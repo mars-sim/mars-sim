@@ -42,9 +42,10 @@ public class ExitMenu implements BiConsumer<TextIO, RunnerData> {
         
         if (toSave) {
             terminal.printf("Exiting the Simulation..." + System.lineSeparator());
-        	Simulation.instance().endSimulation(); 
-    		Simulation.instance().getSimExecutor().shutdownNow();
-    		Simulation.instance().getMasterClock().exitProgram();
+            Simulation sim = Simulation.instance();
+        	sim.endSimulation(); 
+    		sim.getSimExecutor().shutdownNow();
+    		sim.getMasterClock().exitProgram();
     		logger.info("Exiting the Simulation.");
 			System.exit(0);
 			

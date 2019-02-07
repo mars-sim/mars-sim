@@ -11,10 +11,7 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.util.List;
 
-
-import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.table.DefaultTableCellRenderer;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;

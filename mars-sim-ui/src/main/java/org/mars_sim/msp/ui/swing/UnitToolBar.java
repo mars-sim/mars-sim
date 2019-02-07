@@ -12,6 +12,9 @@ import org.mars_sim.msp.core.Unit;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.GradientPaint;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -32,6 +35,17 @@ import javax.swing.border.BevelBorder;
 public class UnitToolBar extends JToolBar implements ActionListener {
 
 	private static final long serialVersionUID = 1L;
+	
+	public static final int HEIGHT = 57;
+	
+	private static final Color antiqueBronze = new Color(102,93,30,128);
+	private static final Color almond = new Color(239,222,205,128);
+	private static final Color cafeNoir = new Color(75,54,33,128);
+	// maroon : 128,21,0; 
+	// almond : 239,222,205;
+	// Antique Bronze : 102,93,30
+	// cafeNoir : 75,54,33
+	
 	// Data members
 	private List<UnitButton> unitButtons; // List of unit buttons
 
@@ -49,7 +63,7 @@ public class UnitToolBar extends JToolBar implements ActionListener {
 		super();
 
 		setOpaque(false);
-		setBackground(new Color(0, 0, 0, 128));
+		setBackground(almond);
 
 		// Initialize data members
 		unitButtons = new ArrayList<UnitButton>();
@@ -62,7 +76,7 @@ public class UnitToolBar extends JToolBar implements ActionListener {
 		setFloatable(false);
 
 		// Set preferred height to 57 pixels.
-		setPreferredSize(new Dimension(0, 57));
+		setPreferredSize(new Dimension(0, HEIGHT));
 
 		// Set border around toolbar
 		setBorder(new BevelBorder(BevelBorder.RAISED));
@@ -153,4 +167,17 @@ public class UnitToolBar extends JToolBar implements ActionListener {
 		return jb;
 	}
 
+	@Override
+	protected void paintComponent(Graphics g){
+	    // Create the 2D copy
+	    Graphics2D g2 = (Graphics2D)g.create();
+
+	    // Apply vertical gradient
+	    g2.setPaint(new GradientPaint(0, 0, almond, 0, getHeight(), cafeNoir));
+	    g2.fillRect(0, 0, getWidth(), getHeight());
+
+	    // Dipose of copy
+	    g2.dispose();
+	}
+	
 }

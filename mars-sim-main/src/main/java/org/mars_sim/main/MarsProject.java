@@ -14,6 +14,8 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
@@ -253,16 +255,16 @@ public class MarsProject {
 //			logger.config("Done with MainWindow.loadSimulationProcess(true)");
 			// Start simulation.
 			startSimulation(true);
-
+			
 //			logger.config("useGUI is " + useGUI);
 			if (useGUI) {
-				// Create main window
-				new MainWindow(true);
+				setupMainWindow();
 			} 
 			
 			else {
 				// Go headless				
 			}
+			
 			// Initialize interactive terminal and load menu
 			initTerminal();
 			
@@ -312,26 +314,40 @@ public class MarsProject {
 				
 			// Start simulation.
 			startSimulation(false);
-
+					
+			
 //			logger.config("useGUI is " + useGUI);
 			if (useGUI) {
-				// Create main window
-				new MainWindow(true);
-
+				setupMainWindow();
 			} 
 			
 			else {
 				// Go headless				
 			}
+
 			// Initialize interactive terminal and load menu
 			initTerminal();
-			
+
 		} catch (Exception e) {
 			// logger.log(Level.SEVERE, "Problem loading existing simulation", e);
 			exitWithError("Problem loading the default simulation.", e);
 		}
 	}
 
+	public void setupMainWindow() {
+		new Timer().schedule(new DelayTimer(), 1000);
+	}
+	
+	/**
+	 * Defines the delay timer class
+	 */
+	class DelayTimer extends TimerTask {
+		public void run() {
+			// Create main window
+			SwingUtilities.invokeLater(() -> new MainWindow(true));
+		}
+	}
+	
 	/**
 	 * Create a new simulation instance.
 	 */
@@ -346,10 +362,10 @@ public class MarsProject {
 				SimulationConfig.loadConfig();
 				// Start interactive terminal
 				sim.getTerm().startModeSelection();
-				// Call Sim config editor in a thread
-				SwingUtilities.invokeLater(() -> {
+				// Start sim config editor
+//				SwingUtilities.invokeLater(() -> {
 					new SimulationConfigEditor(SimulationConfig.instance(), null);
-				});
+//				});
 			} 
 			
 			else {
@@ -385,10 +401,10 @@ public class MarsProject {
 	 * Start the simulation instance.
 	 */
 	public void startSimulation(boolean useDefaultName) {
-		// logger.config("MarsProject's startSimulation() is on
-		// "+Thread.currentThread().getName() + " Thread");
+		logger.config("startSimulation() is on " + Thread.currentThread().getName() + " Thread");
 
 		// Start the simulation.
+//		sim.runStartTask(useDefaultName);
 		sim.start(useDefaultName);
 //		logger.config("Done with sim.start()");
 	}

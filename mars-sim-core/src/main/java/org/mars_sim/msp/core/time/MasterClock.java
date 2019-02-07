@@ -22,6 +22,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -32,14 +33,13 @@ import java.util.logging.Logger;
 public class MasterClock implements Serializable {
 
 	/** default serial id. */
-	static final long serialVersionUID = -1688463735489226493L;
+	static final long serialVersionUID = 1L;
 
 	/** Initialized logger. */
 	private static Logger logger = Logger.getLogger(MasterClock.class.getName());
+	private static String loggerName = logger.getName();
+	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 	
-	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
-			logger.getName().length());
-
 	private static final int FACTOR = 4;
 
 	// Data members
@@ -53,7 +53,8 @@ public class MasterClock implements Serializable {
 	private transient volatile boolean autosave;
 	/** Mode for saving a simulation. */
 	private transient volatile int saveType;
-
+//	private AtomicInteger saveType;
+	
 	/** The Current time between updates (TBU). */
 	private volatile long currentTBU_ns = 0L;
 	/** Simulation time ratio. */
@@ -137,16 +138,16 @@ public class MasterClock implements Serializable {
 	 */
 	public MasterClock(boolean isFXGL, int userTimeRatio) {
 		this.isFXGL = isFXGL;
-		// logger.config("MasterClock's constructor is on " +
-		// Thread.currentThread().getName() + " Thread");
-
+		// logger.config("MasterClock's constructor is on " + Thread.currentThread().getName() + " Thread");
+		
+		// Gets an instance of the Simulation singleton 
 		sim = Simulation.instance();
-		// Initialize data members
+		// Gets an instance of the SimulationConfig singleton 
 		simulationConfig = SimulationConfig.instance();
 
 		// Create a martian clock
 		marsClock = new MarsClock(simulationConfig.getMarsStartDateTime());
-
+		// Save a copy of the initial mars time
 		initialMarsTime = (MarsClock) marsClock.clone();
 		
 //		testNewMarsLandingDayTime();
@@ -164,6 +165,7 @@ public class MasterClock implements Serializable {
 		// Calculate elapsedLast
 		tLast = uptimer.getUptimeMillis();
 
+		// Check if FXGL is used
 		if (!isFXGL)
 			clockThreadTask = new ClockThreadTask();
 
@@ -177,8 +179,11 @@ public class MasterClock implements Serializable {
 			tr = userTimeRatio;
 		logger.config("   User-Defined Time Ratio (TR) : " + (int) tr + "x");
 		}
+		
+		// Gets the time between updates
 		double tbu = simulationConfig.getTimeBetweenUpdates();
 
+		// Gets the machine's # of threads
 		int threads = Simulation.NUM_THREADS;
 
 		// Tune the time between update
@@ -214,6 +219,7 @@ public class MasterClock implements Serializable {
 		adjustedFPS = 1.0 / adjustedTBU_s;
 		currentTBU_ns = (long) adjustedTBU_ns;
 
+		// Save a copy of the current time ratio
 		currentTR = adjustedTR;
 
 		// Added loading the values below from SimulationConfig
@@ -441,9 +447,15 @@ public class MasterClock implements Serializable {
 	 * @param file save to file or null if default file.
 	 */
 	public void setSaveSim(int type, File file) {
-		logger.config("setSaveSim(" + type + ", " + file + ")");
+//		logger.config("setSaveSim() is on " + Thread.currentThread().getName());
+//		logger.config("setSaveSim(" + type + ", " + file + ");  saveType is " + saveType);
 		saveType = type;
+		//		if (type == 1) 
+//			saveType = new AtomicInteger(1);
+//		else if (type == 2) 
+//			saveType = new AtomicInteger(2);
 		this.file = file;
+//		logger.config("setSaveSim(" + type + ", " + file + ");  saveType is " + saveType);
 	}
 
 	/**
@@ -470,10 +482,10 @@ public class MasterClock implements Serializable {
 	 * @return true if saving simulation.
 	 */
 	public boolean isSavingSimulation() {
-		if (saveType != 0)
-			return true;
-		else
+		if (saveType == 0) //saveType.equals(AtomicInteger(1))
 			return false;
+		else
+			return true;
 	}
 
 	/**
@@ -864,8 +876,11 @@ public class MasterClock implements Serializable {
 	 * @return true if it's saving
 	 */
 	private boolean checkSave() {
+//		logger.config("checkSave() is on " + Thread.currentThread().getName()); // pool-4-thread-1
+//		logger.config("1. checkSave() : saveType is " + saveType); 
 		if (saveType != 0) {
-			logger.config("checkSave() : saveType is " + saveType); 
+//			logger.config("checkSave() is on " + Thread.currentThread().getName());
+//			logger.config("2. checkSave() : saveType is " + saveType); 
 			try {
 				sim.saveSimulation(saveType, file);
 			} catch (IOException e) {
@@ -1249,17 +1264,19 @@ public class MasterClock implements Serializable {
 				tpfCache = 0;
 			}
 
-			if (saveType != 0) {
-				try {
-					sim.saveSimulation(saveType, file);
-				} catch (IOException e) {
-					logger.log(Level.SEVERE,
-							"Could not save the simulation as " + (file == null ? "null" : file.getPath()), e);
-					e.printStackTrace();
-				}
-
-				saveType = 0;
-			}
+			checkSave();
+			
+//			if (saveType != 0) {
+//				try {
+//					sim.saveSimulation(saveType, file);
+//				} catch (IOException e) {
+//					logger.log(Level.SEVERE,
+//							"Could not save the simulation as " + (file == null ? "null" : file.getPath()), e);
+//					e.printStackTrace();
+//				}
+//
+//				saveType = 0;
+//			}
 
 			// Exit program if exitProgram flag is true.
 			if (exitProgram) {
@@ -1281,7 +1298,7 @@ public class MasterClock implements Serializable {
 	 * @param clock
 	 */
 	public static void initializeInstances(Simulation s) {
-		sim = s;
+		sim = s;//Simulation.instance();
 		timeIntervals = new ArrayList<>();
 		justReloaded = true;
 	}

@@ -31,17 +31,16 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
 import org.mars_sim.msp.ui.swing.tool.monitor.PersonTableModel;
-import org.mars_sim.msp.ui.swing.tool.monitor.RobotTableModel;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
-//import com.alee.managers.language.data.TooltipWay;
-import com.alee.managers.tooltip.TooltipWay;
 import com.alee.laf.button.WebButton;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
 import com.alee.laf.text.WebTextArea;
 import com.alee.managers.tooltip.TooltipManager;
+//import com.alee.managers.language.data.TooltipWay;
+import com.alee.managers.tooltip.TooltipWay;
 
 /**
  * The TabPanelActivity is a tab panel for a person's current tasks and

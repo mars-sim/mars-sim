@@ -235,7 +235,7 @@ public class MarsProjectHeadless {
 
 			Simulation.createNewSimulation(userTimeRatio, false);
 			
-			sim.start(true);
+			startSimulation(true);
 			// Load the menu choice
 			sim.getTerm().loadTerminalMenu();
 			
@@ -250,7 +250,7 @@ public class MarsProjectHeadless {
 	 */
 	public void startSimulation(boolean useDefaultName) {
 		// Start the simulation.
-		sim.start(useDefaultName);
+		sim.runStartTask(useDefaultName);
 	}
 
 	/**

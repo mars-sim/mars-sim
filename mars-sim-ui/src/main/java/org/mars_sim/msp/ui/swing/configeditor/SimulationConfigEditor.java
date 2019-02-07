@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -33,6 +35,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.AbstractTableModel;
@@ -235,13 +238,12 @@ public class SimulationConfigEditor {
 					editor.stopCellEditing();
 				}
 				if (!hasError) {
-					if (mainWindow == null) {
-					} else {
+					if (mainWindow != null) {
 						mainWindow.getFrame().dispose();
 					}
 					f.setVisible(false);
-					
-					setConfiguration();		
+					// Finalizes the simulation configuration
+					finalizeSettlementConfig();		
 					// Destroy old simulation
 					sim.destroyOldSimulation();
 					// Create new simulation
@@ -249,13 +251,11 @@ public class SimulationConfigEditor {
 					// Initialize interactive terminal 
 					sim.getTerm().initializeTerminal();	
 					// Start the simulation
-					sim.start(false);
+					sim.runStartTask(false);
 					// Close simulation config editor
 					closeWindow();
 					// Create main window
-					new MainWindow(true);
-					// Create the settlement unit windows ahead of time
-//					MainWindow.createSettlementWindows();
+					setupMainWindow();
 //					logger.config("Done SimulationConfigEditor()");
 				}
 			}
@@ -292,6 +292,20 @@ public class SimulationConfigEditor {
 		});
 	}
 
+	public void setupMainWindow() {
+		new Timer().schedule(new DelayTimer(), 1000);
+	}
+	
+	/**
+	 * Defines the delay timer class
+	 */
+	class DelayTimer extends TimerTask {
+		public void run() {
+			// Create main window
+			SwingUtilities.invokeLater(() -> new MainWindow(true));
+		}
+	}
+	
 	/*
 	 * Determines proper width for each column and center aligns each cell content
 	 */
@@ -381,9 +395,9 @@ public class SimulationConfigEditor {
 	}
 
 	/**
-	 * Set the simulation configuration based on dialog choices.
+	 * Finalizes the simulation configuration based on dialog choices.
 	 */
-	private void setConfiguration() {
+	private void finalizeSettlementConfig() {
 		SettlementConfig settlementConfig = config.getSettlementConfiguration();
 
 		// Clear configuration settlements.

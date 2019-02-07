@@ -551,6 +551,8 @@ public class MainDesktopPane extends JDesktopPane
 							// System.out.println("MainDesktopPane: TimeWindow opens at whatever location");
 							if (toolName.equals(TimeWindow.NAME))
 								window.setLocation(getStartingLocation(window));
+							else if (toolName.equals(MonitorWindow.NAME))
+								window.setLocation(new Point(265, 0));
 							else
 								window.setLocation(getRandomLocation(window));
 						}
@@ -1034,7 +1036,7 @@ public class MainDesktopPane extends JDesktopPane
 		// (int) Math.round(Math.random() *
 		// );
 
-		int rY = 55 + RandomUtil.getRandomInt(5) * 20;
+		int rY = RandomUtil.getRandomInt(5) * 20;
 		// (desktop_size.height - window_size.height));
 
 		return new Point(rX, rY);

@@ -20,6 +20,7 @@ import java.net.URL;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -31,6 +32,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.plaf.metal.MetalLookAndFeel;
@@ -40,6 +42,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.time.EarthClock;
+import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.swing.configeditor.SimulationConfigEditor;
 import org.mars_sim.msp.ui.swing.tool.JStatusBar;
@@ -47,6 +50,8 @@ import org.mars_sim.msp.ui.swing.tool.JStatusBar;
 //import com.alee.managers.UIManagers;
 import com.alee.laf.WebLookAndFeel;
 import com.alee.managers.UIManagers;
+import com.alee.managers.tooltip.TooltipManager;
+import com.alee.managers.tooltip.TooltipWay;
 
 /**
  * The MainWindow class is the primary UI frame for the project. It contains the
@@ -57,22 +62,33 @@ public class MainWindow extends JComponent {
 	private static final long serialVersionUID = 1L;
 
 	private static Logger logger = Logger.getLogger(MainWindow.class.getName());
-
+	private static String loggerName = logger.getName();
+	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+	
 	/** Icon image filename for main window. */
 	private static final String ICON_IMAGE = "/images/LanderHab.png";
 	public static final String OS = System.getProperty("os.name").toLowerCase(); // e.g. 'linux', 'mac os x'
-
-	// Data members
-
-	private String lookAndFeelTheme;
+	private static final String SOL = " Sol ";
+	
+//	private static int AUTOSAVE_EVERY_X_MINUTE = 15;
+	private static final int TIME_DELAY = 960;
 
 	private static JFrame frame;
+	
+	// Data members
+//	private boolean cleanUI;
+	private boolean useDefault;
+//	private boolean keepSleeping;
+
+	private int solCache = 0;
+	
+	private String lookAndFeelTheme;
 	/** The unit tool bar. */
 	private UnitToolBar unitToolbar;
 	/** The tool bar. */
 	private ToolToolBar toolToolbar;
 	/** The main desktop. */
-	private static MainDesktopPane desktop;
+	private MainDesktopPane desktop;
 
 	private MainWindowMenu mainWindowMenu;
 
@@ -81,43 +97,40 @@ public class MainWindow extends JComponent {
 //	private BuildingManager mgr; // mgr is very important for FINISH_BUILDING_PLACEMENT_EVENT
 
 //	private static Thread newSimThread;
-	private static Thread loadSimThread;
-	private static Thread saveSimThread;
+//	private Thread loadSimThread;
+//	private Thread saveSimThread;
+	
+    private final AtomicBoolean sleeping = new AtomicBoolean(false);
 
 	private Timer delayTimer;
 	private Timer delayTimer1;
-	private Timer autosaveTimer;
-	private static javax.swing.Timer earthTimer = null;
-	private static int AUTOSAVE_EVERY_X_MINUTE = 15;
-	private static final int TIME_DELAY = 960;
+//	private Timer autosaveTimer;
+	private javax.swing.Timer earthTimer;
 
 	// protected ShowDateTime showDateTime;
-	private static JStatusBar statusBar;
-	private static JLabel leftLabel;
-	private static JLabel memMaxLabel;
-	private static JLabel memUsedLabel;
+	private JStatusBar statusBar;
+	private JLabel leftLabel;
+	private JLabel memMaxLabel;
+	private JLabel memUsedLabel;
 	// private JLabel dateLabel;
-	private static JLabel timeLabel;
-	private static JPanel bottomPane;
-	private static JPanel mainPane;
+	private JLabel earthTimeLabel;
+	private JPanel bottomPane;
+	private JPanel mainPane;
 
-	private static int memMax;
-	private static int memTotal;
-	private static int memUsed, memUsedCache;
-	private static int memFree;
+	private int memMax;
+//	private static int memTotal;
+	private int memUsed, memUsedCache;
+	private int memFree;
 
-	private static String earthTimeString;
+//	private static String earthTimeString;
+//	private String statusText;
+//	private ExecutorService saveExecutor = Executors.newSingleThreadExecutor();
 
-	// private boolean cleanUI;
-	private boolean useDefault;
-	
-	private boolean keepSleeping;
-
-	private String statusText;
-	
 	private static Simulation sim = Simulation.instance();
-	private static MasterClock masterClock = sim.getMasterClock();
-	private static EarthClock earthClock = masterClock.getEarthClock();
+	private static MasterClock masterClock;// = sim.getMasterClock();
+	private static EarthClock earthClock;// = masterClock.getEarthClock();
+	private static MarsClock marsClock;// = masterClock.getMarsClock();
+		
 	
 	/**
 	 * Constructor 1.
@@ -126,8 +139,15 @@ public class MainWindow extends JComponent {
 	 *            true if window should display a clean UI.
 	 */
 	public MainWindow(boolean cleanUI) {
+		logger.config("MainWindow is on " + Thread.currentThread().getName() + " Thread");
 		// this.cleanUI = cleanUI;
+		
+		// Set up the frame
 		frame = new JFrame();
+		
+		// Disable the close button on top right
+//		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		
 		// Set up the look and feel library to be used
 		if (OS.contains("linux"))
 			setLookAndFeel(false, false);
@@ -141,27 +161,27 @@ public class MainWindow extends JComponent {
 		if (!cleanUI) {
 			UIConfig.INSTANCE.parseFile();
 		}
-
+		
 		// Set look and feel of UI.
 		useDefault = UIConfig.INSTANCE.useUIDefault();
-
+		
 		// Set the icon image for the frame.
 		setIconImage();
+		
 		// Initialize UI elements for the frame
 		init();
+		
 		// Set up timers for use on the status bar
 		setupDelayTimer();
+		
 		// Add autosave timer
 //		startAutosaveTimer();
+		
 		// Open all initial windows.
 		desktop.openInitialWindows();
+		
 		// Set up timers for caching the settlemnet windows
 		setupSettlementWindowTimer();
-	}
-	
-	public static void createSettlementWindows() {
-		// Cache each settlement unit window
-		desktop.cacheSettlementUnitWindow();
 	}
 
 	/**
@@ -176,6 +196,7 @@ public class MainWindow extends JComponent {
 				exitSimulation();
 			}
 		});
+		
 		// Set up the main pane
 		mainPane = new JPanel(new BorderLayout());
 		
@@ -198,9 +219,7 @@ public class MainWindow extends JComponent {
 
 		// Prepare unit toolbar
 		unitToolbar = new UnitToolBar(this) {
-
 			private static final long serialVersionUID = 1L;
-
 			@Override
 			protected JButton createActionComponent(Action a) {
 				JButton jb = super.createActionComponent(a);
@@ -228,24 +247,33 @@ public class MainWindow extends JComponent {
 		// Create the status bar
 		statusBar = new JStatusBar();
 
-		memMaxLabel = new JLabel();
-		memMaxLabel.setHorizontalAlignment(JLabel.CENTER);
-		memMax = (int) Math.round(Runtime.getRuntime().maxMemory()) / 1_000_000;
-		memMaxLabel.setText("Total Designated Memory : " + memMax + " MB");
-		statusBar.addRightComponent(memMaxLabel, false);
+		earthTimeLabel = new JLabel();
+		earthTimeLabel.setHorizontalAlignment(JLabel.LEFT);
+		TooltipManager.setTooltip(earthTimeLabel, "Earth Timestamp", TooltipWay.up);
+		statusBar.setLeftComponent(earthTimeLabel, true);
 
+		leftLabel = new JLabel();
+		leftLabel.setText(SOL + "1");
+		leftLabel.setHorizontalAlignment(JLabel.CENTER);
+		TooltipManager.setTooltip(leftLabel, "# of sols since the beginning of the sim", TooltipWay.up);
+		statusBar.add(leftLabel, 0);
+		
 		memFree = (int) Math.round(Runtime.getRuntime().freeMemory()) / 1_000_000;
 
 		memUsedLabel = new JLabel();
-		memUsedLabel.setHorizontalAlignment(JLabel.CENTER);
-		memTotal = (int) Math.round(Runtime.getRuntime().totalMemory()) / 1_000_000;
+		memUsedLabel.setHorizontalAlignment(JLabel.RIGHT);
+		int memTotal = (int) Math.round(Runtime.getRuntime().totalMemory()) / 1_000_000;
 		memUsed = memTotal - memFree;
-		memUsedLabel.setText("Used Memory : " + memUsed + " MB");
+		memUsedLabel.setText(memUsed + " MB");//"Used Memory : " + memUsed + " MB");
+		TooltipManager.setTooltip(memUsedLabel, "Memory Used", TooltipWay.up);
 		statusBar.addRightComponent(memUsedLabel, false);
 
-		timeLabel = new JLabel();
-		timeLabel.setHorizontalAlignment(JLabel.CENTER);
-		statusBar.addRightComponent(timeLabel, false);
+		memMaxLabel = new JLabel();
+		memMaxLabel.setHorizontalAlignment(JLabel.RIGHT);
+		memMax = (int) Math.round(Runtime.getRuntime().maxMemory()) / 1_000_000;
+		memMaxLabel.setText("[ " + memMax + " MB ] ");//"Total Designated Memory : " + memMax + " MB");
+		TooltipManager.setTooltip(memMaxLabel, "Memory Designated", TooltipWay.up);
+		statusBar.addRightComponent(memMaxLabel, false);
 
 		bottomPane.add(statusBar, BorderLayout.SOUTH);
 
@@ -283,7 +311,7 @@ public class MainWindow extends JComponent {
 	 * Set up the timer for status bar
 	 */
 	public void setupDelayTimer() {
-		if (earthTimer == null) {
+		if (delayTimer == null) {
 			delayTimer = new Timer();
 			delayTimer.schedule(new DelayTimer(), 300);
 		}
@@ -294,7 +322,7 @@ public class MainWindow extends JComponent {
 	 */
 	class DelayTimer extends TimerTask {
 		public void run() {
-			startEarthTimer();
+			runStatusTimer();
 		}
 	}
 	
@@ -311,7 +339,8 @@ public class MainWindow extends JComponent {
 	 */
 	class DelayTimer2 extends TimerTask {
 		public void run() {
-			createSettlementWindows();
+			// Cache each settlement unit window
+			desktop.cacheSettlementUnitWindow();
 		}
 	}
 	
@@ -338,40 +367,56 @@ public class MainWindow extends JComponent {
 	/**
 	 * Start the earth timer
 	 */
-	public void startEarthTimer() {
-
+	public void runStatusTimer() {
+		logger.config("runStatusTimer()");
 		earthTimer = new javax.swing.Timer(TIME_DELAY, new ActionListener() {
-			String t = null;
+		
+//		String earthTime = null;
 
 			@Override
 			public void actionPerformed(ActionEvent evt) {
-				try {
+//				logger.config("runStatusTimer()'s actionPerformed()");
+//				try {
 					// Check if new simulation is being created or loaded from file.
-					if (!Simulation.isUpdating()) {
+//					if (!Simulation.isUpdating()) {
+////						MasterClock master = sim.getMasterClock();
+//						if (masterClock == null) {
+//							throw new IllegalStateException("master clock is null");
+//						}
+////						EarthClock earthclock = master.getEarthClock();
+//						if (earthClock == null) {
+//							throw new IllegalStateException("earthclock is null");
+//						}
+//						earthTime = earthClock.getTimeStampF0();
+//					}
+//				} catch (Exception ee) {
+//					ee.printStackTrace(System.err);
+//				}
 
-//						MasterClock master = sim.getMasterClock();
-						if (masterClock == null) {
-							throw new IllegalStateException("master clock is null");
-						}
-//						EarthClock earthclock = master.getEarthClock();
-						if (earthClock == null) {
-							throw new IllegalStateException("earthclock is null");
-						}
-						t = earthClock.getTimeStampF0();
-
-					}
-				} catch (Exception ee) {
-					ee.printStackTrace(System.err);
+				if (earthClock == null) {
+					masterClock = sim.getMasterClock();
+					earthClock = masterClock.getEarthClock();
+					marsClock = masterClock.getMarsClock();
 				}
-				if (t != null)
-					timeLabel.setText("Earth Date & Time : " + t);
-				memFree = (int) Math.round(Runtime.getRuntime().freeMemory()) / 1000000;
-				memTotal = (int) Math.round(Runtime.getRuntime().totalMemory()) / 1000000;
-				memUsed = memTotal - memFree;
+				
+				earthTimeLabel.setText(earthClock.getTimeStampF1());
+				
+				int memFree = (int) Math.round(Runtime.getRuntime().freeMemory()) / 1_000_000;
+				int memTotal = (int) Math.round(Runtime.getRuntime().totalMemory()) / 1_000_000;
+				int memUsed = memTotal - memFree;
 
-				if (memUsed > memUsedCache * 1.1 || memUsed < memUsedCache * 0.9)
-					memUsedLabel.setText("Used Memory : " + memUsed + " MB");
-				memUsedCache = memUsed;
+				if (memUsed > memUsedCache * 1.1 && memUsed < memUsedCache * 0.9) {
+					memUsedCache = memUsed;
+					memUsedLabel.setText(
+//							"Used Memory : " + 
+							memUsed + " MB");
+				}
+		
+				int sol = marsClock.getMissionSol();
+				if (solCache != sol) {
+					solCache = sol;
+					leftLabel.setText(SOL + sol);
+				}
 				
 //				// Check on whether autosave is due
 //				if (masterClock.getAutosave()) {
@@ -415,18 +460,18 @@ public class MainWindow extends JComponent {
 	/**
 	 * Load a previously saved simulation.
 	 */
-	public static void loadSimulation(boolean autosave) {
-		if ((loadSimThread == null) || !loadSimThread.isAlive()) {
-			loadSimThread = new Thread(Msg.getString("MainWindow.thread.loadSim")) { //$NON-NLS-1$
-				@Override
-				public void run() {
+	public void loadSimulation(boolean autosave) {		
+//		if ((loadSimThread == null) || !loadSimThread.isAlive()) {
+//			loadSimThread = new Thread(Msg.getString("MainWindow.thread.loadSim")) { //$NON-NLS-1$
+//				@Override
+//				public void run() {
 					loadSimulationProcess(autosave);
-				}
-			};
-			loadSimThread.start();
-		} else {
-			loadSimThread.interrupt();
-		}
+//				}
+//			};
+//			loadSimThread.start();
+//		} else {
+//			loadSimThread.interrupt();
+//		}
 
 	}
 
@@ -437,7 +482,7 @@ public class MainWindow extends JComponent {
 	public static void loadSimulationProcess(boolean autosave) {
 		logger.config("MainWindow's loadSimulationProcess() is on " + Thread.currentThread().getName());
 
-		if (masterClock != null)
+//		if (masterClock != null)
 			sim.stop();
 
 		String dir = null;
@@ -603,72 +648,107 @@ public class MainWindow extends JComponent {
 	 *            Should the user be allowed to override location?
 	 */
 	public void saveSimulation(boolean loadingDefault, final boolean isAutosave) {
-		
-		if ((saveSimThread == null) || !saveSimThread.isAlive()) {
-			saveSimThread = new Thread(Msg.getString("MainWindow.thread.saveSim")) { //$NON-NLS-1$
-				@Override
-				public void run() {
+//		if ((saveSimThread == null) || !saveSimThread.isAlive()) {
+//			saveSimThread = new Thread(Msg.getString("MainWindow.thread.saveSim")) { //$NON-NLS-1$
+//				@Override
+//				public void run() {
 					saveSimulationProcess(loadingDefault, isAutosave);
-				}
-			};
-			saveSimThread.start();
-		} 
-		
-		else {
-			saveSimThread.interrupt();
-			keepSleeping = false;
-		}
+//				}
+//			};
+//			saveSimThread.start();
+//		} 
+//		
+//		else {
+//			saveSimThread.interrupt();
+//			stopSleeping();
+//		}
 	}
 
 	/**
 	 * Performs the process of saving a simulation.
 	 */
-	private void saveSimulationProcess(boolean loadingDefault, boolean isAutosave) {	
+	private void saveSimulationProcess(boolean loadingDefault, boolean isAutosave) {
+//		logger.config("saveSimulationProcess() is on " + Thread.currentThread().getName());
 		if (masterClock.isPaused()) {
 			logger.config("Cannot save when the simulation is on pause.");
 		}
+		
 		else {
-			try {
-				File fileLocn = null;
-		
-				if (!loadingDefault) {
-					JFileChooser chooser = new JFileChooser(Simulation.DEFAULT_DIR);
-					chooser.setDialogTitle(Msg.getString("MainWindow.dialogSaveSim")); //$NON-NLS-1$
-					if (chooser.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {
-						fileLocn = chooser.getSelectedFile();
-					} else {
-						return;
-					}
-				}
-		
+
 				if (isAutosave) {
-					desktop.disposeAnnouncementWindow();
-					desktop.openAnnouncementWindow("  " + Msg.getString("MainWindow.autosavingSim") + "  "); //$NON-NLS-1$
+					SwingUtilities.invokeLater(() -> {
+						desktop.disposeAnnouncementWindow();
+						desktop.openAnnouncementWindow("  " + Msg.getString("MainWindow.autosavingSim") + "  "); //$NON-NLS-1$
+					});
 					masterClock.setSaveSim(Simulation.AUTOSAVE, null);
-				} else {
-					desktop.disposeAnnouncementWindow();
-					desktop.openAnnouncementWindow("  " + Msg.getString("MainWindow.savingSim") + "  "); //$NON-NLS-1$
-					if (fileLocn == null)
+//					sim.getSimExecutor().submit(() -> masterClock.setSaveSim(Simulation.AUTOSAVE, null));
+				} 
+				
+				else {
+//					File fileLocn = null;
+					
+					SwingUtilities.invokeLater(() -> {
+	
+						desktop.disposeAnnouncementWindow();
+						desktop.openAnnouncementWindow("  " + Msg.getString("MainWindow.savingSim") + "  "); //$NON-NLS-1$
+					});
+						
+					if (!loadingDefault) {
+						JFileChooser chooser = new JFileChooser(Simulation.DEFAULT_DIR);
+						chooser.setDialogTitle(Msg.getString("MainWindow.dialogSaveSim")); //$NON-NLS-1$
+						if (chooser.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {
+							final File fileLocn = chooser.getSelectedFile();
+							masterClock.setSaveSim(Simulation.SAVE_AS, fileLocn);
+//							sim.getSimExecutor().submit(() -> masterClock.setSaveSim(Simulation.SAVE_AS, fileLocn));
+						} else {
+							return;
+						}
+					}
+					
+					else {
+//					if (fileLocn == null)
 						masterClock.setSaveSim(Simulation.SAVE_DEFAULT, null);
-					else
-						masterClock.setSaveSim(Simulation.SAVE_AS, fileLocn);
+//						sim.getSimExecutor().submit(() -> masterClock.setSaveSim(Simulation.SAVE_DEFAULT, null));
+					}
+						
 				}
 	
-				// Save the current main window ui config
-	//			UIConfig.INSTANCE.saveFile(this);
-		
-				while (keepSleeping && masterClock.isSavingSimulation())
-					TimeUnit.MILLISECONDS.sleep(100L);
-	
-			} catch (Exception e) {
-				logger.log(Level.SEVERE, Msg.getString("MainWindow.log.sleepInterrupt") + e); //$NON-NLS-1$
-				e.printStackTrace(System.err);
-			}
+				sleeping.set(true);
+		        while (sleeping.get() && masterClock.isSavingSimulation()) {
+		            try { 
+	//	                Thread.sleep(interval); 
+						TimeUnit.MILLISECONDS.sleep(100L);
+		            } catch (InterruptedException e){ 
+		                Thread.currentThread().interrupt();
+						logger.log(Level.SEVERE, Msg.getString("MainWindow.log.sleepInterrupt") + ". " + e); //$NON-NLS-1$
+						e.printStackTrace(System.err);
+		            }
+		            // do something here 
+		         }
+	        
 			
-			desktop.disposeAnnouncementWindow();
+//			try {
+//				
+//				// Save the current main window ui config
+//	//			UIConfig.INSTANCE.saveFile(this);
+//		
+//				while (keepSleeping && masterClock.isSavingSimulation())
+//					TimeUnit.MILLISECONDS.sleep(100L);
+//	
+//			} catch (Exception e) {
+//				logger.log(Level.SEVERE, Msg.getString("MainWindow.log.sleepInterrupt") + e); //$NON-NLS-1$
+//				e.printStackTrace(System.err);
+//			}
+			
+//	        
+		        SwingUtilities.invokeLater(() -> desktop.disposeAnnouncementWindow());
 		}
 	}
 
+    public void stopSleeping() {
+        sleeping.set(false);
+    }
+    
 //	/**
 //	 * Save the current simulation. This displays a FileChooser to select the
 //	 * location to save the simulation if the default is not to be used.
@@ -832,12 +912,21 @@ public class MainWindow extends JComponent {
 //			logger.log(Level.SEVERE, Msg.getString("MainWindow.log.saveError") + e); //$NON-NLS-1$
 //			e.printStackTrace(System.err);
 //		}
-
+		endSimulationClass();
 		masterClock.exitProgram();
-		
+		System.exit(0);
 		destroy();
 	}
 
+	/**
+	 * Ends the current simulation, closes the JavaFX stage of MainScene but leaves
+	 * the main menu running
+	 */
+	private void endSimulationClass() {
+		sim.endSimulation();
+		sim.getSimExecutor().shutdown();//.shutdownNow();
+	}
+	
 	/**
 	 * Sets the look and feel of the UI
 	 * 
@@ -967,16 +1056,16 @@ public class MainWindow extends JComponent {
 		mainWindowMenu = null;
 //		mgr = null;
 //		newSimThread = null;
-		loadSimThread = null;
-		saveSimThread = null;
+//		loadSimThread = null;
+//		saveSimThread = null;
 		delayTimer = null;
-		autosaveTimer = null;
+//		autosaveTimer = null;
 		earthTimer = null;
 		statusBar = null;
 		leftLabel = null;
 		memMaxLabel = null;
 		memUsedLabel = null;
-		timeLabel = null;
+		earthTimeLabel = null;
 		bottomPane = null;
 		mainPane = null;
 		sim = null;

@@ -14,17 +14,23 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 
 public class JStatusBar extends JPanel {
-
-	public JPanel contentPanel ;
-	//public FormLayout layout;
 	
     private static final long serialVersionUID = 1L;
     	   
+	public static final int HEIGHT = 23;
+	
+	private static final Color antiqueBronze = new Color(102,93,30,128);
+	private static final Color almond = new Color(239,222,205,128);
+	private static final Color cafeNoir = new Color(75,54,33,128);
+	
+	public JPanel contentPanel ;
+	//public FormLayout layout;
     protected JPanel leftPanel;
     protected JPanel rightPanel;
     	 
@@ -36,8 +42,11 @@ public class JStatusBar extends JPanel {
     	 
     protected void createPartControl() {    
 
+		setOpaque(false);
+		setBackground(almond);
+		
         setLayout(new BorderLayout());
-        setPreferredSize(new Dimension(getWidth(), 23));
+        setPreferredSize(new Dimension(getWidth(), HEIGHT));
  
         leftPanel = new JPanel(new FlowLayout(
                 FlowLayout.LEADING, 5, 3));
@@ -51,6 +60,11 @@ public class JStatusBar extends JPanel {
 		//rightPanel.setBackground(new Color(0,0,0,128));
         add(rightPanel, BorderLayout.EAST);
         
+        leftPanel.setOpaque(false);
+        leftPanel.setBackground(almond);
+        
+        rightPanel.setOpaque(false);
+        rightPanel.setBackground(almond);
     }
 
     
@@ -99,6 +113,13 @@ public class JStatusBar extends JPanel {
         g.setColor(new Color(221, 221, 220));
         g.drawLine(0, y, getWidth(), y);
 
+	    // Create the 2D copy
+	    Graphics2D g2 = (Graphics2D)g.create();
+
+	    // Apply vertical gradient
+	    g2.setPaint(almond);
+	    g2.fillRect(0, 0, getWidth(), getHeight());
+	    
     }
 
 }

@@ -65,11 +65,6 @@ import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.MissionPlanning;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
-import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
-import org.mars_sim.msp.core.person.ai.task.ObserveAstronomicalObjects;
-import org.mars_sim.msp.core.person.ai.task.PerformLaboratoryExperiment;
-import org.mars_sim.msp.core.person.ai.task.PlayHoloGame;
-import org.mars_sim.msp.core.person.ai.task.ProposeScientificStudy;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.person.ai.task.TaskManager;
 import org.mars_sim.msp.core.person.ai.task.Walk;
@@ -136,7 +131,9 @@ public class Simulation implements ClockListener, Serializable {
 	private static final long serialVersionUID = -631308653510974249L;
 
 	private static Logger logger = Logger.getLogger(Simulation.class.getName());
-
+	private static String loggerName = logger.getName();
+	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+	
 	/** The mode to load other file. */ 
 	public static final int OTHER = 0;
 	/** The mode to save as default.sim. */
@@ -330,7 +327,7 @@ public class Simulation implements ClockListener, Serializable {
 	}
 
 	public void startSimExecutor() {
-		// INFO: Simulation's startSimExecutor() is on JavaFX-Launcher Thread
+		logger.config("startSimExecutor() is on " + Thread.currentThread().getName());
 		simExecutor = Executors.newSingleThreadExecutor();
 	}
 
@@ -461,7 +458,10 @@ public class Simulation implements ClockListener, Serializable {
 	}
 
 	public void runStartTask(boolean autosaveDefault) {
-		simExecutor.execute(new StartTask(autosaveDefault));
+		logger.config("runStartTask() is on " + Thread.currentThread().getName());
+		if (simExecutor == null || (simExecutor != null && (simExecutor.isTerminated() || simExecutor.isShutdown())))
+			startSimExecutor();
+		simExecutor.submit(new StartTask(autosaveDefault));
 	}
 
 	public class StartTask implements Runnable {
@@ -637,7 +637,8 @@ public class Simulation implements ClockListener, Serializable {
      */
     public void deserialize(File file) throws IOException,
             ClassNotFoundException {
-
+		logger.config("deserialize() is on " + Thread.currentThread().getName());
+		
 //		byte[] buf = new byte[8192];
 		FileInputStream in = null;
 	    XZInputStream xzin = null;
@@ -797,6 +798,7 @@ public class Simulation implements ClockListener, Serializable {
 	 * @throws IOException            if error reading from file.
 	 */
 	private void readFromFile(File file) throws ClassNotFoundException, IOException {
+		logger.config("readFromFile() is on " + Thread.currentThread().getName());
 		logger.config("Loading and processing the saved sim. Please wait...");
 		
 //		System.out.println(file.length() / 1000D);
@@ -1032,7 +1034,7 @@ public class Simulation implements ClockListener, Serializable {
 	 * @param file the file to be saved to.
 	 */
 	public synchronized void saveSimulation(int type, File file) throws IOException {
-		logger.config("saveSimulation(" + type + ", " + file + ")");
+//		logger.config("saveSimulation(" + type + ", " + file + ")");
 		Simulation sim = instance();
 		sim.halt();
 
