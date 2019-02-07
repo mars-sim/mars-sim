@@ -78,21 +78,21 @@ public class EatMealMeta implements MetaTask, Serializable {
 
 		if (person.isInSettlement()) {
 
-			if (CookMeal.isMealTime(person.getCoordinates())) {
-				result = hunger; 
-			} else
-				result = hunger / 4D;
-			
+			if (!CookMeal.isMealTime(person.getCoordinates())) {
+				result = result / 4D;
+			}
 			// Check if a cooked meal is available in a kitchen building at the settlement.
 			Cooking kitchen = EatMeal.getKitchenWithMeal(person);
 			if (kitchen != null) {
 				// Increase probability to eat meal if a cooked meal is available.
 				result *= 1.5 * kitchen.getNumberOfAvailableCookedMeals();
-			} else { // no kitchen has available meals
+			} 
+			
+			else { // no kitchen has available meals
 						// If no cooked meal, check if preserved food is available to eat.
-				if (!EatMeal.isPreservedFoodAvailable(person)) {
+				if (notThirsty && !EatMeal.isPreservedFoodAvailable(person)) {
 					// If no preserved food, person can't eat a meal.
-					return result / 2D;
+					return 0;
 				}
 			}
 
@@ -107,16 +107,14 @@ public class EatMealMeta implements MetaTask, Serializable {
 		}
 
 		else if (person.isInVehicle()) {
-			// if (!EatMeal.isPreservedFoodAvailable(person)) {
-			// If no preserved food, person can't eat a meal.
-			// return 0;
-			// }
+			if (notThirsty && !EatMeal.isPreservedFoodAvailable(person)) {
+				 // no preserved food, person can't eat a meal.
+				 return 0;
+			}
 			// higher probability than inside a settlement since a person is more likely to
 			// become thirsty due to on-call shift.
-			if (CookMeal.isMealTime(person.getCoordinates())) {
-				result = hunger; 
-			} else
-				result = hunger / 4D;
+			if (!CookMeal.isMealTime(person.getCoordinates()))
+				result = result / 4D;
 
 			// TODO : how to ration food and water if running out of it ?
 		} 
