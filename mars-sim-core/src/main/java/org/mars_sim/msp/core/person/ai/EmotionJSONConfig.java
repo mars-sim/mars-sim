@@ -107,14 +107,13 @@ public class EmotionJSONConfig implements Serializable {
 		}
         
         settler.setEmotion(e);
-         
-        //System.out.println(settler);
-         
+        //System.out.println(settler);     
     }
  
 	public int [] getEmotionalStates() {
 		return e.emotional_states;
 	}
+	
     class Settler {
     	String name = null;
     	Emotion e = null;

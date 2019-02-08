@@ -1,0 +1,58 @@
+{
+	"package": "Mars Science Experiment Package (MSEP)",
+	"numbers": 13,
+	"experiments": [
+		{
+			"experiment": "Surface Magnetometer",
+			"number": "S-034"
+		},
+		{
+			"experiment": "Solar Wind Spectrometer",
+			"number": "S-035"
+		},
+		{
+			"experiment": "Suprathermal Ion Detector",
+			"number": "S-036"
+		},
+		{
+			"experiment": "Heat Flow",
+			"number": "S-037"
+		},
+		{
+			"experiment": "Charged Particle Lunear Environment",
+			"number": "S-038"
+		},
+		{
+			"experiment": "Cold Cathode Ion Gauge",
+			"number": "S-058"
+		},
+		{
+			"experiment": "Portable Magnetometer",
+			"number": "S-198"
+		},
+		{
+			"experiment": "Garvity Traverse",
+			"number": "S-199"
+		},
+		{
+			"experiment": "Seismic Profiling",
+			"number": "S-203"
+		},
+		{
+			"experiment": "Surface Electrical Properties",
+			"number": "S-204"
+		},
+		{
+			"experiment": "Atmospheric Composition",
+			"number": "S-205"
+		},
+		{
+			"experiment": "Surface Gravimeter",
+			"number": "S-207"
+		},
+		{
+			"experiment": "Neutron Probe",
+			"number": "S-229"
+		}
+	]
+}

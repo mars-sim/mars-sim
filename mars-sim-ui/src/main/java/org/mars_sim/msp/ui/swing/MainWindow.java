@@ -942,7 +942,7 @@ public class MainWindow extends JComponent {
 		if (OS.contains("linux"))
 			SwingUtilities.invokeLater(() -> setLookAndFeel(defaultThemeType, ThemeType.Nimbus));
 		else
-			SwingUtilities.invokeLater(() -> setLookAndFeel(defaultThemeType, null));
+			SwingUtilities.invokeLater(() -> setLookAndFeel(defaultThemeType, ThemeType.Nimrod));
 		
 	}
 	

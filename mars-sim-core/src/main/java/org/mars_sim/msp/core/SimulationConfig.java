@@ -25,6 +25,7 @@ import org.mars_sim.msp.core.manufacture.ManufactureConfig;
 import org.mars_sim.msp.core.mars.LandmarkConfig;
 import org.mars_sim.msp.core.mars.MineralMapConfig;
 import org.mars_sim.msp.core.person.PersonConfig;
+import org.mars_sim.msp.core.person.ai.mission.ExperimentConfig;
 import org.mars_sim.msp.core.person.health.MedicalConfig;
 import org.mars_sim.msp.core.quotation.QuotationConfig;
 import org.mars_sim.msp.core.resource.AmountResourceConfig;
@@ -74,6 +75,8 @@ public class SimulationConfig implements Serializable {
 	public static final String QUOTATION_FILE = "quotations";
 	public static final String VALUE = "value";
 
+    public static final String EXPERIMENTS_FILE = "/json/experiments.json";
+    
 	// Simulation element names.
 	private static final String TIME_CONFIGURATION = "time-configuration";
 
@@ -126,6 +129,9 @@ public class SimulationConfig implements Serializable {
 	private static MealConfig mealConfig;
 	private static RobotConfig robotConfig;
 	private static QuotationConfig quotationConfig;
+	
+	private static ExperimentConfig experimentConfig;
+	
 
 	/*
 	 * -----------------------------------------------------------------------------
@@ -795,6 +801,9 @@ public class SimulationConfig implements Serializable {
 			mealConfig = new MealConfig(parseXMLFileAsJDOMDocument(MEAL_FILE, true));
 			robotConfig = new RobotConfig(parseXMLFileAsJDOMDocument(ROBOT_FILE, true));
 			quotationConfig = new QuotationConfig(parseXMLFileAsJDOMDocument(QUOTATION_FILE, true));
+			
+			experimentConfig = new ExperimentConfig(EXPERIMENTS_FILE);
+			
 //			logger.config("Done loading all xml files.");
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, "Error reading config file(s) below : " + e.getMessage());
