@@ -953,18 +953,6 @@ public class MainWindow extends JComponent {
 	 */
 	public void setLookAndFeel(ThemeType choice0, ThemeType choice1) {
 		boolean changed = false;
-		if (choice0 == ThemeType.Weblaf) {
-			try {
-				// use the weblaf skin
-//				WebLookAndFeel.setForceSingleEventsThread ( true );
-				WebLookAndFeel.install();
-				UIManagers.initialize();
-				changed = true;
-
-			} catch (Exception e) {
-				logger.log(Level.WARNING, Msg.getString("MainWindow.log.lookAndFeelError"), e); //$NON-NLS-1$
-			}
-		}
 
 		if (choice1 == ThemeType.System) {
 			try {
@@ -1020,6 +1008,19 @@ public class MainWindow extends JComponent {
 			}
 		}
 
+		if (choice0 == ThemeType.Weblaf) {
+			try {
+				// use the weblaf skin
+//				WebLookAndFeel.setForceSingleEventsThread ( true );
+				WebLookAndFeel.install();
+				UIManagers.initialize();
+				changed = true;
+
+			} catch (Exception e) {
+				logger.log(Level.WARNING, Msg.getString("MainWindow.log.lookAndFeelError"), e); //$NON-NLS-1$
+			}
+		}
+		
 		if (changed) {
 			frame.validate();
 			frame.repaint();

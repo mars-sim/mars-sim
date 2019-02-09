@@ -1,0 +1,17 @@
+{
+	"subject": "Medicine",
+	"numbers": 11,
+	"topics": [
+			{"topic": "Whole-Body, Ocular, Skin Radiation Limit"},
+			{"topic": "Radiation Dose on Central Nervious System"},
+			{"topic": "Baseline Protection from Micrometeorites Impacts"},
+			{"topic": "Lightweight Walking Aid"},
+			{"topic": "Modality of Exercise and Health"}, 
+			{"topic": "Work Safety"},
+			{"topic": "Handling Environmental Incidents"}, 
+			{"topic": "Circadian, Sleep–Dream, REM Cycle of Martian Settlers"}, 
+			{"topic": "Health Hazard"}, 
+			{"topic": "Body Toxic Chemical Buildup"},
+			{"topic": "Psychiatrical Aspects of Closed Loop Living Space"}
+	]
+}

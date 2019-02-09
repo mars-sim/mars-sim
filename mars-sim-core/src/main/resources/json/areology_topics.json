@@ -1,0 +1,31 @@
+{
+	"subject": "Areology",
+	"numbers": 25,
+	"topics": [
+			{"topic": "Impact Craters"},
+			{"topic": "Mineralogical Mapping"},
+			{"topic": "Meteorites"},
+			{"topic": "Geological Timescale"},
+			{"topic": "Magnetic Field and Internal Structure"}, 
+			{"topic": "Hydrology and Water Features"},
+			{"topic": "Polar Ice Caps and Glaciers"}, 
+			{"topic": "Black Holes"}, 
+			{"topic": "Dust Storms"}, 
+			{"topic": "Volcanism and Lava Flow"},
+            {"topic": "pre-noachian period"},
+            {"topic": "noachian period"},
+            {"topic": "hesperian period"},
+            {"topic": "amazonian period"},
+			{"topic": "Planitia"},
+			{"topic": "Mons"},
+            {"topic": "Fossae"},
+			{"topic": "Labyrinthae"},
+			{"topic": "sedimentary formations"},
+			{"topic": "igneous formations"},
+			{"topic": "sub-surface ice"}, 
+			{"topic": "electric conductivity"},
+			{"topic": "thermal conductivity"}, 
+			{"topic": "specific gravity"}, 
+			{"topic": "oxygen content"}			
+	]
+}

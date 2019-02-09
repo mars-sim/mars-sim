@@ -32,6 +32,7 @@ import org.mars_sim.msp.core.resource.AmountResourceConfig;
 import org.mars_sim.msp.core.resource.PartConfig;
 import org.mars_sim.msp.core.resource.PartPackageConfig;
 import org.mars_sim.msp.core.robot.RobotConfig;
+import org.mars_sim.msp.core.science.ScienceConfig;
 import org.mars_sim.msp.core.structure.SettlementConfig;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.function.cooking.MealConfig;
@@ -131,7 +132,7 @@ public class SimulationConfig implements Serializable {
 	private static QuotationConfig quotationConfig;
 	
 	private static ExperimentConfig experimentConfig;
-	
+	private static ScienceConfig scienceConfig;	
 
 	/*
 	 * -----------------------------------------------------------------------------
@@ -718,6 +719,10 @@ public class SimulationConfig implements Serializable {
 		return quotationConfig;
 	}
 
+	public ScienceConfig getScienceConfig() {
+		return scienceConfig;
+	}
+			
 	/**
 	 * Parses an XML file into a DOM document.
 	 * 
@@ -803,6 +808,7 @@ public class SimulationConfig implements Serializable {
 			quotationConfig = new QuotationConfig(parseXMLFileAsJDOMDocument(QUOTATION_FILE, true));
 			
 			experimentConfig = new ExperimentConfig(EXPERIMENTS_FILE);
+			scienceConfig = new ScienceConfig();
 			
 //			logger.config("Done loading all xml files.");
 		} catch (Exception e) {

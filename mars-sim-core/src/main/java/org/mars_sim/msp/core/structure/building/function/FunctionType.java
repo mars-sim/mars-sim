@@ -6,6 +6,10 @@
  */
 package org.mars_sim.msp.core.structure.building.function;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import org.mars_sim.msp.core.Msg;
 
 public enum FunctionType {
@@ -52,4 +56,23 @@ public enum FunctionType {
 	public String getName() {
 		return this.name;
 	}
+	
+	public static String[] getNames() {
+		List<String> list = new ArrayList<String>();
+		for (FunctionType value : FunctionType.values()) {
+			list.add(value.getName());
+		}
+		Collections.sort(list);
+		return list.toArray(new String[] {});
+	}
+	
+	public static List<FunctionType> getFunctionTypes() {
+		List<FunctionType> list = new ArrayList<>();
+		for (FunctionType value : FunctionType.values()) {
+			list.add(value);
+		}
+		Collections.sort(list);
+		return list;
+	}
+	
 }

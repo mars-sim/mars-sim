@@ -1,0 +1,16 @@
+{
+	"subject": "Physics",
+	"numbers": 10,
+	"topics": [
+			{"topic": "Non-linear Cyclic Processes"},
+			{"topic": "Temporal Organization"},
+			{"topic": "Dynamic Stability of Surface Structures"},
+			{"topic": "Macrosale Cycles of Matter"},	
+			{"topic": "Superpramagnetic Particles"}, 
+			{"topic": "Habitat Structural Safety and Stability"},
+			{"topic": "Symmetry Breaking of Physical Processes"}, 		
+			{"topic": "Quantum Measurement and Accuracy"}, 
+			{"topic": "Scale Invariance of SPace-time Processes"},			
+			{"topic": "Localized Gravitational Gradient"}
+	]
+}

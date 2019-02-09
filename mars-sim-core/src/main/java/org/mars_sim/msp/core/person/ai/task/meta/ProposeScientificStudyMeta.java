@@ -105,11 +105,11 @@ public class ProposeScientificStudyMeta implements MetaTask, Serializable {
 
 	        // Crowding modifier
 	        if (person.isInSettlement()) {
-	            Building adminBuilding = ProposeScientificStudy.getAvailableAdministrationBuilding(person);
-	            if (adminBuilding != null) {
+	            Building b = ProposeScientificStudy.getAvailableBuilding(study, person);
+	            if (b != null) {
 
-	                result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, adminBuilding);
-	                result *= TaskProbabilityUtil.getRelationshipModifier(person, adminBuilding);
+	                result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, b);
+	                result *= TaskProbabilityUtil.getRelationshipModifier(person, b);
 	            }
 	        }
 

@@ -1220,8 +1220,6 @@ public class BuildingManager implements Serializable {
 	 */
 	public static Map<Building, Double> getBestRelationshipBuildings(Person person, List<Building> buildingList) {
 		Map<Building, Double> result = new HashMap<Building, Double>(buildingList.size());
-		// RelationshipManager relationshipManager =
-		// Simulation.instance().getRelationshipManager();
 		// Determine probabilities based on relationships in buildings.
 		for (Building building : buildingList) {
 			LifeSupport lifeSupport = building.getLifeSupport();

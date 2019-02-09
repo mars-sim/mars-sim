@@ -190,7 +190,8 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	private Building quarters;
 
 	private Building currentBuilding;
-
+	/** The person's preference on which building he likes to work. */
+//	private Map<Integer, Integer> buildingPreference;
 	/** The person's achievement in scientific fields. */
 	private Map<ScienceType, Double> scientificAchievement;
 	/** The person's paternal chromosome. */
@@ -1862,6 +1863,19 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	public double getEatingSpeed() {
 		return eatingSpeed;
 	}
+	
+//	public void updateBuildingPreference(FunctionType type) {
+//		if (buildingPreference.isEmpty()) {
+//			for (FunctionType ft : FunctionType.getFunctionTypes()) {
+//				buildingPreference.put(ft.ordinal(), 1);
+//			}
+//		}
+//		else {
+//			int pref = buildingPreference.get(type.ordinal());
+//			if (pref <= 99)
+//				buildingPreference.put(type.ordinal(), 1 + pref);
+//		}
+//	}
 	
 	/**
 	 * Reloads instances after loading from a saved sim

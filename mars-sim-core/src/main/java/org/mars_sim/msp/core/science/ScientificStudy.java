@@ -44,34 +44,34 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 	public static final int MAX_NUM_COLLABORATORS = 3;
 
 	/** Base amount of work time (millisols) required for proposal phase. */
-	private static final double BASE_PROPOSAL_WORK_TIME = 1000D;
+	private static final double BASE_PROPOSAL_WORK_TIME = 1_000D;
 
 	/** Base amount of work time (millisols) required for primary research. */
-	private static final double BASE_PRIMARY_RESEARCH_WORK_TIME = 30000D;
+	private static final double BASE_PRIMARY_RESEARCH_WORK_TIME = 30_000D;
 
 	/** Base amount of work time (millisols) required for collaborative research. */
-	private static final double BASE_COLLABORATIVE_RESEARCH_WORK_TIME = 10000D;
+	private static final double BASE_COLLABORATIVE_RESEARCH_WORK_TIME = 10_000D;
 
 	/**
 	 * Base amount of work time (millisols) required for primary researcher writing
 	 * study paper.
 	 */
-	private static final double BASE_PRIMARY_PAPER_WORK_TIME = 5000D;
+	private static final double BASE_PRIMARY_PAPER_WORK_TIME = 5_000D;
 
 	/**
 	 * Base amount of work time (millisols) required for collaborative researcher
 	 * writing study paper.
 	 */
-	private static final double BASE_COLLABORATIVE_PAPER_WORK_TIME = 1000D;
+	private static final double BASE_COLLABORATIVE_PAPER_WORK_TIME = 1_000D;
 
 	/** Amount of time (millisols) allotted for peer review. */
 	private static final double PEER_REVIEW_TIME = 10000D;
 
 	/** Amount of time (millisols) allowed as downtime for primary work. */
-	static final double PRIMARY_WORK_DOWNTIME_ALLOWED = 30000D;
+	static final double PRIMARY_WORK_DOWNTIME_ALLOWED = 30_000D;
 
 	/** Amount of time (millisols) allowed as downtime for collaborative work. */
-	static final double COLLABORATIVE_WORK_DOWNTIME_ALLOWED = 30000D;
+	static final double COLLABORATIVE_WORK_DOWNTIME_ALLOWED = 30_000D;
 
 	private transient List<ScientificStudyListener> listeners; // Scientific study listeners.
 	
@@ -102,6 +102,9 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 	private Map<Integer, Double> collaborativeResearchWorkTime;
 	private Map<Integer, ScienceType> collaborativeResearchers;
 	private Map<Integer, Boolean> invitedResearchers;
+
+	/** A major topics this scientific study is aiming at. */
+	private Map<ScienceType, List<String>> topics;
 	
 	private static Simulation sim = Simulation.instance();
 	private static MarsClock marsClock = sim.getMasterClock().getMarsClock();
@@ -139,8 +142,33 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 		primaryResearcherAchievementEarned = 0D;
 		collaborativeAchievementEarned = new HashMap<Integer, Double>(MAX_NUM_COLLABORATORS);
 		listeners = Collections.synchronizedList(new ArrayList<ScientificStudyListener>());
+		topics = new HashMap<ScienceType, List<String>>();
 	}
 
+	public void saveTopics(ScienceType type, List<String> topics) {
+		List<String> list = this.topics.get(type);
+		for (String s : topics) {
+			list.add(s);
+		}
+		this.topics.put(type, list);
+	}
+	
+	public String getTopic(ScienceType type) {
+		List<String> list = topics.get(type);
+		if (list == null || list.isEmpty())
+			return "";
+		else if (list.size() == 1)
+			return list.get(0);
+		else {
+//			StringBuilder builder = new StringBuilder();
+//			for(String s : topics) {
+//			    builder.append(s);
+//			}
+			return String.join(", ", list);
+		}
+	}
+	
+	
 	/**
 	 * Gets the study's current phase.
 	 * 

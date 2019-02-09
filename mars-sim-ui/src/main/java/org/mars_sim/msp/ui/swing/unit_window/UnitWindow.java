@@ -406,7 +406,9 @@ public abstract class UnitWindow extends WebInternalFrame { // ModalInternalFram
 	
 	@Override
     public String getName() {
-    	return unit.getName() +"'s unit window";
+		if (unit != null && unit.getName() != null)
+			return unit.getName() +"'s unit window";
+		return null;
     }
     
 	/**

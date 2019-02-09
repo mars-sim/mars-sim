@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
- * EmotionJSONConfig.java
- * @version 3.08 2015-12-12
+ * ExperimentConfig.java
+ * @version 3.1.0 2019-02-08
  * @author Manny Kung
  */
 

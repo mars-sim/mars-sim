@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.Areologist;
 import org.mars_sim.msp.core.person.ai.job.Astronomer;
@@ -24,6 +25,7 @@ import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.job.Mathematician;
 import org.mars_sim.msp.core.person.ai.job.Meteorologist;
 import org.mars_sim.msp.core.person.ai.job.Physicist;
+import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 
 /**
  * Science field names and researcher job descriptions.
@@ -31,66 +33,40 @@ import org.mars_sim.msp.core.person.ai.job.Physicist;
 public enum ScienceType {
 
 	/** environmental science of mars. */
-	AREOLOGY ( // the actual enum value is followed by data associated to the value.
-		Msg.getString("ScienceType.areology"), //$NON-NLS-1$
-		SkillType.AREOLOGY,
-		Areologist.class
-	),
+	AREOLOGY( // the actual enum value is followed by data associated to the value.
+			Msg.getString("ScienceType.areology"), //$NON-NLS-1$
+			SkillType.AREOLOGY, Areologist.class),
 
 	/** keeping track of heavenly bodies. */
-	ASTRONOMY (
-		Msg.getString("ScienceType.astronomy"), //$NON-NLS-1$
-		SkillType.ASTRONOMY,
-		Astronomer.class
-	),
+	ASTRONOMY(Msg.getString("ScienceType.astronomy"), //$NON-NLS-1$
+			SkillType.ASTRONOMY, Astronomer.class),
 
 	/** concerned with the processes of life from micro to macro scale. */
-	BIOLOGY (
-		Msg.getString("ScienceType.biology"), //$NON-NLS-1$
-		SkillType.BIOLOGY,
-		Biologist.class
-	),
+	BIOLOGY(Msg.getString("ScienceType.biology"), //$NON-NLS-1$
+			SkillType.BIOLOGY, Biologist.class),
 
 	/** plants and how to grow them. */
-	BOTANY (
-		Msg.getString("ScienceType.botany"), //$NON-NLS-1$
-		SkillType.BOTANY,
-		Botanist.class
-	),
+	BOTANY(Msg.getString("ScienceType.botany"), //$NON-NLS-1$
+			SkillType.BOTANY, Botanist.class),
 
 	/** stuff and how to make it. */
-	CHEMISTRY (
-		Msg.getString("ScienceType.chemistry"), //$NON-NLS-1$
-		SkillType.CHEMISTRY,
-		Chemist.class
-	),
+	CHEMISTRY(Msg.getString("ScienceType.chemistry"), //$NON-NLS-1$
+			SkillType.CHEMISTRY, Chemist.class),
 
 	/** provides fundamental basics for all sciences. */
-	MATHEMATICS (
-		Msg.getString("ScienceType.mathematics"), //$NON-NLS-1$
-		SkillType.MATHEMATICS,
-		Mathematician.class
-	),
+	MATHEMATICS(Msg.getString("ScienceType.mathematics"), //$NON-NLS-1$
+			SkillType.MATHEMATICS, Mathematician.class),
 
 	/** how to tell sick from healthy. */
-	MEDICINE (
-		Msg.getString("ScienceType.medicine"), //$NON-NLS-1$
-		SkillType.MEDICINE,
-		Doctor.class
-	),
+	MEDICINE(Msg.getString("ScienceType.medicine"), //$NON-NLS-1$
+			SkillType.MEDICINE, Doctor.class),
 
 	/** weather forecasting, climate modelling. */
-	METEOROLOGY (
-		Msg.getString("ScienceType.meteorology"), //$NON-NLS-1$
-		SkillType.METEOROLOGY,
-		Meteorologist.class
-	),
+	METEOROLOGY(Msg.getString("ScienceType.meteorology"), //$NON-NLS-1$
+			SkillType.METEOROLOGY, Meteorologist.class),
 
-	PHYSICS (
-		Msg.getString("ScienceType.physics"), //$NON-NLS-1$
-		SkillType.PHYSICS,
-		Physicist.class
-	);
+	PHYSICS(Msg.getString("ScienceType.physics"), //$NON-NLS-1$
+			SkillType.PHYSICS, Physicist.class);
 
 	/** used to keep track of collaborative sciences. */
 	private static Map<ScienceType, Science> collabSciences;
@@ -100,11 +76,7 @@ public enum ScienceType {
 	private SkillType skill;
 
 	/** hidden constructor. */
-	private ScienceType(
-		String name,
-		SkillType skill,
-		Class<? extends Job> jobClass
-	) {
+	private ScienceType(String name, SkillType skill, Class<? extends Job> jobClass) {
 		this.name = name;
 		this.jobClass = jobClass;
 		this.skill = skill;
@@ -125,15 +97,12 @@ public enum ScienceType {
 		return this.skill;
 	}
 
-	/** initialize collaborative sciences. */
+	/** Initializes collaborative sciences. */
 	private static void initSciences() {
 		// Load available sciences in list.
-		collabSciences = new HashMap<ScienceType,Science>();
+		collabSciences = new HashMap<ScienceType, Science>();
 		for (ScienceType scienceType : ScienceType.values()) {
-			collabSciences.put(
-				scienceType,
-				new Science(scienceType)
-			);
+			collabSciences.put(scienceType, new Science(scienceType));
 		}
 		// Configure collaborative sciences.
 		Science areology = collabSciences.get(ScienceType.AREOLOGY);
@@ -146,7 +115,7 @@ public enum ScienceType {
 		Science meteorology = collabSciences.get(ScienceType.METEOROLOGY);
 		Science physics = collabSciences.get(ScienceType.PHYSICS);
 
-		areology.setCollaborativeSciences(new Science[] { biology, chemistry, mathematics, meteorology });
+		areology.setCollaborativeSciences(new Science[] { biology, chemistry, mathematics, physics, meteorology });
 		astronomy.setCollaborativeSciences(new Science[] { biology, chemistry, mathematics, physics });
 		biology.setCollaborativeSciences(new Science[] { botany, chemistry, mathematics });
 		botany.setCollaborativeSciences(new Science[] { biology, chemistry, mathematics });
@@ -157,21 +126,29 @@ public enum ScienceType {
 		physics.setCollaborativeSciences(new Science[] { astronomy, mathematics });
 	}
 
-	/** gives back the {@link ScienceType} associated with the given job or <code>null</code>. */
+	/**
+	 * Gives back the {@link ScienceType} associated with the given job or
+	 * <code>null</code>.
+	 * 
+	 * @param job {@link Job}
+	 * @return {@link ScienceType}
+	 */
 	public static ScienceType getJobScience(Job job) {
 		ScienceType result = null;
 		if (job != null) {
-			if (collabSciences == null) initSciences();
+			if (collabSciences == null)
+				initSciences();
 			Iterator<Science> i = collabSciences.values().iterator();
 			while (result == null && i.hasNext()) {
 				Science science = i.next();
 				List<Class<? extends Job>> jobs = science.getJobs();
-				if (jobs.contains(job.getJobClass())) result = science.getType();
+				if (jobs.contains(job.getJobClass()))
+					result = science.getType();
 			}
-	/*		for (Science science : collabSciences.values()) {
-				// here was some type mixup
-				if (science.getJobs().contains(science.getJobs())) result = science.getType();
-			}*/
+//			for (Science science : collabSciences.values()) {
+//				// here was some type mixup
+//				if (science.getJobs().contains(science.getJobs())) result = science.getType();
+//			}
 		}
 		return result;
 	}
@@ -183,28 +160,39 @@ public enum ScienceType {
 
 	/**
 	 * Checks if a science is collaborative to a primary science.
-	 * @param sciencePrimary {@link ScienceType}
+	 * 
+	 * @param sciencePrimary   {@link ScienceType}
 	 * @param scienceSecondary {@link ScienceType}
 	 * @return {@link Boolean}
 	 */
 	public static boolean isCollaborativeScience(ScienceType sciencePrimary, ScienceType scienceSecondary) {
-		if (collabSciences == null) initSciences();
-		return collabSciences
-		.get(sciencePrimary)
-		.getCollaborativeSciences()
-		.contains(scienceSecondary);
+		if (collabSciences == null)
+			initSciences();
+		return collabSciences.get(sciencePrimary).getCollaborativeSciences().contains(scienceSecondary);
 	}
 
 	/**
-	 * gives back a list of all valid values for the ScienceType enum.
+	 * Gives back a list of all valid values for the ScienceType enum.
 	 */
 	public static List<ScienceType> valuesList() {
 		return Arrays.asList(ScienceType.values());
-		// Arrays.asList() returns an ArrayList which is a private static class inside Arrays. 
+		// Arrays.asList() returns an ArrayList which is a private static class inside
+		// Arrays.
 		// It is not an java.util.ArrayList class.
-		// Could possibly reconfigure this method as follows: 
+		// Could possibly reconfigure this method as follows:
 		// public ArrayList<ScienceType> valuesList() {
-		// 	return new ArrayList<ScienceType>(Arrays.asList(ScienceType.values())); }
-
+		// return new ArrayList<ScienceType>(Arrays.asList(ScienceType.values())); }
+	}
+	
+	public static ScienceType getType(String name) {
+		if (name != null) {
+	    	for (ScienceType t : ScienceType.values()) {
+	    		if (name.equalsIgnoreCase(t.name)) {
+	    			return t;
+	    		}
+	    	}
+		}
+		
+		return null;
 	}
 }

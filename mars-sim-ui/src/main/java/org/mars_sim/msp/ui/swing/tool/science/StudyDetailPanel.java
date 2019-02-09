@@ -36,7 +36,9 @@ extends JPanel {
 	// Data members
 	private JLabel scienceFieldLabel;
 	private JLabel levelLabel;
-	private JLabel statusLabel;
+	private JLabel phaseLabel;
+	private JLabel topicLabel;
+	
 	private ResearcherPanel primaryResearcherPane;
 	private ResearcherPanel[] collabResearcherPanes;
 	private ScientificStudy study;
@@ -60,20 +62,29 @@ extends JPanel {
 		mainPane.setBorder(new MarsPanelBorder());
 		add(mainPane, BorderLayout.CENTER);
 
-		JPanel infoPane = new JPanel(new GridLayout(3, 1, 0, 0));
+		JPanel infoPane = new JPanel(new GridLayout(2, 1, 0, 0));
 		infoPane.setBorder(new MarsPanelBorder());
 		infoPane.setAlignmentX(Component.LEFT_ALIGNMENT);
 		mainPane.add(infoPane);
 
+		JPanel labelPane = new JPanel(new GridLayout(2, 2, 0, 0));
+		
 		scienceFieldLabel = new JLabel(Msg.getString("StudyDetailPanel.science",""), JLabel.LEFT); //$NON-NLS-1$
-		infoPane.add(scienceFieldLabel);
+		labelPane.add(scienceFieldLabel);
 
 		levelLabel = new JLabel(Msg.getString("StudyDetailPanel.level",""), JLabel.LEFT); //$NON-NLS-1$
-		infoPane.add(levelLabel);
+		labelPane.add(levelLabel);
 
-		statusLabel = new JLabel(Msg.getString("StudyDetailPanel.status",""), JLabel.LEFT); //$NON-NLS-1$
-		infoPane.add(statusLabel);
+		phaseLabel = new JLabel(Msg.getString("StudyDetailPanel.phase",""), JLabel.LEFT); //$NON-NLS-1$
+		labelPane.add(phaseLabel);
 
+		labelPane.add(new JLabel(""));
+		
+		infoPane.add(labelPane);
+		
+		topicLabel = new JLabel(Msg.getString("StudyDetailPanel.topic", "[Work in Progress]"), JLabel.LEFT); //$NON-NLS-1$
+		infoPane.add(topicLabel);
+		
 		primaryResearcherPane = new ResearcherPanel(scienceWindow);
 		primaryResearcherPane.setAlignmentX(Component.LEFT_ALIGNMENT);
 		mainPane.add(primaryResearcherPane);
@@ -95,7 +106,7 @@ extends JPanel {
 	void update() {
 		if (study != null) {
 			// Update the status label.
-			statusLabel.setText(Msg.getString("StudyDetailPanel.status", getStatusString(study))); //$NON-NLS-1$
+			phaseLabel.setText(Msg.getString("StudyDetailPanel.phase", getPhaseString(study))); //$NON-NLS-1$
 
 			// Update any changes to the displayed collaborative researcher panels.
 			Iterator<Integer> i = study.getCollaborativeResearchers().keySet().iterator();
@@ -127,8 +138,9 @@ extends JPanel {
 		if (study != null) {
 			scienceFieldLabel.setText(Msg.getString("StudyDetailPanel.science", study.getScience().getName()) + " "); //$NON-NLS-1$
 			levelLabel.setText(Msg.getString("StudyDetailPanel.level", Integer.toString(study.getDifficultyLevel())) + " "); //$NON-NLS-1$
-			statusLabel.setText(Msg.getString("StudyDetailPanel.status", getStatusString(study)) + " "); //$NON-NLS-1$
-
+			phaseLabel.setText(Msg.getString("StudyDetailPanel.phase", getPhaseString(study)) + " "); //$NON-NLS-1$
+			topicLabel.setText(Msg.getString("StudyDetailPanel.topic", study.getTopic(study.getScience()))); //$NON-NLS-1$
+			
 			primaryResearcherPane.setStudyResearcher(study, study.getPrimaryResearcher());
 			Iterator<Integer> i = study.getCollaborativeResearchers().keySet().iterator();
 			int count = 0;
@@ -151,7 +163,8 @@ extends JPanel {
 	private void clearLabels() {
 		scienceFieldLabel.setText(Msg.getString("StudyDetailPanel.science","")); //$NON-NLS-1$
 		levelLabel.setText(Msg.getString("StudyDetailPanel.level","")); //$NON-NLS-1$
-		statusLabel.setText(Msg.getString("StudyDetailPanel.status","")); //$NON-NLS-1$
+		phaseLabel.setText(Msg.getString("StudyDetailPanel.phase","")); //$NON-NLS-1$
+		topicLabel.setText(Msg.getString("StudyDetailPanel.topic","")); //$NON-NLS-1$
 	}
 
 	/**
@@ -164,11 +177,11 @@ extends JPanel {
 	}
 
 	/**
-	 * Get the status string for a scientific study.
+	 * Get the phase string for a scientific study.
 	 * @param study the scientific study.
-	 * @return the status string.
+	 * @return the phase string.
 	 */
-	private String getStatusString(ScientificStudy study) {
+	private String getPhaseString(ScientificStudy study) {
 		String result = ""; //$NON-NLS-1$
 
 		if (study != null) {

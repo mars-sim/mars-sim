@@ -27,7 +27,7 @@ public class CollectIceMeta implements MetaMission {
 	/** Mission name */
 	private static final String NAME = Msg.getString("Mission.description.collectIce"); //$NON-NLS-1$
 
-	private static final double VALUE = 20D;
+	private static final double VALUE = 100D;
 
 	@Override
 	public String getName() {
