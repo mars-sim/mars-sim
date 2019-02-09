@@ -20,6 +20,7 @@ import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 
+import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.tool.RandomUtil;
  
 public class ScienceConfig implements Serializable {
@@ -98,7 +99,7 @@ public class ScienceConfig implements Serializable {
 	        	System.out.println(s.getName() + " : ");
 		        for (int i = 0; i< size; i++) {
 	                JsonObject child = jsonArray.getJsonObject(i);
-	                String t = child.getString("topic");
+	                String t = Conversion.capitalize(child.getString("topic"));
 		        	s.createTopic(t);
 		            System.out.println("   " + t);
 		        }
@@ -120,7 +121,7 @@ public class ScienceConfig implements Serializable {
     		int size = topics.size();
     		if (size > 0) {
 	    		int num = RandomUtil.getRandomInt(topics.size());
-	    		return topics.get(num).getName();
+	    		return topics.get(num-1).getName();
     		}
     	}
     	return "General";	

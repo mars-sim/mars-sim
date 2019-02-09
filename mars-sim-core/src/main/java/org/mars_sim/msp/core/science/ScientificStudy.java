@@ -44,7 +44,7 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 	public static final int MAX_NUM_COLLABORATORS = 3;
 
 	/** Base amount of work time (millisols) required for proposal phase. */
-	private static final double BASE_PROPOSAL_WORK_TIME = 1_000D;
+	private static final double BASE_PROPOSAL_WORK_TIME = 50D;
 
 	/** Base amount of work time (millisols) required for primary research. */
 	private static final double BASE_PRIMARY_RESEARCH_WORK_TIME = 30_000D;
@@ -145,14 +145,31 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 		topics = new HashMap<ScienceType, List<String>>();
 	}
 
-	public void saveTopics(ScienceType type, List<String> topics) {
-		List<String> list = this.topics.get(type);
-		for (String s : topics) {
-			list.add(s);
+	/**
+	 * Save topics
+	 * 
+	 * @param type
+	 * @param newTopics
+	 */
+	public void saveTopics(ScienceType type, List<String> newTopics) {
+		if (topics.containsKey(type)) {
+			List<String> list = topics.get(type);
+			for (String s : newTopics) {
+				list.add(s);
+			}
+			topics.put(type, list);
 		}
-		this.topics.put(type, list);
+		else {
+			topics.put(type, newTopics);
+		}
 	}
 	
+	/**
+	 * Get a topic
+	 * 
+	 * @param type
+	 * @return
+	 */
 	public String getTopic(ScienceType type) {
 		List<String> list = topics.get(type);
 		if (list == null || list.isEmpty())
