@@ -80,7 +80,7 @@ http://canada.marssociety.org/winnipeg/soil.html
 			<resource name="bassanite" amount="50.0" />
 		</inputs>
 		<outputs>
-			<resource name="calcium sulphate" amount="45.0" />		
+			<resource name="calcium sulfate" amount="45.0" />		
 			<resource name="grey water" amount="3.0" />	
 		</outputs>
 	</process>
