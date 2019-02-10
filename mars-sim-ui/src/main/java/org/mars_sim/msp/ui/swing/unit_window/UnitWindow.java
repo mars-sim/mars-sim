@@ -245,7 +245,10 @@ public abstract class UnitWindow extends WebInternalFrame { // ModalInternalFram
 //		LookAndFeelFactory.installJideExtension(LookAndFeelFactory.OFFICE2003_STYLE);
 //		tabPanel.setColorTheme(JideTabbedPane.COLOR_THEME_OFFICE2003); // COLOR_THEME_VSNET);
 		
-		LookAndFeelFactory.installJideExtension(LookAndFeelFactory.VSNET_STYLE);
+		if (MainWindow.OS.contains("linux"))
+			LookAndFeelFactory.installJideExtension(LookAndFeelFactory.ECLIPSE_STYLE);//.EXTENSION_STYLE_XERTO);//installDefaultLookAndFeelAndExtension(); //
+		else
+			LookAndFeelFactory.installJideExtension(LookAndFeelFactory.VSNET_STYLE);
 		
 		tabPanel = new JideTabbedPane();
 	

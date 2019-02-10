@@ -78,10 +78,10 @@ public class MainWindow extends JComponent {
 	private static final int TIME_DELAY = 960;
 	
 	public enum ThemeType {
-		System, Nimbus, Nimrod, Weblaf
+		SYSTEM, NIMBUS, NIMROD, WEBLAF, METAL
 	}
 
-	public ThemeType defaultThemeType = ThemeType.Weblaf;
+	public ThemeType defaultThemeType = ThemeType.WEBLAF;
 
 	private static JFrame frame;
 	
@@ -941,9 +941,9 @@ public class MainWindow extends JComponent {
 	 */
 	public void initializeTheme() {
 		if (OS.contains("linux"))
-			SwingUtilities.invokeLater(() -> setLookAndFeel(defaultThemeType, ThemeType.Nimbus));
+			SwingUtilities.invokeLater(() -> setLookAndFeel(defaultThemeType, ThemeType.METAL));
 		else
-			SwingUtilities.invokeLater(() -> setLookAndFeel(defaultThemeType, ThemeType.Nimrod));
+			SwingUtilities.invokeLater(() -> setLookAndFeel(defaultThemeType, ThemeType.NIMROD));
 		
 	}
 	
@@ -954,8 +954,17 @@ public class MainWindow extends JComponent {
 	 */
 	public void setLookAndFeel(ThemeType choice0, ThemeType choice1) {
 		boolean changed = false;
-
-		if (choice1 == ThemeType.System) {
+		
+		if (choice1 == ThemeType.METAL) {
+			try {
+				UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");//UIManager.getCrossPlatformLookAndFeelClassName());//.getSystemLookAndFeelClassName());
+				changed = true;
+			} catch (Exception e) {
+				logger.log(Level.WARNING, Msg.getString("MainWindow.log.lookAndFeelError"), e); //$NON-NLS-1$
+			}
+		}
+		
+		else if (choice1 == ThemeType.SYSTEM) {
 			try {
 				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 				changed = true;
@@ -964,7 +973,7 @@ public class MainWindow extends JComponent {
 			}
 		}
 
-		else if (choice1 == ThemeType.Nimrod) {
+		else if (choice1 == ThemeType.NIMROD) {
 			try {
 				NimRODTheme nt = new NimRODTheme(
 						getClass().getClassLoader().getResource("theme/" + themeSkin + ".theme")); //
@@ -981,7 +990,7 @@ public class MainWindow extends JComponent {
 			}
 		}
 
-		else if (choice1 == ThemeType.Nimbus) {
+		else if (choice1 == ThemeType.NIMBUS) {
 			try {
 				boolean foundNimbus = false;
 				for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
@@ -1008,8 +1017,8 @@ public class MainWindow extends JComponent {
 				logger.log(Level.WARNING, Msg.getString("MainWindow.log.nimbusError")); //$NON-NLS-1$
 			}
 		}
-
-		if (choice0 == ThemeType.Weblaf) {
+		
+		if (choice0 == ThemeType.WEBLAF) {
 			try {
 				// use the weblaf skin
 //				WebLookAndFeel.setForceSingleEventsThread ( true );
@@ -1023,16 +1032,22 @@ public class MainWindow extends JComponent {
 		}
 		
 		if (changed) {
-			frame.validate();
-			frame.repaint();
+			
+			logger.config(UIManager.getLookAndFeel().getName() + " is used in MainWindow.");
 			
 			if (desktop != null) {
 				desktop.updateToolWindowLF();
 				desktop.updateUnitWindowLF();
-				// SwingUtilities.updateComponentTreeUI(desktop);
+//				SwingUtilities.updateComponentTreeUI(desktop);
 				// desktop.updateAnnouncementWindowLF();
 				// desktop.updateTransportWizardLF();
 			}
+			
+			frame.validate();
+			frame.repaint();
+//			SwingUtilities.updateComponentTreeUI(frame);
+			frame.pack();
+			
 		}
 	}
 	
