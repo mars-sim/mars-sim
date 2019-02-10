@@ -1,5 +1,5 @@
 /**
-/ * Mars Simulation Project
+ * Mars Simulation Project
  * MainWindow.java
  * @version 3.1.0 2017-10-05
  * @author Scott Davis
@@ -8,7 +8,6 @@
 package org.mars_sim.msp.ui.swing;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.Toolkit;
@@ -46,6 +45,7 @@ import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.swing.configeditor.SimulationConfigEditor;
+import org.mars_sim.msp.ui.swing.tool.AngledLinesWindowsCornerIcon;
 import org.mars_sim.msp.ui.swing.tool.JStatusBar;
 
 //import com.alee.managers.UIManagers;
@@ -281,7 +281,8 @@ public class MainWindow extends JComponent {
 		memMaxLabel.setText("[ " + memMax + " MB ] ");//"Total Designated Memory : " + memMax + " MB");
 		TooltipManager.setTooltip(memMaxLabel, "Memory Designated", TooltipWay.up);
 		statusBar.addRightComponent(memMaxLabel, false);
-
+		statusBar.addRightComponent(new JLabel(new AngledLinesWindowsCornerIcon()), true);
+		
 		bottomPane.add(statusBar, BorderLayout.SOUTH);
 
 		// Set frame size

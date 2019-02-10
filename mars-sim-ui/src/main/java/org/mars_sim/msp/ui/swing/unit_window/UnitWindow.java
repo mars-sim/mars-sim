@@ -28,6 +28,7 @@ import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.TaskSchedule;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.MainWindow;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfo;
@@ -253,9 +254,15 @@ public abstract class UnitWindow extends WebInternalFrame { // ModalInternalFram
 //			LookAndFeelFactory.installJideExtension(LookAndFeelFactory.OFFICE2003_STYLE);
 //			tabPanel.setColorTheme(JideTabbedPane.COLOR_THEME_OFFICE2003); // COLOR_THEME_VSNET);
 //		} else {
+//			LookAndFeelFactory.installJideExtension(LookAndFeelFactory.VSNET_STYLE);
+//			tabPanel.setColorTheme(JideTabbedPane.COLOR_THEME_VSNET);
+//		}
+			
+		if (!MainWindow.OS.contains("linux")) {
 			LookAndFeelFactory.installJideExtension(LookAndFeelFactory.VSNET_STYLE);
 			tabPanel.setColorTheme(JideTabbedPane.COLOR_THEME_VSNET);
-//		}
+		}
+		
 		// Setting foreground color for tab text.
 		tabPanel.setForeground(Color.DARK_GRAY);
 		tabPanel.setTabPlacement(JideTabbedPane.LEFT);

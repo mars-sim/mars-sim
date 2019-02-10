@@ -1,14 +1,17 @@
 /**
  * Mars Simulation Project
  * AngledLinesWindowsCornerIcon.java
- * @version 3.07 2015-01-06
+ * @version 3.1.0 2019-02-10
  * Modified by Manny Kung
  */
 
 package org.mars_sim.msp.ui.swing.tool;
 
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Graphics;
+
+import javax.swing.Icon;
 
 public class AngledLinesWindowsCornerIcon implements Icon {
 

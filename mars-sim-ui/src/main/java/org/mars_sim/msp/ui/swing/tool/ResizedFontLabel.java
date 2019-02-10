@@ -43,15 +43,15 @@ public class ResizedFontLabel extends JLabel {
         g.drawImage(image, 0, 0, getWidth(), getHeight(), null);
     }
 
-/*    
-	@Override
-	protected void paintComponent(Graphics g) {
-	    final Graphics2D g2d = (Graphics2D) g;
-	    g2d.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
-	    g2d.setRenderingHint(java.awt.RenderingHints.KEY_TEXT_ANTIALIASING, java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-	    super.paintComponent(g2d);
-	}
-*/	
+   
+//	@Override
+//	protected void paintComponent(Graphics g) {
+//	    final Graphics2D g2d = (Graphics2D) g;
+//	    g2d.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
+//	    g2d.setRenderingHint(java.awt.RenderingHints.KEY_TEXT_ANTIALIASING, java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+//	    super.paintComponent(g2d);
+//	}
+	
     private BufferedImage createImage(String label) {
         Font font = new Font(Font.SANS_SERIF, Font.BOLD, SIZE);
         FontRenderContext frc = new FontRenderContext(null, true, true);
