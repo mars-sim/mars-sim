@@ -76,7 +76,7 @@ public class ExperimentConfig implements Serializable {
                 String exp = child.getString("experiment");
                 String num = child.getString("number");
 	        	p.createExperiment(exp, num);
-	            System.out.println(exp + " : " + num);
+//	            System.out.println(exp + " : " + num);
 	        }
         } catch (Exception e1) {
 			e1.printStackTrace();

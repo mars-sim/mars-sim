@@ -102,7 +102,7 @@ public class MarsProject {
 			List<String> argList = Arrays.asList(args);
 			boolean headless = argList.contains("-headless");
 			if (headless) useGUI = false;
-			generateHelp = argList.contains("-generateHelp");
+			generateHelp = argList.contains("-html");
 			
 			if (argList.contains("-help")) {
 				System.out.println(HELP);
@@ -111,7 +111,21 @@ public class MarsProject {
 			
 			// this will generate html files for in-game help based on config xml files
 			else if (generateHelp) {
-				HelpGenerator.generateHtmlHelpFiles();
+				logger.config("Generating help files in headless mode in " + Simulation.OS);
+
+				try {
+					SimulationConfig.loadConfig();
+					// this will generate html files for in-game help based on config xml files
+					// Relocate the following to handleNewSimulation() right before calling
+					// ScenarioConfigEditorFX.
+					HelpGenerator.generateHtmlHelpFiles();
+					logger.config("Done creating help files.");
+					System.exit(1);
+
+				} catch (Exception e) {
+					e.printStackTrace();
+					exitWithError("Could not generate help files ", e);
+				}
 			}
 			
 			else if (useGUI) {
