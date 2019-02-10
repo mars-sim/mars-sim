@@ -474,6 +474,7 @@ public class Simulation implements ClockListener, Serializable {
 		public void run() {
 			// logger.config("StartTask's run() is on " + Thread.currentThread().getName());
 			start(autosaveDefault);
+			getTerm().loadTerminalMenu();
 		}
 	}
 

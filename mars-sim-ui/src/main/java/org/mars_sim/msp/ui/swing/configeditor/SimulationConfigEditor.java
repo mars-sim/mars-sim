@@ -256,6 +256,8 @@ public class SimulationConfigEditor {
 					closeWindow();
 					// Create main window
 					setupMainWindow();
+					// Load the menu choice
+//					sim.getTerm().loadTerminalMenu();
 //					logger.config("Done SimulationConfigEditor()");
 				}
 			}

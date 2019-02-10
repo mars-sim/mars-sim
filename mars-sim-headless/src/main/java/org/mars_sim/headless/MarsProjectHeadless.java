@@ -104,8 +104,6 @@ public class MarsProjectHeadless {
 	public void initTerminal() {
 		// Initialize interactive terminal 
 		sim.getTerm().initializeTerminal();	
-		// Load the menu choice
-		sim.getTerm().loadTerminalMenu();
 	}
 	
 	/**
@@ -237,7 +235,7 @@ public class MarsProjectHeadless {
 			
 			startSimulation(true);
 			// Load the menu choice
-			sim.getTerm().loadTerminalMenu();
+//			sim.getTerm().loadTerminalMenu();
 			
 		} catch (Exception e) {
 			e.printStackTrace();

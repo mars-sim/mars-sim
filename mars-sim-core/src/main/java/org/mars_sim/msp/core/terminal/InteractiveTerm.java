@@ -174,6 +174,9 @@ public class InteractiveTerm {
 				}
 	    	}
 		}
+		else {
+//			loadTerminalMenu();
+		}
 	}
 	
 	

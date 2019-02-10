@@ -951,7 +951,7 @@ public class MainWindow extends JComponent {
 			SwingUtilities.invokeLater(() -> setLookAndFeel(defaultThemeType, ThemeType.NIMROD));
 		
 	}
-	
+		
 	public void initializeWeblaf() {
 //		if (choice0 == ThemeType.WEBLAF) {
 			try {

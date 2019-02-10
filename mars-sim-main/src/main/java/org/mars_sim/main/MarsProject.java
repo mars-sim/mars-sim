@@ -142,9 +142,6 @@ public class MarsProject {
 				// splashWindow.display();
 
 				initializeSimulation(args);
-
-				// Load the menu choice
-				sim.getTerm().loadTerminalMenu();
 							
 				// Dispose the splash window.
 				// splashWindow.remove();
@@ -213,7 +210,7 @@ public class MarsProject {
 	/**
 	 * 	Initialize interactive terminal and load menu
 	 */
-	public void initTerminal() {
+	public void initTerminalLoadMenu() {
 		// Initialize interactive terminal 
 		sim.getTerm().initializeTerminal();	
 		// Load the menu choice
@@ -280,7 +277,7 @@ public class MarsProject {
 			}
 			
 			// Initialize interactive terminal and load menu
-			initTerminal();
+			initTerminalLoadMenu();
 			
 		} catch (Exception e) {
 			// logger.log(Level.WARNING, "Could not load default simulation", e);
@@ -340,7 +337,7 @@ public class MarsProject {
 			}
 
 			// Initialize interactive terminal and load menu
-			initTerminal();
+			initTerminalLoadMenu();
 
 		} catch (Exception e) {
 			// logger.log(Level.SEVERE, "Problem loading existing simulation", e);
@@ -376,10 +373,12 @@ public class MarsProject {
 				SimulationConfig.loadConfig();
 				// Start interactive terminal
 				sim.getTerm().startModeSelection();
+				// Initialize interactive terminal 
+				sim.getTerm().initializeTerminal();	
 				// Start sim config editor
-//				SwingUtilities.invokeLater(() -> {
+				SwingUtilities.invokeLater(() -> {
 					new SimulationConfigEditor(SimulationConfig.instance(), null);
-//				});
+				});
 			} 
 			
 			else {
@@ -395,9 +394,7 @@ public class MarsProject {
 				// Initialize interactive terminal 
 				sim.getTerm().initializeTerminal();	
 				// Start the simulation.
-				startSimulation(true);				
-				// Load the menu choice
-				sim.getTerm().loadTerminalMenu();	
+				startSimulation(true);					
 			}
 		
 			

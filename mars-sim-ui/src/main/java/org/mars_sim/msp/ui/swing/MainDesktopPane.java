@@ -367,6 +367,8 @@ public class MainDesktopPane extends JDesktopPane
 		if (toolWindows != null)
 			toolWindows.clear();
 
+		mainWindow.initializeWeblaf();
+		
 		// Prepare navigator window
 		navWindow = new NavigatorWindow(this);
 		try {
