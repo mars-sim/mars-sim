@@ -20,6 +20,8 @@ import java.util.Collection;
 
 import javax.swing.ImageIcon;
 import javax.swing.SwingConstants;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
@@ -116,7 +118,8 @@ public abstract class UnitWindow extends WebInternalFrame { // ModalInternalFram
 
 		this.setMaximumSize(new Dimension(WIDTH, HEIGHT));
 		this.setPreferredSize(new Dimension(WIDTH, HEIGHT));
-
+		this.setIconifiable(false);
+		
 		tabPanels = new ArrayList<TabPanel>();
 
 		// Create main panel
@@ -245,14 +248,34 @@ public abstract class UnitWindow extends WebInternalFrame { // ModalInternalFram
 //		LookAndFeelFactory.installJideExtension(LookAndFeelFactory.OFFICE2003_STYLE);
 //		tabPanel.setColorTheme(JideTabbedPane.COLOR_THEME_OFFICE2003); // COLOR_THEME_VSNET);
 		
-		if (MainWindow.OS.contains("linux"))
-			LookAndFeelFactory.installJideExtension(LookAndFeelFactory.ECLIPSE_STYLE);//.EXTENSION_STYLE_XERTO);//installDefaultLookAndFeelAndExtension(); //
+		if (MainWindow.OS.contains("linux")) {
+			try {
+				UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InstantiationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (UnsupportedLookAndFeelException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			LookAndFeelFactory.installJideExtension(UIManager.getLookAndFeelDefaults(), UIManager.getLookAndFeel(), LookAndFeelFactory.VSNET_STYLE);////.installDefaultLookAndFeelAndExtension(); //installJideExtension(LookAndFeelFactory.ECLIPSE_STYLE);//.EXTENSION_STYLE_XERTO);//
+		}
+		
 		else
 			LookAndFeelFactory.installJideExtension(LookAndFeelFactory.VSNET_STYLE);
 		
+//		logger.config(UIManager.getLookAndFeel().getName() + " is used in MainWindow.");
+		
 		tabPanel = new JideTabbedPane();
 	
-		tabPanel.setColorTheme(JideTabbedPane.COLOR_THEME_VSNET);
+//		tabPanel.setColorTheme(JideTabbedPane.COLOR_THEME_VSNET);
 	
 		tabPanel.setPreferredSize(new Dimension(WIDTH - 15, 512));
 		tabPanel.setBorder(null);
@@ -277,6 +300,8 @@ public abstract class UnitWindow extends WebInternalFrame { // ModalInternalFram
 		// TODO: disabled in SVN while in development
 		// this.addInternalFrameListener(new
 		// UniversalUnitWindowListener(UnitInspector.getGlobalInstance()));
+		
+		desktop.getMainWindow().initializeTheme();//initializeWeblaf();
 	}
 
 	/**

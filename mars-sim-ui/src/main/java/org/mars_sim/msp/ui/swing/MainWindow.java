@@ -32,7 +32,9 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.LookAndFeel;
 import javax.swing.SwingUtilities;
+import javax.swing.UIDefaults;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.plaf.metal.MetalLookAndFeel;
@@ -53,6 +55,7 @@ import com.alee.laf.WebLookAndFeel;
 import com.alee.managers.UIManagers;
 import com.alee.managers.tooltip.TooltipManager;
 import com.alee.managers.tooltip.TooltipWay;
+import com.jidesoft.plaf.LookAndFeelFactory;
 import com.nilo.plaf.nimrod.NimRODLookAndFeel;
 import com.nilo.plaf.nimrod.NimRODTheme;
 
@@ -187,7 +190,9 @@ public class MainWindow extends JComponent {
 		// Open all initial windows.
 		desktop.openInitialWindows();
 		
-		// Set up timers for caching the settlemnet windows
+//		initializeWeblaf();
+		
+		// Set up timers for caching the settlement windows
 		setupSettlementWindowTimer();
 	}
 
@@ -940,11 +945,28 @@ public class MainWindow extends JComponent {
 	 * Sets the theme skin after calling stage.show() at the start of the sim
 	 */
 	public void initializeTheme() {
-		if (OS.contains("linux"))
-			SwingUtilities.invokeLater(() -> setLookAndFeel(defaultThemeType, ThemeType.METAL));
-		else
+//		if (OS.contains("linux"))
+//			SwingUtilities.invokeLater(() -> setLookAndFeel(defaultThemeType, ThemeType.NIMROD));
+//		else
 			SwingUtilities.invokeLater(() -> setLookAndFeel(defaultThemeType, ThemeType.NIMROD));
 		
+	}
+	
+	public void initializeWeblaf() {
+//		if (choice0 == ThemeType.WEBLAF) {
+			try {
+				// use the weblaf skin
+//				WebLookAndFeel.setForceSingleEventsThread ( true );
+				WebLookAndFeel.install();
+				UIManagers.initialize();
+//				changed = true;
+
+				logger.config(UIManager.getLookAndFeel().getName() + " is used in MainWindow.");
+				
+			} catch (Exception e) {
+				logger.log(Level.WARNING, Msg.getString("MainWindow.log.lookAndFeelError"), e); //$NON-NLS-1$
+			}
+//		}
 	}
 	
 	/**
@@ -956,24 +978,37 @@ public class MainWindow extends JComponent {
 		boolean changed = false;
 		
 		if (choice1 == ThemeType.METAL) {
+			
 			try {
 				UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");//UIManager.getCrossPlatformLookAndFeelClassName());//.getSystemLookAndFeelClassName());
+				
+				logger.config(UIManager.getLookAndFeel().getName() + " is used in MainWindow.");
+				
 				changed = true;
 			} catch (Exception e) {
 				logger.log(Level.WARNING, Msg.getString("MainWindow.log.lookAndFeelError"), e); //$NON-NLS-1$
 			}
+			
+			initializeWeblaf();
+			
 		}
 		
 		else if (choice1 == ThemeType.SYSTEM) {
+			
 			try {
+				
 				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+						
 				changed = true;
 			} catch (Exception e) {
 				logger.log(Level.WARNING, Msg.getString("MainWindow.log.lookAndFeelError"), e); //$NON-NLS-1$
 			}
+			
+			initializeWeblaf();
 		}
 
 		else if (choice1 == ThemeType.NIMROD) {
+			
 			try {
 				NimRODTheme nt = new NimRODTheme(
 						getClass().getClassLoader().getResource("theme/" + themeSkin + ".theme")); //
@@ -988,9 +1023,12 @@ public class MainWindow extends JComponent {
 			} catch (Exception e) {
 				logger.log(Level.WARNING, Msg.getString("MainWindow.log.lookAndFeelError"), e); //$NON-NLS-1$ } }
 			}
+			
+			initializeWeblaf();
 		}
 
 		else if (choice1 == ThemeType.NIMBUS) {
+			
 			try {
 				boolean foundNimbus = false;
 				for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
@@ -1016,20 +1054,10 @@ public class MainWindow extends JComponent {
 			} catch (Exception e) {
 				logger.log(Level.WARNING, Msg.getString("MainWindow.log.nimbusError")); //$NON-NLS-1$
 			}
+			
+			initializeWeblaf();
 		}
 		
-		if (choice0 == ThemeType.WEBLAF) {
-			try {
-				// use the weblaf skin
-//				WebLookAndFeel.setForceSingleEventsThread ( true );
-				WebLookAndFeel.install();
-				UIManagers.initialize();
-				changed = true;
-
-			} catch (Exception e) {
-				logger.log(Level.WARNING, Msg.getString("MainWindow.log.lookAndFeelError"), e); //$NON-NLS-1$
-			}
-		}
 		
 		if (changed) {
 			
