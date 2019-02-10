@@ -192,22 +192,50 @@
 
 
 
-<!-- Mineral Compounds -->
+<!-- Regolith and its directly derived mineral deposits -->
+	<resource name="regolith" phase="solid">Martian soil</resource>
+	<resource name="gypsum" phase="solid">Gypsum is a soft sulfate mineral composed of calcium sulfate dihydrate, 
+		with the chemical formula CaSO4·2H2O. It is widely mined and used as a fertilizer. A typical regolith 
+		derived mineral deposit in NASA Water ISRU Study Reference Case B</resource>
+	<resource name="basaltic" phase="solid">Basalt is a common extrusive igneous rock formed from the rapid cooling 
+		of basaltic lava exposed at or very near the surface of a planet. A typical regolith derived mineral deposit
+		in NASA Water ISRU Study Reference Case D</resource>
+	<resource name="smectite" phase="solid">Smectite is the name used for a group of phyllo-silicate mineral species. 
+		It's a clay-like regolith derived mineral deposit in NASA Water ISRU Study Reference Case C</resource>
+	<resource name="allophane" phase="solid">Allophane is an amorphous to poorly crystalline hydrous aluminium 
+		silicate clay mineraloid. Its chemical formula is Al2O3·1.3-2·H2O. A regolith derived mineral deposit</resource>
+	<resource name="akaganeite" phase="solid">Akaganeite is an iron oxide-hydroxide / chloride mineral with 
+		formula: Fe3+O e.g.; β-FeO. It is formed by the weathering of pyrrhotite. A regolith derived mineral deposit</resource>
+	<resource name="bassanite" phase="solid">Bassanite is a calcium sulfate mineral with formula CaSO4·0.5 
+		or 2CaSO4·H2O. In other words it has half a water per CaSO4 unit hence its synonym hemihydrate. 
+		A regolith derived mineral deposit</resource>
+
+<!-- Other mineral Compounds -->		
 	<resource name="aluminum oxide" phase="solid" />
 	<resource name="ammonia" phase="solid"> NH3+ is an essential nutrient for 
 		plants</resource>
 	<resource name="calcium carbonate" phase="solid" />
-	<resource name="gypsum" phase="solid">Gypsum is a soft sulfate mineral 
-		composed of calcium sulfate dihydrate, with the chemical formula 
-		CaSO4·2H2O. It is widely mined and is used as a fertilizer</resource>
+	<resource name="calcium sulfate" phase="solid" />
+		
 	<resource name="iron oxide" phase="solid">also known as rust</resource>
 	<resource name="iron powder" phase="solid" />
+	<resource name="iron chloride" phase="solid">Iron(III) chloride, also called ferric chloride, 
+	is an industrial scale commodity chemical compound, with the formula FeCl3 and with 
+	iron in the +3 oxidation state. When dissolved in water, iron(III) chloride undergoes 
+	hydrolysis and gives off heat in an exothermic reaction. The resulting brown, acidic, and 
+	corrosive solution is used as a flocculant in sewage treatment and drinking water production, 
+	and as an etchant for copper-based metals in printed circuit boards. Extracted from akaganeite.</resource>
+
+	<resource name="iron hydroxide" phase="solid">Iron(II) hydroxide is a white solid, but even traces
+	of oxygen impart a greenish tinge. The air-oxidized solid is sometimes known as "green rust". 
+	Extracted from akaganeite.</resource>
+	
 	<resource name="nitrate" phase="solid"> NO3 is an essential nutrient for 
 		plants</resource>
 	<resource name="nitrite" phase="solid"> NO2 is an essential nutrient for 
 		plants</resource>
 	<resource name="potash lye" phase="solid">Potassium Hydroxide</resource>
-	<resource name="regolith" phase="solid">Martian soil</resource>
+
 	<resource name="rock samples" phase="solid">Rock samples collected from 
 		explored sites.</resource>
 	<resource name="rock salt" phase="solid">Halite, commonly known as rock 

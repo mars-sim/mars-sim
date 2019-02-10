@@ -47,7 +47,7 @@ public class ScienceConfig implements Serializable {
     	for (int i=0; i<size; i++) {
     		ScienceType type = ScienceType.valuesList().get(i);
     		jsonFiles[i] = PATH + type.getName().toLowerCase() + EXTENSION;
-    		System.out.println(jsonFiles[i]);
+//    		System.out.println(jsonFiles[i]);
     	}
     }
     
@@ -96,12 +96,12 @@ public class ScienceConfig implements Serializable {
 	        JsonArray jsonArray = jsonObject.getJsonArray("topics");
 	        
 	        try {
-	        	System.out.println(s.getName() + " : ");
+//	        	System.out.println(s.getName() + " : ");
 		        for (int i = 0; i< size; i++) {
 	                JsonObject child = jsonArray.getJsonObject(i);
 	                String t = Conversion.capitalize(child.getString("topic"));
 		        	s.createTopic(t);
-		            System.out.println("   " + t);
+//		            System.out.println("   " + t);
 		        }
 	        } catch (Exception e1) {
 				e1.printStackTrace();

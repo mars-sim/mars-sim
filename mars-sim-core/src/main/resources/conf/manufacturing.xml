@@ -12,80 +12,79 @@ http://canada.marssociety.org/winnipeg/soil.html
 
 <!-- List of all manufacturing processes. -->
 <manufacturing-processes>
-
-	<!-- tech - The minimum workshop tech level required to perform the process. (see tech_level.txt) -->
-	<!-- skill - The minimum person skill level in materials science to perform the process. -->
-	<!-- work-time - The effort time (in millisols) required to perform the process.  Higher skilled workers will produce more effort time than lower skilled workers. -->
-	<!-- process-time - The minimum time (in millisols) required for the process regardless of effort time. -->
-	<!-- power-required - The total amount of power (kW hr) required for the process. -->
-	<process name="extract iron oxide from regolith"
-			tech="1" skill="0"
-			work-time="25"
-			process-time="50"
-			power-required="0.1">
-		<description>Process for extracting iron oxide from regolith.</description>
-
-		<!-- List of inputs for the process -->
+	
+	<process name="extract minerals from basaltic deposits" tech="1" skill="1" work-time="10" process-time="100"
+			power-required="0.2">
 		<inputs>
-		<!-- Note : proper order of precedence :
-			(1) resources, (2) parts, (3) equipment and (4) vehicles). -->
-			<!-- amount - The amount of the resource in kilograms. -->
-			<resource name="regolith" amount="50.0" />
-		</inputs>
-
-		<!-- List of outputs from the process -->
-		<outputs>
-		<!-- Note : proper order of precedence :
-			(1) resources, (2) parts, (3) equipment and (4) vehicles). -->		
-			<resource name="iron oxide" amount="7.0" />
-			<resource name="sand" amount="40.0" />
-		</outputs>
-	</process>
-
-	<process name="extract iron oxide from regolith (large batch)"
-			tech="1" skill="2"
-			work-time="100"
-			process-time="200"
-			power-required="0.5">
-		<inputs>
-			<resource name="regolith" amount="500.0" />
+			<resource name="basaltic" amount="50.0" />
 		</inputs>
 		<outputs>
-			<resource name="iron oxide" amount="70.0" />
-			<resource name="sand" amount="400.0" />
+			<resource name="aluminum oxide" amount="9.0" />
+			<resource name="magnesium" amount="7.0" />	
+			<resource name="sodium oxide" amount="5.0" />	
+			<resource name="potassium" amount="3.0" />	
+			<resource name="titanium" amount="3.0" />
+			<resource name="iron oxide" amount="3.0" />
+			<resource name="sand" amount="5.0" />	
+			<resource name="grey water" amount="10.0" />			
 		</outputs>
 	</process>
 	
-<!--
-	<process name="extract ?  oxide from regolith"
-			tech="1" skill="2"
-			work-time="100"
-			process-time="200"
-			power-required="0.5">
+	<process name="extract minerals from smectite deposits" tech="1" skill="1" work-time="10" process-time="100"
+			power-required="0.2">
 		<inputs>
-			<resource name="regolith" amount="50.0" />
+			<resource name="smectite" amount="50.0" />
 		</inputs>
 		<outputs>
-			<resource name="? oxide" amount="7.0" />
-			<resource name="sand" amount="40.0" />
+			<resource name="aluminum oxide" amount="9.0" />
+			<resource name="magnesium" amount="4.0" />	
+			<resource name="sodium oxide" amount="2.0" />	
+			<resource name="potassium" amount="2.0" />	
+			<resource name="calcium" amount="4.0" />
+			<resource name="iron oxide" amount="2.0" />
+			<resource name="rock salt" amount="4.0" />
+			<resource name="sand" amount="10.0" />				
+			<resource name="grey water" amount="2.0" />	
 		</outputs>
-	</process>
-	
-	<process name="extract ?  oxide from regolith (large batch)"
-			tech="1" skill="2"
-			work-time="100"
-			process-time="200"
-			power-required="0.5">
-		<inputs>
-			<resource name="regolith" amount="500.0" />
-		</inputs>
-		<outputs>
-			<resource name="? oxide" amount="70.0" />
-			<resource name="sand" amount="400.0" />
-		</outputs>
-	</process>
--->		
+	</process>	
 
+	<process name="extract minerals from allophane deposits" tech="1" skill="1" work-time="10" process-time="100"
+			power-required="0.2">
+		<inputs>
+			<resource name="allophane" amount="50.0" />
+		</inputs>
+		<outputs>
+			<resource name="aluminum oxide" amount="30.0" />
+			<resource name="silicon dioxide" amount="1.0" />
+			<resource name="sand" amount="6.0" />				
+			<resource name="grey water" amount="10.0" />	
+		</outputs>
+	</process>	
+	
+	<process name="extract minerals from akaganeite deposits" tech="1" skill="1" work-time="10" process-time="100"
+			power-required="0.2">
+		<inputs>
+			<resource name="akaganeite" amount="50.0" />
+		</inputs>
+		<outputs>
+			<resource name="iron oxide" amount="20.0" />
+			<resource name="iron hydroxide" amount="10.0" />
+			<resource name="iron chloride" amount="10.0" />				
+			<resource name="grey water" amount="6.0" />	
+		</outputs>
+	</process>
+
+	<process name="extract minerals from bassanite deposits" tech="1" skill="1" work-time="10" process-time="100"
+			power-required="0.2">
+		<inputs>
+			<resource name="bassanite" amount="50.0" />
+		</inputs>
+		<outputs>
+			<resource name="calcium sulphate" amount="45.0" />		
+			<resource name="grey water" amount="3.0" />	
+		</outputs>
+	</process>
+					
 	<!-- Purify Rock Salt to Food Grade Table Salt -->
 	<process name="purify rock salt into table/epsom salt and other compounds"
 	tech="1" skill="1" work-time="10.0" process-time="100"
@@ -129,7 +128,7 @@ http://canada.marssociety.org/winnipeg/soil.html
 			<resource name="Nitrogen" amount="10.0" />
 			<resource name="Ammonia" amount="10.0" />
 			<resource name="argon" amount="1.0" />
-			<resource name="regolith" amount="250.0" />
+			<resource name="regolith" amount="450.0" />
 		</outputs>
 	</process>
 	<!-- A Mars Aqueous Regolith Extract (MARE) was prepared from the Phoenix
@@ -152,7 +151,7 @@ http://canada.marssociety.org/winnipeg/soil.html
 			<resource name="Nitrogen" amount="1.0" />
 			<resource name="Ammonia" amount="1.0" />
 			<resource name="argon" amount="0.1" />			
-			<resource name="regolith" amount="25.0" />
+			<resource name="regolith" amount="45.0" />
 		</outputs>
 	</process>
 
@@ -1067,16 +1066,6 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="make dark glass bottle" tech="2" skill="2" work-time="200" process-time="200"
-			power-required=".1">
-		<inputs>
-			<resource name="regolith" amount="1.0" />
-		</inputs>
-		<outputs>
-			<part name="bottle" number="10" />
-		</outputs>
-	</process>
-
 	<process name="make clear glass bottle" tech="2" skill="2" work-time="200" process-time="200"
 			power-required=".1">
 		<inputs>
@@ -1113,48 +1102,89 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<resource name="sodium carbonate" amount="5.0" />							
 		</outputs>
 	</process>
-		
-	<!-- Gypsum is CaSO4 * 2H2O 
-	Besides being the mineral evidence that water may have flowed on Mars, 
-	gypsum deposit may indicate a less-acidic water supportive of microbial life.
-	https://arstechnica.com/science/2011/12/gypsum-deposit-on-mars-provides-definitive-evidence-of-water/
+	
+	<!-- 
+		NASA Mars ISRU Water Study
+		Case B : 
+				Deposit Type : Poly-hydrated 
+					40% gypsum
+					3% allophane
+					3% akaganeite
+					3 smectite 
+					
 	-->
-	<process name="extract gypsum from regolith" tech="1" skill="1" work-time="100" process-time="0"
+	<process name="process regolith rich in poly-hydrated sulfate" tech="1" skill="1" work-time="100" process-time="0"
 			power-required="0.1">
 		<description>
-			Gypsum is CaSO&lt;sub&gt;4&lt;/sub&gt; * 2H&lt;sub&gt;2&lt;/sub&gt;O
-			Going with 8% gypsum in regolith. Note that Calcium is found to be 
-			4.1% in average in Martian soil. Calcium Sulfate Dihydrate's 
-			molar mass is 172.1712 g/mol while Calcium's 40.0789 g/mol.
+			Gypsum is CaSO&lt;sub&gt;4&lt;/sub&gt; * 2H&lt;sub&gt;2&lt;/sub&gt;O. 
+			This is Case B (Deposit Type : Poly-hydrated) in NASA Mars ISRU Water Study,
+					40% gypsum; 
+					3% allophane; 
+					3% akaganeite; 
+					3% smectite;  
 		</description>
 		<inputs>
 			<resource name="regolith" amount="50.0" />
 		</inputs>
 		<outputs>
-			<resource name="gypsum" amount="4.0" />
+			<resource name="gypsum" amount="20.0" />
+			<resource name="allophane" amount="1.5" />
+			<resource name="akaganeite" amount="1.5" />	
+			<resource name="smectite" amount="1.5" />	
 			<resource name="sand" amount="20.0" />
-		<!-- According to http://canada.marssociety.org/winnipeg/soil.html
+		</outputs>
+	</process>
+
+	<process name="process regolith rich in phyllo-silicate" tech="1" skill="1" work-time="100" process-time="0"
+			power-required="0.1">
+		<description>
+			Gypsum is CaSO&lt;sub&gt;4&lt;/sub&gt; * 2H&lt;sub&gt;2&lt;/sub&gt;O. 
+			This is Case C (Deposit Type : Clay) in NASA Mars ISRU Water Study,
+					40% smectite; 
+					3% allophane; 
+					3% akaganeite; 
+					3% bassanite;  
+		</description>
+		<inputs>
+			<resource name="regolith" amount="50.0" />
+		</inputs>
+		<outputs>
+			<resource name="smectite" amount="20.0" />
+			<resource name="allophane" amount="1.5" />
+			<resource name="akaganeite" amount="1.5" />	
+			<resource name="bassanite" amount="1.5" />	
+			<resource name="sand" amount="20.0" />
+		</outputs>
+	</process>
+
+	<process name="process typical regolith" tech="1" skill="1" work-time="100" process-time="0"
+			power-required="0.1">
+		<description>
+			Gypsum is CaSO&lt;sub&gt;4&lt;/sub&gt; * 2H&lt;sub&gt;2&lt;/sub&gt;O. 
+			This is Case D (Deposit Type : typical regolith) in NASA Mars ISRU Water Study,
+					23.5% basaltic; 
+					3% allophane; 
+					3% akaganeite; 
+					3% bassanite;
+					3% smectite;  
+		</description>
+		<inputs>
+			<resource name="regolith" amount="50.0" />
+		</inputs>
+		<outputs>
+			<resource name="basaltic" amount="11.75" />
+			<resource name="smectite" amount="1.5" />
+			<resource name="allophane" amount="1.5" />
+			<resource name="akaganeite" amount="1.5" />	
+			<resource name="bassanite" amount="1.5" />	
+			<resource name="sand" amount="25.0" />
+			<!-- According to http://canada.marssociety.org/winnipeg/soil.html
 			regolith is estimated to contain 11.3% sodium bicarbonate (baking
 			soda) and 1.15% of sodium chloride (table salt) -->
 			<resource name="baking powder" amount="4.0" />	
 			<resource name="table salt" amount="0.4" />	
 		</outputs>
-	</process>
-
-	<!-- Gypsum is CaSO4 * 2H2O -->
-	<process name="extract gypsum from regolith (large batch)" tech="1" skill="3" work-time="500" process-time="0"
-			power-required="0.5">
-		<inputs>
-			<resource name="regolith" amount="500.0" />
-		</inputs>
-		<outputs>
-			<resource name="gypsum" amount="40.0" />
-			<resource name="sand" amount="200.0" />	
-			<resource name="baking powder" amount="40.0" />	
-			<resource name="table salt" amount="4.0" />						
-		</outputs>
-	</process>
-
+	</process>					
 
 	<!-- Process for reducing gypsum to calcium carbonate using carbon. -->
 	<process name="reduce gypsum to calcium carbonate with carbon" tech="1" skill="1" work-time="100"
@@ -1514,28 +1544,6 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			power-required=".5">
 		<inputs>
 			<resource name="sand" amount="20.0" />
-		</inputs>
-		<outputs>
-			<part name="fiberglass" number="10" />
-		</outputs>
-	</process>
-
-	<!-- Produces 1kg spool of fiber glass. -->
-	<process name="draw dark fiber glass" tech="3" skill="3" work-time="300" process-time="300"
-			power-required=".1">
-		<inputs>
-			<resource name="regolith" amount="2.0" />
-		</inputs>
-		<outputs>
-			<part name="fiberglass" number="1" />
-		</outputs>
-	</process>
-
-	<!-- Produces 10 1kg spools of fiber glass. -->
-	<process name="draw dark fiber glass (large batch)" tech="3" skill="5" work-time="1500" process-time="1500"
-			power-required="0.5">
-		<inputs>
-			<resource name="regolith" amount="20.0" />
 		</inputs>
 		<outputs>
 			<part name="fiberglass" number="10" />
