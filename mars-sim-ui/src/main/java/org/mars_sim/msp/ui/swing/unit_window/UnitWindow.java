@@ -242,26 +242,21 @@ public abstract class UnitWindow extends WebInternalFrame { // ModalInternalFram
 			// factory.add(centerPanel, DETAILS, getImage(DETAILS_ICON), true);
 		}
 
+//		LookAndFeelFactory.installJideExtension(LookAndFeelFactory.OFFICE2003_STYLE);
+//		tabPanel.setColorTheme(JideTabbedPane.COLOR_THEME_OFFICE2003); // COLOR_THEME_VSNET);
+		
+		LookAndFeelFactory.installJideExtension(LookAndFeelFactory.VSNET_STYLE);
+		
 		tabPanel = new JideTabbedPane();
+	
+		tabPanel.setColorTheme(JideTabbedPane.COLOR_THEME_VSNET);
+	
 		tabPanel.setPreferredSize(new Dimension(WIDTH - 15, 512));
 		tabPanel.setBorder(null);
 
 		tabPanel.setBoldActiveTab(true);
 		tabPanel.setScrollSelectedTabOnWheel(true);
 		tabPanel.setTabShape(JideTabbedPane.SHAPE_WINDOWS_SELECTED);
-		
-//		if (MainScene.getTheme() == 7) {
-//			LookAndFeelFactory.installJideExtension(LookAndFeelFactory.OFFICE2003_STYLE);
-//			tabPanel.setColorTheme(JideTabbedPane.COLOR_THEME_OFFICE2003); // COLOR_THEME_VSNET);
-//		} else {
-//			LookAndFeelFactory.installJideExtension(LookAndFeelFactory.VSNET_STYLE);
-//			tabPanel.setColorTheme(JideTabbedPane.COLOR_THEME_VSNET);
-//		}
-			
-		if (!MainWindow.OS.contains("linux")) {
-			LookAndFeelFactory.installJideExtension(LookAndFeelFactory.VSNET_STYLE);
-			tabPanel.setColorTheme(JideTabbedPane.COLOR_THEME_VSNET);
-		}
 		
 		// Setting foreground color for tab text.
 		tabPanel.setForeground(Color.DARK_GRAY);
