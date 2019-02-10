@@ -75,13 +75,22 @@ import org.mars_sim.msp.ui.swing.tool.resupply.SupplyTableModel;
 // The base directory \help contains other important html pages such as the tutorial pages. They do not
 // need to be overwritten in this case.
 //
-// Note : In order to include a clean set of htmls, it is recommended that one should delete the old set of 
+// In order to include a clean set of htmls, it is recommended that one should delete the old set of 
 // htmls (1-5 above) in the \src\$[DIR] right before copying the new set of htmls from the \target\$[DIR]. 
 // 
-// At last, if you use Windows Explorer to copy over the html files, make sure you "refresh" the 
-// Project Explorer in Eclipse so that it will compare which particular html files have been changed
-// and updated. This way, during "Git Staging", Eclipse will properly tag and post the files that 
-// need to be updated in the mars-sim codebase.
+// There may be a time delay and refresh issue with Eclipse, if you use the Windows Explorer outside of 
+// Eclipse IDE to manually delete the old html pages and then copy over the new html files.
+//
+// Afterward, make sure you "refresh" the Project Explorer in Eclipse so that it will intelligently compare which 
+// particular html files have been changed/updated and which ones stay the same. Eclipse will compare the new
+// ones against the local copies. In this manner, during "Git Staging", Eclipse will properly tag and post only 
+// the html files that need to be updated in the mars-sim codebase. 
+//
+// For if you delete all 652 old html files in $[DIR] and copy over the new 652 html files, Eclipse would 
+// intelligently detect the 20 html files that need to be updated in the codebase during "Git Staging".
+//
+
+
 
 /**
  * Generates html files for the in-game help. 
