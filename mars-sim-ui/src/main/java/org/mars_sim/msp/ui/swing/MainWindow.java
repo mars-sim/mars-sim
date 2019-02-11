@@ -154,15 +154,14 @@ public class MainWindow extends JComponent {
 	public MainWindow(boolean cleanUI) {
 		logger.config("MainWindow is on " + Thread.currentThread().getName() + " Thread");
 		// this.cleanUI = cleanUI;
+		// Set up the look and feel library to be used
+		initializeTheme();
 		
 		// Set up the frame
 		frame = new JFrame();
 		
 		// Disable the close button on top right
 //		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-		
-		// Set up the look and feel library to be used
-		initializeTheme();
 		
 		// Set up MainDesktopPane
 		desktop = new MainDesktopPane(this);
@@ -285,7 +284,7 @@ public class MainWindow extends JComponent {
 		memMax = (int) Math.round(Runtime.getRuntime().maxMemory()) / 1_000_000;
 		memMaxLabel.setText("[ " + memMax + " MB ] ");//"Total Designated Memory : " + memMax + " MB");
 		TooltipManager.setTooltip(memMaxLabel, "Memory Designated", TooltipWay.up);
-		statusBar.addRightComponent(memMaxLabel, false);
+		statusBar.addRightComponent(memMaxLabel, true);
 		statusBar.addRightComponent(new JLabel(new AngledLinesWindowsCornerIcon()), true);
 		
 		bottomPane.add(statusBar, BorderLayout.SOUTH);
@@ -1064,7 +1063,7 @@ public class MainWindow extends JComponent {
 			logger.config(UIManager.getLookAndFeel().getName() + " is used in MainWindow.");
 			
 			if (desktop != null) {
-				desktop.updateToolWindowLF();
+//				desktop.updateToolWindowLF();
 				desktop.updateUnitWindowLF();
 //				SwingUtilities.updateComponentTreeUI(desktop);
 				// desktop.updateAnnouncementWindowLF();

@@ -120,8 +120,8 @@ public class ScienceConfig implements Serializable {
     		List<Topic> topics = scienceTopics.get(type);
     		int size = topics.size();
     		if (size > 0) {
-	    		int num = RandomUtil.getRandomInt(topics.size());
-	    		return topics.get(num-1).getName();
+	    		int num = RandomUtil.getRandomInt(size-1);
+	    		return topics.get(num).getName();
     		}
     	}
     	return "General";	

@@ -23,7 +23,7 @@ public class JStatusBar extends JPanel {
 	
     private static final long serialVersionUID = 1L;
     	   
-	public static final int HEIGHT = 23;
+	public static final int HEIGHT = 19;
 	
 	private static final Color antiqueBronze = new Color(102,93,30,128);
 	private static final Color almond = new Color(239,222,205,128);
@@ -49,13 +49,13 @@ public class JStatusBar extends JPanel {
         setPreferredSize(new Dimension(getWidth(), HEIGHT));
  
         leftPanel = new JPanel(new FlowLayout(
-                FlowLayout.LEADING, 5, 3));
+                FlowLayout.LEADING, 3, 3));
         //leftPanel.setOpaque(false);
 		//leftPanel.setBackground(new Color(0,0,0,128));
         add(leftPanel, BorderLayout.WEST);
         
         rightPanel = new JPanel(new FlowLayout(
-                FlowLayout.TRAILING, 5, 3));
+                FlowLayout.TRAILING, 3, 3));
         //rightPanel.setOpaque(false);
 		//rightPanel.setBackground(new Color(0,0,0,128));
         add(rightPanel, BorderLayout.EAST);
@@ -70,7 +70,7 @@ public class JStatusBar extends JPanel {
     
     public void addRightComponent(JComponent component, boolean isCornerIcon) {
         JPanel panel = new JPanel(new FlowLayout(
-                FlowLayout.LEADING, 5, 0));
+                FlowLayout.LEADING, 0, 0));
         if (!isCornerIcon) 
         	panel.add(new SeparatorPanel(Color.GRAY, Color.WHITE));
         panel.add(component);
