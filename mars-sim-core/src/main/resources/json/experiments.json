@@ -1,6 +1,5 @@
 {
 	"package": "Mars Science Experiment Package (MSEP)",
-	"numbers": 13,
 	"experiments": [
 		{
 			"experiment": "Surface Magnetometer",

@@ -32,20 +32,10 @@ public class ExperimentConfig implements Serializable {
     }
     
     public ExperimentConfig(String fileName){
-    	
-    	// read contents of a file into a single String
-    	//String content = new String(Files.readAllBytes(Paths.get("C:/file.txt")));
-        //System.out.println(content);
-    	
         InputStream fis = null;
         JsonReader jsonReader = null;
         fis = this.getClass().getResourceAsStream(fileName);//JSON_FILE);
         jsonReader = Json.createReader(fis);
-         
-        
-//      We can create JsonReader from Factory also
-//      JsonReaderFactory factory = Json.createReaderFactory(null);
-//      jsonReader = factory.createReader(fis);
          
         //get JsonObject from JsonReader
         JsonObject jsonObject = jsonReader.readObject();
@@ -62,13 +52,13 @@ public class ExperimentConfig implements Serializable {
         p = new Package();
          
         p.setName(jsonObject.getString("package"));
-     
-        p.setNum(jsonObject.getInt("numbers"));
-        
-        int size = p.getNum();
         
         // Read the json array of experiments
         JsonArray jsonArray = jsonObject.getJsonArray("experiments");
+        
+        int size = jsonArray.size();
+        
+        p.setNum(size);
         
         try {
 	        for (int i = 0; i< size; i++) {

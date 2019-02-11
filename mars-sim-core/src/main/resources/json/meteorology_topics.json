@@ -1,6 +1,5 @@
 {
 	"subject": "Meteorology",
-	"numbers": 10,
 	"topics": [
 			{"topic": "Martian Atmospheric Pressure"},
 			{"topic": "Seasonal Variation of Wind Speed and Direction"},

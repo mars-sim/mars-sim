@@ -381,11 +381,9 @@ public class MainWindow extends JComponent {
 	 * Start the earth timer
 	 */
 	public void runStatusTimer() {
-		logger.config("runStatusTimer()");
+//		logger.config("runStatusTimer()");
 		earthTimer = new javax.swing.Timer(TIME_DELAY, new ActionListener() {
-		
 //		String earthTime = null;
-
 			@Override
 			public void actionPerformed(ActionEvent evt) {
 //				logger.config("runStatusTimer()'s actionPerformed()");

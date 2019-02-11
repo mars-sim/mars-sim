@@ -28,15 +28,21 @@ public class ScienceConfig implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
  
+	public static final String SCIENTIFIC_STUDY_JSON = "scientific_study.json";
+	
 	public static final String PATH = "/json/";
 
 	public static final String EXTENSION = "_topics.json";
 	
     public static String[] jsonFiles = new String[9]; 
     
+    public static List<Integer> averageTime = new ArrayList<>(); 
+    
+    private static int aveNumCollaborators;
+    
     private Subject s;
     
-    private Map<ScienceType, List<Topic>> scienceTopics; 
+    private Map<ScienceType, List<Topic>> scienceTopics = new HashMap<>();
     
     public static void main(String[] args) {
 			new ScienceConfig();
@@ -51,31 +57,53 @@ public class ScienceConfig implements Serializable {
     	}
     }
     
-    public ScienceConfig(){
+    public ScienceConfig() {
+        InputStream fis = null;
+        JsonReader jsonReader = null;
+        JsonObject jsonObject = null;
+        
+        // Load the scientific study param json files
+        fis = this.getClass().getResourceAsStream(PATH + SCIENTIFIC_STUDY_JSON);
+        jsonReader = Json.createReader(fis);
+
+        // Get JsonObject from JsonReader
+        jsonObject = jsonReader.readObject();
+         
+        // Close IO resource and JsonReade
+        jsonReader.close();
+        try {
+			fis.close();
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+         
+        aveNumCollaborators = jsonObject.getInt("average_num_collaborators");
+        averageTime.add(jsonObject.getInt("base_proposal_time"));
+        averageTime.add(jsonObject.getInt("base_primary_research_study_time"));
+        averageTime.add(jsonObject.getInt("base_collaborative_research_study_time"));
+        averageTime.add(jsonObject.getInt("base_primary_researcher_paper_writing_time"));
+        averageTime.add(jsonObject.getInt("base_collaborator_paper_writing_time"));
+        averageTime.add(jsonObject.getInt("peer_review_time"));
+        averageTime.add(jsonObject.getInt("primary_researcher_work_downtime_allowed"));
+        averageTime.add(jsonObject.getInt("collaborator_work_downtime_allowed"));
     	
-    	scienceTopics = new HashMap<>();
-    	
-    	// Read contents of a file into a single String
-    	//String content = new String(Files.readAllBytes(Paths.get("C:/file.txt")));
-        //System.out.println(content);
-    	
+        
     	// Create a list of science topic filenames 
     	createJsonFiles();
     	
-    	for (String fileName : jsonFiles) {
-	        InputStream fis = null;
-	        JsonReader jsonReader = null;
-	        fis = this.getClass().getResourceAsStream(fileName);//JSON_FILE);
+        // Load the topic json files
+    	for (String fileName : jsonFiles) {  
+	        fis = this.getClass().getResourceAsStream(fileName);
 	        jsonReader = Json.createReader(fis);
 	             
-	//      We can create JsonReader from Factory also
-	//      JsonReaderFactory factory = Json.createReaderFactory(null);
-	//      jsonReader = factory.createReader(fis);
+	        // Alternatively, we can create JsonReader from Factory 
+//	      	JsonReaderFactory factory = Json.createReaderFactory(null);
+//	      	jsonReader = factory.createReader(fis);
 	         
-	        //get JsonObject from JsonReader
-	        JsonObject jsonObject = jsonReader.readObject();
+	        // Get JsonObject from JsonReader
+	        jsonObject = jsonReader.readObject();
 	         
-	        //we can close IO resource and JsonReader now
+	        // Close IO resource and JsonReader
 	        jsonReader.close();
 	        try {
 				fis.close();
@@ -83,17 +111,19 @@ public class ScienceConfig implements Serializable {
 				e1.printStackTrace();
 			}
 	         
-	        // Retrieve a subject from JsonObject
 	        s = new Subject();
-	         
-	        s.setName(jsonObject.getString("subject"));
+	        // Retrieve a subject from JsonObject
+	        s.setSubject(jsonObject.getString("subject"));
 	     
-	        s.setNum(jsonObject.getInt("numbers"));
-	        
-	        int size = s.getNum();
+//	        s.setNum(jsonObject.getInt("numbers"));
+//	        int size = s.getNum();
 	        
 	        // Read the json array of experiments
 	        JsonArray jsonArray = jsonObject.getJsonArray("topics");
+	        
+	        int size = jsonArray.size();
+	        
+	        s.setNum(size);
 	        
 	        try {
 //	        	System.out.println(s.getName() + " : ");
@@ -127,6 +157,20 @@ public class ScienceConfig implements Serializable {
     	return "General";	
     }
     
+    
+    public static List<Integer> getAverageTime() {
+    	return averageTime; 
+    }
+
+    public static int getAverageTime(int index) {
+    	return averageTime.get(index); 
+    }
+    
+    static int getAveNumCollaborators() {
+    	return aveNumCollaborators;
+    }
+
+    
 	class Subject {
 	    
 		int num;
@@ -137,7 +181,7 @@ public class ScienceConfig implements Serializable {
 		
 		Subject() {}
 
-		void setName(String value) {
+		void setSubject(String value) {
 			this.name = value;
 		}
 		

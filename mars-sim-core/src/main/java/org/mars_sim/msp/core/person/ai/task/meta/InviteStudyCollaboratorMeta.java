@@ -68,7 +68,7 @@ public class InviteStudyCollaboratorMeta implements MetaTask, Serializable {
                 // Check that there isn't a full set of open invitations already sent out.
                 int collabNum = study.getCollaborativeResearchers().size();
                 int openInvites = study.getNumOpenResearchInvitations();
-                if ((openInvites + collabNum) < ScientificStudy.MAX_NUM_COLLABORATORS) {
+                if ((openInvites + collabNum) < study.getMaxCollaborators()) {
 
                     // Check that there's scientists available for invitation.
                     if (ScientificStudyUtil.getAvailableCollaboratorsForInvite(study).size() > 0) {

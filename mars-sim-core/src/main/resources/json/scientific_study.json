@@ -1,0 +1,11 @@
+{
+	"average_num_collaborators"						: 4,
+	"base_proposal_time" 							: 500,
+	"base_primary_research_study_time" 				: 30000,
+	"base_collaborative_research_study_time" 		: 10000,
+	"base_primary_researcher_paper_writing_time" 	: 5000,
+	"base_collaborator_paper_writing_time" 			: 1000,
+	"peer_review_time" 								: 10000,
+	"primary_researcher_work_downtime_allowed" 		: 30000,
+	"collaborator_work_downtime_allowed"			: 30000
+}

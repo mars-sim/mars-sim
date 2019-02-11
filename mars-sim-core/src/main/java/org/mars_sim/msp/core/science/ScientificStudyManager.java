@@ -433,7 +433,7 @@ public class ScientificStudyManager // extends Thread
 					study.cleanResearchInvitations();
 
 					boolean phaseEnded = false;
-					if (study.getCollaborativeResearchers().size() < ScientificStudy.MAX_NUM_COLLABORATORS) {
+					if (study.getCollaborativeResearchers().size() < study.getMaxCollaborators()) {
 						int availableInvitees = ScientificStudyUtil.getAvailableCollaboratorsForInvite(study).size();
 						int openResearchInvitations = study.getNumOpenResearchInvitations();
 						if ((availableInvitees + openResearchInvitations) == 0)
@@ -467,7 +467,7 @@ public class ScientificStudyManager // extends Thread
 						if (!study.isPrimaryResearchCompleted()) {
 							MarsClock lastPrimaryWork = study.getLastPrimaryResearchWorkTime();
 							if ((lastPrimaryWork != null) && MarsClock.getTimeDiff(marsClock,
-									lastPrimaryWork) > ScientificStudy.PRIMARY_WORK_DOWNTIME_ALLOWED) {
+									lastPrimaryWork) >study.getPrimaryWorkDownTimeAllowed()) {
 								study.setCompleted(ScientificStudy.CANCELED);
 								logger.fine(study.toString()
 										+ " was canceled due to lack of primary researcher participation.");
@@ -483,7 +483,7 @@ public class ScientificStudyManager // extends Thread
 								MarsClock lastCollaborativeWork = study
 										.getLastCollaborativeResearchWorkTime(researcher);
 								if ((lastCollaborativeWork != null) && MarsClock.getTimeDiff(marsClock,
-										lastCollaborativeWork) > ScientificStudy.COLLABORATIVE_WORK_DOWNTIME_ALLOWED) {
+										lastCollaborativeWork) > study.getCollaborativeWorkDownTimeAllowed()) {
 									study.removeCollaborativeResearcher(researcher);
 									logger.fine(researcher.getName() + " (collaborator) was removed in " + study.toString()
 											+ " due to lack of participation.");

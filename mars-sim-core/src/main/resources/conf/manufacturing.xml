@@ -1075,17 +1075,6 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="bottle" number="10" />
 		</outputs>
 	</process>
-
-	<process name="extract sodium oxide from regolith" tech="2" skill="1" work-time="50" process-time="50"
-			power-required=".1">
-		<inputs>
-			<resource name="regolith" amount="100.0" />
-		</inputs>
-		<outputs>
-			<resource name="sodium oxide" amount="5.0" />				
-			<resource name="regolith" amount="90.0" />					
-		</outputs>
-	</process>
 	
 <!-- Soda is sodium carbonate. That is a salt. Sodium exists in Martian regolith as an 
 oxide or super oxide and can be converted into soda. Just dissolve the sodium oxide

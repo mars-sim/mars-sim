@@ -19,6 +19,7 @@ import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * A class representing a scientific study.
@@ -40,58 +41,58 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 	public static final String FAILED_COMPLETION = "Failed Completion";
 	public static final String CANCELED = "Canceled";
 
-	/** Maximum number of collaborative researchers. */
-	public static final int MAX_NUM_COLLABORATORS = 3;
+	/** The average amount of base work time (millisols) required for proposal phase. */
+	private static double baseProposalTime;
 
-	/** Base amount of work time (millisols) required for proposal phase. */
-	private static final double BASE_PROPOSAL_WORK_TIME = 50D;
+	/** The average amount of base work time (millisols) required for primary research. */
+	private static double basePrimaryResearchTime;
 
-	/** Base amount of work time (millisols) required for primary research. */
-	private static final double BASE_PRIMARY_RESEARCH_WORK_TIME = 30_000D;
+	/** The average amount of base work time (millisols) required for collaborative research. */
+	private static double baseCollaborativeResearchTime;
 
-	/** Base amount of work time (millisols) required for collaborative research. */
-	private static final double BASE_COLLABORATIVE_RESEARCH_WORK_TIME = 10_000D;
+	/** The average amount of base work time (millisols) required for primary researcher writing study paper. */
+	private static double basePrimaryWritingPaperTime;
 
-	/**
-	 * Base amount of work time (millisols) required for primary researcher writing
-	 * study paper.
-	 */
-	private static final double BASE_PRIMARY_PAPER_WORK_TIME = 5_000D;
+	/** The average amount of base work time (millisols) required for collaborative researcher writing study paper. */
+	private static double baseCollaborativePaperWritingTime;
 
-	/**
-	 * Base amount of work time (millisols) required for collaborative researcher
-	 * writing study paper.
-	 */
-	private static final double BASE_COLLABORATIVE_PAPER_WORK_TIME = 1_000D;
+	/** The average amount of base time (millisols) for peer review. */
+	private static double basePeerReviewTime;
 
-	/** Amount of time (millisols) allotted for peer review. */
-	private static final double PEER_REVIEW_TIME = 10000D;
+	/** The average amount of downtime (millisols) allowed for primary work. */
+	private static double primaryWorkDownTimeAllowed;
 
-	/** Amount of time (millisols) allowed as downtime for primary work. */
-	static final double PRIMARY_WORK_DOWNTIME_ALLOWED = 30_000D;
-
-	/** Amount of time (millisols) allowed as downtime for collaborative work. */
-	static final double COLLABORATIVE_WORK_DOWNTIME_ALLOWED = 30_000D;
-
-	private transient List<ScientificStudyListener> listeners; // Scientific study listeners.
+	/** The average amount of downtime (millisols) allowed for collaborative work. */
+	private static double collaborativeWorkDownTimeAllowed;
+	
+	/** A list of listeners for this scientific study. */
+	private transient List<ScientificStudyListener> listeners; 
 	
 	// Data members
+	/** Is this study completed? */
 	private boolean completed;
-
+	/** Maximum number of collaborative researchers. */
+	private int maxCollaborators;
+	/** The difficulty level of this scientific study. */
 	private int difficultyLevel;
-	private double proposalWorkTime;
-	private double primaryResearchWorkTime;
+	/** The primary settlement's unique identifier. */
+	private int primarySettlement;
+	/** The primary researcher's unique identifier. */
+	private int primaryResearcher;
 
+	/** The amount of proposal time done so far. */
+	private double proposalWorkTime;
+	/** The amount of primary research time done so far. */
+	private double primaryResearchWorkTime;
+	/** The amount of primary writing paper time done so far. */
 	private double primaryPaperWorkTime;
+	/** The amount of primary researcher achievement earned so far. */
 	private double primaryResearcherAchievementEarned;
 	
 	private String phase;
 	private String completionState;
 	
 	private ScienceType science;
-	
-	private int primarySettlement;
-	private int primaryResearcher;
 
 	private MarsClock peerReviewStartTime;
 	private MarsClock lastPrimaryResearchWorkTime;
@@ -126,25 +127,81 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 		this.difficultyLevel = difficultyLevel;
 
 		phase = PROPOSAL_PHASE;
-		collaborativeResearchers = new HashMap<Integer, ScienceType>(MAX_NUM_COLLABORATORS);
+		
+		// Gets the average number from scientific_study.json
+		int aveNum = ScienceConfig.getAveNumCollaborators();
+		// Compute the number for this particular scientific study
+		maxCollaborators = (int)aveNum + (int)(aveNum/5D * RandomUtil.getGaussianDouble());
+		
+		// Compute the base proposal study time for this particular scientific study
+		baseProposalTime = computeTime(0);
+		
+		// Compute the primary research time for this particular scientific study
+		basePrimaryResearchTime = computeTime(1);
+		
+		// Compute the collaborative research time for this particular scientific study
+		baseCollaborativeResearchTime = computeTime(2);
+		
+		// Compute the primary research paper writing time for this particular scientific study
+		basePrimaryWritingPaperTime = computeTime(3);
+		
+		// Compute the collaborative paper writing time for this particular scientific study
+		baseCollaborativePaperWritingTime = computeTime(4);
+		
+		// Compute the base peer review time for this particular scientific study
+		basePeerReviewTime = computeTime(5);
+		
+		// Compute the primary work downtime allowed for this particular scientific study
+		primaryWorkDownTimeAllowed = computeTime(6);
+		
+		// Compute the collaborative work downtime allowed for this particular scientific study
+		collaborativeWorkDownTimeAllowed = computeTime(7);
+		
+		
+		collaborativeResearchers = new HashMap<Integer, ScienceType>(maxCollaborators);
 		invitedResearchers = new HashMap<Integer, Boolean>();
 		proposalWorkTime = 0D;
 		primaryResearchWorkTime = 0D;
-		collaborativeResearchWorkTime = new HashMap<Integer, Double>(MAX_NUM_COLLABORATORS);
+		collaborativeResearchWorkTime = new HashMap<Integer, Double>(maxCollaborators);
 		primaryPaperWorkTime = 0D;
-		collaborativePaperWorkTime = new HashMap<Integer, Double>(MAX_NUM_COLLABORATORS);
+		collaborativePaperWorkTime = new HashMap<Integer, Double>(maxCollaborators);
 		peerReviewStartTime = null;
 		completed = false;
 		completionState = null;
 		primarySettlement = primaryResearcher.getAssociatedSettlement().getIdentifier();
 		lastPrimaryResearchWorkTime = null;
-		lastCollaborativeResearchWorkTime = new HashMap<Integer, MarsClock>(MAX_NUM_COLLABORATORS);
+		lastCollaborativeResearchWorkTime = new HashMap<Integer, MarsClock>(maxCollaborators);
 		primaryResearcherAchievementEarned = 0D;
-		collaborativeAchievementEarned = new HashMap<Integer, Double>(MAX_NUM_COLLABORATORS);
+		collaborativeAchievementEarned = new HashMap<Integer, Double>(maxCollaborators);
 		listeners = Collections.synchronizedList(new ArrayList<ScientificStudyListener>());
 		topics = new HashMap<ScienceType, List<String>>();
 	}
 
+	/**
+	 * Computes the time of interest for this scientific study
+	 * 
+	 * @param index
+	 * @return
+	 */
+	public double computeTime(int index) {
+		// Gets the average time from scientific_study.json
+		int mean = ScienceConfig.getAverageTime(index);
+		// Modify it with random gaussian (and limit it to not less than 1/4 of the mean) for this particular scientific study
+		return Math.max(mean/4D, mean + mean/5D * RandomUtil.getGaussianDouble());	
+	}
+	
+	public double getPrimaryWorkDownTimeAllowed() {
+		return primaryWorkDownTimeAllowed;
+	}
+	
+	public double getCollaborativeWorkDownTimeAllowed() {
+		return collaborativeWorkDownTimeAllowed;
+	}
+	
+	public int getMaxCollaborators() {
+		return maxCollaborators;
+	}
+	
 	/**
 	 * Save topics
 	 * 
@@ -240,9 +297,9 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 	 * @return work time (millisols).
 	 */
 	public double getTotalProposalWorkTimeRequired() {
-		double result = BASE_PROPOSAL_WORK_TIME * difficultyLevel;
+		double result = baseProposalTime * difficultyLevel;
 		if (result == 0D)
-			result = BASE_PROPOSAL_WORK_TIME;
+			result = baseProposalTime;
 		return result;
 	}
 
@@ -405,9 +462,9 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 	 * @return work time (millisols).
 	 */
 	public double getTotalPrimaryResearchWorkTimeRequired() {
-		double result = BASE_PRIMARY_RESEARCH_WORK_TIME * difficultyLevel;
+		double result = basePrimaryResearchTime * difficultyLevel;
 		if (result == 0D)
-			result = BASE_PRIMARY_RESEARCH_WORK_TIME;
+			result = basePrimaryResearchTime;
 		return result;
 	}
 
@@ -459,9 +516,9 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 	 * @return work time (millisols).
 	 */
 	public double getTotalCollaborativeResearchWorkTimeRequired() {
-		double result = BASE_COLLABORATIVE_RESEARCH_WORK_TIME * difficultyLevel;
+		double result = baseCollaborativeResearchTime * difficultyLevel;
 		if (result == 0D)
-			result = BASE_COLLABORATIVE_RESEARCH_WORK_TIME;
+			result = baseCollaborativeResearchTime;
 		return result;
 	}
 
@@ -547,9 +604,9 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 	 * @return work time (millisols).
 	 */
 	public double getTotalPrimaryPaperWorkTimeRequired() {
-		double result = BASE_PRIMARY_PAPER_WORK_TIME * difficultyLevel;
+		double result = basePrimaryWritingPaperTime * difficultyLevel;
 		if (result == 0D)
-			result = BASE_PRIMARY_PAPER_WORK_TIME;
+			result = basePrimaryWritingPaperTime;
 		return result;
 	}
 
@@ -603,9 +660,9 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 	 * @return work time (millisols).
 	 */
 	public double getTotalCollaborativePaperWorkTimeRequired() {
-		double result = BASE_COLLABORATIVE_PAPER_WORK_TIME * difficultyLevel;
+		double result = baseCollaborativePaperWritingTime * difficultyLevel;
 		if (result == 0D)
-			result = BASE_COLLABORATIVE_PAPER_WORK_TIME;
+			result = baseCollaborativePaperWritingTime;
 		return result;
 	}
 
@@ -699,7 +756,7 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 		boolean result = false;
 		if (peerReviewStartTime != null) {
 			double peerReviewTime = MarsClock.getTimeDiff(marsClock, peerReviewStartTime);
-			if (peerReviewTime >= PEER_REVIEW_TIME)
+			if (peerReviewTime >= peerReviewTime)
 				result = true;
 		}
 		return result;
@@ -724,7 +781,7 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 	 * @return the total peer review time (millisols).
 	 */
 	public double getTotalPeerReviewTimeRequired() {
-		return PEER_REVIEW_TIME;
+		return basePeerReviewTime;
 	}
 
 	/**
