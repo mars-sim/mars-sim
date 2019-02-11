@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
@@ -48,7 +49,6 @@ import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
-import com.alee.laf.table.WebTable;
 import com.jidesoft.swing.SearchableUtils;
 import com.jidesoft.swing.TableSearchable;
 
@@ -62,8 +62,8 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 
     private ResourceTableModel resourceTableModel;
     private EquipmentTableModel equipmentTableModel;
-    private WebTable equipmentTable;
-    private WebTable resourcesTable;
+    private JTable equipmentTable;
+    private JTable resourcesTable;
     
 
     /**

@@ -23,7 +23,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-
+import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -41,7 +41,6 @@ import com.alee.laf.button.WebButton;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
-import com.alee.laf.table.WebTable;
 
 /**
  * A wizard panel to select mission members.
@@ -55,10 +54,10 @@ implements ActionListener {
 
 	// Data members.
 	private PeopleTableModel peopleTableModel;
-	private WebTable peopleTable;
+	private JTable peopleTable;
 	private MembersTableModel membersTableModel;
 
-	private WebTable membersTable;
+	private JTable membersTable;
 	private WebLabel errorMessageLabel;
 	private WebButton addButton;
 	private WebButton removeButton;
@@ -103,7 +102,7 @@ implements ActionListener {
 		peopleTableModel = new PeopleTableModel();
 
 		// Create the people table.
-		peopleTable = new WebTable(peopleTableModel);	
+		peopleTable = new JTable(peopleTableModel);	
 		TableStyle.setTableStyle(peopleTable);
 		// Added sorting
 		peopleTable.setAutoCreateRowSorter(true);

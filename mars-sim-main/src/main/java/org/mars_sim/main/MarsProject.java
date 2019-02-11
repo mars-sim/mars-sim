@@ -131,9 +131,10 @@ public class MarsProject {
 			else if (useGUI) {
 				// System.setProperty("sun.java2d.opengl", "true"); // not compatible with
 				// SplashWindow and SimulationConfigEditor
-				System.setProperty("sun.java2d.ddforcevram", "true"); // question: is this compatible with opengl in
+				if (!MainWindow.OS.contains("linux")) {
+					System.setProperty("sun.java2d.ddforcevram", "true"); // question: is this compatible with opengl in
 																		// linux and macos ?
-
+				}
 				// Enable capability of loading of svg image using regular method
 				// SvgImageLoaderFactory.install();
 

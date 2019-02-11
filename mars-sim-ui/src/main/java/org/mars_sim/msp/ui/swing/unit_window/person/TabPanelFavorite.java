@@ -40,7 +40,6 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
-import com.alee.laf.table.WebTable;
 import com.alee.laf.text.WebTextField;
 
 //import com.vdurmont.emoji.EmojiParser;
@@ -51,7 +50,7 @@ import com.alee.laf.text.WebTextField;
 public class TabPanelFavorite
 extends TabPanel {
 
-	private WebTable table;
+	private JTable table;
 	private PreferenceTableModel tableModel;
 	
 

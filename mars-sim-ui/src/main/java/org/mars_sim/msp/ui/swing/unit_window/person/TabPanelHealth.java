@@ -16,6 +16,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.swing.JTable;
 import javax.swing.SpringLayout;
 import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
@@ -39,7 +40,6 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
-import com.alee.laf.table.WebTable;
 //import com.alee.managers.language.data.TooltipWay;
 import com.alee.managers.tooltip.TooltipManager;
 import com.alee.managers.tooltip.TooltipWay;
@@ -77,10 +77,10 @@ extends TabPanel {
 	private RadiationTableModel radiationTableModel;
 	private SleepTableModel sleepTableModel;
 	
-	private WebTable radiationTable;
-	private WebTable medicationTable;
-	private WebTable healthProblemTable;
-	private WebTable sleepTable;
+	private JTable radiationTable;
+	private JTable medicationTable;
+	private JTable healthProblemTable;
+	private JTable sleepTable;
 
 	private DecimalFormat formatter = new DecimalFormat(Msg.getString("TabPanelHealth.decimalFormat")); //$NON-NLS-1$
 

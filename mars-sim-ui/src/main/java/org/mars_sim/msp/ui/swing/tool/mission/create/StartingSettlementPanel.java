@@ -19,15 +19,13 @@ import java.util.Iterator;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-
+import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.equipment.Bag;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.SpecimenContainer;
@@ -45,7 +43,6 @@ import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
-import com.alee.laf.table.WebTable;
 
 /**
  * A wizard panel for selecting the mission's starting settlement.
@@ -57,7 +54,7 @@ class StartingSettlementPanel extends WizardPanel {
 
 	// Data members.
 	private SettlementTableModel settlementTableModel;
-	private WebTable settlementTable;
+	private JTable settlementTable;
 	private WebLabel errorMessageLabel;
 
 	/**

@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import javax.swing.BorderFactory;
+import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -37,7 +38,7 @@ import com.alee.laf.button.WebButton;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.tabbedpane.WebTabbedPane;
-import com.alee.laf.table.WebTable;
+
 import com.alee.managers.tooltip.TooltipManager;
 import com.alee.managers.tooltip.TooltipWay;
 import com.jidesoft.swing.Searchable;
@@ -97,8 +98,8 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	private MainWindow mainWindow;
 
 	private WebPanel statusPanel;
-	private WebTable table;
-	private WebTable rowTable;
+	private JTable table;
+	private JTable rowTable;
 	private Searchable searchable;
 	private SearchableBar searchBar;
 
@@ -356,7 +357,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	public void tabChanged(boolean reloadSearch) {
 		// SwingUtilities.updateComponentTreeUI(this);
 		MonitorTab newTab = getSelected();
-		WebTable table = null;
+		JTable table = null;
 
 		if (newTab != oldTab) {
 			newTab.getModel().addTableModelListener(this);
@@ -428,7 +429,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	}
 
 	
-	public void createSearchableBar(WebTable table) {
+	public void createSearchableBar(JTable table) {
 		// Searchable searchable = null;
 		// SearchableBar _tableSearchableBar = null;
 

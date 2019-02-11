@@ -1022,12 +1022,12 @@ public class MainDesktopPane extends JDesktopPane
 	}
 
 	/**
-	 * Gets a random location on the desktop for a given {@link WebInternalFrame}.
+	 * Gets a random location on the desktop for a given {@link JInternalFrame}.
 	 * 
 	 * @param tempWindow an internal window
 	 * @return random point on the desktop
 	 */
-	private Point getRandomLocation(WebInternalFrame tempWindow) {
+	private Point getRandomLocation(JInternalFrame tempWindow) {
 
 		Dimension desktop_size = getSize();
 		Dimension window_size = tempWindow.getSize();
@@ -1046,11 +1046,11 @@ public class MainDesktopPane extends JDesktopPane
 
 	/**
 	 * Gets the starting location on the desktop for a given
-	 * {@link WebInternalFrame}.
+	 * {@link JInternalFrame}.
 	 * 
 	 * @return a specific point on the desktop
 	 */
-	private Point getStartingLocation(WebInternalFrame f) {
+	private Point getStartingLocation(JInternalFrame f) {
 
 		// Populate windows in grid=like starting position
 		// int w = desktop_size.width - f_size.width;

@@ -14,6 +14,7 @@ import java.beans.PropertyChangeListener;
 
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.JViewport;
 import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
@@ -36,15 +37,15 @@ import com.alee.laf.table.WebTableHeader;
  *  This table must be added to the row header of the scrollpane that
  *  contains the main table.
  */
-public class RowNumberTable extends WebTable
+public class RowNumberTable extends JTable
 	implements ChangeListener, PropertyChangeListener, TableModelListener
 {
 
 	private static final long serialVersionUID = 1L;
 
-	private WebTable main;
+	private JTable main;
 
-	public RowNumberTable(WebTable table)
+	public RowNumberTable(JTable table)
 	{
 		main = table;
 		main.addPropertyChangeListener( this );
@@ -197,7 +198,7 @@ public class RowNumberTable extends WebTable
 
 			if (isSelected)
 			{
-				setFont( getFont().deriveFont(Font.BOLD) );
+				//setFont( getFont().deriveFont(Font.BOLD) );
 			}
 
 			setText((value == null) ? "" : value.toString());

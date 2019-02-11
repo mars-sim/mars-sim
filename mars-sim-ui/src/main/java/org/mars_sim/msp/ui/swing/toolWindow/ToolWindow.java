@@ -6,6 +6,7 @@
  */
 package org.mars_sim.msp.ui.swing.toolWindow;
 
+import javax.swing.JInternalFrame;
 import javax.swing.WindowConstants;
 
 import org.mars_sim.msp.core.Simulation;
@@ -20,7 +21,7 @@ import com.alee.laf.desktoppane.WebInternalFrame;
  * The ToolWindow class is an abstract UI window for a tool. Particular tool
  * windows should be derived from this.
  */
-public abstract class ToolWindow extends WebInternalFrame {
+public abstract class ToolWindow extends JInternalFrame {
 
 	// Data members
 

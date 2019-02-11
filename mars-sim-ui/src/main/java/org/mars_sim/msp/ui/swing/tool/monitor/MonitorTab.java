@@ -11,6 +11,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.Icon;
+import javax.swing.JPanel;
 
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
@@ -24,7 +25,7 @@ import com.alee.laf.panel.WebPanel;
  * Window. The view is displayed inside a tab panel within the window and
  * depends on a UnitTableModel
  */
-public abstract class MonitorTab extends WebPanel {
+public abstract class MonitorTab extends JPanel {
 
 	/** Model providing the data. */
 	private MonitorModel model;

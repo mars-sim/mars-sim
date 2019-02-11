@@ -17,6 +17,7 @@ import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 import java.util.List;
 
+import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
@@ -44,7 +45,6 @@ import com.alee.laf.button.WebButton;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
-import com.alee.laf.table.WebTable;
 
 /**
  * A tab panel displaying a settlement's scientific studies and achievements.
@@ -56,8 +56,8 @@ extends TabPanel {
 	private WebButton scienceToolButton;
 	private WebLabel totalAchievementLabel;
 
-	private WebTable achievementTable;
-	private WebTable studyTable;
+	private JTable achievementTable;
+	private JTable studyTable;
 
 	private StudyTableModel studyTableModel;
 	private AchievementTableModel achievementTableModel;

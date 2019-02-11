@@ -23,7 +23,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-
+import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -55,10 +55,10 @@ implements ActionListener {
 
 	// Data members.
 	private BotsTableModel botsTableModel;
-	private WebTable botsTable;
+	private JTable botsTable;
 	private BotMembersTableModel botMembersTableModel;
 
-	private WebTable botMembersTable;
+	private JTable botMembersTable;
 	private WebLabel errorMessageLabel;
 	private WebButton addButton;
 	private WebButton removeButton;

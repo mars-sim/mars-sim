@@ -21,23 +21,21 @@ import java.util.List;
 
 import javax.swing.Icon;
 import javax.swing.JLabel;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.UIManager;
 import javax.swing.event.TableModelEvent;
+import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
 
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-
 import org.mars_sim.msp.ui.swing.tool.RowNumberTable;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
-import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 
 import com.alee.laf.scroll.WebScrollPane;
-import com.alee.laf.table.WebTable;
-import com.alee.laf.table.WebTableHeader;
 
 
 /**
@@ -48,7 +46,7 @@ import com.alee.laf.table.WebTableHeader;
 abstract class TableTab
 extends MonitorTab {
 	
-	private WebTableHeader header;
+	private JTableHeader header;
 	private TableCellRenderer tableCellRenderer;
 	private TableProperties propsWindow;
 	
@@ -157,7 +155,7 @@ extends MonitorTab {
 	//private final static Icon TABLEICON = ImageLoader.getIcon("Table");
 
 	/** Table component. */
-	protected WebTable table;
+	protected JTable table;
 	/** Sortable model proxy. */
 	private TableSorter sortedModel;
 	/** Constructor will flip this. */
@@ -188,7 +186,7 @@ extends MonitorTab {
             // Create a sortable model to act as a proxy
             sortedModel = new TableSorter(model);
             // Create scrollable table window
-            table = new ZebraJTable(sortedModel) {
+            table = new JTable(sortedModel) {
             	/** default serial id. */
 				//private static final long serialVersionUID = 1L;
 
@@ -250,7 +248,7 @@ extends MonitorTab {
          	// Not the best way but no double click is provided on Header class
         	// Get the TableColumn header to display sorted column
 
-           	header = (WebTableHeader) table.getTableHeader();
+           	header = (JTableHeader) table.getTableHeader();
         	//theRenderer = new TableHeaderRenderer(header.getDefaultRenderer());
         	//header.setDefaultRenderer(theRenderer);
         	header.addMouseListener(new MouseAdapter() {
@@ -265,7 +263,7 @@ extends MonitorTab {
         }
         else {
             // Simple WebTable
-            this.table = new ZebraJTable(model) {
+            this.table = new JTable(model) {
 
             	/** default serial id. */
 				//private static final long serialVersionUID = 1L;
@@ -320,10 +318,10 @@ extends MonitorTab {
         	table.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
 		// Added RowNumberTable
-        WebTable rowTable = new RowNumberTable(table);
+        JTable rowTable = new RowNumberTable(table);
         TableStyle.setTableStyle(rowTable);
         // Add a scrolled window and center it with the table
-        WebScrollPane scroller = new WebScrollPane(table);
+        JScrollPane scroller = new JScrollPane(table);
         //scroller.setBorder(new MarsPanelBorder());
 
         scroller.setRowHeaderView(rowTable);
@@ -337,12 +335,12 @@ extends MonitorTab {
 
     }
 
-    public WebTable getTable() {
+    public JTable getTable() {
     	//System.out.println("table is "+ table);
     	return table;
     }
 
-    public void adjustColumnPreferredWidths(WebTable table) {
+    public void adjustColumnPreferredWidths(JTable table) {
         // Gets max width for cells in column as the preferred width
         TableColumnModel columnModel = table.getColumnModel();
         for (int col = 0; col < table.getColumnCount(); col++) {

@@ -27,6 +27,7 @@ import java.util.Map;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JList;
+import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SpringLayout;
 import javax.swing.SwingUtilities;
@@ -102,7 +103,7 @@ implements ListSelectionListener, MissionListener, UnitListener {
 	private WebLabel traveledLabel;
 	
 	private MemberTableModel memberTableModel;
-	private WebTable memberTable;
+	private JTable memberTable;
 	
 	private WebButton centerMapButton;
 	private WebButton vehicleButton;

@@ -17,7 +17,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.ImageIcon;
-
+import javax.swing.JTable;
 import javax.swing.SpringLayout;
 import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
@@ -48,7 +48,6 @@ import com.alee.laf.checkbox.WebCheckBox;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
-import com.alee.laf.table.WebTable;
 import com.alee.laf.text.WebTextField;
 import com.jidesoft.swing.SearchableUtils;
 import com.jidesoft.swing.TableSearchable;
@@ -65,7 +64,7 @@ extends TabPanel {
 	private static final String PERCENT = " %";
 
 	// Data Members
-	private WebTable powerTable ;
+	private JTable powerTable ;
 	/** The total power generated label. */
 	private WebLabel powerGeneratedLabel;
 	/** The total power used label. */

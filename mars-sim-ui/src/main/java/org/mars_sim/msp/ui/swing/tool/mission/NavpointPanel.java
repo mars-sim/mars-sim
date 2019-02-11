@@ -22,6 +22,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.JList;
+import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
@@ -64,7 +65,6 @@ import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 import com.alee.laf.button.WebButton;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
-import com.alee.laf.table.WebTable;
 
 /**
  * Tab panel for displaying a mission's navpoints.
@@ -82,7 +82,7 @@ implements ListSelectionListener, MissionListener {
 	private NavpointMapLayer navpointLayer;
     private MineralMapLayer mineralLayer;
 	private NavpointTableModel navpointTableModel;
-	private WebTable navpointTable;
+	private JTable navpointTable;
 	private MainDesktopPane desktop;
 	
 	private static Simulation sim = Simulation.instance();

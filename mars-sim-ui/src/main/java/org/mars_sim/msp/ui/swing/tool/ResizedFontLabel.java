@@ -16,7 +16,7 @@ import javax.swing.JLabel;
 /** @see http://stackoverflow.com/questions/8281886 */
 public class ResizedFontLabel extends JLabel {
 
-    private static final int SIZE = 20;
+    private static final int SIZE = 12;
     private BufferedImage image;
 
     public ResizedFontLabel(String string) {

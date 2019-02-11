@@ -19,6 +19,7 @@ import java.util.Vector;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.JTable;
 import javax.swing.SpringLayout;
 import javax.swing.SwingUtilities;
 import javax.swing.border.TitledBorder;
@@ -48,7 +49,6 @@ import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
-import com.alee.laf.table.WebTable;
 
 /**
  * A panel showing a selected resupply mission details.
@@ -363,7 +363,7 @@ implements ClockListener, HistoricalEventListener {
 			}
 
 			// Create table
-			WebTable buildingTable = new ZebraJTable(tableModel);
+			JTable buildingTable = new ZebraJTable(tableModel);
 			TableStyle.setTableStyle(buildingTable);
 			buildingTable.setAutoCreateRowSorter(true);
 			buildingTable.setCellSelectionEnabled(false);
@@ -438,7 +438,7 @@ implements ClockListener, HistoricalEventListener {
 			}
 
 			// Create table
-			WebTable vehicleTable = new ZebraJTable(tableModel);
+			JTable vehicleTable = new ZebraJTable(tableModel);
 			TableStyle.setTableStyle(vehicleTable);
 			vehicleTable.setAutoCreateRowSorter(true);
 			vehicleTable.setCellSelectionEnabled(false);
@@ -499,7 +499,7 @@ implements ClockListener, HistoricalEventListener {
 			}
 
 			// Create table
-			WebTable equipmentTable = new ZebraJTable(tableModel);
+			JTable equipmentTable = new ZebraJTable(tableModel);
 			TableStyle.setTableStyle(equipmentTable);
 			equipmentTable.setAutoCreateRowSorter(true);
 			equipmentTable.setCellSelectionEnabled(false);
@@ -563,7 +563,7 @@ implements ClockListener, HistoricalEventListener {
 			}
 
 			// Create table
-			WebTable resourcesTable = new ZebraJTable(tableModel);
+			JTable resourcesTable = new ZebraJTable(tableModel);
 			TableStyle.setTableStyle(resourcesTable);
 			resourcesTable.setAutoCreateRowSorter(true);
 			resourcesTable.setCellSelectionEnabled(false);
@@ -627,7 +627,7 @@ implements ClockListener, HistoricalEventListener {
 			}
 
 			// Create table
-			WebTable partsTable = new ZebraJTable(tableModel);
+			JTable partsTable = new ZebraJTable(tableModel);
 			TableStyle.setTableStyle(partsTable);
 			partsTable.setAutoCreateRowSorter(true);
 			partsTable.setAutoCreateRowSorter(true);

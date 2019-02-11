@@ -14,6 +14,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Collection;
 
+import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -44,7 +45,7 @@ extends TabPanel
 implements ListSelectionListener {
 
 	// Data members
-	private WebTable relationshipTable;
+	private JTable relationshipTable;
 	private RelationshipTableModel relationshipTableModel;
 
 	/**

@@ -15,8 +15,9 @@ import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 import java.util.Iterator;
 import java.util.List;
-import javax.swing.ImageIcon;
 
+import javax.swing.ImageIcon;
+import javax.swing.JTable;
 import javax.swing.SpringLayout;
 import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
@@ -48,7 +49,6 @@ import com.alee.laf.checkbox.WebCheckBox;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
-import com.alee.laf.table.WebTable;
 import com.alee.laf.text.WebTextField;
 
 /**
@@ -82,7 +82,7 @@ extends TabPanel {
 	
 	private WebLabel eff_electric_heat_Label;
 
-	private WebTable heatTable ;
+	private JTable heatTable ;
 
 	private WebScrollPane heatScrollPane;
 	

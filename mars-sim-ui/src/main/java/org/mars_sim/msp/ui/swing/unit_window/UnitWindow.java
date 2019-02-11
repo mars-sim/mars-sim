@@ -32,6 +32,7 @@ import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MainWindow;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.ModalInternalFrame;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfo;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
@@ -47,7 +48,7 @@ import com.jidesoft.swing.JideTabbedPane;
 /**
  * The UnitWindow is the base window for displaying units.
  */
-public abstract class UnitWindow extends WebInternalFrame { // ModalInternalFrame
+public abstract class UnitWindow extends ModalInternalFrame {
 
 	// private static final int BLUR_SIZE = 7;
 
