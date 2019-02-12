@@ -799,7 +799,7 @@ public class SimulationConfig implements Serializable {
 
 	private static void loadDefaultConfiguration() {
 		try {
-			logger.config("Loading xml files...");
+//			logger.config("Loading xml files...");
 			// Load simulation document
 			simulationDoc = parseXMLFileAsJDOMDocument(SIMULATION_FILE, true);
 			// Load subset configuration classes.
@@ -826,7 +826,8 @@ public class SimulationConfig implements Serializable {
 			experimentConfig = new ExperimentConfig(EXPERIMENTS_FILE);
 			scienceConfig = new ScienceConfig();
 			
-//			logger.config("Done loading all xml files.");
+			logger.config("Done loading all xml files.");
+			
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, "Error reading config file(s) below : " + e.getMessage());
 			e.printStackTrace();

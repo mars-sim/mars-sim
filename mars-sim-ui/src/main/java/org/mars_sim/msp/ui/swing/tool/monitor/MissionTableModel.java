@@ -35,30 +35,34 @@ public class MissionTableModel extends AbstractTableModel
 	private DecimalFormat decFormatter = new DecimalFormat("#,###,##0.0");
 
 	// Column indexes
+	/** Date filed column. */
+	private final static int DATE_FILED = 0;
+	/** Date Embarked column. */
+	private final static int DATE_EMBARKED = 1;
+	/** Date Returned column. */
+	private final static int DATE_RETURNED = 2;
 	/** Starting member column. */
-	private final static int STARTING_TIME = 0;
-	/** Starting member column. */
-	private final static int STARTING_MEMBER = 1;
+	private final static int STARTING_MEMBER = 3;
 	/** Desc column. */
-	private final static int DESC = 2;
+	private final static int DESC = 4;
 	/** Description column. */
-	private final static int DESIGNATION = 3;
+	private final static int DESIGNATION = 5;
 	/** Phase column. */
-	private final static int PHASE = 4;
+	private final static int PHASE = 6;
 	/** Mission vehicle column. */
-	private final static int VEHICLE = 5;
+	private final static int VEHICLE = 7;
 	/** Starting settlement column. */
-	private final static int STARTING_SETTLEMENT = 6;
+	private final static int STARTING_SETTLEMENT = 8;
 	/** Member number column. */
-	private final static int MEMBER_NUM = 7;
+	private final static int MEMBER_NUM = 9;
 	/** Navpoint number column. */
-	private final static int NAVPOINT_NUM = 8;
+	private final static int NAVPOINT_NUM = 10;
 	/** Travelled distance column. */
-	private final static int TRAVELLED_DISTANCE = 9;
+	private final static int TRAVELLED_DISTANCE = 11;
 	/** Remaining distance column. */
-	private final static int REMAINING_DISTANCE = 10;
+	private final static int REMAINING_DISTANCE = 12;
 	/** The number of Columns. */
-	private final static int COLUMNCOUNT = 11;
+	private final static int COLUMNCOUNT = 13;
 	/** Names of Columns. */
 	private static String columnNames[];
 	/** Types of Columns. */
@@ -71,8 +75,12 @@ public class MissionTableModel extends AbstractTableModel
 	public MissionTableModel() {
 		columnNames = new String[COLUMNCOUNT];
 		columnTypes = new Class[COLUMNCOUNT];
-		columnNames[STARTING_TIME] = Msg.getString("MissionTableModel.column.time"); //$NON-NLS-1$
-		columnTypes[STARTING_TIME] = String.class;
+		columnNames[DATE_FILED] = Msg.getString("MissionTableModel.column.filed"); //$NON-NLS-1$
+		columnTypes[DATE_FILED] = String.class;
+		columnNames[DATE_EMBARKED] = Msg.getString("MissionTableModel.column.embarked"); //$NON-NLS-1$
+		columnTypes[DATE_EMBARKED] = String.class;
+		columnNames[DATE_RETURNED] = Msg.getString("MissionTableModel.column.returned"); //$NON-NLS-1$
+		columnTypes[DATE_RETURNED] = String.class;
 		columnNames[STARTING_MEMBER] = Msg.getString("MissionTableModel.column.name"); //$NON-NLS-1$
 		columnTypes[STARTING_MEMBER] = String.class;
 		columnNames[DESC] = Msg.getString("MissionTableModel.column.desc"); //$NON-NLS-1$
@@ -222,7 +230,7 @@ public class MissionTableModel extends AbstractTableModel
 				int column2 = -1;
 
 				if (eventType == MissionEventType.DATE_EVENT)
-					column1 = STARTING_TIME;
+					column1 = DATE_FILED;
 				else if (eventType == MissionEventType.NAME_EVENT)
 					column1 = STARTING_MEMBER;
 				else if (eventType == MissionEventType.DESCRIPTION_EVENT)
@@ -288,8 +296,18 @@ public class MissionTableModel extends AbstractTableModel
 			if (mission != null) {// && mission.getDescription() != null && !mission.getDescription().equals("")) {
 				switch (columnIndex) {
 
-				case STARTING_TIME: {
-					result = mission.getTime();
+				case DATE_FILED: {
+					result = mission.getDateFiled();
+				}
+					break;
+					
+				case DATE_EMBARKED: {
+					result = mission.getDateEmbarked();
+				}
+					break;
+					
+				case DATE_RETURNED : {
+					result = mission.getDateReturned();
 				}
 					break;
 					

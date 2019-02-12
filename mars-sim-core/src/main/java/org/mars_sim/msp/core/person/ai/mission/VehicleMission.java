@@ -601,7 +601,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			requestApprovalPhase(member);
 		}
 		else if (EMBARKING.equals(getPhase())) {
-			setDateEmbarked();
+			createDateEmbarked();
 			performEmbarkFromSettlementPhase(member);
 		} 
 		else if (TRAVELLING.equals(getPhase())) {
@@ -612,7 +612,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		}
 		else if (COMPLETED.equals(getPhase())) {
 			// createAfterActionReport();
-			setDateCompleted();
+			createDateCompleted();
 			setPhaseEnded(true);
 		}
 	}

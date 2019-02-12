@@ -194,9 +194,10 @@ public abstract class Mission implements Serializable {
 		this.identifier = getNextIdentifier();
 		this.missionName = missionName;
 		this.startingMember = startingMember;
-		dateFiled = marsClock.getDateTimeStamp();
-		fireMissionUpdate(MissionEventType.DATE_EVENT, dateFiled);
 		
+		// Create the date filed timestamp
+		createDateFiled();
+			
 		missionID = MissionManager.matchMissionID(missionName);
 		
 		members = new ConcurrentLinkedQueue<MissionMember>();
@@ -254,21 +255,53 @@ public abstract class Mission implements Serializable {
 	}
 
 	/**
-	 * Return the timestamp of the mission.
+	 * Gets the date filed timestamp of the mission.
 	 * 
 	 * @return
 	 */
-	public String getTime() {
+	public String getDateFiled() {
 		return dateFiled;
 	}
+
+	/**
+	 * Gets the date embarked timestamp of the mission.
+	 * 
+	 * @return
+	 */
+	public String getDateEmbarked() {
+		return dateEmbarked;
+	}
+
+	/**
+	 * Gets the date returned timestamp of the mission.
+	 * 
+	 * @return
+	 */
+	public String getDateReturned() {
+		return dateCompleted;
+	}
+
+	/**
+	 * Creates the date filed timestamp of the mission.
+	 */
+	public void createDateFiled() {
+		dateFiled = marsClock.getTrucatedDateTimeStamp();
+		fireMissionUpdate(MissionEventType.DATE_EVENT, dateFiled);
+	}
 	
-	public void setDateCompleted() {
-		dateCompleted = marsClock.getDateTimeStamp();
+	/**
+	 * Creates the date completed timestamp of the mission.
+	 */
+	public void createDateCompleted() {
+		dateCompleted = marsClock.getTrucatedDateTimeStamp();
 		fireMissionUpdate(MissionEventType.DATE_EVENT, dateCompleted);
 	}
 
-	public void setDateEmbarked() {
-		dateEmbarked = marsClock.getDateTimeStamp();
+	/**
+	 * Creates the date embarked timestamp of the mission.
+	 */
+	public void createDateEmbarked() {
+		dateEmbarked = marsClock.getTrucatedDateTimeStamp();
 		fireMissionUpdate(MissionEventType.DATE_EVENT, dateEmbarked);
 	}
 	

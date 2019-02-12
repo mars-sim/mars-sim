@@ -564,6 +564,15 @@ public class MarsClock implements Serializable {
 	}
 
 	/**
+	 * Returns formatted time stamp string in the format of e.g. "0013-Adir-05:056.349"
+	 *
+	 * @return formatted time stamp string
+	 */
+	public String getTrucatedDateTimeStamp() {
+		return new StringBuilder(getDateString()).append(COLON).append(getTrucatedTimeString()).toString();
+	}
+	
+	/**
 	 * Returns formatted time stamp string in the format of "0013-Adir-05:056.434"
 	 * 
 	 * @param time {@link MarsClock} instance
@@ -666,7 +675,7 @@ public class MarsClock implements Serializable {
 	 * 
 	 * @return millisols without decimal
 	 */
-	public String getTrucatedTimeStringUMST() {
+	public String getTrucatedTimeString() {
 		StringBuilder s = new StringBuilder();
 		int tb = (int) millisol;
 		s.append(tb);
