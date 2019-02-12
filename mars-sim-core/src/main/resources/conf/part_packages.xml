@@ -1,6 +1,12 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<!DOCTYPE part-package-list SYSTEM "conf/dtd/part_packages.dtd">
+<?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
+<!DOCTYPE part-package-list [
+	<!ELEMENT part-package-list (part-package*)>
+	<!ELEMENT part-package (part*)>
+	<!ATTLIST part-package name CDATA #REQUIRED>
+	<!ELEMENT part EMPTY>
+	<!ATTLIST part type CDATA #REQUIRED>
+	<!ATTLIST part number CDATA #REQUIRED>
+]>
 
 <!-- List of all part packages in the simulation. -->
 <!-- Part packages are used for settlement initial supplies -->

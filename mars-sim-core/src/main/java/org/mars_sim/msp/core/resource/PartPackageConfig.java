@@ -15,8 +15,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import org.jdom.Document;
-import org.jdom.Element;
+import org.jdom2.Document;
+import org.jdom2.Element;
 
 /**
  * Provides configuration information about part packages. Uses a JDOM document
@@ -56,7 +56,6 @@ public class PartPackageConfig implements Serializable {
 	 * @param partPackageDoc the part package XML document.
 	 * @throws Exception if error reading XML document.
 	 */
-	@SuppressWarnings("unchecked")
 	private void loadPartPackages(Document partPackageDoc) {
 		Element root = partPackageDoc.getRootElement();
 		List<Element> partPackageNodes = root.getChildren(PART_PACKAGE);

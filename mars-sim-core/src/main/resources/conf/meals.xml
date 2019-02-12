@@ -1,6 +1,28 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<!DOCTYPE meal-configuration SYSTEM "conf/dtd/meals.dtd">
+<?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
+<!DOCTYPE meal-configuration [
+	<!ELEMENT meal-configuration (water-consumption-rate, cleaning-agent-per-sol, meal-list)>
+	<!ELEMENT water-consumption-rate EMPTY>
+	<!ATTLIST water-consumption-rate value CDATA #REQUIRED>
+	<!ELEMENT cleaning-agent-per-sol EMPTY>
+	<!ATTLIST cleaning-agent-per-sol value CDATA #REQUIRED>
+	<!ELEMENT meal-list (main-dish*, side-dish* )>
+	<!ELEMENT main-dish (ingredient+)>
+	<!ATTLIST main-dish id CDATA #REQUIRED>
+	<!ATTLIST main-dish name CDATA #REQUIRED>
+	<!ATTLIST main-dish oil CDATA #REQUIRED>
+	<!ATTLIST main-dish salt CDATA #REQUIRED>
+	<!ATTLIST main-dish category CDATA #REQUIRED>
+	<!ELEMENT side-dish (ingredient+)>
+	<!ATTLIST side-dish id CDATA #REQUIRED>
+	<!ATTLIST side-dish name CDATA #REQUIRED>
+	<!ATTLIST side-dish oil CDATA #REQUIRED>
+	<!ATTLIST side-dish salt CDATA #REQUIRED>
+	<!ATTLIST side-dish category CDATA #REQUIRED>
+	<!ELEMENT ingredient EMPTY >
+	<!ATTLIST ingredient id CDATA #REQUIRED>
+	<!ATTLIST ingredient name CDATA #REQUIRED>
+	<!ATTLIST ingredient proportion CDATA #REQUIRED>
+]>
 
 <meal-configuration>
 

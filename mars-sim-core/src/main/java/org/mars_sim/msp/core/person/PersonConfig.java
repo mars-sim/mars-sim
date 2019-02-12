@@ -13,8 +13,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.jdom.Document;
-import org.jdom.Element;
+import org.jdom2.Document;
+import org.jdom2.Element;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 
@@ -1121,7 +1121,7 @@ public class PersonConfig implements Serializable {
 	public int getNumberOfConfiguredPeople() {
 		// Element root = personDoc.getRootElement();
 		Element personList = root.getChild(PERSON_LIST);
-		List<String> personNodes = personList.getChildren(PERSON);
+		List<Element> personNodes = personList.getChildren(PERSON);
 		if (personNodes != null)
 			return personNodes.size();
 		else

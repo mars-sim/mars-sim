@@ -1,6 +1,14 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
+<!DOCTYPE resource-list [
+	<!ELEMENT resource-list (resource*)>
+	<!ELEMENT resource (#PCDATA)>
+	<!ATTLIST resource name CDATA #REQUIRED>
+	<!ATTLIST resource type CDATA #IMPLIED>
+	<!ATTLIST resource phase (solid|liquid|gas) #REQUIRED>
+	<!ATTLIST resource life-support (true|false) "false">
+	<!ATTLIST resource edible (true|false) "false">
+]>
 
-<!DOCTYPE resource-list SYSTEM "conf/dtd/resources.dtd">
 
 <!-- List of all amount resources in the simulation. -->
 <resource-list>

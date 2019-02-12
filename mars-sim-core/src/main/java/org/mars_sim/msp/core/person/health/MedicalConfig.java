@@ -6,8 +6,8 @@
  */
 package org.mars_sim.msp.core.person.health;
 
-import org.jdom.Document;
-import org.jdom.Element;
+import org.jdom2.Document;
+import org.jdom2.Element;
 
 import java.io.Serializable;
 import java.util.ArrayList;

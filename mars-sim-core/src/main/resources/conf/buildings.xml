@@ -1,6 +1,133 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
+<!DOCTYPE building-list [
+	<!ELEMENT building-list (building*)>
+	<!ELEMENT building (description?, power-required, functions)>
+	<!ATTLIST building type CDATA #REQUIRED>
+	<!ATTLIST building width CDATA #REQUIRED>
+	<!ATTLIST building length CDATA #REQUIRED>
+	<!ATTLIST building base-level CDATA #REQUIRED>
+	<!ATTLIST building wear-lifetime CDATA #REQUIRED>
+	<!ATTLIST building maintenance-time CDATA #REQUIRED>
+	<!ATTLIST building room-temperature CDATA #REQUIRED>
+	<!ELEMENT description (#PCDATA)>
+	<!ELEMENT power-required EMPTY>
+	<!ATTLIST power-required base-power CDATA #REQUIRED>
+	<!ATTLIST power-required base-power-down-power CDATA #REQUIRED>
+	<!ELEMENT functions (administration?, astronomical-observation?, building-connection?,
+	communication?, cooking?, dining?, earth-return?, EVA?, exercise?, food-production?, farming?,
+	ground-vehicle-maintenance?, life-support?, living-accommodations?, manufacture?,
+	management?, medical-care?, power-generation?, power-storage?, recreation?, research?,
+	resource-processing?, robotic-station?, storage?, thermal-generation?, thermal-storage?, waste-disposal? )>
+	<!ELEMENT administration (activity?)>
+	<!ATTLIST administration population-support CDATA #REQUIRED>
+	<!ELEMENT astronomical-observation (activity?)>
+	<!ATTLIST astronomical-observation tech-level CDATA #REQUIRED>
+	<!ATTLIST astronomical-observation capacity CDATA #REQUIRED>
+	<!ATTLIST astronomical-observation power-required CDATA #REQUIRED>
+	<!ELEMENT building-connection EMPTY>
+	<!ELEMENT communication (activity?)>
+	<!ELEMENT cooking (activity?)>
+	<!ATTLIST cooking capacity CDATA #REQUIRED>
+	<!ELEMENT dining (activity?)>
+	<!ATTLIST dining capacity CDATA #REQUIRED>
+	<!ELEMENT earth-return EMPTY>
+	<!ATTLIST earth-return crew-capacity CDATA #REQUIRED>
+	<!ELEMENT EVA EMPTY>
+	<!ATTLIST EVA airlock-capacity CDATA #REQUIRED>
+	<!ATTLIST EVA xloc CDATA #REQUIRED>
+	<!ATTLIST EVA yloc CDATA #REQUIRED>
+	<!ATTLIST EVA interior-xloc CDATA #REQUIRED>
+	<!ATTLIST EVA interior-yloc CDATA #REQUIRED>
+	<!ATTLIST EVA exterior-xloc CDATA #REQUIRED>
+	<!ATTLIST EVA exterior-yloc CDATA #REQUIRED>
+	<!ELEMENT exercise (activity?)>
+	<!ATTLIST exercise capacity CDATA #REQUIRED>
+	<!ELEMENT farming (activity?)>
+	<!ATTLIST farming crops CDATA #REQUIRED>
+	<!ATTLIST farming power-growing-crop CDATA #REQUIRED>
+	<!ATTLIST farming power-sustaining-crop CDATA #REQUIRED>
+	<!ATTLIST farming growing-area CDATA #REQUIRED>
+	<!ELEMENT food-production (activity?)>
+	<!ATTLIST food-production tech-level CDATA #REQUIRED>
+	<!ATTLIST food-production concurrent-processes CDATA #REQUIRED>
+	<!ELEMENT ground-vehicle-maintenance (parking-location+, activity?)>
+	<!ATTLIST ground-vehicle-maintenance vehicle-capacity CDATA #REQUIRED>
+	<!ELEMENT parking-location EMPTY>
+	<!ATTLIST parking-location xloc CDATA #REQUIRED>
+	<!ATTLIST parking-location yloc CDATA #REQUIRED>
+	<!ELEMENT thermal-generation (heat-source+)>
+	<!ELEMENT heat-source EMPTY>
+	<!ATTLIST heat-source type CDATA #REQUIRED>
+	<!ATTLIST heat-source toggle (true|false) #IMPLIED>
+	<!ATTLIST heat-source capacity CDATA #REQUIRED>
+	<!ATTLIST heat-source fuel-type CDATA #IMPLIED>
+	<!ATTLIST heat-source consumption-rate CDATA #IMPLIED>
+	<!ELEMENT thermal-storage EMPTY>
+	<!ATTLIST thermal-storage capacity CDATA #REQUIRED>
+	<!ELEMENT life-support EMPTY>
+	<!ATTLIST life-support capacity CDATA #REQUIRED>
+	<!ATTLIST life-support power-required CDATA #REQUIRED>
+	<!ELEMENT living-accommodations (activity?)>
+	<!ATTLIST living-accommodations beds CDATA #REQUIRED>
+	<!ELEMENT management (activity?)>
+	<!ATTLIST management population-support CDATA #REQUIRED>
+	<!ELEMENT manufacture (activity?)>
+	<!ATTLIST manufacture tech-level CDATA #REQUIRED>
+	<!ATTLIST manufacture concurrent-processes CDATA #REQUIRED>
+	<!ELEMENT medical-care (activity?)>
+	<!ATTLIST medical-care tech-level CDATA #REQUIRED>
+	<!ATTLIST medical-care beds CDATA #REQUIRED>
+	<!ELEMENT power-generation (power-source+)>
+	<!ELEMENT power-source EMPTY>
+	<!ATTLIST power-source type CDATA #REQUIRED>
+	<!ATTLIST power-source toggle (true|false) #IMPLIED>
+	<!ATTLIST power-source power CDATA #REQUIRED>
+	<!ATTLIST power-source fuel-type CDATA #IMPLIED>
+	<!ATTLIST power-source consumption-rate CDATA #IMPLIED>
+	<!ELEMENT power-storage EMPTY>
+	<!ATTLIST power-storage capacity CDATA #REQUIRED>
+	<!ELEMENT recreation (activity?)>
+	<!ATTLIST recreation population-support CDATA #REQUIRED>
+	<!ELEMENT research (research-specialty+, activity?)>
+	<!ATTLIST research tech-level CDATA #REQUIRED>
+	<!ATTLIST research capacity CDATA #REQUIRED>
+	<!ELEMENT research-specialty EMPTY>
+	<!ATTLIST research-specialty name CDATA #REQUIRED>
+	<!ELEMENT resource-processing (process+, activity?)>
+	<!ATTLIST resource-processing power-down-level CDATA #REQUIRED>
+	<!ELEMENT robotic-station (activity?)>
+	<!ATTLIST robotic-station slots CDATA #REQUIRED>
+	<!ELEMENT process (input+, output+)>
+	<!ATTLIST process name CDATA #REQUIRED>
+	<!ATTLIST process power-required CDATA #REQUIRED>
+	<!ATTLIST process default (on|off) #REQUIRED>
+	<!ELEMENT input EMPTY>
+	<!ATTLIST input resource CDATA #REQUIRED>
+	<!ATTLIST input rate CDATA #REQUIRED>
+	<!ATTLIST input ambient (true|false) #REQUIRED>
+	<!ELEMENT output EMPTY>
+	<!ATTLIST output resource CDATA #REQUIRED>
+	<!ATTLIST output rate CDATA #REQUIRED>
+	<!ATTLIST output ambient (true|false) #REQUIRED>
+	<!ELEMENT storage (resource-storage*, resource-initial*)>
+	<!ATTLIST storage stock-capacity CDATA #REQUIRED>
+	<!ELEMENT resource-storage EMPTY>
+	<!ATTLIST resource-storage resource CDATA #REQUIRED>
+	<!ATTLIST resource-storage capacity CDATA #REQUIRED>
+	<!ELEMENT resource-initial EMPTY>
+	<!ATTLIST resource-initial resource CDATA #REQUIRED>
+	<!ATTLIST resource-initial amount CDATA #REQUIRED>
+	<!ELEMENT waste-disposal (waste-specialty+, activity?)>
+	<!ATTLIST waste-disposal tech-level CDATA #REQUIRED>
+	<!ATTLIST waste-disposal capacity CDATA #REQUIRED>
+	<!ELEMENT waste-specialty EMPTY>
+	<!ATTLIST waste-specialty name CDATA #REQUIRED>
+	<!ELEMENT activity (activity-spot+)>
+	<!ELEMENT activity-spot EMPTY>
+	<!ATTLIST activity-spot xloc CDATA #REQUIRED>
+	<!ATTLIST activity-spot yloc CDATA #REQUIRED>
+]>
 
-<!DOCTYPE building-list SYSTEM "conf/dtd/buildings.dtd">
 <!--
 1. 2006 HABITAT DESIGN OPTIMIZATION AND ANALYSIS
 http://ntrs.nasa.gov/archive/nasa/casi.ntrs.nasa.gov/20060048561.pdf

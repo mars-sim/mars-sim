@@ -1,6 +1,16 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<!DOCTYPE part-list SYSTEM "conf/dtd/parts.dtd">
+<?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
+<!DOCTYPE part-list [
+	<!ELEMENT part-list (part*)>
+	<!ELEMENT part (description?,maintenance-entity-list?)>
+	<!ATTLIST part name CDATA #REQUIRED>
+	<!ATTLIST part mass CDATA #REQUIRED>
+	<!ELEMENT description (#PCDATA)>
+	<!ELEMENT maintenance-entity-list (entity*)>
+	<!ELEMENT entity EMPTY>
+	<!ATTLIST entity name CDATA #REQUIRED>
+	<!ATTLIST entity probability CDATA #REQUIRED>
+	<!ATTLIST entity max-number CDATA #REQUIRED>
+]>
 
 <part-list>
 	<part name="airleak patch" mass=".2">

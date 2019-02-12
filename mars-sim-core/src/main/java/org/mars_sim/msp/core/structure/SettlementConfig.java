@@ -6,8 +6,19 @@
  */
 package org.mars_sim.msp.core.structure;
 
-import org.jdom.Document;
-import org.jdom.Element;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.Logger;
+
+import org.jdom2.Document;
+import org.jdom2.Element;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplyMissionTemplate;
 import org.mars_sim.msp.core.resource.AmountResource;
@@ -16,10 +27,6 @@ import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.PartPackageConfig;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.BuildingTemplate.BuildingConnectionTemplate;
-
-import java.io.Serializable;
-import java.util.*;
-import java.util.logging.Logger;
 
 /**
  * Provides configuration information about settlements. Uses a DOM document to

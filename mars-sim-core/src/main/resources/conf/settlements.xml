@@ -1,6 +1,101 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<!DOCTYPE settlement-configuration SYSTEM "conf/dtd/settlements.dtd">
+<?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
+<!DOCTYPE settlement-configuration [
+	<!ELEMENT settlement-configuration (mission-control, life-support-requirements, settlement-template-list,
+	initial-settlement-list, new-arriving-settlement-list, settlement-name-list)>
+	
+	<!ELEMENT mission-control (rover-life-support-range-error-margin, rover-fuel-range-error-margin)>
+	<!ELEMENT rover-life-support-range-error-margin EMPTY>
+	<!ATTLIST rover-life-support-range-error-margin value CDATA #REQUIRED>
+	<!ELEMENT rover-fuel-range-error-margin EMPTY>
+	<!ATTLIST rover-fuel-range-error-margin value CDATA #REQUIRED>
+	
+	<!ELEMENT life-support-requirements (total-pressure, partial-pressure-of-oxygen, 
+	partial-pressure-of-nitrogen, partial-pressure-of-carbon-dioxide, temperature,
+	relative-humidity, ventilation)>
+	<!ELEMENT total-pressure EMPTY>
+	<!ATTLIST total-pressure low CDATA #REQUIRED>
+	<!ATTLIST total-pressure high CDATA #REQUIRED>
+	<!ELEMENT partial-pressure-of-oxygen EMPTY>
+	<!ATTLIST partial-pressure-of-oxygen low CDATA #REQUIRED>
+	<!ATTLIST partial-pressure-of-oxygen high CDATA #REQUIRED>
+	<!ELEMENT partial-pressure-of-nitrogen EMPTY>
+	<!ATTLIST partial-pressure-of-nitrogen low CDATA #REQUIRED>
+	<!ATTLIST partial-pressure-of-nitrogen high CDATA #REQUIRED>
+	<!ELEMENT partial-pressure-of-carbon-dioxide EMPTY>
+	<!ATTLIST partial-pressure-of-carbon-dioxide low CDATA #REQUIRED>
+	<!ATTLIST partial-pressure-of-carbon-dioxide high CDATA #REQUIRED>
+	<!ELEMENT temperature EMPTY>
+	<!ATTLIST temperature low CDATA #REQUIRED>
+	<!ATTLIST temperature high CDATA #REQUIRED>
+	<!ELEMENT relative-humidity EMPTY>
+	<!ATTLIST relative-humidity low CDATA #REQUIRED>
+	<!ATTLIST relative-humidity high CDATA #REQUIRED>
+	<!ELEMENT ventilation EMPTY>
+	<!ATTLIST ventilation low CDATA #REQUIRED>
+	<!ATTLIST ventilation high CDATA #REQUIRED>
+	
+	<!ELEMENT settlement-template-list (template*)>
+	<!ELEMENT template (building*, vehicle*, equipment*, resource*, part*, part-package*, resupply?)>
+	<!ATTLIST template name CDATA #REQUIRED>
+	<!ATTLIST template id CDATA #REQUIRED>
+	<!ATTLIST template default-population CDATA #REQUIRED>
+	<!ATTLIST template number-of-robots CDATA #REQUIRED>
+	<!ATTLIST template sponsor CDATA #REQUIRED>
+	<!ELEMENT building (connection-list?)>
+	<!ATTLIST building id CDATA #REQUIRED>
+	<!ATTLIST building type CDATA #REQUIRED>
+	<!ATTLIST building width CDATA #IMPLIED>
+	<!ATTLIST building length CDATA #IMPLIED>
+	<!ATTLIST building x-location CDATA #REQUIRED>
+	<!ATTLIST building y-location CDATA #REQUIRED>
+	<!ATTLIST building facing CDATA #REQUIRED>
+	<!ELEMENT connection-list (connection*)>
+	<!ELEMENT connection EMPTY>
+	<!ATTLIST connection id CDATA #REQUIRED>
+	<!ATTLIST connection x-location CDATA #REQUIRED>
+	<!ATTLIST connection y-location CDATA #REQUIRED>
+	<!ELEMENT vehicle EMPTY>
+	<!ATTLIST vehicle type CDATA #REQUIRED>
+	<!ATTLIST vehicle number CDATA #REQUIRED>
+	<!ELEMENT equipment EMPTY>
+	<!ATTLIST equipment type CDATA #REQUIRED>
+	<!ATTLIST equipment number CDATA #REQUIRED>
+	<!ELEMENT resource EMPTY>
+	<!ATTLIST resource type CDATA #REQUIRED>
+	<!ATTLIST resource amount CDATA #REQUIRED>
+	<!ELEMENT part EMPTY>
+	<!ATTLIST part type CDATA #REQUIRED>
+	<!ATTLIST part number CDATA #REQUIRED>
+	<!ELEMENT part-package EMPTY>
+	<!ATTLIST part-package name CDATA #REQUIRED>
+	<!ATTLIST part-package number CDATA #REQUIRED>
+	<!ELEMENT resupply (resupply-mission*)>
+	<!ELEMENT resupply-mission EMPTY>
+	<!ATTLIST resupply-mission name CDATA #REQUIRED>
+	<!ATTLIST resupply-mission arrival-time CDATA #REQUIRED>
+	<!ELEMENT initial-settlement-list (settlement*)>
+	<!ELEMENT settlement (location, population, number-of-robots, sponsor)>
+	<!ATTLIST settlement name CDATA #REQUIRED>
+	<!ATTLIST settlement template CDATA #REQUIRED>
+	<!ELEMENT new-arriving-settlement-list (arriving-settlement*)>
+	<!ELEMENT arriving-settlement (location, population, number-of-robots, sponsor)>
+	<!ATTLIST arriving-settlement name CDATA #REQUIRED>
+	<!ATTLIST arriving-settlement template CDATA #REQUIRED>
+	<!ATTLIST arriving-settlement arrival-time CDATA #REQUIRED>
+	<!ELEMENT location EMPTY>
+	<!ATTLIST location longitude CDATA #REQUIRED>
+	<!ATTLIST location latitude CDATA #REQUIRED>
+	<!ELEMENT population EMPTY>
+	<!ATTLIST population number CDATA #REQUIRED>
+	<!ELEMENT number-of-robots EMPTY>
+	<!ATTLIST number-of-robots number CDATA #REQUIRED>
+	<!ELEMENT sponsor EMPTY>
+	<!ATTLIST sponsor name CDATA #REQUIRED>
+	<!ELEMENT settlement-name-list (settlement-name*)>
+	<!ELEMENT settlement-name EMPTY>
+	<!ATTLIST settlement-name sponsor CDATA #REQUIRED>
+	<!ATTLIST settlement-name value CDATA #REQUIRED>
+]>
 
 <settlement-configuration>
 

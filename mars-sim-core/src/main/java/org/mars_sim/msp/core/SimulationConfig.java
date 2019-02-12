@@ -8,16 +8,16 @@ package org.mars_sim.msp.core;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.ObjectStreamException;
 import java.io.Serializable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.JDOMException;
-import org.jdom.input.SAXBuilder;
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
+import org.jdom2.input.SAXBuilder;
+
 import org.mars_sim.msp.core.foodProduction.FoodProductionConfig;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplyConfig;
 import org.mars_sim.msp.core.malfunction.MalfunctionConfig;
@@ -747,6 +747,22 @@ public class SimulationConfig implements Serializable {
 //	  		return result; 
 //		}
 
+//	public static Document parseXMLFileAsJDOMDocument(String filename, boolean useDTD)
+//			throws IOException, JDOMException {
+//		InputStream stream = getInputStream(filename);
+//		
+////		bug 2909888: read the inputstream with a specific encoding instead of the
+////		system default.	 
+//		InputStreamReader reader = new InputStreamReader(stream, "UTF-8");
+//		SAXBuilder saxBuilder = new SAXBuilder(useDTD);
+//		
+////		[landrus, 26.11.09]: Use an entity resolver to load dtds from the classpath	 
+//		saxBuilder.setEntityResolver(new ClasspathEntityResolver());
+//		Document result = saxBuilder.build(reader);
+//		stream.close();
+//
+//		return result;
+//	}
 
 	/**
 	 * Parses an XML file into a DOM document.
@@ -758,23 +774,23 @@ public class SimulationConfig implements Serializable {
 	 * @throws JDOMException
 	 * @throws Exception     if XML could not be parsed or file could not be found.
 	 */
-	public static Document parseXMLFileAsJDOMDocument(String filename, boolean useDTD)
-			throws IOException, JDOMException {
-		InputStream stream = getInputStream(filename);
+	private static Document parseXMLFileAsJDOMDocument(String filename, boolean useDTD) {
+	    SAXBuilder builder = new SAXBuilder(useDTD);
+	    Document document = null;
+	    
+		String fullPathName = CONF + filename + XML;
+		InputStream stream = SimulationConfig.class.getResourceAsStream(fullPathName);
 		
-//		bug 2909888: read the inputstream with a specific encoding instead of the
-//		system default.	 
-		InputStreamReader reader = new InputStreamReader(stream, "UTF-8");
-		SAXBuilder saxBuilder = new SAXBuilder(useDTD);
-		
-//		[landrus, 26.11.09]: Use an entity resolver to load dtds from the classpath	 
-		saxBuilder.setEntityResolver(new ClasspathEntityResolver());
-		Document result = saxBuilder.build(reader);
-		stream.close();
-
-		return result;
+	    try {
+	        document = builder.build(stream);
+	    }
+	    catch (JDOMException | IOException e)
+	    {
+	        e.printStackTrace();
+	    }
+	    return document;
 	}
-
+	
 	/*
 	 * -----------------------------------------------------------------------------
 	 * Private Methods
@@ -817,26 +833,26 @@ public class SimulationConfig implements Serializable {
 		}
 	}
 
-	/**
-	 * Gets a configuration file as an input stream.
-	 * 
-	 * @param filename the filename of the configuration file.
-	 * @return input stream
-	 * @throws IOException if file cannot be found.
-	 */
-	private static InputStream getInputStream(String filename) throws IOException {
-		/*
-		 * [landrus, 28.11.09]: dont use filesystem separators in classloader loading
-		 * envs.
-		 */
-		String fullPathName = CONF + filename + XML;
-		InputStream stream = SimulationConfig.class.getResourceAsStream(fullPathName);
-		if (stream == null)
-			throw new IOException(fullPathName + " failed to load");
-		return stream;
-	}
+//	/**
+//	 * Gets a configuration file as an input stream.
+//	 * 
+//	 * @param filename the filename of the configuration file.
+//	 * @return input stream
+//	 * @throws IOException if file cannot be found.
+//	 */
+//	private static InputStream getInputStream(String filename) throws IOException {
+//		/*
+//		 * [landrus, 28.11.09]: dont use filesystem separators in classloader loading
+//		 * envs.
+//		 */
+//		String fullPathName = CONF + filename + XML;
+//		InputStream stream = SimulationConfig.class.getResourceAsStream(fullPathName);
+//		if (stream == null)
+//			throw new IOException(fullPathName + " failed to load");
+//		return stream;
+//	}
 
-
+		
 //	 public int testValue(String str, String name) {
 //		int result = 0;
 //	 	if ((str == null) || str.trim().length() == 0) 

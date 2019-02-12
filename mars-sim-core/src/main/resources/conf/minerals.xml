@@ -1,6 +1,13 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<!DOCTYPE mineral-concentrations SYSTEM "conf/dtd/minerals.dtd">
+<?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
+<!DOCTYPE mineral-concentrations [
+	<!ELEMENT mineral-concentrations (mineral*)>
+	<!ELEMENT mineral (locale-list)>
+	<!ATTLIST mineral name CDATA #REQUIRED>
+	<!ATTLIST mineral frequency (common|uncommon|rare|very_rare) #REQUIRED>
+	<!ELEMENT locale-list (locale+)>
+	<!ELEMENT locale EMPTY>
+	<!ATTLIST locale name (volcanic|sedimentary|crater) #REQUIRED>
+]>
 
 <!-- List of all mineral concentrations that can be mined. -->
 <mineral-concentrations>

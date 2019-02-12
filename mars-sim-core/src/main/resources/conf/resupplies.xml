@@ -1,6 +1,33 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<!DOCTYPE resupply-list SYSTEM "conf/dtd/resupplies.dtd">
+<?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
+<!DOCTYPE resupply-list [
+	<!ELEMENT resupply-list (resupply*)>
+	<!ELEMENT resupply (building*, vehicle*, equipment*, person?, resource*, part*, part-package*)>
+	<!ATTLIST resupply name CDATA #REQUIRED>
+	<!ELEMENT building EMPTY>
+	<!ATTLIST building type CDATA #REQUIRED>
+	<!ATTLIST building width CDATA #IMPLIED>
+	<!ATTLIST building length CDATA #IMPLIED>
+	<!ATTLIST building x-location CDATA #REQUIRED>
+	<!ATTLIST building y-location CDATA #REQUIRED>
+	<!ATTLIST building facing CDATA #REQUIRED>
+	<!ELEMENT vehicle EMPTY>
+	<!ATTLIST vehicle type CDATA #REQUIRED>
+	<!ATTLIST vehicle number CDATA #REQUIRED>
+	<!ELEMENT equipment EMPTY>
+	<!ATTLIST equipment type CDATA #REQUIRED>
+	<!ATTLIST equipment number CDATA #REQUIRED>
+	<!ELEMENT person EMPTY>
+	<!ATTLIST person number CDATA #REQUIRED>
+	<!ELEMENT resource EMPTY>
+	<!ATTLIST resource name CDATA #REQUIRED>
+	<!ATTLIST resource amount CDATA #REQUIRED>
+	<!ELEMENT part EMPTY>
+	<!ATTLIST part type CDATA #REQUIRED>
+	<!ATTLIST part number CDATA #REQUIRED>
+	<!ELEMENT part-package EMPTY>
+	<!ATTLIST part-package name CDATA #REQUIRED>
+	<!ATTLIST part-package number CDATA #REQUIRED>
+]>
 
 <!-- Settlement resupply missions from Earth. -->
 <resupply-list>

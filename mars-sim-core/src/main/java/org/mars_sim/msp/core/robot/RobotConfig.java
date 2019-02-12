@@ -12,8 +12,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.jdom.Document;
-import org.jdom.Element;
+import org.jdom2.Document;
+import org.jdom2.Element;
 
 /**
  * Provides configuration information about robot units. Uses a JDOM document to
@@ -257,7 +257,7 @@ public class RobotConfig implements Serializable {
 	public int getNumberOfConfiguredRobots() {
 		Element root = robotDoc.getRootElement();
 		Element robotList = root.getChild(ROBOT_LIST);
-		List<String> robotNodes = robotList.getChildren(ROBOT);
+		List<Element> robotNodes = robotList.getChildren(ROBOT);
 		if (robotNodes != null)
 			return robotNodes.size();
 		else

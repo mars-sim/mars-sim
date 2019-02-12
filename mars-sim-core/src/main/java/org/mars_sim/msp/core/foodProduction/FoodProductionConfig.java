@@ -12,8 +12,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.jdom.Document;
-import org.jdom.Element;
+import org.jdom2.Document;
+import org.jdom2.Element;
 import org.mars_sim.msp.core.foodProduction.FoodProductionProcessItem;
 import org.mars_sim.msp.core.resource.ItemType;
 

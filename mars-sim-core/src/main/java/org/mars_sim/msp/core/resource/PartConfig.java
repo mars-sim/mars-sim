@@ -11,8 +11,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.jdom.Document;
-import org.jdom.Element;
+import org.jdom2.Document;
+import org.jdom2.Element;
 
 
 /**

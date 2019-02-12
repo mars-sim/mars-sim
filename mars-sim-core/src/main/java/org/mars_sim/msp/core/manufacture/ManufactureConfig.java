@@ -14,8 +14,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import org.jdom.Document;
-import org.jdom.Element;
+import org.jdom2.Document;
+import org.jdom2.Element;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;

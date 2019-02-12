@@ -1,6 +1,26 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<!DOCTYPE foodProduction-processes SYSTEM "conf/dtd/foodProduction.dtd">
+<?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
+<!DOCTYPE foodProduction-processes [
+	<!ELEMENT foodProduction-processes (process*)>
+	<!ELEMENT process (description?, inputs, outputs)>
+	<!ATTLIST process name CDATA #REQUIRED>
+	<!ATTLIST process tech CDATA #REQUIRED>
+	<!ATTLIST process skill CDATA #REQUIRED>
+	<!ATTLIST process work-time CDATA #REQUIRED>
+	<!ATTLIST process process-time CDATA #REQUIRED>
+	<!ATTLIST process power-required CDATA #REQUIRED>
+	<!ELEMENT description (#PCDATA)>
+	<!ELEMENT inputs (part*, resource*)>
+	<!ELEMENT outputs (part*, resource*, equipment*)>
+	<!ELEMENT resource EMPTY>
+	<!ATTLIST resource name CDATA #REQUIRED>
+	<!ATTLIST resource amount CDATA #REQUIRED>
+	<!ELEMENT part EMPTY>
+	<!ATTLIST part name CDATA #REQUIRED>
+	<!ATTLIST part number CDATA #REQUIRED>
+	<!ELEMENT equipment EMPTY>
+	<!ATTLIST equipment name CDATA #REQUIRED>
+	<!ATTLIST equipment number CDATA #REQUIRED>
+]>
 
 <!-- List of all food production processes. -->
 <foodProduction-processes>

@@ -1,6 +1,38 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<!DOCTYPE medical SYSTEM "conf/dtd/medical.dtd">
+<?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
+<!DOCTYPE medical [
+	<!ELEMENT medical (medical-complaint-list, treatment-list)>
+	<!ELEMENT medical-complaint-list (medical-complaint*)>
+	<!ELEMENT medical-complaint (seriousness, degrade-time?, recovery-time, probability, 
+	performance-percent, bed-rest-recovery, treatment-type?, degrade-complaint?)>
+	<!ATTLIST medical-complaint name CDATA #REQUIRED>
+	<!ELEMENT seriousness EMPTY>
+	<!ATTLIST seriousness value CDATA #REQUIRED>
+	<!ELEMENT degrade-time EMPTY>
+	<!ATTLIST degrade-time value CDATA #REQUIRED>
+	<!ELEMENT recovery-time EMPTY>
+	<!ATTLIST recovery-time value CDATA #REQUIRED>
+	<!ELEMENT probability EMPTY>
+	<!ATTLIST probability value CDATA #REQUIRED>
+	<!ELEMENT performance-percent EMPTY>
+	<!ATTLIST performance-percent value CDATA #REQUIRED>
+	<!ELEMENT treatment-type EMPTY>
+	<!ATTLIST treatment-type value CDATA #REQUIRED>
+	<!ELEMENT bed-rest-recovery EMPTY>
+	<!ATTLIST bed-rest-recovery value (true|false) #REQUIRED>
+	<!ELEMENT degrade-complaint EMPTY>
+	<!ATTLIST degrade-complaint value CDATA #REQUIRED>
+	<!ELEMENT treatment-list (treatment*)>
+	<!ELEMENT treatment (skill?, medical-tech-level?, treatment-time?, self-admin?)> 
+	<!ATTLIST treatment name CDATA #REQUIRED>
+	<!ELEMENT skill EMPTY>
+	<!ATTLIST skill value CDATA #REQUIRED>
+	<!ELEMENT medical-tech-level EMPTY>
+	<!ATTLIST medical-tech-level value CDATA #REQUIRED>
+	<!ELEMENT treatment-time EMPTY>
+	<!ATTLIST treatment-time value CDATA #REQUIRED>
+	<!ELEMENT self-admin EMPTY>
+	<!ATTLIST self-admin value (true|false) #REQUIRED>
+]>
 
 <medical>
 

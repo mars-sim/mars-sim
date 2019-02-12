@@ -1,5 +1,10 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE quotation-list SYSTEM "conf/dtd/quotations.dtd">
+<?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
+<!DOCTYPE quotation-list [
+	<!ELEMENT quotation-list (quotation*)>
+	<!ELEMENT quotation EMPTY>
+	<!ATTLIST quotation name CDATA #REQUIRED>
+	<!ATTLIST quotation text CDATA #REQUIRED>
+]>
 
   <!--Sources : -->
   <!--	1. https://en.wikiquote.org/wiki/Robert_A._Heinlein 

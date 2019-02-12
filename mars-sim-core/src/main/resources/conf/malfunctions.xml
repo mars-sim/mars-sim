@@ -1,6 +1,37 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<!DOCTYPE malfunction-list SYSTEM "conf/dtd/malfunctions.dtd">
+<?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
+<!DOCTYPE malfunction-list [
+	<!ELEMENT malfunction-list (malfunction*)>
+	<!ELEMENT malfunction (severity, probability, repair-time?, emergency-repair-time?, 
+	eva-repair-time?, system-list, effect-list?, medical-complaint-list?, repair-parts-list?)>
+	<!ATTLIST malfunction name CDATA #REQUIRED>
+	<!ELEMENT severity EMPTY>
+	<!ATTLIST severity value CDATA #REQUIRED>
+	<!ELEMENT probability EMPTY>
+	<!ATTLIST probability value CDATA #REQUIRED>
+	<!ELEMENT repair-time EMPTY>
+	<!ATTLIST repair-time value CDATA #REQUIRED>
+	<!ELEMENT emergency-repair-time EMPTY>
+	<!ATTLIST emergency-repair-time value CDATA #REQUIRED>
+	<!ELEMENT eva-repair-time EMPTY>
+	<!ATTLIST eva-repair-time value CDATA #REQUIRED>
+	<!ELEMENT system-list (system+)>
+	<!ELEMENT system EMPTY>
+	<!ATTLIST system name CDATA #REQUIRED>
+	<!ELEMENT effect-list (effect*)>
+	<!ELEMENT effect EMPTY>
+	<!ATTLIST effect name CDATA #REQUIRED>
+	<!ATTLIST effect type (resource|life-support) #REQUIRED>
+	<!ATTLIST effect change-rate CDATA #REQUIRED>
+	<!ELEMENT medical-complaint-list (medical-complaint*)>
+	<!ELEMENT medical-complaint EMPTY>
+	<!ATTLIST medical-complaint name CDATA #REQUIRED>
+	<!ATTLIST medical-complaint probability CDATA #REQUIRED>
+	<!ELEMENT repair-parts-list (part*)>
+	<!ELEMENT part EMPTY>
+	<!ATTLIST part name CDATA #REQUIRED>
+	<!ATTLIST part number CDATA #REQUIRED>
+	<!ATTLIST part probability CDATA #REQUIRED>
+]>
 
 <!-- List of possible malfunctions -->
 <malfunction-list>

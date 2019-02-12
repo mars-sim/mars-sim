@@ -9,11 +9,8 @@ package org.mars_sim.msp.ui.swing;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,12 +20,12 @@ import java.util.logging.Logger;
 import javax.swing.JInternalFrame;
 
 import org.apache.commons.io.IOUtils;
-import org.jdom.DocType;
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.input.SAXBuilder;
-import org.jdom.output.Format;
-import org.jdom.output.XMLOutputter;
+import org.jdom2.DocType;
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.input.SAXBuilder;
+import org.jdom2.output.Format;
+import org.jdom2.output.XMLOutputter;
 import org.mars_sim.msp.ui.swing.sound.AudioPlayer;
 import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
@@ -91,30 +88,44 @@ public class UIConfig {
 	/**
 	 * Loads and parses the XML save file.
 	 */
+//	public void parseFile() {
+//		FileInputStream stream = null;
+//
+//		try {
+//			
+////			 [landrus, 27.11.09]: Hard paths are a pain with webstart, so we will use the
+////			 users home dir, because this will work properly.
+//			 
+//			stream = new FileInputStream(new File(DIRECTORY, FILE_NAME));
+//			
+////			 bug 2909888: read the inputstream with a specific encoding instead of the
+////			 system default.
+//			 
+//			InputStreamReader reader = new InputStreamReader(stream, "UTF-8");
+//			SAXBuilder saxBuilder = new SAXBuilder(true);
+//			configDoc = saxBuilder.build(reader);
+//		} catch (Exception e) {
+//			if (!(e instanceof FileNotFoundException))
+//				logger.log(Level.SEVERE, "parseFile()", e);
+//		} finally {
+//			IOUtils.closeQuietly(stream);
+//		}
+//	}
+
+	/**
+	 * Loads and parses the XML save file.
+	 */
 	public void parseFile() {
-		FileInputStream stream = null;
+	    SAXBuilder builder = new SAXBuilder();
 
-		try {
-			
-//			 [landrus, 27.11.09]: Hard paths are a pain with webstart, so we will use the
-//			 users home dir, because this will work properly.
-			 
-			stream = new FileInputStream(new File(DIRECTORY, FILE_NAME));
-			
-//			 bug 2909888: read the inputstream with a specific encoding instead of the
-//			 system default.
-			 
-			InputStreamReader reader = new InputStreamReader(stream, "UTF-8");
-			SAXBuilder saxBuilder = new SAXBuilder(true);
-			configDoc = saxBuilder.build(reader);
-		} catch (Exception e) {
-			if (!(e instanceof FileNotFoundException))
-				logger.log(Level.SEVERE, "parseFile()", e);
-		} finally {
-			IOUtils.closeQuietly(stream);
-		}
+	    try  {
+	    	configDoc = builder.build(new File(DIRECTORY, FILE_NAME));
+	    }
+	    catch (Exception e) {
+	        e.printStackTrace();
+	    }
 	}
-
+	
 	/**
 	 * Creates an XML document for the UI configuration and saves it to a file.
 	 * 
@@ -426,12 +437,11 @@ public class UIConfig {
 	 * @param windowName the window name.
 	 * @return true if displayed.
 	 */
-	@SuppressWarnings("unchecked")
 	public boolean isInternalWindowDisplayed(String windowName) {
 		try {
 			Element root = configDoc.getRootElement();
 			Element internalWindows = root.getChild(INTERNAL_WINDOWS);
-			List<Object> internalWindowNodes = internalWindows.getChildren();
+			List<Element> internalWindowNodes = internalWindows.getChildren();
 			boolean result = false;
 			for (Object element : internalWindowNodes) {
 				if (element instanceof Element) {
@@ -455,12 +465,11 @@ public class UIConfig {
 	 * @param windowName the window name.
 	 * @return location.
 	 */
-	@SuppressWarnings("unchecked")
 	public Point getInternalWindowLocation(String windowName) {
 		try {
 			Element root = configDoc.getRootElement();
 			Element internalWindows = root.getChild(INTERNAL_WINDOWS);
-			List<Object> internalWindowNodes = internalWindows.getChildren();
+			List<Element> internalWindowNodes = internalWindows.getChildren();
 			Point result = new Point(0, 0);
 			for (Object element : internalWindowNodes) {
 				if (element instanceof Element) {
@@ -485,12 +494,11 @@ public class UIConfig {
 	 * @param windowName the window name.
 	 * @return z order (lower number represents higher up)
 	 */
-	@SuppressWarnings("unchecked")
 	public int getInternalWindowZOrder(String windowName) {
 		try {
 			Element root = configDoc.getRootElement();
 			Element internalWindows = root.getChild(INTERNAL_WINDOWS);
-			List<Object> internalWindowNodes = internalWindows.getChildren();
+			List<Element> internalWindowNodes = internalWindows.getChildren();
 			int result = -1;
 			for (Object element : internalWindowNodes) {
 				if (element instanceof Element) {
@@ -512,12 +520,11 @@ public class UIConfig {
 	 * @param windowName the window name.
 	 * @return size.
 	 */
-	@SuppressWarnings("unchecked")
 	public Dimension getInternalWindowDimension(String windowName) {
 		try {
 			Element root = configDoc.getRootElement();
 			Element internalWindows = root.getChild(INTERNAL_WINDOWS);
-			List<Object> internalWindowNodes = internalWindows.getChildren();
+			List<Element> internalWindowNodes = internalWindows.getChildren();
 			Dimension result = new Dimension(0, 0);
 			for (Object element : internalWindowNodes) {
 				if (element instanceof Element) {
@@ -542,12 +549,11 @@ public class UIConfig {
 	 * @param windowName the window name.
 	 * @return "unit" or "tool".
 	 */
-	@SuppressWarnings("unchecked")
 	public String getInternalWindowType(String windowName) {
 		try {
 			Element root = configDoc.getRootElement();
 			Element internalWindows = root.getChild(INTERNAL_WINDOWS);
-			List<Object> internalWindowNodes = internalWindows.getChildren();
+			List<Element> internalWindowNodes = internalWindows.getChildren();
 			String result = "";
 			for (Object element : internalWindowNodes) {
 				if (element instanceof Element) {
@@ -569,12 +575,11 @@ public class UIConfig {
 	 * @param windowName the window name.
 	 * @return true if configured.
 	 */
-	@SuppressWarnings("unchecked")
 	public boolean isInternalWindowConfigured(String windowName) {
 		try {
 			Element root = configDoc.getRootElement();
 			Element internalWindows = root.getChild(INTERNAL_WINDOWS);
-			List<Object> internalWindowNodes = internalWindows.getChildren();
+			List<Element> internalWindowNodes = internalWindows.getChildren();
 			boolean result = false;
 			for (Object element : internalWindowNodes) {
 				if (element instanceof Element) {
@@ -595,13 +600,12 @@ public class UIConfig {
 	 *
 	 * @return list of window names.
 	 */
-	@SuppressWarnings("unchecked")
 	public List<String> getInternalWindowNames() {
 		List<String> result = new ArrayList<String>();
 		try {
 			Element root = configDoc.getRootElement();
 			Element internalWindows = root.getChild(INTERNAL_WINDOWS);
-			List<Object> internalWindowNodes = internalWindows.getChildren();
+			List<Element> internalWindowNodes = internalWindows.getChildren();
 			for (Object element : internalWindowNodes) {
 				if (element instanceof Element) {
 					Element internalWindow = (Element) element;
