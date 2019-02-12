@@ -366,7 +366,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 	 */
 	private void rendezvousPhase(MissionMember member) {
 
-		LogConsolidated.log(Level.FINER, 5000, sourceName,
+		LogConsolidated.log(Level.INFO, 5000, sourceName,
 				"[" + member.getLocationTag().getLocale() + "] " + member.getName() + " in " + getVehicle().getName()
 				+ " had arrived to rendezvous with " + vehicleTarget.getName() + ".");
 
@@ -470,7 +470,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 	        	towedVehicle.determinedSettlementParkedLocationAndFacing();
 	                
 			// towedVehicle.determinedSettlementParkedLocationAndFacing();
-	    	LogConsolidated.log(Level.FINER, 0, sourceName,
+	    	LogConsolidated.log(Level.INFO, 0, sourceName,
 					"[" + towedVehicle.getLocationTag().getLocale() + "] " + towedVehicle 
 					+ " has been towed to " + disembarkSettlement.getName());
 
@@ -497,12 +497,12 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 					if (p.isDeclaredDead() || p.getPerformanceRating() < 0.1) {
 						
 						if (p.isDeclaredDead())
-							LogConsolidated.log(Level.FINER, 0, sourceName,
+							LogConsolidated.log(Level.INFO, 0, sourceName,
 								"[" + p.getLocationTag().getLocale() + "] " + p.getName() 
 								+ p.getName() + "'s body had been retrieved from the towed rover "
 										+ towedVehicle.getName() + " during an Rescue Operation.");
 						else
-							LogConsolidated.log(Level.FINER, 0, sourceName,
+							LogConsolidated.log(Level.INFO, 0, sourceName,
 									"[" + p.getLocationTag().getLocale() + "] " + p.getName() 
 									+ p.getName() + " was rescued from the towed rover "
 											+ towedVehicle.getName() + " during an Rescue Operation.");
@@ -524,7 +524,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 					}
 					
 					else {					
-						LogConsolidated.log(Level.FINER, 0, sourceName,
+						LogConsolidated.log(Level.INFO, 0, sourceName,
 								"[" + p.getLocationTag().getLocale() + "] " + p.getName() 
 								+ " successfully towed the rover "+ towedVehicle.getName() + " back home.");
 					}

@@ -327,7 +327,7 @@ public class Simulation implements ClockListener, Serializable {
 	}
 
 	public void startSimExecutor() {
-		logger.config("startSimExecutor() is on " + Thread.currentThread().getName());
+//		logger.config("startSimExecutor() is on " + Thread.currentThread().getName());
 		simExecutor = Executors.newSingleThreadExecutor();
 	}
 
@@ -458,7 +458,7 @@ public class Simulation implements ClockListener, Serializable {
 	}
 
 	public void runStartTask(boolean autosaveDefault) {
-		logger.config("runStartTask() is on " + Thread.currentThread().getName());
+//		logger.config("runStartTask() is on " + Thread.currentThread().getName());
 		if (simExecutor == null || (simExecutor != null && (simExecutor.isTerminated() || simExecutor.isShutdown())))
 			startSimExecutor();
 		simExecutor.submit(new StartTask(autosaveDefault));

@@ -24,7 +24,7 @@ class CargoRoverDisplayInfoBean extends RoverDisplayInfoBean {
      */
     CargoRoverDisplayInfoBean() {
         super();
-        buttonIcon = ImageLoader.getIcon("CargoRoverIcon");
+        buttonIcon = ImageLoader.getIcon("CargoRoverIcon", ImageLoader.TOOLBAR_ICON_DIR);
     }
     
     /** 

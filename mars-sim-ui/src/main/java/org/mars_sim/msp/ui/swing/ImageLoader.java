@@ -32,6 +32,10 @@ public class ImageLoader {
 	/* [landrus, 26.11.09]: use classloader compatible paths */
 	public final static String IMAGE_DIR = "/images/";
 
+	public final static String ICON_DIR = "/icons/";
+
+	public final static String TOOLBAR_ICON_DIR = "/icons/monitor_tool/toolbar/";
+	
 	/**
 	 * Static singleton
 	 */
@@ -48,9 +52,22 @@ public class ImageLoader {
 	 * @return ImageIcon containing image of specified name.
 	 */
 	public static ImageIcon getIcon(String imagename) {
-		return getIcon(imagename, "png");
+		return getIcon(imagename, "png", IMAGE_DIR);
 	}
 
+	/**
+	 * Load the image icon with the specified name and a "png" image extension. This
+	 * operation may either create a new Image Icon of returned a previously created
+	 * one.
+	 *
+	 * @param imagename
+	 *            Name of the image to load.
+	 * @return ImageIcon containing image of specified name.
+	 */
+	public static ImageIcon getIcon(String imagename, String dir) {
+		return getIcon(imagename, "png", dir);
+	}
+	
 	public static ImageIcon getNewIcon(String imagename) {
 		String ext = "png";
 		String fullImageName = imagename.endsWith(ext) ? imagename : imagename + "." + ext;
@@ -77,11 +94,11 @@ public class ImageLoader {
 	 *            the file extension (ex. "png", "jpg").
 	 * @return ImageIcon containing image of specified name.
 	 */
-	public static ImageIcon getIcon(String imagename, String ext) {
+	public static ImageIcon getIcon(String imagename, String ext, String dir) {
 		String fullImageName = imagename.endsWith(ext) ? imagename : imagename + "." + ext;
 		ImageIcon found = iconCache.get(fullImageName);
 		if (found == null) {
-			String fileName = fullImageName.startsWith("/") ? fullImageName : IMAGE_DIR + fullImageName;
+			String fileName = fullImageName.startsWith("/") ? fullImageName : dir + fullImageName;
 			/* [landrus, 26.11.09]: don't use the system classloader in a webstart env. */
 			URL resource = ImageLoader.class.getResource(fileName);// ClassLoader.getSystemResource(fileName);
 

@@ -48,9 +48,9 @@ public final class UnitDisplayInfoFactory {
         else if (unit instanceof Robot) return robotBean;
         else if (unit instanceof Vehicle) {
         	if (unit instanceof Rover) {
-        		if (unit.getDescription().equals("Explorer Rover")) return explorerRoverBean;
-        		else if (unit.getDescription().equals("Transport Rover")) return transportRoverBean;
-        		else if (unit.getDescription().equals("Cargo Rover")) return cargoRoverBean;
+        		if (unit.getDescription().toLowerCase().contains("explorer")) return explorerRoverBean;
+        		else if (unit.getDescription().toLowerCase().contains("transport")) return transportRoverBean;
+        		else if (unit.getDescription().toLowerCase().contains("cargo")) return cargoRoverBean;
         		else return roverBean;
         	}
         	else if (unit instanceof LightUtilityVehicle) return luvBean;

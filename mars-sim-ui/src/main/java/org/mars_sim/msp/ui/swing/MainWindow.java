@@ -152,7 +152,7 @@ public class MainWindow extends JComponent {
 	 *            true if window should display a clean UI.
 	 */
 	public MainWindow(boolean cleanUI) {
-		logger.config("MainWindow is on " + Thread.currentThread().getName() + " Thread");
+//		logger.config("MainWindow is on " + Thread.currentThread().getName() + " Thread");
 		// this.cleanUI = cleanUI;
 		// Set up the look and feel library to be used
 		initializeTheme();
@@ -958,7 +958,7 @@ public class MainWindow extends JComponent {
 				UIManagers.initialize();
 //				changed = true;
 
-				logger.config(UIManager.getLookAndFeel().getName() + " is used in MainWindow.");
+//				logger.config(UIManager.getLookAndFeel().getName() + " is used in MainWindow.");
 				
 			} catch (Exception e) {
 				logger.log(Level.WARNING, Msg.getString("MainWindow.log.lookAndFeelError"), e); //$NON-NLS-1$
@@ -979,7 +979,7 @@ public class MainWindow extends JComponent {
 			try {
 				UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");//UIManager.getCrossPlatformLookAndFeelClassName());//.getSystemLookAndFeelClassName());
 				
-				logger.config(UIManager.getLookAndFeel().getName() + " is used in MainWindow.");
+//				logger.config(UIManager.getLookAndFeel().getName() + " is used in MainWindow.");
 				
 				changed = true;
 			} catch (Exception e) {
@@ -1058,7 +1058,7 @@ public class MainWindow extends JComponent {
 		
 		if (changed) {
 			
-			logger.config(UIManager.getLookAndFeel().getName() + " is used in MainWindow.");
+//			logger.config(UIManager.getLookAndFeel().getName() + " is used in MainWindow.");
 			
 			if (desktop != null) {
 //				desktop.updateToolWindowLF();

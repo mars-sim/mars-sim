@@ -30,7 +30,7 @@ public class LUVDisplayInfoBean extends VehicleDisplayInfoBean {
 		// Use VehicleDisplayInfoBean
 		super();
 
-		buttonIcon = ImageLoader.getIcon("LUVIcon");
+		buttonIcon = ImageLoader.getIcon("LUVIcon", ImageLoader.TOOLBAR_ICON_DIR);
 	}
 
 

@@ -24,7 +24,7 @@ class TransportRoverDisplayInfoBean extends RoverDisplayInfoBean {
      */
     TransportRoverDisplayInfoBean() {
         super();
-        buttonIcon = ImageLoader.getIcon("TransportRoverIcon");
+        buttonIcon = ImageLoader.getIcon("TransportRoverIcon", ImageLoader.TOOLBAR_ICON_DIR);
     }
     
     /** 

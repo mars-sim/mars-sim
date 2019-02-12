@@ -24,7 +24,7 @@ class ExplorerRoverDisplayInfoBean extends RoverDisplayInfoBean {
      */
     ExplorerRoverDisplayInfoBean() {
         super();
-        buttonIcon = ImageLoader.getIcon("ExplorerRoverIcon");
+        buttonIcon = ImageLoader.getIcon("ExplorerRoverIcon", ImageLoader.TOOLBAR_ICON_DIR);
     }
     
     /** 
