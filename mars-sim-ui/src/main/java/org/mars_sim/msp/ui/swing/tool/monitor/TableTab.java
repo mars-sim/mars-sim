@@ -303,11 +303,6 @@ extends MonitorTab {
             };
             
         }
-
-        if (MainWindow.OS.contains("linux"))
-        	table.setRowHeight(26);
-        else 
-        	table.setRowHeight(22);
         
         // Added ColumnResizer
      	//SwingUtilities.invokeLater(() -> {

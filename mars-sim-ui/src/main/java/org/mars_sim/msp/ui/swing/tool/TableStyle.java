@@ -12,6 +12,8 @@ import java.awt.Color;
 import javax.swing.JTable;
 import javax.swing.SwingUtilities;
 
+import org.mars_sim.msp.ui.swing.MainWindow;
+
 public class TableStyle extends ZebraJTable{
 
 	//private static JTableHeader theHeader;
@@ -54,6 +56,11 @@ public class TableStyle extends ZebraJTable{
     public static void setTableStyle(JTable table) {
 	   	//logger.info("setTableStyle() is on " + Thread.currentThread().getName() );
 
+        if (MainWindow.OS.contains("linux"))
+        	table.setRowHeight(26);
+        else 
+        	table.setRowHeight(22);
+        
     	int theme = 0;//MainScene.getTheme();
 
 		// 255 228 225	MistyRose1

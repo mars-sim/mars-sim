@@ -139,10 +139,7 @@ public class SimulationConfigEditor {
 		// Create settlement table.
 		settlementTableModel = new SettlementTableModel();
 		settlementTable = new JTable(settlementTableModel);
-        if (MainWindow.OS.contains("linux"))
-        	settlementTable.setRowHeight(26);
-        else 
-        	settlementTable.setRowHeight(22);
+		TableStyle.setTableStyle(settlementTable);
 		settlementTable.setRowSelectionAllowed(true);
 		settlementTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		settlementTable.getColumnModel().getColumn(0).setPreferredWidth(80);
