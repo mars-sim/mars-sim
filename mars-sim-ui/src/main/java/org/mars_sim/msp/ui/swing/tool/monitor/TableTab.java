@@ -32,6 +32,7 @@ import javax.swing.table.TableColumnModel;
 
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.MainWindow;
 import org.mars_sim.msp.ui.swing.tool.RowNumberTable;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 
@@ -226,7 +227,6 @@ extends MonitorTab {
 
             };
 
-
     		// call it a click to display details button when user double clicks the table
     		table.addMouseListener(
     			new MouseListener() {
@@ -301,8 +301,14 @@ extends MonitorTab {
                     return getCellText(e);
                 };
             };
+            
         }
 
+        if (MainWindow.OS.contains("linux"))
+        	table.setRowHeight(26);
+        else 
+        	table.setRowHeight(22);
+        
         // Added ColumnResizer
      	//SwingUtilities.invokeLater(() -> {
             TableStyle.setTableStyle(table);

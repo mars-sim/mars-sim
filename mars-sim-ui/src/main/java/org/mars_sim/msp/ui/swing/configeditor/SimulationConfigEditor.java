@@ -119,7 +119,7 @@ public class SimulationConfigEditor {
 
 		f = new JFrame();
 
-		f.setSize(HORIZONTAL_SIZE, 500);
+		f.setSize(HORIZONTAL_SIZE, 360);
 
 		// Sets the dialog content panel.
 		JPanel contentPanel = new JPanel(new BorderLayout(10, 10));
@@ -139,6 +139,10 @@ public class SimulationConfigEditor {
 		// Create settlement table.
 		settlementTableModel = new SettlementTableModel();
 		settlementTable = new JTable(settlementTableModel);
+        if (MainWindow.OS.contains("linux"))
+        	settlementTable.setRowHeight(26);
+        else 
+        	settlementTable.setRowHeight(22);
 		settlementTable.setRowSelectionAllowed(true);
 		settlementTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		settlementTable.getColumnModel().getColumn(0).setPreferredWidth(80);
