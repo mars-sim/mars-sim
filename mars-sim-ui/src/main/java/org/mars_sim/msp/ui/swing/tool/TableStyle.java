@@ -8,6 +8,7 @@
 package org.mars_sim.msp.ui.swing.tool;
 
 import java.awt.Color;
+import java.awt.Font;
 
 import javax.swing.JTable;
 import javax.swing.SwingUtilities;
@@ -57,9 +58,11 @@ public class TableStyle extends ZebraJTable{
 	   	//logger.info("setTableStyle() is on " + Thread.currentThread().getName() );
 
         if (MainWindow.OS.contains("linux"))
-        	table.setRowHeight(26);
+        	table.setRowHeight(24);
         else 
         	table.setRowHeight(22);
+        
+        table.setFont(new Font("Serif", Font.PLAIN, 12));
         
     	int theme = 0;//MainScene.getTheme();
 
