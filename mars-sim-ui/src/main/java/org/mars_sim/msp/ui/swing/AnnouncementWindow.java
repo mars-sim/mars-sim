@@ -19,9 +19,7 @@ import java.awt.*;
  */
 public class AnnouncementWindow extends JInternalFrame {
 
-	private static final long serialVersionUID = 7803343954911356522L;
-
-	private ResizedFontLabel announcementLabel;
+	private JLabel announcementLabel;
 
 	private MainDesktopPane desktop;
 
@@ -40,11 +38,12 @@ public class AnnouncementWindow extends JInternalFrame {
 		// Create the main panel
 		JPanel mainPane = new JPanel();
 		mainPane.setLayout(new BorderLayout());
-		mainPane.setBorder(new EmptyBorder(0, 0, 0, 0));
+//		mainPane.setBorder(new EmptyBorder(0, 0, 0, 0));
 		setContentPane(mainPane);
 
 		mainPane.setSize(new Dimension(200, 80));
-		announcementLabel = new ResizedFontLabel(" "); //$NON-NLS-1$
+		announcementLabel = new JLabel(" "); //$NON-NLS-1$
+		announcementLabel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		announcementLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
 		mainPane.add(announcementLabel, BorderLayout.CENTER);

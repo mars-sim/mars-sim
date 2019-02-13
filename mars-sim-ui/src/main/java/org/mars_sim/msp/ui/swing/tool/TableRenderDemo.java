@@ -120,7 +120,7 @@ public class TableRenderDemo extends JPanel {
     public void setUpSportColumn(JTable table,
                                  TableColumn sportColumn) {
         //Set up the editor for the sport cells.
-        JComboBox comboBox = new JComboBox();
+        JComboBox<String> comboBox = new JComboBox<String>();
         comboBox.addItem("Snowboarding");
         comboBox.addItem("Rowing");
         comboBox.addItem("Knitting");
@@ -144,20 +144,20 @@ public class TableRenderDemo extends JPanel {
                                         "Vegetarian"};
         private Object[][] data = {
 	    {"Kathy", "Smith",
-	     "Snowboarding", new Integer(5), new Boolean(false)},
+	     "Snowboarding", Integer.valueOf(5), Boolean.FALSE},
 	    {"John", "Doe",
-	     "Rowing", new Integer(3), new Boolean(true)},
+	     "Rowing", Integer.valueOf(3), Boolean.TRUE},
 	    {"Sue", "Black",
-	     "Knitting", new Integer(2), new Boolean(false)},
+	     "Knitting", Integer.valueOf(2), Boolean.FALSE},
 	    {"Jane", "White",
-	     "Speed reading", new Integer(20), new Boolean(true)},
+	     "Speed reading", Integer.valueOf(20), Boolean.TRUE},
 	    {"Joe", "Brown",
-	     "Pool", new Integer(10), new Boolean(false)}
+	     "Pool", Integer.valueOf(10), Boolean.FALSE}
         };
 
         public final Object[] longValues = {"Jane", "Kathy",
                                             "None of the above",
-                                            new Integer(20), Boolean.TRUE};
+                                            Integer.valueOf(20), Boolean.TRUE};
 
         public int getColumnCount() {
             return columnNames.length;

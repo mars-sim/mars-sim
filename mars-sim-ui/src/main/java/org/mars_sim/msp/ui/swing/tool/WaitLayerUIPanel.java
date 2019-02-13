@@ -1,6 +1,5 @@
 package org.mars_sim.msp.ui.swing.tool;
 
-import java.awt.AWTEvent;
 import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -10,20 +9,20 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.InputEvent;
 import java.beans.PropertyChangeEvent;
 
 import javax.swing.JComponent;
 import javax.swing.JLayer;
+import javax.swing.JPanel;
 import javax.swing.Timer;
 import javax.swing.plaf.LayerUI;
 
-// http://docs.oracle.com/javase/tutorial/uiswing/misc/jlayer.html
-public class WaitLayerUI extends LayerUI<JComponent> implements ActionListener {
+@SuppressWarnings("serial")
+class WaitLayerUIPanel extends LayerUI<JPanel> implements ActionListener {
+
 	private boolean mIsRunning;
 	private boolean mIsFadingOut;
 	private Timer mTimer;
-
 	private int mAngle;
 	private int mFadeCount;
 	private int mFadeLimit = 15;
@@ -32,25 +31,17 @@ public class WaitLayerUI extends LayerUI<JComponent> implements ActionListener {
 	public void paint(Graphics g, JComponent c) {
 		int w = c.getWidth();
 		int h = c.getHeight();
-
-		// Paint the view.
-		super.paint(g, c);
-
+		super.paint(g, c); // Paint the view.
 		if (!mIsRunning) {
 			return;
 		}
-
 		Graphics2D g2 = (Graphics2D) g.create();
-
 		float fade = (float) mFadeCount / (float) mFadeLimit;
-		// Gray it out.
-		Composite urComposite = g2.getComposite();
+		Composite urComposite = g2.getComposite(); // Gray it out.
 		g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, .5f * fade));
 		g2.fillRect(0, 0, w, h);
 		g2.setComposite(urComposite);
-
-		// Paint the wait indicator.
-		int s = Math.min(w, h) / 5;
+		int s = Math.min(w, h) / 5;// Paint the wait indicator.
 		int cx = w / 2;
 		int cy = h / 2;
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -63,10 +54,10 @@ public class WaitLayerUI extends LayerUI<JComponent> implements ActionListener {
 			g2.rotate(-Math.PI / 6, cx, cy);
 			g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, scale * fade));
 		}
-
 		g2.dispose();
 	}
 
+	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (mIsRunning) {
 			firePropertyChange("tick", 0, 1);
@@ -89,9 +80,7 @@ public class WaitLayerUI extends LayerUI<JComponent> implements ActionListener {
 		if (mIsRunning) {
 			return;
 		}
-
-		// Run a thread for animation.
-		mIsRunning = true;
+		mIsRunning = true;// Run a thread for animation.
 		mIsFadingOut = false;
 		mFadeCount = 0;
 		int fps = 24;
@@ -110,23 +99,4 @@ public class WaitLayerUI extends LayerUI<JComponent> implements ActionListener {
 			l.repaint();
 		}
 	}
-	
-	@Override public void installUI(JComponent c) {
-	    super.installUI(c);
-	    ((JLayer)c).setLayerEventMask(
-	      AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK |
-	      AWTEvent.MOUSE_WHEEL_EVENT_MASK | AWTEvent.KEY_EVENT_MASK |
-	      AWTEvent.FOCUS_EVENT_MASK | AWTEvent.COMPONENT_EVENT_MASK);
-	  }
-	
-	  @Override public void uninstallUI(JComponent c) {
-	    ((JLayer)c).setLayerEventMask(0);
-	    super.uninstallUI(c);
-	  }
-	  
-	  public void eventDispatched(AWTEvent e, JLayer<? extends JComponent> l) {
-	    if(mIsRunning && e instanceof InputEvent) {
-	      ((InputEvent)e).consume();
-	    }
-	  }
 }

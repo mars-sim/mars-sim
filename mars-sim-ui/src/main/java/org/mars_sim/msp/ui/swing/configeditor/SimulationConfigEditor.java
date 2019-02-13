@@ -49,6 +49,7 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 import org.mars_sim.msp.core.structure.SettlementConfig;
 import org.mars_sim.msp.core.structure.SettlementTemplate;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -58,6 +59,8 @@ import org.mars_sim.msp.ui.swing.tool.TableStyle;
 
 import com.alee.laf.WebLookAndFeel;
 import com.alee.managers.UIManagers;
+import com.alee.managers.tooltip.TooltipManager;
+import com.alee.managers.tooltip.TooltipWay;
 
 /**
  * A temporary simulation configuration editor dialog. Will be replaced by
@@ -84,6 +87,8 @@ public class SimulationConfigEditor {
 
 	private Simulation sim = Simulation.instance();
 
+	private SettlementConfig settlementConfig;
+	
 	/**
 	 * Constructor
 	 * 
@@ -96,7 +101,8 @@ public class SimulationConfigEditor {
 
 		// Initialize data members.
 		this.config = config;
-
+		settlementConfig = config.getSettlementConfiguration();
+		
 		hasError = false;
 
 		try {
@@ -135,44 +141,50 @@ public class SimulationConfigEditor {
 		settlementTable = new JTable(settlementTableModel);
 		settlementTable.setRowSelectionAllowed(true);
 		settlementTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-		settlementTable.getColumnModel().getColumn(0).setPreferredWidth(125);
-		settlementTable.getColumnModel().getColumn(1).setPreferredWidth(185);
-		settlementTable.getColumnModel().getColumn(2).setPreferredWidth(65);
-		settlementTable.getColumnModel().getColumn(3).setPreferredWidth(50);
-		settlementTable.getColumnModel().getColumn(4).setPreferredWidth(65);
-		settlementTable.getColumnModel().getColumn(5).setPreferredWidth(65);
-		settlementTable.getColumnModel().getColumn(6).setPreferredWidth(50);
+		settlementTable.getColumnModel().getColumn(0).setPreferredWidth(80);
+		settlementTable.getColumnModel().getColumn(1).setPreferredWidth(100);
+		settlementTable.getColumnModel().getColumn(2).setPreferredWidth(35);
+		settlementTable.getColumnModel().getColumn(3).setPreferredWidth(35);
+		settlementTable.getColumnModel().getColumn(4).setPreferredWidth(45);
+		settlementTable.getColumnModel().getColumn(5).setPreferredWidth(45);
+		settlementTable.getColumnModel().getColumn(6).setPreferredWidth(100);
 
 		settlementTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 
 		settlementTable.setBackground(java.awt.Color.WHITE);
 
-		// 2015-10-06 Added setTableStyle()
 		TableStyle.setTableStyle(settlementTable);
-
-		adjustColumn(settlementTable);
 
 		settlementScrollPane.setViewportView(settlementTable);
 
 		// Create combo box for editing template column in settlement table.
 		TableColumn templateColumn = settlementTable.getColumnModel().getColumn(1);
 		JComboBoxMW<String> templateCB = new JComboBoxMW<String>();
-		SettlementConfig settlementConfig = config.getSettlementConfiguration();
 		Iterator<SettlementTemplate> i = settlementConfig.getSettlementTemplates().iterator();
 		while (i.hasNext()) {
 			templateCB.addItem(i.next().getTemplateName());
 		}
 		templateColumn.setCellEditor(new DefaultCellEditor(templateCB));
 
-		// 2015-10-03 Align content to center of cell
+		// Create combo box for editing sponsor column in settlement table.
+		TableColumn sponsorColumn = settlementTable.getColumnModel().getColumn(6);
+		JComboBoxMW<String> sponsorCB = new JComboBoxMW<String>();
+		for (String s : ReportingAuthorityType.getLongSponsorList()) {
+			sponsorCB.addItem(s);
+		}
+		sponsorColumn.setCellEditor(new DefaultCellEditor(sponsorCB));
+		
+		// Align content to center of cell
 		DefaultTableCellRenderer defaultTableCellRenderer = new DefaultTableCellRenderer();
 		defaultTableCellRenderer.setHorizontalAlignment(SwingConstants.CENTER);
 		TableColumn column = null;
 		for (int ii = 0; ii < 7; ii++) {
 			column = settlementTable.getColumnModel().getColumn(ii);
-			// 2015-10-03 Align content to center of cell
+			// Align content to center of cell
 			column.setCellRenderer(defaultTableCellRenderer);
 		}
+
+//		adjustColumn(settlementTable);
 
 		// Create configuration button outer panel.
 		JPanel configurationButtonOuterPanel = new JPanel(new BorderLayout(0, 0));
@@ -184,7 +196,8 @@ public class SimulationConfigEditor {
 
 		// Create add settlement button.
 		JButton addButton = new JButton(Msg.getString("SimulationConfigEditor.button.add")); //$NON-NLS-1$
-		addButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.add")); //$NON-NLS-1$
+		TooltipManager.setTooltip(addButton, Msg.getString("SimulationConfigEditor.button.add"), TooltipWay.up);
+//		addButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.add")); //$NON-NLS-1$
 		addButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				addNewSettlement();
@@ -194,7 +207,8 @@ public class SimulationConfigEditor {
 
 		// Create remove settlement button.
 		JButton removeButton = new JButton(Msg.getString("SimulationConfigEditor.button.remove")); //$NON-NLS-1$
-		removeButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.remove")); //$NON-NLS-1$
+		TooltipManager.setTooltip(removeButton, Msg.getString("SimulationConfigEditor.button.remove"), TooltipWay.up);
+//		removeButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.remove")); //$NON-NLS-1$
 		removeButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				removeSelectedSettlements();
@@ -208,7 +222,8 @@ public class SimulationConfigEditor {
 
 		// Create default button.
 		JButton defaultButton = new JButton(" " + Msg.getString("SimulationConfigEditor.button.undo") + " "); //$NON-NLS-1$
-		defaultButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.undo")); //$NON-NLS-1$
+		TooltipManager.setTooltip(defaultButton, Msg.getString("SimulationConfigEditor.button.undo"), TooltipWay.up);
+//		defaultButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.undo")); //$NON-NLS-1$
 		defaultButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				setDefaultSettlements();
@@ -231,7 +246,8 @@ public class SimulationConfigEditor {
 
 		// Create the create button.
 		createButton = new JButton("  " + Msg.getString("SimulationConfigEditor.button.newSim") + "  "); //$NON-NLS-1$
-		createButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.newSim")); //$NON-NLS-1$
+		TooltipManager.setTooltip(createButton, Msg.getString("SimulationConfigEditor.button.newSim"), TooltipWay.up);
+//		createButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.newSim")); //$NON-NLS-1$
 		createButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				// Make sure any editing cell is completed, then check if error.
@@ -269,9 +285,10 @@ public class SimulationConfigEditor {
 
 		bottomButtonPanel.add(new JLabel("    "));
 
-		// 2014-12-15 Added Edit Alpha Crew button.
+		// Edit Alpha Crew button.
 		JButton alphaButton = new JButton("  " + Msg.getString("SimulationConfigEditor.button.crewEditor") + "  "); //$NON-NLS-1$
-		alphaButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.crewEditor")); //$NON-NLS-1$
+		TooltipManager.setTooltip(alphaButton, Msg.getString("SimulationConfigEditor.button.crewEditor"), TooltipWay.up);
+//		alphaButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.crewEditor")); //$NON-NLS-1$
 		alphaButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				editCrewProfile("alpha");
@@ -310,53 +327,52 @@ public class SimulationConfigEditor {
 		}
 	}
 	
-	/*
-	 * Determines proper width for each column and center aligns each cell content
-	 */
-	// 2015-10-03 Added adjustColumn()
-	private void adjustColumn(JTable t) {
-		// If all column heads are wider than the column's cells'
-		// contents, then you can just use column.sizeWidthToFit().
-		final Object[] longValues = { "Schiaparelli Point", "Mars Direct Base (phase 1)", Integer.valueOf(18),
-				Integer.valueOf(16), Integer.valueOf(22), Integer.valueOf(22), Boolean.TRUE };
-
-		boolean DEBUG = false;
-		// SettlementTableModel model = settlementTableModel;
-		// //(SettlementTableModel)table.getModel();
-		TableColumn column = null;
-		Component comp = null;
-		int headerWidth = 0;
-		int cellWidth = 0;
-		TableCellRenderer headerRenderer = t.getTableHeader().getDefaultRenderer();
-
-		// 2015-10-03 Align content to center of cell
-		DefaultTableCellRenderer defaultTableCellRenderer = new DefaultTableCellRenderer();
-		defaultTableCellRenderer.setHorizontalAlignment(SwingConstants.CENTER);
-
-		for (int i = 0; i < 7; i++) {
-
-			column = t.getColumnModel().getColumn(i);
-
-			// 2015-10-03 Align content to center of cell
-			column.setCellRenderer(defaultTableCellRenderer);
-
-			comp = headerRenderer.getTableCellRendererComponent(t, column.getHeaderValue(), false, false, 0, 0);
-
-			headerWidth = comp.getPreferredSize().width;
-
-			comp = t.getDefaultRenderer(settlementTableModel.getColumnClass(i)).getTableCellRendererComponent(t,
-					longValues[i], false, false, 0, i);
-
-			cellWidth = comp.getPreferredSize().width;
-
-			if (DEBUG) {
-				System.out.println("Initializing width of column " + i + ". " + "headerWidth = " + headerWidth
-						+ "; cellWidth = " + cellWidth);
-			}
-
-			column.setPreferredWidth(Math.max(headerWidth, cellWidth));
-		}
-	}
+//	/*
+//	 * Determines proper width for each column and center aligns each cell content
+//	 */
+//	private void adjustColumn(JTable t) {
+//		// If all column heads are wider than the column's cells'
+//		// contents, then you can just use column.sizeWidthToFit().
+//		final Object[] longValues = { "Schiaparelli Point", "Mars Direct Base (phase 1)", Integer.valueOf(18),
+//				Integer.valueOf(16), Integer.valueOf(22), Integer.valueOf(22), Boolean.TRUE };
+//
+//		boolean DEBUG = false;
+//		// SettlementTableModel model = settlementTableModel;
+//		// //(SettlementTableModel)table.getModel();
+//		TableColumn column = null;
+//		Component comp = null;
+//		int headerWidth = 0;
+//		int cellWidth = 0;
+//		TableCellRenderer headerRenderer = t.getTableHeader().getDefaultRenderer();
+//
+//		// Align content to center of cell
+//		DefaultTableCellRenderer defaultTableCellRenderer = new DefaultTableCellRenderer();
+//		defaultTableCellRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+//
+//		for (int i = 0; i < 7; i++) {
+//
+//			column = t.getColumnModel().getColumn(i);
+//
+//			// 2015-10-03 Align content to center of cell
+//			column.setCellRenderer(defaultTableCellRenderer);
+//
+//			comp = headerRenderer.getTableCellRendererComponent(t, column.getHeaderValue(), false, false, 0, 0);
+//
+//			headerWidth = comp.getPreferredSize().width;
+//
+//			comp = t.getDefaultRenderer(settlementTableModel.getColumnClass(i)).getTableCellRendererComponent(t,
+//					longValues[i], false, false, 0, i);
+//
+//			cellWidth = comp.getPreferredSize().width;
+//
+//			if (DEBUG) {
+//				System.out.println("Initializing width of column " + i + ". " + "headerWidth = " + headerWidth
+//						+ "; cellWidth = " + cellWidth);
+//			}
+//
+//			column.setPreferredWidth(Math.max(headerWidth, cellWidth));
+//		}
+//	}
 
 	/**
 	 * Adds a new settlement with default values.
@@ -413,14 +429,12 @@ public class SimulationConfigEditor {
 			String template = (String) settlementTableModel.getValueAt(x, 1);
 			String population = (String) settlementTableModel.getValueAt(x, 2);
 			int populationNum = Integer.parseInt(population);
-			// System.out.println("populationNum is " + populationNum);
 			String numOfRobotsStr = (String) settlementTableModel.getValueAt(x, 3);
 			int numOfRobots = Integer.parseInt(numOfRobotsStr);
-			// System.out.println("SimulationConfigEditor : numOfRobots is " + numOfRobots);
 			String latitude = (String) settlementTableModel.getValueAt(x, 4);
 			String longitude = (String) settlementTableModel.getValueAt(x, 5);
-
 			String sponsor = (String) settlementTableModel.getValueAt(x, 6);
+//			System.out.println("sponsor : " + sponsor);
 			settlementConfig.addInitialSettlement(name, template, populationNum, numOfRobots, sponsor, latitude,
 					longitude);// , maxMSD);
 		}
@@ -483,8 +497,7 @@ public class SimulationConfigEditor {
 	 * @return the settlement sponsor name.
 	 */
 	private String determineNewSettlementSponsor() {
-
-		return Msg.getString("ReportingAuthorityType.MarsSociety"); //$NON-NLS-1$
+		return Msg.getString("ReportingAuthorityType.long.MS"); //$NON-NLS-1$
 	}
 
 	/**
@@ -700,7 +713,6 @@ public class SimulationConfigEditor {
 				info.numOfRobots = Integer.toString(settlementConfig.getInitialSettlementNumOfRobots(x));
 				info.latitude = settlementConfig.getInitialSettlementLatitude(x);
 				info.longitude = settlementConfig.getInitialSettlementLongitude(x);
-				// info.maxMSD = "0";
 				info.sponsor = settlementConfig.getInitialSettlementSponsor(x);
 				settlements.add(info);
 			}
@@ -837,13 +849,10 @@ public class SimulationConfigEditor {
 						break;
 
 					case 6:
-
-						// TODO: correct maxMSD should be loaded
 						info.sponsor = (String) aValue;
 						break;
 
 					case 7:
-
 						break;
 					}
 				}

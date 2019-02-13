@@ -104,8 +104,6 @@ public class SettlementConfig implements Serializable {
 	private Collection<SettlementTemplate> settlementTemplates;
 	private List<InitialSettlement> initialSettlements;
 	private List<NewArrivingSettlement> newArrivingSettlements;
-	// private List<ExistingSettlement> existingSettlements;
-	// private List<String> settlementNames;
 	private Map<String, List<String>> settlementNamesMap = new HashMap<>();
 	private Map<Integer, String> scenarioMap = new HashMap<>();
 	private Map<Integer, String> settlementMap = new HashMap<>();
@@ -943,13 +941,10 @@ public class SettlementConfig implements Serializable {
 	 * @param index the index of the initial settlement.
 	 * @return the name of the sponsoring agency
 	 */
-	// 2016-07-18 Added getInitialSettlementSponsor()
 	public String getInitialSettlementSponsor(int index) {
 		if ((index >= 0) && (index < initialSettlements.size())) {
 			InitialSettlement settlement = initialSettlements.get(index);
-			// if (settlement.randomName) return RANDOM;
-			// else
-			// System.out.println("settlement : sponsor is " + settlement.sponsor);
+//			System.out.println(settlement + "'s sponsor is " + settlement.sponsor);
 			return settlement.sponsor;
 		} else
 			throw new IllegalArgumentException("index: " + index + "is out of bounds");

@@ -7,6 +7,7 @@
 
 package org.mars_sim.msp.core.reportingAuthority;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.mars_sim.msp.core.Msg;
@@ -30,7 +31,7 @@ public enum ReportingAuthorityType {
 	NASA_L				(Msg.getString("ReportingAuthorityType.long.NASA")), //$NON-NLS-1$
 	RKA_L				(Msg.getString("ReportingAuthorityType.long.RKA")), //$NON-NLS-1$
 	ESA_L				(Msg.getString("ReportingAuthorityType.long.ESA")), //$NON-NLS-1$
-	MARS_SOCIETY_L		(Msg.getString("ReportingAuthorityType.long.MarsSociety")), //$NON-NLS-1$
+	MARS_SOCIETY_L		(Msg.getString("ReportingAuthorityType.long.MS")), //$NON-NLS-1$
 	SPACEX_L			(Msg.getString("ReportingAuthorityType.long.SpaceX")) //$NON-NLS-1$
 	
 	;
@@ -118,6 +119,7 @@ public enum ReportingAuthorityType {
 	
 	public static List<String> getSponsorList() {
 		if (sponsorList == null) {
+			sponsorList = new ArrayList<>();
 			for (ReportingAuthorityType ra : SPONSORS) {
 				sponsorList.add(ra.getName());
 			}
@@ -127,6 +129,7 @@ public enum ReportingAuthorityType {
 
 	public static List<String> getLongSponsorList() {
 		if (longSponsorList == null) {
+			longSponsorList = new ArrayList<>();
 			for (ReportingAuthorityType ra : SPONSORS_LONG) {
 				longSponsorList.add(ra.getName());
 			}

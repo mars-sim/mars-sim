@@ -32,17 +32,19 @@ public class SettlementTemplate implements Serializable {
 	// Logger.getLogger(SettlementTemplate.class.getName());
 
 	// Data members.
-	private String name;
 	private int defaultPopulation;
 	private int defaultNumOfRobots;
+	private int scenarioID;
+	
+	private String name;
+	
 	private List<BuildingTemplate> buildings;
+	private List<ResupplyMissionTemplate> resupplies;
+	
 	private Map<String, Integer> vehicles;
 	private Map<String, Integer> equipment;
 	private Map<AmountResource, Double> resources;
 	private Map<Part, Integer> parts;
-	private List<ResupplyMissionTemplate> resupplies;
-
-	private int scenarioID;
 
 	/**
 	 * Constructor 1.

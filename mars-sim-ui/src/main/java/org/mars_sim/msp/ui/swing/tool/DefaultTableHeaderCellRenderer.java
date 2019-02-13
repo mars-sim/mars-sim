@@ -106,12 +106,12 @@ public class DefaultTableHeaderCellRenderer extends DefaultTableCellRenderer {
    * @return the SortKey, or null if the column is unsorted
    */
   protected SortKey getSortKey(JTable table, int column) {
-    RowSorter rowSorter = table.getRowSorter();
+    RowSorter<?> rowSorter = table.getRowSorter();
     if (rowSorter == null) {
       return null;
     }
 
-    List sortedColumns = rowSorter.getSortKeys();
+    List<?> sortedColumns = rowSorter.getSortKeys();
     if (sortedColumns.size() > 0) {
       return (SortKey) sortedColumns.get(0);
     }
