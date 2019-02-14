@@ -447,6 +447,9 @@ public class MainWindow extends JComponent {
 //					saveSimulation(true, true);
 //					masterClock.setAutosave(false);
 //				}
+				
+				// Check if the music track should be played
+				desktop.getSoundPlayer().playRandomMusicTrack();
 			}
 		});
 
