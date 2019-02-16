@@ -14,17 +14,16 @@ import java.awt.EventQueue;
 import java.awt.MenuComponent;
 import java.awt.event.MouseEvent;
 
+import javax.swing.JInternalFrame;
+import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
-
-import com.alee.laf.desktoppane.WebInternalFrame;
-import com.alee.laf.text.WebTextField;
 
 /**
  * An internal frame that supports modal behavior. Based on code found in:
  * https://community.oracle.com/thread/1358431?start=0&tstart=0
  * see also https://stackoverflow.com/questions/16422939/jinternalframe-as-modal
  */
-public abstract class ModalInternalFrame extends WebInternalFrame {
+public abstract class ModalInternalFrame extends JInternalFrame {
 
 	// Data members
 	boolean modal = false;
@@ -106,8 +105,8 @@ public abstract class ModalInternalFrame extends WebInternalFrame {
 
 						if (source instanceof Component) {
 							// Attempting to give a text field correct focus for linux
-							if (source instanceof WebTextField) {
-								((WebTextField) source).setEditable(true);
+							if (source instanceof JTextField) {
+								((JTextField) source).setEditable(true);
 							}
 
 							((Component) source).dispatchEvent(event);

@@ -237,7 +237,7 @@ public class PhysicalCondition implements Serializable {
 
 		circadian = person.getCircadianClock();
 
-		medicalManager = Simulation.instance().getMedicalManager();
+		medicalManager = sim.getMedicalManager();
 
 		if (medicalManager != null) {
 			// Note that this 'if' above is for maven test, or else NullPointerException
@@ -336,7 +336,7 @@ public class PhysicalCondition implements Serializable {
 	 * Loads the values
 	 */
 	public static void loadStaticValues() {
-		masterClock = Simulation.instance().getMasterClock();
+		masterClock = sim.getMasterClock();
 		if (masterClock != null)  // check for null in order to pass maven test
 			marsClock = masterClock.getMarsClock();
 		
@@ -1887,7 +1887,8 @@ public class PhysicalCondition implements Serializable {
 		return dehydrationStartTime;
 	}
 	
-	public static void initializeInstances(MasterClock c0, MarsClock c1, MedicalManager m) {
+	public static void initializeInstances(Simulation s, MasterClock c0, MarsClock c1, MedicalManager m) {
+		sim = s;
 		masterClock = c0;
 		marsClock = c1;
 		medicalManager = m;

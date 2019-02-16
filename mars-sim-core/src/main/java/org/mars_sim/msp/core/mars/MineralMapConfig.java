@@ -38,7 +38,6 @@ public class MineralMapConfig implements Serializable {
 		this.mineralDoc = mineralDoc;
 	}
 
-	@SuppressWarnings("unchecked")
 	List<MineralType> getMineralTypes() {
 		if (mineralTypes != null)
 			return mineralTypes;

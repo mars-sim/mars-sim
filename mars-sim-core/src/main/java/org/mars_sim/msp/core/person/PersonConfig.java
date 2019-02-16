@@ -171,7 +171,6 @@ public class PersonConfig implements Serializable {
 	 * @return List of person names.
 	 * @throws Exception if person names could not be found.
 	 */
-	@SuppressWarnings("unchecked")
 	public List<String> getPersonNameList() {
 
 		if (personNameList == null) {
@@ -687,7 +686,6 @@ public class PersonConfig implements Serializable {
 	 * @return {@link GenderType} the gender of the person name
 	 * @throws Exception if person names could not be found.
 	 */
-	@SuppressWarnings("unchecked")
 	public GenderType getPersonGender(String name) {
 		GenderType result = GenderType.UNKNOWN;
 

@@ -22,7 +22,9 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
+import javax.swing.JInternalFrame;
 import javax.swing.JList;
+import javax.swing.JPanel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -55,7 +57,7 @@ import com.alee.laf.text.WebTextField;
  * The mission info panel for the edit mission dialog.
  */
 public class InfoPanel
-extends WebPanel {
+extends JPanel {
 
 	/** action text. */
 	final static String ACTION_NONE = "None";
@@ -68,7 +70,7 @@ extends WebPanel {
 	
 	// Data members.
 	protected Mission mission;
-	protected WebInternalFrame parent;
+	protected JInternalFrame parent;
 	protected MainDesktopPane desktop;	
 	
 	protected WebTextField descriptionField;
@@ -85,7 +87,7 @@ extends WebPanel {
 	 * @param mission {@link Mission} the mission to edit.
 	 * @param parent {@link Dialog} the parent dialog.
 	 */
-	public InfoPanel(Mission mission, MainDesktopPane desktop, WebInternalFrame parent) {
+	public InfoPanel(Mission mission, MainDesktopPane desktop, JInternalFrame parent) {
 		
 		// Data members
 		this.mission = mission;
@@ -360,7 +362,7 @@ extends WebPanel {
 		return result;
 	}
 	
-	public WebInternalFrame getParent() {
+	public JInternalFrame getParent() {
 		return parent;
 	}
 	

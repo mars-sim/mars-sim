@@ -34,15 +34,15 @@ import org.mars_sim.msp.ui.swing.MainWindow;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.ModalInternalFrame;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
+import org.mars_sim.msp.ui.swing.tool.LookAndFeelFactory;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfo;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 
-import com.alee.laf.desktoppane.WebInternalFrame;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import com.alee.managers.tooltip.TooltipManager;
 import com.alee.managers.tooltip.TooltipWay;
-import com.jidesoft.plaf.LookAndFeelFactory;
+//import com.jidesoft.plaf.LookAndFeelFactory;
 import com.jidesoft.swing.JideTabbedPane;
 
 /**

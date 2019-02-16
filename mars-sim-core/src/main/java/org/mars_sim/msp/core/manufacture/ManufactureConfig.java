@@ -237,7 +237,6 @@ public class ManufactureConfig implements Serializable {
 	 * @return list of salvage process information.
 	 * @throws Exception if error getting info.
 	 */
-	@SuppressWarnings("unchecked")
 	List<SalvageProcessInfo> getSalvageList() {
 
 		if (salvageList == null) {

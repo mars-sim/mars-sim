@@ -62,7 +62,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		-->	
 		<!-- trident animation library is required by steelseries.extras in mars-sim-ui	
 		     https://search.maven.org/artifact/org.pushing-pixels/radiance-trident/1.0.1/jar 
-		     https://github.com/kirill-grouchnikov/radiance/blob/master/docs/trident/trident.md79KB -->
+		     https://github.com/kirill-grouchnikov/radiance/blob/master/docs/trident/trident.md 79KB -->
 		<dependency>
 		  <groupId>org.pushing-pixels</groupId>
 		  <artifactId>radiance-trident</artifactId>
@@ -210,10 +210,9 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		https://oss.sonatype.org/content/repositories/snapshots/com/weblookandfeel/ -->
         <dependency>
             <groupId>com.weblookandfeel</groupId>
-            <artifactId>weblaf-ui</artifactId>
-            <!-- version>1.2.8</version-->           
+            <artifactId>weblaf-ui</artifactId>        
             <version>1.2.9-SNAPSHOT</version>
-        </dependency>		
+        </dependency>	
 		<dependency>
 		    <groupId>com.weblookandfeel</groupId>
 		    <artifactId>weblaf-core</artifactId>
@@ -254,36 +253,36 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		    <version>4.7.0.1</version>
 		    <!-- version>4.5.0.3</version-->
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/com.github.nifty-gui/nifty -->
+		<!-- https://mvnrepository.com/artifact/com.github.nifty-gui/nifty 
 		<dependency>
 		    <groupId>com.github.nifty-gui</groupId>
 		    <artifactId>nifty</artifactId>
 		    <version>1.4.3</version>
-		</dependency>		
-		<!-- https://mvnrepository.com/artifact/com.github.nifty-gui/nifty-java2d-renderer -->
+		</dependency-->	
+		<!-- https://mvnrepository.com/artifact/com.github.nifty-gui/nifty-java2d-renderer
 		<dependency>
 		    <groupId>com.github.nifty-gui</groupId>
 		    <artifactId>nifty-java2d-renderer</artifactId>
 		    <version>1.4.3</version>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/com.github.nifty-gui/nifty-default-controls -->
+		</dependency-->
+		<!-- https://mvnrepository.com/artifact/com.github.nifty-gui/nifty-default-controls 
 		<dependency>
 		    <groupId>com.github.nifty-gui</groupId>
 		    <artifactId>nifty-default-controls</artifactId>
 		    <version>1.4.3</version>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/com.github.nifty-gui/nifty-style-black -->
+		</dependency-->
+		<!-- https://mvnrepository.com/artifact/com.github.nifty-gui/nifty-style-black
 		<dependency>
 		    <groupId>com.github.nifty-gui</groupId>
 		    <artifactId>nifty-style-black</artifactId>
 		    <version>1.4.3</version>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/com.github.nifty-gui/nifty-examples -->
+		</dependency-->
+		<!-- https://mvnrepository.com/artifact/com.github.nifty-gui/nifty-examples 
 		<dependency>
 		    <groupId>com.github.nifty-gui</groupId>
 		    <artifactId>nifty-examples</artifactId>
 		    <version>1.4.3</version>
-		</dependency>
+		</dependency -->
 
   </dependencies>
  

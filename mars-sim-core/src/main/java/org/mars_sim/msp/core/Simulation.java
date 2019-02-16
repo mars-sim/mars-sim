@@ -927,7 +927,7 @@ public class Simulation implements ClockListener, Serializable {
 		BotMind.initializeInstances(marsClock);
 		CircadianClock.initializeInstances(marsClock);
 		Mind.initializeInstances(marsClock, this, missionManager, relationshipManager);		
-		PhysicalCondition.initializeInstances(masterClock, marsClock, medicalManager);
+		PhysicalCondition.initializeInstances(this, masterClock, marsClock, medicalManager);
 		RadiationExposure.initializeInstances(masterClock, marsClock);
 		Role.initializeInstances(marsClock);
 		TaskManager.initializeInstances(marsClock, missionManager);

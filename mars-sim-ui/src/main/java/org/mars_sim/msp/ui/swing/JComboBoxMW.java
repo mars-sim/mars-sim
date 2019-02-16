@@ -11,13 +11,12 @@ import java.awt.event.MouseWheelListener;
 import java.util.Vector;
 
 import javax.swing.ComboBoxModel;
-
-import com.alee.laf.combobox.WebComboBox;
+import javax.swing.JComboBox;
 
 /**
  * A Combobox that is mousewheel-enabled.
  */
-public class JComboBoxMW<T> extends WebComboBox implements MouseWheelListener {
+public class JComboBoxMW<T> extends JComboBox implements MouseWheelListener {
 
 //	private static final long serialVersionUID = -3527247980947082803L;
 

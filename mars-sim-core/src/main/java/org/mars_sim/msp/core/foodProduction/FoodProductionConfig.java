@@ -61,7 +61,6 @@ public class FoodProductionConfig implements Serializable {
      * @return list of manufacturing process information.
      * @throws Exception if error getting info.
      */
-    @SuppressWarnings("unchecked")
     public List<FoodProductionProcessInfo> getFoodProductionProcessList() {
 
         if (foodproductionProcessList == null) {

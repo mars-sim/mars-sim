@@ -71,8 +71,6 @@ import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindowFactory;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindowListener;
 
-import com.alee.laf.desktoppane.WebInternalFrame;
-
 /**
  * The MainDesktopPane class is the desktop part of the project's UI. It
  * contains all tool and unit windows, and is itself contained, along with the
@@ -256,8 +254,8 @@ public class MainDesktopPane extends JDesktopPane
 
 	public void updateWebToolWindow() {
 //		logger.config("updateToolWindow()");
-		WebInternalFrame[] frames = (WebInternalFrame[]) this.getAllFrames();
-		for (WebInternalFrame f : frames) {
+		JInternalFrame[] frames = (JInternalFrame[]) this.getAllFrames();
+		for (JInternalFrame f : frames) {
 			f.updateUI();
 		}
 	}
@@ -1000,7 +998,7 @@ public class MainDesktopPane extends JDesktopPane
 
 	}
 
-	private Point getCenterLocation(WebInternalFrame tempWindow) {
+	private Point getCenterLocation(JInternalFrame tempWindow) {
 
 		Dimension desktop_size = getSize();
 		Dimension window_size = tempWindow.getSize();

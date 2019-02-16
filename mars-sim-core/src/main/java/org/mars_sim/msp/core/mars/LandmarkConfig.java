@@ -52,7 +52,6 @@ public class LandmarkConfig implements Serializable {
 	 * @return list of landmarks
 	 * @throws Exception when landmarks can not be parsed.
 	 */
-	@SuppressWarnings("unchecked")
 	public List<Landmark> getLandmarkList() {
 
 		if (landmarkList == null) {

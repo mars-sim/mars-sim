@@ -75,7 +75,6 @@ public class ResupplyConfig implements Serializable {
      * @param resupplyDoc DOM document for resupply configuration.
      * @param partPackageConfig the part package configuration.
      */
-    @SuppressWarnings("unchecked")
     private void loadResupplyTemplates(Document resupplyDoc,
             PartPackageConfig partPackageConfig) {
 
