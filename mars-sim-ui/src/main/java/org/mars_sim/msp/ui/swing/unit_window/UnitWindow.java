@@ -8,7 +8,6 @@
 package org.mars_sim.msp.ui.swing.unit_window;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -19,9 +18,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.swing.ImageIcon;
+import javax.swing.JTabbedPane;
 import javax.swing.SwingConstants;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
@@ -30,11 +28,9 @@ import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.TaskSchedule;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.MainWindow;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.ModalInternalFrame;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
-import org.mars_sim.msp.ui.swing.tool.LookAndFeelFactory;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfo;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 
@@ -43,7 +39,10 @@ import com.alee.laf.panel.WebPanel;
 import com.alee.managers.tooltip.TooltipManager;
 import com.alee.managers.tooltip.TooltipWay;
 //import com.jidesoft.plaf.LookAndFeelFactory;
-import com.jidesoft.swing.JideTabbedPane;
+//import com.jidesoft.swing.JideTabbedPane;
+//import org.mars_sim.msp.ui.swing.tool.JideTabbedPane;
+//import org.mars_sim.msp.ui.swing.tool.LookAndFeelFactory;
+
 
 /**
  * The UnitWindow is the base window for displaying units.
@@ -90,8 +89,8 @@ public abstract class UnitWindow extends ModalInternalFrame {
 	/** The tab panels. */
 	private Collection<TabPanel> tabPanels;
 	/** The center panel. */
-	// private JTabbedPane tabPanel;
-	private JideTabbedPane tabPanel;
+	private JTabbedPane tabPanel;
+//	private JideTabbedPane tabPanel;
 	// private JTabbedPane tabPanel;
 
 	/** Main window. */
@@ -141,7 +140,7 @@ public abstract class UnitWindow extends ModalInternalFrame {
 			statusPanel.setPreferredSize(new Dimension(WIDTH / 8, 60));
 		}
 
-		int theme = 0;
+//		int theme = 0;
 //		if (mainScene != null) {
 //			theme = MainScene.getTheme();
 //			if (themeCache != theme) {
@@ -153,7 +152,7 @@ public abstract class UnitWindow extends ModalInternalFrame {
 //		}
 //
 //		else
-			theme = 7;
+//			theme = 7;
 
 		if (unit instanceof Person) {
 
@@ -249,46 +248,47 @@ public abstract class UnitWindow extends ModalInternalFrame {
 //		LookAndFeelFactory.installJideExtension(LookAndFeelFactory.OFFICE2003_STYLE);
 //		tabPanel.setColorTheme(JideTabbedPane.COLOR_THEME_OFFICE2003); // COLOR_THEME_VSNET);
 		
-		if (MainWindow.OS.contains("linux")) {
-			try {
-				UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
-			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (InstantiationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (UnsupportedLookAndFeelException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			LookAndFeelFactory.installJideExtension(UIManager.getLookAndFeelDefaults(), UIManager.getLookAndFeel(), LookAndFeelFactory.VSNET_STYLE);////.installDefaultLookAndFeelAndExtension(); //installJideExtension(LookAndFeelFactory.ECLIPSE_STYLE);//.EXTENSION_STYLE_XERTO);//
-		}
-		
-		else
-			LookAndFeelFactory.installJideExtension(LookAndFeelFactory.VSNET_STYLE);
+//		if (MainWindow.OS.contains("linux")) {
+//			try {
+//				UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
+//			} catch (ClassNotFoundException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			} catch (InstantiationException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			} catch (IllegalAccessException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			} catch (UnsupportedLookAndFeelException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//			
+//			LookAndFeelFactory.installJideExtension(UIManager.getLookAndFeelDefaults(), UIManager.getLookAndFeel(), LookAndFeelFactory.VSNET_STYLE);////.installDefaultLookAndFeelAndExtension(); //installJideExtension(LookAndFeelFactory.ECLIPSE_STYLE);//.EXTENSION_STYLE_XERTO);//
+//		}
+//		
+//		else
+//			LookAndFeelFactory.installJideExtension(LookAndFeelFactory.VSNET_STYLE);
 		
 //		logger.config(UIManager.getLookAndFeel().getName() + " is used in MainWindow.");
 		
-		tabPanel = new JideTabbedPane();
-	
-//		tabPanel.setColorTheme(JideTabbedPane.COLOR_THEME_VSNET);
-	
-		tabPanel.setPreferredSize(new Dimension(WIDTH - 15, 512));
-		tabPanel.setBorder(null);
+//		tabPanel = new JideTabbedPane();
+////		tabPanel.setColorTheme(JideTabbedPane.COLOR_THEME_VSNET);
+//		tabPanel.setPreferredSize(new Dimension(WIDTH - 15, 512));
+//		tabPanel.setBorder(null);
+//
+//		tabPanel.setBoldActiveTab(true);
+//		tabPanel.setScrollSelectedTabOnWheel(true);
+//		tabPanel.setTabShape(JideTabbedPane.SHAPE_WINDOWS_SELECTED);
+//		
+//		// Setting foreground color for tab text.
+//		tabPanel.setForeground(Color.DARK_GRAY);
+//		tabPanel.setTabPlacement(JideTabbedPane.LEFT);
 
-		tabPanel.setBoldActiveTab(true);
-		tabPanel.setScrollSelectedTabOnWheel(true);
-		tabPanel.setTabShape(JideTabbedPane.SHAPE_WINDOWS_SELECTED);
+		tabPanel = new JTabbedPane();
+		tabPanel.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
 		
-		// Setting foreground color for tab text.
-		tabPanel.setForeground(Color.DARK_GRAY);
-		tabPanel.setTabPlacement(JideTabbedPane.LEFT);
-
 		WebPanel centerPanel = new WebPanel(new FlowLayout(FlowLayout.LEFT));
 		centerPanel.add(tabPanel);
 		centerPanel.setPreferredSize(new Dimension(WIDTH - 5, 512));
