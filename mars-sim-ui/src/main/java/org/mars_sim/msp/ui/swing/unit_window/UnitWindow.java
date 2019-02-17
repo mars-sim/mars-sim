@@ -52,7 +52,7 @@ public abstract class UnitWindow extends ModalInternalFrame {
 	// private static final int BLUR_SIZE = 7;
 
 	public static final int WIDTH = 480;// 512;
-	public static final int HEIGHT = 625;//605;
+	public static final int HEIGHT = 605;//605;
 
 	// private BufferedImage image;
 	public static final String USER = Msg.getString("icon.user");
@@ -287,11 +287,12 @@ public abstract class UnitWindow extends ModalInternalFrame {
 //		tabPanel.setTabPlacement(JideTabbedPane.LEFT);
 
 		tabPanel = new JTabbedPane();
+		tabPanel.setPreferredSize(new Dimension(WIDTH - 35, HEIGHT - 120));
 		tabPanel.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
 		
 		WebPanel centerPanel = new WebPanel(new FlowLayout(FlowLayout.LEFT));
 		centerPanel.add(tabPanel);
-		centerPanel.setPreferredSize(new Dimension(WIDTH - 5, 512));
+		centerPanel.setPreferredSize(new Dimension(WIDTH - 25, HEIGHT - 120));
 
 		// update();
 

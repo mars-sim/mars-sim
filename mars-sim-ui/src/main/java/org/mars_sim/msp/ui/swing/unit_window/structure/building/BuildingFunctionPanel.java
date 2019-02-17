@@ -41,7 +41,8 @@ public abstract class BuildingFunctionPanel extends WebPanel {
 		this.desktop = desktop;
 
 		this.setMaximumSize(new Dimension(UnitWindow.WIDTH, UnitWindow.HEIGHT));
-
+		this.setPreferredSize(new Dimension(WIDTH, HEIGHT));
+		
 		setBorder(new MarsPanelBorder());
 	}
 

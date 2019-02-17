@@ -129,7 +129,8 @@ public class BuildingPanel extends WebPanel {
 
 		setLayout(new BorderLayout(0, 5));
 		this.setMaximumSize(new Dimension(UnitWindow.WIDTH, UnitWindow.HEIGHT));
-
+		this.setPreferredSize(new Dimension(WIDTH, HEIGHT));
+		
 		namePanel = new WebPanel(new GridLayout(2, 1, 0, 0));
 		buildingNameLabel = new WebLabel(building.getNickName(), WebLabel.CENTER);
 		buildingNameLabel.setFont(new Font("Serif", Font.BOLD, 16));

@@ -289,7 +289,7 @@ extends TabPanel {
 		public String getColumnName(int columnIndex) {
 			if (columnIndex == 0) return Msg.getString("TabPanelScience.column.study"); //$NON-NLS-1$
 			else if (columnIndex == 1) return Msg.getString("TabPanelScience.column.role"); //$NON-NLS-1$
-			else if (columnIndex == 2) return Msg.getString("TabPanelScience.column.status"); //$NON-NLS-1$
+			else if (columnIndex == 2) return Msg.getString("TabPanelScience.column.phase"); //$NON-NLS-1$
 			else return null;
 		}
 
