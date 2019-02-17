@@ -15,9 +15,7 @@
  */
 package org.mars_sim.msp.core.terminal;
 
-import org.beryx.textio.*;
-import org.mars_sim.msp.core.terminal.AppUtil;
-import org.mars_sim.msp.core.terminal.RunnerData;
+import static org.beryx.textio.ReadInterruptionStrategy.Action.ABORT;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +23,11 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import static org.beryx.textio.ReadInterruptionStrategy.Action.ABORT;
+import org.beryx.textio.ReadAbortedException;
+import org.beryx.textio.ReadHandlerData;
+import org.beryx.textio.TextIO;
+import org.beryx.textio.TextIoFactory;
+import org.beryx.textio.TextTerminal;
 
 /**
  * Illustrates how to use read handlers to allow going back to a previous field.

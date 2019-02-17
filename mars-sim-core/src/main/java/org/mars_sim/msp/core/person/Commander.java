@@ -9,10 +9,10 @@ package org.mars_sim.msp.core.person;
 
 import java.io.Serializable;
 
-import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.ai.job.JobType;
+import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 
 public class Commander implements Serializable {
 
@@ -148,7 +148,7 @@ public class Commander implements Serializable {
     public String getSponsor() {
     	String s = null;	
     	if (isMarsSocietyAffiliated) {
-    		s = Msg.getString("ReportingAuthorityType.long.MarsSociety");
+    		s = ReportingAuthorityType.MARS_SOCIETY_L.getName();//Msg.getString("ReportingAuthorityType.long.MS");
     	}
     	else {
     		if (!countryStr.equals(""))

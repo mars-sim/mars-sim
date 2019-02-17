@@ -21,7 +21,7 @@ public enum ReportingAuthorityType {
 	NASA				(Msg.getString("ReportingAuthorityType.NASA")), //$NON-NLS-1$
 	RKA					(Msg.getString("ReportingAuthorityType.RKA")), //$NON-NLS-1$
 	ESA					(Msg.getString("ReportingAuthorityType.ESA")), //$NON-NLS-1$
-	MARS_SOCIETY		(Msg.getString("ReportingAuthorityType.MS")), //$NON-NLS-1$
+	MS					(Msg.getString("ReportingAuthorityType.MS")), //$NON-NLS-1$
 	SPACEX				(Msg.getString("ReportingAuthorityType.SpaceX")), //$NON-NLS-1$
 	
 	CNSA_L				(Msg.getString("ReportingAuthorityType.long.CNSA")), //$NON-NLS-1$
@@ -44,7 +44,7 @@ public enum ReportingAuthorityType {
 			NASA,
 			RKA,
 			ESA,
-			MARS_SOCIETY,
+			MS,
 			SPACEX
 			};
 

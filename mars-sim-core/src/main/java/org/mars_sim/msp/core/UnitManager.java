@@ -2206,7 +2206,7 @@ public class UnitManager implements Serializable {
 		else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.ESA
 			||	ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.ESA_L)
 			return countries.get(RandomUtil.getRandomInt(6, 27));
-		else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.MARS_SOCIETY
+		else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.MS
 			||	ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.MARS_SOCIETY_L)
 			return "USA";
 		else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.SPACEX
@@ -2294,12 +2294,16 @@ public class UnitManager implements Serializable {
 //	}
 
 	public static int getCountryID(String country) {
+		if (personConfig == null)
+			personConfig = SimulationConfig.instance().getPersonConfiguration();
 		if (countries == null)
 			countries = personConfig.createCountryList();
 		return countries.indexOf(country);
 	}
 
 	public static List<String> getCountryList() {
+		if (personConfig == null)
+			personConfig = SimulationConfig.instance().getPersonConfiguration();
 		if (countries == null)
 			countries = personConfig.createCountryList();
 		return countries;

@@ -22,7 +22,7 @@ implements Serializable {
 
 	//private final String name = "MS";
 
-	private final ReportingAuthorityType org = ReportingAuthorityType.MARS_SOCIETY;
+	private final ReportingAuthorityType org = ReportingAuthorityType.MS;
 
 	private final String toolTipStr = "Mars Society";
 

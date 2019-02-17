@@ -7,17 +7,7 @@
 
 package org.mars_sim.msp.core.terminal;
 
-import org.beryx.textio.ReadAbortedException;
-import org.beryx.textio.ReadHandlerData;
-import org.beryx.textio.ReadInterruptionStrategy;
-import org.beryx.textio.TextIO;
-import org.beryx.textio.swing.SwingTextTerminal;
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.UnitManager;
-import org.mars_sim.msp.core.person.Commander;
-import org.mars_sim.msp.core.person.PersonConfig;
-import org.mars_sim.msp.core.person.ai.job.JobType;
+import static org.beryx.textio.ReadInterruptionStrategy.Action.ABORT;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -31,7 +21,17 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.logging.Logger;
 
-import static org.beryx.textio.ReadInterruptionStrategy.Action.ABORT;
+import org.beryx.textio.ReadAbortedException;
+import org.beryx.textio.ReadHandlerData;
+import org.beryx.textio.ReadInterruptionStrategy;
+import org.beryx.textio.TextIO;
+import org.beryx.textio.swing.SwingTextTerminal;
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.person.Commander;
+import org.mars_sim.msp.core.person.PersonConfig;
+import org.mars_sim.msp.core.person.ai.job.JobType;
 
 /**
  * The class for setting up a customized commander profile. It reads handlers and allow going back to the previous field.

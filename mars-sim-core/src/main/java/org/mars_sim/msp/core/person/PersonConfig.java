@@ -15,7 +15,6 @@ import java.util.Map;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
-import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 
 /**
@@ -265,7 +264,7 @@ public class PersonConfig implements Serializable {
 				else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.ESA
 						|| ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.ESA_L)
 					sponsors.get(6).add(name);
-				else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.MARS_SOCIETY
+				else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.MS
 						|| ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.MARS_SOCIETY_L)
 					sponsors.get(7).add(name);
 				else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.SPACEX
@@ -665,7 +664,7 @@ public class PersonConfig implements Serializable {
 //					type = ReportingAuthorityType.JAXA;
 
 				if (sponsor.contains("Mars Society") || sponsor.contains("MS"))
-					type = ReportingAuthorityType.MARS_SOCIETY;
+					type = ReportingAuthorityType.MS;
 
 //				else if (sponsor.equals("NASA"))
 //					type = ReportingAuthorityType.NASA;
@@ -1686,46 +1685,6 @@ public class PersonConfig implements Serializable {
 		return countries.indexOf(country);
 	}
 
-//	public String convert2Sponsor(int id) {
-//
-//		if (id == 0) {
-//			return Msg.getString("ReportingAuthorityType.CNSA");
-//		} else if (id == 1) {
-//			return Msg.getString("ReportingAuthorityType.CSA");
-//		} else if (id == 2) {
-//			return Msg.getString("ReportingAuthorityType.ISRO");
-//		} else if (id == 3) {
-//			return Msg.getString("ReportingAuthorityType.JAXA");
-//		} else if (id == 4) {
-//			return Msg.getString("ReportingAuthorityType.NASA");
-//		} else if (id == 5) {
-//			return Msg.getString("ReportingAuthorityType.RKA");
-//		} else {
-//			return Msg.getString("ReportingAuthorityType.ESA");
-//		}
-//
-//	}
-
-//	public String getSponsorFromCountry(String c) {
-//
-//		if (c.equalsIgnoreCase("China")) {
-//			return Msg.getString("ReportingAuthorityType.CNSA");
-//		} else if (c.equalsIgnoreCase("Canada")) {
-//			return Msg.getString("ReportingAuthorityType.CSA");
-//		} else if (c.equalsIgnoreCase("India")) {
-//			return Msg.getString("ReportingAuthorityType.ISRO");
-//		} else if (c.equalsIgnoreCase("Japan")) {
-//			return Msg.getString("ReportingAuthorityType.JAXA");
-//		} else if (c.equalsIgnoreCase("USA")) {
-//			return Msg.getString("ReportingAuthorityType.NASA");
-//		} else if (c.equalsIgnoreCase("Russia")) {
-//			return Msg.getString("ReportingAuthorityType.RKA");
-//		} else {
-//			return Msg.getString("ReportingAuthorityType.ESA");
-//		}
-//
-//	}
-
 	/**
 	 * Create sponsor list
 	 * 
@@ -1736,15 +1695,14 @@ public class PersonConfig implements Serializable {
 		if (longSponsors == null) {
 			longSponsors = new ArrayList<>();
 
-			longSponsors.add(Msg.getString("ReportingAuthorityType.long.CNSA"));
-			longSponsors.add(Msg.getString("ReportingAuthorityType.long.CSA"));
-			longSponsors.add(Msg.getString("ReportingAuthorityType.long.ISRO"));
-			longSponsors.add(Msg.getString("ReportingAuthorityType.long.JAXA"));
-			longSponsors.add(Msg.getString("ReportingAuthorityType.long.NASA"));
-			longSponsors.add(Msg.getString("ReportingAuthorityType.long.RKA"));
-			longSponsors.add(Msg.getString("ReportingAuthorityType.long.ESA"));
-			longSponsors.add(Msg.getString("ReportingAuthorityType.long.MarsSociety"));
-
+			longSponsors.add(ReportingAuthorityType.CNSA_L.getName());
+			longSponsors.add(ReportingAuthorityType.CSA_L.getName());
+			longSponsors.add(ReportingAuthorityType.ISRO_L.getName());
+			longSponsors.add(ReportingAuthorityType.JAXA_L.getName());
+			longSponsors.add(ReportingAuthorityType.NASA_L.getName());
+			longSponsors.add(ReportingAuthorityType.RKA_L.getName());
+			longSponsors.add(ReportingAuthorityType.ESA_L.getName());
+			longSponsors.add(ReportingAuthorityType.MARS_SOCIETY_L.getName());
 		}
 
 		return longSponsors;
@@ -1760,14 +1718,14 @@ public class PersonConfig implements Serializable {
 		if (sponsors == null) {
 			sponsors = new ArrayList<>();
 
-			sponsors.add(Msg.getString("ReportingAuthorityType.CNSA"));
-			sponsors.add(Msg.getString("ReportingAuthorityType.CSA"));
-			sponsors.add(Msg.getString("ReportingAuthorityType.ISRO"));
-			sponsors.add(Msg.getString("ReportingAuthorityType.JAXA"));
-			sponsors.add(Msg.getString("ReportingAuthorityType.NASA"));
-			sponsors.add(Msg.getString("ReportingAuthorityType.RKA"));
-			sponsors.add(Msg.getString("ReportingAuthorityType.ESA"));
-			sponsors.add(Msg.getString("ReportingAuthorityType.MS"));
+			sponsors.add(ReportingAuthorityType.CNSA.getName());
+			sponsors.add(ReportingAuthorityType.CSA.getName());
+			sponsors.add(ReportingAuthorityType.ISRO.getName());
+			sponsors.add(ReportingAuthorityType.JAXA.getName());
+			sponsors.add(ReportingAuthorityType.NASA.getName());
+			sponsors.add(ReportingAuthorityType.RKA.getName());
+			sponsors.add(ReportingAuthorityType.ESA.getName());
+			sponsors.add(ReportingAuthorityType.MS.getName());
 		}
 
 		return sponsors;

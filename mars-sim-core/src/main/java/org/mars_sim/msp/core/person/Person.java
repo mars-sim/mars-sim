@@ -535,7 +535,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 			} else if (sponsor.contains(ReportingAuthorityType.NASA.getName())) {
 				ra = NASAMissionControl.createMissionControl(); // FindingLife
 
-			} else if (sponsor.contains(ReportingAuthorityType.MARS_SOCIETY.getName())) {
+			} else if (sponsor.contains(ReportingAuthorityType.MS.getName())) {
 				ra = MarsSocietyMissionControl.createMissionControl(); // SettlingMars
 
 			} else if (sponsor.contains(ReportingAuthorityType.RKA.getName())) {
