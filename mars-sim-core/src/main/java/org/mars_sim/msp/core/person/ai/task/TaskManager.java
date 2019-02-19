@@ -210,11 +210,20 @@ public class TaskManager implements Serializable {
 		} else
 			return "";
 	}
-	/*
-	 * public FunctionType getFunction(boolean subTask) { if (currentTask != null &&
-	 * currentTask.getFunction(subTask) != null) { return
-	 * currentTask.getFunction(subTask); } else { return FunctionType.UNKNOWN; } }
-	 */
+	
+	
+//	public FunctionType getFunction(boolean subTask) {
+//		if (currentTask != null &&
+//			currentTask.getFunction(subTask) != null) {
+//			return
+//					currentTask.getFunction(subTask); 
+//		}
+//					
+//		else {
+//			return FunctionType.UNKNOWN; 
+//		} 
+//	}
+	
 
 	/**
 	 * Returns the current task phase if there is one. Returns null if current task

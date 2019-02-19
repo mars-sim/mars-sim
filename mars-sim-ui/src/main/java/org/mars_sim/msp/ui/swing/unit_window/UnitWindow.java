@@ -28,6 +28,7 @@ import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.TaskSchedule;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.MainWindow;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.ModalInternalFrame;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
@@ -76,10 +77,14 @@ public abstract class UnitWindow extends ModalInternalFrame {
 	// private static final String DETAILS_ICON = Msg.getString("icon.details");
 
 	// Data members
-	private int themeCache = -1;
+//	private int themeCache = -1;
 
-	private String oldRoleString = "", oldJobString = "", oldTownString = "";
+	private String oldRoleString = "";
+	private String oldJobString = "";
+	private String oldTownString = "";
+	
 	private ShiftType oldShiftType = null;
+	
 	private WebLabel townLabel;
 	private WebLabel jobLabel;
 	private WebLabel roleLabel;
@@ -91,14 +96,10 @@ public abstract class UnitWindow extends ModalInternalFrame {
 	/** The center panel. */
 	private JTabbedPane tabPanel;
 //	private JideTabbedPane tabPanel;
-	// private JTabbedPane tabPanel;
-
 	/** Main window. */
 	protected MainDesktopPane desktop;
 	/** Unit for this window. */
 	protected Unit unit;
-//	protected SlidePaneFactory factory;
-//	protected MainScene mainScene;
 
 	/**
 	 * Constructor
@@ -113,7 +114,6 @@ public abstract class UnitWindow extends ModalInternalFrame {
 
 		// Initialize data members
 		this.desktop = desktop;
-//		mainScene = desktop.getMainScene();
 		this.unit = unit;
 
 		this.setMaximumSize(new Dimension(WIDTH, HEIGHT));
@@ -161,11 +161,11 @@ public abstract class UnitWindow extends ModalInternalFrame {
 
 			Font font = null;
 
-//			if (MainScene.OS.contains("linux")) {
-//				new Font("DIALOG", Font.BOLD, 8);
-//			} else {
+			if (MainWindow.OS.contains("linux")) {
+				new Font("DIALOG", Font.BOLD, 8);
+			} else {
 				new Font("DIALOG", Font.BOLD, 10);
-//			}
+			}
 			nameLabel.setAlignmentX(Component.LEFT_ALIGNMENT);// .CENTER_ALIGNMENT);
 			nameLabel.setAlignmentY(Component.TOP_ALIGNMENT);
 			nameLabel.setFont(font);
@@ -239,7 +239,6 @@ public abstract class UnitWindow extends ModalInternalFrame {
 				statusPanel.add(rowPanel);
 				rowPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-//	            }
 			}
 
 			// factory.add(centerPanel, DETAILS, getImage(DETAILS_ICON), true);
@@ -297,7 +296,9 @@ public abstract class UnitWindow extends ModalInternalFrame {
 		// update();
 
 		mainPane.add(centerPanel, BorderLayout.CENTER);
-		// add focusListener to play sounds and alert users of critical conditions.
+		
+		
+		// TODO: add focusListener to play sounds and alert users of critical conditions.
 
 		// TODO: disabled in SVN while in development
 		// this.addInternalFrameListener(new
@@ -329,10 +330,10 @@ public abstract class UnitWindow extends ModalInternalFrame {
 		String townString = null;
 
 		if (p.getPhysicalCondition().isDead())
-			townString = DEAD;// + p.getBuriedSettlement();
+			townString = DEAD;
 		else
 			townString = Conversion.capitalize(unit.getDescription());
-		// System.out.println("Description is : " + text);
+
 		if (!oldTownString.equals(townString)) {
 			oldJobString = townString;
 			if (townString.length() > 40)

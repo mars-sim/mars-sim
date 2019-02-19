@@ -68,6 +68,8 @@ public class ClockUtils implements Serializable {
 	private static final String ZERO_MINUTES = "00m ";
 	private static final String SECONDS = "s";
 
+	private static DecimalFormat fmt = new DecimalFormat("##.###");
+	
 	/**
 	 * Constructor
 	 */
@@ -106,9 +108,9 @@ public class ClockUtils implements Serializable {
 
 		String output = convertSecs2MarsDate(s_since_1970);
 
-		// For sanity check, calculate backward to validate if 0015-Adir-01 corresponds
+		// For sanity check, calculate backward to validate if 15-Adir-01 corresponds
 		// to September 30, 2043
-		logger.info("0015-Adir-01 corresponds to " + output);
+		logger.info("15-Adir-01 corresponds to " + output);
 		// 0015-Adir-01 corresponds to Wednesday, September 30, 2043 at 12:00:00 AM
 		// Coordinated Universal Time
 
@@ -116,7 +118,7 @@ public class ClockUtils implements Serializable {
 
 		output = convertSecs2MarsDate(delta);
 
-		logger.info("0000-Adir-01 corresponds to " + output);
+		logger.info("00-Adir-01 corresponds to " + output);
 		// 0001-Adir-01 corresponds to Wednesday, May 31, 2017 at 9:13:45 AM Coordinated
 		// Universal Time
 		// 0000-Adir-01 corresponds to Tuesday, July 14, 2015 at 9:53:18 AM Coordinated
@@ -140,7 +142,7 @@ public class ClockUtils implements Serializable {
 	/**
 	 * Convert from the number of seconds since 1970 Jan 1
 	 * 
-	 * @return String the Mars date in standard format yyyy-month-dd
+	 * @return String the Mars date in standard format yy-month-dd
 	 */
 	public static String convertSecs2MarsDate(long s) {
 		// Based on
@@ -611,8 +613,6 @@ public class ClockUtils implements Serializable {
 //		double seconds = Math.round(10.0*((s - hours) * 3600 - minutes * 60))/10.0; // 24 ok
 		double seconds = (s - hours) * 3600 - minutes * 60; // 24 ok
 
-		DecimalFormat fmt = new DecimalFormat("##.###");
-
 		if (s < 0) {
 			minutes = -minutes;
 			String ss = null;
@@ -650,10 +650,10 @@ public class ClockUtils implements Serializable {
 	 */
 	public static String getFormattedMillisolString(double s) {
 
-		DecimalFormat fmt = new DecimalFormat("###.###");
+//		DecimalFormat fmt = new DecimalFormat("###.###");
 		s = s * 3_600_000.0 / SECONDS_PER_SOLAR_DAY_ON_MARS ;
 
-		return fmt.format(s);
+		return new DecimalFormat("###.###").format(s);
 
 	}
 	

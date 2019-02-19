@@ -168,7 +168,7 @@ public class MarsClock implements Serializable {
 //		earthClock = sim.getMasterClock().getEarthClock();
 		orbitInfo = sim.getMars().getOrbitInfo();
 
-		// Set initial date to dateString. ex: "0000-Adir-01 000.000"
+		// Set initial date to dateString. ex: "00-Adir-01 000.000"
 		String orbitStr = dateString.substring(0, dateString.indexOf(DASH));
 		orbit = Integer.parseInt(orbitStr);
 		if (orbit < 0)
@@ -555,7 +555,7 @@ public class MarsClock implements Serializable {
 	}
 
 	/**
-	 * Returns formatted time stamp string in the format of e.g. "0013-Adir-05:056.349"
+	 * Returns formatted time stamp string in the format of e.g. "03-Adir-05:056.349"
 	 *
 	 * @return formatted time stamp string
 	 */
@@ -564,7 +564,7 @@ public class MarsClock implements Serializable {
 	}
 
 	/**
-	 * Returns formatted time stamp string in the format of e.g. "0013-Adir-05:056.349"
+	 * Returns formatted time stamp string in the format of e.g. "03-Adir-05:056.349"
 	 *
 	 * @return formatted time stamp string
 	 */
@@ -573,7 +573,7 @@ public class MarsClock implements Serializable {
 	}
 	
 	/**
-	 * Returns formatted time stamp string in the format of "0013-Adir-05:056.434"
+	 * Returns formatted time stamp string in the format of "03-Adir-05:056.434"
 	 * 
 	 * @param time {@link MarsClock} instance
 	 * @return formatted String
@@ -583,7 +583,7 @@ public class MarsClock implements Serializable {
 	}
 	
 	/**
-	 * Returns a truncated time stamp string in the format of "0013-Adir-05:056"
+	 * Returns a truncated time stamp string in the format of "03-Adir-05:056"
 	 * 
 	 * @param time {@link MarsClock} instance
 	 * @return formatted String
@@ -593,7 +593,7 @@ public class MarsClock implements Serializable {
 	}
 	
 	/**
-	 * Gets the current date string in the format of e.g. "0013-Adir-05"
+	 * Gets the current date string in the format of e.g. "03-Adir-05"
 	 *
 	 * @return current date string
 	 */
@@ -601,13 +601,16 @@ public class MarsClock implements Serializable {
 		StringBuilder result = new StringBuilder();
 
 		// Append padding zeros to orbit
-		if (orbit < 10) // then 000x
-			result.append(THREE_ZEROS);
-		else if (orbit < 100) // then 00xx
-			result.append(TWO_ZEROS);
-		else if (orbit < 1000) // then 0xxx
-			result.append(ONE_ZERO);
+//		if (orbit < 10) // then 000x
+//			result.append(THREE_ZEROS);
+//		else if (orbit < 100) // then 00xx
+//			result.append(TWO_ZEROS);
+//		else if (orbit < 1000) // then 0xxx
+//			result.append(ONE_ZERO);
 
+		if (orbit < 10) // then 0x
+			result.append(ONE_ZERO);
+		
 		result.append(orbit).append(DASH).append(getMonthName()).append(DASH);
 
 		if (sol < 10)
@@ -619,7 +622,7 @@ public class MarsClock implements Serializable {
 	}
 
 	/**
-	 * Gets the current orbit string in the format of e.g. "0013"
+	 * Gets the current orbit string in the format of e.g. "03"
 	 *
 	 * @return current orbit string
 	 */
@@ -627,20 +630,23 @@ public class MarsClock implements Serializable {
 		StringBuilder s = new StringBuilder();
 
 		// Append padding zeros to orbit
-		if (orbit < 10) // then 000x
-			s.append(THREE_ZEROS);
-		else if (orbit < 100) // then 00xx
-			s.append(TWO_ZEROS);
-		else if (orbit < 1000) // then 0xxx
-			s.append(ONE_ZERO);
+//		if (orbit < 10) // then 000x
+//			s.append(THREE_ZEROS);
+//		else if (orbit < 100) // then 00xx
+//			s.append(TWO_ZEROS);
+//		else if (orbit < 1000) // then 0xxx
+//			s.append(ONE_ZERO);
 
+		if (orbit < 10) // then 0x
+			s.append(ONE_ZERO);
+		
 		s.append(orbit);
 
 		return s.toString();
 	}
 
 	/**
-	 * Gets the date string in the format of e.g. "0013-Adir-05"
+	 * Gets the date string in the format of e.g. "03-Adir-05"
 	 * 
 	 * @param time {@link MarsClock} instance
 	 * @return date string
@@ -659,6 +665,9 @@ public class MarsClock implements Serializable {
 		else if (orbit < 1000) // then 0xxx
 			s.append(ONE_ZERO);
 
+		if (orbit < 10) // then 0x
+			s.append(ONE_ZERO);
+		
 		// Append orbit
 		s.append(orbit).append(DASH).append(month).append(DASH);
 
@@ -692,7 +701,7 @@ public class MarsClock implements Serializable {
 //		else if (millisol < 1000D)
 //			s.insert(0, ONE_ZERO);
 
-		return s.append(UMST).toString();
+		return s.toString(); // .append(UMST)
 	}
 
 	/**

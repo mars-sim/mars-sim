@@ -21,6 +21,7 @@ public class JobHistory implements Serializable  {
     private static final long serialVersionUID = 1L;
 
 	//private static transient Logger logger = Logger.getLogger(JobHistory.class.getName());
+    
     private int solCache;
     
 	private Person person;
@@ -32,23 +33,34 @@ public class JobHistory implements Serializable  {
 		this.person = person;
 
 		jobAssignmentList = new CopyOnWriteArrayList<JobAssignment>();
-//		masterClock = Simulation.instance().getMasterClock();
 	}
 
 	public List<JobAssignment> getJobAssignmentList() {
 		return jobAssignmentList;
 	}
-
-    /**
-     * Saves the new job assignment for a person.
-     */
+	
+	/**
+	 * Saves the new job assignment for a person.
+	 * 
+	 * @param newJob
+	 * @param initiator
+	 * @param status
+	 * @param approvedBy
+	 * @param addNewJobAssignment
+	 */
     public void saveJob(Job newJob, String initiator, JobAssignmentType status, String approvedBy, boolean addNewJobAssignment) {
     	String newJobStr = newJob.getName(person.getGender());
     	addJob(newJobStr, initiator, status, approvedBy, addNewJobAssignment);
     }
-
+    
     /**
      * Saves a pending new job assignment for a person.
+     * 
+     * @param newJobStr
+     * @param initiator
+     * @param status
+     * @param approvedBy
+     * @param addAssignment
      */
     public void savePendingJob(String newJobStr, String initiator, JobAssignmentType status, String approvedBy, boolean addAssignment) {
     	// Note: initiator is "User", status is "Pending", approvedBy is "null", addAssignment is true
@@ -60,6 +72,12 @@ public class JobHistory implements Serializable  {
 
     /**
      * Adds the new job to the job assignment list
+     * 
+     * @param newJobStr
+     * @param initiator
+     * @param status
+     * @param approvedBy
+     * @param addNewJobAssignment
      */
     public void addJob(String newJobStr, String initiator, JobAssignmentType status, String approvedBy, boolean addNewJobAssignment) {
     	// at the start of sim OR for a pop <= 4 settlement in which approvedBy = "User"
@@ -75,6 +93,7 @@ public class JobHistory implements Serializable  {
      		jobAssignmentList.add(new JobAssignment(newJobStr, initiator, status, approvedBy));
         	jobAssignmentList.get(last).setSolSubmitted();
      	}
+    	
     	else {
       		int last = jobAssignmentList.size() - 1;
 			// Obtain last entry's lastJobStr

@@ -579,7 +579,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 				// Added checking if user submitted a job rating 
 				checkingJobRating(list);
 
-				// Added checking for the status of Job Reassignment
+				// Check for the status of Job Reassignment
 				checkingJobReassignment(person, list);
 
 				// check for the passing of each day

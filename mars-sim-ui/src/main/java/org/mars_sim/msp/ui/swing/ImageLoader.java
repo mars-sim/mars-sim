@@ -126,8 +126,8 @@ public class ImageLoader {
 				usedToolkit = Toolkit.getDefaultToolkit();
 			}
 			/* [landrus, 26.11.09]: don't use the system classloader in a webstart env. */
-			URL imageURL = ImageLoader.class.getResource(IMAGE_DIR + imagename);// ClassLoader.getSystemResource(IMAGE_DIR
-																				// + imagename);
+			URL imageURL = ImageLoader.class.getResource(IMAGE_DIR + imagename);
+			// ClassLoader.getSystemResource(IMAGE_DIR + imagename);
 
 			newImage = usedToolkit.createImage(imageURL);
 			imageCache.put(imagename, newImage);
