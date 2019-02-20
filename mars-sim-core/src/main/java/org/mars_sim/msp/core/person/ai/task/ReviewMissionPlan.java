@@ -25,6 +25,7 @@ import org.mars_sim.msp.core.person.ai.mission.BiologyStudyFieldMission;
 import org.mars_sim.msp.core.person.ai.mission.CollectRegolith;
 import org.mars_sim.msp.core.person.ai.mission.EmergencySupplyMission;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
+import org.mars_sim.msp.core.person.ai.mission.MeteorologyStudyFieldMission;
 import org.mars_sim.msp.core.person.ai.mission.Mining;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionPlanning;
@@ -223,6 +224,9 @@ public class ReviewMissionPlan extends Task implements Serializable {
 							else if (m instanceof BiologyStudyFieldMission) {
 								qual = 2D * ((BiologyStudyFieldMission)m).getMissionQualification(person);
 							}
+							else if (m instanceof MeteorologyStudyFieldMission) {
+								qual = 2D * ((MeteorologyStudyFieldMission)m).getMissionQualification(person);
+							}
 							else if (m instanceof RescueSalvageVehicle) {
 								qual = 2D * ((RescueSalvageVehicle)m).getMissionQualification(person);
 							}
@@ -238,6 +242,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 							if (person.getAssociatedSettlement().getObjective() == ObjectiveType.TOURISM
 									&& (m instanceof AreologyStudyFieldMission
 									|| m instanceof BiologyStudyFieldMission
+									|| m instanceof MeteorologyStudyFieldMission
 									|| m instanceof TravelToSettlement
 									|| m instanceof Exploration)
 									) {

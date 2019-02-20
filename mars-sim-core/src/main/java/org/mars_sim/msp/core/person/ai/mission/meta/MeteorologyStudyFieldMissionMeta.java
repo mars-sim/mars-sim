@@ -1,8 +1,8 @@
 /**
  * Mars Simulation Project
- * AreologyStudyFieldMissionMeta.java
- * @version 3.1.0 2017-05-02
- * @author Scott Davis
+ * MeteorologyStudyFieldMissionMeta.java
+ * @version 3.1.0 2019-02-20
+ * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.mission.meta;
 
@@ -13,7 +13,7 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
-import org.mars_sim.msp.core.person.ai.mission.AreologyStudyFieldMission;
+import org.mars_sim.msp.core.person.ai.mission.MeteorologyStudyFieldMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
@@ -24,18 +24,18 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Rover;
 
 /**
- * A meta mission for the AreologyStudyFieldMission mission.
+ * A meta mission for the Meteorology Study.
  */
-public class AreologyStudyFieldMissionMeta implements MetaMission {
+public class MeteorologyStudyFieldMissionMeta implements MetaMission {
 
     /** Mission name */
     private static final String NAME = Msg.getString(
-            "Mission.description.areologyStudyFieldMission"); //$NON-NLS-1$
+            "Mission.description.meteorologyStudyFieldMission"); //$NON-NLS-1$
 
     private static double WEIGHT = 4D;
     
     /** default logger. */
-    private static Logger logger = Logger.getLogger(AreologyStudyFieldMissionMeta.class.getName());
+    private static Logger logger = Logger.getLogger(MeteorologyStudyFieldMissionMeta.class.getName());
 
     @Override
     public String getName() {
@@ -44,7 +44,7 @@ public class AreologyStudyFieldMissionMeta implements MetaMission {
 
     @Override
     public Mission constructInstance(Person person) {
-        return new AreologyStudyFieldMission(person);
+        return new MeteorologyStudyFieldMission(person);
     }
 
     @Override
@@ -74,13 +74,13 @@ public class AreologyStudyFieldMissionMeta implements MetaMission {
                 Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(settlement, false);
                 if (rover != null) {
 
-                    ScienceType areology = ScienceType.AREOLOGY;
+                    ScienceType meteorology = ScienceType.METEOROLOGY;
 
                     // Add probability for researcher's primary study (if any).
                     ScientificStudy primaryStudy = studyManager.getOngoingPrimaryStudy(person);
                     if ((primaryStudy != null) && ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase())) {
                         if (!primaryStudy.isPrimaryResearchCompleted()) {
-                            if (areology == primaryStudy.getScience()) {
+                            if (meteorology == primaryStudy.getScience()) {
                                 missionProbability += WEIGHT;
                             }
                         }
@@ -92,7 +92,7 @@ public class AreologyStudyFieldMissionMeta implements MetaMission {
                         ScientificStudy collabStudy = i.next();
                         if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase())) {
                             if (!collabStudy.isCollaborativeResearchCompleted(person)) {
-                                if (areology == collabStudy.getCollaborativeResearchers().get(person.getIdentifier())) {
+                                if (meteorology == collabStudy.getCollaborativeResearchers().get(person.getIdentifier())) {
                                     missionProbability += WEIGHT/2D;
                                 }
                             }
@@ -117,14 +117,14 @@ public class AreologyStudyFieldMissionMeta implements MetaMission {
             Job job = person.getMind().getJob();
             if (job != null) {
             	// If this town has a tourist objective, add bonus
-                missionProbability *= job.getStartMissionProbabilityModifier(AreologyStudyFieldMission.class) 
+                missionProbability *= job.getStartMissionProbabilityModifier(MeteorologyStudyFieldMission.class) 
                 	* (settlement.getGoodsManager().getTourismFactor()
                     + settlement.getGoodsManager().getResearchFactor())/1.5;
             }
         }
         
 //        if (missionProbability > 0)
-//        	logger.info("AreologyStudyFieldMissionMeta's probability : " +
+//        	logger.info("MeteorologyStudyFieldMissionMeta's probability : " +
 //				 Math.round(missionProbability*100D)/100D);
 		
         return missionProbability;

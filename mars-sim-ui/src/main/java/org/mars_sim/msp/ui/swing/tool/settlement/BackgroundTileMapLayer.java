@@ -220,7 +220,7 @@ implements SettlementMapLayer {
 
 		if (settlementBackgroundMap.containsKey(settlement)) {
 			String backgroundImageName = settlementBackgroundMap.get(settlement);
-			result = ImageLoader.getIcon(backgroundImageName, "jpg");
+			result = ImageLoader.getIcon(backgroundImageName, "jpg", ImageLoader.IMAGE_DIR);
 		}
 		else if (settlement != null) {
 			int count = 1;
@@ -229,7 +229,7 @@ implements SettlementMapLayer {
 				if (i.next().equals(settlement)) {
 					String backgroundImageName = "settlement_map_tile" + count;
 					settlementBackgroundMap.put(settlement, backgroundImageName);
-					result = ImageLoader.getIcon(backgroundImageName, "jpg");
+					result = ImageLoader.getIcon(backgroundImageName, "jpg", ImageLoader.IMAGE_DIR);
 				}
 				count++;
 				if (count > MAX_BACKGROUND_IMAGE_NUM) {
@@ -238,7 +238,7 @@ implements SettlementMapLayer {
 			}
 		}
 		else {
-            result = ImageLoader.getIcon("settlement_map_tile1", "jpg");
+            result = ImageLoader.getIcon("settlement_map_tile1", "jpg", ImageLoader.IMAGE_DIR);
 		}
 
 		return result;

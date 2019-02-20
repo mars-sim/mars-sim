@@ -7,6 +7,7 @@
 package org.mars_sim.msp.core.person.ai.mission.meta;
 
 import java.util.Iterator;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
@@ -68,33 +69,39 @@ public class BiologyStudyFieldMissionMeta implements MetaMission {
     		
     		missionProbability = 0;
     		
-            // Get available rover.
-            Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(settlement, false);
-            if (rover != null) {
-
-                ScienceType biology = ScienceType.BIOLOGY;
-
-                // Add probability for researcher's primary study (if any).
-//                ScientificStudyManager studyManager = Simulation.instance().getScientificStudyManager();
-                ScientificStudy primaryStudy = studyManager.getOngoingPrimaryStudy(person);
-                if ((primaryStudy != null) && ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase())) {
-                    if (!primaryStudy.isPrimaryResearchCompleted()) {
-                        if (biology == primaryStudy.getScience())
-                            missionProbability += WEIGHT;
-                    }
-                }
-
-                // Add probability for each study researcher is collaborating on.
-                Iterator<ScientificStudy> i = studyManager.getOngoingCollaborativeStudies(person).iterator();
-                while (i.hasNext()) {
-                    ScientificStudy collabStudy = i.next();
-                    if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase())) {
-                        if (!collabStudy.isCollaborativeResearchCompleted(person)) {
-                            if (biology == collabStudy.getCollaborativeResearchers().get(person.getIdentifier()))
-                                missionProbability += WEIGHT/2D;
-                        }
-                    }
-                }
+            try {
+	            // Get available rover.
+	            Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(settlement, false);
+	            if (rover != null) {
+	
+	                ScienceType biology = ScienceType.BIOLOGY;
+	
+	                // Add probability for researcher's primary study (if any).
+	                ScientificStudy primaryStudy = studyManager.getOngoingPrimaryStudy(person);
+	                if ((primaryStudy != null) && ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase())) {
+	                    if (!primaryStudy.isPrimaryResearchCompleted()) {
+	                        if (biology == primaryStudy.getScience()) {
+	                            missionProbability += WEIGHT;
+	                        }
+	                    }
+	                }
+	
+	                // Add probability for each study researcher is collaborating on.
+	                Iterator<ScientificStudy> i = studyManager.getOngoingCollaborativeStudies(person).iterator();
+	                while (i.hasNext()) {
+	                    ScientificStudy collabStudy = i.next();
+	                    if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase())) {
+	                        if (!collabStudy.isCollaborativeResearchCompleted(person)) {
+	                            if (biology == collabStudy.getCollaborativeResearchers().get(person.getIdentifier())) {
+	                                missionProbability += WEIGHT/2D;
+	                            }
+	                        }
+	                    }
+	                }
+	            }
+            }
+            catch (Exception e) {
+                logger.log(Level.SEVERE, "Error determining rover.", e);
             }
 
             int f1 = 2*numEmbarked + 1;
@@ -111,8 +118,8 @@ public class BiologyStudyFieldMissionMeta implements MetaMission {
             if (job != null) {
             	// If this town has a tourist objective, add bonus
                 missionProbability *= job.getStartMissionProbabilityModifier(BiologyStudyFieldMission.class) 
-                		* (settlement.getGoodsManager().getTourismFactor()
-                		 + settlement.getGoodsManager().getResearchFactor())/1.5;
+                	* (settlement.getGoodsManager().getTourismFactor()
+                	+ settlement.getGoodsManager().getResearchFactor())/1.5;
             }
         }
 
