@@ -14,99 +14,88 @@ import java.util.logging.LogRecord;
 
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.tool.Conversion;
 
 public class SimuLoggingFormatter extends Formatter {
 
-    public final static String LINEFEED = System.getProperty("line.separator");
-    public final static String O_PAREN = " (";
-    public final static String C_PAREN = ") ";
-    public final static String BRAC_X1 = "[x1] ";
-    public final static String C_BRAC = "] ";
-    public final static String O_BRAC_X = "[x";
-    public final static String O_BRAC = "[";
-    public final static String PERIOD = ".";
-    public final static String COLON = " : ";
+	private final static String LOGCON = "logconsolidated"; 
+	private final static String CONTEXT1 = "[CONTEXT";
+	private final static String SKIPPED = "skipped";
+	private final static String CONTEXT2 = "[CONTEXT ratelimit_period=\"";
+	private final static String BRACKET1 = "]\" ]";
+	private final static String MILLISECONDS = " MILLISECONDS [skipped:";
+	private final static String CONTEXT3 = "[CONTEXT";
+	private final static String LINEFEED = System.getProperty("line.separator");
+	private final static String O_PAREN = " (";
+	private final static String C_PAREN = ") ";
+	private final static String BRAC_X1 = "[x1] ";
+	private final static String C_BRAC = "] ";
+	private final static String O_BRAC_X = "[x";
+	private final static String O_BRAC = "[";
+	private final static String PERIOD = ".";
+	private final static String COLON = " : ";
     
 //  public final static DateFormat df = DateFormat.getDateTimeInstance();
 //  private Date date = new Date();
     
     private StringBuffer sb = new StringBuffer();
     
-    private static MasterClock masterClock;// = Simulation.instance().getMasterClock();
-//    private static MarsClock marsClock;// = masterClock.getMarsClock();
-//    private static EarthClock earthClock;// = masterClock.getEarthClock();
-
+    private static MasterClock masterClock;
+    
     public String format(LogRecord record) {
 
-    	if (masterClock == null) {
+    	if (masterClock == null)
     		masterClock = Simulation.instance().getMasterClock();
-//    		if (masterClock != null) {
-//		    	if (marsClock == null)
-//		    		marsClock = masterClock.getMarsClock();
-//		    	if (earthClock == null)
-//		    		earthClock = masterClock.getEarthClock();
-//    		}
-    	}
     	
 		String msg = formatMessage(record);
-//		System.out.println(msg);
-		boolean context = msg.contains("[CONTEXT");
+
+		boolean context = msg.contains(CONTEXT1);
 		
 		if (context) {
 			if (LogConsolidated.showRateLimit()) {
 				// Remove the rate limit comment from google flogger
-				boolean skip = msg.contains("skipped");
+				boolean skip = msg.contains(SKIPPED);
 				if (skip) {
-					msg = fastReplace(msg, "[CONTEXT ratelimit_period=\"", "[");
+					msg = fastReplace(msg, CONTEXT2, "[");
 	//				msg = fastReplace(msg, " MILLISECONDS\" ", "");
-					msg = fastReplace(msg, " MILLISECONDS [skipped:", ",");
-					msg = fastReplace(msg, "]\" ]", "]");
+					msg = fastReplace(msg, MILLISECONDS, ",");
+					msg = fastReplace(msg, BRACKET1, "]");
 				}
 				
 				else {
-					int index = msg.indexOf("[CONTEXT");
+					int index = msg.indexOf(CONTEXT3);
 					if (index > 0)
-						msg = msg.substring(0, msg.indexOf("[CONTEXT")-1);
+						msg = msg.substring(0, msg.indexOf(CONTEXT3)-1);
 				}
 			}
 			
 			else {
-				int index = msg.indexOf("[CONTEXT");
+				int index = msg.indexOf(CONTEXT3);
 				if (index > 0)
-					msg = msg.substring(0, msg.indexOf("[CONTEXT")-1);
+					msg = msg.substring(0, msg.indexOf(CONTEXT3)-1);
 			}
 		}
-		
-//		System.out.println(msg);
-		
+
 		sb.delete(0,sb.length());
 		
 		int timeStamp = LogConsolidated.getTimeStampType();
 		
 		if (masterClock == null || timeStamp == 0) {
-			useLocalTime();
+			appendLocalTime();
 		}
 		
 		else if (timeStamp == 1 && LogConsolidated.getEarthClock() != null) {
-//			if (earthClock == null) {
-//				earthClock = LogConsolidated.getEarthClock();
-//			}
 			sb.append(LogConsolidated.getEarthClock().getTimeStampF0());
 		}
 		
 		else if (timeStamp == 2 && LogConsolidated.getMarsClock() != null && isMarsClockValid()) {
-//			if (marsClock == null) {
-//				marsClock = LogConsolidated.getMarsClock();	
-//			}
 			sb.append(MarsClock.getDateTimeStamp(LogConsolidated.getMarsClock()));
 		}
 		
 		else {
-			useLocalTime();
+			appendLocalTime();
 		}
 
 		// Get the level name and add it to the buffer
@@ -120,7 +109,7 @@ public class SimuLoggingFormatter extends Formatter {
 		String source = null;
 		path = record.getSourceClassName();
 		source = path.substring(path.lastIndexOf(PERIOD) + 1, path.length());
-		if (!source.equalsIgnoreCase("logconsolidated")) {
+		if (!source.equalsIgnoreCase(LOGCON)) {
 			sb.append(source);
 			sb.append(COLON);
 		}
@@ -142,23 +131,29 @@ public class SimuLoggingFormatter extends Formatter {
 			
 			else {
 				msg = msg.substring(msg.indexOf(C_BRAC) + 1, msg.length());
-	
 				sb.append(msg);
 			}
 			
 			sb.append(LINEFEED);
-			
 		}
 	
 		return sb.toString();
-		
     }
     
-    private boolean isMarsClockValid() {
-    	return !MarsClock.getDateTimeStamp(LogConsolidated.getMarsClock()).equalsIgnoreCase("0000-Adir-01:000.000");
+    /**
+     * Checks if the mars clock is different from the starting clock
+     * 
+     * @return
+     */
+    private boolean isMarsClockValid() { 
+    	return !MarsClock.getDateTimeStamp(LogConsolidated.getMarsClock()).equalsIgnoreCase(MarsClock.START_CLOCK);
     }
     
-    private void useLocalTime() {
+    
+    /**
+     * Append the machine's local time
+     */
+    private void appendLocalTime() {
 		// Gets the local time
 		String dt = LocalDateTime.now().toString();
 		// Show only one decimal place in seconds
@@ -167,6 +162,14 @@ public class SimuLoggingFormatter extends Formatter {
 		sb.append(dt);
     }
     
+    /**
+     * Replace characters in a string quickly without using regex
+     * 
+     * @param str
+     * @param target
+     * @param replacement
+     * @return
+     */
     static String fastReplace(String str, String target, String replacement) {
         int targetLength = target.length();
         if( targetLength == 0 ) {

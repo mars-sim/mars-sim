@@ -62,7 +62,7 @@ public class TableStyle extends ZebraJTable{
         else 
         	table.setRowHeight(22);
         
-        table.setFont(new Font("Serif", Font.PLAIN, 12));
+        table.setFont(new Font("Arial", Font.PLAIN, 12));
         
     	int theme = 0;//MainScene.getTheme();
 

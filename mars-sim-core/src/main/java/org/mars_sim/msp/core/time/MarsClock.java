@@ -102,6 +102,7 @@ public class MarsClock implements Serializable {
 	// This gives them 4 periods to use like we do months.
 	// They are a bit long so maybe they divide them up more later.
 
+	public static final String START_CLOCK = "00-Adir-01:000.000";
 	private static final String DASH = "-";
 	private static final String COLON = ":";
 	private static final String ONE_ZERO = "0";
@@ -658,12 +659,12 @@ public class MarsClock implements Serializable {
 		String month = time.getMonthName();
 
 		// Append padding zeros to orbit
-		if (orbit < 10) // then 000x
-			s.append(THREE_ZEROS);
-		else if (orbit < 100) // then 00xx
-			s.append(TWO_ZEROS);
-		else if (orbit < 1000) // then 0xxx
-			s.append(ONE_ZERO);
+//		if (orbit < 10) // then 000x
+//			s.append(THREE_ZEROS);
+//		else if (orbit < 100) // then 00xx
+//			s.append(TWO_ZEROS);
+//		else if (orbit < 1000) // then 0xxx
+//			s.append(ONE_ZERO);
 
 		if (orbit < 10) // then 0x
 			s.append(ONE_ZERO);
