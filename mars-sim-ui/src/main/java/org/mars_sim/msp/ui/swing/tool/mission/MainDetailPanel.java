@@ -48,6 +48,7 @@ import org.mars_sim.msp.core.person.ai.mission.CollectIce;
 import org.mars_sim.msp.core.person.ai.mission.CollectRegolith;
 import org.mars_sim.msp.core.person.ai.mission.EmergencySupplyMission;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
+import org.mars_sim.msp.core.person.ai.mission.MeteorologyStudyFieldMission;
 import org.mars_sim.msp.core.person.ai.mission.Mining;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
@@ -436,6 +437,25 @@ public class MainDetailPanel extends WebPanel implements ListSelectionListener, 
 
 		customInfoPanels = new HashMap<String, MissionCustomInfoPanel>();
 
+
+		// Create custom areology field mission panel.
+		MissionCustomInfoPanel areologyFieldPanel = new AreologyStudyFieldMissionCustomInfoPanel(desktop);
+		String areologyMissionName = AreologyStudyFieldMission.class.getName();
+		customInfoPanels.put(areologyMissionName, areologyFieldPanel);
+		missionCustomPane.add(areologyFieldPanel, areologyMissionName);
+
+		// Create custom biology field mission panel.
+		MissionCustomInfoPanel biologyFieldPanel = new BiologyStudyFieldMissionCustomInfoPanel(desktop);
+		String biologyMissionName = BiologyStudyFieldMission.class.getName();
+		customInfoPanels.put(biologyMissionName, biologyFieldPanel);
+		missionCustomPane.add(biologyFieldPanel, biologyMissionName);
+		
+		// Create custom meteorology field mission panel.
+		MissionCustomInfoPanel meteorologyFieldPanel = new MeteorologyStudyFieldMissionCustomInfoPanel(desktop);
+		String meteorologyMissionName = MeteorologyStudyFieldMission.class.getName();
+		customInfoPanels.put(meteorologyMissionName, meteorologyFieldPanel);
+		missionCustomPane.add(meteorologyFieldPanel, meteorologyMissionName);
+		
 		// Create custom trade mission panel.
 		MissionCustomInfoPanel tradePanel = new TradeMissionCustomInfoPanel();
 		String tradeMissionName = Trade.class.getName();
@@ -466,18 +486,7 @@ public class MainDetailPanel extends WebPanel implements ListSelectionListener, 
 		customInfoPanels.put(explorationMissionName, explorationPanel);
 		missionCustomPane.add(explorationPanel, explorationMissionName);
 
-		// Create custom biology field mission panel.
-		MissionCustomInfoPanel biologyFieldPanel = new BiologyStudyFieldMissionCustomInfoPanel(desktop);
-		String biologyMissionName = BiologyStudyFieldMission.class.getName();
-		customInfoPanels.put(biologyMissionName, biologyFieldPanel);
-		missionCustomPane.add(biologyFieldPanel, biologyMissionName);
-
-		// Create custom areology field mission panel.
-		MissionCustomInfoPanel areologyFieldPanel = new AreologyStudyFieldMissionCustomInfoPanel(desktop);
-		String areologyMissionName = AreologyStudyFieldMission.class.getName();
-		customInfoPanels.put(areologyMissionName, areologyFieldPanel);
-		missionCustomPane.add(areologyFieldPanel, areologyMissionName);
-
+		
 		// Create custom collect regolith mission panel.
 		MissionCustomInfoPanel collectRegolithPanel = new CollectResourcesMissionCustomInfoPanel(regolithAR);
 		String collectRegolithMissionName = CollectRegolith.class.getName();

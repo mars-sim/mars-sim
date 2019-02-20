@@ -6,12 +6,33 @@
  */
 package org.mars_sim.msp.ui.swing.tool.mission.create;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.mars.ExploredLocation;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.mission.*;
+import org.mars_sim.msp.core.person.ai.mission.AreologyStudyFieldMission;
+import org.mars_sim.msp.core.person.ai.mission.BiologyStudyFieldMission;
+import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
+import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
+import org.mars_sim.msp.core.person.ai.mission.CollectIce;
+import org.mars_sim.msp.core.person.ai.mission.CollectRegolith;
+import org.mars_sim.msp.core.person.ai.mission.EmergencySupplyMission;
+import org.mars_sim.msp.core.person.ai.mission.Exploration;
+import org.mars_sim.msp.core.person.ai.mission.MeteorologyStudyFieldMission;
+import org.mars_sim.msp.core.person.ai.mission.Mining;
+import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.mission.MissionManager;
+import org.mars_sim.msp.core.person.ai.mission.MissionMember;
+import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
+import org.mars_sim.msp.core.person.ai.mission.Trade;
+import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -22,27 +43,47 @@ import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
 
-import java.util.*;
-
 /**
  * Mission data holder bean.
  */
 class MissionDataBean {
 
 	// Mission type strings.
-	protected final static String TRAVEL_MISSION = Msg.getString("Mission.description.travelToSettlement"); //$NON-NLS-1$
+    protected final static String AREOLOGY_FIELD_MISSION = Msg.getString("Mission.description.areologyStudyFieldMission"); //$NON-NLS-1$
+    protected final static String BIOLOGY_FIELD_MISSION = Msg.getString("Mission.description.biologyStudyFieldMission"); //$NON-NLS-1$
+    protected final static String METEOROLOGY_FIELD_MISSION = Msg.getString("Mission.description.meteorologyStudyFieldMission"); //$NON-NLS-1$
+
+    protected final static String CONSTRUCTION_MISSION = Msg.getString("Mission.description.buildingConstructionMission"); //$NON-NLS-1$
+
+    protected final static String EMERGENCY_SUPPLY_MISSION = Msg.getString("Mission.description.emergencySupplyMission"); //$NON-NLS-1$
 	protected final static String EXPLORATION_MISSION = Msg.getString("Mission.description.exploration"); //$NON-NLS-1$
 	protected final static String ICE_MISSION = Msg.getString("Mission.description.collectIce"); //$NON-NLS-1$
+
+	protected final static String MINING_MISSION = Msg.getString("Mission.description.mining"); //$NON-NLS-1$
+
 	protected final static String REGOLITH_MISSION = Msg.getString("Mission.description.collectRegolith"); //$NON-NLS-1$
 	protected final static String RESCUE_MISSION = Msg.getString("Mission.description.rescueSalvageVehicle"); //$NON-NLS-1$
 	protected final static String TRADE_MISSION = Msg.getString("Mission.description.trade"); //$NON-NLS-1$
-	protected final static String MINING_MISSION = Msg.getString("Mission.description.mining"); //$NON-NLS-1$
-    protected final static String CONSTRUCTION_MISSION = Msg.getString("Mission.description.buildingConstructionMission"); //$NON-NLS-1$
-    protected final static String AREOLOGY_FIELD_MISSION = Msg.getString("Mission.description.areologyStudyFieldMission"); //$NON-NLS-1$
-    protected final static String BIOLOGY_FIELD_MISSION = Msg.getString("Mission.description.biologyStudyFieldMission"); //$NON-NLS-1$
+	
+	protected final static String TRAVEL_MISSION = Msg.getString("Mission.description.travelToSettlement"); //$NON-NLS-1$
     protected final static String SALVAGE_MISSION = Msg.getString("Mission.description.salvageBuilding"); //$NON-NLS-1$
-    protected final static String EMERGENCY_SUPPLY_MISSION = Msg.getString("Mission.description.emergencySupplyMission"); //$NON-NLS-1$
 
+    protected final static String[] MISSIONS = new String[] {
+    		AREOLOGY_FIELD_MISSION,
+    		BIOLOGY_FIELD_MISSION,
+    		METEOROLOGY_FIELD_MISSION,
+    		CONSTRUCTION_MISSION,
+    		EMERGENCY_SUPPLY_MISSION,
+    		EXPLORATION_MISSION,
+    		ICE_MISSION,
+    		MINING_MISSION,
+    		REGOLITH_MISSION,
+    		RESCUE_MISSION,
+    		TRADE_MISSION,
+    		TRAVEL_MISSION,
+    		SALVAGE_MISSION
+    };
+    
 	// Data members.
     private double constructionSiteXLoc;
     private double constructionSiteYLoc;
@@ -86,7 +127,7 @@ class MissionDataBean {
 	private Map<Good, Integer> sellGoods;
 	private Map<Good, Integer> buyGoods;
 	
-    private static MissionManager manager = Simulation.instance().getMissionManager();
+    private static MissionManager missionManager = Simulation.instance().getMissionManager();
     
 	/**
 	 * Creates a mission from the mission data.
@@ -94,63 +135,77 @@ class MissionDataBean {
     protected void createMission() {
 
 	    Mission mission = null;
-	    if (TRAVEL_MISSION.equals(type)) {
-	        mission = new TravelToSettlement(mixedMembers, startingSettlement, destinationSettlement, rover,
-	                description);
+	    if (AREOLOGY_FIELD_MISSION.equals(type)) {
+	        mission = new AreologyStudyFieldMission(members, startingSettlement, leadResearcher, study,
+	                rover, fieldSite, description);
 	    }
-	    else if (RESCUE_MISSION.equals(type)) {
-	        mission = new RescueSalvageVehicle(mixedMembers, startingSettlement, rescueRover, rover, description);
+	    
+	    else if (BIOLOGY_FIELD_MISSION.equals(type)) {
+	        mission = new BiologyStudyFieldMission(members, startingSettlement, leadResearcher, study,
+	                rover, fieldSite, description);
 	    }
-	    else if (ICE_MISSION.equals(type)) {
-	        List<Coordinates> collectionSites = new ArrayList<Coordinates>(1);
-	        collectionSites.add(iceCollectionSite);
-	        mission = new CollectIce(mixedMembers, startingSettlement, collectionSites, rover, description);
+	    
+	    else if (METEOROLOGY_FIELD_MISSION.equals(type)) {
+	        mission = new MeteorologyStudyFieldMission(members, startingSettlement, leadResearcher, study,
+	                rover, fieldSite, description);
 	    }
-	    else if (REGOLITH_MISSION.equals(type)) {
-	        List<Coordinates> collectionSites = new ArrayList<Coordinates>(1);
-	        collectionSites.add(regolithCollectionSite);
-	        mission = new CollectRegolith(mixedMembers, startingSettlement, collectionSites, rover, description);
+	    
+	    else if (CONSTRUCTION_MISSION.equals(type)) {
+	        mission = new BuildingConstructionMission(mixedMembers, constructionSettlement, constructionSite,
+	                constructionStageInfo, constructionSiteXLoc, constructionSiteYLoc, constructionSiteFacing,
+	                constructionVehicles);
+	        //constructionSettlement.fireUnitUpdate(UnitEventType.START_MANUAL_CONSTRUCTION_WIZARD_EVENT, mission);
 	    }
+	    
+	    else if (EMERGENCY_SUPPLY_MISSION.equals(type)) {
+	        mission = new EmergencySupplyMission(members, startingSettlement, destinationSettlement,
+	                emergencyGoods, rover, description);
+	    }
+	    
 	    else if (EXPLORATION_MISSION.equals(type)) {
 	        List<Coordinates> collectionSites = new ArrayList<Coordinates>(explorationSites.length);
 	        collectionSites.addAll(Arrays.asList(explorationSites));
 	        mission = new Exploration(mixedMembers, startingSettlement, collectionSites, rover, description);
 	    }
-	    else if (TRADE_MISSION.equals(type)) {
-	        mission = new Trade(mixedMembers, startingSettlement, destinationSettlement, rover, description,
-	                sellGoods, buyGoods);
+	    
+	    else if (ICE_MISSION.equals(type)) {
+	        List<Coordinates> collectionSites = new ArrayList<Coordinates>(1);
+	        collectionSites.add(iceCollectionSite);
+	        mission = new CollectIce(mixedMembers, startingSettlement, collectionSites, rover, description);
 	    }
+	    
+	    else if (REGOLITH_MISSION.equals(type)) {
+	        List<Coordinates> collectionSites = new ArrayList<Coordinates>(1);
+	        collectionSites.add(regolithCollectionSite);
+	        mission = new CollectRegolith(mixedMembers, startingSettlement, collectionSites, rover, description);
+	    }
+	    
 	    else if (MINING_MISSION.equals(type)) {
 	        mission = new Mining(mixedMembers, startingSettlement, miningSite, rover, luv, description);
 	    }
-	    else if (CONSTRUCTION_MISSION.equals(type)) {
-	        mission = new BuildingConstructionMission(mixedMembers, constructionSettlement, constructionSite,
-	                constructionStageInfo, constructionSiteXLoc, constructionSiteYLoc, constructionSiteFacing,
-	                constructionVehicles);
-	        // 2015-12-23 Added fireUnitUpdate()
-	        //constructionSettlement.fireUnitUpdate(UnitEventType.START_MANUAL_CONSTRUCTION_WIZARD_EVENT, mission);
+	    
+	    else if (RESCUE_MISSION.equals(type)) {
+	        mission = new RescueSalvageVehicle(mixedMembers, startingSettlement, rescueRover, rover, description);
 	    }
-
-	    else if (AREOLOGY_FIELD_MISSION.equals(type)) {
-	        mission = new AreologyStudyFieldMission(members, startingSettlement, leadResearcher, study,
-	                rover, fieldSite, description);
-	    }
-	    else if (BIOLOGY_FIELD_MISSION.equals(type)) {
-	        mission = new BiologyStudyFieldMission(members, startingSettlement, leadResearcher, study,
-	                rover, fieldSite, description);
-	    }
+	    
 	    else if (SALVAGE_MISSION.equals(type)) {
 	        mission = new BuildingSalvageMission(mixedMembers, salvageSettlement, salvageBuilding, salvageSite,
 	                salvageVehicles);
 	    }
-	    else if (EMERGENCY_SUPPLY_MISSION.equals(type)) {
-	        mission = new EmergencySupplyMission(members, startingSettlement, destinationSettlement,
-	                emergencyGoods, rover, description);
+	    
+	    else if (TRADE_MISSION.equals(type)) {
+	        mission = new Trade(mixedMembers, startingSettlement, destinationSettlement, rover, description,
+	                sellGoods, buyGoods);
 	    }
+	    
+	    else if (TRAVEL_MISSION.equals(type)) {
+	        mission = new TravelToSettlement(mixedMembers, startingSettlement, destinationSettlement, rover,
+	                description);
+	    }
+	    
 	    else throw new IllegalStateException("mission type: " + type + " unknown");
 
-	    //MissionManager manager = Simulation.instance().getMissionManager();
-	    manager.addMission(mission);
+	    missionManager.addMission(mission);
 	}
  
 	/**
@@ -159,7 +214,7 @@ class MissionDataBean {
 	 */
     protected static String[] getMissionTypes() {
 		String[] result = { TRAVEL_MISSION, EXPLORATION_MISSION, ICE_MISSION, REGOLITH_MISSION,
-				AREOLOGY_FIELD_MISSION, BIOLOGY_FIELD_MISSION, RESCUE_MISSION, TRADE_MISSION,
+				AREOLOGY_FIELD_MISSION, BIOLOGY_FIELD_MISSION, METEOROLOGY_FIELD_MISSION, RESCUE_MISSION, TRADE_MISSION,
                 MINING_MISSION, CONSTRUCTION_MISSION, SALVAGE_MISSION, EMERGENCY_SUPPLY_MISSION };
 		return result;
 	}
@@ -200,6 +255,9 @@ class MissionDataBean {
         }
         else if (missionType.equals(BIOLOGY_FIELD_MISSION)) {
             result = BiologyStudyFieldMission.DEFAULT_DESCRIPTION;
+        }
+        else if (missionType.equals(METEOROLOGY_FIELD_MISSION)) {
+            result = MeteorologyStudyFieldMission.DEFAULT_DESCRIPTION;
         }
         else if (missionType.equals(SALVAGE_MISSION)) {
             result = BuildingSalvageMission.DEFAULT_DESCRIPTION;

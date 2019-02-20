@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AddMembersDialog.java
- * @version 3.08 2015-07-02
+ * @version 3.1.0 2019-02-20
  * @author Scott Davis
  */
 

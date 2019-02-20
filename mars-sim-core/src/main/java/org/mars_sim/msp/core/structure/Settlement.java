@@ -47,6 +47,7 @@ import org.mars_sim.msp.core.person.ai.job.Engineer;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.job.JobAssignmentType;
 import org.mars_sim.msp.core.person.ai.job.JobManager;
+import org.mars_sim.msp.core.person.ai.job.Meteorologist;
 import org.mars_sim.msp.core.person.ai.job.Technician;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
@@ -111,9 +112,9 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	private static String DETECTOR_GRID = "] The detector grid forecast a ";
 
 	public static final int CHECK_MISSION = 20; // once every 10 millisols
-	
+
 	public static final int MAX_NUM_SOLS = 3;
-	
+
 	public static final int MAX_SOLS_DAILY_OUTPUT = 14;
 
 	public static final int SUPPLY_DEMAND_REFRESH = 7;
@@ -202,10 +203,10 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	private transient Collection<Robot> allAssociatedRobots = new ConcurrentLinkedQueue<Robot>();
 	/** The settlement's list of vehicles. */
 	private transient Collection<Vehicle> allAssociatedVehicles = new ConcurrentLinkedQueue<Vehicle>();
-	
-	/** The flag for checking if the simulation has just started. */	
+
+	/** The flag for checking if the simulation has just started. */
 	private boolean justLoaded = true;
-	
+
 	/** The base mission probability of the settlement. */
 	private int missionProbability = -1;
 	/** The water ration level of the settlement. */
@@ -246,18 +247,31 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	private int numBots;
 	/** Numbers of associated vehicles in this settlement. */
 	private int numVehicles;
-	/** Minimum amount of methane to stay in this settlement when considering a mission. */
+	/**
+	 * Minimum amount of methane to stay in this settlement when considering a
+	 * mission.
+	 */
 	private int minMethane = 50;
-	/** Minimum amount of oxygen to stay in this settlement when considering a mission. */
+	/**
+	 * Minimum amount of oxygen to stay in this settlement when considering a
+	 * mission.
+	 */
 	private int mineOxygen = 50;
-	/** Minimum amount of water to stay in this settlement when considering a mission. */
+	/**
+	 * Minimum amount of water to stay in this settlement when considering a
+	 * mission.
+	 */
 	private int minWater = 50;
-	/** Minimum amount of food to stay in this settlement when considering a mission. */
+	/**
+	 * Minimum amount of food to stay in this settlement when considering a mission.
+	 */
 	private int minFood = 50;
-	
-	/**  The composite value of the minerals nearby. */
+
+	/** The composite value of the minerals nearby. */
 	public double mineralValue = -1;
-	/**  The rate [kg per millisol] of filtering grey water for irrigating the crop. */
+	/**
+	 * The rate [kg per millisol] of filtering grey water for irrigating the crop.
+	 */
 	public double greyWaterFilteringRate = 1;
 	/** The currently minimum passing score for mission approval. */
 	private double minimumPassingScore = 0;
@@ -334,13 +348,16 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	private List<Double> missionScores;
 	/** The settlement's achievement in scientific fields. */
 	private Map<ScienceType, Double> scientificAchievement;
-	/** The settlement's water consumption in kitchen when preparing/cleaning meal and dessert. */
+	/**
+	 * The settlement's water consumption in kitchen when preparing/cleaning meal
+	 * and dessert.
+	 */
 	private Map<Integer, Map<Integer, Double>> waterConsumption;
 	/** The settlement's daily output (resources produced). */
 	private Map<Integer, Map<Integer, Double>> dailyOutput;
 	/** The settlement's daily labor hours output. */
 	private Map<Integer, Map<Integer, Double>> dailyLaborHours;
-	
+
 	// Static members
 	/**
 	 * The flag signifying this settlement as the destination of the user-defined
@@ -348,9 +365,9 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	 */
 	private boolean isCommanderMode = false;
 
-	private static int sample1 = ResourceUtil.findIDbyAmountResourceName("regolith");//"polyethylene");
-	private static int sample2 = ResourceUtil.findIDbyAmountResourceName("ice");//concrete");
-	
+	private static int sample1 = ResourceUtil.findIDbyAmountResourceName("regolith");// "polyethylene");
+	private static int sample2 = ResourceUtil.findIDbyAmountResourceName("ice");// concrete");
+
 	private static int oxygenID = ResourceUtil.oxygenID;
 	private static int waterID = ResourceUtil.waterID;
 	private static int co2ID = ResourceUtil.co2ID;
@@ -1001,7 +1018,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 				waterTaken = waterLeft;
 			if (waterTaken > MIN) {
 				Storage.retrieveAnResource(waterTaken, waterID, getInventory(), true);
-			 	getInventory().retrieveAmountResource(waterID, waterTaken);
+				getInventory().retrieveAmountResource(waterID, waterTaken);
 //				getInventory().addAmountDemandTotalRequest(waterID);
 //				getInventory().addAmountDemand(waterID, waterTaken);
 			}
@@ -1207,43 +1224,43 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 
 		// Sample a data point every SAMPLE_FREQ (in millisols)
 		int millisols = marsClock.getMillisolInt();
-	
+
 		// Avoid checking at 0 or 1000 millisols
 		// due to high cpu util during the change of day
 		if (millisols != 0 && millisols != 1000) {
-			
+
 			// Updates the goodsManager randomly 4 times per sol .
 			updateGoodsManager(time);
 
-			int remainder = millisols % (int)(CHECK_MISSION/time);
+			int remainder = millisols % (int) (CHECK_MISSION / time);
 			if (remainder == 0) {
 				// Reset the mission probability back to 1
 				missionProbability = -1;
 				mineralValue = -1;
 			}
-			
-			remainder = millisols % (int)(SAMPLING_FREQ/time);
+
+			remainder = millisols % (int) (SAMPLING_FREQ / time);
 			if (remainder == 0) {
 				// will NOT check for radiation at the exact 1000 millisols in order to balance
 				// the simulation load
 				// take a sample for each critical resource
 				sampleAllResources();
 			}
-	
-			remainder = millisols % (int)(100/time);
+
+			remainder = millisols % (int) (100 / time);
 			if (remainder == 0) {
 				// Recompute the water ration level
 				computeWaterRation();
 			}
-	
+
 			// Check every RADIATION_CHECK_FREQ (in millisols)
 			// Compute whether a baseline, GCR, or SEP event has occurred
-			remainder = millisols % (int)(RadiationExposure.RADIATION_CHECK_FREQ/time);
+			remainder = millisols % (int) (RadiationExposure.RADIATION_CHECK_FREQ / time);
 			if (remainder == 5) {
 				checkRadiationProbability(time);
 			}
-			
-			remainder = millisols % (int)(RESOURCE_UPDATE_FREQ/time);
+
+			remainder = millisols % (int) (RESOURCE_UPDATE_FREQ / time);
 			if (remainder == 5) {
 				iceProbabilityValue = computeIceProbability();
 			}
@@ -1439,7 +1456,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 			// Limit the size of the dailyWaterUsage to x key value pairs
 			if (dailyOutput.size() > MAX_SOLS_DAILY_OUTPUT)
 				dailyOutput.remove(solElapsed - MAX_SOLS_DAILY_OUTPUT);
-			
+
 //			printTaskProbability();
 //			printMissionProbability();
 
@@ -1507,7 +1524,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	public void reassignWorkShift() {
 		// TODO: should call this method at, say, 800 millisols, not right at 1000
 		// millisols
-		Collection<Person> people = getAllAssociatedPeople();//getIndoorPeople();
+		Collection<Person> people = getAllAssociatedPeople();// getIndoorPeople();
 		int pop = people.size();
 
 		int nShift = 0;
@@ -1519,15 +1536,15 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		} else {// if pop => 6
 			nShift = 3;
 		}
-		
+
 //		System.out.println();
 //		System.out.println(this + " used to have " + numShiftsCache + " shifts.");
-		
+
 		if (numShiftsCache != nShift) {
 			numShiftsCache = nShift;
 
 //			System.out.println(this + " now has " + nShift + " shifts.");
-			
+
 			for (Person p : people) {
 
 				// Skip the person who is dead or is on a mission
@@ -1538,9 +1555,9 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 					boolean isAstronomer = (p.getMind().getJob() instanceof Astronomer);
 
 					ShiftType oldShift = p.getTaskSchedule().getShiftType();
-					
+
 //					System.out.println(p + " has " + oldShift + " shift in " + this);
-					
+
 					if (isAstronomer) {
 						// TODO: find the darkest time of the day
 						// and set work shift to cover time period
@@ -1577,12 +1594,13 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 
 					else {
 						// Not an astronomer
-						// Note: if a person's shift is over-filled or saturated, he will need to change shift
-						
-						// Get an unfilled work shift 
+						// Note: if a person's shift is over-filled or saturated, he will need to change
+						// shift
+
+						// Get an unfilled work shift
 						ShiftType newShift = getAnEmptyWorkShift(pop);
 //						System.out.println(this + " found a new unfilled work shift : " + newShift);
-						
+
 						int tendency = p.getTaskSchedule().getWorkShiftScore(newShift);
 						// TODO: should find the person with the highest tendency to take this shift
 
@@ -1613,10 +1631,11 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 							}
 						}
 
-						else { 
+						else {
 							// Not on-call
-							
-							// Note: if a person's shift is NOT over-filled or saturated, he doesn't need to change shift
+
+							// Note: if a person's shift is NOT over-filled or saturated, he doesn't need to
+							// change shift
 							boolean oldShift_ok = isWorkShiftSaturated(oldShift, true);
 
 							// TODO: check a person's sleep habit map and request changing his work shift
@@ -1627,7 +1646,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 								if (newShift != oldShift && tendency > 50) { // sanity check
 									p.setShiftType(newShift);
 								}
-								
+
 								else if (tendency <= 50) {
 									ShiftType anotherShift = getAnEmptyWorkShift(pop);
 									if (anotherShift == newShift) {
@@ -1639,7 +1658,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 									if (newShift != oldShift && tendency > 50) { // sanity check
 										p.setShiftType(newShift);
 									}
-									
+
 									else {
 										ShiftType shift3 = getAnEmptyWorkShift(pop);
 										if (shift3 == newShift) {
@@ -1666,7 +1685,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 					if (oldShift != ShiftType.ON_CALL) {
 						p.setShiftType(ShiftType.ON_CALL);
 					}
-				}				
+				}
 //				System.out.println(p + " is now on " + p.getShiftType() + " shift in " + this);
 			} // end of people for loop
 		} // end of for loop
@@ -1684,7 +1703,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 
 		double vp1 = goodsManager.getGoodValuePerItem(GoodsUtil.getResourceGood(sample1));
 		double vp2 = goodsManager.getGoodValuePerItem(GoodsUtil.getResourceGood(sample2));
-		
+
 		double supplyAmount1 = getInventory().getAmountSupply(sample1);
 		double supplyAmount2 = getInventory().getAmountSupply(sample2);
 
@@ -1694,11 +1713,10 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		double demandAmount1 = getInventory().getAmountDemand(sample1);
 		double demandAmount2 = getInventory().getAmountDemand(sample2);
 
-		// For items : 
+		// For items :
 		double demandItem1 = getInventory().getItemDemand(sample1);
 		double demandItem2 = getInventory().getItemDemand(sample2);
 
-		
 		// int totalRequest1 = getInventory().getDemandTotalRequest(sample1);
 		// int totalRequest2 = getInventory().getDemandTotalRequest(sample2);
 
@@ -1718,10 +1736,10 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		// numOfGoodsInDemandAmountMap);
 		String name1 = ResourceUtil.findAmountResourceName(sample1);
 		String name2 = ResourceUtil.findAmountResourceName(sample2);
-		
+
 		logger.info(name1 + " (" + sample1 + ")" + "  vp : " + Math.round(vp1 * 100.0) / 100.0);
 		logger.info(name2 + " (" + sample2 + ")" + "  vp : " + Math.round(vp2 * 100.0) / 100.0);
-		
+
 		logger.info(name1 + " Supply Amount : " + Math.round(supplyAmount1 * 100.0) / 100.0);
 		logger.info(name1 + " Supply Request : " + supplyRequest1);
 
@@ -1764,7 +1782,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 			getInventory().compactItemDemandMap(SUPPLY_DEMAND_REFRESH);
 			getInventory().clearItemDemandTotalRequestMap();
 			getInventory().clearItemDemandMetRequestMap();
-			
+
 			// Added clearing of weather data map
 			weather.clearMap();
 			// logger.info(name + " : Compacted the settlement's supply demand data &
@@ -1783,7 +1801,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 			justLoaded = false;
 			goodsManager.timePassing(time);
 		}
-		
+
 		goodsManagerUpdateTime += time;
 
 		// Randomly update goods manager twice per Sol.
@@ -3063,7 +3081,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		if (inclusiveChecking)
 			decrementShiftType(st);
 
-		int pop = getNumCitizens();//getIndoorPeopleCount();
+		int pop = getNumCitizens();// getIndoorPeopleCount();
 		int quotient = pop / numShiftsCache;
 		int remainder = pop % numShiftsCache;
 
@@ -3193,7 +3211,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	public ShiftType getAnEmptyWorkShift(int population) {
 		int pop = 0;
 		if (population == -1)
-			pop = this.getNumCitizens();//getIndoorPeopleCount();
+			pop = this.getNumCitizens();// getIndoorPeopleCount();
 		else
 			pop = population;
 
@@ -3668,7 +3686,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 					if (c.requiresWork()) {
 						result++;
 					}
-					// if the health condition is below 50%, 
+					// if the health condition is below 50%,
 					// need special care
 					if (c.getHealthCondition() < .5)
 						result++;
@@ -3733,7 +3751,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 
 		if (result < 0)
 			result = 0;
-		
+
 //		System.out.println("computeRegolithProbability() " + result);
 		return result;
 	}
@@ -3917,7 +3935,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	 * @param amount
 	 */
 	public void addOutput(int id, double amount, double millisols) {
-		
+
 		// Record the amount of resource produced
 		Map<Integer, Double> amountMap = null;
 
@@ -3935,7 +3953,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		}
 
 		dailyOutput.put(solCache, amountMap);
-	
+
 		// Record the labor hours
 		Map<Integer, Double> laborHrMap = null;
 
@@ -3953,9 +3971,9 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		}
 
 		dailyLaborHours.put(solCache, amountMap);
-		
+
 	}
-	
+
 	/**
 	 * Records the amount of water being consumed.
 	 * 
@@ -4068,6 +4086,9 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		}
 	}
 
+	/**
+	 * Tune up the settlement with unique job position
+	 */
 	public void tuneJobDeficit() {
 		int numEngs = JobManager.numJobs(Engineer.class, this);
 		if (numEngs == 0) {
@@ -4078,6 +4099,13 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		if (numTechs == 0) {
 			assignBestCandidate(this, Technician.class);
 		}
+
+		if (this.getNumCitizens() > ChainOfCommand.POPULATION_WITH_CHIEFS) {
+			int numWeatherman = JobManager.numJobs(Meteorologist.class, this);
+			if (numWeatherman == 0) {
+				assignBestCandidate(this, Meteorologist.class);
+			}
+		}
 	}
 
 	/**
@@ -4086,7 +4114,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	 * @return probability value
 	 */
 	public double getMissionBaseProbability() {
-		
+
 		if (missionProbability == -1) {
 
 			// 1. Check if a mission-capable rover is available.
@@ -4115,22 +4143,23 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 				return 0;
 			}
 //			System.out.println("4.  missionProbability is " + missionProbability);
-	//		// Check for embarking missions.
-	//		else if (VehicleMission.hasEmbarkingMissions(this)) {
-	//			return 0;
-	//		}
-			
+			// // Check for embarking missions.
+			// else if (VehicleMission.hasEmbarkingMissions(this)) {
+			// return 0;
+			// }
+
 			// 5. Check if min number of EVA suits at settlement.
 			if (Mission.getNumberAvailableEVASuitsAtSettlement(this) < RoverMission.MIN_GOING_MEMBERS) {
 				missionProbability = 0;
 				return 0;
 			}
 //			System.out.println("5.  missionProbability is " + missionProbability);	
-	//		// Check for embarking missions.
-	//		else if (getNumCitizens() / 4.0 < VehicleMission.numEmbarkingMissions(this)) {
-	//			return 0;
-	//		}
-	
+			// // Check for embarking missions.
+			// else if (getNumCitizens() / 4.0 < VehicleMission.numEmbarkingMissions(this))
+			// {
+			// return 0;
+			// }
+
 			// 6. Check if settlement has enough basic resources for a rover mission.
 			if (!hasEnoughBasicResources(true)) {
 				missionProbability = 0;
@@ -4141,31 +4170,32 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 			if (getInventory().getAmountResourceStored(ResourceUtil.methaneID,
 					false) < RoverMission.MIN_STARTING_SETTLEMENT_METHANE) {
 				missionProbability = 0;
-				return 0;	
+				return 0;
 			}
-			
+
 			if (VehicleMission.numEmbarkingMissions(this) > getNumCitizens() / 4D) {
 				missionProbability = 0;
-				return 0;	
+				return 0;
 			}
-			
+
 			if (VehicleMission.numApprovingMissions(this) > getNumCitizens() / 4D) {
 				missionProbability = 0;
-				return 0;	
+				return 0;
 			}
-			
+
 //			System.out.println("7.  missionProbability is " + missionProbability);			
 			missionProbability = 1;
-			
+
 //			System.out.println(this + "  missionProbability is " + missionProbability);
 		}
-		
+
 		return missionProbability;
 	}
-	
+
 	public double getTotalMineralValue(Rover rover) {
 		if (mineralValue == -1) {
-			// Check if any mineral locations within rover range and obtain their concentration
+			// Check if any mineral locations within rover range and obtain their
+			// concentration
 			Map<String, Double> minerals = Exploration.getNearbyMineral(rover, this);
 			if (!minerals.isEmpty()) {
 				mineralValue = Exploration.getTotalMineralValue(this, minerals);
@@ -4173,7 +4203,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		}
 		return mineralValue;
 	}
-	
+
 	/**
 	 * Checks if there are enough basic mission resources at the settlement to start
 	 * mission.
@@ -4188,7 +4218,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		// not enough water since ice will produce water.
 
 		Inventory inv = getInventory();
-		
+
 		try {
 			if (inv.getAmountResourceStored(methaneID, false) < minMethane) {
 				return false;
@@ -4208,7 +4238,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 
 		return true;
 	}
-	
+
 	@Override
 	public void destroy() {
 		super.destroy();
