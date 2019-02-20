@@ -364,17 +364,26 @@ public class FoodProduction extends Function implements Serializable {
 						inv.storeAmountResource(id, amount, true);
 						// Add tracking supply
 						inv.addAmountSupply(id, amount);
-					} else if (ItemType.PART.equals(item.getType())) {
+						// Add to the daily output
+						settlement.addOutput(id, amount, process.getTotalWorkTime());
+					} 
+					
+					else if (ItemType.PART.equals(item.getType())) {
 						// Produce parts.
 						Part part = (Part) ItemResourceUtil.findItemResource(item.getName());
 						int id = part.getID();//ItemResourceUtil.findIDbyItemResourceName(item.getName());
-						double mass = item.getAmount() * part.getMassPerItem();
+						int num = (int) item.getAmount();
+						double mass = num * part.getMassPerItem();
 						double capacity = inv.getGeneralCapacity();
 						if (mass <= capacity) {
-							inv.storeItemResources(id, (int) item.getAmount());
-							inv.addItemSupply(id, (int) item.getAmount());
+							inv.storeItemResources(id, num);
+							inv.addItemSupply(id, num);
+							// Add to the daily output
+							settlement.addOutput(id, num, process.getTotalWorkTime());
 						}
-					} else if (ItemType.EQUIPMENT.equals(item.getType())) {
+					} 
+					
+					else if (ItemType.EQUIPMENT.equals(item.getType())) {
 						// Produce equipment.
 						String equipmentType = item.getName();
 						int number = (int) item.getAmount();
@@ -386,6 +395,8 @@ public class FoodProduction extends Function implements Serializable {
 							// Place this equipment within a settlement
 //							equipment.enter(LocationCodeType.SETTLEMENT);
 							inv.storeUnit(equipment);
+							// Add to the daily output
+							settlement.addOutput(equipment.getIdentifier(), number, process.getTotalWorkTime());
 						}
 					}
 //                    else if (Type.VEHICLE.equals(item.getType())) {
@@ -412,7 +423,9 @@ public class FoodProduction extends Function implements Serializable {
 							.updateGoodValue(FoodProductionUtil.getGood(item), false);
 				}
 			}
-		} else {
+		} 
+		
+		else {
 
 			// Premature end of process. Return all input materials.
 			// Settlement settlement = getBuilding().getBuildingManager().getSettlement();

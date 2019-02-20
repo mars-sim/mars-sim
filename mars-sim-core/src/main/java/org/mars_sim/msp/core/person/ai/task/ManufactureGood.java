@@ -107,9 +107,7 @@ public class ManufactureGood extends Task implements Serializable {
 			// Get available manufacturing workshop if any.
 			Building manufactureBuilding = getAvailableManufacturingBuilding(robot);
 			if (manufactureBuilding != null) {
-				workshop = manufactureBuilding.getManufacture();// (Manufacture)
-																// manufactureBuilding.getFunction(FunctionType.MANUFACTURE);
-
+				workshop = manufactureBuilding.getManufacture();
 				// Walk to manufacturing building.
 				walkToActivitySpotInBuilding(manufactureBuilding, false);
 			} else {
@@ -298,8 +296,7 @@ public class ManufactureGood extends Task implements Serializable {
 		Iterator<Building> i = buildingList.iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
-			Manufacture manufacturingFunction = building.getManufacture();// (Manufacture)
-																			// building.getFunction(FunctionType.MANUFACTURE);
+			Manufacture manufacturingFunction = building.getManufacture();
 			if (manufacturingFunction.requiresManufacturingWork(skill)) {
 				result.add(building);
 			}
@@ -348,8 +345,7 @@ public class ManufactureGood extends Task implements Serializable {
 
 		boolean result = false;
 
-		Manufacture manufacturingFunction = manufacturingBuilding.getManufacture();// (Manufacture)
-																					// manufacturingBuilding.getFunction(FunctionType.MANUFACTURE);
+		Manufacture manufacturingFunction = manufacturingBuilding.getManufacture();
 		Iterator<ManufactureProcess> i = manufacturingFunction.getProcesses().iterator();
 		while (i.hasNext()) {
 			ManufactureProcess process = i.next();
@@ -540,22 +536,27 @@ public class ManufactureGood extends Task implements Serializable {
 				if ((process.getWorkTimeRemaining() <= 0D) && (process.getProcessTimeRemaining() <= 0D)) {
 					workshop.endManufacturingProcess(process, false);
 				}
-			} else {
+			}
+			
+			else {
 
-				if (person != null)
+				if (person != null) {
 					if (!person.getSettlement().getManufactureOverride())
 						process = createNewManufactureProcess();
-					else if (robot != null)
-						if (!robot.getSettlement().getManufactureOverride())
-							process = createNewManufactureProcess();
-
+				}
+				
+				else if (robot != null) {
+					if (!robot.getSettlement().getManufactureOverride())
+						process = createNewManufactureProcess();
+				}
+				
 				if (process == null) {
 					endTask();
 				}
 			}
 
 			if (process != null)
-				// 2016-11-26 Inserted process into setDescription()
+				// Prints description
 				setDescription(Msg.getString("Task.description.manufactureGood.detail",
 						Conversion.capitalize(process.toString()))); // $NON-NLS-1$
 			else

@@ -113,6 +113,8 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	public static final int CHECK_MISSION = 20; // once every 10 millisols
 	
 	public static final int MAX_NUM_SOLS = 3;
+	
+	public static final int MAX_SOLS_DAILY_OUTPUT = 14;
 
 	public static final int SUPPLY_DEMAND_REFRESH = 7;
 
@@ -203,6 +205,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	
 	/** The flag for checking if the simulation has just started. */	
 	private boolean justLoaded = true;
+	
 	/** The base mission probability of the settlement. */
 	private int missionProbability = -1;
 	/** The water ration level of the settlement. */
@@ -213,7 +216,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	private int projectedNumOfRobots;
 	/** The scenario ID of the settlement. */
 	private int scenarioID;
-
+	/** The cache for the mission sol. */
 	private int solCache = 0;
 	// NOTE: can't be static since each settlement needs to keep tracking of it
 	private int numShiftsCache;
@@ -231,9 +234,11 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	private int numOnCall;
 	/** number of people with work shift "Off" */
 	private int numOff;
-
+	/** Total numbers of on-going manufacturing processes. */
 	private int sumOfCurrentManuProcesses = 0;
+	/** The cache for the numbers of crops that need tending. */
 	private int cropsNeedingTendingCache = 5;
+	/** The cache for millisol. */
 	private int millisolCache = -5;
 	/** Numbers of associated people in this settlement. */
 	private int numCitizens;
@@ -266,7 +271,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	private double currentTemperature = 22.5;
 	/** The settlement's current indoor pressure [in kPa], not Pascal. */
 	private double currentPressure = NORMAL_AIR_PRESSURE;
-	/** Amount of time (millisols) that the settlement has had zero population. */
+//	/** Amount of time (millisols) that the settlement has had zero population. */
 //	private double zeroPopulationTime;
 	/** The settlement's current meal replenishment rate. */
 	public double mealsReplenishmentRate = 0.6;
@@ -329,12 +334,13 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	private List<Double> missionScores;
 	/** The settlement's achievement in scientific fields. */
 	private Map<ScienceType, Double> scientificAchievement;
-	/**
-	 * The settlement's water consumption in kitchen when preparing/cleaning meal
-	 * and dessert.
-	 */
-	private Map<Integer, Map<Integer, Double>> consumption;
-
+	/** The settlement's water consumption in kitchen when preparing/cleaning meal and dessert. */
+	private Map<Integer, Map<Integer, Double>> waterConsumption;
+	/** The settlement's daily output (resources produced). */
+	private Map<Integer, Map<Integer, Double>> dailyOutput;
+	/** The settlement's daily labor hours output. */
+	private Map<Integer, Map<Integer, Double>> dailyLaborHours;
+	
 	// Static members
 	/**
 	 * The flag signifying this settlement as the destination of the user-defined
@@ -537,8 +543,12 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		missionScores = new ArrayList<>();
 		missionScores.add(200D);
 
-		// Create the consumption map
-		consumption = new ConcurrentHashMap<>();
+		// Create the water consumption map
+		waterConsumption = new ConcurrentHashMap<>();
+		// Create the daily output map
+		dailyOutput = new ConcurrentHashMap<>();
+		// Create the daily labor hours map
+		dailyLaborHours = new ConcurrentHashMap<>();
 	}
 
 	/**
@@ -1423,9 +1433,13 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		if (solCache != solElapsed) {
 
 			// Limit the size of the dailyWaterUsage to x key value pairs
-			if (consumption.size() > MAX_NUM_SOLS)
-				consumption.remove(solElapsed - MAX_NUM_SOLS);
+			if (waterConsumption.size() > MAX_NUM_SOLS)
+				waterConsumption.remove(solElapsed - MAX_NUM_SOLS);
 
+			// Limit the size of the dailyWaterUsage to x key value pairs
+			if (dailyOutput.size() > MAX_SOLS_DAILY_OUTPUT)
+				dailyOutput.remove(solElapsed - MAX_SOLS_DAILY_OUTPUT);
+			
 //			printTaskProbability();
 //			printMissionProbability();
 
@@ -3897,7 +3911,53 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	}
 
 	/**
-	 * Adds the amount of water consumed.
+	 * Records the daily output.
+	 * 
+	 * @param id
+	 * @param amount
+	 */
+	public void addOutput(int id, double amount, double millisols) {
+		
+		// Record the amount of resource produced
+		Map<Integer, Double> amountMap = null;
+
+		if (dailyOutput.containsKey(solCache)) {
+			amountMap = dailyOutput.get(solCache);
+			if (amountMap.containsKey(id)) {
+				double oldAmt = amountMap.get(id);
+				amountMap.put(id, amount + oldAmt);
+			} else {
+				amountMap.put(id, amount);
+			}
+		} else {
+			amountMap = new ConcurrentHashMap<>();
+			amountMap.put(id, amount);
+		}
+
+		dailyOutput.put(solCache, amountMap);
+	
+		// Record the labor hours
+		Map<Integer, Double> laborHrMap = null;
+
+		if (dailyLaborHours.containsKey(solCache)) {
+			laborHrMap = dailyLaborHours.get(solCache);
+			if (laborHrMap.containsKey(id)) {
+				double oldAmt = laborHrMap.get(id);
+				laborHrMap.put(id, millisols + oldAmt);
+			} else {
+				laborHrMap.put(id, millisols);
+			}
+		} else {
+			laborHrMap = new ConcurrentHashMap<>();
+			laborHrMap.put(id, millisols);
+		}
+
+		dailyLaborHours.put(solCache, amountMap);
+		
+	}
+	
+	/**
+	 * Records the amount of water being consumed.
 	 * 
 	 * @param type
 	 * @param amount
@@ -3909,8 +3969,8 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		// type = 3 : cleaning kitchen for dessert
 		Map<Integer, Double> map = null;
 
-		if (consumption.containsKey(solCache)) {
-			map = consumption.get(solCache);
+		if (waterConsumption.containsKey(solCache)) {
+			map = waterConsumption.get(solCache);
 			if (map.containsKey(type)) {
 				double oldAmt = map.get(type);
 				map.put(type, amount + oldAmt);
@@ -3922,7 +3982,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 			map.put(type, amount);
 		}
 
-		consumption.put(solCache, map);
+		waterConsumption.put(solCache, map);
 	}
 
 	/**
@@ -3934,10 +3994,10 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	public Map<Integer, Double> getTotalConsumptionBySol(int type) {
 		Map<Integer, Double> map = new ConcurrentHashMap<>();
 
-		for (Integer sol : consumption.keySet()) {
-			for (Integer t : consumption.get(sol).keySet()) {
+		for (Integer sol : waterConsumption.keySet()) {
+			for (Integer t : waterConsumption.get(sol).keySet()) {
 				if (t == type) {
-					map.put(sol, consumption.get(sol).get(t));
+					map.put(sol, waterConsumption.get(sol).get(t));
 				}
 			}
 		}

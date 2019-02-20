@@ -17,10 +17,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
@@ -36,21 +33,22 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
+import org.mars_sim.msp.core.resource.ItemType;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.ResourceUtil;
-import org.mars_sim.msp.core.resource.ItemType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.BuildingException;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.goods.Good;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
+import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
-import org.mars_sim.msp.core.time.MarsClock;
-import org.mars_sim.msp.core.tool.RandomUtil;
+import org.mars_sim.msp.core.vehicle.VehicleType;
 
 /**
  * A building function for manufacturing.
@@ -508,18 +506,27 @@ public class Manufacture extends Function implements Serializable {
 						inv.storeAmountResource(id, amount, true);
 						// Add tracking supply
 						inv.addAmountSupply(id, amount);
-					} else if (ItemType.PART.equals(item.getType())) {
+						// Add to the daily output
+						settlement.addOutput(id, amount, process.getTotalWorkTime());
+					} 
+					
+					else if (ItemType.PART.equals(item.getType())) {
 						// Produce parts.
 						Part part = (Part) ItemResourceUtil.findItemResource(item.getName());
 						int id = part.getID();//ItemResourceUtil.findIDbyItemResourceName(item.getName());
-						double mass = item.getAmount() * part.getMassPerItem();
+						int num = (int) item.getAmount();
+						double mass = num * part.getMassPerItem();
 						double capacity = inv.getGeneralCapacity();
 						if (mass <= capacity) {
-							inv.storeItemResources(id, (int) item.getAmount());
+							inv.storeItemResources(id, num);
 							// Add tracking supply
-							inv.addItemSupply(id, (int) item.getAmount());
+							inv.addItemSupply(id, num);
+							// Add to the daily output
+							settlement.addOutput(id, num, process.getTotalWorkTime());
 						}
-					} else if (ItemType.EQUIPMENT.equals(item.getType())) {
+					} 
+					
+					else if (ItemType.EQUIPMENT.equals(item.getType())) {
 						// Produce equipment.
 						String equipmentType = item.getName();
 						int number = (int) item.getAmount();
@@ -531,8 +538,12 @@ public class Manufacture extends Function implements Serializable {
 //							equipment.enter(LocationCodeType.SETTLEMENT);
 							inv.storeUnit(equipment);
 							// TODO: how to add tracking supply for equipment
+							// Add to the daily output
+							settlement.addOutput(equipment.getIdentifier(), number, process.getTotalWorkTime());
 						}
-					} else if (ItemType.VEHICLE.equals(item.getType())) {
+					} 
+					
+					else if (ItemType.VEHICLE.equals(item.getType())) {
 						// Produce vehicles.
 						String vehicleType = item.getName();
 						int number = (int) item.getAmount();
@@ -544,8 +555,12 @@ public class Manufacture extends Function implements Serializable {
 								String name = unitManager.getNewName(UnitType.VEHICLE, null, null, null);
 								unitManager.addUnit(new Rover(name, vehicleType, settlement));
 							}
+							// Add to the daily output
+							settlement.addOutput(VehicleType.convertName2ID(vehicleType), number, process.getTotalWorkTime());
 						}
-					} else
+					} 
+					
+					else
 						throw new IllegalStateException(
 								"Manufacture.addProcess(): output: " + item.getType() + " not a valid type.");
 
@@ -553,10 +568,13 @@ public class Manufacture extends Function implements Serializable {
 					settlement.getGoodsManager().updateGoodValue(ManufactureUtil.getGood(item), false);
 				}
 			}
-		} else {
+		} 
+		
+		else {
 
 			// Premature end of process. Return all input materials.
-
+			// TODO: should some resources be consumed and irreversible ? 
+			
 			// WARNING : The UnitManager instance will be stale after loading from a saved
 			// sim
 			// It will fail to run methods in Settlement and without any warning as to why
@@ -579,16 +597,21 @@ public class Manufacture extends Function implements Serializable {
 							amount = capacity;
 						}
 						inv.storeAmountResource(resource, amount, true);
-					} else if (ItemType.PART.equals(item.getType())) {
+					} 
+					
+					else if (ItemType.PART.equals(item.getType())) {
 						// Produce parts.
 						Part part = (Part) ItemResourceUtil.findItemResource(item.getName());
+						int num = (int) item.getAmount();
 						int id = part.getID();//ItemResourceUtil.findIDbyItemResourceName(item.getName());
-						double mass = item.getAmount() * part.getMassPerItem();
+						double mass = num * part.getMassPerItem();
 						double capacity = inv.getGeneralCapacity();
 						if (mass <= capacity) {
-							inv.storeItemResources(id, (int) item.getAmount());
+							inv.storeItemResources(id, num);
 						}
-					} else if (ItemType.EQUIPMENT.equals(item.getType())) {
+					} 
+					
+					else if (ItemType.EQUIPMENT.equals(item.getType())) {
 						// Produce equipment.
 						String equipmentType = item.getName();
 						int number = (int) item.getAmount();
@@ -600,7 +623,9 @@ public class Manufacture extends Function implements Serializable {
 //							equipment.enter(LocationCodeType.SETTLEMENT);
 							inv.storeUnit(equipment);
 						}
-					} else if (ItemType.VEHICLE.equals(item.getType())) {
+					} 
+					
+					else if (ItemType.VEHICLE.equals(item.getType())) {
 						// Produce vehicles.
 						String vehicleType = item.getName();
 						int number = (int) item.getAmount();
@@ -613,7 +638,9 @@ public class Manufacture extends Function implements Serializable {
 								unitManager.addUnit(new Rover(name, vehicleType, settlement));
 							}
 						}
-					} else
+					} 
+					
+					else
 						throw new IllegalStateException(
 								"Manufacture.addProcess(): output: " + item.getType() + " not a valid type.");
 

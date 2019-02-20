@@ -554,14 +554,28 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
 				if ((process.getWorkTimeRemaining() <= 0D) && (process.getProcessTimeRemaining() <= 0D)) {
 					workshop.endManufacturingProcess(process, false);
 				}
-			} else {
-				if (!person.getSettlement().getManufactureOverride()) {
-					process = createNewManufactureProcess();
+			} 
+			
+			else {
+
+				if (person != null) {
+					if (!person.getSettlement().getManufactureOverride())
+						process = createNewManufactureProcess();
 				}
+				
+				else if (robot != null) {
+					if (!robot.getSettlement().getManufactureOverride())
+						process = createNewManufactureProcess();
+				}
+				
 				if (process == null) {
 					endTask();
 				}
 			}
+
+			if (process == null)
+				// Prints description
+				setDescription(Msg.getString("Task.description.manufactureConstructionMaterials.checking")); //$NON-NLS-1$
 		}
 
 		// Add experience

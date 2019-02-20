@@ -183,7 +183,7 @@ public class TabPanelManufacture extends TabPanel {
 				try {
 					Building workshopBuilding = (Building) buildingComboBox.getSelectedItem();
 					if (workshopBuilding != null) {
-						Manufacture workshop = (Manufacture) workshopBuilding.getFunction(FunctionType.MANUFACTURE);
+						Manufacture workshop = workshopBuilding.getManufacture();
 						Object selectedItem = processSelection.getSelectedItem();
 						if (selectedItem != null) {
 							if (selectedItem instanceof ManufactureProcessInfo) {

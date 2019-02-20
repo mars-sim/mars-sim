@@ -20,10 +20,12 @@ public class FoodProductionProcess implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	// Data members.
-	private FoodProduction kitchen;
-	private FoodProductionProcessInfo info;
+	private double totalWorkTimeReq;
 	private double workTimeRemaining;
 	private double processTimeRemaining;
+	
+	private FoodProduction kitchen;
+	private FoodProductionProcessInfo info;
 
 	/**
 	 * Constructor
@@ -36,6 +38,8 @@ public class FoodProductionProcess implements Serializable {
 		this.kitchen = kitchen;
 		workTimeRemaining = info.getWorkTimeRequired();
 		processTimeRemaining = info.getProcessTimeRequired();
+		
+		totalWorkTimeReq = workTimeRemaining;
 	}
 
 	/**
@@ -101,6 +105,15 @@ public class FoodProductionProcess implements Serializable {
 		return kitchen;
 	}
 
+	/**
+	 * Gets the total work time required
+	 * 
+	 * @return
+	 */
+	public double getTotalWorkTime() {
+		return totalWorkTimeReq;
+	}
+	
 	/**
 	 * Prepare object for garbage collection.
 	 */

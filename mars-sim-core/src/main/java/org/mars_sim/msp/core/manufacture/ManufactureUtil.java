@@ -21,9 +21,10 @@ import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
+import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ItemType;
-import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -304,31 +305,39 @@ public final class ManufactureUtil {
 		GoodsManager manager = settlement.getGoodsManager();
 
 		if (item.getType().equals(ItemType.AMOUNT_RESOURCE)) {
-			// AmountResource resource = ResourceUtil.findAmountResource(item.getName());
+			AmountResource ar = ResourceUtil.findAmountResource(item.getName());
 //            int id = ResourceUtil.findIDbyAmountResourceName(item.getName());
 			double amount = item.getAmount();
 			if (isOutput) {
 				double remainingCapacity = settlement.getInventory().getAmountResourceRemainingCapacity(
-						ResourceUtil.findAmountResource(item.getName()), true, false);
+						ar, true, false);
 				if (amount > remainingCapacity) {
 					amount = remainingCapacity;
 				}
 			}
-			Good good = GoodsUtil.createResourceGood(ResourceUtil.findAmountResource(item.getName()));
+			Good good = GoodsUtil.createResourceGood(ar);
 			result = manager.getGoodValuePerItem(good) * amount;
-		} else if (item.getType().equals(ItemType.PART)) {
-//            ItemResource resource = ItemResource.findItemResource(item.getName());
+		} 
+		
+		else if (item.getType().equals(ItemType.PART)) {
+//            ItemResource ir = ItemResourceUtil.findItemResource(item.getName());
 //            int id = ItemResourceUtil.findIDbyItemResourceName(item.getName());
 			Good good = GoodsUtil.createResourceGood(ItemResourceUtil.findItemResource(item.getName()));
 			result = manager.getGoodValuePerItem(good) * item.getAmount();
-		} else if (item.getType().equals(ItemType.EQUIPMENT)) {
-			Class<? extends Equipment> equipmentClass = EquipmentFactory.getEquipmentClass(item.getName());
-			Good good = GoodsUtil.createEquipmentGood(equipmentClass);
+		} 
+		
+		else if (item.getType().equals(ItemType.EQUIPMENT)) {
+//			Class<? extends Equipment> equipmentClass = EquipmentFactory.getEquipmentClass(item.getName());
+			Good good = GoodsUtil.createEquipmentGood(EquipmentFactory.getEquipmentClass(item.getName()));
 			result = manager.getGoodValuePerItem(good) * item.getAmount();
-		} else if (item.getType().equals(ItemType.VEHICLE)) {
-			Good good = GoodsUtil.createVehicleGood(item.getName());
-			result = manager.getGoodValuePerItem(good) * item.getAmount();
-		} else
+		} 
+		
+		else if (item.getType().equals(ItemType.VEHICLE)) {
+//			Good good = GoodsUtil.createVehicleGood(item.getName());
+			result = manager.getGoodValuePerItem(GoodsUtil.createVehicleGood(item.getName())) * item.getAmount();
+		} 
+		
+		else
 			throw new IllegalStateException("Item type: " + item.getType() + " not valid.");
 
 		return result;
@@ -528,8 +537,8 @@ public final class ManufactureUtil {
 	 * @throws BuildingException if error checking for manufacturing buildings.
 	 */
 	public static boolean doesSettlementHaveManufacturing(Settlement settlement) {
-		BuildingManager manager = settlement.getBuildingManager();
-		return (manager.getBuildings(FunctionType.MANUFACTURE).size() > 0);
+//		BuildingManager manager = settlement.getBuildingManager();
+		return (settlement.getBuildingManager().getBuildings(FunctionType.MANUFACTURE).size() > 0);
 	}
 
 	/**
@@ -545,7 +554,7 @@ public final class ManufactureUtil {
 		Iterator<Building> i = manager.getBuildings(FunctionType.MANUFACTURE).iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
-			Manufacture manufacturingFunction = (Manufacture) building.getFunction(FunctionType.MANUFACTURE);
+			Manufacture manufacturingFunction = building.getManufacture();
 			if (manufacturingFunction.getTechLevel() > highestTechLevel)
 				highestTechLevel = manufacturingFunction.getTechLevel();
 		}
@@ -563,14 +572,30 @@ public final class ManufactureUtil {
 	public static Good getGood(ManufactureProcessItem item) {
 		Good result = null;
 		if (ItemType.AMOUNT_RESOURCE.equals(item.getType())) {
-			result = GoodsUtil.createResourceGood(ResourceUtil.findAmountResource(item.getName()));
-		} else if (ItemType.PART.equals(item.getType())) {
-			result = GoodsUtil.createResourceGood(ItemResourceUtil.findItemResource(item.getName()));
-		} else if (ItemType.EQUIPMENT.equals(item.getType())) {
+			AmountResource ar = ResourceUtil.findAmountResource(item.getName());
+			result = GoodsUtil.getResourceGood(ar);
+			if (result == null)
+				result = GoodsUtil.createResourceGood(ar);
+		} 
+		
+		else if (ItemType.PART.equals(item.getType())) {
+			ItemResource ir = ItemResourceUtil.findItemResource(item.getName());
+			result = GoodsUtil.getResourceGood(ir);
+			if (result == null)
+				result = GoodsUtil.createResourceGood(ir);
+		} 
+		
+		else if (ItemType.EQUIPMENT.equals(item.getType())) {
 			Class<? extends Equipment> equipmentClass = EquipmentFactory.getEquipmentClass(item.getName());
-			result = GoodsUtil.createEquipmentGood(equipmentClass);
-		} else if (ItemType.VEHICLE.equals(item.getType())) {
-			result = GoodsUtil.createVehicleGood(item.getName());
+			result = GoodsUtil.getEquipmentGood(equipmentClass);
+			if (result == null)
+				result = GoodsUtil.createEquipmentGood(equipmentClass);
+		} 
+		
+		else if (ItemType.VEHICLE.equals(item.getType())) {
+			result = GoodsUtil.getVehicleGood(item.getName());
+			if (result == null)
+				result = GoodsUtil.createVehicleGood(item.getName());
 		}
 
 		return result;
@@ -589,8 +614,8 @@ public final class ManufactureUtil {
 		if (ItemType.AMOUNT_RESOURCE.equals(item.getType())) {
 			mass = item.getAmount();
 		} else if (ItemType.PART.equals(item.getType())) {
-			Part part = (Part) ItemResourceUtil.findItemResource(item.getName());
-			mass = item.getAmount() * part.getMassPerItem();
+//			Part part = (Part) ItemResourceUtil.findItemResource(item.getName());
+			mass = item.getAmount() * ItemResourceUtil.findItemResource(item.getName()).getMassPerItem();
 		} else if (ItemType.EQUIPMENT.equals(item.getType())) {
 			double equipmentMass = EquipmentFactory.getEquipmentMass(item.getName());
 			mass = item.getAmount() * equipmentMass;
