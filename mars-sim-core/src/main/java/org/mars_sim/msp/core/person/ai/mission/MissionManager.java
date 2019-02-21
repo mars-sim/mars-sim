@@ -469,12 +469,12 @@ public class MissionManager implements Serializable {
 	 */
 	public int numParticularMissions(String mName, Settlement settlement) {
 		int num = 0;
-		List<Mission> m1 = getMissions();
+		List<Mission> m1 = missions;
 		if (!m1.isEmpty()) {		
 			Iterator<Mission> i = m1.iterator();
 			while (i.hasNext()) {
 				Mission m = i.next();
-				if (!m.isDone() && m.getName().equals(mName)
+				if (!m.isDone() && mName.contains(m.getName())
 						&& settlement == m.getAssociatedSettlement()) {
 					num++;
 				}
