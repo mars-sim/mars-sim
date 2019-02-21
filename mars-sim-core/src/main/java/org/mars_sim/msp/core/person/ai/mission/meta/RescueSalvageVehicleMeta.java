@@ -97,7 +97,7 @@ public class RescueSalvageVehicleMeta implements MetaMission {
             // Check if person is last remaining person at settlement (for salvage mission but not rescue mission).
             // Also check for backup rover for salvage mission.
             //boolean rescue = false;
-            else if (vehicleTarget != null) {
+            if (vehicleTarget != null) {
                 rescuePeople = (RescueSalvageVehicle.getRescuePeopleNum(vehicleTarget) > 0);
                 if (rescuePeople) {
                     //if (!atLeastOnePersonRemainingAtSettlement(settlement, person))
@@ -132,6 +132,9 @@ public class RescueSalvageVehicleMeta implements MetaMission {
                 missionProbability = RescueSalvageVehicle.BASE_SALVAGE_MISSION_WEIGHT;
             }
 
+    		if (missionProbability <= 0)
+    			return 0;
+    		
 			int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);
 			int numThisMission = missionManager.numParticularMissions(NAME, settlement);
 	
@@ -140,7 +143,7 @@ public class RescueSalvageVehicleMeta implements MetaMission {
     			return 0;
     		}	
     		
-    		else if (numThisMission > 1)
+    		if (numThisMission > 1)
     			return 0;	
 
 			int f1 = 2*numEmbarked + 1;

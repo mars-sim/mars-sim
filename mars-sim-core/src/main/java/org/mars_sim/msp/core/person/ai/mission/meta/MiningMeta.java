@@ -56,7 +56,7 @@ public class MiningMeta implements MetaMission {
         	Settlement settlement = person.getSettlement();
 
             missionProbability = settlement.getMissionBaseProbability();
-       		if (missionProbability == 0)
+       		if (missionProbability <= 0)
     			return 0;
        		
             // Check if there are enough bags at the settlement for collecting minerals.
@@ -65,12 +65,12 @@ public class MiningMeta implements MetaMission {
 
             // Check if available light utility vehicles.
             //boolean reservableLUV =
-            else if (!Mining.isLUVAvailable(settlement))
+            if (!Mining.isLUVAvailable(settlement))
             	return 0;
 
             // Check if LUV attachment parts available.
             //boolean availableAttachmentParts =
-            else if (!Mining.areAvailableAttachmentParts(settlement))
+            if (!Mining.areAvailableAttachmentParts(settlement))
             	return 0;
 
 			int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);
@@ -81,7 +81,7 @@ public class MiningMeta implements MetaMission {
     			return 0;
     		}	
     		
-    		else if (numThisMission > 1)
+    		if (numThisMission > 1)
     			return 0;
     		
     		missionProbability = 0;
@@ -99,8 +99,6 @@ public class MiningMeta implements MetaMission {
                         missionProbability = Mining.getMiningSiteValue(miningSite, settlement);
     					if (missionProbability < 0)
     						missionProbability = 0;
-    					else if (missionProbability > LIMIT)
-                            missionProbability = LIMIT;
                     }
                 }
             } catch (Exception e) {
@@ -128,6 +126,8 @@ public class MiningMeta implements MetaMission {
                   		 + settlement.getGoodsManager().getResearchFactor())/1.5;
             }
 
+			if (missionProbability > LIMIT)
+				missionProbability = LIMIT;
         }
 
 //        if (missionProbability > 0)

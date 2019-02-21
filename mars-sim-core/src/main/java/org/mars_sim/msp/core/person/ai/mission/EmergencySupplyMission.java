@@ -73,7 +73,7 @@ public class EmergencySupplyMission extends RoverMission implements Serializable
 	private static final double VEHICLE_FUEL_REMAINING_MODIFIER = 2D;
 	private static final double MINIMUM_EMERGENCY_SUPPLY_AMOUNT = 100D;
 
-	public static final double BASE_STARTING_PROBABILITY = 100D;
+	public static final double BASE_STARTING_PROBABILITY = 20D;
 
 	/** Mission phases. */
 	final public static MissionPhase SUPPLY_DELIVERY_DISEMBARKING = new MissionPhase(

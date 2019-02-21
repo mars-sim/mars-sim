@@ -499,15 +499,15 @@ public class Mind implements Serializable {
 				return;
 			}
 			
-			if (missions) {
-				Mission newMission = missionManager.getNewMission(person);
-				if (newMission != null) {
-					missionManager.addMission(newMission);
-					setMission(newMission);
-				}
-
-				return;
-			}
+//			if (missions) {
+//				Mission newMission = missionManager.getNewMission(person);
+//				if (newMission != null) {
+//					missionManager.addMission(newMission);
+//					setMission(newMission);
+//				}
+//
+//				return;
+//			}
 		}
 		
 		else {

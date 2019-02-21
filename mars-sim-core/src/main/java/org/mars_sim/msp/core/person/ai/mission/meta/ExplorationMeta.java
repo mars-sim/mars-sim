@@ -64,18 +64,21 @@ public class ExplorationMeta implements MetaMission {
 			}
 			
 			missionProbability = settlement.getMissionBaseProbability();
-	   		if (missionProbability == 0)
+	   		if (missionProbability <= 0)
     			return 0;
 	   		
 			int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);
 			int numThisMission = missionManager.numParticularMissions(NAME, settlement);
 	
+//			if (numThisMission > 1)	System.out.println(settlement + "  " + NAME + "'s numThisMission : " + numThisMission);
+//			if (numEmbarked > 1) System.out.println(settlement + "  " + NAME + "'s numEmbarked : " + numEmbarked);
+			
 	   		// Check for # of embarking missions.
     		if (Math.max(1, settlement.getNumCitizens() / 8.0) < numEmbarked + numThisMission) {
     			return 0;
     		}	
     		
-    		else if (numThisMission > 1)
+    		if (numThisMission > 1)
     			return 0;	
     		
     		missionProbability = 0;
@@ -88,8 +91,6 @@ public class ExplorationMeta implements MetaMission {
 					missionProbability = settlement.getTotalMineralValue(rover) / FACTOR;
 					if (missionProbability < 0)
 						missionProbability = 0;
-					else if (missionProbability > LIMIT)
-                        missionProbability = LIMIT;
 				}
 				
 			} catch (Exception e) {
@@ -108,6 +109,9 @@ public class ExplorationMeta implements MetaMission {
 				missionProbability *= job.getStartMissionProbabilityModifier(Exploration.class)
 					* (settlement.getGoodsManager().getTourismFactor()
                		 + settlement.getGoodsManager().getResearchFactor())/1.5;
+			
+			if (missionProbability > LIMIT)
+				missionProbability = LIMIT;
 		}
 
 //        if (missionProbability > 0)

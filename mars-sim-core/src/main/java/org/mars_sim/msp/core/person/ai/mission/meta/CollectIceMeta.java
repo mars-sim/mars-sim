@@ -51,7 +51,7 @@ public class CollectIceMeta implements MetaMission {
 			Settlement settlement = person.getSettlement();
 
 			missionProbability = settlement.getMissionBaseProbability() / VALUE;
-    		if (missionProbability == 0)
+    		if (missionProbability <= 0)
     			return 0;
     		
 //			missionProbability = getSettlementProbability(settlement);
@@ -63,6 +63,9 @@ public class CollectIceMeta implements MetaMission {
     			return 0;
     		}	
     	
+    		if (numThisMission > 1)
+    			return 0;
+    		
     		int f1 = 2*numEmbarked + 1;
     		int f2 = 2*numThisMission + 1;
     		

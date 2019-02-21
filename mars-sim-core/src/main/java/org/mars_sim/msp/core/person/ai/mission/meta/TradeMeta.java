@@ -80,6 +80,9 @@ public class TradeMeta implements MetaMission {
 				missionProbability = 0;
 			}
 			
+    		if (missionProbability <= 0)
+    			return 0;
+    		
 			int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);
 			int numThisMission = Simulation.instance().getMissionManager().numParticularMissions(NAME, settlement);
 	
@@ -88,7 +91,7 @@ public class TradeMeta implements MetaMission {
     			return 0;
     		}		
     		
-    		else if (numThisMission > 1)
+    		if (numThisMission > 1)
     			return 0;	
     		
 

@@ -142,6 +142,8 @@ public abstract class Mission implements Serializable {
 	private String phaseDescription;
 	/** The full mission designation. */
 	private String fullMissionDesignation;
+	/** The reason for ending the mission. */
+	private String reason = "";
 	
 	/** The current phase of the mission. */
 	private MissionPhase phase;
@@ -831,6 +833,8 @@ public abstract class Mission implements Serializable {
 	 * @param reason
 	 */
 	public void endMission(String reason) {
+		this.reason = reason;
+		
 		// Add mission experience score
 		addMissionScore(reason);
 		
@@ -1454,6 +1458,10 @@ public abstract class Mission implements Serializable {
 	
 	public String getReservedVehicle() {
 		return vehicleReserved;
+	}
+	
+	public String getReason() {
+		return reason;
 	}
 	
 	/**

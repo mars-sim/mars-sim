@@ -257,7 +257,11 @@ public class Mining extends RoverMission {
 				if (vehicle.isReserved())
 					usable = false;
 
-				if (vehicle.getStatus() != StatusType.PARKED && vehicle.getStatus() != StatusType.GARAGED)
+				if (vehicle.getStatus() == StatusType.MAINTENANCE 
+						|| vehicle.getStatus() == StatusType.TOWED
+						|| vehicle.getStatus() == StatusType.MOVING
+						|| vehicle.getStatus() == StatusType.STUCK
+						|| vehicle.getStatus() == StatusType.MALFUNCTION)
 					usable = false;
 
 				if (((Crewable) vehicle).getCrewNum() > 0 || ((Crewable) vehicle).getRobotCrewNum() > 0)
@@ -376,13 +380,23 @@ public class Mining extends RoverMission {
 	protected void performEmbarkFrom() {
 		// Attach light utility vehicle for towing.
 		if (!isDone() && (getRover().getTowedVehicle() == null)) {
-			try {
-				Inventory settlementInv = getStartingSettlement().getInventory();
-				Inventory luvInv = luv.getInventory();
-				getRover().setTowedVehicle(luv);
-				luv.setTowingVehicle(getRover());
-				settlementInv.retrieveUnit(luv);
 
+			Inventory settlementInv = getStartingSettlement().getInventory();
+			Inventory luvInv = luv.getInventory();
+			getRover().setTowedVehicle(luv);
+			luv.setTowingVehicle(getRover());
+			settlementInv.retrieveUnit(luv);
+
+			if (!settlementInv.hasItemResource(ItemResourceUtil.pneumaticDrillID)
+					|| !settlementInv.hasItemResource(ItemResourceUtil.backhoeID)) {
+				LogConsolidated.log(Level.INFO, 0, sourceName, "[" + startingPerson.getSettlement() + "] "
+						+ startingPerson.getName() + " could not load LUV and/or its attachment parts from " + getRover().getNickName());
+				endMission(LUV_ATTACHMENT_PARTS_NOT_LOADABLE);
+				
+				return;
+			}
+				
+			try {
 				// Load light utility vehicle with attachment parts.
 				settlementInv.retrieveItemResources(ItemResourceUtil.pneumaticDrillID, 1);
 				luvInv.storeItemResources(ItemResourceUtil.pneumaticDrillID, 1);
@@ -392,7 +406,7 @@ public class Mining extends RoverMission {
 			} catch (Exception e) {
 //				logger.log(Level.SEVERE, "Light Utility Vehicle and/or its attachment parts could not be loaded.");
 				LogConsolidated.log(Level.INFO, 0, sourceName, "[" + startingPerson.getSettlement() + "] "
-						+ startingPerson.getName() + " could not load LUV and/or its attachment parts from " + getRover().getNickName());
+						+ startingPerson.getName() + " could not find the LUV attachment parts from " + getRover().getNickName());
 				endMission(LUV_ATTACHMENT_PARTS_NOT_LOADABLE);
 			}
 		}

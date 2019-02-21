@@ -59,7 +59,7 @@ public class CollectRegolithMeta implements MetaMission {
 //			result = getSettlementProbability(settlement);
 
 			missionProbability = settlement.getMissionBaseProbability() / VALUE;
-    		if (missionProbability == 0)
+    		if (missionProbability <= 0)
     			return 0;
     	   		
     		int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);
@@ -70,6 +70,9 @@ public class CollectRegolithMeta implements MetaMission {
     			return 0;
     		}	
     	
+    		if (numThisMission > 1)
+    			return 0;
+    		
     		int f1 = 2*numEmbarked + 1;
     		int f2 = 2*numThisMission + 1;
     		

@@ -58,7 +58,7 @@ public class MeteorologyStudyFieldMissionMeta implements MetaMission {
             Settlement settlement = person.getSettlement();
 
             missionProbability = settlement.getMissionBaseProbability();
-    		if (missionProbability == 0)
+    		if (missionProbability <= 0)
     			return 0;
     		
 			int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);
@@ -68,6 +68,9 @@ public class MeteorologyStudyFieldMissionMeta implements MetaMission {
     		if (Math.max(1, settlement.getNumCitizens() / 8.0) < numEmbarked + numThisMission) {
     			return 0;
     		}	
+    		
+    		if (numThisMission > 1)
+    			return 0;	
     		
     		missionProbability = 0;
     		

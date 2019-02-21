@@ -397,7 +397,7 @@ public class MissionManager implements Serializable {
 		while (i.hasNext() && (selectedMetaMission == null)) {
 			MetaMission metaMission = i.next();
 			double probWeight = missionProbCache.get(metaMission);
-			if (r <= probWeight) {
+			if (r <= probWeight && probWeight != 0) {
 				selectedMetaMission = metaMission;
 			} else {
 				r -= probWeight;
@@ -474,7 +474,7 @@ public class MissionManager implements Serializable {
 			Iterator<Mission> i = m1.iterator();
 			while (i.hasNext()) {
 				Mission m = i.next();
-				if (!m.isDone() && mName.contains(m.getName())
+				if (!m.isDone() && mName.equalsIgnoreCase(m.getName())
 						&& settlement == m.getAssociatedSettlement()) {
 					num++;
 				}
@@ -613,10 +613,15 @@ public class MissionManager implements Serializable {
 		if (missions != null) { // for passing maven test
 			while (index < missions.size()) {
 				Mission m = missions.get(index);
+				String reason = m.getReason().toLowerCase();
 				if (m == null
 //						|| m.isDone() 
 //						|| !m.isApproved() // initially it's not approved until it passes the approval phase
 //						|| m.getPlan() == null
+						|| m.getPhase() == null
+						|| reason.contains("aborted")
+						|| reason.contains("no ")
+						|| reason.contains("not ")
 						|| (m.getPlan() != null && m.getPlan().getStatus() == PlanType.NOT_APPROVED)
 						) {
 					removeMission(m);
