@@ -479,9 +479,15 @@ public abstract class RoverMission extends VehicleMission {
 					BuildingManager.addToMedicalBuilding(p, id);
 					p.setAssociatedSettlement(id);
 
-					HistoricalEvent rescueEvent = new MissionHistoricalEvent(EventType.MISSION_RESCUE_PERSON, this,
-							p.getPhysicalCondition().getHealthSituation(), p.getTaskDescription(), p.getName(),
-							p.getVehicle().getName(), p.getLocationTag().getLocale());
+					HistoricalEvent rescueEvent = new MissionHistoricalEvent(EventType.MISSION_RESCUE_PERSON, 
+							this,
+							p.getPhysicalCondition().getHealthSituation(), 
+							p.getTaskDescription(), 
+							p.getName(),
+							p.getVehicle().getName(), 
+							p.getLocationTag().getLocale(),
+							p.getAssociatedSettlement().getName()
+							);
 					eventManager.registerNewEvent(rescueEvent);
 
 				}

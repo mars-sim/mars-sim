@@ -34,9 +34,9 @@ public class MalfunctionEvent extends HistoricalEvent implements Serializable {
 	 * 
 	 */
 	public MalfunctionEvent(EventType type, Malfunction malfunction, String whatCause, String whileDoing,
-			String whoAffected, String location0, String location1) {
+			String whoAffected, String location0, String location1, String associatedSettlement) {
 //			Malfunctionable entity, Malfunction malfunction, EventType eventType, Object actor, String location, boolean fixed) {
 		super(HistoricalEventCategory.MALFUNCTION, type, malfunction, whatCause, whileDoing, whoAffected, location0,
-				location1);
+				location1, associatedSettlement);
 	}
 }

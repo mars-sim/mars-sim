@@ -7,6 +7,7 @@
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -16,6 +17,7 @@ import java.util.logging.Logger;
 
 import javax.swing.SwingUtilities;
 
+import org.mars_sim.msp.core.GameManager;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
@@ -132,7 +134,11 @@ public class SettlementTableModel extends UnitTableModel {
 		super(Msg.getString("SettlementTableModel.tabName"), "SettlementTableModel.countingSettlements", //$NON-NLS-2$
 				columnNames, columnTypes);
 
-		setSource(unitManager.getSettlements());
+		if (GameManager.mode.equals("1"))
+			addUnit(GameManager.commander.getAssociatedSettlement());
+		else
+			setSource(unitManager.getSettlements());
+		
 		unitManagerListener = new LocalUnitManagerListener();
 		unitManager.addUnitManagerListener(unitManagerListener);
 		

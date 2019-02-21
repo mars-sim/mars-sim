@@ -18,8 +18,6 @@ import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
 
-import com.alee.laf.panel.WebPanel;
-
 /**
  * This class represents an abstraction of a view displayed in the Monitor
  * Window. The view is displayed inside a tab panel within the window and

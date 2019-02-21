@@ -39,6 +39,7 @@ import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
@@ -533,6 +534,7 @@ public class MalfunctionManager implements Serializable {
 	public void registerAMalfunction(Malfunction malfunction, Unit actor) {
 		String malfunctionName = malfunction.getName();
 
+		Settlement settlement = null;
 		Person person = null;
 		Robot robot = null;
 
@@ -544,9 +546,11 @@ public class MalfunctionManager implements Serializable {
 		if (actor != null) {
 			if (actor instanceof Person) {
 				person = (Person) actor;
+				settlement = person.getAssociatedSettlement();
 				task = person.getTaskDescription();
 			} else if (actor instanceof Robot) {
 				robot = (Robot) actor;
+				settlement = robot.getAssociatedSettlement();
 				task = robot.getTaskDescription();
 			}
 			
@@ -564,6 +568,7 @@ public class MalfunctionManager implements Serializable {
 		if (entity.getUnit() instanceof Vehicle) {
 			loc0 = entity.getNickName();
 			loc1 = entity.getLocale();
+			settlement = entity.getUnit().getAssociatedSettlement();
 		}
 
 		else if (entity.getUnit() instanceof EVASuit) {// object.toLowerCase().contains("eva")) {
@@ -571,22 +576,25 @@ public class MalfunctionManager implements Serializable {
 //				EVASuit suit = (EVASuit)entity.getUnit();
 			loc0 = ((EVASuit) entity).getImmediateLocation();
 			loc1 = ((EVASuit) entity).getLastOwner().getLocationTag().getLocale();
+			settlement = entity.getUnit().getAssociatedSettlement();
 		}
 
 		else if (entity.getUnit() instanceof Robot) {// object.toLowerCase().contains("bot")) {
 			loc0 = entity.getImmediateLocation();
 			loc1 = entity.getLocale();
+			settlement = entity.getUnit().getAssociatedSettlement();
 		}
 
 		else {
 			loc0 = entity.getImmediateLocation();
 			loc1 = entity.getLocale();
+			settlement = entity.getUnit().getAssociatedSettlement();
 		}
 
 		if (object.equals(loc0)) {
 			if (actor == null) {
 				HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_PARTS_FAILURE,
-						malfunction, malfunctionName, "N/A", "None", loc0, loc1);
+						malfunction, malfunctionName, "N/A", "None", loc0, loc1, settlement.getName());
 				eventManager.registerNewEvent(newEvent);
 				
 				LogConsolidated.log(Level.WARNING, 0, sourceName,
@@ -597,7 +605,7 @@ public class MalfunctionManager implements Serializable {
 			else {
 				if (person != null) {
 					HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_HUMAN_FACTORS,
-							malfunction, malfunctionName, task, offender, loc0, loc1);
+							malfunction, malfunctionName, task, offender, loc0, loc1, settlement.getName());
 					eventManager.registerNewEvent(newEvent);
 					
 					LogConsolidated.log(Level.WARNING, 0, sourceName, 
@@ -606,7 +614,7 @@ public class MalfunctionManager implements Serializable {
 							+ offender + ". Cause : Human Factors.");
 				} else if (robot != null) {
 					HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_PROGRAMMING_ERROR,
-							malfunction, malfunctionName, task, offender, loc0, loc1);
+							malfunction, malfunctionName, task, offender, loc0, loc1, settlement.getName());
 					eventManager.registerNewEvent(newEvent);
 					
 					LogConsolidated.log(Level.WARNING, 0, sourceName, 
@@ -620,7 +628,7 @@ public class MalfunctionManager implements Serializable {
 		else {
 			if (actor == null) {
 				HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_PARTS_FAILURE,
-						malfunction, malfunctionName + " on " + object, "N/A", "None", loc0, loc1);
+						malfunction, malfunctionName + " on " + object, "N/A", "None", loc0, loc1, settlement.getName());
 				eventManager.registerNewEvent(newEvent);
 				
 				LogConsolidated.log(Level.WARNING, 0, sourceName,
@@ -631,7 +639,7 @@ public class MalfunctionManager implements Serializable {
 			else {
 				if (person != null) {
 					HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_HUMAN_FACTORS,
-							malfunction, malfunctionName + " on " + object, task, offender, loc0, loc1);
+							malfunction, malfunctionName + " on " + object, task, offender, loc0, loc1, settlement.getName());
 					eventManager.registerNewEvent(newEvent);
 					
 					LogConsolidated.log(Level.WARNING, 0, sourceName, 
@@ -642,7 +650,7 @@ public class MalfunctionManager implements Serializable {
 				
 				else if (robot != null) {
 					HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_PROGRAMMING_ERROR,
-							malfunction, malfunctionName, task, offender, loc0, loc1);
+							malfunction, malfunctionName, task, offender, loc0, loc1, settlement.getName());
 					eventManager.registerNewEvent(newEvent);
 					
 					LogConsolidated.log(Level.WARNING, 0, sourceName, 
@@ -666,6 +674,8 @@ public class MalfunctionManager implements Serializable {
 
 		String object = entity.getNickName();
 
+		Settlement settlement = entity.getUnit().getAssociatedSettlement();
+		
 		// TODO: determine what happens to each entity
 //		entity instanceof EVASuit	
 //		entity instanceof Building
@@ -692,14 +702,14 @@ public class MalfunctionManager implements Serializable {
 
 		else {
 			loc0 = entity.getImmediateLocation();
-			loc1 = entity.getLocale();
+			loc1 = entity.getLocale();	
 		}
 
 		String name = malfunction.getTraumatized();
 
 		// if it is a meteorite impact
 		HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_ACT_OF_GOD, malfunction,
-				malfunctionName, task, name, loc0, loc1);
+				malfunctionName, task, name, loc0, loc1, settlement.getName());
 		eventManager.registerNewEvent(newEvent);
 		
 		if (object.equals(loc0)) {
@@ -946,7 +956,7 @@ public class MalfunctionManager implements Serializable {
 
 				HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_FIXED, m,
 						m.getName(), "Repairing", chiefRepairer, entity.getImmediateLocation(),
-						entity.getLocale());
+						entity.getLocale(), entity.getUnit().getAssociatedSettlement().getName());
 
 				eventManager.registerNewEvent(newEvent);
 				

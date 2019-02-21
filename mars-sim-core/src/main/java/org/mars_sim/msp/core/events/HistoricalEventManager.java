@@ -7,6 +7,7 @@
 
 package org.mars_sim.msp.core.events;
 
+import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.narrator.Narrator;
 import org.mars_sim.msp.core.person.EventType;
@@ -17,6 +18,7 @@ import java.util.ArrayList;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 /**
@@ -113,7 +115,7 @@ public class HistoricalEventManager implements Serializable {
 	public SimpleEvent getEvent(int index) {
 		return eventsRegistry.get(index);
 	}
-
+	
 	public boolean isSameEvent(HistoricalEvent newEvent) {
 		if (lastEvents != null && !lastEvents.isEmpty()) {
 			for (HistoricalEvent e : lastEvents) {
@@ -201,8 +203,9 @@ public class HistoricalEventManager implements Serializable {
 		short who = (short) (getID(whoList, event.getWho()));
 		short loc0 = (short) (getID(loc0List, event.getLocation0()));
 		short loc1 = (short) (getID(loc1List, event.getLocation1()));
-
-		SimpleEvent se = new SimpleEvent(missionSol, millisols, cat, type, what, whileDoing, who, loc0, loc1);
+		short id = (short) CollectionUtils.findSettlementID(event.getAssociatedSettlement());
+		
+		SimpleEvent se = new SimpleEvent(missionSol, millisols, cat, type, what, whileDoing, who, loc0, loc1, id);
 		eventsRegistry.add(0, se);
 		return se;
 	}
@@ -241,6 +244,13 @@ public class HistoricalEventManager implements Serializable {
 		return eventsRegistry;
 	}
 
+	public List<SimpleEvent> getEvents(int settlementID) {
+		return eventsRegistry
+				.stream()
+				.filter(e -> e.getSettlementID() == settlementID)
+				.collect(Collectors.toList());
+	}
+	
 	/**
 	 * Prepare object for garbage collection.
 	 */

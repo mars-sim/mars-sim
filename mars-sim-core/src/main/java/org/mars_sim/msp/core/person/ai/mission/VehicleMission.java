@@ -87,9 +87,6 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	/** Caches */
 	protected Map<Integer, Integer> equipmentNeededCache;
 	
-	// static instances
-	// static instances from Mission
-	
 	/**
 	 * Constructor 1
 	 * 
@@ -961,15 +958,27 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 				|| hasEmergencyAllCrew()) {
 			hasMedicalEmergency = true;
 			// Creating medical emergency mission event.
-			HistoricalEvent newEvent = new MissionHistoricalEvent(EventType.MISSION_MEDICAL_EMERGENCY, this,
-					person.getName() + " had " + person.getPhysicalCondition().getHealthSituation(), this.getName(),
-					member.getName(), member.getVehicle().getName(), member.getLocationTag().getLocale());
+			HistoricalEvent newEvent = new MissionHistoricalEvent(EventType.MISSION_MEDICAL_EMERGENCY, 
+					this,
+					person.getName() + " had " + person.getPhysicalCondition().getHealthSituation(), 
+					this.getName(),
+					member.getName(), 
+					member.getVehicle().getName(),
+					member.getLocationTag().getLocale(),
+					((Person)member).getAssociatedSettlement().getName()
+					);
 			eventManager.registerNewEvent(newEvent);
 		} else {
 			// Creating 'Not enough resources' mission event.
-			HistoricalEvent newEvent = new MissionHistoricalEvent(EventType.MISSION_NOT_ENOUGH_RESOURCES, this,
-					"Dwindling resource(s)", this.getName(), member.getName(), member.getVehicle().getName(),
-					member.getLocationTag().getLocale());
+			HistoricalEvent newEvent = new MissionHistoricalEvent(EventType.MISSION_NOT_ENOUGH_RESOURCES, 
+					this,
+					"Dwindling resource(s)", 
+					this.getName(), 
+					member.getName(), 
+					member.getVehicle().getName(),
+					member.getLocationTag().getLocale(),
+					((Person)member).getAssociatedSettlement().getName()
+					);
 			eventManager.registerNewEvent(newEvent);
 		}
 
@@ -1018,9 +1027,15 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 							+ " km    Duration : " + Math.round(newTripTime * 100.0 / 1000.0) / 100.0 + " sols");
 
 					// Creating emergency destination mission event.
-					HistoricalEvent newEvent = new MissionHistoricalEvent(EventType.MISSION_EMERGENCY_DESTINATION, this,
-							"Dwindling Resource(s)", this.getName(), member.getName(), member.getVehicle().getName(),
-							member.getLocationTag().getLocale());
+					HistoricalEvent newEvent = new MissionHistoricalEvent(EventType.MISSION_EMERGENCY_DESTINATION, 
+							this,
+							"Dwindling Resource(s)", 
+							this.getName(), 
+							member.getName(), 
+							member.getVehicle().getName(),
+							member.getLocationTag().getLocale(),
+							((Person)member).getAssociatedSettlement().getName()
+							);
 					eventManager.registerNewEvent(newEvent);
 
 					// Note: use Mission.goToNearestSettlement() as reference
@@ -1073,9 +1088,15 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 							+ " km    Duration : " + Math.round(newTripTime * 100.0 / 1000.0) / 100.0 + " sols");
 
 					// Creating emergency destination mission event.
-					HistoricalEvent newEvent = new MissionHistoricalEvent(EventType.MISSION_EMERGENCY_DESTINATION, this,
-							"Dwindling Resource(s)", this.getName(), member.getName(), member.getVehicle().getName(),
-							member.getLocationTag().getLocale());
+					HistoricalEvent newEvent = new MissionHistoricalEvent(EventType.MISSION_EMERGENCY_DESTINATION, 
+							this,
+							"Dwindling Resource(s)", 
+							this.getName(), 
+							member.getName(), 
+							member.getVehicle().getName(),
+							member.getLocationTag().getLocale(),
+							((Person)member).getAssociatedSettlement().getName()
+							);
 					Simulation.instance().getEventManager().registerNewEvent(newEvent);
 
 					// Set the new destination as the travel mission's next and final navpoint.
@@ -1122,9 +1143,15 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 
 		if (beaconOn) {
 			// Creating mission emergency beacon event.
-			HistoricalEvent newEvent = new MissionHistoricalEvent(EventType.MISSION_EMERGENCY_BEACON_ON, this, reason,
-					this.getName(), member.getName(), member.getVehicle().getName(),
-					member.getLocationTag().getLocale());
+			HistoricalEvent newEvent = new MissionHistoricalEvent(EventType.MISSION_EMERGENCY_BEACON_ON, 
+					this, 
+					reason,
+					this.getName(), 
+					member.getName(), 
+					member.getVehicle().getName(),
+					member.getLocationTag().getLocale(),
+					((Person)member).getAssociatedSettlement().getName()
+					);
 
 			Simulation.instance().getEventManager().registerNewEvent(newEvent);
 			logger.info("[" + vehicle.getLocationTag().getLocale() + "] " + member

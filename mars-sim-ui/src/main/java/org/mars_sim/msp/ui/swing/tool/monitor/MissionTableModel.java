@@ -13,6 +13,7 @@ import java.util.List;
 import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 
+import org.mars_sim.msp.core.GameManager;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
@@ -26,6 +27,7 @@ import org.mars_sim.msp.core.person.ai.mission.MissionManagerListener;
 import org.mars_sim.msp.core.person.ai.mission.NavPoint;
 import org.mars_sim.msp.core.person.ai.mission.TravelMission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -70,6 +72,8 @@ public class MissionTableModel extends AbstractTableModel
 
 	private List<Mission> missionCache;
 
+	private Settlement commanderSettlement;
+	
 	private static MissionManager missionManager = Simulation.instance().getMissionManager();
 
 	public MissionTableModel() {
@@ -102,7 +106,14 @@ public class MissionTableModel extends AbstractTableModel
 		columnNames[REMAINING_DISTANCE] = Msg.getString("MissionTableModel.column.distanceRemaining"); //$NON-NLS-1$
 		columnTypes[REMAINING_DISTANCE] = Integer.class;
 
-		missionCache = missionManager.getMissions();
+		if (GameManager.mode.equals("1")) {
+			commanderSettlement = GameManager.commander.getAssociatedSettlement();
+			missionCache = missionManager.getMissionsForSettlement(commanderSettlement);
+		}
+		else {
+			missionCache = missionManager.getMissions();
+		}
+		
 		missionManager.addListener(this);
 		Iterator<Mission> i = missionCache.iterator();
 		while (i.hasNext())
@@ -125,7 +136,8 @@ public class MissionTableModel extends AbstractTableModel
 	 * @param mission the new mission.
 	 */
 	public void addMission(Mission mission) {
-		if (!missionCache.contains(mission)) {
+		if (!missionCache.contains(mission) 
+				&& mission.getStartingMember().getAssociatedSettlement().getName().equals(commanderSettlement.getName())) {
 			missionCache.add(mission);
 			mission.addMissionListener(this);
 			

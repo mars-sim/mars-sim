@@ -12,6 +12,7 @@ import java.util.List;
 import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 
+import org.mars_sim.msp.core.GameManager;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.events.HistoricalEvent;
@@ -141,18 +142,30 @@ public class EventTableModel extends AbstractTableModel
 	}
 
 	private synchronized void updateCachedEvents() {
+		List<SimpleEvent> events = new ArrayList<SimpleEvent>();
+		
 		// Clean out existing cached events for the Event Table.
 //		cachedEvents = new ArrayList<HistoricalEvent>();
 		cachedEvents = new ArrayList<SimpleEvent>();
-
-		int size = manager.getEvents().size();
+		
+//		int size = manager.getEvents().size();
+		
+		if (GameManager.mode.equals("1")) {
+			int id = GameManager.commander.getAssociatedSettlement().getIdentifier();
+			events = manager.getEvents(id);
+		}
+		else {
+			events = manager.getEvents();
+		}
 		
 		// TODO: find a way to optimize this so that it doesn't have to redo the sort everytime a new event is added.
 		
 		// Filter events based on category.
-		for (int x = 0; x < size; x++) {
-//			HistoricalEvent event = manager.getEvent(x);
-			SimpleEvent event = manager.getEvent(x);
+//		for (int x = 0; x < size; x++) {
+////			HistoricalEvent event = manager.getEvent(x);
+//			SimpleEvent event = manager.getEvent(x);
+			
+		for (SimpleEvent event : events) {	
 			HistoricalEventCategory category = HistoricalEventCategory.int2enum((int) (event.getCat()));
 			EventType eventType = EventType.int2enum((event.getType()));
 			if (category.equals(HistoricalEventCategory.HAZARD) && displayHazard) {

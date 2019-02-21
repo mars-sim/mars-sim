@@ -228,7 +228,7 @@ public class TabPanelSchedule extends TabPanel {
 
 		WebPanel solPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
 //		solPanel.setMinimumSize(new Dimension(40, 15));
-//		solPanel.setSize(new Dimension(40, 15));
+		solPanel.setSize(new Dimension(50, 15));
 		solPanel.add(solBox);
 
 //		infoPanel.add(solPanel);

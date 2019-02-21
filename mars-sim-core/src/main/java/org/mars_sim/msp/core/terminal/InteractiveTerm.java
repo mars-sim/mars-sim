@@ -23,6 +23,7 @@ import org.beryx.textio.TextIO;
 import org.beryx.textio.TextTerminal;
 import org.beryx.textio.jline.JLineTextTerminal;
 import org.beryx.textio.swing.SwingTextTerminal;
+import org.mars_sim.msp.core.GameManager;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.time.MasterClock;
@@ -83,7 +84,7 @@ public class InteractiveTerm {
 		
 		profile = new CommanderProfile(this);
 
-		CommanderInput ci = new CommanderInput();
+		GameManager ci = new GameManager();
 		
         handler = new SwingHandler(textIO, "console", ci);
         
@@ -107,10 +108,10 @@ public class InteractiveTerm {
 				+ System.lineSeparator()
 				);
 			
-        handler.addStringTask("mode", "Enter the game mode:", false).addChoices("1", "2").constrainInputToChoices();
+        handler.addStringTask("mode", "Select the Game Mode:", false).addChoices("1", "2").constrainInputToChoices();
         handler.executeOneTask();
         
-		if ((CommanderInput.mode).equals("1")) {
+		if ((GameManager.mode).equals("1")) {
 			
 	        terminal.println(System.lineSeparator() 
 	        		+ "                * * *  COMMANDER'S PROFILE * * *" 
@@ -126,7 +127,7 @@ public class InteractiveTerm {
 	        handler.addStringTask("choice", "Enter your choice:", false).addChoices("1", "2").constrainInputToChoices();
 	        handler.executeOneTask();
 	        
-	    	if ((CommanderInput.choice).equals("1")) {
+	    	if ((GameManager.choice).equals("1")) {
 				terminal.print(System.lineSeparator());
 				profile.accept(textIO, null);
 	    	}
@@ -351,16 +352,6 @@ public class InteractiveTerm {
     
     public SwingHandler getHandler() {
     	return handler;
-    }
-    
-    private static class CommanderInput {
-        public static String mode;
-        public static String choice;
-
-        @Override
-        public String toString() {
-            return System.lineSeparator() +">" + mode;
-        }
     }
     
 }

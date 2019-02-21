@@ -17,6 +17,7 @@ import java.util.logging.Logger;
 
 import javax.swing.SwingUtilities;
 
+import org.mars_sim.msp.core.GameManager;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
@@ -33,7 +34,6 @@ import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.farming.Crop;
 import org.mars_sim.msp.core.structure.building.function.farming.CropCategoryType;
 import org.mars_sim.msp.core.structure.building.function.farming.CropConfig;
-import org.mars_sim.msp.core.structure.building.function.farming.CropType;
 import org.mars_sim.msp.core.structure.building.function.farming.Farming;
 
 /**
@@ -182,6 +182,8 @@ public class CropTableModel extends UnitTableModel {
 	private Map<Building, List<Integer>> cropCatMap;
 	private Map<Integer, String> catMap;
 
+	private Settlement commanderSettlement;
+	
 	private static UnitManager unitManager = Simulation.instance().getUnitManager();
 
 	/*
@@ -199,7 +201,16 @@ public class CropTableModel extends UnitTableModel {
 		buildings = new ArrayList<Building>();
 		paddedSettlements = new ArrayList<Settlement>();
 
-		setSource(unitManager.getSettlements());
+		if (GameManager.mode.equals("1")) {
+			commanderSettlement = GameManager.commander.getAssociatedSettlement();
+			addUnit(commanderSettlement);
+		}
+		else {
+			setSource(unitManager.getSettlements());
+		}
+
+		updateMaps();
+		
 		unitManagerListener = new LocalUnitManagerListener();
 		unitManager.addUnitManagerListener(unitManagerListener);
 
@@ -217,8 +228,19 @@ public class CropTableModel extends UnitTableModel {
 	}
 
 	public void updateMaps() {
-		List<Settlement> settlements = new ArrayList<Settlement>(unitManager.getSettlements());
-		Collections.sort(settlements);
+		paddedSettlements.clear();
+		buildings.clear();
+		
+		List<Settlement> settlements = new ArrayList<Settlement>();
+		
+		if (GameManager.mode.equals("1")) {
+			settlements.add(commanderSettlement);
+		}
+		else {
+			settlements.addAll(unitManager.getSettlements());
+			Collections.sort(settlements);
+		}
+		
 		Iterator<Settlement> i = settlements.iterator();
 		while (i.hasNext()) {
 			Settlement s = i.next();
@@ -241,16 +263,7 @@ public class CropTableModel extends UnitTableModel {
 	 */
 	// Called by getTotalNumforCropGroup() which in terms was called by getValueAt()
 	public int getCategoryNum(String cat) {
-
 		return CropCategoryType.valueOf(cat.toUpperCase()).ordinal();
-
-		/*
-		 * for (Entry<Integer, String> entry : catMap.entrySet()) { if
-		 * (entry.getValue().toString().equals(cat)) { return entry.getKey(); } }
-		 * 
-		 * return -1;
-		 * 
-		 */
 	}
 
 	public String getCatName(int num) {
@@ -543,21 +556,27 @@ public class CropTableModel extends UnitTableModel {
 	 * @param event the unit event.
 	 */
 	public void unitUpdate(UnitEvent event) {
-		// logger.info("unitUpdate() : entering");
-		// NOTE: unitUpdate() is called a dozen times every second
+		int unitIndex = -1;
 		Unit unit = (Unit) event.getSource();
-		int unitIndex = getUnitIndex(unit);
 		UnitEventType eventType = event.getType();
 		Object target = event.getTarget();
-		// logger.info("unitUpdate() : eventType : " + eventType.toString());
-
+		
+		if (GameManager.mode.equals("1")) {
+			; // do nothing
+		}
+		else {
+			unitIndex = getUnitIndex(unit);
+		}
+		
 		int columnNum = -1;
 		if (eventType == UnitEventType.NAME_EVENT)
 			columnNum = SETTLEMENT_NAME; // = 0
 		else if (eventType == UnitEventType.ADD_BUILDING_EVENT) {
 			if (target instanceof Farming)
 				columnNum = GREENHOUSE_NAME; // = 1
-		} else if (eventType == UnitEventType.CROP_EVENT) {
+		} 
+		
+		else if (eventType == UnitEventType.CROP_EVENT) {
 			// logger.info("unitUpdate() : CROP_EVENT");
 			// logger.info("unitUpdate() : eventType : " + eventType.toString());
 			// TODO: check with total Crops get updated
@@ -573,21 +592,16 @@ public class CropTableModel extends UnitTableModel {
 				tempColumnNum = getCategoryNum(catName);
 				// logger.info(" tempColumnNum : " + tempColumnNum);
 
-				if (tempColumnNum > -1) {
+				if (tempColumnNum > -1 && unitIndex > -1) {
 					// Only update cell if value as int has changed.
 					int currentValue = (Integer) getValueAt(unitIndex, tempColumnNum);
-					// logger.info("unitUpdate() : currentValue : " + currentValue);
-
 					int newValue = getNewValue(unit, catName);
-					// int groupNum = getGroupNum(cropCat);
-					// logger.info("unitUpdate() : newValue : " + newValue);
 
 					if (currentValue != newValue) {
 						columnNum = tempColumnNum;
 
 						List<Integer> cropCache = cropCatMap.get(unit);
 						cropCache.set(tempColumnNum, newValue);
-						// logger.info("unitUpdate() : cropCache.toString() : " + cropCache.toString());
 					}
 				}
 			} catch (Exception e) {
@@ -761,17 +775,24 @@ public class CropTableModel extends UnitTableModel {
 		 * @param event the unit event.
 		 */
 		public void unitManagerUpdate(UnitManagerEvent event) {
-			Unit unit = event.getUnit();
-			UnitManagerEventType eventType = event.getEventType();
-			if (unit instanceof Settlement) {
-				if (eventType == UnitManagerEventType.ADD_UNIT && !containsUnit(unit)) {
-					addUnit(unit);
-					// updateBuildings();
-					// logger.info(unit + " has just entered");
-				} else if (eventType == UnitManagerEventType.REMOVE_UNIT && containsUnit(unit)) {
-					removeUnit(unit);
-					// updateBuildings();
-					// logger.info(unit + " has just entered");
+			if (GameManager.mode.equals("1")) {
+				; // do nothing
+			}
+			
+			else {
+				Unit unit = event.getUnit();
+				UnitManagerEventType eventType = event.getEventType();
+				
+				if (unit instanceof Settlement) {
+					if (eventType == UnitManagerEventType.ADD_UNIT && !containsUnit(unit)) {
+						addUnit(unit);
+						// updateBuildings();
+						// logger.info(unit + " has just entered");
+					} else if (eventType == UnitManagerEventType.REMOVE_UNIT && containsUnit(unit)) {
+						removeUnit(unit);
+						// updateBuildings();
+						// logger.info(unit + " has just entered");
+					}
 				}
 			}
 		}

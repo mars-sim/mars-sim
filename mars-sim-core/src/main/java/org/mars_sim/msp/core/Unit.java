@@ -564,14 +564,14 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 
 		if (!listeners.contains(newListener)) {
 			listeners.add(newListener);
-		} else {
-			try {
-				throw new IllegalStateException(Msg.getString("Unit.log.alreadyContainsListener", //$NON-NLS-1$
-						newListener.getClass().getName(), newListener.toString()));
-			} catch (Exception e) {
-				e.printStackTrace();
-				logger.log(Level.SEVERE, Msg.getString("Unit.log.addingListenerDupe"), e); //$NON-NLS-1$
-			}
+//		} else {
+//			try {
+//				throw new IllegalStateException(Msg.getString("Unit.log.alreadyContainsListener", //$NON-NLS-1$
+//						newListener.getClass().getName(), newListener.toString()));
+//			} catch (Exception e) {
+//				e.printStackTrace();
+//				logger.log(Level.SEVERE, Msg.getString("Unit.log.addingListenerDupe"), e); //$NON-NLS-1$
+//			}
 		}
 	}
 

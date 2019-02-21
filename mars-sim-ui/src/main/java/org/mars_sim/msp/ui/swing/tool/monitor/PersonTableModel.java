@@ -16,6 +16,7 @@ import java.util.Map;
 
 import javax.swing.SwingUtilities;
 
+import org.mars_sim.msp.core.GameManager;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
@@ -186,7 +187,12 @@ public class PersonTableModel extends UnitTableModel {
 
 //		this.desktop = desktop;
 		sourceType = ValidSourceType.ALL_PEOPLE;
-		setSource(unitManager.getPeople());
+		
+		if (GameManager.mode.equals("1"))
+			setSource(GameManager.commander.getAssociatedSettlement().getAllAssociatedPeople());
+		else
+			setSource(unitManager.getPeople());
+		
 		unitManagerListener = new LocalUnitManagerListener();
 		unitManager.addUnitManagerListener(unitManagerListener);
 

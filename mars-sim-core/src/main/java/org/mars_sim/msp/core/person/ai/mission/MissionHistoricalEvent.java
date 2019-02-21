@@ -32,8 +32,8 @@ public class MissionHistoricalEvent extends HistoricalEvent implements Serializa
 	 * @param location1  the settlement/coordinate where it occurs.
 	 */
 	public MissionHistoricalEvent(EventType eventType, Mission mission, String cause, String whileDoing, String member,
-			String location0, String location1) {
+			String location0, String location1, String associatedsettlement) {
 		// Use HistoricalEvent constructor.
-		super(HistoricalEventCategory.MISSION, eventType, mission, cause, whileDoing, member, location0, location1);
+		super(HistoricalEventCategory.MISSION, eventType, mission, cause, whileDoing, member, location0, location1, associatedsettlement);
 	}
 }

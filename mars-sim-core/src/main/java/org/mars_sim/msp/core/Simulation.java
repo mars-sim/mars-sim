@@ -860,6 +860,8 @@ public class Simulation implements ClockListener, Serializable {
 		// Re-initialize the MarsSurface instance
 		unitManager.setMarsSurface();
 		
+		//  Re-initialize the GameManager
+		GameManager.initializeInstances(unitManager);
 		// Re-initialize the SurfaceFeatures instance
 		SurfaceFeatures surface = mars.getSurfaceFeatures();
 		// Gets the Weather instance

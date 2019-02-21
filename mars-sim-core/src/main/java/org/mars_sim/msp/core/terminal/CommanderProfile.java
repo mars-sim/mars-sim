@@ -70,8 +70,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
 	
 //	private static TextIO textIO;
 	
-	private static PersonConfig personConfig;
-	
+	private static PersonConfig personConfig;	
 
     private final List<Runnable> operations = new ArrayList<>();
 

@@ -30,7 +30,7 @@ public class TransportEvent extends HistoricalEvent implements Serializable {
 	 */
 	public TransportEvent(Transportable transportItem, EventType eventType, String cause, String location) {
 		super(HistoricalEventCategory.TRANSPORT, eventType, transportItem, transportItem.getName(), "N/A", cause, "N/A",
-				location);
+				location, location);
 		// TODO: Add the type of rocket
 	}
 }

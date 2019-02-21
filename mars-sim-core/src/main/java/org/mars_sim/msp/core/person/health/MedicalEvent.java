@@ -40,7 +40,8 @@ extends HistoricalEvent implements Serializable {
 				person.getTaskDescription(),
 				person.getName(),
 				person.getLocationTag().getImmediateLocation(),
-				person.getLocationTag().getLocale()
+				person.getLocationTag().getLocale(),
+				person.getAssociatedSettlement().getName()
 				);
 		
 		this.person = person;

@@ -13,8 +13,10 @@ import java.util.List;
 import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 
+import org.mars_sim.msp.core.GameManager;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEvent;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitListener;
@@ -26,6 +28,7 @@ import org.mars_sim.msp.core.foodProduction.Food;
 import org.mars_sim.msp.core.foodProduction.FoodUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.goods.Good;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
 
 public class FoodInventoryTableModel extends AbstractTableModel
@@ -35,8 +38,10 @@ public class FoodInventoryTableModel extends AbstractTableModel
 
 	// Data members
 	private List<Food> foodList;
-	private List<Settlement> settlements;
+	private List<Settlement> settlements = new ArrayList<Settlement>();
 
+	private Settlement commanderSettlement;
+	
 	private static UnitManager unitManager = Simulation.instance().getUnitManager();
 
 	/**
@@ -47,12 +52,13 @@ public class FoodInventoryTableModel extends AbstractTableModel
 		// Initialize food list.
 		foodList = FoodUtil.getFoodList();
 
-//		UnitManager unitManager = Simulation.instance().getUnitManager();
-
-		// FoodInventoryTableModel ft = unitManager.
-
 		// Initialize settlements.
-		settlements = new ArrayList<Settlement>(unitManager.getSettlements());
+		if (GameManager.mode.equals("1")) {
+			commanderSettlement = GameManager.commander.getAssociatedSettlement();
+			settlements.add(commanderSettlement);
+		}
+		else
+			settlements.addAll(unitManager.getSettlements());
 
 		// Add table as listener to each settlement.
 		Iterator<Settlement> i = settlements.iterator();
@@ -71,11 +77,36 @@ public class FoodInventoryTableModel extends AbstractTableModel
 	 */
 	@Override
 	public void unitUpdate(UnitEvent event) {
-		if (event.getType() == UnitEventType.GOODS_VALUE_EVENT) {
-			SwingUtilities.invokeLater(new FoodTableUpdater(event));
+		Unit unit = (Unit) event.getSource();
+		UnitEventType eventType = event.getType();
+		Object source = event.getTarget();
+		if (eventType == UnitEventType.GOODS_VALUE_EVENT) {
+			if (GameManager.mode.equals("1")) {
+				if (source instanceof Good 
+						&& unit instanceof Settlement
+						&& unit.getName().equalsIgnoreCase(commanderSettlement.getName()))
+					SwingUtilities.invokeLater(new FoodTableUpdater(event));
+				
+			}
+			else {
+				SwingUtilities.invokeLater(new FoodTableUpdater(event));
+			}
 		}
 	}
 
+//	/**
+//	 * Gets the index of the row a given unit is at.
+//	 * 
+//	 * @param unit the unit to find.
+//	 * @return the row index or -1 if not in table model.
+//	 */
+//	protected int getUnitIndex(Unit unit) {
+//		if ((units != null) && units.contains(unit))
+//			return getIndex(unit);
+//		else
+//			return -1;
+//	}
+	
 	/**
 	 * Gets the model count string.
 	 */
@@ -216,32 +247,47 @@ public class FoodInventoryTableModel extends AbstractTableModel
 	@Override
 	public void unitManagerUpdate(UnitManagerEvent event) {
 
-		if (event.getUnit() instanceof Settlement) {
+		if (GameManager.mode.equals("1")
+				&& event.getUnit() instanceof Settlement
+				&&  settlements.contains((Settlement) event.getUnit())) {
+				// Update table structure due to cells changing.
+				SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						fireTableStructureChanged();
+						fireTableStructureChanged();
+					}
+				});
+		}
+		
+		else {
+			if (event.getUnit() instanceof Settlement) {
 
-			Settlement settlement = (Settlement) event.getUnit();
+				Settlement settlement = (Settlement) event.getUnit();
 
-			if (UnitManagerEventType.ADD_UNIT == event.getEventType()) {
-				// If settlement is new, add to settlement list.
-				if (!settlements.contains(settlement)) {
-					settlements.add(settlement);
-					settlement.addUnitListener(this);
+				if (UnitManagerEventType.ADD_UNIT == event.getEventType()) {
+					// If settlement is new, add to settlement list.
+					if (!settlements.contains(settlement)) {
+						settlements.add(settlement);
+						settlement.addUnitListener(this);
+					}
+				} else if (UnitManagerEventType.REMOVE_UNIT == event.getEventType()) {
+					// If settlement is gone, remove from settlement list.
+					if (settlements.contains(settlement)) {
+						settlements.remove(settlement);
+						settlement.removeUnitListener(this);
+					}
 				}
-			} else if (UnitManagerEventType.REMOVE_UNIT == event.getEventType()) {
-				// If settlement is gone, remove from settlement list.
-				if (settlements.contains(settlement)) {
-					settlements.remove(settlement);
-					settlement.removeUnitListener(this);
-				}
-			}
 
-			// Update table structure due to cells changing.
-			SwingUtilities.invokeLater(new Runnable() {
-				@Override
-				public void run() {
-					fireTableStructureChanged();
-					fireTableStructureChanged();
-				}
-			});
+				// Update table structure due to cells changing.
+				SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						fireTableStructureChanged();
+						fireTableStructureChanged();
+					}
+				});
+			}		
 		}
 	}
 

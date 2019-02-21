@@ -592,10 +592,14 @@ public class RadiationExposure implements Serializable {
 							"[" + coord + "] " + str + DOSE + " while " + activity, null);
 				}
 
-				HistoricalEvent hEvent = new HazardEvent(EventType.HAZARD_RADIATION_EXPOSURE, eventMap,
+				HistoricalEvent hEvent = new HazardEvent(EventType.HAZARD_RADIATION_EXPOSURE, 
+						eventMap,
 						"Dose of " + Math.round(totalExposure * 10000.0) / 10000.0 + " mSv",
-						person.getTaskDescription(), person.getName(), person.getLocationTag().getImmediateLocation(),
-						person.getLocationTag().getLocale());
+						person.getTaskDescription(), 
+						person.getName(), person.getLocationTag().getImmediateLocation(),
+						person.getLocationTag().getLocale(),
+						person.getAssociatedSettlement().getName()
+						);
 				Simulation.instance().getEventManager().registerNewEvent(hEvent);
 
 				person.fireUnitUpdate(UnitEventType.RADIATION_EVENT);

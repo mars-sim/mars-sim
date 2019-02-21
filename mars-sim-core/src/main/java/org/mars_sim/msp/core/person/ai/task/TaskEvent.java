@@ -42,7 +42,8 @@ extends HistoricalEvent implements Serializable {
 				"N/A",
 				unit.getName(), 
 				"None",
-				location
+				location, 
+				unit.getAssociatedSettlement().getName()
 				);
 	}
 }

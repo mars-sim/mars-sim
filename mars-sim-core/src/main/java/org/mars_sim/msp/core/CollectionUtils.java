@@ -232,6 +232,66 @@ public class CollectionUtils {
 
 	}
 
+	
+	/**
+	 * Finds the settlement's unique id based on its name
+	 * 
+	 * @param name
+	 * @return
+	 */
+	public static int findSettlementID(String name) {
+		if (unitManager == null)
+			unitManager = Simulation.instance().getUnitManager();
+				
+		Collection<Settlement> ss = unitManager.getSettlements();
+		for (Settlement s : ss) {
+			if (s.getName().equals(name))
+				return s.getIdentifier();
+		}
+
+		return -1;
+	}
+	
+	/**
+	 * Finds the settlement instance based on its name
+	 * 
+	 * @param name
+	 * @return
+	 */
+	public static Settlement findSettlement(String name) {
+		if (unitManager == null)
+			unitManager = Simulation.instance().getUnitManager();
+				
+		Collection<Settlement> ss = unitManager.getSettlements();
+		for (Settlement s : ss) {
+			if (s.getName().equals(name))
+				return s;
+		}
+
+		return null;
+	}
+	
+	/**
+	 * Finds the settlement instance based on its name
+	 * 
+	 * @param c {@link Coordinates}
+	 * @return
+	 */
+	public static Settlement findSettlement(Coordinates c) {
+		if (unitManager == null)
+			unitManager = Simulation.instance().getUnitManager();
+				
+		Collection<Settlement> ss = unitManager.getSettlements();
+		for (Settlement s : ss) {
+			if (s.getCoordinates().equals(c) || s.getCoordinates() == c)
+				return s;
+		}
+
+		return null; 
+		// WARNING : using associated settlement needs to exercise more caution
+	}
+	
+	
 	public static <T extends Unit> Collection<T> sortByName(
 		Collection<T> collection
 	) {

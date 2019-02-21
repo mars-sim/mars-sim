@@ -17,6 +17,7 @@ import java.util.logging.Logger;
 import javax.swing.SwingUtilities;
 
 import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.GameManager;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
@@ -145,7 +146,7 @@ extends UnitTableModel {
 	// Data members
 	private UnitManagerListener unitManagerListener;
 	private LocalMissionManagerListener missionManagerListener;
-	private Map<Unit, Map<Integer, Double>> resourceCache;
+	private Map<Vehicle, Map<Integer, Double>> resourceCache;
 
 	private static int foodID = ResourceUtil.foodID;
 	private static int oxygenID = ResourceUtil.oxygenID;
@@ -160,7 +161,11 @@ extends UnitTableModel {
 
 	private static MissionManager missionManager = Simulation.instance().getMissionManager();
 	
+	
 	private int mapSizeCache = 0;
+	
+	private Settlement commanderSettlement;
+
 	
 	/**
 	 * Constructs a VehicleTableModel object. It creates the list of possible
@@ -176,7 +181,13 @@ extends UnitTableModel {
 			columnTypes
 		);
 
-		setSource(unitManager.getVehicles());
+		if (GameManager.mode.equals("1")) {
+			commanderSettlement = GameManager.commander.getAssociatedSettlement();
+			setSource(commanderSettlement.getAllAssociatedVehicles());
+		}
+		else
+			setSource(unitManager.getVehicles());
+		
 		unitManagerListener = new LocalUnitManagerListener();
 		unitManager.addUnitManagerListener(unitManagerListener);
 
@@ -390,92 +401,107 @@ extends UnitTableModel {
 	 */
 	public void unitUpdate(UnitEvent event) {
 		Unit unit = (Unit) event.getSource();
-		int unitIndex = getUnitIndex(unit);
-		Object source = event.getTarget();
-		UnitEventType eventType = event.getType();
 		
-		int columnNum = -1;
-		if (eventType == UnitEventType.NAME_EVENT) columnNum = NAME;
-		else if (eventType == UnitEventType.LOCATION_EVENT) columnNum = LOCATION;
-		else if (eventType == UnitEventType.INVENTORY_STORING_UNIT_EVENT ||
-				eventType == UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT) {
-			if (source instanceof Person) columnNum = CREW;
-			else if (source instanceof Robot) columnNum = BOTS;
-		}
-		else if (eventType == UnitEventType.OPERATOR_EVENT) columnNum = DRIVER;
-		else if (eventType == UnitEventType.STATUS_EVENT) columnNum = STATUS;
-		else if (eventType == UnitEventType.EMERGENCY_BEACON_EVENT) columnNum = BEACON;
-		else if (eventType == UnitEventType.RESERVED_EVENT) columnNum = RESERVED;
-		else if (eventType == UnitEventType.SPEED_EVENT) columnNum = SPEED;
-		else if (eventType == UnitEventType.MALFUNCTION_EVENT) columnNum = MALFUNCTION;
-		else if (eventType == UnitEventType.INVENTORY_RESOURCE_EVENT) {
-			int target = -1;	
-			if (source instanceof AmountResource) {
-				target = ((AmountResource)source).getID();
+		if (unit instanceof Vehicle) {
+			Vehicle vehicle = (Vehicle) unit;
+			int unitIndex = -1;
+			Object source = event.getTarget();
+			UnitEventType eventType = event.getType();
+			
+			if (GameManager.mode.equals("1")) {
+				if (vehicle.getAssociatedSettlement().getName().equalsIgnoreCase(commanderSettlement.getName()))
+					unitIndex = 0;
 			}
-				
-			else if (source instanceof Integer) {
-				target = (Integer)source;
-				if (target >= ResourceUtil.FIRST_ITEM_RESOURCE_ID)
-					// if it's an item resource, quit
-					return;
+			else {
+				unitIndex = getUnitIndex(vehicle);
 			}
-				
-			try {
-				int tempColumnNum = -1;
-				double currentValue = 0.0;
-				Map<Integer, Double> resourceMap = resourceCache.get(unit);
-				
-				if (target == oxygenID) {
-					tempColumnNum = OXYGEN;
-					currentValue = resourceMap.get(oxygenID);
+			
+			if (unitIndex > -1) {
+		
+				int columnNum = -1;
+				if (eventType == UnitEventType.NAME_EVENT) columnNum = NAME;
+				else if (eventType == UnitEventType.LOCATION_EVENT) columnNum = LOCATION;
+				else if (eventType == UnitEventType.INVENTORY_STORING_UNIT_EVENT ||
+						eventType == UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT) {
+					if (source instanceof Person) columnNum = CREW;
+					else if (source instanceof Robot) columnNum = BOTS;
 				}
-				else if (target == methaneID) {
-					tempColumnNum = METHANE;		
-					currentValue = resourceMap.get(methaneID);
-				}
-				else if (target == foodID) {
-					tempColumnNum = FOOD;
-					currentValue = resourceMap.get(foodID);
-				}
-				else if (target == waterID) {
-					tempColumnNum = WATER;
-					currentValue = resourceMap.get(waterID);
-				}
-				else if (target == rockSamplesID) {
-					tempColumnNum = ROCK_SAMPLES;
-					currentValue = resourceMap.get(rockSamplesID);
-				}
-				else if (target == iceID) {
-					tempColumnNum = ICE;
-					currentValue = resourceMap.get(iceID);
-				}
-				else {
-				  	// Put together a list of available dessert
-			        for(AmountResource ar : availableDesserts) {
-			        	if (target == ar.getID()) {
-			        		tempColumnNum = DESSERT;
-			        		currentValue = resourceMap.get(ar.getID());
-			        	}
-			        }
-				}
-
-				if (tempColumnNum > -1) {
-					currentValue = Math.round (currentValue * 10.0 ) / 10.0;
-					double newValue = Math.round (getResourceStored(unit, target) * 10.0 ) / 10.0;
-					if (currentValue != newValue) {
-						columnNum = tempColumnNum;
-						resourceMap.put(target, newValue);
+				else if (eventType == UnitEventType.OPERATOR_EVENT) columnNum = DRIVER;
+				else if (eventType == UnitEventType.STATUS_EVENT) columnNum = STATUS;
+				else if (eventType == UnitEventType.EMERGENCY_BEACON_EVENT) columnNum = BEACON;
+				else if (eventType == UnitEventType.RESERVED_EVENT) columnNum = RESERVED;
+				else if (eventType == UnitEventType.SPEED_EVENT) columnNum = SPEED;
+				else if (eventType == UnitEventType.MALFUNCTION_EVENT) columnNum = MALFUNCTION;
+				else if (eventType == UnitEventType.INVENTORY_RESOURCE_EVENT) {
+					int target = -1;	
+					if (source instanceof AmountResource) {
+						target = ((AmountResource)source).getID();
+					}
+						
+					else if (source instanceof Integer) {
+						target = (Integer)source;
+						if (target >= ResourceUtil.FIRST_ITEM_RESOURCE_ID)
+							// if it's an item resource, quit
+							return;
+					}
+						
+					try {
+						int tempColumnNum = -1;
+						double currentValue = 0.0;
+						Map<Integer, Double> resourceMap = resourceCache.get(vehicle);
+						
+						if (target == oxygenID) {
+							tempColumnNum = OXYGEN;
+							currentValue = resourceMap.get(oxygenID);
+						}
+						else if (target == methaneID) {
+							tempColumnNum = METHANE;		
+							currentValue = resourceMap.get(methaneID);
+						}
+						else if (target == foodID) {
+							tempColumnNum = FOOD;
+							currentValue = resourceMap.get(foodID);
+						}
+						else if (target == waterID) {
+							tempColumnNum = WATER;
+							currentValue = resourceMap.get(waterID);
+						}
+						else if (target == rockSamplesID) {
+							tempColumnNum = ROCK_SAMPLES;
+							currentValue = resourceMap.get(rockSamplesID);
+						}
+						else if (target == iceID) {
+							tempColumnNum = ICE;
+							currentValue = resourceMap.get(iceID);
+						}
+						else {
+						  	// Put together a list of available dessert
+					        for(AmountResource ar : availableDesserts) {
+					        	if (target == ar.getID()) {
+					        		tempColumnNum = DESSERT;
+					        		currentValue = resourceMap.get(ar.getID());
+					        	}
+					        }
+						}
+		
+						if (tempColumnNum > -1 && unitIndex > -1) {
+							currentValue = Math.round (currentValue * 10.0 ) / 10.0;
+							double newValue = Math.round (getResourceStored(unit, target) * 10.0 ) / 10.0;
+							if (currentValue != newValue) {
+								columnNum = tempColumnNum;
+								resourceMap.put(target, newValue);
+							}
+						}
+					}
+					catch (Exception e) {
+						logger.log(Level.SEVERE, "Issues with unitUpdate()", e);
 					}
 				}
+		
+				if (columnNum > -1 && unitIndex > -1) {
+					SwingUtilities.invokeLater(new VehicleTableCellUpdater(unitIndex, columnNum));
+				}
 			}
-			catch (Exception e) {
-				logger.log(Level.SEVERE, "Issues with unitUpdate()", e);
-			}
-		}
-
-		if (columnNum > -1) {
-			SwingUtilities.invokeLater(new VehicleTableCellUpdater(unitIndex, columnNum));
 		}
 	}
 
@@ -492,7 +518,7 @@ extends UnitTableModel {
 	 * @param newUnit Unit to add to the model.
 	 */
 	protected void addUnit(Unit newUnit) {
-		if (resourceCache == null) resourceCache = new HashMap<Unit, Map<Integer, Double>>();
+		if (resourceCache == null) resourceCache = new HashMap<>();
 		if (!resourceCache.containsKey(newUnit)) {
 			try {
 				Map<Integer, Double> resourceMap = new HashMap<Integer, Double>();
@@ -507,7 +533,7 @@ extends UnitTableModel {
 		        	resourceMap.put(ar.getID(), Math.round(100.0 *getResourceStored(newUnit, ar.getID()))/100.0);
 		        }
 
-				resourceCache.put(newUnit, resourceMap);
+				resourceCache.put((Vehicle)newUnit, resourceMap);
 
 			}
 			catch (Exception e) {
@@ -522,7 +548,7 @@ extends UnitTableModel {
 	 * @param oldUnit Unit to remove from the model.
 	 */
 	protected void removeUnit(Unit oldUnit) {
-		if (resourceCache == null) resourceCache = new HashMap<Unit, Map<Integer, Double>>();
+		if (resourceCache == null) resourceCache = new HashMap<>();
 		if (resourceCache.containsKey(oldUnit)) {
 			Map<Integer, Double> resourceMap = resourceCache.get(oldUnit);
 			resourceMap.clear();
@@ -575,12 +601,24 @@ extends UnitTableModel {
 		public void unitManagerUpdate(UnitManagerEvent event) {
 			Unit unit = event.getUnit();
 			UnitManagerEventType eventType = event.getEventType();
+			
 			if (unit instanceof Vehicle) {
-				if (eventType == UnitManagerEventType.ADD_UNIT) {
-					if (!containsUnit(unit)) addUnit(unit);
+				boolean change = false;
+				if (GameManager.mode.equals("1")) {
+					if (unit.getAssociatedSettlement().getName().equalsIgnoreCase(commanderSettlement.getName()))
+						change = true;
 				}
-				else if (eventType == UnitManagerEventType.REMOVE_UNIT) {
-					if (containsUnit(unit)) removeUnit(unit);
+				else {
+					change = true;
+				}
+				
+				if (change) {
+					if (eventType == UnitManagerEventType.ADD_UNIT) {
+						if (!containsUnit(unit)) addUnit(unit);
+					}
+					else if (eventType == UnitManagerEventType.REMOVE_UNIT) {
+						if (containsUnit(unit)) removeUnit(unit);
+					}
 				}
 			}
 		}
@@ -593,10 +631,16 @@ extends UnitTableModel {
 
 		LocalMissionManagerListener() {
 			missionListener = new LocalMissionListener();
-			missions = missionManager.getMissions();
-			//Iterator<Mission> i = missions.iterator();
-			//while (i.hasNext()) addMission(i.next());
-			for (Mission m : missions) addMission(m);			
+
+			if (GameManager.mode.equals("1")) {
+				missions = missionManager.getMissionsForSettlement(commanderSettlement);
+			}
+			else {
+				missions = missionManager.getMissions();	
+			}
+			
+			for (Mission m : missions) 
+				addMission(m);
 		}
 
 		/**
@@ -684,7 +728,8 @@ extends UnitTableModel {
 					Vehicle vehicle = ((VehicleMission) mission).getVehicle();
 					if (vehicle != null) {
 						int unitIndex = getUnitIndex(vehicle);
-						SwingUtilities.invokeLater(new VehicleTableCellUpdater(unitIndex, columnNum));
+						if (unitIndex > -1)
+							SwingUtilities.invokeLater(new VehicleTableCellUpdater(unitIndex, columnNum));
 					}
 				}
 			}

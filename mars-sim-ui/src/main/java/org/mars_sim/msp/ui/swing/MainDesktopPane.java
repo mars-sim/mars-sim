@@ -35,6 +35,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
 import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.GameManager;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
@@ -1148,11 +1149,12 @@ public class MainDesktopPane extends JDesktopPane
 	 * Caches the creation of settlements for speeding up loading time
 	 */
 	public void cacheSettlementUnitWindow() {
-		List<Settlement> ss = new ArrayList<>(unitManager.getSettlements());
-//		int rand = RandomUtil.getRandomInt(ss.size()-1);
-//		desktop.openUnitWindow((Settlement)(ss.get(rand)), true, false);
-		for (Settlement s : ss) {
-			openUnitWindow((Settlement)s, true, false);
+		if (GameManager.mode.equals("1"))
+			openUnitWindow(GameManager.commander.getAssociatedSettlement(), true, false);
+		else {
+			for (Settlement s : unitManager.getSettlements()) {
+				openUnitWindow((Settlement)s, true, false);
+			}
 		}
 	}
 	

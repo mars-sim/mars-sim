@@ -223,7 +223,7 @@ public abstract class Mission implements Serializable {
 
 			// Created mission starting event.
 			HistoricalEvent newEvent = new MissionHistoricalEvent(EventType.MISSION_START, this,
-					"Mission Starting", missionName, person.getName(), loc0, loc1);
+					"Mission Starting", missionName, person.getName(), loc0, loc1, person.getAssociatedSettlement().getName());
 			
 			eventManager.registerNewEvent(newEvent);
 
@@ -409,7 +409,7 @@ public abstract class Mission implements Serializable {
 
 			// Creating mission joining event.
 			HistoricalEvent newEvent = new MissionHistoricalEvent(EventType.MISSION_JOINING, this,
-					"Adding a member", missionName, person.getName(), loc0, loc1);
+					"Adding a member", missionName, person.getName(), loc0, loc1, person.getAssociatedSettlement().getName());
 
 			eventManager.registerNewEvent(newEvent);
 
@@ -466,7 +466,7 @@ public abstract class Mission implements Serializable {
 				}
 
 				eventManager.registerNewEvent(new MissionHistoricalEvent(EventType.MISSION_FINISH, this,
-								"Removing a member", missionName, person.getName(), loc0, loc1));
+								"Removing a member", missionName, person.getName(), loc0, loc1, person.getAssociatedSettlement().getName()));
 				fireMissionUpdate(MissionEventType.REMOVE_MEMBER_EVENT, member);
 
 				if ((members.size() == 0) && !done) {

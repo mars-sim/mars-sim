@@ -43,6 +43,7 @@ public abstract class HistoricalEvent implements Serializable {
 	private String who;
 	private String location0;
 	private String location1;
+	private String associatedSettlement;
 
 	/**
 	 * Construct an event with the appropriate information. The time is not defined
@@ -57,7 +58,7 @@ public abstract class HistoricalEvent implements Serializable {
 	 * @see org.mars_sim.msp.core.events.HistoricalEventManager#registerNewEvent
 	 */
 	public HistoricalEvent(HistoricalEventCategory category, EventType type, Object source, String whatCause,
-			String whileDoing, String whoAffected, String location0, String location1) {
+			String whileDoing, String whoAffected, String location0, String location1, String associatedSettlement) {
 		this.category = category;
 		this.type = type;
 		this.source = source;
@@ -66,6 +67,7 @@ public abstract class HistoricalEvent implements Serializable {
 		this.who = whoAffected;
 		this.location0 = location0;
 		this.location1 = location1;
+		this.associatedSettlement = associatedSettlement;
 	}
 
 	/**
@@ -122,6 +124,15 @@ public abstract class HistoricalEvent implements Serializable {
 		return location1;
 	}
 
+	/**
+	 * Get the settlement/coordinates.
+	 * 
+	 * @return String the settlement/coordinates
+	 */
+	public String getAssociatedSettlement() {
+		return associatedSettlement;
+	}
+	
 	/**
 	 * Get event time.
 	 * 

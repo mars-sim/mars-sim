@@ -86,18 +86,21 @@ public class UnitManager implements Serializable {
 	
 	/** Is it running in Commander's Mode */
 	public static boolean isCommanderMode = false;	
+	/** True if the simulation has just started. */
+	private static boolean justStarting = true;
+	/** The total numbers of Unit instances. */
+	private static int totalNumUnits = 0;
+	/** The instance of MarsSurface. */
+	private static MarsSurface marsSurface;
 	
 	// Data members
-	private static boolean justStarting = true;
-	
+	/** The commander's unique id . */
+    public int commanderID;
+	/** The cache of the mission sol. */    
 	private int solCache = 0;
-
-	private static int totalNumUnits = 0;
-	
+	/** The core engine's original build. */
 	public String originalBuild;
 	
-	private static MarsSurface marsSurface;
-
 	/** A map of all units with its unit identifier. */
 	private volatile Map<Integer, Unit> lookupUnit = new HashMap<>();
 	/** A map of settlements with its unit identifier. */
@@ -1297,8 +1300,14 @@ public class UnitManager implements Serializable {
 		setJob(cc, getJob());
 		cc.setCountry(newCountry);
 		cc.setSponsor(newSponsor);		
+		
+		commanderID = cc.getIdentifier();
+		GameManager.setCommander(cc);
 	}
 	
+	public int getCommanderID() {
+		return commanderID;
+	}
 	
 	/**
 	 * Find the settlement match for the user proposed commander's sponsor 

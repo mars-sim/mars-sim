@@ -15,6 +15,7 @@ import java.util.Map;
 
 import javax.swing.SwingUtilities;
 
+import org.mars_sim.msp.core.GameManager;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
@@ -166,7 +167,12 @@ public class RobotTableModel extends UnitTableModel {
 				columnNames, columnTypes);
 
 		sourceType = ValidSourceType.ALL_ROBOTS;
-		setSource(unitManager.getRobots());
+		
+		if (GameManager.mode.equals("1"))
+			setSource(GameManager.commander.getAssociatedSettlement().getRobots());
+		else
+			setSource(unitManager.getRobots());
+
 		unitManagerListener = new LocalUnitManagerListener();
 		unitManager.addUnitManagerListener(unitManagerListener);
 

@@ -31,12 +31,13 @@ public class SimpleEvent implements Serializable {
 	private short who;
 	private short loc0;
 	private short loc1;
+	private short settlementID;
 	private String dateTime = null;
 
 	private DecimalFormat df = new DecimalFormat("000.000");
 
 	public SimpleEvent(short missionSol, float msol, byte cat, byte type, short what, short whileDoing, short who, short loc0,
-			short loc1) {
+			short loc1, short settlementID) {
 		this.missionSol = missionSol;
 		this.msol = msol;
 		this.cat = cat;
@@ -46,6 +47,7 @@ public class SimpleEvent implements Serializable {
 		this.who = who;
 		this.loc0 = loc0;
 		this.loc1 = loc1;
+		this.settlementID = settlementID;
 		
 		df.setMinimumFractionDigits(3);
 		df.setMinimumIntegerDigits(3);
@@ -139,5 +141,9 @@ public class SimpleEvent implements Serializable {
 
 	public short getLoc1() {
 		return loc1;
+	}
+	
+	public short getSettlementID() {
+		return settlementID;
 	}
 }

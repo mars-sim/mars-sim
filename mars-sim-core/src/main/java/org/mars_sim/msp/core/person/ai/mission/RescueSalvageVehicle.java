@@ -409,12 +409,18 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 					this.getName(), // during
 					member.getName(), // member
 					member.getVehicle().getName(), // loc0
-					vehicleTarget.getLocationTag().getLocale() // loc1
+					vehicleTarget.getLocationTag().getLocale(), // loc1
+					vehicleTarget.getAssociatedSettlement().getName()
 			);
 		} else {
 			newEvent = new MissionHistoricalEvent(EventType.MISSION_RENDEZVOUS, this,
-					"Salvaged Vehicle", this.getName(), member.getName(), member.getVehicle().getName(),
-					vehicleTarget.getLocationTag().getLocale());
+					"Salvaged Vehicle", 
+					this.getName(), 
+					member.getName(), 
+					member.getVehicle().getName(),
+					vehicleTarget.getLocationTag().getLocale(),
+					vehicleTarget.getAssociatedSettlement().getName()
+			);
 		}
 		eventManager.registerNewEvent(newEvent);
 	}
@@ -481,10 +487,16 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 				issue = vehicleTarget.getMalfunctionManager().getMostSeriousEmergencyMalfunction().getName();
 
 			if (!issue.equals("")) {
-				HistoricalEvent salvageEvent = new MissionHistoricalEvent(EventType.MISSION_SALVAGE_VEHICLE, this, issue,
-					this.getName(), towedVehicle.getName(), // person.getName(),
+				HistoricalEvent salvageEvent = new MissionHistoricalEvent(
+						EventType.MISSION_SALVAGE_VEHICLE, 
+						this, 
+						issue,
+					this.getName(), 
+					towedVehicle.getName(), // person.getName(),
 					person.getLocationTag().getImmediateLocation(), // .getVehicle().getName(),
-					person.getLocationTag().getLocale());
+					person.getLocationTag().getLocale(),
+					person.getAssociatedSettlement().getName()
+					);
 				eventManager.registerNewEvent(salvageEvent);
 			}
 			
@@ -517,9 +529,15 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 						BuildingManager.addToMedicalBuilding(p, id);
 						p.setAssociatedSettlement(id);
 
-						HistoricalEvent rescueEvent = new MissionHistoricalEvent(EventType.MISSION_RESCUE_PERSON, this,
-								p.getPhysicalCondition().getHealthSituation(), p.getTaskDescription(), p.getName(),
-								p.getVehicle().getName(), p.getLocationTag().getLocale());
+						HistoricalEvent rescueEvent = new MissionHistoricalEvent(EventType.MISSION_RESCUE_PERSON, 
+								this,
+								p.getPhysicalCondition().getHealthSituation(), 
+								p.getTaskDescription(), 
+								p.getName(),
+								p.getVehicle().getName(), 
+								p.getLocationTag().getLocale(),
+								p.getAssociatedSettlement().getName()
+								);
 						eventManager.registerNewEvent(rescueEvent);												
 					}
 					
