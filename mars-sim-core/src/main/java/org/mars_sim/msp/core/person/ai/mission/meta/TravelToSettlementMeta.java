@@ -31,6 +31,8 @@ public class TravelToSettlementMeta implements MetaMission {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(TravelToSettlementMeta.class.getName());
 
+    private static final double LIMIT = 10D;
+    
     /** Mission name */
     private static final String NAME = Msg.getString(
             "Mission.description.travelToSettlement"); //$NON-NLS-1$
@@ -68,6 +70,10 @@ public class TravelToSettlementMeta implements MetaMission {
 	        	missionProbability *= job.getStartMissionProbabilityModifier(
 	                    TravelToSettlement.class)* settlement.getGoodsManager().getTourismFactor();
 
+			if (missionProbability > LIMIT)
+				missionProbability = LIMIT;
+			else if (missionProbability < 0)
+				missionProbability = 0;
         }
 
 //        if (missionProbability > 0)

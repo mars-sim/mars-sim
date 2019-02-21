@@ -22,6 +22,8 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  */
 public class RescueSalvageVehicleMeta implements MetaMission {
 
+    private static final double LIMIT = 10D;
+    
     /** Mission name */
     private static final String NAME = Msg.getString(
             "Mission.description.rescueSalvageVehicle"); //$NON-NLS-1$
@@ -39,7 +41,7 @@ public class RescueSalvageVehicleMeta implements MetaMission {
     @Override
     public double getProbability(Person person) {
 
-        double result = 0D;
+        double missionProbability = 0D;
 
         if (person.isInSettlement()) {
 
@@ -124,10 +126,10 @@ public class RescueSalvageVehicleMeta implements MetaMission {
 
             // Determine mission probability.
             if (rescuePeople) {
-                result = RescueSalvageVehicle.BASE_RESCUE_MISSION_WEIGHT;
+                missionProbability = RescueSalvageVehicle.BASE_RESCUE_MISSION_WEIGHT;
             }
             else {
-                result = RescueSalvageVehicle.BASE_SALVAGE_MISSION_WEIGHT;
+                missionProbability = RescueSalvageVehicle.BASE_SALVAGE_MISSION_WEIGHT;
             }
 
 			int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);
@@ -144,23 +146,27 @@ public class RescueSalvageVehicleMeta implements MetaMission {
 			int f1 = 2*numEmbarked + 1;
 			int f2 = 2*numThisMission + 1;
 			
-			result *= settlement.getNumCitizens() / f1 / f2 / 2D;
+			missionProbability *= settlement.getNumCitizens() / f1 / f2 / 2D;
 			
             // Crowding modifier.
             int crowding = settlement.getIndoorPeopleCount() - settlement.getPopulationCapacity();
             if (crowding > 0) {
-                result *= (crowding + 1);
+                missionProbability *= (crowding + 1);
             }
 
             // Job modifier.
             Job job = person.getMind().getJob();
             if (job != null) {
-                result *= job.getStartMissionProbabilityModifier(RescueSalvageVehicle.class);
+                missionProbability *= job.getStartMissionProbabilityModifier(RescueSalvageVehicle.class);
             }
 
+			if (missionProbability > LIMIT)
+				missionProbability = LIMIT;
+			else if (missionProbability < 0)
+				missionProbability = 0;
         }
 
-        return result;
+        return missionProbability;
     }
 
 	@Override

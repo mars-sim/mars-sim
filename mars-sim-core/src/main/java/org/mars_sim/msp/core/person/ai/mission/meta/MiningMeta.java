@@ -34,6 +34,8 @@ public class MiningMeta implements MetaMission {
     /** default logger. */
     private static Logger logger = Logger.getLogger(MiningMeta.class.getName());
 
+    private static final double LIMIT = 10D;
+    
     @Override
     public String getName() {
         return NAME;
@@ -95,9 +97,10 @@ public class MiningMeta implements MetaMission {
                             rover, settlement);
                     if (miningSite != null) {
                         missionProbability = Mining.getMiningSiteValue(miningSite, settlement);
-                        if (missionProbability > 10D) {
-                            missionProbability = 10D;
-                        }
+    					if (missionProbability < 0)
+    						missionProbability = 0;
+    					else if (missionProbability > LIMIT)
+                            missionProbability = LIMIT;
                     }
                 }
             } catch (Exception e) {

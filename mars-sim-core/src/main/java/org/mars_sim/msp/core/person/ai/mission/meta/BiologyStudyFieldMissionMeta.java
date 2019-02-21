@@ -31,7 +31,9 @@ public class BiologyStudyFieldMissionMeta implements MetaMission {
     /** default logger. */
 	private static Logger logger = Logger.getLogger(BiologyStudyFieldMissionMeta.class.getName());
 
-    private static double WEIGHT = 4D;
+    private static final double WEIGHT = 4D;
+    
+    private static final double LIMIT = 10D;
     
     /** Mission name */
     private static final String NAME = Msg.getString(
@@ -121,6 +123,11 @@ public class BiologyStudyFieldMissionMeta implements MetaMission {
                 	* (settlement.getGoodsManager().getTourismFactor()
                 	+ settlement.getGoodsManager().getResearchFactor())/1.5;
             }
+            
+			if (missionProbability > LIMIT)
+				missionProbability = LIMIT;
+			else if (missionProbability < 0)
+				missionProbability = 0;
         }
 
 //        if (missionProbability > 0)

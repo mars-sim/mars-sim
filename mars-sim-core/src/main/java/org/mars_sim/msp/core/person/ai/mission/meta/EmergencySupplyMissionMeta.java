@@ -22,12 +22,14 @@ import org.mars_sim.msp.core.vehicle.Rover;
  */
 public class EmergencySupplyMissionMeta implements MetaMission {
 
+    /** default logger. */
+    //private static Logger logger = Logger.getLogger(EmergencySupplyMissionMeta.class.getName());
+
+    private static final double LIMIT = 10D;
+    
     /** Mission name */
     private static final String NAME = Msg.getString(
             "Mission.description.emergencySupplyMission"); //$NON-NLS-1$
-
-    /** default logger. */
-    //private static Logger logger = Logger.getLogger(EmergencySupplyMissionMeta.class.getName());
 
     @Override
     public String getName() {
@@ -117,6 +119,10 @@ public class EmergencySupplyMissionMeta implements MetaMission {
 	            // Job modifier.
 	            missionProbability *= jobModifier;
 	
+				if (missionProbability > LIMIT)
+					missionProbability = LIMIT;
+				else if (missionProbability < 0)
+					missionProbability = 0;
 	        }
 	        
         }

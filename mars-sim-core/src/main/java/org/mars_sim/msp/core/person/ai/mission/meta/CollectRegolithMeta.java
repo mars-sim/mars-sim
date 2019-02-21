@@ -30,6 +30,8 @@ public class CollectRegolithMeta implements MetaMission {
 
 	private static final double VALUE = 200D;
 
+    private static final double LIMIT = 10D;
+    
 	/** starting sol for this mission to commence. */
 	public final static int MIN_STARTING_SOL = 1;
 
@@ -81,9 +83,8 @@ public class CollectRegolithMeta implements MetaMission {
 				missionProbability = missionProbability / settlement.getGoodsManager().getTourismFactor();
 			}
 
-
-			if (missionProbability > 10D)
-				missionProbability = 10D;
+			if (missionProbability > LIMIT)
+				missionProbability = LIMIT;
 			else if (missionProbability < 0)
 				missionProbability = 0;
 		}

@@ -32,7 +32,9 @@ public class MeteorologyStudyFieldMissionMeta implements MetaMission {
     private static final String NAME = Msg.getString(
             "Mission.description.meteorologyStudyFieldMission"); //$NON-NLS-1$
 
-    private static double WEIGHT = 4D;
+    private static final double WEIGHT = 4D;
+    
+    private static final double LIMIT = 10D;
     
     /** default logger. */
     private static Logger logger = Logger.getLogger(MeteorologyStudyFieldMissionMeta.class.getName());
@@ -121,6 +123,11 @@ public class MeteorologyStudyFieldMissionMeta implements MetaMission {
                 	* (settlement.getGoodsManager().getTourismFactor()
                     + settlement.getGoodsManager().getResearchFactor())/1.5;
             }
+            
+			if (missionProbability > LIMIT)
+				missionProbability = LIMIT;
+			else if (missionProbability < 0)
+				missionProbability = 0;
         }
         
 //        if (missionProbability > 0)

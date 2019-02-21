@@ -35,6 +35,8 @@ public class TradeMeta implements MetaMission {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(TradeMeta.class.getName());
 
+    private static final double LIMIT = 10D;
+    
 	private Person person;
 	private Robot robot;
 
@@ -94,8 +96,14 @@ public class TradeMeta implements MetaMission {
 			int f2 = 2*numThisMission + 1;
 			
 			missionProbability *= settlement.getNumCitizens() / f1 / f2 / 2D;
+			
+			if (missionProbability > LIMIT)
+				missionProbability = LIMIT;
+			else if (missionProbability < 0)
+				missionProbability = 0;
 		}
 //
+		
 //        if (missionProbability > 0)
 //        	logger.info("TradeMeta's probability : " +
 //				 Math.round(missionProbability*100D)/100D);

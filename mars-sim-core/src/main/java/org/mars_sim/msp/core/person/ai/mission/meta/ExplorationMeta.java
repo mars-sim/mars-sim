@@ -32,6 +32,8 @@ public class ExplorationMeta implements MetaMission {
 
 	private static final double FACTOR = 50D;
 
+    private static final double LIMIT = 20D;
+
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(ExplorationMeta.class.getName());
 
@@ -86,6 +88,8 @@ public class ExplorationMeta implements MetaMission {
 					missionProbability = settlement.getTotalMineralValue(rover) / FACTOR;
 					if (missionProbability < 0)
 						missionProbability = 0;
+					else if (missionProbability > LIMIT)
+                        missionProbability = LIMIT;
 				}
 				
 			} catch (Exception e) {
