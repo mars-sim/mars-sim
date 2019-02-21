@@ -999,19 +999,19 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 				if ((nextNav != null) && (newDestination == nextNav.getSettlement())) {
 					sameDestination = true;
 
-					LogConsolidated.log(Level.WARNING, 5000, sourceName,
-							"[" + vehicle.getName() + "] Home Settlement (" + newDestination.getName() + ") : " 
+					LogConsolidated.log(Level.WARNING, 10000, sourceName,
+							"[" + vehicle.getName() + "] Emergency encountered.  Home Settlement (" + newDestination.getName() + ") : " 
 							+ Math.round(newDistance * 100D) / 100D
 							+ " km    Duration : " + Math.round(newTripTime * 100.0 / 1000.0) / 100.0 + " sols");
 					
+					endCollectionPhase();
 					returnHome();
-
 				}
 
 				if (!sameDestination) {
 
-					LogConsolidated.log(Level.WARNING, 5000, sourceName,
-							"[" + vehicle.getName() + "] Home Settlement (" + oldHome.getName() + ") : " 
+					LogConsolidated.log(Level.WARNING, 10000, sourceName,
+							"[" + vehicle.getName() + "] Emergency encountered.  Home Settlement (" + oldHome.getName() + ") : " 
 							+ Math.round(oldDistance * 100D) / 100D
 							+ " km    Nearest Settlement (" + newDestination.getName() + ") : " 
 							+ Math.round(newDistance * 100D) / 100D
@@ -1052,21 +1052,22 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 				if ((nextNav != null) && (newDestination == nextNav.getSettlement())) {
 					sameDestination = true;
 
-					LogConsolidated.log(Level.WARNING, 5000, sourceName,
+					LogConsolidated.log(Level.WARNING, 10000, sourceName,
 							"[" + vehicle.getName() 
-							+ "] Home Settlement (" + newDestination.getName() + ") : " 
+							+ "] Emergency encountered.  Home Settlement (" + newDestination.getName() + ") : " 
 							+ Math.round(newDistance * 2 / 3 * 100D) / 100D 
 							+ " km    Duration : "
 							+ Math.round(newTripTime * 100.0 / 1000.0) / 100.0 + " sols");
 
+					endCollectionPhase();
 					returnHome();
 				}
 
 				if (!sameDestination) {
 
-					LogConsolidated.log(Level.WARNING, 5000, sourceName,
+					LogConsolidated.log(Level.WARNING, 10000, sourceName,
 							"[" + vehicle.getName() 
-							+ "] Home Settlement (" + oldHome.getName() + ") : " 
+							+ "] Emergency encountered.  Home Settlement (" + oldHome.getName() + ") : " 
 							+ Math.round(oldDistance * 100D) / 100D
 							+ " km    Next Routing Stop : " + Math.round(newDistance * 2 / 3 * 100D) / 100D
 							+ " km    Duration : " + Math.round(newTripTime * 100.0 / 1000.0) / 100.0 + " sols");
@@ -1089,6 +1090,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 				}
 
 			} else {
+				
+				endCollectionPhase();		
 				// Don't have enough resources and can't go anywhere, turn on beacon next
 				if (hasMedicalEmergency)
 					endMission(MEDICAL_EMERGENCY);
@@ -1097,6 +1100,9 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			}
 
 		} else { // newDestination is null. Can't find a destination
+			
+			endCollectionPhase();
+			
 			if (hasMedicalEmergency)
 				endMission(MEDICAL_EMERGENCY);
 			else
