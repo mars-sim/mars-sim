@@ -73,9 +73,6 @@ import com.alee.laf.text.WebTextField;
  */
 public class NavigatorWindow extends ToolWindow implements ActionListener {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
 	/** Tool name. */
 	public static final String NAME = Msg.getString("NavigatorWindow.title"); //$NON-NLS-1$
 

@@ -15,6 +15,7 @@ import javax.swing.table.AbstractTableModel;
 import org.mars_sim.msp.core.GameManager;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.events.HistoricalEventCategory;
 import org.mars_sim.msp.core.events.HistoricalEventListener;
@@ -93,7 +94,6 @@ public class EventTableModel extends AbstractTableModel
 	private boolean displayTask = false;
 	private boolean displayTransport = false;
 
-	private HistoricalEventManager manager;
 	private NotificationWindow notifyBox;
 	private MainDesktopPane desktop;
 	private NotificationMenu nMenu;
@@ -101,19 +101,11 @@ public class EventTableModel extends AbstractTableModel
 
 	private List<String> messageCache = new ArrayList<>();
 
-//	private Map<Integer, Image> appIconSet = new LinkedHashMap<>();
-
-//	private static Image icon_med = new Image(
-//			EventTableModel.class.getResource("/icons/notification/medical_48.png").toExternalForm());
-//	private static Image icon_mal = new Image(
-//			EventTableModel.class.getResource("/icons/notification/tool_48.png").toExternalForm());
-//	private static Image icon_mission = new Image(
-//			EventTableModel.class.getResource("/icons/notification/car_48.png").toExternalForm());
-//	private static Image icon_hazard = new Image(
-//			EventTableModel.class.getResource("/icons/notification/hazard_48.png").toExternalForm());
-
 //	private transient List<HistoricalEvent> cachedEvents = new ArrayList<HistoricalEvent>();
 	private transient List<SimpleEvent> cachedEvents = new ArrayList<>();
+
+	private static HistoricalEventManager eventManager;
+	private static UnitManager unitManager = Simulation.instance().getUnitManager();
 
 	/**
 	 * constructor. Create a new Event model based on the specified event manager.
@@ -122,7 +114,7 @@ public class EventTableModel extends AbstractTableModel
 	 * @param notifyBox to present notification message to user.
 	 */
 	public EventTableModel(HistoricalEventManager manager, NotificationWindow notifyBox, MainDesktopPane desktop) {
-		this.manager = manager;
+		this.eventManager = manager;
 		this.notifyBox = notifyBox;
 		this.desktop = desktop;
 
@@ -151,11 +143,11 @@ public class EventTableModel extends AbstractTableModel
 //		int size = manager.getEvents().size();
 		
 		if (GameManager.mode.equals("1")) {
-			int id = GameManager.commander.getAssociatedSettlement().getIdentifier();
-			events = manager.getEvents(id);
+			int id = unitManager.getCommanderSettlement().getIdentifier();
+			events = eventManager.getEvents(id);
 		}
 		else {
-			events = manager.getEvents();
+			events = eventManager.getEvents();
 		}
 		
 		// TODO: find a way to optimize this so that it doesn't have to redo the sort everytime a new event is added.
@@ -333,27 +325,27 @@ public class EventTableModel extends AbstractTableModel
 					break;
 
 				case CAUSE: {
-					result = manager.getWhat(event.getWhat());
+					result = eventManager.getWhat(event.getWhat());
 				}
 					break;
 
 				case WHILE: {
-					result = manager.getWhileDoing(event.getWhileDoing());
+					result = eventManager.getWhileDoing(event.getWhileDoing());
 				}
 					break;
 					
 				case WHO: {
-					result = manager.getWho(event.getWho());
+					result = eventManager.getWho(event.getWho());
 				}
 					break;
 
 				case LOCATION0: {
-					result = manager.getLoc0(event.getLoc0());
+					result = eventManager.getLoc0(event.getLoc0());
 				}
 					break;
 
 				case LOCATION1: {
-					result = manager.getLoc1(event.getLoc1());
+					result = eventManager.getLoc1(event.getLoc1());
 				}
 					break;
 				}
@@ -406,11 +398,11 @@ public class EventTableModel extends AbstractTableModel
 
 				String header = null;
 				String message = null;
-				String cause = manager.getWhat(event.getWhat());
-				String during = (manager.getWhileDoing(event.getWhileDoing()));
-				String who = manager.getWho(event.getWho());
-				String location0 = manager.getLoc0(event.getLoc0());
-				String location1 = manager.getLoc1(event.getLoc1());
+				String cause = eventManager.getWhat(event.getWhat());
+				String during = (eventManager.getWhileDoing(event.getWhileDoing()));
+				String who = eventManager.getWho(event.getWho());
+				String location0 = eventManager.getLoc0(event.getLoc0());
+				String location1 = eventManager.getLoc1(event.getLoc1());
 				
 				HistoricalEventCategory category = HistoricalEventCategory.int2enum(event.getCat());
 				EventType eventType = EventType.int2enum(event.getType());
@@ -885,8 +877,8 @@ public class EventTableModel extends AbstractTableModel
 	 */
 	public void destroy() {
 		Simulation.instance().getMasterClock().removeClockListener(this);
-		manager.removeListener(this);
-		manager = null;
+		eventManager.removeListener(this);
+		eventManager = null;
 		notifyBox = null;
 		desktop = null;
 		nMenu = null;

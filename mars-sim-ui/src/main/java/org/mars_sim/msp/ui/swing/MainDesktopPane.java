@@ -1150,7 +1150,7 @@ public class MainDesktopPane extends JDesktopPane
 	 */
 	public void cacheSettlementUnitWindow() {
 		if (GameManager.mode.equals("1"))
-			openUnitWindow(GameManager.commander.getAssociatedSettlement(), true, false);
+			openUnitWindow(unitManager.getCommanderSettlement(), true, false);
 		else {
 			for (Settlement s : unitManager.getSettlements()) {
 				openUnitWindow((Settlement)s, true, false);

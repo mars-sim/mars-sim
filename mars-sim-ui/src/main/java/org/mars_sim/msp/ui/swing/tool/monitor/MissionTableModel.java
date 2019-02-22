@@ -107,7 +107,7 @@ public class MissionTableModel extends AbstractTableModel
 		columnTypes[REMAINING_DISTANCE] = Integer.class;
 
 		if (GameManager.mode.equals("1")) {
-			commanderSettlement = GameManager.commander.getAssociatedSettlement();
+			commanderSettlement = Simulation.instance().getUnitManager().getCommanderSettlement();
 			missionCache = missionManager.getMissionsForSettlement(commanderSettlement);
 		}
 		else {

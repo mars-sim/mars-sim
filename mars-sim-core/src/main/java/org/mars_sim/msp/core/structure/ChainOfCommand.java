@@ -771,8 +771,9 @@ public class ChainOfCommand implements Serializable {
 		// individuals
 		
 		// Check if this settlement is the designated one for the user proposed commander
-		if (settlement.isCommanderMode()) {
+		if (settlement.hasDesignatedCommander()) {
 			unitManager.updateCommander(cc);
+			cc.setAssociatedSettlement(settlement.getIdentifier());
 			logger.config("[" + cc.getLocationTag().getLocale() + "] " + cc + " will be assigned as the settlement's commander.");
 		}
 		

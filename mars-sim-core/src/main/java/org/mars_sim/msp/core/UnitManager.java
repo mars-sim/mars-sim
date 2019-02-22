@@ -84,8 +84,6 @@ public class UnitManager implements Serializable {
 	public static final String VEHICLE_NAME = "Vehicle";
 	public static final String SETTLEMENT_NAME = "Settlement";
 	
-	/** Is it running in Commander's Mode */
-	public static boolean isCommanderMode = false;	
 	/** True if the simulation has just started. */
 	private static boolean justStarting = true;
 	/** The total numbers of Unit instances. */
@@ -94,6 +92,8 @@ public class UnitManager implements Serializable {
 	private static MarsSurface marsSurface;
 	
 	// Data members
+	/** Is it running in Commander's Mode */
+	public boolean isCommanderMode;	
 	/** The commander's unique id . */
     public int commanderID;
 	/** The cache of the mission sol. */    
@@ -232,7 +232,7 @@ public class UnitManager implements Serializable {
 			createInitialResources();
 			createInitialParts();
 			// Find the settlement match for the user proposed commander's sponsor 
-			if (isCommanderMode)
+			if (GameManager.mode.equals("1"))
 				matchSettlement();
 			// Create pre-configured robots as stated in robots.xml
 			createPreconfiguredRobots();
@@ -398,6 +398,10 @@ public class UnitManager implements Serializable {
 		return lookupPerson.get(id);
 	}
 
+	public Settlement getCommanderSettlement() {
+		return getPersonByID(commanderID).getAssociatedSettlement();
+	}
+	
 	public void addPersonID(Person p) {
 		if (lookupPerson == null)
 			lookupPerson = new HashMap<>();
@@ -1302,6 +1306,7 @@ public class UnitManager implements Serializable {
 		cc.setSponsor(newSponsor);		
 		
 		commanderID = cc.getIdentifier();
+		isCommanderMode = true;
 		GameManager.setCommander(cc);
 	}
 	
@@ -1323,15 +1328,15 @@ public class UnitManager implements Serializable {
 			Settlement s = list.get(j);		
 			// If the sponsors are a match
 			if (sponsor.equals(s.getSponsor()) ) {			
-				s.setCommanderMode(true);
-				logger.config("The nation of '" + country + "' does have a settlement called '" + s + "'.");
+				s.setDesignatedCommander(true);
+				logger.config("The country of '" + country + "' does have a settlement called '" + s + "'.");
 				return;
 			}
 			
 			// If this is the last settlement to examine
 			else if ((j == size - 1)) {			
-				s.setCommanderMode(true);
-				logger.config("The nation of '" + country + "' doesn't have any settlements.");
+				s.setDesignatedCommander(true);
+				logger.config("The country of '" + country + "' doesn't have any settlements.");
 				return;
 			}
 		}			
@@ -2319,15 +2324,24 @@ public class UnitManager implements Serializable {
 	}
 	
 	/**
-	 * Resets the commander's name back to null
+	 * Sets the commander mode
 	 */
-	public static void setCommander(boolean value) {
+	public void setCommanderMode(boolean value) {
 		isCommanderMode = value;
+	}
+	
+	/**
+	 * is the simulation running in commander mode ? 
+	 */
+	public boolean getCommanderMode() {
+		return isCommanderMode;
 	}
 	
 	/** Gets the commander's fullname */
 	public String getFullname() {
 		// During maven test, CommanderProfile/Contact instance doesn't exist
+		if (personConfig == null)
+			personConfig = SimulationConfig.instance().getPersonConfiguration();
 		if (personConfig != null)
 			return personConfig.getCommander().getFullName();
 		else

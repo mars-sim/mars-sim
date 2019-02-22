@@ -441,6 +441,9 @@ public class Simulation implements ClockListener, Serializable {
 		OrbitInfo.initializeInstances(marsClock, earthClock);
 		mars.getWeather().initializeTransientData();
 		
+		//  Re-initialize the GameManager
+		GameManager.initializeInstances(unitManager);
+		
 		// Set instance for Inventory
 		Inventory.initializeInstances(mars.getMarsSurface());
 				

@@ -182,7 +182,7 @@ extends UnitTableModel {
 		);
 
 		if (GameManager.mode.equals("1")) {
-			commanderSettlement = GameManager.commander.getAssociatedSettlement();
+			commanderSettlement = unitManager.getCommanderSettlement();
 			setSource(commanderSettlement.getAllAssociatedVehicles());
 		}
 		else

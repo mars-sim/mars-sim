@@ -14,6 +14,7 @@ public class GameManager {
     public static int id;
     
     public static String mode;
+    
     public static String choice;
 
     public static Person commander;
@@ -25,10 +26,34 @@ public class GameManager {
     	id = cc.getIdentifier();
     }
     
+//    public String getMode() {
+//    	return mode;
+//    }
+//
+//    public void setMode(String mode) {
+//    	this.mode = mode;
+//    }
+//    
     public static void initializeInstances(UnitManager u) {
     	unitManager = u;
-    	id = unitManager.getCommanderID();
-    	commander = unitManager.getPersonByID(id);
+	
+//    	if (mode == null) {
+    		if (unitManager.getCommanderMode()) {
+	    		mode = "1";
+		    	id = unitManager.getCommanderID();
+		    	commander = unitManager.getPersonByID(id);
+    		}
+    		else {
+    			mode = "0";
+    		}
+//    	}
+    	
+//    	if (mode == "1") {
+//    		unitManager.setCommanderMode(true);
+//	    	id = unitManager.getCommanderID();
+//	    	commander = unitManager.getPersonByID(id);
+//    	}
+    	
     }
     
     @Override

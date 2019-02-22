@@ -169,7 +169,7 @@ public class RobotTableModel extends UnitTableModel {
 		sourceType = ValidSourceType.ALL_ROBOTS;
 		
 		if (GameManager.mode.equals("1"))
-			setSource(GameManager.commander.getAssociatedSettlement().getRobots());
+			setSource(unitManager.getCommanderSettlement().getRobots());
 		else
 			setSource(unitManager.getRobots());
 

@@ -15,8 +15,6 @@ import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.monitor.MonitorWindow;
 
-import com.alee.laf.desktoppane.WebInternalFrame;
-
 /**
  * The ToolWindow class is an abstract UI window for a tool. Particular tool
  * windows should be derived from this.

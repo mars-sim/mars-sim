@@ -135,7 +135,7 @@ public class SettlementTableModel extends UnitTableModel {
 				columnNames, columnTypes);
 
 		if (GameManager.mode.equals("1"))
-			addUnit(GameManager.commander.getAssociatedSettlement());
+			addUnit(unitManager.getCommanderSettlement());
 		else
 			setSource(unitManager.getSettlements());
 		

@@ -363,7 +363,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	 * The flag signifying this settlement as the destination of the user-defined
 	 * commander.
 	 */
-	private boolean isCommanderMode = false;
+	private boolean hasDesignatedCommander = false;
 
 	private static int sample1 = ResourceUtil.findIDbyAmountResourceName("regolith");// "polyethylene");
 	private static int sample2 = ResourceUtil.findIDbyAmountResourceName("ice");// concrete");
@@ -3904,12 +3904,12 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		maxMssionRange = value;
 	}
 
-	public boolean isCommanderMode() {
-		return isCommanderMode;
+	public boolean hasDesignatedCommander() {
+		return hasDesignatedCommander;
 	}
 
-	public void setCommanderMode(boolean value) {
-		isCommanderMode = value;
+	public void setDesignatedCommander(boolean value) {
+		hasDesignatedCommander = value;
 	}
 
 	public void increaseGreyWaterFilteringRate() {

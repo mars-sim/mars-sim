@@ -54,7 +54,7 @@ public class FoodInventoryTableModel extends AbstractTableModel
 
 		// Initialize settlements.
 		if (GameManager.mode.equals("1")) {
-			commanderSettlement = GameManager.commander.getAssociatedSettlement();
+			commanderSettlement = unitManager.getCommanderSettlement();
 			settlements.add(commanderSettlement);
 		}
 		else

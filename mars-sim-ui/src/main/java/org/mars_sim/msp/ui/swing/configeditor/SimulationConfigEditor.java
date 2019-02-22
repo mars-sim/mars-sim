@@ -8,7 +8,6 @@ package org.mars_sim.msp.ui.swing.configeditor;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -42,13 +41,14 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
-import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
 import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.GameManager;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 import org.mars_sim.msp.core.structure.SettlementConfig;
 import org.mars_sim.msp.core.structure.SettlementTemplate;
@@ -83,11 +83,12 @@ public class SimulationConfigEditor {
 	private JFrame f;
 
 	private CrewEditor crewEditor;
-	private SimulationConfig config;
-
-	private Simulation sim = Simulation.instance();
-
-	private SettlementConfig settlementConfig;
+	
+	private static Simulation sim = Simulation.instance();
+	private static SimulationConfig simulationConfig;
+	private static SettlementConfig settlementConfig;
+	private static PersonConfig personConfig;
+//	private static UnitManager unitManager;
 	
 	/**
 	 * Constructor
@@ -100,8 +101,9 @@ public class SimulationConfigEditor {
 	public SimulationConfigEditor(SimulationConfig config, MainWindow mainWindow) {
 
 		// Initialize data members.
-		this.config = config;
+		this.simulationConfig = config;
 		settlementConfig = config.getSettlementConfiguration();
+		personConfig = simulationConfig.getPersonConfiguration();
 		
 		hasError = false;
 
@@ -126,11 +128,34 @@ public class SimulationConfigEditor {
 		contentPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 		f.setContentPane(contentPanel);
 
+		JPanel topPanel = new JPanel(new GridLayout(3, 1));
+		f.add(topPanel, BorderLayout.NORTH);
+		
 		// Create the title label.
 		JLabel titleLabel = new JLabel(Msg.getString("SimulationConfigEditor.chooseSettlements"), JLabel.CENTER); //$NON-NLS-1$
 		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
-		f.add(titleLabel, BorderLayout.NORTH);
+		topPanel.add(titleLabel);
 
+		// Create the title label.
+		if (GameManager.mode.equals("1")) {
+			String commanderName = personConfig.getCommander().getFullName();
+			String sponsor = personConfig.getCommander().getSponsor();
+			JLabel gameModeLabel = new JLabel(Msg.getString("SimulationConfigEditor.gameMode", "Commander Mode"), JLabel.CENTER); //$NON-NLS-1$
+			gameModeLabel.setFont(new Font("Serif", Font.ITALIC, 14));
+			topPanel.add(gameModeLabel);
+			
+			JLabel commanderLabel = new JLabel("   " + Msg.getString("SimulationConfigEditor.commanderInfo", 
+					commanderName, sponsor), JLabel.LEFT); //$NON-NLS-1$
+			commanderLabel.setFont(new Font("Serif", Font.PLAIN, 16));
+			topPanel.add(commanderLabel);
+		}
+		
+		else {
+			JLabel gameModeLabel = new JLabel(Msg.getString("SimulationConfigEditor.gameMode", "Sandbox Mode"), JLabel.CENTER); //$NON-NLS-1$
+			gameModeLabel.setFont(new Font("Serif", Font.ITALIC, 14));
+			topPanel.add(gameModeLabel);
+		}
+		
 		// Create settlement scroll panel.
 		JScrollPane settlementScrollPane = new JScrollPane();
 		settlementScrollPane.setPreferredSize(new Dimension(HORIZONTAL_SIZE, 250));// 585, 200));
@@ -395,7 +420,7 @@ public class SimulationConfigEditor {
 	 */
 	private void editCrewProfile(String crew) {
 		if (crewEditor == null) {
-			crewEditor = new CrewEditor(config, this);
+			crewEditor = new CrewEditor(simulationConfig, this);
 			// System.out.println("new CrewEditor()");
 		} else if (!isCrewEditorOpen) {
 			crewEditor.createGUI();
@@ -419,7 +444,7 @@ public class SimulationConfigEditor {
 	 * Finalizes the simulation configuration based on dialog choices.
 	 */
 	private void finalizeSettlementConfig() {
-		SettlementConfig settlementConfig = config.getSettlementConfiguration();
+		SettlementConfig settlementConfig = simulationConfig.getSettlementConfiguration();
 
 		// Clear configuration settlements.
 		settlementConfig.clearInitialSettlements();
@@ -511,7 +536,7 @@ public class SimulationConfigEditor {
 
 		// Try to find unique name in configured settlement name list.
 		// Randomly shuffle settlement name list first.
-		SettlementConfig settlementConfig = config.getSettlementConfiguration();
+		SettlementConfig settlementConfig = simulationConfig.getSettlementConfiguration();
 		List<String> settlementNames = settlementConfig.getSettlementNameList();
 		Collections.shuffle(settlementNames);
 		Iterator<String> i = settlementNames.iterator();
@@ -567,7 +592,7 @@ public class SimulationConfigEditor {
 	private String determineNewSettlementTemplate() {
 		String result = null;
 
-		SettlementConfig settlementConfig = config.getSettlementConfiguration();
+		SettlementConfig settlementConfig = simulationConfig.getSettlementConfiguration();
 		List<SettlementTemplate> templates = settlementConfig.getSettlementTemplates();
 		if (templates.size() > 0) {
 			int index = RandomUtil.getRandomInt(templates.size() - 1);
@@ -590,7 +615,7 @@ public class SimulationConfigEditor {
 		String result = "0"; //$NON-NLS-1$
 
 		if (templateName != null) {
-			SettlementConfig settlementConfig = config.getSettlementConfiguration();
+			SettlementConfig settlementConfig = simulationConfig.getSettlementConfiguration();
 			Iterator<SettlementTemplate> i = settlementConfig.getSettlementTemplates().iterator();
 			while (i.hasNext()) {
 				SettlementTemplate template = i.next();
@@ -615,7 +640,7 @@ public class SimulationConfigEditor {
 		String result = "0"; //$NON-NLS-1$
 
 		if (templateName != null) {
-			SettlementConfig settlementConfig = config.getSettlementConfiguration();
+			SettlementConfig settlementConfig = simulationConfig.getSettlementConfiguration();
 			Iterator<SettlementTemplate> i = settlementConfig.getSettlementTemplates().iterator();
 			while (i.hasNext()) {
 				SettlementTemplate template = i.next();
@@ -676,8 +701,12 @@ public class SimulationConfigEditor {
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
 		// Data members
+//		private boolean isCommanderMode = GameManager.mode;
+		
 		private String[] columns;
 		private List<SettlementInfo> settlements;
+		
+		
 
 		/**
 		 * Hidden Constructor.
@@ -686,7 +715,9 @@ public class SimulationConfigEditor {
 			super();
 
 			// Add table columns.
-			columns = new String[] { Msg.getString("SimulationConfigEditor.column.name"), //$NON-NLS-1$
+			columns = new String[] { 
+//					Msg.getString("SimulationConfigEditor.column.isCommanderSettlement"), //$NON-NLS-1$
+					Msg.getString("SimulationConfigEditor.column.name"), //$NON-NLS-1$
 					Msg.getString("SimulationConfigEditor.column.template"), //$NON-NLS-1$
 					Msg.getString("SimulationConfigEditor.column.population"), //$NON-NLS-1$
 					Msg.getString("SimulationConfigEditor.column.numOfRobots"), //$NON-NLS-1$
@@ -704,7 +735,7 @@ public class SimulationConfigEditor {
 		 * Load the default settlements in the table.
 		 */
 		private void loadDefaultSettlements() {
-			SettlementConfig settlementConfig = config.getSettlementConfiguration();
+			SettlementConfig settlementConfig = simulationConfig.getSettlementConfiguration();
 			settlements.clear();
 			for (int x = 0; x < settlementConfig.getNumberOfInitialSettlements(); x++) {
 				SettlementInfo info = new SettlementInfo();

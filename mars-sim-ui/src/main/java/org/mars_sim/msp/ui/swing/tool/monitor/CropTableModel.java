@@ -202,7 +202,7 @@ public class CropTableModel extends UnitTableModel {
 		paddedSettlements = new ArrayList<Settlement>();
 
 		if (GameManager.mode.equals("1")) {
-			commanderSettlement = GameManager.commander.getAssociatedSettlement();
+			commanderSettlement = unitManager.getCommanderSettlement();
 			addUnit(commanderSettlement);
 		}
 		else {

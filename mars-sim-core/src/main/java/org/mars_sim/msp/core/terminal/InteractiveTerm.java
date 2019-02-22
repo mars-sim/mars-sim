@@ -55,6 +55,7 @@ public class InteractiveTerm {
 	
 	private static SwingHandler handler;
 	
+	private static GameManager gm;
 
 	public InteractiveTerm() {
 		
@@ -84,9 +85,9 @@ public class InteractiveTerm {
 		
 		profile = new CommanderProfile(this);
 
-		GameManager ci = new GameManager();
+		gm = new GameManager();
 		
-        handler = new SwingHandler(textIO, "console", ci);
+        handler = new SwingHandler(textIO, "console", gm);
         
 		// Prevent allow users from arbitrarily close the terminal by clicking top right close button
 		terminal.registerUserInterruptHandler(term -> {}, false);
@@ -142,7 +143,7 @@ public class InteractiveTerm {
 			            		+ System.lineSeparator()
 			            		+ profile.getCommander().toString()
 			            		+ System.lineSeparator());
-			            UnitManager.setCommander(true);
+//			            UnitManager.setCommanderMode(true);
 			            
 			            boolean like = textIO.newBooleanInputReader().withDefaultValue(true).read("Would you like to us this profile ?");
 			            
@@ -354,4 +355,7 @@ public class InteractiveTerm {
     	return handler;
     }
     
+    public GameManager getGameManager() {
+    	return gm;
+    }
 }

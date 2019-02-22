@@ -123,7 +123,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
         		+ System.lineSeparator()
         		+ commander.toString()
         		+ System.lineSeparator());
-        UnitManager.setCommander(true);
+//        UnitManager.setCommanderMode(true);
         
         boolean toSave = textIO.newBooleanInputReader().withDefaultValue(true).read("Save this profile");
         

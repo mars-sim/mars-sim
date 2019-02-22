@@ -189,7 +189,7 @@ public class PersonTableModel extends UnitTableModel {
 		sourceType = ValidSourceType.ALL_PEOPLE;
 		
 		if (GameManager.mode.equals("1"))
-			setSource(GameManager.commander.getAssociatedSettlement().getAllAssociatedPeople());
+			setSource(unitManager.getCommanderSettlement().getAllAssociatedPeople());
 		else
 			setSource(unitManager.getPeople());
 		
