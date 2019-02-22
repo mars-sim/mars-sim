@@ -30,7 +30,6 @@ import javax.swing.JList;
 import javax.swing.SpringLayout;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.plaf.basic.BasicComboBoxRenderer;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
 

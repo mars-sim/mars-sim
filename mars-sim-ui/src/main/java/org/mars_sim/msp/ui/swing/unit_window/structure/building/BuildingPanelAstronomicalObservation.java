@@ -6,16 +6,6 @@
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
-import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.structure.building.function.AstronomicalObservation;
-import org.mars_sim.msp.ui.astroarts.OrbitViewer;
-import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.MainWindow;
-
-import com.alee.laf.button.WebButton;
-import com.alee.laf.label.WebLabel;
-import com.alee.laf.panel.WebPanel;
-
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
@@ -23,6 +13,15 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
+import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.structure.building.function.AstronomicalObservation;
+import org.mars_sim.msp.ui.astroarts.OrbitViewer;
+import org.mars_sim.msp.ui.swing.MainDesktopPane;
+
+import com.alee.laf.button.WebButton;
+import com.alee.laf.label.WebLabel;
+import com.alee.laf.panel.WebPanel;
 
 /**
  * A panel for the astronomical observation building function.

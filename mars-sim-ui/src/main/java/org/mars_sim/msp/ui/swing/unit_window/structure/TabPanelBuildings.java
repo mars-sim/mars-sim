@@ -64,7 +64,6 @@ implements ActionListener {
 	 * @param unit the unit to display.
 	 * @param desktop the main desktop.
 	 */
-	// 2014-11-27 Moved rename building capability to BuildingPanel.java
 	public TabPanelBuildings(Unit unit, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(
@@ -113,7 +112,7 @@ implements ActionListener {
 		}
 		// Create building list.
 		comboBox = new JComboBoxMW<Building>(comboBoxModel);
-		comboBox.setRenderer(new PromptComboBoxRenderer("Select a Building"));
+//		comboBox.setRenderer(new PromptComboBoxRenderer("Select a Building"));
 		//comboBox.setOpaque(false);
 		//comboBox.setBackground(new Color(0,0,0,128));
 		//comboBox.setBackground(new Color(255,229,204));
@@ -156,8 +155,8 @@ implements ActionListener {
 			//defaultRenderer.setHorizontalAlignment(DefaultListCellRenderer.CENTER);
 		    //settlementListBox.setRenderer(defaultRenderer);		
 		    //setOpaque(false);
-		    setHorizontalAlignment(CENTER);
-		    setVerticalAlignment(CENTER);
+//		    setHorizontalAlignment(CENTER);
+//		    setVerticalAlignment(CENTER);
 		}
 		
 		public PromptComboBoxRenderer(String prompt){
@@ -167,9 +166,9 @@ implements ActionListener {
 			@Override
 		    public Component getListCellRendererComponent(JList<?> list, Object value,
 		            int index, boolean isSelected, boolean cellHasFocus) {
-				Component c = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+//				Component c = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 				
-//		        JComponent result = (JComponent)super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+		        JComponent result = (JComponent)super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 		        //Component component = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 		        //component.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);		        
 				if (value == null) {
@@ -199,7 +198,10 @@ implements ActionListener {
 				
 		        //result.setOpaque(false);
 
-		        return c;
+//				c = super.getListCellRendererComponent(
+//	                    list, value, index, isSelected, cellHasFocus);
+				
+		        return result;
 		    }
 	}
 

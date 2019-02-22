@@ -11,9 +11,13 @@ import java.awt.BorderLayout;
 
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
+import javax.swing.border.Border;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
 
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
@@ -65,10 +69,14 @@ public abstract class TabPanel extends WebScrollPane {
 		topContentPanel.setBorder(MainDesktopPane.newEmptyBorder());
 		viewPanel.add(topContentPanel, BorderLayout.NORTH);
 
+		Border border = new MarsPanelBorder();
+		Border margin = new EmptyBorder(5,5,5,5);
+		
 		// Create center content panel
 		centerContentPanel = new WebPanel(new BorderLayout(0, 0));
+		centerContentPanel.setBorder(new CompoundBorder(border, margin));
 		// centerContentPanel.setBackground(THEME_COLOR);
-		centerContentPanel.setBorder(MainDesktopPane.newEmptyBorder());
+//		centerContentPanel.setBorder(MainDesktopPane.newEmptyBorder());
 		viewPanel.add(centerContentPanel, BorderLayout.CENTER);
 
 		// setBorder(new DropShadowBorder(Color.BLACK, 0, 11, .2f, 16,false, true, true,

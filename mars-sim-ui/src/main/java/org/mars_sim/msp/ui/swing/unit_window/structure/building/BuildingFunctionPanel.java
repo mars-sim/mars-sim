@@ -8,18 +8,21 @@ package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
 import java.awt.Dimension;
 
+import javax.swing.JPanel;
+import javax.swing.border.Border;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
+
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
 
-import com.alee.laf.panel.WebPanel;
-
 /**
  * The BuildingFunctionPanel class is a panel representing a function for a
  * settlement building.
  */
-public abstract class BuildingFunctionPanel extends WebPanel {
+public abstract class BuildingFunctionPanel extends JPanel {
 
 	/** The building this panel is for. */
 	protected Building building;
@@ -40,10 +43,12 @@ public abstract class BuildingFunctionPanel extends WebPanel {
 		this.building = building;
 		this.desktop = desktop;
 
-		this.setMaximumSize(new Dimension(UnitWindow.WIDTH, UnitWindow.HEIGHT));
-		this.setPreferredSize(new Dimension(WIDTH, HEIGHT));
+		this.setMaximumSize(new Dimension(UnitWindow.WIDTH - 80, UnitWindow.HEIGHT - 300));
+//		this.setPreferredSize(new Dimension(UnitWindow.WIDTH - 30, UnitWindow.HEIGHT));
 		
-		setBorder(new MarsPanelBorder());
+		Border border = new MarsPanelBorder();
+		Border margin = new EmptyBorder(10,10,10,10);
+		setBorder(new CompoundBorder(border, margin));
 	}
 
 	/**
