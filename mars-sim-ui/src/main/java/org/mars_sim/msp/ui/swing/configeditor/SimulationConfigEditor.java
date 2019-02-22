@@ -128,8 +128,18 @@ public class SimulationConfigEditor {
 		contentPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 		f.setContentPane(contentPanel);
 
-		JPanel topPanel = new JPanel(new GridLayout(3, 1));
-		f.add(topPanel, BorderLayout.NORTH);
+		JPanel topPanel = null;
+		
+		if (GameManager.mode.equals("1")) {
+			topPanel = new JPanel(new GridLayout(4, 1));
+			f.add(topPanel, BorderLayout.NORTH);
+		}
+		
+		else {
+			topPanel = new JPanel(new GridLayout(2, 1));
+			f.add(topPanel, BorderLayout.NORTH);
+		}
+
 		
 		// Create the title label.
 		JLabel titleLabel = new JLabel(Msg.getString("SimulationConfigEditor.chooseSettlements"), JLabel.CENTER); //$NON-NLS-1$
@@ -148,6 +158,10 @@ public class SimulationConfigEditor {
 					commanderName, sponsor), JLabel.LEFT); //$NON-NLS-1$
 			commanderLabel.setFont(new Font("Dialog", Font.PLAIN, 14));
 			topPanel.add(commanderLabel);
+			
+			JLabel noteLabel = new JLabel("    " + Msg.getString("SimulationConfigEditor.sponsorNote"), JLabel.LEFT); //$NON-NLS-1$
+			noteLabel.setFont(new Font("Serif", Font.ITALIC, 13));
+			topPanel.add(noteLabel);
 		}
 		
 		else {

@@ -486,7 +486,7 @@ public class AudioPlayer implements ClockListener {
 	 * Play a randomly selected music track
 	 */
 	public void playRandomMusicTrack() {
-		if (isMusicTrackStopped() && !masterClock.isPaused() && !isSoundDisabled()) {
+		if (!isMusicMute() && isMusicTrackStopped() && !masterClock.isPaused() && !isSoundDisabled()) {
 			// Since Areologie.ogg and Fantascape.ogg are 4 mins long, don't need to replay
 			// them
 			if (currentMusicTrack != null && currentMusicTrack.toString().equals(SoundConstants.ST_AREOLOGIE)

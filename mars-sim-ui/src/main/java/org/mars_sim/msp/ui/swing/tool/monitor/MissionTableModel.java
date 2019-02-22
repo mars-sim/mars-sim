@@ -136,15 +136,28 @@ public class MissionTableModel extends AbstractTableModel
 	 * @param mission the new mission.
 	 */
 	public void addMission(Mission mission) {
-		if (!missionCache.contains(mission) 
-				&& mission.getStartingMember().getAssociatedSettlement().getName().equals(commanderSettlement.getName())) {
+		boolean goodToGo = false;
+		if (GameManager.mode.equals("1")) {	
+			if (mission.getStartingMember().getAssociatedSettlement().getName().equals(commanderSettlement.getName())
+				&& !missionCache.contains(mission)) {
+				goodToGo = true;
+			}
+		}
+		
+		else {
+			if (!missionCache.contains(mission)) {
+				goodToGo = true;
+			}
+		}
+		
+		if (goodToGo) {
 			missionCache.add(mission);
 			mission.addMissionListener(this);
 			
 			// Inform listeners of new row
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
-//					fireTableRowsInserted(missionCache.size() - 1, missionCache.size() - 1);
+		//			fireTableRowsInserted(missionCache.size() - 1, missionCache.size() - 1);
 					fireTableRowsInserted(0, missionCache.size() - 1);
 				}
 			});
