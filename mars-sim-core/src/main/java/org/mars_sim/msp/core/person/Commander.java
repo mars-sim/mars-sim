@@ -66,12 +66,12 @@ public class Commander implements Serializable {
 
     public int getCountryInt() {
     	if (countryInt == -1)
-    		countryInt = SimulationConfig.instance().getPersonConfiguration().getCountryNum(countryStr);
+    		countryInt = SimulationConfig.instance().getPersonConfiguration().getCountryNum(countryStr) + 1;
     	return countryInt - 1;
     }
     
     public void setCountryInt(int c) {
-    	countryInt = c-1;
+    	countryInt = c;
     }
     
     public void setCountryStr(String c) {
@@ -80,7 +80,7 @@ public class Commander implements Serializable {
     
     public String getCountryStr() {
     	if (countryStr.equals(""))
-    		countryStr = UnitManager.getCountryByID(countryInt);
+    		countryStr = UnitManager.getCountryByID(countryInt-1);
     	return countryStr;
     }
     

@@ -133,7 +133,7 @@ public class SimulationConfigEditor {
 		
 		// Create the title label.
 		JLabel titleLabel = new JLabel(Msg.getString("SimulationConfigEditor.chooseSettlements"), JLabel.CENTER); //$NON-NLS-1$
-		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
+		titleLabel.setFont(new Font("Dialog", Font.BOLD, 18));
 		topPanel.add(titleLabel);
 
 		// Create the title label.
@@ -146,7 +146,7 @@ public class SimulationConfigEditor {
 			
 			JLabel commanderLabel = new JLabel("   " + Msg.getString("SimulationConfigEditor.commanderInfo", 
 					commanderName, sponsor), JLabel.LEFT); //$NON-NLS-1$
-			commanderLabel.setFont(new Font("Serif", Font.PLAIN, 16));
+			commanderLabel.setFont(new Font("Dialog", Font.PLAIN, 14));
 			topPanel.add(commanderLabel);
 		}
 		
@@ -168,12 +168,12 @@ public class SimulationConfigEditor {
 		settlementTable.setRowSelectionAllowed(true);
 		settlementTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		settlementTable.getColumnModel().getColumn(0).setPreferredWidth(80);
-		settlementTable.getColumnModel().getColumn(1).setPreferredWidth(100);
-		settlementTable.getColumnModel().getColumn(2).setPreferredWidth(35);
-		settlementTable.getColumnModel().getColumn(3).setPreferredWidth(35);
-		settlementTable.getColumnModel().getColumn(4).setPreferredWidth(45);
-		settlementTable.getColumnModel().getColumn(5).setPreferredWidth(45);
-		settlementTable.getColumnModel().getColumn(6).setPreferredWidth(100);
+		settlementTable.getColumnModel().getColumn(1).setPreferredWidth(120);
+		settlementTable.getColumnModel().getColumn(2).setPreferredWidth(30);
+		settlementTable.getColumnModel().getColumn(3).setPreferredWidth(30);
+		settlementTable.getColumnModel().getColumn(4).setPreferredWidth(35);
+		settlementTable.getColumnModel().getColumn(5).setPreferredWidth(35);
+		settlementTable.getColumnModel().getColumn(6).setPreferredWidth(280);
 
 		settlementTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 
@@ -706,8 +706,6 @@ public class SimulationConfigEditor {
 		private String[] columns;
 		private List<SettlementInfo> settlements;
 		
-		
-
 		/**
 		 * Hidden Constructor.
 		 */
@@ -745,12 +743,21 @@ public class SimulationConfigEditor {
 				info.numOfRobots = Integer.toString(settlementConfig.getInitialSettlementNumOfRobots(x));
 				info.latitude = settlementConfig.getInitialSettlementLatitude(x);
 				info.longitude = settlementConfig.getInitialSettlementLongitude(x);
-				info.sponsor = settlementConfig.getInitialSettlementSponsor(x);
+				
+				// Modify the sponsor in case of the Commander Mode
+				if (x == 0 && GameManager.mode.equals("1"))
+					info.sponsor = personConfig.getCommander().getSponsor();
+				else
+					info.sponsor = settlementConfig.getInitialSettlementSponsor(x);
+				
 				settlements.add(info);
 			}
+			
 			fireTableDataChanged();
 		}
 
+
+		
 		@Override
 		public int getRowCount() {
 			return settlements.size();

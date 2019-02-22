@@ -19,7 +19,7 @@ public class GameManager {
 
     public static Person commander;
 
-    public static UnitManager unitManager = Simulation.instance().getUnitManager();
+    public static UnitManager unitManager;
     
     public static void setCommander(Person cc) {
     	commander = cc;

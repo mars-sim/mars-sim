@@ -57,10 +57,10 @@ public class TableStyle extends ZebraJTable{
     public static void setTableStyle(JTable table) {
 	   	//logger.info("setTableStyle() is on " + Thread.currentThread().getName() );
 
-        if (MainWindow.OS.contains("linux"))
-        	table.setRowHeight(24);
-        else 
-        	table.setRowHeight(22);
+//        if (MainWindow.OS.contains("linux"))
+//        	table.setRowHeight(24);
+//        else 
+        table.setRowHeight(24);
         
         table.setFont(new Font("Arial", Font.PLAIN, 12));
         
