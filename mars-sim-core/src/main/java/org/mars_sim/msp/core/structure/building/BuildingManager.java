@@ -199,9 +199,9 @@ public class BuildingManager implements Serializable {
 //		this.settlement = settlement;	
 		settlementID = settlement.getIdentifier();
 		logger.config("BuildingManager's settlementID : " + settlementID);
-		if (isTest)
-			logger.info("Loading BuildingManager's constructor 2 for " + settlement.getName() + " on "
-					+ Thread.currentThread().getName() + " thread.");
+//		if (isTest)
+//			logger.info("Loading BuildingManager's constructor 2 for " + settlement.getName() + " on "
+//					+ Thread.currentThread().getName() + " thread.");
 
 		buildingConfig = simulationConfig.getBuildingConfiguration();
 		relationshipManager = sim.getRelationshipManager();
