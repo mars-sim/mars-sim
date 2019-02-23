@@ -12,6 +12,8 @@ import java.util.Collection;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.mars.MarsSurface;
+import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 
 /**
@@ -53,8 +55,7 @@ abstract class UnitMapLayer implements MapLayer {
 	 * @param mapType   the type of map.
 	 * @param g         graphics context of the map display.
 	 */
-	public void displayLayer(Coordinates mapCenter, String mapType, Graphics g) {
-
+	public void displayLayer(Coordinates mapCenter, String mapType, Graphics g) {		
 		Collection<Unit> units = null;
 
 		if (unitsToDisplay != null) {
@@ -64,10 +65,9 @@ abstract class UnitMapLayer implements MapLayer {
 		}
 
 		for (Unit unit : units) {
-			// UnitDisplayInfo displayInfo =
-			// UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
-
-			if (UnitDisplayInfoFactory.getUnitDisplayInfo(unit) != null
+			if (!(unit instanceof Building) 
+					&& !(unit instanceof MarsSurface)
+					&& UnitDisplayInfoFactory.getUnitDisplayInfo(unit) != null
 					&& UnitDisplayInfoFactory.getUnitDisplayInfo(unit).isMapDisplayed(unit)) {
 				double angle = CannedMarsMap.HALF_MAP_ANGLE;
 
@@ -77,6 +77,45 @@ abstract class UnitMapLayer implements MapLayer {
 			}
 		}
 
+//		Collection<Unit> units = null;
+//		
+//		if (unitsToDisplay != null) {
+//			units = unitsToDisplay;
+//			for (Unit unit : units) {
+//				// UnitDisplayInfo displayInfo =
+//				// UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
+//	
+//				if (UnitDisplayInfoFactory.getUnitDisplayInfo(unit) != null
+//						&& UnitDisplayInfoFactory.getUnitDisplayInfo(unit).isMapDisplayed(unit)) {
+//					double angle = CannedMarsMap.HALF_MAP_ANGLE;
+//	
+//					if (mapCenter != null && mapCenter.getAngle(unit.getCoordinates()) < angle) {
+//						displayUnit(unit, mapCenter, mapType, g);
+//					}
+//				}
+//			}
+//		} 
+//		
+//		else {
+//				
+//			for (Collection<Unit> units: unitManager.computeUnitArray()) {
+////				Collection<Unit> units = (Collection<Unit>)o;
+//				for (Unit unit : units) {
+//					// UnitDisplayInfo displayInfo =
+//					// UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
+//	
+//					if (UnitDisplayInfoFactory.getUnitDisplayInfo(unit) != null
+//							&& UnitDisplayInfoFactory.getUnitDisplayInfo(unit).isMapDisplayed(unit)) {
+//						double angle = CannedMarsMap.HALF_MAP_ANGLE;
+//	
+//						if (mapCenter != null && mapCenter.getAngle(unit.getCoordinates()) < angle) {
+//							displayUnit(unit, mapCenter, mapType, g);
+//						}
+//					}
+//				}
+//			}
+//		}
+		
 		long currentTime = System.currentTimeMillis();
 		if ((currentTime - blinkTime) > 1000L) {
 			blinkFlag = !blinkFlag;

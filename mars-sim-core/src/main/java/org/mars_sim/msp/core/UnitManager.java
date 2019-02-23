@@ -2102,16 +2102,16 @@ public class UnitManager implements Serializable {
 	
 	/**
 	 * Put together all units in virtual Mars
-	 * 
+	 * @return
 	 */
 	public List<Unit> computeUnits() {
-		List<Unit> list = Stream.of(
-				lookupUnit.values(),
-				lookupSettlement.values(),
-				lookupPerson.values(),
-				lookupRobot.values(),
-				lookupEquipment.values(),
-				lookupVehicle.values()
+		return Stream.of(
+				new ArrayList<>(lookupUnit.values()),
+				new ArrayList<>(lookupSettlement.values()),
+				new ArrayList<>(lookupPerson.values()),
+				new ArrayList<>(lookupRobot.values()),
+				new ArrayList<>(lookupEquipment.values()),
+				new ArrayList<>(lookupVehicle.values())
 				)
 				.flatMap(Collection::stream).collect(Collectors.toList());		
 //		List<Unit> list = new ArrayList<>();
@@ -2121,8 +2121,20 @@ public class UnitManager implements Serializable {
 //		list.addAll(lookupRobot.values());
 //		list.addAll(lookupEquipment.values());
 //		list.addAll(lookupVehicle.values());	
-		return list;
+//		return new ArrayList<>(list);
 	}
+	
+//	public Collection<Unit>[] computeUnitArray() {
+//		return new Collection<Unit>[] {
+//				lookupUnit.values(),
+//				lookupSettlement.values(),
+//				lookupPerson.values(),
+//				lookupRobot.values(),
+//				lookupEquipment.values(),
+//				lookupVehicle.values()
+//		};
+//	}
+	
 	
 //	/**
 //	 * Get all units in virtual Mars
