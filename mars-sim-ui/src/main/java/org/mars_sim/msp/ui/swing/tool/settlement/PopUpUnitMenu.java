@@ -7,6 +7,7 @@
 
 package org.mars_sim.msp.ui.swing.tool.settlement;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -22,6 +23,9 @@ import javax.swing.JDialog;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.UIManager;
+import javax.swing.border.Border;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
 import javax.swing.plaf.BorderUIResource;
 import javax.swing.plaf.UIResource;
 
@@ -33,9 +37,12 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.ComponentMover;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
 import org.mars_sim.msp.ui.swing.unit_window.structure.building.BuildingPanel;
+
+import com.alee.laf.panel.WebPanel;
 
 public class PopUpUnitMenu extends JPopupMenu {
 
@@ -155,7 +162,7 @@ public class PopUpUnitMenu extends JPopupMenu {
 				});	
 				
                 // Make panel drag-able
-			    ComponentMover mover = new ComponentMover(d,b);
+			    ComponentMover mover = new ComponentMover(d, b, d.getContentPane());//d,b);
 			    mover.registerComponent(b);	
 	
              }
@@ -191,14 +198,16 @@ public class PopUpUnitMenu extends JPopupMenu {
 		    		// Make the buildingPanel to appear at the mouse cursor
 	                Point location = MouseInfo.getPointerInfo().getLocation();
 	                d.setLocation(location);
-					d.setUndecorated(true);
+//					d.setUndecorated(true);
 //	                d.setBackground(new Color(51,25,0,128)); // java.awt.IllegalComponentStateException: The dialog is decorated
 	                d.add(buildingPanel);
-					d.setSize(WIDTH - 30, HEIGHT);  // undecorated: 300, 335; decorated: 310, 370
+					d.setSize(UnitWindow.WIDTH, UnitWindow.HEIGHT - 300);//WIDTH, HEIGHT);  // undecorated: 300, 335; decorated: 310, 370
 					d.setLayout(new FlowLayout()); 
 	
-					d.setVisible(true);
-					d.getRootPane().setBorder(BorderFactory.createLineBorder(Color.orange) );
+					// Create compound border
+					Border border = new MarsPanelBorder();
+					Border margin = new EmptyBorder(5,5,5,5);
+					d.getRootPane().setBorder(new CompoundBorder(border, margin));//BorderFactory.createLineBorder(Color.orange));
 	
 				    d.addWindowFocusListener(new WindowFocusListener() {            
 						public void windowLostFocus(WindowEvent e) {
@@ -209,6 +218,9 @@ public class PopUpUnitMenu extends JPopupMenu {
 						public void windowGainedFocus(WindowEvent e) {
 						}
 					});
+				    
+					d.setVisible(true);
+					
 	            }
 	         }
 	    });
