@@ -8,6 +8,7 @@
 package org.mars_sim.msp.ui.swing.unit_window;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -94,7 +95,7 @@ public abstract class UnitWindow extends ModalInternalFrame {
 	/** The tab panels. */
 	private Collection<TabPanel> tabPanels;
 	/** The center panel. */
-	private JTabbedPane tabPanel;
+	private JTabbedPane tabPane;
 //	private JideTabbedPane tabPanel;
 	/** Main window. */
 	protected MainDesktopPane desktop;
@@ -285,21 +286,20 @@ public abstract class UnitWindow extends ModalInternalFrame {
 //		tabPanel.setForeground(Color.DARK_GRAY);
 //		tabPanel.setTabPlacement(JideTabbedPane.LEFT);
 
-		tabPanel = new JTabbedPane();
-		tabPanel.setPreferredSize(new Dimension(WIDTH - 35, HEIGHT - 120));
-		tabPanel.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
+		tabPane = new JTabbedPane();
+		tabPane.setMaximumSize(new Dimension(WIDTH - 35, HEIGHT - 120));
+		tabPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
+//		UIManager.put("TabbedPane.unselectedBackground", Color.GRAY);
 		
 		WebPanel centerPanel = new WebPanel(new FlowLayout(FlowLayout.LEFT));
-		centerPanel.add(tabPanel);
+		centerPanel.setOpaque(false);
+		centerPanel.setBackground(new Color(0,0,0,128));
+		centerPanel.add(tabPane);
 		centerPanel.setPreferredSize(new Dimension(WIDTH - 25, HEIGHT - 120));
-
-		// update();
 
 		mainPane.add(centerPanel, BorderLayout.CENTER);
 		
-		
 		// TODO: add focusListener to play sounds and alert users of critical conditions.
-
 		// TODO: disabled in SVN while in development
 		// this.addInternalFrameListener(new
 		// UniversalUnitWindowListener(UnitInspector.getGlobalInstance()));
@@ -316,7 +316,6 @@ public abstract class UnitWindow extends ModalInternalFrame {
 	}
 
 	public Image getImage(String imageLocation) {
-	
 		return ImageLoader.getNewIcon(imageLocation).getImage();
 	}
 
@@ -362,6 +361,12 @@ public abstract class UnitWindow extends ModalInternalFrame {
 		}
 	}
 
+	/**
+	 * Gets the time period string
+	 * 
+	 * @param shiftType
+	 * @return
+	 */
 	public String getTimePeriod(ShiftType shiftType) {
 		String time = null;
 		if (shiftType == ShiftType.A)
@@ -392,6 +397,11 @@ public abstract class UnitWindow extends ModalInternalFrame {
 		}
 	}
 
+	/**
+	 * Adds a tab panel to the center panel.
+	 *
+	 * @param panel the tab panel to add.
+	 */
 	protected final void addTopPanel(TabPanel panel) {
 		if (!tabPanels.contains(panel)) {
 			tabPanels.add(panel);
@@ -399,10 +409,13 @@ public abstract class UnitWindow extends ModalInternalFrame {
 		}
 	}
 
+	/**
+	 * Sorts tab panels.
+	 */
 	protected void sortTabPanels() {
 		tabPanels.stream().sorted((t1, t2) -> t2.getTabTitle().compareTo(t1.getTabTitle()));
 		tabPanels.forEach(panel -> {
-			tabPanel.addTab(panel.getTabTitle(), panel.getTabIcon(), panel, null);// panel.getTabToolTip());
+			tabPane.addTab(panel.getTabTitle(), panel.getTabIcon(), panel, null);// panel.getTabToolTip());
 		});
 
 	}
@@ -452,7 +465,7 @@ public abstract class UnitWindow extends ModalInternalFrame {
 		if (tabPanels != null)
 			tabPanels.clear();
 		tabPanels = null;
-		tabPanel = null;
+		tabPane = null;
 		oldShiftType = null;
 		townLabel = null;
 		jobLabel = null;

@@ -33,8 +33,8 @@ public class CustomScroll extends JComponent {
         scr.setViewportBorder(null);
         scr.setBorder(BorderFactory.createEmptyBorder());
         scr.getViewport().setOpaque(false);
-        scr.setOpaque(false);
-        scr.setBackground(new Color(0, 0, 0, 5));
+//        scr.setOpaque(false);
+//        scr.setBackground(new Color(0, 0, 0, 5));
         verticalScrollBar = scr.getVerticalScrollBar();
         verticalScrollBar.setVisible(false);
         verticalScrollBar.setOpaque(false);

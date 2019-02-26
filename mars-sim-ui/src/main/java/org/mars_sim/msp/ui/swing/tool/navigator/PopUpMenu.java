@@ -121,14 +121,13 @@ public class PopUpMenu extends JPopupMenu {
 			    f.setSize(350, frameHeight); // undecorated 301, 348 ; decorated : 303, 373
 		        f.setResizable(false);
 		        f.setUndecorated(true);
-		        f.setBackground(new Color(0,0,0,128)); // not working for decorated jframe
+//		        f.setBackground(new Color(0,0,0,128)); // not working for decorated jframe
 
 			    UnitInfoPanel b = new UnitInfoPanel(desktop);
 			    b.init(name, type, description);
 
 			    f.add(b);
 
-			    //2014-11-27 Added ComponentMover Class
 			    ComponentMover mover = new ComponentMover(f, b, f.getContentPane());
 			    mover.registerComponent(b);
 

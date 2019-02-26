@@ -43,7 +43,7 @@ public abstract class BuildingFunctionPanel extends JPanel {
 		this.building = building;
 		this.desktop = desktop;
 
-		this.setMaximumSize(new Dimension(UnitWindow.WIDTH - 80, UnitWindow.HEIGHT - 300));
+		setMaximumSize(new Dimension(UnitWindow.WIDTH, UnitWindow.HEIGHT - 300));
 //		this.setPreferredSize(new Dimension(UnitWindow.WIDTH - 30, UnitWindow.HEIGHT));
 		
 		Border border = new MarsPanelBorder();

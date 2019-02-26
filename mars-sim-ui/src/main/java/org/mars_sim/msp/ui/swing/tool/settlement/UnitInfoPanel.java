@@ -17,120 +17,113 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 
 import javax.swing.BorderFactory;
-import javax.swing.JEditorPane;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.Border;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Document;
 
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.CustomScroll;
 
+public class UnitInfoPanel extends JPanel {// JDialog {
 
-public class UnitInfoPanel extends JPanel {
-
-	private JEditorPane pane;
-
-    public UnitInfoPanel(MainDesktopPane desktop) {
+	public static final int MARGIN_WIDTH = 20;
+	public static final int MARGIN_HEIGHT = 10;
+	
+	public UnitInfoPanel(MainDesktopPane desktop) {
 		super();
-    	setOpaque(false);
-    	setBackground(new Color(0,0,0,0));
-    }
+//		setOpaque(false);
+		setBackground(new Color(51, 25, 0, 150));
+	}
 
-    @Override
+	@Override
 	protected void paintComponent(Graphics g) {
 
-        int x = 20;
-        int y = 27;
-        int w = getWidth() - 40;
-        int h = getHeight() - 40;
-        int arc = 15;
+		int x = 20;
+		int y = 20;
+		int w = getWidth() - MARGIN_WIDTH * 2;
+		int h = getHeight() - MARGIN_HEIGHT * 2;
+		int arc = 15;
 
-        Graphics2D g2 = (Graphics2D) g.create();
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                RenderingHints.VALUE_ANTIALIAS_ON);
-        //g2.setColor(new Color(51,25,0,128));
-        g2.setColor(new Color(0,0,0,128));
-        
-        g2.fillRoundRect(x, y, w, h, arc, arc);
-        g2.setStroke(new BasicStroke(3f));
-        //g2.setColor(Color.lightGray);
-        g2.drawRoundRect(x, y, w, h, arc, arc);
-        g2.dispose();
-    }
+		Graphics2D g2 = (Graphics2D) g.create();
+		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		g2.setColor(new Color(51, 25, 0, 128));
+		g2.fillRoundRect(x, y, w, h, arc, arc);
+		g2.setStroke(new BasicStroke(3f));
+		g2.setColor(Color.lightGray);
+		g2.drawRoundRect(x, y, w, h, arc, arc);
+		g2.dispose();
+	}
 
-    public void init(String unitName, String unitType, String unitDescription) {
+	public void init(String unitName, String unitType, String unitDescription) {
 
-    	this.setOpaque(false);
-        this.setBackground(new Color(0,0,0,128));
-        this.setLayout(new BorderLayout(20, 10));
-    	//this.setSize(350, 400); // undecorated 301, 348 ; decorated : 303, 373
+		setOpaque(false);
+		setLayout(new BorderLayout(10, 20));
+		// this.setSize(350, 400); // undecorated 301, 348 ; decorated : 303, 373
 
-        JPanel mainPanel = new JPanel(new FlowLayout());//new BorderLayout());
-        mainPanel.setOpaque(false);
-        mainPanel.setBackground(new Color(0,0,0,128));
-        this.add(mainPanel, BorderLayout.NORTH);
+		JPanel mainPanel = new JPanel(new FlowLayout());// new BorderLayout());
+		mainPanel.setOpaque(false);
+		mainPanel.setBackground(new Color(0, 0, 0, 128));
+		// setMinimumSize()
+		this.add(mainPanel, BorderLayout.NORTH);
 
-        JPanel westPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));//new BorderLayout());
-        westPanel.setOpaque(false);
-        westPanel.setBackground(new Color(0,0,0,128));
-        this.add(westPanel, BorderLayout.WEST);
+		JPanel westPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));// new BorderLayout());
+		westPanel.setOpaque(false);
+		westPanel.setBackground(new Color(0, 0, 0, 128));
+		// setMinimumSize()
+		this.add(westPanel, BorderLayout.WEST);
 
-        JPanel eastPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));//new BorderLayout());
-        eastPanel.setOpaque(false);
-        eastPanel.setBackground(new Color(0,0,0,128));
-        this.add(eastPanel, BorderLayout.EAST);
+		JPanel eastPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));// new BorderLayout());
+		eastPanel.setOpaque(false);
+		eastPanel.setBackground(new Color(0, 0, 0, 128));
+		// setMinimumSize()
+		this.add(eastPanel, BorderLayout.EAST);
 
-        // Creating the text Input
-        JTextField tf1 = new JTextField("", 20);
+		// Creating the text Input
+		JTextField tf1 = new JTextField("", 15);
 
-        tf1.setHorizontalAlignment(JTextField.CENTER);
-        tf1.setOpaque(false);
-        tf1.setFocusable(false);
-        tf1.setBackground(new Color(0,0,0,128));//180));
-        tf1.setColumns(25);
-        Border border = BorderFactory.createLineBorder(Color.gray, 2);
-        tf1.setBorder(border);
-        tf1.setText(unitName);
-        tf1.setForeground(Color.YELLOW); // orange font
-        //tf1.setFont( new Font("Arial", Font.BOLD, 14 ) );
-        tf1.setFont( new Font("MONOSPACED", Font.BOLD, 14 ) );
+		tf1.setHorizontalAlignment(JTextField.CENTER);
+		tf1.setOpaque(false);
+		tf1.setFocusable(false);
+		tf1.setBackground(new Color(92, 83, 55, 128));
+		tf1.setColumns(20);
+		Border border = BorderFactory.createLineBorder(Color.gray, 2);
+		tf1.setBorder(border);
+		tf1.setText(unitName);
+		tf1.setForeground(Color.BLACK);
+		tf1.setFont(new Font("Arial", Font.BOLD, 14));
 
-        mainPanel.add(tf1);
+		mainPanel.add(tf1);
 
-        pane = new JEditorPane("text/html", "");  
-        pane.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, Boolean.TRUE);
-        pane.setEditable(false);
+		JTextArea ta = new JTextArea();
+		String type = "TYPE: ";
+		String description = "DESCRIPTION: ";
 
-        String type = "<b>TYPE: </b>";
-        String description = "<b>DESCRIPTION: </b>";
+		ta.setLineWrap(true);
+		ta.setFocusable(false);
+		ta.setWrapStyleWord(true);
+		ta.setText(type + "\n");
+		ta.append(unitType + "\n\n");
+		ta.append(description + "\n");
+		ta.append(unitDescription);
+		ta.setCaretPosition(0);
+		ta.setEditable(false);
+		ta.setForeground(Color.black); 
+		ta.setFont(new Font("Dialog", Font.PLAIN, 14));
+		ta.setOpaque(false);
+		ta.setBackground(new Color(92, 83, 55, 128));
 
-        pane.setEnabled(true);
-        pane.setDisabledTextColor(Color.BLACK);
-        pane.requestFocusInWindow();
-        
-        pane.setText("<html><font color='orange'>" + type + "<br>" 
-        		+ unitType + "<br><br>"
-        		+ description + "<br>"
-        		+ unitDescription + "</font></html>");
-        pane.setFont( new Font("MONOSPACED", Font.PLAIN, 14 ) );
-        pane.setOpaque(false);
-        pane.setBackground(new Color(0, 0, 0, 128)); //0
+		CustomScroll scr = new CustomScroll(ta);
+		scr.setSize(PopUpUnitMenu.D_WIDTH - 50 , PopUpUnitMenu.D_HEIGHT - 50);
+		add(scr, BorderLayout.CENTER);
 
-        CustomScroll scr = new CustomScroll(pane);
-        this.add(scr, BorderLayout.CENTER);
-        this.setVisible(true);
+		JPanel southPanel = new JPanel();
+		add(southPanel, BorderLayout.SOUTH);
+		southPanel.setOpaque(false);
+		southPanel.setBackground(new Color(0, 0, 0, 128));
+		
+		setVisible(true);
 
-    }
-
-    public void append(String s) {
-    	   try {
-    	      Document doc = pane.getDocument();
-    	      doc.insertString(doc.getLength(), s, null);
-    	   } catch(BadLocationException exc) {
-    	      exc.printStackTrace();
-    	   }
 	}
 
 }

@@ -56,7 +56,6 @@ public abstract class TabPanel extends WebScrollPane {
 
 		// Create the view panel
 		viewPanel = new WebPanel(new BorderLayout(0, 0));
-		// viewPanel.setBackground(THEME_COLOR);
 		createViewport();
 		setViewportView(viewPanel);
 		createVerticalScrollBar();
@@ -64,7 +63,6 @@ public abstract class TabPanel extends WebScrollPane {
 
 		// Create top content panel
 		topContentPanel = new WebPanel();
-		// topContentPanel.setBackground(THEME_COLOR);
 		topContentPanel.setLayout(new BoxLayout(topContentPanel, BoxLayout.Y_AXIS));
 		topContentPanel.setBorder(MainDesktopPane.newEmptyBorder());
 		viewPanel.add(topContentPanel, BorderLayout.NORTH);
@@ -75,8 +73,6 @@ public abstract class TabPanel extends WebScrollPane {
 		// Create center content panel
 		centerContentPanel = new WebPanel(new BorderLayout(0, 0));
 		centerContentPanel.setBorder(new CompoundBorder(border, margin));
-		// centerContentPanel.setBackground(THEME_COLOR);
-//		centerContentPanel.setBorder(MainDesktopPane.newEmptyBorder());
 		viewPanel.add(centerContentPanel, BorderLayout.CENTER);
 
 		// setBorder(new DropShadowBorder(Color.BLACK, 0, 11, .2f, 16,false, true, true,

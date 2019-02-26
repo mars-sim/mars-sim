@@ -324,7 +324,6 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
             			fireTableDataChanged();
             		}
         		}
-        		
         	}
         	catch(Exception e) {
         	    e.printStackTrace(System.err);

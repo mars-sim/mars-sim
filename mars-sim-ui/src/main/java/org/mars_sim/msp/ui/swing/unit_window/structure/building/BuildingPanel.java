@@ -111,11 +111,11 @@ public class BuildingPanel extends JPanel {
 		this.panelName = panelName;
 		this.building = building;
 		this.desktop = desktop;
-		// this.isTranslucent = isTranslucent;
-		if (isTranslucent) {
-			setOpaque(false);
-			setBackground(new Color(0, 0, 0, 128));
-		}
+//		this.isTranslucent = isTranslucent;
+//		if (isTranslucent) {
+//			setOpaque(false);
+//			setBackground(new Color(0, 0, 0, 128));
+//		}
 		init();
 	}
 
@@ -162,7 +162,7 @@ public class BuildingPanel extends JPanel {
 		JScrollPane scrollPanel = new JScrollPane();
 		scrollPanel.setViewportView(functionListPanel);
 		// CustomScroll scrollPanel = new CustomScroll(functionListPanel);
-		scrollPanel.setPreferredSize(new Dimension(UnitWindow.WIDTH - 80, UnitWindow.HEIGHT - 300));
+		scrollPanel.setPreferredSize(new Dimension(UnitWindow.WIDTH - 20, UnitWindow.HEIGHT - 300));
 		scrollPanel.getVerticalScrollBar().setUnitIncrement(20);
 		add(scrollPanel, BorderLayout.CENTER);
 
