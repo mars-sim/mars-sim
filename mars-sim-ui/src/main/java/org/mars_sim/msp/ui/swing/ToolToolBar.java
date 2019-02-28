@@ -116,7 +116,7 @@ implements ActionListener {
 		});
 		add(exitButton);
 
-		addSeparator();
+		addSeparator(new Dimension(20, 20));
 
 		// Add Mars navigator button
 		ToolButton navButton = new ToolButton(NavigatorWindow.NAME, Msg.getString("img.planet")); //$NON-NLS-1$

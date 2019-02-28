@@ -30,13 +30,13 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 			<version>${project.version}</version>
 		</dependency>
 		
-		<!-- https://mvnrepository.com/artifact/org.jfree/jfreesvg/3.3 : 43KB
-		     can jfreesvg potentially replace batik ? see http://object-refinery.com/blog/blog-20140423.html
+		<!-- https://mvnrepository.com/artifact/org.jfree/jfreesvg/3.4 : 43KB
+		     can jfreesvg potentially replace batik ? see http://object-refinery.com/blog/blog-20140423.html  -->
 		<dependency>
 			<groupId>org.jfree</groupId>
 			<artifactId>jfreesvg</artifactId>
-			<version>3.3</version>
-		</dependency> -->
+			<version>3.4</version>
+		</dependency>
 
 		<!--<dependency>
 		    <groupId>com.object-refinery</groupId>

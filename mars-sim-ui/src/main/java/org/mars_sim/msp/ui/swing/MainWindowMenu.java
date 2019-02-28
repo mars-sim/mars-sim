@@ -108,8 +108,8 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 	private JSlider musicVolumeItem;
 	/** Sound effect volume slider menu item. */
 	private JSlider effectVolumeItem;
-	/** About Mars Simulation Project menu item. */
-	private JMenuItem aboutMspItem;
+	/** The Home/About page of the Mars Simulation Project menu item. */
+	private JMenuItem homeAboutItem;
 	/** Tutorial menu item. */
 	private JMenuItem tutorialItem;
 	/** User Guide menu item. */
@@ -147,7 +147,7 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 		ImageIcon loadAutosaveicon = new ImageIcon(getClass().getResource(Msg.getString("img.openAutosave"))); //$NON-NLS-1$
 		loadAutosaveItem = new JMenuItem(Msg.getString("mainMenu.openAutosave"), loadAutosaveicon); //$NON-NLS-1$
 		loadAutosaveItem.addActionListener(this);
-		loadAutosaveItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, KeyEvent.CTRL_DOWN_MASK, false));
+		loadAutosaveItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, KeyEvent.CTRL_DOWN_MASK, false));
 		loadAutosaveItem.setToolTipText(Msg.getString("mainMenu.tooltip.openAutosave")); //$NON-NLS-1$
 		fileMenu.add(loadAutosaveItem);
 
@@ -165,13 +165,15 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 		ImageIcon saveasicon = new ImageIcon(getClass().getResource(Msg.getString("img.saveAs"))); //$NON-NLS-1$
 		saveAsItem = new JMenuItem(Msg.getString("mainMenu.saveAs"), saveasicon); //$NON-NLS-1$
 		saveAsItem.addActionListener(this);
-		saveAsItem.setAccelerator(
-				KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.SHIFT_DOWN_MASK | KeyEvent.CTRL_DOWN_MASK, false));
+		saveAsItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, KeyEvent.CTRL_DOWN_MASK, false));
+//				KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.SHIFT_DOWN_MASK | KeyEvent.CTRL_DOWN_MASK, false));
 		saveAsItem.setToolTipText(Msg.getString("mainMenu.tooltip.saveAs")); //$NON-NLS-1$
 		fileMenu.add(saveAsItem);
 
 		fileMenu.add(new JSeparator());
 
+//		add(new JSeparator());
+		
 		// Create exit menu item
 		ImageIcon exiticon = new ImageIcon(getClass().getResource(Msg.getString("img.exit"))); //$NON-NLS-1$
 		exitItem = new JMenuItem(Msg.getString("mainMenu.exit"), exiticon); //$NON-NLS-1$
@@ -287,7 +289,7 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 		musicVolumeItem.setPaintTrack(true);
 		musicVolumeItem.setSnapToTicks(true);
 
-		musicVolumeItem.setToolTipText(Msg.getString("mainMenu.tooltip.volumeslider")); //$NON-NLS-1$
+		musicVolumeItem.setToolTipText(Msg.getString("mainMenu.tooltip.musicVolumeslider")); //$NON-NLS-1$
 		musicVolumeItem.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
 				float newVolume = (float) musicVolumeItem.getValue() / 10F;
@@ -296,6 +298,20 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 		});
 		settingsMenu.add(musicVolumeItem);
 
+		// Create Volume Up menu item
+		musicVolumeUpItem = new JMenuItem(Msg.getString("mainMenu.musicVolumeUp")); //$NON-NLS-1$
+		musicVolumeUpItem.addActionListener(this);
+		musicVolumeUpItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_PLUS, KeyEvent.CTRL_DOWN_MASK, false));
+		musicVolumeUpItem.setToolTipText(Msg.getString("mainMenu.tooltip.volumeUp")); //$NON-NLS-1$
+		settingsMenu.add(musicVolumeUpItem);
+
+		// Create Volume Down menu item
+		musicVolumeDownItem = new JMenuItem(Msg.getString("mainMenu.musicVolumeDown")); //$NON-NLS-1$
+		musicVolumeDownItem.addActionListener(this);
+		musicVolumeDownItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, KeyEvent.CTRL_DOWN_MASK, false));
+		musicVolumeDownItem.setToolTipText(Msg.getString("mainMenu.tooltip.volumeDown")); //$NON-NLS-1$
+		settingsMenu.add(musicVolumeDownItem);
+		
 		effectVolumeItem = new JSliderMW(JSlider.HORIZONTAL, 0, 10, intVolume); // $NON-NLS-1$
 		effectVolumeItem.setMajorTickSpacing(1);
 		effectVolumeItem.setPaintTicks(true);
@@ -303,7 +319,7 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 		effectVolumeItem.setPaintTrack(true);
 		effectVolumeItem.setSnapToTicks(true);
 
-		effectVolumeItem.setToolTipText(Msg.getString("mainMenu.tooltip.volumeslider")); //$NON-NLS-1$
+		effectVolumeItem.setToolTipText(Msg.getString("mainMenu.tooltip.effectVolumeSlider")); //$NON-NLS-1$
 		effectVolumeItem.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
 				float newVolume = (float) effectVolumeItem.getValue() / 10F;
@@ -313,17 +329,17 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 		settingsMenu.add(effectVolumeItem);
 
 		// Create Volume Up menu item
-		effectVolumeUpItem = new JMenuItem(Msg.getString("mainMenu.volumeUp")); //$NON-NLS-1$
+		effectVolumeUpItem = new JMenuItem(Msg.getString("mainMenu.effectVolumeUp")); //$NON-NLS-1$
 		effectVolumeUpItem.addActionListener(this);
 		effectVolumeUpItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_UP, KeyEvent.CTRL_DOWN_MASK, false));
-		effectVolumeUpItem.setToolTipText(Msg.getString("mainMenu.tooltip.volumeUp")); //$NON-NLS-1$
+		effectVolumeUpItem.setToolTipText(Msg.getString("mainMenu.tooltip.effectVolumeUp")); //$NON-NLS-1$
 		settingsMenu.add(effectVolumeUpItem);
 
 		// Create Volume Down menu item
-		effectVolumeDownItem = new JMenuItem(Msg.getString("mainMenu.volumeDown")); //$NON-NLS-1$
+		effectVolumeDownItem = new JMenuItem(Msg.getString("mainMenu.effectVolumeDown")); //$NON-NLS-1$
 		effectVolumeDownItem.addActionListener(this);
 		effectVolumeDownItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, KeyEvent.CTRL_DOWN_MASK, false));
-		effectVolumeDownItem.setToolTipText(Msg.getString("mainMenu.tooltip.volumeDown")); //$NON-NLS-1$
+		effectVolumeDownItem.setToolTipText(Msg.getString("mainMenu.tooltip.effectVolumeDown")); //$NON-NLS-1$
 		settingsMenu.add(effectVolumeDownItem);
 
 		// Create Mute menu item
@@ -335,25 +351,25 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 
 		effectMuteItem = new JCheckBoxMenuItem(Msg.getString("mainMenu.mute.effect")); //$NON-NLS-1$
 		effectMuteItem.addActionListener(this);
-		effectMuteItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_M, KeyEvent.CTRL_DOWN_MASK, false));
+		effectMuteItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E, KeyEvent.CTRL_DOWN_MASK, false));
 		effectMuteItem.setToolTipText(Msg.getString("mainMenu.tooltip.mute.effect")); //$NON-NLS-1$
 		settingsMenu.add(effectMuteItem);
 
-		// 2014-12-05 Added notificationMenu
+		// Add notificationMenu
 		notificationMenu = new NotificationMenu(this);
 
 		// Create help menu
 		JMenu helpMenu = new JMenu(Msg.getString("mainMenu.help")); //$NON-NLS-1$
-		helpMenu.setMnemonic(KeyEvent.VK_H);
+		helpMenu.setMnemonic(KeyEvent.VK_H); // alt + H
 		helpMenu.addMenuListener(this);
 		add(helpMenu);
 
 		// Create About Mars Simulation Project menu item
-		aboutMspItem = new JMenuItem(Msg.getString("mainMenu.about")); //$NON-NLS-1$
-		aboutMspItem.addActionListener(this);
-		aboutMspItem.setToolTipText(Msg.getString("mainMenu.tooltip.about")); //$NON-NLS-1$
-		helpMenu.add(aboutMspItem);
-
+		homeAboutItem = new JMenuItem(Msg.getString("mainMenu.about")); //$NON-NLS-1$
+		homeAboutItem.addActionListener(this);
+		homeAboutItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H, KeyEvent.CTRL_DOWN_MASK, false));
+		homeAboutItem.setToolTipText(Msg.getString("mainMenu.tooltip.about")); //$NON-NLS-1$
+		helpMenu.add(homeAboutItem);
 		helpMenu.add(new JSeparator());
 
 		// Create Tutorial menu item
@@ -513,7 +529,7 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 				desktop.getSoundPlayer().unmutePlayer(true, false);
 		}
 
-		else if (selectedItem == aboutMspItem) {
+		else if (selectedItem == homeAboutItem) {
 			desktop.openToolWindow(GuideWindow.NAME);
 			GuideWindow ourGuide;
 			ourGuide = (GuideWindow) desktop.getToolWindow(GuideWindow.NAME);

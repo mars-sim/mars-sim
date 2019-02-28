@@ -7,8 +7,16 @@
 
 a:link{color:#00F;}
 a:visited{color:#F000F0;}
-body{background-color:#DDD3D3;color:#000;font-family:serif;}
-body,h3{font-size:14pt;line-height:1.1em;}
-h2{font-family:sans-serif;font-size:14pt;line-height:1.2em;text-align:center;text-decoration:underline;}
-h2,h3{font-weight:700;}
-p{margin-left:13pt;}
+body{background-color:#DDD3D3;
+	color:#000;
+	font-family:serif;
+	}
+body,h3{font-size:15pt;line-height:1.1em;}
+h2 {font-family:sans-serif; 
+	font-size:16pt;
+	line-height:1.2em;
+	text-align:center;
+	text-decoration:underline;
+	}
+h2, h3, h4{margin-left:10pt; font-weight:800;}
+p {margin-left:20pt;}
