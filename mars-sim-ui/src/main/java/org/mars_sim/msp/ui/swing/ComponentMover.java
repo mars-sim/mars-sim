@@ -1,15 +1,25 @@
 /**
  * Mars Simulation Project
  * ComponentMover.java
- * @version 3.07 2014-11-27
- * http://tips4java.wordpress.com/2009/06/14/moving-windows/
- *  */
+ * @version 3.1.0 2019-02-28
+ * @author Manny Kung
+ */
 
+// see  http://tips4java.wordpress.com/2009/06/14/moving-windows/
 package org.mars_sim.msp.ui.swing;
 
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.Component;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.GraphicsEnvironment;
+import java.awt.Insets;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.Window;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+
 import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
 

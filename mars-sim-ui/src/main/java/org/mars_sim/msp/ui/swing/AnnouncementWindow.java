@@ -6,12 +6,15 @@
  */
 package org.mars_sim.msp.ui.swing;
 
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Cursor;
+import java.awt.Dimension;
 
-import org.mars_sim.msp.ui.swing.tool.ResizedFontLabel;
-
-import java.awt.*;
+import javax.swing.BorderFactory;
+import javax.swing.JInternalFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 /**
  * The AnnouncementWindow class is an internal frame for displaying popup

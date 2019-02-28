@@ -1,8 +1,9 @@
 module mars-sim-core {
 
     requires javax.json;
-    requires java.json;
-    requires java.util;
+//    requires java.json;
+//    requires java.util;
+//    requires java.text;
 	requires java;
     
     requires junit;

@@ -202,8 +202,8 @@
 				        </argLine>
 				    </configuration>
 				</plugin>
-				<plugin>
 				<!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-compiler-plugin -->
+				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
 					<version>3.8.0</version>
@@ -219,8 +219,23 @@
 						<verbose>false</verbose>			          
 					</configuration>
 				</plugin>
+				<!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-compiler-plugin 
 				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+	                <version>3.7.0</version>
+	                <configuration>                
+	                    <source>10</source>
+	                    <target>10</target>
+	                    <compilerArgs>
+			            	<arg>-Xlint:unchecked</arg>
+			            	<arg>-Xlint:deprecation</arg>
+						</compilerArgs>
+						<verbose>true</verbose>
+	                </configuration>
+				</plugin-->
 				<!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-deploy-plugin : 33KB-->
+				<plugin>
 					<artifactId>maven-deploy-plugin</artifactId>
 					<version>3.0.0-M1</version>
 					<executions>
@@ -239,11 +254,9 @@
 							<version>3.2.0</version>
 						</dependency>
 					</dependencies>
-				</plugin>
-				
-				<!--		
+				</plugin>			
+				<!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-site-plugin
 				<plugin>
-					https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-site-plugin
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-site-plugin</artifactId>
 					<version>3.7.1</version>

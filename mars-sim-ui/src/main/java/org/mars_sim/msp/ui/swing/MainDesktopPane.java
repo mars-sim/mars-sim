@@ -55,6 +55,7 @@ import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.ui.astroarts.OrbitViewer;
 import org.mars_sim.msp.ui.swing.sound.AudioPlayer;
+import org.mars_sim.msp.ui.swing.tool.commander.CommanderWindow;
 import org.mars_sim.msp.ui.swing.tool.guide.GuideWindow;
 import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
 import org.mars_sim.msp.ui.swing.tool.monitor.EventTableModel;
@@ -123,7 +124,9 @@ public class MainDesktopPane extends JDesktopPane
 	private SettlementWindow settlementWindow;
 	private NavigatorWindow navWindow;
 	private TimeWindow timeWindow;
-	private Building building;
+	private CommanderWindow commanderWindow;
+	
+//	private Building building;
 	private MainWindow mainWindow;
 	private OrbitViewer orbitViewer;
 	private EventTableModel eventTableModel;
@@ -367,6 +370,14 @@ public class MainDesktopPane extends JDesktopPane
 			toolWindows.clear();
 
 		mainWindow.initializeWeblaf();
+		
+		// Prepare Commander Window
+		commanderWindow = new CommanderWindow(this);
+		try {
+			commanderWindow.setClosed(true);
+		} catch (PropertyVetoException e) {
+		}
+		toolWindows.add(commanderWindow);
 		
 		// Prepare navigator window
 		navWindow = new NavigatorWindow(this);
@@ -1225,7 +1236,6 @@ public class MainDesktopPane extends JDesktopPane
 				}
 			}
 		}
-		
 	}
 
 	/**
@@ -1267,11 +1277,11 @@ public class MainDesktopPane extends JDesktopPane
 	public void unitUpdate(UnitEvent event) {
 		UnitEventType eventType = event.getType();
 
-		Object target = event.getTarget();
+//		Object target = event.getTarget();
 		if (eventType == UnitEventType.START_TRANSPORT_WIZARD_EVENT) {
 
-			building = (Building) target; // overwrite the dummy building object made by the constructor
-			BuildingManager mgr = building.getBuildingManager();
+//			building = (Building) target; // overwrite the dummy building object made by the constructor
+//			BuildingManager mgr = building.getBuildingManager();
 
 //			if (!isTransportingBuilding) {
 //				isTransportingBuilding = true;
@@ -1288,8 +1298,8 @@ public class MainDesktopPane extends JDesktopPane
 		}
 
 		else if (eventType == UnitEventType.START_CONSTRUCTION_WIZARD_EVENT) {
-			BuildingConstructionMission mission = (BuildingConstructionMission) target;
-
+//			BuildingConstructionMission mission = (BuildingConstructionMission) target;
+//
 			if (!isConstructingSite) {
 				isConstructingSite = true;
 
@@ -1309,6 +1319,10 @@ public class MainDesktopPane extends JDesktopPane
 		return timeWindow;
 	}
 
+	public CommanderWindow getCommanderWindow() {
+		return commanderWindow;
+	}
+	
 	public Collection<ToolWindow> getToolWindowsList() {
 		return toolWindows;
 	}
@@ -1383,7 +1397,8 @@ public class MainDesktopPane extends JDesktopPane
 		announcementWindow = null;
 		settlementWindow = null;
 		timeWindow = null;
-		building = null;
+		commanderWindow = null;
+//		building = null;
 		mainWindow = null;
 //		marqueeTicker = null;
 		orbitViewer = null;

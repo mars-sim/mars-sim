@@ -514,7 +514,7 @@ public class Cooking extends Function implements Serializable {
 			double population = getPopulation();
 			double maxServings = population * building.getSettlement().getMealsReplenishmentRate();
 
-			int numSettlementCookedMeals = getTotalAvailableCookedMealsAtSettlement(building.getSettlement());
+			int numSettlementCookedMeals = getTotalAvailableCookedMealsAtSettlement();//building.getSettlement());
 			if (numSettlementCookedMeals >= maxServings) {
 				cookNoMore = true;
 			}
@@ -537,11 +537,11 @@ public class Cooking extends Function implements Serializable {
 	 * @param settlement the settlement.
 	 * @return number of cooked meals.
 	 */
-	private int getTotalAvailableCookedMealsAtSettlement(Settlement settlement) {
+	private int getTotalAvailableCookedMealsAtSettlement() {//Settlement settlement) {
 
 		int result = 0;
 
-		Iterator<Building> i = settlement.getBuildingManager().getBuildings(FUNCTION).iterator();
+		Iterator<Building> i = building.getSettlement().getBuildingManager().getBuildings(FUNCTION).iterator();
 		while (i.hasNext()) {
 			result += ((Cooking) i.next().getCooking()).getNumberOfAvailableCookedMeals();
 		}
@@ -963,6 +963,7 @@ public class Cooking extends Function implements Serializable {
 				if (MarsClock.getTimeDiff(meal.getExpirationTime(), marsClock) < 0D) {
 
 					try {
+						// TODO: turn this into a task
 						cookedMeals.remove(meal);
 
 						// Check if cooked meal has gone bad and has to be thrown out.
@@ -1039,6 +1040,7 @@ public class Cooking extends Function implements Serializable {
 			// int size = getMealRecipesWithAvailableIngredients().size();
 			// setNumCookableMeal(size);
 
+			// TODO: turn this into a task
 			cleanUpKitchen();
 
 			// Limit the size of the dailyWaterUsage to x key value pairs
@@ -1053,6 +1055,7 @@ public class Cooking extends Function implements Serializable {
 	 * Cleans up the kitchen with cleaning agent and water.
 	 */
 	public void cleanUpKitchen() {
+		// TODO: turn this into a task
 		boolean cleaning0 = false;
 		if (cleaningAgentPerSol * .1 > MIN)
 			cleaning0 = Storage.retrieveAnResource(cleaningAgentPerSol * .1, NaClOID, building.getInventory(), true);
@@ -1083,6 +1086,7 @@ public class Cooking extends Function implements Serializable {
 	 * Preserve the food with salts
 	 */
 	public void preserveFood() {
+		// TODO: turn this into a task
 		retrieveAnIngredientFromMap(AMOUNT_OF_SALT_PER_MEAL, ResourceUtil.tableSaltID, true); // TABLE_SALT, true);//
 		if (dryMassPerServing > 0)
 			store(dryMassPerServing, foodID, sourceName + "::preserveFood");

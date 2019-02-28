@@ -14,6 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.NaturalAttributeType;
@@ -56,16 +57,16 @@ public class ChainOfCommand implements Serializable {
 	public static final int POPULATION_WITH_SUB_COMMANDER = 9;
 	public static final int POPULATION_WITH_CHIEFS = 17;
 	public static final int POPULATION_WITH_MAYOR = 51;
-	
+
 	private boolean has7Divisions = false;
 	private boolean has3Divisions = false;
-    /** Stores the number for each role type . */
+	/** Stores the number for each role type . */
 	private Map<RoleType, Integer> roleRegistry;
 
 	private Settlement settlement;
 
 	private static UnitManager unitManager = Simulation.instance().getUnitManager();
-	
+
 	private static MarsClock marsClock = Simulation.instance().getMasterClock().getMarsClock();
 
 //	private RoleType[] CHIEFS_3 = new RoleType[] { 
@@ -73,18 +74,13 @@ public class ChainOfCommand implements Serializable {
 //			RoleType.CHIEF_OF_MISSION_PLANNING, 
 //			RoleType.CHIEF_OF_SUPPLY_N_RESOURCES,
 //		};
-	
-	private RoleType[] CHIEFS_7 = new RoleType[] {
-			RoleType.CHIEF_OF_ENGINEERING,  
-			RoleType.CHIEF_OF_MISSION_PLANNING, 
+
+	private RoleType[] CHIEFS_7 = new RoleType[] { RoleType.CHIEF_OF_ENGINEERING, RoleType.CHIEF_OF_MISSION_PLANNING,
 			RoleType.CHIEF_OF_SUPPLY_N_RESOURCES,
-			
-			RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS,
-			RoleType.CHIEF_OF_SAFETY_N_HEALTH, 
-			RoleType.CHIEF_OF_AGRICULTURE,
-			RoleType.CHIEF_OF_SCIENCE
-		};
-	
+
+			RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS, RoleType.CHIEF_OF_SAFETY_N_HEALTH, RoleType.CHIEF_OF_AGRICULTURE,
+			RoleType.CHIEF_OF_SCIENCE };
+
 	/**
 	 * This class creates a chain of command structure for a settlement. A
 	 * settlement can have either 3 divisions or 7 divisions organizational
@@ -100,7 +96,7 @@ public class ChainOfCommand implements Serializable {
 	/**
 	 * Assigns a person with one of the three specialist role types
 	 * 
-	 * @param job {@link Job}
+	 * @param job    {@link Job}
 	 * @param person {@link Person}
 	 * @param num
 	 */
@@ -119,67 +115,57 @@ public class ChainOfCommand implements Serializable {
 		} else if (r < num - 1) {
 //			assignSpecialiststo3Divisions(person);
 			person.getRole().setNewRoleType(RoleType.RESOURCE_SPECIALIST);
-		}
-		else {
+		} else {
 			if (num < 4) {
-				
+
 				RoleType type = this.getMissingSpecialistRole(1);
 				if (type != null) {
 					person.getRole().setNewRoleType(type);
 				}
-				
+
 				else {
 					int least = Math.max(safe, Math.max(r, e));
 					if (least == safe) {
 						person.getRole().setNewRoleType(RoleType.SAFETY_SPECIALIST);
-					}
-					else if (least == r) {
+					} else if (least == r) {
 						person.getRole().setNewRoleType(RoleType.ENGINEERING_SPECIALIST);
-					}
-					else if (least == e) {
+					} else if (least == e) {
 						person.getRole().setNewRoleType(RoleType.RESOURCE_SPECIALIST);
 					}
 				}
-			}
-			else {
-				
+			} else {
+
 				RoleType type = this.getMissingSpecialistRole(1);
 				if (type != null) {
 					person.getRole().setNewRoleType(type);
 				}
-				
+
 				else {
-				
+
 					int m = getNumFilled(RoleType.MISSION_SPECIALIST);
 					int a = getNumFilled(RoleType.AGRICULTURE_SPECIALIST);
 					int sci = getNumFilled(RoleType.SCIENCE_SPECIALIST);
 					int l = getNumFilled(RoleType.LOGISTIC_SPECIALIST);
-					
+
 					int least = Math.max(safe, Math.max(r, Math.max(e, Math.max(m, Math.max(a, Math.max(sci, l))))));
 					if (least == m) {
 						person.getRole().setNewRoleType(RoleType.MISSION_SPECIALIST);
-					}
-					else if (least == a) {
+					} else if (least == a) {
 						person.getRole().setNewRoleType(RoleType.AGRICULTURE_SPECIALIST);
-					}
-					else if (least == sci) {
+					} else if (least == sci) {
 						person.getRole().setNewRoleType(RoleType.SCIENCE_SPECIALIST);
-					}
-					else if (least == l) {
+					} else if (least == l) {
 						person.getRole().setNewRoleType(RoleType.LOGISTIC_SPECIALIST);
-					}
-					else if (least == safe) {
+					} else if (least == safe) {
 						person.getRole().setNewRoleType(RoleType.SAFETY_SPECIALIST);
-					}
-					else if (least == r) {
+					} else if (least == r) {
 						person.getRole().setNewRoleType(RoleType.RESOURCE_SPECIALIST);
-					}
-					else if (least == e) {
+					} else if (least == e) {
 						person.getRole().setNewRoleType(RoleType.ENGINEERING_SPECIALIST);
 					}
 				}
 			}
-			
+
 //			int rand = RandomUtil.getRandomInt(2);
 //			if (rand == 0) {
 //				person.getRole().setNewRoleType(RoleType.SAFETY_SPECIALIST);
@@ -220,7 +206,7 @@ public class ChainOfCommand implements Serializable {
 //		boolean allSlotsFilledOnce = false;
 //		boolean allSlotsFilledTwice = false;
 //		boolean allSlotsFilledTriple = false;
-		
+
 //		if (pop <= 4) {
 //			boolean allSlotsFilledOnce = metMinimiumFilled(1);
 //			if (!allSlotsFilledOnce) {
@@ -266,10 +252,10 @@ public class ChainOfCommand implements Serializable {
 //				logger.warning("With 10 or less people in " + person.getSettlement() 
 //					+ ". All roles have been filled 3 times.");
 //		}
-		
+
 //		TODO: make use of assignRole(job, person, 1);
 
-			if (job.equals(JobManager.getJob(Architect.class.getSimpleName()))) {
+		if (job.equals(JobManager.getJob(Architect.class.getSimpleName()))) {
 //				if (type != null) { 
 //					if (type == RoleType.SAFETY_SPECIALIST
 //							|| type == RoleType.ENGINEERING_SPECIALIST) {
@@ -277,85 +263,84 @@ public class ChainOfCommand implements Serializable {
 //					}
 //					person.getRole().setNewRoleType(type);
 //				}
-				
-				if (RandomUtil.getRandomInt(1, 2) == 1) {
-					role.setNewRoleType(RoleType.SAFETY_SPECIALIST);
-				} else {
-					role.setNewRoleType(RoleType.ENGINEERING_SPECIALIST);
-				}
-			} 
-			else if (job.equals(JobManager.getJob(Areologist.class.getSimpleName())))
-				role.setNewRoleType(RoleType.ENGINEERING_SPECIALIST);
-			else if (job.equals(JobManager.getJob(Astronomer.class.getSimpleName())))
-				role.setNewRoleType(RoleType.ENGINEERING_SPECIALIST);
-			else if (job.equals(JobManager.getJob(Biologist.class.getSimpleName()))) {
-				if (RandomUtil.getRandomInt(1, 2) == 1)
-					role.setNewRoleType(RoleType.SAFETY_SPECIALIST);
-				else
-					role.setNewRoleType(RoleType.RESOURCE_SPECIALIST);
-			} 
-			
-			else if (job.equals(JobManager.getJob(Botanist.class.getSimpleName())))
-				role.setNewRoleType(RoleType.RESOURCE_SPECIALIST);
-			else if (job.equals(JobManager.getJob(Chef.class.getSimpleName())))
-				role.setNewRoleType(RoleType.RESOURCE_SPECIALIST);
-			else if (job.equals(JobManager.getJob(Chemist.class.getSimpleName()))) {
-				if (RandomUtil.getRandomInt(1, 2) == 1)
-					role.setNewRoleType(RoleType.SAFETY_SPECIALIST);
-				else
-					role.setNewRoleType(RoleType.RESOURCE_SPECIALIST);
-			} 
-			
-			else if (job.equals(JobManager.getJob(Doctor.class.getSimpleName())))
+
+			if (RandomUtil.getRandomInt(1, 2) == 1) {
 				role.setNewRoleType(RoleType.SAFETY_SPECIALIST);
-			else if (job.equals(JobManager.getJob(Driver.class.getSimpleName())))
-				role.setNewRoleType(RoleType.SAFETY_SPECIALIST);
-			else if (job.equals(JobManager.getJob(Engineer.class.getSimpleName())))
+			} else {
 				role.setNewRoleType(RoleType.ENGINEERING_SPECIALIST);
-			else if (job.equals(JobManager.getJob(Mathematician.class.getSimpleName()))) {
-				if (RandomUtil.getRandomInt(1, 2) == 1)
-					role.setNewRoleType(RoleType.ENGINEERING_SPECIALIST);
-				else
-					role.setNewRoleType(RoleType.RESOURCE_SPECIALIST);
-			} 
-			
-			else if (job.equals(JobManager.getJob(Meteorologist.class.getSimpleName())))
-				role.setNewRoleType(RoleType.SAFETY_SPECIALIST);
-			else if (job.equals(JobManager.getJob(Physicist.class.getSimpleName()))) {
-				if (RandomUtil.getRandomInt(1, 2) == 1)
-					role.setNewRoleType(RoleType.ENGINEERING_SPECIALIST);
-				else
-					role.setNewRoleType(RoleType.SAFETY_SPECIALIST);
-			} 
-			
-			else if (job.equals(JobManager.getJob(Reporter.class.getSimpleName()))) {
-				int num = RandomUtil.getRandomInt(1, 3);
-				if (num == 1) {
-					role.setNewRoleType(RoleType.RESOURCE_SPECIALIST);
-				} else if (num == 2) {
-						role.setNewRoleType(RoleType.ENGINEERING_SPECIALIST);	
-				} else {
-					role.setNewRoleType(RoleType.SAFETY_SPECIALIST);
-				}
-			} 
-			
-			else if (job.equals(JobManager.getJob(Technician.class.getSimpleName()))) {
-				if (RandomUtil.getRandomInt(1, 2) == 1)
-					role.setNewRoleType(RoleType.ENGINEERING_SPECIALIST);
-				else
-					role.setNewRoleType(RoleType.SAFETY_SPECIALIST);
-			} 
-			
-			else if (job.equals(JobManager.getJob(Trader.class.getSimpleName()))) {
-				if (RandomUtil.getRandomInt(1, 2) == 1)
-					role.setNewRoleType(RoleType.SAFETY_SPECIALIST);
-				else
-					role.setNewRoleType(RoleType.RESOURCE_SPECIALIST);
 			}
-			
-			if (marsClock.getMissionSol() > 1)
-				logger.config("[" + person.getLocationTag().getLocale() + "] Selecting " + person.getName()
-				+ " the " + job.getClass().getSimpleName() + " to be " + person.getRole() + ".");
+		} else if (job.equals(JobManager.getJob(Areologist.class.getSimpleName())))
+			role.setNewRoleType(RoleType.ENGINEERING_SPECIALIST);
+		else if (job.equals(JobManager.getJob(Astronomer.class.getSimpleName())))
+			role.setNewRoleType(RoleType.ENGINEERING_SPECIALIST);
+		else if (job.equals(JobManager.getJob(Biologist.class.getSimpleName()))) {
+			if (RandomUtil.getRandomInt(1, 2) == 1)
+				role.setNewRoleType(RoleType.SAFETY_SPECIALIST);
+			else
+				role.setNewRoleType(RoleType.RESOURCE_SPECIALIST);
+		}
+
+		else if (job.equals(JobManager.getJob(Botanist.class.getSimpleName())))
+			role.setNewRoleType(RoleType.RESOURCE_SPECIALIST);
+		else if (job.equals(JobManager.getJob(Chef.class.getSimpleName())))
+			role.setNewRoleType(RoleType.RESOURCE_SPECIALIST);
+		else if (job.equals(JobManager.getJob(Chemist.class.getSimpleName()))) {
+			if (RandomUtil.getRandomInt(1, 2) == 1)
+				role.setNewRoleType(RoleType.SAFETY_SPECIALIST);
+			else
+				role.setNewRoleType(RoleType.RESOURCE_SPECIALIST);
+		}
+
+		else if (job.equals(JobManager.getJob(Doctor.class.getSimpleName())))
+			role.setNewRoleType(RoleType.SAFETY_SPECIALIST);
+		else if (job.equals(JobManager.getJob(Driver.class.getSimpleName())))
+			role.setNewRoleType(RoleType.SAFETY_SPECIALIST);
+		else if (job.equals(JobManager.getJob(Engineer.class.getSimpleName())))
+			role.setNewRoleType(RoleType.ENGINEERING_SPECIALIST);
+		else if (job.equals(JobManager.getJob(Mathematician.class.getSimpleName()))) {
+			if (RandomUtil.getRandomInt(1, 2) == 1)
+				role.setNewRoleType(RoleType.ENGINEERING_SPECIALIST);
+			else
+				role.setNewRoleType(RoleType.RESOURCE_SPECIALIST);
+		}
+
+		else if (job.equals(JobManager.getJob(Meteorologist.class.getSimpleName())))
+			role.setNewRoleType(RoleType.SAFETY_SPECIALIST);
+		else if (job.equals(JobManager.getJob(Physicist.class.getSimpleName()))) {
+			if (RandomUtil.getRandomInt(1, 2) == 1)
+				role.setNewRoleType(RoleType.ENGINEERING_SPECIALIST);
+			else
+				role.setNewRoleType(RoleType.SAFETY_SPECIALIST);
+		}
+
+		else if (job.equals(JobManager.getJob(Reporter.class.getSimpleName()))) {
+			int num = RandomUtil.getRandomInt(1, 3);
+			if (num == 1) {
+				role.setNewRoleType(RoleType.RESOURCE_SPECIALIST);
+			} else if (num == 2) {
+				role.setNewRoleType(RoleType.ENGINEERING_SPECIALIST);
+			} else {
+				role.setNewRoleType(RoleType.SAFETY_SPECIALIST);
+			}
+		}
+
+		else if (job.equals(JobManager.getJob(Technician.class.getSimpleName()))) {
+			if (RandomUtil.getRandomInt(1, 2) == 1)
+				role.setNewRoleType(RoleType.ENGINEERING_SPECIALIST);
+			else
+				role.setNewRoleType(RoleType.SAFETY_SPECIALIST);
+		}
+
+		else if (job.equals(JobManager.getJob(Trader.class.getSimpleName()))) {
+			if (RandomUtil.getRandomInt(1, 2) == 1)
+				role.setNewRoleType(RoleType.SAFETY_SPECIALIST);
+			else
+				role.setNewRoleType(RoleType.RESOURCE_SPECIALIST);
+		}
+
+		if (marsClock.getMissionSol() > 1)
+			logger.config("[" + person.getLocationTag().getLocale() + "] Selecting " + person.getName() + " the "
+					+ job.getClass().getSimpleName() + " to be " + person.getRole() + ".");
 //		}
 	}
 
@@ -412,107 +397,107 @@ public class ChainOfCommand implements Serializable {
 //		
 //		else {
 
-			if (job.equals(JobManager.getJob(Architect.class.getSimpleName()))) {
-				if (RandomUtil.getRandomInt(1, 2) == 1) {
-					role.setNewRoleType(RoleType.SAFETY_SPECIALIST);
-				} else {
-					role.setNewRoleType(RoleType.LOGISTIC_SPECIALIST);
-				}
-			} else if (job.equals(JobManager.getJob(Areologist.class.getSimpleName()))) {
-				if (RandomUtil.getRandomInt(1, 2) == 1) {
-					role.setNewRoleType(RoleType.MISSION_SPECIALIST);
-				} else {
-					role.setNewRoleType(RoleType.SCIENCE_SPECIALIST);
-				}
-			} else if (job.equals(JobManager.getJob(Astronomer.class.getSimpleName()))) {
-				role.setNewRoleType(RoleType.SCIENCE_SPECIALIST);
-			} else if (job.equals(JobManager.getJob(Biologist.class.getSimpleName()))) {
-				if (RandomUtil.getRandomInt(1, 2) == 1) {
-					role.setNewRoleType(RoleType.AGRICULTURE_SPECIALIST);
-				} else {
-					role.setNewRoleType(RoleType.RESOURCE_SPECIALIST);
-				}
-			} else if (job.equals(JobManager.getJob(Botanist.class.getSimpleName()))) {
-				int num = RandomUtil.getRandomInt(1, 3);
-				if (num == 1) {
-					role.setNewRoleType(RoleType.AGRICULTURE_SPECIALIST);
-				} else if (num == 2) {
-					role.setNewRoleType(RoleType.SCIENCE_SPECIALIST);
-				} else {
-					role.setNewRoleType(RoleType.RESOURCE_SPECIALIST);
-				}
-			} else if (job.equals(JobManager.getJob(Chef.class.getSimpleName()))) {
-				role.setNewRoleType(RoleType.RESOURCE_SPECIALIST);
-			} else if (job.equals(JobManager.getJob(Chemist.class.getSimpleName()))) {
-				if (RandomUtil.getRandomInt(1, 2) == 1) {
-					role.setNewRoleType(RoleType.RESOURCE_SPECIALIST);
-				} else {
-					role.setNewRoleType(RoleType.SCIENCE_SPECIALIST);
-				}
-			} else if (job.equals(JobManager.getJob(Doctor.class.getSimpleName()))) {
+		if (job.equals(JobManager.getJob(Architect.class.getSimpleName()))) {
+			if (RandomUtil.getRandomInt(1, 2) == 1) {
 				role.setNewRoleType(RoleType.SAFETY_SPECIALIST);
-			} else if (job.equals(JobManager.getJob(Driver.class.getSimpleName()))) {
-				if (RandomUtil.getRandomInt(1, 2) == 1) {
-					role.setNewRoleType(RoleType.MISSION_SPECIALIST);
-				} else {
-					role.setNewRoleType(RoleType.LOGISTIC_SPECIALIST);
-				}
-			} else if (job.equals(JobManager.getJob(Engineer.class.getSimpleName()))) {
-				role.setNewRoleType(RoleType.ENGINEERING_SPECIALIST);
-			} else if (job.equals(JobManager.getJob(Mathematician.class.getSimpleName()))) {
-				int num = RandomUtil.getRandomInt(1, 4);
-				if (num == 1) {
-					role.setNewRoleType(RoleType.MISSION_SPECIALIST);
-				} else if (num == 2) {
-					role.setNewRoleType(RoleType.SCIENCE_SPECIALIST);
-				} else if (num == 3) {
-					role.setNewRoleType(RoleType.RESOURCE_SPECIALIST);
-				} else {
-					role.setNewRoleType(RoleType.ENGINEERING_SPECIALIST);
-				}
-			} else if (job.equals(JobManager.getJob(Meteorologist.class.getSimpleName()))) {
-				if (RandomUtil.getRandomInt(1, 2) == 1) {
-					role.setNewRoleType(RoleType.SAFETY_SPECIALIST);
-				} else {
-					role.setNewRoleType(RoleType.MISSION_SPECIALIST);
-				}
-			} else if (job.equals(JobManager.getJob(Physicist.class.getSimpleName()))) {
-				int num = RandomUtil.getRandomInt(1, 3);
-				if (num == 1) {
-					role.setNewRoleType(RoleType.ENGINEERING_SPECIALIST);
-				} else if (num == 2) {
-					role.setNewRoleType(RoleType.SCIENCE_SPECIALIST);
-				} else {
-					role.setNewRoleType(RoleType.LOGISTIC_SPECIALIST);
-				}
-			} else if (job.equals(JobManager.getJob(Reporter.class.getSimpleName()))) {
-				int num = RandomUtil.getRandomInt(1, 3);
-				if (num == 1) {
-					role.setNewRoleType(RoleType.MISSION_SPECIALIST);
-				} else if (num == 2) {
-						role.setNewRoleType(RoleType.SAFETY_SPECIALIST);	
-				} else {
-					role.setNewRoleType(RoleType.LOGISTIC_SPECIALIST);
-				}
-			} else if (job.equals(JobManager.getJob(Technician.class.getSimpleName()))) {
-				if (RandomUtil.getRandomInt(1, 2) == 1) {
-					role.setNewRoleType(RoleType.ENGINEERING_SPECIALIST);
-				} else {
-					role.setNewRoleType(RoleType.LOGISTIC_SPECIALIST);
-				}
-			} else if (job.equals(JobManager.getJob(Trader.class.getSimpleName()))) {
-				int num = RandomUtil.getRandomInt(1, 3);
-				if (num == 1) {
-					role.setNewRoleType(RoleType.MISSION_SPECIALIST);
-				} else if (num == 2) {
-						role.setNewRoleType(RoleType.RESOURCE_SPECIALIST);	
-				} else {
-					role.setNewRoleType(RoleType.LOGISTIC_SPECIALIST);
-				}
+			} else {
+				role.setNewRoleType(RoleType.LOGISTIC_SPECIALIST);
 			}
-			if (marsClock.getMissionSol() > 1)
-				logger.config("[" + person.getLocationTag().getLocale() + "] Selecting " + person.getName()
-					+ " the " + job.getClass().getSimpleName() + " to be " + person.getRole() + ".");
+		} else if (job.equals(JobManager.getJob(Areologist.class.getSimpleName()))) {
+			if (RandomUtil.getRandomInt(1, 2) == 1) {
+				role.setNewRoleType(RoleType.MISSION_SPECIALIST);
+			} else {
+				role.setNewRoleType(RoleType.SCIENCE_SPECIALIST);
+			}
+		} else if (job.equals(JobManager.getJob(Astronomer.class.getSimpleName()))) {
+			role.setNewRoleType(RoleType.SCIENCE_SPECIALIST);
+		} else if (job.equals(JobManager.getJob(Biologist.class.getSimpleName()))) {
+			if (RandomUtil.getRandomInt(1, 2) == 1) {
+				role.setNewRoleType(RoleType.AGRICULTURE_SPECIALIST);
+			} else {
+				role.setNewRoleType(RoleType.RESOURCE_SPECIALIST);
+			}
+		} else if (job.equals(JobManager.getJob(Botanist.class.getSimpleName()))) {
+			int num = RandomUtil.getRandomInt(1, 3);
+			if (num == 1) {
+				role.setNewRoleType(RoleType.AGRICULTURE_SPECIALIST);
+			} else if (num == 2) {
+				role.setNewRoleType(RoleType.SCIENCE_SPECIALIST);
+			} else {
+				role.setNewRoleType(RoleType.RESOURCE_SPECIALIST);
+			}
+		} else if (job.equals(JobManager.getJob(Chef.class.getSimpleName()))) {
+			role.setNewRoleType(RoleType.RESOURCE_SPECIALIST);
+		} else if (job.equals(JobManager.getJob(Chemist.class.getSimpleName()))) {
+			if (RandomUtil.getRandomInt(1, 2) == 1) {
+				role.setNewRoleType(RoleType.RESOURCE_SPECIALIST);
+			} else {
+				role.setNewRoleType(RoleType.SCIENCE_SPECIALIST);
+			}
+		} else if (job.equals(JobManager.getJob(Doctor.class.getSimpleName()))) {
+			role.setNewRoleType(RoleType.SAFETY_SPECIALIST);
+		} else if (job.equals(JobManager.getJob(Driver.class.getSimpleName()))) {
+			if (RandomUtil.getRandomInt(1, 2) == 1) {
+				role.setNewRoleType(RoleType.MISSION_SPECIALIST);
+			} else {
+				role.setNewRoleType(RoleType.LOGISTIC_SPECIALIST);
+			}
+		} else if (job.equals(JobManager.getJob(Engineer.class.getSimpleName()))) {
+			role.setNewRoleType(RoleType.ENGINEERING_SPECIALIST);
+		} else if (job.equals(JobManager.getJob(Mathematician.class.getSimpleName()))) {
+			int num = RandomUtil.getRandomInt(1, 4);
+			if (num == 1) {
+				role.setNewRoleType(RoleType.MISSION_SPECIALIST);
+			} else if (num == 2) {
+				role.setNewRoleType(RoleType.SCIENCE_SPECIALIST);
+			} else if (num == 3) {
+				role.setNewRoleType(RoleType.RESOURCE_SPECIALIST);
+			} else {
+				role.setNewRoleType(RoleType.ENGINEERING_SPECIALIST);
+			}
+		} else if (job.equals(JobManager.getJob(Meteorologist.class.getSimpleName()))) {
+			if (RandomUtil.getRandomInt(1, 2) == 1) {
+				role.setNewRoleType(RoleType.SAFETY_SPECIALIST);
+			} else {
+				role.setNewRoleType(RoleType.MISSION_SPECIALIST);
+			}
+		} else if (job.equals(JobManager.getJob(Physicist.class.getSimpleName()))) {
+			int num = RandomUtil.getRandomInt(1, 3);
+			if (num == 1) {
+				role.setNewRoleType(RoleType.ENGINEERING_SPECIALIST);
+			} else if (num == 2) {
+				role.setNewRoleType(RoleType.SCIENCE_SPECIALIST);
+			} else {
+				role.setNewRoleType(RoleType.LOGISTIC_SPECIALIST);
+			}
+		} else if (job.equals(JobManager.getJob(Reporter.class.getSimpleName()))) {
+			int num = RandomUtil.getRandomInt(1, 3);
+			if (num == 1) {
+				role.setNewRoleType(RoleType.MISSION_SPECIALIST);
+			} else if (num == 2) {
+				role.setNewRoleType(RoleType.SAFETY_SPECIALIST);
+			} else {
+				role.setNewRoleType(RoleType.LOGISTIC_SPECIALIST);
+			}
+		} else if (job.equals(JobManager.getJob(Technician.class.getSimpleName()))) {
+			if (RandomUtil.getRandomInt(1, 2) == 1) {
+				role.setNewRoleType(RoleType.ENGINEERING_SPECIALIST);
+			} else {
+				role.setNewRoleType(RoleType.LOGISTIC_SPECIALIST);
+			}
+		} else if (job.equals(JobManager.getJob(Trader.class.getSimpleName()))) {
+			int num = RandomUtil.getRandomInt(1, 3);
+			if (num == 1) {
+				role.setNewRoleType(RoleType.MISSION_SPECIALIST);
+			} else if (num == 2) {
+				role.setNewRoleType(RoleType.RESOURCE_SPECIALIST);
+			} else {
+				role.setNewRoleType(RoleType.LOGISTIC_SPECIALIST);
+			}
+		}
+		if (marsClock.getMissionSol() > 1)
+			logger.config("[" + person.getLocationTag().getLocale() + "] Selecting " + person.getName() + " the "
+					+ job.getClass().getSimpleName() + " to be " + person.getRole() + ".");
 //		}
 	}
 
@@ -538,49 +523,42 @@ public class ChainOfCommand implements Serializable {
 	}
 
 	/**
-	 * Elects a new person for leadership in a settlement if a mayor,
-	 * commander, sub-commander, or chiefs vacates his/her position.
+	 * Elects a new person for leadership in a settlement if a mayor, commander,
+	 * sub-commander, or chiefs vacates his/her position.
 	 * 
 	 * @param key {@link RoleType}
 	 */
 	public void reelectLeadership(RoleType key) {
 		if (getNumFilled(key) == 0) {
-			
+
 			int popSize = settlement.getNumCitizens();
-		
-			if (popSize >= POPULATION_WITH_MAYOR) {	
-				if (key == RoleType.CHIEF_OF_AGRICULTURE
-						|| key == RoleType.CHIEF_OF_ENGINEERING
-						|| key == RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS
-						|| key == RoleType.CHIEF_OF_MISSION_PLANNING
-						|| key == RoleType.CHIEF_OF_SAFETY_N_HEALTH
-						|| key == RoleType.CHIEF_OF_SCIENCE
+
+			if (popSize >= POPULATION_WITH_MAYOR) {
+				if (key == RoleType.CHIEF_OF_AGRICULTURE || key == RoleType.CHIEF_OF_ENGINEERING
+						|| key == RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS || key == RoleType.CHIEF_OF_MISSION_PLANNING
+						|| key == RoleType.CHIEF_OF_SAFETY_N_HEALTH || key == RoleType.CHIEF_OF_SCIENCE
 						|| key == RoleType.CHIEF_OF_SUPPLY_N_RESOURCES) {
 					electChief(settlement, key);
-				} else if (key == RoleType.COMMANDER 
-						|| key == RoleType.SUB_COMMANDER) {
+				} else if (key == RoleType.COMMANDER || key == RoleType.SUB_COMMANDER) {
 					int pop = settlement.getNumCitizens();
 					electCommanders(settlement, pop);
 				} else if (key == RoleType.MAYOR) {
 					electMayor(settlement, key);
 				}
 			}
-		
+
 			else if (popSize >= POPULATION_WITH_SUB_COMMANDER) {
-				if (key == RoleType.CHIEF_OF_AGRICULTURE
-						|| key == RoleType.CHIEF_OF_SAFETY_N_HEALTH
+				if (key == RoleType.CHIEF_OF_AGRICULTURE || key == RoleType.CHIEF_OF_SAFETY_N_HEALTH
 						|| key == RoleType.CHIEF_OF_SUPPLY_N_RESOURCES) {
 					electChief(settlement, key);
-				} else if (key == RoleType.COMMANDER 
-						|| key == RoleType.SUB_COMMANDER) {
+				} else if (key == RoleType.COMMANDER || key == RoleType.SUB_COMMANDER) {
 					int pop = settlement.getNumCitizens();
 					electCommanders(settlement, pop);
 				}
 			}
-		
+
 			else {
-				if (key == RoleType.COMMANDER 
-						|| key == RoleType.SUB_COMMANDER) {
+				if (key == RoleType.COMMANDER || key == RoleType.SUB_COMMANDER) {
 					int pop = settlement.getNumCitizens();
 					electCommanders(settlement, pop);
 				}
@@ -653,8 +631,8 @@ public class ChainOfCommand implements Serializable {
 				return RoleType.ENGINEERING_SPECIALIST;
 			else if (getNumFilled(RoleType.RESOURCE_SPECIALIST) < minimum)
 				return RoleType.RESOURCE_SPECIALIST;
-		} 
-		
+		}
+
 		else if (has7Divisions) {
 			if (getNumFilled(RoleType.SAFETY_SPECIALIST) < minimum)
 				return RoleType.SAFETY_SPECIALIST;
@@ -671,10 +649,10 @@ public class ChainOfCommand implements Serializable {
 			else if (getNumFilled(RoleType.LOGISTIC_SPECIALIST) < minimum)
 				return RoleType.LOGISTIC_SPECIALIST;
 		}
-		
+
 		return null;
 	}
-	
+
 	/**
 	 * Elect the commanders
 	 * 
@@ -727,8 +705,8 @@ public class ChainOfCommand implements Serializable {
 					cc_combined = p_combined;
 				}
 //				 else { 
-					 // if this person p has a lower combined score than previous cc 
-					 // but have a higher leadership score than the previous cv 
+				// if this person p has a lower combined score than previous cc
+				// but have a higher leadership score than the previous cv
 //					 if (pop >= POPULATION_WITH_SUB_COMMANDER) {
 //						 if ( p_leadership > cv_leadership) { 
 //							// this person p becomes the sub-commander 
@@ -746,16 +724,14 @@ public class ChainOfCommand implements Serializable {
 //						}
 //					}
 //				 }
-			}
-			else if (pop >= POPULATION_WITH_SUB_COMMANDER) {
+			} else if (pop >= POPULATION_WITH_SUB_COMMANDER) {
 
 				if (p_leadership > cv_leadership) {
 					// this person p becomes the sub-commander
 					cv = p;
 					cv_leadership = p_leadership;
 					cv_combined = p_combined;
-				} 
-				else if (p_leadership == cv_leadership) {
+				} else if (p_leadership == cv_leadership) {
 					// compare person p's combined score with the cv's combined
 					// score
 					if (p_combined > cv_combined) {
@@ -769,19 +745,25 @@ public class ChainOfCommand implements Serializable {
 		}
 		// TODO: look at other attributes and/or skills when comparing
 		// individuals
-		
-		// Check if this settlement is the designated one for the user proposed commander
+
+		// Check if this settlement is the designated one for the user proposed
+		// commander
 		if (settlement.hasDesignatedCommander()) {
 			unitManager.updateCommander(cc);
 			cc.setAssociatedSettlement(settlement.getIdentifier());
-			logger.config("[" + cc.getLocationTag().getLocale() + "] " + cc + " will be assigned as the settlement's commander.");
+			logger.config("[" + cc.getLocationTag().getLocale() + "] " + cc
+					+ " will be assigned as the settlement's commander.");
+
+			// Determine the initial leadership points
+			determineLeadershipPoints(cc);
 		}
-		
+
 		else {
 			cc.setRole(RoleType.COMMANDER);
-			logger.config("[" + cc.getLocationTag().getLocale() + "] " + cc + " got elected as the " + RoleType.COMMANDER.getName() + ".");
+			logger.config("[" + cc.getLocationTag().getLocale() + "] " + cc + " got elected as the "
+					+ RoleType.COMMANDER.getName() + ".");
 		}
-		
+
 //		if (isProfileRetrieved) {
 //			cc.setRole(RoleType.COMMANDER);
 //		}
@@ -810,13 +792,25 @@ public class ChainOfCommand implements Serializable {
 //				
 //			}
 //		}
-		
+
 		if (pop >= POPULATION_WITH_SUB_COMMANDER) {
 			cv.setRole(RoleType.SUB_COMMANDER);
-			logger.config("[" + cv.getLocationTag().getLocale() + "] " + cv + " got elected as the " + RoleType.SUB_COMMANDER.getName() + ".");
+			logger.config("[" + cv.getLocationTag().getLocale() + "] " + cv + " got elected as the "
+					+ RoleType.SUB_COMMANDER.getName() + ".");
 		}
 	}
-	
+
+	/**
+	 * Initialize the leadership points
+	 * 
+	 * @param person
+	 */
+	public void determineLeadershipPoints(Person person) {
+		int leadershipAptitude = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.LEADERSHIP);
+		SimulationConfig.instance().getPersonConfiguration().getCommander()
+				.setInitialLeadershipPoint(leadershipAptitude);
+	}
+
 	/**
 	 * Establish or reset the system of governance at a settlement.
 	 * 
@@ -825,7 +819,7 @@ public class ChainOfCommand implements Serializable {
 	public void establishSettlementGovernance(Settlement settlement) {
 
 		int popSize = settlement.getNumCitizens();
-		
+
 		if (popSize >= POPULATION_WITH_MAYOR) {
 			// Elect a mayor
 			electMayor(settlement, RoleType.MAYOR);
@@ -839,7 +833,7 @@ public class ChainOfCommand implements Serializable {
 
 //			establishGovernment(settlement);
 		}
-		
+
 		else if (popSize >= POPULATION_WITH_COMMANDER) {
 			// Elect commander and sub-commander
 			electCommanders(settlement, popSize);
@@ -853,7 +847,6 @@ public class ChainOfCommand implements Serializable {
 			}
 		}
 	}
-	
 
 	/**
 	 * Establish the mayor in a settlement
@@ -897,7 +890,8 @@ public class ChainOfCommand implements Serializable {
 
 		if (mayorCandidate != null) {
 			mayorCandidate.setRole(RoleType.MAYOR);
-			logger.config("[" + mayorCandidate.getLocationTag().getLocale() + "] " + mayorCandidate + " got elected as the " + role.getName() + ".");
+			logger.config("[" + mayorCandidate.getLocationTag().getLocale() + "] " + mayorCandidate
+					+ " got elected as the " + role.getName() + ".");
 		}
 	}
 
@@ -999,13 +993,14 @@ public class ChainOfCommand implements Serializable {
 				}
 			}
 		}
-		
+
 		if (winner != null) {
 			winner.setRole(role);
-			logger.config("[" + winner.getLocationTag().getLocale() + "] " + winner + " got elected as the " + role.getName() + ".");
+			logger.config("[" + winner.getLocationTag().getLocale() + "] " + winner + " got elected as the "
+					+ role.getName() + ".");
 		}
 	}
-	
+
 	/**
 	 * Reloads instances after loading from a saved sim
 	 * 
@@ -1016,7 +1011,7 @@ public class ChainOfCommand implements Serializable {
 		marsClock = clock;
 		unitManager = um;
 	}
-	
+
 	public void destroy() {
 		roleRegistry.clear();
 		roleRegistry = null;

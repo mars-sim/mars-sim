@@ -51,7 +51,6 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.plaf.BorderUIResource;
 import javax.swing.plaf.UIResource;
-import javax.swing.plaf.basic.BasicComboBoxRenderer;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
@@ -200,7 +199,7 @@ public class SettlementTransparentPanel extends WebComponent {
 		settlementListBox.setBackground(new Color(51,25,0,128)); // dull gold color
 		settlementListBox.setOpaque(false);
 		settlementListBox.setFont(new Font("Dialog", Font.BOLD, 18));
-		settlementListBox.setForeground(Color.GREEN);
+		settlementListBox.setForeground(Color.BLACK);
 		settlementListBox.setToolTipText(Msg.getString("SettlementWindow.tooltip.selectSettlement")); //$NON-NLS-1$
 		settlementListBox.setRenderer(new PromptComboBoxRenderer());
 		settlementListBox.addItemListener(new ItemListener() {
@@ -276,14 +275,11 @@ public class SettlementTransparentPanel extends WebComponent {
 				}
 
 				if (isSelected) {
-					c.setForeground(Color.GREEN);
-			        c.setBackground(new Color(184,134,11,50));
-
-		          // unselected, and not the DnD drop location
-		          } else {
 		        	  c.setForeground(Color.ORANGE);
-		        	  c.setBackground(new Color(255,229,204,50));
-				      //result.setBackground(new Color(184,134,11)); //brown
+		        	  c.setBackground(new Color(255,229,204,50)); // pale orange
+		          } else {
+						c.setForeground(Color.black);
+				        c.setBackground(new Color(184,134,11,50)); // mud orange
 		          }
 
 		        //result.setOpaque(false);

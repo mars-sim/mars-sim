@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * ToolToolBar.java
- * @version 3.07 2015-01-25
-
+ * @version 3.1.0 2019-02-28
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing;
@@ -16,6 +15,7 @@ import javax.swing.JToolBar;
 import javax.swing.border.BevelBorder;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.ui.swing.tool.commander.CommanderWindow;
 import org.mars_sim.msp.ui.swing.tool.guide.GuideWindow;
 import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
 import org.mars_sim.msp.ui.swing.tool.monitor.MonitorWindow;
@@ -166,6 +166,12 @@ implements ActionListener {
 		add(resupplyButton);
 		toolButtons.addElement(resupplyButton);
 
+		// Add commander dashboard button
+		ToolButton dashboardButton = new ToolButton(CommanderWindow.NAME, Msg.getString("img.dashboard")); //$NON-NLS-1$
+		dashboardButton.addActionListener(this);
+		add(dashboardButton);
+		toolButtons.addElement(dashboardButton);
+		
 		addSeparator();
 
 		// Add guide button

@@ -22,15 +22,19 @@ public class Commander implements Serializable {
     private static final String ONE_SPACE = " ";
     
 	private boolean isMarsSocietyAffiliated;
-    private String firstName;
+
+	private int age = -1;
+    private int jobInt = -1;
+    private int phase;
+    private int countryInt = -1;
+    private int leadershipPoint = 0;
+    private int initialLeadershipPoint = 0;
+
+	private String firstName;
     private String lastName;
     private String gender;
     private String jobStr = "";
     private String countryStr = "";
-    private int age = -1;
-    private int jobInt = -1;
-    private int phase;
-    private int countryInt = -1;
     
     public String getFullName() {
     	if (firstName == null && lastName == null)
@@ -167,6 +171,27 @@ public class Commander implements Serializable {
     	}
     	s.append(field);
     	return s.toString();
+    }
+    
+    public void setInitialLeadershipPoint(int value) {   
+    	initialLeadershipPoint = value;
+    	leadershipPoint = value;
+    }
+    
+    public int getLeadershipPoint() {
+    	return leadershipPoint;
+    }
+    
+    public void setLeadershipPoint(int value) {
+    	leadershipPoint = value;
+    }
+
+    public void addLeadershipPoint(int value) {
+    	leadershipPoint += value;
+    }
+
+    public void subtractLeadershipPoint(int value) {
+    	leadershipPoint -= value;
     }
     
     @Override

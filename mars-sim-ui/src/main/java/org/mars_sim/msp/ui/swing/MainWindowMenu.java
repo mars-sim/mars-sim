@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainWindowMenu.java
- * @version 3.07 2015-01-25
+ * @version 3.1.0 2019-02-28
  * @author Scott Davis
  */
 
@@ -27,6 +27,7 @@ import javax.swing.event.MenuListener;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.ui.swing.notification.NotificationMenu;
 import org.mars_sim.msp.ui.swing.sound.AudioPlayer;
+import org.mars_sim.msp.ui.swing.tool.commander.CommanderWindow;
 //import org.mars_sim.msp.ui.swing.tool.MarsViewer;
 import org.mars_sim.msp.ui.swing.tool.guide.GuideWindow;
 import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
@@ -77,6 +78,8 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 	private JCheckBoxMenuItem scienceToolItem;
 	/** Resupply tool menu item. */
 	private JCheckBoxMenuItem resupplyToolItem;
+	/** Commander Dashboard menu item. */
+	private JCheckBoxMenuItem commanderDashboardItem;
 	/** Mars Viewer menu item. */
 	// private JCheckBoxMenuItem marsViewerItem;
 
@@ -85,7 +88,7 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 	/** Tool Bar menu item. */
 	private JCheckBoxMenuItem showToolBarItem;
 
-	// 2014-12-04 Added notificationMenu
+	// Notification Menu
 	private NotificationMenu notificationMenu;
 	// private MainDesktopPane desktop;
 
@@ -141,8 +144,6 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 		fileMenu.add(loadItem);
 
 		// Create load autosave menu item
-		// 2015-01-25 Added autosave
-
 		ImageIcon loadAutosaveicon = new ImageIcon(getClass().getResource(Msg.getString("img.openAutosave"))); //$NON-NLS-1$
 		loadAutosaveItem = new JMenuItem(Msg.getString("mainMenu.openAutosave"), loadAutosaveicon); //$NON-NLS-1$
 		loadAutosaveItem.addActionListener(this);
@@ -241,6 +242,14 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 		resupplyToolItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F8, 0, false));
 		toolsMenu.add(resupplyToolItem);
 
+		// Create commander dashboard menu item
+		ImageIcon commandericon = new ImageIcon(getClass().getResource(Msg.getString("img.dashboard"))); //$NON-NLS-1$
+		commanderDashboardItem = new JCheckBoxMenuItem(CommanderWindow.NAME, commandericon);
+		commanderDashboardItem.addActionListener(this);
+		commanderDashboardItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F9, 0, false));
+		commanderDashboardItem.setToolTipText(Msg.getString("mainMenu.tooltip.dashboard")); //$NON-NLS-1$
+		toolsMenu.add(commanderDashboardItem);	
+		
 		// Create settings menu
 		JMenu settingsMenu = new JMenu(Msg.getString("mainMenu.settings")); //$NON-NLS-1$
 		settingsMenu.setMnemonic(KeyEvent.VK_S);
@@ -398,7 +407,7 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 			mainWindow.loadSimulation(false);
 		else if (selectedItem == loadAutosaveItem)
 			mainWindow.loadSimulation(true);
-
+		
 		else if (selectedItem == marsNavigatorItem) {
 			if (marsNavigatorItem.isSelected())
 				desktop.openToolWindow(NavigatorWindow.NAME);
@@ -455,6 +464,13 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 				desktop.closeToolWindow(ResupplyWindow.NAME);
 		}
 
+		else if (selectedItem == commanderDashboardItem) {
+			if (commanderDashboardItem.isSelected())
+				desktop.openToolWindow(CommanderWindow.NAME);
+			else
+				desktop.closeToolWindow(CommanderWindow.NAME);
+		}
+		
 		else if (selectedItem == showUnitBarItem) {
 			desktop.getMainWindow().getUnitToolBar().setVisible(showUnitBarItem.isSelected());
 		}
@@ -531,7 +547,8 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 		settlementToolItem.setSelected(desktop.isToolWindowOpen(SettlementWindow.NAME));
 		scienceToolItem.setSelected(desktop.isToolWindowOpen(ScienceWindow.NAME));
 		resupplyToolItem.setSelected(desktop.isToolWindowOpen(ResupplyWindow.NAME));
-
+		commanderDashboardItem.setSelected(desktop.isToolWindowOpen(CommanderWindow.NAME));
+		
 		showUnitBarItem.setSelected(desktop.getMainWindow().getUnitToolBar().isVisible());
 		showToolBarItem.setSelected(desktop.getMainWindow().getToolToolBar().isVisible());
 

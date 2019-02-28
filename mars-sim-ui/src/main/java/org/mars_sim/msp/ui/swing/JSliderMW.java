@@ -1,3 +1,9 @@
+/**
+ * Mars Simulation Project
+ * JSliderMW.java
+ * @version 3.1.0 2019-02-28
+ * @author stpa
+ */
 package org.mars_sim.msp.ui.swing;
 
 import java.awt.event.MouseWheelEvent;
@@ -6,9 +12,7 @@ import java.awt.event.MouseWheelListener;
 import javax.swing.JSlider;
 
 /**
- * a slider control that reacts to mouse wheel events.
- * @author stpa
- * 2014-01-31
+ * A slider control that reacts to mouse wheel events.
  */
 public class JSliderMW
 extends JSlider
