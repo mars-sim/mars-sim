@@ -564,7 +564,7 @@ public class MainDesktopPane extends JDesktopPane
 							if (toolName.equals(TimeWindow.NAME))
 								window.setLocation(getStartingLocation(window));
 							else if (toolName.equals(MonitorWindow.NAME))
-								window.setLocation(new Point(265, 0));
+								window.setLocation(new Point(0, 0));
 							else
 								window.setLocation(getRandomLocation(window));
 						}
@@ -873,7 +873,7 @@ public class MainDesktopPane extends JDesktopPane
 			// Update all unit windows.
 		if (!unitWindows.isEmpty()) {
 			for (UnitWindow u : unitWindows) {
-//				if (u.isVisible())
+				if (u.isVisible() && u.isShowing())
 					u.update();
 			}
 //			unitWindows.forEach(u -> {
@@ -1061,11 +1061,14 @@ public class MainDesktopPane extends JDesktopPane
 	 * @return a specific point on the desktop
 	 */
 	private Point getStartingLocation(JInternalFrame f) {
-
+		Dimension desktop_size = getSize();
+		Dimension window_size = f.getSize();
+		
 		// Populate windows in grid=like starting position
-		// int w = desktop_size.width - f_size.width;
-		int rX = 0;
-		int rY = 0;
+		int w = desktop_size.width - window_size.width;
+		int h = desktop_size.height - window_size.height;
+		int rX = w;
+		int rY = h;
 		return new Point(rX, rY);
 	}
 
@@ -1181,6 +1184,11 @@ public class MainDesktopPane extends JDesktopPane
 			openToolWindow(GuideWindow.NAME);
 			((GuideWindow) getToolWindow(GuideWindow.NAME)).setURL(Msg.getString("doc.guide")); //$NON-NLS-1$
 
+			if (GameManager.mode.equals("1")) {
+				// Open the time window for the Commander Mode
+				openToolWindow(TimeWindow.NAME);
+			}
+			
 		} else {
 			// Open windows in Z-order.
 			List<String> windowNames = config.getInternalWindowNames();
@@ -1350,6 +1358,31 @@ public class MainDesktopPane extends JDesktopPane
 		return eventTableModel;
 	}
 
+	public void changeTitle(boolean isPaused) {
+		if (GameManager.mode.equals("1")) {
+			if (isPaused) {
+				mainWindow.getFrame().setTitle(Simulation.title 
+						+ "  -  Commander Mode"
+						+ "  -  [ PAUSE ]");
+			}
+			else {
+				mainWindow.getFrame().setTitle(Simulation.title
+						+ "  -  Commander Mode");
+			}
+		}
+		else {
+			if (isPaused) {
+				mainWindow.getFrame().setTitle(Simulation.title 
+						+ "  -  Sandbox Mode"
+						+ "  -  [ PAUSE ]");
+			}
+			else {
+				mainWindow.getFrame().setTitle(Simulation.title
+						+ "  -  Sandbox Mode");
+			}
+		}
+	}
+	
 	@Override
 	public void clockPulse(double time) {
 		// TODO Auto-generated method stub
@@ -1363,6 +1396,8 @@ public class MainDesktopPane extends JDesktopPane
 
 	@Override
 	public void pauseChange(boolean isPaused, boolean showPane) {
+		changeTitle(isPaused);
+		
 //		if (isPaused) {
 ////			marqueeTicker.pauseMarqueeTimer(true);
 //			soundPlayer.mute(true, true);

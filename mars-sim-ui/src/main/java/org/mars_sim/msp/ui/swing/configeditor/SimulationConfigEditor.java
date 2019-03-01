@@ -131,7 +131,7 @@ public class SimulationConfigEditor {
 		JPanel topPanel = null;
 		
 		if (GameManager.mode.equals("1")) {
-			topPanel = new JPanel(new GridLayout(4, 1));
+			topPanel = new JPanel(new GridLayout(3, 1));
 			f.add(topPanel, BorderLayout.NORTH);
 		}
 		
@@ -148,20 +148,29 @@ public class SimulationConfigEditor {
 
 		// Create the title label.
 		if (GameManager.mode.equals("1")) {
+
 			String commanderName = personConfig.getCommander().getFullName();
 			String sponsor = personConfig.getCommander().getSponsor();
 			JLabel gameModeLabel = new JLabel(Msg.getString("SimulationConfigEditor.gameMode", "Commander Mode"), JLabel.CENTER); //$NON-NLS-1$
 			gameModeLabel.setFont(new Font("Serif", Font.ITALIC, 14));
 			topPanel.add(gameModeLabel);
 			
-			JLabel commanderLabel = new JLabel("   " + Msg.getString("SimulationConfigEditor.commanderInfo", 
-					commanderName, sponsor), JLabel.LEFT); //$NON-NLS-1$
-			commanderLabel.setFont(new Font("Dialog", Font.PLAIN, 14));
-			topPanel.add(commanderLabel);
+			JPanel ccPanel = new JPanel(new GridLayout(1, 3));
+			topPanel.add(ccPanel);
 			
-			JLabel noteLabel = new JLabel("    " + Msg.getString("SimulationConfigEditor.sponsorNote"), JLabel.LEFT); //$NON-NLS-1$
-			noteLabel.setFont(new Font("Serif", Font.ITALIC, 13));
-			topPanel.add(noteLabel);
+			JLabel commanderLabel = new JLabel("   " + Msg.getString("SimulationConfigEditor.commanderName", 
+					commanderName), JLabel.LEFT); //$NON-NLS-1$
+			commanderLabel.setFont(new Font("Dialog", Font.BOLD, 14));
+			ccPanel.add(commanderLabel);
+			
+			ccPanel.add(new JLabel());
+//			ccPanel.add(new JLabel());
+			
+			JLabel sponsorLabel = new JLabel(Msg.getString("SimulationConfigEditor.sponsorInfo", 
+					sponsor)  + "                 ", JLabel.RIGHT); //$NON-NLS-1$
+			sponsorLabel.setFont(new Font("Dialog", Font.BOLD, 14));
+			ccPanel.add(sponsorLabel);
+			
 		}
 		
 		else {
@@ -279,11 +288,19 @@ public class SimulationConfigEditor {
 		errorLabel = new JLabel("", JLabel.CENTER); //$NON-NLS-1$
 		errorLabel.setForeground(Color.RED);
 		bottomPanel.add(errorLabel, BorderLayout.NORTH);
-
+		
 		// Create the bottom button panel.
 		JPanel bottomButtonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		bottomPanel.add(bottomButtonPanel, BorderLayout.SOUTH);
+		bottomPanel.add(bottomButtonPanel, BorderLayout.CENTER);
 
+		if (GameManager.mode.equals("1")) {
+			// Create the sponsor note label
+			JLabel noteLabel = new JLabel("    " + Msg.getString("SimulationConfigEditor.sponsorNote"), JLabel.LEFT); //$NON-NLS-1$
+			noteLabel.setFont(new Font("Serif", Font.ITALIC, 14));
+			noteLabel.setForeground(java.awt.Color.BLUE);
+			bottomPanel.add(noteLabel, BorderLayout.SOUTH);
+		}
+		
 		// Create the create button.
 		createButton = new JButton("  " + Msg.getString("SimulationConfigEditor.button.newSim") + "  "); //$NON-NLS-1$
 		TooltipManager.setTooltip(createButton, Msg.getString("SimulationConfigEditor.button.newSim"), TooltipWay.up);

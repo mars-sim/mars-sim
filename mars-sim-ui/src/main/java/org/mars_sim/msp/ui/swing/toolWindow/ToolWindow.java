@@ -13,6 +13,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.tool.commander.CommanderWindow;
 import org.mars_sim.msp.ui.swing.tool.monitor.MonitorWindow;
 
 /**
@@ -31,8 +32,8 @@ public abstract class ToolWindow extends JInternalFrame {
 
 	/** The main desktop. */
 	protected MainDesktopPane desktop;
-//	protected MainScene mainScene;
 	protected MonitorWindow monitorWindow;
+	protected CommanderWindow commanderWindow;
 	// private SingleSelectionModel<?> ssm;
 
 	protected static MasterClock masterClock = Simulation.instance().getMasterClock();
@@ -73,6 +74,9 @@ public abstract class ToolWindow extends JInternalFrame {
 		if (this instanceof MonitorWindow)
 			this.monitorWindow = (MonitorWindow) this;
 
+		else if (this instanceof CommanderWindow)
+			this.commanderWindow = (CommanderWindow) this;
+		
 		opened = false;
 
 //		if (mainScene != null) {
@@ -141,6 +145,9 @@ public abstract class ToolWindow extends JInternalFrame {
 				if (this.getToolName().equals(MonitorWindow.NAME))
 					monitorWindow.refreshTableStyle();
 					// pack(); // create time lag, and draw artifact
+				
+				else if (this.getToolName().equals(CommanderWindow.NAME))
+					commanderWindow.update();
 			}
 //
 //			else if (!this.isVisible() || !this.isShowing()) {

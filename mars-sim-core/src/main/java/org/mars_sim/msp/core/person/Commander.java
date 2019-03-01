@@ -179,6 +179,10 @@ public class Commander implements Serializable {
     }
     
     public int getLeadershipPoint() {
+//    	if (initialLeadershipPoint == 0) {
+//    		determineLeadershipPoints
+//    	}
+    		
     	return leadershipPoint;
     }
     

@@ -8,10 +8,14 @@ package org.mars_sim.msp.ui.swing.tool.commander;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.GridLayout;
 
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
+import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.person.Commander;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
 
@@ -26,7 +30,10 @@ extends ToolWindow {
 
 	// Private members
 	private JTabbedPane tabPane;
+	
+	private JLabel leadershipPointsLabel;
 
+	private Commander commander = SimulationConfig.instance().getPersonConfiguration().getCommander();
 
 	/**
 	 * Constructor.
@@ -44,10 +51,28 @@ extends ToolWindow {
 		setContentPane(mainPane);
 
 		// Create the mission list panel.
-		JPanel listPane = new JPanel(new BorderLayout());
-		listPane.setPreferredSize(new Dimension(200, 200));
-		mainPane.add(listPane, BorderLayout.WEST);
+//		JPanel listPane = new JPanel(new BorderLayout());
+//		listPane.setPreferredSize(new Dimension(200, 200));
+//		mainPane.add(listPane, BorderLayout.WEST);
 
+		JPanel bottomPane = new JPanel(new GridLayout(1, 4));
+		bottomPane.setPreferredSize(new Dimension(200, 50));
+		mainPane.add(bottomPane, BorderLayout.SOUTH);
+		
+//		JPanel leadershipPane = new JPanel(new BorderLayout());
+//		leadershipPane.setPreferredSize(new Dimension(200, 50));
+//		bottomPane.add(leadershipPane);
+		
+		JLabel leadershipLabel = new JLabel("  Leadership Points : ", JLabel.RIGHT);
+		bottomPane.add(leadershipLabel);
+		
+		leadershipPointsLabel = new JLabel("", JLabel.LEFT);
+		bottomPane.add(leadershipPointsLabel);
+		bottomPane.add(new JLabel());
+		bottomPane.add(new JLabel());
+		
+		leadershipPointsLabel.setText(commander.getLeadershipPoint() + "");
+		
 		// Create the info tab panel.
 		tabPane = new JTabbedPane();
 		mainPane.add(tabPane, BorderLayout.CENTER);
@@ -76,6 +101,10 @@ extends ToolWindow {
 			return true;
 		else
 			return false;
+	}
+	
+	public void update() {
+		leadershipPointsLabel.setText(commander.getLeadershipPoint() + "");
 	}
 	
 	/**

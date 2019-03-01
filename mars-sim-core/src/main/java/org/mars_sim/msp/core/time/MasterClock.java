@@ -7,9 +7,6 @@
 
 package org.mars_sim.msp.core.time;
 
-import org.mars_sim.msp.core.LogConsolidated;
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.SimulationConfig;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
@@ -22,9 +19,13 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.mars_sim.msp.core.GameManager;
+import org.mars_sim.msp.core.LogConsolidated;
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.SimulationConfig;
 
 /**
  * The MasterClock represents the simulated time clock on virtual Mars and
@@ -41,7 +42,8 @@ public class MasterClock implements Serializable {
 	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 	
 	private static final int FACTOR = 4;
-
+	private static final int MAX_MILLISOLS = 5;
+	
 	// Data members
 	/** Runnable flag. */
 	private transient volatile boolean keepRunning = false;
@@ -96,6 +98,8 @@ public class MasterClock implements Serializable {
 	private long t01 = 0;
 	/** Mode for saving a simulation. */
 	private double tpfCache = 0;
+	/** The total amount of millisols for Commander Mode. */
+	private double millisols = 0;
 //	/** The UI refresh cycle. */
 //	private double refresh;
 
@@ -805,6 +809,12 @@ public class MasterClock implements Serializable {
 						AutosaveScheduler.cancel();
 						System.exit(0);
 					}
+					
+					if (GameManager.mode.equals("1") && millisols > MAX_MILLISOLS) {
+						millisols = 0;
+						setPaused(true, false);
+					}
+					
 					// For performance benchmarking
 //	 		       t2Cache = t2;
 //	 		       count++;
@@ -838,7 +848,9 @@ public class MasterClock implements Serializable {
 					earthClock.addTime(millis * currentTR);
 					marsClock.addTime(timePulse);
 					
-					fireClockPulse(timePulse);		
+					fireClockPulse(timePulse);
+					
+					millisols += timePulse;
 				}
 				else {
 					// NOTE: when resuming from power saving, timePulse becomes zero

@@ -288,8 +288,8 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 		musicVolumeItem.setPaintLabels(true);
 		musicVolumeItem.setPaintTrack(true);
 		musicVolumeItem.setSnapToTicks(true);
-
-		musicVolumeItem.setToolTipText(Msg.getString("mainMenu.tooltip.musicVolumeslider")); //$NON-NLS-1$
+	
+		musicVolumeItem.setToolTipText(Msg.getString("mainMenu.tooltip.musicVolumeSlider")); //$NON-NLS-1$
 		musicVolumeItem.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
 				float newVolume = (float) musicVolumeItem.getValue() / 10F;
@@ -302,14 +302,14 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 		musicVolumeUpItem = new JMenuItem(Msg.getString("mainMenu.musicVolumeUp")); //$NON-NLS-1$
 		musicVolumeUpItem.addActionListener(this);
 		musicVolumeUpItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_PLUS, KeyEvent.CTRL_DOWN_MASK, false));
-		musicVolumeUpItem.setToolTipText(Msg.getString("mainMenu.tooltip.volumeUp")); //$NON-NLS-1$
+		musicVolumeUpItem.setToolTipText(Msg.getString("mainMenu.musicVolumeUp")); //$NON-NLS-1$
 		settingsMenu.add(musicVolumeUpItem);
 
 		// Create Volume Down menu item
 		musicVolumeDownItem = new JMenuItem(Msg.getString("mainMenu.musicVolumeDown")); //$NON-NLS-1$
 		musicVolumeDownItem.addActionListener(this);
 		musicVolumeDownItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, KeyEvent.CTRL_DOWN_MASK, false));
-		musicVolumeDownItem.setToolTipText(Msg.getString("mainMenu.tooltip.volumeDown")); //$NON-NLS-1$
+		musicVolumeDownItem.setToolTipText(Msg.getString("mainMenu.musicVolumeDown")); //$NON-NLS-1$
 		settingsMenu.add(musicVolumeDownItem);
 		
 		effectVolumeItem = new JSliderMW(JSlider.HORIZONTAL, 0, 10, intVolume); // $NON-NLS-1$
@@ -318,7 +318,7 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 		effectVolumeItem.setPaintLabels(true);
 		effectVolumeItem.setPaintTrack(true);
 		effectVolumeItem.setSnapToTicks(true);
-
+		
 		effectVolumeItem.setToolTipText(Msg.getString("mainMenu.tooltip.effectVolumeSlider")); //$NON-NLS-1$
 		effectVolumeItem.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
@@ -332,27 +332,27 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 		effectVolumeUpItem = new JMenuItem(Msg.getString("mainMenu.effectVolumeUp")); //$NON-NLS-1$
 		effectVolumeUpItem.addActionListener(this);
 		effectVolumeUpItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_UP, KeyEvent.CTRL_DOWN_MASK, false));
-		effectVolumeUpItem.setToolTipText(Msg.getString("mainMenu.tooltip.effectVolumeUp")); //$NON-NLS-1$
+		effectVolumeUpItem.setToolTipText(Msg.getString("mainMenu.effectVolumeUp")); //$NON-NLS-1$
 		settingsMenu.add(effectVolumeUpItem);
 
 		// Create Volume Down menu item
 		effectVolumeDownItem = new JMenuItem(Msg.getString("mainMenu.effectVolumeDown")); //$NON-NLS-1$
 		effectVolumeDownItem.addActionListener(this);
 		effectVolumeDownItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, KeyEvent.CTRL_DOWN_MASK, false));
-		effectVolumeDownItem.setToolTipText(Msg.getString("mainMenu.tooltip.effectVolumeDown")); //$NON-NLS-1$
+		effectVolumeDownItem.setToolTipText(Msg.getString("mainMenu.effectVolumeDown")); //$NON-NLS-1$
 		settingsMenu.add(effectVolumeDownItem);
 
 		// Create Mute menu item
-		musicMuteItem = new JCheckBoxMenuItem(Msg.getString("mainMenu.mute.music")); //$NON-NLS-1$
+		musicMuteItem = new JCheckBoxMenuItem(Msg.getString("mainMenu.muteMusic")); //$NON-NLS-1$
 		musicMuteItem.addActionListener(this);
 		musicMuteItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_M, KeyEvent.CTRL_DOWN_MASK, false));
-		musicMuteItem.setToolTipText(Msg.getString("mainMenu.tooltip.mute.music")); //$NON-NLS-1$
+		musicMuteItem.setToolTipText(Msg.getString("mainMenu.muteMusic")); //$NON-NLS-1$
 		settingsMenu.add(musicMuteItem);
 
-		effectMuteItem = new JCheckBoxMenuItem(Msg.getString("mainMenu.mute.effect")); //$NON-NLS-1$
+		effectMuteItem = new JCheckBoxMenuItem(Msg.getString("mainMenu.muteEffect")); //$NON-NLS-1$
 		effectMuteItem.addActionListener(this);
 		effectMuteItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E, KeyEvent.CTRL_DOWN_MASK, false));
-		effectMuteItem.setToolTipText(Msg.getString("mainMenu.tooltip.mute.effect")); //$NON-NLS-1$
+		effectMuteItem.setToolTipText(Msg.getString("mainMenu.muteEffect")); //$NON-NLS-1$
 		settingsMenu.add(effectMuteItem);
 
 		// Add notificationMenu

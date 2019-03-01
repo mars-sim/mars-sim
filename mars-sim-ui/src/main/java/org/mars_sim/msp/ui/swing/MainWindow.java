@@ -207,7 +207,10 @@ public class MainWindow extends JComponent {
 	 * Initializes UI elements for the frame
 	 */
 	public void init() {
-		frame.setTitle(Simulation.title);
+//		frame.setTitle(Simulation.title);
+		masterClock = sim.getMasterClock();
+		desktop.changeTitle(masterClock.isPaused());
+		
 		frame.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent event) {
@@ -1078,7 +1081,7 @@ public class MainWindow extends JComponent {
 //			logger.config(UIManager.getLookAndFeel().getName() + " is used in MainWindow.");
 
 			if (desktop != null) {
-//				desktop.updateToolWindowLF();
+				desktop.updateToolWindowLF();
 				desktop.updateUnitWindowLF();
 //				SwingUtilities.updateComponentTreeUI(desktop);
 				// desktop.updateAnnouncementWindowLF();
