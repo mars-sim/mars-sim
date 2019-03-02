@@ -1137,12 +1137,12 @@ public class MasterClock implements Serializable {
 			if (isPaused) {
 //				stop();
 				AutosaveScheduler.cancel();		
-				logger.config("The simulation is paused.");
+//				logger.config("The simulation is paused.");
 			}
 			else {
 //				restart();
 				AutosaveScheduler.start();
-				logger.config("The simulation is unpaused.");
+//				logger.config("The simulation is unpaused.");
 			}
 			
 			// Fire pause change to all clock listeners.

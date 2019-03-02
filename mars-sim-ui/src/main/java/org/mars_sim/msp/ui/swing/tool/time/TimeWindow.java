@@ -62,25 +62,26 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	public static final String NAME = Msg.getString("TimeWindow.title"); //$NON-NLS-1$
 
 	public static final String ONE_REAL_SEC = "1 real sec equals ";
-
+	/** the upper limit of the slider bar. */
+	public static final int MAX = 13;
+	/** the lower limit of the slider bar. */
+	public static final int MIN = 0;
 	/** the max ratio the sim can be set at. */
-	public static final double maxratio = 10800d;
-
-	/** the minimum ratio the sim can be set at. */
-	private static final double minfracratio = 0.01d;// 0.001d;
-
-	/** the largest fractional ratio the sim can be set at. */
-	private static final double maxfracratio = 0.98d;
+//	public static final double maxratio = 8192D;//10800d;
+//	/** the minimum ratio the sim can be set at. */
+//	private static final double minfracratio = 0.01d;// 0.001d;
+//	/** the largest fractional ratio the sim can be set at. */
+//	private static final double maxfracratio = 0.98d;
 
 	// don't recommend changing these:
-	private static final double minslider = 20d;
-	private static final double midslider = (50d - minslider);
-	private static final double maxslider = 100d - minslider;
-	private static final double minfracpos = 1d;
-	private static final double maxfracpos = minslider - 1d;
+//	private static final double minslider = 20d;
+//	private static final double midslider = (50d - minslider);
+//	private static final double maxslider = 100d - minslider;
+//	private static final double minfracpos = 1d;
+//	private static final double maxfracpos = minslider - 1d;
 
 	/** the "default" ratio that will be set at 50, the middle of the scale. */
-	public static double ratioatmid = 500D; 
+//	public static double ratioatmid = 256D; 
 	// default value = 500D This avoids maven test error
 
 	// Data members
@@ -152,7 +153,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		earthTime = masterClock.getEarthClock();
 		uptimer = masterClock.getUpTimer();
 
-		ratioatmid = masterClock.getTimeRatio();
+//		ratioatmid = masterClock.getTimeRatio();
 
 		// Get content pane
 		WebPanel mainPane = new WebPanel(new BorderLayout());
@@ -329,10 +330,10 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 
 		// Create pulse slider
 		int sliderpos = calculateSliderValue(masterClock.getTimeRatio());
-		pulseSlider = new JSliderMW(1, 100, sliderpos);
+		pulseSlider = new JSliderMW(MIN, MAX, sliderpos);
 		// pulseSlider.setEnabled(false);
-		pulseSlider.setMajorTickSpacing(20);
-		pulseSlider.setMinorTickSpacing(5);
+		pulseSlider.setMajorTickSpacing(5);
+		pulseSlider.setMinorTickSpacing(1);
 		// activated for custom tick space
 		pulseSlider.setSnapToTicks(true); 
 		pulseSlider.setPaintTicks(true);
@@ -340,7 +341,8 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 			public void stateChanged(ChangeEvent e) {
 				try {
 
-					setTimeRatioFromSlider(pulseSlider.getValue()); // (int)(mainScene.getTimeRatio()/mainScene.getInitialTimeRatio()))
+					setTimeRatioFromSlider(pulseSlider.getValue()); 
+					// (int)(mainScene.getTimeRatio()/mainScene.getInitialTimeRatio()))
 
 					StringBuilder s0 = new StringBuilder();
 					double ratio = masterClock.getTimeRatio();
@@ -400,43 +402,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	 * @return time ratio value (simulation time / real time).
 	 */
 	public static double calculateTimeRatioFromSlider(int sliderValue) {
-
-		double slope;
-		double offset;
-		double timeRatio;
-
-		// sliderValue should be in the range 1..100 inclusive, if not it
-		// defaults to
-		// 1:15 real:sim ratio
-		if ((sliderValue > 0) && (sliderValue <= 100)) {
-			if (sliderValue >= (midslider + minslider)) {
-
-				// Creates exponential curve between ratioatmid and maxratio.
-				double a = ratioatmid;
-				double b = maxratio / ratioatmid;
-				double T = maxslider - midslider;
-				double expo = (sliderValue - minslider - midslider) / T;
-				timeRatio = a * Math.pow(b, expo);
-			} else if (sliderValue >= minslider) {
-
-				// Creates exponential curve between 1 and ratioatmid.
-				double a = 1D;
-				double b = ratioatmid;
-				double T = midslider;
-				double expo = (sliderValue - minslider) / T;
-				timeRatio = a * Math.pow(b, expo);
-			} else {
-				// generates ratios < 1
-				offset = minfracratio;
-				slope = (maxfracratio - minfracratio) / (maxfracpos - minfracpos);
-				timeRatio = (sliderValue - minfracpos) * slope + offset;
-			}
-		} else {
-			timeRatio = 15D;
-			throw new IllegalArgumentException(Msg.getString("TimeWindow.log.ratioError")); //$NON-NLS-1$
-		}
-
-		return timeRatio;
+		return Math.pow(2, sliderValue);
 	}
 
 	/**
@@ -454,41 +420,19 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	 * inverse of calculateTimeRatioFromSlider.
 	 *
 	 * @param timeRatio time ratio (simulation time / real time).
-	 * @return slider value (1 to 100).
+	 * @return slider value (MIN to MAX).
 	 */
 	public static int calculateSliderValue(double timeRatio) {
+		int speed = 0;
+    	int tr = (int) timeRatio;	
+        int base = 2;
 
-		int sliderValue = 1;
-
-		// Moves the slider bar appropriately given the time ratio.
-		if (timeRatio < minfracratio) {
-			sliderValue = 1;
-		} else if (timeRatio > maxratio) {
-			sliderValue = 100;
-		} else if ((timeRatio >= ratioatmid) && (timeRatio <= maxratio)) {
-			double a = ratioatmid;
-			double b = maxratio / ratioatmid;
-			double T = maxslider - midslider;
-			double temp1 = timeRatio / a;
-			double expo = Math.log(temp1) / Math.log(b);
-			double temp2 = (expo * T) + minslider + midslider;
-			sliderValue = (int) Math.round(temp2);
-		} else if ((timeRatio >= 1D) && (timeRatio <= ratioatmid)) {
-			double a = 1D;
-			double b = ratioatmid;
-			double T = midslider;
-			double temp1 = timeRatio / a;
-			double expo = Math.log(temp1) / Math.log(b);
-			double temp2 = (expo * T) + minslider;
-			sliderValue = (int) Math.round(temp2);
-		} else {
-			double offset = minfracratio;
-			double slope = (maxfracratio - minfracratio) / (maxfracpos - minfracpos);
-			double temp1 = ((timeRatio - offset) / slope) + minfracpos;
-			sliderValue = (int) Math.round(temp1);
-		}
-
-		return sliderValue;
+        while (tr != 1) {
+            tr = tr/base;
+            --speed;
+        }
+        
+    	return -speed;
 	}
 
 	/**
