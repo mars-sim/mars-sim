@@ -7,7 +7,6 @@
 
 package org.mars_sim.msp.ui.swing.tool.settlement;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -18,7 +17,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
 
-import javax.swing.BorderFactory;
 import javax.swing.JDialog;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
@@ -42,17 +40,15 @@ import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
 import org.mars_sim.msp.ui.swing.unit_window.structure.building.BuildingPanel;
 
-import com.alee.laf.panel.WebPanel;
-
 public class PopUpUnitMenu extends JPopupMenu {
 
 	private static final long serialVersionUID = 1L;
 	
-	public static final int WIDTH = UnitWindow.WIDTH;
-	public static final int HEIGHT = 350;
+//	public static final int WIDTH = UnitWindow.WIDTH;
+//	public static final int HEIGHT = UnitWindow.HEIGHT - 125;
 
 	public static final int D_WIDTH = 350;
-	public static final int D_HEIGHT = 300;
+	public static final int D_HEIGHT = UnitWindow.HEIGHT - 125;
 	
 	private JMenuItem itemOne, itemTwo, itemThree;
     private Unit unit;
@@ -201,7 +197,7 @@ public class PopUpUnitMenu extends JPopupMenu {
 //					d.setUndecorated(true);
 //	                d.setBackground(new Color(51,25,0,128)); // java.awt.IllegalComponentStateException: The dialog is decorated
 	                d.add(buildingPanel);
-					d.setSize(UnitWindow.WIDTH, UnitWindow.HEIGHT - 300);//WIDTH, HEIGHT);  // undecorated: 300, 335; decorated: 310, 370
+					d.setSize(UnitWindow.WIDTH, D_HEIGHT);//WIDTH, HEIGHT);  // undecorated: 300, 335; decorated: 310, 370
 					d.setLayout(new FlowLayout()); 
 	
 					// Create compound border

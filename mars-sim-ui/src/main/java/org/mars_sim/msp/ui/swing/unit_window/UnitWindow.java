@@ -287,7 +287,7 @@ public abstract class UnitWindow extends ModalInternalFrame {
 //		tabPanel.setTabPlacement(JideTabbedPane.LEFT);
 
 		tabPane = new JTabbedPane();
-		tabPane.setMaximumSize(new Dimension(WIDTH - 35, HEIGHT - 120));
+		tabPane.setMaximumSize(new Dimension(WIDTH - 40, HEIGHT - 120));
 		tabPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
 //		UIManager.put("TabbedPane.unselectedBackground", Color.GRAY);
 		
@@ -308,13 +308,22 @@ public abstract class UnitWindow extends ModalInternalFrame {
 	}
 
 	/**
-	 * Sets weather image.
+	 * Sets the image on the label
+	 * 
+	 * @param imageLocation
+	 * @param label
 	 */
 	public void setImage(String imageLocation, WebLabel label) {
 		ImageIcon imageIcon = ImageLoader.getNewIcon(imageLocation);
 		label.setIcon(imageIcon);
 	}
 
+	/**
+	 * Gets the image from the location
+	 * 
+	 * @param imageLocation
+	 * @return
+	 */
 	public Image getImage(String imageLocation) {
 		return ImageLoader.getNewIcon(imageLocation).getImage();
 	}

@@ -114,7 +114,7 @@ public class UnitInfoPanel extends JPanel {// JDialog {
 		ta.setBackground(new Color(92, 83, 55, 128));
 
 		CustomScroll scr = new CustomScroll(ta);
-		scr.setSize(PopUpUnitMenu.D_WIDTH - 50 , PopUpUnitMenu.D_HEIGHT - 50);
+		scr.setSize(PopUpUnitMenu.D_WIDTH - 50 , PopUpUnitMenu.D_HEIGHT);
 		add(scr, BorderLayout.CENTER);
 
 		JPanel southPanel = new JPanel();

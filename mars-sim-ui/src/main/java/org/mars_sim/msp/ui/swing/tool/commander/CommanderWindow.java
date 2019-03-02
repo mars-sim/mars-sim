@@ -7,17 +7,43 @@
 package org.mars_sim.msp.ui.swing.tool.commander;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
+import javax.swing.AbstractListModel;
+import javax.swing.BorderFactory;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
+import org.mars_sim.msp.core.GameManager;
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.person.Commander;
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
+
+import com.alee.laf.label.WebLabel;
 
 /**
  * Window for the Commander Dashboard.
@@ -30,11 +56,24 @@ extends ToolWindow {
 
 	// Private members
 	private JTabbedPane tabPane;
-	
+	private DefaultComboBoxModel<String> comboBoxModel;
+	private JComboBoxMW<String> comboBox;
+	private ListModel listModel;
+	private JScrollPane listScrollPanel;
+	private JList<String> list;
 	private JLabel leadershipPointsLabel;
 
 	private Commander commander = SimulationConfig.instance().getPersonConfiguration().getCommander();
 
+	private Person person;
+	
+	private List<String> taskCache;
+	
+	private int deletingTaskIndex;
+	
+	private String deletingTaskType;
+	private String taskName;
+	
 	/**
 	 * Constructor.
 	 * @param desktop {@link MainDesktopPane} the main desktop panel.
@@ -43,8 +82,9 @@ extends ToolWindow {
 
 		// Use ToolWindow constructor
 		super(NAME, desktop);
-//		mainScene = desktop.getMainScene();
 
+		person = GameManager.commander;
+		
 		// Create content panel.
 		JPanel mainPane = new JPanel(new BorderLayout());
 		mainPane.setBorder(MainDesktopPane.newEmptyBorder());
@@ -63,7 +103,7 @@ extends ToolWindow {
 //		leadershipPane.setPreferredSize(new Dimension(200, 50));
 //		bottomPane.add(leadershipPane);
 		
-		JLabel leadershipLabel = new JLabel("  Leadership Points : ", JLabel.RIGHT);
+		JLabel leadershipLabel = new JLabel("Leadership Points : ", JLabel.RIGHT);
 		bottomPane.add(leadershipLabel);
 		
 		leadershipPointsLabel = new JLabel("", JLabel.LEFT);
@@ -77,6 +117,8 @@ extends ToolWindow {
 		tabPane = new JTabbedPane();
 		mainPane.add(tabPane, BorderLayout.CENTER);
 
+		createTaskPanel();
+		
 		setSize(new Dimension(640, 640));
 		setMaximizable(true);
 		setResizable(false);
@@ -92,8 +134,125 @@ extends ToolWindow {
 
 	}
 
+	public void createTaskPanel() {
+		JPanel queuePanel = new JPanel(new BorderLayout());
+		tabPane.add(queuePanel, BorderLayout.CENTER);
+		tabPane.setTitleAt(0, "Tasks");
+	    
+	    JPanel selectPanel = new JPanel(new FlowLayout());
+	    queuePanel.add(selectPanel, BorderLayout.NORTH); // 1st add
+
+	    JPanel buttonPanel = new JPanel(new BorderLayout());
+	    JButton addButton = new JButton(Msg.getString("BuildingPanelFarming.addButton")); //$NON-NLS-1$
+		addButton.setPreferredSize(new Dimension(60, 20));
+		addButton.setFont(new Font("Serif", Font.PLAIN, 9));
+		addButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				taskName = (String) comboBox.getSelectedItem();
+		        listUpdate();
+				repaint();
+			}
+			});
+		buttonPanel.add(addButton, BorderLayout.NORTH);
+		selectPanel.add(buttonPanel);
+
+		JButton delButton = new JButton(Msg.getString("BuildingPanelFarming.delButton")); //$NON-NLS-1$
+		delButton.setPreferredSize(new Dimension(60, 20));
+		delButton.setFont(new Font("Serif", Font.PLAIN, 9));
+
+		delButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				if (!list.isSelectionEmpty() && (list.getSelectedValue() != null)) {
+					selectATask();
+	            	listUpdate();
+	            	repaint();
+				}
+			}
+			});
+		buttonPanel.add(delButton, BorderLayout.CENTER);
+
+       	// Set up crop combo box model.
+		List<String> nameList = GameManager.commander.getPreference().getScoreStringList();
+		taskCache = new ArrayList<>(nameList);
+		comboBoxModel = new DefaultComboBoxModel<String>();
+
+		Iterator<String> i = taskCache.iterator();
+		int j = 0;
+		while (i.hasNext()) {
+			String n = i.next();
+	    	comboBoxModel.addElement(n);
+		}
+		
+		// Create comboBox.
+		comboBox = new JComboBoxMW<String>(comboBoxModel);
+		comboBox.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+            	taskName = (String) comboBox.getSelectedItem();
+            }
+        });
+		comboBox.setMaximumRowCount(10);
+//		comboBox.setSelectedIndex(-1);
+	    selectPanel.add(comboBox);
+
+	    JPanel queueListPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+	    JPanel queueButtonLabelPanel = new JPanel(new BorderLayout());
+	    WebLabel queueListLabel = new WebLabel("     Task Queue     ");
+		queueListLabel.setUI(new com.jidesoft.plaf.xerto.VerticalLabelUI(false));
+	    queueListLabel.setFont( new Font( "Dialog", Font.PLAIN, 14) );
+		queueListLabel.setBorder(new MarsPanelBorder());
+	    queueButtonLabelPanel.add(queueListLabel, BorderLayout.NORTH);
+		queueListPanel.add(queueButtonLabelPanel);
+	    queuePanel.add(queueListPanel, BorderLayout.CENTER); // 2nd add
+	    
+		// Create scroll panel for population list.
+		listScrollPanel = new JScrollPane();
+		listScrollPanel.setPreferredSize(new Dimension(250, 350));
+		listScrollPanel.setBorder( BorderFactory.createLineBorder(Color.LIGHT_GRAY) );
+
+		// Create list model
+		listModel = new ListModel();
+		
+		// Create list
+		list = new JList<String>(listModel);
+		listScrollPanel.setViewportView(list);
+		list.addListSelectionListener(new ListSelectionListener() {
+			public void valueChanged(ListSelectionEvent event) {
+		        if (!event.getValueIsAdjusting() && event != null){
+					selectATask();
+		        }
+		    }
+		});
+		queueListPanel.add(listScrollPanel);
+	}
+	
 	public MainDesktopPane getDesktop() {
 		return desktop;
+	}
+	
+	/**
+	 * Selects a task
+	 */
+	public void selectATask() {
+
+		String n = (String) list.getSelectedValue();
+		if (n != null) {
+			deletingTaskType = n;
+			deletingTaskIndex = list.getSelectedIndex();
+		} 
+		else
+			listUpdate();
+	}
+	
+	public void listUpdate() {
+		listModel.update();
+ 		list.validate();
+ 		list.revalidate();
+ 		list.repaint();
+ 		listScrollPanel.validate();
+ 		listScrollPanel.revalidate();
+ 		listScrollPanel.repaint();
+		comboBox.setRenderer(new PromptComboBoxRenderer("A list of tasks"));
+		comboBox.setSelectedIndex(-1);
 	}
 	
 	public boolean isNavPointsMapTabOpen() {
@@ -105,6 +264,121 @@ extends ToolWindow {
 	
 	public void update() {
 		leadershipPointsLabel.setText(commander.getLeadershipPoint() + "");
+		
+		// Update list
+		listModel.update();
+ 		list.validate();
+ 		list.revalidate();
+ 		list.repaint();
+ 		listScrollPanel.validate();
+ 		listScrollPanel.revalidate();
+ 		listScrollPanel.repaint();
+	}
+	
+	/**
+	 * List model for the tasks in queue.
+	 */
+	private class ListModel extends AbstractListModel<String> {
+
+	    /** default serial id. */
+	    private static final long serialVersionUID = 1L;
+
+	    private List<String> list;
+
+	    private ListModel() {
+
+        	List<String> c = person.getPreference().getScoreStringList();
+	        if (c != null)
+	        	list = new ArrayList<String>(c);
+	        else 
+	        	list = null;
+	    }
+
+        @Override
+        public String getElementAt(int index) {
+        	String result = null;
+
+            if ((index >= 0) && (index < list.size())) {
+                result = list.get(index);
+            }
+
+            return result;
+        }
+
+        @Override
+        public int getSize() {
+        	if (list == null)
+        		return 0;
+        	return list.size();
+        }
+
+        /**
+         * Update the list model.
+         */
+        public void update() {
+
+        	List<String> c = person.getPreference().getScoreStringList();
+        		// if the list contains duplicate items, it somehow pass this test
+        		if (list.size() != c.size() || !list.containsAll(c) || !c.containsAll(list)) {
+	                List<String> oldList = list;
+	                List<String> tempList = new ArrayList<String>(c);
+	                //Collections.sort(tempList);
+
+	                list = tempList;
+	                fireContentsChanged(this, 0, getSize());
+
+	                oldList.clear();
+	           }
+
+        }
+	}
+	
+	class PromptComboBoxRenderer extends DefaultListCellRenderer {
+
+		private static final long serialVersionUID = 1L;
+		private String prompt;
+
+//		private DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();
+	    // Width doesn't matter as the combo box will size
+	    //private Dimension preferredSize = new Dimension(0, 20);
+
+		/*
+		 *  Set the text to display when no item has been selected.
+		 */
+		public PromptComboBoxRenderer(String prompt) {
+			this.prompt = prompt;
+		}
+
+		/*
+		 *  Custom rendering to display the prompt text when no item is selected
+		 */
+		// Add color rendering
+		public Component getListCellRendererComponent(
+				JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+			Component c = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+
+			if (value == null) {
+				setText(Conversion.capitalize(prompt));
+				return this;
+			}
+
+			if (c instanceof WebLabel) {
+
+	            if (isSelected) {
+	                //c.setBackground(Color.orange);
+	            } else {
+	                //c.setBackground(Color.white);
+	                //c.setBackground(new Color(51,25,0,128));
+	            }
+
+	        } else {
+	        	//c.setBackground(Color.white);
+	            //c.setBackground(new Color(51,25,0,128));
+	            c = super.getListCellRendererComponent(
+	                    list, value, index, isSelected, cellHasFocus);
+	        }
+	        return c;
+		}
 	}
 	
 	/**

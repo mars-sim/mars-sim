@@ -55,8 +55,8 @@ public abstract class TabPanel extends WebScrollPane {
 		this.unit = unit;
 		this.desktop = desktop;
 
-		this.setMaximumSize(new Dimension(UnitWindow.WIDTH - 20, UnitWindow.HEIGHT));
-		this.setPreferredSize(new Dimension(UnitWindow.WIDTH - 20, UnitWindow.HEIGHT));
+		this.setMaximumSize(new Dimension(UnitWindow.WIDTH - 40, UnitWindow.HEIGHT));
+		this.setPreferredSize(new Dimension(UnitWindow.WIDTH - 40, UnitWindow.HEIGHT));
 		
 		// Create the view panel
 		viewPanel = new WebPanel(new BorderLayout(0, 0));

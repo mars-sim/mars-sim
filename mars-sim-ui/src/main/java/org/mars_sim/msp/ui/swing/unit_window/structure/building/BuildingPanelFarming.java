@@ -57,6 +57,8 @@ import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
 import com.alee.laf.table.WebTable;
 import com.alee.laf.text.WebTextField;
+import com.alee.managers.tooltip.TooltipManager;
+import com.alee.managers.tooltip.TooltipWay;
 
 
 /**
@@ -136,10 +138,8 @@ implements MouseListener {
 		add(springPanel, BorderLayout.CENTER);
 		
 		// Prepare solar irradiance label
-		//WebPanel radPanel = new WebPanel(new FlowLayout());
 		WebLabel radLabel = new WebLabel(Msg.getString("BuildingPanelFarming.solarIrradiance.title", radCache), WebLabel.RIGHT);
-	    //radPanel.add(radLabel);
-		//balloonToolTip.createBalloonTip(radLabel, "<html>Estimated amount of available <br> sunlight on top of the <br> greenhouse roof outside</html>");
+		TooltipManager.setTooltip(radLabel, "Estimated sunlight on top of the greenhouse roof", TooltipWay.down);
 		springPanel.add(radLabel);
 
 		radCache = Math.round(surface.getSolarIrradiance(location)*10.0)/10.0;
@@ -156,7 +156,7 @@ implements MouseListener {
 		//WebPanel farmersPanel = new WebPanel(new FlowLayout());
 		WebLabel farmersLabel = new WebLabel(Msg.getString("BuildingPanelFarming.numberOfFarmers.title"), WebLabel.RIGHT);
 	    //farmersPanel.add(farmersLabel);
-		//balloonToolTip.createBalloonTip(farmersLabel, "<html># of active gardeners <br> tending the greenhouse</html>");
+		TooltipManager.setTooltip(radLabel, "# of active gardeners tending the greenhouse", TooltipWay.down);
 		springPanel.add(farmersLabel);
 
 		farmersCache = farm.getFarmerNum();
@@ -410,7 +410,7 @@ implements MouseListener {
 		listScrollPanel.setBorder( BorderFactory.createLineBorder(Color.LIGHT_GRAY) );
 
 		// Create list model
-		listModel = new ListModel(); //settlement);
+		listModel = new ListModel();
 		// Create list
 		list = new JList<String>(listModel);
 	    //balloonToolTip.createBalloonTip(list, "<html>Crops in the queue</html>");
@@ -550,9 +550,9 @@ implements MouseListener {
 		if (n != null) {
 			deletingCropType = n;
 			deletingCropIndex = list.getSelectedIndex();
-		} else
-
-        listUpdate();
+		} 
+		else
+			listUpdate();
 	}
 
 	public void listUpdate() {
@@ -565,7 +565,7 @@ implements MouseListener {
  		listScrollPanel.revalidate();
  		listScrollPanel.repaint();
 		comboBox.setRenderer(new PromptComboBoxRenderer("A list of crops"));
-		//comboBox.setSelectedIndex(-1);
+		comboBox.setSelectedIndex(-1);
     	//list.clearSelection(); // cause setting deletingCropIndex to -1
     	//list.setSelectedIndex(0);
 	}
@@ -864,7 +864,6 @@ implements MouseListener {
 	    }
 	}
 
-	// Add PromptComboBoxRenderer()
 	class PromptComboBoxRenderer extends DefaultListCellRenderer {
 
 		private static final long serialVersionUID = 1L;
