@@ -66,23 +66,6 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	public static final int MAX = 13;
 	/** the lower limit of the slider bar. */
 	public static final int MIN = 0;
-	/** the max ratio the sim can be set at. */
-//	public static final double maxratio = 8192D;//10800d;
-//	/** the minimum ratio the sim can be set at. */
-//	private static final double minfracratio = 0.01d;// 0.001d;
-//	/** the largest fractional ratio the sim can be set at. */
-//	private static final double maxfracratio = 0.98d;
-
-	// don't recommend changing these:
-//	private static final double minslider = 20d;
-//	private static final double midslider = (50d - minslider);
-//	private static final double maxslider = 100d - minslider;
-//	private static final double minfracpos = 1d;
-//	private static final double maxfracpos = minslider - 1d;
-
-	/** the "default" ratio that will be set at 50, the middle of the scale. */
-//	public static double ratioatmid = 256D; 
-	// default value = 500D This avoids maven test error
 
 	// Data members
 	private int solElapsedCache = 0;

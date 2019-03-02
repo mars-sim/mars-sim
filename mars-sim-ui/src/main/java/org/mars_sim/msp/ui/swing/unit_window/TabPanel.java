@@ -8,6 +8,7 @@
 package org.mars_sim.msp.ui.swing.unit_window;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
@@ -54,6 +55,9 @@ public abstract class TabPanel extends WebScrollPane {
 		this.unit = unit;
 		this.desktop = desktop;
 
+		this.setMaximumSize(new Dimension(UnitWindow.WIDTH - 20, UnitWindow.HEIGHT));
+		this.setPreferredSize(new Dimension(UnitWindow.WIDTH - 20, UnitWindow.HEIGHT));
+		
 		// Create the view panel
 		viewPanel = new WebPanel(new BorderLayout(0, 0));
 		createViewport();

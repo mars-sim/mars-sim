@@ -15,8 +15,7 @@ import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
 /**
  * The PersonWindow is the window for displaying a person.
  */
-public class PersonWindow
-extends UnitWindow {
+public class PersonWindow extends UnitWindow {
 
 	/** Is person dead? */
 	private boolean deadCache = false;
@@ -25,8 +24,9 @@ extends UnitWindow {
 
 	/**
 	 * Constructor.
+	 * 
 	 * @param desktop the main desktop panel.
-	 * @param person the person for this window.
+	 * @param person  the person for this window.
 	 */
 	public PersonWindow(MainDesktopPane desktop, Person person) {
 		// Use UnitWindow constructor
@@ -44,8 +44,7 @@ extends UnitWindow {
 		if (person.getPhysicalCondition().isDead()) {
 			deadCache = true;
 			addTabPanel(new TabPanelDeath(person, desktop));
-		}
-		else
+		} else
 			deadCache = false;
 
 		addTabPanel(new TabPanelFavorite(person, desktop));
@@ -70,7 +69,7 @@ extends UnitWindow {
 
 		addTabPanel(new TabPanelSponsorship(person, desktop));
 
-	    // Add tab sorting
+		// Add tab sorting
 		sortTabPanels();
 	}
 
@@ -80,7 +79,7 @@ extends UnitWindow {
 	@Override
 	public void update() {
 		super.update();
-		//Person person = (Person) unit;
+		// Person person = (Person) unit;
 		if (!deadCache) {
 			if (person.isDeclaredDead()) {
 				deadCache = true;

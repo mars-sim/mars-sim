@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementUnitWindow.java
- * @version 3.08 2015-04-28
+ * @version 3.1.0 2019-03-02
  * @author Scott Davis
  */
 
@@ -22,70 +22,64 @@ import org.mars_sim.msp.ui.swing.unit_window.structure.building.food.TabPanelFoo
 public class SettlementUnitWindow extends UnitWindow {
 
 	/**
-     * Constructor
-     *
-     * @param desktop the main desktop panel.
-     * @param unit the unit to display.
-     */
-    public SettlementUnitWindow(MainDesktopPane desktop, Unit unit) {
-        // Use UnitWindow constructor
-        super(desktop, unit, false);
+	 * Constructor
+	 *
+	 * @param desktop the main desktop panel.
+	 * @param unit    the unit to display.
+	 */
+	public SettlementUnitWindow(MainDesktopPane desktop, Unit unit) {
+		// Use UnitWindow constructor
+		super(desktop, unit, false);
 
-        Settlement settlement = (Settlement) unit;
+		Settlement settlement = (Settlement) unit;
 
-        //setSize(600,600);
+		addTabPanel(new TabPanelAirComposition(settlement, desktop));
 
-        // Add tab panels
-//        if (desktop.getMainScene() != null)
-//        addTabPanel(new TabPanelDashboard(settlement, desktop));
+		addTabPanel(new TabPanelAssociatedPeople(settlement, desktop));
 
-        addTabPanel(new TabPanelAirComposition(settlement, desktop));
+		addTabPanel(new TabPanelBots(settlement, desktop));
 
-        addTabPanel(new TabPanelAssociatedPeople(settlement, desktop));
+		addTabPanel(new TabPanelBuildings(settlement, desktop));
 
-        addTabPanel(new TabPanelBots(settlement, desktop));
+		addTabPanel(new TabPanelCooking(settlement, desktop));
 
-        addTabPanel(new TabPanelBuildings(settlement, desktop));
+		addTabPanel(new TabPanelConstruction(settlement, desktop));
 
-        addTabPanel(new TabPanelCooking(settlement, desktop));
+		addTabPanel(new TabPanelCredit(settlement, desktop));
 
-        addTabPanel(new TabPanelConstruction(settlement, desktop));
+		addTabPanel(new TabPanelFoodProduction(settlement, desktop));
 
-        addTabPanel(new TabPanelCredit(settlement, desktop));
+		addTabPanel(new TabPanelGoods(settlement, desktop));
 
-        addTabPanel(new TabPanelFoodProduction(settlement, desktop));
+		addTabPanel(new InventoryTabPanel(settlement, desktop));
 
-        addTabPanel(new TabPanelGoods(settlement, desktop));
+		addTopPanel(new LocationTabPanel(settlement, desktop));
 
-        addTabPanel(new InventoryTabPanel(settlement, desktop));
+		addTabPanel(new TabPanelMaintenance(settlement, desktop));
 
-        addTopPanel(new LocationTabPanel(settlement, desktop));
+		addTabPanel(new TabPanelManufacture(settlement, desktop));
 
-        addTabPanel(new TabPanelMaintenance(settlement, desktop));
+		addTabPanel(new TabPanelMissions(settlement, desktop));
 
-        addTabPanel(new TabPanelManufacture(settlement, desktop));
+		addTabPanel(new TabPanelOrganization(settlement, desktop));
 
-        addTabPanel(new TabPanelMissions(settlement, desktop));
-        
-        addTabPanel(new TabPanelOrganization(settlement, desktop));
+		addTabPanel(new TabPanelPopulation(settlement, desktop));
 
-        addTabPanel(new TabPanelPopulation(settlement, desktop));
+		addTabPanel(new TabPanelPowerGrid(settlement, desktop));
 
-        addTabPanel(new TabPanelPowerGrid(settlement, desktop));
+		addTabPanel(new TabPanelResourceProcesses(settlement, desktop));
 
-        addTabPanel(new TabPanelResourceProcesses(settlement, desktop));
+		addTabPanel(new TabPanelScience(settlement, desktop));
 
-        addTabPanel(new TabPanelScience(settlement, desktop));
+		addTabPanel(new TabPanelThermalSystem(settlement, desktop));
 
-        addTabPanel(new TabPanelThermalSystem(settlement, desktop));
+		addTabPanel(new TabPanelVehicles(settlement, desktop));
 
-        addTabPanel(new TabPanelVehicles(settlement, desktop));
-        
-        addTabPanel(new TabPanelWeather(settlement, desktop));
+		addTabPanel(new TabPanelWeather(settlement, desktop));
 
 		sortTabPanels();
-    }
-    
+	}
+
 	/**
 	 * Updates this window.
 	 */
@@ -93,5 +87,5 @@ public class SettlementUnitWindow extends UnitWindow {
 	public void update() {
 		super.update();
 	}
-	
+
 }
