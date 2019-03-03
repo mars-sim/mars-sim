@@ -7,6 +7,7 @@
 package org.mars_sim.msp.core.person.ai.task;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -85,6 +86,8 @@ public class TaskManager implements Serializable {
 	private transient Map<MetaTask, Double> taskProbCache;
 	private transient List<MetaTask> mtListCache;
 
+	private List<String> pendingTasks;
+	
 	private static MarsClock marsClock;
 	private static MissionManager missionManager;
 
@@ -116,6 +119,8 @@ public class TaskManager implements Serializable {
 		// since marsClock won't be initiated in maven test
 		if (Simulation.instance().getMasterClock() != null)
 			marsClock = Simulation.instance().getMasterClock().getMarsClock();
+		
+		pendingTasks = new ArrayList<>();
 	}
 
 	/**
@@ -291,10 +296,12 @@ public class TaskManager implements Serializable {
 				|| taskName.toLowerCase().contains("collectresources"));
 	}
 
-	/*
-	 * Filters tasks for recording in the task schedule
+	/**
+	 * Filters task for recording 
+	 * 
+	 * @param time
 	 */
-	public void recordTask(double time) {
+	public void recordFilterTask(double time) {
 		String taskDescription = getTaskDescription(false);
 		String taskName = getTaskClassName();
 
@@ -727,6 +734,62 @@ public class TaskManager implements Serializable {
 		return ts;
 	}
 
+	/**
+	 * Gets all pending tasks 
+	 * 
+	 * @return
+	 */
+	public List<String> getPendingTasks() {
+		return pendingTasks;
+	}
+	
+	public boolean hasPendingTask() {
+		return !pendingTasks.isEmpty();
+	}
+	
+	/**
+	 * Adds a pending task
+	 * 
+	 * @param task
+	 */
+	public void addAPendingTask(String task) {
+		pendingTasks.add(task);
+	}
+	
+	/**
+	 * Deletes a pending task
+	 * 
+	 * @param task
+	 */
+	public void deleteAPendingTask(String task) {
+		pendingTasks.remove(task);
+	}
+	
+	/**
+	 * Gets the first pending meta task in the queue
+	 * 
+	 * @return
+	 */
+	public MetaTask getAPendingMetaTask() {
+		if (!pendingTasks.isEmpty()) {
+			String firstTask = pendingTasks.get(0);
+			pendingTasks.remove(firstTask);
+			return convertTask2MetaTask(firstTask);
+		}
+		return null;
+	}
+	
+	/**
+	 * Converts a task to its corresponding meta task
+	 * 
+	 * @param a task
+	 */
+	public static MetaTask convertTask2MetaTask(String task) {
+		MetaTask result = null;
+		result = MetaTaskUtil.getMetaTask(task.replaceAll(" ","") + "Meta");
+		return result;
+	}
+	
 	/**
 	 * Reloads instances after loading from a saved sim
 	 * 

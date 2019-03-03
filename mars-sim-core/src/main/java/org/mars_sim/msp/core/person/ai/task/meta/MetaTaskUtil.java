@@ -363,7 +363,7 @@ public class MetaTaskUtil {
 		Iterator<MetaTask> i = getAllMetaTasks().iterator();
 		while (i.hasNext()) {
 			MetaTask t = i.next();
-			if (t.getClass().getSimpleName().equals(name)) {
+			if (t.getClass().getSimpleName().equalsIgnoreCase(name)) {
 				metaTask = t;
 				break;
 			}

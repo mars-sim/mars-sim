@@ -242,7 +242,7 @@ extends TabPanel {
 
 	        }
 
-	        scoreStringList = manager.getScoreStringList();
+	        scoreStringList = manager.getTaskStringList();
 	        scoreStringMap = manager.getScoreStringMap();
 
 		}

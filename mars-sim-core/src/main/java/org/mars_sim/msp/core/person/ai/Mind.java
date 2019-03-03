@@ -137,7 +137,7 @@ public class Mind implements Serializable {
 	 */
 	public void timePassing(double time) {
 		if (taskManager != null)
-			taskManager.recordTask(time);
+			taskManager.recordFilterTask(time);
 
 		double msol1 = marsClock.getMillisolOneDecimal();
 
@@ -244,10 +244,11 @@ public class Mind implements Serializable {
 			boolean hasAMission = hasAMission();
 			
 			boolean hasActiveMission = hasActiveMission();
-			// Check if mission creation at settlement (if any) is overridden.
+
 			boolean overrideMission = false;
 
 			if (person.isInSettlement()) {
+				// Check if mission creation at settlement (if any) is overridden.
 				overrideMission = person.getSettlement().getMissionCreationOverride();
 			}
 
@@ -460,7 +461,14 @@ public class Mind implements Serializable {
 		// Determine sum of weights based on given parameters
 		double weightSum = 0D;
 
-		if (tasks) {
+		// Check if there are any assigned tasks
+		if (taskManager.hasPendingTask()) {
+			Task newTask = taskManager.getAPendingMetaTask().constructInstance(person);
+			taskManager.addTask(newTask); 
+			return;
+		}
+		
+		else if (tasks) {
 			taskWeights = taskManager.getTotalTaskProbability(false);
 			weightSum += taskWeights;
 		}

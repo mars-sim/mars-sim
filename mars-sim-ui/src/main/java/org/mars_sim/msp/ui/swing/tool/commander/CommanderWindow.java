@@ -149,6 +149,7 @@ extends ToolWindow {
 		addButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				taskName = (String) comboBox.getSelectedItem();
+				person.getMind().getTaskManager().addAPendingTask(taskName);
 		        listUpdate();
 				repaint();
 			}
@@ -163,7 +164,7 @@ extends ToolWindow {
 		delButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				if (!list.isSelectionEmpty() && (list.getSelectedValue() != null)) {
-					selectATask();
+					pickATask();
 	            	listUpdate();
 	            	repaint();
 				}
@@ -172,12 +173,12 @@ extends ToolWindow {
 		buttonPanel.add(delButton, BorderLayout.CENTER);
 
        	// Set up crop combo box model.
-		List<String> nameList = GameManager.commander.getPreference().getScoreStringList();
+		List<String> nameList = GameManager.commander.getPreference().getTaskStringList();
 		taskCache = new ArrayList<>(nameList);
 		comboBoxModel = new DefaultComboBoxModel<String>();
 
 		Iterator<String> i = taskCache.iterator();
-		int j = 0;
+//		int j = 0;
 		while (i.hasNext()) {
 			String n = i.next();
 	    	comboBoxModel.addElement(n);
@@ -207,7 +208,7 @@ extends ToolWindow {
 		// Create scroll panel for population list.
 		listScrollPanel = new JScrollPane();
 		listScrollPanel.setPreferredSize(new Dimension(250, 350));
-		listScrollPanel.setBorder( BorderFactory.createLineBorder(Color.LIGHT_GRAY) );
+		listScrollPanel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
 
 		// Create list model
 		listModel = new ListModel();
@@ -218,7 +219,7 @@ extends ToolWindow {
 		list.addListSelectionListener(new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent event) {
 		        if (!event.getValueIsAdjusting() && event != null){
-					selectATask();
+					pickATask();
 		        }
 		    }
 		});
@@ -230,14 +231,14 @@ extends ToolWindow {
 	}
 	
 	/**
-	 * Selects a task
+	 * Picks a task and delete it
 	 */
-	public void selectATask() {
-
+	public void pickATask() {
 		String n = (String) list.getSelectedValue();
 		if (n != null) {
 			deletingTaskType = n;
 			deletingTaskIndex = list.getSelectedIndex();
+			person.getMind().getTaskManager().deleteAPendingTask(deletingTaskType);
 		} 
 		else
 			listUpdate();
@@ -252,7 +253,7 @@ extends ToolWindow {
  		listScrollPanel.revalidate();
  		listScrollPanel.repaint();
 		comboBox.setRenderer(new PromptComboBoxRenderer("A list of tasks"));
-		comboBox.setSelectedIndex(-1);
+//		comboBox.setSelectedIndex(-1);
 	}
 	
 	public boolean isNavPointsMapTabOpen() {
@@ -266,13 +267,7 @@ extends ToolWindow {
 		leadershipPointsLabel.setText(commander.getLeadershipPoint() + "");
 		
 		// Update list
-		listModel.update();
- 		list.validate();
- 		list.revalidate();
- 		list.repaint();
- 		listScrollPanel.validate();
- 		listScrollPanel.revalidate();
- 		listScrollPanel.repaint();
+		listUpdate();
 	}
 	
 	/**
@@ -287,7 +282,7 @@ extends ToolWindow {
 
 	    private ListModel() {
 
-        	List<String> c = person.getPreference().getScoreStringList();
+        	List<String> c = person.getMind().getTaskManager().getPendingTasks();//.getPreference().getTaskStringList();
 	        if (c != null)
 	        	list = new ArrayList<String>(c);
 	        else 
@@ -317,7 +312,7 @@ extends ToolWindow {
          */
         public void update() {
 
-        	List<String> c = person.getPreference().getScoreStringList();
+        	List<String> c = person.getMind().getTaskManager().getPendingTasks();
         		// if the list contains duplicate items, it somehow pass this test
         		if (list.size() != c.size() || !list.containsAll(c) || !c.containsAll(list)) {
 	                List<String> oldList = list;
@@ -337,10 +332,6 @@ extends ToolWindow {
 
 		private static final long serialVersionUID = 1L;
 		private String prompt;
-
-//		private DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();
-	    // Width doesn't matter as the combo box will size
-	    //private Dimension preferredSize = new Dimension(0, 20);
 
 		/*
 		 *  Set the text to display when no item has been selected.
@@ -386,6 +377,15 @@ extends ToolWindow {
 	 */
 	@Override
 	public void destroy() {
-
+		tabPane = null;
+		comboBoxModel = null;
+		comboBox = null;
+		listModel = null;
+		listScrollPanel = null;
+		list = null;
+		leadershipPointsLabel= null;
+		commander = null;
+		person = null;
+		taskCache = null;
 	}
 }

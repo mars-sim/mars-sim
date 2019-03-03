@@ -89,7 +89,7 @@ public class Preference implements Serializable {
 	private static MarsClock marsClock;
 
 	private List<MetaTask> metaTaskList;
-	private List<String> scoreList;
+	private List<String> taskList;
 	// private List<MetaMission> metaMissionList;
 
 	private Map<MetaTask, Integer> scoreMap; // store preference scores
@@ -106,7 +106,7 @@ public class Preference implements Serializable {
 		this.person = person;
 
 		metaTaskList = MetaTaskUtil.getAllMetaTasks();
-		scoreList = new ArrayList<>();
+		taskList = new ArrayList<>();
 		// metaMissionList = MetaMissionUtil.getMetaMissions();
 
 		scoreMap = new ConcurrentHashMap<>();
@@ -254,10 +254,10 @@ public class Preference implements Serializable {
 		}
 
 		for (MetaTask key : scoreMap.keySet()) {
-			scoreList.add(getStringName(key));
+			taskList.add(getStringName(key));
 		}
 
-		Collections.sort(scoreList);
+		Collections.sort(taskList);
 
 		// Add metaMissionList (NOT READY to publish metaMissionList as preferences)
 //        Iterator<MetaMission> ii = metaMissionList.iterator();
@@ -377,7 +377,10 @@ public class Preference implements Serializable {
 //		     }
 //		  }
 
-		String ss = s.replaceAll("(?!^)([A-Z])", " $1").replace("Meta", "").replace("E V A ", "EVA ").replace("To ",
+		String ss = s.replaceAll("(?!^)([A-Z])", " $1")
+				.replace("Meta", "")
+				.replace("E V A ", "EVA ")
+				.replace("To ",
 				"to ");
 		return ss;
 	}
@@ -506,8 +509,8 @@ public class Preference implements Serializable {
 		return scoreStringMap;
 	}
 
-	public List<String> getScoreStringList() {
-		return scoreList;
+	public List<String> getTaskStringList() {
+		return taskList;
 	}
 
 	/**
@@ -518,7 +521,7 @@ public class Preference implements Serializable {
 		person = null;
 		marsClock = null;
 		metaTaskList = null;
-		scoreList = null;
+		taskList = null;
 		// metaMissionList = null;
 		scoreMap = null;
 		priorityMap = null;

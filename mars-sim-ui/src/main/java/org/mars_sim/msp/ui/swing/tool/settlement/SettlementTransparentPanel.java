@@ -207,7 +207,7 @@ public class SettlementTransparentPanel extends WebComponent {
 			// unitUpdate will update combobox when a new building is added
 			public void itemStateChanged(ItemEvent event) {
 				Settlement s;
-				// 2014-12-19 Added if else clause for selecting the settlement that the new building is arriving
+				// Add if else clause for selecting the settlement that the new building is arriving
 				//if (desktop.getIsTransportingBuilding()) {
 				//	s = mapPanel.getSettlement();
 				//	settlementListBox.setSelectedItem(s);
@@ -226,7 +226,7 @@ public class SettlementTransparentPanel extends WebComponent {
 		if (settlementListBox.getModel().getSize() > 0) {
 			settlementListBox.setSelectedIndex(0);
 			Settlement s;
-			// 2014-12-19 Added if else clause for selecting the settlement that the new building is arriving
+			// Add if else clause for selecting the settlement that the new building is arriving
 			//if (desktop.getIsTransportingBuilding()) {
 				//s = desktop.getSettlement();
 				//settlementListBox.setSelectedItem(s);
@@ -275,7 +275,7 @@ public class SettlementTransparentPanel extends WebComponent {
 				}
 
 				if (isSelected) {
-		        	  c.setForeground(Color.ORANGE);
+		        	  c.setForeground(Color.black);
 		        	  c.setBackground(new Color(255,229,204,50)); // pale orange
 		          } else {
 						c.setForeground(Color.black);
@@ -587,10 +587,9 @@ public class SettlementTransparentPanel extends WebComponent {
 	 */
 	public JPopupMenu createLabelsMenu() {
 		JPopupMenu result = new JPopupMenu(Msg.getString("SettlementWindow.menu.labelOptions")); //$NON-NLS-1$
-
-		result.setOpaque(false);
+//		result.setOpaque(false);
 		result.setBorder(BorderFactory.createLineBorder(new Color(139,69,19)));// dark brown
-		result.setBackground(new Color(222,184,135,0)); // pale silky brown
+		result.setBackground(new Color(222,184,135)); // pale silky brown
         UIResource res = new BorderUIResource.LineBorderUIResource(new Color(139,69,19));
         UIManager.put("PopupMenu.border", res);
         result.setLightWeightPopupEnabled(false);
@@ -610,7 +609,7 @@ public class SettlementTransparentPanel extends WebComponent {
 		// Create building label menu item.
 		buildingLabelMenuItem = new JCustomCheckBoxMenuItem(
 				Msg.getString("SettlementWindow.menu.buildings"), mapPanel.isShowBuildingLabels()); //$NON-NLS-1$
-		// 2014-12-24 Added setting setForeground setContentAreaFilled setOpaque
+		// Add setting setForeground setContentAreaFilled setOpaque
 		buildingLabelMenuItem.setForeground(new Color(139,69,19));
 		//buildingLabelMenuItem.setBackground(new Color(222,184,135,0));
 		buildingLabelMenuItem.setContentAreaFilled(false);
@@ -704,8 +703,6 @@ public class SettlementTransparentPanel extends WebComponent {
 	 * Change and validate the new name of the Settlement
 	 * @return call Dialog popup
 	 */
-	// 2014-10-26 Modified renameSettlement()
-	@SuppressWarnings("restriction")
 	public void renameSettlement() {
 
 		String oldName = mapPanel.getSettlement().getName();
@@ -935,27 +932,26 @@ public class SettlementTransparentPanel extends WebComponent {
 		return settlementListBox;
 	}
 	
-/*
-	public JCustomCheckBoxMenuItem getBuildingLabelMenuItem() {
-		return buildingLabelMenuItem;
-	}
+//	public JCustomCheckBoxMenuItem getBuildingLabelMenuItem() {
+//		return buildingLabelMenuItem;
+//	}
+//
+//	public JCustomCheckBoxMenuItem getPersonLabelMenuItem () {
+//		return personLabelMenuItem ;
+//	}
+//
+//	public JCustomCheckBoxMenuItem getConstructionLabelMenuItem () {
+//		return constructionLabelMenuItem ;
+//	}
+//
+//	public JCustomCheckBoxMenuItem getVehicleLabelMenuItem () {
+//		return vehicleLabelMenuItem ;
+//	}
+//
+//	public JCustomCheckBoxMenuItem getRobotLabelMenuItem () {
+//		return robotLabelMenuItem ;
+//	}
 
-	public JCustomCheckBoxMenuItem getPersonLabelMenuItem () {
-		return personLabelMenuItem ;
-	}
-
-	public JCustomCheckBoxMenuItem getConstructionLabelMenuItem () {
-		return constructionLabelMenuItem ;
-	}
-
-	public JCustomCheckBoxMenuItem getVehicleLabelMenuItem () {
-		return vehicleLabelMenuItem ;
-	}
-
-	public JCustomCheckBoxMenuItem getRobotLabelMenuItem () {
-		return robotLabelMenuItem ;
-	}
-*/
 	/**
 	 * Prepare class for deletion.
 	 */
