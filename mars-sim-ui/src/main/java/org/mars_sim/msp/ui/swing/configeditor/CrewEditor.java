@@ -23,16 +23,20 @@ import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.ai.job.JobType;
+import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -85,7 +89,10 @@ public class CrewEditor implements ActionListener {
 		createGUI();
 	}
 
-	// 2015-10-07 Added and revised createGUI()
+
+	/**
+	 * Creates the GUI
+	 */
 	public void createGUI() {
 
 		simulationConfigEditor.setCrewEditorOpen(true);
@@ -157,7 +164,7 @@ public class CrewEditor implements ActionListener {
 		return f;
 	}
 
-	// 2015-10-07 Revised actionPerformed()
+
 	public void actionPerformed(ActionEvent evt) {
 
 		String cmd = (String) evt.getActionCommand();
@@ -179,12 +186,19 @@ public class CrewEditor implements ActionListener {
 
 		else {
 
+			boolean goodToGo = true;
+			
 			for (int i = 0; i < SIZE_OF_CREW; i++) {
 
-				String nameStr = nameTF.get(i).getText();
+//				String nameStr = nameTF.get(i).getText();
+//
+//				if (!nameStr.contains(" "))
+//					goodToGo = false;
+//				
+//				pc.setPersonName(i, nameStr, ALPHA_CREW);
 
-				pc.setPersonName(i, nameStr, ALPHA_CREW);
-
+				goodToGo = goodToGo && checkNameFields(i, goodToGo);
+				
 				String genderStr = (String) genderComboBoxList.get(i).getSelectedItem();
 				if (genderStr.equals("M"))
 					genderStr = "MALE";
@@ -203,12 +217,153 @@ public class CrewEditor implements ActionListener {
 
 			}
 
-			simulationConfigEditor.setCrewEditorOpen(false);
-			f.setVisible(false);
-			f.dispose();
+			if (goodToGo) {
+				simulationConfigEditor.setCrewEditorOpen(false);
+				f.setVisible(false);
+				f.dispose();
+			}
 		}
 	}
 
+	
+	public boolean checkNameFields(int i, boolean goodToGo) {
+		
+//		String destinationStr = (String) destinationCB.getValue();
+//		destinationName = destinationStr;
+			
+			// Name
+			String nameStr = nameTF.get(i).getText().trim();
+			// Added isBlank() and checking against invalid names
+			if (!Conversion.isBlank(nameStr)
+					&& nameStr.contains(" ")) {
+				// update PersonConfig with the new name
+				pc.setPersonName(i, nameStr, ALPHA_CREW);
+				return true;
+				
+			} else {
+				JDialog.setDefaultLookAndFeelDecorated(true);
+				JOptionPane.showMessageDialog(f, 
+								"Settler's name must include first and last name, separated by a whitespace",
+								"Invalid Name Field",
+								JOptionPane.ERROR_MESSAGE);
+				
+				// Disable Start;
+				// event.consume();
+				nameTF.get(i).requestFocus();
+				return false;
+			}
+
+//			// Gender
+//			String genderStr = genderList.get(i).getValue();
+//			if (genderStr.equals("M"))
+//				genderStr = "MALE";
+//			else if (genderStr.equals("F"))
+//				genderStr = "FEMALE";
+//			// update PersonConfig with the new gender
+//			pc.setPersonGender(i, genderStr, ALPHA_CREW);
+//
+//			// Personality
+//			String personalityStr = getPersonality(i);
+//			// update PersonConfig with the new personality
+//			pc.setPersonPersonality(i, personalityStr, ALPHA_CREW);
+//
+//			// Job
+//			String jobStr = (String) jobList.get(i).getValue();
+//
+//			if (!Conversion.isBlank(jobStr)) {
+//				pc.setPersonJob(i, jobStr, ALPHA_CREW);
+//				goodToGo = true && goodToGo;
+//			} else {
+//				goodToGo = false;
+//				jobList.get(i).requestFocus();
+//			}
+//			
+//			// Sponsor
+//			String sponsorStr = (String) sponsorList.get(i).getValue();
+//			System.out.println("commitButton. " + i + " : " + sponsorStr);
+//			
+//			if (!Conversion.isBlank(sponsorStr)) {
+//				pc.setPersonSponsor(i, sponsorStr, ALPHA_CREW);
+//				goodToGo = true && goodToGo;
+//			} else {
+//				goodToGo = false;
+//				sponsorList.get(i).requestFocus();
+//			}
+//							
+//			// Country
+//			String countryStr = (String) countryList.get(i).getValue();
+//			System.out.println("commitButton. " + i + " : " + countryStr);
+//
+//			if (!Conversion.isBlank(countryStr)) {
+//				pc.setPersonCountry(i, countryStr, ALPHA_CREW);
+//				goodToGo = true && goodToGo;
+//			} else {
+//				goodToGo = false;
+//				countryList.get(i).requestFocus();
+//			}
+//
+//			// Destination
+//			if (!Conversion.isBlank(destinationStr)) {
+//				// update PersonConfig with the new destination
+//				pc.setPersonDestination(i, destinationStr, ALPHA_CREW);
+//				goodToGo = true && goodToGo;
+//			}
+//			else {
+//				goodToGo = false;
+//				destinationCB.requestFocus();
+//			}
+//		}
+//
+//		
+//		boolean allHaveSameSponsor = true;
+//		String s = "";
+//		for (int i = 0; i < SIZE_OF_CREW; i++) {
+//			if (i == 0) {
+//				s = (String) sponsorList.get(i).getValue();
+//				if (s == null || s.equals("")) {
+//					goodToGo = false;
+//					sponsorList.get(i).requestFocus();
+//				}
+//			}
+//			else {
+//				String ss = (String) sponsorList.get(i).getValue();
+//				if (ss == null || ss.equals("")) { 
+//					goodToGo = false;
+//					sponsorList.get(i).requestFocus();
+//				}
+//				else if (s != null && !s.equals(ss)) {
+//					allHaveSameSponsor = false;
+//					break;
+//				}
+//			}
+//		}
+//		
+//		if (allHaveSameSponsor) {
+//			// Bring the changes back to the TableViewCombo
+//			scenarioConfigEditorFX.getTableViewCombo().setSameSponsor(destinationName, s);
+//		}
+//		else {
+//			// Bring the changes back to the TableViewCombo
+//			scenarioConfigEditorFX.getTableViewCombo().setSameSponsor(destinationName, "Varied");				
+//		}
+//		
+//		if (goodToGo) {
+//			scenarioConfigEditorFX.setCrewEditorOpen(false);
+//			stage.hide();
+//		}
+//		else
+//			event.consume();
+//
+//		
+//		if (goodToGo) {
+//			scenarioConfigEditorFX.setCrewEditorOpen(false);
+//			stage.hide();
+//		}
+//		else
+//			event.consume();
+		
+	}
+	
 	public void setUpCrewName() {
 		for (int i = 0; i < SIZE_OF_CREW; i++) {
 			int crew_id = pc.getCrew(i);
@@ -278,8 +433,12 @@ public class CrewEditor implements ActionListener {
 		}
 	}
 
-	// 2015-10-07 Revised setUpCrewPersonality() to use radio buttons instead of
-	// combobox
+
+	/**
+	 * Set up personality radio buttons
+	 * 
+	 * @param col
+	 */
 	public void setUpCrewPersonality(int col) {
 
 		ppane = new JPanel(new GridLayout(4, 1));
@@ -334,12 +493,10 @@ public class CrewEditor implements ActionListener {
 
 	}
 
-	// 2015-10-07 Added retrievePersonality()
 	public boolean retrievePersonality(int row, int col) {
 		return personalityArray[row][col];
 	}
 
-	// 2015-10-07 Added getPersonality()
 	public String getPersonality(int col) {
 		String type = null;
 		boolean value = true;

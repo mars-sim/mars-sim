@@ -17,12 +17,12 @@ public class GameManager {
     
     public static String choice;
 
-    public static Person commander;
+    public static Person commanderPerson;
 
     public static UnitManager unitManager;
     
     public static void setCommander(Person cc) {
-    	commander = cc;
+    	commanderPerson = cc;
     	id = cc.getIdentifier();
     }
     
@@ -41,7 +41,7 @@ public class GameManager {
     		if (unitManager.getCommanderMode()) {
 	    		mode = "1";
 		    	id = unitManager.getCommanderID();
-		    	commander = unitManager.getPersonByID(id);
+		    	commanderPerson = unitManager.getPersonByID(id);
     		}
     		else {
     			mode = "0";

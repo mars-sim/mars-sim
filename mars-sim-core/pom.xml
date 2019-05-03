@@ -38,7 +38,8 @@
 			<groupId>org.jdom</groupId>
 			<artifactId>jdom</artifactId>
 			<version>1.1.3</version>
-		</dependency-->
+		</dependency>
+		-->
 		<!-- https://mvnrepository.com/artifact/org.jdom/jdom2 -->
 		<dependency>
 		    <groupId>org.jdom</groupId>
@@ -46,11 +47,11 @@
 		    <version>2.0.6</version>
 		</dependency>
 
-		<!-- https://mvnrepository.com/artifact/com.google.guava/guava : 2.5 MB -->
+		<!-- https://mvnrepository.com/artifact/com.google.guava/guava : 2.6 MB -->
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
-			<version>26.0-jre</version>
+			<version>27.0.1-jre</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/com.google.inject/guice : 303 KB -->
 		<dependency>
@@ -59,23 +60,6 @@
 			<version>4.2.2</version>
 			<classifier>no_aop</classifier>
 		</dependency>
-
-		<!-- https://mvnrepository.com/artifact/log4j/log4j : 469 KB Needed by 
-			GraphUtils.java in plexus 0.13.1
-		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-			<version>1.2.17</version>
-		</dependency>
- 		-->
-		<!-- OLD Group/Artifact https://mvnrepository.com/artifact/commons-collections/commons-collections. 
-			JAR size : 630 KB Needed by GraphUtils.java in plexus 0.13.1 -->
-		<dependency>
-			<groupId>commons-collections</groupId>
-			<artifactId>commons-collections</artifactId>
-			<version>3.2.2</version>
-		</dependency>
-
 		<!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core 316KB -->
 		<dependency>
 		    <groupId>com.fasterxml.jackson.core</groupId>
@@ -95,12 +79,6 @@
 		    <version>2.9.8</version>
 		</dependency>
 
-		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-collections4 
-			: 965 KB <dependency> <groupId>org.apache.commons</groupId> <artifactId>commons-collections4</artifactId> 
-			<version>4.1</version> </dependency> -->
-		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 
-			: 469 KB <dependency> <groupId>org.apache.commons</groupId> <artifactId>commons-lang3</artifactId> 
-			<version>3.5</version> </dependency> -->
 		<!-- https://mvnrepository.com/artifact/org.glassfish/javax.json : 99KB 
 		     https://javaee.github.io/jsonp/
 			 https://jsonp.java.net/ http://docs.oracle.com/javaee/7/tutorial/jsonp.htm -->
@@ -120,24 +98,21 @@
 			<groupId>com.cedarsoftware</groupId> 
 			<artifactId>json-io</artifactId> 
 			<version>4.10.0</version> 
-		</dependency> 
-		-->
+		</dependency-->
+		
 		<!-- http://tukaani.org/xz/java.html https://mvnrepository.com/artifact/org.tukaani/xz : 120 KB 	
 		<dependency>
 			<groupId>org.tukaani</groupId>
 			<artifactId>xz</artifactId>
 			<version>1.7</version>
-		</dependency>
- 		-->
+		</dependency-->
 		<!-- https://mvnrepository.com/artifact/nz.sodium/sodium : 112KB Recent 
-			fix on https://github.com/SodiumFRP/sodium Integrated into mars-sim-core -->
-		<!-- 		
+			fix on https://github.com/SodiumFRP/sodium Integrated into mars-sim-core 		
 		<dependency>
 			<groupId>nz.sodium</groupId>
 			<artifactId>sodium</artifactId>
 			<version>1.1.0</version>
-		</dependency> 
-		-->
+		</dependency-->
 
 		<!--
 		<dependency>
@@ -151,6 +126,9 @@
 			<version>3.9.0</version>
 		</dependency>
 		-->
+		
+		<!-- https://github.com/beryx/text-io
+		     https://mvnrepository.com/artifact/org.beryx/text-io -->
 		<dependency>
 			<groupId>org.beryx</groupId>
 			<artifactId>text-io</artifactId>
@@ -204,6 +182,41 @@
 		    <version>3.8.1</version>
 		</dependency>	
 		 -->
+		 <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-collections4 
+			: 965 KB 
+		<dependency> 
+			<groupId>org.apache.commons</groupId> 
+			<artifactId>commons-collections4</artifactId> 
+			<version>4.1</version> 
+		</dependency> 
+		-->
+		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 
+			: 469 KB 
+		<dependency> 
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId> 
+			<version>3.5</version> 
+		</dependency> 
+		-->
+			
+		<!-- OLD Group/Artifact https://mvnrepository.com/artifact/commons-collections/commons-collections. 
+			JAR size : 630 KB Needed by GraphUtils.java in plexus 0.13.1
+		<dependency>
+			<groupId>commons-collections</groupId>
+			<artifactId>commons-collections</artifactId>
+			<version>3.2.2</version>
+		</dependency>
+		-->
+					
+		<!-- https://mvnrepository.com/artifact/log4j/log4j : 469 KB Needed by 
+			GraphUtils.java in plexus 0.13.1
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.17</version>
+		</dependency>
+ 		-->
+					
 		<!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-simple 
 		     For getting rid of the statement : SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder"
 		     See https://stackoverflow.com/questions/7421612/slf4j-failed-to-load-class-org-slf4j-impl-staticloggerbinder#9919375

@@ -83,7 +83,7 @@ extends ToolWindow {
 		// Use ToolWindow constructor
 		super(NAME, desktop);
 
-		person = GameManager.commander;
+		person = GameManager.commanderPerson;
 		
 		// Create content panel.
 		JPanel mainPane = new JPanel(new BorderLayout());
@@ -172,8 +172,8 @@ extends ToolWindow {
 			});
 		buttonPanel.add(delButton, BorderLayout.CENTER);
 
-       	// Set up crop combo box model.
-		List<String> nameList = GameManager.commander.getPreference().getTaskStringList();
+       	// Set up combo box model.
+		List<String> nameList = GameManager.commanderPerson.getPreference().getTaskStringList();
 		taskCache = new ArrayList<>(nameList);
 		comboBoxModel = new DefaultComboBoxModel<String>();
 

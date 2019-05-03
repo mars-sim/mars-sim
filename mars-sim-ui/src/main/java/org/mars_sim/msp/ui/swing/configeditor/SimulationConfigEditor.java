@@ -122,7 +122,8 @@ public class SimulationConfigEditor {
 		f = new JFrame();
 
 		f.setSize(HORIZONTAL_SIZE, 360);
-
+		f.setTitle(Msg.getString("SimulationConfigEditor.title")); //$NON-NLS-1$
+		
 		// Sets the dialog content panel.
 		JPanel contentPanel = new JPanel(new BorderLayout(10, 10));
 		contentPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
@@ -131,20 +132,20 @@ public class SimulationConfigEditor {
 		JPanel topPanel = null;
 		
 		if (GameManager.mode.equals("1")) {
-			topPanel = new JPanel(new GridLayout(3, 1));
+			topPanel = new JPanel(new GridLayout(2, 1));
 			f.add(topPanel, BorderLayout.NORTH);
 		}
 		
 		else {
-			topPanel = new JPanel(new GridLayout(2, 1));
+			topPanel = new JPanel(new GridLayout(1, 1));
 			f.add(topPanel, BorderLayout.NORTH);
 		}
 
 		
 		// Create the title label.
-		JLabel titleLabel = new JLabel(Msg.getString("SimulationConfigEditor.chooseSettlements"), JLabel.CENTER); //$NON-NLS-1$
-		titleLabel.setFont(new Font("Dialog", Font.BOLD, 18));
-		topPanel.add(titleLabel);
+//		JLabel instructionLabel = new JLabel("   " + Msg.getString("SimulationConfigEditor.chooseSettlements"), JLabel.LEADING); //$NON-NLS-1$
+//		instructionLabel.setFont(new Font("Dialog", Font.PLAIN, 14));
+//		topPanel.add(instructionLabel);
 
 		// Create the title label.
 		if (GameManager.mode.equals("1")) {
@@ -152,7 +153,7 @@ public class SimulationConfigEditor {
 			String commanderName = personConfig.getCommander().getFullName();
 			String sponsor = personConfig.getCommander().getSponsor();
 			JLabel gameModeLabel = new JLabel(Msg.getString("SimulationConfigEditor.gameMode", "Commander Mode"), JLabel.CENTER); //$NON-NLS-1$
-			gameModeLabel.setFont(new Font("Serif", Font.ITALIC, 14));
+			gameModeLabel.setFont(new Font("Serif", Font.PLAIN, 14));
 			topPanel.add(gameModeLabel);
 			
 			JPanel ccPanel = new JPanel(new GridLayout(1, 3));
@@ -160,7 +161,7 @@ public class SimulationConfigEditor {
 			
 			JLabel commanderLabel = new JLabel("   " + Msg.getString("SimulationConfigEditor.commanderName", 
 					commanderName), JLabel.LEFT); //$NON-NLS-1$
-			commanderLabel.setFont(new Font("Dialog", Font.BOLD, 14));
+			commanderLabel.setFont(new Font("Dialog", Font.PLAIN, 14));
 			ccPanel.add(commanderLabel);
 			
 			ccPanel.add(new JLabel());
@@ -168,14 +169,14 @@ public class SimulationConfigEditor {
 			
 			JLabel sponsorLabel = new JLabel(Msg.getString("SimulationConfigEditor.sponsorInfo", 
 					sponsor)  + "                 ", JLabel.RIGHT); //$NON-NLS-1$
-			sponsorLabel.setFont(new Font("Dialog", Font.BOLD, 14));
+			sponsorLabel.setFont(new Font("Dialog", Font.PLAIN, 14));
 			ccPanel.add(sponsorLabel);
 			
 		}
 		
 		else {
 			JLabel gameModeLabel = new JLabel(Msg.getString("SimulationConfigEditor.gameMode", "Sandbox Mode"), JLabel.CENTER); //$NON-NLS-1$
-			gameModeLabel.setFont(new Font("Serif", Font.ITALIC, 14));
+			gameModeLabel.setFont(new Font("Serif", Font.PLAIN, 14));
 			topPanel.add(gameModeLabel);
 		}
 		
@@ -225,7 +226,7 @@ public class SimulationConfigEditor {
 		
 		// Align content to center of cell
 		DefaultTableCellRenderer defaultTableCellRenderer = new DefaultTableCellRenderer();
-		defaultTableCellRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+		defaultTableCellRenderer.setHorizontalAlignment(SwingConstants.LEFT);
 		TableColumn column = null;
 		for (int ii = 0; ii < 7; ii++) {
 			column = settlementTable.getColumnModel().getColumn(ii);
