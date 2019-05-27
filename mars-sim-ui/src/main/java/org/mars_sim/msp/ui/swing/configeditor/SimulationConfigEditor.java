@@ -1186,13 +1186,16 @@ public class SimulationConfigEditor {
 	 * Prepare for deletion.
 	 */
 	public void destroy() {
-
 		settlementTableModel = null;
 		settlementTable = null;
 		errorLabel = null;
 		createButton = null;
 		f = null;
 		crewEditor = null;
+		sim = null;
+		simulationConfig = null;
+		settlementConfig = null;
+		personConfig = null;
 	}
 
 }

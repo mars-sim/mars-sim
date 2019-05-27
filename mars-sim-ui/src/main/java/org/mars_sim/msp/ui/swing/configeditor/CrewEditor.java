@@ -32,12 +32,11 @@ import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 
-import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.tool.Conversion;
-import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
@@ -573,6 +572,17 @@ public class CrewEditor implements ActionListener {
 		pc = null;
 		simulationConfigEditor.setCrewEditorOpen(false);
 		simulationConfigEditor = null;
+		f = null;
+		mainPane = null;
+		listPane = null;
+		radioPane = null;
+		ppane = null;
+		qpane = null;
+		nameTF = null;
+		jobsComboBoxModel = null;
+		jobsComboBoxList = null;
+		genderComboBoxModel = null;
+		genderComboBoxList = null;
 	}
 
 }

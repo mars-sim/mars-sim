@@ -123,4 +123,9 @@ public class Role implements Serializable {
 		return roleType.getName();
 	}
 
+	public void destroy() {
+		person = null;
+		roleType = null;
+		roleHistory = null;
+	}
 }
