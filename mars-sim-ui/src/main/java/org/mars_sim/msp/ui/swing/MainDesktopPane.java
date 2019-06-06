@@ -34,18 +34,7 @@ import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
-import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.GameManager;
-import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.UnitEvent;
-import org.mars_sim.msp.core.UnitEventType;
-import org.mars_sim.msp.core.UnitListener;
-import org.mars_sim.msp.core.UnitManager;
-import org.mars_sim.msp.core.UnitManagerEvent;
-import org.mars_sim.msp.core.UnitManagerEventType;
-import org.mars_sim.msp.core.UnitManagerListener;
+import org.mars_sim.msp.core.*;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -372,12 +361,14 @@ public class MainDesktopPane extends JDesktopPane
 		mainWindow.initializeWeblaf();
 		
 		// Prepare Commander Window
-		commanderWindow = new CommanderWindow(this);
-		try {
-			commanderWindow.setClosed(true);
-		} catch (PropertyVetoException e) {
+		if(GameManager.mode.equalsIgnoreCase("1")) {
+			commanderWindow = new CommanderWindow(this);
+			try {
+				commanderWindow.setClosed(true);
+			} catch (PropertyVetoException e) {
+			}
+			toolWindows.add(commanderWindow);
 		}
-		toolWindows.add(commanderWindow);
 		
 		// Prepare navigator window
 		navWindow = new NavigatorWindow(this);

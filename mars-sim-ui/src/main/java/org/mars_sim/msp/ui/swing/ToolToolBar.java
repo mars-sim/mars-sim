@@ -14,6 +14,7 @@ import java.util.Vector;
 import javax.swing.JToolBar;
 import javax.swing.border.BevelBorder;
 
+import org.mars_sim.msp.core.GameManager;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.ui.swing.tool.commander.CommanderWindow;
 import org.mars_sim.msp.ui.swing.tool.guide.GuideWindow;
@@ -166,11 +167,13 @@ implements ActionListener {
 		add(resupplyButton);
 		toolButtons.addElement(resupplyButton);
 
-		// Add commander dashboard button
-		ToolButton dashboardButton = new ToolButton(CommanderWindow.NAME, Msg.getString("img.dashboard")); //$NON-NLS-1$
-		dashboardButton.addActionListener(this);
-		add(dashboardButton);
-		toolButtons.addElement(dashboardButton);
+		if(GameManager.mode.equalsIgnoreCase("1")) {
+			// Add commander dashboard button
+			ToolButton dashboardButton = new ToolButton(CommanderWindow.NAME, Msg.getString("img.dashboard")); //$NON-NLS-1$
+			dashboardButton.addActionListener(this);
+			add(dashboardButton);
+			toolButtons.addElement(dashboardButton);
+		}
 		
 		addSeparator();
 

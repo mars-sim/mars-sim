@@ -111,7 +111,7 @@ public class InteractiveTerm {
 			
         handler.addStringTask("mode", "Select the Game Mode:", false).addChoices("1", "2").constrainInputToChoices();
         handler.executeOneTask();
-        
+        //That is no good solution. Use a enum here.
 		if ((GameManager.mode).equals("1")) {
 			
 	        terminal.println(System.lineSeparator() 
