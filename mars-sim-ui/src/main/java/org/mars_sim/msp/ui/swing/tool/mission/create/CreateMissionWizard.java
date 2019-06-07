@@ -155,10 +155,13 @@ implements ActionListener {
 		for (int x = 1; x < numPanels; x++) wizardPanels.remove(1);
 
 		// Add mission type appropriate final panels.
+		//TODO: Don't iterate. Use descriptions for telling which panels are needed.
 		for (String type : MissionDataBean.MISSIONS) {
 			if (missionBean.getType().equals(type)) {
-	            addWizardPanel(new StudyPanel(this));
-	            addWizardPanel(new LeadResearcherPanel(this));
+				if(missionBean.isScientificMission()) {
+					addWizardPanel(new StudyPanel(this));
+					addWizardPanel(new LeadResearcherPanel(this));
+				}
 	            addWizardPanel(new VehiclePanel(this));
 	            // TODO: Change members panel to use lead researcher as member.
 	            addWizardPanel(new MembersPanel(this));

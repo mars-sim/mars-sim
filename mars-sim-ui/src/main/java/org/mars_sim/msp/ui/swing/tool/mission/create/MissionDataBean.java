@@ -219,6 +219,7 @@ class MissionDataBean {
 		return result;
 	}
 
+
 	/**
 	 * Gets mission description based on a mission type.
 	 * @param missionType the mission type.
@@ -267,6 +268,8 @@ class MissionDataBean {
         }
 		return result;
 	}
+
+
 
 	/**
 	 * Gets the mission type.
@@ -387,6 +390,8 @@ class MissionDataBean {
 		return rescueRover;
 	}
 
+
+
 	/**
 	 * Sets the rescue rover.
 	 * @param rescueRover the rescue rover.
@@ -469,7 +474,7 @@ class MissionDataBean {
 
 	/**
 	 * Sets the buy goods.
-	 * @param sellGoods map of goods and integer amounts.
+	 * @param buyGoods map of goods and integer amounts.
 	 */
 	protected void setBuyGoods(Map<Good, Integer> buyGoods) {
 		this.buyGoods = buyGoods;
@@ -741,9 +746,20 @@ class MissionDataBean {
 
     /**
      * Sets the emergency resources.
-     * @param emergencyResources map of resources and amounts (kg).
+     * @param emergencyGoods map of resources and amounts (kg).
      */
     protected void setEmergencyGoods(Map<Good, Integer> emergencyGoods) {
         this.emergencyGoods = emergencyGoods;
     }
+
+	protected boolean isScientificMission() {
+		if (type.equals(AREOLOGY_FIELD_MISSION)
+				|| type.equals(BIOLOGY_FIELD_MISSION)
+				|| type.equals(METEOROLOGY_FIELD_MISSION)) {
+			return true;
+		}
+		else
+			return false;
+	}
+
 }
