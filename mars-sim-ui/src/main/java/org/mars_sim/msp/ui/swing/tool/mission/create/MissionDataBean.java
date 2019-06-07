@@ -762,4 +762,71 @@ class MissionDataBean {
 			return false;
 	}
 
+	protected boolean isMiningMission() {
+		return ( type.equals(MINING_MISSION) );
+	}
+
+	protected boolean isExplorationMission() {
+    	return type.equals(EXPLORATION_MISSION);
+	}
+
+	protected boolean isTradeMission() {
+    	return type.equals(TRADE_MISSION);
+	}
+
+	protected boolean isEmergencySupplyMission() {
+    	return type.equals(EMERGENCY_SUPPLY_MISSION);
+	}
+
+	protected boolean isTravelMission() {
+    	return type.equals(TRAVEL_MISSION);
+	}
+
+	protected boolean isConstructionMission() {
+    	return type.equals(CONSTRUCTION_MISSION);
+	}
+
+	protected boolean isSalvageMission() {
+    	return type.equals(SALVAGE_MISSION);
+	}
+
+	protected boolean requiresFieldSite() {
+		return  ( isScientificMission() || isMiningMission() || isExplorationMission() );
+	}
+
+	protected boolean requiresDestinationSettlement() {
+		return  ( isTradeMission() || isEmergencySupplyMission() || isTravelMission() );
+	}
+
+	protected boolean isProspectingMission() {
+		return  ( type.equals(REGOLITH_MISSION)
+				|| type.equals(ICE_MISSION) );
+	}
+
+	/**
+	 * Describes if the mission requires a vehicle for transportation or is executed
+	 * on-site.
+	 * @return true, if a mission takes place outside the starting base
+	 */
+	protected boolean isRemoteMission() {
+		if ( type.equals(CONSTRUCTION_MISSION)
+		|| type.equals(SALVAGE_MISSION) ) {
+			return false;
+		}
+		else
+			return true;
+	}
+
+	/**
+	 * Missions that require meeting another rover.
+	 * @return true, when a on-ground rendezvous is needed
+	 */
+	protected boolean isRendezvousMission() {
+		if ( type.equals(RESCUE_MISSION)) {
+			return true;
+		}
+		else
+			return false;
+	}
+
 }

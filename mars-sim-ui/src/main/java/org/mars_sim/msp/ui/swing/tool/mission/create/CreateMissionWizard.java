@@ -49,7 +49,7 @@ implements ActionListener {
 
 	/**
 	 * Constructor.
-	 * @param owner The owner frame.
+	 * @param missionWindow The owner frame.
 	 */
 	public CreateMissionWizard(MainDesktopPane desktop, MissionWindow missionWindow) {
 		// Use ModalInternalFrame constructor
@@ -151,24 +151,55 @@ implements ActionListener {
 	 */
 	void setFinalWizardPanels() {
 		// Remove old final panels if any.
-        int numPanels = wizardPanels.size();
-		for (int x = 1; x < numPanels; x++) wizardPanels.remove(1);
+		int numPanels = wizardPanels.size();
+		for (int x = 1; x < numPanels; x++)
+			wizardPanels.remove(1);
 
 		// Add mission type appropriate final panels.
-		//TODO: Don't iterate. Use descriptions for telling which panels are needed.
-		for (String type : MissionDataBean.MISSIONS) {
-			if (missionBean.getType().equals(type)) {
-				if(missionBean.isScientificMission()) {
-					addWizardPanel(new StudyPanel(this));
-					addWizardPanel(new LeadResearcherPanel(this));
-				}
-	            addWizardPanel(new VehiclePanel(this));
-	            // TODO: Change members panel to use lead researcher as member.
-	            addWizardPanel(new MembersPanel(this));
-	            //addWizardPanel(new BotMembersPanel(this));
-	            addWizardPanel(new FieldSitePanel(this));
-			}
+
+		if (missionBean.isRemoteMission()) {
+			addWizardPanel(new StartingSettlementPanel(this));
 		}
+		if (missionBean.isScientificMission()) {
+			addWizardPanel(new StudyPanel(this));
+			addWizardPanel(new LeadResearcherPanel(this));
+		}
+		if (missionBean.isRemoteMission()) {
+			addWizardPanel(new VehiclePanel(this));
+		}
+		// TODO: Change members panel to use lead researcher as member.
+		addWizardPanel(new MembersPanel(this));
+		//addWizardPanel(new BotMembersPanel(this));
+		//Choosing the remote location of the mission
+		if (missionBean.requiresFieldSite()) {
+			addWizardPanel(new FieldSitePanel(this));
+		} else if( missionBean.isMiningMission() ) {
+			addWizardPanel(new MiningSitePanel(this));
+	    } else if (missionBean.isProspectingMission()) {
+			addWizardPanel(new ProspectingSitePanel(this));
+		} else if(missionBean.isExplorationMission()) {
+			addWizardPanel(new ExplorationSitesPanel(this));
+		} else if (missionBean.requiresDestinationSettlement()) {
+			addWizardPanel(new DestinationSettlementPanel(this));
+		} else if(missionBean.isRendezvousMission()) {
+			addWizardPanel(new RendezvousVehiclePanel(this));
+		}
+		//The cargo of the mission
+		if ( missionBean.isEmergencySupplyMission()) {
+			addWizardPanel(new EmergencySupplyPanel(this));
+		} else if (missionBean.isTradeMission()) {
+			addWizardPanel(new TradeGoodsPanel(this, false));
+			addWizardPanel(new TradeGoodsPanel(this, true));
+		}
+		// Set construction or salvage projects
+		if ( missionBean.isConstructionMission() ) {
+			addWizardPanel(new ConstructionProjectPanel(this));
+            addWizardPanel(new ConstructionVehiclePanel(this));
+		} else if ( missionBean.isSalvageMission() ) {
+			addWizardPanel(new SalvageProjectPanel(this));
+            addWizardPanel(new SalvageVehiclePanel(this));
+		}
+
 //        if (missionBean.getType().equals(MissionDataBean.AREOLOGY_FIELD_MISSION)) {
 //            addWizardPanel(new StudyPanel(this));
 //            addWizardPanel(new LeadResearcherPanel(this));
@@ -352,7 +383,8 @@ implements ActionListener {
 	public MissionWindow getMissionWindow() {
 		return missionWindow;
 	}
-	
+
+	//Does the same as getMissionData, what is the difference?
 	public MissionDataBean getMissionBean() {
 		return missionBean;
 	}
