@@ -2250,8 +2250,9 @@ public class UnitManager implements Serializable {
 	}
 	
 	public static String getSponsorByCountryID(int id) {
-		
-		if (id == 0)
+		if (id == -1)
+			return "None";
+		else if (id == 0)
 			return ReportingAuthorityType.CNSA_L.getName();
 		else if (id == 1)
 			return ReportingAuthorityType.CSA_L.getName();
@@ -2265,7 +2266,6 @@ public class UnitManager implements Serializable {
 			return ReportingAuthorityType.RKA_L.getName();	
 		else
 			return ReportingAuthorityType.ESA_L.getName();
-		
 	}
 	
 	/**
@@ -2319,12 +2319,18 @@ public class UnitManager implements Serializable {
 //		return countries;
 //	}
 
+	/**
+	 * Obtains the country id. If none, return -1.
+	 * 
+	 * @param country
+	 * @return
+	 */
 	public static int getCountryID(String country) {
 		if (personConfig == null)
 			personConfig = SimulationConfig.instance().getPersonConfiguration();
 		if (countries == null)
 			countries = personConfig.createCountryList();
-		return countries.indexOf(country);
+		return personConfig.computeCountryID(country);
 	}
 
 	public static List<String> getCountryList() {

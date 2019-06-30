@@ -360,7 +360,7 @@ public class Mind implements Serializable {
 				}
 				LogConsolidated.log(Level.CONFIG, 0, sourceName,
 						"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
-						+ " took the " + newJobStr + " job position.");
+						+ " took the " + newJobStr + " job.");
 
 				person.fireUnitUpdate(UnitEventType.JOB_EVENT, newJob);
 

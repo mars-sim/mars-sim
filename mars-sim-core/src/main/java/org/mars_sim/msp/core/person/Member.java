@@ -58,7 +58,6 @@ public class Member implements Serializable {
 		sponsor = value;
 	} 
 
-	
 	public void setDestination(String value) {
 		destination = value;
 	}
@@ -122,7 +121,5 @@ public class Member implements Serializable {
 	public String getActivity() {
 		return activity;
 	}
-
-	
 	
 }

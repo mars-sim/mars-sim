@@ -287,15 +287,13 @@ public abstract class UnitWindow extends ModalInternalFrame {
 //		tabPanel.setTabPlacement(JideTabbedPane.LEFT);
 
 		tabPane = new JTabbedPane();
-		tabPane.setMaximumSize(new Dimension(WIDTH - 40, HEIGHT - 120));
 		tabPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
 //		UIManager.put("TabbedPane.unselectedBackground", Color.GRAY);
 		
-		WebPanel centerPanel = new WebPanel(new FlowLayout(FlowLayout.LEFT));
+		WebPanel centerPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
 		centerPanel.setOpaque(false);
 		centerPanel.setBackground(new Color(0,0,0,128));
 		centerPanel.add(tabPane);
-		centerPanel.setPreferredSize(new Dimension(WIDTH - 25, HEIGHT - 120));
 
 		mainPane.add(centerPanel, BorderLayout.CENTER);
 		

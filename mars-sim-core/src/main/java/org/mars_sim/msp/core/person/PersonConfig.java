@@ -1394,6 +1394,26 @@ public class PersonConfig implements Serializable {
 		// alphaCrewDestination.add(value);
 	}
 
+	public void setMainDish(int index, String value, int crew_id) {
+		if (roster.get(crew_id).getTeam().get(index).getMainDish() == null)
+			roster.get(crew_id).getTeam().get(index).setMainDish(value);
+	}
+	
+	public void setSideDish(int index, String value, int crew_id) {
+		if (roster.get(crew_id).getTeam().get(index).getSideDish() == null)
+			roster.get(crew_id).getTeam().get(index).setSideDish(value);
+	}
+	
+	public void setDessert(int index, String value, int crew_id) {
+		if (roster.get(crew_id).getTeam().get(index).getDessert() == null)
+			roster.get(crew_id).getTeam().get(index).setDessert(value);
+	}
+	
+	public void setActivity(int index, String value, int crew_id) {
+		if (roster.get(crew_id).getTeam().get(index).getActivity() == null)
+			roster.get(crew_id).getTeam().get(index).setActivity(value);
+	}
+	
 	/**
 	 * Gets a map of the configured person's natural attributes.
 	 * 
@@ -1617,7 +1637,7 @@ public class PersonConfig implements Serializable {
 			countries.add("USA"); // 4
 			countries.add("Russia"); // 5
 
-			countries.addAll(createESACountryList());
+			countries.addAll(createESACountryList()); // 6
 
 		}
 
@@ -1644,7 +1664,7 @@ public class PersonConfig implements Serializable {
 	}
 	
 	/**
-	 * Create ESA country list
+	 * Create ESA 22 country list
 	 * 
 	 * @return
 	 */
@@ -1681,8 +1701,19 @@ public class PersonConfig implements Serializable {
 		return ESAcountries;
 	}
 
-	public int getCountryID(String country) {
-		return countries.indexOf(country);
+	/**
+	 * Computes the country id. If none, return -1.
+	 * 
+	 * @param country
+	 * @return
+	 */
+	public int computeCountryID(String country) {
+		if (countries.contains(country))
+			return countries.indexOf(country);
+		else if (ESAcountries.contains(country))
+			return ESAcountries.indexOf(country);
+		else 
+			return -1;
 	}
 
 	/**

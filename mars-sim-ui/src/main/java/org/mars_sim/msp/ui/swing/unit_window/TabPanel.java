@@ -12,25 +12,26 @@ import java.awt.Dimension;
 
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 
-import com.alee.laf.panel.WebPanel;
-import com.alee.laf.scroll.WebScrollPane;
 
-public abstract class TabPanel extends WebScrollPane {
+public abstract class TabPanel extends JScrollPane {
 
 	protected String tabTitle;
 	protected Icon tabIcon;
 	protected String tabToolTip;
-	protected WebPanel viewPanel;
-	protected WebPanel topContentPanel;
-	protected WebPanel centerContentPanel;
+	protected JPanel viewPanel;
+	protected JPanel topContentPanel;
+	protected JPanel centerContentPanel;
 	protected Unit unit;
 	protected MainDesktopPane desktop;
 
@@ -55,18 +56,24 @@ public abstract class TabPanel extends WebScrollPane {
 		this.unit = unit;
 		this.desktop = desktop;
 
-		this.setMaximumSize(new Dimension(UnitWindow.WIDTH - 40, UnitWindow.HEIGHT));
-		this.setPreferredSize(new Dimension(UnitWindow.WIDTH - 40, UnitWindow.HEIGHT));
+		if (unit instanceof Person) {
+			this.setMaximumSize(new Dimension(UnitWindow.WIDTH - 30, UnitWindow.HEIGHT - 140));
+			this.setPreferredSize(new Dimension(UnitWindow.WIDTH - 30, UnitWindow.HEIGHT - 140));
+		}
+		else {
+			this.setMaximumSize(new Dimension(UnitWindow.WIDTH - 30, UnitWindow.HEIGHT - 90));
+			this.setPreferredSize(new Dimension(UnitWindow.WIDTH - 30, UnitWindow.HEIGHT - 90));
+		}
 		
 		// Create the view panel
-		viewPanel = new WebPanel(new BorderLayout(0, 0));
+		viewPanel = new JPanel(new BorderLayout(0, 0));
 		createViewport();
 		setViewportView(viewPanel);
 		createVerticalScrollBar();
 		setVerticalScrollBarPolicy(VERTICAL_SCROLLBAR_ALWAYS);
 
 		// Create top content panel
-		topContentPanel = new WebPanel();
+		topContentPanel = new JPanel();
 		topContentPanel.setLayout(new BoxLayout(topContentPanel, BoxLayout.Y_AXIS));
 		topContentPanel.setBorder(MainDesktopPane.newEmptyBorder());
 		viewPanel.add(topContentPanel, BorderLayout.NORTH);
@@ -75,7 +82,7 @@ public abstract class TabPanel extends WebScrollPane {
 		Border margin = new EmptyBorder(5,5,5,5);
 		
 		// Create center content panel
-		centerContentPanel = new WebPanel(new BorderLayout(0, 0));
+		centerContentPanel = new JPanel(new BorderLayout(0, 0));
 		centerContentPanel.setBorder(new CompoundBorder(border, margin));
 		viewPanel.add(centerContentPanel, BorderLayout.CENTER);
 
