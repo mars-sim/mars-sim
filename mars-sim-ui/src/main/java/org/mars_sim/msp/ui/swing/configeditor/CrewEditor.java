@@ -42,6 +42,7 @@ import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 import org.mars_sim.msp.core.tool.Conversion;
+import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
@@ -179,15 +180,38 @@ public class CrewEditor implements ActionListener {
 		// set up the sponsor combobox at the start of the crew editor
 		for (int i = 0; i < SIZE_OF_CREW; i++) {
 			final JComboBoxMW<String> g = countriesComboBoxList.get(i);
-			g.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e1) {
+//			g.addActionListener(new ActionListener() {
+//				public void actionPerformed(ActionEvent e1) {
 					String s = (String) g.getSelectedItem();
-					g.setSelectedItem(s);
-				}
-			});
+					
+					int max = g.getItemCount();
+					int index = g.getSelectedIndex();
+					
+					if (max > 1) {
+						int num = getRandom(max, index);
+//						System.out.println("num : " + num);
+						// Fictitiously select a num (other than the index)
+						g.setSelectedIndex(num);
+						// Then choose the one already chosen
+						// Note: This should force the sponsor to be chosen correction
+						g.setSelectedItem(s);
+					}
+					
+					else
+						g.setSelectedItem(s);
+//				}
+//			});
 		}
 	}
 
+	private int getRandom(int max, int index) {
+		int num = RandomUtil.getRandomInt(max);
+		if (num != index)
+			return num;
+		else
+			return getRandom(max, index);
+	}
+	
 	public JFrame getJFrame() {
 		return f;
 	}
@@ -610,12 +634,14 @@ public class CrewEditor implements ActionListener {
 		        // removing old data
 		        model.removeAllElements();
 
-				String countryStr = (String) item;
-				String sponsorStr = UnitManager.mapCountry2Sponsor(countryStr);
-
 	            model.addElement(ReportingAuthorityType.MARS_SOCIETY_L.getName());
-				model.addElement(sponsorStr);
 
+				String countryStr = (String) item;
+				
+	            if (!countryStr.isBlank()) {
+					String sponsorStr = UnitManager.mapCountry2Sponsor(countryStr);            
+					model.addElement(sponsorStr);
+	            }
 		        
 			} else if (evt.getStateChange() == ItemEvent.DESELECTED && sponsorsComboBoxList.size() > 0) {
 				// Item is no longer selected
