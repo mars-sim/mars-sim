@@ -34,11 +34,19 @@ import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
-import org.mars_sim.msp.core.*;
-import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
+import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.GameManager;
+import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.UnitEvent;
+import org.mars_sim.msp.core.UnitEventType;
+import org.mars_sim.msp.core.UnitListener;
+import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.UnitManagerEvent;
+import org.mars_sim.msp.core.UnitManagerEventType;
+import org.mars_sim.msp.core.UnitManagerListener;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -74,14 +82,14 @@ public class MainDesktopPane extends JDesktopPane
 	private static Logger logger = Logger.getLogger(MainDesktopPane.class.getName());
 	private static String loggerName = logger.getName();
 	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
-	
+
 //	private static final double PERIOD_IN_MILLISOLS = 10D * 500D / MarsClock.SECONDS_PER_MILLISOL;// 750D / MarsClock.SECONDS_IN_MILLISOL;
 	public final static String THEME_PATH = "/fxui/css/theme/";
 
 	public final static String ORANGE_CSS_THEME = THEME_PATH + "nimrodskin.css";
 	public final static String BLUE_CSS_THEME = THEME_PATH + "snowBlue.css";
-	
-	public final static String ORANGE_CSS = ORANGE_CSS_THEME; 
+
+	public final static String ORANGE_CSS = ORANGE_CSS_THEME;
 	public final static String BLUE_CSS = BLUE_CSS_THEME;
 
 	// Data members
@@ -114,7 +122,7 @@ public class MainDesktopPane extends JDesktopPane
 	private NavigatorWindow navWindow;
 	private TimeWindow timeWindow;
 	private CommanderWindow commanderWindow;
-	
+
 //	private Building building;
 	private MainWindow mainWindow;
 	private OrbitViewer orbitViewer;
@@ -123,7 +131,7 @@ public class MainDesktopPane extends JDesktopPane
 	private static Simulation sim = Simulation.instance();
 	private static MasterClock masterClock = sim.getMasterClock();
 	private static UnitManager unitManager = sim.getUnitManager();
-	
+
 	/**
 	 * Constructor 1.
 	 * 
@@ -144,7 +152,7 @@ public class MainDesktopPane extends JDesktopPane
 		backgroundLabel = new JLabel(backgroundImageIcon);
 		// Add background
 		add(backgroundLabel, Integer.MIN_VALUE);
-		// Set location of background 
+		// Set location of background
 		backgroundLabel.setLocation(0, 0);
 		// Push the background to the back
 		moveToBack(backgroundLabel);
@@ -215,7 +223,7 @@ public class MainDesktopPane extends JDesktopPane
 	@Override
 	public void componentMoved(ComponentEvent e) {
 //		logger.config("componentMoved()");
-		SwingUtilities.invokeLater(() ->  updateToolWindow());
+		SwingUtilities.invokeLater(() -> updateToolWindow());
 	}
 
 	@Override
@@ -224,7 +232,7 @@ public class MainDesktopPane extends JDesktopPane
 		SwingUtilities.invokeLater(() -> {
 			JInternalFrame[] frames = (JInternalFrame[]) this.getAllFrames();
 			for (JInternalFrame f : frames) {
-				 ((ToolWindow)f).update();
+				((ToolWindow) f).update();
 				f.updateUI();
 				// SwingUtilities.updateComponentTreeUI(f);
 				f.validate();
@@ -252,7 +260,7 @@ public class MainDesktopPane extends JDesktopPane
 			f.updateUI();
 		}
 	}
-	
+
 	@Override
 	public Component add(Component comp) {
 		super.add(comp);
@@ -272,7 +280,7 @@ public class MainDesktopPane extends JDesktopPane
 	public void unitManagerUpdate(UnitManagerEvent event) {
 
 //		if (event.getUnit() instanceof Settlement) {		  
-		//removeAllElements(); 
+		// removeAllElements();
 //		UnitManager unitManager =
 //		sim.getUnitManager(); 
 //		List<Settlement> settlements = new ArrayList<Settlement>(unitManager.getSettlements());
@@ -286,7 +294,7 @@ public class MainDesktopPane extends JDesktopPane
 //		while (j.hasNext()) {
 //			j.next().addUnitListener(this);
 //		}}
-		 
+
 		Object unit = event.getUnit();
 		if (unit instanceof Settlement) {
 
@@ -295,8 +303,8 @@ public class MainDesktopPane extends JDesktopPane
 
 			if (eventType == UnitManagerEventType.ADD_UNIT) { // REMOVE_UNIT;
 				settlement.addUnitListener(this);
-			} 
-			
+			}
+
 			else if (eventType == UnitManagerEventType.REMOVE_UNIT) { // REMOVE_UNIT;
 				settlement.removeUnitListener(this);
 			}
@@ -313,17 +321,18 @@ public class MainDesktopPane extends JDesktopPane
 		// Thread.currentThread().getName() + " Thread");
 
 		// Attach UnitManagerListener to desktop
+		unitManager = sim.getUnitManager();
 		unitManager.addUnitManagerListener(this);
 
 		// Add addUnitListener()
 		Collection<Settlement> settlements = unitManager.getSettlements();
-		
+
 //		List<Settlement> settlementList = new ArrayList<Settlement>(settlements);
 //		Settlement settlement = settlementList.get(0);
 //		List<Building> buildings = settlement.getBuildingManager().getACopyOfBuildings();
 //		building = buildings.get(0);
 		// building.addUnitListener(this); // not working
-		
+
 		// Attach UnitListener to each settlement
 		Iterator<Settlement> i = settlements.iterator();
 		while (i.hasNext()) {
@@ -359,9 +368,9 @@ public class MainDesktopPane extends JDesktopPane
 			toolWindows.clear();
 
 		mainWindow.initializeWeblaf();
-		
+
 		// Prepare Commander Window
-		if(GameManager.mode.equalsIgnoreCase("1")) {
+		if (GameManager.mode.equalsIgnoreCase("1")) {
 			commanderWindow = new CommanderWindow(this);
 			try {
 				commanderWindow.setClosed(true);
@@ -369,7 +378,7 @@ public class MainDesktopPane extends JDesktopPane
 			}
 			toolWindows.add(commanderWindow);
 		}
-		
+
 		// Prepare navigator window
 		navWindow = new NavigatorWindow(this);
 		try {
@@ -397,9 +406,9 @@ public class MainDesktopPane extends JDesktopPane
 		} catch (PropertyVetoException e) {
 		}
 		toolWindows.add(timeWindow);
-		
+
 //		logger.config("Done with TimeWindow()");
-		
+
 		// Prepare settlement tool window
 		settlementWindow = new SettlementWindow(this);
 		try {
@@ -408,9 +417,9 @@ public class MainDesktopPane extends JDesktopPane
 		}
 		toolWindows.add(settlementWindow);
 		setSettlementWindow(settlementWindow);
-		
+
 //		logger.config("Done with setSettlementWindow()");
-		
+
 		// Prepare science tool window
 		ScienceWindow scienceWindow = new ScienceWindow(this);
 		try {
@@ -418,9 +427,9 @@ public class MainDesktopPane extends JDesktopPane
 		} catch (PropertyVetoException e) {
 		}
 		toolWindows.add(scienceWindow);
-		
+
 //		logger.config("Done with ScienceWindow()");
-		
+
 		// Prepare guide tool window
 		GuideWindow guideWindow = new GuideWindow(this);
 		try {
@@ -428,9 +437,9 @@ public class MainDesktopPane extends JDesktopPane
 		} catch (PropertyVetoException e) {
 		}
 		toolWindows.add(guideWindow);
-		
+
 //		logger.config("Done with GuideWindow()");
-		
+
 		// Prepare monitor tool window
 		MonitorWindow monitorWindow = new MonitorWindow(this);
 		try {
@@ -545,20 +554,20 @@ public class MainDesktopPane extends JDesktopPane
 //					if (config.useUIDefault()) {
 //						window.setLocation(getCenterLocation(window));
 //					} else {
-						if (config.isInternalWindowConfigured(toolName)) {
-							window.setLocation(config.getInternalWindowLocation(toolName));
-							if (window.isResizable()) {
-								window.setSize(config.getInternalWindowDimension(toolName));
-							}
-						} else {
-							// System.out.println("MainDesktopPane: TimeWindow opens at whatever location");
-							if (toolName.equals(TimeWindow.NAME))
-								window.setLocation(getStartingLocation(window));
-							else if (toolName.equals(MonitorWindow.NAME))
-								window.setLocation(new Point(0, 0));
-							else
-								window.setLocation(getRandomLocation(window));
+					if (config.isInternalWindowConfigured(toolName)) {
+						window.setLocation(config.getInternalWindowLocation(toolName));
+						if (window.isResizable()) {
+							window.setSize(config.getInternalWindowDimension(toolName));
 						}
+					} else {
+						// System.out.println("MainDesktopPane: TimeWindow opens at whatever location");
+						if (toolName.equals(TimeWindow.NAME))
+							window.setLocation(getStartingLocation(window));
+						else if (toolName.equals(MonitorWindow.NAME))
+							window.setLocation(new Point(0, 0));
+						else
+							window.setLocation(getRandomLocation(window));
+					}
 //					}
 					window.setWasOpened(true);
 				}
@@ -664,7 +673,7 @@ public class MainDesktopPane extends JDesktopPane
 		}
 
 		tempWindow.setVisible(true);
-		
+
 		// Correct window becomes selected
 		try {
 			tempWindow.setSelected(true);
@@ -677,7 +686,6 @@ public class MainDesktopPane extends JDesktopPane
 		if (soundFilePath != null && soundFilePath.length() != 0) {
 			soundPlayer.playSound(soundFilePath);
 		}
-
 
 	}
 
@@ -732,14 +740,14 @@ public class MainDesktopPane extends JDesktopPane
 
 		if (toShow) {
 			tempWindow.setVisible(true);
-		
+
 			// Correct window becomes selected
 			try {
 				tempWindow.setSelected(true);
 				tempWindow.moveToFront();
 			} catch (java.beans.PropertyVetoException e) {
 			}
-	
+
 			// Play sound
 			String soundFilePath = UnitDisplayInfoFactory.getUnitDisplayInfo(unit).getSound(unit);
 			if (soundFilePath != null && soundFilePath.length() != 0) {
@@ -747,9 +755,8 @@ public class MainDesktopPane extends JDesktopPane
 			}
 		}
 
-
 	}
-	
+
 	/**
 	 * Finds an existing unit window for a unit.
 	 * 
@@ -822,7 +829,7 @@ public class MainDesktopPane extends JDesktopPane
 				mainWindow.disposeUnitButton(window.getUnit());
 		}
 	}
-	
+
 //	class UnitWindowTask implements Runnable {
 //		// long SLEEP_TIME = 1000;
 //		UnitWindow unitWindow;
@@ -860,8 +867,8 @@ public class MainDesktopPane extends JDesktopPane
 		// set up unitWindowExecutor
 //		if (unitWindowExecutor == null)
 //			setupUnitWindowExecutor();
-		
-			// Update all unit windows.
+
+		// Update all unit windows.
 		if (!unitWindows.isEmpty()) {
 			for (UnitWindow u : unitWindows) {
 				if (u.isVisible() && u.isShowing())
@@ -873,7 +880,7 @@ public class MainDesktopPane extends JDesktopPane
 //					u.update();
 //			});
 		}
-		
+
 //			unitWindows.forEach(u -> {
 //				if (isUnitWindowOpen(u))
 //					if (!unitWindowExecutor.isTerminated() || !unitWindowExecutor.isShutdown()) {	
@@ -917,13 +924,13 @@ public class MainDesktopPane extends JDesktopPane
 		// method
 		toolWindowExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(1); // newCachedThreadPool();
 	}
-	
+
 	private void runToolWindowExecutor() {
 
 		if (toolWindowExecutor == null) {
 			setupToolWindowExecutor();
 		}
-		
+
 		if (toolWindowTaskList.isEmpty()) {
 			setupToolWindowTasks();
 		}
@@ -1046,15 +1053,14 @@ public class MainDesktopPane extends JDesktopPane
 	}
 
 	/**
-	 * Gets the starting location on the desktop for a given
-	 * {@link JInternalFrame}.
+	 * Gets the starting location on the desktop for a given {@link JInternalFrame}.
 	 * 
 	 * @return a specific point on the desktop
 	 */
 	private Point getStartingLocation(JInternalFrame f) {
 		Dimension desktop_size = getSize();
 		Dimension window_size = f.getSize();
-		
+
 		// Populate windows in grid=like starting position
 		int w = desktop_size.width - window_size.width;
 		int h = desktop_size.height - window_size.height;
@@ -1158,11 +1164,11 @@ public class MainDesktopPane extends JDesktopPane
 			openUnitWindow(unitManager.getCommanderSettlement(), true, false);
 		else {
 			for (Settlement s : unitManager.getSettlements()) {
-				openUnitWindow((Settlement)s, true, false);
+				openUnitWindow((Settlement) s, true, false);
 			}
 		}
 	}
-	
+
 	/**
 	 * Opens all initial windows based on UI configuration.
 	 */
@@ -1179,7 +1185,7 @@ public class MainDesktopPane extends JDesktopPane
 				// Open the time window for the Commander Mode
 				openToolWindow(TimeWindow.NAME);
 			}
-			
+
 		} else {
 			// Open windows in Z-order.
 			List<String> windowNames = config.getInternalWindowNames();
@@ -1321,7 +1327,7 @@ public class MainDesktopPane extends JDesktopPane
 	public CommanderWindow getCommanderWindow() {
 		return commanderWindow;
 	}
-	
+
 	public Collection<ToolWindow> getToolWindowsList() {
 		return toolWindows;
 	}
@@ -1352,28 +1358,19 @@ public class MainDesktopPane extends JDesktopPane
 	public void changeTitle(boolean isPaused) {
 		if (GameManager.mode.equals("1")) {
 			if (isPaused) {
-				mainWindow.getFrame().setTitle(Simulation.title 
-						+ "  -  Commander Mode"
-						+ "  -  [ PAUSE ]");
+				mainWindow.getFrame().setTitle(Simulation.title + "  -  Commander Mode" + "  -  [ PAUSE ]");
+			} else {
+				mainWindow.getFrame().setTitle(Simulation.title + "  -  Commander Mode");
 			}
-			else {
-				mainWindow.getFrame().setTitle(Simulation.title
-						+ "  -  Commander Mode");
-			}
-		}
-		else {
+		} else {
 			if (isPaused) {
-				mainWindow.getFrame().setTitle(Simulation.title 
-						+ "  -  Sandbox Mode"
-						+ "  -  [ PAUSE ]");
-			}
-			else {
-				mainWindow.getFrame().setTitle(Simulation.title
-						+ "  -  Sandbox Mode");
+				mainWindow.getFrame().setTitle(Simulation.title + "  -  Sandbox Mode" + "  -  [ PAUSE ]");
+			} else {
+				mainWindow.getFrame().setTitle(Simulation.title + "  -  Sandbox Mode");
 			}
 		}
 	}
-	
+
 	@Override
 	public void clockPulse(double time) {
 		// TODO Auto-generated method stub
@@ -1388,7 +1385,7 @@ public class MainDesktopPane extends JDesktopPane
 	@Override
 	public void pauseChange(boolean isPaused, boolean showPane) {
 		changeTitle(isPaused);
-		
+
 //		if (isPaused) {
 ////			marqueeTicker.pauseMarqueeTimer(true);
 //			soundPlayer.mute(true, true);

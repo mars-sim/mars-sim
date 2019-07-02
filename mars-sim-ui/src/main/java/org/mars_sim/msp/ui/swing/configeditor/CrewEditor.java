@@ -532,7 +532,8 @@ public class CrewEditor implements ActionListener {
 
 		sponsors.add(ReportingAuthorityType.MARS_SOCIETY_L.getName());
 //		// Retrieve the sponsor from the selected country 		
-		sponsors.add(UnitManager.mapCountry2Sponsor(country));		
+		if (!country.isBlank())
+			sponsors.add(UnitManager.mapCountry2Sponsor(country));		
 				
 		DefaultComboBoxModel<String> m = new DefaultComboBoxModel<String>();
 		Iterator<String> j = sponsors.iterator();
