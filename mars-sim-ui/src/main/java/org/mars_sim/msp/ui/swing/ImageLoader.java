@@ -101,7 +101,7 @@ public class ImageLoader {
 			String fileName = fullImageName.startsWith("/") ? fullImageName : dir + fullImageName;
 			/* [landrus, 26.11.09]: don't use the system classloader in a webstart env. */
 			URL resource = ImageLoader.class.getResource(fileName);// ClassLoader.getSystemResource(fileName);
-
+//			System.out.println("fileName : " + fileName);
 			found = new ImageIcon(resource);
 
 			iconCache.put(fullImageName, found);

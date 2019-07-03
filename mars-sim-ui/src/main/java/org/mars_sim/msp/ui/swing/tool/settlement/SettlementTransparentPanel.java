@@ -7,6 +7,7 @@
 
 package org.mars_sim.msp.ui.swing.tool.settlement;
 
+import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -22,17 +23,18 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
@@ -45,12 +47,8 @@ import javax.swing.JPopupMenu;
 import javax.swing.JSlider;
 import javax.swing.Painter;
 import javax.swing.UIDefaults;
-import javax.swing.UIManager;
-import javax.swing.border.LineBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.swing.plaf.BorderUIResource;
-import javax.swing.plaf.UIResource;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
@@ -155,14 +153,14 @@ public class SettlementTransparentPanel extends WebComponent {
 	    mapPanel.add(box, BorderLayout.NORTH);
 
 	    controlCenterPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
-	    controlCenterPane.setBackground(new Color(0,0,0));//,0));
+	    controlCenterPane.setBackground(new Color(0,0,0,128));//,0));
 	    controlCenterPane.setOpaque(false);
         controlCenterPane.setPreferredSize(new Dimension(50, 200));
         controlCenterPane.setSize(new Dimension(50, 200));
         controlCenterPane.add(zoomSlider);
 
 	    controlPane = new JPanel(new BorderLayout());//GridLayout(2,1,10,2));
-	    controlPane.setBackground(new Color(0,0,0));//,0));
+	    controlPane.setBackground(new Color(0,0,0,128));//,0));
 		controlPane.setOpaque(false);
        	controlPane.add(buttonPane, BorderLayout.NORTH);
 	    controlPane.add(labelPane, BorderLayout.SOUTH);
@@ -342,11 +340,11 @@ public class SettlementTransparentPanel extends WebComponent {
         zoomSlider.putClientProperty("Nimbus.Overrides.InheritDefaults",false);
 
     	//zoomSlider = new JSliderMW(JSlider.VERTICAL, -10, 10, 0);
-		zoomSlider.setMajorTickSpacing(5);
-		//zoomSlider.setMinorTickSpacing(1);
+//		zoomSlider.setMajorTickSpacing(5);
+		zoomSlider.setMinorTickSpacing(1);
 		zoomSlider.setPaintTicks(true);
 		zoomSlider.setPaintLabels(true);
-		zoomSlider.setForeground(Color.GREEN);
+//		zoomSlider.setForeground(Color.GREEN);
 		zoomSlider.setBackground(new Color(0,0,0,15));
 		//zoomSlider.setContentAreaFilled(false);
 		zoomSlider.setOpaque(false);
@@ -398,11 +396,11 @@ public class SettlementTransparentPanel extends WebComponent {
 		infoButton = new JButton(Msg.getString("SettlementTransparentPanel.button.info")); //$NON-NLS-1$
 		infoButton.setPreferredSize(new Dimension(50, 20)); //35, 20));
 		infoButton.setFont(new Font("Dialog", Font.PLAIN, 12));
-		infoButton.setForeground(Color.GREEN);
+//		infoButton.setForeground(Color.GREEN);
 		infoButton.setContentAreaFilled(false);
 		infoButton.setOpaque(false);
 		//infoButton.setOpaque(false); // text disappeared if setOpaque(false)
-		infoButton.setBorder(new LineBorder(Color.green, 1, true));
+//		infoButton.setBorder(new LineBorder(Color.green, 1, true));
 		//infoButton.setBorderPainted(true);
 		infoButton.setToolTipText(Msg.getString("SettlementTransparentPanel.tooltip.info")); //$NON-NLS-1$
 		infoButton.addActionListener(new ActionListener() {
@@ -428,11 +426,11 @@ public class SettlementTransparentPanel extends WebComponent {
 		renameBtn = new JButton(Msg.getString("SettlementTransparentPanel.button.rename")); //$NON-NLS-1$
 		renameBtn.setPreferredSize(new Dimension(80, 20)); //
 		renameBtn.setFont(new Font("Dialog", Font.PLAIN, 12));
-		renameBtn.setForeground(Color.GREEN);
+//		renameBtn.setForeground(Color.GREEN);
 		renameBtn.setContentAreaFilled(false);
 		renameBtn.setOpaque(false);
 		//renameBtn.setOpaque(false); // text disappeared if setOpaque(false)
-		renameBtn.setBorder(new LineBorder(Color.green, 1, true));
+//		renameBtn.setBorder(new LineBorder(Color.GREEN), 1, true));
 		infoButton.setToolTipText(Msg.getString("SettlementTransparentPanel.tooltip.rename")); //$NON-NLS-1$
 		renameBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
@@ -442,18 +440,42 @@ public class SettlementTransparentPanel extends WebComponent {
 		renameP.add(renameBtn);
     }
 
-
+//    private BufferedImage getModifiedImage(String n) {
+//    	BufferedImage originalImage = null;
+//    	BufferedImage modifiedImage = null;
+//        originalImage = (BufferedImage) (ImageLoader.getIcon(n, "png", "/icons/map/").getImage()); //$NON-NLS-1$
+//		 modifiedImage = new BufferedImage(
+//		    originalImage.getWidth(),
+//		    originalImage.getHeight(),
+//		    BufferedImage.TYPE_INT_ARGB);
+//
+//        Graphics2D g2 = modifiedImage.createGraphics();
+//        AlphaComposite newComposite = 
+//            AlphaComposite.getInstance(
+//                AlphaComposite.SRC_OVER, 0.5f);
+//        g2.setComposite(newComposite);      
+//        g2.drawImage(originalImage, 0, 0, null);
+//        g2.dispose();
+//        
+//        return modifiedImage;
+//    }
+    
     public void buildButtonPane() {
 
         buttonPane = new JPanel(new FlowLayout(FlowLayout.LEADING));
-        buttonPane.setBackground(new Color(0,0,0));//,0));
+        buttonPane.setBackground(new Color(0,0,0,128));
         buttonPane.setOpaque(false);
-		JButton rotateClockwiseButton = new JButton(ImageLoader.getIcon(Msg.getString("img.clockwise"))); //$NON-NLS-1$
-		rotateClockwiseButton.setPreferredSize(new Dimension(20, 20));
+
+//        BufferedImage bi1 = getModifiedImage("Clockwise");
+//		JButton rotateClockwiseButton = new JButton(new ImageIcon(bi1)); 
+		JButton rotateClockwiseButton = new JButton(ImageLoader.getIcon(Msg.getString("img.clockwise")));//Msg.getString("SettlementTransparentPanel.button.recenter")); //$NON-NLS-1$
+
+//		rotateClockwiseButton.setPreferredSize(new Dimension(20, 20));
 		rotateClockwiseButton.setOpaque(false);
-		rotateClockwiseButton.setForeground(Color.GREEN);
-		rotateClockwiseButton.setBorder(new LineBorder(Color.GREEN, 1, true));
-		rotateClockwiseButton.setContentAreaFilled(false);
+		rotateClockwiseButton.setBorderPainted(false);
+//		rotateClockwiseButton.setForeground(Color.GREEN);
+//		rotateClockwiseButton.setBorder(new LineBorder(Color.GREEN, 1, true));
+//		rotateClockwiseButton.setContentAreaFilled(false);
 		rotateClockwiseButton.setToolTipText(Msg.getString("SettlementTransparentPanel.tooltip.clockwise")); //$NON-NLS-1$
 		rotateClockwiseButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
@@ -463,12 +485,15 @@ public class SettlementTransparentPanel extends WebComponent {
 
 		buttonPane.add(rotateClockwiseButton);
 
+//        BufferedImage bi2 = getModifiedImage("CenterMap");
+//		JButton recenterButton = new JButton(new ImageIcon(bi2)); 
 		JButton recenterButton = new JButton(ImageLoader.getIcon(Msg.getString("img.centerMap")));//Msg.getString("SettlementTransparentPanel.button.recenter")); //$NON-NLS-1$
-		recenterButton.setPreferredSize(new Dimension(20, 20));
+//		recenterButton.setPreferredSize(new Dimension(20, 20));
 		recenterButton.setOpaque(false);
-		recenterButton.setForeground(Color.GREEN);
-		recenterButton.setBorder(new LineBorder(Color.GREEN, 1, true));
-		recenterButton.setContentAreaFilled(false);
+		recenterButton.setBorderPainted(false);
+//		recenterButton.setForeground(Color.GREEN);
+//		recenterButton.setBorder(new LineBorder(Color.GREEN, 1, true));
+//		recenterButton.setContentAreaFilled(false);
 		recenterButton.setToolTipText(Msg.getString("SettlementTransparentPanel.tooltip.recenter")); //$NON-NLS-1$
 		recenterButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
@@ -485,12 +510,16 @@ public class SettlementTransparentPanel extends WebComponent {
 		buttonPane.add(recenterButton);
 
 		// Create rotate counter-clockwise button.
+//        BufferedImage bi3 = getModifiedImage("CounterClockwise");
+//		JButton rotateCounterClockwiseButton = new JButton(new ImageIcon(bi3)); 
 		JButton rotateCounterClockwiseButton = new JButton(ImageLoader.getIcon(Msg.getString("img.counterClockwise"))); //$NON-NLS-1$
-		rotateCounterClockwiseButton.setPreferredSize(new Dimension(20, 20));
+//		rotateCounterClockwiseButton.setPreferredSize(new Dimension(20, 20));
 		rotateCounterClockwiseButton.setOpaque(false);
-		rotateCounterClockwiseButton.setForeground(Color.GREEN);
+		rotateCounterClockwiseButton.setBorderPainted(false);
+		rotateCounterClockwiseButton.setBackground(new Color(0,0,0,128));
+//		rotateCounterClockwiseButton.setForeground(Color.GREEN);
 		rotateCounterClockwiseButton.setContentAreaFilled(false);
-		rotateCounterClockwiseButton.setBorder(new LineBorder(Color.GREEN, 1, true));
+//		rotateCounterClockwiseButton.setBorder(new LineBorder(Color.GREEN, 1, true));
 		rotateCounterClockwiseButton.setToolTipText(Msg.getString("SettlementTransparentPanel.tooltip.counterClockwise")); //$NON-NLS-1$
 		rotateCounterClockwiseButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
@@ -506,7 +535,7 @@ public class SettlementTransparentPanel extends WebComponent {
     public void buildLabelPane() {
 
         labelPane = new JPanel(new FlowLayout(FlowLayout.LEADING));
-        labelPane.setBackground(new Color(0,0,0));//,0));
+        labelPane.setBackground(new Color(0,0,0,128));
 		labelPane.setOpaque(false);
 
 		JButton labelsButton = new JButton(Msg.getString("SettlementTransparentPanel.button.labels")); //$NON-NLS-1$
@@ -514,14 +543,14 @@ public class SettlementTransparentPanel extends WebComponent {
 		//labelsButton.setBackground(new Color(139,69,19)); // (139,69,19) is brown
 		//labelsButton.setBackground(new Color(139,69,19,40));
 		//labelsButton.setBackground(new Color(51,25,0,5)); // dull gold color
-		labelsButton.setBackground(new Color(0,0,0));//,0));
+//		labelsButton.setBackground(new Color(0,0,0));//,0));
 		labelsButton.setPreferredSize(new Dimension(80, 20));
-		labelsButton.setForeground(Color.green);
+//		labelsButton.setForeground(Color.green);
 		labelsButton.setOpaque(false);
 		labelsButton.setVerticalAlignment(JLabel.CENTER);
 		labelsButton.setHorizontalAlignment(JLabel.CENTER);
 		//labelsButton.setContentAreaFilled(false); more artifact when enabled
-		labelsButton.setBorder(new LineBorder(Color.green, 1, true));
+//		labelsButton.setBorder(new LineBorder(Color.green, 1, true));
 		labelsButton.setToolTipText(Msg.getString("SettlementTransparentPanel.tooltip.labels")); //$NON-NLS-1$
 		labelsButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
@@ -588,11 +617,11 @@ public class SettlementTransparentPanel extends WebComponent {
 	public JPopupMenu createLabelsMenu() {
 		JPopupMenu result = new JPopupMenu(Msg.getString("SettlementWindow.menu.labelOptions")); //$NON-NLS-1$
 //		result.setOpaque(false);
-		result.setBorder(BorderFactory.createLineBorder(new Color(139,69,19)));// dark brown
-		result.setBackground(new Color(222,184,135)); // pale silky brown
-        UIResource res = new BorderUIResource.LineBorderUIResource(new Color(139,69,19));
-        UIManager.put("PopupMenu.border", res);
-        result.setLightWeightPopupEnabled(false);
+//		result.setBorder(BorderFactory.createLineBorder(new Color(139,69,19)));// dark brown
+//		result.setBackground(new Color(222,184,135,128)); // pale silky brown
+//        UIResource res = new BorderUIResource.LineBorderUIResource(new Color(139,69,19));
+//        UIManager.put("PopupMenu.border", res);
+//        result.setLightWeightPopupEnabled(false);
 
 		// Create Day Night Layer menu item.
 		JCustomCheckBoxMenuItem dayNightLabelMenuItem = new JCustomCheckBoxMenuItem(

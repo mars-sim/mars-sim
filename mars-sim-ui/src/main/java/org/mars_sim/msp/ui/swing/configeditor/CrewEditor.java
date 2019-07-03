@@ -190,8 +190,10 @@ public class CrewEditor implements ActionListener {
 					if (max > 1) {
 						int num = getRandom(max, index);
 //						System.out.println("num : " + num);
+						String c = (String)g.getItemAt(num);
 						// Fictitiously select a num (other than the index)
-						g.setSelectedIndex(num);
+						if (!c.isBlank())
+							g.setSelectedIndex(num);
 						// Then choose the one already chosen
 						// Note: This should force the sponsor to be chosen correction
 						g.setSelectedItem(s);
