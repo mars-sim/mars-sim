@@ -13,6 +13,7 @@ import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 
+import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
@@ -43,9 +44,6 @@ public abstract class BuildingFunctionPanel extends JPanel {
 		this.building = building;
 		this.desktop = desktop;
 
-		setMaximumSize(new Dimension(UnitWindow.WIDTH, UnitWindow.HEIGHT - 300));
-//		this.setPreferredSize(new Dimension(UnitWindow.WIDTH - 30, UnitWindow.HEIGHT));
-		
 		Border border = new MarsPanelBorder();
 		Border margin = new EmptyBorder(10,10,10,10);
 		setBorder(new CompoundBorder(border, margin));

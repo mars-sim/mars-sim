@@ -29,6 +29,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.AstronomicalObservation;
@@ -126,9 +127,10 @@ public class BuildingPanel extends JPanel {
 		this.functionPanels = new ArrayList<BuildingFunctionPanel>();
 
 		setLayout(new BorderLayout(0, 5));
-		this.setMaximumSize(new Dimension(UnitWindow.WIDTH, UnitWindow.HEIGHT));
-//		this.setPreferredSize(new Dimension(UnitWindow.WIDTH, UnitWindow.HEIGHT));
-		
+
+		this.setMaximumSize(new Dimension(UnitWindow.WIDTH - 90, UnitWindow.HEIGHT - 190));
+		this.setPreferredSize(new Dimension(UnitWindow.WIDTH - 90, UnitWindow.HEIGHT - 190));
+	
 		namePanel = new JPanel(new GridLayout(2, 1, 0, 0));
 		buildingNameLabel = new JLabel(building.getNickName(), JLabel.CENTER);
 		buildingNameLabel.setFont(new Font("Serif", Font.BOLD, 16));

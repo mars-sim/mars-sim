@@ -48,7 +48,7 @@ public class PopUpUnitMenu extends JPopupMenu {
 //	public static final int HEIGHT = UnitWindow.HEIGHT - 125;
 
 	public static final int D_WIDTH = 350;
-	public static final int D_HEIGHT = UnitWindow.HEIGHT - 125;
+	public static final int D_HEIGHT = UnitWindow.HEIGHT - 120;
 	
 	private JMenuItem itemOne, itemTwo, itemThree;
     private Unit unit;
@@ -57,6 +57,7 @@ public class PopUpUnitMenu extends JPopupMenu {
 	
     public PopUpUnitMenu(final SettlementWindow swindow, final Unit unit){
     	this.unit = unit;
+    	desktop = swindow.getDesktop();
     	this.settlement = swindow.getMapPanel().getSettlement();
       
         UIResource res = new BorderUIResource.LineBorderUIResource(Color.orange);
@@ -115,7 +116,7 @@ public class PopUpUnitMenu extends JPopupMenu {
             	setOpaque(false);
             	final JDialog d = new JDialog();
                 d.setForeground(Color.YELLOW); // orange font
-                d.setFont( new Font("Arial", Font.BOLD, 14 ) );
+                d.setFont(new Font("Arial", Font.BOLD, 14));
                 
                 String description;
                 String type;
@@ -171,12 +172,13 @@ public class PopUpUnitMenu extends JPopupMenu {
             public void actionPerformed(ActionEvent e) {
 	
 	            if (unit instanceof Vehicle) {
-	            	Vehicle vehicle = (Vehicle) unit;
-	            	desktop.openUnitWindow(vehicle, false);
+//	            	Vehicle vehicle = (Vehicle) unit;
+//	            	System.out.println("Vehicle : " + vehicle.getName());
+	            	desktop.openUnitWindow(unit, false);
 	            }
 	            else if (unit instanceof Person) {
-	            	Person person =(Person) unit;
-	            	desktop.openUnitWindow(person, false);
+//	            	Person person = (Person) unit;
+	            	desktop.openUnitWindow(unit, false);
 	            }
 	            else {
                 	Building building = (Building) unit;
@@ -197,7 +199,7 @@ public class PopUpUnitMenu extends JPopupMenu {
 //					d.setUndecorated(true);
 //	                d.setBackground(new Color(51,25,0,128)); // java.awt.IllegalComponentStateException: The dialog is decorated
 	                d.add(buildingPanel);
-					d.setSize(UnitWindow.WIDTH, D_HEIGHT);//WIDTH, HEIGHT);  // undecorated: 300, 335; decorated: 310, 370
+					d.setSize(UnitWindow.WIDTH - 60, D_HEIGHT);//WIDTH, HEIGHT);  // undecorated: 300, 335; decorated: 310, 370
 					d.setLayout(new FlowLayout()); 
 	
 					// Create compound border

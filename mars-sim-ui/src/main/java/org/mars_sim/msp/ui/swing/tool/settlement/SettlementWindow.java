@@ -460,7 +460,7 @@ public class SettlementWindow extends ToolWindow {
 	 * 
 	 * @return main desktop panel.
 	 */
-	public JDesktopPane getDesktop() {
+	public MainDesktopPane getDesktop() {
 		return desktop;
 	}
 
