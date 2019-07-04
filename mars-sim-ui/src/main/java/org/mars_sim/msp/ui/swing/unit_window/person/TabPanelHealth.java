@@ -31,7 +31,6 @@ import org.mars_sim.msp.core.person.health.HealthProblem;
 import org.mars_sim.msp.core.person.health.Medication;
 import org.mars_sim.msp.core.person.health.RadiationExposure;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
@@ -119,7 +118,7 @@ extends TabPanel {
 
 		// Prepare condition panel
 		WebPanel conditionPanel = new WebPanel(new SpringLayout());//GridLayout(5, 2, 0, 0));
-		conditionPanel.setBorder(new MarsPanelBorder());
+//		conditionPanel.setBorder(new MarsPanelBorder());
 		//conditionPanel.setSize(180, 60);
 		centerContentPanel.add(conditionPanel, BorderLayout.NORTH);
 
@@ -194,7 +193,7 @@ extends TabPanel {
 		// Add radiation dose info
 		// Prepare radiation panel
 		WebPanel radiationPanel = new WebPanel(new BorderLayout());//new GridLayout(2, 1, 0, 0));
-		radiationPanel.setBorder(new MarsPanelBorder());
+//		radiationPanel.setBorder(new MarsPanelBorder());
 		centerContentPanel.add(radiationPanel, BorderLayout.CENTER);
 
 		// Prepare radiation label
@@ -238,7 +237,7 @@ extends TabPanel {
 		radiationTable.getColumnModel().getColumn(2).setCellRenderer(renderer);
 		radiationTable.getColumnModel().getColumn(3).setCellRenderer(renderer);
 
-		radiationTable.setPreferredScrollableViewportSize(new Dimension(225, 55));
+		radiationTable.setPreferredScrollableViewportSize(new Dimension(225, 70));
 		radiationTable.setRowSelectionAllowed(true);
 		radiationScrollPanel.setViewportView(radiationTable);
 
@@ -256,7 +255,7 @@ extends TabPanel {
 
 		// Prepare sleep time panel
 		WebPanel sleepPanel = new WebPanel(new BorderLayout());
-		sleepPanel.setBorder(new MarsPanelBorder());
+//		sleepPanel.setBorder(new MarsPanelBorder());
 		tablePanel.add(sleepPanel);
 
 		// Prepare sleep time label
@@ -272,7 +271,7 @@ extends TabPanel {
 		
 		// Create sleep time table
 		sleepTable = new ZebraJTable(sleepTableModel);
-		sleepTable.setPreferredScrollableViewportSize(new Dimension(225, 55));
+		sleepTable.setPreferredScrollableViewportSize(new Dimension(225, 90));
 		sleepTable.getColumnModel().getColumn(0).setPreferredWidth(10);
 		sleepTable.getColumnModel().getColumn(1).setPreferredWidth(100);
 		sleepTable.setRowSelectionAllowed(true);
@@ -290,38 +289,10 @@ extends TabPanel {
 		//}
 		TableStyle.setTableStyle(sleepTable);
 		
-		// Prepare medication panel.
-		WebPanel medicationPanel = new WebPanel(new BorderLayout());
-		medicationPanel.setBorder(new MarsPanelBorder());
-		tablePanel.add(medicationPanel);
-
-		// Prepare medication label.
-		WebLabel medicationLabel = new WebLabel(Msg.getString("TabPanelHealth.medication"), WebLabel.CENTER); //$NON-NLS-1$
-		medicationPanel.add(medicationLabel, BorderLayout.NORTH);
-
-		// Prepare medication scroll panel
-		WebScrollPane medicationScrollPanel = new WebScrollPane();
-		medicationPanel.add(medicationScrollPanel, BorderLayout.CENTER);
-
-		// Prepare medication table model.
-		medicationTableModel = new MedicationTableModel(person);
-
-		// Prepare medication table.
-		medicationTable = new ZebraJTable(medicationTableModel);
-		medicationTable.setPreferredScrollableViewportSize(new Dimension(225, 10));
-		medicationTable.setRowSelectionAllowed(true);
-		medicationScrollPanel.setViewportView(medicationTable);
-
-		// Add sorting
-		medicationTable.setAutoCreateRowSorter(true);
-       //if (!MainScene.OS.equals("linux")) {
-        //	medicationTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
-		//}
-		TableStyle.setTableStyle(medicationTable);
 
 		// Prepare health problem panel
 		WebPanel healthProblemPanel = new WebPanel(new BorderLayout());
-		healthProblemPanel.setBorder(new MarsPanelBorder());
+//		healthProblemPanel.setBorder(new MarsPanelBorder());
 		tablePanel.add(healthProblemPanel);
 
 		// Prepare health problem label
@@ -348,6 +319,36 @@ extends TabPanel {
 		//}
 		TableStyle.setTableStyle(healthProblemTable);
 		
+		
+		// Prepare medication panel.
+		WebPanel medicationPanel = new WebPanel(new BorderLayout());
+//		medicationPanel.setBorder(new MarsPanelBorder());
+		tablePanel.add(medicationPanel);
+
+		// Prepare medication label.
+		WebLabel medicationLabel = new WebLabel(Msg.getString("TabPanelHealth.medication"), WebLabel.CENTER); //$NON-NLS-1$
+		medicationPanel.add(medicationLabel, BorderLayout.NORTH);
+
+		// Prepare medication scroll panel
+		WebScrollPane medicationScrollPanel = new WebScrollPane();
+		medicationPanel.add(medicationScrollPanel, BorderLayout.CENTER);
+
+		// Prepare medication table model.
+		medicationTableModel = new MedicationTableModel(person);
+
+		// Prepare medication table.
+		medicationTable = new ZebraJTable(medicationTableModel);
+		medicationTable.setPreferredScrollableViewportSize(new Dimension(225, 10));
+		medicationTable.setRowSelectionAllowed(true);
+		medicationScrollPanel.setViewportView(medicationTable);
+
+		// Add sorting
+		medicationTable.setAutoCreateRowSorter(true);
+       //if (!MainScene.OS.equals("linux")) {
+        //	medicationTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
+		//}
+		TableStyle.setTableStyle(medicationTable);
+
 	}
 
 

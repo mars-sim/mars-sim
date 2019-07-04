@@ -15,13 +15,11 @@ import javax.swing.Icon;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.border.Border;
-import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 
 
 public abstract class TabPanel extends JScrollPane {
@@ -78,12 +76,13 @@ public abstract class TabPanel extends JScrollPane {
 		topContentPanel.setBorder(MainDesktopPane.newEmptyBorder());
 		viewPanel.add(topContentPanel, BorderLayout.NORTH);
 
-		Border border = new MarsPanelBorder();
+//		Border border = new MarsPanelBorder();
 		Border margin = new EmptyBorder(5,5,5,5);
 		
 		// Create center content panel
 		centerContentPanel = new JPanel(new BorderLayout(0, 0));
-		centerContentPanel.setBorder(new CompoundBorder(border, margin));
+//		centerContentPanel.setBorder(new CompoundBorder(border, margin));
+		centerContentPanel.setBorder(margin);
 		viewPanel.add(centerContentPanel, BorderLayout.CENTER);
 
 		// setBorder(new DropShadowBorder(Color.BLACK, 0, 11, .2f, 16,false, true, true,

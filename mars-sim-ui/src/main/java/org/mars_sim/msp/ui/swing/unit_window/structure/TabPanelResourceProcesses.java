@@ -29,7 +29,6 @@ import javax.swing.JScrollPane;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -99,7 +98,7 @@ extends TabPanel {
 
 		// Prepare process list panel.
 		processListPanel = new JPanel(new GridLayout(0, 1, 5, 2));
-		processListPanel.setBorder(new MarsPanelBorder());
+//		processListPanel.setBorder(new MarsPanelBorder());
 		processesScrollPane.setViewportView(processListPanel);
 		populateProcessList();
 

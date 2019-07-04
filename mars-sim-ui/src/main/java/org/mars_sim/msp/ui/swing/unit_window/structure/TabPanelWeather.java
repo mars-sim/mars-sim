@@ -143,7 +143,7 @@ extends TabPanel {
         topContentPanel.add(titlePanel);//, BorderLayout.NORTH);
 
         locationCoordsPanel = new WebPanel();
-        locationCoordsPanel.setBorder(new EmptyBorder(1, 1, 1, 1) );
+//        locationCoordsPanel.setBorder(new EmptyBorder(1, 1, 1, 1) );
         locationCoordsPanel.setLayout(new BorderLayout(0, 0));
 
         // Prepare latitude label
@@ -161,7 +161,7 @@ extends TabPanel {
         locationCoordsPanel.add(longitudeLabel, BorderLayout.CENTER);
 
         locationLabelPanel = new WebPanel();
-        locationLabelPanel.setBorder(new EmptyBorder(1, 1, 1, 1) );
+//        locationLabelPanel.setBorder(new EmptyBorder(1, 1, 1, 1) );
         locationLabelPanel.setLayout(new BorderLayout(0, 0));
         WebLabel latLabel = new WebLabel("Latitude : ");//, JLabel.RIGHT);
         latLabel.setFont(new Font("Serif", Font.PLAIN, 15));
@@ -183,7 +183,7 @@ extends TabPanel {
 		//mainPanel.setBorder(new MarsPanelBorder());
         leftPanel.add(locationPanel, BorderLayout.NORTH);
         
-        centerContentPanel.setBorder(new MarsPanelBorder());
+//        centerContentPanel.setBorder(new MarsPanelBorder());
         centerContentPanel.add(leftPanel, BorderLayout.WEST);
 
       	// Create weatherPanel and imgPanel.

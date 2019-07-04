@@ -93,7 +93,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 
         // Create resources panel
         WebScrollPane resourcesPanel = new WebScrollPane();
-        resourcesPanel.setBorder(new MarsPanelBorder());
+//        resourcesPanel.setBorder(new MarsPanelBorder());
         inventoryContentPanel.add(resourcesPanel);
 
         // Create resources table model
@@ -129,7 +129,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 
         // Create equipment panel
         WebScrollPane equipmentPanel = new WebScrollPane();
-        equipmentPanel.setBorder(new MarsPanelBorder());
+//        equipmentPanel.setBorder(new MarsPanelBorder());
         inventoryContentPanel.add(equipmentPanel);
 
         // Create equipment table model

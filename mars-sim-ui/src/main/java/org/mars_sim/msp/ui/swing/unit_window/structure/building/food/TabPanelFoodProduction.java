@@ -117,7 +117,7 @@ public class TabPanelFoodProduction extends TabPanel {
 
 		// Prepare foodProduction outer list pane.
 		JPanel foodProductionOuterListPane = new JPanel(new BorderLayout(0, 0));
-		foodProductionOuterListPane.setBorder(new MarsPanelBorder());
+//		foodProductionOuterListPane.setBorder(new MarsPanelBorder());
 		foodProductionScrollPane.setViewportView(foodProductionOuterListPane);
 
 		// Prepare foodProduction list pane.

@@ -73,7 +73,7 @@ implements ListSelectionListener {
 
 		// Create relationship scroll panel
 		WebScrollPane relationshipScrollPanel = new WebScrollPane();
-		relationshipScrollPanel.setBorder(new MarsPanelBorder());
+//		relationshipScrollPanel.setBorder(new MarsPanelBorder());
 		centerContentPanel.add(relationshipScrollPanel);
 
 		// Create relationship table model

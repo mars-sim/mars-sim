@@ -171,7 +171,7 @@ public class ConstructionSitesPanel extends JPanel {
             setLayout(new BorderLayout(5, 5));
             
             // Set border
-            setBorder(new MarsPanelBorder());
+//            setBorder(new MarsPanelBorder());
             
             // Create the status panel.
             statusLabel = new JLabel("Status: ", JLabel.LEFT);

@@ -7,6 +7,7 @@
 package org.mars_sim.msp.ui.swing.tool.settlement;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 
 import javax.swing.JDesktopPane;
@@ -119,7 +120,7 @@ public class SettlementWindow extends ToolWindow {
 		// getRootPane().setOpaque(false);
 		// getRootPane().setBackground(new Color(0,0,0,128));
 
-		setBackground(java.awt.Color.BLACK);
+		setBackground(Color.BLACK);
 		// setOpaque(false);
 		// setBackground(new Color(0,0,0,128));
 
@@ -132,7 +133,7 @@ public class SettlementWindow extends ToolWindow {
 		mainPanel.add(subPanel, BorderLayout.CENTER);
 		// subPanel.setOpaque(false);
 		// subPanel.setBackground(new Color(0,0,0,128));
-		subPanel.setBackground(java.awt.Color.BLACK);
+		subPanel.setBackground(Color.BLACK);
 
 		mapPanel = new SettlementMapPanel(desktop, this);
 

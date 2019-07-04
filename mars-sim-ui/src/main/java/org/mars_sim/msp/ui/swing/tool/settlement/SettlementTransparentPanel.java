@@ -7,7 +7,6 @@
 
 package org.mars_sim.msp.ui.swing.tool.settlement;
 
-import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -23,7 +22,6 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -34,7 +32,6 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
@@ -78,7 +75,7 @@ public class SettlementTransparentPanel extends WebComponent {
 	private JLabel emptyLabel;
 
 	private JSlider zoomSlider;
-	private JPanel controlCenterPane, controlSouthPane, controlNorthPane, nameBtnPane, eastPane, labelPane, buttonPane, controlPane, settlementPanel, infoP, renameP ;
+	private JPanel controlCenterPane, nameBtnPane, eastPane, labelPane, buttonPane, controlPane, settlementPanel, infoP, renameP ;
 	private JButton renameBtn, infoButton;
 	//private JLabel zoomLabel;
 	private JPopupMenu labelsMenu;
@@ -136,7 +133,7 @@ public class SettlementTransparentPanel extends WebComponent {
        	nameBtnPane.add(new JLabel(""));
 
 		settlementPanel = new JPanel();//new BorderLayout());
-		settlementPanel.setBackground(new Color(0,0,0));
+		settlementPanel.setBackground(new Color(0,0,0,128));
 		settlementPanel.setOpaque(false);
 		settlementPanel.add(settlementListBox);//, BorderLayout.CENTER);
 
@@ -145,7 +142,7 @@ public class SettlementTransparentPanel extends WebComponent {
 	    box.setAlignmentX(JComponent.CENTER_ALIGNMENT);
 	    //box.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
 	    box.add(Box.createVerticalGlue());
-		box.setBackground(new Color(0,0,0));
+		box.setBackground(new Color(0,0,0,128));
 		box.setOpaque(false);
 	    box.add(settlementPanel);
 	    box.add(nameBtnPane);

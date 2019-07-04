@@ -106,7 +106,7 @@ extends TabPanel {
 
 		// Create attribute scroll panel
 		WebScrollPane attributeScrollPanel = new WebScrollPane();
-		attributeScrollPanel.setBorder(new MarsPanelBorder());
+//		attributeScrollPanel.setBorder(new MarsPanelBorder());
 		centerContentPanel.add(attributeScrollPanel);
 
 		// Create attribute table

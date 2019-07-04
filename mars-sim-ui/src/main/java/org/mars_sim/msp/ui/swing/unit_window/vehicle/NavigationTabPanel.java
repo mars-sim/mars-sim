@@ -32,7 +32,10 @@ import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 
 import javax.swing.JComponent;
+import javax.swing.JPanel;
 import javax.swing.border.BevelBorder;
+import javax.swing.border.Border;
+import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 
 import java.awt.BorderLayout;
@@ -117,7 +120,8 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
 
         // Prepare top info panel
         WebPanel topInfoPanel = new WebPanel(new BorderLayout(0, 0));
-        topInfoPanel.setBorder(new MarsPanelBorder());
+//        topInfoPanel.setBorder(new MarsPanelBorder());
+        topInfoPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
         mainPanel.add(topInfoPanel, BorderLayout.NORTH);
 
         // Prepare driver panel
@@ -126,7 +130,7 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
 
         // Prepare driver label
         WebLabel driverLabel = new WebLabel("Driver: ", WebLabel.LEFT);
-        driverLabel.setBorder(new EmptyBorder(5, 0, 5, 0));
+        driverLabel.setBorder(new EmptyBorder(5, 5, 5, 5));
         driverPanel.add(driverLabel);
 
         // Prepare driver button and add it if vehicle has driver.
@@ -173,7 +177,10 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
 
         // Prepare destination info panel
         WebPanel destinationInfoPanel = new WebPanel(new BorderLayout(0, 0));
-        destinationInfoPanel.setBorder(new MarsPanelBorder());
+		Border border = new MarsPanelBorder();
+		Border margin = new EmptyBorder(5,5,5,5);
+		destinationInfoPanel.setBorder(new CompoundBorder(border, margin));
+//        destinationInfoPanel.setBorder(new MarsPanelBorder());
         mainPanel.add(destinationInfoPanel, BorderLayout.CENTER);
 
         // Prepare destination label panel
@@ -277,7 +284,8 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
 
         // Prepare graphic display panel
         WebPanel graphicDisplayPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
-        graphicDisplayPanel.setBorder(new MarsPanelBorder());
+//        graphicDisplayPanel.setBorder(new MarsPanelBorder());
+        graphicDisplayPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
         mainPanel.add(graphicDisplayPanel, BorderLayout.SOUTH);
 
         // Prepare direction display panel

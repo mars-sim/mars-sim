@@ -81,7 +81,7 @@ public class TabPanelAssociatedPeople extends TabPanel implements MouseListener,
 
 		// Prepare info panel.
 		WebPanel countPanel = new WebPanel(new GridLayout(3, 1, 0, 0));
-		countPanel.setBorder(new MarsPanelBorder());
+//		countPanel.setBorder(new MarsPanelBorder());
 		topContentPanel.add(countPanel);
 
 		// Create associate label
@@ -104,7 +104,7 @@ public class TabPanelAssociatedPeople extends TabPanel implements MouseListener,
 		
 		// Create spring layout population display panel
 		WebPanel populationDisplayPanel = new WebPanel(new SpringLayout());// FlowLayout(FlowLayout.LEFT));
-		populationDisplayPanel.setBorder(new MarsPanelBorder());
+//		populationDisplayPanel.setBorder(new MarsPanelBorder());
 		topContentPanel.add(populationDisplayPanel);
 
 		// Create scroll panel for population list.

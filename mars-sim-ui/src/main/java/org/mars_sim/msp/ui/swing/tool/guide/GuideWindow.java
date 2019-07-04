@@ -111,7 +111,7 @@ public class GuideWindow extends ToolWindow implements ActionListener,
 
 		// Create the main panel
 		WebPanel mainPane = new WebPanel(new BorderLayout());
-		mainPane.setBorder(new MarsPanelBorder());
+//		mainPane.setBorder(new MarsPanelBorder());
 		setContentPane(mainPane);
 
 //		shortcutsButton.setToolTipText(Msg.getString("GuideWindow.tooltip.shortcuts")); //$NON-NLS-1$
@@ -161,7 +161,7 @@ public class GuideWindow extends ToolWindow implements ActionListener,
 		htmlPane.setBorder(new EmptyBorder(2, 2, 2, 2));
 
 		WebScrollPane scrollPane = new WebScrollPane(htmlPane);
-		scrollPane.setBorder(new MarsPanelBorder());
+//		scrollPane.setBorder(new MarsPanelBorder());
 		viewPort = (WebViewport) scrollPane.getViewport();
 		viewPort.addComponentListener(this);
 		viewPort.setScrollMode(WebViewport.BACKINGSTORE_SCROLL_MODE);

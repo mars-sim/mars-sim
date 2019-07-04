@@ -103,7 +103,7 @@ public class MaintenanceTabPanel extends TabPanel {
 
         // Prepare malfunction panel
         JPanel malfunctionPanel = new JPanel(new BorderLayout(0, 0));
-        malfunctionPanel.setBorder(new MarsPanelBorder());
+//        malfunctionPanel.setBorder(new MarsPanelBorder());
         centerContentPanel.add(malfunctionPanel, BorderLayout.CENTER);
 
         // Create malfunctions label

@@ -114,7 +114,7 @@ public class BuildingPanelFoodProduction extends BuildingFunctionPanel {
 		scrollPanel = new WebScrollPane();
 		scrollPanel.setPreferredSize(new Dimension(170, 90));
 		add(scrollPanel, BorderLayout.CENTER);
-		scrollPanel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+//		scrollPanel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
 
 		// Create process list main panel
 		WebPanel processListMainPane = new WebPanel(new BorderLayout(0, 0));

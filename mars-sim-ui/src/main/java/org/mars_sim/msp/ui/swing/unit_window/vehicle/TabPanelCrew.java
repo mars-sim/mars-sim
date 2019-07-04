@@ -86,7 +86,7 @@ implements MouseListener, ActionListener {
 
 		// Create crew count panel
 		WebPanel crewCountPanel = new WebPanel(new GridLayout(2, 1, 0, 0));
-		crewCountPanel.setBorder(new MarsPanelBorder());
+//		crewCountPanel.setBorder(new MarsPanelBorder());
 		topContentPanel.add(crewCountPanel);
 
 		// Create crew num label
@@ -101,7 +101,7 @@ implements MouseListener, ActionListener {
 
 		// Create crew display panel
 		WebPanel crewDisplayPanel = new WebPanel(new FlowLayout(FlowLayout.LEFT));
-		crewDisplayPanel.setBorder(new MarsPanelBorder());
+//		crewDisplayPanel.setBorder(new MarsPanelBorder());
 		topContentPanel.add(crewDisplayPanel);
 
 		// Create scroll panel for crew list.

@@ -93,7 +93,7 @@ public class TabPanelOrganization extends TabPanel {
 
 		// Prepare info panel.
 		infoPanel = new JPanel(new GridLayout(1, 2, 0, 0));
-		infoPanel.setBorder(new MarsPanelBorder());
+//		infoPanel.setBorder(new MarsPanelBorder());
 		centerContentPanel.add(infoPanel, BorderLayout.NORTH);
 
 		// Create label panel.

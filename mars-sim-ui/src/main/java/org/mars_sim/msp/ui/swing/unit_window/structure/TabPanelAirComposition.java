@@ -153,7 +153,7 @@ extends TabPanel {
 		                                10, 1);       //xPad, yPad
 		
 		WebPanel gasesPanel = new WebPanel(new GridLayout(2,1));
-		gasesPanel.setBorder(new MarsPanelBorder());
+//		gasesPanel.setBorder(new MarsPanelBorder());
 		topContentPanel.add(gasesPanel); 
 		
 		// CO2, H2O, N2, O2, Others (Ar2, He, CH4...)

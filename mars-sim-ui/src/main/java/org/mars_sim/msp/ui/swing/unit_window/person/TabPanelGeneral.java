@@ -57,7 +57,7 @@ extends TabPanel {
 
 		// Prepare spring layout info panel.
 		JPanel infoPanel = new JPanel(new SpringLayout());//GridLayout(7, 2, 0, 0));
-		infoPanel.setBorder(new MarsPanelBorder());
+//		infoPanel.setBorder(new MarsPanelBorder());
 		centerContentPanel.add(infoPanel, BorderLayout.NORTH);
 
 		// Prepare gender name label

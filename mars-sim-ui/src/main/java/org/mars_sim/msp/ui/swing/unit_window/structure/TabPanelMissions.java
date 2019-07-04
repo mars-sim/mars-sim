@@ -93,7 +93,7 @@ extends TabPanel {
 
 		// Create center panel.
 		JPanel centerPanel = new JPanel(new BorderLayout());
-		centerPanel.setBorder(new MarsPanelBorder());
+//		centerPanel.setBorder(new MarsPanelBorder());
 		centerContentPanel.add(centerPanel, BorderLayout.CENTER);
 
 		// Create mission list panel.
@@ -159,7 +159,7 @@ extends TabPanel {
 
 		// Create bottom panel.
 		JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		bottomPanel.setBorder(new MarsPanelBorder());
+//		bottomPanel.setBorder(new MarsPanelBorder());
 		topContentPanel.add(bottomPanel, BorderLayout.SOUTH);
 
 		// Create override check box.

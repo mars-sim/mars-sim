@@ -90,7 +90,7 @@ public class TabPanelMaintenance extends TabPanel {
 
 		// Prepare maintenance list panel.
 		maintenanceListPanel = new WebPanel(new GridLayout(0, 1, 0, 0));
-		maintenanceListPanel.setBorder(new MarsPanelBorder());
+//		maintenanceListPanel.setBorder(new MarsPanelBorder());
 		maintenanceScrollPane.setViewportView(maintenanceListPanel);
 		populateMaintenanceList();
 
@@ -113,7 +113,7 @@ public class TabPanelMaintenance extends TabPanel {
 
 		// Prepare malfunctions outer list panel.
 		WebPanel malfunctionsOuterListPanel = new WebPanel(new BorderLayout(0, 0));
-		malfunctionsOuterListPanel.setBorder(new MarsPanelBorder());
+//		malfunctionsOuterListPanel.setBorder(new MarsPanelBorder());
 		malfunctionsScrollPane.setViewportView(malfunctionsOuterListPanel);
 
 		// Prepare malfunctions list panel.
@@ -291,7 +291,7 @@ public class TabPanelMaintenance extends TabPanel {
 			manager = building.getMalfunctionManager();
 
 			setLayout(new GridLayout(4, 1, 0, 0));
-			setBorder(new MarsPanelBorder());
+//			setBorder(new MarsPanelBorder());
 
 			WebLabel buildingLabel = new WebLabel(building.getNickName(), WebLabel.LEFT);
 			buildingLabel.setFont(new Font("Serif", Font.BOLD, 14));
@@ -444,7 +444,7 @@ public class TabPanelMaintenance extends TabPanel {
 
 			// Set layout and border.
 			setLayout(new GridLayout(5, 1, 0, 0));
-			setBorder(new MarsPanelBorder());
+//			setBorder(new MarsPanelBorder());
 
 			// Prepare the building label.
 			WebLabel buildingLabel = new WebLabel(building.getNickName(), WebLabel.LEFT);

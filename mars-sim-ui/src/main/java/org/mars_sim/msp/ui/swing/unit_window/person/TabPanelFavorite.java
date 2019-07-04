@@ -81,7 +81,7 @@ extends TabPanel {
 
 		// Prepare SpringLayout for info panel.
 		WebPanel infoPanel = new WebPanel(new SpringLayout());//GridLayout(4, 2, 0, 0));
-		infoPanel.setBorder(new MarsPanelBorder());
+//		infoPanel.setBorder(new MarsPanelBorder());
 		topContentPanel.add(infoPanel, BorderLayout.NORTH);
 
 		// Prepare main dish name label
@@ -161,7 +161,7 @@ extends TabPanel {
 
 		// Create scroll panel
 		WebScrollPane scrollPane = new WebScrollPane();
-		scrollPane.setBorder(new MarsPanelBorder());
+//		scrollPane.setBorder(new MarsPanelBorder());
 		scrollPane.getVerticalScrollBar().setUnitIncrement(10);
 		scrollPane.setHorizontalScrollBarPolicy(WebScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		centerContentPanel.add(scrollPane,  BorderLayout.CENTER);

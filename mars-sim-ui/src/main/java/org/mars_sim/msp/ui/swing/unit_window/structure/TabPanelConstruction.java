@@ -65,7 +65,7 @@ extends TabPanel {
 
 		// Create bottom panel.
 		JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		bottomPanel.setBorder(new MarsPanelBorder());
+//		bottomPanel.setBorder(new MarsPanelBorder());
 		centerContentPanel.add(bottomPanel, BorderLayout.SOUTH);
 
 		// Create override check box.

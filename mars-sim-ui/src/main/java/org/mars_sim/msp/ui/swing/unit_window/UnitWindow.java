@@ -8,7 +8,6 @@
 package org.mars_sim.msp.ui.swing.unit_window;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -27,10 +26,11 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.TaskSchedule;
+import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MainWindow;
-import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.ModalInternalFrame;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfo;
@@ -117,15 +117,26 @@ public abstract class UnitWindow extends ModalInternalFrame {
 		this.desktop = desktop;
 		this.unit = unit;
 
-		this.setMaximumSize(new Dimension(WIDTH, HEIGHT));
-		this.setPreferredSize(new Dimension(WIDTH, HEIGHT));
+		if (unit instanceof Person) {
+			this.setMaximumSize(new Dimension(WIDTH, HEIGHT + 17));
+			this.setPreferredSize(new Dimension(WIDTH, HEIGHT + 17));
+		}
+		else if (unit instanceof Settlement) {
+			this.setMaximumSize(new Dimension(WIDTH, HEIGHT + 35));
+			this.setPreferredSize(new Dimension(WIDTH, HEIGHT + 35));
+		}
+		else if (unit instanceof Vehicle) {
+			this.setMaximumSize(new Dimension(WIDTH, HEIGHT));
+			this.setPreferredSize(new Dimension(WIDTH, HEIGHT));
+		}		
+
 		this.setIconifiable(false);
 		
 		tabPanels = new ArrayList<TabPanel>();
 
 		// Create main panel
 		WebPanel mainPane = new WebPanel(new BorderLayout());
-		mainPane.setBorder(new MarsPanelBorder());// setBorder(MainDesktopPane.newEmptyBorder());
+//		mainPane.setBorder(new MarsPanelBorder());// setBorder(MainDesktopPane.newEmptyBorder());
 		setContentPane(mainPane);
 
 		// Create status panel
@@ -230,7 +241,7 @@ public abstract class UnitWindow extends ModalInternalFrame {
 				shiftPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
 				WebPanel rowPanel = new WebPanel(new GridLayout(2, 2, 0, 0));
-				// rowPanel.setBorder(new MarsPanelBorder());
+//				 rowPanel.setBorder(new MarsPanelBorder());
 
 				rowPanel.add(townPanel);// , FlowLayout.LEFT);
 				rowPanel.add(rolePanel);// , FlowLayout.LEFT);
@@ -287,12 +298,14 @@ public abstract class UnitWindow extends ModalInternalFrame {
 //		tabPanel.setTabPlacement(JideTabbedPane.LEFT);
 
 		tabPane = new JTabbedPane();
-		tabPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
+//		tabPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
 //		UIManager.put("TabbedPane.unselectedBackground", Color.GRAY);
+//		Color bk = tabPane.getBackground();
+//		UIManager.put("TabbedPane.tabAreaBackground", bk);//ColorUIResource.RED);
 		
 		WebPanel centerPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
-		centerPanel.setOpaque(false);
-		centerPanel.setBackground(new Color(0,0,0,128));
+//		centerPanel.setOpaque(false);
+//		centerPanel.setBackground(new Color(0,0,0,128));
 		centerPanel.add(tabPane);
 
 		mainPane.add(centerPanel, BorderLayout.CENTER);

@@ -171,7 +171,7 @@ public class TabPanelSchedule extends TabPanel {
 		}
 
 		Box box = Box.createHorizontalBox();
-		box.setBorder(new MarsPanelBorder());
+//		box.setBorder(new MarsPanelBorder());
 
 //		centerContentPanel.add(infoPanel, BorderLayout.NORTH);
 		centerContentPanel.add(box, BorderLayout.NORTH);
@@ -282,7 +282,7 @@ public class TabPanelSchedule extends TabPanel {
 
 		// Create attribute scroll panel
 		WebScrollPane scrollPanel = new WebScrollPane();
-		scrollPanel.setBorder(new MarsPanelBorder());
+//		scrollPanel.setBorder(new MarsPanelBorder());
 		centerContentPanel.add(scrollPanel);
 
 		// Create schedule table

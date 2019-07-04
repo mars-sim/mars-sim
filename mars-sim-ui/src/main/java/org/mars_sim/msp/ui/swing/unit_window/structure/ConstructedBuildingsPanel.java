@@ -38,7 +38,7 @@ extends JPanel {
 		super();
 
 		setLayout(new BorderLayout(0, 0));
-		setBorder(new MarsPanelBorder());
+//		setBorder(new MarsPanelBorder());
 
 		JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		add(titlePanel, BorderLayout.NORTH);

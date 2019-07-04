@@ -120,7 +120,7 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 
 		// Prepare task top panel
 		WebPanel taskTopPanel = new WebPanel(new GridLayout(2, 1, 0, 0));
-		taskTopPanel.setBorder(new MarsPanelBorder());
+//		taskTopPanel.setBorder(new MarsPanelBorder());
 		activityPanel.add(taskTopPanel);
 
 		// Prepare task panel

@@ -121,7 +121,7 @@ public class TabPanelBuildings extends TabPanel implements ActionListener {
 		buildingDisplayPanel = new WebPanel();
 		buildingLayout = new CardLayout();
 		buildingDisplayPanel.setLayout(buildingLayout);
-		buildingDisplayPanel.setBorder(new MarsPanelBorder());
+//		buildingDisplayPanel.setBorder(new MarsPanelBorder());
 		centerContentPanel.add(buildingDisplayPanel);
 		panelList.add(buildingDisplayPanel);
 

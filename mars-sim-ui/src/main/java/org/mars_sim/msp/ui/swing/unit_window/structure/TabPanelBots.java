@@ -78,7 +78,7 @@ public class TabPanelBots extends TabPanel implements MouseListener, ActionListe
 
 		// Create robot count panel
 		WebPanel countPanel = new WebPanel(new GridLayout(3, 1, 0, 0));
-		countPanel.setBorder(new MarsPanelBorder());
+//		countPanel.setBorder(new MarsPanelBorder());
 		topContentPanel.add(countPanel);
 
 		// Create robot num label
@@ -99,7 +99,7 @@ public class TabPanelBots extends TabPanel implements MouseListener, ActionListe
 
 		// Create spring layout robot display panel
 		WebPanel robotDisplayPanel = new WebPanel(new SpringLayout());// FlowLayout(FlowLayout.LEFT));
-		robotDisplayPanel.setBorder(new MarsPanelBorder());
+//		robotDisplayPanel.setBorder(new MarsPanelBorder());
 		topContentPanel.add(robotDisplayPanel);
 
 		// Create scroll panel for robot list.

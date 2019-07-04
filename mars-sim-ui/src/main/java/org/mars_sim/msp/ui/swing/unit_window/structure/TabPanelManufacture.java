@@ -117,7 +117,7 @@ public class TabPanelManufacture extends TabPanel {
 
 		// Prepare manufacture outer list pane.
 		JPanel manufactureOuterListPane = new JPanel(new BorderLayout(0, 0));
-		manufactureOuterListPane.setBorder(new MarsPanelBorder());
+//		manufactureOuterListPane.setBorder(new MarsPanelBorder());
 		manufactureScrollPane.setViewportView(manufactureOuterListPane);
 
 		// Prepare manufacture list pane.

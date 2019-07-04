@@ -153,7 +153,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 
 			WebPanel firstPanel = new WebPanel(new BorderLayout());// GridLayout(2, 1, 5, 0));
 			// firstPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY));
-			firstPanel.setBorder(new MarsPanelBorder());
+//			firstPanel.setBorder(new MarsPanelBorder());
 			topContentPanel.add(firstPanel, BorderLayout.NORTH);
 
 			// Prepare job panel
@@ -221,7 +221,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 					10, 1); // xPad, yPad
 
 			WebPanel ratingPanel = new WebPanel(new BorderLayout());
-			ratingPanel.setBorder(new MarsPanelBorder());
+//			ratingPanel.setBorder(new MarsPanelBorder());
 			topContentPanel.add(ratingPanel, BorderLayout.CENTER);
 
 			List<JobAssignment> list = person.getJobHistory().getJobAssignmentList();
@@ -330,7 +330,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 
 		// Create attribute scroll panel
 		WebScrollPane scrollPanel = new WebScrollPane();
-		scrollPanel.setBorder(new MarsPanelBorder());
+//		scrollPanel.setBorder(new MarsPanelBorder());
 		centerContentPanel.add(scrollPanel, BorderLayout.CENTER);
 
 		// Create schedule table

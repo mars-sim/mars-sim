@@ -95,7 +95,7 @@ extends TabPanel {
 
 		// Create the studies panel.
 		JPanel studiesPane = new JPanel(new BorderLayout());
-		studiesPane.setBorder(new MarsPanelBorder());
+//		studiesPane.setBorder(new MarsPanelBorder());
 		mainPane.add(studiesPane);
 
 		// Create the studies label.
@@ -104,7 +104,7 @@ extends TabPanel {
 
 		// Create the study scroll panel.
 		JScrollPane studyScrollPane = new JScrollPane();
-		studyScrollPane.setBorder(new MarsPanelBorder());
+//		studyScrollPane.setBorder(new MarsPanelBorder());
 		studyScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		studiesPane.add(studyScrollPane, BorderLayout.CENTER);
 
@@ -152,7 +152,7 @@ extends TabPanel {
 
 		// Create the achievement panel.
 		JPanel achievementPane = new JPanel(new BorderLayout());
-		achievementPane.setBorder(new MarsPanelBorder());
+//		achievementPane.setBorder(new MarsPanelBorder());
 		mainPane.add(achievementPane);
 
 		// Create achievement label panel.
@@ -171,7 +171,7 @@ extends TabPanel {
 
 		// Create the achievement scroll panel.
 		JScrollPane achievementScrollPane = new JScrollPane();
-		achievementScrollPane.setBorder(new MarsPanelBorder());
+//		achievementScrollPane.setBorder(new MarsPanelBorder());
 		achievementScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		achievementPane.add(achievementScrollPane, BorderLayout.CENTER);
 

@@ -144,7 +144,7 @@ extends TabPanel {
 
 		// Prepare heat info panel.
 		WebPanel heatInfoPanel = new WebPanel(new SpringLayout());//GridLayout(6, 1, 0, 0));
-		heatInfoPanel.setBorder(new MarsPanelBorder());
+//		heatInfoPanel.setBorder(new MarsPanelBorder());
 		topContentPanel.add(heatInfoPanel);
 
 		// Prepare heat generated label.

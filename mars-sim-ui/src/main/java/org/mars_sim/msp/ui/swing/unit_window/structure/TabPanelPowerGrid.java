@@ -149,7 +149,7 @@ extends TabPanel {
 
 		// Prepare spring layout power info panel.
 		WebPanel powerInfoPanel = new WebPanel(new SpringLayout());//GridLayout(6, 2, 0, 0));
-		powerInfoPanel.setBorder(new MarsPanelBorder());
+//		powerInfoPanel.setBorder(new MarsPanelBorder());
 		topContentPanel.add(powerInfoPanel);
 
 		// Prepare power generated label.

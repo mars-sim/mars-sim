@@ -13,8 +13,6 @@ import java.awt.Font;
 import javax.swing.JTable;
 import javax.swing.SwingUtilities;
 
-import org.mars_sim.msp.ui.swing.MainWindow;
-
 public class TableStyle extends ZebraJTable{
 
 	//private static JTableHeader theHeader;

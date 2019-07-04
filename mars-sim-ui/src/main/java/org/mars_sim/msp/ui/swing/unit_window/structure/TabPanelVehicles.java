@@ -69,7 +69,7 @@ implements MouseListener {
 
 		// Create vehicle display panel
 		JPanel vehicleDisplayPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		vehicleDisplayPanel.setBorder(new MarsPanelBorder());
+//		vehicleDisplayPanel.setBorder(new MarsPanelBorder());
 		topContentPanel.add(vehicleDisplayPanel);
 
 		// Create scroll panel for vehicle list.

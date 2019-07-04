@@ -81,7 +81,7 @@ implements MouseListener, ActionListener {
 
 		// Create population count panel
 		JPanel populationCountPanel = new JPanel(new GridLayout(2, 2, 0, 0));
-		populationCountPanel.setBorder(new MarsPanelBorder());
+//		populationCountPanel.setBorder(new MarsPanelBorder());
 		topContentPanel.add(populationCountPanel);
 
 
@@ -99,7 +99,7 @@ implements MouseListener, ActionListener {
 
 		// Create spring layout population display panel
 		JPanel populationDisplayPanel = new JPanel(new SpringLayout());//FlowLayout(FlowLayout.LEFT));
-		populationDisplayPanel.setBorder(new MarsPanelBorder());
+//		populationDisplayPanel.setBorder(new MarsPanelBorder());
 		topContentPanel.add(populationDisplayPanel);
 
 		// Create scroll panel for population list.

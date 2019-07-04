@@ -69,7 +69,7 @@ implements ActionListener {
 
 		// Prepare death label panel
 		JPanel deathLabelPanel = new JPanel(new SpringLayout());//GridLayout(3, 2, 0, 0));
-		deathLabelPanel.setBorder(new MarsPanelBorder());
+//		deathLabelPanel.setBorder(new MarsPanelBorder());
 		centerContentPanel.add(deathLabelPanel, BorderLayout.NORTH);
 
 		// Prepare cause label
@@ -123,7 +123,7 @@ implements ActionListener {
 
 		JPanel innerPanel = new JPanel();//new FlowLayout(FlowLayout.CENTER));
 		innerPanel.setLayout(new BoxLayout(innerPanel, BoxLayout.Y_AXIS));
-		innerPanel.setBorder(new MarsPanelBorder());
+//		innerPanel.setBorder(new MarsPanelBorder());
 		bottomContentPanel.add(innerPanel, BorderLayout.CENTER);
 
 		// Prepare location label panel

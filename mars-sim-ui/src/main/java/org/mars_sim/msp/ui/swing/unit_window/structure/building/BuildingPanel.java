@@ -29,7 +29,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.AstronomicalObservation;

@@ -106,7 +106,7 @@ extends TabPanel {
 
 		// Create skill scroll panel
 		WebScrollPane skillScrollPanel = new WebScrollPane();
-		skillScrollPanel.setBorder(new MarsPanelBorder());
+//		skillScrollPanel.setBorder(new MarsPanelBorder());
 		centerContentPanel.add(skillScrollPanel);
 
 		// Create skill table
