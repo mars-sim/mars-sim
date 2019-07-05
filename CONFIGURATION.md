@@ -13,7 +13,7 @@ on the fly without having to manually compressing, uncompressing,
 ## Location
 
 The Mars Simulation Project's configuration files are primarily 
-written in XML format. They are located inside the '/conf' 
+written in XML format. They are located inside the `/conf` 
 sub-directory of the mars-sim jar file. Specifically, they 
 are inside the resources folder of the mars-sim-core 
 maven submodule.
@@ -21,12 +21,12 @@ maven submodule.
  
 ## Editing
   
-Hover the mouse cursor over the mars-sim jarfile.
-Right click on the jarfile to bring up a menu.
-Choose the option '7-Zip' and 'Open archive'.
-In the 7-zip FIle Manager, go to the directory '\conf'
-Right click on a xml file of your interest
-Choose 'Edit' to open up that xml
+- Hover the mouse cursor over the mars-sim jarfile
+- Right click on the jarfile to bring up a menu
+- Choose the option `7-Zip` and `Open archive`
+- In the 7-zip File Manager, go to the directory `\conf`
+- Right click on a xml file of your interest
+- Choose `Edit` to open up that xml file
  
  
 ## Backup
@@ -38,47 +38,40 @@ fail to start.
 
 ## List of xml files
 
-buildings.xml:	    Modify or create new buildings based on functional 
-                  	components.
+| Filename | Purpose |
+| --- | --- |
+| buildings.xml | Define new buildings with functions |
                   
-construction.xml: 	Modify or create new construction sites for constructing
-                  	settlement buildings.
+| construction.xml | Define type of  foundations, frames and buildings |
                
-crops.xml:        	Modify or add new crops that settlers can grow in 
-                  	greenhouses.
+| crops.xml | Define food crops grown in greenhouses  |
 
-foodProduction.xml: Modify or add food technology related processes.
+| foodProduction.xml | Define food technology related processes  |
            
-landmarks.xml:    	Modify or add landmarks.
+| landmarks.xml | Define landmarks on the surface of Mars |
                
-malfunctions.xml: 	Modify or create new malfunctions that can occur
-                  	in the simulation.
+| malfunctions.xml | Define malfunctions that can occur in the sim  |
                   
-manufacturing.xml: 	Modify or create new manufacturing processes.  
+| manufacturing.xml | Define manufacturing processes  | 
 
-meals.xml:			Modify or create new meal recipes.                  
+| meals.xml | Define meal recipes  |                 
                   
-medical.xml:      	Modify or create new illnesses or treatments.
+| medical.xml | Define illnesses or treatments  |
 
-minerals.xml:     	Modify or create new mineral types.
+| minerals.xml | Define mineral types  |
 
-part_packages.xml: 	Modify or create new part packages that can be used for
-                  	initial settlements or resupplies from Earth.
+| part_packages.xml | Define part packages for initial settlements or resupplies from Earth  |
 
-parts.xml:        	Modify or create new parts.
+| parts.xml | Define parts  |
 
-people.xml:       	Modify properties related to people. May add new 
-                  	names to the person name list.
+| people.xml | Store the alpha crew roster and define properties related to people |
                   
-resources.xml:    	Modify or create new resources.
+| resources.xml | Define resources  |
 
-resupplies.xml:   	Modify or create settlement resupplies from Earth.
+| resupplies.xml | Define initial settlement resupply packages from Earth  |
                   
-settlements.xml:  	Modify or create new settlement templates an
-                  	define individual settlements. May add new settlement
-                  	names to the names list.
+| settlements.xml | Store settlement templates and define properties related to settlements |
                   
-simulation.xml:   	Modify simulation properties.
+| simulation.xml | Define simulation properties  |
 
-vehicles.xml:    	Modify or create new rovers based on components. May add
-					new rover names to the names list.
+| vehicles.xml | Define properties related to vehicles and rovers |
