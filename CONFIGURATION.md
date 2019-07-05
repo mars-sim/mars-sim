@@ -1,15 +1,42 @@
-The Mars Simulation Project can be configured by editing the 
-XML files inside mars-sim-core-${Version}.jar's 'conf' subdirectory.
+# Configuration
+
+
+## Utility Tool
+
+In order to manipulate these xml files inside the jar file, 
+we recommend installing the [7-Zip File Manager](https://www.7-zip.org/)
+that allows users to manipulate files insides a jar file 
+on the fly without having to manually compressing, uncompressing,
+ cutting and pasting of files.
+
+
+## Location
+
+The Mars Simulation Project's configuration files are primarily 
+written in XML format. They are located inside the '/conf' 
+sub-directory of the mars-sim jar file. Specifically, they 
+are inside the resources folder of the mars-sim-core 
+maven submodule.
  
-It's recommended you use utility tool such as '7 Zip File Manager' 
-to manipulate these xml files inside the jar file without having to 
-compress and uncompress other files. 
+ 
+## Editing
+  
+Hover the mouse cursor over the mars-sim jarfile.
+Right click on the jarfile to bring up a menu.
+Choose the option '7-Zip' and 'Open archive'.
+In the 7-zip FIle Manager, go to the directory '\conf'
+Right click on a xml file of your interest
+Choose 'Edit' to open up that xml
+ 
+ 
+## Backup
 
 It is recommended that you make a backup of the original configuration
 file before editing it as user-created XML errors can cause mars-sim
 fail to start.
 
-The following files are edited:
+
+## List of xml files
 
 buildings.xml:	    Modify or create new buildings based on functional 
                   	components.

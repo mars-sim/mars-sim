@@ -17,6 +17,7 @@
 	</properties>
 	<build>
 		<plugins>
+			<!-- https://mvnrepository.com/artifact/org.codehaus.mojo/exec-maven-plugin -->
 			<plugin>
 		        <groupId>org.codehaus.mojo</groupId>
 		        <artifactId>exec-maven-plugin</artifactId>
@@ -41,10 +42,10 @@
 		        </configuration>
 		    </plugin>		
 			<plugin>
-				<!-- https://mvnrepository.com/artifact/org.vafer/jdeb : 1.7 MB -->
+				<!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-jar-plugin/3.1.2  : 27 KB -->
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
-				<version>3.1.0</version>
+				<version>3.1.2</version>
 				<configuration>
 					<archive>
 						<manifest>
@@ -59,7 +60,7 @@
 					https://maven.apache.org/plugins/maven-assembly-plugin/ : 235 KB -->
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
-				<version>3.1.0</version>
+				<version>3.1.1</version>
 				<configuration>
 					<descriptorRefs>
 						<descriptorRef>jar-with-dependencies</descriptorRef>
@@ -81,7 +82,8 @@
 				</executions>
 			</plugin>
 			<plugin>
-				<!-- see https://github.com/tcurdt/jdeb -->
+				<!-- https://github.com/tcurdt/jdeb -->
+				<!-- https://mvnrepository.com/artifact/org.vafer/jdeb : 1.8 MB -->
 				<groupId>org.vafer</groupId>
 				<artifactId>jdeb</artifactId>
 				<version>1.7</version>

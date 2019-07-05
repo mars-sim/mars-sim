@@ -63,10 +63,11 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		<!-- trident animation library is required by steelseries.extras in mars-sim-ui	
 		     https://search.maven.org/artifact/org.pushing-pixels/radiance-trident/1.0.1/jar 
 		     https://github.com/kirill-grouchnikov/radiance/blob/master/docs/trident/trident.md 79KB -->
+		<!-- Note: steelseries requires 1.0.2. 2.0.1 does not work.  -->
 		<dependency>
 		  <groupId>org.pushing-pixels</groupId>
 		  <artifactId>radiance-trident</artifactId>
-		  <version>1.0.1</version>
+		  <version>1.0.2</version>
 		</dependency>
 		<!-- https://github.com/kirill-grouchnikov/radiance
 		     https://github.com/kirill-grouchnikov/radiance/blob/master/docs/substance/substance.md

@@ -21,7 +21,7 @@ Before you submit your issue, search the archive, your question may have been pa
 
 If your issue appears to be a bug, and hasn't been reported, open a new issue.
 
-Help us to maximise the effort we can spend fixing issues and adding new
+Help us to maximize the effort we can spend fixing issues and adding new
 features, by not reporting duplicate issues. 
 
 See under Issues/Tickets at [README.md](https://github.com/mars-sim/mars-sim#issuestickets) and provide the relevant 
@@ -33,7 +33,7 @@ __If you get help, help others. That way everyone benefits!__
 
 We welcome anyone to contribute to mars-sim in terms of ideas, concepts and coding. 
 
-If you would like to become a developer and contribute to coding, see this [wiki](https://github.com/mars-sim/mars-sim/wiki/Development-Environment). 
+If you would like to become a developer and contribute to coding, see this [wiki](https://github.com/mars-sim/mars-sim/wiki/Development-Environment) about setting the development environment on your machine.
 
 ## <a name="info"></a> Further Information
 
