@@ -37,5 +37,5 @@ If you would like to become a developer and contribute to coding, see this [wiki
 
 ## <a name="info"></a> Further Information
 
-You can find out more information about mars-sim at
-https://github.com/mars-sim/mars-sim
+You can find out more information about mars-sim [here](
+https://github.com/mars-sim/mars-sim)

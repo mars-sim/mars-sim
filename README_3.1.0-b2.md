@@ -14,9 +14,7 @@ https://github.com/mars-sim/mars-sim
 
 - 220 MB free disk space
 
-- JRE/JDK 8 (u77 above) for binaries compiled under Java 8
-
-- JRE/JDK 9/10 for binaries compiled under Java 9
+- JRE/JDK 11 or openjdk 11 
 
 ---------------------------------------------------------------------
 
@@ -25,7 +23,7 @@ https://github.com/mars-sim/mars-sim
 - Install the latest Java JRE or JDK on your machine. 
   See `Prerequisites` at [README.md](https://github.com/mars-sim/mars-sim/blob/master/README.md) 
 
-- Download a binary mars-sim package of your choice.
+- Download a binary mars-sim edition of your choice.
 
 ---------------------------------------------------------------------
 
@@ -277,4 +275,5 @@ Public License 3 for more details.
 
 - You should have received a copy of the GNU General Public License 
 along with this program; if not, write to the Free Software Foundation,
- Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307USA
+ Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ 

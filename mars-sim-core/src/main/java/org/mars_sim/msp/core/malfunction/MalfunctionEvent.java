@@ -30,8 +30,7 @@ public class MalfunctionEvent extends HistoricalEvent implements Serializable {
 	 * @param whoAffected Who is being primarily affected by this event.
 	 * @param location0   the building/vehicle where it occurs.
 	 * @param location1   the settlement/coordinate where it occurs.
-	 * 
-	 * 
+	 * @param associatedSettlement   the associated settlement.
 	 */
 	public MalfunctionEvent(EventType type, Malfunction malfunction, String whatCause, String whileDoing,
 			String whoAffected, String location0, String location1, String associatedSettlement) {

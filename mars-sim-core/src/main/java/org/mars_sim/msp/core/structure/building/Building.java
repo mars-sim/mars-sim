@@ -1141,6 +1141,29 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		return num;
 	}
 
+	
+	/**
+	 * Gets the number of people
+	 * 
+	 * @return
+	 */
+	public int getNumPeople() {
+
+		int people = 0;
+		
+		if (lifeSupport != null) {
+			people = lifeSupport.getOccupants().size();
+		}
+
+		return people;
+	}
+	
+	
+	/**
+	 * Gets a collection of inhabitants
+	 * 
+	 * @return
+	 */
 	public Collection<Person> getInhabitants() {
 		Collection<Person> people = new ConcurrentLinkedQueue<Person>();
 
@@ -1189,6 +1212,11 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		return people;
 	}
 
+	/**
+	 * Gets a collection of affected robots
+	 * 
+	 * @return
+	 */
 	public Collection<Robot> getAffectedRobots() {
 		Collection<Robot> robots = new ConcurrentLinkedQueue<Robot>();
 

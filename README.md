@@ -134,6 +134,15 @@ For a more detail description of this project, see our [project website](https:/
 
 ---
 
+## Download 
+Check out the most recent build in the [GitHub's Release Tab](https://github.com/mars-sim/mars-sim/releases) or 
+in [SourceForge Repo](https://sourceforge.net/projects/mars-sim/files/mars-sim/3.1.0/)
+
+Alternatively, you may use SourceForge's button below to automatically sense the correct platform. 
+[![Download Mars Simulation Project](https://a.fsdn.com/con/app/sf-download-button)](https://sourceforge.net/projects/mars-sim/files/latest/download)
+
+---
+
 ## Getting Started
 
 ### Prerequisites
@@ -143,13 +152,15 @@ Before r4945,
 * Require Java 9/10 for binaries compiled under Java 9
 
 As of r4945, 
-* Requires openjdk 11 (Java 11) for compiling binary
+* Requires JRE 11 for running mars-sim
+* Requires openjdk 11 (JDK 11) for compiling binary
 
 ```
 Note 1 : Beginning Java 11, the JRE/JDK is decoupled from the graphic JavaFX API. If you use OpenJDK 11, make sure 
 you also download OpenJFK 11 **separately**. 
 Feel free to discuss how to set up mars-sim to run it under Java 11. See also #156.
 ```
+
 
 #### For Windows OS
  
@@ -244,15 +255,6 @@ Also, we will answer your questions in our [Gitter chatroom](https://gitter.im/m
 
 ## Official Codebase
 * https://github.com/mars-sim/mars-sim
-
----
-
-## Download 
-Check out the most recent build in the [GitHub's Release Tab](https://github.com/mars-sim/mars-sim/releases) or 
-in [SourceForge Repo](https://sourceforge.net/projects/mars-sim/files/mars-sim/3.1.0/)
-
-Alternatively, you may use SourceForge's button below to automatically sense the correct platform. 
-[![Download Mars Simulation Project](https://a.fsdn.com/con/app/sf-download-button)](https://sourceforge.net/projects/mars-sim/files/latest/download)
 
 ---
 
