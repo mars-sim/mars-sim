@@ -31,6 +31,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
+import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 
@@ -41,6 +42,7 @@ public class StudyPanel extends WizardPanel {
 
 	// The wizard panel name.
 	private final static String NAME = "Scientific Study";
+	private final static String CANT = "Note : not valid for this mission";
 
 	// Data members.
 	private StudyTableModel studyTableModel;
@@ -113,7 +115,7 @@ public class StudyPanel extends WizardPanel {
 					int index = studyTable.getSelectedRow();
 					if (index > -1) {
 						if (studyTableModel.isFailureRow(index)) {
-							errorMessageLabel.setText("mission cannot use study (see red cells).");
+							errorMessageLabel.setText(CANT);
 							getWizard().setButtons(false);
 						} else {
 							errorMessageLabel.setText(" ");
@@ -254,9 +256,9 @@ public class StudyPanel extends WizardPanel {
 					ScientificStudy study = studies.get(row);
 
 					if (column == 0)
-						result = study.toString();
+						result = Conversion.capitalize(study.toString());
 					else if (column == 1)
-						result = study.getPhase();
+						result = Conversion.capitalize(study.getPhase());
 					else if (column == 2)
 						result = getScienceResearcherNum(study);
 				} catch (Exception e) {

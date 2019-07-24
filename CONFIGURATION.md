@@ -1,29 +1,31 @@
 # Configuration
+`Revised : 7 Jul 2019`
 
 Most of the Mars Simulation Project's configuration files are 
 primarily written in XML format. This guide will get you 
 started with editing these files.
 
-Although most attributes and properties are designed to 
-tolerate a range of values, beware that they are not all 
-created equal for the same degree of user customizations. 
-By all means, file a [ticket](#issue) and discuss with us 
-what you have in mind to change.
+Most attributes and properties are designed to 
+tolerate a range of values. However, they are not all 
+created equal to have the same degree of user customization. 
+
+Do file a [ticket](#issue) and discuss with us 
+whatever you have in mind to change.
 
 
 ## Utility Tool
 
 In order to manipulate these xml files inside the jar file, 
 we recommend installing the [7-Zip File Manager](https://www.7-zip.org/)
-that allows users to manipulate files insides a jar file 
+that allows users to manipulate files located insides a jar file 
 on the fly without having to manually compressing, uncompressing,
- cutting and pasting of files.
+ copying and deleting files.
 
 
 ## Location
 
-They are located inside the `/conf` 
-sub-directory of the version of the mars-sim jar file, i.e.
+They are located in the `/conf` 
+sub-directory inside the mars-sim jar file such as 
 `r4948_gui_java11.jar`. 
 
 Alternatively, if you have the mars-sim package with separate
@@ -34,6 +36,10 @@ xml files inside the `/resources/conf` sub-directory of the
  
 ## Editing
   
+After installing the 7-Zip File Manager, one may perform 
+the following steps to open a xml file embedded inside 
+a jar file for editing : 
+
 - Hover the mouse cursor over the mars-sim jarfile
 - Right click on the jarfile to bring up a menu
 - Choose the option `7-Zip` and `Open archive`
@@ -44,9 +50,9 @@ xml files inside the `/resources/conf` sub-directory of the
  
 ## Backup
 
-It is recommended that you make a backup of the original configuration
-file before editing it as user-created XML errors can cause mars-sim
-fail to start.
+It is recommended that you make a backup of the original xml 
+configuration file before editing it as the edited XML files 
+often contain errors that can cause mars-sim fail to start.
 
 
 ## List of xml files
@@ -74,7 +80,7 @@ fail to start.
 
 ## Further Information
 
-You can find out more information about mars-sim [here](
-https://github.com/mars-sim/mars-sim)
+You can find out more information about mars-sim in its [github](
+https://github.com/mars-sim/mars-sim) page.
 
 

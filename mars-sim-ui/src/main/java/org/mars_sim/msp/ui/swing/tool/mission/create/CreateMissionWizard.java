@@ -170,10 +170,13 @@ implements ActionListener {
 		// TODO: Change members panel to use lead researcher as member.
 		addWizardPanel(new MembersPanel(this));
 		//addWizardPanel(new BotMembersPanel(this));
-		//Choosing the remote location of the mission
+		
+		// Choose the remote location of the mission
 		if (missionBean.requiresFieldSite()) {
 			addWizardPanel(new FieldSitePanel(this));
-		} else if( missionBean.isMiningMission() ) {
+		} 
+		
+		if( missionBean.isMiningMission() ) {
 			addWizardPanel(new MiningSitePanel(this));
 	    } else if (missionBean.isProspectingMission()) {
 			addWizardPanel(new ProspectingSitePanel(this));
@@ -184,13 +187,15 @@ implements ActionListener {
 		} else if(missionBean.isRendezvousMission()) {
 			addWizardPanel(new RendezvousVehiclePanel(this));
 		}
-		//The cargo of the mission
+		
+		// The cargo of the mission
 		if ( missionBean.isEmergencySupplyMission()) {
 			addWizardPanel(new EmergencySupplyPanel(this));
 		} else if (missionBean.isTradeMission()) {
 			addWizardPanel(new TradeGoodsPanel(this, false));
 			addWizardPanel(new TradeGoodsPanel(this, true));
 		}
+		
 		// Set construction or salvage projects
 		if ( missionBean.isConstructionMission() ) {
 			addWizardPanel(new ConstructionProjectPanel(this));

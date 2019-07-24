@@ -133,7 +133,8 @@ class MissionDataBean {
 	 * Creates a mission from the mission data.
 	 */
     protected void createMission() {
-
+    	// TODO: how to resolve the situation when rover is no longer available ?
+    	
 	    Mission mission = null;
 	    if (AREOLOGY_FIELD_MISSION.equals(type)) {
 	        mission = new AreologyStudyFieldMission(members, startingSettlement, leadResearcher, study,
@@ -203,7 +204,7 @@ class MissionDataBean {
 	                description);
 	    }
 	    
-	    else throw new IllegalStateException("mission type: " + type + " unknown");
+	    else throw new IllegalStateException("Mission type: " + type + " unknown");
 
 	    missionManager.addMission(mission);
 	}
@@ -791,7 +792,7 @@ class MissionDataBean {
 	}
 
 	protected boolean requiresFieldSite() {
-		return  ( isScientificMission() || isMiningMission() || isExplorationMission() );
+		return  (isScientificMission());// || isMiningMission() || isExplorationMission() );
 	}
 
 	protected boolean requiresDestinationSettlement() {
