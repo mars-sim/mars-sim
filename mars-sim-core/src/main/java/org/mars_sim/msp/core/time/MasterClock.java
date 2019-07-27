@@ -1126,15 +1126,15 @@ public class MasterClock implements Serializable {
 	/**
 	 * Set if the simulation is paused or not.
 	 *
-	 * @param isPaused true if simulation is paused.
-	 * @param showPane
+	 * @param value the state to be set.
+	 * @param showPane true if the pane should be shown.
 	 */
-	public void setPaused(boolean isPaused, boolean showPane) {
-		if (this.isPaused != isPaused) {
-			this.isPaused = isPaused;
-			uptimer.setPaused(isPaused);
+	public void setPaused(boolean value, boolean showPane) {
+		if (this.isPaused != value) {
+			this.isPaused = value;
+			uptimer.setPaused(value);
 	
-			if (isPaused) {
+			if (value) {
 //				stop();
 				AutosaveScheduler.cancel();		
 //				logger.config("The simulation is paused.");
@@ -1146,7 +1146,7 @@ public class MasterClock implements Serializable {
 			}
 			
 			// Fire pause change to all clock listeners.
-			firePauseChange(isPaused, showPane);
+			firePauseChange(value, showPane);
 		}
 	}
 

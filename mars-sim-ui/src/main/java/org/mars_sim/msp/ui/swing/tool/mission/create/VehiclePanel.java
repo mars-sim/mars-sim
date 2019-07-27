@@ -167,6 +167,9 @@ class VehiclePanel extends WizardPanel {
 		int selectedIndex = vehicleTable.getSelectedRow();
 		Rover selectedVehicle = (Rover) vehicleTableModel.getUnit(selectedIndex);
 		getWizard().getMissionData().setRover(selectedVehicle);
+		
+		// Reserve the vehicle
+		
 		return true;
 	}
 

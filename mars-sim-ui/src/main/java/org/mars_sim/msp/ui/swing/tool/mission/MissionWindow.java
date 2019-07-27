@@ -29,26 +29,25 @@ import com.alee.laf.tabbedpane.WebTabbedPane;
 /**
  * Window for the mission tool.
  */
-public class MissionWindow
-extends ToolWindow {
+public class MissionWindow extends ToolWindow {
 
 	/** Tool name. */
 	public static final String NAME = "Mission Tool";
 
 	// Private members
 	private double previous;
-	
+
 	private WebTabbedPane tabPane;
 	private JList<Mission> missionList;
-	
+
 	private NavpointPanel navpointPane;
 //	private MainScene mainScene;
 	private CreateMissionWizard createMissionWizard;
 	private EditMissionDialog editMissionDialog;
-	
 
 	/**
 	 * Constructor.
+	 * 
 	 * @param desktop {@link MainDesktopPane} the main desktop panel.
 	 */
 	public MissionWindow(MainDesktopPane desktop) {
@@ -92,13 +91,12 @@ extends ToolWindow {
 
 		// Create the create mission button.
 		WebButton createButton = new WebButton("Create New Mission");
-		createButton.addActionListener(
-				new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						// Create new mission.
-						createNewMission();
-					}
-				});
+		createButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				// Create new mission.
+				createNewMission();
+			}
+		});
 		buttonPane.add(createButton);
 
 		// Create the edit mission button.
@@ -127,7 +125,7 @@ extends ToolWindow {
 		// Create the abort mission button.
 		final WebButton abortButton = new WebButton("Abort Mission");
 		abortButton.setEnabled(false);
-		
+
 //		abortButton.addActionListener(
 //				new ActionListener() {
 //					public void actionPerformed(ActionEvent e) {
@@ -145,7 +143,7 @@ extends ToolWindow {
 
 		buttonPane.add(abortButton);
 
-		setSize(new Dimension(640, 640));//736));
+		setSize(new Dimension(640, 640));// 736));
 		setMaximizable(true);
 		setResizable(false);
 
@@ -154,23 +152,25 @@ extends ToolWindow {
 //		}
 
 		setVisible(true);
-		//pack();
+		// pack();
 
 		Dimension desktopSize = desktop.getSize();
-	    Dimension jInternalFrameSize = this.getSize();
-	    int width = (desktopSize.width - jInternalFrameSize.width) / 2;
-	    int height = (desktopSize.height - jInternalFrameSize.height) / 2;
-	    setLocation(width, height);
+		Dimension jInternalFrameSize = this.getSize();
+		int width = (desktopSize.width - jInternalFrameSize.width) / 2;
+		int height = (desktopSize.height - jInternalFrameSize.height) / 2;
+		setLocation(width, height);
 
 	}
 
 	/**
 	 * Selects a mission for display.
+	 * 
 	 * @param mission the mission to select.
 	 */
 	public void selectMission(Mission mission) {
 		MissionListModel model = (MissionListModel) missionList.getModel();
-		if (model.containsMission(mission)) missionList.setSelectedValue(mission, true);
+		if (model.containsMission(mission))
+			missionList.setSelectedValue(mission, true);
 	}
 
 	/**
@@ -183,7 +183,7 @@ extends ToolWindow {
 //			mainScene.speedUpTimeRatio(previous);
 //		} 
 //		else {
-			createMissionWizard = new CreateMissionWizard(desktop, this);
+		createMissionWizard = new CreateMissionWizard(desktop, this);
 //		}
 
 	}
@@ -207,7 +207,6 @@ extends ToolWindow {
 //			editMissionDialog = new EditMissionDialog(desktop, mission, this);
 //	}
 
-	
 //	/**
 //	 * Ends the mission.
 //	 * @param mission the mission to end.
@@ -217,7 +216,7 @@ extends ToolWindow {
 //		mission.endMission(Mission.USER_ABORTED_MISSION);
 //		repaint();
 //	}
-		
+
 	public CreateMissionWizard getCreateMissionWizard() {
 		return createMissionWizard;
 	}
@@ -225,14 +224,14 @@ extends ToolWindow {
 	public MainDesktopPane getDesktop() {
 		return desktop;
 	}
-	
+
 	public boolean isNavPointsMapTabOpen() {
 		if (tabPane.getSelectedIndex() == 1)
 			return true;
 		else
 			return false;
 	}
-	
+
 	/**
 	 * Prepares tool window for deletion.
 	 */

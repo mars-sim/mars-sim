@@ -131,7 +131,6 @@ public abstract class ModalInternalFrame extends JInternalFrame {
 	 * Stop the modal behavior.
 	 */
 	private synchronized void stopModal() {
-
 		notifyAll();
 	}
 

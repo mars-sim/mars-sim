@@ -16,13 +16,13 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JButton;
+import javax.swing.JPanel;
+
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.ModalInternalFrame;
 import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
-
-import com.alee.laf.button.WebButton;
-import com.alee.laf.panel.WebPanel;
 
 /**
  * A wizard for creating new missions.
@@ -34,10 +34,10 @@ implements ActionListener {
 	// Data members
 	private int displayPanelIndex;
 	
-	private WebPanel infoPane;
-	private WebButton prevButton;
-	private WebButton nextButton;
-	private WebButton finalButton;
+	private JPanel infoPane;
+	private JButton prevButton;
+	private JButton nextButton;
+	private JButton finalButton;
 	
 	private MissionDataBean missionBean;
 	private TypePanel typePanel;
@@ -62,7 +62,7 @@ implements ActionListener {
 		missionBean = new MissionDataBean();
 
 		// Create info panel.
-		infoPane = new WebPanel(new CardLayout());
+		infoPane = new JPanel(new CardLayout());
 		infoPane.setBorder(new MarsPanelBorder());
 
 		//setContentPane(infoPane);
@@ -82,32 +82,34 @@ implements ActionListener {
         addWizardPanel(new StartingSettlementPanel(this));
 
 		// Create bottom button panel.
-		WebPanel bottomButtonPane = new WebPanel(new FlowLayout(FlowLayout.CENTER));
+		JPanel bottomButtonPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		add(bottomButtonPane, BorderLayout.SOUTH);
 
 		// Create previous button.
-		prevButton = new WebButton("Previous");
+		prevButton = new JButton("Previous");
 		prevButton.addActionListener(this);
 		prevButton.setEnabled(false);
 		bottomButtonPane.add(prevButton);
 
 		// Create next button.
-		nextButton = new WebButton("Next");
+		nextButton = new JButton("Next");
 		nextButton.addActionListener(this);
 		nextButton.setEnabled(false);
 		bottomButtonPane.add(nextButton);
 
 		// Create final button.
-		finalButton = new WebButton("Final");
+		finalButton = new JButton("Final");
 		finalButton.addActionListener(this);
 		finalButton.setEnabled(false);
 		bottomButtonPane.add(finalButton);
 
 		// Create cancel button.
-		WebButton cancelButton = new WebButton("Cancel");
+		JButton cancelButton = new JButton("Cancel");
 		cancelButton.addActionListener(
 				new ActionListener() {
         			public void actionPerformed(ActionEvent e) {
+        				// Unpause the game loop
+//        				Simulation.instance().getMasterClock().setPaused(false, true);
         				// Dispose this dialog.
         				dispose();
         			}
@@ -136,6 +138,9 @@ implements ActionListener {
 	    
 	    setModal(true);
 	    setVisible(true);
+	    
+		// Pause the game loop
+//		Simulation.instance().getMasterClock().setPaused(true, true);
 	}
 
 	/**
@@ -376,6 +381,8 @@ implements ActionListener {
 	public void buttonClickedFinal() {
 		if (getCurrentWizardPanel().commitChanges()) {
 			missionBean.createMission();
+			// Unpause the game loop
+//			Simulation.instance().getMasterClock().setPaused(false, true);
 			dispose();
 		}
 	}
