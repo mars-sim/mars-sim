@@ -564,6 +564,8 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 
 	/**
 	 * Sets the role for a person.
+	 * 
+	 * @param type {@link RoleType}
 	 */
 	public void setRole(RoleType type) {
 
@@ -577,6 +579,18 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 			getRole().setNewRoleType(type);
 	}
 
+	/**
+	 * Sets the job of a person
+	 * 
+	 * @param jobStr
+	 */
+	public void setJob(String jobStr, String authority) {
+		Job job = JobManager.getJob(jobStr);
+		if (job != null) {
+			mind.setJob(job, true, JobManager.SETTLEMENT, JobAssignmentType.APPROVED, authority);
+		}	
+	}
+	
 	/**
 	 * Gets the instance of Role for a person.
 	 */
@@ -1269,7 +1283,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 */
 	public void setName(String newName) {
 		if (!name.equals(newName))
-			logger.info("Replace the previous commander '" + name + "' with '" 
+			logger.config("Replace the previous commander '" + name + "' with '" 
 					+ newName + "' in " + unitManager.getSettlementByID(associatedSettlement) + ".");
 		this.name = newName;
 		super.setName(newName);

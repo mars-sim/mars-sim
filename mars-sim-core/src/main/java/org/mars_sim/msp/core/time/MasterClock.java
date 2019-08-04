@@ -1055,6 +1055,8 @@ public class MasterClock implements Serializable {
 					// 7. TimeWindow
 					// 8. EventTableModel
 					// 9. NotificationWindow
+					
+					// Note: on a typical PC, approximately one ui pulse is sent out each second
 					listener.uiPulse(timeCache);
 					timeCache = 0;
 

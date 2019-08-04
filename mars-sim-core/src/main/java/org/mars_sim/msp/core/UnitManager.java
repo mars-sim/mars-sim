@@ -1295,13 +1295,16 @@ public class UnitManager implements Serializable {
 		String newSponsor = getSponsor();		
 		String newName = getFullname();
 		String newGender = getGender();
+		String newJob = getJobStr();
 
 		// Replace the commander 
 		cc.setName(newName);
 		cc.setGender(newGender);
 		cc.changeAge(getAge());
+		cc.setJob(newJob, JobManager.MISSION_CONTROL);
+//		logger.config(newName + " just picked the " + newJob + " job.");
 		cc.setRole(RoleType.COMMANDER);
-		setJob(cc, getJob());
+		logger.config(newName + " just picked the Commander role.");
 		cc.setCountry(newCountry);
 		cc.setSponsor(newSponsor);		
 		
@@ -2379,6 +2382,10 @@ public class UnitManager implements Serializable {
 	/** Gets the commander's job */
 	public int getJob() {
 		return personConfig.getCommander().getJob();
+	}
+	
+	public String getJobStr() {
+		return personConfig.getCommander().getJobStr();
 	}
 	
 //	/** Gets the commander's country */

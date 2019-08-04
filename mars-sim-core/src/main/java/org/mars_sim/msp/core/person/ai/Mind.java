@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonalityTraitManager;
+import org.mars_sim.msp.core.person.RoleType;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.job.JobAssignmentType;
 import org.mars_sim.msp.core.person.ai.job.JobHistory;
@@ -364,11 +365,16 @@ public class Mind implements Serializable {
 
 				person.fireUnitUpdate(UnitEventType.JOB_EVENT, newJob);
 
-				// Assign a new role type to the person and others in a settlement
-				// immediately after the change of one's job type
-				if (s != null) {
+				// Assign a new role type after the change of job
+				if (s != null 
+						// Exclude the person if he's a head
+						&& person.getRole().getType() != RoleType.COMMANDER
+						&& person.getRole().getType() != RoleType.SUB_COMMANDER
+						&& person.getRole().getType() != RoleType.MAYOR
+						&& person.getRole().getType() != RoleType.PRESIDENT) {
 					person.getRole().obtainRole(s);
 				}
+				
 				// the new job will be Locked in until the beginning of the next day
 				jobLock = true;
 			}

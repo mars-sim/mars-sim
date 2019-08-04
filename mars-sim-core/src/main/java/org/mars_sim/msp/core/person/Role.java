@@ -9,7 +9,10 @@ package org.mars_sim.msp.core.person;
 import java.io.Serializable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.structure.ChainOfCommand;
@@ -21,6 +24,11 @@ public class Role implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	/** default logger. */
+	private static Logger logger = Logger.getLogger(Role.class.getName());
+	private static String loggerName = logger.getName();
+	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+	
 	private Person person;
 
 	private RoleType roleType;
@@ -36,10 +44,11 @@ public class Role implements Serializable {
 
 	public Role(Person person) {
 		this.person = person;
-
-		if (Simulation.instance().getMasterClock() != null)
+		
+		if (Simulation.instance().getMasterClock() != null) {
 			// check for null in order to pass the LoadVehicleTest.java maven test
 			marsClock = Simulation.instance().getMasterClock().getMarsClock();
+		}
 	}
 
 	/**
@@ -76,11 +85,22 @@ public class Role implements Serializable {
 
 		if (newType != oldType) {
 			this.roleType = newType;
+			
 			person.getAssociatedSettlement().getChainOfCommand().registerRole(newType);
 			person.fireUnitUpdate(UnitEventType.ROLE_EVENT, newType);
 			relinquishOldRoleType();
 
-			// Add saving roleHistory
+			if (oldType != null)
+				LogConsolidated.log(Level.CONFIG, 0, sourceName,
+					"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
+					+ " relinquished the old " + oldType + " role"
+					+ " and took over the " + newType + " role.");
+			else
+				LogConsolidated.log(Level.CONFIG, 0, sourceName,
+						"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
+						+ " took over the " + newType + " role.");
+			
+			// Save the new role in roleHistory
 			roleHistory.put(newType, marsClock);
 		}
 	}

@@ -746,13 +746,13 @@ public class ChainOfCommand implements Serializable {
 		// TODO: look at other attributes and/or skills when comparing
 		// individuals
 
-		// Check if this settlement is the designated one for the user proposed
-		// commander
+		// Check if this settlement is the designated settlement for 
+		// housing the player commander
 		if (settlement.hasDesignatedCommander()) {
 			unitManager.updateCommander(cc);
 			cc.setAssociatedSettlement(settlement.getIdentifier());
 			logger.config("[" + cc.getLocationTag().getLocale() + "] " + cc
-					+ " will be assigned as the settlement's commander.");
+					+ " has been assigned as the settlement's commander.");
 
 			// Determine the initial leadership points
 			determineLeadershipPoints(cc);
