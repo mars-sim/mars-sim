@@ -14,9 +14,11 @@
 	<packaging>jar</packaging>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<kotlin.version>1.3.41</kotlin.version>
+		<mainClass>org.mars_sim.main.MarsProjectStarter</mainClass>
 	</properties>
 	<build>
-		<plugins>
+		<plugins>				
 			<!-- https://mvnrepository.com/artifact/org.codehaus.mojo/exec-maven-plugin -->
 			<plugin>
 		        <groupId>org.codehaus.mojo</groupId>
@@ -42,7 +44,7 @@
 		        </configuration>
 		    </plugin>		
 			<plugin>
-				<!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-jar-plugin/3.1.2  : 27 KB -->
+				<!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-jar-plugin  : 27 KB -->
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
 				<version>3.1.2</version>
@@ -50,13 +52,13 @@
 					<archive>
 						<manifest>
 							<addClasspath>true</addClasspath>
-							<mainClass>org.mars_sim.main.MarsProjectStarter</mainClass>
+							<mainClass>${mainClass}</mainClass>
 						</manifest>
 					</archive>
 				</configuration>
 			</plugin>
 			<plugin>
-				<!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-assembly-plugin/3.1.0 
+				<!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-assembly-plugin 
 					https://maven.apache.org/plugins/maven-assembly-plugin/ : 235 KB -->
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
@@ -67,7 +69,7 @@
 					</descriptorRefs>
 					<archive>
 						<manifest>
-							<mainClass>org.mars_sim.main.MarsProjectStarter</mainClass>
+							<mainClass>${main.class}</mainClass>
 						</manifest>
 					</archive>
 				</configuration>
