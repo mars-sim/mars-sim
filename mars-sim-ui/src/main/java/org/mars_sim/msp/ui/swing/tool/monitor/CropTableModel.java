@@ -13,11 +13,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Logger;
 
 import javax.swing.SwingUtilities;
 
 import org.mars_sim.msp.core.GameManager;
+import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
@@ -43,8 +43,10 @@ import org.mars_sim.msp.core.structure.building.function.farming.Farming;
 public class CropTableModel extends UnitTableModel {
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(CropTableModel.class.getName());
+//	private static Logger logger = Logger.getLogger(CropTableModel.class.getName());
 
+	private GameMode mode;
+	
 	// Column indexes
 	private final static int SETTLEMENT_NAME = 0;
 	private final static int GREENHOUSE_NAME = 1;
@@ -201,7 +203,8 @@ public class CropTableModel extends UnitTableModel {
 		buildings = new ArrayList<Building>();
 		paddedSettlements = new ArrayList<Settlement>();
 
-		if (GameManager.mode.equals("1")) {
+		if (GameManager.mode == GameMode.COMMAND) {
+			mode = GameMode.COMMAND;
 			commanderSettlement = unitManager.getCommanderSettlement();
 			addUnit(commanderSettlement);
 		}
@@ -233,7 +236,7 @@ public class CropTableModel extends UnitTableModel {
 		
 		List<Settlement> settlements = new ArrayList<Settlement>();
 		
-		if (GameManager.mode.equals("1")) {
+		if (mode == GameMode.COMMAND) {
 			settlements.add(commanderSettlement);
 		}
 		else {
@@ -561,7 +564,7 @@ public class CropTableModel extends UnitTableModel {
 		UnitEventType eventType = event.getType();
 		Object target = event.getTarget();
 		
-		if (GameManager.mode.equals("1")) {
+		if (mode == GameMode.COMMAND) {
 			; // do nothing
 		}
 		else {
@@ -775,7 +778,7 @@ public class CropTableModel extends UnitTableModel {
 		 * @param event the unit event.
 		 */
 		public void unitManagerUpdate(UnitManagerEvent event) {
-			if (GameManager.mode.equals("1")) {
+			if (mode == GameMode.COMMAND) {
 				; // do nothing
 			}
 			

@@ -18,6 +18,7 @@ import java.util.logging.Logger;
 import javax.swing.SwingUtilities;
 
 import org.mars_sim.msp.core.GameManager;
+import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
@@ -134,7 +135,7 @@ public class SettlementTableModel extends UnitTableModel {
 		super(Msg.getString("SettlementTableModel.tabName"), "SettlementTableModel.countingSettlements", //$NON-NLS-2$
 				columnNames, columnTypes);
 
-		if (GameManager.mode.equals("1"))
+		if (GameManager.mode == GameMode.COMMAND)
 			addUnit(unitManager.getCommanderSettlement());
 		else
 			setSource(unitManager.getSettlements());

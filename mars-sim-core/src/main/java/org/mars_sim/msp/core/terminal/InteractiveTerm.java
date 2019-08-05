@@ -24,8 +24,8 @@ import org.beryx.textio.TextTerminal;
 import org.beryx.textio.jline.JLineTextTerminal;
 import org.beryx.textio.swing.SwingTextTerminal;
 import org.mars_sim.msp.core.GameManager;
+import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.time.MasterClock;
 
 public class InteractiveTerm {
@@ -102,17 +102,20 @@ public class InteractiveTerm {
 	
 	
 	public void selectMode() {
-		terminal.print("1. Commander Mode "
+		terminal.print("1. Command Mode "
 				+ System.lineSeparator()
 				+ "2. Sandbox Mode "
 				+ System.lineSeparator()
 				+ System.lineSeparator()
 				);
 			
-        handler.addStringTask("mode", "Select the Game Mode:", false).addChoices("1", "2").constrainInputToChoices();
+        handler.addStringTask("input", "Select the Game Mode:", false).addChoices("1", "2").constrainInputToChoices();
         handler.executeOneTask();
-        //That is no good solution. Use a enum here.
-		if ((GameManager.mode).equals("1")) {
+
+		if (GameManager.input.equals("1")) {
+			
+			// Set the Game Mode to Command Mode in GameManager
+			GameManager.mode = GameMode.COMMAND;
 			
 	        terminal.println(System.lineSeparator() 
 	        		+ "                * * *  COMMANDER'S PROFILE * * *" 
@@ -177,7 +180,7 @@ public class InteractiveTerm {
 	    	}
 		}
 		else {
-//			loadTerminalMenu();
+			GameManager.mode = GameMode.SANDBOX;
 		}
 	}
 	

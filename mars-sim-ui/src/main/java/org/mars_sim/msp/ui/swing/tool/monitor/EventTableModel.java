@@ -16,6 +16,7 @@ import org.mars_sim.msp.core.GameManager;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.events.HistoricalEventCategory;
 import org.mars_sim.msp.core.events.HistoricalEventListener;
@@ -142,7 +143,7 @@ public class EventTableModel extends AbstractTableModel
 		
 //		int size = manager.getEvents().size();
 		
-		if (GameManager.mode.equals("1")) {
+		if (GameManager.mode == GameMode.COMMAND) {
 			int id = unitManager.getCommanderSettlement().getIdentifier();
 			events = eventManager.getEvents(id);
 		}

@@ -47,6 +47,8 @@ import javax.swing.UIDefaults;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.mars_sim.msp.core.CollectionUtils;
+import org.mars_sim.msp.core.GameManager;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEvent;
@@ -55,6 +57,9 @@ import org.mars_sim.msp.core.UnitListener;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.UnitManagerEvent;
 import org.mars_sim.msp.core.UnitManagerListener;
+import org.mars_sim.msp.core.location.LocationStateType;
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -72,6 +77,8 @@ public class SettlementTransparentPanel extends WebComponent {
 	/** Zoom change. */
 	public static final double ZOOM_CHANGE = 1D;
 
+	private GameMode mode;
+	
 	private JLabel emptyLabel;
 
 	private JSlider zoomSlider;
@@ -98,6 +105,12 @@ public class SettlementTransparentPanel extends WebComponent {
         this.desktop = desktop;
 //        this.mainScene = desktop.getMainScene();
 
+		if (GameManager.mode == GameMode.COMMAND) {
+			mode = GameMode.COMMAND;
+		}
+		else
+			mode = GameMode.SANDBOX;
+		
 		setDoubleBuffered(true);
 
         createAndShowGUI();
@@ -896,10 +909,20 @@ public class SettlementTransparentPanel extends WebComponent {
 		 * Update the list of settlements.
 		 */
 		private void updateSettlements() {
-
+			// Clear all elements
 			removeAllElements();
-//			UnitManager unitManager = Simulation.instance().getUnitManager();
-			List<Settlement> settlements = new ArrayList<Settlement>(unitManager.getSettlements());
+
+			List<Settlement> settlements = new ArrayList<Settlement>();
+			
+			// Add the command dashboard button
+			if (mode == GameMode.COMMAND) {
+				settlements = unitManager.getCommanderSettlements();
+			}
+			
+			else if (mode == GameMode.SANDBOX) {
+				settlements.addAll(unitManager.getSettlements());
+			}
+			
 			Collections.sort(settlements);
 
 			Iterator<Settlement> i = settlements.iterator();

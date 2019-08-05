@@ -24,6 +24,7 @@ import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.UnitManagerEvent;
 import org.mars_sim.msp.core.UnitManagerEventType;
 import org.mars_sim.msp.core.UnitManagerListener;
+import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.foodProduction.Food;
 import org.mars_sim.msp.core.foodProduction.FoodUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
@@ -36,6 +37,8 @@ public class FoodInventoryTableModel extends AbstractTableModel
 
 	private static final String FOOD_ITEMS = " Food Items";
 
+	private GameMode mode;
+	
 	// Data members
 	private List<Food> foodList;
 	private List<Settlement> settlements = new ArrayList<Settlement>();
@@ -53,7 +56,7 @@ public class FoodInventoryTableModel extends AbstractTableModel
 		foodList = FoodUtil.getFoodList();
 
 		// Initialize settlements.
-		if (GameManager.mode.equals("1")) {
+		if (GameManager.mode == GameMode.COMMAND) {
 			commanderSettlement = unitManager.getCommanderSettlement();
 			settlements.add(commanderSettlement);
 		}
@@ -81,7 +84,7 @@ public class FoodInventoryTableModel extends AbstractTableModel
 		UnitEventType eventType = event.getType();
 		Object source = event.getTarget();
 		if (eventType == UnitEventType.GOODS_VALUE_EVENT) {
-			if (GameManager.mode.equals("1")) {
+			if (mode == GameMode.COMMAND) {
 				if (source instanceof Good 
 						&& unit instanceof Settlement
 						&& unit.getName().equalsIgnoreCase(commanderSettlement.getName()))
@@ -247,7 +250,7 @@ public class FoodInventoryTableModel extends AbstractTableModel
 	@Override
 	public void unitManagerUpdate(UnitManagerEvent event) {
 
-		if (GameManager.mode.equals("1")
+		if (mode == GameMode.COMMAND
 				&& event.getUnit() instanceof Settlement
 				&&  settlements.contains((Settlement) event.getUnit())) {
 				// Update table structure due to cells changing.

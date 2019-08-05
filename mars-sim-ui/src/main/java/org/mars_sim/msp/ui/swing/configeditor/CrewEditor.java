@@ -192,7 +192,7 @@ public class CrewEditor implements ActionListener {
 //						System.out.println("num : " + num);
 						String c = (String)g.getItemAt(num);
 						// Fictitiously select a num (other than the index)
-						if (!c.isBlank())
+						if (c != null && !c.isBlank())
 							g.setSelectedIndex(num);
 						// Then choose the one already chosen
 						// Note: This should force the sponsor to be chosen correction

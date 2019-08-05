@@ -27,6 +27,7 @@ import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.UnitManagerEvent;
 import org.mars_sim.msp.core.UnitManagerEventType;
 import org.mars_sim.msp.core.UnitManagerListener;
+import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
@@ -58,6 +59,8 @@ extends UnitTableModel {
 
 	private static Logger logger = Logger.getLogger(VehicleTableModel.class.getName());
 
+	private GameMode mode;
+	
 	// Column indexes
 	private final static int NAME = 0;
 	private final static int TYPE = 1;
@@ -181,7 +184,8 @@ extends UnitTableModel {
 			columnTypes
 		);
 
-		if (GameManager.mode.equals("1")) {
+		if (GameManager.mode == GameMode.COMMAND) {
+			mode = GameMode.COMMAND;
 			commanderSettlement = unitManager.getCommanderSettlement();
 			setSource(commanderSettlement.getAllAssociatedVehicles());
 		}
@@ -408,7 +412,7 @@ extends UnitTableModel {
 			Object source = event.getTarget();
 			UnitEventType eventType = event.getType();
 			
-			if (GameManager.mode.equals("1")) {
+			if (mode == GameMode.COMMAND) {
 				if (vehicle.getAssociatedSettlement().getName().equalsIgnoreCase(commanderSettlement.getName()))
 					unitIndex = 0;
 			}
@@ -604,7 +608,7 @@ extends UnitTableModel {
 			
 			if (unit instanceof Vehicle) {
 				boolean change = false;
-				if (GameManager.mode.equals("1")) {
+				if (mode == GameMode.COMMAND) {
 					if (unit.getAssociatedSettlement().getName().equalsIgnoreCase(commanderSettlement.getName()))
 						change = true;
 				}
@@ -632,7 +636,7 @@ extends UnitTableModel {
 		LocalMissionManagerListener() {
 			missionListener = new LocalMissionListener();
 
-			if (GameManager.mode.equals("1")) {
+			if (mode == GameMode.COMMAND) {
 				missions = missionManager.getMissionsForSettlement(commanderSettlement);
 			}
 			else {

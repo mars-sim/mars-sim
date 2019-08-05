@@ -26,6 +26,7 @@ import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.UnitManagerEvent;
 import org.mars_sim.msp.core.UnitManagerEventType;
 import org.mars_sim.msp.core.UnitManagerListener;
+import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.location.LocationSituation;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
@@ -168,7 +169,7 @@ public class RobotTableModel extends UnitTableModel {
 
 		sourceType = ValidSourceType.ALL_ROBOTS;
 		
-		if (GameManager.mode.equals("1"))
+		if (GameManager.mode == GameMode.COMMAND)
 			setSource(unitManager.getCommanderSettlement().getRobots());
 		else
 			setSource(unitManager.getRobots());

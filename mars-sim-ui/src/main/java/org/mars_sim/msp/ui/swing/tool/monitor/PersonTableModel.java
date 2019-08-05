@@ -27,6 +27,7 @@ import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.UnitManagerEvent;
 import org.mars_sim.msp.core.UnitManagerEventType;
 import org.mars_sim.msp.core.UnitManagerListener;
+import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.Role;
@@ -188,7 +189,7 @@ public class PersonTableModel extends UnitTableModel {
 //		this.desktop = desktop;
 		sourceType = ValidSourceType.ALL_PEOPLE;
 		
-		if (GameManager.mode.equals("1"))
+		if (GameManager.mode == GameMode.COMMAND)
 			setSource(unitManager.getCommanderSettlement().getAllAssociatedPeople());
 		else
 			setSource(unitManager.getPeople());

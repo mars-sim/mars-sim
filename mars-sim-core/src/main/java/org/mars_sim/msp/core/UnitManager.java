@@ -19,6 +19,7 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.location.LocationStateType;
@@ -232,7 +233,7 @@ public class UnitManager implements Serializable {
 			createInitialResources();
 			createInitialParts();
 			// Find the settlement match for the user proposed commander's sponsor 
-			if (GameManager.mode.equals("1"))
+			if (GameManager.mode == GameMode.COMMAND)
 				matchSettlement();
 			// Create pre-configured robots as stated in robots.xml
 			createPreconfiguredRobots();
@@ -400,6 +401,31 @@ public class UnitManager implements Serializable {
 
 	public Settlement getCommanderSettlement() {
 		return getPersonByID(commanderID).getAssociatedSettlement();
+	}
+	
+	/**
+	 * Gets the settlement list including the commander's associated settlement
+	 * and the settlement that he's at or in the vicinity of
+	 * 
+	 * @return {@link List<Settlement>}
+	 */
+	public List<Settlement> getCommanderSettlements() {
+		List<Settlement> settlements = new ArrayList<Settlement>();
+		
+		Person cc = getPersonByID(commanderID);
+		// Add the commander's associated settlement
+		Settlement as = cc.getAssociatedSettlement();
+		settlements.add(as);
+		
+		// Find the settlement the commander is at
+		Settlement s = cc.getSettlement();
+		// If the commander is in the vicinity of a settlement
+		if (s == null)
+			s = CollectionUtils.findSettlement(cc.getCoordinates());
+		if (s != null && as != s)
+			settlements.add(s);
+		
+		return settlements;
 	}
 	
 	public void addPersonID(Person p) {
@@ -2344,12 +2370,12 @@ public class UnitManager implements Serializable {
 		return countries;
 	}
 	
-	/**
-	 * Sets the commander mode
-	 */
-	public void setCommanderMode(boolean value) {
-		isCommanderMode = value;
-	}
+//	/**
+//	 * Sets the commander mode
+//	 */
+//	public void setCommanderMode(boolean value) {
+//		isCommanderMode = value;
+//	}
 	
 	/**
 	 * is the simulation running in commander mode ? 

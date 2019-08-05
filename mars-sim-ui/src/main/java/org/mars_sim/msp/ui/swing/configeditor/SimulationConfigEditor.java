@@ -48,6 +48,7 @@ import org.mars_sim.msp.core.GameManager;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 import org.mars_sim.msp.core.structure.SettlementConfig;
@@ -83,6 +84,8 @@ public class SimulationConfigEditor {
 	private JFrame f;
 
 	private CrewEditor crewEditor;
+	
+	private GameMode mode;
 	
 	private static Simulation sim = Simulation.instance();
 	private static SimulationConfig simulationConfig;
@@ -131,7 +134,8 @@ public class SimulationConfigEditor {
 
 		JPanel topPanel = null;
 		
-		if (GameManager.mode.equals("1")) {
+		if (GameManager.mode == GameMode.COMMAND) {
+			mode = GameMode.COMMAND;
 			topPanel = new JPanel(new GridLayout(2, 1));
 			f.add(topPanel, BorderLayout.NORTH);
 		}
@@ -148,11 +152,11 @@ public class SimulationConfigEditor {
 //		topPanel.add(instructionLabel);
 
 		// Create the title label.
-		if (GameManager.mode.equals("1")) {
+		if (mode == GameMode.COMMAND) {
 
 			String commanderName = personConfig.getCommander().getFullName();
 			String sponsor = personConfig.getCommander().getSponsor();
-			JLabel gameModeLabel = new JLabel(Msg.getString("SimulationConfigEditor.gameMode", "Commander Mode"), JLabel.CENTER); //$NON-NLS-1$
+			JLabel gameModeLabel = new JLabel(Msg.getString("SimulationConfigEditor.gameMode", "Command Mode"), JLabel.CENTER); //$NON-NLS-1$
 			gameModeLabel.setFont(new Font("Serif", Font.PLAIN, 14));
 			topPanel.add(gameModeLabel);
 			
@@ -294,7 +298,7 @@ public class SimulationConfigEditor {
 		JPanel bottomButtonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		bottomPanel.add(bottomButtonPanel, BorderLayout.CENTER);
 
-		if (GameManager.mode.equals("1")) {
+		if (mode == GameMode.COMMAND) {
 			// Create the sponsor note label
 			JLabel noteLabel = new JLabel("    " + Msg.getString("SimulationConfigEditor.sponsorNote"), JLabel.LEFT); //$NON-NLS-1$
 			noteLabel.setFont(new Font("Serif", Font.ITALIC, 14));
@@ -777,7 +781,7 @@ public class SimulationConfigEditor {
 				info.longitude = settlementConfig.getInitialSettlementLongitude(x);
 				
 				// Modify the sponsor in case of the Commander Mode
-				if (x == 0 && GameManager.mode.equals("1"))
+				if (x == 0 && mode == GameMode.COMMAND)
 					info.sponsor = personConfig.getCommander().getSponsor();
 				else
 					info.sponsor = settlementConfig.getInitialSettlementSponsor(x);

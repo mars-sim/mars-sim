@@ -16,6 +16,7 @@ import javax.swing.table.AbstractTableModel;
 import org.mars_sim.msp.core.GameManager;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
@@ -36,6 +37,8 @@ public class MissionTableModel extends AbstractTableModel
 
 	private DecimalFormat decFormatter = new DecimalFormat("#,###,##0.0");
 
+	private GameMode mode;
+	
 	// Column indexes
 	/** Date filed column. */
 	private final static int DATE_FILED = 0;
@@ -106,7 +109,8 @@ public class MissionTableModel extends AbstractTableModel
 		columnNames[REMAINING_DISTANCE] = Msg.getString("MissionTableModel.column.distanceRemaining"); //$NON-NLS-1$
 		columnTypes[REMAINING_DISTANCE] = Integer.class;
 
-		if (GameManager.mode.equals("1")) {
+		if (GameManager.mode == GameMode.COMMAND) {
+			mode = GameMode.COMMAND;
 			commanderSettlement = Simulation.instance().getUnitManager().getCommanderSettlement();
 			missionCache = missionManager.getMissionsForSettlement(commanderSettlement);
 		}
@@ -137,7 +141,7 @@ public class MissionTableModel extends AbstractTableModel
 	 */
 	public void addMission(Mission mission) {
 		boolean goodToGo = false;
-		if (GameManager.mode.equals("1")) {	
+		if (mode == GameMode.COMMAND) {	
 			if (mission.getStartingMember().getAssociatedSettlement().getName().equals(commanderSettlement.getName())
 				&& !missionCache.contains(mission)) {
 				goodToGo = true;

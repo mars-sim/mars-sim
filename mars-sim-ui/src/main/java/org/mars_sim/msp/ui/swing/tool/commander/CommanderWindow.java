@@ -53,7 +53,9 @@ extends ToolWindow {
 
 	/** Tool name. */
 	public static final String NAME = "Commander Dashboard";
-
+	public static final String TASK_TAB = "Task";
+	public static final String INTERVAL_TAB = "Interval";
+	
 	// Private members
 	private JTabbedPane tabPane;
 	private DefaultComboBoxModel<String> comboBoxModel;
@@ -119,7 +121,7 @@ extends ToolWindow {
 
 		createTaskPanel();
 		
-		setSize(new Dimension(640, 640));
+		setSize(new Dimension(480, 480));
 		setMaximizable(true);
 		setResizable(false);
 
@@ -137,8 +139,12 @@ extends ToolWindow {
 	public void createTaskPanel() {
 		JPanel queuePanel = new JPanel(new BorderLayout());
 		tabPane.add(queuePanel, BorderLayout.CENTER);
-		tabPane.setTitleAt(0, "Tasks");
+		tabPane.setTitleAt(0, TASK_TAB);
 	    
+		JPanel intervalPanel = new JPanel(new BorderLayout());
+		tabPane.add(intervalPanel, BorderLayout.CENTER);
+		tabPane.setTitleAt(1, INTERVAL_TAB);
+		
 	    JPanel selectPanel = new JPanel(new FlowLayout());
 	    queuePanel.add(selectPanel, BorderLayout.NORTH); // 1st add
 
@@ -207,7 +213,7 @@ extends ToolWindow {
 	    
 		// Create scroll panel for population list.
 		listScrollPanel = new JScrollPane();
-		listScrollPanel.setPreferredSize(new Dimension(250, 350));
+		listScrollPanel.setPreferredSize(new Dimension(240, 280));
 		listScrollPanel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
 
 		// Create list model

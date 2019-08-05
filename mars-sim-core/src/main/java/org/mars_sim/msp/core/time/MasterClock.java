@@ -42,7 +42,8 @@ public class MasterClock implements Serializable {
 	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 	
 	private static final int FACTOR = 4;
-	private static final int MAX_MILLISOLS = 5;
+	/** For Commander Mode, the sim will pause every x millisols. */
+	private static final int PAUSING_MILLISOLS = 500;
 	
 	// Data members
 	/** Runnable flag. */
@@ -810,7 +811,7 @@ public class MasterClock implements Serializable {
 						System.exit(0);
 					}
 					
-					if (GameManager.mode.equals("1") && millisols > MAX_MILLISOLS) {
+					if (GameManager.mode.equals("1") && millisols > PAUSING_MILLISOLS) {
 						millisols = 0;
 						setPaused(true, false);
 					}
