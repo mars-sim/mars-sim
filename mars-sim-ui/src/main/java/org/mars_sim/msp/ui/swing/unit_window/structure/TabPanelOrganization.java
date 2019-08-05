@@ -158,10 +158,8 @@ public class TabPanelOrganization extends TabPanel {
 
 		int population = settlement.getNumCitizens();
 
-		if (population >= ChainOfCommand.POPULATION_WITH_MAYOR) {
-			root.add(mayorNode);
-			root.add(cabinetNode);
-
+		if (population >= ChainOfCommand.POPULATION_WITH_CHIEFS) {
+			
 			cabinetNode.add(agricultureNode);
 			agricultureNode.add(agricultureChiefNode);
 			agricultureNode.add(agricultureSpecialistNode);
@@ -190,29 +188,66 @@ public class TabPanelOrganization extends TabPanel {
 			supplyNode.add(supplyChiefNode);
 			supplyNode.add(supplySpecialistNode);
 
-			// TODO: More to add
+		}
+		
+		else {
+			
+			cabinetNode.add(agricultureNode);
+			agricultureNode.add(agricultureSpecialistNode);
+
+			cabinetNode.add(engineeringNode);
+			engineeringNode.add(engineeringSpecialistNode);
+
+			cabinetNode.add(logisticNode);
+			logisticNode.add(logisticSpecialistNode);
+
+			cabinetNode.add(missionNode);
+			missionNode.add(missionSpecialistNode);
+
+			cabinetNode.add(safetyNode);
+			safetyNode.add(safetySpecialistNode);
+
+			cabinetNode.add(scienceNode);
+			scienceNode.add(scienceSpecialistNode);
+
+			cabinetNode.add(supplyNode);
+			supplyNode.add(supplySpecialistNode);
+		}
+
+		
+		if (population >= ChainOfCommand.POPULATION_WITH_MAYOR) {
+			root.add(mayorNode);
+			root.add(cabinetNode);
+
+//		} else if (population >= ChainOfCommand.POPULATION_WITH_CHIEFS) {
+//			root.add(commanderStaffNode);
+//			commanderStaffNode.add(commanderNode);
+//			commanderStaffNode.add(subCommanderNode);
+//			root.add(cabinetNode);
+			
 		} else if (population >= ChainOfCommand.POPULATION_WITH_SUB_COMMANDER) {
 			root.add(commanderStaffNode);
 			commanderStaffNode.add(commanderNode);
 			commanderStaffNode.add(subCommanderNode);
-
-			commanderStaffNode.add(engineeringNode);
-			engineeringNode.add(engineeringChiefNode);
-			engineeringNode.add(engineeringSpecialistNode);
-
-			commanderStaffNode.add(safetyNode);
-			safetyNode.add(safetyChiefNode);
-			safetyNode.add(safetySpecialistNode);
-
-			commanderStaffNode.add(supplyNode);
-			supplyNode.add(supplyChiefNode);
-			supplyNode.add(supplySpecialistNode);
-		} else { // if population < 12
+			root.add(cabinetNode);
+			
+		} else {
 			root.add(commanderNode);
-			root.add(engineeringSpecialistNode);
-			root.add(safetySpecialistNode);
-			root.add(supplySpecialistNode);
+			root.add(cabinetNode);
 		}
+
+
+//			commanderStaffNode.add(engineeringNode);
+//			engineeringNode.add(engineeringChiefNode);
+//			engineeringNode.add(engineeringSpecialistNode);
+//
+//			commanderStaffNode.add(safetyNode);
+//			safetyNode.add(safetyChiefNode);
+//			safetyNode.add(safetySpecialistNode);
+//
+//			commanderStaffNode.add(supplyNode);
+//			supplyNode.add(supplyChiefNode);
+//			supplyNode.add(supplySpecialistNode);
 
 		tree = new JTree(root);
 		tree.setVisibleRowCount(8);
