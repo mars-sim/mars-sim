@@ -93,6 +93,8 @@ public class MainDesktopPane extends JDesktopPane
 	public final static String ORANGE_CSS = ORANGE_CSS_THEME;
 	public final static String BLUE_CSS = BLUE_CSS_THEME;
 
+	public GameMode mode;
+	
 	// Data members
 //	private double timeCache = 0;
 	private boolean isTransportingBuilding = false, isConstructingSite = false;
@@ -372,6 +374,7 @@ public class MainDesktopPane extends JDesktopPane
 
 		// Prepare Commander Window
 		if (GameManager.mode == GameMode.COMMAND) {
+			mode = GameMode.COMMAND;
 			commanderWindow = new CommanderWindow(this);
 			try {
 				commanderWindow.setClosed(true);
@@ -1161,7 +1164,7 @@ public class MainDesktopPane extends JDesktopPane
 	 * Caches the creation of settlements for speeding up loading time
 	 */
 	public void cacheSettlementUnitWindow() {
-		if (GameManager.mode.equals("1"))
+		if (mode == GameMode.COMMAND)
 			openUnitWindow(unitManager.getCommanderSettlement(), true, false);
 		else {
 			for (Settlement s : unitManager.getSettlements()) {
@@ -1182,7 +1185,7 @@ public class MainDesktopPane extends JDesktopPane
 			openToolWindow(GuideWindow.NAME);
 			((GuideWindow) getToolWindow(GuideWindow.NAME)).setURL(Msg.getString("doc.guide")); //$NON-NLS-1$
 
-			if (GameManager.mode.equals("1")) {
+			if (mode == GameMode.COMMAND) {
 				// Open the time window for the Commander Mode
 				openToolWindow(TimeWindow.NAME);
 				openToolWindow(CommanderWindow.NAME);
@@ -1358,11 +1361,11 @@ public class MainDesktopPane extends JDesktopPane
 	}
 
 	public void changeTitle(boolean isPaused) {
-		if (GameManager.mode.equals("1")) {
+		if (mode == GameMode.COMMAND) {
 			if (isPaused) {
-				mainWindow.getFrame().setTitle(Simulation.title + "  -  Commander Mode" + "  -  [ PAUSE ]");
+				mainWindow.getFrame().setTitle(Simulation.title + "  -  Command Mode" + "  -  [ PAUSE ]");
 			} else {
-				mainWindow.getFrame().setTitle(Simulation.title + "  -  Commander Mode");
+				mainWindow.getFrame().setTitle(Simulation.title + "  -  Command Mode");
 			}
 		} else {
 			if (isPaused) {
