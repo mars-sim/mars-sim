@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Trader.java
- * @version 3.07 2014-12-06
+ * @version 3.1.0 2018-08-06
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.job;
@@ -25,6 +25,10 @@ public class Trader extends Job implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
+
+	private final int JOB_ID = 16;
+	
+	private double[] roleProspects = new double[] {5.0, 5.0, 30.0, 25.0, 25.0, 5.0, 5.0};
 
 	private static double TRADING_RANGE = 500D;
 	private static double SETTLEMENT_MULTIPLIER = 3D;
@@ -114,4 +118,15 @@ public class Trader extends Job implements Serializable {
 		return result * pop / 12D;
 	}
 
+	public double[] getRoleProspects() {
+		return roleProspects;
+	}
+	
+	public void setRoleProspects(int index, int weight) {
+		roleProspects[index] = weight;
+	}
+	
+	public int getJobID() {
+		return JOB_ID;
+	}
 }

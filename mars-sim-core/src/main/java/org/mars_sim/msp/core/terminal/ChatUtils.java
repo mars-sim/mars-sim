@@ -47,7 +47,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.job.Job;
-import org.mars_sim.msp.core.person.ai.job.JobManager;
+import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.mission.AreologyStudyFieldMission;
 import org.mars_sim.msp.core.person.ai.mission.BiologyStudyFieldMission;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
@@ -917,18 +917,18 @@ public class ChatUtils {
 		String jobStrName = text0.replace("job prospect ", "");
 
 		if (text.contains("job prospect") 
-				&& JobManager.getJob(jobStrName) != null) {
+				&& JobUtil.getJob(jobStrName) != null) {
 			List<Person> list = settlementCache.getAllAssociatedPeople().stream()
 //					.sorted((p1, p2)-> p1.getMind().getJob().getName(p1.getGender()).compareTo(p2.getMind().getJob().getName(p2.getGender())))
 					.sorted((p1, p2)-> p1.getName().compareTo(p2.getName()))
 					.collect(Collectors.toList());
 			
-			Job job = JobManager.getJob(jobStrName);
+			Job job = JobUtil.getJob(jobStrName);
 			responseText.append(" --- " + Conversion.capitalize(jobStrName) + " Job Prospect Scores --- ");
 //			responseText.append(System.lineSeparator());
 			responseText.append(System.lineSeparator());
 			for (Person p : list) {
-				double jobProspect = Math.round(JobManager.getJobProspect(p, job, settlementCache, true)*10.0)/10.0;
+				double jobProspect = Math.round(JobUtil.getJobProspect(p, job, settlementCache, true)*10.0)/10.0;
 				responseText.append(addhiteSpacesName(" " + p, 20));
 				responseText.append(addhiteSpacesName(" " + jobProspect, 6));
 				responseText.append(System.lineSeparator());
@@ -998,7 +998,7 @@ public class ChatUtils {
 			responseText.append("  --- Sort by Job ---");
 			responseText.append(System.lineSeparator());
 			
-			Map<String, List<Person>> map = JobManager.getJobMap(settlementCache);
+			Map<String, List<Person>> map = JobUtil.getJobMap(settlementCache);
 			
 			List<String> jobList = new ArrayList<>(map.keySet());
 			Collections.sort(jobList);
@@ -1040,9 +1040,9 @@ public class ChatUtils {
 
 			responseText.append(System.lineSeparator());
 			
-			Map<String, List<Person>> map = JobManager.getJobMap(settlementCache);
+			Map<String, List<Person>> map = JobUtil.getJobMap(settlementCache);
 			
-			List<Job> jobs = JobManager.getJobs();
+			List<Job> jobs = JobUtil.getJobs();
 //			List<String> jobs = JobManager.getJobs();
 			
 			for (Job job : jobs) {
@@ -1053,7 +1053,7 @@ public class ChatUtils {
 				String demand = "" + Math.round(job.getSettlementNeed(settlementCache) * 10.0)/10.0;
 				responseText.append(addhiteSpacesName(demand, 9));
 				
-				String deficit = "" + Math.round(JobManager.getRemainingSettlementNeed(settlementCache, job) * 10.0)/10.0;
+				String deficit = "" + Math.round(JobUtil.getRemainingSettlementNeed(settlementCache, job) * 10.0)/10.0;
 				responseText.append(addhiteSpacesName(deficit, 9));
 				
 				int num = 0;
@@ -2598,7 +2598,7 @@ public class ChatUtils {
 			
 //			Map<String, List<Person>> map = JobManager.getJobMap(personCache.getAssociatedSettlement());
 					
-			List<String> jobList = JobManager.getJobList();
+			List<String> jobList = JobUtil.getJobList();
 			//new ArrayList<>(map.keySet());
 			Collections.sort(jobList);
 			
@@ -2633,13 +2633,13 @@ public class ChatUtils {
 //				for (int i=0; i<length; i++) {
 //					responseText.append("-");
 //				}	
-				Job job = JobManager.getJob(jobStr);
+				Job job = JobUtil.getJob(jobStr);
 				
 				double capScore = Math.round(job.getCapability(personCache) * 10.0)/10.0;					
 				responseText.append(addNameFirstWhiteSpaces(" " + capScore, 18));
 				
 
-				double prospectScore = Math.round(JobManager.getJobProspect(personCache, job, personCache.getAssociatedSettlement(), true) * 10.0)/10.0;					
+				double prospectScore = Math.round(JobUtil.getJobProspect(personCache, job, personCache.getAssociatedSettlement(), true) * 10.0)/10.0;					
 				responseText.append(addNameFirstWhiteSpaces(" " + prospectScore, 5));
 				responseText.append(System.lineSeparator());
 				

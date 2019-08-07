@@ -58,6 +58,7 @@ import org.mars_sim.msp.core.person.CircadianClock;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.Role;
+import org.mars_sim.msp.core.person.RoleUtil;
 import org.mars_sim.msp.core.person.TaskSchedule;
 import org.mars_sim.msp.core.person.ai.Mind;
 import org.mars_sim.msp.core.person.ai.job.Job;
@@ -453,7 +454,7 @@ public class Simulation implements ClockListener, Serializable {
 		Task.initializeInstances(marsClock, eventManager, relationshipManager, unitManager, 
 				scientificStudyManager, mars.getSurfaceFeatures(), missionManager, pc);
 		Unit.initializeInstances(masterClock, marsClock, this, mars, mars.getMarsSurface(), 
-				earthClock, unitManager, missionManager);		
+				earthClock, unitManager, missionManager);
 		
 		ut = masterClock.getUpTimer();
 
@@ -992,6 +993,7 @@ public class Simulation implements ClockListener, Serializable {
 //		RescueSalvageVehicle.justReloaded(eventManager);  // eventManager
 		MissionPlanning.initializeInstances(marsClock);
 //		System.out.println("Done with mission instances");
+
 	}
 	
 	

@@ -46,7 +46,7 @@ import org.mars_sim.msp.core.person.ai.job.Astronomer;
 import org.mars_sim.msp.core.person.ai.job.Engineer;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.job.JobAssignmentType;
-import org.mars_sim.msp.core.person.ai.job.JobManager;
+import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.job.Meteorologist;
 import org.mars_sim.msp.core.person.ai.job.Technician;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
@@ -4077,12 +4077,12 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	}
 
 	public static void assignBestCandidate(Settlement settlement, Class<? extends Job> jobClass) {// String jobName) {
-		Job job = JobManager.getJob(jobClass.getSimpleName());
+		Job job = JobUtil.getJob(jobClass.getSimpleName());
 //		Job job = (Job)(jobClass);
-		Person p0 = JobManager.findBestFit(settlement, job);
+		Person p0 = JobUtil.findBestFit(settlement, job);
 		// Designate a specific job to a person
 		if (p0 != null) {
-			p0.getMind().setJob(job, true, JobManager.SETTLEMENT, JobAssignmentType.APPROVED, JobManager.SETTLEMENT);
+			p0.getMind().setJob(job, true, JobUtil.SETTLEMENT, JobAssignmentType.APPROVED, JobUtil.SETTLEMENT);
 		}
 	}
 
@@ -4090,18 +4090,18 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	 * Tune up the settlement with unique job position
 	 */
 	public void tuneJobDeficit() {
-		int numEngs = JobManager.numJobs(Engineer.class, this);
+		int numEngs = JobUtil.numJobs(Engineer.class, this);
 		if (numEngs == 0) {
 			assignBestCandidate(this, Engineer.class);
 		}
 
-		int numTechs = JobManager.numJobs(Technician.class, this);
+		int numTechs = JobUtil.numJobs(Technician.class, this);
 		if (numTechs == 0) {
 			assignBestCandidate(this, Technician.class);
 		}
 
 		if (this.getNumCitizens() > ChainOfCommand.POPULATION_WITH_CHIEFS) {
-			int numWeatherman = JobManager.numJobs(Meteorologist.class, this);
+			int numWeatherman = JobUtil.numJobs(Meteorologist.class, this);
 			if (numWeatherman == 0) {
 				assignBestCandidate(this, Meteorologist.class);
 			}

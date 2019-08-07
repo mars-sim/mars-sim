@@ -1,10 +1,9 @@
 /**
  * Mars Simulation Project
- * Technician.java
+ * Pilot.java
  * @version 3.1.0 2018-08-06
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.core.person.ai.job;
 
 import java.io.Serializable;
@@ -13,65 +12,81 @@ import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
+import org.mars_sim.msp.core.person.ai.mission.AreologyStudyFieldMission;
+import org.mars_sim.msp.core.person.ai.mission.BiologyStudyFieldMission;
+import org.mars_sim.msp.core.person.ai.mission.CollectIce;
+import org.mars_sim.msp.core.person.ai.mission.CollectRegolith;
+import org.mars_sim.msp.core.person.ai.mission.Exploration;
+import org.mars_sim.msp.core.person.ai.mission.Mining;
+import org.mars_sim.msp.core.person.ai.mission.Trade;
+import org.mars_sim.msp.core.person.ai.task.ConsolidateContainers;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.MaintainGroundVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.MaintainGroundVehicleGarage;
-import org.mars_sim.msp.core.person.ai.task.Maintenance;
-import org.mars_sim.msp.core.person.ai.task.MaintenanceEVA;
-import org.mars_sim.msp.core.person.ai.task.ManufactureGood;
 import org.mars_sim.msp.core.person.ai.task.RepairEVAMalfunction;
 import org.mars_sim.msp.core.person.ai.task.RepairMalfunction;
-import org.mars_sim.msp.core.person.ai.task.SalvageGood;
-import org.mars_sim.msp.core.person.ai.task.ToggleFuelPowerSource;
-import org.mars_sim.msp.core.person.ai.task.ToggleResourceProcess;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleGarage;
 import org.mars_sim.msp.core.structure.Settlement;
 
-public class Technician extends Job implements Serializable {
+/**
+ * The Pilot class represents a pilot job.
+ */
+public class Pilot extends Job implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private final int JOB_ID = 15;
+	private final int JOB_ID = 12;
 	
-	private double[] roleProspects = new double[] {5.0, 20.0, 15.0, 15.0, 15.0, 15.0, 15.0};
+	private double[] roleProspects = new double[] {5.0, 20.0, 20.0, 25.0, 5.0, 15.0, 10.0};
 
 	/**
 	 * Constructor.
 	 */
-	public Technician() {
+	public Pilot() {
 		// Use Job constructor
-		super(Technician.class);
+		super(Pilot.class);
 
-		// Add technician-related tasks.
-		// jobTasks.add(ConsolidateContainers.class);
-		jobTasks.add(LoadVehicleEVA.class);
-		jobTasks.add(LoadVehicleGarage.class);
-		jobTasks.add(Maintenance.class);
-		jobTasks.add(MaintenanceEVA.class);
+		// Add driver-related tasks.
 		jobTasks.add(MaintainGroundVehicleGarage.class);
 		jobTasks.add(MaintainGroundVehicleEVA.class);
-		jobTasks.add(ManufactureGood.class);
 		jobTasks.add(RepairMalfunction.class);
 		jobTasks.add(RepairEVAMalfunction.class);
-		jobTasks.add(ToggleResourceProcess.class);
-		jobTasks.add(ToggleFuelPowerSource.class);
-		jobTasks.add(UnloadVehicleEVA.class);
+		jobTasks.add(LoadVehicleGarage.class);
 		jobTasks.add(UnloadVehicleGarage.class);
-		jobTasks.add(SalvageGood.class);
+		jobTasks.add(LoadVehicleEVA.class);
+		jobTasks.add(UnloadVehicleEVA.class);
 
 		// Add side tasks
-		// None
+		jobTasks.add(ConsolidateContainers.class);
 
-		// Add engineer-related missions.
+		// Add driver-related mission joins.
+		jobMissionJoins.add(Exploration.class);
+		
+		jobMissionJoins.add(CollectIce.class);
+		
+		jobMissionJoins.add(CollectRegolith.class);
+		
+		jobMissionJoins.add(Trade.class);
+		
+		jobMissionJoins.add(Mining.class);
+		
+		jobMissionJoins.add(AreologyStudyFieldMission.class);
+		
+		jobMissionJoins.add(BiologyStudyFieldMission.class);
+		
 //		jobMissionStarts.add(TravelToSettlement.class);
 //		jobMissionJoins.add(TravelToSettlement.class);
+//		
 //		jobMissionStarts.add(RescueSalvageVehicle.class);
 //		jobMissionJoins.add(RescueSalvageVehicle.class);
+//		
 //		jobMissionJoins.add(BuildingConstructionMission.class);
+//		
 //		jobMissionJoins.add(BuildingSalvageMission.class);
+//		
 //		jobMissionStarts.add(EmergencySupplyMission.class);
 //		jobMissionJoins.add(EmergencySupplyMission.class);
 	}
@@ -84,12 +99,11 @@ public class Technician extends Job implements Serializable {
 	 */
 	public double getCapability(Person person) {
 
-		double result = 1D;
+		double result = 0D;
 
-		int materialsScienceSkill = person.getMind().getSkillManager().getSkillLevel(SkillType.MATERIALS_SCIENCE);
-		int mechanicSkill = person.getMind().getSkillManager().getSkillLevel(SkillType.MECHANICS);
-		result = mechanicSkill *.75 + materialsScienceSkill * .25;
-		
+		int drivingSkill = person.getMind().getSkillManager().getSkillLevel(SkillType.DRIVING);
+		result = drivingSkill;
+
 		NaturalAttributeManager attributes = person.getNaturalAttributeManager();
 		int experienceAptitude = attributes.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
 		result += result * ((experienceAptitude - 50D) / 100D);
@@ -97,7 +111,8 @@ public class Technician extends Job implements Serializable {
 		if (person.getPhysicalCondition().hasSeriousMedicalProblems())
 			result = 0D;
 
-//		System.out.println(person + " tech : " + Math.round(result*100.0)/100.0);
+//		System.out.println(person + " driver : " + Math.round(result*100.0)/100.0);
+
 		return result;
 	}
 
@@ -108,18 +123,16 @@ public class Technician extends Job implements Serializable {
 	 * @return the base need >= 0
 	 */
 	public double getSettlementNeed(Settlement settlement) {
-
-		double result = 0D;
-
-		// Add number of buildings in settlement.
-		result += settlement.getBuildingManager().getNumBuildings() / 11D;
-
-		// Add number of vehicles parked at settlement.
-		result += settlement.getParkedVehicleNum() / 7D;
-
-		return result;
+		// Get number of associated vehicles at a settlement.
+//		Collection<Vehicle> vehicles = settlement.getAllAssociatedVehicles();
+//		if (!vehicles.isEmpty())
+//			return vehicles.size()/1.5;
+//		else
+//			return 0;
+		
+		return settlement.getVehicleNum()/1.5;
 	}
-	
+
 	public double[] getRoleProspects() {
 		return roleProspects;
 	}

@@ -21,7 +21,7 @@ import org.mars_sim.msp.core.person.RoleType;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.job.JobAssignmentType;
 import org.mars_sim.msp.core.person.ai.job.JobHistory;
-import org.mars_sim.msp.core.person.ai.job.JobManager;
+import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.job.Politician;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
@@ -194,7 +194,7 @@ public class Mind implements Serializable {
 		if (job == null) { // removing !jobLock
 			// Note: getNewJob() is checking if existing job is "good enough"/ or has good
 			// prospect
-			Job newJob = JobManager.getNewJob(person);
+			Job newJob = JobUtil.getNewJob(person);
 			// Already excluded mayor/manager job from being assigned in
 			// JobManager.getNewJob()
 			String newJobStr = newJob.getName(person.getGender());
@@ -204,7 +204,7 @@ public class Mind implements Serializable {
 			if (newJob != null) {
 				if (!newJobStr.equals(jobStr)) {
 					// job = newJob;
-					setJob(newJob, false, JobManager.SETTLEMENT, JobAssignmentType.APPROVED, JobManager.SETTLEMENT);
+					setJob(newJob, false, JobUtil.SETTLEMENT, JobAssignmentType.APPROVED, JobUtil.SETTLEMENT);
 				}
 			}
 		}
@@ -217,7 +217,7 @@ public class Mind implements Serializable {
 	 */
 	public void getInitialJob(String assignedBy) {
 		// Job newJob = JobManager.getNewJob(person);
-		setJob(JobManager.getNewJob(person), true, assignedBy, JobAssignmentType.APPROVED, assignedBy);
+		setJob(JobUtil.getNewJob(person), true, assignedBy, JobAssignmentType.APPROVED, assignedBy);
 	}
 
 	/**
@@ -290,7 +290,7 @@ public class Mind implements Serializable {
 		// (1) ReviewJobReassignment's constructor or
 		// (2) TabPanelCareer's actionPerformed() [for a pop <= 4 settlement]
 		Job newJob = null;
-		Iterator<Job> i = JobManager.getJobs().iterator();
+		Iterator<Job> i = JobUtil.getJobs().iterator();
 		while (i.hasNext()) {
 			Job job = i.next();
 			String n = job.getName(person.getGender());
@@ -349,11 +349,11 @@ public class Mind implements Serializable {
 			if (bypassingJobLock || !jobLock) {
 				job = newJob;
 				// Set up 4 approvedBy conditions
-				if (approvedBy.equals(JobManager.SETTLEMENT)) { // automatically approved if pop <= 4
+				if (approvedBy.equals(JobUtil.SETTLEMENT)) { // automatically approved if pop <= 4
 					jh.saveJob(newJob, assignedBy, status, approvedBy, true);
-				} else if (approvedBy.equals(JobManager.USER)) {
+				} else if (approvedBy.equals(JobUtil.USER)) {
 					jh.saveJob(newJob, assignedBy, status, approvedBy, true);
-				} else if (approvedBy.equals(JobManager.MISSION_CONTROL)) { // at the start of sim
+				} else if (approvedBy.equals(JobUtil.MISSION_CONTROL)) { // at the start of sim
 					jh.saveJob(newJob, assignedBy, status, approvedBy, false);
 				} else { // Call JobHistory's saveJob(),
 						// approved by a Senior Official");
@@ -366,14 +366,14 @@ public class Mind implements Serializable {
 				person.fireUnitUpdate(UnitEventType.JOB_EVENT, newJob);
 
 				// Assign a new role type after the change of job
-				if (s != null 
-						// Exclude the person if he's a head
-						&& person.getRole().getType() != RoleType.COMMANDER
-						&& person.getRole().getType() != RoleType.SUB_COMMANDER
-						&& person.getRole().getType() != RoleType.MAYOR
-						&& person.getRole().getType() != RoleType.PRESIDENT) {
-					person.getRole().obtainRole(s);
-				}
+//				if (s != null 
+//						// Exclude the person if he's a head
+//						&& person.getRole().getType() != RoleType.COMMANDER
+//						&& person.getRole().getType() != RoleType.SUB_COMMANDER
+//						&& person.getRole().getType() != RoleType.MAYOR
+//						&& person.getRole().getType() != RoleType.PRESIDENT) {
+//					person.getRole().obtainRole(s);
+//				}
 				
 				// the new job will be Locked in until the beginning of the next day
 				jobLock = true;

@@ -76,7 +76,7 @@ public class Role implements Serializable {
 	}
 
 	/**
-	 * Sets new role type.
+	 * Sets the new role type.
 	 * 
 	 * @param role type
 	 */
@@ -86,14 +86,17 @@ public class Role implements Serializable {
 		if (newType != oldType) {
 			this.roleType = newType;
 			
+			// Save the role in the settlement Registry
 			person.getAssociatedSettlement().getChainOfCommand().registerRole(newType);
+			// Fire the role event
 			person.fireUnitUpdate(UnitEventType.ROLE_EVENT, newType);
+			// Turn in the old role
 			relinquishOldRoleType();
 
 			if (oldType != null)
 				LogConsolidated.log(Level.CONFIG, 0, sourceName,
 					"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
-					+ " relinquished the old " + oldType + " role"
+					+ " relinquished the " + oldType + " role"
 					+ " and took over the " + newType + " role.");
 			else
 				LogConsolidated.log(Level.CONFIG, 0, sourceName,
@@ -113,17 +116,8 @@ public class Role implements Serializable {
 	public void obtainRole(Settlement s) {
 		ChainOfCommand cc = s.getChainOfCommand();
 		cc.set7Divisions(true);
-		cc.assignSpecialiststo7Divisions(person);
-		
-//		// Assign a role associate with
-//		if (s.getNumCitizens() >= ChainOfCommand.POPULATION_WITH_MAYOR) {
-//			cc.set7Divisions(true);
-//			cc.assignSpecialiststo7Divisions(person);
-//		}
-//		else {
-//			cc.set3Divisions(true);
-//			cc.assignSpecialiststo3Divisions(person);
-//		}
+		// Assign a role
+		cc.assignSpecialistRole(person);	
 	}
 	
 	/**

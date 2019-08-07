@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Chemist.java
- * @version 3.07 2014-12-06
+ * @version 3.1.0 2018-08-06
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.job;
@@ -48,6 +48,10 @@ public class Chemist extends Job implements Serializable {
 
 	// private static Logger logger = Logger.getLogger(Chemist.class.getName());
 
+	private final int JOB_ID = 6;
+	
+	private double[] roleProspects = new double[] {20.0, 5.0, 5.0, 5.0, 20.0, 15.0, 30.0};
+	
 	/**
 	 * Constructor.
 	 */
@@ -139,4 +143,15 @@ public class Chemist extends Job implements Serializable {
 		return result;
 	}
 
+	public double[] getRoleProspects() {
+		return roleProspects;
+	}
+	
+	public void setRoleProspects(int index, int weight) {
+		roleProspects[index] = weight;
+	}
+	
+	public int getJobID() {
+		return JOB_ID;
+	}
 }

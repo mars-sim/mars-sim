@@ -33,7 +33,7 @@ import org.mars_sim.msp.core.person.ai.Mind;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.job.JobAssignmentType;
 import org.mars_sim.msp.core.person.ai.job.JobHistory;
-import org.mars_sim.msp.core.person.ai.job.JobManager;
+import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.health.MedicalAid;
@@ -205,6 +205,8 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	/** The person's water/oxygen consumption */
 	private Map<Integer, Map<Integer, Double>> consumption;
 
+//	private Map<RoleType, Double> roleProspectScores = new HashMap<>();
+	
 	/**
 	 * Must be synchronised to prevent duplicate ids being assigned via different
 	 * threads.
@@ -571,9 +573,9 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 
 		if (type == RoleType.MAYOR) {
 			getRole().setNewRoleType(type);
-			Job job = JobManager.getJob(POLITICIAN);
+			Job job = JobUtil.getJob(POLITICIAN);
 			if (job != null) {
-				mind.setJob(job, true, JobManager.SETTLEMENT, JobAssignmentType.APPROVED, JobManager.SETTLEMENT);
+				mind.setJob(job, true, JobUtil.SETTLEMENT, JobAssignmentType.APPROVED, JobUtil.SETTLEMENT);
 			}
 		} else
 			getRole().setNewRoleType(type);
@@ -585,9 +587,9 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 * @param jobStr
 	 */
 	public void setJob(String jobStr, String authority) {
-		Job job = JobManager.getJob(jobStr);
+		Job job = JobUtil.getJob(jobStr);
 		if (job != null) {
-			mind.setJob(job, true, JobManager.SETTLEMENT, JobAssignmentType.APPROVED, authority);
+			mind.setJob(job, true, JobUtil.SETTLEMENT, JobAssignmentType.APPROVED, authority);
 		}	
 	}
 	
@@ -1889,6 +1891,25 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 //			if (pref <= 99)
 //				buildingPreference.put(type.ordinal(), 1 + pref);
 //		}
+//	}
+	
+//	/**
+//	 * Gets the Role Prospect score map
+//	 * 
+//	 * @return
+//	 */
+//	public Map<RoleType, Double> getRoleProspectScores() {
+//		return roleProspectScores;
+//	}
+//	
+//	/**
+//	 * Gets a Role Prospect score
+//	 * 
+//	 * @param index
+//	 * @return
+//	 */
+//	public double getARoleProspectScore(RoleType role) {
+//		return roleProspectScores.get(role);
 //	}
 	
 	/**

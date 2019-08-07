@@ -41,7 +41,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.person.ShiftType;
-import org.mars_sim.msp.core.person.ai.job.JobManager;
+import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
@@ -544,7 +544,7 @@ public class Resupply implements Serializable, Transportable {
 //			immigrant.getPreference().initializePreference();
 
 			// Assign a job 
-			immigrant.getMind().getInitialJob(JobManager.MISSION_CONTROL);
+			immigrant.getMind().getInitialJob(JobUtil.MISSION_CONTROL);
 
 			// Set up work shift 
 			immigrant.getTaskSchedule().setShiftType(ShiftType.ON_CALL);
@@ -568,12 +568,6 @@ public class Resupply implements Serializable, Transportable {
 		// immigrants.
 		if (immigrants.size() > 0) {
 
-			// Reset specialist positions at settlement.
-			Iterator<Person> i = settlement.getAllAssociatedPeople().iterator();
-			while (i.hasNext()) {
-				i.next().getRole().obtainRole(settlement);
-			}
-
 			settlement.updateAllAssociatedPeople();
 			settlement.updateAllAssociatedRobots();
 
@@ -581,6 +575,12 @@ public class Resupply implements Serializable, Transportable {
 			// unitManager.setupShift(settlement, popSize);
 			settlement.reassignWorkShift();
 
+			// Reset specialist positions at settlement.
+			Iterator<Person> i = settlement.getAllAssociatedPeople().iterator();
+			while (i.hasNext()) {
+				i.next().getRole().obtainRole(settlement);
+			}
+			
 			// Reset command/government system at settlement.
 			settlement.getChainOfCommand().establishSettlementGovernance(settlement);
 

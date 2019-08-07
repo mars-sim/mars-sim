@@ -6,12 +6,6 @@
  */
 package org.mars_sim.msp.core.person;
 
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.structure.Settlement;
-//import org.mars_sim.msp.core.structure.building.function.FunctionType;
-import org.mars_sim.msp.core.time.MarsClock;
-
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
@@ -19,6 +13,12 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
+
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.structure.Settlement;
+//import org.mars_sim.msp.core.structure.building.function.FunctionType;
+import org.mars_sim.msp.core.time.MarsClock;
 
 /**
  * This class represents the task schedule of a person.

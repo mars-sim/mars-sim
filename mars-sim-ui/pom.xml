@@ -5,8 +5,8 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<artifactId>mars-sim</artifactId>
 		<groupId>net.sf</groupId>
+		<artifactId>mars-sim</artifactId>
 		<version>3.1.0-b2</version>
 	</parent>
 	<groupId>net.sf.mars-sim</groupId>

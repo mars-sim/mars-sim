@@ -25,7 +25,7 @@ import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
-import org.mars_sim.msp.core.person.ai.job.Driver;
+import org.mars_sim.msp.core.person.ai.job.Pilot;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -803,7 +803,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 			Person person = (Person) member;
 
 			// If person has the "Driver" job, add 1 to their qualification.
-			if (person.getMind().getJob() instanceof Driver) {
+			if (person.getMind().getJob() instanceof Pilot) {
 				result += 1D;
 			}
 		}

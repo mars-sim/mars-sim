@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Meteorologist.java
- * @version 3.07 2014-12-06
+ * @version 3.1.0 2018-08-06
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.job;
@@ -41,9 +41,12 @@ public class Meteorologist extends Job implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	// private static Logger logger =
-	// Logger.getLogger(Meteorologist.class.getName());
+	// private static Logger logger = Logger.getLogger(Meteorologist.class.getName());
 
+	private final int JOB_ID = 10;
+	
+	private double[] roleProspects = new double[] {5.0, 10.0, 10.0, 10.0, 15.0, 20.0, 30.0};
+	
 	/** Constructor. */
 	public Meteorologist() {
 		// Use Job constructor
@@ -119,4 +122,15 @@ public class Meteorologist extends Job implements Serializable {
 		return result;
 	}
 
+	public double[] getRoleProspects() {
+		return roleProspects;
+	}
+	
+	public void setRoleProspects(int index, int weight) {
+		roleProspects[index] = weight;
+	}
+	
+	public int getJobID() {
+		return JOB_ID;
+	}
 }

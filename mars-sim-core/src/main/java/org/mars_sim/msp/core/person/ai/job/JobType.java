@@ -26,11 +26,11 @@ public enum JobType {
 	CHEF				(Msg.getString("JobType.Chef")), //$NON-NLS-1$
 	CHEMIST				(Msg.getString("JobType.Chemist")), //$NON-NLS-1$
 	DOCTOR				(Msg.getString("JobType.Doctor")), //$NON-NLS-1$
-	DRIVER				(Msg.getString("JobType.Driver")), //$NON-NLS-1$
 	ENGINEER			(Msg.getString("JobType.Engineer")), //$NON-NLS-1$
 	MATHEMATICIAN		(Msg.getString("JobType.Mathematician")), //$NON-NLS-1$
 	METEOROLOGIST		(Msg.getString("JobType.Meteorologist")), //$NON-NLS-1$
 	PHYSICIST			(Msg.getString("JobType.Physicist")), //$NON-NLS-1$
+	PILOT				(Msg.getString("JobType.Pilot")), //$NON-NLS-1$
 	POLITICIAN			(Msg.getString("JobType.Politician")), //$NON-NLS-1$
 	REPORTER			(Msg.getString("JobType.Reporter")), //$NON-NLS-1$
 	TECHNICIAN			(Msg.getString("JobType.Technician")), //$NON-NLS-1$
@@ -46,11 +46,11 @@ public enum JobType {
 			CHEF,
 			CHEMIST,
 			DOCTOR,
-			DRIVER,
 			ENGINEER,
 			MATHEMATICIAN,
 			METEOROLOGIST,
 			PHYSICIST,
+			PILOT,
 			POLITICIAN,
 			REPORTER,
 			TECHNICIAN,

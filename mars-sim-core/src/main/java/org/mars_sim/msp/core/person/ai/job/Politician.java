@@ -29,6 +29,10 @@ public class Politician extends Job implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	private final int JOB_ID = 13;
+	
+	private double[] roleProspects = new double[] {15.0, 5.0, 25.0, 25.0, 20.0, 5.0, 5.0};
+
 	private static double TRADING_RANGE = 1500D;
 	private static double SETTLEMENT_MULTIPLIER = 1D;
 
@@ -125,4 +129,15 @@ public class Politician extends Job implements Serializable {
 		return result;
 	}
 
+	public double[] getRoleProspects() {
+		return roleProspects;
+	}
+	
+	public void setRoleProspects(int index, int weight) {
+		roleProspects[index] = weight;
+	}
+	
+	public int getJobID() {
+		return JOB_ID;
+	}
 }

@@ -212,4 +212,11 @@ public abstract class Job implements Serializable {
 		unitManager = u;
 		missionManager = m;
 	}
+	
+	public abstract double[] getRoleProspects();
+	
+	public abstract void setRoleProspects(int index, int weight);
+	
+	public abstract int getJobID();
+	
 }

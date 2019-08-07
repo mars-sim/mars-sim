@@ -16,7 +16,7 @@ import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.Doctor;
 import org.mars_sim.msp.core.person.ai.job.Job;
-import org.mars_sim.msp.core.person.ai.job.JobManager;
+import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.task.ExamineBody;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.person.health.HealthProblem;
@@ -80,7 +80,7 @@ public class ExamineBodyMeta implements MetaTask, Serializable {
 			// Effort-driven task modifier.
 			result *= person.getPerformanceRating();
 //			System.out.print("   result : " + result);
-			int numDoctor = JobManager.numJobs(Doctor.class, person.getSettlement());
+			int numDoctor = JobUtil.numJobs(Doctor.class, person.getSettlement());
 //			System.out.print("   # Doctors : " + num);
 			// Job modifier.
 			if (numDoctor > 0) {

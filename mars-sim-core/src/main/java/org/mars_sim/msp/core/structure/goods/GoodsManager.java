@@ -47,7 +47,7 @@ import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.ai.job.Architect;
 import org.mars_sim.msp.core.person.ai.job.Areologist;
 import org.mars_sim.msp.core.person.ai.job.Biologist;
-import org.mars_sim.msp.core.person.ai.job.Driver;
+import org.mars_sim.msp.core.person.ai.job.Pilot;
 import org.mars_sim.msp.core.person.ai.job.Trader;
 import org.mars_sim.msp.core.person.ai.mission.CollectIce;
 import org.mars_sim.msp.core.person.ai.mission.CollectRegolith;
@@ -2625,7 +2625,7 @@ public class GoodsManager implements Serializable {
 		int result = 0;
 		Iterator<Person> i = settlement.getAllAssociatedPeople().iterator();
 		while (i.hasNext()) {
-			if (i.next().getMind().getJob() instanceof Driver)
+			if (i.next().getMind().getJob() instanceof Pilot)
 				result++;
 		}
 		return result;

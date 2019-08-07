@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Physicist.java
- * @version 3.07 2014-12-06
+ * @version 3.1.0 2018-08-06
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.job;
@@ -42,6 +42,10 @@ implements Serializable {
 
 	//	private static Logger logger = Logger.getLogger(Physicist.class.getName());
 
+	private final int JOB_ID = 11;
+	
+	private double[] roleProspects = new double[] {5.0, 15.0, 10.0, 10.0, 15.0, 15.0, 30.0};
+	
 	/** Constructor. */
 	public Physicist() {
 		// Use Job constructor
@@ -108,4 +112,15 @@ implements Serializable {
 		return result;
 	}
 
+	public double[] getRoleProspects() {
+		return roleProspects;
+	}
+	
+	public void setRoleProspects(int index, int weight) {
+		roleProspects[index] = weight;
+	}
+	
+	public int getJobID() {
+		return JOB_ID;
+	}
 }

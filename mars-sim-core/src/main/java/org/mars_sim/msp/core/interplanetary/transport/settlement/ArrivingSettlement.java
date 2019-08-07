@@ -29,7 +29,7 @@ import org.mars_sim.msp.core.person.Favorite;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.GenderType;
-import org.mars_sim.msp.core.person.ai.job.JobManager;
+import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
@@ -322,7 +322,7 @@ public class ArrivingSettlement implements Transportable, Serializable {
 			immigrant.getPreference().initializePreference();
 
 			// Assign a job by calling getInitialJob
-			immigrant.getMind().getInitialJob(JobManager.MISSION_CONTROL);
+			immigrant.getMind().getInitialJob(JobUtil.MISSION_CONTROL);
 
 			unitManager.addUnit(immigrant);
 			relationshipManager.addNewImmigrant(immigrant, immigrants);
@@ -334,12 +334,6 @@ public class ArrivingSettlement implements Transportable, Serializable {
 		// immigrants.
 		if (immigrants.size() > 0) {
 
-			// Reset specialist positions at settlement.
-			Iterator<Person> i = newSettlement.getAllAssociatedPeople().iterator();
-			while (i.hasNext()) {
-				i.next().getRole().obtainRole(newSettlement);
-			}
-
 			// Call updateAllAssociatedPeople(), not getAllAssociatedPeople()()
 			newSettlement.updateAllAssociatedPeople();
 			newSettlement.updateAllAssociatedRobots();
@@ -349,6 +343,12 @@ public class ArrivingSettlement implements Transportable, Serializable {
 			// Reset work shift schedules at settlement.
 			unitManager.setupShift(newSettlement, popSize);
 
+			// Reset specialist positions at settlement.
+			Iterator<Person> i = newSettlement.getAllAssociatedPeople().iterator();
+			while (i.hasNext()) {
+				i.next().getRole().obtainRole(newSettlement);
+			}
+			
 			// Reset command/government system at settlement.
 			newSettlement.getChainOfCommand().establishSettlementGovernance(newSettlement);
 		}
@@ -379,7 +379,7 @@ public class ArrivingSettlement implements Transportable, Serializable {
 			// Initialize robot job.
 			String jobName = RobotJob.getName(robotType);
 			if (jobName != null) {
-				RobotJob robotJob = JobManager.getRobotJob(robotType.getName());
+				RobotJob robotJob = JobUtil.getRobotJob(robotType.getName());
 				if (robotJob != null) {
 					robot.getBotMind().setRobotJob(robotJob, true);
 				}

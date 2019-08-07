@@ -1,6 +1,6 @@
 /**
  * Mars Simulation Project
- * JobManager.java
+ * JobUtil.java
  * @version 3.1.0 2017-08-30
  * @author Scott Davis
  */
@@ -29,14 +29,14 @@ import org.mars_sim.msp.core.robot.ai.job.RobotJob;
 import org.mars_sim.msp.core.structure.Settlement;
 
 /**
- * The JobManager class keeps track of the settler jobs in a simulation.
+ * The JobUtil class keeps track of the settler jobs in a simulation.
  */
-public final class JobManager implements Serializable {
+public final class JobUtil implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private static Logger logger = Logger.getLogger(JobManager.class.getName());
+	private static Logger logger = Logger.getLogger(JobUtil.class.getName());
 
 	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
 			logger.getName().length());
@@ -55,7 +55,7 @@ public final class JobManager implements Serializable {
 	/**
 	 * Private constructor for static utility class.
 	 */
-	private JobManager() {
+	private JobUtil() {
 	}
 
 	/**
@@ -69,16 +69,19 @@ public final class JobManager implements Serializable {
 			jobs.add(new Astronomer());
 			jobs.add(new Biologist());
 			jobs.add(new Botanist());
+			
 			jobs.add(new Chef());
 			jobs.add(new Chemist());
 			jobs.add(new Doctor());
-			jobs.add(new Driver());
 			jobs.add(new Engineer());
 			jobs.add(new Mathematician());
+			
 			jobs.add(new Meteorologist());
 			jobs.add(new Physicist());
+			jobs.add(new Pilot());
 			jobs.add(new Politician());
 			jobs.add(new Reporter());
+			
 			jobs.add(new Technician());
 			jobs.add(new Trader());
 		}
@@ -245,7 +248,7 @@ public final class JobManager implements Serializable {
 			while (i.hasNext()) {
 				Job job = i.next();
 				// Exclude politician job which is reserved for Mayor only
-				if (!job.equals(JobManager.getJob(POLITICIAN))) {
+				if (!job.equals(JobUtil.getJob(POLITICIAN))) {
 					double jobProspect = getJobProspect(person, job, settlement, true);
 					if (jobProspect >= newJobProspect) {
 						newJob = job;

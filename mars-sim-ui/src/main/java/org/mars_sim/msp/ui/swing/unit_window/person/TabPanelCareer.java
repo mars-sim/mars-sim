@@ -35,7 +35,7 @@ import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.job.JobAssignment;
 import org.mars_sim.msp.core.person.ai.job.JobAssignmentType;
 import org.mars_sim.msp.core.person.ai.job.JobHistory;
-import org.mars_sim.msp.core.person.ai.job.JobManager;
+import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.health.DeathInfo;
 import org.mars_sim.msp.core.robot.Robot;
@@ -169,7 +169,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 			// Prepare job combo box
 			jobCache = mind.getJob().getName(person.getGender());
 			List<String> jobNames = new ArrayList<String>();
-			for (Job job : JobManager.getJobs()) {
+			for (Job job : JobUtil.getJobs()) {
 				jobNames.add(job.getName(person.getGender()));
 			}
 
@@ -667,7 +667,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 
 						statusCache = JobAssignmentType.PENDING;
 	
-						jh.savePendingJob(selectedJobStr, JobManager.USER, statusCache, null, true);
+						jh.savePendingJob(selectedJobStr, JobUtil.USER, statusCache, null, true);
 						// set the combobox selection back to its previous job type for the time being
 						// until the reassignment is approved
 						jobComboBox.setSelectedItem(jobCache);
@@ -684,8 +684,8 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 						jobComboBox.setSelectedItem(selectedJobStr);
 						// pop is small, things need to be flexible. Thus automatic approval
 						statusCache = JobAssignmentType.APPROVED;
-						person.getMind().reassignJob(selectedJobStr, true, JobManager.USER, statusCache,
-								JobManager.USER);
+						person.getMind().reassignJob(selectedJobStr, true, JobUtil.USER, statusCache,
+								JobUtil.USER);
 
 						// System.out.println("Yes they are diff");
 						jobCache = selectedJobStr;

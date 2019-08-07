@@ -32,13 +32,14 @@ import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PersonalityTraitType;
+import org.mars_sim.msp.core.person.RoleUtil;
 import org.mars_sim.msp.core.person.RoleType;
 import org.mars_sim.msp.core.person.ai.Mind;
 import org.mars_sim.msp.core.person.ai.Skill;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.job.JobAssignmentType;
-import org.mars_sim.msp.core.person.ai.job.JobManager;
+import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.person.ai.social.Relationship;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
@@ -224,7 +225,7 @@ public class UnitManager implements Serializable {
 		// Initialize settlement and vehicle name lists
 		initializeSettlementNames();
 		initializeVehicleNames();
-
+		
 		if (!loadSaveSim) {
 			// Create initial units.
 			createInitialSettlements();
@@ -239,6 +240,8 @@ public class UnitManager implements Serializable {
 			createPreconfiguredRobots();
 			// Create more robots to fill the settlement(s)
 			createInitialRobots();
+			// Initialize the role prospect array
+			RoleUtil.initialize();
 			// Create pre-configured settlers as stated in people.xml
 			createPreconfiguredPeople();
 			// Create more settlers to fill the settlement(s)
@@ -246,6 +249,10 @@ public class UnitManager implements Serializable {
 			// Manually add job positions
 			tuneJobDeficit();
 		}
+		
+		else
+			// Initialize the role prospect array
+			RoleUtil.initialize();
 
 		justStarting = false;
 	}
@@ -1011,11 +1018,11 @@ public class UnitManager implements Serializable {
 			// Set person's job (if any).
 			String jobName = personConfig.getConfiguredPersonJob(x, crew_id);
 			if (jobName != null) {
-				Job job = JobManager.getJob(jobName);
+				Job job = JobUtil.getJob(jobName);
 				if (job != null) {
 					// Designate a specific job to a person
-					person.getMind().setJob(job, true, JobManager.MISSION_CONTROL, JobAssignmentType.APPROVED,
-							JobManager.MISSION_CONTROL);
+					person.getMind().setJob(job, true, JobUtil.MISSION_CONTROL, JobAssignmentType.APPROVED,
+							JobUtil.MISSION_CONTROL);
 					// Assign a job to a person based on settlement's need
 				}
 			}
@@ -1274,13 +1281,10 @@ public class UnitManager implements Serializable {
 
 //					System.out.println("UnitManager's createInitialPeople : settlement is " + settlement);
 					// Assign a job 
-					m.getInitialJob(JobManager.MISSION_CONTROL);
+					m.getInitialJob(JobUtil.MISSION_CONTROL);
 
 					// Add sponsor
 					person.assignReportingAuthority();
-
-					// Get a role
-					person.getRole().obtainRole(settlement);
 
 				}
 
@@ -1291,6 +1295,12 @@ public class UnitManager implements Serializable {
 				// Set up work shift
 				setupShift(settlement, initPop);
 
+				// Reset specialist positions at settlement.
+				Iterator<Person> j = settlement.getAllAssociatedPeople().iterator();
+				while (j.hasNext()) {
+					j.next().getRole().obtainRole(settlement);
+				}
+				
 				// Establish a system of governance at settlement.
 				settlement.getChainOfCommand().establishSettlementGovernance(settlement);
 				
@@ -1327,7 +1337,7 @@ public class UnitManager implements Serializable {
 		cc.setName(newName);
 		cc.setGender(newGender);
 		cc.changeAge(getAge());
-		cc.setJob(newJob, JobManager.MISSION_CONTROL);
+		cc.setJob(newJob, JobUtil.MISSION_CONTROL);
 //		logger.config(newName + " just picked the " + newJob + " job.");
 		cc.setRole(RoleType.COMMANDER);
 		logger.config(newName + " just picked the Commander role.");
@@ -1374,8 +1384,8 @@ public class UnitManager implements Serializable {
 	
 	public void setJob(Person p, int id) {
 		// Designate a specific job to a person
-		p.getMind().setJob(JobManager.getJob(JobType.getEditedJobString(id)), true, JobManager.MISSION_CONTROL, JobAssignmentType.APPROVED,
-					JobManager.MISSION_CONTROL);
+		p.getMind().setJob(JobUtil.getJob(JobType.getEditedJobString(id)), true, JobUtil.MISSION_CONTROL, JobAssignmentType.APPROVED,
+					JobUtil.MISSION_CONTROL);
 	}
 
 
@@ -1567,7 +1577,7 @@ public class UnitManager implements Serializable {
 
 						if (isDestinationChange) {
 
-							RobotJob robotJob = JobManager.getRobotJob(robotType.getName());
+							RobotJob robotJob = JobUtil.getRobotJob(robotType.getName());
 							if (robotJob != null) {
 								robot.getBotMind().setRobotJob(robotJob, true);
 							}
@@ -1627,7 +1637,7 @@ public class UnitManager implements Serializable {
 
 					String jobName = RobotJob.getName(robotType);
 					if (jobName != null) {
-						RobotJob robotJob = JobManager.getRobotJob(robotType.getName());
+						RobotJob robotJob = JobUtil.getRobotJob(robotType.getName());
 						if (robotJob != null) {
 							robot.getBotMind().setRobotJob(robotJob, true);
 						}

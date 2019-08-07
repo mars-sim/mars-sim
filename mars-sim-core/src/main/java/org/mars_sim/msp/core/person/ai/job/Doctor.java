@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Doctor.java
- * @version 3.07 2014-11-06
+ * @version 3.1.0 2018-08-06
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.job;
@@ -42,6 +42,10 @@ public class Doctor extends Job implements Serializable {
 
 	// private static Logger logger = Logger.getLogger(Doctor.class.getName());
 
+	private final int JOB_ID = 7;
+	
+	private double[] roleProspects = new double[] {20.0, 5.0, 5.0, 5.0, 20.0, 15.0, 30.0};
+	
 	/** Constructor. */
 	public Doctor() {
 		// Use Job constructor
@@ -142,4 +146,15 @@ public class Doctor extends Job implements Serializable {
 		return result;
 	}
 
+	public double[] getRoleProspects() {
+		return roleProspects;
+	}
+	
+	public void setRoleProspects(int index, int weight) {
+		roleProspects[index] = weight;
+	}
+	
+	public int getJobID() {
+		return JOB_ID;
+	}
 }

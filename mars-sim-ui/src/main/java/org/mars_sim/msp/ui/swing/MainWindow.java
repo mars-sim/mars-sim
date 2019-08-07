@@ -97,7 +97,7 @@ public class MainWindow extends JComponent {
 
 	// Data members
 //	private boolean cleanUI;
-	private boolean useDefault;
+	private boolean useDefault = true;
 //	private boolean keepSleeping;
 
 	private int solCache = 0;

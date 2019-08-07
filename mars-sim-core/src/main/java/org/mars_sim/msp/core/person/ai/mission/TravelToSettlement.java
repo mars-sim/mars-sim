@@ -16,9 +16,9 @@ import java.util.Map;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.job.Driver;
+import org.mars_sim.msp.core.person.ai.job.Pilot;
 import org.mars_sim.msp.core.person.ai.job.Job;
-import org.mars_sim.msp.core.person.ai.job.JobManager;
+import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.job.Politician;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.robot.Robot;
@@ -377,13 +377,13 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 		if (member instanceof Person) {
 			Person person = (Person) member;
 			Job currentJob = person.getMind().getJob();
-			double currentJobProspect = JobManager.getJobProspect(person, currentJob, startingSettlement, true);
+			double currentJobProspect = JobUtil.getJobProspect(person, currentJob, startingSettlement, true);
 			double destinationJobProspect = 0D;
 
 			if (person.getMind().getJobLock()) {
-				destinationJobProspect = JobManager.getJobProspect(person, currentJob, destinationSettlement, false);
+				destinationJobProspect = JobUtil.getJobProspect(person, currentJob, destinationSettlement, false);
 			} else {
-				destinationJobProspect = JobManager.getBestJobProspect(person, destinationSettlement, false);
+				destinationJobProspect = JobUtil.getBestJobProspect(person, destinationSettlement, false);
 			}
 
 			if (destinationJobProspect > currentJobProspect) {
@@ -543,7 +543,7 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 			}
 
 			// If person has the "Driver" job, add 1 to their qualification.
-			if (person.getMind().getJob() instanceof Driver) {
+			if (person.getMind().getJob() instanceof Pilot) {
 				result += 1D;
 			}
 

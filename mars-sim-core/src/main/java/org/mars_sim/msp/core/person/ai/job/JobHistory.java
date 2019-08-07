@@ -85,7 +85,7 @@ public class JobHistory implements Serializable  {
      		jobAssignmentList.add(new JobAssignment(newJobStr, initiator, status, approvedBy));
     	}
 
-    	else if (approvedBy.equals(JobManager.USER)) {
+    	else if (approvedBy.equals(JobUtil.USER)) {
     	   	// user approves the flexible job reassignment (for pop <= 4 only)");
     		int last = jobAssignmentList.size() - 1;
 			// Obtain last entry's lastJobStr
@@ -98,7 +98,7 @@ public class JobHistory implements Serializable  {
       		int last = jobAssignmentList.size() - 1;
 			// Obtain last entry's lastJobStr
     		//String lastJobStr = jobAssignmentList.get(last).getJobType();
-    		if (approvedBy.equals(JobManager.SETTLEMENT)){ // based on the emergent need of the settlement
+    		if (approvedBy.equals(JobUtil.SETTLEMENT)){ // based on the emergent need of the settlement
          	   	jobAssignmentList.add(new JobAssignment(newJobStr, initiator, status, approvedBy));
             	jobAssignmentList.get(last).setSolSubmitted();
     		}

@@ -27,6 +27,10 @@ public class Reporter extends Job implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	private final int JOB_ID = 14;
+	
+	private double[] roleProspects = new double[] {5.0, 5.0, 30.0, 30.0, 20.0, 5.0, 5.0};
+
 	private static double TRADING_RANGE = 1500D;
 	private static double SETTLEMENT_MULTIPLIER = 1D;
 
@@ -124,4 +128,15 @@ public class Reporter extends Job implements Serializable {
 		return result * pop / 24D;
 	}
 
+	public double[] getRoleProspects() {
+		return roleProspects;
+	}
+	
+	public void setRoleProspects(int index, int weight) {
+		roleProspects[index] = weight;
+	}
+	
+	public int getJobID() {
+		return JOB_ID;
+	}
 }

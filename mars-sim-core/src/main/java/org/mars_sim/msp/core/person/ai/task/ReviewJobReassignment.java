@@ -21,7 +21,7 @@ import org.mars_sim.msp.core.person.RoleType;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.JobAssignment;
 import org.mars_sim.msp.core.person.ai.job.JobAssignmentType;
-import org.mars_sim.msp.core.person.ai.job.JobManager;
+import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.Administration;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
@@ -173,7 +173,7 @@ public class ReviewJobReassignment extends Task implements Serializable {
 				String s = person.getAssociatedSettlement().getName();
 				
 				if (rating < 2.5 || cumulative_rating < 2.5) {
-					tempPerson.getMind().reassignJob(lastJobStr, true, JobManager.USER,
+					tempPerson.getMind().reassignJob(lastJobStr, true, JobUtil.USER,
 							JobAssignmentType.NOT_APPROVED, approvedBy);
 
 					LogConsolidated.log(Level.INFO, 3000, sourceName,
@@ -184,7 +184,7 @@ public class ReviewJobReassignment extends Task implements Serializable {
 				} else {
 
 					// Updates the job
-					tempPerson.getMind().reassignJob(pendingJobStr, true, JobManager.USER,
+					tempPerson.getMind().reassignJob(pendingJobStr, true, JobUtil.USER,
 							JobAssignmentType.APPROVED, approvedBy);
 					LogConsolidated.log(Level.INFO, 3000, sourceName,
 							"[" + s + "] " + approvedBy + " just approved " + tempPerson
