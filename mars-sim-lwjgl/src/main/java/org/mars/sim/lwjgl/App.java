@@ -1,4 +1,4 @@
-package org.mars_sim.lwjgl;
+package org.mars.sim.lwjgl;
 
 import org.lwjgl.*;
 import org.lwjgl.glfw.*;

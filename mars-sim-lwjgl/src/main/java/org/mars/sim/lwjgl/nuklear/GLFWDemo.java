@@ -2,7 +2,7 @@
  * Copyright LWJGL. All rights reserved.
  * License terms: https://www.lwjgl.org/license
  */
-package org.mars_sim.lwjgl.nuklear;
+package org.mars.sim.lwjgl.nuklear;
 
 import org.lwjgl.glfw.*;
 import org.lwjgl.nuklear.*;
@@ -14,7 +14,6 @@ import java.io.*;
 import java.nio.*;
 import java.util.*;
 
-import static org.mars_sim.lwjgl.IOUtil.*;
 import static org.lwjgl.glfw.Callbacks.*;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.nuklear.Nuklear.*;
@@ -23,6 +22,7 @@ import static org.lwjgl.opengl.GL30C.*;
 import static org.lwjgl.stb.STBTruetype.*;
 import static org.lwjgl.system.MemoryStack.*;
 import static org.lwjgl.system.MemoryUtil.*;
+import static org.mars.sim.lwjgl.IOUtil.*;
 
 /**
  * Nuklear demo using GLFW, OpenGL and stb_truetype for rendering.

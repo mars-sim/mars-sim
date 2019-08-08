@@ -89,8 +89,7 @@ public class ChainOfCommand implements Serializable {
 	 */
 	public void initializeRoleMaps() {
 		int pop = settlement.getInitialPopulation();
-		
-		System.out.println("" + settlement + " : " + pop);
+//		System.out.println("" + settlement + " : " + pop);
 		
 		RoleType[] types = RoleUtil.roleTypes;
 		

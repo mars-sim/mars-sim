@@ -114,7 +114,7 @@ public class TabPanelOrganization extends TabPanel {
 		DefaultMutableTreeNode commanderNode = new DefaultMutableTreeNode(RoleType.COMMANDER.toString());
 		DefaultMutableTreeNode subCommanderNode = new DefaultMutableTreeNode(RoleType.SUB_COMMANDER.toString());
 
-		DefaultMutableTreeNode cabinetNode = new DefaultMutableTreeNode("Cabinet");
+		DefaultMutableTreeNode divisionNode = new DefaultMutableTreeNode("Division");
 		DefaultMutableTreeNode mayorNode = new DefaultMutableTreeNode(RoleType.MAYOR.toString());
 
 		DefaultMutableTreeNode agricultureNode = new DefaultMutableTreeNode("Agriculture");
@@ -160,31 +160,31 @@ public class TabPanelOrganization extends TabPanel {
 
 		if (population >= ChainOfCommand.POPULATION_WITH_CHIEFS) {
 			
-			cabinetNode.add(agricultureNode);
+			divisionNode.add(agricultureNode);
 			agricultureNode.add(agricultureChiefNode);
 			agricultureNode.add(agricultureSpecialistNode);
 
-			cabinetNode.add(engineeringNode);
+			divisionNode.add(engineeringNode);
 			engineeringNode.add(engineeringChiefNode);
 			engineeringNode.add(engineeringSpecialistNode);
 
-			cabinetNode.add(logisticNode);
+			divisionNode.add(logisticNode);
 			logisticNode.add(logisticChiefNode);
 			logisticNode.add(logisticSpecialistNode);
 
-			cabinetNode.add(missionNode);
+			divisionNode.add(missionNode);
 			missionNode.add(missionChiefNode);
 			missionNode.add(missionSpecialistNode);
 
-			cabinetNode.add(safetyNode);
+			divisionNode.add(safetyNode);
 			safetyNode.add(safetyChiefNode);
 			safetyNode.add(safetySpecialistNode);
 
-			cabinetNode.add(scienceNode);
+			divisionNode.add(scienceNode);
 			scienceNode.add(scienceChiefNode);
 			scienceNode.add(scienceSpecialistNode);
 
-			cabinetNode.add(supplyNode);
+			divisionNode.add(supplyNode);
 			supplyNode.add(supplyChiefNode);
 			supplyNode.add(supplySpecialistNode);
 
@@ -192,32 +192,32 @@ public class TabPanelOrganization extends TabPanel {
 		
 		else {
 			
-			cabinetNode.add(agricultureNode);
+			divisionNode.add(agricultureNode);
 			agricultureNode.add(agricultureSpecialistNode);
 
-			cabinetNode.add(engineeringNode);
+			divisionNode.add(engineeringNode);
 			engineeringNode.add(engineeringSpecialistNode);
 
-			cabinetNode.add(logisticNode);
+			divisionNode.add(logisticNode);
 			logisticNode.add(logisticSpecialistNode);
 
-			cabinetNode.add(missionNode);
+			divisionNode.add(missionNode);
 			missionNode.add(missionSpecialistNode);
 
-			cabinetNode.add(safetyNode);
+			divisionNode.add(safetyNode);
 			safetyNode.add(safetySpecialistNode);
 
-			cabinetNode.add(scienceNode);
+			divisionNode.add(scienceNode);
 			scienceNode.add(scienceSpecialistNode);
 
-			cabinetNode.add(supplyNode);
+			divisionNode.add(supplyNode);
 			supplyNode.add(supplySpecialistNode);
 		}
 
 		
 		if (population >= ChainOfCommand.POPULATION_WITH_MAYOR) {
 			root.add(mayorNode);
-			root.add(cabinetNode);
+			root.add(divisionNode);
 
 //		} else if (population >= ChainOfCommand.POPULATION_WITH_CHIEFS) {
 //			root.add(commanderStaffNode);
@@ -229,11 +229,11 @@ public class TabPanelOrganization extends TabPanel {
 			root.add(commanderStaffNode);
 			commanderStaffNode.add(commanderNode);
 			commanderStaffNode.add(subCommanderNode);
-			root.add(cabinetNode);
+			root.add(divisionNode);
 			
 		} else {
 			root.add(commanderNode);
-			root.add(cabinetNode);
+			root.add(divisionNode);
 		}
 
 

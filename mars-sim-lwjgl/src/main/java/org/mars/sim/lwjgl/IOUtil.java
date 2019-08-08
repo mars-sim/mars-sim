@@ -2,7 +2,7 @@
  * Copyright LWJGL. All rights reserved.
  * License terms: https://www.lwjgl.org/license
  */
-package org.mars_sim.lwjgl;
+package org.mars.sim.lwjgl;
 
 import org.lwjgl.*;
 

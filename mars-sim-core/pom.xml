@@ -89,11 +89,12 @@
 			<artifactId>javax.json</artifactId>
 			<version>1.1.4</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.json/json -->
+		<!-- https://mvnrepository.com/artifact/org.json/json 
+			 https://github.com/stleary/JSON-java -->
 		<dependency>
 		    <groupId>org.json</groupId>
 		    <artifactId>json</artifactId>
-		    <version>20180813</version>
+		    <version>20190722</version>
 		</dependency>
 		<!-- 
 		<dependency> 
@@ -241,7 +242,8 @@
 		    <version>1.7.25</version>
 		</dependency>
 		-->
-		<!-- https://github.com/google/flogger 98 KB -->
+		<!-- https://mvnrepository.com/artifact/com.google.flogger/flogger
+			 https://github.com/google/flogger 98 KB -->
 		<dependency>
 			<groupId>com.google.flogger</groupId>
 			<artifactId>flogger</artifactId>
@@ -316,7 +318,7 @@
 			<groupId>org.jetbrains.kotlin</groupId>
 			<artifactId>kotlin-stdlib</artifactId>
 			<version>${kotlin.version}</version>
-		</dependency>
+		</dependency>	
 	</dependencies>
 
 	<repositories>
@@ -329,5 +331,14 @@
 			<id>oss.sonatype.org-snapshot</id>
 			<url>http://oss.sonatype.org/content/repositories/snapshots</url>
 		</repository>
+        <repository>
+            <id>jcenter</id>
+            <name>JCenter</name>
+            <url>https://jcenter.bintray.com/</url>
+        </repository>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>		
 	</repositories>
 </project>

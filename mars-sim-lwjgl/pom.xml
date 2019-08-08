@@ -15,6 +15,7 @@
 	<lwjgl.version>3.2.2</lwjgl.version>
 	<lwjgl.natives>natives-windows</lwjgl.natives>
 	<joml.version>1.9.16</joml.version>	
+	<legui_version>2.0.0-54</legui_version>
 	<mainClass>org.mars_sim.main.MarsProjectStarter</mainClass>	
   </properties> 
   <dependencies>
@@ -33,7 +34,15 @@
 			<groupId>net.sf.mars-sim</groupId>
 			<artifactId>mars-sim-mapdata</artifactId>
 			<version>${project.version}</version>
-		</dependency>   
+		</dependency>
+		<!-- LEGUI - RELEASE/DEVELOP/FEATURE - https://github.com/SpinyOwl/legui -->
+		<dependency>
+		   <groupId>org.liquidengine</groupId>
+		   <artifactId>legui</artifactId>
+		   <version>${legui_version}</version>
+		</dependency>
+		
+		
 		<dependency>
 			<groupId>org.lwjgl</groupId>
 			<artifactId>lwjgl</artifactId>
@@ -259,4 +268,25 @@
             </plugin>
         </plugins>
     </build>
+    
+    <repositories>
+		<repository>
+			<id>github raw releases</id>
+			<url>https://raw.github.com/SpinyOwl/repo/releases</url>
+		</repository>
+		<repository>
+			<id>github raw feature</id>
+			<url>https://raw.github.com/SpinyOwl/repo/feature</url>
+		</repository>
+		<repository>
+			<id>github raw develop</id>
+			<url>https://raw.github.com/SpinyOwl/repo/develop</url>
+		</repository>		
+		
+		<repository>
+			<id>sonatype snapshots</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+		</repository>		
+		
+	</repositories>
 </project> 

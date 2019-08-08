@@ -23,6 +23,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.GameManager;
+import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
@@ -792,8 +793,8 @@ public class MasterClock implements Serializable {
 						addTime();
 					}
 					
-					if (!keepRunning)
-						logger.config("keepRunning : " + keepRunning);
+//					if (!keepRunning)
+//						logger.config("keepRunning : " + keepRunning);
 					
 					// Set excess to zero to prevent getting stuck in the above while loop after
 					// waking up from power saving
@@ -811,7 +812,7 @@ public class MasterClock implements Serializable {
 						System.exit(0);
 					}
 					
-					if (GameManager.mode.equals("1") && millisols > PAUSING_MILLISOLS) {
+					if (GameManager.mode == GameMode.COMMAND && millisols > PAUSING_MILLISOLS) {
 						millisols = 0;
 						setPaused(true, false);
 					}
