@@ -258,7 +258,7 @@ extends ToolWindow {
  		listScrollPanel.validate();
  		listScrollPanel.revalidate();
  		listScrollPanel.repaint();
-		comboBox.setRenderer(new PromptComboBoxRenderer("A list of tasks"));
+//		comboBox.setRenderer(new PromptComboBoxRenderer("A list of tasks"));
 //		comboBox.setSelectedIndex(-1);
 	}
 	

@@ -29,7 +29,7 @@ module mars-sim-ui {
     requires jide-oss;
 
     requires mars-sim-core;
-//    requires mars-sim-mapdata;
+    requires mars-sim-mapdata;
 //    requires mars-sim-network;
     
 	exports mars-sim-ui;

@@ -6,3 +6,4 @@
 org.eclipse.jdt.core.prefs
 /src/main/resources/SurfaceMarsMap.dat
 /src/main/resources/TopoMarsMap.dat
+/mars-sim-mapdata.iml

@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<!-- ************************************************************************************************* -->
 	<!-- * General Section * -->
 	<!-- ************************************************************************************************* -->
@@ -24,7 +22,7 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<!-- springboot.version>1.3.5.RELEASE</springboot.version -->
 		<!-- mapstruct.version>1.1.0.Final</mapstruct.version -->
-		<!-- lwjgl.version>3.1.2</lwjgl.version -->
+		<lwjgl.version>3.2.2</lwjgl.version>
 		<kotlin.version>1.3.41</kotlin.version>
 	</properties>
 
@@ -43,7 +41,7 @@
 		<developer>
 			<id>scud1</id>
 			<name>Scott Davis</name>
-			<email>scud1@users.sourceforge.net</email>
+			<email>mars.sim@gmail.com</email>
 			<roles>
 				<role>manager</role>
 				<role>developer</role>
@@ -53,7 +51,6 @@
 		<developer>
 			<id>lechimp</id>
 			<name>Lars Næsbye Christensen</name>
-			<email>lechimp@users.sourceforge.net</email>
 			<roles>
 				<role>developer</role>
 			</roles>
@@ -62,11 +59,17 @@
 		<developer>
 			<id>mkung</id>
 			<name>Manny Kung</name>
-			<email>mkung@users.sourceforge.net</email>
 			<roles>
 				<role>developer</role>
 			</roles>
 			<timezone>-8</timezone>
+		</developer>
+		<developer>
+			<name>Dennis Krenz</name>
+			<roles>
+				<role>developer</role>
+			</roles>
+			<timezone>+2</timezone>
 		</developer>
 	</developers>
 	
@@ -153,7 +156,8 @@
 		<module>mars-sim-ui</module>
 		<!--module>mars-sim-javafx</module-->
 		<module>mars-sim-lwjgl</module>
-</modules>
+    <module>mars-sim-libgdx</module>
+  </modules>
 	<!-- ************************************************************************************************* -->
 	<!-- * Build Section * -->
 	<!-- ************************************************************************************************* -->

@@ -3,5 +3,4 @@
 .project
 /.settings/**
 .idea
-/bin/
-/mars-sim-core.iml
+/mars-sim-lwjgl.iml
