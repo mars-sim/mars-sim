@@ -39,7 +39,7 @@ import org.mars_sim.msp.core.UnitManagerEvent;
 import org.mars_sim.msp.core.UnitManagerEventType;
 import org.mars_sim.msp.core.UnitManagerListener;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.RoleType;
+import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.structure.ChainOfCommand;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;

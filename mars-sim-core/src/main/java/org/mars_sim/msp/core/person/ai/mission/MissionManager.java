@@ -18,9 +18,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.RoleType;
 import org.mars_sim.msp.core.person.ai.mission.meta.MetaMission;
 import org.mars_sim.msp.core.person.ai.mission.meta.MetaMissionUtil;
+import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;

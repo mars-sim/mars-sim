@@ -29,6 +29,7 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
+import javax.swing.JTextArea;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -41,6 +42,7 @@ import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
+import org.mars_sim.msp.ui.swing.tool.SmartScroller;
 import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
 
 import com.alee.laf.label.WebLabel;
@@ -64,6 +66,7 @@ extends ToolWindow {
 	private JScrollPane listScrollPanel;
 	private JList<String> list;
 	private JLabel leadershipPointsLabel;
+	private JTextArea jta;
 
 	private Commander commander = SimulationConfig.instance().getPersonConfiguration().getCommander();
 
@@ -121,6 +124,10 @@ extends ToolWindow {
 
 		createTaskPanel();
 		
+		JPanel intervalPanel = new JPanel(new BorderLayout());
+		tabPane.add(intervalPanel, BorderLayout.CENTER);
+		tabPane.setTitleAt(1, INTERVAL_TAB);
+		
 		setSize(new Dimension(480, 480));
 		setMaximizable(true);
 		setResizable(false);
@@ -137,17 +144,15 @@ extends ToolWindow {
 	}
 
 	public void createTaskPanel() {
-		JPanel queuePanel = new JPanel(new BorderLayout());
-		tabPane.add(queuePanel, BorderLayout.CENTER);
+		JPanel taskPanel = new JPanel(new BorderLayout());
+//		taskPanel.setPreferredSize(new Dimension(450, 450));
+		tabPane.add(taskPanel, BorderLayout.NORTH);
 		tabPane.setTitleAt(0, TASK_TAB);
 	    
-		JPanel intervalPanel = new JPanel(new BorderLayout());
-		tabPane.add(intervalPanel, BorderLayout.CENTER);
-		tabPane.setTitleAt(1, INTERVAL_TAB);
-		
-	    JPanel selectPanel = new JPanel(new FlowLayout());
-	    queuePanel.add(selectPanel, BorderLayout.NORTH); // 1st add
+	    JPanel topPanel = new JPanel(new FlowLayout());
+	    taskPanel.add(topPanel, BorderLayout.NORTH);
 
+		// Create a button panel
 	    JPanel buttonPanel = new JPanel(new BorderLayout());
 	    JButton addButton = new JButton(Msg.getString("BuildingPanelFarming.addButton")); //$NON-NLS-1$
 		addButton.setPreferredSize(new Dimension(60, 20));
@@ -156,13 +161,15 @@ extends ToolWindow {
 			public void actionPerformed(ActionEvent evt) {
 				taskName = (String) comboBox.getSelectedItem();
 				person.getMind().getTaskManager().addAPendingTask(taskName);
+				jta.append("Add '" + taskName + "' to the list.\n");
 		        listUpdate();
 				repaint();
 			}
 			});
 		buttonPanel.add(addButton, BorderLayout.NORTH);
-		selectPanel.add(buttonPanel);
-
+		topPanel.add(buttonPanel);
+				
+		// Create a delete button
 		JButton delButton = new JButton(Msg.getString("BuildingPanelFarming.delButton")); //$NON-NLS-1$
 		delButton.setPreferredSize(new Dimension(60, 20));
 		delButton.setFont(new Font("Serif", Font.PLAIN, 9));
@@ -170,8 +177,8 @@ extends ToolWindow {
 		delButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				if (!list.isSelectionEmpty() && (list.getSelectedValue() != null)) {
-					pickATask();
-	            	listUpdate();
+					deleteATask();
+					listUpdate();
 	            	repaint();
 				}
 			}
@@ -179,8 +186,8 @@ extends ToolWindow {
 		buttonPanel.add(delButton, BorderLayout.CENTER);
 
        	// Set up combo box model.
-		List<String> nameList = GameManager.commanderPerson.getPreference().getTaskStringList();
-		taskCache = new ArrayList<>(nameList);
+		List<String> taskList = GameManager.commanderPerson.getPreference().getTaskStringList();
+		taskCache = new ArrayList<>(taskList);
 		comboBoxModel = new DefaultComboBoxModel<String>();
 
 		Iterator<String> i = taskCache.iterator();
@@ -199,21 +206,21 @@ extends ToolWindow {
         });
 		comboBox.setMaximumRowCount(10);
 //		comboBox.setSelectedIndex(-1);
-	    selectPanel.add(comboBox);
+	    topPanel.add(comboBox, BorderLayout.CENTER);
 
 	    JPanel queueListPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 	    JPanel queueButtonLabelPanel = new JPanel(new BorderLayout());
-	    WebLabel queueListLabel = new WebLabel("     Task Queue     ");
+	    WebLabel queueListLabel = new WebLabel("     Task Queue    ");
 		queueListLabel.setUI(new com.jidesoft.plaf.xerto.VerticalLabelUI(false));
 	    queueListLabel.setFont( new Font( "Dialog", Font.PLAIN, 14) );
 		queueListLabel.setBorder(new MarsPanelBorder());
 	    queueButtonLabelPanel.add(queueListLabel, BorderLayout.NORTH);
 		queueListPanel.add(queueButtonLabelPanel);
-	    queuePanel.add(queueListPanel, BorderLayout.CENTER); // 2nd add
+	    taskPanel.add(queueListPanel, BorderLayout.CENTER); // 2nd add
 	    
 		// Create scroll panel for population list.
 		listScrollPanel = new JScrollPane();
-		listScrollPanel.setPreferredSize(new Dimension(240, 280));
+		listScrollPanel.setPreferredSize(new Dimension(240, 120));
 		listScrollPanel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
 
 		// Create list model
@@ -225,11 +232,24 @@ extends ToolWindow {
 		list.addListSelectionListener(new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent event) {
 		        if (!event.getValueIsAdjusting() && event != null){
-					pickATask();
+					deleteATask();
 		        }
 		    }
 		});
 		queueListPanel.add(listScrollPanel);
+		
+		// Create an text area
+		JPanel textPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 18, 5));
+		jta = new JTextArea(10, 30);
+		jta.setEditable(false);
+		JScrollPane scrollTextArea = new JScrollPane (jta, 
+				   JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+//		scrollTextArea.setSize(new Dimension(100, 100));
+		// Monitor the vertical scroll of jta
+		new SmartScroller(scrollTextArea, SmartScroller.VERTICAL, SmartScroller.END);
+		textPanel.add(scrollTextArea);
+		taskPanel.add(textPanel, BorderLayout.SOUTH);
+		
 	}
 	
 	public MainDesktopPane getDesktop() {
@@ -239,12 +259,13 @@ extends ToolWindow {
 	/**
 	 * Picks a task and delete it
 	 */
-	public void pickATask() {
+	public void deleteATask() {
 		String n = (String) list.getSelectedValue();
 		if (n != null) {
 			deletingTaskType = n;
 			deletingTaskIndex = list.getSelectedIndex();
 			person.getMind().getTaskManager().deleteAPendingTask(deletingTaskType);
+			jta.append("Delete '" + n + "' from the list.\n");
 		} 
 		else
 			listUpdate();
@@ -319,18 +340,17 @@ extends ToolWindow {
         public void update() {
 
         	List<String> c = person.getMind().getTaskManager().getPendingTasks();
-        		// if the list contains duplicate items, it somehow pass this test
-        		if (list.size() != c.size() || !list.containsAll(c) || !c.containsAll(list)) {
-	                List<String> oldList = list;
-	                List<String> tempList = new ArrayList<String>(c);
-	                //Collections.sort(tempList);
+    		// if the list contains duplicate items, it somehow pass this test
+    		if (list.size() != c.size() || !list.containsAll(c) || !c.containsAll(list)) {
+                List<String> oldList = list;
+                List<String> tempList = new ArrayList<String>(c);
+                //Collections.sort(tempList);
 
-	                list = tempList;
-	                fireContentsChanged(this, 0, getSize());
+                list = tempList;
+                fireContentsChanged(this, 0, getSize());
 
-	                oldList.clear();
-	           }
-
+                oldList.clear();
+           }
         }
 	}
 	

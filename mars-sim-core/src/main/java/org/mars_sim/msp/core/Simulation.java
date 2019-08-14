@@ -57,14 +57,13 @@ import org.mars_sim.msp.core.mars.Weather;
 import org.mars_sim.msp.core.person.CircadianClock;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PhysicalCondition;
-import org.mars_sim.msp.core.person.Role;
-import org.mars_sim.msp.core.person.RoleUtil;
 import org.mars_sim.msp.core.person.TaskSchedule;
 import org.mars_sim.msp.core.person.ai.Mind;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.MissionPlanning;
+import org.mars_sim.msp.core.person.ai.role.Role;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.person.ai.task.TaskManager;
@@ -119,9 +118,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.common.io.ByteStreams;
 
-//import mikera.gui.Frames;
-//import mikera.gui.JConsole;
-
 /**
  * The Simulation class is the primary singleton class in the MSP simulation.
  * It's capable of creating a new simulation or loading/saving an existing one.
@@ -141,7 +137,6 @@ public class Simulation implements ClockListener, Serializable {
 	public static final int SAVE_DEFAULT = 1;
 	/** The mode to save with other name. */
 	public static final int SAVE_AS = 2;
-	/** # The mode to autosave as default.sim. */
 	public static final int AUTOSAVE_AS_DEFAULT = 3;
 	/**  The mode to save with build info/date/time stamp. */
 	public static final int AUTOSAVE = 4;

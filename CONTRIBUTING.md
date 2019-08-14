@@ -1,6 +1,6 @@
 # Contributing
 
-We'd be glad for your help and contribution to mars-sim.
+We are glad for your help and contributions to mars-sim.
 
  - [Issues and Bugs](#issue)
  - [Submission Guidelines](#submit)

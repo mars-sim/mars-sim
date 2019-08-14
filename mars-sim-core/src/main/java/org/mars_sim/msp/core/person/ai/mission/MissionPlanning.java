@@ -12,7 +12,7 @@ import java.util.Map;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.RoleType;
+import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.time.MarsClock;
 
 public class MissionPlanning implements Serializable {

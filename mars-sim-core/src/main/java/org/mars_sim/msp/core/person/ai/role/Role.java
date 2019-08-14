@@ -4,7 +4,7 @@
  * @version 3.1.0 2017-08-30
  * @author Manny Kung
  */
-package org.mars_sim.msp.core.person;
+package org.mars_sim.msp.core.person.ai.role;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -15,6 +15,7 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEventType;
+import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.ChainOfCommand;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;

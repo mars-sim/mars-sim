@@ -31,6 +31,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JRootPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
@@ -45,10 +46,10 @@ import javax.swing.table.TableColumn;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.GameManager;
+import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 import org.mars_sim.msp.core.structure.SettlementConfig;
@@ -373,6 +374,9 @@ public class SimulationConfigEditor {
 				f.dispose();
 			}
 		});
+		
+		JRootPane rootPane = SwingUtilities.getRootPane(defaultButton); 
+		rootPane.setDefaultButton(defaultButton);
 	}
 
 	public void setupMainWindow() {

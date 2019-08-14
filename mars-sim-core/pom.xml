@@ -96,11 +96,11 @@
 		    <artifactId>json</artifactId>
 		    <version>20190722</version>
 		</dependency>
-		<!-- 
+		<!-- https://github.com/jdereg/json-io
 		<dependency> 
 			<groupId>com.cedarsoftware</groupId> 
 			<artifactId>json-io</artifactId> 
-			<version>4.10.0</version> 
+			<version>4.10.1</version> 
 		</dependency-->
 		
 		<!-- http://tukaani.org/xz/java.html https://mvnrepository.com/artifact/org.tukaani/xz : 120 KB 	
