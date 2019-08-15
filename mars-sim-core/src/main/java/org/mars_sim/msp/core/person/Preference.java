@@ -17,7 +17,6 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.person.ai.task.meta.AssistScientificStudyResearcherMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.CompileScientificStudyResultsMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.ConnectWithEarthMeta;
@@ -36,8 +35,6 @@ import org.mars_sim.msp.core.person.ai.task.meta.MaintenanceEVAMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.MaintenanceMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.ManufactureConstructionMaterialsMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.ManufactureGoodMeta;
-import org.mars_sim.msp.core.person.ai.task.meta.MetaTask;
-import org.mars_sim.msp.core.person.ai.task.meta.MetaTaskUtil;
 import org.mars_sim.msp.core.person.ai.task.meta.ObserveAstronomicalObjectsMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.PeerReviewStudyPaperMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.PerformLaboratoryExperimentMeta;
@@ -67,6 +64,9 @@ import org.mars_sim.msp.core.person.ai.task.meta.UnloadVehicleGarageMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.WorkoutMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.WriteReportMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.YogaMeta;
+import org.mars_sim.msp.core.person.ai.taskUtil.MetaTask;
+import org.mars_sim.msp.core.person.ai.taskUtil.MetaTaskUtil;
+import org.mars_sim.msp.core.person.ai.taskUtil.Task;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 

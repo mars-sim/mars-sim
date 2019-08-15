@@ -29,6 +29,8 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
+import org.mars_sim.msp.core.person.ai.taskUtil.Task;
+import org.mars_sim.msp.core.person.ai.taskUtil.TaskPhase;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
@@ -282,12 +284,12 @@ public class LoadVehicleGarage extends Task implements Serializable {
 	}
 
 	@Override
-	protected FunctionType getLivingFunction() {
+	public FunctionType getLivingFunction() {
 		return FunctionType.GROUND_VEHICLE_MAINTENANCE;
 	}
 
 	@Override
-	protected FunctionType getRoboticFunction() {
+	public FunctionType getRoboticFunction() {
 		return FunctionType.GROUND_VEHICLE_MAINTENANCE;
 	}
 

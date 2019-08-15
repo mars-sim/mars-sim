@@ -4,7 +4,7 @@
  * @version 3.1.0 2017-02-20
  * @author Scott Davis
  */
-package org.mars_sim.msp.core.person.ai.task;
+package org.mars_sim.msp.core.person.ai.taskUtil;
 
 import java.io.Serializable;
 

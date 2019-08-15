@@ -20,6 +20,8 @@ import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
+import org.mars_sim.msp.core.person.ai.taskUtil.Task;
+import org.mars_sim.msp.core.person.ai.taskUtil.TaskPhase;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -136,7 +138,7 @@ implements Serializable {
     }
 
     @Override
-    protected FunctionType getLivingFunction() {
+	public FunctionType getLivingFunction() {
         return FunctionType.ADMINISTRATION;
     }
 
@@ -144,7 +146,7 @@ implements Serializable {
      * Determines the scientific study that will be compiled.
      * @return study or null if none available.
      */
-    private ScientificStudy determineStudy() {
+    public ScientificStudy determineStudy() {
         ScientificStudy result = null;
 
         List<ScientificStudy> possibleStudies = new ArrayList<ScientificStudy>();
@@ -183,7 +185,7 @@ implements Serializable {
      * Gets the field of science that the researcher is involved with in a study.
      * @return the field of science or null if researcher is not involved with study.
      */
-    private ScienceType getScience() {
+    public ScienceType getScience() {
         ScienceType result = null;
 
         if (study.getPrimaryResearcher().equals(person)) {
@@ -197,7 +199,7 @@ implements Serializable {
     }
 
     @Override
-    protected void addExperience(double time) {
+    public void addExperience(double time) {
         // Add experience to relevant science skill
         // (1 base experience point per 25 millisols of research time)
         // Experience points adjusted by person's "Academic Aptitude" attribute.
@@ -215,7 +217,7 @@ implements Serializable {
      * @param time the real amount of time (millisol) for result data compilation.
      * @return the effective amount of time (millisol) for result data compilation.
      */
-    private double getEffectiveCompilationTime(double time) {
+    public double getEffectiveCompilationTime(double time) {
         // Determine effective compilation time based on the science skill.
         double compilationTime = time;
         int scienceSkill = getEffectiveSkillLevel();
@@ -245,7 +247,7 @@ implements Serializable {
     }
 
     @Override
-    protected double performMappedPhase(double time) {
+    public double performMappedPhase(double time) {
         if (getPhase() == null) {
             throw new IllegalArgumentException("Task phase is null");
         }
@@ -263,7 +265,7 @@ implements Serializable {
      * @return the amount of time (millisols) left over after performing the phase.
      * @throws Exception if error performing the phase.
      */
-    private double compilingPhase(double time) {
+    public double compilingPhase(double time) {
 
         // If person is incapacitated, end task.
         if (person.getPerformanceRating() == 0D) {

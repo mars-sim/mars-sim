@@ -4,7 +4,7 @@
  * @version 3.1.0 2017-02-20
  * @author Scott Davis
  */
-package org.mars_sim.msp.core.person.ai.task;
+package org.mars_sim.msp.core.person.ai.taskUtil;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -24,8 +24,13 @@ import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.TaskSchedule;
 import org.mars_sim.msp.core.person.ai.Mind;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
-import org.mars_sim.msp.core.person.ai.task.meta.MetaTask;
-import org.mars_sim.msp.core.person.ai.task.meta.MetaTaskUtil;
+import org.mars_sim.msp.core.person.ai.task.EatMeal;
+import org.mars_sim.msp.core.person.ai.task.EnterAirlock;
+import org.mars_sim.msp.core.person.ai.task.ExitAirlock;
+import org.mars_sim.msp.core.person.ai.task.RepairEmergencyMalfunction;
+import org.mars_sim.msp.core.person.ai.task.RepairEmergencyMalfunctionEVA;
+import org.mars_sim.msp.core.person.ai.task.Sleep;
+import org.mars_sim.msp.core.person.ai.task.Walk;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;

@@ -4,7 +4,7 @@
  * @version 3.1.0 2018-01-01
  * @author Scott Davis
  */
-package org.mars_sim.msp.core.person.ai.task;
+package org.mars_sim.msp.core.person.ai.taskUtil;
 
 import java.awt.geom.Point2D;
 import java.io.Serializable;
@@ -35,6 +35,7 @@ import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
+import org.mars_sim.msp.core.person.ai.task.Walk;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotType;
@@ -859,7 +860,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * 
 	 * @return building function or null if none.
 	 */
-	protected FunctionType getLivingFunction() {
+	public FunctionType getLivingFunction() {
 		return null;
 	}
 
@@ -868,7 +869,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * 
 	 * @return building function or null if none.
 	 */
-	protected FunctionType getRoboticFunction() {
+	public FunctionType getRoboticFunction() {
 		return null;
 	}
 
@@ -878,7 +879,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @param building  the destination building.
 	 * @param allowFail true if walking is allowed to fail.
 	 */
-	protected void walkToActivitySpotInBuilding(Building building, boolean allowFail) {
+	public void walkToActivitySpotInBuilding(Building building, boolean allowFail) {
 		FunctionType functionType = null;
 
 		if (person != null)
@@ -901,7 +902,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @param person
 	 * @param allowFail
 	 */
-	protected void walkToBed(LivingAccommodations accommodations, Person person, boolean allowFail) {
+	public void walkToBed(LivingAccommodations accommodations, Person person, boolean allowFail) {
 		Point2D bed = person.getBed();
 		Building building = accommodations.getBuilding();
 		Point2D spot = LocalAreaUtil.getLocalRelativeLocation(bed.getX(), bed.getY(), building);
@@ -925,7 +926,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @param functionType the building function type for the activity.
 	 * @param allowFail    true if walking is allowed to fail.
 	 */
-	protected void walkToActivitySpotInBuilding(Building building, FunctionType functionType, boolean allowFail) {
+	public void walkToActivitySpotInBuilding(Building building, FunctionType functionType, boolean allowFail) {
 
 		Function f = building.getFunction(functionType);
 		if (f == null) {

@@ -4,11 +4,71 @@
  * @version 3.1.0 2017-08-30
  * @author Scott Davis
  */
-package org.mars_sim.msp.core.person.ai.task.meta;
+package org.mars_sim.msp.core.person.ai.taskUtil;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+import org.mars_sim.msp.core.person.ai.task.meta.AssistScientificStudyResearcherMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.CompileScientificStudyResultsMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.ConnectWithEarthMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.ConsolidateContainersMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.ConstructBuildingMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.CookMealMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.DigLocalIceMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.DigLocalRegolithMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.EatMealMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.ExamineBodyMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.HaveConversationMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.InviteStudyCollaboratorMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.ListenToMusicMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.LoadVehicleEVAMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.LoadVehicleGarageMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.MaintainGroundVehicleEVAMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.MaintainGroundVehicleGarageMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.MaintenanceEVAMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.MaintenanceMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.ManufactureConstructionMaterialsMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.ManufactureGoodMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.MeetTogetherMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.ObserveAstronomicalObjectsMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.PeerReviewStudyPaperMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.PerformLaboratoryExperimentMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.PerformLaboratoryResearchMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.PerformMathematicalModelingMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.PlayHoloGameMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.PrepareDessertMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.PrescribeMedicationMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.ProduceFoodMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.ProposeScientificStudyMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.ReadMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.RecordActivityMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.RelaxMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.RepairEVAMalfunctionMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.RepairMalfunctionMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.RequestMedicalTreatmentMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.RespondToStudyInvitationMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.RestingMedicalRecoveryMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.ReturnLightUtilityVehicleMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.ReviewJobReassignmentMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.ReviewMissionPlanMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.SalvageBuildingMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.SalvageGoodMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.SelfTreatHealthProblemMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.SleepMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.StudyFieldSamplesMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.TeachMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.TendGreenhouseMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.ToggleFuelPowerSourceMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.ToggleResourceProcessMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.TreatMedicalPatientMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.UnloadVehicleEVAMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.UnloadVehicleGarageMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.WalkMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.WorkoutMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.WriteReportMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.YogaMeta;
 
 /**
  * A utility task for getting the list of meta tasks.

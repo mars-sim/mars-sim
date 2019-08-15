@@ -4,7 +4,7 @@
  * @version 3.1.0 2017-08-30
  * @author Scott Davis
  */
-package org.mars_sim.msp.core.person.ai.task.meta;
+package org.mars_sim.msp.core.person.ai.taskUtil;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
@@ -13,7 +13,6 @@ import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
-import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.core.time.MarsClock;
