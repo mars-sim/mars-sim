@@ -240,7 +240,7 @@ extends ToolWindow {
 		
 		// Create an text area
 		JPanel textPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 18, 5));
-		jta = new JTextArea(10, 30);
+		jta = new JTextArea(10, 28);
 		jta.setEditable(false);
 		JScrollPane scrollTextArea = new JScrollPane (jta, 
 				   JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);

@@ -11,12 +11,16 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Vector;
 
+import javax.swing.Box;
+import javax.swing.JPanel;
 import javax.swing.JToolBar;
 import javax.swing.border.BevelBorder;
 
 import org.mars_sim.msp.core.GameManager;
 import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.swing.tool.commander.CommanderWindow;
 import org.mars_sim.msp.ui.swing.tool.guide.GuideWindow;
 import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
@@ -44,6 +48,8 @@ implements ActionListener {
 	private Vector<ToolButton> toolButtons;
 	/** Main window that contains this toolbar. */
 	private MainWindow parentMainWindow;
+	
+	private MasterClock masterClock;
 
 	/**
 	 * Constructs a ToolToolBar object
@@ -54,6 +60,9 @@ implements ActionListener {
 		// Use JToolBar constructor
 		super(JToolBar.HORIZONTAL);
 
+		// Initialize data members
+		masterClock = Simulation.instance().getMasterClock();
+		
 		// Initialize data members
 		toolButtons = new Vector<ToolButton>();
 		this.parentMainWindow = parentMainWindow;
@@ -177,6 +186,7 @@ implements ActionListener {
 			toolButtons.addElement(dashboardButton);
 		}
 		
+		
 		addSeparator();
 
 		// Add guide button
@@ -185,6 +195,59 @@ implements ActionListener {
 		add(guideButton);
 		toolButtons.addElement(guideButton);
 
+		addSeparator();
+
+		JPanel emptyPanel = new JPanel();
+		emptyPanel.setPreferredSize(new Dimension(740, 32));
+		add(emptyPanel);
+		 
+		add(Box.createHorizontalGlue());
+		
+		addSeparator();
+		
+		ToolButton slowDownButton = new ToolButton("Slow Down", Msg.getString("img.speed.slowDown")); //$NON-NLS-1$ //$NON-NLS-2$
+		slowDownButton.setPreferredSize(new Dimension(32, 32));
+		slowDownButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int ratio = (int)masterClock.getTimeRatio();
+				if (ratio >= 2)
+					masterClock.setTimeRatio(ratio/2.0);
+			};
+		});
+		add(slowDownButton);
+	
+		ToolButton pauseButton = new ToolButton("Pause", Msg.getString("img.speed.pause")); //$NON-NLS-1$ //$NON-NLS-2$
+		pauseButton.setPreferredSize(new Dimension(32, 32));
+		pauseButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (!masterClock.isPaused())
+					masterClock.setPaused(true, false);
+			};
+		});
+		add(pauseButton);
+		
+		
+		ToolButton resumeButton = new ToolButton("Resume", Msg.getString("img.speed.play")); //$NON-NLS-1$ //$NON-NLS-2$
+		resumeButton.setPreferredSize(new Dimension(32, 32));
+		resumeButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (masterClock.isPaused())
+					masterClock.setPaused(false, false);
+			};
+		});
+		add(resumeButton);
+		
+		ToolButton speedUpButton = new ToolButton("Speed Up", Msg.getString("img.speed.speedUp")); //$NON-NLS-1$ //$NON-NLS-2$
+		speedUpButton.setPreferredSize(new Dimension(32, 32));
+		speedUpButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int ratio = (int)masterClock.getTimeRatio();
+				if (ratio <= 4096)
+					masterClock.setTimeRatio(ratio*2.0);
+			};
+		});
+		add(speedUpButton);
+		
 	}
 
 	/** ActionListener method overridden */

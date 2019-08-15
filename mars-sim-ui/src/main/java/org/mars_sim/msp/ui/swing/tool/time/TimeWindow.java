@@ -327,13 +327,8 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 					setTimeRatioFromSlider(pulseSlider.getValue()); 
 					// (int)(mainScene.getTimeRatio()/mainScene.getInitialTimeRatio()))
 
-					StringBuilder s0 = new StringBuilder();
-					double ratio = masterClock.getTimeRatio();
-					String factor = String.format(Msg.getString("TimeWindow.timeFormat"), ratio); //$NON-NLS-1$
-					s0.append(ONE_REAL_SEC);
-					s0.append(ClockUtils.getTimeString(ratio));
-					timeCompressionLabel.setText(s0.toString());
-					timeRatioLabel.setText(Msg.getString("TimeWindow.timeRatioHeader", factor)); //$NON-NLS-1$
+					// Update the slider status
+					updateSlider();
 
 				} catch (Exception e2) {
 					logger.log(Level.SEVERE, e2.getMessage());
@@ -368,6 +363,16 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		setSize(new Dimension((int) windowSize.getWidth() + 40, (int) windowSize.getHeight()));
 	}
 
+	public void updateSlider() {
+		StringBuilder s0 = new StringBuilder();
+		double ratio = masterClock.getTimeRatio();
+		String factor = String.format(Msg.getString("TimeWindow.timeFormat"), ratio); //$NON-NLS-1$
+		s0.append(ONE_REAL_SEC);
+		s0.append(ClockUtils.getTimeString(ratio));
+		timeCompressionLabel.setText(s0.toString());
+		timeRatioLabel.setText(Msg.getString("TimeWindow.timeRatioHeader", factor)); //$NON-NLS-1$
+	}
+	
 	/**
 	 * Sets the time ratio for the simulation based on the slider value.
 	 *
@@ -574,7 +579,8 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 //			}
 //		} else 
 			if (desktop.isToolWindowOpen(TimeWindow.NAME)) {
-			updateFastLabels();
+				// update the fast labels
+				updateFastLabels();
 		}
 	}
 
@@ -588,7 +594,11 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 //			}
 //		} else 
 			if (desktop.isToolWindowOpen(TimeWindow.NAME)) {
-			updateSlowLabels();
+				// update the slow labels
+				updateSlowLabels();
+				// Update the slider based on the latest time ratio
+				setTimeRatioSlider(masterClock.getTimeRatio());
+				updateSlider();
 		}
 	}
 
