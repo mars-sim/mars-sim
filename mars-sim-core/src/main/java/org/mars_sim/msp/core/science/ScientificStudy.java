@@ -222,24 +222,21 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 	}
 	
 	/**
-	 * Get a topic
+	 * Get a list of topics
 	 * 
 	 * @param type
-	 * @return
+	 * @return {@link List<String>}
 	 */
-	public String getTopic(ScienceType type) {
-		List<String> list = topics.get(type);
-		if (list == null || list.isEmpty())
-			return "";
-		else if (list.size() == 1)
-			return list.get(0);
-		else {
-//			StringBuilder builder = new StringBuilder();
-//			for(String s : topics) {
-//			    builder.append(s);
-//			}
-			return String.join(", ", list);
-		}
+	public List<String> getTopic(ScienceType type) {
+//		List<String> list = topics.get(type);
+//		if (list == null || list.isEmpty())
+//			return "";
+//		else if (list.size() == 1)
+//			return list.get(0);
+//		else {
+//			return String.join(", ", list);
+//		}
+		return topics.get(type);
 	}
 	
 	

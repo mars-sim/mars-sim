@@ -3,12 +3,12 @@
 	"topics": [
 			{"topic": "Non-linear Processes"},
 			{"topic": "Environmental Informatics"},
-			{"topic": "Data Processing and Collection"},
+			{"topic": "Data Processing & Collection"},
 			{"topic": "Stochastic Modeling"},	
 			{"topic": "Operational Modal Analysis"},		 
 			{"topic": "State Space Models for EVA Operations"},
 			{"topic": "System Dynamics"}, 
-			{"topic": "Noise Measurement and Filtering Techniques"}, 
+			{"topic": "Noise Measurement & Filtering Techniques"}, 
 			{"topic": "Ranging"}, 
 			{"topic": "Martian Orbital Elements"}
 	]

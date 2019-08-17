@@ -184,7 +184,7 @@ extends TabPanel {
 		        formatter.format(performanceCache)), WebLabel.LEFT);
 		conditionPanel.add(performanceLabel);
 
-		// PrepareS SpringLayout
+		// Prepare SpringLayout
 		SpringUtilities.makeCompactGrid(conditionPanel,
 		                                3, 4, //rows, cols
 		                                35, 4,        //initX, initY

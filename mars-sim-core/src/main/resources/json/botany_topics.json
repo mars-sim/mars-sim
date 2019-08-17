@@ -2,11 +2,14 @@
 	"subject": "Botany",
 	"topics": [
 			{"topic": "Oragnic Energy Transducers"},
-			{"topic": "Nucleic Acid and Clay"},
-			{"topic": "Proteins, Coenzymes and Histidine"},
-			{"topic": "Solar Irradiation and Crop Yield"},
-			{"topic": "Airborne Droplets and Irrigations"}, 
-			{"topic": "Plant Physiology in Martian Regolith"},
-			{"topic": "CO2 Fixations and Buildup of Biomass"}
+			{"topic": "Nucleic Acid & Clay"},
+			{"topic": "Proteins, Coenzymes & Histidine"},
+			{"topic": "Solar Irradiation"},
+			{"topic": "Crop Yield"},
+			{"topic": "Airborne Droplets & Irrigations"}, 
+			{"topic": "Plant Physiology"},
+			{"topic": "Martian Regolith"},
+			{"topic": "CO2 Fixations"}
+			{"topic": "Buildup of Biomass"}
 	]
 }

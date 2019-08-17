@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.Areologist;
 import org.mars_sim.msp.core.person.ai.job.Astronomer;
@@ -25,7 +24,6 @@ import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.job.Mathematician;
 import org.mars_sim.msp.core.person.ai.job.Meteorologist;
 import org.mars_sim.msp.core.person.ai.job.Physicist;
-import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 
 /**
  * Science field names and researcher job descriptions.
