@@ -250,42 +250,57 @@ public class AudioPlayer implements ClockListener {
 	}
 
 	public void musicVolumeUp() {
-		lastMusicVol = currentMusicVol;
-		double v = currentMusicTrack.getVol() + .05;
-		if (v > 1)
-			v = 1;
-		if (!isSoundDisabled && hasMasterGain && currentMusicTrack != null)
+		if (!isSoundDisabled && hasMasterGain 
+				&& currentMusicTrack.getVol() < 1
+				&& currentMusicTrack != null) {
+//			System.out.print("musicVolumeUp");
+			double v = currentMusicTrack.getVol() + .05;
+			if (v > 1)
+				v = 1;
+			lastMusicVol = currentMusicVol;
+			currentMusicVol = v;
 			currentMusicTrack.determineGain(v);
+		}
 	}
 
 	public void musicVolumeDown() {
-		lastMusicVol = currentMusicVol;
-		double v = currentMusicTrack.getVol() - .05;
-		if (v < 0)
-			v = 0;
-		if (!isSoundDisabled && hasMasterGain && currentMusicTrack != null)
+		if (!isSoundDisabled && hasMasterGain 
+				&& currentMusicTrack.getVol() > 0
+				&& currentMusicTrack != null) {
+//			System.out.print("musicVolumeDown");
+			double v = currentMusicTrack.getVol() - .05;
+			if (v < 0)
+				v = 0;
+			lastMusicVol = currentMusicVol;
+			currentMusicVol = v;
 			currentMusicTrack.determineGain(v);
-
+		}
 	}
 
 	public void soundVolumeUp() {
-		lastSoundVol = currentSoundVol;
-		double v = currentSoundClip.getVol() + .05;
-		if (v > 1)
-			v = 1;
-		if (!isSoundDisabled && hasMasterGain && currentSoundClip != null)
+		if (!isSoundDisabled && hasMasterGain 
+				&& currentSoundClip.getVol() < 1
+				&& currentSoundClip != null) {
+			double v = currentMusicTrack.getVol() + .05;
+			if (v > 1)
+				v = 1;
+			lastSoundVol = currentSoundVol;
+			currentMusicVol = v;
 			currentSoundClip.determineGain(v);
-
+		}
 	}
 
 	public void soundVolumeDown() {
-		lastSoundVol = currentSoundVol;
-		double v = currentSoundClip.getVol() - .05;
-		if (v < 0)
-			v = 0;
-		if (!isSoundDisabled && hasMasterGain && currentSoundClip != null)
+		if (!isSoundDisabled && hasMasterGain 
+				&& currentSoundClip.getVol() > 0
+				&& currentSoundClip != null) {
+			double v = currentMusicTrack.getVol() - .05;
+			if (v < 0)
+				v = 0;
+			lastSoundVol = currentSoundVol;
+			currentMusicVol = v;
 			currentSoundClip.determineGain(v);
-
+		}
 	}
 
 	/**
@@ -308,7 +323,7 @@ public class AudioPlayer implements ClockListener {
 		}
 	}
 
-	public void restoreLastMusicVolume() {
+	public void restoreLastMusicGain() {
 		if (!isSoundDisabled && hasMasterGain && currentMusicTrack != null) {
 			currentMusicTrack.determineGain(lastMusicVol);
 			//currentMusicTrack.resume();
@@ -335,7 +350,7 @@ public class AudioPlayer implements ClockListener {
 	}
 
 
-	public void restoreLastSoundVolume() {
+	public void restoreLastSoundEffectGain() {
 		if (!isSoundDisabled && hasMasterGain && currentSoundClip != null) {
 			currentSoundClip.determineGain(lastSoundVol);
 		}
@@ -352,7 +367,7 @@ public class AudioPlayer implements ClockListener {
 		// if (currentMusicTrack != null) {
 		// result = currentMusicTrack.isMute() || currentMusicTrack.getVol() == 0;
 		// }
-		return currentMusicVol == 0;
+		return currentMusicVol <= 0;
 	}
 
 	/**
@@ -366,57 +381,59 @@ public class AudioPlayer implements ClockListener {
 		// if (currentSoundClip != null) {
 		// result = currentSoundClip.isMute() || currentSoundClip.getVol() == 0;
 		// }
-		return currentSoundVol == 0;
+		return currentSoundVol <= 0;
 	}
 
 
 	/**
-	 * Unmute the sound clip and/or music clip
+	 * Unmute the sound effect
 	 * 
-	 * @param isSound
-	 * @param isMusic
 	 */
-	public void unmutePlayer(boolean isSound, boolean isMusic) {
-		if (isSound) {
-			if (currentSoundClip != null && currentSoundClip.isMute()) {
-				currentSoundClip.setMute(false);
-				//currentSoundClip.resume();
-			}
-			restoreLastSoundVolume();
-		}
-
-		if (isMusic) {
-			if (currentMusicTrack != null && currentMusicTrack.isMute()) {
-				currentMusicTrack.setMute(false);
-				resumeMusic();
-			}
-			restoreLastMusicVolume();
+	public void unmuteSoundEffect() {
+		if (currentSoundClip != null && currentSoundClip.isMute()) {
+			currentSoundClip.setMute(false);
+			currentSoundVol = lastSoundVol;
+			restoreLastSoundEffectGain();
 		}
 	}
 
 	/**
-	 * Mute the sound clip and/or music clip
+	 * Unmute the music
 	 * 
-	 * @param mute true if it will be set to mute
 	 */
-	public void mutePlayer(boolean isSound, boolean isMusic) {
-		if (isSound) {
-			if (currentSoundClip != null && !currentSoundClip.isMute()) {
-				currentSoundClip.setMute(true);
-				currentSoundClip.stop();
-				currentSoundClip.determineGain(0);
-			}
+	public void unmuteMusic() {
+		if (currentMusicTrack != null && currentMusicTrack.isMute()) {
+			currentMusicTrack.setMute(false);
+			currentMusicVol = lastMusicVol;
+			restoreLastMusicGain();
+			resumeMusic();
+		}
+	}
+	
+	/**
+	 * Mute the sound Effect
+	 * 
+	 */
+	public void muteSoundEffect() {
+		if (currentSoundClip != null && !currentSoundClip.isMute()) {
+			currentSoundClip.setMute(true);
+			currentSoundClip.stop();
+			currentSoundClip.determineGain(0);
 			lastSoundVol = currentSoundVol;
 			currentSoundVol = 0;
 		}
-
-		if (isMusic) {
-			if (currentMusicTrack != null && !currentMusicTrack.isMute()) {
-				// Note: should check if it is already mute since 
-				// user may pause and unpause consecutively too fast 
-				currentMusicTrack.setMute(true);
-				currentMusicTrack.determineGain(0);
-			}
+	}
+	
+	/**
+	 * Mute the music
+	 * 
+	 */
+	public void muteMusic() {
+		if (currentMusicTrack != null && !currentMusicTrack.isMute()) {
+			// Note: should check if it is already mute since 
+			// user may pause and unpause consecutively too fast 
+			currentMusicTrack.setMute(true);
+			currentMusicTrack.determineGain(0);
 			lastMusicVol = currentMusicVol;
 			currentMusicVol = 0;
 		}

@@ -51,7 +51,7 @@ public interface SoundConstants {
 	public final static String SND_ROVER_MAINTENANCE = "rover_maintenance.ogg";
 	public final static String SND_ROVER_MALFUNCTION = "rover_malfunction.ogg";
 	public final static String SND_ROVER_MOVING = "rover_moving.ogg";
-	public final static String SND_ROVER_PARKED = "";
+	public final static String SND_ROVER_PARKED = "rover_moving.ogg";
 
 	/** Unit window sounds for settlements. */
 	public final static String SND_SETTLEMENT = "settlement.ogg";

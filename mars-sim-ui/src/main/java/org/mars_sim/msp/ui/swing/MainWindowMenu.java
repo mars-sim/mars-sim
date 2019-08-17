@@ -11,6 +11,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 
+import javax.swing.AbstractButton;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
@@ -50,6 +51,8 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 	// Data members
 	/** The main window frame. */
 	private MainWindow mainWindow;
+	/** The audio player instance. */
+	private AudioPlayer soundPlayer;
 	/** New menu item. */
 	// private JMenuItem newItem;
 	/** Load menu item. */
@@ -105,9 +108,9 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 	/** Volume Down menu item. */
 	private JMenuItem effectVolumeDownItem;
 	/** Music volume slider menu item. */
-	private JSlider musicVolumeItem;
+	private JSlider musicVolumeSlider;
 	/** Sound effect volume slider menu item. */
-	private JSlider effectVolumeItem;
+	private JSlider effectVolumeSlider;
 	/** The Home/About page of the Mars Simulation Project menu item. */
 	private JMenuItem homeAboutItem;
 	/** Tutorial menu item. */
@@ -132,7 +135,7 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 
 		// Create file menu
 		JMenu fileMenu = new JMenu(Msg.getString("mainMenu.file")); //$NON-NLS-1$
-		fileMenu.setMnemonic(KeyEvent.VK_F);
+		fileMenu.setMnemonic(KeyEvent.VK_F); // Alt + F
 		add(fileMenu);
 
 		// Create load menu item
@@ -254,7 +257,7 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 		
 		// Create settings menu
 		JMenu settingsMenu = new JMenu(Msg.getString("mainMenu.settings")); //$NON-NLS-1$
-		settingsMenu.setMnemonic(KeyEvent.VK_S);
+		settingsMenu.setMnemonic(KeyEvent.VK_S); // Alt + S
 		settingsMenu.addMenuListener(this);
 		add(settingsMenu);
 
@@ -276,82 +279,84 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 		settingsMenu.add(new JSeparator());
 		// settingsMenu.addSeparator();
 
-		// Create Volume slider menu item
-		// MainDesktopPane desktop = mainWindow.getDesktop();
-		final AudioPlayer soundPlayer = desktop.getSoundPlayer();
+		// Create Background Music Volume slider menu item
+		soundPlayer = desktop.getSoundPlayer();
 		double volume = soundPlayer.getMusicVolume();
 		int intVolume = (int) Math.round(volume * 10.0);
 
-		musicVolumeItem = new JSliderMW(JSlider.HORIZONTAL, 0, 10, intVolume); // $NON-NLS-1$
-		musicVolumeItem.setMajorTickSpacing(1);
-		musicVolumeItem.setPaintTicks(true);
-		musicVolumeItem.setPaintLabels(true);
-		musicVolumeItem.setPaintTrack(true);
-		musicVolumeItem.setSnapToTicks(true);
+		// Create Background Music Volume Slider
+		musicVolumeSlider = new JSliderMW(JSlider.HORIZONTAL, 0, 10, intVolume); // $NON-NLS-1$
+		musicVolumeSlider.setMajorTickSpacing(1);
+		musicVolumeSlider.setPaintTicks(true);
+		musicVolumeSlider.setPaintLabels(true);
+		musicVolumeSlider.setPaintTrack(true);
+		musicVolumeSlider.setSnapToTicks(true);
 	
-		musicVolumeItem.setToolTipText(Msg.getString("mainMenu.tooltip.musicVolumeSlider")); //$NON-NLS-1$
-		musicVolumeItem.addChangeListener(new ChangeListener() {
+		musicVolumeSlider.setToolTipText(Msg.getString("mainMenu.tooltip.musicVolumeSlider")); //$NON-NLS-1$
+		musicVolumeSlider.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
-				float newVolume = (float) musicVolumeItem.getValue() / 10F;
+				float newVolume = (float) musicVolumeSlider.getValue() / 10F;
 				soundPlayer.setMusicVolume(newVolume);
 			}
 		});
-		settingsMenu.add(musicVolumeItem);
+		settingsMenu.add(musicVolumeSlider);
 
-		// Create Volume Up menu item
+		// Create Background Music Volume Up menu item
 		musicVolumeUpItem = new JMenuItem(Msg.getString("mainMenu.musicVolumeUp")); //$NON-NLS-1$
 		musicVolumeUpItem.addActionListener(this);
-		musicVolumeUpItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_PLUS, KeyEvent.CTRL_DOWN_MASK, false));
+		musicVolumeUpItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_UP, KeyEvent.CTRL_DOWN_MASK, false));
 		musicVolumeUpItem.setToolTipText(Msg.getString("mainMenu.musicVolumeUp")); //$NON-NLS-1$
 		settingsMenu.add(musicVolumeUpItem);
 
-		// Create Volume Down menu item
+		// Create Background Music Volume Down menu item
 		musicVolumeDownItem = new JMenuItem(Msg.getString("mainMenu.musicVolumeDown")); //$NON-NLS-1$
 		musicVolumeDownItem.addActionListener(this);
-		musicVolumeDownItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, KeyEvent.CTRL_DOWN_MASK, false));
+		musicVolumeDownItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_DOWN, KeyEvent.CTRL_DOWN_MASK, false));
 		musicVolumeDownItem.setToolTipText(Msg.getString("mainMenu.musicVolumeDown")); //$NON-NLS-1$
 		settingsMenu.add(musicVolumeDownItem);
 		
-		effectVolumeItem = new JSliderMW(JSlider.HORIZONTAL, 0, 10, intVolume); // $NON-NLS-1$
-		effectVolumeItem.setMajorTickSpacing(1);
-		effectVolumeItem.setPaintTicks(true);
-		effectVolumeItem.setPaintLabels(true);
-		effectVolumeItem.setPaintTrack(true);
-		effectVolumeItem.setSnapToTicks(true);
+		// Create Background Music mute menu item
+		musicMuteItem = new JCheckBoxMenuItem(Msg.getString("mainMenu.muteMusic")); //$NON-NLS-1$
+		musicMuteItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_M, KeyEvent.CTRL_DOWN_MASK, false));
+		musicMuteItem.addActionListener(this);
+		musicMuteItem.setToolTipText(Msg.getString("mainMenu.muteMusic")); //$NON-NLS-1$
+		settingsMenu.add(musicMuteItem);
 		
-		effectVolumeItem.setToolTipText(Msg.getString("mainMenu.tooltip.effectVolumeSlider")); //$NON-NLS-1$
-		effectVolumeItem.addChangeListener(new ChangeListener() {
+		// Create Sound Effect Volume Slider 
+		effectVolumeSlider = new JSliderMW(JSlider.HORIZONTAL, 0, 10, intVolume); // $NON-NLS-1$
+		effectVolumeSlider.setMajorTickSpacing(1);
+		effectVolumeSlider.setPaintTicks(true);
+		effectVolumeSlider.setPaintLabels(true);
+		effectVolumeSlider.setPaintTrack(true);
+		effectVolumeSlider.setSnapToTicks(true);
+		
+		effectVolumeSlider.setToolTipText(Msg.getString("mainMenu.tooltip.effectVolumeSlider")); //$NON-NLS-1$
+		effectVolumeSlider.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
-				float newVolume = (float) effectVolumeItem.getValue() / 10F;
+				float newVolume = (float) effectVolumeSlider.getValue() / 10F;
 				soundPlayer.setSoundVolume(newVolume);
 			}
 		});
-		settingsMenu.add(effectVolumeItem);
+		settingsMenu.add(effectVolumeSlider);
 
-		// Create Volume Up menu item
+		// Create Sound Effect Volume Up menu item
 		effectVolumeUpItem = new JMenuItem(Msg.getString("mainMenu.effectVolumeUp")); //$NON-NLS-1$
 		effectVolumeUpItem.addActionListener(this);
-		effectVolumeUpItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_UP, KeyEvent.CTRL_DOWN_MASK, false));
+		effectVolumeUpItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_CLOSE_BRACKET, KeyEvent.CTRL_DOWN_MASK, false));
 		effectVolumeUpItem.setToolTipText(Msg.getString("mainMenu.effectVolumeUp")); //$NON-NLS-1$
 		settingsMenu.add(effectVolumeUpItem);
 
-		// Create Volume Down menu item
+		// Create Sound Effect Volume Down menu item
 		effectVolumeDownItem = new JMenuItem(Msg.getString("mainMenu.effectVolumeDown")); //$NON-NLS-1$
 		effectVolumeDownItem.addActionListener(this);
-		effectVolumeDownItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, KeyEvent.CTRL_DOWN_MASK, false));
+		effectVolumeDownItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_OPEN_BRACKET, KeyEvent.CTRL_DOWN_MASK, false));
 		effectVolumeDownItem.setToolTipText(Msg.getString("mainMenu.effectVolumeDown")); //$NON-NLS-1$
 		settingsMenu.add(effectVolumeDownItem);
 
-		// Create Mute menu item
-		musicMuteItem = new JCheckBoxMenuItem(Msg.getString("mainMenu.muteMusic")); //$NON-NLS-1$
-		musicMuteItem.addActionListener(this);
-		musicMuteItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_M, KeyEvent.CTRL_DOWN_MASK, false));
-		musicMuteItem.setToolTipText(Msg.getString("mainMenu.muteMusic")); //$NON-NLS-1$
-		settingsMenu.add(musicMuteItem);
-
+		// Create Sound Effect mute menu item
 		effectMuteItem = new JCheckBoxMenuItem(Msg.getString("mainMenu.muteEffect")); //$NON-NLS-1$
-		effectMuteItem.addActionListener(this);
 		effectMuteItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E, KeyEvent.CTRL_DOWN_MASK, false));
+		effectMuteItem.addActionListener(this);
 		effectMuteItem.setToolTipText(Msg.getString("mainMenu.muteEffect")); //$NON-NLS-1$
 		settingsMenu.add(effectMuteItem);
 
@@ -360,7 +365,7 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 
 		// Create help menu
 		JMenu helpMenu = new JMenu(Msg.getString("mainMenu.help")); //$NON-NLS-1$
-		helpMenu.setMnemonic(KeyEvent.VK_H); // alt + H
+		helpMenu.setMnemonic(KeyEvent.VK_H); // Alt + H
 		helpMenu.addMenuListener(this);
 		add(helpMenu);
 
@@ -496,37 +501,76 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 		}
 
 		else if (selectedItem == musicVolumeUpItem) {
-			double oldvolume = desktop.getSoundPlayer().getMusicVolume();
-			desktop.getSoundPlayer().setMusicVolume(oldvolume + 0.05F);
+			int newVolume = musicVolumeSlider.getValue() + 1;
+			if (newVolume <= 10) {
+//				System.out.println("music : " + newVolume);
+				soundPlayer.musicVolumeUp();
+				musicVolumeSlider.setValue(newVolume);
+			}
 		}
 
 		else if (selectedItem == musicVolumeDownItem) {
-			double oldvolume = desktop.getSoundPlayer().getMusicVolume();
-			desktop.getSoundPlayer().setMusicVolume(oldvolume - 0.05F);
+			int newVolume = musicVolumeSlider.getValue() - 1;
+			if (newVolume >= 0) {
+//				System.out.println("music : " + newVolume);
+				soundPlayer.musicVolumeDown();
+				musicVolumeSlider.setValue(newVolume);
+			}
 		}
 
 		else if (selectedItem == effectVolumeUpItem) {
-			double oldvolume = desktop.getSoundPlayer().getEffectVolume();
-			desktop.getSoundPlayer().setSoundVolume(oldvolume + 0.05F);
+			int newVolume = effectVolumeSlider.getValue() + 1;
+			if (newVolume <= 10) {
+//				System.out.println("sound effect : " + newVolume);
+				soundPlayer.soundVolumeUp();
+				effectVolumeSlider.setValue(newVolume);
+			}
 		}
 
 		else if (selectedItem == effectVolumeDownItem) {
-			double oldvolume = desktop.getSoundPlayer().getEffectVolume();
-			desktop.getSoundPlayer().setSoundVolume(oldvolume - 0.05F);
+			int newVolume = effectVolumeSlider.getValue() - 1;
+			if (newVolume >= 0) {
+//				System.out.println("sound effect : " + newVolume);
+				soundPlayer.soundVolumeDown();
+				effectVolumeSlider.setValue(newVolume);
+			}
 		}
 
 		else if (selectedItem == musicMuteItem) {
-			if (musicMuteItem.isSelected())
-				desktop.getSoundPlayer().mutePlayer(false, true);
-			else
-				desktop.getSoundPlayer().unmutePlayer(false, true);
+			if (musicMuteItem.isSelected()) {//!soundPlayer.isMusicMute()) {
+//				System.out.println("Music is on. Turning it off now.");
+				// mute the music
+				soundPlayer.muteMusic();
+				musicMuteItem.setSelected(true);
+				musicVolumeSlider.setEnabled(false);
+			}
+			else {
+				// unmute the music
+//				System.out.println("Music is off. Turning it on now.");
+				soundPlayer.unmuteMusic();
+				musicMuteItem.setSelected(false);
+				musicVolumeSlider.setEnabled(true);
+			}  
 		}
 
 		else if (selectedItem == effectMuteItem) {
-			if (effectMuteItem.isSelected())
-				desktop.getSoundPlayer().mutePlayer(true, false);
-			else
-				desktop.getSoundPlayer().unmutePlayer(true, false);
+			AbstractButton button = (AbstractButton) event.getSource();
+		    if (button.isSelected()) {
+				if (!soundPlayer.isSoundMute()) {
+//					System.out.println("Sound Effect is on. Turning it off now.");
+					// mute the sound effect
+					soundPlayer.muteSoundEffect();
+					effectVolumeSlider.setEnabled(false);
+//					effectMuteItem.setSelected(true);
+				}
+				else {
+					// unmute the sound effect
+//					System.out.println("Sound Effect is off. Turning it on now.");
+					soundPlayer.unmuteSoundEffect();
+					effectVolumeSlider.setEnabled(true);
+//					effectMuteItem.setSelected(false);
+				}
+			}
 		}
 
 		else if (selectedItem == homeAboutItem) {
@@ -568,12 +612,12 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 		showUnitBarItem.setSelected(desktop.getMainWindow().getUnitToolBar().isVisible());
 		showToolBarItem.setSelected(desktop.getMainWindow().getToolToolBar().isVisible());
 
-		musicVolumeItem.setValue((int) Math.round(desktop.getSoundPlayer().getMusicVolume() * 10));
-		musicVolumeItem.setEnabled(!desktop.getSoundPlayer().isMusicMute());
-		effectVolumeItem.setValue((int) Math.round(desktop.getSoundPlayer().getEffectVolume() * 10));
-		effectVolumeItem.setEnabled(!desktop.getSoundPlayer().isSoundMute());
-		musicMuteItem.setSelected(desktop.getSoundPlayer().isMusicMute());
-		effectMuteItem.setSelected(desktop.getSoundPlayer().isSoundMute());
+		musicVolumeSlider.setValue((int) Math.round(soundPlayer.getMusicVolume() * 10));
+		musicVolumeSlider.setEnabled(!soundPlayer.isMusicMute());
+		effectVolumeSlider.setValue((int) Math.round(soundPlayer.getEffectVolume() * 10));
+		effectVolumeSlider.setEnabled(!soundPlayer.isSoundMute());
+		musicMuteItem.setSelected(soundPlayer.isMusicMute());
+		effectMuteItem.setSelected(soundPlayer.isSoundMute());
 	}
 
 	public void menuCanceled(MenuEvent event) {

@@ -13,7 +13,7 @@ a:visited {
 	}
 body {
 	text-indent: 2em;
-	margin-left: 10pt;
+	margin-left: 5pt;
 	background-color: #DDD3D3;
 	color: #000;
 	font-family: serif;
@@ -43,8 +43,21 @@ h2, h3, h4, h5{
 	font-weight: 800;
 	}	
 p {
-	margin-left:20pt;
+/*	margin-left:20pt; */
+	text-indent: 1em;
 	}
+ul {
+  list-style-type: none;
+  /* Use padding to move list item from left to right */
+  padding-left: 1em;
+}
+
+ul li:before {
+  content: "–";
+  position: absolute;
+  /* Change margin to move dash around */
+  margin-left: -3em;
+}	
 ol { counter-reset: item }	
 ol > li { display: block}
 ol > li:before { content: counters(item, ".") ". "; counter-increment: item }	
