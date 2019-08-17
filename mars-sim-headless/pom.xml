@@ -16,7 +16,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<kotlin.version>1.3.41</kotlin.version>		
-		<mainClass>org.mars_sim.headless.MarsProjectHeadlessStarter</mainClass>			
+		<domainNameMainClass>org.mars_sim.headless.MarsProjectHeadlessStarter</domainNameMainClass>			
 	</properties>
 	<build>
 		<plugins>
@@ -52,7 +52,7 @@
 					<archive>
 						<manifest>
 							<addClasspath>true</addClasspath>
-							<mainClass>${mainClass}</mainClass>
+							<mainClass>${domainNameMainClass}</mainClass>
 						</manifest>
 					</archive>
 				</configuration>
@@ -69,7 +69,7 @@
 					</descriptorRefs>
 					<archive>
 						<manifest>
-							<mainClass>${mainClass}</mainClass>
+							<mainClass>${domainNameMainClass}</mainClass>
 						</manifest>
 					</archive>
 				</configuration>

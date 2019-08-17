@@ -14,7 +14,7 @@
 	<packaging>jar</packaging>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<mainClass>org.mars_sim.main.MarsProjectStarter</mainClass>
+		<domainNameMainClass>org.mars_sim.main.MarsProjectStarter</domainNameMainClass>
 	</properties>
 	
 	<dependencies>
@@ -82,7 +82,7 @@
 					<archive>
 						<manifest>
 							<addClasspath>true</addClasspath>
-							<mainClass>${mainClass}</mainClass>
+							<mainClass>${domainNameMainClass}</mainClass>
 						</manifest>
 					</archive>
 				</configuration>
@@ -99,7 +99,7 @@
 					</descriptorRefs>
 					<archive>
 						<manifest>
-							<mainClass>${main.class}</mainClass>
+							<mainClass>${domainNameMainClass}</mainClass>
 						</manifest>
 					</archive>
 				</configuration>
