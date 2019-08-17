@@ -95,7 +95,7 @@ public class ScienceConfig implements Serializable {
     	for (String fileName : jsonFiles) {  
 	        fis = this.getClass().getResourceAsStream(fileName);
 	        jsonReader = Json.createReader(fis);
-	             
+
 	        // Alternatively, we can create JsonReader from Factory 
 //	      	JsonReaderFactory factory = Json.createReaderFactory(null);
 //	      	jsonReader = factory.createReader(fis);
