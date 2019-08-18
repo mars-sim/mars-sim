@@ -523,7 +523,7 @@ public class MainWindow extends JComponent {
 			dir = Simulation.AUTOSAVE_DIR;
 			title = Msg.getString("MainWindow.dialogLoadAutosaveSim");
 		} else {
-			dir = Simulation.DEFAULT_DIR;
+			dir = Simulation.SAVE_DIR;
 			title = Msg.getString("MainWindow.dialogLoadSavedSim");
 		}
 
@@ -722,7 +722,7 @@ public class MainWindow extends JComponent {
 //				});
 
 				if (!loadingDefault) {
-					JFileChooser chooser = new JFileChooser(Simulation.DEFAULT_DIR);
+					JFileChooser chooser = new JFileChooser(Simulation.SAVE_DIR);
 					chooser.setDialogTitle(Msg.getString("MainWindow.dialogSaveSim")); //$NON-NLS-1$
 					if (chooser.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {
 						final File fileLocn = chooser.getSelectedFile();

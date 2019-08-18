@@ -165,11 +165,11 @@ public class Simulation implements ClockListener, Serializable {
 	/** OS architecture string. */
 	private final static String OS_ARCH = (System.getProperty("os.arch").contains("64") ? "64-bit" : "32-bit");
 	/** Default save filename. */
-	private final static String DEFAULT_FILE = Msg.getString("Simulation.defaultFile"); //$NON-NLS-1$
+	private final static String SAVE_FILE = Msg.getString("Simulation.saveFile"); //$NON-NLS-1$
 	/** Default temp filename. */
 //	private final static String TEMP_FILE = Msg.getString("Simulation.tempFile"); //$NON-NLS-1$
 	/** Default save filename extension. */
-	private final static String DEFAULT_EXTENSION = Msg.getString("Simulation.defaultFile.extension"); //$NON-NLS-1$
+	private final static String SAVE_FILE_EXTENSION = Msg.getString("Simulation.saveFile.extension"); //$NON-NLS-1$
 	/** JSON save filename extension. */
 	private final static String JSON_EXTENSION = Msg.getString("Simulation.jsonFile.extension"); //$NON-NLS-1$
 	/** local time string */
@@ -178,15 +178,21 @@ public class Simulation implements ClockListener, Serializable {
 	private final static String WHITESPACES = "  ";
 	/** Console directory for saving/loading console related files. */
 	public final static String CONSOLE_DIR = "/console";
+	/** home directory. */
+	public final static String HOME_DIR = System.getProperty("user.home") + //$NON-NLS-1$
+			File.separator + Msg.getString("Simulation.homeFolder");
 	/** Save directory. */
-	public final static String DEFAULT_DIR = System.getProperty("user.home") + //$NON-NLS-1$
-			File.separator + Msg.getString("Simulation.defaultFolder") + //$NON-NLS-1$
-			File.separator + Msg.getString("Simulation.defaultDir"); //$NON-NLS-1$
+	public final static String SAVE_DIR = HOME_DIR + //$NON-NLS-1$
+			File.separator + Msg.getString("Simulation.saveDir"); //$NON-NLS-1$
 
+	public final static String XML_DIR = System.getProperty("user.home") + //$NON-NLS-1$
+			File.separator + Msg.getString("Simulation.homeFolder") + //$NON-NLS-1$
+			File.separator + Msg.getString("Simulation.xmlFolder"); //$NON-NLS-1$
+		
 	/** autosave directory. */
 	public final static String AUTOSAVE_DIR = System.getProperty("user.home") + //$NON-NLS-1$
-			File.separator + Msg.getString("Simulation.defaultFolder") + //$NON-NLS-1$
-			File.separator + Msg.getString("Simulation.defaultDir.autosave"); //$NON-NLS-1$
+			File.separator + Msg.getString("Simulation.homeFolder") + //$NON-NLS-1$
+			File.separator + Msg.getString("Simulation.saveDir.autosave"); //$NON-NLS-1$
 
 	public final static String MARS_SIM_DIRECTORY = ".mars-sim";
 
@@ -564,7 +570,7 @@ public class Simulation implements ClockListener, Serializable {
 		if (f == null) {
 			// logger.config("Yes file is null");
 			// [landrus, 27.11.09]: use the home dir instead of unknown relative paths.
-			f = new File(DEFAULT_DIR, DEFAULT_FILE + DEFAULT_EXTENSION);
+			f = new File(SAVE_DIR, SAVE_FILE + SAVE_FILE_EXTENSION);
 //			 logger.config("file is " + f);
 			Simulation.defaultLoad = true;
 		} else {
@@ -1023,7 +1029,7 @@ public class Simulation implements ClockListener, Serializable {
 //		objectMapper.writeValue(stringEmp, o);
 //		System.out.println("JSON representation of the Class '" + name + "' :\n" + stringEmp);
 //		// Write to the file
-		objectMapper.writeValue(new File(DEFAULT_DIR, name + JSON_EXTENSION), o);
+		objectMapper.writeValue(new File(SAVE_DIR, name + JSON_EXTENSION), o);
 		
 		String json = objectMapper.writeValueAsString(o) ; 
 		System.out.println("JSON representation of the Class '" + name + "' :\n" + json);
@@ -1047,7 +1053,7 @@ public class Simulation implements ClockListener, Serializable {
 		lastSaveTimeStamp = new SystemDateTime().getDateTimeStr();
 		changed = true;
 
-		File backupFile = new File(DEFAULT_DIR, "previous" + DEFAULT_EXTENSION);
+		File backupFile = new File(SAVE_DIR, "previous" + SAVE_FILE_EXTENSION);
 		FileSystem fileSys = null;
 		Path destPath = null;
 		Path srcPath = null;
@@ -1057,7 +1063,7 @@ public class Simulation implements ClockListener, Serializable {
 		// Use type to differentiate in what name/dir it is saved
 		if (type == SAVE_DEFAULT) {
 
-			file = new File(DEFAULT_DIR, DEFAULT_FILE + DEFAULT_EXTENSION);
+			file = new File(SAVE_DIR, SAVE_FILE + SAVE_FILE_EXTENSION);
 
 			if (file.exists() && !file.isDirectory()) {
 				fileSys = FileSystems.getDefault();
@@ -1067,7 +1073,7 @@ public class Simulation implements ClockListener, Serializable {
 				Files.move(srcPath, destPath, StandardCopyOption.REPLACE_EXISTING);
 			}
 
-			logger.config("Saving the simulation as " + DEFAULT_FILE + DEFAULT_EXTENSION + ".");
+			logger.config("Saving the simulation as " + SAVE_FILE + SAVE_FILE_EXTENSION + ".");
 
 		}
 
@@ -1075,7 +1081,7 @@ public class Simulation implements ClockListener, Serializable {
 			String f = file.getName();
 			String dir = file.getParentFile().getAbsolutePath();
 			if (!f.contains(".sim"))
-				file = new File(dir, f + DEFAULT_EXTENSION);
+				file = new File(dir, f + SAVE_FILE_EXTENSION);
 			logger.config("Saving the simulation as " + file + "...");
 		}
 
@@ -1084,7 +1090,7 @@ public class Simulation implements ClockListener, Serializable {
 //            file = new File(DEFAULT_DIR, DEFAULT_FILE + DEFAULT_EXTENSION);
 //            logger.config("Autosaving as " + DEFAULT_FILE + DEFAULT_EXTENSION);
 
-			file = new File(DEFAULT_DIR, DEFAULT_FILE + DEFAULT_EXTENSION);
+			file = new File(SAVE_DIR, SAVE_FILE + SAVE_FILE_EXTENSION);
 
 			if (file.exists() && !file.isDirectory()) {
 				fileSys = FileSystems.getDefault();
@@ -1094,13 +1100,13 @@ public class Simulation implements ClockListener, Serializable {
 				Files.move(srcPath, destPath, StandardCopyOption.REPLACE_EXISTING);
 			}
 
-			logger.config("Autosaving the simulation as " + DEFAULT_FILE + DEFAULT_EXTENSION + ".");
+			logger.config("Autosaving the simulation as " + SAVE_FILE + SAVE_FILE_EXTENSION + ".");
 
 		}
 
 		else if (type == AUTOSAVE) {
 			String autosaveFilename = lastSaveTimeStamp + "_Sol" + missionSol + "_r" + BUILD
-					+ DEFAULT_EXTENSION;
+					+ SAVE_FILE_EXTENSION;
 			file = new File(AUTOSAVE_DIR, autosaveFilename);
 			logger.config("Autosaving the simulation as " + autosaveFilename + "...");
 

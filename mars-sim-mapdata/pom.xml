@@ -12,7 +12,8 @@
 	<artifactId>mars-sim-mapdata</artifactId>
 	<name>mars-sim-mapdata</name>
 	<dependencies>
-			<!-- http://tukaani.org/xz/java.html https://mvnrepository.com/artifact/org.tukaani/xz 
+			<!-- http://tukaani.org/xz/java.html 
+				 https://mvnrepository.com/artifact/org.tukaani/xz 
 			: 120 KB Note that 1.8 has issues that affects saving -->
 		<dependency>
 			<groupId>org.tukaani</groupId>

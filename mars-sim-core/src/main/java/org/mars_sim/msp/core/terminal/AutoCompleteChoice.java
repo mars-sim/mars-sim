@@ -1,3 +1,10 @@
+/**
+ * Mars Simulation Project
+ * AutoCompleteChoice.java
+ * @version 3.1.0 2019-08-17
+ * @author Manny Kung
+ */
+
 /*
  * Copyright 2018 the original author or authors.
  *

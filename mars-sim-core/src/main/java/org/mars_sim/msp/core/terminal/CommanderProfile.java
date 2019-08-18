@@ -46,7 +46,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
     private static final String ONE_SPACE = " ";
 
     private static final String FILENAME = "/commander.profile";
-	private static final String DIR = Simulation.DEFAULT_DIR;
+	private static final String DIR = Simulation.SAVE_DIR;
 	private static final String PATH = DIR + FILENAME;
 	
     private int choiceIndex = -1;

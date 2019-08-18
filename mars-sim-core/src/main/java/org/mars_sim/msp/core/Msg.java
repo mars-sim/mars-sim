@@ -69,8 +69,12 @@ public class Msg {
 		try {
 			return RESOURCE_BUNDLE.getString(key);
 		} catch (MissingResourceException e) {
+//			Log.warn(e.getStackTrace()[1].getClassName());
 			return handle(e,key);
 		}
+		
+
+		
 	}
 
 	/*

@@ -26,6 +26,7 @@ import org.jdom2.Element;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.ui.swing.sound.AudioPlayer;
 import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
@@ -47,8 +48,8 @@ public class UIConfig {
 	public static final String UNIT = "unit";
 
 	/** Config filename. */
-	private static final String DIRECTORY = System.getProperty("user.home") + File.separator + ".mars-sim"
-			+ File.separator + "saved";
+//	private static final String DIRECTORY = System.getProperty("user.home") + File.separator + ".mars-sim"
+//			+ File.separator + "saved";
 
 	private static final String FILE_NAME = "ui_settings.xml";
 
@@ -119,7 +120,7 @@ public class UIConfig {
 	    SAXBuilder builder = new SAXBuilder();
 
 	    try  {
-	    	configDoc = builder.build(new File(DIRECTORY, FILE_NAME));
+	    	configDoc = builder.build(new File(Simulation.SAVE_DIR, FILE_NAME));
 	    }
 	    catch (Exception e) {
 	        e.printStackTrace();
@@ -137,7 +138,7 @@ public class UIConfig {
 
 		try {
 			Document outputDoc = new Document();
-			DocType dtd = new DocType(UI, DIRECTORY + File.separator + FILE_NAME_DTD);
+			DocType dtd = new DocType(UI, Simulation.SAVE_DIR + File.separator + FILE_NAME_DTD);
 			Element uiElement = new Element(UI);
 			outputDoc.setDocType(dtd);
 			outputDoc.addContent(uiElement);
@@ -202,7 +203,7 @@ public class UIConfig {
 //			 the ui_settings.dtd to this folder because in a webstart environment, the
 //			 user has no initial data in his dirs.
 			 
-			File configFile = new File(DIRECTORY, FILE_NAME);
+			File configFile = new File(Simulation.SAVE_DIR, FILE_NAME);
 
 			// Create save directory if it doesn't exist.
 			if (!configFile.getParentFile().exists()) {
@@ -211,8 +212,8 @@ public class UIConfig {
 
 			// Copy /dtd/ui_settings.dtd resource to save directory.
 			// Always do this as we don't know when the local saved dtd file is out of date.
-			InputStream in = getClass().getResourceAsStream("/dtd/ui_settings.dtd");
-			IOUtils.copy(in, new FileOutputStream(new File(DIRECTORY, "ui_settings.dtd")));
+			InputStream in = getClass().getResourceAsStream("/dtd/" + FILE_NAME_DTD);
+			IOUtils.copy(in, new FileOutputStream(new File(Simulation.SAVE_DIR, FILE_NAME_DTD)));
 
 			XMLOutputter fmt = new XMLOutputter();
 			fmt.setFormat(Format.getPrettyFormat());

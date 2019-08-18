@@ -6,18 +6,23 @@
  */
 package org.mars_sim.msp.core;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectStreamException;
 import java.io.Serializable;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.commons.io.FileUtils;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
-
 import org.mars_sim.msp.core.foodProduction.FoodProductionConfig;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplyConfig;
 import org.mars_sim.msp.core.malfunction.MalfunctionConfig;
@@ -51,6 +56,9 @@ public class SimulationConfig implements Serializable {
 
 	private static final Logger logger = Logger.getLogger(SimulationConfig.class.getName());
 
+	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
+			logger.getName().length());
+	
 	// Configuration files to load.
 	public static final String CONF = "/conf/";
 	public static final String XML = ".xml";
@@ -230,9 +238,44 @@ public class SimulationConfig implements Serializable {
 		if (simulationDoc != null) {
 			instance.destroyOldConfiguration();
 		}
+		
+		// Query if the /conf/ folder exists in user home directory
+		// Query if the xml version matches
+		// If not, copy all xml over
+		
+		// Check if the conf directory exists or not
+		if (!Paths.get(Simulation.XML_DIR).toFile().isDirectory()) {
+			LogConsolidated.log(Level.CONFIG, 0, sourceName, 
+					"conf folder does not exist in user's home directory. Create the folder and copy over the xml files.");
+	
+			String dir = SimulationConfig.class.getResource(CONF).toString().replace("file:/", "");
+			String homeDir = Simulation.HOME_DIR;
+			System.out.println(dir);
+			System.out.println();
+			
+			File sourceLocation= new File(dir);
+	        File targetLocation = new File(homeDir);
+
+	        try {
+				FileUtils.copyDirectoryToDirectory(sourceLocation, targetLocation);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}	
+		}
+        
+		else {
+			// if the conf directory already exists and is populated with xml files, 
+			// TODO: Generate checksum on each of xml to see if it has been altered. 
+			// If it does, back them up into a subdirectory and start off a new batch of xml files
+			
+//			String SHA512 = DatatypeConverter.printHexBinary(Hash.SHA512.checksum(file))
+			
+		}
+			
 		loadDefaultConfiguration();
 	}
 
+    
 	/*
 	 * -----------------------------------------------------------------------------
 	 * Getter
@@ -778,16 +821,23 @@ public class SimulationConfig implements Serializable {
 	    SAXBuilder builder = new SAXBuilder(useDTD);
 	    Document document = null;
 	    
-		String fullPathName = CONF + filename + XML;
-		InputStream stream = SimulationConfig.class.getResourceAsStream(fullPathName);
+//		String fullPathName = CONF + filename + XML;
+//		InputStream stream = SimulationConfig.class.getResourceAsStream(fullPathName);
+				
+		File f = new File(Simulation.XML_DIR, filename + XML);
+
+		if (f.exists() && f.canRead()) {
+	        
+	        try {
+//	        	FileInputStream fi = new FileInputStream(Simulation.XML_DIR);
+		        document = builder.build(f);
+		    }
+		    catch (JDOMException | IOException e)
+		    {
+		        e.printStackTrace();
+		    }
+		}
 		
-	    try {
-	        document = builder.build(stream);
-	    }
-	    catch (JDOMException | IOException e)
-	    {
-	        e.printStackTrace();
-	    }
 	    return document;
 	}
 	

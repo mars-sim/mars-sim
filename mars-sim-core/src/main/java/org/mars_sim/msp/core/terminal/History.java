@@ -1,3 +1,10 @@
+/**
+ * Mars Simulation Project
+ * History.java
+ * @version 3.1.0 2019-08-17
+ * @author Manny Kung
+ */
+
 /*
  * Copyright 2018 the original author or authors.
  *
@@ -19,11 +26,16 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 
 public class History {
@@ -77,8 +89,7 @@ public class History {
     }
 
     private String getPropFilePath() {
-        return System.getProperty("user.home") + //$NON-NLS-1$
-    			File.separator + Msg.getString("Simulation.defaultFolder") + //$NON-NLS-1$
+        return Simulation.HOME_DIR + 
     			File.separator + Simulation.CONSOLE_DIR +
     			File.separator + appName + ".input";
     }
