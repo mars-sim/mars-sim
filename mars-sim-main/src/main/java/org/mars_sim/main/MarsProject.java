@@ -29,6 +29,7 @@ import org.mars_sim.msp.ui.helpGenerator.HelpGenerator;
 //import org.mars_sim.msp.ui.javafx.svg.SvgImageLoaderFactory;
 import org.mars_sim.msp.ui.swing.MainWindow;
 import org.mars_sim.msp.ui.swing.configeditor.SimulationConfigEditor;
+import org.mars_sim.msp.ui.swing.sound.AudioPlayer;
 
 /**
  * MarsProject is the main class for the application. It creates both the
@@ -40,11 +41,14 @@ public class MarsProject {
 
 	private static final String LOGGING_PROPERTIES = "/logging.properties";
 	
+	private static final String DEFAULT_SIM_FILENAME = "default.sim";
+	
 	static String[] args;
 
 	/** true if displaying graphic user interface. */
 	private boolean useGUI = true;
-
+	/** true if player wants no audio. */
+	private boolean noaudio = false;
 	/** true if help documents should be generated from config xml files. */
 	private boolean generateHelp = false;
 
@@ -85,8 +89,7 @@ public class MarsProject {
 	 * @param args command line arguments.
 	 */
 	public MarsProject(String args[]) {
-		// logger.config("MarsProject's constructor is on
-		// "+Thread.currentThread().getName() + " Thread");
+		// logger.config("MarsProject's constructor is on " + Thread.currentThread().getName() + " Thread");
 		sim.startSimExecutor();
 		sim.getSimExecutor().submit(new SimulationTask());
 	}
@@ -100,9 +103,18 @@ public class MarsProject {
 			logger.config("Starting " + Simulation.title);
 
 			List<String> argList = Arrays.asList(args);
-			boolean headless = argList.contains("-headless");
-			if (headless) useGUI = false;
+			
+			if (argList.contains("-headless")) 
+				useGUI = false;
+			
 			generateHelp = argList.contains("-html");
+			noaudio = argList.contains("-noaudio");
+			
+			if (noaudio) {
+				logger.config("noaudio argument detected. Turn off sound.");
+				// Disable the sound in AudioPlayer
+				AudioPlayer.disableSound();
+			}
 			
 			if (argList.contains("-help")) {
 				System.out.println(HELP);
@@ -193,8 +205,7 @@ public class MarsProject {
 			
 			try {
 				handleLoadDefaultSimulation();
-
-				logger.config("Done with handleLoadDefaultSimulation()");
+//				logger.config("Done with handleLoadDefaultSimulation()");
 				
 			} catch (Exception e) {
                 showError("Could not load the default simulation, trying to create a new Simulation...", e);
@@ -302,7 +313,7 @@ public class MarsProject {
 		Simulation.createNewSimulation(-1, true);
 		
 		try {
-			boolean hasDefault = argList.contains("default.sim");
+			boolean hasDefault = argList.contains(DEFAULT_SIM_FILENAME);
 			int index = argList.indexOf("-load");
 			boolean hasSim = argList.contains(".sim");
 			
@@ -316,7 +327,6 @@ public class MarsProject {
 				File loadFile = new File(argList.get(index + 1));
 				if (loadFile.exists() && loadFile.canRead()) {
 					sim.loadSimulation(loadFile);
-					logger.config("Done sim.loadSimulation()");
 				}
 				else {
 //					logger.config("Invalid param.");
@@ -327,7 +337,6 @@ public class MarsProject {
 			// Start simulation.
 			startSimulation(false);
 					
-			
 //			logger.config("useGUI is " + useGUI);
 			if (useGUI) {
 				setupMainWindow();
@@ -403,22 +412,15 @@ public class MarsProject {
 			e.printStackTrace();
 			exitWithError("Could not create a new simulation, startup cannot continue", e);
 		}
-			
-
-
-//		logger.config("Done handleNewSimulation()");
 	}
 
 	/**
 	 * Start the simulation instance.
 	 */
 	public void startSimulation(boolean useDefaultName) {
-		logger.config("startSimulation() is on " + Thread.currentThread().getName() + " Thread");
-
+//		logger.config("startSimulation() is on " + Thread.currentThread().getName() + " Thread");
 		// Start the simulation.
-//		sim.runStartTask(useDefaultName);
 		sim.start(useDefaultName);
-//		logger.config("Done with sim.start()");
 	}
 
 	/**

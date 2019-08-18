@@ -139,7 +139,7 @@ public class MarsProjectStarter {
 
 	        }
 
-	        if (argList.contains("noaudio")) 
+	        if (argList.contains("noaudio") || argList.contains("-noaudio")) 
 	        	command.append(" -noaudio");
         }
 

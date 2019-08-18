@@ -47,7 +47,7 @@ public class AudioPlayer implements ClockListener {
 	private int play_times = 0;
 
 	private static boolean hasMasterGain = true;
-	private static boolean isSoundDisabled = false;
+	private static boolean isSoundDisabled;
 
 	// private boolean lastMusicState = true;
 	// private boolean lastSoundState = true;
@@ -88,6 +88,7 @@ public class AudioPlayer implements ClockListener {
 //			currentMusicVol = MainMenu.music_v / 100D;
 //			currentSoundVol = MainMenu.sound_effect_v / 100D;
 		
+		if (!isSoundDisabled) {
 			allMusicTracks = new HashMap<>();
 			allSoundClips = new HashMap<>();
 
@@ -144,8 +145,8 @@ public class AudioPlayer implements ClockListener {
 			}
 
 			currentSoundClip = allSoundClips.get(SoundConstants.SND_PERSON_FEMALE1);
-			//currentMusicTrack = null;
-
+		}
+		
 //		}
 		// if (UIConfig.INSTANCE.useUIDefault()) {
 		// }
@@ -439,9 +440,9 @@ public class AudioPlayer implements ClockListener {
 		}
 	}
 
-	public static void enableMasterGain(boolean value) {
-		hasMasterGain = value;
-	}
+//	public static void enableMasterGain(boolean value) {
+//		hasMasterGain = value;
+//	}
 
 	/**
 	 * Checks if the music track ever started or has stopped
@@ -491,7 +492,7 @@ public class AudioPlayer implements ClockListener {
 	}
 
 	public void resumeMusic() {
-		if (currentMusicTrack != null && currentMusicTrack.isPaused()) {
+		if (currentMusicTrack != null && currentMusicTrack.isPaused() && !isSoundDisabled) {
 			currentMusicTrack.resume();
 		}
 		else {
@@ -503,7 +504,7 @@ public class AudioPlayer implements ClockListener {
 	 * Play a randomly selected music track
 	 */
 	public void playRandomMusicTrack() {
-		if (!isMusicMute() && isMusicTrackStopped() && !masterClock.isPaused() && !isSoundDisabled()) {
+		if (!isMusicMute() && isMusicTrackStopped() && !masterClock.isPaused() && !isSoundDisabled) {
 			// Since Areologie.ogg and Fantascape.ogg are 4 mins long, don't need to replay
 			// them
 			if (currentMusicTrack != null && currentMusicTrack.toString().equals(SoundConstants.ST_AREOLOGIE)
@@ -530,7 +531,7 @@ public class AudioPlayer implements ClockListener {
 		isSoundDisabled = true;
 		currentMusicVol = 0;
 		currentSoundVol = 0;
-		enableMasterGain(false);
+		hasMasterGain = false;
 
 		allSoundClips = null;
 		allMusicTracks = null;
