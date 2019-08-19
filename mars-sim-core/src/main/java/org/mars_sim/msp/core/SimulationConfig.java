@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectStreamException;
 import java.io.Serializable;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -247,18 +249,22 @@ public class SimulationConfig implements Serializable {
 		if (!Paths.get(Simulation.XML_DIR).toFile().isDirectory()) {
 			LogConsolidated.log(Level.CONFIG, 0, sourceName, 
 					"conf folder does not exist in user's home directory. Create the folder and copy over the xml files.");
-	
-			String dir = SimulationConfig.class.getResource(CONF).toString().replace("file:/", "");
-			String homeDir = Simulation.HOME_DIR;
-			System.out.println(dir);
-			System.out.println();
 			
-			File sourceLocation= new File(dir);
-	        File targetLocation = new File(homeDir);
-
 	        try {
+				URI uri = SimulationConfig.class.getResource(CONF).toURI();
+//				String dir = SimulationConfig.class.getResource(CONF).toString().replace("file:/", "");
+				String homeDir = Simulation.HOME_DIR;
+//				System.out.println(dir);
+				System.out.println(uri);
+				
+				File sourceLocation= new File(uri);
+//				File sourceLocation= new File(dir);
+		        File targetLocation = new File(homeDir);
 				FileUtils.copyDirectoryToDirectory(sourceLocation, targetLocation);
+				
 			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (URISyntaxException e) {
 				e.printStackTrace();
 			}	
 		}
