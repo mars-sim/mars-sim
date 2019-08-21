@@ -156,38 +156,54 @@ As of r4945,
 * Requires openjdk 11 (JDK 11) for compiling binary
 
 ```
-Note 1 : Beginning Java 11, the JRE/JDK is decoupled from the graphic JavaFX API. If you use OpenJDK 11, make sure 
-you also download OpenJFK 11 **separately**. 
-Feel free to discuss how to set up mars-sim to run it under Java 11. See also #156.
+Note 1 : Beginning Java 11, the JRE/JDK is decoupled from the graphic JavaFX API. 
+For the JavaFX edition of mars-sim, make sure you also download and configure 
+OpenJFK 11 SEPARATELY. See ticket #156 to read the discussions on how to set up
+mars-sim to run it under Java 11. 
 ```
+
+#### For linux
+
+1. The debian edition of mars-sim comes with debian installer for quick installation. However, you will have to install, configure and properly update the JDK or openJDK binary in your linux machine in order to run mars-sim. Please google to find out the most updated instructions for your distro.
+
+
+#### For macOS
+
+1.  The directory of JDK is at `Library/Java/JavaVirtualMachines/jdk-11.jdk/Contents/Home`. See [DZone](https://dzone.com/articles/installing-openjdk-11-on-macos) for more instructions.
+
+2. Enter `/usr/libexec/java_home -V` to find out which version of Java you have installed.
 
 
 #### For Windows OS
  
+ 1. Start a command prompt and type this `set PATH="C:\Program Files\Java\jre-11.0.3\bin";%PATH%`.
+
 
  1. Edit the `JAVA_HOME` and `PATH` in the *Environment Variables* in Control Panel 
  ```
-Note 2 : The order of precedence inside `PATH` is crucial. The first available folder having Java executable inside 
-will be the one to be loaded by Windows OS. 
+Note 2 : The order of precedence inside `PATH` is crucial. The first available folder having Java 
+executable inside will be the one to be loaded by Windows OS. 
  ```
  
  2. Set `JAVA_HOME` to a JRE or JDK's destination such as `C:\Program Files\Java\jdk-11.0.3` or 
- `C:\Program Files\Java\jre-11.0.3`
-
+ `C:\Program Files\Java\jre-11.0.3`. 
+ 
  3. Add `%JAVA_HOME%;%JAVA_HOME%\bin;` to `PATH`         
  ```
-Note 3 : The BEST approach is to enable only one Java build (such as Java 11.0.3) inside `PATH` and remove all 
-other folders referencing other java versions/builds.
+Note 3 : The BEST approach is to enable only one Java build (such as Java 11.0.3) 
+inside `PATH` and remove all other folders referencing other java versions/builds.
  ```
  4. Remove any path similar to `C:\ProgramData\Oracle\Java\javapath;`  in `PATH` variable. It can interfere with 
  the correct version of Java that you would like to use. 
  ```
-Note 4 : Depending on the order of precedence in Path variable, `C:\ProgramData\Oracle\Java\javapath` can load the 
-undesired version of jre/jdk, instead of the java version you prefer.
+Note 4 : Depending on the order of precedence in Path variable, 
+`C:\ProgramData\Oracle\Java\javapath` can load the undesired version of jre/jdk,
+instead of the java version you prefer.
  ```
  5. Check if the correct version of Java is being enabled in the **Java Control Panel** in Windows's Control Panel. 
  ```
-Note 5 : To test the version of Java that your machine is using, type "java -version" in a terminal/command prompt.
+Note 5 : To test the version of Java that your machine is using, type "java -version"
+in a terminal/command prompt.
  ```
 
 
