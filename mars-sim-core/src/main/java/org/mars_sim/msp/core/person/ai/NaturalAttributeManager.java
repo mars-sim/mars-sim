@@ -5,7 +5,7 @@
  * @author Scott Davis
  */
 
-package org.mars_sim.msp.core.person;
+package org.mars_sim.msp.core.person.ai;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.mars_sim.msp.core.person.GenderType;
+import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
@@ -39,7 +41,7 @@ public class NaturalAttributeManager implements Serializable {
 	 * 
 	 * @param person the person with the attributes.
 	 */
-	NaturalAttributeManager(Person person) {
+	public NaturalAttributeManager(Person person) {
 
 		attributeTable = new Hashtable<NaturalAttributeType, Integer>();
 

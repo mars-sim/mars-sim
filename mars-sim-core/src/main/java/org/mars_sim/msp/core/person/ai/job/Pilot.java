@@ -8,9 +8,9 @@ package org.mars_sim.msp.core.person.ai.job;
 
 import java.io.Serializable;
 
-import org.mars_sim.msp.core.person.NaturalAttributeManager;
-import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
+import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.AreologyStudyFieldMission;
 import org.mars_sim.msp.core.person.ai.mission.BiologyStudyFieldMission;
@@ -101,7 +101,7 @@ public class Pilot extends Job implements Serializable {
 
 		double result = 0D;
 
-		int drivingSkill = person.getMind().getSkillManager().getSkillLevel(SkillType.DRIVING);
+		int drivingSkill = person.getMind().getSkillManager().getSkillLevel(SkillType.PILOTING);
 		result = drivingSkill;
 
 		NaturalAttributeManager attributes = person.getNaturalAttributeManager();

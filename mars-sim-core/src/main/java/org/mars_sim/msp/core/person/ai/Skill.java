@@ -18,40 +18,6 @@ public class Skill implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	// Skills
-//	/** @deprecated */
-//	public static final String DRIVING = "Driving";
-//	/** @deprecated */
-//	public static final String BOTANY = "Botany";
-//	/** @deprecated */
-//	public static final String MECHANICS = "Mechanics";
-//	/** @deprecated */
-//	public static final String EVA_OPERATIONS = "EVA Operations";
-//	/** @deprecated */
-//	public static final String AREOLOGY = "Areology";
-//	/** @deprecated */
-//	public static final String MEDICAL = "Medicine";
-//	/** @deprecated */
-//	public static final String COOKING = "Cooking";
-//	/** @deprecated */
-//	public static final String TRADING = "Trading";
-//	/** @deprecated */
-//	public static final String MATERIALS_SCIENCE = "Materials Science";
-//	/** @deprecated */
-//	public static final String CONSTRUCTION = "Construction";
-//	/** @deprecated */
-//	public static final String BIOLOGY = "Biology";
-//	/** @deprecated */
-//	public static final String ASTRONOMY = "Astronomy";
-//	/** @deprecated */
-//	public static final String CHEMISTRY = "Chemistry";
-//	/** @deprecated */
-//	public static final String PHYSICS = "Physics";
-//	/** @deprecated */
-//	public static final String MATHEMATICS = "Mathematics";
-//	/** @deprecated */
-//	public static final String METEOROLOGY = "Meteorology";
-
 	// Data members
 	/** The skill level (0 to infinity). */
 	private int level;

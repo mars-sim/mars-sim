@@ -5,11 +5,12 @@
  * @author Manny Kung
  */
 
-package org.mars_sim.msp.core.person;
+package org.mars_sim.msp.core.person.ai;
 
 import java.io.Serializable;
 import java.util.Hashtable;
 
+import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
@@ -54,11 +55,14 @@ public class PersonalityTraitManager implements Serializable {
 		getPersonalityVector();
 	}
 
-	/*
-	 * // * Sync up with the I-E pair score in MBTI // public void
-	 * syncUpExtraversion() { // int value = mind.getMBTI().getScores().get(0); //
-	 * personalityTraits.put(PersonalityTraitType.EXTRAVERSION, value); // } //
-	 */
+//	/**
+//	 * Sync up with the I-E pair score in MBTI 
+//	 */
+//	 public void syncUpExtraversion() { 
+//		 int value = mind.getMBTI().getScores().get(0); 
+//		 personalityTraits.put(PersonalityTraitType.EXTRAVERSION, value); 
+//	 }
+
 
 //	/**
 //	 * Adds a random modifier to an personality trait.

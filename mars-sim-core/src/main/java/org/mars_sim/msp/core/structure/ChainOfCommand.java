@@ -18,9 +18,9 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
-import org.mars_sim.msp.core.person.NaturalAttributeManager;
-import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
+import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
@@ -614,7 +614,7 @@ public class ChainOfCommand implements Serializable {
 			specialty = RoleType.SCIENCE_SPECIALIST;
 		} else if (role == RoleType.CHIEF_OF_MISSION_PLANNING) {
 			skill_1 = SkillType.MATHEMATICS;
-			skill_2 = SkillType.DRIVING;
+			skill_2 = SkillType.PILOTING;
 			skill_3 = SkillType.CONSTRUCTION;
 			skill_4 = SkillType.EVA_OPERATIONS;
 			specialty = RoleType.MISSION_SPECIALIST;
@@ -625,7 +625,7 @@ public class ChainOfCommand implements Serializable {
 			skill_4 = SkillType.COOKING;
 			specialty = RoleType.RESOURCE_SPECIALIST;
 		} else if (role == RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS) {
-			skill_1 = SkillType.DRIVING;
+			skill_1 = SkillType.PILOTING;
 			skill_2 = SkillType.METEOROLOGY;
 			skill_3 = SkillType.AREOLOGY;
 			skill_4 = SkillType.MATHEMATICS;

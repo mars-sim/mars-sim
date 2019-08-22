@@ -320,6 +320,18 @@
 			<artifactId>kotlin-stdlib</artifactId>
 			<version>${kotlin.version}</version>
 		</dependency>	
+		<dependency>
+			<groupId>org.jetbrains.kotlin</groupId>
+			<artifactId>kotlin-stdlib-common</artifactId>
+			<version>${kotlin.version}</version>
+		</dependency>	
+		<!-- https://github.com/cbeust/jcommander -->
+		<dependency>
+			<groupId>com.beust</groupId>
+			<artifactId>jcommander</artifactId>
+			<!-->version>1.48</version-->
+			<version>1.75</version>
+		</dependency>
 	</dependencies>
 
 	<repositories>

@@ -153,7 +153,7 @@ Before r4945,
 
 As of r4945, 
 * Requires JRE 11 for running mars-sim
-* Requires openjdk 11 (JDK 11) for compiling binary
+* Requires openjdk 11 or JDK 11 for compiling binary
 
 ```
 Note 1 : Beginning Java 11, the JRE/JDK is decoupled from the graphic JavaFX API. 

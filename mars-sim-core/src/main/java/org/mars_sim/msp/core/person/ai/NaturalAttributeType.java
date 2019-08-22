@@ -5,7 +5,7 @@
  * @author stpa
  */
 
-package org.mars_sim.msp.core.person;
+package org.mars_sim.msp.core.person.ai;
 
 import java.util.ArrayList;
 import java.util.Collections;

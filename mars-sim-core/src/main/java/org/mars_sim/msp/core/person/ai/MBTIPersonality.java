@@ -1,6 +1,6 @@
 /**
  * Mars Simulation Project
- * PersonalityType.java
+ * MBTIPersonality.java
  * @version 3.1.0 2016-10-31
  * @author Scott Davis
  */
@@ -16,35 +16,37 @@ import java.util.Map;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
-import org.mars_sim.msp.core.person.PersonalityTraitType;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.tool.RandomUtil;
+
+/*
+ * Jung's typology theories postulated a sequence of four cognitive functions
+ * (thinking, feeling, sensation, and intuition), each having one of two polar
+ * orientations (extraversion or introversion), giving a total of eight dominant
+ * functions. 
+ * Four main functions of consciousness: 
+ *      - 2 perceiving functions: Intuition (N) vs. Sensation (S) 
+ *      - 2 judging functions: Feeling (F)  vs. Thinking (T) (B) 
+ *      - 2 main attitude types: Extraversion (E) vs. Introversion (I)
+ * 
+ * The MBTI is based on these eight hypothetical functions, although with some
+ * differences in expression from Jung's model
+ * 
+ * While the Jungian model offers empirical evidence for the first 3
+ * dichotomies, it is unclear whether the Briggs had evidence for the J-P
+ * preference, namely, Judging (J) vs. Perceiving (P)
+ * 
+ * As a whole, Brigg's expanded model gives rise to 16 outcomes
+ */
 
 /**
  * The Myers-Briggs Type Indicator (MBTI) personality type for the person.
  */
-public class PersonalityType implements Serializable {
+public class MBTIPersonality implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	// Jung's typology theories postulated a sequence of four cognitive functions
-	// (thinking, feeling, sensation, and intuition),
-	// each having one of two polar orientations (extraversion or introversion),
-	// giving a total of eight dominant functions.
-	// (A). Four main functions of consciousness:
-	// - 2 perceiving functions: Intuition (N) vs. Sensation (S)
-	// - 2 judging functions: Feeling (F) vs. Thinking (T)
-	// (B). Two main attitude types: Extraversion (E) vs. Introversion (I)
-
-	// The MBTI is based on these eight hypothetical functions, although with some
-	// differences in expression from Jung's model
-	// While the Jungian model offers empirical evidence for the first 3
-	// dichotomies,
-	// it is unclear whether the Briggs had evidence for the J-P preference.
-	// (C). Judging (J) vs. Perceiving (P)
-
-	// As a whole, they above gives rise to 16 outcomes
 
 	// TODO Personality types should be enums
 	public static final String ISTP = "ISTP";
@@ -91,7 +93,7 @@ public class PersonalityType implements Serializable {
 	/**
 	 * Constructor
 	 */
-	PersonalityType(Person person) {
+	MBTIPersonality(Person person) {
 
 		this.person = person;
 

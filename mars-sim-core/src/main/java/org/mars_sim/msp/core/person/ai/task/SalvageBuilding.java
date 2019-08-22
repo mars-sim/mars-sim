@@ -18,9 +18,9 @@ import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
-import org.mars_sim.msp.core.person.NaturalAttributeType;
-import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
+import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
@@ -325,7 +325,7 @@ implements Serializable {
             if (operatingLUV) {
                 double drivingExperience = time / 10D;
                 drivingExperience += drivingExperience * experienceAptitudeModifier;
-                manager.addExperience(SkillType.DRIVING, drivingExperience);
+                manager.addExperience(SkillType.PILOTING, drivingExperience);
             }
         }
     }

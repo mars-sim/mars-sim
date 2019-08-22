@@ -23,10 +23,10 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.UnitManager;
-import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
-import org.mars_sim.msp.core.person.ai.PersonalityType;
+import org.mars_sim.msp.core.person.ai.MBTIPersonality;
+import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
@@ -471,8 +471,8 @@ public class RelationshipManager implements Serializable {
 					RandomUtil.getRandomDouble(changeAmount += genderBondingModifier);
 
 				// Modify based on personality differences.
-				PersonalityType personPersonality = person.getMind().getMBTI();
-				PersonalityType localPersonality = localPerson.getMind().getMBTI();
+				MBTIPersonality personPersonality = person.getMind().getMBTI();
+				MBTIPersonality localPersonality = localPerson.getMind().getMBTI();
 				double personalityDiffModifier = (2D
 						- (double) personPersonality.getPersonalityDifference(localPersonality.getTypeString())) / 2D;
 				personalityDiffModifier *= PERSONALITY_DIFF_MODIFIER * time;

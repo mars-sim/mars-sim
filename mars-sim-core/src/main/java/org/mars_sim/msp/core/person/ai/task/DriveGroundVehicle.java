@@ -19,8 +19,8 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
-import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.taskUtil.TaskPhase;
@@ -504,7 +504,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 		else if (robot != null)
 			manager = robot.getBotMind().getSkillManager();
 
-		return manager.getEffectiveSkillLevel(SkillType.DRIVING);
+		return manager.getEffectiveSkillLevel(SkillType.PILOTING);
 	}
 
 	/**
@@ -515,7 +515,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 	 */
 	public List<SkillType> getAssociatedSkills() {
 		List<SkillType> results = new ArrayList<SkillType>(1);
-		results.add(SkillType.DRIVING);
+		results.add(SkillType.PILOTING);
 		return results;
 	}
 
@@ -543,9 +543,9 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 			phaseModifier = 4D;
 		newPoints *= phaseModifier;
 		if (person != null)
-			person.getMind().getSkillManager().addExperience(SkillType.DRIVING, newPoints);
+			person.getMind().getSkillManager().addExperience(SkillType.PILOTING, newPoints);
 		else if (robot != null)
-			robot.getBotMind().getSkillManager().addExperience(SkillType.DRIVING, newPoints);
+			robot.getBotMind().getSkillManager().addExperience(SkillType.PILOTING, newPoints);
 
 	}
 

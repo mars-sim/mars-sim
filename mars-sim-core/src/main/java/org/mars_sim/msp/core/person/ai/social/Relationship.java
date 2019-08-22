@@ -8,10 +8,10 @@ package org.mars_sim.msp.core.person.ai.social;
 
 import java.io.Serializable;
 
-import org.mars_sim.msp.core.person.NaturalAttributeType;
-import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.PersonalityType;
+import org.mars_sim.msp.core.person.ai.MBTIPersonality;
+import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
+import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
@@ -235,8 +235,8 @@ public class Relationship implements Serializable {
 			result += RandomUtil.getRandomDouble(attractivenessModifier);
 
 		// Personality diff modifier
-		PersonalityType personType = person.getMind().getMBTI();
-		PersonalityType targetType = target.getMind().getMBTI();
+		MBTIPersonality personType = person.getMind().getMBTI();
+		MBTIPersonality targetType = target.getMind().getMBTI();
 		double personalityDiffModifier = (2D - (double) personType.getPersonalityDifference(targetType.getTypeString()))
 				* 50D;
 		result += RandomUtil.getRandomDouble(personalityDiffModifier);

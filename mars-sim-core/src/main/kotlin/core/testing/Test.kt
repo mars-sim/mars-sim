@@ -1,8 +1,8 @@
 package core.testing
 
-class HelloMars {
+class Test {
 }
 
 fun main(args: Array<String>) {
-	println("Hello, Mars!")
+	println("Hello, Test!")
 } 

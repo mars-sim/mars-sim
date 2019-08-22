@@ -24,6 +24,8 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
+import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
+import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.task.EatMeal;
 import org.mars_sim.msp.core.person.ai.task.meta.EatMealMeta;
 import org.mars_sim.msp.core.person.ai.taskUtil.TaskManager;

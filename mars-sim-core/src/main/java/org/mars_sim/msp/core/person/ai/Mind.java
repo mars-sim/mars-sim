@@ -16,7 +16,6 @@ import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.PersonalityTraitManager;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.job.JobAssignmentType;
 import org.mars_sim.msp.core.person.ai.job.JobHistory;
@@ -70,7 +69,7 @@ public class Mind implements Serializable {
 	/** The person's job. */
 	private Job job;
 	/** The person's personality. */
-	private PersonalityType mbti;
+	private MBTIPersonality mbti;
 	/** The person's emotional states. */	
 	private EmotionManager emotion;
 
@@ -109,7 +108,7 @@ public class Mind implements Serializable {
 		// Construct the Big Five personality trait.
 		trait = new PersonalityTraitManager(person);
 		// Construct the MBTI personality type.
-		mbti = new PersonalityType(person);
+		mbti = new MBTIPersonality(person);
 		// Construct the emotion states.
 		emotion = new EmotionManager(person);
 		// Construct the task manager
@@ -702,7 +701,7 @@ public class Mind implements Serializable {
 	 * 
 	 * @return personality type.
 	 */
-	public PersonalityType getMBTI() {
+	public MBTIPersonality getMBTI() {
 		return mbti;
 	}
 

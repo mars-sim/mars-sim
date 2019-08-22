@@ -97,7 +97,7 @@ public class SkillManager implements Serializable {
 				skills.add(SkillType.MEDICINE);
 			}
 			else if (robot.getRobotType() == RobotType.DELIVERYBOT) {
-				skills.add(SkillType.DRIVING);
+				skills.add(SkillType.PILOTING);
 				skills.add(SkillType.TRADING);
 			}
 			else if (robot.getRobotType() == RobotType.CONSTRUCTIONBOT) {

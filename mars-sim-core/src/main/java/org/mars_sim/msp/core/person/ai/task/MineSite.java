@@ -18,9 +18,9 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.person.NaturalAttributeManager;
-import org.mars_sim.msp.core.person.NaturalAttributeType;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
+import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.Mining;
@@ -363,7 +363,7 @@ public class MineSite extends EVAOperation implements Serializable {
 			if (operatingLUV) {
 				double drivingExperience = time / 10D;
 				drivingExperience += drivingExperience * experienceAptitudeModifier;
-				manager.addExperience(SkillType.DRIVING, drivingExperience);
+				manager.addExperience(SkillType.PILOTING, drivingExperience);
 			}
 		}
 	}
@@ -374,7 +374,7 @@ public class MineSite extends EVAOperation implements Serializable {
 		results.add(SkillType.EVA_OPERATIONS);
 		results.add(SkillType.AREOLOGY);
 		if (operatingLUV) {
-			results.add(SkillType.DRIVING);
+			results.add(SkillType.PILOTING);
 		}
 		return results;
 	}
@@ -391,7 +391,7 @@ public class MineSite extends EVAOperation implements Serializable {
 		int EVAOperationsSkill = manager.getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
 		int areologySkill = manager.getEffectiveSkillLevel(SkillType.AREOLOGY);
 		if (operatingLUV) {
-			int drivingSkill = manager.getEffectiveSkillLevel(SkillType.DRIVING);
+			int drivingSkill = manager.getEffectiveSkillLevel(SkillType.PILOTING);
 			result = (int) Math.round((double) (EVAOperationsSkill + areologySkill + drivingSkill) / 3D);
 		} else {
 			result = (int) Math.round((double) (EVAOperationsSkill + areologySkill) / 2D);

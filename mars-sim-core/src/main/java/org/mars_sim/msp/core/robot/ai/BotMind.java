@@ -13,7 +13,7 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEventType;
-import org.mars_sim.msp.core.person.ai.PersonalityType;
+import org.mars_sim.msp.core.person.ai.MBTIPersonality;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
@@ -50,7 +50,7 @@ public class BotMind implements Serializable {
 	/** The robot's job. */
 	private RobotJob robotJob;
 	/** The robot's personality. */
-	private PersonalityType personality;
+	private MBTIPersonality personality;
 	/** The robot's skill manager. */
 	private SkillManager skillManager;
 
@@ -374,7 +374,7 @@ public class BotMind implements Serializable {
 	 * 
 	 * @return personality type.
 	 */
-	public PersonalityType getPersonalityType() {
+	public MBTIPersonality getPersonalityType() {
 		return personality;
 	}
 
