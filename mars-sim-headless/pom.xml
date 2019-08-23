@@ -20,6 +20,9 @@
 	</properties>
 	<build>
 		<plugins>
+			<!-- https://mvnrepository.com/artifact/org.codehaus.mojo/exec-maven-plugin -->
+			<!-- https://www.mojohaus.org/exec-maven-plugin/ -->
+			<!-- https://github.com/mojohaus/mojo-parent -->
 			<plugin>
 		        <groupId>org.codehaus.mojo</groupId>
 		        <artifactId>exec-maven-plugin</artifactId>

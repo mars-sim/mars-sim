@@ -31,6 +31,8 @@ import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.MathUtils;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
+import org.mars_sim.msp.core.mind.CoreMind;
+
 /**
  * The Mind class represents a person's mind. It keeps track of missions and
  * tasks which the person is involved.

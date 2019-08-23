@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import junit.framework.TestCase;
-
 import org.apache.batik.gvt.GraphicsNode;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.construction.ConstructionConfig;
 import org.mars_sim.msp.core.structure.construction.ConstructionStageInfo;
+
+import junit.framework.TestCase;
 
 /**
  * Unit test suite for the SVGMapUtil class.
@@ -19,7 +19,7 @@ public class TestSVGMapUtil extends TestCase {
 
     @Override
     public void setUp() throws Exception {
-        SimulationConfig.loadConfig();
+        SimulationConfig.testLoadConfig();
     }
 
     /**

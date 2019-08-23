@@ -7,6 +7,10 @@
 
 package org.mars_sim.msp.core.person.ai;
 
+import java.util.Arrays;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import org.mars_sim.msp.core.Msg;
 
 public enum SkillType {
@@ -59,6 +63,8 @@ public enum SkillType {
 
 	private String name;
 
+	static Map<Integer, SkillType> lookup = null;
+
 	/** hidden constructor. */
 	private SkillType(String name) {
 		this.name = name;
@@ -72,4 +78,15 @@ public enum SkillType {
 	public static SkillType valueOfIgnoreCase(String skillName) {
 		return SkillType.valueOf(skillName.toUpperCase().replace(' ','_'));
 	}
+	
+
+    public static SkillType lookup(int ordinal) {
+        // Could just run through the array of values but I will us a Map.
+        if (lookup == null) {
+            // Late construction - not thread-safe.
+            lookup = Arrays.stream(SkillType.values())
+                    .collect(Collectors.toMap(s -> s.ordinal(), s -> s));
+        }
+        return lookup.get(ordinal);
+    }
 }

@@ -14,6 +14,8 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
+import org.mars_sim.msp.core.mind.CoreMind;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 
 /**
  * The SkillManager class manages skills for a given person. Each person has one
@@ -51,7 +54,8 @@ public class SkillManager implements Serializable {
 	public SkillManager(Unit unit, CoreMind coreMind) {
 		Person person = null;
 		Robot robot = null;
-
+		this.coreMind = coreMind;
+		
 		if (unit instanceof Person) {
 			person = (Person) unit;
 			this.person = person;
@@ -223,13 +227,17 @@ public class SkillManager implements Serializable {
 			skills.get(skillType).setLevel(newSkill.getLevel());
 		else {
 			skills.put(skillType, newSkill);
-			if (person != null && person.getMind() != null) {
-				String skillEnumString = skillType.ordinal() + "";
-				LogConsolidated.log(Level.SEVERE, 5_000, sourceName,
-						person.getName() + " acquired the " + skillType.getName() + " skill (" + skillEnumString + ")");
-				coreMind.create(skillEnumString);
-			}
 		}
+		// Set up the core mind
+		String skillEnumString = skillType.ordinal() + "";
+		String name = "";
+		if (person != null) 
+			name = person.getName();
+		else 
+			name = robot.getName();
+		LogConsolidated.log(Level.SEVERE, 5_000, sourceName,
+				name + " is acquiring the " + skillType.getName() + " skill (id " + skillEnumString + ")");
+		coreMind.create(skillEnumString);
 	}
 
 	/**

@@ -58,7 +58,7 @@ public class SimulationConfig implements Serializable {
 			logger.getName().length());
 	
 	// Configuration files to load.
-	public static final String CONF = "/conf/";
+	public static final String CONF = "/conf/"; //File.separator + "conf" +File.separator;
 	public static final String XML = ".xml";
 	public static final String SIMULATION_FILE = "simulation";
 	public static final String PEOPLE_FILE = "people";
@@ -278,18 +278,29 @@ public class SimulationConfig implements Serializable {
 		loadDefaultConfiguration();
 	}
 
+	public static void testLoadConfig() {
+		// logger.info("loadConfig() is on " + Thread.currentThread().getName());
+		if (simulationDoc != null) {
+			instance.destroyOldConfiguration();
+		}
+		loadDefaultConfiguration();
+	}
+		
 	public static void setUpXMLDir() {
 		 try {
 				URI uri = SimulationConfig.class.getResource(CONF).toURI();
 				String homeDir = Simulation.HOME_DIR;
-	
+				String xmlDir = Simulation.XML_DIR;
 				File sourceLocation= new File(uri);
-		        File targetLocation = new File(homeDir);
-				FileUtils.copyDirectoryToDirectory(sourceLocation, targetLocation);
+//				File sourceLocation= new File(SimulationConfig.class
+//						.getResource(CONF).toExternalForm());
+		        File targetLocation = new File(xmlDir);
+				FileUtils.copyDirectory(sourceLocation, targetLocation);
 				
 			} catch (IOException e) {
 				e.printStackTrace();
 			} catch (URISyntaxException e) {
+				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}	
 	}
