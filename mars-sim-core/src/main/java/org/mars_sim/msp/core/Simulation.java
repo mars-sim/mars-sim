@@ -178,9 +178,13 @@ public class Simulation implements ClockListener, Serializable {
 	private final static String WHITESPACES = "  ";
 	/** Console directory for saving/loading console related files. */
 	public final static String CONSOLE_DIR = "/console";
-	/** home directory. */
+	/** Home directory. */
 	public final static String HOME_DIR = System.getProperty("user.home") + //$NON-NLS-1$
 			File.separator + Msg.getString("Simulation.homeFolder");
+	/** Backup directory. */
+	public final static String BACKUP_DIR = System.getProperty("user.home") + //$NON-NLS-1$
+			File.separator + Msg.getString("Simulation.homeFolder") + //$NON-NLS-1$
+			File.separator + Msg.getString("Simulation.backupFolder"); //$NON-NLS-1$
 	/** Save directory. */
 	public final static String SAVE_DIR = HOME_DIR + //$NON-NLS-1$
 			File.separator + Msg.getString("Simulation.saveDir"); //$NON-NLS-1$

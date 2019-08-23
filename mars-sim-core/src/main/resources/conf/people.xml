@@ -3332,7 +3332,7 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
 				<personality-trait name = "neuroticism" 	value = "45"/>
 			</personality-trait-list>
 			<skill-list>
-                <skill name="Driving" level="1"/>
+                <skill name="Piloting" level="1"/>
                 <skill name="Physics" level="1"/>
                 <skill name="Botany" level="1"/>
                 <skill name="Mechanics" level="1"/>
@@ -3390,7 +3390,7 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
                 <!-- A skill for the person. -->
                 <!-- name: the name of the skill. (required). -->
                 <!-- level: the level of the skill ( >= 0 ) (required). -->
-                <skill name="Driving" level="1"/>
+                <skill name="Piloting" level="1"/>
                 <skill name="Physics" level="1"/>
                 <skill name="Botany" level="1"/>
                 <skill name="Mechanics" level="2"/>

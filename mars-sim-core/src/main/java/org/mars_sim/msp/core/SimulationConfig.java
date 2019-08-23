@@ -7,15 +7,11 @@
 package org.mars_sim.msp.core;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.ObjectStreamException;
 import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -245,20 +241,49 @@ public class SimulationConfig implements Serializable {
 		// Query if the xml version matches
 		// If not, copy all xml over
 		
+
 		// Check if the conf directory exists or not
-		if (!Paths.get(Simulation.XML_DIR).toFile().isDirectory()) {
+		if (Paths.get(Simulation.XML_DIR).toFile().isDirectory()) {
+			// if the conf directory already exists and is populated with xml files, 
+			LogConsolidated.log(Level.CONFIG, 0, sourceName, 
+					"conf folder already existed. See backup folder. Please make sure you backup all modified xml before proceeding.");
+			
+			// TODO: Generate checksum on each of xml to see if it has been altered. 
+			// TODO: If it does, back them up into a subdirectory and start off a new batch of xml files
+//			String SHA512 = DatatypeConverter.printHexBinary(Hash.SHA512.checksum(file))
+			
+			// Back up the dir
+
+			String xmlDir = Simulation.XML_DIR;
+			String backupDir = Simulation.BACKUP_DIR;
+			
+	        File existingLocation = new File(xmlDir);		
+	        File backupLocation = new File(backupDir);
+			try {
+				FileUtils.copyDirectoryToDirectory(existingLocation, backupLocation);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		} else {
+			// the conf dir does NOT exist
 			LogConsolidated.log(Level.CONFIG, 0, sourceName, 
 					"conf folder does not exist in user's home directory. Create the folder and copy over the xml files.");
+		}
+        
+		
+		setUpXMLDir();
 			
-	        try {
+		loadDefaultConfiguration();
+	}
+
+	public static void setUpXMLDir() {
+		 try {
 				URI uri = SimulationConfig.class.getResource(CONF).toURI();
-//				String dir = SimulationConfig.class.getResource(CONF).toString().replace("file:/", "");
 				String homeDir = Simulation.HOME_DIR;
-//				System.out.println(dir);
-				System.out.println(uri);
-				
+	
 				File sourceLocation= new File(uri);
-//				File sourceLocation= new File(dir);
 		        File targetLocation = new File(homeDir);
 				FileUtils.copyDirectoryToDirectory(sourceLocation, targetLocation);
 				
@@ -267,20 +292,7 @@ public class SimulationConfig implements Serializable {
 			} catch (URISyntaxException e) {
 				e.printStackTrace();
 			}	
-		}
-        
-		else {
-			// if the conf directory already exists and is populated with xml files, 
-			// TODO: Generate checksum on each of xml to see if it has been altered. 
-			// If it does, back them up into a subdirectory and start off a new batch of xml files
-			
-//			String SHA512 = DatatypeConverter.printHexBinary(Hash.SHA512.checksum(file))
-			
-		}
-			
-		loadDefaultConfiguration();
 	}
-
     
 	/*
 	 * -----------------------------------------------------------------------------

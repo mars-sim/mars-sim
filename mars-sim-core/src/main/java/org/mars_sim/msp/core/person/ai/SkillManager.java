@@ -7,6 +7,7 @@
 
 package org.mars_sim.msp.core.person.ai;
 
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.robot.Robot;
@@ -19,6 +20,8 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * The SkillManager class manages skills for a given person. Each person has one
@@ -28,10 +31,16 @@ public class SkillManager implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
+	private static Logger logger = Logger.getLogger(SkillManager.class.getName());
+	private static String loggerName = logger.getName();
+	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+	
 	// Data members
 	/** The person owning the SkillManager. */
 	private Person person;
 	private Robot robot;
+	private CoreMind coreMind;
+	
 	/** A list of the person's skills keyed by name. */
 	private Hashtable<SkillType, Skill> skills;
 
@@ -39,7 +48,7 @@ public class SkillManager implements Serializable {
 	private List<String> skillNames;
 	
 	/** Constructor. */
-	public SkillManager(Unit unit) {
+	public SkillManager(Unit unit, CoreMind coreMind) {
 		Person person = null;
 		Robot robot = null;
 
@@ -69,10 +78,7 @@ public class SkillManager implements Serializable {
 				newSkill.setLevel(skillLevel);
 				addNewSkill(newSkill);
 			}
-			
-			
-		}
-		else {		
+		} else {		
 			// Add starting skills randomly for a bot.
 			List<SkillType> skills = new ArrayList<>();
 			
@@ -215,8 +221,15 @@ public class SkillManager implements Serializable {
 		SkillType skillType = newSkill.getSkill();
 		if (hasSkill(skillType))
 			skills.get(skillType).setLevel(newSkill.getLevel());
-		else
+		else {
 			skills.put(skillType, newSkill);
+			if (person != null && person.getMind() != null) {
+				String skillEnumString = skillType.ordinal() + "";
+				LogConsolidated.log(Level.SEVERE, 5_000, sourceName,
+						person.getName() + " acquired the " + skillType.getName() + " skill (" + skillEnumString + ")");
+				coreMind.create(skillEnumString);
+			}
+		}
 	}
 
 	/**

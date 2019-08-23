@@ -23,7 +23,6 @@ import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.job.Politician;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
-import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.person.ai.taskUtil.Task;
 import org.mars_sim.msp.core.person.ai.taskUtil.TaskManager;
@@ -72,10 +71,12 @@ public class Mind implements Serializable {
 	private MBTIPersonality mbti;
 	/** The person's emotional states. */	
 	private EmotionManager emotion;
-
+	/** The person's personality trait manager. */
 	private PersonalityTraitManager trait;
 	/** The person's skill manager. */
 	private SkillManager skillManager;
+	/** The person's core mind. */
+	private CoreMind coreMind;
 
 	private static MissionManager missionManager;
 
@@ -105,6 +106,8 @@ public class Mind implements Serializable {
 		
 		relationshipManager = sim.getRelationshipManager();
 		
+		// Create CoreMind
+		coreMind = new CoreMind();
 		// Construct the Big Five personality trait.
 		trait = new PersonalityTraitManager(person);
 		// Construct the MBTI personality type.
@@ -114,7 +117,7 @@ public class Mind implements Serializable {
 		// Construct the task manager
 		taskManager = new TaskManager(this);
 		// Construct the skill manager.
-		skillManager = new SkillManager(person);
+		skillManager = new SkillManager(person, coreMind);
 	}
 
 	/**
@@ -771,6 +774,10 @@ public class Mind implements Serializable {
 		return trait;
 	}
 
+	public void setCoreMind(String career) {
+		coreMind.create(career);	
+	}
+	
 	/**
 	 * Prepare object for garbage collection.
 	 */

@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEventType;
+import org.mars_sim.msp.core.person.ai.CoreMind;
 import org.mars_sim.msp.core.person.ai.MBTIPersonality;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
@@ -53,6 +54,9 @@ public class BotMind implements Serializable {
 	private MBTIPersonality personality;
 	/** The robot's skill manager. */
 	private SkillManager skillManager;
+	/** The robot's core mind. */
+	private CoreMind coreMind;
+	
 
 //	private static MissionManager missionManager;
 	private static Simulation sim;
@@ -84,8 +88,10 @@ public class BotMind implements Serializable {
 		// entire cycle, is repeated.
 		// https://en.wikipedia.org/wiki/Sense_Plan_Act
 
+		// Create CoreMind
+		coreMind = new CoreMind();
 		// Construct a skill manager.
-		skillManager = new SkillManager(robot);
+		skillManager = new SkillManager(robot, coreMind);
 
 		// Construct a task manager
 		botTaskManager = new BotTaskManager(this);

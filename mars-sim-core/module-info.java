@@ -18,7 +18,8 @@ module mars-sim-core {
 //    requires xz;
     
 	requires flogger;
-  
+    requires kotlin;
+    
     requires mars-sim-mapdata;
     
 	exports mars-sim-core;
