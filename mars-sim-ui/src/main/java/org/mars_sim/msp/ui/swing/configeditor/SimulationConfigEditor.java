@@ -125,6 +125,14 @@ public class SimulationConfigEditor {
 
 		f = new JFrame();
 
+		f.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent event) {
+				System.exit(0);
+				destroy();
+			}
+		});
+		
 		f.setSize(HORIZONTAL_SIZE, 360);
 		f.setTitle(Msg.getString("SimulationConfigEditor.title")); //$NON-NLS-1$
 		

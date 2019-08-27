@@ -274,7 +274,7 @@ public class SimulationConfig implements Serializable {
 		// if the "xml" directory exists, back up everything inside and clean the directory
 		if (existed && xmlLocation.isDirectory()) {
 			LogConsolidated.log(Level.CONFIG, 0, sourceName, 
-			"'xml' folder already existed. Backing it up into 'backup' folder & Creating a new 'xml' folder with new xml files.");		
+			"'xml' folder already existed.");		
 			
 			if (versionFile.exists()) {
 				BufferedReader brTest;
@@ -282,6 +282,8 @@ public class SimulationConfig implements Serializable {
 					brTest = new BufferedReader(new FileReader(versionFile));
 				    String buildText = brTest.readLine();
 				    if (buildText.equals(Simulation.BUILD)) {
+						LogConsolidated.log(Level.CONFIG, 0, sourceName, 
+								"The version.txt shows the existing xml file set already has the most current BUILD tag.");		
 				    	sameBuild = true;
 				    }		    
 				} catch (FileNotFoundException e) {
@@ -301,7 +303,16 @@ public class SimulationConfig implements Serializable {
 	//			may use FileUtils.checksum(file, checksum)
 				
 				try {
+					LogConsolidated.log(Level.CONFIG, 0, sourceName, 
+							"Backing up the existing xml files into the 'backup' folder. Deleting the xml folder.");	
+					
+					// copy everything in the xml folder
 					FileUtils.copyDirectoryToDirectory(xmlLocation, backupLocation);
+					
+					// delete the version.txt file 
+					versionFile.delete();
+
+					// delete everything in the xml folder
 					FileUtils.deleteDirectory(xmlLocation);
 	
 				} catch (IOException e) {
@@ -314,21 +325,21 @@ public class SimulationConfig implements Serializable {
 		existed = xmlLocation.exists();
 
 		if (!sameBuild) {
+
 			// the "xml" folder does NOT exist
-			
-			// Create the xml folder
-			System.out.println("Can it write ? " + xmlLocation.canWrite());
-			LogConsolidated.log(Level.CONFIG, 0, sourceName, 
-					"'xml' folder does not exist. Creating it.");
-	//				System.out.println("path is " + Files.createDirectories(path));
-			if (!versionFile.getParentFile().exists()) {
+			if (!xmlLocation.exists()) {
+				LogConsolidated.log(Level.CONFIG, 0, sourceName, 
+						"'xml' folder does not exist. Creating it.");
+				// Create the xml folder
 				versionFile.getParentFile().mkdirs();
-				List<String> lines = Arrays.asList(Simulation.BUILD);
-				try {
-					Files.write(versionPath, lines, StandardCharsets.UTF_8);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+			}
+			
+			List<String> lines = Arrays.asList(Simulation.BUILD);
+			try {
+				// Create the version.txt file
+				Files.write(versionPath, lines, StandardCharsets.UTF_8);
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
 		}
         	

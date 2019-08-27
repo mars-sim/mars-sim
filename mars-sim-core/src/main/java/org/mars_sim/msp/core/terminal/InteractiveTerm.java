@@ -102,17 +102,28 @@ public class InteractiveTerm {
 	
 	
 	public void selectMode() {
-		terminal.print("1. Command Mode "
+		terminal.print(
+				"0. Exit "
+				+ System.lineSeparator()
+				+ "1. Command Mode "
 				+ System.lineSeparator()
 				+ "2. Sandbox Mode "
 				+ System.lineSeparator()
 				+ System.lineSeparator()
 				);
 			
-        handler.addStringTask("input", "Select the Game Mode:", false).addChoices("1", "2").constrainInputToChoices();
+        handler.addStringTask("input", "Select the Game Mode:", false).addChoices("0", "1", "2").constrainInputToChoices();
         handler.executeOneTask();
 
-		if (GameManager.input.equals("1")) {
+        if (GameManager.input.equals("0")) {
+            Simulation sim = Simulation.instance();
+        	sim.endSimulation(); 
+    		sim.getSimExecutor().shutdownNow();
+    		sim.getMasterClock().exitProgram();
+    		logger.info("Exiting the Simulation.");
+			System.exit(0);
+        }
+        else if (GameManager.input.equals("1")) {
 			
 			// Set the Game Mode to Command Mode in GameManager
 			GameManager.mode = GameMode.COMMAND;
