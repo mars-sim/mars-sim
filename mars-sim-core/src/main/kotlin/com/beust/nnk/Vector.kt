@@ -1,9 +1,10 @@
 package com.beust.nnk
 
+import java.io.Serializable
 //import java.util.*
 //import java.util.ArrayList
 
-class Vector(val size: Int, val defaultValue: () -> Float = { -> 0.0f }) {
+class Vector(val size: Int, val defaultValue: () -> Float = { -> 0.0f }) : Serializable {
     val content = ArrayList<Float>(size)
     init {
         repeat(size) {

@@ -1,9 +1,11 @@
-package com.beust.nnk
-
-data class NonLinearity(
+ package com.beust.nnk
+ 
+import java.io.Serializable
+ 
+data class NonLinearity (
         val activate: ((Float) -> Float),
-        val activateDerivative: ((Float) -> Float)
-)
+        val activateDerivative: ((Float) -> Float)): Serializable
+ 
 enum class NonLinearities(val value: NonLinearity) {
     TANH(NonLinearity(
             { x -> Math.tanh(x.toDouble()).toFloat() },

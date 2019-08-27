@@ -289,9 +289,9 @@ public class SimulationConfig implements Serializable {
 	public static void setUpXMLDir() {
 		 try {
 				URI uri = SimulationConfig.class.getResource(CONF).toURI();
-				String homeDir = Simulation.HOME_DIR;
+//				String homeDir = Simulation.HOME_DIR;
 				String xmlDir = Simulation.XML_DIR;
-				File sourceLocation= new File(uri);
+				File sourceLocation= new File(uri.getPath());
 //				File sourceLocation= new File(SimulationConfig.class
 //						.getResource(CONF).toExternalForm());
 		        File targetLocation = new File(xmlDir);

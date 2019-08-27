@@ -2,8 +2,8 @@ package com.beust.nnk
 
 import kotlin.random.Random
 
+import java.io.Serializable
 //import java.util.Random
-
 //import java.util.*
 
 /**
@@ -14,7 +14,10 @@ import kotlin.random.Random
  * @since 5/02/2016
  */
 
-class NeuralNetwork(val inputSize: Int, val hiddenSize: Int, val outputSize: Int, val hiddenNonLinearity: NonLinearity = NonLinearities.TANH.value, val outputNonLinearity: NonLinearity = NonLinearities.LEAKYRELU.value) {
+class NeuralNetwork(val inputSize: Int, val hiddenSize: Int, val outputSize: Int,
+					val hiddenNonLinearity: NonLinearity = NonLinearities.TANH.value,
+					val outputNonLinearity: NonLinearity = NonLinearities.LEAKYRELU.value)
+					: Serializable {
 
     val actualInputSize = inputSize + 1 // Add one for the bias node
 

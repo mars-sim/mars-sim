@@ -1216,33 +1216,33 @@ public class Simulation implements ClockListener, Serializable {
 		// Note: see https://docs.oracle.com/javase/7/docs/platform/serialization/spec/exceptions.html
 		} catch (WriteAbortedException e) {
 			// Thrown when reading a stream terminated by an exception that occurred while the stream was being written.
-			logger.log(Level.SEVERE, oos.getClass().getSimpleName() + ": Quitting mars-sim with WriteAbortedException when loading " + file + " : " + e.getMessage());
+			logger.log(Level.SEVERE, oos.getClass().getSimpleName() + ": Quitting mars-sim with WriteAbortedException when saving " + file + " : " + e.getMessage());
 			e.printStackTrace();		
 
 		} catch (OptionalDataException e) {
 			// Thrown by readObject when there is primitive data in the stream and an object is expected. The length field of the exception indicates the number of bytes that are available in the current block.
-			logger.log(Level.SEVERE, oos.getClass().getSimpleName() + ": Quitting mars-sim with OptionalDataException when loading " + file + " : " + e.getMessage());
+			logger.log(Level.SEVERE, oos.getClass().getSimpleName() + ": Quitting mars-sim with OptionalDataException when saving " + file + " : " + e.getMessage());
 			e.printStackTrace();	
 		
 		} catch (InvalidObjectException e) {
 			// Thrown when a restored object cannot be made valid.
-			logger.log(Level.SEVERE, oos.getClass().getSimpleName() + ": Quitting mars-sim with InvalidObjectException when loading " + file + " : " + e.getMessage());
+			logger.log(Level.SEVERE, oos.getClass().getSimpleName() + ": Quitting mars-sim with InvalidObjectException when saving " + file + " : " + e.getMessage());
 			e.printStackTrace();	
 
 		} catch (NotActiveException e) {
-			logger.log(Level.SEVERE, oos.getClass().getSimpleName() + ": Quitting mars-sim with NotActiveException when loading " + file + " : " + e.getMessage());
+			logger.log(Level.SEVERE, oos.getClass().getSimpleName() + ": Quitting mars-sim with NotActiveException when saving " + file + " : " + e.getMessage());
 			e.printStackTrace();	
 
 		} catch (StreamCorruptedException e) {
-			logger.log(Level.SEVERE, oos.getClass().getSimpleName() + ": Quitting mars-sim with StreamCorruptedException when loading " + file + " : " + e.getMessage());
+			logger.log(Level.SEVERE, oos.getClass().getSimpleName() + ": Quitting mars-sim with StreamCorruptedException when saving " + file + " : " + e.getMessage());
 			e.printStackTrace();	
 		
 		} catch (NotSerializableException e) {
-			logger.log(Level.SEVERE, oos.getClass().getSimpleName() + ": Quitting mars-sim with NotSerializableException when loading " + file + " : " + e.getMessage());
+			logger.log(Level.SEVERE, oos.getClass().getSimpleName() + ": Quitting mars-sim with NotSerializableException when saving " + file + " : " + e.getMessage());
 			e.printStackTrace();	
 			
 		} catch (ObjectStreamException e) {
-			logger.log(Level.SEVERE, oos.getClass().getSimpleName() + ": Quitting mars-sim with ObjectStreamException when loading " + file + " : " + e.getMessage());
+			logger.log(Level.SEVERE, oos.getClass().getSimpleName() + ": Quitting mars-sim with ObjectStreamException when saving " + file + " : " + e.getMessage());
 			e.printStackTrace();
 
 		} catch (IOException e0) {

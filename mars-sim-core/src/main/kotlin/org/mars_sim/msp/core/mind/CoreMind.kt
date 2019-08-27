@@ -7,6 +7,7 @@
 
 package org.mars_sim.msp.core.mind;
 
+import java.io.Serializable
 import com.beust.jcommander.JCommander
 import com.beust.jcommander.Parameter
 import kotlin.random.Random
@@ -14,7 +15,7 @@ import com.beust.nnk.NeuralNetwork
 import com.beust.nnk.NetworkData
 import org.mars_sim.msp.core.person.ai.SkillType
 
-public class CoreMind {
+public class CoreMind : Serializable {
 	
 	var LOG_LEVEL = 2
 	
@@ -53,7 +54,7 @@ public class CoreMind {
 	}
 	
 
-	class Args {
+	class Args : Serializable {
         @Parameter(names = arrayOf("--log"), description = "Define the log level (1-3)")
         var log: Int = 2
     }

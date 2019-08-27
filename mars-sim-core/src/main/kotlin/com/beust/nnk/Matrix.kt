@@ -1,8 +1,9 @@
 package com.beust.nnk
 
 //import java.util.*
+import java.io.Serializable
 
-open class Matrix(val rows: Int, val columns: Int, defaultValue: () -> Float = { -> 0.0f }) {
+open class Matrix(val rows: Int, val columns: Int, defaultValue: () -> Float = { -> 0.0f }) : Serializable {
     val content = ArrayList<ArrayList<Float>>(rows)
 
     init {
