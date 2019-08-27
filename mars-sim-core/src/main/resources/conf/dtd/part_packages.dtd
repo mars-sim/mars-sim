@@ -1,6 +1,0 @@
-<!ELEMENT part-package-list (part-package*)>
-<!ELEMENT part-package (part*)>
-<!ATTLIST part-package name CDATA #REQUIRED>
-<!ELEMENT part EMPTY>
-<!ATTLIST part type CDATA #REQUIRED>
-<!ATTLIST part number CDATA #REQUIRED>

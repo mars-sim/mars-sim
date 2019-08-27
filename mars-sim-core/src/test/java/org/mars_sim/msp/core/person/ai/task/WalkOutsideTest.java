@@ -37,7 +37,7 @@ extends TestCase {
 	public void testCheckClearPathToDestination() {
 
 		// Create new simulation instance.
-		SimulationConfig.loadConfig();
+		SimulationConfig.testLoadConfig();
 		Simulation.createNewSimulation(-1, true);
 
 		// Clear out existing settlements in simulation.
@@ -229,7 +229,7 @@ extends TestCase {
 	public void testDetermineWalkingPath() {
 
 		// Create new simulation instance.
-		SimulationConfig.loadConfig();
+		SimulationConfig.testLoadConfig();
 		Simulation.createNewSimulation(-1, true);
 
 		// Clear out existing settlements in simulation.
@@ -318,7 +318,7 @@ extends TestCase {
 	public void testGetLocalObstacleSearchLimits() {
 
 		// Create new simulation instance.
-		SimulationConfig.loadConfig();
+		SimulationConfig.testLoadConfig();
 		Simulation.createNewSimulation(-1, true);
 
 		// Clear out existing settlements in simulation.

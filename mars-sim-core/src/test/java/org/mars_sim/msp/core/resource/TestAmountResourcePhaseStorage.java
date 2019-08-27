@@ -13,7 +13,7 @@ public class TestAmountResourcePhaseStorage extends TestCase {
 	
     @Override
     public void setUp() throws Exception {
-        SimulationConfig.loadConfig();
+        SimulationConfig.testLoadConfig();
     }
 	
 	public void testInventoryAmountResourcePhaseCapacityGood() throws Exception {

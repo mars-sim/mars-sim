@@ -74,10 +74,10 @@ public class CoreMind : Serializable {
 	    repeatTraining(dec)
 	}
 	
-	fun createTrainingSet(dec : Int){
+	fun createTrainingSet(){
 			
 	    with(nn) {
-	        val trainingValues = createNetworkData(dec)
+	        val trainingValues = createNetworkData()
 	
 	        train(trainingValues, 1)
 	    }
@@ -103,7 +103,7 @@ public class CoreMind : Serializable {
 		return list1
 	}
 	
-	fun createNetworkData(dec : Int) : List<NetworkData> {
+	fun createNetworkData() : List<NetworkData> {
 		var newList: List<NetworkData> = emptyList()
 		
 		for (i in 0..31) {
@@ -137,16 +137,16 @@ public class CoreMind : Serializable {
 	
 	fun repeatTraining(dec : Int) {
 		
-		var cycle = 100
+		var cycle = 50
 		
-		val skill : String = SkillType.lookup(dec).getName()
+//		val skill : String = SkillType.lookup(dec).getName()
 		
-		println("--- $skill (id $dec) skill ---")
+//		println("--- $skill (id $dec) skill ---")
 		
 		for (i in 1..cycle) {
-			log(1, "Training $i :" )
+//			log(1, "Training $i :" )
 			val inputVector : List<Int> = createInputVector(dec) 
-			createTrainingSet(dec)
+			createTrainingSet()
 			Testing(inputVector)
 		}
 		

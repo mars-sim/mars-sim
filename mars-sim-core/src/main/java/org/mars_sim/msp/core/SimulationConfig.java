@@ -6,13 +6,22 @@
  */
 package org.mars_sim.msp.core;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectStreamException;
 import java.io.Serializable;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.file.Paths;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
+import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -58,7 +67,7 @@ public class SimulationConfig implements Serializable {
 			logger.getName().length());
 	
 	// Configuration files to load.
-	public static final String CONF = "/conf/"; //File.separator + "conf" +File.separator;
+	public static final String XML_FOLDER = "/" + Msg.getString("Simulation.xmlFolder") + "/";
 	public static final String XML = ".xml";
 	public static final String SIMULATION_FILE = "simulation";
 	public static final String PEOPLE_FILE = "people";
@@ -218,14 +227,6 @@ public class SimulationConfig implements Serializable {
 		SimulationConfig.instance = instance;
 	}
 
-	// public String getBuildVersion() {
-	// return build;
-	// }
-
-	// public String getBuild(){
-	// return build;
-	// }
-
 	/**
 	 * Reloads all of the configuration files.
 	 * 
@@ -237,44 +238,100 @@ public class SimulationConfig implements Serializable {
 			instance.destroyOldConfiguration();
 		}
 		
-		// Query if the /conf/ folder exists in user home directory
+		boolean sameBuild = false;
+		
+		String xmlDir = Simulation.XML_DIR;
+		String backupDir = Simulation.BACKUP_DIR;
+		String versionPathStr = Simulation.XML_DIR + File.separator + Simulation.VERSION_FILE;
+		
+        File xmlLocation = new File(xmlDir);		
+        File backupLocation = new File(backupDir);
+        File versionFile = new File(versionPathStr);
+    
+        FileSystem fileSys = FileSystems.getDefault();
+        Path versionPath = fileSys.getPath(versionFile.getPath());
+		Path xmlPath = fileSys.getPath(xmlLocation.getPath());
+		
+		// Query if the xml folder exists in user home directory
 		// Query if the xml version matches
 		// If not, copy all xml over
-		
 
-		// Check if the conf directory exists or not
-		if (Paths.get(Simulation.XML_DIR).toFile().isDirectory()) {
-			// if the conf directory already exists and is populated with xml files, 
-			LogConsolidated.log(Level.CONFIG, 0, sourceName, 
-					"conf folder already existed. See backup folder. Please make sure you backup all modified xml before proceeding.");
-			
-			// TODO: Generate checksum on each of xml to see if it has been altered. 
-			// TODO: If it does, back them up into a subdirectory and start off a new batch of xml files
-//			String SHA512 = DatatypeConverter.printHexBinary(Hash.SHA512.checksum(file))
-			
-			// Back up the dir
+        boolean existed = xmlPath.toFile().exists();
 
-			String xmlDir = Simulation.XML_DIR;
-			String backupDir = Simulation.BACKUP_DIR;
-			
-	        File existingLocation = new File(xmlDir);		
-	        File backupLocation = new File(backupDir);
+		// if "xml" exits as a file, delete it
+		if (existed && xmlLocation.isFile()) {
+			LogConsolidated.log(Level.CONFIG, 0, sourceName, "'" + xmlLocation +  "'" 
+					+ " is not supposed to exist as a file. Deleting it.");
 			try {
-				FileUtils.copyDirectoryToDirectory(existingLocation, backupLocation);
+				FileUtils.forceDelete(xmlLocation);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
-		} else {
-			// the conf dir does NOT exist
-			LogConsolidated.log(Level.CONFIG, 0, sourceName, 
-					"conf folder does not exist in user's home directory. Create the folder and copy over the xml files.");
 		}
-        
 		
-		setUpXMLDir();
+		existed = xmlLocation.exists();
+
+		// if the "xml" directory exists, back up everything inside and clean the directory
+		if (existed && xmlLocation.isDirectory()) {
+			LogConsolidated.log(Level.CONFIG, 0, sourceName, 
+			"'xml' folder already existed. Backing it up into 'backup' folder & Creating a new 'xml' folder with new xml files.");		
 			
+			if (versionFile.exists()) {
+				BufferedReader brTest;
+				try {
+					brTest = new BufferedReader(new FileReader(versionFile));
+				    String buildText = brTest.readLine();
+				    if (buildText.equals(Simulation.BUILD)) {
+				    	sameBuild = true;
+				    }		    
+				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			    
+			}
+			
+			// TODO: need to check if all the xml files exist 
+			
+			if (!sameBuild) {
+				// TODO: Generate checksum on each of xml to see if it has been altered. 
+				// TODO: If it does, back them up into a subdirectory and start off a new batch of xml files
+	//			String SHA512 = DatatypeConverter.printHexBinary(Hash.SHA512.checksum(file))
+	//			may use FileUtils.checksum(file, checksum)
+				
+				try {
+					FileUtils.copyDirectoryToDirectory(xmlLocation, backupLocation);
+					FileUtils.deleteDirectory(xmlLocation);
+	
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		} 
+		
+		
+		existed = xmlLocation.exists();
+
+		if (!sameBuild) {
+			// the "xml" folder does NOT exist
+			
+			// Create the xml folder
+			System.out.println("Can it write ? " + xmlLocation.canWrite());
+			LogConsolidated.log(Level.CONFIG, 0, sourceName, 
+					"'xml' folder does not exist. Creating it.");
+	//				System.out.println("path is " + Files.createDirectories(path));
+			if (!versionFile.getParentFile().exists()) {
+				versionFile.getParentFile().mkdirs();
+				List<String> lines = Arrays.asList(Simulation.BUILD);
+				try {
+					Files.write(versionPath, lines, StandardCharsets.UTF_8);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+        	
 		loadDefaultConfiguration();
 	}
 
@@ -286,25 +343,9 @@ public class SimulationConfig implements Serializable {
 		loadDefaultConfiguration();
 	}
 		
-	public static void setUpXMLDir() {
-		 try {
-				URI uri = SimulationConfig.class.getResource(CONF).toURI();
-//				String homeDir = Simulation.HOME_DIR;
-				String xmlDir = Simulation.XML_DIR;
-				File sourceLocation= new File(uri.getPath());
-//				File sourceLocation= new File(SimulationConfig.class
-//						.getResource(CONF).toExternalForm());
-		        File targetLocation = new File(xmlDir);
-				FileUtils.copyDirectory(sourceLocation, targetLocation);
-				
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (URISyntaxException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}	
-	}
+	
     
+	
 	/*
 	 * -----------------------------------------------------------------------------
 	 * Getter
@@ -850,11 +891,33 @@ public class SimulationConfig implements Serializable {
 	    SAXBuilder builder = new SAXBuilder(useDTD);
 	    Document document = null;
 	    
-//		String fullPathName = CONF + filename + XML;
-//		InputStream stream = SimulationConfig.class.getResourceAsStream(fullPathName);
-				
+		String fullPathName = XML_FOLDER + filename + XML;
+		
 		File f = new File(Simulation.XML_DIR, filename + XML);
 
+		if (!f.exists()) {
+			// Since the xml file does NOT exist in the home directory, start the input stream for copying
+			InputStream stream = SimulationConfig.class.getResourceAsStream(fullPathName);
+			int bytes = 0;
+			try {
+				bytes = stream.available();
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}		
+			
+			if (bytes != 0) {
+				File targetFile = new File(Simulation.XML_DIR + File.separator + filename + XML);
+				Path path = targetFile.getAbsoluteFile().toPath();
+				try {
+					// Copy the xml file from within the jar to user home 's xml directory
+					Files.copy(stream, path, StandardCopyOption.REPLACE_EXISTING);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+		
 		if (f.exists() && f.canRead()) {
 	        
 	        try {

@@ -34,7 +34,7 @@ public class WalkingStepsTest extends TestCase {
     public void testWalkingStepsBuildingToBuildingPath() {
 
         // Create new simulation instance.
-        SimulationConfig.loadConfig();
+        SimulationConfig.testLoadConfig();
         Simulation.createNewSimulation(-1, true);
         
         // Clear out existing settlements in simulation.
@@ -130,7 +130,7 @@ public class WalkingStepsTest extends TestCase {
     public void testWalkingStepsBuildingToBuildingNoPath() {
 
         // Create new simulation instance.
-        SimulationConfig.loadConfig();
+        SimulationConfig.testLoadConfig();
         Simulation.createNewSimulation(-1, true);
         // Clear out existing settlements in simulation.
         UnitManager unitManager = Simulation.instance().getUnitManager();
@@ -203,7 +203,7 @@ public class WalkingStepsTest extends TestCase {
     public void testWalkingStepsBuildingToBuildingNoPathAirlocks() {
 
         // Create new simulation instance.
-        SimulationConfig.loadConfig();
+        SimulationConfig.testLoadConfig();
         Simulation.createNewSimulation(-1, true);
         // Clear out existing settlements in simulation.
         UnitManager unitManager = Simulation.instance().getUnitManager();
@@ -299,7 +299,7 @@ public class WalkingStepsTest extends TestCase {
     public void testWalkingStepsBuildingToExteriorAirlock() {
 
         // Create new simulation instance.
-        SimulationConfig.loadConfig();
+        SimulationConfig.testLoadConfig();
         Simulation.createNewSimulation(-1, true);
         // Clear out existing settlements in simulation.
         UnitManager unitManager = Simulation.instance().getUnitManager();
@@ -377,7 +377,7 @@ public class WalkingStepsTest extends TestCase {
     public void testWalkingStepsBuildingToExteriorNoAirlock() {
 
         // Create new simulation instance.
-        SimulationConfig.loadConfig();
+        SimulationConfig.testLoadConfig();
         Simulation.createNewSimulation(-1, true);
         // Clear out existing settlements in simulation.
         UnitManager unitManager = Simulation.instance().getUnitManager();
@@ -443,7 +443,7 @@ public class WalkingStepsTest extends TestCase {
     public void testWalkingStepsRoverToExterior() {
 
         // Create new simulation instance.
-        SimulationConfig.loadConfig();
+        SimulationConfig.testLoadConfig();
         Simulation.createNewSimulation(-1, true);
         // Clear out existing settlements in simulation.
         UnitManager unitManager = Simulation.instance().getUnitManager();
@@ -527,7 +527,7 @@ public class WalkingStepsTest extends TestCase {
     public void testWalkingStepsRoverToBuilding() {
 
         // Create new simulation instance.
-        SimulationConfig.loadConfig();
+        SimulationConfig.testLoadConfig();
         Simulation.createNewSimulation(-1, true);
         // Clear out existing settlements in simulation.
         UnitManager unitManager = Simulation.instance().getUnitManager();
@@ -613,7 +613,7 @@ public class WalkingStepsTest extends TestCase {
     public void testWalkingStepsBuildingToRover() {
 
         // Create new simulation instance.
-        SimulationConfig.loadConfig();
+        SimulationConfig.testLoadConfig();
         Simulation.createNewSimulation(-1, true);
         // Clear out existing settlements in simulation.
         UnitManager unitManager = Simulation.instance().getUnitManager();
@@ -699,7 +699,7 @@ public class WalkingStepsTest extends TestCase {
     public void testWalkingStepsBuildingToRoverNoAirlock() {
 
         // Create new simulation instance.
-        SimulationConfig.loadConfig();
+        SimulationConfig.testLoadConfig();
         Simulation.createNewSimulation(-1, true);
         // Clear out existing settlements in simulation.
         UnitManager unitManager = Simulation.instance().getUnitManager();
@@ -768,7 +768,7 @@ public class WalkingStepsTest extends TestCase {
     public void testWalkingStepsRoverToRover() {
 
         // Create new simulation instance.
-        SimulationConfig.loadConfig();
+        SimulationConfig.testLoadConfig();
         Simulation.createNewSimulation(-1, true);
         // Clear out existing settlements in simulation.
         UnitManager unitManager = Simulation.instance().getUnitManager();
@@ -856,7 +856,7 @@ public class WalkingStepsTest extends TestCase {
     public void testWalkingStepsBuildingToRoverInGarage() {
 
         // Create new simulation instance.
-        SimulationConfig.loadConfig();
+        SimulationConfig.testLoadConfig();
         Simulation.createNewSimulation(-1, true);
         // Clear out existing settlements in simulation.
         UnitManager unitManager = Simulation.instance().getUnitManager();
@@ -940,7 +940,7 @@ public class WalkingStepsTest extends TestCase {
     public void testWalkingStepsRoverToBuildingInGarage() {
 
         // Create new simulation instance.
-        SimulationConfig.loadConfig();
+        SimulationConfig.testLoadConfig();
         Simulation.createNewSimulation(-1, true);
         // Clear out existing settlements in simulation.
         UnitManager unitManager = Simulation.instance().getUnitManager();
@@ -1025,7 +1025,7 @@ public class WalkingStepsTest extends TestCase {
     public void testWalkingStepsExteriorToBuildingAirlock() {
 
         // Create new simulation instance.
-        SimulationConfig.loadConfig();
+        SimulationConfig.testLoadConfig();
         Simulation.createNewSimulation(-1, true);
         // Clear out existing settlements in simulation.
         UnitManager unitManager = Simulation.instance().getUnitManager();
@@ -1170,7 +1170,7 @@ public class WalkingStepsTest extends TestCase {
     public void testWalkingStepsExteriorToRover() {
 
         // Create new simulation instance.
-        SimulationConfig.loadConfig();
+        SimulationConfig.testLoadConfig();
         Simulation.createNewSimulation(-1, true);
         // Clear out existing settlements in simulation.
         UnitManager unitManager = Simulation.instance().getUnitManager();

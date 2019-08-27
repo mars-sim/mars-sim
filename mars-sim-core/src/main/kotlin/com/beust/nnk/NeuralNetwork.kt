@@ -169,7 +169,9 @@ class NeuralNetwork(val inputSize: Int, val hiddenSize: Int, val outputSize: Int
 
     fun test(networkDatas: List<NetworkData>) {
         networkDatas.forEach {
-            log(1, it.inputs.toString() + " -> " + runGraph(it.inputs, logLevel = 3))
+//            log(1, it.inputs.toString() + " -> " +
+					runGraph(it.inputs, logLevel = 3)
+//			)
         }
     }
 

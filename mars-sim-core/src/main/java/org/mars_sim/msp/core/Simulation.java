@@ -178,6 +178,8 @@ public class Simulation implements ClockListener, Serializable {
 	private final static String WHITESPACES = "  ";
 	/** Console directory for saving/loading console related files. */
 	public final static String CONSOLE_DIR = "/console";
+	
+
 	/** Home directory. */
 	public final static String HOME_DIR = System.getProperty("user.home") + //$NON-NLS-1$
 			File.separator + Msg.getString("Simulation.homeFolder");
@@ -188,11 +190,12 @@ public class Simulation implements ClockListener, Serializable {
 	/** Save directory. */
 	public final static String SAVE_DIR = HOME_DIR + //$NON-NLS-1$
 			File.separator + Msg.getString("Simulation.saveDir"); //$NON-NLS-1$
-
+	/** xml files directory. */
 	public final static String XML_DIR = System.getProperty("user.home") + //$NON-NLS-1$
 			File.separator + Msg.getString("Simulation.homeFolder") + //$NON-NLS-1$
 			File.separator + Msg.getString("Simulation.xmlFolder"); //$NON-NLS-1$
-		
+	/** The version.txt denotes the xml build version. */	
+	public final static String VERSION_FILE = Msg.getString("Simulation.versionFile"); //$NON-NLS-1$
 	/** autosave directory. */
 	public final static String AUTOSAVE_DIR = System.getProperty("user.home") + //$NON-NLS-1$
 			File.separator + Msg.getString("Simulation.homeFolder") + //$NON-NLS-1$

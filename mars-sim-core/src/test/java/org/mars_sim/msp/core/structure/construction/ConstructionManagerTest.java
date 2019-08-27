@@ -28,7 +28,7 @@ public class ConstructionManagerTest extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
         
-        SimulationConfig.loadConfig();
+        SimulationConfig.testLoadConfig();
         Simulation.createNewSimulation(-1, true);
 //        UnitManager unitManager = Simulation.instance().getUnitManager();
 //		Iterator<Settlement> i = unitManager.getSettlements().iterator();

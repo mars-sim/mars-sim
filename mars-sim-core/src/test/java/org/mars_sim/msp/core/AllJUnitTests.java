@@ -21,8 +21,11 @@ public class AllJUnitTests extends TestCase {
 	 * Collection of external test suites to be included in current testing.
 	 */
 	public static Test suite() {
+		// Run this before other maven test cases to copy xml files to user home directory
+        SimulationConfig.loadConfig();	
+		
 		TestSuite suite = new TestSuite(AllJUnitTests.class);
-
+		
 		suite.addTestSuite(org.mars_sim.msp.core.TestCoordinates.class);
 		suite.addTestSuite(org.mars_sim.msp.core.TestInventory.class);
 		suite.addTestSuite(org.mars_sim.msp.core.TestLocalAreaUtil.class);
