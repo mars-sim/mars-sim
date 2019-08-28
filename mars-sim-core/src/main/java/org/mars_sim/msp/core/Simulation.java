@@ -1432,7 +1432,8 @@ public class Simulation implements ClockListener, Serializable {
 		interactiveTerm.disposeTerminal();
 		Simulation.defaultLoad = false;
 		instance().stop();
-		masterClock.endClockListenerExecutor();
+		if (masterClock != null)
+			masterClock.endClockListenerExecutor();
 		if (clockThreadExecutor != null)
 			clockThreadExecutor.shutdownNow();
 	}

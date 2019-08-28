@@ -304,7 +304,9 @@ public class SimulationConfig implements Serializable {
 				
 				try {
 					LogConsolidated.log(Level.CONFIG, 0, sourceName, 
-							"Backing up the existing xml files into the 'backup' folder. Deleting the xml folder.");	
+							"The version.txt shows the existing xml file is of different build.");
+					LogConsolidated.log(Level.CONFIG, 0, sourceName, 
+							"Backing up existing xml files into the 'backup' folder. Deleting the xml folder.");	
 					
 					// copy everything in the xml folder
 					FileUtils.copyDirectoryToDirectory(xmlLocation, backupLocation);
@@ -313,7 +315,8 @@ public class SimulationConfig implements Serializable {
 					versionFile.delete();
 
 					// delete everything in the xml folder
-					FileUtils.deleteDirectory(xmlLocation);
+//					FileUtils.deleteDirectory(xmlLocation);
+					deleteDirectory(xmlLocation);
 	
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -354,7 +357,24 @@ public class SimulationConfig implements Serializable {
 		loadDefaultConfiguration();
 	}
 		
-	
+	/* 
+	* Delete a non empty directory 
+	*/ 
+	public static boolean deleteDirectory(File dir) {
+		if (dir.isDirectory()) {
+			File[] children = dir.listFiles();
+			for (int i = 0; i < children.length; i++) {
+				boolean success = deleteDirectory(children[i]);
+				if (!success) {
+					return false;
+				}
+			}
+		}
+		 
+		// either file or an empty directory 
+//		System.out.println("removing file or directory : " + dir.getName());
+		return dir.delete(); 
+	}
     
 	
 	/*

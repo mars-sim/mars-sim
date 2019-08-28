@@ -119,7 +119,8 @@ public class InteractiveTerm {
             Simulation sim = Simulation.instance();
         	sim.endSimulation(); 
     		sim.getSimExecutor().shutdownNow();
-    		sim.getMasterClock().exitProgram();
+//    		if (sim.getMasterClock() != null)
+//    			sim.getMasterClock().exitProgram();
     		logger.info("Exiting the Simulation.");
 			System.exit(0);
         }

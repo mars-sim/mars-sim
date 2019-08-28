@@ -1,0 +1,32 @@
+<?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
+<!DOCTYPE scenario-list [
+	<!ELEMENT scenario-list (scenario*)>
+	<!ELEMENT scenario (scenario-name, sponsor, base*)>
+	<!ELEMENT scenario-name EMPTY>
+	<!ATTLIST scenario-name value CDATA #REQUIRED>	
+	<!ELEMENT sponsor EMPTY>
+	<!ATTLIST sponsor value CDATA #REQUIRED>		
+	<!ELEMENT base EMPTY>
+	<!ATTLIST base name CDATA #REQUIRED>	
+	<!ATTLIST base longitude CDATA #REQUIRED>
+	<!ATTLIST base latitude CDATA #IMPLIED>
+	<!ATTLIST base population CDATA #IMPLIED>
+	<!ATTLIST base bots CDATA #REQUIRED>
+	<!ATTLIST base template CDATA #REQUIRED>
+]>
+<!-- For Scenarios Mode-Game play -->
+<scenario-list>
+    <scenario>
+        <scenario-name value="Corporate Expansion" />
+        <sponsor value="SpaceX" />
+        <base name="Elon Musk City" longitude="20.5 E" latitude="20.9 S" 
+        	population="24" bots="48" template="Alpha Base (Phase 4)" />
+    </scenario>
+
+    <scenario>
+        <scenario-name value="Red Mars" />
+        <sponsor value="China" />
+        <base name="XingTiang" longitude="4.2 E" latitude="15.9 S" 
+        	population="4" bots="4" template="Mars Direct Base (Phase 1)" />
+    </scenario>
+</scenario-list>
