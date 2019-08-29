@@ -4,7 +4,7 @@
 	<!-- * General Section * -->
 	<!-- ************************************************************************************************* -->
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>net.sf</groupId>
+	<groupId>com.github</groupId>
 	<artifactId>mars-sim</artifactId>
 	<packaging>pom</packaging>
 	<version>3.1.0-b2</version>

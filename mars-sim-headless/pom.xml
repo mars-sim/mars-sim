@@ -5,11 +5,11 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>net.sf</groupId>
+		<groupId>com.github</groupId>
 		<artifactId>mars-sim</artifactId>
 		<version>3.1.0-b2</version>
 	</parent>
-	<groupId>net.sf.mars-sim</groupId>
+	<groupId>com.github.mars-sim</groupId>
 	<artifactId>mars-sim-headless</artifactId>
 	<name>mars-sim-headless</name>
 	<packaging>jar</packaging>
@@ -177,7 +177,7 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>net.sf.mars-sim</groupId>
+			<groupId>com.github.mars-sim</groupId>
 			<artifactId>mars-sim-core</artifactId>
 			<version>${project.version}</version>
 		</dependency>
