@@ -158,7 +158,7 @@ public class SurfaceFeatures implements Serializable {
 	 *         represents daylight. Values in between 0.0 and 1.0 represent twilight
 	 *         conditions.
 	 */
-	public double getSurfaceSunlight(Coordinates location) {
+	public double getSurfaceSunlightRatio(Coordinates location) {
 		double result = 1D;
 
 		// Method 1:
@@ -301,8 +301,14 @@ public class SurfaceFeatures implements Serializable {
 		
 		return trend;
 	}
-	
-	public double getSunlight(Coordinates location) {
+
+	/**
+	 * Calculate the solar irradiance ratio (between 0 and 1) at a particular location on Mars
+	 * 
+	 * @param location the coordinate location on Mars.
+	 * @return (between 0 and 1)
+	 */
+	public double getSunlightRatio(Coordinates location) {
 		  return Math.round(getSolarIrradiance(location) 
 				  / MEAN_SOLAR_IRRADIANCE * 100D)/100D;
 	}

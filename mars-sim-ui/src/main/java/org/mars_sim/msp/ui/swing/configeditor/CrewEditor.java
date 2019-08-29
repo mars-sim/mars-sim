@@ -620,7 +620,7 @@ public class CrewEditor implements ActionListener {
 	class MyItemListener implements ItemListener {
 		// This method is called only if a new item has been selected.
 		public void itemStateChanged(ItemEvent evt) {
-			JComboBoxMW cb = (JComboBoxMW) evt.getSource();
+			JComboBoxMW<String> cb = (JComboBoxMW<String>) evt.getSource();
 
 			int index = actionListeners.indexOf(this);
 			
@@ -632,7 +632,7 @@ public class CrewEditor implements ActionListener {
 		        JComboBoxMW<String> m = sponsorsComboBoxList.get(index);
 		        
 				// Get combo box model
-		        DefaultComboBoxModel model = (DefaultComboBoxModel) m.getModel();
+		        DefaultComboBoxModel<String> model = (DefaultComboBoxModel<String>) m.getModel();
 		        
 		        // removing old data
 		        model.removeAllElements();
@@ -652,7 +652,7 @@ public class CrewEditor implements ActionListener {
 		        JComboBoxMW<String> m = sponsorsComboBoxList.get(index);
 		        
 				// Get combo box model
-		        DefaultComboBoxModel model = (DefaultComboBoxModel) m.getModel();
+		        DefaultComboBoxModel<String> model = (DefaultComboBoxModel<String>) m.getModel();
 		        
 		        // removing old data
 		        model.removeAllElements();

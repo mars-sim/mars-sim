@@ -59,8 +59,8 @@ public class DayNightMapLayer implements SettlementMapLayer {
 
 			location = settlement.getCoordinates(); // new Coordinates(0D, 0D);
 
-	        // normalized to  590 W/m2
-	        double sunlight = surfaceFeatures.getSunlight(location);
+	        // normalized to 590 W/m2
+	        double sunlight = surfaceFeatures.getSunlightRatio(location);
             int sunlightInt = (int) (LIGHT_THRESHOLD * sunlight);
  
             if (sunlightCache != sunlight || heightCache != height || widthCache != width) {

@@ -15,7 +15,7 @@ import javax.swing.ComboBoxModel;
 import javax.swing.JComboBox;
 
 /**
- * A Combobox that is mousewheel-enabled.
+ * A Combobox that is mouse wheel-enabled.
  */
 public class JComboBoxMW<T> extends JComboBox implements MouseWheelListener {
 

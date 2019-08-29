@@ -61,7 +61,7 @@ public class DateDialog extends ModalInternalFrame {
 		//setFont(new Font("Dialog", Font.PLAIN, 14));
 		
 		// Controls
-		monthCB = new JComboBox();
+		monthCB = new JComboBox<>();
 		for (int i = 0; i < 12; i++) {
 			monthCB.addItem(ATime.getMonthAbbr(i + 1));
 		}

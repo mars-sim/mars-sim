@@ -73,7 +73,7 @@ public class TabPanelManufacture extends TabPanel {
 	/** List of available manufacture buildings. */
 	private Vector<Building> buildingComboBoxCache;
 	/** Process selector. */
-	private JComboBoxMW<Object> processSelection;
+	private JComboBoxMW<ManufactureProcessInfo> processSelection;
 	/** List of available processes. */
 	private Vector<ManufactureProcessInfo> processSelectionCache;
 	/** List of available salvage processes. */
@@ -157,7 +157,7 @@ public class TabPanelManufacture extends TabPanel {
 		// Create new manufacture process selection.
 		Building workshopBuilding = (Building) buildingComboBox.getSelectedItem();
 		processSelectionCache = getAvailableProcesses(workshopBuilding);
-		processSelection = new JComboBoxMW(processSelectionCache);
+		processSelection = new JComboBoxMW<ManufactureProcessInfo>(processSelectionCache);
 
 		processSelection.setSelectedIndex(-1);
 		processSelection.setRenderer(new ManufactureSelectionListCellRenderer("(2). Select a Process"));

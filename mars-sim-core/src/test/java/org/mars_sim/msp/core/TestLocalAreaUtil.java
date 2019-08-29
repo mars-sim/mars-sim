@@ -36,7 +36,11 @@ public class TestLocalAreaUtil extends TestCase {
 //        
 //        // Create test settlement.
 //        Settlement settlement = new MockSettlement();
-//        unitManager.addUnit(settlement);
+//        
+//		// Removes all mock buildings and building functions in the settlement.
+//		settlement.getBuildingManager().removeAllMockBuildings();
+//
+//		unitManager.addUnit(settlement);
 //        Coordinates loc = settlement.getCoordinates();
 //
 //        BuildingManager buildingManager = settlement.getBuildingManager();
@@ -53,7 +57,7 @@ public class TestLocalAreaUtil extends TestCase {
 //		settlement.getBuildingConnectorManager().createBuildingConnections(building);
 //
 //		// Clear obstacle cache.
-////		LocalAreaUtil.clearObstacleCache();
+//		LocalAreaUtil.clearObstacleCache();
 //	
 //        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(0D, 0D, 10D, 0D), loc, true));
 //        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(10D, 0D, 0D, 0D), loc, true));

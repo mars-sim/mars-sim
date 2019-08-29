@@ -105,7 +105,7 @@ public class WaitLayerUI extends LayerUI<JComponent> implements ActionListener {
 	}
 
 	@Override
-	public void applyPropertyChange(PropertyChangeEvent pce, JLayer l) {
+	public void applyPropertyChange(PropertyChangeEvent pce, JLayer<? extends JComponent> l) {
 		if ("tick".equals(pce.getPropertyName())) {
 			l.repaint();
 		}

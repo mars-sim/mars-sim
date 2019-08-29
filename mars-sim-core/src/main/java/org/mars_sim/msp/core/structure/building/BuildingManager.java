@@ -345,14 +345,20 @@ public class BuildingManager implements Serializable {
 	 * Adds a new mock building to the settlement.
 	 * 
 	 * @param newBuilding               the building to add.
-	 * @param createBuildingConnections true if automatically create building
-	 *                                  connections.
 	 */
 	public void addMockBuilding(Building newBuilding) {
 		if (!buildings.contains(newBuilding)) {
 			buildings.add(newBuilding);
 			addAllFunctionstoBFMap(newBuilding);
 		}
+	}
+	
+	/**
+	 * Removes all mock buildings and building functions in the settlement.
+	 */
+	public void removeAllMockBuildings() {
+		buildings.clear();
+		buildingFunctionsMap.clear();
 	}
 	
 	/**

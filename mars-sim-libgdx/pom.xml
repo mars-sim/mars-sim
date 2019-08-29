@@ -7,9 +7,7 @@
     <artifactId>mars-sim</artifactId>
     <version>3.1.0-b2</version>
   </parent>
-  <groupId>com.github</groupId>
   <artifactId>mars-sim-libgdx</artifactId>
-  <version>3.1.0-b2</version>
   <name>mars-sim-libgdx</name>
   <url>http://maven.apache.org</url>
   <properties>

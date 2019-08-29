@@ -505,8 +505,7 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 
 					double sunlight = 1D;
 					try {
-						sunlight = surfaceFeatures.getSurfaceSunlight(location);
-//					    sunlight =surfaceFeatures.getSolarIrradiance(location) / SurfaceFeatures.MEAN_SOLAR_IRRADIANCE;
+						sunlight = surfaceFeatures.getSunlightRatio(location);
 					} catch (NullPointerException e) {
 						// Do nothing.
 						// This may be caused if simulation hasn't been fully initialized yet.

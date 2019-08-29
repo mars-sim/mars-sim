@@ -562,7 +562,7 @@ public class Weather implements Serializable {
 //	        double x_offset = time + theta - VIKING_LONGITUDE_OFFSET_IN_MILLISOLS ;
 //	        double equatorial_temperature = 27.5D * Math.sin  ( Math.PI * x_offset / 500D) - 58.5D ;
 			
-			double light_factor = surfaceFeatures.getSunlight(location);
+			double light_factor = surfaceFeatures.getSunlightRatio(location);
 
 			// Equation below is modeled after Viking's data.
 			double equatorial_temperature = 27.5D * light_factor - 58.5D;

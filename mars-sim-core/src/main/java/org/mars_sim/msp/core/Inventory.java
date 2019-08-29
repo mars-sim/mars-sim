@@ -1604,7 +1604,8 @@ public class Inventory implements Serializable {
 		} else {
 			 LogConsolidated.log(Level.SEVERE, 5_000, sourceName + "::storeUnit",
 					 "Unit: " + unit + " could not be stored.");
-			throw new IllegalStateException("Unit: " + unit + " could not be stored in " + owner.getName()); // needed for maven test
+			// The statement below is eeded for maven test
+			throw new IllegalStateException("Unit: " + unit + " could not be stored in " + owner.getName()); 
 		}
 	}
 
