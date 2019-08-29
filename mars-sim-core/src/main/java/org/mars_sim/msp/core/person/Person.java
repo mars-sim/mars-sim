@@ -21,13 +21,11 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.LogConsolidated;
-import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
-import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.location.LocationSituation;
 import org.mars_sim.msp.core.location.LocationStateType;
-import org.mars_sim.msp.core.mars.Mars;
 import org.mars_sim.msp.core.mars.MarsSurface;
 import org.mars_sim.msp.core.person.ai.Mind;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
@@ -36,6 +34,7 @@ import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.job.JobAssignmentType;
 import org.mars_sim.msp.core.person.ai.job.JobHistory;
 import org.mars_sim.msp.core.person.ai.job.JobUtil;
+import org.mars_sim.msp.core.person.ai.job.Politician;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.ai.role.Role;
@@ -61,8 +60,6 @@ import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
 import org.mars_sim.msp.core.time.EarthClock;
-import org.mars_sim.msp.core.time.MarsClock;
-import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.Medical;
@@ -79,30 +76,24 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	private static final long serialVersionUID = 1L;
 	/* default logger. */
 	private static transient Logger logger = Logger.getLogger(Person.class.getName());
-	
-	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
-			logger.getName().length());
+	private static String loggerName = logger.getName();	
+	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1,
+			loggerName.length());
 	
 	public static final int MAX_NUM_SOLS = 3;
 	
-	/** The base carrying capacity (kg) of a person. */
-	private final static double BASE_CAPACITY = 60D;
-	private final static double AVERAGE_TALL_HEIGHT = 176.5;
-	private final static double AVERAGE_SHORT_HEIGHT = 162.5;
-	final static double AVERAGE_HEIGHT = 169.5;// (AVERAGE_TALL_HEIGHT + AVERAGE_SHORT_HEIGHT)/2D;
-
-	private final static double AVERAGE_HIGH_WEIGHT = 68.5;
-	private final static double AVERAGE_LOW_WEIGHT = 57.2;
-	final static double AVERAGE_WEIGHT = 62.85; // (AVERAGE_HIGH_WEIGHT + AVERAGE_LOW_WEIGHT)/2D ;
-
-	private final static String POLITICIAN = "Politician";
+	private final static String POLITICIAN = Politician.class.getSimpleName();//"Politician";
 	private final static String EARTH = "Earth";
 	private final static String MARS = "Mars";
 	private final static String HEIGHT = "Height";
 	private final static String WEIGHT = "Weight";
 
-	// static unit identifier
+	/** static unit identifier. */
 	private static int unitCount = 0;
+	/** The average height of a person. */
+	private static double averageHeight;
+	/** The average weight of a person. */
+	private static double averageWeight;
 
 	// Data members
 	/** Unique person id. */
@@ -140,7 +131,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	private double xLoc;
 	/** Settlement Y location (meters) from settlement center. */
 	private double yLoc;
-
+	
 	/** The birthplace of the person. */
 	private String birthplace;
 	/** The person's name. */
@@ -361,7 +352,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 
 		int strength = attributes.getAttribute(NaturalAttributeType.STRENGTH);
 		// Set inventory total mass capacity based on the person's strength.
-		getInventory().addGeneralCapacity(BASE_CAPACITY + strength);
+		getInventory().addGeneralCapacity(SimulationConfig.instance().getPersonConfiguration().getBaseCapacity() + strength);
 
 		int rand = RandomUtil.getRandomInt(100);
 
@@ -438,6 +429,11 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		int ID = 20;
 		boolean dominant = false;
 
+		PersonConfig pc = SimulationConfig.instance().getPersonConfiguration();
+		double tall = pc.getTallAverageHeight();
+		double shortH = pc.getShortAverageHeight();
+		averageHeight = (tall + shortH) / 2D;
+		
 		// For a 20-year-old in the US:
 		// male : height : 176.5 weight : 68.5
 		// female : height : 162.6 weight : 57.2
@@ -447,8 +443,9 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 
 		// Note: p = mean + RandomUtil.getGaussianDouble() * standardDeviation
 		// Attempt to compute height with gaussian curve
-		double dad_height = AVERAGE_TALL_HEIGHT + RandomUtil.getGaussianDouble() * AVERAGE_TALL_HEIGHT / 7D;//RandomUtil.getRandomInt(22);
-		double mom_height = AVERAGE_SHORT_HEIGHT + RandomUtil.getGaussianDouble() * AVERAGE_SHORT_HEIGHT / 10D;//RandomUtil.getRandomInt(15);
+
+		double dad_height = tall + RandomUtil.getGaussianDouble() * tall / 7D;//RandomUtil.getRandomInt(22);
+		double mom_height = shortH + RandomUtil.getGaussianDouble() * shortH / 10D;//RandomUtil.getRandomInt(15);
 
 		Gene dad_height_G = new Gene(this, ID, HEIGHT, true, dominant, null, dad_height);
 		paternal_chromosome.put(ID, dad_height_G);
@@ -457,7 +454,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		maternal_chromosome.put(ID, mom_height_G);
 
 		double genetic_factor = .65;
-		double sex_factor = (AVERAGE_TALL_HEIGHT - AVERAGE_HEIGHT) / AVERAGE_HEIGHT;
+		double sex_factor = (tall - averageHeight) / averageHeight;
 		// Add arbitrary (US-based) sex and genetic factor
 		if (gender == GenderType.MALE)
 			height = Math.round(
@@ -475,6 +472,11 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		int ID = 21;
 		boolean dominant = false;
 
+		PersonConfig pc = SimulationConfig.instance().getPersonConfiguration();
+		double highW = pc.getHighAverageWeight();
+		double lowW = pc.getLowAverageWeight();
+		averageWeight = (highW + lowW) / 2D;
+		
 		// For a 20-year-old in the US:
 		// male : height : 176.5 weight : 68.5
 		// female : height : 162.6 weight : 57.2
@@ -484,8 +486,8 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 
 		// Note: p = mean + RandomUtil.getGaussianDouble() * standardDeviation
 		// Attempt to compute height with gaussian curve
-		double dad_weight = AVERAGE_HIGH_WEIGHT + RandomUtil.getGaussianDouble() * AVERAGE_HIGH_WEIGHT / 7D;//RandomUtil.getRandomInt(10);
-		double mom_weight = AVERAGE_LOW_WEIGHT + RandomUtil.getGaussianDouble() * AVERAGE_LOW_WEIGHT / 5D;//RandomUtil.getRandomInt(15);
+		double dad_weight = highW + RandomUtil.getGaussianDouble() * highW / 7D;//RandomUtil.getRandomInt(10);
+		double mom_weight = lowW + RandomUtil.getGaussianDouble() * lowW / 5D;//RandomUtil.getRandomInt(15);
 
 		Gene dad_weight_G = new Gene(this, ID, WEIGHT, true, dominant, null, dad_weight);
 		paternal_chromosome.put(ID, dad_weight_G);
@@ -494,8 +496,8 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		maternal_chromosome.put(ID, mom_weight_G);
 
 		double genetic_factor = .65;
-		double sex_factor = (AVERAGE_HIGH_WEIGHT - AVERAGE_WEIGHT) / AVERAGE_WEIGHT; // for male
-		double height_factor = height / AVERAGE_HEIGHT;
+		double sex_factor = (highW - averageWeight) / averageWeight; // for male
+		double height_factor = height / averageWeight;
 		// Add arbitrary (US-based) sex and genetic factor
 		if (gender == GenderType.MALE)
 			weight = Math.round(height_factor
@@ -1884,6 +1886,20 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		return eatingSpeed;
 	}
 	
+	/** 
+	 * Gets the average height of a person. 
+	 */
+	public double getAverageHeight() {
+		return averageHeight;
+	}
+	
+	/** 
+	 * Gets the average weight of a person. 
+	 */
+	public double getAverageWeight() {
+		return averageWeight;
+	}
+	
 //	public void updateBuildingPreference(FunctionType type) {
 //		if (buildingPreference.isEmpty()) {
 //			for (FunctionType ft : FunctionType.getFunctionTypes()) {
@@ -1916,22 +1932,21 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 //		return roleProspectScores.get(role);
 //	}
 	
-	/**
-	 * Reloads instances after loading from a saved sim
-	 * 
-	 * @param {@link MasterClock}
-	 * @param {{@link MarsClock}
-	 */
-	public static void justReloaded(MasterClock c0, MarsClock c1, Simulation s, Mars m, MarsSurface ms, EarthClock e, UnitManager u) {
-		masterClock = c0;
-		marsClock = c1;
-		sim = s;
-		mars = m;
-		marsSurface = ms;
-		earthClock = e;
-		unitManager = u;
-	}
-
+//	/**
+//	 * Reloads instances after loading from a saved sim
+//	 * 
+//	 * @param {@link MasterClock}
+//	 * @param {{@link MarsClock}
+//	 */
+//	public static void justReloaded(MasterClock c0, MarsClock c1, Simulation s, Mars m, MarsSurface ms, EarthClock e, UnitManager u) {
+//		masterClock = c0;
+//		marsClock = c1;
+//		sim = s;
+//		mars = m;
+//		marsSurface = ms;
+//		earthClock = e;
+//		unitManager = u;
+//	}
 	
 	@Override
 	public void destroy() {

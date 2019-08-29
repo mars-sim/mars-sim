@@ -116,7 +116,7 @@ public class CircadianClock implements Serializable {
 
 			if (solCache == 0) {
 				double dev = Math.sqrt(
-						person.getBaseMass() / Person.AVERAGE_WEIGHT * person.getHeight() / Person.AVERAGE_HEIGHT); 
+						person.getBaseMass() / person.getAverageWeight() * person.getHeight() / person.getAverageHeight()); 
 				// condition.getBodyMassDeviation();
 				// person.getBaseMass()
 				// Person.AVERAGE_WEIGHT;

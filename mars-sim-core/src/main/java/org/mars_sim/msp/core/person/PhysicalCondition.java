@@ -294,7 +294,7 @@ public class PhysicalCondition implements Serializable {
 		appetite = personalMaxEnergy / MAX_DAILY_ENERGY_INTAKE;
 		
 		bodyMassDeviation = Math
-				.sqrt(person.getBaseMass() / Person.AVERAGE_WEIGHT * person.getHeight() / Person.AVERAGE_HEIGHT);
+				.sqrt(person.getBaseMass() / person.getAverageWeight() * person.getHeight() / person.getAverageHeight());
 		// Note: p = mean + RandomUtil.getGaussianDouble() * standardDeviation
 		bodyMassDeviation = bodyMassDeviation + RandomUtil.getGaussianDouble() * bodyMassDeviation / 7D;
 		
@@ -366,7 +366,7 @@ public class PhysicalCondition implements Serializable {
 		// Modify personalMaxEnergy at the start of the sim
 		int d1 = 2 * (35 - person.updateAge()); 
 		// Assume that after age 35, metabolism slows down
-		double d2 = person.getBaseMass() - Person.AVERAGE_WEIGHT;
+		double d2 = person.getBaseMass() - person.getAverageWeight();
 		double preference = person.getPreference().getPreferenceScore(eatMealMeta) * 10D;
 
 		// Update the personal max energy and appetite based on one's age and weight

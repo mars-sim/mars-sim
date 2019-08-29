@@ -1,16 +1,53 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <!DOCTYPE people-configuration [
-	<!ELEMENT people-configuration (low-activity-metaboic-load-o2-consumption-rate, 
+	<!ELEMENT people-configuration ( 
+	base-carrying-capacity, 
+	average-tall-height, 
+	average-short-height, 
+	average-high-weight, 
+	average-low-weight, 
+	low-activity-metaboic-load-o2-consumption-rate, 
 	nominal-activity-metaboic-load-o2-consumption-rate, 
 	high-activity-metaboic-load-o2-consumption-rate, 
-	co2-expelled-rate, water-consumption-rate, water-usage-rate, grey-to-black-water-ratio,
-	dessert-consumption-rate, food-consumption-rate, oxygen-deprivation-time, 
-	water-deprivation-time, dehydration-start-time,
-	food-deprivation-time, starvation-start-time, decompression-time, min-air-pressure,
-	min-temperature, max-temperature, freezing-time, stress-breakdown-chance, 
+	co2-expelled-rate, 
+	water-consumption-rate, 
+	water-usage-rate, 
+	grey-to-black-water-ratio,
+	dessert-consumption-rate, 
+	food-consumption-rate, 
+	oxygen-deprivation-time, 
+	water-deprivation-time, 
+	dehydration-start-time,
+	food-deprivation-time, 
+	starvation-start-time, 
+	decompression-time, 
+	min-air-pressure,
+	min-temperature, 
+	max-temperature, 
+	freezing-time, 
+	stress-breakdown-chance, 
 	high-fatigue-collapse-chance,
-	gender-male-percentage, personality-types, person-name-list, first-name-list, 
-	last-name-list, person-list)>
+	gender-male-percentage, 
+	personality-types, 
+	person-name-list, 
+	first-name-list, 
+	last-name-list, 
+	person-list)>
+	
+	<!ELEMENT base-carrying-capacity EMPTY>
+	<!ATTLIST base-carrying-capacity value CDATA #REQUIRED>
+	
+	<!ELEMENT average-tall-height EMPTY>
+	<!ATTLIST average-tall-height value CDATA #REQUIRED>
+	
+	<!ELEMENT average-short-height EMPTY>
+	<!ATTLIST average-short-height value CDATA #REQUIRED>
+	
+	<!ELEMENT average-high-weight EMPTY>
+	<!ATTLIST average-high-weight value CDATA #REQUIRED>
+	
+	<!ELEMENT average-low-weight EMPTY>
+	<!ATTLIST average-low-weight value CDATA #REQUIRED>
 	
 	<!ELEMENT low-activity-metaboic-load-o2-consumption-rate EMPTY>
 	<!ATTLIST low-activity-metaboic-load-o2-consumption-rate value CDATA #REQUIRED>
@@ -146,6 +183,17 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
 
 <people-configuration>
 
+	<!-- The base load-carrying capacity of a person in kg -->
+	<base-carrying-capacity value="60" />
+	<!-- The upper average height of a person in cm -->
+	<average-tall-height value="176.5" />
+	<!-- The lower average height of a person in cm -->
+	<average-short-height value="162.5" />
+	<!-- The upper average weight of a person in kg -->
+	<average-high-weight value="68.5" />
+	<!-- The lower average weight of a person in kg -->
+	<average-low-weight value="57.2" />
+	
 	<!-- The average amount of oxygen breathed in by a person on each Sol 
 	     for low, nominal & high metabolic activities -->
 	<!-- Default: 0.78, 0.84, 0.96 [in kg] -->	

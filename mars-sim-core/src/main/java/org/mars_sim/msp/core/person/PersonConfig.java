@@ -48,6 +48,16 @@ public class PersonConfig implements Serializable {
 	private static final String SPONSOR = "sponsor";
 	private static final String COUNTRY = "country";
 
+	/** The base carrying capacity (kg) of a person. */
+	private final static String BASE_CAPACITY = "base-carrying-capacity";
+	private final static String AVERAGE_TALL_HEIGHT = "average-tall-height";//176.5;
+	private final static String AVERAGE_SHORT_HEIGHT = "average-short-height";//162.5;
+//	private final static String AVERAGE_HEIGHT = "average_height"; // 169.5;// (AVERAGE_TALL_HEIGHT + AVERAGE_SHORT_HEIGHT)/2D;
+
+	private final static String AVERAGE_HIGH_WEIGHT = "average-high-weight";// 68.5;
+	private final static String AVERAGE_LOW_WEIGHT = "average-low-weight";
+//	private	final static String AVERAGE_WEIGHT = "average_low_weight"; //62.85;
+	
 	private static final String LOW_O2_RATE = "low-activity-metaboic-load-o2-consumption-rate";
 	private static final String NOMINAL_O2_RATE = "nominal-activity-metaboic-load-o2-consumption-rate";
 	private static final String HIGH_O2_RATE = "high-activity-metaboic-load-o2-consumption-rate";
@@ -109,17 +119,23 @@ public class PersonConfig implements Serializable {
 	private static final String DESSERT = "favorite-dessert";
 	private static final String ACTIVITY = "favorite-activity";
 
-	// for 3 types of metabolic loads
+	/** The base load-carrying capacity. */
+	private static double baseCap = 0;
+	/** The upper and lower height. */
+	private static double[] height = new double[] { 0, 0 };
+	/** The high and lor weight. */
+	private static double[] weight = new double[] { 0, 0 };
+	/** The 3 types of metabolic loads. */
 	private static double[] o2ConsumptionRate = new double[] { 0, 0, 0 };
-	// for water, dessert, food
+	/** The consumption rate for water, dessert, food. */
 	private static double[] consumptionRates = new double[] { 0, 0, 0 };
-	// for grey2BlackWaterRatio, gender ratio
+	/** The grey2BlackWaterRatio and the gender ratio. */
 	private static double[] ratio = new double[] { 0, 0 };
-	// for stress breakdown and high fatigue collapse chance
+	/** The stress breakdown and high fatigue collapse chance. */
 	private static double[] chance = new double[] { 0, 0 };
-	// for various time values
+	/** Various time values. */
 	private static double[] time = new double[] { 0, 0, 0, 0, 0, 0, 0 };
-	// for min and max temperature
+	/** The min and max temperature. */
 	private static double[] temperature = new double[] { 0, 0 };
 
 	private static double waterUsage = 0;
@@ -698,6 +714,80 @@ public class PersonConfig implements Serializable {
 		}
 
 		return result;
+	}
+	
+	/**
+	 * Gets the base load capacity of a person.
+	 * 
+	 * @return capacity in kg
+	 */
+	public double getBaseCapacity() {
+		if (baseCap != 0)
+			return baseCap;
+		else {
+			baseCap = getValueAsDouble(BASE_CAPACITY);
+			return baseCap;
+		}
+	}
+	
+	
+	/**
+	 * Gets the upper average height of a person.
+	 * 
+	 * @return height in cm
+	 */
+	public double getTallAverageHeight() {
+		if (height[0] != 0)
+			return height[0];
+		else {
+			height[0] = getValueAsDouble(AVERAGE_TALL_HEIGHT);
+			return height[0];
+		}
+	}
+	
+	/**
+	 * Gets the lower average height of a person.
+	 * 
+	 * @return height in cm
+	 */
+	public double getShortAverageHeight() {
+		if (height[1] != 0)
+			return height[1];
+		else {
+			height[1] = getValueAsDouble(AVERAGE_SHORT_HEIGHT);
+			return height[1];
+		}
+	}
+	
+	
+	
+	
+	/**
+	 * Gets the high average weight of a person.
+	 * 
+	 * @return weight in kg
+	 */
+	public double getHighAverageWeight() {
+		if (weight[0] != 0)
+			return weight[0];
+		else {
+			weight[0] = getValueAsDouble(AVERAGE_HIGH_WEIGHT);
+			return weight[0];
+		}
+	}
+	
+	/**
+	 * Gets the low average weight of a person.
+	 * 
+	 * @return weight in kg
+	 */
+	public double getLowAverageWeight() {
+		if (weight[1] != 0)
+			return weight[1];
+		else {
+			weight[1] = getValueAsDouble(AVERAGE_LOW_WEIGHT);
+			return weight[1];
+		}
 	}
 
 	/**
