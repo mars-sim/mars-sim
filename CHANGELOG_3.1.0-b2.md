@@ -7,21 +7,6 @@ Copyright (C) 2019 Scott Davis
 
 ## v3.1.0-beta2 (build 49__) - 2019-0_-__
 
-### KNOWN LIMITATIONS :
-
-1. In MacOS, a JavaFX WebEngine's bug may create garbled characters on certain 
-   webpages in Help Browser.
-
-2. In Linux, text fields do not allow text input.
-
-3. JavaFX WebEngine uses older version of WebKit, crippling the UI rendering of 
-   certain modern websites such as GitHub pages.
-
-4. When clicking on a combobox to pick an option, the option list would pop up
-   outside the main window, unless the main window has been dragged
-   around the screen once.
-
-
 ### CORE ENGINE IMPROVEMENTS :
 
 1. Apply the natural logarithm when computing value of some goods
@@ -38,7 +23,7 @@ Copyright (C) 2019 Scott Davis
 
 7. Implement basic emotion using two dimensional array.
 
-8. Add Commander Mode vs. Sandbox Mode.
+8. Add Command Mode vs. Sandbox Mode.
 
 9. Compare settlement achievement using metrics (e.g. social & science score)
 
@@ -50,7 +35,8 @@ Copyright (C) 2019 Scott Davis
 
 13. Create a death report on a deceased person.
 
-
+14. Adds topics for each scientific study. 
+    
 
 ### UI IMPROVEMENT :
 
@@ -642,7 +628,7 @@ http://www.mars-one.com/faq/health-and-ethics/how-much-radiation-will-the-settle
 
 1. Added codes to abort an on-going vehicle mission without activating the emergency beacon. Vehicle will drive to the settlement if fuel and consumables are still available.
 
-2. Optimizied the stress modifier on a few AI tasks.
+2. Optimized the stress modifier on a few AI tasks.
 
 3. Added more first and last names (of various national origin) in people.xml for settlers from various sponsoring space agencies.
 
