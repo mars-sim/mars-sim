@@ -1407,7 +1407,7 @@ public class Inventory implements Serializable {
 	 * @param unitClass the unit class.
 	 * @return collection of units or empty collection if none.
 	 */
-	public Collection<Unit> findAllUnitsOfClass(Class unitClass) {
+	public <T extends Unit> Collection<Unit> findAllUnitsOfClass(Class<T> unitClass) {
 		Collection<Unit> result = new ConcurrentLinkedQueue<Unit>();
 		if (containsUnitClass(unitClass)) {
 			for (Unit unit : containedUnits) {
@@ -1444,7 +1444,7 @@ public class Inventory implements Serializable {
 	 * @param unitClass the unit class.
 	 * @return number of units
 	 */
-	public int findNumUnitsOfClass(Class unitClass) {
+	public <T extends Unit> int findNumUnitsOfClass(Class<T> unitClass) {
 		int result = 0;
 		if (containsUnitClass(unitClass)) {
 			for (Unit unit : containedUnits) {
@@ -1464,7 +1464,7 @@ public class Inventory implements Serializable {
 	 * @param allowDirty will allow dirty (possibly out of date) results.
 	 * @return number of empty units.
 	 */
-	public int findNumEmptyUnitsOfClass(Class unitClass, boolean allowDirty) {
+	public <T extends Unit> int findNumEmptyUnitsOfClass(Class<T> unitClass, boolean allowDirty) {
 		int result = 0;
 		if (containsUnitClass(unitClass)) {
 			for (Unit unit : containedUnits) {
@@ -1480,6 +1480,30 @@ public class Inventory implements Serializable {
 		return result;
 	}
 
+	/**
+	 * Finds the number of units of a class that are contained in storage and have
+	 * an empty inventory.
+	 * 
+	 * @param unitClass  the unit class.
+	 * @param allowDirty will allow dirty (possibly out of date) results.
+	 * @return number of empty units.
+	 */
+	public <T extends Equipment> int findNumEmptyContainersOfClass(Class<T> unitClass, boolean allowDirty) {
+		int result = 0;
+		if (containsUnitClass(unitClass)) {
+			for (Unit unit : containedUnits) {
+				if (unitClass.isInstance(unit)) {
+					Inventory inv = unit.getInventory();
+					// It must be empty inside
+					if ((inv != null) && inv.isEmpty(allowDirty)) {
+						result++;
+					}
+				}
+			}
+		}
+		return result;
+	}
+	
 	public int findNumEmptyUnitsOfClass(int id, boolean allowDirty) {
 		Class<? extends Unit> unitClass = EquipmentFactory.getEquipmentClass(id);//EquipmentType.convertID2Type(id).getType());
 //		return findNumEmptyUnitsOfClass(unitClass, allowDirty);

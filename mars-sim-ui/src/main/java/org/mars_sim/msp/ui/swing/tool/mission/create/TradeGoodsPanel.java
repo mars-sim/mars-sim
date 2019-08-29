@@ -327,7 +327,7 @@ extends WizardPanel {
 	 * @param containerType the container class.
 	 * @return number of containers.
 	 */
-	private int getNumberOfTradedContainers(Class containerType) {
+	private <T extends Unit> int getNumberOfTradedContainers(Class<T> containerType) {
 		int result = 0;
 		Good containerGood = GoodsUtil.createEquipmentGood(containerType);
 		Map<Good, Integer> tradeGoods = tradeTableModel.getTradeGoods();

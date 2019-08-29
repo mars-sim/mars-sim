@@ -39,7 +39,7 @@ public final class ContainerUtil {
 	 * @param resource the id of the resource to hold.
 	 * @return container class or null if none found.
 	 */
-	public static Class<? extends Container> getContainerClassToHoldResource(int resource) {
+	public static Class<? extends Equipment> getContainerClassToHoldResource(int resource) {
 		return getContainerTypeNeeded(ResourceUtil.findAmountResource(resource).getPhase());
 	}
 
@@ -71,8 +71,8 @@ public final class ContainerUtil {
 	 * @param phase the phase type of the amount resource.
 	 * @return container class.
 	 */
-	public static Class<? extends Container> getContainerTypeNeeded(PhaseType phase) {
-		Class<? extends Container> result = null;
+	public static Class<? extends Equipment> getContainerTypeNeeded(PhaseType phase) {
+		Class<? extends Equipment> result = null;
 		switch (phase) {
 		case GAS:
 			result = GasCanister.class;

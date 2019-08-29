@@ -18,6 +18,7 @@ import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.ContainerUtil;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
@@ -665,7 +666,7 @@ public final class TradeUtil {
 		} else if (good.getCategory() == GoodType.ITEM_RESOURCE)
 			result = remainingCapacity >= ItemResourceUtil.findItemResource(good.getID()).getMassPerItem();
 		else if (good.getCategory() == GoodType.EQUIPMENT) {
-			Class type = good.getClassType();
+			Class<? extends Equipment> type = good.getClassType();
 			if (!equipmentGoodCache.containsKey(type)) {
 //				int id = good.getID();
 //				Equipment e = EquipmentFactory.get.getEquipment(id);
@@ -723,11 +724,11 @@ public final class TradeUtil {
 
 		Equipment result = null;
 
-		Class containerType = ContainerUtil.getContainerTypeNeeded(resource.getPhase());
+		Class<? extends Equipment> containerType = ContainerUtil.getContainerTypeNeeded(resource.getPhase());
 
 		Inventory settlementInv = settlement.getInventory();
 
-		int containersStored = settlementInv.findNumEmptyUnitsOfClass(containerType, false);
+		int containersStored = settlementInv.findNumEmptyContainersOfClass(containerType, false);
 
 		Good containerGood = GoodsUtil.createEquipmentGood(containerType);
 		int containersTraded = 0;
@@ -802,7 +803,7 @@ public final class TradeUtil {
 	private static double getResourceTradeAmount(AmountResource resource) {
 		double result = 0D;
 
-		Class containerType = ContainerUtil.getContainerTypeNeeded(resource.getPhase());
+		Class<? extends Equipment> containerType = ContainerUtil.getContainerTypeNeeded(resource.getPhase());
 
 		Equipment container = null;
 		if (containerTypeCache.containsKey(containerType))

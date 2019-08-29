@@ -22,6 +22,7 @@ import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.equipment.Bag;
@@ -2652,7 +2653,7 @@ public class GoodsManager implements Serializable {
 	 * @param equipmentClass the equipmentType to check.
 	 * @return number of equipment for the settlement.
 	 */
-	private double getNumberOfEquipmentForSettlement(Good good, Class<?> equipmentClass) {
+	private <T extends Unit> double getNumberOfEquipmentForSettlement(Good good, Class<T> equipmentClass) {
 //		if (equipmentClass.equals(Robot.class))
 //			return ROBOT_FACTOR;
 		
