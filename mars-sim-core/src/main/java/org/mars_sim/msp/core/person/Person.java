@@ -82,7 +82,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	
 	public static final int MAX_NUM_SOLS = 3;
 	
-	private final static String POLITICIAN = Politician.class.getSimpleName();//"Politician";
+	private final static String POLITICIAN = Politician.class.getSimpleName();
 	private final static String EARTH = "Earth";
 	private final static String MARS = "Mars";
 	private final static String HEIGHT = "Height";
@@ -94,12 +94,16 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	private static double averageHeight;
 	/** The average weight of a person. */
 	private static double averageWeight;
-
+	/** The average upper height of a person. */
+	private static double tall;
+	/** The average low height of a person. */
+	private static double shortH;
+	/** The average high weight of a person. */
+	private static double highW;
+	/** The average low weight of a person. */
+	private static double lowW;
+	
 	// Data members
-	/** Unique person id. */
-	private int pid;
-//	/** True if a person is rationing water */
-//	private boolean waterRation;
 	/** True if a person is born on Mars. */
 	private boolean bornOnMars;
 	/** True if person is buried. */
@@ -107,6 +111,14 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	/** True if person is declared dead. */
 	private boolean declaredDead;
 	
+	/** Unique person id. */
+	private int pid;
+	/** The year of birth of a person */
+	private int year;	
+	/** The month of birth of a person */
+	private int month;
+	/** The day of birth of a person */
+	private int day;	
 	/** The age of a person */
 	private int age;
 	/** The cache for sol. */
@@ -117,10 +129,9 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	private int buriedSettlement = -1;
 	/** The vehicle the person is on. */	
 	private int vehicle;
-	/** The cache for msol1 */
-	private double msolCache = -1D;
-	// private int[] emotional_states;
 	
+	/** The cache for msol1 */
+	private double msolCache = -1D;	
 	/** The eating speed of the person [kg/millisol]. */
 	private double eatingSpeed = Math.max(.075, .1 + .1/5D * RandomUtil.getGaussianDouble());
 	/** The height of the person (in cm). */
@@ -146,13 +157,9 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	private String country;
 	/** The person's blood type. */
 	private String bloodType;
-//	/** The person's status. */
-//	private String status;
-	
+
 	/** The gender of the person (male or female). */
 	private GenderType gender;
-	/** The birth time of the person. */
-	private EarthClock birthTimeStamp;
 	/** Manager for Person's natural attributes. */
 	private NaturalAttributeManager attributes;
 	/** Person's mind. */
@@ -185,8 +192,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	private Building quarters;
 
 	private Building currentBuilding;
-	/** The person's preference on which building he likes to work. */
-//	private Map<Integer, Integer> buildingPreference;
+
 	/** The person's achievement in scientific fields. */
 	private Map<ScienceType, Double> scientificAchievement;
 	/** The person's paternal chromosome. */
@@ -200,7 +206,18 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	/** The person's water/oxygen consumption */
 	private Map<Integer, Map<Integer, Double>> consumption;
 
-//	private Map<RoleType, Double> roleProspectScores = new HashMap<>();
+	private static PersonConfig pc = SimulationConfig.instance().getPersonConfiguration();
+	
+	static {
+		// Compute the average height for all
+		tall = pc.getTallAverageHeight();
+		shortH = pc.getShortAverageHeight();
+		averageHeight = (tall + shortH) / 2D;
+		// Compute the average weight for all		
+		highW = pc.getHighAverageWeight();
+		lowW = pc.getLowAverageWeight();
+		averageWeight = (highW + lowW) / 2D;
+	}
 	
 	/**
 	 * Must be synchronised to prevent duplicate ids being assigned via different
@@ -250,17 +267,17 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 * Initialize field data, class and maps
 	 */
 	public void initialize() {
+		// Initialize instsances
 		masterClock = sim.getMasterClock();
 		marsClock = masterClock.getMarsClock();
 		earthClock = masterClock.getEarthClock();
 		mars = sim.getMars();
 		marsSurface = mars.getMarsSurface();
 		unitManager = sim.getUnitManager();
-		// TODO : avoid declaring a birth clock for each person
-		// Find a way to use existing EarthClock inside MasterClock, plus the difference
-		// in date
-		birthTimeStamp = new EarthClock(createBirthTimeString());
-		
+
+		// Set up the time stamp for the person
+		createBirthTimeStamp();
+		// Set the person's status of death
 		isBuried = false;
 		
 		// Add the person to the lookup map
@@ -294,7 +311,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		
 		preference = new Preference(this);
 
-		assignReportingAuthority();
+//		assignReportingAuthority();
 
 		support = getLifeSupportType();		
 		// Create the mission experiences map
@@ -333,9 +350,11 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 			// Biochemistry: id 0 - 19
 			setupBloodType();
 			// Physical Characteristics: id 20 - 39
+			// Set up Height
 			setupHeight();
+			// Set up Weight
 			setupWeight();
-			// Personality traits: id 40 - 59
+			// Set up personality traits: id 40 - 59
 			setupAttributeTrait();
 		}
 
@@ -352,7 +371,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 
 		int strength = attributes.getAttribute(NaturalAttributeType.STRENGTH);
 		// Set inventory total mass capacity based on the person's strength.
-		getInventory().addGeneralCapacity(SimulationConfig.instance().getPersonConfiguration().getBaseCapacity() + strength);
+		getInventory().addGeneralCapacity(pc.getBaseCapacity() + strength);
 
 		int rand = RandomUtil.getRandomInt(100);
 
@@ -428,12 +447,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	public void setupHeight() {
 		int ID = 20;
 		boolean dominant = false;
-
-		PersonConfig pc = SimulationConfig.instance().getPersonConfiguration();
-		double tall = pc.getTallAverageHeight();
-		double shortH = pc.getShortAverageHeight();
-		averageHeight = (tall + shortH) / 2D;
-		
+				
 		// For a 20-year-old in the US:
 		// male : height : 176.5 weight : 68.5
 		// female : height : 162.6 weight : 57.2
@@ -471,12 +485,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	public void setupWeight() {
 		int ID = 21;
 		boolean dominant = false;
-
-		PersonConfig pc = SimulationConfig.instance().getPersonConfiguration();
-		double highW = pc.getHighAverageWeight();
-		double lowW = pc.getLowAverageWeight();
-		averageWeight = (highW + lowW) / 2D;
-		
+				
 		// For a 20-year-old in the US:
 		// male : height : 176.5 weight : 68.5
 		// female : height : 162.6 weight : 57.2
@@ -486,9 +495,9 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 
 		// Note: p = mean + RandomUtil.getGaussianDouble() * standardDeviation
 		// Attempt to compute height with gaussian curve
-		double dad_weight = highW + RandomUtil.getGaussianDouble() * highW / 7D;//RandomUtil.getRandomInt(10);
-		double mom_weight = lowW + RandomUtil.getGaussianDouble() * lowW / 5D;//RandomUtil.getRandomInt(15);
-
+		double dad_weight = highW + RandomUtil.getGaussianDouble() * highW / 13.5;//RandomUtil.getRandomInt(10);
+		double mom_weight = lowW + RandomUtil.getGaussianDouble() * lowW / 10.5;//RandomUtil.getRandomInt(15);
+		
 		Gene dad_weight_G = new Gene(this, ID, WEIGHT, true, dominant, null, dad_weight);
 		paternal_chromosome.put(ID, dad_weight_G);
 
@@ -497,7 +506,8 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 
 		double genetic_factor = .65;
 		double sex_factor = (highW - averageWeight) / averageWeight; // for male
-		double height_factor = height / averageWeight;
+		double height_factor = height / averageHeight;
+	
 		// Add arbitrary (US-based) sex and genetic factor
 		if (gender == GenderType.MALE)
 			weight = Math.round(height_factor
@@ -517,43 +527,41 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 */
 	public void setSponsor(String sponsor) {
 		this.sponsor = sponsor;
-		assignReportingAuthority();
-	}
+//		assignReportingAuthority();
+//	}
+//
+//	/*
+//	 * Assigns sponsoring agency and set up specific mission control for the person
+//	 */
+//	public void assignReportingAuthority() {
+		if (sponsor.contains(ReportingAuthorityType.CNSA.getName())) {
+			ra = CNSAMissionControl.createMissionControl(); // ProspectingMineral
 
-	/*
-	 * Assigns sponsoring agency and set up specific mission control for the person
-	 */
-	public void assignReportingAuthority() {
-//		if (ra == null) {
-			if (sponsor.contains(ReportingAuthorityType.CNSA.getName())) {
-				ra = CNSAMissionControl.createMissionControl(); // ProspectingMineral
+		} else if (sponsor.contains(ReportingAuthorityType.CSA.getName())) {
+			ra = CSAMissionControl.createMissionControl(); // AdvancingSpaceKnowledge
 
-			} else if (sponsor.contains(ReportingAuthorityType.CSA.getName())) {
-				ra = CSAMissionControl.createMissionControl(); // AdvancingSpaceKnowledge
+		} else if (sponsor.contains(ReportingAuthorityType.ESA.getName())) {
+			ra = ESAMissionControl.createMissionControl(); // DevelopingSpaceActivity;
 
-			} else if (sponsor.contains(ReportingAuthorityType.ESA.getName())) {
-				ra = ESAMissionControl.createMissionControl(); // DevelopingSpaceActivity;
+		} else if (sponsor.contains(ReportingAuthorityType.ISRO.getName())) {
+			ra = ISROMissionControl.createMissionControl(); // DevelopingAdvancedTechnology
 
-			} else if (sponsor.contains(ReportingAuthorityType.ISRO.getName())) {
-				ra = ISROMissionControl.createMissionControl(); // DevelopingAdvancedTechnology
+		} else if (sponsor.contains(ReportingAuthorityType.JAXA.getName())) {
+			ra = JAXAMissionControl.createMissionControl(); // ResearchingSpaceApplication
 
-			} else if (sponsor.contains(ReportingAuthorityType.JAXA.getName())) {
-				ra = JAXAMissionControl.createMissionControl(); // ResearchingSpaceApplication
+		} else if (sponsor.contains(ReportingAuthorityType.NASA.getName())) {
+			ra = NASAMissionControl.createMissionControl(); // FindingLife
 
-			} else if (sponsor.contains(ReportingAuthorityType.NASA.getName())) {
-				ra = NASAMissionControl.createMissionControl(); // FindingLife
+		} else if (sponsor.contains(ReportingAuthorityType.MS.getName())) {
+			ra = MarsSocietyMissionControl.createMissionControl(); // SettlingMars
 
-			} else if (sponsor.contains(ReportingAuthorityType.MS.getName())) {
-				ra = MarsSocietyMissionControl.createMissionControl(); // SettlingMars
+		} else if (sponsor.contains(ReportingAuthorityType.RKA.getName())) {
+			ra = RKAMissionControl.createMissionControl(); // ResearchingHealthHazard
 
-			} else if (sponsor.contains(ReportingAuthorityType.RKA.getName())) {
-				ra = RKAMissionControl.createMissionControl(); // ResearchingHealthHazard
-
-			} else {
-				logger.warning(name + " has no reporting authority!");
-				// ra = null;
-			}
-//		}
+		} else {
+			logger.warning(name + " has no reporting authority!");
+			
+		}
 	}
 
 	/*
@@ -576,21 +584,22 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 * @param type {@link RoleType}
 	 */
 	public void setRole(RoleType type) {
-
+		getRole().setNewRoleType(type);
+		
 		if (type == RoleType.MAYOR) {
-			getRole().setNewRoleType(type);
+			// Set the job as Politician
 			Job job = JobUtil.getJob(POLITICIAN);
 			if (job != null) {
 				mind.setJob(job, true, JobUtil.SETTLEMENT, JobAssignmentType.APPROVED, JobUtil.SETTLEMENT);
 			}
-		} else
-			getRole().setNewRoleType(type);
+		}
 	}
 
 	/**
 	 * Sets the job of a person
 	 * 
 	 * @param jobStr
+	 * @param authority
 	 */
 	public void setJob(String jobStr, String authority) {
 		Job job = JobUtil.getJob(jobStr);
@@ -632,20 +641,19 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 *
 	 * @return birth time string.
 	 */
-	private String createBirthTimeString() {
+	private String createBirthTimeStamp() {
 		StringBuilder s = new StringBuilder();
 		// Set a birth time for the person
-		int year = EarthClock.getCurrentYear(earthClock) - RandomUtil.getRandomInt(22, 62);
+		year = EarthClock.getCurrentYear(earthClock) - RandomUtil.getRandomInt(22, 62);
 		// 2003 + RandomUtil.getRandomInt(10) + RandomUtil.getRandomInt(10);
 		s.append(year);
 
-		int month = RandomUtil.getRandomInt(11) + 1;
+		month = RandomUtil.getRandomInt(11) + 1;
 		s.append("-");
 		if (month < 10)
 			s.append(0);
 		s.append(month).append("-");
 
-		int day;
 		if (month == 2) {
 			if (((year % 4 == 0) && (year % 100 != 0)) || (year % 400 == 0)) {
 				day = RandomUtil.getRandomInt(28) + 1;
@@ -1103,24 +1111,24 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 * @return the person's age
 	 */
 	public int updateAge() {
-		age = earthClock.getYear() - birthTimeStamp.getYear() - 1;
-		if (earthClock.getMonth() >= birthTimeStamp.getMonth())
-			if (earthClock.getDayOfMonth() >= birthTimeStamp.getDayOfMonth())
+		age = earthClock.getYear() - year - 1;
+		if (earthClock.getMonth() >= month)
+			if (earthClock.getDayOfMonth() >= day)
 				age++;
 
 		return age;
 	}
 
 	/**
-	 * Updates the person's age
+	 * Set a person's age and update one's year of birth
 	 *
 	 * @param newAge
 	 */
 	public void changeAge(int newAge) {
-		int year = 0;
-		// Figure out the year
-		year = earthClock.getYear() - newAge - 1;
-		birthTimeStamp.setYear(year);
+		// Back calculate a person's year
+		int y = earthClock.getYear() - newAge - 1;
+		// Set year to newYear
+		year = y;
 		age = newAge; 
 	}
 	
@@ -1134,12 +1142,23 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	}
 
 	/**
-	 * Returns the person's birth date
+	 * Returns the person's birth date in the format of "2055-05-06"
 	 *
-	 * @return the person's birth date
+	 * @return the person's birth date 
 	 */
 	public String getBirthDate() {
-		return birthTimeStamp.getDateStringF0();
+		StringBuilder s = new StringBuilder();
+		s.append(year).append("-");
+		if (month < 10)
+			s.append("0").append(month).append("-");
+		else
+			s.append(month).append("-");
+		if (day < 10)
+			s.append("0").append(day);
+		else
+			s.append(day);
+		
+		return s.toString();
 	}
 
 	/**
@@ -1386,14 +1405,6 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		scientificAchievement.put(science, achievementCredit);
 	}
 
-//	public void setDiningBuilding(Building diningBuilding) {
-//		this.diningBuilding = diningBuilding;
-//	}
-//
-//	public Building getDiningBuilding() {
-//		return diningBuilding;
-//	}
-
 	public void setKitchenWithMeal(Cooking kitchen) {
 		this.kitchenWithMeal = kitchen;
 	}
@@ -1532,49 +1543,9 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		return unitManager.getVehicleByID(vehicle);
 	}
 
-//	public Vehicle getAssociatedVehicle() {
-//		return associatedVehicle;
-//	}
-//
-//	public void setAssociatedVehicle(Vehicle v) {
-//		associatedVehicle = v;
-//	}
-
 	public CircadianClock getCircadianClock() {
 		return circadian;
 	}
-
-//	public void setWaterRation(boolean value) {
-//		waterRation = value;
-//	}
-//
-//	public boolean getWaterRation() {
-//		return waterRation;
-//	}
-
-//	public Relax getRelax() {
-//		return relax;
-//	}
-//
-//	public void setRelax(Relax relax) {
-//		this.relax = relax;
-//	}
-
-//	public Sleep getSleep() {
-//		return sleep;
-//	}
-//
-//	public void setSleep(Sleep sleep) {
-//		this.sleep = sleep;
-//	}
-
-//	public Walk getWalk() {
-//		return walk;
-//	}
-//
-//	public void setWalk(Walk walk) {
-//		this.walk = walk;
-//	}
 
 	/**
 	 * Get the unique person id for this unit
@@ -1658,8 +1629,6 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 //		else {
 //			status = "not feeling well";
 //		}
-		
-		
 		//return status;
 	}
 	
@@ -1912,7 +1881,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		return this.name.equals(p.getName())
 				&& this.gender.equals(p.getGender())
 				&& this.age == p.getAge()
-				&& this.birthTimeStamp.getDateStringF0() == p.getBirthDate();
+				&& this.getBirthDate() == p.getBirthDate();
 	}
 	
 //	public void updateBuildingPreference(FunctionType type) {
@@ -1996,7 +1965,6 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		// condition.destroy();
 		condition = null;
 		gender = null;
-		birthTimeStamp = null;
 
 		scientificAchievement.clear();
 		scientificAchievement = null;

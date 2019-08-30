@@ -147,13 +147,17 @@ extends TabPanel {
 		infoPanel.add(BMINameLabel);
 
 		// Prepare BMI label
-		double heightInCmSquared = (person.getHeight()/100D)*(person.getHeight()/100D);
-		double BMI = (person.getBaseMass()/heightInCmSquared);
+		double height = person.getHeight()/100D;
+		double heightSquared = height*height;
+		double BMI = person.getBaseMass()/heightSquared;
 		// categorize according to general weight class
 		String weightClass = Msg.getString("TabPanelGeneral.bmi.underweight"); //$NON-NLS-1$
 		if (BMI > 18.5) {weightClass = Msg.getString("TabPanelGeneral.bmi.normal");} //$NON-NLS-1$
-		if (BMI > 25) {weightClass = Msg.getString("TabPanelGeneral.bmi.overweight");} //$NON-NLS-1$
-		if (BMI > 30) {weightClass = Msg.getString("TabPanelGeneral.bmi.obese");} //$NON-NLS-1$
+		if (BMI > 24.9) {weightClass = Msg.getString("TabPanelGeneral.bmi.overweight");} //$NON-NLS-1$
+		if (BMI > 29.9) {weightClass = Msg.getString("TabPanelGeneral.bmi.obese1");} //$NON-NLS-1$
+		if (BMI > 34.9) {weightClass = Msg.getString("TabPanelGeneral.bmi.obese2");} //$NON-NLS-1$
+		if (BMI > 39.9) {weightClass = Msg.getString("TabPanelGeneral.bmi.obese3");} //$NON-NLS-1$
+
 		//JLabel BMILabel = new JLabel(Msg.getString("TabPanelGeneral.bmiValue", //$NON-NLS-1$
 		//		Integer.toString((int)BMI),	weightClass), JLabel.RIGHT);
 		JTextField BMITF = new JTextField(Msg.getString("TabPanelGeneral.bmiValue", //$NON-NLS-1$

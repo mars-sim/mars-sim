@@ -154,8 +154,9 @@ public class UnitManager implements Serializable {
 	private static Map<Integer, List<String>> lastNamesBySponsor = new HashMap<>();
 	private static Map<Integer, List<String>> lastNamesByCountry = new HashMap<>();
 
-	private static List<String> countries;
-
+	private static List<String> ESACountries;
+	private static List<String> allCountries;
+	
 	private static SimulationConfig simulationConfig = SimulationConfig.instance();
 	private static Simulation sim = Simulation.instance();
 	
@@ -213,9 +214,12 @@ public class UnitManager implements Serializable {
 		// Add marsSurface as the very first unit
 		addUnit(marsSurface);
 		
-		if (countries == null)
-			countries = personConfig.createCountryList();
+		if (ESACountries == null)
+			ESACountries = personConfig.createESACountryList();
 
+		if (allCountries == null)
+			allCountries = personConfig.createAllCountryList();
+		
 		// Initialize name lists
 		initializeRobotNames();
 		initializePersonNames();
@@ -1192,22 +1196,29 @@ public class UnitManager implements Serializable {
 							male_first_list = maleFirstNamesByCountry.get(countryID);
 							female_first_list = femaleFirstNamesByCountry.get(countryID);
 
-//						} else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.MARS_SOCIETY
-//								 || ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.SPACE_X) {
-//							index = 7;
-//							skip = true;
-//							fullname = getNewName(UnitType.PERSON, null, gender, null);
-
-//						} else if (sponsor.contains("SpaceX")) {
-//							index = 8;
-
-						} else { // if belonging to the Mars Society
+						} else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.MS
+								 || ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.MARS_SOCIETY_L) {
 							index = 7;
+
+							int countryID = getCountryID(country);
+
+							last_list = lastNamesByCountry.get(countryID);
+							male_first_list = maleFirstNamesByCountry.get(countryID);
+							female_first_list = femaleFirstNamesByCountry.get(countryID);
+
+						} else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.SPACEX
+								 || ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.SPACEX_L) {
+							index = 8;
+
+						} else { // Utilize the standard Mars Society name list in <person-name-list> in people.xml -->
+							
+							index = 9;
 							skip = true;
 							fullname = getNewName(UnitType.PERSON, null, gender, null);
 						}
+						
 
-						if (index != -1 && index != 2 && index != 7 && index != 8) {
+						if (index != -1 && index != 6 && index != 7 && index != 9) {
 							last_list = lastNamesBySponsor.get(index);
 							male_first_list = maleFirstNamesBySponsor.get(index);
 							female_first_list = femaleFirstNamesBySponsor.get(index);
@@ -1284,7 +1295,7 @@ public class UnitManager implements Serializable {
 					m.getInitialJob(JobUtil.MISSION_CONTROL);
 
 					// Add sponsor
-					person.assignReportingAuthority();
+//					person.assignReportingAuthority();
 
 				}
 
@@ -2270,10 +2281,11 @@ public class UnitManager implements Serializable {
 			return "Russia";
 		else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.ESA
 			||	ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.ESA_L)
-			return countries.get(RandomUtil.getRandomInt(6, 27));
+			return ESACountries.get(RandomUtil.getRandomInt(0, ESACountries.size() - 1));
 		else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.MS
 			||	ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.MARS_SOCIETY_L)
-			return "USA";
+//			return "USA";
+			return allCountries.get(RandomUtil.getRandomInt(0, allCountries.size() - 1));
 		else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.SPACEX
 			||	ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.SPACEX_L)
 			return "USA";
@@ -2283,9 +2295,9 @@ public class UnitManager implements Serializable {
 	}
 
 	public static String getCountryByID(int id) {
-		if (countries == null)
-			getCountryList();
-		return countries.get(id);
+		if (allCountries == null)
+			getAllCountryList();
+		return allCountries.get(id);
 	}
 	
 	public static String getSponsorByCountryID(int id) {
@@ -2300,11 +2312,13 @@ public class UnitManager implements Serializable {
 		else if (id == 3)
 			return ReportingAuthorityType.JAXA_L.getName();
 		else if (id == 4)
-			return ReportingAuthorityType.NASA_L.getName(); // MS or SpaceX
+			return ReportingAuthorityType.NASA_L.getName(); 
 		else if (id == 5)			
 			return ReportingAuthorityType.RKA_L.getName();	
 		else
 			return ReportingAuthorityType.ESA_L.getName();
+		
+		// TODO: how to account for multi-national org such as MS or SPACEX ?
 	}
 	
 	/**
@@ -2367,17 +2381,17 @@ public class UnitManager implements Serializable {
 	public static int getCountryID(String country) {
 		if (personConfig == null)
 			personConfig = SimulationConfig.instance().getPersonConfiguration();
-		if (countries == null)
-			countries = personConfig.createCountryList();
+		if (allCountries == null)
+			allCountries = personConfig.createAllCountryList();
 		return personConfig.computeCountryID(country);
 	}
 
-	public static List<String> getCountryList() {
+	public static List<String> getAllCountryList() {
 		if (personConfig == null)
 			personConfig = SimulationConfig.instance().getPersonConfiguration();
-		if (countries == null)
-			countries = personConfig.createCountryList();
-		return countries;
+		if (allCountries == null)
+			allCountries = personConfig.createAllCountryList();
+		return allCountries;
 	}
 	
 //	/**

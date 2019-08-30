@@ -148,8 +148,8 @@ public class PersonConfig implements Serializable {
 	private static Map<String, Double> personalityDistribution;
 
 	private static List<String> personNameList;
-	private static List<String> countries;
-	private static List<String> ESAcountries;
+	private static List<String> allCountries;
+	private static List<String> ESACountries;
 	private static List<String> sponsors;
 	private static List<String> longSponsors;
 	
@@ -1715,38 +1715,38 @@ public class PersonConfig implements Serializable {
 	 * 
 	 * @return
 	 */
-	public List<String> createCountryList() {
+	public List<String> createAllCountryList() {
 
-		if (countries == null) {
-			countries = new ArrayList<>();
+		if (allCountries == null) {
+			allCountries = new ArrayList<>();
 
-			countries.add("China"); // 0
-			countries.add("Canada"); // 1
-			countries.add("India"); // 2
-			countries.add("Japan"); // 3
-			countries.add("USA"); // 4
-			countries.add("Russia"); // 5
+			allCountries.add("China"); // 0
+			allCountries.add("Canada"); // 1
+			allCountries.add("India"); // 2
+			allCountries.add("Japan"); // 3
+			allCountries.add("USA"); // 4
+			allCountries.add("Russia"); // 5
 
-			countries.addAll(createESACountryList()); // 6
+			allCountries.addAll(createESACountryList()); // 6
 
 		}
 
-		return countries;
+		return allCountries;
 	}
 
 	public String getCountry(int id) {
-		if (countries == null) {
-			countries = createCountryList();
+		if (allCountries == null) {
+			allCountries = createAllCountryList();
 		}
-		return countries.get(id);
+		return allCountries.get(id);
 	}
 
 	public int getCountryNum(String c) {
-		if (countries == null) {
-			countries = createCountryList();
+		if (allCountries == null) {
+			allCountries = createAllCountryList();
 		}
-		for (int i=0; i<countries.size(); i++) {
-			if (countries.get(i).equalsIgnoreCase(c))
+		for (int i=0; i<allCountries.size(); i++) {
+			if (allCountries.get(i).equalsIgnoreCase(c))
 				return i;
 		}
 		
@@ -1760,35 +1760,39 @@ public class PersonConfig implements Serializable {
 	 */
 	public List<String> createESACountryList() {
 
-		if (ESAcountries == null) {
-			ESAcountries = new ArrayList<>();
+		if (ESACountries == null) {
+			ESACountries = new ArrayList<>();
 
-			ESAcountries.add("Austria");
-			ESAcountries.add("Belgium");
-			ESAcountries.add("Czech Republic");
-			ESAcountries.add("Denmark");
-			ESAcountries.add("Estonia");
-			ESAcountries.add("Finland");
-			ESAcountries.add("France");
-			ESAcountries.add("Germany");
-			ESAcountries.add("Greece");
-			ESAcountries.add("Hungary");
-			ESAcountries.add("Ireland");
-			ESAcountries.add("Italy");
-			ESAcountries.add("Luxembourg");
-			ESAcountries.add("The Netherlands");
-			ESAcountries.add("Norway");
-			ESAcountries.add("Poland");
-			ESAcountries.add("Portugal");
-			ESAcountries.add("Romania");
-			ESAcountries.add("Spain");
-			ESAcountries.add("Sweden");
-			ESAcountries.add("Switzerland");
-			ESAcountries.add("UK");
+			ESACountries.add("Austria");
+			ESACountries.add("Belgium");
+			ESACountries.add("Czech Republic");
+			ESACountries.add("Denmark");
+			ESACountries.add("Estonia");
+			
+			ESACountries.add("Finland");
+			ESACountries.add("France");
+			ESACountries.add("Germany");
+			ESACountries.add("Greece");
+			ESACountries.add("Hungary");
+			
+			ESACountries.add("Ireland");
+			ESACountries.add("Italy");
+			ESACountries.add("Luxembourg");
+			ESACountries.add("The Netherlands");
+			ESACountries.add("Norway");
+			
+			ESACountries.add("Poland");
+			ESACountries.add("Portugal");
+			ESACountries.add("Romania");
+			ESACountries.add("Spain");
+			ESACountries.add("Sweden");
+			
+			ESACountries.add("Switzerland");
+			ESACountries.add("UK");
 
 		}
 
-		return ESAcountries;
+		return ESACountries;
 	}
 
 	/**
@@ -1798,10 +1802,10 @@ public class PersonConfig implements Serializable {
 	 * @return
 	 */
 	public int computeCountryID(String country) {
-		if (countries.contains(country))
-			return countries.indexOf(country);
-		else if (ESAcountries.contains(country))
-			return ESAcountries.indexOf(country);
+		if (allCountries.contains(country))
+			return allCountries.indexOf(country);
+//		else if (ESACountries.contains(country))
+//			return ESACountries.indexOf(country);
 		else 
 			return -1;
 	}

@@ -53,8 +53,8 @@ public class BotMind implements Serializable {
 	private MBTIPersonality personality;
 	/** The robot's skill manager. */
 	private SkillManager skillManager;
-	/** The robot's core mind. */
-	private CoreMind coreMind;
+//	/** The robot's core mind. */
+//	private CoreMind coreMind;
 	
 
 //	private static MissionManager missionManager;
@@ -87,11 +87,12 @@ public class BotMind implements Serializable {
 		// entire cycle, is repeated.
 		// https://en.wikipedia.org/wiki/Sense_Plan_Act
 
-		// Create CoreMind
-		coreMind = new CoreMind();
+//		// Create CoreMind
+//		coreMind = new CoreMind();
 		// Construct a skill manager.
-		skillManager = new SkillManager(robot, coreMind);
-
+//		skillManager = new SkillManager(robot, coreMind);
+		skillManager = new SkillManager(robot);
+		
 		// Construct a task manager
 		botTaskManager = new BotTaskManager(this);
 

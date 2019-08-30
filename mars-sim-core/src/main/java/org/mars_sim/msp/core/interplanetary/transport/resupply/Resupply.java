@@ -553,7 +553,7 @@ public class Resupply implements Serializable, Transportable {
 			immigrant.getPreference().initializePreference();
 
 			// Assign sponsor
-			immigrant.assignReportingAuthority();
+//			immigrant.assignReportingAuthority();
 
 			unitManager.addUnit(immigrant);
 			relationshipManager.addNewImmigrant(immigrant, immigrants);

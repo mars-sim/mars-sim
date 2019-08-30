@@ -28,9 +28,7 @@ import java.util.TimeZone;
  * synchronized with the Mars clock. TODO format date strings in an
  * internationalized fashion depending on user locale.
  */
-public class EarthClock
-//extends GregorianCalendar
-		implements Serializable {
+public class EarthClock implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;

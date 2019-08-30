@@ -363,7 +363,7 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
 		<mbti type="ENFJ" percentage="5.0" />
 	</personality-types>
 
-	<!-- List of person names -->
+	<!-- The standard Mars Society name list -->
 	<person-name-list>
 
 		<person-name value="Aaron Wolfe" gender="male" sponsor="Mars Society (MS)"/>

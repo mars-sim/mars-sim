@@ -538,7 +538,7 @@ public class CrewEditor implements ActionListener {
 
 	public DefaultComboBoxModel<String> setUpCountryCBModel() {
 
-		List<String> countries = UnitManager.getCountryList();
+		List<String> countries = UnitManager.getAllCountryList();
 			
 		//Collections.sort(countries);
 

@@ -183,7 +183,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
 			           		+ "    ---------------------- Country Listing ----------------------" 
 			           		+ System.lineSeparator() 
 			           		+ System.lineSeparator());
-			        	List<String> countries = UnitManager.getCountryList();
+			        	List<String> countries = UnitManager.getAllCountryList();
 			        	tt.print(printList(countries));   
                     }
             );

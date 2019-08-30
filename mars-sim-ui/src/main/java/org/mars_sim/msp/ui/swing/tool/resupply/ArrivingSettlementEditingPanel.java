@@ -183,7 +183,7 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 
 		// Create template combo box.
 		Vector<String> sponsorNames = new Vector<String>();
-		Iterator<String> ii = personConfig.createCountryList().iterator();
+		Iterator<String> ii = personConfig.createAllCountryList().iterator();
 		while (ii.hasNext()) {
 			sponsorNames.add(ii.next());
 		}

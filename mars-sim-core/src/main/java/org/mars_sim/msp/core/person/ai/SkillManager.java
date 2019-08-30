@@ -42,7 +42,7 @@ public class SkillManager implements Serializable {
 	/** The person owning the SkillManager. */
 	private Person person;
 	private Robot robot;
-	private CoreMind coreMind;
+//	private CoreMind coreMind;
 	
 	/** A list of the person's skills keyed by name. */
 	private Hashtable<SkillType, Skill> skills;
@@ -51,10 +51,10 @@ public class SkillManager implements Serializable {
 	private List<String> skillNames;
 	
 	/** Constructor. */
-	public SkillManager(Unit unit, CoreMind coreMind) {
+	public SkillManager(Unit unit) {//, CoreMind coreMind) {
 		Person person = null;
 		Robot robot = null;
-		this.coreMind = coreMind;
+//		this.coreMind = coreMind;
 		
 		if (unit instanceof Person) {
 			person = (Person) unit;
@@ -228,16 +228,16 @@ public class SkillManager implements Serializable {
 		else {
 			skills.put(skillType, newSkill);
 		}
-		// Set up the core mind
-		String skillEnumString = skillType.ordinal() + "";
-		String name = "";
-		if (person != null) 
-			name = person.getName();
-		else 
-			name = robot.getName();
-		LogConsolidated.log(Level.SEVERE, 5_000, sourceName,
-				name + " is acquiring the " + skillType.getName() + " skill (id " + skillEnumString + ")");
-		coreMind.create(skillEnumString);
+//		// Set up the core mind
+//		String skillEnumString = skillType.ordinal() + "";
+//		String name = "";
+//		if (person != null) 
+//			name = person.getName();
+//		else 
+//			name = robot.getName();
+//		LogConsolidated.log(Level.SEVERE, 5_000, sourceName,
+//				name + " is acquiring the " + skillType.getName() + " skill (id " + skillEnumString + ")");
+//		coreMind.create(skillEnumString);
 	}
 
 	/**

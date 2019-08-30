@@ -140,13 +140,6 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 			currentStateType = LocationStateType.OUTSIDE_SETTLEMENT_VICINITY;
 		else if (this instanceof Settlement)
 			currentStateType = LocationStateType.OUTSIDE_ON_MARS;
-		
-//		mars = sim.getMars();
-//		masterClock = sim.getMasterClock();
-//		marsClock = masterClock.getMarsClock();
-//		earthClock = masterClock.getEarthClock();
-//		marsSurface = mars.getMarsSurface();
-//		unitManager = sim.getUnitManager();
 	}
 
 	/**
@@ -171,15 +164,6 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 		}
 		this.name = newName;
 	}
-
-//	/**
-//	 * Gets the unit's UnitManager
-//	 * 
-//	 * @return {@link UnitManager} the unit's unit manager
-//	 */
-//	public UnitManager getUnitManager() {
-//		return Simulation.instance().getUnitManager();
-//	}
 
 	/**
 	 * Gets the unit's name
@@ -292,7 +276,6 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 	 * appropriate.
 	 * 
 	 * @param time the amount of time passing (in millisols)
-	 * @throws Exception if error during time passing.
 	 */
 	public void timePassing(double time) {
 	}
@@ -312,10 +295,6 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 	 * @return the unit's container unit
 	 */
 	public Unit getContainerUnit() {
-//		if (once && containerUnit != null && containerUnit instanceof MarsSurface) {
-//			System.out.println(containerUnit + " has " + containerUnit.getCode());
-//			once = false;
-//		}
 		return containerUnit;
 	}
 

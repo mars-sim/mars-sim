@@ -77,8 +77,8 @@ public class Mind implements Serializable {
 	private PersonalityTraitManager trait;
 	/** The person's skill manager. */
 	private SkillManager skillManager;
-	/** The person's core mind. */
-	private CoreMind coreMind;
+//	/** The person's core mind. */
+//	private CoreMind coreMind;
 
 	private static MissionManager missionManager;
 
@@ -108,8 +108,8 @@ public class Mind implements Serializable {
 		
 		relationshipManager = sim.getRelationshipManager();
 		
-		// Create CoreMind
-		coreMind = new CoreMind();
+//		// Create CoreMind
+//		coreMind = new CoreMind();
 		// Construct the Big Five personality trait.
 		trait = new PersonalityTraitManager(person);
 		// Construct the MBTI personality type.
@@ -119,7 +119,8 @@ public class Mind implements Serializable {
 		// Construct the task manager
 		taskManager = new TaskManager(this);
 		// Construct the skill manager.
-		skillManager = new SkillManager(person, coreMind);
+//		skillManager = new SkillManager(person, coreMind);
+		skillManager = new SkillManager(person);
 	}
 
 	/**
@@ -776,10 +777,10 @@ public class Mind implements Serializable {
 		return trait;
 	}
 
-	public void setCoreMind(String career) {
-		coreMind.create(career);	
-	}
-	
+//	public void setCoreMind(String career) {
+//		coreMind.create(career);	
+//	}
+//	
 	/**
 	 * Prepare object for garbage collection.
 	 */
