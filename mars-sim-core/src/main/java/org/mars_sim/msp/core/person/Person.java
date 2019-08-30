@@ -1900,6 +1900,21 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		return averageWeight;
 	}
 	
+	public int getAge() {
+		return age;
+	}
+	
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (obj == null) return false;
+		if (this.getClass() != obj.getClass()) return false;
+		Person p = (Person) obj;
+		return this.name.equals(p.getName())
+				&& this.gender.equals(p.getGender())
+				&& this.age == p.getAge()
+				&& this.birthTimeStamp.getDateStringF0() == p.getBirthDate();
+	}
+	
 //	public void updateBuildingPreference(FunctionType type) {
 //		if (buildingPreference.isEmpty()) {
 //			for (FunctionType ft : FunctionType.getFunctionTypes()) {

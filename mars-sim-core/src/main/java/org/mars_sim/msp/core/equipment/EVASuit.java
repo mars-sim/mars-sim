@@ -23,6 +23,7 @@ import org.mars_sim.msp.core.mars.Weather;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.resource.ResourceUtil;
+import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.CompositionOfAir;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -406,6 +407,14 @@ public class EVASuit extends Equipment implements LifeSupportType, Serializable,
 	@Override
 	public Unit getUnit() {
 		return this;
+	}
+	
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (obj == null) return false;
+		if (this.getClass() != obj.getClass()) return false;
+		EVASuit e = (EVASuit) obj;
+		return this.getNickName().equals(e.getNickName());
 	}
 	
 	/**

@@ -1431,6 +1431,14 @@ public class Crop implements Serializable {
 		Storage.storeAnResource(amount, resource, building.getInventory(), source);
 	}
 	
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (obj == null) return false;
+		if (this.getClass() != obj.getClass()) return false;
+		Crop c = (Crop) obj;
+		return this.identifier == c.getIdentifier();
+	}
+	
 	/**
 	 * Reloads instances after loading from a saved sim
 	 * 

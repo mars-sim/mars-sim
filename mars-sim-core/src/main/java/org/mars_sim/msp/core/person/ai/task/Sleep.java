@@ -108,7 +108,7 @@ public class Sleep extends Task implements Serializable {
 			Settlement s0 = person.getAssociatedSettlement();
 
 			// check to see if a person is a trader or on a trading mission
-			if (!s1.equals(s0) || s1 != s0) {
+			if (s1 != null && !s1.equals(s0)) {
 				// yes he is a trader/guest (Case 1-3)
 				// logger.info(person + " is a guest of a trade mission and will use an
 				// unoccupied bed randomly.");

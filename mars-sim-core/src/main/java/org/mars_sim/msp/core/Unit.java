@@ -639,6 +639,14 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 		return name.compareToIgnoreCase(o.name);
 	}
 
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (obj == null) return false;
+		if (this.getClass() != obj.getClass()) return false;
+		Unit u = (Unit) obj;
+		return this.name.equals(u.getName());
+	}
+	
 	public LocationSituation getLocationSituation() {
 		return null;
 	}

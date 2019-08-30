@@ -97,7 +97,7 @@ public abstract class Vehicle extends Unit
 	private boolean isSalvaged;
 	
 	/** Vehicle's associated Settlement. */
-	private int associatedSettlement;
+	private int associatedSettlementID;
 	
 	/** Current speed of vehicle in kph. */
 	private double speed = 0; // 
@@ -173,7 +173,7 @@ public abstract class Vehicle extends Unit
 //		enter(LocationCodeType.SETTLEMENT);
 			
 		this.vehicleType = vehicleType;
-		associatedSettlement = settlement.getIdentifier();
+		associatedSettlementID = settlement.getIdentifier();
 		containerUnit = settlement;
 		settlement.getInventory().storeUnit(this);
 
@@ -271,7 +271,7 @@ public abstract class Vehicle extends Unit
 				.loadMissionControl()[0];
 		fuel_range_error_margin = SimulationConfig.instance().getSettlementConfiguration().loadMissionControl()[1];
 
-		associatedSettlement = settlement.getIdentifier();
+		associatedSettlementID = settlement.getIdentifier();
 		containerUnit = settlement;
 		settlement.getInventory().storeUnit(this);
 
@@ -1118,10 +1118,14 @@ public abstract class Vehicle extends Unit
 		return life_support_range_error_margin;
 	}
 
-	public Settlement getAssociatedSettlement() {
-		return unitManager.getSettlementByID(associatedSettlement);
+	public int getAssociatedSettlementID() {
+		return associatedSettlementID;
 	}
 
+	public Settlement getAssociatedSettlement() {
+		return unitManager.getSettlementByID(associatedSettlementID);
+	}
+	
 	@Override
 	public String getImmediateLocation() {
 		return getLocationTag().getImmediateLocation();
@@ -1167,6 +1171,16 @@ public abstract class Vehicle extends Unit
 		return this;
 	}
 
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (obj == null) return false;
+		if (this.getClass() != obj.getClass()) return false;
+		Vehicle v = (Vehicle) obj;
+		return this.getName().equals(v.getName())
+				&& this.vehicleType.equals(v.getVehicleType())
+				&& this.associatedSettlementID == v.getAssociatedSettlementID();
+	}
+	
 	/**
 	 * Reloads instances after loading from a saved sim
 	 * 

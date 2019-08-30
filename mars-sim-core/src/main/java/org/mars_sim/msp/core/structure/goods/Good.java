@@ -193,4 +193,13 @@ public class Good implements Serializable, Comparable<Good> {
 	public int compareTo(Good o) {
 		return name.compareTo(o.name);
 	}
+	
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (obj == null) return false;
+		if (this.getClass() != obj.getClass()) return false;
+		Good g = (Good) obj;
+		return this.getName().equals(g.getName());
+	}
+	
 }

@@ -1514,6 +1514,15 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		return this;
 	}
 
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (obj == null) return false;
+		if (this.getClass() != obj.getClass()) return false;
+		Building b = (Building) obj;
+		return this.nickName.equals(b.getNickName());
+//		return this.buildingType.equals(b.getBuildingType());
+	}
+	
 	/**
 	 * Prepare object for garbage collection.
 	 */

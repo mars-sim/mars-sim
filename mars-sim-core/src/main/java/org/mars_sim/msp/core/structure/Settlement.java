@@ -3038,31 +3038,31 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	 */
 	public void incrementShiftType(ShiftType shiftType) {
 
-		if (shiftType.equals(ShiftType.A)) {
+		if (shiftType == ShiftType.A) {
 			numA++;
 		}
 
-		else if (shiftType.equals(ShiftType.B)) {
+		else if (shiftType == ShiftType.B) {
 			numB++;
 		}
 
-		else if (shiftType.equals(ShiftType.X)) {
+		else if (shiftType == ShiftType.X) {
 			numX++;
 		}
 
-		else if (shiftType.equals(ShiftType.Y)) {
+		else if (shiftType == ShiftType.Y) {
 			numY++;
 		}
 
-		else if (shiftType.equals(ShiftType.Z)) {
+		else if (shiftType == ShiftType.Z) {
 			numZ++;
 		}
 
-		else if (shiftType.equals(ShiftType.ON_CALL)) {
+		else if (shiftType == ShiftType.ON_CALL) {
 			numOnCall++;
 		}
 
-		else if (shiftType.equals(ShiftType.OFF)) {
+		else if (shiftType == ShiftType.OFF) {
 			numOff++;
 		}
 	}
@@ -3367,19 +3367,19 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	 */
 	public void incrementAShift(ShiftType shiftType) {
 		if (shiftType != null) {
-			if (shiftType.equals(ShiftType.A))
+			if (shiftType == ShiftType.A)
 				numA++;
-			else if (shiftType.equals(ShiftType.B))
+			else if (shiftType == ShiftType.B)
 				numB++;
-			else if (shiftType.equals(ShiftType.X))
+			else if (shiftType == ShiftType.X)
 				numX++;
-			else if (shiftType.equals(ShiftType.Y))
+			else if (shiftType == ShiftType.Y)
 				numY++;
-			else if (shiftType.equals(ShiftType.Z))
+			else if (shiftType == ShiftType.Z)
 				numZ++;
-			else if (shiftType.equals(ShiftType.ON_CALL))
+			else if (shiftType == ShiftType.ON_CALL)
 				numOnCall++;
-			else if (shiftType.equals(ShiftType.OFF))
+			else if (shiftType == ShiftType.OFF)
 				numOff++;
 		}
 	}
@@ -3391,19 +3391,19 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	 */
 	public void decrementAShift(ShiftType shiftType) {
 		if (shiftType != null) {
-			if (shiftType.equals(ShiftType.A))
+			if (shiftType == ShiftType.A)
 				numA--;
-			else if (shiftType.equals(ShiftType.B))
+			else if (shiftType == ShiftType.B)
 				numB--;
-			else if (shiftType.equals(ShiftType.X))
+			else if (shiftType == ShiftType.X)
 				numX--;
-			else if (shiftType.equals(ShiftType.Y))
+			else if (shiftType == ShiftType.Y)
 				numY--;
-			else if (shiftType.equals(ShiftType.Z))
+			else if (shiftType == ShiftType.Z)
 				numZ--;
-			else if (shiftType.equals(ShiftType.ON_CALL))
+			else if (shiftType == ShiftType.ON_CALL)
 				numOnCall--;
-			else if (shiftType.equals(ShiftType.OFF))
+			else if (shiftType == ShiftType.OFF)
 				numOff--;
 		}
 	}
@@ -4239,6 +4239,14 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		return true;
 	}
 
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (obj == null) return false;
+		if (this.getClass() != obj.getClass()) return false;
+		Settlement s = (Settlement) obj;
+		return this.name.equals(s.getName());
+	}
+	
 	@Override
 	public void destroy() {
 		super.destroy();
