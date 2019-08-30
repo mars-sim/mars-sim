@@ -237,7 +237,7 @@ public class PersonConfig implements Serializable {
 			lastNames = new ArrayList<Map<Integer, List<String>>>();
 
 			List<List<String>> sponsors = new ArrayList<>();
-			for (int i = 0; i < 7; i++) {
+			for (int i = 0; i < 9; i++) {
 				List<String> list = new ArrayList<String>();
 				sponsors.add(list);
 			}
@@ -358,7 +358,7 @@ public class PersonConfig implements Serializable {
 			Map<Integer, List<String>> lastNamesBySponsor = new HashMap<>();
 			Map<Integer, List<String>> lastNamesByCountry = new HashMap<>();
 
-			for (int i = 0; i < 7; i++) {
+			for (int i = 0; i < 9; i++) {
 				lastNamesBySponsor.put(i, sponsors.get(i));
 			}
 
@@ -388,13 +388,13 @@ public class PersonConfig implements Serializable {
 			firstNames = new ArrayList<Map<Integer, List<String>>>();
 
 			List<List<String>> malesBySponsor = new ArrayList<>();
-			for (int i = 0; i < 7; i++) {
+			for (int i = 0; i < 9; i++) {
 				List<String> list = new ArrayList<String>();
 				malesBySponsor.add(list);
 			}
 
 			List<List<String>> femalesBySponsor = new ArrayList<>();
-			for (int i = 0; i < 7; i++) {
+			for (int i = 0; i < 9; i++) {
 				List<String> list = new ArrayList<String>();
 				femalesBySponsor.add(list);
 			}
@@ -1828,6 +1828,7 @@ public class PersonConfig implements Serializable {
 			longSponsors.add(ReportingAuthorityType.RKA_L.getName());
 			longSponsors.add(ReportingAuthorityType.ESA_L.getName());
 			longSponsors.add(ReportingAuthorityType.MARS_SOCIETY_L.getName());
+			longSponsors.add(ReportingAuthorityType.SPACEX_L.getName());
 		}
 
 		return longSponsors;
@@ -1851,6 +1852,7 @@ public class PersonConfig implements Serializable {
 			sponsors.add(ReportingAuthorityType.RKA.getName());
 			sponsors.add(ReportingAuthorityType.ESA.getName());
 			sponsors.add(ReportingAuthorityType.MS.getName());
+			sponsors.add(ReportingAuthorityType.SPACEX.getName());
 		}
 
 		return sponsors;

@@ -302,8 +302,10 @@ public class UnitManager implements Serializable {
 	private void initializeLastNames() {
 		try {
 			List<Map<Integer, List<String>>> lastNames = personConfig.retrieveLastNameList();
-			lastNamesBySponsor = lastNames.get(0);
-			lastNamesByCountry = lastNames.get(1);
+			lastNamesBySponsor = lastNames.get(0); // size = 7
+			lastNamesByCountry = lastNames.get(1); // size = 28
+//			System.out.println("lastNamesBySponsor size : " + lastNamesBySponsor.size());
+//			System.out.println("lastNamesByCountry size : " + lastNamesByCountry.size());
 
 		} catch (Exception e) {
 			throw new IllegalStateException("The last names list could not be loaded: " + e.getMessage(), e);
@@ -1210,6 +1212,12 @@ public class UnitManager implements Serializable {
 								 || ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.SPACEX_L) {
 							index = 8;
 
+							int countryID = getCountryID(country);
+
+							last_list = lastNamesByCountry.get(countryID);
+							male_first_list = maleFirstNamesByCountry.get(countryID);
+							female_first_list = femaleFirstNamesByCountry.get(countryID);
+							
 						} else { // Utilize the standard Mars Society name list in <person-name-list> in people.xml -->
 							
 							index = 9;
@@ -1217,8 +1225,9 @@ public class UnitManager implements Serializable {
 							fullname = getNewName(UnitType.PERSON, null, gender, null);
 						}
 						
-
-						if (index != -1 && index != 6 && index != 7 && index != 9) {
+//						System.out.println("index : " + index + "    sponsor : " + sponsor + "    country : " + country + "    last_list : " + last_list.toString());
+						
+						if (index != -1 && index != 6 && index != 7 && index != 8 && index != 9) {
 							last_list = lastNamesBySponsor.get(index);
 							male_first_list = maleFirstNamesBySponsor.get(index);
 							female_first_list = femaleFirstNamesBySponsor.get(index);
