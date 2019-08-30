@@ -1266,21 +1266,45 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
 		<first-name value="Jules" gender="male" sponsor="ESA" country="France" />
 		<first-name value="Mohammed" gender="male" sponsor="ESA" country="France" />
 
+		<!-- Extracted from https://en.wikipedia.org/wiki/German_name -->
+		
 		<first-name value="Ben" gender="male" sponsor="ESA" country="Germany" />
 		<first-name value="Jonas" gender="male" sponsor="ESA" country="Germany" />
 		<first-name value="Leon" gender="male" sponsor="ESA" country="Germany" />
 		<first-name value="Elias" gender="male" sponsor="ESA" country="Germany" />
 		<first-name value="Finn" gender="male" sponsor="ESA" country="Germany" />
+		
 		<first-name value="Fynn" gender="male" sponsor="ESA" country="Germany" />
 		<first-name value="Noah" gender="male" sponsor="ESA" country="Germany" />
 		<first-name value="Paul" gender="male" sponsor="ESA" country="Germany" />
 		<first-name value="Luis" gender="male" sponsor="ESA" country="Germany" />
 		<first-name value="Louis" gender="male" sponsor="ESA" country="Germany" />
+		
 		<first-name value="Lukas" gender="male" sponsor="ESA" country="Germany" />
 		<first-name value="Lucas" gender="male" sponsor="ESA" country="Germany" />
 		<first-name value="Luca" gender="male" sponsor="ESA" country="Germany" />
 		<first-name value="Luka" gender="male" sponsor="ESA" country="Germany" />
-
+		<first-name value="Felix" gender="male" sponsor="ESA" country="Germany" />
+		
+		<first-name value="Maximilian" gender="male" sponsor="ESA" country="Germany" />
+		<first-name value="Niklas" gender="male" sponsor="ESA" country="Germany" />
+		<first-name value="Niklas" gender="male" sponsor="ESA" country="Germany" />
+		<first-name value="Jannik" gender="male" sponsor="ESA" country="Germany" />
+		<first-name value="Yannik" gender="male" sponsor="ESA" country="Germany" />
+			
+		<first-name value="Jan" gender="male" sponsor="ESA" country="Germany" />
+		<first-name value="Tobias" gender="male" sponsor="ESA" country="Germany" />
+		<first-name value="Christian" gender="male" sponsor="ESA" country="Germany" />
+		<first-name value="Alexander" gender="male" sponsor="ESA" country="Germany" />
+		<first-name value="Sebastian" gender="male" sponsor="ESA" country="Germany" />
+		
+		<first-name value="Philipp" gender="male" sponsor="ESA" country="Germany" />
+		<first-name value="Marcel" gender="male" sponsor="ESA" country="Germany" />
+		<first-name value="Daniel" gender="male" sponsor="ESA" country="Germany" />
+		<first-name value="Yannic" gender="male" sponsor="ESA" country="Germany" />
+		<first-name value="Thomas" gender="male" sponsor="ESA" country="Germany" />
+			
+		
 		<first-name value="Georgios" gender="male" sponsor="ESA" country="Greece" />
 		<first-name value="Ioannis" gender="male" sponsor="ESA" country="Greece" />
 		<first-name value="Konstantinos" gender="male" sponsor="ESA" country="Greece" />
@@ -1610,18 +1634,38 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
 		<first-name value="Adèle" gender="female" sponsor="ESA" country="France" />
 		<first-name value="Juliette" gender="female" sponsor="ESA" country="France" />
 
+		<!-- Extracted from https://en.wikipedia.org/wiki/German_name -->
+		
 		<first-name value="Mia" gender="female" sponsor="ESA" country="Germany" />
 		<first-name value="Emma" gender="female" sponsor="ESA" country="Germany" />
 		<first-name value="Hannah" gender="female" sponsor="ESA" country="Germany" />
 		<first-name value="Hanna" gender="female" sponsor="ESA" country="Germany" />
 		<first-name value="Sofia" gender="female" sponsor="ESA" country="Germany" />
+		
 		<first-name value="Sophia" gender="female" sponsor="ESA" country="Germany" />
 		<first-name value="Anna" gender="female" sponsor="ESA" country="Germany" />
 		<first-name value="Emilia" gender="female" sponsor="ESA" country="Germany" />
 		<first-name value="Lina" gender="female" sponsor="ESA" country="Germany" />
 		<first-name value="Marie" gender="female" sponsor="ESA" country="Germany" />
+		
 		<first-name value="Lena" gender="female" sponsor="ESA" country="Germany" />
 		<first-name value="Mila" gender="female" sponsor="ESA" country="Germany" />
+		<first-name value="Lea" gender="female" sponsor="ESA" country="Germany" />
+		<first-name value="Leah" gender="female" sponsor="ESA" country="Germany" />
+		<first-name value="Emily" gender="female" sponsor="ESA" country="Germany" />
+
+		<first-name value="Anna" gender="female" sponsor="ESA" country="Germany" />
+		<first-name value="Lili" gender="female" sponsor="ESA" country="Germany" />
+		<first-name value="Lina" gender="female" sponsor="ESA" country="Germany" />
+		<first-name value="Julia" gender="female" sponsor="ESA" country="Germany" />
+		<first-name value="Lara" gender="female" sponsor="ESA" country="Germany" />
+
+		<first-name value="Sara" gender="female" sponsor="ESA" country="Germany" />
+		<first-name value="Katharina" gender="female" sponsor="ESA" country="Germany" />
+		<first-name value="Jessika" gender="female" sponsor="ESA" country="Germany" />
+		<first-name value="Melanie" gender="female" sponsor="ESA" country="Germany" />
+		<first-name value="Michelle" gender="female" sponsor="ESA" country="Germany" />
+
 
 		<first-name value="Maria" gender="female" sponsor="ESA" country="Greece" />
 		<first-name value="Eleni" gender="female" sponsor="ESA" country="Greece" />
@@ -2719,18 +2763,45 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
 		<last-name value="Robert"  sponsor="ESA" country="France" />
 		<last-name value="Thomas"  sponsor="ESA" country="France" />
 
-		<!-- 10 most common German surnames-->
+		<!-- https://en.wikipedia.org/wiki/List_of_the_most_common_surnames_in_Germany -->
+
+		<last-name value="Müller"  sponsor="ESA" country="Germany" />
+		<last-name value="Schmidt"  sponsor="ESA" country="Germany" />
+		<last-name value="Schneider"  sponsor="ESA" country="Germany" />
+		<last-name value="Fischer"  sponsor="ESA" country="Germany" />
+		<last-name value="Weber"  sponsor="ESA" country="Germany" />
+		
+		<last-name value="Meyer"  sponsor="ESA" country="Germany" />
+		<last-name value="Wagner"  sponsor="ESA" country="Germany" />
+		<last-name value="Becker"  sponsor="ESA" country="Germany" />
+		<last-name value="Schulz"  sponsor="ESA" country="Germany" />
+		<last-name value="Hoffmann"  sponsor="ESA" country="Germany" />
+
+
+		<last-name value="Schäfer"  sponsor="ESA" country="Germany" />
+		<last-name value="Koch"  sponsor="ESA" country="Germany" />
+		<last-name value="Bauer"  sponsor="ESA" country="Germany" />
+		<last-name value="Richter"  sponsor="ESA" country="Germany" />
+		<last-name value="Klein"  sponsor="ESA" country="Germany" />
+		
+		<last-name value="Wolf"  sponsor="ESA" country="Germany" />
+		<last-name value="Schröder"  sponsor="ESA" country="Germany" />
+		<last-name value="Neumann"  sponsor="ESA" country="Germany" />
+		<last-name value="Schwarz"  sponsor="ESA" country="Germany" />
+		<last-name value="Zimmermann"  sponsor="ESA" country="Germany" />
+
 
 		<last-name value="Becker"  sponsor="ESA" country="Germany" />
 		<last-name value="Fischer"  sponsor="ESA" country="Germany" />
 		<last-name value="Hoffmann"  sponsor="ESA" country="Germany" />
 		<last-name value="Meyer"  sponsor="ESA" country="Germany" />
 		<last-name value="Müller"  sponsor="ESA" country="Germany" />
-		<last-name value="Schmidt"  sponsor="ESA" country="Germany" />
-		<last-name value="Schneider"  sponsor="ESA" country="Germany" />
-		<last-name value="Schulz"  sponsor="ESA" country="Germany" />
-		<last-name value="Wagner"  sponsor="ESA" country="Germany" />
-		<last-name value="Weber"  sponsor="ESA" country="Germany" />
+		
+		<last-name value="Braun"  sponsor="ESA" country="Germany" />
+		<last-name value="Krüger"  sponsor="ESA" country="Germany" />
+		<last-name value="Hofmann"  sponsor="ESA" country="Germany" />
+		<last-name value="Hartmann"  sponsor="ESA" country="Germany" />
+		<last-name value="Lange"  sponsor="ESA" country="Germany" />
 
 		<!-- 10 most common Greek surnames-->
 
