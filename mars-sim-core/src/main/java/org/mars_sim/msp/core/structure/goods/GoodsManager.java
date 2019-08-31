@@ -29,6 +29,7 @@ import org.mars_sim.msp.core.equipment.Bag;
 import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.ContainerUtil;
 import org.mars_sim.msp.core.equipment.EVASuit;
+import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.equipment.SpecimenContainer;
 import org.mars_sim.msp.core.foodProduction.FoodProductionProcess;
@@ -2479,7 +2480,7 @@ public class GoodsManager implements Serializable {
 	 * @param equipmentClass the equipment class.
 	 * @return demand (# of equipment).
 	 */
-	private double determineEquipmentDemand(Class<?> equipmentClass) {				
+	private double determineEquipmentDemand(Class<? extends Equipment> equipmentClass) {				
 		double numDemand = 0D;
 
 		int areologistFactor = getAreologistNum() + 1;
@@ -2495,8 +2496,8 @@ public class GoodsManager implements Serializable {
 		// Determine the number of containers that are needed.
 		if (Container.class.isAssignableFrom(equipmentClass) && !SpecimenContainer.class.equals(equipmentClass)) {
 
-			PhaseType containerPhase = ContainerUtil.getContainerPhase((Class<? extends Container>) equipmentClass);
-			double containerCapacity = ContainerUtil.getContainerCapacity((Class<? extends Container>) equipmentClass);
+			PhaseType containerPhase = ContainerUtil.getContainerPhase(equipmentClass);
+			double containerCapacity = ContainerUtil.getContainerCapacity(equipmentClass);
 
 			double totalPhaseOverfill = 0D;
 			Iterator<AmountResource> i = ResourceUtil.getAmountResources().iterator();

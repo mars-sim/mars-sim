@@ -30,6 +30,7 @@ public class MathUtils {
 	}
 
     
+	@SafeVarargs
 	public static <T> T[] concatAll(T[] first, T[]... rest) {
     	int totalLength = first.length;
     	for (T[] array : rest) {

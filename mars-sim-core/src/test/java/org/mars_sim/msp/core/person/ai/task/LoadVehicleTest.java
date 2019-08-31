@@ -40,7 +40,7 @@ extends TestCase {
 	
 	@Override
     public void setUp() throws Exception {
-        SimulationConfig.testLoadConfig();
+        SimulationConfig.loadConfig();
         Simulation.createNewSimulation(-1, true);
         UnitManager unitManager = Simulation.instance().getUnitManager();
 //		Iterator<Settlement> i = unitManager.getSettlements().iterator();

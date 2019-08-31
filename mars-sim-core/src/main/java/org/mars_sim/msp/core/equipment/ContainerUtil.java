@@ -92,7 +92,7 @@ public final class ContainerUtil {
 	 * @param containerClass the container class.
 	 * @return capacity (kg).
 	 */
-	public static double getContainerCapacity(Class<? extends Container> containerClass) {
+	public static double getContainerCapacity(Class<? extends Equipment> containerClass) {
 
 		if (containerClass == GasCanister.class)
 			return GasCanister.CAPACITY;
@@ -150,7 +150,7 @@ public final class ContainerUtil {
 	 * @param containerClass the container class.
 	 * @return amount resource phase.
 	 */
-	public static PhaseType getContainerPhase(Class<? extends Container> containerClass) {
+	public static PhaseType getContainerPhase(Class<? extends Equipment> containerClass) {
 
 		PhaseType result = null;
 

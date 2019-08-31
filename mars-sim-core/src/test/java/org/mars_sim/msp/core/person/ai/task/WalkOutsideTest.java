@@ -235,7 +235,7 @@ extends TestCase {
 	public void testDetermineWalkingPath() {
 
 		// Create new simulation instance.
-		SimulationConfig.testLoadConfig();
+		SimulationConfig.loadConfig();
 		Simulation.createNewSimulation(-1, true);
 
 		// Clear out existing settlements in simulation.
@@ -266,8 +266,6 @@ extends TestCase {
 		BuildingAirlock airlock0 = new BuildingAirlock(building1, 1, 0D, 0D, 0D, 0D, 0D, 0D);
         building1.addFunction(new EVA(building1, airlock0));
 
-		// Create test person.
-		//Person person = new Person("test person", PersonGender.MALE, null, settlement, "Mars Society (MS)");
 		// Use Builder Pattern for creating an instance of Person
 		Person person = Person.create("test person", settlement)
 								.setGender(GenderType.MALE)
@@ -328,7 +326,7 @@ extends TestCase {
 	public void testGetLocalObstacleSearchLimits() {
 
 		// Create new simulation instance.
-		SimulationConfig.testLoadConfig();
+		SimulationConfig.loadConfig();
 		Simulation.createNewSimulation(-1, true);
 
 		// Clear out existing settlements in simulation.
@@ -355,9 +353,7 @@ extends TestCase {
 		BuildingAirlock airlock0 = new BuildingAirlock(building1, 1, 0D, 0D, 0D, 0D, 0D, 0D);
         building1.addFunction(new EVA(building1, airlock0));
 
-		// Create test person.
-		//Person person = new Person("test person", PersonGender.MALE, null, settlement, "Mars Society (MS)");
-		// 2017-04-11 Use Builder Pattern for creating an instance of Person
+		// Use Builder Pattern for creating an instance of Person
 		Person person = Person.create("test person", settlement)
 								.setGender(GenderType.MALE)
 								.setCountry(null)

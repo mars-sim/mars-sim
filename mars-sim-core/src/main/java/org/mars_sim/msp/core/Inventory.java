@@ -1604,7 +1604,7 @@ public class Inventory implements Serializable {
 		} else {
 			 LogConsolidated.log(Level.SEVERE, 5_000, sourceName + "::storeUnit",
 					 "Unit: " + unit + " could not be stored.");
-			// The statement below is eeded for maven test
+			// The statement below is needed for maven test in testInventoryUnitStoredNull() in TestInventory
 			throw new IllegalStateException("Unit: " + unit + " could not be stored in " + owner.getName()); 
 		}
 	}
@@ -1656,7 +1656,8 @@ public class Inventory implements Serializable {
 		else {
 			 LogConsolidated.log(Level.SEVERE, 5_000, sourceName +
 					 "::retrieveUnit", "'" + unit + "' could not be retrieved.");
-			throw new IllegalStateException("'" + unit + "' could not be retrieved by " + owner.getName()); // needed for maven test
+			// The statement below is needed for maven test
+			throw new IllegalStateException("'" + unit + "' could not be retrieved by " + owner.getName());
 		}
 	}
 

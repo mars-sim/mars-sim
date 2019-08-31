@@ -34,7 +34,7 @@ public class WalkingStepsTest extends TestCase {
     public void testWalkingStepsBuildingToBuildingPath() {
 
         // Create new simulation instance.
-        SimulationConfig.testLoadConfig();
+        SimulationConfig.loadConfig();
         Simulation.createNewSimulation(-1, true);
         
         // Clear out existing settlements in simulation.
@@ -89,11 +89,9 @@ public class WalkingStepsTest extends TestCase {
         connectorManager.addBuildingConnection(new BuildingConnector(building1,
                 -7.5D, 0D, 270D, building2, -7.5D, 0D, 90D));
 
-        // 2016-10-28 Added setupBuildingFunctionsMap()
         buildingManager.setupBuildingFunctionsMap();
 
-        //Person person = new Person("test person", PersonGender.MALE, null, settlement, "Mars Society (MS)");
-		// 2017-04-11 Use Builder Pattern for creating an instance of Person
+        // Use Builder Pattern for creating an instance of Person
 		Person person = Person.create("test person", settlement)
 								.setGender(GenderType.MALE)
 								.setCountry(null)
@@ -130,7 +128,7 @@ public class WalkingStepsTest extends TestCase {
     public void testWalkingStepsBuildingToBuildingNoPath() {
 
         // Create new simulation instance.
-        SimulationConfig.testLoadConfig();
+        SimulationConfig.loadConfig();
         Simulation.createNewSimulation(-1, true);
         // Clear out existing settlements in simulation.
         UnitManager unitManager = Simulation.instance().getUnitManager();
@@ -168,11 +166,10 @@ public class WalkingStepsTest extends TestCase {
         building1.setYLocation(0D);
         building1.setFacing(270D);
         buildingManager.addMockBuilding(building1);
-        // 2016-10-28 Added setupBuildingFunctionsMap()
+
         buildingManager.setupBuildingFunctionsMap();
 
-        //Person person = new Person("test person", PersonGender.MALE, null, settlement, "Mars Society (MS)");
-		// 2017-04-11 Use Builder Pattern for creating an instance of Person
+        // Use Builder Pattern for creating an instance of Person
 		Person person = Person.create("test person", settlement)
 								.setGender(GenderType.MALE)
 								.setCountry(null)
@@ -203,7 +200,7 @@ public class WalkingStepsTest extends TestCase {
     public void testWalkingStepsBuildingToBuildingNoPathAirlocks() {
 
         // Create new simulation instance.
-        SimulationConfig.testLoadConfig();
+        SimulationConfig.loadConfig();
         Simulation.createNewSimulation(-1, true);
         // Clear out existing settlements in simulation.
         UnitManager unitManager = Simulation.instance().getUnitManager();
@@ -244,11 +241,10 @@ public class WalkingStepsTest extends TestCase {
 
         BuildingAirlock airlock1 = new BuildingAirlock(building1, 1, 0D, 0D, 0D, 0D, 0D, 0D);
         building1.addFunction(new EVA(building1, airlock1));
-        // 2016-10-28 Added setupBuildingFunctionsMap()
+
         buildingManager.setupBuildingFunctionsMap();
 
-        //Person person = new Person("test person", PersonGender.MALE, null, settlement, "Mars Society (MS)");
-		// 2017-04-11 Use Builder Pattern for creating an instance of Person
+        // Use Builder Pattern for creating an instance of Person
 		Person person = Person.create("test person", settlement)
 								.setGender(GenderType.MALE)
 								.setCountry(null)
@@ -299,7 +295,7 @@ public class WalkingStepsTest extends TestCase {
     public void testWalkingStepsBuildingToExteriorAirlock() {
 
         // Create new simulation instance.
-        SimulationConfig.testLoadConfig();
+        SimulationConfig.loadConfig();
         Simulation.createNewSimulation(-1, true);
         // Clear out existing settlements in simulation.
         UnitManager unitManager = Simulation.instance().getUnitManager();
@@ -327,11 +323,10 @@ public class WalkingStepsTest extends TestCase {
 
         BuildingAirlock airlock0 = new BuildingAirlock(building0, 1, 0D, 0D, 0D, 0D, 0D, 0D);
         building0.addFunction(new EVA(building0, airlock0));
-        // 2016-10-28 Added setupBuildingFunctionsMap()
+
         buildingManager.setupBuildingFunctionsMap();
 
-        //Person person = new Person("test person", PersonGender.MALE, null, settlement, "Mars Society (MS)");
-		// 2017-04-11 Use Builder Pattern for creating an instance of Person
+        // Use Builder Pattern for creating an instance of Person
 		Person person = Person.create("test person", settlement)
 								.setGender(GenderType.MALE)
 								.setCountry(null)
@@ -377,7 +372,7 @@ public class WalkingStepsTest extends TestCase {
     public void testWalkingStepsBuildingToExteriorNoAirlock() {
 
         // Create new simulation instance.
-        SimulationConfig.testLoadConfig();
+        SimulationConfig.loadConfig();
         Simulation.createNewSimulation(-1, true);
         // Clear out existing settlements in simulation.
         UnitManager unitManager = Simulation.instance().getUnitManager();
@@ -409,8 +404,7 @@ public class WalkingStepsTest extends TestCase {
 
         buildingManager.setupBuildingFunctionsMap();
 
-        //Person person = new Person("test person", PersonGender.MALE, null, settlement, "Mars Society (MS)");
-		// 2017-04-11 Use Builder Pattern for creating an instance of Person
+        // Use Builder Pattern for creating an instance of Person
 		Person person = Person.create("test person", settlement)
 								.setGender(GenderType.MALE)
 								.setCountry(null)
@@ -443,7 +437,7 @@ public class WalkingStepsTest extends TestCase {
     public void testWalkingStepsRoverToExterior() {
 
         // Create new simulation instance.
-        SimulationConfig.testLoadConfig();
+        SimulationConfig.loadConfig();
         Simulation.createNewSimulation(-1, true);
         // Clear out existing settlements in simulation.
         UnitManager unitManager = Simulation.instance().getUnitManager();
@@ -469,11 +463,10 @@ public class WalkingStepsTest extends TestCase {
         BuildingAirlock airlock0 = new BuildingAirlock(building0, 1, 0D, 0D, 0D, 0D, 0D, 0D);
         EVA eva = new EVA(building0, airlock0);
         building0.addFunction(eva);
-        // 2016-10-28 Added setupBuildingFunctionsMap()
+
         buildingManager.setupBuildingFunctionsMap();
 
-        //Person person = new Person("test person", PersonGender.MALE, null, settlement, "Mars Society (MS)");
-		// 2017-04-11 Use Builder Pattern for creating an instance of Person
+        // Use Builder Pattern for creating an instance of Person
 		Person person = Person.create("test person", settlement)
 								.setGender(GenderType.MALE)
 								.setCountry(null)
@@ -527,14 +520,14 @@ public class WalkingStepsTest extends TestCase {
     public void testWalkingStepsRoverToBuilding() {
 
         // Create new simulation instance.
-        SimulationConfig.testLoadConfig();
+        SimulationConfig.loadConfig();
         Simulation.createNewSimulation(-1, true);
         // Clear out existing settlements in simulation.
         UnitManager unitManager = Simulation.instance().getUnitManager();
-//        Iterator<Settlement> i = unitManager.getSettlements().iterator();
-//        while (i.hasNext()) {
-//            unitManager.removeUnit(i.next());
-//        }
+        Iterator<Settlement> i = unitManager.getSettlements().iterator();
+        while (i.hasNext()) {
+            unitManager.removeUnit(i.next());
+        }
 
         Settlement settlement = new MockSettlement();
 		unitManager.addSettlementID(settlement);
@@ -558,11 +551,10 @@ public class WalkingStepsTest extends TestCase {
 
         BuildingAirlock airlock0 = new BuildingAirlock(building0, 1, 0D, 0D, 0D, 0D, 0D, 0D);
         building0.addFunction(new EVA(building0, airlock0));
-        // 2016-10-28 Added setupBuildingFunctionsMap()
+
         buildingManager.setupBuildingFunctionsMap();
 
-        //Person person = new Person("test person", PersonGender.MALE, null, settlement, "Mars Society (MS)");
-		// 2017-04-11 Use Builder Pattern for creating an instance of Person
+        // Use Builder Pattern for creating an instance of Person
 		Person person = Person.create("test person", settlement)
 								.setGender(GenderType.MALE)
 								.setCountry(null)
@@ -613,7 +605,7 @@ public class WalkingStepsTest extends TestCase {
     public void testWalkingStepsBuildingToRover() {
 
         // Create new simulation instance.
-        SimulationConfig.testLoadConfig();
+        SimulationConfig.loadConfig();
         Simulation.createNewSimulation(-1, true);
         // Clear out existing settlements in simulation.
         UnitManager unitManager = Simulation.instance().getUnitManager();
@@ -647,8 +639,7 @@ public class WalkingStepsTest extends TestCase {
         // 2016-10-28 Added setupBuildingFunctionsMap()
         buildingManager.setupBuildingFunctionsMap();
 
-        //Person person = new Person("test person", PersonGender.MALE, null, settlement, "Mars Society (MS)");
-		// 2017-04-11 Use Builder Pattern for creating an instance of Person
+		// Use Builder Pattern for creating an instance of Person
 		Person person = Person.create("test person", settlement)
 								.setGender(GenderType.MALE)
 								.setCountry(null)
@@ -699,7 +690,7 @@ public class WalkingStepsTest extends TestCase {
     public void testWalkingStepsBuildingToRoverNoAirlock() {
 
         // Create new simulation instance.
-        SimulationConfig.testLoadConfig();
+        SimulationConfig.loadConfig();
         Simulation.createNewSimulation(-1, true);
         // Clear out existing settlements in simulation.
         UnitManager unitManager = Simulation.instance().getUnitManager();
@@ -734,8 +725,7 @@ public class WalkingStepsTest extends TestCase {
         // 2016-10-28 Added setupBuildingFunctionsMap()
         buildingManager.setupBuildingFunctionsMap();
 
-        //Person person = new Person("test person", PersonGender.MALE, null, settlement, "Mars Society (MS)");
-		// 2017-04-11 Use Builder Pattern for creating an instance of Person
+		//  Use Builder Pattern for creating an instance of Person
 		Person person = Person.create("test person", settlement)
 								.setGender(GenderType.MALE)
 								.setCountry(null)
@@ -768,7 +758,7 @@ public class WalkingStepsTest extends TestCase {
     public void testWalkingStepsRoverToRover() {
 
         // Create new simulation instance.
-        SimulationConfig.testLoadConfig();
+        SimulationConfig.loadConfig();
         Simulation.createNewSimulation(-1, true);
         // Clear out existing settlements in simulation.
         UnitManager unitManager = Simulation.instance().getUnitManager();
@@ -803,8 +793,7 @@ public class WalkingStepsTest extends TestCase {
         Rover rover2 = new Rover("Test Rover 2", "Explorer Rover", settlement);
         rover2.setParkedLocation(-50D, 20D, 15D);
 
-        //Person person = new Person("test person", PersonGender.MALE, null, settlement, "Mars Society (MS)");
-		// 2017-04-11 Use Builder Pattern for creating an instance of Person
+		// Use Builder Pattern for creating an instance of Person
 		Person person = Person.create("test person", settlement)
 								.setGender(GenderType.MALE)
 								.setCountry(null)
@@ -856,14 +845,14 @@ public class WalkingStepsTest extends TestCase {
     public void testWalkingStepsBuildingToRoverInGarage() {
 
         // Create new simulation instance.
-        SimulationConfig.testLoadConfig();
+        SimulationConfig.loadConfig();
         Simulation.createNewSimulation(-1, true);
         // Clear out existing settlements in simulation.
         UnitManager unitManager = Simulation.instance().getUnitManager();
-//        Iterator<Settlement> i = unitManager.getSettlements().iterator();
-//        while (i.hasNext()) {
-//            unitManager.removeUnit(i.next());
-//        }
+        Iterator<Settlement> i = unitManager.getSettlements().iterator();
+        while (i.hasNext()) {
+            unitManager.removeUnit(i.next());
+        }
         
         Settlement settlement = new MockSettlement();
 		unitManager.addSettlementID(settlement);
@@ -893,11 +882,10 @@ public class WalkingStepsTest extends TestCase {
                 new Point2D[] { parkingLocation });
         building0.addFunction(garage);
         garage.addVehicle(rover);
-        // 2016-10-28 Added setupBuildingFunctionsMap()
+
         buildingManager.setupBuildingFunctionsMap();
 
-        //Person person = new Person("test person", PersonGender.MALE, null, settlement, "Mars Society (MS)");
-		// 2017-04-11 Use Builder Pattern for creating an instance of Person
+        // Use Builder Pattern for creating an instance of Person
 		Person person = Person.create("test person", settlement)
 								.setGender(GenderType.MALE)
 								.setCountry(null)
@@ -940,14 +928,14 @@ public class WalkingStepsTest extends TestCase {
     public void testWalkingStepsRoverToBuildingInGarage() {
 
         // Create new simulation instance.
-        SimulationConfig.testLoadConfig();
+        SimulationConfig.loadConfig();
         Simulation.createNewSimulation(-1, true);
         // Clear out existing settlements in simulation.
         UnitManager unitManager = Simulation.instance().getUnitManager();
-//        Iterator<Settlement> i = unitManager.getSettlements().iterator();
-//        while (i.hasNext()) {
-//            unitManager.removeUnit(i.next());
-//        }
+        Iterator<Settlement> i = unitManager.getSettlements().iterator();
+        while (i.hasNext()) {
+            unitManager.removeUnit(i.next());
+        }
         
         Settlement settlement = new MockSettlement();
 		unitManager.addSettlementID(settlement);
@@ -977,11 +965,10 @@ public class WalkingStepsTest extends TestCase {
                 new Point2D[] { parkingLocation });
         building0.addFunction(garage);
         garage.addVehicle(rover);
-        // 2016-10-28 Added setupBuildingFunctionsMap()
+
         buildingManager.setupBuildingFunctionsMap();
 
-        //Person person = new Person("test person", PersonGender.MALE, null, settlement, "Mars Society (MS)");
-		// 2017-04-11 Use Builder Pattern for creating an instance of Person
+        // Use Builder Pattern for creating an instance of Person
 		Person person = Person.create("test person", settlement)
 								.setGender(GenderType.MALE)
 								.setCountry(null)
@@ -1025,7 +1012,7 @@ public class WalkingStepsTest extends TestCase {
     public void testWalkingStepsExteriorToBuildingAirlock() {
 
         // Create new simulation instance.
-        SimulationConfig.testLoadConfig();
+        SimulationConfig.loadConfig();
         Simulation.createNewSimulation(-1, true);
         // Clear out existing settlements in simulation.
         UnitManager unitManager = Simulation.instance().getUnitManager();
@@ -1053,11 +1040,10 @@ public class WalkingStepsTest extends TestCase {
 
         BuildingAirlock airlock0 = new BuildingAirlock(building0, 1, 0D, 0D, 0D, 0D, 0D, 0D);
         building0.addFunction(new EVA(building0, airlock0));
-        // 2016-10-28 Added setupBuildingFunctionsMap()
+
         buildingManager.setupBuildingFunctionsMap();
 
-        //Person person = new Person("test person", PersonGender.MALE, null, settlement, "Mars Society (MS)");
-		// 2017-04-11 Use Builder Pattern for creating an instance of Person
+        // Use Builder Pattern for creating an instance of Person
 		Person person = Person.create("test person", settlement)
 								.setGender(GenderType.MALE)
 								.setCountry(null)
@@ -1133,11 +1119,10 @@ public class WalkingStepsTest extends TestCase {
 //        BuildingAirlock airlock0 = new BuildingAirlock(building0, 1, 0D, 0D, 0D, 0D, 0D, 0D);
 //        EVA eva = new EVA(building0, airlock0);
 //        building0.addFunction(eva);
-//        // 2016-10-28 Added setupBuildingFunctionsMap()
+
 //        buildingManager.setupBuildingFunctionsMap();
 //
-//        //Person person = new Person("test person", PersonGender.MALE, null, settlement, "Mars Society (MS)");
-//		// 2017-04-11 Use Builder Pattern for creating an instance of Person
+//        // Use Builder Pattern for creating an instance of Person
 //		Person person = Person.create("test person", settlement)
 //								.setGender(GenderType.MALE)
 //								.setCountry(null)
@@ -1170,7 +1155,7 @@ public class WalkingStepsTest extends TestCase {
     public void testWalkingStepsExteriorToRover() {
 
         // Create new simulation instance.
-        SimulationConfig.testLoadConfig();
+        SimulationConfig.loadConfig();
         Simulation.createNewSimulation(-1, true);
         // Clear out existing settlements in simulation.
         UnitManager unitManager = Simulation.instance().getUnitManager();
@@ -1197,14 +1182,13 @@ public class WalkingStepsTest extends TestCase {
         BuildingAirlock airlock0 = new BuildingAirlock(building0, 1, 0D, 0D, 0D, 0D, 0D, 0D);
         EVA eva = new EVA(building0, airlock0);
         building0.addFunction(eva);
-        // 2016-10-28 Added setupBuildingFunctionsMap()
+
         buildingManager.setupBuildingFunctionsMap();
 
         Rover rover = new Rover("Test Rover", "Explorer Rover", settlement);
         rover.setParkedLocation(15D, -10D, 0D);
 
-        //Person person = new Person("test person", PersonGender.MALE, null, settlement, "Mars Society (MS)");
-		// 2017-04-11 Use Builder Pattern for creating an instance of Person
+        // Use Builder Pattern for creating an instance of Person
 		Person person = Person.create("test person", settlement)
 								.setGender(GenderType.MALE)
 								.setCountry(null)

@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
@@ -28,6 +29,8 @@ import org.mars_sim.msp.core.vehicle.VehicleType;
  */
 public class GoodsUtil {
 
+	private static Logger logger = Logger.getLogger(GoodsUtil.class.getName());
+	
 	// Data members
 	private static List<Good> goodsList;
 
@@ -45,7 +48,6 @@ public class GoodsUtil {
 	 * @return list of goods
 	 */
 	public static List<Good> getGoodsList() {
-
 		if (goodsList == null) {
 			goodsList = new ArrayList<Good>();
 			populateGoodsList();
@@ -58,7 +60,6 @@ public class GoodsUtil {
 	 * Destroys the current goods list.
 	 */
 	public static void destroyGoodsList() {
-
 		if (goodsList != null) {
 			goodsList.clear();
 		}
@@ -68,7 +69,8 @@ public class GoodsUtil {
 
 	public static Good createResourceGood(Resource resource) {
 		if (resource == null) {
-			throw new IllegalArgumentException("resource cannot be null");
+			logger.severe("resource is NOT supposed to be null.");
+//			throw new IllegalArgumentException("resource cannot be null");
 		}
 		GoodType category = null;
 		if (resource instanceof AmountResource)
@@ -103,8 +105,9 @@ public class GoodsUtil {
 	 * @return good for the resource.
 	 */
 	public static Good getResourceGood(Resource resource) {
-		if (resource == null) {
-			throw new IllegalArgumentException("resource cannot be null");
+		if (resource == null) { 
+			logger.severe("resource is NOT supposed to be null.");
+//			throw new IllegalArgumentException("resource cannot be null");
 		}
 //		GoodType category = null;
 //		if (resource instanceof AmountResource)
@@ -119,6 +122,7 @@ public class GoodsUtil {
 			if (good.getID() == id)
 				return good;	
 		}
+		logger.severe("resource is NOT supposed to be null.");
 		return null;
 	}
 
@@ -146,6 +150,7 @@ public class GoodsUtil {
 			if (good.getID() == id)
 				return good;	
 		}
+		logger.severe("resource is NOT supposed to be null.");
 		return null;
 	}
 	
@@ -183,7 +188,8 @@ public class GoodsUtil {
 	 */
 	public static Good getEquipmentGood(Class<?> equipmentClass) {
 		if (equipmentClass == null) {
-			throw new IllegalArgumentException("goodClass cannot be null");
+			logger.severe("equipmentClass is NOT supposed to be null.");
+//			throw new IllegalArgumentException("equipmentClass cannot be null");
 		}
 		int id = EquipmentType.getEquipmentID(equipmentClass);
 		Iterator<Good> i = getGoodsList().iterator();
@@ -215,7 +221,8 @@ public class GoodsUtil {
 	 */
 	public static Good createVehicleGood(String vehicleType) {
 		if ((vehicleType == null) || vehicleType.trim().length() == 0) {
-			throw new IllegalArgumentException("vehicleType cannot be blank or null.");
+			logger.severe("vehicleType is NOT supposed to be blacnk or null.");
+//			throw new IllegalArgumentException("vehicleType cannot be blank or null.");
 		}
 //		Class<?> vehicleClass = Rover.class;
 //		if (LightUtilityVehicle.NAME.equalsIgnoreCase(vehicleType))
@@ -232,7 +239,8 @@ public class GoodsUtil {
 	 */
 	public static Good getVehicleGood(String vehicleType) {
 		if ((vehicleType == null) || vehicleType.trim().length() == 0) {
-			throw new IllegalArgumentException("vehicleType cannot be blank or null.");
+			logger.severe("vehicleType is NOT supposed to be blacnk or null.");
+//			throw new IllegalArgumentException("vehicleType cannot be blank or null.");
 		}
 		int id = VehicleType.convertName2ID(vehicleType);
 		Iterator<Good> i = getGoodsList().iterator();
@@ -252,7 +260,8 @@ public class GoodsUtil {
 	 */
 	public static boolean containsGood(Good good) {
 		if (good == null) {
-			throw new IllegalArgumentException("good cannot be null.");
+//			throw new IllegalArgumentException("good cannot be null.");
+			logger.severe("good is NOT supposed to be null.");
 		}
 		return getGoodsList().contains(good);
 	}

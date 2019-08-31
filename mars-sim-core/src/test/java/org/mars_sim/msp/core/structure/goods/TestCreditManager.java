@@ -13,7 +13,7 @@ public class TestCreditManager extends TestCase {
 
     @Override
     public void setUp() throws Exception {
-        SimulationConfig.testLoadConfig();
+        SimulationConfig.loadConfig();
     }
 
     public void testSetCredit() {

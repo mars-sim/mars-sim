@@ -19,7 +19,7 @@ public class TestSVGMapUtil extends TestCase {
 
     @Override
     public void setUp() throws Exception {
-        SimulationConfig.testLoadConfig();
+        SimulationConfig.loadConfig();
     }
 
     /**

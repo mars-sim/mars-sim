@@ -360,13 +360,13 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 		return type;
 	}
 	
-	public boolean equals(Object obj) {
-		if (this == obj) return true;
-		if (obj == null) return false;
-		if (this.getClass() != obj.getClass()) return false;
-		Equipment e = (Equipment) obj;
-		return this.getNickName().equals(e.getNickName());
-	}
+//	public boolean equals(Object obj) {
+//		if (this == obj) return true;
+//		if (obj == null) return false;
+//		if (this.getClass() != obj.getClass()) return false;
+//		Equipment e = (Equipment) obj;
+//		return this.getNickName().equals(e.getNickName());
+//	}
 	
 	@Override
 	public void destroy() {

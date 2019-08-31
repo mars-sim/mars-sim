@@ -618,13 +618,18 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 		return name.compareToIgnoreCase(o.name);
 	}
 
-	public boolean equals(Object obj) {
-		if (this == obj) return true;
-		if (obj == null) return false;
-		if (this.getClass() != obj.getClass()) return false;
-		Unit u = (Unit) obj;
-		return this.name.equals(u.getName());
-	}
+	
+	// TODO: determine why equals() causes testInventoryFindAllUnitsGood() and 
+	// testInventoryFindNumUnitsGood() in TestInventory to fail. 
+	// TODO: how to tweak Inventory's storeUnit() to allow 
+//	public boolean equals(Object obj) {
+//		if (this == obj) return true;
+//		if (obj == null) return false;
+//		if (this.getClass() != obj.getClass()) return false;
+//		Unit u = (Unit) obj;
+//		return this.name.equals(u.getName())
+//				&& Math.abs(this.baseMass - u.getBaseMass()) < Double.MIN_NORMAL ;
+//	}
 	
 	public LocationSituation getLocationSituation() {
 		return null;

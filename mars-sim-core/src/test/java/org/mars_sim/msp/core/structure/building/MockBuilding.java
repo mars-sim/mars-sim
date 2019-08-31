@@ -69,13 +69,8 @@ public class MockBuilding extends Building {
 	    functions.add(function);
 	}
 
-//	public void removeFunction(Function function) {
-//		if (functions.contains(function))
-//	        functions.remove(function);
-//	}
-
 	@Override
 	public Inventory getInventory() {
-		return null;//manager.getSettlement().getInventory();
+		return null;
 	}
 }

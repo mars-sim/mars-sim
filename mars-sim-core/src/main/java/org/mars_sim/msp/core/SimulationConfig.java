@@ -30,6 +30,7 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
+import org.jdom2.input.sax.XMLReaders;
 import org.mars_sim.msp.core.foodProduction.FoodProductionConfig;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplyConfig;
 import org.mars_sim.msp.core.malfunction.MalfunctionConfig;
@@ -256,10 +257,10 @@ public class SimulationConfig implements Serializable {
 		// Query if the xml version matches
 		// If not, copy all xml over
 
-        boolean existed = xmlPath.toFile().exists();
+        boolean xmlDirExist = xmlPath.toFile().exists();
 
 		// if "xml" exits as a file, delete it
-		if (existed && xmlLocation.isFile()) {
+		if (xmlDirExist && xmlLocation.isFile()) {
 			LogConsolidated.log(Level.CONFIG, 0, sourceName, "'" + xmlLocation +  "'" 
 					+ " is not supposed to exist as a file. Deleting it.");
 			try {
@@ -269,18 +270,22 @@ public class SimulationConfig implements Serializable {
 			}
 		}
 		
-		existed = xmlLocation.exists();
-
+		xmlDirExist = xmlLocation.exists();
+		String buildText = "";
+		boolean versionFileExist = false;
+		boolean xmlDirDeleted = false;
+		
 		// if the "xml" directory exists, back up everything inside and clean the directory
-		if (existed && xmlLocation.isDirectory()) {
+		if (xmlDirExist && xmlLocation.isDirectory()) {
 			LogConsolidated.log(Level.CONFIG, 0, sourceName, 
 			"'xml' folder already existed.");		
 			
-			if (versionFile.exists()) {
+			versionFileExist = versionFile.exists();
+			if (versionFileExist) {
 				BufferedReader brTest;
 				try {
 					brTest = new BufferedReader(new FileReader(versionFile));
-				    String buildText = brTest.readLine();
+				    buildText = brTest.readLine();
 				    if (buildText.equals(Simulation.BUILD)) {
 						LogConsolidated.log(Level.CONFIG, 0, sourceName, 
 								"The version.txt shows the existing xml file set already has the most current BUILD tag.");		
@@ -295,65 +300,78 @@ public class SimulationConfig implements Serializable {
 			}
 			
 			// TODO: need to check if all the xml files exist 
-			
-			if (!sameBuild) {
-				// TODO: Generate checksum on each of xml to see if it has been altered. 
-				// TODO: If it does, back them up into a subdirectory and start off a new batch of xml files
-	//			String SHA512 = DatatypeConverter.printHexBinary(Hash.SHA512.checksum(file))
-	//			may use FileUtils.checksum(file, checksum)
-				
-				try {
-					LogConsolidated.log(Level.CONFIG, 0, sourceName, 
-							"The version.txt shows the existing xml file is of different build.");
-					LogConsolidated.log(Level.CONFIG, 0, sourceName, 
-							"Backing up existing xml files into the 'backup' folder. Deleting the xml folder.");	
-					
-					// copy everything in the xml folder
-					FileUtils.copyDirectoryToDirectory(xmlLocation, backupLocation);
-					
-					// delete the version.txt file 
-					versionFile.delete();
+			// TODO: Generate checksum on each of xml to see if it has been altered. 
+			// TODO: If it does, back them up into a subdirectory and start off a new batch of xml files
+//			String SHA512 = DatatypeConverter.printHexBinary(Hash.SHA512.checksum(file))
+//			may use FileUtils.checksum(file, checksum)
 
-					// delete everything in the xml folder
-//					FileUtils.deleteDirectory(xmlLocation);
-					deleteDirectory(xmlLocation);
-	
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
 		} 
 		
+		if (!xmlDirExist)
+			LogConsolidated.log(Level.CONFIG, 0, sourceName, 
+				"The xml directory does not exist in user home.");	
+		if (!versionFileExist)
+			LogConsolidated.log(Level.CONFIG, 0, sourceName, 
+				"The version.txt does not exist.");	
+		if (buildText.equals(""))
+			LogConsolidated.log(Level.CONFIG, 0, sourceName, 
+				"The version.txt is invalid.");	
+		if (!sameBuild)
+			LogConsolidated.log(Level.CONFIG, 0, sourceName, 
+				"The version.txt shows a different build.");
 		
-		existed = xmlLocation.exists();
+		if (!versionFileExist || buildText.equals("") || !sameBuild) {
 
-		if (!sameBuild) {
-
-			// the "xml" folder does NOT exist
-			if (!xmlLocation.exists()) {
-				LogConsolidated.log(Level.CONFIG, 0, sourceName, 
-						"'xml' folder does not exist. Creating it.");
-				// Create the xml folder
-				versionFile.getParentFile().mkdirs();
-			}
+			LogConsolidated.log(Level.CONFIG, 0, sourceName, 
+					"Backing up existing xml files into a 'backup' folder. Cleaning the xml folder.");
+		}
+		
+		if (!xmlDirExist || !versionFileExist || buildText.equals("") || !sameBuild) {
 			
-			List<String> lines = Arrays.asList(Simulation.BUILD);
 			try {
-				// Create the version.txt file
-				Files.write(versionPath, lines, StandardCharsets.UTF_8);
+
+				if (!buildText.equals("")) {
+					String versionDir = Simulation.BACKUP_DIR + File.separator + buildText;		
+			        File versionLocation = new File(versionDir);
+					// copy everything in the xml folder
+					FileUtils.copyDirectoryToDirectory(xmlLocation, versionLocation);					
+				}
+
+				else {
+					// copy everything in the xml folder
+					FileUtils.copyDirectoryToDirectory(xmlLocation, backupLocation);
+				}
+				
+				// delete the version.txt file 
+				versionFile.delete();
+
+				// delete everything in the xml folder
+//				FileUtils.deleteDirectory(xmlLocation);
+				xmlDirDeleted = deleteDirectory(xmlLocation);
+
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
-        	
-		loadDefaultConfiguration();
-	}
+		
+		xmlDirExist = xmlLocation.exists();
 
-	public static void testLoadConfig() {
-		// logger.info("loadConfig() is on " + Thread.currentThread().getName());
-		if (simulationDoc != null) {
-			instance.destroyOldConfiguration();
+		// if the "xml" folder does NOT exist
+		if (!xmlLocation.exists() || xmlDirDeleted) {
+			LogConsolidated.log(Level.CONFIG, 0, sourceName, 
+					"'xml' folder does not exist. Creating it.");
+			// Create the xml folder
+			versionFile.getParentFile().mkdirs();
 		}
+		
+		List<String> lines = Arrays.asList(Simulation.BUILD);
+		try {
+			// Create the version.txt file
+			Files.write(versionPath, lines, StandardCharsets.UTF_8);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+        	
 		loadDefaultConfiguration();
 	}
 		
@@ -373,7 +391,7 @@ public class SimulationConfig implements Serializable {
 		 
 		// either file or an empty directory 
 //		System.out.println("removing file or directory : " + dir.getName());
-		return dir.delete(); 
+		return true; 
 	}
     
 	
@@ -919,7 +937,9 @@ public class SimulationConfig implements Serializable {
 	 * @throws Exception     if XML could not be parsed or file could not be found.
 	 */
 	private static Document parseXMLFileAsJDOMDocument(String filename, boolean useDTD) {
-	    SAXBuilder builder = new SAXBuilder(useDTD);
+//	    SAXBuilder builder = new SAXBuilder(useDTD);
+	    SAXBuilder builder = new SAXBuilder(null, null, null);
+	    
 	    Document document = null;
 	    
 		String fullPathName = XML_FOLDER + filename + XML;

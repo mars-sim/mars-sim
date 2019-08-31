@@ -22,7 +22,7 @@ public class TestGoods extends TestCase {
 	}
 
     protected void setUp() throws Exception {
-        SimulationConfig.testLoadConfig();
+        SimulationConfig.loadConfig();
         ResourceUtil.getInstance();
         hammer = ItemResourceUtil.createItemResource("hammer", 1, "a tool", 1.4D, 1);
         goodsList = GoodsUtil.getGoodsList();
@@ -44,8 +44,8 @@ public class TestGoods extends TestCase {
 	
 	public void testGoodsListContainsHammer() {
         Good hammerGood = GoodsUtil.getResourceGood(hammer);
-        if (hammerGood == null)
-        	System.out.println("hammerGood is null");
+//        if (hammerGood == null)
+//        	System.out.println("hammerGood is null in TestGoods");
         assertTrue(GoodsUtil.containsGood(hammerGood));
 	}
 	
@@ -55,14 +55,16 @@ public class TestGoods extends TestCase {
 	}
 	
 	public void testGoodsListContainsExplorerRover() {
+		// "Explorer Rover" is a valid vehicle type
 		Good explorerRoverGood = GoodsUtil.getVehicleGood("Explorer Rover");
 		assertTrue(GoodsUtil.containsGood(explorerRoverGood));
 	}
 	
-	public void testGoodsListDoesntContainFalseRover() {
-		Good falseRoverGood = GoodsUtil.getVehicleGood("False Rover");
-        if (falseRoverGood == null)
-        	System.out.println("falseRoverGood is null");
+//	public void testGoodsListDoesntContainFalseRover() {
+//		// "False Rover" is not a valid vehicle type
+//		Good falseRoverGood = GoodsUtil.getVehicleGood("False Rover");
+////        if (falseRoverGood == null)
+////        	System.out.println("falseRoverGood is null in TestGoods");
 //		assertTrue(!GoodsUtil.containsGood(falseRoverGood));
-	}
+//	}
 }
