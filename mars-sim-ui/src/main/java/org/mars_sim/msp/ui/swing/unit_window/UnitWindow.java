@@ -464,6 +464,8 @@ public abstract class UnitWindow extends ModalInternalFrame {
 			}
 		}
 
+		setTitle(unit.getName());
+		
 		if (unit instanceof Person) {
 			statusUpdate();
 		}
@@ -477,6 +479,10 @@ public abstract class UnitWindow extends ModalInternalFrame {
 		return null;
     }
     
+	public void setTitle(String value) {
+		super.setTitle(unit.getName());
+	}
+	
 	/**
 	 * Prepares unit window for deletion.
 	 */

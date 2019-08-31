@@ -15,10 +15,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
+import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplyMissionTemplate;
 import org.mars_sim.msp.core.resource.AmountResource;
@@ -104,9 +106,9 @@ public class SettlementConfig implements Serializable {
 	private Collection<SettlementTemplate> settlementTemplates;
 	private List<InitialSettlement> initialSettlements;
 	private List<NewArrivingSettlement> newArrivingSettlements;
-	private Map<String, List<String>> settlementNamesMap = new HashMap<>();
+	private Map<String, List<String>> settlementNamesMap = new ConcurrentHashMap<>();
 	private Map<Integer, String> scenarioMap = new HashMap<>();
-	private Map<Integer, String> settlementMap = new HashMap<>();
+	private Map<Integer, String> settlementMap = new ConcurrentHashMap<>();
 
 	private Document settlementDoc;
 
@@ -585,7 +587,6 @@ public class SettlementConfig implements Serializable {
 	 * @param settlementDoc DOM document with settlement configuration.
 	 * @throws Exception if XML error.
 	 */
-	@SuppressWarnings("unchecked")
 	private void loadSettlementNames(Document settlementDoc) {
 		Element root = settlementDoc.getRootElement();
 		Element settlementNameList = root.getChild(SETTLEMENT_NAME_LIST);
@@ -643,6 +644,18 @@ public class SettlementConfig implements Serializable {
 	 */
 	public void changeSettlementName(String oldName, String newName) {
 		if (settlementMap.containsValue(oldName)) {
+			
+			Settlement s = CollectionUtils.findSettlement(oldName);
+			
+			// Change the name in settlementNamesMap
+			String sponsor = s.getSponsor();
+			List<String> names = settlementNamesMap.get(sponsor);
+//			int index = names.indexOf(oldName);
+			names.remove(oldName);
+			names.add(newName);
+			settlementNamesMap.put(sponsor, names);
+			
+			// Change the name in settlementMap
 			for (Map.Entry<Integer, String> e : settlementMap.entrySet()) {
 				Integer key = e.getKey();
 				Object value = e.getValue();
@@ -651,6 +664,8 @@ public class SettlementConfig implements Serializable {
 					settlementMap.put(key, newName);
 				}
 			}
+			
+			logger.config("The settlement '" + oldName + "' has changed its name to '" + newName + "'");
 		}
 	}
 
@@ -975,14 +990,14 @@ public class SettlementConfig implements Serializable {
 		return new ArrayList<String>(settlementNamesMap.get("Mars Society (MS)"));
 	}
 
-	/**
-	 * Gets a list of possible settlement names.
-	 * 
-	 * @return list of settlement names as strings
-	 */
-	public List<String> getSettlementNameList(String sponsor) {
-		return new ArrayList<String>(settlementNamesMap.get(sponsor));
-	}
+//	/**
+//	 * Gets a list of possible settlement names.
+//	 * 
+//	 * @return list of settlement names as strings
+//	 */
+//	public List<String> getSettlementNameList(String sponsor) {
+//		return new ArrayList<String>(settlementNamesMap.get(sponsor));
+//	}
 
 	/**
 	 * Clears the list of initial settlements.

@@ -746,7 +746,7 @@ public class SettlementTransparentPanel extends WebComponent {
 
 		String oldName = mapPanel.getSettlement().getName();
 
-		//logger.info("Old name was " + oldName);
+//		logger.info("Old name was " + oldName);
 		//boolean isFX = Platform.isFxApplicationThread();
 
 //		if (desktop.getMainScene() != null) {
@@ -793,8 +793,10 @@ public class SettlementTransparentPanel extends WebComponent {
 			if (askNameDialog() != null) {
 				String settlementNewName = askNameDialog().trim();
 	
-				if ( settlementNewName.trim() == null || settlementNewName.trim().length() == 0)
-					settlementNewName = askNameDialog();
+				if ( settlementNewName.trim() == null || settlementNewName.trim() == "" 
+						|| settlementNewName.trim().length() == 0)
+//					settlementNewName = askNameDialog();
+					return;
 				else {
 					mapPanel.getSettlement().changeName(settlementNewName);
 				}

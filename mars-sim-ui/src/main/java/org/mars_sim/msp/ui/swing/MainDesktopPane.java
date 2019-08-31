@@ -81,8 +81,8 @@ public class MainDesktopPane extends JDesktopPane
 
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(MainDesktopPane.class.getName());
-	private static String loggerName = logger.getName();
-	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+//	private static String loggerName = logger.getName();
+//	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 
 //	private static final double PERIOD_IN_MILLISOLS = 10D * 500D / MarsClock.SECONDS_PER_MILLISOL;// 750D / MarsClock.SECONDS_IN_MILLISOL;
 	public final static String THEME_PATH = "/fxui/css/theme/";

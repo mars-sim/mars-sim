@@ -1679,7 +1679,7 @@ public class Simulation implements ClockListener, Serializable {
 	 */
 	@Override
 	public void clockPulse(double time) {
-		if (ut != null && !clockOnPause && !masterClock.isPaused()) {
+		if (ut != null && !clockOnPause && !masterClock.isPaused() && time > Double.MIN_VALUE) {
 
 			ut.updateTime();
 

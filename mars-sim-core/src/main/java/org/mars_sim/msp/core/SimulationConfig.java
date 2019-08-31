@@ -326,31 +326,35 @@ public class SimulationConfig implements Serializable {
 					"Backing up existing xml files into a 'backup' folder. Cleaning the xml folder.");
 		}
 		
-		if (!xmlDirExist || !versionFileExist || buildText.equals("") || !sameBuild) {
+		if (xmlDirExist) {
 			
-			try {
-
-				if (!buildText.equals("")) {
-					String versionDir = Simulation.BACKUP_DIR + File.separator + buildText;		
-			        File versionLocation = new File(versionDir);
-					// copy everything in the xml folder
-					FileUtils.copyDirectoryToDirectory(xmlLocation, versionLocation);					
+			if (!versionFileExist || buildText.equals("") || !sameBuild) {
+			
+				try {
+	
+					if (!buildText.equals("")) {
+						String versionDir = Simulation.BACKUP_DIR + File.separator + buildText;		
+				        File versionLocation = new File(versionDir);
+						// copy everything in the xml folder
+						FileUtils.copyDirectoryToDirectory(xmlLocation, versionLocation);					
+					}
+	
+					else {
+						// copy everything in the xml folder
+						FileUtils.copyDirectoryToDirectory(xmlLocation, backupLocation);
+					}
+					
+					if (buildText.equals("") || !sameBuild)
+						// delete the version.txt file 
+						versionFile.delete();
+	
+					// delete everything in the xml folder
+	//				FileUtils.deleteDirectory(xmlLocation);
+					xmlDirDeleted = deleteDirectory(xmlLocation);
+	
+				} catch (IOException e) {
+					e.printStackTrace();
 				}
-
-				else {
-					// copy everything in the xml folder
-					FileUtils.copyDirectoryToDirectory(xmlLocation, backupLocation);
-				}
-				
-				// delete the version.txt file 
-				versionFile.delete();
-
-				// delete everything in the xml folder
-//				FileUtils.deleteDirectory(xmlLocation);
-				xmlDirDeleted = deleteDirectory(xmlLocation);
-
-			} catch (IOException e) {
-				e.printStackTrace();
 			}
 		}
 		
@@ -358,8 +362,6 @@ public class SimulationConfig implements Serializable {
 
 		// if the "xml" folder does NOT exist
 		if (!xmlLocation.exists() || xmlDirDeleted) {
-			LogConsolidated.log(Level.CONFIG, 0, sourceName, 
-					"'xml' folder does not exist. Creating it.");
 			// Create the xml folder
 			versionFile.getParentFile().mkdirs();
 		}

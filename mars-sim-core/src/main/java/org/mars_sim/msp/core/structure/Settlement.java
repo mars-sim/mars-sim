@@ -4238,6 +4238,11 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 
 		return true;
 	}
+	
+	public void setName(String value) {
+		super.setName(value);
+		this.name = value;
+	}
 
 	public boolean equals(Object obj) {
 		if (this == obj) return true;

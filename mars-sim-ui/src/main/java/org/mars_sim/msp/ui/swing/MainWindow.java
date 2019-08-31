@@ -70,7 +70,8 @@ import com.nilo.plaf.nimrod.NimRODTheme;
  * The MainWindow class is the primary UI frame for the project. It contains the
  * tool bars and main desktop pane.
  */
-public class MainWindow extends JComponent {
+public class MainWindow 
+extends JComponent {
 
 	private static final long serialVersionUID = 1L;
 
