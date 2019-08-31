@@ -161,8 +161,8 @@ public class Preference implements Serializable {
 			MetaTask metaTask = i.next();
 
 			// Set them up in random
-			result = RandomUtil.getRandomInt(-2, 2);
-
+			double rand = RandomUtil.getRandomDouble(3.0) - RandomUtil.getRandomDouble(2.0);
+			
 			// Note: the preference score on a metaTask is modified by a person's natural
 			// attributes
 			// TODO: turn these hardcoded relationship between attributes and task
@@ -177,40 +177,62 @@ public class Preference implements Serializable {
 					|| metaTask instanceof PerformLaboratoryResearchMeta
 					|| metaTask instanceof PerformMathematicalModelingMeta
 					|| metaTask instanceof ProposeScientificStudyMeta
-					|| metaTask instanceof RespondToStudyInvitationMeta || metaTask instanceof RepairEVAMalfunctionMeta
-					|| metaTask instanceof RepairMalfunctionMeta || metaTask instanceof StudyFieldSamplesMeta)
-				result += (int) aa;
+					|| metaTask instanceof RespondToStudyInvitationMeta 
+					|| metaTask instanceof StudyFieldSamplesMeta)
+				rand += aa + .5;
 
 			// Teaching excellence
 			if (metaTask instanceof TeachMeta || metaTask instanceof ReadMeta
 					|| metaTask instanceof PeerReviewStudyPaperMeta || metaTask instanceof WriteReportMeta)
-				result += (int) t;
+				rand += .7 * t + .3 * aa;
 
 			// Endurance & strength related
 			if (metaTask instanceof ConsolidateContainersMeta || metaTask instanceof ConstructBuildingMeta
 					|| metaTask instanceof DigLocalIceMeta || metaTask instanceof DigLocalRegolithMeta
-					|| metaTask instanceof EatMealMeta || metaTask instanceof LoadVehicleEVAMeta
-					|| metaTask instanceof LoadVehicleGarageMeta || metaTask instanceof UnloadVehicleEVAMeta
-					|| metaTask instanceof UnloadVehicleGarageMeta || metaTask instanceof SalvageBuildingMeta
-					|| metaTask instanceof SalvageGoodMeta || metaTask instanceof RepairEVAMalfunctionMeta
-					|| metaTask instanceof RepairMalfunctionMeta || metaTask instanceof MaintenanceEVAMeta
-					|| metaTask instanceof MaintenanceMeta)
-				result += (int) es;
+					|| metaTask instanceof EatMealMeta 
+					|| metaTask instanceof LoadVehicleEVAMeta || metaTask instanceof LoadVehicleGarageMeta 
+					|| metaTask instanceof UnloadVehicleEVAMeta || metaTask instanceof UnloadVehicleGarageMeta 
+					|| metaTask instanceof SalvageBuildingMeta || metaTask instanceof SalvageGoodMeta
+					|| metaTask instanceof RepairEVAMalfunctionMeta	|| metaTask instanceof RepairMalfunctionMeta
+					|| metaTask instanceof MaintenanceMeta || metaTask instanceof MaintenanceEVAMeta)
+				rand += .7 * es + .3 * cou;
 
 			// leadership
 			if (metaTask instanceof ProposeScientificStudyMeta || metaTask instanceof InviteStudyCollaboratorMeta
 					|| metaTask instanceof ReviewJobReassignmentMeta || metaTask instanceof ReviewMissionPlanMeta
 					|| metaTask instanceof WriteReportMeta)
-				result += (int) l;
+				rand += l;
 
+			// stress & emotion & spiritually
 			if (metaTask instanceof TreatMedicalPatientMeta)
 				// need patience and stability to administer healing
-				result += (int) ((se + ss) / 2D);
+				rand += (se + ss) / 2D;
 
+			// stress & emotion
 			if (metaTask instanceof RequestMedicalTreatmentMeta || metaTask instanceof YogaMeta)
 				// if a person is stress-resilient and relatively emotional stable,
 				// he will more likely endure pain and less likely ask to be medicated.
-				result -= (int) se;
+				rand -= se;
+
+			// people oriented
+			if (metaTask instanceof ConnectWithEarthMeta || metaTask instanceof HaveConversationMeta)
+				rand += ca;
+
+			// Artistic quality
+			if (metaTask instanceof ConstructBuildingMeta 
+					|| metaTask instanceof ManufactureConstructionMaterialsMeta || metaTask instanceof ManufactureGoodMeta 
+					|| metaTask instanceof ObserveAstronomicalObjectsMeta
+					|| metaTask instanceof ProduceFoodMeta 
+					|| metaTask instanceof CookMealMeta
+					|| metaTask instanceof PrepareDessertMeta
+					|| metaTask instanceof RecordActivityMeta
+					|| metaTask instanceof SalvageGoodMeta
+					|| metaTask instanceof TendGreenhouseMeta)
+				rand += art;
+
+			if (metaTask instanceof WorkoutMeta || metaTask instanceof PlayHoloGameMeta
+					|| metaTask instanceof YogaMeta)
+				rand += ag;
 
 			if (metaTask instanceof RelaxMeta || metaTask instanceof PlayHoloGameMeta
 			// || metaTask instanceof SleepMeta
@@ -219,30 +241,14 @@ public class Preference implements Serializable {
 				// if a person has high spirituality score and has alternative ways to deal with
 				// stress,
 				// he will less likely require extra time to relax/sleep/workout/do yoga.
-				result -= (int) ss;
-
-			if (metaTask instanceof ConnectWithEarthMeta || metaTask instanceof HaveConversationMeta)
-				result += (int) ca;
-
-			// Artistic quality
-			if (metaTask instanceof ConstructBuildingMeta || metaTask instanceof CookMealMeta
-					|| metaTask instanceof ManufactureConstructionMaterialsMeta
-					|| metaTask instanceof ManufactureGoodMeta || metaTask instanceof ObserveAstronomicalObjectsMeta
-					|| metaTask instanceof ProduceFoodMeta || metaTask instanceof PrepareDessertMeta
-					|| metaTask instanceof ProduceFoodMeta 
-					|| metaTask instanceof RecordActivityMeta
-					|| metaTask instanceof SalvageGoodMeta
-					|| metaTask instanceof TendGreenhouseMeta)
-				result += (int) art;
-
-			if (metaTask instanceof WorkoutMeta || metaTask instanceof PlayHoloGameMeta
-					|| metaTask instanceof YogaMeta)
-				result += (int) ag;
-
-			if (result > 10)
-				result = 10;
-			else if (result < -10)
-				result = -10;
+				rand -= ss;
+			
+			result = (int) Math.round(rand);
+			
+			if (result > 8)
+				result = 8;
+			else if (result < -8)
+				result = -8;
 
 			String s = getStringName(metaTask);
 			if (!scoreStringMap.containsKey(s)) {

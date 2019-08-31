@@ -1280,7 +1280,7 @@
 			<sponsor name="Mars Society (MS)"/>
 		</settlement>
 		
-		<settlement name="Tiān Chéng Base" template="Mars Direct Base (Phase 2)">
+		<settlement name="Tian Cheng" template="Mars Direct Base (Phase 2)">
 			<location longitude="4.2 E" latitude="15.9 S" />
 			<population number="8" />
 			<number-of-robots number="4" />

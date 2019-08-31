@@ -559,15 +559,17 @@ public class ScientificStudyManager // extends Thread
 			allSubject = true;
 
 		double score = 0;
-		double completed = 10;
-		double ongoing = 7.5;
-		double failed = 2.5;
+		double priCompleted = 5;
+		double priOngoing = 2.5;
+		double colCompleted = 6;
+		double colOngoing = 3;
+		double failed = 2;
 
 		List<ScientificStudy> list0 = getCompletedPrimaryStudies(s);
 		if (!list0.isEmpty()) {
 			for (ScientificStudy ss : list0) {
 				if (allSubject || type == ss.getScience()) {
-					score += completed;
+					score += priCompleted;
 				}
 			}
 		}
@@ -576,7 +578,7 @@ public class ScientificStudyManager // extends Thread
 		if (!list1.isEmpty()) {
 			for (ScientificStudy ss : list1) {
 				if (allSubject || type == ss.getScience()) {
-					score += ongoing;
+					score += priOngoing;
 				}
 			}
 		}
@@ -594,7 +596,7 @@ public class ScientificStudyManager // extends Thread
 		if (!list1.isEmpty()) {
 			for (ScientificStudy ss : list3) {
 				if (allSubject || type == ss.getScience()) {
-					score += ongoing;
+					score += colCompleted;
 				}
 			}
 		}
@@ -603,7 +605,7 @@ public class ScientificStudyManager // extends Thread
 		if (!list1.isEmpty()) {
 			for (ScientificStudy ss : list4) {
 				if (allSubject || type == ss.getScience()) {
-					score += ongoing;
+					score += colOngoing;
 				}
 			}
 		}

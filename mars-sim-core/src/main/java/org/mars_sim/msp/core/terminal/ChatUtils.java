@@ -83,6 +83,7 @@ import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RoboticAttributeManager;
 import org.mars_sim.msp.core.robot.RoboticAttributeType;
+import org.mars_sim.msp.core.science.Science;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.core.structure.Airlock;
@@ -105,6 +106,9 @@ import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleAirlock;
+
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 
 public class ChatUtils {
 
@@ -158,7 +162,8 @@ public class ChatUtils {
 			"job roster", "job demand",
 			"job prospect",
 			"bed",
-			"social"
+			"social",
+			"science" 
 	};
 	
 	public final static String[] PERSON_KEYS = new String[] {
@@ -188,14 +193,14 @@ public class ChatUtils {
 	};
 	
 	public final static String[] SYSTEM_KEYS = new String[] {
-			"score", "settlement", "check size", 
+			"settlement", "check size", 
 			"log", "log help", "log timestamp", "log rate limit", "log reset", "log all", "log fine", "log info", "log severe", "log finer", "log finest", "log warning", "log config",
 			"log all walk off", "log all eva off", "log all mission off", "log all airlock off",
 			"vehicle", "rover", 
 			"hi", "hello", "hey",
 			"proposal",
 			"reset clock thread", "reset clock pulse", "reset clock listener",
-			"social", "science"
+			"social", "science", "scores" 
 	};
 
 	public final static String SWITCHES = 
@@ -1571,6 +1576,65 @@ public class ChatUtils {
 			responseText.append("3. Food Allocation Plan");
 			responseText.append(System.lineSeparator());
 
+		}
+		
+		else if (text.toLowerCase().contains("science")) {
+	
+			questionText = YOU_PROMPT + "How are the scientific endeavors in this settlement ?"; 
+
+			double total = 0;
+			// Use Guava's multimap to handle duplicate key
+			Multimap<Double, String> map = ArrayListMultimap.create();
+//			Map<Double, String> map = new HashMap<>();
+			List<Double> list = new ArrayList<>();
+			
+			for (ScienceType scienceType : ScienceType.values()) {
+				double score = scientificManager.getScienceScore(settlementCache, scienceType);
+				total += score;
+				list.add(score);
+				map.put(score, scienceType.toString());
+			}
+			
+			responseText.append("      The Scientific Endeavour  ");
+			responseText.append(System.lineSeparator());
+			responseText.append(" -----------------------------------");
+			responseText.append(System.lineSeparator());
+			
+			responseText.append("   Rank |  Score |  Science");
+			responseText.append(System.lineSeparator());
+			responseText.append(" -----------------------------------");
+			responseText.append(System.lineSeparator());
+			
+			list.sort((Double d1, Double d2) -> -d1.compareTo(d2)); 
+			
+			int size = list.size();
+			for (int i=0; i<size; i++) {
+				double score = list.get(i);
+				String space = "";
+				
+				String scoreStr = Math.round(score*10.0)/10.0 + "";
+				int num = scoreStr.length();
+				if (num == 2)
+					space = "   ";
+				else if (num == 3)
+					space = "  ";
+				else if (num == 4)
+					space = " ";
+				else if (num == 5)
+					space = "";				
+						
+				List<String> names = new ArrayList<>(map.get(score));
+				String n = names.get(0);
+				responseText.append("    #" + (i+1) + "    " + space + scoreStr + "     " + n);
+				map.remove(score, n);
+				responseText.append(System.lineSeparator());
+			}
+			
+			responseText.append(" -----------------------------------");
+			responseText.append(System.lineSeparator());
+			responseText.append(" Overall : " + Math.round(total*10.0)/10.0);			
+			responseText.append(System.lineSeparator());
+			
 		}
 		
 		else if (text.toLowerCase().contains("social")) {
@@ -4535,13 +4599,15 @@ public class ChatUtils {
 		}
 	
 		
-		else if (text.equalsIgnoreCase("score")) {
+		else if (text.equalsIgnoreCase("scores")) {
 			
 //			double aveSocial = 0;
 //			double aveSci = 0;
 			double totalSciScore = 0;
 
 			Map<Double, String> totalScores = new HashMap<>();
+			// Use Guava's multimap to handle duplicate key
+//			Multimap<Double, String> scienceMap = ArrayListMultimap.create();
 			Map<Double, String> scienceMap = new HashMap<>();
 			Map<Double, String> socialMap = new HashMap<>();
 			List<Double> totalList = new ArrayList<>();
@@ -4574,9 +4640,9 @@ public class ChatUtils {
 					double oldScore = 0;
 					if (getKey(scienceMap, s.getName()) != null)
 						oldScore = getKey(scienceMap, s.getName());
-					double newScore = Math.round(oldScore/totalSciScore * 100.0 * 10.0)/10.0;
+//					double newScore = Math.round(oldScore/totalSciScore * 100.0 * 10.0)/10.0;
 					scienceMap.remove(oldScore, s.getName());
-					scienceMap.put(newScore, s.getName());
+//					scienceMap.put(newScore, s.getName());
 				}		
 			}
 			
@@ -4652,32 +4718,34 @@ public class ChatUtils {
 		
 		else if (text.equalsIgnoreCase("science")) {
 			
-			double ave = 0;
-			Map<Double, String> map = new HashMap<>();
-			List<Double> scores = new ArrayList<>();
+			double tot = 0;
+			// Use Guava's multimap to handle duplicate key
+			Multimap<Double, String> map = ArrayListMultimap.create();
+//			Map<Double, String> map = new HashMap<>();
+			List<Double> list = new ArrayList<>();
 			Collection<Settlement> col = unitManager.getSettlements();
 			for (Settlement s : col) {
 				double score = scientificManager.getScienceScore(s, null);
-				ave += score;
-				scores.add(score);
+				tot += score;
+				list.add(score);
 				map.put(score, s.getName());
 			}	
-			int size = scores.size();
-			ave = ave / size;
-			responseText.append("The Hall of Fame for the Science Achievement");
+
+			responseText.append("The Hall of Fame for Science Achievement");
 			responseText.append(System.lineSeparator());
 			responseText.append(" -----------------------------------");
 			responseText.append(System.lineSeparator());
 			
-			responseText.append("   Rank | Score | Settlement");
+			responseText.append("   Rank  |  Score |  Settlement");
 			responseText.append(System.lineSeparator());
 			responseText.append(" -----------------------------------");
 			responseText.append(System.lineSeparator());
 			
-			scores.sort((Double d1, Double d2) -> -d1.compareTo(d2)); 
+			list.sort((Double d1, Double d2) -> -d1.compareTo(d2)); 
 			
+			int size = list.size();
 			for (int i=0; i<size; i++) {
-				double score = scores.get(i);
+				double score = list.get(i);
 				String space = "";
 				
 				String scoreStr = Math.round(score*10.0)/10.0 + "";
@@ -4691,16 +4759,17 @@ public class ChatUtils {
 				else if (num == 5)
 					space = "";				
 				
-				String name = map.get(scores.get(i));		
-				responseText.append("    #" + (i+1) + "    " + space + Math.round(score*10.0)/10.0 + "    " + name );
+				List<String> names = new ArrayList<>(map.get(score));
+				String n = names.get(0);
+				responseText.append("    #" + (i+1) + "    " + space + scoreStr + "    " + n);
 				// Note : remove the pair will prevent the case when when 2 or more settlements have the exact same score from reappearing
-				map.remove(score, name);
+				map.remove(score, n);
 				responseText.append(System.lineSeparator());
 			}
 			
 			responseText.append(" -----------------------------------");
 			responseText.append(System.lineSeparator());
-			responseText.append(" Overall : " + Math.round(ave*10.0)/10.0);			
+			responseText.append(" Overall : " + Math.round(tot*10.0)/10.0);			
 			responseText.append(System.lineSeparator());
 				
 			return responseText.toString();
@@ -4709,31 +4778,33 @@ public class ChatUtils {
 		else if (text.toLowerCase().contains("social")) {
 
 			double ave = 0;
-			Map<Double, String> map = new HashMap<>();
-			List<Double> scores = new ArrayList<>();
+			// Use Guava's multimap to handle duplicate key
+			Multimap<Double, String> map = ArrayListMultimap.create();
+//			Map<Double, String> map = new HashMap<>();
+			List<Double> list = new ArrayList<>();
 			Collection<Settlement> col = unitManager.getSettlements();
 			for (Settlement s : col) {
 				double score = relationshipManager.getRelationshipScore(s);
 				ave += score;
-				scores.add(score);
+				list.add(score);
 				map.put(score, s.getName());
 			}	
-			int size = scores.size();
+			int size = list.size();
 			ave = ave / size;
-			responseText.append("The Hall of Fame for the Social Achievement");
+			responseText.append("The Hall of Fame for Social Achievement");
 			responseText.append(System.lineSeparator());
 			responseText.append(" -----------------------------------");
 			responseText.append(System.lineSeparator());
 			
-			responseText.append("   Rank | Score | Settlement");
+			responseText.append("   Rank  |  Score  |  Settlement");
 			responseText.append(System.lineSeparator());
 			responseText.append(" -----------------------------------");
 			responseText.append(System.lineSeparator());
 			
-			scores.sort((Double d1, Double d2) -> -d1.compareTo(d2)); 
+			list.sort((Double d1, Double d2) -> -d1.compareTo(d2)); 
 			
 			for (int i=0; i<size; i++) {
-				double score = scores.get(i);
+				double score = list.get(i);
 				String space = "";
 				
 				String scoreStr = Math.round(score*10.0)/10.0 + "";
@@ -4747,10 +4818,11 @@ public class ChatUtils {
 				else if (num == 5)
 					space = "";				
 				
-				String name = map.get(scores.get(i));		
-				responseText.append("    #" + (i+1) + "    " + space + Math.round(score*10.0)/10.0 + "    " + name );
+				List<String> names = new ArrayList<>(map.get(score));
+				String n = names.get(0);
+				responseText.append("    #" + (i+1) + "    " + space + scoreStr + "    " + n);
 				// Note : remove the pair will prevent the case when when 2 or more settlements have the exact same score from reappearing
-				map.remove(score, name);
+				map.remove(score, n);
 				responseText.append(System.lineSeparator());
 			}
 			
