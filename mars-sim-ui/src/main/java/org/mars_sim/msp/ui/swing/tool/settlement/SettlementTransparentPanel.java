@@ -444,7 +444,7 @@ public class SettlementTransparentPanel extends WebComponent {
 		infoButton.setToolTipText(Msg.getString("SettlementTransparentPanel.tooltip.rename")); //$NON-NLS-1$
 		renameBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
-				renameSettlement();
+				openRenameDialog();
 			}
 		});
 		renameP.add(renameBtn);
@@ -739,10 +739,10 @@ public class SettlementTransparentPanel extends WebComponent {
 
 
 	/**
-	 * Change and validate the new name of the Settlement
-	 * @return call Dialog popup
+	 * Open dialog box to take in the new settlement name
+	 * 
 	 */
-	public void renameSettlement() {
+	public void openRenameDialog() {
 
 		String oldName = mapPanel.getSettlement().getName();
 
@@ -789,20 +789,19 @@ public class SettlementTransparentPanel extends WebComponent {
 //		else {
 
 			JDialog.setDefaultLookAndFeelDecorated(true);
-			//String nameCache = settlement.getType();
-			if (askNameDialog() != null) {
-				String settlementNewName = askNameDialog().trim();
-	
-				if ( settlementNewName.trim() == null || settlementNewName.trim() == "" 
-						|| settlementNewName.trim().length() == 0)
-//					settlementNewName = askNameDialog();
-					return;
-				else {
-					mapPanel.getSettlement().changeName(settlementNewName);
-				}
+			String newName = askNameDialog();
+			if (!oldName.equals(newName) 
+					&& newName.trim() != null 
+					&& newName.trim() != "" 
+					&& newName.trim().length() != 0) {
+				mapPanel.getSettlement().changeName(newName);
+
+				desktop.closeToolWindow(SettlementWindow.NAME);
+				desktop.openToolWindow(SettlementWindow.NAME);
+
+			} else {
+				return;
 			}
-			desktop.closeToolWindow(SettlementWindow.NAME);
-			desktop.openToolWindow(SettlementWindow.NAME);
 
 //		}
 
