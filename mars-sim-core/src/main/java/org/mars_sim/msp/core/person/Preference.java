@@ -133,7 +133,49 @@ public class Preference implements Serializable {
 			naturalAttributeManager = person.getNaturalAttributeManager();
 
 		int result = 0;
+		double ast = 0;
+		double cook = 0;
+		double field = 0;
+		double game = 0;
+		double lab = 0;
+		double ops = 0;
+		double research = 0;
+		double sport = 0;
+		double plant = 0;
+		double tinker = 0;
 
+		FavoriteType hobby = person.getFavorite().getFavoriteActivity();
+		
+		if (hobby == FavoriteType.ASTRONOMY)
+			ast = 2;
+		
+		if (hobby == FavoriteType.COOKING)
+			cook = 1;
+		
+		if (hobby == FavoriteType.FIELD_WORK)
+			field = 1;
+			
+		if (hobby == FavoriteType.GAMING)
+			game = 1;
+		
+		if (hobby == FavoriteType.LAB_EXPERIMENTATION)
+			lab = 1;
+		
+		if (hobby == FavoriteType.OPERATION)
+			ops = 1;
+		
+		if (hobby == FavoriteType.RESEARCH)
+			research = 1;
+		
+		if (hobby == FavoriteType.SPORT)
+			sport = 1;
+		
+		if (hobby == FavoriteType.TENDING_PLANTS)
+			plant = 1;
+		
+		if (hobby == FavoriteType.TINKERING)
+			tinker = 1;
+			
 		// Computes the adjustment from a person's natural attributes
 		double aa = naturalAttributeManager.getAttribute(NaturalAttributeType.ACADEMIC_APTITUDE) / 50D * 1.5;
 		double t = naturalAttributeManager.getAttribute(NaturalAttributeType.TEACHING) / 50D * 1.5;
@@ -161,17 +203,76 @@ public class Preference implements Serializable {
 			MetaTask metaTask = i.next();
 
 			// Set them up in random
-			double rand = RandomUtil.getRandomDouble(3.0) - RandomUtil.getRandomDouble(2.0);
+			double rand = RandomUtil.getRandomDouble(2.0) - RandomUtil.getRandomDouble(2.0);
 			
 			// Note: the preference score on a metaTask is modified by a person's natural
 			// attributes
 			// TODO: turn these hardcoded relationship between attributes and task
 			// preferences into a XML/JSON file
 
+			// PART 1 : Influenced by FavoriteType 
+			
+			if (metaTask instanceof ObserveAstronomicalObjectsMeta)
+				rand += ast * RandomUtil.getRandomDouble(3);
+			
+			if (metaTask instanceof EatMealMeta 
+					|| metaTask instanceof ProduceFoodMeta 
+					|| metaTask instanceof CookMealMeta
+					|| metaTask instanceof PrepareDessertMeta)
+				rand += cook * RandomUtil.getRandomDouble(3);
+			
+			if (metaTask instanceof StudyFieldSamplesMeta)
+				rand += field * RandomUtil.getRandomDouble(3);
+			
+			if (metaTask instanceof PlayHoloGameMeta)
+				rand += game * RandomUtil.getRandomDouble(3);			
+			
+			if (metaTask instanceof PerformLaboratoryExperimentMeta
+					|| metaTask instanceof PerformLaboratoryResearchMeta)
+				rand += lab * RandomUtil.getRandomDouble(3);
+			
+			if (metaTask instanceof ConsolidateContainersMeta || metaTask instanceof ConstructBuildingMeta
+					|| metaTask instanceof DigLocalIceMeta || metaTask instanceof DigLocalRegolithMeta
+					|| metaTask instanceof LoadVehicleEVAMeta || metaTask instanceof LoadVehicleGarageMeta 
+					|| metaTask instanceof UnloadVehicleEVAMeta || metaTask instanceof UnloadVehicleGarageMeta 
+					|| metaTask instanceof SalvageBuildingMeta || metaTask instanceof SalvageGoodMeta
+					|| metaTask instanceof RepairEVAMalfunctionMeta	|| metaTask instanceof RepairMalfunctionMeta
+					|| metaTask instanceof MaintenanceMeta || metaTask instanceof MaintenanceEVAMeta)
+				rand += ops * RandomUtil.getRandomDouble(3);
+			
+			if (metaTask instanceof AssistScientificStudyResearcherMeta
+					|| metaTask instanceof CompileScientificStudyResultsMeta
+					|| metaTask instanceof PeerReviewStudyPaperMeta
+					|| metaTask instanceof PerformLaboratoryResearchMeta
+					|| metaTask instanceof PerformMathematicalModelingMeta
+					|| metaTask instanceof ProposeScientificStudyMeta
+					|| metaTask instanceof RespondToStudyInvitationMeta)
+				rand += research * RandomUtil.getRandomDouble(3);
+			
+			if (metaTask instanceof PlayHoloGameMeta)
+				rand += game * RandomUtil.getRandomDouble(3);
+			
+			if (metaTask instanceof WorkoutMeta)
+				rand += sport * RandomUtil.getRandomDouble(3);
+
+			if (metaTask instanceof TendGreenhouseMeta)
+				rand += plant * RandomUtil.getRandomDouble(3);
+			
+			if (metaTask instanceof ConsolidateContainersMeta || metaTask instanceof ConstructBuildingMeta
+					|| metaTask instanceof SalvageBuildingMeta || metaTask instanceof SalvageGoodMeta
+					|| metaTask instanceof RepairEVAMalfunctionMeta	|| metaTask instanceof RepairMalfunctionMeta
+					|| metaTask instanceof MaintenanceMeta || metaTask instanceof MaintenanceEVAMeta
+					|| metaTask instanceof ManufactureConstructionMaterialsMeta || metaTask instanceof ManufactureGoodMeta)
+				rand += tinker * RandomUtil.getRandomDouble(3);
+			
+			
+			// PART 2 : influenced by natural attribute
+			
 			// Academically driven
 			if (metaTask instanceof AssistScientificStudyResearcherMeta
 					|| metaTask instanceof CompileScientificStudyResultsMeta || metaTask instanceof MaintenanceEVAMeta
-					|| metaTask instanceof MaintenanceMeta || metaTask instanceof ObserveAstronomicalObjectsMeta
+					|| metaTask instanceof MaintenanceMeta 
+					|| metaTask instanceof ObserveAstronomicalObjectsMeta
 					|| metaTask instanceof PeerReviewStudyPaperMeta
 					|| metaTask instanceof PerformLaboratoryExperimentMeta
 					|| metaTask instanceof PerformLaboratoryResearchMeta

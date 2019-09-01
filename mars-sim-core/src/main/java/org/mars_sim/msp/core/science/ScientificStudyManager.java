@@ -320,6 +320,42 @@ public class ScientificStudyManager // extends Thread
 	}
 
 	/**
+	 * Gets all successful scientific studies at a primary research settlement.
+	 * 
+	 * @param settlement the primary research settlement.
+	 * @return list of studies.
+	 */
+	public List<ScientificStudy> getAllSuccessfulStudies(Settlement settlement) {
+		List<ScientificStudy> result = new ArrayList<ScientificStudy>();
+		Iterator<ScientificStudy> i = studies.iterator();
+		while (i.hasNext()) {
+			ScientificStudy study = i.next();
+			if (study.isCompleted() && study.getCompletionState().equals(ScientificStudy.SUCCESSFUL_COMPLETION)
+					&& settlement.equals(study.getPrimarySettlement()))
+				result.add(study);
+		}
+		return result;
+	}
+
+	/**
+	 * Gets all canceled scientific studies at a primary research settlement.
+	 * 
+	 * @param settlement the primary research settlement.
+	 * @return list of studies.
+	 */
+	public List<ScientificStudy> getAllCanceledStudies(Settlement settlement) {
+		List<ScientificStudy> result = new ArrayList<ScientificStudy>();
+		Iterator<ScientificStudy> i = studies.iterator();
+		while (i.hasNext()) {
+			ScientificStudy study = i.next();
+			if (study.isCompleted() && study.getCompletionState().equals(ScientificStudy.CANCELED)
+					&& settlement.equals(study.getPrimarySettlement()))
+				result.add(study);
+		}
+		return result;
+	}
+	
+	/**
 	 * Gets all studies that have open invitations for collaboration for a
 	 * researcher.
 	 * 
@@ -547,10 +583,35 @@ public class ScientificStudyManager // extends Thread
 		return primaryResearcher.getPhysicalCondition().isDead();
 	}
 
+	public double getPhaseScore(ScientificStudy ss) {
+		if (ss.getPhase().equals(ScientificStudy.PROPOSAL_PHASE)) {
+			return .5;
+		}
+		
+		else if (ss.getPhase().equals(ScientificStudy.INVITATION_PHASE)) {
+			return 1.0;
+		}
+		
+		if (ss.getPhase().equals(ScientificStudy.RESEARCH_PHASE)) {
+			return 1.5;
+		}
+		
+		else if (ss.getPhase().equals(ScientificStudy.PAPER_PHASE)) {
+			return 2.0;
+		}
+		
+		else if (ss.getPhase().equals(ScientificStudy.PEER_REVIEW_PHASE)) {
+			return 2.5;
+		}
+		
+		return 0;
+	}
+	
 	/**
 	 * Computes the overall relationship score of a settlement
 	 * 
 	 * @param s Settlement
+	 * @param type {@link ScienceType} if null, query all science types
 	 * @return the score
 	 */
 	public double getScienceScore(Settlement s, ScienceType type) {
@@ -559,56 +620,74 @@ public class ScientificStudyManager // extends Thread
 			allSubject = true;
 
 		double score = 0;
-		double priCompleted = 5;
-		double priOngoing = 2.5;
-		double colCompleted = 6;
-		double colOngoing = 3;
-		double failed = 2;
+		
+		double succeed = 3;	
+		double failed = 1;
+		double canceled = 0.5;
+		
+//		List<ScientificStudy> list0 = getCompletedPrimaryStudies(s);
+//		if (!list0.isEmpty()) {
+//			for (ScientificStudy ss : list0) {
+//				if (allSubject || type == ss.getScience()) {				
+//					score += priCompleted;
+//				}
+//			}
+//		}
 
-		List<ScientificStudy> list0 = getCompletedPrimaryStudies(s);
-		if (!list0.isEmpty()) {
-			for (ScientificStudy ss : list0) {
+		List<ScientificStudy> list00 = getOngoingCollaborativeStudies(s);
+		if (!list00.isEmpty()) {
+			for (ScientificStudy ss : list00) {
 				if (allSubject || type == ss.getScience()) {
-					score += priCompleted;
+					score += getPhaseScore(ss);
+				}
+			}
+		}
+		
+		List<ScientificStudy> list01 = getOngoingPrimaryStudies(s);
+		if (!list01.isEmpty()) {
+			for (ScientificStudy ss : list01) {
+				if (allSubject || type == ss.getScience()) {
+					score += getPhaseScore(ss);
 				}
 			}
 		}
 
-		List<ScientificStudy> list1 = getOngoingPrimaryStudies(s);
-		if (!list1.isEmpty()) {
-			for (ScientificStudy ss : list1) {
-				if (allSubject || type == ss.getScience()) {
-					score += priOngoing;
-				}
-			}
-		}
-
-		List<ScientificStudy> list2 = getAllFailedStudies(s);
-		if (!list2.isEmpty()) {
-			for (ScientificStudy ss : list2) {
+		List<ScientificStudy> list02 = getAllFailedStudies(s);
+		if (!list02.isEmpty()) {
+			for (ScientificStudy ss : list02) {
 				if (allSubject || type == ss.getScience()) {
 					score += failed;
 				}
 			}
 		}
 
-		List<ScientificStudy> list3 = getCompletedCollaborativeStudies(s);
-		if (!list1.isEmpty()) {
-			for (ScientificStudy ss : list3) {
+		List<ScientificStudy> list03 = getAllCanceledStudies(s);
+		if (!list03.isEmpty()) {
+			for (ScientificStudy ss : list03) {
 				if (allSubject || type == ss.getScience()) {
-					score += colCompleted;
+					score += canceled;
 				}
 			}
 		}
-
-		List<ScientificStudy> list4 = getOngoingCollaborativeStudies(s);
-		if (!list1.isEmpty()) {
-			for (ScientificStudy ss : list4) {
-				if (allSubject || type == ss.getScience()) {
-					score += colOngoing;
+		
+		List<ScientificStudy> list04 = this.getAllSuccessfulStudies(s);
+		if (!list04.isEmpty()) {
+			for (ScientificStudy ss : list04) {
+				if (allSubject || type == ss.getScience()) {				
+					score += succeed;
 				}
 			}
 		}
+		
+		
+//		List<ScientificStudy> list05 = getCompletedCollaborativeStudies(s);
+//		if (!list05.isEmpty()) {
+//			for (ScientificStudy ss : list05) {
+//				if (allSubject || type == ss.getScience()) {
+//					score += colCompleted;
+//				}
+//			}
+//		}
 
 		score = Math.round(score * 100.0) / 100.0;
 

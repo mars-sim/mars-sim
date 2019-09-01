@@ -4601,14 +4601,15 @@ public class ChatUtils {
 		
 		else if (text.equalsIgnoreCase("scores")) {
 			
-//			double aveSocial = 0;
-//			double aveSci = 0;
-			double totalSciScore = 0;
+			double aveSocial = 0;
+			double aveSci = 0;
+//			double totalSciScore = 0;
 
 			Map<Double, String> totalScores = new HashMap<>();
 			// Use Guava's multimap to handle duplicate key
 //			Multimap<Double, String> scienceMap = ArrayListMultimap.create();
 			Map<Double, String> scienceMap = new HashMap<>();
+//			Multimap<Double, String> socialMap = ArrayListMultimap.create();
 			Map<Double, String> socialMap = new HashMap<>();
 			List<Double> totalList = new ArrayList<>();
 //			List<Double> sciList = new ArrayList<>();
@@ -4617,8 +4618,9 @@ public class ChatUtils {
 			for (Settlement s : col) {
 				double social = relationshipManager.getRelationshipScore(s);
 				double science = scientificManager.getScienceScore(s, null);
-//				aveSocial += social;
-				totalSciScore += science;
+				aveSocial += social;
+				aveSci += science;
+//				totalSciScore += science;
 				
 //				socialList.add(social);
 //				sciList.add(science);
@@ -4627,29 +4629,31 @@ public class ChatUtils {
 				socialMap.put(social, s.getName());
 				scienceMap.put(science, s.getName());
 				totalScores.put(science + social, s.getName());
+				
 			}	
 			
 //			System.out.println("done with for loop.");
 			int size = col.size();
-//			aveSocial = aveSocial / size;
-//			aveSci = totalSciScore / size;
+			aveSocial = aveSocial / size;
+			aveSci = aveSci / size;
 			
 			// Compute and save the new science score
-			if (totalSciScore > 0) {
-				for (Settlement s : col) {
-					double oldScore = 0;
-					if (getKey(scienceMap, s.getName()) != null)
-						oldScore = getKey(scienceMap, s.getName());
-//					double newScore = Math.round(oldScore/totalSciScore * 100.0 * 10.0)/10.0;
-					scienceMap.remove(oldScore, s.getName());
-//					scienceMap.put(newScore, s.getName());
-				}		
-			}
+//			if (totalSciScore > 0) {
+//				for (Settlement s : col) {
+//					double oldScore = 0;
+//					if (getKey(scienceMap, s.getName()) != null)
+//						oldScore = getKey(scienceMap, s.getName());
+////					double newScore = Math.round(oldScore/totalSciScore * 100.0 * 10.0)/10.0;
+//					scienceMap.remove(oldScore, s.getName());
+////					scienceMap.put(newScore, s.getName());
+//				}		
+//			}
 			
 			// Sort the total scores
 			totalList.sort((Double d1, Double d2) -> -d1.compareTo(d2)); 
 			
-			responseText.append("                 The Hall of Fame for Key Achievement");
+			responseText.append(System.lineSeparator());
+			responseText.append("                    Hall of Fame for Key Achievement");
 			responseText.append(System.lineSeparator());
 			responseText.append(" ----------------------------------------------------------------------");
 			responseText.append(System.lineSeparator());
@@ -4707,11 +4711,17 @@ public class ChatUtils {
 						+ socialStr + space1
 						+ scienceStr);
 				// Note : remove the pair will prevent the case when when 2 or more settlements have the exact same score from reappearing
-
+			
 //				System.out.println("4.");
 				responseText.append(System.lineSeparator());
 			}
 	
+			responseText.append(" ----------------------------------------------------------------------");
+			responseText.append(System.lineSeparator());
+			responseText.append(addhiteSpacesName(" Average : ", 38)); 
+			responseText.append(Math.round(aveSocial*10.0)/10.0 + "   " + Math.round(aveSci*10.0)/10.0);			
+			responseText.append(System.lineSeparator());
+			
 			return responseText.toString();
 	
 		}
@@ -4731,7 +4741,8 @@ public class ChatUtils {
 				map.put(score, s.getName());
 			}	
 
-			responseText.append("The Hall of Fame for Science Achievement");
+			responseText.append(System.lineSeparator());
+			responseText.append("     Hall of Fame for Science");
 			responseText.append(System.lineSeparator());
 			responseText.append(" -----------------------------------");
 			responseText.append(System.lineSeparator());
@@ -4791,7 +4802,8 @@ public class ChatUtils {
 			}	
 			int size = list.size();
 			ave = ave / size;
-			responseText.append("The Hall of Fame for Social Achievement");
+			responseText.append(System.lineSeparator());
+			responseText.append("      Hall of Fame for Social");
 			responseText.append(System.lineSeparator());
 			responseText.append(" -----------------------------------");
 			responseText.append(System.lineSeparator());
@@ -4828,7 +4840,7 @@ public class ChatUtils {
 			
 			responseText.append(" -----------------------------------");
 			responseText.append(System.lineSeparator());
-			responseText.append(" Overall : " + Math.round(ave*10.0)/10.0);			
+			responseText.append(" Average : " + Math.round(ave*10.0)/10.0);			
 			responseText.append(System.lineSeparator());
 				
 			return responseText.toString();

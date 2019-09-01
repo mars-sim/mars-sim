@@ -1289,7 +1289,7 @@ public class UnitManager implements Serializable {
 					String mainDish = dishes[0];// f.getRandomMainDish();
 					String sideDish = dishes[1];// f.getRandomSideDish();
 					String dessert = f.getRandomDessert();
-					FavoriteType activity = f.getRandomActivity();
+					FavoriteType activity = f.getAFavoriteType();
 
 					f.setFavoriteMainDish(mainDish);
 					f.setFavoriteSideDish(sideDish);
