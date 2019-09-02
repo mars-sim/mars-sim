@@ -87,6 +87,7 @@ public class BuildingPanelManufacture extends BuildingFunctionPanel {
 	 * @param workshop the manufacturing building function.
 	 * @param desktop  the main desktop.
 	 */
+	@SuppressWarnings("unchecked")
 	public BuildingPanelManufacture(Manufacture workshop, MainDesktopPane desktop) {
 		// Use BuildingFunctionPanel constructor.
 		super(workshop.getBuilding(), desktop);
@@ -209,6 +210,7 @@ public class BuildingPanelManufacture extends BuildingFunctionPanel {
 		
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void update() {
 
@@ -449,6 +451,7 @@ public class BuildingPanelManufacture extends BuildingFunctionPanel {
 	/**
 	 * Inner class for the manufacture selection list cell renderer.
 	 */
+	@SuppressWarnings("serial")
 	private static class ManufactureSelectionListCellRenderer extends DefaultListCellRenderer {
 
 		@Override

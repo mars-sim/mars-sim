@@ -4586,8 +4586,9 @@ public class ChatUtils {
 
 			responseText.append(" ----------------------------------------------------------------------");
 			responseText.append(System.lineSeparator());
-			responseText.append(addhiteSpacesName(" Average : ", 38));
-			responseText.append(Math.round(aveSocial * 10.0) / 10.0 + "   " + Math.round(aveSci * 10.0) / 10.0);
+			responseText.append(addhiteSpacesName("Average : ", 36));
+			responseText.append(addhiteSpacesName("" + Math.round(aveSocial * 10.0) / 10.0, 6));
+			responseText.append(addhiteSpacesName("" + Math.round(aveSci * 10.0) / 10.0, 8));
 			responseText.append(System.lineSeparator());
 
 			return responseText.toString();

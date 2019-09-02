@@ -11,29 +11,23 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.GraphicsConfiguration;
-import java.awt.GraphicsDevice;
-import java.awt.GraphicsEnvironment;
 import java.awt.GridLayout;
-import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.DefaultCellEditor;
-import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -52,6 +46,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumn;
 
+import org.mars.sim.console.InteractiveTerm;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.GameManager;
 import org.mars_sim.msp.core.GameManager.GameMode;
@@ -348,10 +343,10 @@ public class SimulationConfigEditor {
 					Simulation.createNewSimulation(-1, false);
 					// Close simulation config editor
 					closeWindow();
+					// Start the simulation
+					startSimThread(false);
 					// Create main window
 					setupMainWindow();
-					// Load the menu choice
-//					sim.getTerm().loadTerminalMenu();
 //					logger.config("Done SimulationConfigEditor()");
 				}
 			}
@@ -391,21 +386,8 @@ public class SimulationConfigEditor {
 		JRootPane rootPane = SwingUtilities.getRootPane(defaultButton); 
 		rootPane.setDefaultButton(defaultButton);
 	}
+	
 
-	public void setupMainWindow() {
-		new Timer().schedule(new DelayTimer(), 1000);
-	}
-	
-	/**
-	 * Defines the delay timer class
-	 */
-	class DelayTimer extends TimerTask {
-		public void run() {
-			// Create main window
-			SwingUtilities.invokeLater(() -> new MainWindow(true));
-		}
-	}
-	
 //	/*
 //	 * Determines proper width for each column and center aligns each cell content
 //	 */
@@ -1201,6 +1183,46 @@ public class SimulationConfigEditor {
 
 		}
 
+	}
+	
+	/**
+	 * Start the simulation instance.
+	 */
+	public void startSimThread(boolean useDefaultName) {
+		// Start the simulation.
+		ExecutorService e = sim.getSimExecutor();
+		if (e == null || (e != null && (e.isTerminated() || e.isShutdown())))
+			sim.startSimExecutor();
+		e.submit(new StartTask(useDefaultName));
+	}
+	
+	class StartTask implements Runnable {
+	boolean autosaveDefault;
+
+		StartTask(boolean autosaveDefault) {
+			this.autosaveDefault = autosaveDefault;
+		}
+	
+		public void run() {
+			logger.config("StartTask's run() is on " + Thread.currentThread().getName());
+			Simulation.instance().startClock(autosaveDefault);
+			// Load the menu choice
+			InteractiveTerm.loadTerminalMenu();
+		}
+	}
+	
+	public void setupMainWindow() {
+		new Timer().schedule(new WindowDelayTimer(), 1000);
+	}
+	
+	/**
+	 * Defines the delay timer class
+	 */
+	class WindowDelayTimer extends TimerTask {
+		public void run() {
+			// Create main window
+			SwingUtilities.invokeLater(() -> new MainWindow(true));
+		}
 	}
 	
 	/**

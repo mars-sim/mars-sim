@@ -112,6 +112,7 @@ implements MouseListener {
 	 * @param farm {@link Farming} the farming building this panel is for.
 	 * @param desktop {@link MainDesktopPane} The main desktop.
 	 */
+	@SuppressWarnings("unchecked")
 	public BuildingPanelFarming(final Farming farm, MainDesktopPane desktop) {
 
 		// Use BuildingFunctionPanel constructor
@@ -555,6 +556,7 @@ implements MouseListener {
 			listUpdate();
 	}
 
+	@SuppressWarnings("unchecked")
 	public void listUpdate() {
 
 		listModel.update();
@@ -864,9 +866,9 @@ implements MouseListener {
 	    }
 	}
 
+	@SuppressWarnings("serial")
 	class PromptComboBoxRenderer extends DefaultListCellRenderer {
 
-		private static final long serialVersionUID = 1L;
 		private String prompt;
 
 //		private DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();

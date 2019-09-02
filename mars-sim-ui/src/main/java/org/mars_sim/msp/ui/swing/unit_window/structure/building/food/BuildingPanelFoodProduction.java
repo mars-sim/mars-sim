@@ -8,7 +8,6 @@
 package org.mars_sim.msp.ui.swing.unit_window.structure.building.food;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -24,7 +23,6 @@ import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JComponent;
@@ -179,6 +177,7 @@ public class BuildingPanelFoodProduction extends BuildingFunctionPanel {
 		interactionPanel.add(btnPanel);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void update() {
 

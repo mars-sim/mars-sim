@@ -88,8 +88,8 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	private final static String HEIGHT = "Height";
 	private final static String WEIGHT = "Weight";
 
-	/** static unit identifier. */
-	private static int unitCount = 0;
+	/** static person count identifier. */
+	private static int personCount = 0;
 	/** The average height of a person. */
 	private static double averageHeight;
 	/** The average weight of a person. */
@@ -112,7 +112,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	private boolean declaredDead;
 	
 	/** Unique person id. */
-	private int pid;
+	private int personID;
 	/** The year of birth of a person */
 	private int year;	
 	/** The month of birth of a person */
@@ -153,7 +153,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	private String lastName;
 	/** The person's sponsor. */
 	private String sponsor;
-	/** The person's country. */
+	/** The person's country of origin. */
 	private String country;
 	/** The person's blood type. */
 	private String bloodType;
@@ -226,7 +226,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 * @return
 	 */
 	private static synchronized int getNextCount() {
-		return unitCount++;
+		return personCount++;
 	}
 
 	/**
@@ -241,7 +241,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		super(name, settlement.getCoordinates());
 		super.setDescription(settlement.getName());
 
-		this.pid = getNextCount();
+		this.personID = getNextCount();
 //		// Place this person within a settlement
 //		enter(LocationCodeType.SETTLEMENT);
 //		// Place this person within a building
@@ -310,8 +310,6 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		mind.getTaskManager().initialize();
 		
 		preference = new Preference(this);
-
-//		assignReportingAuthority();
 
 		support = getLifeSupportType();		
 		// Create the mission experiences map
@@ -527,13 +525,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 */
 	public void setSponsor(String sponsor) {
 		this.sponsor = sponsor;
-//		assignReportingAuthority();
-//	}
-//
-//	/*
-//	 * Assigns sponsoring agency and set up specific mission control for the person
-//	 */
-//	public void assignReportingAuthority() {
+
 		if (sponsor.contains(ReportingAuthorityType.CNSA.getName())) {
 			ra = CNSAMissionControl.createMissionControl(); // ProspectingMineral
 
@@ -1553,7 +1545,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 * @return pid
 	 */
 	public int getPid() {
-		return pid;
+		return personID;
 	}
 
 	/**

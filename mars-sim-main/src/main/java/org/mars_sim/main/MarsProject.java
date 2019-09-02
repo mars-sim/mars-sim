@@ -229,9 +229,9 @@ public class MarsProject {
 	 */
 	public void initTerminalLoadMenu() {
 		// Initialize interactive terminal 
-		interactiveTerm.initializeTerminal();	
+		InteractiveTerm.initializeTerminal();	
 		// Load the menu choice
-		interactiveTerm.loadTerminalMenu();
+		InteractiveTerm.loadTerminalMenu();
 	}
 	
 	/**
@@ -282,7 +282,7 @@ public class MarsProject {
 			MainWindow.loadSimulationProcess(false);
 //			logger.config("Done with MainWindow.loadSimulationProcess(true)");
 			// Start simulation.
-			startSimulation(true);
+			startSimThread(true);
 			
 //			logger.config("useGUI is " + useGUI);
 			if (useGUI) {
@@ -325,6 +325,20 @@ public class MarsProject {
 			if (hasDefault || !hasSim) {
 				// Prompt to open the file cHooser to select a saved sim
 				MainWindow.loadSimulationProcess(false);
+				// Start simulation.
+				startSimThread(false);
+				
+				if (useGUI) {
+//					logger.config("useGUI is " + useGUI);
+					setupMainWindow();
+				} 
+				
+				else {
+					// Go headless				
+				}
+
+				// Initialize interactive terminal and load menu
+//				initTerminalLoadMenu();
 			}
 
 			else if (!hasDefault && hasSim) {
@@ -332,6 +346,20 @@ public class MarsProject {
 				File loadFile = new File(argList.get(index + 1));
 				if (loadFile.exists() && loadFile.canRead()) {
 					sim.loadSimulation(loadFile);
+					// Start simulation.
+					startSimThread(false);	
+					
+					if (useGUI) {
+//						logger.config("useGUI is " + useGUI);
+						setupMainWindow();
+					} 
+					
+					else {
+						// Go headless				
+					}
+
+					// Initialize interactive terminal and load menu
+//					initTerminalLoadMenu();
 				}
 				else {
 //					logger.config("Invalid param.");
@@ -339,20 +367,7 @@ public class MarsProject {
 				}
 			}
 				
-			// Start simulation.
-			startSimulation(false);
-					
-//			logger.config("useGUI is " + useGUI);
-			if (useGUI) {
-				setupMainWindow();
-			} 
-			
-			else {
-				// Go headless				
-			}
 
-			// Initialize interactive terminal and load menu
-			initTerminalLoadMenu();
 
 		} catch (Exception e) {
 			// logger.log(Level.SEVERE, "Problem loading existing simulation", e);
@@ -361,13 +376,13 @@ public class MarsProject {
 	}
 
 	public void setupMainWindow() {
-		new Timer().schedule(new DelayTimer(), 1000);
+		new Timer().schedule(new WindowDelayTimer(), 1000);
 	}
 	
 	/**
 	 * Defines the delay timer class
 	 */
-	class DelayTimer extends TimerTask {
+	class WindowDelayTimer extends TimerTask {
 		public void run() {
 			// Create main window
 			SwingUtilities.invokeLater(() -> new MainWindow(true));
@@ -389,14 +404,10 @@ public class MarsProject {
 				// Start interactive terminal
 				interactiveTerm.startModeSelection();
 				// Initialize interactive terminal 
-				interactiveTerm.initializeTerminal();	
+				InteractiveTerm.initializeTerminal();	
 				// Start sim config editor
 				SwingUtilities.invokeLater(() -> {
 					new SimulationConfigEditor(SimulationConfig.instance(), null);
-					// Initialize interactive terminal 
-					interactiveTerm.initializeTerminal();	
-					// Start the simulation
-					startSimulation(false);
 				});
 			} 
 			
@@ -411,9 +422,9 @@ public class MarsProject {
 				// Start interactive terminal
 				interactiveTerm.startModeSelection();
 				// Initialize interactive terminal 
-				interactiveTerm.initializeTerminal();	
+				InteractiveTerm.initializeTerminal();	
 				// Start the simulation.
-				startSimulation(true);					
+				startSimThread(true);					
 			}
 		
 			
@@ -422,23 +433,32 @@ public class MarsProject {
 			exitWithError("Could not create a new simulation, startup cannot continue", e);
 		}
 	}
-
+	
 	/**
 	 * Start the simulation instance.
 	 */
-	public void startSimulation(boolean useDefaultName) {
+	public void startSimThread(boolean useDefaultName) {
 		// Start the simulation.
-//		runStartTask(useDefaultName);
-//	}
-//
-//	public void runStartTask(boolean autosaveDefault) {
 		ExecutorService e = sim.getSimExecutor();
-//		logger.config("runStartTask() is on " + Thread.currentThread().getName());
 		if (e == null || (e != null && (e.isTerminated() || e.isShutdown())))
 			sim.startSimExecutor();
 		e.submit(new StartTask(useDefaultName));
 	}
 	
+	class StartTask implements Runnable {
+	boolean autosaveDefault;
+
+		StartTask(boolean autosaveDefault) {
+			this.autosaveDefault = autosaveDefault;
+		}
+	
+		public void run() {
+			logger.config("StartTask's run() is on " + Thread.currentThread().getName());
+			Simulation.instance().startClock(autosaveDefault);
+			// Load the menu choice
+			InteractiveTerm.loadTerminalMenu();
+		}
+	}
 	
 	/**
 	 * The starting method for the application
@@ -498,18 +518,5 @@ public class MarsProject {
 //		 }
 
 	}
-	
-	class StartTask implements Runnable {
-		boolean autosaveDefault;
 
-		StartTask(boolean autosaveDefault) {
-			this.autosaveDefault = autosaveDefault;
-		}
-
-		public void run() {
-			// logger.config("StartTask's run() is on " + Thread.currentThread().getName());
-			Simulation.instance().start(autosaveDefault);
-			interactiveTerm.loadTerminalMenu();
-		}
-	}
 }

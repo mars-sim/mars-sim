@@ -142,5 +142,6 @@ public class Role implements Serializable {
 		person = null;
 		roleType = null;
 		roleHistory = null;
+		marsClock = null;
 	}
 }

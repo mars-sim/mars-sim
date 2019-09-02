@@ -41,7 +41,7 @@ public class InteractiveTerm {
 
     private int choiceIndex = -1;
 
-    private boolean keepRunning;
+    private static boolean keepRunning;
 	
 	private static MarsTerminal terminal;
 	
@@ -191,8 +191,10 @@ public class InteractiveTerm {
 				}
 	    	}
 		}
-		else {
+        
+		else if (GameManager.input.equals("2")) {
 			GameManager.mode = GameMode.SANDBOX;
+//			loadTerminalMenu();
 		}
 	}
 	
@@ -200,7 +202,7 @@ public class InteractiveTerm {
 	/**
 	 * Initialize the terminal
 	 */
-	public void initializeTerminal() {
+	public static void initializeTerminal() {
 		keepRunning = true;
 	}
 	
@@ -208,8 +210,9 @@ public class InteractiveTerm {
 	/**
 	 * Loads the terminal menu
 	 */
-	public void loadTerminalMenu() {
-//		logger.config("Calling loadTerminalMenu()");
+	public static void loadTerminalMenu() {
+		// WARNING : loadTerminalMenu() Need to be inside Sim Executor Thread in order to work
+		logger.config("Calling loadTerminalMenu()");
 
 		// Call ChatUils' default constructor to initialize instances
 		new ChatUtils();

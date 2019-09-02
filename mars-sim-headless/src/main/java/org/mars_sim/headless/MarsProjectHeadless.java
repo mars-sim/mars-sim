@@ -101,13 +101,13 @@ public class MarsProjectHeadless {
 //	public void decompressMaps() {		
 //	}
 	
-	/**
-	 * 	Initialize interactive terminal and load menu
-	 */
-	public void initTerminal() {
-		// Initialize interactive terminal 
-		interactiveTerm.initializeTerminal();	
-	}
+//	/**
+//	 * 	Initialize interactive terminal and load menu
+//	 */
+//	public void initTerminal() {
+//		// Initialize interactive terminal 
+//		InteractiveTerm.initializeTerminal();	
+//	}
 	
 	/**
 	 * Initialize the simulation.
@@ -208,10 +208,10 @@ public class MarsProjectHeadless {
 		try {
 			// Load the default simulation
 			sim.loadSimulation(null);
-			// Start simulation.
-			startSimulation(true);
-			// Initialize interactive terminal and load menu
-			initTerminal();
+			// Initialize interactive terminal 
+			InteractiveTerm.initializeTerminal();
+			// Start the sim thread
+			startSimThread(true);
 			
 		} catch (Exception e) {
 			// logger.log(Level.WARNING, "Could not load default simulation", e);
@@ -235,10 +235,8 @@ public class MarsProjectHeadless {
 			sim.destroyOldSimulation();
 
 			Simulation.createNewSimulation(userTimeRatio, false);
-			
-			startSimulation(true);
-			// Load the menu choice
-//			sim.getTerm().loadTerminalMenu();
+			// Start the sim thread
+			startSimThread(true);
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -249,17 +247,27 @@ public class MarsProjectHeadless {
 	/**
 	 * Start the simulation instance.
 	 */
-	public void startSimulation(boolean useDefaultName) {
+	public void startSimThread(boolean useDefaultName) {
 		// Start the simulation.
-		runStartTask(useDefaultName);
-	}
-
-	public void runStartTask(boolean autosaveDefault) {
 		ExecutorService e = sim.getSimExecutor();
-//		logger.config("runStartTask() is on " + Thread.currentThread().getName());
 		if (e == null || (e != null && (e.isTerminated() || e.isShutdown())))
 			sim.startSimExecutor();
-		e.submit(new StartTask(autosaveDefault));
+		e.submit(new StartTask(useDefaultName));
+	}
+	
+	class StartTask implements Runnable {
+	boolean autosaveDefault;
+
+		StartTask(boolean autosaveDefault) {
+			this.autosaveDefault = autosaveDefault;
+		}
+	
+		public void run() {
+			logger.config("StartTask's run() is on " + Thread.currentThread().getName());
+			Simulation.instance().startClock(autosaveDefault);
+			// Load the menu choice
+			InteractiveTerm.loadTerminalMenu();
+		}
 	}
 	
 	/**
@@ -306,18 +314,6 @@ public class MarsProjectHeadless {
 
 	}
 	
-	class StartTask implements Runnable {
-		boolean autosaveDefault;
 
-		StartTask(boolean autosaveDefault) {
-			this.autosaveDefault = autosaveDefault;
-		}
-
-		public void run() {
-			// logger.config("StartTask's run() is on " + Thread.currentThread().getName());
-			Simulation.instance().start(autosaveDefault);
-			interactiveTerm.loadTerminalMenu();
-		}
-	}
 }
 

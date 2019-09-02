@@ -468,33 +468,37 @@ public class Simulation implements ClockListener, Serializable {
 		logger.config("Done initializing intransient data.");
 	}
 
-//	public void runStartTask(boolean autosaveDefault) {
-////		logger.config("runStartTask() is on " + Thread.currentThread().getName());
-//		if (simExecutor == null || (simExecutor != null && (simExecutor.isTerminated() || simExecutor.isShutdown())))
-//			startSimExecutor();
-//		simExecutor.submit(new StartTask(autosaveDefault));
-//	}
+	/**
+	 * Start the simulation instance.
+	 */
+	public void startSimThread(boolean useDefaultName) {
+		// Start the simulation.
+		ExecutorService e = getSimExecutor();
+		if (e == null || (e != null && (e.isTerminated() || e.isShutdown())))
+			startSimExecutor();
+		e.submit(new StartTask(useDefaultName));
+	}
+	
+	class StartTask implements Runnable {
+		boolean autosaveDefault;
 
-//	public class StartTask implements Runnable {
-//		boolean autosaveDefault;
-//
-//		StartTask(boolean autosaveDefault) {
-//			this.autosaveDefault = autosaveDefault;
-//		}
-//
-//		public void run() {
-//			// logger.config("StartTask's run() is on " + Thread.currentThread().getName());
-//			start(autosaveDefault);
-//			getTerm().loadTerminalMenu();
-//		}
-//	}
+		StartTask(boolean autosaveDefault) {
+			this.autosaveDefault = autosaveDefault;
+		}
 
+		public void run() {
+			logger.config("StartTask's run() is on " + Thread.currentThread().getName());
+			startClock(autosaveDefault);
+		}
+	}
+	
 	/**
 	 * Starts the simulation.
 	 * 
 	 * @param autosaveDefault. True if default is used for autosave
 	 */
-	public void start(boolean autosaveDefault) {
+	public void startClock(boolean autosaveDefault) {
+		logger.config("Simulation's startClock() is on " + Thread.currentThread().getName());
 		// SwingUtilities.invokeLater(() -> testConsole());
 		
 		masterClock.addClockListener(this);
@@ -550,7 +554,7 @@ public class Simulation implements ClockListener, Serializable {
 	 * @param file the file to be loaded from.
 	 */
 	public void loadSimulation(final File file) {
-		logger.config("Simulation's loadSimulation() is on " + Thread.currentThread().getName());
+//		logger.config("Simulation's loadSimulation() is on " + Thread.currentThread().getName());
 		isUpdating = true;
 
 		File f = file;
@@ -590,7 +594,7 @@ public class Simulation implements ClockListener, Serializable {
 			try {
 				sim.readFromFile(f);
 
-				logger.config("Done readFromFile()");
+//				logger.config("Done readFromFile()");
 				
 			} catch (ClassNotFoundException e2) {
 				logger.log(Level.SEVERE,
@@ -649,7 +653,7 @@ public class Simulation implements ClockListener, Serializable {
      */
     public void deserialize(File file) throws IOException,
             ClassNotFoundException {
-		logger.config("deserialize() is on " + Thread.currentThread().getName());
+//		logger.config("deserialize() is on " + Thread.currentThread().getName());
 		
 //		byte[] buf = new byte[8192];
 		FileInputStream in = null;
@@ -810,7 +814,7 @@ public class Simulation implements ClockListener, Serializable {
 	 * @throws IOException            if error reading from file.
 	 */
 	private void readFromFile(File file) throws ClassNotFoundException, IOException {
-		logger.config("readFromFile() is on " + Thread.currentThread().getName());
+//		logger.config("readFromFile() is on " + Thread.currentThread().getName());
 		logger.config("Loading and processing the saved sim. Please wait...");
 		
 //		System.out.println(file.length() / 1000D);
@@ -1729,7 +1733,7 @@ public class Simulation implements ClockListener, Serializable {
 	public ObjectMapper getObjectMapper() {
 		return objectMapper; 
 	}
-
+	
 	@Override
 	public void uiPulse(double time) {
 		// TODO Auto-generated method stub

@@ -28,7 +28,6 @@ import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
 import java.io.File;
-import java.net.URL;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
@@ -540,7 +539,7 @@ extends JComponent {
 	 * @param autosave
 	 */
 	public static void loadSimulationProcess(boolean autosave) {
-		logger.config("MainWindow's loadSimulationProcess() is on " + Thread.currentThread().getName());
+//		logger.config("MainWindow's loadSimulationProcess() is on " + Thread.currentThread().getName());
 
 //		if (masterClock != null)
 		sim.stop();
@@ -1243,6 +1242,20 @@ extends JComponent {
 		return lookAndFeelTheme;
 	}
 
+	public void setupMainWindow() {
+		new Timer().schedule(new WindowDelayTimer(), 1000);
+	}
+	
+	/**
+	 * Defines the delay timer class
+	 */
+	class WindowDelayTimer extends TimerTask {
+		public void run() {
+			// Create main window
+			SwingUtilities.invokeLater(() -> new MainWindow(true));
+		}
+	}
+	
 	/**
 	 * Prepares the panel for deletion.
 	 */
