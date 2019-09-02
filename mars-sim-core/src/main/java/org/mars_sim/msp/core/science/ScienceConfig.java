@@ -30,13 +30,13 @@ public class ScienceConfig implements Serializable {
  
 	public static final String SCIENTIFIC_STUDY_JSON = "scientific_study.json";
 	
-	public static final String PATH = "/json/";
+	public static final String JSON_DIR = "/json/";
 
-	public static final String EXTENSION = "_topics.json";
+	public static final String TOPICS_JSON_FILE_EXT = "_topics.json";
 	
-    public static String[] jsonFiles = new String[9]; 
+	private static String[] jsonFiles = new String[9]; 
     
-    public static List<Integer> averageTime = new ArrayList<>(); 
+    private static List<Integer> averageTime = new ArrayList<>(); 
     
     private static int aveNumCollaborators;
     
@@ -52,7 +52,7 @@ public class ScienceConfig implements Serializable {
     	int size = ScienceType.valuesList().size();
     	for (int i=0; i<size; i++) {
     		ScienceType type = ScienceType.valuesList().get(i);
-    		jsonFiles[i] = PATH + type.getName().toLowerCase() + EXTENSION;
+    		jsonFiles[i] = JSON_DIR + type.getName().toLowerCase() + TOPICS_JSON_FILE_EXT;
 //    		System.out.println(jsonFiles[i]);
     	}
     }
@@ -63,7 +63,7 @@ public class ScienceConfig implements Serializable {
         JsonObject jsonObject = null;
         
         // Load the scientific study param json files
-        fis = this.getClass().getResourceAsStream(PATH + SCIENTIFIC_STUDY_JSON);
+        fis = this.getClass().getResourceAsStream(JSON_DIR + SCIENTIFIC_STUDY_JSON);
         jsonReader = Json.createReader(fis);
 
         // Get JsonObject from JsonReader

@@ -20,7 +20,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mars_sim.msp.core.terminal;
+package org.mars.sim.console;
 
 import org.beryx.textio.TextIO;
 import org.beryx.textio.swing.SwingTextTerminal;

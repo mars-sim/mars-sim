@@ -15,6 +15,9 @@ import java.awt.Composite;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.Toolkit;
@@ -22,6 +25,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
 import java.io.File;
 import java.net.URL;
@@ -33,6 +37,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.Action;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
@@ -54,6 +60,7 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
+import org.mars_sim.msp.ui.swing.configeditor.CrewEditor;
 import org.mars_sim.msp.ui.swing.configeditor.SimulationConfigEditor;
 import org.mars_sim.msp.ui.swing.tool.AngledLinesWindowsCornerIcon;
 import org.mars_sim.msp.ui.swing.tool.JStatusBar;
@@ -76,11 +83,12 @@ extends JComponent {
 	private static final long serialVersionUID = 1L;
 
 	private static Logger logger = Logger.getLogger(MainWindow.class.getName());
-	private static String loggerName = logger.getName();
-	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
-
-	/** Icon image filename for main window. */
-	private static final String ICON_IMAGE = "/images/LanderHab.png";
+//	private static String loggerName = logger.getName();
+//	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+	
+	/** Icon image filename for frame */
+	public static final String ICON_IMAGE = "/icons/landerhab16.png";//"/images/LanderHab.png";
+	
 	public static final String OS = System.getProperty("os.name").toLowerCase(); // e.g. 'linux', 'mac os x'
 	private static final String SOL = " Sol ";
 	private static final String themeSkin = "nimrod";
@@ -184,7 +192,9 @@ extends JComponent {
 		useDefault = UIConfig.INSTANCE.useUIDefault();
 
 		// Set the icon image for the frame.
-		setIconImage();
+		ImageIcon icon = new ImageIcon(CrewEditor.class.getResource(MainWindow.ICON_IMAGE));
+		frame.setIconImage(iconToImage(icon));
+		//		setIconImage();
 
 		// Initialize UI elements for the frame
 		init();
@@ -204,6 +214,25 @@ extends JComponent {
 		setupSettlementWindowTimer();
 	}
 
+	public static Image iconToImage(Icon icon) {
+		   if (icon instanceof ImageIcon) {
+		      return ((ImageIcon)icon).getImage();
+		   } 
+		   else {
+		      int w = icon.getIconWidth();
+		      int h = icon.getIconHeight();
+		      GraphicsEnvironment ge = 
+		        GraphicsEnvironment.getLocalGraphicsEnvironment();
+		      GraphicsDevice gd = ge.getDefaultScreenDevice();
+		      GraphicsConfiguration gc = gd.getDefaultConfiguration();
+		      BufferedImage image = gc.createCompatibleImage(w, h);
+		      Graphics2D g = image.createGraphics();
+		      icon.paintIcon(null, g, 0, 0);
+		      g.dispose();
+		      return image;
+		   }
+		 }
+	
 	/**
 	 * Initializes UI elements for the frame
 	 */
@@ -1180,17 +1209,17 @@ extends JComponent {
 //		}
 //	}
 
-	/**
-	 * Sets the icon image for the main window.
-	 */
-	public void setIconImage() {
-
-		String fullImageName = ICON_IMAGE;
-		URL resource = ImageLoader.class.getResource(fullImageName);
-		Toolkit kit = Toolkit.getDefaultToolkit();
-		Image img = kit.createImage(resource);
-		frame.setIconImage(img);
-	}
+//	/**
+//	 * Sets the icon image for the main window.
+//	 */
+//	public void setIconImage() {
+//
+//		String fullImageName = ICON_IMAGE;
+//		URL resource = ImageLoader.class.getResource(fullImageName);
+//		Toolkit kit = Toolkit.getDefaultToolkit();
+//		Image img = kit.createImage(resource);
+//		frame.setIconImage(img);
+//	}
 
 	/**
 	 * Gets the unit toolbar.

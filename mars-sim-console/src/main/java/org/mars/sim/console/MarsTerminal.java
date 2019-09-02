@@ -1,17 +1,44 @@
-package org.mars_sim.msp.core.terminal;
+package org.mars.sim.console;
+
+import java.awt.Graphics2D;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
+import java.awt.Image;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.image.BufferedImage;
+import java.net.URL;
+import java.util.logging.Logger;
+
+import javax.swing.AbstractAction;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPopupMenu;
+import javax.swing.JTextPane;
+import javax.swing.KeyStroke;
 
 import org.beryx.textio.TextTerminal;
 import org.beryx.textio.jline.JLineTextTerminal;
 import org.beryx.textio.swing.SwingTextTerminal;
 import org.mars_sim.msp.core.Simulation;
-
-import javax.swing.*;
-import java.awt.event.*;
-import java.util.logging.Logger;
+import org.mars_sim.msp.core.time.MasterClock;
 
 public class MarsTerminal extends SwingTextTerminal {
     private static Logger logger = Logger.getLogger(MarsTerminal.class.getName());
 
+	/** Icon image filename for frame */
+	public static final String ICON_IMAGE = "/icons/landerhab16.png";
+	
     private final JPopupMenu popup = new JPopupMenu();
 
     private static class PopupListener extends MouseAdapter {
@@ -56,11 +83,34 @@ public class MarsTerminal extends SwingTextTerminal {
             ((SwingTextTerminal) terminal).resetToOffset(0);
         }
     }
+
+
+	static Image iconToImage(Icon icon) {
+	   if (icon instanceof ImageIcon) {
+	      return ((ImageIcon)icon).getImage();
+	   } 
+	   else {
+	      int w = icon.getIconWidth();
+	      int h = icon.getIconHeight();
+	      GraphicsEnvironment ge = 
+	        GraphicsEnvironment.getLocalGraphicsEnvironment();
+	      GraphicsDevice gd = ge.getDefaultScreenDevice();
+	      GraphicsConfiguration gc = gd.getDefaultConfiguration();
+	      BufferedImage image = gc.createCompatibleImage(w, h);
+	      Graphics2D g = image.createGraphics();
+	      icon.paintIcon(null, g, 0, 0);
+	      g.dispose();
+	      return image;
+	   }
+	 }
     
     private void configureMainMenu() {
         JFrame frame = getFrame();
         frame.setTitle("Mars Simulation Project");
         
+		ImageIcon icon = new ImageIcon(MarsTerminal.class.getResource(ICON_IMAGE));
+		frame.setIconImage(iconToImage(icon));
+        		
         JMenuBar menuBar = new JMenuBar();
         JMenu menu = new JMenu("Help");
         menu.setMnemonic(KeyEvent.VK_H);
@@ -68,15 +118,18 @@ public class MarsTerminal extends SwingTextTerminal {
         JMenuItem pauseItem = new JMenuItem("Pause/Unpause", KeyEvent.VK_P);
         pauseItem.addActionListener(e -> {
 
-        	if (Simulation.instance().getMasterClock() != null) {
-				if (Simulation.instance().getMasterClock().isPaused()) {
-					Simulation.instance().getMasterClock().setPaused(false, false);
+        	MasterClock masterClock = Simulation.instance().getMasterClock();
+        	
+        	if (masterClock != null) {
+        		
+				if (masterClock.isPaused()) {
+					masterClock.setPaused(false, false);
 					printf(System.lineSeparator() + System.lineSeparator());
 					printf("                      [ Simulation Unpaused ]");
 					printf(System.lineSeparator() + System.lineSeparator());
 				}
 				else {
-					Simulation.instance().getMasterClock().setPaused(true, false);
+					masterClock.setPaused(true, false);
 					printf(System.lineSeparator() + System.lineSeparator());
 					printf("                       [ Simulation Paused ]");
 					printf(System.lineSeparator() + System.lineSeparator());

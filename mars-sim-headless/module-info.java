@@ -25,7 +25,8 @@ module mars-sim-headless {
 //	requires java.util.logging.Formatter;
 	
 	requires junit;
-    requires mars-sim-core;
+//    requires mars-sim-core;
+    requires mars-sim-console;
     
 	exports mars-sim-headless;
 }

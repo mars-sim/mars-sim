@@ -129,14 +129,7 @@
 			<version>3.9.0</version>
 		</dependency>
 		-->
-		
-		<!-- https://github.com/beryx/text-io
-		     https://mvnrepository.com/artifact/org.beryx/text-io -->
-		<dependency>
-			<groupId>org.beryx</groupId>
-			<artifactId>text-io</artifactId>
-			<version>3.3.0</version>
-		</dependency>		
+			
 		<!-- https://mvnrepository.com/artifact/com.google.code.gson/gson : 235 KB 
 		<dependency>
 		    <groupId>com.google.code.gson</groupId>

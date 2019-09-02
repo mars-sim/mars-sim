@@ -6,13 +6,20 @@
  */
 package org.mars_sim.msp.ui.swing.toolWindow;
 
+import java.awt.Image;
+import java.awt.Toolkit;
+import java.net.URL;
+
+import javax.swing.ImageIcon;
 import javax.swing.JInternalFrame;
 import javax.swing.WindowConstants;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.time.MasterClock;
+import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.MainWindow;
 import org.mars_sim.msp.ui.swing.tool.commander.CommanderWindow;
 import org.mars_sim.msp.ui.swing.tool.monitor.MonitorWindow;
 
@@ -89,8 +96,25 @@ public abstract class ToolWindow extends JInternalFrame {
 
 		// Set internal frame listener
 		addInternalFrameListener(new ToolFrameListener());
+		
+		// Set the icon
+		setIconImage();
 	}
 
+	/**
+	 * Sets the icon image for the main window.
+	 */
+	public void setIconImage() {
+
+		String fullImageName = MainWindow.ICON_IMAGE;
+		URL resource = ImageLoader.class.getResource(fullImageName);
+		Toolkit kit = Toolkit.getDefaultToolkit();
+		Image img = kit.createImage(resource).getScaledInstance(16, 16, Image.SCALE_DEFAULT);
+//		ImageIcon icon = new ImageIcon(ClassLoader.getSystemResource("Iconos/icono.png"));
+		ImageIcon icon = new ImageIcon(img);
+		super.setFrameIcon(icon);
+	}
+	
 	/**
 	 * Gets the tool name.
 	 * 

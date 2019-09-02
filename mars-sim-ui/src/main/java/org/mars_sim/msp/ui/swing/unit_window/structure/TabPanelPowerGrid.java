@@ -37,7 +37,6 @@ import org.mars_sim.msp.core.structure.building.function.PowerSource;
 import org.mars_sim.msp.core.structure.building.function.SolarPowerSource;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
@@ -55,8 +54,7 @@ import com.jidesoft.swing.TableSearchable;
 /**
  * This is a tab panel for a settlement's power grid information.
  */
-public class TabPanelPowerGrid
-extends TabPanel {
+public class TabPanelPowerGrid extends TabPanel {
 
 	private static final String kW = " kW";
 	private static final String kWh = " kWh";
@@ -64,7 +62,7 @@ extends TabPanel {
 	private static final String PERCENT = " %";
 
 	// Data Members
-	private JTable powerTable ;
+	private JTable powerTable;
 	/** The total power generated label. */
 	private WebLabel powerGeneratedLabel;
 	/** The total power used label. */
@@ -84,7 +82,7 @@ extends TabPanel {
 	private WebTextField degradRateTF;
 
 	private WebScrollPane powerScrollPane;
-	
+
 	private WebCheckBox checkbox;
 
 	// Data cache
@@ -103,13 +101,13 @@ extends TabPanel {
 	private PowerTableModel powerTableModel;
 	/** The settlement's power grid. */
 	private PowerGrid powerGrid;
-	
+
 	private BuildingConfig config;
-	
+
 	private BuildingManager manager;
-	
+
 	private List<PowerSource> powerSources;
-	
+
 	private List<Building> buildings;
 
 	private static DecimalFormat formatter = new DecimalFormat(Msg.getString("TabPanelPowerGrid.decimalFormat")); //$NON-NLS-1$
@@ -118,25 +116,23 @@ extends TabPanel {
 
 	/**
 	 * Constructor.
-	 * @param unit the unit to display.
+	 * 
+	 * @param unit    the unit to display.
 	 * @param desktop the main desktop.
 	 */
 	public TabPanelPowerGrid(Unit unit, MainDesktopPane desktop) {
 
 		// Use the TabPanel constructor
-		super(
-			Msg.getString("TabPanelPowerGrid.title"), //$NON-NLS-1$
-			null,
-			Msg.getString("TabPanelPowerGrid.tooltip"), //$NON-NLS-1$
-			unit, desktop
-		);
+		super(Msg.getString("TabPanelPowerGrid.title"), //$NON-NLS-1$
+				null, Msg.getString("TabPanelPowerGrid.tooltip"), //$NON-NLS-1$
+				unit, desktop);
 
 		Settlement settlement = (Settlement) unit;
 		powerGrid = settlement.getPowerGrid();
 		manager = settlement.getBuildingManager();
 		config = SimulationConfig.instance().getBuildingConfiguration();
 		buildings = manager.getBuildingsWithPowerGeneration();
-		
+
 		// Prepare power grid label panel.
 		WebPanel powerGridLabelPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
 		topContentPanel.add(powerGridLabelPanel);
@@ -144,11 +140,11 @@ extends TabPanel {
 		// Prepare power grid label.
 		WebLabel titleLabel = new WebLabel(Msg.getString("TabPanelPowerGrid.label"), WebLabel.CENTER); //$NON-NLS-1$
 		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
-		//titleLabel.setForeground(new Color(102, 51, 0)); // dark brown
+		// titleLabel.setForeground(new Color(102, 51, 0)); // dark brown
 		powerGridLabelPanel.add(titleLabel);
 
 		// Prepare spring layout power info panel.
-		WebPanel powerInfoPanel = new WebPanel(new SpringLayout());//GridLayout(6, 2, 0, 0));
+		WebPanel powerInfoPanel = new WebPanel(new SpringLayout());// GridLayout(6, 2, 0, 0));
 //		powerInfoPanel.setBorder(new MarsPanelBorder());
 		topContentPanel.add(powerInfoPanel);
 
@@ -161,7 +157,7 @@ extends TabPanel {
 		WebPanel wrapper1 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
 		powerGeneratedTF = new WebTextField(formatter.format(powerGeneratedCache) + kW);
 		powerGeneratedTF.setEditable(false);
-		powerGeneratedTF.setPreferredSize(new Dimension(120, 24));//setColumns(20);
+		powerGeneratedTF.setPreferredSize(new Dimension(120, 24));// setColumns(20);
 		wrapper1.add(powerGeneratedTF);
 		powerInfoPanel.add(wrapper1);
 
@@ -174,20 +170,21 @@ extends TabPanel {
 		WebPanel wrapper2 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
 		powerUsedTF = new WebTextField(formatter.format(powerUsedCache) + kW);
 		powerUsedTF.setEditable(false);
-		powerUsedTF.setPreferredSize(new Dimension(120, 24));//setColumns(20);
+		powerUsedTF.setPreferredSize(new Dimension(120, 24));// setColumns(20);
 		wrapper2.add(powerUsedTF);
 		powerInfoPanel.add(wrapper2);
 
 		// Prepare power storage capacity label.
 		energyStorageCapacityCache = powerGrid.getStoredEnergyCapacity();
-		energyStorageCapacityLabel = new WebLabel(Msg.getString("TabPanelPowerGrid.energyStorageCapacity"), WebLabel.RIGHT); //$NON-NLS-1$
+		energyStorageCapacityLabel = new WebLabel(Msg.getString("TabPanelPowerGrid.energyStorageCapacity"), //$NON-NLS-1$
+				WebLabel.RIGHT);
 		energyStorageCapacityLabel.setToolTipText(Msg.getString("TabPanelPowerGrid.energyStorageCapacity.tooltip")); //$NON-NLS-1$
 		powerInfoPanel.add(energyStorageCapacityLabel);
 
 		WebPanel wrapper3 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
 		energyStorageCapacityTF = new WebTextField(formatter.format(energyStorageCapacityCache) + kWh);
 		energyStorageCapacityTF.setEditable(false);
-		energyStorageCapacityTF.setPreferredSize(new Dimension(120, 24));//setColumns(20);
+		energyStorageCapacityTF.setPreferredSize(new Dimension(120, 24));// setColumns(20);
 		wrapper3.add(energyStorageCapacityTF);
 		powerInfoPanel.add(wrapper3);
 
@@ -200,7 +197,7 @@ extends TabPanel {
 		WebPanel wrapper4 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
 		energyStoredTF = new WebTextField(formatter.format(energyStoredCache) + kWh);
 		energyStoredTF.setEditable(false);
-		energyStoredTF.setPreferredSize(new Dimension(120, 24));//setColumns(20);
+		energyStoredTF.setPreferredSize(new Dimension(120, 24));// setColumns(20);
 		wrapper4.add(energyStoredTF);
 		powerInfoPanel.add(wrapper4);
 
@@ -208,34 +205,37 @@ extends TabPanel {
 		solarCellEfficiencyCache = getAverageEfficiency();
 		electricEfficiencyLabel = new WebLabel(Msg.getString("TabPanelPowerGrid.solarPowerEfficiency"), WebLabel.RIGHT); //$NON-NLS-1$
 		electricEfficiencyLabel.setToolTipText(Msg.getString("TabPanelPowerGrid.solarPowerEfficiency.tooltip"));
-		//	("<html><p width=\"300\">Note: the Shockley-Quiesser theoretical limit for a single junction solar cell is only 33.7%. "
-		//	+ "For a tandem structure or multi-junction p-n cells, the limit can be as high as ~68% for unconcentrated sunlight.</p></html>");
+		// ("<html><p width=\"300\">Note: the Shockley-Quiesser theoretical limit for a
+		// single junction solar cell is only 33.7%. "
+		// + "For a tandem structure or multi-junction p-n cells, the limit can be as
+		// high as ~68% for unconcentrated sunlight.</p></html>");
 		powerInfoPanel.add(electricEfficiencyLabel);
 
 		WebPanel wrapper5 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		solarCellEfficiencyTF = new WebTextField(formatter2.format(solarCellEfficiencyCache*100D) + PERCENT);
+		solarCellEfficiencyTF = new WebTextField(formatter2.format(solarCellEfficiencyCache * 100D) + PERCENT);
 		solarCellEfficiencyTF.setEditable(false);
-		solarCellEfficiencyTF.setPreferredSize(new Dimension(120, 24));//setColumns(20);
+		solarCellEfficiencyTF.setPreferredSize(new Dimension(120, 24));// setColumns(20);
 		wrapper5.add(solarCellEfficiencyTF);
 		powerInfoPanel.add(wrapper5);
 
 		// 2015-05-08 Added degradation rate label.
 		double solarPowerDegradRate = SolarPowerSource.DEGRADATION_RATE_PER_SOL;
-		WebLabel solarPowerDegradRateLabel = new WebLabel(Msg.getString("TabPanelPowerGrid.solarPowerDegradRate"), WebLabel.RIGHT); //$NON-NLS-1$
+		WebLabel solarPowerDegradRateLabel = new WebLabel(Msg.getString("TabPanelPowerGrid.solarPowerDegradRate"), //$NON-NLS-1$
+				WebLabel.RIGHT);
 		solarPowerDegradRateLabel.setToolTipText(Msg.getString("TabPanelPowerGrid.solarPowerDegradRate.tooltip"));
 		powerInfoPanel.add(solarPowerDegradRateLabel);
 
 		WebPanel wrapper6 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		degradRateTF = new WebTextField(formatter2.format(solarPowerDegradRate*100D) + PERCENT_PER_SOL);
+		degradRateTF = new WebTextField(formatter2.format(solarPowerDegradRate * 100D) + PERCENT_PER_SOL);
 		degradRateTF.setEditable(false);
-		degradRateTF.setPreferredSize(new Dimension(120, 24));//setColumns(20);
+		degradRateTF.setPreferredSize(new Dimension(120, 24));// setColumns(20);
 		wrapper6.add(degradRateTF);
 		powerInfoPanel.add(wrapper6);
 
 		// Create override check box panel.
 		WebPanel checkboxPane = new WebPanel(new FlowLayout(FlowLayout.CENTER));
 		topContentPanel.add(checkboxPane, BorderLayout.SOUTH);
-		
+
 		// Create override check box.
 		checkbox = new WebCheckBox(Msg.getString("TabPanelPowerGrid.checkbox.value")); //$NON-NLS-1$
 		checkbox.setToolTipText(Msg.getString("TabPanelPowerGrid.checkbox.tooltip")); //$NON-NLS-1$
@@ -246,61 +246,60 @@ extends TabPanel {
 		});
 		checkbox.setSelected(false);
 		checkboxPane.add(checkbox);
-		
+
 		// Create scroll panel for the outer table panel.
 		powerScrollPane = new WebScrollPane();
-		//powerScrollPane.setPreferredSize(new Dimension(257, 230));
+		// powerScrollPane.setPreferredSize(new Dimension(257, 230));
 		// increase vertical mousewheel scrolling speed for this one
 		powerScrollPane.getVerticalScrollBar().setUnitIncrement(16);
 		powerScrollPane.setHorizontalScrollBarPolicy(WebScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		centerContentPanel.add(powerScrollPane,BorderLayout.CENTER);
+		centerContentPanel.add(powerScrollPane, BorderLayout.CENTER);
 
 		// Prepare power table model.
 		powerTableModel = new PowerTableModel(settlement);
 
 		// Prepare power table.
 		powerTable = new ZebraJTable(powerTableModel);
-	    //SwingUtilities.invokeLater(() -> ColumnResizer.adjustColumnPreferredWidths(powerTable));
+		// SwingUtilities.invokeLater(() ->
+		// ColumnResizer.adjustColumnPreferredWidths(powerTable));
 
-	    powerTable.setRowSelectionAllowed(true);
+		powerTable.setRowSelectionAllowed(true);
 		powerTable.setDefaultRenderer(Double.class, new NumberCellRenderer());
 		powerTable.getColumnModel().getColumn(0).setPreferredWidth(10);
 		powerTable.getColumnModel().getColumn(1).setPreferredWidth(130);
 		powerTable.getColumnModel().getColumn(2).setPreferredWidth(50);
-	    powerTable.getColumnModel().getColumn(3).setPreferredWidth(50);
-		
+		powerTable.getColumnModel().getColumn(3).setPreferredWidth(50);
+
 		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
 		renderer.setHorizontalAlignment(SwingConstants.CENTER);
-		//powerTable.getColumnModel().getColumn(0).setCellRenderer(renderer);
+		// powerTable.getColumnModel().getColumn(0).setCellRenderer(renderer);
 		powerTable.getColumnModel().getColumn(1).setCellRenderer(renderer);
 		powerTable.getColumnModel().getColumn(2).setCellRenderer(renderer);
 		powerTable.getColumnModel().getColumn(3).setCellRenderer(renderer);
-		
-		// 2014-12-03 Added the two methods below to make all heatTable columns
-		//resizable automatically when its Panel resizes
+
+		// Resizable automatically when its Panel resizes
 		powerTable.setPreferredScrollableViewportSize(new Dimension(225, -1));
-		//powerTable.setAutoResizeMode(WebTable.AUTO_RESIZE_ALL_COLUMNS);
+		// powerTable.setAutoResizeMode(WebTable.AUTO_RESIZE_ALL_COLUMNS);
 		powerTable.setAutoCreateRowSorter(true);
 		TableStyle.setTableStyle(powerTable);
 
 		powerScrollPane.setViewportView(powerTable);
 
-     	// 2015-06-17 Added resourcesSearchable
-     	TableSearchable searchable = SearchableUtils.installSearchable(powerTable);
-        searchable.setPopupTimeout(5000);
-     	searchable.setCaseSensitive(false);
+		// 2015-06-17 Added resourcesSearchable
+		TableSearchable searchable = SearchableUtils.installSearchable(powerTable);
+		searchable.setPopupTimeout(5000);
+		searchable.setCaseSensitive(false);
 
-		//Lay out the spring panel.
-		SpringUtilities.makeCompactGrid(powerInfoPanel,
-		                                6, 2, //rows, cols
-		                                20, 10,        //initX, initY
-		                                10, 1);       //xPad, yPad
+		// Lay out the spring panel.
+		SpringUtilities.makeCompactGrid(powerInfoPanel, 6, 2, // rows, cols
+				20, 10, // initX, initY
+				10, 1); // xPad, yPad
 
 	}
 
-	
 	/**
 	 * Sets if non-generating buildings should be shown.
+	 * 
 	 * @param value true or false.
 	 */
 	private void setNonGenerating(boolean value) {
@@ -313,6 +312,7 @@ extends TabPanel {
 
 	/**
 	 * Gets a list of buildings should be shown.
+	 * 
 	 * @return a list of buildings
 	 */
 	private List<Building> getBuildings() {
@@ -321,7 +321,7 @@ extends TabPanel {
 		else
 			return manager.getBuildingsWithPowerGeneration();
 	}
-	
+
 	public double getAverageEfficiency() {
 		double eff = 0;
 		int i = 0;
@@ -335,7 +335,7 @@ extends TabPanel {
 				if (powerSource instanceof SolarPowerSource) {
 					i++;
 					SolarPowerSource solarPowerSource = (SolarPowerSource) powerSource;
-					eff+= solarPowerSource.getEfficiency();
+					eff += solarPowerSource.getEfficiency();
 				}
 			}
 		}
@@ -361,7 +361,7 @@ extends TabPanel {
 		// Update power used TF.
 		double req = powerGrid.getRequiredPower();
 		if (powerUsedCache != req) {
-			double average = .5*(powerUsedCache + req);
+			double average = .5 * (powerUsedCache + req);
 			powerUsedCache = req;
 			powerUsedTF.setText(formatter.format(average) + kW);
 		}
@@ -375,7 +375,7 @@ extends TabPanel {
 
 		// Update power stored TF.
 		double store = powerGrid.getStoredEnergy();
-		if (energyStoredCache != store ) {
+		if (energyStoredCache != store) {
 			energyStoredCache = store;
 			energyStoredTF.setText(formatter.format(energyStoredCache) + kWh);
 		}
@@ -384,7 +384,7 @@ extends TabPanel {
 		double eff = getAverageEfficiency();
 		if (solarCellEfficiencyCache != eff) {
 			solarCellEfficiencyCache = eff;
-			solarCellEfficiencyTF.setText(formatter2.format(eff*100D) + PERCENT);
+			solarCellEfficiencyTF.setText(formatter2.format(eff * 100D) + PERCENT);
 		}
 		// Update power table.
 		powerTableModel.update();
@@ -412,7 +412,7 @@ extends TabPanel {
 			dotYellow = ImageLoader.getIcon(Msg.getString("img.dotYellow")); //$NON-NLS-1$
 			dotGreen = ImageLoader.getIcon(Msg.getString("img.dotGreen_full")); //$NON-NLS-1$
 
-			//size = getBuildings().size();
+			// size = getBuildings().size();
 		}
 
 		public int getRowCount() {
@@ -425,19 +425,28 @@ extends TabPanel {
 
 		public Class<?> getColumnClass(int columnIndex) {
 			Class<?> dataType = super.getColumnClass(columnIndex);
-			if (columnIndex == 0) dataType = ImageIcon.class;
-			else if (columnIndex == 1) dataType = Object.class;
-			else if (columnIndex == 2) dataType = Double.class;
-			else if (columnIndex == 3) dataType = Double.class;
+			if (columnIndex == 0)
+				dataType = ImageIcon.class;
+			else if (columnIndex == 1)
+				dataType = Object.class;
+			else if (columnIndex == 2)
+				dataType = Double.class;
+			else if (columnIndex == 3)
+				dataType = Double.class;
 			return dataType;
 		}
 
 		public String getColumnName(int columnIndex) {
-			if (columnIndex == 0) return Msg.getString("TabPanelPowerGrid.column.s"); //$NON-NLS-1$
-			else if (columnIndex == 1) return Msg.getString("TabPanelPowerGrid.column.building"); //$NON-NLS-1$
-			else if (columnIndex == 2) return Msg.getString("TabPanelPowerGrid.column.generated"); //$NON-NLS-1$
-			else if (columnIndex == 3) return Msg.getString("TabPanelPowerGrid.column.used"); //$NON-NLS-1$
-			else return null;
+			if (columnIndex == 0)
+				return Msg.getString("TabPanelPowerGrid.column.s"); //$NON-NLS-1$
+			else if (columnIndex == 1)
+				return Msg.getString("TabPanelPowerGrid.column.building"); //$NON-NLS-1$
+			else if (columnIndex == 2)
+				return Msg.getString("TabPanelPowerGrid.column.generated"); //$NON-NLS-1$
+			else if (columnIndex == 3)
+				return Msg.getString("TabPanelPowerGrid.column.used"); //$NON-NLS-1$
+			else
+				return null;
 		}
 
 		public Object getValueAt(int row, int column) {
@@ -448,46 +457,44 @@ extends TabPanel {
 			if (column == 0) {
 				if (powerMode == PowerMode.FULL_POWER) {
 					return dotGreen;
-				}
-				else if (powerMode == PowerMode.POWER_DOWN) {
+				} else if (powerMode == PowerMode.POWER_DOWN) {
 					return dotYellow;
-				}
-				else if (powerMode == PowerMode.POWER_UP) {
+				} else if (powerMode == PowerMode.POWER_UP) {
 					return dotGreen;
-				}
-				else if (powerMode == PowerMode.NO_POWER) {
+				} else if (powerMode == PowerMode.NO_POWER) {
 					return dotRed;
-				}
-				else return null;
-			}
-			else if (column == 1) return buildings.get(row);
+				} else
+					return null;
+			} else if (column == 1)
+				return buildings.get(row);
 			else if (column == 2) {
 				double generated = 0D;
 				if (building.hasFunction(FunctionType.POWER_GENERATION)) {
 					try {
-						//PowerGeneration generator = (PowerGeneration) building.getFunction(BuildingFunction.POWER_GENERATION);
-						generated =  building.getPowerGeneration().getGeneratedPower();
+						// PowerGeneration generator = (PowerGeneration)
+						// building.getFunction(BuildingFunction.POWER_GENERATION);
+						generated = building.getPowerGeneration().getGeneratedPower();
+					} catch (Exception e) {
 					}
-					catch (Exception e) {}
 				}
 				if (building.hasFunction(FunctionType.THERMAL_GENERATION)) {
 					try {
-						//ThermalGeneration heater = (ThermalGeneration) building.getFunction(BuildingFunction.THERMAL_GENERATION);
-						generated +=  building.getThermalGeneration().getGeneratedPower();
+						// ThermalGeneration heater = (ThermalGeneration)
+						// building.getFunction(BuildingFunction.THERMAL_GENERATION);
+						generated += building.getThermalGeneration().getGeneratedPower();
+					} catch (Exception e) {
 					}
-					catch (Exception e) {}
 				}
-				return Math.round(generated*1000.0)/1000.0;
-			}
-			else if (column == 3) {
+				return Math.round(generated * 1000.0) / 1000.0;
+			} else if (column == 3) {
 				double used = 0D;
 				if (powerMode == PowerMode.FULL_POWER)
-					used =  building.getFullPowerRequired();
+					used = building.getFullPowerRequired();
 				else if (powerMode == PowerMode.POWER_DOWN)
-					used =  building.getPoweredDownPowerRequired();
-				return Math.round(used*1000.0)/1000.0;
-			}
-			else return null;
+					used = building.getPoweredDownPowerRequired();
+				return Math.round(used * 1000.0) / 1000.0;
+			} else
+				return null;
 		}
 
 		public void update() {
@@ -497,25 +504,19 @@ extends TabPanel {
 				buildings = tempBuildings;
 				powerScrollPane.validate();
 			}
-/*			
-			int newSize = buildings.size();
-			if (size != newSize) {
-				size = newSize;
-				buildings = settlement.getBuildingManager().getBuildingsWithPowerGeneration();
-				//Collections.sort(buildings);
-			}
-			else {
-				List<Building> newBuildings = settlement.getBuildingManager().getACopyOfBuildings();
-				if (!buildings.equals(newBuildings)) {
-					buildings = newBuildings;
-					//Collections.sort(buildings);
-				}
-			}
-*/			
+			/*
+			 * int newSize = buildings.size(); if (size != newSize) { size = newSize;
+			 * buildings =
+			 * settlement.getBuildingManager().getBuildingsWithPowerGeneration();
+			 * //Collections.sort(buildings); } else { List<Building> newBuildings =
+			 * settlement.getBuildingManager().getACopyOfBuildings(); if
+			 * (!buildings.equals(newBuildings)) { buildings = newBuildings;
+			 * //Collections.sort(buildings); } }
+			 */
 			fireTableDataChanged();
 		}
 	}
-	
+
 	/**
 	 * Prepare object for garbage collection.
 	 */
@@ -526,23 +527,23 @@ extends TabPanel {
 		energyStorageCapacityLabel = null;
 		energyStoredLabel = null;
 		electricEfficiencyLabel = null;
-		powerGeneratedTF  = null;
+		powerGeneratedTF = null;
 		powerUsedTF = null;
 		energyStorageCapacityTF = null;
 		energyStoredTF = null;
 		solarCellEfficiencyTF = null;
 		degradRateTF = null;
 		powerScrollPane = null;
-		
+
 		checkbox = null;
 		formatter = null;
 		formatter2 = null;
 		formatter3 = null;
 		powerTableModel = null;
-		powerGrid = null;		
-		config = null;		
-		manager = null;		
-		powerSources = null;		
+		powerGrid = null;
+		config = null;
+		manager = null;
+		powerSources = null;
 		buildings = null;
 	}
 }

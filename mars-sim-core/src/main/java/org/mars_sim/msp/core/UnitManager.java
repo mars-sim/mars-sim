@@ -2340,46 +2340,6 @@ public class UnitManager implements Serializable {
 		return getSponsorByCountryID(getCountryID(country));
 	}
 	
-	/**
-	 * Create the country list
-	 * 
-	 */
-//	public static List<String> createCountryList() {
-//
-//		List<String> countries = new ArrayList<>();
-//
-//		countries.add("China"); //0
-//		countries.add("Canada"); //1
-//		countries.add("India"); //2
-//		countries.add("Japan"); //3
-//		countries.add("USA"); //4
-//		countries.add("Russia"); //5
-//
-//		countries.add("Austria");
-//		countries.add("Belgium");
-//		countries.add("Czech Republic");
-//		countries.add("Denmark");
-//		countries.add("Estonia");
-//		countries.add("Finland");
-//		countries.add("France");
-//		countries.add("Germany");
-//		countries.add("Greece");
-//		countries.add("Hungary");
-//		countries.add("Ireland");
-//		countries.add("Italy");
-//		countries.add("Luxembourg");
-//		countries.add("The Netherlands");
-//		countries.add("Norway");
-//		countries.add("Poland");
-//		countries.add("Portugal");
-//		countries.add("Romania");
-//		countries.add("Spain");
-//		countries.add("Sweden");
-//		countries.add("Switzerland");
-//		countries.add("UK");
-//
-//		return countries;
-//	}
 
 	/**
 	 * Obtains the country id. If none, return -1.

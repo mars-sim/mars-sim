@@ -11,12 +11,18 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.Graphics2D;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.awt.GridLayout;
+import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -27,6 +33,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.DefaultCellEditor;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -125,6 +133,9 @@ public class SimulationConfigEditor {
 
 		f = new JFrame();
 
+		ImageIcon icon = new ImageIcon(SimulationConfigEditor.class.getResource(MainWindow.ICON_IMAGE));
+		f.setIconImage(MainWindow.iconToImage(icon));
+		
 		f.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent event) {
@@ -200,8 +211,8 @@ public class SimulationConfigEditor {
 
 		// Create settlement table.
 		settlementTableModel = new SettlementTableModel();
+		
 		settlementTable = new JTable(settlementTableModel);
-		TableStyle.setTableStyle(settlementTable);
 		settlementTable.setRowSelectionAllowed(true);
 		settlementTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		settlementTable.getColumnModel().getColumn(0).setPreferredWidth(80);
@@ -211,9 +222,7 @@ public class SimulationConfigEditor {
 		settlementTable.getColumnModel().getColumn(4).setPreferredWidth(35);
 		settlementTable.getColumnModel().getColumn(5).setPreferredWidth(35);
 		settlementTable.getColumnModel().getColumn(6).setPreferredWidth(280);
-
 		settlementTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-
 		settlementTable.setBackground(java.awt.Color.WHITE);
 
 		TableStyle.setTableStyle(settlementTable);
@@ -337,10 +346,6 @@ public class SimulationConfigEditor {
 					sim.destroyOldSimulation();
 					// Create new simulation
 					Simulation.createNewSimulation(-1, false);
-					// Initialize interactive terminal 
-					sim.getTerm().initializeTerminal();	
-					// Start the simulation
-					sim.runStartTask(false);
 					// Close simulation config editor
 					closeWindow();
 					// Create main window
@@ -1197,7 +1202,7 @@ public class SimulationConfigEditor {
 		}
 
 	}
-
+	
 	/**
 	 * Prepare for deletion.
 	 */

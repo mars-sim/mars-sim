@@ -5,7 +5,7 @@
  * @author Manny Kung
  */
 
-package org.mars_sim.msp.core.terminal;
+package org.mars.sim.console;
 
 import static org.beryx.textio.ReadInterruptionStrategy.Action.ABORT;
 

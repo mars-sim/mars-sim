@@ -30,7 +30,7 @@ module mars-sim-ui {
 
     requires mars-sim-core;
     requires mars-sim-mapdata;
-//    requires mars-sim-network;
+    requires mars-sim-console;
     
 	exports mars-sim-ui;
 }

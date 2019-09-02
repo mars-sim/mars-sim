@@ -72,7 +72,7 @@ public class FinishedStudyListPanel extends JPanel {
 
 		// Create study table.
 		studyTable = new JTable(studyTableModel);
-		studyTable.setPreferredScrollableViewportSize(new Dimension(300, 200));
+		studyTable.setPreferredScrollableViewportSize(new Dimension(450, 200));
 		studyTable.setCellSelectionEnabled(false);
 		studyTable.setRowSelectionAllowed(true);
 		studyTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -163,7 +163,7 @@ public class FinishedStudyListPanel extends JPanel {
 		 * @return the number of columns in the model
 		 */
 		public int getColumnCount() {
-			return 2;
+			return 4;
 		}
 
 		@Override
@@ -173,6 +173,10 @@ public class FinishedStudyListPanel extends JPanel {
 				result = Msg.getString("FinishedStudyListPanel.column.study"); //$NON-NLS-1$
 			else if (column == 1)
 				result = Msg.getString("FinishedStudyListPanel.column.phase"); //$NON-NLS-1$
+			else if (column == 2)
+				result = Msg.getString("FinishedStudyListPanel.column.researcher"); //$NON-NLS-1$
+			else if (column == 3)
+				result = Msg.getString("FinishedStudyListPanel.column.settlement"); //$NON-NLS-1$
 			return result;
 		}
 
@@ -198,10 +202,25 @@ public class FinishedStudyListPanel extends JPanel {
 			String result = new String();
 			if ((rowIndex >= 0) && (rowIndex < studies.size())) {
 				ScientificStudy study = studies.get(rowIndex);
-				if (columnIndex == 0)
+				String researcherN = "";	
+				String settlementN = "";
+				if (study.getPrimaryResearcher() != null) {
+					researcherN = study.getPrimaryResearcher().getName();
+//					System.out.println("Researcher : " + researcherN);
+					
+					if (study.getPrimarySettlement() != null) {
+						settlementN = study.getPrimarySettlement().getName();
+					}
+				}
+				
+				if (columnIndex == 0) 
 					result = Conversion.capitalize(study.toString());
-				else if (columnIndex == 1)
-					result = Conversion.capitalize(study.getCompletionState());
+				else if (columnIndex == 1) 
+					result = Conversion.capitalize(study.getPhase());
+				else if (columnIndex == 2)
+					result = Conversion.capitalize(researcherN);
+				else if (columnIndex == 3)
+					result = Conversion.capitalize(settlementN);
 			}
 			return result;
 		}

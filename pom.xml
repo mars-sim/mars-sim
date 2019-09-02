@@ -156,7 +156,8 @@
 		<!--module>mars-sim-javafx</module-->
 		<!-- module>mars-sim-lwjgl</module-->
     	<!--module>mars-sim-libgdx</module-->
-  </modules>
+		<module>mars-sim-console</module>
+	</modules>
 	<!-- ************************************************************************************************* -->
 	<!-- * Build Section * -->
 	<!-- ************************************************************************************************* -->

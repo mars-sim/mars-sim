@@ -40,6 +40,11 @@
 			<artifactId>mars-sim-headless</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<!-- >dependency>
+			<groupId>com.github.mars-sim</groupId>
+			<artifactId>mars-sim-console</artifactId>
+			<version>${project.version}</version>
+		</dependency-->		
 		<dependency>
 			<groupId>com.github.mars-sim</groupId>
 			<artifactId>mars-sim-ui</artifactId>

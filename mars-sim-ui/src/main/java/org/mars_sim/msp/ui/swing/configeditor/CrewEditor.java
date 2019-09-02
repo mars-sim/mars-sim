@@ -22,10 +22,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
-import javax.swing.AbstractListModel;
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -46,6 +46,7 @@ import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.MainWindow;
 
 /**
  * CrewEditor allows users to design the crew manifest for an initial settlement
@@ -113,6 +114,10 @@ public class CrewEditor implements ActionListener {
 		simulationConfigEditor.setCrewEditorOpen(true);
 
 		f = new JFrame(TITLE);
+		
+		ImageIcon icon = new ImageIcon(CrewEditor.class.getResource(MainWindow.ICON_IMAGE));
+		f.setIconImage(MainWindow.iconToImage(icon));
+		
 		// f.setSize(600, 300);
 		f.setSize(new Dimension(600, 500));
 

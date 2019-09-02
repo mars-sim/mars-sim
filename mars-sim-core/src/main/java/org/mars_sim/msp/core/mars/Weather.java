@@ -601,7 +601,10 @@ public class Weather implements Serializable {
 
 			// (4). Seasonal variation
 			double lat_adjustment = TEMPERATURE_DELTA_PER_DEG_LAT * lat_degree; // an educated guess
-			// System.out.println(marsClock);
+			if (masterClock == null)
+				masterClock = Simulation.instance().getMasterClock();
+			if (marsClock == null)
+				marsClock = masterClock.getMarsClock();
 			int solElapsed = marsClock.getMissionSol();
 			double seasonal_dt = lat_adjustment * Math.sin(2 * Math.PI / 1000D * (solElapsed - 142));
 //			seasonal_dt = Math.round(seasonal_dt * 100.0) / 100.0;

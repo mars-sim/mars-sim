@@ -19,7 +19,7 @@ module mars-sim-main {
 
     requires mars-sim-core;
     requires mars-sim-ui;
-//    requires mars-sim-mapdata;
+//    requires mars-sim-console;
     requires mars-sim-headless;
       
 	exports mars-sim-main;

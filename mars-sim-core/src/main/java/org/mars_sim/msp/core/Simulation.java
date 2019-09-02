@@ -95,7 +95,6 @@ import org.mars_sim.msp.core.structure.building.function.farming.Farming;
 import org.mars_sim.msp.core.structure.construction.SalvageValues;
 import org.mars_sim.msp.core.structure.goods.CreditManager;
 import org.mars_sim.msp.core.structure.goods.GoodsManager;
-import org.mars_sim.msp.core.terminal.InteractiveTerm;
 import org.mars_sim.msp.core.time.AutosaveScheduler;
 import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.time.EarthClock;
@@ -128,8 +127,8 @@ public class Simulation implements ClockListener, Serializable {
 	private static final long serialVersionUID = -631308653510974249L;
 
 	private static Logger logger = Logger.getLogger(Simulation.class.getName());
-	private static String loggerName = logger.getName();
-	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+//	private static String loggerName = logger.getName();
+//	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 	
 	/** The mode to load other file. */ 
 	public static final int OTHER = 0;
@@ -269,7 +268,7 @@ public class Simulation implements ClockListener, Serializable {
 
 	private UpTimer ut;
 	private ObjectMapper objectMapper;
-	private InteractiveTerm interactiveTerm;
+//	private InteractiveTerm interactiveTerm;
 	
 	/**
 	 * Private constructor for the Singleton Simulation. This prevents instantiation
@@ -279,7 +278,7 @@ public class Simulation implements ClockListener, Serializable {
 		// INFO Simulation's constructor is on both JavaFX-Launcher Thread
 //      initializeTransientData();
 		// Create Interactive Terminal instance
-		interactiveTerm = new InteractiveTerm();
+//		interactiveTerm = new InteractiveTerm();
 		// Create ObjectMapper instance
 		objectMapper = new ObjectMapper();
 		// Configure Object mapper for pretty print
@@ -469,26 +468,26 @@ public class Simulation implements ClockListener, Serializable {
 		logger.config("Done initializing intransient data.");
 	}
 
-	public void runStartTask(boolean autosaveDefault) {
-//		logger.config("runStartTask() is on " + Thread.currentThread().getName());
-		if (simExecutor == null || (simExecutor != null && (simExecutor.isTerminated() || simExecutor.isShutdown())))
-			startSimExecutor();
-		simExecutor.submit(new StartTask(autosaveDefault));
-	}
+//	public void runStartTask(boolean autosaveDefault) {
+////		logger.config("runStartTask() is on " + Thread.currentThread().getName());
+//		if (simExecutor == null || (simExecutor != null && (simExecutor.isTerminated() || simExecutor.isShutdown())))
+//			startSimExecutor();
+//		simExecutor.submit(new StartTask(autosaveDefault));
+//	}
 
-	public class StartTask implements Runnable {
-		boolean autosaveDefault;
-
-		StartTask(boolean autosaveDefault) {
-			this.autosaveDefault = autosaveDefault;
-		}
-
-		public void run() {
-			// logger.config("StartTask's run() is on " + Thread.currentThread().getName());
-			start(autosaveDefault);
-			getTerm().loadTerminalMenu();
-		}
-	}
+//	public class StartTask implements Runnable {
+//		boolean autosaveDefault;
+//
+//		StartTask(boolean autosaveDefault) {
+//			this.autosaveDefault = autosaveDefault;
+//		}
+//
+//		public void run() {
+//			// logger.config("StartTask's run() is on " + Thread.currentThread().getName());
+//			start(autosaveDefault);
+//			getTerm().loadTerminalMenu();
+//		}
+//	}
 
 	/**
 	 * Starts the simulation.
@@ -1428,8 +1427,8 @@ public class Simulation implements ClockListener, Serializable {
 	 * Ends the current simulation
 	 */
 	public void endSimulation() {
-		interactiveTerm.setKeepRunning(false);
-		interactiveTerm.disposeTerminal();
+//		interactiveTerm.setKeepRunning(false);
+//		interactiveTerm.disposeTerminal();
 		Simulation.defaultLoad = false;
 		instance().stop();
 		if (masterClock != null)
@@ -1663,14 +1662,14 @@ public class Simulation implements ClockListener, Serializable {
 			masterClock.onUpdate(tpf);
 	}
 
-	/**
-	 * Get the interactive terminal instance
-	 * 
-	 * @return {@link InteractiveTerm}
-	 */
-	public InteractiveTerm getTerm() {
-		return interactiveTerm;
-	}
+//	/**
+//	 * Get the interactive terminal instance
+//	 * 
+//	 * @return {@link InteractiveTerm}
+//	 */
+//	public InteractiveTerm getTerm() {
+//		return interactiveTerm;
+//	}
 	
 	/**
 	 * Clock pulse from master clock

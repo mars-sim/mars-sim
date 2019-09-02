@@ -43,9 +43,9 @@ implements ActionListener {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private static final int ICON_H = 24;
-	private static final int ICON_W = 30;
-	private static final int EMPTY_W = 744;
+//	private static final int ICON_H = 16;
+//	private static final int ICON_W = 16;
+	private static final int EMPTY_W = 745;
 	private static final int EMPTY_H = 32;
 	
 	
@@ -212,7 +212,7 @@ implements ActionListener {
 		addSeparator();
 		
 		ToolButton slowDownButton = new ToolButton("Slow Down", Msg.getString("img.speed.slowDown")); //$NON-NLS-1$ //$NON-NLS-2$
-		slowDownButton.setPreferredSize(new Dimension(ICON_W, ICON_H));
+//		slowDownButton.setPreferredSize(new Dimension(ICON_W, ICON_H));
 		slowDownButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				int ratio = (int)masterClock.getTimeRatio();
@@ -223,7 +223,7 @@ implements ActionListener {
 		add(slowDownButton);
 	
 		ToolButton pauseButton = new ToolButton("Pause", Msg.getString("img.speed.pause")); //$NON-NLS-1$ //$NON-NLS-2$
-		pauseButton.setPreferredSize(new Dimension(ICON_W, ICON_H));
+//		pauseButton.setPreferredSize(new Dimension(ICON_W, ICON_H));
 		pauseButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (!masterClock.isPaused())
@@ -234,7 +234,7 @@ implements ActionListener {
 		
 		
 		ToolButton resumeButton = new ToolButton("Resume", Msg.getString("img.speed.play")); //$NON-NLS-1$ //$NON-NLS-2$
-		resumeButton.setPreferredSize(new Dimension(ICON_W, ICON_H));
+//		resumeButton.setPreferredSize(new Dimension(ICON_W, ICON_H));
 		resumeButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (masterClock.isPaused())
@@ -244,7 +244,7 @@ implements ActionListener {
 		add(resumeButton);
 		
 		ToolButton speedUpButton = new ToolButton("Speed Up", Msg.getString("img.speed.speedUp")); //$NON-NLS-1$ //$NON-NLS-2$
-		speedUpButton.setPreferredSize(new Dimension(ICON_W, ICON_H));
+//		speedUpButton.setPreferredSize(new Dimension(ICON_W, ICON_H));
 		speedUpButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				int ratio = (int)masterClock.getTimeRatio();

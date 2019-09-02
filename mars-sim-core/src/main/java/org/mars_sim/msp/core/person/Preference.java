@@ -159,13 +159,13 @@ public class Preference implements Serializable {
 			game = 1;
 		
 		if (hobby == FavoriteType.LAB_EXPERIMENTATION)
-			lab = 1;
+			lab = 2;
 		
 		if (hobby == FavoriteType.OPERATION)
 			ops = 1;
 		
 		if (hobby == FavoriteType.RESEARCH)
-			research = 1;
+			research = 2;
 		
 		if (hobby == FavoriteType.SPORT)
 			sport = 1;
@@ -203,7 +203,7 @@ public class Preference implements Serializable {
 			MetaTask metaTask = i.next();
 
 			// Set them up in random
-			double rand = RandomUtil.getRandomDouble(2.0) - RandomUtil.getRandomDouble(2.0);
+			double rand = RandomUtil.getRandomDouble(5.0) - RandomUtil.getRandomDouble(5.0);
 			
 			// Note: the preference score on a metaTask is modified by a person's natural
 			// attributes

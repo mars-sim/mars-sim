@@ -4,14 +4,14 @@
  * @version 3.1.0 2018-09-27
  * @author Manny Kung
  */
-package org.mars_sim.msp.core.terminal;
+package org.mars.sim.console;
 
 import org.beryx.textio.TextIO;
 import org.beryx.textio.TextIoFactory;
 import org.beryx.textio.swing.SwingTextTerminal;
+import org.mars.sim.console.AppUtil;
+import org.mars.sim.console.RunnerData;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.terminal.AppUtil;
-import org.mars_sim.msp.core.terminal.RunnerData;
 
 import java.util.function.BiConsumer;
 import java.util.logging.Logger;

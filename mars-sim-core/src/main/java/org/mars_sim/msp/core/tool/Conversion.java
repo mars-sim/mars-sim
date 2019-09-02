@@ -7,6 +7,8 @@
 
 package org.mars_sim.msp.core.tool;
 
+import org.mars_sim.msp.core.science.ScienceConfig;
+
 public class Conversion {
 
 	public Conversion() {
@@ -85,21 +87,31 @@ public class Conversion {
 	 */
 	public static String capitalize(String input) {
 		if (input != null) {
-			StringBuilder titleCase = new StringBuilder();
+			StringBuilder s = new StringBuilder();
 			boolean nextTitleCase = true;
-
-			for (char c : input.toCharArray()) {
+			char[] charArray = input.toCharArray();
+			int index = 0;
+			for (char c : charArray) {
 				if (Character.isSpaceChar(c) || c == '(') {
 					nextTitleCase = true;
 				} else if (nextTitleCase) {
-					c = Character.toTitleCase(c);
-					nextTitleCase = false;
+					// Check if it is "And" string and skip making the 'a' upper-case
+					if (charArray[index] == 'a'
+							&& charArray[index+1] == 'n'
+							&& charArray[index+2] == 'd'
+							&& Character.isSpaceChar(charArray[index+3])) {
+						nextTitleCase = false;	
+					}
+					else {
+						c = Character.toTitleCase(c);
+						nextTitleCase = false;
+					}
 				}
-
-				titleCase.append(c);
+				s.append(c);
+				index++;
 			}
-
-			return titleCase.toString();
+			return s.toString();
+			
 		} else
 			return null;
 	}
@@ -174,5 +186,13 @@ public class Conversion {
 		return true;
 	}
 
+    public static void main(String[] args) {
+			new Conversion();
+			
+			String testString = "he and she are from the galaxy andromeda ! ";
+			String result = capitalize(testString);
+			System.out.println(result);
+    }
+    
 	
 }

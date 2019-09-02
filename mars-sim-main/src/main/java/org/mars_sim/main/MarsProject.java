@@ -16,6 +16,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
@@ -23,6 +24,7 @@ import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
+import org.mars.sim.console.InteractiveTerm;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.ui.helpGenerator.HelpGenerator;
@@ -54,6 +56,8 @@ public class MarsProject {
 
 	private Simulation sim = Simulation.instance();
 
+	private InteractiveTerm interactiveTerm = new InteractiveTerm();
+	
 	private static final String HELP = 
 
 			 "java -jar mars-sim-[$VERSION].jar" + System.lineSeparator()
@@ -92,6 +96,7 @@ public class MarsProject {
 		// logger.config("MarsProject's constructor is on " + Thread.currentThread().getName() + " Thread");
 		sim.startSimExecutor();
 		sim.getSimExecutor().submit(new SimulationTask());
+		
 	}
 
 
@@ -224,9 +229,9 @@ public class MarsProject {
 	 */
 	public void initTerminalLoadMenu() {
 		// Initialize interactive terminal 
-		sim.getTerm().initializeTerminal();	
+		interactiveTerm.initializeTerminal();	
 		// Load the menu choice
-		sim.getTerm().loadTerminalMenu();
+		interactiveTerm.loadTerminalMenu();
 	}
 	
 	/**
@@ -382,12 +387,16 @@ public class MarsProject {
 				// Initialize the simulation.
 				SimulationConfig.loadConfig();
 				// Start interactive terminal
-				sim.getTerm().startModeSelection();
+				interactiveTerm.startModeSelection();
 				// Initialize interactive terminal 
-				sim.getTerm().initializeTerminal();	
+				interactiveTerm.initializeTerminal();	
 				// Start sim config editor
 				SwingUtilities.invokeLater(() -> {
 					new SimulationConfigEditor(SimulationConfig.instance(), null);
+					// Initialize interactive terminal 
+					interactiveTerm.initializeTerminal();	
+					// Start the simulation
+					startSimulation(false);
 				});
 			} 
 			
@@ -400,9 +409,9 @@ public class MarsProject {
 				// Create serializable class 
 				Simulation.createNewSimulation(-1, true);
 				// Start interactive terminal
-				sim.getTerm().startModeSelection();
+				interactiveTerm.startModeSelection();
 				// Initialize interactive terminal 
-				sim.getTerm().initializeTerminal();	
+				interactiveTerm.initializeTerminal();	
 				// Start the simulation.
 				startSimulation(true);					
 			}
@@ -418,11 +427,19 @@ public class MarsProject {
 	 * Start the simulation instance.
 	 */
 	public void startSimulation(boolean useDefaultName) {
-//		logger.config("startSimulation() is on " + Thread.currentThread().getName() + " Thread");
 		// Start the simulation.
-		sim.start(useDefaultName);
+//		runStartTask(useDefaultName);
+//	}
+//
+//	public void runStartTask(boolean autosaveDefault) {
+		ExecutorService e = sim.getSimExecutor();
+//		logger.config("runStartTask() is on " + Thread.currentThread().getName());
+		if (e == null || (e != null && (e.isTerminated() || e.isShutdown())))
+			sim.startSimExecutor();
+		e.submit(new StartTask(useDefaultName));
 	}
-
+	
+	
 	/**
 	 * The starting method for the application
 	 *
@@ -480,5 +497,19 @@ public class MarsProject {
 //			 //in the main loop 
 //		 }
 
+	}
+	
+	class StartTask implements Runnable {
+		boolean autosaveDefault;
+
+		StartTask(boolean autosaveDefault) {
+			this.autosaveDefault = autosaveDefault;
+		}
+
+		public void run() {
+			// logger.config("StartTask's run() is on " + Thread.currentThread().getName());
+			Simulation.instance().start(autosaveDefault);
+			interactiveTerm.loadTerminalMenu();
+		}
 	}
 }

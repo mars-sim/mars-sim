@@ -43,6 +43,8 @@ extends JPanel {
 	private JTable studyTable;
 	private JScrollPane listScrollPane;
 
+	private static ScientificStudyManager scientificStudyManager = Simulation.instance().getScientificStudyManager();
+
 	/**
 	 * Constructor.
 	 * @param scienceWindow the science window.
@@ -70,7 +72,7 @@ extends JPanel {
 
 		// Create study table.
 		studyTable = new JTable(studyTableModel);
-		studyTable.setPreferredScrollableViewportSize(new Dimension(300, 200));
+		studyTable.setPreferredScrollableViewportSize(new Dimension(450, 200));
 		studyTable.setCellSelectionEnabled(false);
 		studyTable.setRowSelectionAllowed(true);
 		studyTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -89,7 +91,6 @@ extends JPanel {
 		
 		studyTable.setAutoCreateRowSorter(true);
 		
-		//2017-01-20 Added calling setTableStyle()
 		TableStyle.setTableStyle(studyTable);
 		
 		listScrollPane.setViewportView(studyTable);
@@ -150,8 +151,7 @@ extends JPanel {
 		 * Constructor.
 		 */
 		private StudyTableModel() {
-			ScientificStudyManager manager = Simulation.instance().getScientificStudyManager();
-			studies = manager.getOngoingStudies();
+			studies = scientificStudyManager.getOngoingStudies();
 		}
 
 		/**
@@ -160,14 +160,20 @@ extends JPanel {
 		 * @return the number of columns in the model
 		 */
 		public int getColumnCount() {
-			return 2;
+			return 4;
 		}
 
 		@Override
 		public String getColumnName(int column) {
 			String result = ""; //$NON-NLS-1$
-			if (column == 0) result = Msg.getString("OngoingStudyListPanel.column.study"); //$NON-NLS-1$
-			else if (column == 1) result = Msg.getString("OngoingStudyListPanel.column.phase"); //$NON-NLS-1$
+			if (column == 0) 
+				result = Msg.getString("OngoingStudyListPanel.column.study"); //$NON-NLS-1$
+			else if (column == 1) 
+				result = Msg.getString("OngoingStudyListPanel.column.phase"); //$NON-NLS-1$
+			else if (column == 2)
+				result = Msg.getString("OngoingStudyListPanel.column.researcher"); //$NON-NLS-1$
+			else if (column == 3)
+				result = Msg.getString("OngoingStudyListPanel.column.settlement"); //$NON-NLS-1$
 			return result;
 		}
 
@@ -191,8 +197,25 @@ extends JPanel {
 			String result = ""; //$NON-NLS-1$
 			if ((rowIndex >= 0) && (rowIndex < studies.size())) {
 				ScientificStudy study = studies.get(rowIndex);
-				if (columnIndex == 0) result = Conversion.capitalize(study.toString());
-				else if (columnIndex == 1) result = Conversion.capitalize(study.getPhase());
+				String researcherN = "";	
+				String settlementN = "";
+				if (study.getPrimaryResearcher() != null) {
+					researcherN = study.getPrimaryResearcher().getName();
+//					System.out.println("Researcher : " + researcherN);
+					
+					if (study.getPrimarySettlement() != null) {
+						settlementN = study.getPrimarySettlement().getName();
+					}
+				}
+
+				if (columnIndex == 0) 
+					result = Conversion.capitalize(study.toString());
+				else if (columnIndex == 1) 
+					result = Conversion.capitalize(study.getPhase());
+				else if (columnIndex == 2)
+					result = Conversion.capitalize(researcherN);
+				else if (columnIndex == 3)
+					result = Conversion.capitalize(settlementN);
 			}
 			return result;
 		}
@@ -201,8 +224,7 @@ extends JPanel {
 		 * Updates the table model.
 		 */
 		private void update() {
-			ScientificStudyManager manager = Simulation.instance().getScientificStudyManager();
-			List<ScientificStudy> newStudies = manager.getOngoingStudies();
+			List<ScientificStudy> newStudies = scientificStudyManager.getOngoingStudies();
 			if (!studies.equals(newStudies)) studies = newStudies;
 			fireTableDataChanged();
 		}

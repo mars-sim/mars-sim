@@ -4,19 +4,16 @@
  * @version 3.1.0 2018-09-27
  * @author Manny Kung
  */
-package org.mars_sim.msp.core.terminal;
+package org.mars.sim.console;
+
+import java.util.List;
+import java.util.function.BiConsumer;
 
 import org.beryx.textio.TextIO;
 import org.beryx.textio.TextIoFactory;
 import org.beryx.textio.swing.SwingTextTerminal;
-import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.terminal.AppUtil;
-import org.mars_sim.msp.core.terminal.RunnerData;
 import org.mars_sim.msp.core.time.MasterClock;
-
-import java.util.List;
-import java.util.function.BiConsumer;
 
 /**
  * A menu for choosing the time ratio in TextIO.
@@ -82,7 +79,7 @@ public class ChatMenu implements BiConsumer<TextIO, RunnerData> {
 	        // Settlement
 	        // Vehicle
 	     
-	        List<String> names = CollectionUtils.createAutoCompleteKeywords();
+	        List<String> names = ChatUtils.createAutoCompleteKeywords();
 //	        String[] array = names.toArray(new String[names.size()]);
 	        quit = false;
  

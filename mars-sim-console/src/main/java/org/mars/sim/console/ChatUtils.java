@@ -5,7 +5,7 @@
  * @author Manny Kung
  */
 
-package org.mars_sim.msp.core.terminal;
+package org.mars.sim.console;
 
 import java.awt.geom.Point2D;
 import java.text.DecimalFormat;
@@ -27,6 +27,7 @@ import java.util.logging.LogManager;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import org.beryx.textio.TextIO;
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.LogConsolidated;
@@ -83,7 +84,6 @@ import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RoboticAttributeManager;
 import org.mars_sim.msp.core.robot.RoboticAttributeType;
-import org.mars_sim.msp.core.science.Science;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.core.structure.Airlock;
@@ -112,15 +112,15 @@ import com.google.common.collect.Multimap;
 
 public class ChatUtils {
 
-    /** DEFAULT LOGGER. */  
+	/** DEFAULT LOGGER. */
 	private static Logger logger = Logger.getLogger(ChatUtils.class.getName());
 	private static String loggerName = logger.getName();
 	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
-	
+
 	private static boolean expertMode = false;
 
-	private static final double RADIANS_TO_DEGREES = 180D/Math.PI;
-	
+	private static final double RADIANS_TO_DEGREES = 180D / Math.PI;
+
 	public final static String SYSTEM = "System";
 	public final static String SYSTEM_PROMPT = "System : ";
 	public final static String YOU_PROMPT = "You : ";
@@ -130,82 +130,35 @@ public class ChatUtils {
 	public final static String REQUEST_KEYS = YOU_PROMPT
 			+ "I need a list of the keywords. Would you tell me what they are ?";
 
-	public final static String[] SPECIAL_KEYS = { 
-			"key", "keys", "keyword", "keywords", "/k",
-			"help", "/h", "/?", "?",	
-			"/y1", "/y2", "/y3", "/y4",		
-			"hello", "hi", "hey",			
-			"expert", "/e",			
-			"quit", "/q", 
-			"bye", "/b", 
-			"exit", "/x",     
-			"pause", "/p"
-	};
-	
-	public final static String[] VEHICLE_KEYS = new String[] {
-			"specs", "status"
-	};
-	
-	public final static String[] SETTLEMENT_KEYS = new String[] {
-			"weather", 
-			"people", "settler", "person",
-			"robot", "bot",
-			"proposal",
-			"vehicle range",
-			"dash", "dashboard",
-			"repair", "maintenance", "evasuit", "eva suit", 
-			"mission plan", "mission now",
-			"objective", 
-			"water",
-			"o2", "oxygen",
-			"co2", "carbon dioxide",
-			"job roster", "job demand",
-			"job prospect",
-			"bed",
-			"social",
-			"science" 
-	};
-	
-	public final static String[] PERSON_KEYS = new String[] {
-			"feeling", "status", "skill", "attribute",
-			"birth", "age", "how old", "born",
-			"friend",
-			"country", "nationality", 
-			"space agency", "sponsor", 
-			"specialty", "job",
-			"outside", "inside", "container", 
-			"building", "associated", "association", "home", "home town",		
-			"garage", "vehicle top container", "vehicle container",  "vehicle park", "vehicle settlement", "vehicle outside", "vehicle inside",			
-			"bed time", "sleep hour", 
-			"eva time", "airlock time",
-			"shift", "work shift",
-			"job score",
-			"bed",
-			"social"
-	};
-	
-	public final static String[] ALL_PARTIES_KEYS = new String[] {
-			"time", "date",
-			"where", "location", "located",	
-			"role",
-			"task",
-			"mission"
-	};
-	
-	public final static String[] SYSTEM_KEYS = new String[] {
-			"settlement", "check size", 
-			"log", "log help", "log timestamp", "log rate limit", "log reset", "log all", "log fine", "log info", "log severe", "log finer", "log finest", "log warning", "log config",
-			"log all walk off", "log all eva off", "log all mission off", "log all airlock off",
-			"vehicle", "rover", 
-			"hi", "hello", "hey",
-			"proposal",
-			"reset clock thread", "reset clock pulse", "reset clock listener",
-			"social", "science", "scores" 
-	};
+	public final static String[] SPECIAL_KEYS = { "key", "keys", "keyword", "keywords", "/k", "help", "/h", "/?", "?",
+			"/y1", "/y2", "/y3", "/y4", "hello", "hi", "hey", "expert", "/e", "quit", "/q", "bye", "/b", "exit", "/x",
+			"pause", "/p" };
 
-	public final static String SWITCHES = 
-			  "  Type 'bye', '/b', 'exit', '/x', 'quit', '/q' to leave the chat." + System.lineSeparator()
-			+ "  Type 'help', '/h', '/?' for this help page." + System.lineSeparator()
+	public final static String[] VEHICLE_KEYS = new String[] { "specs", "status" };
+
+	public final static String[] SETTLEMENT_KEYS = new String[] { "weather", "people", "settler", "person", "robot",
+			"bot", "proposal", "vehicle range", "dash", "dashboard", "repair", "maintenance", "evasuit", "eva suit",
+			"mission plan", "mission now", "objective", "water", "o2", "oxygen", "co2", "carbon dioxide", "job roster",
+			"job demand", "job prospect", "bed", "social", "science" };
+
+	public final static String[] PERSON_KEYS = new String[] { "feeling", "status", "skill", "attribute", "birth", "age",
+			"how old", "born", "friend", "country", "nationality", "space agency", "sponsor", "specialty", "job",
+			"outside", "inside", "container", "building", "associated", "association", "home", "home town", "garage",
+			"vehicle top container", "vehicle container", "vehicle park", "vehicle settlement", "vehicle outside",
+			"vehicle inside", "bed time", "sleep hour", "eva time", "airlock time", "shift", "work shift", "job score",
+			"bed", "social" };
+
+	public final static String[] ALL_PARTIES_KEYS = new String[] { "time", "date", "where", "location", "located",
+			"role", "task", "mission" };
+
+	public final static String[] SYSTEM_KEYS = new String[] { "settlement", "check size", "log", "log help",
+			"log timestamp", "log rate limit", "log reset", "log all", "log fine", "log info", "log severe",
+			"log finer", "log finest", "log warning", "log config", "log all walk off", "log all eva off",
+			"log all mission off", "log all airlock off", "vehicle", "rover", "hi", "hello", "hey", "proposal",
+			"reset clock thread", "reset clock pulse", "reset clock listener", "social", "science", "scores" };
+
+	public final static String SWITCHES = "  Type 'bye', '/b', 'exit', '/x', 'quit', '/q' to leave the chat."
+			+ System.lineSeparator() + "  Type 'help', '/h', '/?' for this help page." + System.lineSeparator()
 			+ "  Type 'expert', '/e' to toggle between normal and expert mode." + System.lineSeparator()
 			+ "  Type 'pause', '/p' to pause and unpause the simulation." + System.lineSeparator();
 
@@ -232,48 +185,46 @@ public class ChatUtils {
 
 	public final static String SYSTEM_KEYWORDS = System.lineSeparator()
 			+ "    ------------------------- K E Y W O R D S ------------------------- " + System.lineSeparator()
-			+ "(A). For MarsNet : " 
-			+ "Type in the NAME of a person, bot, vehicle or settlement to connect with OR keywords below : " + System.lineSeparator()
-			+ System.lineSeparator()
-			+ getKeywordList(SYSTEM_KEYS) + System.lineSeparator();
+			+ "(A). For MarsNet : "
+			+ "Type in the NAME of a person, bot, vehicle or settlement to connect with OR keywords below : "
+			+ System.lineSeparator() + System.lineSeparator() + getKeywordList(SYSTEM_KEYS) + System.lineSeparator();
 //			+ "(B). For all Parties : "  + System.lineSeparator()
 //			+ getKeywordList(ALL_PARTIES_KEYS) + System.lineSeparator();
 //			+ " 0 to 18 are specific QUESTIONS on a person/bot/vehicle/settlement" + System.lineSeparator();
 //			+ "    --------------------------  M I S C S -------------------------- " + System.lineSeparator() 
 //			+ SWITCHES;
-	
+
 	public final static String VEHICLE_KEYWORDS = System.lineSeparator()
 			+ "    ------------------------- K E Y W O R D S ------------------------- " + System.lineSeparator()
-			+ "(A). For Vehicles : "  + System.lineSeparator()
-			+ getKeywordList(VEHICLE_KEYS) + System.lineSeparator()
-			+ "(B). For all Parties : "  + System.lineSeparator()
-			+ getKeywordList(ALL_PARTIES_KEYS) + System.lineSeparator();
+			+ "(A). For Vehicles : " + System.lineSeparator() + getKeywordList(VEHICLE_KEYS) + System.lineSeparator()
+			+ "(B). For all Parties : " + System.lineSeparator() + getKeywordList(ALL_PARTIES_KEYS)
+			+ System.lineSeparator();
 //			+ "(2) 0 to 18 are specific QUESTIONS on a person/bot/vehicle/settlement" + System.lineSeparator();
 //			+ "    --------------------------  M I S C S -------------------------- " + System.lineSeparator() 
 //			+ SWITCHES;
-	
+
 	public final static String PERSON_KEYWORDS = System.lineSeparator()
 			+ "    ------------------------- K E Y W O R D S ------------------------- " + System.lineSeparator()
-			+ "(A). For Settlers : "  + System.lineSeparator()
-			+ getKeywordList(PERSON_KEYS) + System.lineSeparator()
-			+ "(B). For all Parties : "  + System.lineSeparator()
-			+ getKeywordList(ALL_PARTIES_KEYS) + System.lineSeparator();
+			+ "(A). For Settlers : " + System.lineSeparator() + getKeywordList(PERSON_KEYS) + System.lineSeparator()
+			+ "(B). For all Parties : " + System.lineSeparator() + getKeywordList(ALL_PARTIES_KEYS)
+			+ System.lineSeparator();
 //			+ "(2) 0 to 18 are specific QUESTIONS on a person/bot/vehicle/settlement" + System.lineSeparator();
 //			+ "    --------------------------  M I S C S -------------------------- " + System.lineSeparator() 
 //			+ SWITCHES;
-	
+
 	public final static String SETTLEMENT_KEYWORDS = System.lineSeparator()
 			+ "    ------------------------- K E Y W O R D S ------------------------- " + System.lineSeparator()
-			+ "(A). For Settlements : "  + System.lineSeparator()
-			+ getKeywordList(SETTLEMENT_KEYS) + System.lineSeparator()
-			+ "(B). For all Parties : "  + System.lineSeparator()
+			+ "(A). For Settlements : " + System.lineSeparator() + getKeywordList(SETTLEMENT_KEYS)
+			+ System.lineSeparator() + "(B). For all Parties : " + System.lineSeparator()
 			+ getKeywordList(ALL_PARTIES_KEYS) + System.lineSeparator();
 //			+ "(4)  For all Parties : " + getKeywordList(ALL_PARTIES_KEYS) + System.lineSeparator()
 //			+ "(5) 0 to 18 are specific QUESTIONS on a person/bot/vehicle/settlement" + System.lineSeparator() 
 //			+ "    --------------------------  M I S C S -------------------------- " + System.lineSeparator() 
 //			+ SWITCHES;
-	
-	public final static String KEYWORDS_HEIGHT = HELP_HEIGHT; //"(8) '/y1' to reset height to 256 pixels (by default) after closing chat box. '/y2'->512 pixels, '/y3'->768 pixels, '/y4'->1024 pixels" + System.lineSeparator();
+
+	public final static String KEYWORDS_HEIGHT = HELP_HEIGHT; // "(8) '/y1' to reset height to 256 pixels (by default)
+																// after closing chat box. '/y2'->512 pixels, '/y3'->768
+																// pixels, '/y4'->1024 pixels" + System.lineSeparator();
 
 	public final static String DASHES_0 = " ----------------------------------------------------";
 	public final static String DASHES = " ----------------------------------------- ";
@@ -312,21 +263,24 @@ public class ChatUtils {
 	private static LogManager logManager;
 	private static UnitManager unitManager;
 	private static MissionManager missionManager;
-	
+
 	private static DecimalFormat fmt = new DecimalFormat("##0");
 	private static DecimalFormat fmt1 = new DecimalFormat("#0.0");
 	private static DecimalFormat fmt2 = new DecimalFormat("#0.00");
-	
+
 	private static ConcurrentHashMap<String, Level> logLevels = new ConcurrentHashMap<>();
-	
+
+	private static TextIO textIO = InteractiveTerm.getTextIO();
+
 	public ChatUtils() {
 		masterClock = sim.getMasterClock();
-		if (masterClock != null) marsClock = masterClock.getMarsClock();
+		if (masterClock != null)
+			marsClock = masterClock.getMarsClock();
 		mars = sim.getMars();
 		weather = mars.getWeather();
 		surfaceFeatures = mars.getSurfaceFeatures();
 		orbitInfo = mars.getOrbitInfo();
-		
+
 		relationshipManager = sim.getRelationshipManager();
 		scientificManager = sim.getScientificStudyManager();
 		logManager = LogManager.getLogManager();
@@ -347,16 +301,16 @@ public class ChatUtils {
 			return keywords[0];
 
 		Arrays.sort(keywords);
-		
-		for (int i=0 ; i <last; i++) {
-			if (i == last -1)
+
+		for (int i = 0; i < last; i++) {
+			if (i == last - 1)
 				text = text + "and " + keywords[i] + ".";
 			else
 				text = text + keywords[i] + ", ";
 		}
 		return text;
 	}
-	
+
 	/**
 	 * Asks for clarification
 	 * 
@@ -377,8 +331,8 @@ public class ChatUtils {
 			responseText = prompt + " : I beg your pardon?   [/h for help]";
 		else
 			responseText = prompt + " : Can you be more specific?   [/h for help]";
-	
-		return new String[] { questionText, responseText + System.lineSeparator()};
+
+		return new String[] { questionText, responseText + System.lineSeparator() };
 	}
 
 	/**
@@ -419,7 +373,7 @@ public class ChatUtils {
 			else
 				return "I have to leave. Bye !";
 		}
-		
+
 		else {
 			int r0 = RandomUtil.getRandomInt(2);
 			if (r0 == 0)
@@ -442,8 +396,7 @@ public class ChatUtils {
 		}
 		return false;
 	}
-	
-	
+
 	/*
 	 * Checks if the user wants to quit chatting
 	 * 
@@ -539,7 +492,7 @@ public class ChatUtils {
 	 * @return StringBuffer
 	 */
 	public static StringBuffer printTime() {
-		
+
 		StringBuffer responseText = new StringBuffer();
 		// Mars/Earth Date and Time
 //		String earthDateTime = masterClock.getEarthClock().getTimeStampF2();
@@ -551,60 +504,59 @@ public class ChatUtils {
 //		String marsDateTime = marsClock.getDateTimeStamp();
 		String marsDate = marsClock.getDateString();
 		String marsTime = marsClock.getDecimalTimeString();
-		
 
 		responseText.append(System.lineSeparator());
-		
+
 		String s0 = "Mission Sol : ";
 		int num = 20 - s0.length();
-		for (int i=0; i<num; i++) {
+		for (int i = 0; i < num; i++) {
 			responseText.append(" ");
 		}
 		responseText.append(s0);
 		responseText.append(missionSol);
 		responseText.append(System.lineSeparator());
 		responseText.append(System.lineSeparator());
-		
+
 		String s1 = "Mars Date : ";
 		num = 20 - s1.length();
-		for (int i=0; i<num; i++) {
+		for (int i = 0; i < num; i++) {
 			responseText.append(" ");
 		}
 		responseText.append(s1);
 		responseText.append(marsDate);
 		responseText.append(System.lineSeparator());
-		
+
 		String s2 = "Mars Time : ";
 		num = 20 - s2.length();
-		for (int i=0; i<num; i++) {
+		for (int i = 0; i < num; i++) {
 			responseText.append(" ");
 		}
 		responseText.append(s2);
 		responseText.append(marsTime);
 		responseText.append(System.lineSeparator());
 		responseText.append(System.lineSeparator());
-		
+
 		String s3 = "Earth Date : ";
 		num = 20 - s3.length();
-		for (int i=0; i<num; i++) {
+		for (int i = 0; i < num; i++) {
 			responseText.append(" ");
 		}
 		responseText.append(s3);
 		responseText.append(earthDate);
 		responseText.append(System.lineSeparator());
-		
+
 		String s4 = "Earth Time : ";
 		num = 20 - s4.length();
-		for (int i=0; i<num; i++) {
+		for (int i = 0; i < num; i++) {
 			responseText.append(" ");
 		}
 		responseText.append(s4);
 		responseText.append(earthTime);
 		responseText.append(System.lineSeparator());
-		
+
 		return responseText;
 	}
-	
+
 	public static StringBuffer getNextNum(int num) {
 //		StringBuffer s = new StringBuffer();
 //		if (num < 10)
@@ -613,7 +565,7 @@ public class ChatUtils {
 //			return s.append("  " + num);	
 		return new StringBuffer();
 	}
-	
+
 	/**
 	 * Asks the vehicle when the input is a string
 	 * 
@@ -624,29 +576,30 @@ public class ChatUtils {
 	public static String[] askVehicle(String text, String name) {
 		String questionText = "";
 		StringBuffer responseText = new StringBuffer();
-		
+
 		if (text.equalsIgnoreCase("status")) {
-			questionText = YOU_PROMPT + "What is your status ?"; 
+			questionText = YOU_PROMPT + "What is your status ?";
 			int max = 28;
-			
+
 			responseText.append(System.lineSeparator());
 			responseText.append(addhiteSpacesName("Status : ", max) + vehicleCache.getStatus().getName());
-			
+
 			responseText.append(System.lineSeparator());
-			responseText.append(addhiteSpacesName("Associated Settlement : ", max) + vehicleCache.getAssociatedSettlement().getName());
-			
+			responseText.append(addhiteSpacesName("Associated Settlement : ", max)
+					+ vehicleCache.getAssociatedSettlement().getName());
+
 			responseText.append(System.lineSeparator());
 			responseText.append(addhiteSpacesName("Location : ", max) + vehicleCache.getImmediateLocation());
-			
+
 			responseText.append(System.lineSeparator());
 			responseText.append(addhiteSpacesName("Locale : ", max) + vehicleCache.getLocale());
-						
+
 			String reserve = "Yes";
 			if (!vehicleCache.isReservedForMission())
 				reserve = "No";
 			responseText.append(System.lineSeparator());
 			responseText.append(addhiteSpacesName("Reserved : ", max) + reserve);
-			
+
 			String missionStr = "None";
 			if (missionManager.getMissionForVehicle(vehicleCache) != null) {
 				Mission m = missionManager.getMissionForVehicle(vehicleCache);
@@ -657,27 +610,26 @@ public class ChatUtils {
 				responseText.append(System.lineSeparator());
 				responseText.append(addhiteSpacesName("Mission Lead : ", max) + lead);
 				responseText.append(System.lineSeparator());
-				
+
 				double dist = 0;
 				double trav = 0;
-	
+
 				if (m instanceof VehicleMission) {
-					dist = Math.round(((VehicleMission)m).getTotalDistance()*10.0)/10.0;//.getStartingTravelledDistance(); // getTotalDistance();//.
-					trav = Math.round(((VehicleMission)m).getTotalDistanceTravelled()*10.0)/10.0;
+					dist = Math.round(((VehicleMission) m).getTotalDistance() * 10.0) / 10.0;// .getStartingTravelledDistance();
+																								// //
+																								// getTotalDistance();//.
+					trav = Math.round(((VehicleMission) m).getTotalDistanceTravelled() * 10.0) / 10.0;
 					responseText.append("  Est. Dist. : " + dist + " km");
 					responseText.append(System.lineSeparator());
 					responseText.append("   Travelled : " + trav + " km");
 					responseText.append(System.lineSeparator());
 				}
-				
 
-				
-			}
-			else {
+			} else {
 				responseText.append(System.lineSeparator());
 				responseText.append(addhiteSpacesName("On a Mission : ", max) + missionStr);
-			}		
-			
+			}
+
 			if (vehicleCache instanceof Rover) {
 				String towed = "No";
 				if (vehicleCache.isBeingTowed() && vehicleCache.getTowingVehicle().getName() != null) {
@@ -685,20 +637,20 @@ public class ChatUtils {
 				}
 				responseText.append(System.lineSeparator());
 				responseText.append(addhiteSpacesName("Being Towed : ", max) + towed);
-				
+
 				String towing = "No";
-				if (((Rover)vehicleCache).isTowingAVehicle() && ((Rover)vehicleCache).getTowedVehicle().getName() != null) {
-					towing = "Yes. Towing " + ((Rover)vehicleCache).getTowedVehicle().getName();
+				if (((Rover) vehicleCache).isTowingAVehicle()
+						&& ((Rover) vehicleCache).getTowedVehicle().getName() != null) {
+					towing = "Yes. Towing " + ((Rover) vehicleCache).getTowedVehicle().getName();
 				}
 				responseText.append(System.lineSeparator());
 				responseText.append(addhiteSpacesName("Towing : ", max) + towing);
 			}
-			
-			
+
 		}
-		
+
 		else if (text.equalsIgnoreCase("specs")) {
-			questionText = YOU_PROMPT + "Can you show me the specifications ?"; 
+			questionText = YOU_PROMPT + "Can you show me the specifications ?";
 
 			int max = 28;
 			responseText.append(System.lineSeparator());
@@ -711,130 +663,130 @@ public class ChatUtils {
 			responseText.append(System.lineSeparator());
 			responseText.append(addhiteSpacesName("Description : ", max) + vehicleCache.getVehicleType());
 			responseText.append(System.lineSeparator());
-			responseText.append(addhiteSpacesName("Base Mass : ", max)).append(vehicleCache.getBaseMass()).append(" kg");
+			responseText.append(addhiteSpacesName("Base Mass : ", max)).append(vehicleCache.getBaseMass())
+					.append(" kg");
 			responseText.append(System.lineSeparator());
 
 //			System.out.println("next is speed : " + responseText.toString());
 
-			responseText.append(addhiteSpacesName("Base Speed : ", max)).append(vehicleCache.getBaseSpeed()).append(" km/h");
+			responseText.append(addhiteSpacesName("Base Speed : ", max)).append(vehicleCache.getBaseSpeed())
+					.append(" km/h");
 			responseText.append(System.lineSeparator());
-			responseText.append(addhiteSpacesName("Drivetrain Efficiency : ", max)).append(vehicleCache.getDrivetrainEfficiency()).append(" kWh/km");
+			responseText.append(addhiteSpacesName("Drivetrain Efficiency : ", max))
+					.append(vehicleCache.getDrivetrainEfficiency()).append(" kWh/km");
 //			responseText.append(System.lineSeparator());
 //			responseText.append(addhiteSpacesName("Travel per sol : ", max) + vehicleCache.getEstimatedTravelDistancePerSol() + " km (Estimated)");
 			responseText.append(System.lineSeparator());
-			
+
 //			System.out.println("next is SOFC : " + responseText.toString());
-			
+
 			String fuel = "Electrical Battery";
 			if (vehicleCache instanceof Rover) {
-				int id = ((Rover)vehicleCache).getFuelType();
+				int id = ((Rover) vehicleCache).getFuelType();
 				String fuelName = ResourceUtil.findAmountResourceName(id);
 				fuel = Conversion.capitalize(fuelName) + " (Solid Oxide Fuel Cell)";
-				
+
 				responseText.append(addhiteSpacesName("Power Source : ", max) + fuel);
 				responseText.append(System.lineSeparator());
-				
-				responseText.append(addhiteSpacesName("Fuel Capacity : ", max)).append(vehicleCache.getFuelCapacity() + " kg");
+
+				responseText.append(addhiteSpacesName("Fuel Capacity : ", max))
+						.append(vehicleCache.getFuelCapacity() + " kg");
 				responseText.append(System.lineSeparator());
-				
-				responseText.append(addhiteSpacesName("Base Range : ", max)).append(Math.round(vehicleCache.getBaseRange() *100.0)/100.0 + " km (Estimated)");
+
+				responseText.append(addhiteSpacesName("Base Range : ", max))
+						.append(Math.round(vehicleCache.getBaseRange() * 100.0) / 100.0 + " km (Estimated)");
 				responseText.append(System.lineSeparator());
-				
-				responseText.append(addhiteSpacesName("Base Fuel Consumption : ", max)).append(Math.round(vehicleCache.getBaseFuelConsumption() *100.0)/100.0 + " km/kg (Estimated)");
+
+				responseText.append(addhiteSpacesName("Base Fuel Consumption : ", max)).append(
+						Math.round(vehicleCache.getBaseFuelConsumption() * 100.0) / 100.0 + " km/kg (Estimated)");
 				responseText.append(System.lineSeparator());
-			}
-			else {
+			} else {
 				responseText.append(addhiteSpacesName("Power Source : ", max) + fuel);
 				responseText.append(System.lineSeparator());
 			}
 
 //			System.out.println("next is getCrewCapacity : " + responseText.toString());
-			
+
 			int crewSize = 0;
 			if (vehicleCache instanceof Rover) {
-				crewSize = ((Rover)vehicleCache).getCrewCapacity();
-			}
-			else if (vehicleCache instanceof LightUtilityVehicle) {
-				crewSize = ((LightUtilityVehicle)vehicleCache).getCrewCapacity();
+				crewSize = ((Rover) vehicleCache).getCrewCapacity();
+			} else if (vehicleCache instanceof LightUtilityVehicle) {
+				crewSize = ((LightUtilityVehicle) vehicleCache).getCrewCapacity();
 			}
 			responseText.append(addhiteSpacesName("Crew Size : ", max)).append(crewSize);
 			responseText.append(System.lineSeparator());
-			
+
 			double cargo = 0;
 			if (vehicleCache instanceof Rover) {
-				cargo = ((Rover)vehicleCache).getCargoCapacity();
+				cargo = ((Rover) vehicleCache).getCargoCapacity();
 				responseText.append(addhiteSpacesName("Cargo Capacity : ", max)).append(cargo + " kg");
 				responseText.append(System.lineSeparator());
 			}
 
 //			System.out.println("next is sick bay : " + responseText.toString());				
-				
+
 			String hasSickBayStr = "No";
 			if (vehicleCache instanceof Rover) {
 
-				boolean hasSickBay = ((Rover)vehicleCache).hasSickBay();
+				boolean hasSickBay = ((Rover) vehicleCache).hasSickBay();
 				if (hasSickBay) {
 					hasSickBayStr = "Yes";
-					
+
 					responseText.append(addhiteSpacesName("Has Sick Bay : ", max) + hasSickBayStr);
 					responseText.append(System.lineSeparator());
-								
-					int bed = ((Rover)vehicleCache).getSickBay().getSickBedNum();
+
+					int bed = ((Rover) vehicleCache).getSickBay().getSickBedNum();
 					responseText.append(addhiteSpacesName("# Beds (Sick Bay) : ", max)).append(bed);
 					responseText.append(System.lineSeparator());
-					
-					int lvl = ((Rover)vehicleCache).getSickBay().getTreatmentLevel();
+
+					int lvl = ((Rover) vehicleCache).getSickBay().getTreatmentLevel();
 					responseText.append(addhiteSpacesName("Tech Level (Sick Bay) : ", max)).append(lvl);
 					responseText.append(System.lineSeparator());
-				
-				}
-				else {
-					responseText.append(addhiteSpacesName("Has Sick Bay : ", max)  + hasSickBayStr);
+
+				} else {
+					responseText.append(addhiteSpacesName("Has Sick Bay : ", max) + hasSickBayStr);
 					responseText.append(System.lineSeparator());
 				}
-				
+
 			}
 
-
 //			System.out.println("next is lab : " + responseText.toString());
-			
+
 			String hasLabStr = "No";
 			if (vehicleCache instanceof Rover) {
 
-				boolean hasLab = ((Rover)vehicleCache).hasLab();
+				boolean hasLab = ((Rover) vehicleCache).hasLab();
 				if (hasLab) {
 					hasLabStr = "Yes";
-					
-					responseText.append(addhiteSpacesName("Has Lab : ", max)  + hasLabStr);
+
+					responseText.append(addhiteSpacesName("Has Lab : ", max) + hasLabStr);
 					responseText.append(System.lineSeparator());
-									
-					int lvl = ((Rover)vehicleCache).getLab().getTechnologyLevel();
+
+					int lvl = ((Rover) vehicleCache).getLab().getTechnologyLevel();
 					responseText.append(addhiteSpacesName("Tech Level (Lab) : ", max)).append(lvl);
 					responseText.append(System.lineSeparator());
-					
-					int size = ((Rover)vehicleCache).getLab().getLaboratorySize();
+
+					int size = ((Rover) vehicleCache).getLab().getLaboratorySize();
 					responseText.append(addhiteSpacesName("Lab Size : ", max)).append(size);
 					responseText.append(System.lineSeparator());
-					
-					ScienceType[] types = ((Rover)vehicleCache).getLab().getTechSpecialties();
+
+					ScienceType[] types = ((Rover) vehicleCache).getLab().getTechSpecialties();
 					String names = "";
-					for (ScienceType t: types) {
+					for (ScienceType t : types) {
 						names += t.getName() + ", ";
 					}
-					names = names.substring(0, names.length()-2);
-					
+					names = names.substring(0, names.length() - 2);
+
 					responseText.append(addhiteSpacesName("Lab Specialties : ", max) + names);
 					responseText.append(System.lineSeparator());
-				
-				}
-				else {
+
+				} else {
 					responseText.append(addhiteSpacesName("Has Lab: ", max) + hasSickBayStr);
 					responseText.append(System.lineSeparator());
 				}
-				
+
 			}
 
-				
 //			if (vehicleCache instanceof LightUtilityVehicle) {
 //
 //				Collection<Part> parts = ((LightUtilityVehicle)vehicleCache).getPossibleAttachmentParts();
@@ -851,14 +803,11 @@ public class ChatUtils {
 //				responseText.append(System.lineSeparator());
 //					
 //			}
-			
+
 		}
-		
-		else if (text.equalsIgnoreCase("key") 
-				|| text.equalsIgnoreCase("keys")  
-				|| text.equalsIgnoreCase("keyword")  
-				|| text.equalsIgnoreCase("keywords")  
-				|| text.equalsIgnoreCase("/k")) {
+
+		else if (text.equalsIgnoreCase("key") || text.equalsIgnoreCase("keys") || text.equalsIgnoreCase("keyword")
+				|| text.equalsIgnoreCase("keywords") || text.equalsIgnoreCase("/k")) {
 
 //			help = true;
 			questionText = REQUEST_KEYS;
@@ -872,8 +821,8 @@ public class ChatUtils {
 
 		}
 
-		else if (text.equalsIgnoreCase("help") || text.equalsIgnoreCase("/h") 
-				|| text.equalsIgnoreCase("/?") || text.equalsIgnoreCase("?")) {
+		else if (text.equalsIgnoreCase("help") || text.equalsIgnoreCase("/h") || text.equalsIgnoreCase("/?")
+				|| text.equalsIgnoreCase("?")) {
 
 //			help = true;
 			questionText = REQUEST_HELP;
@@ -899,13 +848,13 @@ public class ChatUtils {
 
 	public static StringBuffer printLevel(String[] str, int[] mods) {
 		StringBuffer s = new StringBuffer();
-		for (int i=0; i<str.length; i++) {
+		for (int i = 0; i < str.length; i++) {
 			s.append(" " + str[i] + computeWhiteSpaces(str[i], 25) + " :   " + mods[i]);
 			s.append(System.lineSeparator());
 		}
 		return s;
 	}
-	
+
 	/**
 	 * Asks the settlement when the input is a string
 	 * 
@@ -921,43 +870,51 @@ public class ChatUtils {
 		String text0 = text;
 		String jobStrName = text0.replace("job prospect ", "");
 
-		if (text.contains("job prospect") 
-				&& JobUtil.getJob(jobStrName) != null) {
+		if (text.contains("job prospect") && JobUtil.getJob(jobStrName) != null) {
 			List<Person> list = settlementCache.getAllAssociatedPeople().stream()
 //					.sorted((p1, p2)-> p1.getMind().getJob().getName(p1.getGender()).compareTo(p2.getMind().getJob().getName(p2.getGender())))
-					.sorted((p1, p2)-> p1.getName().compareTo(p2.getName()))
-					.collect(Collectors.toList());
-			
+					.sorted((p1, p2) -> p1.getName().compareTo(p2.getName())).collect(Collectors.toList());
+
 			Job job = JobUtil.getJob(jobStrName);
 			responseText.append(" --- " + Conversion.capitalize(jobStrName) + " Job Prospect Scores --- ");
 //			responseText.append(System.lineSeparator());
 			responseText.append(System.lineSeparator());
 			for (Person p : list) {
-				double jobProspect = Math.round(JobUtil.getJobProspect(p, job, settlementCache, true)*10.0)/10.0;
+				double jobProspect = Math.round(JobUtil.getJobProspect(p, job, settlementCache, true) * 10.0) / 10.0;
 				responseText.append(addhiteSpacesName(" " + p, 20));
 				responseText.append(addhiteSpacesName(" " + jobProspect, 6));
 				responseText.append(System.lineSeparator());
 			}
 		}
-		
-		else if (text.equalsIgnoreCase("job")
-				|| text.equalsIgnoreCase("career")) {
-			responseText.append(settlementCache + " : please specify if you want to see 'job roster', 'job demand'");// or the individual's job prospect score of a particular job.");
+
+		else if (text.equalsIgnoreCase("job") || text.equalsIgnoreCase("career")) {
+			responseText.append(settlementCache + " : please specify if you want to see 'job roster', 'job demand'");// or
+																														// the
+																														// individual's
+																														// job
+																														// prospect
+																														// score
+																														// of
+																														// a
+																														// particular
+																														// job.");
 			responseText.append(System.lineSeparator());
-			responseText.append("Note : to see job prospect scores, specify the job position such as 'job prospect engineer', or 'job prospect botanist'");
+			responseText.append(
+					"Note : to see job prospect scores, specify the job position such as 'job prospect engineer', or 'job prospect botanist'");
 //			responseText.append(System.lineSeparator());
 		}
-		
+
 		else if (text.equalsIgnoreCase("job prospect")) {
-			responseText.append(settlementCache + " : please specify which job you would like to see the prospect scores "
-					+ "such as 'job prospect engineer', or 'job prospect botanist'");
+			responseText
+					.append(settlementCache + " : please specify which job you would like to see the prospect scores "
+							+ "such as 'job prospect engineer', or 'job prospect botanist'");
 
 		}
-		
+
 		else if (text.equalsIgnoreCase("job roster")) {
 //			responseText.append(" Job Roster");
 //			responseText.append(System.lineSeparator());
-			
+
 			questionText = YOU_PROMPT + "What is everybody's job ?";
 			responseText.append(System.lineSeparator());
 			responseText.append(settlementCache + " : ");
@@ -967,23 +924,22 @@ public class ChatUtils {
 			responseText.append("          --- Sort by Name ---");
 			responseText.append(System.lineSeparator());
 			responseText.append(System.lineSeparator());
-			
+
 			List<Person> list = settlementCache.getAllAssociatedPeople().stream()
 //					.sorted((p1, p2)-> p1.getMind().getJob().getName(p1.getGender()).compareTo(p2.getMind().getJob().getName(p2.getGender())))
-					.sorted((p1, p2)-> p1.getName().compareTo(p2.getName()))
-					.collect(Collectors.toList());
-			
+					.sorted((p1, p2) -> p1.getName().compareTo(p2.getName())).collect(Collectors.toList());
+
 			int length = 0;
 			for (Person p : list) {
 				int l = p.getName().length();
 				if (l > length)
 					length = l;
 			}
-			
+
 			int num = 1;
 			for (Person p : list) {
 				String job = p.getMind().getJob().getName(p.getGender());
-				if (num < 10)					
+				if (num < 10)
 					responseText.append("  " + num + ". ");
 				else
 					responseText.append(" " + num + ". ");
@@ -991,52 +947,52 @@ public class ChatUtils {
 				responseText.append(p);
 				int size = length + 2 - p.getName().length();// - job.length();
 				if (size > 0) {
-					for (int i=0; i<size; i++) {
+					for (int i = 0; i < size; i++) {
 						responseText.append(" ");
 					}
 				}
 				responseText.append(" - " + job);
 				responseText.append(System.lineSeparator());
 			}
-			
+
 			responseText.append(System.lineSeparator());
 			responseText.append("  --- Sort by Job ---");
 			responseText.append(System.lineSeparator());
-			
+
 			Map<String, List<Person>> map = JobUtil.getJobMap(settlementCache);
-			
+
 			List<String> jobList = new ArrayList<>(map.keySet());
 			Collections.sort(jobList);
-			
+
 			int num1 = 1;
 
 			for (String jobStr : jobList) {
 				responseText.append(System.lineSeparator());
-				if (num1 < 10)					
+				if (num1 < 10)
 					responseText.append("  " + num1 + ". ");
 				else
 					responseText.append(" " + num1 + ". ");
 				num1++;
-					
+
 				responseText.append(jobStr);
 				responseText.append(System.lineSeparator());
 				responseText.append(" ");
-				for (int i=0; i<length; i++) {
+				for (int i = 0; i < length; i++) {
 					responseText.append("-");
 				}
 //				responseText.append(" -------------");
-				responseText.append(System.lineSeparator());	
-				
+				responseText.append(System.lineSeparator());
+
 				List<Person> plist = map.get(jobStr);
 				Collections.sort(plist);
-				
-				for (Person p: plist) {
+
+				for (Person p : plist) {
 					responseText.append("  - " + p.getName());
 					responseText.append(System.lineSeparator());
 				}
 			}
 		}
-		
+
 		else if (text.equalsIgnoreCase("job demand")) {
 			responseText.append(addhiteSpacesName(" Job", 20));
 			responseText.append(addhiteSpacesName(" Demand", 10));
@@ -1044,56 +1000,55 @@ public class ChatUtils {
 			responseText.append(addhiteSpacesName(" Filled", 8));
 
 			responseText.append(System.lineSeparator());
-			
+
 			Map<String, List<Person>> map = JobUtil.getJobMap(settlementCache);
-			
+
 			List<Job> jobs = JobUtil.getJobs();
 //			List<String> jobs = JobManager.getJobs();
-			
+
 			for (Job job : jobs) {
 				String jobName = job.getName(GenderType.MALE);
 				String n = " " + jobName;
 				responseText.append(addhiteSpacesName(n, 20));
-				
-				String demand = "" + Math.round(job.getSettlementNeed(settlementCache) * 10.0)/10.0;
+
+				String demand = "" + Math.round(job.getSettlementNeed(settlementCache) * 10.0) / 10.0;
 				responseText.append(addhiteSpacesName(demand, 9));
-				
-				String deficit = "" + Math.round(JobUtil.getRemainingSettlementNeed(settlementCache, job) * 10.0)/10.0;
+
+				String deficit = ""
+						+ Math.round(JobUtil.getRemainingSettlementNeed(settlementCache, job) * 10.0) / 10.0;
 				responseText.append(addhiteSpacesName(deficit, 9));
-				
+
 				int num = 0;
 				if (map.get(jobName) != null)
 					num = map.get(jobName).size();
-				
+
 				String positions = "" + num;
 				responseText.append(addhiteSpacesName(positions, 8));
-				
+
 				responseText.append(System.lineSeparator());
 			}
-			
+
 		}
-		
-		else if (text.equalsIgnoreCase("co2")
-				|| text.equalsIgnoreCase("carbon dioxide")) {
+
+		else if (text.equalsIgnoreCase("co2") || text.equalsIgnoreCase("carbon dioxide")) {
 			int max = 40;
 			double usage = 0;
 			double reserve = 0;
 			double totalArea = 0;
-			
+
 			// Prints the current reserve
 			try {
 				reserve = settlementCache.getInventory().getAmountResourceStored(ResourceUtil.co2ID, false);
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 			}
 
 			responseText.append(addhiteSpacesName("--- Greenhouse Farming ---", 50));
 			responseText.append(System.lineSeparator());
 			String s0 = " Current reserve : ";
 			responseText.append(addhiteSpacesName(s0, max));
-			responseText.append(Math.round(reserve* 100.0)/100.0 + " kg");
+			responseText.append(Math.round(reserve * 100.0) / 100.0 + " kg");
 			responseText.append(System.lineSeparator());
-			
+
 			// Prints greenhouse usage
 			List<Building> farms = settlementCache.getBuildingManager().getBuildings(FunctionType.FARMING);
 			for (Building b : farms) {
@@ -1104,21 +1059,20 @@ public class ChatUtils {
 
 			String s1 = " Total growing area : ";
 			responseText.append(addhiteSpacesName(s1, max));
-			responseText.append(Math.round(totalArea * 100.0)/100.0);
+			responseText.append(Math.round(totalArea * 100.0) / 100.0);
 			responseText.append(System.lineSeparator());
 			String s3 = " Generated daily per unit area : ";
 			responseText.append(addhiteSpacesName(s3, max));
-			responseText.append(Math.round(usage / totalArea * 100.0)/100.0 + " kg/m^2/sol");
+			responseText.append(Math.round(usage / totalArea * 100.0) / 100.0 + " kg/m^2/sol");
 			responseText.append(System.lineSeparator());
 			String s2 = " Total amount generated Daily : ";
 			responseText.append(addhiteSpacesName(s2, max));
-			responseText.append(Math.round(usage * 100.0)/100.0 + " kg/sol");
+			responseText.append(Math.round(usage * 100.0) / 100.0 + " kg/sol");
 			responseText.append(System.lineSeparator());
-			
+
 		}
-		
-		else if (text.equalsIgnoreCase("o2")
-				|| text.equalsIgnoreCase("oxygen")) {
+
+		else if (text.equalsIgnoreCase("o2") || text.equalsIgnoreCase("oxygen")) {
 			int max = 40;
 			double usage = 0;
 			double reserve = 0;
@@ -1127,17 +1081,16 @@ public class ChatUtils {
 			// Prints the current reserve
 			try {
 				reserve = settlementCache.getInventory().getAmountResourceStored(ResourceUtil.oxygenID, false);
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 			}
 
 			responseText.append(addhiteSpacesName("--- Greenhouse Farming ---", 50));
 			responseText.append(System.lineSeparator());
 			String s0 = " Current reserve : ";
 			responseText.append(addhiteSpacesName(s0, max));
-			responseText.append(Math.round(reserve* 100.0)/100.0 + " kg");
+			responseText.append(Math.round(reserve * 100.0) / 100.0 + " kg");
 			responseText.append(System.lineSeparator());
-			
+
 			// Prints greenhouse usage
 			List<Building> farms = settlementCache.getBuildingManager().getBuildings(FunctionType.FARMING);
 			for (Building b : farms) {
@@ -1145,28 +1098,27 @@ public class ChatUtils {
 				usage += f.computeUsage(1);
 				totalArea += f.getGrowingArea();
 			}
-			
 
 			String s1 = " Total growing area : ";
 			responseText.append(addhiteSpacesName(s1, max));
-			responseText.append(Math.round(totalArea * 100.0)/100.0);
+			responseText.append(Math.round(totalArea * 100.0) / 100.0);
 			responseText.append(System.lineSeparator());
 			String s3 = " Consumed daily per unit area : ";
 			responseText.append(addhiteSpacesName(s3, max));
-			responseText.append(Math.round(usage / totalArea * 100.0)/100.0 + " kg/m^2/sol");
+			responseText.append(Math.round(usage / totalArea * 100.0) / 100.0 + " kg/m^2/sol");
 			responseText.append(System.lineSeparator());
 			String s2 = " Total amount consumed daily : ";
 			responseText.append(addhiteSpacesName(s2, max));
-			responseText.append(Math.round(usage * 100.0)/100.0 + " kg/sol");
+			responseText.append(Math.round(usage * 100.0) / 100.0 + " kg/sol");
 			responseText.append(System.lineSeparator());
-			
+
 		}
-		
+
 		else if (text.equalsIgnoreCase("water")) {
 			int max0 = 40;
 			double usage = 0;
 			double totalArea = 0;
-			
+
 			// Prints greenhouse usage
 			List<Building> farms = settlementCache.getBuildingManager().getBuildings(FunctionType.FARMING);
 			for (Building b : farms) {
@@ -1174,34 +1126,34 @@ public class ChatUtils {
 				usage += f.computeUsage(0);
 				totalArea += f.getGrowingArea();
 			}
-			
+
 			responseText.append(addhiteSpacesName("--- Greenhouse Farming ---", 50));
 			responseText.append(System.lineSeparator());
 			String s01 = " Total growing area : ";
 			responseText.append(addhiteSpacesName(s01, max0));
-			responseText.append(Math.round(totalArea * 100.0)/100.0);
+			responseText.append(Math.round(totalArea * 100.0) / 100.0);
 			responseText.append(System.lineSeparator());
 			String s03 = " Consumed daily per unit area : ";
 			responseText.append(addhiteSpacesName(s03, max0));
-			responseText.append(Math.round(usage / totalArea * 100.0)/100.0 + " kg/m^2/sol");
+			responseText.append(Math.round(usage / totalArea * 100.0) / 100.0 + " kg/m^2/sol");
 			responseText.append(System.lineSeparator());
 			String s02 = " Projected daily amount consumed : ";
 			responseText.append(addhiteSpacesName(s02, max0));
-			responseText.append(Math.round(usage * 100.0)/100.0 + " kg/sol");
-			responseText.append(System.lineSeparator());		
+			responseText.append(Math.round(usage * 100.0) / 100.0 + " kg/sol");
 			responseText.append(System.lineSeparator());
-			
+			responseText.append(System.lineSeparator());
+
 			int max = 14;
 			double reserve = 0;
-			double greenhouseUsage = 0;			
+			double greenhouseUsage = 0;
 			double consumption = 0;
 			double livingUsage = 0;
 			double output = 0;
 			double cleaning = 0;
-			double net = 0;			
-			
+			double net = 0;
+
 			String s = " -------------+-------------------------------------------------------+-----";
-			
+
 			responseText.append("                        Water - Rate of Change [kg/sol]");
 			responseText.append(System.lineSeparator());
 			responseText.append(s);
@@ -1209,40 +1161,38 @@ public class ChatUtils {
 
 			String t0 = "   Reserve";
 			responseText.append(addNameFirstWhiteSpaces(t0, max));
-			
+
 			String t1 = "| Greenhouse";
-			responseText.append(addNameFirstWhiteSpaces(t1, max-1));
+			responseText.append(addNameFirstWhiteSpaces(t1, max - 1));
 
 			String t2 = " Consumption";
-			responseText.append(addNameFirstWhiteSpaces(t2, max-1));
-			
+			responseText.append(addNameFirstWhiteSpaces(t2, max - 1));
+
 			String t3 = " Hygiene";
-			responseText.append(addNameFirstWhiteSpaces(t3, max-5));
+			responseText.append(addNameFirstWhiteSpaces(t3, max - 5));
 
 			String t4 = " Cleaning";
-			responseText.append(addNameFirstWhiteSpaces(t4, max-3));
-	
+			responseText.append(addNameFirstWhiteSpaces(t4, max - 3));
+
 			String t5 = "Processes";
-			responseText.append(addNameFirstWhiteSpaces(t5, max-4));
+			responseText.append(addNameFirstWhiteSpaces(t5, max - 4));
 
 			String t6 = "| Net";
 			responseText.append(t6);
-			
+
 			responseText.append(System.lineSeparator());
 			responseText.append(s);
 			responseText.append(System.lineSeparator());
-			
+
 			// Prints the current reserve
 			try {
 				reserve = settlementCache.getInventory().getAmountResourceStored(ResourceUtil.waterID, false);
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 			}
 
-			String s0 = " " + Math.round(reserve* 100.0)/100.0 + " kg";
+			String s0 = " " + Math.round(reserve * 100.0) / 100.0 + " kg";
 			responseText.append(addNameFirstWhiteSpaces(s0, max));
 
-			
 			// Prints greenhouse usage
 //			List<Building> farms = settlementCache.getBuildingManager().getBuildings(FunctionType.FARMING);
 			for (Building b : farms) {
@@ -1250,42 +1200,39 @@ public class ChatUtils {
 				greenhouseUsage += f.getDailyAverageWaterUsage();
 //				area += f.getGrowingArea();
 			}
-			String s1 = "|   -" + Math.round(greenhouseUsage * 100.0)/100.0;
-			responseText.append(addNameFirstWhiteSpaces(s1, max-1));
+			String s1 = "|   -" + Math.round(greenhouseUsage * 100.0) / 100.0;
+			responseText.append(addNameFirstWhiteSpaces(s1, max - 1));
 			net = net - greenhouseUsage;
 
-			
-			// Prints consumption 
+			// Prints consumption
 			List<Person> ppl = new ArrayList<>(settlementCache.getAllAssociatedPeople());
 			for (Person p : ppl) {
 				consumption += p.getDailyUsage(1);
 			}
 			// Add water usage from making meal and dessert
 			consumption += settlementCache.getDailyUsage(0) + settlementCache.getDailyUsage(1);
-			String s2 = "    -" + Math.round(consumption * 100.0)/100.0;
-			responseText.append(addNameFirstWhiteSpaces(s2, max-1));
+			String s2 = "    -" + Math.round(consumption * 100.0) / 100.0;
+			responseText.append(addNameFirstWhiteSpaces(s2, max - 1));
 			net = net - consumption;
 
-			
 			// Prints living usage
-			List<Building> quarters = settlementCache.getBuildingManager().getBuildings(FunctionType.LIVING_ACCOMODATIONS);
+			List<Building> quarters = settlementCache.getBuildingManager()
+					.getBuildings(FunctionType.LIVING_ACCOMODATIONS);
 			for (Building b : quarters) {
 				LivingAccommodations la = b.getLivingAccommodations();
 				livingUsage += la.getDailyAverageWaterUsage();
 
 			}
-			String s3 = " -" + Math.round(livingUsage * 100.0)/100.0;
-			responseText.append(addNameFirstWhiteSpaces(s3, max-5));
+			String s3 = " -" + Math.round(livingUsage * 100.0) / 100.0;
+			responseText.append(addNameFirstWhiteSpaces(s3, max - 5));
 			net = net - livingUsage;
 
-			
 			// Prints cleaning usage
-			cleaning = settlementCache.getDailyUsage(2) + settlementCache.getDailyUsage(3);			
-			String s4 = "  -" + Math.round(cleaning * 100.0)/100.0;
-			responseText.append(addNameFirstWhiteSpaces(s4, max-3));
+			cleaning = settlementCache.getDailyUsage(2) + settlementCache.getDailyUsage(3);
+			String s4 = "  -" + Math.round(cleaning * 100.0) / 100.0;
+			responseText.append(addNameFirstWhiteSpaces(s4, max - 3));
 			net = net - cleaning;
-			
-						
+
 			// Prints output from resource processing
 			List<Building> bldgs = settlementCache.getBuildingManager().getBuildings(FunctionType.RESOURCE_PROCESSING);
 			for (Building b : bldgs) {
@@ -1296,275 +1243,263 @@ public class ChatUtils {
 						output += p.getMaxOutputResourceRate(ResourceUtil.waterID);
 				}
 			}
-			String s5 = " +" + Math.round(output * 1_000 * 100.0)/100.0;
-			responseText.append(addNameFirstWhiteSpaces(s5, max-4));
+			String s5 = " +" + Math.round(output * 1_000 * 100.0) / 100.0;
+			responseText.append(addNameFirstWhiteSpaces(s5, max - 4));
 			net = net + output * 1_000;
-			
+
 			// Prints net change
 			String s6 = "";
 			if (net > 0) {
-				s6 = " +" + Math.round(net * 100.0)/100.0;// + " [kg/sol]";
+				s6 = " +" + Math.round(net * 100.0) / 100.0;// + " [kg/sol]";
+			} else {
+				s6 = " " + Math.round(net * 100.0) / 100.0;// + " [kg/sol]";
 			}
-			else {
-				s6 = " " + Math.round(net * 100.0)/100.0;// + " [kg/sol]";
-			}
-			
+
 			responseText.append(s6);
-			responseText.append(System.lineSeparator());		
+			responseText.append(System.lineSeparator());
 		}
-		
+
 		else if (text.equalsIgnoreCase("repair")) {
-			responseText.append(System.lineSeparator());			
+			responseText.append(System.lineSeparator());
 
 			GoodsManager goodsManager = settlementCache.getGoodsManager();
-			
+
 			int level = goodsManager.getRepairLevel();
 
-			String prompt = System.lineSeparator() + "Current Outstanding Repair Priority Level is " + level 
+			String prompt = System.lineSeparator() + "Current Outstanding Repair Priority Level is " + level
 					+ System.lineSeparator() + System.lineSeparator() + "Would you like to change it?";
-			boolean change = Simulation.instance().getTerm().getTextIO().newBooleanInputReader().read(prompt); //.withDefaultValue(true)
-        	        
-			if (change) {
-        		int newLevel = Simulation.instance().getTerm().getTextIO().newIntInputReader().withMinVal(1).withMaxVal(9).read("Enter the Priority Level (1 = lowest; 9 = highest)");
-    	        String s = "";
-    	        
-    	        if (newLevel > 0  && newLevel < 10) {
+			boolean change = textIO.newBooleanInputReader().read(prompt); // .withDefaultValue(true)
 
-    	        	goodsManager.setRepairPriority(newLevel);
-    				
-    				responseText.append(settlementCache + " : I've updated it for you as follows : ");
-    				responseText.append(System.lineSeparator());
-    				responseText.append(System.lineSeparator());
-    				s = "     New Outstanding Repair Priority Level : " + newLevel;
-    				responseText.append(s);
-    				logger.config(s);
-    				
-    	        }
-    	        else {
-    	        	s = settlementCache + " : It's outside of the normal range. Aborted.";
-    				responseText.append(s);
-    				logger.config(s);
-    	        }
-        	}
-											
+			if (change) {
+				int newLevel = textIO.newIntInputReader().withMinVal(1).withMaxVal(9)
+						.read("Enter the Priority Level (1 = lowest; 9 = highest)");
+				String s = "";
+
+				if (newLevel > 0 && newLevel < 10) {
+
+					goodsManager.setRepairPriority(newLevel);
+
+					responseText.append(settlementCache + " : I've updated it for you as follows : ");
+					responseText.append(System.lineSeparator());
+					responseText.append(System.lineSeparator());
+					s = "     New Outstanding Repair Priority Level : " + newLevel;
+					responseText.append(s);
+					logger.config(s);
+
+				} else {
+					s = settlementCache + " : It's outside of the normal range. Aborted.";
+					responseText.append(s);
+					logger.config(s);
+				}
+			}
+
 		}
 
-
 		else if (text.equalsIgnoreCase("maintenance")) {
-			responseText.append(System.lineSeparator());			
+			responseText.append(System.lineSeparator());
 
 			GoodsManager goodsManager = settlementCache.getGoodsManager();
-			
+
 			int level = goodsManager.getMaintenanceLevel();
 
-			String prompt = System.lineSeparator() + "Current Outstanding Maintenance Priority Level is " + level 
+			String prompt = System.lineSeparator() + "Current Outstanding Maintenance Priority Level is " + level
 					+ System.lineSeparator() + System.lineSeparator() + "Would you like to change it?";
-			boolean change = sim.getTerm().getTextIO().newBooleanInputReader().read(prompt); //.withDefaultValue(true)
-        	        
-			if (change) {
-        		int newLevel = sim.getTerm().getTextIO().newIntInputReader().withMinVal(1).withMaxVal(9).read("Enter the Priority Level (1 = lowest; 9 = highest)");
-    	        String s = "";
-    	        
-    	        if (newLevel > 0  && newLevel < 10) {
+			boolean change = textIO.newBooleanInputReader().read(prompt); // .withDefaultValue(true)
 
-    	        	goodsManager.setMaintenancePriority(newLevel);
-    				
-    				responseText.append(settlementCache + " : I've updated it for you as follows : ");
-    				responseText.append(System.lineSeparator());
-    				responseText.append(System.lineSeparator());
-    				s = "     New Outstanding Maintenance Priority Level : " + newLevel;
-    				responseText.append(s);
-    				logger.config(s);
-    				
-    	        }
-    	        else {
-    	        	s = settlementCache + " : It's outside of the normal range. Aborted.";
-    				responseText.append(s);
-    				logger.config(s);
-    	        }
-        	}
-											
+			if (change) {
+				int newLevel = textIO.newIntInputReader().withMinVal(1).withMaxVal(9)
+						.read("Enter the Priority Level (1 = lowest; 9 = highest)");
+				String s = "";
+
+				if (newLevel > 0 && newLevel < 10) {
+
+					goodsManager.setMaintenancePriority(newLevel);
+
+					responseText.append(settlementCache + " : I've updated it for you as follows : ");
+					responseText.append(System.lineSeparator());
+					responseText.append(System.lineSeparator());
+					s = "     New Outstanding Maintenance Priority Level : " + newLevel;
+					responseText.append(s);
+					logger.config(s);
+
+				} else {
+					s = settlementCache + " : It's outside of the normal range. Aborted.";
+					responseText.append(s);
+					logger.config(s);
+				}
+			}
+
 		}
 
 		else if (text.equalsIgnoreCase("evasuit") || text.equalsIgnoreCase("eva suit")) {
-			responseText.append(System.lineSeparator());			
+			responseText.append(System.lineSeparator());
 
 			GoodsManager goodsManager = settlementCache.getGoodsManager();
-			
+
 			int level = goodsManager.getEVASuitLevel();
 
-			String prompt = System.lineSeparator() + "Current EVA Suit Production Priority Level is " + level 
+			String prompt = System.lineSeparator() + "Current EVA Suit Production Priority Level is " + level
 					+ System.lineSeparator() + System.lineSeparator() + "Would you like to change it?";
-			boolean change = sim.getTerm().getTextIO().newBooleanInputReader().read(prompt); //.withDefaultValue(true)
-        	        
-			if (change) {
-        		int newLevel = sim.getTerm().getTextIO().newIntInputReader().withMinVal(1).withMaxVal(9).read("Enter the Priority Level (1 = lowest; 9 = highest)");
-    	        String s = "";
-    	        
-    	        if (newLevel > 0  && newLevel < 10) {
+			boolean change = textIO.newBooleanInputReader().read(prompt); // .withDefaultValue(true)
 
-    	        	goodsManager.setEVASuitPriority(newLevel);
-    				
-    				responseText.append(settlementCache + " : I've updated it for you as follows : ");
-    				responseText.append(System.lineSeparator());
-    				responseText.append(System.lineSeparator());
-    				s = "     New EVA Suit Production Priority Level : " + newLevel;
-    				responseText.append(s);
-    				logger.config(s);
-    				
-    	        }
-    	        else {
-    	        	s = settlementCache + " : Invald input. Please try it again.";
-    				responseText.append(s);
-    				logger.config(s);
-    	        }
-        	}
-											
+			if (change) {
+				int newLevel = textIO.newIntInputReader().withMinVal(1).withMaxVal(9)
+						.read("Enter the Priority Level (1 = lowest; 9 = highest)");
+				String s = "";
+
+				if (newLevel > 0 && newLevel < 10) {
+
+					goodsManager.setEVASuitPriority(newLevel);
+
+					responseText.append(settlementCache + " : I've updated it for you as follows : ");
+					responseText.append(System.lineSeparator());
+					responseText.append(System.lineSeparator());
+					s = "     New EVA Suit Production Priority Level : " + newLevel;
+					responseText.append(s);
+					logger.config(s);
+
+				} else {
+					s = settlementCache + " : Invald input. Please try it again.";
+					responseText.append(s);
+					logger.config(s);
+				}
+			}
+
 		}
 
 		else if (text.equalsIgnoreCase("obj") || text.equalsIgnoreCase("objective")) {
-			//questionText = YOU_PROMPT + "Commander's Dashboard" ; 
+			// questionText = YOU_PROMPT + "Commander's Dashboard" ;
 //			responseText.append(System.lineSeparator());			
-			
-			String obj = settlementCache.getObjective().getName();
-			
-			String prompt = YOU_PROMPT + "Commander's Dashboard" + System.lineSeparator()
-					+ System.lineSeparator() + "Current Development Objective : " + obj 
-					+ System.lineSeparator() + System.lineSeparator() + "Would you like to change it?";
-			boolean change = sim.getTerm().getTextIO().newBooleanInputReader().read(prompt); //.withDefaultValue(true)
-        	        
-			if (change) {
-				String prompt2 =  " 1. " + Msg.getString("ObjectiveType.crop") + System.lineSeparator() 
-								+ " 2. " + Msg.getString("ObjectiveType.manu") + System.lineSeparator() 
-								+ " 3. " + Msg.getString("ObjectiveType.research") + System.lineSeparator() 
-								+ " 4. " + Msg.getString("ObjectiveType.transportation") + System.lineSeparator() 
-								+ " 5. " + Msg.getString("ObjectiveType.trade") + System.lineSeparator() 
-								+ " 6. " + Msg.getString("ObjectiveType.tourism") + System.lineSeparator() 
-								+ "Enter your choice (1-6)";
-        		int newObj = sim.getTerm().getTextIO().newIntInputReader().withMinVal(1).withMaxVal(6).read(prompt2);
-    	        String s = "";
-    	        
-    	        if (newObj > 0  && newObj < 7) {
 
-    	        	String prompt3 =  "Enter the level choice (1-3)";
-    	        	int newLevel = sim.getTerm().getTextIO().newIntInputReader().withMinVal(1).withMaxVal(3).read(prompt3);
-    	        	
-    	        	if (newLevel > 0 && newLevel < 4) {
-	    	        	String newObjStr = settlementCache.getObjectiveArray()[newObj - 1];
-	    	        	
-	    				responseText.append(settlementCache + " : I've updated it for you as follows : ");
-	    				responseText.append(System.lineSeparator());
-	    				responseText.append(System.lineSeparator());
-	//    				responseText.append(System.lineSeparator());
-	
-	    				s = "New Development Objective : " + newObjStr;
-	    				
-	    				settlementCache.setObjective(ObjectiveType.getType(newObjStr), newLevel);
-	    				responseText.append(s);
-	    				logger.config(s);
-    	        	}
-    	        	
-    	        	else {
-        	        	s = settlementCache + " : Invald level. Please try it again.";
-        				responseText.append(s);
-        				logger.config(s);
-    	        	}
-    	        }
-    	        
-    	        else {
-    	        	s = settlementCache + " : Invald objective. Please try it again.";
-    				responseText.append(s);
-    				logger.config(s);
-    	        }
-        	}
-		}
-		
-		else if (text.equalsIgnoreCase("dash") || text.equalsIgnoreCase("dashboard")) {
-			questionText = YOU_PROMPT + "Commander's Dashboard" ; 
-			responseText.append(System.lineSeparator());			
-			
 			String obj = settlementCache.getObjective().getName();
-			
+
+			String prompt = YOU_PROMPT + "Commander's Dashboard" + System.lineSeparator() + System.lineSeparator()
+					+ "Current Development Objective : " + obj + System.lineSeparator() + System.lineSeparator()
+					+ "Would you like to change it?";
+			boolean change = textIO.newBooleanInputReader().read(prompt); // .withDefaultValue(true)
+
+			if (change) {
+				String prompt2 = " 1. " + Msg.getString("ObjectiveType.crop") + System.lineSeparator() + " 2. "
+						+ Msg.getString("ObjectiveType.manu") + System.lineSeparator() + " 3. "
+						+ Msg.getString("ObjectiveType.research") + System.lineSeparator() + " 4. "
+						+ Msg.getString("ObjectiveType.transportation") + System.lineSeparator() + " 5. "
+						+ Msg.getString("ObjectiveType.trade") + System.lineSeparator() + " 6. "
+						+ Msg.getString("ObjectiveType.tourism") + System.lineSeparator() + "Enter your choice (1-6)";
+				int newObj = textIO.newIntInputReader().withMinVal(1).withMaxVal(6).read(prompt2);
+				String s = "";
+
+				if (newObj > 0 && newObj < 7) {
+
+					String prompt3 = "Enter the level choice (1-3)";
+					int newLevel = InteractiveTerm.getTextIO().newIntInputReader().withMinVal(1).withMaxVal(3)
+							.read(prompt3);
+
+					if (newLevel > 0 && newLevel < 4) {
+						String newObjStr = settlementCache.getObjectiveArray()[newObj - 1];
+
+						responseText.append(settlementCache + " : I've updated it for you as follows : ");
+						responseText.append(System.lineSeparator());
+						responseText.append(System.lineSeparator());
+						// responseText.append(System.lineSeparator());
+
+						s = "New Development Objective : " + newObjStr;
+
+						settlementCache.setObjective(ObjectiveType.getType(newObjStr), newLevel);
+						responseText.append(s);
+						logger.config(s);
+					}
+
+					else {
+						s = settlementCache + " : Invald level. Please try it again.";
+						responseText.append(s);
+						logger.config(s);
+					}
+				}
+
+				else {
+					s = settlementCache + " : Invald objective. Please try it again.";
+					responseText.append(s);
+					logger.config(s);
+				}
+			}
+		}
+
+		else if (text.equalsIgnoreCase("dash") || text.equalsIgnoreCase("dashboard")) {
+			questionText = YOU_PROMPT + "Commander's Dashboard";
+			responseText.append(System.lineSeparator());
+
+			String obj = settlementCache.getObjective().getName();
+
 			responseText.append(" Development Objective : " + obj + System.lineSeparator());
 			responseText.append(System.lineSeparator());
-			
-			String[] s = new String[] {
-					"Outstanding Repair",
-					"Outstanding Maintenance",
-					"EVA Suit Production"
-			};
+
+			String[] s = new String[] { "Outstanding Repair", "Outstanding Maintenance", "EVA Suit Production" };
 
 			GoodsManager goodsManager = settlementCache.getGoodsManager();
-			
-			int[] mods = new int[] {
-					goodsManager.getRepairLevel(),
-					goodsManager.getMaintenanceLevel(),
-					goodsManager.getEVASuitLevel()					
-			};
-			
+
+			int[] mods = new int[] { goodsManager.getRepairLevel(), goodsManager.getMaintenanceLevel(),
+					goodsManager.getEVASuitLevel() };
+
 			responseText.append(" Category" + computeWhiteSpaces("Category", 25) + " | Level");
 			responseText.append(System.lineSeparator());
 			responseText.append(" ----------------------------------- ");
-			responseText.append(System.lineSeparator());			
-			responseText.append(printLevel(s, mods));						
+			responseText.append(System.lineSeparator());
+			responseText.append(printLevel(s, mods));
 		}
 
 		else if (text.equalsIgnoreCase("vehicle range")) {
 //			questionText = YOU_PROMPT + "I'd like to change the vehicle range for this settlement." ; 
-			
+
 			double oldRange = settlementCache.getMaxMssionRange();
-			
-//			Input input = new Input();		
-//			SwingHandler handler = new SwingHandler(sim.getTerm().getTextIO(), input);
-	        
-			String prompt = System.lineSeparator() + "Current Vehicle Range Limit is " + oldRange + " km. Would you like to change it?";
-			boolean change = sim.getTerm().getTextIO().newBooleanInputReader().read(prompt); //.withDefaultValue(true)
-        
+
+			String prompt = System.lineSeparator() + "Current Vehicle Range Limit is " + oldRange
+					+ " km. Would you like to change it?";
+			boolean change = textIO.newBooleanInputReader().read(prompt); // .withDefaultValue(true)
+
 //	        handler.addStringTask("change", System.lineSeparator() + "Current Vehicle Range Limit is " + oldRange + " km. Would you like to change it? (y/n)", false)
 //	        		.addChoices("y", "n").constrainInputToChoices();
 //			handler.executeOneTask();
-	        
+
 			if (change) {
 //        	if (Input.change.equalsIgnoreCase("y")) {   		      		
-        		double range = sim.getTerm().getTextIO().newDoubleInputReader()
-        				.withMinVal(50.0).withMaxVal(4000.0).read("Enter a number between 50 and 3000 [km]");
+				double range = textIO.newDoubleInputReader().withMinVal(50.0).withMaxVal(4000.0)
+						.read("Enter a number between 50 and 3000 [km]");
 //        		handler.addIntTask("range", "Enter a number between 50 and 2000 (km)" , false)
 //        		.withInputReaderConfigurator(r -> r.withMinVal(50).withMaxVal(2000));
 //    	        handler.executeOneTask();
-    	        String s = "";
-    	        
-    	        if (range >= 50.0 && range <= 4000.0) {
+				String s = "";
+
+				if (range >= 50.0 && range <= 4000.0) {
 //    	        if (Input.range > 49 && Input.range < 2001) {
 
-    				settlementCache.setMaxMssionRange(range);
-    				
+					settlementCache.setMaxMssionRange(range);
+
 //    				responseText.append(System.lineSeparator());
-    				responseText.append(settlementCache + " : I've updated it for you as follows : ");
-    				responseText.append(System.lineSeparator());
-    				responseText.append(System.lineSeparator());
-    				s = "     Old Vehicle Range Limit : " + oldRange + " km";
-    				responseText.append(s);
-    				logger.config(s);
-    				responseText.append(System.lineSeparator());
-    				s = "     New Vehicle Range Limit : " + range + " km";
-    				responseText.append(s);
+					responseText.append(settlementCache + " : I've updated it for you as follows : ");
+					responseText.append(System.lineSeparator());
+					responseText.append(System.lineSeparator());
+					s = "     Old Vehicle Range Limit : " + oldRange + " km";
+					responseText.append(s);
+					logger.config(s);
+					responseText.append(System.lineSeparator());
+					s = "     New Vehicle Range Limit : " + range + " km";
+					responseText.append(s);
 //    				responseText.append("     New Vehicle Range Limit : ").append(Input.range).append(" km");
-    				logger.config(s);
-    				
-    	        }
-    	        else {
+					logger.config(s);
+
+				} else {
 //    	        	responseText.append(System.lineSeparator());
-    	        	s = settlementCache + " : It's outside of the normal range. Aborted.";
-    				responseText.append(s);
-    				logger.config(s);
-    	        }
-        	}
-        	
+					s = settlementCache + " : It's outside of the normal range. Aborted.";
+					responseText.append(s);
+					logger.config(s);
+				}
+			}
+
 		}
-		
+
 		else if (text.equalsIgnoreCase("proposal")) {
-			questionText = YOU_PROMPT + "Can you show me the list of proposals ?"; 
-			
+			questionText = YOU_PROMPT + "Can you show me the list of proposals ?";
+
 //			responseText.append(System.lineSeparator());
 //			responseText.append(SYSTEM_PROMPT);
 			responseText.append("[EXPERIMENTAL & NON-FUNCTIONAL] Below is a list of proposals for your review :");
@@ -1577,42 +1512,42 @@ public class ChatUtils {
 			responseText.append(System.lineSeparator());
 
 		}
-		
+
 		else if (text.toLowerCase().contains("science")) {
-	
-			questionText = YOU_PROMPT + "How are the scientific endeavors in this settlement ?"; 
+
+			questionText = YOU_PROMPT + "How are the scientific endeavors in this settlement ?";
 
 			double total = 0;
 			// Use Guava's multimap to handle duplicate key
 			Multimap<Double, String> map = ArrayListMultimap.create();
 //			Map<Double, String> map = new HashMap<>();
 			List<Double> list = new ArrayList<>();
-			
+
 			for (ScienceType scienceType : ScienceType.values()) {
 				double score = scientificManager.getScienceScore(settlementCache, scienceType);
 				total += score;
 				list.add(score);
 				map.put(score, scienceType.toString());
 			}
-			
+
 			responseText.append("      The Scientific Endeavour  ");
 			responseText.append(System.lineSeparator());
 			responseText.append(" -----------------------------------");
 			responseText.append(System.lineSeparator());
-			
+
 			responseText.append("   Rank |  Score |  Science");
 			responseText.append(System.lineSeparator());
 			responseText.append(" -----------------------------------");
 			responseText.append(System.lineSeparator());
-			
-			list.sort((Double d1, Double d2) -> -d1.compareTo(d2)); 
-			
+
+			list.sort((Double d1, Double d2) -> -d1.compareTo(d2));
+
 			int size = list.size();
-			for (int i=0; i<size; i++) {
+			for (int i = 0; i < size; i++) {
 				double score = list.get(i);
 				String space = "";
-				
-				String scoreStr = Math.round(score*10.0)/10.0 + "";
+
+				String scoreStr = Math.round(score * 10.0) / 10.0 + "";
 				int num = scoreStr.length();
 				if (num == 2)
 					space = "   ";
@@ -1621,48 +1556,47 @@ public class ChatUtils {
 				else if (num == 4)
 					space = " ";
 				else if (num == 5)
-					space = "";				
-						
+					space = "";
+
 				List<String> names = new ArrayList<>(map.get(score));
 				String n = names.get(0);
-				responseText.append("    #" + (i+1) + "    " + space + scoreStr + "     " + n);
+				responseText.append("    #" + (i + 1) + "    " + space + scoreStr + "     " + n);
 				map.remove(score, n);
 				responseText.append(System.lineSeparator());
 			}
-			
+
 			responseText.append(" -----------------------------------");
 			responseText.append(System.lineSeparator());
-			responseText.append(" Overall : " + Math.round(total*10.0)/10.0);			
+			responseText.append(" Overall : " + Math.round(total * 10.0) / 10.0);
 			responseText.append(System.lineSeparator());
-			
+
 		}
-		
+
 		else if (text.toLowerCase().contains("social")) {
 //			text.toLowerCase().contains("relationship")
 //			|| text.toLowerCase().contains("relation")
-			
-			questionText = YOU_PROMPT + "How is the overall social score in this settlement ?"; 
+
+			questionText = YOU_PROMPT + "How is the overall social score in this settlement ?";
 
 			double score = relationshipManager.getRelationshipScore(settlementCache);
-		
-			responseText.append(System.lineSeparator())	;		
+
+			responseText.append(System.lineSeparator());
 			responseText.append(settlementCache.getName() + "'s social score : " + fmt1.format(score));
 //			responseText.append(System.lineSeparator());
-		
+
 		}
-		
-		else if (text.toLowerCase().contains("time")
-				|| text.toLowerCase().contains("date")) {
-			questionText = YOU_PROMPT + "What day or time is it ?"; 
+
+		else if (text.toLowerCase().contains("time") || text.toLowerCase().contains("date")) {
+			questionText = YOU_PROMPT + "What day or time is it ?";
 			responseText.append(settlementCache.getName() + " : ");
 			responseText.append("see below");
 			responseText.append(System.lineSeparator());
-			
+
 			responseText.append(printTime());
-			
+
 		}
-		
-		else if (text.toLowerCase().contains("task")) { 
+
+		else if (text.toLowerCase().contains("task")) {
 //				|| text.toLowerCase().contains("activity")
 //				|| text.toLowerCase().contains("doing")
 //				|| text.toLowerCase().contains("action")) {
@@ -1673,15 +1607,15 @@ public class ChatUtils {
 			responseText.append(System.lineSeparator());
 			responseText.append("(A). Settlers");
 			responseText.append(System.lineSeparator());
-			
-			Map<String, List<Person>> map =
-					settlementCache.getAllAssociatedPeople().stream().collect(Collectors.groupingBy(Person::getTaskDescription));
-								
+
+			Map<String, List<Person>> map = settlementCache.getAllAssociatedPeople().stream()
+					.collect(Collectors.groupingBy(Person::getTaskDescription));
+
 			for (Map.Entry<String, List<Person>> entry : map.entrySet()) {
 				String task = entry.getKey();
 				List<Person> plist = entry.getValue();
-			
-				if (task != null  && !task.replaceAll(" ", "").equals("")) {
+
+				if (task != null && !task.replaceAll(" ", "").equals("")) {
 					responseText.append(System.lineSeparator());
 					responseText.append("  ");
 					responseText.append(task);
@@ -1689,77 +1623,75 @@ public class ChatUtils {
 					responseText.append(" ");
 					int num = task.length() + 2;
 					if (num > 0) {
-						for (int i=0; i<num; i++) {
+						for (int i = 0; i < num; i++) {
 							responseText.append("-");
 						}
 					}
 					responseText.append(System.lineSeparator());
-									
-				}
-				else {
+
+				} else {
 					responseText.append(System.lineSeparator());
-					responseText.append("  ");	
+					responseText.append("  ");
 					responseText.append("None");
 					responseText.append(System.lineSeparator());
 					responseText.append(" ");
 					int num = 6;
 					if (num > 0) {
-						for (int i=0; i<num; i++) {
+						for (int i = 0; i < num; i++) {
 							responseText.append("-");
 						}
 					}
 					responseText.append(System.lineSeparator());
 				}
-				
+
 				for (Person p : plist) {
 					responseText.append("  -  ");
 					responseText.append(p.getName());
 					responseText.append(System.lineSeparator());
 				}
 			}
-			
+
 			responseText.append(System.lineSeparator());
 			responseText.append(System.lineSeparator());
 			responseText.append("(B). Bots");
 			responseText.append(System.lineSeparator());
-			
-			Map<String, List<Robot>> botMap =
-					settlementCache.getAllAssociatedRobots().stream().collect(Collectors.groupingBy(Robot::getTaskDescription));
-								
+
+			Map<String, List<Robot>> botMap = settlementCache.getAllAssociatedRobots().stream()
+					.collect(Collectors.groupingBy(Robot::getTaskDescription));
+
 			for (Map.Entry<String, List<Robot>> entry : botMap.entrySet()) {
 				String task = entry.getKey();
 				List<Robot> plist = entry.getValue();
-			
+
 				if (task != null) {
 					responseText.append(System.lineSeparator());
-					responseText.append(" ");					
+					responseText.append(" ");
 					responseText.append(task);
 					responseText.append(System.lineSeparator());
 					responseText.append(" ");
 					int num = task.length() + 2;
 					if (num > 0) {
-						for (int i=0; i<num; i++) {
+						for (int i = 0; i < num; i++) {
 							responseText.append("-");
 						}
 					}
 					responseText.append(System.lineSeparator());
-									
-				}
-				else {
+
+				} else {
 					responseText.append(System.lineSeparator());
-					responseText.append(" ");			
+					responseText.append(" ");
 					responseText.append("None");
 					responseText.append(System.lineSeparator());
 					responseText.append(" ");
 					int num = 6;
 					if (num > 0) {
-						for (int i=0; i<num; i++) {
+						for (int i = 0; i < num; i++) {
 							responseText.append("-");
 						}
 					}
 					responseText.append(System.lineSeparator());
 				}
-				
+
 				for (Robot r : plist) {
 					responseText.append("  -  ");
 					responseText.append(r.getName());
@@ -1776,52 +1708,44 @@ public class ChatUtils {
 			responseText.append("Say 'mission plan', 'mission now', etc.");
 //			responseText.append(System.lineSeparator());
 		}
-		
+
 		else if (text.equalsIgnoreCase("mission plan")) {
-			
-			questionText = "";//YOU_PROMPT + "Show me the statistics on the mission plans submitted.";
-			
-			String prompt2 =  YOU_PROMPT + "Show me the statistics on the mission plans submitted."
-					+ System.lineSeparator()
-					+ System.lineSeparator()
-					+ " 1. Today" + System.lineSeparator() 
-					+ " 2. last 3 sols (Each)" + System.lineSeparator() 
-					+ " 3. Last 7 sols (Each)" + System.lineSeparator() 
-					+ " 4. last 3 sols (Combined)" + System.lineSeparator() 
-					+ " 5. Last 7 sols (Combined)" + System.lineSeparator() 
-					+ " 6. Last 14 sols (Combined)" + System.lineSeparator() 
-					+ " 7. Last 28 sols (Combined)" + System.lineSeparator() 
-					+ " 8. Since the beginning (Combined)" + System.lineSeparator() 
-					+ System.lineSeparator()
+
+			questionText = "";// YOU_PROMPT + "Show me the statistics on the mission plans submitted.";
+
+			String prompt2 = YOU_PROMPT + "Show me the statistics on the mission plans submitted."
+					+ System.lineSeparator() + System.lineSeparator() + " 1. Today" + System.lineSeparator()
+					+ " 2. last 3 sols (Each)" + System.lineSeparator() + " 3. Last 7 sols (Each)"
+					+ System.lineSeparator() + " 4. last 3 sols (Combined)" + System.lineSeparator()
+					+ " 5. Last 7 sols (Combined)" + System.lineSeparator() + " 6. Last 14 sols (Combined)"
+					+ System.lineSeparator() + " 7. Last 28 sols (Combined)" + System.lineSeparator()
+					+ " 8. Since the beginning (Combined)" + System.lineSeparator() + System.lineSeparator()
 					+ "Enter your choice (1-8)";
 
-			int newObj = sim.getTerm().getTextIO()
-					.newIntInputReader().withMinVal(1).withMaxVal(8).read(prompt2);
-	
-			if (newObj > 0  && newObj <= 3) {
-				
+			int newObj = textIO.newIntInputReader().withMinVal(1).withMaxVal(8).read(prompt2);
+
+			if (newObj > 0 && newObj <= 3) {
+
 				int today = marsClock.getMissionSol();
 				int max = 0;
 				if (newObj == 1) {
 					max = 1;
 //					responseText.append(System.lineSeparator());
 					responseText.append("On Sol " + today + ", it shows ");
-				}
-				else if (newObj == 2) {
+				} else if (newObj == 2) {
 					max = 3;
 //					responseText.append(System.lineSeparator());
 					responseText.append("On Sol " + today + ", the last " + max + " sols shows ");
-				}
-				else if (newObj == 3) {
+				} else if (newObj == 3) {
 					max = 7;
 //					responseText.append(System.lineSeparator());
 					responseText.append("On Sol " + today + ", the last " + max + " sols shows ");
 				}
-							
+
 				Map<Integer, List<MissionPlanning>> plannings = missionManager.getHistoricalMissions();
-				
+
 				int size = plannings.size();
-				
+
 //				int min = Math.min(size, max);
 
 //				System.out.println("# of sols : " + size);
@@ -1831,33 +1755,33 @@ public class ChatUtils {
 					responseText.append("              # of plans : 0");
 //					responseText.append("No mission plans have been submitted.");
 				}
-				
+
 				else {
 					int sol = marsClock.getMissionSol();
-					for (int i=0; i< max; i++) {
+					for (int i = 0; i < max; i++) {
 						if (sol - i > 0) {
 							List<MissionPlanning> plans = plannings.get(sol - i);
 							int approved = 0;
 							int notApproved = 0;
 							int pending = 0;
-							
+
 							responseText.append(System.lineSeparator());
 							responseText.append(System.lineSeparator());
 							responseText.append("           < Sol " + (sol - i) + " >");
 							responseText.append(System.lineSeparator());
 							responseText.append(" -----------------------------");
-							
+
 							if (plans != null && !plans.isEmpty()) {
-								
+
 								for (MissionPlanning mp : plans) {
 									if (PlanType.PENDING == mp.getStatus())
 										pending++;
 									else if (PlanType.NOT_APPROVED == mp.getStatus())
 										notApproved++;
 									else if (PlanType.APPROVED == mp.getStatus())
-										approved++;	
+										approved++;
 								}
-								
+
 								responseText.append(System.lineSeparator());
 								responseText.append("     # of plans approved : " + approved);
 								responseText.append(System.lineSeparator());
@@ -1866,18 +1790,18 @@ public class ChatUtils {
 								responseText.append("      # of plans pending : " + pending);
 								responseText.append(System.lineSeparator());
 							}
-							
+
 							else {
 								responseText.append(System.lineSeparator());
 								responseText.append("              # of plans : 0");
 								responseText.append(System.lineSeparator());
 							}
-						}		
+						}
 					}
 				}
 			}
-			
-			else if (newObj > 3  && newObj <= 8) {
+
+			else if (newObj > 3 && newObj <= 8) {
 				// 4. last 3 sols (Combined)
 				// 5. Last 7 sols (Combined)
 				// 6. Last 14 sols (Combined)
@@ -1888,58 +1812,54 @@ public class ChatUtils {
 				if (newObj == 4) {
 					max = 3;
 					responseText.append("On Sol " + today + ", the combined data for the last 3 sols shows ");
-				}
-				else if (newObj == 5) {
+				} else if (newObj == 5) {
 					max = 7;
 					responseText.append("On Sol " + today + ", the combined data for the last 7 sols shows ");
-				}
-				else if (newObj == 6) {
+				} else if (newObj == 6) {
 					max = 14;
 					responseText.append("On Sol " + today + ", the combined data for the last 14 sols shows ");
-				}
-				else if (newObj == 7) {
+				} else if (newObj == 7) {
 					max = 28;
 					responseText.append("On Sol " + today + ", the combined data for the last 28 sols shows ");
-				}
-				else if (newObj == 8) {
+				} else if (newObj == 8) {
 					max = Integer.MAX_VALUE;
 					responseText.append("Since the beginning, the combined data shows ");
 				}
-				
+
 				Map<Integer, List<MissionPlanning>> plannings = missionManager.getHistoricalMissions();
 
 				int size = Math.min(plannings.size(), max);
-				
+
 				if (size == 0) {
 					responseText.append(System.lineSeparator());
 					responseText.append("              # of plans : 0");
 //					responseText.append("No mission plans have been submitted.");
 				}
-				
+
 				else {
 					int sol = marsClock.getMissionSol();
 					int approved = 0;
 					int notApproved = 0;
 					int pending = 0;
-					
-					for (int i=0; i< size + 1; i++) {
+
+					for (int i = 0; i < size + 1; i++) {
 						if (sol - i > 0) {
 							List<MissionPlanning> plans = plannings.get(sol - i);
-							
+
 							if (plans != null && !plans.isEmpty()) {
-								
+
 								for (MissionPlanning mp : plans) {
 									if (PlanType.PENDING == mp.getStatus())
 										pending++;
 									else if (PlanType.NOT_APPROVED == mp.getStatus())
 										notApproved++;
 									else if (PlanType.APPROVED == mp.getStatus())
-										approved++;	
-								}						
+										approved++;
+								}
 							}
 						}
-					}		
-					
+					}
+
 					responseText.append(System.lineSeparator());
 					responseText.append("     # of plans approved : " + approved);
 					responseText.append(System.lineSeparator());
@@ -1949,12 +1869,12 @@ public class ChatUtils {
 					responseText.append(System.lineSeparator());
 				}
 			}
-			
+
 			else {
 				responseText.append("Invalid choice. Please try again.");
 			}
 		}
-		
+
 		else if (text.equalsIgnoreCase("mission now")) {
 			questionText = YOU_PROMPT + "Are there any on-going/pending missions at this moment? ";
 
@@ -1962,42 +1882,42 @@ public class ChatUtils {
 //			missions = missions.stream()
 //					.filter(m -> m.getAssociatedSettlement() == settlementCache)
 //					.collect(Collectors.toList());
-					
-			
+
 			if (missions.isEmpty()) {
 				responseText.append(settlementCache + " : ");
 				responseText.append("no on-going/pending missions right now.");
 			}
-			
+
 			else {
 				responseText.append(settlementCache + " : ");
 				responseText.append("here's the mission roster.");
 				responseText.append(System.lineSeparator());
 //				responseText.append(System.lineSeparator());
 
-				for (int i=0; i<missions.size(); i++) {
+				for (int i = 0; i < missions.size(); i++) {
 					Mission mission = missions.get(i);
 					int num = mission.getName().length() + 17;
-					
+
 					Collection<MissionMember> members = mission.getMembers();
-					//Collections.sort(members);
-					
+					// Collections.sort(members);
+
 					Person startingPerson = mission.getStartingMember();
 					members.remove(startingPerson);
-					
-					
-					List<MissionMember> plist = new ArrayList<>(members);			
-					
+
+					List<MissionMember> plist = new ArrayList<>(members);
+
 					double dist = 0;
 					double trav = 0;
 					Vehicle v = null;
-					
+
 					if (mission instanceof VehicleMission) {
 						v = ((VehicleMission) mission).getVehicle();
-						dist = Math.round(((VehicleMission)mission).getTotalDistance()*10.0)/10.0;//.getStartingTravelledDistance(); // getTotalDistance();//.
-						trav = Math.round(((VehicleMission)mission).getTotalDistanceTravelled()*10.0)/10.0;
+						dist = Math.round(((VehicleMission) mission).getTotalDistance() * 10.0) / 10.0;// .getStartingTravelledDistance();
+																										// //
+																										// getTotalDistance();//.
+						trav = Math.round(((VehicleMission) mission).getTotalDistanceTravelled() * 10.0) / 10.0;
 					}
-									
+
 					if (mission != null) {
 //						responseText.append(System.lineSeparator());
 //						responseText.append(" ");
@@ -2007,17 +1927,17 @@ public class ChatUtils {
 //							}
 //						}
 						responseText.append(System.lineSeparator());
-						responseText.append(" (" + (i+1) + "). " + mission.getName());
+						responseText.append(" (" + (i + 1) + "). " + mission.getName());
 //						responseText.append("      Mission : " + mission.getName());
 						responseText.append(System.lineSeparator());
 						responseText.append(" ");
 						if (num > 0) {
-							for (int j=0; j<num; j++) {
+							for (int j = 0; j < num; j++) {
 								responseText.append("-");
 							}
 						}
 						responseText.append(System.lineSeparator());
-						
+
 						if (v != null) {
 							responseText.append("     Vehicle : " + v.getName());
 							responseText.append(System.lineSeparator());
@@ -2030,32 +1950,32 @@ public class ChatUtils {
 						}
 						responseText.append("       Phase : " + mission.getPhaseDescription());
 						responseText.append(System.lineSeparator());
-						
+
 						responseText.append(" ");
 						if (num > 0) {
-							for (int j=0; j<num; j++) {
+							for (int j = 0; j < num; j++) {
 								responseText.append("-");
 							}
 						}
-						
+
 						responseText.append(System.lineSeparator());
-										
+
 					}
-				
+
 					responseText.append("  -  ");
 					responseText.append(startingPerson.getName());
 					responseText.append(" (The Lead)");
 					responseText.append(System.lineSeparator());
-					
+
 					for (MissionMember p : plist) {
 //						if ((Person)p != startingPerson) {
-							responseText.append("  -  ");
-							responseText.append(p.getName());
-							responseText.append(System.lineSeparator());
+						responseText.append("  -  ");
+						responseText.append(p.getName());
+						responseText.append(System.lineSeparator());
 //							responseText.append(System.lineSeparator());
 //						}
-					}		
-					
+					}
+
 //					responseText.append(" ");
 //					if (num > 0) {
 //						for (int j=0; j<num; j++) {
@@ -2064,9 +1984,9 @@ public class ChatUtils {
 //					}
 //					
 					responseText.append(System.lineSeparator());
-				}		
+				}
 			}
-			
+
 //			Map<String, List<Person>> map =
 //					settlementCache.getAllAssociatedPeople().stream()
 //					.collect(Collectors.groupingBy(Person::getMissionDescription));
@@ -2074,7 +1994,7 @@ public class ChatUtils {
 //			for (Entry<String, List<Person>> entry : map.entrySet()) {
 //				String mission = entry.getKey();
 //				List<Person> plist = entry.getValue();
-			
+
 //				if (mission != null) {
 //					responseText.append(System.lineSeparator());
 //					responseText.append(" ");			
@@ -2112,38 +2032,36 @@ public class ChatUtils {
 //				}
 //			}
 		}
-		
-		else if (text.toLowerCase().contains("where")
-				|| text.toLowerCase().contains("location")
+
+		else if (text.toLowerCase().contains("where") || text.toLowerCase().contains("location")
 				|| text.toLowerCase().contains("located")) {
-			questionText = YOU_PROMPT + "Where is the settlement ?"; 
+			questionText = YOU_PROMPT + "Where is the settlement ?";
 			// TODO: add to tell nearby georgraphical features. e.g. at what basin
 			responseText.append(settlementCache + " : ");
 			responseText.append("We're located at ");
 			responseText.append(settlementCache.getCoordinates());
 		}
-		
-		else if (text.toLowerCase().contains("country")
-				|| text.toLowerCase().contains("nation")
+
+		else if (text.toLowerCase().contains("country") || text.toLowerCase().contains("nation")
 				|| text.toLowerCase().contains("nationality")) {
 			questionText = YOU_PROMPT + "What countries are the people of this settlement composed of ?";
 			responseText.append(System.lineSeparator());
 			responseText.append(settlementCache + " : ");
 			responseText.append("See below.");
-			
+
 //			List<Person> list = new ArrayList<>(settlementCache.getAllAssociatedPeople());
-			
+
 //			String oneLiner = settlementCache.getAllAssociatedPeople().stream()
 //					.map(Person::getCountry)  
 //					.collect(Collectors.joining(", ", "Countries: ", "."));		
 //			responseText.append(oneLiner);
-			
+
 //			Map<String, Person> map = settlementCache.getAllAssociatedPeople().stream()
 //					.collect(Collectors.toMap(Person::getName, Function.identity())); 
-			
-			Map<String, List<Person>> map =
-					settlementCache.getAllAssociatedPeople().stream().collect(Collectors.groupingBy(Person::getCountry));
-								
+
+			Map<String, List<Person>> map = settlementCache.getAllAssociatedPeople().stream()
+					.collect(Collectors.groupingBy(Person::getCountry));
+
 			for (Map.Entry<String, List<Person>> entry : map.entrySet()) {
 				String country = entry.getKey();
 				String sponsor = UnitManager.mapCountry2Sponsor(country);
@@ -2156,14 +2074,14 @@ public class ChatUtils {
 				responseText.append(" ----- ");
 				responseText.append(System.lineSeparator());
 				List<Person> list = entry.getValue();
-				for (int i=0; i<list.size(); i++) {
-					responseText.append("(" + (i+1) + "). ");
+				for (int i = 0; i < list.size(); i++) {
+					responseText.append("(" + (i + 1) + "). ");
 					responseText.append(list.get(i));
 					responseText.append(System.lineSeparator());
 				}
 			}
 		}
-		
+
 		else if (text.toLowerCase().contains("role")) {
 			questionText = YOU_PROMPT + "What are the roles ?";
 			responseText.append(System.lineSeparator());
@@ -2171,142 +2089,148 @@ public class ChatUtils {
 			responseText.append("See below.");
 			responseText.append(System.lineSeparator());
 			responseText.append(System.lineSeparator());
-			
+
 			List<Person> list = settlementCache.getAllAssociatedPeople().stream()
 //					.sorted(Comparator.reverseOrder())
 //					.sorted((f1, f2) -> Long.compare(f2.getRole().getType().ordinal(), f1.getRole().getType().ordinal()))
-					//.sorted((p1, p2)-> p1.getRole().getType().getName().compareTo(p2.getRole().getType().getName()))
-					.sorted(Comparator.comparing(o -> o.getRole().getType().ordinal()))
-					.collect(Collectors.toList());
-			
+					// .sorted((p1, p2)->
+					// p1.getRole().getType().getName().compareTo(p2.getRole().getType().getName()))
+					.sorted(Comparator.comparing(o -> o.getRole().getType().ordinal())).collect(Collectors.toList());
+
 			for (Person p : list) {
 				String role = p.getRole().getType().getName();
 				responseText.append(p);
 				int num = 30 - p.getName().length();// - role.length();
 				if (num > 0) {
-					for (int i=0; i<num; i++) {
+					for (int i = 0; i < num; i++) {
 						responseText.append(" ");
 					}
 				}
 				responseText.append(role);
 				responseText.append(System.lineSeparator());
-			} 
+			}
 		}
-		
+
 		else if (text.toLowerCase().contains("weather")) {
-			
+
 			questionText = YOU_PROMPT + "How's the weather in " + settlementCache.toString() + " ?";
 			responseText.append(System.lineSeparator());
-			
+
 			int max = 28;
 			responseText.append(addhiteSpacesName("Name : ", max));
 			responseText.append(settlementCache);
-			if (masterClock == null) masterClock = sim.getMasterClock();
-			if (marsClock == null) marsClock = masterClock.getMarsClock();
-			if (mars == null) mars = sim.getMars();
-			if (weather == null) weather = mars.getWeather();
-			if (surfaceFeatures == null) surfaceFeatures = mars.getSurfaceFeatures();
-			if (orbitInfo == null) orbitInfo = mars.getOrbitInfo();
-			
-			String DEGREE_CELSIUS =  Msg.getString("direction.degreeSign"); //$NON-NLS-1$
+			if (masterClock == null)
+				masterClock = sim.getMasterClock();
+			if (marsClock == null)
+				marsClock = masterClock.getMarsClock();
+			if (mars == null)
+				mars = sim.getMars();
+			if (weather == null)
+				weather = mars.getWeather();
+			if (surfaceFeatures == null)
+				surfaceFeatures = mars.getSurfaceFeatures();
+			if (orbitInfo == null)
+				orbitInfo = mars.getOrbitInfo();
+
+			String DEGREE_CELSIUS = Msg.getString("direction.degreeSign"); //$NON-NLS-1$
 			String DEGREE = Msg.getString("direction.degreeSign"); //$NON-NLS-1$
-			
+
 			Coordinates location = settlementCache.getCoordinates();
 //			System.out.println("location in ChatUtils : " + location);
 //			String lat = location.getFormattedLatitudeString();
 //			String lon = location.getFormattedLongitudeString();
-			
+
 			responseText.append(System.lineSeparator());
 //			responseText.append(settlementCache + " is at " + location);//(" + lat + ", " + lon + ")"); 
 			responseText.append(addhiteSpacesName("Location : ", max) + location.toString());
 			responseText.append(System.lineSeparator());
 
 			String date = marsClock.getDateString();
-			responseText.append(addhiteSpacesName("Date and Time : ", max) + date); 
+			responseText.append(addhiteSpacesName("Date and Time : ", max) + date);
 
 			String time = marsClock.getDecimalTimeString();
-			responseText.append(" at " + time); 
-			
+			responseText.append(" at " + time);
+
 			responseText.append(System.lineSeparator());
 			responseText.append(System.lineSeparator());
-			
+
 			double t = weather.getTemperature(location);
 			String tt = fmt.format(t) + DEGREE_CELSIUS;
-			responseText.append(addhiteSpacesName("Outside temperature : ", max) + tt); 
+			responseText.append(addhiteSpacesName("Outside temperature : ", max) + tt);
 			responseText.append(System.lineSeparator());
-			
+
 			double p = weather.getAirPressure(location);
-			String pp = fmt2.format(p) + " " + Msg.getString("pressure.unit.kPa"); //$NON-NLS-1$		
-			responseText.append(addhiteSpacesName("Air Pressure : ", max) + pp); 
+			String pp = fmt2.format(p) + " " + Msg.getString("pressure.unit.kPa"); //$NON-NLS-1$
+			responseText.append(addhiteSpacesName("Air Pressure : ", max) + pp);
 			responseText.append(System.lineSeparator());
-			
+
 			double ad = weather.getAirDensity(location);
 			String aad = fmt2.format(ad) + " " + Msg.getString("airDensity.unit.gperm3"); //$NON-NLS-1$
 			responseText.append(addhiteSpacesName("Air Density : ", max) + aad);
 			responseText.append(System.lineSeparator());
-			
+
 			double ws = weather.getWindSpeed(location);
 			String wws = fmt2.format(ws) + " " + Msg.getString("windspeed.unit.meterpersec"); //$NON-NLS-1$
-			responseText.append(addhiteSpacesName("Wind Speed : ", max) + wws); 		
+			responseText.append(addhiteSpacesName("Wind Speed : ", max) + wws);
 			responseText.append(System.lineSeparator());
-			
+
 			double wd = weather.getWindDirection(location);
 			String wwd = fmt.format(wd) + Msg.getString("windDirection.unit.deg"); //$NON-NLS-1$
-			responseText.append(addhiteSpacesName("Wind Direction : ", max) + wwd); 		
+			responseText.append(addhiteSpacesName("Wind Direction : ", max) + wwd);
 			responseText.append(System.lineSeparator());
-			
-	 		double od = surfaceFeatures.getOpticalDepth(location);
-	 		String ood = fmt2.format(od);
-			responseText.append(addhiteSpacesName("Optical Depth : ", max) + ood); 
+
+			double od = surfaceFeatures.getOpticalDepth(location);
+			String ood = fmt2.format(od);
+			responseText.append(addhiteSpacesName("Optical Depth : ", max) + ood);
 			responseText.append(System.lineSeparator());
-			
+
 			double sza = orbitInfo.getSolarZenithAngle(location);
-			String ssza = fmt2.format(sza* RADIANS_TO_DEGREES) + DEGREE;
-			responseText.append(addhiteSpacesName("Solar Zenith Angle : ", max) + ssza); 
+			String ssza = fmt2.format(sza * RADIANS_TO_DEGREES) + DEGREE;
+			responseText.append(addhiteSpacesName("Solar Zenith Angle : ", max) + ssza);
 			responseText.append(System.lineSeparator());
-			
+
 			double sda = orbitInfo.getSolarDeclinationAngleDegree();
 			String ssda = fmt2.format(sda) + DEGREE;
-			responseText.append(addhiteSpacesName("Solar Declination Angle : ", max) + ssda); 
+			responseText.append(addhiteSpacesName("Solar Declination Angle : ", max) + ssda);
 			responseText.append(System.lineSeparator());
-			
+
 			double si = surfaceFeatures.getSolarIrradiance(location);
-			String ssi = fmt2.format(si) + " " + Msg.getString("solarIrradiance.unit"); //$NON-NLS-1$		
-			responseText.append(addhiteSpacesName("Solar Irradiance : ", max) + ssi); 		
+			String ssi = fmt2.format(si) + " " + Msg.getString("solarIrradiance.unit"); //$NON-NLS-1$
+			responseText.append(addhiteSpacesName("Solar Irradiance : ", max) + ssi);
 			responseText.append(System.lineSeparator());
 		}
-		
-		else if (text.toLowerCase().contains("people") || text.toLowerCase().contains("settler") 
+
+		else if (text.toLowerCase().contains("people") || text.toLowerCase().contains("settler")
 				|| text.toLowerCase().contains("person")) {
-			
+
 			List<Person> all = new ArrayList<>(settlementCache.getAllAssociatedPeople());
 //			int total = settlementCache.getNumCitizens();
 //			int indoor = settlementCache.getIndoorPeopleCount();
 //			int dead = settlementCache.getNumDeceased();
 //			int outdoor = settlementCache.getNumOutsideEVAPeople(); //total - indoor - dead;
-			
+
 			List<Person> eva = new ArrayList<>(settlementCache.getOutsideEVAPeople());
 			List<Person> indoorP = new ArrayList<>(settlementCache.getIndoorPeople());
 			List<Person> deceasedP = new ArrayList<>(settlementCache.getDeceasedPeople());
 			List<Person> buriedP = new ArrayList<>(settlementCache.getBuriedPeople());
 			List<Person> onMission = new ArrayList<>(settlementCache.getOnMissionPeople());
-			
+
 			Collections.sort(all);
 			Collections.sort(eva);
 			Collections.sort(indoorP);
 			Collections.sort(deceasedP);
 			Collections.sort(buriedP);
 			Collections.sort(onMission);
-			
-			int numAll = all.size(); 
-			int numIndoor = indoorP.size();//settlementCache.getIndoorPeopleCount();
-			int numDead = deceasedP.size();//settlementCache.getNumDeceased();
+
+			int numAll = all.size();
+			int numIndoor = indoorP.size();// settlementCache.getIndoorPeopleCount();
+			int numDead = deceasedP.size();// settlementCache.getNumDeceased();
 			int numBuried = buriedP.size();
-			int numEva = eva.size();//settlementCache.getNumOutsideEVAPeople(); //total - indoor - dead;
+			int numEva = eva.size();// settlementCache.getNumOutsideEVAPeople(); //total - indoor - dead;
 			int numMission = onMission.size();
-			
+
 			questionText = YOU_PROMPT + "Who are the settlers ? ";
-			responseText.append(settlementCache + " : below is the brief summary of the whereabout of the settlers :"); 
+			responseText.append(settlementCache + " : below is the brief summary of the whereabout of the settlers :");
 //			responseText.append(System.lineSeparator());
 			responseText.append(System.lineSeparator());
 			responseText.append(System.lineSeparator());
@@ -2324,63 +2248,63 @@ public class ChatUtils {
 			responseText.append(System.lineSeparator());
 			responseText.append(" Deceased (Buried) : " + numDead + "(" + numBuried + ")");
 			responseText.append(System.lineSeparator());
-			
+
 			// Indoor
 			responseText.append(System.lineSeparator());
 			responseText.append("  A. Registered");
 			responseText.append(System.lineSeparator());
 			responseText.append("  -------------");
 			responseText.append(System.lineSeparator());
-			
+
 			responseText.append(printList(all));
-			
+
 			// Indoor
 			responseText.append(System.lineSeparator());
 			responseText.append("  B. Inside");
 			responseText.append(System.lineSeparator());
 			responseText.append("  ---------");
 			responseText.append(System.lineSeparator());
-			
+
 			responseText.append(printList(indoorP));
-			
+
 			// Outdoor
 			responseText.append(System.lineSeparator());
 			responseText.append("  C. EVA Operation");
 			responseText.append(System.lineSeparator());
 			responseText.append("  ----------------");
 			responseText.append(System.lineSeparator());
-			
+
 			responseText.append(printList(eva));
-			
+
 			// on a mission
 			responseText.append(System.lineSeparator());
 			responseText.append("  D. On a Mission");
 			responseText.append(System.lineSeparator());
 			responseText.append("  ---------------");
 			responseText.append(System.lineSeparator());
-			
+
 			responseText.append(printList(onMission));
-			
+
 			// Deceased
 			responseText.append(System.lineSeparator());
 			responseText.append("  E. Deceased");
 			responseText.append(System.lineSeparator());
 			responseText.append("  -----------");
 			responseText.append(System.lineSeparator());
-			
+
 			responseText.append(printList(deceasedP));
-			
+
 			// Buried
 			responseText.append(System.lineSeparator());
 			responseText.append("  F. Buried");
 			responseText.append(System.lineSeparator());
 			responseText.append("  ---------");
 			responseText.append(System.lineSeparator());
-			
+
 			responseText.append(printList(buriedP));
-		
+
 		}
-		
+
 		else if (text.toLowerCase().contains("bed")) {
 //				|| text.toLowerCase().contains("sleep") 
 //				|| text.equalsIgnoreCase("lodging")
@@ -2388,7 +2312,7 @@ public class ChatUtils {
 
 			questionText = YOU_PROMPT + "how well are the beds utilized ? ";
 			responseText.append(System.lineSeparator());
-			
+
 			responseText.append("Total number of beds : ");
 			responseText.append(settlementCache.getPopulationCapacity());
 			responseText.append(System.lineSeparator());
@@ -2407,79 +2331,77 @@ public class ChatUtils {
 
 			questionText = YOU_PROMPT + "What are the status of the vehicles in the settlement ? ";
 			responseText.append(System.lineSeparator());
-			
+
 			Collection<Vehicle> list = settlementCache.getAllAssociatedVehicles();
-					
+
 			// Sort the vehicle list according to the type
-			List<Vehicle> vlist = list.stream()
-					.sorted((p1, p2)-> p1.getVehicleType().compareTo(p2.getVehicleType()))
+			List<Vehicle> vlist = list.stream().sorted((p1, p2) -> p1.getVehicleType().compareTo(p2.getVehicleType()))
 					.collect(Collectors.toList());
-			
+
 			int SPACING = 20;
 			// Print the heading of each column
 			String nameStr = "     Name  ";
 			responseText.append(nameStr);
 			// Add spaces
 			int num0 = SPACING - nameStr.length() - 2;
-			for (int i=0; i<num0; i++) {
+			for (int i = 0; i < num0; i++) {
 				responseText.append(ONE_SPACE);
 			}
-			
+
 			String typeStr = "     Type  ";
 			responseText.append(typeStr);
 			// Add spaces
 			int num00 = SPACING - typeStr.length();
-			for (int i=0; i<num00; i++) {
+			for (int i = 0; i < num00; i++) {
 				responseText.append(ONE_SPACE);
 			}
-			
+
 			String missionStr = "     Mission  ";
 			responseText.append(missionStr);
 			// Add spaces
 			int num000 = SPACING - missionStr.length() + 2;
-			for (int i=0; i<num000; i++) {
+			for (int i = 0; i < num000; i++) {
 				responseText.append(ONE_SPACE);
 			}
-			
+
 			String personStr = "     Lead  ";
 			responseText.append(personStr);
-			
-			
+
 			responseText.append(System.lineSeparator());
 			responseText.append("  ------------------------------------------------------------------------");
 			responseText.append(System.lineSeparator());
-			
+
 			for (Vehicle v : vlist) {
 				// Print vehicle name
 				responseText.append("  " + v.getName());
 				int num2 = SPACING - v.getName().length() - 2;
 				if (num2 > 0) {
-					for (int i=0; i<num2; i++) {
+					for (int i = 0; i < num2; i++) {
 						responseText.append(ONE_SPACE);
 					}
 				}
-				
+
 				String vTypeStr = v.getVehicleType();
 				if (vTypeStr.equalsIgnoreCase("Light Utility Vehicle"))
 					vTypeStr = "LUV";
-				
+
 				responseText.append(vTypeStr);
-				
+
 				// Print vehicle type
 				int num3 = SPACING - vTypeStr.length();
 				if (num3 > 0) {
-					for (int i=0; i<num3; i++) {
+					for (int i = 0; i < num3; i++) {
 						responseText.append(ONE_SPACE);
 					}
 				}
-				
+
 				// Print mission name
 				String missionName = " ";
 				Mission mission = null;
 				List<Mission> missions = missionManager.getMissions();
 				for (Mission m : missions) {
 					if (m instanceof VehicleMission) {
-						Vehicle vv = ((VehicleMission)m).getVehicle(); 
+						Vehicle vv = ((VehicleMission) m).getVehicle();
 						if (vv.getName().equals(v.getName())) {
 							mission = m;
 							missionName = m.getDescription();
@@ -2487,26 +2409,25 @@ public class ChatUtils {
 					}
 				}
 				responseText.append(missionName);
-					
+
 				// Print the starting member
 				int num4 = SPACING - missionName.length() + 2;
 				if (num4 > 0) {
-					for (int i=0; i<num4; i++) {
+					for (int i = 0; i < num4; i++) {
 						responseText.append(ONE_SPACE);
 					}
 				}
-				
+
 				String personName = " ";
-				
+
 				if (!missionName.equalsIgnoreCase(" "))
 					personName = mission.getStartingMember().getName();
-			
+
 				responseText.append(personName);
-				
+
 				responseText.append(System.lineSeparator());
 			}
-			
-			
+
 //			responseText.append(DASHES_0);
 			responseText.append(System.lineSeparator());
 			// Center the name of the settlement
@@ -2516,14 +2437,14 @@ public class ChatUtils {
 //					responseText.append(" ");
 //				}
 //			}
-			
+
 //			responseText.append(settlementCache.getName());
 //			responseText.append(System.lineSeparator());
-			responseText.append(DASHES_0);	
+			responseText.append(DASHES_0);
 			responseText.append(System.lineSeparator());
 			responseText.append("                             Total # of Rovers : ");
 			responseText.append(settlementCache.getAllAssociatedVehicles().size());
-			responseText.append(System.lineSeparator());			
+			responseText.append(System.lineSeparator());
 			responseText.append(DASHES_0);
 			responseText.append(System.lineSeparator());
 			responseText.append("                  # of Cargo Rovers on Mission : ");
@@ -2563,7 +2484,7 @@ public class ChatUtils {
 			responseText.append("                    # of Rovers NOT on mission : ");
 			responseText.append(settlementCache.getParkedVehicleNum());
 			responseText.append(System.lineSeparator());
-			
+
 			responseText.append(System.lineSeparator());
 //			responseText.append("      ----------------------------");
 			responseText.append(System.lineSeparator());
@@ -2571,34 +2492,30 @@ public class ChatUtils {
 //			responseText.append(System.lineSeparator());
 //			responseText.append("  ------------------------------------");
 			responseText.append(System.lineSeparator());
-		
+
 //			responseText.append(System.lineSeparator());
 		}
 
-		else if (text.equalsIgnoreCase("bot") || text.equalsIgnoreCase("bots") 
-				|| text.equalsIgnoreCase("robot") || text.equalsIgnoreCase("robot")) {
+		else if (text.equalsIgnoreCase("bot") || text.equalsIgnoreCase("bots") || text.equalsIgnoreCase("robot")
+				|| text.equalsIgnoreCase("robot")) {
 			questionText = YOU_PROMPT + "What kind of bots do you have? ";
-			responseText.append(settlementCache + " : we have " 
-					+ settlementCache.getNumBots() + " bots.");
+			responseText.append(settlementCache + " : we have " + settlementCache.getNumBots() + " bots.");
 			Collection<Robot> list = settlementCache.getRobots();
 			List<Robot> namelist = new ArrayList<>(list);
 			Collections.sort(namelist);
 			String s = "";
 			for (int i = 0; i < namelist.size(); i++) {
-				s = s + "(" + (i+1) + "). " + namelist.get(i).toString() + System.lineSeparator();
+				s = s + "(" + (i + 1) + "). " + namelist.get(i).toString() + System.lineSeparator();
 			}
-			//		.replace("[", "").replace("]", "");//.replaceAll(", ", ",\n");
-			//System.out.println("list : " + list);
+			// .replace("[", "").replace("]", "");//.replaceAll(", ", ",\n");
+			// System.out.println("list : " + list);
 			responseText.append(System.lineSeparator());
 			responseText.append(s);
 			responseText.append(System.lineSeparator());
 		}
-		
-		else if (text.equalsIgnoreCase("key") 
-				|| text.equalsIgnoreCase("keys")  
-				|| text.equalsIgnoreCase("keyword")  
-				|| text.equalsIgnoreCase("keywords")  
-				|| text.equalsIgnoreCase("/k")) {
+
+		else if (text.equalsIgnoreCase("key") || text.equalsIgnoreCase("keys") || text.equalsIgnoreCase("keyword")
+				|| text.equalsIgnoreCase("keywords") || text.equalsIgnoreCase("/k")) {
 
 //			help = true;
 			questionText = REQUEST_KEYS;
@@ -2612,8 +2529,8 @@ public class ChatUtils {
 
 		}
 
-		else if (text.equalsIgnoreCase("help") || text.equalsIgnoreCase("/h") 
-				|| text.equalsIgnoreCase("/?") || text.equalsIgnoreCase("?")) {
+		else if (text.equalsIgnoreCase("help") || text.equalsIgnoreCase("/h") || text.equalsIgnoreCase("/?")
+				|| text.equalsIgnoreCase("?")) {
 
 //			help = true;
 			questionText = REQUEST_HELP;
@@ -2637,7 +2554,6 @@ public class ChatUtils {
 		return new String[] { questionText, responseText.toString() };
 	}
 
-	
 	/**
 	 * Asks the person or the robot
 	 * 
@@ -2654,27 +2570,27 @@ public class ChatUtils {
 
 		responseText.append(name);
 		responseText.append(": ");
-		
+
 		if (text.toLowerCase().contains("job score")) {
-			questionText = YOU_PROMPT + "What is your job capability and job prospect scores ?"; 
+			questionText = YOU_PROMPT + "What is your job capability and job prospect scores ?";
 			responseText.append("See below : ");
 			responseText.append(System.lineSeparator());
-			
+
 //			Map<String, List<Person>> map = JobManager.getJobMap(personCache.getAssociatedSettlement());
-					
+
 			List<String> jobList = JobUtil.getJobList();
-			//new ArrayList<>(map.keySet());
+			// new ArrayList<>(map.keySet());
 			Collections.sort(jobList);
-			
+
 			int length = 0;
 			for (String jobStr : jobList) {
 				int l = jobStr.length();
 				if (l > length)
 					length = l;
 			}
-			
+
 			int num1 = 1;
-			
+
 			responseText.append(System.lineSeparator());
 			responseText.append(addhiteSpacesName(" Job   ", 14));
 			responseText.append(addhiteSpacesName(" Capability Score", 22));
@@ -2682,44 +2598,44 @@ public class ChatUtils {
 			responseText.append(System.lineSeparator());
 			responseText.append(" ------------------------------------------------------- ");
 			responseText.append(System.lineSeparator());
-			
+
 			for (String jobStr : jobList) {
-				if (num1 < 10)					
+				if (num1 < 10)
 					responseText.append("  " + num1 + ". ");
 				else
 					responseText.append(" " + num1 + ". ");
 				num1++;
-					
+
 				responseText.append(addNameFirstWhiteSpaces(jobStr, 20));
-				
+
 //				responseText.append(System.lineSeparator());
 //				responseText.append(" ");
 //				for (int i=0; i<length; i++) {
 //					responseText.append("-");
 //				}	
 				Job job = JobUtil.getJob(jobStr);
-				
-				double capScore = Math.round(job.getCapability(personCache) * 10.0)/10.0;					
-				responseText.append(addNameFirstWhiteSpaces(" " + capScore, 18));
-				
 
-				double prospectScore = Math.round(JobUtil.getJobProspect(personCache, job, personCache.getAssociatedSettlement(), true) * 10.0)/10.0;					
+				double capScore = Math.round(job.getCapability(personCache) * 10.0) / 10.0;
+				responseText.append(addNameFirstWhiteSpaces(" " + capScore, 18));
+
+				double prospectScore = Math.round(
+						JobUtil.getJobProspect(personCache, job, personCache.getAssociatedSettlement(), true) * 10.0)
+						/ 10.0;
 				responseText.append(addNameFirstWhiteSpaces(" " + prospectScore, 5));
 				responseText.append(System.lineSeparator());
-				
+
 			}
 		}
-		
-		else if (text.toLowerCase().contains("shift")
-				|| text.toLowerCase().contains("work shift")) {
-			questionText = YOU_PROMPT + "What is your work shift ?"; 
+
+		else if (text.toLowerCase().contains("shift") || text.toLowerCase().contains("work shift")) {
+			questionText = YOU_PROMPT + "What is your work shift ?";
 
 			ShiftType st0 = personCache.getTaskSchedule().getShiftType();
 			int score = personCache.getTaskSchedule().getShiftChoice().get(st0);
 			responseText.append("My current work shift is ");
 			responseText.append(st0);
 			responseText.append(" (score : " + score + ")");
-			
+
 			ShiftType[] st = personCache.getTaskSchedule().getPreferredShift();
 			if (st[1] != null) {
 				int score0 = personCache.getTaskSchedule().getShiftChoice().get(st[0]);
@@ -2731,14 +2647,12 @@ public class ChatUtils {
 				responseText.append(System.lineSeparator());
 				responseText.append("   - 2nd most favorite : " + st[1] + " (score : " + score1 + ")");
 //				responseText.append(System.lineSeparator());
-			}
-			else {
+			} else {
 				if (st0 == st[1]) {
 					responseText.append("And this is also my preferred work shift.");
 					responseText.append(". ");
 //					responseText.append(System.lineSeparator());
-				}
-				else {
+				} else {
 					score = personCache.getTaskSchedule().getShiftChoice().get(st[0]);
 					responseText.append("But my preference is work shift " + st[0] + " (score : " + score + ")");
 					responseText.append(". ");
@@ -2746,61 +2660,60 @@ public class ChatUtils {
 				}
 			}
 
-			
 		}
-		
+
 		else if (text.toLowerCase().contains("airlock time")) {
-			questionText = YOU_PROMPT + "How long have you spent inside the airlock ?"; 
-			
+			questionText = YOU_PROMPT + "How long have you spent inside the airlock ?";
+
 			responseText.append("See my records as follows :");
 			responseText.append(System.lineSeparator());
 			responseText.append(System.lineSeparator());
-			
+
 			responseText.append("  Sol  | Millisols");
 			responseText.append(System.lineSeparator());
-			responseText.append(" ------+------------");	
+			responseText.append(" ------+------------");
 			responseText.append(System.lineSeparator());
-			
+
 			int size = marsClock.getMissionSol();
 			int MAX0 = 5;
 			int MAX1 = 10;
-			for (int i=0; i<size; i++) {
+			for (int i = 0; i < size; i++) {
 				double milliSol = personCache.getTaskSchedule().getAirlockTasksTime(i);
 				if (milliSol > 0) {
 					responseText.append(addhiteSpacesName(i + "", MAX0));
-					String m = Math.round(milliSol*10.0)/10.0 + "";
-					responseText.append(addhiteSpacesName(m, MAX1));	
+					String m = Math.round(milliSol * 10.0) / 10.0 + "";
+					responseText.append(addhiteSpacesName(m, MAX1));
 					responseText.append(System.lineSeparator());
 				}
 			}
 		}
-		
+
 		else if (text.toLowerCase().contains("eva time")) {
-			questionText = YOU_PROMPT + "What is your EVA history and experience ?"; 
-			
+			questionText = YOU_PROMPT + "What is your EVA history and experience ?";
+
 			responseText.append("See my EVA records as follows :");
 			responseText.append(System.lineSeparator());
 			responseText.append(System.lineSeparator());
-			
+
 			responseText.append("  Sol  | Millisols");
 			responseText.append(System.lineSeparator());
-			responseText.append(" ------+------------");	
+			responseText.append(" ------+------------");
 			responseText.append(System.lineSeparator());
-			
-			Map<Integer, Double> eVATime = personCache.getTotalEVATaskTimeBySol();	
+
+			Map<Integer, Double> eVATime = personCache.getTotalEVATaskTimeBySol();
 			int size = marsClock.getMissionSol();
 			int MAX0 = 5;
 			int MAX1 = 10;
-			for (int i=0; i<size; i++) {
+			for (int i = 0; i < size; i++) {
 				if (eVATime.containsKey(i)) {
 					double milliSol = eVATime.get(i);
 					responseText.append(addhiteSpacesName(i + "", MAX0));
-					String m = Math.round(milliSol*10.0)/10.0 + "";
-					responseText.append(addhiteSpacesName(m, MAX1));	
+					String m = Math.round(milliSol * 10.0) / 10.0 + "";
+					responseText.append(addhiteSpacesName(m, MAX1));
 					responseText.append(System.lineSeparator());
 				}
 			}
-			
+
 //			int size = marsClock.getMissionSol();
 //			int MAX0 = 5;
 //			int MAX1 = 10;
@@ -2814,124 +2727,121 @@ public class ChatUtils {
 //				}
 //			}
 		}
-		
+
 		else if (text.toLowerCase().contains("attribute")) {
-			questionText = YOU_PROMPT + "What are your natural attributes ?"; 
-			
+			questionText = YOU_PROMPT + "What are your natural attributes ?";
+
 			responseText.append("here's a list of my natural attributes with scores ");
 			responseText.append(System.lineSeparator());
 			responseText.append(System.lineSeparator());
 			responseText.append("          Attributes | Score");
 			responseText.append(System.lineSeparator());
-			responseText.append(" --------------------------");	
+			responseText.append(" --------------------------");
 			responseText.append(System.lineSeparator());
-			
+
 			if (personCache != null) {
-				NaturalAttributeManager n_manager = personCache.getNaturalAttributeManager();		
+				NaturalAttributeManager n_manager = personCache.getNaturalAttributeManager();
 				Hashtable<NaturalAttributeType, Integer> n_attributes = n_manager.getAttributeTable();
 				List<String> attributeList = n_manager.getAttributeList();
 				int max = 20;
 //				String space = "";		
-				for (int i=0; i< attributeList.size(); i++) {
+				for (int i = 0; i < attributeList.size(); i++) {
 					String n = attributeList.get(i);
 					int size = n.length();
 //					if (i+1 <= 9)
 //						space = " ";
-					for (int j=0; j< (max-size); j++) {
+					for (int j = 0; j < (max - size); j++) {
 						responseText.append(" ");
 					}
 //					responseText.append(space + "(" + (i+1) + ") ");
 					responseText.append(n);
 					responseText.append(" : ");
 					responseText.append(n_attributes.get(NaturalAttributeType.valueOfIgnoreCase(n)));
-					responseText.append(System.lineSeparator());			
+					responseText.append(System.lineSeparator());
 				}
-				
+
 			}
-			
+
 			else if (robotCache != null) {
-				RoboticAttributeManager r_manager = robotCache.getRoboticAttributeManager();	
+				RoboticAttributeManager r_manager = robotCache.getRoboticAttributeManager();
 				Hashtable<RoboticAttributeType, Integer> r_attributes = r_manager.getAttributeTable();
 				List<String> attributeList = r_manager.getAttributeList();
 				int max = 20;
 //				String space = "";		
-				for (int i=0; i< attributeList.size(); i++) {
+				for (int i = 0; i < attributeList.size(); i++) {
 					String n = attributeList.get(i);
 					int size = n.length();
 //					if (i+1 <= 9)
 //						space = " ";
-					for (int j=0; j< (max-size); j++) {
+					for (int j = 0; j < (max - size); j++) {
 						responseText.append(" ");
 					}
 //					responseText.append(space + "(" + (i+1) + ") ");
 					responseText.append(n);
 					responseText.append(" : ");
 					responseText.append(r_attributes.get(RoboticAttributeType.valueOfIgnoreCase(n)));
-					responseText.append(System.lineSeparator());			
+					responseText.append(System.lineSeparator());
 				}
-				
-			}			
-	
-		}
-		
-		else if (text.toLowerCase().contains("skill")) {
-			questionText = YOU_PROMPT + "What are your skills ?"; 
-			
-			if (personCache != null) {
-				skillManager = personCache.getMind().getSkillManager();	
+
 			}
-			
+
+		}
+
+		else if (text.toLowerCase().contains("skill")) {
+			questionText = YOU_PROMPT + "What are your skills ?";
+
+			if (personCache != null) {
+				skillManager = personCache.getMind().getSkillManager();
+			}
+
 			else if (robotCache != null) {
-				skillManager = robotCache.getBotMind().getSkillManager();			
-			}			
-			
+				skillManager = robotCache.getBotMind().getSkillManager();
+			}
+
 			responseText.append("here's a list of my skills with level : ");
 			responseText.append(System.lineSeparator());
 			responseText.append(System.lineSeparator());
 			responseText.append("       Type of Skill | Level");
 			responseText.append(System.lineSeparator());
-			responseText.append("     ------------------------");	
+			responseText.append("     ------------------------");
 			responseText.append(System.lineSeparator());
-			
+
 			Map<String, Integer> skills = skillManager.getSkillsMap();
 			List<String> skillNames = skillManager.getSkillNames();
 			Collections.sort(skillNames);
 //			SkillType[] keys = skillManager.getKeys();
-			
+
 			int max = 20;
 //			String space = "";		
-			for (int i=0; i< skillNames.size(); i++) {
+			for (int i = 0; i < skillNames.size(); i++) {
 				String n = skillNames.get(i);
 				int size = n.length();
 //				if (i+1 <= 9)
 //					space = " ";
-				for (int j=0; j< (max-size); j++) {
+				for (int j = 0; j < (max - size); j++) {
 					responseText.append(" ");
 				}
 //				responseText.append(space + "(" + (i+1) + ") ");
 				responseText.append(n);
 //				responseText.append(" : ");
 				responseText.append(addhiteSpacesName("" + skills.get(n), 5));
-				responseText.append(System.lineSeparator());			
+				responseText.append(System.lineSeparator());
 			}
-			
-		}
-		
 
-		else if (text.toLowerCase().contains("time")
-				|| text.toLowerCase().contains("date")) {
-			questionText = YOU_PROMPT + "What day/time is it ?"; 
-			
+		}
+
+		else if (text.toLowerCase().contains("time") || text.toLowerCase().contains("date")) {
+			questionText = YOU_PROMPT + "What day/time is it ?";
+
 //			responseText.append(personCache.getName() + " : ");
 			responseText.append("See below");
 			responseText.append(System.lineSeparator());
-			
+
 			responseText.append(printTime());
-			
+
 		}
-		
-		else if (text.equalsIgnoreCase("space agency")
-				|| text.toLowerCase().contains("sponsor")) {
+
+		else if (text.equalsIgnoreCase("space agency") || text.toLowerCase().contains("sponsor")) {
 			questionText = YOU_PROMPT + "What is your sponsoring space agency ? ";
 
 			if (personCache != null) {
@@ -2945,21 +2855,20 @@ public class ChatUtils {
 			}
 
 		}
-	
+
 		else if (text.toLowerCase().contains("friend")) {
 			questionText = YOU_PROMPT + "Who's your best friend ?";
 
 			if (relationshipManager == null)
 				relationshipManager = sim.getRelationshipManager();
-			
+
 			Map<Person, Double> bestFriends = relationshipManager.getBestFriends(personCache);
 			if (bestFriends.isEmpty()) {
 				responseText.append("I don't have any friends yet.");
-			}
-			else { 
+			} else {
 				List<Person> list = new ArrayList<>(bestFriends.keySet());
 				int size = list.size();
-				
+
 				if (size == 1) {
 					Person p = list.get(0);
 					double score = bestFriends.get(p);
@@ -2977,8 +2886,7 @@ public class ChatUtils {
 						responseText.append("My best friend is " + p + ". ");
 					responseText.append("I'm " + relation + pronoun + " (");
 					responseText.append("score : " + fmt1.format(score) + ").");
-				}
-				else if (size >= 2) {
+				} else if (size >= 2) {
 					responseText.append("My best friends are ");
 					responseText.append(System.lineSeparator());
 					for (int i = 0; i < size; i++) {
@@ -2993,50 +2901,47 @@ public class ChatUtils {
 							relation = relation + " ";
 						if (p.getGender() == GenderType.FEMALE)
 							pronoun = "her";
-						responseText.append("(" + (i+1) + "). " + p + " -- ");
+						responseText.append("(" + (i + 1) + "). " + p + " -- ");
 						responseText.append("I'm " + relation + pronoun + " (");
 						responseText.append("score : " + fmt1.format(score) + ").");
 						responseText.append(System.lineSeparator());
 					}
-				}	
+				}
 			}
 		}
-		
+
 		else if (text.toLowerCase().contains("social")) {
 //				text.toLowerCase().contains("relationship")
 //				|| text.toLowerCase().contains("relation")
 
-			questionText = YOU_PROMPT + "How are your relationship with others ?"; 
+			questionText = YOU_PROMPT + "How are your relationship with others ?";
 
 			if (relationshipManager == null)
 				relationshipManager = sim.getRelationshipManager();
-			
+
 			// My opinions of them
 			Map<Person, Double> friends = relationshipManager.getMyOpinionsOfThem(personCache);
 //			System.out.println("friends in ChatUtils : " + friends);
 			if (friends.isEmpty()) {
 				responseText.append("I don't have any friends yet.");
-			}
-			else {
+			} else {
 				responseText.append(" See the table below ");
-				responseText.append(System.lineSeparator());	
+				responseText.append(System.lineSeparator());
 				responseText.append(System.lineSeparator());
 				List<Person> list = new ArrayList<>(friends.keySet());
 				int size = list.size();
-	
+
 //				responseText.append("                   Friend | Score | Attitude "				
-				responseText.append("       Toward this Person | Score | My Attitude"
-						+ System.lineSeparator());
-				responseText.append("      -----------------------------------------"
-						+ System.lineSeparator());		
-				
+				responseText.append("       Toward this Person | Score | My Attitude" + System.lineSeparator());
+				responseText.append("      -----------------------------------------" + System.lineSeparator());
+
 				int max0 = 25;
 				int max1 = 7;
 				int max2 = 16;
 				int count = 0;
 				int sum = 0;
 				String SPACE = " ";
-					
+
 				for (int x = 0; x < size; x++) {
 					Person p = list.get(x);
 					double score = friends.get(p);
@@ -3044,52 +2949,50 @@ public class ChatUtils {
 					count++;
 					String relation = RelationshipManager.describeRelationship(score);
 					int size0 = max0 - p.getName().length();
-					for (int i=0; i<size0; i++) {
+					for (int i = 0; i < size0; i++) {
 						responseText.append(SPACE);
 					}
 					responseText.append(p);
-					String scoreStr = Math.round(score*10.0)/10.0 + "";
+					String scoreStr = Math.round(score * 10.0) / 10.0 + "";
 					int size2 = max1 - scoreStr.length();
-					for (int i=0; i<size2; i++) {
+					for (int i = 0; i < size2; i++) {
 						responseText.append(SPACE);
 					}
 					responseText.append(scoreStr);
-					
+
 //						int size1 = max1 - relation.length();
 //						for (int i=0; i<size1; i++) {
 //							responseText.append(SPACE);
 //						}
 					responseText.append("    ");
 					responseText.append(relation);
-				
-					responseText.append(System.lineSeparator());	
+
+					responseText.append(System.lineSeparator());
 
 				}
-					
+
 				responseText.append("      -----------------------------------------");
 				responseText.append(System.lineSeparator());
 				responseText.append("       My Opinion of Them : ");
-				responseText.append(fmt1.format(sum/count));
-				
-				responseText.append(System.lineSeparator());	
+				responseText.append(fmt1.format(sum / count));
+
+				responseText.append(System.lineSeparator());
 				responseText.append(System.lineSeparator());
 //				responseText.append(System.lineSeparator());	
-				
+
 				// Their opinions of me
 				friends = relationshipManager.getTheirOpinionsOfMe(personCache);
-				
+
 				list = new ArrayList<>(friends.keySet());
 				size = list.size();
-	
+
 //				responseText.append("                   Friend | Score | Attitude "				
-				responseText.append("    This Person Toward Me | Score | Attitude Toward Me"
-						+ System.lineSeparator());
-				responseText.append("      -----------------------------------------"
-						+ System.lineSeparator());		
-				
+				responseText.append("    This Person Toward Me | Score | Attitude Toward Me" + System.lineSeparator());
+				responseText.append("      -----------------------------------------" + System.lineSeparator());
+
 				count = 0;
 				sum = 0;
-				
+
 				for (int x = 0; x < size; x++) {
 					Person p = list.get(x);
 					double score = friends.get(p);
@@ -3097,36 +3000,36 @@ public class ChatUtils {
 					count++;
 					String relation = RelationshipManager.describeRelationship(score);
 					int size0 = max0 - p.getName().length();
-					for (int i=0; i<size0; i++) {
+					for (int i = 0; i < size0; i++) {
 						responseText.append(SPACE);
 					}
 					responseText.append(p);
-					
-					String scoreStr = Math.round(score*10.0)/10.0 + "";
+
+					String scoreStr = Math.round(score * 10.0) / 10.0 + "";
 					int size2 = max1 - scoreStr.length();
-					for (int i=0; i<size2; i++) {
+					for (int i = 0; i < size2; i++) {
 						responseText.append(SPACE);
 					}
 					responseText.append(scoreStr);
-					
+
 //						int size1 = max1 - relation.length();
 //						for (int i=0; i<size1; i++) {
 //							responseText.append(SPACE);
 //						}
 					responseText.append("    ");
 					responseText.append(relation);
-				
-					responseText.append(System.lineSeparator());	
+
+					responseText.append(System.lineSeparator());
 
 				}
-				
+
 				responseText.append("      -----------------------------------------");
 				responseText.append(System.lineSeparator());
 				responseText.append("      Their Opinion of Me : ");
-				responseText.append(Math.round(sum/count*10.0)/10.0);
-			
+				responseText.append(Math.round(sum / count * 10.0) / 10.0);
+
 			}
-			
+
 		}
 
 		else if (text.toLowerCase().contains("feeling") || text.toLowerCase().contains("how you been")) {
@@ -3139,8 +3042,8 @@ public class ChatUtils {
 			} else if (robotCache != null) {
 				if (robotCache.getSystemCondition().isInoperable())
 					responseText.append("I'm inoperable.");
-				else 
-					responseText.append("I'm operational.");					
+				else
+					responseText.append("I'm operational.");
 			}
 
 		}
@@ -3155,8 +3058,8 @@ public class ChatUtils {
 			} else if (robotCache != null) {
 				if (robotCache.getSystemCondition().isInoperable())
 					responseText.append("I'm inoperable.");
-				else 
-					responseText.append("I'm operational.");					
+				else
+					responseText.append("I'm operational.");
 //				responseText.append(robotCache...());
 			}
 
@@ -3182,8 +3085,7 @@ public class ChatUtils {
 
 		}
 
-		else if (num == 2 || text.contains("what your role")
-				|| text.toLowerCase().contains("role")) {
+		else if (num == 2 || text.contains("what your role") || text.toLowerCase().contains("role")) {
 			questionText = YOU_PROMPT + "What is your role ?";
 
 			if (personCache != null) {
@@ -3193,13 +3095,13 @@ public class ChatUtils {
 				responseText.append(" of ");
 				responseText.append(personCache.getAssociatedSettlement().getName());
 				responseText.append(".");
-			} 
-			
+			}
+
 			else if (robotCache != null) {
 				responseText.append("I'm just a robot.");
 			}
 		}
-		
+
 		else if (num == 2 || text.contains("what your job") || text.toLowerCase().contains("what your specialty")
 				|| text.toLowerCase().contains("job") || text.toLowerCase().contains("career")
 				|| text.toLowerCase().contains("specialty")) {
@@ -3233,8 +3135,7 @@ public class ChatUtils {
 			}
 		}
 
-		else if (num == 3 || text.equalsIgnoreCase("where you from")
-				|| text.toLowerCase().contains("nationality")
+		else if (num == 3 || text.equalsIgnoreCase("where you from") || text.toLowerCase().contains("nationality")
 				|| text.toLowerCase().contains("country")) {
 			questionText = YOU_PROMPT + "What country were you from ? ";
 
@@ -3248,15 +3149,14 @@ public class ChatUtils {
 			}
 
 		}
-	
+
 		else if (num == 4 || text.toLowerCase().contains("outside") || text.toLowerCase().contains("inside")
 				|| text.toLowerCase().contains("container")) {
 			questionText = YOU_PROMPT + "Are you inside or outside?";
 			Unit c = u.getContainerUnit();// getTopContainerUnit();
 			if (c instanceof MarsSurface) {
 				responseText.append("I'm outside");
-			}
-			else {
+			} else {
 				responseText.append("I'm inside ").append(c.getName()).append(".");
 			}
 
@@ -3313,7 +3213,7 @@ public class ChatUtils {
 
 		}
 
-		else if (num == 7 || text.toLowerCase().contains("task")) { 
+		else if (num == 7 || text.toLowerCase().contains("task")) {
 //				|| text.toLowerCase().contains("activity")
 //				|| text.toLowerCase().contains("doing")
 //				|| text.toLowerCase().contains("action")) {
@@ -3326,7 +3226,7 @@ public class ChatUtils {
 
 		}
 
-		else if (num == 8 || text.toLowerCase().contains("mission")) { 
+		else if (num == 8 || text.toLowerCase().contains("mission")) {
 //			|| text.toLowerCase().contains("trip")
 //				|| text.toLowerCase().contains("excursion")) {
 			// sys = name;
@@ -3425,35 +3325,31 @@ public class ChatUtils {
 				Unit c = v.getContainerUnit();
 				if (c instanceof MarsSurface) {
 					responseText.append("My vehicle is not inside");
-				}
-				else {
+				} else {
 					responseText.append("My vehicle is at ");
 					responseText.append(c.getName());
 				}
-
 
 			} else
 				responseText.append("I'm not in a vehicle.");
 		}
 
-		else if (num == 14
-				|| (text.contains("vehicle") && text.contains("outside"))
+		else if (num == 14 || (text.contains("vehicle") && text.contains("outside"))
 				|| (text.contains("vehicle") && text.contains("top") && text.contains("container"))) {
 			questionText = YOU_PROMPT + "What is your vehicle located?";// 's top container unit ?";
 			Vehicle v = u.getVehicle();
 			if (v != null) {
 //				Unit tc = v.getContainerUnit();
 //				if (tc != null) {
-					responseText.append("My vehicle is at ");
-					responseText.append(v.getLocationTag().getImmediateLocation());//tc.getName());
+				responseText.append("My vehicle is at ");
+				responseText.append(v.getLocationTag().getImmediateLocation());// tc.getName());
 //				} else
 //					responseText.append("My vehicle is not inside");// doesn't have a top container unit.";
 			} else
 				responseText.append("I'm not in a vehicle.");
 		}
 
-		else if (num == 15 || text.equalsIgnoreCase("garage")
-				|| (text.contains("vehicle") && text.contains("park"))) {
+		else if (num == 15 || text.equalsIgnoreCase("garage") || (text.contains("vehicle") && text.contains("park"))) {
 			questionText = YOU_PROMPT + "What building does your vehicle park at ?";
 			Vehicle v = u.getVehicle();
 			if (v != null) {
@@ -3550,11 +3446,8 @@ public class ChatUtils {
 
 		}
 
-		else if (text.equalsIgnoreCase("key") 
-				|| text.equalsIgnoreCase("keys")  
-				|| text.equalsIgnoreCase("keyword")  
-				|| text.equalsIgnoreCase("keywords")  
-				|| text.equalsIgnoreCase("/k")) {
+		else if (text.equalsIgnoreCase("key") || text.equalsIgnoreCase("keys") || text.equalsIgnoreCase("keyword")
+				|| text.equalsIgnoreCase("keywords") || text.equalsIgnoreCase("/k")) {
 
 			questionText = REQUEST_KEYS;
 			if (connectionMode == 0) {
@@ -3605,7 +3498,7 @@ public class ChatUtils {
 		StringBuffer responseText = new StringBuffer();
 		String name = SYSTEM;
 		int cacheType = -1;
-		
+
 		Unit u = null;
 
 		if (personCache != null) {
@@ -3641,27 +3534,26 @@ public class ChatUtils {
 					bye = farewell(name, true);
 				else
 					bye = farewell(name, false);
-				
+
 				questionText = bye[0];
 				responseText.append(bye[1]);
 				responseText.append(System.lineSeparator());
 				responseText.append(System.lineSeparator());
 				responseText.append(name);
 
-				if (settlementCache != null || vehicleCache != null
-						|| robotCache != null) {
+				if (settlementCache != null || vehicleCache != null || robotCache != null) {
 					responseText.append(" is disconnected from the line.");
 				}
-				
+
 				else {
 					int rand1 = RandomUtil.getRandomInt(1);
-	
+
 					if (rand1 == 0)
 						responseText.append(" has left the conversation.");
 					else if (rand1 == 1)
 						responseText.append(" just hung up.");
 				}
-				
+
 				// set personCache and robotCache to null so as to quit the conversation
 				personCache = null;
 				robotCache = null;
@@ -3677,7 +3569,7 @@ public class ChatUtils {
 			}
 
 		}
-		
+
 		else if (checkExpertMode(text)) {
 			toggleExpertMode();
 			responseText.append("Set Expert Mode to " + ChatUtils.isExpertMode());
@@ -3699,9 +3591,9 @@ public class ChatUtils {
 
 			personCache = null;
 			robotCache = null;
-			//settlementCache = null;
+			// settlementCache = null;
 			vehicleCache = null;
-			
+
 			if (isInteger(text, 10)) {
 
 				int num = Integer.parseUnsignedInt(text, 10);
@@ -3711,23 +3603,21 @@ public class ChatUtils {
 				try {
 					questionText = ans[0];
 					responseText.append(ans[1]);
-				}
-				catch (NullPointerException ne){
+				} catch (NullPointerException ne) {
 					ne.printStackTrace();
 				}
-				
+
 				// if it's not a integer input
 			}
 
 			else {
-				
+
 				String[] ans = askSettlementStr(text, name);
-				
+
 				try {
 					questionText = ans[0];
 					responseText.append(ans[1]);
-				}
-				catch (NullPointerException ne){
+				} catch (NullPointerException ne) {
 					ne.printStackTrace();
 				}
 			}
@@ -3741,19 +3631,18 @@ public class ChatUtils {
 			robotCache = null;
 			settlementCache = null;
 //			vehicleCache = null;
-			
+
 			String[] ans = askVehicle(text, name);
-			
+
 			try {
 				questionText = ans[0];
 				responseText.append(ans[1]);
-			}
-			catch (NullPointerException ne){
+			} catch (NullPointerException ne) {
 				ne.printStackTrace();
 			}
 
 		}
-		
+
 		// Case 2: ask to talk to a person or robot
 		else if (settlementCache == null) {
 			// Note : this is better than personCache != null || robotCache != null since it
@@ -3762,11 +3651,11 @@ public class ChatUtils {
 			int num = -1;
 
 //			System.out.println("settlementCache == null");
-			
+
 			if (isInteger(text, 10)) {
 				num = Integer.parseUnsignedInt(text, 10);
 			}
-				
+
 			// Add command "die"
 			if (expertMode && text.equalsIgnoreCase("die")) {
 
@@ -3774,11 +3663,11 @@ public class ChatUtils {
 					questionText = YOU_PROMPT + " I hereby pronounce you dead.";
 
 					if (personCache.isOutside()) {
-						responseText.append("Can you tell me why? Let's wait till I'm done with my task and/or mission.");
-					}
-					else {
+						responseText
+								.append("Can you tell me why? Let's wait till I'm done with my task and/or mission.");
+					} else {
 						String lastWord = null;
-		
+
 						int rand = RandomUtil.getRandomInt(12);
 						// Quotes from http://www.phrases.org.uk/quotes/last-words/suicide-notes.html
 						// https://www.goodreads.com/quotes/tag/suicide-note
@@ -3809,15 +3698,15 @@ public class ChatUtils {
 							lastWord = "I don't want to hurt you or anybody so please forget about me. Just try. Find yourself a better friend.";
 						else
 							lastWord = "They tried to get me —— I got them first!";
-		
+
 						responseText.append(personCache.getName() + " : " + lastWord);
-		
-						responseText.append(System.lineSeparator() + System.lineSeparator() 
-							+ personCache.getName() + " committed suicide as instructed.");
-					
-						personCache.getPhysicalCondition()
-								.setDead(new HealthProblem(new Complaint(ComplaintType.SUICIDE), personCache), true, lastWord);
-		
+
+						responseText.append(System.lineSeparator() + System.lineSeparator() + personCache.getName()
+								+ " committed suicide as instructed.");
+
+						personCache.getPhysicalCondition().setDead(
+								new HealthProblem(new Complaint(ComplaintType.SUICIDE), personCache), true, lastWord);
+
 						personCache = null;
 						robotCache = null;
 						settlementCache = null;
@@ -3825,19 +3714,18 @@ public class ChatUtils {
 					}
 				}
 			}
-			
+
 			else {
 				// if not using expert mode
-				
+
 //				System.out.println("before askPersonRobot()");
-				
+
 				String[] ans = askPersonRobot(text, num, name, u);
-				
+
 				try {
 					questionText = ans[0];
 					responseText.append(ans[1]);
-				}
-				catch (NullPointerException ne){
+				} catch (NullPointerException ne) {
 					ne.printStackTrace();
 				}
 //				System.out.println("after askPersonRobot()");
@@ -3865,7 +3753,7 @@ public class ChatUtils {
 //	        i.set((T)a[j]);
 //	    }
 //	}
-	
+
 	/**
 	 * Saves the log levels
 	 * 
@@ -3875,12 +3763,10 @@ public class ChatUtils {
 	public static void saveLogLevel(String key, Level value) {
 		if (logLevels.isEmpty()) {
 			logLevels.put(key, value);
-		}
-		else {
+		} else {
 			if (logLevels.containsKey(key)) {
 				logLevels.replace(key, value);
-			}
-			else {
+			} else {
 				logLevels.put(key, value);
 			}
 		}
@@ -3894,18 +3780,18 @@ public class ChatUtils {
 	public static void setRootLogLevel(Level newLvl) {
 		// Java 8 stream
 //		Arrays.stream(LogManager.getLogManager().getLogger("").getHandlers()).forEach(h -> h.setLevel(newLvl));
-		
-	    Logger rootLogger = LogManager.getLogManager().getLogger("");
-	    Handler[] handlers = rootLogger.getHandlers();
-	    rootLogger.setLevel(newLvl);
-	    for (Handler h : handlers) {
-	        if (h instanceof ConsoleHandler)
-	            h.setLevel(newLvl);
-	    }
-	    
-	    logger.config("Global logging is set to " + newLvl);
+
+		Logger rootLogger = LogManager.getLogManager().getLogger("");
+		Handler[] handlers = rootLogger.getHandlers();
+		rootLogger.setLevel(newLvl);
+		for (Handler h : handlers) {
+			if (h instanceof ConsoleHandler)
+				h.setLevel(newLvl);
+		}
+
+		logger.config("Global logging is set to " + newLvl);
 	}
-	
+
 	/**
 	 * Computes the # of whitespaces
 	 * 
@@ -3916,12 +3802,12 @@ public class ChatUtils {
 	public static StringBuffer computeWhiteSpaces(String name, int max) {
 		int size = name.length();
 		StringBuffer sb = new StringBuffer();
-		for (int i=0; i< max-size; i++)
+		for (int i = 0; i < max - size; i++)
 			sb.append(ONE_SPACE);
-		
+
 		return sb;
 	}
-	
+
 	/**
 	 * Computes the # of whitespaces
 	 * 
@@ -3932,13 +3818,13 @@ public class ChatUtils {
 	public static StringBuffer addhiteSpacesName(String name, int max) {
 		int size = name.length();
 		StringBuffer sb = new StringBuffer();
-		for (int i=0; i< max-size; i++)
+		for (int i = 0; i < max - size; i++)
 			sb.append(ONE_SPACE);
-		
+
 		sb.append(name);
 		return sb;
 	}
-	
+
 	/**
 	 * Computes the # of whitespaces
 	 * 
@@ -3950,13 +3836,13 @@ public class ChatUtils {
 		int size = name.length();
 		StringBuffer sb = new StringBuffer();
 		sb.append(name);
-		for (int i=0; i< max-size; i++)
+		for (int i = 0; i < max - size; i++)
 			sb.append(ONE_SPACE);
 		return sb;
 	}
-	
+
 	/**
-	 * Gets the first available key of a map given its value 
+	 * Gets the first available key of a map given its value
 	 * 
 	 * @param map
 	 * @param value
@@ -3975,9 +3861,9 @@ public class ChatUtils {
 //				       .map(Map.Entry::getKey)
 //				       .findFirst().get();
 	}
-	
+
 	/**
-	 * Changes the class logger logging level 
+	 * Changes the class logger logging level
 	 * 
 	 * @param clazz
 	 * @param lvl
@@ -3986,7 +3872,7 @@ public class ChatUtils {
 		if (logManager.getLogger(clazz.getName()) != null)
 			logManager.getLogger(clazz.getName()).setLevel(lvl);
 	}
-	
+
 	/**
 	 * Processes the log level configurations
 	 * 
@@ -3995,7 +3881,7 @@ public class ChatUtils {
 	 * @return
 	 */
 	public static StringBuffer processLogChange(String text, StringBuffer responseText) {
-	
+
 //		String[] cmds = text.split("\\s+");
 //		System.out.println(cmds[0].toString());
 //		System.out.println(cmds[1].toString());
@@ -4006,9 +3892,9 @@ public class ChatUtils {
 			responseText.append("All logging levels have been reset back to the default.");
 			responseText.append(System.lineSeparator());
 		}
-		
+
 		else if (text.equalsIgnoreCase("log help")) {
-			
+
 			responseText.append("Please specify the Logging Level as follows : ");
 			responseText.append(System.lineSeparator());
 			responseText.append(" 1. log off     : turn off logging.");
@@ -4028,11 +3914,11 @@ public class ChatUtils {
 			responseText.append(" 8. log finest  : show highly detailed tracing information.");
 			responseText.append(System.lineSeparator());
 			responseText.append(" 9. log all     : show all messages.");
-			
+
 //			responseText.append(System.lineSeparator());				
 //			responseText.append(System.lineSeparator());
 //			responseText.append("See https://docs.oracle.com/javase/8/docs/api/java/util/logging/Level.html");
-								
+
 			responseText.append(System.lineSeparator());
 			responseText.append(System.lineSeparator());
 			responseText.append("e.g. Type 'log info' to set all loggers to INFO level");
@@ -4041,15 +3927,15 @@ public class ChatUtils {
 			responseText.append(System.lineSeparator());
 			responseText.append("e.g. Type 'log all airlock off' to set ALL airlock-related class to OFF level");
 			responseText.append(System.lineSeparator());
-			responseText.append("e.g. Type 'log all walk off' to set ALL walk-related class to OFF level");	
-		
+			responseText.append("e.g. Type 'log all walk off' to set ALL walk-related class to OFF level");
+
 			return responseText;
 		}
-			
+
 		else if (text.equalsIgnoreCase("log")) {
-			
+
 			Level level = LogManager.getLogManager().getLogger("").getLevel();
-			
+
 			responseText.append("Global logging level : " + level);
 			responseText.append(System.lineSeparator());
 			if (!logLevels.isEmpty()) {
@@ -4058,12 +3944,10 @@ public class ChatUtils {
 					responseText.append(System.lineSeparator());
 				}
 			}
-			
 
 			responseText.append(System.lineSeparator());
 			responseText.append("For instructions, type 'log help'");
 			responseText.append(System.lineSeparator());
-			
 
 //				OFF
 //				SEVERE (highest value)
@@ -4074,16 +3958,16 @@ public class ChatUtils {
 //				FINER
 //				FINEST (lowest value)
 //				ALL			
-			
+
 //				responseText.append(System.lineSeparator());
-			
+
 //			responseText.append(System.lineSeparator());	
-			
+
 			return responseText;
 		}
-		
+
 		else if (text.contains("log timestamp")) {
-			
+
 			int ans = LogConsolidated.getTimeStampType();
 			String now = "";
 			if (ans == 0)
@@ -4093,356 +3977,343 @@ public class ChatUtils {
 			else if (ans == 2)
 				now = "Future Martian Time";
 
-			String prompt = "Currently, the log timestamp is " +  now + "." 
-					+ System.lineSeparator()
+			String prompt = "Currently, the log timestamp is " + now + "." + System.lineSeparator()
 					+ "Would you like to change it?";
-			
-			boolean change = sim.getTerm().getTextIO().newBooleanInputReader().read(prompt);
-          
+
+			boolean change = textIO.newBooleanInputReader().read(prompt);
+
 			if (change) {
-						
-				String prompt1 = System.lineSeparator()
-						+ "(1) Local Time"
-						+ System.lineSeparator()
-						+ "(2) Earth Simulation Time"
-						+ System.lineSeparator()
-						+ "(3) Mars Simulation Time"
-						+ System.lineSeparator()
-						+ "Which timestamp do you want to use (1, 2 or 3)?";
-				
-				int choice = sim.getTerm().getTextIO().newIntInputReader().read(prompt1);
-		          
+
+				String prompt1 = System.lineSeparator() + "(1) Local Time" + System.lineSeparator()
+						+ "(2) Earth Simulation Time" + System.lineSeparator() + "(3) Mars Simulation Time"
+						+ System.lineSeparator() + "Which timestamp do you want to use (1, 2 or 3)?";
+
+				int choice = textIO.newIntInputReader().read(prompt1);
+
 				String s = "";
 
 				if (choice == 1) {
 					LogConsolidated.setTimeStampChoice(0);
 					s = "The timestamp has been updated to using Local Time.";
-				}
-				else if (choice == 2) {
+				} else if (choice == 2) {
 					LogConsolidated.setTimeStampChoice(1);
 					s = "The timestamp has been updated to using Earth Simulation Time.";
-				}
-				else if (choice == 3) {
+				} else if (choice == 3) {
 					LogConsolidated.setTimeStampChoice(2);
 					s = "The timestamp has been updated to using Mars Simulation Time.";
-				}
-				else {
+				} else {
 					responseText.append("No change has been made.");
 					responseText.append(System.lineSeparator());
 					return responseText;
 				}
-				
+
 				responseText.append(System.lineSeparator());
 				responseText.append(s);
 				logger.config(s);
-			}
-			else {
+			} else {
 				responseText.append("No change has been made.");
 				responseText.append(System.lineSeparator());
 			}
 
 			return responseText;
 		}
-		
+
 		else if (text.contains("log rate limit")) {
-			
+
 			boolean ans = LogConsolidated.showRateLimit();
 			String now = "";
 			if (ans)
 				now = "enabled";
 			else
 				now = "disabled";
-			String prompt = "Currently, the log rate limit is " +  now + "." 
-					+ System.lineSeparator()
+			String prompt = "Currently, the log rate limit is " + now + "." + System.lineSeparator()
 					+ "Would you like to change it?";
-			
-			boolean change = sim.getTerm().getTextIO().newBooleanInputReader().read(prompt);
-          
+
+			boolean change = textIO.newBooleanInputReader().read(prompt);
+
 			if (change) {
 				String s = "";
 				if (ans) {
 					LogConsolidated.setRateLimit(false);
 					s = "The log rate limit has been disabled.";
-				}
-				else {
+				} else {
 					LogConsolidated.setRateLimit(true);
 					s = "The log rate limit has been enabled.";
 				}
-				
+
 				responseText.append(System.lineSeparator());
 				responseText.append(s);
 				logger.config(s);
-			}
-			else {
+			} else {
 				responseText.append("No change has been made.");
 				responseText.append(System.lineSeparator());
 			}
 
 			return responseText;
 		}
-		
+
 		else if (text.contains("log all walk")) {
 			Level lvl = Level.OFF;
 			if (text.equalsIgnoreCase("log all walk off")) {
-				lvl = Level.OFF;		
+				lvl = Level.OFF;
 			}
-			
+
 			else if (text.equalsIgnoreCase("log all walk finest")) {
-				lvl = Level.FINEST;			
-			}				
+				lvl = Level.FINEST;
+			}
 
 			else if (text.equalsIgnoreCase("log all walk finer")) {
 				lvl = Level.FINER;
 			}
-			
+
 			else if (text.equalsIgnoreCase("log all walk fine")) {
-				lvl = Level.FINE;	
+				lvl = Level.FINE;
 			}
-			
+
 			else if (text.equalsIgnoreCase("log all walk config")) {
-				lvl = Level.CONFIG;	
+				lvl = Level.CONFIG;
 			}
-			
+
 			else if (text.equalsIgnoreCase("log all walk info")) {
-				lvl = Level.INFO;	
+				lvl = Level.INFO;
 			}
-			
+
 			else if (text.equalsIgnoreCase("log all walk warning")) {
-				lvl = Level.WARNING;	
+				lvl = Level.WARNING;
 			}
-			
+
 			else if (text.equalsIgnoreCase("log all walk severe")) {
-				lvl = Level.SEVERE;	
+				lvl = Level.SEVERE;
 			}
-			
+
 			else if (text.equalsIgnoreCase("log all walk off")) {
-				lvl = Level.OFF;	
+				lvl = Level.OFF;
 			}
-			
+
 			changeLogLevel(Walk.class, lvl);
-			changeLogLevel(WalkOutside.class, lvl);	
-			changeLogLevel(WalkingSteps.class, lvl);	
-			changeLogLevel(WalkRoverInterior.class, lvl);	
-			changeLogLevel(WalkSettlementInterior.class, lvl);	
-			
+			changeLogLevel(WalkOutside.class, lvl);
+			changeLogLevel(WalkingSteps.class, lvl);
+			changeLogLevel(WalkRoverInterior.class, lvl);
+			changeLogLevel(WalkSettlementInterior.class, lvl);
+
 			saveLogLevel("all walk", lvl);
-			
+
 			responseText.append("Walk-related Loggers are set to " + lvl);
 			logger.config("Walk-related Loggers are set to " + lvl);
 		}
-		
+
 		else if (text.contains("log all airlock")) {
 			Level lvl = Level.OFF;
 			if (text.equalsIgnoreCase("log all airlock off")) {
-				lvl = Level.OFF;		
+				lvl = Level.OFF;
 			}
-			
+
 			else if (text.equalsIgnoreCase("log all airlock finest")) {
-				lvl = Level.FINEST;			
-			}				
+				lvl = Level.FINEST;
+			}
 
 			else if (text.equalsIgnoreCase("log all airlock finer")) {
 				lvl = Level.FINER;
 			}
-			
+
 			else if (text.equalsIgnoreCase("log all airlock fine")) {
-				lvl = Level.FINE;	
+				lvl = Level.FINE;
 			}
-			
+
 			else if (text.equalsIgnoreCase("log all airlock config")) {
-				lvl = Level.CONFIG;	
+				lvl = Level.CONFIG;
 			}
-			
+
 			else if (text.equalsIgnoreCase("log all airlock info")) {
-				lvl = Level.INFO;	
+				lvl = Level.INFO;
 			}
-			
+
 			else if (text.equalsIgnoreCase("log all airlock warning")) {
 				lvl = Level.WARNING;
 			}
-			
+
 			else if (text.equalsIgnoreCase("log all airlock severe")) {
-				lvl = Level.SEVERE;	
+				lvl = Level.SEVERE;
 			}
-			
+
 			else if (text.equalsIgnoreCase("log all airlock off")) {
-				lvl = Level.OFF;	
+				lvl = Level.OFF;
 			}
 
 			changeLogLevel(EnterAirlock.class, lvl);
-			changeLogLevel(ExitAirlock.class, lvl);	
+			changeLogLevel(ExitAirlock.class, lvl);
 			changeLogLevel(Airlock.class, lvl);
 			changeLogLevel(BuildingAirlock.class, lvl);
 			changeLogLevel(VehicleAirlock.class, lvl);
-			
+
 			saveLogLevel("all airlock", lvl);
-			
+
 			responseText.append("Airlock-related Loggers are set to " + lvl);
-		    logger.config("Airlock-related Loggers are set to " + lvl);
+			logger.config("Airlock-related Loggers are set to " + lvl);
 		}
-		
+
 		else if (text.contains("log all eva")) {
 			Level lvl = Level.OFF;
 			if (text.equalsIgnoreCase("log all eva off")) {
-				lvl = Level.OFF;		
+				lvl = Level.OFF;
 			}
-			
+
 			else if (text.equalsIgnoreCase("log all eva finest")) {
-				lvl = Level.FINEST;			
-			}				
+				lvl = Level.FINEST;
+			}
 
 			else if (text.equalsIgnoreCase("log all eva finer")) {
 				lvl = Level.FINER;
 			}
-			
+
 			else if (text.equalsIgnoreCase("log all eva fine")) {
-				lvl = Level.FINE;	
+				lvl = Level.FINE;
 			}
-			
+
 			else if (text.equalsIgnoreCase("log all eva config")) {
-				lvl = Level.CONFIG;	
+				lvl = Level.CONFIG;
 			}
-			
+
 			else if (text.equalsIgnoreCase("log all eva info")) {
-				lvl = Level.INFO;	
+				lvl = Level.INFO;
 			}
-			
+
 			else if (text.equalsIgnoreCase("log all eva warning")) {
-				lvl = Level.WARNING;	
+				lvl = Level.WARNING;
 			}
-			
+
 			else if (text.equalsIgnoreCase("log all eva severe")) {
-				lvl = Level.SEVERE;	
+				lvl = Level.SEVERE;
 			}
-			
+
 			else if (text.equalsIgnoreCase("log all eva off")) {
-				lvl = Level.OFF;	
+				lvl = Level.OFF;
 			}
-			
-			changeLogLevel(EVAOperation.class, lvl);	
-			
+
+			changeLogLevel(EVAOperation.class, lvl);
+
 			saveLogLevel("all eva", lvl);
-			
+
 			responseText.append("EVAOperation Logger is set to " + lvl);
-		    logger.config("EVAOperation Logger is set to " + lvl);
+			logger.config("EVAOperation Logger is set to " + lvl);
 		}
-		
+
 		else if (text.contains("log all mission")) {
 			Level lvl = Level.OFF;
 			if (text.equalsIgnoreCase("log all mission off")) {
-				lvl = Level.OFF;		
+				lvl = Level.OFF;
 			}
-			
+
 			else if (text.equalsIgnoreCase("log all mission finest")) {
-				lvl = Level.FINEST;			
-			}				
+				lvl = Level.FINEST;
+			}
 
 			else if (text.equalsIgnoreCase("log all mission finer")) {
 				lvl = Level.FINER;
 			}
-			
+
 			else if (text.equalsIgnoreCase("log all mission fine")) {
-				lvl = Level.FINE;	
+				lvl = Level.FINE;
 			}
-			
+
 			else if (text.equalsIgnoreCase("log all mission config")) {
-				lvl = Level.CONFIG;	
+				lvl = Level.CONFIG;
 			}
-			
+
 			else if (text.equalsIgnoreCase("log all mission info")) {
-				lvl = Level.INFO;	
+				lvl = Level.INFO;
 			}
-			
+
 			else if (text.equalsIgnoreCase("log all mission warning")) {
-				lvl = Level.WARNING;	
+				lvl = Level.WARNING;
 			}
-			
+
 			else if (text.equalsIgnoreCase("log all mission severe")) {
-				lvl = Level.SEVERE;	
+				lvl = Level.SEVERE;
 			}
-			
+
 			else if (text.equalsIgnoreCase("log all mission off")) {
-				lvl = Level.OFF;	
+				lvl = Level.OFF;
 			}
-			
-			changeLogLevel(Mission.class, lvl);	
+
+			changeLogLevel(Mission.class, lvl);
 			changeLogLevel(VehicleMission.class, lvl);
 			changeLogLevel(RoverMission.class, lvl);
-			changeLogLevel(MissionManager.class, lvl);	
+			changeLogLevel(MissionManager.class, lvl);
 			changeLogLevel(RescueSalvageVehicle.class, lvl);
 			changeLogLevel(CollectResourcesMission.class, lvl);
-			
+
 			changeLogLevel(Exploration.class, lvl);
-			changeLogLevel(Mining.class, lvl);	
+			changeLogLevel(Mining.class, lvl);
 			changeLogLevel(BuildingConstructionMission.class, lvl);
 			changeLogLevel(EmergencySupplyMission.class, lvl);
-			
+
 			changeLogLevel(Trade.class, lvl);
-			changeLogLevel(TravelMission.class, lvl);	
+			changeLogLevel(TravelMission.class, lvl);
 			changeLogLevel(TravelToSettlement.class, lvl);
 			changeLogLevel(AreologyStudyFieldMission.class, lvl);
 			changeLogLevel(BiologyStudyFieldMission.class, lvl);
-			
+
 			saveLogLevel("all mission", lvl);
-			
+
 			responseText.append("Mission-related loggers are set to " + lvl);
 			logger.config("Mission-related loggers are set to " + lvl);
 		}
-		
+
 		else if (text.equalsIgnoreCase("log off")) {
-			setRootLogLevel(Level.OFF);				
+			setRootLogLevel(Level.OFF);
 //				responseText.append(System.lineSeparator());
-			responseText.append("Logging is set to OFF");				
-		}
-		
-		else if (text.equalsIgnoreCase("log config")) {			
-			setRootLogLevel(Level.CONFIG);
-//				responseText.append(System.lineSeparator());
-			responseText.append("Logging is set to CONFIG");						
+			responseText.append("Logging is set to OFF");
 		}
 
-		else if (text.equalsIgnoreCase("log warning")) {			
-			setRootLogLevel(Level.WARNING);		
+		else if (text.equalsIgnoreCase("log config")) {
+			setRootLogLevel(Level.CONFIG);
 //				responseText.append(System.lineSeparator());
-			responseText.append("Logging is set to WARNING");						
+			responseText.append("Logging is set to CONFIG");
 		}
-		
-		else if (text.equalsIgnoreCase("log fine")) {						
-			setRootLogLevel(Level.FINE);			
+
+		else if (text.equalsIgnoreCase("log warning")) {
+			setRootLogLevel(Level.WARNING);
 //				responseText.append(System.lineSeparator());
-			responseText.append("Logging is set to FINE");						
+			responseText.append("Logging is set to WARNING");
 		}
-		
-		else if (text.equalsIgnoreCase("log finer")) {							
+
+		else if (text.equalsIgnoreCase("log fine")) {
+			setRootLogLevel(Level.FINE);
+//				responseText.append(System.lineSeparator());
+			responseText.append("Logging is set to FINE");
+		}
+
+		else if (text.equalsIgnoreCase("log finer")) {
 			setRootLogLevel(Level.FINER);
 //				responseText.append(System.lineSeparator());
-			responseText.append("Logging is set to FINER");						
+			responseText.append("Logging is set to FINER");
 		}
-		
-		else if (text.equalsIgnoreCase("log finest")) {							
+
+		else if (text.equalsIgnoreCase("log finest")) {
 			setRootLogLevel(Level.FINEST);
 //				responseText.append(System.lineSeparator());
-			responseText.append("Logging is set to FINEST");						
+			responseText.append("Logging is set to FINEST");
 		}
-		
-		else if (text.equalsIgnoreCase("log severe")) {					
+
+		else if (text.equalsIgnoreCase("log severe")) {
 			setRootLogLevel(Level.SEVERE);
 //				responseText.append(System.lineSeparator());
-			responseText.append("Logging is set to SEVERE");	
+			responseText.append("Logging is set to SEVERE");
 		}
-		
-		else if (text.equalsIgnoreCase("log info")) {			
+
+		else if (text.equalsIgnoreCase("log info")) {
 			setRootLogLevel(Level.INFO);
 //				responseText.append(System.lineSeparator());
 			responseText.append("Logging is set to INFO");
 		}
-				
+
 		else if (text.equalsIgnoreCase("log all")) {
 			setRootLogLevel(Level.ALL);
 //				responseText.append(System.lineSeparator());
-			responseText.append("Logging is set to ALL");						
+			responseText.append("Logging is set to ALL");
 		}
-		
+
 		else {
 			responseText.append("Invalid log usage. Please double check.");
 			logger.config("Invalid log usage. Please double check.");
@@ -4523,10 +4394,10 @@ public class ChatUtils {
 //				}
 //			}
 //		}
-		
+
 		return responseText;
 	}
-	
+
 //	public static boolean hasDuplicateNames(int[] names) {
 //		 int size = names.length;
 //		
@@ -4539,7 +4410,7 @@ public class ChatUtils {
 //
 //		 return false;
 //	}
-	
+
 	/*
 	 * Asks the system a question
 	 * 
@@ -4556,7 +4427,7 @@ public class ChatUtils {
 		Robot robot = null;
 		Vehicle vehicle = null;
 		Settlement settlement = null;
-		
+
 		text = text.trim();
 		int len = text.length();
 
@@ -4567,7 +4438,7 @@ public class ChatUtils {
 		}
 
 		if (expertMode) {
-			
+
 			if (text.toLowerCase().contains("reset clock thread")) {
 				String s = "Resetting the clock executor thread...";
 				responseText.append(s + System.lineSeparator());
@@ -4575,7 +4446,7 @@ public class ChatUtils {
 				sim.restartClockExecutor();
 				return responseText.toString();
 			}
-						
+
 			else if (text.toLowerCase().contains("reset clock pulse")) {
 				String s = "Resetting the # of clock pulses according to the default TBU value...";
 				responseText.append(s + System.lineSeparator());
@@ -4583,7 +4454,7 @@ public class ChatUtils {
 				masterClock.resetTotalPulses();
 				return responseText.toString();
 			}
-			
+
 			else if (text.toLowerCase().contains("reset clock listener")) {
 				String s = "Resetting the clock listeners...";
 				responseText.append(s + System.lineSeparator());
@@ -4591,16 +4462,15 @@ public class ChatUtils {
 				masterClock.resetClockListeners();
 				return responseText.toString();
 			}
-			
+
 		}
-		
+
 		else if (text.toLowerCase().contains("log")) {
 			return processLogChange(text, responseText).toString();
 		}
-	
-		
+
 		else if (text.equalsIgnoreCase("scores")) {
-			
+
 			double aveSocial = 0;
 			double aveSci = 0;
 //			double totalSciScore = 0;
@@ -4621,22 +4491,22 @@ public class ChatUtils {
 				aveSocial += social;
 				aveSci += science;
 //				totalSciScore += science;
-				
+
 //				socialList.add(social);
 //				sciList.add(science);
 				totalList.add(science + social);
-				
+
 				socialMap.put(social, s.getName());
 				scienceMap.put(science, s.getName());
 				totalScores.put(science + social, s.getName());
-				
-			}	
-			
+
+			}
+
 //			System.out.println("done with for loop.");
 			int size = col.size();
 			aveSocial = aveSocial / size;
 			aveSci = aveSci / size;
-			
+
 			// Compute and save the new science score
 //			if (totalSciScore > 0) {
 //				for (Settlement s : col) {
@@ -4648,86 +4518,84 @@ public class ChatUtils {
 ////					scienceMap.put(newScore, s.getName());
 //				}		
 //			}
-			
+
 			// Sort the total scores
-			totalList.sort((Double d1, Double d2) -> -d1.compareTo(d2)); 
-			
+			totalList.sort((Double d1, Double d2) -> -d1.compareTo(d2));
+
 			responseText.append(System.lineSeparator());
 			responseText.append("                    Hall of Fame for Key Achievement");
 			responseText.append(System.lineSeparator());
 			responseText.append(" ----------------------------------------------------------------------");
 			responseText.append(System.lineSeparator());
-			
+
 			StringBuffer space00 = computeWhiteSpaces("Settlement", 20);
-			
+
 			responseText.append(" Rank | Settlement");
 			responseText.append(space00);
 			responseText.append("| Total | Social | Science ");
 			responseText.append(System.lineSeparator());
 			responseText.append(" ----------------------------------------------------------------------");
 			responseText.append(System.lineSeparator());
-			
+
 //			System.out.println("beginning next for loop.");
-			for (int i=0; i<size; i++) {				
-				StringBuffer space000 = computeWhiteSpaces("  #" + (i+1), 8);
-				
+			for (int i = 0; i < size; i++) {
+				StringBuffer space000 = computeWhiteSpaces("  #" + (i + 1), 8);
+
 				// total score
 //				System.out.println("0.");
 				double totalScore = totalList.get(i);
-				String totalStr = Math.round(totalScore*10.0)/10.0 + "";
+				String totalStr = Math.round(totalScore * 10.0) / 10.0 + "";
 				String name = totalScores.get(totalScore);
 				if (name.length() > 21)
 					name = name.substring(0, 21);
 				StringBuffer spaces = computeWhiteSpaces(name + totalStr, 26);
 				totalScores.remove(totalScore, name);
-				
+
 				// social score
 //				System.out.println("1.");
 				double socialScore = 0;
 				if (getKey(socialMap, name) != null)
 					socialScore = getKey(socialMap, name);
-				String socialStr = Math.round(socialScore*10.0)/10.0 + "";
+				String socialStr = Math.round(socialScore * 10.0) / 10.0 + "";
 //				System.out.println("1.1");
 				StringBuffer space0 = computeWhiteSpaces(socialStr, 8);
 //				System.out.println("1.2");
 				socialMap.remove(socialScore, name);
-				
+
 				// science score
 //				System.out.println("2.");
 				double scienceScore = 0;
 				if (getKey(scienceMap, name) != null)
 					scienceScore = getKey(scienceMap, name);
 //				System.out.println("2.1");
-				String scienceStr = Math.round(scienceScore*10.0)/10.0 + "";
-				StringBuffer space1 = computeWhiteSpaces(scienceStr, 8);	
+				String scienceStr = Math.round(scienceScore * 10.0) / 10.0 + "";
+				StringBuffer space1 = computeWhiteSpaces(scienceStr, 8);
 //				System.out.println("2.2");
 				scienceMap.remove(scienceScore, name);
-				
+
 //				System.out.println("3.");
 				// sub totals
-				responseText.append("  #" + (i+1) + space000 
-						+ name + spaces 
-						+ totalStr + space0 
-						+ socialStr + space1
+				responseText.append("  #" + (i + 1) + space000 + name + spaces + totalStr + space0 + socialStr + space1
 						+ scienceStr);
-				// Note : remove the pair will prevent the case when when 2 or more settlements have the exact same score from reappearing
-			
+				// Note : remove the pair will prevent the case when when 2 or more settlements
+				// have the exact same score from reappearing
+
 //				System.out.println("4.");
 				responseText.append(System.lineSeparator());
 			}
-	
+
 			responseText.append(" ----------------------------------------------------------------------");
 			responseText.append(System.lineSeparator());
-			responseText.append(addhiteSpacesName(" Average : ", 38)); 
-			responseText.append(Math.round(aveSocial*10.0)/10.0 + "   " + Math.round(aveSci*10.0)/10.0);			
+			responseText.append(addhiteSpacesName(" Average : ", 38));
+			responseText.append(Math.round(aveSocial * 10.0) / 10.0 + "   " + Math.round(aveSci * 10.0) / 10.0);
 			responseText.append(System.lineSeparator());
-			
+
 			return responseText.toString();
-	
+
 		}
-		
+
 		else if (text.equalsIgnoreCase("science")) {
-			
+
 			double tot = 0;
 			// Use Guava's multimap to handle duplicate key
 			Multimap<Double, String> map = ArrayListMultimap.create();
@@ -4739,27 +4607,27 @@ public class ChatUtils {
 				tot += score;
 				list.add(score);
 				map.put(score, s.getName());
-			}	
+			}
 
 			responseText.append(System.lineSeparator());
 			responseText.append("     Hall of Fame for Science");
 			responseText.append(System.lineSeparator());
 			responseText.append(" -----------------------------------");
 			responseText.append(System.lineSeparator());
-			
+
 			responseText.append("   Rank  |  Score |  Settlement");
 			responseText.append(System.lineSeparator());
 			responseText.append(" -----------------------------------");
 			responseText.append(System.lineSeparator());
-			
-			list.sort((Double d1, Double d2) -> -d1.compareTo(d2)); 
-			
+
+			list.sort((Double d1, Double d2) -> -d1.compareTo(d2));
+
 			int size = list.size();
-			for (int i=0; i<size; i++) {
+			for (int i = 0; i < size; i++) {
 				double score = list.get(i);
 				String space = "";
-				
-				String scoreStr = Math.round(score*10.0)/10.0 + "";
+
+				String scoreStr = Math.round(score * 10.0) / 10.0 + "";
 				int num = scoreStr.length();
 				if (num == 2)
 					space = "   ";
@@ -4768,24 +4636,25 @@ public class ChatUtils {
 				else if (num == 4)
 					space = " ";
 				else if (num == 5)
-					space = "";				
-				
+					space = "";
+
 				List<String> names = new ArrayList<>(map.get(score));
 				String n = names.get(0);
-				responseText.append("    #" + (i+1) + "    " + space + scoreStr + "    " + n);
-				// Note : remove the pair will prevent the case when when 2 or more settlements have the exact same score from reappearing
+				responseText.append("    #" + (i + 1) + "    " + space + scoreStr + "    " + n);
+				// Note : remove the pair will prevent the case when when 2 or more settlements
+				// have the exact same score from reappearing
 				map.remove(score, n);
 				responseText.append(System.lineSeparator());
 			}
-			
+
 			responseText.append(" -----------------------------------");
 			responseText.append(System.lineSeparator());
-			responseText.append(" Overall : " + Math.round(tot*10.0)/10.0);			
+			responseText.append(" Overall : " + Math.round(tot * 10.0) / 10.0);
 			responseText.append(System.lineSeparator());
-				
+
 			return responseText.toString();
 		}
-		
+
 		else if (text.toLowerCase().contains("social")) {
 
 			double ave = 0;
@@ -4799,7 +4668,7 @@ public class ChatUtils {
 				ave += score;
 				list.add(score);
 				map.put(score, s.getName());
-			}	
+			}
 			int size = list.size();
 			ave = ave / size;
 			responseText.append(System.lineSeparator());
@@ -4807,19 +4676,19 @@ public class ChatUtils {
 			responseText.append(System.lineSeparator());
 			responseText.append(" -----------------------------------");
 			responseText.append(System.lineSeparator());
-			
+
 			responseText.append("   Rank  |  Score  |  Settlement");
 			responseText.append(System.lineSeparator());
 			responseText.append(" -----------------------------------");
 			responseText.append(System.lineSeparator());
-			
-			list.sort((Double d1, Double d2) -> -d1.compareTo(d2)); 
-			
-			for (int i=0; i<size; i++) {
+
+			list.sort((Double d1, Double d2) -> -d1.compareTo(d2));
+
+			for (int i = 0; i < size; i++) {
 				double score = list.get(i);
 				String space = "";
-				
-				String scoreStr = Math.round(score*10.0)/10.0 + "";
+
+				String scoreStr = Math.round(score * 10.0) / 10.0 + "";
 				int num = scoreStr.length();
 				if (num == 2)
 					space = "   ";
@@ -4828,25 +4697,26 @@ public class ChatUtils {
 				else if (num == 4)
 					space = " ";
 				else if (num == 5)
-					space = "";				
-				
+					space = "";
+
 				List<String> names = new ArrayList<>(map.get(score));
 				String n = names.get(0);
-				responseText.append("    #" + (i+1) + "    " + space + scoreStr + "    " + n);
-				// Note : remove the pair will prevent the case when when 2 or more settlements have the exact same score from reappearing
+				responseText.append("    #" + (i + 1) + "    " + space + scoreStr + "    " + n);
+				// Note : remove the pair will prevent the case when when 2 or more settlements
+				// have the exact same score from reappearing
 				map.remove(score, n);
 				responseText.append(System.lineSeparator());
 			}
-			
+
 			responseText.append(" -----------------------------------");
 			responseText.append(System.lineSeparator());
-			responseText.append(" Average : " + Math.round(ave*10.0)/10.0);			
+			responseText.append(" Average : " + Math.round(ave * 10.0) / 10.0);
 			responseText.append(System.lineSeparator());
-				
+
 			return responseText.toString();
 		}
 
-		else if (text.equalsIgnoreCase("check size")) {			
+		else if (text.equalsIgnoreCase("check size")) {
 
 			int missionSol = marsClock.getMissionSol();
 			String marsTime = marsClock.getDecimalTimeString();
@@ -4860,49 +4730,45 @@ public class ChatUtils {
 			responseText.append(System.lineSeparator());
 			responseText.append("  Mission Sol : " + missionSol);
 			responseText.append(System.lineSeparator());
-			responseText.append(" Martian Time : " + marsTime) ;
+			responseText.append(" Martian Time : " + marsTime);
 			responseText.append(System.lineSeparator());
 			responseText.append(System.lineSeparator());
 			responseText.append(sim.printObjectSize(0));
-	
+
 //			responseText.append(System.lineSeparator());
 //			responseText.append(System.lineSeparator());
 //			responseText.append(sim.printObjectSize(1));
-			
+
 			return responseText.toString();
 		}
-		
-		else if (text.toLowerCase().contains("time")
-				|| text.toLowerCase().contains("date")) {
-	
+
+		else if (text.toLowerCase().contains("time") || text.toLowerCase().contains("date")) {
+
 			responseText.append(SYSTEM_PROMPT);
 			responseText.append("see below");
 			responseText.append(System.lineSeparator());
-			
+
 			responseText.append(printTime());
-			
-			// Life Support System 
-			
+
+			// Life Support System
+
 			// Resource Storage
-			
+
 			// Goal
-			
+
 			// Resource changes
-			
-			// Water Ration 
-					
+
+			// Water Ration
+
 			return responseText.toString();
 		}
-		
-		else if (text.equalsIgnoreCase("key") 
-				|| text.equalsIgnoreCase("keys")  
-				|| text.equalsIgnoreCase("keyword")  
-				|| text.equalsIgnoreCase("keywords")  
-				|| text.equalsIgnoreCase("/k")) {
+
+		else if (text.equalsIgnoreCase("key") || text.equalsIgnoreCase("keys") || text.equalsIgnoreCase("keyword")
+				|| text.equalsIgnoreCase("keywords") || text.equalsIgnoreCase("/k")) {
 
 			// responseText.append(System.lineSeparator());
 			if (connectionMode == 0) {
-				keywordText = SYSTEM_KEYWORDS; 
+				keywordText = SYSTEM_KEYWORDS;
 			} else {
 				keywordText = SYSTEM_KEYWORDS + KEYWORDS_HEIGHT;
 			}
@@ -4999,43 +4865,43 @@ public class ChatUtils {
 			responseText.append("Here's the roster list of vehicles associated with each settlement.");
 			responseText.append(System.lineSeparator());
 			responseText.append(System.lineSeparator());
-			
+
 			// Creates an array with the names of all of settlements
 			List<Settlement> settlementList = new ArrayList<Settlement>(unitManager.getSettlements());
 
 			for (Settlement s : settlementList) {
 				Collection<Vehicle> list = s.getAllAssociatedVehicles();
-				
+
 				responseText.append(DASHES);
 				responseText.append(System.lineSeparator());
-				int num = (DASHES.length() - s.getName().length())/2;
+				int num = (DASHES.length() - s.getName().length()) / 2;
 				if (num > 0) {
-					for (int i=0; i<num; i++) {
+					for (int i = 0; i < num; i++) {
 						responseText.append(" ");
 					}
 				}
-				
+
 				responseText.append(s.getName());
 				responseText.append(System.lineSeparator());
 				responseText.append(DASHES);
 				responseText.append(System.lineSeparator());
-				
+
 				List<Vehicle> vlist = list.stream()
-						.sorted((p1, p2)-> p1.getVehicleType().compareTo(p2.getVehicleType()))
+						.sorted((p1, p2) -> p1.getVehicleType().compareTo(p2.getVehicleType()))
 						.collect(Collectors.toList());
-				
+
 				for (Vehicle v : vlist) {
 					responseText.append(v.getName());
 					int num2 = 25 - v.getName().length();
 					if (num2 > 0) {
-						for (int i=0; i<num2; i++) {
+						for (int i = 0; i < num2; i++) {
 							responseText.append(" ");
 						}
 					}
 					responseText.append(v.getVehicleType());
 					responseText.append(System.lineSeparator());
 				}
-			
+
 				responseText.append(System.lineSeparator());
 			}
 
@@ -5051,7 +4917,7 @@ public class ChatUtils {
 				responseText.append(SYSTEM_PROMPT);
 				responseText.append("Hello, how can I help?    [/h for help]");
 			}
-			
+
 			return responseText.toString();
 		}
 
@@ -5065,7 +4931,7 @@ public class ChatUtils {
 				responseText.append(SYSTEM_PROMPT);
 				responseText.append("Hello, how can I help?    [/h for help]");
 			}
-			
+
 			return responseText.toString();
 		}
 
@@ -5095,15 +4961,15 @@ public class ChatUtils {
 		}
 
 		else if (proceed) {
-			
+
 			List<Person> personList = new ArrayList<>();
 			List<Robot> robotList = new ArrayList<>();
 			List<Vehicle> vehicleList = new ArrayList<>();
 			List<Settlement> settlementList = new ArrayList<>();
-			
+
 			// check settlements
 			settlementList = CollectionUtils.returnSettlementList(text);
-			
+
 			// person and robot
 			Iterator<Settlement> i = unitManager.getSettlements().iterator();
 			while (i.hasNext()) {
@@ -5114,41 +4980,38 @@ public class ChatUtils {
 					// Check if it is a bot
 					robotList.addAll(s.returnRobotList(text));
 					nameCase = robotList.size();
-				} 
-				
-				else { //if (text.contains("rover") || text.contains("vehicle")) {
-					// check vehicles/rovers
+				}
+
+				else { // if (text.contains("rover") || text.contains("vehicle")) {
+						// check vehicles/rovers
 					vehicleList.addAll(s.returnVehicleList(text));
 					// check persons
-					personList.addAll(s.returnPersonList(text));				
+					personList.addAll(s.returnPersonList(text));
 				}
-			}		
-			
-			if (vehicleList.size() 
-					+ robotList.size() 
-					+ settlementList.size() 
-					+ personList.size()
-					> 1) {
+			}
+
+			if (vehicleList.size() + robotList.size() + settlementList.size() + personList.size() > 1) {
 				responseText.append(SYSTEM_PROMPT);
 				responseText.append("There are more than one '");
 				responseText.append(text);
-				responseText.append("'. Please be more specific by spelling out the full name of the party you would like to reach.");
+				responseText.append(
+						"'. Please be more specific by spelling out the full name of the party you would like to reach.");
 				// System.out.println(responseText);
 				return responseText.toString();
 			}
-			
+
 			else if (robotList.size() > 0) {
 				nameCase = robotList.size();
 			}
-			
+
 			else if (vehicleList.size() > 0) {
 				nameCase = vehicleList.size();
 			}
-			
+
 			else if (personList.size() > 0) {
 				nameCase = personList.size();
 			}
-			
+
 			else if (settlementList.size() > 0) {
 				nameCase = settlementList.size();
 			}
@@ -5161,22 +5024,23 @@ public class ChatUtils {
 				responseText.append(SYSTEM_PROMPT);
 				responseText.append("There are more than one \"");
 				responseText.append(text);
-				responseText.append("\".Please be more specific by spelling out the full name of the party you would like to reach.");
+				responseText.append(
+						"\".Please be more specific by spelling out the full name of the party you would like to reach.");
 				// System.out.println(responseText);
 				return responseText.toString();
-				
-			// Case 2: there is one person
+
+				// Case 2: there is one person
 			} else if (nameCase == 1) {
 				String taskStr = "";
-				
+
 				// for people
 				if (!personList.isEmpty()) {
-					
+
 					nameCase = personList.size();
-					
+
 					String s = "";
 					taskStr = personList.get(0).getMind().getTaskManager().getTaskName();
-					
+
 					// Note: can taskStr be null and thus causing the simulation to hang ?
 					if (taskStr == null) {
 						int rand = RandomUtil.getRandomInt(2);
@@ -5186,22 +5050,23 @@ public class ChatUtils {
 							s = text + " does not answer the comm. Please try again later.";
 						else
 							s = text + " cannot respond to your call at this moment. Please try again later.";
-						
-						
+
 						responseText.append(SYSTEM_PROMPT);
 						responseText.append(s);
 						return responseText.toString();
 					}
-					
+
 					else if (taskStr.toLowerCase().contains("sleep")) {
-						s = "I'm sorry. " + text + " is unavailable (" + taskStr + ") at this moment. Please try again later.";				
-						// TODO: check if the person is available or not (e.g. sleeping or if on a mission and out of comm range
+						s = "I'm sorry. " + text + " is unavailable (" + taskStr
+								+ ") at this moment. Please try again later.";
+						// TODO: check if the person is available or not (e.g. sleeping or if on a
+						// mission and out of comm range
 						// broke down)
 						responseText.append(SYSTEM_PROMPT);
 						responseText.append(s);
 						return responseText.toString();
 					}
-					
+
 					else {
 						person = personList.get(0);
 						if (person.isDeclaredDead()) {
@@ -5219,29 +5084,27 @@ public class ChatUtils {
 								responseText.append(SYSTEM_PROMPT);
 								responseText.append("Regrettably, ");
 								responseText.append(text);
-								responseText.append(" has passed away.");								
+								responseText.append(" has passed away.");
 							} else {
 								responseText.append(SYSTEM_PROMPT);
 								responseText.append("Perhaps you haven't heard. ");
 								responseText.append(text);
 								responseText.append(" is dead.");
 							}
-							
+
 							if (!buried.equals("")) {
 								responseText.append(" and is buried at ");
 								responseText.append(buried);
 								responseText.append("." + System.lineSeparator());
-							}
-							else {
+							} else {
 								responseText.append("." + System.lineSeparator());
 							}
-									
+
 							responseText.append(System.lineSeparator());
 							responseText.append("                Death Report");
 							responseText.append(System.lineSeparator());
 							responseText.append("---------------------------------------------");
 
-							
 							DeathInfo info = person.getPhysicalCondition().getDeathDetails();
 							String cause = info.getCause();
 							String doctor = info.getDoctor();
@@ -5261,7 +5124,7 @@ public class ChatUtils {
 							String ill = info.getIllness().toString();
 							String health = info.getHealth() + "";
 							String lastWord = info.getLastWord();
-							
+
 //							responseText.append(System.lineSeparator());
 							responseText.append(System.lineSeparator());
 							responseText.append("Time of Death (TOD) : " + time);
@@ -5273,8 +5136,8 @@ public class ChatUtils {
 							responseText.append("     Place of Death : " + place);
 							responseText.append(System.lineSeparator());
 							if (examDone) {
-							responseText.append(" Postmortem Exam by : " + doctor);
-								responseText.append(System.lineSeparator());							
+								responseText.append(" Postmortem Exam by : " + doctor);
+								responseText.append(System.lineSeparator());
 							}
 							responseText.append("     Cause of Death : " + cause);
 							responseText.append(System.lineSeparator());
@@ -5290,26 +5153,26 @@ public class ChatUtils {
 							responseText.append(System.lineSeparator());
 							responseText.append("      Mission Phase : " + missionPhase);
 							responseText.append(System.lineSeparator());
-							responseText.append("        Malfunction : " + mal);							
+							responseText.append("        Malfunction : " + mal);
 							responseText.append(System.lineSeparator());
-							responseText.append("            Illness : " + problem);	
+							responseText.append("            Illness : " + problem);
 							responseText.append(System.lineSeparator());
-							responseText.append("          Complaint : " + ill);	
+							responseText.append("          Complaint : " + ill);
 							responseText.append(System.lineSeparator());
-							responseText.append("     General Health : " + health);							
+							responseText.append("     General Health : " + health);
 							responseText.append(System.lineSeparator());
-							responseText.append("         Last Words : '" + lastWord +"'");							
+							responseText.append("         Last Words : '" + lastWord + "'");
 							responseText.append(System.lineSeparator());
-							
+
 							return responseText.toString();
 						}
-						
+
 						else {
 							personCache = person;
-							
+
 							responseText.append(personCache.getName());
 							responseText.append(" : This is ");
-							responseText.append(text);					
+							responseText.append(text);
 							responseText.append(". " + getGreeting(1));
 							return responseText.toString();
 						}
@@ -5319,7 +5182,7 @@ public class ChatUtils {
 				// for robots
 				else if (!robotList.isEmpty()) {
 					nameCase = robotList.size();
-					
+
 					robot = robotList.get(0);
 					if (robot.getSystemCondition().isInoperable()) {
 						// Case 4: decomissioned
@@ -5328,8 +5191,8 @@ public class ChatUtils {
 						responseText.append(text);
 						responseText.append(" has been decomissioned.");
 						return responseText.toString();
-					} 
-					
+					}
+
 					else {
 						robotCache = robot;
 
@@ -5352,8 +5215,8 @@ public class ChatUtils {
 						responseText.append(text);
 						responseText.append(" is down for maintenance and connection cannot be established.");
 						return responseText.toString();
-					} 
-					
+					}
+
 					else {
 						vehicleCache = vehicle;
 
@@ -5379,8 +5242,8 @@ public class ChatUtils {
 					return responseText.toString();
 
 				}
-				
-			} 
+
+			}
 
 		}
 
@@ -5399,7 +5262,7 @@ public class ChatUtils {
 	 */
 	public static StringBuffer getGreeting(int type) {
 		StringBuffer s = new StringBuffer();
-		
+
 		if (type == 1) {
 			// For a human being
 			int num = RandomUtil.getRandomInt(7);
@@ -5419,9 +5282,8 @@ public class ChatUtils {
 				s.append("Howdy? anything you meed from me?");
 			else
 				s.append("Hi, do let me know what you need.");
-			
-		}
-		else {
+
+		} else {
 			// for machine AI
 			int num = RandomUtil.getRandomInt(5);
 			if (num == 0)
@@ -5437,81 +5299,80 @@ public class ChatUtils {
 			else
 				s.append("How can I help?");
 		}
-		
+
 		return s;
 	}
-	
-	
-	/**
-     * Generates and prints the list that needs to be processed
-     * 
-     * @param indoorP
-     * @return String
-     */
-    public static StringBuffer printList(List<?> list0) {
-      	StringBuffer sb = new StringBuffer();
-      	
-    	if (list0.isEmpty()) {
-    		sb.append("    None");
-    		sb.append(System.lineSeparator());
-    		return sb;
-    	}
-    		
-      	List<String> list = new ArrayList<>();
-      	for (Object o : list0) {
-      		list.add(o.toString());
-      	}
-      	
-    	StringBuffer s = new StringBuffer();
-    	int SPACES = 22;
-    	//int row = 0;
-        for (int i=0; i< list.size(); i++) {
-        	int column = 0;
-        	
-        	String c = "";
-        	int num = 0;        	
-        	
-        	// Find out what column
-        	if ((i - 1) % 3 == 0)
-        		column = 1;
-        	else if ((i - 2) % 3 == 0)
-        		column = 2;
 
-        	// Look at how many whitespaces needed before printing each column
+	/**
+	 * Generates and prints the list that needs to be processed
+	 * 
+	 * @param indoorP
+	 * @return String
+	 */
+	public static StringBuffer printList(List<?> list0) {
+		StringBuffer sb = new StringBuffer();
+
+		if (list0.isEmpty()) {
+			sb.append("    None");
+			sb.append(System.lineSeparator());
+			return sb;
+		}
+
+		List<String> list = new ArrayList<>();
+		for (Object o : list0) {
+			list.add(o.toString());
+		}
+
+		StringBuffer s = new StringBuffer();
+		int SPACES = 22;
+		// int row = 0;
+		for (int i = 0; i < list.size(); i++) {
+			int column = 0;
+
+			String c = "";
+			int num = 0;
+
+			// Find out what column
+			if ((i - 1) % 3 == 0)
+				column = 1;
+			else if ((i - 2) % 3 == 0)
+				column = 2;
+
+			// Look at how many whitespaces needed before printing each column
 			if (column == 0) {
 				c = list.get(i).toString();
 				num = SPACES - c.length();
-	
+
 			}
-			
+
 			else if (column == 1 || column == 2) {
-	        	c = list.get(i).toString();
-	        	num = SPACES - list.get(i-1).toString().length();
+				c = list.get(i).toString();
+				num = SPACES - list.get(i - 1).toString().length();
 
-	        	// Handle the extra space before the parenthesis
-	            for (int j=0; j < num; j++) { 
-	            	s.append(" ");
-	            }    			
-    		}
+				// Handle the extra space before the parenthesis
+				for (int j = 0; j < num; j++) {
+					s.append(" ");
+				}
+			}
 
-        	if (i+1 < 10)
-        		s.append(" ");
-        	s.append("(");
-        	s.append(i+1);
-        	s.append("). ");
-        	s.append(c);        		
-            
-            // if this is the last column
-            if (column == 2 || i == list.size()-1) {
-                sb.append(s);
-                sb.append(System.lineSeparator());
-                s = new StringBuffer();
-            }
-        }
-      
-        return sb;    
-    }
-    
+			if (i + 1 < 10)
+				s.append(" ");
+			s.append("(");
+			s.append(i + 1);
+			s.append("). ");
+			s.append(c);
+
+			// if this is the last column
+			if (column == 2 || i == list.size() - 1) {
+				sb.append(s);
+				sb.append(System.lineSeparator());
+				s = new StringBuffer();
+			}
+		}
+
+		return sb;
+	}
+
 	public static void setConnectionMode(int value) {
 		connectionMode = value;
 	}
@@ -5519,7 +5380,7 @@ public class ChatUtils {
 	public static int getConnectionMode() {
 		return connectionMode;
 	}
-	
+
 	public static boolean isExpertMode() {
 		return expertMode;
 	}
@@ -5531,7 +5392,7 @@ public class ChatUtils {
 //	public static void setExpertMode(boolean value) {
 //		expertMode = value;
 //	}
-	
+
 //    private static class Input {
 //        public static String change;
 //        public static int range ;
@@ -5541,7 +5402,131 @@ public class ChatUtils {
 //            return System.lineSeparator() +">" + range;
 //        }
 //    }
-//    
+
+	/**
+	 * Compiles the names of settlements, people, robots and vehicles into one
+	 * single list
+	 * 
+	 * @return a list of string
+	 */
+	public static List<String> createAutoCompleteKeywords() {
+		// Creates a list of proper nouns
+		List<String> list = createProperNounsList();
+
+		// Add keywords specifically for MarsNet chat system
+		list.addAll(Arrays.asList(ChatUtils.SYSTEM_KEYS));
+		// Add keywords for all parties
+		list.addAll(Arrays.asList(ChatUtils.ALL_PARTIES_KEYS));
+		// Add keywords specifically for settlements
+		list.addAll(Arrays.asList(ChatUtils.SETTLEMENT_KEYS));
+		// Add keywords specifically for persons/robots
+		list.addAll(Arrays.asList(ChatUtils.PERSON_KEYS));
+		// Add keywords specifically for a vehicles
+		list.addAll(Arrays.asList(ChatUtils.VEHICLE_KEYS));
+		// Add shortcuts
+		list.addAll(createShortcutHelp());
+
+		return list.stream().sorted((s1, s2) -> s1.compareTo(s2)).collect(Collectors.toList());
+	}
+
+	/**
+	 * Compiles a list of shortcuts
+	 * 
+	 * @return a list of string
+	 */
+	public static List<String> createShortcutHelp() {
+		List<String> list = new ArrayList<>();
+		list.addAll(Arrays.asList(ChatUtils.SPECIAL_KEYS));
+
+		return list;
+	}
+
+	/**
+	 * Compiles the names of settlements, people, robots and vehicles into one
+	 * single list
+	 * 
+	 * @return a list of string
+	 */
+	public static List<String> createProperNounsList() {
+		// Creates an empty array
+		List<String> list = new ArrayList<>();
+
+		// Creates an array with the names of all of settlements
+		Collection<Settlement> settlements = unitManager.getSettlements();
+		List<Settlement> settlementList = new ArrayList<Settlement>(settlements);
+
+		// autoCompleteArray = settlementList.toArray(new
+		// String[settlementList.size()]);
+		// With java 8 stream
+		// autoCompleteArray = settlementList.stream().toArray(String[]::new);
+
+		Iterator<Settlement> i = settlementList.iterator();
+		while (i.hasNext()) {
+			Settlement s = i.next();
+			list.add(s.getName());
+
+			// Get two lists of settlers name
+			// One having the order of [first name] + [last name]
+			// The other having the order of [last name] + "," + [first name]
+			Iterator<Person> j = s.getAllAssociatedPeople().iterator();
+			while (j.hasNext()) {
+				Person p = j.next();
+
+				String first = "";
+				String last = "";
+				// Added names in both orders, namely, "first last" or "last, first"
+				String firstLast = p.getName();
+				String lastFirst = "";
+				int len1 = firstLast.length();
+				// Used for loop to find the last is the best approach instead of int index =
+				// firstLast.indexOf(" ");
+				int index = 0;
+
+				for (int k = len1 - 1; k > 0; k--) {
+					// Note: finding the whitespace from the end to 0 (from right to left) works
+					// better than from left to right
+					// e.g. Mary L. Smith (last name should be "Smith", not "L. Smith"
+					if (firstLast.charAt(k) == ' ') {
+						index = k;
+						first = firstLast.substring(0, k);
+						last = firstLast.substring(k + 1, len1);
+						break;
+					} else
+						first = firstLast;
+				}
+
+				if (index == -1) {
+					// the person has no last name
+					first = firstLast;
+					list.add(first);
+				} else {
+					first = firstLast.substring(0, index);
+					last = firstLast.substring(index + 1, firstLast.length());
+					lastFirst = last + ", " + first;
+					list.add(firstLast);
+					list.add(lastFirst);
+				}
+
+			}
+
+			// get all robot names
+			Iterator<Robot> k = s.getAllAssociatedRobots().iterator();
+			while (k.hasNext()) {
+				Robot r = k.next();
+				list.add(r.getName());
+			}
+		}
+
+		// Get all vehicles name
+		Iterator<Vehicle> k = unitManager.getVehicles().iterator();
+		while (k.hasNext()) {
+			Vehicle v = k.next();
+			list.add(v.getName());
+		}
+
+		return list;
+	}
+
 	/**
 	 * Prepare object for garbage collection.
 	 */

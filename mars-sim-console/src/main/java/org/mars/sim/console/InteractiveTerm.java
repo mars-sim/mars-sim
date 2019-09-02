@@ -7,7 +7,7 @@
  * $LastChangedRevision$
  */
 
-package org.mars_sim.msp.core.terminal;
+package org.mars.sim.console;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -354,7 +354,7 @@ public class InteractiveTerm {
     	return terminal;
     }
     
-    public TextIO getTextIO() {
+    public static TextIO getTextIO() {
     	return textIO;
     }
 	

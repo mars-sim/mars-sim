@@ -14,12 +14,14 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 import java.lang.Runnable;
 
+import org.mars.sim.console.InteractiveTerm;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 
@@ -37,6 +39,8 @@ public class MarsProjectHeadless {
 	static String[] args;
 
 	private Simulation sim = Simulation.instance();
+	
+	private InteractiveTerm interactiveTerm = new InteractiveTerm();
 	
 	private static final String HELP = 
 
@@ -76,8 +80,7 @@ public class MarsProjectHeadless {
 	public MarsProjectHeadless(String args[]) {
 		logger.config("Starting " + Simulation.title);
 		sim.startSimExecutor();
-		sim.getSimExecutor().submit(new SimulationTask());
-		
+		sim.getSimExecutor().submit(new SimulationTask());		
 	}
 
 	public class SimulationTask implements Runnable {
@@ -103,7 +106,7 @@ public class MarsProjectHeadless {
 	 */
 	public void initTerminal() {
 		// Initialize interactive terminal 
-		sim.getTerm().initializeTerminal();	
+		interactiveTerm.initializeTerminal();	
 	}
 	
 	/**
@@ -227,7 +230,7 @@ public class MarsProjectHeadless {
 			// Alert the user to see the interactive terminal 
 			logger.config("Please proceed to selecting the type of Game Mode in the popped-up console.");
 			// Start interactive terminal 
-			sim.getTerm().startModeSelection(); 
+			interactiveTerm.startModeSelection(); 
 			
 			sim.destroyOldSimulation();
 
@@ -248,9 +251,17 @@ public class MarsProjectHeadless {
 	 */
 	public void startSimulation(boolean useDefaultName) {
 		// Start the simulation.
-		sim.runStartTask(useDefaultName);
+		runStartTask(useDefaultName);
 	}
 
+	public void runStartTask(boolean autosaveDefault) {
+		ExecutorService e = sim.getSimExecutor();
+//		logger.config("runStartTask() is on " + Thread.currentThread().getName());
+		if (e == null || (e != null && (e.isTerminated() || e.isShutdown())))
+			sim.startSimExecutor();
+		e.submit(new StartTask(autosaveDefault));
+	}
+	
 	/**
 	 * The starting method for the application
 	 *
@@ -294,4 +305,19 @@ public class MarsProjectHeadless {
 		new MarsProjectHeadless(args);
 
 	}
+	
+	class StartTask implements Runnable {
+		boolean autosaveDefault;
+
+		StartTask(boolean autosaveDefault) {
+			this.autosaveDefault = autosaveDefault;
+		}
+
+		public void run() {
+			// logger.config("StartTask's run() is on " + Thread.currentThread().getName());
+			Simulation.instance().start(autosaveDefault);
+			interactiveTerm.loadTerminalMenu();
+		}
+	}
 }
+

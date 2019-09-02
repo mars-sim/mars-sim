@@ -10,8 +10,6 @@ package org.mars_sim.msp.ui.swing.tool.science;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
 import java.util.Iterator;
 import java.util.List;
 
@@ -29,7 +27,6 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 
 import com.alee.extended.label.WebStyledLabel;
-import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import com.alee.managers.style.StyleId;
 

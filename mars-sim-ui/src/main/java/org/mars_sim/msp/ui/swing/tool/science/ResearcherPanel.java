@@ -29,8 +29,7 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 /**
  * A panel that displays study researcher information.
  */
-class ResearcherPanel
-extends JPanel {
+class ResearcherPanel extends JPanel {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -85,13 +84,14 @@ extends JPanel {
 		nameButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				// Open window for researcher.
-				if (researcher != null) openResearcherWindow(researcher);
+				if (researcher != null)
+					openResearcherWindow(researcher);
 			}
 		});
 		titlePane.add(nameButton);
 
 		// Create science label.
-		scienceLabel = new JLabel(Msg.getString("ResearcherPanel.scientificField","")); //$NON-NLS-1$
+		scienceLabel = new JLabel(Msg.getString("ResearcherPanel.scientificField", "")); //$NON-NLS-1$
 		topPane.add(scienceLabel);
 
 		// Create bottom panel.
@@ -118,6 +118,7 @@ extends JPanel {
 
 	/**
 	 * Gets the associated researcher for this panel.
+	 * 
 	 * @return researcher or null if none.
 	 */
 	Person getStudyResearcher() {
@@ -125,9 +126,10 @@ extends JPanel {
 	}
 
 	/**
-	 * Sets the scientific study and researcher to display.
-	 * If either parameter is null, display blank pane.
-	 * @param study the scientific study.
+	 * Sets the scientific study and researcher to display. If either parameter is
+	 * null, display blank pane.
+	 * 
+	 * @param study      the scientific study.
 	 * @param researcher the researcher.
 	 */
 	void setStudyResearcher(ScientificStudy study, Person researcher) {
@@ -137,15 +139,13 @@ extends JPanel {
 		CardLayout cardLayout = (CardLayout) getLayout();
 		if ((study == null) || (researcher == null)) {
 			cardLayout.show(this, Msg.getString("ResearcherPanel.blank")); //$NON-NLS-1$
-		}
-		else {
+		} else {
 			cardLayout.show(this, Msg.getString("ResearcherPanel.researcher")); //$NON-NLS-1$
 
 			if (researcher.equals(study.getPrimaryResearcher())) {
 				titleLabel.setText(Msg.getString("ResearcherPanel.primaryResearcher")); //$NON-NLS-1$
 				scienceLabel.setText(Msg.getString("ResearcherPanel.scientificField", study.getScience().getName())); //$NON-NLS-1$
-			}
-			else {
+			} else {
 				titleLabel.setText(Msg.getString("ResearcherPanel.collaborativeResearcher")); //$NON-NLS-1$
 				ScienceType collabScience = study.getCollaborativeResearchers().get(researcher.getIdentifier());
 				scienceLabel.setText(Msg.getString("ResearcherPanel.scientificField", collabScience.getName())); //$NON-NLS-1$
@@ -167,6 +167,7 @@ extends JPanel {
 
 	/**
 	 * Opens an info window for a researcher.
+	 * 
 	 * @param researcher the researcher.
 	 */
 	private void openResearcherWindow(Person researcher) {
@@ -175,36 +176,36 @@ extends JPanel {
 
 	/**
 	 * Gets the study activity text.
+	 * 
 	 * @return the activity text.
 	 */
 	private String getStudyActivityText() {
 		String result = Msg.getString("ResearcherPanel.activity.none") + " "; //$NON-NLS-1$
 
 		if ((study != null) && (researcher != null)) {
-			boolean isPrimaryResearcher = 
-					(researcher.equals(study.getPrimaryResearcher()));
+			boolean isPrimaryResearcher = (researcher.equals(study.getPrimaryResearcher()));
 			if (!study.isCompleted()) {
 				String phase = study.getPhase();
 				if (ScientificStudy.PROPOSAL_PHASE.equals(phase)) {
-					if (isPrimaryResearcher) result = Msg.getString("ResearcherPanel.activity.writingProposal"); //$NON-NLS-1$
-				}
-				else if (ScientificStudy.INVITATION_PHASE.equals(phase)) {
-					if (isPrimaryResearcher) result = Msg.getString("ResearcherPanel.activity.inivitingCollaborators"); //$NON-NLS-1$
-				}
-				else if (ScientificStudy.RESEARCH_PHASE.equals(phase)) {
+					if (isPrimaryResearcher)
+						result = Msg.getString("ResearcherPanel.activity.writingProposal"); //$NON-NLS-1$
+				} else if (ScientificStudy.INVITATION_PHASE.equals(phase)) {
+					if (isPrimaryResearcher)
+						result = Msg.getString("ResearcherPanel.activity.inivitingCollaborators"); //$NON-NLS-1$
+				} else if (ScientificStudy.RESEARCH_PHASE.equals(phase)) {
 					result = Msg.getString("ResearcherPanel.activity.performingResearch"); //$NON-NLS-1$
-				}
-				else if (ScientificStudy.PAPER_PHASE.equals(phase)) {
+				} else if (ScientificStudy.PAPER_PHASE.equals(phase)) {
 					result = Msg.getString("ResearcherPanel.activity.compilingResults"); //$NON-NLS-1$
+				} else if (ScientificStudy.PEER_REVIEW_PHASE.equals(phase)) {
+					if (isPrimaryResearcher)
+						result = Msg.getString("ResearcherPanel.activity.awaitingReview"); //$NON-NLS-1$
 				}
-				else if (ScientificStudy.PEER_REVIEW_PHASE.equals(phase)) {
-					if (isPrimaryResearcher) result = Msg.getString("ResearcherPanel.activity.awaitingReview"); //$NON-NLS-1$
-				}
-			}
-			else {
+			} else {
 				double achievement = 0D;
-				if (isPrimaryResearcher) achievement = study.getPrimaryResearcherEarnedScientificAchievement();
-				else achievement = study.getCollaborativeResearcherEarnedScientificAchievement(researcher);
+				if (isPrimaryResearcher)
+					achievement = study.getPrimaryResearcherEarnedScientificAchievement();
+				else
+					achievement = study.getCollaborativeResearcherEarnedScientificAchievement(researcher);
 				DecimalFormat formatter = new DecimalFormat(Msg.getString("ResearcherPanel.decimalFormat")); //$NON-NLS-1$
 				String achievementString = formatter.format(achievement);
 				result = Msg.getString("ResearcherPanel.scientificAchievement", achievementString); //$NON-NLS-1$
@@ -232,30 +233,25 @@ extends JPanel {
 						workCompleted = study.getProposalWorkTimeCompleted();
 						workRequired = study.getTotalProposalWorkTimeRequired();
 					}
-				}
-				else if (ScientificStudy.RESEARCH_PHASE.equals(phase)) {
+				} else if (ScientificStudy.RESEARCH_PHASE.equals(phase)) {
 					showProgress = true;
 					if (isPrimaryResearcher) {
 						workCompleted = study.getPrimaryResearchWorkTimeCompleted();
 						workRequired = study.getTotalPrimaryResearchWorkTimeRequired();
-					}
-					else {
+					} else {
 						workCompleted = study.getCollaborativeResearchWorkTimeCompleted(researcher);
 						workRequired = study.getTotalCollaborativeResearchWorkTimeRequired();
 					}
-				}
-				else if (ScientificStudy.PAPER_PHASE.equals(phase)) {
+				} else if (ScientificStudy.PAPER_PHASE.equals(phase)) {
 					showProgress = true;
 					if (isPrimaryResearcher) {
 						workCompleted = study.getPrimaryPaperWorkTimeCompleted();
 						workRequired = study.getTotalPrimaryPaperWorkTimeRequired();
-					}
-					else {
+					} else {
 						workCompleted = study.getCollaborativePaperWorkTimeCompleted(researcher);
 						workRequired = study.getTotalCollaborativePaperWorkTimeRequired();
 					}
-				}
-				else if (ScientificStudy.PEER_REVIEW_PHASE.equals(phase)) {
+				} else if (ScientificStudy.PEER_REVIEW_PHASE.equals(phase)) {
 					if (isPrimaryResearcher) {
 						showProgress = true;
 						workCompleted = study.getPeerReviewTimeCompleted();
@@ -267,11 +263,14 @@ extends JPanel {
 
 		if (showProgress) {
 			int progressValue = 0;
-			if (workRequired > 0D) progressValue = (int) (workCompleted / workRequired * 100D);
+			if (workRequired > 0D)
+				progressValue = (int) (workCompleted / workRequired * 100D);
 			activityBar.setValue(progressValue);
-			((CardLayout) activityBarPane.getLayout()).show(activityBarPane, Msg.getString("ResearcherPanel.showActivityBar")); //$NON-NLS-1$
+			((CardLayout) activityBarPane.getLayout()).show(activityBarPane,
+					Msg.getString("ResearcherPanel.showActivityBar")); //$NON-NLS-1$
 		} else {
-			((CardLayout) activityBarPane.getLayout()).show(activityBarPane, Msg.getString("ResearcherPanel.blankActivityBar")); //$NON-NLS-1$
+			((CardLayout) activityBarPane.getLayout()).show(activityBarPane,
+					Msg.getString("ResearcherPanel.blankActivityBar")); //$NON-NLS-1$
 		}
 	}
 }
