@@ -1,6 +1,6 @@
 /**
  * Mars Simulation Project
- * PopUpMenu.java
+ * MarsGlobeType.java
  * @version 3.1.0 2018-07-23
  * @author stpa
  */

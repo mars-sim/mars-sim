@@ -81,7 +81,10 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 
 	public static final int HORIZONTAL_MINIMAP = 300;// 274
 	public static final int VERTICAL_MINIMAP = 700;// 695;
+	
+	public static final int CB_WIDTH = 120;
 
+	public static final double RAD_PER_DEGREE = Math.PI / 180D;
 	// Data members
 	private Integer[] lon_degrees = new Integer[361];
 	private Integer[] lat_degrees = new Integer[91];
@@ -272,7 +275,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 			// latText.setHorizontalAlignment(WebTextField.CENTER);
 			// coordPane.add(latText);
 
-			// 2016-11-24 Switch to using ComboBoxMW for latitude
+			// Switch to using ComboBoxMW for latitude
 			int size = lon_degrees.length;
 			for (int i = 0; i < size; i++) {
 				lon_degrees[i] = i;
@@ -285,7 +288,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 
 			latCB = new JComboBoxMW<Integer>(lat_degrees);
 			latCB.setSelectedItem(0);
-			latCB.setPreferredSize(new Dimension(80, -1));
+			latCB.setPreferredSize(new Dimension(CB_WIDTH, -1));
 			coordPane.add(latCB);
 
 			String[] latStrings = { Msg.getString("direction.degreeSign") + Msg.getString("direction.northShort"), //$NON-NLS-1$ //$NON-NLS-2$
@@ -313,7 +316,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 			// 2016-11-24 Switch to using ComboBoxMW for longtitude
 			longCB = new JComboBoxMW<Integer>(lon_degrees);
 			longCB.setSelectedItem(0);
-			longCB.setPreferredSize(new Dimension(80, -1));
+			longCB.setPreferredSize(new Dimension(CB_WIDTH, -1));
 			coordPane.add(longCB);
 
 			String[] longStrings = { Msg.getString("direction.degreeSign") + Msg.getString("direction.eastShort"), //$NON-NLS-1$ //$NON-NLS-2$
@@ -677,8 +680,8 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 						}
 					}
 
-					double phi = Math.PI * (latitude / 180D);
-					double theta = (2 * Math.PI) * (longitude / 360D);
+					double phi = RAD_PER_DEGREE * latitude;
+					double theta = RAD_PER_DEGREE * longitude;
 					updateCoords(new Coordinates(phi, theta));
 				}
 			} catch (NumberFormatException e) {
@@ -747,7 +750,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 				mapPanel.hasMapLayer(shadingLayer));
 		dayNightItem.addActionListener(this);
 		optionsMenu.add(dayNightItem);
-		// 2016-06-08 Unchecked dayNightItem at the start of sim
+		// Unchecked dayNightItem at the start of sim
 		// globeNav.setDayNightTracking(false);
 		// dayNightItem.setSelected(false);
 
@@ -964,6 +967,13 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		mapPanel.destroy();
 		globeNav.destroy();
 
+		sim = null;
+		unitManager = null;
+		landmarks = null;
+
+		lon_degrees = null;
+		lat_degrees = null;
+		
 		latCB = null;
 		longCB = null;
 		mapPanel = null;
@@ -986,9 +996,6 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		exploredSiteItem = null;
 		mineralItem = null;
 		mapPaneInner = null;
-		
-		unitManager = null;
-		landmarks = null;
 		
 		unitIconLayer = null;
 		unitLabelLayer = null;

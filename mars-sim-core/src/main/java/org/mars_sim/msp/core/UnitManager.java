@@ -1121,9 +1121,9 @@ public class UnitManager implements Serializable {
 
 				// Fill up the settlement by creating more people
 				while (settlement.getIndoorPeopleCount() < initPop) {
-
 					String sponsor = settlement.getSponsor();
-
+//					System.out.println("UnitManager's sponsor : " + sponsor);
+					
 					// Check for any duplicate full Name
 					List<String> existingfullnames = new ArrayList<>();	
 					Iterator<Person> j = getPeople().iterator();
@@ -2310,9 +2310,7 @@ public class UnitManager implements Serializable {
 	}
 	
 	public static String getSponsorByCountryID(int id) {
-		if (id == -1)
-			return "None";
-		else if (id == 0)
+		if (id == 0)
 			return ReportingAuthorityType.CNSA_L.getName();
 		else if (id == 1)
 			return ReportingAuthorityType.CSA_L.getName();
@@ -2324,10 +2322,14 @@ public class UnitManager implements Serializable {
 			return ReportingAuthorityType.NASA_L.getName(); 
 		else if (id == 5)			
 			return ReportingAuthorityType.RKA_L.getName();	
-		else
+		else if (id == 6)
 			return ReportingAuthorityType.ESA_L.getName();
-		
-		// TODO: how to account for multi-national org such as MS or SPACEX ?
+		else if (id == 7)
+			return ReportingAuthorityType.MARS_SOCIETY_L.getName();
+		else if (id == 8)
+			return ReportingAuthorityType.SPACEX_L.getName();
+		else
+			return "None";
 	}
 	
 	/**

@@ -31,6 +31,7 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.time.ClockListener;
+import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfo;
@@ -53,7 +54,7 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 
 //	private static double PERIOD_IN_MILLISOLS = 10D * 500D / MarsClock.SECONDS_PER_MILLISOL;
 
-	public final static int GLOBE_BOX_HEIGHT = MarsGlobe.map_height;
+	public final static int GLOBE_BOX_HEIGHT = MarsGlobe.MAP_H;
 	public final static int GLOBE_BOX_WIDTH = GLOBE_BOX_HEIGHT;
 	public final static int LIMIT = 60; // the max amount of pixels in each mouse drag that the globe will update itself
 
@@ -123,12 +124,12 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 	int rightWidth = positionMetrics.stringWidth(longitude);
 
 	// private Mars mars;
-	private MainDesktopPane desktop;
+	private static MainDesktopPane desktop;
 //	private NavigatorWindow navwin;
-	private SurfaceFeatures surfaceFeatures;
+	private static SurfaceFeatures surfaceFeatures;
 //	private MainScene mainScene;
 
-//	private static MasterClock masterClock = Simulation.instance().getMasterClock();
+	private static MasterClock masterClock;
 
 	private Graphics dbg;
 	private Image dbImage = null;
@@ -162,7 +163,8 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 		// starfield = ImageLoader.getImage("starfield.gif"); //TODO: localize
 		starfield = ImageLoader.getImage(Msg.getString("img.mars.starfield300")); //$NON-NLS-1$
 
-		Simulation.instance().getMasterClock().addClockListener(this);
+		masterClock = Simulation.instance().getMasterClock();
+		masterClock.addClockListener(this);
 
 		if (surfaceFeatures == null)
 			surfaceFeatures = Simulation.instance().getMars().getSurfaceFeatures();
@@ -752,14 +754,19 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 	 * Prepare globe for deletion.
 	 */
 	public void destroy() {
-		Simulation.instance().getMasterClock().removeClockListener(this);
+		masterClock.removeClockListener(this);
+		masterClock = null;
+		unitManager = null;
+		surfaceFeatures = null;
+		desktop  = null;
+
 		// showThread = null;
 		update = false;
 		keepRunning = false;
 		marsSphere = null;
 		topoSphere = null;
 		centerCoords = null;
-		surfaceFeatures = null;
+
 		dbg = null;
 		dbImage = null;
 		starfield = null;

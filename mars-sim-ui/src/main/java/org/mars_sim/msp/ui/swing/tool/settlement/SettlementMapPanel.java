@@ -33,6 +33,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.time.MasterClock;
+import org.mars_sim.msp.core.tool.MoreMath;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
@@ -469,8 +470,11 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 		yDiff /= scale;
 
 		// Correct due to rotation of map.
-		double realXDiff = (Math.cos(rotation) * xDiff) + (Math.sin(rotation) * yDiff);
-		double realYDiff = (Math.cos(rotation) * yDiff) - (Math.sin(rotation) * xDiff);
+		double c = MoreMath.cos(rotation);
+		double s = MoreMath.sin(rotation);
+		
+		double realXDiff = c * xDiff + s * yDiff;
+		double realYDiff = c * yDiff - s * xDiff;
 
 		xPos += realXDiff;
 		yPos += realYDiff;

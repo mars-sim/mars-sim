@@ -50,6 +50,8 @@ import org.mars_sim.msp.core.reportingAuthority.NASAMissionControl;
 import org.mars_sim.msp.core.reportingAuthority.RKAMissionControl;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
+import org.mars_sim.msp.core.reportingAuthority.SpaceXMissionControl;
+import org.mars_sim.msp.core.reportingAuthority.objectives.BuildingSelfSustainingColonies;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -544,11 +546,14 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		} else if (sponsor.contains(ReportingAuthorityType.NASA.getName())) {
 			ra = NASAMissionControl.createMissionControl(); // FindingLife
 
+		} else if (sponsor.contains(ReportingAuthorityType.RKA.getName())) {
+			ra = RKAMissionControl.createMissionControl(); // ResearchingHealthHazard
+			
 		} else if (sponsor.contains(ReportingAuthorityType.MS.getName())) {
 			ra = MarsSocietyMissionControl.createMissionControl(); // SettlingMars
 
-		} else if (sponsor.contains(ReportingAuthorityType.RKA.getName())) {
-			ra = RKAMissionControl.createMissionControl(); // ResearchingHealthHazard
+		} else if (sponsor.contains(ReportingAuthorityType.SPACEX.getName())) {
+			ra = SpaceXMissionControl.createMissionControl(); // BuildingSelfSustainingColonies
 
 		} else {
 			logger.warning(name + " has no reporting authority!");

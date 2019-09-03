@@ -202,7 +202,7 @@ public class ChatMenu implements BiConsumer<TextIO, RunnerData> {
 		leaveSystem = false;
 		
         //ChatUtils.setConnectionMode(0);
-		String[] ss = ChatUtils.askQuestion(text);
+		String[] ss = SystemChatUtils.askQuestion(text);
 		
 		// Obtain responses
 		questionText = ss[0];

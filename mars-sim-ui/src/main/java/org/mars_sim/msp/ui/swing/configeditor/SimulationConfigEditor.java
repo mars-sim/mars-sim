@@ -495,9 +495,9 @@ public class SimulationConfigEditor {
 			String latitude = (String) settlementTableModel.getValueAt(x, 4);
 			String longitude = (String) settlementTableModel.getValueAt(x, 5);
 			String sponsor = (String) settlementTableModel.getValueAt(x, 6);
-//			System.out.println("sponsor : " + sponsor);
+//			System.out.println("SimulationConfigEditor's  sponsor : " + sponsor);
 			settlementConfig.addInitialSettlement(name, template, populationNum, numOfRobots, sponsor, latitude,
-					longitude);// , maxMSD);
+					longitude);
 		}
 	}
 
@@ -546,7 +546,6 @@ public class SimulationConfigEditor {
 		settlement.numOfRobots = determineNewSettlementNumOfRobots(settlement.template);
 		settlement.latitude = determineNewSettlementLatitude();
 		settlement.longitude = determineNewSettlementLongitude();
-		// settlement.maxMSD = "0";
 		settlement.sponsor = determineNewSettlementSponsor();
 
 		return settlement;
@@ -554,6 +553,7 @@ public class SimulationConfigEditor {
 
 	/**
 	 * Determines the new settlement sponsorship.
+	 * Defaults to "Mars Society (MS)"
 	 * 
 	 * @return the settlement sponsor name.
 	 */

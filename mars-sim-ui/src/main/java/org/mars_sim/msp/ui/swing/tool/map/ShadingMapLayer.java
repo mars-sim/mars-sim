@@ -28,10 +28,10 @@ import org.mars_sim.msp.ui.swing.tool.navigator.MarsGlobe;
  */
 public class ShadingMapLayer implements MapLayer {
 
-	private static String CLASS_NAME = "org.mars_sim.msp.ui.swing.tool.map.ShadingMapLayer";
-
-	private static Logger logger = Logger.getLogger(CLASS_NAME);
-
+//	private static String CLASS_NAME = "org.mars_sim.msp.ui.swing.tool.map.ShadingMapLayer";
+//	private static Logger logger = Logger.getLogger(CLASS_NAME);
+ 	private static Logger logger = Logger.getLogger(ShadingMapLayer.class.getName());
+	
 	// Domain data
 	private SurfaceFeatures surfaceFeatures;
 	private int[] shadingArray;
@@ -59,7 +59,7 @@ public class ShadingMapLayer implements MapLayer {
 	 */
 	public void displayLayer(Coordinates mapCenter, String mapType, Graphics g) {
 
-		int centerX = MarsGlobe.map_width / 2;
+		int centerX = MarsGlobe.MAP_W / 2;
 		int centerY = centerX;
 
 		// Coordinates sunDirection = orbitInfo.getSunDirection();

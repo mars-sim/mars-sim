@@ -18,7 +18,7 @@ import org.mars_sim.msp.ui.swing.tool.navigator.MarsGlobe;
 public interface Map {
 
 	/** created map height (for scrolling) */
-	public static final int DISPLAY_HEIGHT = MarsGlobe.map_height; // NavigatorWindow.VERTICAL_MINIMAP;
+	public static final int DISPLAY_HEIGHT = MarsGlobe.MAP_H; // NavigatorWindow.VERTICAL_MINIMAP;
 	/** created map width (for scrolling) */
 	public static final int DISPLAY_WIDTH = DISPLAY_HEIGHT;// NavigatorWindow.VERTICAL_MINIMAP;
 	/** Map display width in pixels. */

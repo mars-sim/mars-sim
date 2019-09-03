@@ -9,7 +9,7 @@ package org.mars_sim.msp.core.reportingAuthority;
 
 import java.io.Serializable;
 
-import org.mars_sim.msp.core.reportingAuthority.objectives.DeterminingHabitability;
+import org.mars_sim.msp.core.reportingAuthority.objectives.SettlingMars;
 
 /*
  * This class represents the Mission Control of the Mars Society
@@ -35,7 +35,7 @@ implements Serializable {
 	}
 
 	private MarsSocietyMissionControl() {
-		missionAgenda = new DeterminingHabitability();
+		missionAgenda = new SettlingMars();
 	}
 
 	public static MarsSocietyMissionControl createMissionControl() {

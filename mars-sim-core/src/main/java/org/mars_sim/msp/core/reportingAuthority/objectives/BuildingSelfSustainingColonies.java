@@ -19,7 +19,7 @@ public class BuildingSelfSustainingColonies implements MissionAgenda, Serializab
 	private final String[] phases = new String[] {
 								"Collect Meteorological Data",
 								"Collect Ice Samples", 
-								"Collect Regolith Samples",
+								"Refine Techniques for ISRU Polymer Synthesis",
 								"Analyze Medical Data"};
 	
 	@Override

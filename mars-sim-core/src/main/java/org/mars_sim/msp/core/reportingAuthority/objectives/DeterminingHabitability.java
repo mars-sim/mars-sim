@@ -17,9 +17,9 @@ public class DeterminingHabitability implements MissionAgenda, Serializable  {
 	private final String name = "Determining Human Habitability";
 
 	private final String[] phases = new String[] {
-								"Collect Meteorological Data",
-								"Collect Ice Samples", 
-								"Collect Regolith Samples",
+								"Predict Meteorological Change",
+								"Extract Water from regolith", 
+								"Characterize Radiation Countermeasures", 
 								"Analyze Medical Data"};
 	
 	@Override

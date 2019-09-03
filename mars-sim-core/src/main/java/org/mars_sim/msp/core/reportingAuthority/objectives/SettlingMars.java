@@ -18,7 +18,8 @@ public class SettlingMars implements MissionAgenda, Serializable {
 	
 	private final String[] phases = new String[] {
 			"Engineer soil capable of hosting and sustaining organic microbial life",
-			"Test Building Integrity", 
+			"Test Building Structural Integrity", 
+			"Minimize Physiological Effects of Long Term Exposure to Martian Environment", 
 			"Gather Hydro-Meteorological Data"};
 
 	@Override

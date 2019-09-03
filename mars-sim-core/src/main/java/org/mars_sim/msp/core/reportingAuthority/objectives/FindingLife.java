@@ -20,8 +20,9 @@ public class FindingLife implements MissionAgenda, Serializable  {
 	
 	private final String[] phases = new String[] {
 			"Test Rover Range",
-			"Examine regions capable hosting and sustaining organic microbial life",			
-			"Test Return Vehicle Capability"};
+			"Examine regions capable hosting and sustaining organic microbial life",	
+			"Core Drill Rock Samples from Selected Locations"};
+
 
 	@Override
 	public String[] getPhases() {

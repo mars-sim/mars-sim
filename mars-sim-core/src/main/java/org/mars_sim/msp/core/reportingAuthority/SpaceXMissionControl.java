@@ -10,7 +10,6 @@ package org.mars_sim.msp.core.reportingAuthority;
 import java.io.Serializable;
 
 import org.mars_sim.msp.core.reportingAuthority.objectives.BuildingSelfSustainingColonies;
-import org.mars_sim.msp.core.reportingAuthority.objectives.DeterminingHabitability;
 
 /*
  * This class represents the Mission Control of the Mars Society

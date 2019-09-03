@@ -1294,6 +1294,26 @@
 			<sponsor name="National Aeronautics and Space Administration (NASA)"/>
 		</settlement>
 
+		<!-- All the candidate landing sites (except #6 in Phlegra Montes) are located 
+		     on the border between Amazonis Planitia and Arcadia Planitia.
+		     
+		     There's a nearby lobate debris apron glacier and is strong evidence that 
+		     this location holds buried glaciers called lobate debris aprons. 
+		     
+		     https://www.humanmars.net/2019/09/candidate-sites-for-spacex-starship.html?m=1
+		     https://behindtheblack.com/behind-the-black/essays-and-commentaries/spacex-begins-hunt-for-starship-landing-sites-on-mars/ -->
+		<settlement name="Elon One" template="Mars Direct Base (Phase 1)">
+			<location longitude="171.0 W" latitude="39.0 N" />
+			<population number="4" />
+			<number-of-robots number="4" />
+			<sponsor name="Space Exploration Technologies (SpaceX)"/>
+		</settlement>
+		<settlement name="Elon Two" template="Mars Direct Base (Phase 1)">
+			<location longitude="156.0 W" latitude="40.0 N" />
+			<population number="4" />
+			<number-of-robots number="4" />
+			<sponsor name="Space Exploration Technologies (SpaceX)"/>
+		</settlement>
 	</initial-settlement-list>
 
 	<!--  List of settlements that will arrive on Mars at a later time -->

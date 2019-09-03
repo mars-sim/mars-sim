@@ -108,43 +108,41 @@ public class DayNightMapLayer implements SettlementMapLayer {
 		            }
 		            
 		            shadingArray = darkArray;
-/*			        
-
 		            
-		            if (darkImage == null) {
-		            	darkImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);//.TYPE_USHORT_GRAY); //
-
-		                int shadeColor = LIGHT_THRESHOLD;//(LIGHT_THRESHOLD << 24) & 0xFF000000; // 0xFF000000 is 255, the alpha mask
-		            	
-				        for (int x = 0; x < width; x++) {
-				        	for (int y = 0; y < height; y++) {
-				        		       		
-				                darkImage.setRGB(x, y, shadeColor);
-				        	}
-				        }
-		            }
+//		            if (darkImage == null) {
+//		            	darkImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);//.TYPE_USHORT_GRAY); //
+//
+//		                int shadeColor = LIGHT_THRESHOLD;//(LIGHT_THRESHOLD << 24) & 0xFF000000; // 0xFF000000 is 255, the alpha mask
+//		            	
+//				        for (int x = 0; x < width; x++) {
+//				        	for (int y = 0; y < height; y++) {
+//				        		       		
+//				                darkImage.setRGB(x, y, shadeColor);
+//				        	}
+//				        }
+//		            }
+//		            
+//		            shadingImage = darkImage;
 		            
-		            shadingImage = darkImage;
-*/		            
 		        }
 
 		        else if (sunlight >= .9)
 		        	return;
 	
 		        else {
-/*		
-			        shadingImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);//.TYPE_USHORT_GRAY); //
-				       
-	                int shadeColor = LIGHT_THRESHOLD - sunlightInt;//((LIGHT_THRESHOLD - sunlightInt) << 24) & 0xFF000000; // 0xFF000000 is 255, the alpha mask
-	            	
-			        for (int x = 0; x < width; x++) {
-			        	for (int y = 0; y < height; y++) {
-
-				            shadingImage.setRGB(x, y, shadeColor);
-			        	}
-			        }
+		
+//			        shadingImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);//.TYPE_USHORT_GRAY); //
+//				       
+//	                int shadeColor = LIGHT_THRESHOLD - sunlightInt;//((LIGHT_THRESHOLD - sunlightInt) << 24) & 0xFF000000; // 0xFF000000 is 255, the alpha mask
+//	            	
+//			        for (int x = 0; x < width; x++) {
+//			        	for (int y = 0; y < height; y++) {
+//
+//				            shadingImage.setRGB(x, y, shadeColor);
+//			        	}
+//			        }
 			        
-*/
+
 			        for (int x = 0; x < width; x += 2) {
 	
 			            for (int y = 0; y < height; y += 2) {
@@ -166,9 +164,7 @@ public class DayNightMapLayer implements SettlementMapLayer {
 			                        shadingArray[x + 1 + ((y + 1) * width)] = shadeColor;
 			                    }
 			                }
-	
 			            }
-	
 			        }
 	
 		        }

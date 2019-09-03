@@ -310,17 +310,17 @@ public class SimulationConfig implements Serializable {
 		if (!xmlDirExist)
 			LogConsolidated.log(Level.CONFIG, 0, sourceName, 
 				"The xml directory does not exist in user home.");	
-		if (!versionFileExist)
+		else if (!versionFileExist)
 			LogConsolidated.log(Level.CONFIG, 0, sourceName, 
 				"The version.txt does not exist.");	
-		if (buildText.equals(""))
+		else if (buildText.equals(""))
 			LogConsolidated.log(Level.CONFIG, 0, sourceName, 
 				"The version.txt is invalid.");	
-		if (!sameBuild)
+		else if (!sameBuild)
 			LogConsolidated.log(Level.CONFIG, 0, sourceName, 
 				"The version.txt shows a different build.");
 		
-		if (!versionFileExist || buildText.equals("") || !sameBuild) {
+		if (xmlDirExist && (!versionFileExist || buildText.equals("") || !sameBuild)) {
 
 			LogConsolidated.log(Level.CONFIG, 0, sourceName, 
 					"Backing up existing xml files into a 'backup' folder. Cleaning the xml folder.");

@@ -41,7 +41,7 @@ implements MouseListener {
 
 	// Constant data members
 	/** Circular degree unit. */
-	static final double degree = Math.PI / 180D;
+	static final double RAD_PER_DEGREE = Math.PI / 180D;
 
 	// Data members
 	/** Parent NavigatorWindow. */
@@ -162,42 +162,42 @@ implements MouseListener {
 			parentNavigator.updateCoords(centerCoords);
 			break;
 		case 1: // Inner Top Arrow
-			centerCoords.setPhi(centerCoords.getPhi() - (5D * degree));
+			centerCoords.setPhi(centerCoords.getPhi() - (5D * RAD_PER_DEGREE));
 			if (centerCoords.getPhi() < 0D)
 				centerCoords.setPhi(0D);
 			break;
 		case 2: // Inner Bottom Arrow
-			centerCoords.setPhi(centerCoords.getPhi() + (5D * degree));
+			centerCoords.setPhi(centerCoords.getPhi() + (5D * RAD_PER_DEGREE));
 			if (centerCoords.getPhi() > Math.PI)
 				centerCoords.setPhi(Math.PI);
 			break;
 		case 3: // Inner Right Arrow
-			centerCoords.setTheta(centerCoords.getTheta() + (5D * degree));
+			centerCoords.setTheta(centerCoords.getTheta() + (5D * RAD_PER_DEGREE));
 			if (centerCoords.getTheta() > (2D * Math.PI))
 				centerCoords.setTheta(centerCoords.getTheta() - (2D * Math.PI));
 			break;
 		case 4: // Inner Left Arrow
-			centerCoords.setTheta(centerCoords.getTheta() - (5D * degree));
+			centerCoords.setTheta(centerCoords.getTheta() - (5D * RAD_PER_DEGREE));
 			if (centerCoords.getTheta() < 0D)
 				centerCoords.setTheta(centerCoords.getTheta() + (2D * Math.PI));
 			break;
 		case 5: // Outer Top Arrow
-			centerCoords.setPhi(centerCoords.getPhi() - (30D * degree));
+			centerCoords.setPhi(centerCoords.getPhi() - (30D * RAD_PER_DEGREE));
 			if (centerCoords.getPhi() < 0D)
 				centerCoords.setPhi(0D);
 			break;
 		case 6: // Outer Bottom Arrow
-			centerCoords.setPhi(centerCoords.getPhi() + (30D * degree));
+			centerCoords.setPhi(centerCoords.getPhi() + (30D * RAD_PER_DEGREE));
 			if (centerCoords.getPhi() > Math.PI)
 				centerCoords.setPhi(Math.PI);
 			break;
 		case 7: // Outer Right Arrow
-			centerCoords.setTheta(centerCoords.getTheta() + (30D * degree));
+			centerCoords.setTheta(centerCoords.getTheta() + (30D * RAD_PER_DEGREE));
 			if (centerCoords.getTheta() >= (2D * Math.PI))
 				centerCoords.setTheta(centerCoords.getTheta() - (2D * Math.PI));
 			break;
 		case 8: // Outer Left Arrow
-			centerCoords.setTheta(centerCoords.getTheta() - (30D * degree));
+			centerCoords.setTheta(centerCoords.getTheta() - (30D * RAD_PER_DEGREE));
 			if (centerCoords.getTheta() < 0D)
 				centerCoords.setTheta(centerCoords.getTheta() + (2D * Math.PI));
 			break;

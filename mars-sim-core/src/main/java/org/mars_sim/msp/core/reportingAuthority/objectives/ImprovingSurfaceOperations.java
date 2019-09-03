@@ -20,7 +20,7 @@ public class ImprovingSurfaceOperations implements MissionAgenda, Serializable  
 	private final String[] phases = new String[] {
 			"Demonstrate Human Survivability for certain period of time",
 			"Stress Test on Human Endurance", 
-			"Minimize Physiological Effects of Long Term Exposure to Martian Environment", 
+			"Test Return Vehicle Capability",
 			"Characterize Human Interaction Dynamics During Contingency Situations",
 			"Extend EVA Operations to Distances beyond a certain radius"};
 
