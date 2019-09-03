@@ -15,6 +15,8 @@ import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
@@ -30,6 +32,7 @@ import java.util.logging.Logger;
 import javax.swing.DefaultCellEditor;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -53,6 +56,7 @@ import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 import org.mars_sim.msp.core.structure.SettlementConfig;
@@ -353,9 +357,9 @@ public class SimulationConfigEditor {
 		});
 
 		bottomButtonPanel.add(createButton);
-
 		bottomButtonPanel.add(new JLabel("    "));
-
+	 
+		 
 		// Edit Alpha Crew button.
 		JButton alphaButton = new JButton("  " + Msg.getString("SimulationConfigEditor.button.crewEditor") + "  "); //$NON-NLS-1$
 		TooltipManager.setTooltip(alphaButton, Msg.getString("SimulationConfigEditor.button.crewEditor"), TooltipWay.up);
@@ -366,6 +370,23 @@ public class SimulationConfigEditor {
 			}
 		});
 
+		// Set a check box for enabling/disable the alpha crew button
+		JCheckBox cb = new JCheckBox("Load Alpha Crew");
+		cb.setSelected(UnitManager.getCrew());
+		cb.addItemListener(new ItemListener() {
+             public void itemStateChanged(ItemEvent e) {
+            	 if (e.getStateChange() == ItemEvent.SELECTED) {
+            		 alphaButton.setEnabled(true);
+            		 UnitManager.setCrew(true);
+            	 }
+            	 else { 
+            		 alphaButton.setEnabled(false);
+            		 UnitManager.setCrew(false);
+            	 }
+             }     
+        });
+
+		bottomButtonPanel.add(cb);
 		bottomButtonPanel.add(alphaButton);
 
 		// Set the location of the dialog at the center of the screen.
@@ -387,53 +408,6 @@ public class SimulationConfigEditor {
 		rootPane.setDefaultButton(defaultButton);
 	}
 	
-
-//	/*
-//	 * Determines proper width for each column and center aligns each cell content
-//	 */
-//	private void adjustColumn(JTable t) {
-//		// If all column heads are wider than the column's cells'
-//		// contents, then you can just use column.sizeWidthToFit().
-//		final Object[] longValues = { "Schiaparelli Point", "Mars Direct Base (phase 1)", Integer.valueOf(18),
-//				Integer.valueOf(16), Integer.valueOf(22), Integer.valueOf(22), Boolean.TRUE };
-//
-//		boolean DEBUG = false;
-//		// SettlementTableModel model = settlementTableModel;
-//		// //(SettlementTableModel)table.getModel();
-//		TableColumn column = null;
-//		Component comp = null;
-//		int headerWidth = 0;
-//		int cellWidth = 0;
-//		TableCellRenderer headerRenderer = t.getTableHeader().getDefaultRenderer();
-//
-//		// Align content to center of cell
-//		DefaultTableCellRenderer defaultTableCellRenderer = new DefaultTableCellRenderer();
-//		defaultTableCellRenderer.setHorizontalAlignment(SwingConstants.CENTER);
-//
-//		for (int i = 0; i < 7; i++) {
-//
-//			column = t.getColumnModel().getColumn(i);
-//
-//			// 2015-10-03 Align content to center of cell
-//			column.setCellRenderer(defaultTableCellRenderer);
-//
-//			comp = headerRenderer.getTableCellRendererComponent(t, column.getHeaderValue(), false, false, 0, 0);
-//
-//			headerWidth = comp.getPreferredSize().width;
-//
-//			comp = t.getDefaultRenderer(settlementTableModel.getColumnClass(i)).getTableCellRendererComponent(t,
-//					longValues[i], false, false, 0, i);
-//
-//			cellWidth = comp.getPreferredSize().width;
-//
-//			if (DEBUG) {
-//				System.out.println("Initializing width of column " + i + ". " + "headerWidth = " + headerWidth
-//						+ "; cellWidth = " + cellWidth);
-//			}
-//
-//			column.setPreferredWidth(Math.max(headerWidth, cellWidth));
-//		}
-//	}
 
 	/**
 	 * Adds a new settlement with default values.

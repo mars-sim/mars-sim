@@ -88,6 +88,8 @@ public class UnitManager implements Serializable {
 	
 	/** True if the simulation has just started. */
 	private static boolean justStarting = true;
+	/** True if the simulation will start out with the default alpha crew members. */
+	private static boolean useCrew = true;
 	/** The total numbers of Unit instances. */
 	private static int totalNumUnits = 0;
 	/** The instance of MarsSurface. */
@@ -241,13 +243,15 @@ public class UnitManager implements Serializable {
 			if (GameManager.mode == GameMode.COMMAND)
 				matchSettlement();
 			// Create pre-configured robots as stated in robots.xml
-			createPreconfiguredRobots();
+			if (useCrew)
+				createPreconfiguredRobots();
 			// Create more robots to fill the settlement(s)
 			createInitialRobots();
 			// Initialize the role prospect array
 			RoleUtil.initialize();
 			// Create pre-configured settlers as stated in people.xml
-			createPreconfiguredPeople();
+			if (useCrew)
+				createPreconfiguredPeople();
 			// Create more settlers to fill the settlement(s)
 			createInitialPeople();
 			// Manually add job positions
@@ -2451,6 +2455,13 @@ public class UnitManager implements Serializable {
 		sim.getMars().setMarsSurface(marsSurface);//(MarsSurface)units.get(0));
 	}
 	
+	public static void setCrew(boolean value) {
+		useCrew = value;
+	}
+
+	public static boolean getCrew() {
+		return useCrew;
+	}
 	
 	/**
 	 * Prepare object for garbage collection.

@@ -26,6 +26,7 @@ import org.beryx.textio.swing.SwingTextTerminal;
 import org.mars_sim.msp.core.GameManager;
 import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.time.MasterClock;
 
 public class InteractiveTerm {
@@ -42,6 +43,8 @@ public class InteractiveTerm {
     private int choiceIndex = -1;
 
     private static boolean keepRunning;
+    
+    private static boolean useCrew = true;
 	
 	private static MarsTerminal terminal;
 	
@@ -130,74 +133,133 @@ public class InteractiveTerm {
 			GameManager.mode = GameMode.COMMAND;
 			
 	        terminal.println(System.lineSeparator() 
-	        		+ "                * * *  COMMANDER'S PROFILE * * *" 
+	        		+ "                * * *  COMMAND MODE - CREW SELECTION * * *" 
 	        		+ System.lineSeparator()
+	        		+ System.lineSeparator()
+					+ "1. Enable/Disable Alpha Crew"
 					+ System.lineSeparator()
-					+ "1. Set up new profile"
+					+ "2. Set up Commander's Profile"
 					+ System.lineSeparator()
-					+ "2. Load from previous profile"
+					+ "3. Load from Previous Commander's Profile"
 					+ System.lineSeparator()
+					+ System.lineSeparator()
+					+ "Note: Alpha Crew is loaded by default."
 					+ System.lineSeparator()
 					);
 			
-	        handler.addStringTask("choice", "Enter your choice:", false).addChoices("1", "2").constrainInputToChoices();
+	        handler.addStringTask("choice", "Enter your choice:", false).addChoices("1", "2", "3").constrainInputToChoices();
 	        handler.executeOneTask();
-	        
+
 	    	if ((GameManager.choice).equals("1")) {
 				terminal.print(System.lineSeparator());
+				if (useCrew) {			
+					useCrew = false;
+					terminal.print("Alpha Crew is now DISABLED.");
+				}
+				else {
+					useCrew = true;
+					terminal.print("Alpha Crew is now ENABLED.");
+				}
+								
+				terminal.print(System.lineSeparator());
+	    	}
+	    	
+	    	else if ((GameManager.choice).equals("2")) {
+				terminal.print(System.lineSeparator());
+				// Set new profile
 				profile.accept(textIO, null);
 	    	}
 	    	
-	    	else {
-	    		try {
-					boolean canLoad = CommanderProfile.loadProfile();
-					
-					if (canLoad) {
-			            terminal.println(System.lineSeparator() 
-			            		+ "                * * *  COMMANDER'S PROFILE * * *" 
-			            		+ System.lineSeparator()
-			            		+ profile.getCommander().toString()
-			            		+ System.lineSeparator());
-//			            UnitManager.setCommanderMode(true);
-			            
-			            boolean like = textIO.newBooleanInputReader().withDefaultValue(true).read("Would you like to us this profile ?");
-			            
-			        	if (!like) {
-			    			terminal.print(System.lineSeparator() 
-			    					+ "Back to the beginning." 
-			    					+ System.lineSeparator()
-			    					+ System.lineSeparator());
-			    			selectMode();
-			        	}
-					}
-					
-					else {
-		    			terminal.print(System.lineSeparator() 
-		    					+ "Can't find the 'commander.profile' file." 
-		    					+ System.lineSeparator()
-		    					+ System.lineSeparator());
-		    			selectMode();
-					}
-	        	
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-//					e.printStackTrace();
-					logger.severe("Error loading the commander's profile.");
-	    			terminal.print(System.lineSeparator() 
-	    					+ "Error loading the commander's profile." 
-	    					+ System.lineSeparator()
-	    					+ System.lineSeparator());
-					selectMode();
-				}
+	    	else if ((GameManager.choice).equals("3")) {
+	    		// Load from previously saved profile
+	    		loadPreviousProfile();
 	    	}
 		}
         
 		else if (GameManager.input.equals("2")) {
 			GameManager.mode = GameMode.SANDBOX;
-//			loadTerminalMenu();
+
+	        terminal.println(System.lineSeparator() 
+	        		+ "                * * *  SANDOX MODE * * *" 
+	        		+ System.lineSeparator()
+	        		+ System.lineSeparator()
+					+ "0. Proceed"
+	        		+ System.lineSeparator()
+	        		+ System.lineSeparator()
+					+ "1. Enable/Disable Alpha Crew"
+					+ System.lineSeparator()
+					+ System.lineSeparator()
+					+ "Note 1: Alpha Crew is loaded by default."
+					+ System.lineSeparator()
+					);
+			
+	        handler.addStringTask("choice", "Enter your choice:", false).addChoices("0", "1").constrainInputToChoices();
+	        handler.executeOneTask();
+
+	    	if ((GameManager.choice).equals("1")) {
+				terminal.print(System.lineSeparator());
+				if (useCrew) {			
+					useCrew = false;
+					terminal.print("Alpha Crew is now DISABLED.");
+				}
+				else {
+					useCrew = true;
+					terminal.print("Alpha Crew is now ENABLED.");
+				}
+				terminal.print(System.lineSeparator());
+	    	}
+	    	
+	    	else if ((GameManager.choice).equals("0")) {
+				terminal.print(System.lineSeparator());
+	    	}
 		}
+        
+    	// Set the alpha crew use
+    	UnitManager.setCrew(useCrew);
 	}
 	
+	public void loadPreviousProfile() {
+		try {
+			boolean canLoad = CommanderProfile.loadProfile();
+			
+			if (canLoad) {
+	            terminal.println(System.lineSeparator() 
+	            		+ "                * * *  COMMANDER'S PROFILE * * *" 
+	            		+ System.lineSeparator()
+	            		+ profile.getCommander().toString()
+	            		+ System.lineSeparator());
+//	            UnitManager.setCommanderMode(true);
+	            
+	            boolean like = textIO.newBooleanInputReader().withDefaultValue(true).read("Would you like to us this profile ?");
+	            
+	        	if (!like) {
+	    			terminal.print(System.lineSeparator() 
+	    					+ "Back to the beginning." 
+	    					+ System.lineSeparator()
+	    					+ System.lineSeparator());
+	    			selectMode();
+	        	}
+			}
+			
+			else {
+    			terminal.print(System.lineSeparator() 
+    					+ "Can't find the 'commander.profile' file." 
+    					+ System.lineSeparator()
+    					+ System.lineSeparator());
+    			selectMode();
+			}
+    	
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+//			e.printStackTrace();
+			logger.severe("Error loading the commander's profile.");
+			terminal.print(System.lineSeparator() 
+					+ "Error loading the commander's profile." 
+					+ System.lineSeparator()
+					+ System.lineSeparator());
+			selectMode();
+		}
+	}
 	
 	/**
 	 * Initialize the terminal

@@ -1,6 +1,10 @@
 {
 	"subject": "Areology",
 	"topics": [
+			{"topic": "Aqueous Processes"}, 
+			{"topic": "Noachian Bedrock Units"}, 
+			{"topic": "Outcrops with Remnant Magnetization"}, 
+			{"topic": "Aeolian Sediments and Landforms"}, 
 			{"topic": "Impact Craters"},
 			{"topic": "Mineralogical Mapping"},
 			{"topic": "Meteorites"},
@@ -8,7 +12,7 @@
 			{"topic": "Magnetic Field & Internal Structure"}, 
 			{"topic": "Hydrology & Water Features"},
 			{"topic": "Polar Ice Caps & Glaciers"}, 
-			{"topic": "Black Holes"}, 
+			{"topic": "Igneous Rocks"}, 
 			{"topic": "Dust Storms"}, 
 			{"topic": "Volcanism & Lava Flow"},
             {"topic": "pre-noachian period"},
