@@ -114,8 +114,8 @@ public class ChatUtils {
 
 	/** DEFAULT LOGGER. */
 	private static Logger logger = Logger.getLogger(ChatUtils.class.getName());
-	private static String loggerName = logger.getName();
-	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+//	private static String loggerName = logger.getName();
+//	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 
 	private static boolean expertMode = false;
 
@@ -582,23 +582,23 @@ public class ChatUtils {
 			int max = 28;
 
 			responseText.append(System.lineSeparator());
-			responseText.append(addhiteSpacesName("Status : ", max) + vehicleCache.getStatus().getName());
+			responseText.append(addhiteSpacesRightName("Status : ", max) + vehicleCache.getStatus().getName());
 
 			responseText.append(System.lineSeparator());
-			responseText.append(addhiteSpacesName("Associated Settlement : ", max)
+			responseText.append(addhiteSpacesRightName("Associated Settlement : ", max)
 					+ vehicleCache.getAssociatedSettlement().getName());
 
 			responseText.append(System.lineSeparator());
-			responseText.append(addhiteSpacesName("Location : ", max) + vehicleCache.getImmediateLocation());
+			responseText.append(addhiteSpacesRightName("Location : ", max) + vehicleCache.getImmediateLocation());
 
 			responseText.append(System.lineSeparator());
-			responseText.append(addhiteSpacesName("Locale : ", max) + vehicleCache.getLocale());
+			responseText.append(addhiteSpacesRightName("Locale : ", max) + vehicleCache.getLocale());
 
 			String reserve = "Yes";
 			if (!vehicleCache.isReservedForMission())
 				reserve = "No";
 			responseText.append(System.lineSeparator());
-			responseText.append(addhiteSpacesName("Reserved : ", max) + reserve);
+			responseText.append(addhiteSpacesRightName("Reserved : ", max) + reserve);
 
 			String missionStr = "None";
 			if (missionManager.getMissionForVehicle(vehicleCache) != null) {
@@ -606,9 +606,9 @@ public class ChatUtils {
 				String lead = m.getStartingMember().getName();
 				missionStr = "Yes. " + m.getName();
 				responseText.append(System.lineSeparator());
-				responseText.append(addhiteSpacesName("On a Mission : ", max) + missionStr);
+				responseText.append(addhiteSpacesRightName("On a Mission : ", max) + missionStr);
 				responseText.append(System.lineSeparator());
-				responseText.append(addhiteSpacesName("Mission Lead : ", max) + lead);
+				responseText.append(addhiteSpacesRightName("Mission Lead : ", max) + lead);
 				responseText.append(System.lineSeparator());
 
 				double dist = 0;
@@ -627,7 +627,7 @@ public class ChatUtils {
 
 			} else {
 				responseText.append(System.lineSeparator());
-				responseText.append(addhiteSpacesName("On a Mission : ", max) + missionStr);
+				responseText.append(addhiteSpacesRightName("On a Mission : ", max) + missionStr);
 			}
 
 			if (vehicleCache instanceof Rover) {
@@ -636,7 +636,7 @@ public class ChatUtils {
 					towed = "Yes. Towed by " + vehicleCache.getTowingVehicle().getName();
 				}
 				responseText.append(System.lineSeparator());
-				responseText.append(addhiteSpacesName("Being Towed : ", max) + towed);
+				responseText.append(addhiteSpacesRightName("Being Towed : ", max) + towed);
 
 				String towing = "No";
 				if (((Rover) vehicleCache).isTowingAVehicle()
@@ -644,7 +644,7 @@ public class ChatUtils {
 					towing = "Yes. Towing " + ((Rover) vehicleCache).getTowedVehicle().getName();
 				}
 				responseText.append(System.lineSeparator());
-				responseText.append(addhiteSpacesName("Towing : ", max) + towing);
+				responseText.append(addhiteSpacesRightName("Towing : ", max) + towing);
 			}
 
 		}
@@ -657,22 +657,22 @@ public class ChatUtils {
 //			responseText.append(SYSTEM_PROMPT);
 //			responseText.append("Specifications :");
 			responseText.append(System.lineSeparator());
-			responseText.append(addhiteSpacesName("Name : ", max) + vehicleCache.getName());
+			responseText.append(addhiteSpacesRightName("Name : ", max) + vehicleCache.getName());
 			responseText.append(System.lineSeparator());
-			responseText.append(addhiteSpacesName("Type : ", max) + vehicleCache.getVehicleType());
+			responseText.append(addhiteSpacesRightName("Type : ", max) + vehicleCache.getVehicleType());
 			responseText.append(System.lineSeparator());
-			responseText.append(addhiteSpacesName("Description : ", max) + vehicleCache.getVehicleType());
+			responseText.append(addhiteSpacesRightName("Description : ", max) + vehicleCache.getVehicleType());
 			responseText.append(System.lineSeparator());
-			responseText.append(addhiteSpacesName("Base Mass : ", max)).append(vehicleCache.getBaseMass())
+			responseText.append(addhiteSpacesRightName("Base Mass : ", max)).append(vehicleCache.getBaseMass())
 					.append(" kg");
 			responseText.append(System.lineSeparator());
 
 //			System.out.println("next is speed : " + responseText.toString());
 
-			responseText.append(addhiteSpacesName("Base Speed : ", max)).append(vehicleCache.getBaseSpeed())
+			responseText.append(addhiteSpacesRightName("Base Speed : ", max)).append(vehicleCache.getBaseSpeed())
 					.append(" km/h");
 			responseText.append(System.lineSeparator());
-			responseText.append(addhiteSpacesName("Drivetrain Efficiency : ", max))
+			responseText.append(addhiteSpacesRightName("Drivetrain Efficiency : ", max))
 					.append(vehicleCache.getDrivetrainEfficiency()).append(" kWh/km");
 //			responseText.append(System.lineSeparator());
 //			responseText.append(addhiteSpacesName("Travel per sol : ", max) + vehicleCache.getEstimatedTravelDistancePerSol() + " km (Estimated)");
@@ -686,22 +686,22 @@ public class ChatUtils {
 				String fuelName = ResourceUtil.findAmountResourceName(id);
 				fuel = Conversion.capitalize(fuelName) + " (Solid Oxide Fuel Cell)";
 
-				responseText.append(addhiteSpacesName("Power Source : ", max) + fuel);
+				responseText.append(addhiteSpacesRightName("Power Source : ", max) + fuel);
 				responseText.append(System.lineSeparator());
 
-				responseText.append(addhiteSpacesName("Fuel Capacity : ", max))
+				responseText.append(addhiteSpacesRightName("Fuel Capacity : ", max))
 						.append(vehicleCache.getFuelCapacity() + " kg");
 				responseText.append(System.lineSeparator());
 
-				responseText.append(addhiteSpacesName("Base Range : ", max))
+				responseText.append(addhiteSpacesRightName("Base Range : ", max))
 						.append(Math.round(vehicleCache.getBaseRange() * 100.0) / 100.0 + " km (Estimated)");
 				responseText.append(System.lineSeparator());
 
-				responseText.append(addhiteSpacesName("Base Fuel Consumption : ", max)).append(
+				responseText.append(addhiteSpacesRightName("Base Fuel Consumption : ", max)).append(
 						Math.round(vehicleCache.getBaseFuelConsumption() * 100.0) / 100.0 + " km/kg (Estimated)");
 				responseText.append(System.lineSeparator());
 			} else {
-				responseText.append(addhiteSpacesName("Power Source : ", max) + fuel);
+				responseText.append(addhiteSpacesRightName("Power Source : ", max) + fuel);
 				responseText.append(System.lineSeparator());
 			}
 
@@ -713,13 +713,13 @@ public class ChatUtils {
 			} else if (vehicleCache instanceof LightUtilityVehicle) {
 				crewSize = ((LightUtilityVehicle) vehicleCache).getCrewCapacity();
 			}
-			responseText.append(addhiteSpacesName("Crew Size : ", max)).append(crewSize);
+			responseText.append(addhiteSpacesRightName("Crew Size : ", max)).append(crewSize);
 			responseText.append(System.lineSeparator());
 
 			double cargo = 0;
 			if (vehicleCache instanceof Rover) {
 				cargo = ((Rover) vehicleCache).getCargoCapacity();
-				responseText.append(addhiteSpacesName("Cargo Capacity : ", max)).append(cargo + " kg");
+				responseText.append(addhiteSpacesRightName("Cargo Capacity : ", max)).append(cargo + " kg");
 				responseText.append(System.lineSeparator());
 			}
 
@@ -732,19 +732,19 @@ public class ChatUtils {
 				if (hasSickBay) {
 					hasSickBayStr = "Yes";
 
-					responseText.append(addhiteSpacesName("Has Sick Bay : ", max) + hasSickBayStr);
+					responseText.append(addhiteSpacesRightName("Has Sick Bay : ", max) + hasSickBayStr);
 					responseText.append(System.lineSeparator());
 
 					int bed = ((Rover) vehicleCache).getSickBay().getSickBedNum();
-					responseText.append(addhiteSpacesName("# Beds (Sick Bay) : ", max)).append(bed);
+					responseText.append(addhiteSpacesRightName("# Beds (Sick Bay) : ", max)).append(bed);
 					responseText.append(System.lineSeparator());
 
 					int lvl = ((Rover) vehicleCache).getSickBay().getTreatmentLevel();
-					responseText.append(addhiteSpacesName("Tech Level (Sick Bay) : ", max)).append(lvl);
+					responseText.append(addhiteSpacesRightName("Tech Level (Sick Bay) : ", max)).append(lvl);
 					responseText.append(System.lineSeparator());
 
 				} else {
-					responseText.append(addhiteSpacesName("Has Sick Bay : ", max) + hasSickBayStr);
+					responseText.append(addhiteSpacesRightName("Has Sick Bay : ", max) + hasSickBayStr);
 					responseText.append(System.lineSeparator());
 				}
 
@@ -759,15 +759,15 @@ public class ChatUtils {
 				if (hasLab) {
 					hasLabStr = "Yes";
 
-					responseText.append(addhiteSpacesName("Has Lab : ", max) + hasLabStr);
+					responseText.append(addhiteSpacesRightName("Has Lab : ", max) + hasLabStr);
 					responseText.append(System.lineSeparator());
 
 					int lvl = ((Rover) vehicleCache).getLab().getTechnologyLevel();
-					responseText.append(addhiteSpacesName("Tech Level (Lab) : ", max)).append(lvl);
+					responseText.append(addhiteSpacesRightName("Tech Level (Lab) : ", max)).append(lvl);
 					responseText.append(System.lineSeparator());
 
 					int size = ((Rover) vehicleCache).getLab().getLaboratorySize();
-					responseText.append(addhiteSpacesName("Lab Size : ", max)).append(size);
+					responseText.append(addhiteSpacesRightName("Lab Size : ", max)).append(size);
 					responseText.append(System.lineSeparator());
 
 					ScienceType[] types = ((Rover) vehicleCache).getLab().getTechSpecialties();
@@ -777,11 +777,11 @@ public class ChatUtils {
 					}
 					names = names.substring(0, names.length() - 2);
 
-					responseText.append(addhiteSpacesName("Lab Specialties : ", max) + names);
+					responseText.append(addhiteSpacesRightName("Lab Specialties : ", max) + names);
 					responseText.append(System.lineSeparator());
 
 				} else {
-					responseText.append(addhiteSpacesName("Has Lab: ", max) + hasSickBayStr);
+					responseText.append(addhiteSpacesRightName("Has Lab: ", max) + hasSickBayStr);
 					responseText.append(System.lineSeparator());
 				}
 
@@ -881,8 +881,8 @@ public class ChatUtils {
 			responseText.append(System.lineSeparator());
 			for (Person p : list) {
 				double jobProspect = Math.round(JobUtil.getJobProspect(p, job, settlementCache, true) * 10.0) / 10.0;
-				responseText.append(addhiteSpacesName(" " + p, 20));
-				responseText.append(addhiteSpacesName(" " + jobProspect, 6));
+				responseText.append(addhiteSpacesRightName(" " + p, 20));
+				responseText.append(addhiteSpacesRightName(" " + jobProspect, 6));
 				responseText.append(System.lineSeparator());
 			}
 		}
@@ -994,10 +994,10 @@ public class ChatUtils {
 		}
 
 		else if (text.equalsIgnoreCase("job demand")) {
-			responseText.append(addhiteSpacesName(" Job", 20));
-			responseText.append(addhiteSpacesName(" Demand", 10));
-			responseText.append(addhiteSpacesName(" Deficit", 10));
-			responseText.append(addhiteSpacesName(" Filled", 8));
+			responseText.append(addhiteSpacesRightName(" Job", 20));
+			responseText.append(addhiteSpacesRightName(" Demand", 10));
+			responseText.append(addhiteSpacesRightName(" Deficit", 10));
+			responseText.append(addhiteSpacesRightName(" Filled", 8));
 
 			responseText.append(System.lineSeparator());
 
@@ -1009,21 +1009,21 @@ public class ChatUtils {
 			for (Job job : jobs) {
 				String jobName = job.getName(GenderType.MALE);
 				String n = " " + jobName;
-				responseText.append(addhiteSpacesName(n, 20));
+				responseText.append(addhiteSpacesRightName(n, 20));
 
 				String demand = "" + Math.round(job.getSettlementNeed(settlementCache) * 10.0) / 10.0;
-				responseText.append(addhiteSpacesName(demand, 9));
+				responseText.append(addhiteSpacesRightName(demand, 9));
 
 				String deficit = ""
 						+ Math.round(JobUtil.getRemainingSettlementNeed(settlementCache, job) * 10.0) / 10.0;
-				responseText.append(addhiteSpacesName(deficit, 9));
+				responseText.append(addhiteSpacesRightName(deficit, 9));
 
 				int num = 0;
 				if (map.get(jobName) != null)
 					num = map.get(jobName).size();
 
 				String positions = "" + num;
-				responseText.append(addhiteSpacesName(positions, 8));
+				responseText.append(addhiteSpacesRightName(positions, 8));
 
 				responseText.append(System.lineSeparator());
 			}
@@ -1042,10 +1042,10 @@ public class ChatUtils {
 			} catch (Exception e) {
 			}
 
-			responseText.append(addhiteSpacesName("--- Greenhouse Farming ---", 50));
+			responseText.append(addhiteSpacesRightName("--- Greenhouse Farming ---", 50));
 			responseText.append(System.lineSeparator());
 			String s0 = " Current reserve : ";
-			responseText.append(addhiteSpacesName(s0, max));
+			responseText.append(addhiteSpacesRightName(s0, max));
 			responseText.append(Math.round(reserve * 100.0) / 100.0 + " kg");
 			responseText.append(System.lineSeparator());
 
@@ -1058,15 +1058,15 @@ public class ChatUtils {
 			}
 
 			String s1 = " Total growing area : ";
-			responseText.append(addhiteSpacesName(s1, max));
+			responseText.append(addhiteSpacesRightName(s1, max));
 			responseText.append(Math.round(totalArea * 100.0) / 100.0);
 			responseText.append(System.lineSeparator());
 			String s3 = " Generated daily per unit area : ";
-			responseText.append(addhiteSpacesName(s3, max));
+			responseText.append(addhiteSpacesRightName(s3, max));
 			responseText.append(Math.round(usage / totalArea * 100.0) / 100.0 + " kg/m^2/sol");
 			responseText.append(System.lineSeparator());
 			String s2 = " Total amount generated Daily : ";
-			responseText.append(addhiteSpacesName(s2, max));
+			responseText.append(addhiteSpacesRightName(s2, max));
 			responseText.append(Math.round(usage * 100.0) / 100.0 + " kg/sol");
 			responseText.append(System.lineSeparator());
 
@@ -1084,10 +1084,10 @@ public class ChatUtils {
 			} catch (Exception e) {
 			}
 
-			responseText.append(addhiteSpacesName("--- Greenhouse Farming ---", 50));
+			responseText.append(addhiteSpacesRightName("--- Greenhouse Farming ---", 50));
 			responseText.append(System.lineSeparator());
 			String s0 = " Current reserve : ";
-			responseText.append(addhiteSpacesName(s0, max));
+			responseText.append(addhiteSpacesRightName(s0, max));
 			responseText.append(Math.round(reserve * 100.0) / 100.0 + " kg");
 			responseText.append(System.lineSeparator());
 
@@ -1100,15 +1100,15 @@ public class ChatUtils {
 			}
 
 			String s1 = " Total growing area : ";
-			responseText.append(addhiteSpacesName(s1, max));
+			responseText.append(addhiteSpacesRightName(s1, max));
 			responseText.append(Math.round(totalArea * 100.0) / 100.0);
 			responseText.append(System.lineSeparator());
 			String s3 = " Consumed daily per unit area : ";
-			responseText.append(addhiteSpacesName(s3, max));
+			responseText.append(addhiteSpacesRightName(s3, max));
 			responseText.append(Math.round(usage / totalArea * 100.0) / 100.0 + " kg/m^2/sol");
 			responseText.append(System.lineSeparator());
 			String s2 = " Total amount consumed daily : ";
-			responseText.append(addhiteSpacesName(s2, max));
+			responseText.append(addhiteSpacesRightName(s2, max));
 			responseText.append(Math.round(usage * 100.0) / 100.0 + " kg/sol");
 			responseText.append(System.lineSeparator());
 
@@ -1127,18 +1127,18 @@ public class ChatUtils {
 				totalArea += f.getGrowingArea();
 			}
 
-			responseText.append(addhiteSpacesName("--- Greenhouse Farming ---", 50));
+			responseText.append(addhiteSpacesRightName("--- Greenhouse Farming ---", 50));
 			responseText.append(System.lineSeparator());
 			String s01 = " Total growing area : ";
-			responseText.append(addhiteSpacesName(s01, max0));
+			responseText.append(addhiteSpacesRightName(s01, max0));
 			responseText.append(Math.round(totalArea * 100.0) / 100.0);
 			responseText.append(System.lineSeparator());
 			String s03 = " Consumed daily per unit area : ";
-			responseText.append(addhiteSpacesName(s03, max0));
+			responseText.append(addhiteSpacesRightName(s03, max0));
 			responseText.append(Math.round(usage / totalArea * 100.0) / 100.0 + " kg/m^2/sol");
 			responseText.append(System.lineSeparator());
 			String s02 = " Projected daily amount consumed : ";
-			responseText.append(addhiteSpacesName(s02, max0));
+			responseText.append(addhiteSpacesRightName(s02, max0));
 			responseText.append(Math.round(usage * 100.0) / 100.0 + " kg/sol");
 			responseText.append(System.lineSeparator());
 			responseText.append(System.lineSeparator());
@@ -1519,56 +1519,106 @@ public class ChatUtils {
 
 			double total = 0;
 			// Use Guava's multimap to handle duplicate key
-			Multimap<Double, String> map = ArrayListMultimap.create();
+			Multimap<Double, ScienceType> map = ArrayListMultimap.create();
 //			Map<Double, String> map = new HashMap<>();
 			List<Double> list = new ArrayList<>();
 
-			for (ScienceType scienceType : ScienceType.values()) {
-				double score = scientificManager.getScienceScore(settlementCache, scienceType);
+			List<ScienceType> sciences = Arrays.asList(ScienceType.values());
+			int size = sciences.size();
+//			double[][] array2D = new double[size][5];
+//			double[] scoreArray = new double[] {};
+			
+			for (int i=0; i < size; i++ ) {
+				ScienceType t = sciences.get(i);
+				double score = scientificManager.getScienceScore(settlementCache, t);
+//				String n = Conversion.capitalize(sciences.get(i).toString().toLowerCase());
+//				double[] array = scientificManager.getNumScienceStudy(settlementCache, sciences.get(i));
+//				array2D[i] = array;
+				
 				total += score;
 				list.add(score);
-				map.put(score, scienceType.toString());
+				map.put(score, t);
 			}
 
-			responseText.append("      The Scientific Endeavour  ");
+//			responseText.append(System.lineSeparator());
+//			responseText.append("The scientific studies undertaken in " + settlementCache + " :");
 			responseText.append(System.lineSeparator());
-			responseText.append(" -----------------------------------");
+			responseText.append(" ----------------------------------------------------------------------");
 			responseText.append(System.lineSeparator());
 
-			responseText.append("   Rank |  Score |  Science");
+			responseText.append(" Rank |");
+			responseText.append(addhiteSpacesRightName("Score", 5));
+			responseText.append(addhiteSpacesLeftName("| Science", 15));
+			
+			responseText.append(addhiteSpacesRightName("| Succ", 7));
+			responseText.append(addhiteSpacesRightName("| Fail", 7));
+			responseText.append(addhiteSpacesRightName("| Canx", 7));
+			responseText.append(addhiteSpacesRightName("| Prim", 7));
+			responseText.append(addhiteSpacesRightName("| Coll", 7));
+			
 			responseText.append(System.lineSeparator());
-			responseText.append(" -----------------------------------");
+			responseText.append(" ----------------------------------------------------------------------");
 			responseText.append(System.lineSeparator());
 
 			list.sort((Double d1, Double d2) -> -d1.compareTo(d2));
 
-			int size = list.size();
+//			int size = list.size();
 			for (int i = 0; i < size; i++) {
 				double score = list.get(i);
-				String space = "";
-
+//				String space = "";
 				String scoreStr = Math.round(score * 10.0) / 10.0 + "";
-				int num = scoreStr.length();
-				if (num == 2)
-					space = "   ";
-				else if (num == 3)
-					space = "  ";
-				else if (num == 4)
-					space = " ";
-				else if (num == 5)
-					space = "";
+//				int num = scoreStr.length();
+//				if (num == 2)
+//					space = "   ";
+//				else if (num == 3)
+//					space = "  ";
+//				else if (num == 4)
+//					space = " ";
+//				else if (num == 5)
+//					space = "";
 
-				List<String> names = new ArrayList<>(map.get(score));
-				String n = names.get(0);
-				responseText.append("    #" + (i + 1) + "    " + space + scoreStr + "     " + n);
-				map.remove(score, n);
+				List<ScienceType> sciTypes = new ArrayList<>(map.get(score));
+				// Pick the first one
+				ScienceType t = sciTypes.get(0);
+				String n = Conversion.capitalize(t.getName().toLowerCase());
+				
+				//List<ScientificStudy> 
+				int suc = scientificManager.getAllSuccessfulStudies(settlementCache, t).size();
+				int failed = scientificManager.getAllFailedStudies(settlementCache, t).size();
+				int canx = scientificManager.getAllCanceledStudies(settlementCache, t).size();
+				int oPri = scientificManager.getOngoingPrimaryStudies(settlementCache, t).size();
+				int oCol = scientificManager.getOngoingCollaborativeStudies(settlementCache, t).size();
+				
+				responseText.append("  #" + (i + 1) + "   ");
+				responseText.append(addhiteSpacesRightName(scoreStr, 5));
+				responseText.append(addhiteSpacesLeftName("   " + n, 15));
+				
+				responseText.append(addhiteSpacesRightName(suc + "", 7));
+				responseText.append(addhiteSpacesRightName(failed + "", 7));
+				responseText.append(addhiteSpacesRightName(canx + "", 7));
+				responseText.append(addhiteSpacesRightName(oPri + "", 7));
+				responseText.append(addhiteSpacesRightName(oCol + "", 7));
+				
+				map.remove(score, t);
 				responseText.append(System.lineSeparator());
 			}
 
-			responseText.append(" -----------------------------------");
+			responseText.append(" ----------------------------------------------------------------------");
 			responseText.append(System.lineSeparator());
 			responseText.append(" Overall : " + Math.round(total * 10.0) / 10.0);
 			responseText.append(System.lineSeparator());
+			responseText.append(System.lineSeparator());
+			responseText.append("Notes:");
+			responseText.append(System.lineSeparator());
+			responseText.append("1. Succ = # of Successfully Completed Research");
+			responseText.append(System.lineSeparator());
+			responseText.append("2. Fail = # of Failed Research");
+			responseText.append(System.lineSeparator());
+			responseText.append("3. Canx = # of Cancelled Research");
+			responseText.append(System.lineSeparator());
+			responseText.append("4. Prim = # of Ongoing Primary Research");
+			responseText.append(System.lineSeparator());
+			responseText.append("5. Coll = # of Ongoing Collaborative Research");
 
 		}
 
@@ -2117,7 +2167,7 @@ public class ChatUtils {
 			responseText.append(System.lineSeparator());
 
 			int max = 28;
-			responseText.append(addhiteSpacesName("Name : ", max));
+			responseText.append(addhiteSpacesRightName("Name : ", max));
 			responseText.append(settlementCache);
 			if (masterClock == null)
 				masterClock = sim.getMasterClock();
@@ -2142,11 +2192,11 @@ public class ChatUtils {
 
 			responseText.append(System.lineSeparator());
 //			responseText.append(settlementCache + " is at " + location);//(" + lat + ", " + lon + ")"); 
-			responseText.append(addhiteSpacesName("Location : ", max) + location.toString());
+			responseText.append(addhiteSpacesRightName("Location : ", max) + location.toString());
 			responseText.append(System.lineSeparator());
 
 			String date = marsClock.getDateString();
-			responseText.append(addhiteSpacesName("Date and Time : ", max) + date);
+			responseText.append(addhiteSpacesRightName("Date and Time : ", max) + date);
 
 			String time = marsClock.getDecimalTimeString();
 			responseText.append(" at " + time);
@@ -2156,47 +2206,47 @@ public class ChatUtils {
 
 			double t = weather.getTemperature(location);
 			String tt = fmt.format(t) + DEGREE_CELSIUS;
-			responseText.append(addhiteSpacesName("Outside temperature : ", max) + tt);
+			responseText.append(addhiteSpacesRightName("Outside temperature : ", max) + tt);
 			responseText.append(System.lineSeparator());
 
 			double p = weather.getAirPressure(location);
 			String pp = fmt2.format(p) + " " + Msg.getString("pressure.unit.kPa"); //$NON-NLS-1$
-			responseText.append(addhiteSpacesName("Air Pressure : ", max) + pp);
+			responseText.append(addhiteSpacesRightName("Air Pressure : ", max) + pp);
 			responseText.append(System.lineSeparator());
 
 			double ad = weather.getAirDensity(location);
 			String aad = fmt2.format(ad) + " " + Msg.getString("airDensity.unit.gperm3"); //$NON-NLS-1$
-			responseText.append(addhiteSpacesName("Air Density : ", max) + aad);
+			responseText.append(addhiteSpacesRightName("Air Density : ", max) + aad);
 			responseText.append(System.lineSeparator());
 
 			double ws = weather.getWindSpeed(location);
 			String wws = fmt2.format(ws) + " " + Msg.getString("windspeed.unit.meterpersec"); //$NON-NLS-1$
-			responseText.append(addhiteSpacesName("Wind Speed : ", max) + wws);
+			responseText.append(addhiteSpacesRightName("Wind Speed : ", max) + wws);
 			responseText.append(System.lineSeparator());
 
 			double wd = weather.getWindDirection(location);
 			String wwd = fmt.format(wd) + Msg.getString("windDirection.unit.deg"); //$NON-NLS-1$
-			responseText.append(addhiteSpacesName("Wind Direction : ", max) + wwd);
+			responseText.append(addhiteSpacesRightName("Wind Direction : ", max) + wwd);
 			responseText.append(System.lineSeparator());
 
 			double od = surfaceFeatures.getOpticalDepth(location);
 			String ood = fmt2.format(od);
-			responseText.append(addhiteSpacesName("Optical Depth : ", max) + ood);
+			responseText.append(addhiteSpacesRightName("Optical Depth : ", max) + ood);
 			responseText.append(System.lineSeparator());
 
 			double sza = orbitInfo.getSolarZenithAngle(location);
 			String ssza = fmt2.format(sza * RADIANS_TO_DEGREES) + DEGREE;
-			responseText.append(addhiteSpacesName("Solar Zenith Angle : ", max) + ssza);
+			responseText.append(addhiteSpacesRightName("Solar Zenith Angle : ", max) + ssza);
 			responseText.append(System.lineSeparator());
 
 			double sda = orbitInfo.getSolarDeclinationAngleDegree();
 			String ssda = fmt2.format(sda) + DEGREE;
-			responseText.append(addhiteSpacesName("Solar Declination Angle : ", max) + ssda);
+			responseText.append(addhiteSpacesRightName("Solar Declination Angle : ", max) + ssda);
 			responseText.append(System.lineSeparator());
 
 			double si = surfaceFeatures.getSolarIrradiance(location);
 			String ssi = fmt2.format(si) + " " + Msg.getString("solarIrradiance.unit"); //$NON-NLS-1$
-			responseText.append(addhiteSpacesName("Solar Irradiance : ", max) + ssi);
+			responseText.append(addhiteSpacesRightName("Solar Irradiance : ", max) + ssi);
 			responseText.append(System.lineSeparator());
 		}
 
@@ -2592,9 +2642,9 @@ public class ChatUtils {
 			int num1 = 1;
 
 			responseText.append(System.lineSeparator());
-			responseText.append(addhiteSpacesName(" Job   ", 14));
-			responseText.append(addhiteSpacesName(" Capability Score", 22));
-			responseText.append(addhiteSpacesName(" Prospect Score", 18));
+			responseText.append(addhiteSpacesRightName(" Job   ", 14));
+			responseText.append(addhiteSpacesRightName(" Capability Score", 22));
+			responseText.append(addhiteSpacesRightName(" Prospect Score", 18));
 			responseText.append(System.lineSeparator());
 			responseText.append(" ------------------------------------------------------- ");
 			responseText.append(System.lineSeparator());
@@ -2680,9 +2730,9 @@ public class ChatUtils {
 			for (int i = 0; i < size; i++) {
 				double milliSol = personCache.getTaskSchedule().getAirlockTasksTime(i);
 				if (milliSol > 0) {
-					responseText.append(addhiteSpacesName(i + "", MAX0));
+					responseText.append(addhiteSpacesRightName(i + "", MAX0));
 					String m = Math.round(milliSol * 10.0) / 10.0 + "";
-					responseText.append(addhiteSpacesName(m, MAX1));
+					responseText.append(addhiteSpacesRightName(m, MAX1));
 					responseText.append(System.lineSeparator());
 				}
 			}
@@ -2707,9 +2757,9 @@ public class ChatUtils {
 			for (int i = 0; i < size; i++) {
 				if (eVATime.containsKey(i)) {
 					double milliSol = eVATime.get(i);
-					responseText.append(addhiteSpacesName(i + "", MAX0));
+					responseText.append(addhiteSpacesRightName(i + "", MAX0));
 					String m = Math.round(milliSol * 10.0) / 10.0 + "";
-					responseText.append(addhiteSpacesName(m, MAX1));
+					responseText.append(addhiteSpacesRightName(m, MAX1));
 					responseText.append(System.lineSeparator());
 				}
 			}
@@ -2824,7 +2874,7 @@ public class ChatUtils {
 //				responseText.append(space + "(" + (i+1) + ") ");
 				responseText.append(n);
 //				responseText.append(" : ");
-				responseText.append(addhiteSpacesName("" + skills.get(n), 5));
+				responseText.append(addhiteSpacesRightName("" + skills.get(n), 5));
 				responseText.append(System.lineSeparator());
 			}
 
@@ -3801,24 +3851,30 @@ public class ChatUtils {
 	 */
 	public static StringBuffer computeWhiteSpaces(String name, int max) {
 		int size = name.length();
+		int num = 1;
+		if (max - size > 1)
+			num = max - size ;
 		StringBuffer sb = new StringBuffer();
-		for (int i = 0; i < max - size; i++)
+		for (int i = 0; i < num; i++)
 			sb.append(ONE_SPACE);
 
 		return sb;
 	}
 
 	/**
-	 * Computes the # of whitespaces
+	 * Computes and add the # of whitespaces and the right-justified text
 	 * 
 	 * @param name
 	 * @param max
 	 * @return
 	 */
-	public static StringBuffer addhiteSpacesName(String name, int max) {
+	public static StringBuffer addhiteSpacesRightName(String name, int max) {
 		int size = name.length();
 		StringBuffer sb = new StringBuffer();
-		for (int i = 0; i < max - size; i++)
+		int num = 1;
+		if (max - size > 1)
+			num = max - size ;
+		for (int i = 0; i < num; i++)
 			sb.append(ONE_SPACE);
 
 		sb.append(name);
@@ -3826,7 +3882,26 @@ public class ChatUtils {
 	}
 
 	/**
-	 * Computes the # of whitespaces
+	 * Add the left-justified text and computes/add the # of whitespaces 
+	 * 
+	 * @param name
+	 * @param max
+	 * @return
+	 */
+	public static StringBuffer addhiteSpacesLeftName(String name, int max) {
+		int size = name.length();
+		int num = 1;
+		if (max - size > 1)
+			num = max - size ;
+		StringBuffer sb = new StringBuffer();
+		sb.append(ONE_SPACE).append(name);
+		for (int i = 0; i < num; i++)
+			sb.append(ONE_SPACE);
+		return sb;
+	}
+	
+	/**
+	 * Add the name and the # of whitespaces 
 	 * 
 	 * @param name
 	 * @param max
@@ -3834,9 +3909,10 @@ public class ChatUtils {
 	 */
 	public static StringBuffer addNameFirstWhiteSpaces(String name, int max) {
 		int size = name.length();
+		int num = Math.min(max - size, 1);
 		StringBuffer sb = new StringBuffer();
 		sb.append(name);
-		for (int i = 0; i < max - size; i++)
+		for (int i = 0; i < num; i++)
 			sb.append(ONE_SPACE);
 		return sb;
 	}
@@ -4586,9 +4662,9 @@ public class ChatUtils {
 
 			responseText.append(" ----------------------------------------------------------------------");
 			responseText.append(System.lineSeparator());
-			responseText.append(addhiteSpacesName("Average : ", 36));
-			responseText.append(addhiteSpacesName("" + Math.round(aveSocial * 10.0) / 10.0, 6));
-			responseText.append(addhiteSpacesName("" + Math.round(aveSci * 10.0) / 10.0, 8));
+			responseText.append(addhiteSpacesRightName("Average : ", 36));
+			responseText.append(addhiteSpacesRightName("" + Math.round(aveSocial * 10.0) / 10.0, 6));
+			responseText.append(addhiteSpacesRightName("" + Math.round(aveSci * 10.0) / 10.0, 8));
 			responseText.append(System.lineSeparator());
 
 			return responseText.toString();
@@ -4616,7 +4692,7 @@ public class ChatUtils {
 			responseText.append(" -----------------------------------");
 			responseText.append(System.lineSeparator());
 
-			responseText.append("   Rank  |  Score |  Settlement");
+			responseText.append("   Rank |  Score |  Settlement");
 			responseText.append(System.lineSeparator());
 			responseText.append(" -----------------------------------");
 			responseText.append(System.lineSeparator());

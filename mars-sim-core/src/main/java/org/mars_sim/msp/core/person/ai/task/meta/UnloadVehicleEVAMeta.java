@@ -11,7 +11,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -22,6 +21,7 @@ import org.mars_sim.msp.core.person.ai.taskUtil.MetaTask;
 import org.mars_sim.msp.core.person.ai.taskUtil.Task;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * Meta task for the UnloadVehicleEVA task.
@@ -92,6 +92,8 @@ public class UnloadVehicleEVAMeta implements MetaTask, Serializable {
 	            e.printStackTrace(System.err);
 	        }
 	
+	        if (result <= 0) result = 0;
+	        
 	        // Crowded settlement modifier
 	        if (settlement.getIndoorPeopleCount() > settlement.getPopulationCapacity()) {
 	            result *= 2D;
@@ -109,7 +111,7 @@ public class UnloadVehicleEVAMeta implements MetaTask, Serializable {
 	
 	        // Modify if operation is the person's favorite activity.
 	        if (person.getFavorite().getFavoriteActivity() == FavoriteType.OPERATION) {
-	            result *= 1.5D;
+	            result += RandomUtil.getRandomInt(1, 20);
 	        }
 	
 	        // 2015-06-07 Added Preference modifier

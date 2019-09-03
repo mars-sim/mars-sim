@@ -123,7 +123,7 @@ public class CookMealMeta implements MetaTask, Serializable {
 
                     // Modify if cooking is the person's favorite activity.
                     if (person.getFavorite().getFavoriteActivity() == FavoriteType.COOKING)
-                        result *= 2D;
+                        result += RandomUtil.getRandomInt(1, 20);
         
                     // 2015-06-07 Added Preference modifier
                     if (result > 0D) {

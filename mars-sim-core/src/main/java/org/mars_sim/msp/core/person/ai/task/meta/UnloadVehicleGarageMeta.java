@@ -11,7 +11,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.location.LocationSituation;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -22,6 +21,7 @@ import org.mars_sim.msp.core.person.ai.taskUtil.Task;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.job.Deliverybot;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * Meta task for the UnloadVehicleGarage task.
@@ -78,10 +78,7 @@ public class UnloadVehicleGarageMeta implements MetaTask, Serializable {
                 e.printStackTrace(System.err);
             }
             
-            // 2015-06-07 Added Preference modifier
-            if (result > 0)
-            	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
-            
+            if (result <= 0) result = 0;
 
             // Effort-driven task modifier.
             result *= person.getPerformanceRating();
@@ -95,9 +92,13 @@ public class UnloadVehicleGarageMeta implements MetaTask, Serializable {
 
             // Modify if operations is the person's favorite activity.
             if (person.getFavorite().getFavoriteActivity() == FavoriteType.OPERATION) {
-                result *= 2D;
+                result += RandomUtil.getRandomInt(1, 20);
             }
 
+            // Added Preference modifier
+            if (result > 0)
+            	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
+          
             if (result < 0) result = 0;
             
         }

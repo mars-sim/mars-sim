@@ -12,7 +12,6 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -25,6 +24,7 @@ import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.core.structure.building.function.AstronomicalObservation;
+import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * Meta task for the ObserveAstronomicalObjects task.
@@ -142,6 +142,8 @@ public class ObserveAstronomicalObjectsMeta implements MetaTask, Serializable {
                     }
                 }
 
+                if (result <= 0) return 0;
+                
                 // Effort-driven task modifier.
                 result *= person.getPerformanceRating();
 
@@ -155,7 +157,7 @@ public class ObserveAstronomicalObjectsMeta implements MetaTask, Serializable {
 
                 // Modify if research is the person's favorite activity.
                 if (person.getFavorite().getFavoriteActivity() == FavoriteType.ASTRONOMY) {
-                    result *= 2D;
+                    result += RandomUtil.getRandomInt(1, 20);
                 }
                 
                 if (person.getFavorite().getFavoriteActivity() == FavoriteType.RESEARCH) {

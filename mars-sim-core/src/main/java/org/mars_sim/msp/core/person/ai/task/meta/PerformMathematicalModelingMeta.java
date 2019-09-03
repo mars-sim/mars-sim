@@ -25,6 +25,7 @@ import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.core.structure.Lab;
+import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * Meta task for the PerformMathematicalModeling task.
@@ -81,7 +82,6 @@ public class PerformMathematicalModelingMeta implements MetaTask, Serializable {
 	        // Add probability for researcher's primary study (if any).
 	        if (studyManager == null)
 	        	studyManager = Simulation.instance().getScientificStudyManager();
-	        //ScientificStudyManager studyManager = Simulation.instance().getScientificStudyManager();
 	        ScientificStudy primaryStudy = studyManager.getOngoingPrimaryStudy(person);
 	        if ((primaryStudy != null) && ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase())) {
 	            if (!primaryStudy.isPrimaryResearchCompleted()) {
@@ -149,6 +149,8 @@ public class PerformMathematicalModelingMeta implements MetaTask, Serializable {
 	            }
 	        }
 
+	        if (result == 0) return 0;
+	        
 	        // Effort-driven task modifier.
 	        result *= person.getPerformanceRating();
 
@@ -161,7 +163,7 @@ public class PerformMathematicalModelingMeta implements MetaTask, Serializable {
 
 	        // Modify if lab experimentation is the person's favorite activity.
 	        if (person.getFavorite().getFavoriteActivity() == FavoriteType.RESEARCH) {
-	            result *= 2D;
+	            result += RandomUtil.getRandomInt(1, 20);
 	        }
 
 	        // 2015-06-07 Added Preference modifier

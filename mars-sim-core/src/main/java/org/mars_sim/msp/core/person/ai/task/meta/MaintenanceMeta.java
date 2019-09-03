@@ -27,6 +27,7 @@ import org.mars_sim.msp.core.robot.ai.job.Repairbot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
+import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
@@ -109,7 +110,7 @@ public class MaintenanceMeta implements MetaTask, Serializable {
 
 			// Modify if tinkering is the person's favorite activity.
 			if (person.getFavorite().getFavoriteActivity() == FavoriteType.TINKERING) {
-				result *= 2D;
+				result += RandomUtil.getRandomInt(1, 20);
 			}
 
 			// AddPreference modifier

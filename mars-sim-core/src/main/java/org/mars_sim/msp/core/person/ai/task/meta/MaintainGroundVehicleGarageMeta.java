@@ -27,6 +27,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.VehicleMaintenance;
+import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
@@ -117,7 +118,7 @@ public class MaintainGroundVehicleGarageMeta implements MetaTask, Serializable {
 			}
 
 			if (!garageSpace && !needyVehicleInGarage) {
-				result = 0D;
+				return 0D;
 			}
 
 			// Effort-driven task modifier.
@@ -132,7 +133,7 @@ public class MaintainGroundVehicleGarageMeta implements MetaTask, Serializable {
 
 			// Modify if tinkering is the person's favorite activity.
 			if (person.getFavorite().getFavoriteActivity() == FavoriteType.TINKERING) {
-				result *= 1.5D;
+				result += RandomUtil.getRandomInt(1, 20);
 			}
 
 			// Add Preference modifier

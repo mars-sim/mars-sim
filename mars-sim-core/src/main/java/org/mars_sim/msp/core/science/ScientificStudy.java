@@ -892,9 +892,14 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 			collaborativeAchievementEarned.put(researcher.getIdentifier(), earned);
 	}
 
+	
+	public String getScienceName() {
+		return science.getName();
+	}
+	
 	@Override
 	public String toString() {
-		return science.getName().toLowerCase() + " level " + difficultyLevel + " study";
+		return science.getName().toLowerCase() + " level " + difficultyLevel;// + " study";
 	}
 
 	/**

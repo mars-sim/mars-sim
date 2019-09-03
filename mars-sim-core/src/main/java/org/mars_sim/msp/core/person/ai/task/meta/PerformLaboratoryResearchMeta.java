@@ -26,6 +26,7 @@ import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.core.structure.Lab;
+import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * Meta task for the PerformLaboratoryResearch task.
@@ -145,6 +146,8 @@ public class PerformLaboratoryResearchMeta implements MetaTask, Serializable {
 	            }
 	        }
 
+	        if (result == 0) return 0;
+	        
 	        // Effort-driven task modifier.
 	        result *= person.getPerformanceRating();
 
@@ -157,7 +160,7 @@ public class PerformLaboratoryResearchMeta implements MetaTask, Serializable {
 
 	        // Modify if research is the person's favorite activity.
 	        if (person.getFavorite().getFavoriteActivity() == FavoriteType.RESEARCH) {
-	            result *= 1.2D;
+	            result += RandomUtil.getRandomInt(1, 20);
 	        }
 	        
 	        // Modify if lab experimentation is the person's favorite activity.

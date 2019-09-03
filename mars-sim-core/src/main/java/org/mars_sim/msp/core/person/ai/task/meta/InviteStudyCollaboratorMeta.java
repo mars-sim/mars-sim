@@ -21,6 +21,7 @@ import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.science.ScientificStudyUtil;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * Meta task for the InviteStudyCollaborator task.
@@ -99,7 +100,7 @@ public class InviteStudyCollaboratorMeta implements MetaTask, Serializable {
 
                         // Modify if research is the person's favorite activity.
                         if (person.getFavorite().getFavoriteActivity() == FavoriteType.RESEARCH) {
-                            result *= 1.5D;
+                            result += RandomUtil.getRandomInt(1, 20);
                         }
 
                         // Add Preference modifier

@@ -22,6 +22,7 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.job.Chefbot;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
+import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * Meta task for the PrepareSoymilk task.
@@ -107,7 +108,7 @@ public class PrepareDessertMeta implements MetaTask, Serializable {
 
                     // Modify if cooking is the person's favorite activity.
                     if (person.getFavorite().getFavoriteActivity() == FavoriteType.COOKING) {
-                        result *= 2D;
+                        result += RandomUtil.getRandomInt(1, 20);
                     }
 
                     // 2015-06-07 Added Preference modifier

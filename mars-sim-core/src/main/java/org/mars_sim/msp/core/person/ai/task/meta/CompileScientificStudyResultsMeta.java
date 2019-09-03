@@ -24,6 +24,7 @@ import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -130,6 +131,8 @@ public class CompileScientificStudyResultsMeta implements MetaTask, Serializable
                 }
 	        }
 
+	        if (result <= 0) return 0;
+	        
 	        // Crowding modifier
             Building adminBuilding = CompileScientificStudyResults.getAvailableAdministrationBuilding(person);
             if (adminBuilding != null) {
@@ -147,10 +150,10 @@ public class CompileScientificStudyResultsMeta implements MetaTask, Serializable
 	            result *= job.getStartTaskProbabilityModifier(CompileScientificStudyResults.class)
 	            		* person.getAssociatedSettlement().getGoodsManager().getResearchFactor();
 	        }
-
+     
 	        // Modify if research is the person's favorite activity.
 	        if (person.getFavorite().getFavoriteActivity() == FavoriteType.RESEARCH) {
-	            result *= 2D;
+	            result += RandomUtil.getRandomInt(1, 20);
 	        }
 
 	        // Add Preference modifier

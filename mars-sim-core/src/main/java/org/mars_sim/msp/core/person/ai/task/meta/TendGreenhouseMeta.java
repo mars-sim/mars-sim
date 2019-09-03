@@ -19,6 +19,7 @@ import org.mars_sim.msp.core.person.ai.taskUtil.Task;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.job.Gardenbot;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * Meta task for the Tend Greenhouse task.
@@ -71,6 +72,8 @@ public class TendGreenhouseMeta implements MetaTask, Serializable {
                     int needyCropsNum = person.getSettlement().getCropsNeedingTending();
                     result = needyCropsNum * VALUE;
 
+                    if (result <= 0) result = 0;
+                    
                     // Crowding modifier.
                     result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, farmingBuilding);
                     result *= TaskProbabilityUtil.getRelationshipModifier(person, farmingBuilding);
@@ -88,7 +91,7 @@ public class TendGreenhouseMeta implements MetaTask, Serializable {
 
                     // Modify if tending plants is the person's favorite activity.
                     if (person.getFavorite().getFavoriteActivity() == FavoriteType.TENDING_PLANTS) {
-                        result *= 1.5D;
+                        result += RandomUtil.getRandomInt(1, 20);
                     }
                 
         	        // Add Preference modifier

@@ -24,6 +24,7 @@ import org.mars_sim.msp.core.person.ai.taskUtil.MetaTask;
 import org.mars_sim.msp.core.person.ai.taskUtil.Task;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * Meta task for the LoadVehicleEVA task.
@@ -87,7 +88,8 @@ public class LoadVehicleEVAMeta implements MetaTask, Serializable {
 	        // Check all vehicle missions occurring at the settlement.
 	        try {
 	            List<Mission> missions = LoadVehicleEVA.getAllMissionsNeedingLoading(settlement);
-	            result += 100D * missions.size();
+                int num = missions.size();
+               	result = 100D * num;
 	        }
 	        catch (Exception e) {
 	            logger.log(Level.SEVERE, "Error finding loading missions.", e);
@@ -116,7 +118,7 @@ public class LoadVehicleEVAMeta implements MetaTask, Serializable {
 	
 	        // Modify if operations is the person's favorite activity.
 	        if (person.getFavorite().getFavoriteActivity() == FavoriteType.OPERATION)
-	            result *= 1.5D;
+	            result += RandomUtil.getRandomInt(1, 20);
 	
 	        // 2015-06-07 Added Preference modifier
 	        if (result > 0D) {

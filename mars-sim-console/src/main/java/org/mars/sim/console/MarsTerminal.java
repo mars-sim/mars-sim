@@ -5,14 +5,12 @@ import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Image;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
-import java.net.URL;
 import java.util.logging.Logger;
 
 import javax.swing.AbstractAction;
@@ -66,7 +64,7 @@ public class MarsTerminal extends SwingTextTerminal {
     public MarsTerminal() {	
 //    	System.out.println("w: " + getFrame().getWidth()); // w: 656  	
 //    	System.out.println("h: " + getFrame().getHeight()); // h: 519    	
-    	this.getFrame().setSize(1024, 600);
+    	
         configureMainMenu();
 
         JTextPane textPane = getTextPane();
@@ -107,6 +105,7 @@ public class MarsTerminal extends SwingTextTerminal {
     private void configureMainMenu() {
         JFrame frame = getFrame();
         frame.setTitle("Mars Simulation Project");
+        frame.setSize(1366, 600);
         
 		ImageIcon icon = new ImageIcon(MarsTerminal.class.getResource(ICON_IMAGE));
 		frame.setIconImage(iconToImage(icon));

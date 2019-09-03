@@ -23,6 +23,7 @@ import org.mars_sim.msp.core.person.ai.taskUtil.MetaTask;
 import org.mars_sim.msp.core.person.ai.taskUtil.Task;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * Meta task for the ConstructBuilding task.
@@ -93,7 +94,7 @@ public class ConstructBuildingMeta implements MetaTask, Serializable {
 
         // Modify if construction is the person's favorite activity.
         if (person.getFavorite().getFavoriteActivity() == FavoriteType.TINKERING)
-            result *= 1.5D;
+            result += RandomUtil.getRandomInt(1, 20);
 
         // 2015-06-07 Added Preference modifier
         if (result > 0D) {

@@ -72,7 +72,7 @@ public class FinishedStudyListPanel extends JPanel {
 
 		// Create study table.
 		studyTable = new JTable(studyTableModel);
-		studyTable.setPreferredScrollableViewportSize(new Dimension(450, 200));
+		studyTable.setPreferredScrollableViewportSize(new Dimension(500, 200));
 		studyTable.setCellSelectionEnabled(false);
 		studyTable.setRowSelectionAllowed(true);
 		studyTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -88,7 +88,12 @@ public class FinishedStudyListPanel extends JPanel {
 				}
 			}
 		});
-
+		studyTable.getColumnModel().getColumn(0).setPreferredWidth(40);
+		studyTable.getColumnModel().getColumn(1).setPreferredWidth(7);
+		studyTable.getColumnModel().getColumn(2).setPreferredWidth(80);
+		studyTable.getColumnModel().getColumn(3).setPreferredWidth(80);
+		studyTable.getColumnModel().getColumn(3).setPreferredWidth(80);
+		
 		studyTable.setAutoCreateRowSorter(true);
 
 		TableStyle.setTableStyle(studyTable);
@@ -163,7 +168,7 @@ public class FinishedStudyListPanel extends JPanel {
 		 * @return the number of columns in the model
 		 */
 		public int getColumnCount() {
-			return 4;
+			return 5;
 		}
 
 		@Override
@@ -171,11 +176,13 @@ public class FinishedStudyListPanel extends JPanel {
 			String result = new String();
 			if (column == 0)
 				result = Msg.getString("FinishedStudyListPanel.column.study"); //$NON-NLS-1$
-			else if (column == 1)
-				result = Msg.getString("FinishedStudyListPanel.column.phase"); //$NON-NLS-1$
+			else if (column == 1) 
+				result = Msg.getString("FinishedStudyListPanel.column.level"); //$NON-NLS-1$
 			else if (column == 2)
-				result = Msg.getString("FinishedStudyListPanel.column.researcher"); //$NON-NLS-1$
+				result = Msg.getString("FinishedStudyListPanel.column.phase"); //$NON-NLS-1$
 			else if (column == 3)
+				result = Msg.getString("FinishedStudyListPanel.column.researcher"); //$NON-NLS-1$
+			else if (column == 4)
 				result = Msg.getString("FinishedStudyListPanel.column.settlement"); //$NON-NLS-1$
 			return result;
 		}
@@ -214,12 +221,14 @@ public class FinishedStudyListPanel extends JPanel {
 				}
 				
 				if (columnIndex == 0) 
-					result = Conversion.capitalize(study.toString());
+					result = Conversion.capitalize(study.getScienceName());
 				else if (columnIndex == 1) 
+					result = study.getDifficultyLevel() + "";
+				else if (columnIndex == 2) 
 					result = Conversion.capitalize(study.getPhase());
-				else if (columnIndex == 2)
-					result = Conversion.capitalize(researcherN);
 				else if (columnIndex == 3)
+					result = Conversion.capitalize(researcherN);
+				else if (columnIndex == 4)
 					result = Conversion.capitalize(settlementN);
 			}
 			return result;

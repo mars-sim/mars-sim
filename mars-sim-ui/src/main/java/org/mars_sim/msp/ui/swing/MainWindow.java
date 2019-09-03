@@ -91,7 +91,8 @@ extends JComponent {
 	public static final String OS = System.getProperty("os.name").toLowerCase(); // e.g. 'linux', 'mac os x'
 	private static final String SOL = " Sol ";
 	private static final String themeSkin = "nimrod";
-
+	private static final String WHITESPACES = "   ";
+	
 //	private static int AUTOSAVE_EVERY_X_MINUTE = 15;
 	private static final int TIME_DELAY = 960;
 
@@ -132,16 +133,18 @@ extends JComponent {
 
 	private Timer delayTimer;
 	private Timer delayTimer1;
-//	private Timer autosaveTimer;
+	
 	private javax.swing.Timer earthTimer;
 
-	// protected ShowDateTime showDateTime;
 	private JStatusBar statusBar;
+	
 	private JLabel leftLabel;
 	private JLabel memMaxLabel;
 	private JLabel memUsedLabel;
-	// private JLabel dateLabel;
+	
+	private JLabel marsTimeLabel;
 	private JLabel earthTimeLabel;
+	
 	private JPanel bottomPane;
 	private JPanel mainPane;
 
@@ -303,10 +306,16 @@ extends JComponent {
 		// Create the status bar
 		statusBar = new JStatusBar();
 
+		marsTimeLabel = new JLabel();
+		marsTimeLabel.setHorizontalAlignment(JLabel.LEFT);
+		TooltipManager.setTooltip(marsTimeLabel, "Mars Timestamp", TooltipWay.up);
+		statusBar.setLeftComponent(marsTimeLabel, true);
+		
 		earthTimeLabel = new JLabel();
 		earthTimeLabel.setHorizontalAlignment(JLabel.LEFT);
 		TooltipManager.setTooltip(earthTimeLabel, "Earth Timestamp", TooltipWay.up);
 		statusBar.setLeftComponent(earthTimeLabel, true);
+
 
 		leftLabel = new JLabel();
 		leftLabel.setText(SOL + "1");
@@ -454,8 +463,10 @@ extends JComponent {
 					marsClock = masterClock.getMarsClock();
 				}
 
-				earthTimeLabel.setText(earthClock.getTimeStampF1());
+				earthTimeLabel.setText(WHITESPACES + earthClock.getTimeStampF1() + WHITESPACES);
 
+				marsTimeLabel.setText(WHITESPACES + marsClock.getTrucatedDateTimeStamp()+ WHITESPACES);
+				
 				int memFree = (int) Math.round(Runtime.getRuntime().freeMemory()) / 1_000_000;
 				int memTotal = (int) Math.round(Runtime.getRuntime().totalMemory()) / 1_000_000;
 				int memUsed = memTotal - memFree;
@@ -464,7 +475,7 @@ extends JComponent {
 					memUsedCache = memUsed;
 					memUsedLabel.setText(
 //							"Used Memory : " + 
-							memUsed + " MB");
+							memUsed + " MB" + WHITESPACES);
 				}
 
 				int sol = marsClock.getMissionSol();

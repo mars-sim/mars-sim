@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.person.ai.taskUtil.MetaTask;
 import org.mars_sim.msp.core.person.ai.taskUtil.Task;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * Meta task for the Workout task.
@@ -78,7 +79,8 @@ public class WorkoutMeta implements MetaTask, Serializable {
              		result*=4D;
             }
 
-            	            
+            if (result <= 0) result = 0;
+            
             // Get an available gym.
             Building building = Workout.getAvailableGym(person);
             if (building != null) {
@@ -87,8 +89,8 @@ public class WorkoutMeta implements MetaTask, Serializable {
             } // a person can still have workout on his own without a gym in MDP Phase 1-3
 
             // Modify if working out is the person's favorite activity.
-            if (person.getFavorite().getFavoriteActivity() == FavoriteType.OPERATION) {
-                result *= 2D;
+            if (person.getFavorite().getFavoriteActivity() == FavoriteType.SPORT) {
+                result += RandomUtil.getRandomInt(1, 20);
             }
 
             if (result < 0) result = 0;

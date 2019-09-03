@@ -126,7 +126,7 @@ public class DigLocalRegolithMeta implements MetaTask, Serializable {
 	
 	        // Modify if field work is the person's favorite activity.
 	        if (person.getFavorite().getFavoriteActivity() == FavoriteType.FIELD_WORK)
-	            result *= RandomUtil.getRandomInt(1, 3);
+	            result += RandomUtil.getRandomInt(1, 20);
 	
 	        if (result > 0)
 	        	result = result + result * person.getPreference().getPreferenceScore(this)/5D;

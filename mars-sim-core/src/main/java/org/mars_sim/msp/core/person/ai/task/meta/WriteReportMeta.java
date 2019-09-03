@@ -18,6 +18,7 @@ import org.mars_sim.msp.core.person.ai.taskUtil.MetaTask;
 import org.mars_sim.msp.core.person.ai.taskUtil.Task;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * Meta task for the WriteReport task.
@@ -90,6 +91,8 @@ public class WriteReportMeta implements MetaTask, Serializable {
 		            	result += 10D;
 	            }
 	            
+	            if (result <= 0) result = 0;
+	            
 	            // Get an available office space.
 	            Building building = WriteReport.getAvailableOffice(person);
 
@@ -104,7 +107,7 @@ public class WriteReportMeta implements MetaTask, Serializable {
 
                 // Modify if operation is the person's favorite activity.
                 if (person.getFavorite().getFavoriteActivity() == FavoriteType.OPERATION) {
-                    result *= 1.5D;
+                    result += RandomUtil.getRandomInt(1, 20);
                 }
 
 	            

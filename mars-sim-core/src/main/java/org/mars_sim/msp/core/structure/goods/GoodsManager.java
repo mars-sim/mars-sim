@@ -160,7 +160,7 @@ public class GoodsManager implements Serializable {
 
 	private static final double CROPFARM_BASE = 1;
 	private static final double MANU_BASE = 1;
-	private static final double RESEARCH_BASE = 1;
+	private static final double RESEARCH_BASE = 1.5;
 	private static final double TRANSPORT_BASE = 1;
 	private static final double TRADE_BASE = 1;
 	private static final double TOURISM_BASE = 1;

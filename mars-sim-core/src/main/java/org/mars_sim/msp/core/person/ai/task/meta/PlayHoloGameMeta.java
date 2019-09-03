@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.task.PlayHoloGame;
@@ -136,6 +137,13 @@ public class PlayHoloGameMeta implements MetaTask, Serializable {
                 result*= WORK_SHIFT_MODIFIER;
             }
 
+            if (result <= 0) return 0;
+            
+	        // Modify if research is the person's favorite activity.
+	        if (person.getFavorite().getFavoriteActivity() == FavoriteType.GAMING) {
+	            result += RandomUtil.getRandomInt(1, 20);
+	        }
+	        
             result *= person.getAssociatedSettlement().getGoodsManager().getTourismFactor();
             		
             if (result < 0) result = 0;

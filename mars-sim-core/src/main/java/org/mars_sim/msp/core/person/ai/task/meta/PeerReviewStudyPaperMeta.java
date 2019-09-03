@@ -22,6 +22,7 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
+import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * Meta task for the PeerReviewStudyPaper task.
@@ -89,6 +90,8 @@ public class PeerReviewStudyPaperMeta implements MetaTask, Serializable {
 	            }
 	        }
 
+	        if (result == 0) return 0;
+	        
 	        // Effort-driven task modifier.
 	        result *= person.getPerformanceRating();
 
@@ -100,7 +103,7 @@ public class PeerReviewStudyPaperMeta implements MetaTask, Serializable {
 
 	        // Modify if research is the person's favorite activity.
 	        if (person.getFavorite().getFavoriteActivity() == FavoriteType.RESEARCH) {
-	            result *= 2D;
+	            result += RandomUtil.getRandomInt(1, 20);
 	        }
 
 	        // Add Preference modifier

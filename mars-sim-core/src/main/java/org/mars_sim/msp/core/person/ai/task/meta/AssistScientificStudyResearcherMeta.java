@@ -20,6 +20,7 @@ import org.mars_sim.msp.core.person.ai.taskUtil.Task;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -73,7 +74,7 @@ public class AssistScientificStudyResearcherMeta implements MetaTask, Serializab
 	        // Find potential researchers.
 	        Collection<Person> potentialResearchers = AssistScientificStudyResearcher.getBestResearchers(person);
 	        if (potentialResearchers.size() > 0) {
-	            result = 50D;
+	            result += RandomUtil.getRandomInt(1, 50);
 
 	            // If assistant is in a settlement, use crowding modifier.
                 Person researcher = (Person) potentialResearchers.toArray()[0];
@@ -93,7 +94,7 @@ public class AssistScientificStudyResearcherMeta implements MetaTask, Serializab
 
 	            // Modify if research is the person's favorite activity.
 	            if (person.getFavorite().getFavoriteActivity() == FavoriteType.RESEARCH) {
-	                result *= 2D;
+		        	result += RandomUtil.getRandomInt(1, 20);
 	            }
 
                 // 2015-06-07 Added Preference modifier

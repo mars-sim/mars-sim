@@ -565,7 +565,7 @@ public class MarsClock implements Serializable {
 	}
 
 	/**
-	 * Returns formatted time stamp string in the format of e.g. "03-Adir-05:056.349"
+	 * Returns formatted time stamp string in the format of e.g. "03-Adir-05:056"
 	 *
 	 * @return formatted time stamp string
 	 */

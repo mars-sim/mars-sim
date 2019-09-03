@@ -23,6 +23,7 @@ import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * Meta task for the ProposeScientificStudy task.
@@ -32,10 +33,14 @@ public class ProposeScientificStudyMeta implements MetaTask, Serializable {
     /** default serial id. */
     private static final long serialVersionUID = 1L;
     
+    private static final double FACTOR = 3D;
+    
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.proposeScientificStudy"); //$NON-NLS-1$
 
+    private static ScientificStudyManager studyManager;
+    
     @Override
     public String getName() {
         return NAME;
@@ -63,18 +68,17 @@ public class ProposeScientificStudyMeta implements MetaTask, Serializable {
         if (person.isInVehicle()) {	
 	        // Check if person is in a moving rover.
 	        if (PerformLaboratoryExperiment.inMovingRover(person)) {
-	            result = -30D;
-	            return 0;
+	            result = -20D;
 	        } 	       
 	        else
 	        // the penalty for performing experiment inside a vehicle
-	        	result = -20D;
+	        	result = -10D;
         }
         
         if (person.isInside()) {
-
-	        ScientificStudyManager manager = Simulation.instance().getScientificStudyManager();
-	        ScientificStudy study = manager.getOngoingPrimaryStudy(person);
+	        if (studyManager == null)
+	        	studyManager = Simulation.instance().getScientificStudyManager();
+	        ScientificStudy study = studyManager.getOngoingPrimaryStudy(person);
 	        if (study != null) {
 
 	            // Check if study is in proposal phase.
@@ -84,10 +88,10 @@ public class ProposeScientificStudyMeta implements MetaTask, Serializable {
 	                Job job = person.getMind().getJob();
 	                ScienceType science = study.getScience();
 	                if ((job != null) && science == ScienceType.getJobScience(job)) {
-	                    result = 50D;
+	                    result += 50D;
 	                }
 	                else {
-	                    result = 10D;
+	                    result += 20D;
 	                }
 	            }
 	        }
@@ -96,14 +100,16 @@ public class ProposeScientificStudyMeta implements MetaTask, Serializable {
 
 	            // Check if scientist job.
 	            if (ScienceType.isScienceJob(person.getMind().getJob())) {
-	                result = 1D;
+	                result += 50D;
 	            }
 
 	            // Modify if researcher is already collaborating in studies.
-	            int numCollabStudies = manager.getOngoingCollaborativeStudies(person).size();
-	            result /= (numCollabStudies + 1D);
+	            int numCollabStudies = studyManager.getOngoingCollaborativeStudies(person).size();
+	            result /= (numCollabStudies * 1.5 + 1D);
 	        }
 
+	        if (result <= 0) return 0;
+	        
 	        // Crowding modifier
 	        if (person.isInSettlement()) {
 	            Building b = ProposeScientificStudy.getAvailableBuilding(study, person);
@@ -118,18 +124,16 @@ public class ProposeScientificStudyMeta implements MetaTask, Serializable {
 	        Job job = person.getMind().getJob();
 	        if (job != null) {
 	            result *= job.getStartTaskProbabilityModifier(ProposeScientificStudy.class)
-	            		* 1.5D * person.getAssociatedSettlement().getGoodsManager().getResearchFactor();
+	            		* FACTOR * person.getAssociatedSettlement().getGoodsManager().getResearchFactor();
 	        }
-
+	        
 	        // Modify if research is the person's favorite activity.
 	        if (person.getFavorite().getFavoriteActivity() == FavoriteType.RESEARCH) {
-	            result *= 2D;
+	        	result += RandomUtil.getRandomInt(1, 20);
 	        }
 
-	        // 2015-06-07 Added Preference modifier
-            // 2015-06-07 Added Preference modifier
             if (result > 0D) {
-                result = result + result * person.getPreference().getPreferenceScore(this)/2D;
+                result = result + result * person.getPreference().getPreferenceScore(this);
             }
 
         }

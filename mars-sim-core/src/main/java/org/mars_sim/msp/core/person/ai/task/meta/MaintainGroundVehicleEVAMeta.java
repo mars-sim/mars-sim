@@ -22,6 +22,7 @@ import org.mars_sim.msp.core.person.ai.taskUtil.Task;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
+import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
@@ -108,7 +109,7 @@ public class MaintainGroundVehicleEVAMeta implements MetaTask, Serializable {
 	
 	            // Modify if tinkering is the person's favorite activity.
 	            if (person.getFavorite().getFavoriteActivity() == FavoriteType.TINKERING) {
-	                result *= 1.5D;
+	                result += RandomUtil.getRandomInt(1, 20);
 	            }
 	
 	            // 2015-06-07 Added Preference modifier
