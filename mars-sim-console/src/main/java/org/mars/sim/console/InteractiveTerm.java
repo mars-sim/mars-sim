@@ -42,6 +42,8 @@ public class InteractiveTerm {
 
     private int choiceIndex = -1;
 
+    private static boolean consoleEdition = false;
+    
     private static boolean keepRunning;
     
     private static boolean useCrew = true;
@@ -60,7 +62,8 @@ public class InteractiveTerm {
 	
 	private static GameManager gm;
 
-	public InteractiveTerm() {
+	public InteractiveTerm(boolean consoleEdition) {
+		this.consoleEdition = consoleEdition;
 		
 		terminal = new MarsTerminal();
         terminal.init();
@@ -74,39 +77,42 @@ public class InteractiveTerm {
 	
     
     public static void main(String[] args) {	
-    	new InteractiveTerm().startModeSelection();
-    	
+    	new InteractiveTerm(true).startModeSelection();
     }
  
 	
 	/**
 	 * Asks users what mode to run in a text-io terminal.
 	 */
-	public void startModeSelection() {
+	public boolean startModeSelection() {
 
 		initializeTerminal();
 		
 		profile = new CommanderProfile(this);
 
 		gm = new GameManager();
-		
+	
         handler = new SwingHandler(textIO, "console", gm);
         
 		// Prevent allow users from arbitrarily close the terminal by clicking top right close button
 		terminal.registerUserInterruptHandler(term -> {}, false);
 		
 		terminal.print(System.lineSeparator() 
-				+ " ---------------  M A R S   S I M U L A T I O N   P R O J E C T  ---------------" 
-				+ System.lineSeparator()
-				+ System.lineSeparator());
+				+ " ---------------  M A R S   S I M U L A T I O N   P R O J E C T  ---------------\n");
+//				+ "                                   r" + Simulation.BUILD +"\n");
+//				+ System.lineSeparator()
+//				+ System.lineSeparator());
 		
-		selectMode();
+		return selectMode();
 	}
 	
 	
-	public void selectMode() {
-		terminal.print(
-				"0. Exit "
+	public boolean selectMode() {
+		boolean useSCE = false;
+		
+		terminal.print(System.lineSeparator()
+				+ System.lineSeparator()
+				+ "0. Exit "
 				+ System.lineSeparator()
 				+ "1. Command Mode "
 				+ System.lineSeparator()
@@ -128,103 +134,221 @@ public class InteractiveTerm {
 			System.exit(0);
         }
         else if (GameManager.input.equals("1")) {
-			
-			// Set the Game Mode to Command Mode in GameManager
-			GameManager.mode = GameMode.COMMAND;
-			
-	        terminal.println(System.lineSeparator() 
-	        		+ "                * * *  COMMAND MODE - CREW SELECTION * * *" 
-	        		+ System.lineSeparator()
-	        		+ System.lineSeparator()
-					+ "1. Enable/Disable Alpha Crew"
-					+ System.lineSeparator()
-					+ "2. Set up Commander's Profile"
-					+ System.lineSeparator()
-					+ "3. Load from Previous Commander's Profile"
-					+ System.lineSeparator()
-					+ System.lineSeparator()
-					+ "Note: Alpha Crew is loaded by default."
-					+ System.lineSeparator()
-					);
-			
-	        handler.addStringTask("choice", "Enter your choice:", false).addChoices("1", "2", "3").constrainInputToChoices();
-	        handler.executeOneTask();
-
-	    	if ((GameManager.choice).equals("1")) {
-				terminal.print(System.lineSeparator());
-				if (useCrew) {			
-					useCrew = false;
-					terminal.print("Alpha Crew is now DISABLED.");
-				}
-				else {
-					useCrew = true;
-					terminal.print("Alpha Crew is now ENABLED.");
-				}
-								
-				terminal.print(System.lineSeparator());
-	    	}
-	    	
-	    	else if ((GameManager.choice).equals("2")) {
-				terminal.print(System.lineSeparator());
-				// Set new profile
-				profile.accept(textIO, null);
-	    	}
-	    	
-	    	else if ((GameManager.choice).equals("3")) {
-	    		// Load from previously saved profile
-	    		loadPreviousProfile();
-	    	}
-		}
+        	useSCE = selectCommandMode();
+        }
         
-		else if (GameManager.input.equals("2")) {
-			GameManager.mode = GameMode.SANDBOX;
-
-	        terminal.println(System.lineSeparator() 
-	        		+ "                * * *  SANDOX MODE * * *" 
-	        		+ System.lineSeparator()
-	        		+ System.lineSeparator()
-					+ "0. Proceed"
-	        		+ System.lineSeparator()
-	        		+ System.lineSeparator()
-					+ "1. Enable/Disable Alpha Crew"
-					+ System.lineSeparator()
-					+ System.lineSeparator()
-					+ "Note 1: Alpha Crew is loaded by default."
-					+ System.lineSeparator()
-					);
-			
-	        handler.addStringTask("choice", "Enter your choice:", false).addChoices("0", "1").constrainInputToChoices();
-	        handler.executeOneTask();
-
-	    	if ((GameManager.choice).equals("1")) {
-				terminal.print(System.lineSeparator());
-				if (useCrew) {			
-					useCrew = false;
-					terminal.print("Alpha Crew is now DISABLED.");
-				}
-				else {
-					useCrew = true;
-					terminal.print("Alpha Crew is now ENABLED.");
-				}
-				terminal.print(System.lineSeparator());
-	    	}
-	    	
-	    	else if ((GameManager.choice).equals("0")) {
-				terminal.print(System.lineSeparator());
-	    	}
-		}
+        else if (GameManager.input.equals("2")) {
+        	useSCE = selectSandoxMode();
+        }
         
-    	// Set the alpha crew use
-    	UnitManager.setCrew(useCrew);
+		terminal.print(System.lineSeparator());
+		
+        return useSCE;
+	}
+	
+	public boolean selectSCE() {
+		boolean useSCE = false;
+		terminal.println(System.lineSeparator());
+		
+	    terminal.println(System.lineSeparator() 
+        		+ System.lineSeparator()
+        		+ "           * * *  Command Mode - Site Selection  * * *" 
+         		+ System.lineSeparator()
+        		+ System.lineSeparator()
+				+ "0. Proceed with the default site selection."
+        		+ System.lineSeparator()
+        		+ System.lineSeparator()
+				+ "1. Go to Simulation Configuration Editor (SCE)."
+				+ System.lineSeparator()
+				+ System.lineSeparator()
+				+ "Note: Console Editon does not have SCE."
+				+ System.lineSeparator()
+				);
+		
+        handler.addStringTask("useSCE", "Enter your choice:", false).addChoices("0", "1").constrainInputToChoices();
+        handler.executeOneTask();
+
+        if ((GameManager.useSCE).equals("0")) {
+        	terminal.print(System.lineSeparator());
+			terminal.print("Starting the simulation...");	
+        }
+        
+        else if ((GameManager.useSCE).equals("1")) {
+        	if (consoleEdition) {
+				terminal.print(System.lineSeparator());
+				terminal.print("Sorry. The Console Edition of mars-sim does not come with the SCE.");	        		
+        	}
+        	else {
+				terminal.print(System.lineSeparator());
+				terminal.print("Loading Simulation Configuration Editor...");
+				useSCE = true;
+        	}
+        }
+        
+		terminal.print(System.lineSeparator());
+		
+        return useSCE;
+	}
+	
+	public boolean selectCommandMode() {
+		boolean useSCE = false;
+		
+		// Set the Game Mode to Command Mode in GameManager
+		GameManager.mode = GameMode.COMMAND;
+		
+        terminal.println(System.lineSeparator() 
+        		+ System.lineSeparator()
+        		+ "            * * *  Command Mode - Crew Selection  * * *" 
+        		+ System.lineSeparator()
+        		+ System.lineSeparator()
+				+ "0. Go back to previous page"
+				+ System.lineSeparator()
+				+ "1. Enable/Disable Alpha Crew"
+				+ System.lineSeparator()
+				+ "2. Set up Commander's Profile"
+				+ System.lineSeparator()
+				+ "3. Load from Previous Commander's Profile"
+				+ System.lineSeparator()
+				+ System.lineSeparator()
+				+ "Note 1: Alpha Crew is loaded by default."
+				+ System.lineSeparator()
+				+ "Note 2: Console Editon does not have the SCE."
+				+ System.lineSeparator()
+				);
+		
+        handler.addStringTask("command0", "Enter your choice:", false).addChoices("0", "1", "2", "3").constrainInputToChoices();
+        handler.executeOneTask();
+
+        if ((GameManager.command0).equals("0")) {
+			terminal.print(System.lineSeparator());
+			terminal.print("Back to the previous page..");
+			return selectMode();
+        }
+        
+        else if ((GameManager.command0).equals("1")) {
+			terminal.print(System.lineSeparator());
+			if (useCrew) {			
+				useCrew = false;
+				terminal.print("Alpha Crew is now DISABLED.");
+			}
+			else {
+				useCrew = true;
+				terminal.print("Alpha Crew is now ENABLED.");
+			}
+			
+	    	// Set the alpha crew use
+	    	UnitManager.setCrew(useCrew);
+	    	
+			useSCE = selectCommandMode();
+			
+    	}
+    	
+    	else if ((GameManager.command0).equals("2")) {
+			terminal.print(System.lineSeparator());
+			// Set new profile
+			profile.accept(textIO, null);
+			
+			useSCE = selectSCE();
+    	}
+    	
+    	else if ((GameManager.command0).equals("3")) {
+    		// Load from previously saved profile
+    		loadPreviousProfile();
+    		
+    		useSCE = selectSCE();
+    	}
+        
+		terminal.print(System.lineSeparator());
+		
+        return useSCE;
+	}
+ 
+	
+	public boolean selectSandoxMode() {
+		boolean useSCE = false;
+		
+		GameManager.mode = GameMode.SANDBOX;
+
+        terminal.println(System.lineSeparator() 
+        		+ System.lineSeparator()
+        		+ "           * * *  Sandbox Mode - Crew and Site Selection  * * *" 
+        		+ System.lineSeparator()
+        		+ System.lineSeparator()
+				+ "0. Proceed with the default site selection."
+        		+ System.lineSeparator()
+				+ "1. Go to Simulation Configuration Editor (SCE) "
+				+ System.lineSeparator()
+				+ "2. Enable/Disable Alpha Crew"
+				+ System.lineSeparator()
+				+ System.lineSeparator()
+				+ "Note 1: Alpha Crew is loaded by default."
+				+ System.lineSeparator()
+				+ "Note 2: Console Editon does not have SCE."
+				+ System.lineSeparator()
+				);
+		
+        handler.addStringTask("sandbox0", "Enter your choice:", false).addChoices("0", "1", "2").constrainInputToChoices();
+        handler.executeOneTask();
+
+    	if ((GameManager.sandbox0).equals("0")) {
+			terminal.print(System.lineSeparator());
+			terminal.print("Starting the simulation...");
+			terminal.print(System.lineSeparator());
+    	}
+    	
+    	else if ((GameManager.sandbox0).equals("1")) {
+        	if (consoleEdition) {
+				terminal.print(System.lineSeparator());
+				terminal.print("Sorry. The Console Edition of mars-sim does not come with the SCE.");	
+				terminal.println(System.lineSeparator());
+				
+				useSCE = selectSandoxMode();
+        	}
+        	else {
+				terminal.print(System.lineSeparator());
+				terminal.print("Loading Simulation Configuration Editor...");
+				terminal.println(System.lineSeparator());
+				
+				useSCE = true;
+        	}
+        }
+        
+        else if ((GameManager.sandbox0).equals("2")) {
+			terminal.print(System.lineSeparator());
+			if (useCrew) {			
+				useCrew = false;
+				terminal.print("Alpha Crew is now DISABLED.");	
+			}
+			else {
+				useCrew = true;
+				terminal.print("Alpha Crew is now ENABLED.");
+			}
+			
+			terminal.print(System.lineSeparator());
+			terminal.print(System.lineSeparator());
+			
+	    	// Set the alpha crew use
+	    	UnitManager.setCrew(useCrew);
+	    	
+	    	useSCE = selectSandoxMode();
+    	}
+    	
+//        else {
+//        	useSCE = selectSandoxMode();
+//        }
+    	
+    	return useSCE;
 	}
 	
 	public void loadPreviousProfile() {
+		 
 		try {
 			boolean canLoad = CommanderProfile.loadProfile();
 			
 			if (canLoad) {
 	            terminal.println(System.lineSeparator() 
-	            		+ "                * * *  COMMANDER'S PROFILE * * *" 
+	            		+ System.lineSeparator()
+	            		+ "                * * *  Commander's Profile * * *" 
 	            		+ System.lineSeparator()
 	            		+ profile.getCommander().toString()
 	            		+ System.lineSeparator());
@@ -259,6 +383,7 @@ public class InteractiveTerm {
 					+ System.lineSeparator());
 			selectMode();
 		}
+		
 	}
 	
 	/**

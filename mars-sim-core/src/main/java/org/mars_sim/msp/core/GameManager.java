@@ -12,21 +12,30 @@ import org.mars_sim.msp.core.person.Person;
 public class GameManager {
 	
     public static int id;
-    
+
+    /** The GameMode enums. */
     public enum GameMode {
         SANDBOX, COMMAND; 
     }
     
+    /** An instance of GameMode. */
     public static GameMode mode;
 
-    // The input variable captures the first player text input
+    /** The input variable captures the game mode choice. */
     public static String input;
 
-    // The choice variable captures the second player text input
-    public static String choice;
+    /** The useSCE variable captures the choice of using useSCE. */
+    public static String useSCE;
 
+    /** The command0 variable captures the first choice in the Command Mode. */
+    public static String command0;
+    
+    /** The sandbox0 variable captures the first choice in the Sandbox Mode. */
+    public static String sandbox0;
+    
+    /** The Commander instance. */
     public static Person commanderPerson;
-
+    /** The UnitManager instance. */
     public static UnitManager unitManager;
     
     public static void setCommander(Person cc) {
@@ -34,14 +43,6 @@ public class GameManager {
     	id = cc.getIdentifier();
     }
     
-//    public String getMode() {
-//    	return mode;
-//    }
-//
-//    public void setMode(String mode) {
-//    	this.mode = mode;
-//    }
-//    
     public static void initializeInstances(UnitManager u) {
     	unitManager = u;
 	
@@ -58,6 +59,6 @@ public class GameManager {
     
     @Override
     public String toString() {
-        return System.lineSeparator() +">" + input;
+        return System.lineSeparator() +"> ";
     }
 }

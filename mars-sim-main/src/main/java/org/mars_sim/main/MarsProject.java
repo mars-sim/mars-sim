@@ -56,7 +56,7 @@ public class MarsProject {
 
 	private Simulation sim = Simulation.instance();
 
-	private InteractiveTerm interactiveTerm = new InteractiveTerm();
+	private InteractiveTerm interactiveTerm = new InteractiveTerm(false);
 	
 	private static final String HELP = 
 
@@ -402,13 +402,25 @@ public class MarsProject {
 				// Initialize the simulation.
 				SimulationConfig.loadConfig();
 				// Start interactive terminal
-				interactiveTerm.startModeSelection();
+				boolean useSCE = interactiveTerm.startModeSelection();
 				// Initialize interactive terminal 
 				InteractiveTerm.initializeTerminal();	
 				// Start sim config editor
-				SwingUtilities.invokeLater(() -> {
-					new SimulationConfigEditor(SimulationConfig.instance(), null);
-				});
+				
+				if (useSCE) {
+					SwingUtilities.invokeLater(() -> {
+						new SimulationConfigEditor(SimulationConfig.instance(), null);
+					});
+				}
+				
+				else { // Since SCE is not used, manually set up each of the followings 
+					// Create new simulation
+					Simulation.createNewSimulation(-1, false);
+					// Start the simulation
+					startSimThread(false);
+					// Create main window
+					setupMainWindow();
+				}
 			} 
 			
 			else {

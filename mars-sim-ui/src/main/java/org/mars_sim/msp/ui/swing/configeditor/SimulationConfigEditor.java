@@ -174,7 +174,7 @@ public class SimulationConfigEditor {
 		if (mode == GameMode.COMMAND) {
 
 			String commanderName = personConfig.getCommander().getFullName();
-			String sponsor = personConfig.getCommander().getSponsor();
+			String sponsor = personConfig.getCommander().getSponsorStr();
 			JLabel gameModeLabel = new JLabel(Msg.getString("SimulationConfigEditor.gameMode", "Command Mode"), JLabel.CENTER); //$NON-NLS-1$
 			gameModeLabel.setFont(new Font("Serif", Font.PLAIN, 14));
 			topPanel.add(gameModeLabel);
@@ -755,7 +755,7 @@ public class SimulationConfigEditor {
 				
 				// Modify the sponsor in case of the Commander Mode
 				if (x == 0 && mode == GameMode.COMMAND)
-					info.sponsor = personConfig.getCommander().getSponsor();
+					info.sponsor = personConfig.getCommander().getSponsorStr();
 				else
 					info.sponsor = settlementConfig.getInitialSettlementSponsor(x);
 				

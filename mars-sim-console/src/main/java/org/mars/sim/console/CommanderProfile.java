@@ -32,6 +32,7 @@ import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.Commander;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.ai.job.JobType;
+import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 
 /**
  * The class for setting up a customized commander profile. It reads handlers and allow going back to the previous field.
@@ -40,6 +41,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
 
 	private static Logger logger = Logger.getLogger(CommanderProfile.class.getName());
 
+	private static final int MAX = 27;
     private static final String KEY_STROKE_UP = "pressed UP";
     private static final String KEY_STROKE_DOWN = "pressed DOWN";
 
@@ -60,9 +62,9 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
 			"Last Name",
 			"Gender (M, F)",
 			"Age (18-80)",
-			"Job (1-16)",
-			"Mars Society Affiliated",
-			"Country (1-28)"};
+			"Job (1-16), Ctrl-J",
+			"Sponsor (1-9), Ctrl-S",
+			"Country of Origin (1-28), Ctrl-O"};
 	
 	private static Commander commander;
     	
@@ -90,7 +92,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
     
     public String getFieldName(String field) {
     	StringBuilder s = new StringBuilder();
-    	int size = 27 - field.length();
+    	int size = MAX - field.length();
     	for (int i = 0; i < size; i++) {
     		s.append(ONE_SPACE);
     	}
@@ -110,16 +112,18 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
         addString(textIO, getFieldName(fields[1]), () -> commander.getLastName(), s -> commander.setLastName(s));     
         addGender(textIO, getFieldName(fields[2]), () -> commander.getGender(), s -> commander.setGender(s));
         addAge(textIO, getFieldName(fields[3]), () -> commander.getAge(), s -> commander.setAge(s));	      
-        addJobTask(textIO, getFieldName(fields[4]), () -> commander.getJob(), s -> commander.setJob(s));	
-        addAffiliation(textIO, getFieldName(fields[5]), () -> commander.isMarsSocietyStr(), s -> commander.setMarsSocietyStr(s));
+        addJobTask(textIO, getFieldName(fields[4]), () -> commander.getJob(), s -> commander.setJob(s));
+        addSponsorTask(textIO, getFieldName(fields[5]), () -> commander.getSponsorInt(), s -> commander.setSponsorInt(s));
+//        addAffiliation(textIO, getFieldName(fields[5]), () -> commander.isMarsSocietyStr(), s -> commander.setMarsSocietyStr(s));
         addCountryTask(textIO, getFieldName(fields[6]), () -> commander.getCountryInt(), s -> commander.setCountryInt(s));
           
         setUpCountryKey();
         setUpJobKey();
+        setUpSponsorKey();
         setUpUndoKey();
        
         terminal.println(System.lineSeparator() 
-        		+ "                * * *  COMMANDER'S PROFILE * * *" 
+        		+ "                * * *  Commander's Profile  * * *" 
         		+ System.lineSeparator()
         		+ commander.toString()
         		+ System.lineSeparator());
@@ -196,7 +200,29 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
     }
 
   
-    
+    public void setUpSponsorKey() {
+        String key = "ctrl S";
+        
+        boolean isKey = terminal.registerHandler(key, t -> {
+            terminal.executeWithPropertiesPrefix("sponsor",
+                    tt ->   {   
+			           	tt.print(System.lineSeparator() 
+			           		+ System.lineSeparator() 
+			           		+ "    ----------------------- Sponsors Listing -----------------------" 
+			           		+ System.lineSeparator()
+			           		+ System.lineSeparator());
+			        	List<String> list = ReportingAuthorityType.getLongSponsorList();
+			        	tt.print(printOneColumn(list));
+                    }
+            );
+            return new ReadHandlerData(ReadInterruptionStrategy.Action.RESTART).withRedrawRequired(true);
+        });
+        
+        if (isKey) {
+           	terminal.println("Press Ctrl-S to show a list of sponsors.");
+        }
+        
+    }
     
     public void setUpJobKey() {
         String keyJobs = "ctrl J";
@@ -324,20 +350,31 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
         	});
     }
     
-    private void addAffiliation(TextIO textIO, String prompt, Supplier<String> defaultValueSupplier, Consumer<String> valueSetter) {
+//    private void addAffiliation(TextIO textIO, String prompt, Supplier<String> defaultValueSupplier, Consumer<String> valueSetter) {
+//        operations.add(() -> {
+//        	String[] ans = {"y", "n"};
+//        	setChoices(ans);
+//        	valueSetter.accept(textIO.newStringInputReader()
+////                  .withPromptAdjustments(false)
+////                  .withInlinePossibleValues(ans)
+//                    .withIgnoreCase()
+////                    .withPromptAdjustments(false)
+////				.withInlinePossibleValues("m", "f", "M", "F")
+////                .withDefaultValue(defaultValueSupplier.get())
+//              .withDefaultValue("y")
+//                .read(prompt));
+//        	});
+//    } 
+    
+    private void addSponsorTask(TextIO textIO, String prompt, Supplier<Integer> defaultValueSupplier, Consumer<Integer> valueSetter) {
         operations.add(() -> {
-        	String[] ans = {"y", "n"};
-        	setChoices(ans);
-        	valueSetter.accept(textIO.newStringInputReader()
-//                  .withPromptAdjustments(false)
-//                  .withInlinePossibleValues(ans)
-                    .withIgnoreCase()
-//                    .withPromptAdjustments(false)
-//				.withInlinePossibleValues("m", "f", "M", "F")
-//                .withDefaultValue(defaultValueSupplier.get())
-              .withDefaultValue("y")
+        	setChoices();
+        	valueSetter.accept(textIO.newIntInputReader()
+                .withDefaultValue(8)
+                .withMinVal(1)
+                .withMaxVal(9)//defaultValueSupplier.get())
                 .read(prompt));
-        	});
+    		});
     }
     
     private void addCountryTask(TextIO textIO, String prompt, Supplier<Integer> defaultValueSupplier, Consumer<Integer> valueSetter) {
@@ -359,6 +396,34 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
 //                .read(prompt)));
 //    }
     
+    
+    /**
+     * Add the parenthesis and the numerical and prints the list
+     * 
+     * @return List<String>
+     */
+    public static List<String> printOneColumn(List<String> list) {
+    	
+       	List<String> newList = new ArrayList<>();
+    	StringBuffer s = null;
+  
+        for (int i=0; i< list.size(); i++) {  
+            s = new StringBuffer();
+        	String c = list.get(i).toString();
+
+			// Look at how many whitespaces needed before printing each column
+        	if (i+1 < 10)
+        		s.append(" ");
+        	s.append("(");
+        	s.append(i+1);
+        	s.append("). ");
+        	s.append(c);        		
+            
+            newList.add(s.toString());
+        }
+      
+        return newList;    
+    }
     
     /**
      * Generates and prints the list that needs to be processed
@@ -431,7 +496,8 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
 		p.setProperty("commander.age", commander.getAge() + "");
 		p.setProperty("commander.job", commander.getJobStr());
 		p.setProperty("commander.country", commander.getCountryStr());
-		p.setProperty("commander.MarsSociety", commander.isMarsSocietyStr());
+		p.setProperty("commander.sponsor", commander.getSponsorStr());
+//		p.setProperty("commander.MarsSociety", commander.isMarsSocietyStr());
 	    storeProperties(p);
 
 	}
@@ -502,7 +568,8 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
         cc.setAge(Integer.parseInt(p.getProperty("commander.age")));
         cc.setJobStr(p.getProperty("commander.job"));
         cc.setCountryStr(p.getProperty("commander.country"));  
-        cc.setMarsSocietyStr(p.getProperty("commander.MarsSociety"));  
+        cc.setSponsorStr(p.getProperty("commander.sponsor")); 
+//        cc.setMarsSocietyStr(p.getProperty("commander.MarsSociety"));  
         
         return cc;
     }

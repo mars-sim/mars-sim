@@ -40,7 +40,7 @@ public class MarsProjectHeadless {
 
 	private Simulation sim = Simulation.instance();
 	
-	private InteractiveTerm interactiveTerm = new InteractiveTerm();
+	private InteractiveTerm interactiveTerm = new InteractiveTerm(true);
 	
 	private static final String HELP = 
 
@@ -221,7 +221,7 @@ public class MarsProjectHeadless {
 	}
 
 	/**
-	 * Create a new simulation instance.
+	 * Create a new simulation instance without loading the Simulation Configuration Editor
 	 */
 	private void handleNewSimulation(int userTimeRatio) {
 		try {

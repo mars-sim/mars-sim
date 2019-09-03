@@ -158,6 +158,7 @@ public class UnitManager implements Serializable {
 
 	private static List<String> ESACountries;
 	private static List<String> allCountries;
+	private static List<String> allSponsors;
 	
 	private static SimulationConfig simulationConfig = SimulationConfig.instance();
 	private static Simulation sim = Simulation.instance();
@@ -2313,6 +2314,12 @@ public class UnitManager implements Serializable {
 		return allCountries.get(id);
 	}
 	
+	public static String getSponsorByID(int id) {
+		if (allSponsors == null)
+			getAllSponsorList();
+		return allSponsors.get(id);
+	}
+	
 	public static String getSponsorByCountryID(int id) {
 		if (id == 0)
 			return ReportingAuthorityType.CNSA_L.getName();
@@ -2367,6 +2374,12 @@ public class UnitManager implements Serializable {
 		if (allCountries == null)
 			allCountries = personConfig.createAllCountryList();
 		return allCountries;
+	}
+	
+	public static List<String> getAllSponsorList() {
+		if (allSponsors == null)
+			allSponsors = ReportingAuthorityType.getLongSponsorList();
+		return allSponsors;
 	}
 	
 //	/**
@@ -2425,7 +2438,7 @@ public class UnitManager implements Serializable {
 	
 	/** Gets the commander's sponsor */
 	public String getSponsor() {
-		return personConfig.getCommander().getSponsor();
+		return personConfig.getCommander().getSponsorStr();
 	}
 	
 	/** Gets the settlement's phase */

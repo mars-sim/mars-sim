@@ -21,12 +21,14 @@ public class Commander implements Serializable {
 	
     private static final String ONE_SPACE = " ";
     
-	private boolean isMarsSocietyAffiliated;
+//	private boolean isMarsSocietyAffiliated;
 
 	private int age = -1;
     private int jobInt = -1;
     private int phase;
     private int countryInt = -1;
+    private int sponsorInt = -1;
+    
     private int leadershipPoint = 0;
     private int initialLeadershipPoint = 0;
 
@@ -35,6 +37,8 @@ public class Commander implements Serializable {
     private String gender;
     private String jobStr = "";
     private String countryStr = "";
+    private String sponsorStr = "";
+    
     
     public String getFullName() {
     	if (firstName == null && lastName == null)
@@ -88,6 +92,26 @@ public class Commander implements Serializable {
     	return countryStr;
     }
     
+    public int getSponsorInt() {
+    	if (sponsorInt == -1)
+    		sponsorInt = SimulationConfig.instance().getPersonConfiguration().getCountryNum(countryStr) + 1;
+    	return sponsorInt - 1;
+    }
+    
+    public void setSponsorInt(int c) {
+    	sponsorInt = c;
+    }
+    
+    public void setSponsorStr(String c) {
+    	sponsorStr = c;
+    }
+    
+    public String getSponsorStr() {
+    	if (sponsorStr.equals(""))
+    		sponsorStr = UnitManager.getCountryByID(sponsorInt-1);
+    	return sponsorStr;
+    }
+    
     public int getAge() {
     	return age;
     }
@@ -120,48 +144,42 @@ public class Commander implements Serializable {
     	return phase;
     }
     
-    public void setMarsSocietyStr(String value) {
-    	if (value.equalsIgnoreCase("y")) {
-    		isMarsSocietyAffiliated = true;
-//    		System.out.println("isMarsSocietyAffiliated : " + isMarsSocietyAffiliated);
-    	}
-    	else {
-        	isMarsSocietyAffiliated = false;   
-//    		System.out.println("isMarsSocietyAffiliated : " + isMarsSocietyAffiliated);
-    	}
-    }
-    
-    public void setMarsSociety(boolean value) {
-    	isMarsSocietyAffiliated = value;   		
-    }
-    
-//    public boolean isMarsSocietyAffiliated() {
+//    public void setMarsSocietyStr(String value) {
+//    	if (value.equalsIgnoreCase("y")) {
+//    		isMarsSocietyAffiliated = true;
+////    		System.out.println("isMarsSocietyAffiliated : " + isMarsSocietyAffiliated);
+//    	}
+//    	else {
+//        	isMarsSocietyAffiliated = false;   
+////    		System.out.println("isMarsSocietyAffiliated : " + isMarsSocietyAffiliated);
+//    	}
+//    }
+//    
+//    public void setMarsSociety(boolean value) {
+//    	isMarsSocietyAffiliated = value;   		
+//    }
+//    
+////    public boolean isMarsSocietyAffiliated() {
+////    	return isMarsSocietyAffiliated;
+////    }
+//
+//    public String isMarsSocietyStr() {
+//    	if (isMarsSocietyAffiliated)
+//    		return "y";
+//   		return "n";
+//    }
+//
+//    public boolean isMarsSociety() {
 //    	return isMarsSocietyAffiliated;
 //    }
-
-    public String isMarsSocietyStr() {
-    	if (isMarsSocietyAffiliated)
-    		return "y";
-   		return "n";
-    }
-
-    public boolean isMarsSociety() {
-    	return isMarsSocietyAffiliated;
-    }
     
-    public String getSponsor() {
-    	String s = null;	
-    	if (isMarsSocietyAffiliated) {
-    		s = ReportingAuthorityType.MARS_SOCIETY_L.getName();//Msg.getString("ReportingAuthorityType.long.MS");
-    	}
-    	else {
-    		if (!countryStr.equals(""))
-    			s = UnitManager.mapCountry2Sponsor(countryStr);
-    		else
-    			s = UnitManager.getSponsorByCountryID(countryInt);
-    	}
-    	return s;
-    }
+//    public void setSponsor(String c) {
+//    	countryStr = c;
+//    }
+//    
+//    public String getSponsor() {
+//    	return countryStr;
+//    }
     
     public String getFieldName(String field) {
     	StringBuilder s = new StringBuilder();
@@ -206,8 +224,8 @@ public class Commander implements Serializable {
         	   System.lineSeparator() + getFieldName("           Age : ") + age +
         	   System.lineSeparator() + getFieldName("           Job : ") + getJobStr() +
         	   System.lineSeparator() + getFieldName("       Country : ") + getCountryStr() + 
-        	   System.lineSeparator() + getFieldName("       Sponsor : ") + getSponsor() +
-        	   System.lineSeparator() + getFieldName("  Mars Society : ") + isMarsSocietyStr() 
+        	   System.lineSeparator() + getFieldName("       Sponsor : ") + getSponsorStr() 
+//        	   System.lineSeparator() + getFieldName("  Mars Society : ") + isMarsSocietyStr() 
 //        	   System.lineSeparator() + "   Settlement Phase: " + phase
         	   ;
         
