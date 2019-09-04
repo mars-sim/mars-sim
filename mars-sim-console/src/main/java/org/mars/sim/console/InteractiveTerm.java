@@ -155,10 +155,10 @@ public class InteractiveTerm {
         		+ "           * * *  Command Mode - Site Selection  * * *" 
          		+ System.lineSeparator()
         		+ System.lineSeparator()
-				+ "0. Proceed with the default site selection."
+				+ "0. Proceed with default site selection."
         		+ System.lineSeparator()
         		+ System.lineSeparator()
-				+ "1. Go to Simulation Configuration Editor (SCE)."
+				+ "1. Open Simulation Configuration Editor (SCE)."
 				+ System.lineSeparator()
 				+ System.lineSeparator()
 				+ "Note: Console Editon does not have SCE."
@@ -176,11 +176,13 @@ public class InteractiveTerm {
         else if ((GameManager.useSCE).equals("1")) {
         	if (consoleEdition) {
 				terminal.print(System.lineSeparator());
-				terminal.print("Sorry. The Console Edition of mars-sim does not come with the SCE.");	        		
+				terminal.print("Sorry. The Console Edition of mars-sim does not come with the SCE.");	
+				terminal.print(System.lineSeparator());
         	}
         	else {
 				terminal.print(System.lineSeparator());
 				terminal.print("Loading Simulation Configuration Editor...");
+				terminal.print(System.lineSeparator());
 				useSCE = true;
         	}
         }

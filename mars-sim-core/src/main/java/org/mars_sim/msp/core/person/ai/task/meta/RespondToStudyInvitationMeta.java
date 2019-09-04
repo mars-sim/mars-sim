@@ -62,11 +62,11 @@ public class RespondToStudyInvitationMeta implements MetaTask, Serializable {
         if (person.isInVehicle()) {	
 	        // Check if person is in a moving rover.
 	        if (PerformLaboratoryExperiment.inMovingRover(person)) {
-	            return 0;
+	        	result = -30D;
 	        }
 	        else
 	        // the penalty for performing experiment inside a vehicle
-	        	result = -20D;
+	        	result = -10D;
         }
         
         if (person.isInside()) {
@@ -77,6 +77,8 @@ public class RespondToStudyInvitationMeta implements MetaTask, Serializable {
 	        if (invitedStudies.size() > 0) {
 	            result += invitedStudies.size() * 100D;
 	        }
+	        
+	        if (result <= 0) return 0;
 
 	        // Crowding modifier
             Building adminBuilding = RespondToStudyInvitation.getAvailableAdministrationBuilding(person);
@@ -103,7 +105,7 @@ public class RespondToStudyInvitationMeta implements MetaTask, Serializable {
 
         }
 
-        if (result < 0) result = 0;
+        if (result <= 0) result = 0;
         
         return result;
     }
