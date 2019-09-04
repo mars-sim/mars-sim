@@ -25,6 +25,7 @@ import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.mars.MarsSurface;
+import org.mars_sim.msp.core.person.CrewConfig;
 import org.mars_sim.msp.core.person.Favorite;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.GenderType;
@@ -164,6 +165,7 @@ public class UnitManager implements Serializable {
 	private static Simulation sim = Simulation.instance();
 	
 	private static PersonConfig personConfig;
+	private static CrewConfig crewConfig;
 	private static SettlementConfig settlementConfig;
 	private static VehicleConfig vehicleConfig;
 	private static RobotConfig robotConfig;
@@ -192,8 +194,8 @@ public class UnitManager implements Serializable {
 		equipmentNumberMap = new HashMap<String, Integer>();
 		vehicleNumberMap = new HashMap<String, Integer>();
 		
-//		partConfig = simulationConfig.getPartConfiguration();
-		personConfig = simulationConfig.getPersonConfiguration();
+		crewConfig = simulationConfig.getCrewConfig();
+		personConfig = simulationConfig.getPersonConfig();
 		robotConfig = simulationConfig.getRobotConfiguration();
 		settlementConfig = simulationConfig.getSettlementConfiguration();
 		vehicleConfig = simulationConfig.getVehicleConfiguration();
@@ -895,23 +897,23 @@ public class UnitManager implements Serializable {
 		List<Person> personList = new ArrayList<>();
 		
 		if (personConfig == null) // FOR PASSING MAVEN TEST
-			personConfig = SimulationConfig.instance().getPersonConfiguration();
+			personConfig = SimulationConfig.instance().getPersonConfig();
 
 		// TODO: will setting a limit on # crew to 7 be easier ?
 
-		int size = personConfig.getNumberOfConfiguredPeople();
+		int size = crewConfig.getNumberOfConfiguredPeople();
 
 		// Create all configured people.
 		for (int x = 0; x < size; x++) {
 
 			// Get person's name (required)
-			int crew_id = personConfig.getCrew(x);
+			int crew_id = crewConfig.getCrew(x);
 
 			// Get person's name (required)
-			String name = personConfig.getConfiguredPersonName(x, crew_id);
+			String name = crewConfig.getConfiguredPersonName(x, crew_id);
 
 			// Get person's gender or randomly determine it if not configured.
-			GenderType gender = personConfig.getConfiguredPersonGender(x, crew_id);
+			GenderType gender = crewConfig.getConfiguredPersonGender(x, crew_id);
 			if (gender == null) {
 				gender = GenderType.FEMALE;
 				if (RandomUtil.getRandomDouble(1.0D) <= personConfig.getGenderRatio()) {
@@ -962,7 +964,7 @@ public class UnitManager implements Serializable {
 			}
 
 			// Get person's settlement or randomly determine it if not configured.
-			String preConfigSettlementName = personConfig.getConfiguredPersonDestination(x, crew_id);
+			String preConfigSettlementName = crewConfig.getConfiguredPersonDestination(x, crew_id);
 			if (preConfigSettlementName != null) {
 				Collection<Settlement> col = getSettlements();//lookupSettlement.values();//CollectionUtils.getSettlement(units);
 				settlement = CollectionUtils.getSettlement(col, preConfigSettlementName);
@@ -1010,8 +1012,8 @@ public class UnitManager implements Serializable {
 
 			// Retrieve country & sponsor designation from people.xml (may be edited in
 			// CrewEditorFX)
-			String sponsor = personConfig.getConfiguredPersonSponsor(x, crew_id);
-			String country = personConfig.getConfiguredPersonCountry(x, crew_id);
+			String sponsor = crewConfig.getConfiguredPersonSponsor(x, crew_id);
+			String country = crewConfig.getConfiguredPersonCountry(x, crew_id);
 
 			// Create person and add to the unit manager.
 			// Use Builder Pattern for creating an instance of Person
@@ -1027,7 +1029,7 @@ public class UnitManager implements Serializable {
 			relationshipManager.addInitialSettler(person, settlement);
 
 			// Set person's job (if any).
-			String jobName = personConfig.getConfiguredPersonJob(x, crew_id);
+			String jobName = crewConfig.getConfiguredPersonJob(x, crew_id);
 			if (jobName != null) {
 				Job job = JobUtil.getJob(jobName);
 				if (job != null) {
@@ -1039,10 +1041,10 @@ public class UnitManager implements Serializable {
 			}
 
 			// Add Favorite class
-			String mainDish = personConfig.getFavoriteMainDish(x, crew_id);
-			String sideDish = personConfig.getFavoriteSideDish(x, crew_id);
-			String dessert = personConfig.getFavoriteDessert(x, crew_id);
-			String activity = personConfig.getFavoriteActivity(x, crew_id);
+			String mainDish = crewConfig.getFavoriteMainDish(x, crew_id);
+			String sideDish = crewConfig.getFavoriteSideDish(x, crew_id);
+			String dessert = crewConfig.getFavoriteDessert(x, crew_id);
+			String activity = crewConfig.getFavoriteActivity(x, crew_id);
 
 			person.getFavorite().setFavoriteMainDish(mainDish);
 			person.getFavorite().setFavoriteSideDish(sideDish);
@@ -1050,7 +1052,7 @@ public class UnitManager implements Serializable {
 			person.getFavorite().setFavoriteActivity(FavoriteType.fromString(activity));
 
 			// Set the person's configured Big Five Personality traits (if any).
-			Map<String, Integer> bigFiveMap = personConfig.getBigFiveMap(x);
+			Map<String, Integer> bigFiveMap = crewConfig.getBigFiveMap(x);
 			if (bigFiveMap != null) {
 				for (String type : bigFiveMap.keySet()) {
 					int value = bigFiveMap.get(type);
@@ -1060,7 +1062,7 @@ public class UnitManager implements Serializable {
 			}
 
 			// Override person's personality type based on people.xml, if any.
-			String personalityType = personConfig.getConfiguredPersonPersonalityType(x, crew_id);
+			String personalityType = crewConfig.getConfiguredPersonPersonalityType(x, crew_id);
 			if (personalityType != null) {
 				person.getMind().getMBTI().setTypeString(personalityType);
 			}
@@ -1070,7 +1072,7 @@ public class UnitManager implements Serializable {
 			person.getMind().getMBTI().syncUpExtraversion();
 
 			// Set person's configured natural attributes (if any).
-			Map<String, Integer> naturalAttributeMap = personConfig.getNaturalAttributeMap(x);
+			Map<String, Integer> naturalAttributeMap = crewConfig.getNaturalAttributeMap(x);
 			if (naturalAttributeMap != null) {
 				Iterator<String> i = naturalAttributeMap.keySet().iterator();
 				while (i.hasNext()) {
@@ -1082,7 +1084,7 @@ public class UnitManager implements Serializable {
 			}
 
 			// Set person's configured skills (if any).
-			Map<String, Integer> skillMap = personConfig.getSkillMap(x);
+			Map<String, Integer> skillMap = crewConfig.getSkillMap(x);
 			if (skillMap != null) {
 				Iterator<String> i = skillMap.keySet().iterator();
 				while (i.hasNext()) {
@@ -1890,35 +1892,17 @@ public class UnitManager implements Serializable {
 	 */
 	private void createConfiguredRelationships(List<Person> personList) {
 
-		int size = personConfig.getNumberOfConfiguredPeople();
+		int size = crewConfig.getNumberOfConfiguredPeople();
 			
 		// Create all configured people relationships.
 		for (int x = 0; x < size; x++) {
 			try {
 
-				// Get person's name
-//				String name = personConfig.getConfiguredPersonName(x, PersonConfig.ALPHA_CREW);
-//				if (name == null || name.equals("")) {
-//					throw new IllegalStateException("Person name is null");
-//				}
-
 				// Get the person
 				Person person = personList.get(x);
-//				Person person = null;
-//				Iterator<Person> j = getPeople().iterator();
-//				while (j.hasNext()) {
-//					Person tempPerson = j.next();
-//					if (tempPerson.getName().equals(name)) {
-//						person = tempPerson;
-//					}
-//				}
-//				if (person == null) {
-//					throw new IllegalStateException("Person: " + name + " not found.");
-//				}
-
 				
 				// Set person's configured relationships (if any).
-				Map<String, Integer> relationshipMap = personConfig.getRelationshipMap(x);
+				Map<String, Integer> relationshipMap = crewConfig.getRelationshipMap(x);
 				if (relationshipMap != null) {
 					Iterator<String> i = relationshipMap.keySet().iterator();
 					while (i.hasNext()) {
@@ -2362,7 +2346,7 @@ public class UnitManager implements Serializable {
 	 */
 	public static int getCountryID(String country) {
 		if (personConfig == null)
-			personConfig = SimulationConfig.instance().getPersonConfiguration();
+			personConfig = SimulationConfig.instance().getPersonConfig();
 		if (allCountries == null)
 			allCountries = personConfig.createAllCountryList();
 		return personConfig.computeCountryID(country);
@@ -2370,7 +2354,7 @@ public class UnitManager implements Serializable {
 
 	public static List<String> getAllCountryList() {
 		if (personConfig == null)
-			personConfig = SimulationConfig.instance().getPersonConfiguration();
+			personConfig = SimulationConfig.instance().getPersonConfig();
 		if (allCountries == null)
 			allCountries = personConfig.createAllCountryList();
 		return allCountries;
@@ -2400,7 +2384,7 @@ public class UnitManager implements Serializable {
 	public String getFullname() {
 		// During maven test, CommanderProfile/Contact instance doesn't exist
 		if (personConfig == null)
-			personConfig = SimulationConfig.instance().getPersonConfiguration();
+			personConfig = SimulationConfig.instance().getPersonConfig();
 		if (personConfig != null)
 			return personConfig.getCommander().getFullName();
 		else

@@ -226,7 +226,7 @@ public class PhysicalCondition implements Serializable {
 	private static Complaint decompression;
 	private static Complaint suffocation;
 
-	private static PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
+	private static PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
 
 //	/**
 //	 * Loads the values
@@ -359,7 +359,7 @@ public class PhysicalCondition implements Serializable {
 		if (masterClock != null)  // check for null in order to pass maven test
 			marsClock = masterClock.getMarsClock();
 		
-		PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
+		PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
 
 		h2o_consumption = personConfig.getWaterConsumptionRate(); // 3 kg per sol
 		o2_consumption = personConfig.getNominalO2ConsumptionRate();

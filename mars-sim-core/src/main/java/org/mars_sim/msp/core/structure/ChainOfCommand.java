@@ -482,7 +482,7 @@ public class ChainOfCommand implements Serializable {
 	 */
 	public void determineLeadershipPoints(Person person) {
 		int leadershipAptitude = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.LEADERSHIP);
-		SimulationConfig.instance().getPersonConfiguration().getCommander()
+		SimulationConfig.instance().getPersonConfig().getCommander()
 				.setInitialLeadershipPoint(leadershipAptitude);
 	}
 

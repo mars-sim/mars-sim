@@ -220,7 +220,7 @@ public class EatMeal extends Task implements Serializable {
 			mealEatingDuration = dur * MEAL_EATING_PROPORTION;
 			dessertEatingDuration = dur * DESSERT_EATING_PROPORTION;
 	
-			PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
+			PersonConfig config = SimulationConfig.instance().getPersonConfig();
 			foodConsumptionRate = config.getFoodConsumptionRate() / NUMBER_OF_MEAL_PER_SOL;
 			dessertConsumptionRate = config.getDessertConsumptionRate() / NUMBER_OF_DESSERT_PER_SOL;
 		

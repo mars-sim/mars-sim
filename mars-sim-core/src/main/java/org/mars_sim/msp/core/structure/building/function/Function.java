@@ -70,7 +70,7 @@ public abstract class Function implements Serializable {
 		buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
 		masterClock = sim.getMasterClock();
 		marsClock = masterClock.getMarsClock();
-		personConfig = SimulationConfig.instance().getPersonConfiguration();
+		personConfig = SimulationConfig.instance().getPersonConfig();
 		mars = sim.getMars();
 		weather = mars.getWeather();
 		surface = mars.getSurfaceFeatures();

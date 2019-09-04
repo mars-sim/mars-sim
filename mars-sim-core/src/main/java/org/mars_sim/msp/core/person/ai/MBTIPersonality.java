@@ -97,7 +97,7 @@ public class MBTIPersonality implements Serializable {
 
 		this.person = person;
 
-		PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
+		PersonConfig config = SimulationConfig.instance().getPersonConfig();
 
 		// Load personality type map if necessary.
 		if (personalityDistribution == null)

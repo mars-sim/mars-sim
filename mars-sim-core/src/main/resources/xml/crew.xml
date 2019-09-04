@@ -1,0 +1,225 @@
+<?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
+<!DOCTYPE crew-configuration [
+	<!ELEMENT crew-configuration (crew-list)>
+
+	<!ELEMENT crew-list (person*)>
+	<!ELEMENT person (personality-trait-list?, natural-attribute-list?, skill-list?, relationship-list?)>
+	<!ATTLIST person crew CDATA #REQUIRED>
+	<!ATTLIST person name CDATA #REQUIRED>
+	<!ATTLIST person gender (male|female) #IMPLIED>
+	<!ATTLIST person personality-type CDATA #IMPLIED>
+	<!ATTLIST person settlement CDATA #IMPLIED>
+	<!ATTLIST person sponsor CDATA #IMPLIED>
+	<!ATTLIST person country CDATA #IMPLIED>
+	<!ATTLIST person job CDATA #IMPLIED>
+	<!ATTLIST person favorite-main-dish CDATA #IMPLIED>
+	<!ATTLIST person favorite-side-dish CDATA #IMPLIED>
+	<!ATTLIST person favorite-dessert CDATA #IMPLIED>
+	<!ATTLIST person favorite-activity CDATA #IMPLIED>
+	
+	<!ELEMENT personality-trait-list (personality-trait*)>
+	<!ELEMENT personality-trait EMPTY>
+	<!ATTLIST personality-trait name CDATA #REQUIRED>
+	<!ATTLIST personality-trait value CDATA #REQUIRED>
+	
+	<!ELEMENT natural-attribute-list (natural-attribute*)>
+	<!ELEMENT natural-attribute EMPTY>
+	<!ATTLIST natural-attribute name CDATA #REQUIRED>
+	<!ATTLIST natural-attribute value CDATA #REQUIRED>
+	
+	<!ELEMENT skill-list (skill*)>
+	<!ELEMENT skill EMPTY>
+	<!ATTLIST skill name CDATA #REQUIRED>
+	<!ATTLIST skill level CDATA #REQUIRED>
+	
+	<!ELEMENT relationship-list (relationship*)>
+	<!ELEMENT relationship EMPTY>
+	<!ATTLIST relationship person-name CDATA #REQUIRED>
+	<!ATTLIST relationship opinion CDATA #REQUIRED>
+]>
+
+
+<crew-configuration>
+
+	<!-- List of preconfigured crew  -->
+	<crew-list>
+
+		<!-- Configured person -->
+		<!-- crew: the crew designation of the person (required) -->
+		<!-- name: the person's name (required) -->
+		<!-- gender: the person's gender ("male" or "female") (optional) -->
+		<!-- personality-type: the person's MBTI personality type. (optional) -->
+		<!-- settlement: the person's starting settlement. Must be a named settlement configured in settlements.xml.  (optional) -->
+		<!-- sponsor: the space agency or organization that sponsors this person (optional. "Mars Society (MS)" by default)-->
+		<!-- country: the nationality of this person (optional. "USA" by default)-->
+		<!-- job: the person's permanent job. (optional) -->
+		<!-- favorite-main-dish: the person's favorite main dish. (optional) -->
+		<!-- favorite-side-dish: the person's favorite side dish. (optional) -->
+		<!-- favorite-dessert: the person's favorite dessert. (optional) -->
+		<!-- favorite-activity: the person's favorite hobby. see list in the FavoriteType class (optional) -->
+		<person name="Karen Andersen" crew="alpha" gender="female" personality-type="ISTJ"
+			settlement="Schiaparelli Point"
+			sponsor="Mars Society (MS)"
+			country="USA"
+			job="Botanist"
+			favorite-main-dish="Bean Sprout Garlic Stir Fry"
+			favorite-side-dish="Roasted Carrot Soup"
+			favorite-dessert="strawberry"
+			favorite-activity="Field Work">
+
+			<!-- A list of predefined personality traits (optional)
+
+		 	Personality Trait Model / Big Five Model:
+
+	  		1. Openness is appreciation for a variety of experience.
+			2. Conscientiousness is planning ahead rather than being spontaneous.
+			3. Extraversion involves going out with friends and being energetic.
+			4. Agreeableness is, as it says, being agreeable.
+			5. Neuroticism is the extent to which a person's emotion are sensitive
+				to the individual's environment, if he's worrying or feeling vulnerable.
+
+			See https://www.ibm.com/smarterplanet/us/en/ibmwatson/developercloud/doc/personality-insights/models.shtml -->
+
+			<personality-trait-list>
+				<!-- the personality trait for a person using
+					The Big Five Personality Traits,
+					aka the Five Factor Model (FFM) -->
+				<!-- name: the dimension (required) -->
+				<!-- value: 0 (the absence of this trait) to 100 (the max presence of this trait) (required) -->
+				<personality-trait name = "openness" 	value = "25"/>
+				<personality-trait name = "conscientiousness"	 value = "65"/>
+				<personality-trait name = "extraversion" 	value = "20"/>
+				<personality-trait name = "agreeableness" 	value = "85"/>
+				<personality-trait name = "neuroticism" 	value = "85"/>
+			</personality-trait-list>
+
+			<!-- List of configured natural attributes. (optional) -->
+			<natural-attribute-list>
+				<!-- A natural attribute for the person. -->
+				<!-- name: the name of the attribute. (required) -->
+				<!-- value: 0 (low) to 100 (high) (required). -->
+			<!--
+				<natural-attribute name="Strength" value="60"/>
+				<natural-attribute name="Endurance" value="42"/>
+				<natural-attribute name="Agility" value="71"/>
+				<natural-attribute name="Teaching" value="65"/>
+				<natural-attribute name="Academic Aptitude" value="70"/>
+				<natural-attribute name="Experience Aptitude" value="35"/>
+				<natural-attribute name="Stress Resilience" value="43"/>
+				<natural-attribute name="Attractiveness" value="67"/>
+				<natural-attribute name="Leadership" value="25"/>
+				<natural-attribute name="Conversation" value="80"/>
+			-->
+			</natural-attribute-list>
+
+			<!-- List of configured skills. (optional) -->
+			<skill-list>
+				<!-- A skill for the person. -->
+				<!-- name: the name of the skill. (required). -->
+				<!-- level: the level of the skill ( >= 0 ) (required). -->
+				<skill name="Botany" level="2"/>
+				<skill name="Mechanics" level="1"/>
+				<skill name="EVA Operations" level="1"/>
+				<skill name="Areology" level="1"/>
+				<skill name="Medicine" level="1"/>
+				<skill name="Cooking" level="1"/>
+			</skill-list>
+
+			<!-- List of configured relationships. (optional) -->
+			<relationship-list>
+				<!-- A relationship with another configured person. -->
+				<!-- person-name: the name of the relationship person. (required) -->
+				<!--   note: other person must be configured on this list. -->
+				<!-- opinion: this person's opinion of the relationship person. -->
+				<!--   0 (hate) - 100 (close friend) (required) -->
+				<!--<relationship person-name="Rik Declercq" opinion="100"/> -->
+			</relationship-list>
+		</person>
+
+		<person name="Rik Declercq" crew ="alpha" gender="male" personality-type="ESTP"
+			settlement="Schiaparelli Point"
+			sponsor="Mars Society (MS)"
+			country="USA"
+			job="Areologist"
+			favorite-main-dish="Salsa Potato Salad" 
+			favorite-side-dish="Miso Soup" 
+			favorite-dessert="soymilk"
+			favorite-activity="Operation">
+			<personality-trait-list>
+				<personality-trait name = "openness"	 value = "35"/>
+				<personality-trait name = "conscientiousness"	 value = "60"/>
+				<personality-trait name = "extraversion" 	value = "80"/>
+				<personality-trait name = "agreeableness" 	value = "55"/>
+				<personality-trait name = "neuroticism" 	value = "45"/>
+			</personality-trait-list>
+			<skill-list>
+                <skill name="Piloting" level="1"/>
+                <skill name="Physics" level="1"/>
+                <skill name="Botany" level="1"/>
+                <skill name="Mechanics" level="1"/>
+                <skill name="EVA Operations" level="1"/>
+                <skill name="Cooking" level="2"/>
+            </skill-list>
+       </person>
+
+        <person name="Leonardo DaVinci" crew ="alpha" gender="male" personality-type="INFJ"
+        	settlement="Schiaparelli Point"
+        	sponsor="Mars Society (MS)"
+			country="USA"
+        	job="Engineer"
+			favorite-main-dish="Roasted Carrot Soup and Brown Rice" 
+			favorite-side-dish="Baby Carrots" 
+			favorite-dessert="craneberry juice"
+			favorite-activity="Research">
+			<personality-trait-list>
+				<personality-trait name = "openness" 	value = "65"/>
+				<personality-trait name = "conscientiousness" 	value = "80"/>
+				<personality-trait name = "extraversion" 	value = "15"/>
+				<personality-trait name = "agreeableness" 	value = "75"/>
+				<personality-trait name = "neuroticism" 	value = "75"/>
+			</personality-trait-list>
+            <skill-list>
+                <!-- A skill for the person. -->
+                <!-- name: the name of the skill. (required). -->
+                <!-- level: the level of the skill ( >= 0 ) (required). -->
+                <skill name="Physics" level="1"/>
+                <skill name="Botany" level="1"/>
+                <skill name="Mechanics" level="1"/>
+                <skill name="Areology" level="1"/>
+                <skill name="Medicine" level="1"/>
+                <skill name="Materials Science" level="2"/>
+            </skill-list>
+        </person>
+
+        <person name="Lena LaGranda" crew ="alpha" gender="female" personality-type="ENFP"
+        	settlement="Schiaparelli Point"
+        	sponsor="Mars Society (MS)"
+			country="USA"
+        	job="Technician"
+			favorite-main-dish="Kidney Bean Fried Rice with Onion" 
+			favorite-side-dish="Peas and Onions" 
+			favorite-dessert="bluebbery muffin"
+			favorite-activity="Lab Experimentation">
+			<personality-trait-list>
+				<personality-trait name = "openness" 	value = "70"/>
+				<personality-trait name = "conscientiousness" 	value = "60"/>
+				<personality-trait name = "extraversion" 	value = "85"/>
+				<personality-trait name = "agreeableness" 	value = "80"/>
+				<personality-trait name = "neuroticism" 	value = "35"/>
+			</personality-trait-list>
+            <skill-list>
+                <!-- A skill for the person. -->
+                <!-- name: the name of the skill. (required). -->
+                <!-- level: the level of the skill ( >= 0 ) (required). -->
+                <skill name="Piloting" level="1"/>
+                <skill name="Physics" level="1"/>
+                <skill name="Botany" level="1"/>
+                <skill name="Mechanics" level="2"/>
+                <skill name="EVA Operations" level="1"/>
+                <skill name="Materials Science" level="1"/>
+            </skill-list>
+        </person>
+
+	</crew-list>
+
+</crew-configuration>

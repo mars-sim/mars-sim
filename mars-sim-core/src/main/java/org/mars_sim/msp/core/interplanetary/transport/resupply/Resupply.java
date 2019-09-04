@@ -521,7 +521,7 @@ public class Resupply implements Serializable, Transportable {
 		Collection<Person> immigrants = new ConcurrentLinkedQueue<Person>();
 		RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
 		for (int x = 0; x < getNewImmigrantNum(); x++) {
-			PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
+			PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
 			GenderType gender = GenderType.FEMALE;
 			if (RandomUtil.getRandomDouble(1.0D) <= personConfig.getGenderRatio()) {
 				gender = GenderType.MALE;

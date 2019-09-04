@@ -74,7 +74,7 @@ import com.nilo.plaf.nimrod.NimRODTheme;
 
 /**
  * The MainWindow class is the primary UI frame for the project. It contains the
- * tool bars and main desktop pane.
+ * main desktop pane window are, status bar and tool bars.
  */
 public class MainWindow 
 extends JComponent {
@@ -93,7 +93,6 @@ extends JComponent {
 	private static final String themeSkin = "nimrod";
 	private static final String WHITESPACES = "   ";
 	
-//	private static int AUTOSAVE_EVERY_X_MINUTE = 15;
 	private static final int TIME_DELAY = 960;
 
 	public enum ThemeType {
@@ -105,9 +104,7 @@ extends JComponent {
 	private static JFrame frame;
 
 	// Data members
-//	private boolean cleanUI;
 	private boolean useDefault = true;
-//	private boolean keepSleeping;
 
 	private int solCache = 0;
 
@@ -120,14 +117,6 @@ extends JComponent {
 	private MainDesktopPane desktop;
 
 	private MainWindowMenu mainWindowMenu;
-
-//	private TransportWizard transportWizard;
-//	private ConstructionWizard constructionWizard;
-//	private BuildingManager mgr; // mgr is very important for FINISH_BUILDING_PLACEMENT_EVENT
-
-//	private static Thread newSimThread;
-//	private Thread loadSimThread;
-//	private Thread saveSimThread;
 
 	private final AtomicBoolean sleeping = new AtomicBoolean(false);
 
@@ -152,13 +141,9 @@ extends JComponent {
 	private WaitLayerUIPanel layerUI = new WaitLayerUIPanel();
 
 	private int memMax;
-//	private static int memTotal;
-	private int memUsed, memUsedCache;
+	private int memUsed;
+	private int memUsedCache;
 	private int memFree;
-
-//	private static String earthTimeString;
-//	private String statusText;
-//	private ExecutorService saveExecutor = Executors.newSingleThreadExecutor();
 
 	private static Simulation sim = Simulation.instance();
 	private static MasterClock masterClock;// = sim.getMasterClock();
@@ -173,12 +158,17 @@ extends JComponent {
 	public MainWindow(boolean cleanUI) {
 //		logger.config("MainWindow is on " + Thread.currentThread().getName() + " Thread");
 		// this.cleanUI = cleanUI;
-		// Set up the look and feel library to be used
-		initializeTheme();
-
+		
 		// Set up the frame
 		frame = new JFrame();
-
+		frame.setSize(new Dimension(1366, 768));
+		frame.setResizable(false);
+//		frame.setPreferredSize(new Dimension(1366, 768));
+//		frame.setMinimumSize(new Dimension(1024, 600));
+		
+		// Set up the look and feel library to be used
+		setLookAndFeel(defaultThemeType, ThemeType.NIMROD);
+		
 		// Disable the close button on top right
 //		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 

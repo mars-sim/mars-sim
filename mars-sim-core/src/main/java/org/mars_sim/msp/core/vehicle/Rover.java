@@ -98,7 +98,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportType, A
 		// Get vehicle configuration.
 //		weather = Simulation.instance().getMars().getWeather();
 		VehicleConfig vehicleConfig = SimulationConfig.instance().getVehicleConfiguration();
-		personConfig = SimulationConfig.instance().getPersonConfiguration();
+		personConfig = SimulationConfig.instance().getPersonConfig();
 
 		// Add scope to malfunction manager.
 		malfunctionManager.addScopeString(SystemType.ROVER.toString());

@@ -29,7 +29,6 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.Preference;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
@@ -221,26 +220,25 @@ extends TabPanel {
 		//String smiley = "\uf118";
 		//String frowno = "\uf119";
 		
-        byte[] smileyBytes = new byte[]{(byte)0xF0, (byte)0x9F, (byte)0x98, (byte)0x84};
-        byte[] neutralBytes = new byte[]{(byte)0xF0, (byte)0x9F, (byte)0x98, (byte)0x90};
-        byte[] cryBytes = new byte[]{(byte)0xF0, (byte)0x9F, (byte)0x98, (byte)0xA2};
+//        byte[] smileyBytes = new byte[]{(byte)0xF0, (byte)0x9F, (byte)0x98, (byte)0x84};
+//        byte[] neutralBytes = new byte[]{(byte)0xF0, (byte)0x9F, (byte)0x98, (byte)0x90};
+//        byte[] cryBytes = new byte[]{(byte)0xF0, (byte)0x9F, (byte)0x98, (byte)0xA2};
 
-        String smileyStr = new String(smileyBytes, Charset.forName("UTF-8"));
-        String neutralStr = new String(neutralBytes, Charset.forName("UTF-8"));
-        String cryStr = new String(cryBytes, Charset.forName("UTF-8"));
+//        String smileyStr = new String(smileyBytes, Charset.forName("UTF-8"));
+//        String neutralStr = new String(neutralBytes, Charset.forName("UTF-8"));
+//        String cryStr = new String(cryBytes, Charset.forName("UTF-8"));
 
 		private PreferenceTableModel(Unit unit) {
 
 			Person person = null;
-	        Robot robot = null;
+//	        Robot robot = null;
 
 	        if (unit instanceof Person) {
 	         	person = (Person) unit;
 				manager = person.getPreference();
 	        }
-	        else if (unit instanceof Robot) {
-
-	        }
+//	        else if (unit instanceof Robot) {
+//	        }
 
 	        scoreStringList = manager.getTaskStringList();
 	        scoreStringMap = manager.getScoreStringMap();
@@ -315,13 +313,13 @@ extends TabPanel {
 				WebLabel cell = (WebLabel) theResult;
 				cell.setText((String)value);
 			}
-/*
-			//WebTableHeader tableHeader = table.getTableHeader();
-		    //if (tableHeader != null) {
-		   // 	tableHeader.setForeground(TableStyle.getHeaderForegroundColor());
-		    //	tableHeader.setBackground(TableStyle.getHeaderBackgroundColor());
-		   // }
-*/
+
+//			WebTableHeader tableHeader = table.getTableHeader();
+//		    if (tableHeader != null) {
+//		    	tableHeader.setForeground(TableStyle.getHeaderForegroundColor());
+//		    	tableHeader.setBackground(TableStyle.getHeaderBackgroundColor());
+//		    }
+
 			return theResult;
 		}
 	}

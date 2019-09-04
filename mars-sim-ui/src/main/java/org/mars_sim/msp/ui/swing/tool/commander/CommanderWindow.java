@@ -68,7 +68,7 @@ extends ToolWindow {
 	private JLabel leadershipPointsLabel;
 	private JTextArea jta;
 
-	private Commander commander = SimulationConfig.instance().getPersonConfiguration().getCommander();
+	private Commander commander = SimulationConfig.instance().getPersonConfig().getCommander();
 
 	private Person person;
 	

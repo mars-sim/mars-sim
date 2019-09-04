@@ -592,7 +592,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	public static void loadDefaultValues() {
 //		SettlementConfig settlementConfig = SimulationConfig.instance().getSettlementConfiguration();
 
-		PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
+		PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
 		water_consumption_rate = personConfig.getWaterConsumptionRate();
 		minimum_air_pressure = personConfig.getMinAirPressure();
 

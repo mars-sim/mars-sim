@@ -37,6 +37,7 @@ import org.mars_sim.msp.core.malfunction.MalfunctionConfig;
 import org.mars_sim.msp.core.manufacture.ManufactureConfig;
 import org.mars_sim.msp.core.mars.LandmarkConfig;
 import org.mars_sim.msp.core.mars.MineralMapConfig;
+import org.mars_sim.msp.core.person.CrewConfig;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.ai.mission.ExperimentConfig;
 import org.mars_sim.msp.core.person.health.MedicalConfig;
@@ -72,6 +73,7 @@ public class SimulationConfig implements Serializable {
 	public static final String XML = ".xml";
 	public static final String SIMULATION_FILE = "simulation";
 	public static final String PEOPLE_FILE = "people";
+	public static final String CREW_FILE = "crew";
 	public static final String VEHICLE_FILE = "vehicles";
 	public static final String SETTLEMENT_FILE = "settlements";
 	public static final String RESUPPLY_FILE = "resupplies";
@@ -130,6 +132,7 @@ public class SimulationConfig implements Serializable {
 	private static PartPackageConfig partPackageConfig;
 	private static AmountResourceConfig resourceConfig;
 	private static PersonConfig personConfig;
+	private static CrewConfig crewConfig;
 	private static MedicalConfig medicalConfig;
 	private static LandmarkConfig landmarkConfig;
 	private static MineralMapConfig mineralMapConfig;
@@ -742,10 +745,19 @@ public class SimulationConfig implements Serializable {
 	 * 
 	 * @return person config
 	 */
-	public PersonConfig getPersonConfiguration() {
+	public PersonConfig getPersonConfig() {
 		return personConfig;
 	}
 
+	/**
+	 * Gets the crew config subset.
+	 * 
+	 * @return crew config
+	 */
+	public CrewConfig getCrewConfig() {
+		return crewConfig;
+	}
+	
 	/**
 	 * Gets the robot config subset.
 	 * 
@@ -1002,6 +1014,7 @@ public class SimulationConfig implements Serializable {
 			partConfig = new PartConfig(parseXMLFileAsJDOMDocument(PART_FILE, true));
 			partPackageConfig = new PartPackageConfig(parseXMLFileAsJDOMDocument(PART_PACKAGE_FILE, true));
 			personConfig = new PersonConfig(parseXMLFileAsJDOMDocument(PEOPLE_FILE, true));
+			crewConfig = new CrewConfig(parseXMLFileAsJDOMDocument(CREW_FILE, true));
 			medicalConfig = new MedicalConfig(parseXMLFileAsJDOMDocument(MEDICAL_FILE, true));
 			landmarkConfig = new LandmarkConfig(parseXMLFileAsJDOMDocument(LANDMARK_FILE, true));
 			mineralMapConfig = new MineralMapConfig(parseXMLFileAsJDOMDocument(MINERAL_MAP_FILE, true));

@@ -489,8 +489,8 @@ public class Preference implements Serializable {
 		String ss = s.replaceAll("(?!^)([A-Z])", " $1")
 				.replace("Meta", "")
 				.replace("E V A ", "EVA ")
-				.replace("To ",
-				"to ");
+				.replace("With ", "with ")
+				.replace("To ", "to ");
 		return ss;
 	}
 
@@ -502,7 +502,10 @@ public class Preference implements Serializable {
 	 */
 	public static String getStringName(Task task) {
 		String s = task.getClass().getSimpleName();
-		String ss = s.replaceAll("(?!^)([A-Z])", " $1").replace("E V A ", "EVA ").replace("To ", "to ");
+		String ss = s.replaceAll("(?!^)([A-Z])", " $1")
+				.replace("E V A ", "EVA ")
+				.replace("With ", "with ")
+				.replace("To ", "to ");
 		return ss;
 	}
 

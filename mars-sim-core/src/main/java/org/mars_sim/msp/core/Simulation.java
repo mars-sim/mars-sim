@@ -434,7 +434,7 @@ public class Simulation implements ClockListener, Serializable {
 		// Gets config file instances
 		simulationConfig = SimulationConfig.instance();
 		BuildingConfig bc = simulationConfig.getBuildingConfiguration();
-		PersonConfig pc = simulationConfig.getPersonConfiguration();
+		PersonConfig pc = simulationConfig.getPersonConfig();
 	
 		// Set instances for logging
 		LogConsolidated.initializeInstances(marsClock, earthClock);
@@ -517,37 +517,12 @@ public class Simulation implements ClockListener, Serializable {
 	 * Starts or restarts the executive service thread that the MasterClock's ClockThreadTask runs on.
 	 */
 	public void restartClockExecutor() {
-		//if (clockExecutor == null || clockExecutor.isShutdown() || clockExecutor.isTerminated()) {
+		clockThreadExecutor = Executors.newSingleThreadExecutor();
 
-			clockThreadExecutor = Executors.newSingleThreadExecutor();
-
-			// if (NUM_THREADS <= 3)
-			// clockScheduler = (ThreadPoolExecutor) Executors.newFixedThreadPool(1);
-			// clockScheduler = (ThreadPoolExecutor) Executors.newSingleThreadExecutor();
-			// else if (NUM_THREADS <= 8)
-			// clockScheduler = (ThreadPoolExecutor) Executors.newFixedThreadPool(2);//
-			// newSingleThreadExecutor();// newCachedThreadPool(); //
-			// else if (NUM_THREADS <= 16)
-			// clockScheduler = (ThreadPoolExecutor) Executors.newFixedThreadPool(3);//
-			// newSingleThreadExecutor();// newCachedThreadPool(); //
-			// else
-			// clockScheduler = (ThreadPoolExecutor) Executors.newFixedThreadPool(4);//
-			// newSingleThreadExecutor();// newCachedThreadPool(); //
-
-			if (masterClock.getClockThreadTask() != null)
-				clockThreadExecutor.execute(masterClock.getClockThreadTask());
-		//}
+		if (masterClock.getClockThreadTask() != null)
+			clockThreadExecutor.execute(masterClock.getClockThreadTask());
 	}
 	
-//	/*
-//	 * Obtains the size of the file
-//	 * 
-//	 * @return fileSize in megabytes
-//	 */
-//	public double getFileSize() {
-//		return fileSize;
-//	}
-
 	/**
 	 * Loads a simulation instance from a save file.
 	 * 
@@ -910,7 +885,7 @@ public class Simulation implements ClockListener, Serializable {
 		// Gets config file instances
 		simulationConfig = SimulationConfig.instance();
 		BuildingConfig bc = simulationConfig.getBuildingConfiguration();
-		PersonConfig pc = simulationConfig.getPersonConfiguration();
+		PersonConfig pc = simulationConfig.getPersonConfig();
 		
 		// Re-initialize static class
 		MalfunctionFactory.initializeInstances(this, marsClock, unitManager);
@@ -1431,8 +1406,6 @@ public class Simulation implements ClockListener, Serializable {
 	 * Ends the current simulation
 	 */
 	public void endSimulation() {
-//		interactiveTerm.setKeepRunning(false);
-//		interactiveTerm.disposeTerminal();
 		Simulation.defaultLoad = false;
 		instance().stop();
 		if (masterClock != null)

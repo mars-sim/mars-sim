@@ -131,6 +131,8 @@ public class InteractiveTerm {
 //    		if (sim.getMasterClock() != null)
 //    			sim.getMasterClock().exitProgram();
     		logger.info("Exiting the Simulation.");
+    		setKeepRunning(false);
+    		disposeTerminal();
 			System.exit(0);
         }
         else if (GameManager.input.equals("1")) {
@@ -550,11 +552,11 @@ public class InteractiveTerm {
     	return textIO;
     }
 	
-    public void setKeepRunning(boolean value) {
+    public static void setKeepRunning(boolean value) {
     	keepRunning = value;
     }
     
-    public void disposeTerminal() {
+    public static void disposeTerminal() {
     	terminal.dispose(null);
     }
     

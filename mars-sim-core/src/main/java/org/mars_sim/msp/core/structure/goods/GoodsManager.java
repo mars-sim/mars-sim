@@ -218,7 +218,7 @@ public class GoodsManager implements Serializable {
 //	private static BuildingConfig buildingConfig = simulationConfig.getBuildingConfiguration();
 	private static CropConfig cropConfig = simulationConfig.getCropConfiguration();
 	private static MealConfig mealConfig = simulationConfig.getMealConfiguration();
-	private static PersonConfig personConfig = simulationConfig.getPersonConfiguration();
+	private static PersonConfig personConfig = simulationConfig.getPersonConfig();
 	private static VehicleConfig vehicleConfig = simulationConfig.getVehicleConfiguration();
 	
 	private static Simulation sim = Simulation.instance();

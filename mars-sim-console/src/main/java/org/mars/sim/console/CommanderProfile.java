@@ -77,7 +77,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
     private final List<Runnable> operations = new ArrayList<>();
 
     public CommanderProfile(InteractiveTerm term) {	
-    	personConfig = SimulationConfig.instance().getPersonConfiguration();
+    	personConfig = SimulationConfig.instance().getPersonConfig();
     	commander = personConfig.getCommander();
     	terminal = term.getTerminal();
  //   	textIO = term.getTextIO();

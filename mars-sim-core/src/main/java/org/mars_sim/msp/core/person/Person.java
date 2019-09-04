@@ -208,7 +208,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	/** The person's water/oxygen consumption */
 	private Map<Integer, Map<Integer, Double>> consumption;
 
-	private static PersonConfig pc = SimulationConfig.instance().getPersonConfiguration();
+	private static PersonConfig pc = SimulationConfig.instance().getPersonConfig();
 	
 	static {
 		// Compute the average height for all

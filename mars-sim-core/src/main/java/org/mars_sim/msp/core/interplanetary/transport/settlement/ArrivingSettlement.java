@@ -298,7 +298,7 @@ public class ArrivingSettlement implements Transportable, Serializable {
 //		UnitManager unitManager = Simulation.instance().getUnitManager();
 //		RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
 		for (int x = 0; x < populationNum; x++) {
-			PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
+			PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
 			GenderType gender = GenderType.FEMALE;
 			if (RandomUtil.getRandomDouble(1.0D) <= personConfig.getGenderRatio())
 				gender = GenderType.MALE;

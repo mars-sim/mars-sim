@@ -135,7 +135,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	/** The static instance of the MissionManager */
 	protected static MissionManager missionManager;// = sim.getMissionManager();
 	/** The static instance of the personConfig */
-	protected static PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
+	protected static PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
 
 	/**
 	 * Constructs a Task object.

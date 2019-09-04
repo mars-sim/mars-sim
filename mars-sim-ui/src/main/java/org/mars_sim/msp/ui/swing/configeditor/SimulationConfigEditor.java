@@ -88,7 +88,7 @@ public class SimulationConfigEditor {
 	private SettlementTableModel settlementTableModel;
 	private JTable settlementTable;
 	private JLabel errorLabel;
-	private JButton createButton;
+	private JButton startButton;
 	private JFrame f;
 
 	private CrewEditor crewEditor;
@@ -114,7 +114,7 @@ public class SimulationConfigEditor {
 		// Initialize data members.
 		this.simulationConfig = config;
 		settlementConfig = config.getSettlementConfiguration();
-		personConfig = simulationConfig.getPersonConfiguration();
+		personConfig = simulationConfig.getPersonConfig();
 		
 		hasError = false;
 
@@ -323,11 +323,11 @@ public class SimulationConfigEditor {
 			bottomPanel.add(noteLabel, BorderLayout.SOUTH);
 		}
 		
-		// Create the create button.
-		createButton = new JButton("  " + Msg.getString("SimulationConfigEditor.button.newSim") + "  "); //$NON-NLS-1$
-		TooltipManager.setTooltip(createButton, Msg.getString("SimulationConfigEditor.button.newSim"), TooltipWay.up);
+		// Create the start button.
+		startButton = new JButton("  " + Msg.getString("SimulationConfigEditor.button.newSim") + "  "); //$NON-NLS-1$
+		TooltipManager.setTooltip(startButton, Msg.getString("SimulationConfigEditor.button.newSim"), TooltipWay.up);
 //		createButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.newSim")); //$NON-NLS-1$
-		createButton.addActionListener(new ActionListener() {
+		startButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				// Make sure any editing cell is completed, then check if error.
 				TableCellEditor editor = settlementTable.getCellEditor();
@@ -356,8 +356,8 @@ public class SimulationConfigEditor {
 			}
 		});
 
-		bottomButtonPanel.add(createButton);
-		bottomButtonPanel.add(new JLabel("    "));
+		bottomButtonPanel.add(startButton);
+		//bottomButtonPanel.add(new JLabel("    "));
 	 
 		 
 		// Edit Alpha Crew button.
@@ -429,7 +429,7 @@ public class SimulationConfigEditor {
 	 */
 	private void editCrewProfile(String crew) {
 		if (crewEditor == null) {
-			crewEditor = new CrewEditor(simulationConfig, this);
+			crewEditor = new CrewEditor(this);
 			// System.out.println("new CrewEditor()");
 		} else if (!isCrewEditorOpen) {
 			crewEditor.createGUI();
@@ -493,7 +493,7 @@ public class SimulationConfigEditor {
 		if (!hasError) {
 			hasError = true;
 			errorLabel.setText(errorString);
-			createButton.setEnabled(false);
+			startButton.setEnabled(false);
 		}
 	}
 
@@ -503,7 +503,7 @@ public class SimulationConfigEditor {
 	private void clearError() {
 		hasError = false;
 		errorLabel.setText(""); //$NON-NLS-1$
-		createButton.setEnabled(true);
+		startButton.setEnabled(true);
 	}
 
 	/**
@@ -1206,7 +1206,7 @@ public class SimulationConfigEditor {
 		settlementTableModel = null;
 		settlementTable = null;
 		errorLabel = null;
-		createButton = null;
+		startButton = null;
 		f = null;
 		crewEditor = null;
 		sim = null;

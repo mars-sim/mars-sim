@@ -1413,6 +1413,8 @@ public class MainDesktopPane extends JDesktopPane
 	 */
 	public void destroy() {
 		sim.getMasterClock().removeClockListener(this);
+		logger = null;
+		mode = null;
 		unitWindows = null;
 		toolWindows = null;
 		backgroundImageIcon = null;

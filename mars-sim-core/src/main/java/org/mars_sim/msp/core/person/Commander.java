@@ -74,7 +74,7 @@ public class Commander implements Serializable {
 
     public int getCountryInt() {
     	if (countryInt == -1)
-    		countryInt = SimulationConfig.instance().getPersonConfiguration().getCountryNum(countryStr) + 1;
+    		countryInt = SimulationConfig.instance().getPersonConfig().getCountryNum(countryStr) + 1;
     	return countryInt - 1;
     }
     
@@ -94,7 +94,7 @@ public class Commander implements Serializable {
     
     public int getSponsorInt() {
     	if (sponsorInt == -1)
-    		sponsorInt = SimulationConfig.instance().getPersonConfiguration().getCountryNum(countryStr) + 1;
+    		sponsorInt = SimulationConfig.instance().getPersonConfig().getCountryNum(countryStr) + 1;
     	return sponsorInt - 1;
     }
     

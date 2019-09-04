@@ -376,7 +376,7 @@ public class MarsProject {
 	}
 
 	public void setupMainWindow() {
-		new Timer().schedule(new WindowDelayTimer(), 1000);
+		new Timer().schedule(new WindowDelayTimer(), 100);
 	}
 	
 	/**

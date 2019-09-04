@@ -205,7 +205,7 @@ public class CompositionOfAir implements Serializable {
 //		System.out.println("1. CompositionOfAir for " + settlement + " " + settlementID);
 		masterClock = sim.getMasterClock();
 		marsClock = masterClock.getMarsClock();
-		personConfig = simulationConfig.getPersonConfiguration();
+		personConfig = simulationConfig.getPersonConfig();
 
 		o2Consumed = personConfig.getHighO2ConsumptionRate() / 1000D; // divide by 1000 to convert to [kg/millisol]
 

@@ -27,7 +27,7 @@ extends JPanel {
 	protected static MarsClock marsClock = sim.getMasterClock().getMarsClock();
 	protected static SimulationConfig simulationConfig = SimulationConfig.instance();
 	protected static SettlementConfig settlementConfig = simulationConfig.getSettlementConfiguration();
-	protected static PersonConfig personConfig = simulationConfig.getPersonConfiguration();
+	protected static PersonConfig personConfig = simulationConfig.getPersonConfig();
 	
 	// Data members
 	private Transportable transportItem;

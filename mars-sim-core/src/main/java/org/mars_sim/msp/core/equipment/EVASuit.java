@@ -128,7 +128,7 @@ public class EVASuit extends Equipment implements LifeSupportType, Serializable,
 		getInventory().addARTypeCapacity(ResourceUtil.co2ID, CO2_CAPACITY);
 
 //		PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
-		minimum_air_pressure = SimulationConfig.instance().getPersonConfiguration().getMinAirPressure();
+		minimum_air_pressure = SimulationConfig.instance().getPersonConfig().getMinAirPressure();
 
 	}
 

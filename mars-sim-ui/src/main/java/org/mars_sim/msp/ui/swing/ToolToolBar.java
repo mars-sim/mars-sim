@@ -45,7 +45,7 @@ implements ActionListener {
 
 //	private static final int ICON_H = 16;
 //	private static final int ICON_W = 16;
-	private static final int EMPTY_W = 745;
+	private static final int EMPTY_W = 735;
 	private static final int EMPTY_H = 32;
 	
 	
@@ -207,7 +207,7 @@ implements ActionListener {
 		emptyPanel.setPreferredSize(new Dimension(EMPTY_W, EMPTY_H));
 		add(emptyPanel);
 		 
-		add(Box.createHorizontalGlue());
+		add(Box.createGlue());
 		
 		addSeparator();
 		
@@ -221,7 +221,7 @@ implements ActionListener {
 			};
 		});
 		add(slowDownButton);
-	
+
 		ToolButton pauseButton = new ToolButton("Pause", Msg.getString("img.speed.pause")); //$NON-NLS-1$ //$NON-NLS-2$
 //		pauseButton.setPreferredSize(new Dimension(ICON_W, ICON_H));
 		pauseButton.addActionListener(new ActionListener() {

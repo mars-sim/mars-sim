@@ -117,7 +117,7 @@ public class MedicalManager implements Serializable {
 	private static void setUpEnvironmentalComplaints() {
 		
 		// Maven test requires the full "SimulationConfig.instance()" declaration here, rather than during class declaration.
-		PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration(); 
+		PersonConfig personConfig = SimulationConfig.instance().getPersonConfig(); 
 
 		// Most serious complaint
 		suffocation = createEnvironmentComplaint(ComplaintType.SUFFOCATION, 80, personConfig.getOxygenDeprivationTime(),

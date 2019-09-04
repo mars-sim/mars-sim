@@ -38,6 +38,7 @@ import javax.swing.WindowConstants;
 
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.person.CrewConfig;
 import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.ai.job.JobType;
@@ -62,7 +63,7 @@ public class CrewEditor implements ActionListener {
 	private static final String POLITICIAN = "Politician";
 	
 	// Data members
-	private PersonConfig pc;// = SimulationConfig.instance().getPersonConfiguration();
+	private CrewConfig cc;
 	private SimulationConfigEditor simulationConfigEditor;
 
 	private JFrame f;
@@ -95,9 +96,10 @@ public class CrewEditor implements ActionListener {
 	 * @param simulationConfigEditor
 	 *            SimulationConfigEditor
 	 */
-	public CrewEditor(SimulationConfig config, SimulationConfigEditor simulationConfigEditor) {
+	public CrewEditor(SimulationConfigEditor simulationConfigEditor) {
 
-		this.pc = config.getPersonConfiguration();
+		cc = SimulationConfig.instance().getCrewConfig();
+		
 		this.simulationConfigEditor = simulationConfigEditor;
 
 		personalityArray = new boolean[4][SIZE_OF_CREW];
@@ -256,43 +258,43 @@ public class CrewEditor implements ActionListener {
 						genderStr = "MALE";
 					else if (genderStr.equals("F"))
 						genderStr = "FEMALE";
-					pc.setPersonGender(i, genderStr, ALPHA_CREW);
+					cc.setPersonGender(i, genderStr, ALPHA_CREW);
 					System.out.print(genderStr + ", ");
 					
 					String personalityStr = getPersonality(i);
-					pc.setPersonPersonality(i, personalityStr, ALPHA_CREW);
+					cc.setPersonPersonality(i, personalityStr, ALPHA_CREW);
 					System.out.print(personalityStr + ", ");
 					
 					String jobStr = (String) jobsComboBoxList.get(i).getSelectedItem();
-					pc.setPersonJob(i, jobStr, ALPHA_CREW);
+					cc.setPersonJob(i, jobStr, ALPHA_CREW);
 					System.out.print(jobStr + ", ");
 
 					String countryStr = (String) countriesComboBoxList.get(i).getSelectedItem();
-					pc.setPersonCountry(i, countryStr, ALPHA_CREW);
+					cc.setPersonCountry(i, countryStr, ALPHA_CREW);
 					System.out.print(countryStr + ", ");
 					
 					String sponsorStr = (String) sponsorsComboBoxList.get(i).getSelectedItem();
-					pc.setPersonSponsor(i, sponsorStr, ALPHA_CREW);
+					cc.setPersonSponsor(i, sponsorStr, ALPHA_CREW);
 					System.out.print(sponsorStr + ", ");
 					
-					String maindish = pc.getFavoriteMainDish(i, ALPHA_CREW);
-					pc.setMainDish(i, maindish, ALPHA_CREW);
+					String maindish = cc.getFavoriteMainDish(i, ALPHA_CREW);
+					cc.setMainDish(i, maindish, ALPHA_CREW);
 					System.out.print(maindish + ", ");
 					
-					String sidedish = pc.getFavoriteMainDish(i, ALPHA_CREW);
-					pc.setSideDish(i, sidedish, ALPHA_CREW);
+					String sidedish = cc.getFavoriteMainDish(i, ALPHA_CREW);
+					cc.setSideDish(i, sidedish, ALPHA_CREW);
 					System.out.print(sidedish + ", ");
 					
-					String dessert = pc.getFavoriteDessert(i, ALPHA_CREW);
-					pc.setDessert(i, dessert, ALPHA_CREW);
+					String dessert = cc.getFavoriteDessert(i, ALPHA_CREW);
+					cc.setDessert(i, dessert, ALPHA_CREW);
 					System.out.print(dessert + ", ");
 					
-					String activity = pc.getFavoriteActivity(i, ALPHA_CREW);
-					pc.setActivity(i, activity, ALPHA_CREW);
+					String activity = cc.getFavoriteActivity(i, ALPHA_CREW);
+					cc.setActivity(i, activity, ALPHA_CREW);
 					System.out.print(activity + ", ");
 					
-					String destinationStr = pc.getConfiguredPersonDestination(i, ALPHA_CREW);
-					pc.setPersonDestination(i, destinationStr, ALPHA_CREW);
+					String destinationStr = cc.getConfiguredPersonDestination(i, ALPHA_CREW);
+					cc.setPersonDestination(i, destinationStr, ALPHA_CREW);
 					System.out.println(destinationStr + ". ");
 				}
 				
@@ -323,7 +325,7 @@ public class CrewEditor implements ActionListener {
 			if (!Conversion.isBlank(nameStr)
 					&& nameStr.contains(" ")) {
 				System.out.print(nameStr + ", ");
-				pc.setPersonName(i, nameStr, ALPHA_CREW);
+				cc.setPersonName(i, nameStr, ALPHA_CREW);
 				return true;
 				
 			} else {
@@ -342,8 +344,8 @@ public class CrewEditor implements ActionListener {
 	
 	public void setUpCrewName() {
 		for (int i = 0; i < SIZE_OF_CREW; i++) {
-			int crew_id = pc.getCrew(i);
-			String n = pc.getConfiguredPersonName(i, ALPHA_CREW);
+			int crew_id = cc.getCrew(i);
+			String n = cc.getConfiguredPersonName(i, ALPHA_CREW);
 
 			JTextField tf = new JTextField();
 			nameTF.add(tf);
@@ -398,7 +400,7 @@ public class CrewEditor implements ActionListener {
 
 		String s[] = new String[SIZE_OF_CREW];
 		for (int j = 0; j < SIZE_OF_CREW; j++) {
-			GenderType n = pc.getConfiguredPersonGender(j, ALPHA_CREW);
+			GenderType n = cc.getConfiguredPersonGender(j, ALPHA_CREW);
 
 			s[j] = n.toString();
 			if (s[j].equals("MALE"))
@@ -581,7 +583,7 @@ public class CrewEditor implements ActionListener {
 
 		for (int i = 0; i < SIZE_OF_CREW; i++) {
 			String n[] = new String[15];
-			n[i] = pc.getConfiguredPersonJob(i, ALPHA_CREW);
+			n[i] = cc.getConfiguredPersonJob(i, ALPHA_CREW);
 			JComboBoxMW<String> g = setUpCB(2, n[i]);// 2 = Job
 			g.setMaximumRowCount(8);
 			listPane.add(g);
@@ -594,7 +596,7 @@ public class CrewEditor implements ActionListener {
 
 		for (int i = 0; i < SIZE_OF_CREW; i++) {
 			String n[] = new String[28];
-			n[i] = pc.getConfiguredPersonCountry(i, ALPHA_CREW);
+			n[i] = cc.getConfiguredPersonCountry(i, ALPHA_CREW);
 			JComboBoxMW<String> g = setUpCB(3, n[i]); // 3 = Country
 			
 			g.setMaximumRowCount(8);
@@ -613,7 +615,7 @@ public class CrewEditor implements ActionListener {
 
 		for (int i = 0; i < SIZE_OF_CREW; i++) {
 			String n[] = new String[10];
-			n[i] = pc.getConfiguredPersonSponsor(i, ALPHA_CREW);
+			n[i] = cc.getConfiguredPersonSponsor(i, ALPHA_CREW);
 			JComboBoxMW<String> g = setUpCB(4, n[i]); // 4 = Sponsor
 			g.setMaximumRowCount(8);
 			listPane.add(g);
@@ -672,7 +674,7 @@ public class CrewEditor implements ActionListener {
 	 * Prepare this window for deletion.
 	 */
 	public void destroy() {
-		pc = null;
+		cc = null;
 		simulationConfigEditor.setCrewEditorOpen(false);
 		simulationConfigEditor = null;
 		f = null;
