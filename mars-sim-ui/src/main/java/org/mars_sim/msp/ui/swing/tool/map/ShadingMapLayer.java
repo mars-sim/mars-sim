@@ -18,7 +18,6 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.mars.Mars;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.ui.swing.tool.navigator.SurfaceMapPanel;
 
@@ -43,9 +42,7 @@ public class ShadingMapLayer implements MapLayer {
 	 * @param displayComponent the display component.
 	 */
 	public ShadingMapLayer(Component displayComponent) {
-
-		Mars mars = Simulation.instance().getMars();
-		surfaceFeatures = mars.getSurfaceFeatures();
+		surfaceFeatures = Simulation.instance().getMars().getSurfaceFeatures();
 		this.displayComponent = displayComponent;
 		shadingArray = new int[Map.MAP_VIS_WIDTH * Map.MAP_VIS_HEIGHT];
 	}
@@ -72,7 +69,7 @@ public class ShadingMapLayer implements MapLayer {
 		for (int x = 0; x < Map.MAP_VIS_WIDTH; x += 2) {
 			for (int y = 0; y < Map.MAP_VIS_HEIGHT; y += 2) {
 				mapCenter.convertRectToSpherical(x - centerX, y - centerY, rho, location);
-				double sunlight = surfaceFeatures.getSunlightRatio(location);
+				double sunlight = surfaceFeatures.getSurfaceSunlightRatio(location);
 	
 				if (sunlight > 1D) {
 					sunlight = 1D;
