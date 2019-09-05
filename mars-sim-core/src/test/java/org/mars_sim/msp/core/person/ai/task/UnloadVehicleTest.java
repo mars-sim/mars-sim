@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.person.ai.task;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LifeSupportType;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.equipment.SpecimenContainer;
 import org.mars_sim.msp.core.person.GenderType;
@@ -35,10 +36,11 @@ extends TestCase {
 	@Override
 	public void setUp() throws Exception {
 		SimulationConfig.loadConfig();
+        Simulation.testRun();
 	}
 
     public void testUnloadingPhase() throws Exception {
-
+    	
 		AmountResource oxygen = ResourceUtil.findAmountResource(LifeSupportType.OXYGEN);
 		AmountResource food = ResourceUtil.findAmountResource(LifeSupportType.FOOD);
 		AmountResource water = ResourceUtil.findAmountResource(LifeSupportType.WATER);
@@ -49,6 +51,7 @@ extends TestCase {
         int id = 1;
         double massPerItem = 1.4D;
         ItemResource hammer = ItemResourceUtil.createItemResource(resourceName,id,description,massPerItem, 1);
+  
 		Settlement settlement = new MockSettlement();
 		Inventory settlementInv = settlement.getInventory();
 		settlementInv.addAmountResourceTypeCapacity(oxygen, 100D);
@@ -86,8 +89,7 @@ extends TestCase {
         BuildingAirlock airlock0 = new BuildingAirlock(building0, 1, 0D, 0D, 0D, 0D, 0D, 0D);
         building0.addFunction(new EVA(building0, airlock0));
 
-		//Person person = new Person("test person", PersonGender.MALE, null, settlement, "Mars Society (MS)");
-		// 2017-04-11 Use Builder Pattern for creating an instance of Person
+		// Use Builder Pattern for creating an instance of Person
 		Person person = Person.create("test person", settlement)
 								.setGender(GenderType.MALE)
 								.setCountry(null)

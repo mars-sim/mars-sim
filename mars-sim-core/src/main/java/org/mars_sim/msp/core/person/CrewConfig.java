@@ -66,9 +66,8 @@ public class CrewConfig implements Serializable {
 	private static final String DESSERT = "favorite-dessert";
 	private static final String ACTIVITY = "favorite-activity";
 
-	private static Element root;
-
-	private static List<String> personNameList;
+//	private static Element root;
+	private Document crewDoc;
 
 	/**
 	 * Constructor
@@ -76,7 +75,8 @@ public class CrewConfig implements Serializable {
 	 * @param crewDoc the crew config DOM document.
 	 */
 	public CrewConfig(Document crewDoc) {
-		root = crewDoc.getRootElement();
+		this.crewDoc = crewDoc;
+//		root = crewDoc.getRootElement();
 	}
 
 
@@ -87,8 +87,7 @@ public class CrewConfig implements Serializable {
 	 * @throws Exception if error in XML parsing.
 	 */
 	public int getNumberOfConfiguredPeople() {
-		// Element root = personDoc.getRootElement();
-		Element personList = root.getChild(CREW_LIST);
+		Element personList = crewDoc.getRootElement().getChild(CREW_LIST);
 		List<Element> personNodes = personList.getChildren(PERSON);
 		if (personNodes != null)
 			return personNodes.size();
@@ -352,8 +351,7 @@ public class CrewConfig implements Serializable {
 	 */
 	public Map<String, Integer> getNaturalAttributeMap(int index) {
 		Map<String, Integer> result = new HashMap<String, Integer>();
-		// Element root = personDoc.getRootElement();
-		Element personList = root.getChild(CREW_LIST);
+		Element personList = crewDoc.getRootElement().getChild(CREW_LIST);
 		Element personElement = (Element) personList.getChildren(PERSON).get(index);
 		List<Element> naturalAttributeListNodes = personElement.getChildren(NATURAL_ATTRIBUTE_LIST);
 
@@ -382,8 +380,7 @@ public class CrewConfig implements Serializable {
 	 */
 	public Map<String, Integer> getBigFiveMap(int index) {
 		Map<String, Integer> result = new HashMap<String, Integer>();
-		// Element root = personDoc.getRootElement();
-		Element personList = root.getChild(CREW_LIST);
+		Element personList = crewDoc.getRootElement().getChild(CREW_LIST);
 		Element personElement = (Element) personList.getChildren(PERSON).get(index);
 		List<Element> listNodes = personElement.getChildren(PERSONALITY_TRAIT_LIST);
 
@@ -413,25 +410,23 @@ public class CrewConfig implements Serializable {
 	 * @return a String
 	 */
 	private String getValueAsString(int index, String param) {
-		// Element root = personDoc.getRootElement();
-		Element personList = root.getChild(CREW_LIST);
+		Element personList = crewDoc.getRootElement().getChild(CREW_LIST);
 		Element personElement = (Element) personList.getChildren(PERSON).get(index);
 		return personElement.getAttributeValue(param);
 	}
 
-	/**
-	 * Gets the value of an element as a double
-	 * 
-	 * @param an element
-	 * 
-	 * @return a double
-	 */
-	private double getValueAsDouble(String child) {
-		// Element root = personDoc.getRootElement();
-		Element element = root.getChild(child);
-		String str = element.getAttributeValue(VALUE);
-		return Double.parseDouble(str);
-	}
+//	/**
+//	 * Gets the value of an element as a double
+//	 * 
+//	 * @param an element
+//	 * 
+//	 * @return a double
+//	 */
+//	private double getValueAsDouble(String child) {
+//		Element element = crewDoc.getRootElement().getChild(child);
+//		String str = element.getAttributeValue(VALUE);
+//		return Double.parseDouble(str);
+//	}
 
 	/**
 	 * Gets a map of the configured person's skills.
@@ -442,10 +437,7 @@ public class CrewConfig implements Serializable {
 	 */
 	public Map<String, Integer> getSkillMap(int index) {
 		Map<String, Integer> result = new HashMap<String, Integer>();
-		// Element root = personDoc.getRootElement();
-		// Change the people.xml element from "person-list" to
-		// "alpha-team"
-		Element personList = root.getChild(CREW_LIST);
+		Element personList = crewDoc.getRootElement().getChild(CREW_LIST);
 		Element personElement = (Element) personList.getChildren(PERSON).get(index);
 		List<Element> skillListNodes = personElement.getChildren(SKILL_LIST);
 		if ((skillListNodes != null) && (skillListNodes.size() > 0)) {
@@ -473,8 +465,7 @@ public class CrewConfig implements Serializable {
 	 */
 	public Map<String, Integer> getRelationshipMap(int index) {
 		Map<String, Integer> result = new HashMap<String, Integer>();
-		// Element root = personDoc.getRootElement();
-		Element personList = root.getChild(CREW_LIST);
+		Element personList = crewDoc.getRootElement().getChild(CREW_LIST);
 		Element personElement = (Element) personList.getChildren(PERSON).get(index);
 		List<Element> relationshipListNodes = personElement.getChildren(RELATIONSHIP_LIST);
 		if ((relationshipListNodes != null) && (relationshipListNodes.size() > 0)) {
@@ -553,11 +544,7 @@ public class CrewConfig implements Serializable {
 	 * Prepare object for garbage collection.
 	 */
 	public void destroy() {
-		root = null;
+		crewDoc = null;
 		roster = null;
-		if (personNameList != null) {
-			personNameList.clear();
-			personNameList = null;
-		}
 	}
 }

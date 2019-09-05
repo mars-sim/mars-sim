@@ -169,7 +169,6 @@ public class UnitManager implements Serializable {
 	private static SettlementConfig settlementConfig;
 	private static VehicleConfig vehicleConfig;
 	private static RobotConfig robotConfig;
-//	private static PartConfig partConfig;
 
 	private static RelationshipManager relationshipManager;
 	private static MalfunctionFactory factory;
@@ -194,9 +193,10 @@ public class UnitManager implements Serializable {
 		equipmentNumberMap = new HashMap<String, Integer>();
 		vehicleNumberMap = new HashMap<String, Integer>();
 		
-		crewConfig = simulationConfig.getCrewConfig();
-		personConfig = simulationConfig.getPersonConfig();
+		personConfig = simulationConfig.getPersonConfig();	
 		robotConfig = simulationConfig.getRobotConfiguration();
+		crewConfig = simulationConfig.getCrewConfig();
+
 		settlementConfig = simulationConfig.getSettlementConfiguration();
 		vehicleConfig = simulationConfig.getVehicleConfiguration();
 		
@@ -899,6 +899,9 @@ public class UnitManager implements Serializable {
 		if (personConfig == null) // FOR PASSING MAVEN TEST
 			personConfig = SimulationConfig.instance().getPersonConfig();
 
+		if (crewConfig == null) // FOR PASSING MAVEN TEST
+			crewConfig = SimulationConfig.instance().getCrewConfig();
+		
 		// TODO: will setting a limit on # crew to 7 be easier ?
 
 		int size = crewConfig.getNumberOfConfiguredPeople();
@@ -1892,6 +1895,9 @@ public class UnitManager implements Serializable {
 	 */
 	private void createConfiguredRelationships(List<Person> personList) {
 
+		if (crewConfig == null) // FOR PASSING MAVEN TEST
+			crewConfig = SimulationConfig.instance().getCrewConfig();
+		
 		int size = crewConfig.getNumberOfConfiguredPeople();
 			
 		// Create all configured people relationships.
@@ -2492,11 +2498,15 @@ public class UnitManager implements Serializable {
 		vehicleNumberMap = null;
 		// masterClock = null;
 //		firstSettlement = null;
+		
 		personConfig = null;
+		crewConfig = null;
 		settlementConfig = null;
+		vehicleConfig = null;
+		
 		relationshipManager = null;
 		// emotionJSONConfig = null;
-		vehicleConfig = null;
+
 		
 		factory = null;
 		marsClock = null;

@@ -7,7 +7,7 @@ public class MockVehicle extends Vehicle {
 
 	public MockVehicle(Settlement settlement) throws Exception {
 		// Use Vehicle constructor
-		super("Mock Vehicle", "Mock Vehicle", settlement, 10D, 100D, 57D, 100D);
+		super("Mock Vehicle", "Mock Vehicle", settlement, 10D, 5000D, 57D, 100D);
 	}
 
 	public boolean isAppropriateOperator(VehicleOperator operator) {

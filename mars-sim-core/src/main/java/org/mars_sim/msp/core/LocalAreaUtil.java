@@ -58,8 +58,8 @@ public class LocalAreaUtil {
 	 * Private empty constructor for utility class.
 	 */
 	private LocalAreaUtil() {
-//		unitManager = sim.getUnitManager();
-//		marsClock = sim.getMasterClock().getMarsClock();
+		unitManager = sim.getUnitManager();
+		marsClock = sim.getMasterClock().getMarsClock();
 	}
 
 	/**
@@ -767,6 +767,8 @@ public class LocalAreaUtil {
 		boolean cached = false;
 		Area obstacleArea = null;
 		if (useCache && obstacleAreaCache.containsKey(coordinates)) {
+			if (marsClock == null)
+				marsClock = Simulation.instance().getMasterClock().getMarsClock();
 			String currentTimestamp = marsClock.getDateTimeStamp();
 			String cachedTimestamp = obstacleAreaTimestamps.get(coordinates);
 			if (currentTimestamp.equals(cachedTimestamp)) {

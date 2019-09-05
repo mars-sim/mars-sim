@@ -167,6 +167,7 @@ public class MarsClock implements Serializable {
 
 		sim = Simulation.instance();
 //		earthClock = sim.getMasterClock().getEarthClock();
+	
 		orbitInfo = sim.getMars().getOrbitInfo();
 
 		// Set initial date to dateString. ex: "00-Adir-01 000.000"

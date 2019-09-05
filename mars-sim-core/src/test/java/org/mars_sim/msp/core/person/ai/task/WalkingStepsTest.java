@@ -35,7 +35,7 @@ public class WalkingStepsTest extends TestCase {
 
         // Create new simulation instance.
         SimulationConfig.loadConfig();
-        Simulation.createNewSimulation(-1, true);
+        Simulation.testRun();
         
         // Clear out existing settlements in simulation.
         UnitManager unitManager = Simulation.instance().getUnitManager();
@@ -129,7 +129,7 @@ public class WalkingStepsTest extends TestCase {
 
         // Create new simulation instance.
         SimulationConfig.loadConfig();
-        Simulation.createNewSimulation(-1, true);
+        Simulation.testRun();
         // Clear out existing settlements in simulation.
         UnitManager unitManager = Simulation.instance().getUnitManager();
         Iterator<Settlement> i = unitManager.getSettlements().iterator();
@@ -201,7 +201,7 @@ public class WalkingStepsTest extends TestCase {
 
         // Create new simulation instance.
         SimulationConfig.loadConfig();
-        Simulation.createNewSimulation(-1, true);
+        Simulation.testRun();
         // Clear out existing settlements in simulation.
         UnitManager unitManager = Simulation.instance().getUnitManager();
         Iterator<Settlement> i = unitManager.getSettlements().iterator();
@@ -296,7 +296,7 @@ public class WalkingStepsTest extends TestCase {
 
         // Create new simulation instance.
         SimulationConfig.loadConfig();
-        Simulation.createNewSimulation(-1, true);
+        Simulation.testRun();
         // Clear out existing settlements in simulation.
         UnitManager unitManager = Simulation.instance().getUnitManager();
         Iterator<Settlement> i = unitManager.getSettlements().iterator();
@@ -373,7 +373,7 @@ public class WalkingStepsTest extends TestCase {
 
         // Create new simulation instance.
         SimulationConfig.loadConfig();
-        Simulation.createNewSimulation(-1, true);
+        Simulation.testRun();
         // Clear out existing settlements in simulation.
         UnitManager unitManager = Simulation.instance().getUnitManager();
         Iterator<Settlement> i = unitManager.getSettlements().iterator();
@@ -438,7 +438,7 @@ public class WalkingStepsTest extends TestCase {
 
         // Create new simulation instance.
         SimulationConfig.loadConfig();
-        Simulation.createNewSimulation(-1, true);
+        Simulation.testRun();
         // Clear out existing settlements in simulation.
         UnitManager unitManager = Simulation.instance().getUnitManager();
         Iterator<Settlement> i = unitManager.getSettlements().iterator();
@@ -521,7 +521,7 @@ public class WalkingStepsTest extends TestCase {
 
         // Create new simulation instance.
         SimulationConfig.loadConfig();
-        Simulation.createNewSimulation(-1, true);
+        Simulation.testRun();
         // Clear out existing settlements in simulation.
         UnitManager unitManager = Simulation.instance().getUnitManager();
         Iterator<Settlement> i = unitManager.getSettlements().iterator();
@@ -535,7 +535,7 @@ public class WalkingStepsTest extends TestCase {
         BuildingManager buildingManager = settlement.getBuildingManager();
         BuildingConnectorManager connectorManager = settlement.getBuildingConnectorManager();
         assertNotNull(connectorManager);
-
+        
         Rover rover = new Rover("Test Rover", "Explorer Rover", settlement);
         rover.setParkedLocation(15D, -10D, 0D);
 
@@ -606,7 +606,7 @@ public class WalkingStepsTest extends TestCase {
 
         // Create new simulation instance.
         SimulationConfig.loadConfig();
-        Simulation.createNewSimulation(-1, true);
+        Simulation.testRun();
         // Clear out existing settlements in simulation.
         UnitManager unitManager = Simulation.instance().getUnitManager();
         Iterator<Settlement> i = unitManager.getSettlements().iterator();
@@ -691,7 +691,7 @@ public class WalkingStepsTest extends TestCase {
 
         // Create new simulation instance.
         SimulationConfig.loadConfig();
-        Simulation.createNewSimulation(-1, true);
+        Simulation.testRun();
         // Clear out existing settlements in simulation.
         UnitManager unitManager = Simulation.instance().getUnitManager();
         Iterator<Settlement> i = unitManager.getSettlements().iterator();
@@ -759,7 +759,7 @@ public class WalkingStepsTest extends TestCase {
 
         // Create new simulation instance.
         SimulationConfig.loadConfig();
-        Simulation.createNewSimulation(-1, true);
+        Simulation.testRun();
         // Clear out existing settlements in simulation.
         UnitManager unitManager = Simulation.instance().getUnitManager();
         Iterator<Settlement> i = unitManager.getSettlements().iterator();
@@ -846,7 +846,7 @@ public class WalkingStepsTest extends TestCase {
 
         // Create new simulation instance.
         SimulationConfig.loadConfig();
-        Simulation.createNewSimulation(-1, true);
+        Simulation.testRun();
         // Clear out existing settlements in simulation.
         UnitManager unitManager = Simulation.instance().getUnitManager();
         Iterator<Settlement> i = unitManager.getSettlements().iterator();
@@ -929,7 +929,7 @@ public class WalkingStepsTest extends TestCase {
 
         // Create new simulation instance.
         SimulationConfig.loadConfig();
-        Simulation.createNewSimulation(-1, true);
+        Simulation.testRun();
         // Clear out existing settlements in simulation.
         UnitManager unitManager = Simulation.instance().getUnitManager();
         Iterator<Settlement> i = unitManager.getSettlements().iterator();
@@ -1013,7 +1013,7 @@ public class WalkingStepsTest extends TestCase {
 
         // Create new simulation instance.
         SimulationConfig.loadConfig();
-        Simulation.createNewSimulation(-1, true);
+        Simulation.testRun();
         // Clear out existing settlements in simulation.
         UnitManager unitManager = Simulation.instance().getUnitManager();
         Iterator<Settlement> i = unitManager.getSettlements().iterator();
@@ -1091,7 +1091,7 @@ public class WalkingStepsTest extends TestCase {
 //
 //        // Create new simulation instance.
 //        SimulationConfig.loadConfig();
-//        Simulation.createNewSimulation(-1, true);
+//        Simulation.testRun();
 //        // Clear out existing settlements in simulation.
 //        UnitManager unitManager = Simulation.instance().getUnitManager();
 ////        Iterator<Settlement> i = unitManager.getSettlements().iterator();
@@ -1156,7 +1156,7 @@ public class WalkingStepsTest extends TestCase {
 
         // Create new simulation instance.
         SimulationConfig.loadConfig();
-        Simulation.createNewSimulation(-1, true);
+        Simulation.testRun();
         // Clear out existing settlements in simulation.
         UnitManager unitManager = Simulation.instance().getUnitManager();
         Iterator<Settlement> i = unitManager.getSettlements().iterator();

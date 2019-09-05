@@ -8,7 +8,6 @@ package org.mars_sim.msp.core.person.ai.task;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
@@ -29,7 +28,6 @@ import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.taskUtil.Task;
 import org.mars_sim.msp.core.person.ai.taskUtil.TaskPhase;
-import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.robot.Robot;
@@ -443,16 +441,19 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 				settlementInv.storeUnit(equipment);
 				amountUnloading -= equipment.getMass();
 
-				if (person != null)
-					LogConsolidated.log(Level.INFO, 3_000, sourceName,
-							"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " in "
-									+ person.getLocationTag().getImmediateLocation() + " unloaded "
-									+ equipment.getNickName() + " from " + vehicle.getName() + ".");
-				else
-					LogConsolidated.log(Level.INFO, 3_000, sourceName,
-							"[" + robot.getLocationTag().getLocale() + "] " + robot.getName() + " in "
-									+ robot.getLocationTag().getImmediateLocation() + " unloaded "
-									+ equipment.getNickName() + " from " + vehicle.getName() + ".");
+				if (!vehicle.getName().contains("Mock")) {
+					// if it's NOT under maven test
+					if (person != null)
+						LogConsolidated.log(Level.INFO, 3_000, sourceName,
+								"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " in "
+										+ person.getLocationTag().getImmediateLocation() + " unloaded "
+										+ equipment.getNickName() + " from " + vehicle.getName() + ".");
+					else
+						LogConsolidated.log(Level.INFO, 3_000, sourceName,
+								"[" + robot.getLocationTag().getLocale() + "] " + robot.getName() + " in "
+										+ robot.getLocationTag().getImmediateLocation() + " unloaded "
+										+ equipment.getNickName() + " from " + vehicle.getName() + ".");
+				}
 			}
 		}
 
@@ -473,7 +474,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 				vehicleInv.retrieveAmountResource(resource, amount);
 				settlementInv.storeAmountResource(resource, amount, true);
 			} catch (Exception e) {
-				LogConsolidated.log(Level.INFO, 3_000, sourceName,
+				LogConsolidated.log(Level.WARNING, 3_000, sourceName,
 						"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " in "
 								+ person.getLocationTag().getImmediateLocation() + " Could NOT unload the resources.", e);
 			}

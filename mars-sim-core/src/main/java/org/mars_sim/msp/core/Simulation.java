@@ -401,6 +401,25 @@ public class Simulation implements ClockListener, Serializable {
 //       eventManager = new HistoricalEventManager();
 //    }
 
+	public static void testRun() {
+//		PersonConfig pc = SimulationConfig.instance().getPersonConfig();
+		
+		Simulation sim = Simulation.instance();
+		ResourceUtil.getInstance();
+		mars = new Mars();
+		masterClock = new MasterClock(false, 256);
+		unitManager = new UnitManager();
+		unitManager.constructInitialUnits(true);
+		medicalManager = new MedicalManager();
+		
+		// Create marsClock instance
+		MarsClock marsClock = masterClock.getMarsClock();
+		EarthClock earthClock = masterClock.getEarthClock();
+		
+		Unit.initializeInstances(masterClock, marsClock, sim, mars, mars.getMarsSurface(), 
+				earthClock, unitManager, missionManager);
+	}
+	
 	/**
 	 * Initialize intransient data in the simulation.
 	 */
@@ -433,7 +452,7 @@ public class Simulation implements ClockListener, Serializable {
 		
 		// Gets config file instances
 		simulationConfig = SimulationConfig.instance();
-		BuildingConfig bc = simulationConfig.getBuildingConfiguration();
+//		BuildingConfig bc = simulationConfig.getBuildingConfiguration();
 		PersonConfig pc = simulationConfig.getPersonConfig();
 	
 		// Set instances for logging
@@ -1781,12 +1800,7 @@ public class Simulation implements ClockListener, Serializable {
 			eventManager = null;
 		}
 
-//        if (managerExecutor != null) {
-//            managerExecutor.shutdownNow();
-//            managerExecutor = null;
-//        }
-
-		// logger.config("Simulation's destroyOldSimulation() is done");
+		 logger.config("Simulation's destroyOldSimulation() is done");
 	}
 
 }

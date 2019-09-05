@@ -20,6 +20,7 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
@@ -1004,9 +1005,10 @@ public class LoadVehicleGarage extends Task implements Serializable {
 							LogConsolidated.log(Level.INFO, 5000, sourceName,
 									" Not enough "
 									+ Conversion.capitalize(ResourceUtil.findAmountResourceName(resource)) 
-									+ ". Mission need: " + Math.round(needed * 100.0) / 100.0  
-									+ " ; " + settlement + " need: " + Math.round(settlementNeed* 100.0) / 100.0
-									+ " ; Stored: " + Math.round(stored* 100.0) / 100.0);
+									+ "; Loaded into " + vehicle.getNickName() + " : " + Math.round(loaded * 100.0) / 100.0 
+									+ "; Mission need: " + Math.round(needed * 100.0) / 100.0  
+									+ "; " + settlement + " need: " + Math.round(settlementNeed* 100.0) / 100.0
+									+ "; " + settlement + " stored: " + Math.round(stored* 100.0) / 100.0);
 						inv.addAmountDemandTotalRequest(resource, totalNeeded);
 						enoughSupplies = false;
 						return false;
@@ -1025,9 +1027,10 @@ public class LoadVehicleGarage extends Task implements Serializable {
 						LogConsolidated.log(Level.INFO, 0, sourceName,
 								" Not enough "
 								+ Conversion.capitalize(ResourceUtil.findAmountResourceName(resource)) 
-								+ ". Mission need: " + needed   
-								+ " ; " + settlement + " need: " + settlementNeed
-								+ " ; Stored: " + stored);
+								+ "; Loaded into " + vehicle.getNickName() + " : " + numLoaded
+								+ "; Mission need : " + needed   
+								+ "; " + settlement + " need : " + settlementNeed
+								+ "; " + settlement + " stored : " + stored);
 					inv.addItemDemandTotalRequest(resource, totalNeeded);
 					enoughSupplies = false;
 					return false;
@@ -1052,10 +1055,10 @@ public class LoadVehicleGarage extends Task implements Serializable {
 					LogConsolidated.log(Level.INFO, 0, sourceName,						
 							"Not enough "
 							+ name 
-							+ ". Mission need: " + needed 
-							+ ". # loaded: " + numLoaded 
+							+ "; Mission need: " + needed 
+							+ "; Loaded into " + vehicle.getNickName() + " : " + numLoaded 
 							+ "; " + settlement + " need: " + settlementNeed
-							+ "; # unused: " + stored);
+							+ "; " + settlement + " stored : " + stored);
 				enoughSupplies = false;
 				return false;
 			}
@@ -1082,6 +1085,9 @@ public class LoadVehicleGarage extends Task implements Serializable {
 		double amountPersonPerSol = 0D;
 		double tripTimeSols = tripTime / 1000D;
 
+		if (personConfig == null) 
+			personConfig = SimulationConfig.instance().getPersonConfig();
+		
 		// Only life support resources are required at settlement at this time.
 		if (resource == oxygenID)
 			amountPersonPerSol = personConfig.getNominalO2ConsumptionRate();

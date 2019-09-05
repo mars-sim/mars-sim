@@ -92,32 +92,34 @@ public class PersonConfig implements Serializable {
 	private static final String PERCENTAGE = "percentage";
 
 	/** The base load-carrying capacity. */
-	private static double baseCap = 0;
+	private double baseCap = -1;
 	/** The upper and lower height. */
-	private static double[] height = new double[] { 0, 0 };
+	private double[] height = new double[] {-1, -1};
 	/** The high and lor weight. */
-	private static double[] weight = new double[] { 0, 0 };
+	private double[] weight = new double[] {-1, -1};
 	/** The 3 types of metabolic loads. */
-	private static double[] o2ConsumptionRate = new double[] { 0, 0, 0 };
+	private double[] o2ConsumptionRate = new double[] {-1, -1, -1};
 	/** The consumption rate for water, dessert, food. */
-	private static double[] consumptionRates = new double[] { 0, 0, 0 };
+	private double[] consumptionRates = new double[] {-1, -1, -1};
 	/** The grey2BlackWaterRatio and the gender ratio. */
-	private static double[] ratio = new double[] { 0, 0 };
+	private double[] ratio = new double[] {-1, -1};
 	/** The stress breakdown and high fatigue collapse chance. */
-	private static double[] chance = new double[] { 0, 0 };
+	private double[] chance = new double[] {-1, -1};
 	/** Various time values. */
-	private static double[] time = new double[] { 0, 0, 0, 0, 0, 0, 0 };
+	private double[] time = new double[] {-1, -1, -1, -1, -1, -1, -1};
 	/** The min and max temperature. */
-	private static double[] temperature = new double[] { 0, 0 };
+	private double[] temperature = new double[] {-1, -1};
 
-	private static double waterUsage = 0;
+	private double waterUsage = -1;
 
-	private static double pressure = 0;
+	private double pressure = -1;
+	
+	private double co2Rate = -1;
+	
+	private Document personDoc;
+//	private static Element root;
 
-//	private static Document personDoc;
-	private static Element root;
-
-	private static Map<String, Double> personalityDistribution;
+	private Map<String, Double> personalityDistribution;
 
 	private static List<String> personNameList;
 	private static List<String> allCountries;
@@ -128,7 +130,7 @@ public class PersonConfig implements Serializable {
 	private static List<Map<Integer, List<String>>> lastNames;
 	private static List<Map<Integer, List<String>>> firstNames;
 
-	private static Commander commander;
+	private Commander commander;
 
 	/**
 	 * Constructor
@@ -136,7 +138,7 @@ public class PersonConfig implements Serializable {
 	 * @param personDoc the person config DOM document.
 	 */
 	public PersonConfig(Document personDoc) {
-		root = personDoc.getRootElement();
+		this.personDoc = personDoc;
 		commander = new Commander();
 
 		getPersonNameList();
@@ -156,7 +158,7 @@ public class PersonConfig implements Serializable {
 
 		if (personNameList == null) {
 			personNameList = new ArrayList<String>();
-			Element personNameEl = root.getChild(PERSON_NAME_LIST);
+			Element personNameEl = personDoc.getRootElement().getChild(PERSON_NAME_LIST);
 			List<Element> personNames = personNameEl.getChildren(PERSON_NAME);
 
 			for (Element nameElement : personNames) {
@@ -191,8 +193,7 @@ public class PersonConfig implements Serializable {
 				countries.add(countryList);
 			}
 
-			// Element root = personDoc.getRootElement();
-			Element lastNameEl = root.getChild(LAST_NAME_LIST);
+			Element lastNameEl = personDoc.getRootElement().getChild(LAST_NAME_LIST);
 			List<Element> lastNamesList = lastNameEl.getChildren(LAST_NAME);
 
 			for (Element nameElement : lastNamesList) {
@@ -355,7 +356,7 @@ public class PersonConfig implements Serializable {
 				femalesByCountry.add(countryList);
 			}
 
-			Element firstNameEl = root.getChild(FIRST_NAME_LIST);
+			Element firstNameEl = personDoc.getRootElement().getChild(FIRST_NAME_LIST);
 			List<Element> firstNamesList = firstNameEl.getChildren(FIRST_NAME);
 
 			for (Element nameElement : firstNamesList) {
@@ -595,7 +596,7 @@ public class PersonConfig implements Serializable {
 	public ReportingAuthorityType getMarsSocietySponsor(String name) {
 		ReportingAuthorityType type = null;
 
-		Element personNameList = root.getChild(PERSON_NAME_LIST);
+		Element personNameList = personDoc.getRootElement().getChild(PERSON_NAME_LIST);
 		List<Element> personNames = personNameList.getChildren(PERSON_NAME);
 		for (Element nameElement : personNames) {
 			String personName = nameElement.getAttributeValue(VALUE);
@@ -623,8 +624,7 @@ public class PersonConfig implements Serializable {
 	public GenderType getPersonGender(String name) {
 		GenderType result = GenderType.UNKNOWN;
 
-		// Element root = personDoc.getRootElement();
-		Element personNameList = root.getChild(PERSON_NAME_LIST);
+		Element personNameList = personDoc.getRootElement().getChild(PERSON_NAME_LIST);
 		List<Element> personNames = personNameList.getChildren(PERSON_NAME);
 		for (Element nameElement : personNames) {
 			String personName = nameElement.getAttributeValue(VALUE);
@@ -641,7 +641,7 @@ public class PersonConfig implements Serializable {
 	 * @return capacity in kg
 	 */
 	public double getBaseCapacity() {
-		if (baseCap != 0)
+		if (baseCap >= 0)
 			return baseCap;
 		else {
 			baseCap = getValueAsDouble(BASE_CAPACITY);
@@ -656,11 +656,13 @@ public class PersonConfig implements Serializable {
 	 * @return height in cm
 	 */
 	public double getTallAverageHeight() {
-		if (height[0] != 0)
-			return height[0];
+		double r = height[0];
+		if (r >= 0)
+			return r;
 		else {
-			height[0] = getValueAsDouble(AVERAGE_TALL_HEIGHT);
-			return height[0];
+			r = getValueAsDouble(AVERAGE_TALL_HEIGHT);
+			height[0] = r;
+			return r;
 		}
 	}
 	
@@ -670,11 +672,13 @@ public class PersonConfig implements Serializable {
 	 * @return height in cm
 	 */
 	public double getShortAverageHeight() {
-		if (height[1] != 0)
-			return height[1];
+		double r = height[1];
+		if (r >= 0)
+			return r;
 		else {
-			height[1] = getValueAsDouble(AVERAGE_SHORT_HEIGHT);
-			return height[1];
+			r = getValueAsDouble(AVERAGE_SHORT_HEIGHT);
+			height[1] = r;
+			return r;
 		}
 	}
 	
@@ -687,11 +691,13 @@ public class PersonConfig implements Serializable {
 	 * @return weight in kg
 	 */
 	public double getHighAverageWeight() {
-		if (weight[0] != 0)
-			return weight[0];
+		double r = weight[0];
+		if (r >= 0)
+			return r;
 		else {
-			weight[0] = getValueAsDouble(AVERAGE_HIGH_WEIGHT);
-			return weight[0];
+			r = getValueAsDouble(AVERAGE_HIGH_WEIGHT);
+			weight[0] = r;
+			return r;
 		}
 	}
 	
@@ -701,11 +707,13 @@ public class PersonConfig implements Serializable {
 	 * @return weight in kg
 	 */
 	public double getLowAverageWeight() {
-		if (weight[1] != 0)
-			return weight[1];
+		double r = weight[1];
+		if (r >= 0)
+			return r;
 		else {
-			weight[1] = getValueAsDouble(AVERAGE_LOW_WEIGHT);
-			return weight[1];
+			r = getValueAsDouble(AVERAGE_LOW_WEIGHT);
+			weight[1] = r;
+			return r;
 		}
 	}
 
@@ -716,11 +724,13 @@ public class PersonConfig implements Serializable {
 	 * @throws Exception if consumption rate could not be found.
 	 */
 	public double getNominalO2ConsumptionRate() {
-		if (o2ConsumptionRate[1] != 0)
-			return o2ConsumptionRate[1];
+		double r = o2ConsumptionRate[1];
+		if (r >= 0)
+			return r;
 		else {
-			o2ConsumptionRate[1] = getValueAsDouble(NOMINAL_O2_RATE);
-			return o2ConsumptionRate[1];
+			r = getValueAsDouble(NOMINAL_O2_RATE);
+			o2ConsumptionRate[1] = r;
+			return r;
 		}
 	}
 
@@ -731,11 +741,13 @@ public class PersonConfig implements Serializable {
 	 * @throws Exception if consumption rate could not be found.
 	 */
 	public double getLowO2ConsumptionRate() {
-		if (o2ConsumptionRate[0] != 0)
-			return o2ConsumptionRate[0];
+		double r = o2ConsumptionRate[0];
+		if (r >= 0)
+			return r;
 		else {
-			o2ConsumptionRate[0] = getValueAsDouble(LOW_O2_RATE);
-			return o2ConsumptionRate[0];
+			r = getValueAsDouble(LOW_O2_RATE);
+			o2ConsumptionRate[0] = r;
+			return r;
 		}
 	}
 
@@ -746,11 +758,13 @@ public class PersonConfig implements Serializable {
 	 * @throws Exception if consumption rate could not be found.
 	 */
 	public double getHighO2ConsumptionRate() {
-		if (o2ConsumptionRate[2] != 0)
-			return o2ConsumptionRate[2];
+		double r = o2ConsumptionRate[2];
+		if (r >= 0)
+			return r;
 		else {
-			o2ConsumptionRate[2] = getValueAsDouble(HIGH_O2_RATE);
-			return o2ConsumptionRate[2];
+			r = getValueAsDouble(HIGH_O2_RATE);
+			o2ConsumptionRate[2] = r;
+			return r;
 		}
 	}
 
@@ -761,11 +775,11 @@ public class PersonConfig implements Serializable {
 	 * @throws Exception if consumption rate could not be found.
 	 */
 	public double getCO2ExpelledRate() {
-		if (o2ConsumptionRate[2] != 0)
-			return o2ConsumptionRate[2];
+		if (co2Rate >= 0)
+			return co2Rate;
 		else {
-			o2ConsumptionRate[2] = getValueAsDouble(CO2_EXPELLED_RATE);
-			return o2ConsumptionRate[2];
+			co2Rate = getValueAsDouble(CO2_EXPELLED_RATE);
+			return co2Rate;
 		}
 	}
 
@@ -776,11 +790,13 @@ public class PersonConfig implements Serializable {
 	 * @throws Exception if consumption rate could not be found.
 	 */
 	public double getWaterConsumptionRate() {
-		if (consumptionRates[0] != 0)
-			return consumptionRates[0];
+		double r = consumptionRates[0];
+		if (r >= 0)
+			return r;
 		else {
-			consumptionRates[0] = getValueAsDouble(WATER_CONSUMPTION_RATE);
-			return consumptionRates[0];
+			r = getValueAsDouble(WATER_CONSUMPTION_RATE);
+			consumptionRates[0] = r;
+			return r;
 		}
 	}
 
@@ -791,7 +807,7 @@ public class PersonConfig implements Serializable {
 	 * @throws Exception if usage rate could not be found.
 	 */
 	public double getWaterUsageRate() {
-		if (waterUsage != 0)
+		if (waterUsage >= 0)
 			return waterUsage;
 		else {
 			waterUsage = getValueAsDouble(WATER_USAGE_RATE);
@@ -806,11 +822,13 @@ public class PersonConfig implements Serializable {
 	 * @throws Exception if the ratio could not be found.
 	 */
 	public double getGrey2BlackWaterRatio() {
-		if (ratio[0] != 0)
-			return ratio[0];
+		double r = ratio[0];
+		if (r >= 0)
+			return r;
 		else {
-			ratio[0] = getValueAsDouble(GREY_TO_BLACK_WATER_RATIO);
-			return ratio[0];
+			r = getValueAsDouble(GREY_TO_BLACK_WATER_RATIO);
+			ratio[0] = r;
+			return r;
 		}
 	}
 
@@ -821,11 +839,13 @@ public class PersonConfig implements Serializable {
 	 * @throws Exception if consumption rate could not be found.
 	 */
 	public double getFoodConsumptionRate() {
-		if (consumptionRates[2] != 0)
-			return consumptionRates[2];
+		double r = consumptionRates[2];
+		if (r >= 0)
+			return r;
 		else {
-			consumptionRates[2] = getValueAsDouble(FOOD_CONSUMPTION_RATE);
-			return consumptionRates[2];
+			r = getValueAsDouble(FOOD_CONSUMPTION_RATE);
+			consumptionRates[2] = r;
+			return r;
 		}
 	}
 
@@ -836,11 +856,13 @@ public class PersonConfig implements Serializable {
 	 * @throws Exception if consumption rate could not be found.
 	 */
 	public double getDessertConsumptionRate() {
-		if (consumptionRates[1] != 0)
-			return consumptionRates[1];
+		double r = consumptionRates[1];
+		if (r >= 0)
+			return r;
 		else {
-			consumptionRates[1] = getValueAsDouble(DESSERT_CONSUMPTION_RATE);
-			return consumptionRates[1];
+			r = getValueAsDouble(DESSERT_CONSUMPTION_RATE);
+			consumptionRates[1] = r;
+			return r;
 		}
 	}
 
@@ -851,11 +873,13 @@ public class PersonConfig implements Serializable {
 	 * @throws Exception if oxygen deprivation time could not be found.
 	 */
 	public double getOxygenDeprivationTime() {
-		if (time[0] != 0)
-			return time[0];
+		double r = time[0];
+		if (r >= 0)
+			return r;
 		else {
-			time[0] = getValueAsDouble(OXYGEN_DEPRIVATION_TIME);
-			return time[0];
+			r = getValueAsDouble(OXYGEN_DEPRIVATION_TIME);
+			time[0] = r;
+			return r;
 		}
 	}
 
@@ -866,11 +890,13 @@ public class PersonConfig implements Serializable {
 	 * @throws Exception if water deprivation time could not be found.
 	 */
 	public double getWaterDeprivationTime() {
-		if (time[1] != 0)
-			return time[1];
+		double r = time[1];
+		if (r >= 0)
+			return r;
 		else {
-			time[1] = getValueAsDouble(WATER_DEPRIVATION_TIME);
-			return time[1];
+			r = getValueAsDouble(WATER_DEPRIVATION_TIME);
+			time[1] = r;
+			return r;
 		}
 	}
 
@@ -881,11 +907,13 @@ public class PersonConfig implements Serializable {
 	 * @throws Exception if dehydration start time could not be found.
 	 */
 	public double getDehydrationStartTime() {
-		if (time[2] != 0)
-			return time[2];
+		double r = time[2];
+		if (r >= 0)
+			return r;
 		else {
-			time[2] = getValueAsDouble(DEHYDRATION_START_TIME);
-			return time[2];
+			r = getValueAsDouble(DEHYDRATION_START_TIME);
+			time[2] = r;
+			return r;
 		}
 	}
 
@@ -896,11 +924,13 @@ public class PersonConfig implements Serializable {
 	 * @throws Exception if food deprivation time could not be found.
 	 */
 	public double getFoodDeprivationTime() {
-		if (time[3] != 0)
-			return time[3];
+		double r = time[3];
+		if (r >= 0)
+			return r;
 		else {
-			time[3] = getValueAsDouble(FOOD_DEPRIVATION_TIME);
-			return time[3];
+			r = getValueAsDouble(FOOD_DEPRIVATION_TIME);
+			time[3] = r;
+			return r;
 		}
 	}
 
@@ -911,11 +941,13 @@ public class PersonConfig implements Serializable {
 	 * @throws Exception if starvation start time could not be found.
 	 */
 	public double getStarvationStartTime() {
-		if (time[4] != 0)
-			return time[4];
+		double r = time[4];
+		if (r >= 0)
+			return r;
 		else {
-			time[4] = getValueAsDouble(STARVATION_START_TIME);
-			return time[4];
+			r = getValueAsDouble(STARVATION_START_TIME);
+			time[4] = r;
+			return r;
 		}
 	}
 
@@ -926,7 +958,7 @@ public class PersonConfig implements Serializable {
 	 * @throws Exception if air pressure could not be found.
 	 */
 	public double getMinAirPressure() {
-		if (pressure != 0)
+		if (pressure >= 0)
 			return pressure;
 		else {
 			pressure = getValueAsDouble(MIN_AIR_PRESSURE);
@@ -941,11 +973,13 @@ public class PersonConfig implements Serializable {
 	 * @throws Exception if decompression time could not be found.
 	 */
 	public double getDecompressionTime() {
-		if (time[5] != 0)
-			return time[5];
+		double r = time[5];
+		if (r >= 0)
+			return r;
 		else {
-			time[5] = getValueAsDouble(DECOMPRESSION_TIME);
-			return time[5];
+			r = getValueAsDouble(DECOMPRESSION_TIME);
+			time[5] = r;
+			return r;
 		}
 	}
 
@@ -956,11 +990,13 @@ public class PersonConfig implements Serializable {
 	 * @throws Exception if min temperature cannot be found.
 	 */
 	public double getMinTemperature() {
-		if (temperature[0] != 0)
-			return temperature[0];
+		double r = temperature[0];
+		if (r >= 0)
+			return r;
 		else {
-			temperature[0] = getValueAsDouble(MIN_TEMPERATURE);
-			return temperature[0];
+			r = getValueAsDouble(MIN_TEMPERATURE);
+			temperature[0] = r;
+			return r;
 		}
 	}
 
@@ -971,11 +1007,13 @@ public class PersonConfig implements Serializable {
 	 * @throws Exception if max temperature cannot be found.
 	 */
 	public double getMaxTemperature() {
-		if (temperature[1] != 0)
-			return temperature[1];
+		double r = temperature[1];
+		if (r >= 0)
+			return r;
 		else {
-			temperature[1] = getValueAsDouble(MAX_TEMPERATURE);
-			return temperature[1];
+			r = getValueAsDouble(MAX_TEMPERATURE);
+			temperature[1] = r;
+			return r;
 		}
 	}
 
@@ -986,11 +1024,13 @@ public class PersonConfig implements Serializable {
 	 * @throws Exception if freezing time could not be found.
 	 */
 	public double getFreezingTime() {
-		if (time[6] != 0)
-			return time[6];
+		double r = time[6];
+		if (r >= 0)
+			return r;
 		else {
-			time[6] = getValueAsDouble(FREEZING_TIME);
-			return time[6];
+			r = getValueAsDouble(FREEZING_TIME);
+			time[6] = r;
+			return r;
 		}
 	}
 
@@ -1002,11 +1042,13 @@ public class PersonConfig implements Serializable {
 	 * @throws Exception if stress breakdown time could not be found.
 	 */
 	public double getStressBreakdownChance() {
-		if (chance[0] != 0)
-			return chance[0];
+		double r = chance[0];
+		if (r >= 0)
+			return r;
 		else {
-			chance[0] = getValueAsDouble(STRESS_BREAKDOWN_CHANCE);
-			return chance[0];
+			r = getValueAsDouble(STRESS_BREAKDOWN_CHANCE);
+			chance[0] = r;
+			return r;
 		}
 	}
 
@@ -1017,11 +1059,13 @@ public class PersonConfig implements Serializable {
 	 * @throws Exception if collapse time could not be found.
 	 */
 	public double getHighFatigueCollapseChance() {
-		if (chance[1] != 0)
-			return chance[1];
+		double r = chance[1];
+		if (r >= 0)
+			return r;
 		else {
-			chance[1] = getValueAsDouble(HIGH_FATIGUE_COLLAPSE);
-			return chance[1];
+			r = getValueAsDouble(HIGH_FATIGUE_COLLAPSE);
+			chance[1] = r;
+			return r;
 		}
 	}
 
@@ -1032,11 +1076,13 @@ public class PersonConfig implements Serializable {
 	 * @throws Exception if gender ratio could not be found.
 	 */
 	public double getGenderRatio() {
-		if (ratio[1] != 0)
-			return ratio[1];
+		double r = ratio[1];
+		if (r >= 0)
+			return r;
 		else {
-			ratio[1] = getValueAsDouble(GENDER_MALE_PERCENTAGE) / 100D;
-			return ratio[1];
+			r = getValueAsDouble(GENDER_MALE_PERCENTAGE) / 100D;
+			ratio[1] = r;
+			return r;
 		}
 	}
 
@@ -1051,8 +1097,7 @@ public class PersonConfig implements Serializable {
 	public double getPersonalityTypePercentage(String personalityType) {
 		double result = 0D;
 
-		// Element root = personDoc.getRootElement();
-		Element personalityTypeList = root.getChild(PERSONALITY_TYPES);
+		Element personalityTypeList = personDoc.getRootElement().getChild(PERSONALITY_TYPES);
 		List<Element> personalityTypes = personalityTypeList.getChildren(MBTI);
 
 		for (Element mbtiElement : personalityTypes) {
@@ -1123,9 +1168,9 @@ public class PersonConfig implements Serializable {
 	 * @return a double
 	 */
 	private double getValueAsDouble(String child) {
-		// Element root = personDoc.getRootElement();
-		Element element = root.getChild(child);
+		Element element = personDoc.getRootElement().getChild(child);
 		String str = element.getAttributeValue(VALUE);
+//		System.out.println("str : " + str);
 		return Double.parseDouble(str);
 	}
 
@@ -1298,7 +1343,7 @@ public class PersonConfig implements Serializable {
 		chance = null;
 		time = null;
 		temperature = null;
-		root = null;
+		personDoc = null;
 		personalityDistribution = null;
 		personNameList = null;
 		allCountries = null;

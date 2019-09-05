@@ -95,7 +95,7 @@ public class MedicalManager implements Serializable {
 	public static void initializeInstances() {
 		// Maven test requires the full "SimulationConfig.instance()" declaration here, rather than during class declaration.
 		MedicalConfig medicalConfig = SimulationConfig.instance().getMedicalConfiguration();
-
+//		System.out.println("medicalConfig : " + medicalConfig);
 		setUpEnvironmentalComplaints();
 
 		// Create treatments from medical config.
@@ -120,8 +120,10 @@ public class MedicalManager implements Serializable {
 		PersonConfig personConfig = SimulationConfig.instance().getPersonConfig(); 
 
 		// Most serious complaint
+//		System.out.println("suffocation : " + suffocation);
 		suffocation = createEnvironmentComplaint(ComplaintType.SUFFOCATION, 80, personConfig.getOxygenDeprivationTime(),
 				.5, 20, true);
+//		System.out.println("suffocation : " + suffocation);
 		addEnvComplaint(suffocation);
 
 		// Very serious complaint

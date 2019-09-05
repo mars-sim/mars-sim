@@ -394,7 +394,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	private static SettlementConfig settlementConfig = SimulationConfig.instance().getSettlementConfiguration();
 
 	/**
-	 * Constructor 1 called by ConstructionStageTest for maven testing.
+	 * Constructor 1 called by ConstructionStageTest suite for maven testing.
 	 */
 	private Settlement() {
 		super(null, null);

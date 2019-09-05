@@ -237,6 +237,7 @@ public class SimulationConfig implements Serializable {
 	 * @throws Exception if error loading or parsing configuration files.
 	 */
 	public static void loadConfig() {
+		SimulationConfig.instance();
 		// logger.info("loadConfig() is on " + Thread.currentThread().getName());
 		if (simulationDoc != null) {
 			instance.destroyOldConfiguration();

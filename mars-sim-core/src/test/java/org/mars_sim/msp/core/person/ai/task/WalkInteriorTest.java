@@ -35,8 +35,7 @@ public class WalkInteriorTest extends TestCase {
         BuildingAirlock airlock0 = new BuildingAirlock(building, 1, 0D, 0D, 0D, 0D, 0D, 0D);
         building.addFunction(new EVA(building, airlock0));
 
-        //Person person = new Person("test person", PersonGender.MALE, null, settlement, "Mars Society (MS)");
-		// 2017-04-11 Use Builder Pattern for creating an instance of Person
+        // Use Builder Pattern for creating an instance of Person
 		Person person = Person.create("test person", settlement)
 								.setGender(GenderType.MALE)
 								.setCountry(null)

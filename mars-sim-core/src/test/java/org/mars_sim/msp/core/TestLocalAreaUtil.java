@@ -1,5 +1,6 @@
 package org.mars_sim.msp.core;
 
+import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.util.Iterator;
 
@@ -25,7 +26,7 @@ public class TestLocalAreaUtil extends TestCase {
 //        
 //        // Create new simulation instance.
 //        SimulationConfig.loadConfig();
-//        Simulation.createNewSimulation(-1, true);
+//        Simulation.testRun();
 //        
 //        // Clear out existing settlements in simulation.
 //        UnitManager unitManager = Simulation.instance().getUnitManager();
@@ -37,13 +38,13 @@ public class TestLocalAreaUtil extends TestCase {
 //        // Create test settlement.
 //        Settlement settlement = new MockSettlement();
 //        
+//        BuildingManager buildingManager = settlement.getBuildingManager();
+//        
 //		// Removes all mock buildings and building functions in the settlement.
-//		settlement.getBuildingManager().removeAllMockBuildings();
+//		buildingManager.removeAllMockBuildings();
 //
 //		unitManager.addUnit(settlement);
-//        Coordinates loc = settlement.getCoordinates();
-//
-//        BuildingManager buildingManager = settlement.getBuildingManager();
+//        Coordinates loc = settlement.getCoordinates();   
 //        
 //        // Create test building.
 //        MockBuilding building = new MockBuilding(buildingManager);
@@ -53,8 +54,8 @@ public class TestLocalAreaUtil extends TestCase {
 //        building.setYLocation(0D);
 //        building.setFacing(0D);
 ////        settlement.getBuildingManager().addBuilding(building, true);
-//        settlement.getBuildingManager().addMockBuilding(building);
-//		settlement.getBuildingConnectorManager().createBuildingConnections(building);
+////        buildingManager.addMockBuilding(building);
+////		settlement.getBuildingConnectorManager().createBuildingConnections(building);
 //
 //		// Clear obstacle cache.
 //		LocalAreaUtil.clearObstacleCache();
@@ -67,10 +68,10 @@ public class TestLocalAreaUtil extends TestCase {
 //        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(0D, 5D, 10D, -5D), loc, true));
 //        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(5D, 0D, 5D, 10D), loc, true));
 //        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(-5D, 10D, -5D, 0D), loc, true));
-//        assertTrue(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(-6D, 10D, -6D, 0D), loc, true));
-//        assertTrue(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(6D, 10D, 6D, 0D), loc, true));
-//        assertTrue(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(0D, 6D, 10D, 6D), loc, true));
-//        assertTrue(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(0D, -6D, 10D, -6D), loc, true));
+////        assertTrue(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(-6D, 10D, -6D, 0D), loc, true));
+////        assertTrue(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(6D, 10D, 6D, 0D), loc, true));
+////        assertTrue(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(0D, 6D, 10D, 6D), loc, true));
+////        assertTrue(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(0D, -6D, 10D, -6D), loc, true));
 //        
 //        building.setFacing(45D);
 //        
@@ -96,18 +97,18 @@ public class TestLocalAreaUtil extends TestCase {
 //        // Clear obstacle cache.
 //        LocalAreaUtil.clearObstacleCache();
 //        
-//        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(10D, 0D, 20D, 0D), loc, true));
-//        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(20D, 0D, 10D, 0D), loc, true));
-//        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(10D, 5D, 20D, 5D), loc, true));
-//        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(10D, -5D, 20D, -5D), loc, true));
-//        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(10D, -5D, 20D, 5D), loc, true));
-//        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(10D, 5D, 20D, -5D), loc, true));
-//        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(15D, 0D, 15D, 10D), loc, true));
-//        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(5D, 10D, 5D, 0D), loc, true));
-//        assertTrue(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(4D, 10D, 4D, 0D), loc, true));
-//        assertTrue(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(16D, 10D, 16D, 0D), loc, true));
-//        assertTrue(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(10D, 6D, 20D, 6D), loc, true));
-//        assertTrue(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(10D, -6D, 20D, -6D), loc, true));
+////        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(10D, 0D, 20D, 0D), loc, true));
+////        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(20D, 0D, 10D, 0D), loc, true));
+////        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(10D, 5D, 20D, 5D), loc, true));
+////        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(10D, -5D, 20D, -5D), loc, true));
+////        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(10D, -5D, 20D, 5D), loc, true));
+////        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(10D, 5D, 20D, -5D), loc, true));
+////        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(15D, 0D, 15D, 10D), loc, true));
+////        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(5D, 10D, 5D, 0D), loc, true));
+////        assertTrue(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(4D, 10D, 4D, 0D), loc, true));
+////        assertTrue(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(16D, 10D, 16D, 0D), loc, true));
+////        assertTrue(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(10D, 6D, 20D, 6D), loc, true));
+////        assertTrue(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(10D, -6D, 20D, -6D), loc, true));
 //        
 //        building.setXLocation(0D);
 //        building.setYLocation(10D);
@@ -138,7 +139,7 @@ public class TestLocalAreaUtil extends TestCase {
     public void testGetObjectRelativeLocation() {
         // Create new simulation instance.
         SimulationConfig.loadConfig();
-        Simulation.createNewSimulation(-1, true);
+        Simulation.testRun();
         
         // Clear out existing settlements in simulation.
         UnitManager unitManager = Simulation.instance().getUnitManager();
@@ -210,7 +211,7 @@ public class TestLocalAreaUtil extends TestCase {
     public void testLocationWithinLocalBoundedObject() {
         // Create new simulation instance.
         SimulationConfig.loadConfig();
-        Simulation.createNewSimulation(-1, true);
+        Simulation.testRun();
         
         // Clear out existing settlements in simulation.
         UnitManager unitManager = Simulation.instance().getUnitManager();

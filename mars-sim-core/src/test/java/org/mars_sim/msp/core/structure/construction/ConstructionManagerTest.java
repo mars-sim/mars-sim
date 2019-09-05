@@ -29,7 +29,8 @@ public class ConstructionManagerTest extends TestCase {
         super.setUp();
         
         SimulationConfig.loadConfig();
-        Simulation.createNewSimulation(-1, true);
+        Simulation.testRun();
+        
 //        UnitManager unitManager = Simulation.instance().getUnitManager();
 //		Iterator<Settlement> i = unitManager.getSettlements().iterator();
         Settlement settlement = new MockSettlement();

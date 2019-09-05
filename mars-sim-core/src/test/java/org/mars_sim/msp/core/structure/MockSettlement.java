@@ -19,6 +19,9 @@ public class MockSettlement extends Settlement {
 		// Use Settlement constructor.
 		super("Mock Settlement", 0, new Coordinates(0, 0));
 
+		if (Simulation.instance().getUnitManager() == null)
+			System.out.println("Simulation.instance().getUnitManager() is null");
+			
 		Simulation.instance().getUnitManager().addUnit(this);
 		
         // Set inventory total mass capacity.

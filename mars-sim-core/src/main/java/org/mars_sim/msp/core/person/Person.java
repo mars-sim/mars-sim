@@ -21,6 +21,7 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.LogConsolidated;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
@@ -194,6 +195,8 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	private Building quarters;
 
 	private Building currentBuilding;
+	
+	private Simulation sim;
 
 	/** The person's achievement in scientific fields. */
 	private Map<ScienceType, Double> scientificAchievement;
@@ -270,6 +273,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 */
 	public void initialize() {
 		// Initialize instsances
+		sim = Simulation.instance();
 		masterClock = sim.getMasterClock();
 		marsClock = masterClock.getMarsClock();
 		earthClock = masterClock.getEarthClock();
@@ -327,6 +331,9 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 * Initialize field data, class and maps
 	 */
 	public void initializeMock() {
+		if (unitManager == null) {
+			System.out.println("Person's initializeMock() : unitManager is null");
+		}
 		unitManager.getSettlementByID(associatedSettlement).getInventory().storeUnit(this);
 		BuildingManager.addToRandomBuilding(this, associatedSettlement);
 		isBuried = false;
