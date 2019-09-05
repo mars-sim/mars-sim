@@ -92,6 +92,8 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 	private SurfaceMapPanel topoSphere;
 	/** Spherical coordinates for globe center. */
 	private Coordinates centerCoords;
+	/** A mouse adapter class. */
+	private Dragger dragger;
 	
 	private static UnitManager unitManager = Simulation.instance().getUnitManager();
 
@@ -188,92 +190,101 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 		shadingArray = new int[width * height * 2 * 2];
 		showDayNightShading = true;
 
-		addMouseMotionListener(new MouseAdapter() {
-
-			@Override
-			public void mouseDragged(MouseEvent e) {
-				// setCursor(new Cursor(Cursor.MOVE_CURSOR));
-				int dx, dy, x = e.getX(), y = e.getY();
-
-				dx = dragx - x;
-				dy = dragy - y;
-
-				if (dx != 0 || dy != 0) {// (dx < -2 || dx > 2) || (dy < -2 || dy > 2)) {
-					if (dx > -LIMIT && dx < LIMIT && dy > -LIMIT && dy < LIMIT) {
-						if ((dxCache - dx) > -LIMIT && (dxCache - dx) < LIMIT && (dyCache - dy) > -LIMIT
-								&& (dyCache - dy) < LIMIT) {
-							if (x > 50 && x < 245 && y > 50 && y < 245) {
-								// System.out.print("(dragx, dragy) is (" + dragx + ", " + dragy + ")");
-								// System.out.print("(x, y) is (" + x + ", " + y + ")");
-								// System.out.print("\t(delta_x, delta_y) is (" + (dxCache - dx) + ", " +
-								// (dyCache - dy) + ")");
-								// System.out.print("\t(dx, dy) is (" + dx + ", " + dy + ")");
-
-								// Globe circumference in pixels.
-								// double globeCircumference = height *2;
-								// double rho = globeCircumference / (2D * Math.PI);
-								centerCoords = centerCoords.convertRectToSpherical((double) dx, (double) dy, rho);
-
-								recreate = false;
-
-								// Regenerate globe if recreate is true, then display
-								drawSphere();
-
-								// System.out.println("\tDrawn");
-							}
-						}
-					}
-				}
-
-				dxCache = dx;
-				dyCache = dy;
-
-				dragx = x;
-				dragy = y;
-
-				// e.consume();
-				// super.mouseDragged(e);
-				// setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-			}
-		});
-
-		addMouseListener(new MouseAdapter() {
-
-			@Override
-			public void mousePressed(MouseEvent e) {
-				// System.out.println("mousepressed X = " + e.getX());
-				// System.out.println(" Y = " + e.getY());
-				dragx = e.getX();
-				dragy = e.getY();
-				navwin.setCursor(new Cursor(Cursor.MOVE_CURSOR));
-
-				// e.consume();
-			}
-
-			@Override
-			public void mouseReleased(MouseEvent e) {
-				dragx = 0;
-				dragy = 0;
-				navwin.updateCoords(centerCoords);
-				navwin.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-
-				// e.consume();
-			}
-		});
+		dragger = new Dragger(navwin);
+		addMouseMotionListener(dragger);
 
 		// Initially show real surface globe
 		showSurf();
-
-		// drawSphere();
-
-//		MouseEvent me = new MouseEvent(this, 0, 0, 0, 150, 150, 1, false);
-//		for (MouseListener ml: this.getMouseListeners())
-//		    ml.mousePressed(me);
-//		for (MouseMotionListener l: this.getMouseMotionListeners())
-//		    l.mouseDragged(me);
-
 	}
+	
+	public class Dragger extends MouseAdapter {
+		NavigatorWindow navwin;
+		
+		public Dragger (NavigatorWindow navwin) {
+			this.navwin = navwin;
+	    }
+		
+//		@Override
+//		public void mouseMoved(MouseEvent e) {
+//			navwin.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
+//		}
+//		
+		@Override
+		public void mousePressed(MouseEvent e) {
+			navwin.setCursor(new Cursor(Cursor.MOVE_CURSOR));
+			// System.out.println("mousepressed X = " + e.getX());
+			// System.out.println(" Y = " + e.getY());
+			dragx = e.getX();
+			dragy = e.getY();
 
+			e.consume();
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent e) {
+			navwin.setCursor(new Cursor(Cursor.HAND_CURSOR));
+			dragx = 0;
+			dragy = 0;
+			navwin.updateCoords(centerCoords);
+			e.consume();
+		}
+		
+		@Override
+	    public void mouseEntered(MouseEvent e){
+			navwin.setCursor(new Cursor(Cursor.HAND_CURSOR));
+	    }
+	    @Override
+	    public void mouseExited(MouseEvent e){
+	    	navwin.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+	    }
+	    
+		@Override
+		public void mouseDragged(MouseEvent e) {
+			setCursor(new Cursor(Cursor.MOVE_CURSOR));
+			int dx, dy, x = e.getX(), y = e.getY();
+
+			dx = dragx - x;
+			dy = dragy - y;
+
+			if (dx != 0 || dy != 0) {// (dx < -2 || dx > 2) || (dy < -2 || dy > 2)) {
+				if (dx > -LIMIT && dx < LIMIT && dy > -LIMIT && dy < LIMIT) {
+					if ((dxCache - dx) > -LIMIT && (dxCache - dx) < LIMIT && (dyCache - dy) > -LIMIT
+							&& (dyCache - dy) < LIMIT) {
+						if (x > 50 && x < 245 && y > 50 && y < 245) {
+							// System.out.print("(dragx, dragy) is (" + dragx + ", " + dragy + ")");
+							// System.out.print("(x, y) is (" + x + ", " + y + ")");
+							// System.out.print("\t(delta_x, delta_y) is (" + (dxCache - dx) + ", " +
+							// (dyCache - dy) + ")");
+							// System.out.print("\t(dx, dy) is (" + dx + ", " + dy + ")");
+
+							// Globe circumference in pixels.
+							// double globeCircumference = height *2;
+							// double rho = globeCircumference / (2D * Math.PI);
+							centerCoords = centerCoords.convertRectToSpherical((double) dx, (double) dy, rho);
+							navwin.updateCoords(centerCoords);
+							
+							recreate = false;
+
+							// Regenerate globe if recreate is true, then display
+							drawSphere();
+
+							// System.out.println("\tDrawn");
+						}
+					}
+				}
+			}
+
+			dxCache = dx;
+			dyCache = dy;
+
+			dragx = x;
+			dragy = y;
+
+			e.consume();
+			// super.mouseDragged(e);
+			// setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+		}
+	}
 	/**
 	 * Displays real surface globe, regenerating if necessary
 	 */
@@ -428,11 +439,9 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 			if (globe.isImageDone()) {
 				g2d.drawImage(image, 0, 0, this);
 			} else {
-				System.out.println("globe.isImageDone() is false");
 				return;
 			}
-		} else
-			System.out.println("image is null");
+		}
 
 		if (showDayNightShading) {
 			drawShading(g2d);
@@ -705,19 +714,7 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 
 	@Override
 	public void uiPulse(double time) {
-//		if (mainScene != null) {
-//			if (!mainScene.isMinimized() && mainScene.isMapTabOpen() && mainScene.isMinimapOn()) {// &&
-//																									// !masterClock.isPaused())
-//																									// {
-////				timeCache += time;
-////				if (timeCache > PERIOD_IN_MILLISOLS * time) {
-//				// Repaint map panel
-//				updateDisplay();
-////					timeCache = 0;
-////				}
-//			}
-//		} else 
-			if (desktop.isToolWindowOpen(NavigatorWindow.NAME)) {
+		if (desktop.isToolWindowOpen(NavigatorWindow.NAME)) {
 //			timeCache += time;
 //			if (timeCache > PERIOD_IN_MILLISOLS * time) {
 				keepRunning = true;
@@ -725,8 +722,8 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 //				timeCache = 0;
 //			}
 		}
-			else 
-				keepRunning = false;
+		else 
+			keepRunning = false;
 	}
 
 	@Override
@@ -758,6 +755,8 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 	 */
 	public void destroy() {
 		masterClock.removeClockListener(this);
+		removeMouseListener(dragger);
+		dragger = null;
 		masterClock = null;
 		unitManager = null;
 		surfaceFeatures = null;

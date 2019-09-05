@@ -63,21 +63,20 @@ public class PopUpMenu extends JPopupMenu {
        	add(itemOne);
 
        	buildItemOne(unit);
-
-     /*
-     // Determine what the GraphicsDevice can support.
-        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-        GraphicsDevice gd = ge.getDefaultScreenDevice();
-        boolean isPerPixelTranslucencySupported =
-            gd.isWindowTranslucencySupported(PERPIXEL_TRANSLUCENT);
-
-        //If translucent windows aren't supported, exit.
-        if (!isPerPixelTranslucencySupported) {
-            System.out.println(
-                "Per-pixel translucency is not supported");
-                System.exit(0);
-        }
-        */
+    
+//     // Determine what the GraphicsDevice can support.
+//        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+//        GraphicsDevice gd = ge.getDefaultScreenDevice();
+//        boolean isPerPixelTranslucencySupported =
+//            gd.isWindowTranslucencySupported(PERPIXEL_TRANSLUCENT);
+//
+//        //If translucent windows aren't supported, exit.
+//        if (!isPerPixelTranslucencySupported) {
+//            System.out.println(
+//                "Per-pixel translucency is not supported");
+//                System.exit(0);
+//        }
+       
 
     }
 

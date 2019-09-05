@@ -583,7 +583,7 @@ public class MapPanel extends WebPanel implements ClockListener {
 	 */
 	public void destroy() {
 		// Remove clock listener.
-		Simulation.instance().getMasterClock().removeClockListener(this);
+		masterClock.removeClockListener(this);
 		mapLayers = null;
 		centerCoords = null;
 		executor = null;

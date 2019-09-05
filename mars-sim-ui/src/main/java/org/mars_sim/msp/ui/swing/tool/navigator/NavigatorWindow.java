@@ -80,7 +80,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 //	public static final int VERTICAL = 435;
 
 	public static final int HORIZONTAL_MINIMAP = 310;//300;// 274
-	public static final int VERTICAL_MINIMAP = 718;//700;// 695;
+	public static final int VERTICAL_MINIMAP = 715;//700;// 695;
 	public static final int HEIGHT_BUTTON_PANE = 32;//700;// 695;
 	
 	public static final int CB_WIDTH = 120;
