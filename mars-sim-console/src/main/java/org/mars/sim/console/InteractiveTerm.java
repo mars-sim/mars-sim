@@ -278,9 +278,9 @@ public class InteractiveTerm {
         		+ "           * * *  Sandbox Mode - Crew and Site Selection  * * *" 
         		+ System.lineSeparator()
         		+ System.lineSeparator()
-				+ "0. Proceed with the default site selection."
+				+ "0. Proceed with the Default Site Templates."
         		+ System.lineSeparator()
-				+ "1. Go to Simulation Configuration Editor (SCE) "
+				+ "1. Open Simulation Configuration Editor (SCE) "
 				+ System.lineSeparator()
 				+ "2. Enable/Disable Alpha Crew"
 				+ System.lineSeparator()
@@ -531,8 +531,7 @@ public class InteractiveTerm {
         this.choiceIndex = -1;
         this.choices = choices;
     }
-
-
+    
     
 	/**
 	 * Get the Commander's profile

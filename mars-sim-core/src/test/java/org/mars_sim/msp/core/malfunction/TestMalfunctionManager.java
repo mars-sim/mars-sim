@@ -14,7 +14,7 @@ import junit.framework.TestCase;
 public class TestMalfunctionManager extends TestCase {
     @Override
     public void setUp() throws Exception {
-        SimulationConfig.loadConfig();
+        SimulationConfig.instance().loadConfig();
     }
 
     public void testGetEVAMalfunctions() throws Exception {

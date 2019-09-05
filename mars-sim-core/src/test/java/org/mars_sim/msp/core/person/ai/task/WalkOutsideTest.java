@@ -19,6 +19,7 @@ import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.MockSettlement;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.MockBuilding;
 import org.mars_sim.msp.core.structure.building.function.BuildingAirlock;
 import org.mars_sim.msp.core.structure.building.function.EVA;
@@ -235,8 +236,8 @@ extends TestCase {
 	public void testDetermineWalkingPath() {
 
 		// Create new simulation instance.
-		SimulationConfig.loadConfig();
-		Simulation.testRun();
+		SimulationConfig.instance().loadConfig();
+		Simulation.instance().testRun();
 
 		// Clear out existing settlements in simulation.
 		UnitManager unitManager = Simulation.instance().getUnitManager();
@@ -248,13 +249,14 @@ extends TestCase {
 		// Create test settlement.
 		Settlement settlement = new MockSettlement();
 		
+		unitManager.addUnit(settlement);
+
+		BuildingManager buildingManager = settlement.getBuildingManager();
 		// Removes all mock buildings and building functions in the settlement.
 		settlement.getBuildingManager().removeAllMockBuildings();
 		
-		unitManager.addUnit(settlement);
-
 		// Create test building.
-		MockBuilding building1 = new MockBuilding(settlement.getBuildingManager());
+		MockBuilding building1 = new MockBuilding(buildingManager);
 		building1.setWidth(10D);
 		building1.setLength(10D);
 		building1.setXLocation(0D);
@@ -326,8 +328,8 @@ extends TestCase {
 	public void testGetLocalObstacleSearchLimits() {
 
 		// Create new simulation instance.
-		SimulationConfig.loadConfig();
-		Simulation.testRun();
+		SimulationConfig.instance().loadConfig();
+		Simulation.instance().testRun();
 
 		// Clear out existing settlements in simulation.
 		UnitManager unitManager = Simulation.instance().getUnitManager();

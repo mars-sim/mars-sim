@@ -10,9 +10,6 @@ package org.mars_sim.msp.core.person.ai.task;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.logging.Logger;
-
-import junit.framework.TestCase;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Simulation;
@@ -20,9 +17,9 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.equipment.SpecimenContainer;
+import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
-import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.ResourceUtil;
@@ -35,17 +32,19 @@ import org.mars_sim.msp.core.structure.building.function.EVA;
 import org.mars_sim.msp.core.vehicle.MockVehicle;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
+import junit.framework.TestCase;
+
 public class LoadVehicleTest
 extends TestCase {
 
-	private static final Logger logger = Logger.getLogger(LoadVehicleTest.class.getName());
+//	private static final Logger logger = Logger.getLogger(LoadVehicleTest.class.getName());
 
 	private Settlement settlement = null;
 	
 	@Override
     public void setUp() throws Exception {
-        SimulationConfig.loadConfig();
-        Simulation.testRun();
+        SimulationConfig.instance().loadConfig();
+        Simulation.instance().testRun();
         
         UnitManager unitManager = Simulation.instance().getUnitManager();
 		Iterator<Settlement> i = unitManager.getSettlements().iterator();

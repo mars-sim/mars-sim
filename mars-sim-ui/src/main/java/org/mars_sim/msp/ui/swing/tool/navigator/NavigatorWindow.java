@@ -76,18 +76,19 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 	/** Tool name. */
 	public static final String NAME = Msg.getString("NavigatorWindow.title"); //$NON-NLS-1$
 
-	public static final int HORIZONTAL = 635;
-	public static final int VERTICAL = 435;
+//	public static final int HORIZONTAL = 435;//700;//635;
+//	public static final int VERTICAL = 435;
 
-	public static final int HORIZONTAL_MINIMAP = 300;// 274
-	public static final int VERTICAL_MINIMAP = 700;// 695;
+	public static final int HORIZONTAL_MINIMAP = 310;//300;// 274
+	public static final int VERTICAL_MINIMAP = 718;//700;// 695;
+	public static final int HEIGHT_BUTTON_PANE = 32;//700;// 695;
 	
 	public static final int CB_WIDTH = 120;
 
 	public static final double RAD_PER_DEGREE = Math.PI / 180D;
 	// Data members
-	private Integer[] lon_degrees = new Integer[361];
-	private Integer[] lat_degrees = new Integer[91];
+//	private Integer[] lon_degrees = new Integer[361];
+//	private Integer[] lat_degrees = new Integer[91];
 
 	private JComboBoxMW<?> latCB;
 	private JComboBoxMW<?> longCB;
@@ -160,10 +161,8 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 
 		landmarks = sim.getMars().getSurfaceFeatures().getLandmarks();
 
-//		if (desktop.getMainScene() != null) {
-
-			// setTitleName(null);
-			// ...
+		// setTitleName(null);
+		// ...
 //			putClientProperty("JInternalFrame.isPalette", Boolean.TRUE);
 //			getRootPane().setWindowDecorationStyle(JRootPane.NONE);
 //			// Remove title bar
@@ -172,430 +171,241 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 //			// Remove border (not working)
 //			setBorder(null);
 
-			// Prepare content pane
-			JPanel wholePane = new JPanel();
-			// mainPane.setLayout(new BorderLayout());
-			wholePane.setLayout(new BoxLayout(wholePane, BoxLayout.Y_AXIS));
-			// mainPane.setBorder(new MarsPanelBorder());
-			setContentPane(wholePane);
+		// Prepare content pane
+		JPanel wholePane = new JPanel();
+		// mainPane.setLayout(new BorderLayout());
+		wholePane.setLayout(new BoxLayout(wholePane, BoxLayout.Y_AXIS));
+		// mainPane.setBorder(new MarsPanelBorder());
+		setContentPane(wholePane);
 
-			// Prepare globe display
-			globeNav = new GlobeDisplay(this);
-			WebPanel globePane = new WebPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
-			// globePane.setMaximumSize(new Dimension(HORIZONTAL_MINIMAP,
-			// HORIZONTAL_MINIMAP));
-			globePane.setBackground(Color.black);
-			globePane.setOpaque(true);
-			globePane.setBorder(new CompoundBorder(new BevelBorder(BevelBorder.LOWERED), new LineBorder(Color.gray)));
-			globePane.add(globeNav);
+		// Prepare globe display
+		globeNav = new GlobeDisplay(this);
+		WebPanel globePane = new WebPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+		// globePane.setMaximumSize(new Dimension(HORIZONTAL_MINIMAP,
+		// HORIZONTAL_MINIMAP));
+		globePane.setBackground(Color.black);
+		globePane.setOpaque(true);
+		globePane.setBorder(new CompoundBorder(new BevelBorder(BevelBorder.LOWERED), new LineBorder(Color.gray)));
+		globePane.add(globeNav);
 
-			globePane.setAlignmentX(Component.CENTER_ALIGNMENT);
-			wholePane.add(globePane);// , BorderLayout.NORTH);
+		globePane.setAlignmentX(Component.CENTER_ALIGNMENT);
+		wholePane.add(globePane);// , BorderLayout.NORTH);
 
-			///////////////////////////////////////////////////////////////////////////
+		///////////////////////////////////////////////////////////////////////////
 
-			mapPaneInner = new WebPanel(new BorderLayout(0, 0)); // FlowLayout(FlowLayout.LEFT, 0, 0));
-			mapPaneInner
-					.setBorder(new CompoundBorder(new BevelBorder(BevelBorder.LOWERED), new LineBorder(Color.gray)));
-			mapPaneInner.setBackground(Color.black);
-			// mapPaneInner.setMaximumSize(new Dimension(HORIZONTAL_MINIMAP,
-			// HORIZONTAL_MINIMAP));
-			mapPaneInner.setOpaque(true);
-			mapPaneInner.setAlignmentX(CENTER_ALIGNMENT);
-			mapPaneInner.setAlignmentY(CENTER_ALIGNMENT);
-			// mapPaneInner.setCursor(new Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+		mapPaneInner = new WebPanel(new BorderLayout(0, 0)); // FlowLayout(FlowLayout.LEFT, 0, 0));
+		mapPaneInner
+				.setBorder(new CompoundBorder(new BevelBorder(BevelBorder.LOWERED), new LineBorder(Color.gray)));
+		mapPaneInner.setBackground(Color.black);
+		// mapPaneInner.setMaximumSize(new Dimension(HORIZONTAL_MINIMAP,
+		// HORIZONTAL_MINIMAP));
+		mapPaneInner.setOpaque(true);
+		mapPaneInner.setAlignmentX(CENTER_ALIGNMENT);
+		mapPaneInner.setAlignmentY(CENTER_ALIGNMENT);
+		// mapPaneInner.setCursor(new Cursor(java.awt.Cursor.DEFAULT_CURSOR));
 
-			WebPanel detailPane = new WebPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
-			detailPane.setMaximumHeight(HORIZONTAL_MINIMAP - 10);
-			// detailPane.setBorder( new CompoundBorder(new
-			// BevelBorder(BevelBorder.LOWERED),
-			// new LineBorder(Color.gray)));
-			detailPane.setBackground(Color.black);
-			detailPane.setOpaque(true);
-			detailPane.add(mapPaneInner);
+		WebPanel detailPane = new WebPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+		detailPane.setMaximumHeight(HORIZONTAL_MINIMAP - 10);
+		// detailPane.setBorder( new CompoundBorder(new
+		// BevelBorder(BevelBorder.LOWERED),
+		// new LineBorder(Color.gray)));
+		detailPane.setBackground(Color.black);
+		detailPane.setOpaque(true);
+		detailPane.add(mapPaneInner);
 
-			mapPanel = new MapPanel(desktop, 500L);
-			// map.setMaximumSize(new Dimension(HORIZONTAL_MINIMAP, HORIZONTAL_MINIMAP));
-			mapPanel.setNavWin(this);
-			mapPanel.addMouseListener(new mapListener());
-			mapPanel.addMouseMotionListener(new mouseMotionListener());
-			// map.setCursor(new Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+		mapPanel = new MapPanel(desktop, 500L);
+		// map.setMaximumSize(new Dimension(HORIZONTAL_MINIMAP, HORIZONTAL_MINIMAP));
+		mapPanel.setNavWin(this);
+		mapPanel.addMouseListener(new mapListener());
+		mapPanel.addMouseMotionListener(new mouseMotionListener());
+		// map.setCursor(new Cursor(java.awt.Cursor.DEFAULT_CURSOR));
 
-			// Create map layers.
-			unitIconLayer = new UnitIconMapLayer(mapPanel);
-			unitLabelLayer = new UnitLabelMapLayer();
-			mineralLayer = new MineralMapLayer(mapPanel);
-			shadingLayer = new ShadingMapLayer(mapPanel);
-			navpointLayer = new NavpointMapLayer(mapPanel);
-			trailLayer = new VehicleTrailMapLayer();
-			landmarkLayer = new LandmarkMapLayer();
-			exploredSiteLayer = new ExploredSiteMapLayer(mapPanel);
+		// Create map layers.
+		unitIconLayer = new UnitIconMapLayer(mapPanel);
+		unitLabelLayer = new UnitLabelMapLayer();
+		mineralLayer = new MineralMapLayer(mapPanel);
+		shadingLayer = new ShadingMapLayer(mapPanel);
+		navpointLayer = new NavpointMapLayer(mapPanel);
+		trailLayer = new VehicleTrailMapLayer();
+		landmarkLayer = new LandmarkMapLayer();
+		exploredSiteLayer = new ExploredSiteMapLayer(mapPanel);
 
-			// Add default map layers.
-			mapPanel.addMapLayer(shadingLayer, 0);
-			mapPanel.addMapLayer(unitIconLayer, 2);
-			mapPanel.addMapLayer(unitLabelLayer, 3);
-			mapPanel.addMapLayer(navpointLayer, 4);
-			mapPanel.addMapLayer(trailLayer, 5);
-			mapPanel.addMapLayer(landmarkLayer, 6);
+		// Add default map layers.
+		mapPanel.addMapLayer(shadingLayer, 0);
+		mapPanel.addMapLayer(unitIconLayer, 2);
+		mapPanel.addMapLayer(unitLabelLayer, 3);
+		mapPanel.addMapLayer(navpointLayer, 4);
+		mapPanel.addMapLayer(trailLayer, 5);
+		mapPanel.addMapLayer(landmarkLayer, 6);
 
-			mapPanel.showMap(new Coordinates((Math.PI / 2D), 0D));
-			// mapPaneInner.setAlignmentX(Component.CENTER_ALIGNMENT);
-			mapPaneInner.add(mapPanel, BorderLayout.CENTER);
-			// mapPane.add(mapPaneInner, BorderLayout.CENTER);
-			wholePane.add(detailPane);// , BorderLayout.CENTER);
+		mapPanel.showMap(new Coordinates((Math.PI / 2D), 0D));
+		// mapPaneInner.setAlignmentX(Component.CENTER_ALIGNMENT);
+		mapPaneInner.add(mapPanel, BorderLayout.CENTER);
+		// mapPane.add(mapPaneInner, BorderLayout.CENTER);
+		wholePane.add(detailPane);// , BorderLayout.CENTER);
 
-			///////////////////////////////////////////////////////////////////////////
+		///////////////////////////////////////////////////////////////////////////
 
-			WebPanel bottomPane = new WebPanel();// new BorderLayout(0,0));//FlowLayout(FlowLayout.CENTER, 0, 0));/
-			bottomPane.setLayout(new BoxLayout(bottomPane, BoxLayout.Y_AXIS));
-			// bottomPane.setBorder(new EmptyBorder(0, 3, 0, 0));
-			bottomPane.setAlignmentX(Component.CENTER_ALIGNMENT);
-			// bottomPane.setMaximumSize(new Dimension(HORIZONTAL_MINIMAP, 15));
-			bottomPane.setMaximumHeight(35);
-			wholePane.add(bottomPane);// , BorderLayout.SOUTH);
-			// mapPaneInner.add(bottomPane, BorderLayout.SOUTH);
+		WebPanel bottomPane = new WebPanel();// new BorderLayout(0,0));//FlowLayout(FlowLayout.CENTER, 0, 0));/
+		bottomPane.setLayout(new BoxLayout(bottomPane, BoxLayout.Y_AXIS));
+		// bottomPane.setBorder(new EmptyBorder(0, 3, 0, 0));
+		bottomPane.setAlignmentX(Component.CENTER_ALIGNMENT);
+		// bottomPane.setMaximumSize(new Dimension(HORIZONTAL_MINIMAP, 15));
+		bottomPane.setMaximumHeight(35);
+		wholePane.add(bottomPane);// , BorderLayout.SOUTH);
+		// mapPaneInner.add(bottomPane, BorderLayout.SOUTH);
 
-			///////////////////////////////////////////////////////////////////////////
-			// Prepare position entry panel
-			WebPanel coordPane = new WebPanel(new GridLayout(1, 6, 0, 0));// FlowLayout(FlowLayout.LEFT));//
-			// coordPane.setBorder(new EmptyBorder(6, 6, 3, 3));
-			coordPane.setMaximumHeight(18);
-			coordPane.setAlignmentX(Component.CENTER_ALIGNMENT);
-			coordPane.setAlignmentY(Component.TOP_ALIGNMENT);
-			bottomPane.add(coordPane);// , BorderLayout.NORTH);
+		///////////////////////////////////////////////////////////////////////////
+		// Prepare position entry panel
+		WebPanel coordPane = new WebPanel(new GridLayout(1, 6, 0, 0));// FlowLayout(FlowLayout.LEFT));//
+		// coordPane.setBorder(new EmptyBorder(6, 6, 3, 3));
+		coordPane.setMaximumHeight(18);
+		coordPane.setAlignmentX(Component.CENTER_ALIGNMENT);
+		coordPane.setAlignmentY(Component.TOP_ALIGNMENT);
+		bottomPane.add(coordPane);// , BorderLayout.NORTH);
 
-			// Prepare latitude entry components
-			WebLabel latLabel = new WebLabel(" Lat : ", WebLabel.RIGHT);// Msg.getString("NavigatorWindow.latitude")); //$NON-NLS-1$
-			// latLabel.setAlignmentY(.5F);
-			coordPane.add(latLabel);
+		// Prepare latitude entry components
+		WebLabel latLabel = new WebLabel(" Lat : ", WebLabel.RIGHT);// Msg.getString("NavigatorWindow.latitude")); //$NON-NLS-1$
+		// latLabel.setAlignmentY(.5F);
+		coordPane.add(latLabel);
 
-			// latText = new WebTextField(5);
-			// latText.setCaretPosition(latText.getText().length());
-			// latText.setHorizontalAlignment(WebTextField.CENTER);
-			// coordPane.add(latText);
+		// latText = new WebTextField(5);
+		// latText.setCaretPosition(latText.getText().length());
+		// latText.setHorizontalAlignment(WebTextField.CENTER);
+		// coordPane.add(latText);
 
-			// Switch to using ComboBoxMW for latitude
-			int size = lon_degrees.length;
-			for (int i = 0; i < size; i++) {
-				lon_degrees[i] = i;
+		Integer[] lon_degrees = new Integer[361];
+		Integer[] lat_degrees = new Integer[91];
+		
+		// Switch to using ComboBoxMW for latitude
+		int size = lon_degrees.length;
+		for (int i = 0; i < size; i++) {
+			lon_degrees[i] = i;
+		}
+
+		int lat_size = lat_degrees.length;
+		for (int i = 0; i < lat_size; i++) {
+			lat_degrees[i] = i;
+		}
+
+		latCB = new JComboBoxMW<Integer>(lat_degrees);
+		latCB.setSelectedItem(0);
+		latCB.setSize(new Dimension(CB_WIDTH, -1));
+		coordPane.add(latCB);
+
+		String[] latStrings = { Msg.getString("direction.degreeSign") + Msg.getString("direction.northShort"), //$NON-NLS-1$ //$NON-NLS-2$
+				Msg.getString("direction.degreeSign") + Msg.getString("direction.southShort") //$NON-NLS-1$ //$NON-NLS-2$
+		};
+		latDir = new JComboBoxMW<Object>(latStrings);
+		latDir.setEditable(false);
+		latDir.setPreferredSize(new Dimension(20, -1));
+		coordPane.add(latDir);
+
+		// Put glue and strut spacers in
+		// positionPane.add(Box.createHorizontalGlue());
+		// positionPane.add(Box.createHorizontalStrut(5));
+
+		// Prepare longitude entry components
+		WebLabel longLabel = new WebLabel("Lon : ", WebLabel.RIGHT);// Msg.getString("NavigatorWindow.longitude")); //$NON-NLS-1$
+		// longLabel.setAlignmentY(.5F);
+		coordPane.add(longLabel);
+
+		// longText = new WebTextField(5);
+		// longText.setCaretPosition(longText.getText().length());
+		// longText.setHorizontalAlignment(WebTextField.CENTER);
+		// coordPane.add(longText);
+
+		// 2016-11-24 Switch to using ComboBoxMW for longtitude
+		longCB = new JComboBoxMW<Integer>(lon_degrees);
+		longCB.setSelectedItem(0);
+		longCB.setSize(new Dimension(CB_WIDTH, -1));
+		coordPane.add(longCB);
+
+		String[] longStrings = { Msg.getString("direction.degreeSign") + Msg.getString("direction.eastShort"), //$NON-NLS-1$ //$NON-NLS-2$
+				Msg.getString("direction.degreeSign") + Msg.getString("direction.westShort") //$NON-NLS-1$ //$NON-NLS-2$
+		};
+		longDir = new JComboBoxMW<Object>(longStrings);
+		longDir.setEditable(false);
+		longDir.setPreferredSize(new Dimension(20, -1));
+		coordPane.add(longDir);
+
+		// Put glue and strut spacers in
+		// positionPane.add(Box.createHorizontalGlue());
+		// positionPane.add(Box.createHorizontalStrut(5));
+
+		// Prepare location entry submit button
+		// goThere = new WebButton(Msg.getString("NavigatorWindow.button.goThere"));
+		// //$NON-NLS-1$
+		// goThere.addActionListener(this);
+		// goThere.setAlignmentY(.5F);
+		// positionPane.add(goThere);
+		// bottomPane.add(goThere, BorderLayout.SOUTH);
+
+		///////////////////////////////////////////////////////////////////////////
+
+		// Prepare topographical panel
+		// WebPanel buttonsPane = new WebPanel(new BorderLayout());
+		// buttonsPane.setBorder(new EmptyBorder(0, 3, 0, 0));
+		// bottomPane.add(buttonsPane, BorderLayout.NORTH);
+
+		// Prepare options panel
+		WebPanel optionsPane = new WebPanel(new GridLayout(1, 3));
+		optionsPane.setMaximumHeight(15);
+		optionsPane.setAlignmentX(Component.CENTER_ALIGNMENT);
+		bottomPane.add(optionsPane);// , BorderLayout.CENTER);
+
+		// Prepare location entry submit button
+		goThere = new WebButton(Msg.getString("NavigatorWindow.button.resetGo")); //$NON-NLS-1$
+		goThere.setToolTipText("Go to the location with your specified coordinates");
+		goThere.addActionListener(this);
+		// goThere.setAlignmentY(.5F);
+		// positionPane.add(goThere);
+		optionsPane.add(goThere);
+
+		// Prepare options button.
+		optionsButton = new WebButton(Msg.getString("NavigatorWindow.button.mapOptions")); //$NON-NLS-1$
+		optionsButton.setToolTipText(Msg.getString("NavigatorWindow.tooltip.mapOptions")); //$NON-NLS-1$
+		optionsButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent event) {
+				SwingUtilities.invokeLater(() -> {
+					if (optionsMenu == null)
+						createOptionsMenu();
+					optionsMenu.show(optionsButton, 0, optionsButton.getHeight());
+				});
 			}
+		});
+		optionsPane.add(optionsButton);
 
-			int lat_size = lat_degrees.length;
-			for (int i = 0; i < lat_size; i++) {
-				lat_degrees[i] = i;
+		// Prepare minerals button.0
+		mineralsButton = new WebButton(Msg.getString("NavigatorWindow.button.mineralOptions")); //$NON-NLS-1$
+		mineralsButton.setToolTipText(Msg.getString("NavigatorWindow.tooltip.mineralOptions")); //$NON-NLS-1$
+		mineralsButton.setEnabled(false);
+		mineralsButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent event) {
+				SwingUtilities.invokeLater(() -> {
+					WebPopupMenu mineralsMenu = createMineralsMenu();
+					mineralsMenu.show(mineralsButton, 0, mineralsButton.getHeight());
+				});
 			}
+		});
+		optionsPane.add(mineralsButton);
 
-			latCB = new JComboBoxMW<Integer>(lat_degrees);
-			latCB.setSelectedItem(0);
-			latCB.setPreferredSize(new Dimension(CB_WIDTH, -1));
-			coordPane.add(latCB);
-
-			String[] latStrings = { Msg.getString("direction.degreeSign") + Msg.getString("direction.northShort"), //$NON-NLS-1$ //$NON-NLS-2$
-					Msg.getString("direction.degreeSign") + Msg.getString("direction.southShort") //$NON-NLS-1$ //$NON-NLS-2$
-			};
-			latDir = new JComboBoxMW<Object>(latStrings);
-			latDir.setEditable(false);
-			latDir.setPreferredSize(new Dimension(20, -1));
-			coordPane.add(latDir);
-
-			// Put glue and strut spacers in
-			// positionPane.add(Box.createHorizontalGlue());
-			// positionPane.add(Box.createHorizontalStrut(5));
-
-			// Prepare longitude entry components
-			WebLabel longLabel = new WebLabel("Lon : ", WebLabel.RIGHT);// Msg.getString("NavigatorWindow.longitude")); //$NON-NLS-1$
-			// longLabel.setAlignmentY(.5F);
-			coordPane.add(longLabel);
-
-			// longText = new WebTextField(5);
-			// longText.setCaretPosition(longText.getText().length());
-			// longText.setHorizontalAlignment(WebTextField.CENTER);
-			// coordPane.add(longText);
-
-			// 2016-11-24 Switch to using ComboBoxMW for longtitude
-			longCB = new JComboBoxMW<Integer>(lon_degrees);
-			longCB.setSelectedItem(0);
-			longCB.setPreferredSize(new Dimension(CB_WIDTH, -1));
-			coordPane.add(longCB);
-
-			String[] longStrings = { Msg.getString("direction.degreeSign") + Msg.getString("direction.eastShort"), //$NON-NLS-1$ //$NON-NLS-2$
-					Msg.getString("direction.degreeSign") + Msg.getString("direction.westShort") //$NON-NLS-1$ //$NON-NLS-2$
-			};
-			longDir = new JComboBoxMW<Object>(longStrings);
-			longDir.setEditable(false);
-			longDir.setPreferredSize(new Dimension(20, -1));
-			coordPane.add(longDir);
-
-			// Put glue and strut spacers in
-			// positionPane.add(Box.createHorizontalGlue());
-			// positionPane.add(Box.createHorizontalStrut(5));
-
-			// Prepare location entry submit button
-			// goThere = new WebButton(Msg.getString("NavigatorWindow.button.goThere"));
-			// //$NON-NLS-1$
-			// goThere.addActionListener(this);
-			// goThere.setAlignmentY(.5F);
-			// positionPane.add(goThere);
-			// bottomPane.add(goThere, BorderLayout.SOUTH);
-
-			///////////////////////////////////////////////////////////////////////////
-
-			// Prepare topographical panel
-			// WebPanel buttonsPane = new WebPanel(new BorderLayout());
-			// buttonsPane.setBorder(new EmptyBorder(0, 3, 0, 0));
-			// bottomPane.add(buttonsPane, BorderLayout.NORTH);
-
-			// Prepare options panel
-			WebPanel optionsPane = new WebPanel(new GridLayout(1, 3));
-			optionsPane.setMaximumHeight(15);
-			optionsPane.setAlignmentX(Component.CENTER_ALIGNMENT);
-			bottomPane.add(optionsPane);// , BorderLayout.CENTER);
-
-			// Prepare location entry submit button
-			goThere = new WebButton(Msg.getString("NavigatorWindow.button.resetGo")); //$NON-NLS-1$
-			goThere.setToolTipText("Go to the location with your specified coordinates");
-			goThere.addActionListener(this);
-			// goThere.setAlignmentY(.5F);
-			// positionPane.add(goThere);
-			optionsPane.add(goThere);
-
-			// Prepare options button.
-			optionsButton = new WebButton(Msg.getString("NavigatorWindow.button.mapOptions")); //$NON-NLS-1$
-			optionsButton.setToolTipText(Msg.getString("NavigatorWindow.tooltip.mapOptions")); //$NON-NLS-1$
-			optionsButton.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent event) {
-					SwingUtilities.invokeLater(() -> {
-						if (optionsMenu == null)
-							createOptionsMenu();
-						optionsMenu.show(optionsButton, 0, optionsButton.getHeight());
-					});
-				}
-			});
-			optionsPane.add(optionsButton);
-
-			// Prepare minerals button.0
-			mineralsButton = new WebButton(Msg.getString("NavigatorWindow.button.mineralOptions")); //$NON-NLS-1$
-			mineralsButton.setToolTipText(Msg.getString("NavigatorWindow.tooltip.mineralOptions")); //$NON-NLS-1$
-			mineralsButton.setEnabled(false);
-			mineralsButton.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent event) {
-					SwingUtilities.invokeLater(() -> {
-						WebPopupMenu mineralsMenu = createMineralsMenu();
-						mineralsMenu.show(mineralsButton, 0, mineralsButton.getHeight());
-					});
-				}
-			});
-			optionsPane.add(mineralsButton);
-
-			// Prepare legend icon
-			// ruler = new LegendDisplay();
-			// ruler.setBorder( new CompoundBorder(new BevelBorder(BevelBorder.LOWERED),
-			// new LineBorder(Color.gray)));
-			// WebPanel legendPanel = new WebPanel(new BorderLayout(0, 0));
-			// legendPanel.add(ruler, BorderLayout.NORTH);
-			// buttonsPane.add(legendPanel, BorderLayout.NORTH);
-			optionsPane.setSize(new Dimension(HORIZONTAL_MINIMAP, 30));
+		// Prepare legend icon
+		// ruler = new LegendDisplay();
+		// ruler.setBorder( new CompoundBorder(new BevelBorder(BevelBorder.LOWERED),
+		// new LineBorder(Color.gray)));
+		// WebPanel legendPanel = new WebPanel(new BorderLayout(0, 0));
+		// legendPanel.add(ruler, BorderLayout.NORTH);
+		// buttonsPane.add(legendPanel, BorderLayout.NORTH);
+		optionsPane.setSize(new Dimension(HORIZONTAL_MINIMAP, HEIGHT_BUTTON_PANE));
 
 //			setMaximumSize(new Dimension(HORIZONTAL_MINIMAP, VERTICAL_MINIMAP));
 //			setSize(new Dimension(HORIZONTAL_MINIMAP, VERTICAL_MINIMAP));
-			setPreferredSize(new Dimension(HORIZONTAL_MINIMAP, VERTICAL_MINIMAP));
+		setPreferredSize(new Dimension(HORIZONTAL_MINIMAP, VERTICAL_MINIMAP));
 
-//		}
-//
-//		else {
-//
-//			// Prepare content pane
-//			WebPanel mainPane = new WebPanel();
-//			mainPane.setLayout(new BoxLayout(mainPane, BoxLayout.Y_AXIS));
-//			mainPane.setBorder(new MarsPanelBorder());
-//			setContentPane(mainPane);
-//
-//			// Prepare top layout panes
-//			WebPanel topMainPane = new WebPanel();
-//			topMainPane.setLayout(new BoxLayout(topMainPane, BoxLayout.X_AXIS));
-//			mainPane.add(topMainPane);
-//
-//			WebPanel leftTopPane = new WebPanel();
-//			leftTopPane.setLayout(new BoxLayout(leftTopPane, BoxLayout.Y_AXIS));
-//			topMainPane.add(leftTopPane);
-//
-//			// Prepare globe display
-//			// globeNav = new GlobeDisplay(this, 150, 150);
-//			globeNav = new GlobeDisplay(this);// , GlobeDisplay.GLOBE_MAP_WIDTH, GlobeDisplay.GLOBE_MAP_HEIGHT);
-//			WebPanel globePane = new WebPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-//			globePane.setBackground(Color.black);
-//			globePane.setOpaque(true);
-//			globePane.setBorder(new CompoundBorder(new BevelBorder(BevelBorder.LOWERED), new LineBorder(Color.gray)));
-//			globePane.add(globeNav);
-//			leftTopPane.add(globePane);
-//
-//			// Prepare navigation buttons display
-////			navButtons = new NavButtonDisplay(this);
-////			WebPanel navPane = new WebPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-////			navPane.setBorder( new CompoundBorder(new BevelBorder(BevelBorder.LOWERED),
-////					new LineBorder(Color.gray)));
-////			navPane.add(navButtons);
-////			leftTopPane.add(navPane);
-//
-//			// Put strut spacer in
-//			topMainPane.add(Box.createHorizontalStrut(5));
-//
-//			WebPanel rightTopPane = new WebPanel();
-//			rightTopPane.setLayout(new BoxLayout(rightTopPane, BoxLayout.Y_AXIS));
-//			topMainPane.add(rightTopPane);
-//
-//			// Prepare surface map display
-//			WebPanel mapPane = new WebPanel(new BorderLayout(0, 0));
-//			mapPane.setBorder(new CompoundBorder(new BevelBorder(BevelBorder.LOWERED), new LineBorder(Color.gray)));
-//			rightTopPane.add(mapPane);
-//			mapPaneInner = new WebPanel(new BorderLayout(0, 0));
-//			mapPaneInner.setBackground(Color.black);
-//			mapPaneInner.setOpaque(true);
-//			// mapPaneInner.setCursor(new Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-//
-//			map = new MapPanel(desktop, 500L);
-//			map.setNavWin(this);
-//			map.addMouseListener(new mapListener());
-//			map.addMouseMotionListener(new mouseMotionListener());
-//			map.setCursor(new Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-//
-//			// Create map layers.
-//			unitIconLayer = new UnitIconMapLayer(map);
-//			unitLabelLayer = new UnitLabelMapLayer();
-//			mineralLayer = new MineralMapLayer(map);
-//			shadingLayer = new ShadingMapLayer(map);
-//			navpointLayer = new NavpointMapLayer(map);
-//			trailLayer = new VehicleTrailMapLayer();
-//			landmarkLayer = new LandmarkMapLayer();
-//			exploredSiteLayer = new ExploredSiteMapLayer(map);
-//
-//			// Add default map layers.
-//			map.addMapLayer(shadingLayer, 0);
-//			map.addMapLayer(unitIconLayer, 2);
-//			map.addMapLayer(unitLabelLayer, 3);
-//			map.addMapLayer(navpointLayer, 4);
-//			map.addMapLayer(trailLayer, 5);
-//			map.addMapLayer(landmarkLayer, 6);
-//
-//			map.showMap(new Coordinates((Math.PI / 2D), 0D));
-//			mapPaneInner.add(map, BorderLayout.CENTER);
-//			mapPane.add(mapPaneInner, BorderLayout.CENTER);
-//
-//			// Put some glue in to fill in extra space
-//			rightTopPane.add(Box.createVerticalStrut(5));
-//
-//			// Prepare topographical panel
-//			WebPanel topoPane = new WebPanel(new BorderLayout());
-//			topoPane.setBorder(new EmptyBorder(0, 3, 0, 0));
-//			mainPane.add(topoPane);
-//
-//			// Prepare options panel
-//			WebPanel optionsPane = new WebPanel(new GridLayout(2, 1));
-//			topoPane.add(optionsPane, BorderLayout.CENTER);
-//
-//			// Prepare options button.
-//			optionsButton = new WebButton(Msg.getString("NavigatorWindow.button.mapOptions")); //$NON-NLS-1$
-//			optionsButton.setToolTipText(Msg.getString("NavigatorWindow.tooltip.mapOptions")); //$NON-NLS-1$
-//			optionsButton.addActionListener(new ActionListener() {
-//				public void actionPerformed(ActionEvent event) {
-//					SwingUtilities.invokeLater(() -> {
-//						if (optionsMenu == null)
-//							createOptionsMenu();
-//						optionsMenu.show(optionsButton, 0, optionsButton.getHeight());
-//					});
-//				}
-//			});
-//			optionsPane.add(optionsButton);
-//
-//			// Prepare minerals button.0
-//			mineralsButton = new WebButton(Msg.getString("NavigatorWindow.button.mineralOptions")); //$NON-NLS-1$
-//			mineralsButton.setToolTipText(Msg.getString("NavigatorWindow.tooltip.mineralOptions")); //$NON-NLS-1$
-//			mineralsButton.setEnabled(false);
-//			mineralsButton.addActionListener(new ActionListener() {
-//				public void actionPerformed(ActionEvent event) {
-//					SwingUtilities.invokeLater(() -> {
-//						WebPopupMenu mineralsMenu = createMineralsMenu();
-//						mineralsMenu.show(mineralsButton, 0, mineralsButton.getHeight());
-//					});
-//				}
-//			});
-//			optionsPane.add(mineralsButton);
-//
-//			// Prepare legend icon
-//			ruler = new LegendDisplay();
-//			ruler.setBorder(new CompoundBorder(new BevelBorder(BevelBorder.LOWERED), new LineBorder(Color.gray)));
-//			WebPanel legendPanel = new WebPanel(new BorderLayout(0, 0));
-//			legendPanel.add(ruler, BorderLayout.NORTH);
-//			topoPane.add(legendPanel, BorderLayout.EAST);
-//
-//			// Prepare position entry panel
-//			WebPanel positionPane = new WebPanel();
-//			positionPane.setLayout(new BoxLayout(positionPane, BoxLayout.X_AXIS));
-//			positionPane.setBorder(new EmptyBorder(6, 6, 3, 3));
-//			mainPane.add(positionPane);
-//
-//			// Prepare latitude entry components
-//			WebLabel latLabel = new WebLabel(Msg.getString("NavigatorWindow.latitude")); //$NON-NLS-1$
-//			latLabel.setAlignmentY(.5F);
-//			positionPane.add(latLabel);
-//
-//			latText = new WebTextField(5);
-//			positionPane.add(latText);
-//
-//			String[] latStrings = { Msg.getString("direction.degreeSign") + Msg.getString("direction.northShort"), //$NON-NLS-1$ //$NON-NLS-2$
-//					Msg.getString("direction.degreeSign") + Msg.getString("direction.southShort") //$NON-NLS-1$ //$NON-NLS-2$
-//			};
-//			latDir = new JComboBoxMW<Object>(latStrings);
-//			latDir.setEditable(false);
-//			latDir.setPreferredSize(new Dimension(50, -1));
-//			positionPane.add(latDir);
-//
-//			// Put glue and strut spacers in
-//			positionPane.add(Box.createHorizontalGlue());
-//			positionPane.add(Box.createHorizontalStrut(5));
-//
-//			// Prepare longitude entry components
-//			WebLabel longLabel = new WebLabel(Msg.getString("NavigatorWindow.longitude")); //$NON-NLS-1$
-//			longLabel.setAlignmentY(.5F);
-//			positionPane.add(longLabel);
-//
-//			longText = new WebTextField(5);
-//			positionPane.add(longText);
-//
-//			String[] longStrings = { Msg.getString("direction.degreeSign") + Msg.getString("direction.eastShort"), //$NON-NLS-1$ //$NON-NLS-2$
-//					Msg.getString("direction.degreeSign") + Msg.getString("direction.westShort") //$NON-NLS-1$ //$NON-NLS-2$
-//			};
-//			longDir = new JComboBoxMW<Object>(longStrings);
-//			longDir.setEditable(false);
-//			longDir.setPreferredSize(new Dimension(50, -1));
-//			positionPane.add(longDir);
-//
-//			// Put glue and strut spacers in
-//			positionPane.add(Box.createHorizontalGlue());
-//			positionPane.add(Box.createHorizontalStrut(5));
-//
-//			// Prepare location entry submit button
-//			goThere = new WebButton(Msg.getString("NavigatorWindow.button.resetGo")); //$NON-NLS-1$
-//			goThere.addActionListener(this);
-//			goThere.setAlignmentY(.5F);
-//			positionPane.add(goThere);
-//
-//			setMaximumSize(new Dimension(HORIZONTAL, VERTICAL));
-//			// setSize(new Dimension(HORIZONTAL, VERTICAL));
-//			// setPreferredSize(new Dimension(HORIZONTAL, VERTICAL));
-//
-//		}
-
-//		if (desktop.getMainScene() != null) {
-//			setClosable(false);
-//			setResizable(false);
-//			setMaximizable(false);
-//		} else {
-			setClosable(true);
-			setResizable(false);
-			setMaximizable(false);
-//		}
+		setClosable(true);
+		setResizable(false);
+		setMaximizable(false);
 
 		setVisible(true);
 		// Pack window
@@ -971,9 +781,6 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		unitManager = null;
 		landmarks = null;
 
-		lon_degrees = null;
-		lat_degrees = null;
-		
 		latCB = null;
 		longCB = null;
 		mapPanel = null;

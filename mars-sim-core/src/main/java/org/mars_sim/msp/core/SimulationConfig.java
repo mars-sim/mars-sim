@@ -63,38 +63,38 @@ public class SimulationConfig implements Serializable {
 
 	private static final long serialVersionUID = -5348007442971644450L;
 
-	private static final Logger logger = Logger.getLogger(SimulationConfig.class.getName());
+	private final Logger logger = Logger.getLogger(SimulationConfig.class.getName());
 
-	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
+	private final String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
 			logger.getName().length());
 	
 	// Configuration files to load.
-	public static final String XML_FOLDER = "/" + Msg.getString("Simulation.xmlFolder") + "/";
-	public static final String XML = ".xml";
-	public static final String SIMULATION_FILE = "simulation";
-	public static final String PEOPLE_FILE = "people";
-	public static final String CREW_FILE = "crew";
-	public static final String VEHICLE_FILE = "vehicles";
-	public static final String SETTLEMENT_FILE = "settlements";
-	public static final String RESUPPLY_FILE = "resupplies";
-	public static final String MEDICAL_FILE = "medical";
-	public static final String MALFUNCTION_FILE = "malfunctions";
-	public static final String CROP_FILE = "crops";
-	public static final String LANDMARK_FILE = "landmarks";
-	public static final String MINERAL_MAP_FILE = "minerals";
-	public static final String BUILDING_FILE = "buildings";
-	public static final String PART_FILE = "parts";
-	public static final String PART_PACKAGE_FILE = "part_packages";
-	public static final String RESOURCE_FILE = "resources";
-	public static final String MANUFACTURE_FILE = "manufacturing";
-	public static final String CONSTRUCTION_FILE = "construction";
-	public static final String FOODPRODUCTION_FILE = "foodProduction";
-	public static final String MEAL_FILE = "meals";
-	public static final String ROBOT_FILE = "robots";
-	public static final String QUOTATION_FILE = "quotations";
-	public static final String VALUE = "value";
+	public final String XML_FOLDER = "/" + Msg.getString("Simulation.xmlFolder") + "/";
+	public final String XML = ".xml";
+	public final String SIMULATION_FILE = "simulation";
+	public final String PEOPLE_FILE = "people";
+	public final String CREW_FILE = "crew";
+	public final String VEHICLE_FILE = "vehicles";
+	public final String SETTLEMENT_FILE = "settlements";
+	public final String RESUPPLY_FILE = "resupplies";
+	public final String MEDICAL_FILE = "medical";
+	public final String MALFUNCTION_FILE = "malfunctions";
+	public final String CROP_FILE = "crops";
+	public final String LANDMARK_FILE = "landmarks";
+	public final String MINERAL_MAP_FILE = "minerals";
+	public final String BUILDING_FILE = "buildings";
+	public final String PART_FILE = "parts";
+	public final String PART_PACKAGE_FILE = "part_packages";
+	public final String RESOURCE_FILE = "resources";
+	public final String MANUFACTURE_FILE = "manufacturing";
+	public final String CONSTRUCTION_FILE = "construction";
+	public final String FOODPRODUCTION_FILE = "foodProduction";
+	public final String MEAL_FILE = "meals";
+	public final String ROBOT_FILE = "robots";
+	public final String QUOTATION_FILE = "quotations";
+	public final String VALUE = "value";
 
-    public static final String EXPERIMENTS_FILE = "/json/experiments.json";
+    public final String EXPERIMENTS_FILE = "/json/experiments.json";
     
 	// Simulation element names.
 	private static final String TIME_CONFIGURATION = "time-configuration";
@@ -110,13 +110,13 @@ public class SimulationConfig implements Serializable {
 	private static final String EARTH_START_DATE_TIME = "earth-start-date-time";
 	private static final String MARS_START_DATE_TIME = "mars-start-date-time";
 
-	private double tbu = 0;
-	private double tr = 0;
+	private transient double tbu = 0;
+	private transient double tr = 0;
 
-	private int[] data = new int[] { 0, 0, 0, 0 };
+	private transient int[] data = new int[] { 0, 0, 0, 0 };
 
-	public String marsStartDate = null;
-	public String earthStartDate = null;
+	public transient String marsStartDate = null;
+	public transient String earthStartDate = null;
 
 	/*
 	 * -----------------------------------------------------------------------------
@@ -125,33 +125,33 @@ public class SimulationConfig implements Serializable {
 	 */
 
 	/** DOM documents. */
-	private static Document simulationDoc;
+	private transient static Document simulationDoc;
 
 	// Subset configuration classes
-	private static PartConfig partConfig;
-	private static PartPackageConfig partPackageConfig;
-	private static AmountResourceConfig resourceConfig;
-	private static PersonConfig personConfig;
-	private static CrewConfig crewConfig;
-	private static MedicalConfig medicalConfig;
-	private static LandmarkConfig landmarkConfig;
-	private static MineralMapConfig mineralMapConfig;
-	private static MalfunctionConfig malfunctionConfig;
-	private static CropConfig cropConfig;
-	private static VehicleConfig vehicleConfig;
-	private static BuildingConfig buildingConfig;
-	private static SettlementConfig settlementConfig;
-	private static ManufactureConfig manufactureConfig;
-	private static ResupplyConfig resupplyConfig;
-	private static ConstructionConfig constructionConfig;
+	private transient static PartConfig partConfig;
+	private transient static PartPackageConfig partPackageConfig;
+	private transient static AmountResourceConfig resourceConfig;
+	private transient static PersonConfig personConfig;
+	private transient static CrewConfig crewConfig;
+	private transient static MedicalConfig medicalConfig;
+	private transient static LandmarkConfig landmarkConfig;
+	private transient static MineralMapConfig mineralMapConfig;
+	private transient static MalfunctionConfig malfunctionConfig;
+	private transient static CropConfig cropConfig;
+	private transient static VehicleConfig vehicleConfig;
+	private transient static BuildingConfig buildingConfig;
+	private transient static SettlementConfig settlementConfig;
+	private transient static ManufactureConfig manufactureConfig;
+	private transient static ResupplyConfig resupplyConfig;
+	private transient static ConstructionConfig constructionConfig;
 
-	private static FoodProductionConfig foodProductionConfig;
-	private static MealConfig mealConfig;
-	private static RobotConfig robotConfig;
-	private static QuotationConfig quotationConfig;
+	private transient static FoodProductionConfig foodProductionConfig;
+	private transient static MealConfig mealConfig;
+	private transient static RobotConfig robotConfig;
+	private transient static QuotationConfig quotationConfig;
 	
-	private static ExperimentConfig experimentConfig;
-	private static ScienceConfig scienceConfig;	
+	private transient static ExperimentConfig experimentConfig;
+	private transient static ScienceConfig scienceConfig;	
 
 	/*
 	 * -----------------------------------------------------------------------------
@@ -236,7 +236,7 @@ public class SimulationConfig implements Serializable {
 	 * 
 	 * @throws Exception if error loading or parsing configuration files.
 	 */
-	public static void loadConfig() {
+	public void loadConfig() {
 		SimulationConfig.instance();
 		// logger.info("loadConfig() is on " + Thread.currentThread().getName());
 		if (simulationDoc != null) {
@@ -951,7 +951,7 @@ public class SimulationConfig implements Serializable {
 	 * @throws JDOMException
 	 * @throws Exception     if XML could not be parsed or file could not be found.
 	 */
-	private static Document parseXMLFileAsJDOMDocument(String filename, boolean useDTD) {
+	private Document parseXMLFileAsJDOMDocument(String filename, boolean useDTD) {
 //	    SAXBuilder builder = new SAXBuilder(useDTD);
 	    SAXBuilder builder = new SAXBuilder(null, null, null);
 	    
@@ -1005,7 +1005,7 @@ public class SimulationConfig implements Serializable {
 	 * -----------------------------------------------------------------------------
 	 */
 
-	private static void loadDefaultConfiguration() {
+	private void loadDefaultConfiguration() {
 		try {
 //			logger.config("Loading xml files...");
 			// Load simulation document

@@ -22,7 +22,7 @@ public class AllJUnitTests extends TestCase {
 	 */
 	public static Test suite() {
 		// Run this before other maven test cases to copy xml files to user home directory
-        SimulationConfig.loadConfig();	
+        SimulationConfig.instance().loadConfig();	
 		
 		TestSuite suite = new TestSuite(AllJUnitTests.class);
 		

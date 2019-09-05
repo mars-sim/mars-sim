@@ -35,7 +35,6 @@ import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
 import org.mars_sim.msp.ui.swing.tool.mission.NavpointPanel;
 import org.mars_sim.msp.ui.swing.tool.navigator.NavigatorWindow;
 
-import com.alee.laf.desktoppane.WebInternalFrame;
 import com.alee.laf.panel.WebPanel;
 
 public class MapPanel extends WebPanel implements ClockListener {

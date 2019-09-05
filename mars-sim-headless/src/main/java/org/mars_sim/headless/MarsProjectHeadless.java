@@ -40,6 +40,8 @@ public class MarsProjectHeadless {
 
 	private Simulation sim = Simulation.instance();
 	
+	private SimulationConfig simulationConfig = SimulationConfig.instance();
+	
 	private InteractiveTerm interactiveTerm = new InteractiveTerm(true);
 	
 	private static final String HELP = 
@@ -148,9 +150,9 @@ public class MarsProjectHeadless {
 			// If load argument, load simulation from file.
 			try {
 				// Initialize the simulation.
-				SimulationConfig.loadConfig();
+				simulationConfig.loadConfig();
 				
-				Simulation.createNewSimulation(userTimeRatio, true);
+				sim.createNewSimulation(userTimeRatio, true);
 				
 				handleLoadDefaultSimulation();
 
@@ -226,7 +228,7 @@ public class MarsProjectHeadless {
 	private void handleNewSimulation(int userTimeRatio) {
 		try {
 			// Load xml files
-			SimulationConfig.loadConfig();
+			simulationConfig.loadConfig();
 			// Alert the user to see the interactive terminal 
 			logger.config("Please proceed to selecting the type of Game Mode in the popped-up console.");
 			// Start interactive terminal 
@@ -234,7 +236,7 @@ public class MarsProjectHeadless {
 			
 			sim.destroyOldSimulation();
 
-			Simulation.createNewSimulation(userTimeRatio, false);
+			sim.createNewSimulation(userTimeRatio, false);
 			// Start the sim thread
 			startSimThread(true);
 			

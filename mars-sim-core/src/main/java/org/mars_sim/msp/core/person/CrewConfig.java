@@ -26,47 +26,46 @@ public class CrewConfig implements Serializable {
 
 	// private static Logger logger = Logger.getLogger(CrewConfig.class.getName());
 
-	public static final int SIZE_OF_CREW = 4;
-	public static final int ALPHA_CREW = 0;;
+	public static final int ALPHA_CREW = 0;
 
 	// Add a list of crew
 	private List<Crew> roster = new ArrayList<>();
 
-	// Element names
-
-	private static final String CREW_LIST = "crew-list";
-	private static final String PERSON = "person";
+	private transient int crewNum = -1;
 	
-	private static final String PERSON_NAME = "person-name";
-	private static final String GENDER = "gender";
-	private static final String SPONSOR = "sponsor";
-	private static final String COUNTRY = "country";
+	// Element names
+	private final String CREW_LIST = "crew-list";
+	private final String PERSON = "person";
+	
+	private final String PERSON_NAME = "person-name";
+	private final String GENDER = "gender";
+	private final String SPONSOR = "sponsor";
+	private final String COUNTRY = "country";
 
-	private static final String PERSONALITY_TYPE = "personality-type";
-	private static final String PERSONALITY_TRAIT_LIST = "personality-trait-list";
-	private static final String PERSONALITY_TRAIT = "personality-trait";
+	private final String PERSONALITY_TYPE = "personality-type";
+	private final String PERSONALITY_TRAIT_LIST = "personality-trait-list";
+	private final String PERSONALITY_TRAIT = "personality-trait";
 
-	private static final String CREW = "crew";
-	private static final String NAME = "name";
-	private static final String SETTLEMENT = "settlement";
-	private static final String JOB = "job";
-	private static final String NATURAL_ATTRIBUTE_LIST = "natural-attribute-list";
-	private static final String NATURAL_ATTRIBUTE = "natural-attribute";
-	private static final String VALUE = "value";
-	private static final String SKILL_LIST = "skill-list";
-	private static final String SKILL = "skill";
-	private static final String LEVEL = "level";
-	private static final String RELATIONSHIP_LIST = "relationship-list";
-	private static final String RELATIONSHIP = "relationship";
-	private static final String OPINION = "opinion";
+	private final String CREW = "crew";
+	private final String NAME = "name";
+	private final String SETTLEMENT = "settlement";
+	private final String JOB = "job";
+	private final String NATURAL_ATTRIBUTE_LIST = "natural-attribute-list";
+	private final String NATURAL_ATTRIBUTE = "natural-attribute";
+	private final String VALUE = "value";
+	private final String SKILL_LIST = "skill-list";
+	private final String SKILL = "skill";
+	private final String LEVEL = "level";
+	private final String RELATIONSHIP_LIST = "relationship-list";
+	private final String RELATIONSHIP = "relationship";
+	private final String OPINION = "opinion";
 
-	private static final String MAIN_DISH = "favorite-main-dish";
-	private static final String SIDE_DISH = "favorite-side-dish";
+	private final String MAIN_DISH = "favorite-main-dish";
+	private final String SIDE_DISH = "favorite-side-dish";
 
-	private static final String DESSERT = "favorite-dessert";
-	private static final String ACTIVITY = "favorite-activity";
+	private final String DESSERT = "favorite-dessert";
+	private final String ACTIVITY = "favorite-activity";
 
-//	private static Element root;
 	private Document crewDoc;
 
 	/**
@@ -87,12 +86,14 @@ public class CrewConfig implements Serializable {
 	 * @throws Exception if error in XML parsing.
 	 */
 	public int getNumberOfConfiguredPeople() {
-		Element personList = crewDoc.getRootElement().getChild(CREW_LIST);
-		List<Element> personNodes = personList.getChildren(PERSON);
-		if (personNodes != null)
-			return personNodes.size();
-		else
-			return 0;
+		if (crewNum == -1) {
+			Element personList = crewDoc.getRootElement().getChild(CREW_LIST);
+			List<Element> personNodes = personList.getChildren(PERSON);
+			if (personNodes != null) {
+				crewNum = personNodes.size();
+			}
+		}
+		return crewNum;
 	}
 
 	/**

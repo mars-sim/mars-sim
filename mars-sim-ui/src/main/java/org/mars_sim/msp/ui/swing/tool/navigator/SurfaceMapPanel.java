@@ -1,6 +1,6 @@
 /**
  * Mars Simulation Project
- * MarsGlobe.java
+ * SurfaceMapPanel.java
  * @version 3.1.0 2018-07-23
  * @author Scott Davis
  */
@@ -23,18 +23,18 @@ import org.mars_sim.msp.core.tool.MoreMath;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 
 /**
- * The MarsGlobe class generates the Mars surface (using either Surface or 
+ * The SurfaceMapPanel class generates the Mars surface (using either Surface or 
  * Topo map) for the GlobeDisplay object.
  */
-public class MarsGlobe {
+public class SurfaceMapPanel {
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(MarsGlobe.class.getName());
+	private static Logger logger = Logger.getLogger(SurfaceMapPanel.class.getName());
 
 	// Constant data members
 	/** Height of map source image (pixels). */
 	// private final static int map_height = 150;
-	public final static int MAP_H = 300;// GlobeDisplay.GLOBE_BOX_HEIGHT;
+	public final static int MAP_H = 300; //NavigatorWindow.HORIZONTAL;// GlobeDisplay.GLOBE_BOX_HEIGHT;
 	/** Width of map source image (pixels). */
 	public final static int MAP_W = MAP_H * 2;
 
@@ -67,7 +67,7 @@ public class MarsGlobe {
 	 * @param globeType   the type of globe: "surface" or "topo"
 	 * @param displayArea the display component for the globe
 	 */
-	public MarsGlobe(MarsGlobeType globeType, JComponent displayArea) {
+	public SurfaceMapPanel(MarsGlobeType globeType, JComponent displayArea) {
 
 		// Initialize Variables
 		// this.globeType = globeType;

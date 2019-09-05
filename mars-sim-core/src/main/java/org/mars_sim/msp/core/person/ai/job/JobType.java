@@ -23,16 +23,19 @@ public enum JobType {
 	ASTRONOMER			(Msg.getString("JobType.Astronomer")), //$NON-NLS-1$
 	BIOLOGIST			(Msg.getString("JobType.Biologist")), //$NON-NLS-1$
 	BOTANIST			(Msg.getString("JobType.Botanist")), //$NON-NLS-1$t
+	
 	CHEF				(Msg.getString("JobType.Chef")), //$NON-NLS-1$
 	CHEMIST				(Msg.getString("JobType.Chemist")), //$NON-NLS-1$
 	DOCTOR				(Msg.getString("JobType.Doctor")), //$NON-NLS-1$
 	ENGINEER			(Msg.getString("JobType.Engineer")), //$NON-NLS-1$
 	MATHEMATICIAN		(Msg.getString("JobType.Mathematician")), //$NON-NLS-1$
+	
 	METEOROLOGIST		(Msg.getString("JobType.Meteorologist")), //$NON-NLS-1$
 	PHYSICIST			(Msg.getString("JobType.Physicist")), //$NON-NLS-1$
 	PILOT				(Msg.getString("JobType.Pilot")), //$NON-NLS-1$
 	POLITICIAN			(Msg.getString("JobType.Politician")), //$NON-NLS-1$
 	REPORTER			(Msg.getString("JobType.Reporter")), //$NON-NLS-1$
+	
 	TECHNICIAN			(Msg.getString("JobType.Technician")), //$NON-NLS-1$
 	TRADER				(Msg.getString("JobType.Trader")) //$NON-NLS-1$
 	;
@@ -43,16 +46,19 @@ public enum JobType {
 			ASTRONOMER,
 			BIOLOGIST,
 			BOTANIST,
+			
 			CHEF,
 			CHEMIST,
 			DOCTOR,
 			ENGINEER,
 			MATHEMATICIAN,
+			
 			METEOROLOGIST,
 			PHYSICIST,
 			PILOT,
 			POLITICIAN,
 			REPORTER,
+			
 			TECHNICIAN,
 			TRADER	
 			};

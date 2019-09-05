@@ -695,7 +695,7 @@ extends JComponent {
 		}
 
 		public void run() {
-			SimulationConfig.loadConfig();
+			SimulationConfig.instance().loadConfig();
 			new SimulationConfigEditor(SimulationConfig.instance(), null);
 		}
 	}

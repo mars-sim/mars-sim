@@ -54,7 +54,7 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 
 //	private static double PERIOD_IN_MILLISOLS = 10D * 500D / MarsClock.SECONDS_PER_MILLISOL;
 
-	public final static int GLOBE_BOX_HEIGHT = MarsGlobe.MAP_H;
+	public final static int GLOBE_BOX_HEIGHT = SurfaceMapPanel.MAP_H;
 	public final static int GLOBE_BOX_WIDTH = GLOBE_BOX_HEIGHT;
 	public final static int LIMIT = 60; // the max amount of pixels in each mouse drag that the globe will update itself
 
@@ -87,9 +87,9 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 	private boolean keepRunning;
 	
 	/** Real surface sphere object. */
-	private MarsGlobe marsSphere;
+	private SurfaceMapPanel marsSphere;
 	/** Topographical sphere object. */
-	private MarsGlobe topoSphere;
+	private SurfaceMapPanel topoSphere;
 	/** Spherical coordinates for globe center. */
 	private Coordinates centerCoords;
 	
@@ -175,8 +175,8 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 //		setMinimumSize(getPreferredSize());
 
 		// Construct sphere objects for both real and topographical modes
-		marsSphere = new MarsGlobe(MarsGlobeType.SURFACE_MID, this);
-		topoSphere = new MarsGlobe(MarsGlobeType.TOPO_MID, this);
+		marsSphere = new SurfaceMapPanel(MarsGlobeType.SURFACE_MID, this);
+		topoSphere = new SurfaceMapPanel(MarsGlobeType.TOPO_MID, this);
 
 		// Initialize global variables
 		centerCoords = new Coordinates(HALF_PI, 0D);
@@ -421,7 +421,7 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 		g2d.drawImage(starfield, 0, 0, Color.black, null);
 
 		// Draw real or topo globe
-		MarsGlobe globe = topo ? topoSphere : marsSphere;
+		SurfaceMapPanel globe = topo ? topoSphere : marsSphere;
 
 		Image image = globe.getGlobeImage();
 		if (image != null) {
@@ -507,7 +507,7 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 
 					double sunlight = 1D;
 					try {
-						sunlight = surfaceFeatures.getSunlightRatio(location);
+						sunlight = surfaceFeatures.getSurfaceSunlightRatio(location);
 					} catch (NullPointerException e) {
 						// Do nothing.
 						// This may be caused if simulation hasn't been fully initialized yet.
@@ -570,7 +570,7 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 					}
 
 					IntPoint tempLocation = getUnitDrawLocation(unitCoords);
-					g.fillRect(tempLocation.getiX(), tempLocation.getiY(), 1, 1);
+					g.fillRect(tempLocation.getiX(), tempLocation.getiY(), 3, 3);
 				}
 			}
 		}
@@ -720,10 +720,13 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 			if (desktop.isToolWindowOpen(NavigatorWindow.NAME)) {
 //			timeCache += time;
 //			if (timeCache > PERIOD_IN_MILLISOLS * time) {
-			updateDisplay();
+				keepRunning = true;
+				updateDisplay();
 //				timeCache = 0;
 //			}
 		}
+			else 
+				keepRunning = false;
 	}
 
 	@Override

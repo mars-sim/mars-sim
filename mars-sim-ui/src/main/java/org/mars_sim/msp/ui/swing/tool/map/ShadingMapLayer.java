@@ -20,7 +20,7 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.mars.Mars;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
-import org.mars_sim.msp.ui.swing.tool.navigator.MarsGlobe;
+import org.mars_sim.msp.ui.swing.tool.navigator.SurfaceMapPanel;
 
 /**
  * The ShadingMapLayer is a graphics layer to display twilight and night time
@@ -59,7 +59,7 @@ public class ShadingMapLayer implements MapLayer {
 	 */
 	public void displayLayer(Coordinates mapCenter, String mapType, Graphics g) {
 
-		int centerX = MarsGlobe.MAP_W / 2;
+		int centerX = SurfaceMapPanel.MAP_W / 2;
 		int centerY = centerX;
 
 		// Coordinates sunDirection = orbitInfo.getSunDirection();

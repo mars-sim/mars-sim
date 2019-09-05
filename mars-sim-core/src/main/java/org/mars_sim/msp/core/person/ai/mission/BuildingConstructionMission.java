@@ -168,7 +168,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
 
 		if (!isDone()) {
 			// Set initial mission phase.
-			if (Simulation.getUseGUI()) {
+			if (sim.getUseGUI()) {
 				// Add phases.
 				addPhase(SELECT_SITE_PHASE);
 				addPhase(PREPARE_SITE_PHASE);
@@ -222,7 +222,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
 
 		else if (newSiteProfit > 0D) {
 
-			if (Simulation.getUseGUI()) {
+			if (sim.getUseGUI()) {
 				logger.fine(
 						"Case 1 : Construction initiated by a starting member. Building picked by settlement. Site to be 'automatically' picked.");
 				// if GUI is in use
@@ -386,7 +386,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
 
 		if (site != null) {
 			// site already selected
-			if (Simulation.getUseGUI()) {
+			if (sim.getUseGUI()) {
 				// if GUI is in use
 				logger.fine("Case 2 : the site has been picked and the construction is started by users");
 				logger.log(Level.FINE, "New construction site added at " + settlement.getName());
@@ -425,7 +425,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
 
 			// boolean check = false;
 			// if (check) {
-			if (Simulation.getUseGUI()) {
+			if (sim.getUseGUI()) {
 				// if GUI is in use
 				site = new ConstructionSite(settlement);// , manager);
 				site.setSkill(bestConstructionSkill);

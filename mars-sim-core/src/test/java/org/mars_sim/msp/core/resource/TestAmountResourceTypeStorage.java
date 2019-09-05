@@ -14,7 +14,7 @@ public class TestAmountResourceTypeStorage extends TestCase {
 
     @Override
     public void setUp() throws Exception {
-        SimulationConfig.loadConfig();
+        SimulationConfig.instance().loadConfig();
     }
 
     public void testInventoryAmountResourceTypeCapacityGood() throws Exception {

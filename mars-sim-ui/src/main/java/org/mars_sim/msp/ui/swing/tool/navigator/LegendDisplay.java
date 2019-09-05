@@ -65,4 +65,11 @@ extends WebLabel {
 	public void setUSGSMode(boolean useUSGSLegend) {
 		this.useUSGSLegend = useUSGSLegend;
 	}
+	
+	public void destroy() {
+		legend = null;
+		colorImg = null;
+		distanceImg = null;
+		usgsDistanceImg = null;
+	}
 }

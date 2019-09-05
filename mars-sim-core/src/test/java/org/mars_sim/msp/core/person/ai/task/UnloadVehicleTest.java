@@ -35,8 +35,8 @@ extends TestCase {
 
 	@Override
 	public void setUp() throws Exception {
-		SimulationConfig.loadConfig();
-        Simulation.testRun();
+		SimulationConfig.instance().loadConfig();
+        Simulation.instance().testRun();
 	}
 
     public void testUnloadingPhase() throws Exception {

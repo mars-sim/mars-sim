@@ -330,6 +330,12 @@ public class GuideWindow extends ToolWindow implements ActionListener,
 	/** Prepare tool window for deletion. */
 	@Override
 	public void destroy() {
+		htmlPane = null;
+		viewPort = null;
+		guideURL = null;
+		homeButton = null;
+		backButton = null;
+		forwardButton = null;
 	}
 
 }

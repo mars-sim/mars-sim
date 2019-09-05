@@ -344,7 +344,7 @@ public class SimulationConfigEditor {
 					// Destroy old simulation
 					sim.destroyOldSimulation();
 					// Create new simulation
-					Simulation.createNewSimulation(-1, false);
+					sim.createNewSimulation(-1, false);
 					// Close simulation config editor
 					closeWindow();
 					// Start the simulation

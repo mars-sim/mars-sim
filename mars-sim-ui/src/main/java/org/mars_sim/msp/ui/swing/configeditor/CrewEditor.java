@@ -36,6 +36,7 @@ import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.CrewConfig;
@@ -56,28 +57,24 @@ public class CrewEditor implements ActionListener {
 
 	public static final String TITLE = "Alpha Crew Editor";
 
-	public static final int SIZE_OF_CREW = PersonConfig.SIZE_OF_CREW;
 
 	public static final int ALPHA_CREW = 0;
 
 	private static final String POLITICIAN = "Politician";
 	
 	// Data members
-	private CrewConfig cc;
-	private SimulationConfigEditor simulationConfigEditor;
-
-	private JFrame f;
-	private JPanel mainPane, listPane, radioPane, ppane, qpane;
 
 	private List<JTextField> nameTF = new ArrayList<JTextField>();
+
+	private int crewNum = 0;
 
 	private boolean[][] personalityArray;
 
 //	private DefaultComboBoxModel<String> jobsComboBoxModel;
-	private List<JComboBoxMW<String>> jobsComboBoxList = new ArrayList<JComboBoxMW<String>>(15);
+	private List<JComboBoxMW<String>> jobsComboBoxList = new ArrayList<JComboBoxMW<String>>(JobType.JOB_TYPES.length);
 
 //	private DefaultComboBoxModel<String> countriesComboBoxModel;
-	private List<JComboBoxMW<String>> countriesComboBoxList = new ArrayList<JComboBoxMW<String>>(28);
+	private List<JComboBoxMW<String>> countriesComboBoxList = new ArrayList<JComboBoxMW<String>>(SimulationConfig.instance().getPersonConfig().createAllCountryList().size());
 
 //	private DefaultComboBoxModel<String> sponsorsComboBoxModel;
 	private List<JComboBoxMW<String>> sponsorsComboBoxList = new ArrayList<JComboBoxMW<String>>(2);
@@ -87,6 +84,17 @@ public class CrewEditor implements ActionListener {
 	
 	private List<MyItemListener> actionListeners = new ArrayList<>(4);
 	
+	private CrewConfig cc;
+	
+	private SimulationConfigEditor simulationConfigEditor;
+
+	private JFrame f;
+
+	private JPanel mainPane;
+	private JPanel listPane;
+	private JPanel radioPane;
+	private JPanel ppane;
+	private JPanel qpane;
 
 	/**
 	 * Constructor.
@@ -102,7 +110,8 @@ public class CrewEditor implements ActionListener {
 		
 		this.simulationConfigEditor = simulationConfigEditor;
 
-		personalityArray = new boolean[4][SIZE_OF_CREW];
+		crewNum = cc.getNumberOfConfiguredPeople();
+		personalityArray = new boolean[4][crewNum];
 
 		createGUI();
 	}
@@ -129,15 +138,15 @@ public class CrewEditor implements ActionListener {
 		f.setContentPane(mainPane);
 
 		// Create list panel.
-		listPane = new JPanel(new GridLayout(6, 5));
+		listPane = new JPanel(new GridLayout(6, crewNum + 1));
 		mainPane.add(listPane, BorderLayout.NORTH);
 
 		// Create radio panel.
-		radioPane = new JPanel(new GridLayout(1, 5));
+		radioPane = new JPanel(new GridLayout(1, crewNum + 1));
 		mainPane.add(radioPane, BorderLayout.CENTER);
 
 		listPane.add(new JLabel(""));
-		for (int i = 0; i < SIZE_OF_CREW; i++) {
+		for (int i = 0; i < crewNum; i++) {
 			String num = i + 1 + "";
 			listPane.add(new JLabel("Slot " + num));
 		}
@@ -186,7 +195,7 @@ public class CrewEditor implements ActionListener {
 		
 		// Manually trigger the country selection again so as to correctly 
 		// set up the sponsor combobox at the start of the crew editor
-		for (int i = 0; i < SIZE_OF_CREW; i++) {
+		for (int i = 0; i < crewNum; i++) {
 			final JComboBoxMW<String> g = countriesComboBoxList.get(i);
 //			g.addActionListener(new ActionListener() {
 //				public void actionPerformed(ActionEvent e1) {
@@ -234,7 +243,7 @@ public class CrewEditor implements ActionListener {
 		if (!evt.getActionCommand().equals("Commit Changes")) {
 
 			for (int i = 0; i < 4; i++) {
-				for (int j = 0; j < SIZE_OF_CREW; j++) {
+				for (int j = 0; j < crewNum; j++) {
 					if (cmd.equals("a" + i + j)) {
 						personalityArray[i][j] = true;
 
@@ -250,7 +259,7 @@ public class CrewEditor implements ActionListener {
 
 			boolean goodToGo = true;
 			
-			for (int i = 0; i < SIZE_OF_CREW; i++) {
+			for (int i = 0; i < crewNum; i++) {
 	
 				if (checkNameFields(i, goodToGo)) {
 					String genderStr = (String) genderComboBoxList.get(i).getSelectedItem();
@@ -343,7 +352,7 @@ public class CrewEditor implements ActionListener {
 	}
 	
 	public void setUpCrewName() {
-		for (int i = 0; i < SIZE_OF_CREW; i++) {
+		for (int i = 0; i < crewNum; i++) {
 			int crew_id = cc.getCrew(i);
 			String n = cc.getConfiguredPersonName(i, ALPHA_CREW);
 
@@ -398,8 +407,8 @@ public class CrewEditor implements ActionListener {
 
 	public void setUpCrewGender() {
 
-		String s[] = new String[SIZE_OF_CREW];
-		for (int j = 0; j < SIZE_OF_CREW; j++) {
+		String s[] = new String[crewNum];
+		for (int j = 0; j < crewNum; j++) {
 			GenderType n = cc.getConfiguredPersonGender(j, ALPHA_CREW);
 
 			s[j] = n.toString();
@@ -424,7 +433,7 @@ public class CrewEditor implements ActionListener {
 	 * @param col
 	 */
 	public void setUpCrewPersonality() {
-		for (int col = 0; col < SIZE_OF_CREW; col++) {
+		for (int col = 0; col < crewNum; col++) {
 			ppane = new JPanel(new GridLayout(4, 1));
 
 			String quadrant1A = "Extravert", quadrant1B = "Introvert";
@@ -529,7 +538,7 @@ public class CrewEditor implements ActionListener {
 
 		List<String> jobs = JobType.getList();
 				
-		jobs.add(POLITICIAN);
+		jobs.remove(POLITICIAN);
 
 		Collections.sort(jobs);
 
@@ -581,7 +590,7 @@ public class CrewEditor implements ActionListener {
 	
 	public void setUpCrewJob() {
 
-		for (int i = 0; i < SIZE_OF_CREW; i++) {
+		for (int i = 0; i < crewNum; i++) {
 			String n[] = new String[15];
 			n[i] = cc.getConfiguredPersonJob(i, ALPHA_CREW);
 			JComboBoxMW<String> g = setUpCB(2, n[i]);// 2 = Job
@@ -594,7 +603,7 @@ public class CrewEditor implements ActionListener {
 
 	public void setUpCrewCountry() {
 
-		for (int i = 0; i < SIZE_OF_CREW; i++) {
+		for (int i = 0; i < crewNum; i++) {
 			String n[] = new String[28];
 			n[i] = cc.getConfiguredPersonCountry(i, ALPHA_CREW);
 			JComboBoxMW<String> g = setUpCB(3, n[i]); // 3 = Country
@@ -613,7 +622,7 @@ public class CrewEditor implements ActionListener {
 
 	public void setUpCrewSponsor() {
 
-		for (int i = 0; i < SIZE_OF_CREW; i++) {
+		for (int i = 0; i < crewNum; i++) {
 			String n[] = new String[10];
 			n[i] = cc.getConfiguredPersonSponsor(i, ALPHA_CREW);
 			JComboBoxMW<String> g = setUpCB(4, n[i]); // 4 = Sponsor

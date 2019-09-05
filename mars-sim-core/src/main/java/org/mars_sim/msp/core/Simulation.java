@@ -209,17 +209,17 @@ public class Simulation implements ClockListener, Serializable {
 
 //	private static final boolean debug = false; // logger.isLoggable(Level.FINE);
 	/** true if displaying graphic user interface. */
-	private static boolean useGUI = true;
+	private transient boolean useGUI = true;
 	/** Flag to indicate that a new simulation is being created or loaded. */
-	private static boolean isUpdating = false;
+	private transient boolean isUpdating = false;
 
-	private static boolean defaultLoad = false;
+	private transient boolean defaultLoad = false;
 
-	private static boolean justSaved = true;
+	private transient boolean justSaved = true;
 
-	private static boolean autosaveDefault;
+	private transient boolean autosaveDefault;
 	
-	private static boolean clockOnPause = false;
+	private transient boolean clockOnPause = false;
 	
 	private boolean initialSimulationCreated = false;
 
@@ -349,14 +349,14 @@ public class Simulation implements ClockListener, Serializable {
 	 * 
 	 * @return true is simulation is in updating state.
 	 */
-	public static boolean isUpdating() {
+	public boolean isUpdating() {
 		return isUpdating;
 	}
 
 	/**
 	 * Creates a new simulation instance.
 	 */
-	public static void createNewSimulation(int timeRatio, boolean loadSaveSim) {
+	public void createNewSimulation(int timeRatio, boolean loadSaveSim) {
 		isUpdating = true;
 
 		logger.config(Msg.getString("Simulation.log.createNewSim")); //$NON-NLS-1$
@@ -401,7 +401,7 @@ public class Simulation implements ClockListener, Serializable {
 //       eventManager = new HistoricalEventManager();
 //    }
 
-	public static void testRun() {
+	public void testRun() {
 //		PersonConfig pc = SimulationConfig.instance().getPersonConfig();
 		
 		Simulation sim = Simulation.instance();
@@ -525,7 +525,7 @@ public class Simulation implements ClockListener, Serializable {
 
 		restartClockExecutor();
 
-		Simulation.autosaveDefault = autosaveDefault;
+		this.autosaveDefault = autosaveDefault;
 		AutosaveScheduler.defaultStart();
 		ut = masterClock.getUpTimer();
 		
@@ -576,9 +576,9 @@ public class Simulation implements ClockListener, Serializable {
 			// [landrus, 27.11.09]: use the home dir instead of unknown relative paths.
 			f = new File(SAVE_DIR, SAVE_FILE + SAVE_FILE_EXTENSION);
 //			 logger.config("file is " + f);
-			Simulation.defaultLoad = true;
+			defaultLoad = true;
 		} else {
-			Simulation.defaultLoad = false;
+			defaultLoad = false;
 		}
 
 		if (f.exists() && f.canRead()) {
@@ -1425,7 +1425,7 @@ public class Simulation implements ClockListener, Serializable {
 	 * Ends the current simulation
 	 */
 	public void endSimulation() {
-		Simulation.defaultLoad = false;
+		defaultLoad = false;
 		instance().stop();
 		if (masterClock != null)
 			masterClock.endClockListenerExecutor();
@@ -1612,7 +1612,7 @@ public class Simulation implements ClockListener, Serializable {
 	 * 
 	 * @param value is true if GUI is in use.
 	 */
-	public static void setUseGUI(boolean value) {
+	public void setUseGUI(boolean value) {
 		useGUI = value;
 	}
 
@@ -1621,7 +1621,7 @@ public class Simulation implements ClockListener, Serializable {
 	 * 
 	 * @return true if GUI is in use.
 	 */
-	public static boolean getUseGUI() {
+	public boolean getUseGUI() {
 		return useGUI;
 	}
 

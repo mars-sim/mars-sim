@@ -235,11 +235,17 @@ public class MainDesktopPane extends JDesktopPane
 		SwingUtilities.invokeLater(() -> {
 			JInternalFrame[] frames = (JInternalFrame[]) this.getAllFrames();
 			for (JInternalFrame f : frames) {
-				((ToolWindow) f).update();
-				f.updateUI();
-				// SwingUtilities.updateComponentTreeUI(f);
-				f.validate();
-				f.repaint();
+				ToolWindow w = (ToolWindow) f;
+				if (this.isVisible() || this.isShowing()) {
+					w.update();
+//					f.updateUI();
+//					 SwingUtilities.updateComponentTreeUI(f);
+//					f.validate();
+//					f.repaint();
+				}
+				
+				else if (!this.isShowing() && w.getToolName().equals(NavigatorWindow.NAME))
+					closeToolWindow(NavigatorWindow.NAME);
 			}
 		});
 	}
@@ -1415,8 +1421,20 @@ public class MainDesktopPane extends JDesktopPane
 		sim.getMasterClock().removeClockListener(this);
 		logger = null;
 		mode = null;
-		unitWindows = null;
-		toolWindows = null;
+		if (unitWindows != null) {
+			for (UnitWindow u : unitWindows) {
+				u.destroy();
+				u = null;
+			}
+			unitWindows = null;			
+		}
+		if (toolWindows != null) {
+			for (ToolWindow w : toolWindows) {
+				w.destroy();
+				w = null;
+			}
+			toolWindows = null;			
+		}
 		backgroundImageIcon = null;
 		backgroundLabel = null;
 		toolWindowTask = null;

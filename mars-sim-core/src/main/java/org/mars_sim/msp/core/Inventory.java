@@ -53,6 +53,8 @@ public class Inventory implements Serializable {
 	private static final double SMALL_AMOUNT_COMPARISON = .0000001D;
 
 	// Data members
+	/** True if this inventory instance is for maven test tracking only. */
+	private transient boolean testingTag = false;
 	/** General mass capacity of inventory. */
 	private double generalCapacity = 0D;	
 
@@ -2536,6 +2538,25 @@ public class Inventory implements Serializable {
 	public static void initializeInstances(MarsSurface ms) {
 		marsSurface = ms;
 	}
+
+	/**
+	 * Gets the testing tag (for maven test only)
+	 * 
+	 * @return true if this inventory instance is for maven test
+	 */
+	public boolean getTestingTag() {
+		return testingTag;
+	}
+
+	/**
+	 * Sets the testing tag (for maven test only)
+	 * 
+	 * @param value
+	 */
+	public void setTestingTag(boolean value) {
+		testingTag = value;
+	}
+
 	
 	/**
 	 * Prepare object for garbage collection.

@@ -442,7 +442,8 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 				amountUnloading -= equipment.getMass();
 
 				if (!vehicle.getName().contains("Mock")) {
-					// if it's NOT under maven test
+					// Note: In maven test, the name of the vehicle is "Mock Vehicle" 
+					// test if it's NOT under maven test
 					if (person != null)
 						LogConsolidated.log(Level.INFO, 3_000, sourceName,
 								"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " in "
@@ -483,7 +484,10 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 			totalAmount += amount;
 		}
 
-		if (totalAmount > 0) {
+		if (totalAmount > 0 && !vehicle.getName().contains("Mock")) {
+				// Note: In maven test, the name of the vehicle is "Mock Vehicle" 
+				// test if it's NOT under maven test
+
 			if (person != null)
 				LogConsolidated.log(Level.INFO, 3_000, sourceName,
 						"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " in "

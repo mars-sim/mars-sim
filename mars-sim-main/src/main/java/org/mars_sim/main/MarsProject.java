@@ -56,6 +56,8 @@ public class MarsProject {
 
 	private Simulation sim = Simulation.instance();
 
+	private SimulationConfig simulationConfig = SimulationConfig.instance();
+	
 	private InteractiveTerm interactiveTerm = new InteractiveTerm(false);
 	
 	private static final String HELP = 
@@ -131,7 +133,7 @@ public class MarsProject {
 				logger.config("Generating help files in headless mode in " + Simulation.OS);
 
 				try {
-					SimulationConfig.loadConfig();
+					simulationConfig.loadConfig();
 					// this will generate html files for in-game help based on config xml files
 					// Relocate the following to handleNewSimulation() right before calling
 					// ScenarioConfigEditorFX.
@@ -272,9 +274,9 @@ public class MarsProject {
 //		logger.config("handleLoadDefaultSimulation() is on " 
 //				+ Thread.currentThread().getName() + " Thread");
 		// Initialize the simulation.
-		SimulationConfig.loadConfig();
+		simulationConfig.loadConfig();
 		// Create serializable class 
-		Simulation.createNewSimulation(-1, true);
+		sim.createNewSimulation(-1, true);
 		
 		try {
 //			sim.loadSimulation(null);
@@ -313,9 +315,9 @@ public class MarsProject {
 	private void handleLoadSimulation(List<String> argList) throws Exception {
 //		logger.config("MarsProject's handleLoadSimulation() is on " + Thread.currentThread().getName() + " Thread");
 		// Initialize the simulation.
-		SimulationConfig.loadConfig();
+		simulationConfig.loadConfig();
 		// Create serializable class 
-		Simulation.createNewSimulation(-1, true);
+		sim.createNewSimulation(-1, true);
 		
 		try {
 			boolean hasDefault = argList.contains(DEFAULT_SIM_FILENAME);
@@ -400,7 +402,7 @@ public class MarsProject {
 				// Alert the user to see the interactive terminal 
 				logger.config("Please proceed to selecting the type of Game Mode in the popped-up console.");
 				// Initialize the simulation.
-				SimulationConfig.loadConfig();
+				simulationConfig.loadConfig();
 				// Start interactive terminal
 				boolean useSCE = interactiveTerm.startModeSelection();
 				// Initialize interactive terminal 
@@ -415,7 +417,7 @@ public class MarsProject {
 				
 				else { // Since SCE is not used, manually set up each of the followings 
 					// Create new simulation
-					Simulation.createNewSimulation(-1, false);
+					sim.createNewSimulation(-1, false);
 					// Start the simulation
 					startSimThread(false);
 					// Create main window
@@ -428,9 +430,9 @@ public class MarsProject {
 				// Alert the user to see the interactive terminal 
 				logger.config("Please proceed to selecting the type of Game Mode in the popped-up console.");
 				// Initialize the simulation.
-				SimulationConfig.loadConfig();
+				simulationConfig.loadConfig();
 				// Create serializable class 
-				Simulation.createNewSimulation(-1, true);
+				sim.createNewSimulation(-1, true);
 				// Start interactive terminal
 				interactiveTerm.startModeSelection();
 				// Initialize interactive terminal 

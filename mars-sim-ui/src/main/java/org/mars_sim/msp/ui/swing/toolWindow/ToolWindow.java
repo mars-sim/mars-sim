@@ -22,6 +22,7 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MainWindow;
 import org.mars_sim.msp.ui.swing.tool.commander.CommanderWindow;
 import org.mars_sim.msp.ui.swing.tool.monitor.MonitorWindow;
+import org.mars_sim.msp.ui.swing.tool.navigator.NavigatorWindow;
 
 /**
  * The ToolWindow class is an abstract UI window for a tool. Particular tool
@@ -173,6 +174,12 @@ public abstract class ToolWindow extends JInternalFrame {
 				else if (this.getToolName().equals(CommanderWindow.NAME))
 					commanderWindow.update();
 			}
+			else {
+				opened = false;
+				if (this.getToolName().equals(NavigatorWindow.NAME))
+					desktop.closeToolWindow(NavigatorWindow.NAME);
+			}
+			
 //
 //			else if (!this.isVisible() || !this.isShowing()) {
 //				Platform.runLater(() -> {
@@ -197,5 +204,6 @@ public abstract class ToolWindow extends JInternalFrame {
 		desktop = null;
 		masterClock = null;
 		monitorWindow = null;
+		commanderWindow = null;
 	}
 }
