@@ -12,9 +12,7 @@ import java.io.Serializable;
 import org.mars_sim.msp.core.Unit;
 
 /**
- * MarsSurface is the top most container unit that houses all other units
- * (Settlement, Building, Person, Robot, Vehicle, and Equipment)
- *
+ * MarsSurface is the object unit that represents the surface of Mars
  */
 public class MarsSurface extends Unit implements Serializable {
 

@@ -3,6 +3,7 @@
 	<!ELEMENT landmark-list (landmark*)>
 	<!ELEMENT landmark EMPTY>
 	<!ATTLIST landmark name CDATA #REQUIRED>
+	<!ATTLIST landmark location CDATA #IMPLIED>
 	<!ATTLIST landmark longitude CDATA #REQUIRED>
 	<!ATTLIST landmark latitude CDATA #REQUIRED>
 	<!ATTLIST landmark approvaldate CDATA #REQUIRED>
@@ -11,11 +12,12 @@
 	<!ATTLIST landmark type CDATA #REQUIRED>
 ]>
 
-  <!--Landmark coordinates from USGS Astrogeology Research Program-->
-  <!--http://planetarynames.wr.usgs.gov/AdvancedSearch-->
-  <!--Landmarks to be displayed in the user interface. -->
+  <!-- Landmark coordinates from USGS Astrogeology Research Program -->
+  <!-- https://planetarynames.wr.usgs.gov/AdvancedSearch -->
+  <!-- https://planetarynames.wr.usgs.gov/Page/MARS/system -->
+  <!-- Landmarks to be displayed in the user interface. -->
 	<landmark-list>
-	<landmark approvaldate="1973" diameter="43.05" latitude="5.14 S" longitude="0.05 E" name="Airy" origin="George B.; British astronomer (1801-1892)." type="AA"/>
+		<landmark approvaldate="1973" diameter="43.05" latitude="5.14 S" longitude="0.05 E" name="Airy" origin="George B.; British astronomer (1801-1892)." type="AA"/>
 	  	<landmark approvaldate="1973" diameter="158.38" latitude="18.87 N" longitude="150.47 E" name="Albor Tholus" origin="Classical albedo feature name." type="TH"/>
 	  	<landmark approvaldate="1991" diameter="52.51" latitude="29.81 S" longitude="86.65 E" name="Anseris Mons" origin="From albedo feature Anseris Fons." type="MO"/>
 	  	<landmark approvaldate="1973" diameter="400.95" latitude="21.38 N" longitude="60.83 E" name="Antoniadi" origin="Eugène Michael; Turkish-born French astronomer (1870-1944)." type="AA"/>
@@ -84,18 +86,24 @@
 	  	<landmark approvaldate="1973" diameter="170.78" latitude="52.48 S" longitude="110.9 E" name="Wallace" origin="Alfred R.; British biologist (1823-1913)." type="AA"/>
 	  	<landmark approvaldate="1991" diameter="13.19" latitude="35.56 N" longitude="87.96 W" name="W. Mareotis Tholus" origin="Classical albedo name." type="TH"/>
 	  	<landmark approvaldate="1997" diameter="35.95" latitude="19.75 S" longitude="172.92 E" name="Zephyria Tholus" origin="Albedo feature name." type="TH"/>
+	
 	  	<!--Artificial Objects-->
-	  	<landmark approvaldate="N/A" diameter="0.1" latitude="10.6 N" longitude="90.0 E" name="Beagle 2 Lander" origin="N/A" type="AO"/>
-	  	<landmark approvaldate="N/A" diameter="0.1" latitude="45.0 S" longitude="47.0 E" name="Mars 2 Lander" origin="N/A" type="AO"/>
-	  	<landmark approvaldate="N/A" diameter="0.1" latitude="45.0 S" longitude="158.0 W" name="Mars 3 Lander" origin="N/A" type="AO"/>
-	  	<landmark approvaldate="N/A" diameter="0.1" latitude="23.9 S" longitude="19.5 W" name="Mars 6 Lander" origin="N/A" type="AO"/>
-	  	<landmark approvaldate="N/A" diameter="0.1" latitude="19.3 N" longitude="33.3 W" name="Mars Pathfinder Rover" origin="N/A" type="AO"/>
-	  	<landmark approvaldate="N/A" diameter="0.1" latitude="76.7 S" longitude="164.7 E" name="Mars Polar Lander" origin="N/A" type="AO"/>
-	  	<landmark approvaldate="N/A" diameter="0.1" latitude="4.3 S" longitude="137.2 E" name="MSL Curiosity Rover" origin="N/A" type="AO"/>
-	  	<landmark approvaldate="N/A" diameter="0.1" latitude="14.57 S" longitude="175.47 E" name="MER Spirit Rover" origin="N/A" type="AO"/>
-	  	<landmark approvaldate="N/A" diameter="0.1" latitude="1.95 S" longitude="5.53 W" name="MER Opportunity Rover" origin="N/A" type="AO"/>
-	  	<landmark approvaldate="N/A" diameter="0.1" latitude="68.22 N" longitude="125.7 W" name="Phoenix Mars Lander" origin="N/A" type="AO"/>
-	  	<landmark approvaldate="N/A" diameter="0.1" latitude="22.5 N" longitude="48.0 W" name="Viking Lander 1" origin="N/A" type="AO"/>
-	  	<landmark approvaldate="N/A" diameter="0.1" latitude="47.9 N" longitude="133.7 E" name="Viking Lander 2" origin="N/A" type="AO"/>
-	  	<landmark approvaldate="N/A" diameter="0.1" latitude="0.2 N" longitude="2.5 W" name="Schiaparelli EDM Lander" origin="N/A" type="AO"/>  
+	  	<!-- TODO: add memorial station names from https://www.giss.nasa.gov/tools/mars24/help/landers.html  -->
+	  	<landmark name="Beagle 2 Lander" approvaldate="N/A" diameter="0.1" location="Isidis Planitia" latitude="10.6 N" longitude="90.0 E" origin="ESA" type="AO"/>
+	  	<!-- https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1971-045D -->
+	  	<landmark name="Mars 2 Lander" approvaldate="N/A" diameter="0.1" location="Hellas Planitia" latitude="45.0 S" longitude="47.0 E" origin="Soviet" type="AO"/>
+	  	<!-- https://en.wikipedia.org/wiki/Mars_3 -->
+	  	<landmark name="Mars 3 Lander" approvaldate="N/A" diameter="0.1" location="Ptolemaeus Crater" latitude="45.0 S" longitude="158.0 W" origin="Soviet" type="AO"/>
+	  	<!-- Mars 6 : https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1973-052A -->
+	  	<landmark name="Mars 6 Lander" approvaldate="N/A" diameter="0.1" location="Margaritifer Sinus" latitude="23.90 S" longitude="19.42 W" origin="Soviet" type="AO"/>
+	  	<landmark name="Mars Pathfinder Rover" approvaldate="N/A" diameter="0.1" location="Ares Vallis, Chryse Planitia, Oxia Palus quadrangle" latitude="19.3 N" longitude="33.3 W" origin="NASA" type="AO"/>
+	  	<landmark name="Mars Polar Lander" approvaldate="N/A" diameter="0.1" location="Ultimi Scopuli (projected), Southern polar area" latitude="76.7 S" longitude="164.7 E" origin="NASA" type="AO"/>
+	  	<landmark name="MSL Curiosity Rover" approvaldate="N/A" diameter="0.1" location="Quad 51 (Yellowknife), Aeolis Palus, crater Gale" latitude="4.59 S" longitude="137.44 E" origin="NASA" type="AO"/>
+	  	<landmark name="MER Spirit Rover" approvaldate="N/A" diameter="0.1" location="impact crater Gusev" latitude="14.57 S" longitude="175.47 E" origin="NASA" type="AO"/>
+	  	<landmark name="MER Opportunity Rover" approvaldate="N/A" diameter="0.1" location="West of Endeavour crater, Meridiani Planum" latitude="1.95 S" longitude="5.53 W" origin="NASA" type="AO"/>
+	  	<landmark name="Phoenix Lander" approvaldate="N/A" diameter="0.1" location="Green Valley, Vastitas Borealis" latitude="68.22 N" longitude="125.7 W" origin="NASA" type="AO"/>
+	  	<landmark name="Viking Lander 1" approvaldate="N/A" diameter="0.1" location="Western Chryse Planitia" latitude="22.5 N" longitude="48.0 W" origin="NASA" type="AO"/>
+	  	<landmark name="Viking Lander 2" approvaldate="N/A" diameter="0.1" location="West of Mie crater, Utopia Planitia" latitude="47.64 N" longitude="225.71 W" origin="NASA" type="AO"/>
+	  	<landmark name="Schiaparelli EDM Lander" approvaldate="N/A" diameter="0.1" location="Meridiani Planum" latitude="2.05 S" longitude="6.21 W" origin="NASA" type="AO"/>  
+	  	<landmark name="InSight Lander" approvaldate="N/A" diameter="0.1" location="Western Elysium Planitia" latitude="4.50 N" longitude="135.62 E" origin="ESA" type="AO"/>  
 	</landmark-list>

@@ -132,8 +132,8 @@ public class InteractiveTerm {
 //    			sim.getMasterClock().exitProgram();
     		logger.info("Exiting the Simulation.");
     		setKeepRunning(false);
-    		disposeTerminal();
 			System.exit(0);
+    		disposeTerminal();
         }
         else if (GameManager.input.equals("1")) {
         	useSCE = selectCommandMode();

@@ -27,6 +27,7 @@ public class LandmarkConfig implements Serializable {
 	// Element names
 	private static final String LANDMARK = "landmark";
 	private static final String NAME = "name";
+	private static final String LOCATION = "location";
 	private static final String LATITUDE = "latitude";
 	private static final String LONGITUDE = "longitude";
 	private static final String DIAMETER = "diameter";
@@ -66,6 +67,9 @@ public class LandmarkConfig implements Serializable {
 				// Get landmark name.
 				name = landmark.getAttributeValue(NAME);
 
+				// Get location.
+				String locationString = landmark.getAttributeValue(LOCATION);
+				
 				// Get diameter.
 				int diameter = (int) Float.parseFloat(landmark.getAttributeValue(DIAMETER));
 
@@ -91,7 +95,7 @@ public class LandmarkConfig implements Serializable {
 				String type = landmark.getAttributeValue(TYPE).toUpperCase();
 
 				// Create landmark.
-				landmarkList.add(new Landmark(name, location, diameter, origin, type));
+				landmarkList.add(new Landmark(name, locationString, location, diameter, origin, type));
 			}
 		}
 

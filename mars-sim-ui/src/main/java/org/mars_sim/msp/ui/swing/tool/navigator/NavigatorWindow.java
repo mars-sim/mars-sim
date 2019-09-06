@@ -59,12 +59,16 @@ import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfo;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 
+import com.alee.extended.window.PopOverDirection;
+import com.alee.extended.window.WebPopOver;
+import com.alee.extended.window.WebPopup;
 import com.alee.laf.button.WebButton;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.menu.WebCheckBoxMenuItem;
 import com.alee.laf.menu.WebPopupMenu;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.text.WebTextField;
+import com.alee.managers.style.StyleId;
 
 /**
  * The NavigatorWindow is a tool window that displays a map and a globe showing
@@ -750,16 +754,15 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 			while (j.hasNext()) {
 				Landmark landmark = (Landmark) j.next();
 
-				Coordinates unitCoords = landmark.getLandmarkLocation();
+				Coordinates unitCoords = landmark.getLandmarkCoord();
 				double clickRange = unitCoords.getDistance(mousePos);
 				double unitClickRange = 40D;
 
 				if (clickRange < unitClickRange) {
 					onTarget = true;
-					// System.out.println("you're on a landmark");
-					// TODO: may open a panel showing any special items at that landmark
-					mapPanel.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
-					// System.out.println("right on landmark");
+					// Open a popover showing additional info on the landmark
+//					startPopOver(landmark, (int)x, (int)y, event);
+//					mapPanel.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
 				}
 			}
 
@@ -769,6 +772,53 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		}
 	}
 
+	/**
+	 * Pops out a small panel for showing additional info
+	 * 
+	 * @param landmark
+	 * @param event
+	 */
+	public void startPopOver(Landmark landmark, int x, int y, MouseEvent event) {
+//		final WebPopup<?> popup = new WebPopup(desktop.getMainWindow().getMainPane());
+//        popup.setPadding(5);
+//        popup.setResizable(false);
+//        popup.setDraggable(true);
+//
+//        final WebPanel container = new WebPanel(StyleId.panelTransparent, new BorderLayout(5, 5));
+//
+//        final WebLabel label = new WebLabel(landmark.getLandmarkLandingLocation(), WebLabel.CENTER);
+//        container.add(label, BorderLayout.NORTH);
+//
+////        final String text = LM.get ( getExampleLanguagePrefix () + "text" );
+////        final WebTextField field = new WebTextField ( text, 20 );
+////        field.setHorizontalAlignment ( WebTextField.CENTER );
+////        container.add ( field, BorderLayout.CENTER );
+//
+//        popup.add(container);
+//
+////        popup.pack();
+//        popup.showPopup(event.getComponent(), x + 5, y + 5);
+        
+         final WebPopOver popOver = new WebPopOver(desktop.getMainWindow().getMainPane());
+//         popOver.setIconImages ();
+         popOver.setCloseOnFocusLoss(true);
+         popOver.setPadding(2);
+         popOver.setTitle(landmark.getLandmarkName());
+         
+         final WebPanel c = new WebPanel(StyleId.panelTransparent, new BorderLayout(5,5));
+
+         final WebLabel l = new WebLabel(landmark.getLandmarkLandingLocation(), WebLabel.CENTER);
+         c.add(l, BorderLayout.NORTH);
+
+//         final String text = LM.get ( getExampleLanguagePrefix () + "text" );
+//         final WebTextField field = new WebTextField ( text, 20 );
+//         field.setHorizontalAlignment ( WebTextField.CENTER );
+//         container.add ( field, BorderLayout.CENTER );
+
+         popOver.add(c);
+         popOver.show(event.getComponent(), x + 5, y + 5, PopOverDirection.down);
+	}
+	
 	public MainDesktopPane getDesktop() {
 		return desktop;
 	}

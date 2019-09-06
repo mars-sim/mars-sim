@@ -416,8 +416,14 @@ public class Simulation implements ClockListener, Serializable {
 		MarsClock marsClock = masterClock.getMarsClock();
 		EarthClock earthClock = masterClock.getEarthClock();
 		
+		// Set instances for logging
+		LogConsolidated.initializeInstances(marsClock, earthClock);
+		
+		// Set instance for Inventory
+		Inventory.initializeInstances(mars.getMarsSurface());
+		
 		Unit.initializeInstances(masterClock, marsClock, sim, mars, mars.getMarsSurface(), 
-				earthClock, unitManager, missionManager);
+				earthClock, unitManager, new MissionManager());
 	}
 	
 	/**

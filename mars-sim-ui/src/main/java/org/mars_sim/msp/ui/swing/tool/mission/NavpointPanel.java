@@ -343,7 +343,7 @@ implements ListSelectionListener, MissionListener {
 			while (j.hasNext()) {
 				Landmark landmark = (Landmark) j.next();
 
-				Coordinates unitCoords = landmark.getLandmarkLocation();
+				Coordinates unitCoords = landmark.getLandmarkCoord();
 				double clickRange = unitCoords.getDistance(mousePos);
 				double unitClickRange = 40D;
 

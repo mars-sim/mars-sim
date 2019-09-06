@@ -66,6 +66,7 @@ import org.mars_sim.msp.ui.swing.tool.JStatusBar;
 
 //import com.alee.managers.UIManagers;
 import com.alee.laf.WebLookAndFeel;
+import com.alee.laf.panel.WebPanel;
 import com.alee.managers.UIManagers;
 import com.alee.managers.tooltip.TooltipManager;
 import com.alee.managers.tooltip.TooltipWay;
@@ -134,8 +135,8 @@ extends JComponent {
 	private JLabel marsTimeLabel;
 	private JLabel earthTimeLabel;
 	
-	private JPanel bottomPane;
-	private JPanel mainPane;
+	private WebPanel bottomPane;
+	private WebPanel mainPane;
 
 	private JLayer<JPanel> jlayer;
 	private WaitLayerUIPanel layerUI = new WaitLayerUIPanel();
@@ -242,7 +243,7 @@ extends JComponent {
 		});
 
 		// Set up the main pane
-		mainPane = new JPanel(new BorderLayout());
+		mainPane = new WebPanel(new BorderLayout());
 
 		// Add the main pane to the frame
 //		frame.setContentPane(mainPane);
@@ -263,7 +264,7 @@ extends JComponent {
 		mainPane.add(toolToolbar, BorderLayout.NORTH);
 
 		// Add bottomPane for holding unitToolbar and statusBar
-		bottomPane = new JPanel(new BorderLayout());
+		bottomPane = new WebPanel(new BorderLayout());
 
 		// Prepare unit toolbar
 		unitToolbar = new UnitToolBar(this) {
@@ -1257,6 +1258,10 @@ extends JComponent {
 		}
 	}
 	
+	public WebPanel getMainPane() {
+		return mainPane;
+	}
+	
 	/**
 	 * Prepares the panel for deletion.
 	 */
@@ -1356,7 +1361,7 @@ class WaitLayerUIPanel extends LayerUI<JPanel> implements ActionListener {
 			}
 		}
 	}
-
+	
 	public void start() {
 		if (mIsRunning) {
 			return;

@@ -23,8 +23,10 @@ public class Landmark implements Serializable {
 	// Data members
 	/** Name of the landmark. */
 	private String landmarkName;
-	/** Location of the landmark. */
-	private Coordinates landmarkLocation;
+	/** Landing location of the landmark. */
+	private String landingLocation;
+	/** Coordinates of the landmark. */
+	private Coordinates coord;
 	/** Diameter of the landmark, rounded to int. */
 	private int landmarkDiameter;
 	/** Origin of the designation. */
@@ -35,13 +37,18 @@ public class Landmark implements Serializable {
 	/**
 	 * Constructs a landmark object with the given name at the given location.
 	 * 
-	 * @param name     name of the landmark
-	 * @param location location of the landmark
+	 * @param name
+	 * @param landingLocation
+	 * @param coord
+	 * @param diameter
+	 * @param origin
+	 * @param type
 	 */
-	public Landmark(String name, Coordinates location, int diameter, String origin, String type) {
+	public Landmark(String name, String landingLocation, Coordinates coord, int diameter, String origin, String type) {
 
 		this.landmarkName = name;
-		this.landmarkLocation = location;
+		this.landingLocation = landingLocation;
+		this.coord = coord;
 		this.landmarkDiameter = diameter;
 		this.landmarkOrigin = origin;
 		this.landmarkType = type;
@@ -58,18 +65,27 @@ public class Landmark implements Serializable {
 	}
 
 	/**
-	 * Sets the landmark location.
+	 * Sets the landmark landing location.
 	 * 
-	 * @param landmarkLocation location of the landmark
+	 * @param loc landing location of the landmark
 	 */
-	public void setLandmarkLocation(Coordinates landmarkLocation) {
-		this.landmarkLocation = landmarkLocation;
+	public void setLandmarkLocation(String loc) {
+		this.landingLocation = loc;
+	}
+	
+	/**
+	 * Sets the landmark coordinates.
+	 * 
+	 * @param coord coordinates of the landmark
+	 */
+	public void setLandmarkLocation(Coordinates coord) {
+		this.coord = coord;
 	}
 
 	/**
 	 * Sets the landmark diameter.
 	 * 
-	 * @param landmarkLocation diameter of the landmark
+	 * @param coord diameter of the landmark
 	 */
 	public void setLandmarkDiameter(int diameter) {
 		this.landmarkDiameter = diameter;
@@ -103,12 +119,21 @@ public class Landmark implements Serializable {
 	}
 
 	/**
-	 * Gets the landmark location.
+	 * Gets the landmark landing location.
 	 * 
-	 * @return location of the landmark
+	 * @return landing location of the landmark
 	 */
-	public Coordinates getLandmarkLocation() {
-		return landmarkLocation;
+	public String getLandmarkLandingLocation() {
+		return landingLocation;
+	}
+	
+	/**
+	 * Gets the landmark coordinates.
+	 * 
+	 * @return coordinates of the landmark
+	 */
+	public Coordinates getLandmarkCoord() {
+		return coord;
 	}
 
 	/**

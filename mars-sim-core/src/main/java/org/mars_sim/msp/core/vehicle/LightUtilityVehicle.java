@@ -47,12 +47,6 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
         // Get vehicle configuration.
         VehicleConfig config = SimulationConfig.instance().getVehicleConfiguration();
 
-        // Add scope to malfunction manager.
-        //malfunctionManager.addScopeString("Crewable");
-        //malfunctionManager.addScopeString(description);
-        //if (config.hasLab(description)) malfunctionManager.addScopeString("Laboratory");
-        //if (config.hasSickbay(description)) malfunctionManager.addScopeString("Sickbay");
-
         if (config.hasPartAttachments(type)) {
             attachments = config.getAttachableParts(type);
             slotNumber = config.getPartAttachmentSlotNumber(type);

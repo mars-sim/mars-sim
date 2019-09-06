@@ -26,18 +26,32 @@ public class LandmarkMapLayer implements MapLayer {
 	/** Diameter of marking circle. */
 	private int CIRCLE_DIAMETER = 10; // FIXME: make proportional to actual loaded diameter.
 
-	/** Blue color for surface map. */
-	private Color SURFACE_COLOR = new Color(127, 127, 255);
+	/** Diameter of marking circle for artificial objects. */
+	private int AO_CIRCLE_DIAMETER = 2;
+	
+	/** Light pink color for landmarks on surface map. */
+	private Color SURFACE_COLOR = new Color(230, 186, 186);
 
-	/** Gray color for surface map. */
-	private Color TOPO_COLOR = new Color(50, 50, 50);
+	/** Dark pink color for landmarks on topo map. */
+	private Color TOPO_COLOR = new Color(95, 60, 60);
 
-	/** Label font. */
-	private Font MAP_LABEL_FONT = new Font("Serif", Font.PLAIN, 12);
+	/** Light violet color for artificial objects on surface map. */
+	private Color AO_SURFACE_COLOR = new Color(127, 127, 255);
 
+	/** Gray color for artificial objects on topo map. */
+	private Color AO_TOPO_COLOR = new Color(173, 173, 173);
+	
+	/** Label font for landmarks. */
+	private Font MAP_LABEL_FONT = new Font("Monospaced", Font.PLAIN, 20);
+	/** Label font for artificial object. */
+	private Font AO_LABEL_FONT = new Font("Dialog", Font.ITALIC, 10);
+	
 	/** Horizontal offset for label. */
 	private int LABEL_HORIZONTAL_OFFSET = 2;
 
+	/** Horizontal offset for artificial objects. */
+	private int AO_LABEL_HORIZONTAL_OFFSET = 1;
+	
 	private static List<Landmark> landmarks = Simulation.instance().getMars().getSurfaceFeatures().getLandmarks();
 
 	private double angle = CannedMarsMap.HALF_MAP_ANGLE;
@@ -59,7 +73,7 @@ public class LandmarkMapLayer implements MapLayer {
 		g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_LCD_HRGB);
 
 		for (Landmark landmark : landmarks) {
-			if (mapCenter.getAngle(landmark.getLandmarkLocation()) < angle)
+			if (mapCenter.getAngle(landmark.getLandmarkCoord()) < angle)
 				displayLandmark(landmark, mapCenter, mapType, g2d);
 		}
 	}
@@ -75,27 +89,47 @@ public class LandmarkMapLayer implements MapLayer {
 	private void displayLandmark(Landmark landmark, Coordinates mapCenter, String mapType, Graphics2D g2d) {
 
 		// Determine display location of landmark.
-		IntPoint location = MapUtils.getRectPosition(landmark.getLandmarkLocation(), mapCenter, mapType);
+		IntPoint location = MapUtils.getRectPosition(landmark.getLandmarkCoord(), mapCenter, mapType);
 
 		// Determine circle location.
 		int locX = location.getiX() - (CIRCLE_DIAMETER / 2);
 		int locY = location.getiY() - (CIRCLE_DIAMETER / 2);
 
-		// Set the color
-		if (TopoMarsMap.TYPE.equals(mapType))
-			g2d.setColor(TOPO_COLOR);
-		else
-			g2d.setColor(SURFACE_COLOR);
+		int locLabelX = 0;
+		int locLabelY = 0;
 
-		// Draw a circle at the location.
-		g2d.drawOval(locX, locY, CIRCLE_DIAMETER, CIRCLE_DIAMETER);
+		if (landmark.getLandmarkType().equalsIgnoreCase("AO")) {
+			// Find location to display label.
+			locLabelX = location.getiX() + (AO_CIRCLE_DIAMETER / 2) + AO_LABEL_HORIZONTAL_OFFSET;
+			locLabelY = location.getiY() +  AO_CIRCLE_DIAMETER;
+			// Set the label font.
+			g2d.setFont(AO_LABEL_FONT);
+			// Set the label color.
+			if (TopoMarsMap.TYPE.equals(mapType))
+				g2d.setColor(AO_TOPO_COLOR);
+			else
+				g2d.setColor(AO_SURFACE_COLOR);
+			
+			// Draw a circle at the location.
+			g2d.drawOval(locX, locY, AO_CIRCLE_DIAMETER, AO_CIRCLE_DIAMETER);
+		}
+		else {
+			// Find location to display label.
+			locLabelX = location.getiX() + (CIRCLE_DIAMETER / 2) + LABEL_HORIZONTAL_OFFSET;
+			locLabelY = location.getiY() - (CIRCLE_DIAMETER / 2) - LABEL_HORIZONTAL_OFFSET;
+			// Set the label font.
+			g2d.setFont(MAP_LABEL_FONT);
+			// Set the label color.
+			if (TopoMarsMap.TYPE.equals(mapType))
+				g2d.setColor(TOPO_COLOR);
+			else
+				g2d.setColor(SURFACE_COLOR);
+			
+			// Draw a circle at the location.
+			g2d.drawOval(locX, locY, CIRCLE_DIAMETER, CIRCLE_DIAMETER);
+		}
 
-		// Find location to display label.
-		int locLabelX = location.getiX() + (CIRCLE_DIAMETER / 2) + LABEL_HORIZONTAL_OFFSET;
-		int locLabelY = location.getiY() + CIRCLE_DIAMETER;
 
-		// Set the label font.
-		g2d.setFont(MAP_LABEL_FONT);
 
 		// Draw the landmark name.
 		if (landmark != null)
