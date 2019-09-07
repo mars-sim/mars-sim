@@ -42,7 +42,7 @@ public class LandmarkMapLayer implements MapLayer {
 	private Color AO_TOPO_COLOR = new Color(173, 173, 173);
 	
 	/** Label font for landmarks. */
-	private Font MAP_LABEL_FONT = new Font("Monospaced", Font.PLAIN, 20);
+	private Font MAP_LABEL_FONT = new Font("Monospaced", Font.PLAIN, 18);
 	/** Label font for artificial object. */
 	private Font AO_LABEL_FONT = new Font("Dialog", Font.ITALIC, 10);
 	
@@ -55,6 +55,11 @@ public class LandmarkMapLayer implements MapLayer {
 	private static List<Landmark> landmarks = Simulation.instance().getMars().getSurfaceFeatures().getLandmarks();
 
 	private double angle = CannedMarsMap.HALF_MAP_ANGLE;
+	
+//	private double width = 50;
+//	
+//	private double height = 50;
+	
 
 	/**
 	 * Displays the layer on the map image.
@@ -112,8 +117,13 @@ public class LandmarkMapLayer implements MapLayer {
 			
 			// Draw a circle at the location.
 			g2d.drawOval(locX, locY, AO_CIRCLE_DIAMETER, AO_CIRCLE_DIAMETER);
+			
+			// Draw the landmark name.
+			g2d.drawString(landmark.getLandmarkName(), locLabelX, locLabelY);
 		}
+		
 		else {
+
 			// Find location to display label.
 			locLabelX = location.getiX() + (CIRCLE_DIAMETER / 2) + LABEL_HORIZONTAL_OFFSET;
 			locLabelY = location.getiY() - (CIRCLE_DIAMETER / 2) - LABEL_HORIZONTAL_OFFSET;
@@ -127,12 +137,22 @@ public class LandmarkMapLayer implements MapLayer {
 			
 			// Draw a circle at the location.
 			g2d.drawOval(locX, locY, CIRCLE_DIAMETER, CIRCLE_DIAMETER);
-		}
-
-
-
-		// Draw the landmark name.
-		if (landmark != null)
+			
+			// Draw the landmark name.
 			g2d.drawString(landmark.getLandmarkName(), locLabelX, locLabelY);
+	
+//		    FontRenderContext frc = g2d.getFontRenderContext();
+//		    TextLayout textTl = new TextLayout(landmark.getLandmarkName(), MAP_LABEL_FONT, frc);
+//		    AffineTransform transform = new AffineTransform();
+//		    Shape outline = textTl.getOutline(null);
+//		    Rectangle outlineBounds = outline.getBounds();
+//		    transform = g2d.getTransform();
+//		    transform.translate(width / 2 - (outlineBounds.width / 2), height / 2
+//		        + (outlineBounds.height / 2));
+//		    g2d.transform(transform);
+//					    
+//		    g2d.draw(outline);
+//		    g2d.setClip(outline);
+		}
 	}
 }

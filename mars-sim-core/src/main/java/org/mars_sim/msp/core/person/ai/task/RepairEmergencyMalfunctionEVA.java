@@ -406,7 +406,7 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements Repai
 		double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
 		evaExperience += evaExperience * experienceAptitudeModifier;
 		evaExperience *= getTeachingExperienceModifier();
-		person.getMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience);
+		person.getMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience, time);
 
 		// If phase is repair malfunction, add experience to mechanics skill.
 		if (REPAIRING.equals(getPhase())) {
@@ -414,7 +414,7 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements Repai
 			// Experience points adjusted by person's "Experience Aptitude" attribute.
 			double mechanicsExperience = time / 20D;
 			mechanicsExperience += mechanicsExperience * experienceAptitudeModifier;
-			person.getMind().getSkillManager().addExperience(SkillType.MECHANICS, mechanicsExperience);
+			person.getMind().getSkillManager().addExperience(SkillType.MECHANICS, mechanicsExperience, time);
 		}
 //        }
 //        else if (robot != null) {

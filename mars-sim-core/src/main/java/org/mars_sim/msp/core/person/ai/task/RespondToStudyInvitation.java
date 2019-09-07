@@ -279,7 +279,7 @@ public class RespondToStudyInvitation extends Task implements Serializable {
 		newPoints *= getTeachingExperienceModifier();
 
 		ScienceType jobScience = ScienceType.getJobScience(person.getMind().getJob());
-		person.getMind().getSkillManager().addExperience(jobScience.getSkill(), newPoints);
+		person.getMind().getSkillManager().addExperience(jobScience.getSkill(), newPoints, time);
 	}
 
 	@Override

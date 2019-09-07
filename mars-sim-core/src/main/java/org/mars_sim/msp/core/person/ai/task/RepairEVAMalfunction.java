@@ -392,9 +392,9 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 		evaExperience *= getTeachingExperienceModifier();
 
 		if (person != null)
-			person.getMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience);
+			person.getMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience, time);
 		else if (robot != null)
-			robot.getBotMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience);
+			robot.getBotMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience, time);
 
 		// If phase is repair malfunction, add experience to mechanics skill.
 		if (REPAIRING.equals(getPhase())) {
@@ -404,9 +404,9 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 			mechanicsExperience += mechanicsExperience * experienceAptitudeModifier;
 
 			if (person != null)
-				person.getMind().getSkillManager().addExperience(SkillType.MECHANICS, mechanicsExperience);
+				person.getMind().getSkillManager().addExperience(SkillType.MECHANICS, mechanicsExperience, time);
 			else if (robot != null)
-				robot.getBotMind().getSkillManager().addExperience(SkillType.MECHANICS, mechanicsExperience);
+				robot.getBotMind().getSkillManager().addExperience(SkillType.MECHANICS, mechanicsExperience, time);
 
 		}
 	}

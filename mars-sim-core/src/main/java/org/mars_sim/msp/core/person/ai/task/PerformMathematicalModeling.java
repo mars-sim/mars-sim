@@ -345,7 +345,7 @@ implements ResearchScientificStudy, Serializable {
         int academicAptitude = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
         newPoints += newPoints * ((double) academicAptitude - 50D) / 100D;
         newPoints *= getTeachingExperienceModifier();
-        person.getMind().getSkillManager().addExperience(ScienceType.MATHEMATICS.getSkill(), newPoints);
+        person.getMind().getSkillManager().addExperience(ScienceType.MATHEMATICS.getSkill(), newPoints, time);
     }
 
     @Override

@@ -458,9 +458,9 @@ implements Serializable {
         newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
         newPoints *= getTeachingExperienceModifier();
 		if (person != null)
-			person.getMind().getSkillManager().addExperience(SkillType.MEDICINE, newPoints);
+			person.getMind().getSkillManager().addExperience(SkillType.MEDICINE, newPoints, time);
 		else if (robot != null)
-			robot.getBotMind().getSkillManager().addExperience(SkillType.MEDICINE, newPoints);
+			robot.getBotMind().getSkillManager().addExperience(SkillType.MEDICINE, newPoints, time);
 
     }
 

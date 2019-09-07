@@ -231,7 +231,7 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 		newPoints *= getTeachingExperienceModifier();
 		ScienceType astronomyScience = ScienceType.ASTRONOMY;
 		SkillType astronomySkill = astronomyScience.getSkill();
-		person.getMind().getSkillManager().addExperience(astronomySkill, newPoints);
+		person.getMind().getSkillManager().addExperience(astronomySkill, newPoints, time);
 	}
 
 	@Override

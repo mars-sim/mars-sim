@@ -485,8 +485,8 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
 				.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
 		newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
 		newPoints *= getTeachingExperienceModifier();
-		person.getMind().getSkillManager().addExperience(SkillType.MATERIALS_SCIENCE, newPoints / 2D);
-		person.getMind().getSkillManager().addExperience(SkillType.CONSTRUCTION, newPoints / 2D);
+		person.getMind().getSkillManager().addExperience(SkillType.MATERIALS_SCIENCE, newPoints / 2D, time);
+		person.getMind().getSkillManager().addExperience(SkillType.CONSTRUCTION, newPoints / 2D, time);
 	}
 
 	@Override

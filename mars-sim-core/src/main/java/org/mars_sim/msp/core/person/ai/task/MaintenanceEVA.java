@@ -194,9 +194,9 @@ implements Serializable {
 		evaExperience *= getTeachingExperienceModifier();
 
 		if (person != null)
-			person.getMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience);
+			person.getMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience, time);
 		else if (robot != null)
-			robot.getBotMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience);
+			robot.getBotMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience, time);
 
 		// If phase is maintenance, add experience to mechanics skill.
 		if (MAINTAIN.equals(getPhase())) {
@@ -205,9 +205,9 @@ implements Serializable {
 			double mechanicsExperience = time / 100D;
 			mechanicsExperience += mechanicsExperience * experienceAptitudeModifier;
 			if (person != null)
-				person.getMind().getSkillManager().addExperience(SkillType.MECHANICS, mechanicsExperience);
+				person.getMind().getSkillManager().addExperience(SkillType.MECHANICS, mechanicsExperience, time);
 			else if (robot != null)
-				robot.getBotMind().getSkillManager().addExperience(SkillType.MECHANICS, mechanicsExperience);
+				robot.getBotMind().getSkillManager().addExperience(SkillType.MECHANICS, mechanicsExperience, time);
 		}
 	}
 

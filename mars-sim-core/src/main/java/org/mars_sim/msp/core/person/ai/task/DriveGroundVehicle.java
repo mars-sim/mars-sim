@@ -541,9 +541,9 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 			phaseModifier = 4D;
 		newPoints *= phaseModifier;
 		if (person != null)
-			person.getMind().getSkillManager().addExperience(SkillType.PILOTING, newPoints);
+			person.getMind().getSkillManager().addExperience(SkillType.PILOTING, newPoints, time);
 		else if (robot != null)
-			robot.getBotMind().getSkillManager().addExperience(SkillType.PILOTING, newPoints);
+			robot.getBotMind().getSkillManager().addExperience(SkillType.PILOTING, newPoints, time);
 
 	}
 

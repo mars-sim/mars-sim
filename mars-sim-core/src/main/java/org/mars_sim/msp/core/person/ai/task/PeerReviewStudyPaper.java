@@ -191,7 +191,7 @@ implements Serializable {
         int academicAptitude = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
         newPoints += newPoints * ((double) academicAptitude - 50D) / 100D;
         newPoints *= getTeachingExperienceModifier();
-		person.getMind().getSkillManager().addExperience(study.getScience().getSkill(), newPoints);
+		person.getMind().getSkillManager().addExperience(study.getScience().getSkill(), newPoints, time);
     }
 
     @Override

@@ -209,7 +209,7 @@ implements Serializable {
         newPoints += newPoints * ((double) academicAptitude - 50D) / 100D;
         newPoints *= getTeachingExperienceModifier();
         SkillType scienceSkill = getScience().getSkill();
-        person.getMind().getSkillManager().addExperience(scienceSkill, newPoints);
+        person.getMind().getSkillManager().addExperience(scienceSkill, newPoints, time);
     }
 
     /**

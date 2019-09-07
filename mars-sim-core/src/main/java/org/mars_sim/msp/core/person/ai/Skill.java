@@ -25,6 +25,8 @@ public class Skill implements Serializable {
 	private double experiencePoints;
 	/** The experience points needed to reach the next skill level. */
 	private double neededExperiencePoints;
+	/** The labor time of the skill. */
+	private double time;
 	/** The unique (for each person) skill. */
 	private SkillType skill;
 
@@ -76,10 +78,31 @@ public class Skill implements Serializable {
 	 */
 	void setLevel(int newLevel) {
 		level = newLevel;
+		// Reset the exp points back to 0
 		experiencePoints = 0;
+		// Set the upper limit of exp points
 		neededExperiencePoints = 25D * Math.pow(2D, newLevel);
 	}
 
+	/**
+	 * Gets the experience needed to promote to the next level of the skill.
+	 * 
+	 * @return the delta experience points
+	 */
+	public double getDeltaExp() {
+		return neededExperiencePoints - experiencePoints;
+	}
+	
+	
+	/**
+	 * Gets the experience points of the skill.
+	 * 
+	 * @return the experience points
+	 */
+	public double getExperience() {
+		return experiencePoints;
+	}
+	
 	/**
 	 * Adds to the experience points of the skill.
 	 * 
@@ -92,5 +115,23 @@ public class Skill implements Serializable {
 			neededExperiencePoints *= 2D;
 			level++;
 		}
+	}
+	
+	/**
+	 * Gets the labor time one has put in.
+	 * 
+	 * @return the labor time
+	 */
+	public double getTime() {
+		return time;
+	}
+	
+	/**
+	 * Adds to the labor time.
+	 * 
+	 * @param time the labor tme
+	 */
+	void addTime(double time) {
+		this.time += time; 
 	}
 }

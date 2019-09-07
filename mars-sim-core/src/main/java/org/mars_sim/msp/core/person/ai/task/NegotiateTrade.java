@@ -344,7 +344,7 @@ public class NegotiateTrade extends Task implements Serializable {
 					.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
 			newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
 			newPoints *= getTeachingExperienceModifier();
-			person.getMind().getSkillManager().addExperience(SkillType.TRADING, newPoints);
+			person.getMind().getSkillManager().addExperience(SkillType.TRADING, newPoints, time);
 
 		} else if (trader instanceof Robot) {
 			robot = (Robot) trader;
@@ -352,7 +352,7 @@ public class NegotiateTrade extends Task implements Serializable {
 					.getAttribute(RoboticAttributeType.EXPERIENCE_APTITUDE);
 			newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
 			newPoints *= getTeachingExperienceModifier();
-			robot.getBotMind().getSkillManager().addExperience(SkillType.TRADING, newPoints);
+			robot.getBotMind().getSkillManager().addExperience(SkillType.TRADING, newPoints, time);
 		}
 	}
 

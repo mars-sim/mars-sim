@@ -247,7 +247,7 @@ public class MeteorologyStudyFieldWork extends EVAOperation implements Serializa
 		double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
 		evaExperience += evaExperience * experienceAptitudeModifier;
 		evaExperience *= getTeachingExperienceModifier();
-		person.getMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience);
+		person.getMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience, time);
 
 		// If phase is performing field work, add experience to
 		// Task.phase.fieldWork.meteorology skill.
@@ -256,7 +256,7 @@ public class MeteorologyStudyFieldWork extends EVAOperation implements Serializa
 			// Experience points adjusted by person's "Experience Aptitude" attribute.
 			double exp = time / 10D;
 			exp += exp * experienceAptitudeModifier;
-			person.getMind().getSkillManager().addExperience(SkillType.METEOROLOGY, exp);
+			person.getMind().getSkillManager().addExperience(SkillType.METEOROLOGY, exp, time);
 		}
 	}
 

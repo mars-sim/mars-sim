@@ -284,7 +284,7 @@ public class AssistScientificStudyResearcher extends Task implements Serializabl
 		newPoints += newPoints * ((double) academicAptitude - 50D) / 100D;
 		newPoints *= getTeachingExperienceModifier();
 		SkillType scienceSkill = researchTask.getResearchScience().getSkill();
-		person.getMind().getSkillManager().addExperience(scienceSkill, newPoints);
+		person.getMind().getSkillManager().addExperience(scienceSkill, newPoints, time);
 	}
 
 	@Override

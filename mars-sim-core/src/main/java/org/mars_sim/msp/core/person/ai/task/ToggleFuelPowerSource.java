@@ -323,7 +323,7 @@ implements Serializable {
             double evaExperience = time / 100D;
             evaExperience += evaExperience * experienceAptitudeModifier;
             evaExperience *= getTeachingExperienceModifier();
-            person.getMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience);
+            person.getMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience, time);
         }
 
         // If phase is toggle power source, add experience to mechanics skill.
@@ -332,7 +332,7 @@ implements Serializable {
             // Experience points adjusted by person's "Experience Aptitude" attribute.
             double mechanicsExperience = time / 100D;
             mechanicsExperience += mechanicsExperience * experienceAptitudeModifier;
-            person.getMind().getSkillManager().addExperience(SkillType.MECHANICS, mechanicsExperience);
+            person.getMind().getSkillManager().addExperience(SkillType.MECHANICS, mechanicsExperience, time);
         }
     }
 

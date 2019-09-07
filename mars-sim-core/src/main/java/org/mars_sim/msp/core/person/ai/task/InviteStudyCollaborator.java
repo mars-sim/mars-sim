@@ -259,7 +259,7 @@ implements Serializable {
         newPoints *= getTeachingExperienceModifier();
 
         SkillType skillName = study.getScience().getSkill();
-        person.getMind().getSkillManager().addExperience(skillName, newPoints);
+        person.getMind().getSkillManager().addExperience(skillName, newPoints, time);
     }
 
     @Override

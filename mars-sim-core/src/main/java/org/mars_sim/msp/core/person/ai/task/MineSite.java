@@ -346,7 +346,7 @@ public class MineSite extends EVAOperation implements Serializable {
 		double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
 		evaExperience += evaExperience * experienceAptitudeModifier;
 		evaExperience *= getTeachingExperienceModifier();
-		manager.addExperience(SkillType.EVA_OPERATIONS, evaExperience);
+		manager.addExperience(SkillType.EVA_OPERATIONS, evaExperience, time);
 
 		// If phase is mining, add experience to areology skill.
 		if (MINING.equals(getPhase())) {
@@ -354,7 +354,7 @@ public class MineSite extends EVAOperation implements Serializable {
 			// Experience points adjusted by person's "Experience Aptitude" attribute.
 			double areologyExperience = time / 10D;
 			areologyExperience += areologyExperience * experienceAptitudeModifier;
-			manager.addExperience(SkillType.AREOLOGY, areologyExperience);
+			manager.addExperience(SkillType.AREOLOGY, areologyExperience, time);
 
 			// If person is driving the light utility vehicle, add experience to driving
 			// skill.
@@ -363,7 +363,7 @@ public class MineSite extends EVAOperation implements Serializable {
 			if (operatingLUV) {
 				double drivingExperience = time / 10D;
 				drivingExperience += drivingExperience * experienceAptitudeModifier;
-				manager.addExperience(SkillType.PILOTING, drivingExperience);
+				manager.addExperience(SkillType.PILOTING, drivingExperience, time);
 			}
 		}
 	}

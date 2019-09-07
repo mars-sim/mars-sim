@@ -141,7 +141,7 @@ implements Serializable {
         double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
         evaExperience += evaExperience * experienceAptitudeModifier;
         evaExperience *= getTeachingExperienceModifier();
-        person.getMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience);
+        person.getMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience, time);
 
         // If phase is maintain vehicle, add experience to mechanics skill.
         if (MAINTAIN_VEHICLE.equals(getPhase())) {
@@ -149,7 +149,7 @@ implements Serializable {
             // Experience points adjusted by person's "Experience Aptitude" attribute.
             double mechanicsExperience = time / 100D;
             mechanicsExperience += mechanicsExperience * experienceAptitudeModifier;
-            person.getMind().getSkillManager().addExperience(SkillType.MECHANICS, mechanicsExperience);
+            person.getMind().getSkillManager().addExperience(SkillType.MECHANICS, mechanicsExperience, time);
         }
     }
 

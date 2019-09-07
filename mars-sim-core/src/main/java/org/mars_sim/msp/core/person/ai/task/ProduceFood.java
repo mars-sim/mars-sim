@@ -484,18 +484,18 @@ implements Serializable {
 			newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
 			newPoints *= getTeachingExperienceModifier();
 	        skillManager.addExperience(
-	                SkillType.COOKING, newPoints * 5 / 7D);
+	                SkillType.COOKING, newPoints * 5 / 7D, time);
 	        skillManager.addExperience(SkillType.MATERIALS_SCIENCE,
-	                newPoints *2 / 7D);
+	                newPoints *2 / 7D, time);
 		}
 		else if (robot != null) {
 			int experienceAptitude = robot.getRoboticAttributeManager().getAttribute(RoboticAttributeType.EXPERIENCE_APTITUDE);
 			newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
 			newPoints *= getTeachingExperienceModifier();
 	        skillManager.addExperience(
-	                SkillType.COOKING, newPoints * 5 / 7D);
+	                SkillType.COOKING, newPoints * 5 / 7D, time);
 	        skillManager.addExperience(SkillType.MATERIALS_SCIENCE,
-	                newPoints *2 / 7D);
+	                newPoints *2 / 7D, time);
 		}
 	}
 

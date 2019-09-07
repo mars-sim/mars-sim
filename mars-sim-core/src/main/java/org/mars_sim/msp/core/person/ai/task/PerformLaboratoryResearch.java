@@ -372,7 +372,7 @@ public class PerformLaboratoryResearch extends Task implements ResearchScientifi
 		newPoints += newPoints * ((double) academicAptitude - 50D) / 100D;
 		newPoints *= getTeachingExperienceModifier();
 		SkillType scienceSkill = science.getSkill();
-		person.getMind().getSkillManager().addExperience(scienceSkill, newPoints);
+		person.getMind().getSkillManager().addExperience(scienceSkill, newPoints, time);
 	}
 
 	/**

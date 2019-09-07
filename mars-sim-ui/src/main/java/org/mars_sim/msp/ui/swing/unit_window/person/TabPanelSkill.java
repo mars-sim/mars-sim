@@ -26,7 +26,6 @@ import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
@@ -49,6 +48,7 @@ extends TabPanel {
 	private SkillTableModel skillTableModel;
 	//private Person person;
 	//private Robot robot;
+	
 	/**
 	 * Constructor 1.
 	 * @param person the person.
@@ -113,7 +113,9 @@ extends TabPanel {
 		skillTable = new ZebraJTable(skillTableModel);
 		skillTable.setPreferredScrollableViewportSize(new Dimension(250, 100));
 		skillTable.getColumnModel().getColumn(0).setPreferredWidth(150);
-		skillTable.getColumnModel().getColumn(1).setPreferredWidth(100);
+		skillTable.getColumnModel().getColumn(1).setPreferredWidth(50);
+		skillTable.getColumnModel().getColumn(2).setPreferredWidth(60);
+		skillTable.getColumnModel().getColumn(3).setPreferredWidth(100);
 		skillTable.setRowSelectionAllowed(true);
 		skillTable.setDefaultRenderer(Integer.class, new NumberCellRenderer());
 
@@ -122,7 +124,9 @@ extends TabPanel {
 		renderer.setHorizontalAlignment(SwingConstants.CENTER);
 		skillTable.getColumnModel().getColumn(0).setCellRenderer(renderer);
 		skillTable.getColumnModel().getColumn(1).setCellRenderer(renderer);
-
+		skillTable.getColumnModel().getColumn(2).setCellRenderer(renderer);
+		skillTable.getColumnModel().getColumn(3).setCellRenderer(renderer);
+		
 		skillScrollPanel.setViewportView(skillTable);
 
 		// Added sorting
@@ -149,7 +153,9 @@ extends TabPanel {
 		private static final long serialVersionUID = 1L;
 
 		private SkillManager skillManager;
-		private Map<String, Integer> skills;
+		private Map<String, Integer> levels;
+		private Map<String, Integer> times;
+		private Map<String, Integer> exps;
 		private List<String> skillNames;
 
 		private SkillTableModel(Unit unit) {
@@ -165,19 +171,11 @@ extends TabPanel {
 	        	skillManager = robot.getBotMind().getSkillManager();
 	        }
 
-			skills = skillManager.getSkillsMap();
-			skillNames = skillManager.getSkillNames();
-			
-//			SkillType[] keys = manager.getKeys();
-//			skills = new HashMap<String, Integer>();
-//			skillNames = new ArrayList<String>();
-//			for (SkillType skill : keys) {
-//				int level = manager.getSkillLevel(skill);
-//				if (level > 0) {
-//					skillNames.add(skill.getName());
-//					skills.put(skill.getName(), level);
-//				}
-//			}
+			levels = skillManager.getSkillLevelMap();
+			exps = skillManager.getSkillDeltaExpMap();
+			times = skillManager.getSkillTimeMap();
+			skillNames = skillManager.getKeyStrings();
+
 		}
 
 		public int getRowCount() {
@@ -185,25 +183,31 @@ extends TabPanel {
 		}
 
 		public int getColumnCount() {
-			return 2;
+			return 4;
 		}
 
 		public Class<?> getColumnClass(int columnIndex) {
 			Class<?> dataType = super.getColumnClass(columnIndex);
 			if (columnIndex == 0) dataType = String.class;
-			if (columnIndex == 1) dataType = Integer.class;
+			else if (columnIndex == 1) dataType = Integer.class;
+			else if (columnIndex == 2) dataType = Integer.class;
+			else if (columnIndex == 3) dataType = Integer.class;
 			return dataType;
 		}
 
 		public String getColumnName(int columnIndex) {
 			if (columnIndex == 0) return Msg.getString("TabPanelSkill.column.skill"); //$NON-NLS-1$
 			else if (columnIndex == 1) return Msg.getString("TabPanelSkill.column.level"); //$NON-NLS-1$
+			else if (columnIndex == 2) return Msg.getString("TabPanelSkill.column.exp"); //$NON-NLS-1$
+			else if (columnIndex == 3) return Msg.getString("TabPanelSkill.column.time"); //$NON-NLS-1$
 			else return null;
 		}
 
 		public Object getValueAt(int row, int column) {
 			if (column == 0) return skillNames.get(row);
-			else if (column == 1) return skills.get(skillNames.get(row));
+			else if (column == 1) return levels.get(skillNames.get(row));
+			else if (column == 2) return exps.get(skillNames.get(row));
+			else if (column == 3) return times.get(skillNames.get(row));
 			else return null;
 		}
 
@@ -211,19 +215,25 @@ extends TabPanel {
 			SkillType[] keys = skillManager.getKeys();
 			List<String> newSkillNames = new ArrayList<String>();
 			Map<String, Integer> newSkills = new HashMap<String, Integer>();
+			Map<String, Integer> newExps = new HashMap<String, Integer>();
+			Map<String, Integer> newTimes = new HashMap<String, Integer>();
 			for (SkillType skill : keys) {
 				int level = skillManager.getSkillLevel(skill);
-				if (level > 0) {
-					newSkillNames.add(skill.getName());
-					newSkills.put(skill.getName(), level);
-				}
+				int exp = skillManager.getSkillDeltaExp(skill);
+				int time = skillManager.getSkillTime(skill);
+				newExps.put(skill.getName(), exp);
+				newSkillNames.add(skill.getName());
+				newSkills.put(skill.getName(), level);
+				newTimes.put(skill.getName(), time);
 			}
 
-			if (!skills.equals(newSkills)) {
+//			if (!levels.equals(newSkills)) {
 				skillNames = newSkillNames;
-				skills = newSkills;
+				levels = newSkills;
+				exps = newExps;
+				times = newTimes;
 				fireTableDataChanged();
-			}
+//			}
 		}
 	}
 }

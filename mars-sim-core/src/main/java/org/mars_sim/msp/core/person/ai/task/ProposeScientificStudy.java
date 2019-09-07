@@ -229,7 +229,7 @@ public class ProposeScientificStudy extends Task implements Serializable {
 		newPoints += newPoints * ((double) academicAptitude - 50D) / 100D;
 		newPoints *= getTeachingExperienceModifier();
 
-		person.getMind().getSkillManager().addExperience(study.getScience().getSkill(), newPoints);
+		person.getMind().getSkillManager().addExperience(study.getScience().getSkill(), newPoints, time);
 	}
 
 	@Override

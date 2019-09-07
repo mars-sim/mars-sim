@@ -1,6 +1,7 @@
 package org.mars_sim.msp.core.structure;
 
 import java.util.ArrayList;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
@@ -12,25 +13,33 @@ import org.mars_sim.msp.core.structure.construction.ConstructionManager;
 
 public class MockSettlement extends Settlement {
 
+	/* default logger. */
+	private static Logger logger = Logger.getLogger(MockSettlement.class.getName());
+
+	private Simulation sim = Simulation.instance();
 	/**
 	 * Constructor
 	 */
 	public MockSettlement()  {
 		// Use Settlement constructor.
 		super("Mock Settlement", 0, new Coordinates(0, 0));
-
-		if (Simulation.instance().getUnitManager() == null)
-			System.out.println("Simulation.instance().getUnitManager() is null");
+//      Settlement settlement = Settlement.createMockSettlement("Mock Settlement", 0, new Coordinates(0, 0));
+		
+		if (sim == null)
+			logger.severe("sim is null");
+		
+		if (sim.getUnitManager() == null)
+			logger.severe("unitManager is null");
 			
-		Simulation.instance().getUnitManager().addUnit(this);
+		sim.getUnitManager().addUnit(this);
 		
         // Set inventory total mass capacity.
 		getInventory().addGeneralCapacity(Double.MAX_VALUE);
 
         // Initialize building manager
         buildingManager = new BuildingManager(this, true);
-        Building b = new MockBuilding(buildingManager);
-        buildingManager.addMockBuilding(b);
+//        Building b = new MockBuilding(buildingManager);
+//        buildingManager.addMockBuilding(b);
 
         // Initialize building connector manager.
         buildingConnectorManager = new BuildingConnectorManager(this,
@@ -41,25 +50,6 @@ public class MockSettlement extends Settlement {
 
         // Initialize power grid
         powerGrid = new PowerGrid(this);
-
-//        Settlement settlement = Settlement.createMockSettlement("Mock Settlement", 0, new Coordinates(0, 0));
-//
-//        // Set inventory total mass capacity.
-//		settlement.getInventory().addGeneralCapacity(Double.MAX_VALUE);
-//
-//        // Initialize building manager
-//		BuildingManager mgr = new BuildingManager(settlement, true);
-//        mgr.addBuilding(new MockBuilding(mgr), false);
-//
-//        // Initialize building connector manager.
-//        BuildingConnectorManager buildingConnectorManager = new BuildingConnectorManager(settlement,
-//                new ArrayList<BuildingTemplate>());
-//
-//        // Initialize construction manager.
-//        ConstructionManager constructionManager = new ConstructionManager(settlement);
-//
-//        // Initialize power grid
-//        PowerGrid powerGrid = new PowerGrid(settlement);
 
 	}
 }

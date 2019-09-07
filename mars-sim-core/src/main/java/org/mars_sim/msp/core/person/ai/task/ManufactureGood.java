@@ -470,9 +470,9 @@ public class ManufactureGood extends Task implements Serializable {
 		newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
 		newPoints *= getTeachingExperienceModifier();
 		if (person != null)
-			person.getMind().getSkillManager().addExperience(SkillType.MATERIALS_SCIENCE, newPoints);
+			person.getMind().getSkillManager().addExperience(SkillType.MATERIALS_SCIENCE, newPoints, time);
 		else if (robot != null)
-			robot.getBotMind().getSkillManager().addExperience(SkillType.MATERIALS_SCIENCE, newPoints);
+			robot.getBotMind().getSkillManager().addExperience(SkillType.MATERIALS_SCIENCE, newPoints, time);
 	}
 
 	@Override

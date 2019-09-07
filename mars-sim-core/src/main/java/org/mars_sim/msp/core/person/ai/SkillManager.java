@@ -7,23 +7,19 @@
 
 package org.mars_sim.msp.core.person.ai;
 
-import org.mars_sim.msp.core.LogConsolidated;
-import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.robot.RobotType;
-import org.mars_sim.msp.core.tool.RandomUtil;
-
-import org.mars_sim.msp.core.mind.CoreMind;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.stream.Collectors;
+
+import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.robot.RobotType;
+import org.mars_sim.msp.core.tool.RandomUtil;
 
 
 /**
@@ -34,9 +30,9 @@ public class SkillManager implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-	private static Logger logger = Logger.getLogger(SkillManager.class.getName());
-	private static String loggerName = logger.getName();
-	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+//	private static Logger logger = Logger.getLogger(SkillManager.class.getName());
+//	private static String loggerName = logger.getName();
+//	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 	
 	// Data members
 	/** The person owning the SkillManager. */
@@ -47,8 +43,8 @@ public class SkillManager implements Serializable {
 	/** A list of the person's skills keyed by name. */
 	private Hashtable<SkillType, Skill> skills;
 
-	private Map<String, Integer> skillsMap;
-	private List<String> skillNames;
+//	private Map<String, Integer> skillsMap;
+//	private List<String> skillNames;
 	
 	/** Constructor. */
 	public SkillManager(Unit unit) {//, CoreMind coreMind) {
@@ -72,10 +68,10 @@ public class SkillManager implements Serializable {
 				int skillLevel = 0;
 				if (startingSkill == SkillType.MATERIALS_SCIENCE
 					 || startingSkill == SkillType.MECHANICS) {
-					skillLevel = getInitialSkillLevel(1, 50);
+					skillLevel = getInitialSkillLevel(0, 25);
 				}
 				else {
-					skillLevel = getInitialSkillLevel(0, 50);
+					skillLevel = getInitialSkillLevel(0, 10);
 				}
 				
 				Skill newSkill = new Skill(startingSkill);
@@ -122,19 +118,6 @@ public class SkillManager implements Serializable {
 				addNewSkill(newSkill);
 			}
 		}
-		
-		// Create map and list
-		SkillType[] keys = getKeys();
-		skillsMap = new HashMap<String, Integer>();
-		skillNames = new ArrayList<String>();
-		for (SkillType skill : keys) {
-			int level = getSkillLevel(skill);
-			if (level > 0) {
-				skillNames.add(skill.getName());
-				skillsMap.put(skill.getName(), level);
-			}
-		}
-		
 	}
 
 	/**
@@ -170,6 +153,17 @@ public class SkillManager implements Serializable {
 	}
 
 	/**
+	 * Returns an array of the skill strings.
+	 * 
+	 * @return an array of the skill strings
+	 */
+	public List<String> getKeyStrings() {
+		return new ArrayList<>(skills.keySet()).stream()
+				   .map(o -> o.getName())
+				   .collect(Collectors.toList());
+	}
+	
+	/**
 	 * Returns true if the SkillManager has the named skill, false otherwise.
 	 * 
 	 * @param skill {@link SkillType} the skill's name
@@ -194,6 +188,51 @@ public class SkillManager implements Serializable {
 		return result;
 	}
 
+	/**
+	 * Returns the integer skill experiences from a named skill if it exists in the
+	 * SkillManager. Returns 0 otherwise.
+	 * 
+	 * @param skill {@link SkillType}
+	 * @return {@link Integer} >= 0
+	 */
+	public int getSkillExp(SkillType skill) {
+		int result = 0;
+		if (skills.containsKey(skill)) {
+			result = (int) skills.get(skill).getExperience();
+		}
+		return result;
+	}
+	
+	/**
+	 * Returns the integer skill experiences from a named skill if it exists in the
+	 * SkillManager. Returns 0 otherwise.
+	 * 
+	 * @param skill {@link SkillType}
+	 * @return {@link Integer} >= 0
+	 */
+	public int getSkillDeltaExp(SkillType skill) {
+		int result = 0;
+		if (skills.containsKey(skill)) {
+			result = (int) skills.get(skill).getDeltaExp();
+		}
+		return result;
+	}
+	
+	/**
+	 * Returns the integer labor time from a named skill if it exists in the
+	 * SkillManager. Returns 0 otherwise.
+	 * 
+	 * @param skill {@link SkillType}
+	 * @return {@link Integer} >= 0
+	 */
+	public int getSkillTime(SkillType skill) {
+		int result = 0;
+		if (skills.containsKey(skill)) {
+			result = (int) skills.get(skill).getTime();
+		}
+		return result;
+	}
+	
 	/**
 	 * Returns the effective integer skill level from a named skill based on
 	 * additional modifiers such as fatigue.
@@ -248,29 +287,65 @@ public class SkillManager implements Serializable {
 	 * @param skillType        {@link SkillType} the skill's type
 	 * @param experiencePoints the experience points to be added
 	 */
-	public void addExperience(SkillType skillType, double experiencePoints) {
+	public void addExperience(SkillType skillType, double experiencePoints, double time) {
 
-		// int initialSkill = getSkillLevel(skillName);
-
-		if (hasSkill(skillType))
+		if (hasSkill(skillType)) {
 			skills.get(skillType).addExperience(experiencePoints);
+			skills.get(skillType).addTime(time);
+		}
 		else {
 			addNewSkill(new Skill(skillType));
-			addExperience(skillType, experiencePoints);
+			addExperience(skillType, experiencePoints, time);
 		}
 
-		// int finalSkill = getSkillLevel(skillName);
-		// if (finalSkill > initialSkill) logger.info(person.getName() + " improved " +
-		// skillName + " skill to " + finalSkill);
+//		 int finalSkill = getSkillLevel(skillType);
+//		 if (finalSkill > initialSkill) 
+//			 logger.info(person.getName() + " improved " +
+//					 skillName + " skill to " + finalSkill);
 	}
 
-	public Map<String, Integer> getSkillsMap() {
-		return skillsMap;
+	public Map<String, Integer> getSkillLevelMap() {
+		SkillType[] keys = getKeys();
+		Map<String, Integer> skillLevelMap = new HashMap<String, Integer>();
+		for (SkillType skill : keys) {
+			int level = getSkillLevel(skill);
+//			if (level > 0) {
+				skillLevelMap.put(skill.getName(), level);
+//			}
+		}
+		return skillLevelMap;
 	}
 	
-	public List<String> getSkillNames() {
-		return skillNames;
+	public Map<String, Integer> getSkillExpMap() {
+		SkillType[] keys = getKeys();
+		Map<String, Integer> skillExpMap = new HashMap<String, Integer>();
+		for (SkillType skill : keys) {
+			int exp = getSkillExp(skill);
+			skillExpMap.put(skill.getName(), exp);
+		}
+		return skillExpMap;
 	}
+	
+	public Map<String, Integer> getSkillDeltaExpMap() {
+		SkillType[] keys = getKeys();
+		Map<String, Integer> skillDeltaExpMap = new HashMap<String, Integer>();
+		for (SkillType skill : keys) {
+			int exp = getSkillDeltaExp(skill);
+			skillDeltaExpMap.put(skill.getName(), exp);
+		}
+		return skillDeltaExpMap;
+	}
+	
+	public Map<String, Integer> getSkillTimeMap() {
+		SkillType[] keys = getKeys();
+		Map<String, Integer> skillTimeMap = new HashMap<String, Integer>();
+		for (SkillType skill : keys) {
+			int exp = getSkillTime(skill);
+			skillTimeMap.put(skill.getName(), exp);
+		}
+		return skillTimeMap;
+	}
+	
 	
 	/**
 	 * Prepare object for garbage collection.

@@ -337,7 +337,7 @@ public class ExploreSite extends EVAOperation implements Serializable {
 		double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
 		evaExperience += evaExperience * experienceAptitudeModifier;
 		evaExperience *= getTeachingExperienceModifier();
-		person.getMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience);
+		person.getMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience, time);
 
 		// If phase is exploring, add experience to areology skill.
 		if (EXPLORING.equals(getPhase())) {
@@ -345,7 +345,7 @@ public class ExploreSite extends EVAOperation implements Serializable {
 			// Experience points adjusted by person's "Experience Aptitude" attribute.
 			double areologyExperience = time / 10D;
 			areologyExperience += areologyExperience * experienceAptitudeModifier;
-			person.getMind().getSkillManager().addExperience(SkillType.AREOLOGY, areologyExperience);
+			person.getMind().getSkillManager().addExperience(SkillType.AREOLOGY, areologyExperience, time);
 		}
 	}
 

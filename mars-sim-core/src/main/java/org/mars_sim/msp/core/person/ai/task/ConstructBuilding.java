@@ -483,7 +483,7 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
 		double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
 		evaExperience += evaExperience * experienceAptitudeModifier;
 		evaExperience *= getTeachingExperienceModifier();
-		manager.addExperience(SkillType.EVA_OPERATIONS, evaExperience);
+		manager.addExperience(SkillType.EVA_OPERATIONS, evaExperience, time);
 
 		// If phase is construction, add experience to construction skill.
 		if (CONSTRUCTION.equals(getPhase())) {
@@ -491,7 +491,7 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
 			// Experience points adjusted by person's "Experience Aptitude" attribute.
 			double constructionExperience = time / 10D;
 			constructionExperience += constructionExperience * experienceAptitudeModifier;
-			manager.addExperience(SkillType.CONSTRUCTION, constructionExperience);
+			manager.addExperience(SkillType.CONSTRUCTION, constructionExperience, time);
 
 			// If person is driving the light utility vehicle, add experience to driving
 			// skill.
@@ -500,7 +500,7 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
 			if (operatingLUV) {
 				double drivingExperience = time / 10D;
 				drivingExperience += drivingExperience * experienceAptitudeModifier;
-				manager.addExperience(SkillType.PILOTING, drivingExperience);
+				manager.addExperience(SkillType.PILOTING, drivingExperience, time);
 			}
 		}
 	}

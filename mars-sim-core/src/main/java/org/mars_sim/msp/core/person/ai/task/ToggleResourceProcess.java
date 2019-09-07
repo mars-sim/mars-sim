@@ -556,7 +556,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 			// Experience points adjusted by person's "Experience Aptitude" attribute.
 			double mechanicsExperience = time / 100D;
 			mechanicsExperience += mechanicsExperience * experienceAptitudeModifier;
-			person.getMind().getSkillManager().addExperience(SkillType.MECHANICS, mechanicsExperience);
+			person.getMind().getSkillManager().addExperience(SkillType.MECHANICS, mechanicsExperience, time);
 		}
 	}
 

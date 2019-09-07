@@ -282,16 +282,17 @@ public class PersonRobotChatUtils extends ChatUtils {
 				skillManager = robotCache.getBotMind().getSkillManager();
 			}
 
-			responseText.append("here's a list of my skills with level : ");
+			responseText.append("here's a list of my skills with level ane experience points : ");
 			responseText.append(System.lineSeparator());
 			responseText.append(System.lineSeparator());
-			responseText.append("       Type of Skill | Level");
+			responseText.append("       Type of Skill | Level | Exp");
 			responseText.append(System.lineSeparator());
 			responseText.append("     ------------------------");
 			responseText.append(System.lineSeparator());
 
-			Map<String, Integer> skills = skillManager.getSkillsMap();
-			List<String> skillNames = skillManager.getSkillNames();
+			Map<String, Integer> levels = skillManager.getSkillLevelMap();
+			Map<String, Integer> exps = skillManager.getSkillExpMap();
+			List<String> skillNames = skillManager.getKeyStrings();
 			Collections.sort(skillNames);
 //			SkillType[] keys = skillManager.getKeys();
 
@@ -308,7 +309,8 @@ public class PersonRobotChatUtils extends ChatUtils {
 //				responseText.append(space + "(" + (i+1) + ") ");
 				responseText.append(n);
 //				responseText.append(" : ");
-				responseText.append(addhiteSpacesRightName("" + skills.get(n), 5));
+				responseText.append(addhiteSpacesRightName("" + levels.get(n), 5));
+				responseText.append(addhiteSpacesRightName("" + exps.get(n), 8));
 				responseText.append(System.lineSeparator());
 			}
 

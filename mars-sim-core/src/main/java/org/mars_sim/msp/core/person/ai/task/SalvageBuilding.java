@@ -309,7 +309,7 @@ implements Serializable {
         double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
         evaExperience += evaExperience * experienceAptitudeModifier;
         evaExperience *= getTeachingExperienceModifier();
-        manager.addExperience(SkillType.EVA_OPERATIONS, evaExperience);
+        manager.addExperience(SkillType.EVA_OPERATIONS, evaExperience, time);
 
         // If phase is salvage, add experience to construction skill.
         if (SALVAGE.equals(getPhase())) {
@@ -317,7 +317,7 @@ implements Serializable {
             // Experience points adjusted by person's "Experience Aptitude" attribute.
             double constructionExperience = time / 10D;
             constructionExperience += constructionExperience * experienceAptitudeModifier;
-            manager.addExperience(SkillType.CONSTRUCTION, constructionExperience);
+            manager.addExperience(SkillType.CONSTRUCTION, constructionExperience, time);
 
             // If person is driving the light utility vehicle, add experience to driving skill.
             // 1 base experience point per 10 millisols of mining time spent.
@@ -325,7 +325,7 @@ implements Serializable {
             if (operatingLUV) {
                 double drivingExperience = time / 10D;
                 drivingExperience += drivingExperience * experienceAptitudeModifier;
-                manager.addExperience(SkillType.PILOTING, drivingExperience);
+                manager.addExperience(SkillType.PILOTING, drivingExperience, time);
             }
         }
     }

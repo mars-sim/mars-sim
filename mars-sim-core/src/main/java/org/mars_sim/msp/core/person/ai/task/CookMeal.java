@@ -331,9 +331,9 @@ public class CookMeal extends Task implements Serializable {
 		newPoints *= getTeachingExperienceModifier();
 
 		if (person != null) {
-			person.getMind().getSkillManager().addExperience(SkillType.COOKING, newPoints);
+			person.getMind().getSkillManager().addExperience(SkillType.COOKING, newPoints, time);
 		} else if (robot != null) {
-			robot.getBotMind().getSkillManager().addExperience(SkillType.COOKING, newPoints);
+			robot.getBotMind().getSkillManager().addExperience(SkillType.COOKING, newPoints, time);
 		}
 	}
 

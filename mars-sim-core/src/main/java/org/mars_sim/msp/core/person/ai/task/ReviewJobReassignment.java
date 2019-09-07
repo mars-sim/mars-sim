@@ -213,7 +213,7 @@ public class ReviewJobReassignment extends Task implements Serializable {
                     NaturalAttributeType.LEADERSHIP);
             newPoints += newPoints * (experienceAptitude + leadershipAptitude- 100D) / 100D;
             newPoints *= getTeachingExperienceModifier();
-            person.getMind().getSkillManager().addExperience(SkillType.MANAGEMENT, newPoints);
+            person.getMind().getSkillManager().addExperience(SkillType.MANAGEMENT, newPoints, time);
 //        }
 //        else if (robot != null) {	
 //        }

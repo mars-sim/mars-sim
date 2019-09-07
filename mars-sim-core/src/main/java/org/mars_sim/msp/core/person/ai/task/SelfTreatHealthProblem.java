@@ -398,7 +398,7 @@ public class SelfTreatHealthProblem extends Task implements Serializable {
                 NaturalAttributeType.EXPERIENCE_APTITUDE);
         newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
         newPoints *= getTeachingExperienceModifier();
-        person.getMind().getSkillManager().addExperience(SkillType.MEDICINE, newPoints);
+        person.getMind().getSkillManager().addExperience(SkillType.MEDICINE, newPoints, time);
     }
 
     /**
