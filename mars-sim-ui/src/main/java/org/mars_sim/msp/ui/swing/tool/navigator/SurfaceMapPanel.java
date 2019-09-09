@@ -49,9 +49,7 @@ public class SurfaceMapPanel {
 	/** Center position of globe. */
 	private Coordinates centerCoords;
 	/** point colors in variably-sized vectors. */
-	private Vector<Integer>[] sphereColor;
-	// /** "surface" or "topo" */
-	// private String globeType;
+	private Vector<Integer>[] sphereColor = new Vector[MAP_H];
 	/** cylindrical map image. */
 	private Image marsMap;
 	/** finished image of sphere with transparency. */
@@ -72,7 +70,6 @@ public class SurfaceMapPanel {
 		// Initialize Variables
 		// this.globeType = globeType;
 		this.displayArea = displayArea;
-		sphereColor = new Vector[MAP_H];
 		centerCoords = new Coordinates(PI_half, PI_half);
 
 		// Load Surface Map Image, which is now part of the globe enum
@@ -226,7 +223,7 @@ public class SurfaceMapPanel {
 				int buff_y = (int) Math.round((temp_buff_y1 * MoreMath.sin(temp_col)) + temp_buff_y2) + half_map_height;
 
 				// Put point in buffer array
-				buffer_array[buff_x + (MAP_H * buff_y)] = sphereColor[array_y].elementAt(array_x);
+				buffer_array[buff_x + (MAP_H * buff_y)] = (int) sphereColor[array_y].elementAt(array_x);
 				// buffer_array[buff_x + (map_height * buff_y)] = 0xFFFFFFFF; // if in gray
 				// scale
 			}

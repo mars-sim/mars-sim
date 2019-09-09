@@ -56,7 +56,7 @@ public class TableSorter extends AbstractTableModel
      */
     @SuppressWarnings("unchecked")
 	private int compare(int row1, int row2) {
-    	Comparable<Object> obj1 = (Comparable) sourceModel.getValueAt(row1, sortedColumn);
+    	Comparable<Object> obj1 = (Comparable<Object>) sourceModel.getValueAt(row1, sortedColumn);
     	Object obj2 = sourceModel.getValueAt(row2, sortedColumn);
         int result = 0;
         if (obj1 == null) {
@@ -166,7 +166,7 @@ public class TableSorter extends AbstractTableModel
     // arrays. The number of compares appears to vary between N-1 and
     // NlogN depending on the initial order but the main reason for
     // using it here is that, unlike qsort, it is stable.
-    /*
+    
 //    private void shuttlesort(int from[], int to[], int low, int high) {
 //        if (high - low < 2) {
 //            return;

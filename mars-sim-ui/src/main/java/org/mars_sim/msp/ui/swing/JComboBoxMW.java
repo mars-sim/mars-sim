@@ -17,11 +17,12 @@ import javax.swing.JComboBox;
 /**
  * A Combobox that is mouse wheel-enabled.
  */
+@SuppressWarnings("serial")
 public class JComboBoxMW<T> extends JComboBox implements MouseWheelListener {
 
 //	private static final long serialVersionUID = -3527247980947082803L;
 
-	private boolean layingOut = false;
+//	private boolean layingOut = false;
 
 	private boolean wide = true;
 
@@ -77,10 +78,10 @@ public class JComboBoxMW<T> extends JComboBox implements MouseWheelListener {
 
 	public void doLayout() {
 		try {
-			layingOut = true;
+//			layingOut = true;
 			super.doLayout();
 		} finally {
-			layingOut = false;
+//			layingOut = false;
 		}
 	}
 

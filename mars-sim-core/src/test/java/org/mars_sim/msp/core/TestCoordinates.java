@@ -1,7 +1,6 @@
 package org.mars_sim.msp.core;
 
 import java.text.DecimalFormat;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.mars.Mars;
 
@@ -12,7 +11,7 @@ import junit.framework.TestCase;
  */
 public class TestCoordinates extends TestCase {
 	/* default logger. */
-	private static Logger logger = Logger.getLogger(TestCoordinates.class.getName());
+//	private static Logger logger = Logger.getLogger(TestCoordinates.class.getName());
 	
     private static final double ERROR_MARGIN_KM = .000000001D;
     private static final double ERROR_MARGIN_RAD = .00001D;

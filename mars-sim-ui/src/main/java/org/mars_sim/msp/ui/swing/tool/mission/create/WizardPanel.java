@@ -52,15 +52,15 @@ extends WebPanel {
 	
 	/**
 	 * Gets the wizard panel name.
+	 * 
 	 * @return panel name.
-	 * @deprecated
-	 * TODO internationalize the wizard panel names.
 	 */
 	abstract String getPanelName();
 	
 	/**
 	 * Commits changes from this wizard panel.
-	 * @retun true if changes can be committed.
+	 * 
+	 * @return true if changes can be committed.
 	 */
 	abstract boolean commitChanges();
 	

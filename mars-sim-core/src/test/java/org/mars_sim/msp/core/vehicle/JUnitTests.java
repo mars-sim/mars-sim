@@ -63,16 +63,4 @@ public class JUnitTests extends TestCase {
      */
     public void testNothing() {
     }
-
-    public void testLightUtilityVehicle() {
-        SimulationConfig.instance().loadConfig();
-        Simulation.instance().testRun();
-        
-        LightUtilityVehicle vehicle = new LightUtilityVehicle("Subaru", "Light Utility Vehicle", new MockSettlement());
-        int crewCapacity = vehicle.getCrewCapacity();
-        int slots = vehicle.getAtachmentSlotNumber();
-
-        assertEquals("Wrong crew capacity", 1, crewCapacity);
-        assertEquals("Wrong slot number", 2, slots);
-    }
 }

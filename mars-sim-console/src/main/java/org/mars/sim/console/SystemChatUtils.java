@@ -272,10 +272,6 @@ public class SystemChatUtils extends ChatUtils {
 			responseText.append(txt[1]);
 		}
 
-		return new String[] { questionText, responseText.toString() };
-
+		return new String[] { questionText, responseText.toString()};
 	}
-
-	
-			
 }
