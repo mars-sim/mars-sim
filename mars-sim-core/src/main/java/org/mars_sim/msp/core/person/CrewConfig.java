@@ -191,6 +191,87 @@ public class CrewConfig implements Serializable {
 	}
 
 	/**
+	 * Checks if the personality is introvert.
+	 * 
+	 * @param index the crew index
+	 * @return true if introvert
+	 */
+	public boolean isIntrovert(int index) {
+		return getConfiguredPersonPersonalityType(index, getCrew(index)).substring(0, 1).equals("I");
+	}
+
+	/**
+	 * Checks if the personality is extrovert.
+	 * 
+	 * @param index the crew index
+	 * @return true if extrovert
+	 */
+	public boolean isExtrovert(int index) {
+		return getConfiguredPersonPersonalityType(index, getCrew(index)).substring(0, 1).equals("E");
+	}
+
+	/**
+	 * Checks if the personality is sensor.
+	 * 
+	 * @param index the crew index
+	 * @return true if sensor
+	 */
+	public boolean isSensor(int index) {
+		return getConfiguredPersonPersonalityType(index, getCrew(index)).substring(1, 2).equals("S");
+	}
+
+	/**
+	 * Checks if the personality is intuitive.
+	 * 
+	 * @param index the crew index
+	 * @return true if intuitive
+	 */
+	public boolean isIntuitive(int index) {
+		return getConfiguredPersonPersonalityType(index, getCrew(index)).substring(1, 2).equals("N");
+	}
+
+	/**
+	 * Checks if the personality is thinker.
+	 * 
+	 * @param index the crew index
+	 * @return true if thinker
+	 */
+	public boolean isThinker(int index) {
+		return getConfiguredPersonPersonalityType(index, getCrew(index)).substring(2, 3).equals("T");
+	}
+
+	/**
+	 * Checks if the personality is feeler.
+	 * 
+	 * @param index the crew index
+	 * @return true if feeler
+	 */
+	public boolean isFeeler(int index) {
+		return getConfiguredPersonPersonalityType(index, getCrew(index)).substring(2, 3).equals("F");
+	}
+
+	/**
+	 * Checks if the personality is judger.
+	 * 
+	 * @param index the crew index
+	 * @return true if judger
+	 */
+	public boolean isJudger(int index) {
+		return getConfiguredPersonPersonalityType(index, getCrew(index)).substring(3, 4).equals("J");
+	}
+
+	/**
+	 * Checks if the personality is perceiver.
+	 * 
+	 * @param index the crew index
+	 * @return true if perceiver
+	 */
+	public boolean isPerceiver(int index) {
+		return getConfiguredPersonPersonalityType(index, getCrew(index)).substring(3, 4).equals("P");
+	}
+
+	
+	/**
 	 * Gets the configured person's job.
 	 * 
 	 * @param index the person's index.

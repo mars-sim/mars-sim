@@ -36,12 +36,10 @@ import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.CrewConfig;
 import org.mars_sim.msp.core.person.GenderType;
-import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.ai.job.JobType;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 import org.mars_sim.msp.core.tool.Conversion;
@@ -469,11 +467,12 @@ public class CrewEditor implements ActionListener {
 				JRadioButton rb = new JRadioButton(b);
 				rb.setActionCommand("b" + row + col);
 				rb.addActionListener(this);
-				if (retrievePersonality(row, col))
+				
+				if (retrieveCrewMBTI(row, col))
 					ra.setSelected(true);
 				else
 					rb.setSelected(true);
-
+				
 				ButtonGroup bg1 = new ButtonGroup();
 				bg1.add(ra);
 				bg1.add(rb);
@@ -487,8 +486,20 @@ public class CrewEditor implements ActionListener {
 		}
 	}
 
-	public boolean retrievePersonality(int row, int col) {
-		return personalityArray[row][col];
+	public boolean retrieveCrewMBTI(int row, int col) {
+				
+		if (row == 0)
+			return cc.isExtrovert(col);
+		else if (row == 1)
+			return cc.isIntuitive(col);
+		else if (row == 2)
+			return cc.isFeeler(col);
+		else if (row == 3)
+			return cc.isJudger(col);
+		else
+			return false;
+//		return personalityArray[row][col];
+		
 	}
 
 	public boolean getRandomBoolean() {
@@ -499,7 +510,7 @@ public class CrewEditor implements ActionListener {
 	public String getPersonality(int col) {
 		String type = null;
 		boolean value = getRandomBoolean();
-
+		
 		for (int row = 0; row < 4; row++) {
 			value = personalityArray[row][col];
 
