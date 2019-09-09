@@ -22,11 +22,11 @@ public class ChatMenu implements BiConsumer<TextIO, RunnerData> {
 	   
 	private static final String EXPERT_MODE = " [Expert Mode]";
 	
-	private boolean leaveSystem = false;
+	private static boolean leaveSystem = false;
 	private boolean quit = false;
-	private String prompt;
+	private static String prompt;
 	
-	private SwingTextTerminal terminal;
+	private static SwingTextTerminal terminal;
 	private SwingHandler handler;
 	
 	private static Simulation sim = Simulation.instance();
@@ -41,6 +41,27 @@ public class ChatMenu implements BiConsumer<TextIO, RunnerData> {
         new ChatMenu().accept(textIO, null);
     }
 
+    public static String determinePromt() {
+        String expertString = "";
+        // See if user opts in the expert mode
+    	if (ChatUtils.isExpertMode()) {
+    		expertString = EXPERT_MODE;
+    	}
+    	
+    	prompt = "Connected with MarsNet" + expertString + " >";
+    	
+    	if (ChatUtils.personCache != null)
+    		prompt = "Connected with " + ChatUtils.personCache.toString() + expertString + " >";
+    	else if (ChatUtils.robotCache != null) 
+    		prompt = "Connected with " + ChatUtils.robotCache.toString() + expertString + " >";
+    	else if (ChatUtils.settlementCache != null)
+    		prompt = "Connected with " + ChatUtils.settlementCache.toString() + expertString + " >";	
+    	else if (ChatUtils.vehicleCache != null)
+    		prompt = "Connected with " + ChatUtils.vehicleCache.toString() + expertString + " >";	
+    	
+    	return prompt;
+    }
+    
     @Override
     public void accept(TextIO textIO, RunnerData runnerData) {
     	terminal = (SwingTextTerminal)textIO.getTextTerminal();
@@ -62,13 +83,13 @@ public class ChatMenu implements BiConsumer<TextIO, RunnerData> {
 		       	+ System.lineSeparator() 		       	
 	       	);
 		       		       
-	        terminal.println("  --------------------------------------------------------------- ");
-	        terminal.println("|          Press UP key to autocomplete with a keyword            |");
-	        terminal.println("|          Press UP/DOWN keys to scroll through choices           |");
-	        terminal.println("|    Press Crtl+LEFT/RIGHT keys to scroll through input history   |");
-	        terminal.println("  --------------------------------------------------------------- "
+	        terminal.println("  ------------------------------------------------------------ ");
+	        terminal.println("|                       UP : autocomplete your input           |");
+	        terminal.println("|                UP / DOWN : scroll through choices            |");
+	        terminal.println("|      Ctrl + LEFT / RIGHT : scroll through input history      |");
+	        terminal.println("  ------------------------------------------------------------ "
 	        	+ System.lineSeparator() + System.lineSeparator() 	       	
-			    + "'/h' : help,  '/k' : keywords,  '/p' : pause/unpause,  '/q' : quit"
+			    + "'/h' : help,  '/k' : keywords,  '/p' : pause/resume,  '/q' : quit"
 			    + System.lineSeparator()		
 	        ); 
      	
@@ -79,31 +100,16 @@ public class ChatMenu implements BiConsumer<TextIO, RunnerData> {
 	        // Settlement
 	        // Vehicle
 	     
-	        List<String> names = ChatUtils.createAutoCompleteKeywords();
+	        List<String> keywords = ChatUtils.createAutoCompleteKeywords();
 //	        String[] array = names.toArray(new String[names.size()]);
 	        quit = false;
  
 	        while (!quit) {
 	        	
 	        	try {
-			        String expertString = "";
-			        // See if user opts in the expert mode
-		        	if (ChatUtils.isExpertMode()) {
-		        		expertString = EXPERT_MODE;
-		        	}
-		        	
-		        	prompt = "Connected with MarsNet" + expertString + " >";
-		        	
-		        	if (ChatUtils.personCache != null)
-		        		prompt = "Connected with " + ChatUtils.personCache.toString() + expertString + " >";
-		        	else if (ChatUtils.robotCache != null) 
-		        		prompt = "Connected with " + ChatUtils.robotCache.toString() + expertString + " >";
-		        	else if (ChatUtils.settlementCache != null)
-		        		prompt = "Connected with " + ChatUtils.settlementCache.toString() + expertString + " >";	
-		        	else if (ChatUtils.vehicleCache != null)
-		        		prompt = "Connected with " + ChatUtils.vehicleCache.toString() + expertString + " >";	
+	        		String prompt = determinePromt();
 	
-			        handler.addStringTask("party", prompt, false).addChoices(names);//.constrainInputToChoices();
+			        handler.addStringTask("party", prompt, false).addChoices(keywords);//.constrainInputToChoices();
 			        handler.executeOneTask();
 			        		        
 					// if no settlement, robot, person, or vehicle has been selected yet
@@ -178,7 +184,7 @@ public class ChatMenu implements BiConsumer<TextIO, RunnerData> {
 			terminal.printf(System.lineSeparator());
 	        //ChatUtils.setConnectionMode(0);
 			// Call ChatUtils' parseText	
-			responseText = ChatUtils.askSystem(text);
+			responseText = SystemChatUtils.askSystem(text);
 		}
 		
 		// print question
@@ -196,7 +202,7 @@ public class ChatMenu implements BiConsumer<TextIO, RunnerData> {
 	 * 
 	 * @param text
 	 */
-	public void askParty(String text) { 
+	public static void askParty(String text) { 
 		String questionText = null;
 		String responseText = "";
 		leaveSystem = false;
