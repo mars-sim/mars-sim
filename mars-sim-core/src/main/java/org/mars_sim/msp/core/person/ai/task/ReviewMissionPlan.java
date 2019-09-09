@@ -402,7 +402,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
                 NaturalAttributeType.LEADERSHIP);
         newPoints += newPoints * (experienceAptitude + leadershipAptitude- 100D) / 100D;
         newPoints *= getTeachingExperienceModifier();
-        person.getMind().getSkillManager().addExperience(SkillType.MANAGEMENT, newPoints, time);
+        person.getSkillManager().addExperience(SkillType.MANAGEMENT, newPoints, time);
 
 	}
 

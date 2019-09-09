@@ -532,7 +532,7 @@ public class Resupply implements Serializable, Transportable {
 			String country = UnitManager.getCountry(sponsor);
 			// Use Builder Pattern for creating an instance of Person
 			Person immigrant = Person.create(immigrantName, settlement).setGender(gender).setCountry(country)
-					.setSponsor(sponsor).build();
+					.setSponsor(sponsor).setSkill(null).build();
 			immigrant.initialize();
 
 			// Initialize favorites and preferences.

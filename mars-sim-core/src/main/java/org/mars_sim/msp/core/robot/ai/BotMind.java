@@ -91,7 +91,7 @@ public class BotMind implements Serializable {
 //		coreMind = new CoreMind();
 		// Construct a skill manager.
 //		skillManager = new SkillManager(robot, coreMind);
-		skillManager = new SkillManager(robot);
+//		skillManager = new SkillManager(robot);
 		
 		// Construct a task manager
 		botTaskManager = new BotTaskManager(this);
@@ -382,15 +382,6 @@ public class BotMind implements Serializable {
 	 */
 	public MBTIPersonality getPersonalityType() {
 		return personality;
-	}
-
-	/**
-	 * Returns a reference to the robot's skill manager
-	 * 
-	 * @return the robot's skill manager
-	 */
-	public SkillManager getSkillManager() {
-		return skillManager;
 	}
 
 	/**

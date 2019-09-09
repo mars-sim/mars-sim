@@ -503,7 +503,7 @@ public class TabPanelManufacture extends TabPanel {
 				Iterator<Person> i = settlement.getAllAssociatedPeople().iterator();
 				while (i.hasNext()) {
 					Person tempPerson = i.next();
-					SkillManager skillManager = tempPerson.getMind().getSkillManager();
+					SkillManager skillManager = tempPerson.getSkillManager();
 					int skill = skillManager.getSkillLevel(SkillType.MATERIALS_SCIENCE);
 					if (skill > highestSkillLevel) {
 						highestSkillLevel = skill;

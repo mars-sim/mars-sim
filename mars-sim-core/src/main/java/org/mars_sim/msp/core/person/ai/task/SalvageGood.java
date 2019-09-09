@@ -116,7 +116,7 @@ implements Serializable {
 		int experienceAptitude = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
 		newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
 		newPoints *= getTeachingExperienceModifier();
-		person.getMind().getSkillManager().addExperience(SkillType.MATERIALS_SCIENCE, newPoints, time);
+		person.getSkillManager().addExperience(SkillType.MATERIALS_SCIENCE, newPoints, time);
 	}
 
 	@Override
@@ -128,7 +128,7 @@ implements Serializable {
 
 	@Override
 	public int getEffectiveSkillLevel() {
-		SkillManager manager = person.getMind().getSkillManager();
+		SkillManager manager = person.getSkillManager();
 		return manager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
 	}
 
@@ -240,7 +240,7 @@ implements Serializable {
 
 		Building result = null;
 
-		SkillManager skillManager = person.getMind().getSkillManager();
+		SkillManager skillManager = person.getSkillManager();
 		int skill = skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
 
 		if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
@@ -384,7 +384,7 @@ implements Serializable {
 
 		double highestProcessValue = 0D;
 
-		int skillLevel = person.getMind().getSkillManager().getEffectiveSkillLevel(
+		int skillLevel = person.getSkillManager().getEffectiveSkillLevel(
 				SkillType.MATERIALS_SCIENCE);
 
 		Manufacture manufacturingFunction = manufacturingBuilding.getManufacture();

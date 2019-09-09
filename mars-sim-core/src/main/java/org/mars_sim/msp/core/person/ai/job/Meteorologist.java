@@ -91,7 +91,7 @@ public class Meteorologist extends Job implements Serializable {
 	public double getCapability(Person person) {
 		double result = 0D;
 
-		int meteorologySkill = person.getMind().getSkillManager().getSkillLevel(SkillType.METEOROLOGY);
+		int meteorologySkill = person.getSkillManager().getSkillLevel(SkillType.METEOROLOGY);
 		result = meteorologySkill;
 
 		NaturalAttributeManager attributes = person.getNaturalAttributeManager();

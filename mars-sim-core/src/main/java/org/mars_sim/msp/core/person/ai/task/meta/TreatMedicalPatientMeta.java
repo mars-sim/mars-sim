@@ -178,7 +178,7 @@ public class TreatMedicalPatientMeta implements MetaTask, Serializable {
         boolean result = false;
 
         // Get the person's medical skill.
-        int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MEDICINE);
+        int skill = person.getSkillManager().getEffectiveSkillLevel(SkillType.MEDICINE);
 
         // Check if there are any treatable health problems awaiting treatment.
         Iterator<HealthProblem> j = aid.getProblemsAwaitingTreatment().iterator();

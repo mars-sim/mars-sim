@@ -310,7 +310,7 @@ public class ArrivingSettlement implements Transportable, Serializable {
 			// sponsor);
 			// Use Builder Pattern for creating an instance of Person
 			Person immigrant = Person.create(immigrantName, newSettlement).setGender(gender).setCountry(country)
-					.setSponsor(sponsor).build();
+					.setSponsor(sponsor).setSkill(null).build();
 			immigrant.initialize();
 
 			// Initialize favorites and preferences.
@@ -371,7 +371,7 @@ public class ArrivingSettlement implements Transportable, Serializable {
 			// Adopt Static Factory Method and Factory Builder Pattern
 			Robot robot = Robot
 					.create(unitManager.getNewName(UnitType.ROBOT, null, null, robotType), newSettlement, robotType)
-					.setCountry("Earth").build();
+					.setCountry("Earth").setSkill(null).build();
 			robot.initialize();
 
 			unitManager.addUnit(robot);

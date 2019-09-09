@@ -98,7 +98,7 @@ public class MedicalAssistance extends Task implements Serializable {
 			problem = (HealthProblem) medical.getProblemsAwaitingTreatment().get(0);
 
 			// Get the person's medical skill.
-			int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MEDICINE);
+			int skill = person.getSkillManager().getEffectiveSkillLevel(SkillType.MEDICINE);
 
 			// Treat medical problem.
 			Treatment treatment = problem.getIllness().getRecoveryTreatment();
@@ -222,7 +222,7 @@ public class MedicalAssistance extends Task implements Serializable {
 				.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
 		newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
 		newPoints *= getTeachingExperienceModifier();
-		person.getMind().getSkillManager().addExperience(SkillType.MEDICINE, newPoints, time);
+		person.getSkillManager().addExperience(SkillType.MEDICINE, newPoints, time);
 	}
 
 	/**
@@ -302,7 +302,7 @@ public class MedicalAssistance extends Task implements Serializable {
 		double chance = .005D;
 
 		// Medical skill modification.
-		int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MEDICINE);
+		int skill = person.getSkillManager().getEffectiveSkillLevel(SkillType.MEDICINE);
 		if (skill <= 3) {
 			chance *= (4 - skill);
 		} else {
@@ -420,7 +420,7 @@ public class MedicalAssistance extends Task implements Serializable {
 
 	@Override
 	public int getEffectiveSkillLevel() {
-		SkillManager manager = person.getMind().getSkillManager();
+		SkillManager manager = person.getSkillManager();
 		return manager.getEffectiveSkillLevel(SkillType.MEDICINE);
 	}
 

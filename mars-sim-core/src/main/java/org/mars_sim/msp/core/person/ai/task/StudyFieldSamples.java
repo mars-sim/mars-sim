@@ -406,7 +406,7 @@ public class StudyFieldSamples extends Task implements ResearchScientificStudy, 
 		int academicAptitude = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
 		newPoints += newPoints * ((double) academicAptitude - 50D) / 100D;
 		newPoints *= getTeachingExperienceModifier();
-		person.getMind().getSkillManager().addExperience(science.getSkill(), newPoints, time);
+		person.getSkillManager().addExperience(science.getSkill(), newPoints, time);
 	}
 
 	/**
@@ -433,7 +433,7 @@ public class StudyFieldSamples extends Task implements ResearchScientificStudy, 
 
 		// If research assistant, modify by assistant's effective skill.
 		if (hasResearchAssistant()) {
-			SkillManager manager = researchAssistant.getMind().getSkillManager();
+			SkillManager manager = researchAssistant.getSkillManager();
 			int assistantSkill = manager.getEffectiveSkillLevel(science.getSkill());
 			if (scienceSkill > 0) {
 				researchTime *= 1D + ((double) assistantSkill / (double) scienceSkill);
@@ -452,7 +452,7 @@ public class StudyFieldSamples extends Task implements ResearchScientificStudy, 
 
 	@Override
 	public int getEffectiveSkillLevel() {
-		SkillManager manager = person.getMind().getSkillManager();
+		SkillManager manager = person.getSkillManager();
 		return manager.getEffectiveSkillLevel(science.getSkill());
 	}
 
@@ -550,7 +550,7 @@ public class StudyFieldSamples extends Task implements ResearchScientificStudy, 
 		double chance = .005D;
 
 		// Science skill modification.
-		int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(science.getSkill());
+		int skill = person.getSkillManager().getEffectiveSkillLevel(science.getSkill());
 		if (skill <= 3) {
 			chance *= (4 - skill);
 		} else {

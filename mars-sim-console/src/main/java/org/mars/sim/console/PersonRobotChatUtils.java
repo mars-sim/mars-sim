@@ -275,11 +275,11 @@ public class PersonRobotChatUtils extends ChatUtils {
 			questionText = YOU_PROMPT + "What are your skills ?";
 
 			if (personCache != null) {
-				skillManager = personCache.getMind().getSkillManager();
+				skillManager = personCache.getSkillManager();
 			}
 
 			else if (robotCache != null) {
-				skillManager = robotCache.getBotMind().getSkillManager();
+				skillManager = robotCache.getSkillManager();
 			}
 
 			responseText.append("here's a list of my skills with level ane experience points : ");

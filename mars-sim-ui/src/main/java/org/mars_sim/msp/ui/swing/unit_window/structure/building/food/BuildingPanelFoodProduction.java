@@ -283,7 +283,7 @@ public class BuildingPanelFoodProduction extends BuildingFunctionPanel {
 			Iterator<Person> i = settlement.getAllAssociatedPeople().iterator();
 			while (i.hasNext()) {
 				Person tempPerson = i.next();
-				SkillManager skillManager = tempPerson.getMind().getSkillManager();
+				SkillManager skillManager = tempPerson.getSkillManager();
 				int skill = skillManager.getSkillLevel(SkillType.COOKING);
 				if (skill > highestSkillLevel) {
 					highestSkillLevel = skill;

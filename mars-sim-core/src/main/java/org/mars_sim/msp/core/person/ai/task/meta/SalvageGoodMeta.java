@@ -92,7 +92,7 @@ public class SalvageGoodMeta implements MetaTask, Serializable {
 
 	                // If manufacturing building has salvage process requiring work, add
 	                // modifier.
-	                SkillManager skillManager = person.getMind().getSkillManager();
+	                SkillManager skillManager = person.getSkillManager();
 	                int skill = skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
 	                if (SalvageGood.hasSalvageProcessRequiringWork(manufacturingBuilding, skill)) {
 	                    result += 10D;

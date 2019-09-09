@@ -70,7 +70,7 @@ public class Repairbot extends RobotJob implements Serializable {
 
 		double result = 0D; // robot should be less capable than the person counterpart
 
-		int mechanicSkill = robot.getBotMind().getSkillManager().getSkillLevel(SkillType.MECHANICS);
+		int mechanicSkill = robot.getSkillManager().getSkillLevel(SkillType.MECHANICS);
 		result += mechanicSkill;
 
 		RoboticAttributeManager attributes = robot.getRoboticAttributeManager();

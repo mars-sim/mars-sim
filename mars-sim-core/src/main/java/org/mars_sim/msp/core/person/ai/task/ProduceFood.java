@@ -90,7 +90,7 @@ implements Serializable {
 				endTask();
 			}
 	
-			skillManager = person.getMind().getSkillManager();
+			skillManager = person.getSkillManager();
 	
 			// Initialize phase
 			addPhase(PRODUCE_FOOD);
@@ -121,7 +121,7 @@ implements Serializable {
 				endTask();
 			}
 	
-			skillManager = robot.getBotMind().getSkillManager();
+			skillManager = robot.getSkillManager();
 	
 			// Initialize phase
 			addPhase(PRODUCE_FOOD);
@@ -210,7 +210,7 @@ implements Serializable {
         while (i.hasNext()) {
             Person tempPerson = i.next();
             //if (skillManager == null)
-				skillManager = tempPerson.getMind().getSkillManager();
+				skillManager = tempPerson.getSkillManager();
             int skill = skillManager.getSkillLevel(SkillType.COOKING) * 5;
             skill += skillManager.getSkillLevel(SkillType.MATERIALS_SCIENCE) * 2;
             skill = (int) Math.round(skill / 7D);
@@ -226,7 +226,7 @@ implements Serializable {
         while (j.hasNext()) {
             Robot tempRobot = j.next();
             //if (skillManager == null)
-            	skillManager = tempRobot.getBotMind().getSkillManager();
+            	skillManager = tempRobot.getSkillManager();
             int skill = skillManager.getSkillLevel(SkillType.COOKING) * 5;
             skill += skillManager.getSkillLevel(SkillType.MATERIALS_SCIENCE) * 2;
             skill = (int) Math.round(skill / 7D);
@@ -248,7 +248,7 @@ implements Serializable {
 
 		Building result = null;
 
-		SkillManager skillManager = person.getMind().getSkillManager();
+		SkillManager skillManager = person.getSkillManager();
         int skill = skillManager.getEffectiveSkillLevel(SkillType.COOKING) * 5;
         skill += skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE) * 2;
         skill = (int) Math.round(skill / 7D);
@@ -426,7 +426,7 @@ implements Serializable {
 	public static double getHighestFoodProductionProcessValue(Person person,
 			Building foodProductionBuilding) {
 
-		SkillManager skillManager = person.getMind().getSkillManager();
+		SkillManager skillManager = person.getSkillManager();
 		int skill = skillManager.getEffectiveSkillLevel(SkillType.COOKING) * 5;
         skill += skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE) * 2;
         skill = (int) Math.round(skill / 7D);
@@ -437,7 +437,7 @@ implements Serializable {
 	public static double getHighestFoodProductionProcessValue(Robot robot,
 			Building foodProductionBuilding) {
 
-	    SkillManager skillManager = robot.getBotMind().getSkillManager();
+	    SkillManager skillManager = robot.getSkillManager();
         int skill = skillManager.getEffectiveSkillLevel(SkillType.COOKING) * 5;
         skill += skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE) * 2;
         skill = (int) Math.round(skill / 7D);
@@ -512,7 +512,7 @@ implements Serializable {
         double result = 0;
         //SkillManager manager = null;
 		//if (person != null)
-		//	manager = person.getMind().getSkillManager();
+		//	manager = person.getSkillManager();
 		//else if (robot != null)
 		//	manager = robot.getBotMind().getSkillManager();
 		result += skillManager.getEffectiveSkillLevel(SkillType.COOKING) * 5;

@@ -72,7 +72,7 @@ public class Reporter extends Job implements Serializable {
 
 		double result = 0D;
 		
-		int reportSkill = person.getMind().getSkillManager().getSkillLevel(SkillType.REPORTING);
+		int reportSkill = person.getSkillManager().getSkillLevel(SkillType.REPORTING);
 		result = reportSkill;
 		
 		NaturalAttributeManager attributes = person.getNaturalAttributeManager();

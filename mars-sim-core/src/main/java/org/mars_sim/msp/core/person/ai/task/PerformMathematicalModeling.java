@@ -345,7 +345,7 @@ implements ResearchScientificStudy, Serializable {
         int academicAptitude = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
         newPoints += newPoints * ((double) academicAptitude - 50D) / 100D;
         newPoints *= getTeachingExperienceModifier();
-        person.getMind().getSkillManager().addExperience(ScienceType.MATHEMATICS.getSkill(), newPoints, time);
+        person.getSkillManager().addExperience(ScienceType.MATHEMATICS.getSkill(), newPoints, time);
     }
 
     @Override
@@ -357,8 +357,8 @@ implements ResearchScientificStudy, Serializable {
 
     @Override
     public int getEffectiveSkillLevel() {
-        //SkillManager manager = person.getMind().getSkillManager();
-        return person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MATHEMATICS);
+        //SkillManager manager = person.getSkillManager();
+        return person.getSkillManager().getEffectiveSkillLevel(SkillType.MATHEMATICS);
     }
 
     /**
@@ -385,8 +385,8 @@ implements ResearchScientificStudy, Serializable {
 
         // If research assistant, modify by assistant's effective skill.
         if (hasResearchAssistant()) {
-            //SkillManager manager = researchAssistant.getMind().getSkillManager();
-            int assistantSkill = researchAssistant.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MATHEMATICS);
+            //SkillManager manager = researchAssistant.getSkillManager();
+            int assistantSkill = researchAssistant.getSkillManager().getEffectiveSkillLevel(SkillType.MATHEMATICS);
             if (mathematicsSkill > 0) {
                 modelingTime *= 1D + ((double) assistantSkill / (double) mathematicsSkill);
             }

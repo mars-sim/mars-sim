@@ -74,7 +74,7 @@ public class ManufactureGood extends Task implements Serializable {
 			 setDescription(Msg.getString("Task.description.manufactureGood.detail",
 			 person.getSettlement().getName())); //$NON-NLS-1$
 
-			skillManager = person.getMind().getSkillManager();
+			skillManager = person.getSkillManager();
 
 			// Get available manufacturing workshop if any.
 			Building manufactureBuilding = getAvailableManufacturingBuilding(person);
@@ -103,7 +103,7 @@ public class ManufactureGood extends Task implements Serializable {
 			 setDescription(Msg.getString("Task.description.manufactureGood.detail",
 			 robot.getSettlement().getName())); //$NON-NLS-1$
 
-			skillManager = robot.getBotMind().getSkillManager();
+			skillManager = robot.getSkillManager();
 
 			// Get available manufacturing workshop if any.
 			Building manufactureBuilding = getAvailableManufacturingBuilding(robot);
@@ -146,7 +146,7 @@ public class ManufactureGood extends Task implements Serializable {
 			int highestSkillLevel = 0;
 			SkillManager skillManager = null;
 			for (Person tempPerson : settlement.getAllAssociatedPeople()) {
-				skillManager = tempPerson.getMind().getSkillManager();
+				skillManager = tempPerson.getSkillManager();
 				int skill = skillManager.getSkillLevel(SkillType.MATERIALS_SCIENCE);
 				if (skill > highestSkillLevel) {
 					highestSkillLevel = skill;
@@ -157,7 +157,7 @@ public class ManufactureGood extends Task implements Serializable {
 			for (Robot tempRobot : settlement.getAllAssociatedRobots()) {
 				if (tempRobot.getBotMind().getRobotJob() instanceof Makerbot) {
 					// if (skillManager == null)
-					skillManager = tempRobot.getBotMind().getSkillManager();
+					skillManager = tempRobot.getSkillManager();
 					int skill = skillManager.getSkillLevel(SkillType.MATERIALS_SCIENCE);
 					if (skill > highestSkillLevel) {
 						highestSkillLevel = skill;
@@ -189,7 +189,7 @@ public class ManufactureGood extends Task implements Serializable {
 			SkillManager skillManager = null;
 			for (Person tempPerson : settlement.getAllAssociatedPeople()) {
 				if (skillManager == null)
-					skillManager = tempPerson.getMind().getSkillManager();
+					skillManager = tempPerson.getSkillManager();
 				int skill = skillManager.getSkillLevel(SkillType.MATERIALS_SCIENCE);
 				if (skill > highestSkillLevel) {
 					highestSkillLevel = skill;
@@ -200,7 +200,7 @@ public class ManufactureGood extends Task implements Serializable {
 			for (Robot tempRobot : settlement.getAllAssociatedRobots()) {
 				if (robot.getBotMind().getRobotJob() instanceof Makerbot) {
 					if (skillManager == null)
-						skillManager = tempRobot.getBotMind().getSkillManager();
+						skillManager = tempRobot.getSkillManager();
 					int skill = skillManager.getSkillLevel(SkillType.MATERIALS_SCIENCE);
 					if (skill > highestSkillLevel) {
 						highestSkillLevel = skill;
@@ -235,7 +235,7 @@ public class ManufactureGood extends Task implements Serializable {
 
 		Building result = null;
 
-		SkillManager skillManager = person.getMind().getSkillManager();
+		SkillManager skillManager = person.getSkillManager();
 		int skill = skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
 
 		if (person.isInSettlement()) {// .getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
@@ -261,7 +261,7 @@ public class ManufactureGood extends Task implements Serializable {
 
 		Building result = null;
 
-		SkillManager skillManager = robot.getBotMind().getSkillManager();
+		SkillManager skillManager = robot.getSkillManager();
 		int skill = skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
 
 		if (robot.isInSettlement()) {// .getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
@@ -404,7 +404,7 @@ public class ManufactureGood extends Task implements Serializable {
 
 		double highestProcessValue = 0D;
 
-		int skillLevel = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
+		int skillLevel = person.getSkillManager().getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
 
 		Manufacture manufacturingFunction = manufacturingBuilding.getManufacture();
 		int techLevel = manufacturingFunction.getTechLevel();
@@ -430,7 +430,7 @@ public class ManufactureGood extends Task implements Serializable {
 
 		double highestProcessValue = 0D;
 
-		int skillLevel = robot.getBotMind().getSkillManager().getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
+		int skillLevel = robot.getSkillManager().getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
 
 		Manufacture manufacturingFunction = manufacturingBuilding.getManufacture();
 		int techLevel = manufacturingFunction.getTechLevel();
@@ -470,9 +470,9 @@ public class ManufactureGood extends Task implements Serializable {
 		newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
 		newPoints *= getTeachingExperienceModifier();
 		if (person != null)
-			person.getMind().getSkillManager().addExperience(SkillType.MATERIALS_SCIENCE, newPoints, time);
+			person.getSkillManager().addExperience(SkillType.MATERIALS_SCIENCE, newPoints, time);
 		else if (robot != null)
-			robot.getBotMind().getSkillManager().addExperience(SkillType.MATERIALS_SCIENCE, newPoints, time);
+			robot.getSkillManager().addExperience(SkillType.MATERIALS_SCIENCE, newPoints, time);
 	}
 
 	@Override

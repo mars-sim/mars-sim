@@ -96,7 +96,7 @@ public class SelfTreatHealthProblemMeta implements MetaTask, Serializable {
                 Treatment treatment = problem.getIllness().getRecoveryTreatment();
                 if (treatment != null) {
                     boolean selfTreatable = treatment.getSelfAdminister();
-                    int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MEDICINE);
+                    int skill = person.getSkillManager().getEffectiveSkillLevel(SkillType.MEDICINE);
                     int requiredSkill = treatment.getSkill();
                     if (selfTreatable && (skill >= requiredSkill)) {
                         result.add(problem);

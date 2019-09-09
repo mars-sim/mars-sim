@@ -75,8 +75,6 @@ public class Mind implements Serializable {
 	private EmotionManager emotion;
 	/** The person's personality trait manager. */
 	private PersonalityTraitManager trait;
-	/** The person's skill manager. */
-	private SkillManager skillManager;
 //	/** The person's core mind. */
 //	private CoreMind coreMind;
 
@@ -120,7 +118,7 @@ public class Mind implements Serializable {
 		taskManager = new TaskManager(this);
 		// Construct the skill manager.
 //		skillManager = new SkillManager(person, coreMind);
-		skillManager = new SkillManager(person);
+//		skillManager = new SkillManager(person);
 	}
 
 	/**
@@ -712,15 +710,6 @@ public class Mind implements Serializable {
 	}
 
 	/**
-	 * Returns a reference to the Person's skill manager
-	 * 
-	 * @return the person's skill manager
-	 */
-	public SkillManager getSkillManager() {
-		return skillManager;
-	}
-
-	/**
 	 * Returns the person owning this mind.
 	 * 
 	 * @return person
@@ -794,7 +783,7 @@ public class Mind implements Serializable {
 		if (mbti != null)
 			mbti.destroy();
 		mbti = null;
-		skillManager.destroy();
-		skillManager = null;
+//		skillManager.destroy();
+//		skillManager = null;
 	}
 }

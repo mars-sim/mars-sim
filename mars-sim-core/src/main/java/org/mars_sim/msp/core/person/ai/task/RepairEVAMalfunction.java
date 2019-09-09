@@ -392,9 +392,9 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 		evaExperience *= getTeachingExperienceModifier();
 
 		if (person != null)
-			person.getMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience, time);
+			person.getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience, time);
 		else if (robot != null)
-			robot.getBotMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience, time);
+			robot.getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience, time);
 
 		// If phase is repair malfunction, add experience to mechanics skill.
 		if (REPAIRING.equals(getPhase())) {
@@ -404,9 +404,9 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 			mechanicsExperience += mechanicsExperience * experienceAptitudeModifier;
 
 			if (person != null)
-				person.getMind().getSkillManager().addExperience(SkillType.MECHANICS, mechanicsExperience, time);
+				person.getSkillManager().addExperience(SkillType.MECHANICS, mechanicsExperience, time);
 			else if (robot != null)
-				robot.getBotMind().getSkillManager().addExperience(SkillType.MECHANICS, mechanicsExperience, time);
+				robot.getSkillManager().addExperience(SkillType.MECHANICS, mechanicsExperience, time);
 
 		}
 	}
@@ -461,10 +461,10 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 		int mechanicSkill = 0;
 
 		if (person != null)
-			mechanicSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
+			mechanicSkill = person.getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
 
 		else if (robot != null)
-			mechanicSkill = robot.getBotMind().getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
+			mechanicSkill = robot.getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
 
 		if (mechanicSkill == 0)
 			workTime /= 2;
@@ -537,9 +537,9 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 	public int getEffectiveSkillLevel() {
 		SkillManager manager = null;
 		if (person != null)
-			manager = person.getMind().getSkillManager();
+			manager = person.getSkillManager();
 		else if (robot != null)
-			manager = robot.getBotMind().getSkillManager();
+			manager = robot.getSkillManager();
 
 		int EVAOperationsSkill = manager.getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
 		int mechanicsSkill = manager.getEffectiveSkillLevel(SkillType.MECHANICS);

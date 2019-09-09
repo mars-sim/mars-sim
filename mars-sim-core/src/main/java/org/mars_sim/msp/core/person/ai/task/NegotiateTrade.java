@@ -283,18 +283,18 @@ public class NegotiateTrade extends Task implements Serializable {
 		// Modify by 10% for each skill level in trading for buyer and seller.
 		if (buyingTrader instanceof Person) {
 			person = (Person) buyingTrader;
-			modifier += person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.TRADING) / 10D;
+			modifier += person.getSkillManager().getEffectiveSkillLevel(SkillType.TRADING) / 10D;
 		} else if (buyingTrader instanceof Robot) {
 			robot = (Robot) sellingTrader;
-			modifier += robot.getBotMind().getSkillManager().getEffectiveSkillLevel(SkillType.TRADING) / 10D;
+			modifier += robot.getSkillManager().getEffectiveSkillLevel(SkillType.TRADING) / 10D;
 		}
 
 		if (sellingTrader instanceof Person) {
 			person = (Person) buyingTrader;
-			modifier += person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.TRADING) / 10D;
+			modifier += person.getSkillManager().getEffectiveSkillLevel(SkillType.TRADING) / 10D;
 		} else if (sellingTrader instanceof Robot) {
 			robot = (Robot) sellingTrader;
-			modifier += robot.getBotMind().getSkillManager().getEffectiveSkillLevel(SkillType.TRADING) / 10D;
+			modifier += robot.getSkillManager().getEffectiveSkillLevel(SkillType.TRADING) / 10D;
 		}
 
 		// Modify by 10% for the relationship between the buyer and seller.
@@ -344,7 +344,7 @@ public class NegotiateTrade extends Task implements Serializable {
 					.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
 			newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
 			newPoints *= getTeachingExperienceModifier();
-			person.getMind().getSkillManager().addExperience(SkillType.TRADING, newPoints, time);
+			person.getSkillManager().addExperience(SkillType.TRADING, newPoints, time);
 
 		} else if (trader instanceof Robot) {
 			robot = (Robot) trader;
@@ -352,7 +352,7 @@ public class NegotiateTrade extends Task implements Serializable {
 					.getAttribute(RoboticAttributeType.EXPERIENCE_APTITUDE);
 			newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
 			newPoints *= getTeachingExperienceModifier();
-			robot.getBotMind().getSkillManager().addExperience(SkillType.TRADING, newPoints, time);
+			robot.getSkillManager().addExperience(SkillType.TRADING, newPoints, time);
 		}
 	}
 
@@ -367,9 +367,9 @@ public class NegotiateTrade extends Task implements Serializable {
 	public int getEffectiveSkillLevel() {
 		SkillManager manager = null;
 		if (person != null)
-			manager = person.getMind().getSkillManager();
+			manager = person.getSkillManager();
 		else if (robot != null)
-			manager = robot.getBotMind().getSkillManager();
+			manager = robot.getSkillManager();
 		return manager.getEffectiveSkillLevel(SkillType.TRADING);
 	}
 

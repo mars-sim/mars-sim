@@ -54,7 +54,7 @@ implements Serializable {
 
 		double result = 0D;
 
-		int materialsScienceSkill = robot.getBotMind().getSkillManager().getSkillLevel(SkillType.MATERIALS_SCIENCE);
+		int materialsScienceSkill = robot.getSkillManager().getSkillLevel(SkillType.MATERIALS_SCIENCE);
 		result = materialsScienceSkill;
 
 		RoboticAttributeManager attributes = robot.getRoboticAttributeManager();

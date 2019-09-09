@@ -499,7 +499,7 @@ public class ExitAirlock extends Task implements Serializable {
 		double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
 		evaExperience += evaExperience * experienceAptitudeModifier;
 		evaExperience *= getTeachingExperienceModifier();
-		person.getMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience, time);
+		person.getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience, time);
 
 	}
 
@@ -854,7 +854,7 @@ public class ExitAirlock extends Task implements Serializable {
 
 	@Override
 	public int getEffectiveSkillLevel() {
-		return person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
+		return person.getSkillManager().getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
 	}
 
 	@Override

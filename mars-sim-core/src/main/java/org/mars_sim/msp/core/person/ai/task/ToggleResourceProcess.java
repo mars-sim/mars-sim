@@ -547,7 +547,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 //			double evaExperience = time / 100D;
 //			evaExperience += evaExperience * experienceAptitudeModifier;
 //			evaExperience *= getTeachingExperienceModifier();
-//			person.getMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience);
+//			person.getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience);
 //		}
 
 		// If phase is toggle process, add experience to mechanics skill.
@@ -556,7 +556,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 			// Experience points adjusted by person's "Experience Aptitude" attribute.
 			double mechanicsExperience = time / 100D;
 			mechanicsExperience += mechanicsExperience * experienceAptitudeModifier;
-			person.getMind().getSkillManager().addExperience(SkillType.MECHANICS, mechanicsExperience, time);
+			person.getSkillManager().addExperience(SkillType.MECHANICS, mechanicsExperience, time);
 		}
 	}
 
@@ -572,7 +572,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 
 	@Override
 	public int getEffectiveSkillLevel() {
-		SkillManager manager = person.getMind().getSkillManager();
+		SkillManager manager = person.getSkillManager();
 //		int EVAOperationsSkill = manager.getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
 		int mechanicsSkill = manager.getEffectiveSkillLevel(SkillType.MECHANICS);
 //		if (needEVA) {
@@ -616,7 +616,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 		double chance = .005D;
 
 		// Mechanic skill modification.
-		int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
+		int skill = person.getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
 		if (skill <= 3) {
 			chance *= (4 - skill);
 		} else {

@@ -93,7 +93,9 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 	private String name;
 	private String country;
 	private String sponsor;
-
+	
+	/** The person's skill manager. */
+	private SkillManager skillManager;
 	/** Manager for robot's natural attributes. */
 	private RoboticAttributeManager attributes;
 	/** robot's mind. */
@@ -134,6 +136,10 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 		isSalvaged = false;
 		salvageInfo = null;
 		isInoperable = false;
+		
+		// Construct the skill manager.
+//		skillManager = new SkillManager(robot, coreMind);
+		skillManager = new SkillManager(this);
 	}
 
 	/*
@@ -859,10 +865,6 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 		return skill;
 	}
 
-	public SkillManager getSkillManager() {
-		return botMind.getSkillManager();
-	}
-
 	public String getCountry() {
 		return country;
 	}
@@ -935,6 +937,15 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 		return this;
 	}
 
+	/**
+	 * Returns a reference to the robot's skill manager
+	 * 
+	 * @return the robot's skill manager
+	 */
+	public SkillManager getSkillManager() {
+		return skillManager;
+	}
+	
 	public boolean equals(Object obj) {
 		if (this == obj) return true;
 		if (obj == null) return false;
@@ -963,6 +974,8 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 		botMind = null;
 		health.destroy();
 		health = null;
+		skillManager.destroy();
+		skillManager = null;
 		birthTimeStamp = null;
 	}
 }

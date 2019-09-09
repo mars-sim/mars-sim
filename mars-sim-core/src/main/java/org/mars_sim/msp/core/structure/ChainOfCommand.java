@@ -538,7 +538,7 @@ public class ChainOfCommand implements Serializable {
 		for (Person p : people) {
 			NaturalAttributeManager mgr = p.getNaturalAttributeManager();
 			int p_leadership = mgr.getAttribute(NaturalAttributeType.LEADERSHIP);
-			int p_tradeSkill = 5 * p.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.TRADING);
+			int p_tradeSkill = 5 * p.getSkillManager().getEffectiveSkillLevel(SkillType.TRADING);
 			p_leadership = p_leadership + p_tradeSkill;
 			int p_combined = mgr.getAttribute(NaturalAttributeType.ATTRACTIVENESS)
 					+ 3 * mgr.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE)
@@ -634,7 +634,7 @@ public class ChainOfCommand implements Serializable {
 
 		// compare their scores
 		for (Person p : people) {
-			SkillManager skillMgr = p.getMind().getSkillManager();
+			SkillManager skillMgr = p.getSkillManager();
 			NaturalAttributeManager mgr = p.getNaturalAttributeManager();
 			if (p.getRole().getType() == specialty) {
 				// && (p.getRole().getType() != RoleType.COMMANDER)

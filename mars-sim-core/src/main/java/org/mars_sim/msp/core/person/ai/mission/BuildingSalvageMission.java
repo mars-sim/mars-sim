@@ -124,10 +124,10 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 			int constructionSkill = 0;
 			if (startingMember instanceof Person) {
 				Person person = (Person) startingMember;
-				constructionSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
+				constructionSkill = person.getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
 			} else if (startingMember instanceof Robot) {
 				Robot robot = (Robot) startingMember;
-				constructionSkill = robot.getBotMind().getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
+				constructionSkill = robot.getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
 			}
 			ConstructionManager manager = settlement.getConstructionManager();
 			SalvageValues values = manager.getSalvageValues();
@@ -869,10 +869,10 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 			// TODO Refactor
 			int constructionSkill = 0;
 			if (member instanceof Person) {
-				constructionSkill = ((Person) member).getMind().getSkillManager()
+				constructionSkill = ((Person) member).getSkillManager()
 						.getEffectiveSkillLevel(SkillType.CONSTRUCTION);
 			} else if (member instanceof Robot) {
-				constructionSkill = ((Robot) member).getBotMind().getSkillManager()
+				constructionSkill = ((Robot) member).getSkillManager()
 						.getEffectiveSkillLevel(SkillType.CONSTRUCTION);
 			}
 			totalSkill += constructionSkill;

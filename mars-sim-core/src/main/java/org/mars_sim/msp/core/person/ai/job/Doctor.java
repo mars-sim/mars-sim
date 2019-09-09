@@ -94,7 +94,7 @@ public class Doctor extends Job implements Serializable {
 
 		double result = 0D;
 
-		int areologySkill = person.getMind().getSkillManager().getSkillLevel(SkillType.MEDICINE);
+		int areologySkill = person.getSkillManager().getSkillLevel(SkillType.MEDICINE);
 		result = areologySkill;
 
 		NaturalAttributeManager attributes = person.getNaturalAttributeManager();

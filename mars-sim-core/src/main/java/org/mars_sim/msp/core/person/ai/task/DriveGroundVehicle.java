@@ -498,9 +498,9 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 	public int getEffectiveSkillLevel() {
 		SkillManager manager = null;
 		if (person != null)
-			manager = person.getMind().getSkillManager();
+			manager = person.getSkillManager();
 		else if (robot != null)
-			manager = robot.getBotMind().getSkillManager();
+			manager = robot.getSkillManager();
 
 		return manager.getEffectiveSkillLevel(SkillType.PILOTING);
 	}
@@ -541,9 +541,9 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 			phaseModifier = 4D;
 		newPoints *= phaseModifier;
 		if (person != null)
-			person.getMind().getSkillManager().addExperience(SkillType.PILOTING, newPoints, time);
+			person.getSkillManager().addExperience(SkillType.PILOTING, newPoints, time);
 		else if (robot != null)
-			robot.getBotMind().getSkillManager().addExperience(SkillType.PILOTING, newPoints, time);
+			robot.getSkillManager().addExperience(SkillType.PILOTING, newPoints, time);
 
 	}
 

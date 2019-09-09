@@ -109,7 +109,7 @@ implements Serializable {
 
 		double result = 0D;
 
-		int botanySkill = person.getMind().getSkillManager().getSkillLevel(SkillType.BOTANY);
+		int botanySkill = person.getSkillManager().getSkillLevel(SkillType.BOTANY);
 		result = botanySkill;
 
 		NaturalAttributeManager attributes = person.getNaturalAttributeManager();

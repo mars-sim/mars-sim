@@ -75,7 +75,7 @@ implements Serializable {
 
 		double result = 0D;
 
-		int constructionSkill = person.getMind().getSkillManager().getSkillLevel(SkillType.CONSTRUCTION);
+		int constructionSkill = person.getSkillManager().getSkillLevel(SkillType.CONSTRUCTION);
 		result = constructionSkill;
 
 		NaturalAttributeManager attributes = person.getNaturalAttributeManager();

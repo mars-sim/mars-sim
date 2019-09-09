@@ -77,7 +77,7 @@ public class Chef extends Job implements Serializable {
 
 		double result = 0D;
 
-		int cookingSkill = person.getMind().getSkillManager().getSkillLevel(SkillType.COOKING);
+		int cookingSkill = person.getSkillManager().getSkillLevel(SkillType.COOKING);
 		result = cookingSkill;
 
 		// int foodProcessingSkill =

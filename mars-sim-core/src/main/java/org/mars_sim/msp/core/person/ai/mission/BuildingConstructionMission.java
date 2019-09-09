@@ -153,7 +153,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
 				Person person = (Person) startingMember;
 				// logger.info("The starting member is " + person);
 				// person.setMission(this);
-				constructionSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
+				constructionSkill = person.getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
 				person.getMind().setMission(this);
 			}
 //            else if (startingMember instanceof Robot) {
@@ -368,7 +368,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
 			if (member instanceof Person) {
 				Person person = (Person) member;
 				// person.getMind().setMission(this);
-				constructionSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
+				constructionSkill = person.getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
 			}
 //	        else if (member instanceof Robot) {
 //	        	Robot robot = (Robot) member;

@@ -324,9 +324,9 @@ public class MineSite extends EVAOperation implements Serializable {
 	protected void addExperience(double time) {
 		SkillManager manager = null;
 		if (person != null)
-			manager = person.getMind().getSkillManager();
+			manager = person.getSkillManager();
 		else if (robot != null)
-			manager = robot.getBotMind().getSkillManager();
+			manager = robot.getSkillManager();
 
 		// Add experience to "EVA Operations" skill.
 		// (1 base experience point per 100 millisols of time spent)
@@ -385,9 +385,9 @@ public class MineSite extends EVAOperation implements Serializable {
 
 		SkillManager manager = null;
 		if (person != null)
-			manager = person.getMind().getSkillManager();
+			manager = person.getSkillManager();
 		else if (robot != null)
-			manager = robot.getBotMind().getSkillManager();
+			manager = robot.getSkillManager();
 		int EVAOperationsSkill = manager.getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
 		int areologySkill = manager.getEffectiveSkillLevel(SkillType.AREOLOGY);
 		if (operatingLUV) {
@@ -411,9 +411,9 @@ public class MineSite extends EVAOperation implements Serializable {
 			// Driving skill modification.
 			int skill = 0;
 			if (person != null)
-				skill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
+				skill = person.getSkillManager().getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
 			else if (robot != null)
-				skill = robot.getBotMind().getSkillManager().getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
+				skill = robot.getSkillManager().getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
 			if (skill <= 3) {
 				chance *= (4 - skill);
 			} else {

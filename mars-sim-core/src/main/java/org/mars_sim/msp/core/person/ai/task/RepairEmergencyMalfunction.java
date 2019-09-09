@@ -217,14 +217,14 @@ public class RepairEmergencyMalfunction extends Task implements Repair, Serializ
 					.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
 			newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
 			newPoints *= getTeachingExperienceModifier();
-			person.getMind().getSkillManager().addExperience(SkillType.MECHANICS, newPoints, time);
+			person.getSkillManager().addExperience(SkillType.MECHANICS, newPoints, time);
 		} 
 		else if (robot != null) {
 			 int experienceAptitude = robot.getRoboticAttributeManager().getAttribute(
 					 RoboticAttributeType.EXPERIENCE_APTITUDE);
 			 newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
 			 newPoints *= getTeachingExperienceModifier();
-			 robot.getBotMind().getSkillManager().addExperience(SkillType.MECHANICS,
+			 robot.getSkillManager().addExperience(SkillType.MECHANICS,
 			 newPoints, time);
 		}
 
@@ -343,9 +343,9 @@ public class RepairEmergencyMalfunction extends Task implements Repair, Serializ
 	public int getEffectiveSkillLevel() {
 		SkillManager manager = null;
 		if (person != null)
-			manager = person.getMind().getSkillManager();
+			manager = person.getSkillManager();
 		else if (robot != null)
-			manager = robot.getBotMind().getSkillManager();
+			manager = robot.getSkillManager();
 		return manager.getEffectiveSkillLevel(SkillType.MECHANICS);
 	}
 

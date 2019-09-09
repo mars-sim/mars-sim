@@ -149,7 +149,7 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
 
 		Building result = null;
 
-		SkillManager skillManager = person.getMind().getSkillManager();
+		SkillManager skillManager = person.getSkillManager();
 		int skill = skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
 
 		if (person.isInSettlement()) {// .getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
@@ -175,7 +175,7 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
 
 		Building result = null;
 
-		SkillManager skillManager = robot.getBotMind().getSkillManager();
+		SkillManager skillManager = robot.getSkillManager();
 		int skill = skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
 
 		if (robot.isInSettlement()) {// .getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
@@ -336,7 +336,7 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
 
 		double highestProcessValue = 0D;
 
-		int skillLevel = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
+		int skillLevel = person.getSkillManager().getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
 
 		Manufacture manufacturingFunction = manufacturingBuilding.getManufacture();// (Manufacture)
 																					// manufacturingBuilding.getFunction(FunctionType.MANUFACTURE);
@@ -373,7 +373,7 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
 
 		double highestProcessValue = 0D;
 
-		int skillLevel = robot.getBotMind().getSkillManager().getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
+		int skillLevel = robot.getSkillManager().getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
 
 		Manufacture manufacturingFunction = manufacturingBuilding.getManufacture();// (Manufacture)
 																					// manufacturingBuilding.getFunction(FunctionType.MANUFACTURE);
@@ -485,8 +485,8 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
 				.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
 		newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
 		newPoints *= getTeachingExperienceModifier();
-		person.getMind().getSkillManager().addExperience(SkillType.MATERIALS_SCIENCE, newPoints / 2D, time);
-		person.getMind().getSkillManager().addExperience(SkillType.CONSTRUCTION, newPoints / 2D, time);
+		person.getSkillManager().addExperience(SkillType.MATERIALS_SCIENCE, newPoints / 2D, time);
+		person.getSkillManager().addExperience(SkillType.CONSTRUCTION, newPoints / 2D, time);
 	}
 
 	@Override
@@ -500,7 +500,7 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
 	@Override
 	public int getEffectiveSkillLevel() {
 		double result = 0;
-		SkillManager manager = person.getMind().getSkillManager();
+		SkillManager manager = person.getSkillManager();
 		result += manager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
 		result += manager.getEffectiveSkillLevel(SkillType.CONSTRUCTION);
 		return (int) Math.round(result / 2D);

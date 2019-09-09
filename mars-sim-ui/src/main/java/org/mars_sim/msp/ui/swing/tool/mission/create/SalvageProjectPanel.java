@@ -306,12 +306,12 @@ extends WizardPanel {
                         MissionMember member = i.next();
             	        if (member instanceof Person) {
             	        	person = (Person) member;
-            	        	int constructionSkill = person.getMind().getSkillManager().getSkillLevel(SkillType.CONSTRUCTION);
+            	        	int constructionSkill = person.getSkillManager().getSkillLevel(SkillType.CONSTRUCTION);
                             totalSkill += constructionSkill;
             	        }
             	        else if (member instanceof Robot) {
             	        	robot = (Robot) member;
-            	        	int constructionSkill = robot.getBotMind().getSkillManager().getSkillLevel(SkillType.CONSTRUCTION);
+            	        	int constructionSkill = robot.getSkillManager().getSkillLevel(SkillType.CONSTRUCTION);
                             totalSkill += constructionSkill;
             	        }    
                     }

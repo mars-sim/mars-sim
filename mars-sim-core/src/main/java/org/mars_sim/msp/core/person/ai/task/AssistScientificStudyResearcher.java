@@ -233,8 +233,8 @@ public class AssistScientificStudyResearcher extends Task implements Serializabl
 				ResearchScientificStudy researchTask = (ResearchScientificStudy) personsTask;
 				if (!researchTask.hasResearchAssistant()) {
 					SkillType scienceSkill = researchTask.getResearchScience().getSkill();
-					int personSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(scienceSkill);
-					int assistantSkill = assistant.getMind().getSkillManager().getEffectiveSkillLevel(scienceSkill);
+					int personSkill = person.getSkillManager().getEffectiveSkillLevel(scienceSkill);
+					int assistantSkill = assistant.getSkillManager().getEffectiveSkillLevel(scienceSkill);
 					if (assistantSkill < personSkill)
 						result.add(person);
 				}
@@ -284,7 +284,7 @@ public class AssistScientificStudyResearcher extends Task implements Serializabl
 		newPoints += newPoints * ((double) academicAptitude - 50D) / 100D;
 		newPoints *= getTeachingExperienceModifier();
 		SkillType scienceSkill = researchTask.getResearchScience().getSkill();
-		person.getMind().getSkillManager().addExperience(scienceSkill, newPoints, time);
+		person.getSkillManager().addExperience(scienceSkill, newPoints, time);
 	}
 
 	@Override
@@ -298,7 +298,7 @@ public class AssistScientificStudyResearcher extends Task implements Serializabl
 	@Override
 	public int getEffectiveSkillLevel() {
 		SkillType scienceSkill = researchTask.getResearchScience().getSkill();
-		SkillManager manager = person.getMind().getSkillManager();
+		SkillManager manager = person.getSkillManager();
 		return manager.getEffectiveSkillLevel(scienceSkill);
 	}
 

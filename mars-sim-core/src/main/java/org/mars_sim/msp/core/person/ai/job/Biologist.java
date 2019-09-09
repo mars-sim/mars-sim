@@ -107,7 +107,7 @@ implements Serializable {
 	public double getCapability(Person person) {
 		double result = 0D;
 
-		int biologySkill = person.getMind().getSkillManager().getSkillLevel(SkillType.BIOLOGY);
+		int biologySkill = person.getSkillManager().getSkillLevel(SkillType.BIOLOGY);
 		result = biologySkill;
 
 		NaturalAttributeManager attributes = person.getNaturalAttributeManager();

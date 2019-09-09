@@ -194,9 +194,9 @@ implements Serializable {
 		evaExperience *= getTeachingExperienceModifier();
 
 		if (person != null)
-			person.getMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience, time);
+			person.getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience, time);
 		else if (robot != null)
-			robot.getBotMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience, time);
+			robot.getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience, time);
 
 		// If phase is maintenance, add experience to mechanics skill.
 		if (MAINTAIN.equals(getPhase())) {
@@ -205,9 +205,9 @@ implements Serializable {
 			double mechanicsExperience = time / 100D;
 			mechanicsExperience += mechanicsExperience * experienceAptitudeModifier;
 			if (person != null)
-				person.getMind().getSkillManager().addExperience(SkillType.MECHANICS, mechanicsExperience, time);
+				person.getSkillManager().addExperience(SkillType.MECHANICS, mechanicsExperience, time);
 			else if (robot != null)
-				robot.getBotMind().getSkillManager().addExperience(SkillType.MECHANICS, mechanicsExperience, time);
+				robot.getSkillManager().addExperience(SkillType.MECHANICS, mechanicsExperience, time);
 		}
 	}
 
@@ -238,9 +238,9 @@ implements Serializable {
 		double workTime = time;
 		int mechanicSkill = 0;
 		if (person != null)
-			mechanicSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
+			mechanicSkill = person.getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
 		else if (robot != null)
-			mechanicSkill = robot.getBotMind().getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
+			mechanicSkill = robot.getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
 
 		if (mechanicSkill == 0) {
 		    workTime /= 2;
@@ -288,10 +288,10 @@ implements Serializable {
 		int skill = 0;
 		if (person != null)
 			// Mechanic skill modification.
-			skill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
+			skill = person.getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
 		else if (robot != null)
 			// Mechanic skill modification.
-			skill = robot.getBotMind().getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
+			skill = robot.getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
 
 		if (skill <= 3) chance *= (4 - skill);
 		else chance /= (skill - 2);
@@ -388,9 +388,9 @@ implements Serializable {
 	public int getEffectiveSkillLevel() {
 		SkillManager manager = null;
 		if (person != null)
-			manager = person.getMind().getSkillManager();
+			manager = person.getSkillManager();
 		else if (robot != null)
-			manager = robot.getBotMind().getSkillManager();
+			manager = robot.getSkillManager();
 
 		int EVAOperationsSkill = manager.getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
 		int mechanicsSkill = manager.getEffectiveSkillLevel(SkillType.MECHANICS);

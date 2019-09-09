@@ -156,7 +156,7 @@ public class AstronomicalObservation extends Function {
 		SkillType astronomySkill = astronomyScience.getSkill();
 		Iterator<Person> j = settlement.getAllAssociatedPeople().iterator();
 		while (j.hasNext()) {
-			observatoryDemand += j.next().getMind().getSkillManager().getSkillLevel(astronomySkill);
+			observatoryDemand += j.next().getSkillManager().getSkillLevel(astronomySkill);
 		}
 
 		// Determine existing settlement supply of astronomical observatories.

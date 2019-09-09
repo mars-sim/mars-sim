@@ -278,8 +278,8 @@ public class Teach extends Task implements Serializable {
 				Iterator<SkillType> j = task.getAssociatedSkills().iterator();
 				while (j.hasNext()) {
 					SkillType taskSkill = j.next();
-					int studentSkill = student.getMind().getSkillManager().getSkillLevel(taskSkill);
-					int teacherSkill = teacher.getMind().getSkillManager().getSkillLevel(taskSkill);
+					int studentSkill = student.getSkillManager().getSkillLevel(taskSkill);
+					int teacherSkill = teacher.getSkillManager().getSkillLevel(taskSkill);
 					if ((teacherSkill >= (studentSkill + 1)) && !task.hasTeacher()) {
 						possibleStudent = true;
 					}

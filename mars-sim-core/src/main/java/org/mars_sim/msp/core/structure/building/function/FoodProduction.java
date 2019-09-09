@@ -91,7 +91,7 @@ public class FoodProduction extends Function implements Serializable {
 		double demand = 0D;
 		Iterator<Person> i = settlement.getAllAssociatedPeople().iterator();
 		while (i.hasNext()) {
-			demand += i.next().getMind().getSkillManager().getSkillLevel(SkillType.COOKING);
+			demand += i.next().getSkillManager().getSkillLevel(SkillType.COOKING);
 		}
 
 		double supply = 0D;

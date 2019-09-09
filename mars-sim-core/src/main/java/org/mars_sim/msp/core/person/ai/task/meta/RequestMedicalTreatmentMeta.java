@@ -70,7 +70,7 @@ public class RequestMedicalTreatmentMeta implements MetaTask, Serializable {
         	return 0;
         
         // Get person's medical skill level.
-        int personMedicalSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MEDICINE);
+        int personMedicalSkill = person.getSkillManager().getEffectiveSkillLevel(SkillType.MEDICINE);
 
         // Get the best medical skill level of local people.
         int bestMedicalSkill = getBestLocalMedicalSkill(person);
@@ -257,7 +257,7 @@ public class RequestMedicalTreatmentMeta implements MetaTask, Serializable {
         while (i.hasNext()) {
             Person inhabitant = i.next();
             if (person != inhabitant) {
-                int medicalSkill = inhabitant.getMind().getSkillManager().getEffectiveSkillLevel(
+                int medicalSkill = inhabitant.getSkillManager().getEffectiveSkillLevel(
                         SkillType.MEDICINE);
                 if (medicalSkill > result) {
                     result = medicalSkill;
@@ -284,7 +284,7 @@ public class RequestMedicalTreatmentMeta implements MetaTask, Serializable {
             while (i.hasNext()) {
                 Person crewmember = i.next();
                 if (person != crewmember) {
-                    int medicalSkill = crewmember.getMind().getSkillManager().getEffectiveSkillLevel(
+                    int medicalSkill = crewmember.getSkillManager().getEffectiveSkillLevel(
                             SkillType.MEDICINE);
                     if (medicalSkill > result) {
                         result = medicalSkill;

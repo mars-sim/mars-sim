@@ -31,6 +31,7 @@ import org.mars_sim.msp.core.mars.MarsSurface;
 import org.mars_sim.msp.core.person.ai.Mind;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
+import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.job.JobAssignmentType;
 import org.mars_sim.msp.core.person.ai.job.JobHistory;
@@ -107,11 +108,13 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	private static double lowW;
 	
 	// Data members
-	/** True if a person is born on Mars. */
+	/** True if the person is a preconfigured crew member. */
+	private boolean preConfigured;
+	/** True if the person is born on Mars. */
 	private boolean bornOnMars;
-	/** True if person is buried. */
+	/** True if the person is buried. */
 	private boolean isBuried;
-	/** True if person is declared dead. */
+	/** True if the person is declared dead. */
 	private boolean declaredDead;
 	
 	/** Unique person id. */
@@ -163,6 +166,8 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 
 	/** The gender of the person (male or female). */
 	private GenderType gender;
+	/** The person's skill manager. */
+	private SkillManager skillManager;
 	/** Manager for Person's natural attributes. */
 	private NaturalAttributeManager attributes;
 	/** Person's mind. */
@@ -259,6 +264,10 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		this.xLoc = 0D;
 		this.yLoc = 0D;
 		this.associatedSettlement = settlement.getIdentifier();		
+		
+		// Construct the skill manager.
+//		skillManager = new SkillManager(person, coreMind);
+		skillManager = new SkillManager(this);
 	}
 
 	/*
@@ -324,7 +333,8 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		eVATaskTime = new ConcurrentHashMap<>();
 		// Create the consumption map
 		consumption = new ConcurrentHashMap<>();
-
+		// Asssume the person is not a preconfigured crew member
+		preConfigured = false;
 	}
 
 	/**
@@ -1877,6 +1887,29 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		return age;
 	}
 	
+	/** 
+	 * Checks if the person is a preconfigured crew member. 
+	 */
+	public boolean isPreConfigured() {
+		return preConfigured;
+	}
+	
+	/** 
+	 * Set the person as a preconfigured crew member. 
+	 */
+	public void setPreConfigured(boolean value) {
+		preConfigured = value;
+	}
+	
+	/**
+	 * Returns a reference to the Person's skill manager
+	 * 
+	 * @return the person's skill manager
+	 */
+	public SkillManager getSkillManager() {
+		return skillManager;
+	}
+	
 	public boolean equals(Object obj) {
 		if (this == obj) return true;
 		if (obj == null) return false;
@@ -1970,6 +2003,9 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		condition = null;
 		gender = null;
 
+		skillManager.destroy();
+		skillManager = null;
+		
 		scientificAchievement.clear();
 		scientificAchievement = null;
 	}

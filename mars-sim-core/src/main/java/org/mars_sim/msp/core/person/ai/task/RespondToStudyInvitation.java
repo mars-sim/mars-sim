@@ -239,7 +239,7 @@ public class RespondToStudyInvitation extends Task implements Serializable {
 
 				// Modify based on difficulty level of study vs researcher's skill.
 				SkillType skill = jobScience.getSkill();
-				int skillLevel = person.getMind().getSkillManager().getSkillLevel(skill);
+				int skillLevel = person.getSkillManager().getSkillLevel(skill);
 				if (skillLevel == 0) {
 					skillLevel = 1;
 				}
@@ -279,7 +279,7 @@ public class RespondToStudyInvitation extends Task implements Serializable {
 		newPoints *= getTeachingExperienceModifier();
 
 		ScienceType jobScience = ScienceType.getJobScience(person.getMind().getJob());
-		person.getMind().getSkillManager().addExperience(jobScience.getSkill(), newPoints, time);
+		person.getSkillManager().addExperience(jobScience.getSkill(), newPoints, time);
 	}
 
 	@Override
@@ -295,7 +295,7 @@ public class RespondToStudyInvitation extends Task implements Serializable {
 	@Override
 	public int getEffectiveSkillLevel() {
 		ScienceType jobScience = ScienceType.getJobScience(person.getMind().getJob());
-		return person.getMind().getSkillManager().getEffectiveSkillLevel(jobScience.getSkill());
+		return person.getSkillManager().getEffectiveSkillLevel(jobScience.getSkill());
 	}
 
 	@Override

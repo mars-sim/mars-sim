@@ -508,7 +508,7 @@ public abstract class EVAOperation extends Task implements Serializable {
 				double chance = BASE_ACCIDENT_CHANCE;
 
 				// EVA operations skill modification.
-				int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
+				int skill = person.getSkillManager().getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
 				if (skill <= 3)
 					chance *= (4 - skill);
 				else

@@ -123,7 +123,7 @@ public class Exploration extends RoverMission implements Serializable {
 			// Determine exploration sites
 			try {
 				if (hasVehicle()) {
-					int skill = startingPerson.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.AREOLOGY);
+					int skill = startingPerson.getSkillManager().getEffectiveSkillLevel(SkillType.AREOLOGY);
 					determineExplorationSites(getVehicle().getRange(),
 							getTotalTripTimeLimit(getRover(), getPeopleNumber(), true), NUM_SITES, skill);
 				}

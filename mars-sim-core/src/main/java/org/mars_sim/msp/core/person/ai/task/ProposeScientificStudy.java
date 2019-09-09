@@ -71,7 +71,7 @@ public class ProposeScientificStudy extends Task implements Serializable {
 			ScienceType science = ScienceType.getJobScience(job);
 			if (science != null) {
 				SkillType skill = science.getSkill();
-				int level = person.getMind().getSkillManager().getSkillLevel(skill);
+				int level = person.getSkillManager().getSkillLevel(skill);
 				study = scientificStudyManager.createScientificStudy(person, science, level);
 			} else {
 				logger.severe("Person's job: " + job.getName(person.getGender()) + " not scientist.");
@@ -229,7 +229,7 @@ public class ProposeScientificStudy extends Task implements Serializable {
 		newPoints += newPoints * ((double) academicAptitude - 50D) / 100D;
 		newPoints *= getTeachingExperienceModifier();
 
-		person.getMind().getSkillManager().addExperience(study.getScience().getSkill(), newPoints, time);
+		person.getSkillManager().addExperience(study.getScience().getSkill(), newPoints, time);
 	}
 
 	@Override
@@ -241,7 +241,7 @@ public class ProposeScientificStudy extends Task implements Serializable {
 
 	@Override
 	public int getEffectiveSkillLevel() {
-		SkillManager manager = person.getMind().getSkillManager();
+		SkillManager manager = person.getSkillManager();
 		return manager.getEffectiveSkillLevel(study.getScience().getSkill());
 	}
 

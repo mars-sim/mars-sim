@@ -83,7 +83,7 @@ public class ManufactureGoodMeta implements MetaTask, Serializable {
 
                 // If manufacturing building has process requiring work, add
                 // modifier.
-                SkillManager skillManager = person.getMind().getSkillManager();
+                SkillManager skillManager = person.getSkillManager();
                 int skill = skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
                 if (ManufactureGood.hasProcessRequiringWork(manufacturingBuilding, skill)) {
                     result += 10D;
@@ -160,7 +160,7 @@ public class ManufactureGoodMeta implements MetaTask, Serializable {
 
 		                // If manufacturing building has process requiring work, add
 		                // modifier.
-		                SkillManager skillManager = robot.getBotMind().getSkillManager();
+		                SkillManager skillManager = robot.getSkillManager();
 		                int skill = skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
 		                if (ManufactureGood.hasProcessRequiringWork(manufacturingBuilding, skill)) {
 		                    result += 10D;

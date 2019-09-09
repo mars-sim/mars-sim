@@ -182,7 +182,7 @@ implements Serializable {
         double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
         evaExperience += evaExperience * experienceAptitudeModifier;
         evaExperience *= getTeachingExperienceModifier();
-        person.getMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience, time);
+        person.getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience, time);
 
         // If phase is collect regolith, add experience to areology skill.
         if (COLLECT_REGOLITH.equals(getPhase())) {
@@ -190,7 +190,7 @@ implements Serializable {
             // Experience points adjusted by person's "Experience Aptitude" attribute.
             double areologyExperience = time / 10D;
             areologyExperience += areologyExperience * experienceAptitudeModifier;
-            person.getMind().getSkillManager().addExperience(SkillType.AREOLOGY, areologyExperience, time);
+            person.getSkillManager().addExperience(SkillType.AREOLOGY, areologyExperience, time);
         }
     }
 
@@ -204,7 +204,7 @@ implements Serializable {
 
     @Override
     public int getEffectiveSkillLevel() {
-        SkillManager manager = person.getMind().getSkillManager();
+        SkillManager manager = person.getSkillManager();
         int EVAOperationsSkill = manager.getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
         int areologySkill = manager.getEffectiveSkillLevel(SkillType.AREOLOGY);
         return (int) Math.round((double)(EVAOperationsSkill + areologySkill) / 2D);
@@ -303,7 +303,7 @@ implements Serializable {
         NaturalAttributeManager nManager = person.getNaturalAttributeManager();
         int strength = nManager.getAttribute(NaturalAttributeType.STRENGTH);
         int agility = nManager.getAttribute(NaturalAttributeType.AGILITY);
-        int eva = person.getMind().getSkillManager().getSkillLevel(SkillType.EVA_OPERATIONS);
+        int eva = person.getSkillManager().getSkillLevel(SkillType.EVA_OPERATIONS);
         
         double regolithCollected = .25 + RandomUtil.getRandomDouble(.25) * time * COLLECTION_RATE * ((.5 * agility + strength) / 150D) * (eva + .1)/ 5D ;
         totalCollected += regolithCollected;

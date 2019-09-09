@@ -73,7 +73,7 @@ public class Politician extends Job implements Serializable {
 
 		double result = 0D;
 
-		int managerSkill = person.getMind().getSkillManager().getSkillLevel(SkillType.MANAGEMENT);
+		int managerSkill = person.getSkillManager().getSkillLevel(SkillType.MANAGEMENT);
 		result = managerSkill;
 
 		NaturalAttributeManager attributes = person.getNaturalAttributeManager();

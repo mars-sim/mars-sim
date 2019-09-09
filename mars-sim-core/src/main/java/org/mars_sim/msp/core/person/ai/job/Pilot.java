@@ -101,7 +101,7 @@ public class Pilot extends Job implements Serializable {
 
 		double result = 0D;
 
-		int drivingSkill = person.getMind().getSkillManager().getSkillLevel(SkillType.PILOTING);
+		int drivingSkill = person.getSkillManager().getSkillLevel(SkillType.PILOTING);
 		result = drivingSkill;
 
 		NaturalAttributeManager attributes = person.getNaturalAttributeManager();

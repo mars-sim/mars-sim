@@ -122,7 +122,7 @@ public class Areologist extends Job implements Serializable {
 
 		double result = 1D;
 
-		int areologySkill = person.getMind().getSkillManager().getSkillLevel(SkillType.AREOLOGY);
+		int areologySkill = person.getSkillManager().getSkillLevel(SkillType.AREOLOGY);
 		result = areologySkill;
 
 		NaturalAttributeManager attributes = person.getNaturalAttributeManager();

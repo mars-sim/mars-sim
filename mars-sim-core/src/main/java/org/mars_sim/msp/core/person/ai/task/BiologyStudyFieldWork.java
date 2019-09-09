@@ -243,7 +243,7 @@ implements Serializable {
         double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
         evaExperience += evaExperience * experienceAptitudeModifier;
         evaExperience *= getTeachingExperienceModifier();
-        person.getMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience, time);
+        person.getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience, time);
 
         // If phase is performing field work, add experience to biology skill.
         if (FIELD_WORK.equals(getPhase())) {
@@ -251,7 +251,7 @@ implements Serializable {
             // Experience points adjusted by person's "Experience Aptitude" attribute.
             double biologyExperience = time / 10D;
             biologyExperience += biologyExperience * experienceAptitudeModifier;
-            person.getMind().getSkillManager().addExperience(SkillType.BIOLOGY, biologyExperience, time);
+            person.getSkillManager().addExperience(SkillType.BIOLOGY, biologyExperience, time);
         }
     }
 
@@ -265,7 +265,7 @@ implements Serializable {
 
     @Override
     public int getEffectiveSkillLevel() {
-        SkillManager manager = person.getMind().getSkillManager();
+        SkillManager manager = person.getSkillManager();
         int EVAOperationsSkill = manager.getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
         int biologySkill = manager.getEffectiveSkillLevel(SkillType.BIOLOGY);
         return (int) Math.round((double)(EVAOperationsSkill + biologySkill) / 2D);

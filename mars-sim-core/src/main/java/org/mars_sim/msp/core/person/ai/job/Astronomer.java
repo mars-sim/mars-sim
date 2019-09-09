@@ -100,7 +100,7 @@ public class Astronomer extends Job implements Serializable {
 	public double getCapability(Person person) {
 		double result = 0D;
 
-		int astronomySkill = person.getMind().getSkillManager().getSkillLevel(SkillType.ASTRONOMY);
+		int astronomySkill = person.getSkillManager().getSkillLevel(SkillType.ASTRONOMY);
 		result = astronomySkill;
 
 		NaturalAttributeManager attributes = person.getNaturalAttributeManager();

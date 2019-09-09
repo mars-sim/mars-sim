@@ -765,12 +765,12 @@ public class Cooking extends Function implements Serializable {
 		// Add influence of a person/robot's performance on meal quality
 		if (person != null) {
 			culinarySkillPerf = .25 * person.getPerformanceRating()
-					* person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.COOKING);
+					* person.getSkillManager().getEffectiveSkillLevel(SkillType.COOKING);
 		}
 		
 		else {//if (theCook instanceof Robot)
 			culinarySkillPerf = .1 * robot.getPerformanceRating()
-					* robot.getBotMind().getSkillManager().getEffectiveSkillLevel(SkillType.COOKING);
+					* robot.getSkillManager().getEffectiveSkillLevel(SkillType.COOKING);
 		}
 		
 		// consume oil

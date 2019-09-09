@@ -481,7 +481,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
     				speed = baseSpeed * 1.1; 
     			}
     			
-    			int skill = p.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.PILOTING);
+    			int skill = p.getSkillManager().getEffectiveSkillLevel(SkillType.PILOTING);
     			if (skill <= 5) {
     				mod = 0D - ((baseSpeed / 2D) * ((5D - skill) / 5D));
     	        }

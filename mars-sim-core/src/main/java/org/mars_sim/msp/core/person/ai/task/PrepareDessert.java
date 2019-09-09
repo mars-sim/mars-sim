@@ -282,9 +282,9 @@ public class PrepareDessert extends Task implements Serializable {
 		newPoints *= getTeachingExperienceModifier();
 
 		if (person != null) {
-			person.getMind().getSkillManager().addExperience(SkillType.COOKING, newPoints, time);
+			person.getSkillManager().addExperience(SkillType.COOKING, newPoints, time);
 		} else if (robot != null) {
-			robot.getBotMind().getSkillManager().addExperience(SkillType.COOKING, newPoints, time);
+			robot.getSkillManager().addExperience(SkillType.COOKING, newPoints, time);
 		}
 	}
 
@@ -308,9 +308,9 @@ public class PrepareDessert extends Task implements Serializable {
 		int skill = 0;
 		// cooking skill modification.
 		if (person != null) {
-			skill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.COOKING);
+			skill = person.getSkillManager().getEffectiveSkillLevel(SkillType.COOKING);
 		} else if (robot != null) {
-			skill = robot.getBotMind().getSkillManager().getEffectiveSkillLevel(SkillType.COOKING);
+			skill = robot.getSkillManager().getEffectiveSkillLevel(SkillType.COOKING);
 		}
 
 		if (skill <= 3) {
@@ -418,9 +418,9 @@ public class PrepareDessert extends Task implements Serializable {
 
 		SkillManager manager = null;
 		if (person != null) {
-			manager = person.getMind().getSkillManager();
+			manager = person.getSkillManager();
 		} else if (robot != null) {
-			manager = robot.getBotMind().getSkillManager();
+			manager = robot.getSkillManager();
 		}
 
 		return manager.getEffectiveSkillLevel(SkillType.COOKING);

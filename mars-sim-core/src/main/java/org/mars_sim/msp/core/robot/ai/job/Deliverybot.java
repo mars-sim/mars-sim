@@ -57,7 +57,7 @@ implements Serializable {
 
 		double result = 0D;
 
-		int tradingSkill = robot.getBotMind().getSkillManager().getSkillLevel(SkillType.TRADING);
+		int tradingSkill = robot.getSkillManager().getSkillLevel(SkillType.TRADING);
 		result = tradingSkill;
 
 		RoboticAttributeManager attributes = robot.getRoboticAttributeManager();

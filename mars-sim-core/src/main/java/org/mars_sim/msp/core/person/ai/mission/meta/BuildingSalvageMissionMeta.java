@@ -94,7 +94,7 @@ public class BuildingSalvageMissionMeta implements MetaMission {
             }
 
             try {
-                int constructionSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
+                int constructionSkill = person.getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
                 SalvageValues values = settlement.getConstructionManager()
                         .getSalvageValues();
                 double salvageProfit = values

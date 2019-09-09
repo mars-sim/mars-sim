@@ -631,9 +631,9 @@ implements Serializable {
 		    double culinarySkillPerf = 0;
 		    // Add influence of a person/robot's performance on meal quality
 		    if (person != null)
-		    	culinarySkillPerf = .25 * person.getPerformanceRating() * person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.COOKING);
+		    	culinarySkillPerf = .25 * person.getPerformanceRating() * person.getSkillManager().getEffectiveSkillLevel(SkillType.COOKING);
 		    else if (robot != null)
-		    	culinarySkillPerf = .1 * robot.getPerformanceRating() * robot.getBotMind().getSkillManager().getEffectiveSkillLevel(SkillType.COOKING);
+		    	culinarySkillPerf = .1 * robot.getPerformanceRating() * robot.getSkillManager().getEffectiveSkillLevel(SkillType.COOKING);
 
 	        dessertQuality = Math.round((dessertQuality + culinarySkillPerf + cleanliness)*10D)/10D;;
 

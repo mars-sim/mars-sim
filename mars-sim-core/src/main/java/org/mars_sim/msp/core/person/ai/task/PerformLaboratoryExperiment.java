@@ -393,7 +393,7 @@ implements ResearchScientificStudy, Serializable {
         newPoints += newPoints * ((double) academicAptitude - 50D) / 100D;
         newPoints *= getTeachingExperienceModifier();
         SkillType scienceSkill = science.getSkill();
-        person.getMind().getSkillManager().addExperience(scienceSkill, newPoints, time);
+        person.getSkillManager().addExperience(scienceSkill, newPoints, time);
     }
 
     /**
@@ -420,7 +420,7 @@ implements ResearchScientificStudy, Serializable {
 
         // If research assistant, modify by assistant's effective skill.
         if (hasResearchAssistant()) {
-            SkillManager manager = researchAssistant.getMind().getSkillManager();
+            SkillManager manager = researchAssistant.getSkillManager();
             int assistantSkill = manager.getEffectiveSkillLevel(science.getSkill());
             if (scienceSkill > 0) {
                 researchTime *= 1D + ((double) assistantSkill / (double) scienceSkill);
@@ -441,7 +441,7 @@ implements ResearchScientificStudy, Serializable {
     @Override
     public int getEffectiveSkillLevel() {
         SkillType scienceSkill = science.getSkill();
-        SkillManager manager = person.getMind().getSkillManager();
+        SkillManager manager = person.getSkillManager();
         return manager.getEffectiveSkillLevel(scienceSkill);
     }
 
@@ -537,7 +537,7 @@ implements ResearchScientificStudy, Serializable {
 
         // Science skill modification.
         SkillType scienceSkill = science.getSkill();
-        int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(scienceSkill);
+        int skill = person.getSkillManager().getEffectiveSkillLevel(scienceSkill);
         if (skill <= 3) {
             chance *= (4 - skill);
         }

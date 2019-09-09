@@ -231,7 +231,7 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 		newPoints *= getTeachingExperienceModifier();
 		ScienceType astronomyScience = ScienceType.ASTRONOMY;
 		SkillType astronomySkill = astronomyScience.getSkill();
-		person.getMind().getSkillManager().addExperience(astronomySkill, newPoints, time);
+		person.getSkillManager().addExperience(astronomySkill, newPoints, time);
 	}
 
 	@Override
@@ -243,7 +243,7 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 
 	@Override
 	public int getEffectiveSkillLevel() {
-		SkillManager manager = person.getMind().getSkillManager();
+		SkillManager manager = person.getSkillManager();
 		return manager.getEffectiveSkillLevel(SkillType.ASTRONOMY);
 	}
 
@@ -349,7 +349,7 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 
 		// If research assistant, modify by assistant's effective skill.
 		if (hasResearchAssistant()) {
-			SkillManager manager = researchAssistant.getMind().getSkillManager();
+			SkillManager manager = researchAssistant.getSkillManager();
 			int assistantSkill = manager.getEffectiveSkillLevel(ScienceType.ASTRONOMY.getSkill());
 			if (astronomySkill > 0) {
 				observingTime *= 1D + ((double) assistantSkill / (double) astronomySkill);
@@ -369,7 +369,7 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 		double chance = .005D;
 
 		// Astronomy skill modification.
-		int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(ScienceType.ASTRONOMY.getSkill());
+		int skill = person.getSkillManager().getEffectiveSkillLevel(ScienceType.ASTRONOMY.getSkill());
 		if (skill <= 3) {
 			chance *= (4 - skill);
 		} else {

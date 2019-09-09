@@ -103,7 +103,7 @@ public class RecordActivity extends Task implements Serializable {
 		int art = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.ARTISTRY);
 		newPoints += newPoints * (exp + art - 100D) / 100D;
 		newPoints *= getTeachingExperienceModifier();
-		person.getMind().getSkillManager().addExperience(SkillType.REPORTING, newPoints, time);
+		person.getSkillManager().addExperience(SkillType.REPORTING, newPoints, time);
 
 	}
 

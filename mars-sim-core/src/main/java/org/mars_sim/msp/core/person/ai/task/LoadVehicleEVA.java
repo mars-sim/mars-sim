@@ -1118,9 +1118,9 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 	public int getEffectiveSkillLevel() {
 		SkillManager manager = null;
 		if (person != null)
-			manager = person.getMind().getSkillManager();
+			manager = person.getSkillManager();
 		else if (robot != null)
-			manager = robot.getBotMind().getSkillManager();
+			manager = robot.getSkillManager();
 
 		int EVAOperationsSkill = manager.getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
 		return EVAOperationsSkill;
@@ -1154,9 +1154,9 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 		evaExperience += evaExperience * experienceAptitudeModifier;
 		evaExperience *= getTeachingExperienceModifier();
 		if (person != null)
-			person.getMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience, time);
+			person.getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience, time);
 		else if (robot != null)
-			robot.getBotMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience, time);
+			robot.getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience, time);
 	}
 
 	@Override

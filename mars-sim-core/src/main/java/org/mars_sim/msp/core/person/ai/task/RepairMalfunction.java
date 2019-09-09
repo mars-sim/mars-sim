@@ -435,9 +435,9 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 		// Determine effective work time based on "Mechanic" skill.
 		int mechanicSkill = 0;
 		if (person != null)
-			mechanicSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
+			mechanicSkill = person.getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
 		else if (robot != null)
-			mechanicSkill = robot.getBotMind().getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
+			mechanicSkill = robot.getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
 
 		if (mechanicSkill == 0) {
 			workTime /= 2;
@@ -584,14 +584,14 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 					.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
 			newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
 			newPoints *= getTeachingExperienceModifier();
-			person.getMind().getSkillManager().addExperience(SkillType.MECHANICS, newPoints, time);
+			person.getSkillManager().addExperience(SkillType.MECHANICS, newPoints, time);
 
 		} else if (robot != null) {
 			int experienceAptitude = robot.getRoboticAttributeManager()
 					.getAttribute(RoboticAttributeType.EXPERIENCE_APTITUDE);
 			newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
 			newPoints *= getTeachingExperienceModifier();
-			robot.getBotMind().getSkillManager().addExperience(SkillType.MECHANICS, newPoints, time);
+			robot.getSkillManager().addExperience(SkillType.MECHANICS, newPoints, time);
 
 		}
 
@@ -608,11 +608,11 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 		int skill = 0;
 		if (person != null) {
 			// Mechanic skill modification.
-			skill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
+			skill = person.getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
 
 		} else if (robot != null) {
 			// Mechanic skill modification.
-			skill = robot.getBotMind().getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
+			skill = robot.getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
 
 		}
 
@@ -700,9 +700,9 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 	public int getEffectiveSkillLevel() {
 		SkillManager manager = null;
 		if (person != null)
-			manager = person.getMind().getSkillManager();
+			manager = person.getSkillManager();
 		else if (robot != null)
-			manager = robot.getBotMind().getSkillManager();
+			manager = robot.getSkillManager();
 
 		return manager.getEffectiveSkillLevel(SkillType.MECHANICS);
 	}

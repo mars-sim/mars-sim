@@ -53,7 +53,7 @@ implements Serializable {
 
 		double result = 10D;
 
-		int botanySkill = robot.getBotMind().getSkillManager().getSkillLevel(SkillType.BOTANY);
+		int botanySkill = robot.getSkillManager().getSkillLevel(SkillType.BOTANY);
 		result += botanySkill;
 
 		RoboticAttributeManager attributes = robot.getRoboticAttributeManager();

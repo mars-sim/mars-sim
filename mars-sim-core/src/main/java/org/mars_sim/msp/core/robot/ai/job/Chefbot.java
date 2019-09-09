@@ -55,7 +55,7 @@ implements Serializable {
 
 		double result = 10D;
 
-		int cookingSkill = robot.getBotMind().getSkillManager().getSkillLevel(SkillType.COOKING);
+		int cookingSkill = robot.getSkillManager().getSkillLevel(SkillType.COOKING);
 		result += cookingSkill;
 
 		RoboticAttributeManager attributes = robot.getRoboticAttributeManager();

@@ -529,9 +529,9 @@ public class TendGreenhouse extends Task implements Serializable {
 		newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
 		newPoints *= getTeachingExperienceModifier();
 		if (person != null)
-			person.getMind().getSkillManager().addExperience(SkillType.BOTANY, newPoints, time);
+			person.getSkillManager().addExperience(SkillType.BOTANY, newPoints, time);
 		else if (robot != null)
-			robot.getBotMind().getSkillManager().addExperience(SkillType.BOTANY, newPoints, time);
+			robot.getSkillManager().addExperience(SkillType.BOTANY, newPoints, time);
 
 	}
 
@@ -657,9 +657,9 @@ public class TendGreenhouse extends Task implements Serializable {
 	public int getEffectiveSkillLevel() {
 		SkillManager skillManager = null;
 		if (person != null)
-			skillManager = person.getMind().getSkillManager();
+			skillManager = person.getSkillManager();
 		else if (robot != null)
-			skillManager = robot.getBotMind().getSkillManager();
+			skillManager = robot.getSkillManager();
 
 		return skillManager.getEffectiveSkillLevel(SkillType.BOTANY);
 	}

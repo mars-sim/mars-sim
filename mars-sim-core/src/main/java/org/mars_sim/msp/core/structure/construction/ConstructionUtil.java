@@ -247,7 +247,7 @@ public class ConstructionUtil {
 	    while (i.hasNext()) {
 	        Person person = i.next();
 	        if (!person.getPhysicalCondition().isDead()) {
-	            int constructionSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
+	            int constructionSkill = person.getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
 	            if (constructionSkill > result) {
 	                result = constructionSkill;
 	            }

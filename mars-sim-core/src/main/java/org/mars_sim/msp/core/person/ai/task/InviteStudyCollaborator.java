@@ -171,7 +171,7 @@ implements Serializable {
 
             // Modify based on invitee level in job science.
             SkillType skill = jobScience.getSkill();
-            int skillLevel = invitee.getMind().getSkillManager().getEffectiveSkillLevel(skill);
+            int skillLevel = invitee.getSkillManager().getEffectiveSkillLevel(skill);
             inviteeValue += skillLevel;
 
             // Modify based on invitee achievement in job science.
@@ -259,7 +259,7 @@ implements Serializable {
         newPoints *= getTeachingExperienceModifier();
 
         SkillType skillName = study.getScience().getSkill();
-        person.getMind().getSkillManager().addExperience(skillName, newPoints, time);
+        person.getSkillManager().addExperience(skillName, newPoints, time);
     }
 
     @Override
@@ -271,7 +271,7 @@ implements Serializable {
 
     @Override
     public int getEffectiveSkillLevel() {
-        SkillManager manager = person.getMind().getSkillManager();
+        SkillManager manager = person.getSkillManager();
         SkillType skillName = study.getScience().getSkill();
         return manager.getEffectiveSkillLevel(skillName);
     }

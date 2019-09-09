@@ -7,6 +7,11 @@
 
 package org.mars_sim.msp.core.robot;
 
+import java.util.Iterator;
+import java.util.Map;
+
+import org.mars_sim.msp.core.person.ai.Skill;
+import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.structure.Settlement;
 
 public class RobotBuilderImpl implements RobotBuilder<Robot>{
@@ -46,6 +51,23 @@ public class RobotBuilderImpl implements RobotBuilder<Robot>{
 		return this;
 	}
 
+	public RobotBuilder<Robot> setSkill(Map<String, Integer> skillMap) {
+		if (skillMap == null || skillMap.isEmpty()) {
+			robot.getSkillManager().setRandomSkills();
+		}
+		else {
+			Iterator<String> i = skillMap.keySet().iterator();
+			while (i.hasNext()) {
+				String skillName = i.next();
+				int level = skillMap.get(skillName);
+				robot.getSkillManager()
+						.addNewSkill(new Skill(SkillType.valueOfIgnoreCase(skillName), level));
+			}
+		}
+		return this;
+	}
+	
+	
 	public Robot build() {
 		return robot;
 	}

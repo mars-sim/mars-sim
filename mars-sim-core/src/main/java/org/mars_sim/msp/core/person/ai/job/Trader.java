@@ -73,7 +73,7 @@ public class Trader extends Job implements Serializable {
 
 		double result = 0D;
 
-		int tradingSkill = person.getMind().getSkillManager().getSkillLevel(SkillType.TRADING);
+		int tradingSkill = person.getSkillManager().getSkillLevel(SkillType.TRADING);
 		result = tradingSkill;
 
 		NaturalAttributeManager attributes = person.getNaturalAttributeManager();

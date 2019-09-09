@@ -921,7 +921,7 @@ public class WalkOutside extends Task implements Serializable {
 			double chance = BASE_ACCIDENT_CHANCE;
 
 			// EVA operations skill modification.
-			int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
+			int skill = person.getSkillManager().getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
 			if (skill <= 3)
 				chance *= (4 - skill);
 			else
@@ -962,9 +962,9 @@ public class WalkOutside extends Task implements Serializable {
 	public int getEffectiveSkillLevel() {
 		SkillManager manager = null;
 		if (person != null) {
-			manager = person.getMind().getSkillManager();
+			manager = person.getSkillManager();
 		} else if (robot != null) {
-			manager = robot.getBotMind().getSkillManager();
+			manager = robot.getSkillManager();
 		}
 
 		int EVAOperationsSkill = manager.getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
@@ -999,8 +999,8 @@ public class WalkOutside extends Task implements Serializable {
 		evaExperience += evaExperience * experienceAptitudeModifier;
 		evaExperience *= getTeachingExperienceModifier();
 		if (person != null)
-			person.getMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience, time);
+			person.getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience, time);
 		else if (robot != null)
-			robot.getBotMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience, time);
+			robot.getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience, time);
 	}
 }

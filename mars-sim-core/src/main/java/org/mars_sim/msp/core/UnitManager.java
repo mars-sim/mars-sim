@@ -1018,11 +1018,16 @@ public class UnitManager implements Serializable {
 			String sponsor = crewConfig.getConfiguredPersonSponsor(x, crew_id);
 			String country = crewConfig.getConfiguredPersonCountry(x, crew_id);
 
+			// Loads the person's preconfigured skills (if any).
+			Map<String, Integer> skillMap = crewConfig.getSkillMap(x);
+
 			// Create person and add to the unit manager.
 			// Use Builder Pattern for creating an instance of Person
-			Person person = Person.create(name, settlement).setGender(gender).setCountry(country).setSponsor(sponsor)
+			Person person = Person.create(name, settlement).setGender(gender).setCountry(country).setSponsor(sponsor).setSkill(skillMap)
 					.build();
 			person.initialize();
+			// Set the person as a preconfigured crew member
+			person.setPreConfigured(true);
 
 			personList.add(person);
 			
@@ -1083,18 +1088,6 @@ public class UnitManager implements Serializable {
 					int value = (Integer) naturalAttributeMap.get(attributeName);
 					person.getNaturalAttributeManager()
 							.setAttribute(NaturalAttributeType.valueOfIgnoreCase(attributeName), value);
-				}
-			}
-
-			// Set person's configured skills (if any).
-			Map<String, Integer> skillMap = crewConfig.getSkillMap(x);
-			if (skillMap != null) {
-				Iterator<String> i = skillMap.keySet().iterator();
-				while (i.hasNext()) {
-					String skillName = i.next();
-					int level = (Integer) skillMap.get(skillName);
-					person.getMind().getSkillManager()
-							.addNewSkill(new Skill(SkillType.valueOfIgnoreCase(skillName), level));
 				}
 			}
 
@@ -1279,7 +1272,7 @@ public class UnitManager implements Serializable {
 
 					// Use Builder Pattern for creating an instance of Person
 					person = Person.create(fullname, settlement).setGender(gender).setCountry(country)
-							.setSponsor(sponsor).build();
+							.setSponsor(sponsor).setSkill(null).build();
 					person.initialize();
 
 					Mind m = person.getMind();
@@ -1599,8 +1592,11 @@ public class UnitManager implements Serializable {
 					if (proceed) {
 						// Create robot and add to the unit manager.
 			
+						// Set robot's configured skills (if any).
+						Map<String, Integer> skillMap = robotConfig.getSkillMap(x);
+						
 						// Adopt Static Factory Method and Factory Builder Pattern
-						Robot robot = Robot.create(name, settlement, robotType).setCountry("Earth").build();
+						Robot robot = Robot.create(name, settlement, robotType).setCountry("Earth").setSkill(skillMap).build();
 						robot.initialize();
 						addUnit(robot);
 						numBots++;
@@ -1621,18 +1617,6 @@ public class UnitManager implements Serializable {
 									int value = (Integer) attributeMap.get(attributeName);
 									robot.getRoboticAttributeManager()
 											.setAttribute(RoboticAttributeType.valueOfIgnoreCase(attributeName), value);
-								}
-							}
-	
-							// Set robot's configured skills (if any).
-							Map<String, Integer> skillMap = robotConfig.getSkillMap(x);
-							if (skillMap != null) {
-								Iterator<String> i = skillMap.keySet().iterator();
-								while (i.hasNext()) {
-									String skillName = i.next();
-									int level = (Integer) skillMap.get(skillName);
-									robot.getBotMind().getSkillManager()
-											.addNewSkill(new Skill(SkillType.valueOfIgnoreCase(skillName), level));
 								}
 							}
 						}
@@ -1660,7 +1644,7 @@ public class UnitManager implements Serializable {
 					RobotType robotType = getABot(settlement, initial);
 					// Adopt Static Factory Method and Factory Builder Pattern
 					Robot robot = Robot.create(getNewName(UnitType.ROBOT, null, null, robotType), settlement, robotType)
-							.setCountry("Earth").build();
+							.setCountry("Earth").setSkill(null).build();
 					robot.initialize();
 
 					addUnit(robot);

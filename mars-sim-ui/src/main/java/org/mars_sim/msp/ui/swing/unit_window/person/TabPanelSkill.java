@@ -164,11 +164,11 @@ extends TabPanel {
 
 	        if (unit instanceof Person) {
 	         	person = (Person) unit;
-	         	skillManager = person.getMind().getSkillManager();
+	         	skillManager = person.getSkillManager();
 	        }
 	        else if (unit instanceof Robot) {
 	        	robot = (Robot) unit;
-	        	skillManager = robot.getBotMind().getSkillManager();
+	        	skillManager = robot.getSkillManager();
 	        }
 
 			levels = skillManager.getSkillLevelMap();

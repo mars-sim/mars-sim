@@ -331,9 +331,9 @@ public class CookMeal extends Task implements Serializable {
 		newPoints *= getTeachingExperienceModifier();
 
 		if (person != null) {
-			person.getMind().getSkillManager().addExperience(SkillType.COOKING, newPoints, time);
+			person.getSkillManager().addExperience(SkillType.COOKING, newPoints, time);
 		} else if (robot != null) {
-			robot.getBotMind().getSkillManager().addExperience(SkillType.COOKING, newPoints, time);
+			robot.getSkillManager().addExperience(SkillType.COOKING, newPoints, time);
 		}
 	}
 
@@ -358,9 +358,9 @@ public class CookMeal extends Task implements Serializable {
 
 		if (person != null)
 			// Cooking skill modification.
-			skill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.COOKING);
+			skill = person.getSkillManager().getEffectiveSkillLevel(SkillType.COOKING);
 		else if (robot != null)
-			skill = robot.getBotMind().getSkillManager().getEffectiveSkillLevel(SkillType.COOKING);
+			skill = robot.getSkillManager().getEffectiveSkillLevel(SkillType.COOKING);
 
 		if (skill <= 3) {
 			chance *= (4 - skill);
@@ -540,9 +540,9 @@ public class CookMeal extends Task implements Serializable {
 	public int getEffectiveSkillLevel() {
 		SkillManager manager = null;
 		if (person != null) {
-			manager = person.getMind().getSkillManager();
+			manager = person.getSkillManager();
 		} else if (robot != null) {
-			manager = robot.getBotMind().getSkillManager();
+			manager = robot.getSkillManager();
 		}
 
 		return manager.getEffectiveSkillLevel(SkillType.COOKING);

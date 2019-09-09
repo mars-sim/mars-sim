@@ -97,7 +97,7 @@ implements Lab, Serializable {
             double researchDemand = 0D;
             Iterator<Person> j = settlement.getAllAssociatedPeople().iterator();
             while (j.hasNext())
-                researchDemand += j.next().getMind().getSkillManager().getSkillLevel(specialty.getSkill());
+                researchDemand += j.next().getSkillManager().getSkillLevel(specialty.getSkill());
 
             double researchSupply = 0D;
             boolean removedBuilding = false;

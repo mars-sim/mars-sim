@@ -110,7 +110,7 @@ public class Chemist extends Job implements Serializable {
 	public double getCapability(Person person) {
 		double result = 0D;
 
-		int chemistrySkill = person.getMind().getSkillManager().getSkillLevel(SkillType.CHEMISTRY);
+		int chemistrySkill = person.getSkillManager().getSkillLevel(SkillType.CHEMISTRY);
 		result = chemistrySkill;
 
 		NaturalAttributeManager attributes = person.getNaturalAttributeManager();

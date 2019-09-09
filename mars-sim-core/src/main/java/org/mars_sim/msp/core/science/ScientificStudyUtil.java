@@ -98,7 +98,7 @@ public class ScientificStudyUtil {
             // Modify based on collaborative researcher skill in their science.
             ScienceType collaborativeScience = study.getCollaborativeResearchers().get(id);
             SkillType skill = collaborativeScience.getSkill();
-            int skillLevel = researcher.getMind().getSkillManager().getSkillLevel(skill);
+            int skillLevel = researcher.getSkillManager().getSkillLevel(skill);
             collaboratorModifier *= (double) skillLevel / (double) study.getDifficultyLevel();
             
             // Modify based on researcher's academic aptitude attribute.

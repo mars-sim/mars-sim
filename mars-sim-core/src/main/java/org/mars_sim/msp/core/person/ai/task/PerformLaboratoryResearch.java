@@ -372,7 +372,7 @@ public class PerformLaboratoryResearch extends Task implements ResearchScientifi
 		newPoints += newPoints * ((double) academicAptitude - 50D) / 100D;
 		newPoints *= getTeachingExperienceModifier();
 		SkillType scienceSkill = science.getSkill();
-		person.getMind().getSkillManager().addExperience(scienceSkill, newPoints, time);
+		person.getSkillManager().addExperience(scienceSkill, newPoints, time);
 	}
 
 	/**
@@ -399,7 +399,7 @@ public class PerformLaboratoryResearch extends Task implements ResearchScientifi
 
 		// If research assistant, modify by assistant's effective skill.
 		if (hasResearchAssistant()) {
-			SkillManager manager = researchAssistant.getMind().getSkillManager();
+			SkillManager manager = researchAssistant.getSkillManager();
 			int assistantSkill = manager.getEffectiveSkillLevel(science.getSkill());
 			if (scienceSkill > 0) {
 				researchTime *= 1D + ((double) assistantSkill / (double) scienceSkill);
@@ -418,7 +418,7 @@ public class PerformLaboratoryResearch extends Task implements ResearchScientifi
 
 	@Override
 	public int getEffectiveSkillLevel() {
-		SkillManager manager = person.getMind().getSkillManager();
+		SkillManager manager = person.getSkillManager();
 		return manager.getEffectiveSkillLevel(science.getSkill());
 	}
 
@@ -512,7 +512,7 @@ public class PerformLaboratoryResearch extends Task implements ResearchScientifi
 
 		// Science skill modification.
 		SkillType scienceSkill = science.getSkill();
-		int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(scienceSkill);
+		int skill = person.getSkillManager().getEffectiveSkillLevel(scienceSkill);
 		if (skill <= 3) {
 			chance *= (4 - skill);
 		} else {

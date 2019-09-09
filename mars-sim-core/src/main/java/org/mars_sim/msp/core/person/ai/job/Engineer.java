@@ -99,8 +99,8 @@ public class Engineer extends Job implements Serializable {
 
 		double result = 0D;
 
-		int materialsScienceSkill = person.getMind().getSkillManager().getSkillLevel(SkillType.MATERIALS_SCIENCE);
-		int mechanicSkill = person.getMind().getSkillManager().getSkillLevel(SkillType.MECHANICS);
+		int materialsScienceSkill = person.getSkillManager().getSkillLevel(SkillType.MATERIALS_SCIENCE);
+		int mechanicSkill = person.getSkillManager().getSkillLevel(SkillType.MECHANICS);
 		result = mechanicSkill *.25 + materialsScienceSkill * .75;
 		
 		NaturalAttributeManager attributes = person.getNaturalAttributeManager();

@@ -62,23 +62,9 @@ public class SkillManager implements Serializable {
 
 		skills = new Hashtable<SkillType, Skill>();
 
-		if (person != null) {
-			// Add starting skills randomly for a person.
-			for (SkillType startingSkill : SkillType.values()) {
-				int skillLevel = 0;
-				if (startingSkill == SkillType.MATERIALS_SCIENCE
-					 || startingSkill == SkillType.MECHANICS) {
-					skillLevel = getInitialSkillLevel(0, 25);
-				}
-				else {
-					skillLevel = getInitialSkillLevel(0, 10);
-				}
-				
-				Skill newSkill = new Skill(startingSkill);
-				newSkill.setLevel(skillLevel);
-				addNewSkill(newSkill);
-			}
-		} else {		
+		if (person != null && !person.isPreConfigured()) {
+	
+		} else if (robot != null) {		
 			// Add starting skills randomly for a bot.
 			List<SkillType> skills = new ArrayList<>();
 			
@@ -113,13 +99,67 @@ public class SkillManager implements Serializable {
 			
 			for (SkillType startingSkill : skills) {
 				int skillLevel = 1;
-				Skill newSkill = new Skill(startingSkill);
-				newSkill.setLevel(skillLevel);
-				addNewSkill(newSkill);
+				addNewSkillNExperience(startingSkill, skillLevel);
 			}
 		}
 	}
 
+	/**
+	 * Sets some random skills
+	 */
+	public void setRandomSkills() {
+		// Add starting skills randomly for a person.
+		for (SkillType startingSkill : SkillType.values()) {
+			int skillLevel = 0;
+			if (startingSkill == SkillType.MEDICINE) {
+					skillLevel = getInitialSkillLevel(0, 35);
+					int exp = RandomUtil.getRandomInt(0, 24);
+					this.addExperience(startingSkill, exp, 0);
+				}
+			else if (startingSkill == SkillType.MATERIALS_SCIENCE
+				 || startingSkill == SkillType.MECHANICS) {
+				skillLevel = getInitialSkillLevel(0, 45);
+				int exp = RandomUtil.getRandomInt(0, 24);
+				this.addExperience(startingSkill, exp, 0);
+			}
+			else {
+				int rand = RandomUtil.getRandomInt(0, 3);
+				
+				if (rand == 0) {
+					skillLevel = getInitialSkillLevel(0, 30);
+					addNewSkillNExperience(startingSkill, skillLevel);
+				}
+				else if (rand == 1) {
+					skillLevel = getInitialSkillLevel(1, 15);
+					addNewSkillNExperience(startingSkill, skillLevel);
+				}
+				else if (rand == 2) {
+					skillLevel = getInitialSkillLevel(2, 7);
+					addNewSkillNExperience(startingSkill, skillLevel);
+				}
+				else if (rand == 3) {
+					skillLevel = getInitialSkillLevel(3, 3);
+					addNewSkillNExperience(startingSkill, skillLevel);
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Adds a new skill at the prescribed level
+	 * 
+	 * @param startingSkill
+	 * @param skillLevel
+	 */
+	public void addNewSkillNExperience(SkillType startingSkill, int skillLevel) {
+		Skill newSkill = new Skill(startingSkill);
+		newSkill.setLevel(skillLevel);
+		addNewSkill(newSkill);
+		// Add some initial experience points
+		int exp = RandomUtil.getRandomInt(0, (int)( 25 * Math.pow(2, skillLevel)) - 1);
+		this.addExperience(startingSkill, exp, 0);
+	}
+	
 	/**
 	 * Returns an initial skill level.
 	 * 
@@ -267,6 +307,7 @@ public class SkillManager implements Serializable {
 		else {
 			skills.put(skillType, newSkill);
 		}
+		
 //		// Set up the core mind
 //		String skillEnumString = skillType.ordinal() + "";
 //		String name = "";

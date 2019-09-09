@@ -7,7 +7,7 @@
 
 package org.mars_sim.msp.core.robot;
 
-import org.mars_sim.msp.core.structure.Settlement;
+import java.util.Map;
 
 public interface RobotBuilder<T> {
 
@@ -20,6 +20,8 @@ public interface RobotBuilder<T> {
 	public RobotBuilder<Robot> setAssociatedSettlement(int s);
 
 	public RobotBuilder<Robot> setSponsor(String sponsor);
+	
+	public RobotBuilder<Robot> setSkill(Map<String, Integer> skillMap);
 
 	public T build();
 }

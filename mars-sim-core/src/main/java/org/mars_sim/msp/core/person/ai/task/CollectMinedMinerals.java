@@ -259,9 +259,9 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 		// Modify collection rate by "Areology" skill.
 		int areologySkill = 0;
 		if (person != null)
-			areologySkill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.AREOLOGY);
+			areologySkill = person.getSkillManager().getEffectiveSkillLevel(SkillType.AREOLOGY);
 		else if (robot != null)
-			areologySkill = robot.getBotMind().getSkillManager().getEffectiveSkillLevel(SkillType.AREOLOGY);
+			areologySkill = robot.getSkillManager().getEffectiveSkillLevel(SkillType.AREOLOGY);
 		if (areologySkill == 0)
 			mineralsCollected /= 2D;
 		if (areologySkill > 1)
@@ -392,9 +392,9 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 		evaExperience += evaExperience * experienceAptitudeModifier;
 		evaExperience *= getTeachingExperienceModifier();
 		if (person != null)
-			person.getMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience, time);
+			person.getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience, time);
 		else if (robot != null)
-			robot.getBotMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience, time);
+			robot.getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience, time);
 
 		// If phase is collect minerals, add experience to areology skill.
 		if (COLLECT_MINERALS.equals(getPhase())) {
@@ -403,9 +403,9 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 			double areologyExperience = time / 10D;
 			areologyExperience += areologyExperience * experienceAptitudeModifier;
 			if (person != null)
-				person.getMind().getSkillManager().addExperience(SkillType.AREOLOGY, areologyExperience, time);
+				person.getSkillManager().addExperience(SkillType.AREOLOGY, areologyExperience, time);
 			else if (robot != null)
-				robot.getBotMind().getSkillManager().addExperience(SkillType.AREOLOGY, areologyExperience, time);
+				robot.getSkillManager().addExperience(SkillType.AREOLOGY, areologyExperience, time);
 		}
 	}
 
@@ -421,9 +421,9 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 	public int getEffectiveSkillLevel() {
 		SkillManager manager = null;
 		if (person != null)
-			manager = person.getMind().getSkillManager();
+			manager = person.getSkillManager();
 		else if (robot != null)
-			manager = robot.getBotMind().getSkillManager();
+			manager = robot.getSkillManager();
 		int EVAOperationsSkill = manager.getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
 		int areologySkill = manager.getEffectiveSkillLevel(SkillType.AREOLOGY);
 		return (int) Math.round((double) (EVAOperationsSkill + areologySkill) / 2D);

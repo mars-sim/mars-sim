@@ -50,8 +50,8 @@ public class Trade extends RoverMission implements Serializable {
 
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(Trade.class.getName());
-	private static String loggerName = logger.getName();
-	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+//	private static String loggerName = logger.getName();
+//	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 	
 	/** Default description. */
 	public static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.trade"); //$NON-NLS-1$
@@ -883,7 +883,7 @@ public class Trade extends RoverMission implements Serializable {
 			MissionMember member = i.next();
 			if (member instanceof Person) {
 				Person person = (Person) member;
-				int tradeSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.TRADING);
+				int tradeSkill = person.getSkillManager().getEffectiveSkillLevel(SkillType.TRADING);
 				if (tradeSkill > bestTradeSkill) {
 					bestTradeSkill = tradeSkill;
 					bestTrader = person;
@@ -907,7 +907,7 @@ public class Trade extends RoverMission implements Serializable {
 		while (i.hasNext()) {
 			Person person = i.next();
 			if (!getMembers().contains(person)) {
-				int tradeSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.TRADING);
+				int tradeSkill = person.getSkillManager().getEffectiveSkillLevel(SkillType.TRADING);
 				if (tradeSkill > bestTradeSkill) {
 					bestTradeSkill = tradeSkill;
 					bestTrader = person;

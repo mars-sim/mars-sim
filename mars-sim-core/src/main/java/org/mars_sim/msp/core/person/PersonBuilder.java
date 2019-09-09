@@ -7,6 +7,8 @@
 
 package org.mars_sim.msp.core.person;
 
+import java.util.Map;
+
 public interface PersonBuilder<T> {
 
 	public PersonBuilder<Person> setGender(GenderType g);
@@ -18,6 +20,8 @@ public interface PersonBuilder<T> {
 	public PersonBuilder<Person> setAssociatedSettlement(int s);
 
 	public PersonBuilder<Person> setSponsor(String sponsor);
+	
+	public PersonBuilder<Person> setSkill(Map<String, Integer> skillMap);
 
 	public T build();
 }

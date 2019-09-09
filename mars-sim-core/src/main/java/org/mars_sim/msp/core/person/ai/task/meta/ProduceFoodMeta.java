@@ -82,7 +82,7 @@ public class ProduceFoodMeta implements MetaTask, Serializable {
 
                 // If foodProduction building has process requiring work, add
                 // modifier.
-                SkillManager skillManager = person.getMind().getSkillManager();
+                SkillManager skillManager = person.getSkillManager();
                 int skill = skillManager.getEffectiveSkillLevel(SkillType.COOKING) * 5;
                 skill += skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE) * 2;
                 skill = (int) Math.round(skill / 7D);
@@ -150,7 +150,7 @@ public class ProduceFoodMeta implements MetaTask, Serializable {
 		                result *= ProduceFood.getHighestFoodProductionProcessValue(robot, foodProductionBuilding);
 
 		                // If foodProduction building has process requiring work, add modifier.
-		                SkillManager skillManager = robot.getBotMind().getSkillManager();
+		                SkillManager skillManager = robot.getSkillManager();
 		                int skill = skillManager.getEffectiveSkillLevel(SkillType.COOKING) * 5;
 		                skill += skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE) * 2;
 		                skill = (int) Math.round(skill / 7D);

@@ -92,7 +92,7 @@ public class BuildingConstructionMissionMeta implements MetaMission {
             }
             
             try {
-                int constructionSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
+                int constructionSkill = person.getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
                 ConstructionValues values =  settlement.getConstructionManager().getConstructionValues();
 
                 // Add construction profit for existing or new construction sites.

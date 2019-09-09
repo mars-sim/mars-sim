@@ -250,9 +250,9 @@ public class Maintenance extends Task implements Serializable {
 		newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
 		newPoints *= getTeachingExperienceModifier();
 		if (person != null)
-			person.getMind().getSkillManager().addExperience(SkillType.MECHANICS, newPoints, time);
+			person.getSkillManager().addExperience(SkillType.MECHANICS, newPoints, time);
 		else if (robot != null)
-			robot.getBotMind().getSkillManager().addExperience(SkillType.MECHANICS, newPoints, time);
+			robot.getSkillManager().addExperience(SkillType.MECHANICS, newPoints, time);
 
 	}
 
@@ -268,9 +268,9 @@ public class Maintenance extends Task implements Serializable {
 		// Mechanic skill modification.
 		int skill = 0;
 		if (person != null)
-			skill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
+			skill = person.getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
 		else if (robot != null)
-			skill = robot.getBotMind().getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
+			skill = robot.getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
 
 		if (skill <= 3) {
 			chance *= (4 - skill);
@@ -472,9 +472,9 @@ public class Maintenance extends Task implements Serializable {
 	public int getEffectiveSkillLevel() {
 		SkillManager manager = null;
 		if (person != null)
-			manager = person.getMind().getSkillManager();
+			manager = person.getSkillManager();
 		else if (robot != null)
-			manager = robot.getBotMind().getSkillManager();
+			manager = robot.getSkillManager();
 
 		return manager.getEffectiveSkillLevel(SkillType.MECHANICS);
 	}

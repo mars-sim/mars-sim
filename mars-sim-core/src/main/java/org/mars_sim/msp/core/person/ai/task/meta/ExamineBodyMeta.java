@@ -92,7 +92,7 @@ public class ExamineBodyMeta implements MetaTask, Serializable {
 			}
 //			System.out.print("   result : " + result);
 			
-			double skill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MEDICINE);
+			double skill = person.getSkillManager().getEffectiveSkillLevel(SkillType.MEDICINE);
 //			System.out.print("   skill : " + skill);
 			if (skill == 0)
 				skill = .5;
@@ -188,7 +188,7 @@ public class ExamineBodyMeta implements MetaTask, Serializable {
 		boolean result = false;
 
 		// Get the person's medical skill.
-		int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MEDICINE);
+		int skill = person.getSkillManager().getEffectiveSkillLevel(SkillType.MEDICINE);
 
 		// Check if there are any treatable health problems awaiting treatment.
 		Iterator<HealthProblem> j = aid.getProblemsAwaitingTreatment().iterator();

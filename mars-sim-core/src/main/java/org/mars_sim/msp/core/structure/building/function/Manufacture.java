@@ -135,7 +135,7 @@ public class Manufacture extends Function implements Serializable {
 		double demand = 0D;
 		Iterator<Person> i = settlement.getAllAssociatedPeople().iterator();
 		while (i.hasNext()) {
-			demand += i.next().getMind().getSkillManager().getSkillLevel(SkillType.MATERIALS_SCIENCE);
+			demand += i.next().getSkillManager().getSkillLevel(SkillType.MATERIALS_SCIENCE);
 		}
 
 		double supply = 0D;

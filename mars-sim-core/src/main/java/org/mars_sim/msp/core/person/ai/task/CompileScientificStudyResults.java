@@ -209,7 +209,7 @@ implements Serializable {
         newPoints += newPoints * ((double) academicAptitude - 50D) / 100D;
         newPoints *= getTeachingExperienceModifier();
         SkillType scienceSkill = getScience().getSkill();
-        person.getMind().getSkillManager().addExperience(scienceSkill, newPoints, time);
+        person.getSkillManager().addExperience(scienceSkill, newPoints, time);
     }
 
     /**
@@ -242,7 +242,7 @@ implements Serializable {
     @Override
     public int getEffectiveSkillLevel() {
     	SkillType scienceSkill = getScience().getSkill();
-        SkillManager manager = person.getMind().getSkillManager();
+        SkillManager manager = person.getSkillManager();
         return manager.getEffectiveSkillLevel(scienceSkill);
     }
 

@@ -84,7 +84,7 @@ implements Serializable {
 	public double getCapability(Person person) {
 		double result = 0D;
 
-		int mathematicsSkill = person.getMind().getSkillManager().getSkillLevel(SkillType.MATHEMATICS);
+		int mathematicsSkill = person.getSkillManager().getSkillLevel(SkillType.MATHEMATICS);
 		result = mathematicsSkill;
 
 		NaturalAttributeManager attributes = person.getNaturalAttributeManager();

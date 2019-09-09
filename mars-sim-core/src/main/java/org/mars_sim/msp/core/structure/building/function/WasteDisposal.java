@@ -66,7 +66,7 @@ public class WasteDisposal extends Function implements Serializable {
 			double wasteDisposalDemand = 0D;
 			Iterator<Person> j = settlement.getAllAssociatedPeople().iterator();
 			while (j.hasNext())
-				wasteDisposalDemand += j.next().getMind().getSkillManager().getSkillLevel(specialty.getSkill());
+				wasteDisposalDemand += j.next().getSkillManager().getSkillLevel(specialty.getSkill());
 
 			double wasteDisposalSupply = 0D;
 			boolean removedBuilding = false;

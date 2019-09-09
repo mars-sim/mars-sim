@@ -285,7 +285,7 @@ implements Serializable {
     protected void addExperience(double time) {
     	SkillManager manager = null;
 //    	if (person != null)
-    		manager = person.getMind().getSkillManager();
+    		manager = person.getSkillManager();
 //		else if (robot != null)
 //			manager = robot.getBotMind().getSkillManager();
 
@@ -343,7 +343,7 @@ implements Serializable {
 
         SkillManager manager = null;
 //        if (person != null)
-        	manager = person.getMind().getSkillManager();
+        	manager = person.getSkillManager();
 //		else if (robot != null)
 //			manager = robot.getBotMind().getSkillManager();
 
@@ -384,7 +384,7 @@ implements Serializable {
             // Driving skill modification.
             int skill = 0;
 //            if (person != null)
-            	skill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
+            	skill = person.getSkillManager().getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
 //    		else if (robot != null)
 //    			skill = robot.getBotMind().getSkillManager().getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
 

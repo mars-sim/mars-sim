@@ -48,7 +48,7 @@ implements Serializable {
 
 		double result = 0D;
 
-		int kkill = robot.getBotMind().getSkillManager().getSkillLevel(SkillType.MEDICINE);
+		int kkill = robot.getSkillManager().getSkillLevel(SkillType.MEDICINE);
 		result = kkill;
 
 		RoboticAttributeManager attributes = robot.getRoboticAttributeManager();

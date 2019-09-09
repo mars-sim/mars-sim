@@ -342,7 +342,6 @@ public class RobotConfig implements Serializable {
 	 * @return map of skills (empty map if not found).
 	 * @throws Exception if error in XML parsing.
 	 */
-	@SuppressWarnings("unchecked")
 	public Map<String, Integer> getSkillMap(int index) {
 		Map<String, Integer> result = new HashMap<String, Integer>();
 		Element root = robotDoc.getRootElement();
