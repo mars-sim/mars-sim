@@ -26,6 +26,7 @@ public class PersonalityTraitManager implements Serializable {
 
 	private double[] pVector = null;//new double[5];
 	
+	private Person person;
 	/** List of the person's big five personalities keyed by unique name. */
 	private Hashtable<PersonalityTraitType, Integer> personalityTraits;
 
@@ -35,11 +36,14 @@ public class PersonalityTraitManager implements Serializable {
 	 * @param person.
 	 */
 	public PersonalityTraitManager(Person person) {
-
-		// this.mind = person.getMind();
-
+		this.person = person;
 		personalityTraits = new Hashtable<PersonalityTraitType, Integer>();
-
+	}
+	
+	/**
+	 * Create a random profile of big five personality scores
+	 */
+	public void setRandomBigFive() {
 		int numberOfIterations = 2;
 
 		// Create big five personality traits using random values
@@ -55,13 +59,13 @@ public class PersonalityTraitManager implements Serializable {
 		getPersonalityVector();
 	}
 
-//	/**
-//	 * Sync up with the I-E pair score in MBTI 
-//	 */
-//	 public void syncUpExtraversion() { 
-//		 int value = mind.getMBTI().getScores().get(0); 
-//		 personalityTraits.put(PersonalityTraitType.EXTRAVERSION, value); 
-//	 }
+	/**
+	 * Sync up with the I-E pair score in MBTI 
+	 */
+	 public void syncUpExtraversion() { 
+		 int value = person.getMind().getMBTI().getScores().get(0); 
+		 personalityTraits.put(PersonalityTraitType.EXTRAVERSION, value); 
+	 }
 
 
 //	/**

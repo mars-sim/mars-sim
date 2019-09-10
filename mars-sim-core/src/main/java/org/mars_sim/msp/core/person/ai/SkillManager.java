@@ -62,48 +62,54 @@ public class SkillManager implements Serializable {
 
 		skills = new Hashtable<SkillType, Skill>();
 
-		if (person != null && !person.isPreConfigured()) {
-	
-		} else if (robot != null) {		
-			// Add starting skills randomly for a bot.
-			List<SkillType> skills = new ArrayList<>();
-			
-			if (robot.getRobotType() == RobotType.MAKERBOT) {
-				skills.add(SkillType.MATERIALS_SCIENCE);
-				skills.add(SkillType.PHYSICS);
-			}
-			else if (robot.getRobotType() == RobotType.GARDENBOT) {
-				skills.add(SkillType.BOTANY);
-				skills.add(SkillType.BIOLOGY);
-			}
-			else if (robot.getRobotType() == RobotType.REPAIRBOT) {
-				skills.add(SkillType.MATERIALS_SCIENCE);
-				skills.add(SkillType.MECHANICS);
-			}
-			else if (robot.getRobotType() == RobotType.CHEFBOT) {
-				skills.add(SkillType.CHEMISTRY);
-				skills.add(SkillType.COOKING);
-			}
-			else if (robot.getRobotType() == RobotType.MEDICBOT) {
-				skills.add(SkillType.CHEMISTRY);
-				skills.add(SkillType.MEDICINE);
-			}
-			else if (robot.getRobotType() == RobotType.DELIVERYBOT) {
-				skills.add(SkillType.PILOTING);
-				skills.add(SkillType.TRADING);
-			}
-			else if (robot.getRobotType() == RobotType.CONSTRUCTIONBOT) {
-				skills.add(SkillType.AREOLOGY);
-				skills.add(SkillType.CONSTRUCTION);
-			}
-			
-			for (SkillType startingSkill : skills) {
-				int skillLevel = 1;
-				addNewSkillNExperience(startingSkill, skillLevel);
-			}
-		}
+//		if (person != null && !person.isPreConfigured()) {
+//		} else if (robot != null) {		
+//		}
 	}
 
+	/**
+	 * Sets some random bot skills
+	 */
+	public void setRandomBotSkills() {
+		// Add starting skills randomly for a bot.
+		List<SkillType> skills = new ArrayList<>();
+		
+		if (robot.getRobotType() == RobotType.MAKERBOT) {
+			skills.add(SkillType.MATERIALS_SCIENCE);
+			skills.add(SkillType.PHYSICS);
+		}
+		else if (robot.getRobotType() == RobotType.GARDENBOT) {
+			skills.add(SkillType.BOTANY);
+			skills.add(SkillType.BIOLOGY);
+		}
+		else if (robot.getRobotType() == RobotType.REPAIRBOT) {
+			skills.add(SkillType.MATERIALS_SCIENCE);
+			skills.add(SkillType.MECHANICS);
+		}
+		else if (robot.getRobotType() == RobotType.CHEFBOT) {
+			skills.add(SkillType.CHEMISTRY);
+			skills.add(SkillType.COOKING);
+		}
+		else if (robot.getRobotType() == RobotType.MEDICBOT) {
+			skills.add(SkillType.CHEMISTRY);
+			skills.add(SkillType.MEDICINE);
+		}
+		else if (robot.getRobotType() == RobotType.DELIVERYBOT) {
+			skills.add(SkillType.PILOTING);
+			skills.add(SkillType.TRADING);
+		}
+		else if (robot.getRobotType() == RobotType.CONSTRUCTIONBOT) {
+			skills.add(SkillType.AREOLOGY);
+			skills.add(SkillType.CONSTRUCTION);
+		}
+		
+		for (SkillType startingSkill : skills) {
+			int skillLevel = 1;
+			addNewSkillNExperience(startingSkill, skillLevel);
+		}
+
+	}
+	
 	/**
 	 * Sets some random skills
 	 */

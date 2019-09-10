@@ -309,8 +309,13 @@ public class ArrivingSettlement implements Transportable, Serializable {
 			// Person immigrant = new Person(immigrantName, gender, country, newSettlement,
 			// sponsor);
 			// Use Builder Pattern for creating an instance of Person
-			Person immigrant = Person.create(immigrantName, newSettlement).setGender(gender).setCountry(country)
-					.setSponsor(sponsor).setSkill(null).build();
+			Person immigrant = Person.create(immigrantName, newSettlement)
+					.setGender(gender)
+					.setCountry(country)
+					.setSponsor(sponsor)
+					.setSkill(null)
+					.setPersonality(null, null)
+					.build();
 			immigrant.initialize();
 
 			// Initialize favorites and preferences.

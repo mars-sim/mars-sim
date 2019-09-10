@@ -265,9 +265,11 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		this.yLoc = 0D;
 		this.associatedSettlement = settlement.getIdentifier();		
 		
-		// Construct the skill manager.
+		// Construct the skill manager
 //		skillManager = new SkillManager(person, coreMind);
 		skillManager = new SkillManager(this);
+		// Construct the mind instance
+		mind = new Mind(this);
 	}
 
 	/*
@@ -307,8 +309,6 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		setupChromosomeMap();
 		
 		jobHistory = new JobHistory(this);
-
-		mind = new Mind(this);
 
 		circadian = new CircadianClock(this);
 

@@ -39,16 +39,13 @@
 	<!-- ************************************************************************************************* -->
 	<developers>
 		<developer>
-			<id>scud1</id>
 			<name>Scott Davis</name>
 			<roles>
 				<role>manager</role>
-				<role>developer</role>
 			</roles>
 			<timezone>-8</timezone>
 		</developer>
 		<developer>
-			<id>lechimp</id>
 			<name>Lars Næsbye Christensen</name>
 			<roles>
 				<role>developer</role>
@@ -56,7 +53,6 @@
 			<timezone>+1</timezone>
 		</developer>
 		<developer>
-			<id>mkung</id>
 			<name>Manny Kung</name>
 			<roles>
 				<role>developer</role>
@@ -64,9 +60,16 @@
 			<timezone>-8</timezone>
 		</developer>
 		<developer>
+			<name>Shirish Agarwal</name>
+			<roles>
+				<role>integration and testing</role>
+			</roles>
+			<timezone>+5.5</timezone>
+		</developer>
+		<developer>
 			<name>Dennis Krenz</name>
 			<roles>
-				<role>developer</role>
+				<role>conceptual design</role>
 			</roles>
 			<timezone>+2</timezone>
 		</developer>

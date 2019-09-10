@@ -21,7 +21,21 @@ public interface PersonBuilder<T> {
 
 	public PersonBuilder<Person> setSponsor(String sponsor);
 	
+	/**
+	 * Sets the skills of a person
+	 * 
+	 * @param skillMap
+	 * @return {@link PersonBuilder<>}
+	 */
 	public PersonBuilder<Person> setSkill(Map<String, Integer> skillMap);
+	
+	/**
+	 * Sets the personality of a person
+	 * 
+	 * @param map
+	 * @return {@link PersonBuilder<>}
+	 */
+	public PersonBuilder<Person> setPersonality(Map<String, Integer> map, String mbti);
 
 	public T build();
 }

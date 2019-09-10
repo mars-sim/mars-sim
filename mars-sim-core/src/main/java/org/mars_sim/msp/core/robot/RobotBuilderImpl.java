@@ -53,7 +53,7 @@ public class RobotBuilderImpl implements RobotBuilder<Robot>{
 
 	public RobotBuilder<Robot> setSkill(Map<String, Integer> skillMap) {
 		if (skillMap == null || skillMap.isEmpty()) {
-			robot.getSkillManager().setRandomSkills();
+			robot.getSkillManager().setRandomBotSkills();
 		}
 		else {
 			Iterator<String> i = skillMap.keySet().iterator();
@@ -66,7 +66,6 @@ public class RobotBuilderImpl implements RobotBuilder<Robot>{
 		}
 		return this;
 	}
-	
 	
 	public Robot build() {
 		return robot;

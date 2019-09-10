@@ -77,12 +77,13 @@
 
 		 	Personality Trait Model / Big Five Model:
 
-	  		1. Openness is appreciation for a variety of experience.
-			2. Conscientiousness is planning ahead rather than being spontaneous.
-			3. Extraversion involves going out with friends and being energetic.
-			4. Agreeableness is, as it says, being agreeable.
-			5. Neuroticism is the extent to which a person's emotion are sensitive
-				to the individual's environment, if he's worrying or feeling vulnerable.
+//          Openness - The willingness to make a shift of standards in new situations and appreciation for a variety of experience.
+// Conscientiousness - Planning ahead rather than being spontaneous.
+//      Extraversion - The willingness to communicate and socialize with people. Being energetic with people.
+//     Agreeableness - The adaptiveness to other people. Adopt goals in favor of others.
+//       Neuroticism - The extent to which one's emotion are sensitive to his environment; 
+//                     The degree of worrying or feeling vulnerable;
+//	                   The emotional sensitivity and sense of security to the situation.
 
 			See https://www.ibm.com/smarterplanet/us/en/ibmwatson/developercloud/doc/personality-insights/models.shtml -->
 

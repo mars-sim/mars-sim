@@ -100,8 +100,8 @@ public class GoodsManager implements Serializable {
 
 	/** Initialized logger. */
 	private static Logger logger = Logger.getLogger(GoodsManager.class.getName());
-	private static String loggerName = logger.getName();
-	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+//	private static String loggerName = logger.getName();
+//	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 	
 //	public static final double SOFC_CONVERSION_EFFICIENCY = .57D;
 
@@ -217,7 +217,7 @@ public class GoodsManager implements Serializable {
 	private static SimulationConfig simulationConfig = SimulationConfig.instance();
 //	private static BuildingConfig buildingConfig = simulationConfig.getBuildingConfiguration();
 	private static CropConfig cropConfig = simulationConfig.getCropConfiguration();
-	private static MealConfig mealConfig = simulationConfig.getMealConfiguration();
+//	private static MealConfig mealConfig = simulationConfig.getMealConfiguration();
 	private static PersonConfig personConfig = simulationConfig.getPersonConfig();
 	private static VehicleConfig vehicleConfig = simulationConfig.getVehicleConfiguration();
 	
@@ -3243,7 +3243,7 @@ public class GoodsManager implements Serializable {
 		marsClock = c;
 //		buildingConfig = simulationConfig.getBuildingConfiguration();
 		cropConfig = simulationConfig.getCropConfiguration();
-		mealConfig = simulationConfig.getMealConfiguration();
+//		mealConfig = simulationConfig.getMealConfiguration();
 		personConfig = pc;
 		vehicleConfig = simulationConfig.getVehicleConfiguration();
 	}

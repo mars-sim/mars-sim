@@ -1125,35 +1125,35 @@ public class PersonConfig implements Serializable {
 	 */
 	// Relocate createPersonalityDistribution() from MBTI to here
 	public void createPersonalityDistribution() {
-
-		personalityDistribution = new HashMap<String, Double>(16);
-
-		personalityDistribution.put("ISTP", getPersonalityTypePercentage("ISTP"));
-		personalityDistribution.put("ISTJ", getPersonalityTypePercentage("ISTJ"));
-		personalityDistribution.put("ISFP", getPersonalityTypePercentage("ISFP"));
-		personalityDistribution.put("ISFJ", getPersonalityTypePercentage("ISFJ"));
-		personalityDistribution.put("INTP", getPersonalityTypePercentage("INTP"));
-		personalityDistribution.put("INTJ", getPersonalityTypePercentage("INTJ"));
-		personalityDistribution.put("INFP", getPersonalityTypePercentage("INFP"));
-		personalityDistribution.put("INFJ", getPersonalityTypePercentage("INFJ"));
-		personalityDistribution.put("ESTP", getPersonalityTypePercentage("ESTP"));
-		personalityDistribution.put("ESTJ", getPersonalityTypePercentage("ESTJ"));
-		personalityDistribution.put("ESFP", getPersonalityTypePercentage("ESFP"));
-		personalityDistribution.put("ESFJ", getPersonalityTypePercentage("ESFJ"));
-		personalityDistribution.put("ENTP", getPersonalityTypePercentage("ENTP"));
-		personalityDistribution.put("ENTJ", getPersonalityTypePercentage("ENTJ"));
-		personalityDistribution.put("ENFP", getPersonalityTypePercentage("ENFP"));
-		personalityDistribution.put("ENFJ", getPersonalityTypePercentage("ENFJ"));
-
-
-		Iterator<String> i = personalityDistribution.keySet().iterator();
-		double count = 0D;
-		while (i.hasNext())
-			count += personalityDistribution.get(i.next());
-		if (count != 100D)
-			throw new IllegalStateException(
-					"PersonalityType.loadPersonalityTypes(): percentages don't add up to 100%. (total: " + count + ")");
-
+		if (personalityDistribution == null) {
+			personalityDistribution = new HashMap<String, Double>(16);
+	
+			personalityDistribution.put("ISTP", getPersonalityTypePercentage("ISTP"));
+			personalityDistribution.put("ISTJ", getPersonalityTypePercentage("ISTJ"));
+			personalityDistribution.put("ISFP", getPersonalityTypePercentage("ISFP"));
+			personalityDistribution.put("ISFJ", getPersonalityTypePercentage("ISFJ"));
+			personalityDistribution.put("INTP", getPersonalityTypePercentage("INTP"));
+			personalityDistribution.put("INTJ", getPersonalityTypePercentage("INTJ"));
+			personalityDistribution.put("INFP", getPersonalityTypePercentage("INFP"));
+			personalityDistribution.put("INFJ", getPersonalityTypePercentage("INFJ"));
+			personalityDistribution.put("ESTP", getPersonalityTypePercentage("ESTP"));
+			personalityDistribution.put("ESTJ", getPersonalityTypePercentage("ESTJ"));
+			personalityDistribution.put("ESFP", getPersonalityTypePercentage("ESFP"));
+			personalityDistribution.put("ESFJ", getPersonalityTypePercentage("ESFJ"));
+			personalityDistribution.put("ENTP", getPersonalityTypePercentage("ENTP"));
+			personalityDistribution.put("ENTJ", getPersonalityTypePercentage("ENTJ"));
+			personalityDistribution.put("ENFP", getPersonalityTypePercentage("ENFP"));
+			personalityDistribution.put("ENFJ", getPersonalityTypePercentage("ENFJ"));
+	
+	
+			Iterator<String> i = personalityDistribution.keySet().iterator();
+			double count = 0D;
+			while (i.hasNext())
+				count += personalityDistribution.get(i.next());
+			if (count != 100D)
+				throw new IllegalStateException(
+						"PersonalityType.loadPersonalityTypes(): percentages don't add up to 100%. (total: " + count + ")");
+		}
 	}
 
 

@@ -15,13 +15,13 @@ import org.mars_sim.msp.core.Msg;
 
 public enum PersonalityTraitType {
 
-//	Openness is willingness to make a shift of standards in new situations and appreciation for a variety of experience.
-//	Conscientiousness is planning ahead rather than being spontaneous.
-//	Extraversion is willingness to communicate and socialize with people. being energetic with people.
-//	Agreeableness is adaptiveness to other people and adopting goals in favor of others.
-//	Neuroticism is the extent to which a person's emotion are sensitive
-//			to the individual's environment, if he's worrying or feeling vulnerable.
-//			It's a person's emotional sensitivity and sense of security to the situation.
+//          Openness - The willingness to make a shift of standards in new situations and appreciation for a variety of experience.
+// Conscientiousness - Planning ahead rather than being spontaneous.
+//      Extraversion - The willingness to communicate and socialize with people. Being energetic with people.
+//     Agreeableness - The adaptiveness to other people. Adopt goals in favor of others.
+//       Neuroticism - The extent to which one's emotion are sensitive to his environment; 
+//                     The degree of worrying or feeling vulnerable;
+//	                   The emotional sensitivity and sense of security to the situation.
 
 	OPENNESS			(Msg.getString("PersonalityTraitType.openness")), //$NON-NLS-1$
 	CONSCIENTIOUSNESS	(Msg.getString("PersonalityTraitType.conscientiousness")), //$NON-NLS-1$

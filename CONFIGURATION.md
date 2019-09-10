@@ -24,35 +24,19 @@ on the fly without having to manually compressing, uncompressing,
 
 ## Location
 
-They are located in the `/conf` 
-sub-directory inside the mars-sim jar file such as 
-`r4948_gui_java11.jar`. 
+Players may manipulate these XML files in /.mar-sim/xml
+folder.
 
-Alternatively, if you have the mars-sim package with separate
-maven submodule jar files inside, you may also locate these
-xml files inside the `/resources/conf` sub-directory of the 
-`mars-sim-core` maven submodule.
- 
- 
-## Editing
-  
-After installing the 7-Zip File Manager, one may perform 
-the following steps to open a xml file embedded inside 
-a jar file for editing : 
 
-- Hover the mouse cursor over the mars-sim jarfile
-- Right click on the jarfile to bring up a menu
-- Choose the option `7-Zip` and `Open archive`
-- In the 7-zip File Manager, go to the directory `\conf`
-- Right click on a xml file of your interest
-- Choose `Edit` to open up that xml file
- 
- 
 ## Backup
 
 It is recommended that you make a backup of the original xml 
 configuration file before editing it as the edited XML files 
 often contain errors that can cause mars-sim fail to start.
+
+Whenever a new version of mars-sim and is being run in user machine, it will attempts to compare the content of the `version.txt` file in the `/.mars-sim/xml` folder to determine if it matches the core engine's build version. 
+
+If they don't match, mars-sim will attempt to backup the existing XML files on user home into a new directory inside the `backup` folder. e.g. `/backup/${build_version}`, where ${build_version} could be, say, `5004`
 
 
 ## List of xml files
@@ -60,7 +44,8 @@ often contain errors that can cause mars-sim fail to start.
 | Filename | Purpose |
 | --- | --- |
 | buildings.xml | Define new buildings with functions |                  
-| construction.xml | Define type of  foundations, frames and buildings |
+| construction.xml | Define type of foundations, frames and buildings |
+| crew.xml | Store the alpha crew roster |
 | crops.xml | Define food crops grown in greenhouses |
 | foodProduction.xml | Define food technology related processes |
 | landmarks.xml | Define landmarks on the surface of Mars |  
@@ -71,12 +56,13 @@ often contain errors that can cause mars-sim fail to start.
 | minerals.xml | Define mineral types |
 | part_packages.xml | Define part packages for initial settlements or resupplies from Earth |
 | parts.xml | Define parts  |
-| people.xml | Store the alpha crew roster and define properties related to people |
+| people.xml | Define properties related to people |
 | resources.xml | Define resources |
 | resupplies.xml | Define initial settlement resupply packages from Earth |
 | settlements.xml | Store settlement templates and define properties related to settlements |           
 | simulation.xml | Define simulation properties |
 | vehicles.xml | Define properties related to vehicles and rovers |
+
 
 ## Further Information
 

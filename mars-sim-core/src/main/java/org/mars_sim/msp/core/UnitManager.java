@@ -1018,11 +1018,23 @@ public class UnitManager implements Serializable {
 
 			// Loads the person's preconfigured skills (if any).
 			Map<String, Integer> skillMap = crewConfig.getSkillMap(x);
+		
+			// Set the person's configured Big Five Personality traits (if any).
+			Map<String, Integer> bigFiveMap = crewConfig.getBigFiveMap(x);
 
+			// Override person's personality type based on people.xml, if any.
+			String mbti = crewConfig.getConfiguredPersonPersonalityType(x, crew_id);
+			
 			// Create person and add to the unit manager.
 			// Use Builder Pattern for creating an instance of Person
-			Person person = Person.create(name, settlement).setGender(gender).setCountry(country).setSponsor(sponsor).setSkill(skillMap)
+			Person person = Person.create(name, settlement)
+					.setGender(gender)
+					.setCountry(country)
+					.setSponsor(sponsor)
+					.setSkill(skillMap)
+					.setPersonality(bigFiveMap, mbti)
 					.build();
+			
 			person.initialize();
 			// Set the person as a preconfigured crew member
 			person.setPreConfigured(true);
@@ -1056,26 +1068,6 @@ public class UnitManager implements Serializable {
 			person.getFavorite().setFavoriteSideDish(sideDish);
 			person.getFavorite().setFavoriteDessert(dessert);
 			person.getFavorite().setFavoriteActivity(FavoriteType.fromString(activity));
-
-			// Set the person's configured Big Five Personality traits (if any).
-			Map<String, Integer> bigFiveMap = crewConfig.getBigFiveMap(x);
-			if (bigFiveMap != null) {
-				for (String type : bigFiveMap.keySet()) {
-					int value = bigFiveMap.get(type);
-					person.getMind().getTraitManager().setPersonalityTrait(PersonalityTraitType.fromString(type),
-							value);
-				}
-			}
-
-			// Override person's personality type based on people.xml, if any.
-			String personalityType = crewConfig.getConfiguredPersonPersonalityType(x, crew_id);
-			if (personalityType != null) {
-				person.getMind().getMBTI().setTypeString(personalityType);
-			}
-
-			// Call syncUpExtraversion() to sync up the extraversion score between the two
-			// personality models
-			person.getMind().getMBTI().syncUpExtraversion();
 
 			// Set person's configured natural attributes (if any).
 			Map<String, Integer> naturalAttributeMap = crewConfig.getNaturalAttributeMap(x);
@@ -1269,14 +1261,14 @@ public class UnitManager implements Serializable {
 					}
 
 					// Use Builder Pattern for creating an instance of Person
-					person = Person.create(fullname, settlement).setGender(gender).setCountry(country)
-							.setSponsor(sponsor).setSkill(null).build();
+					person = Person.create(fullname, settlement)
+							.setGender(gender)
+							.setCountry(country)
+							.setSponsor(sponsor)
+							.setSkill(null)
+							.setPersonality(null, null)
+							.build();
 					person.initialize();
-
-					Mind m = person.getMind();
-					// Call syncUpExtraversion() to sync up the extraversion score between the two
-					// personality models
-					m.getMBTI().syncUpExtraversion();
 
 					addUnit(person);
 
@@ -1302,7 +1294,7 @@ public class UnitManager implements Serializable {
 
 //					System.out.println("UnitManager's createInitialPeople : settlement is " + settlement);
 					// Assign a job 
-					m.getInitialJob(JobUtil.MISSION_CONTROL);
+					person.getMind().getInitialJob(JobUtil.MISSION_CONTROL);
 
 					// Add sponsor
 //					person.assignReportingAuthority();

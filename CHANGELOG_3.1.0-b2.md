@@ -9,19 +9,19 @@ Copyright (C) 2019 Scott Davis
 
 ### CORE ENGINE IMPROVEMENTS :
 
-1. Apply the natural logarithm when computing value of some goods
+1. Apply the natural logarithm when computing value of goods.
 
 2. Allow time-ratio switches in full headless mode.
 
-3. Enable the use of Java 11 SE for running mars-sim (experimental).
+3. Adopt the use of Java 11 SE for running mars-sim.
 
 4. Add mission approval phase and score mission plans.
 
 5. Track/record settler's sleep time on each sol.
 
-6. Expand chat capability in headless mode.
+6. Expand chat capability with a stand-alone console.
 
-7. Implement basic emotion using two dimensional array.
+7. Implement basic emotion for each settler.
 
 8. Add Command Mode vs. Sandbox Mode.
 
@@ -35,12 +35,12 @@ Copyright (C) 2019 Scott Davis
 
 13. Create a death report on a deceased person.
 
-14. Adds topics for each scientific study. 
+14. Adds topics for scientific studies. 
     
 
 ### UI IMPROVEMENT :
 
-1. Limit billboard x & y location to within the main window.
+1. Add speed buttons on top right of tool bar
 
 
 
@@ -50,7 +50,7 @@ Copyright (C) 2019 Scott Davis
 
 2. Solve unix End-Of-Line issue for the executable file.
 
-3. Fix the path for notifier.css in QNotification.
+3. 
 
 4. Enable year 0 (orbit 0) in resupply or new arriving settlement mission.
 
@@ -64,6 +64,7 @@ Copyright (C) 2019 Scott Davis
 
 9. Fix food consumption during missions.
 
+10. Fix loading alpha crew MBTI personality into crew editor.
 
 -----------------------------------------------------------------------------------------
 

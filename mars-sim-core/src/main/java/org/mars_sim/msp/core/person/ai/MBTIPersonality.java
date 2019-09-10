@@ -89,20 +89,24 @@ public class MBTIPersonality implements Serializable {
 	// is extremely extravert
 	private String personalityType;
 	private Person person;
+	
+	private static PersonConfig config = SimulationConfig.instance().getPersonConfig();
 
 	/**
 	 * Constructor
 	 */
 	MBTIPersonality(Person person) {
-
 		this.person = person;
-
-		PersonConfig config = SimulationConfig.instance().getPersonConfig();
 
 		// Load personality type map if necessary.
 		if (personalityDistribution == null)
 			personalityDistribution = config.loadPersonalityDistribution();
+	}
 
+	/**
+	 * Obtains a random MBTI type
+	 */
+	public void setRandomMBTI() {
 		// Determine personality type.
 		double randValue = RandomUtil.getRandomDouble(100D);
 		Iterator<String> i = personalityDistribution.keySet().iterator();
@@ -123,7 +127,7 @@ public class MBTIPersonality implements Serializable {
 		if (personalityType == null)
 			throw new IllegalStateException("PersonalityType.constructor(): Unable to determine personality type.");
 	}
-
+	
 	/*
 	 * Sets the personality score pairs.
 	 */

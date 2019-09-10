@@ -10,11 +10,12 @@ package org.mars_sim.msp.core.person;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.mars_sim.msp.core.person.ai.PersonalityTraitType;
 import org.mars_sim.msp.core.person.ai.Skill;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.structure.Settlement;
 
-public class PersonBuilderImpl implements PersonBuilder<Person>{
+public class PersonBuilderImpl implements PersonBuilder<Person> {
 
 	private Person person;
 
@@ -53,25 +54,59 @@ public class PersonBuilderImpl implements PersonBuilder<Person>{
 
 	/**
 	 * Sets the skills of a person
+	 * 
 	 * @param skillMap
 	 * @return {@link PersonBuilder<>}
 	 */
 	public PersonBuilder<Person> setSkill(Map<String, Integer> skillMap) {
 		if (skillMap == null || skillMap.isEmpty()) {
 			person.getSkillManager().setRandomSkills();
-		}
-		else {
+		} else {
 			Iterator<String> i = skillMap.keySet().iterator();
 			while (i.hasNext()) {
 				String skillName = i.next();
 				int level = skillMap.get(skillName);
-				person.getSkillManager()
-						.addNewSkill(new Skill(SkillType.valueOfIgnoreCase(skillName), level));
+				person.getSkillManager().addNewSkill(new Skill(SkillType.valueOfIgnoreCase(skillName), level));
 			}
 		}
 		return this;
 	}
-	
+
+	/**
+	 * Sets the personality of a person
+	 * 
+	 * @param map
+	 * @return {@link PersonBuilder<>}
+	 */
+	public PersonBuilder<Person> setPersonality(Map<String, Integer> map, String mbti) {
+		if (map == null || map.isEmpty()) {
+			person.getMind().getTraitManager().setRandomBigFive();
+		} else {
+			for (String type : map.keySet()) {
+				int value = map.get(type);
+				person.getMind().getTraitManager().setPersonalityTrait(PersonalityTraitType.fromString(type),
+						value);
+			}
+		}
+		
+		if (mbti == null) {
+			person.getMind().getMBTI().setRandomMBTI();
+		}
+		else {
+			person.getMind().getMBTI().setTypeString(mbti);
+		}
+		
+		// Call syncUpExtraversion() to sync up the extraversion score between the two
+		// personality models
+		if (map != null && !map.isEmpty() && mbti == null)
+			// Use Big Five's extraversion score in MBTI 
+			person.getMind().getMBTI().syncUpExtraversion();
+		else
+			// Use MBTI's extraversion score in Big Five
+			person.getMind().getTraitManager().syncUpExtraversion();
+		
+		return this;
+	}
 	
 	public Person build() {
 		return person;
