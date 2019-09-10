@@ -12,14 +12,14 @@ package org.mars_sim.mapdata;
  */
 public class SurfaceMapData extends IntegerMapData {
 
-    // Static members.
-    private static final String INDEX_FILE = "SurfaceMarsMap.index";
-    private static final String MAP_FILE = "SurfaceMarsMap.dat"; //"SurfaceMarsMap.xz"; //
-    
-    /**
-     * Constructor
-     */
-    public SurfaceMapData() {
-        super(INDEX_FILE, MAP_FILE);
-    }
+	// Static members.
+	private static final String INDEX_FILE = "SurfaceMarsMap.index";
+	private static final String MAP_FILE = "SurfaceMarsMap.dat"; // "SurfaceMarsMap.xz"; //
+
+	/**
+	 * Constructor
+	 */
+	public SurfaceMapData() {
+		super(INDEX_FILE, MAP_FILE);
+	}
 }

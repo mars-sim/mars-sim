@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.mars;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Direction;
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.mars.MineralMapConfig.MineralType;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -47,7 +48,13 @@ public class RandomMineralMap implements Serializable, MineralMap {
 //	private static String CLASS_NAME = "org.mars_sim.msp.core.mars.RandomMineralMap";
 	private static Logger logger = Logger.getLogger(RandomMineralMap.class.getName());
 
+	
 	// Topographical Region Strings
+	
+	private static final String CRATER_IMG = Msg.getString("RandomMineralMap.image.crater"); //$NON-NLS-1$
+	private static final String VOLCANIC_IMG = Msg.getString("RandomMineralMap.image.volcanic"); //$NON-NLS-1$
+	private static final String SEDIMENTARY_IMG = Msg.getString("RandomMineralMap.image.sedimentary"); //$NON-NLS-1$
+
 	private static final String CRATER_REGION = "crater";
 	private static final String VOLCANIC_REGION = "volcanic";
 	private static final String SEDIMENTARY_REGION = "sedimentary";
@@ -76,9 +83,9 @@ public class RandomMineralMap implements Serializable, MineralMap {
 	 */
 	private void determineMineralConcentrations() {
 		// Load topographical regions.
-		Set<Coordinates> craterRegionSet = getTopoRegionSet("TopographyCrater.png");
-		Set<Coordinates> volcanicRegionSet = getTopoRegionSet("TopographyVolcanic.png");
-		Set<Coordinates> sedimentaryRegionSet = getTopoRegionSet("TopographySedimentary.png");
+		Set<Coordinates> craterRegionSet = getTopoRegionSet(CRATER_IMG);
+		Set<Coordinates> volcanicRegionSet = getTopoRegionSet(VOLCANIC_IMG);
+		Set<Coordinates> sedimentaryRegionSet = getTopoRegionSet(SEDIMENTARY_IMG);
 
 		MineralMapConfig config = SimulationConfig.instance().getMineralMapConfiguration();
 		try {

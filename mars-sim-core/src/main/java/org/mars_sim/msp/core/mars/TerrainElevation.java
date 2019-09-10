@@ -7,6 +7,7 @@
 
 package org.mars_sim.msp.core.mars;
 
+import org.mars_sim.mapdata.MapData;
 import org.mars_sim.mapdata.MapDataUtil;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Direction;
@@ -30,6 +31,8 @@ public class TerrainElevation implements Serializable {
 	private static final double ASCRAEUS_MONS_PHI = 1.363102D;
 	private static final double ASCRAEUS_MONS_THETA = 4.459316D;
 
+	private static MapData mapdata = MapDataUtil.instance().getTopoMapData();
+	
 	/**
 	 * Constructor
 	 */
@@ -64,7 +67,7 @@ public class TerrainElevation implements Serializable {
 	public double getElevation(Coordinates location) {
 
 		// Find hue and saturation color components at location.
-		Color color = MapDataUtil.instance().getTopoMapData().getRGBColor(location.getPhi(), location.getTheta());
+		Color color = mapdata.getRGBColor(location.getPhi(), location.getTheta());
 		float[] hsb = Color.RGBtoHSB(color.getRed(), color.getGreen(), color.getBlue(), null);
 		float hue = hsb[0];
 		float saturation = hsb[1];

@@ -23,6 +23,7 @@ import java.util.logging.Logger;
 import javax.swing.ImageIcon;
 
 import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.Msg;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
@@ -40,8 +41,8 @@ public class AreothermalMap implements Serializable {
 	private static Logger logger = Logger.getLogger(AreothermalMap.class.getName());
 
 	// Static members.
-	private static final String AREOTHERMAL_MAP_NAME = "TopographyVolcanic.png";
-
+	private static final String VOLCANIC_IMG = Msg.getString("RandomMineralMap.image.volcanic"); //$NON-NLS-1$
+	
 	// Data members
 	private Set<Coordinates> hotspots;
 	private Map<Coordinates, Double> areothermalPotentialCache;
@@ -59,7 +60,7 @@ public class AreothermalMap implements Serializable {
 	 */
 	private void loadHotspots() {
 		hotspots = new HashSet<Coordinates>(700);
-		URL imageMapURL = getClass().getResource("/images/" + AREOTHERMAL_MAP_NAME);
+		URL imageMapURL = getClass().getResource("/images/" + VOLCANIC_IMG);
 		ImageIcon mapIcon = new ImageIcon(imageMapURL);
 		Image mapImage = mapIcon.getImage();
 
