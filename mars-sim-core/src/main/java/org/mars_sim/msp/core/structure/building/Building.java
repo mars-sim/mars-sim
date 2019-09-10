@@ -223,8 +223,6 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	private transient AstronomicalObservation astro;
 	private transient Exercise gym;
 
-	private static MarsClock marsClock;
-	private static MasterClock masterClock;
 	private static BuildingConfig buildingConfig;
 	private static Malfunction malfunctionMeteoriteImpact;
 
@@ -303,8 +301,6 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
 		malfunctionMeteoriteImpact = MalfunctionFactory
 				.getMeteoriteImpactMalfunction(MalfunctionFactory.METEORITE_IMPACT_DAMAGE);
-		masterClock = Simulation.instance().getMasterClock();
-		marsClock = masterClock.getMarsClock();
 
 //		if (buildingType.equalsIgnoreCase("hallway") || buildingType.equalsIgnoreCase("tunnel")) {
 //			//b_inv = new Inventory(this);
@@ -1281,12 +1277,10 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	/**
 	 * Reloads instances after loading from a saved sim
 	 * 
-	 * @param {@link MasterClock}
-	 * @param {{@link MarsClock}
+	 * @param {@link BuildingConfig}
+	 * @param {{@link UnitManager}
 	 */
-	public static void initializeInstances(MasterClock c0, MarsClock c1, BuildingConfig bc, UnitManager u) {
-		masterClock = c0;
-		marsClock = c1;
+	public static void initializeInstances(BuildingConfig bc, UnitManager u) {
 		buildingConfig = bc;
 		unitManager = u;
 		malfunctionMeteoriteImpact = MalfunctionFactory

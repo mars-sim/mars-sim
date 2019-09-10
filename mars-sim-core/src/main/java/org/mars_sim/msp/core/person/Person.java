@@ -21,7 +21,6 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.LogConsolidated;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
@@ -53,7 +52,6 @@ import org.mars_sim.msp.core.reportingAuthority.RKAMissionControl;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 import org.mars_sim.msp.core.reportingAuthority.SpaceXMissionControl;
-import org.mars_sim.msp.core.reportingAuthority.objectives.BuildingSelfSustainingColonies;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -201,8 +199,6 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 
 	private Building currentBuilding;
 	
-	private Simulation sim;
-
 	/** The person's achievement in scientific fields. */
 	private Map<ScienceType, Double> scientificAchievement;
 	/** The person's paternal chromosome. */
@@ -270,6 +266,11 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		skillManager = new SkillManager(this);
 		// Construct the mind instance
 		mind = new Mind(this);
+		
+		// Set up the time stamp for the person
+		createBirthTimeStamp();
+		// Set the person's status of death
+		isBuried = false;
 	}
 
 	/*
@@ -282,21 +283,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	/**
 	 * Initialize field data, class and maps
 	 */
-	public void initialize() {
-		// Initialize instsances
-		sim = Simulation.instance();
-		masterClock = sim.getMasterClock();
-		marsClock = masterClock.getMarsClock();
-		earthClock = masterClock.getEarthClock();
-		mars = sim.getMars();
-		marsSurface = mars.getMarsSurface();
-		unitManager = sim.getUnitManager();
-
-		// Set up the time stamp for the person
-		createBirthTimeStamp();
-		// Set the person's status of death
-		isBuried = false;
-		
+	public void initialize() {	
 		// Add the person to the lookup map
 		unitManager.addPersonID(this);
 		// Put person in proper building.
@@ -688,6 +675,9 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 			day = 1;
 		}
 
+		// Set the age
+		age = updateAge();
+		
 		if (day < 10)
 			s.append(0);
 		s.append(day).append(" ");

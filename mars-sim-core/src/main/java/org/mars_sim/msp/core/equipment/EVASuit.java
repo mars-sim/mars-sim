@@ -14,16 +14,13 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.LogConsolidated;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
-import org.mars_sim.msp.core.mars.Weather;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.resource.ResourceUtil;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.CompositionOfAir;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -92,12 +89,8 @@ public class EVASuit extends Equipment implements LifeSupportType, Serializable,
 	private static double minimum_air_pressure;
 
 	// Data members
-//	private Person person;
-
 	/** The equipment's malfunction manager. */
 	private MalfunctionManager malfunctionManager;
-
-	private static Weather weather;
 
 	/**
 	 * Constructor.
@@ -110,9 +103,9 @@ public class EVASuit extends Equipment implements LifeSupportType, Serializable,
 		// Use Equipment constructor.
 		super(null, TYPE, location);
 
-		if (Simulation.instance().getMars() != null)
-			// Note: the use of if above is for passing maven test
-			weather = Simulation.instance().getMars().getWeather();
+//		if (Simulation.instance().getMars() != null)
+//			// Note: the use of if above is for passing maven test
+//			weather = Simulation.instance().getMars().getWeather();
 		
 		// Add scope to malfunction manager.
 		malfunctionManager = new MalfunctionManager(this, WEAR_LIFETIME, MAINTENANCE_TIME);
@@ -417,15 +410,15 @@ public class EVASuit extends Equipment implements LifeSupportType, Serializable,
 		return this.getNickName().equals(e.getNickName());
 	}
 	
-	/**
-	 * Reloads instances after loading from a saved sim
-	 * 
-	 * @param w
-	 */
-	public static void initializeInstances(Weather w) {
-		weather = w;
-	}
-	
+//	/**
+//	 * Reloads instances after loading from a saved sim
+//	 * 
+//	 * @param w
+//	 */
+//	public static void initializeInstances(Weather w) {
+//		weather = w;
+//	}
+//	
 	public void destroy() {
 		malfunctionManager = null;
 		weather = null;

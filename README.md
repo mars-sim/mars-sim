@@ -28,10 +28,10 @@ A settler will be a computer agent possessing certain prescribed attributes, dyn
 the external characteristics imposed on it. Each makes weighted decisions and interact with one 
 another to produce unexpected results in a sandbox world.
 
-For instance, each settler has a well-defined job, a role, a bunch of technical 
-[skills](https://github.com/mars-sim/mars-sim/wiki/Skills), a set of personality, natural 
-[attributes](https://github.com/mars-sim/mars-sim/wiki/Attributes), and task preferences 
-(likes and dislikes). They build [relationship](https://github.com/mars-sim/mars-sim/wiki/Relationship) 
+For instance, each settler is assigned with a job, a role, having technical 
+[skills](https://github.com/mars-sim/mars-sim/wiki/Skills), [personality traits](https://github.com/mars-sim/mars-sim/wiki/Personality), natural 
+[attributes](https://github.com/mars-sim/mars-sim/wiki/Attributes), and preferences of tasks. 
+They build [relationship](https://github.com/mars-sim/mars-sim/wiki/Relationship) 
 as they interact and work with one another. They are there to live, dream, explore, and settle Mars. 
 
 ---

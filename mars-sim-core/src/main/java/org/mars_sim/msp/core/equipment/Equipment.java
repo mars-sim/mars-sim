@@ -61,7 +61,6 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 		salvageInfo = null;
 		
 		if (mars != null) {// For passing maven test
-			marsSurface = mars.getMarsSurface();
 			// Initially set container unit to the mars surface
 			setContainerUnit(marsSurface);
 			// Add this equipment to the equipment lookup map		

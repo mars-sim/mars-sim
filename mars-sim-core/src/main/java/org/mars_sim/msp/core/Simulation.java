@@ -423,7 +423,7 @@ public class Simulation implements ClockListener, Serializable {
 		Inventory.initializeInstances(mars.getMarsSurface());
 		
 		Unit.initializeInstances(masterClock, marsClock, sim, mars, mars.getMarsSurface(), 
-				earthClock, unitManager, new MissionManager());
+				earthClock, mars.getWeather(), unitManager, new MissionManager());
 	}
 	
 	/**
@@ -440,6 +440,16 @@ public class Simulation implements ClockListener, Serializable {
 		relationshipManager = new RelationshipManager();
 		medicalManager = new MedicalManager();
 		masterClock = new MasterClock(isFXGL, timeRatio);
+		
+		// Create clock instances
+		MarsClock marsClock = masterClock.getMarsClock();
+		EarthClock earthClock = masterClock.getEarthClock();
+		
+		// Initialize units prior to starting the unit manager
+		Unit.initializeInstances(masterClock, marsClock, this, mars, mars.getMarsSurface(), 
+				earthClock, mars.getWeather(), unitManager, missionManager);
+		
+		// Initialize serializable managers
 		unitManager = new UnitManager();
 		unitManager.constructInitialUnits(loadSaveSim); // unitManager needs to be on the same thread as masterClock
 		eventManager = new HistoricalEventManager();
@@ -451,10 +461,6 @@ public class Simulation implements ClockListener, Serializable {
 		new MetaTaskUtil();
         // Initialize ManufactureUtil
         new ManufactureUtil();
-		
-		// Create marsClock instance
-		MarsClock marsClock = masterClock.getMarsClock();
-		EarthClock earthClock = masterClock.getEarthClock();
 		
 		// Gets config file instances
 		simulationConfig = SimulationConfig.instance();
@@ -470,6 +476,8 @@ public class Simulation implements ClockListener, Serializable {
 		MalfunctionManager.initializeInstances(masterClock, marsClock, malfunctionFactory, medicalManager, eventManager);
 		RelationshipManager.initializeInstances(unitManager);
 //		MedicalManager.initializeInstances();
+		
+		// Initialize Mars environmental objects
 		mars.initializeTransientData();
 		OrbitInfo.initializeInstances(marsClock, earthClock);
 		mars.getWeather().initializeTransientData();
@@ -485,13 +493,12 @@ public class Simulation implements ClockListener, Serializable {
 				mars.getSurfaceFeatures(), missionManager, relationshipManager, pc, creditManager);
 		Task.initializeInstances(marsClock, eventManager, relationshipManager, unitManager, 
 				scientificStudyManager, mars.getSurfaceFeatures(), missionManager, pc);
-		Unit.initializeInstances(masterClock, marsClock, this, mars, mars.getMarsSurface(), 
-				earthClock, unitManager, missionManager);
 		
 		ut = masterClock.getUpTimer();
 
 		logger.config("Done initializing intransient data.");
 	}
+
 
 	/**
 	 * Start the simulation instance.
@@ -904,9 +911,7 @@ public class Simulation implements ClockListener, Serializable {
 		SurfaceFeatures.initializeInstances(masterClock, mars, this, weather, orbit, missionManager);  // sunDirection, landmarks
 		OrbitInfo.initializeInstances(marsClock, earthClock);		
 		DustStorm.initializeInstances(weather);
-		
-//		System.out.println("Done with Mars environment instances");
-		
+			
 		// Gets config file instances
 		simulationConfig = SimulationConfig.instance();
 		BuildingConfig bc = simulationConfig.getBuildingConfiguration();
@@ -916,6 +921,10 @@ public class Simulation implements ClockListener, Serializable {
 		MalfunctionFactory.initializeInstances(this, marsClock, unitManager);
 		MissionManager.initializeInstances(marsClock);
 //		MedicalManager.justReloaded();
+		
+		// Re-initialize units prior to starting the unit manager
+		Unit.initializeInstances(masterClock, marsClock, this, mars, marsSurface, earthClock, weather, unitManager, missionManager);	
+		
 		unitManager.initializeInstances(marsClock);
 		RelationshipManager.initializeInstances(unitManager);
 		MalfunctionManager.initializeInstances(masterClock, marsClock, malfunctionFactory, medicalManager, eventManager);
@@ -923,23 +932,19 @@ public class Simulation implements ClockListener, Serializable {
 		ScientificStudyManager.initializeInstances(marsClock, unitManager);
 		ScientificStudy.initializeInstances(marsClock, unitManager);
 		ScientificStudyUtil.initializeInstances(relationshipManager, unitManager);
-		
-//		System.out.println("Done with Serialized Object instances");
-		
+				
 		Resupply.initializeInstances(bc, unitManager);
 		
 		// Re-initialize Unit related class
-		EVASuit.initializeInstances(weather);				
+//		EVASuit.initializeInstances(weather);				
 		GroundVehicle.initializeInstances(surface);				//  terrain
 		Inventory.initializeInstances(marsSurface);
 		Robot.initializeInstances();
 		Rover.initializeInstances(pc);					
-		Unit.initializeInstances(masterClock, marsClock, this, mars, marsSurface, earthClock, unitManager, missionManager);		
+	
 		Vehicle.initializeInstances();				//  vehicleconfig 
 		SalvageValues.initializeInstances(unitManager);
-		
-//		System.out.println("Done with Unit Object instances");
-		
+			
 		// Re-initialize Person/Robot related class
 		BotMind.initializeInstances(marsClock);
 		CircadianClock.initializeInstances(marsClock);
@@ -952,14 +957,12 @@ public class Simulation implements ClockListener, Serializable {
 		HealthProblem.initializeInstances(medicalManager, eventManager);
 		
 		// Re-initialize Structure related class
-		Building.initializeInstances(masterClock, marsClock, bc, unitManager);
+		Building.initializeInstances(bc, unitManager);
 		BuildingManager.initializeInstances(this, masterClock, marsClock, bc, eventManager, relationshipManager, unitManager);
-		Settlement.initializeInstances(marsClock, weather, unitManager);		// loadDefaultValues()
+		Settlement.initializeInstances(unitManager);		// loadDefaultValues()
 		ChainOfCommand.initializeInstances(marsClock, unitManager);
 		GoodsManager.initializeInstances(this, marsClock, missionManager, unitManager, pc);
-		
-//		System.out.println("Done with Structure instances");
-		
+			
 		// Re-initialize Building function related class
 		Function.initializeInstances(bc, masterClock, marsClock, pc, mars, surface, weather, unitManager);
 		Cooking.initializeInstances(); // prepareOilMenu()
@@ -976,8 +979,7 @@ public class Simulation implements ClockListener, Serializable {
 		RobotJob.initializeInstances(unitManager, missionManager);
 //		CreditEvent.initializeInstances(unitManager, missionManager);
 		
-//		System.out.println("Done with Building function instances");
-		
+	
 		// Re-initialize Task related class 
 //		LoadVehicleGarage.initializeInstances(pc); 
 //		ObserveAstronomicalObjects.initializeInstances(surface);
@@ -988,8 +990,7 @@ public class Simulation implements ClockListener, Serializable {
 		Task.initializeInstances(marsClock, eventManager, relationshipManager, unitManager, 
 				scientificStudyManager, surface, missionManager, pc);
 
-//		System.out.println("Done with Task instances");
-		
+	
 		// Re-initialize MetaMission class
 //		BuildingConstructionMissionMeta.setInstances(marsClock);
 //		CollectRegolithMeta.setInstances(missionManager);
@@ -1003,7 +1004,6 @@ public class Simulation implements ClockListener, Serializable {
 //		VehicleMission.justReloaded(missionManager); // missionmgr
 //		RescueSalvageVehicle.justReloaded(eventManager);  // eventManager
 		MissionPlanning.initializeInstances(marsClock);
-//		System.out.println("Done with mission instances");
 
 	}
 	

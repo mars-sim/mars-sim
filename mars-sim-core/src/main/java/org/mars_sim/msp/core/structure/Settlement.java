@@ -29,14 +29,11 @@ import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.mars.DustStorm;
-import org.mars_sim.msp.core.mars.MarsSurface;
-import org.mars_sim.msp.core.mars.Weather;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -51,7 +48,6 @@ import org.mars_sim.msp.core.person.ai.job.Meteorologist;
 import org.mars_sim.msp.core.person.ai.job.Technician;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
-import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.mission.meta.BuildingConstructionMissionMeta;
@@ -175,10 +171,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	public transient boolean justReloadedRobots = false;
 	/* Flag showing if the vehicle list has been reloaded. */
 	public transient boolean justReloadedVehicles = false;
-	/**
-	 * The Flag showing if the settlement has been exposed to the last radiation
-	 * event.
-	 */
+	/** The Flag showing if the settlement has been exposed to the last radiation event. */
 	private boolean[] exposed = { false, false, false };
 	/** The cache for the number of building connectors. */
 	private transient int numConnectorsCache = 0;
@@ -247,31 +240,18 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	private int numBots;
 	/** Numbers of associated vehicles in this settlement. */
 	private int numVehicles;
-	/**
-	 * Minimum amount of methane to stay in this settlement when considering a
-	 * mission.
-	 */
+	/** Minimum amount of methane to stay in this settlement when considering a mission. */
 	private int minMethane = 50;
-	/**
-	 * Minimum amount of oxygen to stay in this settlement when considering a
-	 * mission.
-	 */
+	/** Minimum amount of oxygen to stay in this settlement when considering a mission. */
 	private int mineOxygen = 50;
-	/**
-	 * Minimum amount of water to stay in this settlement when considering a
-	 * mission.
-	 */
+	/** Minimum amount of water to stay in this settlement when considering a mission. */
 	private int minWater = 50;
-	/**
-	 * Minimum amount of food to stay in this settlement when considering a mission.
-	 */
+	/** Minimum amount of food to stay in this settlement when considering a mission. */
 	private int minFood = 50;
 
 	/** The composite value of the minerals nearby. */
 	public double mineralValue = -1;
-	/**
-	 * The rate [kg per millisol] of filtering grey water for irrigating the crop.
-	 */
+	/** The rate [kg per millisol] of filtering grey water for irrigating the crop. */
 	public double greyWaterFilteringRate = 1;
 	/** The currently minimum passing score for mission approval. */
 	private double minimumPassingScore = 0;
@@ -374,12 +354,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	private static int foodID = ResourceUtil.foodID;
 	private static int methaneID = ResourceUtil.methaneID;
 
-	private static Simulation sim = Simulation.instance();
 	private static UnitManager unitManager;
-	private static MissionManager missionManager = sim.getMissionManager();
-	private static Weather weather;
-	private static MarsClock marsClock;
-	private static MarsSurface marsSurface;
 
 	private static MaintenanceMeta maintenanceMeta;
 	private static MaintenanceEVAMeta maintenanceEVAMeta;
@@ -399,7 +374,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	private Settlement() {
 		super(null, null);
 		location = getCoordinates();
-		unitManager = Simulation.instance().getUnitManager();
+		unitManager = sim.getUnitManager();
 		unitManager.addSettlementID(this);
 //		updateAllAssociatedPeople();
 //		updateAllAssociatedRobots();
@@ -428,7 +403,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		this.location = location;
 
 		if (unitManager == null) {// for passing maven test
-			unitManager = Simulation.instance().getUnitManager();
+			unitManager = sim.getUnitManager();
 		}
 
 		if (unitManager != null) {// for passing maven test
@@ -436,7 +411,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		}
 
 		if (missionManager == null) {// for passing maven test
-			missionManager = Simulation.instance().getMissionManager();
+			missionManager = sim.getMissionManager();
 		}
 	}
 
@@ -479,11 +454,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		this.projectedNumOfRobots = projectedNumOfRobots;
 		this.initialPopulation = populationNumber;
 
-		marsClock = sim.getMasterClock().getMarsClock();
-		weather = sim.getMars().getWeather();
 		unitManager = sim.getUnitManager();
-		// Set the container unit of the settlement to the MarsSurface
-		marsSurface = Simulation.instance().getMars().getMarsSurface();
 
 		setContainerUnit(marsSurface);
 
@@ -1140,9 +1111,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	 * @param clock
 	 * @param w
 	 */
-	public static void initializeInstances(MarsClock clock, Weather w, UnitManager u) {
-		marsClock = clock;
-		weather = w;
+	public static void initializeInstances(UnitManager u) {
 		unitManager = u;
 		loadDefaultValues();
 	}

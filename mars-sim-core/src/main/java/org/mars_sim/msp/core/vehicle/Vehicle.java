@@ -155,7 +155,6 @@ public abstract class Vehicle extends Unit
 
 	// Static members
 	private static VehicleConfig vehicleConfig = SimulationConfig.instance().getVehicleConfiguration();
-//	private static MissionManager missionManager;
 
 	/**
 	 * Constructor 1 : prepares a Vehicle object with a given settlement

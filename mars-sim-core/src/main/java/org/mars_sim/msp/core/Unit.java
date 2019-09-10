@@ -18,6 +18,7 @@ import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.location.LocationTag;
 import org.mars_sim.msp.core.mars.Mars;
 import org.mars_sim.msp.core.mars.MarsSurface;
+import org.mars_sim.msp.core.mars.Weather;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.robot.Robot;
@@ -88,7 +89,8 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 	protected static MasterClock masterClock;
 	protected static MarsSurface marsSurface;
 	protected static UnitManager unitManager;
-	public static MissionManager missionManager;
+	protected static MissionManager missionManager;
+	protected static Weather weather;
 	
 	/**
 	 * Must be synchronised to prevent duplicate ids being assigned via different
@@ -749,13 +751,14 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 	 * @param m
 	 */
 	public static void initializeInstances(MasterClock c0, MarsClock c1, Simulation s, 
-			Mars m, MarsSurface ms, EarthClock e, UnitManager u, MissionManager mm) {
+			Mars m, MarsSurface ms, EarthClock e, Weather w, UnitManager u, MissionManager mm) {
 		masterClock = c0;
+		earthClock = e;
 		marsClock = c1;
 		sim = s;
 		mars = m;
 		marsSurface = ms;
-		earthClock = e;
+		weather = w;
 		unitManager = u;
 		missionManager = mm;
 		
