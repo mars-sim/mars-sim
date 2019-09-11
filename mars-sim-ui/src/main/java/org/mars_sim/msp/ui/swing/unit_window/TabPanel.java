@@ -17,8 +17,10 @@ import javax.swing.JScrollPane;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
 
@@ -32,6 +34,8 @@ public abstract class TabPanel extends JScrollPane {
 	protected JPanel centerContentPanel;
 	protected Unit unit;
 	protected MainDesktopPane desktop;
+
+	protected static MissionManager missionManager = Simulation.instance().getMissionManager();
 
 	/**
 	 * Constructor

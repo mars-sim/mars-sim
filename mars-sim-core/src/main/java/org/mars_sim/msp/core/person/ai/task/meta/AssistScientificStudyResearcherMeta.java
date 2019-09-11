@@ -73,12 +73,13 @@ public class AssistScientificStudyResearcherMeta implements MetaTask, Serializab
         if (person.isInside()) {
 	        // Find potential researchers.
 	        Collection<Person> potentialResearchers = AssistScientificStudyResearcher.getBestResearchers(person);
-	        if (potentialResearchers.size() > 0) {
-	            result += RandomUtil.getRandomInt(1, 50);
+	        int size = potentialResearchers.size();
+	        if (size > 0) {
+	            result += size * RandomUtil.getRandomInt(1, 10);
 
-	            // If assistant is in a settlement, use crowding modifier.
                 Person researcher = (Person) potentialResearchers.toArray()[0];
 
+	            // If assistant is in a settlement, use crowding modifier.
                 Building building = BuildingManager.getBuilding(researcher);
                 if (building != null) {
                     result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building);
@@ -94,7 +95,7 @@ public class AssistScientificStudyResearcherMeta implements MetaTask, Serializab
 
 	            // Modify if research is the person's favorite activity.
 	            if (person.getFavorite().getFavoriteActivity() == FavoriteType.RESEARCH) {
-		        	result += RandomUtil.getRandomInt(1, 20);
+		        	result *= RandomUtil.getRandomDouble(3.0);
 	            }
 
                 // 2015-06-07 Added Preference modifier
@@ -104,7 +105,7 @@ public class AssistScientificStudyResearcherMeta implements MetaTask, Serializab
 	        }
         }
 
-        if (result < 0) result = 0;
+        if (result <= 0) result = 0;
         
         return result;
     }

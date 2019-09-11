@@ -64,21 +64,25 @@ public abstract class Mission implements Serializable {
 	public static final String USER_ABORTED_MISSION = "Mission aborted by user.";
 	public static final String UNREPAIRABLE_MALFUNCTION = "Unrepairable malfunction.";
 	public static final String NO_RESERVABLE_VEHICLES = "No reservable vehicles.";
+	
 	public static final String NO_AVAILABLE_VEHICLES = "No available vehicles.";
 	public static final String NOT_ENOUGH_RESOURCES = "Not enough resources.";
 	public static final String NO_EMERGENCY_SETTLEMENT_DESTINATION_FOUND = "No emergency settlement destination found.";
 	public static final String MEDICAL_EMERGENCY = "A member has a medical emergency.";
 	public static final String NO_TRADING_SETTLEMENT = "No trading settlement found.";
+	
 	public static final String NO_GOOD_EVA_SUIT = "No good EVA suit.";
 	public static final String REQUEST_RESCUE = "Requesting rescue.";
 	public static final String NO_ONGOING_SCIENTIFIC_STUDY = "No on-going scientific study being conducted in this subject.";
 	public static final String VEHICLE_NOT_LOADABLE = "Cannot load resources into the rover."; // 
 	public static final String NO_EXPLORATION_SITES = "Exploration sites could not be determined.";
+	
 	public static final String NOT_ENOUGH_MEMBERS = "Not enough members recruited.";
 	public static final String NO_MEMBERS_ON_MISSION = "No members available for mission.";
 	public static final String MISSION_NOT_APPROVED = "Mission not approved.";
 	public static final String TARGET_VEHICLE_NOT_FOUND = "Target vehicle not found.";
 	public static final String LUV_NOT_AVAILABLE = "LUV not available.";
+	
 	public static final String LUV_ATTACHMENT_PARTS_NOT_LOADABLE = "LUV and/or its attachment parts could not be loaded.";
 
 	public static final String MISSION = " mission";

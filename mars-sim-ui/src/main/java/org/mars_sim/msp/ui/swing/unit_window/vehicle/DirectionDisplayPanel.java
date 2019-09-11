@@ -14,82 +14,80 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 
+import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
 
 import org.mars_sim.msp.core.Direction;
 import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
-import com.alee.laf.panel.WebPanel;
-
-
-/** 
- * The DirectionDisplayPanel class displays the compass direction
- * a vehicle is currently travelling.
+/**
+ * The DirectionDisplayPanel class displays the compass direction a vehicle is
+ * currently travelling.
  */
-public class DirectionDisplayPanel extends WebPanel {
+public class DirectionDisplayPanel extends JPanel {
 
-    // Static members
-    private final static int CIRCLE_DIAMETER = 44;
-    private final static int CIRCLE_RADIUS = CIRCLE_DIAMETER / 2;
-    
+	// Static members
+	private final static int CIRCLE_DIAMETER = 44;
+	private final static int CIRCLE_RADIUS = CIRCLE_DIAMETER / 2;
+
 	// Data members
-    private Vehicle vehicle;
+	private Vehicle vehicle;
 
-	/** 
-     * Constructor
-     *
-     * @param vehicle the vehicle to track
-     */
+	/**
+	 * Constructor
+	 *
+	 * @param vehicle the vehicle to track
+	 */
 	public DirectionDisplayPanel(Vehicle vehicle) {
-        // Use WebPanel constructor
+		// Use WebPanel constructor
 		super();
-        
-        // Initialize data members
-        this.vehicle = vehicle;
-		
+
+		// Initialize data members
+		this.vehicle = vehicle;
+
 		// Set preferred component size.
 		setPreferredSize(new Dimension(52, 52));
-        
-        // Add border
-        setBorder(new LineBorder(Color.green));
-        
-        // Set panel to be opaque.
-        setOpaque(true);
-        
-        // Set background to black
-        setBackground(Color.black);
+
+		// Add border
+		setBorder(new LineBorder(Color.green));
+
+		// Set panel to be opaque.
+		setOpaque(true);
+
+		// Set background to black
+		setBackground(Color.black);
 	}
 
-	/** 
-     * Update this panel.
-     */
-    public void update() {
-        repaint();
-    }
+	/**
+	 * Update this panel.
+	 */
+	public void update() {
+		repaint();
+	}
 
-	/** Override paintComponent method 
-     *  @param g graphics context
-     */
+	/**
+	 * Override paintComponent method
+	 * 
+	 * @param g graphics context
+	 */
 	public void paintComponent(Graphics g) {
 
-        super.paintComponent(g);
-        
-        // Get component height and width
-        int height = getHeight();
-        int width = getWidth();
-        int centerX = width / 2;
-        int centerY = height / 2;
-        
-		// Draw dark green background circle 
+		super.paintComponent(g);
+
+		// Get component height and width
+		int height = getHeight();
+		int width = getWidth();
+		int centerX = width / 2;
+		int centerY = height / 2;
+
+		// Draw dark green background circle
 		g.setColor(new Color(0, 62, 0));
-        g.fillOval(centerX - CIRCLE_RADIUS, centerY - CIRCLE_RADIUS, 
-            CIRCLE_DIAMETER, CIRCLE_DIAMETER);
+		g.fillOval(centerX - CIRCLE_RADIUS, centerY - CIRCLE_RADIUS, CIRCLE_DIAMETER, CIRCLE_DIAMETER);
 
 		// Draw bright green out circle
 		g.setColor(Color.green);
-		g.drawOval(centerX - CIRCLE_RADIUS, centerY - CIRCLE_RADIUS, 
-            CIRCLE_DIAMETER, CIRCLE_DIAMETER);
+		g.drawOval(centerX - CIRCLE_RADIUS, centerY - CIRCLE_RADIUS, CIRCLE_DIAMETER, CIRCLE_DIAMETER);
 
 		// Draw center dot
 		g.drawRect(centerX, centerY, 1, 1);
@@ -99,11 +97,11 @@ public class DirectionDisplayPanel extends WebPanel {
 		g.setFont(tempFont);
 		FontMetrics tempMetrics = getFontMetrics(tempFont);
 		int fontHeight = tempMetrics.getAscent();
-        int letterRadius = CIRCLE_RADIUS - 7;
+		int letterRadius = CIRCLE_RADIUS - 7;
 
 		// Draw 'N'
 		int nWidth = tempMetrics.charWidth('N');
-        g.drawString("N", centerX - (nWidth / 2), centerY - letterRadius + (fontHeight / 2));
+		g.drawString("N", centerX - (nWidth / 2), centerY - letterRadius + (fontHeight / 2));
 
 		// Draw 'S'
 		int sWidth = tempMetrics.charWidth('S');
@@ -120,15 +118,15 @@ public class DirectionDisplayPanel extends WebPanel {
 		// Draw direction line if necessary
 		StatusType status = vehicle.getStatus();
 		if (status == StatusType.MOVING || (status == StatusType.STUCK && vehicle.getSpeed() > 0D)) {
-            Direction direction = vehicle.getDirection();
+			Direction direction = vehicle.getDirection();
 			double hyp = (double) (CIRCLE_RADIUS);
 			int newX = (int) Math.round(hyp * direction.getSinDirection());
 			int newY = -1 * (int) Math.round(hyp * direction.getCosDirection());
 			g.drawLine(centerX, centerY, centerX + newX, centerY + newY);
 		}
 	}
-	
+
 	public void destroy() {
-	    vehicle = null; 
+		vehicle = null;
 	}
 }

@@ -32,7 +32,6 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
@@ -129,7 +128,7 @@ extends TabPanel {
 		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		titlePanel.add(titleLabel);
 
-		// Prepare info panel.
+		// Prepare the top panel using spring layout.
 		WebPanel topPanel = new WebPanel(new SpringLayout());
 		//topPanel.setBorder(new MarsPanelBorder());
 		topContentPanel.add(topPanel);
@@ -146,7 +145,7 @@ extends TabPanel {
 		indoorPressureLabel = new WebLabel(Msg.getString("TabPanelAirComposition.label.totalPressure.kPa", indoorPressureCache), WebLabel.LEFT); //$NON-NLS-1$
 		topPanel.add(indoorPressureLabel);
 		
-		//Lay out the spring panel.
+		// Lay out the spring panel.
 		SpringUtilities.makeCompactGrid(topPanel,
 		                                2, 2, //rows, cols
 		                                5, 5,        //initX, initY
