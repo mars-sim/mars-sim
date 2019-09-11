@@ -141,7 +141,7 @@ public abstract class Vehicle extends Unit
 	private List<Point2D> passengerActivitySpots;
 	
 	/** The vehicle's status. */
-	private StatusType status; 
+	private StatusType statusType; 
 	/** The malfunction manager for the vehicle. */
 	protected MalfunctionManager malfunctionManager; 
 	/** Direction vehicle is traveling */
@@ -152,7 +152,9 @@ public abstract class Vehicle extends Unit
 	private Vehicle towingVehicle;
 	/** The The vehicle's salvage info. */
 	private SalvageInfo salvageInfo; 
-
+	/** The vehicle's status log. */
+	private Map<Integer, Map<Integer, List<StatusType>>> vehicleLog = new HashMap<>();
+	
 	// Static members
 	private static VehicleConfig vehicleConfig = SimulationConfig.instance().getVehicleConfiguration();
 
@@ -177,7 +179,7 @@ public abstract class Vehicle extends Unit
 		settlement.getInventory().storeUnit(this);
 
 //		missionManager = Simulation.instance().getMissionManager();
-		vehicleConfig = SimulationConfig.instance().getVehicleConfiguration();
+//		vehicleConfig = SimulationConfig.instance().getVehicleConfiguration();
 		if (unitManager == null)
 			unitManager = sim.getUnitManager();
 		unitManager.addVehicleID(this);
@@ -187,7 +189,7 @@ public abstract class Vehicle extends Unit
 
 		direction = new Direction(0);
 		trail = new ArrayList<Coordinates>();
-		status = StatusType.PARKED;
+
 		isReservedMission = false;
 		distanceMark = false;
 		reservedForMaintenance = false;
@@ -198,6 +200,8 @@ public abstract class Vehicle extends Unit
 		malfunctionManager = new MalfunctionManager(this, WEAR_LIFETIME, maintenanceWorkTime);
 		malfunctionManager.addScopeString(SystemType.VEHICLE.getName());// "Vehicle");
 
+		setStatus(StatusType.PARKED);
+		
 		// Set width and length of vehicle.
 		width = vehicleConfig.getWidth(vehicleType);
 		length = vehicleConfig.getLength(vehicleType);
@@ -234,7 +238,6 @@ public abstract class Vehicle extends Unit
 
 		// Initialize passenger activity spots.
 		passengerActivitySpots = new ArrayList<Point2D>(vehicleConfig.getPassengerActivitySpots(vehicleType));
-		
 	}
 
 	/**
@@ -281,7 +284,6 @@ public abstract class Vehicle extends Unit
 		setBaseSpeed(baseSpeed);
 		setBaseMass(baseMass);
 		this.drivetrainEfficiency = fuelEfficiency / 100.0;
-		status = StatusType.PARKED;
 		isReservedMission = false;
 		distanceMark = false;
 		reservedForMaintenance = false;
@@ -298,6 +300,8 @@ public abstract class Vehicle extends Unit
 		// Initialize malfunction manager.
 		malfunctionManager = new MalfunctionManager(this, WEAR_LIFETIME, maintenanceWorkTime);
 		malfunctionManager.addScopeString(SystemType.VEHICLE.getName());// "Vehicle");
+		
+		setStatus(StatusType.PARKED);
 	}
 
 	public String getDescription(String vehicleType) {
@@ -478,11 +482,7 @@ public abstract class Vehicle extends Unit
 	 * @return the vehicle's current status
 	 */
 	public StatusType getStatus() {
-
-		// Update status string if necessary.
-		updateStatus();
-
-		return status;
+		return statusType;
 	}
 
 	/**
@@ -490,40 +490,76 @@ public abstract class Vehicle extends Unit
 	 * 
 	 * @param type
 	 */
-	public void setStatus(StatusType type) {
-		this.status = type;
-		fireUnitUpdate(UnitEventType.STATUS_EVENT, type);
-	}
-	
-	/**
-	 * Updates the vehicle's status.
-	 */
-	private void updateStatus() {
-
-		// Update status based on current situation.
-		StatusType newStatus = null;//StatusType.PARKED;
-		if (getGarage() != null) {
-			newStatus = StatusType.GARAGED;
-		}
-		
-		if (reservedForMaintenance)
-			newStatus = StatusType.MAINTENANCE;
-		else if (towingVehicle != null)
-			newStatus = StatusType.TOWED;
-		else if (malfunctionManager.hasMalfunction())
-			newStatus = StatusType.MALFUNCTION;
-		else if (speed > 0D)
-			newStatus = StatusType.MOVING;
-		else
-			newStatus = StatusType.PARKED;
-		
-		if (status != newStatus) {
-			status = newStatus;
+	public void setStatus(StatusType newStatus) {
+		// Update status based on current situation.		
+		if (statusType != newStatus) {
+			statusType = newStatus;
+			writeLog(newStatus);
 			fireUnitUpdate(UnitEventType.STATUS_EVENT, newStatus);
 		}
 	}
+	
+	/**
+	 * Checks the vehicle's status.
+	 */
+	private void checkStatus() {
+		// Update status based on current situation.
+		StatusType newStatus = null;
+		if (getGarage() != null)
+			newStatus = StatusType.GARAGED;
+		else
+			newStatus = StatusType.PARKED;
+		
+		if (speed > 0D)
+			newStatus = StatusType.MOVING;
+		else if (towingVehicle != null)
+			newStatus = StatusType.TOWED;
+		else if (reservedForMaintenance)
+			newStatus = StatusType.MAINTENANCE;
+		else if (malfunctionManager.hasMalfunction())
+			newStatus = StatusType.MALFUNCTION;
 
+		setStatus(newStatus);
+	}
+	
+	/**
+	 * Records the status in the vehicle log 
+	 * 
+	 * @param type
+	 */
+	public void writeLog(StatusType type) {
+		int today = marsClock.getMissionSol();
+		int millisols = marsClock.getMillisolInt();
+		
+		Map<Integer, List<StatusType>> eachSol = null;
+		List<StatusType> list = null;
+		
+		if (vehicleLog.containsKey(today)) {
+			eachSol = vehicleLog.get(today);
+					
+			if (eachSol.containsKey(millisols)) {
+				list = eachSol.get(millisols);
+			}
+			else {
+				list = new ArrayList<>();
+			}
+		}
+		
+		else {
+			eachSol = new HashMap<>();
+			list = new ArrayList<>();
+		}
+		
+		list.add(type);
+		eachSol.put(millisols, list);
+		vehicleLog.put(today, eachSol);
+//		System.out.println(getName() + " log's size : " + vehicleLog.size());
+	}
 
+	public Map<Integer, Map<Integer, List<StatusType>>> getVehicleLog() {
+		return vehicleLog;
+	}
+	
 	/**
 	 * Checks if the vehicle is reserved for any reason.
 	 * 
@@ -849,13 +885,13 @@ public abstract class Vehicle extends Unit
 	 */
 	public void timePassing(double time) {
 
-		// Update status if necessary.
-		//updateStatus();
-
-		if (status == StatusType.MOVING)
+		// Checks status.
+		checkStatus();
+		
+		if (statusType == StatusType.MOVING)
 			malfunctionManager.activeTimePassing(time);
 		// Make sure reservedForMaintenance is false if vehicle needs no maintenance.
-		else if (status == StatusType.MAINTENANCE) {
+		else if (statusType == StatusType.MAINTENANCE) {
 			if (malfunctionManager.getEffectiveTimeSinceLastMaintenance() <= 0D)
 				setReservedForMaintenance(false);
 		} else {
@@ -1201,7 +1237,7 @@ public abstract class Vehicle extends Unit
 		trail.clear();
 		trail = null;
 		towingVehicle = null;
-		status = null;
+		statusType = null;
 		if (salvageInfo != null)
 			salvageInfo.destroy();
 		salvageInfo = null;

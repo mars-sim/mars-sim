@@ -24,8 +24,7 @@ import com.alee.laf.button.WebButton;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 
-public class TabPanelTow
-extends TabPanel {
+public class TabPanelTow extends TabPanel {
 
 	// Data members
 	private WebPanel towingLabelPanel;

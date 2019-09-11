@@ -178,7 +178,7 @@ public final class MalfunctionFactory implements Serializable {
 		}
 
 		if (person.isInVehicle()) {
-			entities = getMalfunctionables(person.getVehicle());
+			entities.addAll(getMalfunctionables(person.getVehicle()));
 		}
 
 		Collection<Unit> inventoryUnits = person.getInventory().getContainedUnits();
@@ -202,7 +202,7 @@ public final class MalfunctionFactory implements Serializable {
 		}
 
 		if (robot.isInVehicle()) {
-			entities = getMalfunctionables(robot.getVehicle());
+			entities.addAll(getMalfunctionables(robot.getVehicle()));
 		}
 
 		Collection<Unit> inventoryUnits = robot.getInventory().getContainedUnits();

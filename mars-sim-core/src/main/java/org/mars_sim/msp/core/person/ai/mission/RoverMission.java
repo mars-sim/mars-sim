@@ -169,11 +169,15 @@ public abstract class RoverMission extends VehicleMission {
 				usable = false;
 			if (!(vehicle instanceof Rover))
 				usable = false;
-
+			if (vehicle.getStatus() == StatusType.MAINTENANCE || vehicle.getStatus() == StatusType.MALFUNCTION)
+				usable = false;
+			
 			if (usable) {
 				if (result == null)
+					// so far, this is the first vehicle being picked
 					result = vehicle;
 				else if (vehicle.getRange() > result.getRange())
+					// This vehicle has a better range than the previously selected vehicle
 					result = vehicle;
 			}
 		}
@@ -205,7 +209,9 @@ public abstract class RoverMission extends VehicleMission {
 				usable = false;
 			if (!(vehicle instanceof Rover))
 				usable = false;
-
+			if (vehicle.getStatus() == StatusType.MAINTENANCE || vehicle.getStatus() == StatusType.MALFUNCTION)
+				usable = false;
+			
 			if (vehicle.getInventory().getTotalInventoryMass(false) > 0D)
 				usable = false;
 
@@ -294,7 +300,7 @@ public abstract class RoverMission extends VehicleMission {
 			}
 
 			// If the vehicle is currently not in a garage
-			if (v.getGarage() == null) { //BuildingManager.getBuilding(getVehicle()) == null) {
+			if (v.getGarage() == null) {
 				// Add the rover to a garage if possible.
 				BuildingManager.addToGarage((Rover) v, v.getSettlement());
 			}

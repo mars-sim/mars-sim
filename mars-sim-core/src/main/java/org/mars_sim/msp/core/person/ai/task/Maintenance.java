@@ -34,6 +34,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Rover;
+import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
@@ -72,11 +73,14 @@ public class Maintenance extends Task implements Serializable {
 
 		try {
 			entity = getMaintenanceMalfunctionable();
+			
 			if (entity != null) {
+				
 				if (isInhabitableBuilding(entity)) {
 					// Walk to random location in building.
 					walkToRandomLocInBuilding((Building) entity, false);
-				} else {
+					
+				} else if (isVehicleMalfunction(entity)) {
 
 					if (person.isInVehicle()) {
 						// If person is in rover, walk to passenger activity spot.
@@ -107,15 +111,17 @@ public class Maintenance extends Task implements Serializable {
 		try {
 			entity = getMaintenanceMalfunctionable();
 			if (entity != null) {
+				
 				if (isInhabitableBuilding(entity)) {
 					// Walk to random location in building.
 					walkToRandomLocInBuilding((Building) entity, false);
-				} else {
+					
+				} else if (isVehicleMalfunction(entity)) {
+					
 					if (!robot.isInVehicle()) {
 						// Walk to random location.
 						walkToRandomLocation(false);
 					}
-
 				}
 			} else {
 				endTask();
@@ -211,6 +217,7 @@ public class Maintenance extends Task implements Serializable {
 				}
 			}
 		}
+		
 		if (!repairParts) {
 			endTask();
 			return time;
@@ -365,6 +372,23 @@ public class Maintenance extends Task implements Serializable {
 		return result;
 	}
 
+	/**
+	 * Checks if a malfunctionable is a vehicle.
+	 * 
+	 * @param malfunctionable the malfunctionable.
+	 * @return true if it's a vehicle.
+	 */
+	private boolean isVehicleMalfunction(Malfunctionable malfunctionable) {
+		boolean result = false;
+		if (malfunctionable instanceof Vehicle) {
+			Vehicle v = (Vehicle) malfunctionable;
+			if (v.getStatus() == StatusType.MALFUNCTION) {
+				result = true;
+			}
+		}
+		return result;
+	}
+	
 	/**
 	 * Gets the probability weight for a malfunctionable.
 	 * 

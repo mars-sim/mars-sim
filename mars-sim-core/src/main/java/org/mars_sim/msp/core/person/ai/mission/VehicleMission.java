@@ -343,7 +343,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			// Check if user aborted the mission and if
 			// the vehicle has been disembarked.
 			if (reason.equals(Mission.USER_ABORTED_MISSION)) {
-				if (vehicle.getSettlement() == null) { 
+				
+				if (vehicle.getSettlement() == null) {
 					// if the vehicle has not arrived or departed a settlement yet
 					String s = null;
 					if (description.startsWith("A") || description.startsWith("I")) {
@@ -431,11 +432,22 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 				}
 
 				else { // Vehicle is already in the settlement vicinity
+					
+					if (!vehicle.isBeaconOn()) {
+						// if the emergency beacon is off
+						// Question: could the emergency beacon itself be broken ?
+						LogConsolidated.log(Level.WARNING, 0, sourceName,
+								"[" + startingMember.getLocationTag().getLocale() + "] " + startingMember
+										+ " turned on " + vehicle
+										+ "'s emergency beacon and request for towing. Reason : " + reason);
+						vehicle.setEmergencyBeacon(true);
+					}
 					// e.g. unrepairable malfunction
 					LogConsolidated.log(Level.WARNING, 2000, sourceName, 
 							"[" + vehicle.getLocationTag().getLocale() + "] "
 							+ vehicle.getName() + " is currently at " + vehicle.getSettlement()
 							+ " and its mission ended. Reason : " + reason);
+					
 					// if the vehicle is still somewhere inside the settlement when it got broken
 					// down
 					// TODO: wait till the repair is done and the mission may resume ?!?
