@@ -40,7 +40,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.interplanetary.transport.TransportManager;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
@@ -193,6 +192,10 @@ public class Simulation implements ClockListener, Serializable {
 	public final static String XML_DIR = System.getProperty("user.home") + //$NON-NLS-1$
 			File.separator + Msg.getString("Simulation.homeFolder") + //$NON-NLS-1$
 			File.separator + Msg.getString("Simulation.xmlFolder"); //$NON-NLS-1$
+	/** music files directory. */
+	public final static String MUSIC_DIR = System.getProperty("user.home") + //$NON-NLS-1$
+			File.separator + Msg.getString("Simulation.homeFolder") + //$NON-NLS-1$
+			File.separator + Msg.getString("Simulation.musicFolder"); //$NON-NLS-1$
 	/** The version.txt denotes the xml build version. */	
 	public final static String VERSION_FILE = Msg.getString("Simulation.versionFile"); //$NON-NLS-1$
 	/** autosave directory. */
@@ -530,7 +533,7 @@ public class Simulation implements ClockListener, Serializable {
 	 * @param autosaveDefault. True if default is used for autosave
 	 */
 	public void startClock(boolean autosaveDefault) {
-		logger.config("Simulation's startClock() is on " + Thread.currentThread().getName());
+//		logger.config("Simulation's startClock() is on " + Thread.currentThread().getName());
 		// SwingUtilities.invokeLater(() -> testConsole());
 		
 		masterClock.addClockListener(this);

@@ -7,7 +7,11 @@
 
 package org.mars_sim.msp.ui.swing.sound;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,6 +21,8 @@ import java.util.logging.Logger;
 
 import javax.swing.SwingUtilities;
 
+import org.apache.commons.io.FileUtils;
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.time.MasterClock;
@@ -29,13 +35,15 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 public class AudioPlayer implements ClockListener {
 
 	private static Logger logger = Logger.getLogger(AudioPlayer.class.getName());
-
-	private final static int LOUD_TRACKS = 6;
-	private final static int REPEATING_TRACKS = 4; // track the last 4 tracks and avoid playing them repetitively.
+	private final String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
+			logger.getName().length());
+	
+//	private final static int LOUD_TRACKS = 6;
+//	private final static int REPEATING_TRACKS = 4; // track the last 4 tracks and avoid playing them repetitively.
 
 	public final static float DEFAULT_VOL = .5f;
 
-	private static int num_tracks;
+	private static int numTracks;
 
 	/** The volume of the audio player (0.0 to 1.0) */
 	public static double currentMusicVol = DEFAULT_VOL;
@@ -63,7 +71,7 @@ public class AudioPlayer implements ClockListener {
 	private static Map<String, OGGSoundClip> allSoundClips;
 
 	private static List<String> soundEffects;
-	private static List<String> soundTracks;
+	private static List<String> musicTracks;
 	private static List<Integer> played_tracks = new ArrayList<>();
 
 	private static MasterClock masterClock;
@@ -71,85 +79,118 @@ public class AudioPlayer implements ClockListener {
 	public AudioPlayer(MainDesktopPane desktop) {
 		// logger.config("constructor is on " + Thread.currentThread().getName());
 //		this.desktop = desktop;
-//		mainScene = desktop.getMainScene();
 
 		masterClock = Simulation.instance().getMasterClock();
 
 		// Add AudioPlayer to MasterClock's clock listener
 		masterClock.addClockListener(this);
-
-//		if (MainMenu.isSoundDisabled()) {
-//			isSoundDisabled = true;
-//			currentMusicVol = 0;
-//			currentSoundVol = 0;
-//		}
-//
-//		else {
-//			currentMusicVol = MainMenu.music_v / 100D;
-//			currentSoundVol = MainMenu.sound_effect_v / 100D;
-		
+	
 		if (!isSoundDisabled) {
-			allMusicTracks = new HashMap<>();
-			allSoundClips = new HashMap<>();
-
-			soundTracks = new ArrayList<>();
-			soundTracks.add(SoundConstants.ST_AREOLOGIE);
-			soundTracks.add(SoundConstants.ST_PUZZLE);
-			soundTracks.add(SoundConstants.ST_MISTY);
-			soundTracks.add(SoundConstants.ST_MENU);
-
-			soundTracks.add(SoundConstants.ST_ONE_WORLD);
-			soundTracks.add(SoundConstants.ST_BEDTIME);
-			soundTracks.add(SoundConstants.ST_BOG_CREATURES);
-			soundTracks.add(SoundConstants.ST_LOST_JUNGLE);
-
-			// not for playing at the start of the sim due to its loudness
-			// Set LOUD_TRACKS to 5
-			soundTracks.add(SoundConstants.ST_MOONLIGHT);
-			soundTracks.add(SoundConstants.ST_CITY);
-			soundTracks.add(SoundConstants.ST_CLIPPITY);
-			soundTracks.add(SoundConstants.ST_MONKEY);
-//			soundTracks.add(SoundConstants.ST_SURREAL);
-			soundTracks.add(SoundConstants.ST_FANTASCAPE);
-
-			num_tracks = soundTracks.size();
-
-			for (String p : soundTracks) {
-				try {
-					allMusicTracks.put(p, new OGGSoundClip(p));
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-
-			soundEffects = new ArrayList<>();
-			soundEffects.add(SoundConstants.SND_EQUIPMENT);
-			soundEffects.add(SoundConstants.SND_PERSON_DEAD);
-			soundEffects.add(SoundConstants.SND_PERSON_FEMALE1);
-			soundEffects.add(SoundConstants.SND_PERSON_FEMALE2);
-			soundEffects.add(SoundConstants.SND_PERSON_MALE1);
-			soundEffects.add(SoundConstants.SND_PERSON_MALE2);
-
-			soundEffects.add(SoundConstants.SND_ROVER_MAINTENANCE);
-			soundEffects.add(SoundConstants.SND_ROVER_MALFUNCTION);
-			soundEffects.add(SoundConstants.SND_ROVER_MOVING);
-			soundEffects.add(SoundConstants.SND_ROVER_PARKED);
-			soundEffects.add(SoundConstants.SND_SETTLEMENT);
-
-			for (String s : soundEffects) {
-				try {
-					allSoundClips.put(s, new OGGSoundClip(s));
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-
-			currentSoundClip = allSoundClips.get(SoundConstants.SND_PERSON_FEMALE1);
+			loadMusicTracks();
+			loadSoundEffects();
 		}
 		
-//		}
-		// if (UIConfig.INSTANCE.useUIDefault()) {
-		// }
+//		if (UIConfig.INSTANCE.useUIDefault())
+	}
+		
+	public void loadMusicTracks() {
+		allMusicTracks = new HashMap<>();
+		allSoundClips = new HashMap<>();
+
+		musicTracks = new ArrayList<>();
+//			musicTracks.add(SoundConstants.ST_AREOLOGIE);
+//			musicTracks.add(SoundConstants.ST_PUZZLE);
+//			musicTracks.add(SoundConstants.ST_MISTY);
+//			musicTracks.add(SoundConstants.ST_MENU);
+
+//			musicTracks.add(SoundConstants.ST_ONE_WORLD);
+//			musicTracks.add(SoundConstants.ST_BEDTIME);
+//			musicTracks.add(SoundConstants.ST_BOG_CREATURES);
+//			musicTracks.add(SoundConstants.ST_LOST_JUNGLE);
+
+		// not for playing at the start of the sim due to its loudness
+		// Set LOUD_TRACKS to 5
+//			musicTracks.add(SoundConstants.ST_MOONLIGHT);
+//			musicTracks.add(SoundConstants.ST_CITY);
+//			musicTracks.add(SoundConstants.ST_CLIPPITY);
+//			musicTracks.add(SoundConstants.ST_MONKEY);
+//			musicTracks.add(SoundConstants.ST_SURREAL);
+//			musicTracks.add(SoundConstants.ST_FANTASCAPE);
+
+		File folder = new File(Simulation.MUSIC_DIR);
+//	        FileSystem fileSys = FileSystems.getDefault();
+
+//			Path path = fileSys.getPath(folder.getPath());
+		
+		boolean dirExist = folder.isDirectory();
+		boolean fileExist = folder.isFile();
+		
+		// if it exits as a file, delete it
+		if (fileExist) {
+			LogConsolidated.log(Level.CONFIG, 0, sourceName, "'" + folder +  "'" 
+					+ " is not supposed to exist as a file. Deleting it.");
+			try {
+				FileUtils.forceDelete(folder);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		if (!dirExist) {
+			// Create this directory
+			folder.mkdirs();
+			LogConsolidated.log(Level.CONFIG, 0, sourceName, "'" + folder +  "'" 
+					+ " folder is created for storing sound tracks");
+		}
+		else {
+			File[] listOfFiles = folder.listFiles();
+
+			for (int i = 0; i < listOfFiles.length; i++) {
+				File f = listOfFiles[i];
+				if (f.isFile() && f.getName().contains(".ogg")) {
+					musicTracks.add(f.getName());
+				}
+			}
+			
+			numTracks = musicTracks.size();
+			
+			for (String p : musicTracks) {
+				try {
+					allMusicTracks.put(p, new OGGSoundClip(p, true));
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			
+			if (allMusicTracks.size() > 0)
+				currentMusicTrack = allMusicTracks.get(musicTracks.get(numTracks - 1));
+		}
+	}
+	
+	public void loadSoundEffects() {
+		soundEffects = new ArrayList<>();
+		soundEffects.add(SoundConstants.SND_EQUIPMENT);
+		soundEffects.add(SoundConstants.SND_PERSON_DEAD);
+		soundEffects.add(SoundConstants.SND_PERSON_FEMALE1);
+		soundEffects.add(SoundConstants.SND_PERSON_FEMALE2);
+		soundEffects.add(SoundConstants.SND_PERSON_MALE1);
+		soundEffects.add(SoundConstants.SND_PERSON_MALE2);
+
+		soundEffects.add(SoundConstants.SND_ROVER_MAINTENANCE);
+		soundEffects.add(SoundConstants.SND_ROVER_MALFUNCTION);
+		soundEffects.add(SoundConstants.SND_ROVER_MOVING);
+		soundEffects.add(SoundConstants.SND_ROVER_PARKED);
+		soundEffects.add(SoundConstants.SND_SETTLEMENT);
+
+		for (String s : soundEffects) {
+			try {
+				allSoundClips.put(s, new OGGSoundClip(s, false));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+
+		currentSoundClip = allSoundClips.get(SoundConstants.SND_PERSON_FEMALE1);
 	}
 
 	/**
@@ -180,7 +221,7 @@ public class AudioPlayer implements ClockListener {
 			currentSoundClip.play();
 		} else {
 			try {
-				currentSoundClip = new OGGSoundClip(filepath);
+				currentSoundClip = new OGGSoundClip(filepath, false);
 				allSoundClips.put(filepath, currentSoundClip);
 				currentSoundClip.determineGain(currentSoundVol);
 				currentSoundClip.play();
@@ -199,13 +240,8 @@ public class AudioPlayer implements ClockListener {
 	public void playMusic(String filepath) {
 		// logger.config("play() is on " + Thread.currentThread().getName());
 		if (!isMusicMute()) {
-//			if (mainScene != null)
-////			if (desktop.getMainScene() != null)
-//				// Platform.runLater(() -> {
-//				loadMusic(filepath);
-//			// });
-//			else
-				SwingUtilities.invokeLater(() -> loadMusic(filepath));
+//			SwingUtilities.invokeLater(() -> loadMusic(filepath));
+			loadMusic(filepath);
 		}
 	}
 
@@ -221,7 +257,7 @@ public class AudioPlayer implements ClockListener {
 			currentMusicTrack.loop();
 		} else {
 			try {
-				currentMusicTrack = new OGGSoundClip(filepath);
+				currentMusicTrack = new OGGSoundClip(filepath, true);
 				allMusicTracks.put(filepath, currentMusicTrack);
 				currentMusicTrack.determineGain(currentMusicVol);
 				currentMusicTrack.loop();
@@ -462,11 +498,14 @@ public class AudioPlayer implements ClockListener {
 		int rand = 0;
 		// At the start of the sim, refrain from playing the last few tracks due to
 		// their sudden loudness
+		if (numTracks == 0)
+			return;
 		if (played_tracks.isEmpty())
 			// Do not repeat the last 4 music tracks just played
-			rand = RandomUtil.getRandomInt(num_tracks - LOUD_TRACKS - 1);
-		else
-			rand = RandomUtil.getRandomInt(num_tracks - 1);
+//			rand = RandomUtil.getRandomInt(numTracks - LOUD_TRACKS - 1);
+//		else
+			rand = RandomUtil.getRandomInt(numTracks - 1);
+		
 		boolean isNewTrack = false;
 		// Do not repeat the last 4 music tracks just played
 		while (!isNewTrack) {
@@ -474,19 +513,19 @@ public class AudioPlayer implements ClockListener {
 			if (!played_tracks.contains(rand)) {
 				isNewTrack = true;
 
-				String name = soundTracks.get(rand);
+				String name = musicTracks.get(rand);
 				playMusic(name);
 				logger.config("Playing background music track #" + (rand + 1) + " '" + name + "'");
 				// Add the new track
 				played_tracks.add((rand));
 				// Remove the earliest track
-				if (played_tracks.size() > REPEATING_TRACKS)
+//				if (played_tracks.size() > REPEATING_TRACKS)
 					played_tracks.remove(0);
 				// Reset the play times to 1 for this new track
 				play_times = 1;
 				// break;
 			} else
-				rand = RandomUtil.getRandomInt(num_tracks - 1);
+				rand = RandomUtil.getRandomInt(numTracks - 1);
 		}
 
 	}
@@ -504,13 +543,23 @@ public class AudioPlayer implements ClockListener {
 	 * Play a randomly selected music track
 	 */
 	public void playRandomMusicTrack() {
-		if (!isMusicMute() && isMusicTrackStopped() && !masterClock.isPaused() && !isSoundDisabled) {
+		if (numTracks == 0)
+			return;
+		else if (isMusicMute())
+			return;
+		else if (!isMusicTrackStopped())
+			return;
+		else if (masterClock.isPaused())
+			return;
+		else if (isSoundDisabled)
+			return;
+		else {
 			// Since Areologie.ogg and Fantascape.ogg are 4 mins long, don't need to replay
 			// them
-			if (currentMusicTrack != null && currentMusicTrack.toString().equals(SoundConstants.ST_AREOLOGIE)
+			if (currentMusicTrack != null //&& currentMusicTrack.toString().equals(SoundConstants.ST_AREOLOGIE)
 					&& play_times < 2) {
 				pickANewTrack();
-			} else if (currentMusicTrack != null && currentMusicTrack.toString().equals(SoundConstants.ST_FANTASCAPE)
+			} else if (currentMusicTrack != null //&& currentMusicTrack.toString().equals(SoundConstants.ST_FANTASCAPE)
 					&& play_times < 2) {
 				pickANewTrack();
 			} else if (currentMusicTrack != null && !currentMusicTrack.isMute() && currentMusicTrack.getVol() != 0
@@ -537,7 +586,7 @@ public class AudioPlayer implements ClockListener {
 		allMusicTracks = null;
 		currentSoundClip = null;
 		currentMusicTrack = null;
-		soundTracks = null;
+		musicTracks = null;
 		played_tracks = null;
 
 //		if (mainScene != null)
@@ -545,13 +594,17 @@ public class AudioPlayer implements ClockListener {
 
 	}
 
+	public int getNumTracks() {
+		return numTracks;
+	}
+	
 	public void destroy() {
 		allSoundClips = null;
 		allMusicTracks = null;
 //		desktop = null;
 		currentSoundClip = null;
 		currentMusicTrack = null;
-		soundTracks = null;
+		musicTracks = null;
 		played_tracks = null;
 	}
 
