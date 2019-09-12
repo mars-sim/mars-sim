@@ -11,9 +11,6 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Direction;
 import org.mars_sim.msp.core.LocalAreaUtil;
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.mars.SurfaceFeatures;
-import org.mars_sim.msp.core.mars.TerrainElevation;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -29,7 +26,7 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-	
+
 	private static Logger logger = Logger.getLogger(GroundVehicle.class.getName());
 
 	// public final static String STUCK = "Stuck - using winch";
@@ -42,8 +39,7 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
 	/** True if vehicle is stuck. */
 	private boolean isStuck;
 
-	private static SurfaceFeatures surface;
-	private static TerrainElevation terrain;
+//	private static TerrainElevation terrain;
 
 	/**
 	 * Constructs a {@link GroundVehicle} object at a given settlement.
@@ -62,9 +58,8 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
 
 		setTerrainHandlingCapability(0D); // Default terrain capability
 
-		surface = Simulation.instance().getMars().getSurfaceFeatures();
-		terrain = surface.getTerrainElevation();
-		elevation = terrain.getElevation(getCoordinates());
+//		terrain = surface.getTerrainElevation();
+		elevation = surface.getTerrainElevation().getElevation(getCoordinates());
 	}
 
 	/**
@@ -140,10 +135,7 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
 	 */
 	public double getTerrainGrade(Direction direction) {
 		// Determine the terrain grade in a given direction from the vehicle.
-		// SurfaceFeatures surface =
-		// Simulation.instance().getMars().getSurfaceFeatures();
-		// TerrainElevation terrain = surface.getTerrainElevation();
-		return terrain.determineTerrainDifficulty(getCoordinates(), direction);
+		return surface.getTerrainElevation().determineTerrainDifficulty(getCoordinates(), direction);
 	}
 
 	/**
@@ -194,66 +186,66 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
 
 		Settlement settlement = getSettlement();
 		if (settlement == null) {
-			//throw new IllegalStateException("Vehicle not parked at a settlement");
+			// throw new IllegalStateException("Vehicle not parked at a settlement");
 			logger.severe(this.getName() + " no longer parks at a settlement.");
 		}
-		
+
 		else {
 			double centerXLoc = 0D;
 			double centerYLoc = 0D;
-			
+
 			// Place the vehicle starting from the settlement center (0,0).
-        	
+
 			int oX = 10;
 			int oY = 0;
-			
+
 			int weight = 2;
-			
+
 			int numHab = settlement.getBuildingManager().getBuildingsOfSameType("Lander Hab").size();
 			int numHub = settlement.getBuildingManager().getBuildingsOfSameType("Outpost Hub").size();
-			int numGarages = settlement.getBuildingManager().getBuildings(FunctionType.GROUND_VEHICLE_MAINTENANCE).size();
+			int numGarages = settlement.getBuildingManager().getBuildings(FunctionType.GROUND_VEHICLE_MAINTENANCE)
+					.size();
 			int total = numHab + numHub + numGarages * weight - 1;
 			if (total < 0)
 				total = 0;
 			int rand = RandomUtil.getRandomInt(total);
-			
+
 			if (rand != 0) {
-			
+
 				if (rand < numHab + numHub) {
-					int r0 = RandomUtil.getRandomInt(numHab-1);
+					int r0 = RandomUtil.getRandomInt(numHab - 1);
 					Building hab = settlement.getBuildingManager().getBuildingsOfSameType("Lander Hab").get(r0);
 					int r1 = 0;
 					Building hub = null;
 					if (numHub > 0) {
-						r1 = RandomUtil.getRandomInt(numHub-1);
+						r1 = RandomUtil.getRandomInt(numHub - 1);
 						hub = settlement.getBuildingManager().getBuildingsOfSameType("Outpost Hub").get(r1);
 					}
-					
+
 					if (hab != null) {
-						centerXLoc = (int)hab.getXLocation();
-						centerYLoc = (int)hab.getYLocation();
-					}
-					else if (hub != null) {
-						centerXLoc = (int)hub.getXLocation();
-						centerYLoc = (int)hub.getYLocation();							
+						centerXLoc = (int) hab.getXLocation();
+						centerYLoc = (int) hab.getYLocation();
+					} else if (hub != null) {
+						centerXLoc = (int) hub.getXLocation();
+						centerYLoc = (int) hub.getYLocation();
 					}
 				}
-				
+
 				else {
 					Building garage = BuildingManager.getAGarage(getSettlement());
-					centerXLoc = (int)garage.getXLocation();
-					centerYLoc = (int)garage.getYLocation();
+					centerXLoc = (int) garage.getXLocation();
+					centerYLoc = (int) garage.getYLocation();
 				}
 			}
-				
+
 			double newXLoc = 0D;
 			double newYLoc = 0D;
-			
+
 			double newFacing = 0D;
-			
+
 			double step = 10D;
 			boolean foundGoodLocation = false;
-	
+
 			// Try iteratively outward from 10m to 500m distance range.
 			for (int x = oX; (x < 500) && !foundGoodLocation; x += step) {
 				// Try ten random locations at each distance range.
@@ -263,18 +255,18 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
 					newXLoc = centerXLoc - (distance * Math.sin(radianDirection));
 					newYLoc = centerYLoc + (distance * Math.cos(radianDirection));
 					newFacing = RandomUtil.getRandomDouble(360D);
-	
+
 					// Check if new vehicle location collides with anything.
-					foundGoodLocation = LocalAreaUtil.isGoodLocation(this, newXLoc, newYLoc,
-							newFacing, getCoordinates());
+					foundGoodLocation = LocalAreaUtil.isGoodLocation(this, newXLoc, newYLoc, newFacing,
+							getCoordinates());
 				}
 			}
-			
+
 			setParkedLocation(newXLoc, newYLoc, newFacing);
 
 		}
 	}
-	
+
 //	public boolean isGoodLocation(double centerXLoc, double centerYLoc) {
 //		double newXLoc = 0D;
 //		double newYLoc = 0D;
@@ -297,22 +289,22 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
 //		}
 //		return foundGoodLocation;
 //	}
-	
-	/**
-	 * Reloads instances after loading from a saved sim
-	 * 
-	 * @param s
-	 */
-	public static void initializeInstances(SurfaceFeatures s) {
-		surface = s;
-		terrain = surface.getTerrainElevation();
-	}
-	
+
+//	/**
+//	 * Reloads instances after loading from a saved sim
+//	 * 
+//	 * @param s
+//	 */
+//	public static void initializeInstances(SurfaceFeatures s) {
+////		surface = s;
+////		terrain = surface.getTerrainElevation();
+//	}
+//	
 	/**
 	 * Prepare object for garbage collection.
 	 */
 	public void destroy() {
-		surface = null;
-		terrain = null;
+//		surface = null;
+//		terrain = null;
 	}
 }

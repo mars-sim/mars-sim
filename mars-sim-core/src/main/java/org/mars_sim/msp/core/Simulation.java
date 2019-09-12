@@ -425,8 +425,8 @@ public class Simulation implements ClockListener, Serializable {
 		// Set instance for Inventory
 		Inventory.initializeInstances(mars.getMarsSurface());
 		
-		Unit.initializeInstances(masterClock, marsClock, sim, mars, mars.getMarsSurface(), 
-				earthClock, mars.getWeather(), unitManager, new MissionManager());
+		Unit.initializeInstances(masterClock, marsClock, earthClock, sim, mars, 
+				mars.getMarsSurface(), mars.getWeather(), unitManager, new MissionManager());
 	}
 	
 	/**
@@ -449,8 +449,8 @@ public class Simulation implements ClockListener, Serializable {
 		EarthClock earthClock = masterClock.getEarthClock();
 		
 		// Initialize units prior to starting the unit manager
-		Unit.initializeInstances(masterClock, marsClock, this, mars, mars.getMarsSurface(), 
-				earthClock, mars.getWeather(), unitManager, missionManager);
+		Unit.initializeInstances(masterClock, marsClock, earthClock, this, mars, mars.getMarsSurface(), 
+				mars.getWeather(), unitManager, missionManager);
 		
 		// Initialize serializable managers
 		unitManager = new UnitManager();
@@ -926,7 +926,7 @@ public class Simulation implements ClockListener, Serializable {
 //		MedicalManager.justReloaded();
 		
 		// Re-initialize units prior to starting the unit manager
-		Unit.initializeInstances(masterClock, marsClock, this, mars, marsSurface, earthClock, weather, unitManager, missionManager);	
+		Unit.initializeInstances(masterClock, marsClock, earthClock, this, mars, marsSurface, weather, unitManager, missionManager);	
 		
 		unitManager.initializeInstances(marsClock);
 		RelationshipManager.initializeInstances(unitManager);
@@ -940,7 +940,7 @@ public class Simulation implements ClockListener, Serializable {
 		
 		// Re-initialize Unit related class
 //		EVASuit.initializeInstances(weather);				
-		GroundVehicle.initializeInstances(surface);				//  terrain
+//		GroundVehicle.initializeInstances(surface);				//  terrain
 		Inventory.initializeInstances(marsSurface);
 		Robot.initializeInstances();
 		Rover.initializeInstances(pc);					

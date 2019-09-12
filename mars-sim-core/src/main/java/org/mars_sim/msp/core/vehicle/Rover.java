@@ -77,8 +77,8 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportType, A
 	private List<Point2D> sickBayActivitySpots;
 
 	// Static data members
-	// private static VehicleConfig vehicleConfig;
-	private static PersonConfig personConfig;
+//	private static VehicleConfig vehicleConfig;
+//	private static PersonConfig personConfig;
 //	private static Weather weather;
 
 	/**
@@ -97,8 +97,8 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportType, A
 
 		// Get vehicle configuration.
 //		weather = Simulation.instance().getMars().getWeather();
-		VehicleConfig vehicleConfig = SimulationConfig.instance().getVehicleConfiguration();
-		personConfig = SimulationConfig.instance().getPersonConfig();
+//		VehicleConfig vehicleConfig = SimulationConfig.instance().getVehicleConfiguration();
+//		personConfig = SimulationConfig.instance().getPersonConfig();
 
 		// Add scope to malfunction manager.
 		malfunctionManager.addScopeString(SystemType.ROVER.toString());

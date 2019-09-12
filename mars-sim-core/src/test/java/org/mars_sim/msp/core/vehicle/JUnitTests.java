@@ -1,14 +1,11 @@
 package org.mars_sim.msp.core.vehicle;
 
-import junit.textui.TestRunner;
-
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.structure.MockSettlement;
+import org.mars_sim.msp.core.person.ai.task.WalkOutsideTest;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+import junit.textui.TestRunner;
 
 // include any ONE of the following...
 //import junit.textui.TestRunner;
@@ -54,7 +51,11 @@ public class JUnitTests extends TestCase {
      * Collection of external test suites to be included in current testing.
      */
     public static Test suite() {
-        return new TestSuite(thisClass);
+    	TestSuite suite =  new TestSuite(thisClass);
+        
+	    suite.addTestSuite(TestLightUtilityVehicle.class);
+	    
+	    return suite;
     }
 
     /**

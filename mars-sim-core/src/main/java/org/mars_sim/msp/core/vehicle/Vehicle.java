@@ -156,7 +156,7 @@ public abstract class Vehicle extends Unit
 	private Map<Integer, Map<Integer, List<StatusType>>> vehicleLog = new HashMap<>();
 	
 	// Static members
-	private static VehicleConfig vehicleConfig = SimulationConfig.instance().getVehicleConfiguration();
+//	private static VehicleConfig vehicleConfig = SimulationConfig.instance().getVehicleConfiguration();
 
 	/**
 	 * Constructor 1 : prepares a Vehicle object with a given settlement

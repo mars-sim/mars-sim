@@ -136,9 +136,13 @@ public class OGGSoundClip {
 
 		if (volume > 1)
 			volume = 1;
-		else if (volume < 0)
+		else if (volume <= 0) {
 			volume = 0;
-
+			pause();
+		}
+		else
+			paused = false;
+		
 		this.volume = volume;
 
 		// System.out.println("volume : " + volume);
@@ -274,7 +278,7 @@ public class OGGSoundClip {
 	 */
 	public void resume() {
 		if (!paused) {
-			play();
+			loop();//play();
 			return;
 		}
 
@@ -765,8 +769,13 @@ public class OGGSoundClip {
 			BooleanControl muteControl = (BooleanControl) outputLine.getControl(BooleanControl.Type.MUTE);
 			muteControl.setValue(mute);
 
-			// if (!mute)
-			// setGain(oldGain);
+			 if (mute)
+				 paused = true;
+			 else
+				 paused = false;
+			 
+//			 if (!mute)
+//			 setGain(oldGain);
 		}
 
 	}

@@ -11,7 +11,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 
-import javax.swing.AbstractButton;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
@@ -537,40 +536,40 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 		}
 
 		else if (selectedItem == musicMuteItem) {
-			if (musicMuteItem.isSelected()) {//!soundPlayer.isMusicMute()) {
-//				System.out.println("Music is on. Turning it off now.");
+			if (!soundPlayer.isMusicMute()) { // musicMuteItem.isSelected()) {//
+				System.out.println("Music was on. Turning it off now.");
 				// mute the music
 				soundPlayer.muteMusic();
-				musicMuteItem.setSelected(true);
 				musicVolumeSlider.setEnabled(false);
+//				musicMuteItem.setSelected(true);
 			}
-			else {
+			else if (soundPlayer.isMusicMute()) {
 				// unmute the music
-//				System.out.println("Music is off. Turning it on now.");
+				System.out.println("Music was off. Turning it on now.");
 				soundPlayer.unmuteMusic();
-				musicMuteItem.setSelected(false);
 				musicVolumeSlider.setEnabled(true);
+//				musicMuteItem.setSelected(false);
 			}  
 		}
 
 		else if (selectedItem == effectMuteItem) {
-			AbstractButton button = (AbstractButton) event.getSource();
-		    if (button.isSelected()) {
+//			AbstractButton button = (AbstractButton) event.getSource();
+//		    if (button.isSelected()) {
 				if (!soundPlayer.isSoundMute()) {
-//					System.out.println("Sound Effect is on. Turning it off now.");
+//					System.out.println("Sound Effect was on. Turning it off now.");
 					// mute the sound effect
 					soundPlayer.muteSoundEffect();
 					effectVolumeSlider.setEnabled(false);
 //					effectMuteItem.setSelected(true);
 				}
-				else {
+				else if (soundPlayer.isSoundMute()) {
 					// unmute the sound effect
-//					System.out.println("Sound Effect is off. Turning it on now.");
+//					System.out.println("Sound Effect was off. Turning it on now.");
 					soundPlayer.unmuteSoundEffect();
 					effectVolumeSlider.setEnabled(true);
 //					effectMuteItem.setSelected(false);
 				}
-			}
+//			}
 		}
 
 		else if (selectedItem == homeAboutItem) {

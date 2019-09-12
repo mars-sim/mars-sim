@@ -75,9 +75,9 @@ public class VehicleConfig implements Serializable {
 	private final String SICKBAY_TYPE = "sickbay";
 	private final String LAB_TYPE = "lab";
 
-	private transient Document vehicleDoc;
-	private transient List<String> roverNames;
-	private transient  Map<String, VehicleDescription> map;
+	private Document vehicleDoc;
+	private List<String> roverNames;
+	private Map<String, VehicleDescription> map;
 
 	/**
 	 * Constructor.
@@ -97,6 +97,7 @@ public class VehicleConfig implements Serializable {
 		// only parse when necessary (i.e. when not yet parsed)
 		if (map == null) {
 			map = new HashMap<String, VehicleDescription>();
+//			System.out.println("vehicleDoc is " + vehicleDoc);
 			Element root = vehicleDoc.getRootElement();
 			List<Element> vehicleNodes = root.getChildren(VEHICLE);
 			for (Element vehicleElement : vehicleNodes) {
@@ -243,7 +244,7 @@ public class VehicleConfig implements Serializable {
 	 * @throws Exception if error retrieving vehicle types.
 	 */
 	public Set<String> getVehicleTypes() {
-		// parseIfNeccessary();
+		parseIfNeccessary();
 		return map.keySet();
 	}
 
@@ -254,7 +255,7 @@ public class VehicleConfig implements Serializable {
 	 * @return width (meters).
 	 */
 	public double getWidth(String vehicleType) {
-		// parseIfNeccessary();
+		parseIfNeccessary();
 		return map.get(vehicleType.toLowerCase()).width;
 	}
 
@@ -265,7 +266,7 @@ public class VehicleConfig implements Serializable {
 	 * @return length (meters).
 	 */
 	public double getLength(String vehicleType) {
-		// parseIfNeccessary();
+		parseIfNeccessary();
 		return map.get(vehicleType.toLowerCase()).length;
 	}
 
@@ -277,7 +278,7 @@ public class VehicleConfig implements Serializable {
 	 * @throws Exception if vehicle type could not be found or XML parsing error.
 	 */
 	public double getDrivetrainEfficiency(String vehicleType) {
-		// parseIfNeccessary();
+		parseIfNeccessary();
 		return map.get(vehicleType.toLowerCase()).drivetrainEff;
 	}
 
@@ -288,7 +289,7 @@ public class VehicleConfig implements Serializable {
 	 * @return base speed in km/hr.
 	 */
 	public double getBaseSpeed(String vehicleType) {
-		// parseIfNeccessary();
+		parseIfNeccessary();
 		return map.get(vehicleType.toLowerCase()).baseSpeed;
 	}
 
@@ -299,7 +300,7 @@ public class VehicleConfig implements Serializable {
 	 * @return empty mass in kg.
 	 */
 	public double getEmptyMass(String vehicleType) {
-		// parseIfNeccessary();
+		parseIfNeccessary();
 		return map.get(vehicleType.toLowerCase()).emptyMass;
 	}
 
@@ -310,7 +311,7 @@ public class VehicleConfig implements Serializable {
 	 * @return crew size
 	 */
 	public int getCrewSize(String vehicleType) {
-		// parseIfNeccessary();
+		parseIfNeccessary();
 		return map.get(vehicleType.toLowerCase()).crewSize;
 	}
 
@@ -321,7 +322,7 @@ public class VehicleConfig implements Serializable {
 	 * @return total cargo capacity
 	 */
 	public double getTotalCapacity(String vehicleType) {
-		// parseIfNeccessary();
+		parseIfNeccessary();
 		return map.get(vehicleType.toLowerCase()).totalCapacity;
 	}
 
@@ -333,7 +334,7 @@ public class VehicleConfig implements Serializable {
 	 * @return vehicle capacity for resource might be <code>null</code>
 	 */
 	public Double getCargoCapacity(String vehicleType, String resource) {
-		// parseIfNeccessary();
+		parseIfNeccessary();
 		Double value = map.get(vehicleType.toLowerCase()).cargoCapacityMap.get(resource.toLowerCase());
 		if (value == null)
 			return 0d;
@@ -347,7 +348,7 @@ public class VehicleConfig implements Serializable {
 	 * @return true if sickbay
 	 */
 	public boolean hasSickbay(String vehicleType) {
-		// parseIfNeccessary();
+		parseIfNeccessary();
 		return map.get(vehicleType.toLowerCase()).hasSickbay;
 	}
 
@@ -439,11 +440,24 @@ public class VehicleConfig implements Serializable {
 		return map.get(vehicleType.toLowerCase()).attachableParts;
 	}
 
+	
+	/**
+	 * Gets the vehicle description
+	 * 
+	 * @param vehicleType
+	 * @return description of the vehicle
+	 */
 	public String getDescription(String vehicleType) {
 		// parseIfNeccessary();
 		return map.get(vehicleType.toLowerCase()).description;
 	}
 
+	/**
+	 * Gets the vehicle description class
+	 * 
+	 * @param vehicleType
+	 * @return {@link VehicleDescription}
+	 */
 	public VehicleDescription getVehicleDescription(String vehicleType) {
 		// parseIfNeccessary();
 		return map.get(vehicleType.toLowerCase());

@@ -18,8 +18,10 @@ import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.location.LocationTag;
 import org.mars_sim.msp.core.mars.Mars;
 import org.mars_sim.msp.core.mars.MarsSurface;
+import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.mars.Weather;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -28,6 +30,7 @@ import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+import org.mars_sim.msp.core.vehicle.VehicleConfig;
 
 /**
  * The Unit class is the abstract parent class to all units in the Simulation.
@@ -83,14 +86,23 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 	private transient List<UnitListener> listeners;// = Collections.synchronizedList(new ArrayList<UnitListener>());
 
 	protected static Simulation sim = Simulation.instance();
-	protected static Mars mars;
+	protected static SimulationConfig simulationConfig = SimulationConfig.instance();
+	
 	protected static MarsClock marsClock;
 	protected static EarthClock earthClock;
 	protected static MasterClock masterClock;
+	
 	protected static MarsSurface marsSurface;
+	
 	protected static UnitManager unitManager;
 	protected static MissionManager missionManager;
+	
+	protected static Mars mars;
 	protected static Weather weather;
+	protected static SurfaceFeatures surface;
+	
+	protected static PersonConfig personConfig = simulationConfig.getPersonConfig();
+	protected static VehicleConfig vehicleConfig = simulationConfig.getVehicleConfiguration();
 	
 	/**
 	 * Must be synchronised to prevent duplicate ids being assigned via different
@@ -163,7 +175,7 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 		Unit unit = this;
 		if (unit instanceof Settlement) {
 			((Settlement)unit).setName(newName);
-			SimulationConfig.instance().getSettlementConfiguration().changeSettlementName(oldName, newName);
+			simulationConfig.getSettlementConfiguration().changeSettlementName(oldName, newName);
 		}
 		this.name = newName;
 	}
@@ -750,11 +762,11 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 	 * 
 	 * @param m
 	 */
-	public static void initializeInstances(MasterClock c0, MarsClock c1, Simulation s, 
-			Mars m, MarsSurface ms, EarthClock e, Weather w, UnitManager u, MissionManager mm) {
+	public static void initializeInstances(MasterClock c0, MarsClock c1, EarthClock e, Simulation s, 
+			Mars m, MarsSurface ms, Weather w, UnitManager u, MissionManager mm) {
 		masterClock = c0;
-		earthClock = e;
 		marsClock = c1;
+		earthClock = e;
 		sim = s;
 		mars = m;
 		marsSurface = ms;
@@ -762,6 +774,7 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 		unitManager = u;
 		missionManager = mm;
 		
+		surface = mars.getSurfaceFeatures();
 		// TODO: need to fire unit update upon loading
 	}
 	

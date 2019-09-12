@@ -20,6 +20,7 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
@@ -242,6 +243,16 @@ public class SimulationConfig implements Serializable {
 			instance.destroyOldConfiguration();
 		}
 		
+		checkXMLFileVersion();
+    	
+		loadDefaultConfiguration();
+	
+	}
+	
+	/**
+	 * Checks if the xml files are of the same version of the core engine.
+	 */
+	public void checkXMLFileVersion() {
 		boolean sameBuild = false;
 		
 		String xmlDir = Simulation.XML_DIR;
@@ -288,12 +299,11 @@ public class SimulationConfig implements Serializable {
 				BufferedReader brTest;
 				try {
 					brTest = new BufferedReader(new FileReader(versionFile));
-				    buildText = brTest.readLine();
-				    if (buildText.equals(Simulation.BUILD)) {
-						LogConsolidated.log(Level.CONFIG, 0, sourceName, 
-								"The version.txt shows the existing xml file set already has the most current BUILD tag.");		
-				    	sameBuild = true;
-				    }		    
+				    if ((buildText = brTest.readLine()) != null) {
+					    if (buildText.equals(Simulation.BUILD)) {	
+					    	sameBuild = true;
+					    }		
+				    }
 				} catch (FileNotFoundException e) {
 					e.printStackTrace();
 				} catch (IOException e) {
@@ -307,7 +317,6 @@ public class SimulationConfig implements Serializable {
 			// TODO: If it does, back them up into a subdirectory and start off a new batch of xml files
 //			String SHA512 = DatatypeConverter.printHexBinary(Hash.SHA512.checksum(file))
 //			may use FileUtils.checksum(file, checksum)
-
 		} 
 		
 		if (!xmlDirExist)
@@ -316,14 +325,19 @@ public class SimulationConfig implements Serializable {
 		else if (!versionFileExist)
 			LogConsolidated.log(Level.CONFIG, 0, sourceName, 
 				"The version.txt does not exist.");	
-		else if (buildText.equals(""))
+		else if (sameBuild)
 			LogConsolidated.log(Level.CONFIG, 0, sourceName, 
-				"The version.txt is invalid.");	
-		else if (!sameBuild)
+					"Your version.txt already has the same BUILD " + buildText
+					+ " as the core engine.");
+		else if (!isNotNumber(buildText) )
+	    	LogConsolidated.log(Level.CONFIG, 0, sourceName, 
+					"Your version.txt has BUILD " + buildText 
+					+ ". The core engine has BUILD " + Simulation.BUILD);
+		else
 			LogConsolidated.log(Level.CONFIG, 0, sourceName, 
-				"The version.txt shows a different build.");
+				"Your version.txt is invalid.");
 		
-		if (xmlDirExist && (!versionFileExist || buildText.equals("") || !sameBuild)) {
+		if (xmlDirExist && (!versionFileExist || !sameBuild)) {
 
 			LogConsolidated.log(Level.CONFIG, 0, sourceName, 
 					"Backing up existing xml files into a 'backup' folder. Cleaning the xml folder.");
@@ -331,25 +345,43 @@ public class SimulationConfig implements Serializable {
 		
 		if (xmlDirExist) {
 			
-			if (!versionFileExist || buildText.equals("") || !sameBuild) {
+			if (!versionFileExist || buildText.equals("") || !sameBuild || isNotNumber(buildText)) {
 			
 				try {
 	
-					if (!buildText.equals("")) {
+					if (versionFileExist && !buildText.equals("") && isNotNumber(buildText)) {
 						String versionDir = Simulation.BACKUP_DIR + File.separator + buildText;		
 				        File versionLocation = new File(versionDir);
-						// copy everything in the xml folder
-						FileUtils.copyDirectoryToDirectory(xmlLocation, versionLocation);					
+				        if (versionLocation.exists()) {
+				        	//To get machine timestamp which is returned in UTC
+				            Instant timestamp = Instant.now();
+				            String newDir = versionDir + timestamp.toString().replace(":", "").replace("-", "");
+				        	versionLocation = new File(newDir);
+							LogConsolidated.log(Level.CONFIG, 0, sourceName, 
+									"/" + versionDir + " already exists. Backing up to /" + newDir);
+				        }
+						// Make a copy everything in the /xml to the /{$version}
+						FileUtils.copyDirectoryToDirectory(xmlLocation, versionLocation);
 					}
 	
 					else {
-						// copy everything in the xml folder
+						
+						if (backupLocation.exists()) {
+				        	//To get machine timestamp which is returned in UTC
+				            Instant timestamp = Instant.now();
+				            String newDir = backupDir + timestamp.toString().replace(":", "").replace("-", "");
+				            backupLocation = new File(newDir);
+							LogConsolidated.log(Level.CONFIG, 0, sourceName, 
+									"/" + backupDir + " already exists. Backing up to /" + newDir);						
+				        }
+						
+						// Make a copy everything in the /xml to the /backup/xml
 						FileUtils.copyDirectoryToDirectory(xmlLocation, backupLocation);
 					}
 					
-					if (buildText.equals("") || !sameBuild)
-						// delete the version.txt file 
-						versionFile.delete();
+//					if (buildText.equals("") || isNotNumber(buildText) || !sameBuild)
+//						// delete the version.txt file 
+//						versionFile.delete();
 	
 					// delete everything in the xml folder
 	//				FileUtils.deleteDirectory(xmlLocation);
@@ -376,10 +408,21 @@ public class SimulationConfig implements Serializable {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-        	
-		loadDefaultConfiguration();
 	}
 		
+	
+	public boolean isNotNumber(String name) {
+	    char[] chars = name.toCharArray();
+
+	    for (char c : chars) {
+	        if(!Character.isDigit(c)) {
+	            return true;
+	        }
+	    }
+
+	    return false;
+	}
+	
 	/* 
 	* Delete a non empty directory 
 	*/ 
@@ -827,7 +870,6 @@ public class SimulationConfig implements Serializable {
 	 * @return building config
 	 */
 	public BuildingConfig getBuildingConfiguration() {
-		// System.out.println("right before calling getBuildingConfiguration()");
 		return buildingConfig;
 	}
 
@@ -873,7 +915,6 @@ public class SimulationConfig implements Serializable {
 	 * @return meal config
 	 */
 	public MealConfig getMealConfiguration() {
-		// logger.info("calling getMealConfiguration()");
 		return mealConfig;
 	}
 
@@ -895,6 +936,11 @@ public class SimulationConfig implements Serializable {
 		return quotationConfig;
 	}
 
+	/**
+	 * Gets the science config subset.
+	 * 
+	 * @return science config
+	 */
 	public ScienceConfig getScienceConfig() {
 		return scienceConfig;
 	}
