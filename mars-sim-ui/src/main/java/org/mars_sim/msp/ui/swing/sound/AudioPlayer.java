@@ -9,17 +9,12 @@ package org.mars_sim.msp.ui.swing.sound;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import javax.swing.SwingUtilities;
 
 import org.apache.commons.io.FileUtils;
 import org.mars_sim.msp.core.LogConsolidated;
@@ -65,9 +60,9 @@ public class AudioPlayer implements ClockListener {
 
 	/** The current clip sound. */
 	private static OGGSoundClip currentSoundClip;
-	private static OGGSoundClip currentMusicTrack;
+	private static OGGSoundClip currentMusic;
 
-	private static Map<String, OGGSoundClip> allMusicTracks;
+//	private static Map<String, OGGSoundClip> allMusicTracks;
 	private static Map<String, OGGSoundClip> allSoundClips;
 
 	private static List<String> soundEffects;
@@ -93,8 +88,18 @@ public class AudioPlayer implements ClockListener {
 //		if (UIConfig.INSTANCE.useUIDefault())
 	}
 		
+	public OGGSoundClip obtainOGGMusicTrack(String name) {
+		try {
+			return new OGGSoundClip(name, true);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 	public void loadMusicTracks() {
-		allMusicTracks = new HashMap<>();
+//		allMusicTracks = new HashMap<>();
 		allSoundClips = new HashMap<>();
 
 		musicTracks = new ArrayList<>();
@@ -154,16 +159,9 @@ public class AudioPlayer implements ClockListener {
 			
 			numTracks = musicTracks.size();
 			
-			for (String p : musicTracks) {
-				try {
-					allMusicTracks.put(p, new OGGSoundClip(p, true));
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-			
-			if (allMusicTracks.size() > 0)
-				currentMusicTrack = allMusicTracks.get(musicTracks.get(numTracks - 1));
+			if (numTracks > 0) {
+				currentMusic = obtainOGGMusicTrack(musicTracks.get(numTracks -1));
+			}	
 		}
 	}
 	
@@ -200,12 +198,8 @@ public class AudioPlayer implements ClockListener {
 	 */
 	public void playSound(String filepath) {
 		if (!isSoundMute() && filepath != null && !filepath.equals("")) {
-//			if (mainScene != null)
-//				// Platform.runLater(() -> {
-//				loadSound(filepath);
-//			// });
-//			else
-				SwingUtilities.invokeLater(() -> loadSound(filepath));
+//				SwingUtilities.invokeLater(() -> loadSound(filepath));
+			loadSound(filepath);
 		}
 	}
 
@@ -251,20 +245,10 @@ public class AudioPlayer implements ClockListener {
 	 * @param filepath the file path to the music track.
 	 */
 	public void loadMusic(String filepath) {
-		if (allMusicTracks.containsKey(filepath) && allMusicTracks.get(filepath) != null) {
-			currentMusicTrack = allMusicTracks.get(filepath);
-			currentMusicTrack.determineGain(currentMusicVol);
-			currentMusicTrack.loop();
-		} else {
-			try {
-				currentMusicTrack = new OGGSoundClip(filepath, true);
-				allMusicTracks.put(filepath, currentMusicTrack);
-				currentMusicTrack.determineGain(currentMusicVol);
-				currentMusicTrack.loop();
-			} catch (IOException e) {
-				// e.printStackTrace();
-				logger.log(Level.SEVERE, "IOException in AudioPlayer's playInBackground()", e.getMessage());
-			}
+		if (musicTracks.contains(filepath) && filepath != null) {
+			currentMusic = obtainOGGMusicTrack(filepath);
+			currentMusic.determineGain(currentMusicVol);
+			currentMusic.loop();
 		}
 	}
 
@@ -288,29 +272,29 @@ public class AudioPlayer implements ClockListener {
 
 	public void musicVolumeUp() {
 		if (!isSoundDisabled && hasMasterGain 
-				&& currentMusicTrack.getVol() < 1
-				&& currentMusicTrack != null) {
+				&& currentMusic.getVol() < 1
+				&& currentMusic != null) {
 //			System.out.print("musicVolumeUp");
-			double v = currentMusicTrack.getVol() + .05;
+			double v = currentMusic.getVol() + .05;
 			if (v > 1)
 				v = 1;
 			lastMusicVol = currentMusicVol;
 			currentMusicVol = v;
-			currentMusicTrack.determineGain(v);
+			currentMusic.determineGain(v);
 		}
 	}
 
 	public void musicVolumeDown() {
 		if (!isSoundDisabled && hasMasterGain 
-				&& currentMusicTrack.getVol() > 0
-				&& currentMusicTrack != null) {
+				&& currentMusic.getVol() > 0
+				&& currentMusic != null) {
 //			System.out.print("musicVolumeDown");
-			double v = currentMusicTrack.getVol() - .05;
+			double v = currentMusic.getVol() - .05;
 			if (v < 0)
 				v = 0;
 			lastMusicVol = currentMusicVol;
 			currentMusicVol = v;
-			currentMusicTrack.determineGain(v);
+			currentMusic.determineGain(v);
 		}
 	}
 
@@ -318,11 +302,11 @@ public class AudioPlayer implements ClockListener {
 		if (!isSoundDisabled && hasMasterGain 
 				&& currentSoundClip.getVol() < 1
 				&& currentSoundClip != null) {
-			double v = currentMusicTrack.getVol() + .05;
+			double v = currentSoundClip.getVol() + .05;
 			if (v > 1)
 				v = 1;
 			lastSoundVol = currentSoundVol;
-			currentMusicVol = v;
+			currentSoundVol = v;
 			currentSoundClip.determineGain(v);
 		}
 	}
@@ -331,11 +315,11 @@ public class AudioPlayer implements ClockListener {
 		if (!isSoundDisabled && hasMasterGain 
 				&& currentSoundClip.getVol() > 0
 				&& currentSoundClip != null) {
-			double v = currentMusicTrack.getVol() - .05;
+			double v = currentSoundClip.getVol() - .05;
 			if (v < 0)
 				v = 0;
 			lastSoundVol = currentSoundVol;
-			currentMusicVol = v;
+			currentSoundVol = v;
 			currentSoundClip.determineGain(v);
 		}
 	}
@@ -354,15 +338,15 @@ public class AudioPlayer implements ClockListener {
 		lastMusicVol = currentMusicVol;
 		currentMusicVol = volume;
 
-		if (!isSoundDisabled && hasMasterGain && currentMusicTrack != null) {
-			currentMusicTrack.determineGain(volume);
+		if (!isSoundDisabled && hasMasterGain && currentMusic != null) {
+			currentMusic.determineGain(volume);
 			//currentMusicTrack.resume();
 		}
 	}
 
 	public void restoreLastMusicGain() {
-		if (!isSoundDisabled && hasMasterGain && currentMusicTrack != null) {
-			currentMusicTrack.determineGain(lastMusicVol);
+		if (!isSoundDisabled && hasMasterGain && currentMusic != null) {
+			currentMusic.determineGain(lastMusicVol);
 			//currentMusicTrack.resume();
 		}
 	}
@@ -439,8 +423,8 @@ public class AudioPlayer implements ClockListener {
 	 * 
 	 */
 	public void unmuteMusic() {
-		if (currentMusicTrack != null && currentMusicTrack.isMute()) {
-			currentMusicTrack.setMute(false);
+		if (currentMusic != null && currentMusic.isMute()) {
+			currentMusic.setMute(false);
 			currentMusicVol = lastMusicVol;
 			restoreLastMusicGain();
 			resumeMusic();
@@ -466,11 +450,11 @@ public class AudioPlayer implements ClockListener {
 	 * 
 	 */
 	public void muteMusic() {
-		if (currentMusicTrack != null && !currentMusicTrack.isMute()) {
+		if (currentMusic != null && !currentMusic.isMute()) {
 			// Note: should check if it is already mute since 
 			// user may pause and unpause consecutively too fast 
-			currentMusicTrack.setMute(true);
-			currentMusicTrack.determineGain(0);
+			currentMusic.setMute(true);
+			currentMusic.determineGain(0);
 			lastMusicVol = currentMusicVol;
 			currentMusicVol = 0;
 		}
@@ -486,9 +470,9 @@ public class AudioPlayer implements ClockListener {
 	 * @return true if no music track is playing
 	 */
 	public boolean isMusicTrackStopped() {
-		if (currentMusicTrack == null)
+		if (currentMusic == null)
 			return true;
-		return currentMusicTrack.checkState();
+		return currentMusic.checkState();
 	}
 
 	/**
@@ -531,8 +515,8 @@ public class AudioPlayer implements ClockListener {
 	}
 
 	public void resumeMusic() {
-		if (currentMusicTrack != null && currentMusicTrack.isPaused() && !isSoundDisabled) {
-			currentMusicTrack.resume();
+		if (currentMusic != null && currentMusic.isPaused() && !isSoundDisabled) {
+			currentMusic.resume();
 		}
 		else {
 			playRandomMusicTrack();
@@ -556,15 +540,15 @@ public class AudioPlayer implements ClockListener {
 		else {
 			// Since Areologie.ogg and Fantascape.ogg are 4 mins long, don't need to replay
 			// them
-			if (currentMusicTrack != null //&& currentMusicTrack.toString().equals(SoundConstants.ST_AREOLOGIE)
+			if (currentMusic != null //&& currentMusicTrack.toString().equals(SoundConstants.ST_AREOLOGIE)
 					&& play_times < 2) {
 				pickANewTrack();
-			} else if (currentMusicTrack != null //&& currentMusicTrack.toString().equals(SoundConstants.ST_FANTASCAPE)
+			} else if (currentMusic != null //&& currentMusicTrack.toString().equals(SoundConstants.ST_FANTASCAPE)
 					&& play_times < 2) {
 				pickANewTrack();
-			} else if (currentMusicTrack != null && !currentMusicTrack.isMute() && currentMusicTrack.getVol() != 0
+			} else if (currentMusic != null && !currentMusic.isMute() && currentMusic.getVol() != 0
 					&& play_times < 4) {
-				playMusic(currentMusicTrack.toString());
+				playMusic(currentMusic.toString());
 				play_times++;
 			} else {
 				pickANewTrack();
@@ -583,9 +567,8 @@ public class AudioPlayer implements ClockListener {
 		hasMasterGain = false;
 
 		allSoundClips = null;
-		allMusicTracks = null;
 		currentSoundClip = null;
-		currentMusicTrack = null;
+		currentMusic = null;
 		musicTracks = null;
 		played_tracks = null;
 
@@ -600,10 +583,9 @@ public class AudioPlayer implements ClockListener {
 	
 	public void destroy() {
 		allSoundClips = null;
-		allMusicTracks = null;
 //		desktop = null;
 		currentSoundClip = null;
-		currentMusicTrack = null;
+		currentMusic = null;
 		musicTracks = null;
 		played_tracks = null;
 	}
