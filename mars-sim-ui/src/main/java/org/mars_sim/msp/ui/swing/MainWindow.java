@@ -68,11 +68,9 @@ import org.mars_sim.msp.ui.swing.tool.JStatusBar;
 //import com.alee.managers.UIManagers;
 import com.alee.laf.WebLookAndFeel;
 import com.alee.laf.panel.WebPanel;
-import com.alee.managers.UIManagers;
 import com.alee.managers.tooltip.TooltipManager;
 import com.alee.managers.tooltip.TooltipWay;
 import com.nilo.plaf.nimrod.NimRODLookAndFeel;
-import com.nilo.plaf.nimrod.NimRODTheme;
 
 /**
  * The MainWindow class is the primary UI frame for the project. It contains the
@@ -87,12 +85,15 @@ extends JComponent {
 //	private static String loggerName = logger.getName();
 //	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 	
+	public static final int WIDTH = 1366;
+	public static final int HEIGHT = 768;
+	
 	/** Icon image filename for frame */
 	public static final String ICON_IMAGE = "/icons/landerhab16.png";//"/images/LanderHab.png";
 	
 	public static final String OS = System.getProperty("os.name").toLowerCase(); // e.g. 'linux', 'mac os x'
 	private static final String SOL = " Sol ";
-	private static final String themeSkin = "nimrod";
+//	private static final String themeSkin = "nimrod";
 	private static final String WHITESPACES = "   ";
 	
 	private static final int TIME_DELAY = 960;
@@ -163,7 +164,7 @@ extends JComponent {
 		
 		// Set up the frame
 		frame = new JFrame();
-		frame.setSize(new Dimension(1366, 768));
+		frame.setSize(new Dimension(WIDTH, HEIGHT));
 		frame.setResizable(false);
 //		frame.setPreferredSize(new Dimension(1366, 768));
 //		frame.setMinimumSize(new Dimension(1024, 600));

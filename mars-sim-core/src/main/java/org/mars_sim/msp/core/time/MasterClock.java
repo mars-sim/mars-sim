@@ -183,7 +183,7 @@ public class MasterClock implements Serializable {
 			tr = simulationConfig.getTimeRatio();
 		else {
 			tr = userTimeRatio;
-		logger.config("   User-Defined Time Ratio (TR) : " + (int) tr + "x");
+			logger.config("   User-Defined Time Ratio (TR) : " + (int) tr + "x");
 		}
 		
 		// Gets the time between updates

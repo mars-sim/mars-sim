@@ -44,8 +44,9 @@ public abstract class ToolWindow extends JInternalFrame {
 	protected CommanderWindow commanderWindow;
 	// private SingleSelectionModel<?> ssm;
 
-	protected static MasterClock masterClock = Simulation.instance().getMasterClock();
-	protected static UnitManager unitManager = Simulation.instance().getUnitManager();
+	protected static Simulation sim = Simulation.instance();
+	protected static MasterClock masterClock = sim.getMasterClock();
+	protected static UnitManager unitManager = sim.getUnitManager();
 
 	/**
 	 * Constructor.

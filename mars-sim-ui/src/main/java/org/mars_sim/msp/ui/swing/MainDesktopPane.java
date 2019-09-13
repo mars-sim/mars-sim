@@ -262,13 +262,13 @@ public class MainDesktopPane extends JDesktopPane
 		}
 	}
 
-	public void updateWebToolWindow() {
-//		logger.config("updateToolWindow()");
-		JInternalFrame[] frames = (JInternalFrame[]) this.getAllFrames();
-		for (JInternalFrame f : frames) {
-			f.updateUI();
-		}
-	}
+//	public void updateWebToolWindow() {
+////		logger.config("updateToolWindow()");
+//		JInternalFrame[] frames = (JInternalFrame[]) this.getAllFrames();
+//		for (JInternalFrame f : frames) {
+//			f.updateUI();
+//		}
+//	}
 
 	@Override
 	public Component add(Component comp) {
@@ -318,7 +318,7 @@ public class MainDesktopPane extends JDesktopPane
 				settlement.removeUnitListener(this);
 			}
 
-			updateToolWindow();
+			SwingUtilities.invokeLater(() -> updateToolWindow());
 		}
 	}
 

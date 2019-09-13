@@ -537,7 +537,7 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 
 		else if (selectedItem == musicMuteItem) {
 			if (!soundPlayer.isMusicMute()) { // musicMuteItem.isSelected()) {//
-				System.out.println("Music was on. Turning it off now.");
+//				System.out.println("Music was on. Turning it off now.");
 				// mute the music
 				soundPlayer.muteMusic();
 				musicVolumeSlider.setEnabled(false);
@@ -545,7 +545,7 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 			}
 			else if (soundPlayer.isMusicMute()) {
 				// unmute the music
-				System.out.println("Music was off. Turning it on now.");
+//				System.out.println("Music was off. Turning it on now.");
 				soundPlayer.unmuteMusic();
 				musicVolumeSlider.setEnabled(true);
 //				musicMuteItem.setSelected(false);

@@ -44,8 +44,8 @@ public class AudioPlayer implements ClockListener {
 	public static double currentMusicVol = DEFAULT_VOL;
 	public static double currentSoundVol = DEFAULT_VOL;
 
-	private double lastMusicVol = 0;
-	private double lastSoundVol = 0;
+//	private double lastMusicVol = 0;
+//	private double lastSoundVol = 0;
 
 	private int play_times = 0;
 
@@ -286,7 +286,7 @@ public class AudioPlayer implements ClockListener {
 			double v = currentMusic.getVol() + .05;
 			if (v > 1)
 				v = 1;
-			lastMusicVol = currentMusicVol;
+//			lastMusicVol = currentMusicVol;
 			currentMusicVol = v;
 			currentMusic.determineGain(v);
 		}
@@ -300,7 +300,7 @@ public class AudioPlayer implements ClockListener {
 			double v = currentMusic.getVol() - .05;
 			if (v < 0)
 				v = 0;
-			lastMusicVol = currentMusicVol;
+//			lastMusicVol = currentMusicVol;
 			currentMusicVol = v;
 			currentMusic.determineGain(v);
 		}
@@ -313,7 +313,7 @@ public class AudioPlayer implements ClockListener {
 			double v = currentSoundClip.getVol() + .05;
 			if (v > 1)
 				v = 1;
-			lastSoundVol = currentSoundVol;
+//			lastSoundVol = currentSoundVol;
 			currentSoundVol = v;
 			currentSoundClip.determineGain(v);
 		}
@@ -326,7 +326,7 @@ public class AudioPlayer implements ClockListener {
 			double v = currentSoundClip.getVol() - .05;
 			if (v < 0)
 				v = 0;
-			lastSoundVol = currentSoundVol;
+//			lastSoundVol = currentSoundVol;
 			currentSoundVol = v;
 			currentSoundClip.determineGain(v);
 		}
@@ -343,7 +343,7 @@ public class AudioPlayer implements ClockListener {
 			volume = 0;
 		if (volume > 1F)
 			volume = 1F;
-		lastMusicVol = currentMusicVol;
+//		lastMusicVol = currentMusicVol;
 		currentMusicVol = volume;
 
 		if (!isSoundDisabled && hasMasterGain && currentMusic != null) {
@@ -353,10 +353,10 @@ public class AudioPlayer implements ClockListener {
 
 	public void restoreLastMusicGain() {
 		if (!isSoundDisabled && hasMasterGain && currentMusic != null) {
-			if (lastMusicVol == 0)
-				currentMusic.determineGain(DEFAULT_VOL);
-			else
-				currentMusic.determineGain(lastMusicVol);
+//			if (lastMusicVol == 0)
+				currentMusic.determineGain(currentMusicVol);
+//			else
+//				currentMusic.determineGain(lastMusicVol);
 		}
 	}
 	
@@ -371,7 +371,7 @@ public class AudioPlayer implements ClockListener {
 			volume = 0;
 		if (volume > 1F)
 			volume = 1F;
-		lastSoundVol = currentSoundVol;
+//		lastSoundVol = currentSoundVol;
 		currentSoundVol = volume;
 
 		if (!isSoundDisabled && hasMasterGain && currentSoundClip != null) {
@@ -382,10 +382,10 @@ public class AudioPlayer implements ClockListener {
 
 	public void restoreLastSoundEffectGain() {
 		if (!isSoundDisabled && hasMasterGain && currentSoundClip != null) {
-			if (lastSoundVol == 0)
-				currentSoundClip.determineGain(DEFAULT_VOL);
-			else
-				currentSoundClip.determineGain(lastSoundVol);
+//			if (lastSoundVol == 0)
+				currentSoundClip.determineGain(currentSoundVol);
+//			else
+//				currentSoundClip.determineGain(lastSoundVol);
 		}
 	}
 
@@ -425,7 +425,7 @@ public class AudioPlayer implements ClockListener {
 	public void unmuteSoundEffect() {
 		if (currentSoundClip != null && currentSoundClip.isMute()) {
 			currentSoundClip.setMute(false);
-			currentSoundVol = lastSoundVol;
+//			currentSoundVol = lastSoundVol;
 			restoreLastSoundEffectGain();
 		}
 	}
@@ -437,10 +437,10 @@ public class AudioPlayer implements ClockListener {
 	public void unmuteMusic() {
 		if (currentMusic != null) {// && currentMusic.isMute()) {
 			currentMusic.setMute(false);
-			currentMusicVol = lastMusicVol;
+//			currentMusicVol = lastMusicVol;
 			restoreLastMusicGain();
 			resumeMusic();
-			System.out.println("Music should be unmute now. currentMusicVol : " + currentMusicVol + "  lastMusicVol : " + lastMusicVol);
+//			System.out.println("Music should be unmute now. currentMusicVol : " + currentMusicVol + "  lastMusicVol : " + lastMusicVol);
 		}
 	}
 	
@@ -453,7 +453,7 @@ public class AudioPlayer implements ClockListener {
 			currentSoundClip.setMute(true);
 			currentSoundClip.stop();
 //			currentSoundClip.determineGain(0);
-			lastSoundVol = currentSoundVol;
+//			lastSoundVol = currentSoundVol;
 //			currentSoundVol = 0;
 		}
 	}
@@ -468,7 +468,7 @@ public class AudioPlayer implements ClockListener {
 			// user may pause and unpause consecutively too fast 
 			currentMusic.setMute(true);
 //			currentMusic.determineGain(0);
-			lastMusicVol = currentMusicVol;
+//			lastMusicVol = currentMusicVol;
 //			currentMusicVol = 0;
 		}
 	}
@@ -532,7 +532,7 @@ public class AudioPlayer implements ClockListener {
 	public void resumeMusic() {
 		if (currentMusic != null && !isSoundDisabled) {
 			currentMusic.resume();
-			System.out.println("Resuming music");
+//			System.out.println("Resuming music");
 		}
 		else {
 			playRandomMusicTrack();

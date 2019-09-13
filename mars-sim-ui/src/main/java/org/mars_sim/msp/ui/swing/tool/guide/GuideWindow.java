@@ -11,15 +11,11 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JViewport;
 import javax.swing.border.EmptyBorder;
@@ -32,14 +28,12 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
 
 import com.alee.laf.button.WebButton;
-import com.alee.laf.panel.WebPanel;
 
 /**
  * The GuideWindow is a tool window that displays the built-in User Guide, About
  * Box and Tutorial.
  */
-public class GuideWindow extends ToolWindow implements ActionListener,
-		HyperlinkListener, ComponentListener {
+public class GuideWindow extends ToolWindow implements ActionListener, HyperlinkListener { //, ComponentListener {
 	/** Default serial id. */
 	private static final long serialVersionUID = 1L;
 
@@ -50,9 +44,9 @@ public class GuideWindow extends ToolWindow implements ActionListener,
 	public static final String NAME = Msg.getString("GuideWindow.title"); //$NON-NLS-1$
 
 	/** Data members. */
-	private List<URL> history = new ArrayList<>();
+//	private List<URL> history = new ArrayList<>();
 
-	private int historyIndex;
+//	private int historyIndex;
 
 	/** our HTML content pane. */
 	private HTMLContentPane htmlPane;
@@ -74,8 +68,8 @@ public class GuideWindow extends ToolWindow implements ActionListener,
 //	private WebButton wikiButton = new WebButton(Msg.getString("GuideWindow.button.wiki")); //$NON-NLS-1$
 
 	private WebButton homeButton = new WebButton(Msg.getString("GuideWindow.button.home")); //$NON-NLS-1$
-	private WebButton backButton = new WebButton(Msg.getString("GuideWindow.button.back")); //$NON-NLS-1$
-	private WebButton forwardButton = new WebButton(Msg.getString("GuideWindow.button.forward")); //$NON-NLS-1$
+	private WebButton backButton = new WebButton("<");//Msg.getString("GuideWindow.button.back")); //$NON-NLS-1$
+	private WebButton forwardButton = new WebButton(">");//Msg.getString("GuideWindow.button.forward")); //$NON-NLS-1$
 
 //	private BrowserJFX browser;
 //	private WebPanel browserPanel;
@@ -109,7 +103,7 @@ public class GuideWindow extends ToolWindow implements ActionListener,
 		forwardButton.addActionListener(this);
 
 		// Create the main panel
-		WebPanel mainPane = new WebPanel(new BorderLayout());
+		JPanel mainPane = new JPanel(new BorderLayout());
 //		mainPane.setBorder(new MarsPanelBorder());
 		setContentPane(mainPane);
 
@@ -135,9 +129,9 @@ public class GuideWindow extends ToolWindow implements ActionListener,
 //		wikiButton.addActionListener(this);
 
 		// A toolbar to hold all our buttons
-		WebPanel toolPanel = new WebPanel(new FlowLayout());
-		toolPanel.add(homeButton);
+		JPanel toolPanel = new JPanel(new FlowLayout(0,0, FlowLayout.LEADING));
 		toolPanel.add(backButton);
+		toolPanel.add(homeButton);
 		toolPanel.add(forwardButton);
 //		toolPanel.add(aboutButton);
 //		toolPanel.add(tutorialButton);
@@ -155,26 +149,26 @@ public class GuideWindow extends ToolWindow implements ActionListener,
 		htmlPane = new HTMLContentPane();
 		htmlPane.addHyperlinkListener(this);
 		htmlPane.goToURL(guideURL);
-
+		htmlPane.setContentType("text/html");
 		htmlPane.setBackground(Color.lightGray);
 		htmlPane.setBorder(new EmptyBorder(2, 2, 2, 2));
 
 		JScrollPane scrollPane = new JScrollPane(htmlPane);
 //		scrollPane.setBorder(new MarsPanelBorder());
 		viewPort = (JViewport) scrollPane.getViewport();
-		viewPort.addComponentListener(this);
+//		viewPort.addComponentListener(this);
 		viewPort.setScrollMode(JViewport.BACKINGSTORE_SCROLL_MODE);
 		
 		mainPane.add(scrollPane);
 		
 		updateButtons();
 		
-		setResizable(true);
+		setResizable(false);
 		setMaximizable(true);
 		setVisible(true);
 
-		setMinimumSize(new Dimension(800, 600));
-		setSize(new Dimension(1024, 600));
+//		setMinimumSize(new Dimension(800, 600));
+		setSize(new Dimension(800, 600));
 
 //		if (desktop.getMainScene() != null) {
 //			setClosable(false);
@@ -286,25 +280,25 @@ public class GuideWindow extends ToolWindow implements ActionListener,
 		}
 	}
 	
-	/**
-	 * Implement ComponentListener interface. Make sure the text is scrolled to the
-	 * top. Need to find a better way to do this
-	 * 
-	 * @author Scott
-	 */
-	@Override
-	public void componentResized(ComponentEvent e) {
-		viewPort.setViewPosition(new Point(0, 0));
-	}
-
-	public void componentMoved(ComponentEvent e) {
-	}
-
-	public void componentShown(ComponentEvent e) {
-	}
-
-	public void componentHidden(ComponentEvent e) {
-	}
+//	/**
+//	 * Implement ComponentListener interface. Make sure the text is scrolled to the
+//	 * top. Need to find a better way to do this
+//	 * 
+//	 * @author Scott
+//	 */
+//	@Override
+//	public void componentResized(ComponentEvent e) {
+//		viewPort.setViewPosition(new Point(0, 0));
+//	}
+//
+//	public void componentMoved(ComponentEvent e) {
+//	}
+//
+//	public void componentShown(ComponentEvent e) {
+//	}
+//
+//	public void componentHidden(ComponentEvent e) {
+//	}
 
 	/**
 	 * Handles a click on a link.
@@ -330,6 +324,7 @@ public class GuideWindow extends ToolWindow implements ActionListener,
 	/** Prepare tool window for deletion. */
 	@Override
 	public void destroy() {
+//		htmlPane.removeHyperlinkListener(this);
 		htmlPane = null;
 		viewPort = null;
 		guideURL = null;
