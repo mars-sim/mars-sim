@@ -20,6 +20,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JScrollPane;
+import javax.swing.JViewport;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
@@ -31,8 +33,6 @@ import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
 
 import com.alee.laf.button.WebButton;
 import com.alee.laf.panel.WebPanel;
-import com.alee.laf.scroll.WebScrollPane;
-import com.alee.laf.viewport.WebViewport;
 
 /**
  * The GuideWindow is a tool window that displays the built-in User Guide, About
@@ -57,7 +57,7 @@ public class GuideWindow extends ToolWindow implements ActionListener,
 	/** our HTML content pane. */
 	private HTMLContentPane htmlPane;
 	/** The view port for the text pane. */
-	private WebViewport viewPort;
+	private JViewport viewPort;
 	// private URL guideURL = GuideWindow.class.getClassLoader().getResource("docs"
 	// + File.separator +
 	// "help" + File.separator + "userguide.html");
@@ -159,11 +159,11 @@ public class GuideWindow extends ToolWindow implements ActionListener,
 		htmlPane.setBackground(Color.lightGray);
 		htmlPane.setBorder(new EmptyBorder(2, 2, 2, 2));
 
-		WebScrollPane scrollPane = new WebScrollPane(htmlPane);
+		JScrollPane scrollPane = new JScrollPane(htmlPane);
 //		scrollPane.setBorder(new MarsPanelBorder());
-		viewPort = (WebViewport) scrollPane.getViewport();
+		viewPort = (JViewport) scrollPane.getViewport();
 		viewPort.addComponentListener(this);
-		viewPort.setScrollMode(WebViewport.BACKINGSTORE_SCROLL_MODE);
+		viewPort.setScrollMode(JViewport.BACKINGSTORE_SCROLL_MODE);
 		
 		mainPane.add(scrollPane);
 		

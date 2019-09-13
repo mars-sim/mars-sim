@@ -15,6 +15,8 @@ import java.util.logging.Logger;
 
 import javax.swing.JEditorPane;
 import javax.swing.SwingUtilities;
+import javax.swing.text.html.HTMLEditorKit;
+import javax.swing.text.html.StyleSheet;
 
 import org.mars_sim.msp.core.Msg;
 
@@ -38,6 +40,12 @@ public class HTMLContentPane extends JEditorPane {
 	public HTMLContentPane() {
 
 		setEditable(false);
+		
+		HTMLEditorKit kit = new HTMLEditorKit();
+		StyleSheet styleSheet = kit.getStyleSheet();
+//		styleSheet.addRule("A:active {orange}");
+		this.setEditorKit(kit);
+		
 	}
 
 	public void goToURL(URL url) {

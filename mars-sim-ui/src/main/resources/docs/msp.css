@@ -5,46 +5,63 @@
  * @author Lars Naesbye Christensen
  */
 
+
 a:link {
-	color: #00F;
+	color: blue;
+	}
+a:active {
+	color: black;
 	}
 a:visited {
-	color: #F000F0;
-	}
+	color: gray;
+	} 
+a:hover {
+	color: brown;
+	} 
 body {
 	text-indent: 2em;
 	margin-left: 5pt;
 	background-color: #DDD3D3;
 	color: #000;
-	font-family: serif;
+	font-family: Segoe UI;
+	font-size: 16pt;
 	}
-body, h5 {
-	font-size: 14pt;
+h5 {
+	font-size: 18pt;
 	line-height: 1.1em;
 	}
 h4 {
-	font-size: 16pt;
+	font-size: 20pt;
 	line-height: 1.1em;
 	}
 h3 {
-	font-size: 18pt;
+	font-size: 22pt;
 	line-height: 1.1em;
 	}
 h2 {
 	font-family:sans-serif; 
-	font-size: 20pt;
+	font-size: 24pt;
 	line-height: 1.2em;
 	text-align: center;
 	text-decoration: underline;
 	}
-h2, h3, h4, h5{
+h1 {
+	font-size: 26pt;
+	line-height: 1.2em;
+	font-family:Helvetica; 
+	text-align: center;
+	text-decoration: underline;
+	}	
+h1, h2, h3, h4, h5{
 	margin-left: 10pt;
 	text-indent: 1em;
 	font-weight: 800;
 	}	
 p {
 /*	margin-left:20pt; */
+	font-size: 16pt;
 	text-indent: 1em;
+	font-family: Segoe UI;
 	}
 ul {
   list-style-type: none;
@@ -58,6 +75,9 @@ ul li:before {
   /* Change margin to move dash around */
   margin-left: -3em;
 }	
+ul.a {
+  list-style-type: circle;
+}
 ol { counter-reset: item }	
 ol > li { display: block}
 ol > li:before { content: counters(item, ".") ". "; counter-increment: item }	

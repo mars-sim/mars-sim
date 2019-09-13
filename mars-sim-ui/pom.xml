@@ -192,12 +192,13 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		    <version>1.1.0</version>
 		</dependency>-->
 
-		<!-- load nimrodlf 1.2c from mars-sim's maven-repo-->
+		<!-- http://nilogonzalez.es/nimrodlf/index-en.html 
+		     NOTE : nimrodlf 1.2c is located at mars-sim's maven-repo
 		<dependency>
 			<groupId>com.plaf.nimrod</groupId>
 			<artifactId>nimrodlf</artifactId>
 			<version>1.2c</version>
-		</dependency>
+		</dependency-->
 		
 		<!-- https://github.com/Sciss/weblaf 	
         <dependency>

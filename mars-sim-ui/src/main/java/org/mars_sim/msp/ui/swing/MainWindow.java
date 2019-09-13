@@ -49,6 +49,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
+import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.plaf.LayerUI;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 
@@ -360,7 +361,8 @@ extends JComponent {
 		}
 
 		// Show frame
-		frame.pack();
+//		frame.pack();
+		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
 	}
 
@@ -997,7 +999,7 @@ extends JComponent {
 //		if (OS.contains("linux"))
 //			SwingUtilities.invokeLater(() -> setLookAndFeel(defaultThemeType, ThemeType.NIMROD));
 //		else
-		SwingUtilities.invokeLater(() -> setLookAndFeel(defaultThemeType, ThemeType.NIMROD));
+		SwingUtilities.invokeLater(() -> initializeWeblaf());//setLookAndFeel(defaultThemeType, ThemeType.NIMROD));
 
 	}
 
@@ -1005,9 +1007,10 @@ extends JComponent {
 //		if (choice0 == ThemeType.WEBLAF) {
 		try {
 			// use the weblaf skin
+			UIManager.setLookAndFeel(new WebLookAndFeel());
 //				WebLookAndFeel.setForceSingleEventsThread ( true );
-			WebLookAndFeel.install();
-			UIManagers.initialize();
+//			WebLookAndFeel.install();
+//			UIManagers.initialize();
 //				changed = true;
 
 //				logger.config(UIManager.getLookAndFeel().getName() + " is used in MainWindow.");
@@ -1058,22 +1061,28 @@ extends JComponent {
 
 		else if (choice1 == ThemeType.NIMROD) {
 
-			try {
-				NimRODTheme nt = new NimRODTheme(
-						getClass().getClassLoader().getResource("theme/" + themeSkin + ".theme")); //
-				NimRODLookAndFeel.setCurrentTheme(nt); // must be declared non-static or not
-				// working if switching to a brand new .theme file
-				NimRODLookAndFeel nf = new NimRODLookAndFeel();
-				nf.setCurrentTheme(nt); // must be declared non-static or not working if switching to a brand new .theme
-										// // file
-				UIManager.setLookAndFeel(nf);
-				changed = true; //
-
-			} catch (Exception e) {
-				logger.log(Level.WARNING, Msg.getString("MainWindow.log.lookAndFeelError"), e); //$NON-NLS-1$ } }
-			}
-
 			initializeWeblaf();
+			
+//			try {
+//				NimRODTheme nt = new NimRODTheme(
+//						getClass().getClassLoader().getResource("theme/" + themeSkin + ".theme")); //
+//				NimRODLookAndFeel.setCurrentTheme(nt); // must be declared non-static or not
+//				// working if switching to a brand new .theme file
+//				NimRODLookAndFeel nf = new NimRODLookAndFeel();
+//				nf.setCurrentTheme(nt); // must be declared non-static or not working if switching to a brand new .theme
+//										// // file
+//				UIManager.setLookAndFeel(nf);
+//				changed = true; //
+//	
+//			} catch (Exception e) {
+//				logger.log(Level.WARNING, Msg.getString("MainWindow.log.lookAndFeelError"), e); //$NON-NLS-1$ } }
+//			}
+			
+			try {
+				UIManager.setLookAndFeel(new NimRODLookAndFeel());
+			} catch (UnsupportedLookAndFeelException e) {
+				e.printStackTrace();
+			}
 		}
 
 		else if (choice1 == ThemeType.NIMBUS) {
@@ -1126,101 +1135,6 @@ extends JComponent {
 
 		}
 	}
-
-//	/**
-//	 * Sets the look and feel of the UI
-//	 * 
-//	 * @param nativeLookAndFeel
-//	 *            true if native look and feel should be used.
-//	 */
-//	public void setLookAndFeel(boolean nativeLookAndFeel, boolean nimRODLookAndFeel) {
-//		boolean changed = false;
-//   
-//		// use the weblaf skin
-//		WebLookAndFeel.install();
-//		UIManagers.initialize();
-//		
-////		 final XStream xs = XmlUtils.getXStream();
-////		 XStream.setupDefaultSecurity(xs);
-////		 xs.allowTypesByWildcard(new String[] { "com.alee.**" });
-//    
-////		 XStream xstream = new XStream(new StaxDriver()) {
-////		      @Override
-////		      protected void setupConverters() {
-////		      }
-////		    };
-////		    xstream.registerConverter(new ReflectionConverter(xstream.getMapper(), xstream.getReflectionProvider()), XStream.PRIORITY_VERY_LOW);
-////		    xstream.registerConverter(new IntConverter(), XStream.PRIORITY_NORMAL);
-////		    xstream.registerConverter(new StringConverter(), XStream.PRIORITY_NORMAL);
-////		    xstream.registerConverter(new CollectionConverter(xstream.getMapper()), XStream.PRIORITY_NORMAL);
-//		    
-////		String currentTheme = UIManager.getLookAndFeel().getClass().getName();
-//
-//		if (nativeLookAndFeel) {
-//			try {
-//				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-//				changed = true;
-//				lookAndFeelTheme = "system";
-//			} catch (Exception e) {
-//				logger.log(Level.WARNING, Msg.getString("MainWindow.log.lookAndFeelError"), e); //$NON-NLS-1$
-//			}
-//		} else if (nimRODLookAndFeel) {
-//			try {
-//				UIManager.setLookAndFeel(new NimRODLookAndFeel());
-//				changed = true;
-//				lookAndFeelTheme = "nimrod";
-//			} catch (Exception e) {
-//				logger.log(Level.WARNING, Msg.getString("MainWindow.log.lookAndFeelError"), e); //$NON-NLS-1$
-//			}
-//		} else {
-//			try {
-//				// Set Nimbus look & feel if found in JVM.
-//				boolean foundNimbus = false;
-//				for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-//					if (info.getName().equals("Nimbus")) { //$NON-NLS-1$
-//						UIManager.setLookAndFeel(info.getClassName());
-//						foundNimbus = true;
-//						lookAndFeelTheme = "nimbus";
-//						changed = true;
-//						break;
-//					}
-//				}
-//
-//				// Metal Look & Feel fallback if Nimbus not present.
-//				if (!foundNimbus) {
-//					logger.log(Level.WARNING, Msg.getString("MainWindow.log.nimbusError")); //$NON-NLS-1$
-//					UIManager.setLookAndFeel(new MetalLookAndFeel());
-//					lookAndFeelTheme = "metal";
-//					changed = true;
-//				}
-//			} catch (Exception e) {
-//				logger.log(Level.WARNING, Msg.getString("MainWindow.log.nimbusError")); //$NON-NLS-1$
-//			}
-//		}
-//
-//		if (changed) {
-//
-//			frame.validate();
-//			frame.repaint();
-//
-//			if (desktop != null) {
-//				desktop.updateToolWindowLF();
-//				desktop.updateAnnouncementWindowLF();
-//			}
-//		}
-//	}
-
-//	/**
-//	 * Sets the icon image for the main window.
-//	 */
-//	public void setIconImage() {
-//
-//		String fullImageName = ICON_IMAGE;
-//		URL resource = ImageLoader.class.getResource(fullImageName);
-//		Toolkit kit = Toolkit.getDefaultToolkit();
-//		Image img = kit.createImage(resource);
-//		frame.setIconImage(img);
-//	}
 
 	/**
 	 * Gets the unit toolbar.
