@@ -68,16 +68,11 @@ ul {
   /* Use padding to move list item from left to right */
   padding-left: 1em;
 }
-
-ul li:before {
-  content: "–";
-  position: absolute;
-  /* Change margin to move dash around */
-  margin-left: -3em;
-}	
 ul.a {
   list-style-type: circle;
 }
-ol { counter-reset: item }	
+ol { 
+	counter-reset: item 
+	}	
 ol > li { display: block}
 ol > li:before { content: counters(item, ".") ". "; counter-increment: item }	
