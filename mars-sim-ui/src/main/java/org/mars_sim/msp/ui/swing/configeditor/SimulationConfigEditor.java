@@ -42,7 +42,6 @@ import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.AbstractTableModel;
@@ -71,7 +70,6 @@ import com.alee.laf.WebLookAndFeel;
 import com.alee.managers.UIManagers;
 import com.alee.managers.tooltip.TooltipManager;
 import com.alee.managers.tooltip.TooltipWay;
-import com.nilo.plaf.nimrod.NimRODLookAndFeel;
 
 /**
  * A temporary simulation configuration editor dialog. Will be replaced by

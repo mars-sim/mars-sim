@@ -39,8 +39,8 @@ public class MissionManager implements Serializable {
 
 	/** default logger. */
 	private static transient Logger logger = Logger.getLogger(MissionManager.class.getName());
-	private static String loggerName = logger.getName();
-	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+//	private static String loggerName = logger.getName();
+//	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 	
 	private static final int MAX_NUM_PLANS = 100;
 	
@@ -71,6 +71,25 @@ public class MissionManager implements Serializable {
 	// Need to call setMarsClock() right after MarsClock is initialized
 	private static MarsClock marsClock;
 
+	static {
+		/**
+		 * Creates an array of all missions
+		 */
+		missionNames = Arrays.asList(
+					AreologyStudyFieldMission.DEFAULT_DESCRIPTION,
+					BiologyStudyFieldMission.DEFAULT_DESCRIPTION,
+					BuildingConstructionMission.DEFAULT_DESCRIPTION, 
+					BuildingSalvageMission.DEFAULT_DESCRIPTION,
+					CollectIce.DEFAULT_DESCRIPTION,
+					CollectRegolith.DEFAULT_DESCRIPTION,
+					EmergencySupplyMission.DEFAULT_DESCRIPTION,
+					Exploration.DEFAULT_DESCRIPTION,
+					Mining.DEFAULT_DESCRIPTION,
+					RescueSalvageVehicle.DEFAULT_DESCRIPTION,
+					Trade.DEFAULT_DESCRIPTION,
+					TravelToSettlement.DEFAULT_DESCRIPTION
+			);
+		}
 	
 	/**
 	 * Constructor.
@@ -79,8 +98,6 @@ public class MissionManager implements Serializable {
 		// Initialize cache values.
 		personTimeCache = null;
 		totalProbCache = 0D;
-		// Create an array of mission names
-		createMissionArray();
 		
 		// Initialize data members
 		missionIdentifer = 0;
@@ -136,26 +153,6 @@ public class MissionManager implements Serializable {
 			value = "" + s;
 		
 		return value;
-	}
-	
-	/**
-	 * Creates an array of all missions
-	 */
-	private void createMissionArray() {
-		missionNames = Arrays.asList(
-				AreologyStudyFieldMission.DEFAULT_DESCRIPTION,
-				BiologyStudyFieldMission.DEFAULT_DESCRIPTION,
-				BuildingConstructionMission.DEFAULT_DESCRIPTION, 
-				BuildingSalvageMission.DEFAULT_DESCRIPTION,
-				CollectIce.DEFAULT_DESCRIPTION,
-				CollectRegolith.DEFAULT_DESCRIPTION,
-				EmergencySupplyMission.DEFAULT_DESCRIPTION,
-				Exploration.DEFAULT_DESCRIPTION,
-				Mining.DEFAULT_DESCRIPTION,
-				RescueSalvageVehicle.DEFAULT_DESCRIPTION,
-				Trade.DEFAULT_DESCRIPTION,
-				TravelToSettlement.DEFAULT_DESCRIPTION
-		);
 	}
 	
 	

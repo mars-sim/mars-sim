@@ -31,6 +31,7 @@ public class EmergencySupplyMissionMeta implements MetaMission {
     private static final String NAME = Msg.getString(
             "Mission.description.emergencySupplyMission"); //$NON-NLS-1$
 
+    
     @Override
     public String getName() {
         return NAME;

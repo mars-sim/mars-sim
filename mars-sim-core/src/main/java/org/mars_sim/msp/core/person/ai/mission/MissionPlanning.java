@@ -21,10 +21,8 @@ public class MissionPlanning implements Serializable {
 	private static final long serialVersionUID = 1L;
 	/** default logger. */
 //	private static Logger logger = Logger.getLogger(MissionPlanning.class.getName());
-//
 //	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
 //			logger.getName().length());
-//	
 	
 	private int requestedSol;
 	private double percentComplete; // 0% to 100%

@@ -49,6 +49,7 @@ import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.ai.job.Architect;
 import org.mars_sim.msp.core.person.ai.job.Areologist;
 import org.mars_sim.msp.core.person.ai.job.Biologist;
+import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.job.Pilot;
 import org.mars_sim.msp.core.person.ai.job.Trader;
 import org.mars_sim.msp.core.person.ai.mission.CollectIce;
@@ -2483,7 +2484,7 @@ public class GoodsManager implements Serializable {
 	private double determineEquipmentDemand(Class<? extends Equipment> equipmentClass) {				
 		double numDemand = 0D;
 
-		int areologistFactor = getAreologistNum() + 1;
+		int areologistFactor = getJobNum(1) + 1;
 
 		if (Robot.class.equals(equipmentClass))
 			numDemand += ROBOT_FACTOR;
@@ -2574,75 +2575,15 @@ public class GoodsManager implements Serializable {
 //    }
 
 	/**
-	 * Gets the number of areologists associated with the settlement.
+	 * Gets the number of people in a job associated with the settlement.
 	 * 
-	 * @return number of areologists.
+	 * @return number of people 
 	 */
-	private int getAreologistNum() {
+	private int getJobNum(int jobID) {
 		int result = 0;
 		Iterator<Person> i = settlement.getAllAssociatedPeople().iterator();
 		while (i.hasNext()) {
-			if (i.next().getMind().getJob() instanceof Areologist)
-				result++;
-		}
-		return result;
-	}
-
-	/**
-	 * Gets the number of biologists associated with the settlement.
-	 * 
-	 * @return number of biologists.
-	 */
-	private int getBiologistNum() {
-		int result = 0;
-		Iterator<Person> i = settlement.getAllAssociatedPeople().iterator();
-		while (i.hasNext()) {
-			if (i.next().getMind().getJob() instanceof Biologist)
-				result++;
-		}
-		return result;
-	}
-
-	/**
-	 * Gets the number of architect associated with the settlement.
-	 * 
-	 * @return number of architects.
-	 */
-	private int getArchitectNum() {
-		int result = 0;
-		Iterator<Person> i = settlement.getAllAssociatedPeople().iterator();
-		while (i.hasNext()) {
-			if (i.next().getMind().getJob() instanceof Architect)
-				result++;
-		}
-		return result;
-	}
-
-	/**
-	 * Gets the number of drivers associated with the settlement.
-	 * 
-	 * @return number of drivers.
-	 */
-	private int getDriverNum() {
-		int result = 0;
-		Iterator<Person> i = settlement.getAllAssociatedPeople().iterator();
-		while (i.hasNext()) {
-			if (i.next().getMind().getJob() instanceof Pilot)
-				result++;
-		}
-		return result;
-	}
-
-	/**
-	 * Gets the number of traders associated with the settlement.
-	 * 
-	 * @return number of traders.
-	 */
-	private int getTraderNum() {
-		int result = 0;
-		Iterator<Person> i = settlement.getAllAssociatedPeople().iterator();
-		while (i.hasNext()) {
-			if (i.next().getMind().getJob() instanceof Trader)
+			if (i.next().getMind().getJob().getJobID() == jobID)
 				result++;
 		}
 		return result;
@@ -2836,10 +2777,10 @@ public class GoodsManager implements Serializable {
 		double demand = 0D;
 
 		// Add demand for mining missions.
-		demand += getAreologistNum();
+		demand += getJobNum(1);
 
 		// Add demand for construction missions.
-		demand += getArchitectNum();
+		demand += getJobNum(0);
 
 		double supply = getNumberOfVehiclesForSettlement("light utility vehicle");
 		if (!buy)
@@ -2877,33 +2818,33 @@ public class GoodsManager implements Serializable {
 		double demand = 0D;
 
 		if (TRAVEL_TO_SETTLEMENT_MISSION.equals(missionType)) {
-			demand = getDriverNum();
+			demand = getJobNum(12);
 			demand *= ((double) settlement.getNumCitizens()
 					/ (double) settlement.getPopulationCapacity());
 		} else if (EXPLORATION_MISSION.equals(missionType)) {
-			demand = getAreologistNum();
+			demand = getJobNum(1);
 		} else if (COLLECT_ICE_MISSION.equals(missionType)) {
 			demand = getGoodsDemandValue(GoodsUtil.getResourceGood(ResourceUtil.iceID));
 			if (demand > 10D)
 				demand = 10D;
 		} else if (RESCUE_SALVAGE_MISSION.equals(missionType)) {
-			demand = getDriverNum();
+			demand = getJobNum(12);
 		} else if (TRADE_MISSION.equals(missionType)) {
-			demand = getTraderNum();
+			demand = getJobNum(16);
 		} else if (COLLECT_REGOLITH_MISSION.equals(missionType)) {
 			demand = getGoodsDemandValue(GoodsUtil.getResourceGood(ResourceUtil.regolithID));
 			if (demand > 10D)
 				demand = 10D;
 		} else if (MINING_MISSION.equals(missionType)) {
-			demand = getAreologistNum();
+			demand = getJobNum(1);
 //		} else if (CONSTRUCT_BUILDING_MISSION.equals(missionType)) {
 //			// No demand for rover vehicles.
 //		} else if (SALVAGE_BUILDING_MISSION.equals(missionType)) {
 //			// No demand for rover vehicles.
 		} else if (AREOLOGY_STUDY_FIELD_MISSION.equals(missionType)) {
-			demand = getAreologistNum();
+			demand = getJobNum(1);
 		} else if (BIOLOGY_STUDY_FIELD_MISSION.equals(missionType)) {
-			demand = getBiologistNum();
+			demand = getJobNum(3);
 		} else if (EMERGENCY_SUPPLY_MISSION.equals(missionType)) {
 			demand = unitManager.getSettlementNum() - 1D;
 			if (demand < 0D) {

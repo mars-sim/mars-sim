@@ -308,10 +308,6 @@ public class EmergencySupplyMission extends RoverMission implements Serializable
 					Msg.getString("Mission.phase.travelling.description", getNextNavpoint().getDescription())); // $NON-NLS-1$
 		} 
 		
-//		else if (DISEMBARKING.equals(getPhase())) {
-//			endMission(ALL_DISEMBARKED);
-//		}
-		
 		else if (DISEMBARKING.equals(getPhase())) {
 			setPhase(VehicleMission.COMPLETED);
 			setPhaseDescription(
@@ -326,6 +322,7 @@ public class EmergencySupplyMission extends RoverMission implements Serializable
 	@Override
 	protected void performPhase(MissionMember member) {
 		super.performPhase(member);
+		// NOTE: The following 4 phases are unique to this mission
 		if (SUPPLY_DELIVERY_DISEMBARKING.equals(getPhase())) {
 			performSupplyDeliveryDisembarkingPhase(member);
 		} else if (SUPPLY_DELIVERY.equals(getPhase())) {
@@ -550,7 +547,7 @@ public class EmergencySupplyMission extends RoverMission implements Serializable
 			}
 
 			if (isRoverInAGarage()) {
-
+				
 				// Store one EVA suit for person (if possible).
 				if (emergencySettlement.getInventory().findNumUnitsOfClass(EVASuit.class) > 0) {
 					EVASuit suit = (EVASuit) emergencySettlement.getInventory().findUnitOfClass(EVASuit.class);

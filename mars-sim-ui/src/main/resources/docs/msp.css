@@ -5,6 +5,34 @@
  * @author Lars Naesbye Christensen
  */
 
+ul.navbar {
+  list-style-type: none;
+  padding: 0;
+  padding: 0.3em;
+  top: 3em;
+  left: 1.5em;
+  width: 14em 
+  }
+ul.navbar li {
+  background: white;
+  margin: 1em 0;
+  padding: 0.3em;
+  border-right: 1em solid black 
+  }
+ul.navbar a {
+  text-decoration: none 
+  }
+  
+.column {
+  float: left;
+}
+.left {
+  width: 35%;
+}
+.right {
+  padding: 5em;
+  width: 65%;
+}
 
 a:link {
 	color: blue;
@@ -19,7 +47,8 @@ a:hover {
 	color: brown;
 	} 
 body {
-	text-indent: 1em;
+	text-indent: 2em;
+	margin-left: 5pt;
 	background-color: #DDD3D3;
 	color: #000;
 	font-family: Segoe UI;
@@ -57,13 +86,17 @@ h1, h2, h3, h4, h5{
 p {
 	font-size: 16pt;
 	font-family: Segoe UI;
+	text-indent: 2em;
+	margin-left: 5pt;
 	}
 ul {
-  margin-left: 1pt;
+  list-style-type: none;
+  /* Use padding to move list item from left to right */
+  padding-left: .5em;
 }
 ul.a {
-  list-style-type: circle;
 }
 ol { 
 	counter-reset: item 
+	margin-left: 2pt;
 	}

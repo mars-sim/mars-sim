@@ -355,24 +355,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 					// will recursively call endMission() with a brand new "reason"
 					determineEmergencyDestination(startingMember);
 				}
-				// Check on which phase the mission is at
-//				if (EMBARKING.equals(getPhase())) { 
-//					 setPhaseEnded(true); 
-//				}
-//
-//				else if (TRAVELLING.equals(getPhase())) { 
-//					 setPhaseEnded(true); 
-//				}
-//				 
-//				else if (DISEMBARKING.equals(getPhase())) { 
-//					 logger.info("Can't be aborted. This mission is at the very last phase of the mission. "
-//							 + "Members are unloading resources and being disembarked. Please be patient!");
-//				}
-//				else { 
-//				 	setPhaseEnded(true); 
-//				 	super.endMission(reason); 
-//				} 
-				
+				// TODO: May check on which phase the mission is at for fine grain decisions 			
 				setPhaseEnded(true);
 				super.endMission(reason);
 			}
@@ -394,24 +377,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 										+ "'s emergency beacon and request for towing. Reason : " + reason);
 						vehicle.setEmergencyBeacon(true);
 
-						if (!vehicle.isBeingTowed()) {
-//							// Note : don't end the mission yet
-							// So do not called setPhaseEnded(true) and super.endMission(reason);
-//							if (reason.equals(Mission.NOT_ENOUGH_RESOURCES)) {
-//								LogConsolidated.log(logger, Level.WARNING, 5000, sourceName, 
-//										"[" + startingMember.getLocationTag().getShortLocationName() + "] " 
-//										+ startingMember + " turned on " + vehicle + "'s emergency beacon and request for towing. Reason : "
-//										+ reason, null);
-//							}
-//							else {
-//								setEmergencyBeacon(startingMember, vehicle, true, reason);
-//								logger.warning("[" + startingMember.getLocationTag().getShortLocationName() + "] " 
-//										+ startingMember + " turned on " + vehicle + "'s emergency beacon and request for towing. Reason : "
-//										+ reason);
-//							}
-						}
-
-						else {
+						if (vehicle.isBeingTowed()) {
 							// Note: the vehicle is being towed, wait till the journey is over
 							// don't end the mission yet
 							// So do not called setPhaseEnded(true) and super.endMission(reason);
@@ -926,7 +892,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 					}
 				}
 
-				else if (resource >= ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
+				else if (resource < ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID) {
 					int num = (Integer) neededResources.get(resource);
 					int numStored = inv.getItemResourceNum(resource);
 
@@ -1318,9 +1284,21 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 				}
 
 				result.put(containerID, numContainers);
+					
+			}  // Check if these resources are Parts
+			else if (resource < ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID) {
+
+				// TODO: how to specify adding extra parts for EVASuit here ?
+				int num = (Integer) optionalResources.get(resource);
+				if (result.containsKey(resource)) {
+					num += (Integer) result.get(resource);
+				}
+				result.put(resource, num);
 			}
 		}
-
+		
+		// TODO: add extra EVASuit here 
+		
 		return result;
 	}
 

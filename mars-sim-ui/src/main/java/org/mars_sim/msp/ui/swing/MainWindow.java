@@ -49,7 +49,6 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
-import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.plaf.LayerUI;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 
@@ -70,7 +69,6 @@ import com.alee.laf.WebLookAndFeel;
 import com.alee.laf.panel.WebPanel;
 import com.alee.managers.tooltip.TooltipManager;
 import com.alee.managers.tooltip.TooltipWay;
-import com.nilo.plaf.nimrod.NimRODLookAndFeel;
 
 /**
  * The MainWindow class is the primary UI frame for the project. It contains the
@@ -170,7 +168,7 @@ extends JComponent {
 //		frame.setMinimumSize(new Dimension(1024, 600));
 		
 		// Set up the look and feel library to be used
-		setLookAndFeel(defaultThemeType, ThemeType.NIMROD);
+//		setLookAndFeel(defaultThemeType, ThemeType.NIMROD);
 		
 		// Disable the close button on top right
 //		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
@@ -1060,10 +1058,10 @@ extends JComponent {
 			initializeWeblaf();
 		}
 
-		else if (choice1 == ThemeType.NIMROD) {
-
-			initializeWeblaf();
-			
+//		else if (choice1 == ThemeType.NIMROD) {
+//
+//			initializeWeblaf();
+//			
 //			try {
 //				NimRODTheme nt = new NimRODTheme(
 //						getClass().getClassLoader().getResource("theme/" + themeSkin + ".theme")); //
@@ -1078,13 +1076,13 @@ extends JComponent {
 //			} catch (Exception e) {
 //				logger.log(Level.WARNING, Msg.getString("MainWindow.log.lookAndFeelError"), e); //$NON-NLS-1$ } }
 //			}
-			
-			try {
-				UIManager.setLookAndFeel(new NimRODLookAndFeel());
-			} catch (UnsupportedLookAndFeelException e) {
-				e.printStackTrace();
-			}
-		}
+//			
+//			try {
+//				UIManager.setLookAndFeel(new NimRODLookAndFeel());
+//			} catch (UnsupportedLookAndFeelException e) {
+//				e.printStackTrace();
+//			}
+//		}
 
 		else if (choice1 == ThemeType.NIMBUS) {
 

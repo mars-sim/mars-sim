@@ -30,6 +30,22 @@ import org.mars_sim.msp.core.structure.building.function.SystemType;
 /**
  * The EVASuit class represents an EVA suit which provides life support for a
  * person during a EVA operation.
+ * 
+ * Generally speaking, in order to supply enough oxygen for respiration, a space suit 
+ * using pure oxygen must have a pressure of about 
+ * 
+ * (A) 32.4 kPa (240 Torr; 4.7 psi), 
+ * 
+ *     which is equal to the 20.7 kPa (160 Torr; 3.0 psi) partial pressure of oxygen 
+ *     in the Earth's atmosphere at sea level, 
+ * 
+ * (B) plus 5.3 kPa (40 Torr; 0.77 psi) CO2 and 6.3 kPa (47 Torr; 0.91 psi) water vapor 
+ *     pressure, 
+ *     
+ * both of which must be subtracted from the alveolar pressure to get alveolar oxygen 
+ * partial pressure in 100% oxygen atmospheres, by the alveolar gas equation.
+ *  
+ * REFERENCE : https://en.wikipedia.org/wiki/Space_suit,
  */
 public class EVASuit extends Equipment implements LifeSupportType, Serializable, Malfunctionable {
 
@@ -70,16 +86,6 @@ public class EVASuit extends Equipment implements LifeSupportType, Serializable,
 	private static final double WATER_CAPACITY = 4D;
 	/** Normal air pressure (Pa) inside EVA suit is around 20 kPa. */
 	private static final double NORMAL_AIR_PRESSURE = CompositionOfAir.SKYLAB_TOTAL_AIR_PRESSURE_kPA; // 101325D;
-	// Ref : https://en.wikipedia.org/wiki/Space_suit
-	// Generally, to supply enough oxygen for respiration, a space suit using pure
-	// oxygen must have a pressure of about
-	// 32.4 kPa (240 Torr; 4.7 psi), equal to the 20.7 kPa (160 Torr; 3.0 psi)
-	// partial pressure of oxygen in the Earth's
-	// atmosphere at sea level, plus 5.3 kPa (40 Torr; 0.77 psi) CO2 and 6.3 kPa (47
-	// Torr; 0.91 psi) water vapor
-	// pressure, both of which must be subtracted from the alveolar pressure to get
-	// alveolar oxygen partial pressure
-	// in 100% oxygen atmospheres, by the alveolar gas equation.
 	/** Normal temperature (celsius). */
 	private static final double NORMAL_TEMP = 25D;
 	/** 334 Sols (1/2 orbit). */
@@ -278,8 +284,6 @@ public class EVASuit extends Equipment implements LifeSupportType, Serializable,
 	 */
 	public double getAirPressure() {
 		double result = NORMAL_AIR_PRESSURE;// * (malfunctionManager.getAirPressureModifier() / 100D);
-//		if (weather == null)
-//			weather = Simulation.instance().getMars().getWeather();
 		double ambient = weather.getAirPressure(getCoordinates());
 		if (result < ambient) {
 			return ambient;
@@ -295,13 +299,7 @@ public class EVASuit extends Equipment implements LifeSupportType, Serializable,
 	 */
 	public double getTemperature() {
 		double result = NORMAL_TEMP;// * (malfunctionManager.getTemperatureModifier() / 100D);
-		double ambient = 0;
-//		if (weather == null) {
-//			weather = Simulation.instance().getMars().getWeather();
-			// For the first time calling, use calculateTemperature()
-//			ambient = weather.calculateTemperature(getCoordinates());
-//		} else
-			ambient = weather.getTemperature(getCoordinates());
+		double ambient = weather.getTemperature(getCoordinates());
 
 		// the temperature of the suit will not be lower than the ambient temperature
 		if (result < ambient) {
@@ -356,8 +354,7 @@ public class EVASuit extends Equipment implements LifeSupportType, Serializable,
 			
 			malfunctionManager.timePassing(time);
 		}
-//		else
-//			this.person = null;
+
 	}
 
 	@Override
@@ -402,25 +399,17 @@ public class EVASuit extends Equipment implements LifeSupportType, Serializable,
 		return this;
 	}
 	
-	public boolean equals(Object obj) {
-		if (this == obj) return true;
-		if (obj == null) return false;
-		if (this.getClass() != obj.getClass()) return false;
-		EVASuit e = (EVASuit) obj;
-		return this.getNickName().equals(e.getNickName());
-	}
-	
-//	/**
-//	 * Reloads instances after loading from a saved sim
-//	 * 
-//	 * @param w
-//	 */
-//	public static void initializeInstances(Weather w) {
-//		weather = w;
+//	public boolean equals(Object obj) {
+//		if (this == obj) return true;
+//		if (obj == null) return false;
+//		if (this.getClass() != obj.getClass()) return false;
+//		EVASuit e = (EVASuit) obj;
+//		return this.getNickName().equals(e.getNickName());
 //	}
-//	
+	
+
 	public void destroy() {
 		malfunctionManager = null;
-		weather = null;
+		parts = null;
 	}
 }
