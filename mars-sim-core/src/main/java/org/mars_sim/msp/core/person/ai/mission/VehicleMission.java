@@ -18,7 +18,6 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEvent;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitListener;
@@ -1109,7 +1108,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 							member.getLocationTag().getLocale(),
 							((Person)member).getAssociatedSettlement().getName()
 							);
-					Simulation.instance().getEventManager().registerNewEvent(newEvent);
+					eventManager.registerNewEvent(newEvent);
 
 					// Set the new destination as the travel mission's next and final navpoint.
 					clearRemainingNavpoints();
@@ -1165,7 +1164,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 					((Person)member).getAssociatedSettlement().getName()
 					);
 
-			Simulation.instance().getEventManager().registerNewEvent(newEvent);
+			eventManager.registerNewEvent(newEvent);
 			logger.info("[" + vehicle.getLocationTag().getLocale() + "] " + member
 					+ " activated emergency beacon on " + vehicle.getName() + ".");
 		} else {

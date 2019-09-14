@@ -84,6 +84,8 @@ public class RescueSalvageVehicleMeta implements MetaMission {
             else
             	min_num = RescueSalvageVehicle.MIN_GOING_MEMBERS;
     	    
+            // FIXME : need to know how many extra EVA suits needed in the broken vehicle
+            
             // Check if min number of EVA suits at settlement.
             if (Mission.getNumberAvailableEVASuitsAtSettlement(settlement) < min_num) {
     	        return 0;

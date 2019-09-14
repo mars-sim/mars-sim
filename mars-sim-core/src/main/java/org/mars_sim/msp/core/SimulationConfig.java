@@ -337,11 +337,10 @@ public class SimulationConfig implements Serializable {
 			LogConsolidated.log(Level.CONFIG, 0, sourceName, 
 				"Your version.txt is invalid.");
 		
-		if (xmlDirExist && (!versionFileExist || !sameBuild)) {
-
-			LogConsolidated.log(Level.CONFIG, 0, sourceName, 
-					"Backing up existing xml files into a 'backup' folder. Cleaning the xml folder.");
-		}
+//		if (xmlDirExist && (!versionFileExist || !sameBuild)) {
+//			LogConsolidated.log(Level.CONFIG, 0, sourceName, 
+//					"Backing up existing xml files into a 'backup' folder. Cleaning the xml folder.");
+//		}
 		
 		if (xmlDirExist) {
 			
@@ -349,34 +348,51 @@ public class SimulationConfig implements Serializable {
 			
 				try {
 	
-					if (versionFileExist && !buildText.equals("") && isNotNumber(buildText)) {
-						String versionDir = Simulation.BACKUP_DIR + File.separator + buildText;		
-				        File versionLocation = new File(versionDir);
-				        if (versionLocation.exists()) {
-				        	//To get machine timestamp which is returned in UTC
-				            Instant timestamp = Instant.now();
-				            String newDir = versionDir + timestamp.toString().replace(":", "").replace("-", "");
-				        	versionLocation = new File(newDir);
-							LogConsolidated.log(Level.CONFIG, 0, sourceName, 
-									"/" + versionDir + " already exists. Backing up to /" + newDir);
+					if (versionFileExist && !buildText.equals("")) {
+						
+						String s0 = backupDir + File.separator + buildText;		
+				        File dir = new File(s0);
+				        if (!dir.exists()) {
+				        	// Case A1 : Copy it to /.mars-sim/backup/buildText/
+							LogConsolidated.log(Level.CONFIG, 0, sourceName, "Case A2 : " +
+									"Backing up to " + s0);
+							// Make a copy everything in the /xml to the /{$version}
+							FileUtils.copyDirectoryToDirectory(xmlLocation, dir);   	
 				        }
-						// Make a copy everything in the /xml to the /{$version}
-						FileUtils.copyDirectoryToDirectory(xmlLocation, versionLocation);
+				        else {
+				        	// Case A2 :  Copy it to /.mars-sim/backup/{$buildText}/{$timestamp}/
+				        	// if that buildText directory already exists
+				        	// Get timestamp in UTC
+				            Instant timestamp = Instant.now();
+				            String s1 = s0 + File.separator + timestamp.toString().replace(":", "").replace("-", "");
+				            dir = new File(s1);
+							LogConsolidated.log(Level.CONFIG, 0, sourceName, "Case A1 : " +
+									s0 + " folder already exists. Backing up to " + s1);
+							// Make a copy everything in the /xml to the /{$version}
+							FileUtils.copyDirectoryToDirectory(xmlLocation, dir);
+				        }
 					}
 	
 					else {
 						
-						if (backupLocation.exists()) {
-				        	//To get machine timestamp which is returned in UTC
-				            Instant timestamp = Instant.now();
-				            String newDir = backupDir + timestamp.toString().replace(":", "").replace("-", "");
-				            backupLocation = new File(newDir);
-							LogConsolidated.log(Level.CONFIG, 0, sourceName, 
-									"/" + backupDir + " already exists. Backing up to /" + newDir);						
+						if (!backupLocation.exists()) {
+							// Case B1 : Copy it to /.mars-sim/backup/
+							LogConsolidated.log(Level.CONFIG, 0, sourceName, "Case B2 : " +
+									"Backing up to " + backupDir);
+							// Make a copy everything in the /xml to the /backup/xml
+							FileUtils.copyDirectoryToDirectory(xmlLocation, backupLocation);
 				        }
-						
-						// Make a copy everything in the /xml to the /backup/xml
-						FileUtils.copyDirectoryToDirectory(xmlLocation, backupLocation);
+						else {
+							// Case B2 : Copy it to /.mars-sim/backup/{$timestamp}/
+				            Instant timestamp = Instant.now();
+				            String s2 = backupDir + File.separator + timestamp.toString().replace(":", "").replace("-", "");
+				            backupLocation = new File(s2);
+							LogConsolidated.log(Level.CONFIG, 0, sourceName, "Case B1 : " +
+									backupDir + " already exists. Backing up to " + s2);	
+							// Make a copy everything in the /xml to the /backup/xml
+							FileUtils.copyDirectoryToDirectory(xmlLocation, backupLocation);
+
+						}
 					}
 					
 //					if (buildText.equals("") || isNotNumber(buildText) || !sameBuild)

@@ -19,8 +19,7 @@ a:hover {
 	color: brown;
 	} 
 body {
-	text-indent: 2em;
-	margin-left: 5pt;
+	text-indent: 1em;
 	background-color: #DDD3D3;
 	color: #000;
 	font-family: Segoe UI;
@@ -52,26 +51,19 @@ h1 {
 	text-decoration: underline;
 	}	
 h1, h2, h3, h4, h5{
-	margin-left: 10pt;
-	text-indent: 1em;
+	margin-left: 1pt;
 	font-weight: 800;
 	}	
 p {
-/*	margin-left:20pt; */
 	font-size: 16pt;
-	text-indent: 1em;
 	font-family: Segoe UI;
 	}
 ul {
-  list-style-type: none;
-  /* Use padding to move list item from left to right */
-  padding-left: 1em;
+  margin-left: 1pt;
 }
 ul.a {
   list-style-type: circle;
 }
 ol { 
 	counter-reset: item 
-	}	
-ol > li { display: block}
-ol > li:before { content: counters(item, ".") ". "; counter-increment: item }	
+	}

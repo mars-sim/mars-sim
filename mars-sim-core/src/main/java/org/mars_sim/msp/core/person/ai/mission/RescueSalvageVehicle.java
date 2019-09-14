@@ -219,7 +219,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 
 		// Check if vehicle can carry enough supplies for the mission.
 		if (hasVehicle() && !isVehicleLoadable()) {
-			endMission("Vehicle is not loadable. (RescueSalvageVehicle)");
+			endMission(Mission.VEHICLE_NOT_LOADABLE);//"Vehicle is not loadable. (RescueSalvageVehicle)"); ?
 		}
 	}
 
@@ -587,6 +587,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 		}
 		result.put(foodID, foodAmount);
 
+		// Add extra EVA Suits based on how many people to be rescued
 		return result;
 	}
 

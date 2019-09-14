@@ -14,7 +14,6 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.LogConsolidated;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.time.MarsClock;
 
 /**
@@ -28,8 +27,8 @@ public abstract class TravelMission extends Mission {
 
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(TravelMission.class.getName());
-	private static String loggerName = logger.getName();
-	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+//	private static String loggerName = logger.getName();
+//	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 	
 	// Travel Mission status
 	public final static String AT_NAVPOINT = "At a navpoint";
@@ -275,7 +274,7 @@ public abstract class TravelMission extends Mission {
 	protected final void startTravelToNextNode() {
 		setNextNavpointIndex(navIndex + 1);
 		setTravelStatus(TRAVEL_TO_NAVPOINT);
-		legStartingTime = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
+		legStartingTime = (MarsClock) marsClock.clone();
 	}
 
 	/**
