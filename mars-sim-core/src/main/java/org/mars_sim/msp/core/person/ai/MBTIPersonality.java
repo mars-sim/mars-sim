@@ -13,7 +13,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -37,6 +39,9 @@ import org.mars_sim.msp.core.tool.RandomUtil;
  * preference, namely, Judging (J) vs. Perceiving (P)
  * 
  * As a whole, Brigg's expanded model gives rise to 16 outcomes
+ * 
+ * In terms of score, in case of the introversion-extraversion pair, 
+ * 0 being extremely Introvert, 100 being extremely extravert
  */
 
 /**
@@ -46,7 +51,6 @@ public class MBTIPersonality implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
 
 	// TODO Personality types should be enums
 	public static final String ISTP = "ISTP";
@@ -74,29 +78,28 @@ public class MBTIPersonality implements Serializable {
 
 	// The solitude stress modifier per millisol.
 	private static final double BASE_SOLITUDE_STRESS_MODIFIER = .1D;
-
 	// The company stress modifier per millisol.
 	private static final double BASE_COMPANY_STRESS_MODIFIER = .1D;
 
 	// Domain members
-	// % Breakdown of MBTI type of a general population, loading from people.xml
+	/** The percent Breakdown of MBTI type of a general population, loading from people.xml. */
 	private static Map<String, Double> personalityDistribution = null;
-
-	// Add score map for each settler
+	/** The person's score map */
 	private Map<Integer, Integer> scores = null;
-
-	// In case of Introversion vs. Extraversion pair, 0 is extremely Introvert, 100
-	// is extremely extravert
+	/** The person's MBTI */
 	private String personalityType;
-	private Person person;
-	
+	/** The person's ID. */
+	private int personID;
+	/** The unit manager instance. */
+	private static UnitManager unitManager = Simulation.instance().getUnitManager();
+	/** The person config instance. */
 	private static PersonConfig config = SimulationConfig.instance().getPersonConfig();
 
 	/**
 	 * Constructor
 	 */
 	MBTIPersonality(Person person) {
-		this.person = person;
+		personID = person.getIdentifier();
 
 		// Load personality type map if necessary.
 		if (personalityDistribution == null)
@@ -126,8 +129,9 @@ public class MBTIPersonality implements Serializable {
 
 		if (personalityType == null)
 			throw new IllegalStateException("PersonalityType.constructor(): Unable to determine personality type.");
+		
 	}
-	
+
 	/*
 	 * Sets the personality score pairs.
 	 */
@@ -189,11 +193,20 @@ public class MBTIPersonality implements Serializable {
 			throw new IllegalArgumentException("Personality type: " + newPersonalityType + " invalid.");
 	}
 
+	/**
+	 * Gets the I-E pair score
+	 * 
+	 * @return the score
+	 */
+	public int getIntrovertExtrovertScore() {
+		return scores.get(0);
+	}
+	
 	/*
 	 * Sync up with the I-E pair score in MBTI
 	 */
-	public void syncUpExtraversion() {
-		int value = person.getMind().getTraitManager().getPersonalityTraitMap().get(PersonalityTraitType.EXTRAVERSION);
+	public void syncUpExtraversion(int value) {
+//		int value = getPerson().getMind().getTraitManager().getPersonalityTraitMap().get(PersonalityTraitType.EXTRAVERSION);
 		scores.put(0, value);
 	}
 
@@ -299,20 +312,21 @@ public class MBTIPersonality implements Serializable {
 	 * @throws Exception if problem updating stress.
 	 */
 	public void updateStress(double time) {
-
-		Collection<Person> localGroup = person.getLocalGroup();
-		PhysicalCondition condition = person.getPhysicalCondition();
-
-		// Introverts reduce stress when alone.
-		if (isIntrovert() && (localGroup.size() == 0)) {
-			double solitudeStressModifier = BASE_SOLITUDE_STRESS_MODIFIER * time;
-			condition.setStress(condition.getStress() - solitudeStressModifier);
-		}
-
-		// Extroverts reduce stress when with company.
-		if (isExtrovert() && (localGroup.size() > 0)) {
-			double companyStressModifier = BASE_COMPANY_STRESS_MODIFIER * time;
-			condition.setStress(condition.getStress() - companyStressModifier);
+		if (getPerson() != null) {
+			Collection<Person> localGroup = getPerson().getLocalGroup();
+			PhysicalCondition condition = getPerson().getPhysicalCondition();
+	
+			// Introverts reduce stress when alone.
+			if (isIntrovert() && (localGroup.size() == 0)) {
+				double solitudeStressModifier = BASE_SOLITUDE_STRESS_MODIFIER * time;
+				condition.setStress(condition.getStress() - solitudeStressModifier);
+			}
+	
+			// Extroverts reduce stress when with company.
+			if (isExtrovert() && (localGroup.size() > 0)) {
+				double companyStressModifier = BASE_COMPANY_STRESS_MODIFIER * time;
+				condition.setStress(condition.getStress() - companyStressModifier);
+			}
 		}
 	}
 
@@ -321,6 +335,15 @@ public class MBTIPersonality implements Serializable {
 	}
 
 	/**
+	 * Gets the person's reference.
+	 * 
+	 * @return {@link Person}
+	 */
+	public Person getPerson() {
+		return unitManager.getPersonByID(personID);
+	}
+	
+	/**
 	 * Prepare object for garbage collection.
 	 */
 	public void destroy() {
@@ -328,6 +351,8 @@ public class MBTIPersonality implements Serializable {
 			personalityDistribution.clear();
 		personalityDistribution = null;
 		personalityType = null;
-		person = null;
+		scores = null;
+		config = null;
+		unitManager = null;
 	}
 }

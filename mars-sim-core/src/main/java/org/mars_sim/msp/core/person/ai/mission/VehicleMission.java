@@ -1269,32 +1269,56 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		Map<Integer, Number> optionalResources = getOptionalResourcesToLoad();
 		Iterator<Integer> i = optionalResources.keySet().iterator();
 		while (i.hasNext()) {
-			int resource = i.next();
+			int id = i.next();
 			// Check if it's an amount resource that can be stored inside
-			if (resource < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
-				double amount = (double) optionalResources.get(resource);
+			if (id < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
+				double amount = (double) optionalResources.get(id);
 				// Class<? extends Container> containerClass =
 				// ContainerUtil.getContainerClassToHoldResource(resource);
-				int containerID = ContainerUtil.getContainerClassIDToHoldResource(resource);
-				double capacity = ContainerUtil.getContainerCapacity(resource);
+				int containerID = ContainerUtil.getContainerClassIDToHoldResource(id);
+				double capacity = ContainerUtil.getContainerCapacity(containerID);
 				int numContainers = (int) Math.ceil(amount / capacity);
-//	            int id = EquipmentType.str2int(containerClass.getClass().getName());
+
 				if (result.containsKey(containerID)) {
 					numContainers += (int) (result.get(containerID));
 				}
 
+//				System.out.println("VehicleMission's getOptionalEquipmentToLoad() 1 id : " + id 
+//						+ "   containerID : " + containerID
+//						+ "   numContainers : " + numContainers 
+//						+ "   numContainers : " + numContainers
+//						+ "   capacity : " + capacity);
 				result.put(containerID, numContainers);
 					
 			}  // Check if these resources are Parts
-			else if (resource < ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID) {
-
+			else if (id < ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID) {
+				int num = (Integer) optionalResources.get(id);
 				// TODO: how to specify adding extra parts for EVASuit here ?
-				int num = (Integer) optionalResources.get(resource);
-				if (result.containsKey(resource)) {
-					num += (Integer) result.get(resource);
+				int containerID = ContainerUtil.getContainerClassIDToHoldResource(id);
+				double capacity = ContainerUtil.getContainerCapacity(containerID);
+				int numContainers = (int) Math.ceil(num / capacity);
+
+				if (result.containsKey(containerID)) {
+					numContainers += (int) (result.get(containerID));
 				}
-				result.put(resource, num);
+
+//				System.out.println("VehicleMission's getOptionalEquipmentToLoad() 2 id : " + id 
+//						+ "   containerID : " + containerID
+//						+ "   numContainers : " + numContainers 
+//						+ "   numContainers : " + numContainers
+//						+ "   capacity : " + capacity);
+				result.put(containerID, numContainers);
 			}
+			else
+				System.out.println("VehicleMission's getOptionalEquipmentToLoad() 3 id : " + id);
+//			else {
+//				int num = (Integer) optionalResources.get(id);
+//				if (result.containsKey(id)) {
+//					num += (Integer) result.get(id);
+//				}
+////				System.out.println("equipment id : " + id);
+//				result.put(id, num);
+//			}
 		}
 		
 		// TODO: add extra EVASuit here 

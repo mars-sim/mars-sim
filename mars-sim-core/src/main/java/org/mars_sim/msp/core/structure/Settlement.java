@@ -89,8 +89,6 @@ import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleType;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 /**
  * The Settlement class represents a settlement unit on virtual Mars. It
  * contains information related to the state of the settlement.
@@ -177,15 +175,28 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	private transient int numConnectorsCache = 0;
 
 	/** The settlement objective type string array. */
-	private final static String[] objectiveArray = new String[] { Msg.getString("ObjectiveType.crop"),
-			Msg.getString("ObjectiveType.manu"), Msg.getString("ObjectiveType.research"),
-			Msg.getString("ObjectiveType.transportation"), Msg.getString("ObjectiveType.trade"),
-			Msg.getString("ObjectiveType.tourism") };
+	private final static String[] objectiveArray;
 	/** The settlement objective type array. */
-	private final static ObjectiveType[] objectives = new ObjectiveType[] { ObjectiveType.CROP_FARM,
-			ObjectiveType.MANUFACTURING_DEPOT, ObjectiveType.RESEARCH_CAMPUS, ObjectiveType.TRANSPORTATION_HUB,
-			ObjectiveType.TRADE_CENTER, ObjectiveType.TOURISM };
+	private final static ObjectiveType[] objectives;
 
+	static {
+		objectiveArray = new String[] { 
+				Msg.getString("ObjectiveType.crop"),
+				Msg.getString("ObjectiveType.manu"), 
+				Msg.getString("ObjectiveType.research"),
+				Msg.getString("ObjectiveType.transportation"), 
+				Msg.getString("ObjectiveType.trade"),
+				Msg.getString("ObjectiveType.tourism") };
+		
+		objectives = new ObjectiveType[] { 
+				ObjectiveType.CROP_FARM,
+				ObjectiveType.MANUFACTURING_DEPOT, 
+				ObjectiveType.RESEARCH_CAMPUS, 
+				ObjectiveType.TRANSPORTATION_HUB,
+				ObjectiveType.TRADE_CENTER, 
+				ObjectiveType.TOURISM };
+	}
+	
 	/** The settlement's resource statistics. */
 	private transient Map<Integer, Map<Integer, List<Double>>> resourceStat = new HashMap<>();
 	/** The settlement's map of adjacent buildings. */
@@ -294,32 +305,32 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	/** The settlement objective type instance. */
 	private ObjectiveType objectiveType;
 	/** The settlement's building manager. */
-	@JsonIgnore
+//	@JsonIgnore
 	protected BuildingManager buildingManager;
 	/** The settlement's building connector manager. */
-	@JsonIgnore
+//	@JsonIgnore
 	protected BuildingConnectorManager buildingConnectorManager;
 	/** The settlement's goods manager. */
-	@JsonIgnore
+//	@JsonIgnore
 	protected GoodsManager goodsManager;
 	/** The settlement's construction manager. */
-	@JsonIgnore
+//	@JsonIgnore
 	protected ConstructionManager constructionManager;
 	/** The settlement's building power grid. */
-	@JsonIgnore
+//	@JsonIgnore
 	protected PowerGrid powerGrid;
 	// Added heating system
 	/** The settlement's heating system. */
-	@JsonIgnore
+//	@JsonIgnore
 	protected ThermalSystem thermalSystem;
 	/** The settlement's chain of command. */
-	@JsonIgnore
+//	@JsonIgnore
 	private ChainOfCommand chainOfCommand;
 	/** The settlement's composition of air. */
-	@JsonIgnore
+//	@JsonIgnore
 	private CompositionOfAir compositionOfAir;
 	/** The settlement's location. */
-	@JsonIgnore
+//	@JsonIgnore
 	private Coordinates location;
 	/** The settlement's last dust storm. */
 	private DustStorm storm;

@@ -1367,7 +1367,7 @@ public class Inventory implements Serializable {
 			while ((result == null) && i.hasNext()) {
 				Unit unit = i.next();
 				if (unit instanceof Equipment) {
-					if (EquipmentType.getType(((Equipment)unit).getName()) == EquipmentType.convertID2Type(id)) {
+					if (((Equipment)unit).getEquipmentType() == EquipmentType.convertID2Enum(id)) {
 						result = unit;
 						break;
 					}
@@ -1398,9 +1398,21 @@ public class Inventory implements Serializable {
 		return result;
 	}
 
-	public Collection<Unit> findAllUnitsOfClass(int id) {
-//		Class<?> unitClass = EquipmentFactory.getEquipmentClass(EquipmentType.int2enum(id).getName());
-		return findAllUnitsOfClass(EquipmentFactory.getEquipmentClass(EquipmentType.convertID2Type(id).getType()));
+	public Collection<Unit> findAllUnitsOfClass(int id) {	
+		Collection<Unit> result = new ConcurrentLinkedQueue<Unit>();
+		if (containedUnits != null && !containedUnits.isEmpty()) {
+			Iterator<Unit> i = containedUnits.iterator();
+			while (i.hasNext()) {
+				Unit unit = i.next();
+				if (unit instanceof Equipment) {
+					if (((Equipment)unit).getEquipmentType() == EquipmentType.convertID2Enum(id)) {
+						result.add(unit);
+					}
+				}
+			}
+		}
+		
+		return result;
 	}
 
 	/**
@@ -1430,8 +1442,8 @@ public class Inventory implements Serializable {
 			Iterator<Unit> i = containedUnits.iterator();
 			while (i.hasNext()) {
 				Unit unit = i.next();
-				if (unit instanceof Equipment || unit instanceof Container) {
-					if (EquipmentType.getType(((Equipment)unit).getType()) == EquipmentType.convertID2Type(id)) {
+				if (unit instanceof Equipment) {
+					if (((Equipment)unit).getEquipmentType() == EquipmentType.convertID2Enum(id)) {
 						result++;
 					}
 				}

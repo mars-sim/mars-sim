@@ -73,16 +73,22 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 	private static final double WEAR_LIFETIME = 334000D;
 	/** 100 millisols. */
 	private static final double MAINTENANCE_TIME = 100D;
-
+	/** static robot count identifier. */
+	private static int robotCount = 0;
+	
 	// Data members
-	/** Is therobot is inoperable. */
+	/** Is the robot is inoperable. */
 	private boolean isInoperable;
 	/** Is the robot is salvaged. */
 	private boolean isSalvaged;
+	
+	/** Unique robot id. */
+	private int robotID;
 	/** The settlement the robot is currently associated with. */
 	private int associatedSettlementID = -1;
 	/** The height of the robot (in cm). */
 	private int height;
+	
 	/** Settlement X location (meters) from settlement center. */
 	private double xLoc;
 	/** Settlement Y location (meters) from settlement center. */
@@ -90,8 +96,11 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 	/** The cache for msol */
 	private double msolCache = -1D;
 
+	/** The name of the robot. */
 	private String name;
+	/** The country of the robot made. */
 	private String country;
+	/** The sponsor of the robot. */
 	private String sponsor;
 	
 	/** The person's skill manager. */
@@ -120,8 +129,23 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 	private static EarthClock earthClock;
 	private static RobotConfig robotConfig;
 	
+	/**
+	 * Must be synchronised to prevent duplicate ids being assigned via different
+	 * threads.
+	 * 
+	 * @return
+	 */
+	private static synchronized int getNextCount() {
+		return robotCount++;
+	}
+	
 	protected Robot(String name, Settlement settlement, RobotType robotType) {
 		super(name, robotType.toString(), settlement.getCoordinates()); // extending equipment
+		
+		this.robotID = getNextCount();
+		
+		unitManager.addRobotID(this);
+		
 //		// Place this person within a settlement
 //		enter(LocationCodeType.SETTLEMENT);
 //		// Place this person within a building
@@ -138,7 +162,6 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 		isInoperable = false;
 		
 		// Construct the skill manager.
-//		skillManager = new SkillManager(robot, coreMind);
 		skillManager = new SkillManager(this);
 	}
 
@@ -946,13 +969,25 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 		return skillManager;
 	}
 	
-	public boolean equals(Object obj) {
-		if (this == obj) return true;
-		if (obj == null) return false;
-		if (this.getClass() != obj.getClass()) return false;
-		Robot r = (Robot) obj;
-		return this.name.equals(r.getName());
+	/**
+	 * Returns the effective integer skill level from a named skill based on
+	 * additional modifiers such as fatigue.
+	 * 
+	 * @param skillType the skill's type
+	 * @return the skill's effective level
+	 */
+	public int getEffectiveSkillLevel(SkillType skillType) {
+		// Modify for fatigue, minus 1 skill level for every 1000 points of fatigue.
+		return (int) Math.round(getPerformanceRating() * skillManager.getSkillLevel(skillType));
 	}
+	
+//	public boolean equals(Object obj) {
+//		if (this == obj) return true;
+//		if (obj == null) return false;
+//		if (this.getClass() != obj.getClass()) return false;
+//		Robot r = (Robot) obj;
+//		return this.name.equals(r.getName());
+//	}
 	
 	/**
 	 * Reloads instances after loading from a saved sim

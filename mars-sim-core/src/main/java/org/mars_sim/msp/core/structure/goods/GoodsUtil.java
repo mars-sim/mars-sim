@@ -164,8 +164,8 @@ public class GoodsUtil {
 		if (equipmentClass == null) {
 			throw new IllegalArgumentException("goodClass cannot be null");
 		}
-		int id = EquipmentType.getEquipmentID(equipmentClass);
-		return new Good(EquipmentType.convertID2Type(id).getType(), id, GoodType.EQUIPMENT);
+		int id = EquipmentType.convertClass2ID(equipmentClass);
+		return new Good(EquipmentType.convertID2Enum(id).getType(), id, GoodType.EQUIPMENT);
 	}
 
 	/**
@@ -175,7 +175,7 @@ public class GoodsUtil {
 	 * @return good for the resource class or null if none.
 	 */
 	public static Good createEquipmentGood(int id) {
-		return new Good(EquipmentType.convertID2Type(id).getType(), id, GoodType.EQUIPMENT);
+		return new Good(EquipmentType.convertID2Enum(id).getType(), id, GoodType.EQUIPMENT);
 //		Class<? extends Unit> equipmentClass = EquipmentFactory.getEquipmentClass(EquipmentType.int2enum(e).getName());
 //		return getEquipmentGood(EquipmentFactory.getEquipmentClass(EquipmentType.convertID2Type(id).getName()));
 	}
@@ -191,7 +191,7 @@ public class GoodsUtil {
 			logger.severe("equipmentClass is NOT supposed to be null.");
 //			throw new IllegalArgumentException("equipmentClass cannot be null");
 		}
-		int id = EquipmentType.getEquipmentID(equipmentClass);
+		int id = EquipmentType.convertClass2ID(equipmentClass);
 		Iterator<Good> i = getGoodsList().iterator();
 		while (i.hasNext()) {
 			Good good = i.next();

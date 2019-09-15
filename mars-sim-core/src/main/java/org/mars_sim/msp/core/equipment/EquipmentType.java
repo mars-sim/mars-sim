@@ -78,11 +78,15 @@ public enum EquipmentType {
 		return -1;
 	}
 	
-	public static EquipmentType convertID2Type(int id) {
-		return EquipmentType.values()[id - ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID];
+	public static EquipmentType convertOrdinalID2Enum(int ordinalID) {
+		return EquipmentType.values()[ordinalID];
 	}
 	
-	public static int getEquipmentID(Class<?> equipmentClass) {
+	public static EquipmentType convertID2Enum(int resourceID) {
+		return EquipmentType.values()[resourceID - ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID];
+	}
+	
+	public static int convertClass2ID(Class<?> equipmentClass) {
 		if (Bag.class.equals(equipmentClass)) return BAG.ordinal() + ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID;
 		else if (Barrel.class.equals(equipmentClass)) return BARREL.ordinal() + ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID;
 //		else if (BuildingKit.class.equals(equipmentClass)) return BUILDING_KIT.ordinal() + ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID;

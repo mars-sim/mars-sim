@@ -58,7 +58,7 @@ public final class EquipmentFactory {
 	}
 
 	public static Equipment createEquipment(int id, Coordinates location, boolean temp) {
-		return createEquipment(EquipmentType.convertID2Type(id).getType(), location, temp);
+		return createEquipment(EquipmentType.convertID2Enum(id).getType(), location, temp);
 	}
 
 	/**
@@ -176,7 +176,7 @@ public final class EquipmentFactory {
 	public static Class<? extends Equipment> getEquipmentClass(int id) {
 //		String type = EquipmentType.convertID2Type(id).getName();
 //		return getEquipmentClass(type);
-		return getEquipmentClass(EquipmentType.convertID2Type(id).getType());
+		return getEquipmentClass(EquipmentType.convertID2Enum(id).getType());
 	}
 
 //	public static int getEquipmentID(String type) {

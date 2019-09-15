@@ -76,11 +76,11 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 	private double totalResourceCollected;
 
 	/** The type of container needed for the mission or null if none. */
-	private Integer containerType;
+	private Integer containerID;
 	/** The start time at the current collection site. */
 	private MarsClock collectionSiteStartTime;
 	/** The type of resource to collect. */
-	private Integer resourceType;
+	private Integer resourceID;
 
 	// Static members
 	private static int oxygenID = ResourceUtil.oxygenID;
@@ -93,12 +93,12 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 	 * 
 	 * @param missionName            The name of the mission.
 	 * @param startingPerson         The person starting the mission.
-	 * @param resourceType           The type of resource.
+	 * @param resourceID           The type of resource.
 	 * @param siteResourceGoal       The goal amount of resources to collect at a
 	 *                               site (kg) (or 0 if none).
 	 * @param resourceCollectionRate The resource collection rate for a person
 	 *                               (kg/millisol).
-	 * @param containerType          The type of container needed for the mission or
+	 * @param containerID          The type of container needed for the mission or
 	 *                               null if none.
 	 * @param containerNum           The number of containers needed for the
 	 *                               mission.
@@ -106,8 +106,8 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 	 * @param minPeople              The mimimum number of people for the mission.
 	 * @throws MissionException if problem constructing mission.
 	 */
-	CollectResourcesMission(String missionName, Person startingPerson, Integer resourceType, double siteResourceGoal,
-			double resourceCollectionRate, Integer containerType, int containerNum, int numSites, int minPeople) {
+	CollectResourcesMission(String missionName, Person startingPerson, Integer resourceID, double siteResourceGoal,
+			double resourceCollectionRate, Integer containerID, int containerNum, int numSites, int minPeople) {
 
 		// Use RoverMission constructor
 		super(missionName, startingPerson, minPeople);
@@ -130,10 +130,10 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 			if (s != null) {
 				setStartingSettlement(s);
 
-				this.resourceType = resourceType;
+				this.resourceID = resourceID;
 				this.siteResourceGoal = siteResourceGoal;
 				this.resourceCollectionRate = resourceCollectionRate;
-				this.containerType = containerType;
+				this.containerID = containerID;
 				this.containerNum = containerNum;
 
 				// Recruit additional members to mission.
@@ -170,12 +170,12 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 	 * @param missionName            The name of the mission.
 	 * @param members                collection of mission members.
 	 * @param startingSettlement     the starting settlement.
-	 * @param resourceType           The type of resource.
+	 * @param resourceID           The type of resource.
 	 * @param siteResourceGoal       The goal amount of resources to collect at a
 	 *                               site (kg) (or 0 if none).
 	 * @param resourceCollectionRate The resource collection rate for a person
 	 *                               (kg/millisol).
-	 * @param containerType          The type of container needed for the mission or
+	 * @param containerID          The type of container needed for the mission or
 	 *                               null if none.
 	 * @param containerNum           The number of containers needed for the
 	 *                               mission.
@@ -186,7 +186,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 	 * @throws MissionException if problem constructing mission.
 	 */
 	CollectResourcesMission(String missionName, Collection<MissionMember> members, Settlement startingSettlement,
-			Integer resourceType, double siteResourceGoal, double resourceCollectionRate, Integer containerType,
+			Integer resourceID, double siteResourceGoal, double resourceCollectionRate, Integer containerID,
 			int containerNum, int numSites, int minPeople, Rover rover, List<Coordinates> collectionSites) {
 
 		// Use RoverMission constructor
@@ -200,10 +200,10 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 		if (availableSuitNum < getMissionCapacity())
 			setMissionCapacity(availableSuitNum);
 
-		this.resourceType = resourceType;
+		this.resourceID = resourceID;
 		this.siteResourceGoal = siteResourceGoal;
 		this.resourceCollectionRate = resourceCollectionRate;
-		this.containerType = containerType;
+		this.containerID = containerID;
 		this.containerNum = containerNum;
 
 		// Set collection navpoints.
@@ -377,8 +377,8 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 	 */
 	private void collectingPhase(MissionMember member) {
 		Inventory inv = getRover().getInventory();
-		double resourcesCollected = inv.getAmountResourceStored(resourceType, false);
-		double resourcesCapacity = inv.getAmountResourceCapacity(resourceType, false);
+		double resourcesCollected = inv.getAmountResourceStored(resourceID, false);
+		double resourcesCapacity = inv.getAmountResourceCapacity(resourceID, false);
 
 		// Set total collected resources.
 		totalResourceCollected = resourcesCollected;
@@ -409,7 +409,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 			boolean nobodyCollect = true;
 			Iterator<MissionMember> j = getMembers().iterator();
 			while (j.hasNext()) {
-				if (CollectResources.canCollectResources(j.next(), getRover(), containerType, resourceType)) {
+				if (CollectResources.canCollectResources(j.next(), getRover(), containerID, resourceID)) {
 					nobodyCollect = false;
 				}
 			}
@@ -443,11 +443,11 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 					Person person = (Person) member;
 
 					// If person can collect resources, start him/her on that task.
-					if (CollectResources.canCollectResources(person, getRover(), containerType, resourceType)) {
+					if (CollectResources.canCollectResources(person, getRover(), containerID, resourceID)) {
 						CollectResources collectResources = new CollectResources("Collecting Resources", person,
-								getRover(), resourceType, resourceCollectionRate,
-								siteResourceGoal - siteCollectedResources, inv.getAmountResourceStored(resourceType, false),
-								containerType);
+								getRover(), resourceID, resourceCollectionRate,
+								siteResourceGoal - siteCollectedResources, inv.getAmountResourceStored(resourceID, false),
+								containerID);
 						assignTask(person, collectResources);
 					}
 				}
@@ -766,7 +766,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 			Map<Integer, Integer> result = new HashMap<>();
 
 			// Include required number of containers.
-			result.put(containerType, containerNum);
+			result.put(containerID, containerNum);
 
 			equipmentNeededCache = result;
 			return result;
@@ -786,8 +786,8 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 		super.destroy();
 
 		personConfig = null;
-		resourceType = null;
-		containerType = null;
+		resourceID = null;
+		containerID = null;
 		collectionSiteStartTime = null;
 	}
 }

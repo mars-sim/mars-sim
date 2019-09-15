@@ -10,7 +10,10 @@ package org.mars_sim.msp.core.person.ai;
 import java.io.Serializable;
 import java.util.Hashtable;
 
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
@@ -21,22 +24,24 @@ public class PersonalityTraitManager implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
+	/** The person's personality score upper limit. */
 	private static final int RANGE = 100;
-
-	private double[] pVector = null;//new double[5];
-	
-	private Person person;
+	/** The person's personality vector. */
+	private double[] pVector = null;
+	/** The person's ID. */
+	private int personID;
 	/** List of the person's big five personalities keyed by unique name. */
 	private Hashtable<PersonalityTraitType, Integer> personalityTraits;
-
+	/** The unit manager instance. */
+	private static UnitManager unitManager = Simulation.instance().getUnitManager();
+	
 	/**
 	 * Constructor.
 	 * 
 	 * @param person.
 	 */
 	public PersonalityTraitManager(Person person) {
-		this.person = person;
+		personID = person.getIdentifier();
 		personalityTraits = new Hashtable<PersonalityTraitType, Integer>();
 	}
 	
@@ -60,10 +65,19 @@ public class PersonalityTraitManager implements Serializable {
 	}
 
 	/**
+	 * Gets the I-E pair score
+	 * 
+	 * @return the score
+	 */
+	public int getIntrovertExtrovertScore() {
+		return getPersonalityTraitMap().get(PersonalityTraitType.EXTRAVERSION);
+	}
+	
+	/**
 	 * Sync up with the I-E pair score in MBTI 
 	 */
-	 public void syncUpExtraversion() { 
-		 int value = person.getMind().getMBTI().getScores().get(0); 
+	 public void syncUpExtraversion(int value) { 
+//		 int value = getPerson().getMind().getMBTI().getScores().get(0); 
 		 personalityTraits.put(PersonalityTraitType.EXTRAVERSION, value); 
 	 }
 
@@ -150,10 +164,21 @@ public class PersonalityTraitManager implements Serializable {
 	}
 
 	/**
+	 * Gets the person's reference.
+	 * 
+	 * @return {@link Person}
+	 */
+	public Person getPerson() {
+		return unitManager.getPersonByID(personID);
+	}
+	
+	/**
 	 * Prepare object for garbage collection.
 	 */
 	public void destroy() {
 		personalityTraits.clear();
 		personalityTraits = null;
+		pVector = null;
+		unitManager = null;
 	}
 }

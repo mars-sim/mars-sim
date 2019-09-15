@@ -25,7 +25,6 @@ import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * SurfaceFeatures represents the surface terrain and landmarks of the virtual
@@ -82,7 +81,7 @@ public class SurfaceFeatures implements Serializable {
 	
 	private static Coordinates sunDirection;
 	
-	@JsonIgnore // Need to have both @JsonIgnore and transient for Jackson to ignore converting this list
+//	@JsonIgnore // Need to have both @JsonIgnore and transient for Jackson to ignore converting this list
 	private static List<Landmark> landmarks = simulationConfig.getLandmarkConfiguration().getLandmarkList();
 	
 

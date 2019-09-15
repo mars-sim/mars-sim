@@ -29,8 +29,13 @@ public final class ContainerUtil {
 	 * @param resource the id of the resource to hold.
 	 * @return container id.
 	 */
-	public static int getContainerClassIDToHoldResource(int resource) {
-		return getContainerID(ResourceUtil.findAmountResource(resource).getPhase());
+	public static int getContainerClassIDToHoldResource(int id) {
+		if (id < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
+			return getContainerID(ResourceUtil.findAmountResource(id).getPhase());
+		}	
+		else {
+			return getContainerID(PhaseType.SOLID);
+		}
 	}
 
 	/**
@@ -122,11 +127,11 @@ public final class ContainerUtil {
 	 */
 	public static double getContainerCapacity(int id) {
 
-		if (id == EquipmentType.GAS_CANISTER.ordinal())
+		if (id == EquipmentType.GAS_CANISTER.ordinal() + ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID)
 			return GasCanister.CAPACITY;
-		else if (id == EquipmentType.BARREL.ordinal())
+		else if (id == EquipmentType.BARREL.ordinal() + ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID)
 			return Barrel.CAPACITY;
-		else if (id == EquipmentType.BAG.ordinal())
+		else if (id == EquipmentType.BAG.ordinal() + ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID)
 			return Bag.CAPACITY;
 		else
 			return 0;

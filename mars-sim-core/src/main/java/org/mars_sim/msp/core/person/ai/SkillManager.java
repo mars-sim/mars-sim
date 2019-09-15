@@ -15,7 +15,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotType;
@@ -38,70 +40,71 @@ public class SkillManager implements Serializable {
 	private static final int FACTOR = 50; 
 	
 	// Data members
-	/** The person owning the SkillManager. */
+//	/** The person's ID. */
+//	private int personID;
+//	/** The robot's ID. */
+//	private int robotID;
+	/** The person's instance. */
 	private Person person;
+	/** The robot's instance. */
 	private Robot robot;
 //	private CoreMind coreMind;
 	
 	/** A list of the person's skills keyed by name. */
 	private Hashtable<SkillType, Skill> skills;
 
-//	private Map<String, Integer> skillsMap;
-//	private List<String> skillNames;
+	/** The unit manager instance. */
+//	private static UnitManager unitManager = Simulation.instance().getUnitManager();
 	
 	/** Constructor. */
 	public SkillManager(Unit unit) {//, CoreMind coreMind) {
-		Person person = null;
-		Robot robot = null;
+//		personID = -1;
+//		robotID = -1;
+
 //		this.coreMind = coreMind;
 		
 		if (unit instanceof Person) {
-			person = (Person) unit;
-			this.person = person;
+			person = ((Person)unit);
+//			personID = ((Person)unit).getIdentifier();
 		} else if (unit instanceof Robot) {
-			robot = (Robot) unit;
-			this.robot = robot;
+			robot = ((Robot)unit);
+//			robotID = ((Robot)unit).getIdentifier();
 		}
 
 		skills = new Hashtable<SkillType, Skill>();
-
-//		if (person != null && !person.isPreConfigured()) {
-//		} else if (robot != null) {		
-//		}
 	}
 
 	/**
 	 * Sets some random bot skills
 	 */
-	public void setRandomBotSkills() {
+	public void setRandomBotSkills(RobotType t) {
 		// Add starting skills randomly for a bot.
 		List<SkillType> skills = new ArrayList<>();
-		
-		if (robot.getRobotType() == RobotType.MAKERBOT) {
+		if (t == RobotType.MAKERBOT) {
 			skills.add(SkillType.MATERIALS_SCIENCE);
 			skills.add(SkillType.PHYSICS);
 		}
-		else if (robot.getRobotType() == RobotType.GARDENBOT) {
+		else if (t == RobotType.GARDENBOT) {
 			skills.add(SkillType.BOTANY);
 			skills.add(SkillType.BIOLOGY);
 		}
-		else if (robot.getRobotType() == RobotType.REPAIRBOT) {
+		else if (t == RobotType.REPAIRBOT) {
 			skills.add(SkillType.MATERIALS_SCIENCE);
 			skills.add(SkillType.MECHANICS);
 		}
-		else if (robot.getRobotType() == RobotType.CHEFBOT) {
+		else if (t == RobotType.CHEFBOT) {
 			skills.add(SkillType.CHEMISTRY);
 			skills.add(SkillType.COOKING);
 		}
-		else if (robot.getRobotType() == RobotType.MEDICBOT) {
+		else if (t == RobotType.MEDICBOT) {
 			skills.add(SkillType.CHEMISTRY);
 			skills.add(SkillType.MEDICINE);
 		}
-		else if (robot.getRobotType() == RobotType.DELIVERYBOT) {
+		else if (t == RobotType.DELIVERYBOT) {
 			skills.add(SkillType.PILOTING);
 			skills.add(SkillType.TRADING);
 		}
-		else if (robot.getRobotType() == RobotType.CONSTRUCTIONBOT) {
+		else if (t == RobotType.CONSTRUCTIONBOT) {
 			skills.add(SkillType.AREOLOGY);
 			skills.add(SkillType.CONSTRUCTION);
 		}
@@ -117,7 +120,7 @@ public class SkillManager implements Serializable {
 	 * Sets some random skills
 	 */
 	public void setRandomSkills() {
-		int factor = person.getAge();
+		int ageFactor = getPerson().getAge();
 		// Add starting skills randomly for a person.
 		for (SkillType startingSkill : SkillType.values()) {
 			int skillLevel = 0;
@@ -136,19 +139,19 @@ public class SkillManager implements Serializable {
 				int rand = RandomUtil.getRandomInt(0, 3);
 				
 				if (rand == 0) {
-					skillLevel = getInitialSkillLevel(0, (int)(25 + factor/3));
+					skillLevel = getInitialSkillLevel(0, (int)(25 + ageFactor/3));
 					addNewSkillNExperience(startingSkill, skillLevel);
 				}
 				else if (rand == 1) {
-					skillLevel = getInitialSkillLevel(1, (int)(12 + factor/4));
+					skillLevel = getInitialSkillLevel(1, (int)(12 + ageFactor/4));
 					addNewSkillNExperience(startingSkill, skillLevel);
 				}
 				else if (rand == 2) {
-					skillLevel = getInitialSkillLevel(2, (int)(6 + factor/5));
+					skillLevel = getInitialSkillLevel(2, (int)(6 + ageFactor/5));
 					addNewSkillNExperience(startingSkill, skillLevel);
 				}
 				else if (rand == 3) {
-					skillLevel = getInitialSkillLevel(3, (int)(3 + factor/6));
+					skillLevel = getInitialSkillLevel(3, (int)(3 + ageFactor/6));
 					addNewSkillNExperience(startingSkill, skillLevel);
 				}
 			}
@@ -293,14 +296,16 @@ public class SkillManager implements Serializable {
 	public int getEffectiveSkillLevel(SkillType skillType) {
 		int skill = getSkillLevel(skillType);
 		double performance = 0;
-
 		// Modify for fatigue
 		// - 1 skill level for every 1000 points of fatigue.
-		if (person != null)
-			performance = person.getPerformanceRating();
-		else if (robot != null)
-			performance = robot.getPerformanceRating();
-
+		if (person != null) { //personID != -1) {
+//			System.out.println("getPerson() is " + getPerson());
+			performance = getPerson().getPerformanceRating();
+		}
+		else if (robot != null) {//robotID != -1) {
+//			System.out.println("getRobot() is " + getRobot());
+			performance = getRobot().getPerformanceRating();
+		}
 		int result = (int) Math.round(performance * skill);
 		return result;
 	}
@@ -399,11 +404,36 @@ public class SkillManager implements Serializable {
 	
 	
 	/**
+	 * Gets the person's reference.
+	 * 
+	 * @return {@link Person}
+	 */
+	public Person getPerson() {
+		return person;
+//		return unitManager.getPersonByID(personID);
+	}
+	
+	/**
+	 * Gets the robot's reference.
+	 * 
+	 * @return {@link Robot}
+	 */
+	public Robot getRobot() {
+		return robot;
+//		return unitManager.getRobotByID(robotID);
+	}
+	
+	/**
+	 * Loads instances
+	 */
+	public static void initializeInstances() {
+	}
+			
+	/**
 	 * Prepare object for garbage collection.
 	 */
 	public void destroy() {
-		person = null;
-		robot = null;
+//		unitManager = null;
 		skills.clear();
 		skills = null;
 	}

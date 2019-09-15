@@ -9,23 +9,16 @@ package org.mars_sim.msp.core.structure;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.construction.ConstructionSite;
-
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
-import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 
 /**
  * The Structure class is an abstract class that represents a
  * man-made structure such as a settlement, a building, a transponder or
  * a supply cache.
  */
-@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = As.PROPERTY, property = "@class")
-@JsonSubTypes({ @Type(value = Settlement.class, name = "settlement"),
-				@Type(value = Building.class, name = "building"),
-				@Type(value = ConstructionSite.class, name = "constructionSite")})
+//@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = As.PROPERTY, property = "@class")
+//@JsonSubTypes({ @Type(value = Settlement.class, name = "settlement"),
+//				@Type(value = Building.class, name = "building"),
+//				@Type(value = ConstructionSite.class, name = "constructionSite")})
 public abstract class Structure
 extends Unit {
 

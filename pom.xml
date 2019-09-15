@@ -7,13 +7,13 @@
 	<groupId>com.github</groupId>
 	<artifactId>mars-sim</artifactId>
 	<packaging>pom</packaging>
-	<version>3.1.0-b2</version>
+	<version>${project.version}</version>
 	<name>mars-sim</name>
 	<url>https://github.com/mars-sim/mars-sim</url>
 	<inceptionYear>2009</inceptionYear>
 	<properties>
 		<release>11</release>
-		<project.version>3.1.0-b2</project.version>
+		<project.version>3.1.0</project.version>
 		<junit.version>4.12</junit.version>
 		<timestamp>${maven.build.timestamp}</timestamp>
 		<maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
@@ -25,14 +25,6 @@
 		<lwjgl.version>3.2.2</lwjgl.version>
 		<kotlin.version>1.3.50</kotlin.version>
 	</properties>
-
-	<!-- <profiles> <profile> <id>lwjgl-natives-linux</id> <activation> <os><family>unix</family></os> 
-		</activation> <properties> <lwjgl.natives>natives-linux</lwjgl.natives> </properties> 
-		</profile> <profile> <id>lwjgl-natives-macos</id> <activation> <os><family>mac</family></os> 
-		</activation> <properties> <lw\jgl.natives>natives-macos</lwjgl.natives> </properties> 
-		</profile> <profile> <id>lwjgl-natives-windows</id> <activation> <os><family>windows</family></os> 
-		</activation> <properties> <lwjgl.natives>natives-windows</lwjgl.natives> 
-		</properties> </profile> </profiles> -->
 
 	<!-- ************************************************************************************************* -->
 	<!-- * Developers Section * -->
@@ -75,75 +67,6 @@
 		</developer>
 	</developers>
 	
-	<!-- ************************************************************************************************* -->
-	<!-- * Project Tools Section * -->
-	<!-- ************************************************************************************************* -->
-<!-- 
-	<scm>
-		<connection>scm:svn:https://svn.code.sf.net/p/mars-sim/code/trunk/mars-sim</connection>
-		<developerConnection>scm:svn:https://svn.code.sf.net/p/mars-sim/code/trunk/mars-sim</developerConnection>
-		<url>https://svn.code.sf.net/p/mars-sim/code/trunk/mars-sim</url>
-	</scm>
-	<issueManagement>
-		<system>GitHub</system>
-		<url>https://github.com/mars-sim/mars-sim/issues</url>
-	</issueManagement>
-	<mailingLists>
-		<mailingList>
-			<name>Mars-Sim Development Mailing list</name>
-			<subscribe>
-				http://lists.sourceforge.net/lists/listinfo/mars-sim-developers
-			</subscribe>
-			<unsubscribe>
-				http://lists.sourceforge.net/lists/listinfo/mars-sim-developers
-			</unsubscribe>
-			<archive>
-				http://sourceforge.net/mailarchive/forum.php?forum_name=mars-sim-developers
-			</archive>
-			<post>mars-sim-developers@lists.sourceforge.net</post>
-		</mailingList>
-		<mailingList>
-			<name>Mars-Sim User Mailing list</name>
-			<subscribe>
-				http://lists.sourceforge.net/lists/listinfo/mars-sim-users
-			</subscribe>
-			<unsubscribe>
-				http://lists.sourceforge.net/lists/listinfo/mars-sim-users
-			</unsubscribe>
-			<archive>
-				http://sourceforge.net/mailarchive/forum.php?forum_name=mars-sim-users
-			</archive>
-			<post>mars-sim-users@lists.sourceforge.net</post>
-		</mailingList>
-		<mailingList>
-			<name>Mars-Sim CI Mailing list</name>
-			<subscribe>
-				http://lists.sourceforge.net/lists/listinfo/mars-sim-ciserv
-			</subscribe>
-			<unsubscribe>
-				http://lists.sourceforge.net/lists/listinfo/mars-sim-ciserv
-			</unsubscribe>
-			<archive>
-				http://sourceforge.net/mailarchive/forum.php?forum_name=mars-sim-ciserv
-			</archive>
-			<post>mars-sim-ciserv@lists.sourceforge.net</post>
-		</mailingList>
-	</mailingLists>
-	<ciManagement>
-		<system>hudson</system>
-		<url>https://landrus.no-ip.info:8443/hudson/</url>
-		<notifiers>
-			<notifier>
-				<type>mail</type>
-				<address>mars-sim-ciserv@lists.sourceforge.net</address>
-				<sendOnSuccess>true</sendOnSuccess>
-				<sendOnWarning>true</sendOnWarning>
-				<sendOnError>true</sendOnError>
-				<sendOnFailure>true</sendOnFailure>
-			</notifier>
-		</notifiers>
-	</ciManagement>
--->	
 	<!-- ************************************************************************************************* -->
 	<!-- * Module Section * -->
 	<!-- ************************************************************************************************* -->
@@ -302,21 +225,7 @@
 		                </execution>
 	            	</executions>				
 				</plugin>
-				<!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-compiler-plugin 
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-compiler-plugin</artifactId>
-	                <version>3.7.0</version>
-	                <configuration>                
-	                    <source>10</source>
-	                    <target>10</target>
-	                    <compilerArgs>
-			            	<arg>-Xlint:unchecked</arg>
-			            	<arg>-Xlint:deprecation</arg>
-						</compilerArgs>
-						<verbose>true</verbose>
-	                </configuration>
-				</plugin-->
+
 				<!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-deploy-plugin : 33KB-->
 				<plugin>
 					<artifactId>maven-deploy-plugin</artifactId>
@@ -338,31 +247,7 @@
 						    <version>3.3.3</version>
 						</dependency>
 					</dependencies>
-				</plugin>			
-				<!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-site-plugin
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-site-plugin</artifactId>
-					<version>3.7.1</version>
-					<dependencies>
-						<dependency>
-							https://mvnrepository.com/artifact/org.apache.maven.wagon/wagon-ssh
-						    Add support for ssh/scp 
-							<groupId>org.apache.maven.wagon</groupId>
-							<artifactId>wagon-ssh</artifactId>
-							<version>3.1.0</version>
-						</dependency>
-					</dependencies>
 				</plugin>
-				<plugin>
-					<artifactId>maven-release-plugin</artifactId>
-					<version>2.5.3</version>
-				</plugin>
-				-->
-				<!-- <plugin> https://github.com/versioneye/versioneye_maven_plugin <groupId>com.versioneye</groupId> 
-					<artifactId>versioneye-maven-plugin</artifactId> <version>3.11.4</version> 
-					<configuration> <apiKey>9ffb7e9ead4f58524bc9</apiKey> <organisation>mars-sim</organisation> 
-					<team>Owners</team> </configuration> </plugin> -->
 
 			</plugins>
 		</pluginManagement>
@@ -372,64 +257,6 @@
 	<!-- ************************************************************************************************* -->
 	<reporting>
 		<plugins>
-			<!--  
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-project-info-reports-plugin</artifactId>
-				<version>2.9</version>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.10.4</version>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jxr-plugin</artifactId>
-				<version>2.5</version>
-			</plugin>
-			-->
-
-			<!--plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-surefire-report-plugin</artifactId> 
-				<version>2.20.1</version> </plugin -->
-			<!--
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>cobertura-maven-plugin</artifactId>
-				<version>2.7</version>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>taglist-maven-plugin</artifactId>
-				<version>2.4</version>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>findbugs-maven-plugin</artifactId>
-				<version>3.0.5</version>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-changelog-plugin</artifactId>
-				<version>2.3</version>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-changes-plugin</artifactId>
-				<version>2.12.1</version>
-				<reportSets>
-					<reportSet>
-						<reports>
-							<report>changes-report</report>
-						</reports>
-					</reportSet>
-				</reportSets>
-				<configuration>
-					<issueLinkTemplatePerSystem> <default> http://sourceforge.net/tracker/?func=detail&amp;aid=%ISSUE%&amp;group_id=3286&amp;atid=103286 
-						</default> </issueLinkTemplatePerSystem >
-				</configuration>
-			</plugin>
-			-->	
 			<plugin>
 				<!-- https://maven.apache.org/plugins/maven-dependency-plugin/examples/copying-project-dependencies.html -->
 				<!-- See https://maven.apache.org/plugins/maven-dependency-plugin/usage.html -->
@@ -454,30 +281,7 @@
 			<url>https://mars-sim.sourceforge.io/maven-repo/</url>
 		</repository>
 	</repositories>
-	<!-- ************************************************************************************************* -->
-	<!-- * Distribution Management Section * -->
-	<!-- ************************************************************************************************* -->
-	<!-- 
-	<distributionManagement>
-		<repository>
-			<id>sourceforge.net</id>
-			<name>Mars Sim Releases</name>
-			<uniqueVersion>false</uniqueVersion>
-			<url>scp://shell.sourceforge.net/home/project-web/mars-sim/htdocs/maven-repo</url>
-		</repository>
-		<snapshotRepository>
-			<id>sourceforge.net</id>
-			<name>Mars Sim Snapshots</name>
-			<uniqueVersion>true</uniqueVersion>
-			<url>scp://shell.sourceforge.net/home/project-web/mars-sim/htdocs/maven-repo-snapshots</url>
-		</snapshotRepository>
-		<site>
-			<id>sourceforge.net</id>
-			<name>Mars Sim Site</name>
-			<url>scp://shell.sourceforge.net/home/project-web/mars-sim/htdocs/site</url>
-		</site>
-	</distributionManagement>
-	-->
+
 	<pluginRepositories>
 		<pluginRepository>
 			<id>maven central</id>

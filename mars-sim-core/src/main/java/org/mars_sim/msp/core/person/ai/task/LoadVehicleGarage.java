@@ -1043,7 +1043,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 		Iterator<Integer> iE = equipment.keySet().iterator();
 		while (iE.hasNext()) {
 			Integer equipmentID = iE.next();			
-			String name = Conversion.capitalize(EquipmentType.convertID2Type(equipmentID).toString());
+			String name = Conversion.capitalize(EquipmentType.convertID2Enum(equipmentID).toString());
 //			Class<?> c = EquipmentFactory.getEquipmentClass(equipmentID);
 			int needed = equipment.get(equipmentID);
 			int settlementNeed = getRemainingSettlementNum(settlement, vehicleCrewNum, equipmentID);

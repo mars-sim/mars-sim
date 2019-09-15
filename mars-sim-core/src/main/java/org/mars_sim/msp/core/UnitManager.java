@@ -412,6 +412,7 @@ public class UnitManager implements Serializable {
 	}
 
 	public Person getPersonByID(int id) {
+//		System.out.println("id is " + id + "    lookupPerson is " + lookupPerson);
 		return lookupPerson.get(id);
 	}
 
@@ -1039,9 +1040,6 @@ public class UnitManager implements Serializable {
 
 			personList.add(person);
 			
-			// TODO: read from file
-			addUnit(person);
-
 			relationshipManager.addInitialSettler(person, settlement);
 
 			// Set person's job (if any).
@@ -1267,8 +1265,6 @@ public class UnitManager implements Serializable {
 							.setPersonality(null, null)
 							.build();
 					person.initialize();
-
-					addUnit(person);
 
 					relationshipManager.addInitialSettler(person, settlement);
 
@@ -1584,9 +1580,9 @@ public class UnitManager implements Serializable {
 						Map<String, Integer> skillMap = robotConfig.getSkillMap(x);
 						
 						// Adopt Static Factory Method and Factory Builder Pattern
-						Robot robot = Robot.create(name, settlement, robotType).setCountry("Earth").setSkill(skillMap).build();
+						Robot robot = Robot.create(name, settlement, robotType).setCountry("Earth").setSkill(skillMap, robotType).build();
 						robot.initialize();
-						addUnit(robot);
+
 						numBots++;
 
 						if (isDestinationChange) {
@@ -1632,10 +1628,8 @@ public class UnitManager implements Serializable {
 					RobotType robotType = getABot(settlement, initial);
 					// Adopt Static Factory Method and Factory Builder Pattern
 					Robot robot = Robot.create(getNewName(UnitType.ROBOT, null, null, robotType), settlement, robotType)
-							.setCountry("Earth").setSkill(null).build();
+							.setCountry("Earth").setSkill(null, robotType).build();
 					robot.initialize();
-
-					addUnit(robot);
 
 					String jobName = RobotJob.getName(robotType);
 					if (jobName != null) {
@@ -1987,7 +1981,7 @@ public class UnitManager implements Serializable {
 	
 		for (Unit u : lookupUnit.values()) {
 			if (!(u instanceof Building)) {
-				System.out.println(u);
+				System.out.println("UnitManager : " + u);
 				u.timePassing(time);
 			}
 		}

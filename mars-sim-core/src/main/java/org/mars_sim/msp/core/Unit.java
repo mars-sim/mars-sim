@@ -755,12 +755,19 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 //	public void exit(LocationCodeType type) {
 //		locationCode = locationCode - type.getCode();
 //	}
-
-
+	
 	/**
 	 * Loads instances
 	 * 
-	 * @param m
+	 * @param c0 {@link MasterClock}
+	 * @param c1 {@link MarsClock}
+	 * @param e {@link EarthClock}
+	 * @param s {@link Simulation}
+	 * @param m {@link Mars}
+	 * @param ms {@link MarsSurface}
+	 * @param w {@link Weather}
+	 * @param u {@link UnitManager}
+	 * @param mm {@link MissionManager}
 	 */
 	public static void initializeInstances(MasterClock c0, MarsClock c1, EarthClock e, Simulation s, 
 			Mars m, MarsSurface ms, Weather w, UnitManager u, MissionManager mm) {

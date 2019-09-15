@@ -31,6 +31,7 @@ import org.mars_sim.msp.core.person.ai.Mind;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillManager;
+import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.job.JobAssignmentType;
 import org.mars_sim.msp.core.person.ai.job.JobHistory;
@@ -146,7 +147,8 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	private double xLoc;
 	/** Settlement Y location (meters) from settlement center. */
 	private double yLoc;
-	
+	/** The birth timestamp of the person. */
+	private String birthTimeStamp;
 	/** The birthplace of the person. */
 	private String birthplace;
 	/** The person's name. */
@@ -248,6 +250,9 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		super.setDescription(settlement.getName());
 
 		this.personID = getNextCount();
+		
+		unitManager.addPersonID(this);
+		
 //		// Place this person within a settlement
 //		enter(LocationCodeType.SETTLEMENT);
 //		// Place this person within a building
@@ -262,13 +267,12 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		this.associatedSettlement = settlement.getIdentifier();		
 		
 		// Construct the skill manager
-//		skillManager = new SkillManager(person, coreMind);
 		skillManager = new SkillManager(this);
 		// Construct the mind instance
 		mind = new Mind(this);
 		
 		// Set up the time stamp for the person
-		createBirthTimeStamp();
+		birthTimeStamp = createBirthTimeStamp();
 		// Set the person's status of death
 		isBuried = false;
 	}
@@ -1900,16 +1904,28 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		return skillManager;
 	}
 	
-	public boolean equals(Object obj) {
-		if (this == obj) return true;
-		if (obj == null) return false;
-		if (this.getClass() != obj.getClass()) return false;
-		Person p = (Person) obj;
-		return this.name.equals(p.getName())
-				&& this.gender.equals(p.getGender())
-				&& this.age == p.getAge()
-				&& this.getBirthDate() == p.getBirthDate();
+	/**
+	 * Returns the effective integer skill level from a named skill based on
+	 * additional modifiers such as fatigue.
+	 * 
+	 * @param skillType the skill's type
+	 * @return the skill's effective level
+	 */
+	public int getEffectiveSkillLevel(SkillType skillType) {
+		// Modify for fatigue, minus 1 skill level for every 1000 points of fatigue.
+		return (int) Math.round(getPerformanceRating() * skillManager.getSkillLevel(skillType));
 	}
+	
+//	public boolean equals(Object obj) {
+//		if (this == obj) return true;
+//		if (obj == null) return false;
+//		if (this.getClass() != obj.getClass()) return false;
+//		Person p = (Person) obj;
+//		return this.name.equals(p.getName())
+//				&& this.gender.equals(p.getGender())
+//				&& this.age == p.getAge()
+//				&& this.getBirthDate() == p.getBirthDate();
+//	}
 	
 //	public void updateBuildingPreference(FunctionType type) {
 //		if (buildingPreference.isEmpty()) {

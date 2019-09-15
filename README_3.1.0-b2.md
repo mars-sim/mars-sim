@@ -14,7 +14,7 @@ https://github.com/mars-sim/mars-sim
 
 - 220 MB free disk space
 
-- JRE/JDK 11 or openjdk 11 
+- JDK 11 or openjdk 11 
 
 ---------------------------------------------------------------------
 

@@ -22,7 +22,7 @@ public class Bag extends Equipment implements Container, Serializable {
 	private static final long serialVersionUID = 1L;
 
 	// Static data members
-	public static final String TYPE = "Bag";
+	public static final String TYPE = EquipmentType.BAG.getType();
 	public static final double CAPACITY = 50D;
 	public static final double EMPTY_MASS = .1D;
 

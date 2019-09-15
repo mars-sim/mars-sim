@@ -7,7 +7,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<parent>
 		<groupId>com.github</groupId>
 		<artifactId>mars-sim</artifactId>
-		<version>3.1.0-b2</version>
+		<version>${project.version}</version>
 	</parent>
 	<groupId>com.github.mars-sim</groupId>
 	<artifactId>mars-sim-ui</artifactId>
@@ -43,11 +43,6 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 			<version>3.4</version>
 		</dependency>
 
-		<!--<dependency>
-		    <groupId>com.object-refinery</groupId>
-		    <artifactId>orsoncharts</artifactId>
-		    <version>1.5</version>
- 		</dependency>-->
  		<!-- https://mvnrepository.com/artifact/org.jfree/jfreechart : 1.5MB -->
 		<dependency>
 			<groupId>org.jfree</groupId>
@@ -74,15 +69,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		  <artifactId>radiance-trident</artifactId>
 		  <version>1.0.2</version>
 		</dependency>
-		<!-- https://github.com/kirill-grouchnikov/radiance
-		     https://github.com/kirill-grouchnikov/radiance/blob/master/docs/substance/substance.md
-		     https://search.maven.org/search?q=g:org.pushing-pixels%20AND%20a:radiance-substance 1.4 MB
-		<dependency>
-		  <groupId>org.pushing-pixels</groupId>
-		  <artifactId>radiance-substance</artifactId>
-		  <version>1.0.1</version>
-		</dependency>
-		 -->
+	
 		<!-- https://mvnrepository.com/artifact/org.apache.xmlgraphics/batik-transcoder/1.10 : 125KB
 			1.9 has java.lang.NoClassDefFoundError: org/apache/batik/i18n/Localizable, which is caused by a bug with Apache FOP
 			see http://stackoverflow.com/questions/43371411/apache-fop-2-2-migration-error-classnotfoundexception-org-apache-batik-i18n-l
@@ -93,124 +80,13 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 			<artifactId>batik-transcoder</artifactId>
 			<version>1.11</version>
 		</dependency>
-		<!--dependency>
-			<groupId>org.apache.xmlgraphics</groupId>
-			<artifactId>batik-gvt</artifactId>
-			<version>1.10</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.xmlgraphics</groupId>
-			<artifactId>batik-script</artifactId>
-			<version>1.10</version>
-		</dependency>			
-		<dependency>
-			<groupId>org.apache.xmlgraphics</groupId>
-			<artifactId>batik-bridge</artifactId>
-			<version>1.10</version>
-		</dependency-->		
-		<!-- https://mvnrepository.com/artifact/org.apache.xmlgraphics/batik-anim 
-			 Needed by afester's svg class
-		<dependency>
-		    <groupId>org.apache.xmlgraphics</groupId>
-		    <artifactId>batik-anim</artifactId>
-		    <version>1.9.1</version>
-		</dependency-->
-		
-		<!-- https://mvnrepository.com/artifact/org.apache.xmlgraphics/batik-svg-dom
-			 Needed by afester's svg class
-		<dependency>
-		  <groupId>org.apache.xmlgraphics</groupId>
-		  <artifactId>batik-svg-dom</artifactId>
-		  <version>1.9.1</version>
-		</dependency-->	
-
-		<!-- https://mvnrepository.com/artifact/org.fxmisc.flowless/flowless : 20 KB
-			 https://github.com/FXMisc/Flowless
-			 Needed by afester's svg class
-		<dependency>
-		    <groupId>org.fxmisc.flowless</groupId>
-		    <artifactId>flowless</artifactId>
-		    <version>0.6.1</version>
-		</dependency-->
-
-		<!-- May switch to using SVG Salamander, an small fast and light-weight SVG engine
-			https://github.com/blackears/svgSalamander/wiki -->
-		<!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
-		<!--  dependency>
-		    <groupId>commons-io</groupId>
-		    <artifactId>commons-io</artifactId>
-		    <version>2.5</version>
-		</dependency-->
-		
-		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-io -->
-		<!-- dependency>
-		    <groupId>org.apache.commons</groupId>
-		    <artifactId>commons-io</artifactId>
-		    <version>1.3.2</version>
-		</dependency-->
-		
-		<!-- Note : Due to the NoClassDefFoundError in org/apache/xmlgraphics/java2d/color/NamedColorSpace
-			One must stick with xmlgraphics-commons to bypass the error until the fix in the submodules_cyclic_deps branch is merged in future.
-			see http://batik.2283329.n4.nabble.com/batik-rasterizer-NoClassDefFoundError-NamedColorSpace-td4656257.html -->
-		<!-- https://mvnrepository.com/artifact/org.apache.xmlgraphics/xmlgraphics-commons : 631 KB
-			org.apache.commons.io.IOUtils is needed by UIConfig beginning batik-transcoder 1.8 and 1.9
-		<dependency>
-		    <groupId>org.apache.xmlgraphics</groupId>
-		    <artifactId>xmlgraphics-commons</artifactId>
-		    <version>2.2</version>
-		</dependency-->
-		
-		<!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core : 1.1 MB
-		     Needed by afester's svg class
-		<dependency>
-		    <groupId>org.apache.logging.log4j</groupId>
-		    <artifactId>log4j-core</artifactId>
-		    <version>2.11.0</version>
-		</dependency-->
-		
-		<!-- https://mvnrepository.com/artifact/org.jcraft/jorbis : 81KB
-		 	http://www.jcraft.com/jorbis/
-		dependency>
-			<groupId>org.jcraft</groupId>
-			<artifactId>jorbis</artifactId>
-			<version>0.0.17</version>
-		dependency-->
-		
+	
 		<!-- https://mvnrepository.com/artifact/com.googlecode.soundlibs/jorbis -->
 		<dependency>
 		    <groupId>com.googlecode.soundlibs</groupId>
 		    <artifactId>jorbis</artifactId>
 		    <version>0.0.17.4</version>
 		</dependency>
-
-		<!-- https://mvnrepository.com/artifact/com.github.trilarion/vorbis-support : 112 KB
-			https://github.com/Trilarion/java-vorbis-support
-			Combination and continuation of JOrbis, JavaSPI and Tritonus-Share to provide Ogg/Vorbis playback capabilities for Java using the Sound SPI.
-		<dependency>
-		    <groupId>com.github.trilarion</groupId>
-		    <artifactId>vorbis-support</artifactId>
-		    <version>1.1.0</version>
-		</dependency>-->
-
-		<!-- http://nilogonzalez.es/nimrodlf/index-en.html 
-		     NOTE : nimrodlf 1.2c is located at mars-sim's maven-repo
-		<dependency>
-			<groupId>com.plaf.nimrod</groupId>
-			<artifactId>nimrodlf</artifactId>
-			<version>1.2c</version>
-		</dependency-->
-		
-		<!-- https://github.com/Sciss/weblaf 	
-        <dependency>
-            <groupId>de.sciss</groupId>
-            <artifactId>weblaf-ui</artifactId>
-            <version>2.1.3</version>
-        </dependency>		
-		<dependency>
-		    <groupId>de.sciss</groupId>
-		    <artifactId>weblaf-core</artifactId>
-		    <version>2.1.3</version>
-		</dependency-->
 
 		<!-- https://github.com/mgarin/weblaf
 		https://mvnrepository.com/artifact/com.weblookandfeel/weblaf-ui
@@ -240,22 +116,6 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 			<!--version>3.7.4</version-->
 		</dependency>
 		
-        <!-- https://mvnrepository.com/artifact/org.luaj/luaj-jse : 311 KB 
-	   	<dependency>
-			<groupId>org.luaj</groupId>
-			<artifactId>luaj-jse</artifactId>
-			<version>3.0.1</version>
-		dependency-->
-
-
-		<!-- https://plugins.gradle.org/plugin/me.tatarka.retrolambda
-			 https://mvnrepository.com/artifact/me.tatarka/gradle-retrolambda : 14 KB-->
-		<!--dependency>
-		    <groupId>me.tatarka</groupId>
-		    <artifactId>gradle-retrolambda</artifactId>
-		    <version>3.7.0</version>
-		</dependency-->
-
 		<!-- https://mvnrepository.com/artifact/com.github.jiconfont/jiconfont-font_awesome : 102 KB
 		https://github.com/jIconFont/jiconfont-font_awesome-->
 		<dependency>
@@ -264,37 +124,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		    <version>4.7.0.1</version>
 		    <!-- version>4.5.0.3</version-->
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/com.github.nifty-gui/nifty 
-		<dependency>
-		    <groupId>com.github.nifty-gui</groupId>
-		    <artifactId>nifty</artifactId>
-		    <version>1.4.3</version>
-		</dependency-->	
-		<!-- https://mvnrepository.com/artifact/com.github.nifty-gui/nifty-java2d-renderer
-		<dependency>
-		    <groupId>com.github.nifty-gui</groupId>
-		    <artifactId>nifty-java2d-renderer</artifactId>
-		    <version>1.4.3</version>
-		</dependency-->
-		<!-- https://mvnrepository.com/artifact/com.github.nifty-gui/nifty-default-controls 
-		<dependency>
-		    <groupId>com.github.nifty-gui</groupId>
-		    <artifactId>nifty-default-controls</artifactId>
-		    <version>1.4.3</version>
-		</dependency-->
-		<!-- https://mvnrepository.com/artifact/com.github.nifty-gui/nifty-style-black
-		<dependency>
-		    <groupId>com.github.nifty-gui</groupId>
-		    <artifactId>nifty-style-black</artifactId>
-		    <version>1.4.3</version>
-		</dependency-->
-		<!-- https://mvnrepository.com/artifact/com.github.nifty-gui/nifty-examples 
-		<dependency>
-		    <groupId>com.github.nifty-gui</groupId>
-		    <artifactId>nifty-examples</artifactId>
-		    <version>1.4.3</version>
-		</dependency -->
-
+	
   </dependencies>
  
 	<repositories>

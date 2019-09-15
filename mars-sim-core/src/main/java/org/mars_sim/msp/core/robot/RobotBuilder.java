@@ -21,7 +21,7 @@ public interface RobotBuilder<T> {
 
 	public RobotBuilder<Robot> setSponsor(String sponsor);
 	
-	public RobotBuilder<Robot> setSkill(Map<String, Integer> skillMap);
+	public RobotBuilder<Robot> setSkill(Map<String, Integer> skillMap, RobotType t);
 
 	public T build();
 }

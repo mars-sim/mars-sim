@@ -7,16 +7,6 @@
 
 package org.mars_sim.msp.core.mars;
 
-import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.Direction;
-import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.mars.MineralMapConfig.MineralType;
-import org.mars_sim.msp.core.tool.RandomUtil;
-
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
-
 import java.awt.Color;
 import java.awt.Image;
 import java.awt.image.ImageObserver;
@@ -36,10 +26,17 @@ import java.util.logging.Logger;
 
 import javax.swing.ImageIcon;
 
+import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.Direction;
+import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.mars.MineralMapConfig.MineralType;
+import org.mars_sim.msp.core.tool.RandomUtil;
+
 /**
  * A randomly generated mineral map of Mars.
  */
-@JsonTypeInfo(use = JsonTypeInfo.Id.MINIMAL_CLASS, include = As.PROPERTY, property = "@class")
+//@JsonTypeInfo(use = JsonTypeInfo.Id.MINIMAL_CLASS, include = As.PROPERTY, property = "@class")
 public class RandomMineralMap implements Serializable, MineralMap {
 
 	/** default serial id. */

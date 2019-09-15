@@ -45,8 +45,8 @@ public class BiologyStudyFieldMission extends RoverMission implements Serializab
 
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(BiologyStudyFieldMission.class.getName());
-	private static String loggerName = logger.getName();
-	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+//	private static String loggerName = logger.getName();
+//	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 	
 	/** Default description. */
 	public static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.biologyStudyFieldMission"); //$NON-NLS-1$

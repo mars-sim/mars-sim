@@ -24,10 +24,10 @@ import org.mars_sim.msp.core.mars.Landmark;
 public class LandmarkMapLayer implements MapLayer {
 
 	/** Diameter of marking circle. */
-	private int CIRCLE_DIAMETER = 10; // FIXME: make proportional to actual loaded diameter.
+	private int CIRCLE_DIAMETER = 2; // FIXME: make proportional to actual loaded diameter.
 
 	/** Diameter of marking circle for artificial objects. */
-	private int AO_CIRCLE_DIAMETER = 2;
+	private int AO_CIRCLE_DIAMETER = 3;
 	
 	/** Light pink color for landmarks on surface map. */
 	private Color SURFACE_COLOR = new Color(230, 186, 186);

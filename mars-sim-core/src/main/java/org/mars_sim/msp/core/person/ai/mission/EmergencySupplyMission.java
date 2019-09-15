@@ -18,8 +18,11 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.ContainerUtil;
 import org.mars_sim.msp.core.equipment.EVASuit;
+import org.mars_sim.msp.core.equipment.Equipment;
+import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.location.LocationSituation;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
@@ -605,7 +608,7 @@ public class EmergencySupplyMission extends RoverMission implements Serializable
 					if (settlementRange <= (rover.getRange() * .8D)) {
 
 						// Find what emergency supplies are needed at settlement.
-						Map<Integer, Double> emergencyResourcesNeeded = getEmergencyResourcesNeeded(settlement);
+						Map<Integer, Double> emergencyResourcesNeeded = getEmergencyAmountResourcesNeeded(settlement);
 						Map<Integer, Integer> emergencyContainersNeeded = getContainersRequired(
 								emergencyResourcesNeeded);
 
@@ -741,7 +744,7 @@ public class EmergencySupplyMission extends RoverMission implements Serializable
 	private void determineNeededEmergencySupplies() {
 
 		// Determine emergency resources needed.
-		emergencyResources = getEmergencyResourcesNeeded(emergencySettlement);
+		emergencyResources = getEmergencyAmountResourcesNeeded(emergencySettlement);
 
 		// Determine containers needed to hold emergency resources.
 		Map<Integer, Integer> containers = getContainersRequired(emergencyResources);
@@ -758,12 +761,12 @@ public class EmergencySupplyMission extends RoverMission implements Serializable
 	}
 
 	/**
-	 * Gets the emergency resource supplies needed at a settlement.
+	 * Gets the emergency amount resource supplies needed at a settlement.
 	 * 
 	 * @param settlement the settlement
-	 * @return map of resources and amounts needed.
+	 * @return map of amount resources and amounts needed.
 	 */
-	private static Map<Integer, Double> getEmergencyResourcesNeeded(Settlement settlement) {
+	private static Map<Integer, Double> getEmergencyAmountResourcesNeeded(Settlement settlement) {
 
 		Map<Integer, Double> result = new HashMap<>();
 
@@ -874,18 +877,54 @@ public class EmergencySupplyMission extends RoverMission implements Serializable
 
 		Iterator<Integer> i = resources.keySet().iterator();
 		while (i.hasNext()) {
-			Integer resource = i.next();
-//            Class<? extends Container> containerClass = ContainerUtil.getContainerClassToHoldResource(resource);
-//            if (containerClass != null) {
-			double resourceAmount = resources.get(resource);
-			double containerCapacity = ContainerUtil.getContainerCapacity(resource);
-			int numContainers = (int) Math.ceil(resourceAmount / containerCapacity);
-			// result.put(EquipmentType.str2int(containerClass.getName()), numContainers);
-			result.put(resource, numContainers);
-//            }
-//            else {
-//                throw new IllegalStateException("No container found to hold resource: " + resource);
-//            }
+			Integer id = i.next();
+			
+//          Class<? extends Equipment> containerClass = ContainerUtil.getContainerClassToHoldResource(id);
+//			double resourceAmount = resources.get(id);		
+//			double containerCapacity = ContainerUtil.getContainerCapacity(containerClass);
+//			int numContainers = (int) Math.ceil(resourceAmount / containerCapacity);	
+//			result.put(EquipmentType.convertClass2ID(containerClass), numContainers);
+			
+			if (id < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
+				double amount = (double) resources.get(id);
+				// Class<? extends Container> containerClass =
+				// ContainerUtil.getContainerClassToHoldResource(resource);
+				int containerID = ContainerUtil.getContainerClassIDToHoldResource(id);
+				double capacity = ContainerUtil.getContainerCapacity(containerID);
+				int numContainers = (int) Math.ceil(amount / capacity);
+//	            int id = EquipmentType.str2int(containerClass.getClass().getName());
+				if (result.containsKey(containerID)) {
+					numContainers += (int) (result.get(containerID));
+				}
+
+				result.put(containerID, numContainers);
+					
+			}  // Check if these resources are Parts
+//			else if (id < ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID) {
+//				int num = (Integer) resources.get(id);
+//				// TODO: how to specify adding extra parts for EVASuit here ?
+//				int containerID = ContainerUtil.getContainerClassIDToHoldResource(id);
+//				double capacity = ContainerUtil.getContainerCapacity(containerID);
+//				int numContainers = (int) Math.ceil(num / capacity);
+////	            int id = EquipmentType.str2int(containerClass.getClass().getName());
+//				if (result.containsKey(containerID)) {
+//					numContainers += (int) (result.get(containerID));
+//				}
+//
+//				result.put(containerID, numContainers);
+//			}
+//			else {
+//				int num = (Integer) resources.get(id);
+//				if (result.containsKey(id)) {
+//					num += (Integer) result.get(id);
+//				}
+////				System.out.println("equipment id : " + id);
+//				result.put(id, num);
+//			}
+			
+			
+			
+			
 		}
 
 		return result;

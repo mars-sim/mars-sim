@@ -494,13 +494,11 @@ public class Maintenance extends Task implements Serializable {
 
 	@Override
 	public int getEffectiveSkillLevel() {
-		SkillManager manager = null;
 		if (person != null)
-			manager = person.getSkillManager();
+			return person.getEffectiveSkillLevel(SkillType.MECHANICS);
 		else if (robot != null)
-			manager = robot.getSkillManager();
-
-		return manager.getEffectiveSkillLevel(SkillType.MECHANICS);
+			return robot.getEffectiveSkillLevel(SkillType.MECHANICS);
+		return 0;
 	}
 
 	@Override

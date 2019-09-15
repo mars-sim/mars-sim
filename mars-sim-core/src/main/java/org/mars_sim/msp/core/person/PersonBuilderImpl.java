@@ -79,6 +79,9 @@ public class PersonBuilderImpl implements PersonBuilder<Person> {
 	 * @return {@link PersonBuilder<>}
 	 */
 	public PersonBuilder<Person> setPersonality(Map<String, Integer> map, String mbti) {
+		int introvertFromMBTIscore = 0;
+		int introvertFromBigFivescore = 0;
+		
 		if (map == null || map.isEmpty()) {
 			person.getMind().getTraitManager().setRandomBigFive();
 		} else {
@@ -96,14 +99,17 @@ public class PersonBuilderImpl implements PersonBuilder<Person> {
 			person.getMind().getMBTI().setTypeString(mbti);
 		}
 		
+		introvertFromMBTIscore = person.getMind().getMBTI().getIntrovertExtrovertScore();
+		introvertFromBigFivescore = person.getMind().getTraitManager().getIntrovertExtrovertScore();
+		
 		// Call syncUpExtraversion() to sync up the extraversion score between the two
 		// personality models
 		if (map != null && !map.isEmpty() && mbti == null)
 			// Use Big Five's extraversion score in MBTI 
-			person.getMind().getMBTI().syncUpExtraversion();
+			person.getMind().getMBTI().syncUpExtraversion(introvertFromBigFivescore);
 		else
 			// Use MBTI's extraversion score in Big Five
-			person.getMind().getTraitManager().syncUpExtraversion();
+			person.getMind().getTraitManager().syncUpExtraversion(introvertFromMBTIscore);
 		
 		return this;
 	}

@@ -654,14 +654,19 @@ public class TendGreenhouse extends Task implements Serializable {
 
 	@Override
 	// TODO: get agility score of a person/robot
-	public int getEffectiveSkillLevel() {
-		SkillManager skillManager = null;
+	public int getEffectiveSkillLevel() {	
 		if (person != null)
-			skillManager = person.getSkillManager();
+			return person.getEffectiveSkillLevel(SkillType.BOTANY);
 		else if (robot != null)
-			skillManager = robot.getSkillManager();
-
-		return skillManager.getEffectiveSkillLevel(SkillType.BOTANY);
+			return robot.getEffectiveSkillLevel(SkillType.BOTANY);
+		return 0;
+//		SkillManager skillManager = null;
+//		if (person != null)
+//			skillManager = person.getSkillManager();
+//		else if (robot != null)
+//			skillManager = robot.getSkillManager();
+//
+//		return skillManager.getEffectiveSkillLevel(SkillType.BOTANY);
 	}
 
 	@Override

@@ -6,7 +6,7 @@
 	<parent>
 		<artifactId>mars-sim</artifactId>
 		<groupId>com.github</groupId>
-		<version>3.1.0-b2</version>
+		<version>${project.version}</version>
 	</parent>
 	<groupId>com.github.mars-sim</groupId>
 	<artifactId>mars-sim-main</artifactId>
@@ -39,12 +39,7 @@
 			<groupId>com.github.mars-sim</groupId>
 			<artifactId>mars-sim-headless</artifactId>
 			<version>${project.version}</version>
-		</dependency>
-		<!-- >dependency>
-			<groupId>com.github.mars-sim</groupId>
-			<artifactId>mars-sim-console</artifactId>
-			<version>${project.version}</version>
-		</dependency-->		
+		</dependency>	
 		<dependency>
 			<groupId>com.github.mars-sim</groupId>
 			<artifactId>mars-sim-ui</artifactId>
@@ -125,7 +120,7 @@
 				<!-- https://mvnrepository.com/artifact/org.vafer/jdeb : 1.8 MB -->
 				<groupId>org.vafer</groupId>
 				<artifactId>jdeb</artifactId>
-				<version>1.7</version>
+				<version>1.8</version>
 				<executions>
 					<execution>
 						<phase>package</phase>

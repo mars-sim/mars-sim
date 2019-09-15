@@ -6,7 +6,7 @@ xmlns="http://maven.apache.org/POM/4.0.0"
   <parent>
     <groupId>com.github</groupId>
     <artifactId>mars-sim</artifactId>
-    <version>3.1.0-b2</version>
+    <version>${project.version}</version>
   </parent>
   <groupId>com.github.mars-sim</groupId>
   <artifactId>mars-sim-console</artifactId>

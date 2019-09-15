@@ -228,47 +228,46 @@ public class PhysicalCondition implements Serializable {
 
 	private static PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
 
-//	/**
-//	 * Loads the values
-//	 */
-//	static {
-//		masterClock = sim.getMasterClock();
-//		if (masterClock != null)  // check for null in order to pass maven test
-//			marsClock = masterClock.getMarsClock();
-//		
-////		medicalManager = sim.getMedicalManager();
-//		
-//		h2o_consumption = personConfig.getWaterConsumptionRate(); // 3 kg per sol
-//		o2_consumption = personConfig.getNominalO2ConsumptionRate();
-//
-//		minimum_air_pressure = personConfig.getMinAirPressure();
-//		min_temperature = personConfig.getMinTemperature();
-//		max_temperature = personConfig.getMaxTemperature();
-//		food_consumption = personConfig.getFoodConsumptionRate();
-//		dessert_consumption = personConfig.getDessertConsumptionRate();
-//
-//		stressBreakdownChance = personConfig.getStressBreakdownChance();
-//		highFatigueCollapseChance = personConfig.getHighFatigueCollapseChance();
-//		
-//		
-//		// Set health instances
-//		if (medicalManager != null) {
-//			// Note that this 'if' above is for maven test, or else NullPointerException
-//			allMedicalComplaints = medicalManager.getAllMedicalComplaints();
-//			
-//			panicAttack = medicalManager.getComplaintByName(ComplaintType.PANIC_ATTACK);
-//			depression = medicalManager.getComplaintByName(ComplaintType.DEPRESSION);
-//			highFatigue = medicalManager.getComplaintByName(ComplaintType.HIGH_FATIGUE_COLLAPSE);
-//			radiationPoisoning = medicalManager.getComplaintByName(ComplaintType.RADIATION_SICKNESS);
-//			dehydration = medicalManager.getDehydration();
-//			starvation = medicalManager.getStarvation();
-//			
-//			freezing = medicalManager.getFreezing();
-//			heatStroke = medicalManager.getHeatStroke();
-//			decompression = medicalManager.getDecompression();
-//			suffocation = medicalManager.getSuffocation();
-//		}
-//	}
+	/**
+	 * Loads the values
+	 */
+	static {
+		masterClock = sim.getMasterClock();
+		if (masterClock != null)  // check for null in order to pass maven test
+			marsClock = masterClock.getMarsClock();
+			
+		h2o_consumption = personConfig.getWaterConsumptionRate(); // 3 kg per sol
+		o2_consumption = personConfig.getNominalO2ConsumptionRate();
+
+		minimum_air_pressure = personConfig.getMinAirPressure();
+		min_temperature = personConfig.getMinTemperature();
+		max_temperature = personConfig.getMaxTemperature();
+		food_consumption = personConfig.getFoodConsumptionRate();
+		dessert_consumption = personConfig.getDessertConsumptionRate();
+
+		stressBreakdownChance = personConfig.getStressBreakdownChance();
+		highFatigueCollapseChance = personConfig.getHighFatigueCollapseChance();
+		
+		medicalManager = sim.getMedicalManager();
+		
+		// Set health instances
+		if (medicalManager != null) {
+			// Note that this 'if' above is for maven test, or else NullPointerException
+			allMedicalComplaints = medicalManager.getAllMedicalComplaints();
+			
+			panicAttack = medicalManager.getComplaintByName(ComplaintType.PANIC_ATTACK);
+			depression = medicalManager.getComplaintByName(ComplaintType.DEPRESSION);
+			highFatigue = medicalManager.getComplaintByName(ComplaintType.HIGH_FATIGUE_COLLAPSE);
+			radiationPoisoning = medicalManager.getComplaintByName(ComplaintType.RADIATION_SICKNESS);
+			dehydration = medicalManager.getDehydration();
+			starvation = medicalManager.getStarvation();
+			
+			freezing = medicalManager.getFreezing();
+			heatStroke = medicalManager.getHeatStroke();
+			decompression = medicalManager.getDecompression();
+			suffocation = medicalManager.getSuffocation();
+		}
+	}
 	
 	/**
 	 * Constructor 1.
@@ -279,7 +278,7 @@ public class PhysicalCondition implements Serializable {
 		person = newPerson;
 		name = newPerson.getName();
 
-		setHealthInstances();
+//		setHealthInstances();
 		
 		circadian = person.getCircadianClock();
 
@@ -334,7 +333,7 @@ public class PhysicalCondition implements Serializable {
 		bodyMassDeviation = bodyMassDeviation + RandomUtil.getGaussianDouble() * bodyMassDeviation / 7D;
 				
 		// Note: must load static values such as h2o_consumption here
-		loadStaticValues();		
+//		loadStaticValues();		
 		
 		// Assume a person drinks 10 times a day, each time ~375 mL
 		waterConsumedPerServing = h2o_consumption * bodyMassDeviation / 10D; // about .3 kg per serving
@@ -351,53 +350,53 @@ public class PhysicalCondition implements Serializable {
 		isDehydrated = false;
 	}
 
-	/**
-	 * Loads the values
-	 */
-	public static void loadStaticValues() {
-		masterClock = sim.getMasterClock();
-		if (masterClock != null)  // check for null in order to pass maven test
-			marsClock = masterClock.getMarsClock();
-		
-		PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
-
-		h2o_consumption = personConfig.getWaterConsumptionRate(); // 3 kg per sol
-		o2_consumption = personConfig.getNominalO2ConsumptionRate();
-
-		minimum_air_pressure = personConfig.getMinAirPressure();
-		min_temperature = personConfig.getMinTemperature();
-		max_temperature = personConfig.getMaxTemperature();
-		food_consumption = personConfig.getFoodConsumptionRate();
-		dessert_consumption = personConfig.getDessertConsumptionRate();
-
-		stressBreakdownChance = personConfig.getStressBreakdownChance();
-		highFatigueCollapseChance = personConfig.getHighFatigueCollapseChance();
-	}
+//	/**
+//	 * Loads the values
+//	 */
+//	public static void loadStaticValues() {
+//		masterClock = sim.getMasterClock();
+//		if (masterClock != null)  // check for null in order to pass maven test
+//			marsClock = masterClock.getMarsClock();
+//		
+//		PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
+//
+//		h2o_consumption = personConfig.getWaterConsumptionRate(); // 3 kg per sol
+//		o2_consumption = personConfig.getNominalO2ConsumptionRate();
+//
+//		minimum_air_pressure = personConfig.getMinAirPressure();
+//		min_temperature = personConfig.getMinTemperature();
+//		max_temperature = personConfig.getMaxTemperature();
+//		food_consumption = personConfig.getFoodConsumptionRate();
+//		dessert_consumption = personConfig.getDessertConsumptionRate();
+//
+//		stressBreakdownChance = personConfig.getStressBreakdownChance();
+//		highFatigueCollapseChance = personConfig.getHighFatigueCollapseChance();
+//	}
 	
-	/**
-	 * Sets health related instances
-	 */
-	public static void setHealthInstances() {
-		medicalManager = sim.getMedicalManager();
-		
-		if (medicalManager != null) {
-//			// Note that this 'if' above is for maven test, or else NullPointerException
-			
-			allMedicalComplaints = medicalManager.getAllMedicalComplaints();
-			
-			panicAttack = medicalManager.getComplaintByName(ComplaintType.PANIC_ATTACK);
-			depression = medicalManager.getComplaintByName(ComplaintType.DEPRESSION);
-			highFatigue = medicalManager.getComplaintByName(ComplaintType.HIGH_FATIGUE_COLLAPSE);
-			radiationPoisoning = medicalManager.getComplaintByName(ComplaintType.RADIATION_SICKNESS);
-			dehydration = medicalManager.getDehydration();
-			starvation = medicalManager.getStarvation();
-			
-			freezing = medicalManager.getFreezing();
-			heatStroke = medicalManager.getHeatStroke();
-			decompression = medicalManager.getDecompression();
-			suffocation = medicalManager.getSuffocation();
-		}
-	}
+//	/**
+//	 * Sets health related instances
+//	 */
+//	public static void setHealthInstances() {
+//		medicalManager = sim.getMedicalManager();
+//		
+//		if (medicalManager != null) {
+////			// Note that this 'if' above is for maven test, or else NullPointerException
+//			
+//			allMedicalComplaints = medicalManager.getAllMedicalComplaints();
+//			
+//			panicAttack = medicalManager.getComplaintByName(ComplaintType.PANIC_ATTACK);
+//			depression = medicalManager.getComplaintByName(ComplaintType.DEPRESSION);
+//			highFatigue = medicalManager.getComplaintByName(ComplaintType.HIGH_FATIGUE_COLLAPSE);
+//			radiationPoisoning = medicalManager.getComplaintByName(ComplaintType.RADIATION_SICKNESS);
+//			dehydration = medicalManager.getDehydration();
+//			starvation = medicalManager.getStarvation();
+//			
+//			freezing = medicalManager.getFreezing();
+//			heatStroke = medicalManager.getHeatStroke();
+//			decompression = medicalManager.getDecompression();
+//			suffocation = medicalManager.getSuffocation();
+//		}
+//	}
 	
 	/**
 	 * Initialize values and instances at the beginning of sol 1
@@ -1874,8 +1873,8 @@ public class PhysicalCondition implements Serializable {
 		masterClock = c0;
 		marsClock = c1;
 		medicalManager = m;
-		setHealthInstances();
-		loadStaticValues();
+//		setHealthInstances();
+//		loadStaticValues();
 	}
 	
 	/**

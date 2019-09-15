@@ -7,15 +7,13 @@
 
 package org.mars_sim.msp.core.mars;
 
+import java.awt.Color;
+import java.io.Serializable;
+
 import org.mars_sim.mapdata.MapData;
 import org.mars_sim.mapdata.MapDataUtil;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Direction;
-
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
-import java.awt.Color;
-import java.io.Serializable;
 
 /**
  * The TerrainElevation class represents the surface terrain of the virtual
@@ -36,7 +34,7 @@ public class TerrainElevation implements Serializable {
 	/**
 	 * Constructor
 	 */
-	@JsonIgnoreProperties
+//	@JsonIgnoreProperties
 	public TerrainElevation() {
 	}
 

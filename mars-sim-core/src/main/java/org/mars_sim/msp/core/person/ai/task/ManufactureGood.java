@@ -59,8 +59,6 @@ public class ManufactureGood extends Task implements Serializable {
 	/** The manufacturing workshop the person is using. */
 	private Manufacture workshop;
 
-	private SkillManager skillManager;
-
 	/**
 	 * Constructor.
 	 * 
@@ -73,8 +71,6 @@ public class ManufactureGood extends Task implements Serializable {
 		if (person.isInSettlement()) {
 			 setDescription(Msg.getString("Task.description.manufactureGood.detail",
 			 person.getSettlement().getName())); //$NON-NLS-1$
-
-			skillManager = person.getSkillManager();
 
 			// Get available manufacturing workshop if any.
 			Building manufactureBuilding = getAvailableManufacturingBuilding(person);
@@ -103,7 +99,6 @@ public class ManufactureGood extends Task implements Serializable {
 			 setDescription(Msg.getString("Task.description.manufactureGood.detail",
 			 robot.getSettlement().getName())); //$NON-NLS-1$
 
-			skillManager = robot.getSkillManager();
 
 			// Get available manufacturing workshop if any.
 			Building manufactureBuilding = getAvailableManufacturingBuilding(robot);
@@ -484,7 +479,11 @@ public class ManufactureGood extends Task implements Serializable {
 
 	@Override
 	public int getEffectiveSkillLevel() {
-		return skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
+		if (person != null)
+			return person.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
+		else if (robot != null)
+			return robot.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
+		return 0;
 	}
 
 	@Override

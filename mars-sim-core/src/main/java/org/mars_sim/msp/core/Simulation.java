@@ -40,6 +40,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.json.stream.JsonGenerationException;
+
 import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.interplanetary.transport.TransportManager;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
@@ -102,7 +104,6 @@ import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.time.SystemDateTime;
 import org.mars_sim.msp.core.time.UpTimer;
 import org.mars_sim.msp.core.tool.CheckSerializedSize;
-import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.tukaani.xz.FilterOptions;
@@ -110,10 +111,6 @@ import org.tukaani.xz.LZMA2Options;
 import org.tukaani.xz.XZInputStream;
 import org.tukaani.xz.XZOutputStream;
 
-import com.fasterxml.jackson.core.JsonGenerationException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.common.io.ByteStreams;
 
 /**
@@ -270,8 +267,7 @@ public class Simulation implements ClockListener, Serializable {
 	// private GameWorld gameWorld;
 
 	private UpTimer ut;
-	private ObjectMapper objectMapper;
-//	private InteractiveTerm interactiveTerm;
+//	private ObjectMapper objectMapper;
 	
 	/**
 	 * Private constructor for the Singleton Simulation. This prevents instantiation
@@ -279,16 +275,14 @@ public class Simulation implements ClockListener, Serializable {
 	 */
 	private Simulation() {
 		// INFO Simulation's constructor is on both JavaFX-Launcher Thread
-//      initializeTransientData();
-		// Create Interactive Terminal instance
-//		interactiveTerm = new InteractiveTerm();
-		// Create ObjectMapper instance
-		objectMapper = new ObjectMapper();
-		// Configure Object mapper for pretty print
-		objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true);
-		// to allow serialization of "empty" POJOs (no properties to serialize)
-		// (without this setting, an exception is thrown in those cases)
-		objectMapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
+
+//		// Create ObjectMapper instance
+//		objectMapper = new ObjectMapper();
+//		// Configure Object mapper for pretty print
+//		objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true);
+//		// to allow serialization of "empty" POJOs (no properties to serialize)
+//		// (without this setting, an exception is thrown in those cases)
+//		objectMapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
 		
 	}
 
@@ -1018,7 +1012,7 @@ public class Simulation implements ClockListener, Serializable {
 	 * @throws JsonMappingException
 	 * @throws IOException
 	 */
-	public void writeJSON() throws JsonGenerationException, JsonMappingException, IOException {	
+//	public void writeJSON() throws JsonGenerationException, JsonMappingException, IOException {	
 		// Write to console, can write to any output stream such as file
 //		StringWriter stringEmp = new StringWriter();
 		
@@ -1036,18 +1030,17 @@ public class Simulation implements ClockListener, Serializable {
 //		// Write to the file
 //		objectMapper.writeValue(new File(DEFAULT_DIR, name + JSON_EXTENSION), mars);
 		
-		Object o = mars;
-		String name = o.getClass().getSimpleName();
+//		Object o = mars;
+//		String name = o.getClass().getSimpleName();
 		
 //		objectMapper.writeValue(stringEmp, o);
 //		System.out.println("JSON representation of the Class '" + name + "' :\n" + stringEmp);
 //		// Write to the file
-		objectMapper.writeValue(new File(SAVE_DIR, name + JSON_EXTENSION), o);
-		
-		String json = objectMapper.writeValueAsString(o) ; 
-		System.out.println("JSON representation of the Class '" + name + "' :\n" + json);
-		
-	}
+//		objectMapper.writeValue(new File(SAVE_DIR, name + JSON_EXTENSION), o);
+//		
+//		String json = objectMapper.writeValueAsString(o) ; 
+//		System.out.println("JSON representation of the Class '" + name + "' :\n" + json);	
+//	}
 	
 	
 	/**
@@ -1727,13 +1720,13 @@ public class Simulation implements ClockListener, Serializable {
 		return autosaveDefault;
 	}
 	
-	/**
-	 * Returns the ObjectMapper instance
-	 * @return {@link ObjectMapper}
-	 */
-	public ObjectMapper getObjectMapper() {
-		return objectMapper; 
-	}
+//	/**
+//	 * Returns the ObjectMapper instance
+//	 * @return {@link ObjectMapper}
+//	 */
+//	public ObjectMapper getObjectMapper() {
+//		return objectMapper; 
+//	}
 	
 	@Override
 	public void uiPulse(double time) {

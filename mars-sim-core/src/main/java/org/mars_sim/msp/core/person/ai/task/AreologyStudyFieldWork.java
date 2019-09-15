@@ -269,10 +269,15 @@ public class AreologyStudyFieldWork extends EVAOperation implements Serializable
 
 	@Override
 	public int getEffectiveSkillLevel() {
-		SkillManager manager = person.getSkillManager();
-		int EVAOperationsSkill = manager.getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
-		int areologySkill = manager.getEffectiveSkillLevel(SkillType.AREOLOGY);
+//		SkillManager manager = person.getSkillManager();
+//		int EVAOperationsSkill = manager.getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
+//		int areologySkill = manager.getEffectiveSkillLevel(SkillType.AREOLOGY);
+//		return (int) Math.round((double) (EVAOperationsSkill + areologySkill) / 2D);
+
+		int EVAOperationsSkill = person.getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
+		int areologySkill = person.getEffectiveSkillLevel(SkillType.AREOLOGY);
 		return (int) Math.round((double) (EVAOperationsSkill + areologySkill) / 2D);
+		
 	}
 
 	@Override

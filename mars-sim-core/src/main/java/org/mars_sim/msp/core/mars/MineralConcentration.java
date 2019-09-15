@@ -4,13 +4,10 @@ import java.io.Serializable;
 
 import org.mars_sim.msp.core.Coordinates;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
-
 /**
  * Internal class representing a mineral concentration.
  */
-@JsonTypeInfo(use = JsonTypeInfo.Id.MINIMAL_CLASS, include = As.PROPERTY, property = "@class")
+//@JsonTypeInfo(use = JsonTypeInfo.Id.MINIMAL_CLASS, include = As.PROPERTY, property = "@class")
 public class MineralConcentration implements Serializable {
 
 	private static final long serialVersionUID = 1L;

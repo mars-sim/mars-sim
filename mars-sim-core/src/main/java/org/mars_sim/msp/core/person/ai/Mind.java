@@ -31,8 +31,6 @@ import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.MathUtils;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
-import org.mars_sim.msp.core.mind.CoreMind;
-
 /**
  * The Mind class represents a person's mind. It keeps track of missions and
  * tasks which the person is involved.
@@ -47,6 +45,7 @@ public class Mind implements Serializable {
 	private static String loggerName = logger.getName();
 	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 	
+	private static final int STRESS_UPDATE_CYCLE = 10;
 	private static final double MINIMUM_MISSION_PERFORMANCE = 0.3;
 	private static final double FACTOR = .05;
 
@@ -150,7 +149,7 @@ public class Mind implements Serializable {
 
 			int msol = marsClock.getMillisolInt();
 
-			if (msol % 5 == 0) {
+			if (msol % STRESS_UPDATE_CYCLE == 0) {
 //				msolCache = msol;
 
 				// Update stress based on personality.
