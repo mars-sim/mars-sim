@@ -107,7 +107,7 @@ public class EVASuit extends Equipment implements LifeSupportType, Serializable,
 	public EVASuit(Coordinates location) {
 
 		// Use Equipment constructor.
-		super(null, TYPE, location);
+		super(TYPE, TYPE, location);
 
 //		if (Simulation.instance().getMars() != null)
 //			// Note: the use of if above is for passing maven test

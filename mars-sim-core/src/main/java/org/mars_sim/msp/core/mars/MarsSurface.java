@@ -23,5 +23,6 @@ public class MarsSurface extends Unit implements Serializable {
 		super("Mars Surface", null);
 		getInventory().addGeneralCapacity(Double.MAX_VALUE);
 //		System.out.println("MarsSurface : " + this.getIdentifier());
+		// Note: this unit's unitIdentifer is 0
 	}
 }

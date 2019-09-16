@@ -56,7 +56,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	 * @param location the unit's location
 	 */
 	protected Equipment(String name, String type, Coordinates location) {
-		super(name, location);
+		super(type, location);
 		this.type = type;
 		this.equipmentType = EquipmentType.getType(type);
 		// Initialize data members.

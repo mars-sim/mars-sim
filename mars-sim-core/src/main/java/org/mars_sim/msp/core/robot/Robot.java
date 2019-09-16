@@ -449,6 +449,10 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 	 */
 	@Override
 	public Settlement getSettlement() {
+		
+		if (getContainerID() == 0)
+			return null;
+		
 		Unit c = getContainerUnit();
 
 		if (c instanceof Settlement) {

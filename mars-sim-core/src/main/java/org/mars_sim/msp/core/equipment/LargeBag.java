@@ -34,7 +34,7 @@ public class LargeBag extends Equipment implements Container, Serializable {
 	 */
 	public LargeBag(Coordinates location) {
 		// Use Equipment constructor
-		super(null, TYPE, location);
+		super(TYPE, TYPE, location);
 
 		// Sets the base mass of the bag.
 		setBaseMass(EMPTY_MASS);

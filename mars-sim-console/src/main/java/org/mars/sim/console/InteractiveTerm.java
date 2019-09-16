@@ -100,12 +100,6 @@ public class InteractiveTerm {
 		// Prevent allow users from arbitrarily close the terminal by clicking top right close button
 		terminal.registerUserInterruptHandler(term -> {}, false);
 		
-		terminal.print(System.lineSeparator() 
-				+ " ---------------  M A R S   S I M U L A T I O N   P R O J E C T  ---------------\n");
-//				+ "                                   r" + Simulation.BUILD +"\n");
-//				+ System.lineSeparator()
-//				+ System.lineSeparator());
-		
 		return selectMode();
 	}
 	
@@ -118,7 +112,12 @@ public class InteractiveTerm {
 	public boolean selectMode() {
 		boolean useSCE = false;
 		
-		terminal.print(System.lineSeparator()
+		terminal.print(System.lineSeparator() 
+				+ " ---------------  M A R S   S I M U L A T I O N   P R O J E C T  ---------------\n"
+				+ System.lineSeparator()
+				+ "                         * * *   Mode Menu   * * *\n"
+//				+ "                                   r" + Simulation.BUILD +"\n");
+				+ System.lineSeparator()
 				+ System.lineSeparator()
 				+ "0. Exit "
 				+ System.lineSeparator()
@@ -167,16 +166,16 @@ public class InteractiveTerm {
 		
 	    terminal.println(System.lineSeparator() 
         		+ System.lineSeparator()
-        		+ "           * * *  Command Mode - Site Selection  * * *" 
+        		+ "           * * *   Command Mode - Site Selection   * * *" 
          		+ System.lineSeparator()
         		+ System.lineSeparator()
 				+ "0. Proceed with default site selection."
         		+ System.lineSeparator()
         		+ System.lineSeparator()
-				+ "1. Open Simulation Configuration Editor (SCE)."
+				+ "1. Open Site Editor."
 				+ System.lineSeparator()
 				+ System.lineSeparator()
-				+ "Note: Console Editon does not have SCE."
+				+ "NOTE: the Console Editon does not come with the Site Editor."
 				+ System.lineSeparator()
 				);
 		
@@ -191,12 +190,12 @@ public class InteractiveTerm {
         else if ((GameManager.useSCE).equals("1")) {
         	if (consoleEdition) {
 				terminal.print(System.lineSeparator());
-				terminal.print("Sorry. The Console Edition of mars-sim does not come with the SCE.");	
+				terminal.print("Sorry. The Console Edition of mars-sim does not come with the Site Editor.");	
 				terminal.print(System.lineSeparator());
         	}
         	else {
 				terminal.print(System.lineSeparator());
-				terminal.print("Loading Simulation Configuration Editor...");
+				terminal.print("Loading the Site Editor...");
 				terminal.print(System.lineSeparator());
 				useSCE = true;
         	}
@@ -220,22 +219,22 @@ public class InteractiveTerm {
 		
         terminal.println(System.lineSeparator() 
         		+ System.lineSeparator()
-        		+ "            * * *  Command Mode - Crew Selection  * * *" 
+        		+ "            * * *   Command Mode - Crew Selection   * * *" 
         		+ System.lineSeparator()
         		+ System.lineSeparator()
-				+ "0. Back to previous"
+				+ "0. Back"
 				+ System.lineSeparator()
-				+ "1. Enable/Disable Alpha Crew"
+				+ "1. Enable/disable Loading the alpha crew will be DISABLED"
 				+ System.lineSeparator()
-				+ "2. Set up Commander's Profile"
+				+ "2. Set up commander profile"
 				+ System.lineSeparator()
-				+ "3. Load from previously saved Commander Profile"
+				+ "3. Load commander profile"
 				+ System.lineSeparator()
 				+ System.lineSeparator()
-				+ "Note 1: Alpha Crew is loaded by default."
+				+ "NOTE 1: The alpha crew defined in crew.xml will be loaded by default."
 				+ System.lineSeparator()
-				+ "Note 2: Console Editon does NOT have the SCE."
-				+ System.lineSeparator()
+//				+ "Note 2: Console Editon does NOT have the Site Editor."
+//				+ System.lineSeparator()
 				);
 		
         handler.addStringTask("command0", "Enter your choice:", false).addChoices("0", "1", "2", "3").constrainInputToChoices();
@@ -243,7 +242,7 @@ public class InteractiveTerm {
 
         if ((GameManager.command0).equals("0")) {
 			terminal.print(System.lineSeparator());
-			terminal.print("Back to the previous page..");
+			terminal.print("Back to the previous menu..");
 			return selectMode();
         }
         
@@ -251,11 +250,11 @@ public class InteractiveTerm {
 			terminal.print(System.lineSeparator());
 			if (useCrew) {			
 				useCrew = false;
-				terminal.print("Alpha Crew is now DISABLED.");
+				terminal.print("Loading the alpha crew will be DISABLED.");
 			}
 			else {
 				useCrew = true;
-				terminal.print("Alpha Crew is now ENABLED.");
+				terminal.print("Loading the alpha crew will be ENABLED.");
 			}
 			
 	    	// Set the alpha crew use
@@ -301,16 +300,16 @@ public class InteractiveTerm {
         		+ "           * * *  Sandbox Mode - Crew and Site Selection  * * *" 
         		+ System.lineSeparator()
         		+ System.lineSeparator()
-				+ "0. Proceed with the Default Site Templates."
+				+ "0. Proceed"
         		+ System.lineSeparator()
-				+ "1. Open Simulation Configuration Editor (SCE) "
+				+ "1. Open site editor"
 				+ System.lineSeparator()
-				+ "2. Enable/Disable Alpha Crew"
+				+ "2. Enable/disable alpha crew"
 				+ System.lineSeparator()
 				+ System.lineSeparator()
-				+ "Note 1: Alpha Crew is loaded by default."
+				+ "NOTE 1: The alpha crew defined in crew.xml will be loaded by default."
 				+ System.lineSeparator()
-				+ "Note 2: Console Editon does not have SCE."
+				+ "NOTE 2: The console editon does not have the site editor."
 				+ System.lineSeparator()
 				);
 		
@@ -326,14 +325,14 @@ public class InteractiveTerm {
     	else if ((GameManager.sandbox0).equals("1")) {
         	if (consoleEdition) {
 				terminal.print(System.lineSeparator());
-				terminal.print("Sorry. The Console Edition of mars-sim does not come with the SCE.");	
+				terminal.print("Sorry. The Console Edition of mars-sim does not come with the Site Editor.");	
 				terminal.println(System.lineSeparator());
 				
 				useSCE = selectSandoxMode();
         	}
         	else {
 				terminal.print(System.lineSeparator());
-				terminal.print("Loading Simulation Configuration Editor...");
+				terminal.print("Loading the Site Editor...");
 				terminal.println(System.lineSeparator());
 				
 				useSCE = true;
@@ -344,11 +343,11 @@ public class InteractiveTerm {
 			terminal.print(System.lineSeparator());
 			if (useCrew) {			
 				useCrew = false;
-				terminal.print("Alpha Crew is now DISABLED.");	
+				terminal.print("Loading the alpha crew will be DISABLED.");	
 			}
 			else {
 				useCrew = true;
-				terminal.print("Alpha Crew is now ENABLED.");
+				terminal.print("Loading the alpha crew will be ENABLED.");
 			}
 			
 			terminal.print(System.lineSeparator());
@@ -378,17 +377,17 @@ public class InteractiveTerm {
 			if (canLoad) {
 	            terminal.println(System.lineSeparator() 
 	            		+ System.lineSeparator()
-	            		+ "                * * *  Commander's Profile * * *" 
+	            		+ "                * * *   Commander Profile  * * *" 
 	            		+ System.lineSeparator()
 	            		+ profile.getCommander().toString()
 	            		+ System.lineSeparator());
 //	            UnitManager.setCommanderMode(true);
 	            
-	            boolean like = textIO.newBooleanInputReader().withDefaultValue(true).read("Would you like to us this profile ?");
+	            boolean like = textIO.newBooleanInputReader().withDefaultValue(true).read("Would you like to use this profile ?");
 	            
 	        	if (!like) {
 	    			terminal.print(System.lineSeparator() 
-	    					+ "Back to the beginning." 
+	    					+ "Back to the mode selection" 
 	    					+ System.lineSeparator()
 	    					+ System.lineSeparator());
 	    			selectMode();
@@ -406,9 +405,9 @@ public class InteractiveTerm {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 //			e.printStackTrace();
-			logger.severe("Error loading the commander's profile.");
+			logger.severe("Error loading the commander profile.");
 			terminal.print(System.lineSeparator() 
-					+ "Error loading the commander's profile." 
+					+ "Error loading the commander profile." 
 					+ System.lineSeparator()
 					+ System.lineSeparator());
 			selectMode();
@@ -429,7 +428,7 @@ public class InteractiveTerm {
 	 */
 	public static void loadTerminalMenu() {
 		// WARNING : loadTerminalMenu() Need to be inside Sim Executor Thread in order to work
-		logger.config("Calling loadTerminalMenu()");
+//		logger.config("Calling loadTerminalMenu()");
 
 		// Call ChatUils' default constructor to initialize instances
 		new ChatUtils();
@@ -553,7 +552,7 @@ public class InteractiveTerm {
 				if (mc.isPaused()) {
 					mc.setPaused(false, false);
 					terminal.printf(System.lineSeparator() + System.lineSeparator());
-					terminal.printf("                          [ Simulation Unpaused ]");
+					terminal.printf("                          [ Simulation Resumed ]");
 					//terminal.printf(System.lineSeparator() + System.lineSeparator());
 				}
 				else {

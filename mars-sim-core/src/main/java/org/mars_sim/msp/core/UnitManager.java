@@ -378,11 +378,57 @@ public class UnitManager implements Serializable {
 		}
 	}
 	
+	/**
+	 * Gets the unit with a particular indentifier
+	 * 
+	 * @param id
+	 * @return
+	 */
 	public Unit getUnitByID(int id) {
-		return lookupUnit.get(id);
+		if (id == 0)
+			return marsSurface;
+		
+		Unit u = lookupUnit.get(id);
+		
+		if (u != null) {
+			return u;
+		}
+			
+		u = lookupSettlement.get(id);
+		
+		if (u != null) {
+			return u;
+		}	
+		
+		u = lookupVehicle.get(id);
+		
+		if (u != null) {
+			return u;
+		}
+		
+		u = lookupPerson.get(id);
+		
+		if (u != null) {
+			return u;
+		}
+		
+		u = lookupEquipment.get(id);
+		
+		if (u != null) {
+			return u;
+		}
+		
+		u = lookupRobot.get(id);
+		
+		if (u != null) {
+			return u;
+		}
+		
+		return null;
 	}
 	
 	public void addUnitID(Unit unit) {
+		System.out.println("addUnitID() :" + unit.getName());
 		if (unit != null && !lookupUnit.containsKey(unit.getIdentifier()))
 			lookupUnit.put(unit.getIdentifier(), unit);
 	}
@@ -513,7 +559,7 @@ public class UnitManager implements Serializable {
 	public void addUnit(Unit unit) {
 //		if (!units.contains(unit)) {
 //			units.add(unit);
-			
+		if (unit != null) {
 			// Add the unit's id into its lookup maps
 			if (unit instanceof Settlement)
 				addSettlementID((Settlement)unit);
@@ -541,7 +587,7 @@ public class UnitManager implements Serializable {
 			}
 			// Fire unit manager event.
 			fireUnitManagerUpdate(UnitManagerEventType.ADD_UNIT, unit);
-//		}
+		}
 	}
 
 	/**

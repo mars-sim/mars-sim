@@ -70,13 +70,7 @@
 				<robotic-attribute name="Conversation" value="10"/>
 			</robotic-attribute-list>
 			<skill-list>
-				<skill name="Botany" level="2"/>
-				<skill name="Mechanics" level="1"/>
-				<skill name="EVA Operations" level="2"/>
-				<skill name="Trading" level="1"/>
-				<skill name="Medicine" level="1"/>
-				<skill name="Cooking" level="1"/>
-				<skill name="Construction" level="1"/>
+				<skill name="Botany" level="1"/>
 			</skill-list>
 		</robot>
 		
@@ -85,122 +79,124 @@
 				<robotic-attribute name="Strength" value="95"/>
 				<robotic-attribute name="Endurance" value="95"/>
 				<robotic-attribute name="Agility" value="40"/>
-				<robotic-attribute name="Teaching" value="10"/>
+				<robotic-attribute name="Teaching" value="50"/>
 				<robotic-attribute name="Experience Aptitude" value="95"/>
 				<robotic-attribute name="Conversation" value="10"/>
 			</robotic-attribute-list>
 			<skill-list>
-				<skill name="Botany" level="1"/>
-				<skill name="Materials Science" level="2"/>
-				<skill name="EVA Operations" level="1"/>
-				<skill name="Mechanics" level="1"/>
-				<skill name="Medicine" level="1"/>
-				<skill name="Cooking" level="2"/>				
+				<skill name="Materials Science" level="1"/>
+				<skill name="Cooking" level="1"/>				
 				<skill name="Construction" level="1"/>
 			</skill-list>
 		</robot>				
 		
-		<robot name="GardenBot 003" type="GardenBot" settlement="Alpha Base" job="Gardener">
+		<robot name="RepairBot 003" type="RepairBot" settlement="Plymouth Base" job="Handyman">
 			<robotic-attribute-list>
 				<robotic-attribute name="Strength" value="95"/>
 				<robotic-attribute name="Endurance" value="95"/>
 				<robotic-attribute name="Agility" value="40"/>
-				<robotic-attribute name="Teaching" value="10"/>
+				<robotic-attribute name="Teaching" value="50"/>
 				<robotic-attribute name="Experience Aptitude" value="95"/>
 				<robotic-attribute name="Conversation" value="10"/>
 			</robotic-attribute-list>
 			<skill-list>
-				<skill name="Botany" level="2"/>
 				<skill name="Mechanics" level="1"/>
-				<skill name="EVA Operations" level="2"/>
-				<skill name="Trading" level="1"/>
-				<skill name="Medicine" level="1"/>
-				<skill name="Cooking" level="1"/>
-				<skill name="Construction" level="1"/>
-			</skill-list>
-		</robot>
-		
-		<robot name="MakerBot 004" type="MakerBot" settlement="Alpha Base" job="Maker">
-			<robotic-attribute-list>
-				<robotic-attribute name="Strength" value="95"/>
-				<robotic-attribute name="Endurance" value="95"/>
-				<robotic-attribute name="Agility" value="40"/>
-				<robotic-attribute name="Teaching" value="10"/>
-				<robotic-attribute name="Experience Aptitude" value="95"/>
-				<robotic-attribute name="Conversation" value="10"/>
-			</robotic-attribute-list>
-			<skill-list>
-				<skill name="Botany" level="1"/>
-				<skill name="Materials Science" level="2"/>
 				<skill name="EVA Operations" level="1"/>
-				<skill name="Mechanics" level="1"/>
-				<skill name="Medicine" level="1"/>
-				<skill name="Cooking" level="2"/>				
-				<skill name="Construction" level="1"/>
-			</skill-list>
-		</robot>				
-		
-		<robot name="RepairBot 005" type="RepairBot" settlement="Alpha Base" job="Handyman">
-			<robotic-attribute-list>
-				<robotic-attribute name="Strength" value="95"/>
-				<robotic-attribute name="Endurance" value="95"/>
-				<robotic-attribute name="Agility" value="40"/>
-				<robotic-attribute name="Teaching" value="10"/>
-				<robotic-attribute name="Experience Aptitude" value="95"/>
-				<robotic-attribute name="Conversation" value="10"/>
-			</robotic-attribute-list>
-			<skill-list>
-				<skill name="Botany" level="1"/>
-				<skill name="Mechanics" level="2"/>
-				<skill name="EVA Operations" level="2"/>
-				<skill name="Trading" level="1"/>
-				<skill name="Medicine" level="1"/>
-				<skill name="Cooking" level="1"/>
-				<skill name="Construction" level="1"/>
-			</skill-list>
-		</robot>
-			
-		<robot name="ChefBot 006" type="ChefBot" settlement="Alpha Base" job="Cook">
-			<robotic-attribute-list>
-				<robotic-attribute name="Strength" value="95"/>
-				<robotic-attribute name="Endurance" value="95"/>
-				<robotic-attribute name="Agility" value="40"/>
-				<robotic-attribute name="Teaching" value="10"/>
-				<robotic-attribute name="Experience Aptitude" value="95"/>
-				<robotic-attribute name="Conversation" value="10"/>
-			</robotic-attribute-list>
-			<skill-list>
-				<skill name="Botany" level="1"/>
-				<skill name="Mechanics" level="1"/>
-				<skill name="EVA Operations" level="2"/>
-				<skill name="Trading" level="1"/>
-				<skill name="Medicine" level="1"/>
-				<skill name="Cooking" level="2"/>
-				<skill name="Construction" level="1"/>
 			</skill-list>
 		</robot>	
-
-		<robot name="MedicBot 007" type="MedicBot" settlement="Alpha Base" job="Medic">
+		
+		<robot name="GardenBot 004" type="GardenBot" settlement="Plymouth Base" job="Gardener">
 			<robotic-attribute-list>
 				<robotic-attribute name="Strength" value="95"/>
 				<robotic-attribute name="Endurance" value="95"/>
 				<robotic-attribute name="Agility" value="40"/>
-				<robotic-attribute name="Teaching" value="10"/>
+				<robotic-attribute name="Teaching" value="50"/>
 				<robotic-attribute name="Experience Aptitude" value="95"/>
 				<robotic-attribute name="Conversation" value="10"/>
 			</robotic-attribute-list>
 			<skill-list>
 				<skill name="Botany" level="1"/>
-				<skill name="Trading" level="1"/>
-				<skill name="EVA Operations" level="2"/>
-				<skill name="Mechanics" level="1"/>
-				<skill name="Medicine" level="2"/>
+			</skill-list>
+		</robot>
+		
+		<robot name="MakerBot 005" type="MakerBot" settlement="Plymouth Base" job="Maker">
+			<robotic-attribute-list>
+				<robotic-attribute name="Strength" value="95"/>
+				<robotic-attribute name="Endurance" value="95"/>
+				<robotic-attribute name="Agility" value="40"/>
+				<robotic-attribute name="Teaching" value="50"/>
+				<robotic-attribute name="Experience Aptitude" value="95"/>
+				<robotic-attribute name="Conversation" value="10"/>
+			</robotic-attribute-list>
+			<skill-list>
+				<skill name="Materials Science" level="1"/>
 				<skill name="Cooking" level="1"/>				
 				<skill name="Construction" level="1"/>
 			</skill-list>
 		</robot>				
 		
-		<robot name="ConstructionBot 008" type="ConstructionBot" settlement="Alpha Base" job="Builder">
+		<robot name="RepairBot 006" type="RepairBot" settlement="Plymouth Base" job="Handyman">
+			<robotic-attribute-list>
+				<robotic-attribute name="Strength" value="95"/>
+				<robotic-attribute name="Endurance" value="95"/>
+				<robotic-attribute name="Agility" value="40"/>
+				<robotic-attribute name="Teaching" value="50"/>
+				<robotic-attribute name="Experience Aptitude" value="95"/>
+				<robotic-attribute name="Conversation" value="10"/>
+			</robotic-attribute-list>
+			<skill-list>
+				<skill name="Mechanics" level="1"/>
+				<skill name="EVA Operations" level="1"/>
+			</skill-list>
+		</robot>
+		
+		<robot name="GardenBot 007" type="GardenBot" settlement="Tian Cheng" job="Gardener">
+			<robotic-attribute-list>
+				<robotic-attribute name="Strength" value="95"/>
+				<robotic-attribute name="Endurance" value="95"/>
+				<robotic-attribute name="Agility" value="40"/>
+				<robotic-attribute name="Teaching" value="50"/>
+				<robotic-attribute name="Experience Aptitude" value="95"/>
+				<robotic-attribute name="Conversation" value="10"/>
+			</robotic-attribute-list>
+			<skill-list>
+				<skill name="Botany" level="1"/>
+			</skill-list>
+		</robot>
+		
+		<robot name="MakerBot 008" type="MakerBot" settlement="Tian Cheng" job="Maker">
+			<robotic-attribute-list>
+				<robotic-attribute name="Strength" value="95"/>
+				<robotic-attribute name="Endurance" value="95"/>
+				<robotic-attribute name="Agility" value="40"/>
+				<robotic-attribute name="Teaching" value="50"/>
+				<robotic-attribute name="Experience Aptitude" value="95"/>
+				<robotic-attribute name="Conversation" value="10"/>
+			</robotic-attribute-list>
+			<skill-list>
+				<skill name="Materials Science" level="1"/>
+				<skill name="Cooking" level="1"/>				
+				<skill name="Construction" level="1"/>
+			</skill-list>
+		</robot>				
+		
+		<robot name="RepairBot 009" type="RepairBot" settlement="Tian Cheng" job="Handyman">
+			<robotic-attribute-list>
+				<robotic-attribute name="Strength" value="95"/>
+				<robotic-attribute name="Endurance" value="95"/>
+				<robotic-attribute name="Agility" value="40"/>
+				<robotic-attribute name="Teaching" value="50"/>
+				<robotic-attribute name="Experience Aptitude" value="95"/>
+				<robotic-attribute name="Conversation" value="10"/>
+			</robotic-attribute-list>
+			<skill-list>
+				<skill name="Mechanics" level="1"/>
+				<skill name="EVA Operations" level="1"/>
+			</skill-list>
+		</robot>
+		
+		<!--	
+		<robot name="ChefBot 010" type="ChefBot" settlement="Plymouth Base" job="Cook">
 			<robotic-attribute-list>
 				<robotic-attribute name="Strength" value="95"/>
 				<robotic-attribute name="Endurance" value="95"/>
@@ -211,17 +207,45 @@
 			</robotic-attribute-list>
 			<skill-list>
 				<skill name="Botany" level="1"/>
-				<skill name="Construction" level="2"/>
-				<skill name="EVA Operations" level="2"/>
-				<skill name="Mechanics" level="1"/>
+				<skill name="Cooking" level="1"/>
+			</skill-list>
+		</robot>	
+		-->
+		
+		<!--
+		<robot name="MedicBot 011" type="MedicBot" settlement="Plymouth Base" job="Medic">
+			<robotic-attribute-list>
+				<robotic-attribute name="Strength" value="95"/>
+				<robotic-attribute name="Endurance" value="95"/>
+				<robotic-attribute name="Agility" value="40"/>
+				<robotic-attribute name="Teaching" value="10"/>
+				<robotic-attribute name="Experience Aptitude" value="95"/>
+				<robotic-attribute name="Conversation" value="10"/>
+			</robotic-attribute-list>
+			<skill-list>
+				<skill name="Botany" level="1"/>
 				<skill name="Medicine" level="1"/>
-				<skill name="Cooking" level="1"/>				
-				<skill name="Trading" level="1"/>
+			</skill-list>
+		</robot>				
+		
+		<robot name="ConstructionBot 012" type="ConstructionBot" settlement="Plymouth Base" job="Builder">
+			<robotic-attribute-list>
+				<robotic-attribute name="Strength" value="95"/>
+				<robotic-attribute name="Endurance" value="95"/>
+				<robotic-attribute name="Agility" value="40"/>
+				<robotic-attribute name="Teaching" value="10"/>
+				<robotic-attribute name="Experience Aptitude" value="95"/>
+				<robotic-attribute name="Conversation" value="10"/>
+			</robotic-attribute-list>
+			<skill-list>
+				<skill name="Construction" level="1"/>
+				<skill name="EVA Operations" level="1"/>
+				<skill name="Mechanics" level="1"/>		
 			</skill-list>
 		</robot>
 
 		
-		<robot name="DeliveryBot 009" type="DeliveryBot" settlement="Alpha Base" job="Postman">
+		<robot name="DeliveryBot 013" type="DeliveryBot" settlement="Plymouth Base" job="Postman">
 			<robotic-attribute-list>
 				<robotic-attribute name="Strength" value="95"/>
 				<robotic-attribute name="Endurance" value="95"/>
@@ -231,16 +255,12 @@
 				<robotic-attribute name="Conversation" value="10"/>
 			</robotic-attribute-list>
 			<skill-list>
-				<skill name="Botany" level="1"/>
-				<skill name="Trading" level="2"/>
-				<skill name="EVA Operations" level="2"/>
-				<skill name="Mechanics" level="1"/>
-				<skill name="Medicine" level="1"/>
-				<skill name="Construction" level="1"/>
-				<skill name="Cooking" level="1"/>				
+				<skill name="Trading" level="1"/>
+				<skill name="EVA Operations" level="1"/>
+				<skill name="Mechanics" level="1"/>		
 			</skill-list>
 		</robot>	
-
+  		-->
 
 	</robot-list>
 

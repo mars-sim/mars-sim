@@ -76,7 +76,9 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 	/** The unit's inventory. */
 	private Inventory inventory;
 	/** The unit containing this unit. */
-	protected Unit containerUnit;
+//	protected Unit containerUnit;
+	private int containerID;
+	
 	/** Unit location coordinates. */
 	private Coordinates location;
 
@@ -121,6 +123,8 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 	 * @param location {@link Coordinates} the unit's location
 	 */
 	public Unit(String name, Coordinates location) {
+		unitManager = sim.getUnitManager();
+		
 		listeners = Collections.synchronizedList(new ArrayList<UnitListener>()); // Unit listeners.
 
 		this.identifier = getNextIdentifier();
@@ -310,9 +314,19 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 	 * @return the unit's container unit
 	 */
 	public Unit getContainerUnit() {
-		return containerUnit;
+		if (unitManager == null)
+			unitManager = sim.getUnitManager();
+		return unitManager.getUnitByID(containerID);
 	}
 
+	public int getContainerID() {
+		return containerID;
+	}
+	
+	public void setContainerID(int ID) {
+		containerID = ID;
+	}
+	
 	/**
 	 * Gets the topmost container unit that owns this unit (Settlement, Vehicle, Person or Robot) 
 	 * If it's on the surface of Mars, then the topmost container is MarsSurface. 
@@ -320,10 +334,10 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 	 * @return the unit's topmost container unit
 	 */
 	public Unit getTopContainerUnit() {
-		Unit topUnit = containerUnit;
+		Unit topUnit = getContainerUnit();
 		if (!(topUnit instanceof MarsSurface)) {
-			while (topUnit.containerUnit != null && !(topUnit.containerUnit instanceof MarsSurface)) {
-				topUnit = topUnit.containerUnit;
+			while (topUnit.getContainerUnit() != null && !(topUnit.getContainerUnit() instanceof MarsSurface)) {
+				topUnit = topUnit.getContainerUnit();
 			}
 		}
 
@@ -331,14 +345,23 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 	}
 
 	public void setTopContainerUnit(Unit u) {
-		Unit topUnit = containerUnit;
+		Unit topUnit = getContainerUnit();
 		if (!(topUnit instanceof MarsSurface)) {
-			while (topUnit.containerUnit != null && !(topUnit.containerUnit instanceof MarsSurface)) {
-				topUnit = topUnit.containerUnit;
+			while (topUnit.getContainerUnit() != null && !(topUnit.getContainerUnit() instanceof MarsSurface)) {
+				topUnit = topUnit.getContainerUnit();
 			}
 		}
 
-		containerUnit.setContainerUnit(u);
+//		int topUnit = containerUnit;
+//		if (topUnit != 0) {
+//			while (topUnit != 0) {
+//				topUnit = getContainerUnit().getIdentifier();
+//			}
+//		}
+		
+		getContainerUnit().setContainerUnit(u);
+		
+		getContainerUnit().setContainerID(u.getIdentifier());
 	}
 	
 	/**
@@ -361,11 +384,9 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 		else if (this instanceof Settlement)
 			currentStateType = LocationStateType.OUTSIDE_ON_MARS;
 		
-//		if (containerUnit != null)
-//			containerUnitCache = containerUnit;
+//		containerUnit = newContainer.getIdentifier();
+		containerID = newContainer.getIdentifier();
 		
-		this.containerUnit = newContainer;
-
 		fireUnitUpdate(UnitEventType.CONTAINER_UNIT_EVENT, newContainer);
 	}
 
@@ -375,7 +396,7 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 	 * @param newContainer
 	 */
 	public void updatePersonRobotState(Unit newContainer) {
-		Unit oldContainer = this.containerUnit;
+		Unit oldContainer = getContainerUnit();
 
 		if (newContainer == null)
 			logger.severe("updatePersonRobotState(): " + getName() + " has an null newContainer");
@@ -423,7 +444,7 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 	 * @param newContainer
 	 */
 	public void updateEquipmentState(Unit newContainer) {
-		Unit oldContainer = this.containerUnit;
+		Unit oldContainer = unitManager.getUnitByID(containerID);
 		if (newContainer == null)
 			logger.severe("updateEquipmentState(): " + getName() + " has an null newContainer");
 		// Note : a person or a robot must be the carrier of an equipment
@@ -770,7 +791,7 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 	 * @param mm {@link MissionManager}
 	 */
 	public static void initializeInstances(MasterClock c0, MarsClock c1, EarthClock e, Simulation s, 
-			Mars m, MarsSurface ms, Weather w, UnitManager u, MissionManager mm) {
+			Mars m, MarsSurface ms, Weather w, MissionManager mm) {
 		masterClock = c0;
 		marsClock = c1;
 		earthClock = e;
@@ -778,11 +799,15 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 		mars = m;
 		marsSurface = ms;
 		weather = w;
-		unitManager = u;
+//		unitManager = u;
 		missionManager = mm;
 		
 		surface = mars.getSurfaceFeatures();
 		// TODO: need to fire unit update upon loading
+	}
+	
+	public static void setUnitManager(UnitManager u) {
+		unitManager = u;
 	}
 	
 	/**
@@ -794,7 +819,7 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 		description = null;
 		inventory.destroy();
 		inventory = null;
-		containerUnit = null;
+//		containerUnit = null;
 		// if (listeners != null) listeners.clear();
 		listeners = null;
 	}

@@ -133,7 +133,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	/** The buried settlement if the person has been deceased. */
 	private int buriedSettlement = -1;
 	/** The vehicle the person is on. */	
-	private int vehicle;
+	private int vehicle = -1;
 	
 	/** The cache for msol1 */
 	private double msolCache = -1D;	
@@ -874,7 +874,18 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 * @return the person's settlement
 	 */
 	public Settlement getSettlement() {
-
+//		System.out.println("Person: getContainerID() is " + getContainerID());
+		if (getContainerID() == 0)
+			return null;
+//		
+//		else if (vehicle == 0)
+//			return null;
+//
+//		else
+//			return unitManager.getSettlementByID(getContainerID());
+		
+		// TODO: what if a person is in a EVASuit inside an airlock in a settlement ?
+		
 		Unit c = getContainerUnit();
 
 		if (c instanceof Settlement) {
@@ -900,6 +911,8 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		if (containerUnit instanceof Vehicle) {
 			vehicle = containerUnit.getIdentifier();
 		}
+		else
+			vehicle = -1;
 	}
 
 	/**
@@ -913,7 +926,8 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		// Bury the body
 		isBuried = true;
 		// Back up the last container unit
-		condition.getDeathDetails().backupContainerUnit(containerUnit);
+//		condition.getDeathDetails().backupContainerUnit(containerUnit);
+		condition.getDeathDetails().backupContainerID(getContainerID());
 		// set container unit to null if not done so
 		setContainerUnit(null);
 		// Set his/her buried settlement
@@ -956,8 +970,8 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 //		if (marsSurface == null)
 //			marsSurface = Simulation.instance().getMars().getMarsSurface();
 //		
-		if (containerUnit == null)
-			this.containerUnit = marsSurface;
+//		if (containerUnit == null)
+//			this.containerUnit = marsSurface;
 //
 //		if (marsClock == null) {
 //			masterClock = Simulation.instance().getMasterClock();
@@ -1548,7 +1562,10 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 * @return the person's vehicle
 	 */
 	public Vehicle getVehicle() {
-		return unitManager.getVehicleByID(vehicle);
+		if (vehicle != -1)
+			return unitManager.getVehicleByID(vehicle);
+		else
+			return null;
 	}
 
 	public CircadianClock getCircadianClock() {

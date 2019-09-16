@@ -1852,13 +1852,16 @@ public class Inventory implements Serializable {
 
 		// Set owner unit's amount resource capacity cache as dirty (if any).
 		if (owner != null) {
-			Unit container = owner.getContainerUnit();
+
 			if (owner instanceof MarsSurface) {
 				return;
 			}
-			else if (container != null && !(container instanceof MarsSurface)) { 
+			
+//			Unit container = owner.getContainerUnit();
+			
+			if (owner.getContainerUnit() != null && !(owner.getContainerUnit() instanceof MarsSurface)) { 
 				// Note : still need (container != null) since MarsSurface may not have been initiated
-				container.getInventory().setAmountResourceCapacityCacheAllDirty(true);
+				owner.getContainerUnit().getInventory().setAmountResourceCapacityCacheAllDirty(true);
 			}
 		}
 	}

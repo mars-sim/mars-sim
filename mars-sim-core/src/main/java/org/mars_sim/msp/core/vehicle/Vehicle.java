@@ -175,7 +175,8 @@ public abstract class Vehicle extends Unit
 			
 		this.vehicleType = vehicleType;
 		associatedSettlementID = settlement.getIdentifier();
-		containerUnit = settlement;
+//		containerUnit = settlement;
+		setContainerID(associatedSettlementID);
 		settlement.getInventory().storeUnit(this);
 
 //		missionManager = Simulation.instance().getMissionManager();
@@ -274,7 +275,8 @@ public abstract class Vehicle extends Unit
 		fuel_range_error_margin = SimulationConfig.instance().getSettlementConfiguration().loadMissionControl()[1];
 
 		associatedSettlementID = settlement.getIdentifier();
-		containerUnit = settlement;
+//		containerUnit = settlement;
+		setContainerID(associatedSettlementID);
 		settlement.getInventory().storeUnit(this);
 
 		// Initialize vehicle data

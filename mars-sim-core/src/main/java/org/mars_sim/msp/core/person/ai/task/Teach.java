@@ -15,12 +15,14 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.social.Relationship;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.person.ai.taskUtil.Task;
 import org.mars_sim.msp.core.person.ai.taskUtil.TaskPhase;
+import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
@@ -62,11 +64,17 @@ public class Teach extends Task implements Serializable {
 	 * 
 	 * @param person the person performing the task.
 	 */
-	public Teach(Person person) {
-		super(NAME, person, false, false, STRESS_MODIFIER, false, 0D);
+	public Teach(Unit unit) {
+		super(NAME, unit, false, false, STRESS_MODIFIER, false, 0D);
 
 		// Randomly get a student.
-		Collection<Person> students = getBestStudents(person);
+		Collection<Person> students = null;
+		
+		if (unit instanceof Person)
+			students = getBestStudents(person);
+		else
+			students = getBestStudents(robot);
+		
 		if (students.size() > 0) {
 			Object[] array = students.toArray();
 			int rand = RandomUtil.getRandomInt(students.size() - 1);
@@ -294,6 +302,122 @@ public class Teach extends Task implements Serializable {
 	}
 
 	/**
+	 * Get a collection of students the teacher can teach.
+	 * 
+	 * @param teacher the teacher looking for students.
+	 * @return collection of students
+	 */
+	private static Collection<Person> getTeachableStudents(Robot teacher) {
+		Collection<Person> result = new ConcurrentLinkedQueue<Person>();
+
+		Iterator<Person> i = getLocalPeople(teacher).iterator();
+		while (i.hasNext()) {
+			Person student = i.next();
+			boolean possibleStudent = false;
+			Task task = student.getMind().getTaskManager().getTask();
+			if (task != null) {
+				Iterator<SkillType> j = task.getAssociatedSkills().iterator();
+				while (j.hasNext()) {
+					SkillType taskSkill = j.next();
+					int studentSkill = student.getSkillManager().getSkillLevel(taskSkill);
+					int teacherSkill = teacher.getSkillManager().getSkillLevel(taskSkill);
+					if ((teacherSkill >= (studentSkill + 1)) && !task.hasTeacher()) {
+						possibleStudent = true;
+					}
+				}
+				if (possibleStudent) {
+					result.add(student);
+				}
+			}
+		}
+
+		return result;
+	}
+	
+	/**
+	 * Gets a collection of the best students the teacher can teach.
+	 * 
+	 * @param teacher the teacher looking for students.
+	 * @return collection of the best students
+	 */
+	public static Collection<Person> getBestStudents(Robot teacher) {
+		Collection<Person> result = new ConcurrentLinkedQueue<Person>();
+		Collection<Person> students = getTeachableStudents(teacher);
+
+		// If teacher is in a settlement, best students are in least crowded buildings.
+		Collection<Person> leastCrowded = new ConcurrentLinkedQueue<Person>();
+		if (teacher.isInSettlement()) {
+			// Find the least crowded buildings that teachable students are in.
+			int crowding = Integer.MAX_VALUE;
+			Iterator<Person> i = students.iterator();
+			while (i.hasNext()) {
+				Person student = i.next();
+				Building building = BuildingManager.getBuilding(student);
+				if (building != null) {
+					LifeSupport lifeSupport = building.getLifeSupport();
+					int buildingCrowding = lifeSupport.getOccupantNumber() - lifeSupport.getOccupantCapacity() + 1;
+					if (buildingCrowding < -1) {
+						buildingCrowding = -1;
+					}
+					if (buildingCrowding < crowding) {
+						crowding = buildingCrowding;
+					}
+				}
+			}
+
+			// Add students in least crowded buildings to result.
+			Iterator<Person> j = students.iterator();
+			while (j.hasNext()) {
+				Person student = j.next();
+				Building building = BuildingManager.getBuilding(student);
+				if (building != null) {
+					LifeSupport lifeSupport = building.getLifeSupport();
+					int buildingCrowding = lifeSupport.getOccupantNumber() - lifeSupport.getOccupantCapacity() + 1;
+					if (buildingCrowding < -1) {
+						buildingCrowding = -1;
+					}
+					if (buildingCrowding == crowding) {
+						leastCrowded.add(student);
+					}
+				}
+			}
+		} else {
+			leastCrowded = students;
+		}
+
+		// TODO : may account for the attitude (like and dislike) of the person having a robot as his tutor 
+		
+//		// Get the teacher's favorite students.
+//		RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
+//		Collection<Person> favoriteStudents = new ConcurrentLinkedQueue<Person>();
+//
+//		// Find favorite opinion.
+//		double favorite = Double.NEGATIVE_INFINITY;
+//		Iterator<Person> k = leastCrowded.iterator();
+//		while (k.hasNext()) {
+//			Person student = k.next();
+//			double opinion = relationshipManager.getOpinionOfPerson(teacher, student);
+//			if (opinion > favorite) {
+//				favorite = opinion;
+//			}
+//		}
+//
+//		// Get list of favorite students.
+//		k = leastCrowded.iterator();
+//		while (k.hasNext()) {
+//			Person student = k.next();
+//			double opinion = relationshipManager.getOpinionOfPerson(teacher, student);
+//			if (opinion == favorite) {
+//				favoriteStudents.add(student);
+//			}
+//		}
+
+		result = leastCrowded;
+
+		return result;
+	}
+	
+	/**
 	 * Gets a collection of people in a person's settlement or rover. The resulting
 	 * collection doesn't include the given person.
 	 * 
@@ -325,6 +449,38 @@ public class Teach extends Task implements Serializable {
 		return people;
 	}
 
+	/**
+	 * Gets a collection of robot in a robot's settlement or rover. The resulting
+	 * collection doesn't include the given robot.
+	 * 
+	 * @param robot the robot checking
+	 * @return collection of robot
+	 */
+	private static Collection<Person> getLocalPeople(Robot robot) {
+		Collection<Person> people = new ConcurrentLinkedQueue<Person>();
+
+		if (robot.isInSettlement()) {
+			Iterator<Person> i = robot.getSettlement().getIndoorPeople().iterator();
+			while (i.hasNext()) {
+				Person inhabitant = i.next();
+//				if (robot != inhabitant) {
+					people.add(inhabitant);
+//				}
+			}
+		} else if (robot.isInVehicle()) {
+			Crewable rover = (Crewable) robot.getVehicle();
+			Iterator<Person> i = rover.getCrew().iterator();
+			while (i.hasNext()) {
+				Person crewmember = i.next();
+//				if (robot != crewmember) {
+					people.add(crewmember);
+//				}
+			}
+		}
+
+		return people;
+	}
+	
 	@Override
 	public int getEffectiveSkillLevel() {
 		return 0;

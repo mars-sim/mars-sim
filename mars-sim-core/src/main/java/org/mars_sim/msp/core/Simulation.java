@@ -42,6 +42,7 @@ import java.util.logging.Logger;
 
 import javax.json.stream.JsonGenerationException;
 
+import org.github.jamm.MemoryMeter;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.interplanetary.transport.TransportManager;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
@@ -104,6 +105,7 @@ import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.time.SystemDateTime;
 import org.mars_sim.msp.core.time.UpTimer;
 import org.mars_sim.msp.core.tool.CheckSerializedSize;
+import org.mars_sim.msp.core.tool.ObjectSizeCalculator;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.tukaani.xz.FilterOptions;
@@ -419,8 +421,10 @@ public class Simulation implements ClockListener, Serializable {
 		// Set instance for Inventory
 		Inventory.initializeInstances(mars.getMarsSurface());
 		
+		Unit.setUnitManager(unitManager);
 		Unit.initializeInstances(masterClock, marsClock, earthClock, sim, mars, 
-				mars.getMarsSurface(), mars.getWeather(), unitManager, new MissionManager());
+				mars.getMarsSurface(), mars.getWeather(), new MissionManager());
+
 	}
 	
 	/**
@@ -444,10 +448,12 @@ public class Simulation implements ClockListener, Serializable {
 		
 		// Initialize units prior to starting the unit manager
 		Unit.initializeInstances(masterClock, marsClock, earthClock, this, mars, mars.getMarsSurface(), 
-				mars.getWeather(), unitManager, missionManager);
+				mars.getWeather(), missionManager);
 		
 		// Initialize serializable managers
 		unitManager = new UnitManager();
+		Unit.setUnitManager(unitManager);
+		
 		unitManager.constructInitialUnits(loadSaveSim); // unitManager needs to be on the same thread as masterClock
 		eventManager = new HistoricalEventManager();
 		creditManager = new CreditManager();
@@ -920,7 +926,8 @@ public class Simulation implements ClockListener, Serializable {
 //		MedicalManager.justReloaded();
 		
 		// Re-initialize units prior to starting the unit manager
-		Unit.initializeInstances(masterClock, marsClock, earthClock, this, mars, marsSurface, weather, unitManager, missionManager);	
+		Unit.initializeInstances(masterClock, marsClock, earthClock, this, mars, marsSurface, weather, missionManager);	
+		Unit.setUnitManager(unitManager);
 		
 		unitManager.initializeInstances(marsClock);
 		RelationshipManager.initializeInstances(unitManager);
@@ -1323,16 +1330,21 @@ public class Simulation implements ClockListener, Serializable {
 			
 		list.sort((Serializable d1, Serializable d2) -> d1.getClass().getSimpleName().compareTo(d2.getClass().getSimpleName())); 
 		
-		sb.append("      Serializable object :     Size  (before compression)"
-				+ System.lineSeparator());
+		sb.append("      Serializable object | Serialized Size");
+		sb.append("  | Object Size");
+		sb.append(System.lineSeparator());
 		sb.append(" ---------------------------------------------------------"
 				+ System.lineSeparator());		
 		int max0 = 25;
 		int max1 = 10;
+		
 		String SPACE = " ";
 		
 		double sumSize = 0;
+//		double sumSize1 = 0;
+		
 		String unit = "";
+//		String unit1 = "";
 		
 //		halt();
 		masterClock.setPaused(true, false);
@@ -1347,37 +1359,69 @@ public class Simulation implements ClockListener, Serializable {
 			sb.append(SPACE + ":" + SPACE);
 
 			// Get size
-			double size = 0;
+			long size = 0;
 			
-			if (type == 0)
+//			long objectSize = 0;
+					
+//			MemoryMeter meter = new MemoryMeter();
+		    
+			if (type == 0) {
 				size = CheckSerializedSize.getSerializedSize(o);
-			else if (type == 1)
+//				objectSize = meter.countChildren(o);
+//				System.out.println("Object Size : " + objectSize);
+			}
+			else if (type == 1) {
 				size = CheckSerializedSize.getSerializedSizeByteArray(o);
-
-			sumSize += size;
+//				objectSize = meter.countChildren(o);
+//				System.out.println("Object Size : " + objectSize);
+			}
 			
+			sumSize += size;
+		
 			if (size < 1_000D) {
 				unit = SPACE + "B" + SPACE;
 			}
-			else if (size < 1_000_000D) {
-				size = size/1_000D;
+			else if (size < 1_000_000) {
+				size = size/1_000;
 				unit = SPACE + "KB";
 			}
 			else if (size < 1_000_000_000) {
-				size = size/1_000_000D;
+				size = size/1_000_000;
 				unit = SPACE + "MB";
 			}
-			
-			size = Math.round(size*10.0)/10.0;
 			
 			String sizeStr = size + unit;
 			int size1 = max1 - sizeStr.length();
 			for (int i=0; i<size1; i++) {
 				sb.append(SPACE);
 			}
+						
+//			sumSize1 += objectSize;
+//			
+//			if (objectSize < 1_000) {
+//				unit1 = SPACE + "B" + SPACE;
+//			}
+//			else if (objectSize < 1_000_000) {
+//				objectSize = objectSize/1_000;
+//				unit1 = SPACE + "KB";
+//			}
+//			else if (objectSize < 1_000_000_000) {
+//				objectSize = objectSize/1_000_000;
+//				unit1 = SPACE + "MB";
+//			}
+//			
+//			String objectSizeStr1 = objectSize + unit1;
+//			int objectSize1 = max1 - objectSizeStr1.length();
+//			for (int i=0; i<objectSize1; i++) {
+//				sb.append(SPACE);
+//			}
 			
-			sb.append(size + unit
-					+ System.lineSeparator());
+			
+			sb.append(size + unit);
+			
+//			sb.append("        " + objectSize + unit1);
+			
+			sb.append(System.lineSeparator());
 		}
 		
 		// Get the total size
@@ -1394,8 +1438,7 @@ public class Simulation implements ClockListener, Serializable {
 		}
 		
 		sumSize = Math.round(sumSize*10.0)/10.0;
-		
-		
+			
 		sb.append(" ---------------------------------------------------------"
 				+ System.lineSeparator());	
 		

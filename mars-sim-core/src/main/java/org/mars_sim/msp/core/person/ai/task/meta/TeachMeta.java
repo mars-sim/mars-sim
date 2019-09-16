@@ -89,8 +89,7 @@ public class TeachMeta implements MetaTask, Serializable {
 
 	@Override
 	public Task constructInstance(Robot robot) {
-		// TODO Auto-generated method stub
-		return null;
+		return new Teach(robot);
 	}
 
 	@Override

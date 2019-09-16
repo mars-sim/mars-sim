@@ -91,6 +91,7 @@ public class DeathInfo implements Serializable {
 	private HealthProblem problem;
 	/** Container unit at time of death. */
 	private Unit containerUnit;
+	private int containerID;
 	/** Coordinate at time of death. */
 	private Coordinates locationOfDeath;
 	/** The person's job at time of death. */
@@ -387,6 +388,10 @@ public class DeathInfo implements Serializable {
 
 	public void backupContainerUnit(Unit c) {
 		containerUnit = c;
+	}
+	
+	public void backupContainerID(int c) {
+		containerID = c;
 	}
 	
 	/**

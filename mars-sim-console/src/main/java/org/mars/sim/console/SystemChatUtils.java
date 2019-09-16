@@ -16,9 +16,11 @@ import java.util.Map;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import org.github.jamm.MemoryMeter;
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.health.Complaint;
 import org.mars_sim.msp.core.person.health.ComplaintType;
@@ -26,7 +28,9 @@ import org.mars_sim.msp.core.person.health.DeathInfo;
 import org.mars_sim.msp.core.person.health.HealthProblem;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.tool.CheckSerializedSize;
 import org.mars_sim.msp.core.tool.Conversion;
+import org.mars_sim.msp.core.tool.ObjectSizeCalculator;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -71,6 +75,77 @@ public class SystemChatUtils extends ChatUtils {
 			masterClock.resetClockListeners();
 			return responseText.toString();
 		}
+		
+		else if (text.toLowerCase().contains("object size")) {
+
+//			List<Person> list = new ArrayList<>(unitManager.getPeople());
+//			List<Person> list1 = new ArrayList<>();
+			
+			List<Equipment> list = new ArrayList<>(unitManager.getEquipment());
+//			List<Equipment> list1 = new ArrayList<>();
+			
+//			list1.add(list.get(0));
+			
+			long sumSize = 0;
+			String SPACE = " ";
+			
+			for (Equipment i : list) {
+				
+//				MemoryMeter meter = new MemoryMeter();
+//			    long size0 = meter.measure(p);
+//			    long size1 = meter.measureDeep(p);
+//			    long size2 = meter.countChildren(p);
+//			    
+////				long size = ObjectSizeCalculator.getObjectSize(list.get(0));
+//				String s = "The Object Size of " + p + " is " + size0 + " | " + size1 + " | " + size2;
+				String unit = "";
+				
+				long size = CheckSerializedSize.getSerializedSize(i);
+				
+				sumSize += size;
+				
+				if (size < 1_000D) {
+					unit = SPACE + "B" + SPACE;
+				}
+				else if (size < 1_000_000) {
+					size = size/1_000;
+					unit = SPACE + "KB";
+				}
+				else if (size < 1_000_000_000) {
+					size = size/1_000_000;
+					unit = SPACE + "MB";
+				}
+				
+				String s = i + " : " + size + unit;// + "   # : " + size0;
+				
+				
+				responseText.append(s + System.lineSeparator());
+			}
+			
+			String sumUnit = "";
+			
+			if (sumSize < 1_000D) {
+				sumUnit = SPACE + "B" + SPACE;
+			}
+			else if (sumSize < 1_000_000) {
+				sumSize = sumSize/1_000;
+				sumUnit = SPACE + "KB";
+			}
+			else if (sumSize < 1_000_000_000) {
+				sumSize = sumSize/1_000_000;
+				sumUnit = SPACE + "MB";
+			}
+			
+			String s = "The Total Size of " + list.size() + " is " + sumSize + sumUnit;
+			
+			responseText.append(s + System.lineSeparator());
+
+			return responseText.toString();
+		}
+		
+
+		
+		
 		return responseText.toString();
 	}
 	
