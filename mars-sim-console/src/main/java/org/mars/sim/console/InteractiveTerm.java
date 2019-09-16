@@ -29,6 +29,9 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.time.MasterClock;
 
+/**
+ * The InteractiveTerm class builds a text-based console interface and handles the interaction with players
+ */
 public class InteractiveTerm {
 
 	private static Logger logger = Logger.getLogger(InteractiveTerm.class.getName());
@@ -107,6 +110,11 @@ public class InteractiveTerm {
 	}
 	
 	
+	/**
+	 * Selects the game mode
+	 * 
+	 * @return
+	 */
 	public boolean selectMode() {
 		boolean useSCE = false;
 		
@@ -148,6 +156,11 @@ public class InteractiveTerm {
         return useSCE;
 	}
 	
+	/**
+	 * Selects the simulation configuration editor 
+	 * 
+	 * @return
+	 */
 	public boolean selectSCE() {
 		boolean useSCE = false;
 		terminal.println(System.lineSeparator());
@@ -194,6 +207,11 @@ public class InteractiveTerm {
         return useSCE;
 	}
 	
+	/**
+	 * Selects the command mode
+	 * 
+	 * @return
+	 */
 	public boolean selectCommandMode() {
 		boolean useSCE = false;
 		
@@ -205,18 +223,18 @@ public class InteractiveTerm {
         		+ "            * * *  Command Mode - Crew Selection  * * *" 
         		+ System.lineSeparator()
         		+ System.lineSeparator()
-				+ "0. Go back to previous page"
+				+ "0. Back to previous"
 				+ System.lineSeparator()
 				+ "1. Enable/Disable Alpha Crew"
 				+ System.lineSeparator()
 				+ "2. Set up Commander's Profile"
 				+ System.lineSeparator()
-				+ "3. Load from Previous Commander's Profile"
+				+ "3. Load from previously saved Commander Profile"
 				+ System.lineSeparator()
 				+ System.lineSeparator()
 				+ "Note 1: Alpha Crew is loaded by default."
 				+ System.lineSeparator()
-				+ "Note 2: Console Editon does not have the SCE."
+				+ "Note 2: Console Editon does NOT have the SCE."
 				+ System.lineSeparator()
 				);
 		
@@ -268,6 +286,11 @@ public class InteractiveTerm {
 	}
  
 	
+	/**
+	 * Selects the sandbox mode
+	 * 
+	 * @return
+	 */
 	public boolean selectSandoxMode() {
 		boolean useSCE = false;
 		
@@ -344,6 +367,9 @@ public class InteractiveTerm {
     	return useSCE;
 	}
 	
+	/**
+	 * Loads the previously saved commander profile
+	 */
 	public void loadPreviousProfile() {
 		 
 		try {
@@ -422,11 +448,8 @@ public class InteractiveTerm {
 		while (keepRunning) {
 			     
 		    BiConsumer<TextIO, RunnerData> menu = chooseMenu(textIO);
-		    //TextIO textIO = chooseTextIO();
 		    terminal.printf(System.lineSeparator());
-		    
-//			setChoices();//"1", "2", "3", "4");
-		       
+	       
 		    // Set up the prompt for the menu
 		    menu.accept(textIO, null);
 	        
@@ -438,11 +461,14 @@ public class InteractiveTerm {
 		    	delay(500L);
 		    }
 		}
-		
 //        terminal.resetToBookmark("MENU");
 	}
     
-	
+	/**
+	 * Clears the screen
+	 * 
+	 * @param terminal
+	 */
     public static void clearScreen(TextTerminal<?> terminal) {
         if (terminal instanceof JLineTextTerminal) {
             terminal.print("\033[H\033[2J");
@@ -451,6 +477,11 @@ public class InteractiveTerm {
         }
     }
     
+    /**
+     * Starts the time delay
+     * 
+     * @param millis
+     */
     public static void delay(long millis) {
         try {
 			TimeUnit.MILLISECONDS.sleep(millis);
@@ -459,13 +490,19 @@ public class InteractiveTerm {
         }
     }
     
+    /**
+     * Presents choices in the console menu
+     * 
+     * @param textIO
+     * @return {@link BiConsumer}
+     */
     private static BiConsumer<TextIO, RunnerData> chooseMenu(TextIO textIO) {
         List<BiConsumer<TextIO, RunnerData>> apps = Arrays.asList(
         		chatMenu,
                 new AutosaveMenu(),
                 new SaveMenu(),
                 new TimeRatioMenu(),
-//                new Weather(),
+                new LogMenu(),
                 new ExitMenu()
         );
        
@@ -480,6 +517,10 @@ public class InteractiveTerm {
         return app;
     }
     
+    
+    /**
+     * Sets up arrow keys
+     */
     public void setUpArrows() {
         terminal.registerHandler(KEY_STROKE_UP, t -> {
             if(choiceIndex < 0) {
@@ -502,7 +543,9 @@ public class InteractiveTerm {
         });
     }
     
-
+    /**
+     * Sets up the ESC key
+     */
     public void setUpESC() {
         terminal.registerHandler(KEY_ESC, t -> {
         	MasterClock mc = Simulation.instance().getMasterClock();
@@ -526,6 +569,11 @@ public class InteractiveTerm {
 
     }
     	
+    /**
+     * Sets choice strings
+     * 
+     * @param choices
+     */
     public void setChoices(String... choices) {
         this.originalInput = "";
         this.choiceIndex = -1;

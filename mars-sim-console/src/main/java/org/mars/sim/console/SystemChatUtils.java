@@ -41,12 +41,46 @@ public class SystemChatUtils extends ChatUtils {
 	private static String target = "";
 	
 	/**
-	 * Processes the question and return the answer regarding an unit
+	 * Asks a question in Expert Mode
+	 * 
+	 * @param text
+	 * @param responseText
+	 * @return
+	 */
+	public static String askExpertMode(String text, StringBuffer responseText) {
+		if (text.toLowerCase().contains("reset clock thread")) {
+			String s = "Resetting the clock executor thread...";
+			responseText.append(s + System.lineSeparator());
+			logger.config(s);
+			sim.restartClockExecutor();
+			return responseText.toString();
+		}
+
+		else if (text.toLowerCase().contains("reset clock pulse")) {
+			String s = "Resetting the # of clock pulses according to the default TBU value...";
+			responseText.append(s + System.lineSeparator());
+			logger.config(s);
+			masterClock.resetTotalPulses();
+			return responseText.toString();
+		}
+
+		else if (text.toLowerCase().contains("reset clock listener")) {
+			String s = "Resetting the clock listeners...";
+			responseText.append(s + System.lineSeparator());
+			logger.config(s);
+			masterClock.resetClockListeners();
+			return responseText.toString();
+		}
+		return responseText.toString();
+	}
+	
+	/**
+	 * Connects to an unit (Person, Robot, Vehicle, or Settlement)
 	 * 
 	 * @param text
 	 * @return an array of String
 	 */
-	public static String[] askQuestion(String text) {
+	public static String[] connect2Unit(String text) {
 //		System.out.println("askQuestion() in SystemChatUtils");
 		String questionText = "";
 		StringBuffer responseText = new StringBuffer();
@@ -314,7 +348,7 @@ public class SystemChatUtils extends ChatUtils {
 	}
 	
 	/*
-	 * Asks the system a question
+	 * Asks a system-wide, overall question. e.g. "scores" on all settlements
 	 * 
 	 * @param input text
 	 */
@@ -341,34 +375,8 @@ public class SystemChatUtils extends ChatUtils {
 
 		if (expertMode) {
 
-			if (text.toLowerCase().contains("reset clock thread")) {
-				String s = "Resetting the clock executor thread...";
-				responseText.append(s + System.lineSeparator());
-				logger.config(s);
-				sim.restartClockExecutor();
-				return responseText.toString();
-			}
+			return askExpertMode(text, responseText);
 
-			else if (text.toLowerCase().contains("reset clock pulse")) {
-				String s = "Resetting the # of clock pulses according to the default TBU value...";
-				responseText.append(s + System.lineSeparator());
-				logger.config(s);
-				masterClock.resetTotalPulses();
-				return responseText.toString();
-			}
-
-			else if (text.toLowerCase().contains("reset clock listener")) {
-				String s = "Resetting the clock listeners...";
-				responseText.append(s + System.lineSeparator());
-				logger.config(s);
-				masterClock.resetClockListeners();
-				return responseText.toString();
-			}
-
-		}
-
-		else if (text.toLowerCase().contains("log")) {
-			return processLogChange(text, responseText).toString();
 		}
 
 		else if (text.equalsIgnoreCase("scores")) {
