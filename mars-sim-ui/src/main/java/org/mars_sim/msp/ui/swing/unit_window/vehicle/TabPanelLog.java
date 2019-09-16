@@ -305,7 +305,7 @@ public class TabPanelLog extends TabPanel {
 		public Object getValueAt(int row, int column) {	
 			if (oneDayStatuses != null 
 					&& !oneDayStatuses.isEmpty()
-					&& millisolList.get(row) != null) {
+					&& millisolList.size() > row) {
 				int msol = millisolList.get(row);
 				if (column == 0) {
 					return fmt.format(msol);
@@ -371,6 +371,9 @@ public class TabPanelLog extends TabPanel {
 					if (millisolList.size() > 1)
 						Collections.sort(millisolList);
 				}
+				else
+					millisolList.clear();
+				
 			}
 			
 			fireTableDataChanged();

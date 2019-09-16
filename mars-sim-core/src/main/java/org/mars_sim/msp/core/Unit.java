@@ -314,8 +314,10 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 	 * @return the unit's container unit
 	 */
 	public Unit getContainerUnit() {
-		if (unitManager == null)
-			unitManager = sim.getUnitManager();
+//		if (unitManager == null)
+//			unitManager = sim.getUnitManager();
+		if (unitManager == null) // for maven test
+			return null;
 		return unitManager.getUnitByID(containerID);
 	}
 

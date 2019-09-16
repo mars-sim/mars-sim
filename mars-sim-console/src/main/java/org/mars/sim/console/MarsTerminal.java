@@ -30,6 +30,8 @@ import org.beryx.textio.TextTerminal;
 import org.beryx.textio.jline.JLineTextTerminal;
 import org.beryx.textio.swing.SwingTextTerminal;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.GameManager;
+import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.time.MasterClock;
 
 public class MarsTerminal extends SwingTextTerminal {
@@ -131,7 +133,8 @@ public class MarsTerminal extends SwingTextTerminal {
 	
     private void configureMainMenu() {
         frame = getFrame();
-        frame.setTitle("Mars Simulation Project");
+//        frame.setTitle("Mars Simulation Project");
+        changeTitle(false);
         setSize(WIDTH, HEIGHT);
         frame.setResizable(false);
 //        frame.setPreferredSize(new Dimension(WIDTH, HEIGHT));
@@ -261,4 +264,21 @@ public class MarsTerminal extends SwingTextTerminal {
         });
         return true;
     }
+    
+	public void changeTitle(boolean isPaused) {
+		if (GameManager.mode == GameMode.COMMAND) {
+			if (isPaused) {
+				frame.setTitle(Simulation.title + "  -  Command Mode" + "  -  [ PAUSE ]");
+			} else {
+				frame.setTitle(Simulation.title + "  -  Command Mode");
+			}
+		} else {
+			if (isPaused) {
+				frame.setTitle(Simulation.title + "  -  Sandbox Mode" + "  -  [ PAUSE ]");
+			} else {
+				frame.setTitle(Simulation.title + "  -  Sandbox Mode");
+			}
+		}
+	}
+	
 }
