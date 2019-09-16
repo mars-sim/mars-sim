@@ -506,31 +506,8 @@ public class MarsProject {
 		System.setProperty("swing.aatext", "true");
 		System.setProperty("awt.useSystemAAFontSettings", "lcd"); // for newer VMs
 
-		// Add command prompt console
-//        Console console = System.console();
-//        if(console == null && !GraphicsEnvironment.isHeadless()){
-//            String filename = MarsProject.class.getProtectionDomain().getCodeSource().getLocation().toString().substring(6);
-//            Runtime.getRuntime().exec(new String[]{"cmd","/c","start","cmd","/k","java -jar \"" + filename + "\""});
-//        }else{
-//        	MarsProject.main(new String[0]);
-//            System.out.println("Program has ended, please type 'exit' to close the console");
-//        }
-
 		// starting the simulation
 		new MarsProject(args);
-		
-//		 mp.start(com.jme3.system.JmeContext.Type.Headless);
-
-//		 @Override 
-//		 public void simpleInitApp() { 
-//			 // TODO Auto-generated method stub 
-//		 }
-//		 @Override 
-//		 public void simpleUpdate(float tpf) { 
-//			 // Interact with game events
-//			 //in the main loop 
-//		 }
-
 	}
 
 }

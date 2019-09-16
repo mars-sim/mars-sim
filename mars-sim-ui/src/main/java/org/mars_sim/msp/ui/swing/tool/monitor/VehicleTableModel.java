@@ -59,7 +59,11 @@ extends UnitTableModel {
 
 	private static Logger logger = Logger.getLogger(VehicleTableModel.class.getName());
 
-	private GameMode mode;
+	private final static String AT = "At ";
+	private static String ON = "On";	
+	private static String OFF = "Off";
+	private static String TRUE = "True";	
+	private static String FALSE = "False";
 	
 	// Column indexes
 	private final static int NAME = 0;
@@ -87,11 +91,6 @@ extends UnitTableModel {
 	private final static int COLUMNCOUNT = 21;
 	/** Names of Columns. */
 	private static String columnNames[];
-	
-	private static String ON = "On";	
-	private static String OFF = "Off";
-	private static String TRUE = "True";	
-	private static String FALSE = "False";
 		
 	/** Names of Columns. */
 	private static Class<?> columnTypes[];
@@ -146,10 +145,6 @@ extends UnitTableModel {
 		columnTypes[ICE] = Integer.class;
 	}
 
-	// Data members
-	private UnitManagerListener unitManagerListener;
-	private LocalMissionManagerListener missionManagerListener;
-	private Map<Vehicle, Map<Integer, Double>> resourceCache;
 
 	private static int foodID = ResourceUtil.foodID;
 	private static int oxygenID = ResourceUtil.oxygenID;
@@ -164,8 +159,15 @@ extends UnitTableModel {
 
 	private static MissionManager missionManager = Simulation.instance().getMissionManager();
 	
-	
+	// Data members
 	private int mapSizeCache = 0;
+	
+	private UnitManagerListener unitManagerListener;
+	private LocalMissionManagerListener missionManagerListener;
+	
+	private Map<Vehicle, Map<Integer, Double>> resourceCache;
+
+	private GameMode mode;
 	
 	private Settlement commanderSettlement;
 
@@ -351,12 +353,21 @@ extends UnitTableModel {
 					Mission mission = missionManager.getMissionForVehicle(vehicle);
 					if ((mission != null) && (mission instanceof VehicleMission)) {
 						VehicleMission vehicleMission = (VehicleMission) mission;
-						if (vehicleMission.getTravelStatus() != null 
-								&& vehicleMission.getTravelStatus().equals(TravelMission.TRAVEL_TO_NAVPOINT)) {
-							NavPoint destination = vehicleMission.getNextNavpoint();
-							if (destination.isSettlementAtNavpoint()) result = destination.getSettlement().getName();
-							else result = destination.getLocation().getFormattedString();
-						}
+						String status = vehicleMission.getTravelStatus();
+						if (status != null) {
+							if (status.equals(TravelMission.TRAVEL_TO_NAVPOINT)) {
+								NavPoint destination = vehicleMission.getNextNavpoint();	
+								if (destination.isSettlementAtNavpoint()) 
+									result = destination.getSettlement().getName();
+								else
+									result = Conversion.capitalize(destination.getDescription()) + " " + destination.getLocation().getFormattedString();
+							}
+							else if (status.equals(TravelMission.AT_NAVPOINT)) {
+								NavPoint destination = vehicleMission.getCurrentNavpoint();
+//								result = destination.getLocation().getFormattedString();
+								result = AT + Conversion.capitalize(destination.getDescription());
+							}					
+						}			
 					}
 				} break;
 

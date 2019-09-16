@@ -142,6 +142,7 @@ public class MainDesktopPane extends JDesktopPane
 	 */
 	public MainDesktopPane(MainWindow mainWindow) {
 		super();
+		
 		this.mainWindow = mainWindow;
 		// Set background color to black
 		setBackground(Color.black);
@@ -375,8 +376,6 @@ public class MainDesktopPane extends JDesktopPane
 	private void prepareToolWindows() {
 		if (toolWindows != null)
 			toolWindows.clear();
-
-		mainWindow.initializeWeblaf();
 
 		// Prepare Commander Window
 		if (GameManager.mode == GameMode.COMMAND) {

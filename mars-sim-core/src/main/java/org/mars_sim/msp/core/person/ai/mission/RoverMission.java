@@ -471,6 +471,7 @@ public abstract class RoverMission extends VehicleMission {
 
 				if (p.isDeclaredDead()) {
 					
+					String vehicleName = p.getVehicle().getName();
 					LogConsolidated.log(Level.FINER, 0, sourceName,
 							"[" + p.getLocationTag().getLocale() + "] " + p.getName() 
 							+ "'s body had been retrieved from rover " + v.getName() + ".");
@@ -490,7 +491,7 @@ public abstract class RoverMission extends VehicleMission {
 							p.getPhysicalCondition().getHealthSituation(), 
 							p.getTaskDescription(), 
 							p.getName(),
-							p.getVehicle().getName(), 
+							vehicleName, 
 							p.getLocationTag().getLocale(),
 							p.getAssociatedSettlement().getName()
 							);

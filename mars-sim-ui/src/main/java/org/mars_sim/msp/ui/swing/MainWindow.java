@@ -67,6 +67,7 @@ import org.mars_sim.msp.ui.swing.tool.JStatusBar;
 //import com.alee.managers.UIManagers;
 import com.alee.laf.WebLookAndFeel;
 import com.alee.laf.panel.WebPanel;
+import com.alee.managers.UIManagers;
 import com.alee.managers.tooltip.TooltipManager;
 import com.alee.managers.tooltip.TooltipWay;
 
@@ -100,7 +101,7 @@ extends JComponent {
 		SYSTEM, NIMBUS, NIMROD, WEBLAF, METAL
 	}
 
-	public ThemeType defaultThemeType = ThemeType.WEBLAF;
+	public ThemeType defaultThemeType = ThemeType.NIMBUS;//WEBLAF;
 
 	private static JFrame frame;
 
@@ -159,16 +160,14 @@ extends JComponent {
 	public MainWindow(boolean cleanUI) {
 //		logger.config("MainWindow is on " + Thread.currentThread().getName() + " Thread");
 		// this.cleanUI = cleanUI;
+		// Set up the look and feel library to be used
+		initializeTheme();
 		
 		// Set up the frame
 		frame = new JFrame();
 		frame.setSize(new Dimension(WIDTH, HEIGHT));
 		frame.setResizable(false);
-//		frame.setPreferredSize(new Dimension(1366, 768));
-//		frame.setMinimumSize(new Dimension(1024, 600));
-		
-		// Set up the look and feel library to be used
-//		setLookAndFeel(defaultThemeType, ThemeType.NIMROD);
+
 		
 		// Disable the close button on top right
 //		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
@@ -187,7 +186,6 @@ extends JComponent {
 		// Set the icon image for the frame.
 		ImageIcon icon = new ImageIcon(CrewEditor.class.getResource(MainWindow.ICON_IMAGE));
 		frame.setIconImage(iconToImage(icon));
-		//		setIconImage();
 
 		// Initialize UI elements for the frame
 		init();
@@ -195,18 +193,26 @@ extends JComponent {
 		// Set up timers for use on the status bar
 		setupDelayTimer();
 
-		// Add autosave timer
-//		startAutosaveTimer();
-
+		// Show frame
+//		frame.pack();
+		frame.setLocationRelativeTo(null);
+		frame.setVisible(true);
+		
 		// Open all initial windows.
 		desktop.openInitialWindows();
 
-//		initializeWeblaf();
-
 		// Set up timers for caching the settlement windows
 		setupSettlementWindowTimer();
+		
+
 	}
 
+	/**
+	 * Returns an image from an icon
+	 * 
+	 * @param icon
+	 * @return
+	 */
 	public static Image iconToImage(Icon icon) {
 		   if (icon instanceof ImageIcon) {
 		      return ((ImageIcon)icon).getImage();
@@ -245,9 +251,6 @@ extends JComponent {
 		// Set up the main pane
 		mainPane = new WebPanel(new BorderLayout());
 
-		// Add the main pane to the frame
-//		frame.setContentPane(mainPane);
-
 		// Set up the glassy wait layer for pausing
 		jlayer = new JLayer<>(mainPane, layerUI);
 		frame.add(jlayer);
@@ -278,11 +281,6 @@ extends JComponent {
 			}
 		};
 
-//		BasicToolBarUI ui = new BasicToolBarUI();
-//		unitToolbar.setUI(ui);
-
-		// unitToolbar.setOpaque(false);
-		// unitToolbar.setBackground(new Color(0,0,0,0));
 		unitToolbar.setBorder(new MarsPanelBorder());
 		// Remove the toolbar border, to blend into figure contents
 		unitToolbar.setBorderPainted(true);
@@ -334,35 +332,6 @@ extends JComponent {
 
 		bottomPane.add(statusBar, BorderLayout.SOUTH);
 
-		// Set frame size
-		final Dimension frame_size;
-		Dimension screen_size = Toolkit.getDefaultToolkit().getScreenSize();
-		if (useDefault) {
-			// Make frame size 80% of screen size.
-			if (screen_size.width > 800) {
-				frame_size = new Dimension((int) Math.round(screen_size.getWidth() * .9D),
-						(int) Math.round(screen_size.getHeight() * .9D));
-			} else {
-				frame_size = new Dimension(screen_size);
-			}
-		} else {
-			frame_size = UIConfig.INSTANCE.getMainWindowDimension();
-		}
-		frame.setSize(frame_size);
-
-		// Set frame location.
-		if (useDefault) {
-			// Center frame on screen
-			frame.setLocation(((screen_size.width - frame_size.width) / 2),
-					((screen_size.height - frame_size.height) / 2));
-		} else {
-			frame.setLocation(UIConfig.INSTANCE.getMainWindowLocation());
-		}
-
-		// Show frame
-//		frame.pack();
-		frame.setLocationRelativeTo(null);
-		frame.setVisible(true);
 	}
 
 	/**
@@ -406,49 +375,13 @@ extends JComponent {
 		return bottomPane;
 	}
 
-//	/**
-//	 * Start the auto save timer
-//	 */
-//	public void startAutosaveTimer() {
-//		TimerTask timerTask = new TimerTask() {
-//			@Override
-//			public void run() {
-//				autosaveTimer.cancel();
-////				saveSimulation(true, true);
-////				startAutosaveTimer();
-//			}
-//		};
-//		autosaveTimer = new Timer();
-//		autosaveTimer.schedule(timerTask, 1000 * 60 * AUTOSAVE_EVERY_X_MINUTE);
-//	}
-
 	/**
 	 * Start the earth timer
 	 */
 	public void runStatusTimer() {
-//		logger.config("runStatusTimer()");
 		earthTimer = new javax.swing.Timer(TIME_DELAY, new ActionListener() {
-//		String earthTime = null;
 			@Override
 			public void actionPerformed(ActionEvent evt) {
-//				logger.config("runStatusTimer()'s actionPerformed()");
-//				try {
-				// Check if new simulation is being created or loaded from file.
-//					if (!Simulation.isUpdating()) {
-////						MasterClock master = sim.getMasterClock();
-//						if (masterClock == null) {
-//							throw new IllegalStateException("master clock is null");
-//						}
-////						EarthClock earthclock = master.getEarthClock();
-//						if (earthClock == null) {
-//							throw new IllegalStateException("earthclock is null");
-//						}
-//						earthTime = earthClock.getTimeStampF0();
-//					}
-//				} catch (Exception ee) {
-//					ee.printStackTrace(System.err);
-//				}
-
 				if (earthClock == null) {
 					masterClock = sim.getMasterClock();
 					earthClock = masterClock.getEarthClock();
@@ -475,14 +408,7 @@ extends JComponent {
 					solCache = sol;
 					leftLabel.setText(SOL + sol);
 				}
-
-//				// Check on whether autosave is due
-//				if (masterClock.getAutosave()) {
-//					// Trigger an autosave instance
-//					saveSimulation(true, true);
-//					masterClock.setAutosave(false);
-//				}
-				
+			
 				// Check if the music track should be played
 				desktop.getSoundPlayer().playRandomMusicTrack();
 			}
@@ -522,18 +448,7 @@ extends JComponent {
 	 * Load a previously saved simulation.
 	 */
 	public void loadSimulation(boolean autosave) {
-//		if ((loadSimThread == null) || !loadSimThread.isAlive()) {
-//			loadSimThread = new Thread(Msg.getString("MainWindow.thread.loadSim")) { //$NON-NLS-1$
-//				@Override
-//				public void run() {
 		loadSimulationProcess(autosave);
-//				}
-//			};
-//			loadSimThread.start();
-//		} else {
-//			loadSimThread.interrupt();
-//		}
-
 	}
 
 	/**
@@ -542,9 +457,6 @@ extends JComponent {
 	 * @param autosave
 	 */
 	public static void loadSimulationProcess(boolean autosave) {
-//		logger.config("MainWindow's loadSimulationProcess() is on " + Thread.currentThread().getName());
-
-//		if (masterClock != null)
 		sim.stop();
 
 		String dir = null;
@@ -562,76 +474,9 @@ extends JComponent {
 		JFileChooser chooser = new JFileChooser(dir);
 		chooser.setDialogTitle(title); // $NON-NLS-1$
 		if (chooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) {
-//			desktop.openAnnouncementWindow(Msg.getString("MainWindow.loadingSim")); //$NON-NLS-1$
-
-			// Break up the creation of the new simulation, to allow interfering with the
-			// single steps.
-//			sim.endSimulation();
-
-//			logger.config("Done open annoucement window");
-
-//			try {
-//				desktop.clearDesktop();
-//
-//				if (earthTimer != null) {
-//					earthTimer.stop();
-//				}
-//				earthTimer = null;
-//
-//			} catch (Exception e) {
-//				// New simulation process should continue even if there's an exception in the
-//				// UI.
-//				logger.severe(e.getMessage());
-//				e.printStackTrace(System.err);
-//			}
-
-//			logger.config("About to call loadSimulation()");
 			sim.loadSimulation(chooser.getSelectedFile());
-//			logger.config("Done calling loadSimulation()");
-
-//			while (masterClock != null) {// while (masterClock.isLoadingSimulation()) {
-//				try {
-//					Thread.sleep(300L);
-//				} catch (InterruptedException e) {
-//					logger.log(Level.WARNING, Msg.getString("MainWindow.log.waitInterrupt"), e); //$NON-NLS-1$
-//				}
-//			}
-//
-//			desktop.disposeAnnouncementWindow();
-
-//			try {
-//				desktop.resetDesktop();
-//			} catch (Exception e) {
-//				// New simulation process should continue even if there's an exception in the
-//				// UI.
-//				logger.severe(e.getMessage());
-//				e.printStackTrace(System.err);
-//			}
-//
-//			if (masterClock != null)
-//				sim.start(false);
-
-//			startEarthTimer();
 		}
 	}
-
-//	/**
-//	 * Create a new simulation.
-//	 */
-//	public void newSimulation() {
-//		if ((newSimThread == null) || !newSimThread.isAlive()) {
-//			newSimThread = new Thread(Msg.getString("MainWindow.thread.newSim")) { //$NON-NLS-1$
-//				@Override
-//				public void run() {
-//					newSimulationProcess();
-//					// Simulation.instance().runStartTask(false);
-//				}
-//			};
-//			newSimThread.start();
-//		} else {
-//			newSimThread.interrupt();
-//		}
-//	}
 
 	/**
 	 * Performs the process of creating a new simulation.
@@ -995,21 +840,18 @@ extends JComponent {
 	 * Sets the theme skin after calling stage.show() at the start of the sim
 	 */
 	public void initializeTheme() {
-//		if (OS.contains("linux"))
-//			SwingUtilities.invokeLater(() -> setLookAndFeel(defaultThemeType, ThemeType.NIMROD));
-//		else
-		SwingUtilities.invokeLater(() -> initializeWeblaf());//setLookAndFeel(defaultThemeType, ThemeType.NIMROD));
-
+//		SwingUtilities.invokeLater(() -> setLookAndFeel(defaultThemeType)); //initializeWeblaf());//
+		setLookAndFeel(defaultThemeType);
 	}
 
 	public void initializeWeblaf() {
 //		if (choice0 == ThemeType.WEBLAF) {
 		try {
 			// use the weblaf skin
-			UIManager.setLookAndFeel(new WebLookAndFeel());
+//			UIManager.setLookAndFeel(new WebLookAndFeel());
 //				WebLookAndFeel.setForceSingleEventsThread ( true );
-//			WebLookAndFeel.install();
-//			UIManagers.initialize();
+			WebLookAndFeel.install();
+			UIManagers.initialize();
 //				changed = true;
 
 //				logger.config(UIManager.getLookAndFeel().getName() + " is used in MainWindow.");
@@ -1025,7 +867,7 @@ extends JComponent {
 	 * 
 	 * @param choice
 	 */
-	public void setLookAndFeel(ThemeType choice0, ThemeType choice1) {
+	public void setLookAndFeel(ThemeType choice1) {
 		boolean changed = false;
 
 		if (choice1 == ThemeType.METAL) {
@@ -1040,7 +882,7 @@ extends JComponent {
 				logger.log(Level.WARNING, Msg.getString("MainWindow.log.lookAndFeelError"), e); //$NON-NLS-1$
 			}
 
-			initializeWeblaf();
+			initializeTheme();
 
 		}
 
@@ -1127,10 +969,10 @@ extends JComponent {
 				// desktop.updateTransportWizardLF();
 			}
 
-			frame.validate();
-			frame.repaint();
+//			frame.validate();
+//			frame.repaint();
 //			SwingUtilities.updateComponentTreeUI(frame);
-			frame.pack();
+//			frame.pack();
 
 		}
 	}
