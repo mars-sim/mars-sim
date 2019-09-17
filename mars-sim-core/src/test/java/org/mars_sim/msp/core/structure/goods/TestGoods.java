@@ -43,10 +43,9 @@ public class TestGoods extends TestCase {
 	}
 	
 	public void testGoodsListContainsHammer() {
-        Good hammerGood = GoodsUtil.getResourceGood(hammer);
-//        if (hammerGood == null)
-//        	System.out.println("hammerGood is null in TestGoods");
-        assertTrue(GoodsUtil.containsGood(hammerGood));
+        Good hammerGood = GoodsUtil.createResourceGood(hammer);
+        // hammer is not a standardized part and is NOT registered on the goodsMap
+        assertFalse(GoodsUtil.containsGood(hammerGood));
 	}
 	
 	public void testGoodsListContainsBag() {

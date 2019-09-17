@@ -318,7 +318,7 @@ public final class TradeUtil {
 						Equipment container = getAvailableContainerForResource(resource,
 								sellingSettlement, tradeList);
 						if (container != null) {
-							Good containerGood = GoodsUtil.createEquipmentGood(container.getClass());
+							Good containerGood = GoodsUtil.getEquipmentGood(container.getClass());
 							massCapacity -= container.getBaseMass();
 							int containerNum = 0;
 							if (tradeList.containsKey(containerGood))
@@ -730,7 +730,7 @@ public final class TradeUtil {
 
 		int containersStored = settlementInv.findNumEmptyContainersOfClass(containerType, false);
 
-		Good containerGood = GoodsUtil.createEquipmentGood(containerType);
+		Good containerGood = GoodsUtil.getEquipmentGood(containerType);
 		int containersTraded = 0;
 		if (tradedGoods.containsKey(containerGood))
 			containersTraded = tradedGoods.get(containerGood);

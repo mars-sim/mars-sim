@@ -79,8 +79,6 @@ public class Farming extends Function implements Serializable {
 	private static final int NUM_INSPECTIONS = 2;
 	private static final int NUM_CLEANING = 2;
 	
-	private static double farmingAreaNeededPerPerson = 0;
-	
 //	 private static ItemResource LED_Item;
 //	 private static ItemResource HPS_Item;
 //	 private int numLEDInUse;
@@ -93,7 +91,7 @@ public class Farming extends Function implements Serializable {
 	private int defaultCropNum;
 	/** The sol cache.  */
 	private int solCache = 1;
-	/** The unique identifier. */
+	/** The id of a crop in this greenhouse. */
 	private int identifer;
 	/** The number of crops to plant. */
 	private int numCrops2Plant;
@@ -207,12 +205,21 @@ public class Farming extends Function implements Serializable {
 	}
 
 	/**
-	 * Gets a new identifier
+	 * Obtains the next identifier and increment the counter
 	 * 
 	 * @return
 	 */
 	private int getNextIdentifier() {
 		return identifer++;
+	}
+	
+	/**
+	 * Sees the most current identifier in use
+	 * 
+	 * @return
+	 */
+	private int getIdentifier() {
+		return identifer;
 	}
 	
 	public void setupInspection() {
@@ -645,7 +652,7 @@ public class Farming extends Function implements Serializable {
 
 		// Demand is farming area (m^2) needed to produce food for settlement
 		// population.
-		double requiredFarmingAreaPerPerson = getFarmingAreaNeededPerPerson();
+		double requiredFarmingAreaPerPerson = CropConfig.getFarmingAreaNeededPerPerson();
 		double demand = requiredFarmingAreaPerPerson * settlement.getNumCitizens();
 
 		// Supply is total farming area (m^2) of all farming buildings at settlement.
@@ -671,32 +678,6 @@ public class Farming extends Function implements Serializable {
 		// TODO: investigating if other food group besides food should be added as well
 
 		return result;
-	}
-
-	/**
-	 * Gets the average area (m^2) of farming surface required to sustain one
-	 * person.
-	 * 
-	 * @return area (m^2) of farming surface.
-	 */
-	public static double getFarmingAreaNeededPerPerson() {
-		if (farmingAreaNeededPerPerson <= 0) {
-			// Determine average amount (kg) of food required per person per orbit.
-			double neededFoodPerSol = personConfig.getFoodConsumptionRate();
-	
-			// Determine average amount (kg) of food produced per farm area (m^2).
-			// CropConfig cropConfig = SimulationConfig.instance().getCropConfiguration();
-			double totalFoodPerSolPerArea = 0D;
-			for (CropType c : CropConfig.getCropTypes())
-				// Crop type average edible biomass (kg) per Sol.
-				totalFoodPerSolPerArea += c.getEdibleBiomass() / 1000D;
-	
-			double producedFoodPerSolPerArea = totalFoodPerSolPerArea / CropConfig.getNumCropTypes();
-	
-			farmingAreaNeededPerPerson = neededFoodPerSol / producedFoodPerSolPerArea;
-		}
-		
-		return farmingAreaNeededPerPerson;
 	}
 
 	/**
@@ -997,7 +978,7 @@ public class Farming extends Function implements Serializable {
 	 */
 	public double getAverageGrowingCyclesPerOrbit() {
 
-		double aveGrowingTime = Crop.getAverageCropGrowingTime();
+		double aveGrowingTime = CropConfig.getAverageCropGrowingTime();
 		int solsInOrbit = MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR;
 		double aveGrowingCyclesPerOrbit = solsInOrbit * 1000D / aveGrowingTime; // e.g. 668 sols * 1000 / 50,000
 																				// millisols

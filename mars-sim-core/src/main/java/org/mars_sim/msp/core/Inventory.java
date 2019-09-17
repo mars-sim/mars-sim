@@ -50,7 +50,7 @@ public class Inventory implements Serializable {
 		private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 
 	/** Comparison to indicate a small but non-zero amount. */
-	private static final double SMALL_AMOUNT_COMPARISON = .0000001D;
+	private static final double SMALL_AMOUNT_COMPARISON = .000_000_1D;
 
 	// Data members
 	/** True if this inventory instance is for maven test tracking only. */
@@ -106,7 +106,7 @@ public class Inventory implements Serializable {
 	/** Resource storage. */
 	private AmountResourceStorage resourceStorage = new AmountResourceStorage();
 
-	private static MarsSurface marsSurface;
+//	private static MarsSurface marsSurface;
 
 	/**
 	 * Constructor
@@ -116,7 +116,6 @@ public class Inventory implements Serializable {
 	public Inventory(Unit owner) {
 		// Set owning unit.
 		this.owner = owner;
-//		marsSurface = Simulation.instance().getMars().getMarsSurface();
 	}
 
 	public int getAmountSupplyRequest(int r) {
@@ -773,7 +772,7 @@ public class Inventory implements Serializable {
 	public void storeAmountResource(AmountResource resource, double amount, boolean useContainedUnits) {
 
 		if (amount < 0D) {
-			throw new IllegalStateException("Cannot store negative amount of resource: " + amount);
+			LogConsolidated.log(logger, Level.SEVERE, 0, sourceName, "Cannot store negative amount of resource: " + amount, null);
 		}
 
 		if (amount > 0D) {
@@ -795,8 +794,9 @@ public class Inventory implements Serializable {
 				// Check if local resource storage can hold resources if not using contained
 				// units.
 				if (!useContainedUnits && (remainingAmount > remainingStorageCapacity)) {
-					throw new IllegalStateException(resource.getName() + " could not be totally stored. Remaining: "
-							+ (remainingAmount - remainingStorageCapacity));
+					LogConsolidated.log(logger, Level.WARNING, 10_000, sourceName, "Case A1 : " + resource.getName() 
+							+ " could not be totally stored. Remaining: "
+							+ (remainingAmount - remainingStorageCapacity), null);
 				}
 
 				// Store resource in local resource storage.
@@ -830,8 +830,8 @@ public class Inventory implements Serializable {
 				}
 
 				if (remainingAmount > SMALL_AMOUNT_COMPARISON) {
-					throw new IllegalStateException(
-							resource.getName() + " could not be totally stored. Remaining: " + remainingAmount);
+					LogConsolidated.log(logger, Level.WARNING, 10_000, sourceName, "Case A2 : " + resource.getName() 
+							+ " could not be totally stored. Remaining: " + remainingAmount, null);
 				}
 
 				// Fire inventory event.
@@ -839,9 +839,9 @@ public class Inventory implements Serializable {
 					owner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);
 				}
 			} else {
-				throw new IllegalStateException("Insufficient capacity to store " + resource.getName() + ", capacity: "
+				LogConsolidated.log(logger, Level.SEVERE, 0, sourceName, "Insufficient capacity to store " + resource.getName() + ", capacity: "
 						+ getAmountResourceRemainingCapacity(resource, useContainedUnits, false) + ", attempted: "
-						+ Math.round(amount*1000.0)/1000.0);
+						+ Math.round(amount*1000.0)/1000.0, null);
 			}
 		}
 	}
@@ -856,7 +856,7 @@ public class Inventory implements Serializable {
 	public void storeAmountResource(int resource, double amount, boolean useContainedUnits) {
 
 		if (amount < 0D) {
-			throw new IllegalStateException("Cannot store negative amount of resource: " + amount);
+			LogConsolidated.log(logger, Level.SEVERE, 0, sourceName, "Cannot store negative amount of resource: " + amount, null);
 		}
 
 		if (amount > 0D) {
@@ -879,9 +879,10 @@ public class Inventory implements Serializable {
 				// Check if local resource storage can hold resources if not using contained
 				// units.
 				if (!useContainedUnits && (remainingAmount > remainingStorageCapacity)) {
-					throw new IllegalStateException(
-							ResourceUtil.findAmountResourceName(resource) + " could not be totally stored. Remaining: "
-									+ (remainingAmount - remainingStorageCapacity));
+					LogConsolidated.log(logger, Level.WARNING, 10_000, sourceName, "Case B1 : " + 
+							ResourceUtil.findAmountResourceName(resource) 
+							+ " could not be totally stored. Remaining: "
+									+ (remainingAmount - remainingStorageCapacity), null);
 				}
 
 				// Store resource in local resource storage.
@@ -915,8 +916,8 @@ public class Inventory implements Serializable {
 				}
 
 				if (remainingAmount > SMALL_AMOUNT_COMPARISON) {
-					throw new IllegalStateException(ResourceUtil.findAmountResourceName(resource)
-							+ " could not be totally stored. Remaining: " + remainingAmount);
+					LogConsolidated.log(logger, Level.WARNING, 10_000, sourceName, "Case B2 : " + ResourceUtil.findAmountResourceName(resource)
+							+ " could not be totally stored. Remaining: " + remainingAmount, null);
 				}
 
 				// Fire inventory event.
@@ -925,10 +926,10 @@ public class Inventory implements Serializable {
 //							ResourceUtil.findAmountResourceName(resource));
 				}
 			} else {
-				throw new IllegalStateException("Insufficient capacity to store "
+				LogConsolidated.log(logger, Level.SEVERE, 0, sourceName, "Insufficient capacity to store "
 						+ ResourceUtil.findAmountResourceName(resource) + ", capacity: "
 						+ getAmountResourceRemainingCapacity(resource, useContainedUnits, false) + ", attempted: "
-						+ Math.round(amount*1000.0)/1000.0);
+						+ Math.round(amount*1000.0)/1000.0, null);
 			}
 		}
 	}
@@ -941,7 +942,7 @@ public class Inventory implements Serializable {
 	 */
 	public void retrieveAmountResource(int resource, double amount) {
 		if (amount < 0D) {
-			throw new IllegalStateException("Cannot retrieve negative amount of resource: " + amount);
+			LogConsolidated.log(Level.SEVERE, 0, sourceName, "Cannot retrieve negative amount of resource: " + amount);
 		}
 
 		if (amount > 0D) {
@@ -989,7 +990,7 @@ public class Inventory implements Serializable {
 				}
 
 				if (remainingAmount > SMALL_AMOUNT_COMPARISON) {
-					LogConsolidated.log(Level.SEVERE, 5000, sourceName,
+					LogConsolidated.log(Level.SEVERE, 10_000, sourceName,
 							ResourceUtil.findAmountResourceName(resource)
 							+ " could not be totally retrieved. Remaining: " + remainingAmount);
 //					throw new IllegalStateException(ResourceUtil.findAmountResourceName(resource)
@@ -1006,7 +1007,7 @@ public class Inventory implements Serializable {
 //							ResourceUtil.findAmountResource(resource));
 				}
 			} else {
-				throw new IllegalStateException("Insufficient stored amount to retrieve "
+				LogConsolidated.log(Level.SEVERE, 10_000, sourceName, "Insufficient stored amount to retrieve "
 						+ ResourceUtil.findAmountResourceName(resource) + ". Storage Amount : "
 						+ getAmountResourceStored(resource, false) + " kg. Attempted Amount : " + amount + " kg");
 			}
@@ -1298,16 +1299,13 @@ public class Inventory implements Serializable {
 	}
 
 	private boolean containsUnitClassLocal(int id) {
-		Class<? extends Unit> unitClass = EquipmentFactory.getEquipmentClass(id);//EquipmentType.int2enum(id).getName());
-//		return containsUnitClassLocal(EquipmentFactory.getEquipmentClass(EquipmentType.convertID2Type(id).getName()));
+		Class<? extends Unit> unitClass = EquipmentFactory.getEquipmentClass(id);
 		if (containedUnits != null && !containedUnits.isEmpty()) {
 			Iterator<Unit> i = containedUnits.iterator();
 			while (i.hasNext()) {
 				Unit unit = i.next();
 				if (unitClass.isInstance(unit)) {
-//					if (EquipmentType.getType(((Equipment)unit).getType()) == EquipmentType.convertID2Type(id)) {
-						return true;
-//					}
+					return true;
 				}
 			}
 		}
@@ -1358,9 +1356,6 @@ public class Inventory implements Serializable {
 	}
 
 	public Unit findUnitOfClass(int id) {
-//		Class<? extends Unit> unitClass = EquipmentFactory.getEquipmentClass(EquipmentType.int2enum(id).getName());
-//		return findUnitOfClass(EquipmentFactory.getEquipmentClass(EquipmentType.convertID2Type(id).getName()));
-		
 		Unit result = null;
 		if (containedUnits != null && !containedUnits.isEmpty()) {
 			Iterator<Unit> i = containedUnits.iterator();
@@ -1434,9 +1429,6 @@ public class Inventory implements Serializable {
 	}
 
 	public int findNumUnitsOfClass(int id) {
-//		Class<? extends Unit> unitClass = EquipmentFactory.getEquipmentClass(id);
-//		return findNumUnitsOfClass(unitClass);
-		
 		int result = 0;
 		if (containedUnits != null && !containedUnits.isEmpty()) {
 			Iterator<Unit> i = containedUnits.iterator();
@@ -1519,9 +1511,7 @@ public class Inventory implements Serializable {
 	}
 	
 	public int findNumEmptyUnitsOfClass(int id, boolean allowDirty) {
-		Class<? extends Unit> unitClass = EquipmentFactory.getEquipmentClass(id);//EquipmentType.convertID2Type(id).getType());
-//		return findNumEmptyUnitsOfClass(unitClass, allowDirty);
-		
+		Class<? extends Unit> unitClass = EquipmentFactory.getEquipmentClass(id);	
 		int result = 0;
 		if (containsUnitClass(id)) {
 			for (Unit unit : containedUnits) {
@@ -1549,7 +1539,6 @@ public class Inventory implements Serializable {
 			if (unit.getMass() <= getRemainingGeneralCapacity(allowDirty)) {
 				result = true;
 			} else {
-//				System.out.println(unit + "'s mass : " + unit.getMass() + "   getRemainingGeneralCapacity(allowDirty) : " + getRemainingGeneralCapacity(allowDirty));
 				result = false;
 			}
 
@@ -1617,7 +1606,7 @@ public class Inventory implements Serializable {
 			}
 		} else {
 			 LogConsolidated.log(Level.SEVERE, 5_000, sourceName + "::storeUnit",
-					 "Unit: " + unit + " could not be stored.");
+					  unit + " could not be stored.");
 			// The statement below is needed for maven test in testInventoryUnitStoredNull() in TestInventory
 			throw new IllegalStateException("Unit: " + unit + " could not be stored in " + owner.getName()); 
 		}
@@ -1721,7 +1710,7 @@ public class Inventory implements Serializable {
 
 		double result = Double.MAX_VALUE;
 
-		if ((owner != null) && !(owner.getContainerUnit() instanceof MarsSurface)) {
+		if ((owner != null) && (owner.getContainerID() != 0)) {
 			Inventory containerInv = null;
 			if (owner.getContainerUnit() != null) {
 				containerInv = owner.getContainerUnit().getInventory();
@@ -1764,15 +1753,15 @@ public class Inventory implements Serializable {
 		}
 	}
 
-	/**
-	 * Checks if the amount resource capacity cache is dirty for a resource.
-	 * 
-	 * @param resource the resource to check.
-	 * @return true if resource is dirty in cache.
-	 */
-	private boolean isAmountResourceCapacityCacheDirty(AmountResource resource) {
-		return isARCapacityCacheDirty(resource.getID());
-	}
+//	/**
+//	 * Checks if the amount resource capacity cache is dirty for a resource.
+//	 * 
+//	 * @param resource the resource to check.
+//	 * @return true if resource is dirty in cache.
+//	 */
+//	private boolean isAmountResourceCapacityCacheDirty(AmountResource resource) {
+//		return isARCapacityCacheDirty(resource.getID());
+//	}
 
 	/**
 	 * Checks if the amount resource capacity cache is dirty for a resource.
@@ -1794,14 +1783,14 @@ public class Inventory implements Serializable {
 
 	}
 
-	/**
-	 * Sets a resource in the amount resource capacity cache to dirty.
-	 * 
-	 * @param resource the dirty resource.
-	 */
-	private void setAmountResourceCapacityCacheDirty(AmountResource resource) {
-		setARCapacityCacheDirty(resource.getID());
-	}
+//	/**
+//	 * Sets a resource in the amount resource capacity cache to dirty.
+//	 * 
+//	 * @param resource the dirty resource.
+//	 */
+//	private void setAmountResourceCapacityCacheDirty(AmountResource resource) {
+//		setARCapacityCacheDirty(resource.getID());
+//	}
 
 	/**
 	 * Sets a resource in the amount resource capacity cache to dirty.
@@ -1857,12 +1846,7 @@ public class Inventory implements Serializable {
 				return;
 			}
 			
-//			Unit container = owner.getContainerUnit();
-			
-			if (owner.getContainerUnit() != null && !(owner.getContainerUnit() instanceof MarsSurface)) { 
-				// Note : still need (container != null) since MarsSurface may not have been initiated
-				owner.getContainerUnit().getInventory().setAmountResourceCapacityCacheAllDirty(true);
-			}
+			setCacheDirty(0);
 		}
 	}
 
@@ -1906,14 +1890,14 @@ public class Inventory implements Serializable {
 		// return amountResourceCapacityCache.get(resource);
 	}
 
-	/**
-	 * Update the amount resource capacity cache for an amount resource.
-	 * 
-	 * @param resource the resource to update.
-	 */
-	private void updateAmountResourceCapacityCache(AmountResource resource) {
-		updateAmountResourceCapacityCache(resource.getID());
-	}
+//	/**
+//	 * Update the amount resource capacity cache for an amount resource.
+//	 * 
+//	 * @param resource the resource to update.
+//	 */
+//	private void updateAmountResourceCapacityCache(AmountResource resource) {
+//		updateAmountResourceCapacityCache(resource.getID());
+//	}
 
 	/**
 	 * Update the amount resource capacity cache for an amount resource.
@@ -2024,15 +2008,15 @@ public class Inventory implements Serializable {
 		}
 	}
 
-	/**
-	 * Checks if the amount resource stored cache is dirty for a resource.
-	 * 
-	 * @param resource the resource to check.
-	 * @return true if resource is dirty in cache.
-	 */
-	private boolean isAmountResourceStoredCacheDirty(AmountResource resource) {
-		return isARStoredCacheDirty(resource.getID());
-	}
+//	/**
+//	 * Checks if the amount resource stored cache is dirty for a resource.
+//	 * 
+//	 * @param resource the resource to check.
+//	 * @return true if resource is dirty in cache.
+//	 */
+//	private boolean isAmountResourceStoredCacheDirty(AmountResource resource) {
+//		return isARStoredCacheDirty(resource.getID());
+//	}
 
 	/**
 	 * Checks if the amount resource stored cache is dirty for a resource.
@@ -2053,14 +2037,14 @@ public class Inventory implements Serializable {
 			return true;
 	}
 
-	/**
-	 * Sets a resource in the amount resource stored cache to dirty.
-	 * 
-	 * @param resource the dirty resource.
-	 */
-	private void setAmountResourceStoredCacheDirty(AmountResource resource) {
-		setARStoredCacheDirty(resource.getID());
-	}
+//	/**
+//	 * Sets a resource in the amount resource stored cache to dirty.
+//	 * 
+//	 * @param resource the dirty resource.
+//	 */
+//	private void setAmountResourceStoredCacheDirty(AmountResource resource) {
+//		setARStoredCacheDirty(resource.getID());
+//	}
 
 	/**
 	 * Sets a resource in the amount resource stored cache to dirty.
@@ -2107,14 +2091,9 @@ public class Inventory implements Serializable {
 				containersStoredCacheDirty.put(id, true);
 			}
 		}
-
+		
 		// Set owner unit's amount resource stored cache as dirty (if any).
-		if (owner != null) {
-			Unit container = owner.getContainerUnit();
-			if (container != null && !(container instanceof MarsSurface)) {
-				container.getInventory().setARStoredCacheAllDirty(true);
-			}
-		}
+		setCacheDirty(1);
 	}
 
 	/**
@@ -2159,14 +2138,14 @@ public class Inventory implements Serializable {
 
 	}
 
-	/**
-	 * Update the amount resource stored cache for an amount resource.
-	 * 
-	 * @param resource the resource to update.
-	 */
-	private void updateAmountResourceStoredCache(AmountResource resource) {
-		updateAmountResourceStoredCache(resource.getID());
-	}
+//	/**
+//	 * Update the amount resource stored cache for an amount resource.
+//	 * 
+//	 * @param resource the resource to update.
+//	 */
+//	private void updateAmountResourceStoredCache(AmountResource resource) {
+//		updateAmountResourceStoredCache(resource.getID());
+//	}
 
 	/**
 	 * Update the amount resource stored cache for an amount resource.
@@ -2249,12 +2228,7 @@ public class Inventory implements Serializable {
 		allStoredAmountResourcesCacheDirty = true;
 
 		// Mark owner unit's all stored amount resources stored as dirty, if any.
-		if (owner != null) {
-			Unit container = owner.getContainerUnit();
-			if (container != null && !(container instanceof MarsSurface)) {
-				container.getInventory().setAllStoredARCacheDirty();
-			}
-		}
+		setCacheDirty(2);
 	}
 
 	/**
@@ -2333,12 +2307,7 @@ public class Inventory implements Serializable {
 		setTotalInventoryMassCacheDirty();
 
 		// Mark owner unit's total resources stored as dirty, if any.
-		if (owner != null) {
-			Unit container = owner.getContainerUnit();
-			if (container != null && !(container instanceof MarsSurface)) {
-				container.getInventory().setTotalAmountResourcesStoredCacheDirty();
-			}
-		}
+		setCacheDirty(3);
 	}
 
 	/**
@@ -2472,12 +2441,7 @@ public class Inventory implements Serializable {
 		totalInventoryMassCacheDirty = true;
 
 		// Set owner's unit total mass to dirty, if any.
-		if (owner != null) {
-			Unit container = owner.getContainerUnit();
-			if (container != null && !(container instanceof MarsSurface)) {
-				container.getInventory().setUnitTotalMassCacheDirty();
-			}
-		}
+		setCacheDirty(4);
 	}
 
 	/**
@@ -2545,14 +2509,14 @@ public class Inventory implements Serializable {
 			resourceStorage.restoreARs(ars);
 	}
 
-	/**
-	 * Remaps the instances
-	 * 
-	 * @param ms {@link MarsSurface}
-	 */
-	public static void initializeInstances(MarsSurface ms) {
-		marsSurface = ms;
-	}
+//	/**
+//	 * Remaps the instances
+//	 * 
+//	 * @param ms {@link MarsSurface}
+//	 */
+//	public static void initializeInstances(MarsSurface ms) {
+//		marsSurface = ms;
+//	}
 
 	/**
 	 * Gets the testing tag (for maven test only)
@@ -2572,6 +2536,32 @@ public class Inventory implements Serializable {
 		testingTag = value;
 	}
 
+	public void setCacheDirty(int type) {
+		// Set owner unit's amount resource stored cache as dirty (if any).	
+		if (owner != null && owner.getContainerID() != 0) {
+			Unit container = owner.getContainerUnit();
+			if (container != null) {// && !(container instanceof MarsSurface)) {
+		
+				if (type == 0)
+					container.getInventory().setAmountResourceCapacityCacheAllDirty(true);
+				else if (type == 1)
+					container.getInventory().setARStoredCacheAllDirty(true);
+				else if (type == 2)
+					container.getInventory().setAllStoredARCacheDirty();
+				else if (type == 3)
+					container.getInventory().setTotalAmountResourcesStoredCacheDirty();
+				else if (type == 4)
+					container.getInventory().setUnitTotalMassCacheDirty();
+			}
+		}
+		
+		
+//		Unit container = owner.getContainerUnit();
+//		if (owner.getContainerID() != 0 && owner.getContainerUnit() != null) { 
+//		// Note : still need (container != null) since MarsSurface may not have been initiated
+//			owner.getContainerUnit().getInventory().setAmountResourceCapacityCacheAllDirty(true);
+//		}
+	}
 	
 	/**
 	 * Prepare object for garbage collection.

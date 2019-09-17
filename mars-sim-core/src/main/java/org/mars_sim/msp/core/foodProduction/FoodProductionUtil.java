@@ -200,19 +200,15 @@ public final class FoodProductionUtil {
 					amount = remainingCapacity;
 				}
 			}
-//			Good good = GoodsUtil.getResourceGood(resource);
 			result = manager.getGoodValuePerItem(id) * amount;
 		} else if (item.getType().equals(ItemType.PART)) {
-			ItemResource resource = ItemResourceUtil.findItemResource(item.getName());
-//            int id = ItemResourceUtil.findIDbyItemResourceName(item.getName());
-			Good good = GoodsUtil.createResourceGood(resource);
+			Good good = GoodsUtil.getResourceGood(ItemResourceUtil.findItemResource(item.getName()));
 			result = manager.getGoodValuePerItem(good) * item.getAmount();
 		} else if (item.getType().equals(ItemType.EQUIPMENT)) {
-			Class<? extends Equipment> equipmentClass = EquipmentFactory.getEquipmentClass(item.getName());
-			Good good = GoodsUtil.createEquipmentGood(equipmentClass);
+			Good good = GoodsUtil.getEquipmentGood(EquipmentFactory.getEquipmentClass(item.getName()));
 			result = manager.getGoodValuePerItem(good) * item.getAmount();
 		} else if (item.getType().equals(ItemType.VEHICLE)) {
-			Good good = GoodsUtil.createVehicleGood(item.getName());
+			Good good = GoodsUtil.getVehicleGood(item.getName());
 			result = manager.getGoodValuePerItem(good) * item.getAmount();
 		} else
 			throw new IllegalStateException("Item type: " + item.getType() + " not valid.");
@@ -355,7 +351,7 @@ public final class FoodProductionUtil {
 		Iterator<Building> i = manager.getBuildings(FunctionType.FOOD_PRODUCTION).iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
-			FoodProduction foodProductionFunction = (FoodProduction) building.getFunction(FunctionType.FOOD_PRODUCTION);
+			FoodProduction foodProductionFunction = building.getFoodProduction();
 			if (foodProductionFunction.getTechLevel() > highestTechLevel)
 				highestTechLevel = foodProductionFunction.getTechLevel();
 		}
@@ -375,14 +371,14 @@ public final class FoodProductionUtil {
 		if (ItemType.AMOUNT_RESOURCE.equals(item.getType())) {
 			AmountResource resource = ResourceUtil.findAmountResource(item.getName());
 //            int id = ResourceUtil.findIDbyAmountResourceName(item.getName());
-			result = GoodsUtil.createResourceGood(resource);
+			result = GoodsUtil.getResourceGood(resource);
 		} else if (ItemType.PART.equals(item.getType())) {
 			Part part = (Part) ItemResourceUtil.findItemResource(item.getName());
 //            int id = ItemResourceUtil.findIDbyItemResourceName(item.getName());
-			result = GoodsUtil.createResourceGood(part);
+			result = GoodsUtil.getResourceGood(part);
 		} else if (ItemType.EQUIPMENT.equals(item.getType())) {
 			Class<? extends Equipment> equipmentClass = EquipmentFactory.getEquipmentClass(item.getName());
-			result = GoodsUtil.createEquipmentGood(equipmentClass);
+			result = GoodsUtil.getEquipmentGood(equipmentClass);
 		}
 		// else if (Type.VEHICLE.equals(item.getType())) {
 		// result = GoodsUtil.getVehicleGood(item.getName());

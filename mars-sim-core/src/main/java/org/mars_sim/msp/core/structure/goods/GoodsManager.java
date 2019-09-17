@@ -46,12 +46,6 @@ import org.mars_sim.msp.core.manufacture.ManufactureProcessItem;
 import org.mars_sim.msp.core.manufacture.ManufactureUtil;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
-import org.mars_sim.msp.core.person.ai.job.Architect;
-import org.mars_sim.msp.core.person.ai.job.Areologist;
-import org.mars_sim.msp.core.person.ai.job.Biologist;
-import org.mars_sim.msp.core.person.ai.job.Job;
-import org.mars_sim.msp.core.person.ai.job.Pilot;
-import org.mars_sim.msp.core.person.ai.job.Trader;
 import org.mars_sim.msp.core.person.ai.mission.CollectIce;
 import org.mars_sim.msp.core.person.ai.mission.CollectRegolith;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
@@ -89,6 +83,7 @@ import org.mars_sim.msp.core.structure.construction.ConstructionValues;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleConfig;
+import org.mars_sim.msp.core.vehicle.VehicleType;
 import org.mars_sim.msp.core.vehicle.VehicleConfig.VehicleDescription;
 
 /**
@@ -134,11 +129,15 @@ public class GoodsManager implements Serializable {
 	// Value multiplier factors for certain goods.
 	private static double eVASuitMod = EVA_SUIT_FACTOR;
 
-	private static final double EVA_SUIT_VALUE = 500D;
+	private static final double EVA_SUIT_VALUE = 20D;
 	private static final double MINERAL_VALUE = 10D;
-	private static final double ROBOT_FACTOR = 1000D;
-	private static final double VEHICLE_FACTOR = 100_000D;
-	private static final double LUV_FACTOR = .1D;
+	private static final double ROBOT_FACTOR = 500D;
+	private static final double TRANSPORT_VEHICLE_FACTOR = 1_000D;
+	private static final double CARGO_VEHICLE_FACTOR = 800D;
+	private static final double EXPLORER_VEHICLE_FACTOR = 600D;
+	private static final double LUV_VEHICLE_FACTOR = 200D;
+	
+	private static final double LUV_FACTOR = .8D;
 	private static final double LIFE_SUPPORT_FACTOR = 1D;
 	private static final double WATER_FACTOR = 3D;
 	private static final double FUEL_FACTOR = 5D;
@@ -378,13 +377,7 @@ public class GoodsManager implements Serializable {
 		Iterator<Good> i = goodsValues.keySet().iterator();
 		while (i.hasNext())
 			updateGoodValue(i.next(), true);
-//		
-//		 while (i.hasNext()) {
-//			Good good = i.next(); 
-//			logger.info("Good : " + good.toString());
-//			updateGoodValue(good, true); 
-//		}
-//		 
+ 
 		settlement.fireUnitUpdate(UnitEventType.GOODS_VALUE_EVENT);
 
 		initialized = true;
@@ -1772,7 +1765,7 @@ public class GoodsManager implements Serializable {
 
 		// Get the amount of the resource that will be produced by ongoing manufacturing
 		// processes.
-		Good amountResourceGood = GoodsUtil.createResourceGood(resource);
+		Good amountResourceGood = GoodsUtil.getResourceGood(resource);
 		amount += getManufacturingProcessOutput(amountResourceGood);
 
 		// Get the amount of the resource that will be produced by ongoing food
@@ -2431,7 +2424,7 @@ public class GoodsManager implements Serializable {
 
 		// Get the number of resources that will be produced by ongoing manufacturing
 		// processes.
-		Good amountResourceGood = GoodsUtil.createResourceGood(resource);
+		Good amountResourceGood = GoodsUtil.getResourceGood(resource);
 		number += getManufacturingProcessOutput(amountResourceGood);
 
 		number += getFoodProductionOutput(amountResourceGood);
@@ -2741,9 +2734,15 @@ public class GoodsManager implements Serializable {
 					value = emergencySupplyMissionValue;
 				}
 			}
-
-			// Multiply by vehicle factor.
-			value *= transportation_factor * VEHICLE_FACTOR;
+	
+			if (vehicleType.equalsIgnoreCase(VehicleType.CARGO_ROVER.getName()))
+				value *= transportation_factor * CARGO_VEHICLE_FACTOR;
+			else if (vehicleType.equalsIgnoreCase(VehicleType.TRANSPORT_ROVER.getName()))
+				value *= transportation_factor * TRANSPORT_VEHICLE_FACTOR;
+			else if (vehicleType.equalsIgnoreCase(VehicleType.EXPLORER_ROVER.getName()))
+				value *= transportation_factor * EXPLORER_VEHICLE_FACTOR;
+			else if (vehicleType.equalsIgnoreCase(VehicleType.LUV.getName()))
+				value *= transportation_factor * LUV_VEHICLE_FACTOR;
 
 			double tradeValue = determineTradeVehicleValue(vehicleGood, useCache);
 			if (tradeValue > value) {
@@ -3045,7 +3044,7 @@ public class GoodsManager implements Serializable {
 
 		// Get the number of vehicles that will be produced by ongoing manufacturing
 		// processes.
-		Good vehicleGood = GoodsUtil.createVehicleGood(vehicleType);
+		Good vehicleGood = GoodsUtil.getVehicleGood(vehicleType);
 		number += getManufacturingProcessOutput(vehicleGood);
 
 		return number;
@@ -3218,6 +3217,6 @@ public class GoodsManager implements Serializable {
 		}
 
 		// Destroy goods list in GoodsUtil.
-		GoodsUtil.destroyGoodsList();
+		GoodsUtil.destroyGoods();
 	}
 }

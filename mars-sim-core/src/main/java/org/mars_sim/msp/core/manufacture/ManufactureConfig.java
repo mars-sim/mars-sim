@@ -196,7 +196,7 @@ public class ManufactureConfig implements Serializable {
 			equipmentItem.setType(ItemType.EQUIPMENT);
 			String equipmentName = equipmentElement.getAttributeValue(NAME);
 
-			Set<String> names = EquipmentType.getEquipmentTypeString();// EquipmentFactory.getEquipmentNames();
+			Set<String> names = EquipmentType.getNameSet();// EquipmentFactory.getEquipmentNames();
 			boolean result = false;
 			for (String s : names) {
 				if (s.equalsIgnoreCase(equipmentName)) {

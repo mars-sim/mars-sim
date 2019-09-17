@@ -16,6 +16,8 @@ import java.util.Map;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
@@ -56,6 +58,11 @@ public class CropConfig implements Serializable {
 	private static int numCropTypes;
 	/** The conversion rate. */
 	private static double conversionRate = 0;
+	/** The average crop growing time. */
+	private static double averageCropGrowingTime = -1;
+	/** The average farming area needed per person. */
+	private static double farmingAreaNeededPerPerson = 0;
+	
 	/** The consumption rates for co2, o2, water. **/
 	private static double[] consumptionRates = new double[] { 0, 0, 0 };
 
@@ -535,6 +542,48 @@ public class CropConfig implements Serializable {
 	
 	public static CropCategoryType getCropCategoryType(int id) {
 		return getCropTypeByID(id).getCropCategoryType();
+	}
+	
+	/**
+	 * Gets the average growing time for all crops.
+	 * 
+	 * @return average growing time (millisols)
+	 */
+	public static double getAverageCropGrowingTime() {
+		if (averageCropGrowingTime == -1) {
+			double totalGrowingTime = 0D;
+			for (CropType ct : CropConfig.getCropTypes()) {
+				totalGrowingTime += ct.getGrowingTime(); 
+			}
+			averageCropGrowingTime = totalGrowingTime / CropConfig.getNumCropTypes();
+		}
+		return averageCropGrowingTime;
+	}
+	
+	/**
+	 * Gets the average area (m^2) of farming surface required to sustain one
+	 * person.
+	 * 
+	 * @return area (m^2) of farming surface.
+	 */
+	public static double getFarmingAreaNeededPerPerson() {
+		if (farmingAreaNeededPerPerson <= 0) {
+			// Determine average amount (kg) of food required per person per orbit.
+			double neededFoodPerSol = SimulationConfig.instance().getPersonConfig().getFoodConsumptionRate();
+	
+			// Determine average amount (kg) of food produced per farm area (m^2).
+			// CropConfig cropConfig = SimulationConfig.instance().getCropConfiguration();
+			double totalFoodPerSolPerArea = 0D;
+			for (CropType c : getCropTypes())
+				// Crop type average edible biomass (kg) per Sol.
+				totalFoodPerSolPerArea += c.getEdibleBiomass() / 1000D;
+	
+			double producedFoodPerSolPerArea = totalFoodPerSolPerArea / getNumCropTypes();
+	
+			farmingAreaNeededPerPerson = neededFoodPerSol / producedFoodPerSolPerArea;
+		}
+		
+		return farmingAreaNeededPerPerson;
 	}
 	
 	/**

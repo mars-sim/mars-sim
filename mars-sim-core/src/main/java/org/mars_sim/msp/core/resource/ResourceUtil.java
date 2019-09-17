@@ -27,11 +27,13 @@ public class ResourceUtil implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	public static final int FIRST_AMOUNT_RESOURCE_ID = 200;
+	
 	public static final int FIRST_ITEM_RESOURCE_ID = 1000;
 
-	public static final int FIRST_EQUIPMENT_RESOURCE_ID = 1500;
+	public static final int FIRST_VEHICLE_RESOURCE_ID = 2000; 
 
-	public static final int FIRST_VEHICLE_RESOURCE_ID = 2000;
+	public static final int FIRST_EQUIPMENT_RESOURCE_ID = 4000;
 	
 	public static final String ARGON = "argon";
 	public static final String NITROGEN = "nitrogen";

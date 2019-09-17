@@ -358,13 +358,13 @@ extends JComponent {
 	 */
 	public void setupSettlementWindowTimer() {
 		delayTimer1 = new Timer();
-		delayTimer1.schedule(new DelayTimer2(), 2000);
+		delayTimer1.schedule(new CacheLoadingSettlementTimerTask(), 2000);
 	}
 
 	/**
 	 * Defines the delay timer class
 	 */
-	class DelayTimer2 extends TimerTask {
+	class CacheLoadingSettlementTimerTask extends TimerTask {
 		public void run() {
 			// Cache each settlement unit window
 			desktop.cacheSettlementUnitWindow();

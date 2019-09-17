@@ -36,7 +36,7 @@ public class AmountResourceConfig implements Serializable {
 	private static final String EDIBLE = "edible";
 	private static final String TYPE = "type";
 	private static final String CROP = "crop";
-	private static int nextID = 0;
+	private static int nextID = ResourceUtil.FIRST_AMOUNT_RESOURCE_ID;
 
 	// Data members.
 	private static Set<AmountResource> resourceSet;

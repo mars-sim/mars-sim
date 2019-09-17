@@ -40,9 +40,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.json.stream.JsonGenerationException;
-
-import org.github.jamm.MemoryMeter;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.interplanetary.transport.TransportManager;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
@@ -105,7 +102,6 @@ import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.time.SystemDateTime;
 import org.mars_sim.msp.core.time.UpTimer;
 import org.mars_sim.msp.core.tool.CheckSerializedSize;
-import org.mars_sim.msp.core.tool.ObjectSizeCalculator;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.tukaani.xz.FilterOptions;
@@ -150,7 +146,7 @@ public class Simulation implements ClockListener, Serializable {
 	/** Version string. */
 	public final static String VERSION = Msg.getString("Simulation.version"); //$NON-NLS-1$
 	/** Build string. */
-	public final static String BUILD = Msg.getString("Simulation.build"); //$NON-NLS-1$
+	public final static String BUILD = Msg.getString("Simulation.build").trim(); //$NON-NLS-1$
 	/** Java version string. */
 	private final static String JAVA_TAG = System.getProperty("java.version");
 	// VersionInfo.getRuntimeVersion() e.g. "8.0.121-b13 (abcdefg)";																			
@@ -419,7 +415,7 @@ public class Simulation implements ClockListener, Serializable {
 		LogConsolidated.initializeInstances(marsClock, earthClock);
 		
 		// Set instance for Inventory
-		Inventory.initializeInstances(mars.getMarsSurface());
+//		Inventory.initializeInstances(mars.getMarsSurface());
 		
 		Unit.setUnitManager(unitManager);
 		Unit.initializeInstances(masterClock, marsClock, earthClock, sim, mars, 
@@ -489,7 +485,7 @@ public class Simulation implements ClockListener, Serializable {
 		GameManager.initializeInstances(unitManager);
 		
 		// Set instance for Inventory
-		Inventory.initializeInstances(mars.getMarsSurface());
+//		Inventory.initializeInstances(mars.getMarsSurface());
 				
 		// Set instances for classes that extend Unit and Task and Mission
 		Mission.initializeInstances(this, marsClock, eventManager, unitManager, scientificStudyManager, 
@@ -942,7 +938,7 @@ public class Simulation implements ClockListener, Serializable {
 		// Re-initialize Unit related class
 //		EVASuit.initializeInstances(weather);				
 //		GroundVehicle.initializeInstances(surface);				//  terrain
-		Inventory.initializeInstances(marsSurface);
+//		Inventory.initializeInstances(marsSurface);
 		Robot.initializeInstances();
 		Rover.initializeInstances(pc);					
 	

@@ -18,11 +18,21 @@ public class MarsSurface extends Unit implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 123L;
-
+	
+	/** Unique identifier. */
+	private int identifier = Unit.MARS_SURFACE_ID;
+	
 	public MarsSurface() {
 		super("Mars Surface", null);
 		getInventory().addGeneralCapacity(Double.MAX_VALUE);
-//		System.out.println("MarsSurface : " + this.getIdentifier());
-		// Note: this unit's unitIdentifer is 0
+	}
+	
+	/**
+	 * Get the unique identifier for mars surface
+	 * 
+	 * @return Identifier
+	 */
+	public int getIdentifier() {
+		return identifier;
 	}
 }

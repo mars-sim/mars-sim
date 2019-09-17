@@ -37,18 +37,42 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
-	// Data members.
-	private boolean isSalvaged;
-
-	private SalvageInfo salvageInfo;
-
-	private String type;
+	/** The unit count for this person. */
+	private static int uniqueCount = Unit.FIRST_EQUIPMENT_ID;
 	
+	// Data members.
+	/** is this equipment being salvage. */
+	private boolean isSalvaged;
+	/** Unique identifier for this equipment. */
+	private int identifier;
+	/** The identifier for the last owner of this equipment. */
+	private int lastOwner = -1;
+	/** The equipment type. */
+	private String type;
+	/** The SalvageInfo instatnce. */	
+	private SalvageInfo salvageInfo;
+	/** The equipment type enum. */
 	private EquipmentType equipmentType;
 	
-	private int lastOwner = -1;
-
+	/**
+	 * Must be synchronised to prevent duplicate ids being assigned via different
+	 * threads.
+	 * 
+	 * @return
+	 */
+	private static synchronized int getNextIdentifier() {
+		return uniqueCount++;
+	}
+	
+	/**
+	 * Get the unique identifier for this person
+	 * 
+	 * @return Identifier
+	 */
+	public int getIdentifier() {
+		return identifier;
+	}
+	
 	/**
 	 * Constructs an Equipment object
 	 * 
@@ -58,7 +82,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	protected Equipment(String name, String type, Coordinates location) {
 		super(type, location);
 		this.type = type;
-		this.equipmentType = EquipmentType.getType(type);
+		this.equipmentType = EquipmentType.convertName2Enum(type);
 		// Initialize data members.
 		isSalvaged = false;
 		salvageInfo = null;
@@ -66,6 +90,8 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 		if (mars != null) {// For passing maven test
 			// Initially set container unit to the mars surface
 			setContainerUnit(marsSurface);
+			
+			this.identifier = getNextIdentifier();
 			// Add this equipment to the equipment lookup map		
 			unitManager.addEquipmentID(this);
 		}
@@ -213,6 +239,9 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	 */
 	public Settlement getSettlement() {
 
+		if (getContainerID() == 0)
+			return null;
+		
 		Unit c = getContainerUnit();
 
 		if (c instanceof Settlement) {

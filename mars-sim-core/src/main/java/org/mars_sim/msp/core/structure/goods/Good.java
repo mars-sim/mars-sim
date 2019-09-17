@@ -20,9 +20,6 @@ public class Good implements Serializable, Comparable<Good> {
 	private static final long serialVersionUID = 1L;
 	// Data members
 	private String name;
-	//
-//	private Class<?> classType;
-//	private Object object;
 	private int id;
 	private GoodType category;
 
@@ -39,11 +36,6 @@ public class Good implements Serializable, Comparable<Good> {
 		else
 			throw new IllegalArgumentException("name cannot be null.");
 		this.id = id;
-//		if (object != null) {
-//			this.object = object;
-//			this.classType = object.getClass();
-//		} else
-//			throw new IllegalArgumentException("object cannot be null.");
 
 		if (isValidCategory(category))
 			this.category = category;
@@ -51,29 +43,6 @@ public class Good implements Serializable, Comparable<Good> {
 			throw new IllegalArgumentException("category: " + category + " not valid.");
 	}
 
-//	/**
-//	 * Constructor with class.
-//	 * 
-//	 * @param name      the name of the good.
-//	 * @param classType the good's class.
-//	 * @param category  {@link GoodType} the good's category.
-//	 */
-//	Good (String name, Class<?> classType, GoodType category) {
-//		if (name != null)
-//			this.name = name.trim().toLowerCase();
-//		else
-//			throw new IllegalArgumentException("name cannot be null.");
-//
-//		if (classType != null)
-//			this.classType = classType;
-//		else
-//			throw new IllegalArgumentException("classType cannot be null.");
-//
-//		if (isValidCategory(category))
-//			this.category = category;
-//		else
-//			throw new IllegalArgumentException("category: " + category + " not valid.");
-//	}
 
 	/**
 	 * Checks if a category string is valid.
@@ -114,15 +83,6 @@ public class Good implements Serializable, Comparable<Good> {
 		return EquipmentFactory.getEquipmentClass(id);
 	}
 
-//	/**
-//	 * Gets the good's object if any.
-//	 * 
-//	 * @return object or null if none.
-//	 */
-//	public Object getObject() {
-//		return object;
-//	}
-
 	public int getID() {
 		return id;
 	}
@@ -145,40 +105,14 @@ public class Good implements Serializable, Comparable<Good> {
 		return name;
 	}
 
-//	/**
-//	 * Checks if an object is equal to this object.
-//	 * 
-//	 * @param object the object to compare.
-//	 * @return true if equal
-//	 */
-//	public boolean equals(Object object) {
-//		boolean result = true;
-//		if (object instanceof Good) {
-//			Good good = (Good) object;
-//			if (!name.equals(good.name))
-//				result = false;
-//			if (!classType.equals(good.classType))
-//				result = false;
-//			if (this.object != null) {
-//				if (!this.object.equals(good.object))
-//					result = false;
-//			}
-//			if (!category.equals(good.category))
-//				result = false;
-//		} else
-//			result = false;
-//
-//		return result;
-//	}
-	
 	/**
 	 * Gets the hash code value.
+	 * 
+	 * @return hash code
 	 */
 	public int hashCode() {
-		int hashCode = name.hashCode();// * getClass().hashCode();
-//		hashCode *= id;
-//		if (object != null)
-//			hashCode *= object.hashCode();
+		int hashCode = name.hashCode();
+		hashCode *= id;
 		hashCode *= category.hashCode();
 		return hashCode;
 	}
@@ -199,7 +133,8 @@ public class Good implements Serializable, Comparable<Good> {
 		if (obj == null) return false;
 		if (this.getClass() != obj.getClass()) return false;
 		Good g = (Good) obj;
-		return this.getName().equals(g.getName());
+		return this.getName().equals(g.getName())
+				&& this.getID() == g.getID();
 	}
 	
 }

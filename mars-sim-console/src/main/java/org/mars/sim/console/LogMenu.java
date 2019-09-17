@@ -46,7 +46,6 @@ import org.mars_sim.msp.core.person.ai.task.WalkSettlementInterior;
 import org.mars_sim.msp.core.person.ai.task.WalkingSteps;
 import org.mars_sim.msp.core.structure.Airlock;
 import org.mars_sim.msp.core.structure.building.function.BuildingAirlock;
-import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.vehicle.VehicleAirlock;
 
 /**
@@ -74,6 +73,8 @@ public class LogMenu implements BiConsumer<TextIO, RunnerData> {
 	static {
 		keywords = Arrays.asList(
 				"help",
+				"/h",
+				"h",
 				"quit",
 				"/quit",
 				"q", 
@@ -141,8 +142,9 @@ public class LogMenu implements BiConsumer<TextIO, RunnerData> {
         SwingHandler handler = new SwingHandler(textIO, "console", choice);
 
         terminal.printf(
-        		"Type 'help' for instructions. "
-        		+ "Or 'q', '/q' or 'quit' to go back to console menu." 
+        		"Type 'h', '/h', or 'help' for instructions. "
+        		+ System.lineSeparator() 
+        		+ "Type 'q', '/q' or 'quit' to go back to console menu." 
         		+ System.lineSeparator() + System.lineSeparator() );
         
         terminal.printf(processLogChange("log level").toString() + System.lineSeparator());
@@ -160,7 +162,10 @@ public class LogMenu implements BiConsumer<TextIO, RunnerData> {
 		    
 		    String result = "";
 		    
-			if (s.toLowerCase().contains("log") || s.toLowerCase().contains("help")) {
+			if (s.toLowerCase().contains("log") 
+					|| s.toLowerCase().contains("help")
+					|| s.toLowerCase().contains("/h")
+					|| s.toLowerCase().contains("h")) {
 				result = processLogChange(s).toString();
 				
 				if (result.trim().toLowerCase().equals(""))
@@ -267,7 +272,8 @@ public class LogMenu implements BiConsumer<TextIO, RunnerData> {
 			responseText.append(System.lineSeparator());
 		}
 
-		else if (text.equalsIgnoreCase("help") || text.equalsIgnoreCase("log help")) {
+		else if (text.equalsIgnoreCase("help") || text.equalsIgnoreCase("log help")
+				|| text.equalsIgnoreCase("/h") || text.equalsIgnoreCase("h")) {
 
 			responseText.append("(A). There are 9 logging levels as follows : ");
 			responseText.append(System.lineSeparator());
@@ -295,35 +301,33 @@ public class LogMenu implements BiConsumer<TextIO, RunnerData> {
 			responseText.append(System.lineSeparator());
 			
 			responseText.append(System.lineSeparator());
-			responseText.append("(B). Other log commands :");
+			responseText.append("(B). class-related log commands :");
 			responseText.append(System.lineSeparator());
-			responseText.append(" a. 'log level'              : see current log level");
 			responseText.append(System.lineSeparator());
-			responseText.append(" b. 'log help'               : get instructions and log related keywords");
+			responseText.append(" f. log <Class Name> <lvl> : set the logger of a class to a particular log level");
 			responseText.append(System.lineSeparator());
-			responseText.append(" c. 'log timestamp'          : change the logging timestamp for the simulation"); 
+			responseText.append(" g. log all airlock <lvl>    : set ALL airlock-related class to <lvl>");
 			responseText.append(System.lineSeparator());
-			responseText.append(" d. 'log rate limit'         : change the rate limit on the log statements"); 
+			responseText.append(" h. log all walk <lvl>       : set ALL walk-related class to <lvl>");
 			responseText.append(System.lineSeparator());
-			responseText.append(" e. 'log reset'              : reset the log level back to default");  
+			responseText.append(" i. log all eva <lvl>        : set ALL airlock-related class to <lvl>");
 			responseText.append(System.lineSeparator());
-			responseText.append(" f. 'log <Class Name> <lvl>' : set the logger of a class to a particular log level");
-			responseText.append(System.lineSeparator());
-			responseText.append(" g. 'log all airlock <lvl>'    : set ALL airlock-related class to <lvl>");
-			responseText.append(System.lineSeparator());
-			responseText.append(" h. 'log all walk <lvl>'       : set ALL walk-related class to <lvl>");
-			responseText.append(System.lineSeparator());
-			responseText.append(" i. 'log all eva <lvl>'        : set ALL airlock-related class to <lvl>");
-			responseText.append(System.lineSeparator());
-			responseText.append(" j. 'log all mission <lvl>'    : set ALL mission-related class to <lvl>");
+			responseText.append(" j. log all mission <lvl>    : set ALL mission-related class to <lvl>");
 			responseText.append(System.lineSeparator());
 			
 			responseText.append(System.lineSeparator());
-			responseText.append("(C). Other commands :");
+			responseText.append("(C). Other log commands ");
+			responseText.append(" a. log level                : see current log level");
 			responseText.append(System.lineSeparator());
-			responseText.append(" 1. 'help'              : get instructions and log related keywords");
+			responseText.append(" b. log timestamp            : change the logging timestamp for the simulation"); 
 			responseText.append(System.lineSeparator());
-			responseText.append(" 2. 'q', '/q' or 'quit' : Go back to the console menu.");
+			responseText.append(" c. log rate limit           : change the rate limit on the log statements"); 
+			responseText.append(System.lineSeparator());
+			responseText.append(" d. log reset                : reset the log level back to default");  
+			responseText.append(System.lineSeparator());
+			responseText.append(" e. log help, help, /h, or h : get instructions and log related keywords");
+			responseText.append(System.lineSeparator());
+			responseText.append(" f. quit, /q, or q           : Go back to the console menu.");
 	        responseText.append(System.lineSeparator());
 
 			return responseText;

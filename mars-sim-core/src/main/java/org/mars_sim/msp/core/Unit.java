@@ -42,7 +42,7 @@ import org.mars_sim.msp.core.vehicle.VehicleConfig;
 //				@Type(value = Structure.class, name = "structure"),
 //				@Type(value = Vehicle.class, name = "vehicle"),
 //				@Type(value = Equipment.class, name = "equipment"),})
-public abstract class Unit implements Serializable, Comparable<Unit> {
+public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Unit> {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -50,16 +50,23 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(Unit.class.getName());
 
-	// private static String sourceName =
-	// logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
-	// logger.getName().length());
+	// private static String sourceName =  logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
 	
-	/** Static unit identifier. */
-	private static int unitIdentifer = 0;
+	public static final int MARS_SURFACE_ID = 0;
+	
+	public static final int FIRST_SETTLEMENT_ID = 1;
+	
+	public static final int FIRST_BUILDING_ID = 20;
 
+	public static final int FIRST_VEHICLE_ID = 2050;
+
+	public static final int FIRST_PERSON_ID = 2500;
+
+	public static final int FIRST_ROBOT_ID = 3550;
+
+	public static final int FIRST_EQUIPMENT_ID = 4050;
+	
 	// Data members
-	// Unique identifier
-	private int identifier;
 	// The unit's location code
 	private int locationCode = 110_000;
 	
@@ -112,10 +119,30 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 	 * 
 	 * @return
 	 */
-	private static synchronized int getNextIdentifier() {
-		return unitIdentifer++;
-	}
+//	private static synchronized int getNextIdentifier() {
+//		return unitIdentifer++;
+//	}
 
+	public int getIdentifier() {
+
+		if (this instanceof MarsSurface)
+			return MARS_SURFACE_ID;
+//		else
+//			return this.getClass().asSubclass(this.getClass()).getIdentifier();
+		else if (this instanceof Settlement)
+			return ((Settlement)this).getIdentifier();
+		else if (this instanceof Equipment)
+			return ((Equipment)this).getIdentifier();
+		else if (this instanceof Person)
+			return ((Person)this).getIdentifier();
+		else if (this instanceof Robot)
+			return ((Robot)this).getIdentifier();
+		else if (this instanceof Vehicle)
+			return ((Vehicle)this).getIdentifier();
+		
+		return -1;
+	}
+	
 	/**
 	 * Constructor.
 	 * 
@@ -127,7 +154,7 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 		
 		listeners = Collections.synchronizedList(new ArrayList<UnitListener>()); // Unit listeners.
 
-		this.identifier = getNextIdentifier();
+//		this.identifier = getNextIdentifier();
 		
 		// Creates a new location tag instance for each unit
 		tag = new LocationTag(this);
@@ -160,14 +187,14 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 			currentStateType = LocationStateType.OUTSIDE_ON_MARS;
 	}
 
-	/**
-	 * Get the unique identifier for this unit
-	 * 
-	 * @return Identifier
-	 */
-	public int getIdentifier() {
-		return identifier;
-	}
+//	/**
+//	 * Get the unique identifier for this unit
+//	 * 
+//	 * @return Identifier
+//	 */
+//	public int getIdentifier() {
+//		return identifier;
+//	}
 
 	/**
 	 * Change the unit's name
@@ -344,27 +371,65 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 		}
 
 		return topUnit;
-	}
+				
+		// Scenarios: 
+		// 1. If a person is having an EVA Suit, then his container is EVASuit
+		//    and his top container is EVA Suit
+		// 2. If a person is having an EVA Suit inside a vehicle, then his container is EVASuit
+		//    and his top container is that vehicle.
 
-	public void setTopContainerUnit(Unit u) {
-		Unit topUnit = getContainerUnit();
-		if (!(topUnit instanceof MarsSurface)) {
-			while (topUnit.getContainerUnit() != null && !(topUnit.getContainerUnit() instanceof MarsSurface)) {
-				topUnit = topUnit.getContainerUnit();
+		// WARNING : Under no circumstances should his top container be "MarsSurface".
+
+//		int topID = getContainerUnit().getContainerID();
+//		if (topID != 0) {
+//			while (topID != 0) {
+//				topID = getContainerUnit().getContainerID();
+//			}
+//		}
+//
+//		return unitManager.getUnitByID(topID);
+	}
+	
+	/**
+	 * Gets the topmost container unit that owns this unit (Settlement, Vehicle, Person or Robot) 
+	 * If it's on the surface of Mars, then the topmost container is MarsSurface. 
+	 * 
+	 * @return the unit's topmost container unit
+	 */
+	public int getTopContainerID() {
+				
+		int topID = getContainerUnit().getContainerID();
+		if (topID != 0) {
+			while (topID != 0) {
+				topID = getContainerUnit().getContainerID();
 			}
 		}
 
-//		int topUnit = containerUnit;
-//		if (topUnit != 0) {
-//			while (topUnit != 0) {
-//				topUnit = getContainerUnit().getIdentifier();
+		return topID;
+	}
+	
+
+//	public void setTopContainerUnit(Unit u) {
+////		Unit topUnit = getContainerUnit();
+////		if (!(topUnit instanceof MarsSurface)) {
+////			while (topUnit.getContainerUnit() != null && !(topUnit.getContainerUnit() instanceof MarsSurface)) {
+////				topUnit = topUnit.getContainerUnit();
+////			}
+////		}
+//
+//		int topID = getContainerUnit().getContainerID();
+//		if (topID != 0) {
+//			while (topID != 0) {
+//				topID = getContainerUnit().getContainerID();
 //			}
 //		}
-		
-		getContainerUnit().setContainerUnit(u);
-		
-		getContainerUnit().setContainerID(u.getIdentifier());
-	}
+//		
+//		Unit topUnit = unitManager.getUnitByID(topID);
+//		
+//		topUnit.setContainerUnit(u);
+//		
+//		topUnit.setContainerID(u.getIdentifier());
+//	}
 	
 	/**
 	 * Sets the unit's container unit.
@@ -387,7 +452,8 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 			currentStateType = LocationStateType.OUTSIDE_ON_MARS;
 		
 //		containerUnit = newContainer.getIdentifier();
-		containerID = newContainer.getIdentifier();
+		if (newContainer != null && newContainer.getIdentifier() != -1)
+			containerID = newContainer.getIdentifier();
 		
 		fireUnitUpdate(UnitEventType.CONTAINER_UNIT_EVENT, newContainer);
 	}

@@ -22,7 +22,6 @@ import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
@@ -277,7 +276,9 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportType, A
 		// Assuming that a hose is connected between the vehicle and the settlement to supply resources
 		if (getStatus() == StatusType.GARAGED) {// || getStatus() == StatusType.PARKED) {
 			if (getSettlement() == null)
-				System.out.println("garage : " + getGarage().getNickName());
+				LogConsolidated.log(Level.SEVERE, 1_000, sourceName,
+						"[" + this.getName() + "] Rover's lifeSupportCheck(). Why settlement = null ? " 
+								+ getNickName() + " is in garage " + getGarage().getNickName());
 			inv = getSettlement().getInventory();
 		}
 		else

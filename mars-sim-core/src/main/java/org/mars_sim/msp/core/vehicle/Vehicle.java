@@ -78,7 +78,9 @@ public abstract class Vehicle extends Unit
 	public static final double SOFC_CONVERSION_EFFICIENCY = .57;
 	/** Lifetime Wear in millisols **/
 	private static final double WEAR_LIFETIME = 668000D; // 668 Sols (1 orbit)
-
+	/** The unit count for this person. */
+	private static int uniqueCount = Unit.FIRST_VEHICLE_ID;
+	
 	// 1989 NASA Mars Manned Transportation Vehicle - Shuttle Fuel Cell Power Plant (FCP)  7.6 kg/kW
 	
 	// DOE 2010 Targe : Specific power = 650 W_e/L; Power Density = 650 W_e/kg
@@ -96,6 +98,8 @@ public abstract class Vehicle extends Unit
 	/** True if vehicle is salvaged. */
 	private boolean isSalvaged;
 	
+	/** Unique identifier for this vehicle. */
+	private int identifier;
 	/** Vehicle's associated Settlement. */
 	private int associatedSettlementID;
 	
@@ -158,6 +162,31 @@ public abstract class Vehicle extends Unit
 	// Static members
 //	private static VehicleConfig vehicleConfig = SimulationConfig.instance().getVehicleConfiguration();
 
+	static {
+		life_support_range_error_margin = SimulationConfig.instance().getSettlementConfiguration()
+				.loadMissionControl()[0];
+		fuel_range_error_margin = SimulationConfig.instance().getSettlementConfiguration().loadMissionControl()[1];
+	}
+	
+	/**
+	 * Must be synchronised to prevent duplicate ids being assigned via different
+	 * threads.
+	 * 
+	 * @return
+	 */
+	private static synchronized int getNextIdentifier() {
+		return uniqueCount++;
+	}
+	
+	/**
+	 * Get the unique identifier for this person
+	 * 
+	 * @return Identifier
+	 */
+	public int getIdentifier() {
+		return identifier;
+	}
+	
 	/**
 	 * Constructor 1 : prepares a Vehicle object with a given settlement
 	 * 
@@ -170,6 +199,13 @@ public abstract class Vehicle extends Unit
 		// Use Unit constructor
 		super(name, settlement.getCoordinates());
 		
+		if (unitManager == null)
+			unitManager = sim.getUnitManager();
+		
+		this.identifier = getNextIdentifier();
+
+		unitManager.addVehicleID(this);
+		
 		// Place this person within a settlement
 //		enter(LocationCodeType.SETTLEMENT);
 			
@@ -181,9 +217,7 @@ public abstract class Vehicle extends Unit
 
 //		missionManager = Simulation.instance().getMissionManager();
 //		vehicleConfig = SimulationConfig.instance().getVehicleConfiguration();
-		if (unitManager == null)
-			unitManager = sim.getUnitManager();
-		unitManager.addVehicleID(this);
+
 	
 		// Initialize vehicle data
 		vehicleType = vehicleType.toLowerCase();
@@ -258,21 +292,18 @@ public abstract class Vehicle extends Unit
 		// Use Unit constructor
 		super(name, settlement.getCoordinates());
 		
+		if (unitManager == null)
+			unitManager = sim.getUnitManager();
+		
+		this.identifier = getNextIdentifier();
+		
+		if (unitManager != null) // for passing maven test
+			unitManager.addVehicleID(this);
+		
 		// Place this person within a settlement
 //		enter(LocationCodeType.SETTLEMENT);
 		
 		this.vehicleType = vehicleType;
-
-//		missionManager = Simulation.instance().getMissionManager();
-		
-		if (unitManager == null)
-			unitManager = sim.getUnitManager();
-		if (unitManager != null) // for passing maven test
-			unitManager.addVehicleID(this);
-		
-		life_support_range_error_margin = SimulationConfig.instance().getSettlementConfiguration()
-				.loadMissionControl()[0];
-		fuel_range_error_margin = SimulationConfig.instance().getSettlementConfiguration().loadMissionControl()[1];
 
 		associatedSettlementID = settlement.getIdentifier();
 //		containerUnit = settlement;
@@ -847,6 +878,10 @@ public abstract class Vehicle extends Unit
 	 * @return the settlement the vehicle is parked at
 	 */
 	public Settlement getSettlement() {
+		
+		if (getContainerID() == 0)
+			return null;
+		
 		Unit c = getContainerUnit();
 
 		if (c instanceof Settlement)

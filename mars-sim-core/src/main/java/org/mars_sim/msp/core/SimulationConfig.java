@@ -288,6 +288,7 @@ public class SimulationConfig implements Serializable {
 		String buildText = "";
 		boolean versionFileExist = false;
 		boolean xmlDirDeleted = false;
+		boolean invalid = false;
 		
 		// if the "xml" directory exists, back up everything inside and clean the directory
 		if (xmlDirExist && xmlLocation.isDirectory()) {
@@ -302,7 +303,7 @@ public class SimulationConfig implements Serializable {
 				    if ((buildText = brTest.readLine()) != null) {
 					    if (buildText.equals(Simulation.BUILD)) {	
 					    	sameBuild = true;
-					    }		
+					    }
 				    }
 				} catch (FileNotFoundException e) {
 					e.printStackTrace();
@@ -329,13 +330,15 @@ public class SimulationConfig implements Serializable {
 			LogConsolidated.log(Level.CONFIG, 0, sourceName, 
 					"Your version.txt already has the same BUILD " + buildText
 					+ " as the core engine.");
-		else if (!isNotNumber(buildText) )
+		else if (!isNotNumber(buildText))
 	    	LogConsolidated.log(Level.CONFIG, 0, sourceName, 
 					"Your version.txt has BUILD " + buildText 
 					+ ". The core engine has BUILD " + Simulation.BUILD);
-		else
+		else {
 			LogConsolidated.log(Level.CONFIG, 0, sourceName, 
 				"Your version.txt is invalid.");
+			invalid = true;
+		}
 		
 //		if (xmlDirExist && (!versionFileExist || !sameBuild)) {
 //			LogConsolidated.log(Level.CONFIG, 0, sourceName, 
@@ -348,13 +351,13 @@ public class SimulationConfig implements Serializable {
 			
 				try {
 	
-					if (versionFileExist && !buildText.equals("")) {
+					if (versionFileExist && !buildText.equals("") && !invalid) {
 						
 						String s0 = backupDir + File.separator + buildText;		
-				        File dir = new File(s0);
+				        File dir = new File(s0.trim());
 				        if (!dir.exists()) {
 				        	// Case A1 : Copy it to /.mars-sim/backup/buildText/
-							LogConsolidated.log(Level.CONFIG, 0, sourceName, "Case A2 : " +
+							LogConsolidated.log(Level.CONFIG, 0, sourceName, "Case A1 : " +
 									"Backing up to " + s0);
 							// Make a copy everything in the /xml to the /{$version}
 							FileUtils.copyDirectoryToDirectory(xmlLocation, dir);   	
@@ -365,8 +368,8 @@ public class SimulationConfig implements Serializable {
 				        	// Get timestamp in UTC
 				            Instant timestamp = Instant.now();
 				            String s1 = s0 + File.separator + timestamp.toString().replace(":", "").replace("-", "");
-				            dir = new File(s1);
-							LogConsolidated.log(Level.CONFIG, 0, sourceName, "Case A1 : " +
+				            dir = new File(s1.trim());
+							LogConsolidated.log(Level.CONFIG, 0, sourceName, "Case A2 : " +
 									s0 + " folder already exists. Backing up to " + s1);
 							// Make a copy everything in the /xml to the /{$version}
 							FileUtils.copyDirectoryToDirectory(xmlLocation, dir);
@@ -377,7 +380,7 @@ public class SimulationConfig implements Serializable {
 						
 						if (!backupLocation.exists()) {
 							// Case B1 : Copy it to /.mars-sim/backup/
-							LogConsolidated.log(Level.CONFIG, 0, sourceName, "Case B2 : " +
+							LogConsolidated.log(Level.CONFIG, 0, sourceName, "Case B1 : " +
 									"Backing up to " + backupDir);
 							// Make a copy everything in the /xml to the /backup/xml
 							FileUtils.copyDirectoryToDirectory(xmlLocation, backupLocation);
@@ -387,7 +390,7 @@ public class SimulationConfig implements Serializable {
 				            Instant timestamp = Instant.now();
 				            String s2 = backupDir + File.separator + timestamp.toString().replace(":", "").replace("-", "");
 				            backupLocation = new File(s2);
-							LogConsolidated.log(Level.CONFIG, 0, sourceName, "Case B1 : " +
+							LogConsolidated.log(Level.CONFIG, 0, sourceName, "Case B2 : " +
 									backupDir + " already exists. Backing up to " + s2);	
 							// Make a copy everything in the /xml to the /backup/xml
 							FileUtils.copyDirectoryToDirectory(xmlLocation, backupLocation);

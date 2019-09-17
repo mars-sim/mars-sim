@@ -504,7 +504,7 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 	@Override
 	public Map<Integer, Integer> getEquipmentNeededForRemainingMission(boolean useBuffer) {
 		Map<Integer, Integer> equipment = new HashMap<>(1);
-		equipment.put(EquipmentType.convertType2ID(EVASuit.TYPE), getPeopleNumber());
+		equipment.put(EquipmentType.convertName2ID(EVASuit.TYPE), getPeopleNumber());
 		return equipment;
 	}
 
@@ -903,7 +903,7 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 					settlement.getInventory().storeItemResources(part, salvagedNumber);
 
 				// Recalculate settlement good value for salvaged part.
-				settlement.getGoodsManager().updateGoodValue(GoodsUtil.createResourceGood(p), false);
+				settlement.getGoodsManager().updateGoodValue(GoodsUtil.getResourceGood(p), false);
 			}
 		}
 	}

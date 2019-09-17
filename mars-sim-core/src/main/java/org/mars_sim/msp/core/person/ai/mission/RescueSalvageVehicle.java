@@ -745,24 +745,24 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 		if (rescue && (getRover().getTowedVehicle() == null)) {
 			Map<Integer, Number> rescueResources = determineRescueResourcesNeeded(useBuffer);
 
-			for (Integer resource : rescueResources.keySet()) {
-				if (resource < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
-					double amount = (Double) rescueResources.get(resource);
-					if (result.containsKey(resource)) {
-						amount += (Double) result.get(resource);
+			for (Integer id : rescueResources.keySet()) {
+				if (id < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
+					double amount = (Double) rescueResources.get(id);
+					if (result.containsKey(id)) {
+						amount += (Double) result.get(id);
 					}
 					if (useBuffer) {
 						amount *= RESCUE_RESOURCE_BUFFER;
 					}
-					result.put(resource, amount);
+					result.put(id, amount);
 					
 				}  // Check if these resources are Parts
-				else if (resource < ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID) {
-					int num = (Integer) rescueResources.get(resource);
-					if (result.containsKey(resource)) {
-						num += (Integer) result.get(resource);
+				else if (id >= ResourceUtil.FIRST_ITEM_RESOURCE_ID && id < ResourceUtil.FIRST_VEHICLE_RESOURCE_ID) {
+					int num = (Integer) rescueResources.get(id);
+					if (result.containsKey(id)) {
+						num += (Integer) result.get(id);
 					}
-					result.put(resource, num);
+					result.put(id, num);
 				}
 			}
 		}

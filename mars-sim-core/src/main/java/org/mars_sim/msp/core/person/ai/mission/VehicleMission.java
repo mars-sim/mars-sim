@@ -876,15 +876,15 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		if (vehicle != null) {
 			Inventory inv = vehicle.getInventory();
 
-			for (Integer resource : neededResources.keySet()) {
-				if (resource < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
+			for (Integer id : neededResources.keySet()) {
+				if (id < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
 
-					double amount = (Double) neededResources.get(resource);
-					double amountStored = inv.getAmountResourceStored(resource, false);
+					double amount = (Double) neededResources.get(id);
+					double amountStored = inv.getAmountResourceStored(id, false);
 
 					if (amountStored < amount) {
 						String newLog = "[" + vehicle.getLocationTag().getLocale() + "] " + vehicle.getName() + " does not have enough " 
-								+ ResourceUtil.findAmountResourceName(resource) + " to continue with "
+								+ ResourceUtil.findAmountResourceName(id) + " to continue with "
 								+ getName() + " (Required: " + Math.round(amount * 100D) / 100D + " kg  Stored: "
 								+ Math.round(amountStored * 100D) / 100D + " kg).";
 						LogConsolidated.log(Level.WARNING, 10_000, sourceName, newLog);
@@ -892,13 +892,13 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 					}
 				}
 
-				else if (resource < ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID) {
-					int num = (Integer) neededResources.get(resource);
-					int numStored = inv.getItemResourceNum(resource);
+				else if (id >= ResourceUtil.FIRST_ITEM_RESOURCE_ID && id < ResourceUtil.FIRST_VEHICLE_RESOURCE_ID) {
+					int num = (Integer) neededResources.get(id);
+					int numStored = inv.getItemResourceNum(id);
 
 					if (numStored < num) {
 						String newLog = "[" + vehicle.getLocationTag().getLocale() + "] " + vehicle.getName() + " does not have enough " 
-								+ ItemResourceUtil.findItemResource(resource).getName() + " to continue with "
+								+ ItemResourceUtil.findItemResource(id).getName() + " to continue with "
 								+ getName() + " (Required: " + num + "  Stored: " + numStored + ").";
 						LogConsolidated.log(Level.WARNING, 10_000, sourceName, newLog);
 						return false;
@@ -907,7 +907,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 
 				else {
 					throw new IllegalStateException(getPhase() + " : issues with the resource type of " 
-							+ ResourceUtil.findAmountResourceName(resource));
+							+ ResourceUtil.findAmountResourceName(id));
 				}
 			}
 
@@ -1291,7 +1291,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 				result.put(containerID, numContainers);
 					
 			}  // Check if these resources are Parts
-			else if (id < ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID) {
+			else if (id >= ResourceUtil.FIRST_ITEM_RESOURCE_ID && id < ResourceUtil.FIRST_VEHICLE_RESOURCE_ID) {
 				int num = (Integer) optionalResources.get(id);
 				// TODO: how to specify adding extra parts for EVASuit here ?
 				int containerID = ContainerUtil.getContainerClassIDToHoldResource(id);

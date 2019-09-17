@@ -12,7 +12,8 @@ public enum GoodType {
 	ITEM_RESOURCE ("GoodType.itemResource"), //$NON-NLS-1$
 	EQUIPMENT ("GoodType.equipment"), //$NON-NLS-1$
 	VEHICLE ("GoodType.vehicle"); //$NON-NLS-1$
-
+//  ROBOT ("GoodType.robot"); //$NON-NLS-1$
+	
 	private String msgKey;
 
 	private GoodType(String msgKey) {

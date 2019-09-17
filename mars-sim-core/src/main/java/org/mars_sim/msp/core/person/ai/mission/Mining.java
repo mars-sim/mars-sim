@@ -875,7 +875,7 @@ public class Mining extends RoverMission {
 		while (i.hasNext()) {
 			String mineralType = i.next();
 //          int mineralResource = ResourceUtil.findIDbyAmountResourceName(mineralType);
-			Good mineralGood = GoodsUtil.createResourceGood(ResourceUtil.findAmountResource(mineralType));
+			Good mineralGood = GoodsUtil.getResourceGood(ResourceUtil.findAmountResource(mineralType));
 			double mineralValue = settlement.getGoodsManager().getGoodValuePerItem(mineralGood);
 			double concentration = concentrations.get(mineralType);
 			double mineralAmount = (concentration / 100D) * MINERAL_BASE_AMOUNT;
@@ -953,7 +953,7 @@ public class Mining extends RoverMission {
 			Map<Integer, Integer> result = new HashMap<>();
 
 			// Include required number of bags.
-			result.put(EquipmentType.convertType2ID(Bag.TYPE), NUMBER_OF_BAGS);
+			result.put(EquipmentType.convertName2ID(Bag.TYPE), NUMBER_OF_BAGS);
 
 			equipmentNeededCache = result;
 			return result;

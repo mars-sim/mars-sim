@@ -14,7 +14,6 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.equipment.Equipment;
-import org.mars_sim.msp.core.mars.MarsSurface;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -109,9 +108,9 @@ public class LocationTag implements LocationState, Serializable {
 		}
 
 		else if (e != null) {
-			if (!(e.getContainerUnit() instanceof MarsSurface))
+			if (e.getContainerID() != 0)
 				return e.getContainerUnit().getName();
-			else if (!(e.getTopContainerUnit() instanceof MarsSurface))
+			else if (e.getTopContainerID() != 0)
 				return e.getTopContainerUnit().getName();
 			else
 				return e.getCoordinates().getFormattedString();

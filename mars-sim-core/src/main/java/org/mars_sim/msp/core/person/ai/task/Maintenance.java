@@ -449,7 +449,7 @@ public class Maintenance extends Task implements Serializable {
 	 */
 	public static boolean hasMaintenanceParts(Person person, Malfunctionable malfunctionable) {
 		Inventory inv = null;
-		if (!(person.getTopContainerUnit() instanceof MarsSurface))
+		if (person.getTopContainerID() != 0)
 			inv = person.getTopContainerUnit().getInventory();
 		else
 			inv = person.getInventory();
@@ -458,7 +458,7 @@ public class Maintenance extends Task implements Serializable {
 
 	public static boolean hasMaintenanceParts(Robot robot, Malfunctionable malfunctionable) {
 		Inventory inv = null;
-		if (!(robot.getTopContainerUnit() instanceof MarsSurface))
+		if (robot.getTopContainerID() != 0)
 			inv = robot.getTopContainerUnit().getInventory();
 		else
 			inv = robot.getInventory();

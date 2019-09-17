@@ -1107,33 +1107,30 @@ public class EmergencySupplyMission extends RoverMission implements Serializable
 		// Add emergency resources.
 		Iterator<Integer> i = emergencyResources.keySet().iterator();
 		while (i.hasNext()) {
-			Integer resource = i.next();
-			double amount = emergencyResources.get(resource);
-			Good resourceGood = GoodsUtil.createResourceGood(ResourceUtil.findAmountResource(resource));
-			result.put(resourceGood, (int) amount);
+			Integer id = i.next();
+			double amount = emergencyResources.get(id);
+			result.put(GoodsUtil.getResourceGood(id), (int) amount);
 		}
 
 		// Add emergency parts.
 		Iterator<Integer> j = emergencyParts.keySet().iterator();
 		while (j.hasNext()) {
-			Integer part = j.next();
-			int number = emergencyParts.get(part);
-			Good partGood = GoodsUtil.createResourceGood(ItemResourceUtil.findItemResource(part));
-			result.put(partGood, number);
+			Integer id = j.next();
+			int number = emergencyParts.get(id);
+			result.put(GoodsUtil.getResourceGood(id), number);
 		}
 
 		// Add emergency equipment.
 		Iterator<Integer> k = emergencyEquipment.keySet().iterator();
 		while (k.hasNext()) {
-			Integer equipmentClass = k.next();
-			int number = emergencyEquipment.get(equipmentClass);
-			Good equipmentGood = GoodsUtil.createEquipmentGood(equipmentClass);
-			result.put(equipmentGood, number);
+			Integer id = k.next();
+			int number = emergencyEquipment.get(id);
+			result.put(GoodsUtil.getEquipmentGood(id), number);
 		}
 
 		// Add emergency vehicle.
 		if (emergencyVehicle != null) {
-			Good vehicleGood = GoodsUtil.createVehicleGood(emergencyVehicle.getDescription());
+			Good vehicleGood = GoodsUtil.getVehicleGood(emergencyVehicle.getDescription());
 			result.put(vehicleGood, 1);
 		}
 

@@ -128,7 +128,7 @@ public class Crop implements Serializable {
 	// Data members
 	/** The settlement's unique identifier */
 	private int settlementID;
-	/** The unique identifier */
+	/** The crop identifier (unique only within a greenhouse). */
 	private int identifier;
 	/** The cache for msols */
 	private int msolCache;
@@ -253,6 +253,7 @@ public class Crop implements Serializable {
 	/**
 	 * Constructor.
 	 * 
+	 * @param identifier      the identifier of this crop.
 	 * @param cropType        the type of crop.
 	 * @param growingArea     the area occupied by the crop [m^2]
 	 * @param dailyMaxHarvest - Maximum possible food harvest for crop. (kg/sol)
@@ -1376,10 +1377,7 @@ public class Crop implements Serializable {
 	 * @throws Exception if error reading crop config.
 	 */
 	public static double getAverageCropGrowingTime() {
-		double totalGrowingTime = 0D;
-		for (CropType ct : CropConfig.getCropTypes())
-			totalGrowingTime += ct.getGrowingTime();
-		return totalGrowingTime / CropConfig.getNumCropTypes();
+		return CropConfig.getAverageCropGrowingTime();
 	}
 
 	public int getCurrentPhaseNum() {

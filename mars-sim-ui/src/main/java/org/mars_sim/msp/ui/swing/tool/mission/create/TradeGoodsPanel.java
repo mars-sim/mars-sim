@@ -329,7 +329,7 @@ extends WizardPanel {
 	 */
 	private <T extends Unit> int getNumberOfTradedContainers(Class<T> containerType) {
 		int result = 0;
-		Good containerGood = GoodsUtil.createEquipmentGood(containerType);
+		Good containerGood = GoodsUtil.getEquipmentGood(containerType);
 		Map<Good, Integer> tradeGoods = tradeTableModel.getTradeGoods();
 		if (tradeGoods.containsKey(containerGood)) result = tradeGoods.get(containerGood);
 		return result;

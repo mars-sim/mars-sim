@@ -253,9 +253,9 @@ public final class ManufactureUtil {
 			double salvagedGoodValue = 0D;
 			Good salvagedGood = null;
 			if (salvagedUnit instanceof Equipment) {
-				salvagedGood = GoodsUtil.createEquipmentGood(salvagedUnit.getClass());
+				salvagedGood = GoodsUtil.getEquipmentGood(salvagedUnit.getClass());
 			} else if (salvagedUnit instanceof Vehicle) {
-				salvagedGood = GoodsUtil.createVehicleGood(salvagedUnit.getDescription());
+				salvagedGood = GoodsUtil.getVehicleGood(salvagedUnit.getDescription());
 			}
 
 			if (salvagedGood != null)
@@ -270,9 +270,7 @@ public final class ManufactureUtil {
 			Iterator<PartSalvage> i = process.getPartSalvageList().iterator();
 			while (i.hasNext()) {
 				PartSalvage partSalvage = i.next();
-//                Part part = (Part) ItemResource.findItemResource(partSalvage.getName());
-//                int id = ItemResourceUtil.findIDbyItemResourceName(partSalvage.getName());
-				Good partGood = GoodsUtil.createResourceGood(ItemResourceUtil.findItemResource(partSalvage.getName()));
+				Good partGood = GoodsUtil.getResourceGood(ItemResourceUtil.findItemResource(partSalvage.getName()));
 				double partValue = goodsManager.getGoodValuePerItem(partGood) * partSalvage.getNumber();
 				totalPartsGoodValue += partValue;
 			}
@@ -315,26 +313,25 @@ public final class ManufactureUtil {
 					amount = remainingCapacity;
 				}
 			}
-			Good good = GoodsUtil.createResourceGood(ar);
+			Good good = GoodsUtil.getResourceGood(ar);
 			result = manager.getGoodValuePerItem(good) * amount;
 		} 
 		
 		else if (item.getType().equals(ItemType.PART)) {
 //            ItemResource ir = ItemResourceUtil.findItemResource(item.getName());
 //            int id = ItemResourceUtil.findIDbyItemResourceName(item.getName());
-			Good good = GoodsUtil.createResourceGood(ItemResourceUtil.findItemResource(item.getName()));
+			Good good = GoodsUtil.getResourceGood(ItemResourceUtil.findItemResource(item.getName()));
 			result = manager.getGoodValuePerItem(good) * item.getAmount();
 		} 
 		
 		else if (item.getType().equals(ItemType.EQUIPMENT)) {
 //			Class<? extends Equipment> equipmentClass = EquipmentFactory.getEquipmentClass(item.getName());
-			Good good = GoodsUtil.createEquipmentGood(EquipmentFactory.getEquipmentClass(item.getName()));
+			Good good = GoodsUtil.getEquipmentGood(EquipmentFactory.getEquipmentClass(item.getName()));
 			result = manager.getGoodValuePerItem(good) * item.getAmount();
 		} 
 		
 		else if (item.getType().equals(ItemType.VEHICLE)) {
-//			Good good = GoodsUtil.createVehicleGood(item.getName());
-			result = manager.getGoodValuePerItem(GoodsUtil.createVehicleGood(item.getName())) * item.getAmount();
+			result = manager.getGoodValuePerItem(GoodsUtil.getVehicleGood(item.getName())) * item.getAmount();
 		} 
 		
 		else

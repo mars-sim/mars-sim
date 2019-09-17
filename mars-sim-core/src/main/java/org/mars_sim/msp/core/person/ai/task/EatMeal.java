@@ -1080,14 +1080,6 @@ public class EatMeal extends Task implements Serializable {
 	 */
 	public static boolean isPreservedFoodAvailable(Person person) {
 		boolean result = false;
-		// NOTE: if a person is having an EVA Suit, then his container is EVASuit.
-		// and his top container is mars surface.
-		
-//		int containerID = person.getTopContainerID();
-//		if (containerID != 0) {
-//		}
-			
-			
 		Unit containerUnit = person.getTopContainerUnit();
 		if (!(containerUnit instanceof MarsSurface)) {
 			Inventory inv = containerUnit.getInventory();

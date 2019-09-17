@@ -73,8 +73,8 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 	private static final double WEAR_LIFETIME = 334000D;
 	/** 100 millisols. */
 	private static final double MAINTENANCE_TIME = 100D;
-	/** static robot count identifier. */
-	private static int robotCount = 0;
+	/** The unit count for this robot. */
+	private static int uniqueCount = Unit.FIRST_ROBOT_ID;
 	
 	// Data members
 	/** Is the robot is inoperable. */
@@ -82,8 +82,8 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 	/** Is the robot is salvaged. */
 	private boolean isSalvaged;
 	
-	/** Unique robot id. */
-	private int robotID;
+	/** Unique identifier for this robot. */
+	private int identifier;
 	/** The settlement the robot is currently associated with. */
 	private int associatedSettlementID = -1;
 	/** The height of the robot (in cm). */
@@ -135,15 +135,14 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 	 * 
 	 * @return
 	 */
-	private static synchronized int getNextCount() {
-		return robotCount++;
+	private static synchronized int getNextIdentifier() {
+		return uniqueCount++;
 	}
 	
 	protected Robot(String name, Settlement settlement, RobotType robotType) {
 		super(name, robotType.toString(), settlement.getCoordinates()); // extending equipment
 		
-		this.robotID = getNextCount();
-		
+		this.identifier = getNextIdentifier();
 		unitManager.addRobotID(this);
 		
 //		// Place this person within a settlement

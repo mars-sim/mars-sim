@@ -121,7 +121,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 			optionalResources = new HashMap<Integer, Number>(0);
 			
 			requiredEquipment = new HashMap<>(1);
-			requiredEquipment.put(EquipmentType.convertType2ID(EVASuit.TYPE), 1);
+			requiredEquipment.put(EquipmentType.convertName2ID(EVASuit.TYPE), 1);
 			
 			optionalEquipment = new HashMap<>(0);
 			

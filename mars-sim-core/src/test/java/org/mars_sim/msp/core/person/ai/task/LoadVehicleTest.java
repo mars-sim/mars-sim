@@ -165,7 +165,7 @@ extends TestCase {
 		Map<Integer, Number> optionalResourcesMap = new HashMap<Integer, Number>(0);
 
 		Map<Integer, Integer> requiredEquipmentMap = new HashMap<>();
-		requiredEquipmentMap.put(EquipmentType.convertType2ID(SpecimenContainer.TYPE), Integer.valueOf(5));
+		requiredEquipmentMap.put(EquipmentType.convertName2ID(SpecimenContainer.TYPE), Integer.valueOf(5));
 
 		Map<Integer, Integer> optionalEquipmentMap = new HashMap<>(0);
 
@@ -404,7 +404,7 @@ extends TestCase {
 		Map<Integer, Number> optionalResourcesMap = new HashMap<Integer, Number>(0);
 
 		Map<Integer, Integer> requiredEquipmentMap = new HashMap<>();
-		requiredEquipmentMap.put(EquipmentType.convertType2ID(SpecimenContainer.TYPE), Integer.valueOf(5));
+		requiredEquipmentMap.put(EquipmentType.convertName2ID(SpecimenContainer.TYPE), Integer.valueOf(5));
 
 		Map<Integer, Integer> optionalEquipmentMap = new HashMap<>(0);
 
@@ -446,7 +446,7 @@ extends TestCase {
 		Map<Integer, Number> optionalResourcesMap = new HashMap<Integer, Number>(0);
 
 		Map<Integer, Integer> requiredEquipmentMap = new HashMap<>();
-		requiredEquipmentMap.put(EquipmentType.convertType2ID(SpecimenContainer.TYPE), Integer.valueOf(5));
+		requiredEquipmentMap.put(EquipmentType.convertName2ID(SpecimenContainer.TYPE), Integer.valueOf(5));
 
 		Map<Integer, Integer> optionalEquipmentMap = new HashMap<>(0);
 
@@ -494,7 +494,7 @@ extends TestCase {
 		Map<Integer, Number> optionalResourcesMap = new HashMap<Integer, Number>(0);
 
 		Map<Integer, Integer> requiredEquipmentMap = new HashMap<>();
-		requiredEquipmentMap.put(EquipmentType.convertType2ID(SpecimenContainer.TYPE), Integer.valueOf(5));
+		requiredEquipmentMap.put(EquipmentType.convertName2ID(SpecimenContainer.TYPE), Integer.valueOf(5));
 
 		Map<Integer, Integer> optionalEquipmentMap = new HashMap<>(0);
 
@@ -540,7 +540,7 @@ extends TestCase {
 		Map<Integer, Number> optionalResourcesMap = new HashMap<Integer, Number>(0);
 
 		Map<Integer, Integer> requiredEquipmentMap = new HashMap<>();
-		requiredEquipmentMap.put(EquipmentType.convertType2ID(SpecimenContainer.TYPE), Integer.valueOf(5));
+		requiredEquipmentMap.put(EquipmentType.convertName2ID(SpecimenContainer.TYPE), Integer.valueOf(5));
 
 		Map<Integer, Integer> optionalEquipmentMap = new HashMap<>(0);
 

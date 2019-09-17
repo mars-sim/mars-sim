@@ -30,6 +30,7 @@ import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.location.LocationStateType;
@@ -139,11 +140,10 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	private static final double NORMAL_AIR_PRESSURE = CompositionOfAir.SKYLAB_TOTAL_AIR_PRESSURE_kPA;
 	/** The minimal amount of resource to be retrieved. */
 	private static final double MIN = 0.00001;
-	/** Normal temperature (celsius) */
-	// private static final double NORMAL_TEMP = 22.5D;
-	// maximum & minimal acceptable temperature for living space (arbitrary)
-	// private static final double MIN_TEMP = -15.0D;
-	// private static final double MAX_TEMP = 45.0D;
+	
+	/** The unit count for this person. */
+	private static int uniqueCount = Unit.FIRST_PERSON_ID;
+	
 	/** The settlement water consumption */
 	public static double water_consumption_rate;
 	/** The settlement minimum air pressure requirement. */
@@ -211,6 +211,8 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	/** The flag for checking if the simulation has just started. */
 	private boolean justLoaded = true;
 
+	/** Unique identifier for this settlement. */
+	private int identifier;
 	/** The base mission probability of the settlement. */
 	private int missionProbability = -1;
 	/** The water ration level of the settlement. */
@@ -378,15 +380,51 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	private static CollectIceMeta collectIceMeta;
 
 	private static SettlementConfig settlementConfig = SimulationConfig.instance().getSettlementConfiguration();
+	private static PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
+	
+	/**
+	 * Must be synchronised to prevent duplicate ids being assigned via different
+	 * threads.
+	 * 
+	 * @return
+	 */
+	private static synchronized int getNextIdentifier() {
+		return uniqueCount++;
+	}
+	
+	
+	/**
+	 * Get the unique identifier for this settlement
+	 * 
+	 * @return Identifier
+	 */
+	public int getIdentifier() {
+		return identifier;
+	}
+	
+	
+	static {
 
+		water_consumption_rate = personConfig.getWaterConsumptionRate();
+		minimum_air_pressure = personConfig.getMinAirPressure();
+
+		life_support_value = settlementConfig.loadLifeSupportRequirements();
+	}
+	
 	/**
 	 * Constructor 1 called by ConstructionStageTest suite for maven testing.
 	 */
 	private Settlement() {
 		super(null, null);
-		location = getCoordinates();
+
+		this.identifier = getNextIdentifier();
+		
 		unitManager = sim.getUnitManager();
+		// Add this settlement to the lookup map
 		unitManager.addSettlementID(this);
+		
+		location = getCoordinates();
+		
 //		updateAllAssociatedPeople();
 //		updateAllAssociatedRobots();
 	}
@@ -409,17 +447,27 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	public Settlement(String name, int scenarioID, Coordinates location) {
 		// Use Structure constructor.
 		super(name, location);
-		this.name = name;
-		this.scenarioID = scenarioID;
-		this.location = location;
-
+		
+		this.identifier = getNextIdentifier();
+		
 		if (unitManager == null) {// for passing maven test
 			unitManager = sim.getUnitManager();
 		}
 
 		if (unitManager != null) {// for passing maven test
+			// Add this settlement to the lookup map
 			unitManager.addSettlementID(this);
 		}
+		
+
+
+		
+		this.name = name;
+		this.scenarioID = scenarioID;
+		this.location = location;
+
+		
+
 
 		if (missionManager == null) {// for passing maven test
 			missionManager = sim.getMissionManager();
@@ -457,6 +505,12 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		// Use Structure constructor
 		super(name, location);
 
+		this.identifier = getNextIdentifier();
+		
+		unitManager = sim.getUnitManager();
+		// Add this settlement to the lookup map
+		unitManager.addSettlementID(this);
+		
 		this.name = name;
 		this.template = template;
 		this.sponsor = sponsor;
@@ -465,7 +519,6 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		this.projectedNumOfRobots = projectedNumOfRobots;
 		this.initialPopulation = populationNumber;
 
-		unitManager = sim.getUnitManager();
 
 		setContainerUnit(marsSurface);
 
@@ -482,18 +535,33 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 
 	}
 
+	
+	/**
+	 * The static factory method called by UnitManager and ArrivingSettlement to
+	 * create a brand new settlement
+	 * 
+	 * @param name
+	 * @param id
+	 * @param template
+	 * @param sponsor
+	 * @param location
+	 * @param populationNumber
+	 * @param initialNumOfRobots
+	 * @return
+	 */
+	public static Settlement createNewSettlement(String name, int id, String template, String sponsor,
+			Coordinates location, int populationNumber, int initialNumOfRobots) {
+		return new Settlement(name, id, template, sponsor, location, populationNumber, initialNumOfRobots);
+	}
+
+
 	/**
 	 * Initialize field data, class and maps
 	 */
 	public void initialize() {
-		// Add this settlement to the lookup map
-		unitManager.addSettlementID(this);
 
 		// Set inventory total mass capacity.
 		getInventory().addGeneralCapacity(Double.MAX_VALUE); // 10_000_000);//100_000_000);//
-
-		// Loads default values
-		loadDefaultValues();
 
 		updateAllAssociatedPeople();
 		updateAllAssociatedRobots();
@@ -548,37 +616,6 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		dailyOutput = new ConcurrentHashMap<>();
 		// Create the daily labor hours map
 		dailyLaborHours = new ConcurrentHashMap<>();
-	}
-
-	/**
-	 * The static factory method called by UnitManager and ArrivingSettlement to
-	 * create a brand new settlement
-	 * 
-	 * @param name
-	 * @param id
-	 * @param template
-	 * @param sponsor
-	 * @param location
-	 * @param populationNumber
-	 * @param initialNumOfRobots
-	 * @return
-	 */
-	public static Settlement createNewSettlement(String name, int id, String template, String sponsor,
-			Coordinates location, int populationNumber, int initialNumOfRobots) {
-		return new Settlement(name, id, template, sponsor, location, populationNumber, initialNumOfRobots);
-	}
-
-	/**
-	 * Loads default values
-	 */
-	public static void loadDefaultValues() {
-//		SettlementConfig settlementConfig = SimulationConfig.instance().getSettlementConfiguration();
-
-		PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
-		water_consumption_rate = personConfig.getWaterConsumptionRate();
-		minimum_air_pressure = personConfig.getMinAirPressure();
-
-		life_support_value = settlementConfig.loadLifeSupportRequirements();
 	}
 
 	/**
@@ -1124,7 +1161,6 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	 */
 	public static void initializeInstances(UnitManager u) {
 		unitManager = u;
-		loadDefaultValues();
 	}
 
 	/**

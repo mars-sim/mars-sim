@@ -101,18 +101,17 @@ public class EmergencySupplyPanel extends WizardPanel {
 		TableStyle.setTableStyle(supplyTable);
 		supplyTable.setRowSelectionAllowed(true);
 		supplyTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		supplyTable.getSelectionModel().addListSelectionListener(
-				new ListSelectionListener() {
-					public void valueChanged(ListSelectionEvent e) {
-						if (e.getValueIsAdjusting() && (supplyTable.getSelectedRow() > -1)) {
-							cargoTable.clearSelection();
-							errorMessageLabel.setText(" ");
-							leftArrowButton.setEnabled(false);
-							amountTextField.setEnabled(true);
-							rightArrowButton.setEnabled(true);
-						}
-					}
-				}); 
+		supplyTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+			public void valueChanged(ListSelectionEvent e) {
+				if (e.getValueIsAdjusting() && (supplyTable.getSelectedRow() > -1)) {
+					cargoTable.clearSelection();
+					errorMessageLabel.setText(" ");
+					leftArrowButton.setEnabled(false);
+					amountTextField.setEnabled(true);
+					rightArrowButton.setEnabled(true);
+				}
+			}
+		});
 		supplyScrollPane.setViewportView(supplyTable);
 
 		// Create amount outer panel.
@@ -130,27 +129,26 @@ public class EmergencySupplyPanel extends WizardPanel {
 		// Create left arrow button.
 		leftArrowButton = new JButton("<");
 		leftArrowButton.setEnabled(false);
-		leftArrowButton.addActionListener(
-				new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						try {
-							// Remove cargo amount.
-							int amount = (Integer) formatter.stringToValue(amountTextField.getText());
-							int selectedGoodIndex = cargoTable.getSelectedRow();
-							if (selectedGoodIndex > -1) {
-								Good good = cargoTableModel.cargoList.get(selectedGoodIndex);
-								int currentAmount = cargoTableModel.cargoMap.get(good);
-								if (amount <= currentAmount) {
-									cargoTableModel.removeGoodAmount(good, amount);
-									supplyTableModel.addGoodAmount(good, amount);
-									errorMessageLabel.setText(" ");
-								}
-								else errorMessageLabel.setText("Amount to remove is larger than cargo amount.");
-							}
-						}
-						catch (ParseException c) {}
+		leftArrowButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					// Remove cargo amount.
+					int amount = (Integer) formatter.stringToValue(amountTextField.getText());
+					int selectedGoodIndex = cargoTable.getSelectedRow();
+					if (selectedGoodIndex > -1) {
+						Good good = cargoTableModel.cargoList.get(selectedGoodIndex);
+						int currentAmount = cargoTableModel.cargoMap.get(good);
+						if (amount <= currentAmount) {
+							cargoTableModel.removeGoodAmount(good, amount);
+							supplyTableModel.addGoodAmount(good, amount);
+							errorMessageLabel.setText(" ");
+						} else
+							errorMessageLabel.setText("Amount to remove is larger than cargo amount.");
 					}
-				});
+				} catch (ParseException c) {
+				}
+			}
+		});
 		amountControlPane.add(leftArrowButton, BorderLayout.WEST);
 
 		// Create amount text field.
@@ -168,33 +166,31 @@ public class EmergencySupplyPanel extends WizardPanel {
 		// Create right arrow button.
 		rightArrowButton = new JButton(">");
 		rightArrowButton.setEnabled(false);
-		rightArrowButton.addActionListener(
-				new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						// Add trade good amount.
-						try {
-							int amount = (Integer) formatter.stringToValue(amountTextField.getText());
-							int selectedGoodIndex = supplyTable.getSelectedRow();
-							if (selectedGoodIndex > -1) {
-								Good good = supplyTableModel.goodsList.get(selectedGoodIndex);
-								int currentAmount = supplyTableModel.goodsMap.get(good);
-								if (amount <= currentAmount) {
-									if (good.getCategory() == GoodType.VEHICLE && 
-											((amount > 1) || cargoTableModel.hasCargoVehicle())) {
-										errorMessageLabel.setText("Only one vehicle can be traded.");
-									}
-									else {
-										supplyTableModel.removeGoodAmount(good, amount);
-										cargoTableModel.addGoodAmount(good, amount);
-										errorMessageLabel.setText(" ");
-									}
-								}
-								else errorMessageLabel.setText("Amount to add is larger than available amount.");
+		rightArrowButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				// Add trade good amount.
+				try {
+					int amount = (Integer) formatter.stringToValue(amountTextField.getText());
+					int selectedGoodIndex = supplyTable.getSelectedRow();
+					if (selectedGoodIndex > -1) {
+						Good good = supplyTableModel.goodsList.get(selectedGoodIndex);
+						int currentAmount = supplyTableModel.goodsMap.get(good);
+						if (amount <= currentAmount) {
+							if (good.getCategory() == GoodType.VEHICLE
+									&& ((amount > 1) || cargoTableModel.hasCargoVehicle())) {
+								errorMessageLabel.setText("Only one vehicle can be traded.");
+							} else {
+								supplyTableModel.removeGoodAmount(good, amount);
+								cargoTableModel.addGoodAmount(good, amount);
+								errorMessageLabel.setText(" ");
 							}
-						}
-						catch (ParseException c) {}
+						} else
+							errorMessageLabel.setText("Amount to add is larger than available amount.");
 					}
-				});
+				} catch (ParseException c) {
+				}
+			}
+		});
 		amountControlPane.add(rightArrowButton, BorderLayout.EAST);
 
 		// Create cargo panel.
@@ -213,18 +209,17 @@ public class EmergencySupplyPanel extends WizardPanel {
 		cargoTable = new JTable(cargoTableModel);
 		cargoTable.setRowSelectionAllowed(true);
 		cargoTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		cargoTable.getSelectionModel().addListSelectionListener(
-				new ListSelectionListener() {
-					public void valueChanged(ListSelectionEvent e) {
-						if (e.getValueIsAdjusting() && (cargoTable.getSelectedRow() > -1)) {
-							cargoTable.clearSelection();
-							errorMessageLabel.setText(" ");
-							leftArrowButton.setEnabled(true);
-							amountTextField.setEnabled(true);
-							rightArrowButton.setEnabled(false);
-						}
-					}
-				}); 
+		cargoTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+			public void valueChanged(ListSelectionEvent e) {
+				if (e.getValueIsAdjusting() && (cargoTable.getSelectedRow() > -1)) {
+					cargoTable.clearSelection();
+					errorMessageLabel.setText(" ");
+					leftArrowButton.setEnabled(true);
+					amountTextField.setEnabled(true);
+					rightArrowButton.setEnabled(false);
+				}
+			}
+		});
 		cargoScrollPane.setViewportView(cargoTable);
 
 		// Create the message label.
@@ -251,8 +246,7 @@ public class EmergencySupplyPanel extends WizardPanel {
 
 				result = true;
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace(System.err);
 		}
 
@@ -285,6 +279,7 @@ public class EmergencySupplyPanel extends WizardPanel {
 
 	/**
 	 * Checks if trade list has enough containers to hold amount resources.
+	 * 
 	 * @return true if enough containers
 	 * @throws Exception if error checking containers.
 	 */
@@ -315,12 +310,13 @@ public class EmergencySupplyPanel extends WizardPanel {
 					double neededCapacity = resourceAmount - totalCapacity;
 					int neededContainerNum = (int) Math.ceil(neededCapacity / capacity);
 					String containerName = container.getName().toLowerCase();
-					if (neededContainerNum > 1) containerName = containerName + "s";
-					errorMessageLabel.setText(neededContainerNum + " " + containerName + " needed to hold " + resource.getName());
+					if (neededContainerNum > 1)
+						containerName = containerName + "s";
+					errorMessageLabel.setText(
+							neededContainerNum + " " + containerName + " needed to hold " + resource.getName());
 					result = false;
 					break;
-				}
-				else {
+				} else {
 					int neededContainerNum = (int) Math.ceil(resourceAmount / capacity);
 					int remainingContainerNum = containerNum - neededContainerNum;
 					containerMap.put(containerType, remainingContainerNum);
@@ -333,33 +329,19 @@ public class EmergencySupplyPanel extends WizardPanel {
 
 	/**
 	 * Gets the number of containers of a type in the trade list.
+	 * 
 	 * @param containerType the container class.
 	 * @return number of containers.
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private int getNumberOfCargoContainers(Class containerType) {
 		int result = 0;
-		Good containerGood = GoodsUtil.createEquipmentGood(containerType);
+		Good containerGood = GoodsUtil.getEquipmentGood(containerType);
 		Map<Good, Integer> cargoGoods = cargoTableModel.getCargoGoods();
-		if (cargoGoods.containsKey(containerGood)) result = cargoGoods.get(containerGood);
+		if (cargoGoods.containsKey(containerGood))
+			result = cargoGoods.get(containerGood);
 		return result;
 	}
 
-	/*
-	 * Gets a list of emergency resources.
-	 * @return list of amount resources.
-	 *
-    private List<AmountResource> getEmergencyResources() {
-
-        List<AmountResource> result = new ArrayList<AmountResource>(4);
-        result.add(AmountResource.findAmountResource(LifeSupport.OXYGEN));
-        result.add(AmountResource.findAmountResource(LifeSupport.WATER));
-        result.add(AmountResource.findAmountResource(LifeSupport.FOOD));
-        result.add(AmountResource.findAmountResource("methane"));
-
-        return result;
-    }
-	 */
 
 	private class SupplyTableModel extends AbstractTableModel {
 
@@ -379,11 +361,13 @@ public class EmergencySupplyPanel extends WizardPanel {
 			goodsList = GoodsUtil.getGoodsList();
 			goodsMap = new HashMap<Good, Integer>(goodsList.size());
 			Iterator<Good> i = goodsList.iterator();
-			while (i.hasNext()) goodsMap.put(i.next(), 0);
+			while (i.hasNext())
+				goodsMap.put(i.next(), 0);
 		}
 
 		/**
 		 * Returns the number of rows in the model.
+		 * 
 		 * @return number of rows.
 		 */
 		public int getRowCount() {
@@ -392,6 +376,7 @@ public class EmergencySupplyPanel extends WizardPanel {
 
 		/**
 		 * Returns the number of columns in the model.
+		 * 
 		 * @return number of columns.
 		 */
 		public int getColumnCount() {
@@ -400,17 +385,21 @@ public class EmergencySupplyPanel extends WizardPanel {
 
 		/**
 		 * Returns the name of the column at columnIndex.
+		 * 
 		 * @param columnIndex the column index.
 		 * @return column name.
 		 */
 		public String getColumnName(int columnIndex) {
-			if (columnIndex == 0) return "Good";
-			else return "Amount";
+			if (columnIndex == 0)
+				return "Good";
+			else
+				return "Amount";
 		}
 
 		/**
 		 * Returns the value for the cell at columnIndex and rowIndex.
-		 * @param row the row whose value is to be queried.
+		 * 
+		 * @param row    the row whose value is to be queried.
 		 * @param column the column whose value is to be queried.
 		 * @return the value Object at the specified cell.
 		 */
@@ -418,9 +407,11 @@ public class EmergencySupplyPanel extends WizardPanel {
 			Object result = null;
 
 			if (row < goodsList.size()) {
-				Good good = goodsList.get(row); 
-				if (column == 0) result = good.getName();
-				else result = goodsMap.get(good);
+				Good good = goodsList.get(row);
+				if (column == 0)
+					result = good.getName();
+				else
+					result = goodsMap.get(good);
 			}
 
 			return result;
@@ -438,10 +429,10 @@ public class EmergencySupplyPanel extends WizardPanel {
 				Good good = i.next();
 				try {
 					int amount = (int) TradeUtil.getNumInInventory(good, settlement.getInventory());
-					if (checkForVehicle(good)) amount--;
+					if (checkForVehicle(good))
+						amount--;
 					goodsMap.put(good, amount);
-				}
-				catch (Exception e) {
+				} catch (Exception e) {
 					e.printStackTrace(System.err);
 				}
 			}
@@ -450,6 +441,7 @@ public class EmergencySupplyPanel extends WizardPanel {
 
 		/**
 		 * Checks if good is the same type as the mission vehicle.
+		 * 
 		 * @param good the good to check.
 		 * @return true if same type of vehicle.
 		 */
@@ -458,7 +450,8 @@ public class EmergencySupplyPanel extends WizardPanel {
 
 			if (good.getCategory() == GoodType.VEHICLE) {
 				String missionRoverName = getWizard().getMissionData().getRover().getDescription();
-				if (good.getName().equalsIgnoreCase(missionRoverName)) result = true;
+				if (good.getName().equalsIgnoreCase(missionRoverName))
+					result = true;
 			}
 
 			return result;
@@ -466,7 +459,8 @@ public class EmergencySupplyPanel extends WizardPanel {
 
 		/**
 		 * Adds an amount of a good to the table.
-		 * @param good the good to add.
+		 * 
+		 * @param good   the good to add.
 		 * @param amount the amount to add.
 		 */
 		void addGoodAmount(Good good, int amount) {
@@ -479,7 +473,8 @@ public class EmergencySupplyPanel extends WizardPanel {
 
 		/**
 		 * Removes an amount of a good from the table.
-		 * @param good the good to remove.
+		 * 
+		 * @param good   the good to remove.
 		 * @param amount the amount to remove.
 		 */
 		void removeGoodAmount(Good good, int amount) {
@@ -516,6 +511,7 @@ public class EmergencySupplyPanel extends WizardPanel {
 
 		/**
 		 * Returns the number of rows in the model.
+		 * 
 		 * @return number of rows.
 		 */
 		public int getRowCount() {
@@ -524,6 +520,7 @@ public class EmergencySupplyPanel extends WizardPanel {
 
 		/**
 		 * Returns the number of columns in the model.
+		 * 
 		 * @return number of columns.
 		 */
 		public int getColumnCount() {
@@ -532,17 +529,21 @@ public class EmergencySupplyPanel extends WizardPanel {
 
 		/**
 		 * Returns the name of the column at columnIndex.
+		 * 
 		 * @param columnIndex the column index.
 		 * @return column name.
 		 */
 		public String getColumnName(int columnIndex) {
-			if (columnIndex == 0) return "Good";
-			else return "Amount";
+			if (columnIndex == 0)
+				return "Good";
+			else
+				return "Amount";
 		}
 
 		/**
 		 * Returns the value for the cell at columnIndex and rowIndex.
-		 * @param row the row whose value is to be queried.
+		 * 
+		 * @param row    the row whose value is to be queried.
 		 * @param column the column whose value is to be queried.
 		 * @return the value Object at the specified cell.
 		 */
@@ -550,9 +551,11 @@ public class EmergencySupplyPanel extends WizardPanel {
 			Object result = null;
 
 			if (row < cargoList.size()) {
-				Good good = cargoList.get(row); 
-				if (column == 0) result = good.getName();
-				else result = cargoMap.get(good);
+				Good good = cargoList.get(row);
+				if (column == 0)
+					result = good.getName();
+				else
+					result = cargoMap.get(good);
 			}
 
 			return result;
@@ -570,13 +573,16 @@ public class EmergencySupplyPanel extends WizardPanel {
 
 		/**
 		 * Adds an amount of a good to the table.
-		 * @param good the good to add.
+		 * 
+		 * @param good   the good to add.
 		 * @param amount the amount to add.
 		 */
 		void addGoodAmount(Good good, int amount) {
 			if (amount > 0) {
-				if (cargoList.contains(good)) amount += cargoMap.get(good);
-				else cargoList.add(good);
+				if (cargoList.contains(good))
+					amount += cargoMap.get(good);
+				else
+					cargoList.add(good);
 				cargoMap.put(good, amount);
 				fireTableDataChanged();
 			}
@@ -584,13 +590,15 @@ public class EmergencySupplyPanel extends WizardPanel {
 
 		/**
 		 * Removes an amount of a good from the table.
-		 * @param good the good to remove.
+		 * 
+		 * @param good   the good to remove.
 		 * @param amount the amount to remove.
 		 */
 		void removeGoodAmount(Good good, int amount) {
 			if (amount > 0) {
 				int currentAmount = 0;
-				if (cargoList.contains(good)) currentAmount = cargoMap.get(good);
+				if (cargoList.contains(good))
+					currentAmount = cargoMap.get(good);
 				int finalAmount = currentAmount - amount;
 
 				if (finalAmount > 0) {
@@ -599,8 +607,7 @@ public class EmergencySupplyPanel extends WizardPanel {
 					fireTableDataChanged();
 					if (selectedGoodIndex > -1)
 						cargoTable.setRowSelectionInterval(selectedGoodIndex, selectedGoodIndex);
-				}
-				else {
+				} else {
 					cargoList.remove(good);
 					cargoMap.remove(good);
 					fireTableDataChanged();
@@ -610,6 +617,7 @@ public class EmergencySupplyPanel extends WizardPanel {
 
 		/**
 		 * Gets the cargo goods.
+		 * 
 		 * @return map of goods and integers.
 		 */
 		Map<Good, Integer> getCargoGoods() {
@@ -618,13 +626,15 @@ public class EmergencySupplyPanel extends WizardPanel {
 
 		/**
 		 * Checks if a vehicle is being towed.
+		 * 
 		 * @return true if vehicle is towed.
 		 */
 		private boolean hasCargoVehicle() {
 			boolean result = false;
 			Iterator<Good> i = cargoList.iterator();
 			while (i.hasNext()) {
-				if (i.next().getCategory() == GoodType.VEHICLE) result = true;
+				if (i.next().getCategory() == GoodType.VEHICLE)
+					result = true;
 			}
 			return result;
 		}

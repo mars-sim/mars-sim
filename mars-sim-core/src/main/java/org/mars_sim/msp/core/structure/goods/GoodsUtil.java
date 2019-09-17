@@ -8,8 +8,10 @@ package org.mars_sim.msp.core.structure.goods;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.SimulationConfig;
@@ -33,7 +35,8 @@ public class GoodsUtil {
 	
 	// Data members
 	private static List<Good> goodsList;
-
+	private static Map<Integer, Good> goodsMap;
+	
 	private static VehicleConfig vehicleConfig = SimulationConfig.instance().getVehicleConfiguration();
 	
 	/**
@@ -48,29 +51,50 @@ public class GoodsUtil {
 	 * @return list of goods
 	 */
 	public static List<Good> getGoodsList() {
-		if (goodsList == null) {
+		if (goodsList == null || goodsMap == null) {
 			goodsList = new ArrayList<Good>();
-			populateGoodsList();
+			goodsMap = new HashMap<>();
+			populateGoods();
 		}
 
 		return Collections.unmodifiableList(goodsList);
 	}
 
 	/**
-	 * Destroys the current goods list.
+	 * Gets a list of all goods in the simulation.
+	 * 
+	 * @return list of goods
 	 */
-	public static void destroyGoodsList() {
+	public static Map<Integer, Good> getGoodsMap() {
+		if (goodsList == null || goodsMap == null) {
+			goodsList = new ArrayList<Good>();
+			goodsMap = new HashMap<>();
+			populateGoods();
+		}
+		
+		return goodsMap;
+	}
+	
+	/**
+	 * Destroys the current goods list and maps.
+	 */
+	public static void destroyGoods() {
 		if (goodsList != null) {
 			goodsList.clear();
 		}
 
 		goodsList = null;
-	}
+		
+		if (goodsMap != null) {
+			goodsMap.clear();
+		}
 
+		goodsList = null;
+	}
+	
 	public static Good createResourceGood(Resource resource) {
 		if (resource == null) {
 			logger.severe("resource is NOT supposed to be null.");
-//			throw new IllegalArgumentException("resource cannot be null");
 		}
 		GoodType category = null;
 		if (resource instanceof AmountResource)
@@ -107,23 +131,10 @@ public class GoodsUtil {
 	public static Good getResourceGood(Resource resource) {
 		if (resource == null) { 
 			logger.severe("resource is NOT supposed to be null.");
-//			throw new IllegalArgumentException("resource cannot be null");
 		}
-//		GoodType category = null;
-//		if (resource instanceof AmountResource)
-//			category = GoodType.AMOUNT_RESOURCE;
-//		else if (resource instanceof ItemResource)
-//			category = GoodType.ITEM_RESOURCE;
-//		return new Good(resource.getName(), resource.getID(), category);
+		
 		int id = resource.getID();
-		Iterator<Good> i = getGoodsList().iterator();
-		while (i.hasNext()) {
-			Good good = i.next();
-			if (good.getID() == id)
-				return good;	
-		}
-		logger.severe("resource is NOT supposed to be null.");
-		return null;
+		return getGoodsMap().get(id);
 	}
 
 	/**
@@ -133,25 +144,7 @@ public class GoodsUtil {
 	 * @return good for the resource.
 	 */
 	public static Good getResourceGood(int id) {
-//		if (resource == null) {
-//			throw new IllegalArgumentException("resource cannot be null");
-//		}
-//		GoodType category = null;
-//		if (id < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
-//			category = GoodType.AMOUNT_RESOURCE;
-//			return new Good(ResourceUtil.findAmountResourceName(id), id, category);
-//		} else if (id >= ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
-//			category = GoodType.ITEM_RESOURCE;
-//			return new Good(ItemResourceUtil.findItemResourceName(id), id, category);
-//		}
-		Iterator<Good> i = getGoodsList().iterator();
-		while (i.hasNext()) {
-			Good good = i.next();
-			if (good.getID() == id)
-				return good;	
-		}
-		logger.severe("resource is NOT supposed to be null.");
-		return null;
+		return getGoodsMap().get(id);
 	}
 	
 	/**
@@ -162,10 +155,10 @@ public class GoodsUtil {
 	 */
 	public static Good createEquipmentGood(Class<?> equipmentClass) {
 		if (equipmentClass == null) {
-			throw new IllegalArgumentException("goodClass cannot be null");
+			logger.severe("goodClass cannot be null");
 		}
 		int id = EquipmentType.convertClass2ID(equipmentClass);
-		return new Good(EquipmentType.convertID2Enum(id).getType(), id, GoodType.EQUIPMENT);
+		return new Good(EquipmentType.convertID2Enum(id).getName(), id, GoodType.EQUIPMENT);
 	}
 
 	/**
@@ -175,9 +168,7 @@ public class GoodsUtil {
 	 * @return good for the resource class or null if none.
 	 */
 	public static Good createEquipmentGood(int id) {
-		return new Good(EquipmentType.convertID2Enum(id).getType(), id, GoodType.EQUIPMENT);
-//		Class<? extends Unit> equipmentClass = EquipmentFactory.getEquipmentClass(EquipmentType.int2enum(e).getName());
-//		return getEquipmentGood(EquipmentFactory.getEquipmentClass(EquipmentType.convertID2Type(id).getName()));
+		return new Good(EquipmentType.convertID2Enum(id).getName(), id, GoodType.EQUIPMENT);
 	}
 	
 	/**
@@ -189,28 +180,24 @@ public class GoodsUtil {
 	public static Good getEquipmentGood(Class<?> equipmentClass) {
 		if (equipmentClass == null) {
 			logger.severe("equipmentClass is NOT supposed to be null.");
-//			throw new IllegalArgumentException("equipmentClass cannot be null");
 		}
 		int id = EquipmentType.convertClass2ID(equipmentClass);
-		Iterator<Good> i = getGoodsList().iterator();
-		while (i.hasNext()) {
-			Good good = i.next();
-			if (good.getID() == id)
-				return good;	
+		if (id > 0) {
+			return getEquipmentGood(id);
 		}
 		
 		return null;
 	}
 
+	
+	/**
+	 * Gets a good object for a given equipment id
+	 * 
+	 * @param id
+	 * @return
+	 */
 	public static Good getEquipmentGood(int id) {
-		Iterator<Good> i = getGoodsList().iterator();
-		while (i.hasNext()) {
-			Good good = i.next();
-			if (good.getID() == id)
-				return good;	
-		}
-		
-		return null;
+		return getGoodsMap().get(id);
 	}
 
 	/**
@@ -221,13 +208,8 @@ public class GoodsUtil {
 	 */
 	public static Good createVehicleGood(String vehicleType) {
 		if ((vehicleType == null) || vehicleType.trim().length() == 0) {
-			logger.severe("vehicleType is NOT supposed to be blacnk or null.");
-//			throw new IllegalArgumentException("vehicleType cannot be blank or null.");
+			logger.severe("vehicleType is NOT supposed to be blank or null.");
 		}
-//		Class<?> vehicleClass = Rover.class;
-//		if (LightUtilityVehicle.NAME.equalsIgnoreCase(vehicleType))
-//			vehicleClass = LightUtilityVehicle.class;
-//		return new Good(vehicleType, vehicleClass, GoodType.VEHICLE);
 		return new Good(vehicleType, VehicleType.convertName2ID(vehicleType), GoodType.VEHICLE);
 	}
 
@@ -239,17 +221,11 @@ public class GoodsUtil {
 	 */
 	public static Good getVehicleGood(String vehicleType) {
 		if ((vehicleType == null) || vehicleType.trim().length() == 0) {
-			logger.severe("vehicleType is NOT supposed to be blacnk or null.");
-//			throw new IllegalArgumentException("vehicleType cannot be blank or null.");
+			logger.severe("vehicleType is NOT supposed to be blank or null.");
 		}
-		int id = VehicleType.convertName2ID(vehicleType);
-		Iterator<Good> i = getGoodsList().iterator();
-		while (i.hasNext()) {
-			Good good = i.next();
-			if (good.getID() == id)
-				return good;	
-		}
-		return null;
+		
+		int id = VehicleType.convertName2ID(vehicleType);		
+		return getGoodsMap().get(id);
 	}
 	
 	/**
@@ -260,16 +236,28 @@ public class GoodsUtil {
 	 */
 	public static boolean containsGood(Good good) {
 		if (good == null) {
-//			throw new IllegalArgumentException("good cannot be null.");
 			logger.severe("good is NOT supposed to be null.");
 		}
 		return getGoodsList().contains(good);
 	}
 
 	/**
+	 * Checks if a good is valid in the simulation.
+	 * 
+	 * @param good the good to check.
+	 * @return true if good is valid.
+	 */
+	public static boolean containsGood(int id) {
+		if (id > 0) {
+			logger.severe("good id is NOT supposed to be less than zero.");
+		}
+		return getGoodsMap().containsKey(id);
+	}
+	
+	/**
 	 * Populates the goods list with all goods.
 	 */
-	private static void populateGoodsList() {
+	private static void populateGoods() {
 		// Populate amount resources.
 		populateAmountResources();
 
@@ -286,49 +274,64 @@ public class GoodsUtil {
 		Collections.sort(goodsList);
 	}
 
+	
 	/**
 	 * Populates the goods list with all amount resources.
 	 */
 	private static void populateAmountResources() {
 //		Iterator<Integer> i = ResourceUtil.getInstance().getARIDs().iterator();
 		Iterator<AmountResource> i = ResourceUtil.getAmountResources().iterator();
-		while (i.hasNext())
-			goodsList.add(createResourceGood(i.next()));
+		while (i.hasNext()) {
+			AmountResource ar = i.next();
+			Good g = createResourceGood(ar);
+			goodsList.add(g);
+			goodsMap.put(ar.getID(), g);
+		}		
 	}
-
+	
 	/**
 	 * Populates the goods list with all item resources.
 	 */
 	private static void populateItemResources() {
 //		Iterator<Integer> i = ItemResourceUtil.getItemIDs().iterator();
 		Iterator<Part> i = ItemResourceUtil.getItemResources().iterator();
-		while (i.hasNext())
-			goodsList.add(createResourceGood(i.next()));
+		while (i.hasNext()) {
+			Part p = i.next();
+			Good g = createResourceGood(p);
+			goodsList.add(g);
+			goodsMap.put(p.getID(), g);
+		}		
 	}
-
+	
 	/**
 	 * Populates the goods list with all equipment.
 	 */
 	private static void populateEquipment() {
 		List<String> equipmentNames = new ArrayList<String>(EquipmentFactory.getEquipmentNames());
-		Collections.sort(equipmentNames);
+//		Collections.sort(equipmentNames);
 		Iterator<String> i = equipmentNames.iterator();
 		while (i.hasNext()) {
 			String name = i.next();
-//			Class<? extends Equipment> equipmentClass = EquipmentFactory.getEquipmentClass(name);
-			int id = EquipmentType.convertType2ID(name);
-			goodsList.add(new Good(name, id, GoodType.EQUIPMENT));
+			int id = EquipmentType.convertName2ID(name);
+			Good g = new Good(name, id, GoodType.EQUIPMENT);
+			goodsList.add(g);
+			goodsMap.put(id, g);
 		}
 	}
-
+	
 	/**
 	 * Populates the goods list with all vehicles.
 	 */
 	private static void populateVehicles() {
 		try {
 			Iterator<String> i = vehicleConfig.getVehicleTypes().iterator();
-			while (i.hasNext())
-				goodsList.add(createVehicleGood(i.next()));
+			while (i.hasNext()) {
+				String name = i.next();
+				int id = VehicleType.convertName2ID(name);
+				Good g = new Good(name, id, GoodType.VEHICLE);
+				goodsList.add(g);
+				goodsMap.put(id, g);
+			}
 		} catch (Exception e) {
 			e.printStackTrace(System.err);
 		}

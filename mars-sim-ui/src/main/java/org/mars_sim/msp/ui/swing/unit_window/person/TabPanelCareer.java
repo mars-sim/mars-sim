@@ -450,10 +450,10 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 		int pop = 0;
 
 		Settlement settlement = null;
-		if (person.getAssociatedSettlement() != null)
+		if (person.getAssociatedSettlement() != null) {
 			settlement = person.getAssociatedSettlement();
-		else if (person.isOutside()) {
-			settlement = (Settlement) person.getTopContainerUnit();
+//		else if (person.isOutside()) {
+//			settlement = (Settlement) person.getTopContainerUnit();
 		} else if (person.isInVehicle()) {
 			Vehicle vehicle = (Vehicle) person.getContainerUnit();
 			settlement = vehicle.getSettlement();
@@ -642,10 +642,10 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 					// Use getAssociatedSettlement instead of getSettlement()
 					int pop = 0;
 					Settlement settlement = null;
-					if (person.getAssociatedSettlement() != null)
+					if (person.getAssociatedSettlement() != null) {
 						settlement = person.getAssociatedSettlement();
-					else if (person.isOutside()) {// .getLocationSituation() == LocationSituation.OUTSIDE) {
-						settlement = (Settlement) person.getTopContainerUnit();
+//					else if (person.isOutside()) {// .getLocationSituation() == LocationSituation.OUTSIDE) {
+//						settlement = (Settlement) person.getTopContainerUnit();
 					} else if (person.isInVehicle()) {// .getLocationSituation() == LocationSituation.IN_VEHICLE) {
 						Vehicle vehicle = (Vehicle) person.getContainerUnit();
 						settlement = vehicle.getSettlement();

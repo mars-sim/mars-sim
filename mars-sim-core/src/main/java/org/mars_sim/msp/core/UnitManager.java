@@ -387,14 +387,8 @@ public class UnitManager implements Serializable {
 	public Unit getUnitByID(int id) {
 		if (id == 0)
 			return marsSurface;
-		
-		Unit u = lookupUnit.get(id);
-		
-		if (u != null) {
-			return u;
-		}
 			
-		u = lookupSettlement.get(id);
+		Unit u = lookupSettlement.get(id);
 		
 		if (u != null) {
 			return u;
@@ -419,6 +413,12 @@ public class UnitManager implements Serializable {
 		}
 		
 		u = lookupRobot.get(id);
+		
+		if (u != null) {
+			return u;
+		}
+		
+		u = lookupUnit.get(id);
 		
 		if (u != null) {
 			return u;
