@@ -34,7 +34,7 @@ public class Politician extends Job implements Serializable {
 	private double[] roleProspects = new double[] {15.0, 5.0, 25.0, 25.0, 20.0, 5.0, 5.0};
 
 	private static double TRADING_RANGE = 1500D;
-	private static double SETTLEMENT_MULTIPLIER = 1D;
+	private static double SETTLEMENT_MULTIPLIER = .3D;
 
 	/**
 	 * Constructor.
@@ -104,7 +104,7 @@ public class Politician extends Job implements Serializable {
 	 */
 	public double getSettlementNeed(Settlement settlement) {
 
-		double result = 0D;
+		double result = .1;
 
 		int pop = settlement.getNumCitizens();
 		
@@ -122,10 +122,10 @@ public class Politician extends Job implements Serializable {
 		while (j.hasNext()) {
 			Building building = j.next();
 			Administration admin = building.getAdministration();
-			result += admin.getStaffCapacity()/4D;
+			result += admin.getStaffCapacity()/8D;
 		}
 		
-		result += pop/48;
+		result += pop/96;
 		return result;
 	}
 

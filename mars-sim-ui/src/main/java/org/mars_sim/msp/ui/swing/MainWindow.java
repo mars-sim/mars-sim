@@ -7,26 +7,18 @@
 
 package org.mars_sim.msp.ui.swing;
 
-import java.awt.AlphaComposite;
-import java.awt.BasicStroke;
 import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Composite;
 import java.awt.Dimension;
-import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Image;
-import java.awt.RenderingHints;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
-import java.beans.PropertyChangeEvent;
 import java.io.File;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -49,7 +41,6 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
-import javax.swing.plaf.LayerUI;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 
 import org.mars_sim.msp.core.Msg;
@@ -139,8 +130,8 @@ extends JComponent {
 	private WebPanel bottomPane;
 	private WebPanel mainPane;
 
-	private JLayer<JPanel> jlayer;
-	private WaitLayerUIPanel layerUI = new WaitLayerUIPanel();
+//	private JLayer<JPanel> jlayer;
+//	private WaitLayerUIPanel layerUI = new WaitLayerUIPanel();
 
 	private int memMax;
 	private int memUsed;
@@ -250,10 +241,11 @@ extends JComponent {
 
 		// Set up the main pane
 		mainPane = new WebPanel(new BorderLayout());
-
+		frame.add(mainPane);
+		
 		// Set up the glassy wait layer for pausing
-		jlayer = new JLayer<>(mainPane, layerUI);
-		frame.add(jlayer);
+//		jlayer = new JLayer<>(mainPane, layerUI);
+//		frame.add(jlayer);
 		
 		// Add main pane
 		mainPane.add(desktop, BorderLayout.CENTER);
@@ -1047,98 +1039,98 @@ extends JComponent {
 	}
 }
 
-class WaitLayerUIPanel extends LayerUI<JPanel> implements ActionListener {
-
-	private boolean mIsRunning;
-	private boolean mIsFadingOut;
-	private javax.swing.Timer mTimer;
-	private int mAngle;
-	private int mFadeCount;
-	private int mFadeLimit = 15;
-
-	@Override
-	public void paint(Graphics g, JComponent c) {
-		int w = c.getWidth();
-		int h = c.getHeight();
-		super.paint(g, c); // Paint the view.
-		if (!mIsRunning) {
-			return;
-		}
-		Graphics2D g2 = (Graphics2D) g.create();
-		float fade = (float) mFadeCount / (float) mFadeLimit;
-		Composite urComposite = g2.getComposite(); // Gray it out.
-		if (.5f * fade < 0.0f) {
-			fade = 0;
-		}
-		else if (.5f * fade > 1.0f) {
-			fade = 1;
-		}
-		g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, .5f * fade));
-		g2.fillRect(0, 0, w, h);
-		g2.setComposite(urComposite);
-		int s = Math.min(w, h) / 5;// Paint the wait indicator.
-		int cx = w / 2;
-		int cy = h / 2;
-		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		g2.setStroke(new BasicStroke(s / 4, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-		g2.setPaint(Color.white);
-		g2.rotate(Math.PI * mAngle / 180, cx, cy);
-		for (int i = 0; i < 12; i++) {
-			float scale = (11.0f - (float) i) / 11.0f;
-			g2.drawLine(cx + s, cy, cx + s * 2, cy);
-			g2.rotate(-Math.PI / 6, cx, cy);
-			if (scale * fade < 0.0f) {
-				fade = 0;
-			}
-			else if (scale * fade > 1.0f) {
-				fade = 1;
-			}
-			g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, scale * fade));
-		}
-		g2.dispose();
-	}
-
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		if (mIsRunning) {
-			firePropertyChange("tick", 0, 1);
-			mAngle += 3;
-			if (mAngle >= 360) {
-				mAngle = 0;
-			}
-			if (mIsFadingOut) {
-				if (--mFadeCount == 0) {
-					mIsRunning = false;
-					mTimer.stop();
-				}
-			} else if (mFadeCount < mFadeLimit) {
-				mFadeCount++;
-			}
-		}
-	}
-	
-	public void start() {
-		if (mIsRunning) {
-			return;
-		}
-		mIsRunning = true;// Run a thread for animation.
-		mIsFadingOut = false;
-		mFadeCount = 0;
-		int fps = 24;
-		int tick = 1000 / fps;
-		mTimer = new javax.swing.Timer(tick, this);
-		mTimer.start();
-	}
-
-	public void stop() {
-		mIsFadingOut = true;
-//		mIsRunning = false;
-	}
-
-	@Override
-	public void applyPropertyChange(PropertyChangeEvent pce, JLayer l) {
-		if ("tick".equals(pce.getPropertyName())) {
-			l.repaint();
-		}
-	}
-}
+//class WaitLayerUIPanel extends LayerUI<JPanel> implements ActionListener {
+//
+//	private boolean mIsRunning;
+//	private boolean mIsFadingOut;
+//	private javax.swing.Timer mTimer;
+//	private int mAngle;
+//	private int mFadeCount;
+//	private int mFadeLimit = 15;
+//
+//	@Override
+//	public void paint(Graphics g, JComponent c) {
+//		int w = c.getWidth();
+//		int h = c.getHeight();
+//		super.paint(g, c); // Paint the view.
+//		if (!mIsRunning) {
+//			return;
+//		}
+//		Graphics2D g2 = (Graphics2D) g.create();
+//		float fade = (float) mFadeCount / (float) mFadeLimit;
+//		Composite urComposite = g2.getComposite(); // Gray it out.
+//		if (.5f * fade < 0.0f) {
+//			fade = 0;
+//		}
+//		else if (.5f * fade > 1.0f) {
+//			fade = 1;
+//		}
+//		g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, .5f * fade));
+//		g2.fillRect(0, 0, w, h);
+//		g2.setComposite(urComposite);
+//		int s = Math.min(w, h) / 5;// Paint the wait indicator.
+//		int cx = w / 2;
+//		int cy = h / 2;
+//		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+//		g2.setStroke(new BasicStroke(s / 4, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+//		g2.setPaint(Color.white);
+//		g2.rotate(Math.PI * mAngle / 180, cx, cy);
+//		for (int i = 0; i < 12; i++) {
+//			float scale = (11.0f - (float) i) / 11.0f;
+//			g2.drawLine(cx + s, cy, cx + s * 2, cy);
+//			g2.rotate(-Math.PI / 6, cx, cy);
+//			if (scale * fade < 0.0f) {
+//				fade = 0;
+//			}
+//			else if (scale * fade > 1.0f) {
+//				fade = 1;
+//			}
+//			g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, scale * fade));
+//		}
+//		g2.dispose();
+//	}
+//
+//	@Override
+//	public void actionPerformed(ActionEvent e) {
+//		if (mIsRunning) {
+//			firePropertyChange("tick", 0, 1);
+//			mAngle += 3;
+//			if (mAngle >= 360) {
+//				mAngle = 0;
+//			}
+//			if (mIsFadingOut) {
+//				if (--mFadeCount == 0) {
+//					mIsRunning = false;
+//					mTimer.stop();
+//				}
+//			} else if (mFadeCount < mFadeLimit) {
+//				mFadeCount++;
+//			}
+//		}
+//	}
+//	
+//	public void start() {
+//		if (mIsRunning) {
+//			return;
+//		}
+//		mIsRunning = true;// Run a thread for animation.
+//		mIsFadingOut = false;
+//		mFadeCount = 0;
+//		int fps = 24;
+//		int tick = 1000 / fps;
+//		mTimer = new javax.swing.Timer(tick, this);
+//		mTimer.start();
+//	}
+//
+//	public void stop() {
+//		mIsFadingOut = true;
+////		mIsRunning = false;
+//	}
+//
+//	@Override
+//	public void applyPropertyChange(PropertyChangeEvent pce, JLayer l) {
+//		if ("tick".equals(pce.getPropertyName())) {
+//			l.repaint();
+//		}
+//	}
+//}

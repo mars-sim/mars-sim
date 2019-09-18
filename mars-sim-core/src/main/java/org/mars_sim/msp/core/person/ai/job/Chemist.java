@@ -127,7 +127,7 @@ public class Chemist extends Job implements Serializable {
 
 	@Override
 	public double getSettlementNeed(Settlement settlement) {
-		double result = 0D;
+		double result = .1;
 
 		// Add (labspace * tech level / 2) for all labs with chemistry specialties.
 		List<Building> laboratoryBuildings = settlement.getBuildingManager().getBuildings(FunctionType.RESEARCH);
@@ -136,7 +136,7 @@ public class Chemist extends Job implements Serializable {
 			Building building = i.next();
 			Research lab = building.getResearch();
 			if (lab.hasSpecialty(ScienceType.CHEMISTRY)) {
-				result += (lab.getLaboratorySize() * lab.getTechnologyLevel() / 2D);
+				result += (lab.getLaboratorySize() * lab.getTechnologyLevel() / 4D);
 			}
 		}
 

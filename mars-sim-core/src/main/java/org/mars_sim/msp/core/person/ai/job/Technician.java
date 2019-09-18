@@ -109,7 +109,7 @@ public class Technician extends Job implements Serializable {
 	 */
 	public double getSettlementNeed(Settlement settlement) {
 
-		double result = 0D;
+		double result = .1;
 
 		// Add number of buildings in settlement.
 		result += settlement.getBuildingManager().getNumBuildings() / 11D;

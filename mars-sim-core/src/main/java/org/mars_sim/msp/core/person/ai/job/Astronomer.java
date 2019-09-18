@@ -53,7 +53,6 @@ public class Astronomer extends Job implements Serializable {
 		// Use Job constructor
 		super(Astronomer.class);
 
-		// 2015-01-03 Added PrepareDessert
 		// jobTasks.add(PrepareDessert.class);
 
 		// Add astronomer-related tasks.
@@ -117,7 +116,7 @@ public class Astronomer extends Job implements Serializable {
 
 	@Override
 	public double getSettlementNeed(Settlement settlement) {
-		double result = 0D;
+		double result = 0.1;
 
 		BuildingManager manager = settlement.getBuildingManager();
 

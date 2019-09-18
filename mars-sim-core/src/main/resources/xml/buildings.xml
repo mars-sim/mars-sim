@@ -286,10 +286,15 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<research tech-level="1" capacity="2">
 				<!-- Sciences that can be researched at the laboratory. -->
 				<research-specialty name="AREOLOGY" />
+				<research-specialty name="ASTRONOMY" />
 				<research-specialty name="BIOLOGY" />
 				<research-specialty name="BOTANY" />
-				<research-specialty name="CHEMISTRY" />
+				<research-specialty name="CHEMISTRY" />				
+				<research-specialty name="MATHEMATICS" />				
 				<research-specialty name="MEDICINE" />
+				<research-specialty name="METEOROLOGY" />				
+				<research-specialty name="PHYSICS" />
+			
 				<activity>
 					<activity-spot xloc="-1.72" yloc="-2.65" />
 				</activity>
@@ -1637,12 +1642,14 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<power-storage capacity="20.0" />
 			<research tech-level="2" capacity="4">
 				<research-specialty name="AREOLOGY" />
+				<research-specialty name="ASTRONOMY" />
 				<research-specialty name="BIOLOGY" />
 				<research-specialty name="BOTANY" />
-				<research-specialty name="CHEMISTRY" />
+				<research-specialty name="CHEMISTRY" />				
+				<research-specialty name="MATHEMATICS" />				
+				<research-specialty name="MEDICINE" />
+				<research-specialty name="METEOROLOGY" />				
 				<research-specialty name="PHYSICS" />
-				<research-specialty name="MATHEMATICS" />
-				<research-specialty name="METEOROLOGY" />
 				<activity>
 					<activity-spot xloc="1.55" yloc="2.87" />
 					<activity-spot xloc="1.55" yloc="1.38" />
@@ -2214,12 +2221,14 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<power-storage capacity="20.0" />
 			<research tech-level="2" capacity="4">
 				<research-specialty name="AREOLOGY" />
+				<research-specialty name="ASTRONOMY" />
 				<research-specialty name="BIOLOGY" />
 				<research-specialty name="BOTANY" />
-				<research-specialty name="CHEMISTRY" />
+				<research-specialty name="CHEMISTRY" />				
+				<research-specialty name="MATHEMATICS" />				
+				<research-specialty name="MEDICINE" />
+				<research-specialty name="METEOROLOGY" />				
 				<research-specialty name="PHYSICS" />
-				<research-specialty name="MATHEMATICS" />
-				<research-specialty name="METEOROLOGY" />
 				<activity>
 					<activity-spot xloc=".4" yloc="3.05" />
 					<activity-spot xloc="-2.73" yloc="-.15" />
@@ -2759,8 +2768,11 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<power-storage capacity="20.0" />
 			<research tech-level="2" capacity="2">
 				<research-specialty name="AREOLOGY" />
-				<research-specialty name="BIOLOGY" />
-				<research-specialty name="CHEMISTRY" />
+				<research-specialty name="ASTRONOMY" />
+				<research-specialty name="CHEMISTRY" />				
+				<research-specialty name="MATHEMATICS" />
+				<research-specialty name="METEOROLOGY" />				
+				<research-specialty name="PHYSICS" />
 				<activity>
 					<activity-spot xloc="1.58" yloc=".82" />
 					<activity-spot xloc=".62" yloc=".28" />

@@ -117,11 +117,11 @@ public class Doctor extends Job implements Serializable {
 	 */
 	public double getSettlementNeed(Settlement settlement) {
 
-		double result = 0D;
+		double result = .1;
 
 		// Add total population / 10
 		int population = settlement.getNumCitizens();
-		result += population / 10D;
+		result += population / 32D;
 
 		// Add (labspace * tech level) / 2 for all labs with medical specialties.
 		List<Building> laboratoryBuildings = settlement.getBuildingManager().getBuildings(FunctionType.RESEARCH);
@@ -130,7 +130,7 @@ public class Doctor extends Job implements Serializable {
 			Building building = i.next();
 			Research lab = building.getResearch();
 			if (lab.hasSpecialty(ScienceType.MEDICINE)) {
-				result += ((double) (lab.getResearcherNum() * lab.getTechnologyLevel()) / 3.5D);
+				result += ((double) (lab.getResearcherNum() * lab.getTechnologyLevel()) / 8D);
 			}
 		}
 
@@ -140,7 +140,7 @@ public class Doctor extends Job implements Serializable {
 		while (j.hasNext()) {
 			Building building = j.next();
 			MedicalCare infirmary = building.getMedical();
-			result += (double) infirmary.getTechLevel() / 3.5D;
+			result += (double) infirmary.getTechLevel() / 8D;
 		}
 
 		return result;

@@ -125,7 +125,7 @@ public class Engineer extends Job implements Serializable {
 	 */
 	public double getSettlementNeed(Settlement settlement) {
 
-		double result = 0D;
+		double result = 0.1;
 
 		// Add (tech level * process number / 2) for all manufacture buildings.
 		List<Building> manufactureBuildings = settlement.getBuildingManager().getBuildings(FunctionType.MANUFACTURE);

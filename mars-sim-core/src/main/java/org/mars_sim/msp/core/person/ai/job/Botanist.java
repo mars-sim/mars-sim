@@ -107,7 +107,7 @@ implements Serializable {
 	 */
 	public double getCapability(Person person) {
 
-		double result = 0D;
+		double result = 0;
 
 		int botanySkill = person.getSkillManager().getSkillLevel(SkillType.BOTANY);
 		result = botanySkill;
@@ -136,7 +136,7 @@ implements Serializable {
 	 * @return the base need >= 0
 	 */
 	public double getSettlementNeed(Settlement settlement) {
-		double result = 0D;
+		double result = .1;
 
 		int pop = settlement.getNumCitizens();
 		
@@ -147,7 +147,7 @@ implements Serializable {
 			Building building = i.next();
 			Research lab = building.getResearch();
 			if (lab.hasSpecialty(ScienceType.BOTANY)) {
-				result += (double) (lab.getResearcherNum() * lab.getTechnologyLevel()) / 6D;
+				result += (double) (lab.getResearcherNum() * lab.getTechnologyLevel()) / 12D;
 			}
 		}
 
@@ -157,7 +157,7 @@ implements Serializable {
 		while (j.hasNext()) {
 			Building building = j.next();
 			Farming farm = building.getFarming();
-			result += (farm.getGrowingArea() / 120D);
+			result += (farm.getGrowingArea() / 240D);
 		}
 
 		// Multiply by food value at settlement.
@@ -166,7 +166,7 @@ implements Serializable {
 		//result *= foodValue;
 		//System.out.println("getSettlementNeed() : result is " + result);
 
-		result += pop/6D;
+		result += pop/32D;
 		return result;
 	}
 

@@ -111,7 +111,7 @@ public class Reporter extends Job implements Serializable {
 	 */
 	public double getSettlementNeed(Settlement settlement) {
 
-		double result = 0D;
+		double result = .1;
 
 		int pop = settlement.getNumCitizens();
 		

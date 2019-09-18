@@ -103,7 +103,7 @@ public class Chef extends Job implements Serializable {
 	 * @return the base need >= 0
 	 */
 	public double getSettlementNeed(Settlement settlement) {
-		double result = 0D;
+		double result = .1;
 
 		// Add all kitchen work space in settlement.
 		List<Building> kitchenBuildings = settlement.getBuildingManager().getBuildings(FunctionType.COOKING);
@@ -111,12 +111,12 @@ public class Chef extends Job implements Serializable {
 		while (i.hasNext()) {
 			Building building = i.next();
 			Cooking kitchen = building.getCooking();
-			result += (double) kitchen.getCookCapacity()/2D;
+			result += (double) kitchen.getCookCapacity()/12D;
 		}
 
 		// Add total population / 10.
 		int population = settlement.getIndoorPeopleCount();
-		result += ((double) population / 12D);
+		result += ((double) population / 16D);
 
 		return result;
 	}

@@ -85,7 +85,7 @@ public class CropConfig implements Serializable {
 	 * @param cropDoc the crop DOM document.
 	 */
 	public CropConfig(Document cropDoc) {
-		this.cropDoc = cropDoc;
+		CropConfig.cropDoc = cropDoc;
 
 		// Call to create lists and map
 		getCropTypes();

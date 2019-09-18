@@ -98,7 +98,7 @@ implements Serializable {
 
 	@Override
 	public double getSettlementNeed(Settlement settlement) {
-		double result = 0D;
+		double result = 0.1;
 
 		// Add (labspace * tech level / 2) for all labs with mathematics specialties.
 		List<Building> laboratoryBuildings = settlement.getBuildingManager().getBuildings(FunctionType.RESEARCH);

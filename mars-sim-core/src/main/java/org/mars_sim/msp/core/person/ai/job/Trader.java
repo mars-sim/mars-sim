@@ -99,7 +99,7 @@ public class Trader extends Job implements Serializable {
 	 */
 	public double getSettlementNeed(Settlement settlement) {
 
-		double result = 0D;
+		double result = .1;
 		
 		int pop = settlement.getNumCitizens();
 				
@@ -108,14 +108,14 @@ public class Trader extends Job implements Serializable {
 			Settlement otherSettlement = i.next();
 			if (otherSettlement != settlement) {
 				double distance = settlement.getCoordinates().getDistance(otherSettlement.getCoordinates());
-				result += TRADING_RANGE / distance * SETTLEMENT_MULTIPLIER;
+				result += TRADING_RANGE / distance * SETTLEMENT_MULTIPLIER *.5;
 //				if (distance <= TRADING_RANGE) {
 //					result += SETTLEMENT_MULTIPLIER;
 //				}
 			}
 		}
 
-		return result * pop / 12D;
+		return result * pop / 18D;
 	}
 
 	public double[] getRoleProspects() {

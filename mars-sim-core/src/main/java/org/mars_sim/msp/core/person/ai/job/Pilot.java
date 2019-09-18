@@ -123,14 +123,9 @@ public class Pilot extends Job implements Serializable {
 	 * @return the base need >= 0
 	 */
 	public double getSettlementNeed(Settlement settlement) {
-		// Get number of associated vehicles at a settlement.
-//		Collection<Vehicle> vehicles = settlement.getAllAssociatedVehicles();
-//		if (!vehicles.isEmpty())
-//			return vehicles.size()/1.5;
-//		else
-//			return 0;
-		
-		return settlement.getVehicleNum()/1.5;
+		double result = 0.1;
+		// Get number of associated vehicles at a settlement.	
+		return result + settlement.getVehicleNum()/3;
 	}
 
 	public double[] getRoleProspects() {

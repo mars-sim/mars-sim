@@ -14,6 +14,8 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
+import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.person.ai.task.AssistScientificStudyResearcher;
 import org.mars_sim.msp.core.person.ai.task.CompileScientificStudyResults;
 import org.mars_sim.msp.core.person.ai.task.ConsolidateContainers;
@@ -25,10 +27,12 @@ import org.mars_sim.msp.core.person.ai.task.PerformLaboratoryResearch;
 import org.mars_sim.msp.core.person.ai.task.ProposeScientificStudy;
 import org.mars_sim.msp.core.person.ai.task.RespondToStudyInvitation;
 import org.mars_sim.msp.core.science.ScienceType;
+import org.mars_sim.msp.core.structure.Lab;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.Research;
+import org.mars_sim.msp.core.vehicle.Rover;
 
 /**
  * The Physicist class represents a job for a physicist.
@@ -96,7 +100,7 @@ implements Serializable {
 
 	@Override
 	public double getSettlementNeed(Settlement settlement) {
-		double result = 0D;
+		double result = 0.1;
 
 		// Add (labspace * tech level / 2D) for all labs with physics specialties.
 		List<Building> laboratoryBuildings = settlement.getBuildingManager().getBuildings(FunctionType.RESEARCH);
@@ -105,10 +109,26 @@ implements Serializable {
 			Building building = i.next();
 			Research lab = building.getResearch();
 			if (lab.hasSpecialty(ScienceType.PHYSICS)) {
-				result += (lab.getLaboratorySize() * lab.getTechnologyLevel() / 3.5D);
+				result += (lab.getLaboratorySize() * lab.getTechnologyLevel() / 4D);
 			}
 		}
 
+		Iterator<Mission> k = missionManager.getMissionsForSettlement(settlement).iterator();
+		while (k.hasNext()) {
+			Mission mission = k.next();
+			if (mission instanceof RoverMission) {
+				Rover rover = ((RoverMission) mission).getRover();
+				if ((rover != null) && !settlement.getParkedVehicles().contains(rover)) {
+					if (rover.hasLab()) {
+						Lab lab = rover.getLab();
+						if (lab.hasSpecialty(ScienceType.PHYSICS)) {
+							result += (lab.getLaboratorySize() * lab.getTechnologyLevel() / 8D);
+						}
+					}
+				}
+			}
+		}
+		
 		return result;
 	}
 

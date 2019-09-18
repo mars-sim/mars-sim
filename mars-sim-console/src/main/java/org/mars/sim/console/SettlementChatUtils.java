@@ -110,7 +110,7 @@ public class SettlementChatUtils extends ChatUtils {
 					.sorted((p1, p2) -> p1.getName().compareTo(p2.getName())).collect(Collectors.toList());
 
 			Job job = JobUtil.getJob(jobStrName);
-			responseText.append(" --- " + Conversion.capitalize(jobStrName) + " Job Prospect Scores --- ");
+			responseText.append(" ** " + Conversion.capitalize(jobStrName) + " Job Prospect Scores ** ");
 //			responseText.append(System.lineSeparator());
 			responseText.append(System.lineSeparator());
 			for (Person p : list) {
@@ -743,6 +743,7 @@ public class SettlementChatUtils extends ChatUtils {
 
 			questionText = YOU_PROMPT + "How are the scientific endeavors in this settlement ?";
 
+			int WIDTH = 9;
 			double total = 0;
 			// Use Guava's multimap to handle duplicate key
 			Multimap<Double, ScienceType> map = ArrayListMultimap.create();
@@ -757,33 +758,35 @@ public class SettlementChatUtils extends ChatUtils {
 			for (int i = 0; i < size; i++) {
 				ScienceType t = sciences.get(i);
 				double score = scientificManager.getScienceScore(settlementCache, t);
+				double achievement = settlementCache.getScientificAchievement(t);
 //				String n = Conversion.capitalize(sciences.get(i).toString().toLowerCase());
 //				double[] array = scientificManager.getNumScienceStudy(settlementCache, sciences.get(i));
 //				array2D[i] = array;
-
-				total += score;
-				list.add(score);
-				map.put(score, t);
+				double subtotal = score + achievement;
+				total += subtotal;
+				list.add(subtotal);
+				map.put(subtotal, t);
 			}
 
 //			responseText.append(System.lineSeparator());
 //			responseText.append("The scientific studies undertaken in " + settlementCache + " :");
 			responseText.append(System.lineSeparator());
-			responseText.append(" ----------------------------------------------------------------------");
+			responseText.append(" ----------------------------------------------------------------------------------");
 			responseText.append(System.lineSeparator());
 
-			responseText.append(" Rank |");
+			responseText.append(" Rank  ");
 			responseText.append(addhiteSpacesRightName("Score", 5));
-			responseText.append(addhiteSpacesLeftName("| Science", 15));
+			responseText.append(addhiteSpacesRightName("Science", 13));
 
-			responseText.append(addhiteSpacesRightName("| Succ", 7));
-			responseText.append(addhiteSpacesRightName("| Fail", 7));
-			responseText.append(addhiteSpacesRightName("| Canx", 7));
-			responseText.append(addhiteSpacesRightName("| Prim", 7));
-			responseText.append(addhiteSpacesRightName("| Coll", 7));
-
+			responseText.append(addhiteSpacesRightName(" Succ ", WIDTH));
+			responseText.append(addhiteSpacesRightName(" Fail ", WIDTH));
+			responseText.append(addhiteSpacesRightName(" Canx ", WIDTH));
+			responseText.append(addhiteSpacesRightName(" Prim ", WIDTH));
+			responseText.append(addhiteSpacesRightName("Collab", WIDTH));
+			responseText.append(addhiteSpacesRightName("Achiev", WIDTH));
+			
 			responseText.append(System.lineSeparator());
-			responseText.append(" ----------------------------------------------------------------------");
+			responseText.append(" ----------------------------------------------------------------------------------");
 			responseText.append(System.lineSeparator());
 
 			list.sort((Double d1, Double d2) -> -d1.compareTo(d2));
@@ -810,42 +813,53 @@ public class SettlementChatUtils extends ChatUtils {
 
 				// List<ScientificStudy>
 				int suc = scientificManager.getAllSuccessfulStudies(settlementCache, t).size();
-				int failed = scientificManager.getAllFailedStudies(settlementCache, t).size();
+				int fail = scientificManager.getAllFailedStudies(settlementCache, t).size();
 				int canx = scientificManager.getAllCanceledStudies(settlementCache, t).size();
 				int oPri = scientificManager.getOngoingPrimaryStudies(settlementCache, t).size();
 				int oCol = scientificManager.getOngoingCollaborativeStudies(settlementCache, t).size();
-
-				responseText.append("  #" + (i + 1) + "   ");
+				double achieve = Math.round(10.0 *settlementCache.getScientificAchievement(t))/10.0;
+				
+				int rank = i + 1;
+				String rankStr;
+				if (rank >= 10)
+					rankStr = "  " + (i + 1) + "   ";
+				else
+					rankStr = "   " + (i + 1) + "   ";
+						
+				responseText.append(rankStr);
 				responseText.append(addhiteSpacesRightName(scoreStr, 5));
-				responseText.append(addhiteSpacesLeftName("   " + n, 15));
+				responseText.append(addhiteSpacesRightName("  " + n, 14));
 
-				responseText.append(addhiteSpacesRightName(suc + "", 7));
-				responseText.append(addhiteSpacesRightName(failed + "", 7));
-				responseText.append(addhiteSpacesRightName(canx + "", 7));
-				responseText.append(addhiteSpacesRightName(oPri + "", 7));
-				responseText.append(addhiteSpacesRightName(oCol + "", 7));
-
+				responseText.append(addhiteSpacesRightName(suc + "", WIDTH));
+				responseText.append(addhiteSpacesRightName(fail + "", WIDTH));
+				responseText.append(addhiteSpacesRightName(canx + "", WIDTH));
+				responseText.append(addhiteSpacesRightName(oPri + "", WIDTH));
+				responseText.append(addhiteSpacesRightName(oCol + "", WIDTH));
+				responseText.append(addhiteSpacesRightName(achieve + "", WIDTH));
+				
 				map.remove(score, t);
 				responseText.append(System.lineSeparator());
 			}
 
-			responseText.append(" ----------------------------------------------------------------------");
+			responseText.append(" ----------------------------------------------------------------------------------");
 			responseText.append(System.lineSeparator());
 			responseText.append(" Overall : " + Math.round(total * 10.0) / 10.0);
 			responseText.append(System.lineSeparator());
 			responseText.append(System.lineSeparator());
 			responseText.append("Notes:");
 			responseText.append(System.lineSeparator());
-			responseText.append("1. Succ = # of Successfully Completed Research");
+			responseText.append("1. Succ   : # of Successfully Completed Research");
 			responseText.append(System.lineSeparator());
-			responseText.append("2. Fail = # of Failed Research");
+			responseText.append("2. Fail   : # of Failed Research");
 			responseText.append(System.lineSeparator());
-			responseText.append("3. Canx = # of Cancelled Research");
+			responseText.append("3. Canx   : # of Cancelled Research");
 			responseText.append(System.lineSeparator());
-			responseText.append("4. Prim = # of Ongoing Primary Research");
+			responseText.append("4. Prim   : # of Ongoing Primary Research");
 			responseText.append(System.lineSeparator());
-			responseText.append("5. Coll = # of Ongoing Collaborative Research");
-
+			responseText.append("5. Collab : # of Ongoing Collaborative Research");
+			responseText.append(System.lineSeparator());
+			responseText.append("6. Achiev : the settlement's achievement score on completed studies");
+			
 		}
 
 		else if (text.toLowerCase().contains("social")) {
