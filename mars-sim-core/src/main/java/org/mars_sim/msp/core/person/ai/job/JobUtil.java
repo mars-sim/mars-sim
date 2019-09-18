@@ -239,7 +239,6 @@ public final class JobUtil implements Serializable {
 		Job originalJob = person.getMind().getJob();
 		// Determine person's associated settlement.
 		Settlement settlement = person.getAssociatedSettlement();
-
 		// Find new job for person.
 		double newJobProspect = Integer.MIN_VALUE;
 

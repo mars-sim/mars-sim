@@ -32,6 +32,7 @@ import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.science.ScienceType;
+import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.structure.ObjectiveType;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
@@ -739,6 +740,103 @@ public class SettlementChatUtils extends ChatUtils {
 
 		}
 
+		else if (text.toLowerCase().contains("researchers")) {
+			questionText = YOU_PROMPT + "Can you show me a list of researchers and their endeavors ?";
+			responseText.append(System.lineSeparator());
+			responseText.append(System.lineSeparator());
+			
+			List<Person> people = new ArrayList<>(settlementCache.getAllAssociatedPeople());
+			int size0 = people.size();
+
+			List<ScienceType> sciences = Arrays.asList(ScienceType.values());			
+			int size1 = sciences.size();
+
+			for (int i = 0; i < size0; i++) {
+				Person p = people.get(i);
+				responseText.append("  Name                           Job");
+				responseText.append(System.lineSeparator());
+				responseText.append(" ------------------------------------------ ");
+				responseText.append(System.lineSeparator());
+				responseText.append(addhiteSpacesLeftName(" #" +  i+1 + ". " + p.getName(), 28));
+				responseText.append(addhiteSpacesLeftName(" " + p.getJobName(), 20));
+				responseText.append(System.lineSeparator());
+				responseText.append(System.lineSeparator());
+				responseText.append(System.lineSeparator());
+				responseText.append(" Ongoing Primary Study             Phase");
+				responseText.append(System.lineSeparator());
+				responseText.append(" ------------------------------------------------ ");
+				responseText.append(System.lineSeparator());
+
+				ScientificStudy ss = scientificManager.getOngoingPrimaryStudy(p);
+				String priName = "";
+				String priPhase = "";
+				if (ss != null) {
+					priName = ss.getScienceName();
+					priPhase = ss.getPhase();
+				}
+				else {
+					responseText.append("   None");
+					responseText.append(System.lineSeparator());
+					responseText.append(System.lineSeparator());
+				}
+				
+				responseText.append(addhiteSpacesLeftName("  " + priName, 15));
+				responseText.append(addhiteSpacesLeftName("  " + priPhase, 20));
+				
+				responseText.append(System.lineSeparator());
+				responseText.append(System.lineSeparator());
+				responseText.append(System.lineSeparator());
+				
+				responseText.append(" Ongoing Collaborative Studies     Phase");
+				responseText.append(System.lineSeparator());
+				responseText.append(" ------------------------------------------------ ");
+				responseText.append(System.lineSeparator());
+				
+				List<ScientificStudy> cols = scientificManager.getOngoingCollaborativeStudies(p);
+				int size2 = cols.size();
+
+				if (size2 == 0) {
+					responseText.append("   None");
+					responseText.append(System.lineSeparator());
+					responseText.append(System.lineSeparator());
+				}
+				else {
+					for (int k = 0; k < size2; k++) {
+						String secName = "None";
+						String secPhase = "";
+						if (ss != null) {
+							secName = cols.get(k).getScienceName();
+							secPhase = cols.get(k).getPhase();
+						}
+						
+						responseText.append(addhiteSpacesLeftName(" " + secName, 15));
+						responseText.append(addhiteSpacesLeftName(" " + secPhase, 20));
+						responseText.append(System.lineSeparator());
+						responseText.append(System.lineSeparator());
+					}
+				}
+				
+				
+				responseText.append(System.lineSeparator());
+				responseText.append("  Subject         Achievement Score ");
+				responseText.append(System.lineSeparator());
+				responseText.append(" --------------------------------------- ");
+				responseText.append(System.lineSeparator());
+				
+				for (int j = 0; j < size1; j++) {
+					ScienceType t = sciences.get(j);
+
+					double score = p.getScientificAchievement(t);
+					responseText.append(addhiteSpacesLeftName(" " + t.getName(), 18));
+					responseText.append(addhiteSpacesRightName("     " + score, 8));
+					responseText.append(System.lineSeparator());
+				}
+				
+				responseText.append(System.lineSeparator());
+				responseText.append(System.lineSeparator());
+			}
+		}
+		
 		else if (text.toLowerCase().contains("science")) {
 
 			questionText = YOU_PROMPT + "How are the scientific endeavors in this settlement ?";

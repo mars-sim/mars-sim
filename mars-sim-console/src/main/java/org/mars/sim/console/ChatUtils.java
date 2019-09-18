@@ -65,7 +65,7 @@ public class ChatUtils {
 	public final static String[] SETTLEMENT_KEYS = new String[] { "weather", "people", "settler", "person", "robot",
 			"bot", "proposal", "vehicle range", "dash", "dashboard", "repair", "maintenance", "evasuit", "eva suit",
 			"mission plan", "mission now", "objective", "water", "o2", "oxygen", "co2", "carbon dioxide", "job roster",
-			"job demand", "job prospect", "bed", "social", "science" };
+			"job demand", "job prospect", "bed", "social", "science", "researchers" };
 
 	public final static String[] PERSON_KEYS = new String[] { "feeling", "status", "skill", "attribute", "birth", "age",
 			"how old", "born", "friend", "country", "nationality", "space agency", "sponsor", "specialty", "job",

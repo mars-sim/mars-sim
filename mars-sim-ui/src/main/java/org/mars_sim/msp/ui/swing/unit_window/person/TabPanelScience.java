@@ -37,7 +37,6 @@ import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
@@ -45,9 +44,9 @@ import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.tool.science.ScienceWindow;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
-import com.alee.managers.tooltip.TooltipWay;
 //import com.alee.managers.language.data.TooltipWay;
 import com.alee.managers.tooltip.TooltipManager;
+import com.alee.managers.tooltip.TooltipWay;
 
 /**
  * A tab panel displaying a person's scientific studies and achievements.
@@ -124,13 +123,8 @@ extends TabPanel {
 		});
 		studyScrollPane.setViewportView(studyTable);
 
-		// 2015-06-08 Added sorting
 		studyTable.setAutoCreateRowSorter(true);
-	    //if (!MainScene.OS.equals("linux")) {
-	    //	studyTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
-	    //}
 
-		// 2015-06-08 Added setTableStyle()
 		TableStyle.setTableStyle(studyTable);
 
 		// Create the button panel.
@@ -141,7 +135,6 @@ extends TabPanel {
 		scienceToolButton = new JButton(ImageLoader.getIcon(Msg.getString("img.science"))); //$NON-NLS-1$
 		scienceToolButton.setEnabled(false);
 		scienceToolButton.setMargin(new Insets(1, 1, 1, 1));
-		//scienceToolButton.setToolTipText(Msg.getString("TabPanelScience.tooltip.science")); //$NON-NLS-1$
 		TooltipManager.setTooltip (scienceToolButton, Msg.getString("TabPanelScience.tooltip.science"), TooltipWay.down);
 		scienceToolButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -182,7 +175,7 @@ extends TabPanel {
 		achievementTable.setRowSelectionAllowed(true);
 		achievementTable.setDefaultRenderer(Double.class, new NumberCellRenderer(1));
 
-		// 2015-09-24 Align the content to the center of the cell
+		//  Align the content to the center of the cell
 		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
 		renderer.setHorizontalAlignment(SwingConstants.CENTER);
 		achievementTable.getColumnModel().getColumn(0).setCellRenderer(renderer);
@@ -190,11 +183,8 @@ extends TabPanel {
 
 		achievementScrollPane.setViewportView(achievementTable);
 
-		// 2015-06-08 Added sorting
 		achievementTable.setAutoCreateRowSorter(true);
-	    ///if (!MainScene.OS.equals("linux")) {
-	    //	achievementTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
-	    //}
+
 		TableStyle.setTableStyle(achievementTable);
 	}
 
