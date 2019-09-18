@@ -251,10 +251,8 @@ public class Mind implements Serializable {
 
 			boolean overrideMission = false;
 
-			if (person.isInSettlement()) {
-				// Check if mission creation at settlement (if any) is overridden.
-				overrideMission = person.getSettlement().getMissionCreationOverride();
-			}
+			// Check if mission creation at settlement (if any) is overridden.
+			overrideMission = person.getAssociatedSettlement().getMissionCreationOverride();
 
 			// Check if it's within the mission request window 
 			// Within 50 millisols at the start of the work shift

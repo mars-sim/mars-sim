@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.location.LocationSituation;
 import org.mars_sim.msp.core.location.LocationStateType;
@@ -66,6 +67,9 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 
 	public static final int FIRST_EQUIPMENT_ID = 4050;
 	
+	public static final int UNKNOWN_ID = 8000;
+	
+	
 	// Data members
 	// The unit's location code
 	private int locationCode = 110_000;
@@ -84,7 +88,7 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 	private Inventory inventory;
 	/** The unit containing this unit. */
 //	protected Unit containerUnit;
-	private int containerID;
+	private int containerID = MARS_SURFACE_ID;
 	
 	/** Unit location coordinates. */
 	private Coordinates location;
@@ -154,8 +158,6 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 		
 		listeners = Collections.synchronizedList(new ArrayList<UnitListener>()); // Unit listeners.
 
-//		this.identifier = getNextIdentifier();
-		
 		// Creates a new location tag instance for each unit
 		tag = new LocationTag(this);
 
@@ -173,28 +175,26 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 		}
 		
 		// Define the default LocationStateType of an unit at the start of the sim
-		if (this instanceof Robot)
+		if (this instanceof Robot) {
 			currentStateType = LocationStateType.INSIDE_SETTLEMENT;
-		else if (this instanceof Equipment)
+		}
+		else if (this instanceof Equipment) {
 			currentStateType = LocationStateType.INSIDE_SETTLEMENT;
-		else if (this instanceof Person)
+		}
+		else if (this instanceof Person) {
 			currentStateType = LocationStateType.INSIDE_SETTLEMENT;
-		else if (this instanceof Building)
+		}
+		else if (this instanceof Building) {
 			currentStateType = LocationStateType.INSIDE_SETTLEMENT;
-		else if (this instanceof Vehicle)
-			currentStateType = LocationStateType.OUTSIDE_SETTLEMENT_VICINITY;
-		else if (this instanceof Settlement)
+		}
+		else if (this instanceof Vehicle) {
+			currentStateType = LocationStateType.INSIDE_SETTLEMENT;
+		}
+		else if (this instanceof Settlement) {
 			currentStateType = LocationStateType.OUTSIDE_ON_MARS;
+		}
 	}
 
-//	/**
-//	 * Get the unique identifier for this unit
-//	 * 
-//	 * @return Identifier
-//	 */
-//	public int getIdentifier() {
-//		return identifier;
-//	}
 
 	/**
 	 * Change the unit's name
@@ -437,10 +437,14 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 	 * @param newContainer the unit to contain this unit.
 	 */
 	public void setContainerUnit(Unit newContainer) {	
-		if (newContainer == null && mars != null) // to pass maven test
-			newContainer = mars.getMarsSurface();//marsSurface;
-			
+		if (newContainer == null && mars != null) {
+			// to pass maven test
+			newContainer = mars.getMarsSurface();
+			containerID = MARS_SURFACE_ID;
+		}
+		
 		if (this instanceof Person || this instanceof Robot)
+			// NOTE: consider a robot in this case 
 			updatePersonRobotState(newContainer);
 		else if (this instanceof Equipment)
 			updateEquipmentState(newContainer);
@@ -451,7 +455,6 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 		else if (this instanceof Settlement)
 			currentStateType = LocationStateType.OUTSIDE_ON_MARS;
 		
-//		containerUnit = newContainer.getIdentifier();
 		if (newContainer != null && newContainer.getIdentifier() != -1)
 			containerID = newContainer.getIdentifier();
 		
@@ -470,11 +473,15 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 			logger.severe("updatePersonRobotState(): " + getName() + " has an null newContainer");
 		
 		// Case 1a : exiting a settlement
-		if (oldContainer instanceof Settlement && newContainer instanceof MarsSurface)
+		if ((oldContainer instanceof EVASuit || oldContainer instanceof MarsSurface) && (newContainer instanceof EVASuit || newContainer instanceof MarsSurface))
+			currentStateType = LocationStateType.INSIDE_AIRLOCK;
+				
+		// Case 1a : exiting a settlement
+		if (oldContainer instanceof Settlement && (newContainer instanceof EVASuit || newContainer instanceof MarsSurface))
 			currentStateType = LocationStateType.OUTSIDE_SETTLEMENT_VICINITY;
 
 		// Case 1b (reverse of Case 1a)
-		else if (oldContainer instanceof MarsSurface && newContainer instanceof Settlement)
+		else if ((oldContainer instanceof EVASuit || oldContainer instanceof MarsSurface) && newContainer instanceof Settlement)
 			currentStateType = LocationStateType.INSIDE_SETTLEMENT;
 
 		// Case 2a : boarding a vehic)le parked inside a garage
@@ -492,7 +499,7 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 			currentStateType = LocationStateType.INSIDE_VEHICLE;
 
 		// Case 3b and 3c
-		else if (oldContainer instanceof Vehicle && newContainer instanceof MarsSurface) {
+		else if (oldContainer instanceof Vehicle && (newContainer instanceof EVASuit || newContainer instanceof MarsSurface)) {
 			if (((Vehicle) oldContainer).getLocationStateType() == LocationStateType.OUTSIDE_SETTLEMENT_VICINITY)
 				// Case 3b : a person exits a vehicle that is within the settlement vicinity
 				currentStateType = LocationStateType.OUTSIDE_SETTLEMENT_VICINITY;
@@ -553,31 +560,42 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 	}
 
 	/**
-	 * Updates the location state type of a vehicle
+	 * Updates the location state type of a vehicle.
+	 * 
+	 * @apiNote (1) : OUTSIDE_SETTLEMENT_VICINITY is the intermediate state between being INSIDE_SETTLEMENT (in a garage) and being OUTSIDE_ON_MARS.
+	 *
+	 * @apiNote (2) : OUTSIDE_SETTLEMENT_VICINITY can be used by a person only.
+	 *
+	 * @apiNote (3) : A vehicle may be in a garage inside a building or is parked at a settlement. 
+	 *	         In both cases, this vehicle is INSIDE_SETTLEMENT, not OUTSIDE_SETTLEMENT_VICINITY or OUTSIDE_ON_MARS.
 	 * 
 	 * @param newContainer
 	 */
 	public void updateVehicleState(Unit newContainer) {
-//		Unit oldContainer = this.containerUnit;
 		if (newContainer == null)
-			logger.severe("updateVehicleState(): " + getName() + " has an null newContainer");
-		// Note : "within a settlement vicinity" is the intermediate state between being
-		// "in a settlement" and being "outside on Mars"
+			logger.warning("updateVehicleState(): " + getName() + " has an null newContainer");
+		
 		// Case 1
-		if (newContainer instanceof MarsSurface) {
-			if (newContainer instanceof Vehicle)
-				// in case of luv
-				currentStateType = LocationStateType.INSIDE_VEHICLE;
-			else if (((Vehicle) this).getBuildingLocation() != null)
-				// 1a : to park in a garage
-				currentStateType = LocationStateType.INSIDE_SETTLEMENT;
-			else // if (newContainer instanceof Settlement)
-					// 1b : park outside of a settlement
-				currentStateType = LocationStateType.OUTSIDE_SETTLEMENT_VICINITY;
+		if (newContainer instanceof Vehicle)
+			// Case 1a : in case of LUV
+			currentStateType = LocationStateType.INSIDE_VEHICLE;
+		
+		// Case 2
+		else if (newContainer instanceof Settlement) {
+			
+			currentStateType = LocationStateType.INSIDE_SETTLEMENT;
+			
+//			if (((Vehicle) this).getBuildingLocation() != null || ((Vehicle) this).getStatus() == StatusType.GARAGED)
+//				// Case 2a : to park in a garage
+//				currentStateType = LocationStateType.INSIDE_SETTLEMENT;
+//			else // if (newContainer instanceof Settlement)
+//				// Case 2b : park outside of a settlement
+//				currentStateType = LocationStateType.INSIDE_SETTLEMENT;
 		}
 
-		else { // if (newContainer == null)
-				// Case 2 : leaving settlement vicinity to outside on mars
+		// Case 3
+		else if (newContainer instanceof MarsSurface) {
+
 			currentStateType = LocationStateType.OUTSIDE_ON_MARS;
 		}
 
@@ -844,6 +862,160 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 //	public void exit(LocationCodeType type) {
 //		locationCode = locationCode - type.getCode();
 //	}
+	
+	/**
+	 * Is this unit inside an environmentally enclosed breathable living space
+	 * such as inside a settlement or a vehicle (NOT including in an EVA Suit)
+	 * 
+	 * @return true if the unit is inside a breathable environment
+	 */
+	public boolean isInside() {
+		if (LocationStateType.INSIDE_SETTLEMENT == currentStateType
+				|| LocationStateType.INSIDE_VEHICLE == currentStateType)
+			return true;
+
+		return false;
+		
+//		if (containerID >= FIRST_SETTLEMENT_ID 
+//					&& containerID < FIRST_PERSON_ID) {
+//				return true;
+//		}
+//		
+//		return false;
+	}
+
+	/**
+	 * Is this unit outside on the surface of Mars, including wearing an EVA Suit 
+	 * and being outside the settlement/building/vehicle
+	 * 
+	 * @return true if the unit is outside
+	 */
+	public boolean isOutside() {
+		if (LocationStateType.OUTSIDE_ON_MARS == currentStateType
+				|| LocationStateType.OUTSIDE_SETTLEMENT_VICINITY == currentStateType)
+			return true;
+		
+		return false;
+		
+//		if (containerID == MARS_SURFACE_ID)
+//			return true;
+//		
+//		// if the container is a vehicle
+//		if (containerID >= FIRST_VEHICLE_ID && containerID < FIRST_PERSON_ID) {
+//			int vid = getContainerUnit().getContainerID();
+//			
+//			if (vid == MARS_SURFACE_ID)
+//				return true;
+//			
+////			// check if the vehicle is still inside a settlement/building/garage/
+////			if (vid >= FIRST_SETTLEMENT_ID
+////					&& vid < FIRST_VEHICLE_ID)
+////				return false;
+//		}
+//		
+//		// if the container is an equipment such as EVASuit
+//		if (containerID >= FIRST_EQUIPMENT_ID && containerID < UNKNOWN_ID) {
+//			int eid = getContainerUnit().getContainerID();
+//			
+//			if (eid == MARS_SURFACE_ID)
+//				return true;
+//			
+////			// check if the equipment itself is still inside a settlement/building/garage/vehicle
+////			if (eid >= FIRST_SETTLEMENT_ID
+////					&& eid < FIRST_PERSON_ID)
+////				return false;
+//		}
+//		
+//		// if the container is a person/robot
+//		if (containerID >= FIRST_PERSON_ID && containerID < FIRST_EQUIPMENT_ID) {
+//			int pid = getContainerUnit().getContainerID();
+//			
+//			if (pid == MARS_SURFACE_ID)
+//				return true;
+//			
+////			// check if the person/robot himself is still inside a settlement/building/garage/vehicle
+////			if (pid >= FIRST_SETTLEMENT_ID
+////					&& pid < FIRST_PERSON_ID)
+////				return false;
+//		}
+//	
+//		return false;
+	}
+	
+	/**
+	 * Is this unit inside a vehicle
+	 * 
+	 * @return true if the unit is inside a vehicle
+	 */
+	public boolean isInVehicle() {
+		if (LocationStateType.INSIDE_VEHICLE == currentStateType)
+			return true;
+
+		return false;
+		
+//		if (containerID >= FIRST_VEHICLE_ID
+//				&& containerID < FIRST_PERSON_ID)
+//			return true;
+//		
+//		return false;
+	}
+	
+	/**
+	 * Is this unit inside a settlement
+	 * 
+	 * @return true if the unit is inside a settlement
+	 */
+	public boolean isInSettlement() {
+		if (LocationStateType.INSIDE_SETTLEMENT == currentStateType)
+			return true;
+		
+		return false;
+		
+//		if (containerID >= FIRST_SETTLEMENT_ID
+//				&& containerID < FIRST_VEHICLE_ID)
+//			return true;
+//		
+//		else 
+//			return isInVehicleInGarage();		
+	}
+	
+	/**
+	 * Is this unit in a vehicle inside a garage
+	 * 
+	 * @return true if the unit is in a vehicle inside a garage
+	 */
+	public boolean isInVehicleInGarage() {
+		if (containerID >= FIRST_VEHICLE_ID && containerID < FIRST_PERSON_ID) {
+			int vid = getContainerUnit().getContainerID();
+			
+			if (vid >= FIRST_SETTLEMENT_ID
+					&& vid < FIRST_VEHICLE_ID)
+				return true;
+		}
+		
+		return false;	
+		
+//		if (getContainerUnit() instanceof Vehicle) {
+//			Building b = BuildingManager.getBuilding((Vehicle) getContainerUnit());
+//			if (b != null)
+//				// still inside the garage
+//				return true;
+//		}
+//		return false;
+	}
+	
+	/**
+	 * Is this unit inside a garage
+	 * 
+	 * @return true if the unit is inside a garage
+	 */
+	public boolean isInGarage() {
+		if (containerID >= FIRST_SETTLEMENT_ID
+				&& containerID < FIRST_VEHICLE_ID)
+			return true;
+		
+		return false;		
+	}
 	
 	/**
 	 * Loads instances

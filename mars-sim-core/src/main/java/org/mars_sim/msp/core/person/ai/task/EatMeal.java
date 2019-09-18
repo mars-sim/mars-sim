@@ -125,7 +125,7 @@ public class EatMeal extends Task implements Serializable {
 		super(NAME, person, false, false, STRESS_MODIFIER, true, 20D 
 				+ RandomUtil.getRandomDouble(10D) - RandomUtil.getRandomDouble(5D));
 		// 20 milisols ~ 30 mins
-
+//		logger.info("EatMeal " + person + " containerID : " + person.getContainerID());		
 		sourceName = sourceName.substring(sourceName.lastIndexOf(".") + 1, sourceName.length());
 
 		condition = person.getPhysicalCondition();

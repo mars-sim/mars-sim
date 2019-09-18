@@ -77,25 +77,25 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	 * Constructs an Equipment object
 	 * 
 	 * @param name     the name of the unit
-	 * @param location the unit's location
+	 * @param type     the type of the unit
+	 * @param location the unit's coordinates
 	 */
 	protected Equipment(String name, String type, Coordinates location) {
 		super(type, location);
+		
+		// Initialize data members.
 		this.type = type;
 		this.equipmentType = EquipmentType.convertName2Enum(type);
-		// Initialize data members.
 		isSalvaged = false;
 		salvageInfo = null;
 		
-		if (mars != null) {// For passing maven test
-			// Initially set container unit to the mars surface
-			setContainerUnit(marsSurface);
-			
-			this.identifier = getNextIdentifier();
-			// Add this equipment to the equipment lookup map		
-			unitManager.addEquipmentID(this);
-		}
-
+		this.identifier = getNextIdentifier();
+		// Add this equipment to the equipment lookup map		
+		unitManager.addEquipmentID(this);
+		
+		// For passing maven test
+		// Initially set container unit to the mars surface
+//		setContainerUnit(marsSurface);
 		
 //		// Place this person within a settlement
 //		enter(LocationCodeType.SETTLEMENT);
@@ -178,59 +178,6 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 		return salvageInfo;
 	}
 
-//	/**
-//	 * Get settlement equipment is at, null if not at a settlement
-//	 *
-//	 * @return the equipment's settlement
-//	 */
-//    @Override
-//	  public Settlement getSettlement() {
-//		LocationSituation ls = getLocationSituation();
-//		if (LocationSituation.IN_SETTLEMENT == ls) {
-//			return (Settlement) getContainerUnit();
-//		}
-//
-//		else if (LocationSituation.OUTSIDE == ls)
-//			return null;
-//
-//		else if (LocationSituation.IN_VEHICLE == ls) {
-//			Vehicle vehicle = (Vehicle) getContainerUnit();
-//			Settlement settlement = (Settlement) vehicle.getContainerUnit();
-//			return settlement;
-//		}
-//
-//		else if (LocationSituation.BURIED == ls) {
-//			// should not be the case
-//			return null;
-//		}
-//
-//		else {
-//			System.err.println("Equipment : error in determining " + getName() + "'s getSettlement() ");
-//			return null;
-//		}
-//	}
-
-	/**
-	 * Is the person inside a settlement or a vehicle
-	 * 
-	 * @return true if the person is inside a settlement or a vehicle
-	 */
-	public boolean isInside() {
-		Unit c = getContainerUnit();
-		if (c instanceof Settlement
-			|| c instanceof Vehicle)
-			return true;
-		else if (c instanceof Person) {
-			Unit cc = ((Person) c).getContainerUnit();
-			if (cc instanceof Settlement
-				|| cc instanceof Vehicle) {
-				return true;
-			}
-		}
-			
-		return false;
-	}
-	
 	
 	/**
 	 * Get the equipment's settlement, null if equipment is not at a settlement
@@ -314,64 +261,16 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	}
 
 	/**
-	 * Is the equipment's immediate container a settlement ?
+	 * Is a person carrying this equipment? Is this equipment's container a person ?
 	 * 
 	 * @return true if yes
 	 */
-	public boolean isInSettlement() {
-		if (LocationStateType.INSIDE_SETTLEMENT == currentStateType)
-			return true;
-		return false;		
-//		Unit c = getTopContainerUnit();
-//		if (c instanceof Settlement)
-//			return true;
-////		else if (c instanceof Vehicle && ((Vehicle) c).getStatus() == StatusType.GARAGED)
-////			return true;
-//		return false;
-	}
-
-	/**
-	 * Is the equipment's immediate container a person ?
-	 * 
-	 * @return true if yes
-	 */
-	public boolean isInPerson() {
+	public boolean isOnPerson() {
 		if (LocationStateType.ON_A_PERSON == currentStateType)
 			return true;
 		
 		return false;	
 //		if (getContainerUnit() instanceof Person)
-//			return true;
-//		return false;
-	}
-
-	/**
-	 * Is the equipment's immediate container a vehicle ?
-	 * 
-	 * @return true if yes
-	 */
-	public boolean isInVehicle() {
-		if (LocationStateType.INSIDE_VEHICLE == currentStateType)
-			return true;
-		
-		return false;	
-//		if (getContainerUnit() instanceof Vehicle)
-//			return true;
-//		return false;
-	}
-
-	/**
-	 * Is the equipment outside on the surface of Mars
-	 * 
-	 * @return true if the equipment is outside
-	 */
-	public boolean isOutside() {
-		if (LocationStateType.OUTSIDE_ON_MARS == currentStateType
-				|| LocationStateType.OUTSIDE_SETTLEMENT_VICINITY == currentStateType)
-			return true;
-		
-		return false;	
-//		if (getContainerUnit() instanceof MarsSurface)
 //			return true;
 //		return false;
 	}

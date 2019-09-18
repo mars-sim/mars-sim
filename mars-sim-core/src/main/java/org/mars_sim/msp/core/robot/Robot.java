@@ -283,97 +283,21 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 		return s.toString();
 	}
 
-	/**
-	 * Is the robot outside
-	 * 
-	 * @return true if the robot is outside
-	 */
-	public boolean isOutside() {
-		if (LocationStateType.OUTSIDE_ON_MARS == currentStateType
-				|| LocationStateType.OUTSIDE_SETTLEMENT_VICINITY == currentStateType)
-			return true;
-		
-		return false;	
-//		if (isInoperable)
-//			return true;
-//		else if (getContainerUnit() instanceof MarsSurface)
+//	/**
+//	 * Is the robot in a vehicle inside a garage
+//	 * 
+//	 * @return true if the robot is in a vehicle inside a garage
+//	 */
+//	public boolean isInVehicleInGarage() {
+//	if (getContainerUnit() instanceof Vehicle) {
+//			Building b = BuildingManager.getBuilding((Vehicle) getContainerUnit());
+//			if (b != null)
+//				// still inside the garage
 //				return true;
-//		return false;
-	}
-
-	/**
-	 * Is the robot inside a vehicle
-	 * 
-	 * @return true if the robot is inside a vehicle
-	 */
-	public boolean isInVehicle() {
-		if (LocationStateType.INSIDE_VEHICLE == currentStateType)
-			return true;
-
-		return false;	
-//		if (isInoperable)
-//			return false;
-//		else if (getContainerUnit() instanceof Vehicle)
-//				return true;
-//		return false;
-	}
-
-	/**
-	 * Is the robot in a vehicle inside a garage
-	 * 
-	 * @return true if the robot is in a vehicle inside a garage
-	 */
-	public boolean isInVehicleInGarage() {
-	if (getContainerUnit() instanceof Vehicle) {
-			Building b = BuildingManager.getBuilding((Vehicle) getContainerUnit());
-			if (b != null)
-				// still inside the garage
-				return true;
-		}
-		return false;
-	}
-
-	/**
-	 * Is the robot inside a settlement
-	 * 
-	 * @return true if the robot is inside a settlement
-	 */
-	public boolean isInSettlement() {
-		if (LocationStateType.INSIDE_SETTLEMENT == currentStateType)
-			return true;
-		return false;	
-		
-//		if (getContainerUnit() instanceof Settlement) {
-//			return true;
 //		}
-////		if (isInoperable)
-////			return false;
-////			if (getContainerUnit() instanceof Settlement)
-////				return true;
-////			else if (getContainerUnit() instanceof Vehicle && ((Vehicle) getContainerUnit()).getStatus() == StatusType.GARAGED)//getGarage() != null)
-////				return true;
 //		return false;
-	}
+//	}
 
-	/**
-	 * Is the robot inside a settlement or a vehicle
-	 * 
-	 * @return true if the robot is inside a settlement or a vehicle
-	 */
-	public boolean isInside() {
-		if (LocationStateType.INSIDE_SETTLEMENT == currentStateType
-				|| LocationStateType.INSIDE_VEHICLE == currentStateType)
-			return true;
-		return false;	
-		
-//		Unit c = getContainerUnit();
-//		if (c instanceof Settlement)
-//			return true;
-//		else if (c instanceof Vehicle)
-//			return true;
-//
-//		return false;
-	}
 
 	/**
 	 * Is the robot outside of a settlement but within its vicinity
@@ -488,9 +412,10 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 	 */
 	public void setContainerUnit(Unit containerUnit) {
 		super.setContainerUnit(containerUnit);
-		// if (containerUnit instanceof Vehicle) {
-		// vehicle = (Vehicle) containerUnit;
-		// }
+//		if (containerUnit instanceof Vehicle) {
+//			vehicle = containerUnit.getIdentifier();
+//		} else
+//			vehicle = -1;
 	}
 
 	// TODO: allow parts to be recycled
@@ -507,6 +432,8 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 	void setInoperable() {
 		botMind.setInactive();
 		toBeSalvaged();
+		// if inoperable, set containerID to be ZERO 
+		setContainerUnit(marsSurface);
 	}
 
 	/**

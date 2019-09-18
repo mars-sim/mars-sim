@@ -38,7 +38,9 @@ public class BuildingAirlock extends Airlock {
 	
     // Data members.
     private Building building; // The building this airlock is for.
-   
+ 
+//    private Inventory inventory;
+    
     private Point2D airlockInsidePos;
     private Point2D airlockInteriorPos;
     private Point2D airlockExteriorPos;
@@ -54,6 +56,10 @@ public class BuildingAirlock extends Airlock {
         super(capacity);
 
         this.building = building;
+//        inventory = new Inventory(this);
+//        
+//		// Set inventory total mass capacity.
+//        inventory.addGeneralCapacity(Double.MAX_VALUE); // 10_000_000);//100_000_000);//
 
         // Determine airlock interior position.
         airlockInteriorPos = LocalAreaUtil.getLocalRelativeLocation(interiorXLoc, interiorYLoc, building);

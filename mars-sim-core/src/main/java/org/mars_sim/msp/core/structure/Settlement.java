@@ -142,7 +142,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	private static final double MIN = 0.00001;
 	
 	/** The unit count for this person. */
-	private static int uniqueCount = Unit.FIRST_PERSON_ID;
+	private static int uniqueCount = Unit.FIRST_SETTLEMENT_ID;
 	
 	/** The settlement water consumption */
 	public static double water_consumption_rate;

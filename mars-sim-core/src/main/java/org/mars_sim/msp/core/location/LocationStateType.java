@@ -9,22 +9,36 @@ package org.mars_sim.msp.core.location;
 
 import org.mars_sim.msp.core.Msg;
 
+/**
+ * LocationStateType class keeps track of the location state of an unit
+ * 
+ * @apiNote (1) : OUTSIDE_SETTLEMENT_VICINITY is the intermediate state between being INSIDE_SETTLEMENT (in a garage) and being OUTSIDE_ON_MARS.
+ *
+ * @apiNote (2) : OUTSIDE_SETTLEMENT_VICINITY can be used by a person only.
+ *
+ * @apiNote (3) : A vehicle may be in a garage inside a building or is parked at a settlement. 
+ *	         In both cases, this vehicle is INSIDE_SETTLEMENT, not OUTSIDE_SETTLEMENT_VICINITY or OUTSIDE_ON_MARS.
+ */
 public enum LocationStateType {
 
-	//INSIDE_BUILDING					(Msg.getString("LocationStateType.insideBuilding")), //$NON-NLS-1$
+	INSIDE_AIRLOCK					(Msg.getString("LocationStateType.insideAirlock")), //$NON-NLS-1$
 	INSIDE_SETTLEMENT				(Msg.getString("LocationStateType.insideSettlement")), //$NON-NLS-1$
 	INSIDE_VEHICLE					(Msg.getString("LocationStateType.insideVehicle")), //$NON-NLS-1$
-//	INSIDE_VEHICLE_INSIDE_GARAGE	(Msg.getString("LocationStateType.insideVehicle")), //$NON-NLS-1$
 	ON_A_PERSON						(Msg.getString("LocationStateType.onAPerson")), //$NON-NLS-1$
 	OUTSIDE_ON_MARS					(Msg.getString("LocationStateType.outsideOnMars")), //$NON-NLS-1$
 	OUTSIDE_SETTLEMENT_VICINITY		(Msg.getString("LocationStateType.settlementVincinity")) //$NON-NLS-1$
 	;
 
+	// Note 0: OUTSIDE_SETTLEMENT_VICINITY is the intermediate state between being INSIDE_SETTLEMENT (in a garage) and being OUTSIDE_ON_MARS
+	
+	// Note 1: OUTSIDE_SETTLEMENT_VICINITY can be used by a person only
+	
+	// Note 2: A vehicle may be in a garage inside a building or is parked at a settlement. 
+	//         in both cases, this vehicle is INSIDE_SETTLEMENT, not OUTSIDE_SETTLEMENT_VICINITY or OUTSIDE_ON_MARS
+	
 	public static LocationStateType[] TYPES = new LocationStateType[]{
-			//INSIDE_BUILDING,
 			INSIDE_SETTLEMENT,
 			INSIDE_VEHICLE,
-			//INSIDE_VEHICLE_INSIDE_GARAGE.
 			ON_A_PERSON,
 			OUTSIDE_ON_MARS,
 			OUTSIDE_SETTLEMENT_VICINITY

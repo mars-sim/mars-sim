@@ -889,6 +889,8 @@ public class BuildingManager implements Serializable {
 	 */
 	public static boolean addToGarage(GroundVehicle vehicle, Settlement settlement) {
 
+		
+		// The following block of codes are for FIXING invalid states and setting them straight
 		if (vehicle.getStatus() == StatusType.GARAGED) {
 			if (vehicle.getSettlement() == null) {
 				// Place this vehicle inside a building

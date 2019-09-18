@@ -256,8 +256,9 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	protected Person(String name, Settlement settlement) {
 		super(name, settlement.getCoordinates());
 		super.setDescription(settlement.getName());
-
+		// Gets the identifier
 		this.identifier = getNextIdentifier();
+		// Add the person to the lookup map
 		unitManager.addPersonID(this);
 
 //		// Place this person within a settlement
@@ -299,7 +300,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		unitManager.addPersonID(this);
 		// Put person in proper building.
 		unitManager.getSettlementByID(associatedSettlement).getInventory().storeUnit(this);
-		// Note: setAssociatedSettlement(settlement) will cause suffocation when
+		// WARNING: setAssociatedSettlement(settlement) will cause suffocation when
 		// reloading from a saved sim
 		BuildingManager.addToRandomBuilding(this, associatedSettlement);
 		// why failed in
@@ -714,23 +715,6 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	}
 
 	/**
-	 * Is the person outside on the surface of Mars
-	 * 
-	 * @return true if the person is outside
-	 */
-	public boolean isOutside() {
-		if (LocationStateType.OUTSIDE_ON_MARS == currentStateType
-				|| LocationStateType.OUTSIDE_SETTLEMENT_VICINITY == currentStateType || isBuried)
-			return true;
-		return false;
-//		if (getContainerUnit() instanceof MarsSurface)
-//			return true;
-//		else if (isBuried)
-//			return true;
-//		return false;
-	}
-
-	/**
 	 * Is the person outside of a settlement but within its vicinity
 	 * 
 	 * @return true if the person is just right outside of a settlement
@@ -741,79 +725,20 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		return false;
 	}
 
-	/**
-	 * Is the person inside a vehicle
-	 * 
-	 * @return true if the person is inside a vehicle
-	 */
-	public boolean isInVehicle() {
-		if (LocationStateType.INSIDE_VEHICLE == currentStateType)
-			return true;
-
-		return false;
-//		if (isBuried)
-//			return false;
-//		else if (getContainerUnit() instanceof Vehicle)
-//				return true;
-//		return false;
-	}
-
-	/**
-	 * Is the person in a vehicle inside a garage
-	 * 
-	 * @return true if the person is in a vehicle inside a garage
-	 */
-	public boolean isInVehicleInGarage() {
-		if (getContainerUnit() instanceof Vehicle) {
-			Building b = BuildingManager.getBuilding((Vehicle) getContainerUnit());
-			if (b != null)
-				// still inside the garage
-				return true;
-		}
-		return false;
-	}
-
-	/**
-	 * Is the person inside a settlement
-	 * 
-	 * @return true if the person is inside a settlement
-	 */
-	public boolean isInSettlement() {
-		if (LocationStateType.INSIDE_SETTLEMENT == currentStateType)
-			return true;
-		return false;
-
-//		if (getContainerUnit() instanceof Settlement) {
-//			return true;
-//		}
-//		
-//		return false;
-	}
-
-	/**
-	 * Is the person inside a settlement or a vehicle
-	 * 
-	 * @return true if the person is inside a settlement or a vehicle
-	 */
-	public boolean isInside() {
-		if (LocationStateType.INSIDE_SETTLEMENT == currentStateType
-				|| LocationStateType.INSIDE_VEHICLE == currentStateType)
-			return true;
-
-		return false;
-
-//		if (isBuried)
-//			return false;
-//		else {
-//			Unit c = getContainerUnit();
-//			if (c instanceof Settlement)
-//				return true;
-//			else if (c instanceof Vehicle)
+//	/**
+//	 * Is the person in a vehicle inside a garage
+//	 * 
+//	 * @return true if the person is in a vehicle inside a garage
+//	 */
+//	public boolean isInVehicleInGarage() {
+//		if (getContainerUnit() instanceof Vehicle) {
+//			Building b = BuildingManager.getBuilding((Vehicle) getContainerUnit());
+//			if (b != null)
+//				// still inside the garage
 //				return true;
 //		}
 //		return false;
-
-	}
+//	}
 
 	/**
 	 * Get a person's location situation
@@ -934,6 +859,8 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		condition.getDeathDetails().backupContainerID(getContainerID());
 		// set container unit to null if not done so
 		setContainerUnit(null);
+		// Set his/her currentStateType
+		currentStateType = LocationStateType.OUTSIDE_SETTLEMENT_VICINITY;  
 		// Set his/her buried settlement
 		setBuriedSettlement(associatedSettlement);
 		// Remove the person from being a member of the associated settlement
@@ -971,23 +898,11 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 */
 	public void timePassing(double time) {
 
-//		if (marsSurface == null)
-//			marsSurface = Simulation.instance().getMars().getMarsSurface();
-//		
-//		if (containerUnit == null)
-//			this.containerUnit = marsSurface;
-//
-//		if (marsClock == null) {
-//			masterClock = Simulation.instance().getMasterClock();
-//			marsClock = masterClock.getMarsClock();
-//		}
-
 		double msol1 = marsClock.getMillisolOneDecimal();
 
 		if (msolCache != msol1) {
 			msolCache = msol1;
-//			if (time > 10)
-//			System.out.println("msolCache : " + msolCache);
+
 			// If Person is dead, then skip
 			if (!condition.isDead() && getLifeSupportType() != null) {// health.getDeathDetails() == null) {
 
@@ -998,9 +913,6 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 				condition.timePassing(time, support);
 
 				if (!condition.isDead()) {
-
-					// Call preference
-					// preference.timePassing(time);
 
 					try {
 						// Mental changes with time passing.
@@ -1049,8 +961,6 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 					setDeclaredDead();
 					mind.setInactive();
 				}
-
-//				buryBody();
 			}
 		}
 
@@ -1202,10 +1112,11 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		}
 
 		else {
+			
 			Vehicle vehicle = getVehicle();
 			if ((vehicle != null) && (vehicle instanceof LifeSupportType)) {
 
-				if (BuildingManager.getBuilding(vehicle) != null) {
+				if (vehicle.isInVehicleInGarage()) { //BuildingManager.getBuilding(vehicle) != null) {
 					// if the vehicle is inside a garage
 					lifeSupportUnits.add(vehicle.getSettlement());
 				}
@@ -1972,6 +1883,33 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 //		unitManager = u;
 //	}
 
+	/**
+	 * Is this person outside on the surface of Mars
+	 * 
+	 * @return true if the person is outside
+	 */
+	public boolean isOutside() {
+		int id = getContainerID();
+		if (id == MARS_SURFACE_ID 
+				|| (id >= FIRST_EQUIPMENT_ID && id < UNKNOWN_ID))
+			return true;
+		
+		return false;
+	}
+	
+	/**
+	 * has this person donned an EVA suit
+	 * 
+	 * @return true if the person has donned an EVA suit
+	 */
+	public boolean isOnEVASuit() {
+		int id = getContainerID();
+		if (id >= MARS_SURFACE_ID && id < UNKNOWN_ID)
+			return true;
+		
+		return false;
+	}
+	
 	@Override
 	public void destroy() {
 		super.destroy();

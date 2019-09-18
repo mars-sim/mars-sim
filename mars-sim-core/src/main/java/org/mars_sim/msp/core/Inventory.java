@@ -1539,16 +1539,26 @@ public class Inventory implements Serializable {
 			if (unit.getMass() <= getRemainingGeneralCapacity(allowDirty)) {
 				result = true;
 			} else {
+				LogConsolidated.log(Level.SEVERE, 0, sourceName + "::canStoreUnit",
+						  unit + " has a mass of " + unit.getMass() 
+						  + " and is too big for the owner to carry. Remaining Cap : " 
+						  + getRemainingGeneralCapacity(allowDirty));
 				result = false;
 			}
 
 			if (unit == owner) {
+				LogConsolidated.log(Level.SEVERE, 0, sourceName + "::canStoreUnit",
+						  unit + " is the same as its owner.");
 				result = false;
 			}
 			if (containsUnit(unit)) {
+				LogConsolidated.log(Level.SEVERE, 0, sourceName + "::canStoreUnit",
+						  unit + " is already owned by " + owner);
 				result = false;
 			}
 			if (unit.getInventory().containsUnit(owner)) {
+				LogConsolidated.log(Level.SEVERE, 0, sourceName + "::canStoreUnit",
+						  owner + " is owned by " + unit);
 				result = false;
 			}
 		}

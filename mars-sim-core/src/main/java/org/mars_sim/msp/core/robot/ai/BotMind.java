@@ -13,7 +13,6 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEventType;
-import org.mars_sim.msp.core.mind.CoreMind;
 import org.mars_sim.msp.core.person.ai.MBTIPersonality;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
@@ -295,11 +294,6 @@ public class BotMind implements Serializable {
 	 * @param missions can actions be new missions?
 	 */
 	public void getNewAction(boolean tasks, boolean missions) {
-
-//    	if (robot.getPerformanceRating() < 0.5D) {
-//        	missions = false;
-//        }
-
 		// Get probability weights from tasks, missions and active missions.
 		double taskWeights = 0D;
 		double missionWeights = 0D;
@@ -312,13 +306,6 @@ public class BotMind implements Serializable {
 			weightSum += taskWeights;
 		}
 
-//        if (missions) {
-//        	if (missionManager == null)
-//        		missionManager = sim.getMissionManager();
-//        	missionWeights = missionManager.getTotalMissionProbability(robot);
-//        	weightSum += missionWeights;
-//	   }
-
 		if ((weightSum <= 0D) || (Double.isNaN(weightSum)) || (Double.isInfinite(weightSum))) {
 			try {
 				TimeUnit.MILLISECONDS.sleep(1000L);
@@ -326,8 +313,7 @@ public class BotMind implements Serializable {
 				logger.severe("BotMind.getNewAction() " + robot.getName() + " has weight sum of " + weightSum);
 				e.printStackTrace();
 			}
-			// throw new IllegalStateException("BotMind.getNewAction() " + robot.getName() +
-			// " has weight sum of " + weightSum);
+
 		}
 
 		// Select randomly across the total weight sum.
@@ -348,26 +334,6 @@ public class BotMind implements Serializable {
 				rand -= taskWeights;
 			}
 		}
-
-//        if (missions) {
-//            if (rand < missionWeights) {
-//            	Mission newMission = null;
-//
-//            	logger.fine(robot.getName() + " is starting a new mission.");
-//            	newMission = missionManager.getNewMission(robot);
-//
-//
-//                if (newMission != null) {
-//                    missionManager.addMission(newMission);
-//                    setMission(newMission);
-//                }
-//
-//                return;
-//            }
-//            else {
-//                rand -= missionWeights;
-//            }
-//        }
 
 		// If reached this point, no task or mission has been found.
 		logger.severe(robot.getName() + " couldn't determine new action - taskWeights: " + taskWeights

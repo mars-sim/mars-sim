@@ -129,7 +129,7 @@ public class LocationTag implements LocationState, Serializable {
 		}
 
 		else if (v != null) {
-			if (LocationStateType.OUTSIDE_SETTLEMENT_VICINITY == v.getLocationStateType())
+			if (LocationStateType.INSIDE_SETTLEMENT == v.getLocationStateType())
 				return v.getSettlement().getName();
 			else if (LocationStateType.INSIDE_SETTLEMENT == v.getLocationStateType())
 				return v.getBuildingLocation().getNickName();
@@ -262,8 +262,9 @@ public class LocationTag implements LocationState, Serializable {
 				} else {
 					return OUTSIDE_ON_MARS;
 				}
-			} else if (v.isRightOutsideSettlement())
-				return findSettlementVicinity().getName() + VICINITY;
+			} 
+//			else if (v.isRightOutsideSettlement())
+//				return findSettlementVicinity().getName() + VICINITY;
 			else
 				return OUTSIDE_ON_MARS;
 		}

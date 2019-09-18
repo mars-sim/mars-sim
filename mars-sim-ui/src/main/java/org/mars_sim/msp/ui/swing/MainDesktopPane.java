@@ -1388,7 +1388,7 @@ public class MainDesktopPane extends JDesktopPane
 
 	@Override
 	public void uiPulse(double time) {
-		SwingUtilities.invokeLater(() -> super.updateUI());
+//		SwingUtilities.invokeLater(() -> super.updateUI());
 		updateWindows();
 	}
 
