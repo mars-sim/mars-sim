@@ -94,12 +94,14 @@ public class Doctor extends Job implements Serializable {
 
 		double result = 0D;
 
-		int areologySkill = person.getSkillManager().getSkillLevel(SkillType.MEDICINE);
-		result = areologySkill;
+		int skill = person.getSkillManager().getSkillLevel(SkillType.MEDICINE);
+		result = skill;
 
 		NaturalAttributeManager attributes = person.getNaturalAttributeManager();
 		int academicAptitude = attributes.getAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
-		result += result * ((academicAptitude - 50D) / 100D);
+		int experienceAptitude = attributes.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
+		double averageAptitude = (academicAptitude + experienceAptitude) / 2D;
+		result += result * ((averageAptitude - 100D) / 100D);
 
 		if (person.getPhysicalCondition().hasSeriousMedicalProblems())
 			result = 0D;

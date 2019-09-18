@@ -1128,9 +1128,12 @@ public class UnitManager implements Serializable {
 
 			// Initialize emotional states
 			// person.setEmotionalStates(emotionJSONConfig.getEmotionalStates());
+			
+			// Updates the number of people
+			settlement.updateAllAssociatedPeople();
 		}
 
-		settlement.updateAllAssociatedPeople();
+		// Updates the number of robots
 		settlement.updateAllAssociatedRobots();
 
 		// Create all configured relationships.
@@ -1336,13 +1339,11 @@ public class UnitManager implements Serializable {
 					// Assign a job 
 					person.getMind().getInitialJob(JobUtil.MISSION_CONTROL);
 
-					// Add sponsor
-//					person.assignReportingAuthority();
-
+					// Updates the number of people
+					settlement.updateAllAssociatedPeople();
 				}
 
-				// Add calling updateAllAssociatedPeople(), not getAllAssociatedPeople()()
-				settlement.updateAllAssociatedPeople();
+				// Updates the number of robots
 				settlement.updateAllAssociatedRobots();
 
 				// Set up work shift
@@ -1684,7 +1685,14 @@ public class UnitManager implements Serializable {
 							robot.getBotMind().setRobotJob(robotJob, true);
 						}
 					}
+					// Updates the number of robots
+					settlement.updateAllAssociatedRobots();
+					
 				}
+
+				// Updates the number of people
+				settlement.updateAllAssociatedPeople();
+				
 			}
 		} catch (Exception e) {
 			e.printStackTrace(System.err);

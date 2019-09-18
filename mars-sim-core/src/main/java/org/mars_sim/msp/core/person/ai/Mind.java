@@ -218,8 +218,9 @@ public class Mind implements Serializable {
 	 * @param assignedBy the authority that assigns the job
 	 */
 	public void getInitialJob(String assignedBy) {
-		// Job newJob = JobManager.getNewJob(person);
-		setJob(JobUtil.getNewJob(person), true, assignedBy, JobAssignmentType.APPROVED, assignedBy);
+		Job newJob = JobUtil.getNewJob(person);
+		if (newJob != null)
+			setJob(newJob, true, assignedBy, JobAssignmentType.APPROVED, assignedBy);
 	}
 
 	/**
@@ -338,7 +339,7 @@ public class Mind implements Serializable {
 			JobAssignmentType status, String approvedBy) {
 		String jobStr = null;
 		JobHistory jh = person.getJobHistory();
-		Settlement s = person.getSettlement();
+//		Settlement s = person.getSettlement();
 
 		if (job == null)
 			jobStr = null;
@@ -349,7 +350,9 @@ public class Mind implements Serializable {
 		if (!newJobStr.equals(jobStr)) {
 
 			if (bypassingJobLock || !jobLock) {
+//				System.out.println("1 " + person + " " + person.getJobName() + " " + jobStr);
 				job = newJob;
+//				logger.info("2 " + person + " " + person.getJobName() + " " + newJobStr);
 				// Set up 4 approvedBy conditions
 				if (approvedBy.equals(JobUtil.SETTLEMENT)) { // automatically approved if pop <= 4
 					jh.saveJob(newJob, assignedBy, status, approvedBy, true);

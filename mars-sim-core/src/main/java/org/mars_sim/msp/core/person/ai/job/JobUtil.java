@@ -27,6 +27,7 @@ import org.mars_sim.msp.core.robot.ai.job.Medicbot;
 import org.mars_sim.msp.core.robot.ai.job.Repairbot;
 import org.mars_sim.msp.core.robot.ai.job.RobotJob;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * The JobUtil class keeps track of the settler jobs in a simulation.
@@ -226,49 +227,57 @@ public final class JobUtil implements Serializable {
 		return result;
 	}
 
+	
 	/**
 	 * Gets a new job for the person. Might be the person's current job.
 	 * 
 	 * @param person the person to check.
 	 * @return the new job.
 	 */
-	public static Job getNewJob(Unit unit) {
-		Job newJob = null;
-		Person person = (Person) unit;
-
+	public static Job getNewJob(Person person) {
+		// Find new job for person.
+		double selectedJobProspect = Integer.MIN_VALUE;
+		
 		Job originalJob = person.getMind().getJob();
+		Job selectedJob = originalJob;
 		// Determine person's associated settlement.
 		Settlement settlement = person.getAssociatedSettlement();
-		// Find new job for person.
-		double newJobProspect = Integer.MIN_VALUE;
+		
+		int pop = settlement.getIndoorPeopleCount();
+		if (pop == 0)
+			// At the start of the game, pop = 0
+			pop = settlement.getInitialPopulation();
 
-		if (settlement != null) {
-			Iterator<Job> i = getJobs().iterator();
-			while (i.hasNext()) {
-				Job job = i.next();
-				// Exclude politician job which is reserved for Mayor only
-				if (!job.equals(JobUtil.getJob(POLITICIAN))) {
-					double jobProspect = getJobProspect(person, job, settlement, true);
-					if (jobProspect >= newJobProspect) {
-						newJob = job;
-						newJobProspect = jobProspect;
+		// Set limits on # of position available for a job, based on settlement's population
+		// e.g. rather not having 3 botanists when the settlement has only 8 people
+		
+		while (selectedJob == originalJob) {
+			double rand = RandomUtil.getRandomDouble(2.0);
+			double t = pop/JobType.numJobTypes + rand;
+			int maxPos = (int)(Math.ceil(t));
+			
+			if (settlement != null) {
+				Iterator<Job> i = getJobs().iterator();
+				while (i.hasNext()) {
+					Job job = i.next();
+					if (!job.equals(JobUtil.getJob(POLITICIAN))) {
+						int numPositions = numJobs(job.getName(GenderType.MALE), settlement);
+//						logger.info(job.getName(GenderType.MALE) +  ": " + numPositions + "  ");
+						if (numPositions < maxPos) {
+						// Exclude politician job which is reserved for Mayor only
+							double jobProspect = getJobProspect(person, job, settlement, true);
+							if (jobProspect > selectedJobProspect) {
+								selectedJob = job;
+								selectedJobProspect = jobProspect;
+							}
+						}
 					}
 				}
-			}
-
-//			if (logger.isLoggable(Level.CONFIG)) {
-//				if ((newJob != null) && (newJob != originalJob))
-//					LogConsolidated.log(Level.CONFIG, 0, sourceName,
-//							"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
-//							+ " took the " +  newJob.getName(person.getGender()) + " job position.");
-//			}
-		} 
-		
-		else
-			newJob = originalJob;
-
-//		System.out.println(newJob + " : " + newJobProspect);
-		return newJob;
+			} 
+		}
+//		logger.info(newJob.getName(GenderType.MALE) + " job prospects : " + newJobProspect);
+//		logger.info(newJob + " : " + newJobProspect);
+		return selectedJob;
 	}
 
 	public static Person findBestFit(Settlement settlement, Job job) {
@@ -293,51 +302,6 @@ public final class JobUtil implements Serializable {
 		return person;
 	}
 	
-	/**
-	 * Gets a new job for the Robot. Might be the Robot's current job.
-	 * 
-	 * @param Robot the Robot to check.
-	 * @return the new job.
-	 */
-//	public static RobotJob getNewRobotJob(Unit unit) {
-//		RobotJob newJob = null;
-//		Robot robot = (Robot) unit;
-//
-//		RobotJob originalJob = robot.getBotMind().getRobotJob();
-//
-//		// Determine robot's associated settlement.
-//		Settlement settlement = null;
-//		if (robot.isInSettlement())
-//			settlement = robot.getSettlement();
-//		else if (robot.getBotMind().hasActiveMission())
-//			settlement = robot.getBotMind().getMission().getAssociatedSettlement();
-//
-//		// Find new job for robot.
-//		double newJobProspect = Integer.MIN_VALUE;
-//		if (settlement != null) {
-//			Iterator<RobotJob> i = getRobotJobs().iterator();
-//			while (i.hasNext()) {
-//				RobotJob robotJob = i.next();
-//				double jobProspect = getRobotJobProspect(robot, robotJob, settlement, true);
-//				if (jobProspect >= newJobProspect) {
-//					newJob = robotJob;
-//					newJobProspect = jobProspect;
-//				}
-//			}
-//
-//			if (logger.isLoggable(Level.FINE)) {
-//				if ((newJob != null) && (newJob != originalJob))
-//					logger.info(
-//							"Notes: " + robot.getName() + " changed jobs to " + newJob.getName(robot.getRobotType())); // logger.finest(
-//				else
-//					logger.info("Notes: " + robot.getName() + " keeping old job of "
-//							+ originalJob.getName(robot.getRobotType()));
-//			}
-//		} else
-//			newJob = originalJob;
-//
-//		return newJob;
-//	}
 
 	/**
 	 * Get the job prospect value for a person and a particular job at a settlement.
@@ -366,33 +330,6 @@ public final class JobUtil implements Serializable {
 		return (jobCapability + 1D) * remainingNeed;
 	}
 
-//	/**
-//	 * Get the job prospect value for a robot and a particular job at a settlement.
-//	 * 
-//	 * @param unit             the robot to check for
-//	 * @param robotJob         the job to check for
-//	 * @param settlement       the settlement to do the job in.
-//	 * @param isHomeSettlement is this the robot home settlement?
-//	 * @return job prospect value (0.0 min)
-//	 */
-//	public static double getRobotJobProspect(Unit unit, RobotJob robotJob, Settlement settlement,
-//			boolean isHomeSettlement) {
-//		Robot robot = null;
-//		double jobCapability = 0D;
-//		double remainingNeed = 0D;
-//
-//		robot = (Robot) unit;
-//		if (robotJob != null)
-//			jobCapability = robotJob.getCapability(robot);
-//
-//		remainingNeed = getRemainingSettlementNeed(settlement, robotJob);
-//
-//		if ((robotJob == robot.getBotMind().getRobotJob()) && isHomeSettlement)
-//			remainingNeed += jobCapability;
-//
-//		return (jobCapability + 1D) * remainingNeed;
-//	}
-
 	/**
 	 * Gets the best job prospect value for a person at a settlement.
 	 * 
@@ -413,17 +350,20 @@ public final class JobUtil implements Serializable {
 		return bestProspect;
 	}
 
+	
 	/**
 	 * Counts the number of people having a particular job
 	 * 
-	 * @param job
+	 * @param job string
+	 * @param settlement
 	 * @return number
 	 */
-	public static int numJobs(Class<?> job, Settlement s) {
+	public static int numJobs(String job, Settlement settlement) {
 		int num = 0;
-		for (Person p : s.getAllAssociatedPeople()) {
-			if (p.getMind().getJob().getClass().equals(job))
+		for (Person p : settlement.getAllAssociatedPeople()) {
+			if (p.getJobName().equalsIgnoreCase(job)) {
 				num++;
+			}
 		}
 		return num;
 	}
@@ -437,17 +377,5 @@ public final class JobUtil implements Serializable {
 	public static Map<String, List<Person>> getJobMap(Settlement s)	{
 		return 	s.getAllAssociatedPeople().stream().collect(Collectors.groupingBy(Person::getJobName));		
 	}
-
-//	public static double getBestRobotJobProspect(Robot robot, Settlement settlement, boolean isHomeSettlement) {
-//		double bestProspect = Double.MIN_VALUE;
-//		Iterator<RobotJob> i = getRobotJobs().iterator();
-//		while (i.hasNext()) {
-//			RobotJob robotJob = i.next();
-//			double prospect = getRobotJobProspect(robot, robotJob, settlement, isHomeSettlement);
-//			if (prospect > bestProspect)
-//				bestProspect = prospect;
-//		}
-//		return bestProspect;
-//	}
 
 }

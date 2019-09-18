@@ -114,9 +114,9 @@ implements Serializable {
 
 		NaturalAttributeManager attributes = person.getNaturalAttributeManager();
 		int academicAptitude = attributes.getAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
-//		result += result * ((academicAptitude - 50D) / 100D);
 		int experienceAptitude = attributes.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
-		result += result * ((academicAptitude + experienceAptitude - 100) / 100D);
+		double averageAptitude = (academicAptitude + experienceAptitude) / 2D;
+		result += result * ((averageAptitude - 100D) / 100D);
 		
 //		double averageAptitude = (academicAptitude + experienceAptitude) / 2D;
 //		result+= result * ((averageAptitude - 50D) / 100D);

@@ -4106,18 +4106,18 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	 * Tune up the settlement with unique job position
 	 */
 	public void tuneJobDeficit() {
-		int numEngs = JobUtil.numJobs(Engineer.class, this);
+		int numEngs = JobUtil.numJobs(Engineer.class.getSimpleName(), this);
 		if (numEngs == 0) {
 			assignBestCandidate(this, Engineer.class);
 		}
 
-		int numTechs = JobUtil.numJobs(Technician.class, this);
+		int numTechs = JobUtil.numJobs(Technician.class.getSimpleName(), this);
 		if (numTechs == 0) {
 			assignBestCandidate(this, Technician.class);
 		}
 
 		if (this.getNumCitizens() > ChainOfCommand.POPULATION_WITH_CHIEFS) {
-			int numWeatherman = JobUtil.numJobs(Meteorologist.class, this);
+			int numWeatherman = JobUtil.numJobs(Meteorologist.class.getSimpleName(), this);
 			if (numWeatherman == 0) {
 				assignBestCandidate(this, Meteorologist.class);
 			}

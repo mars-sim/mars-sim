@@ -129,7 +129,7 @@ public class Areologist extends Job implements Serializable {
 		int academicAptitude = attributes.getAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
 		int experienceAptitude = attributes.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
 		double averageAptitude = (academicAptitude + experienceAptitude) / 2D;
-		result += result * ((averageAptitude - 50D) / 100D);
+		result += result * ((averageAptitude - 100D) / 100D);
 
 		if (person.getPhysicalCondition().hasSeriousMedicalProblems())
 			result = 0D;

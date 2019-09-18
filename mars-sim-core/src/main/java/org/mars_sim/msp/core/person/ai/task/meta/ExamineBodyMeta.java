@@ -81,7 +81,7 @@ public class ExamineBodyMeta implements MetaTask, Serializable {
 			// Effort-driven task modifier.
 			result *= person.getPerformanceRating();
 //			System.out.print("   result : " + result);
-			int numDoctor = JobUtil.numJobs(Doctor.class, person.getSettlement());
+			int numDoctor = JobUtil.numJobs(Doctor.class.getSimpleName(), person.getSettlement());
 //			System.out.print("   # Doctors : " + num);
 			// Job modifier.
 			if (numDoctor > 0) {
