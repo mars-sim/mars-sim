@@ -123,6 +123,10 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 			<!-- Default: varies according to the type of vehicle  -->
 			<capacity resource="oxygen" value="110.0" />
 
+			<!-- The oxygen cargo capacity of the rover (kg) -->
+			<!-- Default: varies according to the type of vehicle  -->
+			<capacity resource="nitrogen" value="110.0" />
+			
 			<!-- The water cargo capacity of the rover (kg) -->
 			<!-- Default: varies according to the type of vehicle  -->
 			<capacity resource="water" value="400.0" />
@@ -210,6 +214,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<cargo total-capacity="7300.0">
 			<capacity resource="methane" value="600.0" />
 			<capacity resource="oxygen" value="176.0" />
+			<capacity resource="nitrogen" value="176.0" />			
 			<capacity resource="water" value="800.0" />
 			<capacity resource="food" value="512.0" />
 			<capacity resource="dessert" value="240.0" />
@@ -248,6 +253,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<cargo total-capacity="10300.0">
 			<capacity resource="methane" value="800.0" />
 			<capacity resource="oxygen" value="66.0" />
+			<capacity resource="nitrogen" value="66.0" />		
 			<capacity resource="water" value="200.0" />
 			<capacity resource="food" value="128.0" />
 			<capacity resource="dessert" value="60" />

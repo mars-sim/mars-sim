@@ -16,7 +16,7 @@ public class TestInventory extends TestCase {
     private static final String CARBON_DIOXIDE = "carbon dioxide";
     private static final String HYDROGEN = "hydrogen";
     private static final String METHANE = "methane";
-    private static final String FOOD = LifeSupportType.FOOD;
+    private static final String FOOD = LifeSupportInterface.FOOD;
 
     @Override
     public void setUp() throws Exception {

@@ -17,7 +17,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.LifeSupportType;
+import org.mars_sim.msp.core.LifeSupportInterface;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
@@ -58,11 +58,11 @@ public class PhysicalCondition implements Serializable {
 			logger.getName().length());
 
 	/** The amount of thirst threshold [millisols]. */
-	public static final int THIRST_THRESHOLD = 150;
+	public static final int THIRST_THRESHOLD = 150;// + RandomUtil.getRandomInt(20);
 	/** The amount of thirst threshold [millisols]. */
-	public static final int HUNGER_THRESHOLD = 250;
+	public static final int HUNGER_THRESHOLD = 250;// + RandomUtil.getRandomInt(30);
 	/** The amount of thirst threshold [millisols]. */
-	public static final int ENERGY_THRESHOLD = 2525;
+	public static final int ENERGY_THRESHOLD = 2525;// + RandomUtil.getRandomInt(20);
 
 	/** Life support minimum value. */
 	private static int MIN_VALUE = 0;
@@ -350,54 +350,6 @@ public class PhysicalCondition implements Serializable {
 		isDehydrated = false;
 	}
 
-//	/**
-//	 * Loads the values
-//	 */
-//	public static void loadStaticValues() {
-//		masterClock = sim.getMasterClock();
-//		if (masterClock != null)  // check for null in order to pass maven test
-//			marsClock = masterClock.getMarsClock();
-//		
-//		PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
-//
-//		h2o_consumption = personConfig.getWaterConsumptionRate(); // 3 kg per sol
-//		o2_consumption = personConfig.getNominalO2ConsumptionRate();
-//
-//		minimum_air_pressure = personConfig.getMinAirPressure();
-//		min_temperature = personConfig.getMinTemperature();
-//		max_temperature = personConfig.getMaxTemperature();
-//		food_consumption = personConfig.getFoodConsumptionRate();
-//		dessert_consumption = personConfig.getDessertConsumptionRate();
-//
-//		stressBreakdownChance = personConfig.getStressBreakdownChance();
-//		highFatigueCollapseChance = personConfig.getHighFatigueCollapseChance();
-//	}
-	
-//	/**
-//	 * Sets health related instances
-//	 */
-//	public static void setHealthInstances() {
-//		medicalManager = sim.getMedicalManager();
-//		
-//		if (medicalManager != null) {
-////			// Note that this 'if' above is for maven test, or else NullPointerException
-//			
-//			allMedicalComplaints = medicalManager.getAllMedicalComplaints();
-//			
-//			panicAttack = medicalManager.getComplaintByName(ComplaintType.PANIC_ATTACK);
-//			depression = medicalManager.getComplaintByName(ComplaintType.DEPRESSION);
-//			highFatigue = medicalManager.getComplaintByName(ComplaintType.HIGH_FATIGUE_COLLAPSE);
-//			radiationPoisoning = medicalManager.getComplaintByName(ComplaintType.RADIATION_SICKNESS);
-//			dehydration = medicalManager.getDehydration();
-//			starvation = medicalManager.getStarvation();
-//			
-//			freezing = medicalManager.getFreezing();
-//			heatStroke = medicalManager.getHeatStroke();
-//			decompression = medicalManager.getDecompression();
-//			suffocation = medicalManager.getSuffocation();
-//		}
-//	}
-	
 	/**
 	 * Initialize values and instances at the beginning of sol 1
 	 * (Note : Must skip this when running maven test or else having exceptions)
@@ -435,7 +387,7 @@ public class PhysicalCondition implements Serializable {
 	 * @param support life support system.
 	 * @return True still alive.
 	 */
-	public void timePassing(double time, LifeSupportType support) {
+	public void timePassing(double time, LifeSupportInterface support) {
 //		if (time > 10)
 //			System.out.println("time : " + time);
 		if (alive) {
@@ -619,7 +571,7 @@ public class PhysicalCondition implements Serializable {
 	 * @param time
 	 * @param support
 	 */
-	public void checkLifeSupport(double time, LifeSupportType support) {
+	public void checkLifeSupport(double time, LifeSupportInterface support) {
 		if (time > 0) {
 			String loc0 = person.getLocationTag().getLocale();
 			String loc1 = person.getLocationTag().getImmediateLocation();
@@ -1296,7 +1248,7 @@ public class PhysicalCondition implements Serializable {
 	 * @return new problem added.
 	 * @throws Exception if error consuming oxygen.
 	 */
-	private boolean lackOxygen(LifeSupportType support, double amount) {
+	private boolean lackOxygen(LifeSupportInterface support, double amount) {
 		if (amount > 0) {
 			if (support == null)
 				LogConsolidated.log(Level.SEVERE, 1000, sourceName, 
@@ -1340,20 +1292,21 @@ public class PhysicalCondition implements Serializable {
 			String reading = "";
 			String unit = "";
 			double decimals = 10.0;
-			if (complaint.getType() == ComplaintType.SUFFOCATION) {
+			ComplaintType ct = complaint.getType();
+			if (ct == ComplaintType.SUFFOCATION) {
 				reading = "Oxygen sensor";
 				unit = " kg";
 				decimals = 10000.0;
 			}
-			else if (complaint.getType() == ComplaintType.DECOMPRESSION) {
+			else if (ct == ComplaintType.DECOMPRESSION) {
 				reading = "Pressure sensor";
 				unit = " kPa";
 			}
-			if (complaint.getType() == ComplaintType.FREEZING) {
+			if (ct == ComplaintType.FREEZING) {
 				reading = "Low Temperature sensor";
 				unit = " C";
 			}
-			if (complaint.getType() == ComplaintType.HEAT_STROKE) {
+			if (ct == ComplaintType.HEAT_STROKE) {
 				reading = "High Temperature sensor";
 				unit = " C";
 			}
@@ -1384,7 +1337,7 @@ public class PhysicalCondition implements Serializable {
 	 * @param pressure minimum air pressure person requires (in Pa)
 	 * @return new problem added.
 	 */
-	private boolean badAirPressure(LifeSupportType support, double pressure) {
+	private boolean badAirPressure(LifeSupportInterface support, double pressure) {
 		return checkResourceConsumption(support.getAirPressure(), pressure, MIN_VALUE, decompression);
 	}
 
@@ -1395,7 +1348,7 @@ public class PhysicalCondition implements Serializable {
 	 * @param temperature minimum temperature person requires (in degrees Celsius)
 	 * @return new problem added.
 	 */
-	private boolean badTemperature(LifeSupportType support, double minTemperature, double maxTemperature) {
+	private boolean badTemperature(LifeSupportInterface support, double minTemperature, double maxTemperature) {
 		boolean freeze = checkResourceConsumption(support.getTemperature(), minTemperature, MIN_VALUE, freezing);
 		boolean hot = checkResourceConsumption(support.getTemperature(), maxTemperature, MAX_VALUE, heatStroke);
 		return freeze || hot;

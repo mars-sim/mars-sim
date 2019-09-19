@@ -103,10 +103,10 @@ public class EatMeal extends Task implements Serializable {
 
 	private double energy;
 	private double waterEachServing;
-
+			
 	private boolean hasNapkin = false;
-	private boolean notHungry;
-	private boolean notThirsty;
+//	private boolean notHungry;
+//	private boolean notThirsty;
 
 	private CookedMeal cookedMeal;
 	private PreparedDessert nameOfDessert;
@@ -137,8 +137,8 @@ public class EatMeal extends Task implements Serializable {
 		currentHunger = startingHunger;
 		thirst = condition.getThirst();
 
-		notHungry = startingHunger < PhysicalCondition.HUNGER_THRESHOLD && energy > PhysicalCondition.ENERGY_THRESHOLD;
-		notThirsty = thirst < PhysicalCondition.THIRST_THRESHOLD;
+		boolean notHungry = startingHunger < PhysicalCondition.HUNGER_THRESHOLD && energy > PhysicalCondition.ENERGY_THRESHOLD;
+		boolean notThirsty = thirst < PhysicalCondition.THIRST_THRESHOLD;
 		
 		if (!notThirsty && notHungry) {
 			// if a person is thirsty and not hungry, whether he's inside or outside			
@@ -721,7 +721,7 @@ public class EatMeal extends Task implements Serializable {
 	 */
 	public void consumeWater(boolean waterOnly) {
 		thirst = condition.getThirst();
-		notThirsty = thirst < PhysicalCondition.THIRST_THRESHOLD;
+		boolean notThirsty = thirst < PhysicalCondition.THIRST_THRESHOLD;
 		
 		if (!notThirsty) {
 			double currentThirst = Math.min(thirst, 1_000);

@@ -19,7 +19,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.LifeSupportType;
+import org.mars_sim.msp.core.LifeSupportInterface;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
@@ -3004,7 +3004,7 @@ public class GoodsManager implements Serializable {
 
 		// Check food capacity as range limit.
 		double foodConsumptionRate = personConfig.getFoodConsumptionRate();
-		double foodCapacity = v.getCargoCapacity(LifeSupportType.FOOD);
+		double foodCapacity = v.getCargoCapacity(LifeSupportInterface.FOOD);
 		double foodSols = foodCapacity / (foodConsumptionRate * crewSize);
 		double foodRange = distancePerSol * foodSols / 3D;
 		if (foodRange < range)
@@ -3012,7 +3012,7 @@ public class GoodsManager implements Serializable {
 
 		// Check water capacity as range limit.
 		double waterConsumptionRate = personConfig.getWaterConsumptionRate();
-		double waterCapacity = v.getCargoCapacity(LifeSupportType.WATER);
+		double waterCapacity = v.getCargoCapacity(LifeSupportInterface.WATER);
 		double waterSols = waterCapacity / (waterConsumptionRate * crewSize);
 		double waterRange = distancePerSol * waterSols / 3D;
 		if (waterRange < range)
@@ -3020,7 +3020,7 @@ public class GoodsManager implements Serializable {
 
 		// Check oxygen capacity as range limit.
 		double oxygenConsumptionRate = personConfig.getNominalO2ConsumptionRate();
-		double oxygenCapacity = v.getCargoCapacity(LifeSupportType.OXYGEN);
+		double oxygenCapacity = v.getCargoCapacity(LifeSupportInterface.OXYGEN);
 		double oxygenSols = oxygenCapacity / (oxygenConsumptionRate * crewSize);
 		double oxygenRange = distancePerSol * oxygenSols / 3D;
 		if (oxygenRange < range)

@@ -73,43 +73,46 @@ import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
- * The Preference class handles the task preferences of a person
+ * The Preference class determines the task preferences of a person
  */
 public class Preference implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
+	/** Meta static string. */
 	private static final String META = "Meta";
-
+	/** The cache for mission sol. */
 	private int solCache = 0;
 
-	private NaturalAttributeManager naturalAttributeManager;
-
-	private Person person;
-
-	private static MarsClock marsClock;
-
+	/** A list of MetaTasks. */
 	private List<MetaTask> metaTaskList;
+	/** A string list of Tasks. */
 	private List<String> taskList;
-	// private List<MetaMission> metaMissionList;
-
-	private Map<MetaTask, Integer> scoreMap; // store preference scores
-	private Map<MetaTask, Integer> priorityMap; // store priority scores for scheduled tasks
-	private Map<MetaTask, Boolean> oneADayMap; // true if the activity can only be done once a day
-	private Map<MetaTask, Boolean> taskAccomplishedMap; // true if the activity has been accomplished
-
+	/** A map of MetaTasks and preference scores. */
+	private Map<MetaTask, Integer> scoreMap;
+	/** A map of priority scores for scheduled task. */
+	private Map<MetaTask, Integer> priorityMap;
+	/** A map of MetaTasks that can only be done once a day. */
+	private Map<MetaTask, Boolean> oneADayMap;
+	/** A map of MetaTasks that has been accomplished once a day. */
+	private Map<MetaTask, Boolean> taskAccomplishedMap;
+	/**  A string map of tasks and preference scores. */
 	private Map<String, Integer> scoreStringMap;
-
+	/**  A string map of future MetaTasks. */
 	private Map<MarsClock, MetaTask> futureTaskMap;
 
+	/** The Person instance. */
+	private Person person;
+	/** The MarsClock instance. */
+	private static MarsClock marsClock;
+	
+	
 	public Preference(Person person) {
 
 		this.person = person;
 
 		metaTaskList = MetaTaskUtil.getAllMetaTasks();
 		taskList = new ArrayList<>();
-		// metaMissionList = MetaMissionUtil.getMetaMissions();
 
 		scoreMap = new ConcurrentHashMap<>();
 		scoreStringMap = new ConcurrentHashMap<>();
@@ -129,8 +132,7 @@ public class Preference implements Serializable {
 	 */
 	public void initializePreference() {
 
-		if (naturalAttributeManager == null)
-			naturalAttributeManager = person.getNaturalAttributeManager();
+		NaturalAttributeManager naturalAttributeManager = person.getNaturalAttributeManager();
 
 		int result = 0;
 		double ast = 0;
@@ -629,7 +631,7 @@ public class Preference implements Serializable {
 	 * Prepare object for garbage collection.
 	 */
 	public void destroy() {
-		naturalAttributeManager = null;
+//		naturalAttributeManager = null;
 		person = null;
 		marsClock = null;
 		metaTaskList = null;

@@ -1483,6 +1483,10 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		heating.setHeatLoss(heat);
 	}
 
+	public double getCurrentAirPressure() {
+		return getSettlement().getBuildingAirPressure(this);
+	}
+	
 	@Override
 	public String getImmediateLocation() {
 		return getLocationTag().getImmediateLocation();

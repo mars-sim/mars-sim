@@ -9,7 +9,7 @@ package org.mars_sim.msp.core.robot;
 import java.io.Serializable;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.LifeSupportType;
+import org.mars_sim.msp.core.LifeSupportInterface;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
@@ -150,7 +150,7 @@ implements Serializable {
      * @return new problem added.
      * @throws Exception if error consuming methane
      */
-    private boolean consumeFuel(LifeSupportType support, double amount) {
+    private boolean consumeFuel(LifeSupportInterface support, double amount) {
     	return true;
     }
 
@@ -200,7 +200,7 @@ implements Serializable {
      * @param pressure minimum air pressure person requires (in Pa)
      * @return new problem added.
      */
-    private boolean requireAirPressure(LifeSupportType support, double pressure) {
+    private boolean requireAirPressure(LifeSupportInterface support, double pressure) {
         return checkResourceConsumption(support.getAirPressure(), pressure,
                 MIN_VALUE, getMedicalManager().getDecompression());
     }
@@ -211,7 +211,7 @@ implements Serializable {
      * @param temperature minimum temperature person requires (in degrees Celsius)
      * @return new problem added.
      */
-    private boolean requireTemperature(LifeSupportType support, double minTemperature,
+    private boolean requireTemperature(LifeSupportInterface support, double minTemperature,
             double maxTemperature) {
 
         boolean freeze = checkResourceConsumption(support.getTemperature(),

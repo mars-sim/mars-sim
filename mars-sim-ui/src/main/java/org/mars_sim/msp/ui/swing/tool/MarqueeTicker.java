@@ -28,7 +28,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
-import org.mars_sim.msp.core.LifeSupportType;
+import org.mars_sim.msp.core.LifeSupportInterface;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -144,7 +144,7 @@ public class MarqueeTicker extends WebPanel {
 			//s = new StringBuffer("O{2:sb}");
 			//s.append("O{2:sb}");
 			s.append(sp10).append(sp10).append("O2");
-			resource = LifeSupportType.OXYGEN;
+			resource = LifeSupportInterface.OXYGEN;
 			numLetters = 22; // including 20 whitespaces
 			subscript = 21; // including 20 whitespaces
 		}
@@ -180,7 +180,7 @@ public class MarqueeTicker extends WebPanel {
 			//s = new StringBuffer("H{2:sb}0");
 			//s.append("H{2:sb}O");
 			s.append("H2O");
-			resource = LifeSupportType.WATER;
+			resource = LifeSupportInterface.WATER;
 			numLetters = 3;//8;
 			subscript = 1;
 		}

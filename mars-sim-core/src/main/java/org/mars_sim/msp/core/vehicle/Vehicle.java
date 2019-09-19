@@ -34,6 +34,12 @@ import org.mars_sim.msp.core.manufacture.Salvagable;
 import org.mars_sim.msp.core.manufacture.SalvageInfo;
 import org.mars_sim.msp.core.manufacture.SalvageProcessInfo;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
+import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
+import org.mars_sim.msp.core.person.ai.mission.Mining;
+import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.mission.Trade;
+import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.task.HaveConversation;
 import org.mars_sim.msp.core.person.ai.task.Maintenance;
 import org.mars_sim.msp.core.person.ai.task.Repair;
@@ -88,7 +94,7 @@ public abstract class Vehicle extends Unit
 	
 	// Data members
 	/** True if vehicle is currently reserved for a mission. */
-	private boolean isReservedMission;
+	protected boolean isReservedMission;
 	/** True if vehicle is due for maintenance. */
 	private boolean distanceMark;
 	/** True if vehicle is currently reserved for periodic maintenance. */
@@ -1243,14 +1249,80 @@ public abstract class Vehicle extends Unit
 		return this;
 	}
 
+	
+	/**
+	 * Checks if this vehicle is involved in a mission
+	 * 
+	 * @return true if yes
+	 */
+	public boolean isOnAMission() {
+		Iterator<Mission> i = missionManager.getMissions().iterator();
+		while (i.hasNext()) {
+			Mission mission = i.next();
+			if (!mission.isDone()) {
+				if (mission instanceof VehicleMission) {
+					if (((VehicleMission) mission).getVehicle() == this) {
+						return true;
+					}
+
+					if (mission instanceof Mining) {
+						if (((Mining) mission).getLightUtilityVehicle() == this) {
+							return true;
+						}
+					}
+
+					if (mission instanceof Trade) {
+						Rover towingRover = (Rover) ((Trade) mission).getVehicle();
+						if (towingRover != null) {
+							if (towingRover.getTowedVehicle() == this) {
+								return true;
+							}
+						}
+					}
+				} else if (mission instanceof BuildingConstructionMission) {
+					BuildingConstructionMission construction = (BuildingConstructionMission) mission;
+					if (construction.getConstructionVehicles() != null) {
+						if (construction.getConstructionVehicles().contains(this)) {
+							return true;
+						}
+					}
+					// else {
+					// result = null;
+					// }
+				} else if (mission instanceof BuildingSalvageMission) {
+					BuildingSalvageMission salvage = (BuildingSalvageMission) mission;
+					if (salvage.getConstructionVehicles().contains(this)) {
+						return true;
+					}
+				}
+			}
+		}
+
+		return false;
+	}
+	
 	public boolean equals(Object obj) {
 		if (this == obj) return true;
 		if (obj == null) return false;
 		if (this.getClass() != obj.getClass()) return false;
 		Vehicle v = (Vehicle) obj;
 		return this.getName().equals(v.getName())
+				&& this.identifier == v.getIdentifier()
 				&& this.vehicleType.equals(v.getVehicleType())
 				&& this.associatedSettlementID == v.getAssociatedSettlementID();
+	}
+	
+	/**
+	 * Gets the hash code value.
+	 * 
+	 * @return hash code
+	 */
+	public int hashCode() {
+		int hashCode = getName().hashCode();
+		hashCode *= identifier;
+		hashCode *= associatedSettlementID;
+		hashCode *= vehicleType.hashCode();
+		return hashCode;
 	}
 	
 	/**

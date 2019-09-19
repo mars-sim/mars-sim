@@ -80,7 +80,7 @@ public class VehicleChatUtils extends ChatUtils {
 
 			} else {
 				responseText.append(System.lineSeparator());
-				responseText.append(addhiteSpacesRightName("On a Mission : ", max) + missionStr);
+				responseText.append(addhiteSpacesRightName("Not on a Mission", max));
 			}
 
 			if (vehicleCache instanceof Rover) {

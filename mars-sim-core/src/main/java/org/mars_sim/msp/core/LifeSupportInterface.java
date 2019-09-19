@@ -1,6 +1,6 @@
 /**
  * Mars Simulation Project
- * LifeSupportType.java
+ * LifeSupportInterface.java
  * @version 3.1.0 2017-03-08
  * @author Barry Evans
  */
@@ -13,7 +13,7 @@ package org.mars_sim.msp.core;
  * 
  * @see org.mars_sim.msp.core.person.PhysicalCondition
  */
-public interface LifeSupportType {
+public interface LifeSupportInterface {
 
 	public static final String OXYGEN = "oxygen";
 	public static final String WATER = "water";

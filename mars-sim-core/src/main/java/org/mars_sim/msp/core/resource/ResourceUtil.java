@@ -19,7 +19,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.mars_sim.msp.core.LifeSupportType;
+import org.mars_sim.msp.core.LifeSupportInterface;
 import org.mars_sim.msp.core.SimulationConfig;
 
 public class ResourceUtil implements Serializable {
@@ -347,11 +347,11 @@ public class ResourceUtil implements Serializable {
 
 		// AmountResource instances as Integer
 		
-		foodID = findAmountResource(LifeSupportType.FOOD).getID(); // 1
-		waterID = findAmountResource(LifeSupportType.WATER).getID(); // 2
+		foodID = findAmountResource(LifeSupportInterface.FOOD).getID(); // 1
+		waterID = findAmountResource(LifeSupportInterface.WATER).getID(); // 2
 
-		oxygenID = findAmountResource(LifeSupportType.OXYGEN).getID(); // 3
-		co2ID = findAmountResource(LifeSupportType.CO2).getID(); // 4
+		oxygenID = findAmountResource(LifeSupportInterface.OXYGEN).getID(); // 3
+		co2ID = findAmountResource(LifeSupportInterface.CO2).getID(); // 4
 		argonID = findAmountResource(ARGON).getID(); // 5
 		coID = findAmountResource(CO).getID(); // 6
 
@@ -397,10 +397,10 @@ public class ResourceUtil implements Serializable {
 		napkinID = findAmountResource(NAPKIN).getID(); // 
 		
 		// AmountResource instances as objects
-		foodAR = findAmountResource(LifeSupportType.FOOD); // 1
-		waterAR = findAmountResource(LifeSupportType.WATER); // 2
-		oxygenAR = findAmountResource(LifeSupportType.OXYGEN); // 3
-		carbonDioxideAR = findAmountResource(LifeSupportType.CO2); // 4
+		foodAR = findAmountResource(LifeSupportInterface.FOOD); // 1
+		waterAR = findAmountResource(LifeSupportInterface.WATER); // 2
+		oxygenAR = findAmountResource(LifeSupportInterface.OXYGEN); // 3
+		carbonDioxideAR = findAmountResource(LifeSupportInterface.CO2); // 4
 		argonAR = findAmountResource(ARGON); // 5
 		nitrogenAR = findAmountResource(NITROGEN); // 10
 		coAR = findAmountResource(CO); // 6

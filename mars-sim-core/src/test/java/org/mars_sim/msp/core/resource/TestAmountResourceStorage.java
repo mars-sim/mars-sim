@@ -4,14 +4,14 @@ import java.util.Set;
 
 import junit.framework.TestCase;
 
-import org.mars_sim.msp.core.LifeSupportType;
+import org.mars_sim.msp.core.LifeSupportInterface;
 import org.mars_sim.msp.core.SimulationConfig;
 
 public class TestAmountResourceStorage extends TestCase {
 
 	private static final String CARBON_DIOXIDE = "carbon dioxide";
 	private static final String HYDROGEN = "hydrogen";
-	private static final String WATER = LifeSupportType.WATER;
+	private static final String WATER = LifeSupportInterface.WATER;
 
     @Override
     public void setUp() throws Exception {

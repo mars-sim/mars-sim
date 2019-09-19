@@ -14,7 +14,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.mars_sim.msp.core.LifeSupportType;
+import org.mars_sim.msp.core.LifeSupportInterface;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.time.MarsClock;
 
@@ -104,7 +104,7 @@ public class CircadianClock implements Serializable {
 //			marsClock = Simulation.instance().getMasterClock().getMarsClock();
 	}
 	
-	public void timePassing(double time, LifeSupportType support) {
+	public void timePassing(double time, LifeSupportInterface support) {
 
 		int solElapsed = marsClock.getMissionSol();
 

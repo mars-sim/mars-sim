@@ -12,7 +12,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.LifeSupportType;
+import org.mars_sim.msp.core.LifeSupportInterface;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
@@ -47,7 +47,7 @@ import org.mars_sim.msp.core.structure.building.function.SystemType;
  *  
  * REFERENCE : https://en.wikipedia.org/wiki/Space_suit,
  */
-public class EVASuit extends Equipment implements LifeSupportType, Serializable, Malfunctionable {
+public class EVASuit extends Equipment implements LifeSupportInterface, Serializable, Malfunctionable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;

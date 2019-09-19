@@ -8,7 +8,7 @@
 package org.mars_sim.msp.core.person.ai.task;
 
 import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.LifeSupportType;
+import org.mars_sim.msp.core.LifeSupportInterface;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.equipment.SpecimenContainer;
@@ -41,9 +41,9 @@ extends TestCase {
 
     public void testUnloadingPhase() throws Exception {
     	
-		AmountResource oxygen = ResourceUtil.findAmountResource(LifeSupportType.OXYGEN);
-		AmountResource food = ResourceUtil.findAmountResource(LifeSupportType.FOOD);
-		AmountResource water = ResourceUtil.findAmountResource(LifeSupportType.WATER);
+		AmountResource oxygen = ResourceUtil.findAmountResource(LifeSupportInterface.OXYGEN);
+		AmountResource food = ResourceUtil.findAmountResource(LifeSupportInterface.FOOD);
+		AmountResource water = ResourceUtil.findAmountResource(LifeSupportInterface.WATER);
 		AmountResource methane = ResourceUtil.findAmountResource("methane");
 
         String resourceName = "hammer";

@@ -18,7 +18,7 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.LifeSupportType;
+import org.mars_sim.msp.core.LifeSupportInterface;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
@@ -39,7 +39,7 @@ import org.mars_sim.msp.core.structure.building.function.SystemType;
  * The Rover class represents the rover type of ground vehicle. It contains
  * information about the rover.
  */
-public class Rover extends GroundVehicle implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
+public class Rover extends GroundVehicle implements Crewable, LifeSupportInterface, Airlockable, Medical, Towing {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -48,21 +48,47 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportType, A
 	private static String loggerName = logger.getName();
 	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 
+	/** The reference small amount of resource. */
+	public static final double SMALL_AMOUNT = 0.1;
+	
 	/** The amount of work time to perform maintenance (millisols) */
 	public static final double MAINTENANCE_WORK_TIME = 500D;
 
+	// Note: 34 kPa (5 psi) is chosen for the composition of oxygen inside a settlement at 58.8%.
+	/** Rate of change of temperature in degree celsius. */
+	private static final double RATE_OF_CHANGE_OF_C_PER_MILLISOL = 0.0005D; 
+	/** Rate of change of air pressure (kPa). */
+	private static final double RATE_OF_CHANGE_OF_kPa_PER_MILLISOL = 0.0005D; 
+	/** The factitious temperature flow [deg C per millisols] when connected to a settlement */
+	private static final double TEMPERATURE_FLOW_PER_MILLISOL = 0.01D; 
+	/** The factitious air pressure flow [kPa per millisols] when connected to a settlement */
+	private static final double AIR_PRESSURE_FLOW_PER_MILLISOL = 0.01D; 
+	
 	/** Normal air pressure (kPa). */
-	private double NORMAL_AIR_PRESSURE = 34.7D; // 101325D;
+	private static final double NORMAL_AIR_PRESSURE = 34.7D; 
 	/** Normal temperature (celsius). */
-	private double NORMAL_TEMP = 22.5D;
+	private static final double NORMAL_TEMP = 22.5D;
 
 	// Data members
 	/** The rover's capacity for crew members. */
 	private int crewCapacity = 0;
 	/** The rover's capacity for robot crew members. */
 	private int robotCrewCapacity = 0;
+	
+	/** The rover's internal air pressure. */
+	private double airPressure = 0; //NORMAL_AIR_PRESSURE;
+	/** The rover's internal temperature. */
+	private double temperature = 0; //NORMAL_TEMP;
 	/** The rover's cargo capacity */
 	private double cargoCapacity = 0;
+
+//	private String sCache = "";
+	
+	/** The rover's lab activity spots. */
+	private List<Point2D> labActivitySpots;
+	/** The rover's sick bay activity spots. */
+	private List<Point2D> sickBayActivitySpots;
+	
 	/** The rover's airlock. */
 	private Airlock airlock;
 	/** The rover's lab. */
@@ -71,14 +97,6 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportType, A
 	private SickBay sickbay;
 	/** The vehicle the rover is currently towing. */
 	private Vehicle towedVehicle;
-
-	private List<Point2D> labActivitySpots;
-	private List<Point2D> sickBayActivitySpots;
-
-	// Static data members
-//	private static VehicleConfig vehicleConfig;
-//	private static PersonConfig personConfig;
-//	private static Weather weather;
 
 	/**
 	 * Constructs a Rover object at a given settlement
@@ -90,14 +108,6 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportType, A
 	public Rover(String name, String type, Settlement settlement) {
 		// Use GroundVehicle constructor
 		super(name, type, settlement, MAINTENANCE_WORK_TIME);
-
-		// life_support_range_error_margin =
-		// SimulationConfig.instance().getSettlementConfiguration().loadMissionControl()[0];
-
-		// Get vehicle configuration.
-//		weather = Simulation.instance().getMars().getWeather();
-//		VehicleConfig vehicleConfig = SimulationConfig.instance().getVehicleConfiguration();
-//		personConfig = SimulationConfig.instance().getPersonConfig();
 
 		// Add scope to malfunction manager.
 		malfunctionManager.addScopeString(SystemType.ROVER.toString());
@@ -122,9 +132,9 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportType, A
 
 		// Set inventory resource capacities.
 		inv.addAmountResourceTypeCapacity(ResourceUtil.methaneID, vehicleConfig.getCargoCapacity(type, ResourceUtil.METHANE));
-		inv.addAmountResourceTypeCapacity(ResourceUtil.oxygenID, vehicleConfig.getCargoCapacity(type, LifeSupportType.OXYGEN));
-		inv.addAmountResourceTypeCapacity(ResourceUtil.waterID, vehicleConfig.getCargoCapacity(type, LifeSupportType.WATER));
-		inv.addAmountResourceTypeCapacity(ResourceUtil.foodID, vehicleConfig.getCargoCapacity(type, LifeSupportType.FOOD));
+		inv.addAmountResourceTypeCapacity(ResourceUtil.oxygenID, vehicleConfig.getCargoCapacity(type, LifeSupportInterface.OXYGEN));
+		inv.addAmountResourceTypeCapacity(ResourceUtil.waterID, vehicleConfig.getCargoCapacity(type, LifeSupportInterface.WATER));
+		inv.addAmountResourceTypeCapacity(ResourceUtil.foodID, vehicleConfig.getCargoCapacity(type, LifeSupportInterface.FOOD));
 		inv.addAmountResourceTypeCapacity(ResourceUtil.rockSamplesID, vehicleConfig.getCargoCapacity(type, ResourceUtil.ROCK_SAMLES));
 		inv.addAmountResourceTypeCapacity(ResourceUtil.iceID, vehicleConfig.getCargoCapacity(type, ResourceUtil.ICE));
 		
@@ -272,16 +282,21 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportType, A
 		boolean result = true;
 		
 		Inventory inv = null;
-
-		// Assuming that a hose is connected between the vehicle and the settlement to supply resources
-		if (getStatus() == StatusType.GARAGED) {// || getStatus() == StatusType.PARKED) {
-			if (getSettlement() == null)
-				LogConsolidated.log(Level.SEVERE, 1_000, sourceName,
-						"[" + this.getName() + "] Rover's lifeSupportCheck(). Why settlement = null ? " 
-								+ getNickName() + " is in garage " + getGarage().getNickName());
-			inv = getSettlement().getInventory();
+		
+		// TODO: need to draw the the hose connecting between the vehicle and the settlement to supply resources
+		
+		if (isPluggedIn()) {		
+			if (getSettlement() == null) {
+				LogConsolidated.log(Level.SEVERE, 1_000, sourceName, "[" + this.getName() + "] " 
+						+ getNickName() + "'s settlement is null");
+			
+				inv = getInventory();
+			}
+			else
+				// Use the settlement's inventory
+				inv = getSettlement().getInventory();
 		}
-		else
+		else 
 			inv = getInventory();
 		
 		if (inv.getAmountResourceStored(ResourceUtil.oxygenID, false) <= 0D)
@@ -299,7 +314,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportType, A
 			LogConsolidated.log(Level.SEVERE, 10_000, sourceName,
 					"[" + this.getName() + "] out-of-range overall air pressure at " + Math.round(p * 10D) / 10D 
 					+ " kPa detected.");
-			return false;
+			result = false;
 		}
 		
 		double t = getTemperature();
@@ -308,7 +323,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportType, A
 				LogConsolidated.log(Level.SEVERE, 10_000, sourceName,
 					"[" + this.getName() + "] out-of-range overall temperature at " + Math.round(t * 10D) / 10D 
 						+ " " + Msg.getString("temperature.sign.degreeCelsius") + " detected.");		
-			return false;
+			result = false;
 		}
 
 		return result;
@@ -324,6 +339,24 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportType, A
 	}
 
 	/**
+	 * Is the rover connected to the settlement through hoses
+	 * 
+	 * @return true if yes
+	 */
+	public boolean isPluggedIn() {
+		if (isInSettlement())
+			return true;
+		
+		StatusType st = getStatus();
+		if (st == StatusType.GARAGED)
+			return true;
+		if (st == StatusType.TOWED)
+			return true;
+		
+		return false;
+	}
+	
+	/**
 	 * Gets oxygen from system.
 	 * 
 	 * @param amountRequested the amount of oxygen requested from system (kg)
@@ -333,9 +366,19 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportType, A
 	public double provideOxygen(double amountRequested) {
 		Inventory inv = null;
 		
-		// Assuming that a hose is connected between the vehicle and the settlement to supply resources
-		if (getStatus() == StatusType.GARAGED)// || getStatus() == StatusType.PARKED)
-			inv = getSettlement().getInventory();
+		// TODO: need to draw the the hose connecting between the vehicle and the settlement to supply resources
+		
+		if (isPluggedIn()) {
+			if (getSettlement() == null) {
+				LogConsolidated.log(Level.SEVERE, 1_000, sourceName, "[" + this.getName() + "] " 
+					+ getNickName() + "'s settlement is null");
+		
+				inv = getInventory();
+			}
+			else
+				// Use the settlement's inventory
+				inv = getSettlement().getInventory();
+		}
 		else
 			inv = getInventory();
 		
@@ -362,10 +405,19 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportType, A
 	 */
 	public double provideWater(double amountRequested) {
 		Inventory inv = null;
-
-		// Assuming that a hose is connected between the vehicle and the settlement to supply resources
-		if (getStatus() == StatusType.GARAGED)// || getStatus() == StatusType.PARKED)
-			inv = getSettlement().getInventory();
+		// TODO: need to draw the the hose connecting between the vehicle and the settlement to supply resources
+		
+		if (isPluggedIn()) {
+			if (getSettlement() == null) {
+				LogConsolidated.log(Level.SEVERE, 1_000, sourceName, "[" + this.getName() + "] " 
+					+ getNickName() + "'s settlement is null");
+		
+				inv = getInventory();
+			}
+			else
+				// Use the settlement's inventory
+				inv = getSettlement().getInventory();
+		}
 		else
 			inv = getInventory();
 		
@@ -389,19 +441,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportType, A
 	 * @return air pressure (Pa)
 	 */
 	public double getAirPressure() {
-		double result = 0;
-		
-		// Assuming that a hose is connected between the vehicle and the settlement to supply resources
-		if (getStatus() == StatusType.GARAGED)// || getStatus() == StatusType.PARKED)	
-			result = getSettlement().getAirPressure();
-		else
-			result = NORMAL_AIR_PRESSURE;// * (malfunctionManager.getAirPressureModifier() / 100D);
-		
-//		double ambient = weather.getAirPressure(getCoordinates());
-//		if (result < ambient)
-//			return ambient;
-//		else
-		return result;
+		return airPressure;
 	}
 
 	/**
@@ -410,21 +450,107 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportType, A
 	 * @return temperature (degrees C)
 	 */
 	public double getTemperature() {
-	double result = 0;
-		
-	// Assuming that a hose is connected between the vehicle and the settlement to supply resources
-		if (getStatus() == StatusType.GARAGED)// || getStatus() == StatusType.PARKED)
-			result = getSettlement().getTemperature();
-		else
-			result = NORMAL_TEMP;// * (malfunctionManager.getTemperatureModifier() / 100D);
-		
-//		double ambient = weather.getTemperature(getCoordinates());
-//		if (result < ambient)
-//			return ambient;
-//		else
-		return result;
+		return temperature;	
 	}
 
+	/**
+	 * Plugs in the rover and adjust the temperature 
+	 * 
+	 * @param time
+	 */
+	public void plugInTemperature(double time) {
+		// TODO: need to draw the the hose connecting between the vehicle and the settlement to supply resources
+		if (isPluggedIn()) {
+			if (temperature > NORMAL_TEMP * 1.15 || temperature < NORMAL_TEMP * 0.85) {
+				// Internal air pumps of a rover maintains the air pressure
+				// TODO: need to model the power usage
+				
+				double p = 0;
+				if (getStatus() == StatusType.GARAGED)
+					p = getGarage().getCurrentTemperature();
+				else 
+					p = getSettlement().getTemperature();// * (malfunctionManager.getTemperatureModifier() / 100D);
+				double delta = temperature - p;
+				if (delta > 5)
+					delta = 5;
+				else if (delta < -5)
+					delta = -5;
+
+				double result = temperature - delta * TEMPERATURE_FLOW_PER_MILLISOL * time;
+					
+				temperature = result;
+			}
+		}
+	}
+	
+	
+	/**
+	 * Unplugs the rover and adjust the temperature 
+	 * 
+	 * @param time
+	 */
+	public void plugOffTemperature(double time) {
+		if (temperature >= 0) {
+			// if no one is occupying the rover, can power it off 
+		
+			// TODO : will need to the internal air composition/pressure of a vehicle 
+			temperature -= RATE_OF_CHANGE_OF_C_PER_MILLISOL * time;
+			if (temperature < 0)
+				// but will use power to maintain the temperature at the minimum of zero deg C
+				temperature = 0;	
+		}
+	}
+	
+	/**
+	 * Adjust the air pressure of the rover
+	 * 
+	 * @param time
+	 */
+	public void plugInAirPressure(double time) {
+		// TODO: need to draw the the hose connecting between the vehicle and the settlement to supply resources
+		if (isPluggedIn()) {
+			if (airPressure > NORMAL_AIR_PRESSURE * 1.15 || airPressure < NORMAL_AIR_PRESSURE * 0.85) {
+				// Internal heat pump of a rover maintains the air pressure
+				// TODO: need to model the power usage
+				
+				double p = 0;
+				if (getStatus() == StatusType.GARAGED)
+					p = getGarage().getCurrentAirPressure();
+				else 
+					p = getSettlement().getAirPressure();// * (malfunctionManager.getAirPressureModifier() / 100D);
+				
+				double delta = airPressure - p;
+				if (delta > 5)
+					delta = 5;
+				else if (delta < -5)
+					delta = -5;
+				
+				double result = airPressure - delta * AIR_PRESSURE_FLOW_PER_MILLISOL * time;
+				airPressure = result;
+			}
+		}
+	}
+		
+	public void plugOffAirPressure(double time) {
+		if (airPressure >= 0) {
+			// if no one is occupying the rover, can power it off 
+	
+//			double nitrogenLeft = getInventory().getAmountResourceStored(ResourceUtil.nitrogenID, false);
+//			double oxygenLeft = getInventory().getAmountResourceStored(ResourceUtil.oxygenID, false);
+//			double co2Left = getInventory().getAmountResourceStored(ResourceUtil.oxygenID, false);
+//			double waterLeft = getInventory().getAmountResourceStored(ResourceUtil.waterID, false);
+//			double sum = nitrogenLeft + oxygenLeft + co2Left + waterLeft;
+			
+			double rate = RATE_OF_CHANGE_OF_kPa_PER_MILLISOL * time;
+			
+			// TODO : will need to the internal air composition/pressure of a vehicle 
+			airPressure -= rate;	
+			
+			if (airPressure < 0)
+				airPressure = 0;	
+		}
+	}
+	
 	/**
 	 * Gets the rover's airlock.
 	 * 
@@ -433,7 +559,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportType, A
 	public Airlock getAirlock() {
 		return airlock;
 	}
-
+	
 	/**
 	 * Perform time-related processes
 	 * 
@@ -444,12 +570,29 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportType, A
 		super.timePassing(time);
 
 		airlock.timePassing(time);
+		
+		boolean onAMission = isOnAMission();
+		if (onAMission || isReservedForMission()) {
+			plugInTemperature(time);
+			plugInAirPressure(time);	
+//			String s = this + " is plugged in.  " +  + airPressure + " kPa  " + temperature + " C";
+//			if (!sCache.equals(s)) {
+//				sCache = s;
+//				logger.info(sCache);
+//			}
+		}
+		
+		else if (crewCapacity <= 0) {
+			plugOffTemperature(time);
+			plugOffAirPressure(time);
+		}
+	
 	}
 
 	/**
 	 * Gets a collection of people affected by this entity.
 	 * 
-	 * @return person collection
+	 * @return people collection
 	 */
 	public Collection<Person> getAffectedPeople() {
 		Collection<Person> people = super.getAffectedPeople();
@@ -465,6 +608,11 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportType, A
 		return people;
 	}
 
+	/**
+	 * Gets a collection of robots affected by this entity.
+	 * 
+	 * @return robots collection
+	 */
 	public Collection<Robot> getAffectedRobots() {
 		Collection<Robot> robots = super.getAffectedRobots();
 

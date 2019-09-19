@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.LifeSupportType;
+import org.mars_sim.msp.core.LifeSupportInterface;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.SimulationConfig;
@@ -94,7 +94,7 @@ import org.mars_sim.msp.core.vehicle.VehicleType;
  * The Settlement class represents a settlement unit on virtual Mars. It
  * contains information related to the state of the settlement.
  */
-public class Settlement extends Structure implements Serializable, LifeSupportType, Objective {
+public class Settlement extends Structure implements Serializable, LifeSupportInterface, Objective {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -1079,6 +1079,25 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 
 	}
 
+	/**
+	 * Gets the air pressure of a particular building.
+	 *
+	 * @param building
+	 * @return air pressure [in kPa] (not Pa)
+	 */
+	public double getBuildingAirPressure(Building building) {
+		double p = 0;
+		List<Building> buildings = buildingManager.getBuildingsWithLifeSupport();
+		for (Building b : buildings) {
+			if (b == building) {
+				int id = b.getInhabitableID();
+				p = compositionOfAir.getTotalPressure()[id];
+			}
+		}
+		// convert from atm to kPascal
+		return p * CompositionOfAir.KPA_PER_ATM;
+	}
+	
 	/**
 	 * Gets the air pressure of the life support system.
 	 * 

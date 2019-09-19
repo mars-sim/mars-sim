@@ -19,7 +19,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.LifeSupportType;
+import org.mars_sim.msp.core.LifeSupportInterface;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
@@ -186,7 +186,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 
 	private Preference preference;
 
-	private LifeSupportType support;
+	private LifeSupportInterface support;
 
 	private Cooking kitchenWithMeal;
 
@@ -1102,10 +1102,10 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 *
 	 * @return Life support system.
 	 */
-	private LifeSupportType getLifeSupportType() {
+	private LifeSupportInterface getLifeSupportType() {
 
-		LifeSupportType result = null;
-		List<LifeSupportType> lifeSupportUnits = new ArrayList<LifeSupportType>();
+		LifeSupportInterface result = null;
+		List<LifeSupportInterface> lifeSupportUnits = new ArrayList<LifeSupportInterface>();
 
 		Settlement settlement = getSettlement();
 		if (settlement != null) {
@@ -1115,7 +1115,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		else {
 			
 			Vehicle vehicle = getVehicle();
-			if ((vehicle != null) && (vehicle instanceof LifeSupportType)) {
+			if ((vehicle != null) && (vehicle instanceof LifeSupportInterface)) {
 
 				if (vehicle.isInVehicleInGarage()) { //BuildingManager.getBuilding(vehicle) != null) {
 					// if the vehicle is inside a garage
@@ -1123,7 +1123,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 				}
 
 				else {
-					lifeSupportUnits.add((LifeSupportType) vehicle);
+					lifeSupportUnits.add((LifeSupportInterface) vehicle);
 				}
 			}
 		}
@@ -1131,12 +1131,12 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		// Get all contained units.
 		Collection<Unit> units = getInventory().getContainedUnits();
 		for (Unit u : units) {
-			if (u instanceof LifeSupportType)
-				lifeSupportUnits.add((LifeSupportType) u);
+			if (u instanceof LifeSupportInterface)
+				lifeSupportUnits.add((LifeSupportInterface) u);
 		}
 
 		// Get first life support unit that checks out.
-		for (LifeSupportType goodUnit : lifeSupportUnits) {
+		for (LifeSupportInterface goodUnit : lifeSupportUnits) {
 			if (result == null && goodUnit.lifeSupportCheck()) {
 				result = goodUnit;
 			}
