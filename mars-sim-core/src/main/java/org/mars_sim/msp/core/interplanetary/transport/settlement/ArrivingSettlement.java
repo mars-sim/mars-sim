@@ -315,6 +315,7 @@ public class ArrivingSettlement implements Transportable, Serializable {
 					.setSponsor(sponsor)
 					.setSkill(null)
 					.setPersonality(null, null)
+					.setAttribute(null)
 					.build();
 			immigrant.initialize();
 
@@ -376,7 +377,10 @@ public class ArrivingSettlement implements Transportable, Serializable {
 			// Adopt Static Factory Method and Factory Builder Pattern
 			Robot robot = Robot
 					.create(unitManager.getNewName(UnitType.ROBOT, null, null, robotType), newSettlement, robotType)
-					.setCountry("Earth").setSkill(null, robotType).build();
+					.setCountry("Earth")
+					.setSkill(null, robotType)
+					.setAttribute(null)
+					.build();
 			robot.initialize();
 
 			unitManager.addUnit(robot);

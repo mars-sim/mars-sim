@@ -119,11 +119,8 @@ extends TabPanel {
 
 		attributeScrollPanel.setViewportView(attributeTable);
 
-		// 2015-06-08 Added sorting
 		attributeTable.setAutoCreateRowSorter(true);
-        //if (!MainScene.OS.equals("linux")) {
-        //	attributeTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
-		//}
+ 
 		// Align the content to the center of the cell
         // Note: DefaultTableCellRenderer does NOT work well with nimrod
 		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
@@ -131,7 +128,7 @@ extends TabPanel {
 		attributeTable.getColumnModel().getColumn(0).setCellRenderer(renderer);
 		attributeTable.getColumnModel().getColumn(1).setCellRenderer(renderer);
 
-		// 2015-06-08 Added setTableStyle()
+
         TableStyle.setTableStyle(attributeTable);
         update();
         //attributeTableModel.update();
@@ -234,32 +231,30 @@ extends AbstractTableModel {
 
 		else if (column == 1) {
 			if (person != null)
-				return getLevelString(n_manager.getAttribute(n_attributes.get(row).values().iterator().next()));
+				return n_manager.getAttribute(n_attributes.get(row).values().iterator().next());
 
 			else if (robot != null)
-				return getLevelString(r_manager.getAttribute(r_attributes.get(row).values().iterator().next()));
+				return r_manager.getAttribute(r_attributes.get(row).values().iterator().next());
 			else
 				return null;
 		}
 
 		else return null;
 	}
-	/*
-	public void update() {}
-	 */
-	public String getLevelString(int level) {
-		String result = null;
-		if (level < 5) result = Msg.getString("TabPanelAttribute.level.0"); //$NON-NLS-1$
-		else if (level < 20) result = Msg.getString("TabPanelAttribute.level.1"); //$NON-NLS-1$
-		else if (level < 35) result = Msg.getString("TabPanelAttribute.level.2"); //$NON-NLS-1$
-		else if (level < 45) result = Msg.getString("TabPanelAttribute.level.3"); //$NON-NLS-1$
-		else if (level < 55) result = Msg.getString("TabPanelAttribute.level.4"); //$NON-NLS-1$
-		else if (level < 65) result = Msg.getString("TabPanelAttribute.level.5"); //$NON-NLS-1$
-		else if (level < 80) result = Msg.getString("TabPanelAttribute.level.6"); //$NON-NLS-1$
-		else if (level < 95) result = Msg.getString("TabPanelAttribute.level.7"); //$NON-NLS-1$
-		else result = Msg.getString("TabPanelAttribute.level.8"); //$NON-NLS-1$
-		return result;
-	}
+
+//	public String getLevelString(int level) {
+//		String result = null;
+//		if (level < 5) result = Msg.getString("TabPanelAttribute.level.0"); //$NON-NLS-1$
+//		else if (level < 20) result = Msg.getString("TabPanelAttribute.level.1"); //$NON-NLS-1$
+//		else if (level < 35) result = Msg.getString("TabPanelAttribute.level.2"); //$NON-NLS-1$
+//		else if (level < 45) result = Msg.getString("TabPanelAttribute.level.3"); //$NON-NLS-1$
+//		else if (level < 55) result = Msg.getString("TabPanelAttribute.level.4"); //$NON-NLS-1$
+//		else if (level < 65) result = Msg.getString("TabPanelAttribute.level.5"); //$NON-NLS-1$
+//		else if (level < 80) result = Msg.getString("TabPanelAttribute.level.6"); //$NON-NLS-1$
+//		else if (level < 95) result = Msg.getString("TabPanelAttribute.level.7"); //$NON-NLS-1$
+//		else result = Msg.getString("TabPanelAttribute.level.8"); //$NON-NLS-1$
+//		return result;
+//	}
 
 	/**
 	 * Prepares the job history of the person

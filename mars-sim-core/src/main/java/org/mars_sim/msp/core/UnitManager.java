@@ -1070,6 +1070,9 @@ public class UnitManager implements Serializable {
 			// Override person's personality type based on people.xml, if any.
 			String mbti = crewConfig.getConfiguredPersonPersonalityType(x, crew_id);
 			
+			// Set person's configured natural attributes (if any).
+			Map<String, Integer> attributeMap = crewConfig.getNaturalAttributeMap(x);
+			
 			// Create person and add to the unit manager.
 			// Use Builder Pattern for creating an instance of Person
 			Person person = Person.create(name, settlement)
@@ -1078,6 +1081,7 @@ public class UnitManager implements Serializable {
 					.setSponsor(sponsor)
 					.setSkill(skillMap)
 					.setPersonality(bigFiveMap, mbti)
+					.setAttribute(attributeMap)
 					.build();
 			
 			person.initialize();
@@ -1110,18 +1114,6 @@ public class UnitManager implements Serializable {
 			person.getFavorite().setFavoriteSideDish(sideDish);
 			person.getFavorite().setFavoriteDessert(dessert);
 			person.getFavorite().setFavoriteActivity(FavoriteType.fromString(activity));
-
-			// Set person's configured natural attributes (if any).
-			Map<String, Integer> naturalAttributeMap = crewConfig.getNaturalAttributeMap(x);
-			if (naturalAttributeMap != null) {
-				Iterator<String> i = naturalAttributeMap.keySet().iterator();
-				while (i.hasNext()) {
-					String attributeName = i.next();
-					int value = (Integer) naturalAttributeMap.get(attributeName);
-					person.getNaturalAttributeManager()
-							.setAttribute(NaturalAttributeType.valueOfIgnoreCase(attributeName), value);
-				}
-			}
 
 			// Initialize Preference
 			person.getPreference().initializePreference();
@@ -1312,6 +1304,7 @@ public class UnitManager implements Serializable {
 							.setSponsor(sponsor)
 							.setSkill(null)
 							.setPersonality(null, null)
+							.setAttribute(null)
 							.build();
 					person.initialize();
 
@@ -1626,8 +1619,15 @@ public class UnitManager implements Serializable {
 						// Set robot's configured skills (if any).
 						Map<String, Integer> skillMap = robotConfig.getSkillMap(x);
 						
+						// Set robot's configured natural attributes (if any).
+						Map<String, Integer> attributeMap = robotConfig.getRoboticAttributeMap(x);
+						
 						// Adopt Static Factory Method and Factory Builder Pattern
-						Robot robot = Robot.create(name, settlement, robotType).setCountry("Earth").setSkill(skillMap, robotType).build();
+						Robot robot = Robot.create(name, settlement, robotType)
+								.setCountry("Earth")
+								.setSkill(skillMap, robotType)
+								.setAttribute(attributeMap)
+								.build();
 						robot.initialize();
 
 						numBots++;
@@ -1637,18 +1637,6 @@ public class UnitManager implements Serializable {
 							RobotJob robotJob = JobUtil.getRobotJob(robotType.getName());
 							if (robotJob != null) {
 								robot.getBotMind().setRobotJob(robotJob, true);
-							}
-	
-							// Set robot's configured natural attributes (if any).
-							Map<String, Integer> attributeMap = robotConfig.getRoboticAttributeMap(x);
-							if (attributeMap != null) {
-								Iterator<String> i = attributeMap.keySet().iterator();
-								while (i.hasNext()) {
-									String attributeName = i.next();
-									int value = (Integer) attributeMap.get(attributeName);
-									robot.getRoboticAttributeManager()
-											.setAttribute(RoboticAttributeType.valueOfIgnoreCase(attributeName), value);
-								}
 							}
 						}
 					}
@@ -1675,7 +1663,10 @@ public class UnitManager implements Serializable {
 					RobotType robotType = getABot(settlement, initial);
 					// Adopt Static Factory Method and Factory Builder Pattern
 					Robot robot = Robot.create(getNewName(UnitType.ROBOT, null, null, robotType), settlement, robotType)
-							.setCountry("Earth").setSkill(null, robotType).build();
+							.setCountry("Earth")
+							.setSkill(null, robotType)
+							.setAttribute(null)
+							.build();
 					robot.initialize();
 
 					String jobName = RobotJob.getName(robotType);

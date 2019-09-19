@@ -23,8 +23,7 @@ import org.mars_sim.msp.core.tool.MoreMath;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 
 /**
- * The SurfaceMapPanel class generates the Mars surface (using either Surface or 
- * Topo map) for the GlobeDisplay object.
+ * The SurfaceMapPanel class generates the real surface and topographical map for GlobeDisplay object.
  */
 public class SurfaceMapPanel {
 
@@ -34,7 +33,7 @@ public class SurfaceMapPanel {
 	// Constant data members
 	/** Height of map source image (pixels). */
 	// private final static int map_height = 150;
-	public final static int MAP_H = 300; //NavigatorWindow.HORIZONTAL;// GlobeDisplay.GLOBE_BOX_HEIGHT;
+	public final static int MAP_H = NavigatorWindow.HORIZONTAL_SURFACE_MAP; //HORIZONTAL_LEFT_HALF; //
 	/** Width of map source image (pixels). */
 	public final static int MAP_W = MAP_H * 2;
 

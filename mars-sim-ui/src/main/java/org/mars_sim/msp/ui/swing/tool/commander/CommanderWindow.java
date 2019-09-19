@@ -21,12 +21,14 @@ import java.util.List;
 
 import javax.swing.AbstractListModel;
 import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
@@ -56,7 +58,7 @@ extends ToolWindow {
 	/** Tool name. */
 	public static final String NAME = "Commander Dashboard";
 	public static final String TASK_TAB = "Task";
-	public static final String INTERVAL_TAB = "Interval";
+	public static final String INTERVAL_TAB = "Time";
 	
 	// Private members
 	private JTabbedPane tabPane;
@@ -65,9 +67,15 @@ extends ToolWindow {
 	private ListModel listModel;
 	private JScrollPane listScrollPanel;
 	private JList<String> list;
-	private JLabel leadershipPointsLabel;
+//	private JLabel leadershipPointsLabel;
 	private JTextArea jta;
 
+	private JRadioButton r0;
+	private JRadioButton r1;
+	private JRadioButton r2;
+	private JRadioButton r3;
+	private JRadioButton r4;
+			
 	private Commander commander = SimulationConfig.instance().getPersonConfig().getCommander();
 
 	private Person person;
@@ -108,15 +116,15 @@ extends ToolWindow {
 //		leadershipPane.setPreferredSize(new Dimension(200, 50));
 //		bottomPane.add(leadershipPane);
 		
-		JLabel leadershipLabel = new JLabel("Leadership Points : ", JLabel.RIGHT);
-		bottomPane.add(leadershipLabel);
+//		JLabel leadershipLabel = new JLabel("Leadership Points : ", JLabel.RIGHT);
+//		bottomPane.add(leadershipLabel);
 		
-		leadershipPointsLabel = new JLabel("", JLabel.LEFT);
-		bottomPane.add(leadershipPointsLabel);
-		bottomPane.add(new JLabel());
-		bottomPane.add(new JLabel());
-		
-		leadershipPointsLabel.setText(commander.getLeadershipPoint() + "");
+//		leadershipPointsLabel = new JLabel("", JLabel.LEFT);
+//		bottomPane.add(leadershipPointsLabel);
+//		bottomPane.add(new JLabel());
+//		bottomPane.add(new JLabel());
+//		
+//		leadershipPointsLabel.setText(commander.getLeadershipPoint() + "");
 		
 		// Create the info tab panel.
 		tabPane = new JTabbedPane();
@@ -124,9 +132,7 @@ extends ToolWindow {
 
 		createTaskPanel();
 		
-		JPanel intervalPanel = new JPanel(new BorderLayout());
-		tabPane.add(intervalPanel, BorderLayout.CENTER);
-		tabPane.setTitleAt(1, INTERVAL_TAB);
+		createTimePanel();
 		
 		setSize(new Dimension(480, 480));
 		setMaximizable(true);
@@ -143,6 +149,71 @@ extends ToolWindow {
 
 	}
 
+	public void createTimePanel() {
+		JPanel timePanel = new JPanel(new BorderLayout());
+		tabPane.add(timePanel, BorderLayout.CENTER);
+		tabPane.setTitleAt(1, INTERVAL_TAB);
+		
+		JPanel topPanel = new JPanel(new BorderLayout(20, 20));
+		timePanel.add(topPanel, BorderLayout.NORTH);
+
+//		JLabel label = new JLabel("Pause Timer");	
+
+		// Create a button panel
+		JPanel buttonPanel = new JPanel(new GridLayout(5,1));
+		topPanel.add(buttonPanel);
+		
+		buttonPanel.setBorder(BorderFactory.createTitledBorder("Pausing Interval"));
+		buttonPanel.setToolTipText("Select the time interval for automatic simulation pausing");
+		
+		ButtonGroup group = new ButtonGroup();
+	
+		r0 = new JRadioButton("None", true);
+		r1 = new JRadioButton("250 millisols");
+		r2 = new JRadioButton("333 millisols");
+		r3 = new JRadioButton("500 millisols");
+		r4 = new JRadioButton("1 sol");
+
+		group.add(r0);
+		group.add(r1);
+		group.add(r2);
+		group.add(r3);
+		group.add(r4);
+		
+		buttonPanel.add(r0);
+		buttonPanel.add(r1);
+		buttonPanel.add(r2);
+		buttonPanel.add(r3);
+		buttonPanel.add(r4);
+		
+		RadioButtonActionListener actionListener = new RadioButtonActionListener();
+		r0.addActionListener(actionListener);
+		r1.addActionListener(actionListener);
+		r2.addActionListener(actionListener);
+		r3.addActionListener(actionListener);
+		r4.addActionListener(actionListener);
+	    
+	}
+
+	class RadioButtonActionListener implements ActionListener {
+	    @Override
+	    public void actionPerformed(ActionEvent event) {
+	        JRadioButton button = (JRadioButton) event.getSource();
+	 
+	        if (button == r0) {
+	        	masterClock.setCommandPause(false, 1000);
+	        } else if (button == r1) {
+	        	masterClock.setCommandPause(true, 250);	 
+	        } else if (button == r2) {
+	        	masterClock.setCommandPause(true, 333.333);	
+	        } else if (button == r3) {
+	        	masterClock.setCommandPause(true, 500);       	 
+	        } else if (button == r4) {
+	        	masterClock.setCommandPause(true, 999.999);	
+	        }
+	    }
+	}
+    
 	public void createTaskPanel() {
 		JPanel taskPanel = new JPanel(new BorderLayout());
 //		taskPanel.setPreferredSize(new Dimension(450, 450));
@@ -291,7 +362,7 @@ extends ToolWindow {
 	}
 	
 	public void update() {
-		leadershipPointsLabel.setText(commander.getLeadershipPoint() + "");
+//		leadershipPointsLabel.setText(commander.getLeadershipPoint() + "");
 		
 		// Update list
 		listUpdate();
@@ -409,7 +480,7 @@ extends ToolWindow {
 		listModel = null;
 		listScrollPanel = null;
 		list = null;
-		leadershipPointsLabel= null;
+//		leadershipPointsLabel = null;
 		commander = null;
 		person = null;
 		taskCache = null;

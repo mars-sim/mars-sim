@@ -29,11 +29,13 @@ public class NaturalAttributeManager implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	/** List of the person's natural attributes keyed by unique name. */
+	/** A table of the person's natural attributes keyed by its type. */
 	private Hashtable<NaturalAttributeType, Integer> attributeTable;
+	
+	/** A list of the map of the person's natural attributes keyed by unique name. */
 	private List<Map<String, NaturalAttributeType>> n_attributes;
 
-//	private Map<String, Integer> attributeMap;
+	/** A list of the person's natural attributes. */
 	private List<String> attributeList;
 	
 	/**
@@ -42,12 +44,14 @@ public class NaturalAttributeManager implements Serializable {
 	 * @param person the person with the attributes.
 	 */
 	public NaturalAttributeManager(Person person) {
-
 		attributeTable = new Hashtable<NaturalAttributeType, Integer>();
-
 		attributeList = new ArrayList<>();
-//		attributeMap = new HashMap<>();
-		
+	}
+
+	/**
+	 * Sets some random attributes
+	 */
+	public void setRandomAttributes(Person person) {
 		// Create natural attributes using random values (averaged for bell curve around
 		// 50%).
 		// Note: this may change later.
@@ -61,37 +65,36 @@ public class NaturalAttributeManager implements Serializable {
 		}
 
 		// Modify the attributes reflective of Martian settlers.
-		addAttributeModifier(NaturalAttributeType.ACADEMIC_APTITUDE, 30);
+		addAttributeModifier(NaturalAttributeType.ACADEMIC_APTITUDE, -10);
 		addAttributeModifier(NaturalAttributeType.AGILITY, 30);
-		//addAttributeModifier(NaturalAttributeType.ARTISTRY, 20);
+		addAttributeModifier(NaturalAttributeType.ARTISTRY, -10);
 		addAttributeModifier(NaturalAttributeType.COURAGE, 40);
 		addAttributeModifier(NaturalAttributeType.ATTRACTIVENESS, 20);
 		addAttributeModifier(NaturalAttributeType.EMOTIONAL_STABILITY, 30);
 		addAttributeModifier(NaturalAttributeType.ENDURANCE, 5);
 		addAttributeModifier(NaturalAttributeType.EXPERIENCE_APTITUDE, 10);
 		addAttributeModifier(NaturalAttributeType.LEADERSHIP, 20);
-		//addAttributeModifier(NaturalAttributeType.SPIRITUALITY, 60);
-		addAttributeModifier(NaturalAttributeType.STRENGTH, 20);
-		addAttributeModifier(NaturalAttributeType.STRESS_RESILIENCE, 40);
-		//addAttributeModifier(NaturalAttributeType.TEACHING, 20);
+		addAttributeModifier(NaturalAttributeType.SPIRITUALITY, 10);
+		addAttributeModifier(NaturalAttributeType.STRENGTH, 5);
+		addAttributeModifier(NaturalAttributeType.STRESS_RESILIENCE, 30);
+		addAttributeModifier(NaturalAttributeType.TEACHING, 10);
 
 		// Adjust certain attributes reflective of differences between the genders.
-		// TODO: Do more research on this and cite references if possible.
 		if (person.getGender() == GenderType.MALE) {
-			addAttributeModifier(NaturalAttributeType.STRENGTH, 20);
+			addAttributeModifier(NaturalAttributeType.STRENGTH, RandomUtil.getRandomInt(20));
 		} else if (person.getGender() == GenderType.FEMALE) {
-			addAttributeModifier(NaturalAttributeType.STRENGTH, -20);
-			addAttributeModifier(NaturalAttributeType.ENDURANCE, 20);
+			addAttributeModifier(NaturalAttributeType.STRENGTH, -RandomUtil.getRandomInt(20));
 		}
 		
 		n_attributes = new ArrayList<Map<String, NaturalAttributeType>>();
 		for (NaturalAttributeType type : NaturalAttributeType.values()) {
-			Map<String,NaturalAttributeType> map = new TreeMap<String,NaturalAttributeType>();
+			Map<String, NaturalAttributeType> map = new TreeMap<String, NaturalAttributeType>();
 			map.put(type.getName(),type);
 			attributeList.add(type.getName());
 //			attributeMap.put(value.getName(), getAttribute(value));
 			n_attributes.add(map);
 		}
+		
 		Collections.sort(
 			n_attributes,
 			new Comparator<Map<String, NaturalAttributeType>>() {
@@ -102,7 +105,6 @@ public class NaturalAttributeManager implements Serializable {
 			}
 		);
 	}
-
 
 	/**
 	 * Adds a random modifier to an attribute.

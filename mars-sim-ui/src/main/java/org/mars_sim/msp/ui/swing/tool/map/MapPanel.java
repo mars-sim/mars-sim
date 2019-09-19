@@ -45,8 +45,8 @@ public class MapPanel extends WebPanel implements ClockListener {
 	private static Logger logger = Logger.getLogger(MapPanel.class.getName());
 	private static final double HALF_PI = Math.PI / 2d;
 
-	public final static int MAP_BOX_HEIGHT = NavigatorWindow.HORIZONTAL_MINIMAP;
-	public final static int MAP_BOX_WIDTH = NavigatorWindow.HORIZONTAL_MINIMAP;
+	public final static int MAP_BOX_HEIGHT = NavigatorWindow.HORIZONTAL_SURFACE_MAP;
+	public final static int MAP_BOX_WIDTH = NavigatorWindow.HORIZONTAL_SURFACE_MAP;
 	private static int dragx, dragy;
 
 //	private static final double PERIOD_IN_MILLISOLS = 10D * 500D / MarsClock.SECONDS_PER_MILLISOL; //3;

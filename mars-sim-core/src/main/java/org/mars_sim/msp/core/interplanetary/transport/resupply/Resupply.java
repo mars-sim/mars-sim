@@ -537,6 +537,7 @@ public class Resupply implements Serializable, Transportable {
 					.setSponsor(sponsor)
 					.setSkill(null)
 					.setPersonality(null, null)
+					.setAttribute(null)
 					.build();
 			immigrant.initialize();
 

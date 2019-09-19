@@ -67,6 +67,28 @@ public class RobotBuilderImpl implements RobotBuilder<Robot>{
 		return this;
 	}
 	
+	/**
+	 * Sets the attributes of a robot
+	 * 
+	 * @param attribute map
+	 * @return {@link RobotBuilder<>}
+	 */
+	public RobotBuilder<Robot> setAttribute(Map<String, Integer> attributeMap) {	
+		if (attributeMap == null || attributeMap.isEmpty()) {
+			robot.getRoboticAttributeManager().setRandomAttributes();	
+		}
+		else {
+			Iterator<String> i = attributeMap.keySet().iterator();
+			while (i.hasNext()) {
+				String attributeName = i.next();
+				int value = (Integer) attributeMap.get(attributeName);
+				robot.getRoboticAttributeManager()
+						.setAttribute(RoboticAttributeType.valueOfIgnoreCase(attributeName), value);
+			}
+		}
+		return this;
+	}
+	
 	public Robot build() {
 		return robot;
 	}

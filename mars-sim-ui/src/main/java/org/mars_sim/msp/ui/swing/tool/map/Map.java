@@ -10,7 +10,7 @@ package org.mars_sim.msp.ui.swing.tool.map;
 import java.awt.Image;
 
 import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.ui.swing.tool.navigator.SurfaceMapPanel;
+import org.mars_sim.msp.ui.swing.tool.navigator.NavigatorWindow;
 
 /**
  * The Map interface represents a map usable by the MapDisplay class.
@@ -18,7 +18,7 @@ import org.mars_sim.msp.ui.swing.tool.navigator.SurfaceMapPanel;
 public interface Map {
 
 	/** created map height (for scrolling) */
-	public static final int DISPLAY_HEIGHT = SurfaceMapPanel.MAP_H; // NavigatorWindow.VERTICAL_MINIMAP;
+	public static final int DISPLAY_HEIGHT = NavigatorWindow.HORIZONTAL_SURFACE_MAP; // SurfaceMapPanel.MAP_H; // NavigatorWindow.VERTICAL_MINIMAP;
 	/** created map width (for scrolling) */
 	public static final int DISPLAY_WIDTH = DISPLAY_HEIGHT;// NavigatorWindow.VERTICAL_MINIMAP;
 	/** Map display width in pixels. */

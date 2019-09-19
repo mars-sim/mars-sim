@@ -27,8 +27,8 @@ abstract class IntegerMapData implements MapData {
 
 	// Static members.
 	private static Logger logger = Logger.getLogger(IntegerMapData.class.getName());
-	private static int IMAGE_WIDTH = 300;
-	private static int IMAGE_HEIGHT = 300;
+	public static int IMAGE_WIDTH = MapDataUtil.IMAGE_WIDTH;
+	public static int IMAGE_HEIGHT = MapDataUtil.IMAGE_HEIGHT;
 	public static final double HALF_MAP_ANGLE = .48587D;
 	public static final int MAP_HEIGHT = 1440; // Source map height in pixels.
 	public static final int MAP_WIDTH = 2880; // Source map width in pixels.

@@ -273,10 +273,12 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		this.xLoc = 0D;
 		this.yLoc = 0D;
 		this.associatedSettlement = settlement.getIdentifier();
-
-		// Construct the skill manager
+		
+		// Construct the NaturalAttributeManager instance
+		attributes = new NaturalAttributeManager(this);
+		// Construct the SkillManager instance
 		skillManager = new SkillManager(this);
-		// Construct the mind instance
+		// Construct the Mind instance
 		mind = new Mind(this);
 
 		// Set up the time stamp for the person
@@ -305,7 +307,6 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		BuildingManager.addToRandomBuilding(this, associatedSettlement);
 		// why failed in
 		// testWalkingStepsRoverToExterior(org.mars_sim.msp.core.person.ai.task.WalkingStepsTest)
-		attributes = new NaturalAttributeManager(this);
 		// Set up genetic make-up. Notes it requires attributes.
 		setupChromosomeMap();
 

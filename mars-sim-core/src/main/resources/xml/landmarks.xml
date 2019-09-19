@@ -96,14 +96,24 @@
 	  	<landmark name="Mars 3 Lander" approvaldate="N/A" diameter="0.1" location="Ptolemaeus Crater" latitude="45.0 S" longitude="158.0 W" origin="Soviet" type="AO"/>
 	  	<!-- Mars 6 : https://nssdc.gsfc.nasa.gov/nmc/spacecraft/display.action?id=1973-052A -->
 	  	<landmark name="Mars 6 Lander" approvaldate="N/A" diameter="0.1" location="Margaritifer Sinus" latitude="23.90 S" longitude="19.42 W" origin="Soviet" type="AO"/>
+	  	
 	  	<landmark name="Mars Pathfinder Rover" approvaldate="N/A" diameter="0.1" location="Ares Vallis, Chryse Planitia, Oxia Palus quadrangle" latitude="19.3 N" longitude="33.3 W" origin="NASA" type="AO"/>
+	  	
 	  	<landmark name="Mars Polar Lander" approvaldate="N/A" diameter="0.1" location="Ultimi Scopuli (projected), Southern polar area" latitude="76.7 S" longitude="164.7 E" origin="NASA" type="AO"/>
+	  	
 	  	<landmark name="MSL Curiosity Rover" approvaldate="N/A" diameter="0.1" location="Quad 51 (Yellowknife), Aeolis Palus, crater Gale" latitude="4.59 S" longitude="137.44 E" origin="NASA" type="AO"/>
+	  	
 	  	<landmark name="MER Spirit Rover" approvaldate="N/A" diameter="0.1" location="impact crater Gusev" latitude="14.57 S" longitude="175.47 E" origin="NASA" type="AO"/>
-	  	<landmark name="MER Opportunity Rover" approvaldate="N/A" diameter="0.1" location="West of Endeavour crater, Meridiani Planum" latitude="1.95 S" longitude="5.53 W" origin="NASA" type="AO"/>
+	  	
+	  	<landmark name="MER Opportunity Rover" approvaldate="N/A" diameter="0.1" location="West of Endeavour crater, Meridiani Planum" latitude="1.95 S" longitude="354.47 E" origin="NASA" type="AO"/>
+	  	
 	  	<landmark name="Phoenix Lander" approvaldate="N/A" diameter="0.1" location="Green Valley, Vastitas Borealis" latitude="68.22 N" longitude="125.7 W" origin="NASA" type="AO"/>
+	  	
 	  	<landmark name="Viking Lander 1" approvaldate="N/A" diameter="0.1" location="Western Chryse Planitia" latitude="22.5 N" longitude="48.0 W" origin="NASA" type="AO"/>
+	  	
 	  	<landmark name="Viking Lander 2" approvaldate="N/A" diameter="0.1" location="West of Mie crater, Utopia Planitia" latitude="47.64 N" longitude="225.71 W" origin="NASA" type="AO"/>
+	  	
 	  	<landmark name="Schiaparelli EDM Lander" approvaldate="N/A" diameter="0.1" location="Meridiani Planum" latitude="2.05 S" longitude="6.21 W" origin="NASA" type="AO"/>  
+	  	
 	  	<landmark name="InSight Lander" approvaldate="N/A" diameter="0.1" location="Western Elysium Planitia" latitude="4.50 N" longitude="135.62 E" origin="ESA" type="AO"/>  
 	</landmark-list>

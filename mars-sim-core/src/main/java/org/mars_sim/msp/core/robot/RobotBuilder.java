@@ -23,5 +23,13 @@ public interface RobotBuilder<T> {
 	
 	public RobotBuilder<Robot> setSkill(Map<String, Integer> skillMap, RobotType t);
 
+	/**
+	 * Sets the attributes of a robot
+	 * 
+	 * @param attribute map
+	 * @return {@link RobotBuilder<>}
+	 */
+	public RobotBuilder<Robot> setAttribute(Map<String, Integer> attributeMap);
+	
 	public T build();
 }

@@ -54,7 +54,8 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 
 //	private static double PERIOD_IN_MILLISOLS = 10D * 500D / MarsClock.SECONDS_PER_MILLISOL;
 
-	public final static int GLOBE_BOX_HEIGHT = SurfaceMapPanel.MAP_H;
+//	public final static int HEIGHT_OFFSET = 40;
+	public final static int GLOBE_BOX_HEIGHT = NavigatorWindow.HORIZONTAL_SURFACE_MAP;//SurfaceMapPanel.MAP_H;
 	public final static int GLOBE_BOX_WIDTH = GLOBE_BOX_HEIGHT;
 	public final static int LIMIT = 60; // the max amount of pixels in each mouse drag that the globe will update itself
 
@@ -176,7 +177,7 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 		setMaximumSize(getPreferredSize());
 //		setMinimumSize(getPreferredSize());
 
-		// Construct sphere objects for both real and topographical modes
+		// Construct sphere objects for both real surface and topographical modes
 		marsSphere = new SurfaceMapPanel(MarsGlobeType.SURFACE_MID, this);
 		topoSphere = new SurfaceMapPanel(MarsGlobeType.TOPO_MID, this);
 
@@ -603,7 +604,7 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 			g.drawRect(72, 72, 6, 6);
 			g.drawLine(0, 75, 71, 75);
 			g.drawLine(79, 75, 149, 75);
-			g.drawLine(75, 0, 75, 71);
+			g.drawLine(75, 20, 75, 71);
 			g.drawLine(75, 79, 75, 149);
 		}
 		// If not USGS map, use large crosshairs.
@@ -617,7 +618,7 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 			g.drawRect(118, 118, 66, 66);
 			g.drawLine(0, 150, 117, 150);
 			g.drawLine(184, 150, 299, 150);
-			g.drawLine(150, 0, 150, 117);
+			g.drawLine(150, 20, 150, 117);
 			g.drawLine(150, 185, 150, 300);
 
 //			g.drawRect(105, 105, 53, 53);
@@ -632,9 +633,9 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 
 		// Draw longitude and latitude strings using prepared measurements
 		// g.drawString(latitude, 5, 130);
-		g.drawString(latitude, 25, 270);
+		g.drawString(latitude, 25, 30);
 		// g.drawString(longitude, 145 - rightWidth, 130);
-		g.drawString(longitude, 275 - rightWidth, 270);
+		g.drawString(longitude, 275 - rightWidth, 30);
 
 		String latString = centerCoords.getFormattedLatitudeString();
 		String longString = centerCoords.getFormattedLongitudeString();
@@ -647,8 +648,8 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 
 		// g.drawString(latString, latPosition, 142);
 		// g.drawString(longString, longPosition, 142);
-		g.drawString(latString, latPosition, 284);
-		g.drawString(longString, longPosition, 284);
+		g.drawString(latString, latPosition, 50);
+		g.drawString(longString, longPosition, 50);
 
 	}
 

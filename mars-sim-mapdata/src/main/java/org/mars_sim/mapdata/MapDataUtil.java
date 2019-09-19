@@ -11,7 +11,9 @@ package org.mars_sim.mapdata;
  * Static utility class for accessing Mars map data.
  */
 public final class MapDataUtil {
-
+	
+	public static int IMAGE_WIDTH = 300;
+	public static int IMAGE_HEIGHT = IMAGE_WIDTH;
     // Singleton instance.
     private static MapDataUtil instance;
     private static MapDataFactory mapDataFactory;

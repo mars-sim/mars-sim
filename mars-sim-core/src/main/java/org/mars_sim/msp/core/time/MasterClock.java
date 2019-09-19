@@ -22,8 +22,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.GameManager;
-import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
@@ -43,9 +41,7 @@ public class MasterClock implements Serializable {
 	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 	
 	private static final int FACTOR = 4;
-	/** For Commander Mode, the sim will pause every x millisols. */
-	private static final int PAUSING_MILLISOLS = 500;
-	
+
 	// Data members
 	/** Runnable flag. */
 	private transient volatile boolean keepRunning = false;
@@ -82,28 +78,35 @@ public class MasterClock implements Serializable {
 	private transient double timeCache;
 
 	private static boolean justReloaded = false;
-	/** Is FXGL is in use. */
-	public boolean isFXGL = false;
+	
 //	/** The time between two ui pulses. */	
 //	private float pulseTime = .5F;
 	/** The counts for ui pulses. */	
 	private transient int count;
 	/** The total number of counts between two ui pulses. */
 	private transient int totalCount = 40;
+	
+	/** Is FXGL is in use. */
+	public boolean isFXGL = false;
+	/** Is pausing millisol in use. */
+	public boolean canPauseTime = false;
+
 	/** The maximum number of counts allowed in waiting for other threads to execute. */
 	private int noDelaysPerYield = 0;
 	/** The measure of tolerance of the maximum number of lost frames for saving a simulation. */
 	private int maxFrameSkips = 0;
+	
 	/** The total number of pulses cumulated. */
 	private long totalPulses = 1;
 	/** The cache for the last nano time of an ui pulse. */	
 	private long t01 = 0;
+	
 	/** Mode for saving a simulation. */
 	private double tpfCache = 0;
 	/** The total amount of millisols for Commander Mode. */
 	private double millisols = 0;
-//	/** The UI refresh cycle. */
-//	private double refresh;
+	/** For Command Mode, the sim will pause every x millisols. */
+	private double pausingMillisols = 1000;
 
 	/** The file to save or load the simulation. */
 	private transient volatile File file;
@@ -812,8 +815,12 @@ public class MasterClock implements Serializable {
 						System.exit(0);
 					}
 					
-					if (GameManager.mode == GameMode.COMMAND && millisols > PAUSING_MILLISOLS) {
-						millisols = 0;
+					if (canPauseTime && millisols > pausingMillisols) {
+						
+						double m = marsClock.getMillisolOneDecimal();
+						
+						millisols = m % pausingMillisols;
+						
 						setPaused(true, false);
 					}
 					
@@ -825,6 +832,12 @@ public class MasterClock implements Serializable {
 		} // end of run
 	}
 
+	public void setCommandPause(boolean value0, double value1) {
+		// Check GameManager.mode == GameMode.COMMAND ?
+		canPauseTime = value0;
+		pausingMillisols = value1;
+	}
+	
 	/*
 	 * Add earth time and mars time
 	 */

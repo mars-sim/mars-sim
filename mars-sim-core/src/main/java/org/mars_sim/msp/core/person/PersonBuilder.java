@@ -37,5 +37,13 @@ public interface PersonBuilder<T> {
 	 */
 	public PersonBuilder<Person> setPersonality(Map<String, Integer> map, String mbti);
 
+	/**
+	 * Sets the attributes of a person
+	 * 
+	 * @param attribute map
+	 * @return {@link PersonBuilder<>}
+	 */
+	public PersonBuilder<Person> setAttribute(Map<String, Integer> attributeMap);
+	
 	public T build();
 }

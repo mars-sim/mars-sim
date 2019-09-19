@@ -10,6 +10,7 @@ package org.mars_sim.msp.core.person;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.PersonalityTraitType;
 import org.mars_sim.msp.core.person.ai.Skill;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -113,6 +114,31 @@ public class PersonBuilderImpl implements PersonBuilder<Person> {
 		
 		return this;
 	}
+	
+	/**
+	 * Sets the attributes of a person
+	 * 
+	 * @param attribute map
+	 * @return {@link PersonBuilder<>}
+	 */
+	public PersonBuilder<Person> setAttribute(Map<String, Integer> attributeMap) {
+		if (attributeMap == null || attributeMap.isEmpty()) {
+			person.getNaturalAttributeManager().setRandomAttributes(person);	
+		}
+		else {
+			Iterator<String> i = attributeMap.keySet().iterator();
+			while (i.hasNext()) {
+				String attributeName = i.next();
+				int value = (Integer) attributeMap.get(attributeName);
+				person.getNaturalAttributeManager()
+						.setAttribute(NaturalAttributeType.valueOfIgnoreCase(attributeName), value);
+			}
+		}
+		
+		return this;
+	}
+	
+	
 	
 	public Person build() {
 		return person;

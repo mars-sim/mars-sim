@@ -82,8 +82,18 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 	/** Is the robot is salvaged. */
 	private boolean isSalvaged;
 	
+	/** The cache for sol. */
+	private int solCache = 1;
 	/** Unique identifier for this robot. */
 	private int identifier;
+	/** The year of birth of this robot. */
+	private int year;
+	/** The month of birth of this robot. */
+	private int month;
+	/** The day of birth of this robot. */
+	private int day;
+	/** The age of this robot. */
+	private int age;
 	/** The settlement the robot is currently associated with. */
 	private int associatedSettlementID = -1;
 	/** The height of the robot (in cm). */
@@ -118,7 +128,7 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 	/** The birthplace of the robot. */
 	private String birthplace;
 	/** The birth time of the robot. */
-	private EarthClock birthTimeStamp;
+	private String birthTimeStamp;
 
 	private TaskSchedule taskSchedule;
 
@@ -160,8 +170,10 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 		salvageInfo = null;
 		isInoperable = false;
 		
-		// Construct the skill manager.
+		// Construct the SkillManager instance.
 		skillManager = new SkillManager(this);
+		// Construct the RoboticAttributeManager instance.
+		attributes = new RoboticAttributeManager(this);
 	}
 
 	/*
@@ -180,14 +192,14 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 		malfunctionManager = new MalfunctionManager(this, WEAR_LIFETIME, MAINTENANCE_TIME);
 		malfunctionManager.addScopeString(SystemType.ROBOT.getName());
 
-		// TODO : avoid declaring a birth clock for each robot
-		// Find a way to use existing EarthClock inside MasterClock, plus the difference
-		// in date
-		birthTimeStamp = new EarthClock(createBirthTimeString());
-		attributes = new RoboticAttributeManager(this);
+		// Set up the time stamp for the robot
+		birthTimeStamp = createBirthTimeStamp();
+		
+		// Construct the BotMind instance.
 		botMind = new BotMind(this);
+		// Construct the SystemCondition instance.
 		health = new SystemCondition(this);
-
+		// Construct the TaskSchedule instance.
 		taskSchedule = new TaskSchedule(this);
 
 		setBaseMass(100D + (RandomUtil.getRandomInt(100) + RandomUtil.getRandomInt(100)) / 10D);
@@ -218,23 +230,23 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 	}
 
 	/**
-	 * Create a string representing the birth time of the robot.
-	 * 
+	 * Create a string representing the birth time of the person.
+	 *
 	 * @return birth time string.
 	 */
-	private String createBirthTimeString() {
+	private String createBirthTimeStamp() {
 		StringBuilder s = new StringBuilder();
-		// Set a birth time for the robot
-		int year = EarthClock.getCurrentYear(earthClock);
+		// Set a birth time for the person
+		year = EarthClock.getCurrentYear(earthClock) - RandomUtil.getRandomInt(22, 62);
+		// 2003 + RandomUtil.getRandomInt(10) + RandomUtil.getRandomInt(10);
 		s.append(year);
 
-		int month = RandomUtil.getRandomInt(11) + 1;
+		month = RandomUtil.getRandomInt(11) + 1;
 		s.append("-");
 		if (month < 10)
 			s.append(0);
 		s.append(month).append("-");
 
-		int day;
 		if (month == 2) {
 			if (((year % 4 == 0) && (year % 100 != 0)) || (year % 400 == 0)) {
 				day = RandomUtil.getRandomInt(28) + 1;
@@ -251,9 +263,12 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 
 		// TODO: find out why sometimes day = 0 as seen on
 		if (day == 0) {
-			logger.warning(name + "'s date of birth is on the day 0th. Incremementing to the 1st.");
+			logger.warning(name + "'s date of birth is on the day 0th. Incrementing to the 1st.");
 			day = 1;
 		}
+
+		// Set the age
+		age = updateAge();
 
 		if (day < 10)
 			s.append(0);
@@ -274,14 +289,74 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 			s.append(0);
 		s.append(second).append(".000");
 
-		// return month + "/" + day + "/" + year + " " + hour + ":"
-		// + minute + ":" + second;
-
-		// return year + "-" + monthString + "-" + day + " "
-		// + hour + ":" + minute + ":" + second;
-
 		return s.toString();
 	}
+	
+//	/**
+//	 * Create a string representing the birth time of the robot.
+//	 * 
+//	 * @return birth time string.
+//	 */
+//	private String createBirthTimeString() {
+//		StringBuilder s = new StringBuilder();
+//		// Set a birth time for the robot
+//		int year = EarthClock.getCurrentYear(earthClock);
+//		s.append(year);
+//
+//		int month = RandomUtil.getRandomInt(11) + 1;
+//		s.append("-");
+//		if (month < 10)
+//			s.append(0);
+//		s.append(month).append("-");
+//
+//		int day;
+//		if (month == 2) {
+//			if (((year % 4 == 0) && (year % 100 != 0)) || (year % 400 == 0)) {
+//				day = RandomUtil.getRandomInt(28) + 1;
+//			} else {
+//				day = RandomUtil.getRandomInt(27) + 1;
+//			}
+//		}
+//
+//		else if (month == 1 || month == 3 || month == 5 || month == 7 || month == 8 || month == 10 || month == 12) {
+//			day = RandomUtil.getRandomInt(30) + 1;
+//		} else {
+//			day = RandomUtil.getRandomInt(29) + 1;
+//		}
+//
+//		// TODO: find out why sometimes day = 0 as seen on
+//		if (day == 0) {
+//			logger.warning(name + "'s date of birth is on the day 0th. Incremementing to the 1st.");
+//			day = 1;
+//		}
+//
+//		if (day < 10)
+//			s.append(0);
+//		s.append(day).append(" ");
+//
+//		int hour = RandomUtil.getRandomInt(23);
+//		if (hour < 10)
+//			s.append(0);
+//		s.append(hour).append(":");
+//
+//		int minute = RandomUtil.getRandomInt(59);
+//		if (minute < 10)
+//			s.append(0);
+//		s.append(minute).append(":");
+//
+//		int second = RandomUtil.getRandomInt(59);
+//		if (second < 10)
+//			s.append(0);
+//		s.append(second).append(".000");
+//
+//		// return month + "/" + day + "/" + year + " " + hour + ":"
+//		// + minute + ":" + second;
+//
+//		// return year + "-" + monthString + "-" + day + " "
+//		// + hour + ":" + minute + ":" + second;
+//
+//		return s.toString();
+//	}
 
 //	/**
 //	 * Is the robot in a vehicle inside a garage
@@ -463,6 +538,15 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 		if (msolCache != msol1) {
 			msolCache = msol1;
 
+			// check for the passing of each day
+			int solElapsed = marsClock.getMissionSol();
+
+			if (solCache != solElapsed) {
+				// Check if a person's age should be updated
+				age = updateAge();
+				solCache = solElapsed;
+			}
+			
 			// If robot is dead, then skip
 			if (health != null && !health.isInoperable()) {
 
@@ -528,11 +612,10 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 	 * @return the robot's age
 	 */
 	public int updateAge() {
-		// EarthClock simClock = Simulation.instance().getMasterClock().getEarthClock();
-		int age = earthClock.getYear() - birthTimeStamp.getYear() - 1;
-		if (earthClock.getMonth() >= birthTimeStamp.getMonth() && earthClock.getMonth() >= birthTimeStamp.getMonth()) {
-			age++;
-		}
+		age = earthClock.getYear() - year - 1;
+		if (earthClock.getMonth() >= month)
+			if (earthClock.getDayOfMonth() >= day)
+				age++;
 
 		return age;
 	}
@@ -552,8 +635,20 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 	 * @return the robot's birth date
 	 */
 	public String getBirthDate() {
-		return birthTimeStamp.getDateStringF0();
+		StringBuilder s = new StringBuilder();
+		s.append(year).append("-");
+		if (month < 10)
+			s.append("0").append(month).append("-");
+		else
+			s.append(month).append("-");
+		if (day < 10)
+			s.append("0").append(day);
+		else
+			s.append(day);
+
+		return s.toString();
 	}
+
 
 //    /**
 //     * robot consumes given amount of power.
