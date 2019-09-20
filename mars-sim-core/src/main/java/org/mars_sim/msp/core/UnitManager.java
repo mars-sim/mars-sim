@@ -31,6 +31,7 @@ import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
+import org.mars_sim.msp.core.person.TrainingType;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.job.JobAssignmentType;
@@ -1127,7 +1128,7 @@ public class UnitManager implements Serializable {
 
 		// Updates the number of robots
 		settlement.updateAllAssociatedRobots();
-
+		
 		// Create all configured relationships.
 		createConfiguredRelationships(personList);
 
@@ -1152,8 +1153,7 @@ public class UnitManager implements Serializable {
 				// Fill up the settlement by creating more people
 				while (settlement.getIndoorPeopleCount() < initPop) {
 					String sponsor = settlement.getSponsor();
-//					System.out.println("UnitManager's sponsor : " + sponsor);
-					
+				
 					// Check for any duplicate full Name
 					List<String> existingfullnames = new ArrayList<>();	
 					Iterator<Person> j = getPeople().iterator();
@@ -1255,8 +1255,6 @@ public class UnitManager implements Serializable {
 							fullname = getNewName(UnitType.PERSON, null, gender, null);
 						}
 						
-//						System.out.println("index : " + index + "    sponsor : " + sponsor + "    country : " + country + "    last_list : " + last_list.toString());
-						
 						if (index != -1 && index != 6 && index != 7 && index != 8 && index != 9) {
 							last_list = lastNamesBySponsor.get(index);
 							male_first_list = maleFirstNamesBySponsor.get(index);
@@ -1328,7 +1326,6 @@ public class UnitManager implements Serializable {
 					// Set up preference
 					person.getPreference().initializePreference();
 
-//					System.out.println("UnitManager's createInitialPeople : settlement is " + settlement);
 					// Assign a job 
 					person.getMind().getInitialJob(JobUtil.MISSION_CONTROL);
 
@@ -1341,12 +1338,9 @@ public class UnitManager implements Serializable {
 
 				// Set up work shift
 				setupShift(settlement, initPop);
-
-				// Reset specialist positions at settlement.
-				Iterator<Person> j = settlement.getAllAssociatedPeople().iterator();
-				while (j.hasNext()) {
-					j.next().getRole().obtainRole(settlement);
-				}
+				
+				// Assign a role to each person
+				assignRoles(settlement);
 				
 				// Establish a system of governance at settlement.
 				settlement.getChainOfCommand().establishSettlementGovernance(settlement);
@@ -1357,6 +1351,31 @@ public class UnitManager implements Serializable {
 			e.printStackTrace(System.err);
 			// throw new IllegalStateException("People could not be created: " +
 			// e.getMessage(), e);
+		}
+	}
+	
+	/**
+	 * Assign a role to each person
+	 * 
+	 * @param settlement
+	 */
+	public void assignRoles(Settlement settlement) {
+		// Assign roles to each person
+		List<Person> personList1 = new ArrayList<>(settlement.getAllAssociatedPeople());
+		
+		while (personList1.size() > 0) {
+			List<RoleType> roleList = RoleType.getSpecialistRoles();
+			// Randomly reorient the order of roleList so that the 
+			// roles to go in different order each time 
+			Collections.shuffle(roleList);
+			
+			for (RoleType r : roleList) {
+				Person p = RoleUtil.findBestFit(r, personList1);
+				p.setRole(r);
+				personList1.remove(p);
+				if (personList1.isEmpty()) 
+					return;
+			}
 		}
 	}
 	

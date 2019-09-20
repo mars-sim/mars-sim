@@ -114,11 +114,11 @@ public class Role implements Serializable {
 	 * 
 	 * @param s
 	 */
-	public void obtainRole(Settlement s) {
-		ChainOfCommand cc = s.getChainOfCommand();
-		cc.set7Divisions(true);
-		// Assign a role
-		cc.assignSpecialistRole(person);	
+	public void obtainRole() {
+		// Find the best role
+		RoleType roleType = RoleUtil.findBestRole(person);	
+		// Finalize setting a person's new role
+		person.getRole().setNewRoleType(roleType);
 	}
 	
 	/**

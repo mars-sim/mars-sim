@@ -7,6 +7,7 @@
 
 package org.mars_sim.msp.core.person.ai.role;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -56,4 +57,19 @@ public enum RoleType {
 	public static List<RoleType> valuesList() {
 		return Arrays.asList(RoleType.values());
 	}
+	
+	/**
+	 * Returns a list of specialist roles.
+	 */
+	public static List<RoleType> getSpecialistRoles() {
+		List<RoleType> list = new ArrayList<>();
+		
+		for (RoleType r : RoleType.values()) {
+			if (r.ordinal() > 10)
+				list.add(r);
+		}
+		
+		return list;
+	}
+	
 }

@@ -330,7 +330,7 @@ public class SimulationConfig implements Serializable {
 			LogConsolidated.log(Level.CONFIG, 0, sourceName, 
 					"Your version.txt already has the same BUILD " + buildText
 					+ " as the core engine.");
-		else if (!isNotNumber(buildText))
+		else if (!hasNonDigit(buildText))
 	    	LogConsolidated.log(Level.CONFIG, 0, sourceName, 
 					"Your version.txt has BUILD " + buildText 
 					+ ". The core engine has BUILD " + Simulation.BUILD);
@@ -347,7 +347,7 @@ public class SimulationConfig implements Serializable {
 		
 		if (xmlDirExist) {
 			
-			if (!versionFileExist || buildText.equals("") || !sameBuild || isNotNumber(buildText)) {
+			if (!versionFileExist || buildText.equals("") || !sameBuild || hasNonDigit(buildText)) {
 			
 				try {
 	
@@ -418,19 +418,29 @@ public class SimulationConfig implements Serializable {
 		if (!xmlLocation.exists() || xmlDirDeleted) {
 			// Create the xml folder
 			versionFile.getParentFile().mkdirs();
+			LogConsolidated.log(Level.CONFIG, 0, sourceName, "The xml folder is created");
 		}
 		
-		List<String> lines = Arrays.asList(Simulation.BUILD);
-		try {
-			// Create the version.txt file
-			Files.write(versionPath, lines, StandardCharsets.UTF_8);
-		} catch (IOException e) {
-			e.printStackTrace();
+		if (!sameBuild || invalid || !versionFileExist || !xmlDirExist) {
+			List<String> lines = Arrays.asList(Simulation.BUILD);
+			try {
+				// Create the version.txt file
+				Files.write(versionPath, lines, StandardCharsets.UTF_8);
+				LogConsolidated.log(Level.CONFIG, 0, sourceName, "The version.txt file is created");
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 		
 	
-	public boolean isNotNumber(String name) {
+	/**
+	 * Checks if the string contains non-digits
+	 * 
+	 * @param name
+	 * @return true if it contains non-digits
+	 */
+	public boolean hasNonDigit(String name) {
 	    char[] chars = name.toCharArray();
 
 	    for (char c : chars) {
@@ -1039,8 +1049,9 @@ public class SimulationConfig implements Serializable {
 				File targetFile = new File(Simulation.XML_DIR + File.separator + filename + XML);
 				Path path = targetFile.getAbsoluteFile().toPath();
 				try {
-					// Copy the xml file from within the jar to user home 's xml directory
+					// Copy the xml files from within the jar to user home's xml directory
 					Files.copy(stream, path, StandardCopyOption.REPLACE_EXISTING);
+					LogConsolidated.log(Level.CONFIG, 0, sourceName, "Copying the xml files from within the jar to user's xml folder");
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

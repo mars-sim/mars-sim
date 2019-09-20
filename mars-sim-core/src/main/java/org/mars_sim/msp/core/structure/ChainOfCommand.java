@@ -82,6 +82,11 @@ public class ChainOfCommand implements Serializable {
 		roleRegistry = new ConcurrentHashMap<>();
 		roleAvailability = new ConcurrentHashMap<>();
 		
+		has7Divisions = true;
+		
+		// Initialize roleAvailability array once only
+		if (roleAvailability.isEmpty())
+			initializeRoleMaps();
 	}
 
 	/**
@@ -141,27 +146,23 @@ public class ChainOfCommand implements Serializable {
 		return roleAvailability;
 	}
 
-	/**
-	 * Assigns a person with a specialist roleType in 7-division settlement
-	 * 
-	 * @param person {@link Person}
-	 */
-	public void assignSpecialistRole(Person person) {
-		
-		// Initialize roleAvailability array once only
-		if (roleAvailability.isEmpty())
-			initializeRoleMaps();
-		
-//		RoleType roleType = 
-		RoleUtil.findBestRole(person);
-				
-//		Job job = person.getMind().getJob();
-
-//		if (marsClock.getMissionSol() > 1)
-//			logger.config("[" + person.getLocationTag().getLocale() + "] Selecting " + person.getName() + " the "
-//					+ person.getMind().getJob().getClass().getSimpleName() + " to be " + roleType.toString() + ".");
-
-	}
+//	/**
+//	 * Assigns a person with a specialist roleType in 7-division settlement
+//	 * 
+//	 * @param person {@link Person}
+//	 */
+//	public void assignSpecialistRole(Person person) {
+//		
+//		// Initialize roleAvailability array once only
+//		if (roleAvailability.isEmpty())
+//			initializeRoleMaps();
+//		
+//		RoleType roleType = RoleUtil.findBestRole(person);
+//				
+//		// Finalize setting a person's new role
+//		person.getRole().setNewRoleType(roleType);
+//		
+//	}
 
 	/**
 	 * Increments the number of the target role type in the map

@@ -349,11 +349,8 @@ public class ArrivingSettlement implements Transportable, Serializable {
 			// Reset work shift schedules at settlement.
 			unitManager.setupShift(newSettlement, popSize);
 
-			// Reset specialist positions at settlement.
-			Iterator<Person> i = newSettlement.getAllAssociatedPeople().iterator();
-			while (i.hasNext()) {
-				i.next().getRole().obtainRole(newSettlement);
-			}
+			// Assign a role to each person
+			unitManager.assignRoles(newSettlement);
 			
 			// Reset command/government system at settlement.
 			newSettlement.getChainOfCommand().establishSettlementGovernance(newSettlement);

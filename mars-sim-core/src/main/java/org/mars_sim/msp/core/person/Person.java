@@ -10,6 +10,7 @@ package org.mars_sim.msp.core.person;
 import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -212,7 +213,9 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	private Map<Integer, Map<String, Double>> eVATaskTime;
 	/** The person's water/oxygen consumption */
 	private Map<Integer, Map<Integer, Double>> consumption;
-
+	/** The person's prior training */
+	private List<TrainingType> trainings;
+	
 	private static PersonConfig pc = SimulationConfig.instance().getPersonConfig();
 
 	static {
@@ -273,6 +276,8 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		this.xLoc = 0D;
 		this.yLoc = 0D;
 		this.associatedSettlement = settlement.getIdentifier();
+		
+		generatePriorTraining();
 		
 		// Construct the NaturalAttributeManager instance
 		attributes = new NaturalAttributeManager(this);
@@ -602,6 +607,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	public void setRole(RoleType type) {
 		getRole().setNewRoleType(type);
 
+		// In case of the role of the Mayor, his job must be set to Politician instead.
 		if (type == RoleType.MAYOR) {
 			// Set the job as Politician
 			Job job = JobUtil.getJob(POLITICIAN);
@@ -930,7 +936,13 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 					if (solCache != solElapsed) {
 						// Check if a person's age should be updated
 						age = updateAge();
+						
+						// Update the solCache
 						solCache = solElapsed;
+						
+						// Checks if a person has a role
+						if (role.getType() == null)
+							role.obtainRole();
 
 						// Limit the size of the dailyWaterUsage to x key value pairs
 						if (consumption.size() > MAX_NUM_SOLS)
@@ -1910,6 +1922,37 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		
 		return false;
 	}
+	
+	/**
+	 * Randomly generate a list of training the person attended
+	 */
+	public void generatePriorTraining() {
+		if (trainings == null) {
+			trainings = new ArrayList<>();
+			List<TrainingType> lists = new ArrayList<>(Arrays.asList(TrainingType.values()));
+			int size = lists.size();
+			int num = RandomUtil.getRandomRegressionInteger(4);
+			// Guarantee at least one training
+			if (num == 0) num = 1;
+			for (int i= 0 ; i < num; i++) {
+				size = lists.size();
+				int rand = RandomUtil.getRandomInt(size-1);
+				TrainingType t = lists.get(rand);
+				trainings.add(t);
+				lists.remove(t);
+			}
+		}
+	}
+	
+	/**
+	 * Gets a list of prior trainings
+	 * 
+	 * @return {@link List<TrainingType>}
+	 */
+	public List<TrainingType> getTrainings() {
+		return trainings;
+	}
+	
 	
 	@Override
 	public void destroy() {

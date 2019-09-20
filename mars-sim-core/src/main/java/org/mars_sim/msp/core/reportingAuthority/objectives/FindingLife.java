@@ -19,9 +19,9 @@ public class FindingLife implements MissionAgenda, Serializable  {
 	private final String name = "Finding Life Past and Present on Mars";
 	
 	private final String[] phases = new String[] {
-			"Test Rover Range",
+			"Follow the water",
 			"Examine regions capable hosting and sustaining organic microbial life",	
-			"Core Drill Rock Samples from Selected Locations"};
+			"Core drill rock samples from selected locations"};
 
 
 	@Override
