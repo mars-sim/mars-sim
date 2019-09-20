@@ -30,10 +30,21 @@ public enum TrainingType {
 	UNDERSEA_MISSION					(Msg.getString("TrainingType.underseaMission")), //$NON-NLS-1$
 	
 	MILITIARY_DEPLOYMENT				(Msg.getString("TrainingType.militaryDeployment")), //$NON-NLS-1$
-	COMMERCIAL_PILOT					(Msg.getString("TrainingType.commercialPilot")), //$NON-NLS-1$
+	AVIATION_CERTIFICATION				(Msg.getString("TrainingType.aviationCert")), //$NON-NLS-1$
 	ANTARCTICA_RESEARCH					(Msg.getString("TrainingType.antarcticaResearch")), //$NON-NLS-1$
-	MARS_TWO_FINAL_100		 			(Msg.getString("TrainingType.marsTwoFinal100")) //$NON-NLS-1$
+	MARS_TWO_FINAL_100		 			(Msg.getString("TrainingType.marsTwoFinal100")), //$NON-NLS-1$
+	UNDERGROUND_CAVES_EXPLORATION      	(Msg.getString("TrainingType.undergroundCaves")) //$NON-NLS-1$
 	;
+	
+	// References : 
+	// 1. ESA Cooperative Adventure for Valuing and Exercising human behaviour and performance Skills (CAVES) training. 
+	//    A three-week course prepares astronauts to work safely and effectively in multicultural teams in an environment 
+	//    where safety is critical – in caves. 
+	//    http://www.esa.int/Our_Activities/Human_and_Robotic_Exploration/Caves/A_new_journey_into_Earth_for_space_exploration
+	// 2. NASA Desert Research and Technology Studies (Desert RATS) 
+	//    https://www.nasa.gov/hrp/research/analogs/drats  
+	//    https://www.youtube.com/watch?v=2Q13dyRi5ok 
+	
 	
 	private String name;
 

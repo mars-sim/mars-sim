@@ -58,7 +58,13 @@ public class SettlementChatUtils extends ChatUtils {
 	 * @return the response string[]
 	 */
 	public static String[] askSettlementNum(int num) {
-//		System.out.println("askSettlementNum() in ChatUtils");
+//		System.out.println("askSettlementNum() in ChatUtils   partyName: " + partyName);
+		
+		ChatUtils.personCache = null;
+		ChatUtils.robotCache = null;
+//		ChatUtils.settlementCache = null;
+		ChatUtils.vehicleCache = null;
+		
 		String questionText = "";
 		StringBuffer responseText = new StringBuffer();
 
@@ -98,7 +104,13 @@ public class SettlementChatUtils extends ChatUtils {
 	 * @return the response string[]
 	 */
 	public static String[] askSettlementStr(String text, String name) {
+//		System.out.println("askSettlementStr() in ChatUtils   partyName: " + partyName);
 
+		ChatUtils.personCache = null;
+		ChatUtils.robotCache = null;
+//		ChatUtils.settlementCache = null;
+		ChatUtils.vehicleCache = null;
+		
 		String questionText = "";
 		StringBuffer responseText = new StringBuffer();
 
@@ -223,8 +235,8 @@ public class SettlementChatUtils extends ChatUtils {
 		else if (text.equalsIgnoreCase("job demand")) {
 			responseText.append(addhiteSpacesRightName(" Job", 20));
 			responseText.append(addhiteSpacesRightName(" Demand", 10));
-			responseText.append(addhiteSpacesRightName(" Deficit", 10));
 			responseText.append(addhiteSpacesRightName(" Filled", 8));
+			responseText.append(addhiteSpacesRightName(" Deficit", 10));
 
 			responseText.append(System.lineSeparator());
 
@@ -241,9 +253,6 @@ public class SettlementChatUtils extends ChatUtils {
 				String demand = "" + Math.round(job.getSettlementNeed(settlementCache) * 10.0) / 10.0;
 				responseText.append(addhiteSpacesRightName(demand, 9));
 
-				String deficit = ""
-						+ Math.round(JobUtil.getRemainingSettlementNeed(settlementCache, job) * 10.0) / 10.0;
-				responseText.append(addhiteSpacesRightName(deficit, 9));
 
 				int num = 0;
 				if (map.get(jobName) != null)
@@ -251,6 +260,11 @@ public class SettlementChatUtils extends ChatUtils {
 
 				String positions = "" + num;
 				responseText.append(addhiteSpacesRightName(positions, 8));
+				
+				String deficit = ""
+						+ Math.round(JobUtil.getRemainingSettlementNeed(settlementCache, job) * 10.0) / 10.0;
+				responseText.append(addhiteSpacesRightName(deficit, 9));
+				
 
 				responseText.append(System.lineSeparator());
 			}
@@ -595,12 +609,9 @@ public class SettlementChatUtils extends ChatUtils {
 		}
 
 		else if (text.equalsIgnoreCase("obj") || text.equalsIgnoreCase("objective")) {
-			// questionText = YOU_PROMPT + "Commander's Dashboard" ;
-//			responseText.append(System.lineSeparator());			
-
 			String obj = settlementCache.getObjective().getName();
 
-			String prompt = YOU_PROMPT + "Commander's Dashboard" + System.lineSeparator() + System.lineSeparator()
+			String prompt = YOU_PROMPT + "What is the current settlement objective ?" + System.lineSeparator() + System.lineSeparator()
 					+ "Current Development Objective : " + obj + System.lineSeparator() + System.lineSeparator()
 					+ "Would you like to change it?";
 			boolean change = textIO.newBooleanInputReader().read(prompt); // .withDefaultValue(true)
@@ -652,22 +663,31 @@ public class SettlementChatUtils extends ChatUtils {
 		}
 
 		else if (text.equalsIgnoreCase("dash") || text.equalsIgnoreCase("dashboard")) {
-			questionText = YOU_PROMPT + "Commander's Dashboard";
+			questionText = YOU_PROMPT + "I'd like to see the Commander's Dashboard";
 			responseText.append(System.lineSeparator());
 
 			String obj = settlementCache.getObjective().getName();
-
-			responseText.append(" Development Objective : " + obj + System.lineSeparator());
+			double level = Math.round(settlementCache.getObjectiveLevel(ObjectiveType.getType(obj)) * 10.0)/10.0;
+			
+			responseText.append(addhiteSpacesLeftName(" Development Objective", 25));
+			responseText.append(addhiteSpacesRightName("Level", 8));
 			responseText.append(System.lineSeparator());
-
-			String[] s = new String[] { "Outstanding Repair", "Outstanding Maintenance", "EVA Suit Production" };
+			responseText.append(" ----------------------------------- ");
+			responseText.append(System.lineSeparator());
+			responseText.append(addhiteSpacesLeftName(" " + obj, 25));
+			responseText.append(addhiteSpacesRightName("" + level, 7));	
+					
+			String[] s = new String[] { "Repair", "Maintenance", "EVA Suit Production" };
 
 			GoodsManager goodsManager = settlementCache.getGoodsManager();
 
 			int[] mods = new int[] { goodsManager.getRepairLevel(), goodsManager.getMaintenanceLevel(),
 					goodsManager.getEVASuitLevel() };
-
-			responseText.append(" Category" + computeWhiteSpaces("Category", 25) + " | Level");
+			
+			responseText.append(System.lineSeparator());
+			responseText.append(System.lineSeparator());
+			responseText.append(System.lineSeparator());
+			responseText.append(addhiteSpacesLeftName(" Category of Operations        Level ", 33));
 			responseText.append(System.lineSeparator());
 			responseText.append(" ----------------------------------- ");
 			responseText.append(System.lineSeparator());
@@ -1470,13 +1490,18 @@ public class SettlementChatUtils extends ChatUtils {
 			}
 		}
 
-		else if (text.toLowerCase().contains("role")) {
+		else if (text.toLowerCase().equalsIgnoreCase("role")) {
 			questionText = YOU_PROMPT + "What are the roles ?";
-			responseText.append(System.lineSeparator());
 			responseText.append(settlementCache + " : ");
-			responseText.append("See below.");
+			responseText.append("See the table below.");
 			responseText.append(System.lineSeparator());
 			responseText.append(System.lineSeparator());
+			
+			responseText.append(addhiteSpacesLeftName("   Name ", 30));
+			responseText.append(addhiteSpacesLeftName(" Role ", 25));
+			responseText.append(System.lineSeparator());
+			responseText.append(" -------------------------------------------- ");
+			responseText.append(System.lineSeparator());		
 
 			List<Person> list = settlementCache.getAllAssociatedPeople().stream()
 //					.sorted(Comparator.reverseOrder())
@@ -1485,16 +1510,16 @@ public class SettlementChatUtils extends ChatUtils {
 					// p1.getRole().getType().getName().compareTo(p2.getRole().getType().getName()))
 					.sorted(Comparator.comparing(o -> o.getRole().getType().ordinal())).collect(Collectors.toList());
 
-			for (Person p : list) {
-				String role = p.getRole().getType().getName();
-				responseText.append(p);
-				int num = 30 - p.getName().length();// - role.length();
-				if (num > 0) {
-					for (int i = 0; i < num; i++) {
-						responseText.append(" ");
-					}
-				}
-				responseText.append(role);
+//			for (Person p : list) {
+			for (int i = 0; i < list.size(); i++) {	
+				String role = list.get(i).getRole().getType().getName();
+				String numStr = " " + (i+1) + ". ";
+				if (i > 9)
+					numStr = (i+1) + ". ";
+				
+				responseText.append(addhiteSpacesLeftName(numStr + list.get(i), 30));
+
+				responseText.append(addhiteSpacesLeftName(" " + role, 25));
 				responseText.append(System.lineSeparator());
 			}
 		}
@@ -1769,7 +1794,7 @@ public class SettlementChatUtils extends ChatUtils {
 					}
 				}
 
-				String vTypeStr = v.getVehicleType();
+				String vTypeStr = Conversion.capitalize(v.getVehicleType());
 				if (vTypeStr.equalsIgnoreCase("Light Utility Vehicle"))
 					vTypeStr = "LUV";
 
@@ -1893,7 +1918,7 @@ public class SettlementChatUtils extends ChatUtils {
 			Collections.sort(namelist);
 			String s = "";
 			for (int i = 0; i < namelist.size(); i++) {
-				s = s + "(" + (i + 1) + "). " + namelist.get(i).toString() + System.lineSeparator();
+				s = s + "(" + (i + 1) + "). " + namelist.get(i).getName() + System.lineSeparator();
 			}
 			// .replace("[", "").replace("]", "");//.replaceAll(", ", ",\n");
 			// System.out.println("list : " + list);
@@ -1937,6 +1962,8 @@ public class SettlementChatUtils extends ChatUtils {
 			String[] txt = clarify(name);
 			questionText = txt[0];
 			responseText.append(txt[1]);
+			
+			return new String[] { questionText, responseText.toString() };
 		}
 
 		return new String[] { questionText, responseText.toString() };

@@ -1945,7 +1945,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	}
 	
 	/**
-	 * Gets a list of prior trainings
+	 * Gets a list of prior training
 	 * 
 	 * @return {@link List<TrainingType>}
 	 */

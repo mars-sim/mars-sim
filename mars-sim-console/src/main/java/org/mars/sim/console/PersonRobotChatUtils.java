@@ -9,6 +9,7 @@ package org.mars.sim.console;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Hashtable;
 import java.util.List;
@@ -20,11 +21,14 @@ import org.mars_sim.msp.core.mars.MarsSurface;
 import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ShiftType;
+import org.mars_sim.msp.core.person.TrainingType;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.role.RoleType;
+import org.mars_sim.msp.core.person.ai.role.RoleUtil;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.robot.RoboticAttributeManager;
 import org.mars_sim.msp.core.robot.RoboticAttributeType;
@@ -48,16 +52,97 @@ public class PersonRobotChatUtils extends ChatUtils {
 	 * @return string array
 	 */
 	public static String[] askPersonRobot(String text, int num, String name, Unit u) {
-//		System.out.println("askPersonRobot() in ChatUtils");
+//		System.out.println("askPersonRobot() in PersonRobotChatUtils   partyName:" + partyName);
+		
+//		ChatUtils.personCache = null;
+//		ChatUtils.robotCache = null;
+		ChatUtils.settlementCache = null;
+		ChatUtils.vehicleCache = null;
+		
 		String questionText = "";
 		StringBuffer responseText = new StringBuffer();
 
 		responseText.append(name);
 		responseText.append(": ");
 
-		if (text.toLowerCase().contains("job score")) {
+		if (text.toLowerCase().equalsIgnoreCase("trainings")) {
+			questionText = YOU_PROMPT + "What is your list of prior trainings ?";
+			responseText.append(System.lineSeparator());
+			responseText.append(System.lineSeparator());
+			
+			responseText.append(addhiteSpacesLeftName("  Type of Training", 30));
+			responseText.append(System.lineSeparator());
+			responseText.append(" ---------------------------- ");
+			responseText.append(System.lineSeparator());		
+			
+			List<TrainingType> trainings = personCache.getTrainings();
+			
+			for (TrainingType tt : trainings) {
+				responseText.append(addhiteSpacesLeftName(" " + tt.getName(), 22));
+				responseText.append(System.lineSeparator());
+			}
+			
+//			responseText.append(System.lineSeparator());
+		}
+		
+		else if (text.toLowerCase().equalsIgnoreCase("role prospect")) {
+			questionText = YOU_PROMPT + "What is your role prospect scores ?";
+			responseText.append("See the breakdown of my role prospect scores below : ");
+			responseText.append(System.lineSeparator());
+
+			List<RoleType> list = Arrays.asList(RoleUtil.roleTypes);
+			Collections.sort(list);
+
+			int num1 = 1;
+
+			responseText.append(System.lineSeparator());
+			responseText.append(addhiteSpacesLeftName("        Role   ", 30));
+			responseText.append(addhiteSpacesRightName(" Job Score ", 15));
+			responseText.append(addhiteSpacesRightName(" Training Score ", 15));
+			responseText.append(addhiteSpacesRightName(" Total", 8));
+
+			responseText.append(System.lineSeparator());
+			responseText.append(" ------------------------------------------------------------------- ");
+			responseText.append(System.lineSeparator());
+
+			// Initialize it if it hasn't
+			RoleUtil.initialize();
+			
+			Job job = personCache.getMind().getJob();
+			int id = job.getJobID();
+			double[] weights = RoleUtil.getRoleWeights().get(id);
+			
+			for (RoleType roleType : list) {
+				if (num1 < 10)
+					responseText.append("  " + num1 + ". ");
+				else
+					responseText.append(" " + num1 + ". ");
+				num1++;
+
+				responseText.append(addhiteSpacesLeftName(roleType.getName(), 30));
+
+				double jScore = Math.round(
+						RoleUtil.getJobScore(personCache, roleType, weights) * 10.0)
+						/ 10.0;
+				responseText.append(addhiteSpacesRightName(" " + jScore, 5));
+				
+				double tScore = Math.round(
+						RoleUtil.getTrainingScore(personCache, roleType, weights) * 10.0)
+						/ 10.0;
+				responseText.append(addhiteSpacesRightName(" " + tScore, 10));
+				
+				double total = Math.round((jScore + tScore) * 10.0) / 10.0;
+						
+				responseText.append(addhiteSpacesRightName(" " + total, 8));
+				
+				responseText.append(System.lineSeparator());
+
+			}
+		}
+		
+		else if (text.toLowerCase().equalsIgnoreCase("job prospect")) {
 			questionText = YOU_PROMPT + "What is your job capability and job prospect scores ?";
-			responseText.append("See below : ");
+			responseText.append("See the breakdown of my job prospect scores below : ");
 			responseText.append(System.lineSeparator());
 
 //			Map<String, List<Person>> map = JobManager.getJobMap(personCache.getAssociatedSettlement());
@@ -66,19 +151,12 @@ public class PersonRobotChatUtils extends ChatUtils {
 			// new ArrayList<>(map.keySet());
 			Collections.sort(jobList);
 
-			int length = 0;
-			for (String jobStr : jobList) {
-				int l = jobStr.length();
-				if (l > length)
-					length = l;
-			}
-
 			int num1 = 1;
 
 			responseText.append(System.lineSeparator());
-			responseText.append(addhiteSpacesRightName(" Job   ", 14));
-			responseText.append(addhiteSpacesRightName(" Capability Score", 22));
-			responseText.append(addhiteSpacesRightName(" Prospect Score", 18));
+			responseText.append(addhiteSpacesLeftName("         Job   ", 16));
+			responseText.append(addhiteSpacesRightName(" Capability Score", 18));
+			responseText.append(addhiteSpacesRightName(" Prospect Score", 13));
 			responseText.append(System.lineSeparator());
 			responseText.append(" ------------------------------------------------------- ");
 			responseText.append(System.lineSeparator());
@@ -90,28 +168,23 @@ public class PersonRobotChatUtils extends ChatUtils {
 					responseText.append(" " + num1 + ". ");
 				num1++;
 
-				responseText.append(addNameFirstWhiteSpaces(jobStr, 20));
+				responseText.append(addhiteSpacesLeftName(jobStr, 16));
 
-//				responseText.append(System.lineSeparator());
-//				responseText.append(" ");
-//				for (int i=0; i<length; i++) {
-//					responseText.append("-");
-//				}	
 				Job job = JobUtil.getJob(jobStr);
 
 				double capScore = Math.round(job.getCapability(personCache) * 10.0) / 10.0;
-				responseText.append(addNameFirstWhiteSpaces(" " + capScore, 18));
+				responseText.append(addhiteSpacesRightName(" " + capScore, 8));
 
 				double prospectScore = Math.round(
 						JobUtil.getJobProspect(personCache, job, personCache.getAssociatedSettlement(), true) * 10.0)
 						/ 10.0;
-				responseText.append(addNameFirstWhiteSpaces(" " + prospectScore, 5));
+				responseText.append(addhiteSpacesRightName(" " + prospectScore, 13));
 				responseText.append(System.lineSeparator());
 
 			}
 		}
 
-		else if (text.toLowerCase().contains("shift") || text.toLowerCase().contains("work shift")) {
+		else if (text.toLowerCase().equalsIgnoreCase("shift") || text.toLowerCase().equalsIgnoreCase("work shift")) {
 			questionText = YOU_PROMPT + "What is your work shift ?";
 
 			ShiftType st0 = personCache.getTaskSchedule().getShiftType();
@@ -146,7 +219,7 @@ public class PersonRobotChatUtils extends ChatUtils {
 
 		}
 
-		else if (text.toLowerCase().contains("airlock time")) {
+		else if (text.toLowerCase().equalsIgnoreCase("airlock time")) {
 			questionText = YOU_PROMPT + "How long have you spent inside the airlock ?";
 
 			responseText.append("See my records as follows :");
@@ -172,7 +245,7 @@ public class PersonRobotChatUtils extends ChatUtils {
 			}
 		}
 
-		else if (text.toLowerCase().contains("eva time")) {
+		else if (text.toLowerCase().equalsIgnoreCase("eva time")) {
 			questionText = YOU_PROMPT + "What is your EVA history and experience ?";
 
 			responseText.append("See my EVA records as follows :");
@@ -525,7 +598,7 @@ public class PersonRobotChatUtils extends ChatUtils {
 
 			if (personCache != null) {
 				responseText.append("I'm feeling ");
-				responseText.append(personCache.getMind().getEmotion().getDescription());
+				responseText.append(personCache.getMind().getEmotion().getDescription().toLowerCase());
 
 			} else if (robotCache != null) {
 				if (robotCache.getSystemCondition().isInoperable())
@@ -573,7 +646,7 @@ public class PersonRobotChatUtils extends ChatUtils {
 
 		}
 
-		else if (num == 2 || text.contains("what your role") || text.toLowerCase().contains("role")) {
+		else if (num == 2 || text.toLowerCase().equalsIgnoreCase("role")) {
 			questionText = YOU_PROMPT + "What is your role ?";
 
 			if (personCache != null) {
@@ -968,7 +1041,10 @@ public class PersonRobotChatUtils extends ChatUtils {
 			String[] txt = clarify(name);
 			questionText = txt[0];
 			responseText.append(txt[1]);
+			
+			return new String[] { questionText, responseText.toString()};
 		}
+
 
 		return new String[] { questionText, responseText.toString() };
 	}

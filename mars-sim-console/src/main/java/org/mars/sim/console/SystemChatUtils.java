@@ -22,14 +22,12 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.health.Complaint;
 import org.mars_sim.msp.core.person.health.ComplaintType;
-import org.mars_sim.msp.core.person.health.DeathInfo;
 import org.mars_sim.msp.core.person.health.HealthProblem;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.tool.CheckSerializedSize;
 import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.tool.RandomUtil;
-import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 import com.google.common.collect.ArrayListMultimap;
@@ -39,7 +37,6 @@ public class SystemChatUtils extends ChatUtils {
 
 	private static Logger logger = Logger.getLogger(SystemChatUtils.class.getName());
 
-	private static String target = "";
 	
 	/**
 	 * Asks a question in Expert Mode
@@ -48,13 +45,16 @@ public class SystemChatUtils extends ChatUtils {
 	 * @param responseText
 	 * @return
 	 */
-	public static String askExpertMode(String text, StringBuffer responseText) {
+	public static String[] askExpertMode(String text, StringBuffer responseText) {
+		
+		String questionText = "";
+		
 		if (text.toLowerCase().contains("reset clock thread")) {
 			String s = "Resetting the clock executor thread...";
 			responseText.append(s + System.lineSeparator());
 			logger.config(s);
 			sim.restartClockExecutor();
-			return responseText.toString();
+
 		}
 
 		else if (text.toLowerCase().contains("reset clock pulse")) {
@@ -62,7 +62,7 @@ public class SystemChatUtils extends ChatUtils {
 			responseText.append(s + System.lineSeparator());
 			logger.config(s);
 			masterClock.resetTotalPulses();
-			return responseText.toString();
+
 		}
 
 		else if (text.toLowerCase().contains("reset clock listener")) {
@@ -70,7 +70,7 @@ public class SystemChatUtils extends ChatUtils {
 			responseText.append(s + System.lineSeparator());
 			logger.config(s);
 			masterClock.resetClockListeners();
-			return responseText.toString();
+
 		}
 		
 		else if (text.toLowerCase().contains("object size")) {
@@ -137,13 +137,10 @@ public class SystemChatUtils extends ChatUtils {
 			
 			responseText.append(s + System.lineSeparator());
 
-			return responseText.toString();
+
 		}
 		
-
-		
-		
-		return responseText.toString();
+		return new String[] {questionText, responseText.toString()};
 	}
 	
 	/**
@@ -152,8 +149,9 @@ public class SystemChatUtils extends ChatUtils {
 	 * @param text
 	 * @return an array of String
 	 */
-	public static String[] connect2Unit(String text) {
-//		System.out.println("askQuestion() in SystemChatUtils");
+	public static String[] connectToAUnit(String text) {
+//		System.out.println("connectToAUnit() in SystemChatUtils   partyName: " + partyName);
+
 		String questionText = "";
 		StringBuffer responseText = new StringBuffer();
 		String name = SYSTEM;
@@ -186,17 +184,19 @@ public class SystemChatUtils extends ChatUtils {
 			cacheType = 3;
 		}
 		
-		if (!target.equalsIgnoreCase("") && !target.equalsIgnoreCase(text)) {
+		if (!partyName.equalsIgnoreCase("") && !partyName.equalsIgnoreCase(text)) {
 			List<String> properNames = ChatUtils.createProperNounsList();
 			for (String s : properNames) {
 				if (s.equalsIgnoreCase(text)) {
 //					System.out.println("text is " + text);				
 					// Switch the target of the conversation to this unit with the name "text"			
-					String response = askSystem(text).toString();			
+					String response = askSystem(text)[1];			
 //					// Print the new connection status line 			
-		        	questionText = "Disconnecting from " + name + ". Connecting with " + target + "..."
-		        			+ System.lineSeparator();        			
-		        	return new String[] {questionText, response};//responseText.toString()};			
+		        	questionText = "Disconnecting from " + name + ". Connecting with " + partyName + "...";
+		        	
+		        	partyName = "";
+		        	
+		        	return new String[] {questionText, response};			
 				}
 			}
 		}
@@ -221,21 +221,14 @@ public class SystemChatUtils extends ChatUtils {
 					responseText.append(" is disconnected from the line.");
 				}
 
-				else {
+				else if (personCache != null) {
 					int rand1 = RandomUtil.getRandomInt(1);
 
 					if (rand1 == 0)
 						responseText.append(" has left the conversation.");
 					else if (rand1 == 1)
 						responseText.append(" just hung up.");
-				}
-
-				// set personCache and robotCache to null so as to quit the conversation
-				personCache = null;
-				robotCache = null;
-				settlementCache = null;
-				vehicleCache = null;
-			}
+				}		}
 
 			else {
 				bye = farewell(name, false);
@@ -243,13 +236,21 @@ public class SystemChatUtils extends ChatUtils {
 				responseText.append(bye[1]);
 				responseText.append(System.lineSeparator());
 			}
-
+			
+			personCache = null;
+			robotCache = null;
+			settlementCache = null;
+			vehicleCache = null;
+			
+			return new String[] { questionText, responseText.toString()};
 		}
 
 		else if (checkExpertMode(text)) {
 			toggleExpertMode();
 			responseText.append("Set Expert Mode to " + ChatUtils.isExpertMode());
 //			responseText.append(System.lineSeparator());
+			
+			return new String[] { questionText, responseText.toString()};
 		}
 
 		// Add proposals
@@ -269,33 +270,37 @@ public class SystemChatUtils extends ChatUtils {
 			robotCache = null;
 			// settlementCache = null;
 			vehicleCache = null;
-
+//			Party.isSettlement = true;
+			
 			if (isInteger(text, 10)) {
 
 				int num = Integer.parseUnsignedInt(text, 10);
 
-				String[] ans = SettlementChatUtils.askSettlementNum(num);
-
 				try {
+					String[] ans = SettlementChatUtils.askSettlementNum(num);
 					questionText = ans[0];
 					responseText.append(ans[1]);
 				} catch (NullPointerException ne) {
 					ne.printStackTrace();
 				}
 
-				// if it's not a integer input
+				return new String[] { questionText, responseText.toString()};
+				
+
 			}
 
 			else {
-
-				String[] ans = SettlementChatUtils.askSettlementStr(text, name);
+				// if it's not a integer input
 
 				try {
+					String[] ans = SettlementChatUtils.askSettlementStr(text, name);
 					questionText = ans[0];
 					responseText.append(ans[1]);
 				} catch (NullPointerException ne) {
 					ne.printStackTrace();
 				}
+				
+				return new String[] { questionText, responseText.toString()};
 			}
 
 		}
@@ -308,19 +313,20 @@ public class SystemChatUtils extends ChatUtils {
 			settlementCache = null;
 //			vehicleCache = null;
 
-			String[] ans = VehicleChatUtils.askVehicle(text, name);
-
 			try {
+				String[] ans = VehicleChatUtils.askVehicle(text, name);
 				questionText = ans[0];
 				responseText.append(ans[1]);
 			} catch (NullPointerException ne) {
 				ne.printStackTrace();
 			}
 
+			return new String[] { questionText, responseText.toString()};
+			
 		}
 
 		// Case 2: ask to talk to a person or robot
-		else if (settlementCache == null) {
+		else if (personCache != null || robotCache != null && settlementCache == null) {
 			// Note : this is better than personCache != null || robotCache != null since it
 			// can
 			// incorporate help and other commands
@@ -332,80 +338,55 @@ public class SystemChatUtils extends ChatUtils {
 				num = Integer.parseUnsignedInt(text, 10);
 			}
 
-			// Add command "die"
-			if (expertMode && text.equalsIgnoreCase("die")) {
-
-				if (personCache != null) {
-					questionText = YOU_PROMPT + " I hereby pronounce you dead.";
-
-					if (personCache.isOutside()) {
-						responseText
-								.append("Can you tell me why? Let's wait till I'm done with my task and/or mission.");
-					} else {
-						String lastWord = null;
-
-						int rand = RandomUtil.getRandomInt(12);
-						// Quotes from http://www.phrases.org.uk/quotes/last-words/suicide-notes.html
-						// https://www.goodreads.com/quotes/tag/suicide-note
-						if (rand == 0)
-							lastWord = "This is all too heartbreaking for me. Farewell, my friend.";
-						else if (rand == 1)
-							lastWord = "Things just seem to have gone too wrong too many times...";
-						else if (rand == 2)
-							lastWord = "So I leave this world, where the heart must either break or turn to lead.";
-						else if (rand == 3)
-							lastWord = "Let's have no sadness —— furrowed brow. There's nothing new in dying now. Though living is no newer.";
-						else if (rand == 4)
-							lastWord = "I myself —— in order to escape the disgrace of deposition or capitulation —— choose death.";
-						else if (rand == 5)
-							lastWord = "When all usefulness is over, when one is assured of an unavoidable and imminent death, "
-									+ "it is the simplest of human rights to choose a quick and easy death in place of a slow and horrible one. ";
-						else if (rand == 6)
-							lastWord = "I am going to put myself to sleep now for a bit longer than usual. Call it Eternity.";
-						else if (rand == 7)
-							lastWord = "All fled —— all done, so lift me on the pyre; the feast is over, and the lamps expire.";
-						else if (rand == 8)
-							lastWord = "No more pain. Wake no more. Nobody owns.";
-						else if (rand == 9)
-							lastWord = "Dear World, I am leaving because I feel I have lived long enough. I am leaving you with your worries in this sweet cesspool. Good luck.";
-						else if (rand == 10)
-							lastWord = "This is what I want so don't be sad.";
-						else if (rand == 11)
-							lastWord = "I don't want to hurt you or anybody so please forget about me. Just try. Find yourself a better friend.";
-						else
-							lastWord = "They tried to get me —— I got them first!";
-
-						responseText.append(personCache.getName() + " : " + lastWord);
-
-						responseText.append(System.lineSeparator() + System.lineSeparator() + personCache.getName()
-								+ " committed suicide as instructed.");
-
-						personCache.getPhysicalCondition().setDead(
-								new HealthProblem(new Complaint(ComplaintType.SUICIDE), personCache), true, lastWord);
-
-						personCache = null;
-						robotCache = null;
-						settlementCache = null;
-						vehicleCache = null;
-					}
-				}
-			}
-
-			else {
-				// if not using expert mode
-
-//				System.out.println("before askPersonRobot()");
-
-				String[] ans = PersonRobotChatUtils.askPersonRobot(text, num, name, u);
-
+			// Add command "die" for expert mode
+			if (expertMode && personCache != null && text.equalsIgnoreCase("die")) {
+				
+//				personCache = null;
+				robotCache = null;
+				settlementCache = null;
+				vehicleCache = null;
+				
 				try {
+					String[] ans = suicide(questionText, responseText, name);
 					questionText = ans[0];
 					responseText.append(ans[1]);
 				} catch (NullPointerException ne) {
 					ne.printStackTrace();
 				}
-//				System.out.println("after askPersonRobot()");
+				
+				return new String[] { questionText, responseText.toString()};
 			}
+
+			else {
+				// if not using expert mode
+				// ask a person or a robot
+				
+//				personCache = null;
+//				robotCache = null;
+				settlementCache = null;
+				vehicleCache = null;
+				
+				try {
+					String[] ans = PersonRobotChatUtils.askPersonRobot(text, num, name, u);
+					questionText = ans[0];
+					responseText.append(ans[1]);
+				} catch (NullPointerException ne) {
+					ne.printStackTrace();
+				}
+
+				return new String[] { questionText, responseText.toString()};
+			}
+			
+//			else {
+//				// set personCache and robotCache to null only if you want to quit the
+//				// conversation
+//				String[] txt = clarify(name);
+//				questionText = txt[0];
+//				responseText.append(txt[1]);
+//				
+//				return new String[] { questionText, responseText.toString()};
+//			}
+			
 		}
 
 		else {
@@ -414,8 +395,86 @@ public class SystemChatUtils extends ChatUtils {
 			String[] txt = clarify(name);
 			questionText = txt[0];
 			responseText.append(txt[1]);
+			
+			return new String[] { questionText, responseText.toString()};
 		}
 
+//		return new String[] { questionText, responseText.toString()};
+	}
+	
+	/**
+	 * Requests the person to die
+	 * 
+	 * @param questionText
+	 * @param responseText
+	 * @return
+	 */
+	public static String[] suicide(String questionText, StringBuffer responseText, String name) {
+		
+		if (personCache != null) {
+			questionText = YOU_PROMPT + " I hereby pronounce you dead.";
+
+			if (personCache.isOutside()) {
+				responseText
+						.append("Can you at least tell me why ? I'm outside right now. "
+								+ "Let's wait till I'm done with my task and/or mission :( ");
+			} else {
+				String lastWord = null;
+
+				int rand = RandomUtil.getRandomInt(12);
+				// Quotes from http://www.phrases.org.uk/quotes/last-words/suicide-notes.html
+				// https://www.goodreads.com/quotes/tag/suicide-note
+				if (rand == 0)
+					lastWord = "This is all too heartbreaking for me. Farewell, my friend.";
+				else if (rand == 1)
+					lastWord = "Things just seem to have gone too wrong too many times...";
+				else if (rand == 2)
+					lastWord = "So I leave this world, where the heart must either break or turn to lead.";
+				else if (rand == 3)
+					lastWord = "Let's have no sadness —— furrowed brow. There's nothing new in dying now. Though living is no newer.";
+				else if (rand == 4)
+					lastWord = "I myself —— in order to escape the disgrace of deposition or capitulation —— choose death.";
+				else if (rand == 5)
+					lastWord = "When all usefulness is over, when one is assured of an unavoidable and imminent death, "
+							+ "it is the simplest of human rights to choose a quick and easy death in place of a slow and horrible one. ";
+				else if (rand == 6)
+					lastWord = "I am going to put myself to sleep now for a bit longer than usual. Call it Eternity.";
+				else if (rand == 7)
+					lastWord = "All fled —— all done, so lift me on the pyre; the feast is over, and the lamps expire.";
+				else if (rand == 8)
+					lastWord = "No more pain. Wake no more. Nobody owns.";
+				else if (rand == 9)
+					lastWord = "Dear World, I am leaving because I feel I have lived long enough. I am leaving you with your worries in this sweet cesspool. Good luck.";
+				else if (rand == 10)
+					lastWord = "This is what I want so don't be sad.";
+				else if (rand == 11)
+					lastWord = "I don't want to hurt you or anybody so please forget about me. Just try. Find yourself a better friend.";
+				else
+					lastWord = "They tried to get me —— I got them first!";
+
+				responseText.append(personCache.getName() + " : " + lastWord);
+
+				responseText.append(System.lineSeparator() + System.lineSeparator() + personCache.getName()
+						+ " committed suicide as instructed.");
+
+				personCache.getPhysicalCondition().setDead(
+						new HealthProblem(new Complaint(ComplaintType.SUICIDE), personCache), true, lastWord);
+
+				personCache = null;
+				robotCache = null;
+				settlementCache = null;
+				vehicleCache = null;
+			}
+		}
+		
+		else {
+			// set personCache and robotCache to null only if you want to quit the
+			// conversation
+			String[] txt = clarify(name);
+			questionText = txt[0];
+			responseText.append(txt[1]);
+		}
+		
 		return new String[] { questionText, responseText.toString()};
 	}
 	
@@ -424,7 +483,14 @@ public class SystemChatUtils extends ChatUtils {
 	 * 
 	 * @param input text
 	 */
-	public static String askSystem(String text) {
+	public static String[] askSystem(String text) {
+//		System.out.println("askSystem() in SystemChatUtils   partyName: " + partyName);
+//		ChatUtils.personCache = null;
+//		ChatUtils.robotCache = null;
+//		ChatUtils.settlementCache = null;
+//		ChatUtils.vehicleCache = null;
+		
+		String questionText = "";
 		StringBuffer responseText = new StringBuffer();
 
 //		boolean available = true;
@@ -573,7 +639,7 @@ public class SystemChatUtils extends ChatUtils {
 			responseText.append(addhiteSpacesRightName("" + Math.round(aveSci * 10.0) / 10.0, 8));
 			responseText.append(System.lineSeparator());
 
-			return responseText.toString();
+
 
 		}
 
@@ -635,7 +701,7 @@ public class SystemChatUtils extends ChatUtils {
 			responseText.append(" Overall : " + Math.round(tot * 10.0) / 10.0);
 			responseText.append(System.lineSeparator());
 
-			return responseText.toString();
+
 		}
 
 		else if (text.toLowerCase().contains("social")) {
@@ -696,7 +762,7 @@ public class SystemChatUtils extends ChatUtils {
 			responseText.append(" Average : " + Math.round(ave * 10.0) / 10.0);
 			responseText.append(System.lineSeparator());
 
-			return responseText.toString();
+
 		}
 
 		else if (text.equalsIgnoreCase("check size")) {
@@ -722,7 +788,7 @@ public class SystemChatUtils extends ChatUtils {
 //			responseText.append(System.lineSeparator());
 //			responseText.append(sim.printObjectSize(1));
 
-			return responseText.toString();
+
 		}
 
 		else if (text.toLowerCase().contains("time") || text.toLowerCase().contains("date")) {
@@ -743,7 +809,7 @@ public class SystemChatUtils extends ChatUtils {
 
 			// Water Ration
 
-			return responseText.toString();
+
 		}
 
 		else if (text.equalsIgnoreCase("key") || text.equalsIgnoreCase("keys") || text.equalsIgnoreCase("keyword")
@@ -756,7 +822,7 @@ public class SystemChatUtils extends ChatUtils {
 				keywordText = SYSTEM_KEYWORDS + KEYWORDS_HEIGHT;
 			}
 			responseText.append(keywordText);
-			return responseText.toString();
+
 		}
 
 		else if (text.equalsIgnoreCase("help") || text.equalsIgnoreCase("/h") || text.equalsIgnoreCase("/?")
@@ -769,7 +835,7 @@ public class SystemChatUtils extends ChatUtils {
 				helpText = HELP_TEXT + HELP_HEIGHT;
 			}
 			responseText.append(helpText);
-			return responseText.toString();
+
 		}
 
 		// Add proposals
@@ -785,7 +851,7 @@ public class SystemChatUtils extends ChatUtils {
 			responseText.append(System.lineSeparator());
 			responseText.append("3. Food Allocation Plan");
 			responseText.append(System.lineSeparator());
-			return responseText.toString();
+
 		}
 
 		// Add asking about settlements in general
@@ -813,7 +879,7 @@ public class SystemChatUtils extends ChatUtils {
 				responseText.append(num);
 				responseText.append(" settlements : ");
 				responseText.append(s);
-				return responseText.toString();
+
 			}
 
 			else if (num == 2) {
@@ -823,20 +889,20 @@ public class SystemChatUtils extends ChatUtils {
 				responseText.append(num);
 				responseText.append(" settlements : ");
 				responseText.append(s);
-				return responseText.toString();
+
 			}
 
 			else if (num == 1) {
 				responseText.append(SYSTEM_PROMPT);
 				responseText.append("There is just one settlement : ");
 				responseText.append(settlementList.get(0));
-				return responseText.toString();
+
 			}
 
 			else {
 				responseText.append(SYSTEM_PROMPT);
 				responseText.append("Currently, there is no settlement established on Mars.");
-				return responseText.toString();
+
 			}
 
 		}
@@ -888,7 +954,6 @@ public class SystemChatUtils extends ChatUtils {
 				responseText.append(System.lineSeparator());
 			}
 
-			return responseText.toString();
 		}
 
 		else if (len >= 5 && text.substring(0, 5).equalsIgnoreCase("hello")) {
@@ -901,7 +966,7 @@ public class SystemChatUtils extends ChatUtils {
 				responseText.append("Hello, how can I help?    [/h for help]");
 			}
 
-			return responseText.toString();
+
 		}
 
 		else if (len >= 3 && text.substring(0, 3).equalsIgnoreCase("hey")) {
@@ -915,7 +980,7 @@ public class SystemChatUtils extends ChatUtils {
 				responseText.append("Hello, how can I help?    [/h for help]");
 			}
 
-			return responseText.toString();
+
 		}
 
 		else if (len >= 2 && text.substring(0, 2).equalsIgnoreCase("hi")) {
@@ -929,7 +994,6 @@ public class SystemChatUtils extends ChatUtils {
 				responseText.append("Hello, how can I help?    [/h for help]");
 			}
 
-			return responseText.toString();
 		}
 
 		else if (len >= 1) {
@@ -980,7 +1044,7 @@ public class SystemChatUtils extends ChatUtils {
 				responseText.append(
 						"'. Please be more specific by spelling out the full name of the party you would like to reach.");
 				// System.out.println(responseText);
-				return responseText.toString();
+
 			}
 
 			else if (robotList.size() > 0) {
@@ -1002,252 +1066,20 @@ public class SystemChatUtils extends ChatUtils {
 			// capitalize the first initial of a name
 			text = Conversion.capitalize(text);
 
-			responseText = obtainTargetUnit(responseText, nameCase, text, 
+			responseText = PartyUtils.acquireParty(responseText, nameCase, text, 
 					personList, 
 					robotList, 
 					vehicleList, 
 					settlementList);
-			return responseText.toString();
+
 		}
 
-		responseText.append(SYSTEM_PROMPT);
-		responseText.append("I do not recognize any person, robot, vehicle or settlement by the name of '");
-		responseText.append(text);
-		responseText.append("'.");
-		return responseText.toString();
+//		responseText.append(SYSTEM_PROMPT);
+//		responseText.append("I do not recognize any person, robot, vehicle or settlement by the name of '");
+//		responseText.append(text);
+//		responseText.append("'.");
+	
+		return new String[] { questionText, responseText.toString() };
 	}
 	
-	public static StringBuffer obtainTargetUnit(StringBuffer responseText, int nameCase, String text, 
-			List<Person> personList, 
-			List<Robot> robotList, 
-			List<Vehicle> vehicleList, 
-			List<Settlement> settlementList) {
-		// Case 1: more than one with the same name
-		if (nameCase >= 2) {
-			responseText.append(SYSTEM_PROMPT);
-			responseText.append("There are more than one '");
-			responseText.append(text);
-			responseText.append(
-					"'.Please be more specific by spelling out the full name of the party you would like to reach.");
-			// System.out.println(responseText);
-			return responseText;
-
-		// Case 2: there is one person
-		} else if (nameCase == 1) {
-			String taskStr = "";
-
-			// for people
-			if (!personList.isEmpty()) {
-
-				nameCase = personList.size();
-
-				String s = "";
-				taskStr = personList.get(0).getMind().getTaskManager().getTaskName();
-
-				// Note: can taskStr be null and thus causing the simulation to hang ?
-				if (taskStr == null) {
-					int rand = RandomUtil.getRandomInt(2);
-					if (rand == 0)
-						s = "I'm sorry. " + text + " is occupied at this moment. Please try again later.";
-					else if (rand == 1)
-						s = text + " does not answer the comm. Please try again later.";
-					else
-						s = text + " cannot respond to your call at this moment. Please try again later.";
-
-					responseText.append(SYSTEM_PROMPT);
-					responseText.append(s);
-					return responseText;
-				}
-
-				else if (taskStr.toLowerCase().contains("sleep")) {
-					s = "I'm sorry. " + text + " is unavailable (" + taskStr
-							+ ") at this moment. Please try again later.";
-					// TODO: check if the person is available or not (e.g. sleeping or if on a
-					// mission and out of comm range
-					// broke down)
-					responseText.append(SYSTEM_PROMPT);
-					responseText.append(s);
-					return responseText;
-				}
-
-				else {
-					Person person = personList.get(0);
-					if (person.isDeclaredDead()) {
-						// Case 4: passed away
-						String buried = "";
-						if (person.getBuriedSettlement() != null)
-							buried = person.getBuriedSettlement().getName();
-						int rand = RandomUtil.getRandomInt(1);
-						if (rand == 0) {
-							responseText.append(SYSTEM_PROMPT);
-							responseText.append("I'm sorry. ");
-							responseText.append(text);
-							responseText.append(" has passed away.");
-						} else if (rand == 1) {
-							responseText.append(SYSTEM_PROMPT);
-							responseText.append("Regrettably, ");
-							responseText.append(text);
-							responseText.append(" has passed away.");
-						} else {
-							responseText.append(SYSTEM_PROMPT);
-							responseText.append("Perhaps you haven't heard. ");
-							responseText.append(text);
-							responseText.append(" is dead.");
-						}
-
-						if (!buried.equals("")) {
-							responseText.append(" and is buried at ");
-							responseText.append(buried);
-							responseText.append("." + System.lineSeparator());
-						} else {
-							responseText.append("." + System.lineSeparator());
-						}
-
-						responseText.append(System.lineSeparator());
-						responseText.append("                Death Report");
-						responseText.append(System.lineSeparator());
-						responseText.append("---------------------------------------------");
-
-						DeathInfo info = person.getPhysicalCondition().getDeathDetails();
-						String cause = info.getCause();
-						String doctor = info.getDoctor();
-						boolean examDone = info.getExamDone();
-						String time = info.getTimeOfDeath();
-						String earthTime = info.getEarthTimeOfDeath();
-						int sol = info.getMissionSol();
-						String coord = info.getLocationOfDeath().getFormattedString();
-						String place = info.getPlaceOfDeath();
-						String missionPhase = info.getMissionPhase();
-						String mission = info.getMission();
-						String task = info.getTask();
-						String taskPhase = info.getTaskPhase();
-						String problem = info.getProblem().getSituation();
-						String mal = info.getMalfunction();
-						String job = info.getJob();
-						String ill = info.getIllness().toString();
-						String health = info.getHealth() + "";
-						String lastWord = info.getLastWord();
-
-//						responseText.append(System.lineSeparator());
-						responseText.append(System.lineSeparator());
-						responseText.append("Time of Death (TOD) : " + time);
-						responseText.append(System.lineSeparator());
-						responseText.append("          Earth TOD : " + earthTime);
-						responseText.append(System.lineSeparator());
-						responseText.append("        Mission Sol : " + sol);
-						responseText.append(System.lineSeparator());
-						responseText.append("     Place of Death : " + place);
-						responseText.append(System.lineSeparator());
-						if (examDone) {
-							responseText.append(" Postmortem Exam by : " + doctor);
-							responseText.append(System.lineSeparator());
-						}
-						responseText.append("     Cause of Death : " + cause);
-						responseText.append(System.lineSeparator());
-						responseText.append("        Coordinates : " + coord);
-						responseText.append(System.lineSeparator());
-						responseText.append("                Job : " + job);
-						responseText.append(System.lineSeparator());
-						responseText.append("               Task : " + task);
-						responseText.append(System.lineSeparator());
-						responseText.append("         Task Phase : " + taskPhase);
-						responseText.append(System.lineSeparator());
-						responseText.append("            Mission : " + mission);
-						responseText.append(System.lineSeparator());
-						responseText.append("      Mission Phase : " + missionPhase);
-						responseText.append(System.lineSeparator());
-						responseText.append("        Malfunction : " + mal);
-						responseText.append(System.lineSeparator());
-						responseText.append("            Illness : " + problem);
-						responseText.append(System.lineSeparator());
-						responseText.append("          Complaint : " + ill);
-						responseText.append(System.lineSeparator());
-						responseText.append("     General Health : " + health);
-						responseText.append(System.lineSeparator());
-						responseText.append("         Last Words : '" + lastWord + "'");
-						responseText.append(System.lineSeparator());
-
-						return responseText;
-					}
-
-					else {
-						personCache = person;
-						target = person.getName();
-
-						responseText.append(personCache.getName());
-						responseText.append(" : This is ");
-						responseText.append(text);
-						responseText.append(". " + getGreeting(1));
-						return responseText;
-					}
-				}
-			}
-
-			// for robots
-			else if (!robotList.isEmpty()) {
-				nameCase = robotList.size();
-
-				Robot robot = robotList.get(0);
-				if (robot.getSystemCondition().isInoperable()) {
-					// Case 4: decomissioned
-					responseText.append(SYSTEM_PROMPT);
-					responseText.append("I'm sorry. ");
-					responseText.append(text);
-					responseText.append(" has been decomissioned.");
-					return responseText;
-				}
-
-				else {
-					robotCache = robot;
-					target = robot.getName();
-					
-					responseText.append(robotCache.getName());
-					responseText.append(" : This is ");
-					responseText.append(text);
-					responseText.append(". " + getGreeting(2));
-					return responseText;
-				}
-			}
-
-			// For vehicles
-			else if (!vehicleList.isEmpty()) {
-				Vehicle vehicle = vehicleList.get(0);
-				if (vehicle.getStatus() == StatusType.MAINTENANCE) {
-					// Case 4: decomissioned
-					responseText.append(SYSTEM_PROMPT);
-					responseText.append("I'm sorry. ");
-					responseText.append(text);
-					responseText.append(" is down for maintenance and connection cannot be established.");
-					return responseText;
-				}
-
-				else {
-					vehicleCache = vehicle;
-					target = vehicle.getName();
-					
-					responseText.append(vehicleCache.getName());
-					responseText.append(" : This is ");
-					responseText.append(text);
-					responseText.append(". " + getGreeting(3));
-					return responseText;
-				}
-			}
-
-			// For settlements
-			else if (!settlementList.isEmpty()) {
-				Settlement settlement = settlementList.get(0);
-				responseText.append(SYSTEM_PROMPT);
-				responseText.append("You are now connected with ");
-				responseText.append(settlement.getName());
-				responseText.append(". " + getGreeting(0));
-
-				settlementCache = settlement;
-				target = settlement.getName();
-				
-				return responseText;
-			}
-		}
-		
-		return responseText;
-	}
 }

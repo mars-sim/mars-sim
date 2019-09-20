@@ -41,7 +41,7 @@ public class ChatMenu implements BiConsumer<TextIO, RunnerData> {
         new ChatMenu().accept(textIO, null);
     }
 
-    public static String determinePromt() {
+    public static String determinePrompt() {
         String expertString = "";
         // See if user opts in the expert mode
     	if (ChatUtils.isExpertMode()) {
@@ -107,27 +107,36 @@ public class ChatMenu implements BiConsumer<TextIO, RunnerData> {
 	        while (!quit) {
 	        	
 	        	try {
-	        		String prompt = determinePromt();
+	        		String prompt = determinePrompt();
 	
-			        handler.addStringTask("party", prompt, false).addChoices(keywords);//.constrainInputToChoices();
+			        handler.addStringTask("name", prompt, false).addChoices(keywords);//.constrainInputToChoices();
 			        handler.executeOneTask();
-			        		        
-					// if no settlement, robot, person, or vehicle has been selected yet
-					if (ChatUtils.personCache == null && ChatUtils.robotCache == null 
-							&& ChatUtils.settlementCache == null && ChatUtils.vehicleCache == null) {	
-						// Call parse() to obtain a new value of unit
-						askSystem(Party.party);
-					} 
+			
+//					System.out.println("ChatMenu's accept()");
 					
-					else {
+//					// if no settlement, robot, person, or vehicle has been selected yet
+//					if (ChatUtils.personCache == null && ChatUtils.robotCache == null 
+//							&& ChatUtils.settlementCache == null && ChatUtils.vehicleCache == null) {	
+//						// Call parse() to obtain a new value of unit
+////						askSystem(Party.party);
+//					} 
+					
+//					else {
 						// Connect to a certain party
-						askParty(Party.party);
+						askParty(Party.name);
 						// Note : if all xxx_Cache are null, then leave
 						// askParty() and go back to askSystem()
-					}
+//					}
 					
 			        // if choosing to quit the chat mode
-					if (leaveSystem && ChatUtils.isQuitting(Party.party)) {
+					if (leaveSystem && ChatUtils.isQuitting(Party.name)) {
+						ChatUtils.personCache = null;
+						ChatUtils.robotCache = null;
+						ChatUtils.settlementCache = null;
+						ChatUtils.vehicleCache = null;
+						
+						terminal.printf("Disconnecting MarsNet. Farewell." + System.lineSeparator() );
+			        	
 						quit = true;
 						handler.save();
 						ChatUtils.setConnectionMode(-1);
@@ -141,61 +150,7 @@ public class ChatMenu implements BiConsumer<TextIO, RunnerData> {
         }
     }
     
-    /*
-	 * Parses the text and interprets the contents in the chat
-	 * 
-	 * @param input text
-	 */
-    public void askSystem(String text) {
 
-		String responseText = "";
-		String questionText = "";
-
-		text = text.trim();
-
-		if (isPause(Party.party)){
-			if (masterClock.isPaused()) {
-				masterClock.setPaused(false, false);
-				terminal.printf(System.lineSeparator());
-				terminal.printf("The simulation is now unpaused.");
-			}
-			else {
-				masterClock.setPaused(true, false);
-				terminal.printf(System.lineSeparator());
-				terminal.printf("The simulation is now paused.");
-			}
-		}
-
-		else if (ChatUtils.isQuitting(text)) {
-			String[] txt = ChatUtils.farewell(ChatUtils.SYSTEM, false);
-			questionText = txt[0];
-			responseText = txt[1];
-			leaveSystem = true;
-			terminal.printf(System.lineSeparator());
-			
-		}
-		
-		else if (ChatUtils.checkExpertMode(text)) {
-			ChatUtils.toggleExpertMode();
-			responseText = System.lineSeparator() + "Set Expert Mode to " + ChatUtils.isExpertMode();
-		}
-		
-		else {
-			terminal.printf(System.lineSeparator());
-	        //ChatUtils.setConnectionMode(0);
-			// Call ChatUtils' parseText	
-			responseText = SystemChatUtils.askSystem(text);
-		}
-		
-		// print question
-		if (!questionText.equals(""))
-			terminal.printf(questionText + System.lineSeparator());
-		
-		// print response
-        terminal.printf(responseText + System.lineSeparator());
-        
-		terminal.printf(System.lineSeparator());
-    }
  
 	/**
 	 * Processes a question and return an answer regarding an unit
@@ -203,26 +158,64 @@ public class ChatMenu implements BiConsumer<TextIO, RunnerData> {
 	 * @param text
 	 */
 	public static void askParty(String text) { 
-		String questionText = null;
+//		System.out.println("ChatMenu's askParty()");
+
+		String questionText = "";
 		String responseText = "";
+		
+		String[] ans;
+		
 		leaveSystem = false;
 		
-        //ChatUtils.setConnectionMode(0);
-		String[] ss = SystemChatUtils.connect2Unit(text);
+//		terminal.printf(System.lineSeparator());
 		
-		// Obtain responses
-		questionText = ss[0];
-		responseText = ss[1];
+		if (isPause(Party.name)){
+			if (masterClock.isPaused()) {
+				masterClock.setPaused(false, false);
+				terminal.printf("The simulation is now unpaused.");
+			}
+			else {
+				masterClock.setPaused(true, false);
+				terminal.printf("The simulation is now paused.");
+			}
+		}
 
-		terminal.printf(System.lineSeparator());
+		else if (ChatUtils.isQuitting(text)) {
+			ans = ChatUtils.farewell(ChatUtils.SYSTEM, false);
+			questionText = ans[0];
+			responseText = ans[1];
+			leaveSystem = true;
+			
+			ChatUtils.personCache = null;
+			ChatUtils.robotCache = null;
+			ChatUtils.settlementCache = null;
+			ChatUtils.vehicleCache = null;
+		}
 		
-		// print question
-		if (!questionText.equals(""))
+		else if (ChatUtils.checkExpertMode(text)) {
+			ChatUtils.toggleExpertMode();
+			responseText = System.lineSeparator() + "Set Expert Mode to " + ChatUtils.isExpertMode();
+		}
+		
+		else if (ChatUtils.personCache == null && ChatUtils.robotCache == null 
+			&& ChatUtils.settlementCache == null && ChatUtils.vehicleCache == null) {
+			ans = SystemChatUtils.askSystem(text);
+			questionText = ans[0];
+			responseText = ans[1];
+		}
+		
+		else {
+			ans = SystemChatUtils.connectToAUnit(text);
+			questionText = ans[0];
+			responseText = ans[1];
+		}
+
+		if (!questionText.equals("")) {
 			terminal.printf(questionText + System.lineSeparator());
-
-		// print response
-		terminal.printf(responseText + System.lineSeparator());
+		}
 		
+		terminal.printf(System.lineSeparator());
+		terminal.printf(responseText + System.lineSeparator());
 		terminal.printf(System.lineSeparator());
 	}
 	
@@ -260,12 +253,17 @@ public class ChatMenu implements BiConsumer<TextIO, RunnerData> {
         return "Connect with MarsNet";
     }
     
-    private static class Party {
-        public static String party;
-
+    public static class Party {
+        public static String name;
+        public static boolean isSettlement;
+        public static boolean isPerson;
+        public static boolean isRobot;
+        public static boolean isVehicle;
+        public static boolean isSystem;
+        
         @Override
         public String toString() {
-            return System.lineSeparator() +">" + party;
+            return System.lineSeparator() +">" + name;
         }
     }
 }

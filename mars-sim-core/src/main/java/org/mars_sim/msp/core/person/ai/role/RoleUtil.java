@@ -39,6 +39,11 @@ public class RoleUtil implements Serializable {
 			
 	private static Map<Integer, double[]> roleWeights = new HashMap<>();
 	
+	public static Map<Integer, double[]> getRoleWeights() {
+		return roleWeights;
+	}
+	
+	
 	public RoleUtil() {
 	}
 
@@ -46,13 +51,13 @@ public class RoleUtil implements Serializable {
 	 * Initialize the role prospect array
 	 */
 	public static void initialize() {
-
-		List<Job> jobList = JobUtil.getJobs();
-		for (Job j : jobList) {
-			int id = j.getJobID();
-			roleWeights.put(id, j.getRoleProspects());
+		if (roleWeights.isEmpty()) {
+			List<Job> jobList = JobUtil.getJobs();
+			for (Job j : jobList) {
+				int id = j.getJobID();
+				roleWeights.put(id, j.getRoleProspects());
+			}
 		}
-		
 	}
 	
 	public static boolean isRoleWeightsInitialized() {
@@ -70,7 +75,7 @@ public class RoleUtil implements Serializable {
 	 * @return
 	 */
 	public static RoleType findBestRole(Person p) {
-		
+
 		RoleType role1 = roleTypes[RandomUtil.getRandomInt(6)];
 //		RoleType role2 = roleTypes[RandomUtil.getRandomInt(6)];
 		
@@ -81,31 +86,25 @@ public class RoleUtil implements Serializable {
 		int id = job.getJobID();
 		double[] weights = roleWeights.get(id);
 		
-		List<TrainingType> trainings = p.getTrainings();
-		
+
 		for (int i=0; i<7; i++) {
 			boolean isRoleAvailable = p.getSettlement().getChainOfCommand().isRoleAvailable(roleTypes[i]);		
-			// If the RoleUtil has not been initialized, then ignore checking 
-			// for the role availability, 
-			if (isRoleWeightsInitialized())
-				initialize();
 			
-			double jobScore = weights[i];
-			
-			int trainingScore = 0;
-			for (TrainingType tt : trainings) {
-				trainingScore += TrainingUtils.getModifier(roleTypes[i].ordinal(), tt.ordinal());
-			}
-			
-			double totalScore = jobScore + trainingScore;
-			
-			if (isRoleAvailable && (totalScore > highestWeight)) {
+			if (isRoleAvailable) {
 				
-				// Pick the role based on the highest weight
-				role1 = roleTypes[i];
-				highestWeight = totalScore;
-			}
-			
+				double jobScore = weights[i];
+				
+				double trainingScore = getTrainingScore(p, roleTypes[i], weights);
+				
+				double totalScore = jobScore + trainingScore;
+				
+				if (totalScore > highestWeight) {
+					
+					// Pick the role based on the highest weight
+					role1 = roleTypes[i];
+					highestWeight = totalScore;
+				}
+			}	
 		}
 		
 		return role1;
@@ -125,26 +124,13 @@ public class RoleUtil implements Serializable {
 		Person bestPerson = null;
 		double bestScore = 0;
 
-//		List<Person> ppl = new ArrayList<>(settlement.getAllAssociatedPeople());
 		for (Person p : candidates) {
 			
 			Job job = p.getMind().getJob();
 			int id = job.getJobID();
 			double[] weights = roleWeights.get(id);
 			
-			// Note the specialist role begins at element 11 in RoleType class
-			int roleEnum = role.ordinal() - 11;
-			
-			double jobScore = Math.round(weights[roleEnum] * 10.0)/10.0;
-			
-			List<TrainingType> trainings = p.getTrainings();
-			
-			int trainingScore = 0;
-			for (TrainingType tt : trainings) {
-				trainingScore += TrainingUtils.getModifier(roleEnum, tt.ordinal());
-			}
-			
-			double score = jobScore + trainingScore * 2;
+			double score = getRolePropectScore(p, role, weights);
 			
 			if (score > bestScore) {
 				bestScore = score;
@@ -153,6 +139,66 @@ public class RoleUtil implements Serializable {
 		}
 
 		return bestPerson;
+	}
+	
+	/**
+	 * Gets the role prospect score of a person on a particular role
+	 * 
+	 * @param person
+	 * @param role
+	 * @return the role prospect score 
+	 */
+	public static double getRolePropectScore(Person person, RoleType role, double[] weights) {
+		
+		double jobScore = getJobScore(person, role, weights);
+		
+		double trainingScore = getTrainingScore(person, role, weights);
+
+		return jobScore + trainingScore;
+		
+	}
+	
+	/**
+	 * Gets the job score of a person on a particular role
+	 * 
+	 * @param person
+	 * @param role
+	 * @param weights
+	 * @return the job score 
+	 */
+	public static double getJobScore(Person person, RoleType role, double[] weights) {
+	
+		// Note the specialist role currently begins at element 0 in RoleType class
+		int roleEnum = role.ordinal();
+		
+		double jobScore = Math.round(weights[roleEnum] * 10.0)/10.0;
+		
+		return jobScore;
+		
+	}
+	
+	/**
+	 * Gets the training score of a person on a particular role
+	 * 
+	 * @param person
+	 * @param role
+	 * @param weights
+	 * @return the training score 
+	 */
+	public static double getTrainingScore(Person person, RoleType role, double[] weights) {
+	
+		// Note the specialist role currently begins at element 0 in RoleType class
+		int roleEnum = role.ordinal();
+		
+		List<TrainingType> trainings = person.getTrainings();
+		
+		int trainingScore = 0;
+		for (TrainingType tt : trainings) {
+			trainingScore += TrainingUtils.getModifier(roleEnum, tt.ordinal());
+		}
+		
+		return trainingScore;
+		
 	}
 	
 }

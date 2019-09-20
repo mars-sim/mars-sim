@@ -34,7 +34,8 @@ public class TrainingUtils {
 //	MILITIARY_DEPLOYMENT			
 //	COMMERCIAL_PILOT	
 //	ANTARCTICA_RESEARCH				
-//	MARS_TWO_FINAL_100		 	
+//	MARS_TWO_FINAL_100		
+//  UNDERGROUND_CAVES_EXPLORATION
 
 	// 7 roles
 //	AGRICULTURE_SPECIALIST	
@@ -46,11 +47,11 @@ public class TrainingUtils {
 //	SCIENCE_SPECIALIST
 	
 	private static int [][] modifiers = new int[][] {
-		{8, 7, 2, 2, 4, 5, 6}, // BIOETHICAL
-		{6, 6, 6, 4, 5, 3, 8}, // EXTREME_ENV_OPS
-		{4, 4, 6, 7, 4, 7, 3}, // NASA_DESERT_RATS
-		{6, 2, 4, 8, 7, 5, 3}, // SURVIVAL_TRAINING	
-		{0, 2, 5, 8, 6, 6, 2}, // SCUBA_DIVING_MASTER	
+		{8, 7, 2, 2, 4, 5, 6}, //  BIOETHICAL
+		{6, 6, 6, 4, 5, 3, 8}, //  EXTREME_ENV_OPS
+		{2, 6, 6, 8, 5, 3, 8}, //  NASA_DESERT_RATS
+		{6, 2, 4, 8, 7, 5, 3}, //  SURVIVAL_TRAINING	
+		{0, 2, 5, 8, 6, 6, 2}, //  SCUBA_DIVING_MASTER	
 	
 		{0, 6, 4, 4, 2, 8, 5}, //	FLIGHT_SAFETY				
 		{1, 3, 8, 8, 4, 7, 1}, //	SEARCH_AND_RESCUE
@@ -64,10 +65,11 @@ public class TrainingUtils {
 		{7, 5, 6, 4, 5, 2, 8}, //	MARS_ANALOG_ENVIRONMENT	
 		{3, 6, 6, 4, 5, 3, 8}, //	UNDERSEA_MISSION	
 		
-		{0, 2, 9, 8, 5, 5, 0}, //		MILITIARY_DEPLOYMENT			
-		{0, 4, 3, 4, 3, 9, 2}, //		COMMERCIAL_PILOT
-		{8, 7, 4, 4, 6, 2, 9}, //		ANTARCTICA_RESEARCH		
-		{5, 4, 6, 4, 5, 2, 3}  //		MARS_TWO_FINAL_100	
+		{0, 2, 9, 8, 5, 5, 0}, //  MILITIARY_DEPLOYMENT			
+		{0, 4, 3, 4, 3, 9, 2}, //  COMMERCIAL_PILOT
+		{8, 7, 4, 4, 6, 2, 9}, //  ANTARCTICA_RESEARCH		
+		{5, 4, 6, 4, 5, 2, 3}, //  MARS_TWO_FINAL_100	
+		{5, 5, 4, 8, 4, 7, 6}  //  UNDERGROUND_CAVES_EXPLORATION
 			
 	};
 	

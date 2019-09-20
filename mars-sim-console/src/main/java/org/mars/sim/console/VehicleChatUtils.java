@@ -27,6 +27,12 @@ public class VehicleChatUtils extends ChatUtils {
 	 * @return the response string[]
 	 */
 	public static String[] askVehicle(String text, String name) {
+		
+		ChatUtils.personCache = null;
+		ChatUtils.robotCache = null;
+		ChatUtils.settlementCache = null;
+//		ChatUtils.vehicleCache = null;
+		
 		String questionText = "";
 		StringBuffer responseText = new StringBuffer();
 

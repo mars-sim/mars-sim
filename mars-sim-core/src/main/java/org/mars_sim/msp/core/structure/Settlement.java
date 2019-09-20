@@ -3638,6 +3638,48 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	}
 
 	/**
+	 * Sets the objective
+	 * 
+	 * @param       {{@link ObjectiveType}
+	 * @param level
+	 */
+	
+	/**
+	 * Gets the objective level
+	 * 
+	 * @param objectiveType
+	 * @return
+	 */
+	public double getObjectiveLevel(ObjectiveType objectiveType) {
+		
+		if (objectiveType == ObjectiveType.CROP_FARM) {
+			return goodsManager.getCropFarmFactor();
+		}
+
+		else if (objectiveType == ObjectiveType.MANUFACTURING_DEPOT) {
+			return goodsManager.getManufacturingFactor();
+		}
+
+		else if (objectiveType == ObjectiveType.RESEARCH_CAMPUS) {
+			return goodsManager.getResearchFactor();
+		}
+
+		else if (objectiveType == ObjectiveType.TRANSPORTATION_HUB) {
+			return goodsManager.getTransportationFactor();
+		}
+
+		else if (objectiveType == ObjectiveType.TRADE_CENTER) {
+			return goodsManager.getTradeFactor();
+		}
+
+		else if (objectiveType == ObjectiveType.TOURISM) {
+			return goodsManager.getTourismFactor();
+		}
+
+		return -1;
+	}
+	
+	/**
 	 * Gets the objective
 	 */
 	public ObjectiveType getObjective() {

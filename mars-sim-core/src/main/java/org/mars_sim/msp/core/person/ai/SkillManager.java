@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.TrainingType;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -122,17 +123,30 @@ public class SkillManager implements Serializable {
 		// Add starting skills randomly for a person.
 		for (SkillType startingSkill : SkillType.values()) {
 			int skillLevel = 0;
+			
+			if (startingSkill == SkillType.PILOTING) {
+				// Checks to see if a person has a pilot license/certification
+				if (getPerson().getTrainings().contains(TrainingType.AVIATION_CERTIFICATION)) {
+					skillLevel = getInitialSkillLevel(1, 35);
+					int exp = RandomUtil.getRandomInt(0, 24);
+					this.addExperience(startingSkill, exp, 0);
+				}
+			}
+			
+			// Medicine skill is highly needed for diagnosing sickness and prescribing medication 
 			if (startingSkill == SkillType.MEDICINE) {
 					skillLevel = getInitialSkillLevel(0, 35);
 					int exp = RandomUtil.getRandomInt(0, 24);
 					this.addExperience(startingSkill, exp, 0);
 				}
+			// Mechanics skill is sought after for repairing malfunctions
 			else if (startingSkill == SkillType.MATERIALS_SCIENCE
 				 || startingSkill == SkillType.MECHANICS) {
 				skillLevel = getInitialSkillLevel(0, 45);
 				int exp = RandomUtil.getRandomInt(0, 24);
 				this.addExperience(startingSkill, exp, 0);
 			}
+			
 			else {
 				int rand = RandomUtil.getRandomInt(0, 3);
 				
