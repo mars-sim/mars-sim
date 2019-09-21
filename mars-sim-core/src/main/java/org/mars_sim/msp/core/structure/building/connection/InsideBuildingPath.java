@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingPath.java
- * @version 3.07 2014-12-06
-
+ * @version 3.1.0 2019-09-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.connection;
@@ -18,7 +17,11 @@ import java.util.List;
  */
 public class InsideBuildingPath implements Serializable, Cloneable {
 
-    // Data members.
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	// Data members.
     private List<InsidePathLocation> pathLocations;
     private int nextLocationIndex;
     

@@ -47,8 +47,8 @@ import javax.swing.UIDefaults;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.GameManager;
+import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEvent;
@@ -57,9 +57,6 @@ import org.mars_sim.msp.core.UnitListener;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.UnitManagerEvent;
 import org.mars_sim.msp.core.UnitManagerListener;
-import org.mars_sim.msp.core.location.LocationStateType;
-import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -69,7 +66,7 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import com.alee.extended.WebComponent;
 import com.alee.laf.combobox.WebComboBox;
 import com.alee.managers.style.StyleId;
-
+@SuppressWarnings("serial")
 public class SettlementTransparentPanel extends WebComponent {
 
 	/** Rotation change (radians per rotation button press). */

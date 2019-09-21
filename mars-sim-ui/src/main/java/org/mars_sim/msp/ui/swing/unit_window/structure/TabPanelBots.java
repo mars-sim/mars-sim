@@ -29,7 +29,6 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 //import org.mars_sim.msp.ui.swing.tool.monitor.personTableModel;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
@@ -42,6 +41,7 @@ import com.alee.laf.scroll.WebScrollPane;
 /**
  * This is a tab panel for robots.
  */
+@SuppressWarnings("serial")
 public class TabPanelBots extends TabPanel implements MouseListener, ActionListener {
 
 	private WebLabel robotNumLabel;

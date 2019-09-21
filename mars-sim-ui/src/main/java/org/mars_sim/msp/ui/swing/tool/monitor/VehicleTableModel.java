@@ -52,8 +52,8 @@ import org.mars_sim.msp.ui.swing.tool.Conversion;
  * The VehicleTableModel that maintains a list of Vehicle objects.
  * It maps key attributes of the Vehicle into Columns.
  */
-public class VehicleTableModel
-extends UnitTableModel {
+@SuppressWarnings("serial")
+public class VehicleTableModel extends UnitTableModel {
 
 	//private DecimalFormat decFormatter = new DecimalFormat("#,###,###.#");
 

@@ -26,7 +26,6 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RoboticAttributeManager;
 import org.mars_sim.msp.core.robot.RoboticAttributeType;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
@@ -39,6 +38,7 @@ import com.alee.laf.scroll.WebScrollPane;
 /**
  * The TabPanelAttribute is a tab panel for the natural attributes of a person.
  */
+@SuppressWarnings("serial")
 public class TabPanelAttribute
 extends TabPanel {
 

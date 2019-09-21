@@ -49,7 +49,6 @@ import org.mars_sim.msp.core.structure.building.function.FoodProduction;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
@@ -57,6 +56,7 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
  * TabPanelFoodProduction is a panel that displays a settlement's food
  * production information.
  */
+@SuppressWarnings("serial")
 public class TabPanelFoodProduction extends TabPanel {
 
 	/** default logger. */

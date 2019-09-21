@@ -9,6 +9,7 @@ package org.mars_sim.msp.ui.swing.tool.monitor;
 /**
  * This class represents a unit table displayed within the Monitor Window.
  */
+@SuppressWarnings("serial")
 public class UnitTab
 extends TableTab {
 

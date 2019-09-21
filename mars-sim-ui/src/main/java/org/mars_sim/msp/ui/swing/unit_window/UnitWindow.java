@@ -49,6 +49,7 @@ import com.alee.managers.tooltip.TooltipWay;
 /**
  * The UnitWindow is the base window for displaying units.
  */
+@SuppressWarnings("serial")
 public abstract class UnitWindow extends ModalInternalFrame {
 
 	// private static final int BLUR_SIZE = 7;

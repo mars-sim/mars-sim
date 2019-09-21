@@ -8,7 +8,6 @@ package org.mars_sim.msp.core.person.ai.mission.meta;
 
 import java.util.Iterator;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
@@ -29,7 +28,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 public class TravelToSettlementMeta implements MetaMission {
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(TravelToSettlementMeta.class.getName());
+//	private static Logger logger = Logger.getLogger(TravelToSettlementMeta.class.getName());
 
     private static final double LIMIT = 50D;
     

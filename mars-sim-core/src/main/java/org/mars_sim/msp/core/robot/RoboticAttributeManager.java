@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RoboticAttributeManager.java
- * @version 3.08 2016-05-04
+ * @version 3.1.0 2019-09-20
  * @author Manny Kung
  */
 

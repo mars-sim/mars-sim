@@ -19,6 +19,7 @@ import java.util.Arrays;
  * are Comparable will be sorted.
  * Also only one column can be used as a sorting key
  */
+@SuppressWarnings("serial")
 public class TableSorter extends AbstractTableModel
                     implements TableModelListener, MonitorModel {
 

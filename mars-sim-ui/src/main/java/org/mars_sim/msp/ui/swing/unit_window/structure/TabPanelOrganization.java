@@ -52,6 +52,7 @@ import com.jidesoft.swing.TreeSearchable;
  * The TabPanelStructure is a tab panel showing the organizational structure of
  * a settlement.
  */
+@SuppressWarnings("serial")
 public class TabPanelOrganization extends TabPanel {
 
 	private Settlement settlement;

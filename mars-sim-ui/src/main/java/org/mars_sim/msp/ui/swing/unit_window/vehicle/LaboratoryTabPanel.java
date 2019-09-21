@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LaboratoryTabPanel.java
- * @version 3.07 2014-12-06
+ * @version 3.1.0 2019-09-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.vehicle;
@@ -24,6 +24,7 @@ import com.alee.laf.panel.WebPanel;
 /** 
  * The LaboratoryTabPanel is a tab panel for an explorer rover's lab information.
  */
+@SuppressWarnings("serial")
 public class LaboratoryTabPanel extends TabPanel {
 
 	// Data members

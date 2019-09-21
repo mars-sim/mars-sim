@@ -3,7 +3,6 @@ package org.mars_sim.msp.ui.swing.tool.guide;
 import static java.lang.System.err;
 import static java.lang.System.out;
 
-import java.awt.Color;
 import java.awt.Container;
 import java.io.IOException;
 
@@ -27,7 +26,7 @@ import javax.swing.SwingUtilities;
          */
         private static final int width = 1000;
 
-        private static final String RELEASE_DATE = "2007-10-04";
+//        private static final String RELEASE_DATE = "2007-10-04";
 
         /**
          * title for frame
@@ -51,7 +50,6 @@ import javax.swing.SwingUtilities;
          *
          * @param args command line arguments are ignored.
          */
-        @SuppressWarnings( { "UnusedParameters" } )
         public static void main( String args[] )
             {
             // Invoke the run method on the Swing event dispatch thread

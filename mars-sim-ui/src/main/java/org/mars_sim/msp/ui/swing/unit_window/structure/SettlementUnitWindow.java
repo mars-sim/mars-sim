@@ -19,6 +19,7 @@ import org.mars_sim.msp.ui.swing.unit_window.structure.building.food.TabPanelFoo
 /**
  * The SettlementUnitWindow is the window for displaying a settlement.
  */
+@SuppressWarnings("serial")
 public class SettlementUnitWindow extends UnitWindow {
 
 	/**

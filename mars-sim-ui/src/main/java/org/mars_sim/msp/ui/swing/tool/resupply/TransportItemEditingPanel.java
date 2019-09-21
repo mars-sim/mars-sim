@@ -19,6 +19,7 @@ import org.mars_sim.msp.core.time.MarsClock;
 /**
  * An abstract panel for editing a transport item.
  */
+@SuppressWarnings("serial")
 public abstract class TransportItemEditingPanel
 extends JPanel {
 

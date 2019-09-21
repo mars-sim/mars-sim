@@ -17,6 +17,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 /**
  * Cell renderer for unit tables that marks failure cells as red.
  */
+@SuppressWarnings("serial")
 class UnitTableCellRenderer extends DefaultTableCellRenderer {
 
 	// Private data members.

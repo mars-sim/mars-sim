@@ -55,6 +55,7 @@ import com.alee.managers.tooltip.TooltipWay;
 /**
  * The TabPanelSchedule is a tab panel showing the daily schedule a person.
  */
+@SuppressWarnings("serial")
 public class TabPanelSchedule extends TabPanel {
 
 	private static final String SOL = "  Sol ";
@@ -102,8 +103,8 @@ public class TabPanelSchedule extends TabPanel {
 	private Person person;
 	private Robot robot;
 	private TaskSchedule taskSchedule;
-	private PlannerWindow plannerWindow;
-	private MainDesktopPane desktop;
+//	private PlannerWindow plannerWindow;
+//	private MainDesktopPane desktop;
 
 	/**
 	 * Constructor.
@@ -117,7 +118,7 @@ public class TabPanelSchedule extends TabPanel {
 				null, Msg.getString("TabPanelSchedule.tooltip"), //$NON-NLS-1$
 				unit, desktop);
 
-		this.desktop = desktop;
+//		this.desktop = desktop;
 		isRealTimeUpdate = true;
 
 		// Prepare combo box
@@ -429,9 +430,9 @@ public class TabPanelSchedule extends TabPanel {
 
 	}
 
-	public void setViewer(PlannerWindow w) {
-		this.plannerWindow = w;
-	}
+//	public void setViewer(PlannerWindow w) {
+//		this.plannerWindow = w;
+//	}
 
 	/**
 	 * Opens PlannerWindow
@@ -441,7 +442,6 @@ public class TabPanelSchedule extends TabPanel {
 //		if (plannerWindow == null)
 //			plannerWindow = new PlannerWindow(unit, desktop, this);
 //	}
-
 	class PromptComboBoxRenderer extends DefaultListCellRenderer {
 
 		private String prompt;
@@ -688,7 +688,7 @@ public class TabPanelSchedule extends TabPanel {
 		person = null;
 		robot = null;
 		taskSchedule = null;
-		plannerWindow = null;
+//		plannerWindow = null;
 		desktop = null;
 		// balloonToolTip = null;
 

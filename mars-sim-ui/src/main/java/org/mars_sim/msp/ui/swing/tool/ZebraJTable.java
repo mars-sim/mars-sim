@@ -25,6 +25,7 @@ import javax.swing.table.TableModel;
 /**
  * A WebTable that draws a zebra striped background.
  */
+@SuppressWarnings("serial")
 public class ZebraJTable extends JTable {
 
     private Color rowColors[] = new Color[2];

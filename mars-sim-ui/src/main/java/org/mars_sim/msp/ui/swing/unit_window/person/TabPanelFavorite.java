@@ -11,7 +11,6 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
 
@@ -27,7 +26,6 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.Preference;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
@@ -46,6 +44,7 @@ import com.alee.laf.text.WebTextField;
 /**
  * The TabPanelFavorite is a tab panel for general information about a person.
  */
+@SuppressWarnings("serial")
 public class TabPanelFavorite
 extends TabPanel {
 

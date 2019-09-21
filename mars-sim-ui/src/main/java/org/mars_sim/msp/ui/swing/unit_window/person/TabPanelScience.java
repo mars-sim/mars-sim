@@ -51,6 +51,7 @@ import com.alee.managers.tooltip.TooltipWay;
 /**
  * A tab panel displaying a person's scientific studies and achievements.
  */
+@SuppressWarnings("serial")
 public class TabPanelScience
 extends TabPanel {
 

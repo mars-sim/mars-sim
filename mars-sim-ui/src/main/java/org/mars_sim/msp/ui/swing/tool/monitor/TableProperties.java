@@ -30,6 +30,7 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
  * The TableProperties class display the columns of a specific table.
  * The columns can be either display or hidden in the target table.
  */
+@SuppressWarnings("serial")
 class TableProperties extends JInternalFrame {
 
     // Data members

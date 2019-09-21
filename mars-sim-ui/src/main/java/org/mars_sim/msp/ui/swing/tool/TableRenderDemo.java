@@ -54,6 +54,7 @@ import java.awt.GridLayout;
  * explicitly initializes column sizes and it uses a combo box
  * as an editor for the Sport column.
  */
+@SuppressWarnings("serial")
 public class TableRenderDemo extends JPanel {
     private boolean DEBUG = false;
 

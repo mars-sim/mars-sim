@@ -38,7 +38,6 @@ import org.mars_sim.msp.core.structure.building.function.SolarHeatSource;
 import org.mars_sim.msp.core.structure.building.function.ThermalGeneration;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
@@ -54,6 +53,7 @@ import com.alee.laf.text.WebTextField;
 /**
  * This is a tab panel for settlement's Thermal System .
  */
+@SuppressWarnings("serial")
 public class TabPanelThermalSystem
 extends TabPanel {
 
@@ -287,16 +287,16 @@ extends TabPanel {
 		heatTableModel.update();
 	}
 
-	/**
-	 * Gets a list of buildings should be shown.
-	 * @return a list of buildings
-	 */
-	private List<Building> getBuildings() {
-		if (checkbox.isSelected())
-			return manager.getSortedBuildings();
-		else
-			return manager.getBuildingsWithThermal();
-	}
+//	/**
+//	 * Gets a list of buildings should be shown.
+//	 * @return a list of buildings
+//	 */
+//	private List<Building> getBuildings() {
+//		if (checkbox.isSelected())
+//			return manager.getSortedBuildings();
+//		else
+//			return manager.getBuildingsWithThermal();
+//	}
 
 	public double getAverageEfficiencySolarHeating() {
 		double eff_solar_heat = 0;
@@ -426,7 +426,7 @@ extends TabPanel {
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
 
-		private Settlement settlement;
+//		private Settlement settlement;
 		// Make sure it's from java.util.List, not java.awt.List
 		//private List<Building> buildings; // java.util.List, not java.awt.List
 		//private List<Building> buildings = new ArrayList<>();
@@ -434,10 +434,10 @@ extends TabPanel {
 		private ImageIcon dotYellow;
 		private ImageIcon dotGreen_full, dotGreen_half, dotGreen_quarter, dotGreen_threeQuarter;
 
-		private int size;
+//		private int size;
 
 		private HeatTableModel(Settlement settlement) {
-			this.settlement = settlement;
+//			this.settlement = settlement;
 			//this.size = buildings.size();
 
 			dotRed = ImageLoader.getIcon(Msg.getString("img.dotRed")); //$NON-NLS-1$

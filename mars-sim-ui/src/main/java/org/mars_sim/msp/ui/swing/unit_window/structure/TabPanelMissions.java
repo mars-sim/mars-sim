@@ -36,7 +36,6 @@ import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
 import org.mars_sim.msp.ui.swing.tool.monitor.PersonTableModel;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
@@ -48,6 +47,7 @@ import org.mars_sim.msp.ui.swing.unit_window.vehicle.TabPanelMission;
  * {@link TabPanelMission}, which displays a vehicle's
  * single mission's details.
  */
+@SuppressWarnings("serial")
 public class TabPanelMissions
 extends TabPanel {
 

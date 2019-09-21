@@ -30,7 +30,6 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.structure.building.BuildingPanel;
 
@@ -40,6 +39,7 @@ import com.alee.laf.panel.WebPanel;
 /**
  * The BuildingsTabPanel is a tab panel containing building panels.
  */
+@SuppressWarnings("serial")
 public class TabPanelBuildings extends TabPanel implements ActionListener {
 
 	private DefaultComboBoxModel<Building> comboBoxModel;

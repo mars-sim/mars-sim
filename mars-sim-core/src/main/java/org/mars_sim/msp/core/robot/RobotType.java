@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RobotType.java
- * @version 3.07 2015-03-05
+ * @version 3.1.0 2019-09-20
  * @author Manny Kung
  */
 

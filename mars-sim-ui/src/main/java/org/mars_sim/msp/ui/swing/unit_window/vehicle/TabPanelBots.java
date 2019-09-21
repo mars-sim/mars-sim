@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TabPanelBots.java
- * @version 3.08 2015-03-24
+ * @version 3.1.0 2019-09-20
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.unit_window.vehicle;
@@ -20,7 +20,6 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import javax.swing.DefaultListModel;
-
 import javax.swing.JList;
 
 import org.mars_sim.msp.core.Msg;
@@ -29,7 +28,6 @@ import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.monitor.RobotTableModel;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
@@ -41,6 +39,7 @@ import com.alee.laf.scroll.WebScrollPane;
 /** 
  * The TabPanelBots is a tab panel for a vehicle's bots crew information.
  */
+@SuppressWarnings("serial")
 public class TabPanelBots
 extends TabPanel
 implements MouseListener, ActionListener {

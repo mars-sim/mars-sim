@@ -1,6 +1,6 @@
 /* Mars Simulation Project
  * Browser.java
- * @version 3.08 2015-05-30
+ * @version 3.1.0 2019-09-20
  * @author Manny Kung
  */
 

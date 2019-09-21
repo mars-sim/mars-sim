@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainMenu.java
- * @version 3.08 2015-01-28
+ * @version 3.1.0 2019-09-20
  * @author Lars Næsbye Christensen
  */
 

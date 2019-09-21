@@ -1,14 +1,13 @@
 /**
  * Mars Simulation Project
  * RowNumberTable.java
- * @version 3.08 2015-06-08
+ * @version 3.1.0 2019-09-20
  * @author Manny Kung
  */
 
 package org.mars_sim.msp.ui.swing.tool;
 
 import java.awt.Component;
-import java.awt.Font;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 

@@ -43,6 +43,7 @@ import com.alee.laf.scroll.WebScrollPane;
 /**
  * A wizard panel for selecting the mission vehicle.
  */
+@SuppressWarnings("serial")
 class VehiclePanel extends WizardPanel {
 
 	/** The wizard panel name. */

@@ -27,12 +27,12 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
 /** 
  * The VehicleTabPanel is a tab panel for parked vehicle information.
  */
+@SuppressWarnings("serial")
 public class TabPanelVehicles
 extends TabPanel
 implements MouseListener {

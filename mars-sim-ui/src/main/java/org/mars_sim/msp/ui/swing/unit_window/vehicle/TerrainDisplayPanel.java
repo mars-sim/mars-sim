@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * TerrainDisplayPanel.java
- * @version 3.07 2014-12-06
-
+ * @version 3.1.0 2019-09-20
  * @author Scott Davis
  */
 
@@ -23,6 +22,7 @@ import org.mars_sim.msp.core.vehicle.StatusType;
  * The TerrainDisplayPanel class displays the compass direction a vehicle is
  * currently travelling.
  */
+@SuppressWarnings("serial")
 public class TerrainDisplayPanel extends JPanel {
 
 	// Data members

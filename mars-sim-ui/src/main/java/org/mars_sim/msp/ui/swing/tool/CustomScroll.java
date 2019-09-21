@@ -1,17 +1,32 @@
 /**
  * Mars Simulation Project
  * CustomScroll.java
- * @version 3.07 2015-01-01
+ * @version 3.1.0 2019-09-20
  * Modified by Manny Kung
  * Courtesy of Vladimir Ikryanov
  */
 
 package org.mars_sim.msp.ui.swing.tool;
 
-import javax.swing.*;
-import javax.swing.plaf.basic.BasicScrollBarUI;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
+import java.awt.RenderingHints;
 
-import java.awt.*;
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JLayeredPane;
+import javax.swing.JScrollBar;
+import javax.swing.JScrollPane;
+import javax.swing.JViewport;
+import javax.swing.ScrollPaneLayout;
+import javax.swing.SwingUtilities;
+import javax.swing.plaf.basic.BasicScrollBarUI;
 
 
 @SuppressWarnings("serial")

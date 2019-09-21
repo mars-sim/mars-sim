@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MissionTabPanel.java
- * @version 3.08 2015-07-02
+ * @version 3.1.0 2019-09-20
  * @author Scott Davis
  */
 
@@ -48,6 +48,7 @@ import com.alee.laf.text.WebTextArea;
 /**
  * Tab panel displaying vehicle mission info.
  */
+@SuppressWarnings("serial")
 public class TabPanelMission
 extends TabPanel {
 

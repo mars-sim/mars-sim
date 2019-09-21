@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SeparatorPanel.java
- * @version 3.07 2015-01-06
+ * @version 3.1.0 2019-09-20
  * Modified by Manny Kung
  * Based on Java Swing Hacks
  */

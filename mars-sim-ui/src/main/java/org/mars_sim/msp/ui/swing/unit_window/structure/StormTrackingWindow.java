@@ -29,19 +29,20 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 /**
  * The window for tracking storms.
  */
+@SuppressWarnings("serial")
 public class StormTrackingWindow
 extends JInternalFrame
 implements InternalFrameListener, ActionListener {
 
 	// Data members
 	private JPanel infoPane;
-	private TabPanelWeather tabPanelWeather;
+//	private TabPanelWeather tabPanelWeather;
 
 	public StormTrackingWindow(MainDesktopPane desktop, TabPanelWeather tabPanelWeather) {
 		// Use JInternalFrame constructor
         super("Storm Tracking", false, true, false, false);
 
-        this.tabPanelWeather = tabPanelWeather;
+//        this.tabPanelWeather = tabPanelWeather;
 		// Create info panel.
 		infoPane = new JPanel(new CardLayout());
 		infoPane.setBorder(new MarsPanelBorder());
@@ -84,7 +85,7 @@ implements InternalFrameListener, ActionListener {
 	@Override
 	public void internalFrameClosing(InternalFrameEvent e) {
 		// TODO Auto-generated method stub
-		tabPanelWeather.setViewer(null);
+//		tabPanelWeather.setViewer(null);
 		//System.out.println("internalFrameClosing()");
 	}
 
@@ -92,7 +93,7 @@ implements InternalFrameListener, ActionListener {
 	@Override
 	public void internalFrameClosed(InternalFrameEvent e) {
 		// TODO Auto-generated method stub
-		tabPanelWeather.setViewer(null);
+//		tabPanelWeather.setViewer(null);
 		//System.out.println("internalFrameClosed()");
 	}
 
@@ -127,6 +128,6 @@ implements InternalFrameListener, ActionListener {
 	 */
 	public void destroy() {
 		infoPane = null;
-		tabPanelWeather = null;
+//		tabPanelWeather = null;
 	}
 }

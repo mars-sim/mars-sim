@@ -25,7 +25,8 @@ public class TestLED {
 	        }
 	    });
 	}
-    private void createAndShowUI() {
+    @SuppressWarnings("serial")
+	private void createAndShowUI() {
         final JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLocationByPlatform(true);

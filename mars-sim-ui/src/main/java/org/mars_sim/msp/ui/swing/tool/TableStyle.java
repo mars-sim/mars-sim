@@ -12,7 +12,7 @@ import java.awt.Font;
 
 import javax.swing.JTable;
 import javax.swing.SwingUtilities;
-
+@SuppressWarnings("serial")
 public class TableStyle extends ZebraJTable{
 
 	//private static JTableHeader theHeader;

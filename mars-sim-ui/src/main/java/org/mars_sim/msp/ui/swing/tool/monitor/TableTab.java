@@ -42,6 +42,7 @@ import com.alee.laf.scroll.WebScrollPane;
  * displays the contents of a UnitTableModel in a WebTable window. It supports
  * the selection and deletion of rows.
  */
+@SuppressWarnings("serial")
 abstract class TableTab extends MonitorTab {
 
 	private JTableHeader header;

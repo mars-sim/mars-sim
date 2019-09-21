@@ -52,6 +52,7 @@ import com.google.common.collect.Multiset;
 /**
  * This is a tab panel for displaying a settlement's Food Menu.
  */
+@SuppressWarnings("serial")
 public class TabPanelCooking extends TabPanel {
 
 	/** default logger. */

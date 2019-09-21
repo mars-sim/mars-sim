@@ -20,6 +20,7 @@ import org.mars_sim.msp.ui.swing.NumberCellRenderer;
  * This class represents a table of trade good values at settlements displayed
  * within the Monitor Window.
  */
+@SuppressWarnings("serial")
 public class TradeTab
 extends TableTab
 implements UnitManagerListener {

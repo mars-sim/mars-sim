@@ -23,6 +23,7 @@ import org.mars_sim.msp.core.UnitManager;
  * The UnitTableModel that maintains a table model of Units objects. It is only
  * a partial implementation of the TableModel interface.
  */
+@SuppressWarnings("serial")
 abstract public class UnitTableModel extends AbstractTableModel implements MonitorModel, UnitListener {
 
 	// Data members

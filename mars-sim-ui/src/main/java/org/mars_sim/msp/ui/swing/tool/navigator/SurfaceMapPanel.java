@@ -25,6 +25,7 @@ import org.mars_sim.msp.ui.swing.ImageLoader;
 /**
  * The SurfaceMapPanel class generates the real surface and topographical map for GlobeDisplay object.
  */
+
 public class SurfaceMapPanel {
 
 	/** default logger. */

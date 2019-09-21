@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * StudyDetailPanel.java
- * @version 3.07 2014-12-06
-
+ * @version 3.1.0 2019-09-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.science;
@@ -33,11 +32,9 @@ import com.alee.managers.style.StyleId;
 /**
  * A panel showing details of a selected scientific study.
  */
+@SuppressWarnings("serial")
 public class StudyDetailPanel
 extends JPanel {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
 
 	// Data members
 	private JLabel scienceFieldLabel;

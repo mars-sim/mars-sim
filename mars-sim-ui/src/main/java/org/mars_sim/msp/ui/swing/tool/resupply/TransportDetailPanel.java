@@ -23,6 +23,7 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
  * A panel showing a selected transport details.
  * TODO externalize strings
  */
+@SuppressWarnings("serial")
 public class TransportDetailPanel
 extends JPanel
 implements ListSelectionListener {

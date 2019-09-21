@@ -38,6 +38,7 @@ import org.mars_sim.msp.ui.swing.tool.TableStyle;
 /**
  * A wizard panel to select a scientific study for the mission.
  */
+@SuppressWarnings("serial")
 public class StudyPanel extends WizardPanel {
 
 	// The wizard panel name.

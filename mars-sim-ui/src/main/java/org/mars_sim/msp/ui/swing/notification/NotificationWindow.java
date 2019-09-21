@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * NotificationWindow.java
- * @version 3.07 2014-12-17
+ * @version 3.1.0 2019-09-20
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.notification;

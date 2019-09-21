@@ -26,6 +26,7 @@ import org.mars_sim.msp.core.structure.BuildingTemplate;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
 
 /** TODO externalize strings */
+@SuppressWarnings("serial")
 public class SupplyTableModel
 extends AbstractTableModel {
 

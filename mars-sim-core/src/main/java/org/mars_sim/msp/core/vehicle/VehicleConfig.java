@@ -92,7 +92,6 @@ public class VehicleConfig implements Serializable {
 	/**
 	 * parse only once, store resulting config data for later use.
 	 */
-	@SuppressWarnings("unchecked")
 	private void parseIfNeccessary() {
 		// only parse when necessary (i.e. when not yet parsed)
 		if (map == null) {
@@ -603,7 +602,6 @@ public class VehicleConfig implements Serializable {
 	 * @return list of rover names as strings.
 	 * @throws Exception if XML parsing error.
 	 */
-	@SuppressWarnings("unchecked")
 	public List<String> getRoverNameList() {
 		if (roverNames == null) {
 			roverNames = new ArrayList<String>();

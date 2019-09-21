@@ -416,6 +416,7 @@ public class TableColumnManager
 	 *  Allows you to select a specific menu item when the popup is
 	 *  displayed. (ie. this is a bug? fix)
 	 */
+	@SuppressWarnings("serial")
 	class SelectPopupMenu extends JPopupMenu
 	{
 		@Override

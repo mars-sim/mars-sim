@@ -32,7 +32,6 @@ import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
-import javax.swing.plaf.basic.BasicComboBoxRenderer;
 import javax.swing.table.AbstractTableModel;
 
 import org.mars_sim.msp.core.Msg;
@@ -50,6 +49,7 @@ import org.mars_sim.msp.ui.swing.tool.TableStyle;
 /**
  * The window for planning future activities.
  */
+@SuppressWarnings("serial")
 public class PlannerWindow
 extends JInternalFrame
 implements InternalFrameListener, ActionListener {
@@ -203,7 +203,7 @@ implements InternalFrameListener, ActionListener {
 	@Override
 	public void internalFrameClosing(InternalFrameEvent e) {
 		// TODO Auto-generated method stub
-		tabPanelSchedule.setViewer(null);
+//		tabPanelSchedule.setViewer(null);
 		//System.out.println("internalFrameClosing()");
 	}
 
@@ -211,7 +211,7 @@ implements InternalFrameListener, ActionListener {
 	@Override
 	public void internalFrameClosed(InternalFrameEvent e) {
 		// TODO Auto-generated method stub
-		tabPanelSchedule.setViewer(null);
+//		tabPanelSchedule.setViewer(null);
 		//System.out.println("internalFrameClosed()");
 	}
 

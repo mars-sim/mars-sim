@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * NavigationTabPanel.java
- * @version 3.07 2014-12-06
+ * @version 3.1.0 2019-09-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.vehicle;
@@ -23,7 +23,7 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 import com.alee.laf.button.WebButton;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
-
+@SuppressWarnings("serial")
 public class TabPanelTow extends TabPanel {
 
 	// Data members

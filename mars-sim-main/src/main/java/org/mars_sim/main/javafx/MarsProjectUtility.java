@@ -1,9 +1,9 @@
-///**
-// * Mars Simulation Project
-// * MarsProjectUtility.java
-// * @version 3.08 2015-11-08
-// * @author Manny Kung
-// */
+/**
+ * Mars Simulation Project
+ * MarsProjectUtility.java
+ * @version 3.1.0 2019-09-20
+ * @author Manny Kung
+ */
 //package org.mars_sim.main.javafx;
 //
 //import java.awt.Toolkit;

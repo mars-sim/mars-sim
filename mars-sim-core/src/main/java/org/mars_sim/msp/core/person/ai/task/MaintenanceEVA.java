@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintenanceEVA.java
- * @version 3.07 2015-02-02
+ * @version 3.1.0 2019-09-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EffectUtilities.java
- * @version 3.08 2015-05-26
+ * @version 3.1.0 2019-09-20
  * @author Manny Kung
  * see the original codes based on https://gist.github.com/jewelsea/3388637
  */

@@ -29,7 +29,6 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.tool.monitor.PersonTableModel;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
@@ -43,6 +42,7 @@ import com.alee.laf.scroll.WebScrollPane;
  * The AssociatedPeopleTabPanel is a tab panel for information on all people
  * associated with a settlement.
  */
+@SuppressWarnings("serial")
 public class TabPanelAssociatedPeople extends TabPanel implements MouseListener, ActionListener {
 
 	// Data members

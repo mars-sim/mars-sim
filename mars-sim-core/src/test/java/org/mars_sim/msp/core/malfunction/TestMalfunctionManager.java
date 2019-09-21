@@ -33,6 +33,7 @@ public class TestMalfunctionManager extends TestCase {
 		assertEquals("Third malfunction is malfunction1", malfunction1, sorted.get(2));
 	}
 	
+    @SuppressWarnings("serial")
 	private class MockMalfunction extends Malfunction {
 		
 		private MockMalfunction(String name, int severity, double emergencyWorkTime, double workTime, 

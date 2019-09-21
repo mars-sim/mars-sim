@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * NavigationTabPanel.java
- * @version 3.07 2014-12-06
-
+ * @version 3.1.0 2019-09-20
  * @author Scott Davis
  */
 
@@ -25,8 +24,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SpringLayout;
 import javax.swing.border.BevelBorder;
-import javax.swing.border.Border;
-import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 
 import org.mars_sim.msp.core.Coordinates;
@@ -54,6 +51,7 @@ import com.alee.laf.panel.WebPanel;
 /**
  * The NavigationTabPanel is a tab panel for a vehicle's navigation information.
  */
+@SuppressWarnings("serial")
 public class NavigationTabPanel extends TabPanel implements ActionListener {
 
     private static Logger logger = Logger.getLogger(NavigationTabPanel.class.getName());

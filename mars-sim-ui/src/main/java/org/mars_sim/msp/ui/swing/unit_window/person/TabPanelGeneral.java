@@ -27,8 +27,8 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 /**
  * The TabPanelGeneral is a tab panel for general information about a person.
  */
-public class TabPanelGeneral
-extends TabPanel {
+@SuppressWarnings("serial")
+public class TabPanelGeneral extends TabPanel {
 
 	/**
 	 * Constructor.

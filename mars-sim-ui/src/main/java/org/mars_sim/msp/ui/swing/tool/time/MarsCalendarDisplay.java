@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * GlobeDisplay.java
- * @version 3.07 2014-12-06
-
+ * @version 3.1.0 2019-09-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.time;
@@ -26,10 +25,8 @@ import com.alee.managers.style.StyleId;
  * The Mars Calendar Display class shows the current month in a panel for the
  * {@link TimeWindow} class.
  */
+@SuppressWarnings("serial")
 public class MarsCalendarDisplay extends WebComponent {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
 
 	// Data members
 	/** The Martian clock instance. */

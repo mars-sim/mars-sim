@@ -21,7 +21,8 @@ import org.mars_sim.msp.ui.steelseries.tools.LedColor;
 
 
 public class TestGauge {
-    private static void createAndShowUI() {
+    @SuppressWarnings("serial")
+	private static void createAndShowUI() {
         final JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLocationByPlatform(true);

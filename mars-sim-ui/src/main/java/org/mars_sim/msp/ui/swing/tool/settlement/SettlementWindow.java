@@ -26,6 +26,7 @@ import com.alee.laf.panel.WebPanel;
 /**
  * The SettlementWindow is a tool window that displays the Settlement Map Tool.
  */
+@SuppressWarnings("serial")
 public class SettlementWindow extends ToolWindow {
 
 	// default logger.

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BeeHive.java
- * @version 3.07 2015-02-18
+ * @version 3.1.0 2019-09-20
  * @author Manny Kung
  */
 

@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructionManagerTest.java
- * @version 3.07 2014-12-06
-
+ * @version 3.1.0 2019-09-20
  * @author Scott Davis
  */
 
@@ -10,7 +9,6 @@ package org.mars_sim.msp.core.structure.construction;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.structure.MockSettlement;
 import org.mars_sim.msp.core.structure.Settlement;
 

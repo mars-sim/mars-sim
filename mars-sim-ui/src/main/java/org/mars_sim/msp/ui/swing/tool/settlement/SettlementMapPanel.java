@@ -42,6 +42,7 @@ import com.alee.laf.panel.WebPanel;
 /**
  * A panel for displaying the settlement map.
  */
+@SuppressWarnings("serial")
 public class SettlementMapPanel extends WebPanel implements ClockListener {
 
 // 	Default logger.

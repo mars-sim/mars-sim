@@ -28,7 +28,7 @@ import org.mars_sim.msp.core.structure.goods.Good;
 import org.mars_sim.msp.core.structure.goods.GoodType;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
-
+@SuppressWarnings("serial")
 public class TradeTableModel
 extends AbstractTableModel
 implements UnitListener, MonitorModel, UnitManagerListener {

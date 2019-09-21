@@ -20,6 +20,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 /**
  * An abstract table model for unit tables in create mission wizard.
  */
+@SuppressWarnings("serial")
 abstract class UnitTableModel extends AbstractTableModel {
 
 	// Data members.

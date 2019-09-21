@@ -31,7 +31,6 @@ import org.mars_sim.msp.core.mars.Weather;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 //import org.mars_sim.msp.ui.swing.tool.MarsViewer;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
@@ -43,18 +42,19 @@ import com.alee.laf.text.WebTextField;
 /**
  * The TabPanelWeather is a tab panel for location information.
  */
+@SuppressWarnings("serial")
 public class TabPanelWeather
 extends TabPanel {
 
 	private static final String DUSTY_SKY = Msg.getString("img.dust128"); //$NON-NLS-1$
 	private static final String SUNNY = Msg.getString("img.sunny128"); //$NON-NLS-1$
 	private static final String BALMY = Msg.getString("img.hot128"); //$NON-NLS-1$
-	private static final String LIGHTNING = Msg.getString("img.lightning128"); //$NON-NLS-1$
+//	private static final String LIGHTNING = Msg.getString("img.lightning128"); //$NON-NLS-1$
 
 	private static final String SNOW_BLOWING = Msg.getString("img.snow_blowing"); //$NON-NLS-1$
 	private static final String SUN_STORM = Msg.getString("img.sun_storm"); //$NON-NLS-1$
 	private static final String SNOWFLAKE = Msg.getString("img.thermometer_snowflake"); //$NON-NLS-1$
-	private static final String WIND_FLAG = Msg.getString("img.wind_flag_storm"); //$NON-NLS-1$
+//	private static final String WIND_FLAG = Msg.getString("img.wind_flag_storm"); //$NON-NLS-1$
 	private static final String FRIGID = Msg.getString("img.frigid"); //$NON-NLS-1$
 	private static final String HAZE = Msg.getString("img.haze"); //$NON-NLS-1$
 
@@ -97,7 +97,7 @@ extends TabPanel {
 
 	private Coordinates locationCache;
 
-	private StormTrackingWindow stormWin;
+//	private StormTrackingWindow stormWin;
 
 	private static Weather weather;
 	private static SurfaceFeatures surfaceFeatures;
@@ -367,9 +367,9 @@ extends TabPanel {
     }
 
 
-    public void setViewer(StormTrackingWindow w) {
-    	this.stormWin = w;
-    }
+//    public void setViewer(StormTrackingWindow w) {
+//    	this.stormWin = w;
+//    }
 
 //	/**
 //	 * Open storm tracking window
@@ -620,7 +620,7 @@ extends TabPanel {
     	masterClock = null;
     	orbitInfo = null;
 
-    	stormWin = null;
+//    	stormWin = null;
 
     	fmt = null;
     	//fmt1 = null;

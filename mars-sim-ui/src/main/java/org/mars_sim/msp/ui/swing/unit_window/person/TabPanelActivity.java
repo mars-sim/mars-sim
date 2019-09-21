@@ -28,7 +28,6 @@ import org.mars_sim.msp.core.robot.ai.BotMind;
 import org.mars_sim.msp.core.robot.ai.task.BotTaskManager;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
 import org.mars_sim.msp.ui.swing.tool.monitor.PersonTableModel;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
@@ -46,6 +45,7 @@ import com.alee.managers.tooltip.TooltipWay;
  * The TabPanelActivity is a tab panel for a person's current tasks and
  * activities
  */
+@SuppressWarnings("serial")
 public class TabPanelActivity extends TabPanel implements ActionListener {
 
 	private static final int COL_WDITH = 16;

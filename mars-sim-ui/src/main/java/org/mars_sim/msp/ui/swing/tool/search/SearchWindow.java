@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * SearchWindow.java
- * @version 3.08 2015-06-26
-
+ * @version 3.1.0 2019-09-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.search;
@@ -21,18 +20,14 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import javax.swing.DefaultListModel;
-
 import javax.swing.JList;
-
 import javax.swing.border.EtchedBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.UnitManagerEvent;
 import org.mars_sim.msp.core.UnitManagerListener;
 import org.mars_sim.msp.core.person.Person;
@@ -54,11 +49,9 @@ import com.alee.laf.text.WebTextField;
  * The SearchWindow is a tool window that allows the user to search
  * for individual units by name and category.
  */
+@SuppressWarnings("serial")
 public class SearchWindow
 extends ToolWindow {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
 
 	/** Tool name. */
 	public static final String NAME = Msg.getString("SearchWindow.title"); //$NON-NLS-1$

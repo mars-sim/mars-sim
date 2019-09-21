@@ -25,6 +25,7 @@ import javax.swing.border.Border;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.CustomScroll;
 
+@SuppressWarnings("serial")
 public class UnitInfoPanel extends JPanel {// JDialog {
 
 	public static final int MARGIN_WIDTH = 20;

@@ -17,8 +17,8 @@ import com.alee.laf.panel.WebPanel;
 /**
  * An abstract panel for the create mission wizard.
  */
-abstract class WizardPanel
-extends WebPanel {
+@SuppressWarnings("serial")
+abstract class WizardPanel extends WebPanel {
 	
 	// Static members
 	protected static Simulation sim = Simulation.instance();

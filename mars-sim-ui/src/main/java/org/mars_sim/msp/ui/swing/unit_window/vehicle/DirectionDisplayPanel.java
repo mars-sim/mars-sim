@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * DirectionDisplayPanel.java
- * @version 3.07 2014-12-06
-
+ * @version 3.1.0 2019-09-20
  * @author Scott Davis
  */
 
@@ -23,8 +22,9 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * The DirectionDisplayPanel class displays the compass direction a vehicle is
- * currently travelling.
+ * currently traveling.
  */
+@SuppressWarnings("serial")
 public class DirectionDisplayPanel extends JPanel {
 
 	// Static members

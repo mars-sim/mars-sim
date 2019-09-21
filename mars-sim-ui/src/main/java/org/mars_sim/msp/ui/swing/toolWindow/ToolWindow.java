@@ -28,6 +28,7 @@ import org.mars_sim.msp.ui.swing.tool.navigator.NavigatorWindow;
  * The ToolWindow class is an abstract UI window for a tool. Particular tool
  * windows should be derived from this.
  */
+@SuppressWarnings("serial")
 public abstract class ToolWindow extends JInternalFrame {
 
 	// Data members

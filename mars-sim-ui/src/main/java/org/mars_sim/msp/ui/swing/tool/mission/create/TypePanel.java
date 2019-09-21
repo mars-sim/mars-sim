@@ -31,6 +31,7 @@ import com.alee.laf.text.WebTextField;
 /**
  * A wizard panel for selecting mission type.
  */
+@SuppressWarnings("serial")
 public class TypePanel extends WizardPanel implements ItemListener {
 
 	/** The wizard panel name. */

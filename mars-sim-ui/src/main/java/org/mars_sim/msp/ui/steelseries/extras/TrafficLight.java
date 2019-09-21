@@ -64,6 +64,7 @@ import org.mars_sim.msp.ui.steelseries.tools.Util;
  *
  * @author Gerrit Grunwald <han.solo at muenster.de>
  */
+@SuppressWarnings("serial")
 public class TrafficLight extends JComponent implements ActionListener {
     public static final String RED_PROPERTY = "red";
     public static final String YELLOW_PROPERTY = "yellow";

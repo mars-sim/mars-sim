@@ -51,7 +51,7 @@ public class UpTimer implements Serializable {
 	private static MasterClock masterClock;
 
     public UpTimer(MasterClock masterclock) {
-    	this.masterClock = masterclock;
+    	UpTimer.masterClock = masterclock;
         this.setPaused(false);
         lastcall = System.nanoTime() / NANOSECONDS_PER_MILLISECONDS;
     }

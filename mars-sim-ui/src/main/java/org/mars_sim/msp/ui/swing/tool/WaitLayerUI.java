@@ -19,6 +19,7 @@ import javax.swing.Timer;
 import javax.swing.plaf.LayerUI;
 
 // http://docs.oracle.com/javase/tutorial/uiswing/misc/jlayer.html
+@SuppressWarnings("serial")
 public class WaitLayerUI extends LayerUI<JComponent> implements ActionListener {
 	private boolean mIsRunning;
 	private boolean mIsFadingOut;

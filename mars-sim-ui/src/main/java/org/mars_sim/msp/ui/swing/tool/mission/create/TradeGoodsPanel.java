@@ -51,8 +51,8 @@ import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 
-class TradeGoodsPanel
-extends WizardPanel {
+@SuppressWarnings("serial")
+class TradeGoodsPanel extends WizardPanel {
 
 	private boolean buyGoods;
 	private JLabel errorMessageLabel;

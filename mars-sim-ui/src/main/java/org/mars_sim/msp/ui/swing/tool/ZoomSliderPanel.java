@@ -25,6 +25,7 @@ import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
   
+@SuppressWarnings("serial")
 public class ZoomSliderPanel extends JPanel implements ChangeListener {
     Shape[] shapes;
     Dimension size;

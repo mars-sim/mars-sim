@@ -33,8 +33,8 @@ import com.alee.laf.scroll.WebScrollPane;
 import com.jidesoft.swing.SearchableUtils;
 import com.jidesoft.swing.TableSearchable;
 
-public class TabPanelGoods
-extends TabPanel {
+@SuppressWarnings("serial")
+public class TabPanelGoods extends TabPanel {
 
 	// Data members
 	private JTable goodsTable;

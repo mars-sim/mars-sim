@@ -21,9 +21,9 @@ public class SystemDateTime {
        protected SimpleDateFormat timeFormat =
                new SimpleDateFormat("hhmmssaa");
 
-       private String dateStr;
-       private String timeStr;
-       private static String dateTimeStr;
+//       private String dateStr;
+//       private String timeStr;
+//       private static String dateTimeStr;
 
        public SystemDateTime() {
        }
@@ -32,13 +32,12 @@ public class SystemDateTime {
         * Constructs the portion of the autosave filename string based on local date and time
         */
        public String getDateTimeStr() {
-/*
-    	   Calendar currentCalendar = Calendar.getInstance();
-    	   Date currentTime = currentCalendar.getTime();
-    	   dateStr = dateFormat.format(currentTime);
-    	   timeStr = timeFormat.format(currentTime);
-    	   dateTimeStr = dateStr + "_" + timeStr;
-*/
+
+//    	   Calendar currentCalendar = Calendar.getInstance();
+//    	   Date currentTime = currentCalendar.getTime();
+//    	   dateStr = dateFormat.format(currentTime);
+//    	   timeStr = timeFormat.format(currentTime);
+//    	   dateTimeStr = dateStr + "_" + timeStr;
 
     	   // Use ISO-8601-like calendar system.
     	   //e.g. 2007-12-03T10:15:30+01:00 Europe/Paris.
@@ -46,7 +45,7 @@ public class SystemDateTime {
 
     	   ZonedDateTime cal = ZonedDateTime.now();
     	   String s = cal.toString();
-    	   dateTimeStr = (s.substring(0, s.indexOf("."))).replace(":", ".");
+    	   String dateTimeStr = (s.substring(0, s.indexOf("."))).replace(":", ".");
 
     	   //System.out.println("dateTimeStr : " + dateTimeStr);
     	   return dateTimeStr;

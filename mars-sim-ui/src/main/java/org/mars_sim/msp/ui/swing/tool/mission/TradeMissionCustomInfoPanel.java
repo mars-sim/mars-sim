@@ -31,8 +31,8 @@ import com.alee.laf.table.WebTable;
 /**
  * A panel for displaying trade mission information.
  */
-public class TradeMissionCustomInfoPanel
-extends MissionCustomInfoPanel {
+@SuppressWarnings("serial")
+public class TradeMissionCustomInfoPanel extends MissionCustomInfoPanel {
 
 	// Data members.
 	private Trade mission;

@@ -23,7 +23,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
-
+@SuppressWarnings("serial")
 public abstract class TabPanel extends JScrollPane {
 
 	protected String tabTitle;

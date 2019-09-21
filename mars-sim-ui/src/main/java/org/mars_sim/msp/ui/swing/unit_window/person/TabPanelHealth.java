@@ -46,6 +46,7 @@ import com.alee.managers.tooltip.TooltipWay;
 /**
  * The HealthTabPanel is a tab panel for a person's health.
  */
+@SuppressWarnings("serial")
 public class TabPanelHealth
 extends TabPanel {
 

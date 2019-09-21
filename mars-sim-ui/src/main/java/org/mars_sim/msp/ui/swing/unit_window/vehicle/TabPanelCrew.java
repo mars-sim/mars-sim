@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * CrewTabPanel.java
- * @version 3.07 2014-12-06
-
+ * @version 3.1.0 2019-09-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.vehicle;
@@ -21,7 +20,6 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import javax.swing.DefaultListModel;
-
 import javax.swing.JList;
 
 import org.mars_sim.msp.core.Msg;
@@ -30,7 +28,6 @@ import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.monitor.PersonTableModel;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
@@ -42,6 +39,7 @@ import com.alee.laf.scroll.WebScrollPane;
 /** 
  * The CrewTabPanel is a tab panel for a vehicle's crew information.
  */
+@SuppressWarnings("serial")
 public class TabPanelCrew
 extends TabPanel
 implements MouseListener, ActionListener {

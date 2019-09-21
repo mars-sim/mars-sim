@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintenanceTabPanel.java
- * @version 3.07 2015-03-06
-
+ * @version 3.1.0 2019-09-20
  * @author Scott Davis
  */
 
@@ -30,6 +29,7 @@ import java.util.Map;
 /**
  * The MaintenanceTabPanel is a tab panel for unit maintenance information.
  */
+@SuppressWarnings("serial")
 public class MaintenanceTabPanel extends TabPanel {
 
     private JLabel wearConditionLabel; // The wear condition label.

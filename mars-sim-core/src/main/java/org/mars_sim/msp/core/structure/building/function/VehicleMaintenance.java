@@ -284,6 +284,8 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
 	 */
 	public class ParkingLocation implements Serializable {
 
+		private static final long serialVersionUID = 1L;
+		
 		// Data members
 		private double xLocation;
 		private double yLocation;

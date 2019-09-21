@@ -164,7 +164,7 @@ public class Simulation implements ClockListener, Serializable {
 	/** Default save filename extension. */
 	private final static String SAVE_FILE_EXTENSION = Msg.getString("Simulation.saveFile.extension"); //$NON-NLS-1$
 	/** JSON save filename extension. */
-	private final static String JSON_EXTENSION = Msg.getString("Simulation.jsonFile.extension"); //$NON-NLS-1$
+//	private final static String JSON_EXTENSION = Msg.getString("Simulation.jsonFile.extension"); //$NON-NLS-1$
 	/** local time string */
 	private final static String LOCAL_TIME = Msg.getString("Simulation.localTime"); //$NON-NLS-1$ " (Local Time) ";
 	/** 2 whitespaces. */

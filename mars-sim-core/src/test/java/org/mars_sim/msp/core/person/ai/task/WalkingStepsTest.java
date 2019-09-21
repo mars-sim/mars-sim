@@ -1,6 +1,5 @@
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.awt.geom.Point2D;
 import java.util.Iterator;
 
 import org.mars_sim.msp.core.Simulation;
@@ -17,9 +16,6 @@ import org.mars_sim.msp.core.structure.building.connection.BuildingConnector;
 import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
 import org.mars_sim.msp.core.structure.building.function.BuildingAirlock;
 import org.mars_sim.msp.core.structure.building.function.EVA;
-import org.mars_sim.msp.core.structure.building.function.GroundVehicleMaintenance;
-import org.mars_sim.msp.core.vehicle.Rover;
-import org.mars_sim.msp.core.vehicle.VehicleConfig;
 
 import junit.framework.TestCase;
 

@@ -20,6 +20,7 @@ import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
 /**
  * The VehicleWindow is the window for displaying a vehicle.
  */
+@SuppressWarnings("serial")
 public class VehicleWindow extends UnitWindow {
 
 	// Data members

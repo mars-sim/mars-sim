@@ -33,7 +33,6 @@ import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
@@ -49,6 +48,7 @@ import com.alee.laf.scroll.WebScrollPane;
 /**
  * A tab panel displaying a settlement's scientific studies and achievements.
  */
+@SuppressWarnings("serial")
 public class TabPanelScience
 extends TabPanel {
 

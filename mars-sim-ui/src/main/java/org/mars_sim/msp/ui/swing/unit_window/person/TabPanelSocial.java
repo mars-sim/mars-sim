@@ -27,7 +27,6 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
@@ -40,6 +39,7 @@ import com.alee.laf.table.WebTable;
 /**
  * A tab panel displaying a person's social relationships.
  */
+@SuppressWarnings("serial")
 public class TabPanelSocial
 extends TabPanel
 implements ListSelectionListener {

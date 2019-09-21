@@ -41,6 +41,7 @@ import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
 
+@SuppressWarnings("serial")
 public class TabPanelCredit
 extends TabPanel {
 

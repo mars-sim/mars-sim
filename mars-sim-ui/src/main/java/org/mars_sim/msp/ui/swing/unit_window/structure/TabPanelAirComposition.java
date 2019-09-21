@@ -46,6 +46,7 @@ import com.alee.laf.scroll.WebScrollPane;
 /**
  * This is a tab panel for displaying the composition of air of each inhabitable building in a settlement.
  */
+@SuppressWarnings("serial")
 public class TabPanelAirComposition
 extends TabPanel {
 
@@ -518,7 +519,7 @@ extends TabPanel {
 
 		private int size;
 
-		private Settlement settlement;
+//		private Settlement settlement;
 		private BuildingManager manager;
 
 		private List<Building> buildings = new ArrayList<>();;
@@ -527,10 +528,10 @@ extends TabPanel {
 
 		private DecimalFormat fmt3 = new DecimalFormat(Msg.getString("decimalFormat3")); //$NON-NLS-1$
 		private DecimalFormat fmt2 = new DecimalFormat(Msg.getString("decimalFormat2")); //$NON-NLS-1$
-		private DecimalFormat fmt1 = new DecimalFormat(Msg.getString("decimalFormat1")); //$NON-NLS-1$
+//		private DecimalFormat fmt1 = new DecimalFormat(Msg.getString("decimalFormat1")); //$NON-NLS-1$
 
 		private TableModel(Settlement settlement) {
-			this.settlement = settlement;
+//			this.settlement = settlement;
 			this.manager = settlement.getBuildingManager();
 			this.air = settlement.getCompositionOfAir();
 			this.buildings = selectBuildingsWithLS();

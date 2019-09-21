@@ -74,10 +74,8 @@ public class TelegraphWindow extends JWindow {
 	 */
 	private boolean discarded = false;
 
-	//2014-12-17 Added telegraph
 	private Telegraph telegraph;
 
-	// 2014-12-17 Added Timer
 	//private Timer pauseTimer;
 	/**
 	 * Default constructor which initializes everything...
