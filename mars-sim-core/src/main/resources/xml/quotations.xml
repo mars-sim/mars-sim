@@ -166,5 +166,11 @@
 
 	<quotation name="Carl Sagan" text="If you wish to make an apple pie from scratch, you must first invent the universe. "/>
 
+	<!-- Mathematicians -->
+	<quotation name="Rocco Servedio via Moritz Hardt (Zen of Gradient Descent blog post)" text="There’s only one bullet in the gun. It’s called the Chebyshev polynomial. "/>
+
+
+
+
 
 </quotation-list>

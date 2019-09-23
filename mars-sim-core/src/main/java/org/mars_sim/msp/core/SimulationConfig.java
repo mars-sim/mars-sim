@@ -70,7 +70,7 @@ public class SimulationConfig implements Serializable {
 	
 	// Configuration files to load.
 	public final String XML_FOLDER = "/" + Msg.getString("Simulation.xmlFolder") + "/";
-	public final String XML = ".xml";
+	public final String XML_EXTENSION = ".xml";
 	public final String SIMULATION_FILE = "simulation";
 	public final String PEOPLE_FILE = "people";
 	public final String CREW_FILE = "crew";
@@ -267,7 +267,7 @@ public class SimulationConfig implements Serializable {
         Path versionPath = fileSys.getPath(versionFile.getPath());
 		Path xmlPath = fileSys.getPath(xmlLocation.getPath());
 		
-		// Query if the xml folder exists in user home directory
+		// Query if the /xml folder exists in user home directory
 		// Query if the xml version matches
 		// If not, copy all xml over
 
@@ -322,7 +322,7 @@ public class SimulationConfig implements Serializable {
 		
 		if (!xmlDirExist)
 			LogConsolidated.log(Level.CONFIG, 0, sourceName, 
-				"The xml directory does not exist in user home.");	
+				"The /xml folder does not exist in user home.");	
 		else if (!versionFileExist)
 			LogConsolidated.log(Level.CONFIG, 0, sourceName, 
 				"The version.txt does not exist.");	
@@ -342,7 +342,7 @@ public class SimulationConfig implements Serializable {
 		
 //		if (xmlDirExist && (!versionFileExist || !sameBuild)) {
 //			LogConsolidated.log(Level.CONFIG, 0, sourceName, 
-//					"Backing up existing xml files into a 'backup' folder. Cleaning the xml folder.");
+//					"Backing up existing xml files into a 'backup' folder. Cleaning the /xml folder.");
 //		}
 		
 		if (xmlDirExist) {
@@ -402,7 +402,7 @@ public class SimulationConfig implements Serializable {
 //						// delete the version.txt file 
 //						versionFile.delete();
 	
-					// delete everything in the xml folder
+					// delete everything in the /xml folder
 	//				FileUtils.deleteDirectory(xmlLocation);
 					xmlDirDeleted = deleteDirectory(xmlLocation);
 	
@@ -416,9 +416,9 @@ public class SimulationConfig implements Serializable {
 
 		// if the "xml" folder does NOT exist
 		if (!xmlLocation.exists() || xmlDirDeleted) {
-			// Create the xml folder
+			// Create the /xml folder
 			versionFile.getParentFile().mkdirs();
-			LogConsolidated.log(Level.CONFIG, 0, sourceName, "The xml folder is created");
+			LogConsolidated.log(Level.CONFIG, 0, sourceName, "The /xml folder is created.");
 		}
 		
 		if (!sameBuild || invalid || !versionFileExist || !xmlDirExist) {
@@ -426,7 +426,7 @@ public class SimulationConfig implements Serializable {
 			try {
 				// Create the version.txt file
 				Files.write(versionPath, lines, StandardCharsets.UTF_8);
-				LogConsolidated.log(Level.CONFIG, 0, sourceName, "The version.txt file is created");
+				LogConsolidated.log(Level.CONFIG, 0, sourceName, "The version.txt file is created.");
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -1031,9 +1031,9 @@ public class SimulationConfig implements Serializable {
 	    
 	    Document document = null;
 	    
-		String fullPathName = XML_FOLDER + filename + XML;
+		String fullPathName = XML_FOLDER + filename + XML_EXTENSION;
 		
-		File f = new File(Simulation.XML_DIR, filename + XML);
+		File f = new File(Simulation.XML_DIR, filename + XML_EXTENSION);
 
 		if (!f.exists()) {
 			// Since the xml file does NOT exist in the home directory, start the input stream for copying
@@ -1046,12 +1046,13 @@ public class SimulationConfig implements Serializable {
 			}		
 			
 			if (bytes != 0) {
-				File targetFile = new File(Simulation.XML_DIR + File.separator + filename + XML);
+				File targetFile = new File(Simulation.XML_DIR + File.separator + filename + XML_EXTENSION);
 				Path path = targetFile.getAbsoluteFile().toPath();
 				try {
 					// Copy the xml files from within the jar to user home's xml directory
 					Files.copy(stream, path, StandardCopyOption.REPLACE_EXISTING);
-					LogConsolidated.log(Level.CONFIG, 0, sourceName, "Copying the xml files from within the jar to user's xml folder");
+					LogConsolidated.log(Level.CONFIG, 0, sourceName, 
+							"Copying " + filename + XML_EXTENSION + " to /xml folder.");
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

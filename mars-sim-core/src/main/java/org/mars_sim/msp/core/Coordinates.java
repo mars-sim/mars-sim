@@ -228,25 +228,25 @@ public class Coordinates implements Serializable {
 	 * @param otherCoords Coordinates object to be matched against
 	 * @return true if Coordinates values match, false otherwise
 	 */
-//	public boolean equals(Object otherCoords) {
-//
-//		if ((otherCoords != null) && (otherCoords instanceof Coordinates)) {
-//			Coordinates other = (Coordinates) otherCoords;
-//			if ((phi == other.phi) && (theta == other.theta))
-//				return true;
-//		}
-//
-//		return false;
-//	}
+	public boolean equals(Object otherCoords) {
 
-	public boolean equals(Object obj) {
-		if (this == obj) return true;
-		if (obj == null) return false;
-		if (this.getClass() != obj.getClass()) return false;
-		Coordinates c = (Coordinates) obj;
-		return (this.phi == c.getPhi()) 
-				&& (this.theta == c.getTheta());
+		if ((otherCoords != null) && (otherCoords instanceof Coordinates)) {
+			Coordinates other = (Coordinates) otherCoords;
+			if ((phi == other.phi) && (theta == other.theta))
+				return true;
+		}
+
+		return false;
 	}
+
+//	public boolean equals(Object obj) {
+//		if (this == obj) return true;
+//		if (obj == null) return false;
+//		if (this.getClass() != obj.getClass()) return false;
+//		Coordinates c = (Coordinates) obj;
+//		return (this.phi == c.getPhi()) 
+//				&& (this.theta == c.getTheta());
+//	}
 	
 	/**
 	 * Gets the hash code for this object.

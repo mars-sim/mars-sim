@@ -45,6 +45,8 @@ public class RandomMineralMap implements Serializable, MineralMap {
 //	private static String CLASS_NAME = "org.mars_sim.msp.core.mars.RandomMineralMap";
 	private static Logger logger = Logger.getLogger(RandomMineralMap.class.getName());
 
+	private static final int W = 300;
+	private static final int H = 150;
 	
 	// Topographical Region Strings
 	
@@ -65,6 +67,8 @@ public class RandomMineralMap implements Serializable, MineralMap {
 	// List of all mineral concentrations.
 	private List<MineralConcentration> mineralConcentrations;
 
+	private static MineralMapConfig mineralMapConfig;
+	
 	/**
 	 * Constructor
 	 */
@@ -84,9 +88,10 @@ public class RandomMineralMap implements Serializable, MineralMap {
 		Set<Coordinates> volcanicRegionSet = getTopoRegionSet(VOLCANIC_IMG);
 		Set<Coordinates> sedimentaryRegionSet = getTopoRegionSet(SEDIMENTARY_IMG);
 
-		MineralMapConfig config = SimulationConfig.instance().getMineralMapConfiguration();
+		if (mineralMapConfig == null)
+			mineralMapConfig = SimulationConfig.instance().getMineralMapConfiguration();
 		try {
-			Iterator<MineralType> i = config.getMineralTypes().iterator();
+			Iterator<MineralType> i = mineralMapConfig.getMineralTypes().iterator();
 			while (i.hasNext()) {
 				MineralType mineralType = i.next();
 
@@ -112,7 +117,7 @@ public class RandomMineralMap implements Serializable, MineralMap {
 						int regionLocationIndex = RandomUtil.getRandomInt(regionArray.length - 1);
 						Coordinates regionLocation = regionArray[regionLocationIndex];
 						Direction direction = new Direction(RandomUtil.getRandomDouble(Math.PI * 2D));
-						double pixelRadius = (Mars.MARS_CIRCUMFERENCE / 300D) / 2D;
+						double pixelRadius = (Mars.MARS_CIRCUMFERENCE / W) / 2D;
 						double distance = RandomUtil.getRandomDouble(pixelRadius);
 						Coordinates location = regionLocation.getNewLocation(direction, distance);
 						double concentration = RandomUtil.getRandomDouble(100D);
@@ -168,8 +173,8 @@ public class RandomMineralMap implements Serializable, MineralMap {
 		ImageIcon mapIcon = new ImageIcon(imageMapURL);
 		Image mapImage = mapIcon.getImage();
 
-		int[] mapPixels = new int[300 * 150];
-		PixelGrabber topoGrabber = new PixelGrabber(mapImage, 0, 0, 300, 150, mapPixels, 0, 300);
+		int[] mapPixels = new int[W * H];
+		PixelGrabber topoGrabber = new PixelGrabber(mapImage, 0, 0, W, H, mapPixels, 0, W);
 		try {
 			topoGrabber.grabPixels();
 		} catch (InterruptedException e) {
@@ -178,9 +183,9 @@ public class RandomMineralMap implements Serializable, MineralMap {
 		if ((topoGrabber.status() & ImageObserver.ABORT) != 0)
 			logger.info("grabber error");
 
-		for (int x = 0; x < 150; x++) {
-			for (int y = 0; y < 300; y++) {
-				int pixel = mapPixels[(x * 300) + y];
+		for (int x = 0; x < H; x++) {
+			for (int y = 0; y < W; y++) {
+				int pixel = mapPixels[(x * W) + y];
 				Color color = new Color(pixel);
 				if (Color.white.equals(color)) {
 					double pixel_offset = (Math.PI / 150D) / 2D;
@@ -284,9 +289,12 @@ public class RandomMineralMap implements Serializable, MineralMap {
 	 */
 	public String[] getMineralTypeNames() {
 		String[] result = new String[0];
-//		MineralMapConfig config = SimulationConfig.instance().getMineralMapConfiguration();
+		
+		if (mineralMapConfig == null)
+			mineralMapConfig = SimulationConfig.instance().getMineralMapConfiguration();
+
 		try {
-			List<MineralType> mineralTypes = SimulationConfig.instance().getMineralMapConfiguration().getMineralTypes();
+			List<MineralType> mineralTypes = mineralMapConfig.getMineralTypes();
 			result = new String[mineralTypes.size()];
 			for (int x = 0; x < mineralTypes.size(); x++)
 				result[x] = mineralTypes.get(x).name;

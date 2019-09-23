@@ -29,6 +29,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 
+import org.mars_sim.mapdata.MapDataUtil;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
@@ -69,11 +70,13 @@ import com.alee.laf.scroll.WebScrollPane;
 /**
  * Tab panel for displaying a mission's navpoints.
  */
+@SuppressWarnings("serial")
 public class NavpointPanel
 extends WebPanel
 implements ListSelectionListener, MissionListener {
 
-	private static int theme;
+	private static int WIDTH = MapDataUtil.IMAGE_WIDTH;
+	private static int HEIGHT = MapDataUtil.IMAGE_HEIGHT;
 	
 	// Private members.
 	private Mission currentMission;
@@ -102,20 +105,20 @@ implements ListSelectionListener, MissionListener {
 		//Box mainPane = Box.createVerticalBox();
 		WebPanel mainPane = new WebPanel(new BorderLayout(0, 0));
 		mainPane.setAlignmentX(Component.CENTER_ALIGNMENT);
-		mainPane.setSize(new Dimension(300, 300));
-		mainPane.setPreferredSize(new Dimension(300, 300));
+		mainPane.setSize(new Dimension(WIDTH, HEIGHT));
+		mainPane.setPreferredSize(new Dimension(WIDTH, HEIGHT));
 		mainPane.setBorder(new MarsPanelBorder());
 		add(mainPane, BorderLayout.CENTER);
 		
 		// Create the map display panel.
 		WebPanel mapDisplayPane = new WebPanel(new BorderLayout(0, 0));
 		mapDisplayPane.setAlignmentX(Component.CENTER_ALIGNMENT);
-		mapDisplayPane.setSize(new Dimension(300, 300));
-		mapDisplayPane.setPreferredSize(new Dimension(300, 300));
+		mapDisplayPane.setSize(new Dimension(WIDTH, HEIGHT));
+		mapDisplayPane.setPreferredSize(new Dimension(WIDTH, HEIGHT));
 		WebPanel left = new WebPanel();
-        left.setPreferredSize(new Dimension(48, 300));
+        left.setPreferredSize(new Dimension(48, HEIGHT));
         WebPanel right = new WebPanel();
-        right.setPreferredSize(new Dimension(48, 300));
+        right.setPreferredSize(new Dimension(48, HEIGHT));
 		mainPane.add(mapDisplayPane, BorderLayout.CENTER);
 		mainPane.add(left, BorderLayout.WEST);
 		mainPane.add(right, BorderLayout.EAST);
@@ -138,8 +141,8 @@ implements ListSelectionListener, MissionListener {
 		mapPanel.addMapLayer(navpointLayer, 5);
         mineralLayer = new MineralMapLayer(this);
         // Forcing map panel to be 300x300 size.
-        mapPanel.setSize(new Dimension(300, 300));
-        mapPanel.setPreferredSize(new Dimension(300, 300));
+        mapPanel.setSize(new Dimension(WIDTH, HEIGHT));
+        mapPanel.setPreferredSize(new Dimension(WIDTH, HEIGHT));
         mapDisplayPane.add(mapPanel, BorderLayout.CENTER);
         
 		// Create the north button.

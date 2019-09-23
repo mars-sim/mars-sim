@@ -5,7 +5,7 @@ Copyright (C) 2019 Scott Davis
 
 -----------------------------------------------------------------------------------------
 
-## v3.1.0 (build 5049) - 2019-09-20
+## v3.1.0 (build 5050) - 2019-09-2_
 
 ### CORE ENGINE IMPROVEMENTS :
 
@@ -19,15 +19,15 @@ Copyright (C) 2019 Scott Davis
 
 5. Track/record settler's sleep time on each sol.
 
-6. Expand chat capability with a stand-alone console.
+6. Add a stand-alone console window for querying the health of a settlement.
 
 7. Implement basic emotion for each settler.
 
 8. Add Command Mode vs. Sandbox Mode.
 
-9. Compare settlement achievement using metrics (e.g. social & science score)
+9. Compare settlement achievement using metrics (e.g. social/science score, water/O2 consumption/production)
 
-10. Add customizing desired logging level.
+10. Add options for customizing logging level.
 
 11. Streamline saving and loading simulation.
 
@@ -35,8 +35,17 @@ Copyright (C) 2019 Scott Davis
 
 13. Create a death report on a deceased person.
 
-14. Adds topics for scientific studies. 
+14. Add topics for scientific studies. 
     
+15. Add role prospect scores (like job prospects) on each role.
+
+16. Export xml files to player's home folder.
+
+17. Allow playing external ogg music files.
+
+18. Add vehicle log for tracking changes to a vehicle's status. </LI>
+ 
+
 
 ### UI IMPROVEMENT :
 
@@ -50,21 +59,20 @@ Copyright (C) 2019 Scott Davis
 
 2. Solve unix End-Of-Line issue for the executable file.
 
-3. 
+3. Enable year 0 (orbit 0) in resupply or new arriving settlement mission.
 
-4. Enable year 0 (orbit 0) in resupply or new arriving settlement mission.
+4. Fix gaining mechanical skill in garage.
 
-5. Fix gaining mechanical skill in garage.
+5. Fix numerous mission bugs.
 
-6. Fix numerous mission bugs.
+6. Correct how food crop harvest should end.
 
-7. Correct how food crop harvest should end.
+7. Fix recovering the simulation from machine's power saving.
 
-8. Fix recovering the simulation from machine's power saving.
+8. Fix food consumption during missions.
 
-9. Fix food consumption during missions.
+9. Fix loading alpha crew MBTI personality into crew editor.
 
-10. Fix loading alpha crew MBTI personality into crew editor.
 
 -----------------------------------------------------------------------------------------
 

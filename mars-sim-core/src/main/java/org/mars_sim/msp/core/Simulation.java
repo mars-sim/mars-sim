@@ -130,8 +130,9 @@ public class Simulation implements ClockListener, Serializable {
 	public static final int SAVE_DEFAULT = 1;
 	/** The mode to save with other name. */
 	public static final int SAVE_AS = 2;
+	/** The mode to autosave as default.sim . */
 	public static final int AUTOSAVE_AS_DEFAULT = 3;
-	/**  The mode to save with build info/date/time stamp. */
+	/**  The mode to autosave with build info/date/time stamp. */
 	public static final int AUTOSAVE = 4;
 	/** # of thread(s). */
 	public static final int NUM_THREADS = Runtime.getRuntime().availableProcessors();

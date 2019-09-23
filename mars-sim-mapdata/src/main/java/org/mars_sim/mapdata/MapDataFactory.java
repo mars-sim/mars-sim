@@ -13,8 +13,8 @@ package org.mars_sim.mapdata;
 class MapDataFactory {
 
     // Static members.
-    static final String SURFACE_MAP_DATA = "surface map data";
-    static final String TOPO_MAP_DATA = "topographical map data";
+    static final int SURFACE_MAP_DATA = 0;//"surface map data";
+    static final int TOPO_MAP_DATA = 1;//"topographical map data";
     
 //	private boolean decompressed = false;
 	
@@ -34,7 +34,7 @@ class MapDataFactory {
      * @param mapType the map type.
      * @return the map data.
      */
-    MapData getMapData(String mapType) {
+    MapData getMapData(int mapType) {
         MapData result = null;
         
   		// Decompress the dat maps 
@@ -44,10 +44,10 @@ class MapDataFactory {
 //			decompressed = true;
 //		}
 		
-        if (mapType.equals(SURFACE_MAP_DATA)) {
+        if (mapType == SURFACE_MAP_DATA) {
             result = getSurfaceMapData();
         }
-        else if (mapType.equals(TOPO_MAP_DATA)) {
+        else if (mapType == TOPO_MAP_DATA) {
             result = getTopoMapData();
         }
         else {

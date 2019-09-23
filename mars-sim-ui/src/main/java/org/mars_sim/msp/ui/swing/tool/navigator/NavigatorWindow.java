@@ -76,6 +76,7 @@ import com.alee.managers.style.StyleId;
  * Mars, and various other elements. It is the primary interface component that
  * presents the simulation to the user.
  */
+@SuppressWarnings("serial")
 public class NavigatorWindow extends ToolWindow implements ActionListener {
 
 	/** Tool name. */

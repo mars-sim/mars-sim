@@ -27,11 +27,13 @@ public abstract class CannedMarsMap implements Map {
 	private static Logger logger = Logger.getLogger(CannedMarsMap.class.getName());
 
 	// Data members
+	private boolean mapImageDone = false;
+	
 	private MapData mapData;
 	private JComponent displayArea = null;
 	private Coordinates currentCenter = null;
 	private Image mapImage = null;
-	private boolean mapImageDone = false;
+
 
 	/**
 	 * Constructor.

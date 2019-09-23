@@ -13,13 +13,13 @@ package org.mars_sim.mapdata;
 public class TopoMapData extends IntegerMapData {
 
     // Static members.
-    private static final String INDEX_FILE = "TopoMarsMap.index";
-    private static final String MAP_FILE = "TopoMarsMap.dat"; //"TopoMarsMap.xz"; //
+//    private static final String INDEX_FILE = "TopoMarsMap.index";
+    private static final String MAP_FILE = "/maps/topo2880x1440.jpg";//"TopoMarsMap.dat"; //"TopoMarsMap.xz"; //
     
     /**
      * Constructor
      */
     public TopoMapData() {
-        super(INDEX_FILE, MAP_FILE);
+        super(MAP_FILE);
     }
 }
