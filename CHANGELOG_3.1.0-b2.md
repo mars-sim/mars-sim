@@ -5,7 +5,7 @@ Copyright (C) 2019 Scott Davis
 
 -----------------------------------------------------------------------------------------
 
-## v3.1.0 (build 5050) - 2019-09-2_
+## v3.1.0 (build 5052) - 2019-09-23
 
 ### CORE ENGINE IMPROVEMENTS :
 
@@ -43,13 +43,16 @@ Copyright (C) 2019 Scott Davis
 
 17. Allow playing external ogg music files.
 
-18. Add vehicle log for tracking changes to a vehicle's status. </LI>
+18. Add vehicle log for tracking changes to a vehicle's status.
  
+
 
 
 ### UI IMPROVEMENT :
 
-1. Add speed buttons on top right of tool bar
+1. Add speed buttons on top right of tool bar.
+
+2. Add geological map to Mars Navigator.
 
 
 

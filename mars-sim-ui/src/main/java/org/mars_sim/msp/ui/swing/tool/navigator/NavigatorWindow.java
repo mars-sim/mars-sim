@@ -505,6 +505,8 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 				// ruler.showColor();
 //				surfItem.setSelected(false);
 //				geoItem.setSelected(false);
+				mineralItem.setSelected(false);
+				mineralsButton.setEnabled(false);
 			}
 		}
 		else if (source == surfItem) {
@@ -527,6 +529,8 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 				// ruler.showMap();
 //				surfItem.setSelected(false);
 //				topoItem.setSelected(false);
+				mineralItem.setSelected(false);
+				mineralsButton.setEnabled(false);
 			}
 		} else if (source == dayNightItem) {
 			setMapLayer(dayNightItem.isSelected(), 0, shadingLayer);
@@ -544,6 +548,10 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		else if (source == mineralItem) {
 			setMapLayer(mineralItem.isSelected(), 1, mineralLayer);
 			mineralsButton.setEnabled(mineralItem.isSelected());
+			surfItem.doClick();
+//			topoItem.setSelected(false);
+//			geoItem.setSelected(false);
+			
 		}
 	}
 
