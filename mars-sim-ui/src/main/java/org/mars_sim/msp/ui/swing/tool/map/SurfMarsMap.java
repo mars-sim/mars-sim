@@ -8,7 +8,7 @@
 
 package org.mars_sim.msp.ui.swing.tool.map;
 
-import javax.swing.*;
+import javax.swing.JComponent;
 
 import org.mars_sim.mapdata.MapDataUtil;
 

@@ -1,6 +1,6 @@
 /**
  * Mars Simulation Project
- * SurfaceMapPanel.java
+ * MarsMap.java
  * @version 3.1.0 2018-07-23
  * @author Scott Davis
  */
@@ -23,13 +23,14 @@ import org.mars_sim.msp.core.tool.MoreMath;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 
 /**
- * The SurfaceMapPanel class generates the real surface and topographical map for GlobeDisplay object.
+ * The MarsMap class generates the surface, the topographical and 
+ * the geological map for GlobeDisplay.
  */
 
-public class SurfaceMapPanel {
+public class MarsMap {
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(SurfaceMapPanel.class.getName());
+	private static Logger logger = Logger.getLogger(MarsMap.class.getName());
 
 	// Constant data members
 	/** Height of map source image (pixels). */
@@ -60,12 +61,12 @@ public class SurfaceMapPanel {
 	private JComponent displayArea;
 
 	/**
-	 * Constructs a MarsGlobe object
+	 * Constructs a MarsMap object
 	 * 
-	 * @param globeType   the type of globe: "surface" or "topo"
-	 * @param displayArea the display component for the globe
+	 * @param globeType   the type of globe: surface, topo or geo
+	 * @param displayArea the display component for the map
 	 */
-	public SurfaceMapPanel(MarsGlobeType globeType, JComponent displayArea) {
+	public MarsMap(MarsMapType globeType, JComponent displayArea) {
 
 		// Initialize Variables
 		// this.globeType = globeType;
@@ -74,11 +75,6 @@ public class SurfaceMapPanel {
 
 		// Load Surface Map Image, which is now part of the globe enum
 		String imageName = globeType.getPath();
-//		switch (globeType) {
-//			case SURFACE : imageName = "SurfaceMarsMapSmall.jpg"; break;
-//			case TOPO : imageName = "TopoMarsMapSmall.jpg"; break;
-//			default : imageName = "";
-//		}
 
 		MediaTracker mtrack = new MediaTracker(displayArea);
 		marsMap = ImageLoader.getImage(imageName);
@@ -86,7 +82,7 @@ public class SurfaceMapPanel {
 		try {
 			mtrack.waitForAll();
 		} catch (InterruptedException e) {
-			logger.log(Level.SEVERE, Msg.getString("MarsGlobe.log.mediaTrackerError", e.toString())); //$NON-NLS-1$
+			logger.log(Level.SEVERE, Msg.getString("MarsMap.log.mediaTrackerError", e.toString())); //$NON-NLS-1$
 		}
 
 		// Prepare Sphere
@@ -99,7 +95,6 @@ public class SurfaceMapPanel {
 	 * @param newCenter new center location
 	 */
 	public synchronized void drawSphere(Coordinates newCenter) {
-		// System.out.println("drawSphere()");
 		// Adjust coordinates
 		Coordinates adjNewCenter = new Coordinates(newCenter.getPhi(), newCenter.getTheta() + Math.PI);
 
@@ -121,7 +116,6 @@ public class SurfaceMapPanel {
 		double start_row = end_row + Math.PI;
 		double row_iterate;
 		boolean north;
-
 
 		// Determine if sphere should be created from north-south, or from south-north
 		if (phi <= PI_half) {
@@ -243,7 +237,7 @@ public class SurfaceMapPanel {
 			// System.out.println("mt.waitForID(0)");
 
 		} catch (InterruptedException e) {
-			logger.log(Level.SEVERE, Msg.getString("MarsGlobe.log.mediaTrackerError", e.toString())); //$NON-NLS-1$
+			logger.log(Level.SEVERE, Msg.getString("MarsMap.log.mediaTrackerError", e.toString())); //$NON-NLS-1$
 		}
 
 	}
@@ -275,10 +269,10 @@ public class SurfaceMapPanel {
 		try {
 			pg_color.grabPixels();
 		} catch (InterruptedException e) {
-			logger.log(Level.SEVERE, Msg.getString("MarsGlobe.log.grabberError") + e); //$NON-NLS-1$
+			logger.log(Level.SEVERE, Msg.getString("MarsMap.log.grabberError") + e); //$NON-NLS-1$
 		}
 		if ((pg_color.status() & ImageObserver.ABORT) != 0)
-			logger.info(Msg.getString("MarsGlobe.log.grabberError")); //$NON-NLS-1$
+			logger.info(Msg.getString("MarsMap.log.grabberError")); //$NON-NLS-1$
 
 		// Transfer contents of 1-dimensional pixels_color into 2-dimensional map_pixels
 		for (int x = 0; x < MAP_W; x++)

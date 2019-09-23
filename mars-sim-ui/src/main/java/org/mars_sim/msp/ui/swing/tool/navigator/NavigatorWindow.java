@@ -26,8 +26,10 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.swing.ButtonGroup;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.border.BevelBorder;
@@ -45,6 +47,7 @@ import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.map.CannedMarsMap;
 import org.mars_sim.msp.ui.swing.tool.map.ExploredSiteMapLayer;
+import org.mars_sim.msp.ui.swing.tool.map.GeologyMarsMap;
 import org.mars_sim.msp.ui.swing.tool.map.LandmarkMapLayer;
 import org.mars_sim.msp.ui.swing.tool.map.Map;
 import org.mars_sim.msp.ui.swing.tool.map.MapLayer;
@@ -124,8 +127,12 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 	private WebPopupMenu optionsMenu;
 	/** Minerals button. */
 	private WebButton mineralsButton;
+	/** Surface map menu item. */
+	private WebCheckBoxMenuItem surfItem;
 	/** Topographical map menu item. */
 	private WebCheckBoxMenuItem topoItem;
+	/** Geological map menu item. */
+	private WebCheckBoxMenuItem geoItem;
 	/** Show unit labels menu item. */
 	private WebCheckBoxMenuItem unitLabelItem;
 	/** Day/night tracking menu item. */
@@ -359,6 +366,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 				});
 			}
 		});
+		
 		optionsPane.add(optionsButton);
 
 		// Prepare minerals button.0
@@ -421,12 +429,18 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		return globeNav;
 	}
 
-	public void showSurfaceMap() {
-		// show surface map
-		mapPanel.setMapType(SurfMarsMap.TYPE);
-		globeNav.showSurf();
-		// ruler.showMap();
-	}
+//	public void showSurfaceMap() {
+//		// show surface map
+//		mapPanel.setMapType(SurfMarsMap.TYPE);
+//		globeNav.showSurf();
+//		// ruler.showMap();
+//	}
+//
+//	public void showGeologyMap() {
+//		// show geology map
+//		mapPanel.setMapType(GeologyMarsMap.TYPE);
+//		globeNav.showGeo();
+//	}
 
 	/** ActionListener method overridden */
 	public void actionPerformed(ActionEvent event) {
@@ -489,13 +503,30 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 				mapPanel.setMapType(TopoMarsMap.TYPE);
 				globeNav.showTopo();
 				// ruler.showColor();
+//				surfItem.setSelected(false);
+//				geoItem.setSelected(false);
 			}
-
-			else {
+		}
+		else if (source == surfItem) {
+			if (surfItem.isSelected()) {
 				// show surface map
 				mapPanel.setMapType(SurfMarsMap.TYPE);
 				globeNav.showSurf();
 				// ruler.showMap();
+//				topoItem.setSelected(false);
+//				geoItem.setSelected(false);
+			}
+		}		
+		else if (source == geoItem) {
+			if (geoItem.isSelected()) {
+				// turn off day night layer
+				setMapLayer(dayNightItem.isSelected(), 0, shadingLayer);
+				// show geology map
+				mapPanel.setMapType(GeologyMarsMap.TYPE);
+				globeNav.showGeo();
+				// ruler.showMap();
+//				surfItem.setSelected(false);
+//				topoItem.setSelected(false);
 			}
 		} else if (source == dayNightItem) {
 			setMapLayer(dayNightItem.isSelected(), 0, shadingLayer);
@@ -546,14 +577,37 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		optionsMenu.add(dayNightItem);
 		// Unchecked dayNightItem at the start of sim
 		// globeNav.setDayNightTracking(false);
-		// dayNightItem.setSelected(false);
+		dayNightItem.setSelected(false);
 
+		// Create topographical map menu item.
+		surfItem = new WebCheckBoxMenuItem(Msg.getString("NavigatorWindow.menu.map.surf"), //$NON-NLS-1$
+				SurfMarsMap.TYPE.equals(mapPanel.getMapType()));
+		surfItem.addActionListener(this);
+		optionsMenu.add(surfItem);
+		
 		// Create topographical map menu item.
 		topoItem = new WebCheckBoxMenuItem(Msg.getString("NavigatorWindow.menu.map.topo"), //$NON-NLS-1$
 				TopoMarsMap.TYPE.equals(mapPanel.getMapType()));
 		topoItem.addActionListener(this);
 		optionsMenu.add(topoItem);
 
+		// Create topographical map menu item.
+		geoItem = new WebCheckBoxMenuItem(Msg.getString("NavigatorWindow.menu.map.geo"), //$NON-NLS-1$
+				GeologyMarsMap.TYPE.equals(mapPanel.getMapType()));
+		geoItem.addActionListener(this);
+		optionsMenu.add(geoItem);
+		
+	    ButtonGroup group = new ButtonGroup();
+		group.add(surfItem);
+		group.add(topoItem);
+		group.add(geoItem);
+
+//		JMenuItem mapItem = new JMenuItem(Msg.getString("NavigatorWindow.menu.selectMap"));//, KeyEvent.VK_M);
+//		mapItem.add(geoItem);
+//		mapItem.add(surfItem);
+//		mapItem.add(geoItem);
+//		optionsMenu.add(mapItem);
+		
 		// Create unit label menu item.
 		unitLabelItem = new WebCheckBoxMenuItem(Msg.getString("NavigatorWindow.menu.map.showLabels"), //$NON-NLS-1$
 				mapPanel.hasMapLayer(unitLabelLayer));
@@ -679,7 +733,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 
 			Coordinates clickedPosition = mapPanel.getCenterLocation().convertRectToSpherical(x, y, rho);
 
-			Iterator<Unit> i = unitManager.computeUnits().iterator();
+			Iterator<Unit> i = unitManager.getDisplayUnits().iterator();
 
 			// Open window if unit is clicked on the map
 			while (i.hasNext()) {
@@ -711,7 +765,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 			Coordinates mousePos = mapPanel.getCenterLocation().convertRectToSpherical(x, y, rho);
 			boolean onTarget = false;
 
-			Iterator<Unit> i = unitManager.computeUnits().iterator();
+			Iterator<Unit> i = unitManager.getDisplayUnits().iterator();
 
 			// Change mouse cursor if hovering over an unit on the map
 			while (i.hasNext()) {
@@ -825,6 +879,8 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		optionsMenu = null;
 		mineralsButton = null;
 		topoItem = null;
+		surfItem = null;
+		geoItem = null;
 		unitLabelItem = null;
 		dayNightItem = null;
 		trailItem = null;

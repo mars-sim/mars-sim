@@ -8,6 +8,7 @@ package org.mars_sim.msp.core;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -110,8 +111,11 @@ public class UnitManager implements Serializable {
 	private volatile Map<Integer, Robot> lookupRobot = new HashMap<>();
 	/** A map of vehicle with its unit identifier. */
 	private volatile Map<Integer, Vehicle> lookupVehicle = new HashMap<>();
-	/** A map of other equipment (excluding robots and vehicles) with its unit identifier. */
+	/** A map of equipment (excluding robots and vehicles) with its unit identifier. */
 	private volatile Map<Integer, Equipment> lookupEquipment = new HashMap<>();
+	/** A map of building with its unit identifier. */
+	private volatile Map<Integer, Building> lookupBuilding = new HashMap<>();
+	
 	
 	// Transient members
 	/** Flag true if the class has just been loaded */
@@ -182,6 +186,8 @@ public class UnitManager implements Serializable {
 		lookupRobot = new HashMap<>();
 		lookupEquipment = new HashMap<>();
 		lookupVehicle = new HashMap<>();
+		lookupBuilding = new HashMap<>();
+		
 //		units = new CopyOnWriteArrayList<>();//ConcurrentLinkedQueue<Unit>();
 		listeners = Collections.synchronizedList(new ArrayList<UnitManagerListener>());
 		equipmentNumberMap = new HashMap<String, Integer>();
@@ -392,6 +398,13 @@ public class UnitManager implements Serializable {
 			return u;
 		}	
 		
+		u = lookupBuilding.get(id);
+		
+		if (u != null) {
+			return u;
+		}
+		
+		
 		u = lookupVehicle.get(id);
 		
 		if (u != null) {
@@ -527,10 +540,26 @@ public class UnitManager implements Serializable {
 		if (e != null && !lookupEquipment.containsKey(e.getIdentifier()))
 			lookupEquipment.put(e.getIdentifier(), e);
 	}
-
+	
 	public void removeEquipmentID(Equipment e) {
 		if (lookupEquipment.containsKey(e.getIdentifier()))
 			lookupEquipment.remove(e.getIdentifier());
+	}
+	
+	public Building getBuildingtByID(int id) {
+		return lookupBuilding.get(id);
+	}
+	
+	public void addBuildingID(Building b) {
+		if (lookupBuilding == null)
+			lookupBuilding = new HashMap<>();
+		if (b != null && !lookupBuilding.containsKey(b.getIdentifier()))
+			lookupBuilding.put(b.getIdentifier(), b);
+	}
+	
+	public void removeBuildingID(Building b) {
+		if (lookupBuilding.containsKey(b.getIdentifier()))
+			lookupBuilding.remove(b.getIdentifier());
 	}
 
 	public Vehicle getVehicleByID(int id) {
@@ -569,6 +598,8 @@ public class UnitManager implements Serializable {
 				addVehicleID((Vehicle)unit);
 			else if (unit instanceof Equipment)
 				addEquipmentID((Equipment)unit);
+			else if (unit instanceof Building)
+				addBuildingID((Building)unit);
 			else if (unit instanceof MarsSurface)
 				marsSurface = (MarsSurface) unit;
 			else 
@@ -576,7 +607,7 @@ public class UnitManager implements Serializable {
 
 			if (!justStarting) {
 				computeUnitNum();
-				computeUnits();
+//				computeUnits();
 			}
 			
 			Iterator<Unit> i = unit.getInventory().getContainedUnits().iterator();
@@ -608,12 +639,14 @@ public class UnitManager implements Serializable {
 				removeVehicleID((Vehicle)unit);
 			else if (unit instanceof Equipment)
 				removeEquipmentID((Equipment)unit);
+			else if (unit instanceof Building)
+				removeBuildingID((Building)unit);
 			else 
 				removeUnitID(unit);
 			
 			if (!justStarting) {
 				computeUnitNum();
-				computeUnits();
+//				computeUnits();
 			}
 
 			// Fire unit manager event.
@@ -2039,7 +2072,9 @@ public class UnitManager implements Serializable {
 		for (Vehicle v : lookupVehicle.values()) 
 			v.timePassing(time);
 
-	
+//		for (Building b : lookupBuilding.values()) 
+//			b.timePassing(time);
+		
 		for (Unit u : lookupUnit.values()) {
 			if (!(u instanceof Building)) {
 				System.out.println("UnitManager : " + u);
@@ -2158,6 +2193,24 @@ public class UnitManager implements Serializable {
 	}
 
 	/**
+	 * Get the number of building.
+	 * 
+	 * @return number
+	 */
+	public int getBuildingNum() {
+		return lookupBuilding.size();
+	}
+
+	/**
+	 * Get a collection of building.
+	 * 
+	 * @return collection
+	 */
+	public Collection<Building> getBuilding() {
+		return lookupBuilding.values();
+	}
+	
+	/**
 	 * The total number of units
 	 * 
 	 * @return the total number of units
@@ -2177,33 +2230,58 @@ public class UnitManager implements Serializable {
 				+ lookupPerson.size()
 				+ lookupRobot.size()
 				+ lookupEquipment.size()
+				+ lookupBuilding.size()
 				+ lookupVehicle.size();
 		return totalNumUnits;
 	}
 	
 	/**
-	 * Put together all units in virtual Mars
+	 * Obtains the settlement and vehicle units for display
 	 * @return
 	 */
-	public List<Unit> computeUnits() {
+	public List<Unit> getDisplayUnits() {
 		return Stream.of(
-				new ArrayList<>(lookupUnit.values()),
-				new ArrayList<>(lookupSettlement.values()),
-				new ArrayList<>(lookupPerson.values()),
-				new ArrayList<>(lookupRobot.values()),
-				new ArrayList<>(lookupEquipment.values()),
-				new ArrayList<>(lookupVehicle.values())
-				)
-				.flatMap(Collection::stream).collect(Collectors.toList());		
+				lookupSettlement.values(),
+				lookupVehicle.values())
+				.flatMap(Collection::stream).collect(Collectors.toList());	
+	}
+	
+//	/**
+//	 * Put together all units in virtual Mars
+//	 * @return
+//	 */
+//	public List<Unit> computeUnits() {
+//		return Stream.of(
+//		new ArrayList<>(lookupUnit.values()),
+//		new ArrayList<>(lookupSettlement.values()),
+//		new ArrayList<>(lookupPerson.values()),
+//		new ArrayList<>(lookupRobot.values()),
+//		new ArrayList<>(lookupEquipment.values()),
+//		new ArrayList<>(lookupVehicle.values())
+//		)
+//		.flatMap(Collection::stream).collect(Collectors.toList());	
+		
 //		List<Unit> list = new ArrayList<>();
 //		list.addAll(lookupUnit.values());
 //		list.addAll(lookupSettlement.values());
+//		list.addAll(lookupBuilding.values());
 //		list.addAll(lookupPerson.values());
 //		list.addAll(lookupRobot.values());
 //		list.addAll(lookupEquipment.values());
 //		list.addAll(lookupVehicle.values());	
-//		return new ArrayList<>(list);
-	}
+//		return list;
+		
+//		return Stream.of(
+//				Arrays.asList(lookupUnit.values(),
+//				lookupSettlement.values(),
+//				lookupPerson.values(),
+//				lookupRobot.values(),
+//				lookupEquipment.values(),
+//				lookupVehicle.values())
+//				)
+//				.flatMap(Collection::stream).collect(Collectors.toList());	
+		
+//	}
 	
 //	public Collection<Unit>[] computeUnitArray() {
 //		return new Collection<Unit>[] {
@@ -2271,23 +2349,23 @@ public class UnitManager implements Serializable {
 		}
 	}
 
-	/**
-	 * Finds a unit in the simulation that has the given name.
-	 * 
-	 * @param name the name to search for.
-	 * @return unit or null if none.
-	 */
-	public Unit findUnit(String name) {
-		Unit result = null;
-		Iterator<Unit> i = computeUnits().iterator();
-		while (i.hasNext() && (result == null)) {
-			Unit unit = i.next();
-			if (unit.getName().equalsIgnoreCase(name)) {
-				result = unit;
-			}
-		}
-		return result;
-	}
+//	/**
+//	 * Finds a unit in the simulation that has the given name.
+//	 * 
+//	 * @param name the name to search for.
+//	 * @return unit or null if none.
+//	 */
+//	public Unit findUnit(String name) {
+//		Unit result = null;
+//		Iterator<Unit> i = computeUnits().iterator();
+//		while (i.hasNext() && (result == null)) {
+//			Unit unit = i.next();
+//			if (unit.getName().equalsIgnoreCase(name)) {
+//				result = unit;
+//			}
+//		}
+//		return result;
+//	}
 
 	
 	public static String getCountry(String sponsor) {

@@ -1,4 +1,4 @@
-package org.mars_sim.msp.core.mars;
+package org.mars_sim.mapdata;
 
 import java.awt.Image;
 import java.awt.image.BufferedImage;
@@ -12,15 +12,13 @@ import java.net.URL;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 
-import org.mars_sim.msp.core.Simulation;
-
 public class PerformanceTest {
 
 	// Static members.
 //	private static final String VOLCANIC_IMG = "TopographyVolcanic.png";
 //	private static URL imageMapURL = PerformanceTest.class.getResource("/images/" + VOLCANIC_IMG);//VOLCANIC_IMG);
 
-	private static final String MAP = "topo2880x1440.jpg";//"Mars2880x1440.jpg";//"Mars-Shaded-names-2k.jpg";//"rgbmars-spec-2k.jpg"; //"MarsNormalMap-2K.png";
+	private static final String MAP = "geologyMOLA2880x1440.jpg";//"topo2880x1440.jpg";//"Mars2880x1440.jpg";//"Mars-Shaded-names-2k.jpg";//"rgbmars-spec-2k.jpg"; //"MarsNormalMap-2K.png";
 	private static URL imageMapURL = PerformanceTest.class.getResource("/maps/" + MAP);//VOLCANIC_IMG);
 
 	private static BufferedImage hugeImage;
@@ -392,7 +390,7 @@ public class PerformanceTest {
 		 
 		BufferedImage newImg = getCustomImage(pixels, withAlpha);
 		 
-		File location = new File(Simulation.HOME_DIR + "/" + imgPath);
+		File location = new File(System.getProperty("user.home") + "/.mars-sim/" + imgPath);
 		
 		try {
 			ImageIO.write(newImg, imgFormat,location);

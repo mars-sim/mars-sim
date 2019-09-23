@@ -9,6 +9,8 @@ package org.mars_sim.msp.ui.swing.tool.map;
 import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Unit;
@@ -57,18 +59,19 @@ abstract class UnitMapLayer implements MapLayer {
 	 */
 	public void displayLayer(Coordinates mapCenter, String mapType, Graphics g) {		
 		Collection<Unit> units = null;
-
+				
 		if (unitsToDisplay != null) {
 			units = unitsToDisplay;
 		} else {
-			units = unitManager.computeUnits();
+			units= unitManager.getDisplayUnits();
 		}
 
 		for (Unit unit : units) {
-			if (!(unit instanceof Building) 
-					&& !(unit instanceof MarsSurface)
-					&& UnitDisplayInfoFactory.getUnitDisplayInfo(unit) != null
-					&& UnitDisplayInfoFactory.getUnitDisplayInfo(unit).isMapDisplayed(unit)) {
+			if (UnitDisplayInfoFactory.getUnitDisplayInfo(unit) != null
+					&& UnitDisplayInfoFactory.getUnitDisplayInfo(unit).isMapDisplayed(unit)
+//					&& !(unit instanceof Building) 
+//					&& !(unit instanceof MarsSurface)
+					) {
 				double angle = CannedMarsMap.HALF_MAP_ANGLE;
 
 				if (mapCenter != null && mapCenter.getAngle(unit.getCoordinates()) < angle) {

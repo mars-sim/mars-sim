@@ -22,9 +22,14 @@ class SettlementDisplayInfoBean implements UnitDisplayInfo {
     // Navigator click range in km.
     private static double SETTLEMENT_CLICK_RANGE = 90D;
 
+    private static Color lightSlateGray = new Color(255, 255, 255);
+
+    private static Color lightOrange = new Color(234, 204, 173);
+    
     // Data members
     private Icon surfMapIcon;
     private Icon topoMapIcon;
+    private Icon geoMapIcon;
     private Icon buttonIcon;
     private Font mapLabelFont;
 
@@ -34,6 +39,7 @@ class SettlementDisplayInfoBean implements UnitDisplayInfo {
     SettlementDisplayInfoBean() {
         surfMapIcon = ImageLoader.getIcon("SettlementSymbol");
         topoMapIcon = ImageLoader.getIcon("SettlementSymbolBlack");
+        geoMapIcon = ImageLoader.getIcon("SettlementSymbolBlack");
         buttonIcon = ImageLoader.getIcon("SettlementIcon");
         mapLabelFont = new Font("SansSerif", Font.PLAIN, 12);
     }
@@ -147,4 +153,19 @@ class SettlementDisplayInfoBean implements UnitDisplayInfo {
     public String getSound(Unit unit) {
     	return SoundConstants.SND_SETTLEMENT;
     }
+
+	@Override
+	public Icon getGeologyMapIcon(Unit unit) {
+		return geoMapIcon;
+	}
+
+	@Override
+	public Color getGeologyMapLabelColor() {
+		return lightSlateGray;
+	}
+
+	@Override
+	public Color getGeologyGlobeColor() {
+		return lightSlateGray;
+	}
 }

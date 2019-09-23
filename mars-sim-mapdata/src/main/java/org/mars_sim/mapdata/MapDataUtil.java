@@ -52,4 +52,13 @@ public final class MapDataUtil {
     public MapData getTopoMapData() {
         return mapDataFactory.getMapData(MapDataFactory.TOPO_MAP_DATA);
     }
+    
+    /**
+     * Get the geology map data.
+     * @return geology map data.
+     */
+    public MapData getGeologyMapData() {
+        return mapDataFactory.getMapData(MapDataFactory.GEOLOGY_MAP_DATA);
+    }
+    
 }

@@ -1,4 +1,4 @@
-package org.mars_sim.msp.core.mars;
+package org.mars_sim.mapdata;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;

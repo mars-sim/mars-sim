@@ -48,6 +48,8 @@ public class UnitIconMapLayer extends UnitMapLayer {
 			Icon displayIcon = null;
 			if (TopoMarsMap.TYPE.equals(mapType))
 				displayIcon = displayInfo.getTopoMapIcon(unit);
+			else if (GeologyMarsMap.TYPE.equals(mapType))
+				displayIcon = displayInfo.getGeologyMapIcon(unit);
 			else
 				displayIcon = displayInfo.getSurfMapIcon(unit);
 			if (g != null)

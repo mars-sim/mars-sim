@@ -44,10 +44,8 @@ import com.alee.managers.style.StyleId;
  * The Globe Display class displays a graphical globe of Mars in the Navigator
  * tool.
  */
+@SuppressWarnings("serial")
 public class GlobeDisplay extends WebComponent implements ClockListener {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(GlobeDisplay.class.getName());
@@ -63,13 +61,8 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 	private static int dragx, dragy, dxCache = 0, dyCache = 0;
 
 	// Data members
-//	private double timeCache = 0;
-	/** Refresh thread. */
-	// private Thread showThread;
-	/**
-	 * <code>true</code> if in topographical mode, false if in real surface mode.
-	 */
-	private boolean topo;
+	/** The Map type. 0 = surface, 1 = topo, 2 = geology. */
+	private int mapType;
 	/** <code>true</code> if globe needs to be regenerated */
 	private boolean recreate;
 	/** width of the globe display component. */
@@ -88,16 +81,31 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 	private boolean keepRunning;
 	
 	/** Real surface sphere object. */
-	private SurfaceMapPanel marsSphere;
+	private MarsMap marsSphere;
 	/** Topographical sphere object. */
-	private SurfaceMapPanel topoSphere;
+	private MarsMap topoSphere;
+	/** Geological sphere object. */
+	private MarsMap geoSphere;
 	/** Spherical coordinates for globe center. */
 	private Coordinates centerCoords;
 	/** A mouse adapter class. */
 	private Dragger dragger;
 	
-	private static UnitManager unitManager = Simulation.instance().getUnitManager();
+	private Graphics dbg;
+	private Image dbImage = null;
+	private Image starfield;
+	
+	/**
+	 * Stores the font for drawing lon/lat strings in
+	 * {@link #drawCrossHair(Graphics)}.
+	 */
+	private Font positionFont = new Font("Helvetica", Font.PLAIN, 10);
+	/** measures the pixels needed to display text. */
+	private FontMetrics positionMetrics = getFontMetrics(positionFont);
 
+	private double globeCircumference;
+	private double rho;
+	
 	/**
 	 * stores the internationalized string for reuse in
 	 * {@link #drawCrossHair(Graphics)}.
@@ -108,40 +116,22 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 	 * {@link #drawCrossHair(Graphics)}.
 	 */
 	private String latitude = Msg.getString("direction.latitude"); //$NON-NLS-1$
-	/**
-	 * stores the font for drawing lon/lat strings in
-	 * {@link #drawCrossHair(Graphics)}.
-	 */
-	private Font positionFont = new Font("Helvetica", Font.PLAIN, 10);
-	/** measures the pixels needed to display text. */
-	private FontMetrics positionMetrics = getFontMetrics(positionFont);
-	/**
-	 * stores the position for drawing lon/lat strings in
-	 * {@link #drawCrossHair(Graphics)}.
-	 */
-	int leftWidth = positionMetrics.stringWidth(latitude);
-	/**
-	 * stores the position for drawing lon/lat strings in
-	 * {@link #drawCrossHair(Graphics)}.
-	 */
-	int rightWidth = positionMetrics.stringWidth(longitude);
 
-	// private Mars mars;
+	/**
+	 * stores the position for drawing lon/lat strings in
+	 * {@link #drawCrossHair(Graphics)}.
+	 */
+	private int leftWidth = positionMetrics.stringWidth(latitude);
+	/**
+	 * stores the position for drawing lon/lat strings in
+	 * {@link #drawCrossHair(Graphics)}.
+	 */
+	private int rightWidth = positionMetrics.stringWidth(longitude);
+	
 	private static MainDesktopPane desktop;
-//	private NavigatorWindow navwin;
 	private static SurfaceFeatures surfaceFeatures;
-//	private MainScene mainScene;
-
 	private static MasterClock masterClock;
-
-	private Graphics dbg;
-	private Image dbImage = null;
-	private Image starfield;
-
-//	private boolean isOpenCache = false; // justLoaded = true,
-	// private int difxCache, difyCache;
-	private double globeCircumference;
-	private double rho;
+	private static UnitManager unitManager = Simulation.instance().getUnitManager();
 
 	/**
 	 * Constructor.
@@ -178,13 +168,14 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 //		setMinimumSize(getPreferredSize());
 
 		// Construct sphere objects for both real surface and topographical modes
-		marsSphere = new SurfaceMapPanel(MarsGlobeType.SURFACE_MID, this);
-		topoSphere = new SurfaceMapPanel(MarsGlobeType.TOPO_MID, this);
+		marsSphere = new MarsMap(MarsMapType.SURFACE_MID, this);
+		topoSphere = new MarsMap(MarsMapType.TOPO_MID, this);
+		geoSphere = new MarsMap(MarsMapType.GEO_MID, this);
 
 		// Initialize global variables
 		centerCoords = new Coordinates(HALF_PI, 0D);
 		update = true;
-		topo = false;
+		mapType = 0;
 		recreate = true;
 		keepRunning = true;
 		useUSGSMap = false;
@@ -290,28 +281,41 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 	 * Displays real surface globe, regenerating if necessary
 	 */
 	public void showSurf() {
-		if (topo) {
+		if (mapType != 0) {
 			recreate = true;
 		}
-		topo = false;
+		mapType = 0;
 		showGlobe(centerCoords);
 	}
 
-	public boolean isTopo() {
-		return topo;
+	public int getMapType() {
+		return mapType;
 	}
 
 	/**
 	 * Displays topographical globe, regenerating if necessary
 	 */
 	public void showTopo() {
-		if (!topo) {
+		if (mapType != 1) {
 			recreate = true;
 		}
-		topo = true;
+		mapType = 1;
 		showGlobe(centerCoords);
 	}
 
+
+	/**
+	 * Displays geological globe, regenerating if necessary
+	 */
+	public void showGeo() {
+		if (mapType != 2) {
+			recreate = true;
+		}
+		mapType = 2;
+		showGlobe(centerCoords);
+	}
+	
+	
 	/**
 	 * Displays globe at given center regardless of mode, regenerating if necessary
 	 *
@@ -394,12 +398,14 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 
 	public void drawSphere() {
 
-		if (topo) {
-			topoSphere.drawSphere(centerCoords);
-		} else {
+		if (mapType == 0) {
 			marsSphere.drawSphere(centerCoords);
+		} else if (mapType == 1) {
+			topoSphere.drawSphere(centerCoords);
+		} else if (mapType == 2) {
+			geoSphere.drawSphere(centerCoords);
 		}
-
+		
 		paintDoubleBuffer();
 		repaint();
 
@@ -433,8 +439,16 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 		g2d.drawImage(starfield, 0, 0, Color.black, null);
 
 		// Draw real or topo globe
-		SurfaceMapPanel globe = topo ? topoSphere : marsSphere;
-
+		MarsMap globe = null;
+		
+		if (mapType == 0) {
+			globe = marsSphere;
+		} else if (mapType == 1) {
+			globe = topoSphere;
+		} else if (mapType == 2) {
+			globe = geoSphere;
+		}
+		
 		Image image = globe.getGlobeImage();
 		if (image != null) {
 			if (globe.isImageDone()) {
@@ -566,19 +580,23 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 //		g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 //		g.setRenderingHint( RenderingHints.  KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
 
-		Iterator<Unit> i = unitManager.computeUnits().iterator();
+		Iterator<Unit> i = unitManager.getDisplayUnits().iterator();
 		while (i.hasNext()) {
 			Unit unit = i.next();
 			UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
 			if (displayInfo != null && displayInfo.isGlobeDisplayed(unit)) {
 				Coordinates unitCoords = unit.getCoordinates();
 				if (centerCoords.getAngle(unitCoords) < HALF_PI) {
-					if (topo) {
-						g.setColor(displayInfo.getTopoGlobeColor());
-					} else {
-						g.setColor(displayInfo.getSurfGlobeColor());
-					}
 
+					if (mapType == 0) {
+						g.setColor(displayInfo.getSurfGlobeColor());
+					} else if (mapType == 1) {
+						g.setColor(displayInfo.getTopoGlobeColor());
+					} else if (mapType == 2) {
+						g.setColor(displayInfo.getGeologyGlobeColor());
+					}
+					
+					
 					IntPoint tempLocation = getUnitDrawLocation(unitCoords);
 					g.fillRect(tempLocation.getiX(), tempLocation.getiY(), 3, 3);
 				}
@@ -600,7 +618,7 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 		g.setColor(Color.orange);
 
 		// If USGS map is used, use small crosshairs.
-		if (useUSGSMap & !topo) {
+		if (useUSGSMap & mapType == 0) {
 			g.drawRect(72, 72, 6, 6);
 			g.drawLine(0, 75, 71, 75);
 			g.drawLine(79, 75, 149, 75);

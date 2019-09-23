@@ -15,12 +15,14 @@ class MapDataFactory {
     // Static members.
     static final int SURFACE_MAP_DATA = 0;//"surface map data";
     static final int TOPO_MAP_DATA = 1;//"topographical map data";
-    
+    static final int GEOLOGY_MAP_DATA = 2;
+    		
 //	private boolean decompressed = false;
 	
     // Data members.
     private MapData surfaceMapData;
     private MapData topoMapData;
+    private MapData geologyMapData;
     
     /**
      * Constructor.
@@ -49,6 +51,9 @@ class MapDataFactory {
         }
         else if (mapType == TOPO_MAP_DATA) {
             result = getTopoMapData();
+        }
+        else if (mapType == GEOLOGY_MAP_DATA) {
+            result = getGeologyMapData();
         }
         else {
             throw new IllegalArgumentException("mapType: " + mapType + " not a valid type.");
@@ -80,4 +85,17 @@ class MapDataFactory {
         }
         return topoMapData;
     }
+    
+    /**
+     * Gets the geological map data.
+     * @return geological map data.
+     */
+    private MapData getGeologyMapData() {
+        // Create topo map data if it doesn't exist.
+        if (geologyMapData == null) {
+            geologyMapData = new GeologyMapData();
+        }
+        return geologyMapData;
+    }
+    
 }

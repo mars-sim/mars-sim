@@ -1182,8 +1182,8 @@ public class MainDesktopPane extends JDesktopPane
 	 * Opens all initial windows based on UI configuration.
 	 */
 	public void openInitialWindows() {
-		UIConfig config = UIConfig.INSTANCE;
-		if (config.useUIDefault()) {
+//		UIConfig config = UIConfig.INSTANCE;
+//		if (config.useUIDefault()) {
 			// Note: SwingUtilities.invokeLater(()) doesn't allow guide windows to be
 			// centered for javaFX mode in Windows PC (but not in other platform)
 //			GuideWindow ourGuide = (GuideWindow) getToolWindow(GuideWindow.NAME);
@@ -1196,61 +1196,61 @@ public class MainDesktopPane extends JDesktopPane
 				openToolWindow(CommanderWindow.NAME);
 			}
 
-		} else {
-			// Open windows in Z-order.
-			List<String> windowNames = config.getInternalWindowNames();
-			int num = windowNames.size();
-			for (int x = 0; x < num; x++) {
-				String highestZName = null;
-				int highestZ = Integer.MIN_VALUE;
-				Iterator<String> i = windowNames.iterator();
-				while (i.hasNext()) {
-					String name = i.next();
-					boolean display = config.isInternalWindowDisplayed(name);
-					String type = config.getInternalWindowType(name);
-					if (UIConfig.UNIT.equals(type) && !sim.isDefaultLoad()) {
-						display = false;
-					}
-					if (display) {
-						int zOrder = config.getInternalWindowZOrder(name);
-						if (zOrder > highestZ) {
-							highestZName = name;
-							highestZ = zOrder;
-						}
-					}
-				}
-				if (highestZName != null) {
-					String type = config.getInternalWindowType(highestZName);
-					if (UIConfig.TOOL.equals(type)) {
-						openToolWindow(highestZName);
-					} else if (UIConfig.UNIT.equals(type)) {
-						Unit unit = unitManager.findUnit(highestZName);
-						if (unit != null) {
-							openUnitWindow(unit, true);
-						}
-					}
-					windowNames.remove(highestZName);
-				}
-			}
-
-			if (mainWindow != null) {
-				// Create unit bar buttons for closed unit windows.
-				if (sim.isDefaultLoad()) {
-					Iterator<String> i = config.getInternalWindowNames().iterator();
-					while (i.hasNext()) {
-						String name = i.next();
-						if (UIConfig.UNIT.equals(config.getInternalWindowType(name))) {
-							if (!config.isInternalWindowDisplayed(name)) {
-								Unit unit = unitManager.findUnit(name);
-								if (unit != null) {
-									mainWindow.createUnitButton(unit);
-								}
-							}
-						}
-					}
-				}
-			}
-		}
+//		} else {
+//			// Open windows in Z-order.
+//			List<String> windowNames = config.getInternalWindowNames();
+//			int num = windowNames.size();
+//			for (int x = 0; x < num; x++) {
+//				String highestZName = null;
+//				int highestZ = Integer.MIN_VALUE;
+//				Iterator<String> i = windowNames.iterator();
+//				while (i.hasNext()) {
+//					String name = i.next();
+//					boolean display = config.isInternalWindowDisplayed(name);
+//					String type = config.getInternalWindowType(name);
+//					if (UIConfig.UNIT.equals(type) && !sim.isDefaultLoad()) {
+//						display = false;
+//					}
+//					if (display) {
+//						int zOrder = config.getInternalWindowZOrder(name);
+//						if (zOrder > highestZ) {
+//							highestZName = name;
+//							highestZ = zOrder;
+//						}
+//					}
+//				}
+//				if (highestZName != null) {
+//					String type = config.getInternalWindowType(highestZName);
+//					if (UIConfig.TOOL.equals(type)) {
+//						openToolWindow(highestZName);
+//					} else if (UIConfig.UNIT.equals(type)) {
+//						Unit unit = unitManager.findUnit(highestZName);
+//						if (unit != null) {
+//							openUnitWindow(unit, true);
+//						}
+//					}
+//					windowNames.remove(highestZName);
+//				}
+//			}
+//
+//			if (mainWindow != null) {
+//				// Create unit bar buttons for closed unit windows.
+//				if (sim.isDefaultLoad()) {
+//					Iterator<String> i = config.getInternalWindowNames().iterator();
+//					while (i.hasNext()) {
+//						String name = i.next();
+//						if (UIConfig.UNIT.equals(config.getInternalWindowType(name))) {
+//							if (!config.isInternalWindowDisplayed(name)) {
+//								Unit unit = unitManager.findUnit(name);
+//								if (unit != null) {
+//									mainWindow.createUnitButton(unit);
+//								}
+//							}
+//						}
+//					}
+//				}
+//			}
+//		}
 	}
 
 	/**

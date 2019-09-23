@@ -11,7 +11,6 @@ import java.awt.Image;
 
 import org.mars_sim.mapdata.MapDataUtil;
 import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.ui.swing.tool.navigator.NavigatorWindow;
 
 /**
  * The Map interface represents a map usable by the MapDisplay class.

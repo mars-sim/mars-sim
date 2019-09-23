@@ -27,6 +27,7 @@ abstract class VehicleDisplayInfoBean implements UnitDisplayInfo {
     // Data members
     private Icon surfMapIcon;
     private Icon topoMapIcon;
+    private Icon geoMapIcon;
     private Font mapLabelFont;
     
     /**
@@ -35,6 +36,7 @@ abstract class VehicleDisplayInfoBean implements UnitDisplayInfo {
     VehicleDisplayInfoBean() {
         surfMapIcon = ImageLoader.getIcon("VehicleSymbol");
         topoMapIcon = ImageLoader.getIcon("VehicleSymbolBlack");
+        geoMapIcon = ImageLoader.getIcon("VehicleSymbolBlack");
         mapLabelFont = new Font("SansSerif", Font.PLAIN, 9);
     }
     
@@ -78,6 +80,15 @@ abstract class VehicleDisplayInfoBean implements UnitDisplayInfo {
     public Icon getTopoMapIcon(Unit unit) {
     	return topoMapIcon;
     }
+
+    /** 
+     * Gets display icon for geo navigator map. 
+     * @param unit the unit to display 
+     * @return icon
+     */
+    public Icon getGeologyMapIcon(Unit unit) {
+    	return geoMapIcon;
+    }
     
     /**
      * Checks if the map icon should blink on and off.
@@ -101,6 +112,14 @@ abstract class VehicleDisplayInfoBean implements UnitDisplayInfo {
      * @return color
      */
     public Color getTopoMapLabelColor() {
+        return Color.black;
+    }
+
+    /** 
+     * Gets the label color for geo navigator map. 
+     * @return color
+     */
+    public Color getGeologyMapLabelColor() {
         return Color.black;
     }
     
@@ -154,4 +173,13 @@ abstract class VehicleDisplayInfoBean implements UnitDisplayInfo {
     public Color getTopoGlobeColor() {
         return Color.black;
     }
+
+    /** 
+     * Gets display color for geo globe.
+     * @return color
+     */
+    public Color getGeologyGlobeColor() {
+        return Color.black;
+    }
+    
 }

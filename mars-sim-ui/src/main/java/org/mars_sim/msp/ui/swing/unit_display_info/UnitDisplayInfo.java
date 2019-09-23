@@ -39,6 +39,13 @@ public interface UnitDisplayInfo {
     public Icon getTopoMapIcon(Unit unit);
 
     /**
+     * Gets display icon for geology navigator map.
+     * @param unit the unit to display
+     * @return icon
+     */
+    public Icon getGeologyMapIcon(Unit unit);
+    
+    /**
      * Checks if the map icon should blink on and off.
      * @param unit the unit to display
      * @return true if blink
@@ -57,6 +64,12 @@ public interface UnitDisplayInfo {
      */
     public Color getTopoMapLabelColor();
 
+    /**
+     * Gets the label color for geo navigator map.
+     * @return color
+     */
+    public Color getGeologyMapLabelColor();
+    
     /**
      * Gets the label font for navigator map.
      * @return font
@@ -88,6 +101,12 @@ public interface UnitDisplayInfo {
      */
     public Color getTopoGlobeColor();
 
+    /**
+     * Gets display color for geology globe.
+     * @return color
+     */
+    public Color getGeologyGlobeColor();
+    
     /**
      * Gets icon for unit button.
      * @return icon

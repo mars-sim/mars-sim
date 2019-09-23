@@ -150,7 +150,7 @@ public class SurfaceFeatures implements Serializable {
 	 * Returns a float value representing the current sunlight conditions at a
 	 * particular location.
 	 * 
-	 * @return value from 0.0 - 1.0 0.0 represents night time darkness. 1.0
+	 * @return value from 0.0 - 1.0; 0.0 represents night time darkness. 1.0
 	 *         represents daylight. Values in between 0.0 and 1.0 represent twilight
 	 *         conditions.
 	 */

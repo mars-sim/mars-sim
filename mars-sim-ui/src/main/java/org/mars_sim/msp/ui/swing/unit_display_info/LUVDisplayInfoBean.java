@@ -13,6 +13,8 @@ import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.sound.SoundConstants;
 
+import java.awt.Color;
+
 import javax.swing.*;
 
 /**
@@ -64,5 +66,26 @@ public class LUVDisplayInfoBean extends VehicleDisplayInfoBean {
     	else if (StatusType.MALFUNCTION.equals(status)) return SoundConstants.SND_ROVER_MALFUNCTION;
     	else if (luv.getCrewNum() > 0 || luv.getRobotCrewNum() > 0) return SoundConstants.SND_ROVER_MOVING;
     	else return "";
+	}
+
+
+	@Override
+	public Icon getGeologyMapIcon(Unit unit) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public Color getGeologyMapLabelColor() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public Color getGeologyGlobeColor() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

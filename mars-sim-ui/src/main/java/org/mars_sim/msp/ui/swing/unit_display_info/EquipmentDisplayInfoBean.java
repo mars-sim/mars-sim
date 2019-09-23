@@ -138,4 +138,22 @@ class EquipmentDisplayInfoBean implements UnitDisplayInfo {
     public String getSound(Unit unit) {
     	return SoundConstants.SND_EQUIPMENT;
     }
+
+	@Override
+	public Icon getGeologyMapIcon(Unit unit) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Color getGeologyMapLabelColor() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Color getGeologyGlobeColor() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

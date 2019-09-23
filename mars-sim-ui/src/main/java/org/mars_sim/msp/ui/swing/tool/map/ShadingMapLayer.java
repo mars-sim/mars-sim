@@ -7,7 +7,6 @@
 
 package org.mars_sim.msp.ui.swing.tool.map;
 
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Image;
@@ -19,7 +18,7 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
-import org.mars_sim.msp.ui.swing.tool.navigator.SurfaceMapPanel;
+import org.mars_sim.msp.ui.swing.tool.navigator.MarsMap;
 
 /**
  * The ShadingMapLayer is a graphics layer to display twilight and night time
@@ -30,10 +29,14 @@ public class ShadingMapLayer implements MapLayer {
 //	private static String CLASS_NAME = "org.mars_sim.msp.ui.swing.tool.map.ShadingMapLayer";
 //	private static Logger logger = Logger.getLogger(CLASS_NAME);
  	private static Logger logger = Logger.getLogger(ShadingMapLayer.class.getName());
-	
+ 	
+ 	private static double rho = CannedMarsMap.PIXEL_RHO;
+
 	// Domain data
-	private SurfaceFeatures surfaceFeatures;
 	private int[] shadingArray;
+	
+	private static SurfaceFeatures surfaceFeatures;
+
 	private Component displayComponent;
 
 	/**
@@ -43,7 +46,9 @@ public class ShadingMapLayer implements MapLayer {
 	 */
 	public ShadingMapLayer(Component displayComponent) {
 		surfaceFeatures = Simulation.instance().getMars().getSurfaceFeatures();
+		
 		this.displayComponent = displayComponent;
+		
 		shadingArray = new int[Map.MAP_VIS_WIDTH * Map.MAP_VIS_HEIGHT];
 	}
 
@@ -56,45 +61,42 @@ public class ShadingMapLayer implements MapLayer {
 	 */
 	public void displayLayer(Coordinates mapCenter, String mapType, Graphics g) {
 
-		int centerX = SurfaceMapPanel.MAP_W / 2;
-		int centerY = centerX;
-
-		// Coordinates sunDirection = orbitInfo.getSunDirection();
-
-		double rho = CannedMarsMap.PIXEL_RHO;
-
-		boolean nightTime = true;
-		boolean dayTime = true;
-		Coordinates location = new Coordinates(0D, 0D);
-		for (int x = 0; x < Map.MAP_VIS_WIDTH; x += 2) {
-			for (int y = 0; y < Map.MAP_VIS_HEIGHT; y += 2) {
-				mapCenter.convertRectToSpherical(x - centerX, y - centerY, rho, location);
-				double sunlight = surfaceFeatures.getSurfaceSunlightRatio(location);
+//		boolean nightTime = false;
 	
-				if (sunlight > 1D) {
-					sunlight = 1D;
-				}
-				int sunlightInt = (int) (127 * sunlight);
-				int shadeColor = ((127 - sunlightInt) << 24) & 0xFF000000;
+		Coordinates location = new Coordinates(0D, 0D);
+		
+		int sunlightInt = (int) (127 * surfaceFeatures.getSurfaceSunlightRatio(mapCenter));
 
-				shadingArray[x + (y * Map.MAP_VIS_WIDTH)] = shadeColor;
-				shadingArray[x + 1 + (y * Map.MAP_VIS_WIDTH)] = shadeColor;
-				if (y < Map.MAP_VIS_HEIGHT - 1) {
-					shadingArray[x + ((y + 1) * Map.MAP_VIS_WIDTH)] = shadeColor;
-					shadingArray[x + 1 + ((y + 1) * Map.MAP_VIS_WIDTH)] = shadeColor;
-				}
+		if (sunlightInt < 36) {
+//			nightTime = true;
+//		}
+//		
+//		if (nightTime) {
+//			g.setColor(new Color(0, 0, 0, 128));
+//			g.fillRect(0, 0, Map.MAP_VIS_WIDTH, Map.MAP_VIS_HEIGHT);
+//		}
+//		
+//		else {
+			int centerX = MarsMap.MAP_W / 2;
+			int centerY = centerX;
 
-				if (sunlight > 0)
-					nightTime = false;
-				if (sunlight < 127)
-					dayTime = false;
+			// Coordinates sunDirection = orbitInfo.getSunDirection();
+
+			int shadeColor = ((127 - sunlightInt) << 24) & 0xFF000000;
+			
+			for (int x = 0; x < Map.MAP_VIS_WIDTH; x += 2) {
+				for (int y = 0; y < Map.MAP_VIS_HEIGHT; y += 2) {
+					mapCenter.convertRectToSpherical(x - centerX, y - centerY, rho, location);
+
+					shadingArray[x + (y * Map.MAP_VIS_WIDTH)] = shadeColor;
+					shadingArray[x + 1 + (y * Map.MAP_VIS_WIDTH)] = shadeColor;
+					if (y < Map.MAP_VIS_HEIGHT - 1) {
+						shadingArray[x + ((y + 1) * Map.MAP_VIS_WIDTH)] = shadeColor;
+						shadingArray[x + 1 + ((y + 1) * Map.MAP_VIS_WIDTH)] = shadeColor;
+					}
+				}
 			}
-		}
-
-		if (nightTime) {
-			g.setColor(new Color(0, 0, 0, 128));
-			g.fillRect(0, 0, Map.MAP_VIS_WIDTH, Map.MAP_VIS_HEIGHT);
-		} else if (!dayTime) {
+			
 			// Create shading image for map
 			Image shadingMap = displayComponent.createImage(
 					new MemoryImageSource(Map.MAP_VIS_WIDTH, Map.MAP_VIS_HEIGHT, shadingArray, 0, Map.MAP_VIS_WIDTH));

@@ -48,10 +48,14 @@ public class UnitLabelMapLayer extends UnitMapLayer {
 
 		IntPoint labelLocation = getLabelLocation(location, displayInfo.getSurfMapIcon(unit));
 
-		if (TopoMarsMap.TYPE.equals(mapType))
-			g2d.setColor(displayInfo.getTopoMapLabelColor());
-		else if (displayInfo != null)
-			g2d.setColor(displayInfo.getSurfMapLabelColor());
+		if (displayInfo != null) {
+			if (SurfMarsMap.TYPE.equals(mapType))
+				g2d.setColor(displayInfo.getSurfMapLabelColor());
+			else if (TopoMarsMap.TYPE.equals(mapType))
+				g2d.setColor(displayInfo.getTopoMapLabelColor());
+			else if (GeologyMarsMap.TYPE.equals(mapType))
+				g2d.setColor(displayInfo.getGeologyMapLabelColor());
+		}
 
 		g2d.setFont(displayInfo.getMapLabelFont());
 

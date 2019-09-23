@@ -73,8 +73,6 @@ import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 import org.mars_sim.msp.core.structure.building.function.cooking.Dining;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
 import org.mars_sim.msp.core.structure.building.function.farming.Farming;
-import org.mars_sim.msp.core.time.MarsClock;
-import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
@@ -94,6 +92,10 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	public static String TYPE = SystemType.BUILDING.getName();
 	
 	public static final int TISSUE_CAPACITY = 20;
+	
+	/** The unit count for this robot. */
+	private static int uniqueCount = Unit.FIRST_BUILDING_ID;
+	
 	/** The height of an airlock in meters */
 	// Assume an uniform height of 2.5 meters in all buildings
 	public static final double HEIGHT = 2.5; 
@@ -158,6 +160,8 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	// public double GREENHOUSE_TEMPERATURE = 24D;
 
 	// Data members
+	/** Unique identifier for this building. */
+	private int identifier;
 	/** The cache for msols */
 	private int msolCache;
 	/** Unique template id assigned for the settlement template of this building belong. */
@@ -232,6 +236,16 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	private static UnitManager unitManager = Simulation.instance().getUnitManager();
 	
 	/**
+	 * Must be synchronised to prevent duplicate ids being assigned via different
+	 * threads.
+	 * 
+	 * @return
+	 */
+	private static synchronized int getNextIdentifier() {
+		return uniqueCount++;
+	}
+	
+	/**
 	 * Constructor 1. Constructs a Building object.
 	 * 
 	 * @param template the building template.
@@ -241,7 +255,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	public Building(BuildingTemplate template, BuildingManager manager) {
 		this(template.getID(), template.getBuildingType(), template.getNickName(), template.getWidth(),
 				template.getLength(), template.getXLoc(), template.getYLoc(), template.getFacing(), manager);
-
+		
 		this.manager = manager;
 		location = manager.getSettlement().getCoordinates();
 		buildingType = template.getBuildingType();
@@ -282,6 +296,9 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		super(nickName, manager.getSettlement().getCoordinates());
 		// logger.info("Building's constructor 2 is on " +
 		// Thread.currentThread().getName() + " Thread");
+		
+		this.identifier = getNextIdentifier();
+		unitManager.addBuildingID(this);
 		
 		// Place it within a settlement
 //		enter(LocationCodeType.SETTLEMENT);
@@ -409,6 +426,9 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	protected Building(BuildingManager manager) {
 		super("Mock Building", new Coordinates(0D, 0D));
 
+		this.identifier = getNextIdentifier();
+		unitManager.addBuildingID(this);
+		
 		if (manager != null) {
 			this.manager = manager;
 			settlementID = manager.getSettlement().getIdentifier();

@@ -74,6 +74,7 @@ public class MapPanel extends WebPanel implements ClockListener {
 	private Image mapImage;
 	private SurfMarsMap surfMap;
 	private TopoMarsMap topoMap;
+	private GeologyMarsMap geoMap;
 
 	private MainDesktopPane desktop;
 
@@ -105,6 +106,8 @@ public class MapPanel extends WebPanel implements ClockListener {
 
 		topoMap = new TopoMarsMap(this);
 		surfMap = new SurfMarsMap(this);
+		geoMap = new GeologyMarsMap(this);
+		
 		map = surfMap;
 		mapError = false;
 		wait = false;
@@ -301,6 +304,8 @@ public class MapPanel extends WebPanel implements ClockListener {
 			map = surfMap;
 		else if (TopoMarsMap.TYPE.equals(mapType))
 			map = topoMap;
+		else if (GeologyMarsMap.TYPE.equals(mapType))
+			map = geoMap;
 		showMap(centerCoords);
 	}
 
@@ -590,6 +595,7 @@ public class MapPanel extends WebPanel implements ClockListener {
 		map = null;
 		surfMap = null;
 		topoMap = null;
+		geoMap = null;
 		update = false;
 		dbg = null;
 		dbImage = null;

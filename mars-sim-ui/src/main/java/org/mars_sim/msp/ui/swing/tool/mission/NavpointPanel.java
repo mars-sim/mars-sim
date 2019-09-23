@@ -56,7 +56,6 @@ import org.mars_sim.msp.ui.swing.tool.map.Map;
 import org.mars_sim.msp.ui.swing.tool.map.MapPanel;
 import org.mars_sim.msp.ui.swing.tool.map.MineralMapLayer;
 import org.mars_sim.msp.ui.swing.tool.map.NavpointMapLayer;
-import org.mars_sim.msp.ui.swing.tool.map.ShadingMapLayer;
 import org.mars_sim.msp.ui.swing.tool.map.UnitIconMapLayer;
 import org.mars_sim.msp.ui.swing.tool.map.UnitLabelMapLayer;
 import org.mars_sim.msp.ui.swing.tool.map.VehicleTrailMapLayer;
@@ -132,14 +131,18 @@ implements ListSelectionListener, MissionListener {
 		mapPanel.addMouseMotionListener(new mouseMotionListener());
 		
 		mapPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
-		mapPanel.addMapLayer(new ShadingMapLayer(mapPanel), 0);
+		// Note remove the ShadingMapLayer to improve clarity of map display 
+//		mapPanel.addMapLayer(new ShadingMapLayer(mapPanel), 0);
+		// Note: mineralLayer is 1; // mapPanel.addMapLayer(mineralLayer, 1);
 		mapPanel.addMapLayer(new UnitIconMapLayer(mapPanel), 2);
 		mapPanel.addMapLayer(new UnitLabelMapLayer(), 3);
+		
 		trailLayer = new VehicleTrailMapLayer();
 		mapPanel.addMapLayer(trailLayer, 4);
 		navpointLayer = new NavpointMapLayer(this);
 		mapPanel.addMapLayer(navpointLayer, 5);
         mineralLayer = new MineralMapLayer(this);
+        
         // Forcing map panel to be 300x300 size.
         mapPanel.setSize(new Dimension(WIDTH, HEIGHT));
         mapPanel.setPreferredSize(new Dimension(WIDTH, HEIGHT));
@@ -291,7 +294,7 @@ implements ListSelectionListener, MissionListener {
 
 			Coordinates clickedPosition = mapPanel.getCenterLocation().convertRectToSpherical(x, y, rho);
 
-			Iterator<Unit> i = unitManager.computeUnits().iterator();
+			Iterator<Unit> i = unitManager.getDisplayUnits().iterator();
 
 			// Open window if unit is clicked on the map
 			while (i.hasNext()) {
@@ -323,7 +326,7 @@ implements ListSelectionListener, MissionListener {
 			Coordinates mousePos = mapPanel.getCenterLocation().convertRectToSpherical(x, y, rho);
 			boolean onTarget = false;
 
-			Iterator<Unit> i = unitManager.computeUnits().iterator();
+			Iterator<Unit> i = unitManager.getDisplayUnits().iterator();
 
 			// Change mouse cursor if hovering over an unit on the map
 			while (i.hasNext()) {
