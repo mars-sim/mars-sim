@@ -29,7 +29,6 @@ import java.util.List;
 import javax.swing.ButtonGroup;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
-import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.border.BevelBorder;
@@ -43,6 +42,8 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.mars.Landmark;
+import org.mars_sim.msp.core.mars.Mars;
+import org.mars_sim.msp.core.mars.TerrainElevation;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.map.CannedMarsMap;
@@ -162,6 +163,9 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 	private static List<Landmark> landmarks;
 	
 	private static Simulation sim = Simulation.instance();
+	private static TerrainElevation terrainElevation;
+	private static Mars mars;
+	
 	private static UnitManager unitManager = sim.getUnitManager();
 
 	/**
@@ -174,7 +178,12 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		super(NAME, desktop);
 		this.desktop = desktop;
 
-		landmarks = sim.getMars().getSurfaceFeatures().getLandmarks();
+		if (mars == null)
+			mars = sim.getMars();
+		if (terrainElevation == null)
+			terrainElevation =  mars.getSurfaceFeatures().getTerrainElevation();
+		
+		landmarks = mars.getSurfaceFeatures().getLandmarks();
 
 		// setTitleName(null);
 		// ...
@@ -741,6 +750,9 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 
 			Coordinates clickedPosition = mapPanel.getCenterLocation().convertRectToSpherical(x, y, rho);
 
+			System.out.println("At " + clickedPosition.getFormattedString() 
+			+ ", Elevation : " + terrainElevation.getElevation(clickedPosition) + " km");
+			
 			Iterator<Unit> i = unitManager.getDisplayUnits().iterator();
 
 			// Open window if unit is clicked on the map

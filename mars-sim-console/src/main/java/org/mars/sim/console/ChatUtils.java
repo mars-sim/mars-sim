@@ -23,6 +23,7 @@ import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.mars.Mars;
 import org.mars_sim.msp.core.mars.OrbitInfo;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
+import org.mars_sim.msp.core.mars.TerrainElevation;
 import org.mars_sim.msp.core.mars.Weather;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
@@ -107,7 +108,7 @@ public class ChatUtils {
 			"  reset clock listener"};
 	
 	public final static String[] SYSTEM_KEYS = new String[] { "settlement", "check size", "vehicle", "rover", 
-			"hi", "hello", "hey", "proposal", "social", "science", "scores" };
+			"hi", "hello", "hey", "proposal", "social", "science", "scores", "elevation" };
 
 	public final static String SWITCHES = 
 			  "  bye, /b, exit, /x, quit, /q" + System.lineSeparator()
@@ -213,6 +214,7 @@ public class ChatUtils {
 	static Simulation sim = Simulation.instance();
 	static Weather weather;
 	static SurfaceFeatures surfaceFeatures;
+	static TerrainElevation terrainElevation;
 	static Mars mars;
 	static MasterClock masterClock;
 	static MarsClock marsClock;
@@ -237,11 +239,36 @@ public class ChatUtils {
 		weather = mars.getWeather();
 		surfaceFeatures = mars.getSurfaceFeatures();
 		orbitInfo = mars.getOrbitInfo();
+		terrainElevation =  mars.getSurfaceFeatures().getTerrainElevation();
 
 		relationshipManager = sim.getRelationshipManager();
 		scientificManager = sim.getScientificStudyManager();
 		unitManager = sim.getUnitManager();
 		missionManager = sim.getMissionManager();
+		
+		int size = SystemChatUtils.topographicExcursionNames.size();
+		
+		for (int i = 1; i <= size; i++) {
+			String value[] = SystemChatUtils.topographicExcursionCoords.get(i);
+			String latStr = value[0];
+			String lonStr = value[1];
+			String elevStr = value[2];
+			double ref = Math.round(Double.parseDouble(elevStr))/1_000.0;
+			String s0 = String.format("%16s  %10f km ", 
+					SystemChatUtils.topographicExcursionNames.get(i),
+					ref);
+			System.out.print(s0);
+			double e = SystemChatUtils.getElevationNoDir(latStr, lonStr);
+			String s1 = String.format("  %10f km  ", 
+					Math.round(e*1_000.0)/1_000.0);
+			System.out.print(s1);
+			double delta = (e - ref)/e * 100.0; 
+			String s2 = String.format(" %12f %s", 
+					Math.round(delta*1_000.0)/1_000.0,
+					"%");
+			System.out.println(s2);
+		}
+		
 	}
 
 	/**
@@ -511,7 +538,7 @@ public class ChatUtils {
 	 * @param max
 	 * @return
 	 */
-	public static StringBuffer addhiteSpacesRightName(String name, int max) {
+	public static StringBuffer addWhiteSpacesRightName(String name, int max) {
 		int size = name.length();
 		StringBuffer sb = new StringBuffer();
 		int num = 1;
@@ -531,7 +558,7 @@ public class ChatUtils {
 	 * @param max
 	 * @return
 	 */
-	public static StringBuffer addhiteSpacesLeftName(String name, int max) {
+	public static StringBuffer addWhiteSpacesLeftName(String name, int max) {
 		int size = name.length();
 		int num = 1;
 		if (max - size > 1)

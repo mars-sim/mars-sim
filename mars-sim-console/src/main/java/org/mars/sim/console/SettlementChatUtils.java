@@ -128,8 +128,8 @@ public class SettlementChatUtils extends ChatUtils {
 			responseText.append(System.lineSeparator());
 			for (Person p : list) {
 				double jobProspect = Math.round(JobUtil.getJobProspect(p, job, settlementCache, true) * 10.0) / 10.0;
-				responseText.append(addhiteSpacesRightName(" " + p, 20));
-				responseText.append(addhiteSpacesRightName(" " + jobProspect, 6));
+				responseText.append(addWhiteSpacesRightName(" " + p, 20));
+				responseText.append(addWhiteSpacesRightName(" " + jobProspect, 6));
 				responseText.append(System.lineSeparator());
 			}
 		}
@@ -233,10 +233,10 @@ public class SettlementChatUtils extends ChatUtils {
 		}
 
 		else if (text.equalsIgnoreCase("job demand")) {
-			responseText.append(addhiteSpacesRightName(" Job", 20));
-			responseText.append(addhiteSpacesRightName(" Demand", 10));
-			responseText.append(addhiteSpacesRightName(" Filled", 8));
-			responseText.append(addhiteSpacesRightName(" Deficit", 10));
+			responseText.append(addWhiteSpacesRightName(" Job", 20));
+			responseText.append(addWhiteSpacesRightName(" Demand", 10));
+			responseText.append(addWhiteSpacesRightName(" Filled", 8));
+			responseText.append(addWhiteSpacesRightName(" Deficit", 10));
 
 			responseText.append(System.lineSeparator());
 
@@ -248,10 +248,10 @@ public class SettlementChatUtils extends ChatUtils {
 			for (Job job : jobs) {
 				String jobName = job.getName(GenderType.MALE);
 				String n = " " + jobName;
-				responseText.append(addhiteSpacesRightName(n, 20));
+				responseText.append(addWhiteSpacesRightName(n, 20));
 
 				String demand = "" + Math.round(job.getSettlementNeed(settlementCache) * 10.0) / 10.0;
-				responseText.append(addhiteSpacesRightName(demand, 9));
+				responseText.append(addWhiteSpacesRightName(demand, 9));
 
 
 				int num = 0;
@@ -259,11 +259,11 @@ public class SettlementChatUtils extends ChatUtils {
 					num = map.get(jobName).size();
 
 				String positions = "" + num;
-				responseText.append(addhiteSpacesRightName(positions, 8));
+				responseText.append(addWhiteSpacesRightName(positions, 8));
 				
 				String deficit = ""
 						+ Math.round(JobUtil.getRemainingSettlementNeed(settlementCache, job) * 10.0) / 10.0;
-				responseText.append(addhiteSpacesRightName(deficit, 9));
+				responseText.append(addWhiteSpacesRightName(deficit, 9));
 				
 
 				responseText.append(System.lineSeparator());
@@ -283,10 +283,10 @@ public class SettlementChatUtils extends ChatUtils {
 			} catch (Exception e) {
 			}
 
-			responseText.append(addhiteSpacesRightName("--- Greenhouse Farming ---", 50));
+			responseText.append(addWhiteSpacesRightName("--- Greenhouse Farming ---", 50));
 			responseText.append(System.lineSeparator());
 			String s0 = " Current reserve : ";
-			responseText.append(addhiteSpacesRightName(s0, max));
+			responseText.append(addWhiteSpacesRightName(s0, max));
 			responseText.append(Math.round(reserve * 100.0) / 100.0 + " kg");
 			responseText.append(System.lineSeparator());
 
@@ -299,15 +299,15 @@ public class SettlementChatUtils extends ChatUtils {
 			}
 
 			String s1 = " Total growing area : ";
-			responseText.append(addhiteSpacesRightName(s1, max));
+			responseText.append(addWhiteSpacesRightName(s1, max));
 			responseText.append(Math.round(totalArea * 100.0) / 100.0);
 			responseText.append(System.lineSeparator());
 			String s3 = " Generated daily per unit area : ";
-			responseText.append(addhiteSpacesRightName(s3, max));
+			responseText.append(addWhiteSpacesRightName(s3, max));
 			responseText.append(Math.round(usage / totalArea * 100.0) / 100.0 + " kg/m^2/sol");
 			responseText.append(System.lineSeparator());
 			String s2 = " Total amount generated Daily : ";
-			responseText.append(addhiteSpacesRightName(s2, max));
+			responseText.append(addWhiteSpacesRightName(s2, max));
 			responseText.append(Math.round(usage * 100.0) / 100.0 + " kg/sol");
 			responseText.append(System.lineSeparator());
 
@@ -325,10 +325,10 @@ public class SettlementChatUtils extends ChatUtils {
 			} catch (Exception e) {
 			}
 
-			responseText.append(addhiteSpacesRightName("--- Greenhouse Farming ---", 50));
+			responseText.append(addWhiteSpacesRightName("--- Greenhouse Farming ---", 50));
 			responseText.append(System.lineSeparator());
 			String s0 = " Current reserve : ";
-			responseText.append(addhiteSpacesRightName(s0, max));
+			responseText.append(addWhiteSpacesRightName(s0, max));
 			responseText.append(Math.round(reserve * 100.0) / 100.0 + " kg");
 			responseText.append(System.lineSeparator());
 
@@ -341,15 +341,15 @@ public class SettlementChatUtils extends ChatUtils {
 			}
 
 			String s1 = " Total growing area : ";
-			responseText.append(addhiteSpacesRightName(s1, max));
+			responseText.append(addWhiteSpacesRightName(s1, max));
 			responseText.append(Math.round(totalArea * 100.0) / 100.0);
 			responseText.append(System.lineSeparator());
 			String s3 = " Consumed daily per unit area : ";
-			responseText.append(addhiteSpacesRightName(s3, max));
+			responseText.append(addWhiteSpacesRightName(s3, max));
 			responseText.append(Math.round(usage / totalArea * 100.0) / 100.0 + " kg/m^2/sol");
 			responseText.append(System.lineSeparator());
 			String s2 = " Total amount consumed daily : ";
-			responseText.append(addhiteSpacesRightName(s2, max));
+			responseText.append(addWhiteSpacesRightName(s2, max));
 			responseText.append(Math.round(usage * 100.0) / 100.0 + " kg/sol");
 			responseText.append(System.lineSeparator());
 
@@ -368,18 +368,18 @@ public class SettlementChatUtils extends ChatUtils {
 				totalArea += f.getGrowingArea();
 			}
 
-			responseText.append(addhiteSpacesRightName("--- Greenhouse Farming ---", 50));
+			responseText.append(addWhiteSpacesRightName("--- Greenhouse Farming ---", 50));
 			responseText.append(System.lineSeparator());
 			String s01 = " Total growing area : ";
-			responseText.append(addhiteSpacesRightName(s01, max0));
+			responseText.append(addWhiteSpacesRightName(s01, max0));
 			responseText.append(Math.round(totalArea * 100.0) / 100.0);
 			responseText.append(System.lineSeparator());
 			String s03 = " Consumed daily per unit area : ";
-			responseText.append(addhiteSpacesRightName(s03, max0));
+			responseText.append(addWhiteSpacesRightName(s03, max0));
 			responseText.append(Math.round(usage / totalArea * 100.0) / 100.0 + " kg/m^2/sol");
 			responseText.append(System.lineSeparator());
 			String s02 = " Projected daily amount consumed : ";
-			responseText.append(addhiteSpacesRightName(s02, max0));
+			responseText.append(addWhiteSpacesRightName(s02, max0));
 			responseText.append(Math.round(usage * 100.0) / 100.0 + " kg/sol");
 			responseText.append(System.lineSeparator());
 			responseText.append(System.lineSeparator());
@@ -669,13 +669,13 @@ public class SettlementChatUtils extends ChatUtils {
 			String obj = settlementCache.getObjective().getName();
 			double level = Math.round(settlementCache.getObjectiveLevel(ObjectiveType.getType(obj)) * 10.0)/10.0;
 			
-			responseText.append(addhiteSpacesLeftName(" Development Objective", 25));
-			responseText.append(addhiteSpacesRightName("Level", 8));
+			responseText.append(addWhiteSpacesLeftName(" Development Objective", 25));
+			responseText.append(addWhiteSpacesRightName("Level", 8));
 			responseText.append(System.lineSeparator());
 			responseText.append(" ----------------------------------- ");
 			responseText.append(System.lineSeparator());
-			responseText.append(addhiteSpacesLeftName(" " + obj, 25));
-			responseText.append(addhiteSpacesRightName("" + level, 7));	
+			responseText.append(addWhiteSpacesLeftName(" " + obj, 25));
+			responseText.append(addWhiteSpacesRightName("" + level, 7));	
 					
 			String[] s = new String[] { "Repair", "Maintenance", "EVA Suit Production" };
 
@@ -687,7 +687,7 @@ public class SettlementChatUtils extends ChatUtils {
 			responseText.append(System.lineSeparator());
 			responseText.append(System.lineSeparator());
 			responseText.append(System.lineSeparator());
-			responseText.append(addhiteSpacesLeftName(" Category of Operations        Level ", 33));
+			responseText.append(addWhiteSpacesLeftName(" Category of Operations        Level ", 33));
 			responseText.append(System.lineSeparator());
 			responseText.append(" ----------------------------------- ");
 			responseText.append(System.lineSeparator());
@@ -777,8 +777,8 @@ public class SettlementChatUtils extends ChatUtils {
 				responseText.append(System.lineSeparator());
 				responseText.append(" ------------------------------------------ ");
 				responseText.append(System.lineSeparator());
-				responseText.append(addhiteSpacesLeftName(" #" +  i+1 + ". " + p.getName(), 28));
-				responseText.append(addhiteSpacesLeftName(" " + p.getJobName(), 20));
+				responseText.append(addWhiteSpacesLeftName(" #" +  i+1 + ". " + p.getName(), 28));
+				responseText.append(addWhiteSpacesLeftName(" " + p.getJobName(), 20));
 				responseText.append(System.lineSeparator());
 				responseText.append(System.lineSeparator());
 				responseText.append(System.lineSeparator());
@@ -800,8 +800,8 @@ public class SettlementChatUtils extends ChatUtils {
 					responseText.append(System.lineSeparator());
 				}
 				
-				responseText.append(addhiteSpacesLeftName("  " + priName, 15));
-				responseText.append(addhiteSpacesLeftName("  " + priPhase, 20));
+				responseText.append(addWhiteSpacesLeftName("  " + priName, 15));
+				responseText.append(addWhiteSpacesLeftName("  " + priPhase, 20));
 				
 				responseText.append(System.lineSeparator());
 				responseText.append(System.lineSeparator());
@@ -829,8 +829,8 @@ public class SettlementChatUtils extends ChatUtils {
 							secPhase = cols.get(k).getPhase();
 						}
 						
-						responseText.append(addhiteSpacesLeftName(" " + secName, 15));
-						responseText.append(addhiteSpacesLeftName(" " + secPhase, 20));
+						responseText.append(addWhiteSpacesLeftName(" " + secName, 15));
+						responseText.append(addWhiteSpacesLeftName(" " + secPhase, 20));
 						responseText.append(System.lineSeparator());
 						responseText.append(System.lineSeparator());
 					}
@@ -847,8 +847,8 @@ public class SettlementChatUtils extends ChatUtils {
 					ScienceType t = sciences.get(j);
 
 					double score = p.getScientificAchievement(t);
-					responseText.append(addhiteSpacesLeftName(" " + t.getName(), 18));
-					responseText.append(addhiteSpacesRightName("     " + score, 8));
+					responseText.append(addWhiteSpacesLeftName(" " + t.getName(), 18));
+					responseText.append(addWhiteSpacesRightName("     " + score, 8));
 					responseText.append(System.lineSeparator());
 				}
 				
@@ -893,15 +893,15 @@ public class SettlementChatUtils extends ChatUtils {
 			responseText.append(System.lineSeparator());
 
 			responseText.append(" Rank  ");
-			responseText.append(addhiteSpacesRightName("Score", 5));
-			responseText.append(addhiteSpacesRightName("Science", 13));
+			responseText.append(addWhiteSpacesRightName("Score", 5));
+			responseText.append(addWhiteSpacesRightName("Science", 13));
 
-			responseText.append(addhiteSpacesRightName(" Succ ", WIDTH));
-			responseText.append(addhiteSpacesRightName(" Fail ", WIDTH));
-			responseText.append(addhiteSpacesRightName(" Canx ", WIDTH));
-			responseText.append(addhiteSpacesRightName(" Prim ", WIDTH));
-			responseText.append(addhiteSpacesRightName("Collab", WIDTH));
-			responseText.append(addhiteSpacesRightName("Achiev", WIDTH));
+			responseText.append(addWhiteSpacesRightName(" Succ ", WIDTH));
+			responseText.append(addWhiteSpacesRightName(" Fail ", WIDTH));
+			responseText.append(addWhiteSpacesRightName(" Canx ", WIDTH));
+			responseText.append(addWhiteSpacesRightName(" Prim ", WIDTH));
+			responseText.append(addWhiteSpacesRightName("Collab", WIDTH));
+			responseText.append(addWhiteSpacesRightName("Achiev", WIDTH));
 			
 			responseText.append(System.lineSeparator());
 			responseText.append(" ----------------------------------------------------------------------------------");
@@ -945,15 +945,15 @@ public class SettlementChatUtils extends ChatUtils {
 					rankStr = "   " + (i + 1) + "   ";
 						
 				responseText.append(rankStr);
-				responseText.append(addhiteSpacesRightName(scoreStr, 5));
-				responseText.append(addhiteSpacesRightName("  " + n, 14));
+				responseText.append(addWhiteSpacesRightName(scoreStr, 5));
+				responseText.append(addWhiteSpacesRightName("  " + n, 14));
 
-				responseText.append(addhiteSpacesRightName(suc + "", WIDTH));
-				responseText.append(addhiteSpacesRightName(fail + "", WIDTH));
-				responseText.append(addhiteSpacesRightName(canx + "", WIDTH));
-				responseText.append(addhiteSpacesRightName(oPri + "", WIDTH));
-				responseText.append(addhiteSpacesRightName(oCol + "", WIDTH));
-				responseText.append(addhiteSpacesRightName(achieve + "", WIDTH));
+				responseText.append(addWhiteSpacesRightName(suc + "", WIDTH));
+				responseText.append(addWhiteSpacesRightName(fail + "", WIDTH));
+				responseText.append(addWhiteSpacesRightName(canx + "", WIDTH));
+				responseText.append(addWhiteSpacesRightName(oPri + "", WIDTH));
+				responseText.append(addWhiteSpacesRightName(oCol + "", WIDTH));
+				responseText.append(addWhiteSpacesRightName(achieve + "", WIDTH));
 				
 				map.remove(score, t);
 				responseText.append(System.lineSeparator());
@@ -1497,8 +1497,8 @@ public class SettlementChatUtils extends ChatUtils {
 			responseText.append(System.lineSeparator());
 			responseText.append(System.lineSeparator());
 			
-			responseText.append(addhiteSpacesLeftName("   Name ", 30));
-			responseText.append(addhiteSpacesLeftName(" Role ", 25));
+			responseText.append(addWhiteSpacesLeftName("   Name ", 30));
+			responseText.append(addWhiteSpacesLeftName(" Role ", 25));
 			responseText.append(System.lineSeparator());
 			responseText.append(" -------------------------------------------- ");
 			responseText.append(System.lineSeparator());		
@@ -1517,9 +1517,9 @@ public class SettlementChatUtils extends ChatUtils {
 				if (i > 9)
 					numStr = (i+1) + ". ";
 				
-				responseText.append(addhiteSpacesLeftName(numStr + list.get(i), 30));
+				responseText.append(addWhiteSpacesLeftName(numStr + list.get(i), 30));
 
-				responseText.append(addhiteSpacesLeftName(" " + role, 25));
+				responseText.append(addWhiteSpacesLeftName(" " + role, 25));
 				responseText.append(System.lineSeparator());
 			}
 		}
@@ -1530,7 +1530,7 @@ public class SettlementChatUtils extends ChatUtils {
 			responseText.append(System.lineSeparator());
 
 			int max = 28;
-			responseText.append(addhiteSpacesRightName("Name : ", max));
+			responseText.append(addWhiteSpacesRightName("Name : ", max));
 			responseText.append(settlementCache);
 			if (masterClock == null)
 				masterClock = sim.getMasterClock();
@@ -1555,11 +1555,11 @@ public class SettlementChatUtils extends ChatUtils {
 
 			responseText.append(System.lineSeparator());
 //			responseText.append(settlementCache + " is at " + location);//(" + lat + ", " + lon + ")"); 
-			responseText.append(addhiteSpacesRightName("Location : ", max) + location.toString());
+			responseText.append(addWhiteSpacesRightName("Location : ", max) + location.toString());
 			responseText.append(System.lineSeparator());
 
 			String date = marsClock.getDateString();
-			responseText.append(addhiteSpacesRightName("Date and Time : ", max) + date);
+			responseText.append(addWhiteSpacesRightName("Date and Time : ", max) + date);
 
 			String time = marsClock.getDecimalTimeString();
 			responseText.append(" at " + time);
@@ -1569,47 +1569,47 @@ public class SettlementChatUtils extends ChatUtils {
 
 			double t = weather.getTemperature(location);
 			String tt = fmt.format(t) + DEGREE_CELSIUS;
-			responseText.append(addhiteSpacesRightName("Outside temperature : ", max) + tt);
+			responseText.append(addWhiteSpacesRightName("Outside temperature : ", max) + tt);
 			responseText.append(System.lineSeparator());
 
 			double p = weather.getAirPressure(location);
 			String pp = fmt2.format(p) + " " + Msg.getString("pressure.unit.kPa"); //$NON-NLS-1$
-			responseText.append(addhiteSpacesRightName("Air Pressure : ", max) + pp);
+			responseText.append(addWhiteSpacesRightName("Air Pressure : ", max) + pp);
 			responseText.append(System.lineSeparator());
 
 			double ad = weather.getAirDensity(location);
 			String aad = fmt2.format(ad) + " " + Msg.getString("airDensity.unit.gperm3"); //$NON-NLS-1$
-			responseText.append(addhiteSpacesRightName("Air Density : ", max) + aad);
+			responseText.append(addWhiteSpacesRightName("Air Density : ", max) + aad);
 			responseText.append(System.lineSeparator());
 
 			double ws = weather.getWindSpeed(location);
 			String wws = fmt2.format(ws) + " " + Msg.getString("windspeed.unit.meterpersec"); //$NON-NLS-1$
-			responseText.append(addhiteSpacesRightName("Wind Speed : ", max) + wws);
+			responseText.append(addWhiteSpacesRightName("Wind Speed : ", max) + wws);
 			responseText.append(System.lineSeparator());
 
 			double wd = weather.getWindDirection(location);
 			String wwd = fmt.format(wd) + Msg.getString("windDirection.unit.deg"); //$NON-NLS-1$
-			responseText.append(addhiteSpacesRightName("Wind Direction : ", max) + wwd);
+			responseText.append(addWhiteSpacesRightName("Wind Direction : ", max) + wwd);
 			responseText.append(System.lineSeparator());
 
 			double od = surfaceFeatures.getOpticalDepth(location);
 			String ood = fmt2.format(od);
-			responseText.append(addhiteSpacesRightName("Optical Depth : ", max) + ood);
+			responseText.append(addWhiteSpacesRightName("Optical Depth : ", max) + ood);
 			responseText.append(System.lineSeparator());
 
 			double sza = orbitInfo.getSolarZenithAngle(location);
 			String ssza = fmt2.format(sza * RADIANS_TO_DEGREES) + DEGREE;
-			responseText.append(addhiteSpacesRightName("Solar Zenith Angle : ", max) + ssza);
+			responseText.append(addWhiteSpacesRightName("Solar Zenith Angle : ", max) + ssza);
 			responseText.append(System.lineSeparator());
 
 			double sda = orbitInfo.getSolarDeclinationAngleDegree();
 			String ssda = fmt2.format(sda) + DEGREE;
-			responseText.append(addhiteSpacesRightName("Solar Declination Angle : ", max) + ssda);
+			responseText.append(addWhiteSpacesRightName("Solar Declination Angle : ", max) + ssda);
 			responseText.append(System.lineSeparator());
 
 			double si = surfaceFeatures.getSolarIrradiance(location);
 			String ssi = fmt2.format(si) + " " + Msg.getString("solarIrradiance.unit"); //$NON-NLS-1$
-			responseText.append(addhiteSpacesRightName("Solar Irradiance : ", max) + ssi);
+			responseText.append(addWhiteSpacesRightName("Solar Irradiance : ", max) + ssi);
 			responseText.append(System.lineSeparator());
 		}
 

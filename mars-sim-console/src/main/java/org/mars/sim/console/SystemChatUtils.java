@@ -17,6 +17,7 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.CollectionUtils;
+import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
@@ -37,6 +38,47 @@ public class SystemChatUtils extends ChatUtils {
 
 	private static Logger logger = Logger.getLogger(SystemChatUtils.class.getName());
 
+	static Map<Integer, String> topographicExcursionNames = new HashMap<>();
+	static Map<Integer, String[]> topographicExcursionCoords = new HashMap<>();
+			
+	static {
+		topographicExcursionNames.put(1, "Olympus Mons");
+		topographicExcursionNames.put(2, "Ascraeus Mons");
+		topographicExcursionNames.put(3, "Arsia Mons");
+		topographicExcursionNames.put(4, "Elysium Mons");
+		topographicExcursionNames.put(5, "Pavonis Mons");
+		topographicExcursionNames.put(6, "Hecates Tholus");
+		topographicExcursionNames.put(7, "Albor Tholus");
+		
+		topographicExcursionNames.put(8, "Hellas");
+		topographicExcursionNames.put(9, "Argyre");
+		topographicExcursionNames.put(10, "Utopia");
+		topographicExcursionNames.put(11, "Lyot");
+		topographicExcursionNames.put(12, "Valles Marineris");
+
+		topographicExcursionNames.put(13, "Viking Lander 1");
+		topographicExcursionNames.put(14, "Viking Lander 2");
+		topographicExcursionNames.put(15, "Pathfinder");
+
+		topographicExcursionCoords.put(1, new String[] {"17.3495", "226.31", "21287.4"});
+		topographicExcursionCoords.put(2, new String[] {"11.7082", "255.177", "18219.0"});
+		topographicExcursionCoords.put(3, new String[] {"-9.12736 ", "238.261", "17780.7"});
+		topographicExcursionCoords.put(4, new String[] {"24.7478", "146.437", "14126.6"});
+		topographicExcursionCoords.put(5, new String[] {"-0.06261", "246.674", "14057.4"});
+		topographicExcursionCoords.put(6, new String[] {"31.8125", "149.875", "4853.26"});
+		topographicExcursionCoords.put(7, new String[] {"18.6562", "149.875", "3925.49"});
+		
+		topographicExcursionCoords.put(8, new String[] {"-32.8132", "62.0172", "-8180"});
+		topographicExcursionCoords.put(9, new String[] {"-44.819", "315.088", "-5240.7"});
+		topographicExcursionCoords.put(10, new String[] {"39.5 ", "110.2", "-5050"});
+		topographicExcursionCoords.put(11, new String[] {"28.9277", "50.6031", "-7036"});
+		topographicExcursionCoords.put(12, new String[] {"-14.2969", "301.969", "-5679.47"});
+		
+		topographicExcursionCoords.put(13, new String[] {"22.2692", "311.8113", "-3627"});
+		topographicExcursionCoords.put(14, new String[] {"47.6680", "134.0430", "-4505"});
+		topographicExcursionCoords.put(15, new String[] {"19.0949", "326.5092", "-3682"});
+	}
+	
 	
 	/**
 	 * Asks a question in Expert Mode
@@ -478,6 +520,106 @@ public class SystemChatUtils extends ChatUtils {
 		return new String[] { questionText, responseText.toString()};
 	}
 	
+	
+	/**
+	 * Gets the elevation of the given latitude and longitude
+	 * 
+	 * @param latitudeStr
+	 * @param longitudeStr
+	 * @return
+	 */
+	public static double getElevation(String latitudeStr, String longitudeStr) {
+		try {
+//			double lat = Double.parseDouble(latitudeStr); //Coordinates.parseLatitude(latitudeStr);
+//			double lon = Double.parseDouble(longitudeStr); //Coordinates.parseLatitude(longitudeStr);
+//			System.out.println("lat : " + lat + "  lon : " + lon);
+			if (mars == null)
+				mars = sim.getMars();
+			if (terrainElevation == null)
+				terrainElevation =  mars.getSurfaceFeatures().getTerrainElevation();
+			return terrainElevation.getElevation(new Coordinates(latitudeStr, longitudeStr));//lon, lat));
+		} catch(IllegalStateException e) {
+			System.out.println(e);
+			return 0;
+		}
+	}
+	
+	/**
+	 * Gets the elevation of the given latitude and longitude
+	 * 
+	 * @param latitudeStr
+	 * @param longitudeStr
+	 * @return
+	 */
+	public static double getElevationNoDir(String latitudeStr, String longitudeStr) {
+		try {
+//		System.out.println("lat : " + latitudeStr + "  lon : " + longitudeStr);
+			double phi = Coordinates.parseLatitude2Phi(latitudeStr); // Double.parseDouble(latitudeStr); //
+			double theta = Coordinates.parseLongitude2Theta(longitudeStr); // Double.parseDouble(longitudeStr); //
+			String s = String.format("%8s: %8f %6s: %8f", 
+					"theta", Math.round(theta*1_000_000.0)/1_000_000.0,
+					"phi", Math.round(phi*1_000_000.0)/1_000_000.0);
+			System.out.print(s);
+			if (mars == null)
+				mars = sim.getMars();
+			if (terrainElevation == null)
+				terrainElevation =  mars.getSurfaceFeatures().getTerrainElevation();
+			double e = terrainElevation.getElevation(new Coordinates(latitudeStr, longitudeStr));//lon, lat));
+//			System.out.println("e : " + e);
+			return e;
+		} catch(IllegalStateException e) {
+			System.out.println(e);
+			return 0;
+		}
+	}
+	
+	
+	public static StringBuffer displayReferenceElevation(StringBuffer responseText) {
+		int size = topographicExcursionNames.size();
+		
+		responseText.append(System.lineSeparator());
+		responseText.append(addWhiteSpacesLeftName(" Location", 15));
+		responseText.append(addWhiteSpacesRightName(" Latitude", 12));
+		responseText.append(addWhiteSpacesRightName(" Longitude", 12));
+		responseText.append(addWhiteSpacesRightName(" Est Elevation", 15));
+		responseText.append(addWhiteSpacesRightName(" Ref Elevation", 15));	
+		responseText.append(addWhiteSpacesRightName(" delta", 10));
+		
+		responseText.append(System.lineSeparator());
+		responseText.append(" ----------------------------------------------------------------------");
+		responseText.append(System.lineSeparator());
+
+		for (int i = 1; i <= size; i++) {
+			String value[] = topographicExcursionCoords.get(i);
+			String latStr = value[0];
+			String lonStr = value[1];
+			String elevStr = value[2];
+			double ref = Double.parseDouble(elevStr)/1_000.0;
+//			System.out.println("ref : " + ref);
+									
+			double e = getElevationNoDir(latStr, lonStr);
+//			System.out.println("e : " + e);
+			double delta = Math.round((e-ref)/e *100_000.0)/1_000.0;
+//			System.out.println("delta : " + delta);
+			
+			responseText.append(addWhiteSpacesLeftName(" " + topographicExcursionNames.get(i), 15));
+			responseText.append(addWhiteSpacesRightName("" + latStr, 12));
+			responseText.append(addWhiteSpacesRightName("" + lonStr, 12));
+			responseText.append(addWhiteSpacesRightName(Math.round(e *1_000.0)/1_000.0 + " km", 15));
+			responseText.append(addWhiteSpacesRightName(Math.round(ref *1_000.0)/1_000.0 + " km", 15));	
+			responseText.append(addWhiteSpacesRightName(" " + delta + " %", 10));
+			responseText.append(System.lineSeparator());
+//			responseText.append("The estimated elevation of " + topographicExcursionNames.get(i) 
+//					+ " at (" + latStr + ", " + lonStr + ") is "
+//					+ Math.round(e *10_000.0)/10.0 
+//					+ " m. (Reference value : " + Math.round(ref *1_000.0)/1_000.0 + " m)");
+//					responseText.append(System.lineSeparator());
+		}
+		responseText.append(System.lineSeparator());
+		
+		return responseText;
+	}
+	
 	/*
 	 * Asks a system-wide, overall question. e.g. "scores" on all settlements
 	 * 
@@ -512,11 +654,74 @@ public class SystemChatUtils extends ChatUtils {
 		}
 
 		if (expertMode) {
-
 			return askExpertMode(text, responseText);
-
 		}
 
+
+		else if (text.equalsIgnoreCase("elevation")) {
+			
+//			responseText = displayReferenceElevation(responseText);
+			
+			boolean quit = true;
+			String latitudeStr = "";
+			String longitudeStr = "";
+			double lat = -1;
+			double lon = -1;
+			
+			boolean change = true;
+			
+			while (change) {
+				
+				do {
+					try {
+						String prompt0 = YOU_PROMPT + "What is the latitude (e.g. 10.03 N, 5.01 S) ? " 
+								+ System.lineSeparator() + "Note: '/q' to quit";
+						latitudeStr = textIO.newStringInputReader().read(prompt0);
+						if (latitudeStr.equalsIgnoreCase("quit") || latitudeStr.equalsIgnoreCase("/q"))
+							;
+						else {
+							lat = Coordinates.parseLatitude2Phi(latitudeStr);
+						}
+						quit = true;
+					} catch(IllegalStateException e) {
+						quit = false;
+					}
+				} while (!quit);
+				
+				do {
+					try {
+						String prompt0 = YOU_PROMPT + "What is the longitude (e.g. 5.09 E, 18.04 W) ? " 
+								+ System.lineSeparator() + "Note: '/q' to quit";
+						longitudeStr = textIO.newStringInputReader().read(prompt0);
+						if (longitudeStr.equalsIgnoreCase("quit") || longitudeStr.equalsIgnoreCase("/q"))
+							;
+						else {
+							lon = Coordinates.parseLatitude2Phi(longitudeStr);
+						}
+						quit = true;
+					} catch(IllegalStateException e) {
+						quit = false;
+					}
+				} while (!quit);
+				
+				if (lat != -1 && lon != -1) {
+					double elevation = terrainElevation.getElevation(new Coordinates(lat, lon));
+					responseText.append(System.lineSeparator());
+					responseText.append("The elevation of (" + latitudeStr + ", " + longitudeStr + ") is "
+							+ Math.round(elevation *1000.0)/1000.0);
+					responseText.append(System.lineSeparator());
+				}
+				
+				String prompt = YOU_PROMPT + "Another location ? " 
+						+ System.lineSeparator() + "Note: '/q' to quit";
+				
+				change = textIO.newBooleanInputReader().read(prompt); 
+			}
+			
+			responseText.append(System.lineSeparator());
+			
+		}
+		
 		else if (text.equalsIgnoreCase("scores")) {
 
 			double aveSocial = 0;
@@ -634,9 +839,9 @@ public class SystemChatUtils extends ChatUtils {
 
 			responseText.append(" ----------------------------------------------------------------------");
 			responseText.append(System.lineSeparator());
-			responseText.append(addhiteSpacesRightName("Average : ", 36));
-			responseText.append(addhiteSpacesRightName("" + Math.round(aveSocial * 10.0) / 10.0, 6));
-			responseText.append(addhiteSpacesRightName("" + Math.round(aveSci * 10.0) / 10.0, 8));
+			responseText.append(addWhiteSpacesRightName("Average : ", 36));
+			responseText.append(addWhiteSpacesRightName("" + Math.round(aveSocial * 10.0) / 10.0, 6));
+			responseText.append(addWhiteSpacesRightName("" + Math.round(aveSci * 10.0) / 10.0, 8));
 			responseText.append(System.lineSeparator());
 
 

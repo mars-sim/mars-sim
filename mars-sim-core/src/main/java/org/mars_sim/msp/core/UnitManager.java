@@ -807,7 +807,7 @@ public class UnitManager implements Serializable {
 				if (longitudeStr.equals(SettlementConfig.RANDOM)) {
 					longitude = Coordinates.getRandomLongitude();
 				} else {
-					longitude = Coordinates.parseLongitude(longitudeStr);
+					longitude = Coordinates.parseLongitude2Theta(longitudeStr);
 				}
 
 				// Get settlement latitude
@@ -817,7 +817,7 @@ public class UnitManager implements Serializable {
 				if (latitudeStr.equals(SettlementConfig.RANDOM)) {
 					latitude = Coordinates.getRandomLatitude();
 				} else {
-					latitude = Coordinates.parseLatitude(latitudeStr);
+					latitude = Coordinates.parseLatitude2Phi(latitudeStr);
 				}
 
 				Coordinates location = new Coordinates(latitude, longitude);

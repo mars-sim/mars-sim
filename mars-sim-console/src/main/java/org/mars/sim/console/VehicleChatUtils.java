@@ -41,23 +41,23 @@ public class VehicleChatUtils extends ChatUtils {
 			int max = 28;
 
 			responseText.append(System.lineSeparator());
-			responseText.append(addhiteSpacesRightName("Status : ", max) + vehicleCache.getStatus().getName());
+			responseText.append(addWhiteSpacesRightName("Status : ", max) + vehicleCache.getStatus().getName());
 
 			responseText.append(System.lineSeparator());
-			responseText.append(addhiteSpacesRightName("Associated Settlement : ", max)
+			responseText.append(addWhiteSpacesRightName("Associated Settlement : ", max)
 					+ vehicleCache.getAssociatedSettlement().getName());
 
 			responseText.append(System.lineSeparator());
-			responseText.append(addhiteSpacesRightName("Location : ", max) + vehicleCache.getImmediateLocation());
+			responseText.append(addWhiteSpacesRightName("Location : ", max) + vehicleCache.getImmediateLocation());
 
 			responseText.append(System.lineSeparator());
-			responseText.append(addhiteSpacesRightName("Locale : ", max) + vehicleCache.getLocale());
+			responseText.append(addWhiteSpacesRightName("Locale : ", max) + vehicleCache.getLocale());
 
 			String reserve = "Yes";
 			if (!vehicleCache.isReservedForMission())
 				reserve = "No";
 			responseText.append(System.lineSeparator());
-			responseText.append(addhiteSpacesRightName("Reserved : ", max) + reserve);
+			responseText.append(addWhiteSpacesRightName("Reserved : ", max) + reserve);
 
 			String missionStr = "None";
 			if (missionManager.getMissionForVehicle(vehicleCache) != null) {
@@ -65,9 +65,9 @@ public class VehicleChatUtils extends ChatUtils {
 				String lead = m.getStartingMember().getName();
 				missionStr = "Yes. " + m.getName();
 				responseText.append(System.lineSeparator());
-				responseText.append(addhiteSpacesRightName("On a Mission : ", max) + missionStr);
+				responseText.append(addWhiteSpacesRightName("On a Mission : ", max) + missionStr);
 				responseText.append(System.lineSeparator());
-				responseText.append(addhiteSpacesRightName("Mission Lead : ", max) + lead);
+				responseText.append(addWhiteSpacesRightName("Mission Lead : ", max) + lead);
 				responseText.append(System.lineSeparator());
 
 				double dist = 0;
@@ -86,7 +86,7 @@ public class VehicleChatUtils extends ChatUtils {
 
 			} else {
 				responseText.append(System.lineSeparator());
-				responseText.append(addhiteSpacesRightName("Not on a Mission", max));
+				responseText.append(addWhiteSpacesRightName("Not on a Mission", max));
 			}
 
 			if (vehicleCache instanceof Rover) {
@@ -95,7 +95,7 @@ public class VehicleChatUtils extends ChatUtils {
 					towed = "Yes. Towed by " + vehicleCache.getTowingVehicle().getName();
 				}
 				responseText.append(System.lineSeparator());
-				responseText.append(addhiteSpacesRightName("Being Towed : ", max) + towed);
+				responseText.append(addWhiteSpacesRightName("Being Towed : ", max) + towed);
 
 				String towing = "No";
 				if (((Rover) vehicleCache).isTowingAVehicle()
@@ -103,7 +103,7 @@ public class VehicleChatUtils extends ChatUtils {
 					towing = "Yes. Towing " + ((Rover) vehicleCache).getTowedVehicle().getName();
 				}
 				responseText.append(System.lineSeparator());
-				responseText.append(addhiteSpacesRightName("Towing : ", max) + towing);
+				responseText.append(addWhiteSpacesRightName("Towing : ", max) + towing);
 			}
 
 		}
@@ -116,22 +116,22 @@ public class VehicleChatUtils extends ChatUtils {
 //			responseText.append(SYSTEM_PROMPT);
 //			responseText.append("Specifications :");
 			responseText.append(System.lineSeparator());
-			responseText.append(addhiteSpacesRightName("Name : ", max) + vehicleCache.getName());
+			responseText.append(addWhiteSpacesRightName("Name : ", max) + vehicleCache.getName());
 			responseText.append(System.lineSeparator());
-			responseText.append(addhiteSpacesRightName("Type : ", max) + vehicleCache.getVehicleType());
+			responseText.append(addWhiteSpacesRightName("Type : ", max) + vehicleCache.getVehicleType());
 			responseText.append(System.lineSeparator());
-			responseText.append(addhiteSpacesRightName("Description : ", max) + vehicleCache.getVehicleType());
+			responseText.append(addWhiteSpacesRightName("Description : ", max) + vehicleCache.getVehicleType());
 			responseText.append(System.lineSeparator());
-			responseText.append(addhiteSpacesRightName("Base Mass : ", max)).append(vehicleCache.getBaseMass())
+			responseText.append(addWhiteSpacesRightName("Base Mass : ", max)).append(vehicleCache.getBaseMass())
 					.append(" kg");
 			responseText.append(System.lineSeparator());
 
 //			System.out.println("next is speed : " + responseText.toString());
 
-			responseText.append(addhiteSpacesRightName("Base Speed : ", max)).append(vehicleCache.getBaseSpeed())
+			responseText.append(addWhiteSpacesRightName("Base Speed : ", max)).append(vehicleCache.getBaseSpeed())
 					.append(" km/h");
 			responseText.append(System.lineSeparator());
-			responseText.append(addhiteSpacesRightName("Drivetrain Efficiency : ", max))
+			responseText.append(addWhiteSpacesRightName("Drivetrain Efficiency : ", max))
 					.append(vehicleCache.getDrivetrainEfficiency()).append(" kWh/km");
 //			responseText.append(System.lineSeparator());
 //			responseText.append(addhiteSpacesName("Travel per sol : ", max) + vehicleCache.getEstimatedTravelDistancePerSol() + " km (Estimated)");
@@ -145,22 +145,22 @@ public class VehicleChatUtils extends ChatUtils {
 				String fuelName = ResourceUtil.findAmountResourceName(id);
 				fuel = Conversion.capitalize(fuelName) + " (Solid Oxide Fuel Cell)";
 
-				responseText.append(addhiteSpacesRightName("Power Source : ", max) + fuel);
+				responseText.append(addWhiteSpacesRightName("Power Source : ", max) + fuel);
 				responseText.append(System.lineSeparator());
 
-				responseText.append(addhiteSpacesRightName("Fuel Capacity : ", max))
+				responseText.append(addWhiteSpacesRightName("Fuel Capacity : ", max))
 						.append(vehicleCache.getFuelCapacity() + " kg");
 				responseText.append(System.lineSeparator());
 
-				responseText.append(addhiteSpacesRightName("Base Range : ", max))
+				responseText.append(addWhiteSpacesRightName("Base Range : ", max))
 						.append(Math.round(vehicleCache.getBaseRange() * 100.0) / 100.0 + " km (Estimated)");
 				responseText.append(System.lineSeparator());
 
-				responseText.append(addhiteSpacesRightName("Base Fuel Consumption : ", max)).append(
+				responseText.append(addWhiteSpacesRightName("Base Fuel Consumption : ", max)).append(
 						Math.round(vehicleCache.getBaseFuelConsumption() * 100.0) / 100.0 + " km/kg (Estimated)");
 				responseText.append(System.lineSeparator());
 			} else {
-				responseText.append(addhiteSpacesRightName("Power Source : ", max) + fuel);
+				responseText.append(addWhiteSpacesRightName("Power Source : ", max) + fuel);
 				responseText.append(System.lineSeparator());
 			}
 
@@ -172,13 +172,13 @@ public class VehicleChatUtils extends ChatUtils {
 			} else if (vehicleCache instanceof LightUtilityVehicle) {
 				crewSize = ((LightUtilityVehicle) vehicleCache).getCrewCapacity();
 			}
-			responseText.append(addhiteSpacesRightName("Crew Size : ", max)).append(crewSize);
+			responseText.append(addWhiteSpacesRightName("Crew Size : ", max)).append(crewSize);
 			responseText.append(System.lineSeparator());
 
 			double cargo = 0;
 			if (vehicleCache instanceof Rover) {
 				cargo = ((Rover) vehicleCache).getCargoCapacity();
-				responseText.append(addhiteSpacesRightName("Cargo Capacity : ", max)).append(cargo + " kg");
+				responseText.append(addWhiteSpacesRightName("Cargo Capacity : ", max)).append(cargo + " kg");
 				responseText.append(System.lineSeparator());
 			}
 
@@ -191,19 +191,19 @@ public class VehicleChatUtils extends ChatUtils {
 				if (hasSickBay) {
 					hasSickBayStr = "Yes";
 
-					responseText.append(addhiteSpacesRightName("Has Sick Bay : ", max) + hasSickBayStr);
+					responseText.append(addWhiteSpacesRightName("Has Sick Bay : ", max) + hasSickBayStr);
 					responseText.append(System.lineSeparator());
 
 					int bed = ((Rover) vehicleCache).getSickBay().getSickBedNum();
-					responseText.append(addhiteSpacesRightName("# Beds (Sick Bay) : ", max)).append(bed);
+					responseText.append(addWhiteSpacesRightName("# Beds (Sick Bay) : ", max)).append(bed);
 					responseText.append(System.lineSeparator());
 
 					int lvl = ((Rover) vehicleCache).getSickBay().getTreatmentLevel();
-					responseText.append(addhiteSpacesRightName("Tech Level (Sick Bay) : ", max)).append(lvl);
+					responseText.append(addWhiteSpacesRightName("Tech Level (Sick Bay) : ", max)).append(lvl);
 					responseText.append(System.lineSeparator());
 
 				} else {
-					responseText.append(addhiteSpacesRightName("Has Sick Bay : ", max) + hasSickBayStr);
+					responseText.append(addWhiteSpacesRightName("Has Sick Bay : ", max) + hasSickBayStr);
 					responseText.append(System.lineSeparator());
 				}
 
@@ -218,15 +218,15 @@ public class VehicleChatUtils extends ChatUtils {
 				if (hasLab) {
 					hasLabStr = "Yes";
 
-					responseText.append(addhiteSpacesRightName("Has Lab : ", max) + hasLabStr);
+					responseText.append(addWhiteSpacesRightName("Has Lab : ", max) + hasLabStr);
 					responseText.append(System.lineSeparator());
 
 					int lvl = ((Rover) vehicleCache).getLab().getTechnologyLevel();
-					responseText.append(addhiteSpacesRightName("Tech Level (Lab) : ", max)).append(lvl);
+					responseText.append(addWhiteSpacesRightName("Tech Level (Lab) : ", max)).append(lvl);
 					responseText.append(System.lineSeparator());
 
 					int size = ((Rover) vehicleCache).getLab().getLaboratorySize();
-					responseText.append(addhiteSpacesRightName("Lab Size : ", max)).append(size);
+					responseText.append(addWhiteSpacesRightName("Lab Size : ", max)).append(size);
 					responseText.append(System.lineSeparator());
 
 					ScienceType[] types = ((Rover) vehicleCache).getLab().getTechSpecialties();
@@ -236,11 +236,11 @@ public class VehicleChatUtils extends ChatUtils {
 					}
 					names = names.substring(0, names.length() - 2);
 
-					responseText.append(addhiteSpacesRightName("Lab Specialties : ", max) + names);
+					responseText.append(addWhiteSpacesRightName("Lab Specialties : ", max) + names);
 					responseText.append(System.lineSeparator());
 
 				} else {
-					responseText.append(addhiteSpacesRightName("Has Lab: ", max) + hasSickBayStr);
+					responseText.append(addWhiteSpacesRightName("Has Lab: ", max) + hasSickBayStr);
 					responseText.append(System.lineSeparator());
 				}
 

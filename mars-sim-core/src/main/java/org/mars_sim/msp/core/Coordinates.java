@@ -17,9 +17,8 @@ import org.mars_sim.msp.core.tool.RandomUtil;
  * Spherical Coordinates. Represents a location on virtual Mars in spherical
  * coordinates. It provides some useful methods involving those coordinates, as
  * well as some static methods for general coordinate calculations.<br/>
- * {@link #theta} is longitute in (0-2PI) radians.<br/>
- * {@link #phi} is latitude in (-PI - PI) radians (although only 0-PI) makes any
- * sense for the renderer.<br/>
+ * {@link #theta} is longitute in (0 - 2 PI) radians. <br/>
+ * {@link #phi} is latitude in (0 - PI) radians. <br/>
  * {@link #rho} rho diameter of planet (in km) or 2* MARS_RADIUS_KM =
  * 3393.0<br/>
  */
@@ -27,12 +26,12 @@ public class Coordinates implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
-	/*
-	 * default logger. private static Logger logger =
-	 * Logger.getLogger(Coordinates.class.getName());
-	 */
-
+	
+	private static final double DEG_TO_RADIAN  = Math.PI / 180; 
+	private static final double RADIAN_TO_DEG  = 180 / Math.PI; 
+	private static final double PI_HALF = Math.PI / 2.0;
+	private static final double TWO_PI = Math.PI * 2D;
+	
 	// stored for efficiency but not serialized.
 	private static final transient String shortNorth = Msg.getString("direction.northShort");
 	private static final transient String shortEast = Msg.getString("direction.eastShort");
@@ -40,12 +39,9 @@ public class Coordinates implements Serializable {
 	private static final transient String shortWest = Msg.getString("direction.westShort");
 
 	// Data members
-	/**
-	 * Phi value of coordinates PHI is latitude in (-PI - PI) radians (although only
-	 * 0-PI) seem to be legal values.
-	 */
+	/** Phi value of coordinates PHI is latitude in 0-PI radians. */
 	private double phi;
-	/** Theta value of coordinates, THETA is longitude in (0-2PI) radians. */
+	/** Theta value of coordinates, THETA is longitude in 0-2PI radians. */
 	private double theta;
 	/** Sine of phi (stored for efficiency). */
 	private double sinPhi;
@@ -65,8 +61,8 @@ public class Coordinates implements Serializable {
 	/**
 	 * Constructs a Coordinates object, hence a constructor.
 	 * 
-	 * @param phi   the phi angle of the spherical coordinate
-	 * @param theta the theta angle of the spherical coordinate
+	 * @param phi    (latitude) the phi angle of the spherical coordinate
+	 * @param theta  (longitude) the theta angle of the spherical coordinate
 	 */
 	public Coordinates(double phi, double theta) {
 
@@ -97,7 +93,7 @@ public class Coordinates implements Serializable {
 	 * @throws Exception if latitude or longitude strings are invalid.
 	 */
 	public Coordinates(String latitude, String longitude) {
-		this(parseLatitude(latitude), parseLongitude(longitude));
+		this(parseLatitude2Phi(latitude), parseLongitude2Theta(longitude));
 	}
 
 	/** Sets commonly-used trigonometric functions of coordinates */
@@ -161,9 +157,9 @@ public class Coordinates implements Serializable {
 	public void setTheta(double newTheta) {
 		theta = newTheta;
 		while (theta < 0D)
-			theta += (Math.PI * 2D);
-		while (theta > (Math.PI * 2D))
-			theta -= (Math.PI * 2D);
+			theta += TWO_PI; 
+		while (theta > TWO_PI)
+			theta -= TWO_PI;
 		setTrigFunctions();
 	}
 
@@ -278,8 +274,8 @@ public class Coordinates implements Serializable {
 	 */
 	public double getAngleSLC(Coordinates otherCoords) {
 
-		double phi1 = -1D * (phi - (Math.PI / 2D));
-		double phi2 = -1D * (otherCoords.phi - (Math.PI / 2D));
+		double phi1 = -1D * (phi - PI_HALF);
+		double phi2 = -1D * (otherCoords.phi - PI_HALF);
 		double diffTheta = Math.abs(theta - otherCoords.theta);
 
 		double temp1 = Math.cos(phi1) * Math.cos(phi2);
@@ -306,8 +302,8 @@ public class Coordinates implements Serializable {
 	 */
 	public double getAngleHaversine(Coordinates otherCoords) {
 
-		double phi1 = -1D * (phi - (Math.PI / 2D));
-		double phi2 = -1D * (otherCoords.phi - (Math.PI / 2D));
+		double phi1 = -1D * (phi - PI_HALF);
+		double phi2 = -1D * (otherCoords.phi - PI_HALF);
 		double diffPhi = Math.abs(phi1 - phi2);
 		double diffTheta = Math.abs(theta - otherCoords.theta);
 
@@ -327,8 +323,8 @@ public class Coordinates implements Serializable {
 	 */
 	public double getAngleVincenty(Coordinates otherCoords) {
 
-		double phi1 = -1D * (phi - (Math.PI / 2D));
-		double phi2 = -1D * (otherCoords.phi - (Math.PI / 2D));
+		double phi1 = -1D * (phi - PI_HALF);
+		double phi2 = -1D * (otherCoords.phi - PI_HALF);
 		double diffTheta = Math.abs(theta - otherCoords.theta);
 
 		double temp1 = Math.pow(Math.cos(phi2) * Math.sin(diffTheta), 2D);
@@ -396,14 +392,12 @@ public class Coordinates implements Serializable {
 	 * @return double longitude
 	 */
 	public double getLongitudeDouble() {
-		double degrees;
-
-		degrees = 0D;
+		double degrees = 0D;
 
 		if ((theta < Math.PI) && (theta >= 0D)) {
 			degrees = Math.toDegrees(theta);
 		} else if (theta >= Math.PI) {
-			degrees = Math.toDegrees((Math.PI * 2D) - theta);
+			degrees = Math.toDegrees(TWO_PI - theta);
 			degrees = -degrees;
 		}
 
@@ -418,16 +412,14 @@ public class Coordinates implements Serializable {
 	 * @return formatted longitude string for this Coordinates object
 	 */
 	public static String getFormattedLongitudeString(double theta) {
-		double degrees;
+		double degrees = 0;
 		String direction = "";
-
-		degrees = 0D;
 
 		if ((theta < Math.PI) && (theta >= 0D)) {
 			degrees = Math.toDegrees(theta);
 			direction = Msg.getString("direction.eastShort"); //$NON-NLS-1$
 		} else if (theta >= Math.PI) {
-			degrees = Math.toDegrees((Math.PI * 2D) - theta);
+			degrees = Math.toDegrees(TWO_PI - theta);
 			direction = Msg.getString("direction.westShort"); //$NON-NLS-1$ ;
 		}
 
@@ -457,14 +449,12 @@ public class Coordinates implements Serializable {
 	 */
 	public double getLatitudeDouble() {
 		double degrees;
-		double piHalf = Math.PI / 2.0;
-
 		degrees = 0D;
 
-		if (phi <= piHalf) {
-			degrees = ((piHalf - phi) / piHalf) * 90D;
-		} else if (phi > piHalf) {
-			degrees = ((phi - piHalf) / piHalf) * 90D;
+		if (phi <= PI_HALF) {
+			degrees = ((PI_HALF - phi) / PI_HALF) * 90D;
+		} else if (phi > PI_HALF) {
+			degrees = ((phi - PI_HALF) / PI_HALF) * 90D;
 			degrees = -degrees;
 		}
 
@@ -480,18 +470,14 @@ public class Coordinates implements Serializable {
 	 * @return formatted latitude string for this Coordinates object
 	 */
 	public static String getFormattedLatitudeString(double phi) {
-
-		double degrees;
-		double piHalf = Math.PI / 2.0;
+		double degrees = 0;
 		String direction = "";
 
-		degrees = 0D;
-
-		if (phi <= piHalf) {
-			degrees = ((piHalf - phi) / piHalf) * 90D;
+		if (phi <= PI_HALF) {
+			degrees = ((PI_HALF - phi) / PI_HALF) * 90D;
 			direction = Msg.getString("direction.northShort"); //$NON-NLS-1$
-		} else if (phi > piHalf) {
-			degrees = ((phi - piHalf) / piHalf) * 90D;
+		} else if (phi > PI_HALF) {
+			degrees = ((phi - PI_HALF) / PI_HALF) * 90D;
 			direction = Msg.getString("direction.southShort"); //$NON-NLS-1$
 		}
 
@@ -507,34 +493,23 @@ public class Coordinates implements Serializable {
 	 * @return latitude in degrees
 	 */
 	public double getPhi2Lat() {
-		double phi = getPhi();
-		double piHalf = Math.PI / 2.0;
-		double lat_degree = 0;
-		if (phi < piHalf) {
-			lat_degree = ((piHalf - phi) / piHalf) * 90;
-			// hemisphere = 1;
-		} else if (phi > piHalf) {
-			lat_degree = ((phi - piHalf) / piHalf) * 90;
-			// hemisphere = 2;
-		}
-		return lat_degree;
+		return getPhi2LatRadian() * RADIAN_TO_DEG;
 	}
 
 	/**
-	 * Converts phi in radian to lat in radian
+	 * Converts phi in radians to lat in radians
 	 * 
 	 * @param latCache in radians
-	 * @return latitude in radian
+	 * @return latitude in radians
 	 */
 	public double getPhi2LatRadian() {
 		double phi = getPhi();
-		double piHalf = Math.PI / 2.0;
 		double lat_radian = 0;
-		if (phi < piHalf) {
-			lat_radian = piHalf - phi;
+		if (phi < PI_HALF) {
+			lat_radian = PI_HALF - phi;
 			// hemisphere = 1;
-		} else if (phi > piHalf) {
-			lat_radian = phi - piHalf;
+		} else if (phi > PI_HALF) {
+			lat_radian = phi - PI_HALF;
 			// hemisphere = 2;
 		}
 		return lat_radian;
@@ -570,7 +545,7 @@ public class Coordinates implements Serializable {
 	 */
 	public IntPoint findRectPosition(double newPhi, double newTheta, double rho, int half_map, int low_edge) {
 
-		double temp_col = newTheta + ((Math.PI / -2D) - theta);
+		double temp_col = newTheta + (-PI_HALF - theta);
 		double temp_buff_x = rho * Math.sin(newPhi);
 		int buff_x = ((int) Math.round(temp_buff_x * Math.cos(temp_col)) + half_map) - low_edge;
 		int buff_y = ((int) Math
@@ -636,7 +611,7 @@ public class Coordinates implements Serializable {
 			if (y3 < 0)
 				theta_new = Math.PI - theta_new;
 			else
-				theta_new = (Math.PI * 2D) + theta_new;
+				theta_new = TWO_PI + theta_new;
 		}
 
 		newCoordinates.setPhi(phi_new);
@@ -652,8 +627,8 @@ public class Coordinates implements Serializable {
 	 */
 	public Direction getDirectionToPoint(Coordinates otherCoords) {
 
-		double phi1 = -1D * (phi - (Math.PI / 2D));
-		double phi2 = -1D * (otherCoords.phi - (Math.PI / 2D));
+		double phi1 = -1D * (phi - PI_HALF);
+		double phi2 = -1D * (otherCoords.phi - PI_HALF);
 		double thetaDiff = otherCoords.theta - theta;
 		double temp1 = Math.sin(thetaDiff) * Math.cos(phi2);
 		double temp2 = Math.cos(phi1) * Math.sin(phi2);
@@ -702,13 +677,13 @@ public class Coordinates implements Serializable {
 	}
 
 	/**
-	 * Parse a latitude string into a phi value. ex. "25.344 N"
+	 * Parse a latitude string into a phi value. e.g. input: "25.344 N"
 	 * 
 	 * @param latitude as string
-	 * @return phi value
+	 * @return phi value in radians
 	 * @throws ParseException if latitude string could not be parsed.
 	 */
-	public static double parseLatitude(String latitude) {
+	public static double parseLatitude2Phi(String latitude) {
 		double latValue = 0D;
 
 		String cleanLatitude = latitude.toUpperCase().trim();
@@ -716,41 +691,58 @@ public class Coordinates implements Serializable {
 		if (cleanLatitude.isEmpty())
 			throw new IllegalStateException("Latitude is blank !");
 
+		boolean pureDecimal = true;
+		
 		try {
-			String numberString = cleanLatitude.substring(0, cleanLatitude.length() - 1).trim();
-			if (numberString.endsWith(Msg.getString("direction.degreeSign"))) //$NON-NLS-1$
-				numberString = numberString.substring(0, numberString.length() - 1);
-			// Replace comma with period from internationalization.
-			numberString = numberString.replace(',', '.');
-			latValue = Double.parseDouble(numberString);
+			latValue = Double.parseDouble(latitude);		
+			if ((latValue > 90D) || (latValue < -90))
+				throw new IllegalStateException("Latitude value out of range : " + latValue);
+			if (latValue >= 0)
+				latValue = 90D - latValue;
+			else
+				latValue += 90D;		
 		} catch (NumberFormatException e) {
-			throw new IllegalStateException("Latitude number invalid : " + latitude);
+			pureDecimal = false;
 		}
+		
+		if (!pureDecimal) {
+			try {
+				String numberString = cleanLatitude.substring(0, cleanLatitude.length() - 1).trim();
+				if (numberString.endsWith(Msg.getString("direction.degreeSign"))) //$NON-NLS-1$
+					numberString = numberString.substring(0, numberString.length() - 1);
+				// Replace comma with period from internationalization.
+				numberString = numberString.replace(',', '.');
+				latValue = Double.parseDouble(numberString);
+			} catch (NumberFormatException e) {
+				throw new IllegalStateException("Latitude number invalid : " + latitude);
+			}
 
-		if ((latValue > 90D) || (latValue < 0))
-			throw new IllegalStateException("Latitude value out of range : " + latValue);
+			if ((latValue > 90D) || (latValue < -90))
+				throw new IllegalStateException("Latitude value out of range : " + latValue);
 
-		// TODO parse latitude depending on locale and validate
-		String direction = "" + cleanLatitude.charAt(latitude.length() - 1);
-		if (direction.compareToIgnoreCase(shortNorth) == 0)
-			latValue = 90D - latValue;
-		else if (direction.compareToIgnoreCase(shortSouth) == 0)
-			latValue += 90D;
-		else
-			throw new IllegalStateException("Invalid Latitude direction : " + direction);
+			// TODO parse latitude depending on locale and validate
+			String direction = "" + cleanLatitude.charAt(latitude.length() - 1);
+			if (direction.compareToIgnoreCase(shortNorth) == 0)
+				latValue = 90D - latValue;
+			else if (direction.compareToIgnoreCase(shortSouth) == 0)
+				latValue += 90D;
+			else
+				throw new IllegalStateException("Invalid Latitude direction : " + direction);
+		}
+	
 
-		double phi = Math.PI * (latValue / 180D);
+		double phi = DEG_TO_RADIAN * latValue;
 		return phi;
 	}
 
 	/**
-	 * Parse a longitude string into a theta value. ex. "63.5532 W"
+	 * Parse a longitude string into a theta value. e.g. input:  "63.5532 W" 
 	 * 
 	 * @param longitude as string
-	 * @return theta value
+	 * @return theta value in radians
 	 * @throws ParseException if longitude string could not be parsed.
 	 */
-	public static double parseLongitude(String longitude) {
+	public static double parseLongitude2Theta(String longitude) {
 		double longValue = 0D;
 
 		String cleanLongitude = longitude.toUpperCase().trim();
@@ -758,31 +750,47 @@ public class Coordinates implements Serializable {
 		if (cleanLongitude.isEmpty())
 			throw new IllegalStateException("Longitude is blank !");
 
+		boolean pureDecimal = true;
+		
 		try {
-			String numberString = cleanLongitude.substring(0, cleanLongitude.length() - 1).trim();
-			if (numberString.endsWith(Msg.getString("direction.degreeSign")))
-				numberString = numberString.substring(0, numberString.length() - 1); // $NON-NLS-1$
-			// Replace "comma" (in case of non-US locale) with "period"
-			numberString = numberString.replace(',', '.');
-			longValue = Double.parseDouble(numberString);
+			longValue = Double.parseDouble(longitude);		
+			while (longValue < 0D)
+				longValue += 360; 
+			while (longValue > 360)
+				longValue -= 360;
+			
 		} catch (NumberFormatException e) {
-			throw new IllegalStateException("Longitude number invalid: " + longitude);
+			pureDecimal = false;
 		}
+		
+		if (!pureDecimal) {
+		
+			try {
+				String numberString = cleanLongitude.substring(0, cleanLongitude.length() - 1).trim();
+				if (numberString.endsWith(Msg.getString("direction.degreeSign")))
+					numberString = numberString.substring(0, numberString.length() - 1); // $NON-NLS-1$
+				// Replace "comma" (in case of non-US locale) with "period"
+				numberString = numberString.replace(',', '.');
+				longValue = Double.parseDouble(numberString);
+			} catch (NumberFormatException e) {
+				throw new IllegalStateException("Longitude number invalid: " + longitude);
+			}
+	
+			// TODO parse longitude depending on locale and validate
+			String directionStr = "" + cleanLongitude.charAt(cleanLongitude.length() - 1);
+	
+			if (directionStr.compareToIgnoreCase(shortWest) == 0)
+				longValue = 360D - longValue;
+			else if (directionStr.compareToIgnoreCase(shortEast) != 0)
+				throw new IllegalStateException("Invalid Longitude direction : " + directionStr);
 
-		// TODO parse longitude depending on locale and validate
-		String directionStr = "" + cleanLongitude.charAt(cleanLongitude.length() - 1);
-
-		if (directionStr.compareToIgnoreCase(shortWest) == 0)
-			longValue = 360D - longValue;
-		else if (directionStr.compareToIgnoreCase(shortEast) != 0)
-			throw new IllegalStateException("Invalid Longitude direction : " + directionStr);
-
+		}
 		// if ((longValue > 180D) || (longValue < 0)) {
 		// throw new IllegalStateException("The value of longitude " + longValue + "
 		// needs to be between 0 and 180 degrees.");
 		// }
 
-		double theta = (2 * Math.PI) * (longValue / 360D);
+		double theta = DEG_TO_RADIAN * longValue;
 		return theta;
 	}
 
@@ -793,7 +801,7 @@ public class Coordinates implements Serializable {
 	 */
 	public static double getRandomLatitude() {
 		// Random latitude should be less likely to be near the poles.
-		double phi = RandomUtil.getRandomDouble(Math.PI / 2D) + RandomUtil.getRandomDouble(Math.PI / 2D);
+		double phi = .8 * (RandomUtil.getRandomDouble(PI_HALF) - RandomUtil.getRandomDouble(PI_HALF));
 		return phi;
 	}
 
@@ -803,7 +811,7 @@ public class Coordinates implements Serializable {
 	 * @return longitude
 	 */
 	public static double getRandomLongitude() {
-		double theta = Math.random() * (2D * Math.PI);
+		double theta = RandomUtil.getRandomDouble(Math.PI) - RandomUtil.getRandomDouble(Math.PI); 
 		return theta;
 	}
 }

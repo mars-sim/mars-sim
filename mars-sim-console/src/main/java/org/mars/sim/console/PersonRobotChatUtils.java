@@ -70,7 +70,7 @@ public class PersonRobotChatUtils extends ChatUtils {
 			responseText.append(System.lineSeparator());
 			responseText.append(System.lineSeparator());
 			
-			responseText.append(addhiteSpacesLeftName("  Type of Training", 30));
+			responseText.append(addWhiteSpacesLeftName("  Type of Training", 30));
 			responseText.append(System.lineSeparator());
 			responseText.append(" ---------------------------- ");
 			responseText.append(System.lineSeparator());		
@@ -78,7 +78,7 @@ public class PersonRobotChatUtils extends ChatUtils {
 			List<TrainingType> trainings = personCache.getTrainings();
 			
 			for (TrainingType tt : trainings) {
-				responseText.append(addhiteSpacesLeftName(" " + tt.getName(), 22));
+				responseText.append(addWhiteSpacesLeftName(" " + tt.getName(), 22));
 				responseText.append(System.lineSeparator());
 			}
 			
@@ -96,10 +96,10 @@ public class PersonRobotChatUtils extends ChatUtils {
 			int num1 = 1;
 
 			responseText.append(System.lineSeparator());
-			responseText.append(addhiteSpacesLeftName("        Role   ", 30));
-			responseText.append(addhiteSpacesRightName(" Job Score ", 15));
-			responseText.append(addhiteSpacesRightName(" Training Score ", 15));
-			responseText.append(addhiteSpacesRightName(" Total", 8));
+			responseText.append(addWhiteSpacesLeftName("        Role   ", 30));
+			responseText.append(addWhiteSpacesRightName(" Job Score ", 15));
+			responseText.append(addWhiteSpacesRightName(" Training Score ", 15));
+			responseText.append(addWhiteSpacesRightName(" Total", 8));
 
 			responseText.append(System.lineSeparator());
 			responseText.append(" ------------------------------------------------------------------- ");
@@ -119,21 +119,21 @@ public class PersonRobotChatUtils extends ChatUtils {
 					responseText.append(" " + num1 + ". ");
 				num1++;
 
-				responseText.append(addhiteSpacesLeftName(roleType.getName(), 30));
+				responseText.append(addWhiteSpacesLeftName(roleType.getName(), 30));
 
 				double jScore = Math.round(
 						RoleUtil.getJobScore(personCache, roleType, weights) * 10.0)
 						/ 10.0;
-				responseText.append(addhiteSpacesRightName(" " + jScore, 5));
+				responseText.append(addWhiteSpacesRightName(" " + jScore, 5));
 				
 				double tScore = Math.round(
 						RoleUtil.getTrainingScore(personCache, roleType, weights) * 10.0)
 						/ 10.0;
-				responseText.append(addhiteSpacesRightName(" " + tScore, 10));
+				responseText.append(addWhiteSpacesRightName(" " + tScore, 10));
 				
 				double total = Math.round((jScore + tScore) * 10.0) / 10.0;
 						
-				responseText.append(addhiteSpacesRightName(" " + total, 8));
+				responseText.append(addWhiteSpacesRightName(" " + total, 8));
 				
 				responseText.append(System.lineSeparator());
 
@@ -154,9 +154,9 @@ public class PersonRobotChatUtils extends ChatUtils {
 			int num1 = 1;
 
 			responseText.append(System.lineSeparator());
-			responseText.append(addhiteSpacesLeftName("         Job   ", 16));
-			responseText.append(addhiteSpacesRightName(" Capability Score", 18));
-			responseText.append(addhiteSpacesRightName(" Prospect Score", 13));
+			responseText.append(addWhiteSpacesLeftName("         Job   ", 16));
+			responseText.append(addWhiteSpacesRightName(" Capability Score", 18));
+			responseText.append(addWhiteSpacesRightName(" Prospect Score", 13));
 			responseText.append(System.lineSeparator());
 			responseText.append(" ------------------------------------------------------- ");
 			responseText.append(System.lineSeparator());
@@ -168,17 +168,17 @@ public class PersonRobotChatUtils extends ChatUtils {
 					responseText.append(" " + num1 + ". ");
 				num1++;
 
-				responseText.append(addhiteSpacesLeftName(jobStr, 16));
+				responseText.append(addWhiteSpacesLeftName(jobStr, 16));
 
 				Job job = JobUtil.getJob(jobStr);
 
 				double capScore = Math.round(job.getCapability(personCache) * 10.0) / 10.0;
-				responseText.append(addhiteSpacesRightName(" " + capScore, 8));
+				responseText.append(addWhiteSpacesRightName(" " + capScore, 8));
 
 				double prospectScore = Math.round(
 						JobUtil.getJobProspect(personCache, job, personCache.getAssociatedSettlement(), true) * 10.0)
 						/ 10.0;
-				responseText.append(addhiteSpacesRightName(" " + prospectScore, 13));
+				responseText.append(addWhiteSpacesRightName(" " + prospectScore, 13));
 				responseText.append(System.lineSeparator());
 
 			}
@@ -237,9 +237,9 @@ public class PersonRobotChatUtils extends ChatUtils {
 			for (int i = 0; i < size; i++) {
 				double milliSol = personCache.getTaskSchedule().getAirlockTasksTime(i);
 				if (milliSol > 0) {
-					responseText.append(addhiteSpacesRightName(i + "", MAX0));
+					responseText.append(addWhiteSpacesRightName(i + "", MAX0));
 					String m = Math.round(milliSol * 10.0) / 10.0 + "";
-					responseText.append(addhiteSpacesRightName(m, MAX1));
+					responseText.append(addWhiteSpacesRightName(m, MAX1));
 					responseText.append(System.lineSeparator());
 				}
 			}
@@ -264,9 +264,9 @@ public class PersonRobotChatUtils extends ChatUtils {
 			for (int i = 0; i < size; i++) {
 				if (eVATime.containsKey(i)) {
 					double milliSol = eVATime.get(i);
-					responseText.append(addhiteSpacesRightName(i + "", MAX0));
+					responseText.append(addWhiteSpacesRightName(i + "", MAX0));
 					String m = Math.round(milliSol * 10.0) / 10.0 + "";
-					responseText.append(addhiteSpacesRightName(m, MAX1));
+					responseText.append(addWhiteSpacesRightName(m, MAX1));
 					responseText.append(System.lineSeparator());
 				}
 			}
@@ -383,9 +383,9 @@ public class PersonRobotChatUtils extends ChatUtils {
 //				responseText.append(space + "(" + (i+1) + ") ");
 				responseText.append(n);
 //				responseText.append(" : ");
-				responseText.append(addhiteSpacesRightName("" + levels.get(n), 5));
-				responseText.append(addhiteSpacesRightName("" + exps.get(n), 12));
-				responseText.append(addhiteSpacesRightName("" + times.get(n), 14));
+				responseText.append(addWhiteSpacesRightName("" + levels.get(n), 5));
+				responseText.append(addWhiteSpacesRightName("" + exps.get(n), 12));
+				responseText.append(addWhiteSpacesRightName("" + times.get(n), 14));
 				responseText.append(System.lineSeparator());
 			}
 

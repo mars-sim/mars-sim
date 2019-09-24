@@ -79,7 +79,7 @@ public class LandmarkConfig implements Serializable {
 				// Get longitude.
 				String longitude = landmark.getAttributeValue(LONGITUDE).toUpperCase();
 
-				// take care to internationalize the coordinates
+				// TODO : need to account for other international system of coordinates
 				latitude = latitude.replace("N", Msg.getString("direction.northShort")); //$NON-NLS-1$ //$NON-NLS-2$
 				latitude = latitude.replace("S", Msg.getString("direction.southShort")); //$NON-NLS-1$ //$NON-NLS-2$
 				longitude = longitude.replace("E", Msg.getString("direction.eastShort")); //$NON-NLS-1$ //$NON-NLS-2$

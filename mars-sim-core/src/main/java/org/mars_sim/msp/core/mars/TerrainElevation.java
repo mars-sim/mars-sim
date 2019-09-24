@@ -24,10 +24,26 @@ public class TerrainElevation implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private static final double OLYMPUS_MONS_CALDERA_PHI = 1.246165D;
-	private static final double OLYMPUS_MONS_CALDERA_THETA = 3.944444D;
+	private static final double OLYMPUS_MONS_CALDERA_PHI = 1.267990;
+	private static final double OLYMPUS_MONS_CALDERA_THETA = 3.949854;
+	
 	private static final double ASCRAEUS_MONS_PHI = 1.363102D;
 	private static final double ASCRAEUS_MONS_THETA = 4.459316D;
+	
+	private static final double ARSIA_MONS_PHI = 1.411494; 
+	private static final double ARSIA_MONS_THETA = 4.158439;
+//
+	private static final double ELYSIUM_MONS_PHI = 1.138866; 
+	private static final double ELYSIUM_MONS_THETA = 2.555808;
+//	
+	private static final double PAVONIS_MONS_PHI = 1.569704; 
+	private static final double PAVONIS_MONS_THETA = 4.305273 ;
+
+	private static final double HECATES_THOLUS_PHI = 1.015563; 
+	private static final double HECATES_THOLUS_THETA = 2.615812;
+
+	private static final double ALBOR_THOLUS_PHI = 1.245184; 
+	private static final double ALBOR_THOLUS_THETA = 2.615812;
 
 	private static MapData mapdata = MapDataUtil.instance().getTopoMapData();
 	
@@ -74,12 +90,12 @@ public class TerrainElevation implements Serializable {
 		// TODO This code (calculate terrain elevation) needs updating.
 		double elevation = 0D;
 		if ((hue < .792F) && (hue > .033F))
-			elevation = (-13801.99D * hue) + 2500D;
+			elevation = (-13_801.99D * hue) + 2_500D;
 		else
-			elevation = (-21527.78D * saturation) + 19375D + 2500D;
+			elevation = (-21_527.78D * saturation) + 19_375D + 2_500D;
 
 		// Determine elevation in kilometers.
-		elevation = elevation / 1000D;
+		elevation = elevation / 1_000D;
 
 		// Patch elevation problems at certain locations.
 		elevation = patchElevation(elevation, location);
@@ -98,21 +114,59 @@ public class TerrainElevation implements Serializable {
 		double result = elevation;
 
 		// Patch errors at Olympus Mons caldera.
-		if (Math.abs(location.getTheta() - OLYMPUS_MONS_CALDERA_THETA) < .04D) {
-			if (Math.abs(location.getPhi() - OLYMPUS_MONS_CALDERA_PHI) < .04D) {
+		if (Math.abs(location.getTheta() - OLYMPUS_MONS_CALDERA_THETA) < .06D) {
+			if (Math.abs(location.getPhi() - OLYMPUS_MONS_CALDERA_PHI) < .06D) {
+//				System.out.println("elevation at Olympus : " + elevation);
 				if (elevation < 3D)
-					result = 20D;
+					result = 21.287D;
 			}
 		}
 
 		// Patch errors at Ascraeus Mons.
-		if (Math.abs(location.getTheta() - ASCRAEUS_MONS_THETA) < .02D) {
-			if (Math.abs(location.getPhi() - ASCRAEUS_MONS_PHI) < .02D) {
+		else if (Math.abs(location.getTheta() - ASCRAEUS_MONS_THETA) < .04D) {
+			if (Math.abs(location.getPhi() - ASCRAEUS_MONS_PHI) < .04D) {
 				if (elevation < 3D)
-					result = 20D;
+					result = 18.219;
 			}
 		}
 
+
+		else if (Math.abs(location.getTheta() - ARSIA_MONS_THETA) < .04D) {
+			if (Math.abs(location.getPhi() - ARSIA_MONS_PHI) < .04D) {
+				if (elevation < 3D)
+					result = 17.781;
+			}
+		}
+
+		else if (Math.abs(location.getTheta() - ELYSIUM_MONS_THETA) < .04D) {
+			if (Math.abs(location.getPhi() - ELYSIUM_MONS_PHI) < .04D) {
+				if (elevation < 3D)
+					result = 14.127;
+			}
+		}
+		
+		else if (Math.abs(location.getTheta() - PAVONIS_MONS_THETA) < .04D) {
+			if (Math.abs(location.getPhi() - PAVONIS_MONS_PHI) < .04D) {
+				if (elevation < 3D)
+					result = 14.057;
+			}
+		}
+		
+		else if (Math.abs(location.getTheta() - HECATES_THOLUS_THETA) < .04D) {
+			if (Math.abs(location.getPhi() - HECATES_THOLUS_PHI) < .04D) {
+				if (elevation < 2.5D)
+					result = 4.853;
+			}
+		}
+		
+		// Patch errors at Ascraeus Mons.
+		else if (Math.abs(location.getTheta() - ALBOR_THOLUS_THETA) < .04D) {
+			if (Math.abs(location.getPhi() - ALBOR_THOLUS_PHI) < .04D) {
+				if (elevation < 2D)
+					result = 3.925;
+			}
+		}
+		
 		return result;
 	}
 }

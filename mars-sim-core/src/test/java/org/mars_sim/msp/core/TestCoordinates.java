@@ -289,19 +289,19 @@ public class TestCoordinates extends TestCase {
     public void testParseLongitude() {
         
         String lonString1 = "0.0" + Msg.getString("direction.degreeSign") + " E";
-        double lon1 = Coordinates.parseLongitude(lonString1);
+        double lon1 = Coordinates.parseLongitude2Theta(lonString1);
         assertEquals(0D, lon1);
         
         String lonString2 = "90.0" + Msg.getString("direction.degreeSign") + " W";
-        double lon2 = Coordinates.parseLongitude(lonString2);
+        double lon2 = Coordinates.parseLongitude2Theta(lonString2);
         assertEquals(3D * Math.PI / 2D, lon2);
         
         String lonString3 = "90.0 W";
-        double lon3 = Coordinates.parseLongitude(lonString3);
+        double lon3 = Coordinates.parseLongitude2Theta(lonString3);
         assertEquals(3D * Math.PI / 2D, lon3);
         
         String lonString4 = "90,0 W";
-        double lon4 = Coordinates.parseLongitude(lonString4);
+        double lon4 = Coordinates.parseLongitude2Theta(lonString4);
         assertEquals(3D * Math.PI / 2D, lon4);
     }
     
@@ -311,19 +311,19 @@ public class TestCoordinates extends TestCase {
     public void testParseLatitude() {
         
         String latString1 = "0.0" + Msg.getString("direction.degreeSign") + " N";
-        double lat1 = Coordinates.parseLatitude(latString1);
+        double lat1 = Coordinates.parseLatitude2Phi(latString1);
         assertEquals(Math.PI / 2D, lat1);
         
         String latString2 = "90.0" + Msg.getString("direction.degreeSign") + " S";
-        double lat2 = Coordinates.parseLatitude(latString2);
+        double lat2 = Coordinates.parseLatitude2Phi(latString2);
         assertEquals(Math.PI, lat2);
         
         String latString3 = "90.0 N";
-        double lat3 = Coordinates.parseLatitude(latString3);
+        double lat3 = Coordinates.parseLatitude2Phi(latString3);
         assertEquals(0D, lat3);
         
         String latString4 = "90,0 N";
-        double lat4 = Coordinates.parseLatitude(latString4);
+        double lat4 = Coordinates.parseLatitude2Phi(latString4);
         assertEquals(0D, lat4);
     }
     

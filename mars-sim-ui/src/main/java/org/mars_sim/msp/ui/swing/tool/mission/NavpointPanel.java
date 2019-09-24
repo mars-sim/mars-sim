@@ -36,6 +36,8 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.mars.Landmark;
+import org.mars_sim.msp.core.mars.Mars;
+import org.mars_sim.msp.core.mars.TerrainElevation;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
 import org.mars_sim.msp.core.person.ai.mission.Mining;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
@@ -88,14 +90,23 @@ implements ListSelectionListener, MissionListener {
 	private MainDesktopPane desktop;
 	
 	private static Simulation sim = Simulation.instance();
+	private static TerrainElevation terrainElevation;
+	private static Mars mars;
+	
 	private static UnitManager unitManager = sim.getUnitManager();
 	private static List<Landmark> landmarks = sim.getMars().getSurfaceFeatures().getLandmarks();
+	
 
 	/**
 	 * Constructor.
 	 */
 	protected NavpointPanel(MainDesktopPane desktop) {
 		this.desktop = desktop;
+		
+		if (mars == null)
+			mars = sim.getMars();
+		if (terrainElevation == null)
+			terrainElevation =  mars.getSurfaceFeatures().getTerrainElevation();
 		
 		// Set the layout.
 		setLayout(new BorderLayout());
@@ -294,6 +305,9 @@ implements ListSelectionListener, MissionListener {
 
 			Coordinates clickedPosition = mapPanel.getCenterLocation().convertRectToSpherical(x, y, rho);
 
+			System.out.println("At " + clickedPosition.getFormattedString() 
+				+ ", Elevation : " + terrainElevation.getElevation(clickedPosition) + " km");
+			
 			Iterator<Unit> i = unitManager.getDisplayUnits().iterator();
 
 			// Open window if unit is clicked on the map
