@@ -7,6 +7,7 @@
 
 package org.mars.sim.console;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -537,7 +538,7 @@ public class SystemChatUtils extends ChatUtils {
 				mars = sim.getMars();
 			if (terrainElevation == null)
 				terrainElevation =  mars.getSurfaceFeatures().getTerrainElevation();
-			return terrainElevation.getElevation(new Coordinates(latitudeStr, longitudeStr));//lon, lat));
+			return terrainElevation.getPatchedElevation(new Coordinates(latitudeStr, longitudeStr));//lon, lat));
 		} catch(IllegalStateException e) {
 			System.out.println(e);
 			return 0;
@@ -556,17 +557,52 @@ public class SystemChatUtils extends ChatUtils {
 //		System.out.println("lat : " + latitudeStr + "  lon : " + longitudeStr);
 			double phi = Coordinates.parseLatitude2Phi(latitudeStr); // Double.parseDouble(latitudeStr); //
 			double theta = Coordinates.parseLongitude2Theta(longitudeStr); // Double.parseDouble(longitudeStr); //
-			String s = String.format("%8s: %8f %6s: %8f", 
-					"theta", Math.round(theta*1_000_000.0)/1_000_000.0,
-					"phi", Math.round(phi*1_000_000.0)/1_000_000.0);
+			String s = String.format("%10f %10f ", 
+					Math.round(phi*1_000_000.0)/1_000_000.0,
+					Math.round(theta*1_000_000.0)/1_000_000.0);
 			System.out.print(s);
 			if (mars == null)
 				mars = sim.getMars();
 			if (terrainElevation == null)
 				terrainElevation =  mars.getSurfaceFeatures().getTerrainElevation();
-			double e = terrainElevation.getElevation(new Coordinates(latitudeStr, longitudeStr));//lon, lat));
+			
+			Coordinates location = new Coordinates(latitudeStr, longitudeStr);
+			
+			int rgb[] = terrainElevation.getRGB(location);
+			int red = rgb[0];
+			int green = rgb[1];
+			int blue = rgb[2];
+			
+			String s00 = String.format("  %3d %3d %3d  ", 
+							red,
+							green,
+							blue); 
+			System.out.print(s00);
+			
+			float[] hsb = terrainElevation.getHSB(rgb);
+			float hue = hsb[0];
+			float saturation = hsb[1];
+			float brightness = hsb[2];
+			
+			String s1 = String.format(" %5.3f %5.3f %5.3f  ", 
+					Math.round(hue*1000.0)/1000.0, 
+					Math.round(saturation*1000.0)/1000.0,
+					Math.round(brightness*1000.0)/1000.0); 
+			System.out.print(s1);
+			
+			double re = terrainElevation.getRawElevation(location);
+			String s2 = String.format("%8.3f ", 
+					Math.round(re*1_000.0)/1_000.0);
+			System.out.print(s2);
+			
+			double pe = terrainElevation.getPatchedElevation(location);
+			
+			String s3 = String.format("%8.3f ", 
+					Math.round(pe*1_000.0)/1_000.0);
+			System.out.print(s3);
+			
 //			System.out.println("e : " + e);
-			return e;
+			return pe;
 		} catch(IllegalStateException e) {
 			System.out.println(e);
 			return 0;
@@ -658,10 +694,8 @@ public class SystemChatUtils extends ChatUtils {
 		}
 
 
-		else if (text.equalsIgnoreCase("elevation")) {
-			
-//			responseText = displayReferenceElevation(responseText);
-			
+		else if (text.equalsIgnoreCase("elevation")) {			
+//			responseText = displayReferenceElevation(responseText);		
 			boolean quit = true;
 			String latitudeStr = "";
 			String longitudeStr = "";
@@ -704,18 +738,18 @@ public class SystemChatUtils extends ChatUtils {
 					}
 				} while (!quit);
 				
-				if (lat != -1 && lon != -1) {
-					double elevation = terrainElevation.getElevation(new Coordinates(lat, lon));
+				if (!quit) {
+					double elevation = terrainElevation.getPatchedElevation(new Coordinates(lat, lon));
 					responseText.append(System.lineSeparator());
 					responseText.append("The elevation of (" + latitudeStr + ", " + longitudeStr + ") is "
 							+ Math.round(elevation *1000.0)/1000.0);
 					responseText.append(System.lineSeparator());
+					
+					String prompt = YOU_PROMPT + "Another location ? " 
+							+ System.lineSeparator() + "Note: '/q' to quit";
+					
+					change = textIO.newBooleanInputReader().read(prompt); 
 				}
-				
-				String prompt = YOU_PROMPT + "Another location ? " 
-						+ System.lineSeparator() + "Note: '/q' to quit";
-				
-				change = textIO.newBooleanInputReader().read(prompt); 
 			}
 			
 			responseText.append(System.lineSeparator());

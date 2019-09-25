@@ -447,7 +447,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
     protected double getVehicleElevation() {
 //    	if (surface == null)
 //    		surface = Simulation.instance().getMars().getSurfaceFeatures();
-        return surface.getTerrainElevation().getElevation(vehicle.getCoordinates());
+        return surface.getTerrainElevation().getPatchedElevation(vehicle.getCoordinates());
     }
     
     /**

@@ -406,7 +406,7 @@ public class Weather implements Serializable {
 		double elevation = 0;
 
 		if (height == 0)
-			elevation = terrainElevation.getElevation(location); // in km since getElevation() return the value in km
+			elevation = terrainElevation.getPatchedElevation(location); // in km since getElevation() return the value in km
 		else
 			elevation = height;
 
@@ -579,7 +579,7 @@ public class Weather implements Serializable {
 			// T = -31 - 0.000998 * h
 			// The upper stratosphere model is used for altitudes above 7,000 meters.
 			// T = -23.4 - 0.00222 * h
-			double elevation = terrainElevation.getElevation(location); // in km from getElevation(location)
+			double elevation = terrainElevation.getPatchedElevation(location); // in km from getElevation(location)
 			double terrain_dt;
 
 			// Assume a typical temperature of -31 deg celsius

@@ -7,6 +7,7 @@
 
 package org.mars.sim.console;
 
+import java.awt.Color;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -248,24 +249,35 @@ public class ChatUtils {
 		
 		int size = SystemChatUtils.topographicExcursionNames.size();
 		
+		String s00 = String.format("%16s %10s %10s %10s %10s %18s %8s %10s %6s"
+				, " Location ", " Ref Elev", " phi/lat ", " theta/lon ", "RGB   ", "HSB     ", "Est. E", "Patched E", "delta" );
+		System.out.println(s00);
+		String s01 = String.format("%16s %10s %10s %10s %10s %18s %10s %8s %8s"
+				, "          ", " [km]  ", "[rad]", " [rad] ", "  ", "  ", "[km] ", "[km] ", "[%]");
+		System.out.println(s01);
+		System.out.println(" -------------------------------------------------------------------------------------------------------------------- ");
+		
 		for (int i = 1; i <= size; i++) {
+
 			String value[] = SystemChatUtils.topographicExcursionCoords.get(i);
 			String latStr = value[0];
 			String lonStr = value[1];
 			String elevStr = value[2];
 			double ref = Math.round(Double.parseDouble(elevStr))/1_000.0;
-			String s0 = String.format("%16s  %10f km ", 
+			String s0 = String.format("%16s %8.3f", 
 					SystemChatUtils.topographicExcursionNames.get(i),
 					ref);
 			System.out.print(s0);
+			
 			double e = SystemChatUtils.getElevationNoDir(latStr, lonStr);
-			String s1 = String.format("  %10f km  ", 
-					Math.round(e*1_000.0)/1_000.0);
-			System.out.print(s1);
-			double delta = (e - ref)/e * 100.0; 
-			String s2 = String.format(" %12f %s", 
-					Math.round(delta*1_000.0)/1_000.0,
-					"%");
+
+//			String s1 = String.format("%10.3f ", 
+//					Math.round(e*1_000.0)/1_000.0);
+//			System.out.print(s1);
+			
+			double delta = (e - ref)/ref * 100.0; 
+			String s2 = String.format("%9.2f", 
+					Math.round(delta*100.0)/100.0);
 			System.out.println(s2);
 		}
 		

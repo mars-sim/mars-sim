@@ -304,10 +304,7 @@ implements ListSelectionListener, MissionListener {
 			double y = (double) (event.getY() - (Map.DISPLAY_HEIGHT / 2D) - 1);
 
 			Coordinates clickedPosition = mapPanel.getCenterLocation().convertRectToSpherical(x, y, rho);
-
-			System.out.println("At " + clickedPosition.getFormattedString() 
-				+ ", Elevation : " + terrainElevation.getElevation(clickedPosition) + " km");
-			
+	
 			Iterator<Unit> i = unitManager.getDisplayUnits().iterator();
 
 			// Open window if unit is clicked on the map

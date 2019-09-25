@@ -13,9 +13,9 @@ package org.mars_sim.mapdata;
 class MapDataFactory {
 
     // Static members.
-    static final int SURFACE_MAP_DATA = 0;//"surface map data";
-    static final int TOPO_MAP_DATA = 1;//"topographical map data";
-    static final int GEOLOGY_MAP_DATA = 2;
+    static final int SURFACE_MAP_DATA = 0;	//"surface map data";
+    static final int TOPO_MAP_DATA = 1;		//"topographical map data";
+    static final int GEOLOGY_MAP_DATA = 2;	//"geological ages map data"
     		
 //	private boolean decompressed = false;
 	
