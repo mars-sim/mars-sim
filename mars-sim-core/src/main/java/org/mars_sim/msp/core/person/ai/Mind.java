@@ -26,7 +26,6 @@ import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.person.ai.taskUtil.Task;
 import org.mars_sim.msp.core.person.ai.taskUtil.TaskManager;
-import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.MathUtils;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -362,9 +361,13 @@ public class Mind implements Serializable {
 						// approved by a Senior Official");
 					jh.saveJob(newJob, assignedBy, status, approvedBy, false);
 				}
-				LogConsolidated.log(Level.CONFIG, 0, sourceName,
-						"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
-						+ " took the " + newJobStr + " job.");
+				
+				String s = String.format("[%s] %18s (Job) -> %s",
+						person.getLocationTag().getLocale(), 
+						person.getName(), 
+						newJobStr);
+				
+				LogConsolidated.log(Level.CONFIG, 0, sourceName, s);
 
 				person.fireUnitUpdate(UnitEventType.JOB_EVENT, newJob);
 

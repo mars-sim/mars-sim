@@ -202,7 +202,7 @@ public class TerrainElevation implements Serializable {
 		else if (Math.abs(location.getTheta() - OLYMPUS_MONS_CALDERA_THETA) < .0796
 			&& Math.abs(location.getPhi() - OLYMPUS_MONS_CALDERA_PHI) < .0796) {
 //				System.out.println("elevation at Olympus : " + elevation);
-			if (elevation > 19000 && elevation < 21.2870)
+			if (elevation > 19 && elevation < 21.2870)
 				result = elevation;
 			else
 				result = 21.287D;
@@ -213,7 +213,7 @@ public class TerrainElevation implements Serializable {
 		else if (Math.abs(location.getTheta() - OLYMPUS_MONS_CALDERA_THETA) < .1731
 			&& Math.abs(location.getPhi() - OLYMPUS_MONS_CALDERA_PHI) < .1731) {
 //				System.out.println("elevation at Olympus : " + elevation);
-			if (elevation < 19000 && elevation > 3000)
+			if (elevation < 19 && elevation > 3)
 				result = elevation;
 			else
 				result = 3;

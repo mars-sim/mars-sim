@@ -16,8 +16,6 @@ import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.structure.ChainOfCommand;
-import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
 
 public class Role implements Serializable {
@@ -94,15 +92,25 @@ public class Role implements Serializable {
 			// Turn in the old role
 			relinquishOldRoleType();
 
-			if (oldType != null)
-				LogConsolidated.log(Level.CONFIG, 0, sourceName,
-					"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
-					+ " relinquished the " + oldType + " role"
-					+ " and took over the " + newType + " role.");
-			else
-				LogConsolidated.log(Level.CONFIG, 0, sourceName,
-						"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
-						+ " took over the " + newType + " role.");
+			if (oldType != null) {				
+				String s = String.format("[%s] %18s (Role) : %s -> %s",
+						person.getLocationTag().getLocale(), 
+						person.getName(), 
+						oldType,
+						newType);
+				
+				LogConsolidated.log(Level.CONFIG, 0, sourceName, s);
+			}
+
+			else {
+				String s = String.format("[%s] %18s (Role) -> %s",
+						person.getLocationTag().getLocale(), 
+						person.getName(), 
+						newType);
+				
+				LogConsolidated.log(Level.CONFIG, 0, sourceName, s);
+				
+			}
 			
 			// Save the new role in roleHistory
 			roleHistory.put(newType, marsClock);

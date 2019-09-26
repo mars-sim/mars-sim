@@ -247,6 +247,14 @@ public class ChatUtils {
 		unitManager = sim.getUnitManager();
 		missionManager = sim.getMissionManager();
 		
+//		printElevationLocales();
+	}
+	
+	/**
+	 * Prints a table of interesting locales and its elevation calculation 
+	 */
+	public void printElevationLocales() {
+		
 		int size = SystemChatUtils.topographicExcursionNames.size();
 		
 		String s00 = String.format("%16s %10s %10s %10s %10s %18s %8s %10s %6s"

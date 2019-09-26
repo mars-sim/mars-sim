@@ -436,7 +436,8 @@ public class ChainOfCommand implements Serializable {
 
 		else {
 			cc.setRole(RoleType.COMMANDER);
-			logger.config("[" + cc.getLocationTag().getLocale() + "] " + cc + " got elected as the "
+			logger.config("[" + cc.getLocationTag().getLocale() + "] Congrats ! " 
+					+ cc + " got elected as the "
 					+ RoleType.COMMANDER.getName() + ".");
 		}
 
@@ -471,7 +472,8 @@ public class ChainOfCommand implements Serializable {
 
 		if (pop >= POPULATION_WITH_SUB_COMMANDER) {
 			cv.setRole(RoleType.SUB_COMMANDER);
-			logger.config("[" + cv.getLocationTag().getLocale() + "] " + cv + " got elected as the "
+			logger.config("[" + cv.getLocationTag().getLocale() + "] Congrats ! " 
+					+ cv + " got elected as the "
 					+ RoleType.SUB_COMMANDER.getName() + ".");
 		}
 	}
@@ -566,7 +568,8 @@ public class ChainOfCommand implements Serializable {
 
 		if (mayorCandidate != null) {
 			mayorCandidate.setRole(RoleType.MAYOR);
-			logger.config("[" + mayorCandidate.getLocationTag().getLocale() + "] " + mayorCandidate
+			logger.config("[" + mayorCandidate.getLocationTag().getLocale() + "] Congrats ! "
+					+ mayorCandidate
 					+ " got elected as the " + role.getName() + ".");
 		}
 	}
@@ -672,7 +675,8 @@ public class ChainOfCommand implements Serializable {
 
 		if (winner != null) {
 			winner.setRole(role);
-			logger.config("[" + winner.getLocationTag().getLocale() + "] " + winner + " got elected as the "
+			logger.config("[" + winner.getLocationTag().getLocale() + "] Congrats ! " 
+					+ winner + " got elected as the "
 					+ role.getName() + ".");
 		}
 	}
