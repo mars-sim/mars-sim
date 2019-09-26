@@ -114,9 +114,7 @@ public class TabPanelLog extends TabPanel {
 
 		// Create comboBox
 		solBox = new JComboBoxMW<Object>(comboBoxModel);
-
-//		solBox.setSelectedItem(today);
-		// comboBox.setOpaque(false);
+		solBox.setWide(true);
 		solBox.setRenderer(new PromptComboBoxRenderer());
 		solBox.setMaximumRowCount(7);
 

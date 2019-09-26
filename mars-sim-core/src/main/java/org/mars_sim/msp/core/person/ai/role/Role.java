@@ -7,6 +7,7 @@
 package org.mars_sim.msp.core.person.ai.role;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
@@ -74,15 +75,29 @@ public class Role implements Serializable {
 		}
 	}
 
+
 	/**
 	 * Sets the new role type.
-	 * 
+	 *                                                                                                                                                                                                                
 	 * @param role type
 	 */
 	public void setNewRoleType(RoleType newType) {
 		RoleType oldType = roleType;
 
 		if (newType != oldType) {
+			// Note : if this is a leadership role, only one person should occupy this position 
+			List<Person> predecessors = null;
+			if (RoleUtil.isLeadershipRole(newType)) {
+				// Find a list of predecessors who are occupying this role
+				predecessors = person.getAssociatedSettlement().getChainOfCommand().findPeopleWithRole(newType);
+				// Predecessors to obtain a new role
+				if (predecessors != null) {
+					for (Person p: predecessors) {
+						p.getRole().obtainRole();
+					}
+				}
+			}
+			
 			this.roleType = newType;
 			
 			// Save the role in the settlement Registry

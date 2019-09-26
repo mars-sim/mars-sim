@@ -65,6 +65,7 @@ import org.pushingpixels.trident.ease.Spline;
  *
  * @author hansolo
  */
+@SuppressWarnings("serial")
 public class WindDirection extends AbstractRadial {
     // <editor-fold defaultstate="collapsed" desc="Variable declaration">
     private double visibleValue = 0;

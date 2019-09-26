@@ -201,4 +201,19 @@ public class RoleUtil implements Serializable {
 		
 	}
 	
+	/**
+	 * Checks if this is a leadership role
+	 * 
+	 * @param role
+	 * @return yes if it is true
+	 */
+	public static boolean isLeadershipRole(RoleType role) {
+		for (RoleType r : RoleType.getSpecialistRoles()) {
+			if (r == role)
+				return false;
+		}
+		return true;
+	}
+	
+	
 }

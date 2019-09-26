@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 
 public enum RoleType {
 
@@ -63,6 +64,21 @@ public enum RoleType {
 	}
 	
 	/**
+	 * Returns a list of chief roles.
+	 */
+	public static List<RoleType> getChiefRoles() {
+		List<RoleType> list = new ArrayList<>();
+		
+		for (RoleType r : RoleType.values()) {
+			if (r.ordinal() >= SEVEN && r.ordinal() < SEVEN * 2)
+				list.add(r);
+		}
+		
+		return list;
+	}
+	
+	
+	/**
 	 * Returns a list of specialist roles.
 	 */
 	public static List<RoleType> getSpecialistRoles() {
@@ -76,4 +92,15 @@ public enum RoleType {
 		return list;
 	}
 	
+	public static RoleType getType(String name) {
+		if (name != null) {
+	    	for (RoleType r : RoleType.values()) {
+	    		if (name.equalsIgnoreCase(r.name)) {
+	    			return r;
+	    		}
+	    	}
+		}
+		
+		return null;
+	}
 }

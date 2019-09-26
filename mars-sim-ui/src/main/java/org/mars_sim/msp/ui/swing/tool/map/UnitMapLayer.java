@@ -9,13 +9,9 @@ package org.mars_sim.msp.ui.swing.tool.map;
 import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.mars.MarsSurface;
-import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 
 /**

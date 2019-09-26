@@ -1480,19 +1480,24 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		return isBuried;
 	}
 
-	// @Override
+	@Override
 	public void setVehicle(Vehicle vehicle) {
 		this.vehicle = vehicle.getIdentifier();
 	}
-
+	
 	/**
 	 * Get vehicle person is in, null if person is not in vehicle
 	 * 
 	 * @return the person's vehicle
 	 */
 	public Vehicle getVehicle() {
-		if (vehicle != -1)
-			return unitManager.getVehicleByID(vehicle);
+		if (getContainerID() >= FIRST_VEHICLE_ID 
+				&& getContainerID() < FIRST_PERSON_ID) {
+			Vehicle v = unitManager.getVehicleByID(getContainerID());
+			vehicle = getContainerID();
+			return v;
+		}
+
 		else
 			return null;
 	}

@@ -223,6 +223,7 @@ public class TabPanelSchedule extends TabPanel {
 
 		solBox.setSelectedItem(todayInteger);
 		// comboBox.setOpaque(false);
+		solBox.setWide(true);
 		solBox.setRenderer(new PromptComboBoxRenderer());
 		solBox.setMaximumRowCount(7);
 

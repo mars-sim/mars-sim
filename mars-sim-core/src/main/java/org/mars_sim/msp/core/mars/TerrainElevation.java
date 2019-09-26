@@ -45,11 +45,11 @@ public class TerrainElevation implements Serializable {
 	private static final double ALBOR_THOLUS_PHI = 1.245184; 
 	private static final double ALBOR_THOLUS_THETA = 2.615812;
 
-	private static final double NORTH_POLE_PHI = 0; 
-	private static final double NORTH_POLE_THETA = 0;
-
-	private static final double SOUTH_POLE_PHI = Math.PI; 
-	private static final double SOUTH_POLE_THETA = 0;
+//	private static final double NORTH_POLE_PHI = 0; 
+//	private static final double NORTH_POLE_THETA = 0;
+//
+//	private static final double SOUTH_POLE_PHI = Math.PI; 
+//	private static final double SOUTH_POLE_THETA = 0;
 	
 	private static MapData mapdata = MapDataUtil.instance().getTopoMapData();
 	

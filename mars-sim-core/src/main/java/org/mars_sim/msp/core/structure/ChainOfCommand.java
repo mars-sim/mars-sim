@@ -8,9 +8,11 @@
 package org.mars_sim.msp.core.structure;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
@@ -52,7 +54,7 @@ public class ChainOfCommand implements Serializable {
 
 	private static UnitManager unitManager = Simulation.instance().getUnitManager();
 
-	private static MarsClock marsClock = Simulation.instance().getMasterClock().getMarsClock();
+//	private static MarsClock marsClock = Simulation.instance().getMasterClock().getMarsClock();
 
 //	private RoleType[] CHIEFS_3 = new RoleType[] { 
 //			RoleType.CHIEF_OF_ENGINEERING,  
@@ -240,7 +242,6 @@ public class ChainOfCommand implements Serializable {
 				}
 			}
 		}
-
 	}
 
 	/**
@@ -436,7 +437,7 @@ public class ChainOfCommand implements Serializable {
 
 		else {
 			cc.setRole(RoleType.COMMANDER);
-			logger.config("[" + cc.getLocationTag().getLocale() + "] Congrats ! " 
+			logger.config("[" + cc.getLocationTag().getLocale() + "] " 
 					+ cc + " got elected as the "
 					+ RoleType.COMMANDER.getName() + ".");
 		}
@@ -472,7 +473,7 @@ public class ChainOfCommand implements Serializable {
 
 		if (pop >= POPULATION_WITH_SUB_COMMANDER) {
 			cv.setRole(RoleType.SUB_COMMANDER);
-			logger.config("[" + cv.getLocationTag().getLocale() + "] Congrats ! " 
+			logger.config("[" + cv.getLocationTag().getLocale() + "] " 
 					+ cv + " got elected as the "
 					+ RoleType.SUB_COMMANDER.getName() + ".");
 		}
@@ -568,7 +569,7 @@ public class ChainOfCommand implements Serializable {
 
 		if (mayorCandidate != null) {
 			mayorCandidate.setRole(RoleType.MAYOR);
-			logger.config("[" + mayorCandidate.getLocationTag().getLocale() + "] Congrats ! "
+			logger.config("[" + mayorCandidate.getLocationTag().getLocale() + "] "
 					+ mayorCandidate
 					+ " got elected as the " + role.getName() + ".");
 		}
@@ -675,12 +676,28 @@ public class ChainOfCommand implements Serializable {
 
 		if (winner != null) {
 			winner.setRole(role);
-			logger.config("[" + winner.getLocationTag().getLocale() + "] Congrats ! " 
+			logger.config("[" + winner.getLocationTag().getLocale() + "] " 
 					+ winner + " got elected as the "
 					+ role.getName() + ".");
 		}
 	}
 
+	/**
+	 * Finds a list of people with a particular role
+	 * 
+	 * @param role
+	 * @return List<Person>
+	 */
+	public List<Person> findPeopleWithRole(RoleType role) {
+		List<Person> people = new ArrayList<>();
+		for (Person p : settlement.getAllAssociatedPeople()) {
+			if (p.getRole().getType() == role)
+				people.add(p);
+		}
+		
+		return people;
+	}
+	
 	/**
 	 * Reloads instances after loading from a saved sim
 	 * 
@@ -688,7 +705,7 @@ public class ChainOfCommand implements Serializable {
 	 * @param um
 	 */
 	public static void initializeInstances(MarsClock clock, UnitManager um) {
-		marsClock = clock;
+//		marsClock = clock;
 		unitManager = um;
 	}
 

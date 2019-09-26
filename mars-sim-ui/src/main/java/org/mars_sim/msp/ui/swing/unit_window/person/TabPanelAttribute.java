@@ -26,6 +26,7 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RoboticAttributeManager;
 import org.mars_sim.msp.core.robot.RoboticAttributeType;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
@@ -45,9 +46,6 @@ extends TabPanel {
 	private AttributeTableModel attributeTableModel;
 	private JTable attributeTable;
 
-	//private Person person;
-	//private Robot robot;
-
 	/**
 	 * Constructor 1.
 	 * @param person {@link Person} the person.
@@ -62,8 +60,6 @@ extends TabPanel {
 			person,
 			desktop
 		);
-		//this.person = person;
-
 		// Create attribute table model
 		attributeTableModel = new AttributeTableModel(person);
 
@@ -84,8 +80,6 @@ extends TabPanel {
 			robot,
 			desktop
 		);
-
-		//this.robot = robot;
 
 		// Create attribute table model
 		attributeTableModel = new AttributeTableModel(robot);
@@ -115,22 +109,22 @@ extends TabPanel {
 		attributeTable.getColumnModel().getColumn(0).setPreferredWidth(100);
 		attributeTable.getColumnModel().getColumn(1).setPreferredWidth(70);
 		attributeTable.setRowSelectionAllowed(true);
-		// attributeTable.setDefaultRenderer(Integer.class, new NumberCellRenderer());
-
+//		attributeTable.setDefaultRenderer(Integer.class, new NumberCellRenderer());
+		
 		attributeScrollPanel.setViewportView(attributeTable);
 
-		attributeTable.setAutoCreateRowSorter(true);
+//		attributeTable.setAutoCreateRowSorter(true);
  
 		// Align the content to the center of the cell
         // Note: DefaultTableCellRenderer does NOT work well with nimrod
 		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
-		renderer.setHorizontalAlignment(SwingConstants.LEFT);
+		renderer.setHorizontalAlignment(SwingConstants.CENTER);
 		attributeTable.getColumnModel().getColumn(0).setCellRenderer(renderer);
 		attributeTable.getColumnModel().getColumn(1).setCellRenderer(renderer);
 
-
         TableStyle.setTableStyle(attributeTable);
         update();
+        
         //attributeTableModel.update();
 	}
 
@@ -143,19 +137,21 @@ extends TabPanel {
 		attributeTableModel.update();
 	}
 
+	public void destroy() {
+		attributeTableModel = null;
+		attributeTable = null;
+	}
 }
 
 /**
  * Internal class used as model for the attribute table.
  */
-class AttributeTableModel
-extends AbstractTableModel {
+@SuppressWarnings("serial")
+class AttributeTableModel extends AbstractTableModel {
 
 	private List<Map<String, NaturalAttributeType>> n_attributes;
 	private List<Map<String, RoboticAttributeType>> r_attributes;
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
 	private NaturalAttributeManager n_manager;
 	private RoboticAttributeManager r_manager;
 
@@ -181,8 +177,6 @@ extends AbstractTableModel {
 
     		r_attributes = r_manager.getAttributes();
         }
-
-
 	}
 
 	@Override
@@ -262,6 +256,20 @@ extends AbstractTableModel {
 	 * @param
 	 */
 	void update() {
-    	fireTableDataChanged();
+//    	fireTableDataChanged();
+	}
+	
+	public void destroy() {
+		n_attributes.clear();
+		r_attributes.clear();
+		
+		n_attributes = null;
+		r_attributes = null;
+		
+		n_manager = null;
+		r_manager = null;
+
+	    person = null;
+	    robot = null;
 	}
 }
