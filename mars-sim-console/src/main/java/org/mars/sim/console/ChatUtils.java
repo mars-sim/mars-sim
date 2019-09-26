@@ -7,11 +7,12 @@
 
 package org.mars.sim.console;
 
-import java.awt.Color;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -47,6 +48,8 @@ public class ChatUtils {
 
 	public static final double RADIANS_TO_DEGREES = 180D / Math.PI;
 
+	public final static String SPACES_2 = "  ";
+	public final static String SPACES_7 = "       ";
 	public final static String SYSTEM = "System";
 	public final static String SYSTEM_PROMPT = "System : ";
 	public final static String YOU_PROMPT = "You : ";
@@ -56,60 +59,158 @@ public class ChatUtils {
 	public final static String REQUEST_KEYS = YOU_PROMPT
 			+ "I need a list of the keywords. Would you tell me what they are ?";
 
-	public final static String[] SPECIAL_KEYS = { "key", "keys", "keyword", "keywords", "/k", "help", "/h", "/?", "?",
-			"/y1", "/y2", "/y3", "/y4", "hello", "hi", "hey", "expert", "/e", "quit", "/q", "bye", "/b", "exit", "/x",
-			"pause", "/p" };
+	public final static String[] SPECIAL_KEYS = { 
+			"key", 
+			"keys", 
+			"keyword", 
+			"keywords", 
+			"/k", 
+			"help", 
+			"/h", 
+			"/?", 
+			"?",
+			"/y1", 
+			"/y2", 
+			"/y3", 
+			"/y4", 
+//			"hello", 
+//			"hi", 
+//			"hey", 
+			"expert", 
+			"/e", 
+			"quit", 
+			"/q", 
+			"bye", 
+			"/b", 
+			"exit", 
+			"/x",
+			"pause", 
+			"/p" };
 
-	public final static String[] VEHICLE_KEYS = new String[] { "specs", "status" };
-
-	public final static String[] SETTLEMENT_KEYS = new String[] { "weather", "people", "settler", "person", "robot",
-			"bot", "proposal", "vehicle range", "dash", "dashboard", "repair", "maintenance", "evasuit", "eva suit",
-			"mission plan", "mission now", "objective", "water", "o2", "oxygen", "co2", "carbon dioxide", "job roster",
-			"job demand", "job prospect", "bed", "social", "science", "researchers" };
-
-	public final static String[] PERSON_KEYS = new String[] { 
-			"feeling", 
-			"status", 
-			"skill", 
-			"attribute", 
-			"birth", "age",
-			"how old", "born", "friend", 
-			"country", "nationality", 
-			"space agency", "sponsor", 
-			"specialty", "job",
-			"outside", 
-			"inside", 
-			"container", 
-			"building", 
-			"associated", "association", "home", "home town", 
-			"garage",
-			"vehicle top container", 
-			"vehicle container", 
-			"vehicle park", 
-			"vehicle settlement", 
-			"vehicle outside",
-			"vehicle inside", 
-			"bed time", "sleep hour", 
-			"eva time", 
-			"airlock time", 
-			"shift", "work shift", 
-			"job prospect",
-			"role prospect", 
-			"bed", 
-			"social", 
-			"trainings" 
-			};
-
-	public final static String[] ALL_PARTIES_KEYS = new String[] { "time", "date", "where", "location", "located",
-			"role", "task", "mission", "sponsor" };
-
-	public final static String[] EXPERT_KEYS = new String[] {
-			"  reset clock thread", 
-			"  reset clock pulse",
-			"  reset clock listener"};
+	public static String[][] VEHICLE_KEYS;
 	
-	public final static String[] SYSTEM_KEYS = new String[] { "settlement", "check size", "vehicle", "rover", 
-			"hi", "hello", "hey", "proposal", "social", "science", "scores", "elevation" };
+	static 
+	{ 
+		VEHICLE_KEYS = new String[][] {
+			{"specs", 	"what is the design and performance specifications for this vehicle"},
+			{"status", 	"what is the current status of this vehicle"}
+		};
+	};
+	
+	public static String[][] SETTLEMENT_KEYS;// = new String[22][2];
+	
+	static {
+		SETTLEMENT_KEYS = new String[][] {
+			{"role", 			"what kind of roles are there in this settlement"},
+			{"task", 			"what are the on-going tasks"},
+			{"weather", 		"the meteorological data from the weather station"},
+			{"people",  		"who are associated with this settlement"},
+//			"settler", 
+//			"person", 
+			{"robot", 			"what robots have been assigned to this settlement"},
+//			"bot", 
+			{"proposal", 		"what proposal have been represented"},
+			{"vehicle range", 	"what are the range of the vehicles we have"},
+//			{"dash", 			"what is on the settlement dashboard"},
+			{"dashboard", 		"what is on the settlement dashboard"},
+			{"repair", 			"what is the level of the repair effort"},
+			{"maintenance", 	"what is the level of the maintenance effort"},
+//			{"evasuit", 
+			{"eva suit",		"what is the level of the EVA Suit related effort"},
+			{"mission plan", 	"a list of proposed mission plans"},
+			{"mission now",		"what are the currently on-going missions"}, 
+			{"objective", 		"what is the settlement's objective"},
+			{"water", 			"how is the water production and consumption"},
+//			"o2", 
+			{"oxygen", 			"how is the oxgyen production and consumption"},
+//			"co2", 
+			{"carbon dioxide", 	"how is the carbon dioxide production and consumption"},
+			{"job roster",		"what job does each settler have"},
+			{"job demand", 		"what are the job demand, positions filled and the deficits"},
+			{"job prospect", 	"what are the job prospects of a particular job "},
+			{"bed", 			"what are the quarters arrangement in this settlement"},
+			{"social", 			"how is this settlement doing socially"},
+			{"science", 		"how is the science score in this settlement"},
+			{"researchers", 	"who are conducting reseach in this settlement"}
+		};
+	};
+
+	public final static String[][] PERSON_KEYS;
+	
+	static {
+	
+		PERSON_KEYS = new String[][] { 
+			{"role", 				"what is your role"},
+			{"task", 				"what are you working on"},
+			{"mission", 			"what is your current mission"},			
+			{"feeling", 			"how are you feeling"},
+			{"status", 				"what is your status"},
+			{"skill",  				"what are your skills"},
+			{"attribute", 			"what are your attributes"}, 
+			{"age", 				"how old are you"}, 
+//			"how old", "born", 
+			{"friend",  			"who are your friends"}, 
+			{"country",   			"what country are you from"}, 
+//			"nationality", 
+//			{"space agency", 
+			{"sponsor", 			"who is your sponsor"},
+//			"specialty", 
+			{"job",					"what is your job"},
+			{"outside", 			"are you outside"},
+			{"inside", 				"are you inside"},
+			{"container", 			"what is your container"},
+			{"building", 			"what building are you in"},
+//			{"associated", "association", 
+			{"home", 				"which settlement is your home town"},
+//			"home town",
+			{"garage",				"are you in a garage"},
+			{"vehicle top container","where is your vehicle at"}, 
+			{"vehicle container", 	"where is your vehicle at"},
+			{"vehicle park", 		"where does your vehicle park"},
+			{"vehicle settlement", 	"what is your vehicle's associated settlement"},
+			{"vehicle outside",		"is your vehicle outside"},
+			{"vehicle inside", 		"is your vehicle inside"},
+//			"bed time", 
+			{"sleep hour", 			"what is your typical sleep hour"},
+			{"eva time", 			"how often have you done EVA"},
+			{"airlock time", 		"how much time have you spent in the airlock"},
+			{"shift", 				"what is your work shift"},
+//			"work shift", 
+			{"job prospect", 		"what are your job prospect score"},
+			{"role prospect",  		"what are your role prospect scores"},
+			{"bed",  				"where is your quarters"},
+			{"social",  			"how is your social life"},
+			{"trainings",  			"what trainings have you done"}
+		};
+		
+	}
+
+	public final static String[][] ALL_PARTIES_KEYS = new String[][] {
+		{"time", 		"what time is it"},
+		{"date", 		"what date is it"},
+		{"where", 		"what is your location"},
+	};
+
+	public final static String[][] EXPERT_KEYS = new String[][] {
+		{"reset clock thread", 		"Resets the main clock thread"},
+		{"reset clock pulse",	"Resets the main clock pulse"},
+		{"reset clock listener", "Resets all the clock listeners"}
+	};
+	
+	public final static String[][] SYSTEM_KEYS = new String[][] {
+		{"settlement", 		"What are the names of the settlements"},
+		{"check size", 		"What are the unserialized size of each class"},
+		{"vehicle", 		"What are the names of the vehicles"},
+//		{"rover", 			""
+//		{"hi", 				"how are you doing"},
+//		{"hello", 			
+//		{"hey", 
+		{"proposal",		"what are the submitted proposals"},
+		{"social", 			"how are the settlements doing socially"},
+		{"science", 		"how are the scientific studies in all settlements"},
+		{"scores", 			"what are the achievement scores"},
+		{"elevation", 		"what is the elevation of a particular location"}
+	};
 
 	public final static String SWITCHES = 
 			  "  bye, /b, exit, /x, quit, /q" + System.lineSeparator()
@@ -119,75 +220,61 @@ public class ChatUtils {
 			+ "  expert, /e"  + System.lineSeparator()
 			+ "       toggle between normal and expert mode" + System.lineSeparator()
 			+ "  pause, /p"  + System.lineSeparator()
-			+ "       pause and resume the simulation" + System.lineSeparator();
+			+ "       pause and resume the simulation" + System.lineSeparator()
+			+ System.lineSeparator()
+			+ "    ------------------------------------------------------------------- ";
 
 	public final static String HELP_TEXT = System.lineSeparator()
 			+ "    ------------------------- H E L P ------------------------- " + System.lineSeparator() + System.lineSeparator()
-			+ "  Type in the NAME of a person, bot, vehicle or settlement " + System.lineSeparator()
-			+ "  to connect with." + System.lineSeparator() + System.lineSeparator()
+			+ "  Type in the NAME of a person, bot, vehicle or settlement to connect to." + System.lineSeparator() + System.lineSeparator()
 //			+ "  Use KEYWORDS or type in a number between 0 and 18 (specific QUESTIONS on a party)." + System.lineSeparator() 
 			+ "  /k, key" + System.lineSeparator()
-			+ "       see a list of KEYWORDS." + System.lineSeparator()
+			+ "       see a list of KEYWORDS." + System.lineSeparator() + System.lineSeparator()
 			+ "  settlement" + System.lineSeparator()
-			+ "       obtain the NAMES of the established settlements." + System.lineSeparator()
+			+ "       obtain the NAMES of the established settlements." + System.lineSeparator() + System.lineSeparator()
 			+ SWITCHES;
 
 	public final static String HELP_HEIGHT = "  Type 'y_' to change the chat box height; '/y1'-> 256 pixels (default) '/y2'->512 pixels, '/y3'->768 pixels, '/y4'->1024 pixels"
 			+ System.lineSeparator();
 
-//	public final static String KEYWORDS_TEXT = System.lineSeparator()
-//			+ "    ------------------------- K E Y W O R D S ------------------------- " + System.lineSeparator()
-//			+ "(1)       In MarsNet : a settlement/bot/person's name OR " + getKeywordList(SYSTEM_KEYS) + System.lineSeparator() 
-//			+ "(2) For a Settlement : " + getKeywordList(SETTLEMENT_KEYS) + System.lineSeparator() 
-//			+ "(3)    For a Settler : " + getKeywordList(PERSON_KEYS) + System.lineSeparator() 
-//			+ "(4)  For all Parties : " + getKeywordList(ALL_PARTIES_KEYS) + System.lineSeparator()
-//			+ "(5) 0 to 18 are specific QUESTIONS on a person/bot/vehicle/settlement" + System.lineSeparator();
-////			+ "    --------------------------  M I S C S -------------------------- " + System.lineSeparator() 
-////			+ SWITCHES;
-
 	public final static String SYSTEM_KEYWORDS = System.lineSeparator()
-			+ "    ------------------------- K E Y W O R D S ------------------------- " + System.lineSeparator()
-			+ "(A). For MarsNet : Type in the NAME of a person, bot, vehicle" + System.lineSeparator()
+			+ "    ------------------------- K E Y W O R D S ------------------------- " + System.lineSeparator() + System.lineSeparator()
+			+ "  For MarsNet : Type in the NAME of a person, bot, vehicle" + System.lineSeparator()
 			+ "     or settlement to connect with OR keywords below : "
 			+ System.lineSeparator() + System.lineSeparator() 
-			+ "  "  + getKeywordList(SYSTEM_KEYS) + System.lineSeparator();
-
+			+ getKeywordPage(SYSTEM_KEYS)			
+			+ System.lineSeparator()
+			+ "    ------------------------------------------------------------------- ";
+	
 	public final static String VEHICLE_KEYWORDS = System.lineSeparator()
-			+ "    ------------------------- K E Y W O R D S ------------------------- " + System.lineSeparator()
-			+ "(A). For Vehicles : " + System.lineSeparator() + System.lineSeparator()
-			+ "  " + getKeywordList(VEHICLE_KEYS) + System.lineSeparator() + System.lineSeparator() + System.lineSeparator()
-			+ "(B). For all Parties : " + System.lineSeparator() 
-			+ "  " + getKeywordList(ALL_PARTIES_KEYS)
-			+ System.lineSeparator();
-//			+ "(2) 0 to 18 are specific QUESTIONS on a person/bot/vehicle/settlement" + System.lineSeparator();
-//			+ "    --------------------------  M I S C S -------------------------- " + System.lineSeparator() 
-//			+ SWITCHES;
+			+ "    ------------------------- K E Y W O R D S ------------------------- " + System.lineSeparator() + System.lineSeparator()
+			+ "  For Vehicles : " + System.lineSeparator() + System.lineSeparator()
+			+ getKeywordPage(VEHICLE_KEYS) + System.lineSeparator() + System.lineSeparator() + System.lineSeparator()
+			+ "  For all Parties : " + System.lineSeparator() 
+			+ getKeywordPage(ALL_PARTIES_KEYS)
+			+ System.lineSeparator()
+			+ "    ------------------------------------------------------------------- ";
 
 	public final static String PERSON_KEYWORDS = System.lineSeparator()
-			+ "    ------------------------- K E Y W O R D S ------------------------- " + System.lineSeparator()
-			+ "(A). For Settlers : " + System.lineSeparator() + System.lineSeparator()
-			+ "  " + getKeywordList(PERSON_KEYS) + System.lineSeparator() + System.lineSeparator()
-			+ "(B). For all Parties : " + System.lineSeparator() + "  " + getKeywordList(ALL_PARTIES_KEYS)
-			+ System.lineSeparator();
-//			+ "(2) 0 to 18 are specific QUESTIONS on a person/bot/vehicle/settlement" + System.lineSeparator();
-//			+ "    --------------------------  M I S C S -------------------------- " + System.lineSeparator() 
-//			+ SWITCHES;
+			+ "    ------------------------- K E Y W O R D S ------------------------- " + System.lineSeparator() + System.lineSeparator()
+			+ "  For Settlers : " + System.lineSeparator() + System.lineSeparator()
+			+ getKeywordPage(PERSON_KEYS) + System.lineSeparator() + System.lineSeparator()
+			+ "  For all Parties : " + System.lineSeparator() + "  " + getKeywordPage(ALL_PARTIES_KEYS)
+			+ System.lineSeparator()
+			+ "    ------------------------------------------------------------------- ";
 
 	public final static String SETTLEMENT_KEYWORDS = System.lineSeparator()
-			+ "    ------------------------- K E Y W O R D S ------------------------- " + System.lineSeparator()
-			+ "(A). For Settlements : " + System.lineSeparator() + System.lineSeparator()
-			+ "  " + getKeywordList(SETTLEMENT_KEYS) + System.lineSeparator() + System.lineSeparator()
-			+ "(B). For all Parties : " + System.lineSeparator()+ System.lineSeparator()
-			+ "  " + getKeywordList(ALL_PARTIES_KEYS) + System.lineSeparator();
-//			+ "(4)  For all Parties : " + getKeywordList(ALL_PARTIES_KEYS) + System.lineSeparator()
-//			+ "(5) 0 to 18 are specific QUESTIONS on a person/bot/vehicle/settlement" + System.lineSeparator() 
-//			+ "    --------------------------  M I S C S -------------------------- " + System.lineSeparator() 
-//			+ SWITCHES;
-
+			+ "    ------------------------- K E Y W O R D S ------------------------- " + System.lineSeparator() + System.lineSeparator()
+			+ "  For Settlements : " + System.lineSeparator() + System.lineSeparator()
+			+ getKeywordPage(SETTLEMENT_KEYS) + System.lineSeparator() + System.lineSeparator()
+			+ "  For all Parties : " + System.lineSeparator()+ System.lineSeparator()
+			+ getKeywordPage(ALL_PARTIES_KEYS)
+			+ System.lineSeparator()
+			+ "    ------------------------------------------------------------------- ";
+	
 	public final static String KEYWORDS_HEIGHT = HELP_HEIGHT; // "(8) '/y1' to reset height to 256 pixels (by default)
 																// after closing chat box. '/y2'->512 pixels, '/y3'->768
 																// pixels, '/y4'->1024 pixels" + System.lineSeparator();
-
 	public final static String DASHES_0 = " ----------------------------------------------------";
 	public final static String DASHES = " ----------------------------------------- ";
 	public final static String DASHES_1 = "----------";
@@ -212,6 +299,8 @@ public class ChatUtils {
 	public static Unit unitCache;
 	public static Vehicle vehicleCache;
 
+	public static Map<String, String> settlementKeys = new HashMap<>();
+	
 	static Simulation sim = Simulation.instance();
 	static Weather weather;
 	static SurfaceFeatures surfaceFeatures;
@@ -249,6 +338,11 @@ public class ChatUtils {
 		
 //		printElevationLocales();
 	}
+	
+	
+//	public void setUpKeys() {
+//		settlementKeys.put(key, );
+//	}
 	
 	/**
 	 * Prints a table of interesting locales and its elevation calculation 
@@ -314,6 +408,73 @@ public class ChatUtils {
 		return text;
 	}
 
+	/**
+	 * Returns a list of keywords
+	 * 
+	 * @param keywords
+	 * @return list
+	 */
+	public static String getKeywordPage(String[][] keywords) {
+		// Sort the keywords 2D array
+//		keywords = sortbyColumn(keywords, 1);
+		
+		Arrays.sort(keywords, new Comparator<Object>() {
+		      public int compare(Object o1, Object o2) {
+		        String[] a = (String[])o1;
+		        String[] b = (String[])o2;
+		        if(a.length == 0 && b.length == 0)
+		          return 0;
+		        if(a.length == 0 && b.length != 0)
+		          return 1;
+		        if(a.length != 0 && b.length == 0)
+		          return -1;
+		        return a[0].compareTo(b[0]);
+		      }
+		      public boolean equals(Object o) {
+		        return this == o;
+		      }
+		    });
+		
+		StringBuffer s = new StringBuffer();
+		int rows = keywords.length;
+//		int cols = keywords[0].length;
+		
+		for (int i = 0; i < rows; i++) {
+//			for (int j = 0; j < cols; j++) {
+				s.append(SPACES_2 + keywords[i][0] + System.lineSeparator());
+				s.append(SPACES_7 + keywords[i][1] + System.lineSeparator() + System.lineSeparator());
+//			}
+		}
+		
+//		Arrays.sort(keywords);
+//		return Arrays.deepToString(keywords);
+		
+		return s.toString();
+	}
+	
+    // Function to sort by column 
+    public static String[][] sortbyColumn(String theArray[][], int col) { 
+    	
+//    	String[][] arr = Arrays.copyOf(theArray, theArray.length);
+    	
+        // Using built-in sort function Arrays.sort 
+    	Arrays.sort(theArray, new Comparator<String[]>(){
+
+    	    @Override
+    	    public int compare(final String[] first, final String[] second){
+    	        // here you should usually check that first and second
+    	        // a) are not null and b) have at least two items
+    	        // updated after comments: comparing Double, not Strings
+    	        // makes more sense, thanks Bart Kiers
+    	        return Double.valueOf(second[0]).compareTo(
+    	            Double.valueOf(first[0])
+    	        );
+    	    }
+    	});
+    	
+        return theArray;
+    } 
+    
 	/**
 	 * Asks for clarification
 	 * 
@@ -804,15 +965,15 @@ public class ChatUtils {
 		List<String> list = createProperNounsList();
 
 		// Add keywords specifically for MarsNet chat system
-		list.addAll(Arrays.asList(ChatUtils.SYSTEM_KEYS));
+		list.addAll(Arrays.asList(getColumn(ChatUtils.SYSTEM_KEYS, 0)));
 		// Add keywords for all parties
-		list.addAll(Arrays.asList(ChatUtils.ALL_PARTIES_KEYS));
+		list.addAll(Arrays.asList(getColumn(ChatUtils.ALL_PARTIES_KEYS, 0)));
 		// Add keywords specifically for settlements
-		list.addAll(Arrays.asList(ChatUtils.SETTLEMENT_KEYS));
+		list.addAll(Arrays.asList(getColumn(ChatUtils.SETTLEMENT_KEYS, 0)));
 		// Add keywords specifically for persons/robots
-		list.addAll(Arrays.asList(ChatUtils.PERSON_KEYS));
+		list.addAll(Arrays.asList(getColumn(ChatUtils.PERSON_KEYS, 0)));
 		// Add keywords specifically for a vehicles
-		list.addAll(Arrays.asList(ChatUtils.VEHICLE_KEYS));
+		list.addAll(Arrays.asList(getColumn(ChatUtils.VEHICLE_KEYS, 0)));
 		// Add shortcuts
 		list.addAll(createShortcutHelp());
 
@@ -926,6 +1087,11 @@ public class ChatUtils {
 		return s;
 	}
 
+    public static String[] getColumn(String[][] array, int colToGet) {
+    	return Arrays.stream(array).map(o -> o[colToGet]).toArray(String[]::new);
+    }
+    
+  	
 	/**
 	 * Prepare object for garbage collection.
 	 */

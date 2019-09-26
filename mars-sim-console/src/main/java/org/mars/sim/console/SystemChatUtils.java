@@ -696,11 +696,13 @@ public class SystemChatUtils extends ChatUtils {
 
 		else if (text.equalsIgnoreCase("elevation")) {			
 //			responseText = displayReferenceElevation(responseText);		
-			boolean quit = true;
+			boolean good0 = false;
+			boolean good1 = false;
 			String latitudeStr = "";
 			String longitudeStr = "";
 			double lat = -1;
 			double lon = -1;
+			final String NOTE = "[Note: '/q' to quit]";
 			
 			boolean change = true;
 			
@@ -709,44 +711,44 @@ public class SystemChatUtils extends ChatUtils {
 				do {
 					try {
 						String prompt0 = YOU_PROMPT + "What is the latitude (e.g. 10.03 N, 5.01 S) ? " 
-								+ System.lineSeparator() + "Note: '/q' to quit";
+								+ System.lineSeparator() + NOTE;
 						latitudeStr = textIO.newStringInputReader().read(prompt0);
 						if (latitudeStr.equalsIgnoreCase("quit") || latitudeStr.equalsIgnoreCase("/q"))
-							;
+							return new String[] { questionText, responseText.toString() };
 						else {
 							lat = Coordinates.parseLatitude2Phi(latitudeStr);
+							good0 = true;
 						}
-						quit = true;
 					} catch(IllegalStateException e) {
-						quit = false;
+						good0 = false;
 					}
-				} while (!quit);
+				} while (!good0);
 				
 				do {
 					try {
 						String prompt0 = YOU_PROMPT + "What is the longitude (e.g. 5.09 E, 18.04 W) ? " 
-								+ System.lineSeparator() + "Note: '/q' to quit";
+								+ System.lineSeparator() + NOTE;
 						longitudeStr = textIO.newStringInputReader().read(prompt0);
 						if (longitudeStr.equalsIgnoreCase("quit") || longitudeStr.equalsIgnoreCase("/q"))
-							;
+							return new String[] { questionText, responseText.toString() };
 						else {
 							lon = Coordinates.parseLatitude2Phi(longitudeStr);
+							good1 = true;
 						}
-						quit = true;
 					} catch(IllegalStateException e) {
-						quit = false;
+						good1 = false;
 					}
-				} while (!quit);
+				} while (!good1);
 				
-				if (!quit) {
+				if (good0 && good1) {
 					double elevation = terrainElevation.getPatchedElevation(new Coordinates(lat, lon));
 					responseText.append(System.lineSeparator());
-					responseText.append("The elevation of (" + latitudeStr + ", " + longitudeStr + ") is "
-							+ Math.round(elevation *1000.0)/1000.0);
-					responseText.append(System.lineSeparator());
 					
-					String prompt = YOU_PROMPT + "Another location ? " 
-							+ System.lineSeparator() + "Note: '/q' to quit";
+					String ans = "The elevation of (" + latitudeStr + ", " + longitudeStr + ") is "
+							+ Math.round(elevation *1000.0)/1000.0 + " km" + System.lineSeparator();
+					
+					String prompt = ans + SYSTEM_PROMPT + "Another location ? " 
+							+ System.lineSeparator() + NOTE;
 					
 					change = textIO.newBooleanInputReader().read(prompt); 
 				}

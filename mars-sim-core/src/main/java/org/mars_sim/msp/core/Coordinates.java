@@ -678,6 +678,7 @@ public class Coordinates implements Serializable {
 
 	/**
 	 * Parse a latitude string into a phi value. e.g. input: "25.344 N"
+	 * Note: North is positive (+); South is negative (-)
 	 * 
 	 * @param latitude as string
 	 * @return phi value in radians
@@ -737,6 +738,7 @@ public class Coordinates implements Serializable {
 
 	/**
 	 * Parse a longitude string into a theta value. e.g. input:  "63.5532 W" 
+	 * Note: East is positive (+), West is negative (-)
 	 * 
 	 * @param longitude as string
 	 * @return theta value in radians

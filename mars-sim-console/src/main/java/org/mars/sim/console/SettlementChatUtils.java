@@ -1443,7 +1443,7 @@ public class SettlementChatUtils extends ChatUtils {
 
 		else if (text.toLowerCase().contains("where") || text.toLowerCase().contains("location")
 				|| text.toLowerCase().contains("located")) {
-			questionText = YOU_PROMPT + "Where is the settlement ?";
+			questionText = YOU_PROMPT + "What settlement are you at?";
 			// TODO: add to tell nearby georgraphical features. e.g. at what basin
 			responseText.append(settlementCache + " : ");
 			responseText.append("We're located at ");

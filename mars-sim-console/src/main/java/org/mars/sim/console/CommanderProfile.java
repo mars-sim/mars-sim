@@ -114,7 +114,6 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
         addAge(textIO, getFieldName(fields[3]), () -> commander.getAge(), s -> commander.setAge(s));	      
         addJobTask(textIO, getFieldName(fields[4]), () -> commander.getJob(), s -> commander.setJob(s));
         addSponsorTask(textIO, getFieldName(fields[5]), () -> commander.getSponsorInt(), s -> commander.setSponsorInt(s));
-//        addAffiliation(textIO, getFieldName(fields[5]), () -> commander.isMarsSocietyStr(), s -> commander.setMarsSocietyStr(s));
         addCountryTask(textIO, getFieldName(fields[6]), () -> commander.getCountryInt(), s -> commander.setCountryInt(s));
           
         setUpCountryKey();
@@ -316,14 +315,6 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
         	});
     }
     
-//    private void addChar(TextIO textIO, String prompt, Supplier<Character> defaultValueSupplier, Consumer<Character> valueSetter) {
-//        setChoices("M", "F");
-//        
-//        operations.add(() -> valueSetter.accept(textIO.newCharInputReader()
-//        		.withDefaultValue('M')
-//                .read(prompt)));
-//    }
-    
     private void addAge(TextIO textIO, String prompt, Supplier<Integer> defaultValueSupplier, Consumer<Integer> valueSetter) {
         operations.add(() -> {
         	setChoices();
@@ -350,22 +341,6 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
         	});
     }
     
-//    private void addAffiliation(TextIO textIO, String prompt, Supplier<String> defaultValueSupplier, Consumer<String> valueSetter) {
-//        operations.add(() -> {
-//        	String[] ans = {"y", "n"};
-//        	setChoices(ans);
-//        	valueSetter.accept(textIO.newStringInputReader()
-////                  .withPromptAdjustments(false)
-////                  .withInlinePossibleValues(ans)
-//                    .withIgnoreCase()
-////                    .withPromptAdjustments(false)
-////				.withInlinePossibleValues("m", "f", "M", "F")
-////                .withDefaultValue(defaultValueSupplier.get())
-//              .withDefaultValue("y")
-//                .read(prompt));
-//        	});
-//    } 
-    
     private void addSponsorTask(TextIO textIO, String prompt, Supplier<Integer> defaultValueSupplier, Consumer<Integer> valueSetter) {
         operations.add(() -> {
         	setChoices();
@@ -388,15 +363,6 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
     		});
     }
 
-//    private void addPhaseTask(TextIO textIO, String prompt, Supplier<Integer> defaultValueSupplier, Consumer<Integer> valueSetter) {
-//        operations.add(() -> valueSetter.accept(textIO.newIntInputReader()
-//                .withDefaultValue(1)
-//                .withMinVal(1)
-//                .withMaxVal(4)//defaultValueSupplier.get())
-//                .read(prompt)));
-//    }
-    
-    
     /**
      * Add the parenthesis and the numerical and prints the list
      * 
@@ -509,12 +475,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
         logger.config("Commander's profile saved: " + p);
     }
 
-    public static boolean loadProfile() throws IOException {
-//    	return loadCommander(commander);
-//    }
-//    
-//    public static boolean loadCommander(Commander commander) throws IOException {
-    	
+    public static boolean loadProfile() throws IOException { 	
 		File f = new File(DIR, FILENAME);
 
 		if (f.exists() && f.canRead()) {
@@ -536,30 +497,6 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
 		}
     }
     
-//    public static Commander loadCommander() throws IOException {
-//    	
-//    	Commander cc = new Commander();
-//    	
-//		File f = new File(DIR, FILENAME);
-//
-//		if (f.exists() && f.canRead()) {
-//	    	
-//	    	Properties p = new Properties();
-//	        FileInputStream fi = new FileInputStream(PATH);
-//	        p.load(fi);
-//	        fi.close();
-//
-//	        cc = loadProperties(p, cc);
-//	        
-//	        logger.config("Commander's profile loaded: " + p);
-//		}
-//		else {
-//	        logger.config("Can't find the 'commander.profile' file.");
-//		}
-//		
-//        return cc;
-//    }
-    
     
     public static Commander loadProperties(Properties p, Commander cc) {
         cc.setLastName(p.getProperty("commander.lastname"));
@@ -569,7 +506,6 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
         cc.setJobStr(p.getProperty("commander.job"));
         cc.setCountryStr(p.getProperty("commander.country"));  
         cc.setSponsorStr(p.getProperty("commander.sponsor")); 
-//        cc.setMarsSocietyStr(p.getProperty("commander.MarsSociety"));  
         
         return cc;
     }

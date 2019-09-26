@@ -36,7 +36,13 @@ public class VehicleChatUtils extends ChatUtils {
 		String questionText = "";
 		StringBuffer responseText = new StringBuffer();
 
-		if (text.equalsIgnoreCase("status")) {
+		if (text.toLowerCase().contains("where")) {
+			questionText = YOU_PROMPT + "Where are you located ?"; 
+			responseText.append("I'm located at ");
+			responseText.append(Conversion.capitalize(vehicleCache.getLocationTag().getQuickLocation()));
+		}
+		
+		else if (text.equalsIgnoreCase("status")) {
 			questionText = YOU_PROMPT + "What is your status ?";
 			int max = 28;
 
