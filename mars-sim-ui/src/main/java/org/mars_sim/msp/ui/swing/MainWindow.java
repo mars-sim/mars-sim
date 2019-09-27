@@ -359,7 +359,7 @@ extends JComponent {
 	class CacheLoadingSettlementTimerTask extends TimerTask {
 		public void run() {
 			// Cache each settlement unit window
-			desktop.cacheSettlementUnitWindow();
+			SwingUtilities.invokeLater(() -> desktop.cacheSettlementUnitWindow());
 		}
 	}
 

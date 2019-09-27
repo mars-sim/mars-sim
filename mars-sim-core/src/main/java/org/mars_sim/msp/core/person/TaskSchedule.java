@@ -496,24 +496,6 @@ public class TaskSchedule implements Serializable {
 		return todayActivities;
 	}
 
-//	/**
-//	 * Gets all schedules of a person.
-//	 * 
-//	 * @return schedules
-//	 */
-//	public Map <Integer, List<OneTask>> getSchedules() {
-//		return schedules;
-//	}
-
-//	/**
-//	 * Gets the today's schedule.
-//	 * 
-//	 * @return todaySchedule
-//	 */
-//	public List<OneTask> getTodaySchedule() {
-//		return todaySchedule;
-//	}
-
 	/**
 	 * Gets the current sol.
 	 * 

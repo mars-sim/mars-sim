@@ -149,4 +149,18 @@ public abstract class TabPanel extends JScrollPane {
 	public Unit getUnit() {
 		return unit;
 	}
+	
+	/**
+	 * Prepares for deletion.
+	 */
+	public void destroy() {
+		tabIcon = null;
+		viewPanel = null;
+		topContentPanel = null;
+		centerContentPanel = null;
+		unit = null;
+		desktop = null;
+		missionManager = null;
+		
+	}
 }

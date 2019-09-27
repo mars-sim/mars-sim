@@ -114,7 +114,9 @@ public class TabPanelLog extends TabPanel {
 
 		// Create comboBox
 		solBox = new JComboBoxMW<Object>(comboBoxModel);
-		solBox.setWide(true);
+//		solBox.setWide(true);
+		solBox.setPreferredSize(new Dimension(80, 25));
+		solBox.setPrototypeDisplayValue(new Dimension(80, 25));
 		solBox.setRenderer(new PromptComboBoxRenderer());
 		solBox.setMaximumRowCount(7);
 
@@ -219,7 +221,7 @@ public class TabPanelLog extends TabPanel {
 				return this;
 			}
 
-			setText(SOL + value + WHITESPACES);
+			setText(SOL + value);// + WHITESPACES);
 
 			// 184,134,11 mud yellow
 			// 255,229,204 white-ish (super pale) yellow
