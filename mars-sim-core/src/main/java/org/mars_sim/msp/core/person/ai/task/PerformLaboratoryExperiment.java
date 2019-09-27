@@ -97,17 +97,17 @@ implements ResearchScientificStudy, Serializable {
                     addPersonToLab();
                 }
                 else {
-                    logger.info("lab could not be determined.");
+                    logger.warning("The lab could not be determined.");
                     endTask();
                 }
             }
             else {
-                logger.info("science could not be determined");
+                logger.warning("The science of a study could not be determined");
                 endTask();
             }
         }
         else {
-            logger.info("study could not be determined");
+            logger.warning("The study could not be determined");
             endTask();
         }
 

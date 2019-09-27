@@ -225,10 +225,10 @@ class AttributeTableModel extends AbstractTableModel {
 
 		else if (column == 1) {
 			if (person != null)
-				return n_manager.getAttribute(n_attributes.get(row).values().iterator().next());
+				return getLevelString(n_manager.getAttribute(n_attributes.get(row).values().iterator().next()));
 
 			else if (robot != null)
-				return r_manager.getAttribute(r_attributes.get(row).values().iterator().next());
+				return getLevelString(r_manager.getAttribute(r_attributes.get(row).values().iterator().next()));
 			else
 				return null;
 		}
@@ -236,19 +236,26 @@ class AttributeTableModel extends AbstractTableModel {
 		else return null;
 	}
 
-//	public String getLevelString(int level) {
-//		String result = null;
-//		if (level < 5) result = Msg.getString("TabPanelAttribute.level.0"); //$NON-NLS-1$
-//		else if (level < 20) result = Msg.getString("TabPanelAttribute.level.1"); //$NON-NLS-1$
-//		else if (level < 35) result = Msg.getString("TabPanelAttribute.level.2"); //$NON-NLS-1$
-//		else if (level < 45) result = Msg.getString("TabPanelAttribute.level.3"); //$NON-NLS-1$
-//		else if (level < 55) result = Msg.getString("TabPanelAttribute.level.4"); //$NON-NLS-1$
-//		else if (level < 65) result = Msg.getString("TabPanelAttribute.level.5"); //$NON-NLS-1$
-//		else if (level < 80) result = Msg.getString("TabPanelAttribute.level.6"); //$NON-NLS-1$
-//		else if (level < 95) result = Msg.getString("TabPanelAttribute.level.7"); //$NON-NLS-1$
-//		else result = Msg.getString("TabPanelAttribute.level.8"); //$NON-NLS-1$
-//		return result;
-//	}
+	/**
+	 * Converts the numeric attribute points to a description of level
+	 * 
+	 * @param level
+	 * @return
+	 */
+	public String getLevelString(int level) {
+		String result = null;
+		if (level < 10) result = Msg.getString("TabPanelAttribute.level.0"); //$NON-NLS-1$
+		else if (level < 20) result = Msg.getString("TabPanelAttribute.level.1"); //$NON-NLS-1$
+		else if (level < 30) result = Msg.getString("TabPanelAttribute.level.2"); //$NON-NLS-1$
+		else if (level < 40) result = Msg.getString("TabPanelAttribute.level.3"); //$NON-NLS-1$
+		else if (level < 50) result = Msg.getString("TabPanelAttribute.level.4"); //$NON-NLS-1$
+		else if (level < 60) result = Msg.getString("TabPanelAttribute.level.5"); //$NON-NLS-1$
+		else if (level < 70) result = Msg.getString("TabPanelAttribute.level.6"); //$NON-NLS-1$
+		else if (level < 80) result = Msg.getString("TabPanelAttribute.level.7"); //$NON-NLS-1$
+		else if (level < 90) result = Msg.getString("TabPanelAttribute.level.7"); //$NON-NLS-1$		
+		else result = Msg.getString("TabPanelAttribute.level.8"); //$NON-NLS-1$
+		return result;
+	}
 
 	/**
 	 * Prepares the job history of the person

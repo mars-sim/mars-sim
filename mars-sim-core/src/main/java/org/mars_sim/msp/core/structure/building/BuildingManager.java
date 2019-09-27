@@ -888,8 +888,6 @@ public class BuildingManager implements Serializable {
 	 * @return true if it has been added to a garage 
 	 */
 	public static boolean addToGarage(GroundVehicle vehicle, Settlement settlement) {
-
-		
 		// The following block of codes are for FIXING invalid states and setting them straight
 		if (vehicle.getStatus() == StatusType.GARAGED) {
 			if (vehicle.getSettlement() == null) {

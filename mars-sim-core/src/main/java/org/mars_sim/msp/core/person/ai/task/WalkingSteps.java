@@ -723,16 +723,18 @@ implements Serializable {
                 destinationWalkState.xLoc, destinationWalkState.yLoc);
         if (airlock == null) {
             canWalkAllSteps = false;
-            if (person != null)
+            if (person != null) {
             	LogConsolidated.log(Level.WARNING, 10000, sourceName,
     					"[" + person.getSettlement() + "] " + person.getName()
             		+ " in " + person.getBuildingLocation().getNickName()
             		+ " cannot find walkable airlock from building interior to building interior.");
-            else if (robot != null)
+            }
+            else if (robot != null) {
             	LogConsolidated.log(Level.WARNING, 10000, sourceName,
     					"[" + robot.getSettlement() + "] " + robot.getName()
                 		+ " in " + robot.getBuildingLocation().getNickName()
                 		+ " cannot find walkable airlock from building interior to building interior.");
+            }
            return;
         }
 
@@ -1229,17 +1231,20 @@ implements Serializable {
                     // Cannot walk to destination building.
                     canWalkAllSteps = false;
 
-                    if (person != null)
+                    if (person != null) {
                     	LogConsolidated.log(Level.WARNING, 10000, sourceName,
             					"[" + person.getLocationTag().getLocale()  + "] " + person.getName()
             					+ " in " + person.getBuildingLocation().getNickName()
                         		+ " cannot find walkable airlock from building airlock exterior to building interior.");
-                    else if (robot != null)
+                    }
+                    else if (robot != null) {
                     	LogConsolidated.log(Level.WARNING, 10000, sourceName,
             					"[" + robot.getLocationTag().getLocale()  + "] " + robot.getName()
                         		+ " in " + robot.getBuildingLocation().getNickName()
                         		+ " cannot find walkable airlock from building airlock exterior to building interior.");
-
+                    }
+                    
+                    return;
                 }
             }
         }

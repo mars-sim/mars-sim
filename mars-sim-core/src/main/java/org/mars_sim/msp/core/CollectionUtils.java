@@ -7,7 +7,6 @@
 package org.mars_sim.msp.core;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -345,6 +344,20 @@ public class CollectionUtils {
 		}
 		
 		return sList;
+	}
+	
+	/**
+	 * Finds a person in a settlement
+	 * 
+	 * @param name
+	 * @param settlement
+	 * @return
+	 */
+	public static Person findPerson(String name, Settlement settlement) {
+		// Person person = null;
+		Collection<Person> people = settlement.getIndoorPeople();
+		// List<Person> peopleList = new ArrayList<Person>(people);
+		return (Person) people.stream().filter(p -> p.getName() == name);
 	}
 	
 }

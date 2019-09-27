@@ -937,13 +937,7 @@ public class Simulation implements ClockListener, Serializable {
 		Resupply.initializeInstances(bc, unitManager);
 		
 		// Re-initialize Unit related class
-//		EVASuit.initializeInstances(weather);				
-//		GroundVehicle.initializeInstances(surface);				//  terrain
-//		Inventory.initializeInstances(marsSurface);
-		Robot.initializeInstances();
-		Rover.initializeInstances(pc);					
-	
-		Vehicle.initializeInstances();				//  vehicleconfig 
+//		Vehicle.initializeInstances();
 		SalvageValues.initializeInstances(unitManager);
 			
 		// Re-initialize Person/Robot related class

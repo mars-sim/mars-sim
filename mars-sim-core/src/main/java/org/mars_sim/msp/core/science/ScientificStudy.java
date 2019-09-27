@@ -42,28 +42,28 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 	public static final String CANCELED = "Canceled";
 
 	/** The average amount of base work time (millisols) required for proposal phase. */
-	private static double baseProposalTime;
+	private double baseProposalTime;
 
 	/** The average amount of base work time (millisols) required for primary research. */
-	private static double basePrimaryResearchTime;
+	private double basePrimaryResearchTime;
 
 	/** The average amount of base work time (millisols) required for collaborative research. */
-	private static double baseCollaborativeResearchTime;
+	private double baseCollaborativeResearchTime;
 
 	/** The average amount of base work time (millisols) required for primary researcher writing study paper. */
-	private static double basePrimaryWritingPaperTime;
+	private double basePrimaryWritingPaperTime;
 
 	/** The average amount of base work time (millisols) required for collaborative researcher writing study paper. */
-	private static double baseCollaborativePaperWritingTime;
+	private double baseCollaborativePaperWritingTime;
 
 	/** The average amount of base time (millisols) for peer review. */
-	private static double basePeerReviewTime;
+	private double basePeerReviewTime;
 
 	/** The average amount of downtime (millisols) allowed for primary work. */
-	private static double primaryWorkDownTimeAllowed;
+	private double primaryWorkDownTimeAllowed;
 
 	/** The average amount of downtime (millisols) allowed for collaborative work. */
-	private static double collaborativeWorkDownTimeAllowed;
+	private double collaborativeWorkDownTimeAllowed;
 	
 	/** A list of listeners for this scientific study. */
 	private transient List<ScientificStudyListener> listeners; 

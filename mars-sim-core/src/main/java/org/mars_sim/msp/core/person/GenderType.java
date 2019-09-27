@@ -40,4 +40,13 @@ public enum GenderType {
 	public static GenderType valueOfIgnoreCase(String s) {
 		return valueOf(s.toUpperCase().replace(' ','_'));
 	}
+	
+	public static String getPossessivePronoun(GenderType gender) {
+		if (gender == GenderType.MALE)
+			return "his";
+		else if (gender == GenderType.FEMALE)
+			return "her";
+		
+		return "its";
+	}
 }

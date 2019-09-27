@@ -165,9 +165,6 @@ public abstract class Vehicle extends Unit
 	/** The vehicle's status log. */
 	private Map<Integer, Map<Integer, List<StatusType>>> vehicleLog = new HashMap<>();
 	
-	// Static members
-//	private static VehicleConfig vehicleConfig = SimulationConfig.instance().getVehicleConfiguration();
-
 	static {
 		life_support_range_error_margin = SimulationConfig.instance().getSettlementConfiguration()
 				.loadMissionControl()[0];
@@ -1324,17 +1321,7 @@ public abstract class Vehicle extends Unit
 		hashCode *= vehicleType.hashCode();
 		return hashCode;
 	}
-	
-	/**
-	 * Reloads instances after loading from a saved sim
-	 * 
-	 * @param mgr
-	 */
-	public static void initializeInstances() {
-		vehicleConfig = SimulationConfig.instance().getVehicleConfiguration();
-	}
 
-	
 	@Override
 	public void destroy() {
 		super.destroy();

@@ -16,6 +16,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.LocalAreaUtil;
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.person.Person;
@@ -50,8 +51,8 @@ public class Trade extends RoverMission implements Serializable {
 
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(Trade.class.getName());
-//	private static String loggerName = logger.getName();
-//	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+	private static String loggerName = logger.getName();
+	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 	
 	/** Default description. */
 	public static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.trade"); //$NON-NLS-1$
@@ -354,7 +355,7 @@ public class Trade extends RoverMission implements Serializable {
 		}
 
 		// Have person exit rover if necessary.
-		if (member.isInSettlement()) {
+		if (!member.isInSettlement()) {
 
 			// Get random inhabitable building at trading settlement.
 			Building destinationBuilding = tradingSettlement.getBuildingManager().getRandomAirlockBuilding();
@@ -369,7 +370,8 @@ public class Trade extends RoverMission implements Serializable {
 						assignTask(person,
 								new Walk(person, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding));
 					} else {
-						logger.severe("[" + person.getLocationTag().getLocale() + "] " + person.getName()
+							LogConsolidated.log(Level.SEVERE, 5000, sourceName,
+									"[" + person.getLocationTag().getLocale() + "] " + person.getName()
 								+ " is unable to walk to building " + destinationBuilding);
 						// + " at " + tradingSettlement);
 					}
@@ -378,7 +380,8 @@ public class Trade extends RoverMission implements Serializable {
 					if (Walk.canWalkAllSteps(robot, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding)) {
 						assignTask(robot, new Walk(robot, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding));
 					} else {
-						logger.severe("[" + robot.getLocationTag().getLocale() + "] " + robot.getName()
+						LogConsolidated.log(Level.SEVERE, 5009, sourceName,
+								"[" + robot.getLocationTag().getLocale() + "] " + robot.getName()
 								+ " is unable to walk to building " + destinationBuilding);
 						// + " at " + tradingSettlement);
 					}

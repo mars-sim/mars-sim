@@ -19,6 +19,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.equipment.ContainerUtil;
+import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -48,10 +49,10 @@ public final class TradeUtil {
 	 * Credit limit under which a seller is willing to sell goods to a buyer. Buyer
 	 * must pay off credit to under limit to continue buying.
 	 */
-	public static final double SELL_CREDIT_LIMIT = 10000000D;
+	public static final double SELL_CREDIT_LIMIT = 10_000_000D;
 
 	/** Estimated mission parts mass. */
-	private static final double MISSION_BASE_MASS = 2000D;
+	private static final double MISSION_BASE_MASS = 2_000D;
 
 	/** Minimum mass (kg) of life support resources to leave at settlement. */
 	private static final int MIN_LIFE_SUPPORT_RESOURCES = 100;
@@ -192,7 +193,6 @@ public final class TradeUtil {
 			Settlement tradingSettlement) {
 
 		// Get credit between starting settlement and trading settlement.
-		// CreditManager creditManager = Simulation.instance().getCreditManager();
 		double credit = creditManager.getCredit(startingSettlement, tradingSettlement);
 
 		Map<Good, Integer> buyLoad = null;
@@ -619,7 +619,7 @@ public final class TradeUtil {
 			}
 
 			boolean enoughEVASuits = true;
-			if (good.getName().equalsIgnoreCase("EVA Suit")) {
+			if (good.getClassType() == EVASuit.class) {//.getName().equalsIgnoreCase("EVA Suit")) {
 				double remainingSuits = sellingInventory - amountTraded;
 				int requiredSuits = Trade.MAX_MEMBERS + 2;
 				enoughEVASuits = remainingSuits > requiredSuits;

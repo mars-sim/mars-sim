@@ -200,7 +200,7 @@ public class AudioPlayer implements ClockListener {
 	 * @param filepath the file path to the sound file.
 	 */
 	public void playSound(String filepath) {
-		if (!isSoundMute() && filepath != null && !filepath.equals("")) {
+		if (!isSoundDisabled && !isSoundMute() && filepath != null && !filepath.equals("")) {
 //				SwingUtilities.invokeLater(() -> loadSound(filepath));
 			loadSound(filepath);
 		}
@@ -397,10 +397,12 @@ public class AudioPlayer implements ClockListener {
 	 * @return true if mute.
 	 */
 	public boolean isMusicMute() {
-		if ((currentMusic != null && currentMusic.isMute() || currentMusic.isPaused()) || currentMusicVol <= 0)
-			return true;
-		else
-			return false;
+		if (currentMusic != null || currentMusicVol <= 0) {
+			if (currentMusic.isMute() || currentMusic.isPaused())
+				return true;
+		}
+
+		return false;
 	}
 
 	/**
@@ -411,12 +413,13 @@ public class AudioPlayer implements ClockListener {
 	 * @return true if mute.
 	 */
 	public boolean isSoundMute() {
-		if ((currentSoundClip != null && currentSoundClip.isMute() || currentSoundClip.isPaused()) || currentSoundVol <= 0)
-			return true;
-		else
-			return false;
-	}
+		if (currentSoundClip != null || currentSoundVol <= 0) {
+			if (currentSoundClip.isMute() || currentSoundClip.isPaused())
+				return true;
+		}
 
+		return false;
+	}
 
 	/**
 	 * Unmute the sound effect

@@ -61,6 +61,10 @@ public class TabPanelOrganization extends TabPanel {
 
 	private JTree tree;
 
+	private DefaultMutableTreeNode root;
+	
+	private DefaultTreeModel defaultTreeModel;
+	
 	/**
 	 * Constructor.
 	 * 
@@ -109,7 +113,7 @@ public class TabPanelOrganization extends TabPanel {
 
 	public void createTree() {
 
-		DefaultMutableTreeNode root = new DefaultMutableTreeNode(settlement.getName());
+		root = new DefaultMutableTreeNode(settlement.getName());
 
 		DefaultMutableTreeNode commanderStaffNode = new DefaultMutableTreeNode("Command Staff");
 		DefaultMutableTreeNode commanderNode = new DefaultMutableTreeNode(RoleType.COMMANDER.toString());
@@ -220,12 +224,6 @@ public class TabPanelOrganization extends TabPanel {
 			root.add(mayorNode);
 			root.add(divisionNode);
 
-//		} else if (population >= ChainOfCommand.POPULATION_WITH_CHIEFS) {
-//			root.add(commanderStaffNode);
-//			commanderStaffNode.add(commanderNode);
-//			commanderStaffNode.add(subCommanderNode);
-//			root.add(cabinetNode);
-			
 		} else if (population >= ChainOfCommand.POPULATION_WITH_SUB_COMMANDER) {
 			root.add(commanderStaffNode);
 			commanderStaffNode.add(commanderNode);
@@ -237,18 +235,6 @@ public class TabPanelOrganization extends TabPanel {
 			root.add(divisionNode);
 		}
 
-
-//			commanderStaffNode.add(engineeringNode);
-//			engineeringNode.add(engineeringChiefNode);
-//			engineeringNode.add(engineeringSpecialistNode);
-//
-//			commanderStaffNode.add(safetyNode);
-//			safetyNode.add(safetyChiefNode);
-//			safetyNode.add(safetySpecialistNode);
-//
-//			commanderStaffNode.add(supplyNode);
-//			supplyNode.add(supplyChiefNode);
-//			supplyNode.add(supplySpecialistNode);
 
 		tree = new JTree(root);
 		tree.setVisibleRowCount(8);
@@ -320,7 +306,7 @@ public class TabPanelOrganization extends TabPanel {
 			}
 		}
 
-		DefaultTreeModel defaultTreeModel = new DefaultTreeModel(root);
+		defaultTreeModel = new DefaultTreeModel(root);
 		tree.setModel(defaultTreeModel);
 
 		for (int i = 0; i < tree.getRowCount(); i++)
@@ -329,6 +315,10 @@ public class TabPanelOrganization extends TabPanel {
 		centerContentPanel.add(new JScrollPane(tree, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER), BorderLayout.CENTER);
 
+		setupMouse();
+	}
+	
+	public void setupMouse() {
 		MouseListener ml = new MouseAdapter() {
 			public void mousePressed(MouseEvent e) {
 				int selRow = tree.getRowForLocation(e.getX(), e.getY());
@@ -407,6 +397,9 @@ public class TabPanelOrganization extends TabPanel {
 		// tree = null;
 		// TODO: create a button to refresh instead of recreating the tree ?
 		// createTree();
+//		model = (DefaultTreeModel) tree.getModel();
+		defaultTreeModel.reload(root); // notify changes to model 
+		tree.expandPath(tree.getSelectionPath());
 	}
 
 	/**

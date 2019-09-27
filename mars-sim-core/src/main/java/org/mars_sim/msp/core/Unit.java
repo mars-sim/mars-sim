@@ -25,6 +25,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.robot.RobotConfig;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.EarthClock;
@@ -116,6 +117,7 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 	
 	protected static PersonConfig personConfig = simulationConfig.getPersonConfig();
 	protected static VehicleConfig vehicleConfig = simulationConfig.getVehicleConfiguration();
+	protected static RobotConfig robotConfig = simulationConfig.getRobotConfiguration();
 	
 	/**
 	 * Must be synchronised to prevent duplicate ids being assigned via different

@@ -816,18 +816,6 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 		return cargoCapacity;
 	}
 	
-	/**
-	 * Reloads instances after loading from a saved sim
-	 * 
-	 * @param clock
-	 */
-	public static void initializeInstances(PersonConfig pc) {
-//		weather = Simulation.instance().getMars().getWeather();
-//		VehicleConfig vehicleConfig = SimulationConfig.instance().getVehicleConfiguration();
-		personConfig = pc;
-
-	}
-	
 	@Override
 	public void destroy() {
 		super.destroy();

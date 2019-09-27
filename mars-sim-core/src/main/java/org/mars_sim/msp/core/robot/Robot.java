@@ -121,7 +121,7 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 	private BotMind botMind;
 	/** robot's System condition. */
 	private SystemCondition health;
-
+	/** The SalvageInfo instance. */
 	private SalvageInfo salvageInfo;
 	/** The equipment's malfunction manager. */
 	protected MalfunctionManager malfunctionManager;
@@ -129,16 +129,13 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 	private String birthplace;
 	/** The birth time of the robot. */
 	private String birthTimeStamp;
-
+	/** The TaskSchedule instance. */
 	private TaskSchedule taskSchedule;
-
+	/** The Robot Type. */
 	private RobotType robotType;
-
+	/** The building the robot is at. */
 	private Building currentBuilding;
 
-	private static EarthClock earthClock;
-	private static RobotConfig robotConfig;
-	
 	/**
 	 * Must be synchronised to prevent duplicate ids being assigned via different
 	 * threads.
@@ -184,7 +181,7 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 	}
 
 	public void initialize() {
-		earthClock = sim.getMasterClock().getEarthClock();
+
 		robotConfig = SimulationConfig.instance().getRobotConfiguration();
 		unitManager = sim.getUnitManager();
 		
@@ -544,6 +541,7 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 			if (solCache != solElapsed) {
 				// Check if a person's age should be updated
 				age = updateAge();
+				
 				solCache = solElapsed;
 			}
 			
@@ -1013,15 +1011,7 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 //		Robot r = (Robot) obj;
 //		return this.name.equals(r.getName());
 //	}
-	
-	/**
-	 * Reloads instances after loading from a saved sim
-	 */
-	public static void initializeInstances() {
-		robotConfig = SimulationConfig.instance().getRobotConfiguration();
-	}
-//	
-	
+
 	@Override
 	public void destroy() {
 		super.destroy();
