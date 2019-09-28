@@ -28,6 +28,7 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.mars.OrbitInfo;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.mars.Weather;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -64,6 +65,12 @@ extends TabPanel {
 	 /** default logger.   */
 	//private static Logger logger = Logger.getLogger(LocationTabPanel.class.getName());
 
+	/** Is UI constructed. */
+	private boolean uiDone = false;
+	
+	/** The Settlement instance. */
+	private Settlement settlement;
+	
 	private WebTextField airDensityTF;
 	private WebTextField pressureTF;
 	private WebTextField solarIrradianceTF;
@@ -121,6 +128,17 @@ extends TabPanel {
     			Msg.getString("TabPanelWeather.tooltip"), //$NON-NLS-1$
     			unit, desktop);
 
+		settlement = (Settlement) unit;
+
+	}
+	
+	public boolean isUIDone() {
+		return uiDone;
+	}
+	
+	public void initializeUI() {
+		uiDone = true;
+		
 		if (masterClock == null)
 			masterClock = Simulation.instance().getMasterClock();
 
@@ -488,7 +506,9 @@ extends TabPanel {
      * Updates the info on this panel.
      */
     public void update() {
-
+		if (!uiDone)
+			initializeUI();
+		
     	Coordinates location = unit.getCoordinates();
 		//System.out.println("solar declination angle : " + 57.2975 * orbitInfo.getSolarDeclinationAngle());
 		//System.out.println("Duration of Mars daylight in millisols : " + orbitInfo.getDaylightinMillisols(location));

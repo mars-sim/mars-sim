@@ -44,10 +44,17 @@ extends TabPanel {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	/** Is UI constructed. */
+	private boolean uiDone = false;
+	
+	/** The Person instance. */
+	private Person person = null;
+	/** The Robot instance. */
+	private Robot robot = null;
+	
 	private JTable skillTable ;
 	private SkillTableModel skillTableModel;
-	//private Person person;
-	//private Robot robot;
+
 	
 	/**
 	 * Constructor 1.
@@ -63,13 +70,16 @@ extends TabPanel {
 			person, desktop
 		);
 
-		//this.person = person;
-
+		this.person = person;
+		
 		// Create skill table model
 		skillTableModel = new SkillTableModel(person);
-
-		init();
 	}
+	
+	public boolean isUIDone() {
+		return uiDone;
+	}
+	
 
 	/**
 	 * Constructor 2.
@@ -85,16 +95,19 @@ extends TabPanel {
 			robot, desktop
 		);
 
-		//this.robot = robot;
-
+		this.robot = robot;
+		
 		// Create skill table model
 		skillTableModel = new SkillTableModel(robot);
 
-		init();
 	}
+	
+	public void initializeUI() {
+		uiDone = true;
 
-	public void init() {
-
+		// Create skill table model
+		skillTableModel = new SkillTableModel(person);
+		
 		// Create skill label panel.
 		WebPanel skillLabelPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
 		topContentPanel.add(skillLabelPanel);
@@ -139,6 +152,9 @@ extends TabPanel {
 	 * Updates the info on this panel.
 	 */
 	public void update() {
+		if (!uiDone)
+			initializeUI();
+		
 		TableStyle.setTableStyle(skillTable);
 		skillTableModel.update();
 	}

@@ -87,6 +87,9 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
 //	private static final String USED_BY = "Used by ";
 //	private static final String UNKNOWN = "Unknown";
 
+	/** Is UI constructed. */
+	private boolean uiDone = false;
+	
 	private int themeCache;
 
 	private double elevationCache;
@@ -117,6 +120,16 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
 		// Use the TabPanel constructor
 		super(Msg.getString("LocationTabPanel.title"), null, Msg.getString("LocationTabPanel.tooltip"), unit, desktop);
 
+		this.unit = unit;
+	}
+	
+	public boolean isUIDone() {
+		return uiDone;
+	}
+	
+	public void initializeUI() {
+		uiDone = true;
+		
 		Unit container = unit.getContainerUnit();
 		if (containerCache != container) {
 			containerCache = container;
@@ -691,7 +704,9 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
 	 * Updates the info on this panel.
 	 */
 	public void update() {
-
+		if (!uiDone)
+			initializeUI();
+		
 		// If unit's location has changed, update location display.
 		// TODO: if a person goes outside the settlement for servicing an equipment
 		// does the coordinate (down to how many decimal) change?

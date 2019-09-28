@@ -6,10 +6,13 @@
  */
 package org.mars_sim.msp.ui.swing.unit_window.person;
 
+import javax.swing.event.ChangeEvent;
+
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.unit_window.InventoryTabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.LocationTabPanel;
+import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
 
 /**
@@ -21,6 +24,23 @@ public class PersonWindow extends UnitWindow {
 	private boolean deadCache = false;
 
 	private Person person;
+	
+	/** The cache for the currently selected TabPanel. */
+	private TabPanel oldTab;
+	
+	private TabPanelActivity tabPanelActivity;
+	private TabPanelAttribute tabPanelAttribute;
+	private TabPanelCareer tabPanelCareer;
+	private TabPanelFavorite tabPanelFavorite;
+	private TabPanelGeneral tabPanelGeneral;
+	private TabPanelHealth tabPanelHealth;
+	private InventoryTabPanel inventoryTabPanel;
+	private LocationTabPanel locationTabPanel;
+	private TabPanelSchedule tabPanelSchedule;
+	private TabPanelScience tabPanelScience;
+	private TabPanelSkill tabPanelSkill;
+	private TabPanelSocial tabPanelSocial;
+	private TabPanelSponsorship tabPanelSponsorship;
 
 	/**
 	 * Constructor.
@@ -32,11 +52,15 @@ public class PersonWindow extends UnitWindow {
 		// Use UnitWindow constructor
 		super(desktop, person, true);
 		this.person = person;
-
+	
 		// Add tab panels
-		addTabPanel(new TabPanelActivity(person, desktop));
+		
+		tabPanelActivity = new TabPanelActivity(person, desktop);
+		addTabPanel(tabPanelActivity);
 
-		addTabPanel(new TabPanelAttribute(person, desktop));
+		tabPanelAttribute = new TabPanelAttribute(person, desktop);
+		addTabPanel(tabPanelAttribute);
+		
 
 		addTabPanel(new TabPanelCareer(person, desktop));
 
@@ -73,6 +97,10 @@ public class PersonWindow extends UnitWindow {
 		sortTabPanels();
 	}
 
+//	public void initializeUI(TabPanel tabPanel) {
+//		tabPanel.initializeUI();
+//	}
+
 	/**
 	 * Updates this window.
 	 */
@@ -84,6 +112,22 @@ public class PersonWindow extends UnitWindow {
 			if (person.isDeclaredDead()) {
 				deadCache = true;
 				addTabPanel(new TabPanelDeath(person, desktop));
+			}
+		}
+	}
+
+	@Override
+	public void stateChanged(ChangeEvent e) {
+		// SwingUtilities.updateComponentTreeUI(this);
+		TabPanel newTab = getSelected();
+
+		if (newTab != oldTab) {
+
+			if (newTab instanceof TabPanelActivity) {
+				if (tabPanelActivity.isUIDone());
+				 	tabPanelActivity.initializeUI();
+			} else if (newTab instanceof TabPanelAttribute) {
+				
 			}
 		}
 	}

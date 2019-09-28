@@ -14,9 +14,12 @@ import java.awt.EventQueue;
 import java.awt.MenuComponent;
 import java.awt.event.MouseEvent;
 
+import javax.swing.ImageIcon;
 import javax.swing.JInternalFrame;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
+
+import org.mars_sim.msp.ui.swing.configeditor.SimulationConfigEditor;
 
 /**
  * An internal frame that supports modal behavior. Based on code found in:
@@ -27,6 +30,9 @@ public abstract class ModalInternalFrame extends JInternalFrame {
 
 	// Data members
 	boolean modal = false;
+	
+	private static ImageIcon icon = new ImageIcon(SimulationConfigEditor.class.getResource(MainWindow.ICON_IMAGE));
+	
 
 	/**
 	 * Constructor
@@ -43,6 +49,8 @@ public abstract class ModalInternalFrame extends JInternalFrame {
 			boolean iconifiable) {
 		// Call JInternalFrame constructor.
 		super(title, resizable, closable, maximizable, iconifiable);
+		
+		setFrameIcon(icon);
 	}
 
 	@Override

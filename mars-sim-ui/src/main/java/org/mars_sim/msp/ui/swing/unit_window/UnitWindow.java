@@ -15,11 +15,14 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Image;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 
 import javax.swing.ImageIcon;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
@@ -50,7 +53,7 @@ import com.alee.managers.tooltip.TooltipWay;
  * The UnitWindow is the base window for displaying units.
  */
 @SuppressWarnings("serial")
-public abstract class UnitWindow extends ModalInternalFrame {
+public abstract class UnitWindow extends ModalInternalFrame implements ChangeListener {
 
 	// private static final int BLUR_SIZE = 7;
 
@@ -80,7 +83,8 @@ public abstract class UnitWindow extends ModalInternalFrame {
 
 	// Data members
 //	private int themeCache = -1;
-
+	private boolean hasDescription;
+	
 	private String oldRoleString = "";
 	private String oldJobString = "";
 	private String oldTownString = "";
@@ -94,10 +98,11 @@ public abstract class UnitWindow extends ModalInternalFrame {
 
 	private WebPanel statusPanel;
 	/** The tab panels. */
-	private Collection<TabPanel> tabPanels;
+	private List<TabPanel> tabPanels;
 	/** The center panel. */
 	private JTabbedPane tabPane;
 //	private JideTabbedPane tabPanel;
+	
 	/** Main window. */
 	protected MainDesktopPane desktop;
 	/** Unit for this window. */
@@ -117,6 +122,7 @@ public abstract class UnitWindow extends ModalInternalFrame {
 		// Initialize data members
 		this.desktop = desktop;
 		this.unit = unit;
+		this.hasDescription = hasDescription;
 
 		if (unit instanceof Person) {
 			this.setMaximumSize(new Dimension(WIDTH, HEIGHT + 17));
@@ -133,8 +139,13 @@ public abstract class UnitWindow extends ModalInternalFrame {
 
 		this.setIconifiable(false);
 		
+		initializeUI();
+	}
+	
+	private void initializeUI() {
+    
 		tabPanels = new ArrayList<TabPanel>();
-
+        
 		// Create main panel
 		WebPanel mainPane = new WebPanel(new BorderLayout());
 //		mainPane.setBorder(new MarsPanelBorder());// setBorder(MainDesktopPane.newEmptyBorder());
@@ -304,6 +315,14 @@ public abstract class UnitWindow extends ModalInternalFrame {
 //		Color bk = tabPane.getBackground();
 //		UIManager.put("TabbedPane.tabAreaBackground", bk);//ColorUIResource.RED);
 		
+		// Add a listener for the tab changes
+		tabPane.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent e) {
+//				tabChanged(true);
+			}
+		});
+
+		
 		WebPanel centerPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
 //		centerPanel.setOpaque(false);
 //		centerPanel.setBackground(new Color(0,0,0,128));
@@ -456,10 +475,10 @@ public abstract class UnitWindow extends ModalInternalFrame {
 	public void update() {
 		// Update each of the tab panels.
 		for (TabPanel tabPanel : tabPanels) {
-			if (tabPanel.isVisible()) {// && isShowing()) {
-//				SwingUtilities.invokeLater(() -> 
-					tabPanel.update();
-//				);
+			if (tabPanel.isVisible() && tabPanel.isShowing()) {
+				SwingUtilities.invokeLater(() -> 
+					tabPanel.update()
+				);
 //				tabPanel.updateUI();
 //			tabPanel.validate();
 			}
@@ -483,6 +502,22 @@ public abstract class UnitWindow extends ModalInternalFrame {
 	public void setTitle(String value) {
 		super.setTitle(unit.getName());
 	}
+
+	/**
+	 * Return the currently selected tab.
+	 *
+	 * @return Monitor tab being displayed.
+	 */
+	public TabPanel getSelected() {
+		// SwingUtilities.updateComponentTreeUI(this);
+		TabPanel selected = null;
+		int selectedIdx = tabPane.getSelectedIndex();
+		if ((selectedIdx != -1) && (selectedIdx < tabPanels.size()))
+			selected = tabPanels.get(selectedIdx);
+		return selected;
+	}
+	
+//	public abstract void tabChanged(boolean reloadSearch);
 	
 	/**
 	 * Prepares unit window for deletion.

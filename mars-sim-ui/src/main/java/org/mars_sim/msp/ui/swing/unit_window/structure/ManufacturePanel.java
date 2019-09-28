@@ -134,7 +134,7 @@ public class ManufacturePanel extends WebPanel {
     /**
      * Updates the panel's information.
      */
-    public void update() {
+    public void update() {		
     	// Update work progress bar.
     	double workTimeRequired = process.getInfo().getWorkTimeRequired();
         double workTimeRemaining = process.getWorkTimeRemaining();

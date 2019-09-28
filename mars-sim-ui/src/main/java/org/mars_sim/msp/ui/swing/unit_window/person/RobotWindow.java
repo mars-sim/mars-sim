@@ -6,10 +6,13 @@
  */
 package org.mars_sim.msp.ui.swing.unit_window.person;
 
+import javax.swing.event.ChangeEvent;
+
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.unit_window.InventoryTabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.LocationTabPanel;
+import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
 
 /**
@@ -20,6 +23,9 @@ public class RobotWindow extends UnitWindow {
 	/** Is robot inoperable? */
 	private boolean inoperableCache = false;
 
+	/** The cache for the currently selected TabPanel. */
+	private TabPanel oldTab;
+	
 	private Robot robot;
 
 	/**
@@ -67,6 +73,22 @@ public class RobotWindow extends UnitWindow {
 			if (robot.getSystemCondition().isInoperable()) {
 				inoperableCache = true;
 				addTabPanel(new TabPanelDeath(robot, desktop));
+			}
+		}
+	}
+
+	@Override
+	public void stateChanged(ChangeEvent e) {
+		// SwingUtilities.updateComponentTreeUI(this);
+		TabPanel newTab = getSelected();
+
+		if (newTab != oldTab) {
+
+			if (newTab instanceof TabPanelActivity) {
+//				if (tabPanelActivity.isUIDone());
+//				 	tabPanelActivity.initializeUI();
+			} else if (newTab instanceof TabPanelAttribute) {
+				
 			}
 		}
 	}

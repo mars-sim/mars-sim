@@ -27,6 +27,7 @@ import com.alee.laf.text.WebTextArea;
  * The ResearchBuildingPanel class is a building function panel representing
  * the research info of a settlement building.
  */
+@SuppressWarnings("serial")
 public class BuildingPanelResearch
 extends BuildingFunctionPanel {
 
@@ -63,8 +64,6 @@ extends BuildingFunctionPanel {
 		labelPanel.setBackground(new Color(0,0,0,128));
 
 		// Prepare research label
-		// 2014-11-21 Changed font type, size and color and label text
-		// 2014-11-21 Added internationalization for the three labels
 		WebLabel researchLabel = new WebLabel(Msg.getString("BuildingPanelResearch.title"), WebLabel.CENTER); //$NON-NLS-1$
 		researchLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		//researchLabel.setForeground(new Color(102, 51, 0)); // dark brown
@@ -88,47 +87,21 @@ extends BuildingFunctionPanel {
 		// Get the research specialties of the building.
 		ScienceType[] specialties = lab.getTechSpecialties();
 		int size = specialties.length;
-		// Prepare specialtiesListPanel
-		//WebPanel specialtiesListPanel = new WebPanel(new GridLayout(specialties.length, 1, 10, 3));
-		//specialtiesListPanel.setBorder(new EmptyBorder(1, 20, 1, 20)); //(int top, int left, int bottom, int right)
-		//specialtiesListPanel.setOpaque(false);
-		//specialtiesListPanel.setBackground(new Color(0,0,0,128));
-
-		//add(specialtiesListPanel, BorderLayout.CENTER);
 
 		WebTextArea specialtyTA = new WebTextArea();
-		//JTextPane specialtyTA = new JTextPane();
-		//StyledDocument doc = specialtyTA.getStyledDocument();
-		//SimpleAttributeSet center = new SimpleAttributeSet();
-		//StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
-		//doc.setParagraphAttributes(0, doc.getLength(), center, false);
 		specialtyTA.setEditable(false);
-		//specialtyTA.setOpaque(false);
-		//specialtyTA.setBackground(new Color(0,0,0,128));
 		specialtyTA.setFont(new Font("SansSerif", Font.ITALIC, 12));
 		specialtyTA.setColumns(7);
-		//specialtyTA.setFont(new Font("Serif", Font.PLAIN, 12));
 
 		// For each specialty, add specialty name panel.
 		for (ScienceType specialty : specialties) {
-			//WebLabel specialtyLabel = new WebLabel(specialty.getName(), WebLabel.CENTER);
-			//specialtyLabel.setFont(new Font("SansSerif", Font.ITALIC, 10));
-			//specialtyLabel.setForeground(Color.DARK_GRAY);
-			//specialtyLabel.setBackground(Color.WHITE);
-			//specialtiesListPanel.add(specialtyLabel);
-
 			specialtyTA.append(" " + specialty.getName()+ " ");
-
 			if (!specialty.equals(specialties[size-1]))
 				//if it's NOT the last one
 				specialtyTA.append("\n");
 		}
 
-
 		WebPanel listPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
-		//listPanel.add(specialtiesListPanel);
-		//specialtiesListPanel.setBorder(new MarsPanelBorder());
-
 		listPanel.add(specialtyTA);
 		specialtyTA.setBorder(new MarsPanelBorder());
 

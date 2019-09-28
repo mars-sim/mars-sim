@@ -82,6 +82,8 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 	private int solCache = 1;
 	private int solRatingSubmitted = -1;
 
+	/** Is UI constructed. */
+	private boolean uiDone = false;
 	private boolean firstNotification = true;
 	private boolean printLog;
 	private boolean printLog2;
@@ -108,10 +110,13 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 
 	private StarRater starRater;
 	private StarRater aveRater;
-	private MarsClock marsClock;
 	
+	/** The Person instance. */
 	private Person person = null;
+	/** The Robot instance. */
 	private Robot robot = null;
+	
+	private static MarsClock marsClock;
 
 	/**
 	 * Constructor.
@@ -125,8 +130,24 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 				null, Msg.getString("TabPanelCareer.tooltip"), //$NON-NLS-1$
 				unit, desktop);
 
-		marsClock = Simulation.instance().getMasterClock().getMarsClock();
+		if (marsClock == null)
+			marsClock	= Simulation.instance().getMasterClock().getMarsClock();
+		
+		if (unit instanceof Person) {
+			person = (Person) unit;
+		} else if (unit instanceof Robot) {
+			robot = (Robot) unit;
+		}
+		
+	}
 
+	public boolean isUIDone() {
+		return uiDone;
+	}
+	
+	public void initializeUI() {
+		uiDone = true;
+		
 		Mind mind = null;
 		BotMind botMind = null;
 		boolean dead = false;
@@ -642,7 +663,9 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 	 * Updates the info on this panel.
 	 */
 	public void update() {
-
+		if (!uiDone)
+			initializeUI();
+		
 		TableStyle.setTableStyle(table);
 
 		Person person = null;

@@ -19,6 +19,7 @@ import javax.swing.SpringLayout;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
@@ -30,6 +31,12 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 @SuppressWarnings("serial")
 public class TabPanelGeneral extends TabPanel {
 
+	/** Is UI constructed. */
+	private boolean uiDone = false;
+	
+	/** The Person instance. */
+	private Person person = null;
+	
 	/**
 	 * Constructor.
 	 * @param unit the unit to display.
@@ -44,8 +51,15 @@ public class TabPanelGeneral extends TabPanel {
 			unit, desktop
 		);
 
-		Person person = (Person) unit;
-
+		person = (Person) unit;
+	}
+	
+	public boolean isUIDone() {
+		return uiDone;
+	}
+	
+	public void initializeUI() {
+		uiDone = true;
 		// Create general panel.
 		JPanel generalLabelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		topContentPanel.add(generalLabelPanel);
@@ -178,6 +192,8 @@ public class TabPanelGeneral extends TabPanel {
 	 */
 	@Override
 	public void update() {
+		if (!uiDone)
+			initializeUI();
 		// Person person = (Person) unit;
 		// Fill in as we have more to update on this panel.
 	}

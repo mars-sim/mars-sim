@@ -71,7 +71,12 @@ public class TabPanelLog extends TabPanel {
 	private Map<Integer, List<StatusType>> oneDayStatuses;
 	private List<StatusType> oneMillisolStatuses;
 	
+	/** Is UI constructed. */
+	private boolean uiDone = false;
+	
+	/** The Vehicle instance. */
 	private Vehicle vehicle;
+	
 	private MarsClock marsClock = Simulation.instance().getMasterClock().getMarsClock();
 
 	public TabPanelLog(Vehicle vehicle, MainDesktopPane desktop) {
@@ -85,7 +90,16 @@ public class TabPanelLog extends TabPanel {
 		);
 		
 		this.vehicle = vehicle;
-		
+
+	}
+
+	public boolean isUIDone() {
+		return uiDone;
+	}
+	
+	public void initializeUI() {
+		uiDone = true;
+			
 		// Create towing label.
 		WebPanel panel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
 		WebLabel titleLabel = new WebLabel(Msg.getString("TabPanelLog.title"), WebLabel.CENTER); //$NON-NLS-1$
@@ -119,10 +133,10 @@ public class TabPanelLog extends TabPanel {
 		solBox.setPrototypeDisplayValue(new Dimension(80, 25));
 		solBox.setRenderer(new PromptComboBoxRenderer());
 		solBox.setMaximumRowCount(7);
-
+				
 		WebPanel solPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
-//		solPanel.setMinimumSize(new Dimension(40, 15));
-//		solPanel.setSize(new Dimension(100, 15));
+//		WebLabel solLabel = new WebLabel("Sol : ");
+//		solPanel.add(solLabel);
 		solPanel.add(solBox);
 		centerContentPanel.add(solPanel, BorderLayout.NORTH);
 				
@@ -187,6 +201,9 @@ public class TabPanelLog extends TabPanel {
 
 	@Override
 	public void update() {
+		if (!uiDone)
+			initializeUI();
+		
 		int t = -1;
 
 		if (theme != t) {

@@ -45,6 +45,12 @@ extends TabPanel
 implements ListSelectionListener {
 
 	// Data members
+	/** Is UI constructed. */
+	private boolean uiDone = false;
+	
+	/** The Person instance. */
+	private Person person = null;
+	
 	private JTable relationshipTable;
 	private RelationshipTableModel relationshipTableModel;
 
@@ -61,7 +67,15 @@ implements ListSelectionListener {
 			Msg.getString("TabPanelSocial.tooltip"), //$NON-NLS-1$
 			person, desktop
 		);
-
+		this.person = person;
+	}
+	
+	public boolean isUIDone() {
+		return uiDone;
+	}
+	
+	public void initializeUI() {
+		uiDone = true;
 		// Create relationship label panel.
 		WebPanel relationshipLabelPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
 		topContentPanel.add(relationshipLabelPanel);
@@ -124,6 +138,9 @@ implements ListSelectionListener {
 	 * Updates this panel.
 	 */
 	public void update() {
+		if (!uiDone)
+			initializeUI();
+		
 		TableStyle.setTableStyle(relationshipTable);
 		relationshipTableModel.update();
 	}

@@ -29,6 +29,9 @@ public class TabPanelConstruction
 extends TabPanel {
 
 	// Data members
+	/** Is UI constructed. */
+	private boolean uiDone = false;
+	/** The Settlement instance. */
 	private Settlement settlement;
 	private ConstructionSitesPanel sitesPanel;
 	private ConstructedBuildingsPanel buildingsPanel;
@@ -49,6 +52,16 @@ extends TabPanel {
 		);
 
 		settlement = (Settlement) unit;
+
+	}
+	
+	public boolean isUIDone() {
+		return uiDone;
+	}
+	
+	public void initializeUI() {
+		uiDone = true;
+		
 		ConstructionManager manager = settlement.getConstructionManager();
 
 		JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -95,6 +108,9 @@ extends TabPanel {
 
 	@Override
 	public void update() {
+		if (!uiDone)
+			this.initializeUI();
+		
 		sitesPanel.update();
 		buildingsPanel.update();
 

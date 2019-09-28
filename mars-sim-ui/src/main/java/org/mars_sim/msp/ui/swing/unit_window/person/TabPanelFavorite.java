@@ -48,6 +48,11 @@ import com.alee.laf.text.WebTextField;
 public class TabPanelFavorite
 extends TabPanel {
 
+	/** Is UI constructed. */
+	private boolean uiDone = false;
+	/** The Person instance. */
+	private Person person = null;
+	
 	private JTable table;
 	private PreferenceTableModel tableModel;
 	
@@ -66,8 +71,16 @@ extends TabPanel {
 			unit, desktop
 		);
 
-		Person person = (Person) unit;
-
+		person = (Person) unit;
+	}
+	
+	public boolean isUIDone() {
+		return uiDone;
+	}
+	
+	public void initializeUI() {
+		uiDone = true;
+		
 		// Create Favorite label panel.
 		WebPanel favoriteLabelPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
 		topContentPanel.add(favoriteLabelPanel);
@@ -170,7 +183,7 @@ extends TabPanel {
 
 		// Align the preference score to the center of the cell
 		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
-		renderer.setHorizontalAlignment(SwingConstants.CENTER);
+		renderer.setHorizontalAlignment(SwingConstants.LEFT);
 		table.getColumnModel().getColumn(0).setCellRenderer(renderer);
 		table.getColumnModel().getColumn(1).setCellRenderer(renderer);
 
@@ -194,6 +207,9 @@ extends TabPanel {
 	 */
 	@Override
 	public void update() {
+		if (!uiDone)
+			initializeUI();
+		
 		TableStyle.setTableStyle(table);
 	}
 
@@ -203,9 +219,6 @@ extends TabPanel {
 	 */
 	private static class PreferenceTableModel
 	extends AbstractTableModel {
-
-		/** default serial id. */
-		private static final long serialVersionUID = 1L;
 
 		private Preference manager;
 		private List<String> scoreStringList;

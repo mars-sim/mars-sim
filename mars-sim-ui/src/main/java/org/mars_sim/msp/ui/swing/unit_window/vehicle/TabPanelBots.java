@@ -56,6 +56,12 @@ implements MouseListener, ActionListener {
 	private int crewNumCache;
 	private int crewCapacityCache;
 
+	/** Is UI constructed. */
+	private boolean uiDone = false;
+	
+	/** The Crewable instance. */
+	private Crewable crewable;
+	
 	/**
 	 * Constructor.
 	 * @param vehicle the vehicle.
@@ -70,7 +76,16 @@ implements MouseListener, ActionListener {
 			vehicle, desktop
 		);
 
-		Crewable crewable = (Crewable) vehicle;
+		crewable = (Crewable) vehicle;
+
+	}
+
+	public boolean isUIDone() {
+		return uiDone;
+	}
+	
+	public void initializeUI() {
+		uiDone = true;
 
 		// Prepare title label.
 		WebPanel titlePanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
@@ -131,8 +146,8 @@ implements MouseListener, ActionListener {
 	 * Updates the info on this panel.
 	 */
 	public void update() {
-		Vehicle vehicle = (Vehicle) unit;
-		Crewable crewable = (Crewable) vehicle;
+		if (!uiDone)
+			initializeUI();
 
 		// Update crew num
 		if (crewNumCache !=  crewable.getRobotCrewNum()) {

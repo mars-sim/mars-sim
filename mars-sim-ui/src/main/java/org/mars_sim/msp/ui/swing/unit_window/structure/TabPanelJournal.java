@@ -37,14 +37,11 @@ public class TabPanelJournal
 extends TabPanel {
 	
 	// Data members
-//	private Settlement settlement;
+	/** Is UI constructed. */
+	private boolean uiDone = false;
+	
+	private Settlement settlement;
 
-//	private List<Mission> missionsCache;
-//	private DefaultListModel<Mission> missionListModel;
-//	private JList<Mission> missionList;
-//	private JButton missionButton;
-//	private JButton monitorButton;
-//	private JCheckBox overrideCheckbox;
 
 	/**
 	 * Constructor.
@@ -60,9 +57,17 @@ extends TabPanel {
 			settlement, desktop
 		);
 
-		// Initialize data members.
-//		this.settlement = settlement;
+		this.settlement = settlement;
 
+	}
+	
+	public boolean isUIDone() {
+		return uiDone;
+	}
+	
+	public void initializeUI() {
+		uiDone = true;
+		
 		// Create label panel.
 		JPanel labelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		topContentPanel.add(labelPanel);
@@ -124,7 +129,8 @@ extends TabPanel {
 		 
 	@Override
 	public void update() {
-
+		if (!uiDone)
+			initializeUI();
 	}
 
 	/**

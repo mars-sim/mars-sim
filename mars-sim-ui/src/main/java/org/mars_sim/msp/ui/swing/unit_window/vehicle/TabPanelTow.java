@@ -34,6 +34,12 @@ public class TabPanelTow extends TabPanel {
 	private WebLabel towedTextLabel;
 	private WebButton towedButton;
 
+	/** Is UI constructed. */
+	private boolean uiDone = false;
+	
+	/** The Vehicle instance. */
+	private Vehicle vehicle;
+	
 	public TabPanelTow(Unit unit, MainDesktopPane desktop) {
 		// Use TabPanel constructor.
 		super(
@@ -44,6 +50,17 @@ public class TabPanelTow extends TabPanel {
 			desktop
 		);
 
+      vehicle = (Vehicle) unit;
+
+	}
+
+	public boolean isUIDone() {
+		return uiDone;
+	}
+	
+	public void initializeUI() {
+		uiDone = true;
+			
 		// Create towing label.
 		WebPanel panel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
 		WebLabel titleLabel = new WebLabel(Msg.getString("TabPanelTow.title"), WebLabel.CENTER); //$NON-NLS-1$
@@ -180,7 +197,9 @@ public class TabPanelTow extends TabPanel {
 	 * Updates the info on this panel.
 	 */
 	public void update() {
-
+		if (!uiDone)
+			initializeUI();
+		
 		if (unit instanceof Towing) {
 			// Update towing button or towing text label as necessary.
 			Vehicle towedVehicle = ((Towing) unit).getTowedVehicle();

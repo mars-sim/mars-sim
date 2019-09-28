@@ -50,6 +50,12 @@ public class TabPanelDeath
 extends TabPanel
 implements ActionListener {
 
+	/** Is UI constructed. */
+	private boolean uiDone = false;
+	
+	/** The Person instance. */
+	private Person person = null;
+	
 	private JTextField causeTF, timeTF, malTF;
 
 	/**
@@ -66,7 +72,17 @@ implements ActionListener {
 			unit, desktop
 		);
 
-		Person person = (Person) unit;
+		person = (Person) unit;		
+
+	}
+
+	public boolean isUIDone() {
+		return uiDone;
+	}
+	
+	public void initializeUI() {
+		uiDone = true;
+			
 		PhysicalCondition condition = person.getPhysicalCondition();
 		DeathInfo death = condition.getDeathDetails();
 
@@ -238,7 +254,10 @@ implements ActionListener {
 	/**
 	 * Updates the info on this panel.
 	 */
-	public void update() {}
+	public void update() {
+		if (!uiDone)
+			initializeUI();
+	}
 
 	/**
 	 * Action event occurs.

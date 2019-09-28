@@ -63,7 +63,12 @@ public class TabPanelFoodProduction extends TabPanel {
 	private static Logger logger = Logger.getLogger(TabPanelFoodProduction.class.getName());
 
 	// Data members
+	/** Is UI constructed. */
+	private boolean uiDone = false;
+	
+	/** The Settlement instance. */
 	private Settlement settlement;
+	
 	private JPanel foodProductionListPane;
 	private JScrollPane foodProductionScrollPane;
 	private List<FoodProductionProcess> processCache;
@@ -95,6 +100,16 @@ public class TabPanelFoodProduction extends TabPanel {
 				unit, desktop);
 
 		settlement = (Settlement) unit;
+
+	}
+	
+	public boolean isUIDone() {
+		return uiDone;
+	}
+	
+	public void initializeUI() {
+		uiDone = true;
+		
 		setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
 		// Create topPanel.
@@ -178,7 +193,7 @@ public class TabPanelFoodProduction extends TabPanel {
 								if (FoodProductionUtil.canProcessBeStarted(selectedProcess, foodFactory)) {
 									foodFactory.addProcess(new FoodProductionProcess(selectedProcess, foodFactory));
 									update();
-									// 2014-12-09 Added PromptComboBoxRenderer() & setSelectedIndex(-1)
+									// Add PromptComboBoxRenderer() & setSelectedIndex(-1)
 									buildingComboBox.setRenderer(new PromptComboBoxRenderer(" (1). Select a Building"));
 									buildingComboBox.setSelectedIndex(-1);
 									processSelection.setRenderer(
@@ -256,7 +271,9 @@ public class TabPanelFoodProduction extends TabPanel {
 
 	@Override
 	public void update() {
-
+		if (!uiDone)
+			this.initializeUI();
+		
 		// Update processes if necessary.
 		List<FoodProductionProcess> processes = getFoodProductionProcesses();
 		// List<SalvageProcess> salvages = getSalvageProcesses();

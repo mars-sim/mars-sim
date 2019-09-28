@@ -64,6 +64,12 @@ extends TabPanel {
 	private String missionPhaseCache = null;
 	private Collection<MissionMember> memberCache;
 
+	/** Is UI constructed. */
+	private boolean uiDone = false;
+	
+	/** The Vehicle instance. */
+	private Vehicle vehicle;
+	
 	private static MissionManager missionManager;
 	
 	/**
@@ -80,6 +86,17 @@ extends TabPanel {
 			vehicle, desktop
 		);
 
+      this.vehicle = vehicle;
+
+	}
+
+	public boolean isUIDone() {
+		return uiDone;
+	}
+	
+	public void initializeUI() {
+		uiDone = true;
+			
 		missionManager = Simulation.instance().getMissionManager(); 
 		
 		Mission mission = missionManager.getMissionForVehicle(vehicle);
@@ -205,7 +222,9 @@ extends TabPanel {
 	 * Updates the info on this panel.
 	 */
 	public void update() {
-
+		if (!uiDone)
+			initializeUI();
+		
 		Vehicle vehicle = (Vehicle) unit;
 		Mission mission = missionManager.getMissionForVehicle(vehicle);
 

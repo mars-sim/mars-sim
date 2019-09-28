@@ -104,7 +104,6 @@ extends WebPanel {
 	 * Updates the panel's information.
 	 */
 	public void update() {
-
 		// Update name label.
 		int eva = 0;
 		int emer = 0;

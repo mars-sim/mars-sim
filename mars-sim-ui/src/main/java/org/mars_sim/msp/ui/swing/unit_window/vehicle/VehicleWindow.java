@@ -7,6 +7,8 @@
 
 package org.mars_sim.msp.ui.swing.unit_window.vehicle;
 
+import javax.swing.event.ChangeEvent;
+
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -15,7 +17,10 @@ import org.mars_sim.msp.ui.swing.unit_window.InventoryTabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.LocationTabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.MaintenanceTabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.SalvageTabPanel;
+import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
+import org.mars_sim.msp.ui.swing.unit_window.person.TabPanelActivity;
+import org.mars_sim.msp.ui.swing.unit_window.person.TabPanelAttribute;
 
 /**
  * The VehicleWindow is the window for displaying a vehicle.
@@ -26,6 +31,9 @@ public class VehicleWindow extends UnitWindow {
 	// Data members
 	private boolean salvaged;
 
+	/** The cache for the currently selected TabPanel. */
+	private TabPanel oldTab;
+	
 	private Vehicle vehicle;
 
 	/**
@@ -87,5 +95,21 @@ public class VehicleWindow extends UnitWindow {
 
 	public void destroy() {
 		vehicle = null;
+	}
+
+    @Override
+	public void stateChanged(ChangeEvent e) {
+		// SwingUtilities.updateComponentTreeUI(this);
+		TabPanel newTab = getSelected();
+
+		if (newTab != oldTab) {
+
+			if (newTab instanceof TabPanelActivity) {
+//				if (tabPanelActivity.isUIDone());
+//				 	tabPanelActivity.initializeUI();
+			} else if (newTab instanceof TabPanelAttribute) {
+				
+			}
+		}
 	}
 }

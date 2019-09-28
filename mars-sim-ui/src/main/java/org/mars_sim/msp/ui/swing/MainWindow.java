@@ -193,7 +193,7 @@ extends JComponent {
 		desktop.openInitialWindows();
 
 		// Set up timers for caching the settlement windows
-		setupSettlementWindowTimer();
+//		setupSettlementWindowTimer();
 		
 
 	}

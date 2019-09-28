@@ -52,7 +52,12 @@ public class TabPanelMissions
 extends TabPanel {
 
 	// Data members
+	/** Is UI constructed. */
+	private boolean uiDone = false;
+	
+	/** The Settlement instance. */
 	private Settlement settlement;
+	
 	private List<Mission> missionsCache;
 	private DefaultListModel<Mission> missionListModel;
 	private JList<Mission> missionList;
@@ -78,7 +83,15 @@ extends TabPanel {
 
 		// Initialize data members.
 		this.settlement = settlement;
-
+	}
+	
+	public boolean isUIDone() {
+		return uiDone;
+	}
+	
+	public void initializeUI() {
+		uiDone = true;
+		
 		missionManager = Simulation.instance().getMissionManager();
 		
 		// Create label panel.
@@ -176,7 +189,9 @@ extends TabPanel {
 
 	@Override
 	public void update() {
-
+		if (!uiDone)
+			initializeUI();
+		
 		// Get all missions for the settlement.
 		//MissionManager manager = Simulation.instance().getMissionManager();
 		List<Mission> missions = missionManager.getMissionsForSettlement(settlement);

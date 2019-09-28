@@ -61,7 +61,9 @@ public class TabPanelSchedule extends TabPanel {
 	private static final String SOL = "  Sol ";
 	private static final String SPACES = "   ";
 
-//	private boolean hideRepeated;
+	/** Is UI constructed. */
+	private boolean uiDone = false;
+	
 	private boolean hideRepeatedCache;
 	private boolean isRealTimeUpdate;
 	private int todayCache = 1;
@@ -92,8 +94,12 @@ public class TabPanelSchedule extends TabPanel {
 	private List<Integer> solList;
 	private Map<Integer, List<OneActivity>> allActivities;
 
-	private Person person;
-	private Robot robot;
+	/** The Person instance. */
+	private Person person = null;
+	
+	/** The Robot instance. */
+	private Robot robot = null;
+	
 	private TaskSchedule taskSchedule;
 
 	/**
@@ -108,6 +114,16 @@ public class TabPanelSchedule extends TabPanel {
 				null, Msg.getString("TabPanelSchedule.tooltip"), //$NON-NLS-1$
 				unit, desktop);
 
+		person = (Person) unit;
+	}
+	
+	public boolean isUIDone() {
+		return uiDone;
+	}
+	
+	public void initializeUI() {
+		uiDone = true;
+		
 //		this.desktop = desktop;
 		isRealTimeUpdate = true;
 
@@ -211,7 +227,9 @@ public class TabPanelSchedule extends TabPanel {
 		solBox.setRenderer(new PromptComboBoxRenderer());
 		solBox.setMaximumRowCount(7);
 
-		WebPanel solPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
+		WebPanel solPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));	
+//		WebLabel solLabel = new WebLabel("Sol : ");
+//		solPanel.add(solLabel);
 		solPanel.add(solBox);
 
 		box.add(solPanel);
@@ -303,6 +321,9 @@ public class TabPanelSchedule extends TabPanel {
 	 * Updates the info on this panel.
 	 */
 	public void update() {
+		if (!uiDone)
+			initializeUI();
+		
 		int t = -1;
 
 		if (theme != t) {

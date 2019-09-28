@@ -63,17 +63,14 @@ public class TabPanelCooking extends TabPanel {
 	private static final FunctionType PREPARING_DESSERT = FunctionType.PREPARING_DESSERT;
 
 	// Data Members
+	/** Is UI constructed. */
+	private boolean uiDone = false;
+	
 	private int numRow = 0;
 	private int dayCache = 1;
-	// private MarsClock expirationCache = null;
 
 	private Set<String> nameSet;
-	private List<String> nameList;
-
-	/** Constructor will flip this. */
-	// private boolean sortAscending = true;
-	/** Sort column is defined. */
-	// private int sortedColumn = 0;
+	private List<String> nameList;;
 
 	private JTable table;
 	private CookingTableModel cookingTableModel;
@@ -124,6 +121,15 @@ public class TabPanelCooking extends TabPanel {
 
 		settlement = (Settlement) unit;
 
+	}
+	
+	public boolean isUIDone() {
+		return uiDone;
+	}
+	
+	public void initializeUI() {
+		uiDone = true;
+		
 		Iterator<Building> i = settlement.getBuildingManager().getBuildings(COOKING).iterator();
 		while (i.hasNext()) {
 			// for each building's kitchen in the settlement
@@ -288,6 +294,9 @@ public class TabPanelCooking extends TabPanel {
 	 */
 	// Called by TabPanel whenever the Cooking tab is opened
 	public void update() {
+		if (!uiDone)
+			this.initializeUI();
+		
 		// Update cooking table.
 		TableStyle.setTableStyle(table);
 

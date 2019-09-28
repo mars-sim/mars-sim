@@ -30,6 +30,7 @@ import java.util.List;
  * The ResourceProcessingBuildingPanel class is a building function panel representing
  * the resource processes of a settlement building.
  */
+@SuppressWarnings("serial")
 public class BuildingPanelResourceProcessing
 extends BuildingFunctionPanel {
 

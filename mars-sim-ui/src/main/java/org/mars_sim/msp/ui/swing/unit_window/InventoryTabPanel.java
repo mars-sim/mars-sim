@@ -39,6 +39,7 @@ import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.Resource;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
@@ -60,6 +61,15 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(InventoryTabPanel.class.getName());
 
+	/** Is UI constructed. */
+	private boolean uiDone = false;
+	
+	/** The Settlement instance. */
+//	private Settlement settlement;
+	
+	/** The Inventory instance. */
+	private Inventory inv; 
+	
     private ResourceTableModel resourceTableModel;
     private EquipmentTableModel equipmentTableModel;
     private JTable equipmentTable;
@@ -75,8 +85,19 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         // Use the TabPanel constructor
         super("Inventory", null, "Inventory", unit, desktop);
 
-        Inventory inv = unit.getInventory();
+        inv = unit.getInventory();
 
+//		settlement = (Settlement) unit;
+
+	}
+	
+	public boolean isUIDone() {
+		return uiDone;
+	}
+	
+	public void initializeUI() {
+		uiDone = true;
+		
         // Create inventory label panel.
         WebPanel inventoryLabelPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
         topContentPanel.add(inventoryLabelPanel);
@@ -162,6 +183,9 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
      * Updates the info on this panel.
      */
     public void update() {
+		if (!uiDone)
+			initializeUI();
+		
         resourceTableModel.update();
         equipmentTableModel.update();
 		TableStyle.setTableStyle(resourcesTable);

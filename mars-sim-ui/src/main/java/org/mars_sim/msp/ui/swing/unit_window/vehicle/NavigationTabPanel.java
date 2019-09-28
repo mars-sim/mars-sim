@@ -35,6 +35,7 @@ import org.mars_sim.msp.core.person.ai.mission.TravelMission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
+import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleOperator;
@@ -74,6 +75,8 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
     private TerrainDisplayPanel terrainDisplay;
 
     // Data cache
+	/** Is UI constructed. */
+	private boolean uiDone = false;
     private boolean beaconCache;
     
     private double speedCache;
@@ -86,6 +89,9 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
     private VehicleOperator driverCache;
     private StatusType statusCache;
 
+	/** The Vehicle instance. */
+	private Vehicle vehicle;
+	
     private Coordinates destinationLocationCache;
     private Settlement destinationSettlementCache;
 
@@ -99,7 +105,16 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         // Use the TabPanel constructor
         super("Navigation", null, "Navigation", unit, desktop);
 	
-        Vehicle vehicle = (Vehicle) unit;
+        vehicle = (Vehicle) unit;
+
+	}
+
+	public boolean isUIDone() {
+		return uiDone;
+	}
+	
+	public void initializeUI() {
+		uiDone = true;
 
 		// Create tht title label.
 		WebPanel titlePanel = new WebPanel(new FlowLayout());
@@ -360,7 +375,9 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
      * Updates the info on this panel.
      */
     public void update() {
-
+		if (!uiDone)
+			initializeUI();
+		
         Vehicle vehicle = (Vehicle) unit;
 
         // Update driver button if necessary.

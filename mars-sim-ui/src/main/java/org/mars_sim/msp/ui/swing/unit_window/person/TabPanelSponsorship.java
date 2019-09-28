@@ -35,6 +35,12 @@ import com.alee.managers.tooltip.TooltipWay;
 public class TabPanelSponsorship
 extends TabPanel {
 
+	/** Is UI constructed. */
+	private boolean uiDone = false;
+	
+	/** The Person instance. */
+	private Person person = null;
+	
 	/**
 	 * Constructor.
 	 * @param unit the unit to display.
@@ -49,11 +55,19 @@ extends TabPanel {
 			unit, desktop
 		);
 
-		// TabPanelSponsorship.missionControl		= Sponsored Organization : {0}
+		//TabPanelSponsorship.missionControl		= Sponsored Organization : {0}
 		//TabPanelSponsorship.missionObjective		= Mission Objective : {0}
 
-		Person person = (Person) unit;
-
+		person = (Person) unit;
+	}
+	
+	public boolean isUIDone() {
+		return uiDone;
+	}
+	
+	public void initializeUI() {
+		uiDone = true;
+		
 		// Create general label panel.
 		JPanel labelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		topContentPanel.add(labelPanel);
@@ -121,6 +135,9 @@ extends TabPanel {
 	 */
 	@Override
 	public void update() {
+		if (!uiDone)
+			initializeUI();
+		
 		// Person person = (Person) unit;
 		// Fill in as we have more to update on this panel.
 	}

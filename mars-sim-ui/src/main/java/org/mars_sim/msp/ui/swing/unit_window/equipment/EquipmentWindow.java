@@ -7,6 +7,8 @@
 
 package org.mars_sim.msp.ui.swing.unit_window.equipment;
 
+import javax.swing.event.ChangeEvent;
+
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -66,4 +68,10 @@ public class EquipmentWindow extends UnitWindow {
             salvaged = true;
         }
     }
+
+	@Override
+	public void stateChanged(ChangeEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
 }

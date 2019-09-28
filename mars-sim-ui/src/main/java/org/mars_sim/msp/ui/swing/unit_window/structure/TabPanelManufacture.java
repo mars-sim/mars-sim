@@ -63,7 +63,12 @@ public class TabPanelManufacture extends TabPanel {
 	private static Logger logger = Logger.getLogger(TabPanelManufacture.class.getName());
 
 	// Data members
+	/** Is UI constructed. */
+	private boolean uiDone = false;
+	
+	/** The Settlement instance. */
 	private Settlement settlement;
+	
 	private JPanel manufactureListPane;
 	private JScrollPane manufactureScrollPane;
 	private List<ManufactureProcess> processCache;
@@ -95,6 +100,15 @@ public class TabPanelManufacture extends TabPanel {
 				unit, desktop);
 
 		settlement = (Settlement) unit;
+	}
+	
+	public boolean isUIDone() {
+		return uiDone;
+	}
+	
+	public void initializeUI() {
+		uiDone = true;
+		
 		setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
 		// Create topPanel.
@@ -279,7 +293,9 @@ public class TabPanelManufacture extends TabPanel {
 
 	@Override
 	public void update() {
-
+		if (!uiDone)
+			initializeUI();
+		
 		// Update processes if necessary.
 		List<ManufactureProcess> processes = getManufactureProcesses();
 		List<SalvageProcess> salvages = getSalvageProcesses();

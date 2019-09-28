@@ -42,17 +42,21 @@ import com.alee.laf.panel.WebPanel;
 @SuppressWarnings("serial")
 public class TabPanelBuildings extends TabPanel implements ActionListener {
 
-	private DefaultComboBoxModel<Building> comboBoxModel;
-	private JComboBoxMW<Building> comboBox;
-
-	private List<Building> buildingsCache;
-	private WebPanel buildingDisplayPanel;
-	private CardLayout buildingLayout;
-	private List<BuildingPanel> buildingPanels;
+	/** Is UI constructed. */
+	private boolean uiDone = false;
+	
 	private int count;
 
+	private Settlement settlement;
 	private Building building;
 
+	private DefaultComboBoxModel<Building> comboBoxModel;
+	private JComboBoxMW<Building> comboBox;
+	private WebPanel buildingDisplayPanel;
+	private CardLayout buildingLayout;
+	
+	private List<Building> buildingsCache;
+	private List<BuildingPanel> buildingPanels;
 	private List<WebPanel> panelList = new ArrayList<WebPanel>();
 
 	/**
@@ -69,7 +73,16 @@ public class TabPanelBuildings extends TabPanel implements ActionListener {
 		this.setOpaque(false);
 		this.setBackground(new Color(0, 0, 0, 128));
 
-		Settlement settlement = (Settlement) unit;
+		settlement = (Settlement) unit;
+	}
+	
+	public boolean isUIDone() {
+		return uiDone;
+	}
+	
+	public void initializeUI() {
+		uiDone = true;
+						
 		List<Building> buildings = settlement.getBuildingManager().getSortedBuildings();
 
 		// Set building to the first element on the list
@@ -229,7 +242,9 @@ public class TabPanelBuildings extends TabPanel implements ActionListener {
 	 */
 	@Override
 	public void update() {
-		Settlement settlement = (Settlement) unit;
+		if (!uiDone)
+			this.initializeUI();
+		
 		List<Building> buildings = settlement.getBuildingManager().getSortedBuildings();
 
 		// Update buildings if necessary.

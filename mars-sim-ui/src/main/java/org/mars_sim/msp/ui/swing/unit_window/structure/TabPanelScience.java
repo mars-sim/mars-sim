@@ -53,6 +53,12 @@ public class TabPanelScience
 extends TabPanel {
 
 	// Data members
+	/** Is UI constructed. */
+	private boolean uiDone = false;
+	
+	/** The Settlement instance. */
+	private Settlement settlement;
+	
 	private WebButton scienceToolButton;
 	private WebLabel totalAchievementLabel;
 
@@ -77,6 +83,17 @@ extends TabPanel {
 			settlement, desktop
 		);
 
+		this.settlement = settlement;
+
+	}
+	
+	public boolean isUIDone() {
+		return uiDone;
+	}
+	
+	public void initializeUI() {
+		uiDone = true;
+		
 		// Create the title panel.
 		WebPanel titlePane = new WebPanel(new FlowLayout(FlowLayout.CENTER));
 		topContentPanel.add(titlePane);
@@ -200,6 +217,9 @@ extends TabPanel {
 
 	@Override
 	public void update() {
+		if (!uiDone)
+			initializeUI();
+		
 		TableStyle.setTableStyle(studyTable);
 		TableStyle.setTableStyle(achievementTable);
 

@@ -39,6 +39,9 @@ import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 public class SalvageTabPanel extends TabPanel {
 
     // Data members
+	/** Is UI constructed. */
+	private boolean uiDone = false;
+	
     private String finishTimeString;
     private JLabel finishTimeLabel;
     private PartTableModel partTableModel;
@@ -51,7 +54,17 @@ public class SalvageTabPanel extends TabPanel {
     public SalvageTabPanel(Unit unit, MainDesktopPane desktop) { 
         // Use the TabPanel constructor
         super("Salvage", null, "Salvage Info", unit, desktop);
-        
+
+		this.unit = unit;
+	}
+	
+	public boolean isUIDone() {
+		return uiDone;
+	}
+	
+	public void initializeUI() {
+		uiDone = true;
+		
         Salvagable salvageItem = (Salvagable) unit;
         SalvageInfo salvageInfo = salvageItem.getSalvageInfo();
         
@@ -127,7 +140,6 @@ public class SalvageTabPanel extends TabPanel {
     
     @Override
     public void update() {
-        
         // Update finish time.
         SalvageInfo salvageInfo = ((Salvagable) unit).getSalvageInfo();
         MarsClock finishTime = salvageInfo.getFinishTime();

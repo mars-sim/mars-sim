@@ -46,6 +46,12 @@ public class TabPanelPopulation
 extends TabPanel
 implements MouseListener, ActionListener {
 
+	/** Is UI constructed. */
+	private boolean uiDone = false;
+	
+	/** The Settlement instance. */
+	private Settlement settlement;
+	
 	private JLabel populationNumLabel;
 	private JLabel populationCapLabel;
 	private PopulationListModel populationListModel;
@@ -68,8 +74,17 @@ implements MouseListener, ActionListener {
 			unit, desktop
 		);
 
-		Settlement settlement = (Settlement) unit;
+		settlement = (Settlement) unit;
 
+	}
+	
+	public boolean isUIDone() {
+		return uiDone;
+	}
+	
+	public void initializeUI() {
+		uiDone = true;
+		
 		JPanel titlePane = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		topContentPanel.add(titlePane);
 
@@ -133,6 +148,9 @@ implements MouseListener, ActionListener {
 	 * Updates the info on this panel.
 	 */
 	public void update() {
+		if (!uiDone)
+			initializeUI();
+		
 		Settlement settlement = (Settlement) unit;
 
 		int num = settlement.getIndoorPeopleCount();

@@ -12,6 +12,7 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
+import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -32,15 +33,21 @@ import java.util.Map;
 @SuppressWarnings("serial")
 public class MaintenanceTabPanel extends TabPanel {
 
-    private JLabel wearConditionLabel; // The wear condition label.
+	/** Is UI constructed. */
+	private boolean uiDone = false;
+	
     private int wearConditionCache; // The cached value for the wear condition.
-    private JLabel lastCompletedLabel; // The last completed label.
-    private BoundedRangeModel progressBarModel; // The progress bar model.
     private int lastCompletedTime; // The time since last completed maintenance.
+    
+    private JLabel wearConditionLabel; // The wear condition label.
+    private JLabel lastCompletedLabel; // The last completed label.
     private JLabel partsLabel; // Label for showing maintenance parts list.
+    private JPanel malfunctionListPanel; // Malfunction list panel.
+   
+    private BoundedRangeModel progressBarModel; // The progress bar model.
+    
     private Collection<MalfunctionPanel> malfunctionPanels; // List of malfunction panels.
     private Collection<Malfunction> malfunctionCache; // List of malfunctions.
-    private JPanel malfunctionListPanel; // Malfunction list panel.
 
     /**
      * Constructor
@@ -52,6 +59,16 @@ public class MaintenanceTabPanel extends TabPanel {
         // Use the TabPanel constructor
         super("Maint", null, "Maintenance", unit, desktop);
 
+		this.unit = unit;
+	}
+	
+	public boolean isUIDone() {
+		return uiDone;
+	}
+	
+	public void initializeUI() {
+		uiDone = true;
+		
         Malfunctionable malfunctionable = (Malfunctionable) unit;
         MalfunctionManager manager = malfunctionable.getMalfunctionManager();
 
@@ -139,7 +156,9 @@ public class MaintenanceTabPanel extends TabPanel {
      * Update this panel
      */
     public void update() {
-
+		if (!uiDone)
+			initializeUI();
+		
         Malfunctionable malfunctionable = (Malfunctionable) unit;
         MalfunctionManager manager = malfunctionable.getMalfunctionManager();
 

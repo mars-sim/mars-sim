@@ -56,7 +56,12 @@ public class TabPanelScience
 extends TabPanel {
 
 	// Data members
-
+	/** Is UI constructed. */
+	private boolean uiDone = false;
+	
+	/** The Person instance. */
+	private Person person = null;
+	
 	private JTable studyTable, achievementTable;
 
 	private JButton scienceToolButton;
@@ -80,6 +85,16 @@ extends TabPanel {
 			person, desktop
 		);
 
+		this.person = person;
+	}
+	
+	public boolean isUIDone() {
+		return uiDone;
+	}
+	
+	public void initializeUI() {
+		uiDone = true;
+		
 		// Create the title panel.
 		JPanel titlePane = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		topContentPanel.add(titlePane);
@@ -191,7 +206,9 @@ extends TabPanel {
 
 	@Override
 	public void update() {
-
+		if (!uiDone)
+			initializeUI();
+		
 		TableStyle.setTableStyle(studyTable);
 		TableStyle.setTableStyle(achievementTable);
 

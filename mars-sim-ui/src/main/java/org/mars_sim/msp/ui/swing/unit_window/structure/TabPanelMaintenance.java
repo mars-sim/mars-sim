@@ -43,14 +43,18 @@ import com.alee.managers.tooltip.TooltipWay;
 @SuppressWarnings("serial")
 public class TabPanelMaintenance extends TabPanel {
 
-//	private int count = 0;
+	/** Is UI constructed. */
+	private boolean uiDone = false;
+	
+	/** The Settlement instance. */
+	private Settlement settlement;
+	
 	private WebScrollPane maintenanceScrollPane;
 	private WebScrollPane malfunctionsScrollPane;
 	
 	private WebPanel malfunctionsListPanel;
 	private WebPanel maintenanceListPanel;
 
-	private Settlement settlement;
 	private List<Building> buildingsList;
 	private List<Malfunction> malfunctionsList;
 	
@@ -67,6 +71,15 @@ public class TabPanelMaintenance extends TabPanel {
 
 		settlement = (Settlement) unit;
 
+	}
+	
+	public boolean isUIDone() {
+		return uiDone;
+	}
+	
+	public void initializeUI() {
+		uiDone = true;
+		
 		// Create topPanel.
 		WebPanel topPanel = new WebPanel(new GridLayout(2, 1));
 		centerContentPanel.add(topPanel);
@@ -169,7 +182,9 @@ public class TabPanelMaintenance extends TabPanel {
 	 * Update the tab panel.
 	 */
 	public void update() {
-
+		if (!uiDone)
+			initializeUI();
+		
 		// Check if building list has changed.
 		List<Building> tempBuildings = ((Settlement) unit).getBuildingManager().getSortedBuildings();
 		if (!tempBuildings.equals(buildingsList)) {

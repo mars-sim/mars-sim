@@ -37,6 +37,12 @@ public class TabPanelVehicles
 extends TabPanel
 implements MouseListener {
 
+	/** Is UI constructed. */
+	private boolean uiDone = false;
+	
+	/** The Settlement instance. */
+	private Settlement settlement;
+	
 	private VehicleListModel vehicleListModel;
 	private JList<Vehicle> vehicleList;
 	private JScrollPane vehicleScrollPanel;
@@ -55,8 +61,17 @@ implements MouseListener {
 			unit, desktop
 		);
 
-		Settlement settlement = (Settlement) unit;
+		settlement = (Settlement) unit;
 
+	}
+	
+	public boolean isUIDone() {
+		return uiDone;
+	}
+	
+	public void initializeUI() {
+		uiDone = true;
+		
 		// Create vehicle label panel
 		JPanel vehicleLabelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		topContentPanel.add(vehicleLabelPanel);
@@ -90,7 +105,9 @@ implements MouseListener {
 	 * Updates the info on this panel.
 	 */
 	public void update() {
-
+		if (!uiDone)
+			initializeUI();
+		
 		// Update vehicle list
 		vehicleListModel.update();
 		vehicleScrollPanel.validate();

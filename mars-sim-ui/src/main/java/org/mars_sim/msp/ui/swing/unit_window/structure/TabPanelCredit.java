@@ -45,6 +45,12 @@ import com.alee.laf.scroll.WebScrollPane;
 public class TabPanelCredit
 extends TabPanel {
 
+	/** Is UI constructed. */
+	private boolean uiDone = false;
+	
+	/** The Settlement instance. */
+	private Settlement settlement;
+	
 	private JTable creditTable;
 
 	/**
@@ -61,6 +67,17 @@ extends TabPanel {
 			unit, desktop
 		);
 
+		settlement = (Settlement) unit;
+
+	}
+	
+	public boolean isUIDone() {
+		return uiDone;
+	}
+	
+	public void initializeUI() {
+		uiDone = true;
+		
 		// Prepare credit label panel.
 		WebPanel creditLabelPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
 		topContentPanel.add(creditLabelPanel);
@@ -110,6 +127,9 @@ extends TabPanel {
 	 */
 	@Override
 	public void update() {
+		if (!uiDone)
+			this.initializeUI();
+		
 		TableStyle.setTableStyle(creditTable);
 	}
 

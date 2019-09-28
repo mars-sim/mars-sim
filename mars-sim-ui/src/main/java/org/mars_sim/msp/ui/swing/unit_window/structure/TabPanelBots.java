@@ -44,15 +44,22 @@ import com.alee.laf.scroll.WebScrollPane;
 @SuppressWarnings("serial")
 public class TabPanelBots extends TabPanel implements MouseListener, ActionListener {
 
-	private WebLabel robotNumLabel;
-	private WebLabel robotCapLabel;
-	private WebLabel robotIndoorLabel;
-	private RobotListModel robotListModel;
-	private JList<Robot> robotList;
-	private WebScrollPane robotScrollPanel;
+	/** Is UI constructed. */
+	private boolean uiDone = false;
+	
 	private int robotNumCache;
 	private int robotCapacityCache;
 	private int robotIndoorCache;
+	
+	private Settlement settlement;
+	
+	private WebLabel robotNumLabel;
+	private WebLabel robotCapLabel;
+	private WebLabel robotIndoorLabel;
+	
+	private RobotListModel robotListModel;
+	private JList<Robot> robotList;
+	private WebScrollPane robotScrollPanel;
 
 	/**
 	 * Constructor.
@@ -66,8 +73,17 @@ public class TabPanelBots extends TabPanel implements MouseListener, ActionListe
 				null, Msg.getString("TabPanelBots.tooltip"), //$NON-NLS-1$
 				unit, desktop);
 
-		Settlement settlement = (Settlement) unit;
+		settlement = (Settlement) unit;
 
+	}
+	
+	public boolean isUIDone() {
+		return uiDone;
+	}
+	
+	public void initializeUI() {
+		uiDone = true;
+		
 		WebPanel titlePane = new WebPanel(new FlowLayout(FlowLayout.CENTER));
 		topContentPanel.add(titlePane);
 
@@ -137,8 +153,9 @@ public class TabPanelBots extends TabPanel implements MouseListener, ActionListe
 	 * Updates the info on this panel.
 	 */
 	public void update() {
-		Settlement settlement = (Settlement) unit;
-
+		if (!uiDone)
+			this.initializeUI();
+		
 		// Update robot num
 		if (robotNumCache != settlement.getNumBots()) {
 			robotNumCache = settlement.getNumBots();

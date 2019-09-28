@@ -63,6 +63,24 @@ public class TabPanelPowerGrid extends TabPanel {
 	private static final String PERCENT = " %";
 
 	// Data Members
+	/** Is UI constructed. */
+	private boolean uiDone = false;
+	
+	// Data cache
+	/** The total power generated cache. */
+	private double powerGeneratedCache;
+	/** The total power used cache. */
+	private double powerUsedCache;
+	/** The total power storage capacity cache. */
+	private double energyStorageCapacityCache;
+	/** The total power stored cache. */
+	private double energyStoredCache;
+	/** The total solar cell efficiency cache. */
+	private double solarCellEfficiencyCache;
+	
+	/** The Settlement instance. */
+	private Settlement settlement;
+	
 	private JTable powerTable;
 	/** The total power generated label. */
 	private WebLabel powerGeneratedLabel;
@@ -85,18 +103,6 @@ public class TabPanelPowerGrid extends TabPanel {
 	private WebScrollPane powerScrollPane;
 
 	private WebCheckBox checkbox;
-
-	// Data cache
-	/** The total power generated cache. */
-	private double powerGeneratedCache;
-	/** The total power used cache. */
-	private double powerUsedCache;
-	/** The total power storage capacity cache. */
-	private double energyStorageCapacityCache;
-	/** The total power stored cache. */
-	private double energyStoredCache;
-	/** The total solar cell efficiency cache. */
-	private double solarCellEfficiencyCache;
 
 	/** Table model for power info. */
 	private PowerTableModel powerTableModel;
@@ -128,7 +134,17 @@ public class TabPanelPowerGrid extends TabPanel {
 				null, Msg.getString("TabPanelPowerGrid.tooltip"), //$NON-NLS-1$
 				unit, desktop);
 
-		Settlement settlement = (Settlement) unit;
+		settlement = (Settlement) unit;
+
+	}
+	
+	public boolean isUIDone() {
+		return uiDone;
+	}
+	
+	public void initializeUI() {
+		uiDone = true;
+		
 		powerGrid = settlement.getPowerGrid();
 		manager = settlement.getBuildingManager();
 		config = SimulationConfig.instance().getBuildingConfiguration();
@@ -349,7 +365,9 @@ public class TabPanelPowerGrid extends TabPanel {
 	 * Updates the info on this panel.
 	 */
 	public void update() {
-
+		if (!uiDone)
+			initializeUI();
+		
 		TableStyle.setTableStyle(powerTable);
 
 		// Update power generated TF

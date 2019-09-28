@@ -7,13 +7,18 @@
 
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
+import javax.swing.event.ChangeEvent;
+
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.unit_window.InventoryTabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.LocationTabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.MaintenanceTabPanel;
+import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
+import org.mars_sim.msp.ui.swing.unit_window.person.TabPanelActivity;
+import org.mars_sim.msp.ui.swing.unit_window.person.TabPanelAttribute;
 
 
 /**
@@ -22,7 +27,8 @@ import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
 public class BuildingWindow extends UnitWindow {
 
 	// Data members
-	//private boolean salvaged;
+	/** The cache for the currently selected TabPanel. */
+	private TabPanel oldTab;
 
     /**
      * Constructor
@@ -57,4 +63,20 @@ public class BuildingWindow extends UnitWindow {
         //    salvaged = true;
         //}
     }
+
+    @Override
+	public void stateChanged(ChangeEvent e) {
+		// SwingUtilities.updateComponentTreeUI(this);
+		TabPanel newTab = getSelected();
+
+		if (newTab != oldTab) {
+
+			if (newTab instanceof TabPanelActivity) {
+//				if (tabPanelActivity.isUIDone());
+//				 	tabPanelActivity.initializeUI();
+			} else if (newTab instanceof TabPanelAttribute) {
+				
+			}
+		}
+	}
 }

@@ -90,9 +90,9 @@ public class Role implements Serializable {
 			if (RoleUtil.isLeadershipRole(newType)) {
 				// Find a list of predecessors who are occupying this role
 				predecessors = person.getAssociatedSettlement().getChainOfCommand().findPeopleWithRole(newType);
-				// Predecessors to obtain a new role
 				if (predecessors != null) {
 					for (Person p: predecessors) {
+						// Predecessors to seek for a new role to fill
 						p.getRole().obtainRole();
 					}
 				}
@@ -102,8 +102,7 @@ public class Role implements Serializable {
 			
 			// Save the role in the settlement Registry
 			person.getAssociatedSettlement().getChainOfCommand().registerRole(newType);
-			// Fire the role event
-			person.fireUnitUpdate(UnitEventType.ROLE_EVENT, newType);
+
 			// Turn in the old role
 			relinquishOldRoleType();
 
@@ -129,6 +128,8 @@ public class Role implements Serializable {
 			
 			// Save the new role in roleHistory
 			roleHistory.put(newType, marsClock);
+			// Fire the role event
+			person.fireUnitUpdate(UnitEventType.ROLE_EVENT, newType);
 		}
 	}
 

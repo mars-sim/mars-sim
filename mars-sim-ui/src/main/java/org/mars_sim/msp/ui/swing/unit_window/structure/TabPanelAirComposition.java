@@ -54,6 +54,9 @@ extends TabPanel {
 	//private static Logger logger = Logger.getLogger(TabPanelAirComposition.class.getName());
 
 	// Data cache
+	/** Is UI constructed. */
+	private boolean uiDone = false;
+
 	private int numBuildingsCache;
 	
 	private double o2Cache;
@@ -115,6 +118,16 @@ extends TabPanel {
 		);
 
 		settlement = (Settlement) unit;
+
+	}
+	
+	public boolean isUIDone() {
+		return uiDone;
+	}
+	
+	public void initializeUI() {
+		uiDone = true;
+		
 		manager = settlement.getBuildingManager();
 		air = settlement.getCompositionOfAir();
 
@@ -407,7 +420,9 @@ extends TabPanel {
 	 * Updates the info on this panel.
 	 */
 	public void update() {
-
+		if (!uiDone)
+			this.initializeUI();
+		
 		List<Building> buildings = manager.getBuildingsWithLifeSupport();//getBuildings(BuildingFunction.LIFE_SUPPORT);
 		int numBuildings = buildings.size();
 

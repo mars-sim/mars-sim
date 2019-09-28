@@ -46,15 +46,23 @@ import com.alee.laf.scroll.WebScrollPane;
 public class TabPanelAssociatedPeople extends TabPanel implements MouseListener, ActionListener {
 
 	// Data members
-	private AssociatedPopulationListModel populationListModel;
-	private JList<Person> populationList;
-	private WebScrollPane populationScrollPanel;
-	private WebLabel populationNumLabel;
-	private WebLabel populationCapacityLabel;
-	private WebLabel populationIndoorLabel;
+	/** Is UI constructed. */
+	private boolean uiDone = false;
+
 	private int populationNumCache;
 	private int populationCapacityCache;
 	private int populationIndoorCache;
+	
+	private Settlement settlement;
+	
+	private AssociatedPopulationListModel populationListModel;
+	private JList<Person> populationList;
+	private WebScrollPane populationScrollPanel;
+	
+	private WebLabel populationNumLabel;
+	private WebLabel populationCapacityLabel;
+	private WebLabel populationIndoorLabel;
+
 	
 	/**
 	 * Constructor.
@@ -68,8 +76,17 @@ public class TabPanelAssociatedPeople extends TabPanel implements MouseListener,
 				null, Msg.getString("TabPanelAssociatedPeople.tooltip"), //$NON-NLS-1$
 				unit, desktop);
 
-		Settlement settlement = (Settlement) unit;
+		settlement = (Settlement) unit;
 
+	}
+	
+	public boolean isUIDone() {
+		return uiDone;
+	}
+	
+	public void initializeUI() {
+		uiDone = true;
+		
 		WebPanel titlePane = new WebPanel(new FlowLayout(FlowLayout.CENTER));
 		topContentPanel.add(titlePane);
 
@@ -142,8 +159,8 @@ public class TabPanelAssociatedPeople extends TabPanel implements MouseListener,
 	 * Updates the info on this panel.
 	 */
 	public void update() {
-
-		Settlement settlement = (Settlement) unit;
+		if (!uiDone)
+			this.initializeUI();
 
 		int num = settlement.getNumCitizens();
 		// Update population num

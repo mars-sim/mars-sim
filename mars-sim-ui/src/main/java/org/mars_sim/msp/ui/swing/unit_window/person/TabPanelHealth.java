@@ -55,6 +55,9 @@ extends TabPanel {
 	private static final String CAREER = "Career";
 
 	// Data cache
+	/** Is UI constructed. */
+	private boolean uiDone = false;
+	
 	private static int theme;
 	private double fatigueCache;
 	private double thirstCache;
@@ -69,8 +72,6 @@ extends TabPanel {
 	private WebLabel energyLabel;
 	private WebLabel stressLabel;
 	private WebLabel performanceLabel;
-
-	private PhysicalCondition condition;
 	
 	private MedicationTableModel medicationTableModel;
 	private HealthProblemTableModel healthProblemTableModel;
@@ -84,6 +85,13 @@ extends TabPanel {
 
 	private DecimalFormat formatter = new DecimalFormat(Msg.getString("TabPanelHealth.decimalFormat")); //$NON-NLS-1$
 
+	/** The Person instance. */
+	private Person person = null;
+	
+	/** The PhysicalCondition instance. */
+	private PhysicalCondition condition;
+
+	
 	protected String[] radiationToolTips = {
 		    "Exposure Interval",
 		    "[Max for BFO] 30-Day : 250; Annual : 500; Career : 1000",
@@ -104,7 +112,16 @@ extends TabPanel {
 			unit, desktop
 		);
 
-		Person person = (Person) unit;
+		person = (Person) unit;
+	}
+	
+	public boolean isUIDone() {
+		return uiDone;
+	}
+	
+	public void initializeUI() {
+		uiDone = true;
+		
 		condition = person.getPhysicalCondition();
 		//PhysicalCondition condition = ((Person) unit).getPhysicalCondition();
 		
@@ -358,7 +375,9 @@ extends TabPanel {
 	 */
 	@Override
 	public void update() {
-//		System.out.println("TabPanelHealth update()");
+		if (!uiDone)
+			initializeUI();
+
 		int t = 0;//MainScene.getTheme();		
 		if (theme != t) {
 			theme = t;

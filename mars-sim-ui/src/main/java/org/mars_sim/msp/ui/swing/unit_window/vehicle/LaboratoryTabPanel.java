@@ -7,12 +7,14 @@
 package org.mars_sim.msp.ui.swing.unit_window.vehicle;
 
 import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
 
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Lab;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
@@ -20,6 +22,7 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
+import com.alee.laf.text.WebTextArea;
 
 /** 
  * The LaboratoryTabPanel is a tab panel for an explorer rover's lab information.
@@ -28,6 +31,12 @@ import com.alee.laf.panel.WebPanel;
 public class LaboratoryTabPanel extends TabPanel {
 
 	// Data members
+	/** Is UI constructed. */
+	private boolean uiDone = false;
+	
+	/** The Rover instance. */
+	private Rover rover;
+	
 	/** The number of researchers label. */
 	private WebLabel researchersLabel;
 
@@ -43,10 +52,20 @@ public class LaboratoryTabPanel extends TabPanel {
 	public LaboratoryTabPanel(Unit unit, MainDesktopPane desktop) { 
 		// Use the TabPanel constructor
 		super("Lab", null, "Laboratory", unit, desktop);
+		
+		rover = (Rover) unit;
 
-		Rover rover = (Rover) unit;
+	}
+
+	public boolean isUIDone() {
+		return uiDone;
+	}
+	
+	public void initializeUI() {
+		uiDone = true;
+
 		Lab lab = rover.getLab();
-
+		
 		// Prepare laboratory panel
 		WebPanel laboratoryPanel = new WebPanel(new BorderLayout());
 		topContentPanel.add(laboratoryPanel);
@@ -80,16 +99,25 @@ public class LaboratoryTabPanel extends TabPanel {
 
 		// Get the research specialties of the building.
 		ScienceType[] specialties = lab.getTechSpecialties();
-
-		// Prepare specialitiesListPanel
-		WebPanel specialtiesListPanel = new WebPanel(new GridLayout(specialties.length, 1, 0, 0));
-		specialtiesListPanel.setBorder(new MarsPanelBorder());
-		laboratoryPanel.add(specialtiesListPanel, BorderLayout.SOUTH);
-
+		int size = specialties.length;
+		
+		// Prepare specialty text area
+		WebTextArea specialtyTA = new WebTextArea();
+		specialtyTA.setEditable(false);
+		specialtyTA.setFont(new Font("SansSerif", Font.ITALIC, 12));
+		specialtyTA.setColumns(7);
+		specialtyTA.setBorder(new MarsPanelBorder());
+		
+		WebPanel listPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
+		listPanel.add(specialtyTA);
+		laboratoryPanel.add(listPanel, BorderLayout.SOUTH);
+		
 		// For each specialty, add specialty name panel.
 		for (ScienceType specialty : specialties) {
-			WebLabel specialtyLabel = new WebLabel(specialty.getName(), WebLabel.CENTER);
-			specialtiesListPanel.add(specialtyLabel);
+			specialtyTA.append(" " + specialty.getName()+ " ");
+			if (!specialty.equals(specialties[size-1]))
+				//if it's NOT the last one
+				specialtyTA.append("\n");
 		}
 	}
 
@@ -97,7 +125,9 @@ public class LaboratoryTabPanel extends TabPanel {
 	 * Update this panel
 	 */
 	public void update() {
-
+		if (!uiDone)
+			initializeUI();
+		
 		Rover rover = (Rover) unit;
 		Lab lab = rover.getLab();
 

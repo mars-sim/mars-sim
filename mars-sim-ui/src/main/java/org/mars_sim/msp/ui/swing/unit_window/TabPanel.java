@@ -27,11 +27,14 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 public abstract class TabPanel extends JScrollPane {
 
 	protected String tabTitle;
-	protected Icon tabIcon;
 	protected String tabToolTip;
+	
+	protected Icon tabIcon;
+	
 	protected JPanel viewPanel;
 	protected JPanel topContentPanel;
 	protected JPanel centerContentPanel;
+	
 	protected Unit unit;
 	protected MainDesktopPane desktop;
 
@@ -93,6 +96,8 @@ public abstract class TabPanel extends JScrollPane {
 		// true));
 	}
 
+//	public abstract void initializeUI();
+	
 	/**
 	 * Gets the tab title.
 	 *
@@ -149,6 +154,8 @@ public abstract class TabPanel extends JScrollPane {
 	public Unit getUnit() {
 		return unit;
 	}
+	
+	public abstract void initializeUI();
 	
 	/**
 	 * Prepares for deletion.

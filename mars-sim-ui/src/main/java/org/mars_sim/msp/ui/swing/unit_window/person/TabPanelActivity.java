@@ -54,6 +54,9 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 																									// of Death)" ;
 	private static final String NONE = "None ";
 
+	/** Is UI constructed. */
+	private boolean uiDone = false;
+	
 	/** data cache */
 	private String taskTextCache = ""; //$NON-NLS-1$
 	/** data cache */
@@ -62,7 +65,11 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 	private String missionTextCache = ""; //$NON-NLS-1$
 	/** data cache */
 	private String missionPhaseCache = ""; //$NON-NLS-1$
-
+	/** The Person instance. */
+	private Person person = null;
+	/** The Robot instance. */
+	private Robot robot = null;
+	
 	private WebTextArea taskTextArea;
 	private WebTextArea taskPhaseArea;
 	private WebTextArea missionTextArea;
@@ -82,13 +89,29 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 				null, Msg.getString("TabPanelActivity.tooltip"), //$NON-NLS-1$
 				unit, desktop);
 
-		Person person = null;
-		Robot robot = null;
+		if (unit instanceof Person) {
+			person = (Person) unit;
+		} else if (unit instanceof Robot) {
+			robot = (Robot) unit;
+		}
+		
+	}
+	
+	public boolean isUIDone() {
+		return uiDone;
+	}
+	
+	public void initializeUI() {
+		uiDone = true;
+		
+		boolean dead = false;
+		
 		Mind mind = null;
 		BotMind botMind = null;
+		
 		TaskManager taskManager = null;
 		BotTaskManager botTaskManager = null;
-		boolean dead = false;
+		
 		DeathInfo deathInfo = null;
 
 		if (unit instanceof Person) {
@@ -330,7 +353,9 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 	 */
 	@Override
 	public void update() {
-
+		if (!uiDone)
+			initializeUI();
+		
 		Person person = null;
 		Robot robot = null;
 		Mind mind = null;

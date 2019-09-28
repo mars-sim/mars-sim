@@ -37,6 +37,12 @@ import com.jidesoft.swing.TableSearchable;
 public class TabPanelGoods extends TabPanel {
 
 	// Data members
+	/** Is UI constructed. */
+	private boolean uiDone = false;
+	
+	/** The Settlement instance. */
+	private Settlement settlement;
+	
 	private JTable goodsTable;
 	private GoodsTableModel goodsTableModel;
 
@@ -54,6 +60,17 @@ public class TabPanelGoods extends TabPanel {
 			unit, desktop
 		);
 
+		settlement = (Settlement) unit;
+
+	}
+	
+	public boolean isUIDone() {
+		return uiDone;
+	}
+	
+	public void initializeUI() {
+		uiDone = true;
+		
 		// Prepare goods label panel.
 		WebPanel goodsLabelPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
 		topContentPanel.add(goodsLabelPanel);
@@ -110,6 +127,9 @@ public class TabPanelGoods extends TabPanel {
 	 */
 	@Override
 	public void update() {
+		if (!uiDone)
+			this.initializeUI();
+		
 		TableStyle.setTableStyle(goodsTable);
 		goodsTableModel.update();
 	}

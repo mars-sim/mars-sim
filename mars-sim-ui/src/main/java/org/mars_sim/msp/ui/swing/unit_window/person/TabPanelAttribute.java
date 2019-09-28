@@ -26,7 +26,6 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RoboticAttributeManager;
 import org.mars_sim.msp.core.robot.RoboticAttributeType;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
@@ -43,6 +42,13 @@ import com.alee.laf.scroll.WebScrollPane;
 public class TabPanelAttribute
 extends TabPanel {
 
+	/** Is UI constructed. */
+	private boolean uiDone = false;
+
+	/** The Person instance. */
+	private Person person = null;
+	private Robot robot;
+	
 	private AttributeTableModel attributeTableModel;
 	private JTable attributeTable;
 
@@ -60,10 +66,7 @@ extends TabPanel {
 			person,
 			desktop
 		);
-		// Create attribute table model
-		attributeTableModel = new AttributeTableModel(person);
-
-		init();
+		this.person = person;
 	}
 
 	/**
@@ -80,14 +83,15 @@ extends TabPanel {
 			robot,
 			desktop
 		);
-
-		// Create attribute table model
-		attributeTableModel = new AttributeTableModel(robot);
-
-		init();
+		this.robot = robot;
 	}
 
-	public void init() {
+	public boolean isUIDone() {
+		return uiDone;
+	}
+	
+	public void initializeUI() {
+		uiDone = true;
 
 		// Create attribute label panel.
 		WebPanel attributeLabelPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
@@ -103,6 +107,9 @@ extends TabPanel {
 //		attributeScrollPanel.setBorder(new MarsPanelBorder());
 		centerContentPanel.add(attributeScrollPanel);
 
+		// Create attribute table model
+		attributeTableModel = new AttributeTableModel(person);
+
 		// Create attribute table
 		attributeTable = new ZebraJTable(attributeTableModel); //new JTable(attributeTableModel);//
 		attributeTable.setPreferredScrollableViewportSize(new Dimension(225, 100));
@@ -113,12 +120,12 @@ extends TabPanel {
 		
 		attributeScrollPanel.setViewportView(attributeTable);
 
-//		attributeTable.setAutoCreateRowSorter(true);
+		attributeTable.setAutoCreateRowSorter(true);
  
 		// Align the content to the center of the cell
         // Note: DefaultTableCellRenderer does NOT work well with nimrod
 		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
-		renderer.setHorizontalAlignment(SwingConstants.CENTER);
+		renderer.setHorizontalAlignment(SwingConstants.LEFT);
 		attributeTable.getColumnModel().getColumn(0).setCellRenderer(renderer);
 		attributeTable.getColumnModel().getColumn(1).setCellRenderer(renderer);
 
@@ -133,6 +140,9 @@ extends TabPanel {
 	 */
 	@Override
 	public void update() {
+		if (!uiDone)
+			this.initializeUI();
+		
 		TableStyle.setTableStyle(attributeTable);
 		attributeTableModel.update();
 	}

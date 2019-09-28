@@ -7,11 +7,14 @@
 
 package org.mars_sim.msp.ui.swing.unit_window.structure;
 
+import javax.swing.event.ChangeEvent;
+
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.unit_window.InventoryTabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.LocationTabPanel;
+import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
 import org.mars_sim.msp.ui.swing.unit_window.structure.building.food.TabPanelCooking;
 import org.mars_sim.msp.ui.swing.unit_window.structure.building.food.TabPanelFoodProduction;
@@ -22,6 +25,9 @@ import org.mars_sim.msp.ui.swing.unit_window.structure.building.food.TabPanelFoo
 @SuppressWarnings("serial")
 public class SettlementUnitWindow extends UnitWindow {
 
+	/** The cache for the currently selected TabPanel. */
+	private TabPanel oldTab;
+	
 	/**
 	 * Constructor
 	 *
@@ -87,6 +93,22 @@ public class SettlementUnitWindow extends UnitWindow {
 	@Override
 	public void update() {
 		super.update();
+	}
+
+	@Override
+	public void stateChanged(ChangeEvent e) {
+		// SwingUtilities.updateComponentTreeUI(this);
+		TabPanel newTab = getSelected();
+
+		if (newTab != oldTab) {
+
+			if (newTab instanceof TabPanelAirComposition) {
+//				if (tabPanelActivity.isUIDone());
+//				 	tabPanelActivity.initializeUI();
+			} else if (newTab instanceof TabPanelAssociatedPeople) {
+				
+			}
+		}
 	}
 
 }

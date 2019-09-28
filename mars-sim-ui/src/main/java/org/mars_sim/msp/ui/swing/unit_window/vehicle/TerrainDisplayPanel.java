@@ -17,6 +17,7 @@ import javax.swing.border.LineBorder;
 
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.StatusType;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * The TerrainDisplayPanel class displays the compass direction a vehicle is
@@ -26,8 +27,12 @@ import org.mars_sim.msp.core.vehicle.StatusType;
 public class TerrainDisplayPanel extends JPanel {
 
 	// Data members
+	/** Is UI constructed. */
+	private boolean uiDone = false;
+	
+	/** The Vehicle instance. */
 	private GroundVehicle vehicle;
-
+	
 	/**
 	 * Constructor
 	 *
@@ -40,6 +45,15 @@ public class TerrainDisplayPanel extends JPanel {
 		// Initialize data members
 		this.vehicle = vehicle;
 
+	}
+
+	public boolean isUIDone() {
+		return uiDone;
+	}
+	
+	public void initializeUI() {
+		uiDone = true;
+			
 		// Set preferred component size.
 		setPreferredSize(new Dimension(102, 52));
 
@@ -57,6 +71,9 @@ public class TerrainDisplayPanel extends JPanel {
 	 * Update this panel.
 	 */
 	public void update() {
+		if (!uiDone)
+			initializeUI();
+		
 		repaint();
 	}
 

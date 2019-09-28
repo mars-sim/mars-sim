@@ -9,6 +9,7 @@ package org.mars_sim.msp.core;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -720,13 +721,13 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 		}
 		final UnitEvent ue = new UnitEvent(this, updateType, target);
 		synchronized (listeners) {
-			// Iterator<UnitListener> i = listeners.iterator();
-			// while (i.hasNext()) {
-			// i.next().unitUpdate(ue);
-			// }
-			for (UnitListener u : listeners) {
-				u.unitUpdate(ue);
-			}
+			 Iterator<UnitListener> i = listeners.iterator();
+				 while (i.hasNext()) {
+				 i.next().unitUpdate(ue);
+			 }
+//			for (UnitListener u : listeners) {
+//				u.unitUpdate(ue);
+//			}
 		}
 	}
 

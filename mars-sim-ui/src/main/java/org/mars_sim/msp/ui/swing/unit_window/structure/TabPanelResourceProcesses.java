@@ -49,12 +49,17 @@ public class TabPanelResourceProcesses
 extends TabPanel {
 
 	// Data members
+	/** Is UI constructed. */
+	private boolean uiDone = false;
+	
+	/** The Settlement instance. */
+	private Settlement settlement;
+	
 	private List<Building> buildings;
 	private JScrollPane processesScrollPane;
 	private JPanel processListPanel;
 	private JCheckBox overrideCheckbox;
 
-	private Settlement settlement;
 	private BuildingManager mgr;
 
 	private int size;
@@ -75,6 +80,14 @@ extends TabPanel {
 		);
 
 		settlement = (Settlement) unit;
+	}
+	
+	public boolean isUIDone() {
+		return uiDone;
+	}
+	
+	public void initializeUI() {
+		uiDone = true;
 		mgr = settlement.getBuildingManager();
 		buildings = mgr.getBuildings(FunctionType.RESOURCE_PROCESSING);
 		size = buildings.size();
@@ -146,6 +159,9 @@ extends TabPanel {
 
 	@Override
 	public void update() {
+		if (!uiDone)
+			initializeUI();
+		
 		// Check if building list has changed.
 		List<Building> newBuildings = selectBuildingsWithRP();
 		int newSize = buildings.size();
