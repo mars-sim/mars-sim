@@ -72,14 +72,19 @@ public class PersonConfig implements Serializable {
 	private final String STARVATION_START_TIME = "starvation-start-time";
 
 	private final String MIN_AIR_PRESSURE = "min-air-pressure";
-	private final String DECOMPRESSION_TIME = "decompression-time";
+	private final String MIN_O2_PARTIAL_PRESSURE = "min-o2-partial-pressure";
+	
 	private final String MIN_TEMPERATURE = "min-temperature";
 	private final String MAX_TEMPERATURE = "max-temperature";
+	
+	private final String DECOMPRESSION_TIME = "decompression-time";
 	private final String FREEZING_TIME = "freezing-time";
+	
 	private final String STRESS_BREAKDOWN_CHANCE = "stress-breakdown-chance";
 	private final String HIGH_FATIGUE_COLLAPSE = "high-fatigue-collapse-chance";
 
 	private final String GENDER_MALE_PERCENTAGE = "gender-male-percentage";
+	
 	private final String PERSONALITY_TYPES = "personality-types";
 	private final String MBTI = "mbti";
 
@@ -106,18 +111,19 @@ public class PersonConfig implements Serializable {
 	private transient double[] time = new double[] {-1, -1, -1, -1, -1, -1, -1};
 	/** The min and max temperature. */
 	private transient double[] temperature = new double[] {-1, -1};
-
+	/** The average rate of water usage [kg/sol]. */
 	private transient double waterUsage = -1;
-
+	/** The min air pressure [kPa]. */
 	private transient double pressure = -1;
-	
+	/** The min o2 partial pressure [kPa]. */
+	private transient double o2pressure = -1;
+	/** The co2 expulsion rate [kg/sol]. */
 	private transient double co2Rate = -1;
-	
+	/** The document object. */
 	private transient Document personDoc;
-//	private static Element root;
-
+	/** The personality distribution map. */
 	private transient Map<String, Double> personalityDistribution;
-
+	/** The lists. */
 	private transient List<String> personNameList;
 	private transient List<String> allCountries;
 	private transient List<String> ESACountries;
@@ -949,7 +955,7 @@ public class PersonConfig implements Serializable {
 	}
 
 	/**
-	 * Gets the required air pressure.
+	 * Gets the minimum air pressure.
 	 * 
 	 * @return air pressure in kPa.
 	 * @throws Exception if air pressure could not be found.
@@ -962,7 +968,22 @@ public class PersonConfig implements Serializable {
 			return pressure;
 		}
 	}
-			
+		
+	/**
+	 * Gets the absolute minimum oxygen partial pressure of a spacesuit.
+	 * 
+	 * @return partial pressure in kPa.
+	 * @throws Exception if air pressure could not be found.
+	 */
+	public double getMinSuitO2Pressure() {
+		if (o2pressure >= 0)
+			return o2pressure;
+		else {
+			o2pressure = getValueAsDouble(MIN_O2_PARTIAL_PRESSURE);
+			return o2pressure;
+		}
+	}
+	
 	/**
 	 * Gets the max decompression time a person can survive.
 	 * 

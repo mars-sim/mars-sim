@@ -14,7 +14,6 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.LifeSupportInterface;
 import org.mars_sim.msp.core.LogConsolidated;
-import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
@@ -31,8 +30,10 @@ import org.mars_sim.msp.core.structure.building.function.SystemType;
  * The EVASuit class represents an EVA suit which provides life support for a
  * person during a EVA operation.
  * 
+ * According to https://en.wikipedia.org/wiki/Space_suit, 
+ * 
  * Generally speaking, in order to supply enough oxygen for respiration, a space suit 
- * using pure oxygen must have a pressure of about 
+ * using pure oxygen should have a pressure of about 
  * 
  * (A) 32.4 kPa (240 Torr; 4.7 psi), 
  * 
@@ -45,7 +46,17 @@ import org.mars_sim.msp.core.structure.building.function.SystemType;
  * both of which must be subtracted from the alveolar pressure to get alveolar oxygen 
  * partial pressure in 100% oxygen atmospheres, by the alveolar gas equation.
  *  
- * REFERENCE : https://en.wikipedia.org/wiki/Space_suit,
+ * According to https://en.wikipedia.org/wiki/Mars_suit#Breathing for a Mars suit, the
+ * absolute minimum safe O2 requirement is a partial pressure of 11.94 kPa (1.732 psi) 
+ * 	 
+ * In contrast, The Russian Orlan spacesuit system operates at 40.0 kPa (5.8 psia). 
+ * On the other hand, the U.S. EMU system operates at 29.6 kPa (4.3 psia) of oxygen, 
+ * with traces of CO2 and water vapor.
+ * 
+ * The Russian EVA preparation protocol includes a 30-minute oxygen pre-breathe in 
+ * the Orlan spacesuit at a pressure of 73 kPa (10.6 psia) to partially wash out 
+ * nitrogen from crew members’ blood and tissues (Barer and Filipenkov, 1994)
+ * 
  */
 public class EVASuit extends Equipment implements LifeSupportInterface, Serializable, Malfunctionable {
 
@@ -63,6 +74,8 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 
 	public static String[] parts;
 	
+	/** Total gas tank volume of EVA suit (Liter). */
+	public static final double TOTAL_VOLUME = 3.9D;
 	/** Unloaded mass of EVA suit (kg.). */
 	public static final double EMPTY_MASS = 30D;
 	/** Oxygen capacity (kg.). */
@@ -71,17 +84,23 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 	private static final double CO2_CAPACITY = 1D;
 	/** Water capacity (kg.). */
 	private static final double WATER_CAPACITY = 4D;
-	/** Normal air pressure (Pa) inside EVA suit is around 20 kPa. */
-	private static final double NORMAL_AIR_PRESSURE = CompositionOfAir.SKYLAB_TOTAL_AIR_PRESSURE_kPA; // 101325D;
+	/** Typical O2 air pressure (Pa) inside EVA suit is set to be 20.7 kPa. */
+	private static final double NORMAL_AIR_PRESSURE = 20.7; // CompositionOfAir.SKYLAB_TOTAL_AIR_PRESSURE_kPA; // 101325D;
 	/** Normal temperature (celsius). */
 	private static final double NORMAL_TEMP = 25D;
 	/** The wear lifetime value of 334 Sols (1/2 orbit). */
 	private static final double WEAR_LIFETIME = 334000D;
 	/** The maintenance time of 20 millisols. */
 	private static final double MAINTENANCE_TIME = 20D;
-	/** The minimum required air pressure. */
-	private static double minimum_air_pressure;
-
+	/** The minimum required O2 partial pressure. At 11.94 kPa (1.732 psi)  */
+	private static double min_o2_pressure;
+	/** The full O2 partial pressure if at full tank. */
+	private static double fullO2PartialPressure;
+	/** The nominal mass of O2 required to maintain the nominal partial pressure of 20.7 kPa (3.003 psi)  */
+	private static double massO2NominalLimit;
+	/** The minimum mass of O2 required to maintain right above the safety limit of 11.94 kPa (1.732 psi)  */
+	private static double massO2MinimumLimit;
+	 
 	// Data members
 	/** The equipment's malfunction manager. */
 	private MalfunctionManager malfunctionManager;
@@ -102,7 +121,18 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 					"eva radio",
 			};
 		 
-		minimum_air_pressure = personConfig.getMinAirPressure();
+		 min_o2_pressure = personConfig.getMinSuitO2Pressure();
+		 
+		 fullO2PartialPressure = CompositionOfAir.KPA_PER_ATM * OXYGEN_CAPACITY / CompositionOfAir.O2_MOLAR_MASS * CompositionOfAir.R_GAS_CONSTANT / TOTAL_VOLUME;
+
+		 massO2MinimumLimit = min_o2_pressure / fullO2PartialPressure * OXYGEN_CAPACITY;
+		 
+		 massO2NominalLimit = NORMAL_AIR_PRESSURE / min_o2_pressure * massO2MinimumLimit;
+		 
+//		 logger.info("The full O2 partial pressure is " + Math.round(fullO2PartialPressure*1_000.0)/1_000.0 + " kPa");
+//		 logger.info("The minimum mass limit of O2 (above the safety limit) is " + Math.round(massO2MinimumLimit*10_000.0)/10_000.0  + " kg");
+//		 logger.info("The nomimal mass limit of O2 is " + Math.round(massO2NominalLimit*10_000.0)/10_000.0  + " kg");
+
 	}
 	
 	/**
@@ -153,10 +183,12 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 	public boolean lifeSupportCheck() {
 		// boolean result = true;
 		try {
-			if (getInventory().getAmountResourceStored(ResourceUtil.oxygenID, false) <= 0D) {
+			// With the minimum required O2 partial pressure of 11.94 kPa (1.732 psi), the minimum mass of O2 is 0.1792 kg 
+			
+			if (getInventory().getAmountResourceStored(ResourceUtil.oxygenID, false) <= massO2MinimumLimit) {
 				LogConsolidated.log(Level.WARNING, 5000, sourceName,
 						"[" + this.getLocationTag().getLocale() + "] " 
-								+ this.getName() + " ran out of oxygen.");
+								+ this.getName() + " ran out of oxygen and is less than 0.1792 kg and below the safety limit.");
 				return false;
 			}
 			if (getInventory().getAmountResourceStored(ResourceUtil.waterID, false) <= 0D) {
@@ -179,10 +211,10 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 //			}
 
 			double p = getAirPressure();
-			if (p > PhysicalCondition.MAXIMUM_AIR_PRESSURE || p <= minimum_air_pressure) {
+			if (p > PhysicalCondition.MAXIMUM_AIR_PRESSURE || p <= min_o2_pressure) {
 				LogConsolidated.log(Level.WARNING, 5000, sourceName,
 						"[" + this.getLocationTag().getLocale() + "] " 
-								+ this.getName() + " detected improper air pressure at " + Math.round(p * 10D) / 10D);
+								+ this.getName() + " detected improper o2 pressure at " + Math.round(p * 10D) / 10D);
 				return false;
 			}
 			double t = getTemperature();
@@ -286,13 +318,29 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 	 * @return air pressure (Pa)
 	 */
 	public double getAirPressure() {
-		double result = NORMAL_AIR_PRESSURE;// * (malfunctionManager.getAirPressureModifier() / 100D);
-		double ambient = weather.getAirPressure(getCoordinates());
-		if (result < ambient) {
-			return ambient;
-		} else {
-			return result;
+		// Based on some pre-calculation, 
+		// In a 3.9 liter system, 1 kg of O2 can create 66.61118 kPa partial pressure 
+		// To supply a partial oxygen pressure of 20.7 kPa, one needs at least 0.3107 kg O2
+		
+		// With the minimum required O2 partial pressure of 11.94 kPa (1.732 psi), the minimum mass of O2 is 0.1792 kg 
+		
+		// Note : our targetPressure is 20.7 kPa = CompositionOfAir.O2_PARTIAL_PRESSURE
+		
+		double oxygenLeft = getInventory().getAmountResourceStored(ResourceUtil.oxygenID, false);
+		// Assuming that we can maintain a constant oxygen partial pressure of 20.7 kPa if O2 has at least 0.3107 kg left
+		if (oxygenLeft < massO2NominalLimit) {
+			double remainingMass = oxygenLeft;
+			double pp = CompositionOfAir.KPA_PER_ATM * remainingMass / CompositionOfAir.O2_MOLAR_MASS * CompositionOfAir.R_GAS_CONSTANT / TOTAL_VOLUME;
+			LogConsolidated.log(Level.WARNING, 10_000, sourceName,
+					"[" + this.getLocationTag().getLocale() + "] " 
+						+ this.getName() + " has " + Math.round(oxygenLeft*100.0)/100.0
+						+ " kg O2 left at partial pressure of " + Math.round(pp*100.0)/100.0);
+			return pp;
 		}
+
+//		Note: the outside ambient air pressure is weather.getAirPressure(getCoordinates());
+
+		return NORMAL_AIR_PRESSURE;// * (malfunctionManager.getAirPressureModifier() / 100D);	
 	}
 
 	/**

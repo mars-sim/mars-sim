@@ -22,6 +22,7 @@
 	starvation-start-time, 
 	decompression-time, 
 	min-air-pressure,
+	min-o2-partial-pressure,
 	min-temperature, 
 	max-temperature, 
 	freezing-time, 
@@ -96,6 +97,9 @@
 	<!ELEMENT min-air-pressure EMPTY>
 	<!ATTLIST min-air-pressure value CDATA #REQUIRED>
 	
+	<!ELEMENT min-o2-partial-pressure EMPTY>
+	<!ATTLIST min-o2-partial-pressure value CDATA #REQUIRED>
+	
 	<!ELEMENT min-temperature EMPTY>
 	<!ATTLIST min-temperature value CDATA #REQUIRED>
 	
@@ -169,7 +173,7 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
 
 	<!-- The average amount of carbon dioxide expelled by a person on each 
 	     Sol for high metabolic activities -->
-	<!-- Default: 1.0433 [in kg] -->	
+	<!-- Default: 1.0433 [in kg/sol] -->	
 	<co2-expelled-rate value="1.0433" />
 	<!-- Note: this is in contrast with the value of 700 to 900 mL CO2 exhaled 
 	     due to norminal activity. 
@@ -271,11 +275,20 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
 	<!-- Default: 10.0 )-->
 	<decompression-time value="10.0" />
 	
-	<!-- Minimum air pressure (kPa) a person can withstand without harm -->
-	<!-- At least 170 mb, "How To Live On Mars" per Zubrin, P.91 -->
-	<!-- Default: 16.7-->
-	<min-air-pressure value="16.7" />
+	<!-- Minimum air pressure (kPa) a person can withstand without harm 
+		 At least 170 mb (2.5 psi, or 17.24 kPa) without a spacesuit, 
+		 Note : 1kPa = 0.1450377 psi        
+	     see "How To Live On Mars" per Zubrin, P.91 -->
+	<!-- Default: 17.24 -->
+	<min-air-pressure value="17.24" />
 
+	<!-- The absolute minimum oxygen partial pressure -->
+	<!-- According to https://en.wikipedia.org/wiki/Mars_suit#Breathing
+	     for a space suit, the absolute minimum safe oxygen requirement is 
+	     a partial pressure of 11.94 kPa (1.732 psi)                         -->
+	<!-- Default: 11.94 -->
+	<min-o2-partial-pressure value="11.94" />
+	
 	<!-- Minimum temperature (degrees celsius) a person can withstand without harm -->
 	<!-- Default: 0 degrees celsius -->
 	<min-temperature value="-20.0" />

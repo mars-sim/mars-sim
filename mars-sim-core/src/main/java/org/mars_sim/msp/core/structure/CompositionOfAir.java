@@ -120,7 +120,7 @@ public class CompositionOfAir implements Serializable {
 
 	private static final int MILLISOLS_PER_UPDATE = 2;
 
-	private static final double R_GAS_CONSTANT = 0.082057338; // [ in L atm K^−1 mol^−1 ]
+	public static final double R_GAS_CONSTANT = 0.082057338; // [ in L atm K^−1 mol^−1 ]
 	// alternatively, R_GAS_CONSTANT = 8.3144598 m^3 Pa K^−1 mol^−1
 	// see https://en.wikipedia.org/wiki/Gas_constant
 
@@ -329,7 +329,6 @@ public class CompositionOfAir implements Serializable {
 //		System.out.println(//size + " : " + 
 //		buildings.size() + " : " + buildings.get(size-1) + "   id: " 
 //				+ buildings.get(size-1).getInhabitableID() + ":    mass[0][last]: " + mass[0][buildings.get(size-1).getInhabitableID()]);
-
 	}
 	
 	/**
