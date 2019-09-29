@@ -19,14 +19,11 @@ import org.mars_sim.msp.core.Coordinates;
 public final class EquipmentFactory {
 
 	// Cache maps.
-	private static final Map<String, Equipment> equipmentTypeCache = new HashMap<String, Equipment>(8);
-	private static final Map<Class<? extends Equipment>, Equipment> equipmentClassCache 
-		= new HashMap<Class<? extends Equipment>, Equipment>(8);
-	
+	/** The equipment map cache. */
+	private static final Map<String, Equipment> equipmentTypeCache = new HashMap<String, Equipment>(6);
+	/** The equipment name set cache. */
 	private static Set<String> equipmentNamesCache;
 
-	// private static UnitManager unitManager =
-	// Simulation.instance().getUnitManager();
 
 	/**
 	 * Private constructor for static factory class.
@@ -43,20 +40,20 @@ public final class EquipmentFactory {
 
 		if (equipmentNamesCache == null) {
 			equipmentNamesCache = EquipmentType.getNameSet();
-//	        equipmentNamesCache.add(Bag.TYPE);
-//	        equipmentNamesCache.add(Barrel.TYPE);
-//	        equipmentNamesCache.add(EVASuit.TYPE);
-//	        equipmentNamesCache.add(GasCanister.TYPE);
-//	        equipmentNamesCache.add(LargeBag.TYPE);
-//	        equipmentNamesCache.add(SpecimenContainer.TYPE);
-//	        equipmentNamesCache.add(BuildingKit.TYPE);
-//	        equipmentNamesCache.add(Robot.TYPE);      
 		}
 
-		return equipmentNamesCache;// new HashSet<String>(equipmentNamesCache);
+		return equipmentNamesCache;
 
 	}
 
+	/**
+	 * Gets the equipment object
+	 * 
+	 * @param id		the equipment resource id.
+	 * @param location 	the location of the equipment.
+	 * @param temp 		is this equipment only temporary?
+	 * @return {@link Equipment}
+	 */
 	public static Equipment createEquipment(int id, Coordinates location, boolean temp) {
 		return createEquipment(EquipmentType.convertID2Enum(id).getName(), location, temp);
 	}
@@ -67,7 +64,7 @@ public final class EquipmentFactory {
 	 * @param type     the equipment type string.
 	 * @param location the location of the equipment.
 	 * @param temp     is this equipment only temporary?
-	 * @return the equipment instance.
+	 * @return {@link Equipment}
 	 * @throws Exception if error creating equipment instance.
 	 */
 	public static Equipment createEquipment(String type, Coordinates location, boolean temp) {
@@ -84,20 +81,12 @@ public final class EquipmentFactory {
 			return new Bag(location);
 		else if (Barrel.TYPE.equalsIgnoreCase(type))
 			return new Barrel(location);
-//		else if (BuildingKit.TYPE.equalsIgnoreCase(type))
-//			return new BuildingKit(location);
 		else if (EVASuit.TYPE.equalsIgnoreCase(type))
 			return new EVASuit(location);
 		else if (GasCanister.TYPE.equalsIgnoreCase(type))
 			return new GasCanister(location);
 		else if (LargeBag.TYPE.equalsIgnoreCase(type))
 			return new LargeBag(location);
-//		else if (Robot.TYPE.equalsIgnoreCase(type))  {
-//	         Get a robotType randomly
-//            RobotType robotType = unitManager.getABot(Settlement, numOfRobots);
-//			return Robot.create(unitManager.getNewName(UnitType.ROBOT, null, null, robotType), newSettlement, robotType);
-//			return new Robot(null, null, null, null, location);
-//		}
 		else if (SpecimenBox.TYPE.equalsIgnoreCase(type))
 			return new SpecimenBox(location);
 		else
@@ -110,17 +99,18 @@ public final class EquipmentFactory {
 	 * @param equipmentClass the equipment class to use.
 	 * @param location       the location of the equipment.
 	 * @param temp           is this equipment only temporary?
-	 * @return the equipment instance.
+	 * @return  {@link Equipment}
 	 * @throws Exception if error creating equipment instance.
 	 */
 	public static Equipment createEquipment(Class<? extends Equipment> equipmentClass, Coordinates location,
 			boolean temp) {
 		if (temp) {
-			if (equipmentClassCache.containsKey(equipmentClass))
-				return equipmentClassCache.get(equipmentClass);
+			String name = EquipmentType.convertClass2Type(equipmentClass).getName();
+			if (equipmentTypeCache.containsKey(name))
+				return equipmentTypeCache.get(name);
 			else {
-				Equipment equipment = createEquipment(equipmentClass, location, false);
-				equipmentClassCache.put(equipmentClass, equipment);
+				Equipment equipment = createEquipment(name, location, false);
+				equipmentTypeCache.put(name, equipment);
 				return equipment;
 			}
 		}
@@ -136,10 +126,6 @@ public final class EquipmentFactory {
 			return new LargeBag(location);
 		else if (SpecimenBox.class.equals(equipmentClass))
 			return new SpecimenBox(location);
-//		else if (BuildingKit.class.equals(equipmentClass))
-//			return new BuildingKit(location);
-//		else if (Robot.class.equals(equipmentClass)) 
-//			return new Robot(null, null, null, null, location);
 		else
 			throw new IllegalStateException("Equipment: " + equipmentClass + " could not be constructed.");
 	}
@@ -164,24 +150,19 @@ public final class EquipmentFactory {
 			return LargeBag.class;
 		else if (SpecimenBox.TYPE.equalsIgnoreCase(type))
 			return SpecimenBox.class;
-//		else if (BuildingKit.TYPE.equalsIgnoreCase(type))
-//			return BuildingKit.class;
-//		else if (Robot.TYPE.equalsIgnoreCase(type))
-//			return Robot.class;
-//		else if (Vehicle.NAME.equalsIgnoreCase(type)) return Vehicle.class;
 		else
 			throw new IllegalStateException("Class for equipment: " + type + " could not be found.");
 	}
 
+	/**
+	 * Gets the equipment class with its resource id
+	 * 
+	 * @param id  	resource id.
+	 * @return the 	equipment class.
+	 */
 	public static Class<? extends Equipment> getEquipmentClass(int id) {
-//		String type = EquipmentType.convertID2Type(id).getName();
-//		return getEquipmentClass(type);
 		return getEquipmentClass(EquipmentType.convertID2Enum(id).getName());
 	}
-
-//	public static int getEquipmentID(String type) {
-//		return EquipmentType.str2int(type);
-//	}
 
 	/**
 	 * Gets the empty mass of the equipment.
@@ -203,10 +184,6 @@ public final class EquipmentFactory {
 			return LargeBag.EMPTY_MASS;
 		else if (SpecimenBox.TYPE.equalsIgnoreCase(type))
 			return SpecimenBox.EMPTY_MASS;
-//		else if (BuildingKit.TYPE.equalsIgnoreCase(type))
-//			return BuildingKit.EMPTY_MASS;
-//		else if (Robot.TYPE.equalsIgnoreCase(type))
-//			return Robot.EMPTY_MASS;
 		else
 			throw new IllegalStateException("Class for equipment: " + type + " could not be found.");
 	}

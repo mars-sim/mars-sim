@@ -535,7 +535,6 @@ public class Manufacture extends Function implements Serializable {
 									settlement.getCoordinates(), false);
 							equipment.setName(unitManager.getNewName(UnitType.EQUIPMENT, equipmentType, null, null));
 							// Place this equipment within a settlement
-//							equipment.enter(LocationCodeType.SETTLEMENT);
 							inv.storeUnit(equipment);
 							// TODO: how to add tracking supply for equipment
 							// Add to the daily output

@@ -64,6 +64,12 @@ public enum EquipmentType {
 		return enumSet;
 	}
 	
+	/**
+	 * Obtains the resource id (not the ordinal id) of the equipment
+	 * 
+	 * @param name
+	 * @return resource id
+	 */
 	public static int convertName2ID(String name) {
 		if (name != null) {
 	    	for (EquipmentType e : EquipmentType.values()) {
@@ -75,14 +81,32 @@ public enum EquipmentType {
 		return -1;
 	}
 	
+	/**
+	 * Obtains the enum type of the equipment with its ordinal id
+	 * 
+	 * @param ordinalID
+	 * @return
+	 */
 	public static EquipmentType convertOrdinalID2Enum(int ordinalID) {
 		return EquipmentType.values()[ordinalID];
 	}
 	
+	/**
+	 * Obtains the enum type of the equipment with its resource id
+	 * 
+	 * @param resourceID
+	 * @return
+	 */
 	public static EquipmentType convertID2Enum(int resourceID) {
 		return EquipmentType.values()[resourceID - ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID];
 	}
 	
+	/**
+	 * Obtains the resource id of the equipment class
+	 * 
+	 * @param equipmentClass
+	 * @return
+	 */
 	public static int convertClass2ID(Class<?> equipmentClass) {
 		if (Bag.class.equals(equipmentClass)) return BAG.ordinal() + ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID;
 		else if (Barrel.class.equals(equipmentClass)) return BARREL.ordinal() + ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID;
@@ -93,6 +117,28 @@ public enum EquipmentType {
 		else return -1;
 	}
 	
+	/**
+	 * Obtains the enum type of the equipment class
+	 * 
+	 * @param equipmentClass
+	 * @return
+	 */
+	public static EquipmentType convertClass2Type(Class<?> equipmentClass) {
+		if (Bag.class.equals(equipmentClass)) return BAG;
+		else if (Barrel.class.equals(equipmentClass)) return BARREL;
+		else if (EVASuit.class.equals(equipmentClass)) return EVA_SUIT;
+		else if (GasCanister.class.equals(equipmentClass)) return GAS_CANISTER;
+        else if (LargeBag.class.equals(equipmentClass)) return LARGE_BAG;
+		else if (SpecimenBox.class.equals(equipmentClass)) return SPECIMEN_BOX;
+		else return null;
+	}
+	
+	/**
+	 * Obtains the enum type of the equipment with its name
+	 * 
+	 * @param name
+	 * @return
+	 */
 	public static EquipmentType convertName2Enum(String name) {
 		if (name != null) {
 	    	for (EquipmentType et : EquipmentType.values()) {

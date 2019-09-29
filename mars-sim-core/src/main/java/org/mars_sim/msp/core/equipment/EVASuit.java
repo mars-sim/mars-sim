@@ -61,23 +61,10 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 	// Static members
 	public static String TYPE = SystemType.EVA_SUIT.getName();
 
-	public static String[] parts = new String[] {
-			"eva helmet",
-			"helmet visor",
-			"counter pressure suit",
-			"coveralls",
-			"suit heating unit",
-			"eva gloves",
-			"eva boots",
-			"eva pads",
-			"eva backpack",
-			"eva antenna",
-			"eva battery",
-			"eva radio",
-	};
+	public static String[] parts;
 	
 	/** Unloaded mass of EVA suit (kg.). */
-	public static final double EMPTY_MASS = 45D;
+	public static final double EMPTY_MASS = 30D;
 	/** Oxygen capacity (kg.). */
 	private static final double OXYGEN_CAPACITY = 1D;
 	/** CO2 capacity (kg.). */
@@ -88,16 +75,36 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 	private static final double NORMAL_AIR_PRESSURE = CompositionOfAir.SKYLAB_TOTAL_AIR_PRESSURE_kPA; // 101325D;
 	/** Normal temperature (celsius). */
 	private static final double NORMAL_TEMP = 25D;
-	/** 334 Sols (1/2 orbit). */
+	/** The wear lifetime value of 334 Sols (1/2 orbit). */
 	private static final double WEAR_LIFETIME = 334000D;
-	/** 100 millisols. */
+	/** The maintenance time of 20 millisols. */
 	private static final double MAINTENANCE_TIME = 20D;
+	/** The minimum required air pressure. */
 	private static double minimum_air_pressure;
 
 	// Data members
 	/** The equipment's malfunction manager. */
 	private MalfunctionManager malfunctionManager;
 
+	static {
+		 parts = new String[] {
+					"eva helmet",
+					"helmet visor",
+					"counter pressure suit",
+					"coveralls",
+					"suit heating unit",
+					"eva gloves",
+					"eva boots",
+					"eva pads",
+					"eva backpack",
+					"eva antenna",
+					"eva battery",
+					"eva radio",
+			};
+		 
+		minimum_air_pressure = personConfig.getMinAirPressure();
+	}
+	
 	/**
 	 * Constructor.
 	 * 
@@ -108,11 +115,7 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 
 		// Use Equipment constructor.
 		super(TYPE, TYPE, location);
-
-//		if (Simulation.instance().getMars() != null)
-//			// Note: the use of if above is for passing maven test
-//			weather = Simulation.instance().getMars().getWeather();
-		
+	
 		// Add scope to malfunction manager.
 		malfunctionManager = new MalfunctionManager(this, WEAR_LIFETIME, MAINTENANCE_TIME);
 		malfunctionManager.addScopeString(TYPE);
@@ -125,10 +128,10 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 		getInventory().addARTypeCapacity(ResourceUtil.oxygenID, OXYGEN_CAPACITY);
 		getInventory().addARTypeCapacity(ResourceUtil.waterID, WATER_CAPACITY);
 		getInventory().addARTypeCapacity(ResourceUtil.co2ID, CO2_CAPACITY);
-
-//		PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
-		minimum_air_pressure = SimulationConfig.instance().getPersonConfig().getMinAirPressure();
-
+		
+		// Set the load carrying capacity of the EVA suit to an arbitrary value of 250 kg.
+		getInventory().addGeneralCapacity(250);
+		
 	}
 
 	/**

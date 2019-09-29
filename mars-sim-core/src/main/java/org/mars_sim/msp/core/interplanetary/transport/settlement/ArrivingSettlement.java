@@ -402,7 +402,6 @@ public class ArrivingSettlement implements Transportable, Serializable {
 
 		SettlementTemplate template = settlementConfig
 				.getSettlementTemplate(getTemplate());
-//		UnitManager unitManager = Simulation.instance().getUnitManager();
 		Iterator<String> equipmentI = template.getEquipment().keySet().iterator();
 		while (equipmentI.hasNext()) {
 			String equipmentType = equipmentI.next();
@@ -413,7 +412,6 @@ public class ArrivingSettlement implements Transportable, Serializable {
 				equipment.setName(unitManager.getNewName(UnitType.EQUIPMENT, equipmentType, null, null));
 				unitManager.addUnit(equipment);
 				// Place this equipment within a settlement
-//				equipment.enter(LocationCodeType.SETTLEMENT);
 				newSettlement.getInventory().storeUnit(equipment);
 			}
 		}

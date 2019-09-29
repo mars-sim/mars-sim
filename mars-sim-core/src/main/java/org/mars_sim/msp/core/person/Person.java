@@ -149,6 +149,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	private double xLoc;
 	/** Settlement Y location (meters) from settlement center. */
 	private double yLoc;
+	
 	/** The birth timestamp of the person. */
 	private String birthTimeStamp;
 	/** The birthplace of the person. */
@@ -178,29 +179,29 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	private PhysicalCondition condition;
 	/** Person's circadian clock. */
 	private CircadianClock circadian;
-
+	/** Person's Favorite instance. */
 	private Favorite favorite;
-
+	/** Person's TaskSchedule instance. */
 	private TaskSchedule taskSchedule;
-
+	/** Person's JobHistory instance. */
 	private JobHistory jobHistory;
-
+	/** Person's Role instance. */
 	private Role role;
-
+	/** Person's Preference instance. */
 	private Preference preference;
-
+	/** Person's LifeSupportInterface instance. */
 	private LifeSupportInterface support;
-
+	/** Person's Cooking instance. */
 	private Cooking kitchenWithMeal;
-
+	/** Person's PreparingDessert instance. */
 	private PreparingDessert kitchenWithDessert;
-
+	/** Person's ReportingAuthority instance. */
 	private ReportingAuthority ra;
-
+	/** The bed location of the person */
 	private Point2D bed;
-
+	/** The quarters of the person. */
 	private Building quarters;
-
+	/** The current building location of the person. */
 	private Building currentBuilding;
 	/** The EVA suit that the person has donned on. */
 	private EVASuit suit;
@@ -219,16 +220,16 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	/** The person's prior training */
 	private List<TrainingType> trainings;
 	
-	private static PersonConfig pc = SimulationConfig.instance().getPersonConfig();
+//	private static PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
 
 	static {
 		// Compute the average height for all
-		tall = pc.getTallAverageHeight();
-		shortH = pc.getShortAverageHeight();
+		tall = personConfig.getTallAverageHeight();
+		shortH = personConfig.getShortAverageHeight();
 		averageHeight = (tall + shortH) / 2D;
 		// Compute the average weight for all
-		highW = pc.getHighAverageWeight();
-		lowW = pc.getLowAverageWeight();
+		highW = personConfig.getHighAverageWeight();
+		lowW = personConfig.getLowAverageWeight();
 		averageWeight = (highW + lowW) / 2D;
 	}
 
@@ -297,13 +298,17 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 
 	/*
 	 * Uses static factory method to create an instance of PersonBuilder
+	 *
+	 * @param name
+	 * @param settlement
+	 * @return
 	 */
 	public static PersonBuilder<?> create(String name, Settlement settlement) {
 		return new PersonBuilderImpl(name, settlement);
 	}
 
 	/**
-	 * Initialize field data, class and maps
+	 * Initialize field data and class 
 	 */
 	public void initialize() {
 		// Add the person to the lookup map
@@ -397,12 +402,15 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		boolean dominant = false;
 
 		int strength = attributes.getAttribute(NaturalAttributeType.STRENGTH);
-		// Set inventory total mass capacity based on the person's strength.
-		getInventory().addGeneralCapacity(pc.getBaseCapacity() + strength);
+		
+		int carryCap = (int)(personConfig.getBaseCapacity() + weight/2.5 + strength/1.5);
+//		logger.info(name + " can carry " + carryCap + " kg");
+		// Set inventory total mass capacity based on the person's weight and strength.
+		getInventory().addGeneralCapacity(carryCap); 
 
-		int rand = RandomUtil.getRandomInt(100);
+		int score = mind.getMBTI().getIntrovertExtrovertScore();
 
-		Gene trait1_G = new Gene(this, ID, "Trait 1", true, dominant, "Introvert", rand);
+		Gene trait1_G = new Gene(this, ID, "Trait 1", true, dominant, "Introvert", score);
 		paternal_chromosome.put(ID, trait1_G);
 
 	}

@@ -176,7 +176,7 @@ public class BuildingAirlock extends Airlock {
             // Recapture air from the airlock before depressurizing it
 			building.getSettlement().getCompositionOfAir().releaseOrRecaptureAir(building.getInhabitableID(), false, building);
             
-			// 5.1 Gets the EVA suit reference the person has already donned on
+			// 5.1 Gets the EVA suit under the person's possession
 			EVASuit suit = (EVASuit) person.getInventory().findUnitOfClass(EVASuit.class); //person.getSuit();
 			// 5.2 Retrieve the suit from the person
 			person.getInventory().retrieveUnit(suit);
@@ -184,7 +184,7 @@ public class BuildingAirlock extends Airlock {
             building.getInventory().retrieveUnit(person);
             // 5.4 Remove the person from the building
             BuildingManager.removePersonOrRobotFromBuilding(person, building);
-			// 5.5 store the person into the EVA suit inventory (as the person dons the suit)
+			// 5.5 Don the suit (store the person into the EVA suit inventory)
 			suit.getInventory().storeUnit(person);
 			// 5.6 Store the suit on the surface of Mars
 			Simulation.instance().getMars().getMarsSurface().getInventory().storeUnit(suit);

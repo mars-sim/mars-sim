@@ -74,7 +74,9 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 	
 	// Data members
 	// The unit's location code
-	private int locationCode = 110_000;
+//	private int locationCode = 110_000;
+	/** The unit containing this unit. */
+	private int containerID = MARS_SURFACE_ID;
 	
 	/** The mass of the unit without inventory. */
 	private double baseMass;
@@ -88,9 +90,7 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 	private LocationTag tag;
 	/** The unit's inventory. */
 	private Inventory inventory;
-	/** The unit containing this unit. */
-//	protected Unit containerUnit;
-	private int containerID = MARS_SURFACE_ID;
+
 	
 	/** Unit location coordinates. */
 	private Coordinates location;
@@ -884,13 +884,13 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 			return null;
 	}
 
-	public int getLocationCode() {
-		return locationCode;
-	}
-
-	public void setLocationCode(int code) {
-		locationCode = code;
-	}
+//	public int getLocationCode() {
+//		return locationCode;
+//	}
+//
+//	public void setLocationCode(int code) {
+//		locationCode = code;
+//	}
 
 	/**
 	 * Is this unit inside an environmentally enclosed breathable living space

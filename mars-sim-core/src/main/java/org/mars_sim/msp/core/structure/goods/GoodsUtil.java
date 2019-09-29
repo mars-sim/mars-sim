@@ -308,7 +308,6 @@ public class GoodsUtil {
 	 */
 	private static void populateEquipment() {
 		List<String> equipmentNames = new ArrayList<String>(EquipmentFactory.getEquipmentNames());
-//		Collections.sort(equipmentNames);
 		Iterator<String> i = equipmentNames.iterator();
 		while (i.hasNext()) {
 			String name = i.next();

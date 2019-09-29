@@ -393,27 +393,11 @@ public class FoodProduction extends Function implements Serializable {
 							equipment.setName(Simulation.instance().getUnitManager().getNewName(UnitType.EQUIPMENT,
 									equipmentType, null, null));
 							// Place this equipment within a settlement
-//							equipment.enter(LocationCodeType.SETTLEMENT);
 							inv.storeUnit(equipment);
 							// Add to the daily output
 							settlement.addOutput(equipment.getIdentifier(), number, process.getTotalWorkTime());
 						}
 					}
-//                    else if (Type.VEHICLE.equals(item.getType())) {
-//                        // Produce vehicles.
-//                        String vehicleType = item.getName();
-//                        int number = (int) item.getAmount();
-//                        for (int x = 0; x < number; x++) {
-//                            if (LightUtilityVehicle.NAME.equalsIgnoreCase(vehicleType)) {
-//                                String name = manager.getNewName(UnitType.VEHICLE, "LUV", null);
-//                                manager.addUnit(new LightUtilityVehicle(name, vehicleType, settlement));
-//                            }
-//                            else {
-//                                String name = manager.getNewName(UnitType.VEHICLE, null, null);
-//                                manager.addUnit(new Rover(name, vehicleType, settlement));
-//                            }
-//                        }
-//                    }
 					else
 						throw new IllegalStateException(
 								"FoodProduction.addProcess(): output: " + item.getType() + " not a valid type.");

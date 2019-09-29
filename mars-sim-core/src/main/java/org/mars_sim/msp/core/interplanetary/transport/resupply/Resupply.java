@@ -486,7 +486,6 @@ public class Resupply implements Serializable, Transportable {
 						false);
 				equipment.setName(unitManager.getNewName(UnitType.EQUIPMENT, equipmentType, null, null));
 				// Place this equipment within a settlement
-//				equipment.enter(LocationCodeType.SETTLEMENT);
 				inv.storeUnit(equipment);
 			}
 		}
