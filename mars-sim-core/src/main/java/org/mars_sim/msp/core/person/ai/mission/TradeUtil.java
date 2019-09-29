@@ -667,10 +667,7 @@ public final class TradeUtil {
 		else if (good.getCategory() == GoodType.EQUIPMENT) {
 			Class<? extends Equipment> type = good.getClassType();
 			if (!equipmentGoodCache.containsKey(type)) {
-//				int id = good.getID();
-//				Equipment e = EquipmentFactory.get.getEquipment(id);
 				equipmentGoodCache.put(type, EquipmentFactory.createEquipment(type, new Coordinates(0D, 0D), true));
-//				equipmentGoodCache.put(type, EquipmentFactory.getEquipmentClass(id));
 			}
 			result = (remainingCapacity >= equipmentGoodCache.get(type).getBaseMass());
 		} else if (good.getCategory() == GoodType.VEHICLE)
@@ -807,7 +804,7 @@ public final class TradeUtil {
 		Equipment container = null;
 		if (containerTypeCache.containsKey(containerType))
 			container = containerTypeCache.get(containerType);
-		else {
+		else { 
 			container = EquipmentFactory.createEquipment(containerType, new Coordinates(0, 0), true);
 			containerTypeCache.put(containerType, container);
 		}

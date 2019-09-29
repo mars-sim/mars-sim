@@ -17,7 +17,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 /**
  * A specialized container for holding rock samples.
  */
-public class SpecimenContainer
+public class SpecimenBox
 extends Equipment
 implements Container, Serializable {
 
@@ -30,7 +30,7 @@ implements Container, Serializable {
 	/** Rock sample capacity (kg). */
 	public static final double CAPACITY = 10D;
 
-	public SpecimenContainer(Coordinates location) {
+	public SpecimenBox(Coordinates location) {
 		// Use Equipment constructor.
 		super(TYPE, TYPE, location);
 

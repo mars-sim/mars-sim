@@ -21,7 +21,7 @@ import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.equipment.SpecimenContainer;
+import org.mars_sim.msp.core.equipment.SpecimenBox;
 import org.mars_sim.msp.core.mars.ExploredLocation;
 import org.mars_sim.msp.core.mars.MineralMap;
 import org.mars_sim.msp.core.person.Person;
@@ -277,7 +277,7 @@ public class ExploreSite extends EVAOperation implements Serializable {
 	 * @return true if carrying container.
 	 */
 	private boolean hasSpecimenContainer() {
-		return person.getInventory().containsUnitClass(SpecimenContainer.class);
+		return person.getInventory().containsUnitClass(SpecimenBox.class);
 	}
 
 	/**
@@ -301,13 +301,13 @@ public class ExploreSite extends EVAOperation implements Serializable {
 	 * @param rover the rover with the inventory to look in.
 	 * @return specimen container or null if none.
 	 */
-	private static SpecimenContainer findLeastFullContainer(Rover rover) {
-		SpecimenContainer result = null;
+	private static SpecimenBox findLeastFullContainer(Rover rover) {
+		SpecimenBox result = null;
 		double mostCapacity = 0D;
 
-		Iterator<Unit> i = rover.getInventory().findAllUnitsOfClass(SpecimenContainer.class).iterator();
+		Iterator<Unit> i = rover.getInventory().findAllUnitsOfClass(SpecimenBox.class).iterator();
 		while (i.hasNext()) {
-			SpecimenContainer container = (SpecimenContainer) i.next();
+			SpecimenBox container = (SpecimenBox) i.next();
 			try {
 				// AmountResource rockSamples = ("rock samples");
 				double remainingCapacity = container.getInventory()
@@ -370,8 +370,8 @@ public class ExploreSite extends EVAOperation implements Serializable {
 
 		// Load specimen container in rover.
 		Inventory pInv = person.getInventory();
-		if (pInv.containsUnitClass(SpecimenContainer.class)) {
-			Unit container = pInv.findUnitOfClass(SpecimenContainer.class);
+		if (pInv.containsUnitClass(SpecimenBox.class)) {
+			Unit container = pInv.findUnitOfClass(SpecimenBox.class);
 			pInv.retrieveUnit(container);
 			// Place this equipment within a rover outside on Mars
 //            container.enter(LocationCodeType.MOBILE_UNIT_4);

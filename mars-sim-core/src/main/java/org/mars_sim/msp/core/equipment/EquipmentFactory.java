@@ -98,8 +98,8 @@ public final class EquipmentFactory {
 //			return Robot.create(unitManager.getNewName(UnitType.ROBOT, null, null, robotType), newSettlement, robotType);
 //			return new Robot(null, null, null, null, location);
 //		}
-		else if (SpecimenContainer.TYPE.equalsIgnoreCase(type))
-			return new SpecimenContainer(location);
+		else if (SpecimenBox.TYPE.equalsIgnoreCase(type))
+			return new SpecimenBox(location);
 		else
 			throw new IllegalStateException("Equipment: " + type + " could not be constructed.");
 	}
@@ -134,8 +134,8 @@ public final class EquipmentFactory {
 			return new GasCanister(location);
 		else if (LargeBag.class.equals(equipmentClass))
 			return new LargeBag(location);
-		else if (SpecimenContainer.class.equals(equipmentClass))
-			return new SpecimenContainer(location);
+		else if (SpecimenBox.class.equals(equipmentClass))
+			return new SpecimenBox(location);
 //		else if (BuildingKit.class.equals(equipmentClass))
 //			return new BuildingKit(location);
 //		else if (Robot.class.equals(equipmentClass)) 
@@ -162,8 +162,8 @@ public final class EquipmentFactory {
 			return GasCanister.class;
 		else if (LargeBag.TYPE.equalsIgnoreCase(type))
 			return LargeBag.class;
-		else if (SpecimenContainer.TYPE.equalsIgnoreCase(type))
-			return SpecimenContainer.class;
+		else if (SpecimenBox.TYPE.equalsIgnoreCase(type))
+			return SpecimenBox.class;
 //		else if (BuildingKit.TYPE.equalsIgnoreCase(type))
 //			return BuildingKit.class;
 //		else if (Robot.TYPE.equalsIgnoreCase(type))
@@ -201,8 +201,8 @@ public final class EquipmentFactory {
 			return GasCanister.EMPTY_MASS;
 		else if (LargeBag.TYPE.equalsIgnoreCase(type))
 			return LargeBag.EMPTY_MASS;
-		else if (SpecimenContainer.TYPE.equalsIgnoreCase(type))
-			return SpecimenContainer.EMPTY_MASS;
+		else if (SpecimenBox.TYPE.equalsIgnoreCase(type))
+			return SpecimenBox.EMPTY_MASS;
 //		else if (BuildingKit.TYPE.equalsIgnoreCase(type))
 //			return BuildingKit.EMPTY_MASS;
 //		else if (Robot.TYPE.equalsIgnoreCase(type))

@@ -138,7 +138,11 @@ public class EnterAirlock extends Task implements Serializable {
 				" was waiting to enter airlock from outside in " + person.getLocationTag().getImmediateLocation());
 		
 		// If person is already inside, change to exit airlock phase.
+		// TODO: why would a person be already inside ?
 		if (person.isInside()) {
+			LogConsolidated.log(Level.WARNING, 0, sourceName, 
+					"[" + person.getLocationTag().getLocale() + "] " + person.getName() + 
+					" was about to enter the airlock from outside, but was already inside the settlement. Exiting the airlock.");
 			setPhase(EXITING_AIRLOCK);
 			return remainingTime;
 		}
@@ -206,7 +210,7 @@ public class EnterAirlock extends Task implements Serializable {
 		if (airlock.inAirlock(person)) {
 			LogConsolidated.log(Level.FINER, 0, sourceName, 
 					"[" + person.getLocationTag().getLocale() + "] " + person.getName() + 
-					" was about to enter airlock, but found already in the airlock.");
+					" was about to enter airlock, but was found already in the airlock.");
 			setPhase(WAITING_INSIDE_AIRLOCK);
 		} 
 		
@@ -214,8 +218,9 @@ public class EnterAirlock extends Task implements Serializable {
 			// WARNING: calling this incorrectly can potentially halt the simulation
 			LogConsolidated.log(Level.WARNING, 0, sourceName, 
 					"[" + person.getLocationTag().getLocale() + "] " + person.getName() + 
-					" was about to enter the airlock from outside, but was already inside the settlement. End task.");
-			endTask();
+					" was about to enter the airlock from outside, but was already inside the settlement. Exiting the airlock.");
+			setPhase(EXITING_AIRLOCK);
+			return remainingTime;
 		} 
 		
 		else if (LocalAreaUtil.areLocationsClose(personLocation, insideAirlockPos)) {
@@ -232,6 +237,7 @@ public class EnterAirlock extends Task implements Serializable {
 						" had entered the airlock in " + person.getLocationTag().getImmediateLocation());
 
 				setPhase(WAITING_INSIDE_AIRLOCK);
+				
 			} else {
 				// If airlock has not been activated, activate it.
 				if (!airlock.isActivated()) {
@@ -419,16 +425,23 @@ public class EnterAirlock extends Task implements Serializable {
 
 		double remainingTime = time;
 
-		EVASuit suit = (EVASuit) person.getInventory().findUnitOfClass(EVASuit.class);
+//		EVASuit suit = (EVASuit) person.getInventory().findUnitOfClass(EVASuit.class); ////(EVASuit) person.getContainerUnit();
+		// 5.1. Gets the suit instance
+		EVASuit suit = person.getSuit(); 
+		// 5.2 deregister the suit the person will take into the airlock to don
+		person.registerSuit(null);		
+		// 5.3 set the person as the owner
+		suit.setLastOwner(person);
+		
 		if (suit != null) {
 			
 			Inventory suitInv = suit.getInventory();
-			Inventory personInv = person.getInventory();
+//			Inventory personInv = person.getInventory();
 			
 			if (person.getContainerUnit() instanceof MarsSurface) {
 				LogConsolidated.log(Level.WARNING, 0, sourceName,
 						"[" + person.getLocationTag().getLocale() + "] "  
-									+ person + " had no container. Location state type : " 
+									+ person + " had Mars surface as the container. Location state type : " 
 									+ person.getLocationStateType());
 				endTask();
 			}
@@ -438,15 +451,15 @@ public class EnterAirlock extends Task implements Serializable {
 						"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
 						+ " was going to retrieve the O2 and H2O in " + suit.getName());
 	
-				Inventory entityInv = null;
+				Inventory entityInv = airlock.getEntityInventory();
 				
-				if (person.getContainerUnit().getInventory() != null) {
+				if (entityInv != null && suitInv != null) {
 	
+					// 5.4 Retrieve the suit on the person
+					person.getInventory().retrieveUnit(suit);
+					
+					// 1.5 Unloads the resources into the EVA suit
 					try {
-						entityInv = person.getContainerUnit().getInventory();
-						// Warning : if person.getContainerUnit().getInventory() is null, the simulation hang up
-						// person.getContainerUnit() instanceof MarsSurface may alleviate this situation
-						
 						// Unload oxygen from suit.
 						double oxygenAmount = suitInv.getAmountResourceStored(oxygenID, false);
 						double oxygenCapacity = entityInv.getAmountResourceRemainingCapacity(oxygenID, true, false);
@@ -484,11 +497,10 @@ public class EnterAirlock extends Task implements Serializable {
 						endTask();
 					}
 		
-		//			 logger.finer(person.getName() + " putting away EVA suit into " +
-		//			 entity.getName());
-					personInv.retrieveUnit(suit);
-		//			 suit.setLastOwner(person);
+
+					// 5.5 Store the EVA suit to the entityInv
 					entityInv.storeUnit(suit);
+					
 					// Return suit to entity's inventory.
 					LogConsolidated.log(Level.FINER, 0, sourceName, 
 							"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
@@ -507,7 +519,7 @@ public class EnterAirlock extends Task implements Serializable {
 		else {
 			LogConsolidated.log(Level.WARNING, 0, sourceName,
 					"[" + person.getLocationTag().getLocale() + "] " 
-					+ person.getName() + " did NOT have an EVA suit to put away in "
+					+ person.getName() + " entered an airlock and was supposed to put away an EVA suit but did not have one in "
 							+ person.getLocationTag().getImmediateLocation());
 			endTask();
 		}

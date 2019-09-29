@@ -222,7 +222,7 @@ public class LocationTag implements LocationState, Serializable {
 		}
 
 		else if (e != null) {
-			if (LocationStateType.ON_A_PERSON == e.getLocationStateType())
+			if (LocationStateType.ON_A_PERSON_OR_ROBOT == e.getLocationStateType())
 				return e.getContainerUnit().getLocationTag().getImmediateLocation();
 			else if (e.isRightOutsideSettlement())
 				return findSettlementVicinity().getName() + VICINITY;

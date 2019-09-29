@@ -12,10 +12,8 @@ import org.mars_sim.msp.core.Unit;
 
 public class OnAPerson implements LocationState, Serializable {
 
-	/**
-	 *
-	 */
 	private static final long serialVersionUID = 1L;
+	
 	private String name = "Inside a building";
 	private Unit unit;
 
@@ -24,7 +22,7 @@ public class OnAPerson implements LocationState, Serializable {
 	}
 
 	public LocationStateType getType() {
-		return LocationStateType.ON_A_PERSON;
+		return LocationStateType.ON_A_PERSON_OR_ROBOT;
 	}
 	
 	public OnAPerson(Unit unit) {

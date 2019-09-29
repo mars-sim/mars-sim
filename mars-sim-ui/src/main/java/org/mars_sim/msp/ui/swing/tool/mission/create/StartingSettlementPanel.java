@@ -28,7 +28,7 @@ import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.equipment.Bag;
 import org.mars_sim.msp.core.equipment.EVASuit;
-import org.mars_sim.msp.core.equipment.SpecimenContainer;
+import org.mars_sim.msp.core.equipment.SpecimenBox;
 import org.mars_sim.msp.core.person.ai.mission.CollectIce;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
@@ -255,7 +255,7 @@ class StartingSettlementPanel extends WizardPanel {
 
 					if (type.equals(MissionDataBean.EXPLORATION_MISSION)) {
 						if (column == 8)
-							result = inv.findNumEmptyUnitsOfClass(SpecimenContainer.class, true);
+							result = inv.findNumEmptyUnitsOfClass(SpecimenBox.class, true);
 					}
 					else if (type.equals(MissionDataBean.ICE_MISSION) ||
 							type.equals(MissionDataBean.REGOLITH_MISSION)) {
@@ -392,7 +392,7 @@ class StartingSettlementPanel extends WizardPanel {
 				String type = getWizard().getMissionData().getType();
 				if (type.equals(MissionDataBean.EXPLORATION_MISSION)) {
 					if (column == 8) {
-						if (inv.findNumEmptyUnitsOfClass(SpecimenContainer.class, true) <
+						if (inv.findNumEmptyUnitsOfClass(SpecimenBox.class, true) <
 								Exploration.REQUIRED_SPECIMEN_CONTAINERS) result = true;
 					}
 				}

@@ -4,7 +4,7 @@
  * @version 3.1.0 2017-08-30
  * @author Manny Kung
  */
-package org.mars_sim.msp.core.person;
+package org.mars_sim.msp.core.person.ai.taskUtil;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -15,6 +15,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 //import org.mars_sim.msp.core.structure.building.function.FunctionType;

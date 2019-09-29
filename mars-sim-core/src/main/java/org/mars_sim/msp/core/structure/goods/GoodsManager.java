@@ -31,7 +31,7 @@ import org.mars_sim.msp.core.equipment.ContainerUtil;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
-import org.mars_sim.msp.core.equipment.SpecimenContainer;
+import org.mars_sim.msp.core.equipment.SpecimenBox;
 import org.mars_sim.msp.core.foodProduction.FoodProductionProcess;
 import org.mars_sim.msp.core.foodProduction.FoodProductionProcessInfo;
 import org.mars_sim.msp.core.foodProduction.FoodProductionProcessItem;
@@ -2488,7 +2488,7 @@ public class GoodsManager implements Serializable {
 		}
 		
 		// Determine the number of containers that are needed.
-		if (Container.class.isAssignableFrom(equipmentClass) && !SpecimenContainer.class.equals(equipmentClass)) {
+		if (Container.class.isAssignableFrom(equipmentClass) && !SpecimenBox.class.equals(equipmentClass)) {
 
 			PhaseType containerPhase = ContainerUtil.getContainerPhase(equipmentClass);
 			double containerCapacity = ContainerUtil.getContainerCapacity(equipmentClass);
@@ -2525,7 +2525,7 @@ public class GoodsManager implements Serializable {
 		}
 
 		// Determine number of specimen containers that are needed.
-		if (SpecimenContainer.class.equals(equipmentClass)) {
+		if (SpecimenBox.class.equals(equipmentClass)) {
 			numDemand += Exploration.REQUIRED_SPECIMEN_CONTAINERS * areologistFactor * SPECIMEN_BOX_DEMAND;
 		}
 

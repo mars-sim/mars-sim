@@ -15,8 +15,11 @@ import org.mars_sim.msp.core.LifeSupportInterface;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Airlock;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
 
 /**
  * This class represents an airlock for a vehicle.
@@ -87,46 +90,16 @@ extends Airlock {
 		
 		if (inAirlock(person)) {
 			if (PRESSURIZED.equals(getState())) {
-				if (person.isOutside()) {
-					
-					// Enter the vehicle from the surface of Mars
-//					person.enter(LocationCodeType.MOBILE_UNIT_4);
-					// Exit person to inside vehicle.
-					vehicle.getInventory().storeUnit(person);
-					LogConsolidated.log(Level.FINER, 0, sourceName, 
-							"[" + person.getLocationTag().getLocale() + "] "
-							+ person.getName() + " had just stepped inside rover " + vehicle.getName());
-				}
-				else if (person.isInSettlement()) {
-					LogConsolidated.log(Level.SEVERE, 0, sourceName, 
-							Msg.getString("VehicleAirlock.error.notOutside", person.getName(), getEntityName()));
-					//throw new IllegalStateException(Msg.getString("VehicleAirlock.error.notOutside",person.getName(),getEntityName())); //$NON-NLS-1$
-				}
+				// check if the airlock has been sealed from outside and pressurized, ready to 
+            	// open the inner door to release the person into the vehicle
+				stepIntoAirlock(person);
+				
 			}
 			else if (DEPRESSURIZED.equals(getState())) {
-				if (person.isInVehicle()) {
-					
-//					if (vehicle.getSettlement() == null) {
-//						// Exit the vehicle and land on the surface of Mars
-//						person.exit(LocationCodeType.MOBILE_UNIT_4);
-//					}
-//					else {
-//						// Exit the vehicle and enter the settlement vicinity
-//						person.exit(LocationCodeType.MOBILE_UNIT_3);
-//					}
+            	// check if the airlock has been de-pressurized, ready to open the outer door to 
+            	// get exposed to the outside air and release the person
+				stepIntoMarsSurface(person);
 
-					// Exit person outside vehicle.
-					vehicle.getInventory().retrieveUnit(person);
-					
-					LogConsolidated.log(Level.FINER, 0, sourceName, 
-							"[" + person.getLocationTag().getLocale() + "] "
-							+ person.getName() + " had just stepped outside rover " + vehicle.getName());
-				}
-				else if (person.isOutside()) {
-					LogConsolidated.log(Level.SEVERE, 0, sourceName, 
-							Msg.getString("VehicleAirlock.error.notInside", person.getName(), getEntityName()));
-					//throw new IllegalStateException(Msg.getString("VehicleAirlock.error.notInside",person.getName(),getEntityName())); //$NON-NLS-1$
-				}
 			}
 			else {
 				logger.severe(Msg.getString("VehicleAirlock.error.badState",getState())); //$NON-NLS-1$
@@ -137,6 +110,68 @@ extends Airlock {
 		}
 	}
 
+	   /**
+     * Steps back into an airlock of a settlement
+     * 
+     * @param person
+     */
+    public void stepIntoAirlock(Person person) {
+    	if (person.isOutside()) {
+			
+    		// 1.1 Gets the EVA suit reference the person used to don on
+			EVASuit suit = (EVASuit) person.getContainerUnit(); 
+			if (suit == null) suit = person.getSuit();
+			// 1.2 Retrieve the suit from the surface of Mars
+			Simulation.instance().getMars().getMarsSurface().getInventory().retrieveUnit(suit);
+			// 1.3 Retrieve the person from the suitInv
+            suit.getInventory().retrieveUnit(person);
+			// 1.4 store the person into the vehicle inventory
+            vehicle.getInventory().storeUnit(person);
+			// 1.5 Store the suit on the person
+			person.getInventory().storeUnit(suit);
+    						
+			LogConsolidated.log(Level.FINER, 0, sourceName, 
+					"[" + person.getLocationTag().getLocale() + "] "
+					+ person.getName() + " had just stepped inside rover " + vehicle.getName());
+		}
+		else if (person.isInSettlement()) {
+			LogConsolidated.log(Level.SEVERE, 0, sourceName, 
+					Msg.getString("VehicleAirlock.error.notOutside", person.getName(), getEntityName()));
+			//throw new IllegalStateException(Msg.getString("VehicleAirlock.error.notOutside",person.getName(),getEntityName())); //$NON-NLS-1$
+		}
+    }
+    
+    /**
+     * Gets outside of the airlock and step into the surface of Mars
+     * 
+     * @param person
+     */
+    public void stepIntoMarsSurface(Person person) {
+		if (person.isInVehicle()) {
+
+			// 5.1 Gets the EVA suit reference the person has already donned on
+			EVASuit suit = (EVASuit) person.getInventory().findUnitOfClass(EVASuit.class); //person.getSuit();
+			// 5.2 Retrieve the suit from the person
+			person.getInventory().retrieveUnit(suit);
+			// 5.3 retrieve the person from the entityInv
+			vehicle.getInventory().retrieveUnit(person);
+			// 5.5 store the person into the EVA suit inventory (as the person dons the suit)
+			suit.getInventory().storeUnit(person);
+			// 5.6 Store the suit on the surface of Mars
+			Simulation.instance().getMars().getMarsSurface().getInventory().storeUnit(suit);
+			
+			LogConsolidated.log(Level.FINER, 0, sourceName, 
+					"[" + person.getLocationTag().getLocale() + "] "
+					+ person.getName() + " had just stepped outside rover " + vehicle.getName());
+		}
+		else if (person.isOutside()) {
+			LogConsolidated.log(Level.SEVERE, 0, sourceName, 
+					Msg.getString("VehicleAirlock.error.notInside", person.getName(), getEntityName()));
+			//throw new IllegalStateException(Msg.getString("VehicleAirlock.error.notInside",person.getName(),getEntityName())); //$NON-NLS-1$
+		}
+    }
+    
+    
 	/**
 	 * Gets the name of the entity this airlock is attached to.
 	 * @return name {@link String}

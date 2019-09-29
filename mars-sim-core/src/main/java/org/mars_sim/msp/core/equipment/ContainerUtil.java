@@ -15,7 +15,7 @@ import org.mars_sim.msp.core.resource.ResourceUtil;
  */
 public final class ContainerUtil {
 
-	private static final Coordinates coordinates = new Coordinates(0D, 0D);
+	private static final Coordinates tempCoordinates = new Coordinates(0D, 0D);
 
 	/**
 	 * Private constructor for utility class.
@@ -161,7 +161,7 @@ public final class ContainerUtil {
 
 		// Note : not an inefficient way of finding the phase type of a container
 		Class<? extends Equipment> equipmentClass = (Class<? extends Equipment>) containerClass;
-		Container container = (Container) EquipmentFactory.createEquipment(equipmentClass, coordinates, true);
+		Container container = (Container) EquipmentFactory.createEquipment(equipmentClass, tempCoordinates, true);
 		if (container != null) {
 			result = container.getContainingResourcePhase();
 		}

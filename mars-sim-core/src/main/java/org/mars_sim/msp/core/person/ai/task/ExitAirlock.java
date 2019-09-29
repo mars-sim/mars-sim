@@ -158,15 +158,22 @@ public class ExitAirlock extends Task implements Serializable {
 
 			// Get an EVA suit from entity inventory.
 			if (!hasSuit) {
-				Inventory inv = airlock.getEntityInventory();
-				EVASuit suit = getGoodEVASuit(inv, person);
+				Inventory entityInv = airlock.getEntityInventory();
+				EVASuit suit = getGoodEVASuit(entityInv, person);
 				if (suit != null) {
 					// logger.info(person + " found an EVA suit.");
 					try {
-						inv.retrieveUnit(suit);
+						// 1.1 retrieve the EVA suit from the entityInv
+						entityInv.retrieveUnit(suit);
+						// 1.2 store it under the person's inventory
 						person.getInventory().storeUnit(suit);
+						// 1.3 set the person as the owner
 						suit.setLastOwner(person);
+						// 1.4 register the suit the person will take into the airlock to don
+						person.registerSuit(suit);
+						// 1.5 Loads the resources into the EVA suit
 						loadEVASuit(suit);
+						// the person has a EVA suit
 						hasSuit = true;
 						// logger.info(person + " grabbed an EVA suit.");
 					} catch (Exception e) {
@@ -326,7 +333,7 @@ public class ExitAirlock extends Task implements Serializable {
 						boolean activationSuccessful = airlock.addCycleTime(activationTime);
 						if (!activationSuccessful) {
 							LogConsolidated.log(Level.WARNING, 0, sourceName, "[" + person.getSettlement() + "] "
-									+ person.getName() + " has problems with airlock activation.");
+									+ person.getName() + " had problems with airlock activation.");
 						}
 					} else {
 						// If person is not airlock operator, just wait.
@@ -344,7 +351,7 @@ public class ExitAirlock extends Task implements Serializable {
 								insideAirlockPos.getX(), insideAirlockPos.getY());
 						// logger.finer(person + " walking to inside airlock position, distance: " +
 						// distance);
-						logger.finer(person + " is walking toward an airlock within a distance of " + distance);
+						logger.finer(person + " was walking toward an airlock within a distance of " + distance);
 						Building airlockBuilding = (Building) airlock.getEntity();
 						addSubTask(new WalkSettlementInterior(person, airlockBuilding, insideAirlockPos.getX(),
 								insideAirlockPos.getY()));
@@ -366,7 +373,7 @@ public class ExitAirlock extends Task implements Serializable {
 	}
 
 	/**
-	 * Performs the waiting inside airlock phase of the task.
+	 * Performs the waiting and donning of the EVA suit while inside the airlock.
 	 * 
 	 * @param time the amount of time to perform the task phase.
 	 * @return the remaining time after performing the task phase.
@@ -378,7 +385,14 @@ public class ExitAirlock extends Task implements Serializable {
 		if (person != null) {
 
 			if (airlock.inAirlock(person)) {
-	
+				
+				// TODO: how to account for the speed of donning an EVA suit
+				
+				// 4.1 find the EVA suit from a person's inventory
+//				EVASuit suit = (EVASuit) person.getInventory().findUnitOfClass(EVASuit.class);
+				// 4.2 register the suit the person dons
+//				person.registerSuit(suit);
+				
 				// Check if person is the airlock operator.
 				if (person.equals(airlock.getOperator())) {
 	
@@ -412,7 +426,7 @@ public class ExitAirlock extends Task implements Serializable {
 							" was not the operator and waiting inside an airlock for the completion of the air cycle.");
 					remainingTime = 0D;
 				}
-			} 
+			}
 			
 			else {
 //				LogConsolidated.log(Level.FINER, 0, sourceName, 
@@ -420,6 +434,7 @@ public class ExitAirlock extends Task implements Serializable {
 //						+ " was in " + person.getLocationTag().getImmediateLocation()
 //						+ " and was thus no longer inside the airlock.");
 				
+
 				setPhase(EXITING_AIRLOCK);
 			}
 		}
@@ -504,7 +519,7 @@ public class ExitAirlock extends Task implements Serializable {
 	}
 
 	/**
-	 * Checks if a person can exit an airlock on an EVA.
+	 * Checks if a person can exit an airlock to do an EVA.
 	 * 
 	 * @param person  the person exiting
 	 * @param airlock the airlock to be used
@@ -580,6 +595,16 @@ public class ExitAirlock extends Task implements Serializable {
 				// Repair this EVASuit by himself/herself
 //				person.getMind().getTaskManager().addTask(new RepairMalfunction(person));
 				
+				EVASuit suit = (EVASuit) person.getInventory().findUnitOfClass(EVASuit.class);
+				
+				// Check if suit has any malfunctions.
+				if (suit != null && suit.getMalfunctionManager().hasMalfunction()) {
+					
+					LogConsolidated.log(Level.INFO, 20_000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
+							+ person.getName() + " would have to end " + person.getTaskDescription() + " since " 
+							+ suit.getName() + " has malfunctions and not usable.");
+				}
+				
 //				if (airlock.getCheckEVASuit() > 21) {
 //					// Repair this EVASuit by himself/herself
 ////					person.getMind().getTaskManager().addTask(new RepairMalfunction(person));
@@ -637,7 +662,7 @@ public class ExitAirlock extends Task implements Serializable {
 					if (suit != null && suit.getMalfunctionManager().hasMalfunction()) {
 						
 						LogConsolidated.log(Level.INFO, 20_000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
-								+ person.getName() + " ended " + person.getTaskDescription() + " since " 
+								+ person.getName() + " would have to end " + person.getTaskDescription() + " since " 
 								+ suit.getName() + " has malfunctions and not usable.");
 					}
 					

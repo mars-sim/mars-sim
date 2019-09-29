@@ -7,6 +7,7 @@
 
 package org.mars_sim.msp.core.equipment;
 
+import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.location.LocationSituation;
@@ -19,6 +20,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.Maintenance;
 import org.mars_sim.msp.core.person.ai.task.Repair;
 import org.mars_sim.msp.core.person.ai.taskUtil.Task;
+import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -93,16 +95,9 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 		// Add this equipment to the equipment lookup map		
 		unitManager.addEquipmentID(this);
 		
-		// For passing maven test
-		// Initially set container unit to the mars surface
-//		setContainerUnit(marsSurface);
-		
-//		// Place this person within a settlement
-//		enter(LocationCodeType.SETTLEMENT);
-//		// Place this person within a building
-//		enter(LocationCodeType.BUILDING);
-
-		
+		// Set its container unit
+		if (!(this instanceof Robot))
+			super.setContainerUnit(CollectionUtils.findSettlement(location));
 	}
 	
 	/**
@@ -265,8 +260,8 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	 * 
 	 * @return true if yes
 	 */
-	public boolean isOnPerson() {
-		if (LocationStateType.ON_A_PERSON == currentStateType)
+	public boolean isCarriedByAPerson() {
+		if (LocationStateType.ON_A_PERSON_OR_ROBOT == currentStateType)
 			return true;
 		
 		return false;	
@@ -275,13 +270,25 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 //		return false;
 	}
 
+	/**
+	 * Sets the last owner of this equipment
+	 * 
+	 * @param unit
+	 */
 	public void setLastOwner(Unit unit) {
-		if (unit != null)
-			lastOwner = unit.getIdentifier();
+		if (unit != null) {
+			 if (unit.getIdentifier() != lastOwner)
+				 lastOwner = unit.getIdentifier();
+		}	
 		else
-			lastOwner = -1;
+			lastOwner = Unit.UNKNOWN_ID;
 	}
 
+	/**
+	 * Gets the last owner of this equipment
+	 * 
+	 * @return
+	 */
 	public Unit getLastOwner() {
 		return unitManager.getPersonByID(lastOwner);
 	}

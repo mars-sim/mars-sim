@@ -1663,7 +1663,7 @@ public class Inventory implements Serializable {
 		}
 
 		if (retrieved) {
-            unit.setContainerUnit(null);
+            unit.setContainerUnit(null);// newOwner); //owner.getContainerUnit());
 		}
 
 		else {

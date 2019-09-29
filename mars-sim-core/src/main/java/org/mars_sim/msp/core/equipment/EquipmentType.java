@@ -23,7 +23,7 @@ public enum EquipmentType {
 	EVA_SUIT			(Msg.getString("EquipmentType.EVASuit")), //$NON-NLS-1$ 
 	GAS_CANISTER		(Msg.getString("EquipmentType.gasCanister")), //$NON-NLS-1$
 	LARGE_BAG			(Msg.getString("EquipmentType.largeBag")), //$NON-NLS-1$
-	SPECIMEN_CONTAINER	(Msg.getString("EquipmentType.specimenBox")); //$NON-NLS-1$
+	SPECIMEN_BOX		(Msg.getString("EquipmentType.specimenBox")); //$NON-NLS-1$
 
 	private String name;	
 
@@ -89,7 +89,7 @@ public enum EquipmentType {
 		else if (EVASuit.class.equals(equipmentClass)) return EVA_SUIT.ordinal() + ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID;
 		else if (GasCanister.class.equals(equipmentClass)) return GAS_CANISTER.ordinal() + ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID;
         else if (LargeBag.class.equals(equipmentClass)) return LARGE_BAG.ordinal() + ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID;
-		else if (SpecimenContainer.class.equals(equipmentClass)) return SPECIMEN_CONTAINER.ordinal() + ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID;
+		else if (SpecimenBox.class.equals(equipmentClass)) return SPECIMEN_BOX.ordinal() + ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID;
 		else return -1;
 	}
 	

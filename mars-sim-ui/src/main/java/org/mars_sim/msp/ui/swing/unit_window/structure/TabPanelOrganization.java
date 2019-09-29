@@ -27,10 +27,12 @@ import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.UIManager;
+import javax.swing.event.TreeSelectionEvent;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
@@ -166,7 +168,10 @@ public class TabPanelOrganization extends TabPanel {
 
 		tree = new JTree(root);
 		tree.setVisibleRowCount(8);
-		
+		tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+		//Listen for when the selection changes.
+//	    tree.addTreeSelectionListener(new MyTreeModelListener());
+	    
 		// Use treeSearchable
 		TreeSearchable searchable = SearchableUtils.installSearchable(tree);
 		searchable.setPopupTimeout(5000);
@@ -181,6 +186,37 @@ public class TabPanelOrganization extends TabPanel {
 		buildTreeNodes();
 		
 		initNodes();
+	}
+	
+//	ImageIcon leafIcon = createImageIcon("images/middle.gif");
+//	if (leafIcon != null) {
+//	    DefaultTreeCellRenderer renderer = 
+//	        new DefaultTreeCellRenderer();
+//	    renderer.setLeafIcon(leafIcon);
+//	    tree.setCellRenderer(renderer);
+//	}
+	
+	/**
+	 * Track tree changes
+	 * 
+	 * @param e TreeSelectionEvent
+	 */
+	public void valueChanged(TreeSelectionEvent e) {
+		//Returns the last path element of the selection.
+		// This method is useful only when the selection model allows a single selection.
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode)
+		                       tree.getLastSelectedPathComponent();
+
+	    if (node == null)
+	    //Nothing is selected.     
+	    return;
+
+	    Object nodeInfo = node.getUserObject();
+	    if (node.isLeaf()) {
+	        ;
+	    } else {
+	       ; 
+	    }
 	}
 	
 	public void initNodes() {

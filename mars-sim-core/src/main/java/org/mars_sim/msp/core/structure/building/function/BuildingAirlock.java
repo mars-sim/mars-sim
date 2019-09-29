@@ -14,6 +14,8 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LogConsolidated;
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Airlock;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -79,88 +81,14 @@ public class BuildingAirlock extends Airlock {
             if (PRESSURIZED.equals(getState())) {
             	// check if the airlock has been sealed from outside and pressurized, ready to 
             	// open the inner door to release the person into the settlement
-            	LogConsolidated.log(Level.FINER, 0, sourceName,
-    	  				"[" + person.getLocationTag().getLocale() 
-    	  				+ "] The airlock had been pressurized and is ready to open the inner door to release " + person + ".");
-            	
-                if (person.isOutside()) {
-                	
-        			LogConsolidated.log(Level.FINER, 0, sourceName,
-        	  				"[" + person.getLocationTag().getLocale() + "] "
-        					+ person + " was about to leave the airlock in " + building + " to go inside " 
-                			+ building.getBuildingManager().getSettlement()
-                			+ ".");
-        			
-                    // Pump air into the airlock to make it breathable
-        			building.getSettlement().getCompositionOfAir().releaseOrRecaptureAir(building.getInhabitableID(), true, building);
-
-                    // Enter a settlement
-//                  person.enter(LocationCodeType.SETTLEMENT);               
-                    // Put the person into the settlement
-                    building.getInventory().storeUnit(person);
-                    BuildingManager.addPersonOrRobotToBuilding(person, building);
-                    
-           			LogConsolidated.log(Level.FINER, 0, sourceName,
-        	  				"[" + person.getLocationTag().getLocale() + "] "
-        					+ person + " had just exited the airlock at " + building + " and went inside " 
-                			+ building.getSettlement()
-                			+ ".");
-
-                }
-                
-                else {
-                	//if (LocationSituation.BURIED != person.getLocationSituation()) {
-//                    throw new IllegalStateException(person + " was in " + person.getLocationTag().getImmediateLocation() + " and entering " + getEntityName() +
-//                            " from an airlock but not from outside.");
-                  	LogConsolidated.log(Level.SEVERE, 0, sourceName,		
-                  		person +  " was supposed to be entering " + getEntityName() +
-                          "'s airlock but now alraedy in " + person.getLocationTag().getImmediateLocation());
-                }
+            	stepIntoAirlock(person);
+  
             }
             
-            else if (DEPRESSURIZED.equals(getState())) { 
-            	// check if the airlock has been depressurized, ready to open the outer door to 
+            else if (DEPRESSURIZED.equals(getState())) {
+            	// check if the airlock has been de-pressurized, ready to open the outer door to 
             	// get exposed to the outside air and release the person
-            	LogConsolidated.log(Level.FINER, 0, sourceName,
-    	  				"[" + person.getLocationTag().getLocale() 
-    	  				+ "] The airlock had been depressurized and is ready to open the outer door to release " + person + ".");
-            	
-            	if (person.isInSettlement()) {
-          			LogConsolidated.log(Level.FINER, 0, sourceName,
-        	  				"[" + person.getLocationTag().getLocale() + "] "
-        					+ person
-                			+ " was about to leave the airlock at " + building + " in " 
-                			+ building.getSettlement()
-                			+ " to step outside.");
-          					
-                    // Upon depressurization, there is heat loss to the Martian air in Heating class
-          			building.getThermalGeneration().getHeating().flagHeatLostViaAirlockOuterDoor(true);
-                    			
-                    // Recapture air from the airlock before depressurizing it
-        			building.getSettlement().getCompositionOfAir().releaseOrRecaptureAir(building.getInhabitableID(), false, building);
-                    
-                    // Exit the settlement into its vicinity
-//                    person.exit(LocationCodeType.SETTLEMENT);
-                    // Take the person out of the settlement
-                    building.getInventory().retrieveUnit(person);
-                    BuildingManager.removePersonOrRobotFromBuilding(person, building);
-                                     
-          			LogConsolidated.log(Level.FINER, 0, sourceName,
-        	  				"[" + person.getLocationTag().getLocale() + "] "
-        					+ person
-                			+ " had just left the airlock at " + building + " in " 
-                			+ building.getSettlement()
-                			+ " and stepped outside.");
-          			
-                }
-            	
-                else {
-                	//if (LocationSituation.BURIED != person.getLocationSituation()) {
-//                    throw new IllegalStateException(
-                    	LogConsolidated.log(Level.SEVERE, 0, sourceName,		
-                    		person +  " was supposed to be exiting " + getEntityName() +
-                            "'s airlock but now alraedy in " + person.getLocationTag().getImmediateLocation());
-                }
+            	stepIntoMarsSurface(person);
             }
             else {
                 logger.severe("Building airlock in incorrect state for exiting: " + getState());
@@ -171,7 +99,115 @@ public class BuildingAirlock extends Airlock {
         }
     }
 
+    /**
+     * Steps back into an airlock of a settlement
+     * 
+     * @param person
+     */
+    public void stepIntoAirlock(Person person) {
+      	LogConsolidated.log(Level.FINER, 0, sourceName,
+	  				"[" + person.getLocationTag().getLocale() 
+	  				+ "] The airlock had been pressurized and is ready to open the inner door to release " + person + ".");
+        	
+        if (person.isOutside()) {
+        	
+			LogConsolidated.log(Level.FINER, 0, sourceName,
+	  				"[" + person.getLocationTag().getLocale() + "] "
+					+ person + " was about to leave the airlock in " + building + " to go inside " 
+        			+ building.getBuildingManager().getSettlement()
+        			+ ".");
+			
+            // Pump air into the airlock to make it breathable
+			building.getSettlement().getCompositionOfAir().releaseOrRecaptureAir(building.getInhabitableID(), true, building);
+
+			
+			// 1.1 Gets the EVA suit reference the person used to don on
+			EVASuit suit = (EVASuit) person.getContainerUnit(); 
+			if (suit == null) suit = person.getSuit();
+			// 1.2 Retrieve the suit from the surface of Mars
+			Simulation.instance().getMars().getMarsSurface().getInventory().retrieveUnit(suit);
+			// 1.3 Retrieve the person from the suitInv
+            suit.getInventory().retrieveUnit(person);
+			// 1.4 store the person into the building inventory
+            building.getInventory().storeUnit(person);
+            // 1.5 Add the person from the building
+            BuildingManager.addPersonOrRobotToBuilding(person, building);
+			// 1.6 Store the suit on the person
+			person.getInventory().storeUnit(suit);
+            
+   			LogConsolidated.log(Level.FINER, 0, sourceName,
+	  				"[" + person.getLocationTag().getLocale() + "] "
+					+ person + " had just exited the airlock at " + building + " and went inside " 
+        			+ building.getSettlement()
+        			+ ".");
+        }
+        
+        else {
+        	//if (LocationSituation.BURIED != person.getLocationSituation()) {
+//                throw new IllegalStateException(person + " was in " + person.getLocationTag().getImmediateLocation() + " and entering " + getEntityName() +
+//                        " from an airlock but not from outside.");
+          	LogConsolidated.log(Level.SEVERE, 0, sourceName,		
+          		person +  " was supposed to be entering " + getEntityName() +
+                  "'s airlock but now alraedy in " + person.getLocationTag().getImmediateLocation());
+        }
+    }
  
+    /**
+     * Gets outside of the airlock and step into the surface of Mars
+     * 
+     * @param person
+     */
+    public void stepIntoMarsSurface(Person person) {
+    	LogConsolidated.log(Level.FINER, 0, sourceName,
+  				"[" + person.getLocationTag().getLocale() 
+  				+ "] The airlock had been depressurized and is ready to open the outer door to release " + person + ".");
+    	
+    	if (person.isInSettlement()) {
+  			LogConsolidated.log(Level.FINER, 0, sourceName,
+	  				"[" + person.getLocationTag().getLocale() + "] "
+					+ person
+        			+ " was about to leave the airlock at " + building + " in " 
+        			+ building.getSettlement()
+        			+ " to step outside.");
+  					
+            // Upon depressurization, there is heat loss to the Martian air in Heating class
+  			building.getThermalGeneration().getHeating().flagHeatLostViaAirlockOuterDoor(true);
+            			
+            // Recapture air from the airlock before depressurizing it
+			building.getSettlement().getCompositionOfAir().releaseOrRecaptureAir(building.getInhabitableID(), false, building);
+            
+			// 5.1 Gets the EVA suit reference the person has already donned on
+			EVASuit suit = (EVASuit) person.getInventory().findUnitOfClass(EVASuit.class); //person.getSuit();
+			// 5.2 Retrieve the suit from the person
+			person.getInventory().retrieveUnit(suit);
+			// 5.3 retrieve the person from the entityInv
+            building.getInventory().retrieveUnit(person);
+            // 5.4 Remove the person from the building
+            BuildingManager.removePersonOrRobotFromBuilding(person, building);
+			// 5.5 store the person into the EVA suit inventory (as the person dons the suit)
+			suit.getInventory().storeUnit(person);
+			// 5.6 Store the suit on the surface of Mars
+			Simulation.instance().getMars().getMarsSurface().getInventory().storeUnit(suit);
+
+                             
+  			LogConsolidated.log(Level.FINER, 0, sourceName,
+	  				"[" + person.getLocationTag().getLocale() + "] "
+					+ person
+        			+ " had just left the airlock at " + building + " in " 
+        			+ building.getSettlement()
+        			+ " and stepped outside.");
+  			
+        }
+    	
+        else {
+        	//if (LocationSituation.BURIED != person.getLocationSituation()) {
+//            throw new IllegalStateException(
+            	LogConsolidated.log(Level.SEVERE, 0, sourceName,		
+            		person +  " was supposed to be exiting " + getEntityName() +
+                    "'s airlock but now alraedy in " + person.getLocationTag().getImmediateLocation());
+        }
+    }
+    
     @Override
     public String getEntityName() {
         return building.getNickName() + " in " + building.getSettlement().getName();

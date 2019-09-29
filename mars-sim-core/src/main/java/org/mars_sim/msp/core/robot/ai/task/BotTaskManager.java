@@ -10,8 +10,10 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.person.ai.task.Walk;
@@ -24,6 +26,7 @@ import org.mars_sim.msp.core.robot.SystemCondition;
 import org.mars_sim.msp.core.robot.ai.BotMind;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -42,29 +45,34 @@ implements Serializable {
 
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(BotTaskManager.class.getName());
-
+	
+	private static String loggerName = logger.getName();
+	
+	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+	
 	// Data members
-    /** The cache for msol */     
+    /** The cache for msol. */     
  	private double msolCache = -1D;
-	// Cache variables.
+	/** The cache for total probability. */
 	private transient double totalProbCache;
-	
+	/** The cache for task description phase. */		
 	private String taskDescriptionCache = "";
-	
+	/** The cache for task phase. */	
 	private String taskPhaseCache = "";
 	/** The current task the robot is doing. */
 	private Task currentTask; 
 	/** The mind of the robot. */
 	private BotMind botMind;
-
+	/** The robot instance. */
 	private Robot robot = null;
-	
-	private transient MarsClock timeCache;
-	
+	/** The MarsClock instance. */	
 	private MarsClock marsClock;
-	
+	/** The MasterClock static instance. */	
+	private static MasterClock masterClock = Simulation.instance().getMasterClock();
+	/** The cache map for the task probability. */		
 	private transient Map<MetaTask, Double> taskProbCache;
 
+	
 	/**
 	 * Constructor.
 	 * @param botMind the mind that uses this bot task manager.
@@ -77,13 +85,11 @@ implements Serializable {
 
 		currentTask = null;
 
-		// Initialize cache values.
-		timeCache = null;
 		taskProbCache = new HashMap<MetaTask, Double>(MetaTaskUtil.getRobotMetaTasks().size());
 		totalProbCache = 0D;
 	
-		if (Simulation.instance().getMasterClock() != null) // use this check to pass maven test
-			marsClock = Simulation.instance().getMasterClock().getMarsClock(); 
+		if (masterClock != null) // use this check to pass maven test
+			marsClock = masterClock.getMarsClock(); 
 	}
 	
 	/**
@@ -421,6 +427,8 @@ implements Serializable {
 	 */
 	public Task getNewTask() {
 		Task result = null;
+		MetaTask selectedMetaTask = null;
+
 		// If cache is not current, calculate the probabilities.
 		if (!useCache()) {
 			calculateProbability();
@@ -429,36 +437,41 @@ implements Serializable {
 		double totalProbability = getTotalTaskProbability(true);
 
 		if (totalProbability == 0D) {
-			throw new IllegalStateException(botMind.getRobot() +
-						" has zero total task probability weight.");
-		}
+//			LogConsolidated.log(Level.SEVERE, 5_000, sourceName,
+//			person.getName() + " has zero total task probability weight.");
 
-		double r = RandomUtil.getRandomDouble(totalProbability);
+			// Switch to loading non-work hour meta tasks since
+			// leisure tasks are NOT based on needs
+			List<MetaTask> list = MetaTaskUtil.getNonWorkHourMetaTasks();
+			selectedMetaTask = list.get(RandomUtil.getRandomInt(list.size() - 1));
+			
+		} else {
 
-		MetaTask selectedMetaTask = null;
-		//System.out.println("size of metaTask : " + taskProbCache.size());
-		// Determine which task is selected.
-		for (MetaTask mt : taskProbCache.keySet()) {
-			double probWeight = taskProbCache.get(mt);
-			if (r <= probWeight) {
-				// Select this task
-				selectedMetaTask = mt;
-			}
-			else {
-				r -= probWeight;
+			double r = RandomUtil.getRandomDouble(totalProbability);
+
+			// Determine which task is selected.
+			for (MetaTask mt : taskProbCache.keySet()) {
+				double probWeight = taskProbCache.get(mt);
+				if (r <= probWeight) {
+					// Select this task
+					selectedMetaTask = mt;
+				} else {
+					r -= probWeight;
+				}
 			}
 		}
 		
 		if (selectedMetaTask == null) {
-			throw new IllegalStateException(botMind.getRobot() +
-							" could not determine a new task.");
-
-		} 
-		else {
-				result = selectedMetaTask.constructInstance(botMind.getRobot());
+			LogConsolidated.log(Level.SEVERE, 5_000, sourceName, robot.getName() + " could not determine a new task.");
+		} else {
+			// Call constructInstance of the selected Meta Task to commence the ai task
+			result = selectedMetaTask.constructInstance(botMind.getRobot());
+//			LogConsolidated.log(Level.FINE, 5_000, sourceName, robot + " is going to " + selectedMetaTask.getName());
 		}
+
 		// Clear time cache.
-		timeCache = null;
+		msolCache = -1;
+
 		return result;
 	}
 
@@ -479,20 +492,7 @@ implements Serializable {
 	 */
 	private void calculateProbability() {
 
-//    	if (marsClock == null) {
-//    		marsClock = Simulation.instance().getMasterClock().getMarsClock();
-//    	}
-    	
-	    if (timeCache == null) {
-	    	timeCache = Simulation.instance().getMasterClock().getMarsClock();
-	    	marsClock = timeCache;
-	    }
-	    
-	    
-	    double msol1 = marsClock.getMillisolOneDecimal();
-	    
-	    if (msolCache != msol1) {
-	    	msolCache = msol1;
+		if (!useCache()) {
 		    	
 			List<MetaTask> mtList = MetaTaskUtil.getRobotMetaTasks();
 	
@@ -516,11 +516,6 @@ implements Serializable {
 								" probability: " + probability);
 				}
 			}
-	
-			// Set the time cache to the current time.
-			//if (marsClock != null)
-			//	marsClock = Simulation.instance().getMasterClock().getMarsClock();
-			timeCache = (MarsClock) marsClock.clone();
 	    }
 	}
 
@@ -529,9 +524,13 @@ implements Serializable {
 	 * @return true if cache should be used.
 	 */
 	private boolean useCache() {
-		//MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
-		//return currentTime.equals(timeCache);
-		return marsClock.equals(timeCache);
+		double msol = marsClock.getMillisolOneDecimal();
+		int diff = Double.compare(msolCache, msol);
+		if (diff > 0 || diff < 0) {
+			msolCache = msol;
+			return false;
+		}
+		return true;
 	}
 
 	/**
@@ -543,7 +542,6 @@ implements Serializable {
 		}
 		botMind = null;
 		robot = null;
-		timeCache = null;
 		marsClock = null;
 		if (taskProbCache != null) {
 			taskProbCache.clear();

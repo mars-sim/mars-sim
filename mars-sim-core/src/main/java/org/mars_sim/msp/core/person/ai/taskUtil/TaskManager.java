@@ -21,7 +21,6 @@ import org.mars_sim.msp.core.person.CircadianClock;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ShiftType;
-import org.mars_sim.msp.core.person.TaskSchedule;
 import org.mars_sim.msp.core.person.ai.Mind;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.task.EatMeal;
@@ -60,7 +59,7 @@ public class TaskManager implements Serializable {
 	private static final int MAX_TASK_PROBABILITY = 3000;
 
 	// Data members
-	/** The cache for msolInt */
+	/** The cache for msol */
 	private double msolCache = -1.0;
 
 	private double totalProbCache;
@@ -580,7 +579,6 @@ public class TaskManager implements Serializable {
 		double totalProbability = getTotalTaskProbability(true);
 
 		if (totalProbability == 0D) {
-//			throw new IllegalStateException(mind.getPerson() + " has zero total task probability weight.");
 //			LogConsolidated.log(Level.SEVERE, 5_000, sourceName,
 //					person.getName() + " has zero total task probability weight.");
 
@@ -606,12 +604,11 @@ public class TaskManager implements Serializable {
 		}
 
 		if (selectedMetaTask == null) {
-//			throw new IllegalStateException(mind.getPerson() + " could not determine a new task.");
 			LogConsolidated.log(Level.SEVERE, 5_000, sourceName, person.getName() + " could not determine a new task.");
 		} else {
 			// Call constructInstance of the selected Meta Task to commence the ai task
 			result = selectedMetaTask.constructInstance(mind.getPerson());
-//			System.out.println(person + " is going to " + selectedMetaTask.getName());
+//			LogConsolidated.log(Level.FINE, 5_000, sourceName, person + " is going to " + selectedMetaTask.getName());
 		}
 
 		// Clear time cache.
@@ -644,11 +641,7 @@ public class TaskManager implements Serializable {
 	 */
 	private void calculateProbability() {
 
-		double msol1 = marsClock.getMillisolOneDecimal();
-
-		int diff = Double.compare(msolCache, msol1);
-		if (diff < 0 || diff > 0) {
-			msolCache = msol1;
+		if (!useCache()) {
 
 			int shift = 0;
 
@@ -728,8 +721,10 @@ public class TaskManager implements Serializable {
 	 * @return true if cache should be used.
 	 */
 	private boolean useCache() {
-		int retval = Double.compare(msolCache, marsClock.getMillisolOneDecimal());
-		if (retval > 0 || retval < 0) {
+		double msol = marsClock.getMillisolOneDecimal();
+		int diff = Double.compare(msolCache, msol);
+		if (diff > 0 || diff < 0) {
+			msolCache = msol;
 			return false;
 		}
 		return true;

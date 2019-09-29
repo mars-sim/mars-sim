@@ -25,6 +25,7 @@ import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
+import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.location.LocationSituation;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.mars.MarsSurface;
@@ -42,6 +43,7 @@ import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.ai.role.Role;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
+import org.mars_sim.msp.core.person.ai.taskUtil.TaskSchedule;
 import org.mars_sim.msp.core.person.health.MedicalAid;
 import org.mars_sim.msp.core.reportingAuthority.CNSAMissionControl;
 import org.mars_sim.msp.core.reportingAuthority.CSAMissionControl;
@@ -200,7 +202,8 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	private Building quarters;
 
 	private Building currentBuilding;
-
+	/** The EVA suit that the person has donned on. */
+	private EVASuit suit;
 	/** The person's achievement in scientific fields. */
 	private Map<ScienceType, Double> scientificAchievement;
 	/** The person's paternal chromosome. */
@@ -1901,32 +1904,32 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 //		unitManager = u;
 //	}
 
-	/**
-	 * Is this person outside on the surface of Mars
-	 * 
-	 * @return true if the person is outside
-	 */
-	public boolean isOutside() {
-		int id = getContainerID();
-		if (id == MARS_SURFACE_ID 
-				|| (id >= FIRST_EQUIPMENT_ID && id < UNKNOWN_ID))
-			return true;
-		
-		return false;
-	}
+//	/**
+//	 * Is this person outside on the surface of Mars
+//	 * 
+//	 * @return true if the person is outside
+//	 */
+//	public boolean isOutside() {
+//		int id = getContainerID();
+//		if (id == MARS_SURFACE_ID 
+//				|| (id >= FIRST_EQUIPMENT_ID && id != UNKNOWN_ID))
+//			return true;
+//		
+//		return false;
+//	}
 	
-	/**
-	 * has this person donned an EVA suit
-	 * 
-	 * @return true if the person has donned an EVA suit
-	 */
-	public boolean isOnEVASuit() {
-		int id = getContainerID();
-		if (id >= MARS_SURFACE_ID && id < UNKNOWN_ID)
-			return true;
-		
-		return false;
-	}
+//	/**
+//	 * has this person donned an EVA suit
+//	 * 
+//	 * @return true if the person has donned an EVA suit
+//	 */
+//	public boolean isOnEVASuit() {
+//		int id = getContainerID();
+//		if (id >= MARS_SURFACE_ID && id < UNKNOWN_ID)
+//			return true;
+//		
+//		return false;
+//	}
 	
 	/**
 	 * Randomly generate a list of training the person attended
@@ -1956,6 +1959,23 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 */
 	public List<TrainingType> getTrainings() {
 		return trainings;
+	}
+	
+	/**
+	 * Registers a particular EVA suit to the person
+	 * 
+	 * @param suit
+	 */
+	public void registerSuit(EVASuit suit) {
+		this.suit = suit;
+	}
+
+	/**
+	 * Gets the EVA suit the person has donned on
+	 * @return
+	 */
+	public EVASuit getSuit() {
+		return suit;
 	}
 	
 	

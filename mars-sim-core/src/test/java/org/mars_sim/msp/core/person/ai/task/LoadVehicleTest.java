@@ -16,7 +16,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.equipment.EquipmentType;
-import org.mars_sim.msp.core.equipment.SpecimenContainer;
+import org.mars_sim.msp.core.equipment.SpecimenBox;
 import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
@@ -152,7 +152,7 @@ extends TestCase {
 		
 		
 		for (int x = 0; x < 5; x++) {
-			settlementInv.storeUnit(new SpecimenContainer(settlement.getCoordinates()));
+			settlementInv.storeUnit(new SpecimenBox(settlement.getCoordinates()));
 		}
 
 		Map<Integer, Number> requiredResourcesMap = new HashMap<Integer, Number>();
@@ -165,7 +165,7 @@ extends TestCase {
 		Map<Integer, Number> optionalResourcesMap = new HashMap<Integer, Number>(0);
 
 		Map<Integer, Integer> requiredEquipmentMap = new HashMap<>();
-		requiredEquipmentMap.put(EquipmentType.convertName2ID(SpecimenContainer.TYPE), Integer.valueOf(5));
+		requiredEquipmentMap.put(EquipmentType.convertName2ID(SpecimenBox.TYPE), Integer.valueOf(5));
 
 		Map<Integer, Integer> optionalEquipmentMap = new HashMap<>(0);
 
@@ -173,7 +173,7 @@ extends TestCase {
 		        requiredEquipmentMap, optionalEquipmentMap);
 		loadVehicle.loadingPhase(10D);
 
-		assertEquals("Vehicle loaded correctly.", 5, vehicle.getInventory().findNumUnitsOfClass(SpecimenContainer.class));
+		assertEquals("Vehicle loaded correctly.", 5, vehicle.getInventory().findNumUnitsOfClass(SpecimenBox.class));
 	}
 
 //	/*
@@ -391,7 +391,7 @@ extends TestCase {
 		inv.storeItemResources(hammerID, 5);
 
 		for (int x = 0; x < 5; x++) {
-			inv.storeUnit(new SpecimenContainer(settlement.getCoordinates()));
+			inv.storeUnit(new SpecimenBox(settlement.getCoordinates()));
 		}
 
 		Map<Integer, Number> requiredResourcesMap = new HashMap<Integer, Number>();
@@ -404,7 +404,7 @@ extends TestCase {
 		Map<Integer, Number> optionalResourcesMap = new HashMap<Integer, Number>(0);
 
 		Map<Integer, Integer> requiredEquipmentMap = new HashMap<>();
-		requiredEquipmentMap.put(EquipmentType.convertName2ID(SpecimenContainer.TYPE), Integer.valueOf(5));
+		requiredEquipmentMap.put(EquipmentType.convertName2ID(SpecimenBox.TYPE), Integer.valueOf(5));
 
 		Map<Integer, Integer> optionalEquipmentMap = new HashMap<>(0);
 
@@ -433,7 +433,7 @@ extends TestCase {
 		inv.storeItemResources(hammerID, 5);
 
 		for (int x = 0; x < 5; x++) {
-			inv.storeUnit(new SpecimenContainer(settlement.getCoordinates()));
+			inv.storeUnit(new SpecimenBox(settlement.getCoordinates()));
 		}
 
 		Map<Integer, Number> requiredResourcesMap = new HashMap<Integer, Number>();
@@ -446,7 +446,7 @@ extends TestCase {
 		Map<Integer, Number> optionalResourcesMap = new HashMap<Integer, Number>(0);
 
 		Map<Integer, Integer> requiredEquipmentMap = new HashMap<>();
-		requiredEquipmentMap.put(EquipmentType.convertName2ID(SpecimenContainer.TYPE), Integer.valueOf(5));
+		requiredEquipmentMap.put(EquipmentType.convertName2ID(SpecimenBox.TYPE), Integer.valueOf(5));
 
 		Map<Integer, Integer> optionalEquipmentMap = new HashMap<>(0);
 
@@ -481,7 +481,7 @@ extends TestCase {
 		inv.storeAmountResource(methaneID, 100D, true);
 
 		for (int x = 0; x < 5; x++) {
-			inv.storeUnit(new SpecimenContainer(settlement.getCoordinates()));
+			inv.storeUnit(new SpecimenBox(settlement.getCoordinates()));
 		}
 
 		Map<Integer, Number> requiredResourcesMap = new HashMap<Integer, Number>();
@@ -494,7 +494,7 @@ extends TestCase {
 		Map<Integer, Number> optionalResourcesMap = new HashMap<Integer, Number>(0);
 
 		Map<Integer, Integer> requiredEquipmentMap = new HashMap<>();
-		requiredEquipmentMap.put(EquipmentType.convertName2ID(SpecimenContainer.TYPE), Integer.valueOf(5));
+		requiredEquipmentMap.put(EquipmentType.convertName2ID(SpecimenBox.TYPE), Integer.valueOf(5));
 
 		Map<Integer, Integer> optionalEquipmentMap = new HashMap<>(0);
 
@@ -540,7 +540,7 @@ extends TestCase {
 		Map<Integer, Number> optionalResourcesMap = new HashMap<Integer, Number>(0);
 
 		Map<Integer, Integer> requiredEquipmentMap = new HashMap<>();
-		requiredEquipmentMap.put(EquipmentType.convertName2ID(SpecimenContainer.TYPE), Integer.valueOf(5));
+		requiredEquipmentMap.put(EquipmentType.convertName2ID(SpecimenBox.TYPE), Integer.valueOf(5));
 
 		Map<Integer, Integer> optionalEquipmentMap = new HashMap<>(0);
 

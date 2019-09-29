@@ -348,7 +348,7 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 		if (container instanceof Person) {
 			Person person = (Person) container;
 			if (!person.getPhysicalCondition().isDead()) {
-				setLastOwner(person);
+//				setLastOwner(person);
 				malfunctionManager.activeTimePassing(time);	
 			}
 			

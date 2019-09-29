@@ -14,19 +14,21 @@ import org.mars_sim.msp.core.Msg;
  * 
  * @apiNote (1) : OUTSIDE_SETTLEMENT_VICINITY is the intermediate state between being INSIDE_SETTLEMENT (in a garage) and being OUTSIDE_ON_MARS.
  *
- * @apiNote (2) : OUTSIDE_SETTLEMENT_VICINITY can be used by a person only.
+ * @apiNote (2) : OUTSIDE_SETTLEMENT_VICINITY can be used by a person or a vehicle.
  *
- * @apiNote (3) : A vehicle may be in a garage inside a building or is parked at a settlement. 
- *	         In both cases, this vehicle is INSIDE_SETTLEMENT, not OUTSIDE_SETTLEMENT_VICINITY or OUTSIDE_ON_MARS.
+ * @apiNote (3) : If a vehicle may be in a garage inside a building, this vehicle is INSIDE_SETTLEMENT.
+ *                If a vehicle is parked right outside a settlement, this vehicle is OUTSIDE_SETTLEMENT_VICINITY.
  */
 public enum LocationStateType {
 
-	INSIDE_AIRLOCK					(Msg.getString("LocationStateType.insideAirlock")), //$NON-NLS-1$
+//	INSIDE_AIRLOCK					(Msg.getString("LocationStateType.insideAirlock")), //$NON-NLS-1$
 	INSIDE_SETTLEMENT				(Msg.getString("LocationStateType.insideSettlement")), //$NON-NLS-1$
 	INSIDE_VEHICLE					(Msg.getString("LocationStateType.insideVehicle")), //$NON-NLS-1$
-	ON_A_PERSON						(Msg.getString("LocationStateType.onAPerson")), //$NON-NLS-1$
+	ON_A_PERSON_OR_ROBOT			(Msg.getString("LocationStateType.onAPersonOrRobot")), //$NON-NLS-1$
+	INSIDE_EVASUIT					(Msg.getString("LocationStateType.insideEVASuit")), //$NON-NLS-1$
 	OUTSIDE_ON_MARS					(Msg.getString("LocationStateType.outsideOnMars")), //$NON-NLS-1$
-	OUTSIDE_SETTLEMENT_VICINITY		(Msg.getString("LocationStateType.settlementVincinity")) //$NON-NLS-1$
+	OUTSIDE_SETTLEMENT_VICINITY		(Msg.getString("LocationStateType.settlementVincinity")), //$NON-NLS-1$
+	UNKNOWN							(Msg.getString("LocationStateType.unknown")) //$NON-NLS-1$
 	;
 
 	// Note 0: OUTSIDE_SETTLEMENT_VICINITY is the intermediate state between being INSIDE_SETTLEMENT (in a garage) and being OUTSIDE_ON_MARS
@@ -39,7 +41,7 @@ public enum LocationStateType {
 	public static LocationStateType[] TYPES = new LocationStateType[]{
 			INSIDE_SETTLEMENT,
 			INSIDE_VEHICLE,
-			ON_A_PERSON,
+			ON_A_PERSON_OR_ROBOT,
 			OUTSIDE_ON_MARS,
 			OUTSIDE_SETTLEMENT_VICINITY
 	};

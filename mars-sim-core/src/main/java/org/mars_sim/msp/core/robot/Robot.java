@@ -13,6 +13,7 @@ import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
@@ -27,7 +28,6 @@ import org.mars_sim.msp.core.manufacture.SalvageProcessInfo;
 import org.mars_sim.msp.core.mars.MarsSurface;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ShiftType;
-import org.mars_sim.msp.core.person.TaskSchedule;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
@@ -35,6 +35,7 @@ import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.ai.task.Maintenance;
 import org.mars_sim.msp.core.person.ai.task.Repair;
 import org.mars_sim.msp.core.person.ai.taskUtil.Task;
+import org.mars_sim.msp.core.person.ai.taskUtil.TaskSchedule;
 import org.mars_sim.msp.core.person.health.MedicalAid;
 import org.mars_sim.msp.core.robot.ai.BotMind;
 import org.mars_sim.msp.core.science.ScienceType;
@@ -151,6 +152,9 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 		
 		this.identifier = getNextIdentifier();
 		unitManager.addRobotID(this);
+		
+		// Set its container unit
+		setContainerUnit(settlement);
 		
 //		// Place this person within a settlement
 //		enter(LocationCodeType.SETTLEMENT);
@@ -290,72 +294,6 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 	}
 	
 //	/**
-//	 * Create a string representing the birth time of the robot.
-//	 * 
-//	 * @return birth time string.
-//	 */
-//	private String createBirthTimeString() {
-//		StringBuilder s = new StringBuilder();
-//		// Set a birth time for the robot
-//		int year = EarthClock.getCurrentYear(earthClock);
-//		s.append(year);
-//
-//		int month = RandomUtil.getRandomInt(11) + 1;
-//		s.append("-");
-//		if (month < 10)
-//			s.append(0);
-//		s.append(month).append("-");
-//
-//		int day;
-//		if (month == 2) {
-//			if (((year % 4 == 0) && (year % 100 != 0)) || (year % 400 == 0)) {
-//				day = RandomUtil.getRandomInt(28) + 1;
-//			} else {
-//				day = RandomUtil.getRandomInt(27) + 1;
-//			}
-//		}
-//
-//		else if (month == 1 || month == 3 || month == 5 || month == 7 || month == 8 || month == 10 || month == 12) {
-//			day = RandomUtil.getRandomInt(30) + 1;
-//		} else {
-//			day = RandomUtil.getRandomInt(29) + 1;
-//		}
-//
-//		// TODO: find out why sometimes day = 0 as seen on
-//		if (day == 0) {
-//			logger.warning(name + "'s date of birth is on the day 0th. Incremementing to the 1st.");
-//			day = 1;
-//		}
-//
-//		if (day < 10)
-//			s.append(0);
-//		s.append(day).append(" ");
-//
-//		int hour = RandomUtil.getRandomInt(23);
-//		if (hour < 10)
-//			s.append(0);
-//		s.append(hour).append(":");
-//
-//		int minute = RandomUtil.getRandomInt(59);
-//		if (minute < 10)
-//			s.append(0);
-//		s.append(minute).append(":");
-//
-//		int second = RandomUtil.getRandomInt(59);
-//		if (second < 10)
-//			s.append(0);
-//		s.append(second).append(".000");
-//
-//		// return month + "/" + day + "/" + year + " " + hour + ":"
-//		// + minute + ":" + second;
-//
-//		// return year + "-" + monthString + "-" + day + " "
-//		// + hour + ":" + minute + ":" + second;
-//
-//		return s.toString();
-//	}
-
-//	/**
 //	 * Is the robot in a vehicle inside a garage
 //	 * 
 //	 * @return true if the robot is in a vehicle inside a garage
@@ -369,7 +307,6 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 //		}
 //		return false;
 //	}
-
 
 	/**
 	 * Is the robot outside of a settlement but within its vicinity
@@ -505,7 +442,7 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 		botMind.setInactive();
 		toBeSalvaged();
 		// if inoperable, set containerID to be ZERO 
-		setContainerUnit(marsSurface);
+//		setContainerUnit(marsSurface);
 	}
 
 	/**

@@ -11,7 +11,7 @@ import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LifeSupportInterface;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.equipment.SpecimenContainer;
+import org.mars_sim.msp.core.equipment.SpecimenBox;
 import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
@@ -72,7 +72,7 @@ extends TestCase {
 		vehicleInv.addGeneralCapacity(100D);
 		vehicleInv.storeItemResources(hammer.getID(), 5);
 		for (int x = 0; x < 5; x++) {
-			vehicleInv.storeUnit(new SpecimenContainer(settlement.getCoordinates()));
+			vehicleInv.storeUnit(new SpecimenBox(settlement.getCoordinates()));
 		}
 
 		BuildingManager buildingManager = settlement.getBuildingManager();

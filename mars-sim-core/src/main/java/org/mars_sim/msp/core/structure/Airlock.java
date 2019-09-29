@@ -319,8 +319,8 @@ public abstract class Airlock implements Serializable {
 	}
 	
 	/**
-	 * Deactivates the airlock and opens the appropriate door. Any people in the
-	 * airlock are transferred inside or outside the airlock.
+	 * Deactivates the airlock and opens the appropriate (inner/outer) door. 
+	 * Any people inside the airlock are to leave.
 	 * 
 	 * @return true if airlock was deactivated successfully.
 	 */
@@ -341,20 +341,8 @@ public abstract class Airlock implements Serializable {
 				return false;
 			}
 
-			Iterator<Person> i = occupants.iterator();
-			while (i.hasNext()) {
-				Person occupant = i.next();
-				if (occupant instanceof Person) {
-					Person person = (Person) occupant;
-					LogConsolidated.log(Level.FINER, 0, sourceName,
-							"[" + person.getLocationTag().getLocale() + "] " 
-						+ person.getName()
-						+ " reported that the airlock in " + getEntity() + " had been " + getState() 
-							+ ".");
-				}
-
-				exitAirlock(occupant);
-			}
+			// Occupants are to exit the airlock one by one
+			exitAirlock();
 
 			occupants.clear();
 
@@ -366,6 +354,27 @@ public abstract class Airlock implements Serializable {
 		return result;
 	}
 
+	/**
+	 * Occupants are to exit the airlock one by one
+	 */
+	public void exitAirlock() {
+		Iterator<Person> i = occupants.iterator();
+		while (i.hasNext()) {
+			Person occupant = i.next();
+			if (occupant instanceof Person) {
+				Person person = (Person) occupant;
+				LogConsolidated.log(Level.FINER, 0, sourceName,
+						"[" + person.getLocationTag().getLocale() + "] " 
+					+ person.getName()
+					+ " reported that the airlock in " + getEntity() + " had been " + getState() 
+						+ ".");
+			}
+
+			// Call BuildingAirlock's exitAirlock() to change the state of the his container unit, namely, the EVA suit
+			exitAirlock(occupant);
+		}
+	}
+	
 	/**
 	 * Causes a person within the airlock to exit either inside or outside.
 	 * 
