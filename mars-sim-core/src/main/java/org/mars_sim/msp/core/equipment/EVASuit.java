@@ -40,7 +40,7 @@ import org.mars_sim.msp.core.structure.building.function.SystemType;
  *     which is equal to the 20.7 kPa (160 Torr; 3.0 psi) partial pressure of oxygen 
  *     in the Earth's atmosphere at sea level, 
  * 
- * (B) plus 5.3 kPa (40 Torr; 0.77 psi) CO2 and 6.3 kPa (47 Torr; 0.91 psi) water vapor 
+ * (B) plus 5.31 kPa (40 Torr; 0.77 psi) CO2 and 6.28 kPa (47 Torr; 0.91 psi) water vapor 
  *     pressure, 
  *     
  * both of which must be subtracted from the alveolar pressure to get alveolar oxygen 
@@ -85,7 +85,7 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 	/** Water capacity (kg.). */
 	private static final double WATER_CAPACITY = 4D;
 	/** Typical O2 air pressure (Pa) inside EVA suit is set to be 20.7 kPa. */
-	private static final double NORMAL_AIR_PRESSURE = 20.7; // CompositionOfAir.SKYLAB_TOTAL_AIR_PRESSURE_kPA; // 101325D;
+	private static final double NORMAL_AIR_PRESSURE = 17;// 20.7; // CompositionOfAir.SKYLAB_TOTAL_AIR_PRESSURE_kPA; // 101325D;
 	/** Normal temperature (celsius). */
 	private static final double NORMAL_TEMP = 25D;
 	/** The wear lifetime value of 334 Sols (1/2 orbit). */
@@ -129,9 +129,9 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 		 
 		 massO2NominalLimit = NORMAL_AIR_PRESSURE / min_o2_pressure * massO2MinimumLimit;
 		 
-//		 logger.info("The full O2 partial pressure is " + Math.round(fullO2PartialPressure*1_000.0)/1_000.0 + " kPa");
-//		 logger.info("The minimum mass limit of O2 (above the safety limit) is " + Math.round(massO2MinimumLimit*10_000.0)/10_000.0  + " kg");
-//		 logger.info("The nomimal mass limit of O2 is " + Math.round(massO2NominalLimit*10_000.0)/10_000.0  + " kg");
+		 logger.info("The full tank O2 partial pressure is " + Math.round(fullO2PartialPressure*1_000.0)/1_000.0 + " kPa");
+		 logger.info("The minimum mass limit of O2 (above the safety limit) is " + Math.round(massO2MinimumLimit*10_000.0)/10_000.0  + " kg");
+		 logger.info("The nomimal mass limit of O2 is " + Math.round(massO2NominalLimit*10_000.0)/10_000.0  + " kg");
 
 	}
 	
@@ -214,14 +214,14 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 			if (p > PhysicalCondition.MAXIMUM_AIR_PRESSURE || p <= min_o2_pressure) {
 				LogConsolidated.log(Level.WARNING, 5000, sourceName,
 						"[" + this.getLocationTag().getLocale() + "] " 
-								+ this.getName() + " detected improper o2 pressure at " + Math.round(p * 10D) / 10D);
+								+ this.getName() + " detected improper o2 pressure at " + Math.round(p * 100.0D) / 100.0D);
 				return false;
 			}
 			double t = getTemperature();
 			if (t > NORMAL_TEMP + 15 || t < NORMAL_TEMP - 20) {
 				LogConsolidated.log(Level.WARNING, 5000, sourceName,
 						"[" + this.getLocationTag().getLocale() + "] " 
-								+ this.getName() + " detected improper temperature at " + Math.round(t * 10D) / 10D);
+								+ this.getName() + " detected improper temperature at " + Math.round(t * 100.0D) / 100.0D);
 				return false;
 			}
 		} catch (Exception e) {
@@ -324,10 +324,10 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 		
 		// With the minimum required O2 partial pressure of 11.94 kPa (1.732 psi), the minimum mass of O2 is 0.1792 kg 
 		
-		// Note : our targetPressure is 20.7 kPa = CompositionOfAir.O2_PARTIAL_PRESSURE
+		// Note : our target o2 partial pressure is now 17 kPa (not 20.7 kPa)
 		
 		double oxygenLeft = getInventory().getAmountResourceStored(ResourceUtil.oxygenID, false);
-		// Assuming that we can maintain a constant oxygen partial pressure of 20.7 kPa if O2 has at least 0.3107 kg left
+		// Assuming that we can maintain a constant oxygen partial pressure unless it falls below massO2NominalLimit 
 		if (oxygenLeft < massO2NominalLimit) {
 			double remainingMass = oxygenLeft;
 			double pp = CompositionOfAir.KPA_PER_ATM * remainingMass / CompositionOfAir.O2_MOLAR_MASS * CompositionOfAir.R_GAS_CONSTANT / TOTAL_VOLUME;

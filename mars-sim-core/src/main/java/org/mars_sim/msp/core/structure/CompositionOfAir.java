@@ -78,14 +78,16 @@ public class CompositionOfAir implements Serializable {
 
 	public static final double SKYLAB_TOTAL_AIR_PRESSURE_IN_ATM = 340D;
 	public static final double SKYLAB_TOTAL_AIR_PRESSURE_IN_MB = 340D;
-	public static final double SKYLAB_TOTAL_AIR_PRESSURE_kPA = 34D; // 1 mb to .1 kPa
-
-	public static final double PSI_PER_ATM = 14.7;
+	public static final double SKYLAB_TOTAL_AIR_PRESSURE_kPA = 34D; 
+	
+	public static final double PSI_PER_ATM = 14.696;
 	public static final double MMHG_PER_ATM = 760;
 	public static final double KPA_PER_ATM = 101.32501;
 	public static final double MB_PER_ATM = 1013.2501;
 
 	// The standard atmosphere (i.e. 1 atm) = 101325 Pa or 1 kPa = 0.00986923267 atm
+	// 1 mbar = 0.0145037738 psi
+	// 1 mbar =	0.1 kPa
 	// Mars has only 0.13% of O2
 
 	// The partial pressures of each gas are in atm

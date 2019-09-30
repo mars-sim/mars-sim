@@ -270,6 +270,16 @@ public class VehicleConfig implements Serializable {
 	}
 
 	/**
+	 * Gets the vehicle's estimated interior volume of air space.
+	 * 
+	 * @param vehicleType the vehicle type.
+	 * @return volume (meters^3).
+	 */
+	public double getEstimatedAirVolume(String vehicleType) {
+		return .8 * getLength(vehicleType) * getWidth(vehicleType) * 2D;
+	}
+	
+	/**
 	 * Gets the vehicle's drivetrain efficiency.
 	 * 
 	 * @param vehicleType the vehicle type

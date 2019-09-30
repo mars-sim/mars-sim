@@ -24,12 +24,12 @@ import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Airlock;
+import org.mars_sim.msp.core.structure.CompositionOfAir;
 import org.mars_sim.msp.core.structure.Lab;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
@@ -65,22 +65,35 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 	private static final double AIR_PRESSURE_FLOW_PER_MILLISOL = 0.01D; 
 	
 	/** Normal air pressure (kPa). */
-	private static final double NORMAL_AIR_PRESSURE = 34.7D; 
+	private static final double NORMAL_AIR_PRESSURE = 17; //20.7; //34.7D; 
 	/** Normal temperature (celsius). */
 	private static final double NORMAL_TEMP = 22.5D;
-
+	
 	// Data members
 	/** The rover's capacity for crew members. */
 	private int crewCapacity = 0;
 	/** The rover's capacity for robot crew members. */
 	private int robotCrewCapacity = 0;
 	
+
+	/** The minimum required O2 partial pressure. At 11.94 kPa (1.732 psi)  */
+	private double min_o2_pressure;
+	/** The full O2 partial pressure if at full tank. */
+	private double fullO2PartialPressure;
+	/** The nominal mass of O2 required to maintain the nominal partial pressure of 20.7 kPa (3.003 psi)  */
+	private double massO2NominalLimit;
+	/** The minimum mass of O2 required to maintain right above the safety limit of 11.94 kPa (1.732 psi)  */
+	private double massO2MinimumLimit;
+	/** The capacity of O2 in this rover (kg)  */
+	private double oxygenCapacity;
 	/** The rover's internal air pressure. */
 	private double airPressure = 0; //NORMAL_AIR_PRESSURE;
 	/** The rover's internal temperature. */
 	private double temperature = 0; //NORMAL_TEMP;
 	/** The rover's cargo capacity */
 	private double cargoCapacity = 0;
+	/** The rover's total crew internal volume. */
+	private double cabinAirVolume;
 
 //	private String sCache = "";
 	
@@ -129,10 +142,24 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 		cargoCapacity = vehicleConfig.getTotalCapacity(type);
 		// Set inventory total mass capacity.
 		inv.addGeneralCapacity(cargoCapacity);
+		
+		// Gets the estimated cabin compartment air volume.
+		cabinAirVolume = vehicleConfig.getEstimatedAirVolume(type);
 
+		oxygenCapacity = vehicleConfig.getCargoCapacity(type, LifeSupportInterface.OXYGEN);
+		min_o2_pressure = personConfig.getMinSuitO2Pressure();
+		fullO2PartialPressure = Math.round(CompositionOfAir.KPA_PER_ATM * oxygenCapacity / CompositionOfAir.O2_MOLAR_MASS 
+				* CompositionOfAir.R_GAS_CONSTANT / cabinAirVolume*1_000.0)/1_000.0;
+		massO2MinimumLimit = Math.round(min_o2_pressure / fullO2PartialPressure * oxygenCapacity*10_000.0)/10_000.0;
+		massO2NominalLimit =Math.round( NORMAL_AIR_PRESSURE / min_o2_pressure * massO2MinimumLimit*10_000.0)/10_000.0;
+		 
+		logger.info(type + " : full O2 partial pressure is " + fullO2PartialPressure + " kPa");
+		logger.info(type + " : minimum mass limit of O2 (above the safety limit) is " + massO2MinimumLimit  + " kg");
+		logger.info(type + " : nomimal mass limit of O2 is " + massO2NominalLimit  + " kg");
+		
 		// Set inventory resource capacities.
 		inv.addAmountResourceTypeCapacity(ResourceUtil.methaneID, vehicleConfig.getCargoCapacity(type, ResourceUtil.METHANE));
-		inv.addAmountResourceTypeCapacity(ResourceUtil.oxygenID, vehicleConfig.getCargoCapacity(type, LifeSupportInterface.OXYGEN));
+		inv.addAmountResourceTypeCapacity(ResourceUtil.oxygenID, oxygenCapacity);
 		inv.addAmountResourceTypeCapacity(ResourceUtil.waterID, vehicleConfig.getCargoCapacity(type, LifeSupportInterface.WATER));
 		inv.addAmountResourceTypeCapacity(ResourceUtil.foodID, vehicleConfig.getCargoCapacity(type, LifeSupportInterface.FOOD));
 		inv.addAmountResourceTypeCapacity(ResourceUtil.rockSamplesID, vehicleConfig.getCargoCapacity(type, ResourceUtil.ROCK_SAMLES));
@@ -267,6 +294,12 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 		return getInventory().containsUnit(person);
 	}
 
+	/**
+	 * Checks if robot is a crewmember.
+	 * 
+	 * @param robot the robot to check
+	 * @return true if robot is a crewmember
+	 */
 	public boolean isRobotCrewmember(Robot robot) {
 		return getInventory().containsUnit(robot);
 	}
@@ -299,20 +332,29 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 		else 
 			inv = getInventory();
 		
-		if (inv.getAmountResourceStored(ResourceUtil.oxygenID, false) <= 0D)
+		if (inv.getAmountResourceStored(ResourceUtil.oxygenID, false) <= massO2MinimumLimit) {
+			LogConsolidated.log(Level.WARNING, 5000, sourceName,
+					"[" + this.getLocationTag().getLocale() + "] " 
+							+ this.getName() + " ran out of oxygen and has less than " 
+							+ massO2MinimumLimit + " kg (below the safety limit).");
 			result = false;
-		if (inv.getAmountResourceStored(ResourceUtil.waterID, false) <= 0D)
+		}
+		if (inv.getAmountResourceStored(ResourceUtil.waterID, false) <= 0D) {
+			LogConsolidated.log(Level.WARNING, 5000, sourceName,
+					"[" + this.getLocationTag().getLocale() + "] " 
+							+ this.getName() + " ran out of water.");
 			result = false;
-
+		}
+		
 //		if (malfunctionManager.getOxygenFlowModifier() < 100D)
 //			result = false;
 //		if (malfunctionManager.getWaterFlowModifier() < 100D)
 //			result = false;
 
 		double p = getAirPressure();
-		if (p > PhysicalCondition.MAXIMUM_AIR_PRESSURE || p < Settlement.minimum_air_pressure) {
+		if (p > PhysicalCondition.MAXIMUM_AIR_PRESSURE || p <= min_o2_pressure) {
 			LogConsolidated.log(Level.SEVERE, 10_000, sourceName,
-					"[" + this.getName() + "] out-of-range overall air pressure at " + Math.round(p * 10D) / 10D 
+					"[" + this.getName() + "] out-of-range O2 pressure at " + Math.round(p * 100.0D) / 100.0D 
 					+ " kPa detected.");
 			result = false;
 		}
@@ -321,7 +363,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 		if (t < Settlement.life_support_value[0][4] - Settlement.SAFE_TEMPERATURE_RANGE
 				|| t > Settlement.life_support_value[1][4] + Settlement.SAFE_TEMPERATURE_RANGE) {
 				LogConsolidated.log(Level.SEVERE, 10_000, sourceName,
-					"[" + this.getName() + "] out-of-range overall temperature at " + Math.round(t * 10D) / 10D 
+					"[" + this.getName() + "] out-of-range overall temperature at " + Math.round(t * 100.0D) / 100.0D 
 						+ " " + Msg.getString("temperature.sign.degreeCelsius") + " detected.");		
 			result = false;
 		}
@@ -441,7 +483,29 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 	 * @return air pressure (Pa)
 	 */
 	public double getAirPressure() {
-		return airPressure;
+		// Based on some pre-calculation, 
+		// To supply a partial oxygen pressure of 20.7 kPa, one needs at least 0.3107 kg O2
+
+		// With the minimum required O2 partial pressure of 11.94 kPa (1.732 psi), the minimum mass of O2 is 0.1792 kg 
+		
+		// Note : our target o2 partial pressure is now 17 kPa (not 20.7 kPa)
+		// To supply 17 kPa O2, need 0.2552 kg O2
+
+		double oxygenLeft = getInventory().getAmountResourceStored(ResourceUtil.oxygenID, false);
+		// Assuming that we can maintain a constant oxygen partial pressure unless it falls below massO2NominalLimit 
+		if (oxygenLeft < massO2NominalLimit) {
+			double remainingMass = oxygenLeft;
+			double pp = CompositionOfAir.KPA_PER_ATM * remainingMass / CompositionOfAir.O2_MOLAR_MASS * CompositionOfAir.R_GAS_CONSTANT / cabinAirVolume;
+			LogConsolidated.log(Level.WARNING, 10_000, sourceName,
+					"[" + this.getLocationTag().getLocale() + "] " 
+						+ this.getName() + " has " + Math.round(oxygenLeft*100.0)/100.0
+						+ " kg O2 left at partial pressure of " + Math.round(pp*100.0)/100.0);
+			return pp;
+		}
+
+//		Note: the outside ambient air pressure is weather.getAirPressure(getCoordinates());
+
+		return NORMAL_AIR_PRESSURE;// * (malfunctionManager.getAirPressureModifier() / 100D);	
 	}
 
 	/**

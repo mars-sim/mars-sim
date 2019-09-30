@@ -45,31 +45,39 @@ For instance, the simulation assumes a low-pressure living environment that faci
 structural requirements on buildings. 
 
 While at the Earth's sea level, the atmospheric pressure is **101 kPa** (14.7 psi) and has 20.9% oxygen, 
-in mars-sim, a low pressure atmosphere of **34 kPa** (5 psi) is chosen for the settlement and, as a result, 
-the composition of oxygen inside a settlement is 58.8%. 
+in mars-sim, a low pressure atmosphere of **34 kPa** (4.93 psi) is chosen for the settlement living with
+the composition of oxygen at 58.8%. However, inside a rover or an [EVA suit](https://github.com/mars-sim/mars-sim/wiki/EVA-Suit), 
+an even lower pressurized 
+environment of 17 kPa (2.47 psi) is adopted for more optimal use of resources and design specifications. 
+See [Atmosphere](https://github.com/mars-sim/mars-sim/wiki/Atmosphere) wiki.
 
-Other than oxygen, carbon dioxide, and water moisture indoor are continuously monitored and replenished 
-periodically in each building being equipped with various life-support system 
-[functions](https://github.com/mars-sim/mars-sim/wiki/Building-Function). These gases are 
-generated via systems such as **Sabatier Reverse Water Gas (SRWG)**, and 
+Each building has life-support system [functions](https://github.com/mars-sim/mars-sim/wiki/Building-Function)
+that continuously monitored and periodically replenished oxygen, carbon dioxide, and water moisture. 
+These gases are produced via chemical systems such as **Sabatier Reverse Water Gas (SRWG)**, and 
 **Oxygen Generation System (OGS)**, etc..
 
-Another example is modeling the sequence of operations involving the airlock for an 
-**Extra-Vehicular Activity (EVA)**. In mars-sim, an *airlock* is an immediate place between a settlement 
-and outside. In order to walk on the surface of Mars, a settler must come through an airlock, which is 
-found in a *Lander Hab* or a *Garage*. To perform a team EVA, one of them will be selected as the 
-*airlock operator*. He will ensure that before entering the *inner door* of the airlock from within 
-the settlement, the airlock would have to be *pressurized* first and the air would be heated so that 
-the atmospheric pressure and temperature is equalized. Then he would open the inner door and the whole 
-team will enter the airlock chamber. Once he locks the inner door. he will  *depressurize* the chamber, 
-meaning, the gases would be re-captured to match the air pressure and the gas composition of that of 
-the surface of Mars. Then he will open the *outer door* of the airlock to allow the egress of 
-the team outside.
+An example of operation modeling is the sequence of steps involving the ingress and egress of airlocks 
+before and after an **Extra-Vehicular Activity (EVA)**. 
 
-The third example is the [Radiation Modeling](https://github.com/mars-sim/mars-sim/wiki/Radiation-Exposure),
- which accounts for how often the **Galactic Cosmic Ray (GCR)** and **Solar Energetic Particles (SEP)** 
- would occur during EVA. The cumulative dose is closely monitored in 3 specific periods of time, 
- namely, the 30-day, the annual and the career lifetime of a settler. 
+In mars-sim, an *airlock* is an immediate place between a settlement and outside. To walk on the surface 
+of Mars, a settler must come through an airlock, which is found in a *Lander Hab* or a *Garage*. 
+
+To perform a team EVA, one of them will be selected as the *airlock operator*, who will ensure that proper
+procedures be followed before going out for an EVA or after coming back from an EVA.
+
+In case of an egress operation, (1) the airlock would have to be *pressurized*. (2) The air would be heated 
+so that the atmospheric pressure and temperature are equalized. (3) Then the airlcok operator would unlock 
+and open the inner door. (4) The whole team would enter into the airlock. (5) After all have donned 
+EVA suits, the operator will depressurize the chamber and the gases would be re-captured to match the 
+outside air pressure. (6) At last, he/she would unlock and open the outer door and the whole team will 
+exit to the outside surface of Mars. 
+
+Our third example is the [Radiation Modeling](https://github.com/mars-sim/mars-sim/wiki/Radiation-Exposure),
+ which account for how often the **Galactic Cosmic Ray (GCR)** and **Solar Energetic Particles (SEP)** 
+ would occur during EVA. The cumulative dose is closely monitored in 3 specific exposure interval, 
+ namely, the 30-day, the annual and the career lifetime of a settler. It would affect 3 different regions 
+ of our body, namely, the Blood Forming Organs (BFO), the Ocular Lens, and the Skin. The dose limits are
+ measured in milli-Severt.
  
 ---
  
