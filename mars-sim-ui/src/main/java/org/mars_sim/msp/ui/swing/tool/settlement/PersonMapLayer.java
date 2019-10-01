@@ -30,6 +30,10 @@ public class PersonMapLayer implements SettlementMapLayer {
 	private static final Color SELECTED_OUTLINE_COLOR = LabelMapLayer.SELECTED_PERSON_LABEL_OUTLINE_COLOR ;//new Color(0, 0, 0, 190);
 
 	// Data members
+	private double circleDiameter = 15D;
+	private double centerX = circleDiameter / 2D;
+	private double centerY = circleDiameter / 2D;
+	
 	private SettlementMapPanel mapPanel;
 
 	/**
@@ -137,10 +141,6 @@ public class PersonMapLayer implements SettlementMapLayer {
 
 			// Save original graphics transforms.
 			AffineTransform saveTransform = g2d.getTransform();
-
-			double circleDiameter = 10D;
-			double centerX = circleDiameter / 2D;
-			double centerY = circleDiameter / 2D;
 
 			double translationX = (-1D * person.getXLocation() * scale - centerX);
 			double translationY = (-1D * person.getYLocation() * scale - centerY);

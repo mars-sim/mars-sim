@@ -19,7 +19,7 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Direction;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.location.LocationSituation;
+import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.job.Job;
@@ -589,7 +589,7 @@ public class BiologyStudyFieldMission extends RoverMission implements Serializab
 		boolean result = super.isCapableOfMission(member);
 		if (result) {
 			boolean atStartingSettlement = false;
-			if (member.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+			if (member.getLocationStateType() == LocationStateType.INSIDE_SETTLEMENT) {
 				if (member.getSettlement() == getStartingSettlement()) {
 					atStartingSettlement = true;
 				}

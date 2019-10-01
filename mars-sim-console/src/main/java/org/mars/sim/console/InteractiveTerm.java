@@ -115,7 +115,7 @@ public class InteractiveTerm {
 		terminal.print(System.lineSeparator() 
 				+ " ---------------  M A R S   S I M U L A T I O N   P R O J E C T  ---------------\n"
 				+ System.lineSeparator()
-				+ "                         * * *   Mode Menu   * * *\n"
+				+ "                        * * *   Mode Selection   * * *\n"
 //				+ "                                   r" + Simulation.BUILD +"\n");
 				+ System.lineSeparator()
 				+ System.lineSeparator()

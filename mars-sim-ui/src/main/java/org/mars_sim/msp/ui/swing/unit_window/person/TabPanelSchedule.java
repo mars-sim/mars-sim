@@ -114,7 +114,12 @@ public class TabPanelSchedule extends TabPanel {
 				null, Msg.getString("TabPanelSchedule.tooltip"), //$NON-NLS-1$
 				unit, desktop);
 
-		person = (Person) unit;
+		// Prepare combo box
+		if (unit instanceof Person) {
+			person = (Person) unit;
+		} else if (unit instanceof Robot) {
+			robot = (Robot) unit;
+		}
 	}
 	
 	public boolean isUIDone() {
@@ -128,11 +133,9 @@ public class TabPanelSchedule extends TabPanel {
 		isRealTimeUpdate = true;
 
 		// Prepare combo box
-		if (unit instanceof Person) {
-			person = (Person) unit;
+		if (person != null) {
 			taskSchedule = person.getTaskSchedule();
-		} else if (unit instanceof Robot) {
-			robot = (Robot) unit;
+		} else {
 			taskSchedule = robot.getTaskSchedule();
 		}
 

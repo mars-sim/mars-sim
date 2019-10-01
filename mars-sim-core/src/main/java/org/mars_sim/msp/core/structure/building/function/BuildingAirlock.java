@@ -16,6 +16,7 @@ import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.equipment.EVASuit;
+import org.mars_sim.msp.core.mars.MarsSurface;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Airlock;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -39,14 +40,15 @@ public class BuildingAirlock extends Airlock {
 	public static final double AIRLOCK_VOLUME_IN_CM = 12D; //3 * 2 * 2; //in m^3
 	
     // Data members.
-    private Building building; // The building this airlock is for.
- 
-//    private Inventory inventory;
-    
+	/** The building this airlock is for. */
+    private Building building;
+  
     private Point2D airlockInsidePos;
     private Point2D airlockInteriorPos;
     private Point2D airlockExteriorPos;
 
+    private static MarsSurface marsSurface = Simulation.instance().getMars().getMarsSurface();
+    
     /**
      * Constructor
      * @param building the building this airlock of for.
@@ -58,10 +60,6 @@ public class BuildingAirlock extends Airlock {
         super(capacity);
 
         this.building = building;
-//        inventory = new Inventory(this);
-//        
-//		// Set inventory total mass capacity.
-//        inventory.addGeneralCapacity(Double.MAX_VALUE); // 10_000_000);//100_000_000);//
 
         // Determine airlock interior position.
         airlockInteriorPos = LocalAreaUtil.getLocalRelativeLocation(interiorXLoc, interiorYLoc, building);
@@ -78,14 +76,13 @@ public class BuildingAirlock extends Airlock {
 
         if (inAirlock(person)) {
 
-            if (PRESSURIZED.equals(getState())) {
+            if (AirlockState.PRESSURIZED == getState()) {
             	// check if the airlock has been sealed from outside and pressurized, ready to 
             	// open the inner door to release the person into the settlement
             	stepIntoAirlock(person);
-  
             }
             
-            else if (DEPRESSURIZED.equals(getState())) {
+            else if (AirlockState.DEPRESSURIZED == getState()) {
             	// check if the airlock has been de-pressurized, ready to open the outer door to 
             	// get exposed to the outside air and release the person
             	stepIntoMarsSurface(person);
@@ -122,18 +119,21 @@ public class BuildingAirlock extends Airlock {
 
 			
 			// 1.1 Gets the EVA suit reference the person used to don on
-			EVASuit suit = (EVASuit) person.getContainerUnit(); 
-			if (suit == null) suit = person.getSuit();
-			// 1.2 Retrieve the suit from the surface of Mars
-			Simulation.instance().getMars().getMarsSurface().getInventory().retrieveUnit(suit);
-			// 1.3 Retrieve the person from the suitInv
-            suit.getInventory().retrieveUnit(person);
-			// 1.4 store the person into the building inventory
+//			EVASuit suit = person.getSuit(); //(EVASuit) person.getContainerUnit(); 
+//			if (suit == null) suit = person.getSuit();
+			// 1.2 Retrieve the person from the suitInv
+//            suit.getInventory().retrieveUnit(person);
+			// 1.3 store the person into the building inventory
             building.getInventory().storeUnit(person);
-            // 1.5 Add the person from the building
+            // 1.4 Add the person from the building
             BuildingManager.addPersonOrRobotToBuilding(person, building);
+			// 1.5 Retrieve the suit from the surface of Mars
+			if (marsSurface == null)
+				marsSurface = Simulation.instance().getMars().getMarsSurface();
+//            marsSurface.getInventory().retrieveUnit(suit);
+            marsSurface.getInventory().retrieveUnit(person);
 			// 1.6 Store the suit on the person
-			person.getInventory().storeUnit(suit);
+//			person.getInventory().storeUnit(suit);
             
    			LogConsolidated.log(Level.FINER, 0, sourceName,
 	  				"[" + person.getLocationTag().getLocale() + "] "
@@ -148,7 +148,7 @@ public class BuildingAirlock extends Airlock {
 //                        " from an airlock but not from outside.");
           	LogConsolidated.log(Level.SEVERE, 0, sourceName,		
           		person +  " was supposed to be entering " + getEntityName() +
-                  "'s airlock but now alraedy in " + person.getLocationTag().getImmediateLocation());
+                  "'s airlock but already in " + person.getLocationTag().getImmediateLocation());
         }
     }
  
@@ -177,26 +177,27 @@ public class BuildingAirlock extends Airlock {
 			building.getSettlement().getCompositionOfAir().releaseOrRecaptureAir(building.getInhabitableID(), false, building);
             
 			// 5.1 Gets the EVA suit under the person's possession
-			EVASuit suit = (EVASuit) person.getInventory().findUnitOfClass(EVASuit.class); //person.getSuit();
+			EVASuit suit = person.getSuit(); //(EVASuit) person.getInventory().findUnitOfClass(EVASuit.class);
 			// 5.2 Retrieve the suit from the person
-			person.getInventory().retrieveUnit(suit);
-			// 5.3 retrieve the person from the entityInv
-            building.getInventory().retrieveUnit(person);
-            // 5.4 Remove the person from the building
+//			person.getInventory().retrieveUnit(suit);
+            // 5.3 Remove the person from the building
             BuildingManager.removePersonOrRobotFromBuilding(person, building);
+			// 5.4 retrieve the person from the entityInv
+            building.getInventory().retrieveUnit(person);
 			// 5.5 Don the suit (store the person into the EVA suit inventory)
-			suit.getInventory().storeUnit(person);
+//			suit.getInventory().storeUnit(person);
 			// 5.6 Store the suit on the surface of Mars
-			Simulation.instance().getMars().getMarsSurface().getInventory().storeUnit(suit);
-
-                             
+			if (marsSurface == null)
+				marsSurface = Simulation.instance().getMars().getMarsSurface();
+//			marsSurface.getInventory().storeUnit(suit);
+			marsSurface.getInventory().storeUnit(person);
+			
   			LogConsolidated.log(Level.FINER, 0, sourceName,
 	  				"[" + person.getLocationTag().getLocale() + "] "
 					+ person
         			+ " had just left the airlock at " + building + " in " 
         			+ building.getSettlement()
         			+ " and stepped outside.");
-  			
         }
     	
         else {
@@ -204,7 +205,7 @@ public class BuildingAirlock extends Airlock {
 //            throw new IllegalStateException(
             	LogConsolidated.log(Level.SEVERE, 0, sourceName,		
             		person +  " was supposed to be exiting " + getEntityName() +
-                    "'s airlock but now alraedy in " + person.getLocationTag().getImmediateLocation());
+                    "'s airlock but already " + person.getLocationTag().getImmediateLocation());
         }
     }
     

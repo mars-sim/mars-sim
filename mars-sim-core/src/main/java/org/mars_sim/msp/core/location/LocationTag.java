@@ -57,6 +57,11 @@ public class LocationTag implements LocationState, Serializable {
 
 	}
 
+	/**
+	 * Gets the name of the settlement the unit is at
+	 * 
+	 * @return
+	 */
 	public String getSettlementName() {
 		if (p != null) {
 			if (LocationStateType.INSIDE_SETTLEMENT == p.getLocationStateType())
@@ -263,8 +268,8 @@ public class LocationTag implements LocationState, Serializable {
 					return OUTSIDE_ON_MARS;
 				}
 			} 
-//			else if (v.isRightOutsideSettlement())
-//				return findSettlementVicinity().getName() + VICINITY;
+			else if (v.isRightOutsideSettlement())
+				return findSettlementVicinity().getName() + VICINITY;
 			else
 				return OUTSIDE_ON_MARS;
 		}
@@ -272,6 +277,11 @@ public class LocationTag implements LocationState, Serializable {
 		return UNKNOWN;
 	}
 
+	/**
+	 * Finds the settlement that a person/robot is in its vicinity
+	 * 
+	 * @return {@link Settlement}
+	 */
 	public Settlement findSettlementVicinity() {
 		Coordinates c = unit.getCoordinates();
 
@@ -288,23 +298,46 @@ public class LocationTag implements LocationState, Serializable {
 		// WARNING : using associated settlement needs to exercise more caution
 	}
 
+	/**
+	 * Checks if an unit is in the vicinity of a settlement
+	 * 
+	 * @return true if it is
+	 */
+	public boolean isInSettlementVicinity() {
+		Coordinates c = unit.getCoordinates();
+
+		if (unitManager == null)
+			unitManager = Simulation.instance().getUnitManager();
+				
+		Collection<Settlement> ss = unitManager.getSettlements();
+		for (Settlement s : ss) {
+			if (s.getCoordinates().equals(c) || s.getCoordinates() == c)
+				return true;
+		}
+
+		return false;
+	}
+	
+	/*
+	 * Gets the unit's location state type
+	 */
 	public LocationStateType getType() {
 		return unit.getLocationStateType();
 	}
 
-	public LocationSituation getLocationSituation() {
-		if (p != null) {
-			if (p.getLocationSituation() != null)
-				return p.getLocationSituation();
-		} else if (e != null) {
-			if (e.getLocationSituation() != null)
-				return e.getLocationSituation();
-		} else if (r != null) {
-			if (r.getLocationSituation() != null)
-				return r.getLocationSituation();
-		}
-		return LocationSituation.UNKNOWN;
-	}
+//	public LocationSituation getLocationSituation() {
+//		if (p != null) {
+//			if (p.getLocationSituation() != null)
+//				return p.getLocationSituation();
+//		} else if (e != null) {
+//			if (e.getLocationSituation() != null)
+//				return e.getLocationSituation();
+//		} else if (r != null) {
+//			if (r.getLocationSituation() != null)
+//				return r.getLocationSituation();
+//		}
+//		return LocationSituation.UNKNOWN;
+//	}
 
 	@Override
 	public String getName() {

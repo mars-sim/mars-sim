@@ -210,9 +210,11 @@ public abstract class Vehicle extends Unit
 		unitManager.addVehicleID(this);
 		
 		this.vehicleType = vehicleType;
+		// Obtain the associated settlement ID 
 		associatedSettlementID = settlement.getIdentifier();
-//		containerUnit = settlement;
-		setContainerID(associatedSettlementID);
+//		// Set the containerID
+//		setContainerID(associatedSettlementID);
+		// Store this vehicle in the settlement
 		settlement.getInventory().storeUnit(this);
 	
 		// Initialize vehicle data

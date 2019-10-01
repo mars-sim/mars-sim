@@ -7,16 +7,6 @@
 
 package org.mars_sim.msp.core.structure;
 
-import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.LogConsolidated;
-import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.task.EnterAirlock;
-import org.mars_sim.msp.core.person.ai.task.ExitAirlock;
-import org.mars_sim.msp.core.person.ai.taskUtil.Task;
-import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.tool.RandomUtil;
-import org.mars_sim.msp.core.vehicle.Vehicle;
-
 import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -26,6 +16,16 @@ import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.LogConsolidated;
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.task.EnterAirlock;
+import org.mars_sim.msp.core.person.ai.task.ExitAirlock;
+import org.mars_sim.msp.core.person.ai.taskUtil.Task;
+import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.tool.RandomUtil;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 
 // see discussions on Airlocks for Mars Colony at 
 // https://forum.nasaspaceflight.com/index.php?topic=42098.0
@@ -55,16 +55,13 @@ public abstract class Airlock implements Serializable {
 	/** Pressurize/depressurize time (millisols). */
 	public static final double CYCLE_TIME = 5D; // TODO: should we add pre-breathing time into CYCLE_TIME ?
 
-	// TODO Airlock states should be an enum.
-	public static final String PRESSURIZED = "pressurized";
-	public static final String DEPRESSURIZED = "depressurized";
-	public static final String PRESSURIZING = "pressurizing";
-	public static final String DEPRESSURIZING = "depressurizing";
+	public enum AirlockState {
+		PRESSURIZED, DEPRESSURIZED, PRESSURIZING, DEPRESSURIZING
+	}
+
+	public AirlockState airlockState; 
 
 	// Data members
-	/** The state of the airlock. */
-	private String state;
-
 	/** True if airlock is activated. */
 	private boolean activated;
 	/** True if inner door is locked. */
@@ -113,7 +110,7 @@ public abstract class Airlock implements Serializable {
 			this.capacity = capacity;
 
 		activated = false;
-		state = PRESSURIZED;
+		airlockState = AirlockState.PRESSURIZED;
 		innerDoorLocked = false;
 		outerDoorLocked = true;
 		remainingCycleTime = 0D;
@@ -145,10 +142,10 @@ public abstract class Airlock implements Serializable {
 	 * or outer door (respectively) must be unlocked for person to enter.
 	 * 
 	 * @param person {@link Person} the person to enter the airlock
-	 * @param inside {@link Boolean} <code>true</code> if person is entering from
+	 * @param inside {@link boolean} <code>true</code> if person is entering from
 	 *               inside<br/>
 	 *               <code>false</code> if person is entering from outside
-	 * @return {@link Boolean} <code>true</code> if person entered the airlock
+	 * @return {@link boolean} <code>true</code> if person entered the airlock
 	 *         successfully
 	 */
 	public boolean enterAirlock(Person person, boolean inside) {
@@ -257,14 +254,14 @@ public abstract class Airlock implements Serializable {
 			activated = true;
 			remainingCycleTime = CYCLE_TIME;
 
-			if (PRESSURIZED.equals(state)) {
-				setState(DEPRESSURIZING);
-			} else if (DEPRESSURIZED.equals(state)) {
-				setState(PRESSURIZING);
+			if (AirlockState.PRESSURIZED == airlockState) {
+				setState(AirlockState.DEPRESSURIZING);
+			} else if (AirlockState.DEPRESSURIZED == airlockState) {
+				setState(AirlockState.PRESSURIZING);
 			} else {
 				LogConsolidated.log(Level.SEVERE, 0, sourceName,
 						"[" + operator.getLocationTag().getLocale() + "] " 
-					+ operator.getName() + " reported the airlock was having incorrect state for activation: '" + state + "'.");
+					+ operator.getName() + " reported the airlock was having incorrect state for activation: '" + airlockState + "'.");
 				return false;
 			}
 
@@ -319,8 +316,8 @@ public abstract class Airlock implements Serializable {
 	}
 	
 	/**
-	 * Deactivates the airlock and opens the appropriate (inner/outer) door. 
-	 * Any people inside the airlock are to leave.
+	 * Set new air pressure state, and unlock/open the (inner/outer) door. 
+	 * Any people inside the airlock proceed to leave the airlock
 	 * 
 	 * @return true if airlock was deactivated successfully.
 	 */
@@ -331,18 +328,18 @@ public abstract class Airlock implements Serializable {
 		if (activated) {
 			activated = false;
 
-			if (DEPRESSURIZING.equals(state)) {
-				setState(DEPRESSURIZED);
+			if (AirlockState.DEPRESSURIZING == airlockState) {
+				setState(AirlockState.DEPRESSURIZED);
 				outerDoorLocked = false;
-			} else if (PRESSURIZING.equals(state)) {
-				setState(PRESSURIZED);
+			} else if (AirlockState.PRESSURIZING == airlockState) {
+				setState(AirlockState.PRESSURIZED);
 				innerDoorLocked = false;
 			} else {
 				return false;
 			}
 
-			// Occupants are to exit the airlock one by one
-			exitAirlock();
+			// Occupants are to leave the airlock one by one
+			leaveAirlock();
 
 			occupants.clear();
 
@@ -357,7 +354,7 @@ public abstract class Airlock implements Serializable {
 	/**
 	 * Occupants are to exit the airlock one by one
 	 */
-	public void exitAirlock() {
+	public void leaveAirlock() {
 		Iterator<Person> i = occupants.iterator();
 		while (i.hasNext()) {
 			Person occupant = i.next();
@@ -366,12 +363,12 @@ public abstract class Airlock implements Serializable {
 				LogConsolidated.log(Level.FINER, 0, sourceName,
 						"[" + person.getLocationTag().getLocale() + "] " 
 					+ person.getName()
-					+ " reported that the airlock in " + getEntity() + " had been " + getState() 
+					+ " reported that the airlock in " + getEntity() + " had been " + getState().toString().toLowerCase() 
 						+ ".");
+				
+				// Call BuildingAirlock or VehicleAirlock's exitAirlock() to change the state of the his container unit, namely, the EVA suit
+				exitAirlock(occupant);
 			}
-
-			// Call BuildingAirlock's exitAirlock() to change the state of the his container unit, namely, the EVA suit
-			exitAirlock(occupant);
 		}
 	}
 	
@@ -414,8 +411,8 @@ public abstract class Airlock implements Serializable {
 	 * 
 	 * @return the state string.
 	 */
-	public String getState() {
-		return state;
+	public AirlockState getState() {
+		return airlockState;
 	}
 
 	/**
@@ -423,8 +420,8 @@ public abstract class Airlock implements Serializable {
 	 * 
 	 * @param state the airlock state.
 	 */
-	private void setState(String state) {
-		this.state = state;
+	private void setState(AirlockState state) {
+		this.airlockState = state;
 		logger.finer("The airlock in " + getEntityName() + " was " + state);
 	}
 

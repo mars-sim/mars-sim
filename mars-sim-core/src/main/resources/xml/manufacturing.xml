@@ -187,9 +187,6 @@ http://canada.marssociety.org/winnipeg/soil.html
 		</outputs>
 	</process>
 
-
-
-
 	<process name="turn compost into soil"
 			tech="2" skill="2"
 			work-time="50"
@@ -1648,6 +1645,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 	<process name="make helmet visor" tech="3" skill="4" work-time="300" process-time="200"
 			power-required=".1">
 		<inputs>
+			<resource name="polycarbonate resin" amount=".2" />
 			<part name="glass sheet" number="1" />
 		</inputs>
 		<outputs>
@@ -1670,6 +1668,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			power-required=".2">
 		<inputs>
 			<resource name="cane fiber" amount="0.2" />
+			<resource name="polyurethane" amount="0.1" />	
 			<part name="fiberglass cloth" number="5" />
 			<part name="fiberglass" number="1" />
 		</inputs>
@@ -1682,6 +1681,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			power-required=".1">
 		<inputs>
 			<resource name="cane fiber" amount="0.1" />
+			<resource name="polyurethane" amount="0.05" />			
 			<part name="fiberglass cloth" number="1" />
 			<part name="fiberglass" number="1" />
 		</inputs>
@@ -1694,6 +1694,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			power-required=".1">
 		<inputs>
 			<resource name="cane fiber" amount="0.2" />
+			<resource name="polyurethane" amount="0.1" />			
 			<part name="steel ingot" number="1" />
 			<part name="fiberglass cloth" number="2" />
 			<part name="fiberglass" number="2" />
@@ -1707,6 +1708,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			power-required=".7">
 		<inputs>
 			<resource name="cane fiber" amount="0.1" />
+			<resource name="polyurethane" amount="0.05" />			
 			<part name="steel ingot" number="1" />
 			<part name="fiberglass" number="1" />
 		</inputs>
@@ -3466,24 +3468,38 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		</outputs>
 	</process>
 
-<!-- Produces polycarbonate roofing.
-Asahi/Chi Mei produces DPC (polycarbonate) from DMC which is produced via 
-methanolysis of ethylene carbonate. Ethylene carbonate is produced by the 
-reaction between ethylene oxide and carbon dioxide.-->
 	<process name="produce polycarbonate resin" tech="3" skill="3" work-time="100" process-time="200"
 			power-required="0.5">
 		<inputs>
-			<resource name="ethylene" amount="3.0" />
-			<resource name="carbon dioxide" amount="3.0" />
-			<resource name="bisphenol-a" amount="2.0" />
+			<resource name="ethylene" amount="1.0" />
+			<resource name="food waste" amount="2.0" />
+			<resource name="carbon dioxide" amount="2.0" />
+			<resource name="bisphenol-a" amount="1.0" />
 		</inputs>
 		<outputs>
-			<resource name="polycarbonate resin" amount="5.0" />
+			<resource name="polycarbonate resin" amount="3.0" />
 		</outputs>
 	</process>
 
+	<process name="produce polyurethane" tech="3" skill="3" work-time="100" process-time="200"
+			power-required="0.5">
+		<inputs>
+			<resource name="crop waste" amount="2.0" />
+			<resource name="carbon dioxide" amount="3.0" />
+		</inputs>
+		<outputs>
+			<resource name="polyurethane" amount="2.0" />
+		</outputs>
+	</process>
+	
+	<!-- Produces polycarbonate roofing. -->
 	<process name="manufacture polycarbonate roofing" tech="3" skill="3" work-time="100" process-time="200"
 			power-required="1.0">
+		<description>
+			Asahi/Chi Mei produces DPC (polycarbonate) from DMC which is produced via 
+			methanolysis of ethylene carbonate. Ethylene carbonate is produced by the 
+			reaction between ethylene oxide and carbon dioxide.
+		</description>	
 		<inputs>
 			<resource name="polycarbonate resin" amount="3.5" />
 		</inputs>
@@ -3495,8 +3511,8 @@ reaction between ethylene oxide and carbon dioxide.-->
 	<process name="produce bisphenol-a" tech="3" skill="3" work-time="100" process-time="600"
 			power-required="0.2">
 		<description>
-		Bisphenol A (BPA), a colourless crystalline solid belonging to the family of organic compounds;
-		its molecular formula is C15H16O2. BPA is best known for its use in the manufacture of polycarbonate plastics and epoxy resins
+			Bisphenol A (BPA), a colourless crystalline solid belonging to the family of organic compounds;
+			its molecular formula is C15H16O2. BPA is best known for its use in the manufacture of polycarbonate plastics and epoxy resins
 		</description>
 		<inputs>
 			<resource name="hydrogen" amount="1.6" />
@@ -3508,10 +3524,12 @@ reaction between ethylene oxide and carbon dioxide.-->
 		</outputs>
 	</process>
 
-<!-- 2015-09-28 Added manufacturing fuel cell stack. each comprises 25 solid 
-oxide fuel cells, at 5 kWe. -->
+	<!-- 2015-09-28 Added manufacturing fuel cell stack. -->
 	<process name="manufacture fuel cell stack" tech="3" skill="4" work-time="1000" process-time="100"
 			power-required="5">
+		<description>
+			Each fuel cell stack comprises 25 solid oxide fuel cells at 5 kWe.
+		</description>	
 		<inputs>
 			<part name="steel sheet" number="1" />
 			<part name="plastic sheet" number="1" />

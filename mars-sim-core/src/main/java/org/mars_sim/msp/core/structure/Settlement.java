@@ -459,15 +459,9 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 			unitManager.addSettlementID(this);
 		}
 		
-
-
-		
 		this.name = name;
 		this.scenarioID = scenarioID;
 		this.location = location;
-
-		
-
 
 		if (missionManager == null) {// for passing maven test
 			missionManager = sim.getMissionManager();
@@ -519,9 +513,11 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 		this.projectedNumOfRobots = projectedNumOfRobots;
 		this.initialPopulation = populationNumber;
 
-		// The surface of Mars contains this settlement
-		setContainerUnit(marsSurface);
-
+//		// The surface of Mars contains this settlement
+//		setContainerUnit(marsSurface);
+//		// Set the containerID
+//		setContainerID(Unit.MARS_SURFACE_ID);
+		
 		// Create Task instances
 		maintenanceMeta = new MaintenanceMeta();
 		maintenanceEVAMeta = new MaintenanceEVAMeta();

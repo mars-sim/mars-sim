@@ -182,6 +182,7 @@ public class Cooking extends Function implements Serializable {
 			oilMenu.add(ResourceUtil.garlicOilID);
 			oilMenu.add(ResourceUtil.sesameOilID);
 			oilMenu.add(ResourceUtil.peanutOilID);
+			oilMenu.add(ResourceUtil.riceBranOilID);
 		}
 	}
 

@@ -242,7 +242,7 @@ public class EatMeal extends Task implements Serializable {
 
 				setPhase(PICK_UP_MEAL);
 			}
-		}		
+		}
 	}
 
 	@Override
@@ -258,8 +258,11 @@ public class EatMeal extends Task implements Serializable {
 	 */
 	protected double performMappedPhase(double time) {
 		if (getPhase() == null) {
-			throw new IllegalArgumentException(person + "'s Task phase is null");
-		} else if (DRINK_WATER.equals(getPhase())) {
+			return time;
+//			throw new IllegalArgumentException(person + "'s Task phase is null");
+		}
+		
+		if (DRINK_WATER.equals(getPhase())) {
 			return drinkingWaterPhase(time);			
 		} else if (PICK_UP_MEAL.equals(getPhase())) {
 			return pickingUpMealPhase(time);
@@ -726,8 +729,15 @@ public class EatMeal extends Task implements Serializable {
 		if (!notThirsty) {
 			double currentThirst = Math.min(thirst, 1_000);
 			Unit containerUnit = person.getTopContainerUnit();
+			Inventory inv = null;
+			// Get water from one's EVA suit
 			if (containerUnit != null) {
-				Inventory inv = containerUnit.getInventory();
+				inv = containerUnit.getInventory();
+			}
+			else {
+				inv = person.getSuit().getInventory();
+			}
+				
 				double waterFinal = Math.min(waterEachServing, currentThirst);
 
 				if (waterFinal > 0) {
@@ -852,7 +862,7 @@ public class EatMeal extends Task implements Serializable {
 					}
 				}
 			}
-		}
+//		}
 	}
 
 	
@@ -905,8 +915,14 @@ public class EatMeal extends Task implements Serializable {
 			
 			Unit containerUnit = person.getTopContainerUnit();
 			
+			Inventory inv = null;
+			// Get water from one's EVA suit
 			if (containerUnit != null) {
-				Inventory inv = containerUnit.getInventory();
+				inv = containerUnit.getInventory();
+			}
+			else {
+				inv = person.getSuit().getInventory();
+			}
 				
 				// Take dessert resource from inventory if it is available.
 				boolean hasDessert = false;
@@ -936,13 +952,6 @@ public class EatMeal extends Task implements Serializable {
 					// Not enough dessert resource available to eat.
 					result = false;
 				}
-
-			}
-			// else {
-			// Person is not inside a container unit, so end task.
-			// result = false;
-			// endTask();
-			// }
 		}
 
 		return result;

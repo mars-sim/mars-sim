@@ -377,8 +377,8 @@
 		<description> Cover Rice with cold water. Soak for 3 hours. Finely grind the rice
 		Heat and stir. Cool and dry. </description>
 		<inputs>
-			<resource name="White Rice" amount="5.0" />
-			<resource name="Water" amount="5.0" />
+			<resource name="White Rice" amount="1.0" />
+			<resource name="Water" amount="4.0" />
 
 		</inputs>
 		<outputs>
@@ -387,17 +387,18 @@
 
 	</process>
 
-	<process name="Process Rice into White Rice"
+	<process name="Process Rice into White Rice and rice bran oil"
 		tech="1" skill="2" work-time="50" process-time="100" power-required="1.0">
 		<description> Remove hulls, bran layers and germ from rice.
 		May enrich milled rice with vitamins and minerals </description>
 
 		<inputs>
-			<resource name="Rice" amount="5.0" />
+			<resource name="Rice" amount="2.0" />
 
 		</inputs>
 		<outputs>
-			<resource name="White Rice" amount="5.0" />
+			<resource name="White Rice" amount="1.6" />
+			<resource name="rice bran oil" amount="0.4" />			
 		</outputs>
 	</process>
 
@@ -407,11 +408,12 @@
 		and the embryo or germ. Brown rice requires longer cooking time than either parboiled or regular-milled white rice </description>
 
 		<inputs>
-			<resource name="Rice" amount="5.0" />
+			<resource name="Rice" amount="2.0" />
 
 		</inputs>
 		<outputs>
-			<resource name="Brown Rice" amount="5.0" />
+			<resource name="Brown Rice" amount="1.6" />
+			<resource name="rice bran oil" amount="0.4" />				
 		</outputs>
 	</process>
 

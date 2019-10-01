@@ -10,7 +10,7 @@ import java.io.Serializable;
 import java.util.Iterator;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.location.LocationSituation;
+import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.Job;
@@ -101,10 +101,10 @@ public class TreatMedicalPatientMeta implements MetaTask, Serializable {
 
         boolean result = false;
 
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+		if (person.getLocationStateType() == LocationStateType.INSIDE_SETTLEMENT) {
             result = hasNeedyMedicalAidsAtSettlement(person, person.getSettlement());
         }
-        else if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+        else if (person.getLocationStateType() == LocationStateType.INSIDE_VEHICLE) {
             result = hasNeedyMedicalAidsInVehicle(person, person.getVehicle());
         }
 

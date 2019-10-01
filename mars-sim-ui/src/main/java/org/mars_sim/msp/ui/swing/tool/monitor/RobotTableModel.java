@@ -16,6 +16,7 @@ import java.util.Map;
 import javax.swing.SwingUtilities;
 
 import org.mars_sim.msp.core.GameManager;
+import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
@@ -26,8 +27,6 @@ import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.UnitManagerEvent;
 import org.mars_sim.msp.core.UnitManagerEventType;
 import org.mars_sim.msp.core.UnitManagerListener;
-import org.mars_sim.msp.core.GameManager.GameMode;
-import org.mars_sim.msp.core.location.LocationSituation;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
 import org.mars_sim.msp.core.person.ai.mission.MissionEventType;
@@ -339,29 +338,12 @@ public class RobotTableModel extends UnitTableModel {
 				break;
 
 			case LOCATION: {
-				LocationSituation locationSituation = robot.getLocationSituation();
-				if (locationSituation == LocationSituation.IN_SETTLEMENT) {
-					if (robot.getSettlement() != null)
-						result = robot.getSettlement().getName();
-				} else if (locationSituation == LocationSituation.IN_VEHICLE) {
-					if (robot.getVehicle() != null)
-						result = robot.getVehicle().getName();
-				} else
-					result = locationSituation.getName();
+				result = robot.getLocationTag().getImmediateLocation();
 			}
 				break;
 
 			case JOB: {
-				// If robot is dead, get job from death info.
-				if (robot.getSystemCondition().isInoperable())
-					result = "None";
-				else {
-					RobotJob robotJob = robot.getBotMind().getRobotJob();
-					if (robotJob != null)
-						result = robotJob.getName(robot.getRobotType());
-					else
-						result = null;
-				}
+				result = RobotJob.getName(robot.getRobotType());
 			}
 				break;
 

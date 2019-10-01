@@ -20,7 +20,7 @@ import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.events.HistoricalEvent;
-import org.mars_sim.msp.core.location.LocationSituation;
+import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -246,7 +246,7 @@ public abstract class RoverMission extends VehicleMission {
 		boolean result = true;
 		Iterator<MissionMember> i = getMembers().iterator();
 		while (i.hasNext()) {
-			if (i.next().getLocationSituation() != LocationSituation.IN_VEHICLE) {
+			if (i.next().getLocationStateType() != LocationStateType.INSIDE_VEHICLE) {
 				result = false;
 			}
 		}

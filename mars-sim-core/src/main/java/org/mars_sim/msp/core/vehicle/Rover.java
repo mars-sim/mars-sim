@@ -153,7 +153,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 		massO2MinimumLimit = Math.round(min_o2_pressure / fullO2PartialPressure * oxygenCapacity*10_000.0)/10_000.0;
 		massO2NominalLimit =Math.round( NORMAL_AIR_PRESSURE / min_o2_pressure * massO2MinimumLimit*10_000.0)/10_000.0;
 		 
-		logger.info(type + " : full O2 partial pressure is " + fullO2PartialPressure + " kPa");
+		logger.info(type + " : full tank O2 partial pressure is " + fullO2PartialPressure + " kPa");
 		logger.info(type + " : minimum mass limit of O2 (above the safety limit) is " + massO2MinimumLimit  + " kg");
 		logger.info(type + " : nomimal mass limit of O2 is " + massO2NominalLimit  + " kg");
 		

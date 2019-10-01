@@ -7,15 +7,17 @@
 
 package org.mars_sim.msp.core.equipment;
 
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.location.LocationSituation;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.manufacture.Salvagable;
 import org.mars_sim.msp.core.manufacture.SalvageInfo;
 import org.mars_sim.msp.core.manufacture.SalvageProcessInfo;
-import org.mars_sim.msp.core.mars.MarsSurface;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.Maintenance;
 import org.mars_sim.msp.core.person.ai.task.Repair;
@@ -26,10 +28,6 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.Indoor;
 import org.mars_sim.msp.core.vehicle.Vehicle;
-
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * The Equipment class is an abstract class that represents a useful piece of
@@ -94,10 +92,16 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 		this.identifier = getNextIdentifier();
 		// Add this equipment to the equipment lookup map		
 		unitManager.addEquipmentID(this);
-		
-		// Set its container unit
-		if (!(this instanceof Robot))
-			super.setContainerUnit(CollectionUtils.findSettlement(location));
+
+//		if (!(this instanceof Robot)) {
+//			Settlement s = CollectionUtils.findSettlement(location);
+//			if (s != null) {
+//				// Set its container unit
+//				setContainerUnit(s);
+//				// Set the containerID
+//				setContainerID(s.getIdentifier());
+//			}
+//		}
 	}
 	
 	/**
@@ -191,15 +195,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 		}
 
 		else if (c instanceof Person) {
-			Unit cc = ((Person) c).getContainerUnit();
-			if (cc instanceof Settlement) {
-				return (Settlement) cc;
-			}
-//		} else if (c instanceof Vehicle && ((Vehicle) c).getStatus() == StatusType.GARAGED) {
-//			Unit cc = ((Vehicle) c).getContainerUnit();
-//			if (cc instanceof Settlement) {
-//				return (Settlement) c;
-//			}
+			return c.getSettlement();
 		}
 		else if (c instanceof Vehicle) {
 			Building b = BuildingManager.getBuilding((Vehicle) getContainerUnit());
@@ -224,6 +220,9 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 		Unit container = getContainerUnit();
 		if (container instanceof Vehicle)
 			return (Vehicle) container;
+		if (container.getContainerUnit() instanceof Vehicle)
+			return (Vehicle) (container.getContainerUnit());
+		
 		return null;
 	}
 
@@ -238,22 +237,24 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 		return false;
 	}
 	
-	/**
-	 * Get the equipment's location
-	 * 
-	 * @return {@link LocationSituation} the person's location
-	 */
-	public LocationSituation getLocationSituation() {
-		Unit container = getContainerUnit();
-		if (container instanceof Settlement)
-			return LocationSituation.IN_SETTLEMENT;
-		else if (container instanceof Vehicle)
-			return LocationSituation.IN_VEHICLE;
-		else if (container instanceof MarsSurface)
-			return LocationSituation.OUTSIDE;
-		else
-			return LocationSituation.UNKNOWN;
-	}
+//	/**
+//	 * Get the equipment's location
+//	 * 
+//	 * @return {@link LocationSituation} the person's location
+//	 */
+//	public LocationSituation getLocationSituation() {
+//		Unit container = getContainerUnit();
+//		if (container instanceof Settlement)
+//			return LocationSituation.IN_SETTLEMENT;
+//		else if (container instanceof Vehicle)
+//			return LocationSituation.IN_VEHICLE;
+//		else if (container instanceof Person || container instanceof Robot)
+//			return container.getLocationSituation();
+//		else if (container instanceof MarsSurface)
+//			return LocationSituation.OUTSIDE;
+//		else
+//			return LocationSituation.UNKNOWN;
+//	}
 
 	/**
 	 * Is a person carrying this equipment? Is this equipment's container a person ?

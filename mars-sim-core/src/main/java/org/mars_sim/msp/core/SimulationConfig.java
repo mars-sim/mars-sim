@@ -360,7 +360,7 @@ public class SimulationConfig implements Serializable {
 							LogConsolidated.log(Level.CONFIG, 0, sourceName, "Case A1 : " +
 									"Backing up to " + s0);
 							// Make a copy everything in the /xml to the /{$version}
-							FileUtils.copyDirectoryToDirectory(xmlLocation, dir);   	
+							FileUtils.moveDirectoryToDirectory(xmlLocation, dir, true);   	
 				        }
 				        else {
 				        	// Case A2 :  Copy it to /.mars-sim/backup/{$buildText}/{$timestamp}/
@@ -372,7 +372,7 @@ public class SimulationConfig implements Serializable {
 							LogConsolidated.log(Level.CONFIG, 0, sourceName, "Case A2 : " +
 									s0 + " folder already exists. Backing up to " + s1);
 							// Make a copy everything in the /xml to the /{$version}
-							FileUtils.copyDirectoryToDirectory(xmlLocation, dir);
+							FileUtils.moveDirectoryToDirectory(xmlLocation, dir, true);
 				        }
 					}
 	
@@ -383,7 +383,7 @@ public class SimulationConfig implements Serializable {
 							LogConsolidated.log(Level.CONFIG, 0, sourceName, "Case B1 : " +
 									"Backing up to " + backupDir);
 							// Make a copy everything in the /xml to the /backup/xml
-							FileUtils.copyDirectoryToDirectory(xmlLocation, backupLocation);
+							FileUtils.moveDirectoryToDirectory(xmlLocation, backupLocation, true);
 				        }
 						else {
 							// Case B2 : Copy it to /.mars-sim/backup/{$timestamp}/
@@ -393,7 +393,7 @@ public class SimulationConfig implements Serializable {
 							LogConsolidated.log(Level.CONFIG, 0, sourceName, "Case B2 : " +
 									backupDir + " already exists. Backing up to " + s2);	
 							// Make a copy everything in the /xml to the /backup/xml
-							FileUtils.copyDirectoryToDirectory(xmlLocation, backupLocation);
+							FileUtils.moveDirectoryToDirectory(xmlLocation, backupLocation, true);
 
 						}
 					}

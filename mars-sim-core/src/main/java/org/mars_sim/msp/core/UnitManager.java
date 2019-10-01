@@ -8,7 +8,6 @@ package org.mars_sim.msp.core;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -1004,7 +1003,7 @@ public class UnitManager implements Serializable {
 			boolean invalid = false;
 			// Prevent mars-sim from using the user defined commander's name  
 			if (name == "" || name == null) {
-				logger.severe("A person's name is invalid in alpha crew list or in people.xml");
+				logger.severe("A person's name is invalid in crew.xml");
 				invalid = true;
 			}
 				
@@ -1046,12 +1045,11 @@ public class UnitManager implements Serializable {
 				Collection<Settlement> col = getSettlements();//lookupSettlement.values();//CollectionUtils.getSettlement(units);
 				settlement = CollectionUtils.getSettlement(col, preConfigSettlementName);
 				if (settlement == null) {
-//					System.out.println("settlement : " + settlement);
-					// TODO: If settlement cannot be found that matches the settlement name,
-					// should we put the person in a randomly selected settlement?
-					settlement = CollectionUtils.getRandomSettlement(col);
-					logger.log(Level.INFO, name + " is being sent to " + settlement + " since "
-							+ preConfigSettlementName + " doesn't exist.");
+					// Note: if settlement cannot be found that matches the settlement name,
+					// do NOT use this member
+//					settlement = CollectionUtils.getRandomSettlement(col);
+					logger.log(Level.CONFIG, "Alpha crew member '" + name + "' has the designated settlement called '" 
+						+ preConfigSettlementName + "' but it doesn't exist.");
 				}
 
 			} else {

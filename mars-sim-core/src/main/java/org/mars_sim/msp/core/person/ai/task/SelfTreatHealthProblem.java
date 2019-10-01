@@ -16,7 +16,7 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.location.LocationSituation;
+import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
@@ -144,10 +144,10 @@ public class SelfTreatHealthProblem extends Task implements Serializable {
 
         MedicalAid result = null;
 
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+		if (person.getLocationStateType() == LocationStateType.INSIDE_SETTLEMENT) {
             result = determineMedicalAidAtSettlement();
         }
-        else if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+        else if (person.getLocationStateType() == LocationStateType.INSIDE_VEHICLE) {
             result = determineMedicalAidInVehicle();
         }
 

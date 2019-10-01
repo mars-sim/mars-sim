@@ -22,13 +22,10 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.LifeSupportInterface;
 import org.mars_sim.msp.core.LogConsolidated;
-import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.equipment.EVASuit;
-import org.mars_sim.msp.core.location.LocationSituation;
 import org.mars_sim.msp.core.location.LocationStateType;
-import org.mars_sim.msp.core.mars.MarsSurface;
 import org.mars_sim.msp.core.person.ai.Mind;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
@@ -56,6 +53,7 @@ import org.mars_sim.msp.core.reportingAuthority.RKAMissionControl;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 import org.mars_sim.msp.core.reportingAuthority.SpaceXMissionControl;
+import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -267,7 +265,11 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		this.identifier = getNextIdentifier();
 		// Add the person to the lookup map
 		unitManager.addPersonID(this);
-
+//		// Set its container unit
+//		setContainerUnit(settlement);
+//		// Set the containerID
+//		setContainerID(settlement.getIdentifier());
+		
 //		// Place this person within a settlement
 //		enter(LocationCodeType.SETTLEMENT);
 //		// Place this person within a building
@@ -318,6 +320,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		// WARNING: setAssociatedSettlement(settlement) will cause suffocation when
 		// reloading from a saved sim
 		BuildingManager.addToRandomBuilding(this, associatedSettlement);
+		
 		// why failed in
 		// testWalkingStepsRoverToExterior(org.mars_sim.msp.core.person.ai.task.WalkingStepsTest)
 		// Set up genetic make-up. Notes it requires attributes.
@@ -758,27 +761,28 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 //		return false;
 //	}
 
-	/**
-	 * Get a person's location situation
-	 * 
-	 * @return {@link LocationSituation} the person's location
-	 */
-	public LocationSituation getLocationSituation() {
-		if (isBuried)
-			return LocationSituation.BURIED;
-		else {
-			Unit container = getContainerUnit();
-			if (container instanceof Settlement)
-				return LocationSituation.IN_SETTLEMENT;
-			else if (container instanceof Vehicle)
-				return LocationSituation.IN_VEHICLE;
-			else if (container instanceof MarsSurface)
-				return LocationSituation.OUTSIDE;
-			else
-				return LocationSituation.UNKNOWN;
-		}
-
-	}
+//	/**
+//	 * Get a person's location situation
+//	 * 
+//	 * @return {@link LocationSituation} the person's location
+//	 */
+//	public LocationSituation getLocationSituation() {
+//		if (isBuried)
+//			return LocationSituation.BURIED;
+//		else {
+//			Unit container = getContainerUnit();
+//			if (container instanceof Settlement)
+//				return LocationSituation.IN_SETTLEMENT;
+//			else if (container instanceof Vehicle)
+//				return LocationSituation.IN_VEHICLE;
+//			else if (container instanceof EVASuit)
+//				return container.getLocationSituation();
+//			else if (container instanceof MarsSurface)
+//				return LocationSituation.OUTSIDE;
+//			else
+//				return LocationSituation.UNKNOWN;
+//		}
+//	}
 
 	/**
 	 * Gets the person's X location at a settlement.
@@ -840,6 +844,10 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 			return (Settlement) c;
 		}
 
+		else if (c instanceof EVASuit || c instanceof Person || c instanceof Robot) {
+			return c.getSettlement();
+		}
+		
 		else if (c instanceof Vehicle) {
 			Building b = BuildingManager.getBuilding((Vehicle) c);
 			if (b != null)
@@ -941,6 +949,12 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 								+ getName() + "'s Mind was having trouble processing task selection.", ex);
 					}
 
+//					// Check on the EVA suit donned by the person
+//					if (suit != null) {
+//						suit.getMalfunctionManager().activeTimePassing(time);	
+//						suit.getMalfunctionManager().timePassing(time);
+//					}
+					
 					// check for the passing of each day
 					int solElapsed = marsClock.getMissionSol();
 
@@ -1502,7 +1516,8 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 * @return the person's vehicle
 	 */
 	public Vehicle getVehicle() {
-		if (getContainerID() >= FIRST_VEHICLE_ID 
+		if (getLocationStateType() == LocationStateType.INSIDE_VEHICLE
+				&& getContainerID() >= FIRST_VEHICLE_ID 
 				&& getContainerID() < FIRST_PERSON_ID) {
 			Vehicle v = unitManager.getVehicleByID(getContainerID());
 			vehicle = getContainerID();

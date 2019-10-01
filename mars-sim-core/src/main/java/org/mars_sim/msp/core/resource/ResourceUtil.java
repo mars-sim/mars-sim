@@ -72,6 +72,7 @@ public class ResourceUtil implements Serializable {
 	public static final String GARLIC_OIL = "garlic oil";
 	public static final String SESAME_OIL = "sesame oil";
 	public static final String PEANUT_OIL = "peanut oil";
+	public static final String RICE_BRAN_OIL = "rice bran oil";
 
 	public static final String TOILET_TISSUE = "toilet tissue";
 	
@@ -138,6 +139,7 @@ public class ResourceUtil implements Serializable {
 	public static int garlicOilID;
 	public static int sesameOilID;
 	public static int peanutOilID;
+	public static int riceBranOilID;
 
 	public static int epsomSaltID;
 	public static int tableSaltID;
@@ -388,6 +390,7 @@ public class ResourceUtil implements Serializable {
 		garlicOilID = findAmountResource(GARLIC_OIL).getID(); // 41
 		sesameOilID = findAmountResource(SESAME_OIL).getID(); // 53
 		peanutOilID = findAmountResource(PEANUT_OIL).getID(); // 46
+		riceBranOilID = findAmountResource(RICE_BRAN_OIL).getID(); // 46
 		
 		tableSaltID = findAmountResource(TABLE_SALT).getID(); // 23
 		rockSaltID = findAmountResource(ROCK_SALT).getID(); // 

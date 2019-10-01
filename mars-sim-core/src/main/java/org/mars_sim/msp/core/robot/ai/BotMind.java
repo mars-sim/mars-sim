@@ -39,7 +39,7 @@ public class BotMind implements Serializable {
 	/** Is the job locked so another can't be chosen? */
 	private boolean jobLock;
 	/** The cache for msol. */
-	private double msolCache = -1D;
+	private int msolCache = -1;
 	/** The robot owning this mind. */
 	private Robot robot = null;
 	/** The robot's task manager. */
@@ -113,10 +113,10 @@ public class BotMind implements Serializable {
 //	    if (missionManager != null)
 //	    	missionManager.recordMission(robot);
 
-		double msol1 = marsClock.getMillisolOneDecimal();
+		int msolInt = marsClock.getMillisolInt();
 
-		if (msolCache != msol1) {
-			msolCache = msol1;
+		if (msolCache != msolInt) {
+			msolCache = msolInt;
 
 			// I don't think robots should be changing jobs on their own. - Scott
 			// Check if this robot needs to get a new job or change jobs.
@@ -138,20 +138,6 @@ public class BotMind implements Serializable {
 	 * @throws Exception if error during action.
 	 */
 	public void takeAction(double time) {
-
-//		if ((mission != null) && mission.isDone()) {
-//			mission = null;
-//		}
-
-//		boolean activeMission = (mission != null);
-
-		// Check if mission creation at settlement (if any) is overridden.
-		boolean overrideMission = false;
-
-		if (robot.isInSettlement()) {
-			overrideMission = robot.getSettlement().getMissionCreationOverride();
-		}
-
 		boolean hasActiveTask = botTaskManager.hasActiveTask();
 		// Perform a task if the robot has one, or determine a new task/mission.
 		if (hasActiveTask) {
@@ -159,24 +145,17 @@ public class BotMind implements Serializable {
 			if (remainingTime > 0D) {
 				takeAction(remainingTime);
 			}
-		} else {
-
-//			if (activeMission) {
-//				mission.performMission(robot);
-//			}
-
+		} 
+		
+		else {
 			if (!botTaskManager.hasActiveTask()) {
 				try {
-					getNewAction(true, false);//(!activeMission && !overrideMission));
+					getNewAction(true);
 				} catch (Exception e) {
 					logger.log(Level.WARNING, robot + " could not get new action", e);
 					e.printStackTrace(System.err);
 				}
 			}
-
-			// if (botTaskManager.hasActiveTask() || hasActiveMission()) {
-			// takeAction(time);
-			// }
 		}
 	}
 
@@ -293,7 +272,7 @@ public class BotMind implements Serializable {
 	 * @param tasks    can actions be tasks?
 	 * @param missions can actions be new missions?
 	 */
-	public void getNewAction(boolean tasks, boolean missions) {
+	public void getNewAction(boolean tasks) {
 		// Get probability weights from tasks, missions and active missions.
 		double taskWeights = 0D;
 		double missionWeights = 0D;
@@ -338,7 +317,6 @@ public class BotMind implements Serializable {
 		// If reached this point, no task or mission has been found.
 		logger.severe(robot.getName() + " couldn't determine new action - taskWeights: " + taskWeights
 				+ ", missionWeights: " + missionWeights);
-
 	}
 
 	/**

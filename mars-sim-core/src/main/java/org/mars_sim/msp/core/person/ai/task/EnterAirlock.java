@@ -27,6 +27,7 @@ import org.mars_sim.msp.core.person.ai.taskUtil.Task;
 import org.mars_sim.msp.core.person.ai.taskUtil.TaskPhase;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Airlock;
+import org.mars_sim.msp.core.structure.Airlock.AirlockState;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.vehicle.Rover;
@@ -148,7 +149,7 @@ public class EnterAirlock extends Task implements Serializable {
 		}
 
 		// If airlock is depressurized and outer door unlocked, enter airlock.
-		if ((Airlock.DEPRESSURIZED.equals(airlock.getState()) && !airlock.isOuterDoorLocked())
+		if ((Airlock.AirlockState.DEPRESSURIZED == airlock.getState() && !airlock.isOuterDoorLocked())
 				|| airlock.inAirlock(person)) {
 			setPhase(ENTERING_AIRLOCK);
 		} else {
@@ -430,10 +431,10 @@ public class EnterAirlock extends Task implements Serializable {
 		EVASuit suit = person.getSuit(); 
 		// 5.2 deregister the suit the person will take into the airlock to don
 		person.registerSuit(null);		
-		// 5.3 set the person as the owner
-		suit.setLastOwner(person);
-		
+
 		if (suit != null) {
+			// 5.3 set the person as the owner
+			suit.setLastOwner(person);
 			
 			Inventory suitInv = suit.getInventory();
 //			Inventory personInv = person.getInventory();

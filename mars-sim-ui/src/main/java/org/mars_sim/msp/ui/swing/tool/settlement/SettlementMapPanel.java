@@ -222,57 +222,21 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 		addMouseMotionListener(new MouseMotionAdapter() {
 			@Override
 			public void mouseDragged(MouseEvent evt) {
-				// Move map center based on mouse drag difference.
-				double xDiff = evt.getX() - xLast;
-				double yDiff = evt.getY() - yLast;
-				moveCenter(xDiff, yDiff);
-				xLast = evt.getX();
-				yLast = evt.getY();
-			}
-		});
-		
-		addMouseListener(new MouseAdapter() {
-
-			@Override
-			public void mouseReleased(MouseEvent evt) {
-				if (evt.getButton() == MouseEvent.BUTTON1) {
-					setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+//				if (evt.getButton() == MouseEvent.BUTTON1) {
+					setCursor(new Cursor(Cursor.MOVE_CURSOR));
+					// Move map center based on mouse drag difference.
+					double xDiff = evt.getX() - xLast;
+					double yDiff = evt.getY() - yLast;
+					moveCenter(xDiff, yDiff);
+//					xLast = evt.getX();
+//					yLast = evt.getY();
 				}
-			}
-
-			@Override
-			public void mousePressed(MouseEvent evt) {
-				// setCursor(new Cursor(Cursor.HAND_CURSOR));
-				if (evt.getButton() == MouseEvent.BUTTON1) {
-					// Set initial mouse drag position.
-					xLast = evt.getX();
-					yLast = evt.getY();
-				}
-			}
-
-			@Override
-			public void mouseClicked(MouseEvent evt) {
-				// Select person if clicked on.
-//					setCursor(new Cursor(Cursor.HAND_CURSOR));
-				setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-//					selectPersonAt(evt.getX(), evt.getY());
-//					selectRobotAt(evt.getX(), evt.getY());
-			}
-
+//			}
+			
 		});
 		
 		// Add PopClickListener() to detect mouse right click
 		class PopClickListener extends MouseAdapter {
-
-			// @Override
-//			public void mouseClicked(MouseEvent evt) {
-			// Select person if clicked on.
-//				if (evt.getButton() == MouseEvent.BUTTON1) {
-//					setCursor(new Cursor(Cursor.HAND_CURSOR));
-//					selectPersonAt(evt.getX(), evt.getY());
-//					selectRobotAt(evt.getX(), evt.getY());
-//				}
-//			}
 
 			// @Override
 //			public void mouseEntered(MouseEvent evt) {
@@ -283,35 +247,22 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 			// mouseMoved(evt);
 //			}
 
-//			@Override
-//			public void mouseClicked(MouseEvent evt) {
-//				// Select person if clicked on.
-//				if (evt.getButton() == MouseEvent.BUTTON1
-//						|| evt.getButton() == MouseEvent.BUTTON3) {
-//					setCursor(new Cursor(Cursor.HAND_CURSOR));
-//					selectPersonAt(evt.getX(), evt.getY());
-//					selectRobotAt(evt.getX(), evt.getY());
-//				}
-//
-//				else if (evt.isPopupTrigger()) {
-//					 setCursor(new Cursor(Cursor.HAND_CURSOR));
-//					 doPop(evt);
-//				}
-//
-//			}
-
 			@Override
 			public void mousePressed(MouseEvent evt) {
-				setCursor(new Cursor(Cursor.HAND_CURSOR));
-
+				
+				if (evt.getButton() == MouseEvent.BUTTON1) {
+					// This condition must be presented in order to reset the mouse dragging action
+					xLast = evt.getX();
+					yLast = evt.getX();
+				}
+				
 				if (evt.getButton() == MouseEvent.BUTTON3) {
+					setCursor(new Cursor(Cursor.HAND_CURSOR));
 					// Set initial mouse drag position.
 					xLast = evt.getX();
 					yLast = evt.getY();
 
 					if (evt.isPopupTrigger()) {
-						setCursor(new Cursor(Cursor.HAND_CURSOR));
-						// repaint();
 						doPop(evt);
 					}
 				}
@@ -319,21 +270,29 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 
 			@Override
 			public void mouseReleased(MouseEvent evt) {
-				// setCursor(new Cursor(Cursor.HAND_CURSOR));
-				// setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-				if (evt.getButton() == MouseEvent.BUTTON3) {
-
+				
+				if (evt.getButton() == MouseEvent.BUTTON1) {
 					setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-					xLast = 0;// evt.getX();
-					yLast = 0;// evt.getY();
+//					xLast = 0;
+//					yLast = 0;
+				}
+				
+				if (evt.getButton() == MouseEvent.BUTTON3) {
+					setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+					xLast = 0;
+					yLast = 0;
 
 					if (evt.isPopupTrigger()) {
-						setCursor(new Cursor(Cursor.HAND_CURSOR));
 						doPop(evt);
 					}
 				}
 			}
 
+//			@Override
+//			public void mouseClicked(MouseEvent evt) {
+//				setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+//			}
+			
 			// Add vehicle detection
 			private void doPop(final MouseEvent evt) {
 				// System.out.println("doPop()");

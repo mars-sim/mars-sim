@@ -1663,7 +1663,9 @@ public class Inventory implements Serializable {
 		}
 
 		if (retrieved) {
-            unit.setContainerUnit(null);// newOwner); //owner.getContainerUnit());
+            unit.setContainerUnit(null);
+            // Set the unit's coordinates back to its owner's current coordinates
+//            unit.setCoordinates(owner.getCoordinates());
 		}
 
 		else {
@@ -1681,7 +1683,7 @@ public class Inventory implements Serializable {
 	 */
 	public void setCoordinates(Coordinates newLocation) {
 
-		if (containedUnits != null && newLocation != null) {
+		if (containedUnits != null && newLocation != null && !newLocation.equals(new Coordinates(0D, 0D))) {
 			for (Unit unit : containedUnits) {
 				unit.setCoordinates(newLocation);
 			}

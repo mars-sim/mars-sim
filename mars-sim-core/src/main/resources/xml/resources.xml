@@ -67,7 +67,6 @@
 	<resource name="okara" type="food" phase="solid" edible="true">The Soy Pulp consisting of insoluble parts of the soybean which
 		 after pureed Soybean are filtered in the production of soymilk and tofu.</resource>
 	<resource name="soybean ash" type="food" phase="solid" edible="true">Soybean extract composed of mainly Potassium, Phosphorus, Magnesium, and Calcium.</resource>
-	<resource name="soybean oil" type="food" phase="liquid" edible="true">Oil derived from Soybean.</resource>
 	<resource name="soymilk" type="food" phase="liquid" edible="true">Plant milk produced by soaking dry Soybean and grinding them with water.</resource>
 	<resource name="soy fiber" type="food" phase="solid" edible="true">Light yellow, silky protein Soybean fiber .</resource>
 	<resource name="soy flour" type="food" phase="solid" edible="true">Flour made from ground Soybean.</resource>
@@ -87,19 +86,16 @@
 	<resource name="cranberry juice" type="food" phase="solid" edible="true">Juice made from Cranberries</resource>
 	<resource name="cranberry sauce" type="food" phase="solid" edible="true">Sauce or relish made from Cranberries</resource>
 	<resource name="french fries" type="food" phase="solid" edible="true">French fries made from potatoes.</resource>
-	<resource name="garlic oil" type="food" phase="liquid" edible="true">Oil pressed from Garlic.</resource>
 	<resource name="granola bar" type="food" phase="solid" edible="true">A popular breakfast food and snack food consisting of puffed grain, rolled oats, nuts, honey, dried fruits</resource>
 	<resource name="honey" type="food" phase="liquid" edible="true">Honey extracted from bee hives</resource>
 	<resource name="mustard" type="food" phase="liquid" edible="true">Mustard made from mustard seed</resource>
 	<resource name="peanut butter" type="food" phase="solid" edible="true"></resource>
-	<resource name="peanut oil" type="food" phase="liquid" edible="true"></resource>
 	<resource name="pizza dough" type="food" phase="solid" edible="true"></resource>
 	<resource name="quinoa sprout" type="food" phase="solid" edible="true">Sprouts from Quinoa</resource>
 	<resource name="rice noodle" type="food" phase="solid" edible="true">Noodle made of Rice Flour.</resource>
 	<resource name="rice flour" type="food" phase="solid" edible="true">Flour made from White Rice. </resource>
 	<resource name="rice vinegar" type="food" phase="liquid" edible="true">Rice vinegar is more popular in the cuisines of East and Southeast Asia. It is available in "white" (light yellow), red, and black varieties.</resource>
 	<resource name="roasted peanut" type="food" phase="solid" edible="true"></resource>
-	<resource name="sesame oil" type="food" phase="liquid" edible="true">Oil pressed from Sesame Seeds.</resource>
 	<resource name="soy sauce" type="food" phase="liquid" edible="true">Made from fermented soybeans</resource>
 	<resource name="sugarcane juice" type="food" phase="liquid" edible="true">Juice made from Sugarcane</resource>
 	<resource name="sugar" type="food" phase="solid" edible="true">Sugar processed from Sugarcane.</resource>
@@ -112,6 +108,13 @@
 	<resource name="white bun" type="food" phase="solid" edible="true">French bread or loaves of bread made from flour. </resource>
 	<resource name="white rice" type="food" phase="solid" edible="true"></resource>
 
+<!-- Oil -->
+	<resource name="sesame oil" type="food" phase="liquid" edible="true">Oil pressed from Sesame Seeds.</resource>
+	<resource name="rice bran oil" type="food" phase="liquid" edible="true">Oil is extracted from the germ and inner husk of rice. </resource>
+	<resource name="peanut oil" type="food" phase="liquid" edible="true">Oil is extracted from peanuts.</resource>
+	<resource name="garlic oil" type="food" phase="liquid" edible="true">Oil pressed from Garlic.</resource>
+	<resource name="soybean oil" type="food" phase="liquid" edible="true">Oil derived from Soybean.</resource>
+		
 <!-- Crop Produce -->
 	<resource name="blueberry" type="crop" phase="solid" edible="true"></resource>
 	<resource name="cabbage" type="crop" phase="solid" edible="true"></resource>
@@ -185,7 +188,15 @@
 	<resource name="lime" phase="solid">Lime is a calcium-containing inorganic 
 		material in which carbonates, oxides, and hydroxides predominate. In the 
 		strict sense of the term, lime is CaO or Ca(OH)2.</resource> 
-	<resource name="polycarbonate resin" phase="liquid" />
+	<resource name="polycarbonate resin" phase="solid">These are partially bio-based 
+		polycarbonates made use of renewable feedstocks (food waste) and CO2. See 
+		https://www.bio.org/sites/default/files/Natalie%20Bittner.pdf. They 
+		are strong, tough materials, easily worked, molded, and thermoformed.</resource>
+	<resource name="polyurethane" phase="solid">These bio-based polyurethane made 
+		use of natural-oil polyols (NOPs) produced from renewable 
+		raw materials such as soybean or vegetable oil. Polyurethanes are used 
+		in the manufacturing of foot wears, solid plastic items, foams for 
+		bedding and upholstery. </resource>
 	<resource name="polyester resin" phase="liquid" />
 	<resource name="polyethylene" phase="solid">Polyethylene pellets or flakes.</resource>
 	<resource name="styrene" phase="solid"/>

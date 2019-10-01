@@ -18,12 +18,9 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.ContainerUtil;
 import org.mars_sim.msp.core.equipment.EVASuit;
-import org.mars_sim.msp.core.equipment.Equipment;
-import org.mars_sim.msp.core.equipment.EquipmentType;
-import org.mars_sim.msp.core.location.LocationSituation;
+import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
@@ -34,7 +31,6 @@ import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.Walk;
-import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -392,7 +388,7 @@ public class EmergencySupplyMission extends RoverMission implements Serializable
 		}
 
 		// Have member exit rover if necessary.
-		if (member.getLocationSituation() != LocationSituation.IN_SETTLEMENT) {
+		if (member.getLocationStateType() != LocationStateType.INSIDE_SETTLEMENT) {
 
 			// Get random inhabitable building at emergency settlement.
 			Building destinationBuilding = emergencySettlement.getBuildingManager().getRandomAirlockBuilding();
@@ -523,9 +519,9 @@ public class EmergencySupplyMission extends RoverMission implements Serializable
 	private void performReturnTripEmbarkingPhase(MissionMember member) {
 
 		// If person is not aboard the rover, board rover.
-		if (member.getLocationSituation() != LocationSituation.IN_VEHICLE
-				&& member.getLocationSituation() != LocationSituation.BURIED) {
 
+		if (member.getLocationStateType() != LocationStateType.INSIDE_VEHICLE) {
+				
 			// Move person to random location within rover.
 			Point2D.Double vehicleLoc = LocalAreaUtil.getRandomInteriorLocation(getVehicle());
 			Point2D.Double adjustedLoc = LocalAreaUtil.getLocalRelativeLocation(vehicleLoc.getX(), vehicleLoc.getY(),
@@ -533,11 +529,13 @@ public class EmergencySupplyMission extends RoverMission implements Serializable
 			// TODO Refactor
 			if (member instanceof Person) {
 				Person person = (Person) member;
-				if (Walk.canWalkAllSteps(person, adjustedLoc.getX(), adjustedLoc.getY(), getVehicle())) {
-					assignTask(person, new Walk(person, adjustedLoc.getX(), adjustedLoc.getY(), getVehicle()));
-				} else {
-					logger.severe(person.getName() + " unable to enter rover " + getVehicle());
-					endMission(person.getName() + " unable to enter rover " + getVehicle());
+				if (!person.getPhysicalCondition().isDead()) { 
+					if (Walk.canWalkAllSteps(person, adjustedLoc.getX(), adjustedLoc.getY(), getVehicle())) {
+						assignTask(person, new Walk(person, adjustedLoc.getX(), adjustedLoc.getY(), getVehicle()));
+					} else {
+						logger.severe(person.getName() + " unable to enter rover " + getVehicle());
+						endMission(person.getName() + " unable to enter rover " + getVehicle());
+					}
 				}
 			} else if (member instanceof Robot) {
 				Robot robot = (Robot) member;
@@ -1156,7 +1154,7 @@ public class EmergencySupplyMission extends RoverMission implements Serializable
 
 		if (result) {
 			boolean atStartingSettlement = false;
-			if (member.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+			if (member.getLocationStateType() == LocationStateType.INSIDE_SETTLEMENT) {
 				if (member.getSettlement() == getStartingSettlement()) {
 					atStartingSettlement = true;
 				}

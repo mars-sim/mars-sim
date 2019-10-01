@@ -30,7 +30,6 @@ import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.taskUtil.Task;
 import org.mars_sim.msp.core.person.ai.taskUtil.TaskPhase;
 import org.mars_sim.msp.core.resource.ResourceUtil;
-
 import org.mars_sim.msp.core.structure.Airlock;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -228,7 +227,7 @@ public class ExitAirlock extends Task implements Serializable {
 		}
 
 		// If airlock is pressurized and inner door unlocked, enter airlock.
-		if ((Airlock.PRESSURIZED.equals(airlock.getState()) && !airlock.isInnerDoorLocked())
+		if ((Airlock.AirlockState.PRESSURIZED == airlock.getState() && !airlock.isInnerDoorLocked())
 				|| airlock.inAirlock(person)) {
 			setPhase(ENTERING_AIRLOCK);
 		} else {
@@ -296,13 +295,14 @@ public class ExitAirlock extends Task implements Serializable {
 				// WARNING: calling this incorrectly can potentially halt the simulation
 				LogConsolidated.log(Level.WARNING, 0, sourceName, 
 						"[" + person.getLocationTag().getLocale() + "] " + person.getName() + 
-						" was about to enter the airlock within the settlement, but was already outside. End task.");	
+						" was about to exit the airlock, but was already outside. End task.");	
 				endTask();
+				
 			} else if (LocalAreaUtil.areLocationsClose(personLocation, insideAirlockPos)) {
 				LogConsolidated.log(Level.FINER, 0, sourceName, 
 						"[" + person.getLocationTag().getLocale() + "] " + person.getName()
 						+ " has arrived at an airlock and ready to enter.");
-				
+
 				// Enter airlock.
 				if (airlock.enterAirlock(person, true)) {
 	
@@ -343,7 +343,7 @@ public class ExitAirlock extends Task implements Serializable {
 			}
 			
 			else {
-				if (!person.isOutside()) {
+				if (person.isInside()) {
 	
 					// Walk to inside airlock position.
 					if (airlock.getEntity() instanceof Building) {
@@ -461,12 +461,14 @@ public class ExitAirlock extends Task implements Serializable {
 		LogConsolidated.log(Level.FINER, 0, sourceName,
 				"[" + person.getLocationTag().getLocale() + "] " + person + " was about to leave the airlock going outside.");
 		
-		if (!person.isOutside()) {
+		if (person.isInside()) {
 //                throw new IllegalStateException(person + " has exited airlock of " + airlock.getEntityName() +
 //                        " but is not outside.");
 			LogConsolidated.log(Level.SEVERE, 5000, sourceName,
+//					"[" + person.getLocationTag().getLocale() + "] " + person + " was still inside the airlock at " 
+//					+ airlock.getEntityName() + " and should have been outside.");
 					"[" + person.getLocationTag().getLocale() + "] " + person + " was still inside the airlock at " 
-							+ airlock.getEntityName() + " and should have been outside.");
+					+ airlock.getEntityName() + " and should have been outside.");
 			endTask();
 		}
 
@@ -484,7 +486,6 @@ public class ExitAirlock extends Task implements Serializable {
 			}
 
 			else {
-				// TODO: why addSubTask below? should we throw new IllegalStateException
 				// Walk to exterior airlock position.
 				addSubTask(new WalkOutside(person, person.getXLocation(), person.getYLocation(),
 						exteriorAirlockPos.getX(), exteriorAirlockPos.getY(), true));
@@ -595,7 +596,7 @@ public class ExitAirlock extends Task implements Serializable {
 				// Repair this EVASuit by himself/herself
 //				person.getMind().getTaskManager().addTask(new RepairMalfunction(person));
 				
-				EVASuit suit = (EVASuit) person.getInventory().findUnitOfClass(EVASuit.class);
+				EVASuit suit = person.getSuit();//(EVASuit) person.getInventory().findUnitOfClass(EVASuit.class);
 				
 				// Check if suit has any malfunctions.
 				if (suit != null && suit.getMalfunctionManager().hasMalfunction()) {
@@ -656,7 +657,7 @@ public class ExitAirlock extends Task implements Serializable {
 							+ "] " + person + " in " + v.getName() + hasMission
 							+ " will try to repair an EVA suit.");
 					
-					EVASuit suit = (EVASuit) person.getInventory().findUnitOfClass(EVASuit.class);
+					EVASuit suit = person.getSuit();//(EVASuit) person.getInventory().findUnitOfClass(EVASuit.class);
 					
 					// Check if suit has any malfunctions.
 					if (suit != null && suit.getMalfunctionManager().hasMalfunction()) {
@@ -695,7 +696,7 @@ public class ExitAirlock extends Task implements Serializable {
 	private boolean alreadyHasEVASuit() {
 		boolean result = false;
 
-		EVASuit suit = (EVASuit) person.getInventory().findUnitOfClass(EVASuit.class);
+		EVASuit suit = person.getSuit();//(EVASuit) person.getInventory().findUnitOfClass(EVASuit.class);
 		if (suit != null) {
 			result = true;
 			// LogConsolidated.log(Level.INFO, 3000, sourceName,

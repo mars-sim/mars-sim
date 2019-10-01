@@ -425,8 +425,8 @@ public class LogMenu implements BiConsumer<TextIO, RunnerData> {
 				responseText.append("Plese specify which log level.");
 				logger.config("Plese specify which log level.");
 			}
-			else if (text.equalsIgnoreCase("log all walk off")) {
-				lvl = Level.OFF;
+			else if (text.equalsIgnoreCase("log all walk all")) {
+				lvl = Level.ALL;
 			}
 
 			else if (text.equalsIgnoreCase("log all walk finest")) {
@@ -481,8 +481,8 @@ public class LogMenu implements BiConsumer<TextIO, RunnerData> {
 				responseText.append("Plese specify which log level.");
 				logger.config("Plese specify which log level.");
 			}
-			else if (text.equalsIgnoreCase("log all airlock off")) {
-				lvl = Level.OFF;
+			else if (text.equalsIgnoreCase("log all airlock all")) {
+				lvl = Level.ALL;
 			}
 
 			else if (text.equalsIgnoreCase("log all airlock finest")) {
@@ -537,8 +537,8 @@ public class LogMenu implements BiConsumer<TextIO, RunnerData> {
 				responseText.append("Plese specify which log level.");
 				logger.config("Plese specify which log level.");
 			}
-			else if (text.equalsIgnoreCase("log all eva off")) {
-				lvl = Level.OFF;
+			else if (text.equalsIgnoreCase("log all eva all")) {
+				lvl = Level.ALL;
 			}
 
 			else if (text.equalsIgnoreCase("log all eva finest")) {
@@ -589,8 +589,8 @@ public class LogMenu implements BiConsumer<TextIO, RunnerData> {
 				responseText.append("Plese specify which log level.");
 				logger.config("Plese specify which log level.");
 			}
-			else if (text.equalsIgnoreCase("log all mission off")) {
-				lvl = Level.OFF;
+			else if (text.equalsIgnoreCase("log all mission all")) {
+				lvl = Level.ALL;
 			}
 
 			else if (text.equalsIgnoreCase("log all mission finest")) {

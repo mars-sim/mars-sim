@@ -406,8 +406,13 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 			malfunctionManager.timePassing(time);
 		}
 
+
 	}
 
+	/**
+	 * Gets a list of people affected by this equipment
+	 * @return Collection<Person>
+	 */
 	@Override
 	public Collection<Person> getAffectedPeople() {
 		Collection<Person> people = super.getAffectedPeople();
@@ -416,6 +421,19 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 				people.add((Person) getContainerUnit());
 			}
 		}
+		
+
+//		Person p = (Person) getInventory().findUnitOfClass(Person.class);
+//		people.add(p);
+//		for (Unit u : getInventory().getContainedUnits()) {
+//		}
+//		List<Person> pp = getInventory().getAllContainedUnits()
+//				.stream()
+//				.filter(u -> u instanceof Person)
+//				.map(p -> (Person) p)
+//				.collect(Collectors.toList());
+//		people.addAll(pp);
+		
 		return people;
 	}
 

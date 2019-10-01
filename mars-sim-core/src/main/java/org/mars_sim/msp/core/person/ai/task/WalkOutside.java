@@ -21,13 +21,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
-
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.equipment.EVASuit;
-import org.mars_sim.msp.core.location.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
@@ -36,8 +34,8 @@ import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.taskUtil.Task;
 import org.mars_sim.msp.core.person.ai.taskUtil.TaskPhase;
 import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.robot.RoboticAttributeType;
 import org.mars_sim.msp.core.robot.RoboticAttributeManager;
+import org.mars_sim.msp.core.robot.RoboticAttributeType;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
@@ -110,11 +108,14 @@ public class WalkOutside extends Task implements Serializable {
 		this.ignoreEndEVA = ignoreEndEVA;
 
 		// Check that the person is currently outside a settlement or vehicle.
-		LocationSituation location = person.getLocationSituation();
-		if (location != LocationSituation.OUTSIDE) {
-			throw new IllegalStateException("WalkOutside task started when " + person + " is not outside.");
-		}
+//		LocationSituation location = person.getLocationSituation();
+//		if (location != LocationSituation.OUTSIDE) {
+//			throw new IllegalStateException("WalkOutside task started when " + person + " is not outside.");
+//		}
 
+		if (person.isInside())
+			throw new IllegalStateException("WalkOutside task started when " + person + " is " + person.getLocationStateType());
+		
 		init();
 	}
 
@@ -131,10 +132,8 @@ public class WalkOutside extends Task implements Serializable {
 		this.ignoreEndEVA = ignoreEndEVA;
 
 		// Check that the robot is currently outside a settlement or vehicle.
-		LocationSituation location = robot.getLocationSituation();
-		if (location != LocationSituation.OUTSIDE) {
-			throw new IllegalStateException("WalkOutside task started when " + robot + " is not outside.");
-		}
+		if (robot.isInside())
+			throw new IllegalStateException("WalkOutside task started when " + robot + " is " + robot.getLocationStateType());
 
 		init();
 	}
@@ -915,7 +914,7 @@ public class WalkOutside extends Task implements Serializable {
 	private void checkForAccident(double time) {
 
 //		if (person != null) {
-		EVASuit suit = (EVASuit) person.getInventory().findUnitOfClass(EVASuit.class);
+		EVASuit suit = person.getSuit();//(EVASuit) person.getInventory().findUnitOfClass(EVASuit.class);
 		if (suit != null) {
 
 			double chance = BASE_ACCIDENT_CHANCE;

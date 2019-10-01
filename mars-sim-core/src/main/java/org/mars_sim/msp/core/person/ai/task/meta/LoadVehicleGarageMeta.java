@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.location.LocationSituation;
+import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -119,7 +120,7 @@ public class LoadVehicleGarageMeta implements MetaTask, Serializable {
 
         if (robot.getBotMind().getRobotJob() instanceof Deliverybot)
 
-	        if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+    		if (robot.getLocationStateType() == LocationStateType.INSIDE_SETTLEMENT) {
 
 	            // Check all vehicle missions occurring at the settlement.
 	            try {

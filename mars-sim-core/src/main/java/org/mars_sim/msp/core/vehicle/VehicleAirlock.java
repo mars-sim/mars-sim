@@ -17,9 +17,9 @@ import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.equipment.EVASuit;
+import org.mars_sim.msp.core.mars.MarsSurface;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Airlock;
-import org.mars_sim.msp.core.structure.building.BuildingManager;
 
 /**
  * This class represents an airlock for a vehicle.
@@ -42,6 +42,8 @@ extends Airlock {
 	private Point2D airlockInteriorPos;
 	private Point2D airlockExteriorPos;
 
+    private static MarsSurface marsSurface = Simulation.instance().getMars().getMarsSurface();
+    
 	/**
 	 * Constructor.
 	 * @param vehicle the vehicle this airlock of for.
@@ -89,13 +91,13 @@ extends Airlock {
 		// see exitingRoverGaragePhase() in Walk
 		
 		if (inAirlock(person)) {
-			if (PRESSURIZED.equals(getState())) {
+			if (AirlockState.PRESSURIZED == getState()) {
 				// check if the airlock has been sealed from outside and pressurized, ready to 
             	// open the inner door to release the person into the vehicle
 				stepIntoAirlock(person);
 				
 			}
-			else if (DEPRESSURIZED.equals(getState())) {
+			else if (AirlockState.DEPRESSURIZED == getState()) {
             	// check if the airlock has been de-pressurized, ready to open the outer door to 
             	// get exposed to the outside air and release the person
 				stepIntoMarsSurface(person);
@@ -119,16 +121,19 @@ extends Airlock {
     	if (person.isOutside()) {
 			
     		// 1.1 Gets the EVA suit reference the person used to don on
-			EVASuit suit = (EVASuit) person.getContainerUnit(); 
-			if (suit == null) suit = person.getSuit();
+//			EVASuit suit = (EVASuit) person.getContainerUnit(); 
+//			if (suit == null) suit = person.getSuit();
 			// 1.2 Retrieve the suit from the surface of Mars
-			Simulation.instance().getMars().getMarsSurface().getInventory().retrieveUnit(suit);
+			if (marsSurface == null)
+				marsSurface = Simulation.instance().getMars().getMarsSurface();
+//			marsSurface.getInventory().retrieveUnit(suit);
+			marsSurface.getInventory().retrieveUnit(person);
 			// 1.3 Retrieve the person from the suitInv
-            suit.getInventory().retrieveUnit(person);
+//            suit.getInventory().retrieveUnit(person);
 			// 1.4 store the person into the vehicle inventory
             vehicle.getInventory().storeUnit(person);
 			// 1.5 Store the suit on the person
-			person.getInventory().storeUnit(suit);
+//			person.getInventory().storeUnit(suit);
     						
 			LogConsolidated.log(Level.FINER, 0, sourceName, 
 					"[" + person.getLocationTag().getLocale() + "] "
@@ -150,15 +155,18 @@ extends Airlock {
 		if (person.isInVehicle()) {
 
 			// 5.1 Gets the EVA suit reference the person has already donned on
-			EVASuit suit = (EVASuit) person.getInventory().findUnitOfClass(EVASuit.class); //person.getSuit();
+			EVASuit suit = person.getSuit(); //(EVASuit) person.getInventory().findUnitOfClass(EVASuit.class); //person.getSuit();
 			// 5.2 Retrieve the suit from the person
-			person.getInventory().retrieveUnit(suit);
+//			person.getInventory().retrieveUnit(suit);
 			// 5.3 retrieve the person from the entityInv
 			vehicle.getInventory().retrieveUnit(person);
 			// 5.5 store the person into the EVA suit inventory (as the person dons the suit)
-			suit.getInventory().storeUnit(person);
+//			suit.getInventory().storeUnit(person);
 			// 5.6 Store the suit on the surface of Mars
-			Simulation.instance().getMars().getMarsSurface().getInventory().storeUnit(suit);
+			if (marsSurface == null)
+				marsSurface = Simulation.instance().getMars().getMarsSurface();
+//			marsSurface.getInventory().storeUnit(suit);
+			marsSurface.getInventory().storeUnit(person);
 			
 			LogConsolidated.log(Level.FINER, 0, sourceName, 
 					"[" + person.getLocationTag().getLocale() + "] "

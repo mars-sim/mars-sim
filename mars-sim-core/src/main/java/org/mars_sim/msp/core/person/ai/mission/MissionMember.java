@@ -9,7 +9,7 @@ package org.mars_sim.msp.core.person.ai.mission;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.UnitListener;
-import org.mars_sim.msp.core.location.LocationSituation;
+import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.location.LocationTag;
 import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -78,10 +78,17 @@ public interface MissionMember extends Indoor {
 	 */
 	public void setShiftType(ShiftType shiftType);
 
+//	/**
+//	 * @return {@link LocationSituation} the mission member's location
+//	 */
+//	public LocationSituation getLocationSituation();
+
 	/**
-	 * @return {@link LocationSituation} the mission member's location
+	 * Gets the location state type of the member
+	 * 
+	 * @return
 	 */
-	public LocationSituation getLocationSituation();
+	public LocationStateType getLocationStateType();
 
 	/**
 	 * Get settlement the member is at, null if member is not at a settlement

@@ -151,19 +151,19 @@ public class SkillManager implements Serializable {
 				int rand = RandomUtil.getRandomInt(0, 3);
 				
 				if (rand == 0) {
-					skillLevel = getInitialSkillLevel(0, (int)(25 + ageFactor/3));
+					skillLevel = getInitialSkillLevel(0, (int)(10 + ageFactor/10));
 					addNewSkillNExperience(startingSkill, skillLevel);
 				}
 				else if (rand == 1) {
-					skillLevel = getInitialSkillLevel(1, (int)(12 + ageFactor/4));
+					skillLevel = getInitialSkillLevel(1, (int)(5 + ageFactor/8));
 					addNewSkillNExperience(startingSkill, skillLevel);
 				}
 				else if (rand == 2) {
-					skillLevel = getInitialSkillLevel(2, (int)(6 + ageFactor/5));
+					skillLevel = getInitialSkillLevel(2, (int)(2.5 + ageFactor/6));
 					addNewSkillNExperience(startingSkill, skillLevel);
 				}
 				else if (rand == 3) {
-					skillLevel = getInitialSkillLevel(3, (int)(3 + ageFactor/6));
+					skillLevel = getInitialSkillLevel(3, (int)(1.25 + ageFactor/4));
 					addNewSkillNExperience(startingSkill, skillLevel);
 				}
 			}

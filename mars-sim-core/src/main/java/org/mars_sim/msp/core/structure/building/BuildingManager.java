@@ -1521,6 +1521,9 @@ public class BuildingManager implements Serializable {
 
 					if (lifeSupport.containsOccupant(person)) {
 						lifeSupport.removePerson(person);
+//						LogConsolidated.log(Level.INFO, 0, sourceName,
+//								"[" + unit.getLocationTag().getLocale() + "] "
+//										+ unit.getName() + " was removed from " + building.getNickName());
 					}
 					person.setCurrentBuilding(null);
 				}

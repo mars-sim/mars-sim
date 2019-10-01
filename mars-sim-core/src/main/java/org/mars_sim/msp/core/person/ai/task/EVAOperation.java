@@ -355,7 +355,6 @@ public abstract class EVAOperation extends Task implements Serializable {
 	protected boolean shouldEndEVAOperation() {
 
 		boolean result = false;
-//    	if (person != null) {
 
 		// Check end EVA flag.
 		if (endEVA) {
@@ -366,10 +365,6 @@ public abstract class EVAOperation extends Task implements Serializable {
 		else if (!noEVAProblem(person)) {
 			result = true;
 		}
-//    	}
-//    	else if (robot != null) {
-//
-//    	}
 
 		return result;
 	}
@@ -423,7 +418,7 @@ public abstract class EVAOperation extends Task implements Serializable {
 			return false;
 		}
 		
-		EVASuit suit = (EVASuit) person.getInventory().findUnitOfClass(EVASuit.class);
+		EVASuit suit = person.getSuit();//(EVASuit) person.getInventory().findUnitOfClass(EVASuit.class);
 		if (suit == null) {
 			LogConsolidated.log(Level.WARNING, 5000, sourceName, 
 					"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " ended " 
@@ -502,7 +497,7 @@ public abstract class EVAOperation extends Task implements Serializable {
 	protected void checkForAccident(double time) {
 
 		if (person != null) {
-			EVASuit suit = (EVASuit) person.getInventory().findUnitOfClass(EVASuit.class);
+			EVASuit suit = person.getSuit();//(EVASuit) person.getInventory().findUnitOfClass(EVASuit.class);
 			if (suit != null) {
 
 				double chance = BASE_ACCIDENT_CHANCE;

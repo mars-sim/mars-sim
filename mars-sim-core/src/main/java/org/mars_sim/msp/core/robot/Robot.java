@@ -13,12 +13,10 @@ import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.equipment.Equipment;
-import org.mars_sim.msp.core.location.LocationSituation;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
@@ -153,8 +151,10 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 		this.identifier = getNextIdentifier();
 		unitManager.addRobotID(this);
 		
-		// Set its container unit
-		setContainerUnit(settlement);
+//		// Set its container unit
+//		setContainerUnit(settlement);
+//		// Set the containerID
+//		setContainerID(settlement.getIdentifier());
 		
 //		// Place this person within a settlement
 //		enter(LocationCodeType.SETTLEMENT);
@@ -319,24 +319,24 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 		return false;
 	}
 
-	/**
-	 * @return {@link LocationSituation} the robot's location
-	 */
-	@Override
-	public LocationSituation getLocationSituation() {
-		if (isInoperable)
-			return LocationSituation.DECOMMISSIONED;
-		else {
-			Unit container = getContainerUnit();
-			if (container instanceof Settlement)
-				return LocationSituation.IN_SETTLEMENT;
-			else if (container instanceof Vehicle)
-				return LocationSituation.IN_VEHICLE;
-			else if (container instanceof MarsSurface)
-				return LocationSituation.OUTSIDE;
-		}
-		return LocationSituation.UNKNOWN;
-	}
+//	/**
+//	 * @return {@link LocationSituation} the robot's location
+//	 */
+//	@Override
+//	public LocationSituation getLocationSituation() {
+//		if (isInoperable)
+//			return LocationSituation.DECOMMISSIONED;
+//		else {
+//			Unit container = getContainerUnit();
+//			if (container instanceof Settlement)
+//				return LocationSituation.IN_SETTLEMENT;
+//			else if (container instanceof Vehicle)
+//				return LocationSituation.IN_VEHICLE;
+//			else if (container instanceof MarsSurface)
+//				return LocationSituation.OUTSIDE;
+//		}
+//		return LocationSituation.UNKNOWN;
+//	}
 
 	/**
 	 * Gets the robot's X location at a settlement.
