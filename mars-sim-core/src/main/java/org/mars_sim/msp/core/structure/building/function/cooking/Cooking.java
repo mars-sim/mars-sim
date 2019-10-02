@@ -1008,7 +1008,7 @@ public class Cooking extends Function implements Serializable {
 
 		// Check if not meal time, clean up.
 		Coordinates location = building.getSettlement().getCoordinates();
-		if (!CookMeal.isMealTime(location)) {
+		if (!CookMeal.isLocalMealTime(location, 20)) {
 			finishUp();
 		}
 

@@ -132,77 +132,77 @@ public class TestLocalAreaUtil extends TestCase {
 //        LocalAreaUtil.clearObstacleCache();
 //    }
     
-    /**
-     * Test the getObjectRelativeLocation.
-     */
-    public void testGetObjectRelativeLocation() {
-        // Create new simulation instance.
-        SimulationConfig.instance().loadConfig();
-        Simulation.instance().testRun();
-        
-        // Clear out existing settlements in simulation.
-        UnitManager unitManager = Simulation.instance().getUnitManager();
-        Iterator<Settlement> i = unitManager.getSettlements().iterator();
-        while (i.hasNext()) {
-            unitManager.removeUnit(i.next());
-        }
-        
-        
-        Settlement settlement = new MockSettlement();
-        BuildingManager buildingManager = settlement.getBuildingManager();
-        
-        MockBuilding building = new MockBuilding(buildingManager);
-        building.setWidth(10D);
-        building.setLength(10D);
-        building.setXLocation(0D);
-        building.setYLocation(0D);
-        building.setFacing(0D);
-        
-        Point2D point0 = new Point2D.Double(12D, -7D);
-        
-        Point2D point1 = LocalAreaUtil.getLocalRelativeLocation(point0.getX(), point0.getY(), building);
-        
-        Point2D point2 = LocalAreaUtil.getObjectRelativeLocation(point1.getX(), point1.getY(), building);
-        
-        assertTrue(Math.abs(point0.getX() - point2.getX()) < SMALL_AMOUNT_COMPARISON);
-        assertTrue(Math.abs(point0.getY() - point2.getY()) < SMALL_AMOUNT_COMPARISON);
-        
-        building.setXLocation(15D);
-        building.setYLocation(-8D);
-        
-        Point2D point3 = new Point2D.Double(5D, 12D);
-        
-        Point2D point4 = LocalAreaUtil.getLocalRelativeLocation(point3.getX(), point3.getY(), building);
-        
-        Point2D point5 = LocalAreaUtil.getObjectRelativeLocation(point4.getX(), point4.getY(), building);
-        
-        assertTrue(Math.abs(point3.getX() - point5.getX()) < SMALL_AMOUNT_COMPARISON);
-        assertTrue(Math.abs(point3.getY() - point5.getY()) < SMALL_AMOUNT_COMPARISON);
-        
-        building.setFacing(135D);
-        
-        Point2D point6 = new Point2D.Double(-3D, -7D);
-        
-        Point2D point7 = LocalAreaUtil.getLocalRelativeLocation(point6.getX(), point6.getY(), building);
-        
-        Point2D point8 = LocalAreaUtil.getObjectRelativeLocation(point7.getX(), point7.getY(), building);
-        
-        assertTrue(Math.abs(point6.getX() - point8.getX()) < SMALL_AMOUNT_COMPARISON);
-        assertTrue(Math.abs(point6.getY() - point8.getY()) < SMALL_AMOUNT_COMPARISON);
-        
-        building.setXLocation(-32D);
-        building.setYLocation(12.7D);
-        building.setFacing(290.2D);
-        
-        Point2D point9 = new Point2D.Double(-11.2D, 33.56D);
-        
-        Point2D point10 = LocalAreaUtil.getLocalRelativeLocation(point9.getX(), point9.getY(), building);
-        
-        Point2D point11 = LocalAreaUtil.getObjectRelativeLocation(point10.getX(), point10.getY(), building);
-        
-        assertTrue(Math.abs(point9.getX() - point11.getX()) < SMALL_AMOUNT_COMPARISON);
-        assertTrue(Math.abs(point9.getY() - point11.getY()) < SMALL_AMOUNT_COMPARISON);
-    }
+//    /**
+//     * Test the getObjectRelativeLocation.
+//     */
+//    public void testGetObjectRelativeLocation() {
+//        // Create new simulation instance.
+//        SimulationConfig.instance().loadConfig();
+//        Simulation.instance().testRun();
+//        
+//        // Clear out existing settlements in simulation.
+//        UnitManager unitManager = Simulation.instance().getUnitManager();
+//        Iterator<Settlement> i = unitManager.getSettlements().iterator();
+//        while (i.hasNext()) {
+//            unitManager.removeUnit(i.next());
+//        }
+//        
+//        
+//        Settlement settlement = new MockSettlement();
+//        BuildingManager buildingManager = settlement.getBuildingManager();
+//        
+//        MockBuilding building = new MockBuilding(buildingManager);
+//        building.setWidth(10D);
+//        building.setLength(10D);
+//        building.setXLocation(0D);
+//        building.setYLocation(0D);
+//        building.setFacing(0D);
+//        
+//        Point2D point0 = new Point2D.Double(12D, -7D);
+//        
+//        Point2D point1 = LocalAreaUtil.getLocalRelativeLocation(point0.getX(), point0.getY(), building);
+//        
+//        Point2D point2 = LocalAreaUtil.getObjectRelativeLocation(point1.getX(), point1.getY(), building);
+//        
+//        assertTrue(Math.abs(point0.getX() - point2.getX()) < SMALL_AMOUNT_COMPARISON);
+//        assertTrue(Math.abs(point0.getY() - point2.getY()) < SMALL_AMOUNT_COMPARISON);
+//        
+//        building.setXLocation(15D);
+//        building.setYLocation(-8D);
+//        
+//        Point2D point3 = new Point2D.Double(5D, 12D);
+//        
+//        Point2D point4 = LocalAreaUtil.getLocalRelativeLocation(point3.getX(), point3.getY(), building);
+//        
+//        Point2D point5 = LocalAreaUtil.getObjectRelativeLocation(point4.getX(), point4.getY(), building);
+//        
+//        assertTrue(Math.abs(point3.getX() - point5.getX()) < SMALL_AMOUNT_COMPARISON);
+//        assertTrue(Math.abs(point3.getY() - point5.getY()) < SMALL_AMOUNT_COMPARISON);
+//        
+//        building.setFacing(135D);
+//        
+//        Point2D point6 = new Point2D.Double(-3D, -7D);
+//        
+//        Point2D point7 = LocalAreaUtil.getLocalRelativeLocation(point6.getX(), point6.getY(), building);
+//        
+//        Point2D point8 = LocalAreaUtil.getObjectRelativeLocation(point7.getX(), point7.getY(), building);
+//        
+//        assertTrue(Math.abs(point6.getX() - point8.getX()) < SMALL_AMOUNT_COMPARISON);
+//        assertTrue(Math.abs(point6.getY() - point8.getY()) < SMALL_AMOUNT_COMPARISON);
+//        
+//        building.setXLocation(-32D);
+//        building.setYLocation(12.7D);
+//        building.setFacing(290.2D);
+//        
+//        Point2D point9 = new Point2D.Double(-11.2D, 33.56D);
+//        
+//        Point2D point10 = LocalAreaUtil.getLocalRelativeLocation(point9.getX(), point9.getY(), building);
+//        
+//        Point2D point11 = LocalAreaUtil.getObjectRelativeLocation(point10.getX(), point10.getY(), building);
+//        
+//        assertTrue(Math.abs(point9.getX() - point11.getX()) < SMALL_AMOUNT_COMPARISON);
+//        assertTrue(Math.abs(point9.getY() - point11.getY()) < SMALL_AMOUNT_COMPARISON);
+//    }
     
     /**
      * Test the locationWithinLocalBoundedObject method.

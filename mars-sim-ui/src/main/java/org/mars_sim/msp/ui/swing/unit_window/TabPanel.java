@@ -87,7 +87,7 @@ public abstract class TabPanel extends JScrollPane {
 		Border margin = new EmptyBorder(5,5,5,5);
 		
 		// Create center content panel
-		centerContentPanel = new JPanel(new BorderLayout(0, 0));
+		centerContentPanel = new JPanel(new BorderLayout(0, 10));
 //		centerContentPanel.setBorder(new CompoundBorder(border, margin));
 		centerContentPanel.setBorder(margin);
 		viewPanel.add(centerContentPanel, BorderLayout.CENTER);

@@ -83,6 +83,10 @@ public class MaintainGroundVehicleEVAMeta implements MetaTask, Serializable {
 				if (EVAOperation.isGettingDark(person))
 					return 0;
 				
+	            // Checks if the person's settlement is at meal time and is hungry
+	            if ((EVAOperation.isHungryAtMealTime(person)))
+	            	return 0;
+	            
 	            if (settlement.getIndoorPeopleCount() > settlement.getPopulationCapacity())
 	                result *= 2D;
 	

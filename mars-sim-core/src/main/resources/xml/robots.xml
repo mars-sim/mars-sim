@@ -90,7 +90,7 @@
 			</skill-list>
 		</robot>				
 		
-		<robot name="RepairBot 003" type="RepairBot" settlement="Plymouth Base" job="Handyman">
+		<robot name="RepairBot 003" type="RepairBot" settlement="New Plymouth" job="Handyman">
 			<robotic-attribute-list>
 				<robotic-attribute name="Strength" value="95"/>
 				<robotic-attribute name="Endurance" value="95"/>
@@ -105,7 +105,7 @@
 			</skill-list>
 		</robot>	
 		
-		<robot name="GardenBot 004" type="GardenBot" settlement="Plymouth Base" job="Gardener">
+		<robot name="GardenBot 004" type="GardenBot" settlement="New Plymouth" job="Gardener">
 			<robotic-attribute-list>
 				<robotic-attribute name="Strength" value="95"/>
 				<robotic-attribute name="Endurance" value="95"/>
@@ -119,7 +119,7 @@
 			</skill-list>
 		</robot>
 		
-		<robot name="MakerBot 005" type="MakerBot" settlement="Plymouth Base" job="Maker">
+		<robot name="MakerBot 005" type="MakerBot" settlement="New Plymouth" job="Maker">
 			<robotic-attribute-list>
 				<robotic-attribute name="Strength" value="95"/>
 				<robotic-attribute name="Endurance" value="95"/>
@@ -135,7 +135,7 @@
 			</skill-list>
 		</robot>				
 		
-		<robot name="RepairBot 006" type="RepairBot" settlement="Plymouth Base" job="Handyman">
+		<robot name="RepairBot 006" type="RepairBot" settlement="New Plymouth" job="Handyman">
 			<robotic-attribute-list>
 				<robotic-attribute name="Strength" value="95"/>
 				<robotic-attribute name="Endurance" value="95"/>
@@ -196,7 +196,7 @@
 		</robot>
 		
 		<!--	
-		<robot name="ChefBot 010" type="ChefBot" settlement="Plymouth Base" job="Cook">
+		<robot name="ChefBot 010" type="ChefBot" settlement="New Plymouth" job="Cook">
 			<robotic-attribute-list>
 				<robotic-attribute name="Strength" value="95"/>
 				<robotic-attribute name="Endurance" value="95"/>
@@ -213,7 +213,7 @@
 		-->
 		
 		<!--
-		<robot name="MedicBot 011" type="MedicBot" settlement="Plymouth Base" job="Medic">
+		<robot name="MedicBot 011" type="MedicBot" settlement="New Plymouth" job="Medic">
 			<robotic-attribute-list>
 				<robotic-attribute name="Strength" value="95"/>
 				<robotic-attribute name="Endurance" value="95"/>
@@ -228,7 +228,7 @@
 			</skill-list>
 		</robot>				
 		
-		<robot name="ConstructionBot 012" type="ConstructionBot" settlement="Plymouth Base" job="Builder">
+		<robot name="ConstructionBot 012" type="ConstructionBot" settlement="New Plymouth" job="Builder">
 			<robotic-attribute-list>
 				<robotic-attribute name="Strength" value="95"/>
 				<robotic-attribute name="Endurance" value="95"/>
@@ -245,7 +245,7 @@
 		</robot>
 
 		
-		<robot name="DeliveryBot 013" type="DeliveryBot" settlement="Plymouth Base" job="Postman">
+		<robot name="DeliveryBot 013" type="DeliveryBot" settlement="New Plymouth" job="Postman">
 			<robotic-attribute-list>
 				<robotic-attribute name="Strength" value="95"/>
 				<robotic-attribute name="Endurance" value="95"/>

@@ -88,8 +88,6 @@ public abstract class EVAOperation extends Task implements Serializable {
 
 		sourceName = sourceName.substring(sourceName.lastIndexOf(".") + 1, sourceName.length());
 
-		// marsClock = Simulation.instance().getMasterClock().getMarsClock();
-
 		// Check if person is in a settlement or a rover.
 		if (person.isInSettlement() || person.isInVehicleInGarage()) {
 			interiorObject = BuildingManager.getBuilding(person);
@@ -189,24 +187,24 @@ public abstract class EVAOperation extends Task implements Serializable {
 	@Override
 	protected double performMappedPhase(double time) {
 		if (getPhase() == null) {
-			//throw new IllegalArgumentException(person + "'s Task phase is null");
-			if (EVAOperation.noEVAProblem(person)) {
-				logger.finer(person + " had no EVA problems but had no task phase. Setting " 
-						+ ((person.getGender() == GenderType.MALE) ? "him" : "her") + "  up to continue to walk outside.");
-				return walkToOutsideSitePhase(time);
-			}
-			else {
-				logger.finer(person + " had EVA problems and had no task phase. Setting " 
-						+ ((person.getGender() == GenderType.MALE) ? "him" : "her") + " up to walk back inside now.");
-				return walkBackInsidePhase(time);
-			}
+			throw new IllegalArgumentException("EVAOoperation's task phase is null");
+//			if (!EVAOperation.noEVAProblem(person)) {
+//				logger.finer(person + " was " + person.getTaskDescription().toLowerCase() + " and had no EVA problems but had no task phase. Ending EVA now.");
+//				return walkBackInsidePhase(time);
+//			}
+//			else if (isHungryAtMealTime(person)) {
+//				logger.finer(person + " was " + person.getTaskDescription().toLowerCase() + " and is hungry and now during at meal time but had no task phase. Setting " 
+//						+ ((person.getGender() == GenderType.MALE) ? "him" : "her") + " up to walk back inside.");
+//				return walkBackInsidePhase(time);
+//			}
+			
 		} else if (WALK_TO_OUTSIDE_SITE.equals(getPhase())) {
 			return walkToOutsideSitePhase(time);
 		} else if (WALK_BACK_INSIDE.equals(getPhase())) {
 			return walkBackInsidePhase(time);
-		} else {
-			return time;
-		}
+		} 
+		
+		return time;
 	}
 
 	/**
@@ -243,106 +241,88 @@ public abstract class EVAOperation extends Task implements Serializable {
 	 * @return remaining time after performing the phase.
 	 */
 	private double walkBackInsidePhase(double time) {
-
-		if (person != null) {
-
+		
+		if (person.isOutside()) {
 			if (interiorObject == null) {
-				// throw new IllegalStateException(person.getName() + " is in " +
-				// person.getSettlement() + " but not in building : interiorObject is null.");
-				
-				// Get closest airlock building at settlement.
-				if (LocationStateType.OUTSIDE_SETTLEMENT_VICINITY == person.getLocationStateType()) {
-					Settlement s = person.getLocationTag().findSettlementVicinity();
-					if (s != null) {
-						interiorObject = (Building)(s.getClosestAvailableAirlock(person).getEntity()); // (LocalBoundedObject)(s.getClosestAvailableAirlock(person).getEntity());//
-						LogConsolidated.log(Level.WARNING, 0, sourceName,
-								"[" + person.getLocationTag().getLocale() + "] " + person.getName()
-//								" in " + person.getLocationTag().getImmediateLocation()
-								+ " found " + ((Building)interiorObject).getNickName()
-								+ " as the closet building with an airlock to enter.");
-					}
-					else {
-						// near a vehicle
-						Rover r = (Rover)person.getVehicle();
-//						interiorObject = (LocalBoundedObject) (r.getAirlock()).getEntity();
-						LogConsolidated.log(Level.WARNING, 0, sourceName,
-								"[" + person.getLocationTag().getLocale() + "] " + person.getName()
-								+ " was near " + r.getName() //person.getLocationTag().getImmediateLocation()
-								+ " and had to end the EVA now.");
-						endTask();
-					}
-				}
-				else {				
+			// Get closest airlock building at settlement.
+				Settlement s = person.getLocationTag().findSettlementVicinity();
+				if (s != null) {
+					interiorObject = (Building)(s.getClosestAvailableAirlock(person).getEntity()); 
+					System.out.println("interiorObject is " + interiorObject);
+					if (interiorObject == null)
+						interiorObject = (LocalBoundedObject)(s.getClosestAvailableAirlock(person).getEntity());
+					System.out.println("interiorObject is " + interiorObject);
 					LogConsolidated.log(Level.WARNING, 0, sourceName,
-						"[" + person.getLocationTag().getLocale() + "] " + person.getName()
-						+ " was " + person.getLocationTag().getImmediateLocation()
-						+ " had to end the EVA now.");
-					endTask();
+							"[" + person.getLocationTag().getLocale() + "] " + person.getName()
+							+ " in " + person.getLocationTag().getImmediateLocation()
+							+ " found " + ((Building)interiorObject).getNickName()
+							+ " as the closet building with an airlock to enter.");
 				}
-
-			} 
+				else {
+					// near a vehicle
+					Rover r = (Rover)person.getVehicle();
+					interiorObject = (LocalBoundedObject) (r.getAirlock()).getEntity();
+					LogConsolidated.log(Level.WARNING, 0, sourceName,
+							"[" + person.getLocationTag().getLocale() + "] " + person.getName()
+							+ " was near " + r.getName()
+							+ " and had to walk back inside the vehicle.");
+				}
+			}
+			
+			if (interiorObject == null) 
+				endTask();
+		
+//			LogConsolidated.log(Level.INFO, 0, sourceName,
+//				"[" + person.getLocationTag().getLocale() + "] " + person.getName()
+//				+ " was near " + ((Building)interiorObject).getNickName() //person.getLocationTag().getImmediateLocation()
+////				+ " at (" + Math.round(returnInsideLoc.getX()*10.0)/10.0 + ", " 
+////				+ Math.round(returnInsideLoc.getY()*10.0)/10.0 + ") "
+//				+ " and was attempting to enter its airlock.");
 			
 			if (interiorObject != null 
-					&& (returnInsideLoc == null
-						|| !LocalAreaUtil.checkLocationWithinLocalBoundedObject(returnInsideLoc.getX(),
-							returnInsideLoc.getY(), interiorObject))) {
+					&& (returnInsideLoc == null)) {
+	//					|| !LocalAreaUtil.checkLocationWithinLocalBoundedObject(returnInsideLoc.getX(),
+	//						returnInsideLoc.getY(), interiorObject))) {
 				// Set return location.
 				Point2D rawReturnInsideLoc = LocalAreaUtil.getRandomInteriorLocation(interiorObject);
 				returnInsideLoc = LocalAreaUtil.getLocalRelativeLocation(rawReturnInsideLoc.getX(),
 						rawReturnInsideLoc.getY(), interiorObject);
 			}
-
+	
+			// If not at return inside location, create walk inside subtask.
+	        Point2D personLocation = new Point2D.Double(person.getXLocation(), person.getYLocation());
+	        boolean closeToLocation = LocalAreaUtil.areLocationsClose(personLocation, returnInsideLoc);
+	        
 			// If not inside, create walk inside subtask.
-			if (person.isOutside() && interiorObject != null) {
+			if (interiorObject != null && !closeToLocation) {
+					LogConsolidated.log(Level.FINEST, 10_000, sourceName,
+							"[" + person.getLocationTag().getLocale() + "] " + person.getName()
+							+ " was near " + ((Building)interiorObject).getNickName() //person.getLocationTag().getImmediateLocation()
+							+ " at (" + Math.round(returnInsideLoc.getX()*10.0)/10.0 + ", " 
+							+ Math.round(returnInsideLoc.getY()*10.0)/10.0 
+							+ ") and was attempting to enter its airlock.");
+				
 				if (Walk.canWalkAllSteps(person, returnInsideLoc.getX(), returnInsideLoc.getY(), interiorObject)) {
 					Task walkingTask = new Walk(person, returnInsideLoc.getX(), returnInsideLoc.getY(), interiorObject);
 					addSubTask(walkingTask);
-				} else {
-					LogConsolidated.log(Level.SEVERE, 3000, sourceName,
-							person.getName() + " cannot walk back to inside location.");
-					endTask();
-				}
-			} else {
-				endTask();
-			}
-
-		} else if (robot != null) {
-
-			if (interiorObject == null) {
-				// throw new IllegalStateException(person.getName() + " is in " +
-				// person.getSettlement() + " but not in building : interiorObject is null.");
-				LogConsolidated.log(Level.WARNING, 0, sourceName,
-						"[" + robot.getLocationTag().getLocale() + "] " + robot.getName() + 
-						" in " + robot.getLocationTag().getImmediateLocation()
-						+ " did not have a designated building to go to yet. Ending EVA now.");
-				endTask();
-			} 
-			
-			else if ((returnInsideLoc == null)
-					|| !LocalAreaUtil.checkLocationWithinLocalBoundedObject(returnInsideLoc.getX(),
-							returnInsideLoc.getY(), interiorObject)) {
-				// Set return location.
-				Point2D rawReturnInsideLoc = LocalAreaUtil.getRandomInteriorLocation(interiorObject);
-				returnInsideLoc = LocalAreaUtil.getLocalRelativeLocation(rawReturnInsideLoc.getX(),
-						rawReturnInsideLoc.getY(), interiorObject);
-			}
-
-			// If not inside, create walk inside subtask.
-			if (robot.isOutside()) {
-				if (Walk.canWalkAllSteps(robot, returnInsideLoc.getX(), returnInsideLoc.getY(), interiorObject)) {
-					Task walkingTask = new Walk(robot, returnInsideLoc.getX(), returnInsideLoc.getY(), interiorObject);
-					addSubTask(walkingTask);
-				} else {
+				} 
+				
+				else {
 					LogConsolidated.log(Level.SEVERE, 0, sourceName,
-							"[" + robot.getName() + " cannot walk back to inside location.");
+							person.getName() + " was " + person.getTaskDescription().toLowerCase() 
+							+ " and cannot find a valid path to enter an airlock. Will see what to do.");
 					endTask();
 				}
 			} else {
+				LogConsolidated.log(Level.SEVERE, 0, sourceName,
+						person.getName() + " was " + person.getTaskDescription().toLowerCase() 
+						+ " and cannot find the building airlock to  walk back inside. Will see what to do.");
 				endTask();
 			}
-
 		}
-
+		else
+			endTask();
+		
 		return time;
 	}
 
@@ -358,14 +338,19 @@ public abstract class EVAOperation extends Task implements Serializable {
 
 		// Check end EVA flag.
 		if (endEVA) {
-			result = true;
+			return true;
 		}
 
 		// Check if any EVA problem.
 		else if (!noEVAProblem(person)) {
-			result = true;
+			return true;
 		}
 
+		// Check if it is at meal time and the person is hungry
+		else if (isHungryAtMealTime(person)) {
+			return true;
+		}
+		
 		return result;
 	}
 
@@ -489,6 +474,21 @@ public abstract class EVAOperation extends Task implements Serializable {
 		return true;
 	}
 
+	/**
+	 * Checks if the person's settlement is at meal time and is hungry
+	 * 
+	 * @param person
+	 * @return
+	 */
+	public static boolean isHungryAtMealTime(Person person) {
+	
+		if (CookMeal.isLocalMealTime(person.getCoordinates(), 15) && person.getPhysicalCondition().isHungry()) {
+			return true;
+		}
+		
+		return false;
+	}
+	
 	/**
 	 * Check for accident with EVA suit.
 	 * 

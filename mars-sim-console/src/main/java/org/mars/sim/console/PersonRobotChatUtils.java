@@ -969,6 +969,7 @@ public class PersonRobotChatUtils extends ChatUtils {
 							responseText.append(") in ");
 							responseText.append(personCache.getQuarters());
 							responseText.append(" at ");
+							responseText.append(personCache.getAssociatedSettlement());
 
 							if (s1 == s2) {
 								responseText.append(s1);
@@ -987,6 +988,7 @@ public class PersonRobotChatUtils extends ChatUtils {
 						responseText.append(") in ");
 						responseText.append(personCache.getQuarters());
 						responseText.append(" at ");
+						responseText.append(personCache.getAssociatedSettlement());
 					}
 				}
 

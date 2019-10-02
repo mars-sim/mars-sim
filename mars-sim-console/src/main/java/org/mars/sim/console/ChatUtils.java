@@ -257,7 +257,7 @@ public class ChatUtils {
 
 	public final static String PERSON_KEYWORDS = System.lineSeparator()
 			+ "    ------------------------- K E Y W O R D S ------------------------- " + System.lineSeparator() + System.lineSeparator()
-			+ "  For Settlers : " + System.lineSeparator() + System.lineSeparator()
+			+ "  For Settlers : use preconfigured Q&A - from 1 to 18, or " + System.lineSeparator() + System.lineSeparator()
 			+ getKeywordPage(PERSON_KEYS) + System.lineSeparator() + System.lineSeparator()
 			+ "  For all Parties : " + System.lineSeparator() + "  " + getKeywordPage(ALL_PARTIES_KEYS)
 			+ System.lineSeparator()
@@ -265,7 +265,7 @@ public class ChatUtils {
 
 	public final static String SETTLEMENT_KEYWORDS = System.lineSeparator()
 			+ "    ------------------------- K E Y W O R D S ------------------------- " + System.lineSeparator() + System.lineSeparator()
-			+ "  For Settlements : " + System.lineSeparator() + System.lineSeparator()
+			+ "  For Settlements : use preconfigured Q&A - from 1 to 4, or " + System.lineSeparator() + System.lineSeparator()
 			+ getKeywordPage(SETTLEMENT_KEYS) + System.lineSeparator() + System.lineSeparator()
 			+ "  For all Parties : " + System.lineSeparator()+ System.lineSeparator()
 			+ getKeywordPage(ALL_PARTIES_KEYS)

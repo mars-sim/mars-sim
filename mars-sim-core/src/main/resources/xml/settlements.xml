@@ -1287,7 +1287,7 @@
 			<sponsor name="China National Space Administration (CNSA)"/>
 		</settlement>
 		
-		<settlement name="Plymouth Base" template="Mars Direct Base (Phase 2)">
+		<settlement name="New Plymouth" template="Mars Direct Base (Phase 2)">
 			<location longitude="0.0 W" latitude="0.0 N" />
 			<population number="8" />
 			<number-of-robots number="4" />

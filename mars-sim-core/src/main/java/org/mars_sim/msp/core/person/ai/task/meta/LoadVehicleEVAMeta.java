@@ -85,6 +85,10 @@ public class LoadVehicleEVAMeta implements MetaTask, Serializable {
 			if (EVAOperation.isGettingDark(person))
 				return 0;
 	
+            // Checks if the person's settlement is at meal time and is hungry
+            if ((EVAOperation.isHungryAtMealTime(person)))
+            	return 0;
+            
 	        // Check all vehicle missions occurring at the settlement.
 	        try {
 	            List<Mission> missions = LoadVehicleEVA.getAllMissionsNeedingLoading(settlement);

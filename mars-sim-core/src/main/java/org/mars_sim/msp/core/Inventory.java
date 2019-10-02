@@ -106,8 +106,6 @@ public class Inventory implements Serializable {
 	/** Resource storage. */
 	private AmountResourceStorage resourceStorage = new AmountResourceStorage();
 
-//	private static MarsSurface marsSurface;
-
 	/**
 	 * Constructor
 	 * 
@@ -1603,7 +1601,13 @@ public class Inventory implements Serializable {
 
 			// Update owner
 			if (owner != null) {
-				unit.setCoordinates(owner.getCoordinates());
+				
+				if (!(owner instanceof MarsSurface)) {
+					// Note: MarsSurface represents the whole surface of Mars does not have coordinates
+					// If MarsSurface is a container of an unit, that unit may keep its own coordinates
+					unit.setCoordinates(owner.getCoordinates());
+				}	
+				
 				owner.fireUnitUpdate(UnitEventType.INVENTORY_STORING_UNIT_EVENT, unit);
 				for (Integer resource : unit.getInventory().getAllARStored(false)) {
 					updateAmountResourceCapacityCache(resource);
@@ -1664,8 +1668,6 @@ public class Inventory implements Serializable {
 
 		if (retrieved) {
             unit.setContainerUnit(null);
-            // Set the unit's coordinates back to its owner's current coordinates
-//            unit.setCoordinates(owner.getCoordinates());
 		}
 
 		else {
@@ -1726,6 +1728,7 @@ public class Inventory implements Serializable {
 			Inventory containerInv = null;
 			if (owner.getContainerUnit() != null) {
 				containerInv = owner.getContainerUnit().getInventory();
+//				System.out.println("Inventory : containerInv is " + containerInv);
 				if (containerInv.getRemainingGeneralCapacity(allowDirty) < result) {
 					result = containerInv.getRemainingGeneralCapacity(allowDirty);
 				}
@@ -2521,15 +2524,6 @@ public class Inventory implements Serializable {
 			resourceStorage.restoreARs(ars);
 	}
 
-//	/**
-//	 * Remaps the instances
-//	 * 
-//	 * @param ms {@link MarsSurface}
-//	 */
-//	public static void initializeInstances(MarsSurface ms) {
-//		marsSurface = ms;
-//	}
-
 	/**
 	 * Gets the testing tag (for maven test only)
 	 * 
@@ -2552,7 +2546,7 @@ public class Inventory implements Serializable {
 		// Set owner unit's amount resource stored cache as dirty (if any).	
 		if (owner != null && owner.getContainerID() != 0) {
 			Unit container = owner.getContainerUnit();
-			if (container != null) {// && !(container instanceof MarsSurface)) {
+			if (container != null) {
 		
 				if (type == 0)
 					container.getInventory().setAmountResourceCapacityCacheAllDirty(true);

@@ -80,7 +80,7 @@ public class Good implements Serializable, Comparable<Good> {
 	 * @return equipment class
 	 */
 	public Class<? extends Equipment> getClassType() {
-		return EquipmentFactory.getEquipmentClass(id);
+		return EquipmentFactory.getEquipmentClass(name);
 	}
 
 	public int getID() {

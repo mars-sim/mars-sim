@@ -33,6 +33,7 @@ public class PersonMapLayer implements SettlementMapLayer {
 	private double circleDiameter = 15D;
 	private double centerX = circleDiameter / 2D;
 	private double centerY = circleDiameter / 2D;
+	private double size = 1.5;
 	
 	private SettlementMapPanel mapPanel;
 
@@ -160,14 +161,14 @@ public class PersonMapLayer implements SettlementMapLayer {
 			// Set circle color.
 			g2d.setColor(iconColor);
 
-			int size = 1;
+			int diameter = 0;
 			if (scale > 0)
-				size = (int)(size * scale/2.5);
+				diameter = (int)(size * scale/2D);
 			else if (scale <= 0)
-				size = 1;
+				diameter = 1;
 			
 			// Draw circle
-			g2d.fillOval(0, 0, size, size);
+			g2d.fillOval(0, 0, diameter, diameter);
 
 			// Restore original graphic transforms.
 			g2d.setTransform(saveTransform);

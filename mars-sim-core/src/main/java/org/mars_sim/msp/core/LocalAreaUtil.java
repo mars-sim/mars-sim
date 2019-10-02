@@ -483,14 +483,24 @@ public class LocalAreaUtil {
 		Rectangle2D rect = new Rectangle2D.Double(object.getXLocation() - (object.getWidth() / 2D),
 				object.getYLocation() - (object.getLength() / 2D), object.getWidth(), object.getLength());
 		Path2D path = getPathFromRectangleRotation(rect, object.getFacing());
-		Area area = new Area(path); // Exception in thread "pool-4-thread-1" java.lang.StackOverflowError
+		Area area = new Area(path); // See StackOverflowError below : 
 
-		// Notes:
-		// (Severe) [x341] Walk : Tracy Kilmar cannot exit airlock at Desert Rose. From
-		// Walk's canExitAllAirlocks()
-		// (Severe) [x1060] EVAOperation : Tracy Kilmar cannot walk to outside site.
-		// From EVAOperation's walkToOutsideSitePhase()
-
+//		Exception in thread "pool-2-thread-9" java.lang.StackOverflowError
+//		at java.base/java.util.TimSort.countRunAndMakeAscending(TimSort.java:355)
+//		at java.base/java.util.TimSort.sort(TimSort.java:220)
+//		at java.base/java.util.Arrays.sort(Arrays.java:1441)
+//		at java.desktop/sun.awt.geom.AreaOp.pruneEdges(AreaOp.java:205)
+//		at java.desktop/sun.awt.geom.AreaOp.calculate(AreaOp.java:159)
+//		at java.desktop/java.awt.geom.Area.pathToCurves(Area.java:195)
+//		at java.desktop/java.awt.geom.Area.<init>(Area.java:126)
+//		at org.mars_sim.msp.core.LocalAreaUtil.checkLocationWithinLocalBoundedObject(LocalAreaUtil.java:486)
+//		at org.mars_sim.msp.core.person.ai.task.WalkingSteps.determineInitialWalkState(WalkingSteps.java:174)
+//		at org.mars_sim.msp.core.person.ai.task.WalkingSteps.<init>(WalkingSteps.java:62)
+//		at org.mars_sim.msp.core.person.ai.task.Walk.<init>(Walk.java:316)
+//		at org.mars_sim.msp.core.person.ai.task.EVAOperation.walkBackInsidePhase(EVAOperation.java:304)
+//		at org.mars_sim.msp.core.person.ai.task.EVAOperation.performMappedPhase(EVAOperation.java:206)
+//		at org.mars_sim.msp.core.person.ai.task.DigLocalRegolith.performMappedPhase(DigLocalRegolith.java:160)
+		
 		if (area.contains(xLoc, yLoc)) {
 			result = true;
 		}

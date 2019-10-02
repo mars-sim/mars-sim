@@ -88,7 +88,7 @@ public class UnitManager implements Serializable {
 	/** The total numbers of Unit instances. */
 	private static int totalNumUnits = 0;
 	/** The instance of MarsSurface. */
-	private static MarsSurface marsSurface;
+	private MarsSurface marsSurface;
 	
 	// Data members
 	/** Is it running in Commander's Mode */
@@ -204,6 +204,7 @@ public class UnitManager implements Serializable {
 
 		// Add mars surface
 		marsSurface = sim.getMars().getMarsSurface();
+//		logger.info("marsSurface : " + marsSurface);
 
 		marsClock = sim.getMasterClock().getMarsClock();
 
@@ -2558,7 +2559,11 @@ public class UnitManager implements Serializable {
 	}
 	
 	public void setMarsSurface() {
-		sim.getMars().setMarsSurface(marsSurface);//(MarsSurface)units.get(0));
+		sim.getMars().setMarsSurface(marsSurface);
+	}
+	
+	public MarsSurface getMarsSurface() {
+		 return marsSurface;
 	}
 	
 	public static void setCrew(boolean value) {

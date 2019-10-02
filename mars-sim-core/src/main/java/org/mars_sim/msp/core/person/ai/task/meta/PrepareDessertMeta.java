@@ -64,7 +64,7 @@ public class PrepareDessertMeta implements MetaTask, Serializable {
 
         double result = 0D;
         
-        if (person.isInside() && CookMeal.isMealTime(person.getCoordinates())) {
+        if (person.isInside() && CookMeal.isLocalMealTime(person.getCoordinates(), 10)) {
             // Desserts should be prepared during meal times.
         	
             // Probability affected by the person's stress and fatigue.
@@ -130,7 +130,7 @@ public class PrepareDessertMeta implements MetaTask, Serializable {
 
        double result = 0D;
 
-       if (CookMeal.isMealTime(robot) && robot.getBotMind().getRobotJob() instanceof Chefbot) {
+       if (CookMeal.isMealTime(robot, 10) && robot.getBotMind().getRobotJob() instanceof Chefbot) {
            // See if there is an available kitchen.
            Building kitchenBuilding = PrepareDessert.getAvailableKitchen(robot);
 

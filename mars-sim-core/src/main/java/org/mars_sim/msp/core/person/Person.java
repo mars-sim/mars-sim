@@ -20,6 +20,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.LifeSupportInterface;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Unit;
@@ -251,6 +252,30 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	}
 	
 	/**
+	 * Constructor 0 : used by LoadVehicleTest and other maven test suites
+	 * 
+	 * @param settlement
+	 */
+	public Person(Settlement settlement) {
+		super("test person", settlement.getCoordinates());
+		this.xLoc = 0D;
+		this.yLoc = 0D;
+		this.associatedSettlement = settlement.getIdentifier();
+		super.setDescription(settlement.getName());
+		// Gets the identifier
+		this.identifier = getNextIdentifier();
+		// Add the person to the lookup map
+		unitManager.addPersonID(this);
+		// Put person in proper building.
+		unitManager.getSettlementByID(associatedSettlement).getInventory().storeUnit(this);
+		// WARNING: setAssociatedSettlement(settlement) will cause suffocation when
+		// reloading from a saved sim
+		BuildingManager.addToRandomBuilding(this, associatedSettlement);
+		// Construct the NaturalAttributeManager instance
+		attributes = new NaturalAttributeManager(this);
+	}
+	
+	/**
 	 * Constructor 1 : used by PersonBuilderImpl Creates a Person object at a given
 	 * settlement.
 	 *
@@ -258,7 +283,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 * @param settlement {@link Settlement} the settlement the person is at
 	 * @throws Exception if no inhabitable building available at settlement.
 	 */
-	protected Person(String name, Settlement settlement) {
+	public Person(String name, Settlement settlement) {
 		super(name, settlement.getCoordinates());
 		super.setDescription(settlement.getName());
 		// Gets the identifier
@@ -857,18 +882,18 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		return null;
 	}
 
-	/**
-	 * Sets the unit's container unit. Overridden from Unit class.
-	 *
-	 * @param containerUnit the unit to contain this unit.
-	 */
-	public void setContainerUnit(Unit containerUnit) {
-		super.setContainerUnit(containerUnit);
-		if (containerUnit instanceof Vehicle) {
-			vehicle = containerUnit.getIdentifier();
-		} else
-			vehicle = -1;
-	}
+//	/**
+//	 * Sets the unit's container unit. Overridden from Unit class.
+//	 *
+//	 * @param containerUnit the unit to contain this unit.
+//	 */
+//	public void setContainerUnit(Unit containerUnit) {
+//		super.setContainerUnit(containerUnit);
+//		if (containerUnit instanceof Vehicle) {
+//			vehicle = containerUnit.getIdentifier();
+//		} else
+//			vehicle = -1;
+//	}
 
 	/**
 	 * Bury the Person at the current location. This happens only if the person can
@@ -1516,16 +1541,13 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 * @return the person's vehicle
 	 */
 	public Vehicle getVehicle() {
-		if (getLocationStateType() == LocationStateType.INSIDE_VEHICLE
-				&& getContainerID() >= FIRST_VEHICLE_ID 
-				&& getContainerID() < FIRST_PERSON_ID) {
-			Vehicle v = unitManager.getVehicleByID(getContainerID());
-			vehicle = getContainerID();
+		if (getLocationStateType() == LocationStateType.INSIDE_VEHICLE) {
+			Vehicle v = (Vehicle) getContainerUnit();
+			setVehicle(v);
 			return v;
 		}
 
-		else
-			return null;
+		return null;
 	}
 
 	public CircadianClock getCircadianClock() {

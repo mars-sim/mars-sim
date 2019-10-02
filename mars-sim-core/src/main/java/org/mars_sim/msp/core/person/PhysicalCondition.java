@@ -1821,6 +1821,24 @@ public class PhysicalCondition implements Serializable {
 		return dehydrationStartTime;
 	}
 	
+	/**
+	 * Checks if it passes the hunger threshold
+	 * 
+	 * @return
+	 */
+	public boolean isHungry() {
+		return hunger > HUNGER_THRESHOLD && kJoules < ENERGY_THRESHOLD;
+	}
+	
+	/**
+	 * Checks if it passes the thirst threshold
+	 * 
+	 * @return
+	 */
+	public boolean isThirsty() {
+		return thirst > THIRST_THRESHOLD;
+	}
+	
 	public static void initializeInstances(Simulation s, MasterClock c0, MarsClock c1, MedicalManager m) {
 		sim = s;
 		masterClock = c0;

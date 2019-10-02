@@ -11,6 +11,7 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Direction;
 import org.mars_sim.msp.core.LocalAreaUtil;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -59,7 +60,9 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
 		setTerrainHandlingCapability(0D); // Default terrain capability
 
 //		terrain = surface.getTerrainElevation();
-		elevation = surface.getTerrainElevation().getPatchedElevation(getCoordinates());
+		if (surfaceFeatures == null)
+			surfaceFeatures = Simulation.instance().getMars().getSurfaceFeatures();
+		elevation = surfaceFeatures.getTerrainElevation().getPatchedElevation(getCoordinates());
 	}
 
 	/**
@@ -135,7 +138,7 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
 	 */
 	public double getTerrainGrade(Direction direction) {
 		// Determine the terrain grade in a given direction from the vehicle.
-		return surface.getTerrainElevation().determineTerrainDifficulty(getCoordinates(), direction);
+		return surfaceFeatures.getTerrainElevation().determineTerrainDifficulty(getCoordinates(), direction);
 	}
 
 	/**

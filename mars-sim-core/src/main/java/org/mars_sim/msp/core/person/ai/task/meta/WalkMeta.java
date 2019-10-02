@@ -33,18 +33,6 @@ public class WalkMeta implements MetaTask, Serializable {
 
 	@Override
 	public Task constructInstance(Person person) {
-//      Walk walk = person.getWalk();
-//    	if (walk == null) {
-//    		walk = new Walk(person);
-//    		person.setWalk(walk);
-//    	}
-//    	else {
-//    		walk.taskCompute();
-//    		walk.compute();
-//    	}
-//    	
-//    	return walk;
-
 		return new Walk(person);
 	}
 
@@ -56,14 +44,14 @@ public class WalkMeta implements MetaTask, Serializable {
 		// If person is outside, give high probability to walk to emergency airlock
 		// location.
 		if (person.isOutside()) {
-			result = 0D;
+			result = 10D;
 		} else if (person.isInVehicle()) {
 			// If person is inside a rover, may walk to random location within rover.
-			result = 0D;
+			result = 1D;
 		} else if (person.isInSettlement()) {
 			// If person is inside a settlement building, may walk to a random location
 			// within settlement.
-			result = 0D;
+			result = 1D;
 		}
 
 		if (result < 0)

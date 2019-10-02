@@ -37,19 +37,19 @@ public class Mars implements Serializable {
 	 * @throws Exception if Mars could not be constructed.
 	 */
 	public Mars() {
-		// logger.info("Mars' constructor is in "+Thread.currentThread().getName() + "
-		// Thread");
+		// Initialize mars surface		
+		marsSurface = new MarsSurface();
+	}
+
+	public void createInstances() {
 		// Initialize surface features
 		surfaceFeatures = new SurfaceFeatures();
 		// Initialize orbit info
 		orbitInfo = new OrbitInfo();
 		// Initialize weather
 		weather = new Weather();
-		
-		// Initialize mars surface		
-		marsSurface = new MarsSurface();
 	}
-
+	
 	public void setMarsSurface(MarsSurface ms) {
 //		System.out.println("Mars : " + marsSurface + " has " + marsSurface.getCode());
 //		System.out.println("Mars : " + ms + " has " + ms.getCode());

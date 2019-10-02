@@ -49,7 +49,7 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 //	private static Logger logger = Logger.getLogger(SettlementMapPanel.class.getName());
 
 	// Static members.
-//	private static final double PERIOD_IN_MILLISOLS = 10D * 500D / MarsClock.SECONDS_PER_MILLISOL;//3;
+	private static final double WIDTH = 6D;
 	public static final double DEFAULT_SCALE = 10D;
 	public static final double MAX_SCALE = 55D;
 	public static final double MIN_SCALE = 5D / 11D;
@@ -68,6 +68,7 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 
 	private int size;
 
+	
 	private boolean showBuildingLabels;
 	private boolean showConstructionLabels;
 	private boolean showPersonLabels;
@@ -150,7 +151,7 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 			masterClock = sim.getMasterClock();
 		
 		masterClock.addClockListener(this);
-
+	
 		// Add detectMouseMovement() after refactoring
 //		SwingUtilities.invokeLater(() -> {
 			detectMouseMovement();
@@ -217,75 +218,54 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 
 	}
 
+
 	public void detectMouseMovement() {
 
 		addMouseMotionListener(new MouseMotionAdapter() {
 			@Override
 			public void mouseDragged(MouseEvent evt) {
 //				if (evt.getButton() == MouseEvent.BUTTON1) {
-					setCursor(new Cursor(Cursor.MOVE_CURSOR));
 					// Move map center based on mouse drag difference.
 					double xDiff = evt.getX() - xLast;
 					double yDiff = evt.getY() - yLast;
 					moveCenter(xDiff, yDiff);
-//					xLast = evt.getX();
-//					yLast = evt.getY();
+					xLast = evt.getX();
+					yLast = evt.getY();
 				}
 //			}
 			
 		});
 		
-		// Add PopClickListener() to detect mouse right click
-		class PopClickListener extends MouseAdapter {
-
-			// @Override
-//			public void mouseEntered(MouseEvent evt) {
-			// mouseMoved(evt);
-//			}
-
-//			public void mouseExited(MouseEvent evt) {
-			// mouseMoved(evt);
-//			}
-
+		addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent evt) {
 				
-				if (evt.getButton() == MouseEvent.BUTTON1) {
-					// This condition must be presented in order to reset the mouse dragging action
-					xLast = evt.getX();
-					yLast = evt.getX();
-				}
+//				if (evt.getButton() == MouseEvent.BUTTON3 
+//						|| evt.getButton() == MouseEvent.BUTTON1) {
 				
-				if (evt.getButton() == MouseEvent.BUTTON3) {
-					setCursor(new Cursor(Cursor.HAND_CURSOR));
 					// Set initial mouse drag position.
 					xLast = evt.getX();
 					yLast = evt.getY();
-
-					if (evt.isPopupTrigger()) {
-						doPop(evt);
-					}
-				}
+//				}
 			}
 
 			@Override
 			public void mouseReleased(MouseEvent evt) {
 				
-				if (evt.getButton() == MouseEvent.BUTTON1) {
-					setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-//					xLast = 0;
-//					yLast = 0;
-				}
-				
-				if (evt.getButton() == MouseEvent.BUTTON3) {
-					setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-					xLast = 0;
-					yLast = 0;
-
+//				if (evt.getButton() == MouseEvent.BUTTON3
+//						|| evt.getButton() == MouseEvent.BUTTON1) {
+//					setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+					
 					if (evt.isPopupTrigger()) {
+						setCursor(new Cursor(Cursor.HAND_CURSOR));
 						doPop(evt);
 					}
-				}
+					else
+						setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+					
+					xLast = 0;
+					yLast = 0;
+//				}
 			}
 
 //			@Override
@@ -293,42 +273,40 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 //				setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 //			}
 			
-			// Add vehicle detection
-			private void doPop(final MouseEvent evt) {
-				// System.out.println("doPop()");
-				final ConstructionSite site = selectConstructionSiteAt(evt.getX(), evt.getY());
-				final Building building = selectBuildingAt(evt.getX(), evt.getY());
-				final Vehicle vehicle = selectVehicleAt(evt.getX(), evt.getY());
-				final Person person = selectPersonAt(evt.getX(), evt.getY());
-				final Robot robot = selectRobotAt(evt.getX(), evt.getY());
-
-				// if NO building is selected, do NOT call popup menu
-				if (site != null || building != null || vehicle != null || person != null || robot != null) {
-
-					// Deconflict cases by the virtue of the if-else order below
-					// when one or more are detected
-					if (person != null)
-						menu = new PopUpUnitMenu(settlementWindow, person);
-					else if (robot != null)
-						menu = new PopUpUnitMenu(settlementWindow, robot);
-					else if (vehicle != null)
-						menu = new PopUpUnitMenu(settlementWindow, vehicle);
-					else if (building != null)
-						menu = new PopUpUnitMenu(settlementWindow, building);
-					else if (site != null)
-						menu = new PopUpUnitMenu(settlementWindow, site);
-
-					// setComponentPopupMenu(menu);
-					menu.show(evt.getComponent(), evt.getX(), evt.getY());
-				}
-				// repaint();
-			}
-		}// end of class PopClickListener
-
-		addMouseListener(new PopClickListener());
-
+		});
 	}
 
+	// Add vehicle detection
+	private void doPop(final MouseEvent evt) {
+		// System.out.println("doPop()");
+		final ConstructionSite site = selectConstructionSiteAt(evt.getX(), evt.getY());
+		final Building building = selectBuildingAt(evt.getX(), evt.getY());
+		final Vehicle vehicle = selectVehicleAt(evt.getX(), evt.getY());
+		final Person person = selectPersonAt(evt.getX(), evt.getY());
+		final Robot robot = selectRobotAt(evt.getX(), evt.getY());
+
+		// if NO building is selected, do NOT call popup menu
+		if (site != null || building != null || vehicle != null || person != null || robot != null) {
+
+			// Deconflict cases by the virtue of the if-else order below
+			// when one or more are detected
+			if (person != null)
+				menu = new PopUpUnitMenu(settlementWindow, person);
+			else if (robot != null)
+				menu = new PopUpUnitMenu(settlementWindow, robot);
+			else if (vehicle != null)
+				menu = new PopUpUnitMenu(settlementWindow, vehicle);
+			else if (building != null)
+				menu = new PopUpUnitMenu(settlementWindow, building);
+			else if (site != null)
+				menu = new PopUpUnitMenu(settlementWindow, site);
+
+			// setComponentPopupMenu(menu);
+			menu.show(evt.getComponent(), evt.getX(), evt.getY());
+		}
+		 repaint();
+	}
+	
 	/**
 	 * Gets the settlement currently displayed.
 	 * 
@@ -426,6 +404,7 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 	 * @param yDiff the Y axis pixels.
 	 */
 	public void moveCenter(double xDiff, double yDiff) {
+		setCursor(new Cursor(Cursor.MOVE_CURSOR));
 		xDiff /= scale;
 		yDiff /= scale;
 
@@ -451,9 +430,8 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 	 * @return selectedPerson;
 	 */
 	public Person selectPersonAt(int xPixel, int yPixel) {
-
+		double range = WIDTH / scale;
 		Point.Double settlementPosition = convertToSettlementLocation(xPixel, yPixel);
-		double range = 6D / scale;
 		Person selectedPerson = null;
 
 		Iterator<Person> i = PersonMapLayer.getPeopleToDisplay(settlement).iterator();
@@ -484,9 +462,8 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 	 * @return selectedRobot;
 	 */
 	public Robot selectRobotAt(int xPixel, int yPixel) {
-
+		double range = WIDTH / scale;
 		Point.Double settlementPosition = convertToSettlementLocation(xPixel, yPixel);
-		double range = 6D / scale;
 		Robot selectedRobot = null;
 
 		Iterator<Robot> i = RobotMapLayer.getRobotsToDisplay(settlement).iterator();

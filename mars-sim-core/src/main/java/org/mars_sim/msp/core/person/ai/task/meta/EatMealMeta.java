@@ -50,8 +50,8 @@ public class EatMealMeta implements MetaTask, Serializable {
 		double hunger = pc.getHunger();
 		double energy = pc.getEnergy();
 
-		boolean notHungry = hunger < PhysicalCondition.HUNGER_THRESHOLD && energy > PhysicalCondition.ENERGY_THRESHOLD;
-		boolean notThirsty = thirst < PhysicalCondition.THIRST_THRESHOLD;
+		boolean notHungry = !pc.isHungry();
+		boolean notThirsty = !pc.isThirsty();
 		
 		// CircadianClock cc = person.getCircadianClock();
 		// double ghrelin = cc.getSurplusGhrelin();
@@ -79,7 +79,7 @@ public class EatMealMeta implements MetaTask, Serializable {
 
 		if (person.isInSettlement()) {
 
-			if (!CookMeal.isMealTime(person.getCoordinates())) {
+			if (!CookMeal.isLocalMealTime(person.getCoordinates(), 0)) {
 				result = result / 4D;
 			}
 			// Check if a cooked meal is available in a kitchen building at the settlement.
@@ -114,7 +114,7 @@ public class EatMealMeta implements MetaTask, Serializable {
 			}
 			// higher probability than inside a settlement since a person is more likely to
 			// become thirsty due to on-call shift.
-			if (!CookMeal.isMealTime(person.getCoordinates()))
+			if (!CookMeal.isLocalMealTime(person.getCoordinates(), 0))
 				result = result / 4D;
 
 			// TODO : how to ration food and water if running out of it ?
@@ -125,7 +125,7 @@ public class EatMealMeta implements MetaTask, Serializable {
 			if (notThirsty) {
 				return 0;
 			}
-			else if (CookMeal.isMealTime(person.getCoordinates())) {
+			else if (CookMeal.isLocalMealTime(person.getCoordinates(), 10)) {
 				result = hunger; 
 			} else
 				result = hunger / 4D;

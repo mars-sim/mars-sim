@@ -266,8 +266,8 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		mapLayerPanel = new MapPanel(desktop, 500L);
 		mapLayerPanel.setMaximumSize(new Dimension(HORIZONTAL_SURFACE_MAP + 5, HORIZONTAL_SURFACE_MAP + 5));
 		mapLayerPanel.setNavWin(this);
-		mapLayerPanel.addMouseListener(new mapListener());
-		mapLayerPanel.addMouseMotionListener(new mouseMotionListener());
+		mapLayerPanel.addMouseListener(new MouseListener());
+		mapLayerPanel.addMouseMotionListener(new MouseMotionListener());
 		// map.setCursor(new Cursor(java.awt.Cursor.DEFAULT_CURSOR));
 
 		// Create map layers.
@@ -755,7 +755,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		desktop.openUnitWindow(unit, false);
 	}
 
-	private class mapListener extends MouseAdapter {
+	private class MouseListener extends MouseAdapter {
 		public void mouseEntered(MouseEvent event) {
 			// checkHover(event);
 		}
@@ -767,7 +767,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		}
 	}
 
-	private class mouseMotionListener extends MouseMotionAdapter {
+	private class MouseMotionListener extends MouseMotionAdapter {
 		public void mouseMoved(MouseEvent event) {
 			checkHover(event);
 		}

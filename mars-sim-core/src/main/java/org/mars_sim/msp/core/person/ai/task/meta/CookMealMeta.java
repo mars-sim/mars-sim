@@ -58,7 +58,7 @@ public class CookMealMeta implements MetaTask, Serializable {
 
         double result = 0D;
 
-        if (person.isInside() && CookMeal.isMealTime(person.getCoordinates())) {
+        if (person.isInside() && CookMeal.isLocalMealTime(person.getCoordinates(), 20)) {
         	
             // Probability affected by the person's stress and fatigue.
             PhysicalCondition condition = person.getPhysicalCondition();
@@ -103,7 +103,7 @@ public class CookMealMeta implements MetaTask, Serializable {
 
                     result = 50D;
                     
-                	if (CookMeal.isMealTime(person.getCoordinates())) {
+                	if (CookMeal.isLocalMealTime(person.getCoordinates(), 20)) {
                 		result *= 2.5D;
                 	}
                 	else
@@ -151,7 +151,7 @@ public class CookMealMeta implements MetaTask, Serializable {
         double result = 0D;
 
 
-        if (CookMeal.isMealTime(robot)) {
+        if (CookMeal.isMealTime(robot, 20)) {
 
             if (robot.getBotMind().getRobotJob() instanceof Chefbot) {
                 // See if there is an available kitchen.

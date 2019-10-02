@@ -194,7 +194,7 @@ public class PrepareDessert extends Task implements Serializable {
 
 		if (person != null) {
 			// If meal time is over, end task.
-			if (!CookMeal.isMealTime(person.getCoordinates())) {
+			if (!CookMeal.isLocalMealTime(person.getCoordinates(), 10)) {
 				logger.fine(person + " ended preparing desserts : meal time was over.");
 				endTask();
 				return time;
@@ -213,7 +213,7 @@ public class PrepareDessert extends Task implements Serializable {
 
 		else if (robot != null) {
 			// If meal time is over, end task.
-			if (!CookMeal.isMealTime(robot)) {
+			if (!CookMeal.isMealTime(robot, 10)) {
 				logger.fine(robot + " ended preparing desserts : meal time was over.");
 				endTask();
 				return time;

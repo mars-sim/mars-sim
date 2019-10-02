@@ -244,7 +244,7 @@ public class CookMeal extends Task implements Serializable {
 
 		if (person != null) {
 			// If meal time is over, end task.
-			if (!isMealTime(person.getCoordinates())) {
+			if (!isLocalMealTime(person.getCoordinates(), 20)) {
 				logger.finest(person + " ending cooking due to meal time over.");
 				endTask();
 				return time;
@@ -261,7 +261,7 @@ public class CookMeal extends Task implements Serializable {
 			nameOfMeal = kitchen.addWork(workTime, person);
 		} else if (robot != null) {
 			// If meal time is over, end task.
-			if (!isMealTime(robot)) {
+			if (!isMealTime(robot, 20)) {
 				logger.finest(robot + " ending cooking due to meal time over.");
 				endTask();
 				return time;
@@ -385,28 +385,34 @@ public class CookMeal extends Task implements Serializable {
 	}
 
 	/**
-	 * Checks if it is currently a meal time at the location.
+	 * Checks if it is currently a meal time at the location. Need to estimate the prepTime 
+	 * e.g. the cook needs to be in the chow hall to begin cooking 20 millisols prior to 
+	 * 'starting' the meal time 
 	 * 
 	 * @param location the coordinate location to check for.
+	 * @param prepTime the number of millisols prior to meal time that needs to be accounted for.
 	 * @return true if meal time
 	 */
-	public static boolean isMealTime(Coordinates location) {
+	public static boolean isLocalMealTime(Coordinates location, int prepTime) {
 		double timeDiff = 1000D * (location.getTheta() / (2D * Math.PI));
-		return mealTime(timeDiff);
+		return isMealTime(timeDiff, prepTime);
 	}
 
-	public static boolean isMealTime(Robot robot) {
-		// double timeDiff = 1000D * (robot.getCoordinates().getTheta() / (2D *
-		// Math.PI));
-		// return mealTime(timeDiff);
-		return isMealTime(robot.getCoordinates());
+	public static boolean isMealTime(Robot robot, int prepTime) {
+		return isLocalMealTime(robot.getCoordinates(), prepTime);
 	}
 
-	public static boolean mealTime(double timeDiff) {
+	/**
+	 * Checks if it's the meal time
+	 * 
+	 * @param timeDiff
+	 * @return
+	 */
+	public static boolean isMealTime(double timeDiff, int prepTime) {
 
 		boolean result = false;
 		double timeOfDay = marsClock.getMillisol();
-		double modifiedTime = timeOfDay + timeDiff;
+		double modifiedTime = timeOfDay + timeDiff + prepTime;
 		if (modifiedTime >= 1000D) {
 			modifiedTime -= 1000D;
 		}

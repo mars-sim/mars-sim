@@ -67,7 +67,7 @@ public class RandomMineralMap implements Serializable, MineralMap {
 	// List of all mineral concentrations.
 	private List<MineralConcentration> mineralConcentrations;
 
-	private static MineralMapConfig mineralMapConfig;
+	private static MineralMapConfig mineralMapConfig = SimulationConfig.instance().getMineralMapConfiguration();
 	
 	/**
 	 * Constructor

@@ -109,12 +109,12 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 	
 	protected static MarsSurface marsSurface;
 	
-	protected static UnitManager unitManager;
+	protected static UnitManager unitManager = sim.getUnitManager();
 	protected static MissionManager missionManager;
 	
 	protected static Mars mars;
 	protected static Weather weather;
-	protected static SurfaceFeatures surface;
+	protected static SurfaceFeatures surfaceFeatures;
 	
 	protected static PersonConfig personConfig = simulationConfig.getPersonConfig();
 	protected static VehicleConfig vehicleConfig = simulationConfig.getVehicleConfiguration();
@@ -203,7 +203,7 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 		else {
 			currentStateType = LocationStateType.OUTSIDE_ON_MARS;
 			containerID = MARS_SURFACE_ID;
-			logger.info(this + " is " + currentStateType);
+//			logger.info(this + " is " + currentStateType);
 		}
 	}
 
@@ -314,7 +314,7 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 	 * @return the unit's location
 	 */
 	public Coordinates getCoordinates() {
-		return location; //getContainerUnit().getCoordinates();
+		return location;
 	}
 
 	/**
@@ -352,8 +352,8 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 	 * @return the unit's container unit
 	 */
 	public Unit getContainerUnit() {
-//		if (unitManager == null) // for maven test
-//			return null;
+		if (unitManager == null) // for maven test
+			return null;
 		return unitManager.getUnitByID(containerID);
 	}
 
@@ -446,14 +446,24 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 	 * @param newContainer the unit to contain this unit.
 	 */
 	public void setContainerUnit(Unit newContainer) {
-
-		if (newContainer == null)
+		Unit oldContainer = getContainerUnit();
+		// a. Set Coordinates
+		if (newContainer == null) {
 			// Set back to its previous container unit's coordinates
-			setCoordinates(getContainerUnit().getCoordinates());
-		else
+			if (oldContainer != null)
+				setCoordinates(oldContainer.getCoordinates());
+		}
+		else if (this instanceof MarsSurface) {
+			// Set back to its previous container unit's coordinates
+			if (oldContainer != null)
+				setCoordinates(oldContainer.getCoordinates());
+		}
+		else {
 			// Slave the coordinates to that of the newContainer
 			setCoordinates(newContainer.getCoordinates());
-		
+		}
+			
+		// b. Set LocationStateType
 		if (this instanceof Person || this instanceof Robot) {
 			// NOTE: consider a robot in this case 
 			updatePersonRobotState(newContainer);
@@ -472,19 +482,18 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 		}
 		else if (this instanceof MarsSurface) {
 			currentStateType = LocationStateType.OUTSIDE_ON_MARS;
-			// NOTE: this is needed since the surface of Mars is everywhere
-			// e.g. EVASuit 001 is the container unit of John Wayne and it's located
-			// at right outside the New Plymouth at (0, 0).
-			// Set back to its previous container unit's coordinates
-			setCoordinates(getContainerUnit().getCoordinates());
 		}			
 			
-		// Set containerID
-		if (newContainer == null || newContainer.getIdentifier() == Unit.UNKNOWN_ID) {
-			containerID = Unit.UNKNOWN_ID;
+		// c. Set containerID
+		if (newContainer == null || newContainer.getIdentifier() == UNKNOWN_ID) {
+			containerID = UNKNOWN_ID;
 		}
 		
-		else if (newContainer != null || newContainer.getIdentifier() != Unit.UNKNOWN_ID)
+		else if (this instanceof MarsSurface) {
+			containerID = MARS_SURFACE_ID;
+		}
+		
+		else //if (newContainer != null || newContainer.getIdentifier() != Unit.UNKNOWN_ID)
 			containerID = newContainer.getIdentifier();
 		
 		fireUnitUpdate(UnitEventType.CONTAINER_UNIT_EVENT, newContainer);
@@ -502,7 +511,7 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 		if (newContainer instanceof EVASuit)
 			return LocationStateType.INSIDE_EVASUIT;
 
-		else if (newContainer instanceof Settlement)
+		else if (newContainer instanceof Settlement || newContainer instanceof Building)
 			return LocationStateType.INSIDE_SETTLEMENT;	
 		
 		else if (newContainer instanceof Vehicle)
@@ -1034,8 +1043,8 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 				|| LocationStateType.INSIDE_VEHICLE == currentStateType)
 			return true;
 		
-		if (LocationStateType.INSIDE_EVASUIT == currentStateType)
-			return getContainerUnit().isInside();
+//		if (LocationStateType.INSIDE_EVASUIT == currentStateType)
+//			return getContainerUnit().isInside();
 		
 		if (LocationStateType.ON_A_PERSON_OR_ROBOT == currentStateType)
 			return getContainerUnit().isInside();
@@ -1054,8 +1063,8 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 				|| LocationStateType.OUTSIDE_SETTLEMENT_VICINITY == currentStateType)
 			return true;
 		
-		if (LocationStateType.INSIDE_EVASUIT == currentStateType)
-			return getContainerUnit().isOutside();
+//		if (LocationStateType.INSIDE_EVASUIT == currentStateType)
+//			return getContainerUnit().isOutside();
 		
 		if (LocationStateType.ON_A_PERSON_OR_ROBOT == currentStateType)
 			return getContainerUnit().isOutside();
@@ -1072,8 +1081,8 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 		if (LocationStateType.INSIDE_VEHICLE == currentStateType)
 			return true;
 		
-		if (LocationStateType.INSIDE_EVASUIT == currentStateType)
-			return getContainerUnit().isInVehicle();
+//		if (LocationStateType.INSIDE_EVASUIT == currentStateType)
+//			return getContainerUnit().isInVehicle();
 		
 		if (LocationStateType.ON_A_PERSON_OR_ROBOT == currentStateType)
 			return getContainerUnit().isInVehicle();
@@ -1090,8 +1099,8 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 		if (LocationStateType.INSIDE_SETTLEMENT == currentStateType)
 			return true;
 		
-		if (LocationStateType.INSIDE_EVASUIT == currentStateType)
-			return getContainerUnit().isInSettlement();
+//		if (LocationStateType.INSIDE_EVASUIT == currentStateType)
+//			return getContainerUnit().isInSettlement();
 		
 		if (LocationStateType.ON_A_PERSON_OR_ROBOT == currentStateType)
 			return getContainerUnit().isInSettlement();
@@ -1105,8 +1114,8 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 	 * @return true if the unit is in a vehicle inside a garage
 	 */
 	public boolean isInVehicleInGarage() {
-		if (LocationStateType.INSIDE_EVASUIT == currentStateType)
-			return getContainerUnit().isInVehicleInGarage();
+//		if (LocationStateType.INSIDE_EVASUIT == currentStateType)
+//			return getContainerUnit().isInVehicleInGarage();
 		
 		
 //		if (containerID >= FIRST_VEHICLE_ID && containerID < FIRST_PERSON_ID) {
@@ -1160,7 +1169,7 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 	 * @param mm {@link MissionManager}
 	 */
 	public static void initializeInstances(MasterClock c0, MarsClock c1, EarthClock e, Simulation s, 
-			Mars m, MarsSurface ms, Weather w, MissionManager mm) {
+			Mars m, MarsSurface ms, Weather w, SurfaceFeatures sf, MissionManager mm) {
 		masterClock = c0;
 		marsClock = c1;
 		earthClock = e;
@@ -1171,7 +1180,7 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 //		unitManager = u;
 		missionManager = mm;
 		
-		surface = mars.getSurfaceFeatures();
+		surfaceFeatures = sf;
 	}
 	
 	public static void setUnitManager(UnitManager u) {

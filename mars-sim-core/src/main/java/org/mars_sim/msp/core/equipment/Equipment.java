@@ -13,6 +13,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.manufacture.Salvagable;
@@ -90,7 +91,9 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 		salvageInfo = null;
 		
 		this.identifier = getNextIdentifier();
-		// Add this equipment to the equipment lookup map		
+		// Add this equipment to the equipment lookup map	
+		if (unitManager == null)
+			unitManager = Simulation.instance().getUnitManager();
 		unitManager.addEquipmentID(this);
 
 //		if (!(this instanceof Robot)) {

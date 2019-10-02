@@ -234,8 +234,14 @@ public class Mind implements Serializable {
 		if (hasActiveTask) {
 			double remainingTime = taskManager.executeTask(time, person.getPerformanceRating());
 			if (remainingTime > 0D) {
-				// Call takeAction recursively until time = 0
-				takeAction(remainingTime);
+				try {
+					// Call takeAction recursively until time = 0
+					takeAction(remainingTime);
+				} catch (Exception e) {
+					LogConsolidated.log(Level.SEVERE, 0, sourceName,
+							person.getName() + " had trouble calling takeAction(). remaining time : " + Math.round(remainingTime *1000.0)/1000.0, e);
+					e.printStackTrace(System.err);
+				}
 			}
 		} 
 		

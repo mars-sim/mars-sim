@@ -47,7 +47,7 @@ public class BuildingAirlock extends Airlock {
     private Point2D airlockInteriorPos;
     private Point2D airlockExteriorPos;
 
-    private static MarsSurface marsSurface = Simulation.instance().getMars().getMarsSurface();
+    private static MarsSurface marsSurface = Simulation.instance().getUnitManager().getMarsSurface();
     
     /**
      * Constructor
@@ -117,35 +117,25 @@ public class BuildingAirlock extends Airlock {
             // Pump air into the airlock to make it breathable
 			building.getSettlement().getCompositionOfAir().releaseOrRecaptureAir(building.getInhabitableID(), true, building);
 
-			
-			// 1.1 Gets the EVA suit reference the person used to don on
-//			EVASuit suit = person.getSuit(); //(EVASuit) person.getContainerUnit(); 
-//			if (suit == null) suit = person.getSuit();
-			// 1.2 Retrieve the person from the suitInv
-//            suit.getInventory().retrieveUnit(person);
-			// 1.3 store the person into the building inventory
-            building.getInventory().storeUnit(person);
-            // 1.4 Add the person from the building
-            BuildingManager.addPersonOrRobotToBuilding(person, building);
-			// 1.5 Retrieve the suit from the surface of Mars
 			if (marsSurface == null)
-				marsSurface = Simulation.instance().getMars().getMarsSurface();
-//            marsSurface.getInventory().retrieveUnit(suit);
+				marsSurface = Simulation.instance().getUnitManager().getMarsSurface();
+			// 1.1 Retrieve the person from the surface of Mars
             marsSurface.getInventory().retrieveUnit(person);
-			// 1.6 Store the suit on the person
-//			person.getInventory().storeUnit(suit);
-            
-   			LogConsolidated.log(Level.FINER, 0, sourceName,
+			// 1.2 store the person into the building inventory
+            building.getInventory().storeUnit(person);
+            // 1.3 Add the person to the building
+            BuildingManager.addPersonOrRobotToBuilding(person, building);
+			// 5.4 Set the person's coordinates to that of the settlement's
+			person.setCoordinates(building.getSettlement().getCoordinates());
+			
+   			LogConsolidated.log(Level.INFO, 0, sourceName,
 	  				"[" + person.getLocationTag().getLocale() + "] "
-					+ person + " had just exited the airlock at " + building + " and went inside " 
+					+ person + " had just doffed the EVA suit, exited the airlock at " + building + " and went inside " 
         			+ building.getSettlement()
         			+ ".");
         }
         
-        else {
-        	//if (LocationSituation.BURIED != person.getLocationSituation()) {
-//                throw new IllegalStateException(person + " was in " + person.getLocationTag().getImmediateLocation() + " and entering " + getEntityName() +
-//                        " from an airlock but not from outside.");
+        else if (!person.isBuried() || !person.isDeclaredDead()) {
           	LogConsolidated.log(Level.SEVERE, 0, sourceName,		
           		person +  " was supposed to be entering " + getEntityName() +
                   "'s airlock but already in " + person.getLocationTag().getImmediateLocation());
@@ -176,33 +166,26 @@ public class BuildingAirlock extends Airlock {
             // Recapture air from the airlock before depressurizing it
 			building.getSettlement().getCompositionOfAir().releaseOrRecaptureAir(building.getInhabitableID(), false, building);
             
-			// 5.1 Gets the EVA suit under the person's possession
-			EVASuit suit = person.getSuit(); //(EVASuit) person.getInventory().findUnitOfClass(EVASuit.class);
-			// 5.2 Retrieve the suit from the person
-//			person.getInventory().retrieveUnit(suit);
-            // 5.3 Remove the person from the building
+			// 5.1 Remove the person from the building
             BuildingManager.removePersonOrRobotFromBuilding(person, building);
-			// 5.4 retrieve the person from the entityInv
+			// 5.2 Retrieve the person from the settlement
             building.getInventory().retrieveUnit(person);
-			// 5.5 Don the suit (store the person into the EVA suit inventory)
-//			suit.getInventory().storeUnit(person);
-			// 5.6 Store the suit on the surface of Mars
+			// 5.3 Store the person onto the surface of Mars
 			if (marsSurface == null)
-				marsSurface = Simulation.instance().getMars().getMarsSurface();
-//			marsSurface.getInventory().storeUnit(suit);
+				marsSurface = Simulation.instance().getUnitManager().getMarsSurface();
 			marsSurface.getInventory().storeUnit(person);
+			// 5.4 Set the person's coordinates to that of the settlement's
+			person.setCoordinates(building.getSettlement().getCoordinates());
 			
-  			LogConsolidated.log(Level.FINER, 0, sourceName,
+  			LogConsolidated.log(Level.INFO, 0, sourceName,
 	  				"[" + person.getLocationTag().getLocale() + "] "
 					+ person
-        			+ " had just left the airlock at " + building + " in " 
+        			+ " had just donned the EVA suit, left the airlock at " + building + " in " 
         			+ building.getSettlement()
         			+ " and stepped outside.");
         }
     	
-        else {
-        	//if (LocationSituation.BURIED != person.getLocationSituation()) {
-//            throw new IllegalStateException(
+        else if (!person.isBuried() || !person.isDeclaredDead()) {
             	LogConsolidated.log(Level.SEVERE, 0, sourceName,		
             		person +  " was supposed to be exiting " + getEntityName() +
                     "'s airlock but already " + person.getLocationTag().getImmediateLocation());

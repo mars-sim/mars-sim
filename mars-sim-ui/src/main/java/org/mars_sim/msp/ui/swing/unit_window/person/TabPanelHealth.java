@@ -210,7 +210,7 @@ extends TabPanel {
 		
 		// Add radiation dose info
 		// Prepare radiation panel
-		WebPanel radiationPanel = new WebPanel(new BorderLayout());//new GridLayout(2, 1, 0, 0));
+		WebPanel radiationPanel = new WebPanel(new BorderLayout(0, 0));//new GridLayout(2, 1, 0, 0));
 //		radiationPanel.setBorder(new MarsPanelBorder());
 		centerContentPanel.add(radiationPanel, BorderLayout.CENTER);
 
@@ -256,6 +256,10 @@ extends TabPanel {
 		radiationTable.getColumnModel().getColumn(3).setCellRenderer(renderer);
 
 		radiationTable.setPreferredScrollableViewportSize(new Dimension(225, 70));
+		radiationTable.getColumnModel().getColumn(0).setPreferredWidth(40);
+		radiationTable.getColumnModel().getColumn(1).setPreferredWidth(80);
+		radiationTable.getColumnModel().getColumn(2).setPreferredWidth(70);
+		radiationTable.getColumnModel().getColumn(2).setPreferredWidth(30);
 		radiationTable.setRowSelectionAllowed(true);
 		radiationScrollPanel.setViewportView(radiationTable);
 
@@ -272,7 +276,7 @@ extends TabPanel {
 		centerContentPanel.add(tablePanel, BorderLayout.SOUTH);
 
 		// Prepare sleep time panel
-		WebPanel sleepPanel = new WebPanel(new BorderLayout());
+		WebPanel sleepPanel = new WebPanel(new BorderLayout(0, 0));
 //		sleepPanel.setBorder(new MarsPanelBorder());
 		tablePanel.add(sleepPanel);
 
@@ -309,7 +313,7 @@ extends TabPanel {
 		
 
 		// Prepare health problem panel
-		WebPanel healthProblemPanel = new WebPanel(new BorderLayout());
+		WebPanel healthProblemPanel = new WebPanel(new BorderLayout(0, 0));
 //		healthProblemPanel.setBorder(new MarsPanelBorder());
 		tablePanel.add(healthProblemPanel);
 
