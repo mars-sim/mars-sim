@@ -184,8 +184,9 @@ implements Serializable {
 
 //    			LogConsolidated.log(Level.SEVERE, 5000, sourceName, 		
  				throw new IllegalStateException("[" + person.getSettlement() + "] " + person.getName() + " has invalid walk start location. (" +
-                        person.getXLocation() + ", " + person.getYLocation() + ") is not within " 
-            					+ building);
+                        Math.round(person.getXLocation()*10.0)/10.0 + ", " 
+ 						+ Math.round(person.getYLocation()*10.0)/10.0 
+ 						+ ") is not within " + building);
             }
         }
         else if (person.isInVehicle()) {

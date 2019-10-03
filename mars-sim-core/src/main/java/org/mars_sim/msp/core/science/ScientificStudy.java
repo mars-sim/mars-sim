@@ -353,7 +353,7 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 	 * @param science    the scientific field to collaborate with.
 	 */
 	public void addCollaborativeResearcher(Person researcher, ScienceType science) {
-		int id = researcher.getIdentifier();
+		Integer id = researcher.getIdentifier();
 		collaborativeResearchers.put(id, science);
 		collaborativeResearchWorkTime.put(id, 0D);
 		collaborativePaperWorkTime.put(id, 0D);
@@ -370,7 +370,7 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 	 * @param researcher the collaborative researcher.
 	 */
 	public void removeCollaborativeResearcher(Person researcher) { 
-		int id = researcher.getIdentifier();
+		Integer id = researcher.getIdentifier();
 		collaborativeResearchers.remove(id);
 		collaborativeResearchWorkTime.remove(id);
 		collaborativePaperWorkTime.remove(id);
@@ -539,7 +539,7 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 	 * @param workTime   the work time (millisols).
 	 */
 	public void addCollaborativeResearchWorkTime(Person researcher, double workTime) {
-		int id = researcher.getIdentifier();
+		Integer id = researcher.getIdentifier();
 		if (collaborativeResearchWorkTime.containsKey(id)) {
 			double currentWorkTime = collaborativeResearchWorkTime.get(id);
 			currentWorkTime += workTime;
@@ -683,7 +683,7 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 	 * @param workTime   the work time (millisols).
 	 */
 	public void addCollaborativePaperWorkTime(Person researcher, double workTime) {
-		int id = researcher.getIdentifier();
+		Integer id = researcher.getIdentifier();
 		if (collaborativePaperWorkTime.containsKey(id)) {
 			double currentWorkTime = collaborativePaperWorkTime.get(id);
 			currentWorkTime += workTime;

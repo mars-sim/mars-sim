@@ -68,7 +68,6 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 
 	private int size;
 
-	
 	private boolean showBuildingLabels;
 	private boolean showConstructionLabels;
 	private boolean showPersonLabels;
@@ -78,7 +77,7 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 
 //	private MainScene mainScene;
 	private MainDesktopPane desktop;
-
+	
 	private Building building;
 	private SettlementWindow settlementWindow;
 	private Settlement settlement;
@@ -136,7 +135,9 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 		showDaylightLayer = false; // turn off by default
 		selectedPerson = new HashMap<Settlement, Person>();
 		selectedRobot = new HashMap<Settlement, Robot>();
-
+	}
+	
+	public void createUI() {
 		// logger.info("PERIOD_IN_MILLISOLS : " + PERIOD_IN_MILLISOLS);
 //		SwingUtilities.invokeLater(() -> {
 			initLayers(desktop);
@@ -184,6 +185,7 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 		// SwingUtilities.invokeLater(() -> {
 //		if (desktop.getMainScene() == null)
 			settlementTransparentPanel = new SettlementTransparentPanel(desktop, this);
+			settlementTransparentPanel.createAndShowGUI();
 //		// });
 
 		// paintDoubleBuffer();
@@ -246,7 +248,11 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 					// Set initial mouse drag position.
 					xLast = evt.getX();
 					yLast = evt.getY();
+					
+					// Display the settlement's (x, y) coordinate of the mouse pointer on the status bar
+					settlementWindow.setMapXYCoord(xLast, yLast);
 //				}
+					
 			}
 
 			@Override
@@ -547,8 +553,7 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 				if (Math.abs(distanceX) <= xx && Math.abs(distanceY) <= yy) {
 					selectedBuilding = building;
 
-					settlementWindow.setXCoor(distanceX);
-					settlementWindow.setYCoor(distanceY);
+					settlementWindow.setBuildingXYCoord(distanceX, distanceY);
 
 					break;
 				}

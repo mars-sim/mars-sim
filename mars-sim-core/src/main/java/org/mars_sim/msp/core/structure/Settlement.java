@@ -4317,6 +4317,14 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 		this.name = value;
 	}
 
+	public double getAverageSettlerWeight() {
+		double value = 0;
+		for (Person p: this.allAssociatedPeople) {
+			value += p.getMass();
+		}
+		return value;
+	}
+	
 	public boolean equals(Object obj) {
 		if (this == obj) return true;
 		if (obj == null) return false;

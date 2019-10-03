@@ -293,7 +293,7 @@ public class SimulationConfig implements Serializable {
 		// if the "xml" directory exists, back up everything inside and clean the directory
 		if (xmlDirExist && xmlLocation.isDirectory()) {
 			LogConsolidated.log(Level.CONFIG, 0, sourceName, 
-			"'xml' folder already existed.");		
+			"/xml folder already existed.");		
 			
 			versionFileExist = versionFile.exists();
 			if (versionFileExist) {
@@ -305,14 +305,15 @@ public class SimulationConfig implements Serializable {
 					    	sameBuild = true;
 					    }
 				    }
+					brTest.close();
 				} catch (FileNotFoundException e) {
 					e.printStackTrace();
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-			    
 			}
 			
+
 			// TODO: need to check if all the xml files exist 
 			// TODO: Generate checksum on each of xml to see if it has been altered. 
 			// TODO: If it does, back them up into a subdirectory and start off a new batch of xml files

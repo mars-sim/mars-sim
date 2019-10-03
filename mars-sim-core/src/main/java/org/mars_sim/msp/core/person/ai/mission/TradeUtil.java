@@ -22,6 +22,7 @@ import org.mars_sim.msp.core.equipment.ContainerUtil;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
+import org.mars_sim.msp.core.equipment.SpecimenBox;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
@@ -60,6 +61,9 @@ public final class TradeUtil {
 	/** Minimum number of repair parts to leave at settlement. */
 	private static final int MIN_REPAIR_PARTS = 20;
 
+	/** Minimum number of repair parts to leave at settlement. */
+	private static final int MIN_NUM_EQUIPMENT = 10;
+	
 	/** Performance cache for equipment goods. */
 	private final static Map<Class<? extends Equipment>, Equipment> equipmentGoodCache = new HashMap<Class<? extends Equipment>, Equipment>(
 			5);
@@ -619,10 +623,18 @@ public final class TradeUtil {
 			}
 
 			boolean enoughEVASuits = true;
-			if (good.getClassType() == EVASuit.class) {//.getName().equalsIgnoreCase("EVA Suit")) {
-				double remainingSuits = sellingInventory - amountTraded;
-				int requiredSuits = Trade.MAX_MEMBERS + 2;
-				enoughEVASuits = remainingSuits > requiredSuits;
+			boolean enoughEquipment = true;
+			if (good.getCategory() == GoodType.EQUIPMENT) {	
+				if (good.getClassType() == EVASuit.class) {//.getName().equalsIgnoreCase("EVA Suit")) {
+					double remainingSuits = sellingInventory - amountTraded;
+					int requiredSuits = Trade.MAX_MEMBERS + 2;
+					enoughEVASuits = remainingSuits > requiredSuits;
+				}
+				else {
+					double remaining = sellingInventory - amountTraded;
+					enoughEquipment = remaining > MIN_NUM_EQUIPMENT;
+				}
+
 			}
 
 			boolean enoughRepairParts = true;
@@ -640,7 +652,7 @@ public final class TradeUtil {
 			}
 
 			if (isRoverCapacity && isContainerAvailable && !isMissionRover && enoughResourceForContainer
-					&& enoughEVASuits && enoughRepairParts && enoughLifeSupportResources) {
+					&& enoughEVASuits && enoughEquipment && enoughRepairParts && enoughLifeSupportResources) {
 				result = buyingValue - sellingValue;
 			}
 		}
@@ -751,7 +763,7 @@ public final class TradeUtil {
 
 		// Get required fuel.
 		Good fuelGood = GoodsUtil.getResourceGood(rover.getFuelType());
-		neededResources.put(fuelGood, (int) VehicleMission.getFuelNeededForTrip(distance, rover.getIFuelConsumption(), true));
+		neededResources.put(fuelGood, (int) VehicleMission.getFuelNeededForTrip(distance, rover.getEstimatedAveFuelConsumption(), true));
 
 		// Get estimated trip time.
 		double averageSpeed = rover.getBaseSpeed() / 2D;

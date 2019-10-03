@@ -221,7 +221,7 @@ public class RespondToStudyInvitation extends Task implements Serializable {
 				// Modify based on study collaborative researchers' achievements.
 				Iterator<Integer> i = study.getCollaborativeResearchers().keySet().iterator();
 				while (i.hasNext()) {
-					int id = i.next();
+					Integer id = i.next();
 					Person collaborator = unitManager.getPersonByID(id);
 					ScienceType collaborativeScience = study.getCollaborativeResearchers().get(id);
 					acceptChance += (collaborator.getScientificAchievement(collaborativeScience) / 2D);

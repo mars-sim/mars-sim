@@ -68,27 +68,28 @@ public class VehicleTableModel extends UnitTableModel {
 	// Column indexes
 	private final static int NAME = 0;
 	private final static int TYPE = 1;
-	private final static int LOCATION = 2;
-	private final static int DESTINATION = 3;
-	private final static int DESTDIST = 4;
-	private final static int MISSION = 5;
-	private final static int CREW = 6;
-	private final static int BOTS = 7;
-	private final static int DRIVER = 8;
-	private final static int STATUS = 9;
-	private final static int BEACON = 10;
-	private final static int RESERVED = 11;
-	private final static int SPEED = 12;
-	private final static int MALFUNCTION = 13;
-	private final static int OXYGEN = 14;
-	private final static int METHANE = 15;
-	private final static int WATER = 16;
-	private final static int FOOD = 17;
-	private final static int DESSERT = 18;
-	private final static int ROCK_SAMPLES = 19;
-	private final static int ICE = 20;
+	private final static int HOME = 2;
+	private final static int LOCATION = 3;
+	private final static int DESTINATION = 4;
+	private final static int DESTDIST = 5;
+	private final static int MISSION = 6;
+	private final static int CREW = 7;
+	private final static int BOTS = 8;
+	private final static int DRIVER = 9;
+	private final static int STATUS = 10;
+	private final static int BEACON = 11;
+	private final static int RESERVED = 12;
+	private final static int SPEED = 13;
+	private final static int MALFUNCTION = 14;
+	private final static int OXYGEN = 15;
+	private final static int METHANE = 16;
+	private final static int WATER = 17;
+	private final static int FOOD = 18;
+	private final static int DESSERT = 19;
+	private final static int ROCK_SAMPLES = 20;
+	private final static int ICE = 21;
 	/** The number of Columns. */
-	private final static int COLUMNCOUNT = 21;
+	private final static int COLUMNCOUNT = 22;
 	/** Names of Columns. */
 	private static String columnNames[];
 		
@@ -105,6 +106,20 @@ public class VehicleTableModel extends UnitTableModel {
 		columnTypes[NAME] = String.class;
 		columnNames[TYPE] = "Type";
 		columnTypes[TYPE] = String.class;
+		columnNames[HOME] = "Home";
+		columnTypes[HOME] = String.class;
+		columnNames[LOCATION] = "Location";
+		columnTypes[LOCATION] = String.class;
+		columnNames[DESTINATION] = "Next Waypoint";
+		columnTypes[DESTINATION] = Coordinates.class;
+		columnNames[DESTDIST] = "Remaining km";
+		columnTypes[DESTDIST] = Integer.class;
+		columnNames[MISSION] = "Mission";
+		columnTypes[MISSION] = String.class;
+		columnNames[CREW] = "Crew";
+		columnTypes[CREW] = Integer.class;
+		columnNames[BOTS] = "Bots";
+		columnTypes[BOTS] = Integer.class;
 		columnNames[DRIVER] = "Driver";
 		columnTypes[DRIVER] = String.class;
 		columnNames[STATUS] = "Status";
@@ -113,32 +128,20 @@ public class VehicleTableModel extends UnitTableModel {
 		columnTypes[BEACON] = String.class;
 		columnNames[RESERVED] = "Reserved";
 		columnTypes[RESERVED] = String.class;
-		columnNames[LOCATION] = "Location";
-		columnTypes[LOCATION] = String.class;
 		columnNames[SPEED] = "Speed";
 		columnTypes[SPEED] = Integer.class;
 		columnNames[MALFUNCTION] = "Malfunction";
 		columnTypes[MALFUNCTION] = String.class;
-		columnNames[CREW] = "Crew";
-		columnTypes[CREW] = Integer.class;
-		columnNames[BOTS] = "Bots";
-		columnTypes[BOTS] = Integer.class;
-		columnNames[DESTINATION] = "Destination";
-		columnTypes[DESTINATION] = Coordinates.class;
-		columnNames[DESTDIST] = "Dest. Dist.";
-		columnTypes[DESTDIST] = Integer.class;
-		columnNames[MISSION] = "Mission";
-		columnTypes[MISSION] = String.class;
+		columnNames[OXYGEN] = "Oxygen";
+		columnTypes[OXYGEN] = Integer.class;
+		columnNames[METHANE] = "Methane";
+		columnTypes[METHANE] = Integer.class;
+		columnNames[WATER] = "Water";
+		columnTypes[WATER] = Integer.class;
 		columnNames[FOOD] = "Food";
 		columnTypes[FOOD] = Integer.class;
 		columnNames[DESSERT] = "Dessert";
 		columnTypes[DESSERT] = Integer.class;
-		columnNames[OXYGEN] = "Oxygen";
-		columnTypes[OXYGEN] = Integer.class;
-		columnNames[WATER] = "Water";
-		columnTypes[WATER] = Integer.class;
-		columnNames[METHANE] = "Methane";
-		columnTypes[METHANE] = Integer.class;
 		columnNames[ROCK_SAMPLES] = "Rock Samples";
 		columnTypes[ROCK_SAMPLES] = Integer.class;
 		columnNames[ICE] = "Ice";
@@ -224,6 +227,72 @@ public class VehicleTableModel extends UnitTableModel {
 					result = Conversion.capitalize(vehicle.getDescription());
 				} break;
 
+				case HOME : {
+					Settlement as = vehicle.getAssociatedSettlement();
+					if (as != null) {
+						result = as.getName();
+					}
+					else {
+						result = vehicle.getCoordinates().getFormattedString();
+					}
+				} break;
+				
+				case LOCATION : {
+					Settlement settle = vehicle.getSettlement();
+					if (settle != null) {
+						result = settle.getName();
+					}
+					else {
+						result = vehicle.getCoordinates().getFormattedString();
+					}
+				} break;
+
+				case DESTINATION : {
+					result = null;
+					Mission mission = missionManager.getMissionForVehicle(vehicle);
+					if ((mission != null) && (mission instanceof VehicleMission)) {
+						VehicleMission vehicleMission = (VehicleMission) mission;
+						String status = vehicleMission.getTravelStatus();
+						if (status != null) {
+							if (status.equals(TravelMission.TRAVEL_TO_NAVPOINT)) {
+								NavPoint destination = vehicleMission.getNextNavpoint();	
+								if (destination.isSettlementAtNavpoint()) 
+									result = destination.getSettlement().getName();
+								else
+									result = Conversion.capitalize(destination.getDescription()) + " " + destination.getLocation().getFormattedString();
+							}
+							else if (status.equals(TravelMission.AT_NAVPOINT)) {
+								NavPoint destination = vehicleMission.getCurrentNavpoint();
+//								result = destination.getLocation().getFormattedString();
+								result = Conversion.capitalize(destination.getDescription());
+							}					
+						}			
+					}
+				} break;
+
+				case DESTDIST : {
+					Mission mission = missionManager.getMissionForVehicle(vehicle);
+					if ((mission != null) && (mission instanceof VehicleMission)) {
+						VehicleMission vehicleMission = (VehicleMission) mission;
+						try {
+							result = Math.round(vehicleMission.getCurrentLegRemainingDistance()*10.0)/10.0;
+						}
+						catch (Exception e) {
+							logger.log(Level.SEVERE,"Error getting current leg remaining distance.");
+							e.printStackTrace(System.err);
+						}
+					}
+					else result = null;
+				} break;
+
+				case MISSION : {
+					Mission mission = missionManager.getMissionForVehicle(vehicle);
+					if (mission != null) {
+						result = mission.getName();
+					}
+					else result = null;
+				} break;
+				
 				case CREW : {
 					if (vehicle instanceof Crewable)
 						result = ((Crewable) vehicle).getCrewNum();
@@ -235,6 +304,41 @@ public class VehicleTableModel extends UnitTableModel {
 						result = ((Crewable) vehicle).getRobotCrewNum();
 					else result = 0;
 				} break;
+
+				case DRIVER : {
+					if (vehicle.getOperator() != null) {
+						result = vehicle.getOperator().getOperatorName();
+					}
+					else {
+						result = null;
+					}
+				} break;
+				
+				case SPEED : {
+					result = Math.round(vehicle.getSpeed()*10.0)/10.0;
+				} break;
+
+
+				// Status is a combination of Mechanical failure and maintenance
+				case STATUS : {
+					result = vehicle.getStatus();
+				} break;
+
+				case BEACON : {
+					if (vehicle.isBeaconOn()) result = ON;
+					else result = OFF;
+				} break;
+
+				case RESERVED : {
+					if (vehicle.isReserved()) result = TRUE;
+					else result = FALSE;
+				} break;
+
+				case MALFUNCTION: {
+					Malfunction failure = vehicle.getMalfunctionManager().getMostSeriousMalfunction();
+					if (failure != null) result = failure.getName();
+				} break;
+
 
 				case WATER : {
 					//result = decFormatter.format(resourceMap.get(AmountResource.findAmountResource(LifeSupport.WATER)));
@@ -303,95 +407,6 @@ public class VehicleTableModel extends UnitTableModel {
 						result = "--";
 					else
 						result = value;
-				} break;
-
-				case SPEED : {
-					result = Math.round(vehicle.getSpeed()*10.0)/10.0;
-				} break;
-
-				case DRIVER : {
-					if (vehicle.getOperator() != null) {
-						result = vehicle.getOperator().getOperatorName();
-					}
-					else {
-						result = null;
-					}
-				} break;
-
-				// Status is a combination of Mechanical failure and maintenance
-				case STATUS : {
-					result = vehicle.getStatus();
-				} break;
-
-				case BEACON : {
-					if (vehicle.isBeaconOn()) result = ON;
-					else result = OFF;
-				} break;
-
-				case RESERVED : {
-					if (vehicle.isReserved()) result = TRUE;
-					else result = FALSE;
-				} break;
-
-				case MALFUNCTION: {
-					Malfunction failure = vehicle.getMalfunctionManager().getMostSeriousMalfunction();
-					if (failure != null) result = failure.getName();
-				} break;
-
-				case LOCATION : {
-					Settlement settle = vehicle.getSettlement();
-					if (settle != null) {
-						result = settle.getName();
-					}
-					else {
-						result = vehicle.getCoordinates().getFormattedString();
-					}
-				} break;
-
-				case DESTINATION : {
-					result = null;
-					Mission mission = missionManager.getMissionForVehicle(vehicle);
-					if ((mission != null) && (mission instanceof VehicleMission)) {
-						VehicleMission vehicleMission = (VehicleMission) mission;
-						String status = vehicleMission.getTravelStatus();
-						if (status != null) {
-							if (status.equals(TravelMission.TRAVEL_TO_NAVPOINT)) {
-								NavPoint destination = vehicleMission.getNextNavpoint();	
-								if (destination.isSettlementAtNavpoint()) 
-									result = destination.getSettlement().getName();
-								else
-									result = Conversion.capitalize(destination.getDescription()) + " " + destination.getLocation().getFormattedString();
-							}
-							else if (status.equals(TravelMission.AT_NAVPOINT)) {
-								NavPoint destination = vehicleMission.getCurrentNavpoint();
-//								result = destination.getLocation().getFormattedString();
-								result = AT + Conversion.capitalize(destination.getDescription());
-							}					
-						}			
-					}
-				} break;
-
-				case DESTDIST : {
-					Mission mission = missionManager.getMissionForVehicle(vehicle);
-					if ((mission != null) && (mission instanceof VehicleMission)) {
-						VehicleMission vehicleMission = (VehicleMission) mission;
-						try {
-							result = Math.round(vehicleMission.getCurrentLegRemainingDistance()*10.0)/10.0;
-						}
-						catch (Exception e) {
-							logger.log(Level.SEVERE,"Error getting current leg remaining distance.");
-							e.printStackTrace(System.err);
-						}
-					}
-					else result = null;
-				} break;
-
-				case MISSION : {
-					Mission mission = missionManager.getMissionForVehicle(vehicle);
-					if (mission != null) {
-						result = mission.getName();
-					}
-					else result = null;
 				} break;
 
 				case ICE : {

@@ -15,7 +15,6 @@ import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.mars.MarsSurface;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Airlock;
@@ -46,8 +45,6 @@ public class BuildingAirlock extends Airlock {
     private Point2D airlockInsidePos;
     private Point2D airlockInteriorPos;
     private Point2D airlockExteriorPos;
-
-    private static MarsSurface marsSurface = Simulation.instance().getUnitManager().getMarsSurface();
     
     /**
      * Constructor
@@ -117,8 +114,6 @@ public class BuildingAirlock extends Airlock {
             // Pump air into the airlock to make it breathable
 			building.getSettlement().getCompositionOfAir().releaseOrRecaptureAir(building.getInhabitableID(), true, building);
 
-			if (marsSurface == null)
-				marsSurface = Simulation.instance().getUnitManager().getMarsSurface();
 			// 1.1 Retrieve the person from the surface of Mars
             marsSurface.getInventory().retrieveUnit(person);
 			// 1.2 store the person into the building inventory
@@ -128,9 +123,10 @@ public class BuildingAirlock extends Airlock {
 			// 5.4 Set the person's coordinates to that of the settlement's
 			person.setCoordinates(building.getSettlement().getCoordinates());
 			
-   			LogConsolidated.log(Level.INFO, 0, sourceName,
+   			LogConsolidated.log(Level.FINER, 0, sourceName,
 	  				"[" + person.getLocationTag().getLocale() + "] "
-					+ person + " had just doffed the EVA suit, exited the airlock at " + building + " and went inside " 
+					+ person + " doffed the EVA suit, came through the inner door of the airlock at " 
+	  				+ building + " and went inside " 
         			+ building.getSettlement()
         			+ ".");
         }
@@ -171,16 +167,15 @@ public class BuildingAirlock extends Airlock {
 			// 5.2 Retrieve the person from the settlement
             building.getInventory().retrieveUnit(person);
 			// 5.3 Store the person onto the surface of Mars
-			if (marsSurface == null)
-				marsSurface = Simulation.instance().getUnitManager().getMarsSurface();
 			marsSurface.getInventory().storeUnit(person);
 			// 5.4 Set the person's coordinates to that of the settlement's
 			person.setCoordinates(building.getSettlement().getCoordinates());
 			
-  			LogConsolidated.log(Level.INFO, 0, sourceName,
+  			LogConsolidated.log(Level.FINER, 0, sourceName,
 	  				"[" + person.getLocationTag().getLocale() + "] "
 					+ person
-        			+ " had just donned the EVA suit, left the airlock at " + building + " in " 
+        			+ " donned the EVA suit, came through the outer door of the airlock at " 
+					+ building + " in " 
         			+ building.getSettlement()
         			+ " and stepped outside.");
         }

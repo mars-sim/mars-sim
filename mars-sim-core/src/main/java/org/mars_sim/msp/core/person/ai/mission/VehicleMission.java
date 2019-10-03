@@ -71,6 +71,9 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	protected boolean loadedFlag = false;
 	/** Vehicle traveled distance at start of mission. */
 	private double startingTravelledDistance;
+	/** Total traveled distance. */
+	private double distanceTravelled;
+	
 	/** Description of the mission */
 	private String description;
 
@@ -818,7 +821,11 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	public Map<Integer, Number> getResourcesNeededForTrip(boolean useMargin, double distance) {
 		Map<Integer, Number> result = new HashMap<Integer, Number>();
 		if (vehicle != null) {
-			result.put(vehicle.getFuelType(), getFuelNeededForTrip(distance, vehicle.getIFuelConsumption(), useMargin));
+			// Add the methane resource
+			if (getPhase() == null || getPhase().equals(VehicleMission.EMBARKING) || getPhase().equals(VehicleMission.APPROVAL))
+				result.put(vehicle.getFuelType(), getFuelNeededForTrip(distance, vehicle.getEstimatedAveFuelConsumption(), useMargin));
+			else
+				result.put(vehicle.getFuelType(), getFuelNeededForTrip(distance, vehicle.getIFuelConsumption(), useMargin));
 		}
 		return result;
 	}
@@ -1176,13 +1183,17 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	/**
 	 * Gets the total distance travelled during the mission so far.
 	 * 
-	 * @return distance (km)
+	 * @return distance travelled (km)
 	 */
 	public final double getTotalDistanceTravelled() {
 		if (vehicle != null) {
-			return vehicle.getTotalDistanceTraveled() - startingTravelledDistance;
+			double dist = vehicle.getTotalDistanceTraveled() - startingTravelledDistance;
+			if (dist > distanceTravelled)
+				// Record the distance
+				distanceTravelled = dist;
+			return distanceTravelled;
 		} else {
-			return 0D;
+			return distanceTravelled;
 		}
 	}
 

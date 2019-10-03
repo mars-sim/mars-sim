@@ -8,6 +8,8 @@ package org.mars_sim.msp.core.mars;
 
 import java.io.Serializable;
 
+import org.mars_sim.msp.core.structure.Settlement;
+
 
 /**
  * Mars represents the planet Mars in the simulation.
@@ -31,29 +33,33 @@ public class Mars implements Serializable {
 	private OrbitInfo orbitInfo;
 	/** Mars Surface as a unit container */
 	private MarsSurface marsSurface;
+	
 	/**
 	 * Constructor.
 	 * 
 	 * @throws Exception if Mars could not be constructed.
 	 */
 	public Mars() {
-		// Initialize mars surface		
-		marsSurface = new MarsSurface();
 	}
 
+//	public Mars(boolean test) {
+//		// Initialize mars surface		
+////		marsSurface = new MarsSurface();
+//	}
+	
+	public static Mars createTest() {
+		return new Mars();
+	}
+	
 	public void createInstances() {
+		// Initialize mars surface		
+		marsSurface = new MarsSurface();
 		// Initialize surface features
 		surfaceFeatures = new SurfaceFeatures();
 		// Initialize orbit info
 		orbitInfo = new OrbitInfo();
 		// Initialize weather
 		weather = new Weather();
-	}
-	
-	public void setMarsSurface(MarsSurface ms) {
-//		System.out.println("Mars : " + marsSurface + " has " + marsSurface.getCode());
-//		System.out.println("Mars : " + ms + " has " + ms.getCode());
-		marsSurface = ms;
 	}
 	
 	/**
@@ -113,6 +119,12 @@ public class Mars implements Serializable {
 	public MarsSurface getMarsSurface() {
 		return marsSurface;
 	}
+	
+//	public void setMarsSurface(MarsSurface ms) {
+//		//System.out.println("Mars : " + marsSurface + " has " + marsSurface.getCode());
+//		//System.out.println("Mars : " + ms + " has " + ms.getCode());
+//		marsSurface = ms;
+//	}
 	
 	/**
 	 * Prepare object for garbage collection.

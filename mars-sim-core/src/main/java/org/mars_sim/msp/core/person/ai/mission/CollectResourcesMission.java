@@ -624,7 +624,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 
 	@Override
 	public Map<Integer, Number> getResourcesNeededForRemainingMission(boolean useBuffer) {
-
+		// Note: currently, it has methane resource only
 		Map<Integer, Number> result = super.getResourcesNeededForRemainingMission(useBuffer);
 
 		double collectionSitesTime = getEstimatedRemainingCollectionSiteTime(useBuffer);

@@ -421,9 +421,9 @@ public class MissionTableModel extends AbstractTableModel
 					break;
 
 				case TRAVELLED_DISTANCE: {
-					if (mission instanceof TravelMission) {
-						TravelMission travelMission = (TravelMission) mission;
-						result = decFormatter.format(travelMission.getTotalDistanceTravelled());
+					if (mission instanceof VehicleMission) {
+						VehicleMission vehicleMission = (VehicleMission) mission;
+						result = decFormatter.format(vehicleMission.getTotalDistanceTravelled());
 					} else
 						result = 0;
 				}

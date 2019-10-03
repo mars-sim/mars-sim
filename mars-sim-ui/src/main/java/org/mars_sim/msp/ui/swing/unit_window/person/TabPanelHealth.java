@@ -319,6 +319,7 @@ extends TabPanel {
 
 		// Prepare health problem label
 		WebLabel healthProblemLabel = new WebLabel(Msg.getString("TabPanelHealth.healthProblems"), WebLabel.CENTER); //$NON-NLS-1$
+		healthProblemLabel.setPadding(7, 0, 0, 0);
 		healthProblemPanel.add(healthProblemLabel, BorderLayout.NORTH);
 
 		// Prepare health problem scroll panel
@@ -349,6 +350,7 @@ extends TabPanel {
 
 		// Prepare medication label.
 		WebLabel medicationLabel = new WebLabel(Msg.getString("TabPanelHealth.medication"), WebLabel.CENTER); //$NON-NLS-1$
+		medicationLabel.setPadding(7, 0, 0, 0);
 		medicationPanel.add(medicationLabel, BorderLayout.NORTH);
 
 		// Prepare medication scroll panel

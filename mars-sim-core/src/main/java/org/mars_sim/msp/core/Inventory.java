@@ -50,7 +50,7 @@ public class Inventory implements Serializable {
 		private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 
 	/** Comparison to indicate a small but non-zero amount. */
-	private static final double SMALL_AMOUNT_COMPARISON = .000_000_1D;
+	public static final double SMALL_AMOUNT_COMPARISON = .000_000_1D;
 
 	// Data members
 	/** True if this inventory instance is for maven test tracking only. */
@@ -1674,7 +1674,7 @@ public class Inventory implements Serializable {
 			 LogConsolidated.log(Level.SEVERE, 5_000, sourceName +
 					 "::retrieveUnit", "'" + unit + "' could not be retrieved.");
 			// The statement below is needed for maven test
-			throw new IllegalStateException("'" + unit + "' could not be retrieved by " + owner.getName());
+			throw new IllegalStateException("'" + unit + "' could not be retrieved from '" + owner.getName() + "'");
 		}
 	}
 

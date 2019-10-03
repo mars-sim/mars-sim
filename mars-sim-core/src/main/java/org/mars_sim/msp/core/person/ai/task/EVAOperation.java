@@ -17,8 +17,6 @@ import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.equipment.EVASuit;
-import org.mars_sim.msp.core.location.LocationStateType;
-import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.taskUtil.Task;
@@ -295,9 +293,17 @@ public abstract class EVAOperation extends Task implements Serializable {
 	        
 			// If not inside, create walk inside subtask.
 			if (interiorObject != null && !closeToLocation) {
-					LogConsolidated.log(Level.FINEST, 10_000, sourceName,
+				String name = "";
+				if (interiorObject instanceof Building) {
+					name = ((Building)interiorObject).getNickName();
+				}
+				else if (interiorObject instanceof Vehicle) {
+					name = ((Vehicle)interiorObject).getNickName();
+				}
+						
+				LogConsolidated.log(Level.FINEST, 10_000, sourceName,
 							"[" + person.getLocationTag().getLocale() + "] " + person.getName()
-							+ " was near " + ((Building)interiorObject).getNickName() //person.getLocationTag().getImmediateLocation()
+							+ " was near " +  name 
 							+ " at (" + Math.round(returnInsideLoc.getX()*10.0)/10.0 + ", " 
 							+ Math.round(returnInsideLoc.getY()*10.0)/10.0 
 							+ ") and was attempting to enter its airlock.");

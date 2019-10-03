@@ -761,8 +761,11 @@ public class BuildingManager implements Serializable {
 							.findAny().orElse(null);
 
 			if (building != null) {
+				// Add the person to a random building loc
 				addPersonOrRobotToBuildingRandomLocation(person, building);
-			} else if (!person.getLocationTag().getLocale().contains("Mock")) {
+			} 
+			
+			else if (!person.getLocationTag().getLocale().contains("Mock")) {
 				// if it's NOT under maven test
 				// throw new IllegalStateException("No inhabitable buildings available for " +
 				// person.getName());

@@ -8,22 +8,26 @@ package org.mars_sim.msp.core.person.ai.task;
 
 import java.io.Serializable;
 import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Direction;
 import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
-import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
+import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.person.ai.taskUtil.Task;
 import org.mars_sim.msp.core.person.ai.taskUtil.TaskPhase;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.function.Storage;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Rover;
+import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleOperator;
 
@@ -36,9 +40,16 @@ public abstract class OperateVehicle extends Task implements Serializable {
     /** default serial id. */
     private static final long serialVersionUID = 1L;
     
+	private static Logger logger = Logger.getLogger(OperateVehicle.class.getName());
+	private static String loggerName = logger.getName();
+	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+
     /** Task phases. */
     protected static final TaskPhase MOBILIZE = new TaskPhase(Msg.getString(
             "Task.phase.mobilize")); //$NON-NLS-1$
+	
+	/** Comparison to indicate a small but non-zero amount of fuel (methane) in kg that can still work on the fuel cell to propel the engine. */
+    private static final double LEAST_AMOUNT = RoverMission.LEAST_AMOUNT;
 	
     // Distance buffer for arriving at destination (km).
     private final static double DESTINATION_BUFFER = .001D;
@@ -53,7 +64,6 @@ public abstract class OperateVehicle extends Task implements Serializable {
 	private Coordinates destination; // The location of the destination of the trip.
 	private MarsClock startTripTime; // The time/date the trip is starting.
 	
-//	private static SurfaceFeatures surface;
 	private MalfunctionManager malfunctionManager;
 	
 
@@ -258,15 +268,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
 	            vehicle.setOperator(person);
 	        }
 
-		}
-//		else if (robot != null) {
-//			
-//	        // Set robot as the vehicle operator if it isn't already.
-//	        if (!robot.equals(vehicle.getOperator())) {
-//	            vehicle.setOperator(robot);
-//	        }
-//
-//		}		
+		}	
 		
         // Find starting distance to destination.
         double startingDistanceToDestination = getDistanceToDestination();
@@ -279,14 +281,35 @@ public abstract class OperateVehicle extends Task implements Serializable {
         double fuelConsumed = distanceTraveled / vehicle.getIFuelConsumption();
         Inventory vInv = vehicle.getInventory();
         int fuelType = vehicle.getFuelType();
+        
         double remainingFuel = vInv.getAmountResourceStored(fuelType, false);
+
+        if (remainingFuel < LEAST_AMOUNT) {
+        	// TODO: need to turn on emergency beacon and ask for rescue here or in RoverMission ?
+	    	LogConsolidated.log(Level.SEVERE, 0, sourceName, "[" + vehicle.getName() + "] " 
+					+ "ran out of methane. Cannot drive.");
+        	vehicle.setStatus(StatusType.OUT_OF_FUEL);
+        	distanceTraveled = 0;
+        	endTask();
+        }
+        	
         if (fuelConsumed > remainingFuel) {
         	fuelConsumed = remainingFuel;
+        	
+        	try {
+		    	vInv.retrieveAmountResource(fuelType, fuelConsumed);
+		    }
+		    catch (Exception e) {
+		    	LogConsolidated.log(Level.SEVERE, 0, sourceName, "[" + vehicle.getName() + "] " 
+						+ "can't retrieve methane. Cannot drive.");
+	        	distanceTraveled = 0;
+	        	vehicle.setStatus(StatusType.OUT_OF_FUEL);
+		    	endTask();
+		    }
+        	
+        	// Update and reduce the distanceTraveled since there is not enough fuel
+        	distanceTraveled =  fuelConsumed * vehicle.getIFuelConsumption();
         }
-        try {
-        	vInv.retrieveAmountResource(fuelType, fuelConsumed);
-        }
-        catch (Exception e) {}
 
         double result = 0;
 

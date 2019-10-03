@@ -51,6 +51,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.Indoor;
 import org.mars_sim.msp.core.structure.building.function.SystemType;
+import org.mars_sim.msp.core.tool.Conversion;
 
 /**
  * The Vehicle class represents a generic vehicle. It keeps track of generic
@@ -127,6 +128,16 @@ public abstract class Vehicle extends Unit
 	private double totalEnergy = 100D;
 	/** The base fuel consumption of the vehicle [km/kg]. */
 	private double baseFuelConsumption;
+	/** The estimated average fuel consumption of the vehicle for a trip [km/kg]. */
+	private double estimatedAveFuelConsumption;
+	/** The estimated combined total crew weight for a trip [km/kg]. */
+	private double estimatedTotalCrewWeight;
+	/** The cargo capacity of the vehicle for a trip [km/kg]. */
+	private double cargoCapacity;
+	/** The estimated beginning mass of the vehicle (base mass + crew weight + full cargo weight) for a trip [km/kg]. */
+	private double beginningMass;
+	/** The estimated end mass of the vehicle (base mass + crew weight + remaining cargo weight) for a trip [km/kg]. */
+	private double endMass;
 	/** Width of vehicle (meters). */
 	private double width;
 	/** Length of vehicle (meters). */
@@ -253,15 +264,35 @@ public abstract class Vehicle extends Unit
 		
 		// Gets the capacity of vehicle's fuel tank 
 		fuelCapacity = vehicleConfig.getCargoCapacity(vehicleType, ResourceUtil.findAmountResourceName(getFuelType())); 
-//		System.out.println("fuelCapacity: " + fuelCapacity);
+
 		// Gets the total energy on a full tank of methane
 		totalEnergy = METHANE_SPECIFIC_ENERGY * fuelCapacity * SOFC_CONVERSION_EFFICIENCY;// * drivetrainEfficiency;	
 
 		// Gets the base range of the vehicle
 		baseRange = totalEnergy / drivetrainEfficiency;
 		
-		// Gets the fuel consumption of this vehicle [km/kg]
-		baseFuelConsumption = baseRange / fuelCapacity; 
+		// Gets the base fuel consumption of this vehicle [km/kg]
+		baseFuelConsumption = baseRange / fuelCapacity;
+		// Gets the crew capacity
+		int numCrew = 0; 
+		if (this instanceof Rover)
+			numCrew = ((Rover)this).getCrewCapacity();
+		else if (this instanceof LightUtilityVehicle)
+			numCrew = ((LightUtilityVehicle)this).getCrewCapacity();
+		
+		estimatedTotalCrewWeight = numCrew * settlement.getAverageSettlerWeight();
+		
+		cargoCapacity = vehicleConfig.getTotalCapacity(vehicleType);
+		
+		beginningMass = getBaseMass() + estimatedTotalCrewWeight + cargoCapacity;
+		
+		endMass = getBaseMass() + estimatedTotalCrewWeight + cargoCapacity/10;
+		
+		// Gets the estimated average fuel consumption for a trip [km/kg]
+		estimatedAveFuelConsumption = baseFuelConsumption / (1 + beginningMass / endMass)  ;
+		
+		logger.config(Conversion.capitalize(vehicleType) + "'s base fuel consumption : " + Math.round(baseFuelConsumption*100.0)/100.0 + " km/kg");
+		logger.config(Conversion.capitalize(vehicleType) + "'s estimated average fuel consumption : " + Math.round(estimatedAveFuelConsumption*100.0)/100.0 + " km/kg");
 		
 		// Set initial parked location and facing at settlement.
 		determinedSettlementParkedLocationAndFacing();
@@ -764,11 +795,23 @@ public abstract class Vehicle extends Unit
 
 	/**
 	 * Gets the instantaneous fuel consumption of the vehicle [km/kg] 
-	 * (Depending on the current weight of the vehicle)
+	 * Note: assume that it is primarily dependent upon the current weight of the vehicle
+	 * 
 	 * @return
 	 */
 	public double getIFuelConsumption() {
-		return baseFuelConsumption * (getMass() + fuelCapacity) / (getBaseMass() + fuelCapacity) ;
+		return baseFuelConsumption / (1 + getMass() / endMass); 
+		
+	}
+	
+	/**
+	 * Gets the estimated average fuel consumption of the vehicle [km/kg] for a trip 
+	 * Note: Assume that it is half of two fuel consumption values (between the beginning and the end of the trip)
+	 * 
+	 * @return
+	 */
+	public double getEstimatedAveFuelConsumption() {
+		return estimatedAveFuelConsumption;
 	}
 	
 	/**
@@ -923,13 +966,19 @@ public abstract class Vehicle extends Unit
 		// Checks status.
 		checkStatus();
 		
-		if (statusType == StatusType.MOVING)
+		if (statusType == StatusType.MOVING) {
 			malfunctionManager.activeTimePassing(time);
+		}
 		// Make sure reservedForMaintenance is false if vehicle needs no maintenance.
 		else if (statusType == StatusType.MAINTENANCE) {
 			if (malfunctionManager.getEffectiveTimeSinceLastMaintenance() <= 0D)
 				setReservedForMaintenance(false);
-		} else {
+		}
+		else if (statusType == StatusType.OUT_OF_FUEL) {
+			setOperator(null);
+			setSpeed(0);
+		} 
+		else {
 			malfunctionManager.timePassing(time);
 		}
 

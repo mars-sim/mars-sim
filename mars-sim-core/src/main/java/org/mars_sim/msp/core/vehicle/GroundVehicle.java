@@ -7,10 +7,13 @@
 package org.mars_sim.msp.core.vehicle;
 
 import java.io.Serializable;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Direction;
+import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -29,9 +32,14 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private static Logger logger = Logger.getLogger(GroundVehicle.class.getName());
-
+	private static String loggerName = logger.getName();
+	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+	
 	// public final static String STUCK = "Stuck - using winch";
 
+	/** Comparison to indicate a small but non-zero amount of fuel (methane) in kg that can still work on the fuel cell to propel the engine. */
+    public static final double LEAST_AMOUNT = .001D;
+    
 	// Data members
 	/** Current elevation in km. */
 	private double elevation;
@@ -293,16 +301,41 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
 //		return foundGoodLocation;
 //	}
 
-//	/**
-//	 * Reloads instances after loading from a saved sim
-//	 * 
-//	 * @param s
-//	 */
-//	public static void initializeInstances(SurfaceFeatures s) {
-////		surface = s;
-////		terrain = surface.getTerrainElevation();
-//	}
-//	
+
+	/**
+	 * Checks if the vehicle has enough amount of fuel as prescribed
+	 * 
+	 * @param fuelConsumed
+	 * @return
+	 */
+	protected boolean hasEnoughFuel(double fuelConsumed) {
+		Vehicle v = getVehicle();
+	    Inventory vInv = v.getInventory();
+        int fuelType = v.getFuelType();
+        
+    	try {
+    		double remainingFuel = vInv.getAmountResourceStored(fuelType, false);
+//		    	vInv.retrieveAmountResource(fuelType, fuelConsumed);
+    		
+    		if (remainingFuel < LEAST_AMOUNT) {
+    			v.setStatus(StatusType.OUT_OF_FUEL);
+    			return false;
+    		}
+    			
+    		if (fuelConsumed > remainingFuel) {
+            	fuelConsumed = remainingFuel;
+            	return false;
+    		}
+    		else
+    			return true;
+	    }
+	    catch (Exception e) {
+	    	LogConsolidated.log(Level.SEVERE, 0, sourceName, "[" + v.getName() + "] " 
+					+ "can't retrieve methane. Cannot drive.");
+	    	return false;
+	    }
+	}
+	
 	/**
 	 * Prepare object for garbage collection.
 	 */

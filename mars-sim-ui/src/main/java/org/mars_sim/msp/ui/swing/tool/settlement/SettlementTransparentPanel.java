@@ -97,10 +97,8 @@ public class SettlementTransparentPanel extends WebComponent {
 	private static UnitManager unitManager = Simulation.instance().getUnitManager();
 		
     public SettlementTransparentPanel(MainDesktopPane desktop, SettlementMapPanel mapPanel) {
-
         this.mapPanel = mapPanel;
         this.desktop = desktop;
-//        this.mainScene = desktop.getMainScene();
 
 		if (GameManager.mode == GameMode.COMMAND) {
 			mode = GameMode.COMMAND;
@@ -109,8 +107,6 @@ public class SettlementTransparentPanel extends WebComponent {
 			mode = GameMode.SANDBOX;
 		
 		setDoubleBuffered(true);
-
-        createAndShowGUI();
     }
 
 
@@ -222,7 +218,12 @@ public class SettlementTransparentPanel extends WebComponent {
 					s = (Settlement) event.getItem();
 				//}
 				//System.out.println(" settlement is " + settlement.getName());
+
+				// Set the selected settlement in SettlementMapPanel
 				mapPanel.setSettlement(s);
+				// Set the population label in the status bar
+				mapPanel.getSettlementWindow().setPop(s.getNumCitizens());
+				// Set the box opaque
 				settlementListBox.setOpaque(false);
 			}
 		});
@@ -241,7 +242,12 @@ public class SettlementTransparentPanel extends WebComponent {
 				s = (Settlement) settlementListBox.getSelectedItem();
 			//}
 			//System.out.println(" settlement is " + settlement.getName());
+				
+			// Set the selected settlement in SettlementMapPanel
 			mapPanel.setSettlement(s);
+			// Set the population label in the status bar
+			mapPanel.getSettlementWindow().setPop(s.getNumCitizens());
+			// Set the box opaque
 			settlementListBox.setOpaque(false);
 		}
 

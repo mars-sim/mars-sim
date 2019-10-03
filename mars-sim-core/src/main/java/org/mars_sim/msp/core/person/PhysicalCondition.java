@@ -596,9 +596,9 @@ public class PhysicalCondition implements Serializable {
 	}
 
 	/**
-	 * Gets the person's fatigue level
+	 * Gets the person's fatigue level 
 	 * 
-	 * @return person's fatigue
+	 * @return the value from 0 to infinity.
 	 */
 	public double getFatigue() {
 		return fatigue;

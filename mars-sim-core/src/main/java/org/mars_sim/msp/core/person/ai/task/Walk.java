@@ -627,8 +627,8 @@ public class Walk extends Task implements Serializable {
 						result = false;
 						 LogConsolidated.log(Level.WARNING, 5000, sourceName,
 								 "[" + person.getLocationTag().getLocale() + "] "
-				      					+ person + " was in " + person.getLocationTag().getImmediateLocation()
-				      					+ " and could exit airlock at " + airlock.getEntityName());
+				      					+ person // + " was in " + person.getLocationTag().getImmediateLocation()
+				      					+ " could NOT exit airlock at " + airlock.getEntityName());
 					}
 				}
 			}

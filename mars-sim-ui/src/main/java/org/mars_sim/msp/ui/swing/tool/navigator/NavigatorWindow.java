@@ -407,7 +407,6 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		});
 		optionsPane.add(mineralsButton);
 
-		
 		// Create the status bar
 		statusBar = new JStatusBar();
 		contentPane.add(statusBar, BorderLayout.SOUTH);

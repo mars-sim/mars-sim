@@ -83,7 +83,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 	 */
 	public UnloadVehicleEVA(Person person) {
 		// Use EVAOperation constructor.
-		super(NAME, person, true, RandomUtil.getRandomDouble(50D) + 10D);
+		super(NAME, person, true, RandomUtil.getRandomDouble(10D) + 10D);
 
 		settlement = person.getAssociatedSettlement();
 
@@ -132,7 +132,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 	 */
 	public UnloadVehicleEVA(Person person, Vehicle vehicle) {
 		// Use EVAOperation constructor.
-		super("Unloading vehicle EVA", person, true, RandomUtil.getRandomDouble(50D) + 10D);
+		super("Unloading vehicle EVA", person, true, RandomUtil.getRandomDouble(10D) + 10D);
 
 		setDescription(Msg.getString("Task.description.unloadVehicleEVA.detail", vehicle.getName())); // $NON-NLS-1$
 		this.vehicle = vehicle;

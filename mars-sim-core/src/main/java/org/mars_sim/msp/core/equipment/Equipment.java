@@ -47,7 +47,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	/** Unique identifier for this equipment. */
 	private int identifier;
 	/** The identifier for the last owner of this equipment. */
-	private int lastOwner = -1;
+	private int lastOwner;
 	/** The equipment type. */
 	private String type;
 	/** The SalvageInfo instatnce. */	
@@ -89,6 +89,8 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 		this.equipmentType = EquipmentType.convertName2Enum(type);
 		isSalvaged = false;
 		salvageInfo = null;
+		
+		lastOwner = -1;
 		
 		this.identifier = getNextIdentifier();
 		// Add this equipment to the equipment lookup map	

@@ -11,7 +11,7 @@ import org.mars_sim.msp.core.person.Person;
 
 public class GameManager {
 	
-    public static int id;
+    public static Integer id;
 
     /** The GameMode enums. */
     public enum GameMode {

@@ -70,18 +70,20 @@ public class EatMealMeta implements MetaTask, Serializable {
 			result += hunger / 8D;
 			result += (2525 - energy) / 50D; // + (ghrelin-leptin - 300);
 			if (result <= 0)
-				return 0;
+				result = 0;
 		}
 
 		else if (notThirsty)
 			// if not thirsty and not hungry
-			return 0;
+			result = 0;
 
 		if (person.isInSettlement()) {
 
 			if (!CookMeal.isLocalMealTime(person.getCoordinates(), 0)) {
-				result = result / 4D;
+				// If it's not meal time yet, reduce the probability
+				result /= 4;
 			}
+			
 			// Check if a cooked meal is available in a kitchen building at the settlement.
 			Cooking kitchen = EatMeal.getKitchenWithMeal(person);
 			if (kitchen != null) {
@@ -90,10 +92,10 @@ public class EatMealMeta implements MetaTask, Serializable {
 			} 
 			
 			else { // no kitchen has available meals
-						// If no cooked meal, check if preserved food is available to eat.
-				if (notThirsty && !EatMeal.isPreservedFoodAvailable(person)) {
-					// If no preserved food, person can't eat a meal.
-					return 0;
+					// If no cooked meal, check if preserved food is available to eat.
+				if (!EatMeal.isPreservedFoodAvailable(person)) {
+					// If no preserved food, person can still drink
+					result /= 2;
 				}
 			}
 
@@ -108,27 +110,29 @@ public class EatMealMeta implements MetaTask, Serializable {
 		}
 
 		else if (person.isInVehicle()) {
-			if (notThirsty && !EatMeal.isPreservedFoodAvailable(person)) {
-				 // no preserved food, person can't eat a meal.
-				 return 0;
-			}
-			// higher probability than inside a settlement since a person is more likely to
-			// become thirsty due to on-call shift.
+			// Note: consider how is the probability compared to that of inside a settlement 
+			// may be a person is more likely to become thirsty and/or hungry due to on-call shift ?
+			
 			if (!CookMeal.isLocalMealTime(person.getCoordinates(), 0))
-				result = result / 4D;
+				result /= 4;
 
+			if (!EatMeal.isPreservedFoodAvailable(person)) {
+				// If no preserved food, person can still drink
+				result /= 2;
+			}
 			// TODO : how to ration food and water if running out of it ?
 		} 
 		
 		else if (person.isOutside()) {
 
 			if (notThirsty) {
+				// person cannot consume food while being outside doing EVA
 				return 0;
 			}
 			else if (CookMeal.isLocalMealTime(person.getCoordinates(), 10)) {
 				result = hunger; 
 			} else
-				result = hunger / 4D;
+				result /= 4;
 		}
 
 		// Add Preference modifier

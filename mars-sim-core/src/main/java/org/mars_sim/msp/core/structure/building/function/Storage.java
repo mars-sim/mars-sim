@@ -405,7 +405,7 @@ public class Storage extends Function implements Serializable {
 	 * @param id
 	 * @param inv
 	 * @param isRetrieving
-	 * @return true if the full amount can be retrieved.
+	 * @return true if the 'full' amount can be retrieved.
 	 */
 	public static boolean retrieveAnResource(double amount, int id, Inventory inv, boolean isRetrieving) {
 		boolean result = false;

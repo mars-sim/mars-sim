@@ -356,7 +356,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 		// Prepare job title label
 		WebLabel historyLabel = new WebLabel(Msg.getString("TabPanelCareer.history"), WebLabel.CENTER); //$NON-NLS-1$
 		// historyLabel.setBounds(0, 0, width, height);
-		jobHistoryPanel.add(new WebLabel());
+		historyLabel.setPadding(7, 0, 3, 0);
 		jobHistoryPanel.add(historyLabel, BorderLayout.NORTH);
 
 		// Create schedule table model

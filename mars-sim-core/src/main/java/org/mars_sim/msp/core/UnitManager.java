@@ -87,9 +87,7 @@ public class UnitManager implements Serializable {
 	private static boolean useCrew = true;
 	/** The total numbers of Unit instances. */
 	private static int totalNumUnits = 0;
-	/** The instance of MarsSurface. */
-	private MarsSurface marsSurface;
-	
+
 	// Data members
 	/** Is it running in Commander's Mode */
 	public boolean isCommanderMode;	
@@ -171,13 +169,15 @@ public class UnitManager implements Serializable {
 	private static MalfunctionFactory factory;
 	
 	private static MarsClock marsClock;
+	
+	/** The instance of MarsSurface. */
+	private volatile MarsSurface marsSurface;
+	
 
 	/**
 	 * Constructor.
 	 */
 	public UnitManager() {
-		marsClock = sim.getMasterClock().getMarsClock();
-
 		// Initialize unit collection
 		lookupUnit = new HashMap<>();
 		lookupSettlement = new HashMap<>();
@@ -202,11 +202,11 @@ public class UnitManager implements Serializable {
 		relationshipManager = sim.getRelationshipManager();
 		factory = sim.getMalfunctionFactory();		
 
-		// Add mars surface
+		marsClock = sim.getMasterClock().getMarsClock();
+		
+		// Gets the mars surface
 		marsSurface = sim.getMars().getMarsSurface();
 //		logger.info("marsSurface : " + marsSurface);
-
-		marsClock = sim.getMasterClock().getMarsClock();
 
 	}
 
@@ -388,8 +388,8 @@ public class UnitManager implements Serializable {
 	 * @param id
 	 * @return
 	 */
-	public Unit getUnitByID(int id) {
-		if (id == 0)
+	public Unit getUnitByID(Integer id) {
+		if (id == Unit.MARS_SURFACE_ID)
 			return marsSurface;
 			
 		Unit u = lookupSettlement.get(id);
@@ -446,10 +446,10 @@ public class UnitManager implements Serializable {
 
 	public void removeUnitID(Unit unit) {
 		if (lookupUnit.containsKey(unit.getIdentifier()))
-			lookupUnit.remove(unit.getIdentifier());
+			lookupUnit.remove((Integer)unit.getIdentifier());
 	}
 	
-	public Settlement getSettlementByID(int id) {
+	public Settlement getSettlementByID(Integer id) {
 //		System.out.println("Getting " + lookupSettlement.get(id) + " (" + id + ")");
 		return lookupSettlement.get(id);
 	}
@@ -465,11 +465,11 @@ public class UnitManager implements Serializable {
 
 	public void removeSettlementID(Settlement s) {
 		if (!lookupSettlement.containsKey(s.getIdentifier()))
-			lookupSettlement.remove(s.getIdentifier());
+			lookupSettlement.remove((Integer)s.getIdentifier());
 	}
 
-	public Person getPersonByID(int id) {
-//		System.out.println("id is " + id + "    lookupPerson is " + lookupPerson);
+	public Person getPersonByID(Integer id) {
+//		System.out.println("id is " + id + "    lookupPerson is " + lookupPerson + "    lookupPerson.get(id) is " + lookupPerson.get(id));
 		return lookupPerson.get(id);
 	}
 
@@ -511,10 +511,10 @@ public class UnitManager implements Serializable {
 
 	public void removePersonID(Person p) {
 		if (lookupPerson.containsKey(p.getIdentifier()))
-			lookupPerson.remove(p.getIdentifier());
+			lookupPerson.remove((Integer)p.getIdentifier());
 	}
 
-	public Robot getRobotByID(int id) {
+	public Robot getRobotByID(Integer id) {
 		return lookupRobot.get(id);
 	}
 
@@ -530,7 +530,7 @@ public class UnitManager implements Serializable {
 			lookupRobot.remove(r.getIdentifier());
 	}
 	
-	public Equipment getEquipmentByID(int id) {
+	public Equipment getEquipmentByID(Integer id) {
 		return lookupEquipment.get(id);
 	}
 
@@ -543,10 +543,10 @@ public class UnitManager implements Serializable {
 	
 	public void removeEquipmentID(Equipment e) {
 		if (lookupEquipment.containsKey(e.getIdentifier()))
-			lookupEquipment.remove(e.getIdentifier());
+			lookupEquipment.remove((Integer)e.getIdentifier());
 	}
 	
-	public Building getBuildingtByID(int id) {
+	public Building getBuildingtByID(Integer id) {
 		return lookupBuilding.get(id);
 	}
 	
@@ -559,10 +559,10 @@ public class UnitManager implements Serializable {
 	
 	public void removeBuildingID(Building b) {
 		if (lookupBuilding.containsKey(b.getIdentifier()))
-			lookupBuilding.remove(b.getIdentifier());
+			lookupBuilding.remove((Integer)b.getIdentifier());
 	}
 
-	public Vehicle getVehicleByID(int id) {
+	public Vehicle getVehicleByID(Integer id) {
 		return lookupVehicle.get(id);
 	}
 
@@ -575,7 +575,7 @@ public class UnitManager implements Serializable {
 
 	public void removeVehicleID(Vehicle v) {
 		if (lookupVehicle.containsKey(v.getIdentifier()))
-			lookupVehicle.remove(v.getIdentifier());
+			lookupVehicle.remove((Integer)v.getIdentifier());
 	}
 	
 	/**
@@ -2558,12 +2558,22 @@ public class UnitManager implements Serializable {
 		marsClock = clock;
 	}
 	
-	public void setMarsSurface() {
-		sim.getMars().setMarsSurface(marsSurface);
-	}
+//	public void retrieveMarsSurface() {
+//		marsSurface = sim.getMars().getMarsSurface();
+//	}
 	
+//	public MarsSurface getMarsSurface() {
+//		retrieveMarsSurface();
+//		return marsSurface;
+//	}
+	
+	/**
+	 * Returns Mars surface instance
+	 * 
+	 * @return {@Link MarsSurface}
+	 */
 	public MarsSurface getMarsSurface() {
-		 return marsSurface;
+		return marsSurface;
 	}
 	
 	public static void setCrew(boolean value) {

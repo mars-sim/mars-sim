@@ -294,12 +294,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 //		setContainerUnit(settlement);
 //		// Set the containerID
 //		setContainerID(settlement.getIdentifier());
-		
-//		// Place this person within a settlement
-//		enter(LocationCodeType.SETTLEMENT);
-//		// Place this person within a building
-//		enter(LocationCodeType.BUILDING);
-
+	
 		// Initialize data members
 		this.name = name;
 		firstName = name.substring(0, name.indexOf(" "));
@@ -1482,6 +1477,10 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		return condition.getFatigue();
 	}
 
+	public double getEnergy() {
+		return condition.getEnergy();
+	}
+	
 	public double getStress() {
 		return condition.getStress();
 	}

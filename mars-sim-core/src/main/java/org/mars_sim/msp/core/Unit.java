@@ -143,7 +143,7 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 		if (this instanceof MarsSurface)
 			return MARS_SURFACE_ID;
 
-		return UNKNOWN_ID;
+		return (Integer) UNKNOWN_ID;
 	}
 	
 	/**

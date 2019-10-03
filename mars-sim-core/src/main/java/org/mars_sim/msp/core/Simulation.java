@@ -399,12 +399,16 @@ public class Simulation implements ClockListener, Serializable {
 		
 		Simulation sim = Simulation.instance();
 		ResourceUtil.getInstance();
-		mars = new Mars();
+		mars = Mars.createTest();
 		masterClock = new MasterClock(false, 256);
 		unitManager = new UnitManager();
 		unitManager.constructInitialUnits(true);
 		medicalManager = new MedicalManager();
+		
+		// Gets the SurfaceFeatures instance
 		SurfaceFeatures surfaceFeatures = mars.getSurfaceFeatures();
+		// Re-initialize the MarsSurface instance
+		MarsSurface marsSurface = unitManager.getMarsSurface();
 		
 		// Create marsClock instance
 		MarsClock marsClock = masterClock.getMarsClock();
@@ -418,7 +422,7 @@ public class Simulation implements ClockListener, Serializable {
 		
 		Unit.setUnitManager(unitManager);
 		Unit.initializeInstances(masterClock, marsClock, earthClock, sim, mars, 
-				mars.getMarsSurface(), mars.getWeather(), surfaceFeatures, new MissionManager());
+				marsSurface, mars.getWeather(), surfaceFeatures, new MissionManager());
 
 	}
 	
@@ -437,14 +441,18 @@ public class Simulation implements ClockListener, Serializable {
 		relationshipManager = new RelationshipManager();
 		medicalManager = new MedicalManager();
 		masterClock = new MasterClock(isFXGL, timeRatio);
+		
+		// Gets the SurfaceFeatures instance
 		SurfaceFeatures surfaceFeatures = mars.getSurfaceFeatures();
+		// Gets the MarsSurface instance
+		MarsSurface marsSurface = mars.getMarsSurface();
 		
 		// Create clock instances
 		MarsClock marsClock = masterClock.getMarsClock();
 		EarthClock earthClock = masterClock.getEarthClock();
 		
 		// Initialize units prior to starting the unit manager
-		Unit.initializeInstances(masterClock, marsClock, earthClock, this, mars, mars.getMarsSurface(), 
+		Unit.initializeInstances(masterClock, marsClock, earthClock, this, mars, marsSurface, 
 				mars.getWeather(), surfaceFeatures, missionManager);
 		
 		// Initialize serializable managers
@@ -484,15 +492,12 @@ public class Simulation implements ClockListener, Serializable {
 		
 		//  Re-initialize the GameManager
 		GameManager.initializeInstances(unitManager);
-		
-		// Set instance for Inventory
-//		Inventory.initializeInstances(mars.getMarsSurface());
-				
+					
 		// Set instances for classes that extend Unit and Task and Mission
 		Mission.initializeInstances(this, marsClock, eventManager, unitManager, scientificStudyManager, 
 				surfaceFeatures, missionManager, relationshipManager, pc, creditManager);
 		Task.initializeInstances(marsClock, eventManager, relationshipManager, unitManager, 
-				scientificStudyManager, mars.getSurfaceFeatures(), missionManager, pc);
+				scientificStudyManager, surfaceFeatures, missionManager, pc);
 		
 		ut = masterClock.getUpTimer();
 
@@ -700,7 +705,7 @@ public class Simulation implements ClockListener, Serializable {
 			// Load remaining serialized objects
 			malfunctionFactory = (MalfunctionFactory) ois.readObject();
 			mars = (Mars) ois.readObject();
-			mars.createInstances();
+//			mars.createInstances();
 			mars.initializeTransientData();
 			missionManager = (MissionManager) ois.readObject();
 			medicalManager = (MedicalManager) ois.readObject();
@@ -881,7 +886,12 @@ public class Simulation implements ClockListener, Serializable {
 		// Re-initialize the resources for the saved sim
 		ResourceUtil.getInstance().initializeInstances();
 		// Re-initialize the MarsSurface instance
-		unitManager.setMarsSurface();
+		MarsSurface marsSurface = unitManager.getMarsSurface();
+		int num = marsSurface.getInventory().getContainedUnits().size();
+		System.out.println("UnitManager's marsSurface : " + marsSurface.hashCode() + "  num : " + num);
+		MarsSurface marsSurface2 = mars.getMarsSurface();
+		num = marsSurface2.getInventory().getContainedUnits().size();
+		System.out.println("Mars' marsSurface : " + marsSurface2.hashCode() + "  num : " + num);
 		
 		//  Re-initialize the GameManager
 		GameManager.initializeInstances(unitManager);
@@ -892,7 +902,7 @@ public class Simulation implements ClockListener, Serializable {
 		// Gets the orbitInfo instance
 		OrbitInfo orbit = mars.getOrbitInfo();
 		// Gets MarsSurface instance
-		MarsSurface marsSurface = mars.getMarsSurface();
+//		MarsSurface marsSurface = mars.getMarsSurface();
 		
 		// Re-initialize the Simulation instance
 		MasterClock.initializeInstances(this);					

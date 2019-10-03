@@ -31,7 +31,7 @@ public enum TrainingType {
 	
 	MILITIARY_DEPLOYMENT				(Msg.getString("TrainingType.militaryDeployment")), //$NON-NLS-1$
 	AVIATION_CERTIFICATION				(Msg.getString("TrainingType.aviationCert")), //$NON-NLS-1$
-	ANTARCTICA_RESEARCH					(Msg.getString("TrainingType.antarcticaResearch")), //$NON-NLS-1$
+	ANTARCTICA_EDEN_ISS					(Msg.getString("TrainingType.antarcticaResearch")), //$NON-NLS-1$
 	MARS_TWO_FINAL_100		 			(Msg.getString("TrainingType.marsTwoFinal100")), //$NON-NLS-1$
 	UNDERGROUND_CAVES_EXPLORATION      	(Msg.getString("TrainingType.undergroundCaves")) //$NON-NLS-1$
 	;
@@ -44,7 +44,10 @@ public enum TrainingType {
 	// 2. NASA Desert Research and Technology Studies (Desert RATS) 
 	//    https://www.nasa.gov/hrp/research/analogs/drats  
 	//    https://www.youtube.com/watch?v=2Q13dyRi5ok 
-	
+	// 3. EDEN ISS is a 4-year project under the European Union‘s Research and Innovation Action program Horizon 2020
+	//    Ground Demonstration of Plant Cultivation Technologies for Safe Food Production in Space
+	//    https://eden-iss.net/
+	//    https://www.youtube.com/watch?v=KOeSlwwuvWQ
 	
 	private String name;
 

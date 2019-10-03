@@ -43,8 +43,6 @@ extends Airlock {
 	private Point2D airlockInteriorPos;
 	private Point2D airlockExteriorPos;
 
-    private static MarsSurface marsSurface = Simulation.instance().getUnitManager().getMarsSurface();
-    
 	/**
 	 * Constructor.
 	 * @param vehicle the vehicle this airlock of for.
@@ -121,8 +119,6 @@ extends Airlock {
     public void stepIntoAirlock(Person person) {
     	if (person.isOutside()) {
 									
-			if (marsSurface == null)
-				marsSurface = Simulation.instance().getUnitManager().getMarsSurface();
 			// 1.1 Retrieve the person from the surface of Mars
             marsSurface.getInventory().retrieveUnit(person);
 			// 1.2 store the person into the building inventory
@@ -150,8 +146,6 @@ extends Airlock {
 			// 5.2 Retrieve the person from the settlement
             vehicle.getInventory().retrieveUnit(person);
 			// 5.3 Store the person onto the surface of Mars
-			if (marsSurface == null)
-				marsSurface = Simulation.instance().getUnitManager().getMarsSurface();
 			marsSurface.getInventory().storeUnit(person);
 			// 5.4 Set the person's coordinates to that of the settlement's
 			person.setCoordinates(vehicle.getCoordinates());

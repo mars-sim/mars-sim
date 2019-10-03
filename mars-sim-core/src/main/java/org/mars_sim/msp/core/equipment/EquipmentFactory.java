@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.Simulation;
 
 /**
  * A factory for equipment units.
@@ -24,6 +25,7 @@ public final class EquipmentFactory {
 	/** The equipment name set cache. */
 	private static Set<String> equipmentNamesCache;
 
+//	private static UnitManager unitManager = Simulation.instance().getUnitManager();
 
 	/**
 	 * Private constructor for static factory class.
@@ -56,6 +58,7 @@ public final class EquipmentFactory {
 	 */
 	public static Equipment createEquipment(int id, Coordinates location, boolean temp) {
 		return createEquipment(EquipmentType.convertID2Enum(id).getName(), location, temp);
+//		return createEquipment(unitManager.getEquipmentByID(id).getName(), location, temp);
 	}
 
 	/**

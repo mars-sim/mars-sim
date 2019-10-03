@@ -17,7 +17,9 @@ public enum StatusType {
 	MOVING 				(Msg.getString("StatusType.moving")), //$NON-NLS-1$
 	PARKED 				(Msg.getString("StatusType.parked")), //$NON-NLS-1$
 	STUCK				(Msg.getString("StatusType.stuck")), //$NON-NLS-1$
-	TOWED 				(Msg.getString("StatusType.towed")); //$NON-NLS-1$	
+	TOWED 				(Msg.getString("StatusType.towed")), //$NON-NLS-1$	
+	OUT_OF_FUEL 		(Msg.getString("StatusType.outOfFuel")) //$NON-NLS-1$
+	;
 	
 	private String name;
 

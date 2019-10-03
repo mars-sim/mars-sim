@@ -50,7 +50,6 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 
 	/** The reference small amount of resource. */
 	public static final double SMALL_AMOUNT = 0.1;
-	
 	/** The amount of work time to perform maintenance (millisols) */
 	public static final double MAINTENANCE_WORK_TIME = 500D;
 
@@ -75,7 +74,6 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 	/** The rover's capacity for robot crew members. */
 	private int robotCrewCapacity = 0;
 	
-
 	/** The minimum required O2 partial pressure. At 11.94 kPa (1.732 psi)  */
 	private double min_o2_pressure;
 	/** The full O2 partial pressure if at full tank. */
@@ -95,8 +93,6 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 	/** The rover's total crew internal volume. */
 	private double cabinAirVolume;
 
-//	private String sCache = "";
-	
 	/** The rover's lab activity spots. */
 	private List<Point2D> labActivitySpots;
 	/** The rover's sick bay activity spots. */
@@ -135,7 +131,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 		// Set crew capacity
 		crewCapacity = vehicleConfig.getCrewSize(type);
 		robotCrewCapacity = crewCapacity;
-
+		// Get inventory object
 		Inventory inv = getInventory();
 
 		// Set total cargo capacity
@@ -153,9 +149,9 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 		massO2MinimumLimit = Math.round(min_o2_pressure / fullO2PartialPressure * oxygenCapacity*10_000.0)/10_000.0;
 		massO2NominalLimit =Math.round( NORMAL_AIR_PRESSURE / min_o2_pressure * massO2MinimumLimit*10_000.0)/10_000.0;
 		 
-		logger.info(type + " : full tank O2 partial pressure is " + fullO2PartialPressure + " kPa");
-		logger.info(type + " : minimum mass limit of O2 (above the safety limit) is " + massO2MinimumLimit  + " kg");
-		logger.info(type + " : nomimal mass limit of O2 is " + massO2NominalLimit  + " kg");
+//		logger.config(type + " : full tank O2 partial pressure is " + fullO2PartialPressure + " kPa");
+//		logger.config(type + " : minimum mass limit of O2 (above the safety limit) is " + massO2MinimumLimit  + " kg");
+//		logger.config(type + " : nomimal mass limit of O2 is " + massO2NominalLimit  + " kg");
 		
 		// Set inventory resource capacities.
 		inv.addAmountResourceTypeCapacity(ResourceUtil.methaneID, vehicleConfig.getCargoCapacity(type, ResourceUtil.METHANE));

@@ -39,8 +39,13 @@ public abstract class TravelMission extends Mission {
 	private List<NavPoint> navPoints = new ArrayList<NavPoint>();
 	/** The current navpoint index. */
 	private int navIndex = 0;
+	
+	/** The total distance travelled so far. */
+	private double totalDistance;
+	
 	/** The current traveling status of the mission. */
 	private String travelStatus;
+	
 	/** The last navpoint the mission stopped at. */
 	private NavPoint lastStopNavpoint;
 	/** The time the last leg of the mission started at. */
@@ -353,16 +358,23 @@ public abstract class TravelMission extends Mission {
 	 * @return total distance (km)
 	 */
 	public final double getTotalDistance() {
-		double result = 0D;
 		if (navPoints.size() > 1) {
+			double result = 0D;
+			
 			for (int x = 1; x < navPoints.size(); x++) {
 				NavPoint prevNav = navPoints.get(x - 1);
 				NavPoint currNav = navPoints.get(x);
 				double distance = currNav.getLocation().getDistance(prevNav.getLocation());
 				result += distance;
 			}
+			
+			if (result > totalDistance)
+				// Record the distance
+				totalDistance = result;
+			return totalDistance;
 		}
-		return result;
+		else
+			return totalDistance;
 	}
 
 	/**

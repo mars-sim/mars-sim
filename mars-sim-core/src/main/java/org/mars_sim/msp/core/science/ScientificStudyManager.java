@@ -498,7 +498,7 @@ public class ScientificStudyManager // extends Thread
 				// Check if collaborators have died.
 				Iterator<Integer> j = study.getCollaborativeResearchers().keySet().iterator();
 				while (j.hasNext()) {
-					int id = j.next();
+					Integer id = j.next();
 					Person collaborator = unitManager.getPersonByID(id);
 					if (collaborator.getPhysicalCondition().isDead()) {
 						String genderStr = GenderType.getPossessivePronoun(collaborator.getGender());
