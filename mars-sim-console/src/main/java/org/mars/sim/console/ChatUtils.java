@@ -99,6 +99,13 @@ public class ChatUtils {
 	
 	public static String[][] SETTLEMENT_KEYS;// = new String[22][2];
 	
+	public static String SCROLL_HELP =
+      "  ------------------------------------------------------------ " + System.lineSeparator()
+    + "|      Ctrl + LEFT / RIGHT : scroll through input history      |" + System.lineSeparator()
+    + "|                UP / DOWN : scroll through choices            |" + System.lineSeparator()
+    + "|                       UP : autocomplete your input           |" + System.lineSeparator()
+    + "  ------------------------------------------------------------ ";
+    		
 	static {
 		SETTLEMENT_KEYS = new String[][] {
 			{"role", 			"what kind of roles are there in this settlement"},
@@ -140,6 +147,7 @@ public class ChatUtils {
 	static {
 	
 		PERSON_KEYS = new String[][] { 
+			{"health",				"How's your health"},
 			{"role", 				"what is your role"},
 			{"task", 				"what are you working on"},
 			{"mission", 			"what is your current mission"},			
@@ -232,7 +240,7 @@ public class ChatUtils {
 			+ "       see a list of KEYWORDS." + System.lineSeparator() + System.lineSeparator()
 			+ "  settlement" + System.lineSeparator()
 			+ "       obtain the NAMES of the established settlements." + System.lineSeparator() + System.lineSeparator()
-			+ SWITCHES;
+			+ SWITCHES + System.lineSeparator() + SCROLL_HELP;
 
 	public final static String HELP_HEIGHT = "  Type 'y_' to change the chat box height; '/y1'-> 256 pixels (default) '/y2'->512 pixels, '/y3'->768 pixels, '/y4'->1024 pixels"
 			+ System.lineSeparator();
@@ -243,25 +251,25 @@ public class ChatUtils {
 			+ "     or settlement to connect with OR keywords below : "
 			+ System.lineSeparator() + System.lineSeparator() 
 			+ getKeywordPage(SYSTEM_KEYS)			
-			+ System.lineSeparator()
-			+ "    ------------------------------------------------------------------- ";
+			+ System.lineSeparator() + SCROLL_HELP;
+//			+ "    ------------------------------------------------------------------- ";
 	
 	public final static String VEHICLE_KEYWORDS = System.lineSeparator()
 			+ "    ------------------------- K E Y W O R D S ------------------------- " + System.lineSeparator() + System.lineSeparator()
 			+ "  For Vehicles : " + System.lineSeparator() + System.lineSeparator()
-			+ getKeywordPage(VEHICLE_KEYS) + System.lineSeparator() + System.lineSeparator() + System.lineSeparator()
+			+ getKeywordPage(VEHICLE_KEYS) + System.lineSeparator() + System.lineSeparator()
 			+ "  For all Parties : " + System.lineSeparator() 
 			+ getKeywordPage(ALL_PARTIES_KEYS)
-			+ System.lineSeparator()
-			+ "    ------------------------------------------------------------------- ";
+			+ System.lineSeparator() + SCROLL_HELP;
+//			+ "    ------------------------------------------------------------------- ";
 
 	public final static String PERSON_KEYWORDS = System.lineSeparator()
 			+ "    ------------------------- K E Y W O R D S ------------------------- " + System.lineSeparator() + System.lineSeparator()
 			+ "  For Settlers : use preconfigured Q&A - from 1 to 18, or " + System.lineSeparator() + System.lineSeparator()
 			+ getKeywordPage(PERSON_KEYS) + System.lineSeparator() + System.lineSeparator()
-			+ "  For all Parties : " + System.lineSeparator() + "  " + getKeywordPage(ALL_PARTIES_KEYS)
-			+ System.lineSeparator()
-			+ "    ------------------------------------------------------------------- ";
+			+ "  For all Parties : " + System.lineSeparator() + getKeywordPage(ALL_PARTIES_KEYS)
+			+ System.lineSeparator() + SCROLL_HELP;
+//			+ "    ------------------------------------------------------------------- ";
 
 	public final static String SETTLEMENT_KEYWORDS = System.lineSeparator()
 			+ "    ------------------------- K E Y W O R D S ------------------------- " + System.lineSeparator() + System.lineSeparator()
@@ -269,8 +277,8 @@ public class ChatUtils {
 			+ getKeywordPage(SETTLEMENT_KEYS) + System.lineSeparator() + System.lineSeparator()
 			+ "  For all Parties : " + System.lineSeparator()+ System.lineSeparator()
 			+ getKeywordPage(ALL_PARTIES_KEYS)
-			+ System.lineSeparator()
-			+ "    ------------------------------------------------------------------- ";
+			+ System.lineSeparator() + SCROLL_HELP;
+//			+ "    ------------------------------------------------------------------- ";
 	
 	public final static String KEYWORDS_HEIGHT = HELP_HEIGHT; // "(8) '/y1' to reset height to 256 pixels (by default)
 																// after closing chat box. '/y2'->512 pixels, '/y3'->768
@@ -481,8 +489,8 @@ public class ChatUtils {
 	 * @param prompt
 	 * @return a string array
 	 */
-	public static String[] clarify(String prompt) {
-		String questionText = YOU_PROMPT + "You were mumbling something about....";
+	public static String[] clarify(String prompt, String input) {
+		String questionText = YOU_PROMPT + "You were mumbling something about '" + input + "'";
 		String responseText = null;
 		int rand0 = RandomUtil.getRandomInt(4);
 		if (rand0 == 0)
@@ -496,7 +504,8 @@ public class ChatUtils {
 		else
 			responseText = prompt + " : Can you be more specific?   [/h for help]";
 
-		return new String[] { questionText, responseText + System.lineSeparator() };
+//		System.out.println("ChatUtils' clarify() :" + responseText);
+		return new String[] { questionText, responseText }; // + System.lineSeparator()
 	}
 
 	/**

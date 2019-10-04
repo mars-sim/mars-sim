@@ -79,6 +79,26 @@ public class Conversion {
 //		return s.toString();
 	}
 
+	public static String capitalize0(String input) {
+	    StringBuilder titleCase = new StringBuilder();
+	    boolean nextTitleCase = true;
+
+	    if (input != null) {
+		    for (char c : input.toCharArray()) {
+		        if (Character.isSpaceChar(c) || c == '(' ) {
+		            nextTitleCase = true;
+		        } else if (nextTitleCase) {
+		            c = Character.toTitleCase(c);
+		            nextTitleCase = false;
+		        }
+	
+		        titleCase.append(c);
+		    }
+	    }
+	    
+	    return titleCase.toString();
+	}
+	
 	/**
 	 * Capitalizes the first letter of each word in the input phase
 	 * 
@@ -96,7 +116,8 @@ public class Conversion {
 					nextTitleCase = true;
 				} else if (nextTitleCase) {
 					// Check if it is "And" string and skip making the 'a' upper-case
-					if (charArray[index] == 'a'
+					if (input.length() > 2 
+							&& charArray[index] == 'a'
 							&& charArray[index+1] == 'n'
 							&& charArray[index+2] == 'd'
 							&& Character.isSpaceChar(charArray[index+3])) {

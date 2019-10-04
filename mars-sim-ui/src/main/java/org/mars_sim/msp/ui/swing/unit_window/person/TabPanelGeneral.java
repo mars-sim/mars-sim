@@ -19,7 +19,6 @@ import javax.swing.SpringLayout;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
@@ -165,17 +164,18 @@ public class TabPanelGeneral extends TabPanel {
 		double heightSquared = height*height;
 		double BMI = person.getBaseMass()/heightSquared;
 		// categorize according to general weight class
-		String weightClass = Msg.getString("TabPanelGeneral.bmi.underweight"); //$NON-NLS-1$
+		String weightClass = "";
+		if (BMI <= 18.5) {weightClass = Msg.getString("TabPanelGeneral.bmi.underweight");} //$NON-NLS-1$
 		if (BMI > 18.5) {weightClass = Msg.getString("TabPanelGeneral.bmi.normal");} //$NON-NLS-1$
-		if (BMI > 24.9) {weightClass = Msg.getString("TabPanelGeneral.bmi.overweight");} //$NON-NLS-1$
-		if (BMI > 29.9) {weightClass = Msg.getString("TabPanelGeneral.bmi.obese1");} //$NON-NLS-1$
-		if (BMI > 34.9) {weightClass = Msg.getString("TabPanelGeneral.bmi.obese2");} //$NON-NLS-1$
-		if (BMI > 39.9) {weightClass = Msg.getString("TabPanelGeneral.bmi.obese3");} //$NON-NLS-1$
+		if (BMI > 24.99) {weightClass = Msg.getString("TabPanelGeneral.bmi.overweight");} //$NON-NLS-1$
+		if (BMI > 29.99) {weightClass = Msg.getString("TabPanelGeneral.bmi.obese1");} //$NON-NLS-1$
+		if (BMI > 34.99) {weightClass = Msg.getString("TabPanelGeneral.bmi.obese2");} //$NON-NLS-1$
+		if (BMI > 39.99) {weightClass = Msg.getString("TabPanelGeneral.bmi.obese3");} //$NON-NLS-1$
 
 		//JLabel BMILabel = new JLabel(Msg.getString("TabPanelGeneral.bmiValue", //$NON-NLS-1$
 		//		Integer.toString((int)BMI),	weightClass), JLabel.RIGHT);
 		JTextField BMITF = new JTextField(Msg.getString("TabPanelGeneral.bmiValue", //$NON-NLS-1$
-				Integer.toString((int)BMI),	weightClass));
+				Math.round(BMI*100.0)/100.0,	weightClass));
 		BMITF.setEditable(false);
 		BMITF.setColumns(12);
 		infoPanel.add(BMITF);

@@ -68,7 +68,7 @@ public class InteractiveTerm {
 	public InteractiveTerm(boolean consoleEdition) {
 		this.consoleEdition = consoleEdition;
 		
-		terminal = new MarsTerminal();
+		terminal = new MarsTerminal(this);
         terminal.init();
         
         textIO = new TextIO(terminal);
@@ -422,6 +422,9 @@ public class InteractiveTerm {
 		keepRunning = true;
 	}
 	
+	public ChatMenu getChatMenu() {
+		return chatMenu;
+	}
 	
 	/**
 	 * Loads the terminal menu

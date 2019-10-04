@@ -22,8 +22,8 @@ public class ChatMenu implements BiConsumer<TextIO, RunnerData> {
 	   
 	private static final String EXPERT_MODE = " [Expert Mode]";
 	
-	private static boolean leaveSystem = false;
-	private boolean quit = false;
+	private volatile static boolean leaveSystem = false;
+	private volatile boolean quit = false;
 	private static String prompt;
 	
 	private static SwingTextTerminal terminal;
@@ -84,9 +84,9 @@ public class ChatMenu implements BiConsumer<TextIO, RunnerData> {
 	       	);
 		       		       
 	        terminal.println("  ------------------------------------------------------------ ");
-	        terminal.println("|                       UP : autocomplete your input           |");
-	        terminal.println("|                UP / DOWN : scroll through choices            |");
 	        terminal.println("|      Ctrl + LEFT / RIGHT : scroll through input history      |");
+	        terminal.println("|                UP / DOWN : scroll through choices            |");
+	        terminal.println("|                       UP : autocomplete your input           |");
 	        terminal.println("  ------------------------------------------------------------ "
 	        	+ System.lineSeparator() + System.lineSeparator() 	       	
 			    + "'/h' : help,  '/k' : keywords,  '/p' : pause/resume,  '/q' : quit"
@@ -99,8 +99,14 @@ public class ChatMenu implements BiConsumer<TextIO, RunnerData> {
 	        // Robot
 	        // Settlement
 	        // Vehicle
-	     
-	        List<String> keywords = ChatUtils.createAutoCompleteKeywords();
+	        
+	        setupPrompt();
+		}
+    }
+        
+        
+	public void setupPrompt() {
+        List<String> keywords = ChatUtils.createAutoCompleteKeywords();
 //	        String[] array = names.toArray(new String[names.size()]);
 	        quit = false;
  
@@ -111,42 +117,41 @@ public class ChatMenu implements BiConsumer<TextIO, RunnerData> {
 	
 			        handler.addStringTask("name", prompt, false).addChoices(keywords);//.constrainInputToChoices();
 			        handler.executeOneTask();
-			
+		
 //					System.out.println("ChatMenu's accept()");
-					
+				
 //					// if no settlement, robot, person, or vehicle has been selected yet
 //					if (ChatUtils.personCache == null && ChatUtils.robotCache == null 
 //							&& ChatUtils.settlementCache == null && ChatUtils.vehicleCache == null) {	
 //						// Call parse() to obtain a new value of unit
 ////						askSystem(Party.party);
 //					} 
-					
+				
 //					else {
-						// Connect to a certain party
-						askParty(Party.name);
-						// Note : if all xxx_Cache are null, then leave
-						// askParty() and go back to askSystem()
+					// Connect to a certain party
+					askParty(Party.name);
+					// Note : if all xxx_Cache are null, then leave
+					// askParty() and go back to askSystem()
 //					}
 					
-			        // if choosing to quit the chat mode
-					if (leaveSystem && ChatUtils.isQuitting(Party.name)) {
-						ChatUtils.personCache = null;
-						ChatUtils.robotCache = null;
-						ChatUtils.settlementCache = null;
-						ChatUtils.vehicleCache = null;
-						
-						terminal.printf("Disconnecting MarsNet. Farewell." + System.lineSeparator() );
-			        	
-						quit = true;
-						handler.save();
-						ChatUtils.setConnectionMode(-1);
-					}		
-	        	} catch (NullPointerException ne) {
-	        		ne.printStackTrace();      		
-	        		quit = true;
+		        // if choosing to quit the chat mode
+				if (leaveSystem && ChatUtils.isQuitting(Party.name)) {
+					ChatUtils.personCache = null;
+					ChatUtils.robotCache = null;
+					ChatUtils.settlementCache = null;
+					ChatUtils.vehicleCache = null;
+					
+					terminal.printf("Disconnecting MarsNet. Farewell." + System.lineSeparator() );
+		        	
+					quit = true;
 					handler.save();
-	        	}
-	        }
+					ChatUtils.setConnectionMode(-1);
+				}		
+        	} catch (Exception ne) {
+        		ne.printStackTrace();      		
+        		quit = true;
+				handler.save();
+        	}
         }
     }
     
@@ -233,19 +238,29 @@ public class ChatMenu implements BiConsumer<TextIO, RunnerData> {
 			return false;
 	}
 
-	public void executeQuit() {
+	public void restartMenu() {
 		quit = true;
 		leaveSystem = true;
-		ChatUtils.setConnectionMode(-1);
+		handler.save();
+		
+//		ChatUtils.setConnectionMode(-1);
+		
 //		prompt = "/q";
 		ChatUtils.personCache = null;
 		ChatUtils.robotCache = null;
 		ChatUtils.settlementCache = null;
 		ChatUtils.vehicleCache = null;
+		
 //		return;
 //		prompt = "Enter your choice:";
 //		terminal.println();
 //		handler.executeOneTask();
+		
+		// Restart the prompt
+		setupPrompt();
+
+		quit = false;
+		leaveSystem = false;
 	}
 	
     @Override

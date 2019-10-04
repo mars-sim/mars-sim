@@ -11,6 +11,7 @@ import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Formatter;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +21,7 @@ import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.mars.MarsSurface;
 import org.mars_sim.msp.core.person.GenderType;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.TrainingType;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
@@ -60,12 +62,99 @@ public class PersonRobotChatUtils extends ChatUtils {
 		ChatUtils.vehicleCache = null;
 		
 		String questionText = "";
-		StringBuffer responseText = new StringBuffer();
+		StringBuffer responseText = new StringBuffer("");
 
 		responseText.append(name);
 		responseText.append(": ");
 
-		if (text.toLowerCase().equalsIgnoreCase("trainings")) {
+		if (text.toLowerCase().equalsIgnoreCase("health")) {
+			try {
+				
+				questionText = YOU_PROMPT + "How's your health ? ";
+				responseText.append(System.lineSeparator());
+				responseText.append(System.lineSeparator());
+				
+				responseText.append(addWhiteSpacesRightName("Health Indicators", 15));
+				responseText.append(addWhiteSpacesRightName("Indices" , 19));
+				responseText.append(System.lineSeparator());
+				responseText.append(" ----------------------------------------- ");
+				responseText.append(System.lineSeparator());		
+				
+				PhysicalCondition pc = personCache.getPhysicalCondition();
+				
+				double fatigue = Math.round(pc.getFatigue()*10.0)/10.0;
+				double thirst = Math.round(pc.getThirst()*10.0)/10.0;
+				double hunger = Math.round(pc.getHunger()*10.0)/10.0;
+				double energy = Math.round(pc.getEnergy()*10.0)/10.0;
+	            double stress = Math.round(pc.getStress()*10.0)/10.0;
+	            double perf = Math.round(pc.getPerformanceFactor()*10_000.0)/10.0;
+	            
+//				System.out.println("1");
+	            
+	        	double ghrelin = Math.round(personCache.getCircadianClock().getSurplusGhrelin()*10.0)/10.0;
+	        	double leptin = Math.round(personCache.getCircadianClock().getSurplusLeptin()*10.0)/10.0;
+	        	
+				boolean notHungry = !pc.isHungry();
+				boolean notThirsty = !pc.isThirsty();
+				String h = notHungry ? "(Not Hungry)" : "(Hungry)";
+				String t = notThirsty ? "(Not Thirsty)" : "(Thirsty)";
+				
+	//			Formatter fmt = new Formatter(responseText);
+	//			fmt.format(s);
+//				System.out.println("2");
+				
+				responseText.append(addWhiteSpacesRightName("Thirst", 15));
+				responseText.append(addWhiteSpacesRightName(thirst + "", 9));
+				responseText.append(addWhiteSpacesLeftName(" millisols", 12));
+				responseText.append(addWhiteSpacesLeftName(t, 13));
+				responseText.append(System.lineSeparator());
+				
+//				System.out.println("3");
+				
+				responseText.append(addWhiteSpacesRightName("Hunger", 15));
+				responseText.append(addWhiteSpacesRightName(hunger + "", 9));
+				responseText.append(addWhiteSpacesLeftName(" millisols", 12));
+				responseText.append(addWhiteSpacesLeftName(h, 13));
+				responseText.append(System.lineSeparator());
+				responseText.append(addWhiteSpacesRightName("Energy", 15));
+				responseText.append(addWhiteSpacesRightName(energy + "", 9));
+				responseText.append(addWhiteSpacesLeftName(" kJ", 4));
+				responseText.append(System.lineSeparator());
+				responseText.append(addWhiteSpacesRightName("Fatigue", 15));
+				responseText.append(addWhiteSpacesRightName(fatigue + "", 9));
+				responseText.append(addWhiteSpacesLeftName(" millisols", 12));
+				responseText.append(System.lineSeparator());
+				
+//				System.out.println("4");
+				
+				responseText.append(addWhiteSpacesRightName("Performance", 15));
+				responseText.append(addWhiteSpacesRightName(perf + "", 9));
+				responseText.append(addWhiteSpacesLeftName(" %", 4));
+				responseText.append(System.lineSeparator());
+				responseText.append(addWhiteSpacesRightName("Stress", 15));
+				responseText.append(addWhiteSpacesRightName(stress + "", 9));
+				responseText.append(addWhiteSpacesLeftName(" %", 4));
+				responseText.append(System.lineSeparator());
+				
+//				System.out.println("5");
+				
+				responseText.append(addWhiteSpacesRightName("Surplus Ghrelin", 15));
+				responseText.append(addWhiteSpacesRightName(ghrelin +  "", 9));
+				responseText.append(addWhiteSpacesLeftName(" millisols", 12));
+				responseText.append(System.lineSeparator());
+				responseText.append(addWhiteSpacesRightName("Surplus Leptin", 15));
+				responseText.append(addWhiteSpacesRightName(leptin +  "", 9));
+				responseText.append(addWhiteSpacesLeftName(" millisols", 12));
+				responseText.append(System.lineSeparator());
+				
+//				System.out.println("6");
+			
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	        }	
+		}	
+		
+		else if (text.toLowerCase().equalsIgnoreCase("trainings")) {
 			questionText = YOU_PROMPT + "What is your list of prior trainings ?";
 			responseText.append(System.lineSeparator());
 			responseText.append(System.lineSeparator());
@@ -1040,7 +1129,8 @@ public class PersonRobotChatUtils extends ChatUtils {
 		// DELETED
 
 		else {
-			String[] txt = clarify(name);
+//			responseText.append(clarify(SYSTEM)[1]);
+			String[] txt = clarify(name, text);
 			questionText = txt[0];
 			responseText.append(txt[1]);
 			

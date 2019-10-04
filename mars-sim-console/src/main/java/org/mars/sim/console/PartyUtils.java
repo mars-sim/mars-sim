@@ -78,99 +78,8 @@ public class PartyUtils extends ChatUtils {
 					Person person = personList.get(0);
 					if (person.isDeclaredDead()) {
 						// Case 4: passed away
-						String buried = "";
-						if (person.getBuriedSettlement() != null)
-							buried = person.getBuriedSettlement().getName();
-						int rand = RandomUtil.getRandomInt(1);
-						if (rand == 0) {
-							responseText.append(SYSTEM_PROMPT);
-							responseText.append("I'm sorry. ");
-							responseText.append(text);
-							responseText.append(" has passed away.");
-						} else if (rand == 1) {
-							responseText.append(SYSTEM_PROMPT);
-							responseText.append("Regrettably, ");
-							responseText.append(text);
-							responseText.append(" has passed away.");
-						} else {
-							responseText.append(SYSTEM_PROMPT);
-							responseText.append("Perhaps you haven't heard. ");
-							responseText.append(text);
-							responseText.append(" is dead.");
-						}
-
-						if (!buried.equals("")) {
-							responseText.append(" and is buried at ");
-							responseText.append(buried);
-							responseText.append("." + System.lineSeparator());
-						} else {
-							responseText.append("." + System.lineSeparator());
-						}
-
-						responseText.append(System.lineSeparator());
-						responseText.append("                Death Report");
-						responseText.append(System.lineSeparator());
-						responseText.append("---------------------------------------------");
-
-						DeathInfo info = person.getPhysicalCondition().getDeathDetails();
-						String cause = info.getCause();
-						String doctor = info.getDoctor();
-						boolean examDone = info.getExamDone();
-						String time = info.getTimeOfDeath();
-						String earthTime = info.getEarthTimeOfDeath();
-						int sol = info.getMissionSol();
-						String coord = info.getLocationOfDeath().getFormattedString();
-						String place = info.getPlaceOfDeath();
-						String missionPhase = info.getMissionPhase();
-						String mission = info.getMission();
-						String task = info.getTask();
-						String taskPhase = info.getTaskPhase();
-						String problem = info.getProblem().getSituation();
-						String mal = info.getMalfunction();
-						String job = info.getJob();
-						String ill = info.getIllness().toString();
-						String health = info.getHealth() + "";
-						String lastWord = info.getLastWord();
-
-//						responseText.append(System.lineSeparator());
-						responseText.append(System.lineSeparator());
-						responseText.append("Time of Death (TOD) : " + time);
-						responseText.append(System.lineSeparator());
-						responseText.append("          Earth TOD : " + earthTime);
-						responseText.append(System.lineSeparator());
-						responseText.append("        Mission Sol : " + sol);
-						responseText.append(System.lineSeparator());
-						responseText.append("     Place of Death : " + place);
-						responseText.append(System.lineSeparator());
-						if (examDone) {
-							responseText.append(" Postmortem Exam by : " + doctor);
-							responseText.append(System.lineSeparator());
-						}
-						responseText.append("     Cause of Death : " + cause);
-						responseText.append(System.lineSeparator());
-						responseText.append("        Coordinates : " + coord);
-						responseText.append(System.lineSeparator());
-						responseText.append("                Job : " + job);
-						responseText.append(System.lineSeparator());
-						responseText.append("               Task : " + task);
-						responseText.append(System.lineSeparator());
-						responseText.append("         Task Phase : " + taskPhase);
-						responseText.append(System.lineSeparator());
-						responseText.append("            Mission : " + mission);
-						responseText.append(System.lineSeparator());
-						responseText.append("      Mission Phase : " + missionPhase);
-						responseText.append(System.lineSeparator());
-						responseText.append("        Malfunction : " + mal);
-						responseText.append(System.lineSeparator());
-						responseText.append("            Illness : " + problem);
-						responseText.append(System.lineSeparator());
-						responseText.append("          Complaint : " + ill);
-						responseText.append(System.lineSeparator());
-						responseText.append("     General Health : " + health);
-						responseText.append(System.lineSeparator());
-						responseText.append("         Last Words : '" + lastWord + "'");
-						responseText.append(System.lineSeparator());
-
+						responseText = printDeathNotice(responseText, person, text);
+						
 						return responseText;
 					}
 
@@ -261,8 +170,129 @@ public class PartyUtils extends ChatUtils {
 
 				return responseText;
 			}
+			
+			else {
+				String[] txt = clarify(SYSTEM, text);
+//				questionText = txt[0];
+				responseText.append(txt[1]);	
+				
+				return responseText;
+			}
 		}
 		
+		else {
+			String[] txt = clarify(SYSTEM, text);
+//			questionText = txt[0];
+			responseText.append(txt[1]);	
+			
+			return responseText;
+		}
+		
+//		return responseText;
+	}
+	
+	/**
+	 * Prints the death notice of a person
+	 * 
+	 * @param responseText
+	 * @param person
+	 * @param text
+	 * @return
+	 */
+	public static StringBuffer printDeathNotice(StringBuffer responseText, Person person, String text) {
+		String buried = "";
+		if (person.getBuriedSettlement() != null)
+			buried = person.getBuriedSettlement().getName();
+		int rand = RandomUtil.getRandomInt(1);
+		if (rand == 0) {
+			responseText.append(SYSTEM_PROMPT);
+			responseText.append("I'm sorry. ");
+			responseText.append(text);
+			responseText.append(" has passed away.");
+		} else if (rand == 1) {
+			responseText.append(SYSTEM_PROMPT);
+			responseText.append("Regrettably, ");
+			responseText.append(text);
+			responseText.append(" has passed away.");
+		} else {
+			responseText.append(SYSTEM_PROMPT);
+			responseText.append("Perhaps you haven't heard. ");
+			responseText.append(text);
+			responseText.append(" is dead.");
+		}
+
+		if (!buried.equals("")) {
+			responseText.append(" and is buried at ");
+			responseText.append(buried);
+			responseText.append("." + System.lineSeparator());
+		} else {
+			responseText.append("." + System.lineSeparator());
+		}
+
+		responseText.append(System.lineSeparator());
+		responseText.append("                Death Report");
+		responseText.append(System.lineSeparator());
+		responseText.append("---------------------------------------------");
+
+		DeathInfo info = person.getPhysicalCondition().getDeathDetails();
+		String cause = info.getCause();
+		String doctor = info.getDoctor();
+		boolean examDone = info.getExamDone();
+		String time = info.getTimeOfDeath();
+		String earthTime = info.getEarthTimeOfDeath();
+		int sol = info.getMissionSol();
+		String coord = info.getLocationOfDeath().getFormattedString();
+		String place = info.getPlaceOfDeath();
+		String missionPhase = info.getMissionPhase();
+		String mission = info.getMission();
+		String task = info.getTask();
+		String taskPhase = info.getTaskPhase();
+		String problem = info.getProblem().getSituation();
+		String mal = info.getMalfunction();
+		String job = info.getJob();
+		String ill = info.getIllness().toString();
+		String health = info.getHealth() + "";
+		String lastWord = info.getLastWord();
+
+//		responseText.append(System.lineSeparator());
+		responseText.append(System.lineSeparator());
+		responseText.append("Time of Death (TOD) : " + time);
+		responseText.append(System.lineSeparator());
+		responseText.append("          Earth TOD : " + earthTime);
+		responseText.append(System.lineSeparator());
+		responseText.append("        Mission Sol : " + sol);
+		responseText.append(System.lineSeparator());
+		responseText.append("     Place of Death : " + place);
+		responseText.append(System.lineSeparator());
+		if (examDone) {
+			responseText.append(" Postmortem Exam by : " + doctor);
+			responseText.append(System.lineSeparator());
+		}
+		responseText.append("     Cause of Death : " + cause);
+		responseText.append(System.lineSeparator());
+		responseText.append("        Coordinates : " + coord);
+		responseText.append(System.lineSeparator());
+		responseText.append("                Job : " + job);
+		responseText.append(System.lineSeparator());
+		responseText.append("               Task : " + task);
+		responseText.append(System.lineSeparator());
+		responseText.append("         Task Phase : " + taskPhase);
+		responseText.append(System.lineSeparator());
+		responseText.append("            Mission : " + mission);
+		responseText.append(System.lineSeparator());
+		responseText.append("      Mission Phase : " + missionPhase);
+		responseText.append(System.lineSeparator());
+		responseText.append("        Malfunction : " + mal);
+		responseText.append(System.lineSeparator());
+		responseText.append("            Illness : " + problem);
+		responseText.append(System.lineSeparator());
+		responseText.append("          Complaint : " + ill);
+		responseText.append(System.lineSeparator());
+		responseText.append("     General Health : " + health);
+		responseText.append(System.lineSeparator());
+		responseText.append("         Last Words : '" + lastWord + "'");
+		responseText.append(System.lineSeparator());
+
 		return responseText;
 	}
 }

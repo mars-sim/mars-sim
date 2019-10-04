@@ -296,8 +296,7 @@ public class VehicleChatUtils extends ChatUtils {
 			responseText.append(helpText);
 
 		} else {
-
-			String[] txt = clarify(name);
+			String[] txt = clarify(name, text);
 			questionText = txt[0];
 			responseText.append(txt[1]);
 		}

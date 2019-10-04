@@ -887,11 +887,11 @@ public class Simulation implements ClockListener, Serializable {
 		ResourceUtil.getInstance().initializeInstances();
 		// Re-initialize the MarsSurface instance
 		MarsSurface marsSurface = unitManager.getMarsSurface();
-		int num = marsSurface.getInventory().getContainedUnits().size();
-		System.out.println("UnitManager's marsSurface : " + marsSurface.hashCode() + "  num : " + num);
-		MarsSurface marsSurface2 = mars.getMarsSurface();
-		num = marsSurface2.getInventory().getContainedUnits().size();
-		System.out.println("Mars' marsSurface : " + marsSurface2.hashCode() + "  num : " + num);
+//		int num = marsSurface.getInventory().getContainedUnits().size();
+//		System.out.println("UnitManager's marsSurface : " + marsSurface.hashCode() + "  num : " + num);
+//		MarsSurface marsSurface2 = mars.getMarsSurface();
+//		num = marsSurface2.getInventory().getContainedUnits().size();
+//		System.out.println("Mars' marsSurface : " + marsSurface2.hashCode() + "  num : " + num);
 		
 		//  Re-initialize the GameManager
 		GameManager.initializeInstances(unitManager);

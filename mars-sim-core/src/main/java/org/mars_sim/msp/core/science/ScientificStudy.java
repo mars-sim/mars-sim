@@ -527,7 +527,7 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 	 */
 	public double getCollaborativeResearchWorkTimeCompleted(Person researcher) {
 		if (collaborativeResearchWorkTime.containsKey(researcher.getIdentifier()))
-			return collaborativeResearchWorkTime.get(researcher.getIdentifier());
+			return collaborativeResearchWorkTime.get((Integer)researcher.getIdentifier());
 		else
 			throw new IllegalArgumentException(researcher + " is not a collaborative researcher in this study.");
 	}
@@ -564,7 +564,7 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 	 */
 	public boolean isCollaborativeResearchCompleted(Person researcher) {
 		if (collaborativeResearchWorkTime.containsKey(researcher.getIdentifier())) {
-			double currentWorkTime = collaborativeResearchWorkTime.get(researcher.getIdentifier());
+			double currentWorkTime = collaborativeResearchWorkTime.get((Integer)researcher.getIdentifier());
 			double requiredWorkTime = getTotalCollaborativeResearchWorkTimeRequired();
 			return (currentWorkTime >= requiredWorkTime);
 		} else
@@ -671,7 +671,7 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 	 */
 	public double getCollaborativePaperWorkTimeCompleted(Person researcher) {
 		if (collaborativePaperWorkTime.containsKey(researcher.getIdentifier()))
-			return collaborativePaperWorkTime.get(researcher.getIdentifier());
+			return collaborativePaperWorkTime.get((Integer)researcher.getIdentifier());
 		else
 			throw new IllegalArgumentException(researcher + " is not a collaborative researcher in this study.");
 	}
@@ -706,7 +706,7 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 	 */
 	public boolean isCollaborativePaperCompleted(Person researcher) {
 		if (collaborativePaperWorkTime.containsKey(researcher.getIdentifier())) {
-			double currentWorkTime = collaborativePaperWorkTime.get(researcher.getIdentifier());
+			double currentWorkTime = collaborativePaperWorkTime.get((Integer)researcher.getIdentifier());
 			double requiredWorkTime = getTotalCollaborativePaperWorkTimeRequired();
 			return (currentWorkTime >= requiredWorkTime);
 		} else
@@ -842,7 +842,7 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 	public MarsClock getLastCollaborativeResearchWorkTime(Person researcher) {
 		MarsClock result = null;
 		if (lastCollaborativeResearchWorkTime.containsKey(researcher.getIdentifier()))
-			result = lastCollaborativeResearchWorkTime.get(researcher.getIdentifier());
+			result = lastCollaborativeResearchWorkTime.get((Integer)researcher.getIdentifier());
 		return result;
 	}
 
@@ -875,7 +875,7 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 		double result = 0D;
 
 		if (collaborativeAchievementEarned.containsKey(researcher.getIdentifier()))
-			result = collaborativeAchievementEarned.get(researcher.getIdentifier());
+			result = collaborativeAchievementEarned.get((Integer)researcher.getIdentifier());
 
 		return result;
 	}

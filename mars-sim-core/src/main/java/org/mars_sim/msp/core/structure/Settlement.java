@@ -10,6 +10,7 @@ package org.mars_sim.msp.core.structure;
 import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -2431,6 +2432,25 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	}
 
 	/**
+	 * Checks if any elements from the two string are matching
+	 * 
+	 * @param aNameArray
+	 * @param vNameArray
+	 * @return
+	 */
+	public boolean hasAnyMatch(String[] aNameArray, String[] vNameArray) {
+//		boolean value = false;
+		for (String a : aNameArray) {
+			for (String v : vNameArray) {
+				if (v.equalsIgnoreCase(a))
+					return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	/**
 	 * Returns a list of robots containing a particular name
 	 * 
 	 * @param aName bot's name
@@ -2438,13 +2458,18 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	 *
 	 */
 	public List<Vehicle> returnVehicleList(String aName) {
+		String[] aNameArray = aName.split(" ");
+//		String first = elements[0];
+//		String[] trailing = Arrays.copyOfRange(elements,1,elements.length);
+		
 		List<Vehicle> vList = new ArrayList<>();
 		Iterator<Vehicle> i = getAllAssociatedVehicles().iterator();
 		while (i.hasNext()) {
 			Vehicle v = i.next();
-			if (v.getName().equalsIgnoreCase(aName)
-					|| v.getName().replaceAll(" ", "").equalsIgnoreCase(aName.replaceAll(" ", "")) || v.getName()
-							.replaceAll(" ", "").toLowerCase().contains(aName.replaceAll(" ", "").toLowerCase())) {
+			String vName =  v.getName();
+			String[] vNameArray = vName.split(" ");
+			
+			if (hasAnyMatch(aNameArray, vNameArray)) {
 				vList.add(v);
 			}
 		}

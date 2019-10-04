@@ -1958,8 +1958,8 @@ public class SettlementChatUtils extends ChatUtils {
 		}
 
 		else {
-
-			String[] txt = clarify(name);
+//			responseText.append(clarify(SYSTEM)[1]);
+			String[] txt = clarify(name, text);
 			questionText = txt[0];
 			responseText.append(txt[1]);
 			

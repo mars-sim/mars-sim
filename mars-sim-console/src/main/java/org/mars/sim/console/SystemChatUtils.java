@@ -7,7 +7,6 @@
 
 package org.mars.sim.console;
 
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -196,7 +195,7 @@ public class SystemChatUtils extends ChatUtils {
 //		System.out.println("connectToAUnit() in SystemChatUtils   partyName: " + partyName);
 
 		String questionText = "";
-		StringBuffer responseText = new StringBuffer();
+		StringBuffer responseText = new StringBuffer("");
 		String name = SYSTEM;
 		
 		int cacheType = -1;
@@ -284,8 +283,7 @@ public class SystemChatUtils extends ChatUtils {
 			robotCache = null;
 			settlementCache = null;
 			vehicleCache = null;
-			
-			return new String[] { questionText, responseText.toString()};
+		
 		}
 
 		else if (checkExpertMode(text)) {
@@ -293,7 +291,6 @@ public class SystemChatUtils extends ChatUtils {
 			responseText.append("Set Expert Mode to " + ChatUtils.isExpertMode());
 //			responseText.append(System.lineSeparator());
 			
-			return new String[] { questionText, responseText.toString()};
 		}
 
 		// Add proposals
@@ -325,10 +322,7 @@ public class SystemChatUtils extends ChatUtils {
 					responseText.append(ans[1]);
 				} catch (NullPointerException ne) {
 					ne.printStackTrace();
-				}
-
-				return new String[] { questionText, responseText.toString()};
-				
+				}			
 
 			}
 
@@ -343,7 +337,6 @@ public class SystemChatUtils extends ChatUtils {
 					ne.printStackTrace();
 				}
 				
-				return new String[] { questionText, responseText.toString()};
 			}
 
 		}
@@ -363,9 +356,7 @@ public class SystemChatUtils extends ChatUtils {
 			} catch (NullPointerException ne) {
 				ne.printStackTrace();
 			}
-
-			return new String[] { questionText, responseText.toString()};
-			
+	
 		}
 
 		// Case 2: ask to talk to a person or robot
@@ -393,11 +384,9 @@ public class SystemChatUtils extends ChatUtils {
 					String[] ans = suicide(questionText, responseText, name);
 					questionText = ans[0];
 					responseText.append(ans[1]);
-				} catch (NullPointerException ne) {
+				} catch (Exception ne) {
 					ne.printStackTrace();
 				}
-				
-				return new String[] { questionText, responseText.toString()};
 			}
 
 			else {
@@ -413,11 +402,11 @@ public class SystemChatUtils extends ChatUtils {
 					String[] ans = PersonRobotChatUtils.askPersonRobot(text, num, name, u);
 					questionText = ans[0];
 					responseText.append(ans[1]);
-				} catch (NullPointerException ne) {
+					System.out.println(responseText.toString());
+				} catch (Exception ne) {
 					ne.printStackTrace();
 				}
 
-				return new String[] { questionText, responseText.toString()};
 			}
 			
 //			else {
@@ -435,14 +424,12 @@ public class SystemChatUtils extends ChatUtils {
 		else {
 			// set personCache and robotCache to null only if you want to quit the
 			// conversation
-			String[] txt = clarify(name);
+			String[] txt = clarify(name, text);
 			questionText = txt[0];
 			responseText.append(txt[1]);
-			
-			return new String[] { questionText, responseText.toString()};
 		}
 
-//		return new String[] { questionText, responseText.toString()};
+		return new String[] { questionText, responseText.toString()};
 	}
 	
 	/**
@@ -513,7 +500,7 @@ public class SystemChatUtils extends ChatUtils {
 		else {
 			// set personCache and robotCache to null only if you want to quit the
 			// conversation
-			String[] txt = clarify(name);
+			String[] txt = clarify(name, "dying");
 			questionText = txt[0];
 			responseText.append(txt[1]);
 		}
@@ -1188,7 +1175,7 @@ public class SystemChatUtils extends ChatUtils {
 							responseText.append(" ");
 						}
 					}
-					responseText.append(v.getVehicleType());
+					responseText.append(Conversion.capitalize(v.getVehicleType()));
 					responseText.append(System.lineSeparator());
 				}
 
@@ -1240,87 +1227,127 @@ public class SystemChatUtils extends ChatUtils {
 		else if (len >= 1) {
 			proceed = true;
 		}
-
-		// Part 2 //
-
-		if (len == 0 || text == null) {// || text.length() == ) {
-			responseText.append(clarify(SYSTEM)[1]);
-
+		
+		else {
+//			responseText.append(clarify(SYSTEM)[1]);
+			String[] txt = clarify(SYSTEM, text);
+			questionText = txt[0];
+			responseText.append(txt[1]);
 		}
-
+		
+		
+		if (len == 0 || text == null) {// || text.length() == ) {
+			
+//			responseText.append(clarify(SYSTEM)[1]);
+			String[] txt = clarify(SYSTEM, text);
+			questionText = txt[0];
+			responseText.append(txt[1]);
+		}
+		
 		else if (proceed) {
+			responseText = matchName(responseText, text, nameCase);
+		}
+		
+		else {
+//			responseText.append(clarify(SYSTEM)[1]);
+			String[] txt = clarify(SYSTEM, text);
+			questionText = txt[0];
+			responseText.append(txt[1]);
+		}
+		
+		return new String[] { questionText, responseText.toString() };
+	}
+	
+	
+	/**
+	 * Checks to see if the input text matches a name
+	 * 
+	 * @param responseText
+	 * @param text
+	 * @param nameCase
+	 * @return
+	 */
+	public static StringBuffer matchName(StringBuffer responseText, String text, int nameCase) {
 
-			List<Person> personList = new ArrayList<>();
-			List<Robot> robotList = new ArrayList<>();
-			List<Vehicle> vehicleList = new ArrayList<>();
-			List<Settlement> settlementList = new ArrayList<>();
+		List<Person> personList = new ArrayList<>();
+		List<Robot> robotList = new ArrayList<>();
+		List<Vehicle> vehicleList = new ArrayList<>();
+		List<Settlement> settlementList = new ArrayList<>();
 
-			// check settlements
-			settlementList = CollectionUtils.returnSettlementList(text);
+		// check settlements
+		settlementList = CollectionUtils.returnSettlementList(text);
 
-			// person and robot
-			Iterator<Settlement> i = unitManager.getSettlements().iterator();
-			while (i.hasNext()) {
-				Settlement s = i.next();
-				// Check if anyone has this name (as first/last name) in any settlements
-				// and if he/she is still alive
-				if (text.contains("bot") || text.contains("Bot")) {
-					// Check if it is a bot
-					robotList.addAll(s.returnRobotList(text));
-					nameCase = robotList.size();
-				}
-
-				else { // if (text.contains("rover") || text.contains("vehicle")) {
-						// check vehicles/rovers
-					vehicleList.addAll(s.returnVehicleList(text));
-					// check persons
-					personList.addAll(s.returnPersonList(text));
-				}
-			}
-
-			if (vehicleList.size() + robotList.size() + settlementList.size() + personList.size() > 1) {
-				responseText.append(SYSTEM_PROMPT);
-				responseText.append("There are more than one '");
-				responseText.append(text);
-				responseText.append(
-						"'. Please be more specific by spelling out the full name of the party you would like to reach.");
-				// System.out.println(responseText);
-
-			}
-
-			else if (robotList.size() > 0) {
+		// person and robot
+		Iterator<Settlement> i = unitManager.getSettlements().iterator();
+		while (i.hasNext()) {
+			Settlement s = i.next();
+			// Check if anyone has this name (as first/last name) in any settlements
+			// and if he/she is still alive
+			if (text.contains("bot") || text.contains("Bot")) {
+				// Check if it is a bot
+				robotList.addAll(s.returnRobotList(text));
 				nameCase = robotList.size();
 			}
 
-			else if (vehicleList.size() > 0) {
-				nameCase = vehicleList.size();
+			else { // if (text.contains("rover") || text.contains("vehicle")) {
+					// check vehicles/rovers
+				vehicleList.addAll(s.returnVehicleList(text));
+				// check persons
+				personList.addAll(s.returnPersonList(text));
 			}
+		}
 
-			else if (personList.size() > 0) {
-				nameCase = personList.size();
-			}
-
-			else if (settlementList.size() > 0) {
-				nameCase = settlementList.size();
-			}
-
-			// capitalize the first initial of a name
-			text = Conversion.capitalize(text);
-
-			responseText = PartyUtils.acquireParty(responseText, nameCase, text, 
-					personList, 
-					robotList, 
-					vehicleList, 
-					settlementList);
+		if (vehicleList.size() + robotList.size() + settlementList.size() + personList.size() > 1) {
+			responseText.append(SYSTEM_PROMPT);
+			responseText.append("There are more than one '");
+			responseText.append(text);
+			responseText.append(
+					"'. Please be more specific by spelling out the full name of the party you would like to reach.");
+			// System.out.println(responseText);
 
 		}
+
+		else if (robotList.size() > 0) {
+			nameCase = robotList.size();
+		}
+
+		else if (vehicleList.size() > 0) {
+			nameCase = vehicleList.size();
+		}
+
+		else if (personList.size() > 0) {
+			nameCase = personList.size();
+		}
+
+		else if (settlementList.size() > 0) {
+			nameCase = settlementList.size();
+		}
+		
+		else {
+			String[] txt = clarify(SYSTEM, text);
+//			questionText = txt[0];
+			responseText.append(txt[1]);	
+			
+			return responseText;
+		}
+
+		// capitalize the first initial of a name
+		text = Conversion.capitalize0(text);
+
+		responseText = PartyUtils.acquireParty(responseText, nameCase, text, 
+				personList, 
+				robotList, 
+				vehicleList, 
+				settlementList);
+
+//		}
 
 //		responseText.append(SYSTEM_PROMPT);
 //		responseText.append("I do not recognize any person, robot, vehicle or settlement by the name of '");
 //		responseText.append(text);
 //		responseText.append("'.");
 	
-		return new String[] { questionText, responseText.toString() };
+		return responseText;
 	}
 	
 }

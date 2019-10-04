@@ -47,6 +47,8 @@ public class MarsTerminal extends SwingTextTerminal {
 	
 	private JFrame frame;
 	
+	private InteractiveTerm interactiveTerm;
+	
     private final JPopupMenu popup = new JPopupMenu();
 
     private static class PopupListener extends MouseAdapter {
@@ -71,7 +73,8 @@ public class MarsTerminal extends SwingTextTerminal {
         }
     }
 
-    public MarsTerminal() {	
+    public MarsTerminal(InteractiveTerm interactiveTerm) {	
+    	this.interactiveTerm = interactiveTerm;
 //    	System.out.println("w: " + getFrame().getWidth()); // w: 656  	
 //    	System.out.println("h: " + getFrame().getHeight()); // h: 519    	
     	
@@ -231,6 +234,11 @@ public class MarsTerminal extends SwingTextTerminal {
         JMenuItem clearItem = new JMenuItem("Clear Screen", KeyEvent.VK_C);
         clearItem.addActionListener(e -> clearScreen(this));
         menu.add(clearItem);
+        
+        
+        JMenuItem restartItem = new JMenuItem("Restart menu", KeyEvent.VK_R);
+        restartItem.addActionListener(e -> interactiveTerm.getChatMenu().restartMenu());
+        menu.add(restartItem);     
         
         JMenuItem menuItem = new JMenuItem("About", KeyEvent.VK_A);
         menuItem.addActionListener(e -> JOptionPane.showMessageDialog(frame, 

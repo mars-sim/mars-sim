@@ -390,7 +390,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<rover-name value="Prithvi" /> <!-- Hindi for "earth" -->
 		<rover-name value="Reth" /> <!-- Hindi for "sand" -->
 		<rover-name value="Naag" /> <!-- Hindi for "snake" -->
-		<rover-name value="Mangala" /> <!-- Mars in Jyotish astrology -->
+		<rover-name value="Mangala" /> <!--  Sanskrit for "Mars" in Jyotish astrology -->
 		<rover-name value="Angaraka" /> <!-- Mars in Jyotish astrology (alternate name) -->
 		<rover-name value="Ma'adim" /> <!-- Hebrew for "Mars" -->
 		<rover-name value="al-Mirrikh" /> <!-- Arabic/Persian for "Mars" -->
@@ -400,6 +400,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<rover-name value="Nergal" /> <!-- Babylonian for "Mars" -->
 		<rover-name value="Areos Aster" /> <!-- Greek for "star of Ares" -->
 		<rover-name value="Blodstjarna" /> <!-- Viking for "Mars" (not certain) -->
+		<rover-name value="Huoxing" /> <!-- Chinese for "Mars" -->
 
 	</rover-name-list>
 

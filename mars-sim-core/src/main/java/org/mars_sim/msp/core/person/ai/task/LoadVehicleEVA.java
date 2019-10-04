@@ -787,7 +787,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 		while (iE.hasNext() && (amountLoading > 0D)) {
 			Integer id = iE.next();
 			int numNeededTotal = (Integer) optionalEquipment.get(id);
-			int i0 = numNeededTotal;
+//			int i0 = numNeededTotal;
 			
 			if (requiredEquipment.containsKey(id)) {
 				numNeededTotal += (Integer) requiredEquipment.get(id);
