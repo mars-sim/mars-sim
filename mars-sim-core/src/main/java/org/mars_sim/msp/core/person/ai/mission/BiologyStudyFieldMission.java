@@ -544,7 +544,7 @@ public class BiologyStudyFieldMission extends RoverMission implements Serializab
 				setPhaseEnded(true);
 			}
 
-			// Check if enough resources for remaining trip.
+			// Check if enough resources for remaining trip. false = not using margin.
 			if (!hasEnoughResourcesForRemainingMission(false)) {
 				// If not, determine an emergency destination.
 				determineEmergencyDestination(member);

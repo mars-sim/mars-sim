@@ -542,7 +542,7 @@ public class AreologyStudyFieldMission extends RoverMission implements Serializa
 				setPhaseEnded(true);
 			}
 
-			// Check if enough resources for remaining trip.
+			// Check if enough resources for remaining trip. false = not using margin.
 			if (!hasEnoughResourcesForRemainingMission(false)) {
 				// If not, determine an emergency destination.
 				determineEmergencyDestination(member);

@@ -520,7 +520,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 * 
 	 * @param tripDistance   the distance (km) of the trip.
 	 * @param fuelConsumption the vehicle's instantaneous fuel consumption (km/kg).
-	 * @param useMargin      use time buffers in estimation if true.
+	 * @param useMargin      Apply safety margin when loading resources before embarking if true.
 	 * @return amount of fuel needed for trip (kg)
 	 */
 	public static double getFuelNeededForTrip(double tripDistance, double fuelConsumption, boolean useMargin) {
@@ -663,9 +663,12 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			setPhaseEnded(true);
 		}
 
-		// if there is an emergency medical problem or not enough resources for
-		// remaining trip
-		// if (hasEmergency() ||
+		// Note: Check if there is an emergency medical problem separately ?
+		if (hasEmergency()) {
+		}
+
+		// remaining trip. false = not using margin.
+		// Check if enough resources for remaining trip. false = not using margin.
 		if (!hasEnoughResourcesForRemainingMission(false)) {
 			// If not, determine an emergency destination.
 			determineEmergencyDestination(member);
@@ -800,8 +803,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	/**
 	 * Gets the number and amounts of resources needed for the mission.
 	 * 
-	 * @param useMargin True if estimating trip. False if calculating remaining
-	 *                  trip.
+	 * @param useMargin Apply safety margin when loading resources before embarking if true.
+	 *        Note : True if estimating trip. False if calculating remaining trip.
 	 * @return map of amount and item resources and their Double amount or Integer
 	 *         number.
 	 */
@@ -812,8 +815,9 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	/**
 	 * Gets the number and amounts of resources needed for a trip.
 	 * 
-	 * @param useMargin True if estimating trip. False if calculating remaining
-	 *                  trip.
+	 * @param useMargin Apply safety margin when loading resources before embarking if true.
+	 * Note : True if estimating trip. False if calculating remaining trip.
+	 *                  
 	 * @param distance  the distance (km) of the trip.
 	 * @return map of amount and item resources and their Double amount or Integer
 	 *         number.

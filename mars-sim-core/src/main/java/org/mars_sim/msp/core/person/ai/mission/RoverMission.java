@@ -15,7 +15,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
@@ -784,8 +783,14 @@ public abstract class RoverMission extends VehicleMission {
 	}
 
 	
-	
-	
+	/**
+	 * Gets the number and amounts of resources needed for the mission.
+	 * 
+	 * @param useMargin Apply safety margin when loading resources before embarking if true.
+	 *        Note : True if estimating trip. False if calculating remaining trip.
+	 * @return map of amount and item resources and their Double amount or Integer
+	 *         number.
+	 */
 	@Override
 	public Map<Integer, Number> getResourcesNeededForTrip(boolean useBuffer, double distance) {
 		// Note: currently, it has methane resource only

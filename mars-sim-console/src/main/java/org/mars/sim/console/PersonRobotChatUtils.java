@@ -11,7 +11,6 @@ import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Formatter;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -62,22 +61,25 @@ public class PersonRobotChatUtils extends ChatUtils {
 		ChatUtils.vehicleCache = null;
 		
 		String questionText = "";
-		StringBuffer responseText = new StringBuffer("");
+		StringBuffer responseText = new StringBuffer();
 
 		responseText.append(name);
-		responseText.append(": ");
+		responseText.append("'s health :");
 
 		if (text.toLowerCase().equalsIgnoreCase("health")) {
+			int col0 = 16;
+			int col1 = 8;
+			int col2a = 9;
 			try {
 				
 				questionText = YOU_PROMPT + "How's your health ? ";
 				responseText.append(System.lineSeparator());
 				responseText.append(System.lineSeparator());
 				
-				responseText.append(addWhiteSpacesRightName("Health Indicators", 15));
-				responseText.append(addWhiteSpacesRightName("Indices" , 19));
+				responseText.append(addWhiteSpacesRightName("Health Indicators", col0 + col1 + 4));
+//				responseText.append(addWhiteSpacesRightName("Indices" , 19));
 				responseText.append(System.lineSeparator());
-				responseText.append(" ----------------------------------------- ");
+				responseText.append(" -------------------------------------------------- ");
 				responseText.append(System.lineSeparator());		
 				
 				PhysicalCondition pc = personCache.getPhysicalCondition();
@@ -87,7 +89,7 @@ public class PersonRobotChatUtils extends ChatUtils {
 				double hunger = Math.round(pc.getHunger()*10.0)/10.0;
 				double energy = Math.round(pc.getEnergy()*10.0)/10.0;
 	            double stress = Math.round(pc.getStress()*10.0)/10.0;
-	            double perf = Math.round(pc.getPerformanceFactor()*10_000.0)/10.0;
+	            double perf = Math.round(pc.getPerformanceFactor()*1_000.0)/10.0;
 	            
 //				System.out.println("1");
 	            
@@ -103,48 +105,50 @@ public class PersonRobotChatUtils extends ChatUtils {
 	//			fmt.format(s);
 //				System.out.println("2");
 				
-				responseText.append(addWhiteSpacesRightName("Thirst", 15));
-				responseText.append(addWhiteSpacesRightName(thirst + "", 9));
-				responseText.append(addWhiteSpacesLeftName(" millisols", 12));
-				responseText.append(addWhiteSpacesLeftName(t, 13));
+				responseText.append(addWhiteSpacesRightName("Thirst", col0));
+				responseText.append(addWhiteSpacesRightName(thirst + "", col1));
+				responseText.append(addWhiteSpacesLeftName(" millisols", col2a));
+				responseText.append(addWhiteSpacesLeftName(t, 11));
 				responseText.append(System.lineSeparator());
 				
 //				System.out.println("3");
 				
-				responseText.append(addWhiteSpacesRightName("Hunger", 15));
-				responseText.append(addWhiteSpacesRightName(hunger + "", 9));
-				responseText.append(addWhiteSpacesLeftName(" millisols", 12));
-				responseText.append(addWhiteSpacesLeftName(h, 13));
+				responseText.append(addWhiteSpacesRightName("Hunger", col0));
+				responseText.append(addWhiteSpacesRightName(hunger + "", col1));
+				responseText.append(addWhiteSpacesLeftName(" millisols", col2a));
+				responseText.append(addWhiteSpacesLeftName(h, 11));
 				responseText.append(System.lineSeparator());
-				responseText.append(addWhiteSpacesRightName("Energy", 15));
-				responseText.append(addWhiteSpacesRightName(energy + "", 9));
+				responseText.append(addWhiteSpacesRightName("Energy", col0));
+				responseText.append(addWhiteSpacesRightName(energy + "", col1));
 				responseText.append(addWhiteSpacesLeftName(" kJ", 4));
 				responseText.append(System.lineSeparator());
-				responseText.append(addWhiteSpacesRightName("Fatigue", 15));
-				responseText.append(addWhiteSpacesRightName(fatigue + "", 9));
-				responseText.append(addWhiteSpacesLeftName(" millisols", 12));
+				responseText.append(addWhiteSpacesRightName("Fatigue", col0));
+				responseText.append(addWhiteSpacesRightName(fatigue + "", col1));
+				responseText.append(addWhiteSpacesLeftName(" millisols", col2a));
 				responseText.append(System.lineSeparator());
 				
 //				System.out.println("4");
 				
-				responseText.append(addWhiteSpacesRightName("Performance", 15));
-				responseText.append(addWhiteSpacesRightName(perf + "", 9));
-				responseText.append(addWhiteSpacesLeftName(" %", 4));
+				responseText.append(addWhiteSpacesRightName("Performance", col0));
+				responseText.append(addWhiteSpacesRightName(perf + "", col1));
+				// Note : he percent sign is escaped using another percent sign
+				responseText.append(addWhiteSpacesLeftName(" %%", 4));
 				responseText.append(System.lineSeparator());
-				responseText.append(addWhiteSpacesRightName("Stress", 15));
-				responseText.append(addWhiteSpacesRightName(stress + "", 9));
-				responseText.append(addWhiteSpacesLeftName(" %", 4));
+				responseText.append(addWhiteSpacesRightName("Stress", col0));
+				responseText.append(addWhiteSpacesRightName(stress + "", col1));
+				// Note : he percent sign is escaped using another percent sign
+				responseText.append(addWhiteSpacesLeftName(" %%", 4));
 				responseText.append(System.lineSeparator());
 				
 //				System.out.println("5");
 				
-				responseText.append(addWhiteSpacesRightName("Surplus Ghrelin", 15));
-				responseText.append(addWhiteSpacesRightName(ghrelin +  "", 9));
-				responseText.append(addWhiteSpacesLeftName(" millisols", 12));
+				responseText.append(addWhiteSpacesRightName("Surplus Ghrelin", col0));
+				responseText.append(addWhiteSpacesRightName(ghrelin +  "", col1));
+				responseText.append(addWhiteSpacesLeftName(" millisols", col2a));
 				responseText.append(System.lineSeparator());
-				responseText.append(addWhiteSpacesRightName("Surplus Leptin", 15));
-				responseText.append(addWhiteSpacesRightName(leptin +  "", 9));
-				responseText.append(addWhiteSpacesLeftName(" millisols", 12));
+				responseText.append(addWhiteSpacesRightName("Surplus Leptin", col0));
+				responseText.append(addWhiteSpacesRightName(leptin +  "", col1));
+				responseText.append(addWhiteSpacesLeftName(" millisols", col2a));
 				responseText.append(System.lineSeparator());
 				
 //				System.out.println("6");
