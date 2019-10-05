@@ -1121,9 +1121,9 @@ public class Farming extends Function implements Serializable {
 					if (STANDARD_AMOUNT_TISSUE_CULTURE > 0) {
 						store(STANDARD_AMOUNT_TISSUE_CULTURE, tissueID, sourceName + "::growCropTissue");
 						LogConsolidated.log(Level.INFO, 3_000, sourceName,
-							"[" + building.getSettlement().getName() + "] During sampling analysis, " + p
-								+ " could not find any " + cropName + TISSUE_CULTURE
-								+ " in stock and produced " + STANDARD_AMOUNT_TISSUE_CULTURE
+							"[" + building.getSettlement().getName() + "] In a sampling analysis, " + p
+								+ " found no " + cropName + TISSUE_CULTURE
+								+ " in stock. Producing " + STANDARD_AMOUNT_TISSUE_CULTURE
 										+ " kg from " + cropName + " in " + lab.getBuilding().getNickName()
 										+ ".");
 						isDone = true;

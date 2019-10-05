@@ -1320,23 +1320,13 @@ public class SettlementChatUtils extends ChatUtils {
 
 					if (mission instanceof VehicleMission) {
 						v = ((VehicleMission) mission).getVehicle();
-						dist = Math.round(((VehicleMission) mission).getTotalDistance() * 10.0) / 10.0;// .getStartingTravelledDistance();
-																										// //
-																										// getTotalDistance();//.
-						trav = Math.round(((VehicleMission) mission).getTotalDistanceTravelled() * 10.0) / 10.0;
+						dist = Math.round(((VehicleMission) mission).getProposedRouteTotalDistance() * 10.0) / 10.0;
+						trav = Math.round(((VehicleMission) mission).getActualTotalDistanceTravelled() * 10.0) / 10.0;
 					}
 
 					if (mission != null) {
-//						responseText.append(System.lineSeparator());
-//						responseText.append(" ");
-//						if (num > 0) {
-//							for (int j=0; j<num; j++) {
-//								responseText.append("-");
-//							}
-//						}
 						responseText.append(System.lineSeparator());
 						responseText.append(" (" + (i + 1) + "). " + mission.getName());
-//						responseText.append("      Mission : " + mission.getName());
 						responseText.append(System.lineSeparator());
 						responseText.append(" ");
 						if (num > 0) {

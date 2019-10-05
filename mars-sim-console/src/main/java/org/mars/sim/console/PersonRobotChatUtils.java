@@ -64,8 +64,8 @@ public class PersonRobotChatUtils extends ChatUtils {
 		StringBuffer responseText = new StringBuffer();
 
 		responseText.append(name);
-		responseText.append("'s health :");
-
+		responseText.append(" : ");
+	
 		if (text.toLowerCase().equalsIgnoreCase("health")) {
 			int col0 = 16;
 			int col1 = 8;
@@ -73,6 +73,8 @@ public class PersonRobotChatUtils extends ChatUtils {
 			try {
 				
 				questionText = YOU_PROMPT + "How's your health ? ";
+				responseText.append("'s health : ");
+				
 				responseText.append(System.lineSeparator());
 				responseText.append(System.lineSeparator());
 				
@@ -701,7 +703,12 @@ public class PersonRobotChatUtils extends ChatUtils {
 			}
 
 		}
-
+		
+//		return new String[] { questionText, responseText.toString() };
+//	}
+//	
+//	public void askPersonRobotNum(String text, int num, String name, Unit u) {
+		
 		else if (num == 0 || text.toLowerCase().contains("status") || text.toLowerCase().contains("how you doing")) {
 			questionText = YOU_PROMPT + "how are you doing ?"; // what is your Location Situation [Expert Mode only] ?";
 
@@ -1136,7 +1143,7 @@ public class PersonRobotChatUtils extends ChatUtils {
 //			responseText.append(clarify(SYSTEM)[1]);
 			String[] txt = clarify(name, text);
 			questionText = txt[0];
-			responseText.append(txt[1]);
+//			responseText.append(txt[1]);
 			
 			return new String[] { questionText, responseText.toString()};
 		}

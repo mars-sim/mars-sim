@@ -399,8 +399,6 @@ public class MarsProject {
 
 		try {
 			if (useGUI) {
-				// Alert the user to see the interactive terminal 
-				logger.config("Please proceed to selecting the type of Game Mode in the popped-up console.");
 				// Initialize the simulation.
 				simulationConfig.loadConfig();
 				// Start interactive terminal
@@ -427,8 +425,6 @@ public class MarsProject {
 			
 			else {
 				// Go headless
-				// Alert the user to see the interactive terminal 
-				logger.config("Please proceed to selecting the type of Game Mode in the popped-up console.");
 				// Initialize the simulation.
 				simulationConfig.loadConfig();
 				// Create serializable class 
@@ -440,7 +436,9 @@ public class MarsProject {
 				// Start the simulation.
 				startSimThread(true);					
 			}
-		
+			
+			// Alert the user to see the interactive terminal 
+			logger.config("Please proceed to selecting the type of Game Mode in the popped-up console.");
 			
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -41,8 +41,9 @@ public abstract class TravelMission extends Mission {
 	private int navIndex = 0;
 	
 	/** The total distance travelled so far. */
-	private double totalDistance;
-	
+	private double proposedRouteTotalDistance;
+	/** The current leg remaining distance so far. */
+	private double currentLegRemainingDistance;
 	/** The current traveling status of the mission. */
 	private String travelStatus;
 	
@@ -344,8 +345,14 @@ public abstract class TravelMission extends Mission {
 				setNextNavpointIndex(getNumberOfNavpoints() - offset);
 				updateTravelDestination();
 			}
+			double dist = getCurrentMissionLocation().getDistance(getNextNavpoint().getLocation());
+			
+			if (currentLegRemainingDistance != dist) {
+				currentLegRemainingDistance = dist;
+				fireMissionUpdate(MissionEventType.DISTANCE_EVENT);
+			}
 
-			return getCurrentMissionLocation().getDistance(getNextNavpoint().getLocation());
+			return currentLegRemainingDistance;
 		}
 
 		else
@@ -353,11 +360,11 @@ public abstract class TravelMission extends Mission {
 	}
 
 	/**
-	 * Gets the total distance of the trip.
+	 * Gets the proposed route total distance of the trip.
 	 * 
-	 * @return total distance (km)
+	 * @return distance (km)
 	 */
-	public final double getTotalDistance() {
+	public final double getProposedRouteTotalDistance() {
 		if (navPoints.size() > 1) {
 			double result = 0D;
 			
@@ -368,13 +375,13 @@ public abstract class TravelMission extends Mission {
 				result += distance;
 			}
 			
-			if (result > totalDistance)
+			if (result > proposedRouteTotalDistance)
 				// Record the distance
-				totalDistance = result;
-			return totalDistance;
+				proposedRouteTotalDistance = result;
+			return proposedRouteTotalDistance;
 		}
 		else
-			return totalDistance;
+			return proposedRouteTotalDistance;
 	}
 
 	/**
@@ -384,26 +391,33 @@ public abstract class TravelMission extends Mission {
 	 * @throws MissionException if error determining distance.
 	 */
 	public final double getTotalRemainingDistance() {
-		double result = getCurrentLegRemainingDistance();
-
+		double remain = getCurrentLegRemainingDistance();
+//		if (this instanceof VehicleMission) {
+//			VehicleMission vehicleMission = (VehicleMission) this;
+//			String name = vehicleMission.getVehicle().getNickName();
+//			System.out.print("TravelMission " + name + " Current Leg Remaining Distance : " + Math.round(remain*10.0)/10.0 + " km");
+//		}
 		int index = 0;
+		double navDist = 0;
 		if (AT_NAVPOINT.equals(travelStatus))
 			index = getCurrentNavpointIndex();
 		else if (TRAVEL_TO_NAVPOINT.equals(travelStatus))
 			index = getNextNavpointIndex();
 
 		for (int x = (index + 1); x < getNumberOfNavpoints(); x++)
-			result += getNavpoint(x - 1).getLocation().getDistance(getNavpoint(x).getLocation());
-//		System.out.println("TravelMission : total remaining dist : " + result);
-		return result; //Math.abs(result);
+			navDist = getNavpoint(x - 1).getLocation().getDistance(getNavpoint(x).getLocation());
+		
+//		System.out.print("    Nav Distance : " + Math.round(navDist*10.0)/10.0);
+//		System.out.println("    Total : " + Math.round((remain + navDist)*10.0)/10.0);
+		return remain + navDist; //Math.abs(result);
 	}
 
 	/**
-	 * Gets the total distance travelled during the mission so far.
+	 * Gets the actual total distance travelled during the mission so far.
 	 * 
 	 * @return distance (km)
 	 */
-	public abstract double getTotalDistanceTravelled();
+	public abstract double getActualTotalDistanceTravelled();
 
 	/**
 	 * Gets the estimated time of arrival (ETA) for the current leg of the mission.

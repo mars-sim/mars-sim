@@ -112,7 +112,7 @@ public class VehicleTableModel extends UnitTableModel {
 		columnTypes[LOCATION] = String.class;
 		columnNames[DESTINATION] = "Next Waypoint";
 		columnTypes[DESTINATION] = Coordinates.class;
-		columnNames[DESTDIST] = "Remaining km";
+		columnNames[DESTDIST] = "Dist. to next [km]";
 		columnTypes[DESTDIST] = Integer.class;
 		columnNames[MISSION] = "Mission";
 		columnTypes[MISSION] = String.class;

@@ -613,8 +613,8 @@ public class MainDetailPanel extends WebPanel implements ListSelectionListener, 
 						distanceNextNavLabel.setText(Msg.getString("MainDetailPanel.kmNextNavPoint", distanceNextNav)); //$NON-NLS-1$
 					} catch (Exception e2) {
 					}
-					int travelledDistance = (int) vehicleMission.getTotalDistanceTravelled();
-					int totalDistance = (int) vehicleMission.getTotalDistance();
+					double travelledDistance = Math.round(vehicleMission.getActualTotalDistanceTravelled()*10.0)/10.0;
+					double totalDistance = Math.round(vehicleMission.getProposedRouteTotalDistance()*10.0)/10.0;
 					traveledLabel.setText(Msg.getString("MainDetailPanel.kmTraveled", //$NON-NLS-1$
 							travelledDistance, totalDistance));
 					vehicle.addUnitListener(this);
@@ -834,8 +834,8 @@ public class MainDetailPanel extends WebPanel implements ListSelectionListener, 
 					distanceNextNavLabel.setText(Msg.getString("MainDetailPanel.kmNextNavPoint", distanceNextNav)); //$NON-NLS-1$
 				} catch (Exception e2) {
 				}
-				int travelledDistance = (int) vehicleMission.getTotalDistanceTravelled();
-				int totalDistance = (int) vehicleMission.getTotalDistance();
+				double travelledDistance = Math.round(vehicleMission.getActualTotalDistanceTravelled()*10.0)/10.0;
+				double totalDistance = Math.round(vehicleMission.getProposedRouteTotalDistance()*10.0)/10.0;
 				traveledLabel.setText(Msg.getString("MainDetailPanel.kmTraveled", travelledDistance, //$NON-NLS-1$
 						totalDistance));
 			}

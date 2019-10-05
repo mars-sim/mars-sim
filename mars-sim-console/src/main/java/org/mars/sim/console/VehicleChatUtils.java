@@ -80,13 +80,11 @@ public class VehicleChatUtils extends ChatUtils {
 				double trav = 0;
 
 				if (m instanceof VehicleMission) {
-					dist = Math.round(((VehicleMission) m).getTotalDistance() * 10.0) / 10.0;// .getStartingTravelledDistance();
-																								// //
-																								// getTotalDistance();//.
-					trav = Math.round(((VehicleMission) m).getTotalDistanceTravelled() * 10.0) / 10.0;
-					responseText.append("  Est. Dist. : " + dist + " km");
+					dist = Math.round(((VehicleMission) m).getProposedRouteTotalDistance() * 10.0) / 10.0;
+					trav = Math.round(((VehicleMission) m).getActualTotalDistanceTravelled() * 10.0) / 10.0;
+					responseText.append(addWhiteSpacesRightName("Proposed Dist. : ", max) + (dist + " km"));
 					responseText.append(System.lineSeparator());
-					responseText.append("   Travelled : " + trav + " km");
+					responseText.append(addWhiteSpacesRightName("Travelled : ", max) + (trav + " km"));
 					responseText.append(System.lineSeparator());
 				}
 

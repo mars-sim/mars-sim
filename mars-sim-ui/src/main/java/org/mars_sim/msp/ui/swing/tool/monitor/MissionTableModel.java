@@ -67,8 +67,10 @@ public class MissionTableModel extends AbstractTableModel
 	private final static int TRAVELLED_DISTANCE = 11;
 	/** Remaining distance column. */
 	private final static int REMAINING_DISTANCE = 12;
+	/** Proposed route distance column. */
+	private final static int PROPOSED_ROUTE_DISTANCE = 13;
 	/** The number of Columns. */
-	private final static int COLUMNCOUNT = 13;
+	private final static int COLUMNCOUNT = 14;
 	/** Names of Columns. */
 	private static String columnNames[];
 	/** Types of Columns. */
@@ -109,7 +111,11 @@ public class MissionTableModel extends AbstractTableModel
 		columnTypes[TRAVELLED_DISTANCE] = Integer.class;
 		columnNames[REMAINING_DISTANCE] = Msg.getString("MissionTableModel.column.distanceRemaining"); //$NON-NLS-1$
 		columnTypes[REMAINING_DISTANCE] = Integer.class;
+		columnNames[PROPOSED_ROUTE_DISTANCE] = Msg.getString("MissionTableModel.column.proposedDistance"); //$NON-NLS-1$
+		columnTypes[PROPOSED_ROUTE_DISTANCE] = Integer.class;
 
+		
+		
 		if (GameManager.mode == GameMode.COMMAND) {
 			mode = GameMode.COMMAND;
 			commanderSettlement = Simulation.instance().getUnitManager().getCommanderSettlement();
@@ -258,7 +264,8 @@ public class MissionTableModel extends AbstractTableModel
 			if ((index > -1) && (index < missionCache.size())) {
 				int column1 = -1;
 				int column2 = -1;
-
+				int column3 = -1;
+				
 				if (eventType == MissionEventType.DATE_EVENT)
 					column1 = DATE_FILED;
 				else if (eventType == MissionEventType.NAME_EVENT)
@@ -283,12 +290,15 @@ public class MissionTableModel extends AbstractTableModel
 				else if (eventType == MissionEventType.DISTANCE_EVENT) {
 					column1 = TRAVELLED_DISTANCE;
 					column2 = REMAINING_DISTANCE;
+					column3 = PROPOSED_ROUTE_DISTANCE;
 				}
-	
+		
 				if (column1 > -1)
 					SwingUtilities.invokeLater(new MissionTableCellUpdater(index, column1));
 				if (column2 > -1)
 					SwingUtilities.invokeLater(new MissionTableCellUpdater(index, column2));
+				if (column3 > -1)
+					SwingUtilities.invokeLater(new MissionTableCellUpdater(index, column3));
 			}
 			
 			else {
@@ -424,7 +434,7 @@ public class MissionTableModel extends AbstractTableModel
 				case TRAVELLED_DISTANCE: {
 					if (mission instanceof VehicleMission) {
 						VehicleMission vehicleMission = (VehicleMission) mission;
-						result = decFormatter.format(vehicleMission.getTotalDistanceTravelled());
+						result = decFormatter.format(vehicleMission.getActualTotalDistanceTravelled());
 					} else
 						result = 0;
 				}
@@ -440,6 +450,20 @@ public class MissionTableModel extends AbstractTableModel
 					} else
 						result = 0;
 				}
+				
+				break;
+
+				case PROPOSED_ROUTE_DISTANCE: {
+					if (mission instanceof TravelMission) {
+						TravelMission travelMission = (TravelMission) mission;
+						try {
+							result = decFormatter.format(travelMission.getProposedRouteTotalDistance());
+						} catch (Exception e) {
+						}
+					} else
+						result = 0;
+				}
+
 				}
 			}
 //		}

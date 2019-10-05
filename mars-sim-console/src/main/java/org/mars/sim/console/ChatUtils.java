@@ -92,7 +92,7 @@ public class ChatUtils {
 	static 
 	{ 
 		VEHICLE_KEYS = new String[][] {
-			{"specs", 	"what is the design and performance specifications for this vehicle"},
+			{"specs", 	"what is the design/performance specifications for this vehicle"},
 			{"status", 	"what is the current status of this vehicle"}
 		};
 	};

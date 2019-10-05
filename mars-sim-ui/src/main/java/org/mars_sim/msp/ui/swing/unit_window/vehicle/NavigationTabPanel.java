@@ -35,13 +35,13 @@ import org.mars_sim.msp.core.person.ai.mission.TravelMission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
-import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleOperator;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
@@ -58,19 +58,23 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
     private static Logger logger = Logger.getLogger(NavigationTabPanel.class.getName());
 
     private DecimalFormat formatter = new DecimalFormat("0.0");
+    
     private WebButton driverButton;
+    private WebButton centerMapButton;
+    private WebButton destinationButton;
+    
     private WebLabel statusLabel;
     private WebLabel beaconLabel;
     private WebLabel speedLabel;
     private WebLabel elevationLabel;
-    private WebButton centerMapButton;
-    private JButton destinationButton;
-    private JLabel destinationTextLabel;
-    private JPanel destinationLabelPanel;
     private WebLabel destinationLatitudeLabel;
     private WebLabel destinationLongitudeLabel;
     private WebLabel distanceLabel;
     private WebLabel etaLabel;
+    private WebLabel destinationTextLabel;
+    
+    private JPanel destinationLabelPanel;
+    
     private DirectionDisplayPanel directionDisplay;
     private TerrainDisplayPanel terrainDisplay;
 
@@ -183,11 +187,11 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         leftPanel.add(destinationLabel);
         
         // Prepare destination button
-        destinationButton = new JButton();
+        destinationButton = new WebButton();
         destinationButton.addActionListener(this);
 
         // Prepare destination text label
-        destinationTextLabel = new JLabel("", WebLabel.LEFT);
+        destinationTextLabel = new WebLabel("", WebLabel.LEFT);
         
         boolean hasDestination = false;
 
@@ -208,7 +212,7 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
                 }
                 else {
                     // If destination is coordinates, add destination text label.
-                    destinationTextCache = "A Navpoint";
+                    destinationTextCache = Conversion.capitalize(destinationPoint.getDescription());//"A Navpoint";
                     destinationTextLabel.setText(destinationTextCache);
                     destinationLabelPanel.add(destinationTextLabel);
                 }
@@ -228,7 +232,6 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
 		
 		// Prepare the top panel using spring layout.
 		WebPanel destinationSpringPanel = new WebPanel(new SpringLayout());
-//		destinationSpringPanel.setBorder(new MarsPanelBorder());
 		destinationSpringPanel.setBorder(new EmptyBorder(15, 5, 15, 5));
 		locPanel.add(destinationSpringPanel, BorderLayout.NORTH);
 		
@@ -255,7 +258,7 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         destinationSpringPanel.add(destinationLongitudeLabel);
 
         // Prepare distance header label.
-        WebLabel distanceHeaderLabel = new WebLabel("Distance :", WebLabel.RIGHT);
+        WebLabel distanceHeaderLabel = new WebLabel("Remaining Distance :", WebLabel.RIGHT);
         destinationSpringPanel.add(distanceHeaderLabel);
         
         // Prepare distance label.
@@ -446,13 +449,13 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         		}
         	}
         	else {
-        		if (destinationTextCache != "A Navpoint") {
+//        		if (destinationTextCache != "") {
         			// If destination is coordinates, update destination text label.
-        			destinationTextCache = "A Navpoint";
+        			destinationTextCache = Conversion.capitalize(destinationPoint.getDescription());//"A Navpoint";
         			destinationTextLabel.setText(destinationTextCache);
         			addDestinationTextLabel();
                     destinationSettlementCache = null;
-        		}
+//        		}
         	}
         }
         

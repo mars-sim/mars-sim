@@ -25,6 +25,7 @@ import javax.swing.event.HyperlinkListener;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.ui.swing.HTMLContentPane;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.ToolButton;
 import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
 
 import com.alee.laf.button.WebButton;
@@ -42,7 +43,8 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
 
 	/** Tool name. */
 	public static final String NAME = Msg.getString("GuideWindow.title"); //$NON-NLS-1$
-
+	public static final String DIR = Msg.getString("GuideWindow.homeIcon.dir"); //$NON-NLS-1$
+	
 	/** Data members. */
 //	private List<URL> history = new ArrayList<>();
 
@@ -66,8 +68,10 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
 //	private WebButton userguideButton = new WebButton(Msg.getString("GuideWindow.button.userguide")); //$NON-NLS-1$
 //	private WebButton projectsiteButton = new WebButton(Msg.getString("GuideWindow.button.projectsite")); //$NON-NLS-1$
 //	private WebButton wikiButton = new WebButton(Msg.getString("GuideWindow.button.wiki")); //$NON-NLS-1$
-
-	private WebButton homeButton = new WebButton(Msg.getString("GuideWindow.button.home")); //$NON-NLS-1$
+	
+	private ToolButton homeButton = new ToolButton(Msg.getString("GuideWindow.tooltip.home"), DIR);
+	
+//	private WebButton homeButton = new WebButton(Msg.getString("GuideWindow.button.home")); //$NON-NLS-1$
 	private WebButton backButton = new WebButton("<");//Msg.getString("GuideWindow.button.back")); //$NON-NLS-1$
 	private WebButton forwardButton = new WebButton(">");//Msg.getString("GuideWindow.button.forward")); //$NON-NLS-1$
 
@@ -93,7 +97,7 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
 //		// discussionURLstring = Msg.getString("url.discussion"); //$NON-NLS-1$
 //		wikiURLstring = Msg.getString("url.wiki"); //$NON-NLS-1$
 
-		homeButton.setToolTipText(Msg.getString("GuideWindow.tooltip.home")); //$NON-NLS-1$
+//		homeButton.setToolTipText(Msg.getString("GuideWindow.tooltip.home")); //$NON-NLS-1$
 		homeButton.addActionListener(this);
 
 		backButton.setToolTipText(Msg.getString("GuideWindow.tooltip.back")); //$NON-NLS-1$

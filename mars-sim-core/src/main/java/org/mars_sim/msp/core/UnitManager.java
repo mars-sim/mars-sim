@@ -501,10 +501,6 @@ public class UnitManager implements Serializable {
 	}
 	
 	public Person getPersonByID(Integer id) {
-//		System.out.print("id is " + id);
-//		System.out.print("    lookupPerson is " + lookupPerson);
-//		System.out.println("    lookupPerson.get(id) is " + lookupPerson.get(id));
-//		logger.config("lookupPerson's size is " + lookupPerson.size());
 		return lookupPerson.get(id);
 	}
 
@@ -2019,11 +2015,7 @@ public class UnitManager implements Serializable {
 	 * @param time the amount time passing (in millisols)
 	 * @throws Exception if error during time passing.
 	 */
-	void timePassing(double time) {
-		// Note : resetting marsClock is needed after loading from a saved sim 
-		// Cannot add "if (marsClock == null)"		
-//		marsClock = Simulation.instance().getMasterClock().getMarsClock();
-		
+	void timePassing(double time) {	
 		int solElapsed = marsClock.getMissionSol();
 		
 		if (solCache != solElapsed) {
@@ -2045,7 +2037,7 @@ public class UnitManager implements Serializable {
 			// Only need to run all these below once at the start of the sim
 			factory.computeReliability();
 
-			Collection<Settlement> c = lookupSettlement.values();//CollectionUtils.getSettlement(units);
+			Collection<Settlement> c = lookupSettlement.values();
 			for (Settlement s : c) {
 				s.updateAllAssociatedPeople();
 				s.updateAllAssociatedRobots();
@@ -2055,45 +2047,15 @@ public class UnitManager implements Serializable {
 			justLoaded = false;
 		}
 
-//		for (Unit u : units)
-//			u.timePassing(time);
+		lookupSettlement.values().stream().forEach(x -> x.timePassing(time));
 		
-//		for (Unit u : lookupUnit.values()) {
-//			if (!(u instanceof Building)) {
-//				System.out.println("UnitManager : " + u);
-//				u.timePassing(time);
-//			}
-//		}
-		
-//		for (Settlement s : lookupSettlement.values()) 
-//			s.timePassing(time);
+		lookupPerson.values().stream().forEach(x -> x.timePassing(time));
 
-		new ArrayList<Settlement>(lookupSettlement.values()).stream().forEach(x -> x.timePassing(time));
-		
-		// Note : BuildingManager::timingPassing() is called within Settlement::timePassing()
-		// Note : Building::timingPassing() is called within BuildingManager::timingPassing()
-//		for (Building b : lookupBuilding.values()) 
-//			b.timePassing(time);
+		lookupRobot.values().stream().forEach(x -> x.timePassing(time));
 
-//		for (Person p : lookupPerson.values()) 
-//			p.timePassing(time);
-		
-		new ArrayList<Person>(lookupPerson.values()).stream().forEach(x -> x.timePassing(time));
-		
-//		for (Robot r : lookupRobot.values()) 
-//			r.timePassing(time);
-
-		new ArrayList<Robot>(lookupRobot.values()).stream().forEach(x -> x.timePassing(time));
-		
-//		for (Equipment e : lookupEquipment.values()) 
-//			e.timePassing(time);
-
-		new ArrayList<Equipment>(lookupEquipment.values()).stream().forEach(x -> x.timePassing(time));
-		
-//		for (Vehicle v : lookupVehicle.values()) 
-//			v.timePassing(time);
-		
-		new ArrayList<Vehicle>(lookupVehicle.values()).stream().forEach(x -> x.timePassing(time));
+		lookupEquipment.values().stream().forEach(x -> x.timePassing(time));
+			
+		lookupVehicle.values().stream().forEach(x -> x.timePassing(time));
 	}
 
 	/**

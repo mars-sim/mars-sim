@@ -139,7 +139,6 @@ public class Interpolation {
         TrivariateGridInterpolator interpolator = new TricubicSplineInterpolator();
 //        TricubicSplineInterpolator
         
-        @SuppressWarnings("unused")
         TrivariateFunction p = interpolator.interpolate(xval, yval, zval, fval);
 
 //        double[] wxval = new double[] {3, 2, 5, 6.5};

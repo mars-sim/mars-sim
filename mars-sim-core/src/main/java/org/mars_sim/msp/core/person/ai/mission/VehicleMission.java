@@ -1185,11 +1185,11 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	}
 
 	/**
-	 * Gets the total distance travelled during the mission so far.
+	 * Gets the actual total distance travelled during the mission so far.
 	 * 
-	 * @return distance travelled (km)
+	 * @return distance (km)
 	 */
-	public final double getTotalDistanceTravelled() {
+	public final double getActualTotalDistanceTravelled() {
 		if (vehicle != null) {
 			double dist = vehicle.getTotalDistanceTraveled() - startingTravelledDistance;
 			if (dist > distanceTravelled)
