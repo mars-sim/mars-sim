@@ -31,6 +31,7 @@ import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+import org.mars_sim.msp.ui.swing.tool.Conversion;
 
 public class MissionTableModel extends AbstractTableModel
 		implements MonitorModel, MissionManagerListener, MissionListener {
@@ -365,7 +366,7 @@ public class MissionTableModel extends AbstractTableModel
 								+ mission.getPhaseDescription();
 					}
 					else
-						result = mission.getPhaseDescription();
+						result = Conversion.capitalize(mission.getPhaseDescription());
 
 				}
 					break;

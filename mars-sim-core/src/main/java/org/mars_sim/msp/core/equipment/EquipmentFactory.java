@@ -182,7 +182,7 @@ public final class EquipmentFactory {
 		else if (Barrel.TYPE.equalsIgnoreCase(type))
 			return Barrel.EMPTY_MASS;
 		else if (EVASuit.TYPE.equalsIgnoreCase(type))
-			return EVASuit.EMPTY_MASS;
+			return EVASuit.emptyMass;
 		else if (GasCanister.TYPE.equalsIgnoreCase(type))
 			return GasCanister.EMPTY_MASS;
 		else if (LargeBag.TYPE.equalsIgnoreCase(type))

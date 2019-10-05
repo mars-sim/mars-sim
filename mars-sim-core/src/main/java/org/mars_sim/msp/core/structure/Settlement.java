@@ -10,7 +10,6 @@ package org.mars_sim.msp.core.structure;
 import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -560,8 +559,8 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 		// Set inventory total mass capacity.
 		getInventory().addGeneralCapacity(Double.MAX_VALUE); // 10_000_000);//100_000_000);//
 
-		updateAllAssociatedPeople();
-		updateAllAssociatedRobots();
+//		updateAllAssociatedPeople();
+//		updateAllAssociatedRobots();
 
 		double max = 500;
 		// Initialize inventory of this building for resource storage

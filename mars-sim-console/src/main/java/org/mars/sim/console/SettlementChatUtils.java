@@ -677,7 +677,7 @@ public class SettlementChatUtils extends ChatUtils {
 			responseText.append(addWhiteSpacesLeftName(" " + obj, 25));
 			responseText.append(addWhiteSpacesRightName("" + level, 7));	
 					
-			String[] s = new String[] { "Repair", "Maintenance", "EVA Suit Production" };
+			String[] s = new String[] { " Repair", " Maintenance", " EVA Suit Production" };
 
 			GoodsManager goodsManager = settlementCache.getGoodsManager();
 
@@ -687,7 +687,7 @@ public class SettlementChatUtils extends ChatUtils {
 			responseText.append(System.lineSeparator());
 			responseText.append(System.lineSeparator());
 			responseText.append(System.lineSeparator());
-			responseText.append(addWhiteSpacesLeftName(" Category of Operations        Level ", 33));
+			responseText.append(addWhiteSpacesLeftName(" Category of Operations     Level ", 33));
 			responseText.append(System.lineSeparator());
 			responseText.append(" ----------------------------------- ");
 			responseText.append(System.lineSeparator());

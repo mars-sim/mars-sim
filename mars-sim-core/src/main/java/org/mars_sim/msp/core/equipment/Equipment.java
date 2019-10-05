@@ -47,7 +47,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	/** Unique identifier for this equipment. */
 	private int identifier;
 	/** The identifier for the last owner of this equipment. */
-	private int lastOwner;
+	private Integer lastOwner;
 	/** The equipment type. */
 	private String type;
 	/** The SalvageInfo instatnce. */	
@@ -90,7 +90,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 		isSalvaged = false;
 		salvageInfo = null;
 		
-		lastOwner = -1;
+		lastOwner = Integer.valueOf(-1);
 		
 		this.identifier = getNextIdentifier();
 		// Add this equipment to the equipment lookup map	
@@ -118,7 +118,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 		Collection<Person> people = new ConcurrentLinkedQueue<Person>();
 
 		Person owner = null;
-		if (lastOwner != -1) {// && lastOwner instanceof Person) {
+		if (lastOwner != Integer.valueOf(-1)) {// && lastOwner instanceof Person) {
 			owner = unitManager.getPersonByID(lastOwner);
 			people.add(owner);
 		}
@@ -283,11 +283,11 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	 */
 	public void setLastOwner(Unit unit) {
 		if (unit != null) {
-			 if (unit.getIdentifier() != lastOwner)
-				 lastOwner = unit.getIdentifier();
+			 if ((Integer) unit.getIdentifier() != lastOwner)
+				 lastOwner = (Integer) unit.getIdentifier();
 		}	
 		else
-			lastOwner = Unit.UNKNOWN_ID;
+			lastOwner = (Integer) Unit.UNKNOWN_ID;
 	}
 
 	/**

@@ -76,7 +76,7 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="electrical wire" mass=".2">
+	<part name="electrical wire" mass=".02">
 		<maintenance-entity-list>
 			<entity name="building" probability="5" max-number="6" />		
 			<entity name="vehicle" probability="5" max-number="6" />
@@ -92,7 +92,7 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="wire connector" mass=".1">
+	<part name="wire connector" mass=".005">
 		<maintenance-entity-list>
 			<entity name="vehicle" probability="5" max-number="6" />
 			<entity name="power generation" probability="5" max-number="4" />
@@ -243,7 +243,7 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="helmet visor" mass="2.0" >
+	<part name="helmet visor" mass="0.5" >
 		<maintenance-entity-list>
 			<entity name="eva suit" probability="5" max-number="1" />
 		</maintenance-entity-list>
@@ -263,33 +263,33 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="suit heating unit" mass="2.0">
+	<part name="suit heating unit" mass="0.5">
 		<maintenance-entity-list>
 			<entity name="eva suit" probability="1" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 
-	<part name="eva gloves" mass="1.0" >
+	<part name="eva gloves" mass="0.25" >
 		<maintenance-entity-list>
 			<entity name="eva suit" probability="5" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 
-	<part name="eva boots" mass="4.0" >
+	<part name="eva boots" mass="2.0" >
 		<description>steel soled and tipped.  Fiberglass insulated.</description>
 		<maintenance-entity-list>
 			<entity name="eva suit" probability="2" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 
-	<part name="eva pads" mass="2.0" >
+	<part name="eva pads" mass="1.0" >
 		<description>steel plate with fiberglass insulation.</description>
 		<maintenance-entity-list>
 			<entity name="eva suit" probability="2" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 
-	<part name="eva backpack" mass="15.0" >
+	<part name="eva backpack" mass="5.0" >
 		<description>The backpack is the most crucial part of the Portable Life-Support System (PLSS).
 		It is made with polyethylene and a steel frame.</description>
 		<maintenance-entity-list>
@@ -297,19 +297,19 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="eva antenna" mass=".5" >
+	<part name="eva antenna" mass=".05" >
 		<maintenance-entity-list>
 			<entity name="eva suit" probability="2" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 
-	<part name="eva battery" mass="10.0" >
+	<part name="eva battery" mass="5.0" >
 		<maintenance-entity-list>
 			<entity name="eva suit" probability="2" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 
-	<part name="eva radio" mass="2.0" >
+	<part name="eva radio" mass="1.0" >
 		<maintenance-entity-list>
 			<entity name="eva suit" probability="2" max-number="1" />
 		</maintenance-entity-list>

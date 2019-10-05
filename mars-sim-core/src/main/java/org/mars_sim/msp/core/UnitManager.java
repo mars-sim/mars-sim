@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -87,32 +88,6 @@ public class UnitManager implements Serializable {
 	private static boolean useCrew = true;
 	/** The total numbers of Unit instances. */
 	private static int totalNumUnits = 0;
-
-	// Data members
-	/** Is it running in Commander's Mode */
-	public boolean isCommanderMode;	
-	/** The commander's unique id . */
-    public int commanderID;
-	/** The cache of the mission sol. */    
-	private int solCache = 0;
-	/** The core engine's original build. */
-	public String originalBuild;
-	
-	/** A map of all units with its unit identifier. */
-	private volatile Map<Integer, Unit> lookupUnit = new HashMap<>();
-	/** A map of settlements with its unit identifier. */
-	private volatile Map<Integer, Settlement> lookupSettlement = new HashMap<>();
-	/** A map of persons with its unit identifier. */
-	private volatile Map<Integer, Person> lookupPerson = new HashMap<>();
-	/** A map of robots with its unit identifier. */
-	private volatile Map<Integer, Robot> lookupRobot = new HashMap<>();
-	/** A map of vehicle with its unit identifier. */
-	private volatile Map<Integer, Vehicle> lookupVehicle = new HashMap<>();
-	/** A map of equipment (excluding robots and vehicles) with its unit identifier. */
-	private volatile Map<Integer, Equipment> lookupEquipment = new HashMap<>();
-	/** A map of building with its unit identifier. */
-	private volatile Map<Integer, Building> lookupBuilding = new HashMap<>();
-	
 	
 	// Transient members
 	/** Flag true if the class has just been loaded */
@@ -155,6 +130,32 @@ public class UnitManager implements Serializable {
 	private static List<String> ESACountries;
 	private static List<String> allCountries;
 	private static List<String> allSponsors;
+	
+	// Data members
+	/** Is it running in Commander's Mode */
+	public boolean isCommanderMode;	
+	/** The commander's unique id . */
+    public Integer commanderID;
+	/** The cache of the mission sol. */    
+	private int solCache = 0;
+	/** The core engine's original build. */
+	public String originalBuild;
+	
+	/** A map of all units with its unit identifier. */
+	private volatile Map<Integer, Unit> lookupUnit;// = new HashMap<>();
+	/** A map of settlements with its unit identifier. */
+	private volatile Map<Integer, Settlement> lookupSettlement;// = new HashMap<>();
+	/** A map of persons with its unit identifier. */
+	private volatile Map<Integer, Person> lookupPerson;// = new HashMap<>();
+	/** A map of robots with its unit identifier. */
+	private volatile Map<Integer, Robot> lookupRobot;// = new HashMap<>();
+	/** A map of vehicle with its unit identifier. */
+	private volatile Map<Integer, Vehicle> lookupVehicle;// = new HashMap<>();
+	/** A map of equipment (excluding robots and vehicles) with its unit identifier. */
+	private volatile Map<Integer, Equipment> lookupEquipment;// = new HashMap<>();
+	/** A map of building with its unit identifier. */
+	private volatile Map<Integer, Building> lookupBuilding;// = new HashMap<>();
+	
 	
 	private static SimulationConfig simulationConfig = SimulationConfig.instance();
 	private static Simulation sim = Simulation.instance();
@@ -389,7 +390,7 @@ public class UnitManager implements Serializable {
 	 * @return
 	 */
 	public Unit getUnitByID(Integer id) {
-		if (id == Unit.MARS_SURFACE_ID)
+		if (id == (Integer) Unit.MARS_SURFACE_ID)
 			return marsSurface;
 			
 		Unit u = lookupSettlement.get(id);
@@ -439,7 +440,9 @@ public class UnitManager implements Serializable {
 	}
 	
 	public void addUnitID(Unit unit) {
-		System.out.println("addUnitID() :" + unit.getName());
+		if (lookupUnit == null)
+			lookupUnit = new HashMap<>();
+		System.out.println("UnitManager::addUnitID() :" + unit.getName());
 		if (unit != null && !lookupUnit.containsKey(unit.getIdentifier()))
 			lookupUnit.put(unit.getIdentifier(), unit);
 	}
@@ -466,11 +469,6 @@ public class UnitManager implements Serializable {
 	public void removeSettlementID(Settlement s) {
 		if (!lookupSettlement.containsKey(s.getIdentifier()))
 			lookupSettlement.remove((Integer)s.getIdentifier());
-	}
-
-	public Person getPersonByID(Integer id) {
-//		System.out.println("id is " + id + "    lookupPerson is " + lookupPerson + "    lookupPerson.get(id) is " + lookupPerson.get(id));
-		return lookupPerson.get(id);
 	}
 
 	public Settlement getCommanderSettlement() {
@@ -502,6 +500,14 @@ public class UnitManager implements Serializable {
 		return settlements;
 	}
 	
+	public Person getPersonByID(Integer id) {
+//		System.out.print("id is " + id);
+//		System.out.print("    lookupPerson is " + lookupPerson);
+//		System.out.println("    lookupPerson.get(id) is " + lookupPerson.get(id));
+//		logger.config("lookupPerson's size is " + lookupPerson.size());
+		return lookupPerson.get(id);
+	}
+
 	public void addPersonID(Person p) {
 		if (lookupPerson == null)
 			lookupPerson = new HashMap<>();
@@ -1439,12 +1445,12 @@ public class UnitManager implements Serializable {
 		cc.setCountry(newCountry);
 		cc.setSponsor(newSponsor);		
 		
-		commanderID = cc.getIdentifier();
+		commanderID = (Integer) cc.getIdentifier();
 		isCommanderMode = true;
 		GameManager.setCommander(cc);
 	}
 	
-	public int getCommanderID() {
+	public Integer getCommanderID() {
 		return commanderID;
 	}
 	
@@ -2049,38 +2055,45 @@ public class UnitManager implements Serializable {
 			justLoaded = false;
 		}
 
-//		if (units == null)
-//			computeUnits();
-
-//		for (Unit u : units) {
+//		for (Unit u : units)
 //			u.timePassing(time);
+		
+//		for (Unit u : lookupUnit.values()) {
+//			if (!(u instanceof Building)) {
+//				System.out.println("UnitManager : " + u);
+//				u.timePassing(time);
+//			}
 //		}
 		
-		for (Settlement s : lookupSettlement.values()) 
-			s.timePassing(time);
+//		for (Settlement s : lookupSettlement.values()) 
+//			s.timePassing(time);
 
-		for (Person p : lookupPerson.values()) 
-			p.timePassing(time);
+		new ArrayList<Settlement>(lookupSettlement.values()).stream().forEach(x -> x.timePassing(time));
 		
-		for (Robot r : lookupRobot.values()) 
-			r.timePassing(time);
-
-		for (Equipment e : lookupEquipment.values()) 
-			e.timePassing(time);
-
-		for (Vehicle v : lookupVehicle.values()) 
-			v.timePassing(time);
-
+		// Note : BuildingManager::timingPassing() is called within Settlement::timePassing()
+		// Note : Building::timingPassing() is called within BuildingManager::timingPassing()
 //		for (Building b : lookupBuilding.values()) 
 //			b.timePassing(time);
+
+//		for (Person p : lookupPerson.values()) 
+//			p.timePassing(time);
 		
-		for (Unit u : lookupUnit.values()) {
-			if (!(u instanceof Building)) {
-				System.out.println("UnitManager : " + u);
-				u.timePassing(time);
-			}
-		}
+		new ArrayList<Person>(lookupPerson.values()).stream().forEach(x -> x.timePassing(time));
 		
+//		for (Robot r : lookupRobot.values()) 
+//			r.timePassing(time);
+
+		new ArrayList<Robot>(lookupRobot.values()).stream().forEach(x -> x.timePassing(time));
+		
+//		for (Equipment e : lookupEquipment.values()) 
+//			e.timePassing(time);
+
+		new ArrayList<Equipment>(lookupEquipment.values()).stream().forEach(x -> x.timePassing(time));
+		
+//		for (Vehicle v : lookupVehicle.values()) 
+//			v.timePassing(time);
+		
+		new ArrayList<Vehicle>(lookupVehicle.values()).stream().forEach(x -> x.timePassing(time));
 	}
 
 	/**

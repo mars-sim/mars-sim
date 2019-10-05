@@ -89,7 +89,7 @@ public class MBTIPersonality implements Serializable {
 	/** The person's MBTI */
 	private String personalityType;
 	/** The person's ID. */
-	private int personID;
+	private Integer personID;
 	/** The unit manager instance. */
 	private static UnitManager unitManager = Simulation.instance().getUnitManager();
 	/** The person config instance. */

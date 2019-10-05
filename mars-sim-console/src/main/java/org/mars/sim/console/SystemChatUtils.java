@@ -26,6 +26,7 @@ import org.mars_sim.msp.core.person.health.ComplaintType;
 import org.mars_sim.msp.core.person.health.HealthProblem;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.tool.CheckSerializedSize;
 import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -1091,47 +1092,74 @@ public class SystemChatUtils extends ChatUtils {
 			List<Settlement> settlementList = new ArrayList<Settlement>(unitManager.getSettlements());
 
 			int num = settlementList.size();
-			String s = "";
+			
+			String[] header = new String[] { " Name", " Coordinates", " Elevation" };
 
-			if (num > 2) {
-				for (int i = 0; i < num; i++) {
-					if (i == num - 2)
-						s = s + settlementList.get(i) + ", and ";
-					else if (i == num - 1)
-						s = s + settlementList.get(i) + ".";
-					else
-						s = s + settlementList.get(i) + ", ";
-				}
-				responseText.append(SYSTEM_PROMPT);
-				responseText.append("There is a total of ");
-				responseText.append(num);
-				responseText.append(" settlements : ");
-				responseText.append(s);
+			GoodsManager goodsManager = settlementCache.getGoodsManager();
 
+			int[] mods = new int[] { goodsManager.getRepairLevel(), goodsManager.getMaintenanceLevel(),
+					goodsManager.getEVASuitLevel() };
+			
+			responseText.append(System.lineSeparator());
+			responseText.append(System.lineSeparator());
+			responseText.append(System.lineSeparator());
+			responseText.append(addWhiteSpacesLeftName(header[0], 20));
+			responseText.append(addWhiteSpacesLeftName(header[1], 13));
+			responseText.append(addWhiteSpacesLeftName(header[2], 10));
+			responseText.append(System.lineSeparator());
+			responseText.append(" ------------------------------------------- ");
+			responseText.append(System.lineSeparator());
+
+			for (Settlement s: settlementList) {
+				responseText.append(addWhiteSpacesLeftName(s.getName(), 20));
+				responseText.append(addWhiteSpacesLeftName(s.getCoordinates().getFormattedString(), 13));
+				double elevation = Math.round(terrainElevation.getPatchedElevation(s.getCoordinates())*1000.0)/1000.0;
+				responseText.append(addWhiteSpacesLeftName(elevation +"", 10));
+				responseText.append(System.lineSeparator());
 			}
-
-			else if (num == 2) {
-				s = settlementList.get(0) + " and " + settlementList.get(1);
-				responseText.append(SYSTEM_PROMPT);
-				responseText.append("There is a total of ");
-				responseText.append(num);
-				responseText.append(" settlements : ");
-				responseText.append(s);
-
-			}
-
-			else if (num == 1) {
-				responseText.append(SYSTEM_PROMPT);
-				responseText.append("There is just one settlement : ");
-				responseText.append(settlementList.get(0));
-
-			}
-
-			else {
-				responseText.append(SYSTEM_PROMPT);
-				responseText.append("Currently, there is no settlement established on Mars.");
-
-			}
+			
+//			
+//			String s = "";
+//
+//			if (num > 2) {
+//				for (int i = 0; i < num; i++) {
+//					if (i == num - 2)
+//						s = s + settlementList.get(i) + ", and ";
+//					else if (i == num - 1)
+//						s = s + settlementList.get(i) + ".";
+//					else
+//						s = s + settlementList.get(i) + ", ";
+//				}
+//				responseText.append(SYSTEM_PROMPT);
+//				responseText.append("There is a total of ");
+//				responseText.append(num);
+//				responseText.append(" settlements : ");
+//				responseText.append(s);
+//
+//			}
+//
+//			else if (num == 2) {
+//				s = settlementList.get(0) + " and " + settlementList.get(1);
+//				responseText.append(SYSTEM_PROMPT);
+//				responseText.append("There is a total of ");
+//				responseText.append(num);
+//				responseText.append(" settlements : ");
+//				responseText.append(s);
+//
+//			}
+//
+//			else if (num == 1) {
+//				responseText.append(SYSTEM_PROMPT);
+//				responseText.append("There is just one settlement : ");
+//				responseText.append(settlementList.get(0));
+//
+//			}
+//
+//			else {
+//				responseText.append(SYSTEM_PROMPT);
+//				responseText.append("Currently, there is no settlement established on Mars.");
+//
+//			}
 
 		}
 

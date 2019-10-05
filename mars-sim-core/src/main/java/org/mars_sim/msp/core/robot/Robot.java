@@ -94,7 +94,7 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 	/** The age of this robot. */
 	private int age;
 	/** The settlement the robot is currently associated with. */
-	private int associatedSettlementID = -1;
+	private Integer associatedSettlementID = -1;
 	/** The height of the robot (in cm). */
 	private int height;
 	
@@ -162,7 +162,7 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 //		enter(LocationCodeType.BUILDING);
 		// Initialize data members.
 		this.name = name;
-		this.associatedSettlementID = settlement.getIdentifier();
+		this.associatedSettlementID = (Integer) settlement.getIdentifier();
 //		System.out.println("(1) " + associatedSettlementID + " : " + settlement + " : " + name);
 		this.robotType = robotType;
 		xLoc = 0D;

@@ -23,8 +23,6 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.science.ScienceType;
@@ -46,7 +44,7 @@ extends WizardPanel {
     private JTable researcherTable;
     private JLabel errorMessageLabel;
     
-	private static UnitManager unitManager = Simulation.instance().getUnitManager();
+//	private static UnitManager unitManager = Simulation.instance().getUnitManager();
 	
     /**
      * Constructor

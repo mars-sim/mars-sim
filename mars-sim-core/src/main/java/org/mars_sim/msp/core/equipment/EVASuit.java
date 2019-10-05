@@ -19,6 +19,7 @@ import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
+import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.CompositionOfAir;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -76,8 +77,6 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 	
 	/** Total gas tank volume of EVA suit (Liter). */
 	public static final double TOTAL_VOLUME = 3.9D;
-	/** Unloaded mass of EVA suit (kg.). */
-	public static final double EMPTY_MASS = 30D;
 	/** Oxygen capacity (kg.). */
 	private static final double OXYGEN_CAPACITY = 1D;
 	/** CO2 capacity (kg.). */
@@ -92,6 +91,7 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 	private static final double WEAR_LIFETIME = 334000D;
 	/** The maintenance time of 20 millisols. */
 	private static final double MAINTENANCE_TIME = 20D;
+	
 	/** The minimum required O2 partial pressure. At 11.94 kPa (1.732 psi)  */
 	private static double min_o2_pressure;
 	/** The full O2 partial pressure if at full tank. */
@@ -100,7 +100,9 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 	private static double massO2NominalLimit;
 	/** The minimum mass of O2 required to maintain right above the safety limit of 11.94 kPa (1.732 psi)  */
 	private static double massO2MinimumLimit;
-	 
+	/** Unloaded mass of EVA suit (kg.). The combined total of the mass of all parts. */
+	public static double emptyMass;
+	
 	// Data members
 	/** The equipment's malfunction manager. */
 	private MalfunctionManager malfunctionManager;
@@ -120,6 +122,12 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 					"eva battery",
 					"eva radio",
 			};
+		 
+		 for (String p: parts) {
+			 emptyMass += ItemResourceUtil.findItemResource(p).getMassPerItem();
+		 }
+		 
+		 logger.config("Each EVA suit has an unloaded weight of " + emptyMass + " kg");
 		 
 		 min_o2_pressure = personConfig.getMinSuitO2Pressure();
 		 
@@ -152,7 +160,7 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 		malfunctionManager.addScopeString(FunctionType.LIFE_SUPPORT.getName());
 
 		// Set the empty mass of the EVA suit in kg.
-		setBaseMass(EMPTY_MASS);
+		setBaseMass(emptyMass);
 
 		// Set the resource capacities of the EVA suit.
 		getInventory().addARTypeCapacity(ResourceUtil.oxygenID, OXYGEN_CAPACITY);

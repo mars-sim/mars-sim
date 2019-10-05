@@ -144,7 +144,12 @@ public class ExploreSite extends EVAOperation implements Serializable {
 				return false;
 
 			if (EVAOperation.isGettingDark(person)) {
-				logger.fine(person.getName() + " end exploring site: night time");
+				logger.fine(person.getName() + " ended exploring site due to night time");
+				return false;
+			}
+
+			if (EVAOperation.isHungryAtMealTime(person)) {
+				logger.fine(person.getName() + " ended exploring site due to meal time");
 				return false;
 			}
 

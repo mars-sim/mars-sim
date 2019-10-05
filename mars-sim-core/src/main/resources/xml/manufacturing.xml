@@ -1721,7 +1721,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			power-required=".5">
 		<description>Polyethylene box with steel frame and fiberglass cloth straps.</description>
 		<inputs>
-			<resource name="polyethylene" amount="10.0" />
+			<resource name="polyethylene" amount="5.0" />
 			<resource name="cane fiber" amount="0.5" />
 			<part name="steel ingot" number="1" />
 			<part name="fiberglass cloth" number="1" />

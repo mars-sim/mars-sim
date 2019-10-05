@@ -47,13 +47,15 @@ public class InteractiveTerm {
 
     private static boolean consoleEdition = false;
     
-    private static boolean keepRunning;
+    private volatile static boolean keepRunning;
     
     private static boolean useCrew = true;
 	
 	private static MarsTerminal terminal;
 	
 	private static ChatMenu chatMenu;
+	
+	private static ChatUtils chatUtils;
 
 	private static CommanderProfile profile;
 	
@@ -64,6 +66,7 @@ public class InteractiveTerm {
 	private static SwingHandler handler;
 	
 	private static GameManager gm;
+	
 
 	public InteractiveTerm(boolean consoleEdition) {
 		this.consoleEdition = consoleEdition;
@@ -434,7 +437,7 @@ public class InteractiveTerm {
 //		logger.config("Calling loadTerminalMenu()");
 
 		// Call ChatUils' default constructor to initialize instances
-		new ChatUtils();
+		chatUtils = new ChatUtils();
 		chatMenu = new ChatMenu();
 		
 		// Prevent allow users from arbitrarily close the terminal by clicking top right close button
@@ -445,6 +448,13 @@ public class InteractiveTerm {
             
 	    // Set the bookmark here
 //        terminal.setBookmark("MENU");
+		
+		setUpRunningLoop();
+	}
+	
+	
+	public static void setUpRunningLoop() {
+		
 		keepRunning = true;
 		
 		while (keepRunning) {
@@ -464,8 +474,10 @@ public class InteractiveTerm {
 		    }
 		}
 //        terminal.resetToBookmark("MENU");
+		
+		return;
 	}
-    
+	
 	/**
 	 * Clears the screen
 	 * 

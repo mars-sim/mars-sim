@@ -28,7 +28,7 @@ public class PersonalityTraitManager implements Serializable {
 	/** The person's personality vector. */
 	private double[] pVector = null;
 	/** The person's ID. */
-	private int personID;
+	private Integer personID;
 	/** List of the person's big five personalities keyed by unique name. */
 	private Hashtable<PersonalityTraitType, Integer> personalityTraits;
 	/** The unit manager instance. */

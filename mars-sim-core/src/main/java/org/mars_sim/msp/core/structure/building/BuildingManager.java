@@ -110,7 +110,7 @@ public class BuildingManager implements Serializable {
 //	private int numBuildings;
 	private int solCache = 0;
 	private int farmTimeCache = -5;
-	private int settlementID;
+	private Integer settlementID;
 	private int nextInhabitableID = 0;
 	
 	private double probabilityOfImpactPerSQMPerSol;
@@ -154,7 +154,7 @@ public class BuildingManager implements Serializable {
 	 */
 	public BuildingManager(Settlement settlement, List<BuildingTemplate> buildingTemplates) {
 //		this.settlement = settlement;
-		settlementID = settlement.getIdentifier();
+		settlementID = (Integer) settlement.getIdentifier();
 		
 		masterClock = sim.getMasterClock();
 		marsClock = masterClock.getMarsClock();
@@ -197,7 +197,7 @@ public class BuildingManager implements Serializable {
 	 */
 	public BuildingManager(Settlement settlement, boolean isTest) {
 //		this.settlement = settlement;	
-		settlementID = settlement.getIdentifier();
+		settlementID = (Integer) settlement.getIdentifier();
 		logger.config("BuildingManager's settlementID : " + settlementID);
 //		if (isTest)
 //			logger.info("Loading BuildingManager's constructor 2 for " + settlement.getName() + " on "

@@ -239,17 +239,24 @@ public class ChatMenu implements BiConsumer<TextIO, RunnerData> {
 	}
 
 	public void restartMenu() {
-		quit = true;
-		leaveSystem = true;
-		handler.save();
-		
-//		ChatUtils.setConnectionMode(-1);
-		
-//		prompt = "/q";
 		ChatUtils.personCache = null;
 		ChatUtils.robotCache = null;
 		ChatUtils.settlementCache = null;
 		ChatUtils.vehicleCache = null;
+		
+		InteractiveTerm.setKeepRunning(false);
+//		InteractiveTerm.disposeTerminal();
+		InteractiveTerm.delay(500L);
+		InteractiveTerm.setUpRunningLoop();
+		
+//		quit = true;
+//		leaveSystem = true;
+//		handler.save();
+		
+//		ChatUtils.setConnectionMode(-1);
+		
+//		prompt = "/q";
+	
 		
 //		return;
 //		prompt = "Enter your choice:";
@@ -257,10 +264,11 @@ public class ChatMenu implements BiConsumer<TextIO, RunnerData> {
 //		handler.executeOneTask();
 		
 		// Restart the prompt
-		setupPrompt();
+//		setupPrompt();
+//		quit = false;
+//		leaveSystem = false;
+		
 
-		quit = false;
-		leaveSystem = false;
 	}
 	
     @Override

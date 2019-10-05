@@ -129,7 +129,7 @@ public class GoodsManager implements Serializable {
 	// Value multiplier factors for certain goods.
 	private static double eVASuitMod = EVA_SUIT_FACTOR;
 
-	private static final double EVA_SUIT_VALUE = 20D;
+	private static final double EVA_SUIT_VALUE = 5D;
 	private static final double MINERAL_VALUE = 10D;
 	private static final double ROBOT_FACTOR = 500D;
 	private static final double TRANSPORT_VEHICLE_FACTOR = 1_000D;

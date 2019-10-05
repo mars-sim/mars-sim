@@ -259,7 +259,7 @@ public class VehicleTableModel extends UnitTableModel {
 								if (destination.isSettlementAtNavpoint()) 
 									result = destination.getSettlement().getName();
 								else
-									result = Conversion.capitalize(destination.getDescription()) + " " + destination.getLocation().getFormattedString();
+									result = Conversion.capitalize(destination.getDescription()) + " - " + destination.getLocation().getFormattedString();
 							}
 							else if (status.equals(TravelMission.AT_NAVPOINT)) {
 								NavPoint destination = vehicleMission.getCurrentNavpoint();

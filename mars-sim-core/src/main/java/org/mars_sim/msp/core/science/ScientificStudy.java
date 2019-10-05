@@ -72,13 +72,13 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 	/** Is this study completed? */
 	private boolean completed;
 	/** Maximum number of collaborative researchers. */
-	private int maxCollaborators;
+	private Integer maxCollaborators;
 	/** The difficulty level of this scientific study. */
-	private int difficultyLevel;
+	private Integer difficultyLevel;
 	/** The primary settlement's unique identifier. */
-	private int primarySettlement;
+	private Integer primarySettlement;
 	/** The primary researcher's unique identifier. */
-	private int primaryResearcher;
+	private Integer primaryResearcher;
 
 	/** The amount of proposal time done so far. */
 	private double proposalWorkTime;

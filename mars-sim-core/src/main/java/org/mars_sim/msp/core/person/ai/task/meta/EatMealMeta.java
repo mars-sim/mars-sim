@@ -68,12 +68,12 @@ public class EatMealMeta implements MetaTask, Serializable {
 		if (!notHungry) {// || ghrelin-leptin > 300) {
 			result += thirst;
 			result += hunger / 8D;
-			result += (2525 - energy) / 50D; // + (ghrelin-leptin - 300);
+			result += (2525 - energy) / 50D;  // negative contribution // + (ghrelin-leptin - 300);
 			if (result <= 0)
 				result = 0;
 		}
 
-		else if (notThirsty)
+		else if (notHungry && notThirsty)
 			// if not thirsty and not hungry
 			result = 0;
 
@@ -125,7 +125,7 @@ public class EatMealMeta implements MetaTask, Serializable {
 		
 		else if (person.isOutside()) {
 
-			if (notThirsty) {
+			if (notHungry && notThirsty) {
 				// person cannot consume food while being outside doing EVA
 				return 0;
 			}

@@ -169,7 +169,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	protected int inhabitableID = -1;
 	protected int baseLevel;
 	private int solCache = 0;
-	private int settlementID;
+	private Integer settlementID;
 
 	protected double width;
 	protected double length;
@@ -260,7 +260,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		location = manager.getSettlement().getCoordinates();
 		buildingType = template.getBuildingType();
 		inv = manager.getSettlement().getInventory();
-		settlementID = manager.getSettlement().getIdentifier();
+		settlementID = (Integer) manager.getSettlement().getIdentifier();
 
 		// Set the instance of life support
 		// NOTE: needed for setting inhabitable id
@@ -308,7 +308,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		this.nickName = nickName;
 		this.manager = manager;
 		inv = manager.getSettlement().getInventory();
-		settlementID = manager.getSettlement().getIdentifier();
+		settlementID = (Integer) manager.getSettlement().getIdentifier();
 		
 		this.xLoc = xLoc;
 		this.yLoc = yLoc;
@@ -431,7 +431,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		
 		if (manager != null) {
 			this.manager = manager;
-			settlementID = manager.getSettlement().getIdentifier();
+			settlementID = (Integer) manager.getSettlement().getIdentifier();
 		}
 		// Place it in a settlement
 //		enter(LocationCodeType.SETTLEMENT);

@@ -20,7 +20,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.LifeSupportInterface;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Unit;
@@ -130,11 +129,11 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	/** The cache for sol. */
 	private int solCache = 1;
 	/** The settlement the person is currently associated with. */
-	private int associatedSettlement = -1;
+	private Integer associatedSettlement = Integer.valueOf(-1);
 	/** The buried settlement if the person has been deceased. */
-	private int buriedSettlement = -1;
+	private Integer buriedSettlement = Integer.valueOf(-1);
 	/** The vehicle the person is on. */
-	private int vehicle = -1;
+	private Integer vehicle = Integer.valueOf(-1);
 
 	/** The cache for msol1 */
 	private double msolCache = -1D;

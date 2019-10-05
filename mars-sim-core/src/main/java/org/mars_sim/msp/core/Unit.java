@@ -69,14 +69,14 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 
 	public static final int FIRST_EQUIPMENT_ID = 4050;
 	
-	public static final int UNKNOWN_ID = -1;
+	public static final Integer UNKNOWN_ID = -1;
 	
 	
 	// Data members
 	// The unit's location code
 //	private int locationCode = 110_000;
 	/** The unit containing this unit. */
-	private int containerID = MARS_SURFACE_ID;
+	private Integer containerID = MARS_SURFACE_ID;
 	
 	/** The mass of the unit without inventory. */
 	private double baseMass;
@@ -194,15 +194,15 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 		}
 		else if (this instanceof Vehicle) {
 			currentStateType = LocationStateType.OUTSIDE_SETTLEMENT_VICINITY;//.INSIDE_SETTLEMENT;
-			containerID = MARS_SURFACE_ID;
+			containerID = (Integer) MARS_SURFACE_ID;
 		}
 		else if (this instanceof Settlement) {
 			currentStateType = LocationStateType.OUTSIDE_ON_MARS;
-			containerID = MARS_SURFACE_ID;
+			containerID = (Integer) MARS_SURFACE_ID;
 		}
 		else {
 			currentStateType = LocationStateType.OUTSIDE_ON_MARS;
-			containerID = MARS_SURFACE_ID;
+			containerID = (Integer) MARS_SURFACE_ID;
 //			logger.info(this + " is " + currentStateType);
 		}
 	}
@@ -361,8 +361,8 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 		return containerID;
 	}
 	
-	public void setContainerID(int ID) {
-		containerID = ID;
+	public void setContainerID(Integer id) {
+		containerID = id;
 	}
 	
 	/**
@@ -486,11 +486,11 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 			
 		// c. Set containerID
 		if (newContainer == null || newContainer.getIdentifier() == UNKNOWN_ID) {
-			containerID = UNKNOWN_ID;
+			containerID = (Integer) UNKNOWN_ID;
 		}
 		
 		else if (this instanceof MarsSurface) {
-			containerID = MARS_SURFACE_ID;
+			containerID = (Integer) MARS_SURFACE_ID;
 		}
 		
 		else //if (newContainer != null || newContainer.getIdentifier() != Unit.UNKNOWN_ID)
