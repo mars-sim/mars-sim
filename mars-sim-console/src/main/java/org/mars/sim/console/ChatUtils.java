@@ -108,6 +108,7 @@ public class ChatUtils {
     		
 	static {
 		SETTLEMENT_KEYS = new String[][] {
+			{"distance",		"What are the distances between two given settlements"},
 			{"role", 			"what kind of roles are there in this settlement"},
 			{"task", 			"what are the on-going tasks"},
 			{"weather", 		"the meteorological data from the weather station"},
@@ -206,6 +207,7 @@ public class ChatUtils {
 	};
 	
 	public final static String[][] SYSTEM_KEYS = new String[][] {
+		{"distance",		"What are the distances between two coodinates"},
 		{"settlement", 		"What are the names of the settlements"},
 		{"check size", 		"What are the unserialized size of each class"},
 		{"vehicle", 		"What are the names of the vehicles"},
@@ -287,6 +289,7 @@ public class ChatUtils {
 	public final static String DASHES = " ----------------------------------------- ";
 	public final static String DASHES_1 = "----------";
 	public final static String ONE_SPACE = " ";
+	public final static String ONE_DASH = "-";
 
 	public static String helpText;
 
@@ -757,6 +760,16 @@ public class ChatUtils {
 		sb.append(ONE_SPACE).append(name);
 		for (int i = 0; i < num; i++)
 			sb.append(ONE_SPACE);
+		return sb;
+	}
+	
+	public static StringBuffer addDashes(int num) {
+		StringBuffer sb = new StringBuffer(ONE_DASH);
+		if (num > 1) {
+			for (int i = 0; i < num - 1; i++) {
+				sb.append(ONE_DASH);
+			}
+		}
 		return sb;
 	}
 	

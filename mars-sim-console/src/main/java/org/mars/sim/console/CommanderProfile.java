@@ -25,7 +25,6 @@ import org.beryx.textio.ReadAbortedException;
 import org.beryx.textio.ReadHandlerData;
 import org.beryx.textio.ReadInterruptionStrategy;
 import org.beryx.textio.TextIO;
-import org.beryx.textio.swing.SwingTextTerminal;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
@@ -68,7 +67,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
 	
 	private static Commander commander;
     	
-	private SwingTextTerminal terminal;
+	private MarsTerminal terminal;
 	
 //	private static TextIO textIO;
 	

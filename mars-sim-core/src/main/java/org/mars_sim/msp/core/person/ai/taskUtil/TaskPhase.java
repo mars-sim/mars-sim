@@ -37,7 +37,7 @@ public final class TaskPhase implements Serializable {
 
     @Override
     public String toString() {
-        return getName();
+        return name;
     }
 
     @Override

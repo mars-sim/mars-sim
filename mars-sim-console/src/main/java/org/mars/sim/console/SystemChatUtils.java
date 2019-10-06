@@ -504,6 +504,8 @@ public class SystemChatUtils extends ChatUtils {
 			String[] txt = clarify(name, "dying");
 			questionText = txt[0];
 			responseText.append(txt[1]);
+			
+			return new String[] { questionText, responseText.toString()};
 		}
 		
 		return new String[] { questionText, responseText.toString()};
@@ -682,8 +684,123 @@ public class SystemChatUtils extends ChatUtils {
 		}
 
 
+		// Add asking about settlements in general
+		else if (text.toLowerCase().contains("distance")) {
+
+			// Note: can't use questionText since it's asking for player's input
+//			questionText = YOU_PROMPT + "What is the distance between two given coordinates ?";
+	
+//			List<Settlement> settlementList = new ArrayList<Settlement>(unitManager.getSettlements());
+//			responseText = SettlementChatUtils.findSettlementDistances(responseText, settlementList);
+				
+			boolean good0 = false;
+			boolean good1 = false;
+			String latitudeStr = "";
+			String longitudeStr = "";
+			double lat = -1;
+			double lon = -1;
+			
+			boolean good2 = false;
+			boolean good3 = false;
+			String latitudeStr1 = "";
+			String longitudeStr1 = "";
+			double lat1 = -1;
+			double lon1 = -1;
+			final String NOTE = "[Note: '/q' to quit]";
+			
+			boolean change = true;
+			
+			while (change) {
+				
+				do {
+					try {
+						String prompt0 = YOU_PROMPT + "What is the latitude (e.g. 10.03 N, 5.01 S) of the 1st coordinate ? " 
+								+ System.lineSeparator() + NOTE;
+						latitudeStr = textIO.newStringInputReader().read(prompt0);
+						if (latitudeStr.equalsIgnoreCase("quit") || latitudeStr.equalsIgnoreCase("/q"))
+							return new String[] { questionText, responseText.toString() };
+						else {
+							lat = Coordinates.parseLatitude2Phi(latitudeStr);
+							good0 = true;
+						}
+					} catch(IllegalStateException e) {
+						good0 = false;
+					}
+				} while (!good0);
+				
+				do {
+					try {
+						String prompt0 = YOU_PROMPT + "What is the longitude (e.g. 5.09 E, 18.04 W) of the 1st coordinate ?" 
+								+ System.lineSeparator() + NOTE;
+						longitudeStr = textIO.newStringInputReader().read(prompt0);
+						if (longitudeStr.equalsIgnoreCase("quit") || longitudeStr.equalsIgnoreCase("/q"))
+							return new String[] { questionText, responseText.toString() };
+						else {
+							lon = Coordinates.parseLatitude2Phi(longitudeStr);
+							good1 = true;
+						}
+					} catch(IllegalStateException e) {
+						good1 = false;
+					}
+				} while (!good1);
+				
+				do {
+					try {
+						String prompt0 = YOU_PROMPT + "What is the latitude (e.g. 10.03 N, 5.01 S) of the 2nd coordinate ?" 
+								+ System.lineSeparator() + NOTE;
+						latitudeStr1 = textIO.newStringInputReader().read(prompt0);
+						if (latitudeStr1.equalsIgnoreCase("quit") || latitudeStr1.equalsIgnoreCase("/q"))
+							return new String[] { questionText, responseText.toString() };
+						else {
+							lat1 = Coordinates.parseLatitude2Phi(latitudeStr1);
+							good2 = true;
+						}
+					} catch(IllegalStateException e) {
+						good2 = false;
+					}
+				} while (!good2);
+				
+				do {
+					try {
+						String prompt0 = YOU_PROMPT + "What is the longitude (e.g. 5.09 E, 18.04 W) of the 2nd coordinate ?" 
+								+ System.lineSeparator() + NOTE;
+						longitudeStr1 = textIO.newStringInputReader().read(prompt0);
+						if (longitudeStr1.equalsIgnoreCase("quit") || longitudeStr1.equalsIgnoreCase("/q"))
+							return new String[] { questionText, responseText.toString() };
+						else {
+							lon1 = Coordinates.parseLatitude2Phi(longitudeStr);
+							good3 = true;
+						}
+					} catch(IllegalStateException e) {
+						good3 = false;
+					}
+				} while (!good3);
+				
+				if (good0 && good1 && good2 && good3) {
+					
+					double distance = new Coordinates(lat, lon).getDistance(new Coordinates(lat1, lon1));
+					responseText.append(System.lineSeparator());
+					
+					String ans = "The distance between "
+							+ "(" + latitudeStr + ", " + longitudeStr + ") and "
+							+ "(" + latitudeStr1 + ", " + longitudeStr1 + ") is "
+							+ Math.round(distance *1_000.0)/1_000.0 + " km" + System.lineSeparator();
+					
+					String prompt = ans + SYSTEM_PROMPT + "Another pair of coordinates ? " 
+							+ System.lineSeparator() + NOTE;
+					
+					change = textIO.newBooleanInputReader().read(prompt); 
+				}
+			} // the end of the outer while loop
+			
+		}
+		
 		else if (text.equalsIgnoreCase("elevation")) {			
 //			responseText = displayReferenceElevation(responseText);		
+			
+			// Note: can't use questionText since it's asking for player's input
+//			questionText = YOU_PROMPT + "What is the elevation of a given coordinate ?";
+			
 			boolean good0 = false;
 			boolean good1 = false;
 			String latitudeStr = "";
@@ -1029,15 +1146,10 @@ public class SystemChatUtils extends ChatUtils {
 			responseText.append(printTime());
 
 			// Life Support System
-
 			// Resource Storage
-
 			// Goal
-
 			// Resource changes
-
 			// Water Ration
-
 
 		}
 
@@ -1083,84 +1195,13 @@ public class SystemChatUtils extends ChatUtils {
 
 		}
 
+		
 		// Add asking about settlements in general
 		else if (text.toLowerCase().contains("settlement")) {
 
-			// questionText = YOU_PROMPT + "What are the names of the settlements ?";
+			questionText = YOU_PROMPT + "What are the location information regarding the settlements ?";
 
-			// Creates an array with the names of all of settlements
-			List<Settlement> settlementList = new ArrayList<Settlement>(unitManager.getSettlements());
-
-			int num = settlementList.size();
-			
-			String[] header = new String[] { " Name", " Coordinates", " Elevation" };
-
-			GoodsManager goodsManager = settlementCache.getGoodsManager();
-
-			int[] mods = new int[] { goodsManager.getRepairLevel(), goodsManager.getMaintenanceLevel(),
-					goodsManager.getEVASuitLevel() };
-			
-			responseText.append(System.lineSeparator());
-			responseText.append(System.lineSeparator());
-			responseText.append(System.lineSeparator());
-			responseText.append(addWhiteSpacesLeftName(header[0], 20));
-			responseText.append(addWhiteSpacesLeftName(header[1], 13));
-			responseText.append(addWhiteSpacesLeftName(header[2], 10));
-			responseText.append(System.lineSeparator());
-			responseText.append(" ------------------------------------------- ");
-			responseText.append(System.lineSeparator());
-
-			for (Settlement s: settlementList) {
-				responseText.append(addWhiteSpacesLeftName(s.getName(), 20));
-				responseText.append(addWhiteSpacesLeftName(s.getCoordinates().getFormattedString(), 13));
-				double elevation = Math.round(terrainElevation.getPatchedElevation(s.getCoordinates())*1000.0)/1000.0;
-				responseText.append(addWhiteSpacesLeftName(elevation +"", 10));
-				responseText.append(System.lineSeparator());
-			}
-			
-//			
-//			String s = "";
-//
-//			if (num > 2) {
-//				for (int i = 0; i < num; i++) {
-//					if (i == num - 2)
-//						s = s + settlementList.get(i) + ", and ";
-//					else if (i == num - 1)
-//						s = s + settlementList.get(i) + ".";
-//					else
-//						s = s + settlementList.get(i) + ", ";
-//				}
-//				responseText.append(SYSTEM_PROMPT);
-//				responseText.append("There is a total of ");
-//				responseText.append(num);
-//				responseText.append(" settlements : ");
-//				responseText.append(s);
-//
-//			}
-//
-//			else if (num == 2) {
-//				s = settlementList.get(0) + " and " + settlementList.get(1);
-//				responseText.append(SYSTEM_PROMPT);
-//				responseText.append("There is a total of ");
-//				responseText.append(num);
-//				responseText.append(" settlements : ");
-//				responseText.append(s);
-//
-//			}
-//
-//			else if (num == 1) {
-//				responseText.append(SYSTEM_PROMPT);
-//				responseText.append("There is just one settlement : ");
-//				responseText.append(settlementList.get(0));
-//
-//			}
-//
-//			else {
-//				responseText.append(SYSTEM_PROMPT);
-//				responseText.append("Currently, there is no settlement established on Mars.");
-//
-//			}
-
+			responseText = findLocationInfo(responseText, unitManager.getSettlements());
 		}
 
 		// Add asking about vehicles in general
@@ -1235,8 +1276,6 @@ public class SystemChatUtils extends ChatUtils {
 				responseText.append(SYSTEM_PROMPT);
 				responseText.append("Hello, how can I help?    [/h for help]");
 			}
-
-
 		}
 
 		else if (len >= 2 && text.substring(0, 2).equalsIgnoreCase("hi")) {
@@ -1256,32 +1295,19 @@ public class SystemChatUtils extends ChatUtils {
 			proceed = true;
 		}
 		
-		else {
-//			responseText.append(clarify(SYSTEM)[1]);
-			String[] txt = clarify(SYSTEM, text);
-			questionText = txt[0];
-			responseText.append(txt[1]);
-		}
 		
-		
-		if (len == 0 || text == null) {// || text.length() == ) {
-			
-//			responseText.append(clarify(SYSTEM)[1]);
-			String[] txt = clarify(SYSTEM, text);
-			questionText = txt[0];
-			responseText.append(txt[1]);
-		}
-		
-		else if (proceed) {
+		if (proceed) {
 			responseText = matchName(responseText, text, nameCase);
 		}
 		
-		else {
-//			responseText.append(clarify(SYSTEM)[1]);
-			String[] txt = clarify(SYSTEM, text);
-			questionText = txt[0];
-			responseText.append(txt[1]);
-		}
+//		else {//if (len == 0 || text == null) {// || text.length() == ) {{
+////			responseText.append(clarify(SYSTEM)[1]);
+//			String[] txt = clarify(SYSTEM, text);
+//			questionText = txt[0];
+//			responseText.append(txt[1]);
+//			
+//			return new String[] { questionText, responseText.toString()};
+//		}
 		
 		return new String[] { questionText, responseText.toString() };
 	}
@@ -1368,14 +1394,40 @@ public class SystemChatUtils extends ChatUtils {
 				vehicleList, 
 				settlementList);
 
-//		}
-
-//		responseText.append(SYSTEM_PROMPT);
-//		responseText.append("I do not recognize any person, robot, vehicle or settlement by the name of '");
-//		responseText.append(text);
-//		responseText.append("'.");
-	
 		return responseText;
 	}
 	
+	/**
+	 * Obtains the location information regarding the settlements
+	 * 
+	 * @param responseText
+	 * @param collection
+	 * @return
+	 */
+	public static StringBuffer findLocationInfo(StringBuffer responseText, Collection<Settlement> collection) {
+		
+		responseText.append("Settlement Location Information :" + System.lineSeparator() + System.lineSeparator());
+		
+		String[] header = new String[] { " Settlement ", " Lat & long ", " Elev [km]" };
+
+		responseText.append(System.lineSeparator());
+		responseText.append(System.lineSeparator());
+		responseText.append(System.lineSeparator());
+		responseText.append(addWhiteSpacesLeftName(header[0], 20));
+		responseText.append(addWhiteSpacesRightName(header[1], 20));
+		responseText.append(addWhiteSpacesRightName(header[2], 13));
+		responseText.append(System.lineSeparator());
+		responseText.append(" " +  addDashes(66) + " ");
+		responseText.append(System.lineSeparator());
+
+		for (Settlement s: collection) {
+			responseText.append(addWhiteSpacesLeftName(" " + s.getName(), 20));
+			responseText.append(addWhiteSpacesRightName(s.getCoordinates().getFormattedString(), 20));
+			double elevation = Math.round(terrainElevation.getPatchedElevation(s.getCoordinates())*1000.0)/1000.0;
+			responseText.append(addWhiteSpacesRightName(elevation +"", 13));
+			responseText.append(System.lineSeparator());
+		}
+		
+		return responseText;
+	}
 }

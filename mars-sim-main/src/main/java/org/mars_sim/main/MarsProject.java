@@ -58,7 +58,7 @@ public class MarsProject {
 
 	private SimulationConfig simulationConfig = SimulationConfig.instance();
 	
-	private InteractiveTerm interactiveTerm = new InteractiveTerm(false);
+	private InteractiveTerm interactiveTerm = new InteractiveTerm(false, false);
 	
 	private static final String HELP = 
 

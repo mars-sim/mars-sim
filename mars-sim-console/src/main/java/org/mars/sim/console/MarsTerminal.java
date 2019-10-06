@@ -235,9 +235,9 @@ public class MarsTerminal extends SwingTextTerminal {
         clearItem.addActionListener(e -> clearScreen(this));
         menu.add(clearItem);
         
-//        JMenuItem restartItem = new JMenuItem("Restart menu", KeyEvent.VK_R);
-//        restartItem.addActionListener(e -> interactiveTerm.getChatMenu().restartMenu());
-//        menu.add(restartItem);     
+        JMenuItem restartItem = new JMenuItem("Restart menu", KeyEvent.VK_R);
+        restartItem.addActionListener(e -> interactiveTerm.getChatMenu().restartMenu());
+        menu.add(restartItem);     
         
         JMenuItem menuItem = new JMenuItem("About", KeyEvent.VK_A);
         menuItem.addActionListener(e -> JOptionPane.showMessageDialog(frame, 

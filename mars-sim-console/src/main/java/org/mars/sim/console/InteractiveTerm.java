@@ -40,10 +40,10 @@ public class InteractiveTerm {
     private static final String KEY_STROKE_DOWN = "pressed DOWN";
     private static final String KEY_ESC = "ESCAPE";
     
-    private String originalInput = "";
-    private String[] choices = {};
+    private static String originalInput = "";
+    private static String[] choices = {};
 
-    private int choiceIndex = -1;
+    private static int choiceIndex = -1;
 
     private static boolean consoleEdition = false;
     
@@ -67,9 +67,11 @@ public class InteractiveTerm {
 	
 	private static GameManager gm;
 	
+	private static InteractiveTerm interactiveTerm;
 
-	public InteractiveTerm(boolean consoleEdition) {
+	public InteractiveTerm(boolean consoleEdition, boolean restart) {
 		this.consoleEdition = consoleEdition;
+		interactiveTerm = this;
 		
 		terminal = new MarsTerminal(this);
         terminal.init();
@@ -79,11 +81,32 @@ public class InteractiveTerm {
         setUpArrows();
         
         setUpESC();
+        
+        if (restart) {
+        	
+//    		profile = new CommanderProfile(this);
+//
+//    		gm = new GameManager();
+//    		//  Re-initialize the GameManager
+//    		GameManager.initializeInstances(Simulation.instance().getUnitManager());
+    		
+            handler = new SwingHandler(textIO, "console", gm);
+//    		// Prevent allow users from arbitrarily close the terminal by clicking top right close button
+    		terminal.registerUserInterruptHandler(term -> {}, false);
+    		
+    		setKeepRunning(true);
+
+    		loadTerminalMenu();
+        }
+        
+        else {
+        	
+        }
 	}
 	
     
     public static void main(String[] args) {	
-    	new InteractiveTerm(true).startModeSelection();
+    	new InteractiveTerm(true, false).startModeSelection();
     }
  
 	
@@ -438,7 +461,7 @@ public class InteractiveTerm {
 
 		// Call ChatUils' default constructor to initialize instances
 		chatUtils = new ChatUtils();
-		chatMenu = new ChatMenu();
+		chatMenu = new ChatMenu(consoleEdition);
 		
 		// Prevent allow users from arbitrarily close the terminal by clicking top right close button
 //		terminal.registerUserInterruptHandler(term -> {
@@ -454,8 +477,6 @@ public class InteractiveTerm {
 	
 	
 	public static void setUpRunningLoop() {
-		
-		keepRunning = true;
 		
 		while (keepRunning) {
 			     
@@ -477,6 +498,33 @@ public class InteractiveTerm {
 		
 		return;
 	}
+	
+//	/**
+//	 * Restarts the terminal.
+//	 */
+//	public static void restartTerm() {
+//
+//		terminal = new MarsTerminal(interactiveTerm);
+//        terminal.init();
+//        
+//        textIO = new TextIO(terminal);
+//        
+//        setUpArrows();
+//        
+//        setUpESC();
+//        
+//		initializeTerminal();
+//		
+//		profile = new CommanderProfile(interactiveTerm);
+//
+//		gm = new GameManager();
+//	
+//        handler = new SwingHandler(textIO, "console", gm);
+//        
+//		// Prevent allow users from arbitrarily close the terminal by clicking top right close button
+//		terminal.registerUserInterruptHandler(term -> {}, false);
+//
+//	}
 	
 	/**
 	 * Clears the screen
@@ -535,7 +583,7 @@ public class InteractiveTerm {
     /**
      * Sets up arrow keys
      */
-    public void setUpArrows() {
+    public static void setUpArrows() {
         terminal.registerHandler(KEY_STROKE_UP, t -> {
             if(choiceIndex < 0) {
                 originalInput = terminal.getPartialInput();
@@ -560,7 +608,7 @@ public class InteractiveTerm {
     /**
      * Sets up the ESC key
      */
-    public void setUpESC() {
+    public static void setUpESC() {
         terminal.registerHandler(KEY_ESC, t -> {
         	MasterClock mc = Simulation.instance().getMasterClock();
         	if (mc != null) {

@@ -34,6 +34,7 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.structure.ObjectiveType;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
@@ -117,7 +118,20 @@ public class SettlementChatUtils extends ChatUtils {
 		String text0 = text;
 		String jobStrName = text0.replace("job prospect ", "");
 
-		if (text.contains("job prospect") && JobUtil.getJob(jobStrName) != null) {
+		if (text.toLowerCase().contains("distance")) {
+
+			questionText = YOU_PROMPT + "What are the distances between settlements ?";
+
+			// Creates an array with the names of all of settlements
+			List<Settlement> settlementList = new ArrayList<Settlement>(unitManager.getSettlements());
+	
+			responseText = SystemChatUtils.findLocationInfo(responseText, settlementList);
+			
+			responseText = findSettlementDistances(responseText, settlementList);
+			
+		}
+		
+		else if (text.contains("job prospect") && JobUtil.getJob(jobStrName) != null) {
 			List<Person> list = settlementCache.getAllAssociatedPeople().stream()
 //					.sorted((p1, p2)-> p1.getMind().getJob().getName(p1.getGender()).compareTo(p2.getMind().getJob().getName(p2.getGender())))
 					.sorted((p1, p2) -> p1.getName().compareTo(p2.getName())).collect(Collectors.toList());
@@ -1959,4 +1973,43 @@ public class SettlementChatUtils extends ChatUtils {
 		return new String[] { questionText, responseText.toString() };
 	}
 
+	/**
+	 * Obtains the distances between settlements
+	 * 
+	 * @param responseText
+	 * @param settlementList
+	 * @return
+	 */
+	public static StringBuffer findSettlementDistances(StringBuffer responseText, List<Settlement> settlementList) {
+		
+		responseText.append("Inter-Settlement Distances :" + System.lineSeparator() + System.lineSeparator());
+		
+		String[] header = new String[] { " Settlement 1", " Settlement 2", " Distance [km]"};
+		
+		responseText.append(System.lineSeparator());
+		responseText.append(System.lineSeparator());
+		responseText.append(System.lineSeparator());
+		responseText.append(addWhiteSpacesLeftName(header[0], 25));
+		responseText.append(addWhiteSpacesLeftName(header[1], 25));
+		responseText.append(addWhiteSpacesRightName(header[2], 12));
+		responseText.append(System.lineSeparator());
+		responseText.append(" " +  addDashes(67) + " ");
+		responseText.append(System.lineSeparator());
+		
+		for (Settlement s1: settlementList) {
+			for (Settlement s2: settlementList) {
+				if (!s1.equals(s2)) {
+					responseText.append(addWhiteSpacesLeftName(" " + s1.getName(), 25));
+					responseText.append(addWhiteSpacesLeftName(" " + s2.getName(), 25));
+					double distance = Math.round(s1.getCoordinates().getDistance(s2.getCoordinates())*100.0)/100.0;
+					responseText.append(addWhiteSpacesRightName(distance +"", 12));
+					responseText.append(System.lineSeparator());
+				}
+			}
+			responseText.append(System.lineSeparator());
+		}
+		
+		return responseText;
+	}
+	
 }

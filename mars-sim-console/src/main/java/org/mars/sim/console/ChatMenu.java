@@ -24,21 +24,25 @@ public class ChatMenu implements BiConsumer<TextIO, RunnerData> {
 	
 	private volatile static boolean leaveSystem = false;
 	private volatile boolean quit = false;
+    private static boolean consoleEdition = false;
+    
 	private static String prompt;
 	
 	private static SwingTextTerminal terminal;
+	
 	private SwingHandler handler;
 	
 	private static Simulation sim = Simulation.instance();
 	private static MasterClock masterClock;
 	
-	public ChatMenu() {
+	public ChatMenu(boolean consoleEdition) {
+		this.consoleEdition = consoleEdition;
 		masterClock = sim.getMasterClock();
 	}
 	
     public static void main(String[] args) {
         TextIO textIO = TextIoFactory.getTextIO();
-        new ChatMenu().accept(textIO, null);
+        new ChatMenu(true).accept(textIO, null);
     }
 
     public static String determinePrompt() {
@@ -239,15 +243,23 @@ public class ChatMenu implements BiConsumer<TextIO, RunnerData> {
 	}
 
 	public void restartMenu() {
+		// Restart any selected objects to null
 		ChatUtils.personCache = null;
 		ChatUtils.robotCache = null;
 		ChatUtils.settlementCache = null;
 		ChatUtils.vehicleCache = null;
 		
-		InteractiveTerm.setKeepRunning(false);
+		// Dispose the old terminal
+		InteractiveTerm.disposeTerminal();
+		// Restart the MarsTerminal, SwingHandler, TextIO, InteractiveTerm
+		new InteractiveTerm(consoleEdition, true);
+		
+//		InteractiveTerm.setKeepRunning(false);
 //		InteractiveTerm.disposeTerminal();
-		InteractiveTerm.delay(500L);
-		InteractiveTerm.setUpRunningLoop();
+//		InteractiveTerm.delay(500L);
+//		
+//		InteractiveTerm.restartTerm();
+//		InteractiveTerm.setUpRunningLoop();
 		
 //		quit = true;
 //		leaveSystem = true;
@@ -257,7 +269,6 @@ public class ChatMenu implements BiConsumer<TextIO, RunnerData> {
 		
 //		prompt = "/q";
 	
-		
 //		return;
 //		prompt = "Enter your choice:";
 //		terminal.println();

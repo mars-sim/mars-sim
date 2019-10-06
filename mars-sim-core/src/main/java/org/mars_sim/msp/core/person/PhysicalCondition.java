@@ -1056,31 +1056,32 @@ public class PhysicalCondition implements Serializable {
 						if (tendency > 2)
 							tendency = 2;
 
-						if (ct == ComplaintType.PULL_MUSCLE_TENDON || ct == ComplaintType.BROKEN_BONE) {
+						if (ct == ComplaintType.PULL_MUSCLE_TENDON 
+								|| ct == ComplaintType.BROKEN_BONE) {
 							// Note: at the time of workout, pulled muscle can happen
 							// TODO: but make a person less prone to pulled muscle while doing other tasks
 							// if having consistent workout.
-							if (person.getTaskDescription().equalsIgnoreCase("exercising"))
-								taskModifier = 1.2;
-
-							else if (person.getTaskDescription().toLowerCase().contains("work")) {
-								// Doing outdoor field work increases the risk of having pulled muscle.
+							String taskDes = person.getTaskDescription().toLowerCase();
+							String taskPhase = person.getTaskPhase().toLowerCase();
+							if (taskPhase.contains("exercising") || taskDes.contains("yoga"))
 								taskModifier = 1.1;
+
+							else if (taskPhase.contains("loading") || taskPhase.contains("unloading")) {
+								// Doing outdoor field work increases the risk of having pulled muscle.
+								taskModifier = 1.2;
 
 								if (agility > 50)
 									taskModifier = .75 * taskModifier - .25 * agility / 100.0;
 								else
 									taskModifier = .75 * taskModifier + .25 * (50 - agility) / 50.0;
 							}
-
-							else if (person.getTaskDescription().toLowerCase().contains("yoga"))
-								taskModifier = 1.1;
-
-							else if (person.getTaskDescription().toLowerCase().contains("eva"))
-								taskModifier = 1.2;
-
-							else if (person.getTaskDescription().contains("Digging")) {
+							else if (person.getTaskDescription().contains("EVA"))
+								// match the uppercase EVA
 								taskModifier = 1.3;
+
+							else if (taskDes.contains("digging") || taskDes.contains("mining")
+									|| taskDes.contains("excavating")) {
+								taskModifier = 1.4;
 
 								int avoidAccident = strength + agility;
 								if (avoidAccident > 50)
@@ -1089,8 +1090,9 @@ public class PhysicalCondition implements Serializable {
 									taskModifier = .75 * taskModifier + .25 * (100 - avoidAccident) / 100.0;
 							}
 
-						} else if (ct == ComplaintType.MINOR_BURNS || ct == ComplaintType.MAJOR_BURNS
-								|| ct == ComplaintType.BURNS || ct == ComplaintType.LACERATION) {
+						} else if (ct == ComplaintType.MINOR_BURNS// || ct == ComplaintType.MAJOR_BURNS
+								|| ct == ComplaintType.BURNS 
+								|| ct == ComplaintType.LACERATION) {
 							if (agility > 50)
 								taskModifier = .75 * taskModifier - .25 * agility / 100.0;
 							else

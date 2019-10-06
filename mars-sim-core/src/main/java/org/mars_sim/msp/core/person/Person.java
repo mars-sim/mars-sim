@@ -1458,6 +1458,13 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		return getMind().getTaskManager().getTaskDescription(false);
 	}
 
+	public String getTaskPhase() {
+		if (getMind().getTaskManager().getPhase() != null)
+		return getMind().getTaskManager().getPhase().getName();
+		
+		return "";
+	}
+	
 	@Override
 	public void setMission(Mission newMission) {
 		getMind().setMission(newMission);

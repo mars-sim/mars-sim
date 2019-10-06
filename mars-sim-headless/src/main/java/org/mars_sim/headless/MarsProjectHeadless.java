@@ -42,7 +42,7 @@ public class MarsProjectHeadless {
 	
 	private SimulationConfig simulationConfig = SimulationConfig.instance();
 	
-	private InteractiveTerm interactiveTerm = new InteractiveTerm(true);
+	private InteractiveTerm interactiveTerm = new InteractiveTerm(true, false);
 	
 	private static final String HELP = 
 
