@@ -191,15 +191,12 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	private String nickName;
 	/** Description for this building. */
 	private String description;
-
-	/** Unit location coordinates. */
-	private Coordinates location;
 	
+	/** The BuildingManager instance. */
 	protected BuildingManager manager;
+	/** The MalfunctionManager instance. */
 	protected MalfunctionManager malfunctionManager;
-
-	private Inventory inv;
-
+	
 	private transient Communication comm;
 	private transient ThermalGeneration furnace;
 	private transient PowerGeneration powerGen;
@@ -257,9 +254,8 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 				template.getLength(), template.getXLoc(), template.getYLoc(), template.getFacing(), manager);
 		
 		this.manager = manager;
-		location = manager.getSettlement().getCoordinates();
 		buildingType = template.getBuildingType();
-		inv = manager.getSettlement().getInventory();
+
 		settlementID = (Integer) manager.getSettlement().getIdentifier();
 
 		// Set the instance of life support
@@ -307,13 +303,12 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		this.buildingType = buildingType;
 		this.nickName = nickName;
 		this.manager = manager;
-		inv = manager.getSettlement().getInventory();
+
 		settlementID = (Integer) manager.getSettlement().getIdentifier();
 		
 		this.xLoc = xLoc;
 		this.yLoc = yLoc;
 		this.facing = facing;
-		this.location = manager.getSettlement().getCoordinates();
 
 		buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
 		malfunctionMeteoriteImpact = MalfunctionFactory
@@ -443,7 +438,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	 * @return inventory
 	 */
 	public Inventory getSettlementInventory() {
-		return inv;
+		return manager.getSettlement().getInventory();
 	}
 
 	/**
@@ -452,7 +447,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	 * @return inventory
 	 */
 	public Inventory getInventory() {
-		return inv;
+		return manager.getSettlement().getInventory();
 	}
 
 	/**
@@ -1452,7 +1447,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	}
 
 	public Coordinates getLocation() {
-		return location;
+		return manager.getSettlement().getCoordinates();
 	}
 
 	/**
@@ -1541,12 +1536,16 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 ////		return this.buildingType.equals(b.getBuildingType());
 //	}
 	
+	public void reinit() {
+		// transient instances
+		
+	}
+	
 	/**
 	 * Prepare object for garbage collection.
 	 */
 	public void destroy() {
 		functions = null;
-		location = null;
 		furnace = null;
 		lifeSupport = null;
 		roboticStation = null;

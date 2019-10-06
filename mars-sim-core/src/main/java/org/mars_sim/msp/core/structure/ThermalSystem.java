@@ -46,8 +46,6 @@ implements Serializable {
 	
 	private double heatValue;
 
-	//private boolean sufficientHeat;
-
 	private Settlement settlement;
 
 	private BuildingManager manager;
@@ -64,8 +62,6 @@ implements Serializable {
 		heatStored = 0D;
 
 		heatRequired = 0D;
-		//sufficientHeat = true;
-
 	}
 
 

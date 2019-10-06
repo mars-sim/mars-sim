@@ -167,6 +167,10 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 
 	/** The gender of the person (male or female). */
 	private GenderType gender;
+	
+	/** The person model instance. */
+//	private PersonModel personModel;
+ 
 	/** The person's skill manager. */
 	private SkillManager skillManager;
 	/** Manager for Person's natural attributes. */
@@ -218,8 +222,6 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	/** The person's prior training */
 	private List<TrainingType> trainings;
 	
-//	private static PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
-
 	static {
 		// Compute the average height for all
 		tall = personConfig.getTallAverageHeight();
@@ -498,6 +500,10 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 
 	}
 
+	public String getBloodType() {
+		return bloodType;
+	}
+	
 	/**
 	 * Compute a person's height and its chromosome
 	 */
@@ -2028,6 +2034,10 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		return suit;
 	}
 	
+	public void reinit() {
+		mind.reinit();
+		condition.reinit();
+	}
 	
 	@Override
 	public void destroy() {

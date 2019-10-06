@@ -63,15 +63,23 @@ implements Serializable {
 	private Task currentTask; 
 	/** The mind of the robot. */
 	private BotMind botMind;
+	
 	/** The robot instance. */
-	private Robot robot = null;
-	/** The MarsClock instance. */	
-	private MarsClock marsClock;
+	private transient Robot robot = null;
+	
 	/** The MasterClock static instance. */	
-	private static MasterClock masterClock = Simulation.instance().getMasterClock();
+	private static MasterClock masterClock;
+	/** The MarsClock instance. */	
+	private static MarsClock marsClock;
+
 	/** The cache map for the task probability. */		
 	private transient Map<MetaTask, Double> taskProbCache;
 
+	static {
+		masterClock = Simulation.instance().getMasterClock();
+		/** The MarsClock instance. */	
+		marsClock = masterClock.getMarsClock(); 
+	}
 	
 	/**
 	 * Constructor.
@@ -88,8 +96,8 @@ implements Serializable {
 		taskProbCache = new HashMap<MetaTask, Double>(MetaTaskUtil.getRobotMetaTasks().size());
 		totalProbCache = 0D;
 	
-		if (masterClock != null) // use this check to pass maven test
-			marsClock = masterClock.getMarsClock(); 
+//		if (masterClock != null) // use this check to pass maven test
+//			marsClock = masterClock.getMarsClock(); 
 	}
 	
 	/**
@@ -533,6 +541,10 @@ implements Serializable {
 		return true;
 	}
 
+	public void reinit() {
+		robot = botMind.getRobot();
+	}
+	
 	/**
 	 * Prepare object for garbage collection.
 	 */

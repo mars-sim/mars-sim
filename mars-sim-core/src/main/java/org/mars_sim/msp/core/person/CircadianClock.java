@@ -85,23 +85,24 @@ public class CircadianClock implements Serializable {
 
 	private Person person;
 
-//	private PhysicalCondition condition;
-
 	/** Sleep habit map keeps track of the sleep cycle */
 	private Map<Integer, Integer> sleepCycleMap;
 
 	/** The amount of Sleep [millisols] a person on each mission sol */
 	private List<Double> sleepTime;
 
-	private static MarsClock marsClock = Simulation.instance().getMasterClock().getMarsClock();
+	private static MarsClock marsClock;
 
+	static {
+		marsClock = Simulation.instance().getMasterClock().getMarsClock();
+	}
+	
 	public CircadianClock(Person person) {
 		this.person = person;
 
 		sleepCycleMap = new HashMap<>();
 		sleepTime = new ArrayList<>();
-//		if (Simulation.instance().getMasterClock() != null) // for passing maven test
-//			marsClock = Simulation.instance().getMasterClock().getMarsClock();
+		
 	}
 	
 	public void timePassing(double time, LifeSupportInterface support) {

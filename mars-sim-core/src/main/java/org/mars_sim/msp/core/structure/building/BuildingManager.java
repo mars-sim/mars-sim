@@ -2041,7 +2041,7 @@ public class BuildingManager implements Serializable {
 		relationshipManager = r;
 		unitManager = u;
 	}
-	
+			
 	/**
 	 * Prepare object for garbage collection.
 	 */

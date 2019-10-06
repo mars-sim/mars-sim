@@ -337,6 +337,10 @@ public class BotMind implements Serializable {
 		marsClock = clock;
 	}
 	
+	public void reinit() {
+		botTaskManager.reinit();
+	}
+	
 	/**
 	 * Prepare object for garbage collection.
 	 */

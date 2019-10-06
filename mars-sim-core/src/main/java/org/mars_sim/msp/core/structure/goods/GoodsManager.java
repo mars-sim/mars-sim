@@ -212,7 +212,6 @@ public class GoodsManager implements Serializable {
 	private Map<Integer, Double> partsDemandCache;
 
 	private Settlement settlement;
-	private Inventory inv;
 
 	private static SimulationConfig simulationConfig = SimulationConfig.instance();
 //	private static BuildingConfig buildingConfig = simulationConfig.getBuildingConfiguration();
@@ -233,8 +232,6 @@ public class GoodsManager implements Serializable {
 	 */
 	public GoodsManager(Settlement settlement) {
 		this.settlement = settlement;
-		inv = settlement.getInventory();
-
 	
 		populateGoodsValues();
 	}
@@ -605,7 +602,7 @@ public class GoodsManager implements Serializable {
 	 */
 	public double getAverageAmountSupply(int resource, double supplyStored, int solElapsed) {
 		// Gets the total produced or supplied since last time 
-		double goodSupply = inv.getAmountSupply(resource);
+		double goodSupply = getInventory().getAmountSupply(resource);
 		// Gets # of successful requests
 //		int goodRequests = inv.getAmountSupplyRequest(resource);
 		
@@ -633,7 +630,7 @@ public class GoodsManager implements Serializable {
 	 */
 	public double getAverageItemSupply(int resource, double supplyStored, int solElapsed) {
 		// Gets the total produced or supplied since last time 
-		double goodSupply = inv.getItemSupply(resource);
+		double goodSupply = getInventory().getItemSupply(resource);
 		// Gets # of successful requests
 //      int supplyRequest = inv.getAmountSupplyRequest(resource);
 		if (goodSupply > MIN && supplyStored > MIN)
@@ -655,6 +652,7 @@ public class GoodsManager implements Serializable {
 	 * @return
 	 */
 	public double getAverageAmoundDemand(int resource, int solElapsed) {
+		Inventory inv = getInventory();
 		// Gets the total demand on record
 		double goodDemand = inv.getAmountDemand(resource);
 		// Gets # of successful requests
@@ -697,6 +695,7 @@ public class GoodsManager implements Serializable {
 	 * @return
 	 */
 	public double getAverageItemDemand(int resource, int solElapsed) {
+		Inventory inv = getInventory();
 		// Gets the total demand record
 		double goodDemand = inv.getItemDemand(resource);
 		// Gets # of successful requests
@@ -3166,6 +3165,15 @@ public class GoodsManager implements Serializable {
 		return mod;
 	}
 
+	/**
+	 * Gets the settlement inventory.
+	 * 
+	 * @return inventory
+	 */
+	public Inventory getInventory() {
+		return settlement.getInventory();
+	}
+	
 	/**
 	 * Reloads instances after loading from a saved sim
 	 * 

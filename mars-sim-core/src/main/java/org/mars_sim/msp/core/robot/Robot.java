@@ -949,6 +949,10 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 //		return this.name.equals(r.getName());
 //	}
 
+	public void reinit() {
+		botMind.reinit();
+	}
+	
 	@Override
 	public void destroy() {
 		super.destroy();

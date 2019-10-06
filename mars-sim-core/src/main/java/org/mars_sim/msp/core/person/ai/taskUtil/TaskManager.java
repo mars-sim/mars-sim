@@ -59,33 +59,35 @@ public class TaskManager implements Serializable {
 	private static final int MAX_TASK_PROBABILITY = 3000;
 
 	// Data members
-	/** The cache for msol */
+	/** The cache for work shift. */
+	private int shiftCache;
+	/** The cache for msol. */
 	private double msolCache = -1.0;
-
+	/** The cache for total probability. */
 	private double totalProbCache;
-
+	/** The cache for task name. */
 	private String taskNameCache = "";
-
+	/** The cache for task description. */
 	private String taskDescriptionCache = "Relaxing";
-
+	/** The cache for task phase. */
 	private String taskPhaseNameCache = "Relaxing";
 
 	/** The current task the person/robot is doing. */
 	private Task currentTask;
 	/** The last task the person/robot was doing. */
 	private Task lastTask;
+	
 	/** The mind of the person the task manager is responsible for. */
 	private Mind mind;
-
-	private Person person = null;
-
-	private PhysicalCondition health;
-
-	private CircadianClock circadian;
-
-	private TaskSchedule ts;
-
-	private int shiftCache;
+	
+	/** The person instance. */
+	private transient Person person;
+	/** The PhysicalCondition reference */ 
+	private transient PhysicalCondition health;
+	/** The CircadianClock reference */ 
+	private transient CircadianClock circadian;
+	/** The TaskSchedule reference */ 
+	private transient TaskSchedule taskSchedule;
 
 	private transient Map<MetaTask, Double> taskProbCache;
 	private transient List<MetaTask> mtListCache;
@@ -95,6 +97,12 @@ public class TaskManager implements Serializable {
 	private static MarsClock marsClock;
 	private static MissionManager missionManager;
 
+	static {
+		Simulation sim = Simulation.instance();
+		missionManager = sim.getMissionManager();
+		marsClock = sim.getMasterClock().getMarsClock();
+	}
+	
 	/**
 	 * Constructor.
 	 * 
@@ -105,33 +113,27 @@ public class TaskManager implements Serializable {
 		this.mind = mind;
 
 		person = mind.getPerson();
-
-		missionManager = Simulation.instance().getMissionManager();
-
 		circadian = person.getCircadianClock();
-
 		health = person.getPhysicalCondition();
 
 		currentTask = null;
 
 		// Initialize cache values.
-//		timeCache = null;
 		taskProbCache = new HashMap<MetaTask, Double>();
 		totalProbCache = 0D;
-
-		// Ensure no NULLPOiNTEREXCEPTION in maven test
-		// since marsClock won't be initiated in maven test
-		if (Simulation.instance().getMasterClock() != null)
-			marsClock = Simulation.instance().getMasterClock().getMarsClock();
 		
 		pendingTasks = new ArrayList<>();
+		
+//		Simulation sim = Simulation.instance();
+//		missionManager = sim.getMissionManager();
+//		marsClock = sim.getMasterClock().getMarsClock();
 	}
 
 	/**
 	 * Initializes tash schedule instance
 	 */
 	public void initialize() {
-		ts = person.getTaskSchedule();
+		taskSchedule = person.getTaskSchedule();
 	}
 
 	/**
@@ -335,7 +337,7 @@ public class TaskManager implements Serializable {
 					if (!taskPhaseNameCache.equals(taskPhaseName)) {
 						// Note : can taskPhaseName be null ?
 						// TODO: decide if it needs to record the same task description as the last
-						ts.recordTask(taskName, taskDescription, taskPhaseName, missionName);
+						taskSchedule.recordTask(taskName, taskDescription, taskPhaseName, missionName);
 						taskPhaseNameCache = taskPhaseName;
 						taskDescriptionCache = taskDescription;
 					}
@@ -645,11 +647,11 @@ public class TaskManager implements Serializable {
 
 			int shift = 0;
 
-			if (ts.getShiftType() == ShiftType.ON_CALL) {
+			if (taskSchedule.getShiftType() == ShiftType.ON_CALL) {
 				shift = 0;
 			}
 
-			else if (ts.isShiftHour(marsClock.getMillisolInt())) {
+			else if (taskSchedule.isShiftHour(marsClock.getMillisolInt())) {
 				shift = 1;
 			}
 
@@ -731,7 +733,7 @@ public class TaskManager implements Serializable {
 	}
 
 	public TaskSchedule getTaskSchedule() {
-		return ts;
+		return taskSchedule;
 	}
 
 	/**
@@ -801,6 +803,13 @@ public class TaskManager implements Serializable {
 		missionManager = mgr;
 	}
 
+	public void reinit() {
+		person = mind.getPerson();
+		health = person.getPhysicalCondition();
+		circadian = person.getCircadianClock();
+		taskSchedule = person.getTaskSchedule();
+	}
+	
 	/**
 	 * Prepare object for garbage collection.
 	 */
@@ -813,7 +822,7 @@ public class TaskManager implements Serializable {
 		lastTask = null;
 		health = null;
 		circadian = null;
-		ts = null;
+		taskSchedule = null;
 		marsClock = null;
 		if (taskProbCache != null) {
 			taskProbCache.clear();

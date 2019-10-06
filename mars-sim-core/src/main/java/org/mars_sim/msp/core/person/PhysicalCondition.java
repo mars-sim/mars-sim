@@ -65,9 +65,10 @@ public class PhysicalCondition implements Serializable {
 	public static final int ENERGY_THRESHOLD = 2525;// + RandomUtil.getRandomInt(20);
 
 	/** Life support minimum value. */
-	private static int MIN_VALUE = 0;
+	private static final int MIN_VALUE = 0;
 	/** Life support maximum value. */
-	private static int MAX_VALUE = 1;
+	private static final int MAX_VALUE = 1;
+	
 	/** The amount of fatigue for the mental breakdown to occur [millisols]. */
 	public static final double MENTAL_BREAKDOWN = 100D;
 	/** The amount of fatigue for the collapse to occur [millisols]. */
@@ -96,26 +97,24 @@ public class PhysicalCondition implements Serializable {
 	/** The maximum air pressure a person can live without harm in kPa. (somewhat arbitrary). */
 	public static final double MAXIMUM_AIR_PRESSURE = 68D; // Assume 68 kPa time dependent
 	/** Period of time (millisols) over which random ailments may happen. */
-	private static double RANDOM_AILMENT_PROBABILITY_TIME = 100_000D;
+	private static final double RANDOM_AILMENT_PROBABILITY_TIME = 100_000D;
 
-	private static double o2_consumption;
-	private static double h2o_consumption;
-	private static double minimum_air_pressure;
-	private static double min_temperature;
-	private static double max_temperature;
-	private static double food_consumption;
-	private static double dessert_consumption;
-	private static double highFatigueCollapseChance;
-	private static double stressBreakdownChance;
+	private static final double h2o_consumption;
+	private static final double minimum_air_pressure;
+	private static final double min_temperature;
+	private static final double max_temperature;
+	private static final double food_consumption;
+	private static final double dessert_consumption;
+	private static final double highFatigueCollapseChance;
+	private static final double stressBreakdownChance;
 
 	public static final String WELL = "Well";
 	public static final String DEAD = "Dead : ";
 	public static final String ILL = "Sick : ";
 	
-	/**
-	 * The amount of water this person would consume each time (assuming drinking
-	 * water 8 times a day)
-	 */
+	private static double o2_consumption;
+	
+	/**  The amount of water this person would consume each time (assuming drinking water 8 times a day). */
 	private double waterConsumedPerServing;
 	/** True if person is starving. */
 	private boolean isStarving;
@@ -127,8 +126,6 @@ public class PhysicalCondition implements Serializable {
 	private boolean isDehydrated;
 	/** True if person is alive. */
 	private boolean alive;
-//	/** True if person is thirsty. */
-//	private boolean isThirsty;
 	/** True if person is radiation Poisoned. */
 	private boolean isRadiationPoisoned;
 	/** True if person is doing a task that's considered resting. */
@@ -186,16 +183,6 @@ public class PhysicalCondition implements Serializable {
 	/** Radiation Exposure. */
 	private RadiationExposure radiation;
 
-	private CircadianClock circadian;
-
-	private TaskManager taskMgr;
-
-	private HealthProblem starved;
-
-	private HealthProblem dehydrated;
-
-	private NaturalAttributeManager naturalAttributeManager;
-
 	/** List of medications affecting the person. */
 	private List<Medication> medicationList;
 	/** Injury/Illness effecting person. */
@@ -205,7 +192,19 @@ public class PhysicalCondition implements Serializable {
 	/** Record of illness start time. */
 	private Map<ComplaintType, List<String>> healthHistory;
 
-	/** List of all available medical complaints. */
+	/** The CircadianClock instance. */
+	private transient CircadianClock circadian;
+	/** The TaskManager instance. */
+	private transient TaskManager taskMgr;
+	/** The NaturalAttributeManager instance. */
+	private transient NaturalAttributeManager naturalAttributeManager;
+	
+	/** The HealthProblem instance. */
+	private HealthProblem starved;
+	/** The HealthProblem instance. */
+	private HealthProblem dehydrated;
+	
+	/** A static list of all available medical complaints. */
 	private static List<Complaint> allMedicalComplaints;
 	
 	private static Simulation sim = Simulation.instance();
@@ -226,7 +225,7 @@ public class PhysicalCondition implements Serializable {
 	private static Complaint decompression;
 	private static Complaint suffocation;
 
-	private static PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
+	private static PersonConfig personConfig;
 
 	/**
 	 * Loads the values
@@ -236,6 +235,8 @@ public class PhysicalCondition implements Serializable {
 		if (masterClock != null)  // check for null in order to pass maven test
 			marsClock = masterClock.getMarsClock();
 			
+		personConfig = SimulationConfig.instance().getPersonConfig();
+		
 		h2o_consumption = personConfig.getWaterConsumptionRate(); // 3 kg per sol
 		o2_consumption = personConfig.getNominalO2ConsumptionRate();
 
@@ -277,13 +278,11 @@ public class PhysicalCondition implements Serializable {
 	public PhysicalCondition(Person newPerson) {
 		person = newPerson;
 		name = newPerson.getName();
-
-//		setHealthInstances();
 		
 		circadian = person.getCircadianClock();
-
 		taskMgr = person.getMind().getTaskManager();
-
+		naturalAttributeManager = person.getNaturalAttributeManager();
+		
 		alive = true;
 
 		radiation = new RadiationExposure(this);
@@ -292,15 +291,9 @@ public class PhysicalCondition implements Serializable {
 		deathDetails = null;
 
 		problems = new HashMap<Complaint, HealthProblem>();
-
 		healthLog = new HashMap<ComplaintType, Integer>();
-
 		healthHistory = new HashMap<ComplaintType, List<String>>();
-
 		medicationList = new ArrayList<Medication>();
-
-//		if (naturalAttributeManager == null)
-		naturalAttributeManager = person.getNaturalAttributeManager();
 
 		endurance = naturalAttributeManager.getAttribute(NaturalAttributeType.ENDURANCE);
 		strength = naturalAttributeManager.getAttribute(NaturalAttributeType.STRENGTH);
@@ -327,14 +320,10 @@ public class PhysicalCondition implements Serializable {
 		personalMaxEnergy = MAX_DAILY_ENERGY_INTAKE;
 		appetite = personalMaxEnergy / MAX_DAILY_ENERGY_INTAKE;
 		
-		bodyMassDeviation = Math
-				.sqrt(person.getBaseMass() / person.getAverageWeight() * person.getHeight() / person.getAverageHeight());
+		bodyMassDeviation = Math.sqrt(person.getBaseMass() / person.getAverageWeight() 
+				* person.getHeight() / person.getAverageHeight());
 		// Note: p = mean + RandomUtil.getGaussianDouble() * standardDeviation
-		bodyMassDeviation = bodyMassDeviation + RandomUtil.getGaussianDouble() * bodyMassDeviation / 7D;
-				
-		// Note: must load static values such as h2o_consumption here
-//		loadStaticValues();		
-		
+		bodyMassDeviation = bodyMassDeviation + RandomUtil.getGaussianDouble() * bodyMassDeviation / 7D;		
 		// Assume a person drinks 10 times a day, each time ~375 mL
 		waterConsumedPerServing = h2o_consumption * bodyMassDeviation / 10D; // about .3 kg per serving
 
@@ -355,7 +344,6 @@ public class PhysicalCondition implements Serializable {
 	 * (Note : Must skip this when running maven test or else having exceptions)
 	 */
 	public void initialize() {
-
 		// Modify personalMaxEnergy at the start of the sim
 		int d1 = 2 * (35 - person.updateAge()); 
 		// Assume that after age 35, metabolism slows down
@@ -1846,8 +1834,12 @@ public class PhysicalCondition implements Serializable {
 		masterClock = c0;
 		marsClock = c1;
 		medicalManager = m;
-//		setHealthInstances();
-//		loadStaticValues();
+	}
+	
+	public void reinit() {
+		circadian = person.getCircadianClock();
+		taskMgr = person.getMind().getTaskManager();
+		naturalAttributeManager = person.getNaturalAttributeManager();
 	}
 	
 	/**

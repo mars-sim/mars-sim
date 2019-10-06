@@ -608,35 +608,39 @@ public class Simulation implements ClockListener, Serializable {
 
 //				logger.config("Done readFromFile()");
 				
-			} catch (ClassNotFoundException e2) {
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
 				logger.log(Level.SEVERE,
 						"Quitting mars-sim with ClassNotFoundException when loading the simulation : "
-								+ e2.getMessage());
+								+ e.getMessage());
 //    	        Platform.exit();
 				System.exit(1);
 
-			} catch (IOException e1) {
+			} catch (IOException e) {
+				e.printStackTrace();
 				logger.log(Level.SEVERE,
-						"Quitting mars-sim with IOException when loading the simulation : " + e1.getMessage());
+						"Quitting mars-sim with IOException when loading the simulation : " + e.getMessage());
 //    	        Platform.exit();
 				System.exit(1);
 
 			} catch (NullPointerException e) {
+				e.printStackTrace();
 				logger.log(Level.SEVERE,
 						"Quitting mars-sim with NullPointerException when loading the simulation : " + e.getMessage());
 //    	        Platform.exit();
 				System.exit(1);
 			
-			} catch (Exception e0) {
+			} catch (Exception e) {
+				e.printStackTrace();
 				logger.log(Level.SEVERE,
-						"Quitting mars-sim. Could not load the simulation : " + e0.getMessage());
+						"Quitting mars-sim. Could not load the simulation : " + e.getMessage());
 //    	        Platform.exit();
 				System.exit(1);
 			}
 		}
 
 		else {
-			logger.log(Level.SEVERE, "Quitting mars-sim. The saved sim cannot be read or is NOT found.");
+			logger.log(Level.SEVERE, "Quitting mars-sim. The saved sim cannot be read/found.");
 			System.exit(1);
 		}
 	}
@@ -887,12 +891,7 @@ public class Simulation implements ClockListener, Serializable {
 		ResourceUtil.getInstance().initializeInstances();
 		// Re-initialize the MarsSurface instance
 		MarsSurface marsSurface = unitManager.getMarsSurface();
-//		int num = marsSurface.getInventory().getContainedUnits().size();
-//		System.out.println("UnitManager's marsSurface : " + marsSurface.hashCode() + "  num : " + num);
-//		MarsSurface marsSurface2 = mars.getMarsSurface();
-//		num = marsSurface2.getInventory().getContainedUnits().size();
-//		System.out.println("Mars' marsSurface : " + marsSurface2.hashCode() + "  num : " + num);
-		
+	
 		//  Re-initialize the GameManager
 		GameManager.initializeInstances(unitManager);
 		// Re-initialize the SurfaceFeatures instance
@@ -901,9 +900,7 @@ public class Simulation implements ClockListener, Serializable {
 		Weather weather = mars.getWeather();
 		// Gets the orbitInfo instance
 		OrbitInfo orbit = mars.getOrbitInfo();
-		// Gets MarsSurface instance
-//		MarsSurface marsSurface = mars.getMarsSurface();
-		
+	
 		// Re-initialize the Simulation instance
 		MasterClock.initializeInstances(this);					
 		// Re-initialize the Mars instance
@@ -937,7 +934,9 @@ public class Simulation implements ClockListener, Serializable {
 		Unit.initializeInstances(masterClock, marsClock, earthClock, this, mars, marsSurface, weather, surfaceFeatures, missionManager);	
 		Unit.setUnitManager(unitManager);
 		
-		unitManager.initializeInstances(marsClock);
+		// Start a chain of calls to set instances on each person
+		unitManager.reinit(marsClock);
+		
 		RelationshipManager.initializeInstances(unitManager);
 		MalfunctionManager.initializeInstances(masterClock, marsClock, malfunctionFactory, medicalManager, eventManager);
 		TransportManager.initializeInstances(marsClock, eventManager);
@@ -954,7 +953,7 @@ public class Simulation implements ClockListener, Serializable {
 		// Re-initialize Person/Robot related class
 		BotMind.initializeInstances(marsClock);
 		CircadianClock.initializeInstances(marsClock);
-		Mind.initializeInstances(marsClock, this, missionManager, relationshipManager);		
+		Mind.initializeInstances(marsClock, missionManager, relationshipManager);		
 		PhysicalCondition.initializeInstances(this, masterClock, marsClock, medicalManager);
 		RadiationExposure.initializeInstances(masterClock, marsClock);
 		Role.initializeInstances(marsClock);
@@ -1342,7 +1341,7 @@ public class Simulation implements ClockListener, Serializable {
 		
 		String SPACE = " ";
 		
-		double sumSize = 0;
+		double sumFileSize = 0;
 //		double sumSize1 = 0;
 		
 		String unit = "";
@@ -1361,40 +1360,40 @@ public class Simulation implements ClockListener, Serializable {
 			sb.append(SPACE + ":" + SPACE);
 
 			// Get size
-			long size = 0;
+			double fileSize = 0;
 			
 //			long objectSize = 0;
 					
 //			MemoryMeter meter = new MemoryMeter();
 		    
 			if (type == 0) {
-				size = CheckSerializedSize.getSerializedSize(o);
+				fileSize = CheckSerializedSize.getSerializedSize(o);
 //				objectSize = meter.countChildren(o);
 //				System.out.println("Object Size : " + objectSize);
 			}
 			else if (type == 1) {
-				size = CheckSerializedSize.getSerializedSizeByteArray(o);
+				fileSize = CheckSerializedSize.getSerializedSizeByteArray(o);
 //				objectSize = meter.countChildren(o);
 //				System.out.println("Object Size : " + objectSize);
 			}
 			
-			sumSize += size;
+			sumFileSize += fileSize;
 		
-			if (size < 1_000D) {
+			if (fileSize < 1_000) {
 				unit = SPACE + "B" + SPACE;
 			}
-			else if (size < 1_000_000) {
-				size = size/1_000;
+			else if (fileSize < 1_000_000) {
+				fileSize = fileSize/1_000D;
 				unit = SPACE + "KB";
 			}
-			else if (size < 1_000_000_000) {
-				size = size/1_000_000;
+			else if (fileSize < 1_000_000_000) {
+				fileSize = fileSize/1_000_000D;
 				unit = SPACE + "MB";
 			}
 			
-			String sizeStr = size + unit;
-			int size1 = max1 - sizeStr.length();
-			for (int i=0; i<size1; i++) {
+			String sizeStr = String.format("%.2f", fileSize) + unit;
+			int size = max1 - sizeStr.length();
+			for (int i=0; i<size; i++) {
 				sb.append(SPACE);
 			}
 						
@@ -1419,7 +1418,7 @@ public class Simulation implements ClockListener, Serializable {
 //			}
 			
 			
-			sb.append(size + unit);
+			sb.append(sizeStr);
 			
 //			sb.append("        " + objectSize + unit1);
 			
@@ -1427,20 +1426,18 @@ public class Simulation implements ClockListener, Serializable {
 		}
 		
 		// Get the total size
-		if (sumSize < 1_000D) {
+		if (sumFileSize < 1_000D) {
 			unit = SPACE + "B" + SPACE;
 		}
-		else if (sumSize < 1_000_000D) {
-			sumSize = sumSize/1_000D;
+		else if (sumFileSize < 1_000_000D) {
+			sumFileSize = sumFileSize/1_000D;
 			unit = SPACE + "KB";
 		}
-		else if (sumSize < 1_000_000_000) {
-			sumSize = sumSize/1_000_000D;
+		else if (sumFileSize < 1_000_000_000) {
+			sumFileSize = sumFileSize/1_000_000D;
 			unit = SPACE + "MB";
 		}
-		
-		sumSize = Math.round(sumSize*10.0)/10.0;
-			
+					
 		sb.append(" ---------------------------------------------------------"
 				+ System.lineSeparator());	
 		
@@ -1452,14 +1449,15 @@ public class Simulation implements ClockListener, Serializable {
 		sb.append(name);
 		sb.append(SPACE + ":" + SPACE);
 
-		String sizeStr = sumSize + unit;
+//		sumFileSize = Math.round(sumFileSize*100.0)/100.0;
+
+		String sizeStr = String.format("%.2f", sumFileSize) + unit;
 		int size2 = max1 - sizeStr.length();
 		for (int i=0; i<size2; i++) {
 			sb.append(SPACE);
 		}
 		
-		sb.append(sumSize + unit
-				+ System.lineSeparator());
+		sb.append(sizeStr + System.lineSeparator());
 		
 //		proceed();
 		masterClock.setPaused(false, false);

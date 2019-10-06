@@ -2529,8 +2529,18 @@ public class UnitManager implements Serializable {
 	 * 
 	 * @param clock
 	 */
-	public void initializeInstances(MarsClock clock) {
+	public void reinit(MarsClock clock) {
 		marsClock = clock;
+		
+		for (Person p: lookupPerson.values()) {
+			p.reinit();
+		}
+		for (Robot r: lookupRobot.values()) {
+			r.reinit();
+		}
+		for (Building b: lookupBuilding.values()) {
+			b.reinit();
+		}
 	}
 	
 //	public void retrieveMarsSurface() {

@@ -61,6 +61,7 @@ public class Mind implements Serializable {
 	
 	/** The person owning this mind. */
 	private Person person = null;
+	
 	/** The person's task manager. */
 	private TaskManager taskManager;
 	/** The person's current mission (if any). */
@@ -73,15 +74,24 @@ public class Mind implements Serializable {
 	private EmotionManager emotion;
 	/** The person's personality trait manager. */
 	private PersonalityTraitManager trait;
+	
 //	/** The person's core mind. */
 //	private CoreMind coreMind;
 
 	private static MissionManager missionManager;
-
-	private static Simulation sim;
 	private static MarsClock marsClock;
 	private static RelationshipManager relationshipManager;
 
+	static {
+		Simulation sim = Simulation.instance();
+		// Load the marsClock
+		marsClock = sim.getMasterClock().getMarsClock();
+		// Load the mission manager
+		missionManager = sim.getMissionManager();
+		// Load the relationship manager
+		relationshipManager = sim.getRelationshipManager();
+	}
+	
 	/**
 	 * Constructor 1.
 	 * 
@@ -95,14 +105,13 @@ public class Mind implements Serializable {
 		job = null;
 		jobLock = false;
 
-		sim = Simulation.instance();
-		if (sim.getMasterClock() != null) // for passing maven test
-			marsClock = sim.getMasterClock().getMarsClock();
-
-		// Load the mission manager
-		missionManager = sim.getMissionManager();
-		
-		relationshipManager = sim.getRelationshipManager();
+//		Simulation sim = Simulation.instance();
+//		// Load the marsClock
+//		marsClock = sim.getMasterClock().getMarsClock();
+//		// Load the mission manager
+//		missionManager = sim.getMissionManager();
+//		// Load the relationship manager
+//		relationshipManager = sim.getRelationshipManager();
 		
 //		// Create CoreMind
 //		coreMind = new CoreMind();
@@ -114,21 +123,6 @@ public class Mind implements Serializable {
 		emotion = new EmotionManager(person);
 		// Construct the task manager
 		taskManager = new TaskManager(this);
-		// Construct the skill manager.
-//		skillManager = new SkillManager(person, coreMind);
-//		skillManager = new SkillManager(person);
-	}
-
-	/**
-	 * Reloads instances after loading from a saved sim
-	 * 
-	 * @param clock
-	 */
-	public static void initializeInstances(MarsClock clock, Simulation s, MissionManager m, RelationshipManager r) {
-		marsClock = clock;
-		sim = s;
-		relationshipManager = r;
-		missionManager = m;
 	}
 	
 	/**
@@ -778,7 +772,25 @@ public class Mind implements Serializable {
 //	public void setCoreMind(String career) {
 //		coreMind.create(career);	
 //	}
-//	
+
+	/**
+	 * Reloads instances after loading from a saved sim
+	 * 
+	 * @param clock
+	 */
+	public static void initializeInstances(MarsClock clock, MissionManager m, RelationshipManager r) {
+		marsClock = clock;
+		relationshipManager = r;
+		missionManager = m;
+	}
+	
+	public void reinit() {
+//		trait.reinit();
+//		mbti.reinit();
+//		emotion.reinit();
+		taskManager.reinit();
+	}
+	
 	/**
 	 * Prepare object for garbage collection.
 	 */

@@ -24,8 +24,7 @@ import org.mars_sim.msp.core.tool.RandomUtil;
  * This class represents the System Condition of a robot.
  * It models a robot's health.
  */
-public class SystemCondition
-implements Serializable {
+public class SystemCondition implements Serializable {
 
     /** default serial id. */
     private static final long serialVersionUID = 1L;
@@ -76,7 +75,8 @@ implements Serializable {
     private boolean isBatteryDepleting;
 
     private Robot robot;
-	private MarsClock marsClock;
+    
+	private static MarsClock marsClock;
 
 
     /**

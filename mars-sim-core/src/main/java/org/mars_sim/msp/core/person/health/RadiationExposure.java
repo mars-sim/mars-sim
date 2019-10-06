@@ -111,13 +111,12 @@ public class RadiationExposure implements Serializable {
 	// factors
 	// On MSL, SEPs is only 5% of GCRs, not like 10% (=25/2.5) here
 
-	/** The time interval that a person checks for radiation exposure */
+	/** The time interval that a person checks for radiation exposure. */
 	public static final int RADIATION_CHECK_FREQ = 50; // in millisols
-
-	public static final double SEP_CHANCE_SWING = 2D; // can be twice as much. probability of occurrence modifier
-														// (arbitrary)
-	public static final double GCR_CHANCE_SWING = 3D; // can be three times as much. probability of occurrence modifier
-														// (arbitrary)
+	/** The chance modifier for SEP. Can be twice as much probability of occurrence (an arbitrary value for now). */
+	public static final double SEP_CHANCE_SWING = 2D;
+	/** The chance modifier for GCR. Can be 3x as much probability of occurrence (an arbitrary value for now). */
+	public static final double GCR_CHANCE_SWING = 3D;
 
 	// Baseline radiation is a combination of the solar wind and the secondary
 	// radiation as a result of primary
@@ -147,38 +146,30 @@ public class RadiationExposure implements Serializable {
 	// magnetic fields protect the planet from solar wind erosion.
 	// Source :
 	// https://science.nasa.gov/science-news/science-at-nasa/2001/ast31jan_1/
-
+	/** 
 	public static final double BASELINE_PERCENT = 72.5; // [in %] calculated
 
-	// Galactic cosmic rays (GCRs) events
-	// Based on Ref_A's DAT data, ~25% of the GCR for the one day duration of the
-	// event.
+	/** Galactic cosmic rays (GCRs) events. Based on Ref_A's DAT data, ~25% of the GCR for the one day duration of the event. */
 	public static final double GCR_PERCENT = 25; // [in %] based on DAT
 
-	// Solar energetic particles (SEPs) events
-	// Includes Coronal Mass Ejection and Solar Flare
-	// The astronauts should expect one SPE every 2 months on average and a total of
-	// 3 or 4 during their
-	// entire trip, with each one usually lasting not more than a couple of days.
-	// Source :
-	// http://www.mars-one.com/faq/health-and-ethics/how-much-radiation-will-the-settlers-be-exposed-to
+	/** Percent of Solar energetic particles (SEPs) events [in %] (arbitrary). Note: it Includes Coronal Mass Ejection and Solar Flare. The astronauts should expect one SPE every 2 months on average and a total of3 or 4 during their entire trip, with each one usually lasting not more than a couple of days. Source :  http://www.mars-one.com/faq/health-and-ethics/how-much-radiation-will-the-settlers-be-exposed-to. */
+	public static final double SEP_PERCENT = 2.5; //
+	/** THe Baseline radiation dose per sol [in mSv] arbitrary. */
+	public static final double BASELINE_RAD_PER_SOL = .1; //
 
-	public static final double SEP_PERCENT = 2.5; // [in %] arbitrary
+	/** The average GCR dose equivalent rate [mSv] on the Mars, based on DAT. Note: based on Ref_A's DAT data, the average GCR dose equivalent rate on the Mars surface is 0.64 ± 0.12 mSv/day. The dose equivalent is 50 μSv. */
+	public static final double GCR_RAD_PER_SOL = .64;
+	/** THe GCR dose modifier[in mSv], based on DAT value. */
+	public static final double GCR_RAD_SWING = .12; // 
 
-	public static final double BASELINE_RAD_PER_SOL = .1; // [in mSv] arbitrary
-
-	// Based on Ref_A's DAT data, the average GCR dose equivalent rate on the Mars
-	// surface
-	// is 0.64 ± 0.12 mSv/day. The dose equivalent is 50 μSv,
-	public static final double GCR_RAD_PER_SOL = .64; // [in mSv] based on DAT
-	public static final double GCR_RAD_SWING = .12; // [in mSv] based on DAT
-
-	// Note : frequency and intensity of SEP events is sporadic and difficult to
-	// predict.
-	// Its flux varies by several orders of magnitude and are typically dominated by
-	// protons,
-	public static final double SEP_RAD_PER_SOL = .21; // [in mSv]
-	public static final double SEP_SWING_FACTOR = 1000; // assuming 3 orders of magnitude (arbitrary)
+	/** 
+	 * The SEP dose [mSv] per sol.
+	 * Note : frequency and intensity of SEP events is sporadic and difficult to predict. 
+	 * Its flux varies by several orders of magnitude and are typically dominated by protons. 
+	 */
+	public static final double SEP_RAD_PER_SOL = .21;
+	/** The SEP dose modifier [mSv], assuming 3 orders of magnitude (arbitrary) */
+	public static final double SEP_SWING_FACTOR = 1000; 
 	// since orders of magnitude are written in powers of 10.
 	// e.g. the order of magnitude of 1500 is 3, since 1500 may be written as 1.5 ×
 	// 10^3.
@@ -193,18 +184,18 @@ public class RadiationExposure implements Serializable {
 	// Pavlov et al. assumed an absorbed dose of 50 ±5 mGy/year.
 	// The actual absorbed dose measured by the RAD is 76 mGy/yr at the surface.
 
-	// ROWS of the 2-D dose array
+	// ROWS of the 2-D dose array. */
 	private static final int THIRTY_DAY = 0;
 	private static final int ANNUAL = 1;
 	private static final int CAREER = 2;
 
 	// COLUMNS of the 2-D dose array
-	// Organ dose equivalent limits, per NCRP guidelines
+	// Organ dose equivalent limits, per NCRP guidelines. */
 	private static final int BFO = 0; // BFO = blood-forming organs
 	private static final int OCULAR = 1;
 	private static final int SKIN = 2;
 
-	// Career whole-body effective dose limits, per NCRP guidelines
+	// Career whole-body effective dose limits, per NCRP guidelines. */
 	private static final int WHOLE_BODY_DOSE = 1000; // TODO: it varies with age and differs in male and female
 
 	private static final String WAS = " was ";
@@ -220,24 +211,20 @@ public class RadiationExposure implements Serializable {
 
 	private boolean isSick;
 
-	// private boolean isExposureChecked = false;
-
-	// Radiation Shielding
+	// <Radiation Shielding>
 	// One material in development at NASA has the potential to do both jobs:
-	// Hydrogenated boron nitride
-	// nanotubes—known as hydrogenated BNNTs—are tiny, nanotubes made of carbon,
-	// boron, and nitrogen, with
+	// - Hydrogenated boron nitride nanotubes—known as hydrogenated BNNTs
+	// They are tiny, nanotubes made of carbon, boron, and nitrogen, with
 	// hydrogen interspersed throughout the empty spaces left in between the tubes.
-	// Boron is also an excellent
-	// absorber secondary neutrons, making hydrogenated BNNTs an ideal shielding
-	// material.
-	// source :
+	// Boron is also an excellent absorber secondary neutrons, making hydrogenated 
+	// BNNTs an ideal shielding material.
+	// Source :
 	// https://www.nasa.gov/feature/goddard/real-martians-how-to-protect-astronauts-from-space-radiation-on-mars
 
-	// dose equivalent limits in mSv (milliSieverts)
+	/** Dose equivalent limits in mSv (milliSieverts). */
 	private int[][] DOSE_LIMITS = { { 250, 1000, 1500 }, { 500, 2000, 3000 }, { WHOLE_BODY_DOSE, 4000, 6000 } };
 
-	// randomize dose at the start of the sim when a settler arrives on Mars
+	/** Randomize dose at the start of the sim when a settler arrives on Mars. */
 	private double[][] dose;
 
 	// private List<RadiationEvent> eventList = new CopyOnWriteArrayList<>();
@@ -248,21 +235,22 @@ public class RadiationExposure implements Serializable {
 	private static MarsClock marsClock;
 	private static MasterClock masterClock;
 
+	static {
+//		if (Simulation.instance().getMasterClock() != null) { // for passing maven test
+//			masterClock = Simulation.instance().getMasterClock();
+//			marsClock = masterClock.getMarsClock();
+//		}
+	}
+	
 	public RadiationExposure(PhysicalCondition condition) {
 		this.person = condition.getPerson();
 		// this.condition = condition;
 		dose = new double[3][3];
-
+		
 		if (Simulation.instance().getMasterClock() != null) { // for passing maven test
 			masterClock = Simulation.instance().getMasterClock();
 			marsClock = masterClock.getMarsClock();
 		}
-
-		// if (masterClock == null)
-		// masterClock = Simulation.instance().getMasterClock();
-
-		// if (marsClock == null)
-		// marsClock = masterClock.getMarsClock(); // cannot pass maven test
 	}
 
 	public Map<RadiationEvent, Integer> getRadiationEventMap() {
