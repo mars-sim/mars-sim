@@ -61,10 +61,12 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	// Static members
 
 	/** Modifier for number of parts needed for a trip. */
-	private static final double PARTS_NUMBER_MODIFIER = 6D;
+	private static final double PARTS_NUMBER_MODIFIER = 5.5;
 	/** Estimate number of broken parts per malfunctions */
-	private static final double AVERAGE_NUM_MALFUNCTION = 3;
-
+	private static final double AVERAGE_NUM_MALFUNCTION = 2.5;
+	/** Estimate number of broken parts per malfunctions for EVA suits. */
+	protected static final double AVERAGE_EVA_MALFUNCTION = 2.0;
+	
 	/** True if vehicle's emergency beacon has been turned on */
 	// private boolean isBeaconOn = false;
 	/** True if vehicle has been loaded. */
@@ -847,14 +849,16 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		if (vehicle != null) {
 			double drivingTime = getEstimatedTripTime(false, distance);
 			double numberAccidents = drivingTime * OperateVehicle.BASE_ACCIDENT_CHANCE;
-			// Average number malfunctions per accident is 3.
 			double numberMalfunctions = numberAccidents * AVERAGE_NUM_MALFUNCTION;
 
 			Map<Integer, Double> parts = vehicle.getMalfunctionManager().getRepairPartProbabilities();
 			for (Integer part : parts.keySet()) {
-				int number = (int) Math.round(parts.get(part) * numberMalfunctions * PARTS_NUMBER_MODIFIER);
-				if (number > 0) {
-					result.put(part, number);
+				String name = ItemResourceUtil.findItemResourceName(part);
+				if (!name.contains("3d printer")) {
+					int number = (int) Math.round(parts.get(part) * numberMalfunctions * PARTS_NUMBER_MODIFIER);
+					if (number > 0) {
+						result.put(part, number);
+					}
 				}
 			}
 		}
@@ -1259,6 +1263,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 * @return resources and their number.
 	 */
 	public Map<Integer, Number> getOptionalResourcesToLoad() {
+		// Also load EVA suit related parts
 		return getPartsNeededForTrip(getTotalRemainingDistance());
 	}
 
@@ -1284,7 +1289,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		Map<Integer, Number> optionalResources = getOptionalResourcesToLoad();
 		Iterator<Integer> i = optionalResources.keySet().iterator();
 		while (i.hasNext()) {
-			int id = i.next();
+			Integer id = i.next();
 			// Check if it's an amount resource that can be stored inside
 			if (id < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
 				double amount = (double) optionalResources.get(id);

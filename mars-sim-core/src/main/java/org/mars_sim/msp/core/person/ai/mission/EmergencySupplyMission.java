@@ -919,10 +919,6 @@ public class EmergencySupplyMission extends RoverMission implements Serializable
 ////				System.out.println("equipment id : " + id);
 //				result.put(id, num);
 //			}
-			
-			
-			
-			
 		}
 
 		return result;

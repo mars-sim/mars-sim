@@ -61,16 +61,17 @@ public class EatMealMeta implements MetaTask, Serializable {
 
 		// When thirst is greater than 100, a person may start feeling thirsty
 		if (!notThirsty) {
-			result = Math.pow((thirst - PhysicalCondition.THIRST_THRESHOLD), 1.2);
+			result = Math.pow((thirst - PhysicalCondition.THIRST_THRESHOLD), 2.0);
 		}
 		
 		// Only eat a meal if person is sufficiently hungry or low on caloric energy.
 		if (!notHungry) {// || ghrelin-leptin > 300) {
-			result += thirst;
+			result += thirst * 2;
 			result += hunger / 8D;
-			result += (2525 - energy) / 50D;  // negative contribution // + (ghrelin-leptin - 300);
-			if (result <= 0)
-				result = 0;
+			if (energy < 2525)
+				result += (2525 - energy) / 50D; // (ghrelin-leptin - 300);
+//			if (result <= 0)
+//				result = 0;
 		}
 
 		else if (notHungry && notThirsty)

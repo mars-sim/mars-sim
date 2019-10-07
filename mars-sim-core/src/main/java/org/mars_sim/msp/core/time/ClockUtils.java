@@ -199,7 +199,7 @@ public class ClockUtils implements Serializable {
 			b.append(ZERO_MINUTES);
 		}
 
-		b.append(String.format("%05.2f", secs) + SECONDS);
+		b.append(String.format("%02d", (int)secs) + SECONDS);
 
 		return b.toString();
 	}

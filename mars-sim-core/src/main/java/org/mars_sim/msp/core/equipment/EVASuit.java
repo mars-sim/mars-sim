@@ -73,7 +73,7 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 	// Static members
 	public static String TYPE = SystemType.EVA_SUIT.getName();
 
-	public static String[] parts;
+	private static String[] parts;
 	
 	/** Total gas tank volume of EVA suit (Liter). */
 	public static final double TOTAL_VOLUME = 3.9D;
@@ -488,5 +488,9 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 	public void destroy() {
 		malfunctionManager = null;
 		parts = null;
+	}
+
+	public static String[] getParts() {
+		return parts;
 	}
 }

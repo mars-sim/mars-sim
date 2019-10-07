@@ -247,14 +247,13 @@ public abstract class RoverMission extends VehicleMission {
 	 * @return true if everyone is aboard
 	 */
 	protected final boolean isEveryoneInRover() {
-		boolean result = true;
 		Iterator<MissionMember> i = getMembers().iterator();
 		while (i.hasNext()) {
 			if (i.next().getLocationStateType() != LocationStateType.INSIDE_VEHICLE) {
-				result = false;
+				return false;
 			}
 		}
-		return result;
+		return true;
 	}
 
 	/**
@@ -263,14 +262,13 @@ public abstract class RoverMission extends VehicleMission {
 	 * @return true if no one is aboard
 	 */
 	protected final boolean isNoOneInRover() {
-		boolean result = true;
 		Iterator<MissionMember> i = getMembers().iterator();
 		while (i.hasNext()) {
 			if (i.next().isInVehicle()) {
-				result = false;
+				return false;
 			}
 		}
-		return result;
+		return true;
 	}
 
 	/**
@@ -618,7 +616,8 @@ public abstract class RoverMission extends VehicleMission {
 					
 					LogConsolidated.log(Level.WARNING, 0, sourceName, 
 							"[" + disembarkSettlement.getName() + "] "
-							+ p.getName() + " was transported to ("
+							+ p.getName() 
+							+ " was transported to ("
 							+ Math.round(p.getXLocation()*10.0)/10.0 + ", " 
 							+ Math.round(p.getYLocation()*10.0)/10.0 + ") in "
 							+ p.getBuildingLocation().getNickName()); //$NON-NLS-1$

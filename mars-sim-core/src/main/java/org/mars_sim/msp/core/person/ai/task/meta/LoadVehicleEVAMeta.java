@@ -93,7 +93,10 @@ public class LoadVehicleEVAMeta implements MetaTask, Serializable {
 	        try {
 	            List<Mission> missions = LoadVehicleEVA.getAllMissionsNeedingLoading(settlement);
                 int num = missions.size();
-               	result = 100D * num;
+               	if (num == 0)
+               		return 0;
+               	else 
+               		result = 100D * num;
 	        }
 	        catch (Exception e) {
 	            logger.log(Level.SEVERE, "Error finding loading missions.", e);
@@ -107,9 +110,9 @@ public class LoadVehicleEVAMeta implements MetaTask, Serializable {
 	            }
 	        }
 	
-	        // Crowded settlement modifier
-	        if (settlement.getIndoorPeopleCount() > settlement.getPopulationCapacity())
-	            result *= 2D;
+//	        // Crowded settlement modifier
+//	        if (settlement.getIndoorPeopleCount() > settlement.getPopulationCapacity())
+//	            result *= 2D;
 	
 	        // Job modifier.
 	        Job job = person.getMind().getJob();

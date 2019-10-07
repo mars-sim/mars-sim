@@ -29,6 +29,7 @@ import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.task.CollectResources;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.taskUtil.Task;
+import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -653,14 +654,15 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 
 	@Override
 	protected Map<Integer, Number> getPartsNeededForTrip(double distance) {
-		Map<Integer, Number> result = super.getPartsNeededForTrip(distance);
+		// Load the standard parts from VehicleMission.
+		Map<Integer, Number> result = super.getPartsNeededForTrip(distance); // new HashMap<>();
 
 		// Determine repair parts for EVA Suits.
 		double evaTime = getEstimatedRemainingCollectionSiteTime(false);
 		double numberAccidents = evaTime * getPeopleNumber() * EVAOperation.BASE_ACCIDENT_CHANCE;
 
-		// Average number malfunctions per accident is two.
-		double numberMalfunctions = numberAccidents * 2D;
+		// Assume the average number malfunctions per accident is 1.5.
+		double numberMalfunctions = numberAccidents * VehicleMission.AVERAGE_EVA_MALFUNCTION;
 
 		// Get temporary EVA suit.
 		EVASuit suit = (EVASuit) EquipmentFactory.createEquipment(EVASuit.class, new Coordinates(0, 0), true);
@@ -670,11 +672,16 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 		Iterator<Integer> i = parts.keySet().iterator();
 		while (i.hasNext()) {
 			Integer part = i.next();
-			int number = (int) Math.round(parts.get(part) * numberMalfunctions);
-			if (number > 0) {
-				if (result.containsKey(part))
-					number += result.get(part).intValue();
-				result.put(part, number);
+			String name = ItemResourceUtil.findItemResourceName(part);
+			for (String n : EVASuit.getParts()) {
+				if (n.equalsIgnoreCase(name)) {
+					int number = (int) Math.round(parts.get(part) * numberMalfunctions);
+					if (number > 0) {
+						if (result.containsKey(part))
+							number += result.get(part).intValue();
+						result.put(part, number);
+					}
+				}
 			}
 		}
 

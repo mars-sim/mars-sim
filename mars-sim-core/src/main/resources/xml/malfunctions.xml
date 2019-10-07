@@ -106,8 +106,9 @@
 			     Note that this probability has nothing to do with the 
 			     reliability or failure rate of this item. -->
 			<part name="airleak patch" number="2" probability="75" />
-			<part name="work gloves" number="1" probability="5" />			
-			<part name="fiberglass cloth" number="1" probability="20" />
+			<part name="work gloves" number="1" probability="15" />			
+			<part name="fiberglass cloth" number="1" probability="10" />
+			<part name="eva helmet" number="1" probability="10" />				
 		</repair-parts-list>
 
 	</malfunction>
@@ -503,6 +504,10 @@
 		<!-- 2014-11-19 Added water tank and small water pump -->
 			<part name="water tank" number="1" probability="10" />
 			<part name="small water pump" number="1" probability="15" />
+			<part name="eva boots" number="1" probability="15" />		
+			<part name="coveralls" number="1" probability="10" />
+			<part name="eva backpack" number="1" probability="10" />	
+										
 		</repair-parts-list>
 	</malfunction>
 
@@ -630,6 +635,9 @@
 		</medical-complaint-list>
 		<repair-parts-list>
 			<part name="airleak patch" number="1" probability="100" />
+			<part name="counter pressure suit" number="1" probability="10" />
+			<part name="eva pads" number="1" probability="10" />
+			<part name="coveralls" number="1" probability="10" />	
 		</repair-parts-list>
 	</malfunction>
 

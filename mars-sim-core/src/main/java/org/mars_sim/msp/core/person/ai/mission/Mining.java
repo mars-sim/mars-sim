@@ -19,12 +19,15 @@ import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.equipment.Bag;
+import org.mars_sim.msp.core.equipment.EVASuit;
+import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.mars.ExploredLocation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.task.CollectMinedMinerals;
+import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.MineSite;
 import org.mars_sim.msp.core.person.ai.taskUtil.Task;
 import org.mars_sim.msp.core.resource.AmountResource;
@@ -1194,6 +1197,42 @@ public class Mining extends RoverMission {
 		fireMissionUpdate(MissionEventType.COLLECT_MINERALS_EVENT);
 	}
 
+	@Override
+	protected Map<Integer, Number> getPartsNeededForTrip(double distance) {
+		// Load the standard parts from VehicleMission.
+		Map<Integer, Number> result = super.getPartsNeededForTrip(distance); // new HashMap<>();
+
+		// Determine repair parts for EVA Suits.
+		double evaTime = getEstimatedRemainingMiningSiteTime();
+		double numberAccidents = evaTime * getPeopleNumber() * EVAOperation.BASE_ACCIDENT_CHANCE;
+
+		// Assume the average number malfunctions per accident is 1.5.
+		double numberMalfunctions = numberAccidents * VehicleMission.AVERAGE_EVA_MALFUNCTION;
+
+		// Get temporary EVA suit.
+		EVASuit suit = (EVASuit) EquipmentFactory.createEquipment(EVASuit.class, new Coordinates(0, 0), true);
+
+		// Determine needed repair parts for EVA suits.
+		Map<Integer, Double> parts = suit.getMalfunctionManager().getRepairPartProbabilities();
+		Iterator<Integer> i = parts.keySet().iterator();
+		while (i.hasNext()) {
+			Integer part = i.next();
+			String name = ItemResourceUtil.findItemResourceName(part);
+			for (String n : EVASuit.getParts()) {
+				if (n.equalsIgnoreCase(name)) {
+					int number = (int) Math.round(parts.get(part) * numberMalfunctions);
+					if (number > 0) {
+						if (result.containsKey(part))
+							number += result.get(part).intValue();
+						result.put(part, number);
+					}
+				}
+			}
+		}
+
+		return result;
+	}
+	
 	@Override
 	public void destroy() {
 		super.destroy();

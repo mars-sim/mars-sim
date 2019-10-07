@@ -91,9 +91,7 @@ public final class MalfunctionFactory implements Serializable {
 		partConfig = simulationConfig.getPartConfiguration();
 //		malfunctions = malfunctionConfig.getMalfunctionList();
 		missionManager = sim.getMissionManager();
-//		marsClock = Simulation.instance().getMasterClock().getMarsClock();
-//		unitManager = sim.getUnitManager();
-		
+	
 		// Initialize maps 
 		namePartMap = new HashMap<String, Part>();
 

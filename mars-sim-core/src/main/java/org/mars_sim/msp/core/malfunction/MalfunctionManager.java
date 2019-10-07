@@ -1461,7 +1461,7 @@ public class MalfunctionManager implements Serializable {
 	}
 
 	/**
-	 * Gets off of the repair part probabilities for the malfunctionable.
+	 * Gets the repair part probabilities for the malfunctionable.
 	 * 
 	 * @return maps of parts and probable number of parts needed per malfunction.
 	 * @throws Exception if error finding probabilities.
@@ -1471,6 +1471,12 @@ public class MalfunctionManager implements Serializable {
 		return factory.getRepairPartProbabilities(scopes);
 	}
 
+	/**
+	 * Gets the repair part probabilities for maintenance.
+	 * 
+	 * @return maps of parts and probable number of parts in case of maintenance.
+	 * @throws Exception if error finding probabilities.
+	 */
 	public Map<Integer, Double> getMaintenancePartProbabilities() {
 		// MalfunctionFactory factory = Simulation.instance().getMalfunctionFactory();
 		return factory.getMaintenancePartProbabilities(scopes);

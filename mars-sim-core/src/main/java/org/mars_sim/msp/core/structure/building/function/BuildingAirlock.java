@@ -120,7 +120,7 @@ public class BuildingAirlock extends Airlock {
             building.getInventory().storeUnit(person);
             // 1.3 Add the person to the building
             BuildingManager.addPersonOrRobotToBuilding(person, building);
-			// 5.4 Set the person's coordinates to that of the settlement's
+			// 1.4 Set the person's coordinates to that of the settlement's
 			person.setCoordinates(building.getSettlement().getCoordinates());
 			
    			LogConsolidated.log(Level.FINER, 0, sourceName,

@@ -1868,7 +1868,7 @@ public class GoodsManager implements Serializable {
 		if (supply < MINIMUM_STORED_SUPPLY)
 			supply = MINIMUM_STORED_SUPPLY;
 
-		int id = resourceGood.getID();
+		Integer id = resourceGood.getID();
 		Part part = null;
 		if (id >= ResourceUtil.FIRST_ITEM_RESOURCE_ID)
 			part = (Part) ItemResourceUtil.findItemResource(resourceGood.getID());
@@ -2140,7 +2140,7 @@ public class GoodsManager implements Serializable {
 	 * @return demand
 	 */
 	private double getEVASuitPartsDemand(double demand, Part part) {
-		for (String s : EVASuit.parts) {
+		for (String s : EVASuit.getParts()) {
 			if (part.getName().equalsIgnoreCase(s)) {
 				return demand * eVASuitMod;
 			}
