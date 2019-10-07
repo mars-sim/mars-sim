@@ -5,6 +5,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.structure.BuildingTemplate;
 import org.mars_sim.msp.core.structure.MockSettlement;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -18,7 +20,9 @@ public class BuildingConnectorManagerTest extends TestCase {
     private static final double SMALL_DELTA = .0000001D;
 
     public void testConstructorNoBuildingTemplates() {
-
+        SimulationConfig.instance().loadConfig();
+        Simulation.instance().testRun();
+        
         Settlement settlement = new MockSettlement();
 
         List<BuildingTemplate> buildingTemplates = new ArrayList<BuildingTemplate>(0);
@@ -32,7 +36,9 @@ public class BuildingConnectorManagerTest extends TestCase {
     }
 
     public void testConstructorWithBuildingTemplates() {
-
+        SimulationConfig.instance().loadConfig();
+        Simulation.instance().testRun();
+        
         Settlement settlement = new MockSettlement();
         BuildingManager buildingManager = settlement.getBuildingManager();
 
@@ -133,7 +139,9 @@ public class BuildingConnectorManagerTest extends TestCase {
     }
 
     public void testDetermineShortestPath() {
-
+        SimulationConfig.instance().loadConfig();
+        Simulation.instance().testRun();
+        
         Settlement settlement = new MockSettlement();
         BuildingManager buildingManager = settlement.getBuildingManager();
 

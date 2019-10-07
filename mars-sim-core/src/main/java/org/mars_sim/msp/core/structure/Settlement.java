@@ -4354,7 +4354,8 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 		if (obj == null) return false;
 		if (this.getClass() != obj.getClass()) return false;
 		Settlement s = (Settlement) obj;
-		return this.name.equals(s.getName())
+		return this.identifier == s.getIdentifier()
+				&& this.name.equals(s.getName())
 				&& this.template.equals(s.getTemplate());
 	}
 	

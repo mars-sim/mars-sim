@@ -899,6 +899,8 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	 */
 	// Called by TabPanelBuilding.java for building nickname change
 	public String getNickName() {
+		if (nickName == null || nickName.equalsIgnoreCase(""))
+			nickName = getName();			
 		return nickName;
 	}
 
@@ -906,13 +908,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	 * Gets the building type, not building's nickname
 	 * 
 	 * @return building type as a String.
-	 * @deprecated TODO internationalize building names for display in user
-	 *             interface.
 	 */
-	// Change data field from "name" to "buildingType"
-	// TODO: change getName() to getBuildingType()
-	// getName() has 120 occurrences in MSP
-	// will retain its name for the time being
 	public String getName() {
 		return buildingType;
 	}
@@ -1532,8 +1528,9 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		if (obj == null) return false;
 		if (this.getClass() != obj.getClass()) return false;
 		Building b = (Building) obj;
-		return this.nickName.equals(b.getNickName());
-//		return this.buildingType.equals(b.getBuildingType());
+		return this.identifier == b.getIdentifier()
+			&& this.buildingType.equals(b.getBuildingType());
+//			&& this.nickName.equals(b.getNickName());
 	}
 	
 	/**

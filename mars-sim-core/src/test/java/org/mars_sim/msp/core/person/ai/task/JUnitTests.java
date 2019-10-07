@@ -1,5 +1,7 @@
 package org.mars_sim.msp.core.person.ai.task;
 
+import org.mars_sim.msp.core.SimulationConfig;
+
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -49,6 +51,8 @@ public class JUnitTests extends TestCase {
 	 * Collection of external test suites to be included in current testing.
 	 */
 	public static Test suite() {
+        SimulationConfig.instance().loadConfig();	
+		
 	    TestSuite suite = new TestSuite(thisClass);
 	    
 	    suite.addTestSuite(LoadVehicleTest.class);

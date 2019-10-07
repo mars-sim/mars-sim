@@ -223,6 +223,9 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	private List<TrainingType> trainings;
 	
 	static {
+		// personConfig is needed by maven unit test
+		PersonConfig personConfig = simulationConfig.getPersonConfig();
+		
 		// Compute the average height for all
 		tall = personConfig.getTallAverageHeight();
 		shortH = personConfig.getShortAverageHeight();
@@ -1910,8 +1913,9 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		if (obj == null) return false;
 		if (this.getClass() != obj.getClass()) return false;
 		Person p = (Person) obj;
-		return this.name.equals(p.getName())
-				&& this.gender.equals(p.getGender())
+		return this.identifier == p.getIdentifier()
+				&& this.name.equals(p.getName())
+//				&& this.gender.equals(p.getGender())
 				&& this.age == p.getAge()
 				&& this.getBirthDate() == p.getBirthDate();
 	}
@@ -1923,7 +1927,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 */
 	public int hashCode() {
 		int hashCode = name.hashCode();
-		hashCode *= age;
+		hashCode *= age * identifier;
 		hashCode *= getBirthDate().hashCode();
 		return hashCode;
 	}
