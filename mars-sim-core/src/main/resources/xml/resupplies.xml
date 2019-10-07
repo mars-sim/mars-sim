@@ -105,7 +105,9 @@
 		<equipment type="Bag" number="140" />
 		<equipment type="Large Bag" number="140" />
 		<equipment type="Specimen Box" number="140" />
+		
 		<person number="4" />
+		
 		<resource name="hydrogen" amount="1000.0" />
 		<resource name="food" amount="1657.0" />
 		<part-package name="package 3" number="1" />
@@ -157,7 +159,9 @@
 		<equipment type="Bag" number="260" />
 		<equipment type="Large Bag" number="260" />
 		<equipment type="Specimen Box" number="260" />
+		
 		<person number="12" />
+		
 		<resource name="hydrogen" amount="1000.0" />
 		<resource name="food" amount="4970.0" />
 		<part-package name="package 4" number="1" />

@@ -265,7 +265,7 @@ public class MarsProjectHeadless {
 		}
 	
 		public void run() {
-			logger.config("StartTask's run() is on " + Thread.currentThread().getName());
+//			logger.config("StartTask's run() is on " + Thread.currentThread().getName());
 			Simulation.instance().startClock(autosaveDefault);
 			// Load the menu choice
 			InteractiveTerm.loadTerminalMenu();

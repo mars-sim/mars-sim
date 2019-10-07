@@ -46,13 +46,13 @@
 		<part type="light emitting diode bulb" number="50" />
 		<part type="mushroom containment kit" number="5" />
 		<!-- 2014-11-20 Added the following new parts -->
-		<part type="microcontroller" number="30" />
+		<part type="microcontroller" number="60" />
 		<part type="microwave" number="3" />
 		<part type="water tank" number="5" />
 		<part type="small water pump" number="3" />
 		<part type="carbon dioxide pump" number="3" />
 		<part type="small transformer" number="5" />
-		<part type="rF power transistor" number="10" />
+		<part type="rF power transistor" number="60" />
 		<part type="autoclave" number="3" />
 		<part type="blender" number="3" />
 		<part type="air compressor" number="3" />
@@ -155,13 +155,13 @@
 		<part type="light emitting diode bulb" number="100" />
 		<part type="mushroom containment kit" number="10" />
 		<!-- 2014-11-20 Added the following new parts -->
-		<part type="microcontroller" number="60" />
+		<part type="microcontroller" number="120" />
 		<part type="microwave" number="10" />
 		<part type="water tank" number="10" />
 		<part type="small water pump" number="10" />
 		<part type="carbon dioxide pump" number="10" />
 		<part type="small transformer" number="10" />
-		<part type="rF power transistor" number="10" />
+		<part type="rF power transistor" number="120" />
 		<part type="autoclave" number="10" />
 		<part type="blender" number="10" />
 		<part type="air compressor" number="10" />
@@ -265,13 +265,13 @@
 		<part type="light emitting diode bulb" number="150" />
 		<part type="mushroom containment kit" number="15" />
 		<!-- 2014-11-20 Added the following new parts -->
-		<part type="microcontroller" number="80" />
+		<part type="microcontroller" number="160" />
 		<part type="microwave" number="15" />
 		<part type="water tank" number="15" />
 		<part type="small water pump" number="15" />
 		<part type="carbon dioxide pump" number="15" />
 		<part type="small transformer" number="15" />
-		<part type="rF power transistor" number="20" />
+		<part type="rF power transistor" number="160" />
 		<part type="autoclave" number="15" />
 		<part type="blender" number="15" />
 		<part type="air compressor" number="15" />
@@ -375,13 +375,13 @@
 		<part type="light emitting diode bulb" number="200" />
 		<part type="mushroom containment kit" number="20" />
 		<!-- 2014-11-20 Added the following new parts -->
-		<part type="microcontroller" number="200" />
+		<part type="microcontroller" number="400" />
 		<part type="microwave" number="10" />
 		<part type="water tank" number="25" />
 		<part type="small water pump" number="20" />
 		<part type="carbon dioxide pump" number="15" />
 		<part type="small transformer" number="25" />
-		<part type="rF power transistor" number="40" />
+		<part type="rF power transistor" number="400" />
 		<part type="autoclave" number="15" />
 		<part type="blender" number="15" />
 		<part type="air compressor" number="15" />

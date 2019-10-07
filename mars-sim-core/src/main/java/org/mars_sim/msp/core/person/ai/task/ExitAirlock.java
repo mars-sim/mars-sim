@@ -37,7 +37,8 @@ import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
- * The ExitAirlock class is a task for exiting an airlock for an EVA operation.
+ * The ExitAirlock class is a task for exiting an airlock of a settlement or vehicle 
+ * in order to perform an EVA operation outside.
  */
 public class ExitAirlock extends Task implements Serializable {
 
@@ -329,8 +330,9 @@ public class ExitAirlock extends Task implements Serializable {
 					}
 					boolean activationSuccessful = airlock.addCycleTime(activationTime);
 					if (!activationSuccessful) {
-						LogConsolidated.log(Level.WARNING, 0, sourceName, "[" + person.getSettlement() + "] "
-								+ person.getName() + " had problems with airlock activation.");
+							LogConsolidated.log(Level.WARNING, 0, sourceName, 
+									"[" + person.getLocationTag().getLocale() + "] " + person.getName()
+									+ " had problems with airlock activation.");
 					}
 				} else {
 					// If person is not airlock operator, just wait.
@@ -346,12 +348,14 @@ public class ExitAirlock extends Task implements Serializable {
 				if (airlock.getEntity() instanceof Building) {
 					double distance = Point2D.distance(person.getXLocation(), person.getYLocation(),
 							insideAirlockPos.getX(), insideAirlockPos.getY());
-					// logger.finer(person + " walking to inside airlock position, distance: " +
-					// distance);
-					logger.finer(person + " was walking toward an airlock within a distance of " + distance);
+					LogConsolidated.log(Level.FINER, 0, sourceName, 
+							"[" + person.getLocationTag().getLocale() + "] " + person.getName()
+							+ " was walking toward an airlock within a distance of " + distance);
+					
 					Building airlockBuilding = (Building) airlock.getEntity();
 					addSubTask(new WalkSettlementInterior(person, airlockBuilding, insideAirlockPos.getX(),
 							insideAirlockPos.getY()));
+					
 				} else if (airlock.getEntity() instanceof Rover) {
 
 					Rover airlockRover = (Rover) airlock.getEntity();
@@ -377,8 +381,6 @@ public class ExitAirlock extends Task implements Serializable {
 	private double waitingInsideAirlockPhase(double time) {
 
 		double remainingTime = time;
-
-//		if (person != null) {
 
 			if (airlock.inAirlock(person)) {
 				
@@ -425,16 +427,14 @@ public class ExitAirlock extends Task implements Serializable {
 			}
 			
 			else {
-//				LogConsolidated.log(Level.FINER, 0, sourceName, 
-//						"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
-//						+ " was in " + person.getLocationTag().getImmediateLocation()
-//						+ " and was thus no longer inside the airlock.");
+				// at this point, the person should have already been 'retrieved' from the settlement's inventory. 
+				LogConsolidated.log(Level.FINER, 0, sourceName, 
+						"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
+						+ " was in " + person.getLocationTag().getImmediateLocation()
+						+ " and was exiting the airlock.");
 				
-
 				setPhase(EXITING_AIRLOCK);
 			}
-//		}
-
 		// Add experience
 		addExperience(time - remainingTime);
 
@@ -454,7 +454,8 @@ public class ExitAirlock extends Task implements Serializable {
 		double remainingTime = time;
 
 		LogConsolidated.log(Level.FINER, 0, sourceName,
-				"[" + person.getLocationTag().getLocale() + "] " + person + " was about to leave the airlock going outside.");
+				"[" + person.getLocationTag().getLocale() + "] " + person 
+				+ " was about to open the outer door of the airlock going outside.");
 		
 		if (person.isInside()) {
 //                throw new IllegalStateException(person + " has exited airlock of " + airlock.getEntityName() +
@@ -866,9 +867,21 @@ public class ExitAirlock extends Task implements Serializable {
 		super.endTask();
 		// Clear the person as the airlock operator if task ended prematurely.
 		if ((airlock != null) && person.equals(airlock.getOperator())) {
-			LogConsolidated.log(Level.WARNING, 1_000, sourceName,
-					person + " was ending the task of exiting airlock task prematurely and no longer being the airlock operator for "
-							+ airlock.getEntityName());
+			String loc = "";
+			if (airlock.getEntity() instanceof Vehicle) {
+				loc = airlock.getEntityName();
+				LogConsolidated.log(Level.WARNING, 1_000, sourceName,
+						"[" + loc + "] "
+						+ person + " ended the task of being the airlock operator.");
+			}
+			else {//if (airlock.getEntity() instanceof Settlement) {
+				loc = ((Building) (airlock.getEntity())).getSettlement().getName();
+				LogConsolidated.log(Level.WARNING, 1_000, sourceName,
+						"[" + loc + "] "
+						+ person + " ended the task of being the airlock operator for "
+								+ airlock.getEntityName());
+			}
+			
 			airlock.clearOperator();
 		}
 	}

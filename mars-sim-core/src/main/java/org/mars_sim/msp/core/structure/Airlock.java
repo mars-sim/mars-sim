@@ -373,7 +373,7 @@ public abstract class Airlock implements Serializable {
 			
 			operatorID = selectedID;
 
-			LogConsolidated.log(Level.INFO, 0, sourceName, "[" + selected.getLocationTag().getLocale() + "] "
+			LogConsolidated.log(Level.FINER, 0, sourceName, "[" + selected.getLocationTag().getLocale() + "] "
 						+ selected + " stepped up and became the operator of the airlock in "
 						+ getEntityName());
 		}
@@ -416,7 +416,7 @@ public abstract class Airlock implements Serializable {
 	}
 
 	/**
-	 * Occupants are to exit the airlock one by one
+	 * Occupants are to exit/leave the airlock one by one
 	 */
 	public void leaveAirlock() {
 		Iterator<Integer> i = occupantIDs.iterator();
@@ -429,10 +429,9 @@ public abstract class Airlock implements Serializable {
 		    		lookupPerson.put(id, p);
 		    	}
 				LogConsolidated.log(Level.FINER, 0, sourceName,
-						"[" + p.getLocationTag().getLocale() + "] " 
-					+ p.getName()
-					+ " reported that the airlock in " + getEntity() + " had been " + getState().toString().toLowerCase() 
-						+ ".");
+						"[" + p.getLocationTag().getLocale() + "] " + p.getName()
+						+ " reported that the airlock in " + getEntity() + " had been " 
+						+ getState().toString().toLowerCase() + ".");
 				
 				// Call BuildingAirlock or VehicleAirlock's exitAirlock() to change the state of the his container unit, namely, the EVA suit
 				exitAirlock(p);

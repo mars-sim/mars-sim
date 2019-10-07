@@ -786,11 +786,11 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 		Iterator<Integer> iE = optionalEquipment.keySet().iterator();
 		while (iE.hasNext() && (amountLoading > 0D)) {
 			Integer id = iE.next();
-			int numNeededTotal = (Integer) optionalEquipment.get(id);
+			int numNeededTotal = optionalEquipment.get(id);
 //			int i0 = numNeededTotal;
 			
 			if (requiredEquipment.containsKey(id)) {
-				numNeededTotal += (Integer) requiredEquipment.get(id);
+				numNeededTotal += requiredEquipment.get(id);
 			}
 			int numAlreadyLoaded = vInv.findNumUnitsOfClass(id);
 			
@@ -906,7 +906,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 			Iterator<Class<? extends Equipment>> i = equipment.keySet().iterator();
 			while (i.hasNext()) {
 				Class<? extends Equipment> equipmentType = i.next();
-				int num = (Integer) equipment.get(equipmentType);
+				int num = equipment.get(equipmentType);
 //				Coordinates defaultLoc = new Coordinates(0D, 0D);
 				for (int x = 0; x < num; x++) {
 					inv.storeUnit(EquipmentFactory.createEquipment(equipmentType, settlement.getCoordinates(), true));

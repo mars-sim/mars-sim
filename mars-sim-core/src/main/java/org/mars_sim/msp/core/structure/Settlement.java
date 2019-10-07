@@ -802,7 +802,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 
 		return allAssociatedPeople.stream().filter(
 				p -> !p.isDeclaredDead() && (p.getLocationStateType() == LocationStateType.OUTSIDE_SETTLEMENT_VICINITY
-						|| p.getLocationStateType() == LocationStateType.OUTSIDE_ON_MARS))
+						|| p.getLocationStateType() == LocationStateType.OUTSIDE_ON_THE_SURFACE_OF_MARS))
 				.collect(Collectors.toList());
 
 	}
@@ -4354,7 +4354,20 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 		if (obj == null) return false;
 		if (this.getClass() != obj.getClass()) return false;
 		Settlement s = (Settlement) obj;
-		return this.name.equals(s.getName());
+		return this.name.equals(s.getName())
+				&& this.template.equals(s.getTemplate());
+	}
+	
+	/**
+	 * Gets the hash code for this object.
+	 * 
+	 * @return hash code.
+	 */
+	public int hashCode() {
+		int hashCode = name.hashCode();
+		hashCode *= identifier;
+		hashCode *= template.hashCode();
+		return hashCode;
 	}
 	
 	@Override

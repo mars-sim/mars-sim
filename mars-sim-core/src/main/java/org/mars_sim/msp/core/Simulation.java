@@ -610,30 +610,30 @@ public class Simulation implements ClockListener, Serializable {
 				
 			} catch (ClassNotFoundException e) {
 				e.printStackTrace();
-				logger.log(Level.SEVERE,
-						"Quitting mars-sim with ClassNotFoundException when loading the simulation : "
-								+ e.getMessage());
+//				logger.log(Level.SEVERE,
+//						"Quitting mars-sim with ClassNotFoundException when loading the simulation : "
+//								+ e.getMessage());
 //    	        Platform.exit();
 				System.exit(1);
 
 			} catch (IOException e) {
 				e.printStackTrace();
-				logger.log(Level.SEVERE,
-						"Quitting mars-sim with IOException when loading the simulation : " + e.getMessage());
+//				logger.log(Level.SEVERE,
+//						"Quitting mars-sim with IOException when loading the simulation : " + e.getMessage());
 //    	        Platform.exit();
 				System.exit(1);
 
 			} catch (NullPointerException e) {
 				e.printStackTrace();
-				logger.log(Level.SEVERE,
-						"Quitting mars-sim with NullPointerException when loading the simulation : " + e.getMessage());
+//				logger.log(Level.SEVERE,
+//						"Quitting mars-sim with NullPointerException when loading the simulation : " + e.getMessage());
 //    	        Platform.exit();
-				System.exit(1);
+//				System.exit(1);
 			
 			} catch (Exception e) {
 				e.printStackTrace();
-				logger.log(Level.SEVERE,
-						"Quitting mars-sim. Could not load the simulation : " + e.getMessage());
+//				logger.log(Level.SEVERE,
+//						"Quitting mars-sim. Could not load the simulation : " + e.getMessage());
 //    	        Platform.exit();
 				System.exit(1);
 			}

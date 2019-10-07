@@ -1527,14 +1527,26 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		return this;
 	}
 
-//	public boolean equals(Object obj) {
-//		if (this == obj) return true;
-//		if (obj == null) return false;
-//		if (this.getClass() != obj.getClass()) return false;
-//		Building b = (Building) obj;
-//		return this.nickName.equals(b.getNickName());
-////		return this.buildingType.equals(b.getBuildingType());
-//	}
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (obj == null) return false;
+		if (this.getClass() != obj.getClass()) return false;
+		Building b = (Building) obj;
+		return this.nickName.equals(b.getNickName());
+//		return this.buildingType.equals(b.getBuildingType());
+	}
+	
+	/**
+	 * Gets the hash code for this object.
+	 * 
+	 * @return hash code.
+	 */
+	public int hashCode() {
+		int hashCode = nickName.hashCode();
+		hashCode *= identifier;
+		hashCode *= buildingType.hashCode();
+		return hashCode;
+	}
 	
 	public void reinit() {
 		// transient instances

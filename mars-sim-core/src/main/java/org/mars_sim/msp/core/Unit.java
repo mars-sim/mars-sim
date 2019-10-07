@@ -197,11 +197,11 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 			containerID = (Integer) MARS_SURFACE_ID;
 		}
 		else if (this instanceof Settlement) {
-			currentStateType = LocationStateType.OUTSIDE_ON_MARS;
+			currentStateType = LocationStateType.OUTSIDE_ON_THE_SURFACE_OF_MARS;
 			containerID = (Integer) MARS_SURFACE_ID;
 		}
 		else {
-			currentStateType = LocationStateType.OUTSIDE_ON_MARS;
+			currentStateType = LocationStateType.OUTSIDE_ON_THE_SURFACE_OF_MARS;
 			containerID = (Integer) MARS_SURFACE_ID;
 //			logger.info(this + " is " + currentStateType);
 		}
@@ -478,10 +478,10 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 			currentStateType = LocationStateType.INSIDE_SETTLEMENT;
 		}
 		else if (this instanceof Settlement) {
-			currentStateType = LocationStateType.OUTSIDE_ON_MARS;
+			currentStateType = LocationStateType.OUTSIDE_ON_THE_SURFACE_OF_MARS;
 		}
 		else if (this instanceof MarsSurface) {
-			currentStateType = LocationStateType.OUTSIDE_ON_MARS;
+			currentStateType = LocationStateType.OUTSIDE_ON_THE_SURFACE_OF_MARS;
 		}			
 			
 		// c. Set containerID
@@ -548,7 +548,7 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 			if (tag.isInSettlementVicinity())
 				currentStateType = LocationStateType.OUTSIDE_SETTLEMENT_VICINITY;		
 			else
-				currentStateType = LocationStateType.OUTSIDE_ON_MARS;
+				currentStateType = LocationStateType.OUTSIDE_ON_THE_SURFACE_OF_MARS;
 		}
 		
 		else
@@ -618,7 +618,7 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 			if (tag.isInSettlementVicinity())
 				currentStateType = LocationStateType.OUTSIDE_SETTLEMENT_VICINITY;		
 			else
-				currentStateType = LocationStateType.OUTSIDE_ON_MARS;
+				currentStateType = LocationStateType.OUTSIDE_ON_THE_SURFACE_OF_MARS;
 			
 //			Unit oldContainer = getContainerUnit();
 //			
@@ -728,7 +728,7 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 			if (tag.isInSettlementVicinity())
 				currentStateType = LocationStateType.OUTSIDE_SETTLEMENT_VICINITY;		
 			else
-				currentStateType = LocationStateType.OUTSIDE_ON_MARS;
+				currentStateType = LocationStateType.OUTSIDE_ON_THE_SURFACE_OF_MARS;
 			
 //			Unit oldContainer = getContainerUnit();
 //			
@@ -1059,7 +1059,7 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 	 * @return true if the unit is outside
 	 */
 	public boolean isOutside() {
-		if (LocationStateType.OUTSIDE_ON_MARS == currentStateType
+		if (LocationStateType.OUTSIDE_ON_THE_SURFACE_OF_MARS == currentStateType
 				|| LocationStateType.OUTSIDE_SETTLEMENT_VICINITY == currentStateType)
 			return true;
 		

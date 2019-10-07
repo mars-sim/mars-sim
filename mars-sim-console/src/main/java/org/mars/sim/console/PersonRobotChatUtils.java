@@ -714,7 +714,7 @@ public class PersonRobotChatUtils extends ChatUtils {
 
 			if (personCache != null) {
 				responseText.append("I'm ");
-				responseText.append(personCache.getStatus());
+				responseText.append(personCache.getStatus().toLowerCase());
 
 			} else if (robotCache != null) {
 				if (robotCache.getSystemCondition().isInoperable())
@@ -1143,7 +1143,7 @@ public class PersonRobotChatUtils extends ChatUtils {
 //			responseText.append(clarify(SYSTEM)[1]);
 			String[] txt = clarify(name, text);
 			questionText = txt[0];
-//			responseText.append(txt[1]);
+			responseText.append(txt[1]);
 			
 			return new String[] { questionText, responseText.toString()};
 		}

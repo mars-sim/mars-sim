@@ -854,7 +854,9 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			Map<Integer, Double> parts = vehicle.getMalfunctionManager().getRepairPartProbabilities();
 			for (Integer part : parts.keySet()) {
 				String name = ItemResourceUtil.findItemResourceName(part);
-				if (!name.contains("3d printer")) {
+				if (!name.contains("laser") 
+						&& !name.contains("stepper motor")
+						&& !name.contains("prism")) {
 					int number = (int) Math.round(parts.get(part) * numberMalfunctions * PARTS_NUMBER_MODIFIER);
 					if (number > 0) {
 						result.put(part, number);
@@ -1043,12 +1045,11 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 					endCollectionPhase();
 				}
 
-			} else if (newDistance > 0 && !hasEnoughResources(getResourcesNeededForTrip(false, newDistance * 2 / 3))
-					&& hasEnoughResources(getResourcesNeededForTrip(false, newDistance * 1 / 3))) {
+			} else if (newDistance > 0 && hasEnoughResources(getResourcesNeededForTrip(false, newDistance * 0.667))) {
 
-				// if it has enough resources to traverse between 2/3 and 1/3 of the distance
+				// if it has enough resources to traverse at least 2/3 of the distance
 				// toward the new destination
-				double newTripTime = getEstimatedTripTime(false, newDistance * 2 / 3);
+				double newTripTime = getEstimatedTripTime(false, newDistance * 0.667);
 
 				// && !hasEmergencyAllCrew()) {
 
@@ -1059,12 +1060,12 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 				if ((nextNav != null) && (newDestination == nextNav.getSettlement())) {
 					sameDestination = true;
 
-					LogConsolidated.log(Level.WARNING, 10000, sourceName,
+					LogConsolidated.log(Level.WARNING, 10_000, sourceName,
 							"[" + vehicle.getName() 
 							+ "] Emergency encountered.  Home Settlement (" + newDestination.getName() + ") : " 
-							+ Math.round(newDistance * 2 / 3 * 100D) / 100D 
+							+ Math.round(newDistance * 0.667 * 100D) / 100D 
 							+ " km    Duration : "
-							+ Math.round(newTripTime * 100.0 / 1000.0) / 100.0 + " sols");
+							+ Math.round(newTripTime * 100.0 / 1_000.0) / 100.0 + " sols");
 
 					endCollectionPhase();
 					returnHome();
@@ -1072,12 +1073,12 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 
 				if (!sameDestination) {
 
-					LogConsolidated.log(Level.WARNING, 10000, sourceName,
+					LogConsolidated.log(Level.WARNING, 10_000, sourceName,
 							"[" + vehicle.getName() 
 							+ "] Emergency encountered.  Home Settlement (" + oldHome.getName() + ") : " 
 							+ Math.round(oldDistance * 100D) / 100D
 							+ " km    Next Routing Stop : " + Math.round(newDistance * 2 / 3 * 100D) / 100D
-							+ " km    Duration : " + Math.round(newTripTime * 100.0 / 1000.0) / 100.0 + " sols");
+							+ " km    Duration : " + Math.round(newTripTime * 100.0 / 1_000.0) / 100.0 + " sols");
 
 					// Creating emergency destination mission event.
 					HistoricalEvent newEvent = new MissionHistoricalEvent(EventType.MISSION_EMERGENCY_DESTINATION, 

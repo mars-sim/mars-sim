@@ -305,13 +305,26 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 		return equipmentType;
 	}
 	
-//	public boolean equals(Object obj) {
-//		if (this == obj) return true;
-//		if (obj == null) return false;
-//		if (this.getClass() != obj.getClass()) return false;
-//		Equipment e = (Equipment) obj;
-//		return this.getNickName().equals(e.getNickName());
-//	}
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (obj == null) return false;
+		if (this.getClass() != obj.getClass()) return false;
+		Equipment e = (Equipment) obj;
+		return this.identifier == e.getIdentifier()
+				&& this.getNickName().equals(e.getNickName());
+	}
+	
+	/**
+	 * Gets the hash code for this object.
+	 * 
+	 * @return hash code.
+	 */
+	public int hashCode() {
+		int hashCode = getNickName().hashCode();
+		hashCode *= type.hashCode();
+		hashCode *= identifier;
+		return hashCode;
+	}
 	
 	@Override
 	public void destroy() {

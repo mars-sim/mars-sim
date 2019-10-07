@@ -15,12 +15,8 @@ import org.mars_sim.msp.core.LifeSupportInterface;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.equipment.EVASuit;
-import org.mars_sim.msp.core.mars.MarsSurface;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Airlock;
-import org.mars_sim.msp.core.structure.building.BuildingManager;
 
 /**
  * This class represents an airlock for a vehicle.

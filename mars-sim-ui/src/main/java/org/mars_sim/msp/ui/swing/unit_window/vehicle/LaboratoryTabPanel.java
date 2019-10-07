@@ -9,10 +9,8 @@ package org.mars_sim.msp.ui.swing.unit_window.vehicle;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.GridLayout;
 
 import javax.swing.BorderFactory;
-import javax.swing.JPanel;
 import javax.swing.SpringLayout;
 import javax.swing.border.TitledBorder;
 
@@ -124,21 +122,22 @@ public class LaboratoryTabPanel extends TabPanel {
 		specialtyTA.setEditable(false);
 		specialtyTA.setFont(new Font("SansSerif", Font.ITALIC, 12));
 		specialtyTA.setColumns(10);
+//		specialtyTA.setSize(100, 60);
 		specialtyTA.setBorder(new MarsPanelBorder());
 		
 		
 		WebPanel listPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
-//		listPanel.setPadding(10, 0, 0, 0);
+		listPanel.setSize(150, 80);
 		listPanel.add(specialtyTA);
 		
-		TitledBorder mealBorder = BorderFactory.createTitledBorder(null, "Specialties",
+		TitledBorder titledBorder = BorderFactory.createTitledBorder(null, "Specialties",
 				javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION,
 				new Font("Serif", Font.BOLD, 14), java.awt.Color.darkGray);
-		listPanel.setBorder(mealBorder);
+		listPanel.setBorder(titledBorder);
 		
 		// Prepare specialties label
-		WebLabel specialtiesLabel = new WebLabel("Specialties : ", WebLabel.CENTER);
-		listPanel.add(specialtiesLabel, BorderLayout.NORTH);		
+//		WebLabel specialtiesLabel = new WebLabel("Specialties : ", WebLabel.CENTER);
+//		listPanel.add(specialtiesLabel, BorderLayout.NORTH);		
 		laboratoryPanel.add(listPanel, BorderLayout.SOUTH);
 		
 		// For each specialty, add specialty name panel.

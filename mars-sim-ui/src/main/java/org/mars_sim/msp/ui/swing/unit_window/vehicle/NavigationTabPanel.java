@@ -18,9 +18,7 @@ import java.text.DecimalFormat;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.swing.JButton;
 import javax.swing.JComponent;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SpringLayout;
 import javax.swing.border.BevelBorder;
@@ -271,7 +269,7 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         		logger.log(Level.SEVERE,"Error getting current leg remaining distance.");
     			e.printStackTrace(System.err);
         	}
-        	distanceLabel = new WebLabel(formatter.format(distanceCache) + " km.", WebLabel.LEFT);
+        	distanceLabel = new WebLabel(formatter.format(distanceCache) + " km", WebLabel.LEFT);
         }
         else {
         	distanceCache = 0D;

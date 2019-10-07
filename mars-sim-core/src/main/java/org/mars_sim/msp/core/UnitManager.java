@@ -82,6 +82,8 @@ public class UnitManager implements Serializable {
 	public static final String VEHICLE_NAME = "Vehicle";
 	public static final String SETTLEMENT_NAME = "Settlement";
 	
+	public static final String LUV = "LUV";
+	
 	/** True if the simulation has just started. */
 	private static boolean justStarting = true;
 	/** True if the simulation will start out with the default alpha crew members. */
@@ -678,7 +680,7 @@ public class UnitManager implements Serializable {
 			unitName = SETTLEMENT_NAME;
 
 		} else if (unitType == UnitType.VEHICLE) {
-			if (baseName != null) {
+			if (baseName != null && baseName.equalsIgnoreCase(LUV)) {
 				// for LUVs 
 				String tagID = "";
 				int number = 1;
@@ -697,6 +699,7 @@ public class UnitManager implements Serializable {
 				return baseName + " " + tagID;
 
 			} else {
+				// for Explorer, Transport and Cargo Rover
 				initialNameList = vehicleNames;
 //				System.out.println(initialNameList);
 				Iterator<Vehicle> vi = getVehicles().iterator();
@@ -859,7 +862,7 @@ public class UnitManager implements Serializable {
 					vehicleType = vehicleType.toLowerCase();
 					for (int x = 0; x < number; x++) {
 						if (LightUtilityVehicle.NAME.equalsIgnoreCase(vehicleType)) {
-							String name = getNewName(UnitType.VEHICLE, "LUV", null, null);
+							String name = getNewName(UnitType.VEHICLE, LUV, null, null);
 							addUnit(new LightUtilityVehicle(name, vehicleType, settlement));
 						} else {
 							String name = getNewName(UnitType.VEHICLE, null, null, null);
@@ -887,17 +890,20 @@ public class UnitManager implements Serializable {
 				SettlementTemplate template = settlementConfig.getSettlementTemplate(settlement.getTemplate());
 				Map<String, Integer> equipmentMap = template.getEquipment();
 				for (String type : equipmentMap.keySet()) {
-					int number = (Integer) equipmentMap.get(type);
+					int number = equipmentMap.get(type);
 					for (int x = 0; x < number; x++) {
 						Equipment equipment = EquipmentFactory.createEquipment(type, settlement.getCoordinates(),
 								false);
-						equipment.setName(getNewName(UnitType.EQUIPMENT, type, null, null));
+						String newName = getNewName(UnitType.EQUIPMENT, type, null, null);
+						equipment.setName(newName);
 						settlement.getInventory().storeUnit(equipment);
+//						System.out.println("UnitManager : Equipment " + newName + "  owned by " + equipment.getContainerUnit().getName());
 						addUnit(equipment);
 					}
 				}
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			throw new IllegalStateException("Equipment could not be created: " + e.getMessage(), e);
 		}
 	}
@@ -2123,7 +2129,7 @@ public class UnitManager implements Serializable {
 				lookupPerson.values()
 				.stream()
 				.filter(p -> p.getLocationStateType() == LocationStateType.OUTSIDE_SETTLEMENT_VICINITY
-						|| p.getLocationStateType() == LocationStateType.OUTSIDE_ON_MARS)
+						|| p.getLocationStateType() == LocationStateType.OUTSIDE_ON_THE_SURFACE_OF_MARS)
 				.collect(Collectors.toList());
 	}
 

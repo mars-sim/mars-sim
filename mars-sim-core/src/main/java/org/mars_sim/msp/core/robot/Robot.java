@@ -941,13 +941,13 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 		return (int) Math.round(getPerformanceRating() * skillManager.getSkillLevel(skillType));
 	}
 	
-//	public boolean equals(Object obj) {
-//		if (this == obj) return true;
-//		if (obj == null) return false;
-//		if (this.getClass() != obj.getClass()) return false;
-//		Robot r = (Robot) obj;
-//		return this.name.equals(r.getName());
-//	}
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (obj == null) return false;
+		if (this.getClass() != obj.getClass()) return false;
+		Robot r = (Robot) obj;
+		return this.name.equals(r.getName());
+	}
 
 	public void reinit() {
 		botMind.reinit();

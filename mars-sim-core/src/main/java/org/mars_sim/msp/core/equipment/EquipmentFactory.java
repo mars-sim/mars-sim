@@ -70,6 +70,7 @@ public final class EquipmentFactory {
 	public static Equipment createEquipment(String type, Coordinates location, boolean temp) {
 		if (temp) {
 			if (equipmentTypeCache.containsKey(type))
+				// since it's temporary, it doesn't matter if the location has been defined
 				return equipmentTypeCache.get(type);
 			else {
 				Equipment equipment = createEquipment(type, location, false);

@@ -25,7 +25,7 @@ public class OutsideOnMars implements LocationState, Serializable {
 	}
 
 	public LocationStateType getType() {
-		return LocationStateType.OUTSIDE_ON_MARS;
+		return LocationStateType.OUTSIDE_ON_THE_SURFACE_OF_MARS;
 	}
 /*	
 	public void leaveBuilding() {

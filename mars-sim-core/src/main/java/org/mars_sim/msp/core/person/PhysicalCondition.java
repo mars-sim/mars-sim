@@ -1648,13 +1648,13 @@ public class PhysicalCondition implements Serializable {
 	 */
 	public static String getPerformanceStatus(double value) {
 		String status = "N/A";
-		if (value > 95)
+		if (value > .95)
 			status = Msg.getString("PersonTableModel.column.performance.level1");
-		else if (value > 75)
+		else if (value > .75)
 			status = Msg.getString("PersonTableModel.column.performance.level2");
-		else if (value > 50)
+		else if (value > .50)
 			status = Msg.getString("PersonTableModel.column.performance.level3");
-		else if (value > 25)
+		else if (value > .25)
 			status = Msg.getString("PersonTableModel.column.performance.level4");
 		else 
 			status = Msg.getString("PersonTableModel.column.performance.level5");
@@ -1817,7 +1817,7 @@ public class PhysicalCondition implements Serializable {
 	 * @return
 	 */
 	public boolean isHungry() {
-		return hunger > HUNGER_THRESHOLD && kJoules < ENERGY_THRESHOLD;
+		return hunger > HUNGER_THRESHOLD || kJoules < ENERGY_THRESHOLD;
 	}
 	
 	/**

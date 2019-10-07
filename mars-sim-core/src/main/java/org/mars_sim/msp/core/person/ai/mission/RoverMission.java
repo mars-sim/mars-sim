@@ -395,7 +395,7 @@ public abstract class RoverMission extends VehicleMission {
 
 						int numEVASuit = 0;
 						// Store one or two EVA suit for person (if possible).
-						int limit = RandomUtil.getRandomInt(1, 2);
+						int limit = RandomUtil.getRandomInt(1, 3);
 						while (numEVASuit <= limit) {
 							if (settlement.getInventory().findNumUnitsOfClass(EVASuit.class) > 0) {
 								EVASuit suit = (EVASuit) settlement.getInventory().findUnitOfClass(EVASuit.class);
@@ -486,9 +486,9 @@ public abstract class RoverMission extends VehicleMission {
 				else {
 					// the person is still inside the vehicle
 					
-					LogConsolidated.log(Level.FINER, 0, sourceName,
-							"[" + p.getLocationTag().getLocale() + "] " + p.getName() 
-							+ " finally came home safety on the rover "+ rover.getName() + ".");
+//					LogConsolidated.log(Level.INFO, 10_000, sourceName,
+//							"[" + p.getLocationTag().getLocale() + "] " + p.getName() 
+//							+ " came home safety on the rover "+ rover.getName() + ".");
 					
 					checkPersonStatus(rover, p, disembarkSettlement);
 				}
@@ -583,24 +583,51 @@ public abstract class RoverMission extends VehicleMission {
 				Point2D adjustedLoc = LocalAreaUtil.getLocalRelativeLocation(destinationLoc.getX(),
 						destinationLoc.getY(), destinationBuilding);
 
-				if (Walk.canWalkAllSteps(p, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding)) {
+				double fatigue = p.getFatigue(); // 0 to infinity
+				double perf = p.getPerformanceRating(); // 0 to 1
+				double stress = p.getStress(); // 0 to 100
+				double energy = p.getEnergy(); // 100 to infinity
+				double hunger = p.getHunger(); // 0 to infinity
+
+				boolean hasStrength = fatigue < 1000 && perf > .4 && stress < 60 && energy > 750 && hunger < 1000;
+				
+				if (p.isInVehicle() && p.getInventory().findNumUnitsOfClass(EVASuit.class) == 0) {
+					// If the person does not have an EVA suit	
+					int availableSuitNum = Mission.getNumberAvailableEVASuitsAtSettlement(disembarkSettlement);
+					int suitVehicle = rover.getInventory().findNumUnitsOfClass(EVASuit.class);
 					
-					double fatigue = p.getFatigue(); // 0 to infinity
-					double perf = p.getPerformanceRating(); // 0 to 1
-					double stress = p.getStress(); // 0 to 100
-					double energy = p.getEnergy(); // 100 to infinity
-	
-					if (fatigue > 750 && perf > 50 && stress < 40 && energy > 1200) {
+					if (suitVehicle == 0 && availableSuitNum > 0) {
+						// Deliver an EVA suit from the settlement to the rover
+						// TODO: Need to generate a task for a person to hand deliver an extra suit
+						EVASuit suit = (EVASuit) disembarkSettlement.getInventory().findUnitOfClass(EVASuit.class);
+						if (rover.getInventory().canStoreUnit(suit, false)) {
+							disembarkSettlement.getInventory().retrieveUnit(suit);
+							rover.getInventory().storeUnit(suit);
+						}	
+					}
+				}
+				
+				if (Walk.canWalkAllSteps(p, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding)) {
+			
+					if (hasStrength) {
+						LogConsolidated.log(Level.WARNING, 0, sourceName, 
+								"[" + disembarkSettlement.getName() + "] "
+								+ p.getName() + " still had some strength left and will help unload cargo.");
 						// help unload the cargo
 						unloadCargo(p, rover);
 					}	
-					else 
+					else {
+						LogConsolidated.log(Level.WARNING, 0, sourceName, 
+								"[" + disembarkSettlement.getName() + "] "
+								+ p.getName() + " had no more strength and walked back to the settlement.");
 						// walk back home
 						assignTask(p, new Walk(p, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding));
+					}
 					
 				} 
 				
-				else {			
+				else if (!hasStrength) {
+
 					// Help this person put on an EVA suit
 					// TODO: consider inflatable medical tent for emergency transport of incapacitated personnel
 					
@@ -646,8 +673,12 @@ public abstract class RoverMission extends VehicleMission {
 	 */
 	private void rescueOperation(Rover r, Person p, Settlement s) {
 		
-		// Retrieve the person from the rover 
-		r.getInventory().retrieveUnit(p);
+		// Retrieve the person from the rover
+		if (p.isInVehicle())
+			r.getInventory().retrieveUnit(p);
+		else if (p.isOutside())
+			unitManager.getMarsSurface().getInventory().retrieveUnit(p);
+			
 		// Store the person into the settlement
 		s.getInventory().storeUnit(p);
 		// Gets the settlement id

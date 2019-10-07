@@ -66,12 +66,9 @@ public class EatMealMeta implements MetaTask, Serializable {
 		
 		// Only eat a meal if person is sufficiently hungry or low on caloric energy.
 		if (!notHungry) {// || ghrelin-leptin > 300) {
-			result += thirst * 2;
-			result += hunger / 8D;
+			result += hunger / 4D;
 			if (energy < 2525)
 				result += (2525 - energy) / 50D; // (ghrelin-leptin - 300);
-//			if (result <= 0)
-//				result = 0;
 		}
 
 		else if (notHungry && notThirsty)

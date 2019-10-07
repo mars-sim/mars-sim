@@ -1493,6 +1493,10 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		return condition.getEnergy();
 	}
 	
+	public double getHunger() {
+		return condition.getHunger();
+	}
+		
 	public double getStress() {
 		return condition.getStress();
 	}
@@ -1901,17 +1905,29 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		return (int) Math.round(getPerformanceRating() * skillManager.getSkillLevel(skillType));
 	}
 
-//	public boolean equals(Object obj) {
-//		if (this == obj) return true;
-//		if (obj == null) return false;
-//		if (this.getClass() != obj.getClass()) return false;
-//		Person p = (Person) obj;
-//		return this.name.equals(p.getName())
-//				&& this.gender.equals(p.getGender())
-//				&& this.age == p.getAge()
-//				&& this.getBirthDate() == p.getBirthDate();
-//	}
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (obj == null) return false;
+		if (this.getClass() != obj.getClass()) return false;
+		Person p = (Person) obj;
+		return this.name.equals(p.getName())
+				&& this.gender.equals(p.getGender())
+				&& this.age == p.getAge()
+				&& this.getBirthDate() == p.getBirthDate();
+	}
 
+	/**
+	 * Gets the hash code for this object.
+	 * 
+	 * @return hash code.
+	 */
+	public int hashCode() {
+		int hashCode = name.hashCode();
+		hashCode *= age;
+		hashCode *= getBirthDate().hashCode();
+		return hashCode;
+	}
+	
 //	public void updateBuildingPreference(FunctionType type) {
 //		if (buildingPreference.isEmpty()) {
 //			for (FunctionType ft : FunctionType.getFunctionTypes()) {

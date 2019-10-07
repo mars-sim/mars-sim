@@ -14,8 +14,6 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LogConsolidated;
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.mars.MarsSurface;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Airlock;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -76,7 +74,7 @@ public class BuildingAirlock extends Airlock {
             if (AirlockState.PRESSURIZED == getState()) {
             	// check if the airlock has been sealed from outside and pressurized, ready to 
             	// open the inner door to release the person into the settlement
-            	stepIntoAirlock(person);
+            	stepInside(person);
             }
             
             else if (AirlockState.DEPRESSURIZED == getState()) {
@@ -94,11 +92,11 @@ public class BuildingAirlock extends Airlock {
     }
 
     /**
-     * Steps back into an airlock of a settlement
+     * Steps inside of a settlement
      * 
      * @param person
      */
-    public void stepIntoAirlock(Person person) {
+    public void stepInside(Person person) {
       	LogConsolidated.log(Level.FINER, 0, sourceName,
 	  				"[" + person.getLocationTag().getLocale() 
 	  				+ "] The airlock had been pressurized and is ready to open the inner door to release " + person + ".");
@@ -132,9 +130,10 @@ public class BuildingAirlock extends Airlock {
         }
         
         else if (!person.isBuried() || !person.isDeclaredDead()) {
-          	LogConsolidated.log(Level.SEVERE, 0, sourceName,		
-          		person +  " was supposed to be entering " + getEntityName() +
-                  "'s airlock but already in " + person.getLocationTag().getImmediateLocation());
+          	LogConsolidated.log(Level.SEVERE, 0, sourceName,	
+          		"[" + person.getLocationTag().getLocale() + "] "
+          		 + person +  " was supposed to be entering " + getEntityName() 
+          		 + "'s airlock but already in " + person.getLocationTag().getImmediateLocation());
         }
     }
  
@@ -181,9 +180,10 @@ public class BuildingAirlock extends Airlock {
         }
     	
         else if (!person.isBuried() || !person.isDeclaredDead()) {
-            	LogConsolidated.log(Level.SEVERE, 0, sourceName,		
-            		person +  " was supposed to be exiting " + getEntityName() +
-                    "'s airlock but already " + person.getLocationTag().getImmediateLocation());
+            	LogConsolidated.log(Level.SEVERE, 0, sourceName,	
+                  	"[" + person.getLocationTag().getLocale() + "] "	
+            		+ person +  " was supposed to be exiting " + getEntityName()
+                    + "'s airlock but already " + person.getLocationTag().getImmediateLocation());
         }
     }
     

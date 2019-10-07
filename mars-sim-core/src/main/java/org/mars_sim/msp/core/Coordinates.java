@@ -225,7 +225,7 @@ public class Coordinates implements Serializable {
 	 * @return true if Coordinates values match, false otherwise
 	 */
 	public boolean equals(Object otherCoords) {
-
+		if (this == otherCoords) return true;
 		if ((otherCoords != null) && (otherCoords instanceof Coordinates)) {
 			Coordinates other = (Coordinates) otherCoords;
 			if ((phi == other.phi) && (theta == other.theta))
