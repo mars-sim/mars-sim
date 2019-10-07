@@ -35,13 +35,18 @@ extends JButton {
 	 * @param imageName the name of the tool button image
 	 */
 	public ToolButton(String toolName, String imageName) {
-
 		// Use JButton constructor
 		super(ImageLoader.getIcon(imageName));
-
 		// Initialize toolName
 		this.toolName = toolName;
-
+		
+		init();
+	}
+	
+	/**
+	 * Initialize the button
+	 */
+	public void init() {
 		// Initialize tool tip for button
 		toolButtonTip = new JToolTip();
 		toolButtonTip.setBackground(Color.white);

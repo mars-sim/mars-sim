@@ -346,6 +346,7 @@ public abstract class Airlock implements Serializable {
 			// No operator, deactivate the air lock
 			deactivateAirlock();
 		}
+		
 		else if (size == 1) {	
 			int evaExp = -1;
 			int evaLevel = -1;
@@ -594,15 +595,15 @@ public abstract class Airlock implements Serializable {
 				}
 			}
 			
-			else {
-				// If no operator, deactivate airlock.
-				LogConsolidated.log(Level.SEVERE, 0, sourceName, //"[" + locale + "] "
-						"Without an operator, the airlock in " 
-						+ getEntityName() + " may get deactivated.");
-				
-				// Elect a new operator
-				electAnOperator();
-			}
+//			else {
+//				// If no operator, deactivate airlock.
+//				LogConsolidated.log(Level.SEVERE, 0, sourceName, //"[" + locale + "] "
+//						"Without an operator, the airlock in " 
+//						+ getEntityName() + " may get deactivated.");
+//				
+//				// Elect a new operator
+//				electAnOperator();
+//			}
 		}
 	}
 

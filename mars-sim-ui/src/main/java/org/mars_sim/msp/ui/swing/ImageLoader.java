@@ -14,6 +14,8 @@ import java.util.HashMap;
 
 import javax.swing.ImageIcon;
 
+import org.mars_sim.msp.ui.swing.tool.guide.GuideWindow;
+
 /**
  * This is a static class that acts as a helper to load Images for use in the
  * UI. It is based on loading the resource form the class path via the
@@ -92,6 +94,8 @@ public class ImageLoader {
 	 *            Name of the image to load.
 	 * @param ext
 	 *            the file extension (ex. "png", "jpg").
+	 * @param idr
+	 *            the direcotyr of the file .  
 	 * @return ImageIcon containing image of specified name.
 	 */
 	public static ImageIcon getIcon(String imagename, String ext, String dir) {
@@ -99,14 +103,10 @@ public class ImageLoader {
 		ImageIcon found = iconCache.get(fullImageName);
 		if (found == null) {
 			String fileName = fullImageName.startsWith("/") ? fullImageName : dir + fullImageName;
-			/* [landrus, 26.11.09]: don't use the system classloader in a webstart env. */
-			URL resource = ImageLoader.class.getResource(fileName);// ClassLoader.getSystemResource(fileName);
-//			System.out.println("fileName : " + fileName);
-			found = new ImageIcon(resource);
-
+			found = new ImageIcon(ImageLoader.class.getResource(fileName));
 			iconCache.put(fullImageName, found);
 		}
-
+		
 		return found;
 	}
 
