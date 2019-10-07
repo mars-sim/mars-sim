@@ -62,7 +62,7 @@ implements ListSelectionListener {
 		super(NAME, desktop);
 
 		this.desktop = desktop;
-		MainWindow mw = desktop.getMainWindow();
+//		MainWindow mw = desktop.getMainWindow();
 //		mainScene = desktop.getMainScene();
 
 		// Create main panel.

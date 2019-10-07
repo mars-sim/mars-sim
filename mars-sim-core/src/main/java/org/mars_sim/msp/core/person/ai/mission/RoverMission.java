@@ -815,7 +815,7 @@ public abstract class RoverMission extends VehicleMission {
 		if (useBuffer)
 			foodAmount *= Vehicle.getLifeSupportRangeErrorMargin();
 		result.put(foodID, foodAmount);
-//		System.out.println("RoverMission - food : " + foodAmount);
+
 		return result;
 	}
 

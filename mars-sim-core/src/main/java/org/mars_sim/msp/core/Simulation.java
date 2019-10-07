@@ -401,7 +401,7 @@ public class Simulation implements ClockListener, Serializable {
 		ResourceUtil.getInstance();
 		mars = Mars.createTest();
 		masterClock = new MasterClock(false, 256);
-		unitManager = new UnitManager();
+		unitManager = new UnitManager(); //UnitManager.instance();
 		unitManager.constructInitialUnits(true);
 		medicalManager = new MedicalManager();
 		
@@ -456,7 +456,7 @@ public class Simulation implements ClockListener, Serializable {
 				mars.getWeather(), surfaceFeatures, missionManager);
 		
 		// Initialize serializable managers
-		unitManager = new UnitManager();
+		unitManager = new UnitManager(); //UnitManager.instance();//
 		Unit.setUnitManager(unitManager);
 		
 		unitManager.constructInitialUnits(loadSaveSim); // unitManager needs to be on the same thread as masterClock

@@ -399,7 +399,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 		// The member of the rescuing vehicle will turn off the target vehicle's
 		// emergency beacon.
 		if (vehicleTarget.isBeaconOn())
-			setEmergencyBeacon(member, vehicleTarget, false, "None");
+			setEmergencyBeacon(member, vehicleTarget, false, "The 2 Vehicles Rendezvous");
 
 		// Set mission event.
 		HistoricalEvent newEvent = null;

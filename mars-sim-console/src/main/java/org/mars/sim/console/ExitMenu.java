@@ -48,7 +48,7 @@ public class ExitMenu implements BiConsumer<TextIO, RunnerData> {
     		sim.getMasterClock().exitProgram();
     		logger.info("Exiting the Simulation.");
     		InteractiveTerm.setKeepRunning(false);
-    		InteractiveTerm.disposeTerminal();
+//    		InteractiveTerm.disposeTerminal();
     		InteractiveTerm.delay(500L);
 			System.exit(0);
 			

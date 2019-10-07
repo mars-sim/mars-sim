@@ -551,7 +551,7 @@ public abstract class Airlock implements Serializable {
 	public void timePassing(double time) {
 		if (activated) {
 			
-			if (operatorID != Integer.valueOf(-1)) {
+			if (operatorID > 0) {//!= Integer.valueOf(-1)) {
 //				logger.config("unitManager is " + unitManager);
 				Person p = getPersonByID(operatorID);
 //				logger.config("operatorID is " + operatorID);
@@ -693,7 +693,16 @@ public abstract class Airlock implements Serializable {
 //		System.out.print("    lookupPerson is " + lookupPerson);
 //		System.out.println("    lookupPerson.get(id) is " + lookupPerson.get(id));
 //		logger.config("lookupPerson's size is " + lookupPerson.size());
-		return lookupPerson.get(id);
+		if (lookupPerson.get(id) != null)
+			return lookupPerson.get(id);
+		else {
+			Person p = unitManager.getPersonByID(id);
+			if (p != null) {
+				addPersonID(p);
+				return p;
+			}
+		}
+		return null;
 	}
 
 	public void addPersonID(Person p) {

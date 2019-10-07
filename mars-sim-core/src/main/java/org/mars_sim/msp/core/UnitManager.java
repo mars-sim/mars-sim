@@ -6,6 +6,7 @@
  */
 package org.mars_sim.msp.core;
 
+import java.io.ObjectStreamException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -14,7 +15,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -156,7 +156,6 @@ public class UnitManager implements Serializable {
 	/** A map of building with its unit identifier. */
 	private volatile Map<Integer, Building> lookupBuilding;// = new HashMap<>();
 	
-	
 	private static SimulationConfig simulationConfig = SimulationConfig.instance();
 	private static Simulation sim = Simulation.instance();
 	
@@ -173,7 +172,6 @@ public class UnitManager implements Serializable {
 	
 	/** The instance of MarsSurface. */
 	private volatile MarsSurface marsSurface;
-	
 
 	/**
 	 * Constructor.
