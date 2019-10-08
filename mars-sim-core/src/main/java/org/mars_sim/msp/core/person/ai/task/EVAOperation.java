@@ -16,11 +16,18 @@ import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.equipment.EVASuit;
+import org.mars_sim.msp.core.events.HistoricalEvent;
+import org.mars_sim.msp.core.events.HistoricalEventManager;
+import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
+import org.mars_sim.msp.core.person.ai.mission.MissionHistoricalEvent;
 import org.mars_sim.msp.core.person.ai.taskUtil.Task;
 import org.mars_sim.msp.core.person.ai.taskUtil.TaskPhase;
+import org.mars_sim.msp.core.person.health.HealthProblem;
+import org.mars_sim.msp.core.person.health.MedicalEvent;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Airlock;
@@ -616,6 +623,34 @@ public abstract class EVAOperation extends Task implements Serializable {
 	 */
 	protected void setStressModifier(double newStressModifier) {
 		super.setStressModifier(stressModifier);
+	}
+	
+	/**
+	 * Rescue the person from the rover
+	 * 
+	 * @param r the rover
+	 * @param p the person
+	 * @param s the settlement
+	 */
+	static void rescueOperation(Rover r, Person p, Settlement s) {
+		
+		// Retrieve the person from the rover
+		if (p.isInVehicle())
+			r.getInventory().retrieveUnit(p);
+		else if (p.isOutside())
+			unitManager.getMarsSurface().getInventory().retrieveUnit(p);
+			
+		// Store the person into the settlement
+		s.getInventory().storeUnit(p);
+		// Gets the settlement id
+		int id = s.getIdentifier();
+		// Store the person into a medical building
+		BuildingManager.addToMedicalBuilding(p, id);
+		// Register the person
+//		p.setAssociatedSettlement(id);
+		// Register the historical event
+		HistoricalEvent rescueEvent = new MedicalEvent(p, null, EventType.MEDICAL_RESCUE);
+		Simulation.instance().getEventManager().registerNewEvent(rescueEvent);
 	}
 	
 	@Override

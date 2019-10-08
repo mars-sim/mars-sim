@@ -24,11 +24,11 @@ public class LocationTag implements LocationState, Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	public static final String OUTSIDE_ON_MARS = "outside on Mars";
+	public static final String OUTSIDE_ON_MARS = LocationStateType.OUTSIDE_ON_THE_SURFACE_OF_MARS.getName();
 
 	public static final String VICINITY = " vicinity";
 
-	private static final String UNKNOWN = "unknown";
+	private static final String UNKNOWN = LocationStateType.UNKNOWN.getName();
 
 	private static final String IN = " in ";
 

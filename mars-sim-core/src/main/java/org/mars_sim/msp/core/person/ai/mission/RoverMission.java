@@ -26,6 +26,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.task.DriveGroundVehicle;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
+import org.mars_sim.msp.core.person.ai.task.ExitAirlock;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.OperateVehicle;
@@ -591,33 +592,45 @@ public abstract class RoverMission extends VehicleMission {
 
 				boolean hasStrength = fatigue < 1000 && perf > .4 && stress < 60 && energy > 750 && hunger < 1000;
 				
-				if (p.isInVehicle() && p.getInventory().findNumUnitsOfClass(EVASuit.class) == 0) {
-					// If the person does not have an EVA suit	
-					int availableSuitNum = Mission.getNumberAvailableEVASuitsAtSettlement(disembarkSettlement);
-					int suitVehicle = rover.getInventory().findNumUnitsOfClass(EVASuit.class);
+				
+				
+				if (p.isInVehicle()) {// && p.getInventory().findNumUnitsOfClass(EVASuit.class) == 0) {
+					// Checks to see if the person has an EVA suit	
+					if (!ExitAirlock.goodEVASuitAvailable(rover.getInventory(), p)) {
+
+						LogConsolidated.log(Level.WARNING, 0, sourceName, "[" + p.getLocationTag().getLocale() + "] "
+										+ p + " could not find a working EVA suit and needed to wait.");
 					
-					if (suitVehicle == 0 && availableSuitNum > 0) {
-						// Deliver an EVA suit from the settlement to the rover
-						// TODO: Need to generate a task for a person to hand deliver an extra suit
-						EVASuit suit = (EVASuit) disembarkSettlement.getInventory().findUnitOfClass(EVASuit.class);
-						if (rover.getInventory().canStoreUnit(suit, false)) {
-							disembarkSettlement.getInventory().retrieveUnit(suit);
-							rover.getInventory().storeUnit(suit);
-						}	
+						// If the person does not have an EVA suit	
+						int availableSuitNum = Mission.getNumberAvailableEVASuitsAtSettlement(disembarkSettlement);
+//						int suitVehicle = rover.getInventory().findNumUnitsOfClass(EVASuit.class);
+						
+						if (availableSuitNum > 0) {
+							// Deliver an EVA suit from the settlement to the rover
+							// TODO: Need to generate a task for a person to hand deliver an extra suit
+							EVASuit suit = (EVASuit) disembarkSettlement.getInventory().findUnitOfClass(EVASuit.class);
+							if (rover.getInventory().canStoreUnit(suit, false)) {
+								disembarkSettlement.getInventory().retrieveUnit(suit);
+								rover.getInventory().storeUnit(suit);
+								
+								LogConsolidated.log(Level.WARNING, 0, sourceName, "[" + p.getLocationTag().getLocale() + "] "
+										+ p + " received a spare EVA suit from the settlement.");
+							}
+						}
 					}
 				}
 				
 				if (Walk.canWalkAllSteps(p, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding)) {
 			
 					if (hasStrength) {
-						LogConsolidated.log(Level.WARNING, 0, sourceName, 
+						LogConsolidated.log(Level.INFO, 20_000, sourceName, 
 								"[" + disembarkSettlement.getName() + "] "
-								+ p.getName() + " still had some strength left and will help unload cargo.");
+								+ p.getName() + " still had strength left and would help unload cargo.");
 						// help unload the cargo
 						unloadCargo(p, rover);
 					}	
 					else {
-						LogConsolidated.log(Level.WARNING, 0, sourceName, 
+						LogConsolidated.log(Level.INFO, 20_000, sourceName, 
 								"[" + disembarkSettlement.getName() + "] "
 								+ p.getName() + " had no more strength and walked back to the settlement.");
 						// walk back home
@@ -632,7 +645,7 @@ public abstract class RoverMission extends VehicleMission {
 					// TODO: consider inflatable medical tent for emergency transport of incapacitated personnel
 					
 					// This person needs to be rescued.
-					LogConsolidated.log(Level.WARNING, 0, sourceName, 
+					LogConsolidated.log(Level.INFO, 0, sourceName, 
 							"[" + disembarkSettlement.getName() + "] "
 							+ Msg.getString("RoverMission.log.emergencyEnterSettlement", p.getName(), 
 									disembarkSettlement.getNickName())); //$NON-NLS-1$
@@ -641,7 +654,7 @@ public abstract class RoverMission extends VehicleMission {
 					// TODO: Gets a lead person to perform it and give him a rescue badge
 					rescueOperation(rover, p, disembarkSettlement);
 					
-					LogConsolidated.log(Level.WARNING, 0, sourceName, 
+					LogConsolidated.log(Level.INFO, 0, sourceName, 
 							"[" + disembarkSettlement.getName() + "] "
 							+ p.getName() 
 							+ " was transported to ("

@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.CollectionUtils;
+import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LogConsolidated;
@@ -31,6 +33,7 @@ import org.mars_sim.msp.core.person.ai.taskUtil.Task;
 import org.mars_sim.msp.core.person.ai.taskUtil.TaskPhase;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Airlock;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Rover;
@@ -56,6 +59,8 @@ public class ExitAirlock extends Task implements Serializable {
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.exitAirlock"); //$NON-NLS-1$
 
+	private static final double PERFORMANCE_BONUS = 0.1;
+	
 	/** Task phases. */
 	private static final TaskPhase PROCURING_EVA_SUIT = new TaskPhase(Msg.getString("Task.phase.procuringEVASuit")); //$NON-NLS-1$
 	private static final TaskPhase WAITING_TO_ENTER_AIRLOCK = new TaskPhase(
@@ -524,40 +529,33 @@ public class ExitAirlock extends Task implements Serializable {
 	 */
 	public static boolean canExitAirlock(Person person, Airlock airlock) {
 
-		// Check if person is outside.
-		if (person.isOutside()) {
-			LogConsolidated.log(Level.WARNING, 10000, sourceName, person.getName()
-					+ " could NOT exit airlock from " + airlock.getEntityName() + " since he/she was already outside.");
-//			person.getMind().getNewAction(true, false);
-//          person.getMind().getTaskManager().clearTask();
-			return false;
-		}
-
 		// Check if person is incapacitated.
-		else if (person.getPerformanceRating() == 0) {
+		if (person.getPerformanceRating() < 0.1) {
 			// TODO: if incapacitated, should someone else help this person to get out?
 
 			// Prevent the logger statement below from being repeated multiple times
 			String newLog = person.getName() + " could exit NOT airlock from " + airlock.getEntityName()
 					+ " due to crippling performance rating";
 
-			LogConsolidated.log(Level.WARNING, 10000, sourceName, newLog);
+			LogConsolidated.log(Level.WARNING, 10_000, sourceName, newLog);
 
-			try {
-				// logger.info(person.getName() + " is nearly abandoning the action of exiting
-				// the airlock and switching to a new task");
-				// Note: calling getNewAction() below is still considered "experimental"
-				// It may have caused StackOverflowError if a very high fatigue person is
-				// stranded in the airlock and cannot go outside.
-				// Intentionally add a 10% performance boost
-				person.getPhysicalCondition().setPerformanceFactor(0.1);
-//				person.getMind().getTaskManager().clearTask();
-				// Calling getNewAction(true, false) so as not to get "stuck" inside the
-				// airlock.
-//            	person.getMind().getNewAction(true, false);
-
+			try {				
+				if (person.isInVehicle()) {
+					Settlement nearbySettlement = CollectionUtils.findSettlement(person.getVehicle().getCoordinates());
+					if (nearbySettlement != null)
+						// Attempt a rescue operation
+						EVAOperation.rescueOperation((Rover)(person.getVehicle()), person, nearbySettlement);
+				}
+				else if (person.isOutside()) {
+					Settlement nearbySettlement = CollectionUtils.findSettlement(person.getCoordinates());
+//					Settlement nearbySettlement =  ((Building) (airlock.getEntity())).getSettlement()
+					if (nearbySettlement != null)
+						// Attempt a rescue operation
+						EVAOperation.rescueOperation(null, person, ((Building) (airlock.getEntity())).getSettlement());
+				}
+				
 			} catch (Exception e) {
-				LogConsolidated.log(Level.SEVERE, 10000, sourceName,
+				LogConsolidated.log(Level.SEVERE, 10_000, sourceName,
 						person + " could not get new action" + e.getMessage(), e);
 				e.printStackTrace(System.err);
 
@@ -565,7 +563,15 @@ public class ExitAirlock extends Task implements Serializable {
 
 			return false;
 		}
+		
+		// Check if person is outside.
+		if (person.isOutside()) {
+			LogConsolidated.log(Level.WARNING, 10_000, sourceName, person.getName()
+					+ " could NOT exit airlock from " + airlock.getEntityName() + " since he/she was already outside.");
 
+			return false;
+		}
+		
 		else if (person.isInSettlement()) {
 
 			// Check if EVA suit is available.
@@ -573,25 +579,9 @@ public class ExitAirlock extends Task implements Serializable {
 
 				LogConsolidated.log(Level.WARNING, 10_000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
 								+ person + " could not find a working EVA suit and needed to wait.");
-				// TODO: how to reduce the probability of doing any EVA tasks to save cpu util
-				
-//	    		Mission m = person.getMind().getMission();
-				// TODO: what about outdoor tasks such as DiggingIce ?
 
-//	    		// TODO: should at least wait for a period of time for the EVA suit to be fixed before calling for rescue
-//	    		if (m != null) {	
 				airlock.addCheckEVASuit();
-//				LogConsolidated.log(
-//						logger, Level.WARNING, 10_000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
-//								+ person + " had tried to exit the airlock " + airlock.getCheckEVASuit()// + " time(s).",
-//						, null);
-
-//				person.getMind().getTaskManager().clearTask();
-				// Call getNewAction(true, false) so as not to get "stuck" inside the airlock.
-//            	person.getMind().getNewAction(true, false);
-				// Repair this EVASuit by himself/herself
-//				person.getMind().getTaskManager().addTask(new RepairMalfunction(person));
-				
+			
 				EVASuit suit = person.getSuit();//(EVASuit) person.getInventory().findUnitOfClass(EVASuit.class);
 				
 				// Check if suit has any malfunctions.
@@ -602,15 +592,6 @@ public class ExitAirlock extends Task implements Serializable {
 							+ suit.getName() + " has malfunctions and not usable.");
 				}
 				
-//				if (airlock.getCheckEVASuit() > 21) {
-//					// Repair this EVASuit by himself/herself
-////					person.getMind().getTaskManager().addTask(new RepairMalfunction(person));
-//	    				LogConsolidated.log(Level.INFO, 2000, sourceName, 
-//	    						"[" + person.getLocationTag().getLocale() 
-//	    						+ "] " + person + " has already tried to exit the airlock " + airlock.getCheckEVASuit() + " times."
-//	    						, null);
-//	    		}
-
 				return false;
 			}
 

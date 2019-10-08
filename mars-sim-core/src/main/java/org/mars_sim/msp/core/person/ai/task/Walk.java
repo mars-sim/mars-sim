@@ -625,7 +625,7 @@ public class Walk extends Task implements Serializable {
 					Airlock airlock = step.airlock;
 					if (!ExitAirlock.canExitAirlock(person, airlock)) {
 						result = false;
-						 LogConsolidated.log(Level.WARNING, 5000, sourceName,
+						 LogConsolidated.log(Level.WARNING, 10_000, sourceName,
 								 "[" + person.getLocationTag().getLocale() + "] "
 				      					+ person // + " was in " + person.getLocationTag().getImmediateLocation()
 				      					+ " could NOT exit airlock at " + airlock.getEntityName());
