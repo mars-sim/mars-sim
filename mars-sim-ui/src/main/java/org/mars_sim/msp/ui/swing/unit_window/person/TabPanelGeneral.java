@@ -20,8 +20,12 @@ import javax.swing.border.TitledBorder;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.MBTIPersonality;
+import org.mars_sim.msp.core.person.ai.PersonalityTraitManager;
+import org.mars_sim.msp.core.person.ai.PersonalityTraitType;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
@@ -200,6 +204,22 @@ public class TabPanelGeneral extends TabPanel {
 		mbtiTF.setColumns(12);
 		infoPanel.add(mbtiTF);
 		
+		// Create the text area for displaying the MBTI scores
+		createMBTI(p);
+		// Create the text area for displaying the Big Five scores
+		createBigFive();
+		
+		//Lay out the spring panel.
+		SpringUtilities.makeCompactGrid(infoPanel,
+		                                8, 2, //rows, cols
+		                                50, 10,        //initX, initY
+		                                10, 5);       //xPad, yPad
+		
+	}
+	
+	
+	public void createMBTI(MBTIPersonality p) {
+		
 		int ie = p.getIntrovertExtrovertScore();
 		int ns = p.getScores().get(1);
 		int ft = p.getScores().get(2);
@@ -254,20 +274,20 @@ public class TabPanelGeneral extends TabPanel {
 		// Prepare MBTI text area
 		WebTextArea ta = new WebTextArea();
 		ta.setEditable(false);
-		ta.setFont(new Font("Monospaced", Font.ITALIC, 12));
-		ta.setColumns(10);
+		ta.setFont(new Font("Monospaced", Font.PLAIN, 12));
+		ta.setColumns(13);
 //		specialtyTA.setSize(100, 60);
 		ta.setBorder(new MarsPanelBorder());
 		
 		WebPanel listPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
-		listPanel.setSize(130, 140);
+		listPanel.setSize(110, 160);
 		listPanel.add(ta);
 
 		centerContentPanel.add(listPanel, BorderLayout.CENTER);
 		
 		TitledBorder titledBorder = BorderFactory.createTitledBorder(null, "Personality scores based on MBTI",
 				javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION,
-				new Font("Serif", Font.BOLD, 14), java.awt.Color.darkGray);
+				new Font("Serif", Font.PLAIN, 12), java.awt.Color.darkGray);
 		listPanel.setBorder(titledBorder);
 		
 		if (ie < 51) {
@@ -309,24 +329,72 @@ public class TabPanelGeneral extends TabPanel {
 		for (int i = 0; i < 4; i++) {
 //			StringBuffer sb = new StringBuffer();
 			String s = types[i];
-			int size = 16 - s.length();
+			int size = 14 - s.length();
 			while (size > 0) {
 				ta.append(" ");
 				size--;
 			}
-			ta.append(" " + s + " : " + scores[i]);
+			ta.append(" " + s + " : " + scores[i] + "  ");
+			if (i < 3)
+				//if it's NOT the last one
+				ta.append("\n");
+		}
+		
+	}
+
+	public void createBigFive() {
+		PersonalityTraitManager p = person.getMind().getTraitManager();
+		
+//		int o = p.getPersonalityTrait(PersonalityTraitType.OPENNESS);
+//		int c = p.getPersonalityTrait(PersonalityTraitType.CONSCIENTIOUSNESS);
+//		int e = p.getPersonalityTrait(PersonalityTraitType.EXTRAVERSION); //getIntrovertExtrovertScore();
+//		int a = p.getPersonalityTrait(PersonalityTraitType.AGREEABLENESS);
+//		int n = p.getPersonalityTrait(PersonalityTraitType.NEUROTICISM);
+		
+		String[] types = new String[5];
+		int[] scores = new int[5];
+		
+    	for (PersonalityTraitType t : PersonalityTraitType.values()) {
+    		types[t.ordinal()] = t.getName();
+    		scores[t.ordinal()] = p.getPersonalityTrait(t);
+    	}
+    	
+		// Prepare MBTI text area
+		WebTextArea ta = new WebTextArea();
+		ta.setEditable(false);
+		ta.setFont(new Font("Monospaced", Font.PLAIN, 12));
+		ta.setColumns(14);
+//		specialtyTA.setSize(100, 60);
+		ta.setBorder(new MarsPanelBorder());
+		
+		WebPanel listPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
+		listPanel.setSize(110, 160);
+		listPanel.add(ta);
+
+		centerContentPanel.add(listPanel, BorderLayout.SOUTH);
+		
+		TitledBorder titledBorder = BorderFactory.createTitledBorder(null, "Personality scores based on Big Five",
+				javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION,
+				new Font("Serif", Font.PLAIN, 12), java.awt.Color.darkGray);
+		listPanel.setBorder(titledBorder);
+		
+    
+		for (int i = 0; i < 5; i++) {
+//			StringBuffer sb = new StringBuffer();
+			String s = types[i];
+			int size = 18 - s.length();
+			while (size > 0) {
+				ta.append(" ");
+				size--;
+			}
+			ta.append(" " + s + " : " + scores[i] + "  ");
 			if (i < 4)
 				//if it's NOT the last one
 				ta.append("\n");
 		}
 		
-		//Lay out the spring panel.
-		SpringUtilities.makeCompactGrid(infoPanel,
-		                                8, 2, //rows, cols
-		                                50, 10,        //initX, initY
-		                                10, 5);       //xPad, yPad
 	}
-
+	
 	/**
 	 * Updates the info on this panel.
 	 */
