@@ -45,7 +45,6 @@ public class ReturnLightUtilityVehicleMeta implements MetaTask, Serializable {
         if (person.isInVehicle() && person.getVehicle() instanceof LightUtilityVehicle) {
             result = 500D;
 
-	        // 2015-06-07 Added Preference modifier
 	        if (result > 0)
             	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
 
@@ -57,7 +56,7 @@ public class ReturnLightUtilityVehicleMeta implements MetaTask, Serializable {
 
 	@Override
 	public Task constructInstance(Robot robot) {
-		return new ReturnLightUtilityVehicle(robot);
+		return null; //new ReturnLightUtilityVehicle(robot);
 	}
 
 	@Override

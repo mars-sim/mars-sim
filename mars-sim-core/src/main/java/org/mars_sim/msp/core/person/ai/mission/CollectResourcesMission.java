@@ -14,15 +14,19 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Direction;
 import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
+import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -48,9 +52,9 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-//  private static Logger logger = Logger.getLogger(CollectResourcesMission.class.getName());
-//	private static String loggerName = logger.getName();
-//	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+  private static Logger logger = Logger.getLogger(CollectResourcesMission.class.getName());
+	private static String loggerName = logger.getName();
+	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 	
 	/** Mission phase. */
 	public final static MissionPhase COLLECT_RESOURCES = new MissionPhase(
@@ -227,8 +231,8 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 				person = (Person) member;
 				person.getMind().setMission(this);
 			} else if (member instanceof Robot) {
-				robot = (Robot) member;
-				robot.getBotMind().setMission(this);
+//				robot = (Robot) member;
+//				robot.getBotMind().setMission(this);
 			}
 		}
 
@@ -579,7 +583,22 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 	 * @throws MissionException if error determining number.
 	 */
 	protected static int numCollectingContainersAvailable(Settlement settlement, Class<? extends Unit> containerType) {
-		return settlement.getInventory().findNumEmptyUnitsOfClass(containerType, false);
+		int num = settlement.getInventory().findNumEmptyUnitsOfClass(containerType, false);
+		
+		if (num == 0) {
+			int id = EquipmentType.convertClass2ID(containerType);
+			String name = EquipmentType.convertID2Enum(id).toString();
+	    	// Add the equipment demand for a bag
+//	    	settlement.getInventory().addEquipmentDemandTotalRequest(id, 1);
+//	    	settlement.getInventory().addEquipmentDemand(id, 1);
+        	LogConsolidated.log(Level.WARNING, 10_000, sourceName,
+					"[" 
+					+ settlement
+					+ "] no more empty " + name 
+					+ " available.");
+		}
+		
+		return num;
 	}
 
 	/**

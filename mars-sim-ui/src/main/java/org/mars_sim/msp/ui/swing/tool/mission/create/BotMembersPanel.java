@@ -413,10 +413,11 @@ implements ActionListener {
 			boolean result = false;
 
 			if (row < units.size()) {
-				Robot robot = (Robot) getUnit(row);
+//				Robot robot = (Robot) getUnit(row);
 
 				if (column == 2) {
-					if (robot.getBotMind().getMission() != null) return true;
+//					if (robot.getBotMind().getMission() != null) 
+//						return true;
 				}
 			}
 
@@ -493,7 +494,8 @@ implements ActionListener {
 					else if (column == 2) {
 						Mission mission = robot.getBotMind().getMission();
 						if (mission != null) result = mission.getName();
-						else result = "None";
+						else 
+							result = "None";
 					}
 					else if (column == 3) 
 						result = (int) (robot.getPerformanceRating() * 100D) + "%";

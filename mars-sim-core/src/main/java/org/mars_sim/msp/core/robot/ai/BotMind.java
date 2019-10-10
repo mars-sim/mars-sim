@@ -13,7 +13,6 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEventType;
-import org.mars_sim.msp.core.person.ai.MBTIPersonality;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.taskUtil.Task;
@@ -40,16 +39,15 @@ public class BotMind implements Serializable {
 	private boolean jobLock;
 	/** The cache for msol. */
 	private int msolCache = -1;
+	
 	/** The robot owning this mind. */
 	private Robot robot = null;
 	/** The robot's task manager. */
 	private BotTaskManager botTaskManager;
 	/** The robot's current mission (if any). */
-	private Mission mission;
+//	private Mission mission;
 	/** The robot's job. */
 	private RobotJob robotJob;
-	/** The robot's personality. */
-	private MBTIPersonality personality;
 	/** The robot's skill manager. */
 	private SkillManager skillManager;
 //	/** The robot's core mind. */
@@ -70,7 +68,7 @@ public class BotMind implements Serializable {
 
 		// Initialize data members
 		this.robot = robot;
-		mission = null;
+//		mission = null;
 		robotJob = null;
 		jobLock = false;
 
@@ -179,7 +177,7 @@ public class BotMind implements Serializable {
 	 * @return current mission
 	 */
 	public Mission getMission() {
-		return mission;
+		return null;//mission;
 	}
 
 	/**
@@ -234,9 +232,9 @@ public class BotMind implements Serializable {
 	public void setInactive() {
 		botTaskManager.clearTask();
 //		if (hasActiveMission()) {
-			if (robot != null)
-				mission.removeMember(robot);
-			mission = null;
+//			if (robot != null)
+//				mission.removeMember(robot);
+//			mission = null;
 //		}
 	}
 
@@ -246,23 +244,22 @@ public class BotMind implements Serializable {
 	 * @param newMission the new mission
 	 */
 	public void setMission(Mission newMission) {
-		if (newMission != mission) {
-
-			if (robot != null) {
-				if (mission != null) {
-					mission.removeMember(robot);
-				}
-
-				mission = newMission;
-
-				if (newMission != null) {
-					newMission.addMember(robot);
-				}
-
-				robot.fireUnitUpdate(UnitEventType.MISSION_EVENT, newMission);
-			}
-
-		}
+//		if (newMission != mission) {
+//
+//			if (robot != null) {
+//				if (mission != null) {
+//					mission.removeMember(robot);
+//				}
+//
+//				mission = newMission;
+//
+//				if (newMission != null) {
+//					newMission.addMember(robot);
+//				}
+//
+//				robot.fireUnitUpdate(UnitEventType.MISSION_EVENT, newMission);
+//			}
+//		}
 	}
 
 	/**
@@ -320,15 +317,6 @@ public class BotMind implements Serializable {
 	}
 
 	/**
-	 * Gets the robot's personality type.
-	 * 
-	 * @return personality type.
-	 */
-	public MBTIPersonality getPersonalityType() {
-		return personality;
-	}
-
-	/**
 	 * Reloads instances after loading from a saved sim
 	 * 
 	 * @param clock
@@ -348,16 +336,11 @@ public class BotMind implements Serializable {
 		robot = null;
 		botTaskManager.destroy();
 		botTaskManager = null;
-		if (mission != null)
-			mission.destroy();
-		mission = null;
+//		if (mission != null)
+//			mission.destroy();
+//		mission = null;
 		robotJob = null;
-		if (personality != null)
-			personality.destroy();
-		personality = null;
 		// skillManager.destroy(); // not working for maven test
-		// skillManager = null;
-		// missionManager.destroy(); // not working for maven test
-		// missionManager = null;
+		 skillManager = null;
 	}
 }

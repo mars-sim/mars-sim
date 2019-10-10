@@ -846,7 +846,7 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 
 	@Override
 	public void setMission(Mission newMission) {
-		getBotMind().setMission(newMission);
+//		getBotMind().setMission(newMission);
 	}
 
 	@Override

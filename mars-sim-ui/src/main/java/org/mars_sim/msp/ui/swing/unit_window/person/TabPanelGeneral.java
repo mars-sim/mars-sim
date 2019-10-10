@@ -11,18 +11,26 @@ import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Font;
 
+import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SpringLayout;
+import javax.swing.border.TitledBorder;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.MBTIPersonality;
+import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
+
+import com.alee.laf.panel.WebPanel;
+import com.alee.laf.text.WebTextArea;
 
 /**
  * The TabPanelGeneral is a tab panel for general information about a person.
@@ -73,7 +81,7 @@ public class TabPanelGeneral extends TabPanel {
 //		infoPanel.setBorder(new MarsPanelBorder());
 		centerContentPanel.add(infoPanel, BorderLayout.NORTH);
 
-		// Prepare gender name label
+		// 1. Prepare gender name label
 		JLabel genderNameLabel = new JLabel(Msg.getString("TabPanelGeneral.gender"), JLabel.RIGHT); //$NON-NLS-1$
 		genderNameLabel.setSize(5, 2);
 		infoPanel.add(genderNameLabel);
@@ -86,7 +94,7 @@ public class TabPanelGeneral extends TabPanel {
 		//JLabel genderLabel = new JLabel(gender, JLabel.RIGHT);
 		infoPanel.add(genderTF);
 
-		// Prepare birthdate and age name label
+		// 2. Prepare birthdate and age name label
 		JLabel birthNameLabel = new JLabel(Msg.getString("TabPanelGeneral.birthDate"), JLabel.RIGHT); //$NON-NLS-1$
 		birthNameLabel.setSize(5, 2);
 		infoPanel.add(birthNameLabel);
@@ -97,13 +105,13 @@ public class TabPanelGeneral extends TabPanel {
 			person.getBirthDate(),
 			Integer.toString(person.updateAge())
 		); //$NON-NLS-1$
-		//JLabel birthDateLabel = new JLabel(birthdate, JLabel.RIGHT);
+
 		JTextField birthDateTF = new JTextField(birthdate);
 		birthDateTF.setEditable(false);
 		birthDateTF.setColumns(12);
 		infoPanel.add(birthDateTF);
 
-		// Prepare birth location name label
+		// 3. Prepare birth location name label
 		JLabel birthLocationNameLabel = new JLabel(Msg.getString("TabPanelGeneral.birthLocation"), JLabel.RIGHT); //$NON-NLS-1$
 		birthLocationNameLabel.setSize(5, 2);
 		infoPanel.add(birthLocationNameLabel);
@@ -116,7 +124,7 @@ public class TabPanelGeneral extends TabPanel {
 		birthLocationTF.setColumns(12);
 		infoPanel.add(birthLocationTF);
 
-		// Prepare country name label
+		// 4. Prepare country name label
 		JLabel countryNameLabel = new JLabel(Msg.getString("TabPanelGeneral.country"), JLabel.RIGHT); //$NON-NLS-1$
 		countryNameLabel.setSize(5, 2);
 		infoPanel.add(countryNameLabel);
@@ -128,7 +136,7 @@ public class TabPanelGeneral extends TabPanel {
 		countryTF.setColumns(15);
 		infoPanel.add(countryTF);
 
-		// Prepare weight name label
+		// 5. Prepare weight name label
 		JLabel weightNameLabel = new JLabel(Msg.getString("TabPanelGeneral.weight"), JLabel.RIGHT); //$NON-NLS-1$
 		weightNameLabel.setSize(5, 2);
 		infoPanel.add(weightNameLabel);
@@ -141,7 +149,7 @@ public class TabPanelGeneral extends TabPanel {
 		weightTF.setColumns(12);
 		infoPanel.add(weightTF);
 
-		// Prepare height name label
+		// 6. Prepare height name label
 		JLabel heightNameLabel = new JLabel(Msg.getString("TabPanelGeneral.height"), JLabel.RIGHT); //$NON-NLS-1$
 		heightNameLabel.setSize(5, 2);
 		infoPanel.add(heightNameLabel);
@@ -154,7 +162,7 @@ public class TabPanelGeneral extends TabPanel {
 		heightTF.setColumns(12);
 		infoPanel.add(heightTF);
 
-		// Prepare BMI name label
+		// 7. Prepare BMI name label
 		JLabel BMINameLabel = new JLabel(Msg.getString("TabPanelGeneral.bmi"), JLabel.RIGHT); //$NON-NLS-1$
 		BMINameLabel.setSize(5, 2);
 		infoPanel.add(BMINameLabel);
@@ -172,17 +180,149 @@ public class TabPanelGeneral extends TabPanel {
 		if (BMI > 34.99) {weightClass = Msg.getString("TabPanelGeneral.bmi.obese2");} //$NON-NLS-1$
 		if (BMI > 39.99) {weightClass = Msg.getString("TabPanelGeneral.bmi.obese3");} //$NON-NLS-1$
 
-		//JLabel BMILabel = new JLabel(Msg.getString("TabPanelGeneral.bmiValue", //$NON-NLS-1$
-		//		Integer.toString((int)BMI),	weightClass), JLabel.RIGHT);
 		JTextField BMITF = new JTextField(Msg.getString("TabPanelGeneral.bmiValue", //$NON-NLS-1$
 				Math.round(BMI*100.0)/100.0,	weightClass));
 		BMITF.setEditable(false);
 		BMITF.setColumns(12);
 		infoPanel.add(BMITF);
 
+		// 8. Prepare MBTI label
+		JLabel mbtiLabel = new JLabel(Msg.getString("TabPanelGeneral.mbti"), JLabel.RIGHT); //$NON-NLS-1$
+		mbtiLabel.setSize(5, 2);
+		infoPanel.add(mbtiLabel);
+		mbtiLabel.setToolTipText(Msg.getString("TabPanelGeneral.mbti.label"));//$NON-NLS-1$
+		
+		// Prepare height label
+		MBTIPersonality p = person.getMind().getMBTI();
+		String mbtiType = p.getTypeString();
+		JTextField mbtiTF = new JTextField(mbtiType);
+		mbtiTF.setEditable(false);
+		mbtiTF.setColumns(12);
+		infoPanel.add(mbtiTF);
+		
+		int ie = p.getIntrovertExtrovertScore();
+		int ns = p.getScores().get(1);
+		int ft = p.getScores().get(2);
+		int jp = p.getScores().get(3);
+		
+//		StringBuffer sb = new StringBuffer();
+//		String ieStr = "";
+//		String nsStr = "";
+//		String ftStr = "";
+//		String jpStr = "";
+//		String tab = "&nbsp;&nbsp;&nbsp;&nbsp;";
+//		String thinsp = "&thinsp;";
+		
+		String[] types = new String[4];
+		int[] scores = new int[4];
+		
+//		if (ie < 51) {
+//			ieStr = thinsp + "Introvert : " + ie + "<br>" ;
+//			
+//			types[0] = ieStr;
+//		}
+//		else
+//			ieStr = thinsp + "Extrovert : " + (ie-50) + "<br>" ;
+//		
+//		if (ns < 51)
+//			nsStr = thinsp + thinsp + "Intuitive : " + ns + "<br>" ;
+//		else
+//			nsStr = thinsp + thinsp + thinsp + "Sensing : " + (ns-50) + "<br>" ;
+//		
+//		if (ft < 51)
+//			ftStr =thinsp + thinsp + thinsp + thinsp + "Feeling : " + ft + "<br>" ;
+//		else
+//			ftStr = thinsp + thinsp + "Thinking : " + (ft-50) + "<br>" ;
+//
+//		
+//		if (jp < 51)
+//			jpStr = thinsp + thinsp + thinsp + "Judging : " + jp + "<br>" ;
+//		else
+//			jpStr = "Perceiving : " + (jp-50) + "<br>" ;
+//		
+//		String notestr = "<br> Note : intensity range<br>" + thinsp + thinsp + thinsp + thinsp + "from 1 to 50<br>";
+//		
+//		sb.append("<html>").append(ieStr).append(nsStr).append(ftStr).append(jpStr).append(notestr).append("</html>");
+//		
+////		&nbsp; - non-breakable space
+////		&ensp; - en space
+////		&emsp; - em space
+////		&thinsp; - thin space
+//		
+//		mbtiTF.setToolTipText(sb.toString());
+		
+		// Prepare MBTI text area
+		WebTextArea ta = new WebTextArea();
+		ta.setEditable(false);
+		ta.setFont(new Font("Monospaced", Font.ITALIC, 12));
+		ta.setColumns(10);
+//		specialtyTA.setSize(100, 60);
+		ta.setBorder(new MarsPanelBorder());
+		
+		WebPanel listPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
+		listPanel.setSize(130, 140);
+		listPanel.add(ta);
+
+		centerContentPanel.add(listPanel, BorderLayout.CENTER);
+		
+		TitledBorder titledBorder = BorderFactory.createTitledBorder(null, "Personality scores based on MBTI",
+				javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION,
+				new Font("Serif", Font.BOLD, 14), java.awt.Color.darkGray);
+		listPanel.setBorder(titledBorder);
+		
+		if (ie < 51) {
+			types[0] = "Introvert (I)";
+			scores[0] = ie;
+		}
+		else {
+			types[0] = "Extrovert (E)";
+			scores[0] = ie - 50;
+		}
+		
+		if (ns < 51) {
+			types[1] = "Intuitive (N)";
+			scores[1] = ns;
+		}
+		else {
+			types[1] = "Sensing (S)";
+			scores[1] = ns - 50;
+		}
+		
+		if (ft < 51) {
+			types[2] = "Feeling (F)";
+			scores[2] = ft;
+		}
+		else {
+			types[2] = "Thinking (T)";
+			scores[2] = ft - 50;
+		}
+		
+		if (jp < 51) {
+			types[3] = "Judging (J)";
+			scores[3] = jp;
+		}
+		else {
+			types[3] = "Perceiving (P)";
+			scores[3] = jp - 50;
+		}
+	
+		for (int i = 0; i < 4; i++) {
+//			StringBuffer sb = new StringBuffer();
+			String s = types[i];
+			int size = 16 - s.length();
+			while (size > 0) {
+				ta.append(" ");
+				size--;
+			}
+			ta.append(" " + s + " : " + scores[i]);
+			if (i < 4)
+				//if it's NOT the last one
+				ta.append("\n");
+		}
+		
 		//Lay out the spring panel.
 		SpringUtilities.makeCompactGrid(infoPanel,
-		                                7, 2, //rows, cols
+		                                8, 2, //rows, cols
 		                                50, 10,        //initX, initY
 		                                10, 5);       //xPad, yPad
 	}

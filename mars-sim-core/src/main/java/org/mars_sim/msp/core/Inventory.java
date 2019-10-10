@@ -83,8 +83,10 @@ public class Inventory implements Serializable {
 	private transient boolean allStoredAmountResourcesCacheDirty = true;
 	private transient double totalAmountResourcesStoredCache;
 	private transient boolean totalAmountResourcesStoredCacheDirty = true;
+	
 	private transient double itemResourceTotalMassCache;
 	private transient boolean itemResourceTotalMassCacheDirty = true;
+	
 	private transient double unitTotalMassCache;
 	private transient boolean unitTotalMassCacheDirty = true;
 	private transient double totalInventoryMassCache;
@@ -136,7 +138,7 @@ public class Inventory implements Serializable {
 			marsSurface = sim.getMars().getMarsSurface();
 	}
 
-	public int getAmountSupplyRequest(int r) {
+	public int getAmountSupplyRequest(Integer r) {
 		int result;
 
 		if (amountSupplyRequestMap.containsKey(r)) {
@@ -148,7 +150,7 @@ public class Inventory implements Serializable {
 		return result;
 	}
 
-	public int getItemSupplyRequest(int r) {
+	public int getItemSupplyRequest(Integer r) {
 		int result;
 
 		if (itemSupplyRequestMap.containsKey(r)) {
@@ -160,7 +162,7 @@ public class Inventory implements Serializable {
 		return result;
 	}
 	
-	public double getAmountSupply(int r) {
+	public double getAmountSupply(Integer r) {
 		double result;
 		
 		if (amountSupplyMap.containsKey(r)) {
@@ -172,7 +174,7 @@ public class Inventory implements Serializable {
 		return result;
 	}
 
-	public double getItemSupply(int r) {
+	public double getItemSupply(Integer r) {
 		double result;
 		
 		if (itemSupplyMap.containsKey(r)) {
@@ -184,7 +186,7 @@ public class Inventory implements Serializable {
 		return result;
 	}
 	
-	public void addAmountSupply(int r, double amount) {
+	public void addAmountSupply(Integer r, double amount) {
 		if (amountSupplyMap.containsKey(r)) {
 			double oldAmount = amountSupplyMap.get(r);
 			amountSupplyMap.put(r, amount + oldAmount);
@@ -195,7 +197,7 @@ public class Inventory implements Serializable {
 		addAmountSupplyRequest(r);
 	}
 
-	public void addItemSupply(int r, int amount) {
+	public void addItemSupply(Integer r, int amount) {
 		if (itemSupplyMap.containsKey(r)) {
 			int oldAmount = itemSupplyMap.get(r);
 			itemSupplyMap.put(r, amount + oldAmount);
@@ -206,7 +208,7 @@ public class Inventory implements Serializable {
 		addItemSupplyRequest(r);
 	}
 	
-	public void addAmountSupplyRequest(int r) {
+	public void addAmountSupplyRequest(Integer r) {
 		if (amountSupplyRequestMap.containsKey(r)) {
 			int oldNum = amountSupplyRequestMap.get(r);
 			amountSupplyRequestMap.put(r, oldNum + 1);
@@ -216,7 +218,7 @@ public class Inventory implements Serializable {
 		}
 	}
 
-	public void addItemSupplyRequest(int r) {
+	public void addItemSupplyRequest(Integer r) {
 		if (itemSupplyRequestMap.containsKey(r)) {
 			int oldNum = itemSupplyRequestMap.get(r);
 			itemSupplyRequestMap.put(r, oldNum + 1);
@@ -226,7 +228,7 @@ public class Inventory implements Serializable {
 		}
 	}
 	
-	public double getAmountDemand(int r) {
+	public double getAmountDemand(Integer r) {
 		double result;
 
 		if (amountDemandMap.containsKey(r)) {
@@ -238,7 +240,7 @@ public class Inventory implements Serializable {
 		return result;
 	}
 
-	public double getItemDemand(int r) {
+	public double getItemDemand(Integer r) {
 		double result;
 
 		if (itemDemandMap.containsKey(r)) {
@@ -250,7 +252,7 @@ public class Inventory implements Serializable {
 		return result;
 	}
 	
-	public double getAmountDemandEstimated(int r) {
+	public double getAmountDemandEstimated(Integer r) {
 		double result;
 
 		if (amountDemandEstimatedMap.containsKey(r)) {
@@ -262,7 +264,7 @@ public class Inventory implements Serializable {
 		return result;
 	}
 
-	public double getItemDemandEstimated(int r) {
+	public double getItemDemandEstimated(Integer r) {
 		double result;
 
 		if (itemDemandEstimatedMap.containsKey(r)) {
@@ -274,7 +276,7 @@ public class Inventory implements Serializable {
 		return result;
 	}
 	
-	public int getAmountDemandTotalRequest(int r) {
+	public int getAmountDemandTotalRequest(Integer r) {
 		int result;
 		if (amountDemandTotalRequestMap.containsKey(r)) {
 			result = amountDemandTotalRequestMap.get(r);
@@ -285,7 +287,7 @@ public class Inventory implements Serializable {
 		return result;
 	}
 
-	public int getItemDemandTotalRequest(int r) {
+	public int getItemDemandTotalRequest(Integer r) {
 		int result;
 		if (itemDemandTotalRequestMap.containsKey(r)) {
 			result = itemDemandTotalRequestMap.get(r);
@@ -296,7 +298,7 @@ public class Inventory implements Serializable {
 		return result;
 	}
 
-	public int getAmountDemandMetRequest(int r) {
+	public int getAmountDemandMetRequest(Integer r) {
 		int result;
 		if (amountDemandMetRequestMap.containsKey(r)) {
 			result = amountDemandMetRequestMap.get(r);
@@ -307,7 +309,7 @@ public class Inventory implements Serializable {
 		return result;
 	}
 
-	public int getItemDemandMetRequest(int r) {
+	public int getItemDemandMetRequest(Integer r) {
 		int result;
 		if (itemDemandMetRequestMap.containsKey(r)) {
 			result = itemDemandMetRequestMap.get(r);
@@ -1867,13 +1869,13 @@ public class Inventory implements Serializable {
 		if (containedUnitIDs != null) {
 			for (Integer id : containedUnitIDs) {
 				Equipment unit = unitManager.getEquipmentByID(id);
-//				if (unitClass.isInstance(unit)) {
+				if (unitClass.isInstance(unit)) {
 					Inventory inv = unit.getInventory();
 					// It must be empty inside
 					if ((inv != null) && inv.isEmpty(allowDirty)) {
 						result++;
 					}
-//				}
+				}
 			}
 		}
 		

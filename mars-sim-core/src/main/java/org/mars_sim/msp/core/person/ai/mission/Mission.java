@@ -1136,20 +1136,20 @@ public abstract class Mission implements Serializable {
 				result = true;
 			}
 		} else if (member instanceof Robot) {
-			Robot robot = (Robot) member;
-
-			// Make sure robot isn't already on a mission.
-			boolean onMission = (robot.getBotMind().getMission() != null);
-
-			// Make sure robot doesn't have a malfunction.
-			boolean hasMalfunction = robot.getMalfunctionManager().hasMalfunction();
-
-			// Check if robot is qualified to join the mission.
-			boolean isQualified = (getMissionQualification(robot) > 0D);
-
-			if (!onMission && !hasMalfunction && isQualified) {
-				result = true;
-			}
+//			Robot robot = (Robot) member;
+//
+//			// Make sure robot isn't already on a mission.
+//			boolean onMission = (robot.getBotMind().getMission() != null);
+//
+//			// Make sure robot doesn't have a malfunction.
+//			boolean hasMalfunction = robot.getMalfunctionManager().hasMalfunction();
+//
+//			// Check if robot is qualified to join the mission.
+//			boolean isQualified = (getMissionQualification(robot) > 0D);
+//
+//			if (!onMission && !hasMalfunction && isQualified) {
+//				result = true;
+//			}
 		}
 
 		return result;
@@ -1220,7 +1220,6 @@ public abstract class Mission implements Serializable {
 				result = job.getJoinMissionProbabilityModifier(this.getClass());
 			}
 		}
-//        }
 
 		return result;
 	}

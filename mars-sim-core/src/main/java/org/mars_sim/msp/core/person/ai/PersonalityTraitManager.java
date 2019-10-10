@@ -4,7 +4,7 @@
  * @version 3.1.0 2016-11-05
  * @author Manny Kung
  */
-
+ 
 package org.mars_sim.msp.core.person.ai;
 
 import java.io.Serializable;

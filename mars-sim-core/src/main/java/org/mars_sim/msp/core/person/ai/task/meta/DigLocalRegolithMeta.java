@@ -10,8 +10,6 @@ import java.io.Serializable;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.equipment.Bag;
-import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;

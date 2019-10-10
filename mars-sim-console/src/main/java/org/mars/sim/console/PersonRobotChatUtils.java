@@ -36,6 +36,7 @@ import org.mars_sim.msp.core.robot.RoboticAttributeType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.tool.Conversion;
+import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -895,9 +896,13 @@ public class PersonRobotChatUtils extends ChatUtils {
 			Mission mission = null;
 			if (personCache != null) {
 				mission = personCache.getMind().getMission();
-			} else if (robotCache != null) {
-				mission = robotCache.getBotMind().getMission();
-			} else if (vehicleCache != null) {
+			} 
+			
+			else if (robotCache != null) {
+//				mission = robotCache.getBotMind().getMission();
+			} 
+			
+			else if (vehicleCache != null) {
 				Person p = (Person) vehicleCache.getOperator();
 				if (p != null)
 					mission = p.getMind().getMission();
@@ -905,8 +910,36 @@ public class PersonRobotChatUtils extends ChatUtils {
 //						mission = "Mission data not available.";
 			}
 
-			if (mission == null)
-				responseText.append("No. I'm not. ");
+			if (mission == null) {
+				if (personCache != null) {
+					int rand = RandomUtil.getRandomInt(3);
+					String s = "";
+					if (rand == 0)
+						s = "No. I'm not.";
+					else if (rand == 1)
+						s = "Not really.";
+					else if (rand == 2)
+						s = "No. I don't have a mission now.";
+					else
+						s = "No. I'm too busy with my daily tasks.";
+					responseText.append(s);
+				} 
+				
+				else if (robotCache != null) {
+					int rand = RandomUtil.getRandomInt(3);
+					String s = "";
+					if (rand == 0)
+						s = "My apology. My firmware is unable to allow me to participate in any missions.";
+					else if (rand == 1)
+						s = "Sorry. I'm not configured to perform any missions.";
+					else if (rand == 2)
+						s = "My programmming directives cannot execute any missions.";
+					else 
+						s = "I wish. My software stacks won't allow me to interpret the functional baselines of a missions";
+					responseText.append(s);
+				} 
+			}
+
 			else
 				responseText.append(mission.getDescription());
 

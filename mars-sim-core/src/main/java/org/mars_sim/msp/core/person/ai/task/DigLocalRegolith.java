@@ -19,12 +19,14 @@ import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.equipment.Bag;
+import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.taskUtil.TaskPhase;
+import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Airlock;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -58,6 +60,9 @@ implements Serializable {
 	/** Collection rate of regolith during EVA (kg/millisol). */
 	private static final double COLLECTION_RATE = 20D;
 
+	/** The resource id for a bag. */
+	private static final int BAG  = EquipmentType.convertName2ID("bag");
+	
 	// Domain members
 	/** Total ice collected in kg. */
 	private double totalCollected;
@@ -96,7 +101,6 @@ implements Serializable {
 
             // If bags are not available, end task.
             if (!hasBags()) {
-                logger.fine(person.getName() + " was not able to find bag to collect regolith.");
                 endTask();
             }
         }
@@ -116,31 +120,38 @@ implements Serializable {
     }
 
     /**
-     * Takes the most full bag from the rover.
+     * Takes an empty bag (preferably) from the rover.
      */
     private void takeBag() {
-        Bag emptyBag = settlement.getInventory().findABag(true);
-//        Iterator<Unit> i = settlement.getInventory().findAllUnitsOfClass(Bag.class).iterator();
-//        while (i.hasNext() && (emptyBag == null)) {
-//            Bag foundBag = (Bag) i.next();
-//            if (foundBag.getInventory().isEmpty(false)) {
-//                emptyBag = foundBag;
-//            }
-//        }
-
-        if (emptyBag != null) {
-            if (person.getInventory().canStoreUnit(emptyBag, false)) {
-            	emptyBag.transfer(settlement, person);
+        Bag aBag = settlement.getInventory().findABag(true);
+        if (aBag == null) {
+        	// if no empty bag, take any bags
+        	aBag = settlement.getInventory().findABag(false);
+	    	// Add the equipment demand for a bag
+//	    	settlement.getInventory().addEquipmentDemandTotalRequest(BAG, 1);
+//	    	settlement.getInventory().addEquipmentDemand(BAG, 1);
+        }
+        if (aBag != null) {
+            if (person.getInventory().canStoreUnit(aBag, false)) {
+            	aBag.transfer(settlement, person);
 //                settlement.getInventory().retrieveUnit(emptyBag);
 //                person.getInventory().storeUnit(emptyBag);
-                bag = emptyBag;
+                bag = aBag;
             }
             else {
-                logger.severe(person.getName() + " was unable to carry empty bag. Why? ");
+            	LogConsolidated.log(Level.WARNING, 10_000, sourceName,
+    					"[" 
+    					+ person.getLocationTag().getLocale()
+    					+ "] "  + person.getName() 
+    					+ " was strangely unable to carry an empty bag.");
             }
         }
         else {
-            logger.severe(person.getName() + " was unable to find empty bag in settlement inventory.");
+        	LogConsolidated.log(Level.WARNING, 10_000, sourceName,
+					"[" 
+					+ person.getLocationTag().getLocale()
+					+ "] "  + person.getName() 
+					+ " was unable to find an empty bag in the inventory.");
         }
     }
 

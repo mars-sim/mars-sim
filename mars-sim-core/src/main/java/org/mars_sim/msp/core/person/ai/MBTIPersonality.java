@@ -8,9 +8,12 @@
 package org.mars_sim.msp.core.person.ai;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.mars_sim.msp.core.Simulation;
@@ -52,23 +55,30 @@ public class MBTIPersonality implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	// TODO Personality types should be enums
-	public static final String ISTP = "ISTP";
-	public static final String ISTJ = "ISTJ";
-	public static final String ISFP = "ISFP";
-	public static final String ISFJ = "ISFJ";
-	public static final String INTP = "INTP";
-	public static final String INTJ = "INTJ";
-	public static final String INFP = "INFP";
-	public static final String INFJ = "INFJ";
-	public static final String ESTP = "ESTP";
-	public static final String ESTJ = "ESTJ";
-	public static final String ESFP = "ESFP";
-	public static final String ESFJ = "ESFJ";
-	public static final String ENTP = "ENTP";
-	public static final String ENTJ = "ENTJ";
-	public static final String ENFP = "ENFP";
-	public static final String ENFJ = "ENFJ";
+	public enum MBTIType {
+		ISTP,
+		ISTJ,
+		ISFP,
+		ISFJ, 
+		
+		INTP,
+		INTJ,
+		INFP,
+		INFJ,
+		
+		ESTP,
+		ESTJ,
+		ESFP,
+		ESFJ,
+		
+		ENTP,
+		ENTJ,
+		ENFP,
+		ENFJ
+	}
+	
+	/** The person's MBTI */
+	public MBTIType mbtiType;
 
 	// Add four MBTI scores
 	public static final int INTROVERSION_EXTRAVERSION = 0;
@@ -87,7 +97,7 @@ public class MBTIPersonality implements Serializable {
 	/** The person's score map */
 	private Map<Integer, Integer> scores = null;
 	/** The person's MBTI */
-	private String personalityType;
+//	private String personalityType;
 	/** The person's ID. */
 	private Integer personID;
 	/** The unit manager instance. */
@@ -95,15 +105,17 @@ public class MBTIPersonality implements Serializable {
 	/** The person config instance. */
 	private static PersonConfig config = SimulationConfig.instance().getPersonConfig();
 
+	static {
+		// Load personality type map if necessary.
+		if (personalityDistribution == null)
+			personalityDistribution = config.loadPersonalityDistribution();
+	}
+	
 	/**
 	 * Constructor
 	 */
 	MBTIPersonality(Person person) {
 		personID = person.getIdentifier();
-
-		// Load personality type map if necessary.
-		if (personalityDistribution == null)
-			personalityDistribution = config.loadPersonalityDistribution();
 	}
 
 	/**
@@ -112,24 +124,26 @@ public class MBTIPersonality implements Serializable {
 	public void setRandomMBTI() {
 		// Determine personality type.
 		double randValue = RandomUtil.getRandomDouble(100D);
-		Iterator<String> i = personalityDistribution.keySet().iterator();
+		
+		List<String> distribution = new ArrayList<>(personalityDistribution.keySet());
+		Collections.shuffle(distribution);
+		
+		Iterator<String> i = distribution.iterator();
+		String selected = "";
+		
 		while (i.hasNext()) {
 			String type = i.next();
 			double percentage = personalityDistribution.get(type);
 			if (randValue <= percentage) {
-				personalityType = type;
+				selected = type;
 				break;
 			} else {
 				randValue -= percentage;
 			}
 		}
 
-		// Add setScorePairs()
-		setScorePairs();
-
-		if (personalityType == null)
-			throw new IllegalStateException("PersonalityType.constructor(): Unable to determine personality type.");
-		
+		// Set the MBTI string
+		setTypeString(selected);
 	}
 
 	/*
@@ -143,7 +157,7 @@ public class MBTIPersonality implements Serializable {
 		for (int j = 0; j < 4; j++) {
 
 			int score = 0;
-			int rand = RandomUtil.getRandomInt(50);
+			int rand = RandomUtil.getRandomInt(1, 50);
 			if (j == 0) {
 				if (isIntrovert())
 					score = rand;
@@ -177,7 +191,7 @@ public class MBTIPersonality implements Serializable {
 	 * @return personality type.
 	 */
 	public String getTypeString() {
-		return personalityType;
+		return mbtiType.toString();
 	}
 
 	/**
@@ -185,12 +199,18 @@ public class MBTIPersonality implements Serializable {
 	 * 
 	 * @param newPersonalityType for letter MBTI code.
 	 */
-	public void setTypeString(String newPersonalityType) {
-		if (personalityDistribution.containsKey(newPersonalityType)) {
-			personalityType = newPersonalityType;
+	public void setTypeString(String selected) {
+		if (personalityDistribution.containsKey(selected)) {
+
+			// Obtain the enum
+			for (MBTIType type: MBTIType.values()) {
+				if (selected.equalsIgnoreCase(type.toString()))
+					mbtiType = type;
+			}
+			
 			setScorePairs();
 		} else
-			throw new IllegalArgumentException("Personality type: " + newPersonalityType + " invalid.");
+			throw new IllegalArgumentException("MBTI Personality type '" + selected + "' is invalid in people.xml.");
 	}
 
 	/**
@@ -214,7 +234,7 @@ public class MBTIPersonality implements Serializable {
 	 * Get this object as a string.
 	 */
 	public String toString() {
-		return personalityType;
+		return mbtiType.toString();
 	}
 
 	/**
@@ -227,7 +247,7 @@ public class MBTIPersonality implements Serializable {
 		int diff = 0;
 
 		for (int x = 0; x < 4; x++)
-			if (!personalityType.substring(x, (x + 1)).equals(otherPersonality.substring(x, (x + 1))))
+			if (!mbtiType.toString().substring(x, (x + 1)).equals(otherPersonality.substring(x, (x + 1))))
 				diff++;
 
 		return diff;
@@ -239,7 +259,7 @@ public class MBTIPersonality implements Serializable {
 	 * @return true if introvert
 	 */
 	public boolean isIntrovert() {
-		return personalityType.substring(0, 1).equals("I");
+		return mbtiType.toString().substring(0, 1).equals("I");
 	}
 
 	/**
@@ -248,7 +268,7 @@ public class MBTIPersonality implements Serializable {
 	 * @return true if extrovert
 	 */
 	public boolean isExtrovert() {
-		return personalityType.substring(0, 1).equals("E");
+		return mbtiType.toString().substring(0, 1).equals("E");
 	}
 
 	/**
@@ -257,7 +277,7 @@ public class MBTIPersonality implements Serializable {
 	 * @return true if sensor
 	 */
 	public boolean isSensor() {
-		return personalityType.substring(1, 2).equals("S");
+		return mbtiType.toString().substring(1, 2).equals("S");
 	}
 
 	/**
@@ -266,7 +286,7 @@ public class MBTIPersonality implements Serializable {
 	 * @return true if intuitive
 	 */
 	public boolean isIntuitive() {
-		return personalityType.substring(1, 2).equals("N");
+		return mbtiType.toString().substring(1, 2).equals("N");
 	}
 
 	/**
@@ -275,7 +295,7 @@ public class MBTIPersonality implements Serializable {
 	 * @return true if thinker
 	 */
 	public boolean isThinker() {
-		return personalityType.substring(2, 3).equals("T");
+		return mbtiType.toString().substring(2, 3).equals("T");
 	}
 
 	/**
@@ -284,7 +304,7 @@ public class MBTIPersonality implements Serializable {
 	 * @return true if feeler
 	 */
 	public boolean isFeeler() {
-		return personalityType.substring(2, 3).equals("F");
+		return mbtiType.toString().substring(2, 3).equals("F");
 	}
 
 	/**
@@ -293,7 +313,7 @@ public class MBTIPersonality implements Serializable {
 	 * @return true if judger
 	 */
 	public boolean isJudger() {
-		return personalityType.substring(3, 4).equals("J");
+		return mbtiType.toString().substring(3, 4).equals("J");
 	}
 
 	/**
@@ -302,7 +322,7 @@ public class MBTIPersonality implements Serializable {
 	 * @return true if perceiver
 	 */
 	public boolean isPerceiver() {
-		return personalityType.substring(3, 4).equals("P");
+		return mbtiType.toString().substring(3, 4).equals("P");
 	}
 
 	/**
@@ -330,6 +350,11 @@ public class MBTIPersonality implements Serializable {
 		}
 	}
 
+	/**
+	 * Obtains the scores map
+	 * 
+	 * @return
+	 */
 	public Map<Integer, Integer> getScores() {
 		return scores;
 	}
@@ -350,7 +375,7 @@ public class MBTIPersonality implements Serializable {
 		if (personalityDistribution != null)
 			personalityDistribution.clear();
 		personalityDistribution = null;
-		personalityType = null;
+		mbtiType = null;
 		scores = null;
 		config = null;
 		unitManager = null;

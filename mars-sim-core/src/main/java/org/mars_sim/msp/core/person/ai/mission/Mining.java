@@ -209,8 +209,8 @@ public class Mining extends RoverMission {
 				person = (Person) member;
 				person.getMind().setMission(this);
 			} else if (member instanceof Robot) {
-				robot = (Robot) member;
-				robot.getBotMind().setMission(this);
+//				robot = (Robot) member;
+//				robot.getBotMind().setMission(this);
 			}
 		}
 

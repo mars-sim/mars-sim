@@ -635,7 +635,7 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 	 * @param newContainer
 	 */
 	public void updateEquipmentState(Unit newContainer) {
-		logger.severe("Unit::updateEquipmentState() - " + getName() + "'s container unit : (" + getContainerUnit() + " --> "  + newContainer + ")");
+//		logger.info("Unit::updateEquipmentState() - " + getName() + "'s container unit : (" + getContainerUnit() + " --> "  + newContainer + ")");
 		if (newContainer == null) {
 			currentStateType = LocationStateType.UNKNOWN;
 			return;

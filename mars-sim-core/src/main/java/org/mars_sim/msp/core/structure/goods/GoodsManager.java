@@ -208,12 +208,18 @@ public class GoodsManager implements Serializable {
 //	private double inflation_rate = 1;
 
 	private Map<Good, Double> goodsValues;
+	
 	private Map<Good, Double> goodsDemandCache;
+	private Map<Integer, Double> partsDemandCache;
+	
 	// private Map<Good, Double> goodsSupplyCache;
+	
 	private Map<Good, Double> goodsTradeCache;
+	
 	private Map<String, Double> vehicleBuyValueCache;
 	private Map<String, Double> vehicleSellValueCache;
-	private Map<Integer, Double> partsDemandCache;
+	
+
 
 	private Settlement settlement;
 
@@ -1888,13 +1894,13 @@ public class GoodsManager implements Serializable {
 			if (previousDemand > 0)
 				totalDemand =  .8 * previousDemand + .2 * getAverageItemDemand(id, numSol);
 			else 
-				totalDemand = getAverageAmoundDemand(id, numSol);
+				totalDemand = getAverageItemDemand(id, numSol);
 				
 			// Calculate total supply
 			totalSupply = supply;
 			
 			// Clear parts demand cache so it will be calculated next time.
-//			partsDemandCache.clear();
+			partsDemandCache.clear();
 		} 
 	
 		else {
@@ -1935,12 +1941,12 @@ public class GoodsManager implements Serializable {
 			if (previousDemand > 0)
 				totalDemand = .6 * previousDemand 
 					+ .2 * projectedDemand / MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR 
-					+ .1 * getAverageAmoundDemand(id, numSol) 
+					+ .1 * getAverageItemDemand(id, numSol) 
 					+ .1 * tradeDemand;
 			else
 				totalDemand = 
 				+ .6 * projectedDemand / MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR 
-				+ .2 * getAverageAmoundDemand(id, numSol) 
+				+ .2 * getAverageItemDemand(id, numSol) 
 				+ .2 * tradeDemand;
 			
 			// Calculate total supply

@@ -376,8 +376,8 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 				Person person = (Person) member;
 				person.getMind().setMission(this);
 			} else if (member instanceof Robot) {
-				Robot robot = (Robot) member;
-				robot.getBotMind().setMission(this);
+//				Robot robot = (Robot) member;
+//				robot.getBotMind().setMission(this);
 			}
 		}
 
