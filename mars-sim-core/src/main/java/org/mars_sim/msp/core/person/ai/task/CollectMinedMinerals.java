@@ -159,13 +159,15 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 		if (bag != null) {
 			if (person != null) {
 				if (person.getInventory().canStoreUnit(bag, false)) {
-					rover.getInventory().retrieveUnit(bag);
-					person.getInventory().storeUnit(bag);
+					bag.transfer(rover, person);
+//					rover.getInventory().retrieveUnit(bag);
+//					person.getInventory().storeUnit(bag);
 				}
 			} else if (robot != null) {
 				if (robot.getInventory().canStoreUnit(bag, false)) {
-					rover.getInventory().retrieveUnit(bag);
-					robot.getInventory().storeUnit(bag);
+					bag.transfer(rover, robot);
+//					rover.getInventory().retrieveUnit(bag);
+//					robot.getInventory().storeUnit(bag);
 				}
 			}
 		}
@@ -182,9 +184,9 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 		Bag result = null;
 		double leastCapacity = Double.MAX_VALUE;
 
-		Iterator<Unit> i = inv.findAllUnitsOfClass(Bag.class).iterator();
+		Iterator<Bag> i = inv.findAllBags().iterator();
 		while (i.hasNext()) {
-			Bag bag = (Bag) i.next();
+			Bag bag = i.next();
 			double remainingCapacity = bag.getInventory().getAmountResourceRemainingCapacity(resource, true, false);
 
 			if ((remainingCapacity > 0D) && (remainingCapacity < leastCapacity)) {
@@ -300,13 +302,13 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 			pInv = robot.getInventory();
 		if (pInv.containsUnitClass(Bag.class)) {
 			// Load bags in rover.
-			Iterator<Unit> i = pInv.findAllUnitsOfClass(Bag.class).iterator();
+			Iterator<Bag> i = pInv.findAllBags().iterator();
 			while (i.hasNext()) {
-				Bag bag = (Bag) i.next();
-				pInv.retrieveUnit(bag);
+//				Bag bag = i.next();
 				// Place this equipment within a rover outside on Mars
-//				bag.enter(LocationCodeType.MOBILE_UNIT_4);
-				rover.getInventory().storeUnit(bag);
+				i.next().transfer(pInv, rover);
+//				pInv.retrieveUnit(bag);
+//				rover.getInventory().storeUnit(bag);
 			}
 		}
 
@@ -355,7 +357,7 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 				carryMass += bag.getMass();
 			}
 
-			EVASuit suit = (EVASuit) rover.getInventory().findUnitOfClass(EVASuit.class);
+			EVASuit suit = rover.getInventory().findAnEVAsuit(); //(EVASuit) rover.getInventory().findUnitOfClass(EVASuit.class);
 			if (suit != null) {
 				carryMass += suit.getMass();
 				carryMass += suit.getInventory().getAmountResourceRemainingCapacity(oxygenID, false, false);

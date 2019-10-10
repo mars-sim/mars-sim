@@ -37,7 +37,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	/** The unit count for this person. */
-	private static int uniqueCount = Unit.FIRST_EQUIPMENT_ID;
+	private static int uniqueCount = Unit.FIRST_EQUIPMENT_UNIT_ID;
 	
 	// Data members.
 	/** is this equipment being salvage. */
@@ -72,6 +72,11 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 		return identifier;
 	}
 	
+	public void incrementID() {
+		// Gets the identifier
+		this.identifier = getNextIdentifier();
+	}
+	
 	/**
 	 * Constructs an Equipment object
 	 * 
@@ -90,7 +95,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 		
 		lastOwner = Integer.valueOf(-1);
 		
-		this.identifier = getNextIdentifier();
+//		this.identifier = getNextIdentifier();
 		// Add this equipment to the equipment lookup map	
 		if (unitManager == null)
 			unitManager = Simulation.instance().getUnitManager();
@@ -235,7 +240,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	 * @return true if the equipment's is just right outside of a settlement
 	 */
 	public boolean isRightOutsideSettlement() {
-		if (LocationStateType.OUTSIDE_SETTLEMENT_VICINITY  == currentStateType)
+		if (LocationStateType.WITHIN_SETTLEMENT_VICINITY  == currentStateType)
 			return true;
 		return false;
 	}
@@ -285,7 +290,7 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 				 lastOwner = (Integer) unit.getIdentifier();
 		}	
 		else
-			lastOwner = (Integer) Unit.UNKNOWN_ID;
+			lastOwner = (Integer) Unit.UNKNOWN_UNIT_ID;
 	}
 
 	/**

@@ -520,11 +520,10 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 											+ towedVehicle.getName() + " during an Rescue Operation.");
 						
 						// Retrieve the person if he/she is dead
-						towedVehicle.getInventory().retrieveUnit(p);
+						p.transfer(towedVehicle, disembarkSettlement);
+//						towedVehicle.getInventory().retrieveUnit(p);
+//						disembarkSettlement.getInventory().storeUnit(p);
 						
-						// Place this person within a settlement
-//						p.enter(LocationCodeType.SETTLEMENT);
-						disembarkSettlement.getInventory().storeUnit(p);
 						int id = disembarkSettlement.getIdentifier();
 						BuildingManager.addToMedicalBuilding(p, id);
 						p.setAssociatedSettlement(id);

@@ -46,6 +46,9 @@ import org.mars_sim.msp.core.manufacture.ManufactureProcessItem;
 import org.mars_sim.msp.core.manufacture.ManufactureUtil;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
+import org.mars_sim.msp.core.person.ai.job.Architect;
+import org.mars_sim.msp.core.person.ai.job.Areologist;
+import org.mars_sim.msp.core.person.ai.job.Engineer;
 import org.mars_sim.msp.core.person.ai.mission.CollectIce;
 import org.mars_sim.msp.core.person.ai.mission.CollectRegolith;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
@@ -81,6 +84,7 @@ import org.mars_sim.msp.core.structure.construction.ConstructionStageInfo;
 import org.mars_sim.msp.core.structure.construction.ConstructionUtil;
 import org.mars_sim.msp.core.structure.construction.ConstructionValues;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleConfig;
 import org.mars_sim.msp.core.vehicle.VehicleType;
@@ -129,13 +133,13 @@ public class GoodsManager implements Serializable {
 	// Value multiplier factors for certain goods.
 	private static double eVASuitMod = EVA_SUIT_FACTOR;
 
-	private static final double EVA_SUIT_VALUE = 5D;
+	private static final double EVA_SUIT_VALUE = 7.5D;
 	private static final double MINERAL_VALUE = 10D;
 	private static final double ROBOT_FACTOR = 500D;
 	private static final double TRANSPORT_VEHICLE_FACTOR = 1_000D;
 	private static final double CARGO_VEHICLE_FACTOR = 800D;
 	private static final double EXPLORER_VEHICLE_FACTOR = 600D;
-	private static final double LUV_VEHICLE_FACTOR = 200D;
+	private static final double LUV_VEHICLE_FACTOR = 250D;
 	
 	private static final double LUV_FACTOR = .8D;
 	private static final double LIFE_SUPPORT_FACTOR = 1D;
@@ -2664,7 +2668,7 @@ public class GoodsManager implements Serializable {
 				}
 			}
 		} else {
-			if (vehicleType.equalsIgnoreCase("light utility vehicle")) {
+			if (vehicleType.equalsIgnoreCase(LightUtilityVehicle.NAME)) {
 				value = determineLUVValue(buy);
 			} else {
 				double travelToSettlementMissionValue = determineMissionVehicleValue(TRAVEL_TO_SETTLEMENT_MISSION,
@@ -2772,15 +2776,18 @@ public class GoodsManager implements Serializable {
 	 */
 	private double determineLUVValue(boolean buy) {
 
-		double demand = 0D;
+		double demand = 0.25D;
 
-		// Add demand for mining missions.
-		demand += getJobNum(1);
+		// Add demand for mining missions by areologists.
+		demand += getJobNum(Areologist.JOB_ID) * .5;
 
-		// Add demand for construction missions.
-		demand += getJobNum(0);
+		// Add demand for construction missions by architects.
+		demand += getJobNum(Architect.JOB_ID) * 1.5;
 
-		double supply = getNumberOfVehiclesForSettlement("light utility vehicle");
+		// Add demand for mining missions by engineers.
+		demand += getJobNum(Engineer.JOB_ID) * .5;
+		
+		double supply = getNumberOfVehiclesForSettlement(LightUtilityVehicle.NAME);
 		if (!buy)
 			supply--;
 		if (supply < 0D)

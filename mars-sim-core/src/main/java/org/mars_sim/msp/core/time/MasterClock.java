@@ -1338,8 +1338,10 @@ public class MasterClock implements Serializable {
 	public void destroy() {
 		simulationConfig = null;
 		sim = null;
+		marsClock.destroy();
 		marsClock = null;
 		initialMarsTime = null;
+		earthClock.destroy();
 		earthClock = null;
 		uptimer = null;
 		clockThreadTask = null;

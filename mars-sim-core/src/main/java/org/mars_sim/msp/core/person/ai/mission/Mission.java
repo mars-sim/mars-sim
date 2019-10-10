@@ -1263,7 +1263,7 @@ public abstract class Mission implements Serializable {
 	 * Gets the number and types of equipment needed for the mission.
 	 * 
 	 * @param useBuffer use time buffers in estimation if true.
-	 * @return map of equipment class and Integer number.
+	 * @return map of equipment types and number.
 	 */
 	public abstract Map<Integer, Integer> getEquipmentNeededForRemainingMission(boolean useBuffer);
 
@@ -1360,7 +1360,7 @@ public abstract class Mission implements Serializable {
 			logger.severe("Settlement is null");
 
 		else {
-			result = settlement.getInventory().findNumUnitsOfClass(EVASuit.class);
+			result = settlement.getInventory().findNumEVASuits();
 
 			// Leave one suit for settlement use.
 			if (result > 0) {

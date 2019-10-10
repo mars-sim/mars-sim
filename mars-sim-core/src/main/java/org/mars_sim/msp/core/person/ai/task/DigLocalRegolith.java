@@ -10,7 +10,6 @@ package org.mars_sim.msp.core.person.ai.task;
 import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -19,7 +18,6 @@ import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Bag;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
@@ -121,19 +119,20 @@ implements Serializable {
      * Takes the most full bag from the rover.
      */
     private void takeBag() {
-        Bag emptyBag = null;
-        Iterator<Unit> i = settlement.getInventory().findAllUnitsOfClass(Bag.class).iterator();
-        while (i.hasNext() && (emptyBag == null)) {
-            Bag foundBag = (Bag) i.next();
-            if (foundBag.getInventory().isEmpty(false)) {
-                emptyBag = foundBag;
-            }
-        }
+        Bag emptyBag = settlement.getInventory().findABag(true);
+//        Iterator<Unit> i = settlement.getInventory().findAllUnitsOfClass(Bag.class).iterator();
+//        while (i.hasNext() && (emptyBag == null)) {
+//            Bag foundBag = (Bag) i.next();
+//            if (foundBag.getInventory().isEmpty(false)) {
+//                emptyBag = foundBag;
+//            }
+//        }
 
         if (emptyBag != null) {
             if (person.getInventory().canStoreUnit(emptyBag, false)) {
-                settlement.getInventory().retrieveUnit(emptyBag);
-                person.getInventory().storeUnit(emptyBag);
+            	emptyBag.transfer(settlement, person);
+//                settlement.getInventory().retrieveUnit(emptyBag);
+//                person.getInventory().storeUnit(emptyBag);
                 bag = emptyBag;
             }
             else {
@@ -258,11 +257,9 @@ implements Serializable {
                 settlement.getInventory().addAmountSupply(regolithID, collectedAmount);
             }
 
-            // Store bag.
-            person.getInventory().retrieveUnit(bag);
-			// Place this equipment within a settlement
-//            bag.enter(LocationCodeType.MOBILE_UNIT_4);
-            settlement.getInventory().storeUnit(bag);
+            bag.transfer(person, settlement);
+//            person.getInventory().retrieveUnit(bag);
+//            settlement.getInventory().storeUnit(bag);
 
             // Recalculate settlement good value for output item.
 //            GoodsManager goodsManager = settlement.getGoodsManager();

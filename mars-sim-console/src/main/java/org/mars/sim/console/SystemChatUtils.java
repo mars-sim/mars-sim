@@ -180,7 +180,6 @@ public class SystemChatUtils extends ChatUtils {
 			
 			responseText.append(s + System.lineSeparator());
 
-
 		}
 		
 		return new String[] {questionText, responseText.toString()};

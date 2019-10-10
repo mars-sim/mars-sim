@@ -58,7 +58,7 @@ implements Serializable {
             "Task.phase.collectIce")); //$NON-NLS-1$
 
 	/**  Collection rate of ice during EVA (kg/millisol). */
-	private static final double COLLECTION_RATE = 20D;
+	private double collectionRate;
 
 	// Domain members
 	/** Total ice collected in kg. */
@@ -82,7 +82,9 @@ implements Serializable {
         super(NAME, person, false, 10D);
 
         settlement = person.getAssociatedSettlement();
-
+        
+        collectionRate = settlement.getIceCollectionRate();
+        
         // Get an available airlock.
         airlock = getWalkableAvailableAirlock(person);
         if (airlock == null) {
@@ -122,19 +124,20 @@ implements Serializable {
      * Takes the most full bag from the rover.
      */
     private void takeBag() {
-        Bag emptyBag = null;
-        Iterator<Unit> i = settlement.getInventory().findAllUnitsOfClass(Bag.class).iterator();
-        while (i.hasNext() && (emptyBag == null)) {
-            Bag foundBag = (Bag) i.next();
-            if (foundBag.getInventory().isEmpty(false)) {
-                emptyBag = foundBag;
-            }
-        }
+    	Bag emptyBag = settlement.getInventory().findABag(true);
+//        Iterator<Unit> i = settlement.getInventory().findAllUnitsOfClass(Bag.class).iterator();
+//        while (i.hasNext() && (emptyBag == null)) {
+//            Bag foundBag = (Bag) i.next();
+//            if (foundBag.getInventory().isEmpty(false)) {
+//                emptyBag = foundBag;
+//            }
+//        }
 
         if (emptyBag != null) {
             if (person.getInventory().canStoreUnit(emptyBag, false)) {
-                settlement.getInventory().retrieveUnit(emptyBag);
-                person.getInventory().storeUnit(emptyBag);
+            	emptyBag.transfer(settlement, person);
+//                settlement.getInventory().retrieveUnit(emptyBag);
+//                person.getInventory().storeUnit(emptyBag);
                 bag = emptyBag;
             }
             else {
@@ -259,14 +262,11 @@ implements Serializable {
 	                sInv.storeAmountResource(iceID, collectedAmount, false);
 	                sInv.addAmountSupply(iceID, collectedAmount);
 	                
-	            	// TODO: java.lang.IllegalStateException: Unit: Bag 104 could not be retrieved
-	            	// ExitAirlock : [Alpha Base] Cheryl Halvorson had tried to exit the airlock 1 times
-		            
+	                bag.transfer(person, sInv);
 	            	// Retrieve the bag from the person
-		            person.getInventory().retrieveUnit(bag);
 					// Place this equipment within a settlement
-//		            bag.enter(LocationCodeType.MOBILE_UNIT_4);
-		            sInv.storeUnit(bag);	      
+//		            person.getInventory().retrieveUnit(bag);
+//		            sInv.storeUnit(bag);	      
 		            
 		            // Recalculate settlement good value for output item.
 //		            GoodsManager goodsManager = settlement.getGoodsManager();
@@ -309,7 +309,9 @@ implements Serializable {
         int agility = nManager.getAttribute(NaturalAttributeType.AGILITY);
         int eva = person.getSkillManager().getSkillLevel(SkillType.EVA_OPERATIONS);
         
-        double iceCollected = .25 + RandomUtil.getRandomDouble(.25) * time * COLLECTION_RATE * ((.5 * agility + strength) / 150D) * (eva + .1)/ 5D ;
+        double iceCollected = RandomUtil.getRandomDouble(.25) * time * collectionRate 
+        		* ((.5 * agility + strength) / 150D) * (eva + .1)/ 5D ;
+        
         totalCollected += iceCollected;
         
         boolean finishedCollecting = false;

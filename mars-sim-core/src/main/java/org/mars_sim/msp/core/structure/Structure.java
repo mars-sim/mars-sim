@@ -19,8 +19,7 @@ import org.mars_sim.msp.core.Unit;
 //@JsonSubTypes({ @Type(value = Settlement.class, name = "settlement"),
 //				@Type(value = Building.class, name = "building"),
 //				@Type(value = ConstructionSite.class, name = "constructionSite")})
-public abstract class Structure
-extends Unit {
+public abstract class Structure extends Unit {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;

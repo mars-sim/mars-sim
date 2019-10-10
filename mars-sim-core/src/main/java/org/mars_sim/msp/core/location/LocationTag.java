@@ -14,6 +14,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.equipment.Equipment;
+import org.mars_sim.msp.core.mars.MarsSurface;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -39,6 +40,9 @@ public class LocationTag implements LocationState, Serializable {
 	private Equipment e = null;
 	private Building b = null;
 	private Vehicle v = null;
+	private Settlement s = null;
+	private MarsSurface ms = null;
+	
 
 	private static UnitManager unitManager = Simulation.instance().getUnitManager();
 
@@ -54,7 +58,10 @@ public class LocationTag implements LocationState, Serializable {
 			b = (Building) unit;
 		else if (unit instanceof Vehicle)
 			v = (Vehicle) unit;
-
+		else if (unit instanceof Settlement)
+			s = (Settlement) unit;
+		else if (unit instanceof MarsSurface)
+			ms = (MarsSurface) unit;
 	}
 
 	/**

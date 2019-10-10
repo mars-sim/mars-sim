@@ -97,39 +97,31 @@ public class WalkSettlementInterior extends Task implements Serializable {
 
 		// Check that destination location is within destination building.
 		if (!LocalAreaUtil.checkLocationWithinLocalBoundedObject(destXLoc, destYLoc, destBuilding)) {
-			LogConsolidated.log(Level.WARNING, 20_000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
+			throw new IllegalStateException(
+//			LogConsolidated.log(Level.WARNING, 20_000, sourceName, 
+					"[" + person.getLocationTag().getLocale() + "] "
 					+ person + " was unable to walk to the destination in " + person.getBuildingLocation());
-			// throw new IllegalStateException(
-			// "Given destination walking location not within destination building.");
-			//
-			// TODO: determine if a mfalfunction within this building can cause this
-			// IllegalStateException
+			// TODO: determine if a malfunction within this building can cause this IllegalStateException
 			// if that's the case, there is no need to throw IllegalStateException
 //			endTask();
-			person.getMind().getTaskManager().getNewTask();
+//			person.getMind().getTaskManager().getNewTask();
 		}
 
 		// Check that the person is currently inside a building.
 		Building startBuilding = BuildingManager.getBuilding(person);
 		if (startBuilding == null) {
-			// Note: the above will trigger exception below and halt the sim
-			// Exception in thread "pool-4-thread-3024" java.lang.IllegalStateException:
-			// RepairBot 003 is not currently in a building.
-			// at
-			// org.mars_sim.msp.core.person.ai.task.WalkSettlementInterior.<init>(WalkSettlementInterior.java:145)
-			// at
-			// org.mars_sim.msp.core.person.ai.task.EnterAirlock.exitingAirlockPhase(EnterAirlock.java:549)
-			// at
-			// org.mars_sim.msp.core.person.ai.task.EnterAirlock.performMappedPhase(EnterAirlock.java:129)
-
-			// Question: can we use a gentler approach as follows until it's clearly
+			// TODO: can we use a gentler approach as follows until it's clearly
 			// understood and resolved.
 			// logger.severe(person.getName() + " is not currently in a building.");
 			// endTask();
-			throw new IllegalStateException(person.getName() + " is not currently in a building.");
+			throw new IllegalStateException(
+					"[" + person.getLocationTag().getLocale() + "] "
+					+person.getName() + " is not currently in a building.");
 		}
 
 		// Determine the walking path to the destination.
+//		System.out.println("WalkSettlementInterior : settlement : " + settlement);
+//		System.out.println("WalkSettlementInterior : person's settlement : " + person.getSettlement());
 		walkingPath = settlement.getBuildingConnectorManager().determineShortestPath(startBuilding,
 				person.getXLocation(), person.getYLocation(), destinationBuilding, destinationXLocation,
 				destinationYLocation);
@@ -251,7 +243,7 @@ public class WalkSettlementInterior extends Task implements Serializable {
 	/**
 	 * Performs the walking phase of the task.
 	 * 
-	 * @param time the amount of time (millisol) to perform the walking phase.
+	 * @param time the amount of time (millis)ol) to perform the walking phase.
 	 * @return the amount of time (millisol) left after performing the walking
 	 *         phase.
 	 */

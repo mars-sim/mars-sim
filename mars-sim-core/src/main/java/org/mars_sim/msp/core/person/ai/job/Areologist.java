@@ -52,7 +52,7 @@ public class Areologist extends Job implements Serializable {
 
 	// private static Logger logger = Logger.getLogger(Areologist.class.getName());
 
-	private final int JOB_ID = 1;
+	public final static int JOB_ID = 1;
 
 	private double[] roleProspects = new double[] {5.0, 5.0, 5.0, 20.0, 25.0, 10.0, 30.0};
 	

@@ -67,7 +67,7 @@ public class RepairEVAMalfunctionMeta implements MetaTask, Serializable {
 		boolean returnFromMission = false;
 		
 		// TODO: need to analyze if checking the location state this way can properly verify if a person return from a mission
-		if (person.isInVehicle() && person.getVehicle().getLocationStateType() == LocationStateType.OUTSIDE_SETTLEMENT_VICINITY) {
+		if (person.isInVehicle() && person.getVehicle().getLocationStateType() == LocationStateType.WITHIN_SETTLEMENT_VICINITY) {
 			returnFromMission = true;
 		}
 		

@@ -29,6 +29,7 @@ import org.mars_sim.msp.core.robot.RobotConfig;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
@@ -40,11 +41,6 @@ import org.mars_sim.msp.core.vehicle.VehicleConfig;
  * Units include people, vehicles and settlements. This class provides data
  * members and methods common to all units.
  */
-//@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = As.PROPERTY, property = "@class")
-//@JsonSubTypes({ @Type(value = Person.class, name = "person"), 
-//				@Type(value = Structure.class, name = "structure"),
-//				@Type(value = Vehicle.class, name = "vehicle"),
-//				@Type(value = Equipment.class, name = "equipment"),})
 public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Unit> {
 
 	/** default serial id. */
@@ -52,31 +48,22 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(Unit.class.getName());
-
-	// private static String sourceName =  logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
+//	private static String sourceName =  logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
 	
-	public static final int MARS_SURFACE_ID = 0;
-	
-	public static final int FIRST_SETTLEMENT_ID = 1;
-	
-	public static final int FIRST_BUILDING_ID = 20;
-
-	public static final int FIRST_VEHICLE_ID = 2050;
-
-	public static final int FIRST_PERSON_ID = 2500;
-
-	public static final int FIRST_ROBOT_ID = 3550;
-
-	public static final int FIRST_EQUIPMENT_ID = 4050;
-	
-	public static final Integer UNKNOWN_ID = -1;
-	
+	public static final int OUTER_SPACE_UNIT_ID = 10000;
+	public static final int MARS_SURFACE_UNIT_ID = 0;
+	public static final int FIRST_SETTLEMENT_UNIT_ID = 1;
+	public static final int FIRST_SITE_UNIT_ID = 20;
+	public static final int FIRST_BUILDING_UNIT_ID = 100;
+	public static final int FIRST_VEHICLE_UNIT_ID = 2050;
+	public static final int FIRST_PERSON_UNIT_ID = 2500;
+	public static final int FIRST_ROBOT_UNIT_ID = 3550;
+	public static final int FIRST_EQUIPMENT_UNIT_ID = 4050;
+	public static final Integer UNKNOWN_UNIT_ID = -1;
 	
 	// Data members
-	// The unit's location code
-//	private int locationCode = 110_000;
 	/** The unit containing this unit. */
-	private Integer containerID = MARS_SURFACE_ID;
+	private Integer containerID = MARS_SURFACE_UNIT_ID;
 	
 	/** The mass of the unit without inventory. */
 	private double baseMass;
@@ -137,13 +124,43 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 		if (this instanceof Vehicle)
 			return ((Vehicle)this).getIdentifier();
 
-//		if (this instanceof Building) // StackOverflowError
-//			return ((Building)this).getIdentifier();
+		if (this instanceof Building)
+			return ((Building)this).getIdentifier();
+		
+		if (this instanceof ConstructionSite)
+			return ((ConstructionSite)this).getIdentifier();
 		
 		if (this instanceof MarsSurface)
-			return MARS_SURFACE_ID;
+			return ((MarsSurface)this).getIdentifier();
 
-		return (Integer) UNKNOWN_ID;
+		return (Integer) UNKNOWN_UNIT_ID;
+	}
+	
+	public void incrementID() {
+
+		if (this instanceof Settlement)
+			((Settlement)this).incrementID();
+		
+		if (this instanceof Equipment)
+			((Equipment)this).incrementID();
+		
+		if (this instanceof Person)
+			((Person)this).incrementID();
+		
+		if (this instanceof Robot)
+			((Robot)this).incrementID();
+		
+		if (this instanceof Vehicle)
+			((Vehicle)this).incrementID();
+
+		if (this instanceof Building)
+			((Building)this).incrementID();
+		
+		if (this instanceof ConstructionSite)
+			((ConstructionSite)this).incrementID();
+		
+		if (this instanceof MarsSurface)
+			((MarsSurface)this).incrementID();
 	}
 	
 	/**
@@ -153,6 +170,11 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 	 * @param location {@link Coordinates} the unit's location
 	 */
 	public Unit(String name, Coordinates location) {
+		// Initialize data members from parameters
+		this.name = name;
+		this.description = name;
+		this.baseMass = 0;//Double.MAX_VALUE;
+
 		unitManager = sim.getUnitManager();
 		
 		listeners = Collections.synchronizedList(new ArrayList<UnitListener>()); // Unit listeners.
@@ -160,11 +182,9 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 		// Creates a new location tag instance for each unit
 		tag = new LocationTag(this);
 
-		// Initialize data members from parameters
-		this.name = name;
-		this.description = name;
-		this.baseMass = 0;//Double.MAX_VALUE;
-
+		incrementID();
+//		System.out.println("Unit : " + this + " (" + getIdentifier() + ")");
+		
 		this.inventory = new Inventory(this);
 		this.location = new Coordinates(0D, 0D);
 
@@ -186,6 +206,7 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 		}
 		else if (this instanceof Person) {
 			currentStateType = LocationStateType.INSIDE_SETTLEMENT;
+//			System.out.println("Unit : " + this + "'s location state type : " + this.getLocationStateType());
 //			containerID = FIRST_SETTLEMENT_ID;
 		}
 		else if (this instanceof Building) {
@@ -193,17 +214,25 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 //			containerID = FIRST_SETTLEMENT_ID;
 		}
 		else if (this instanceof Vehicle) {
-			currentStateType = LocationStateType.OUTSIDE_SETTLEMENT_VICINITY;//.INSIDE_SETTLEMENT;
-			containerID = (Integer) MARS_SURFACE_ID;
+			currentStateType = LocationStateType.WITHIN_SETTLEMENT_VICINITY;
+			containerID = (Integer) MARS_SURFACE_UNIT_ID;
 		}
 		else if (this instanceof Settlement) {
 			currentStateType = LocationStateType.OUTSIDE_ON_THE_SURFACE_OF_MARS;
-			containerID = (Integer) MARS_SURFACE_ID;
+			containerID = (Integer) MARS_SURFACE_UNIT_ID;
+		}
+		else if (this instanceof ConstructionSite) {
+			currentStateType = LocationStateType.OUTSIDE_ON_THE_SURFACE_OF_MARS;
+			containerID = (Integer) MARS_SURFACE_UNIT_ID;
+		}
+		else if (this instanceof Unit) {
+			currentStateType = LocationStateType.OUTSIDE_ON_THE_SURFACE_OF_MARS;
+			containerID = (Integer) MARS_SURFACE_UNIT_ID;
 		}
 		else {
-			currentStateType = LocationStateType.OUTSIDE_ON_THE_SURFACE_OF_MARS;
-			containerID = (Integer) MARS_SURFACE_ID;
-//			logger.info(this + " is " + currentStateType);
+			currentStateType = LocationStateType.IN_OUTER_SPACE;
+			containerID = (Integer) OUTER_SPACE_UNIT_ID;
+//			System.out.println(this + " has containerID " + containerID + " and is " + currentStateType);
 		}
 	}
 
@@ -363,6 +392,7 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 	
 	public void setContainerID(Integer id) {
 		containerID = id;
+//		inventory.setOwnerID(id);
 	}
 	
 	/**
@@ -408,8 +438,8 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 	public int getTopContainerID() {
 				
 		int topID = getContainerUnit().getContainerID();
-		if (topID != 0) {
-			while (topID != 0) {
+		if (topID != Unit.MARS_SURFACE_UNIT_ID) {
+			while (topID != Unit.MARS_SURFACE_UNIT_ID) {
 				topID = getContainerUnit().getContainerID();
 			}
 		}
@@ -477,24 +507,25 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 		else if (this instanceof Building) {
 			currentStateType = LocationStateType.INSIDE_SETTLEMENT;
 		}
-		else if (this instanceof Settlement) {
+		else if (this instanceof Settlement
+				|| this instanceof MarsSurface
+				|| this instanceof ConstructionSite) {
 			currentStateType = LocationStateType.OUTSIDE_ON_THE_SURFACE_OF_MARS;
-		}
-		else if (this instanceof MarsSurface) {
-			currentStateType = LocationStateType.OUTSIDE_ON_THE_SURFACE_OF_MARS;
-		}			
+		}		
 			
 		// c. Set containerID
-		if (newContainer == null || newContainer.getIdentifier() == UNKNOWN_ID) {
-			containerID = (Integer) UNKNOWN_ID;
+		if (newContainer == null || newContainer.getIdentifier() == UNKNOWN_UNIT_ID) {
+			containerID = (Integer) UNKNOWN_UNIT_ID;
 		}
 		
 		else if (this instanceof MarsSurface) {
-			containerID = (Integer) MARS_SURFACE_ID;
+			containerID = (Integer) MARS_SURFACE_UNIT_ID;
 		}
 		
-		else //if (newContainer != null || newContainer.getIdentifier() != Unit.UNKNOWN_ID)
+		else 
 			containerID = newContainer.getIdentifier();
+		
+//		System.out.println("Unit::setContainerUnit - " + this + "'s containerID : " + containerID);
 		
 		fireUnitUpdate(UnitEventType.CONTAINER_UNIT_EVENT, newContainer);
 	}
@@ -519,6 +550,9 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 
 		else if (newContainer instanceof Person)
 			return LocationStateType.ON_A_PERSON_OR_ROBOT;
+		
+		else if (newContainer instanceof ConstructionSite)
+			return LocationStateType.WITHIN_SETTLEMENT_VICINITY;
 		
 //		else if (newContainer instanceof MarsSurface)
 //			return LocationStateType.OUTSIDE_SETTLEMENT_VICINITY;
@@ -546,7 +580,7 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 		// Case 4 : a person gets buried outside the settlement
 		else if (newContainer instanceof MarsSurface) {
 			if (tag.isInSettlementVicinity())
-				currentStateType = LocationStateType.OUTSIDE_SETTLEMENT_VICINITY;		
+				currentStateType = LocationStateType.WITHIN_SETTLEMENT_VICINITY;		
 			else
 				currentStateType = LocationStateType.OUTSIDE_ON_THE_SURFACE_OF_MARS;
 		}
@@ -601,9 +635,9 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 	 * @param newContainer
 	 */
 	public void updateEquipmentState(Unit newContainer) {
+		logger.severe("Unit::updateEquipmentState() - " + getName() + "'s container unit : (" + getContainerUnit() + " --> "  + newContainer + ")");
 		if (newContainer == null) {
-			currentStateType = LocationStateType.UNKNOWN; 
-//			logger.severe("updateEquipmentState(): " + getName() + " has an null newContainer");
+			currentStateType = LocationStateType.UNKNOWN;
 			return;
 		}
 		
@@ -616,7 +650,7 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 		else {
 		
 			if (tag.isInSettlementVicinity())
-				currentStateType = LocationStateType.OUTSIDE_SETTLEMENT_VICINITY;		
+				currentStateType = LocationStateType.WITHIN_SETTLEMENT_VICINITY;		
 			else
 				currentStateType = LocationStateType.OUTSIDE_ON_THE_SURFACE_OF_MARS;
 			
@@ -726,7 +760,7 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 		}
 		else {
 			if (tag.isInSettlementVicinity())
-				currentStateType = LocationStateType.OUTSIDE_SETTLEMENT_VICINITY;		
+				currentStateType = LocationStateType.WITHIN_SETTLEMENT_VICINITY;		
 			else
 				currentStateType = LocationStateType.OUTSIDE_ON_THE_SURFACE_OF_MARS;
 			
@@ -812,21 +846,6 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 	public double getBaseMass() {
 		return baseMass;
 	}
-
-	/**
-	 * String representation of this Unit.
-	 * 
-	 * @return The units name.
-	 */
-	@Override
-	public String toString() {
-		// return name + " (" + identifier + ")";
-		return name;
-	}
-
-    public String getCode() {
-        return getClass().getName() + "@" + Integer.toHexString(hashCode());
-    }
     
 	public synchronized boolean hasUnitListener(UnitListener listener) {
 		if (listeners == null)
@@ -911,35 +930,7 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 		}
 	}
 
-	/**
-	 * Compares this object with the specified object for order.
-	 * 
-	 * @param o the Object to be compared.
-	 * @return a negative integer, zero, or a positive integer as this object is
-	 *         less than, equal to, or greater than the specified object.
-	 */
-	@Override
-	public int compareTo(Unit o) {
-		return name.compareToIgnoreCase(o.name);
-	}
-
 	
-	// TODO: determine why equals() causes testInventoryFindAllUnitsGood() and 
-	// testInventoryFindNumUnitsGood() in TestInventory to fail. 
-	// TODO: how to tweak Inventory's storeUnit() to allow 
-//	public boolean equals(Object obj) {
-//		if (this == obj) return true;
-//		if (obj == null) return false;
-//		if (this.getClass() != obj.getClass()) return false;
-//		Unit u = (Unit) obj;
-//		return this.name.equals(u.getName())
-//				&& Math.abs(this.baseMass - u.getBaseMass()) < Double.MIN_NORMAL ;
-//	}
-	
-//	public LocationSituation getLocationSituation() {
-//		return null;
-//	}
-
 	public LocationStateType getLocationStateType() {
 		return currentStateType;
 	}
@@ -1060,7 +1051,7 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 	 */
 	public boolean isOutside() {
 		if (LocationStateType.OUTSIDE_ON_THE_SURFACE_OF_MARS == currentStateType
-				|| LocationStateType.OUTSIDE_SETTLEMENT_VICINITY == currentStateType)
+				|| LocationStateType.WITHIN_SETTLEMENT_VICINITY == currentStateType)
 			return true;
 		
 //		if (LocationStateType.INSIDE_EVASUIT == currentStateType)
@@ -1096,8 +1087,15 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 	 * @return true if the unit is inside a settlement
 	 */
 	public boolean isInSettlement() {
+//		System.out.println("Unit : " + this + "'s location state type : " + currentStateType);
+
 		if (LocationStateType.INSIDE_SETTLEMENT == currentStateType)
 			return true;
+		
+		if (this instanceof Vehicle) {
+			if (LocationStateType.WITHIN_SETTLEMENT_VICINITY == currentStateType)
+				return true;
+		}
 		
 //		if (LocationStateType.INSIDE_EVASUIT == currentStateType)
 //			return getContainerUnit().isInSettlement();
@@ -1185,6 +1183,96 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 	
 	public static void setUnitManager(UnitManager u) {
 		unitManager = u;
+	}
+	
+	public static void setMarsSurface(MarsSurface ms) {
+		marsSurface = ms;
+	}
+	
+	/**
+	 * Transfer the unit from one place to another
+	 * 
+	 * @param origin {@link Unit} the original container unit
+	 * @param destination {@link Unit} the destination container unit
+	 */
+	public void transfer(Unit origin, Unit destination) {
+		origin.getInventory().transferUnit(this, destination);
+	}
+
+	/**
+	 * Transfer the unit from one place to another
+	 * 
+	 * @param originInv {@link Inventory} the inventory of the original container unit
+	 * @param destination {@link Unit} the destination container unit
+	 */
+	public void transfer(Inventory originInv, Unit destination) {
+		originInv.transferUnit(this, destination);
+	}
+	
+	/**
+	 * Transfer the unit from one place to another
+	 * 
+	 * @param origin {@link Unit} the original container unit
+	 * @param destinationInv {@link Inventory} the inventory of the destination container unit
+	 */
+	public void transfer(Unit origin, Inventory destinationInv) {
+		origin.getInventory().transferUnit(this, destinationInv.getOwner());
+	}
+	
+	/**
+	 * Transfer the unit from one place to another
+	 * 
+	 * @param originInv {@link Inventory} the inventory of the original container unit
+	 * @param destinationInv {@link Inventory} the inventory of the destination container unit
+	 */
+	public void transfer(Inventory originInv, Inventory destinationInv) {
+		originInv.transferUnit(this, destinationInv.getOwner());
+	}
+	/**
+	 * Compares this object with the specified object for order.
+	 * 
+	 * @param o the Object to be compared.
+	 * @return a negative integer, zero, or a positive integer as this object is
+	 *         less than, equal to, or greater than the specified object.
+	 */
+	@Override
+	public int compareTo(Unit o) {
+		return name.compareToIgnoreCase(o.name);
+	}
+
+	/**
+	 * String representation of this Unit.
+	 * 
+	 * @return The units name.
+	 */
+	@Override
+	public String toString() {
+		// return name + " (" + identifier + ")";
+		return name;
+	}
+
+    public String getCode() {
+        return getClass().getName() + "@" + Integer.toHexString(hashCode());
+    }
+    
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (obj == null) return false;
+		if (this.getClass() != obj.getClass()) return false;
+		Unit u = (Unit) obj;
+		return this.name.equals(u.getName())
+				&& this.getIdentifier() == ((Unit) obj).getIdentifier()
+				&& (int)this.baseMass == (int)u.getBaseMass();
+	}
+	
+	/**
+	 * Gets the hash code for this object.
+	 * 
+	 * @return hash code.
+	 */
+	public int hashCode() {
+		int hashCode = (int)( (1 + name.hashCode()) * (1 + baseMass) * getIdentifier());
+		return hashCode;
 	}
 	
 	/**

@@ -94,7 +94,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	public static final int TISSUE_CAPACITY = 20;
 	
 	/** The unit count for this robot. */
-	private static int uniqueCount = Unit.FIRST_BUILDING_ID;
+	private static int uniqueCount = Unit.FIRST_BUILDING_UNIT_ID;
 	
 	/** The height of an airlock in meters */
 	// Assume an uniform height of 2.5 meters in all buildings
@@ -162,14 +162,19 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	// Data members
 	/** Unique identifier for this building. */
 	private int identifier;
-	/** The cache for msols */
+	/** The cache for msols. */
 	private int msolCache;
 	/** Unique template id assigned for the settlement template of this building belong. */
 	protected int templateID;
+	/** The inhabitable ID for this building. */
 	protected int inhabitableID = -1;
+	/** The base level for this building. -1 for in-ground, 0 for above-ground. */
 	protected int baseLevel;
+	/** The cache for sol. */
 	private int solCache = 0;
-	private Integer settlementID;
+	
+	/** Unique identifier for the settlement of this building. */
+	protected Integer settlementID;
 
 	protected double width;
 	protected double length;
@@ -242,6 +247,21 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		return uniqueCount++;
 	}
 	
+	
+	/**
+	 * Get the unique identifier for this settlement
+	 * 
+	 * @return Identifier
+	 */
+	public int getIdentifier() {
+		return identifier;
+	}
+	
+	public void incrementID() {
+		// Gets the identifier
+		this.identifier = getNextIdentifier();
+	}
+	
 	/**
 	 * Constructor 1. Constructs a Building object.
 	 * 
@@ -255,7 +275,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		
 		this.manager = manager;
 		buildingType = template.getBuildingType();
-
+		
 		settlementID = (Integer) manager.getSettlement().getIdentifier();
 
 		// Set the instance of life support
@@ -290,15 +310,9 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	public Building(int id, String buildingType, String nickName, double w, double l, double xLoc, double yLoc,
 			double facing, BuildingManager manager) {
 		super(nickName, manager.getSettlement().getCoordinates());
-		// logger.info("Building's constructor 2 is on " +
-		// Thread.currentThread().getName() + " Thread");
 		
-		this.identifier = getNextIdentifier();
 		unitManager.addBuildingID(this);
-		
-		// Place it within a settlement
-//		enter(LocationCodeType.SETTLEMENT);
-		
+
 		this.templateID = id;
 		this.buildingType = buildingType;
 		this.nickName = nickName;
@@ -421,17 +435,23 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	protected Building(BuildingManager manager) {
 		super("Mock Building", new Coordinates(0D, 0D));
 
-		this.identifier = getNextIdentifier();
 		unitManager.addBuildingID(this);
 		
 		if (manager != null) {
 			this.manager = manager;
 			settlementID = (Integer) manager.getSettlement().getIdentifier();
 		}
-		// Place it in a settlement
-//		enter(LocationCodeType.SETTLEMENT);
 	}
 
+	/**
+	 * Constructor 4 (for use by Unit testing)
+	 * 
+	 * @return manager
+	 */
+	protected Building() {
+		super("Mock Building", new Coordinates(0D, 0D));
+	}
+	
 	/**
 	 * Gets the settlement inventory of this building.
 	 * 

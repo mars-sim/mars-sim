@@ -7,28 +7,25 @@
 
 package org.mars_sim.msp.core.structure.construction;
 
-import org.mars_sim.msp.core.LocalBoundedObject;
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.UnitManager;
-import org.mars_sim.msp.core.events.HistoricalEventManager;
-import org.mars_sim.msp.core.person.ai.mission.MissionMember;
-import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
-import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.Structure;
-import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingConfig;
-import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.time.MarsClock;
-import org.mars_sim.msp.core.time.MasterClock;
-import org.mars_sim.msp.core.vehicle.GroundVehicle;
-import org.mars_sim.msp.core.vehicle.Vehicle;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+
+import org.mars_sim.msp.core.LocalBoundedObject;
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.person.ai.mission.MissionMember;
+import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.Structure;
+import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MasterClock;
+import org.mars_sim.msp.core.vehicle.GroundVehicle;
 
 /**
  * A building construction site.
@@ -49,9 +46,14 @@ implements Serializable, LocalBoundedObject {
     public static final String REMOVE_CONSTRUCTION_STAGE_EVENT = "removing construction stage";
     public static final String CREATE_BUILDING_EVENT = "creating new building";
     public static final String REMOVE_BUILDING_EVENT = "removing old building";
+	
+    /** The unit count for this settlement. */
+	private static int uniqueCount = Unit.FIRST_SITE_UNIT_ID;
 
     // Data members
-
+	/** Unique identifier for this site. */
+	private int identifier;
+	/** construction skill for this site. */
     private int constructionSkill;
 
     private double width;
@@ -80,6 +82,30 @@ implements Serializable, LocalBoundedObject {
 
 	private static UnitManager unitManager = Simulation.instance().getUnitManager();
 
+	/**
+	 * Must be synchronised to prevent duplicate ids being assigned via different
+	 * threads.
+	 * 
+	 * @return
+	 */
+	private static synchronized int getNextIdentifier() {
+		return uniqueCount++;
+	}
+	
+	/**
+	 * Get the unique identifier for this settlement
+	 * 
+	 * @return Identifier
+	 */
+	public int getIdentifier() {
+		return identifier;
+	}
+	
+	public void incrementID() {
+		// Gets the identifier
+		this.identifier = getNextIdentifier();
+	}
+	
     /**
      * Constructor
      */
@@ -89,6 +115,9 @@ implements Serializable, LocalBoundedObject {
     	this.constructionManager = settlement.getConstructionManager();
     	this.settlement = settlement;
 
+    	// Add this site to the lookup map
+    	unitManager.addSiteID(this);
+    	
     	width = 0D;
         length = 0D;
         xLocation = 0D;

@@ -35,6 +35,7 @@ import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.mars.DustStorm;
+import org.mars_sim.msp.core.mars.TerrainElevation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -141,8 +142,8 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	/** The minimal amount of resource to be retrieved. */
 	private static final double MIN = 0.00001;
 	
-	/** The unit count for this person. */
-	private static int uniqueCount = Unit.FIRST_SETTLEMENT_ID;
+	/** The unit count for this settlement. */
+	private static int uniqueCount = Unit.FIRST_SETTLEMENT_UNIT_ID;
 	
 	/** The settlement water consumption */
 	public static double water_consumption_rate;
@@ -150,6 +151,9 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	public static double minimum_air_pressure;
 	/** The settlement life support requirements. */
 	public static double[][] life_support_value = new double[2][7];
+	/** The settlement terrain profile. */
+	public static double[] terrainProfile = new double[2];
+	
 	/** Amount of time (millisols) required for periodic maintenance. */
 	// private static final double MAINTENANCE_TIME = 1000D;
 
@@ -250,7 +254,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	/** Numbers of associated people in this settlement. */
 	private int numCitizens;
 	/** Numbers of associated bots in this settlement. */
-	private int numBots;
+	private int numAssociatedBots;
 	/** Numbers of associated vehicles in this settlement. */
 	private int numVehicles;
 	/** Minimum amount of methane to stay in this settlement when considering a mission. */
@@ -262,6 +266,8 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	/** Minimum amount of food to stay in this settlement when considering a mission. */
 	private int minFood = 50;
 
+	/** The average ice collection rate of the water ice nearby */
+	private double iceCollectionRate;
 	/** The composite value of the minerals nearby. */
 	public double mineralValue = -1;
 	/** The rate [kg per millisol] of filtering grey water for irrigating the crop. */
@@ -296,7 +302,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	private double outside_temperature;
 	/** The maximum distance (in km) the rovers are allowed to travel. */
 	private double maxMssionRange = 2200;
-
+	
 	/** The settlement sponsor. */
 	private String sponsor;
 	/** The settlement template name. */
@@ -392,7 +398,6 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 		return uniqueCount++;
 	}
 	
-	
 	/**
 	 * Get the unique identifier for this settlement
 	 * 
@@ -402,12 +407,14 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 		return identifier;
 	}
 	
+	public void incrementID() {
+		// Gets the identifier
+		this.identifier = getNextIdentifier();
+	}
 	
 	static {
-
 		water_consumption_rate = personConfig.getWaterConsumptionRate();
 		minimum_air_pressure = personConfig.getMinAirPressure();
-
 		life_support_value = settlementConfig.loadLifeSupportRequirements();
 	}
 	
@@ -416,13 +423,11 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	 */
 	private Settlement() {
 		super(null, null);
-
-		this.identifier = getNextIdentifier();
-		
+	
 		unitManager = sim.getUnitManager();
 		// Add this settlement to the lookup map
 		unitManager.addSettlementID(this);
-		
+		// set location
 		location = getCoordinates();
 		
 //		updateAllAssociatedPeople();
@@ -447,8 +452,6 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	public Settlement(String name, int scenarioID, Coordinates location) {
 		// Use Structure constructor.
 		super(name, location);
-		
-		this.identifier = getNextIdentifier();
 		
 		if (unitManager == null) {// for passing maven test
 			unitManager = sim.getUnitManager();
@@ -498,8 +501,6 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 			int projectedNumOfRobots) {
 		// Use Structure constructor
 		super(name, location);
-
-		this.identifier = getNextIdentifier();
 		
 		unitManager = sim.getUnitManager();
 		// Add this settlement to the lookup map
@@ -556,6 +557,21 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	 */
 	public void initialize() {
 
+		// Get the elevation and terrain gradient factor
+		terrainProfile = TerrainElevation.getTerrainProfile(location);
+				
+		double elevation = terrainProfile[0];
+		double gradient = terrainProfile[1];		
+		
+		iceCollectionRate = (- 0.639 * elevation + 14.2492) / 2D  + gradient / 250;
+		
+		if (iceCollectionRate < 0)
+			iceCollectionRate = 0;
+		
+		logger.info(this + " elevation : " + Math.round(elevation*1000.0)/1000.0);
+		logger.info(this + " gradient : " + Math.round(gradient*10.0)/10.0);
+		logger.info(this + " ice collection rate : " + Math.round(iceCollectionRate*100.0)/100.0);
+		
 		// Set inventory total mass capacity.
 		getInventory().addGeneralCapacity(Double.MAX_VALUE); // 10_000_000);//100_000_000);//
 
@@ -801,7 +817,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	public Collection<Person> getOutsideEVAPeople() {
 
 		return allAssociatedPeople.stream().filter(
-				p -> !p.isDeclaredDead() && (p.getLocationStateType() == LocationStateType.OUTSIDE_SETTLEMENT_VICINITY
+				p -> !p.isDeclaredDead() && (p.getLocationStateType() == LocationStateType.WITHIN_SETTLEMENT_VICINITY
 						|| p.getLocationStateType() == LocationStateType.OUTSIDE_ON_THE_SURFACE_OF_MARS))
 				.collect(Collectors.toList());
 
@@ -886,8 +902,11 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	 * @return the number of robots
 	 */
 	public int getIndoorRobotsCount() {
-		return Math.toIntExact(getInventory().getAllContainedUnits().stream().filter(r -> r instanceof Robot)
+		return Math.toIntExact(getInventory().getAllContainedUnitIDs()
+				.stream().filter(id -> unitManager.getRobotByID(id) instanceof Robot)
 				.collect(Collectors.counting()));
+		
+		
 //		int n = 0;
 //		Iterator<Unit> i = getInventory().getAllContainedUnits().iterator();
 //		while (i.hasNext()) {
@@ -911,7 +930,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	 * @return the available robots capacity
 	 */
 	public int getAvailableRobotCapacity() {
-		return getRobotCapacity() - numBots;
+		return getRobotCapacity() - numAssociatedBots;
 	}
 
 	/**
@@ -2635,7 +2654,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 
 		allAssociatedRobots = result;
 		justReloadedRobots = true;
-		numBots = result.size();
+		numAssociatedBots = result.size();
 		return result;
 	}
 
@@ -2645,7 +2664,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	 * @return the number of associated bots.
 	 */
 	public int getNumBots() {
-		return numBots;
+		return numAssociatedBots;
 	}
 
 	/**
@@ -2705,7 +2724,9 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	 * @return collection of vehicles.
 	 */
 	public Collection<Vehicle> getMissionVehicles() {
-		return getAllAssociatedVehicles().stream().filter(v -> v.isReservedForMission()).collect(Collectors.toList());
+		return getAllAssociatedVehicles().stream()
+				.filter(v -> v.isReservedForMission())
+				.collect(Collectors.toList());
 
 //		Collection<Vehicle> result = new ArrayList<Vehicle>();
 //
@@ -2741,7 +2762,8 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	 * @return parked vehicles number
 	 */
 	public int getParkedVehicleNum() {
-		return Math.toIntExact(getAllAssociatedVehicles().stream().filter(v -> !v.isSalvaged() && v.isParked())// !v.isReservedForMission())
+		return Math.toIntExact(getAllAssociatedVehicles().stream()
+				.filter(v -> !v.isSalvaged() && v.isParked())// !v.isReservedForMission())
 				.collect(Collectors.counting()));
 //		return getParkedVehicles().size();
 	}
@@ -4348,6 +4370,14 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 		}
 		return value;
 	}
+	
+    public double[] getTerrainProfile() {
+        return terrainProfile;
+    }
+    
+    public double getIceCollectionRate() {
+    	return iceCollectionRate;
+    }
 	
 	public boolean equals(Object obj) {
 		if (this == obj) return true;

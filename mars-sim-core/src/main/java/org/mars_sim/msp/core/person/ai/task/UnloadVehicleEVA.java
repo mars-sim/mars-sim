@@ -399,8 +399,10 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 				// Unload inventories of equipment (if possible)
 				unloadEquipmentInventory(equipment);
 
-				vehicleInv.retrieveUnit(equipment);
-				settlementInv.storeUnit(equipment);
+				equipment.transfer(vehicleInv, settlementInv);
+//				vehicleInv.retrieveUnit(equipment);
+//				settlementInv.storeUnit(equipment);
+				
 				amountUnloading -= equipment.getMass();
 				
 				if (person != null)
@@ -510,12 +512,8 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 						+ settlement, null);
 					
 
-					// Retrieve the person if he/she is dead
-					vehicle.getInventory().retrieveUnit(p);
-						
-					// Place this person within a settlement
-//					p.enter(LocationCodeType.SETTLEMENT);
-					settlementInv.storeUnit(p);
+					p.transfer(vehicle, settlementInv);
+					
 					BuildingManager.addToMedicalBuilding(p, settlement.getIdentifier());			
 					
 					p.setAssociatedSettlement(settlement.getIdentifier());

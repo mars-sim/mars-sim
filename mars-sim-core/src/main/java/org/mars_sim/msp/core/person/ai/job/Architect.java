@@ -33,7 +33,7 @@ implements Serializable {
 
 	//private static Logger logger = Logger.getLogger(Architect.class.getName());
 	
-	private final int JOB_ID = 0;
+	public final static int JOB_ID = 0;
 	
 	private double[] roleProspects = new double[] {5.0, 30.0, 10.0, 15.0, 10.0, 15.0, 15.0};
 	

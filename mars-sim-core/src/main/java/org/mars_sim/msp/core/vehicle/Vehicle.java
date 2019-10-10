@@ -86,7 +86,7 @@ public abstract class Vehicle extends Unit
 	/** Lifetime Wear in millisols **/
 	private static final double WEAR_LIFETIME = 668000D; // 668 Sols (1 orbit)
 	/** The unit count for this person. */
-	private static int uniqueCount = Unit.FIRST_VEHICLE_ID;
+	private static int uniqueCount = Unit.FIRST_VEHICLE_UNIT_ID;
 	
 	// 1989 NASA Mars Manned Transportation Vehicle - Shuttle Fuel Cell Power Plant (FCP)  7.6 kg/kW
 	
@@ -201,6 +201,11 @@ public abstract class Vehicle extends Unit
 		return identifier;
 	}
 	
+	public void incrementID() {
+		// Gets the identifier
+		this.identifier = getNextIdentifier();
+	}
+	
 	/**
 	 * Constructor 1 : prepares a Vehicle object with a given settlement
 	 * 
@@ -216,7 +221,7 @@ public abstract class Vehicle extends Unit
 		if (unitManager == null)
 			unitManager = sim.getUnitManager();
 		
-		this.identifier = getNextIdentifier();
+//		this.identifier = getNextIdentifier();
 
 		unitManager.addVehicleID(this);
 		
@@ -324,7 +329,7 @@ public abstract class Vehicle extends Unit
 		if (unitManager == null)
 			unitManager = sim.getUnitManager();
 		
-		this.identifier = getNextIdentifier();
+//		this.identifier = getNextIdentifier();
 		
 		if (unitManager != null) // for passing maven test
 			unitManager.addVehicleID(this);
@@ -1261,7 +1266,7 @@ public abstract class Vehicle extends Unit
 	 * @return
 	 */
 	public boolean isRightOutsideSettlement() {
-		if (getLocationStateType() == LocationStateType.OUTSIDE_SETTLEMENT_VICINITY)
+		if (getLocationStateType() == LocationStateType.WITHIN_SETTLEMENT_VICINITY)
 			return true;
 		else
 			return false;
@@ -1273,7 +1278,7 @@ public abstract class Vehicle extends Unit
 	 * @return 
 	 */
 	public boolean isParked() {
-		if (getLocationStateType() == LocationStateType.OUTSIDE_SETTLEMENT_VICINITY
+		if (getLocationStateType() == LocationStateType.WITHIN_SETTLEMENT_VICINITY
 				|| getLocationStateType() == LocationStateType.INSIDE_SETTLEMENT)
 			return true;
 		else

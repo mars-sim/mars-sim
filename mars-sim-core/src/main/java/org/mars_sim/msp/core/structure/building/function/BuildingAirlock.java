@@ -16,6 +16,7 @@ import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Airlock;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 
@@ -103,29 +104,31 @@ public class BuildingAirlock extends Airlock {
         	
         if (person.isOutside()) {
         	
+			Settlement settlement = building.getSettlement();
+			
 			LogConsolidated.log(Level.FINER, 0, sourceName,
 	  				"[" + person.getLocationTag().getLocale() + "] "
 					+ person + " was about to leave the airlock in " + building + " to go inside " 
-        			+ building.getBuildingManager().getSettlement()
+        			+ settlement
         			+ ".");
 			
-            // Pump air into the airlock to make it breathable
-			building.getSettlement().getCompositionOfAir().releaseOrRecaptureAir(building.getInhabitableID(), true, building);
+            // 1.0. Pump air into the airlock to make it breathable
+			settlement.getCompositionOfAir().releaseOrRecaptureAir(building.getInhabitableID(), true, building);
 
-			// 1.1 Retrieve the person from the surface of Mars
-            marsSurface.getInventory().retrieveUnit(person);
-			// 1.2 store the person into the building inventory
-            building.getInventory().storeUnit(person);
-            // 1.3 Add the person to the building
+            // 1.1. Transfer a person from the surface of Mars to the building inventory
+            person.transfer(marsSurface, settlement);
+            
+            // 1.2 Add the person to the building
             BuildingManager.addPersonOrRobotToBuilding(person, building);
-			// 1.4 Set the person's coordinates to that of the settlement's
-			person.setCoordinates(building.getSettlement().getCoordinates());
+            
+			// 1.3 Set the person's coordinates to that of the settlement's
+			person.setCoordinates(settlement.getCoordinates());
 			
    			LogConsolidated.log(Level.FINER, 0, sourceName,
 	  				"[" + person.getLocationTag().getLocale() + "] "
 					+ person + " doffed the EVA suit, came through the inner door of the airlock at " 
 	  				+ building + " and went inside " 
-        			+ building.getSettlement()
+        			+ settlement
         			+ ".");
         }
         
@@ -148,6 +151,9 @@ public class BuildingAirlock extends Airlock {
   				+ "] The airlock had been depressurized and is ready to open the outer door to release " + person + ".");
     	
     	if (person.isInSettlement()) {
+    		
+			Settlement settlement = building.getSettlement();
+			
   			LogConsolidated.log(Level.FINER, 0, sourceName,
 	  				"[" + person.getLocationTag().getLocale() + "] "
 					+ person
@@ -158,24 +164,24 @@ public class BuildingAirlock extends Airlock {
             // Upon depressurization, there is heat loss to the Martian air in Heating class
   			building.getThermalGeneration().getHeating().flagHeatLostViaAirlockOuterDoor(true);
             			
-            // Recapture air from the airlock before depressurizing it
-			building.getSettlement().getCompositionOfAir().releaseOrRecaptureAir(building.getInhabitableID(), false, building);
+            // 5.0. Recapture air from the airlock before depressurizing it
+  			settlement.getCompositionOfAir().releaseOrRecaptureAir(building.getInhabitableID(), false, building);
             
 			// 5.1 Remove the person from the building
             BuildingManager.removePersonOrRobotFromBuilding(person, building);
-			// 5.2 Retrieve the person from the settlement
-            building.getInventory().retrieveUnit(person);
-			// 5.3 Store the person onto the surface of Mars
-			marsSurface.getInventory().storeUnit(person);
-			// 5.4 Set the person's coordinates to that of the settlement's
-			person.setCoordinates(building.getSettlement().getCoordinates());
+                     
+            // 5.2. Transfer a person from the building to the surface of Mars to the vehicle
+            person.transfer(settlement, marsSurface);
+            
+			// 5.3. Set the person's coordinates to that of the settlement's
+			person.setCoordinates(settlement.getCoordinates());
 			
   			LogConsolidated.log(Level.FINER, 0, sourceName,
 	  				"[" + person.getLocationTag().getLocale() + "] "
 					+ person
         			+ " donned the EVA suit, came through the outer door of the airlock at " 
 					+ building + " in " 
-        			+ building.getSettlement()
+        			+ settlement
         			+ " and stepped outside.");
         }
     	

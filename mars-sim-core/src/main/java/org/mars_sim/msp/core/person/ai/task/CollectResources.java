@@ -211,8 +211,9 @@ public class CollectResources extends EVAOperation implements Serializable {
 		Unit container = findLeastFullContainer(rover.getInventory(), containerType, resourceType);
 		if (container != null) {
 			if (person.getInventory().canStoreUnit(container, false)) {
-				rover.getInventory().retrieveUnit(container);
-				person.getInventory().storeUnit(container);
+				container.transfer(rover, person);
+//				rover.getInventory().retrieveUnit(container);
+//				person.getInventory().storeUnit(container);
 			}
 		}
 	}
@@ -320,11 +321,10 @@ public class CollectResources extends EVAOperation implements Serializable {
 			// Load containers in rover.
 			Iterator<Unit> i = pInv.findAllUnitsOfClass(containerType).iterator();
 			while (i.hasNext()) {
-				Unit container = i.next();
-				pInv.retrieveUnit(container);
 				// Place this equipment within a rover outside on Mars
-//				container.enter(LocationCodeType.MOBILE_UNIT_4);
-				rover.getInventory().storeUnit(container);
+				i.next().transfer(pInv, rover);
+//				pInv.retrieveUnit(container);
+//				rover.getInventory().storeUnit(container);
 			}
 		}
 
@@ -370,7 +370,7 @@ public class CollectResources extends EVAOperation implements Serializable {
 			if (container != null) {
 				carryMass += container.getMass();
 			}
-			EVASuit suit = (EVASuit) rover.getInventory().findUnitOfClass(EVASuit.class);
+			EVASuit suit = rover.getInventory().findAnEVAsuit(); //(EVASuit) rover.getInventory().findUnitOfClass(EVASuit.class);
 			if (suit != null) {
 				carryMass += suit.getMass();
 				carryMass += suit.getInventory().getAmountResourceRemainingCapacity(ResourceUtil.oxygenID, false, false);

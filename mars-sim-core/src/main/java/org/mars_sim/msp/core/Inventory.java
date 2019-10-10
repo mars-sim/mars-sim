@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -22,10 +23,13 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.equipment.Bag;
 import org.mars_sim.msp.core.equipment.Container;
+import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.equipment.EquipmentType;
+import org.mars_sim.msp.core.equipment.SpecimenBox;
 import org.mars_sim.msp.core.mars.MarsSurface;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.AmountResourceStorage;
@@ -45,9 +49,9 @@ public class Inventory implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 123L;
 
-	 private static Logger logger = Logger.getLogger(Inventory.class.getName());
-		private static String loggerName = logger.getName();
-		private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+	private static Logger logger = Logger.getLogger(Inventory.class.getName());
+	private static String loggerName = logger.getName();
+	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 
 	/** Comparison to indicate a small but non-zero amount. */
 	public static final double SMALL_AMOUNT_COMPARISON = .000_000_1D;
@@ -59,7 +63,9 @@ public class Inventory implements Serializable {
 	private double generalCapacity = 0D;	
 
 	/** Collection of units in inventory. */
-	private Collection<Unit> containedUnits = null;
+//	private Collection<Unit> containedUnits = null;
+	private Collection<Integer> containedUnitIDs = null;
+	
 	/** Map of item resources. */
 	private Map<Integer, Integer> containedItemResources = null;
 	
@@ -102,9 +108,17 @@ public class Inventory implements Serializable {
 	private Map<Integer, Integer> itemSupplyRequestMap = new HashMap<>();
 	
 	/** The unit that owns this inventory. */
-	private Unit owner;
+//	private Unit owner;
+	private Integer ownerID;
+
 	/** Resource storage. */
 	private AmountResourceStorage resourceStorage = new AmountResourceStorage();
+
+	private static Simulation sim = Simulation.instance();
+	
+	private static UnitManager unitManager;
+
+	private static MarsSurface marsSurface;
 
 	/**
 	 * Constructor
@@ -113,7 +127,13 @@ public class Inventory implements Serializable {
 	 */
 	public Inventory(Unit owner) {
 		// Set owning unit.
-		this.owner = owner;
+		if (owner != null) {
+			this.ownerID = (Integer) owner.getIdentifier();
+		}
+//		if (unitManager == null)
+//			unitManager = Simulation.instance().getUnitManager();
+		if (sim.getMars() != null) 
+			marsSurface = sim.getMars().getMarsSurface();
 	}
 
 	public int getAmountSupplyRequest(int r) {
@@ -808,8 +828,9 @@ public class Inventory implements Serializable {
 				}
 
 				// Store remaining resource in contained units in general capacity.
-				if (useContainedUnits && (remainingAmount > 0D) && (containedUnits != null)) {
-					for (Unit unit : containedUnits) {
+				if (useContainedUnits && (remainingAmount > 0D) && (containedUnitIDs != null)) {
+					for (Integer id : containedUnitIDs) {
+						Unit unit = unitManager.getUnitByID(id);
 						// Use only contained units that implement container interface.
 						if (unit instanceof Container) {
 							Inventory unitInventory = unit.getInventory();
@@ -833,8 +854,8 @@ public class Inventory implements Serializable {
 				}
 
 				// Fire inventory event.
-				if (owner != null) {
-					owner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);
+				if (getOwner() != null) {
+					getOwner().fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);
 				}
 			} else {
 				LogConsolidated.log(logger, Level.SEVERE, 0, sourceName, "Insufficient capacity to store " + resource.getName() + ", capacity: "
@@ -893,9 +914,10 @@ public class Inventory implements Serializable {
 					remainingAmount -= storageAmount;
 				}
 
-				// Store remaining resource in contained units in general capacity.
-				if (useContainedUnits && (remainingAmount > 0D) && (containedUnits != null)) {
-					for (Unit unit : containedUnits) {
+				if (useContainedUnits && (remainingAmount > 0D) && (containedUnitIDs != null)) {
+					// Store remaining resource in contained units in general capacity.
+					for (Integer id : containedUnitIDs) {
+						Unit unit = unitManager.getUnitByID(id);
 						// Use only contained units that implement container interface.
 						if (unit instanceof Container) {
 							Inventory unitInventory = unit.getInventory();
@@ -919,8 +941,8 @@ public class Inventory implements Serializable {
 				}
 
 				// Fire inventory event.
-				if (owner != null) {
-					owner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);
+				if (getOwner() != null) {
+					getOwner().fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);
 //							ResourceUtil.findAmountResourceName(resource));
 				}
 			} else {
@@ -970,8 +992,9 @@ public class Inventory implements Serializable {
 				}
 
 				// Retrieve remaining resource from contained units.
-				if ((remainingAmount > 0D) && (containedUnits != null)) {
-					for (Unit unit : containedUnits) {
+				if ((remainingAmount > 0D) && (containedUnitIDs != null)) {
+					for (Integer id : containedUnitIDs) {
+						Unit unit = unitManager.getUnitByID(id);					
 						if (unit instanceof Container) {
 							Inventory unitInventory = unit.getInventory();
 							double unitResourceStored = unitInventory.getAmountResourceStored(resource, false);
@@ -1000,8 +1023,8 @@ public class Inventory implements Serializable {
 				updateAmountResourceStoredCache(resource);
 
 				// Fire inventory event.
-				if (owner != null) {
-					owner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);
+				if (getOwner() != null) {
+					getOwner().fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);
 //							ResourceUtil.findAmountResource(resource));
 				}
 			} else {
@@ -1074,10 +1097,10 @@ public class Inventory implements Serializable {
 			if (containedItemResources.get(id) > 0) {
 				result = true;
 			}
-		} else if (containedUnits != null) {
-			Iterator<Unit> i = containedUnits.iterator();
+		} else if (containedUnitIDs != null) {
+			Iterator<Integer> i = containedUnitIDs.iterator();
 			while (!result && i.hasNext()) {
-				if (i.next().getInventory().hasItemResource(id)) {
+				if (unitManager.getUnitByID(i.next()).getInventory().hasItemResource(id)) {
 					result = true;
 				}
 			}
@@ -1186,8 +1209,8 @@ public class Inventory implements Serializable {
 				}
 
 				// Fire inventory event.
-				if (owner != null) {
-					owner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);
+				if (getOwner() != null) {
+					getOwner().fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);
 				}
 			} else {
 				throw new IllegalStateException("Could not store item resources.");
@@ -1236,8 +1259,8 @@ public class Inventory implements Serializable {
 				}
 
 				// Fire inventory event.
-				if (owner != null) {
-					owner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);//ItemResourceUtil.findItemResource(resource));
+				if (getOwner() != null) {
+					getOwner().fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);//ItemResourceUtil.findItemResource(resource));
 				}
 
 				if (remainingNum > 0) {
@@ -1264,24 +1287,104 @@ public class Inventory implements Serializable {
 	}
 
 	/**
+	 * Gets a collection of all the stored EVA suits.
+	 * 
+	 * @return Collection
+	 */
+	public Collection<EVASuit> getContainedEVASuits() {
+		List<EVASuit> result = new ArrayList<>();
+		if (containedUnitIDs != null) {
+			for (Integer id : containedUnitIDs) {
+				Equipment e = unitManager.getEquipmentByID(id);
+				if (e instanceof EVASuit)
+					result.add((EVASuit)e);
+			}
+		}
+		return result;
+	}
+	
+	/**
+	 * Gets a collection of all the stored bags.
+	 * 
+	 * @return Collection
+	 */
+	public Collection<Bag> getContainedBags() {
+		List<Bag> result = new ArrayList<>();
+		if (containedUnitIDs != null) {
+			for (Integer id : containedUnitIDs) {
+				Equipment e = unitManager.getEquipmentByID(id);
+				if (e instanceof Bag)
+					result.add((Bag)e);
+			}
+		}
+		return result;
+	}
+	
+	/**
+	 * Gets a collection of all the stored specimen box.
+	 * 
+	 * @return Collection
+	 */
+	public Collection<SpecimenBox> getContainedSpecimenBoxes() {
+		List<SpecimenBox> result = new ArrayList<>();
+		if (containedUnitIDs != null) {
+			for (Integer id : containedUnitIDs) {
+				Equipment e = unitManager.getEquipmentByID(id);
+				if (e instanceof SpecimenBox)
+					result.add((SpecimenBox)e);
+			}
+		}
+		return result;
+	}
+	
+	/**
 	 * Gets a collection of all the stored units.
 	 * 
 	 * @return Collection of all units
 	 */
 	public Collection<Unit> getContainedUnits() {
-		Collection<Unit> result = null;
-		if (containedUnits != null) {
-			result = new ArrayList<Unit>(containedUnits);
-		} else {
-			result = new ArrayList<Unit>(0);
+		List<Unit> result = new ArrayList<>();
+		if (containedUnitIDs != null) {
+			for (Integer id : containedUnitIDs) {
+				result.add(unitManager.getUnitByID(id));
+			}
 		}
 		return result;
 	}
 
+	/**
+	 * Gets a collection of all the stored units.
+	 * 
+	 * @return Collection of all units
+	 */
+	public Collection<Integer> getContainedUnitIDs() {
+		Collection<Integer> result = null;
+		if (containedUnitIDs != null) {
+			result = new ArrayList<>(containedUnitIDs);
+		} else {
+			result = new ArrayList<>(0);
+		}
+		return result;
+	}
+	
 	public Collection<Unit> getAllContainedUnits() {
-		return containedUnits;
+		return getContainedUnits();
 	}
 
+	public Collection<Integer> getAllContainedUnitIDs() {
+		return containedUnitIDs;
+	}
+	
+	public void addAContainedUnitID(Integer id) {
+		// Initialize containedUnitIDs if necessary.
+		if (containedUnitIDs == null) {
+			containedUnitIDs = new ConcurrentLinkedQueue<>();
+		}
+		if (!containedUnitIDs.contains(id)) {
+			containedUnitIDs.add(id);
+		}
+	}
+	
 	/**
 	 * Checks if a unit is in storage.
 	 * 
@@ -1289,17 +1392,18 @@ public class Inventory implements Serializable {
 	 * @return true if unit is in storage.
 	 */
 	public boolean containsUnit(Unit unit) {
+		Integer id = unit.getIdentifier();
 		boolean result = false;
-		if (containedUnits != null) {
-			result = containedUnits.contains(unit);
+		if (containedUnitIDs != null) {
+			result = containedUnitIDs.contains(id);
 		}
 		return result;
 	}
 
-	private boolean containsUnitClassLocal(int id) {
-		Class<? extends Unit> unitClass = EquipmentFactory.getEquipmentClass(id);
-		if (containedUnits != null && !containedUnits.isEmpty()) {
-			Iterator<Unit> i = containedUnits.iterator();
+	private boolean containsUnitClassLocal(int typeID) {
+		Class<? extends Unit> unitClass = EquipmentFactory.getEquipmentClass(typeID);
+		if (containedUnitIDs != null && !containedUnitIDs.isEmpty()) {
+			Iterator<Unit> i = getContainedUnits().iterator();
 			while (i.hasNext()) {
 				Unit unit = i.next();
 				if (unitClass.isInstance(unit)) {
@@ -1318,8 +1422,8 @@ public class Inventory implements Serializable {
 	 */
 	private boolean containsUnitClassLocal(Class<? extends Unit> unitClass) {
 		boolean result = false;
-		if (containedUnits != null) {
-			Iterator<Unit> i = containedUnits.iterator();
+		if (containedUnitIDs != null) {
+			Iterator<Unit> i = getContainedUnits().iterator();
 			while (!result && i.hasNext()) {
 				if (unitClass.isInstance(i.next())) {
 					return true;
@@ -1329,10 +1433,10 @@ public class Inventory implements Serializable {
 		return result;
 	}
 
-	public boolean containsUnitClass(int c) {
+	public boolean containsUnitClass(int typeID) {
 		boolean result = false;
 		// Check if unit of class is in inventory.
-		if (containsUnitClassLocal(c)) {
+		if (containsUnitClassLocal(typeID)) {
 			return true;
 		}
 		return result;
@@ -1353,52 +1457,186 @@ public class Inventory implements Serializable {
 		return result;
 	}
 
-	public Unit findUnitOfClass(int id) {
-		Unit result = null;
-		if (containedUnits != null && !containedUnits.isEmpty()) {
-			Iterator<Unit> i = containedUnits.iterator();
-			while ((result == null) && i.hasNext()) {
-				Unit unit = i.next();
-				if (unit instanceof Equipment) {
-					if (((Equipment)unit).getEquipmentType() == EquipmentType.convertID2Enum(id)) {
-						result = unit;
-						break;
+//	public Unit findUnitOfClass(int id) {
+//		Unit result = null;
+//		if (containedUnits != null && !containedUnits.isEmpty()) {
+//			Iterator<Unit> i = containedUnitIDs.iterator();
+//			while ((result == null) && i.hasNext()) {
+//				Unit unit = i.next();
+//				if (unit instanceof Equipment) {
+//					if (((Equipment)unit).getEquipmentType() == EquipmentType.convertID2Enum(id)) {
+//						result = unit;
+//						break;
+//					}
+//				}
+//			}
+//		}
+//		return result;
+//	}
+
+	public Equipment findAnEmptyEquipment(Class<? extends Unit> unitClass) {
+		if (containedUnitIDs != null) {
+			for (Integer id : containedUnitIDs) {
+				Equipment unit = unitManager.getEquipmentByID(id);
+				if (unitClass.isInstance(unit)) {
+					Inventory inv = unit.getInventory();
+					// It must be empty inside
+					if ((inv != null) && inv.isEmpty(false)) {
+						return unit;
 					}
 				}
 			}
-		}
-		return result;
+		}	
+		return null;
 	}
-
+	
 	/**
-	 * Finds a unit of a given class in storage.
+	 * Finds an unit of a given class in storage.
 	 * 
 	 * @param unitClass the unit class.
 	 * @return the instance of the unit class or null if none.
 	 */
 	public Unit findUnitOfClass(Class<? extends Unit> unitClass) {
-		Unit result = null;
-		if (containsUnitClass(unitClass)) {
-			Iterator<Unit> i = containedUnits.iterator();
-			while ((result == null) && i.hasNext()) {
-				Unit unit = i.next();
+		if (containedUnitIDs != null) {
+			for (Integer id : containedUnitIDs) {
+				Unit unit = unitManager.getUnitByID(id);
 				if (unitClass.isInstance(unit)) {
-					result = unit;
-					break;
+					return unit;
 				}
 			}
 		}
-		return result;
+		return null;
+		
+//		Unit result = null;
+////		if (containsUnitClass(unitClass)) {
+//			Iterator<Unit> i = getContainedUnits().iterator();
+//			while ((result == null) && i.hasNext()) {
+//				Unit unit = i.next();
+//				if (unitClass.isInstance(unit)) {
+//					result = unit;
+//					break;
+//				}
+//			}
+////		}
+//		return result;
 	}
 
-	public Collection<Unit> findAllUnitsOfClass(int id) {	
+	/**
+	 * Finds an EVA suit in storage.
+	 * 
+	 * @return the instance of EVAsuit or null if none.
+	 */
+	public EVASuit findAnEVAsuit() {
+		if (containedUnitIDs != null) {
+			for (Integer id : containedUnitIDs) {
+				Equipment e = unitManager.getEquipmentByID(id);
+				if (e instanceof EVASuit)
+					return (EVASuit)e;
+			}
+		}
+		return null;
+		
+//		EVASuit result = null;
+////		if (containsUnitClass(EVASuit.class)) {
+//			Iterator<Unit> i = getContainedUnits().iterator();
+//			while ((result == null) && i.hasNext()) {
+//				Unit unit = i.next();
+//				if (EVASuit.class.isInstance(unit)) {
+//					return result;
+//				}
+//			}
+////		}
+//		return result;
+	}
+
+	/**
+	 * Finds an specimen box in storage.
+	 * 
+	 * @return the instance of SpecimenBox or null if none.
+	 */
+	public SpecimenBox findASpecimenBox() {
+//		List<SpecimenBox> result = new ArrayList<>();
+		if (containedUnitIDs != null) {
+			for (Integer id : containedUnitIDs) {
+				Equipment e = unitManager.getEquipmentByID(id);
+				if (e instanceof SpecimenBox)
+					return (SpecimenBox)e;
+			}
+		}
+		return null;
+		
+//		SpecimenBox result = null;
+////		if (containsUnitClass(SpecimenBox.class)) {
+//			Iterator<SpecimenBox> i = getContainedSpecimenBoxes().iterator();
+//			while ((result == null) && i.hasNext()) {
+//				SpecimenBox unit = i.next();
+//				if (SpecimenBox.class.isInstance(unit)) {
+//					return result;
+//				}
+//			}
+////		}
+//		return result;
+	}	
+	
+	/**
+	 * Finds a bag in storage.
+	 * 
+	 * @param empty does it need to be empty ?
+	 * @return the instance of SpecimenBox or null if none.
+	 */
+	public Bag findABag(boolean empty) {
+//		List<Bag> result = new ArrayList<>();
+		if (containedUnitIDs != null) {
+			for (Integer id : containedUnitIDs) {
+				Equipment e = unitManager.getEquipmentByID(id);
+				if (e instanceof Bag) {
+					if (empty) {
+						Inventory inv = e.getInventory();
+						// It must be empty inside
+						if ((inv != null) && inv.isEmpty(false)) {
+							return (Bag)e;
+						}
+					}
+					else
+						return (Bag)e;
+				}
+			}
+		}
+		return null;
+							
+//		Bag result = null;
+////		if (containsUnitClass(Bag.class)) {
+//			Iterator<Bag> i = getContainedBags().iterator();
+//			while ((result == null) && i.hasNext()) {
+//				Bag b = i.next();
+////				if (Bag.class.isInstance(b)) {
+//					Inventory inv = b.getInventory();
+//					// It must be empty inside
+//					if ((inv != null) && inv.isEmpty(false)) {
+//						return result;
+//					}
+////				}
+//			}
+////		}
+//		return result;
+	}	
+	
+	
+	/**
+	 * Finds all the units with a particular type ID
+	 * Note: currently use by equipment (containers) only
+	 * 
+	 * @param typeID
+	 * @return
+	 */
+	public Collection<Unit> findAllUnitsOfClass(int typeID) {	
 		Collection<Unit> result = new ConcurrentLinkedQueue<Unit>();
-		if (containedUnits != null && !containedUnits.isEmpty()) {
-			Iterator<Unit> i = containedUnits.iterator();
+		if (containedUnitIDs != null && !containedUnitIDs.isEmpty()) {
+			Iterator<Unit> i = getContainedUnits().iterator();
 			while (i.hasNext()) {
 				Unit unit = i.next();
 				if (unit instanceof Equipment) {
-					if (((Equipment)unit).getEquipmentType() == EquipmentType.convertID2Enum(id)) {
+					if (((Equipment)unit).getEquipmentType() == EquipmentType.convertID2Enum(typeID)) {
 						result.add(unit);
 					}
 				}
@@ -1417,7 +1655,7 @@ public class Inventory implements Serializable {
 	public <T extends Unit> Collection<Unit> findAllUnitsOfClass(Class<T> unitClass) {
 		Collection<Unit> result = new ConcurrentLinkedQueue<Unit>();
 		if (containsUnitClass(unitClass)) {
-			for (Unit unit : containedUnits) {
+			for (Unit unit : getContainedUnits()) {
 				if (unitClass.isInstance(unit)) {
 					result.add(unit);
 				}
@@ -1426,14 +1664,86 @@ public class Inventory implements Serializable {
 		return result;
 	}
 
-	public int findNumUnitsOfClass(int id) {
+	/**
+	 * Finds all of the specimen boxes in storage.
+	 * 
+	 * @return collection of specimen boxes or empty collection if none.
+	 */
+	public <T extends Unit> Collection<SpecimenBox> findAllSpecimenBoxes() {
+		Collection<SpecimenBox> result = new ConcurrentLinkedQueue<>();
+		if (containedUnitIDs != null) {
+			for (Integer id : containedUnitIDs) {
+				Equipment e = unitManager.getEquipmentByID(id);
+				if (e instanceof SpecimenBox) {
+					result.add((SpecimenBox)e);
+				}	
+			}
+		}
+		return result;
+	}
+	
+	/**
+	 * Finds all of the EVA suits in storage.
+	 * 
+	 * @return collection of EVA suits or empty collection if none.
+	 */
+	public <T extends Unit> Collection<EVASuit> findAllEVASuits() {
+		Collection<EVASuit> result = new ConcurrentLinkedQueue<>();
+		if (containedUnitIDs != null) {
+			for (Integer id : containedUnitIDs) {
+				Equipment e = unitManager.getEquipmentByID(id);
+				if (e instanceof EVASuit) {
+					result.add((EVASuit)e);
+				}	
+			}
+		}
+		return result;
+	}
+	
+	
+	/**
+	 * Finds all of the bags in storage.
+	 * 
+	 * @return collection of bags or empty collection if none.
+	 */
+	public <T extends Unit> Collection<Bag> findAllBags() {
+		Collection<Bag> result = new ConcurrentLinkedQueue<>();
+		if (containedUnitIDs != null) {
+			for (Integer id : containedUnitIDs) {
+				Equipment e = unitManager.getEquipmentByID(id);
+				if (e instanceof Bag) {
+					result.add((Bag)e);
+				}	
+			}
+		}
+		return result;
+		
+//		Collection<Bag> result = new ConcurrentLinkedQueue<>();
+//		if (containsUnitClass(Bag.class)) {
+//			for (Unit unit : getContainedUnits()) {
+//				if (Bag.class.isInstance(unit)) {
+//					result.add((Bag)unit);
+//				}
+//			}
+//		}
+//		return result;
+	}
+
+
+	/**
+	 * Find the number of equipment having the same type id
+	 * 
+	 * @param typeID
+	 * @return
+	 */
+	public int findNumEquipment(int typeID) {
 		int result = 0;
-		if (containedUnits != null && !containedUnits.isEmpty()) {
-			Iterator<Unit> i = containedUnits.iterator();
+		if (containedUnitIDs != null && !containedUnitIDs.isEmpty()) {
+			Iterator<Unit> i = getContainedUnits().iterator();
 			while (i.hasNext()) {
 				Unit unit = i.next();
 				if (unit instanceof Equipment) {
-					if (((Equipment)unit).getEquipmentType() == EquipmentType.convertID2Enum(id)) {
+					if (((Equipment)unit).getEquipmentType() == EquipmentType.convertID2Enum(typeID)) {
 						result++;
 					}
 				}
@@ -1451,7 +1761,7 @@ public class Inventory implements Serializable {
 	public <T extends Unit> int findNumUnitsOfClass(Class<T> unitClass) {
 		int result = 0;
 		if (containsUnitClass(unitClass)) {
-			for (Unit unit : containedUnits) {
+			for (Unit unit : getContainedUnits()) {
 				if (unitClass.isInstance(unit)) {
 					result++;
 				}
@@ -1460,6 +1770,51 @@ public class Inventory implements Serializable {
 		return result;
 	}
 
+	
+	/**
+	 * Finds the number of bags that are contained in storage.
+	 * 
+	 * @return number of bags
+	 */
+	public <T extends Unit> int findNumBags() {
+		int result = 0;
+		if (containedUnitIDs != null) {
+			for (Integer id : containedUnitIDs) {
+				Equipment e = unitManager.getEquipmentByID(id);
+				if (e instanceof Bag) {
+					result++;
+				}	
+			}
+		}
+		return result;
+	}
+		
+	/**
+	 * Finds the number of EVA suits that are contained in storage.
+	 * 
+	 * @return number of EVA suits
+	 */
+	public <T extends Unit> int findNumEVASuits() {
+		int result = 0;
+		if (containedUnitIDs != null) {
+			for (Integer id : containedUnitIDs) {
+				Equipment e = unitManager.getEquipmentByID(id);
+				if (e instanceof EVASuit) {
+					result++;
+				}	
+			}
+		}
+		
+//		if (containsUnitClass(unitClass)) {
+//			for (Unit unit : getContainedUnits()) {
+//				if (unitClass.isInstance(unit)) {
+//					result++;
+//				}
+//			}
+//		}
+		return result;
+	}
+	
 	/**
 	 * Finds the number of units of a class that are contained in storage and have
 	 * an empty inventory.
@@ -1470,8 +1825,9 @@ public class Inventory implements Serializable {
 	 */
 	public <T extends Unit> int findNumEmptyUnitsOfClass(Class<T> unitClass, boolean allowDirty) {
 		int result = 0;
-		if (containsUnitClass(unitClass)) {
-			for (Unit unit : containedUnits) {
+		if (containedUnitIDs != null) {
+			for (Integer id : containedUnitIDs) {
+				Unit unit = unitManager.getUnitByID(id);
 				if (unitClass.isInstance(unit)) {
 					Inventory inv = unit.getInventory();
 					// It must be empty inside
@@ -1482,6 +1838,20 @@ public class Inventory implements Serializable {
 			}
 		}
 		return result;
+				
+//		int result = 0;
+////		if (containsUnitClass(unitClass)) {
+//			for (Unit unit : getContainedUnits()) {
+//				if (unitClass.isInstance(unit)) {
+//					Inventory inv = unit.getInventory();
+//					// It must be empty inside
+//					if ((inv != null) && inv.isEmpty(allowDirty)) {
+//						result++;
+//					}
+//				}
+//			}
+////		}
+//		return result;
 	}
 
 	/**
@@ -1494,25 +1864,38 @@ public class Inventory implements Serializable {
 	 */
 	public <T extends Equipment> int findNumEmptyContainersOfClass(Class<T> unitClass, boolean allowDirty) {
 		int result = 0;
-		if (containsUnitClass(unitClass)) {
-			for (Unit unit : containedUnits) {
-				if (unitClass.isInstance(unit)) {
+		if (containedUnitIDs != null) {
+			for (Integer id : containedUnitIDs) {
+				Equipment unit = unitManager.getEquipmentByID(id);
+//				if (unitClass.isInstance(unit)) {
 					Inventory inv = unit.getInventory();
 					// It must be empty inside
 					if ((inv != null) && inv.isEmpty(allowDirty)) {
 						result++;
 					}
-				}
+//				}
 			}
 		}
+		
+//		if (containsUnitClass(unitClass)) {
+//			for (Unit unit : getContainedUnits()) {
+//				if (unitClass.isInstance(unit)) {
+//					Inventory inv = unit.getInventory();
+//					// It must be empty inside
+//					if ((inv != null) && inv.isEmpty(allowDirty)) {
+//						result++;
+//					}
+//				}
+//			}
+//		}
 		return result;
 	}
 	
-	public int findNumEmptyUnitsOfClass(int id, boolean allowDirty) {
-		Class<? extends Unit> unitClass = EquipmentFactory.getEquipmentClass(id);	
+	public int findNumEmptyUnitsOfClass(int typeID, boolean allowDirty) {
+		Class<? extends Unit> unitClass = EquipmentFactory.getEquipmentClass(typeID);	
 		int result = 0;
-		if (containsUnitClass(id)) {
-			for (Unit unit : containedUnits) {
+		if (containsUnitClass(typeID)) {
+			for (Unit unit : getContainedUnits()) {
 				if (unitClass.isInstance(unit)) {
 					Inventory inv = unit.getInventory();
 					if ((inv != null) && inv.isEmpty(allowDirty)) {
@@ -1533,6 +1916,7 @@ public class Inventory implements Serializable {
 	 */
 	public boolean canStoreUnit(Unit unit, boolean allowDirty) {
 		boolean result = false;
+		Integer unitID = unit.getIdentifier();
 		if (unit != null) {
 			if (unit.getMass() <= getRemainingGeneralCapacity(allowDirty)) {
 				result = true;
@@ -1544,19 +1928,23 @@ public class Inventory implements Serializable {
 				result = false;
 			}
 
-			if (unit == owner) {
+			if (unitID == ownerID) {
 				LogConsolidated.log(Level.SEVERE, 0, sourceName + "::canStoreUnit",
 						  unit.getName() + " is the same as its owner.");
 				result = false;
 			}
+			
 			if (containsUnit(unit)) {
 				LogConsolidated.log(Level.SEVERE, 0, sourceName + "::canStoreUnit",
-						  unit.getName() + " is already owned by " + owner);
+						  unit.getName() + " is already inside.");
 				result = false;
 			}
-			if (unit.getInventory().containsUnit(owner)) {
+			
+			Unit owner = getOwner();
+			
+			if (owner != null && unit.getInventory().containsUnit(owner)) {
 				LogConsolidated.log(Level.SEVERE, 0, sourceName + "::canStoreUnit",
-						  owner.getName() + " is owned by " + unit);
+						owner.getName() + " is owned by " + unit);
 				result = false;
 			}
 		}
@@ -1569,7 +1957,7 @@ public class Inventory implements Serializable {
 	 * @param unit the unit
 	 */
 	public void storeUnit(Unit unit) {
-
+		
 		if (canStoreUnit(unit, false)) {
 
 			// Set modified cache values as dirty.
@@ -1579,14 +1967,17 @@ public class Inventory implements Serializable {
 			setTotalAmountResourcesStoredCacheDirty();
 			setUnitTotalMassCacheDirty();
 
-			// Initialize containedUnits if necessary.
-			if (containedUnits == null) {
-				containedUnits = new ConcurrentLinkedQueue<Unit>();
+			// Initialize containedUnitIDs if necessary.
+			if (containedUnitIDs == null) {
+				containedUnitIDs = new ConcurrentLinkedQueue<>();
 			}
 
-			containedUnits.add(unit);
-			unit.setContainerUnit(owner);
-
+			containedUnitIDs.add(unit.getIdentifier());
+			Unit owner = getOwner();
+//			System.out.println("Inventory::storeUnit - " + unit + "'s ownerID : " + ownerID + "   owner : " + owner);
+			if (owner != null)
+				unit.setContainerUnit(owner);
+//			System.out.println("Inventory::storeUnit - " + unit + " owned by " + owner + " (" + ownerID + ")");
 			// Try to empty amount resources into parent if container.
 			if (unit instanceof Container) {
 				Inventory containerInv = unit.getInventory();
@@ -1598,8 +1989,10 @@ public class Inventory implements Serializable {
 					}
 				}
 			}
-
+			
 			// Update owner
+			owner = getOwner();
+			
 			if (owner != null) {
 				
 				if (!(owner instanceof MarsSurface)) {
@@ -1622,10 +2015,116 @@ public class Inventory implements Serializable {
 			 LogConsolidated.log(Level.SEVERE, 5_000, sourceName + "::storeUnit",
 					  unit + " could not be stored.");
 			// The statement below is needed for maven test in testInventoryUnitStoredNull() in TestInventory
-			throw new IllegalStateException("Unit: " + unit + " could not be stored in " + owner.getName()); 
+			throw new IllegalStateException("Unit: " + unit + " could not be stored in " + getOwner().getName()); 
 		}
 	}
 
+	/**
+	 * Transfer the ownership of a unit from one owner to another.
+	 * 
+	 * @param unit the unit.
+	 */
+	public void transferUnit(Unit unit, Unit newOwner) {
+		boolean retrieved = false;
+		Unit owner = getOwner();
+		
+		String ownerName = "null";
+		
+		if (owner != null)
+			ownerName = owner.getName();
+		
+		Integer id = unit.getIdentifier();
+		
+		if (containedUnitIDs.contains(id)) {
+			// Set modified cache values as dirty.
+			setAmountResourceCapacityCacheAllDirty(true);
+			setAmountResourceStoredCacheAllDirty(true);
+			setAllStoredAmountResourcesCacheDirty();
+			setTotalAmountResourcesStoredCacheDirty();
+			setUnitTotalMassCacheDirty();
+
+			containedUnitIDs.remove(id);
+
+			// Update owner
+			if (owner != null) {
+				owner.fireUnitUpdate(UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT, unit);
+
+				for (Integer resource : unit.getInventory().getAllARStored(false)) {
+					updateAmountResourceCapacityCache(resource);
+					updateAmountResourceStoredCache(resource);
+					owner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);//ResourceUtil.findAmountResource(resource)); 
+				}
+				for (Integer resource : unit.getInventory().getAllItemResourcesStored()) {
+					owner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);//, ItemResourceUtil.findItemResource(resource));
+				}
+			}
+
+			retrieved = true;
+
+		}
+
+		Inventory newInv = newOwner.getInventory();
+		
+		if (!retrieved) {
+			 LogConsolidated.log(Level.SEVERE, 5_000, sourceName + "::transferUnit",
+					  unit + " could not be retrieved by " + ownerName + ".");
+			// The statement below is needed for maven test in testInventoryUnitStoredNull() in TestInventory
+			throw new IllegalStateException("Unit: " + unit + " could not be retrieved by " + ownerName + "."); 
+		}
+
+		else if (newInv.canStoreUnit(unit, false)) {
+					
+			// Set modified cache values as dirty.
+			setAmountResourceCapacityCacheAllDirty(true);
+			setAmountResourceStoredCacheAllDirty(true);
+			setAllStoredAmountResourcesCacheDirty();
+			setTotalAmountResourcesStoredCacheDirty();
+			setUnitTotalMassCacheDirty();
+
+			// Add the unit's identifier
+			newInv.addAContainedUnitID(unit.getIdentifier());
+			
+//			System.out.println("Inventory::storeUnit - " + unit + "'s ownerID : " + ownerID + "   owner : " + owner);
+			unit.setContainerUnit(newOwner);
+//			System.out.println("Inventory::storeUnit - " + unit + " owned by " + owner + " (" + ownerID + ")");
+			// Try to empty amount resources into parent if container.
+			if (unit instanceof Container) {
+				Inventory containerInv = unit.getInventory();
+				for (Integer resource : containerInv.getAllARStored(false)) {
+					double containerAmount = containerInv.getAmountResourceStored(resource, false);
+					if (getAmountResourceRemainingCapacity(resource, false, false) >= containerAmount) {
+						containerInv.retrieveAmountResource(resource, containerAmount);
+						storeAmountResource(resource, containerAmount, false);
+					}
+				}
+			}
+			
+			if (newOwner != null) {
+				
+				if (!(newOwner instanceof MarsSurface)) {
+					// Note: MarsSurface represents the whole surface of Mars does not have coordinates
+					// If MarsSurface is a container of an unit, that unit may keep its own coordinates
+					unit.setCoordinates(newOwner.getCoordinates());
+				}	
+				
+				newOwner.fireUnitUpdate(UnitEventType.INVENTORY_STORING_UNIT_EVENT, unit);
+				for (Integer resource : unit.getInventory().getAllARStored(false)) {
+					updateAmountResourceCapacityCache(resource);
+					updateAmountResourceStoredCache(resource);
+					newOwner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);
+				}
+				for (Integer itemResource : unit.getInventory().getAllItemResourcesStored()) {
+					newOwner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, itemResource);
+				}
+			}
+		} else {
+			 LogConsolidated.log(Level.SEVERE, 5_000, sourceName + "::transferUnit",
+					  unit + " could not be stored in " + newOwner.getName()); 
+			// The statement below is needed for maven test in testInventoryUnitStoredNull() in TestInventory
+			throw new IllegalStateException("Unit: " + unit + " could not be stored in " + newOwner.getName()); 
+		}
+	}
+	
 	/**
 	 * Retrieves a unit from storage.
 	 * 
@@ -1635,8 +2134,33 @@ public class Inventory implements Serializable {
 
 		boolean retrieved = false;
 
-		if (containsUnit(unit)) {
-
+		Unit owner = getOwner();
+		
+		Integer id = unit.getIdentifier();
+//		
+//		if (unitManager == null)
+//			unitManager= Simulation.instance().getUnitManager();
+//		//unit = unitManager.getUnitByID(id);
+//		
+//		String s = String.format("Inventory::retrieveUnit - %20s (%4d)", unit.getName(), id);
+//		System.out.print(s);
+//		
+//		if (owner != null) {
+//			String s1 = String.format(" %20s (%4d) - size:%4d ", owner.getName(), ownerID, containedUnitIDs.size());
+//			System.out.print(s1);
+//		}
+//		
+//		System.out.println();
+		
+//		System.out.print("unit id " + id);
+//		System.out.print("   unit " + unit.getName());
+//		System.out.print("   owner id " + owner.getIdentifier());
+//		System.out.print("   owner " + owner.getName());
+//		System.out.println("   unit size " + containedUnitIDs.size());
+		
+		if (containedUnitIDs.contains(id)) {
+//		if (containsUnit(unit)) {
+//			System.out.println("containsUnit(unit) is true");
 			// Set modified cache values as dirty.
 			setAmountResourceCapacityCacheAllDirty(true);
 			setAmountResourceStoredCacheAllDirty(true);
@@ -1644,9 +2168,9 @@ public class Inventory implements Serializable {
 			setTotalAmountResourcesStoredCacheDirty();
 			setUnitTotalMassCacheDirty();
 
-			if (containedUnits.contains(unit)) {
-
-				containedUnits.remove(unit);
+//			if (containedUnitIDs.contains(id)) {
+//				System.out.println("containedUnitIDs.contains(unit) is true");
+				containedUnitIDs.remove(id);
 
 				// Update owner
 				if (owner != null) {
@@ -1663,7 +2187,7 @@ public class Inventory implements Serializable {
 				}
 
 				retrieved = true;
-			}
+//			}
 		}
 
 		if (retrieved) {
@@ -1685,8 +2209,8 @@ public class Inventory implements Serializable {
 	 */
 	public void setCoordinates(Coordinates newLocation) {
 
-		if (containedUnits != null && newLocation != null && !newLocation.equals(new Coordinates(0D, 0D))) {
-			for (Unit unit : containedUnits) {
+		if (containedUnitIDs != null && newLocation != null && !newLocation.equals(new Coordinates(0D, 0D))) {
+			for (Unit unit : getContainedUnits()) {
 				unit.setCoordinates(newLocation);
 			}
 		}
@@ -1723,8 +2247,10 @@ public class Inventory implements Serializable {
 	private double getContainerUnitGeneralCapacityLimit(boolean allowDirty) {
 
 		double result = Double.MAX_VALUE;
-
-		if ((owner != null) && (owner.getContainerID() != 0)) {
+		
+		Unit owner = getOwner();
+		
+		if (owner != null && (owner.getContainerID() != Unit.OUTER_SPACE_UNIT_ID)) {
 			Inventory containerInv = null;
 			if (owner.getContainerUnit() != null) {
 				containerInv = owner.getContainerUnit().getInventory();
@@ -1854,14 +2380,16 @@ public class Inventory implements Serializable {
 			}
 		}
 
+		Unit owner = getOwner();
+		
 		// Set owner unit's amount resource capacity cache as dirty (if any).
-		if (owner != null) {
+		if (owner != null && (owner.getContainerID() != Unit.OUTER_SPACE_UNIT_ID)) {
 
 			if (owner instanceof MarsSurface) {
 				return;
 			}
-			
-			setCacheDirty(0);
+			else
+				setCacheDirty(0);
 		}
 	}
 
@@ -1937,8 +2465,8 @@ public class Inventory implements Serializable {
 		// Check for null
 		if (containersCapacityCacheDirty.containsKey(resource)) {
 			if (containersCapacityCacheDirty.get(resource)) {
-				if (containedUnits != null) {
-					for (Unit unit : containedUnits) {
+				if (containedUnitIDs != null) {
+					for (Unit unit : getContainedUnits()) {
 						if (unit instanceof Container) {
 							containedCapacity += unit.getInventory().getARCapacity(resource, false);
 						}
@@ -1967,8 +2495,8 @@ public class Inventory implements Serializable {
 		// clause
 		if (containersStoredCacheDirty.containsKey(resource)) {
 			if (containersStoredCacheDirty.get(resource)) {
-				if (containedUnits != null) {
-					for (Unit unit : containedUnits) {
+				if (containedUnitIDs != null) {
+					for (Unit unit : getContainedUnits()) {
 						if (unit instanceof Container) {
 							containedStored += unit.getInventory().getAmountResourceStored(resource, false);
 						}
@@ -2179,8 +2707,8 @@ public class Inventory implements Serializable {
 		// Add checking for amountResourceContainersStoredCacheDirty
 		if (containersStoredCacheDirty.containsKey(resource)) {
 			if (containersStoredCacheDirty.get(resource)) {
-				if (containedUnits != null) {
-					for (Unit unit : containedUnits) {
+				if (containedUnitIDs != null) {
+					for (Unit unit : getContainedUnits()) {
 						if (unit instanceof Container) {
 							containerStored += unit.getInventory().getAmountResourceStored(resource, false);
 						}
@@ -2299,8 +2827,8 @@ public class Inventory implements Serializable {
 			tempAllStored.addAll(resourceStorage.getAllARStored(false));
 		}
 
-		if (containedUnits != null) {
-			for (Unit unit : containedUnits) {
+		if (containedUnitIDs != null) {
+			for (Unit unit : getContainedUnits()) {
 				if (unit instanceof Container) {
 					tempAllStored.addAll(unit.getInventory().getAllARStored(false));
 				}
@@ -2352,8 +2880,8 @@ public class Inventory implements Serializable {
 			tempStored += resourceStorage.getTotalAmountResourcesStored(false);
 		}
 
-		if (containedUnits != null) {
-			for (Unit unit : containedUnits) {
+		if (containedUnitIDs != null) {
+			for (Unit unit : getContainedUnits()) {
 				tempStored = unit.getInventory().getTotalAmountResourcesStored(false);
 			}
 		}
@@ -2439,8 +2967,8 @@ public class Inventory implements Serializable {
 	 */
 	private void updateUnitTotalMassCache() {
 		double tempMass = 0D;
-		if (containedUnits != null) {
-			for (Unit unit : containedUnits) {
+		if (containedUnitIDs != null) {
+			for (Unit unit : getContainedUnits()) {
 				tempMass += unit.getMass();
 			}
 		}
@@ -2493,7 +3021,8 @@ public class Inventory implements Serializable {
 	}
 
 	/**
-	 * Creates a clone of this inventory (not including the inventory contents).
+	 * Creates a clone of this inventory for testing the available capacity (not including the inventory contents).
+	 * Note: used by LoadVehicleEVA and LoaedVehicleGarage
 	 * 
 	 * @param owner the unit owner of the inventory (or null).
 	 * @return inventory clone.
@@ -2515,10 +3044,30 @@ public class Inventory implements Serializable {
 		return result;
 	}
 
-	public Unit getOwner() {
-		return owner;
-	}
+//	public Unit getOwner() {
+//		return owner;
+//	}
 
+	public Unit getOwner() {
+		if (unitManager == null)
+			unitManager = Simulation.instance().getUnitManager();
+//		System.out.println("Inventory ownerID : " + ownerID);
+		if (ownerID != null) {	
+			if (ownerID == Unit.MARS_SURFACE_UNIT_ID) {
+				return marsSurface;
+			}
+			
+			if (unitManager != null)
+				return unitManager.getUnitByID(ownerID);
+		}
+
+		return null;
+	}
+	
+//	public void setOwnerID(Integer id) {
+//		ownerID = id;
+//	}
+	
 	public void restoreARs(AmountResource[] ars) {
 		if (resourceStorage != null)
 			resourceStorage.restoreARs(ars);
@@ -2544,7 +3093,8 @@ public class Inventory implements Serializable {
 
 	public void setCacheDirty(int type) {
 		// Set owner unit's amount resource stored cache as dirty (if any).	
-		if (owner != null && owner.getContainerID() != 0) {
+		Unit owner = getOwner();
+		if (owner != null && (owner.getContainerID() != Unit.OUTER_SPACE_UNIT_ID)) {
 			Unit container = owner.getContainerUnit();
 			if (container != null) {
 		
@@ -2569,15 +3119,20 @@ public class Inventory implements Serializable {
 //		}
 	}
 	
+	public static void setUnitManager(UnitManager um) {
+		unitManager = um;
+	}
+	
 	/**
 	 * Prepare object for garbage collection.
 	 */
 	public void destroy() {
 
-		owner = null;
-//        if (containedUnits != null) containedUnits.clear();
-		containedUnits = null;
-//        if (containedItemResources != null) containedItemResources.clear();
+        if (containedUnitIDs != null) 
+        	containedUnitIDs.clear();
+		containedUnitIDs = null;
+        if (containedItemResources != null) 
+        	containedItemResources.clear();
 		containedItemResources = null;
 
 		if (resourceStorage != null)

@@ -14,6 +14,7 @@ import org.mars_sim.mapdata.MapData;
 import org.mars_sim.mapdata.MapDataUtil;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Direction;
+import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * The TerrainElevation class represents the surface terrain of the virtual
@@ -24,6 +25,8 @@ public class TerrainElevation implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
+	private static final double DEG_TO_RAD = Math.PI/180;
+	
 	private static final double OLYMPUS_MONS_CALDERA_PHI = 1.267990;
 	private static final double OLYMPUS_MONS_CALDERA_THETA = 3.949854;
 	
@@ -68,17 +71,35 @@ public class TerrainElevation implements Serializable {
 	 * @param currentDirection the current direction (in radians)
 	 * @return terrain steepness angle (in radians)
 	 */
-	public double determineTerrainDifficulty(Coordinates currentLocation, Direction currentDirection) {
+	public static double determineTerrainDifficulty(Coordinates currentLocation, Direction currentDirection) {
 		double newY = -1.5D * currentDirection.getCosDirection();
 		double newX = 1.5D * currentDirection.getSinDirection();
 		Coordinates sampleLocation = currentLocation.convertRectToSpherical(newX, newY);
 		double elevationChange = getPatchedElevation(sampleLocation) - getPatchedElevation(currentLocation);
 		double result = Math.atan(elevationChange / 11.1D);
-
 		return result;
 	}
 
-	public int[] getRGB(Coordinates location) {
+	public static double determineTerrainSlopeFactor(Coordinates currentLocation, double elevation, Direction currentDirection) {
+		double newY = - RandomUtil.getRandomDouble(2.5) * currentDirection.getCosDirection();
+		double newX = RandomUtil.getRandomDouble(2.5) * currentDirection.getSinDirection();
+		Coordinates sampleLocation = currentLocation.convertRectToSpherical(newX, newY);
+		double elevationChange = getPatchedElevation(sampleLocation) - elevation;
+		return Math.atan(elevationChange / 11.1D);
+	}
+	
+	public static double[] getTerrainProfile(Coordinates currentLocation) {
+		double slopeFactor = 0;
+		double elevation = getPatchedElevation(currentLocation);
+		for (int i=0 ; i <= 360 ; i++) {
+			double rad = i * DEG_TO_RAD;
+			slopeFactor += Math.abs(determineTerrainSlopeFactor(currentLocation, elevation, new Direction(rad)));
+		}
+		return new double[] {elevation, slopeFactor};
+	}
+	
+	
+	public static int[] getRGB(Coordinates location) {
 		// Find hue and saturation color components at location.
 		Color color = mapdata.getRGBColor(location.getPhi(), location.getTheta());
 		int red = color.getRed();
@@ -94,7 +115,7 @@ public class TerrainElevation implements Serializable {
 		return new int[] {red, green, blue};
 	}
 	
-	public float[] getHSB(int[] rgb) {
+	public static float[] getHSB(int[] rgb) {
 		float[] hsb = Color.RGBtoHSB(rgb[0], rgb[1], rgb[2], null);
 		float hue = hsb[0];
 		float saturation = hsb[1];
@@ -115,7 +136,7 @@ public class TerrainElevation implements Serializable {
 	 * @param location the location in question
 	 * @return the elevation at the location (in km)
 	 */
-	public double getPatchedElevation(Coordinates location) {
+	public static double getPatchedElevation(Coordinates location) {
 		
 		// Patch elevation problems at certain locations.
 		double elevation = patchElevation(getRawElevation(location), location);
@@ -133,7 +154,7 @@ public class TerrainElevation implements Serializable {
 	 * @param location the location in question
 	 * @return the elevation at the location (in km)
 	 */
-	public double getRawElevation(Coordinates location) {
+	public static double getRawElevation(Coordinates location) {
 
 		// Find hue and saturation color components at location.
 		int rgb[] = getRGB(location);
@@ -186,7 +207,7 @@ public class TerrainElevation implements Serializable {
 	 * @param location  the coordinates
 	 * @return the patched elevation for the location
 	 */
-	private double patchElevation(double elevation, Coordinates location) {
+	private static double patchElevation(double elevation, Coordinates location) {
 		double result = elevation;
 
 		// Patch errors at Olympus Mons
@@ -279,8 +300,14 @@ public class TerrainElevation implements Serializable {
 //					result = .783;
 //			}
 //		}
-		
-		
+
 		return result;
+	}
+	
+	/**
+	 * Prepare object for garbage collection.
+	 */
+	public void destroy() {
+		mapdata = null;
 	}
 }

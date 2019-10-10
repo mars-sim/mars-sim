@@ -1,8 +1,8 @@
 /**
  * Mars Simulation Project
- * MockUnit1.java
- * @version 3.1.0 2018-06-27
- * @author Scott Davis
+ * MockUnit4.java
+ * @version 3.1.0 2019-10-08
+ * @author Manny Kung
  */
 
 package org.mars_sim.msp.core;
@@ -10,7 +10,7 @@ package org.mars_sim.msp.core;
 /**
  * A mock unit used for unit testing.
  */
-public class MockUnit1 extends Unit {
+public class MockUnit4 extends Unit {
 	
 	/** The unit count for this settlement. */
 	private static int uniqueCount = Unit.FIRST_SETTLEMENT_UNIT_ID;
@@ -41,9 +41,10 @@ public class MockUnit1 extends Unit {
 		this.identifier = getNextIdentifier();
 	}
 	
-	public MockUnit1() {
+	
+	public MockUnit4(String name) {
 		// Use Unit constructor.
-		super("Mock Unit 1", new Coordinates(0D, 0D));
+		super(name, new Coordinates(0D, 0D));
 		
 		setBaseMass(10D);
 	}

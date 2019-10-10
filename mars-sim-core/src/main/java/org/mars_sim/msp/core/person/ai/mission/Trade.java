@@ -616,11 +616,12 @@ public class Trade extends RoverMission implements Serializable {
 			if (!isDone() && isRoverInAGarage()) {
 
 				// Store one EVA suit for person (if possible).
-				if (tradingSettlement.getInventory().findNumUnitsOfClass(EVASuit.class) > 0) {
-					EVASuit suit = (EVASuit) tradingSettlement.getInventory().findUnitOfClass(EVASuit.class);
-					if (getVehicle().getInventory().canStoreUnit(suit, false)) {
-						tradingSettlement.getInventory().retrieveUnit(suit);
-						getVehicle().getInventory().storeUnit(suit);
+				if (tradingSettlement.getInventory().findNumEVASuits() > 0) {
+					EVASuit suit = tradingSettlement.getInventory().findAnEVAsuit(); //(EVASuit) tradingSettlement.getInventory().findUnitOfClass(EVASuit.class);
+					if (suit != null && getVehicle().getInventory().canStoreUnit(suit, false)) {
+						suit.transfer(tradingSettlement, getVehicle());
+//						tradingSettlement.getInventory().retrieveUnit(suit);
+//						getVehicle().getInventory().storeUnit(suit);
 					} else {
 						endMission("Equipment " + suit + " cannot be loaded in rover " + getVehicle());
 						return;

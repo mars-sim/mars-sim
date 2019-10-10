@@ -60,10 +60,16 @@ implements Serializable {
         
         // Determine initial walk state.
         WalkState initialWalkState = determineInitialWalkState(person);
-        if (initialWalkState == null) logger.severe("initialWalkState : " + initialWalkState);
+        if (initialWalkState == null)  {
+        	logger.severe("initialWalkState : " + initialWalkState);
+//        	return;
+        }
         // Determine destination walk state.
         WalkState destinationWalkState = determineDestinationWalkState(xLoc, yLoc, interiorObject);
-        if (destinationWalkState == null) logger.severe("destinationWalkState : " + destinationWalkState);
+        if (destinationWalkState == null) {
+        	logger.severe("destinationWalkState : " + destinationWalkState);
+//        	return;
+        }
         // Determine walking steps to destination.
         determineWalkingSteps(initialWalkState, destinationWalkState);
     }
@@ -160,7 +166,10 @@ implements Serializable {
             result = new WalkState(WalkState.OUTSIDE_LOC);
             
 			LogConsolidated.log(Level.FINER, 0, sourceName,
-					"[" + person.getLocationStateType().getName() + "] " + person.getName() +
+					"[" 
+					+ person.getLocationTag().getLocale()
+//					+ person.getLocationStateType().getName() 
+					+ "] "  + person.getName() +
                     " is having WalkState.OUTSIDE_LOC");
         }
         else if (person.isInSettlement()) {
@@ -169,7 +178,10 @@ implements Serializable {
             
             if (building == null) {
     			LogConsolidated.log(Level.FINER, 0, sourceName,
-    					"[" + person.getLocationStateType().getName() + "] " + person.getName() +
+    					"[" 
+    					+ person.getLocationTag().getLocale()
+//    					+ person.getLocationStateType().getName() 
+    					+ "] " + person.getName() +
                         " is inside the settlement and having a bad WalkState");
             	return null;
             }
@@ -178,17 +190,28 @@ implements Serializable {
             result.building = building;
             
 			LogConsolidated.log(Level.FINER, 0, sourceName,
-					"[" + person.getLocationStateType().getName() + "] " + person.getName() +
+					"[" 
+					+ person.getLocationTag().getLocale()
+//					+ person.getLocationStateType().getName() 
+					+ "] " 
+					+ person.getName() +
                     " is having WalkState.BUILDING_LOC");
 
             if (!LocalAreaUtil.checkLocationWithinLocalBoundedObject(person.getXLocation(),
                     person.getYLocation(), building)) {
 
-//    			LogConsolidated.log(Level.SEVERE, 5000, sourceName, 		
- 				throw new IllegalStateException("[" + person.getSettlement() + "] " + person.getName() + " has invalid walk start location. (" +
+//    			LogConsolidated.log(Level.SEVERE, 5_000, sourceName, 		
+ 				throw new IllegalStateException(
+    					"[" 
+    					+ person.getLocationTag().getLocale()
+//    					+ person.getLocationStateType().getName() 
+    					+ "] " 
+    					+ person.getName() + " has invalid walk start location. (" +
                         Math.round(person.getXLocation()*10.0)/10.0 + ", " 
  						+ Math.round(person.getYLocation()*10.0)/10.0 
- 						+ ") is not within " + building);
+ 						+ ") is not within " + building + " in " + person.getSettlement());
+ 				
+//            	return null;
             }
         }
         else if (person.isInVehicle()) {
@@ -206,25 +229,38 @@ implements Serializable {
                 if (!LocalAreaUtil.checkLocationWithinLocalBoundedObject(person.getXLocation(),
                         person.getYLocation(), vehicle)) {
                 	
-//        			LogConsolidated.log(Level.SEVERE, 5000, sourceName,
-        			throw new IllegalStateException("[" + person.getLocationStateType().getName() + "] " 
+//        			LogConsolidated.log(Level.SEVERE, 5_000, sourceName,
+        			throw new IllegalStateException(		
+        					"[" 
+        					+ person.getLocationTag().getLocale()
+//        					+ person.getLocationStateType().getName() 
+        					+ "] " 
         				+ person.getName() + " was supposed to be inside " + vehicle 
         				+ " but had an invalid location at (" 
         				+ Math.round(person.getXLocation()*10.0)/10.0 + ", " 
         				+ Math.round(person.getYLocation()*10.0)/10.0 + ").");
+//        			return null;
                 }
             }
             else {
                 result = new WalkState(WalkState.OUTSIDE_LOC);
     			LogConsolidated.log(Level.FINER, 0, sourceName,
-    					"[" + person.getLocationStateType().getName() + "] " + person.getName() 
+    					"[" 
+    					+ person.getLocationTag().getLocale()
+//    					+ person.getLocationStateType().getName() 
+    					+ "] " 
+    					+ person.getName() 
     					+ " is having WalkState.OUTSIDE_LOC");
             }
         }
         
         else {
-			LogConsolidated.log(Level.SEVERE, 5000, sourceName,
-					"[" + person.getLocationStateType().getName() + "] " + person.getName() 
+			LogConsolidated.log(Level.SEVERE, 5_000, sourceName,
+					"[" 
+					+ person.getLocationTag().getLocale()
+//					+ person.getLocationStateType().getName() 
+					+ "] " 
+					+ person.getName() 
 					+ " is in an invalid location situation for walking task.");
             //throw new IllegalStateException(person.getName() +
             //        " is in an invalid location situation for walking task: " + locationSituation);

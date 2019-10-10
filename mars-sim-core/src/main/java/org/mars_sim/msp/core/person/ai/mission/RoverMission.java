@@ -18,6 +18,7 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.location.LocationStateType;
@@ -398,11 +399,12 @@ public abstract class RoverMission extends VehicleMission {
 						// Store one or two EVA suit for person (if possible).
 						int limit = RandomUtil.getRandomInt(1, 3);
 						while (numEVASuit <= limit) {
-							if (settlement.getInventory().findNumUnitsOfClass(EVASuit.class) > 0) {
-								EVASuit suit = (EVASuit) settlement.getInventory().findUnitOfClass(EVASuit.class);
-								if (v.getInventory().canStoreUnit(suit, false)) {
-									settlement.getInventory().retrieveUnit(suit);
-									v.getInventory().storeUnit(suit);
+							if (settlement.getInventory().findNumEVASuits() > 0) {
+								EVASuit suit = settlement.getInventory().findAnEVAsuit(); //(EVASuit) settlement.getInventory().findUnitOfClass(EVASuit.class);
+								if (suit != null && v.getInventory().canStoreUnit(suit, false)) {
+									suit.transfer(settlement, v);
+//									settlement.getInventory().retrieveUnit(suit);
+//									v.getInventory().storeUnit(suit);
 									numEVASuit++;
 								}
 
@@ -608,10 +610,12 @@ public abstract class RoverMission extends VehicleMission {
 						if (availableSuitNum > 0) {
 							// Deliver an EVA suit from the settlement to the rover
 							// TODO: Need to generate a task for a person to hand deliver an extra suit
-							EVASuit suit = (EVASuit) disembarkSettlement.getInventory().findUnitOfClass(EVASuit.class);
-							if (rover.getInventory().canStoreUnit(suit, false)) {
-								disembarkSettlement.getInventory().retrieveUnit(suit);
-								rover.getInventory().storeUnit(suit);
+							EVASuit suit = disembarkSettlement.getInventory().findAnEVAsuit(); //(EVASuit) disembarkSettlement.getInventory().findUnitOfClass(EVASuit.class);
+							if (suit != null && rover.getInventory().canStoreUnit(suit, false)) {
+								
+								suit.transfer(disembarkSettlement, rover);
+//								disembarkSettlement.getInventory().retrieveUnit(suit);
+//								rover.getInventory().storeUnit(suit);
 								
 								LogConsolidated.log(Level.WARNING, 0, sourceName, "[" + p.getLocationTag().getLocale() + "] "
 										+ p + " received a spare EVA suit from the settlement.");
@@ -686,14 +690,24 @@ public abstract class RoverMission extends VehicleMission {
 	 */
 	private void rescueOperation(Rover r, Person p, Settlement s) {
 		
+		if (p.isDeclaredDead()) {
+			Unit cu = p.getPhysicalCondition().getDeathDetails().getContainerUnit();
+//			cu.getInventory().retrieveUnit(p);
+			p.transfer(cu, s);
+		}
 		// Retrieve the person from the rover
-		if (p.isInVehicle())
-			r.getInventory().retrieveUnit(p);
-		else if (p.isOutside())
-			unitManager.getMarsSurface().getInventory().retrieveUnit(p);
-			
+		else if (r != null) {
+//			r.getInventory().retrieveUnit(p);
+			p.transfer(r, s);
+		}
+		else if (p.isOutside()) {
+//			unitManager.getMarsSurface().getInventory().retrieveUnit(p);
+			p.transfer(unitManager.getMarsSurface(), s);
+		}
+		
 		// Store the person into the settlement
-		s.getInventory().storeUnit(p);
+//		s.getInventory().storeUnit(p);
+		
 		// Gets the settlement id
 		int id = s.getIdentifier();
 		// Store the person into a medical building

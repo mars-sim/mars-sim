@@ -77,6 +77,7 @@ import org.mars_sim.msp.core.robot.ai.job.RobotJob;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.core.science.ScientificStudyUtil;
+import org.mars_sim.msp.core.structure.Airlock;
 import org.mars_sim.msp.core.structure.ChainOfCommand;
 import org.mars_sim.msp.core.structure.CompositionOfAir;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -401,8 +402,11 @@ public class Simulation implements ClockListener, Serializable {
 		ResourceUtil.getInstance();
 		mars = Mars.createTest();
 		masterClock = new MasterClock(false, 256);
-		unitManager = new UnitManager(); //UnitManager.instance();
+		unitManager = new UnitManager();
+		Inventory.setUnitManager(unitManager);
+		
 		unitManager.constructInitialUnits(true);
+		
 		medicalManager = new MedicalManager();
 		
 		// Gets the SurfaceFeatures instance
@@ -442,21 +446,30 @@ public class Simulation implements ClockListener, Serializable {
 		medicalManager = new MedicalManager();
 		masterClock = new MasterClock(isFXGL, timeRatio);
 		
+		// Note : marsSurface is needed before creating Inventory and Unit
+		// When loading from saved sim, it's at unitManager
+		// Gets the MarsSurface instance 
+		MarsSurface marsSurface = mars.getMarsSurface();
+		
 		// Gets the SurfaceFeatures instance
 		SurfaceFeatures surfaceFeatures = mars.getSurfaceFeatures();
-		// Gets the MarsSurface instance
-		MarsSurface marsSurface = mars.getMarsSurface();
 		
 		// Create clock instances
 		MarsClock marsClock = masterClock.getMarsClock();
 		EarthClock earthClock = masterClock.getEarthClock();
 		
 		// Initialize units prior to starting the unit manager
-		Unit.initializeInstances(masterClock, marsClock, earthClock, this, mars, marsSurface, 
+		Unit.initializeInstances(masterClock, marsClock, earthClock, this, mars, null, 
 				mars.getWeather(), surfaceFeatures, missionManager);
 		
 		// Initialize serializable managers
-		unitManager = new UnitManager(); //UnitManager.instance();//
+		unitManager = new UnitManager(); 
+		Inventory.setUnitManager(unitManager);
+		Airlock.initializeInstances(unitManager, marsSurface);
+		
+		// Gets the MarsSurface instance
+//		MarsSurface marsSurface = unitManager.getMarsSurface();//mars.getMarsSurface();
+		Unit.setMarsSurface(marsSurface);
 		Unit.setUnitManager(unitManager);
 		
 		unitManager.constructInitialUnits(loadSaveSim); // unitManager needs to be on the same thread as masterClock
@@ -669,7 +682,7 @@ public class Simulation implements ClockListener, Serializable {
      */
     public void deserialize(File file) throws IOException,
             ClassNotFoundException {
-//		logger.config("deserialize() is on " + Thread.currentThread().getName());
+		logger.config("deserialize() is on " + Thread.currentThread().getName());
 		
 //		byte[] buf = new byte[8192];
 		FileInputStream in = null;
@@ -709,7 +722,6 @@ public class Simulation implements ClockListener, Serializable {
 			// Load remaining serialized objects
 			malfunctionFactory = (MalfunctionFactory) ois.readObject();
 			mars = (Mars) ois.readObject();
-//			mars.createInstances();
 			mars.initializeTransientData();
 			missionManager = (MissionManager) ois.readObject();
 			medicalManager = (MedicalManager) ois.readObject();
@@ -717,62 +729,80 @@ public class Simulation implements ClockListener, Serializable {
 			transportManager = (TransportManager) ois.readObject();
 			creditManager = (CreditManager) ois.readObject();
 			eventManager = (HistoricalEventManager) ois.readObject();
-			relationshipManager = (RelationshipManager) ois.readObject();
-			unitManager = (UnitManager) ois.readObject();
+			relationshipManager = (RelationshipManager) ois.readObject();		
+			unitManager = (UnitManager) ois.readObject();		
 			masterClock = (MasterClock) ois.readObject();
-			
+	
 		// Note: see https://docs.oracle.com/javase/7/docs/platform/serialization/spec/exceptions.html
 		} catch (WriteAbortedException e) {
+			e.printStackTrace();
 			// Thrown when reading a stream terminated by an exception that occurred while the stream was being written.
 			logger.log(Level.SEVERE, "Quitting mars-sim with WriteAbortedException when loading " + file + " : " + e.getMessage());
 			System.exit(1);		
 
 		} catch (OptionalDataException e) {
+			e.printStackTrace();
 			// Thrown by readObject when there is primitive data in the stream and an object is expected. The length field of the exception indicates the number of bytes that are available in the current block.
 			logger.log(Level.SEVERE, "Quitting mars-sim with OptionalDataException when loading " + file + " : " + e.getMessage());
 			System.exit(1);		
 		
 		} catch (InvalidObjectException e) {
+			e.printStackTrace();
 			// Thrown when a restored object cannot be made valid.
 			logger.log(Level.SEVERE, "Quitting mars-sim with InvalidObjectException when loading " + file + " : " + e.getMessage());
 			System.exit(1);		
 
 		} catch (NotActiveException e) {
+			e.printStackTrace();
 			logger.log(Level.SEVERE, "Quitting mars-sim with NotActiveException when loading " + file + " : " + e.getMessage());
 			System.exit(1);		
 
 		} catch (StreamCorruptedException e) {
+			e.printStackTrace();
 			logger.log(Level.SEVERE, "Quitting mars-sim with StreamCorruptedException when loading " + file + " : " + e.getMessage());
 			System.exit(1);		
 		
 		} catch (NotSerializableException e) {
+			e.printStackTrace();
 			logger.log(Level.SEVERE, "Quitting mars-sim with NotSerializableException when loading " + file + " : " + e.getMessage());
 			System.exit(1);		
 			
 		} catch (ObjectStreamException e) {
+			e.printStackTrace();
 			logger.log(Level.SEVERE, "Quitting mars-sim with ObjectStreamException when loading " + file + " : " + e.getMessage());
 			System.exit(1);
 			
 		} catch (FileNotFoundException e) {
+			e.printStackTrace();
 			logger.log(Level.SEVERE, "Quitting mars-sim with FileNotFoundException since " + file + " cannot be found : ", e.getMessage());
 			System.exit(1);
 
 		} catch (EOFException e) {
+			e.printStackTrace();
 			logger.log(Level.SEVERE,
 					"Quitting mars-sim. Unexpected End of File error on " + file + " : " + e.getMessage());
 			System.exit(1);
 
 		} catch (IOException e) {
+			e.printStackTrace();
 			logger.log(Level.SEVERE,
 					"Quitting mars-sim. IOException when decompressing " + file + " : " + e.getMessage());
 			System.exit(1);
 
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+			logger.log(Level.SEVERE,
+					"Quitting mars-sim. ClassNotFoundException when decompressing " + file + " : " + e.getMessage());
+			System.exit(1);
+			
 		} catch (NullPointerException e) {
+			e.printStackTrace();
 			logger.log(Level.SEVERE,
 					"Quitting mars-sim. NullPointerException when loading " + file + " : " + e.getMessage());
 			System.exit(1);
 
 		} catch (Exception e) {
+			e.printStackTrace();
 			logger.log(Level.SEVERE, "Quitting mars-sim with errors when loading " + file + " : " + e.getMessage());
 			System.exit(1);
 		
@@ -876,9 +906,14 @@ public class Simulation implements ClockListener, Serializable {
 		instance().initialSimulationCreated = true;
 		isUpdating = false;
 		
-		// Re-initialize instances
-		reinitializeInstances();
-//		logger.config("Done reinitializeInstances");
+        try {
+    		// Re-initialize instances
+    		reinitializeInstances();
+//    		logger.config("Done reinitializeInstances");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
 	}
 	
 	/**
@@ -891,7 +926,18 @@ public class Simulation implements ClockListener, Serializable {
 		ResourceUtil.getInstance().initializeInstances();
 		// Re-initialize the MarsSurface instance
 		MarsSurface marsSurface = unitManager.getMarsSurface();
-	
+//		mars.setMarsSurface(marsSurface);
+		Airlock.initializeInstances(unitManager, marsSurface);
+		
+		Inventory.setUnitManager(unitManager);
+//		Inventory inv = marsSurface.getInventory();
+//		for (Unit u: inv.getContainedUnits()) {
+//			String s = String.format("Simulation : %20s (%4d)", u.getName(), u.getIdentifier());
+//			System.out.println(s);
+//		}
+				
+//		logger.config("Done marsSurface");
+		
 		//  Re-initialize the GameManager
 		GameManager.initializeInstances(unitManager);
 		// Re-initialize the SurfaceFeatures instance
@@ -901,6 +947,8 @@ public class Simulation implements ClockListener, Serializable {
 		// Gets the orbitInfo instance
 		OrbitInfo orbit = mars.getOrbitInfo();
 	
+//		logger.config("Done orbit");
+		
 		// Re-initialize the Simulation instance
 		MasterClock.initializeInstances(this);					
 		// Re-initialize the Mars instance
@@ -914,16 +962,22 @@ public class Simulation implements ClockListener, Serializable {
 		// Re-initialize the instances in LogConsolidated
 		LogConsolidated.initializeInstances(marsClock, earthClock);
 		
+//		logger.config("Done LogConsolidated");
+		
 		// Re-initialize Mars environmental instances
 		Weather.initializeInstances(masterClock, marsClock, mars, surfaceFeatures, orbit, unitManager); // terrain
 		SurfaceFeatures.initializeInstances(masterClock, mars, this, weather, orbit, missionManager);  // sunDirection, landmarks
 		OrbitInfo.initializeInstances(marsClock, earthClock);		
 		DustStorm.initializeInstances(weather);
 			
+//		logger.config("Done DustStorm");
+		
 		// Gets config file instances
 		simulationConfig = SimulationConfig.instance();
 		BuildingConfig bc = simulationConfig.getBuildingConfiguration();
 		PersonConfig pc = simulationConfig.getPersonConfig();
+		
+//		logger.config("Done pc");
 		
 		// Re-initialize static class
 		MalfunctionFactory.initializeInstances(this, marsClock, unitManager);
@@ -933,6 +987,8 @@ public class Simulation implements ClockListener, Serializable {
 		// Re-initialize units prior to starting the unit manager
 		Unit.initializeInstances(masterClock, marsClock, earthClock, this, mars, marsSurface, weather, surfaceFeatures, missionManager);	
 		Unit.setUnitManager(unitManager);
+		
+//		logger.config("Done Unit");
 		
 		// Start a chain of calls to set instances on each person
 		unitManager.reinit(marsClock);
@@ -945,6 +1001,8 @@ public class Simulation implements ClockListener, Serializable {
 		ScientificStudyUtil.initializeInstances(relationshipManager, unitManager);
 				
 		Resupply.initializeInstances(bc, unitManager);
+		
+//		logger.config("Done Resupply");
 		
 		// Re-initialize Unit related class
 //		Vehicle.initializeInstances();
@@ -961,6 +1019,8 @@ public class Simulation implements ClockListener, Serializable {
 		TaskSchedule.initializeInstances(marsClock);
 		HealthProblem.initializeInstances(medicalManager, eventManager);
 		
+//		logger.config("Done HealthProblem");
+
 		// Re-initialize Structure related class
 		Building.initializeInstances(bc, unitManager);
 		BuildingManager.initializeInstances(this, masterClock, marsClock, bc, eventManager, relationshipManager, unitManager);
@@ -973,6 +1033,8 @@ public class Simulation implements ClockListener, Serializable {
 		Cooking.initializeInstances(); // prepareOilMenu()
 		Farming.initializeInstances();  // cropConfig
 
+//		logger.config("Done Farming");
+		
 		// Miscs.
 		CompositionOfAir.initializeInstances(masterClock, marsClock, pc, unitManager);
 		Crop.initializeInstances(masterClock, marsClock, surfaceFeatures, unitManager);
@@ -984,7 +1046,8 @@ public class Simulation implements ClockListener, Serializable {
 		RobotJob.initializeInstances(unitManager, missionManager);
 //		CreditEvent.initializeInstances(unitManager, missionManager);
 		
-	
+//		logger.config("Done RobotJob");
+				
 		// Re-initialize Task related class 
 //		LoadVehicleGarage.initializeInstances(pc); 
 //		ObserveAstronomicalObjects.initializeInstances(surface);
@@ -995,7 +1058,8 @@ public class Simulation implements ClockListener, Serializable {
 		Task.initializeInstances(marsClock, eventManager, relationshipManager, unitManager, 
 				scientificStudyManager, surfaceFeatures, missionManager, pc);
 
-	
+//		logger.config("Done Task");
+		
 		// Re-initialize MetaMission class
 //		BuildingConstructionMissionMeta.setInstances(marsClock);
 //		CollectRegolithMeta.setInstances(missionManager);
@@ -1010,6 +1074,7 @@ public class Simulation implements ClockListener, Serializable {
 //		RescueSalvageVehicle.justReloaded(eventManager);  // eventManager
 		MissionPlanning.initializeInstances(marsClock);
 
+//		logger.config("Done MissionPlanning");
 	}
 	
 	
@@ -1189,7 +1254,7 @@ public class Simulation implements ClockListener, Serializable {
 			oos.writeObject(relationshipManager);
 			oos.writeObject(unitManager);
 			oos.writeObject(masterClock);
-
+			
 			oos.flush();
 			oos.close();
 

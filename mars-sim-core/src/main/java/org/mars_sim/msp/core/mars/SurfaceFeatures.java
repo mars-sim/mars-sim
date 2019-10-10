@@ -736,6 +736,7 @@ public class SurfaceFeatures implements Serializable {
 	 * Prepare object for garbage collection.
 	 */
 	public void destroy() {
+		terrainElevation.destroy();
 		terrainElevation = null;
 		orbitInfo = null;
 		mars = null;

@@ -27,7 +27,8 @@ public enum LocationStateType {
 	ON_A_PERSON_OR_ROBOT			(Msg.getString("LocationStateType.onAPersonOrRobot")), //$NON-NLS-1$
 	INSIDE_EVASUIT					(Msg.getString("LocationStateType.insideEVASuit")), //$NON-NLS-1$
 	OUTSIDE_ON_THE_SURFACE_OF_MARS	(Msg.getString("LocationStateType.outsideOnMars")), //$NON-NLS-1$
-	OUTSIDE_SETTLEMENT_VICINITY		(Msg.getString("LocationStateType.settlementVincinity")), //$NON-NLS-1$
+	WITHIN_SETTLEMENT_VICINITY		(Msg.getString("LocationStateType.settlementVincinity")), //$NON-NLS-1$
+	IN_OUTER_SPACE					(Msg.getString("LocationStateType.outerspace")), //$NON-NLS-1$
 	UNKNOWN							(Msg.getString("LocationStateType.unknown")) //$NON-NLS-1$
 	;
 
@@ -43,7 +44,7 @@ public enum LocationStateType {
 			INSIDE_VEHICLE,
 			ON_A_PERSON_OR_ROBOT,
 			OUTSIDE_ON_THE_SURFACE_OF_MARS,
-			OUTSIDE_SETTLEMENT_VICINITY
+			WITHIN_SETTLEMENT_VICINITY
 	};
 
 	public static int numSponsors = TYPES.length;

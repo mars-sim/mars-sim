@@ -436,9 +436,11 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 
 				// Unload inventories of equipment (if possible)
 				unloadEquipmentInventory(equipment);
-
-				vehicleInv.retrieveUnit(equipment);
-				settlementInv.storeUnit(equipment);
+				
+				equipment.transfer(vehicleInv, settlementInv);
+//				vehicleInv.retrieveUnit(equipment);
+//				settlementInv.storeUnit(equipment);
+				
 				amountUnloading -= equipment.getMass();
 
 				if (!vehicle.getName().contains("Mock")) {
@@ -561,12 +563,10 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 										+ " was retrieving the dead body of " + p + " from " + vehicle.getName()
 										+ " parked inside " + settlement, null);
 
-					// Retrieve the person if he/she is dead	
-					vehicle.getInventory().retrieveUnit(p);
-						
-					// Place this person within a settlement
-//					p.enter(LocationCodeType.SETTLEMENT);
-					settlementInv.storeUnit(p);
+					
+					// Retrieve the dead person and place this person within a settlement	
+					p.transfer(vehicle, settlementInv);
+					
 					BuildingManager.addToMedicalBuilding(p, settlement.getIdentifier());
 
 					p.setAssociatedSettlement(settlement.getIdentifier());

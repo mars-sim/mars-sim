@@ -73,7 +73,7 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 	/** 100 millisols. */
 	private static final double MAINTENANCE_TIME = 100D;
 	/** The unit count for this robot. */
-	private static int uniqueCount = Unit.FIRST_ROBOT_ID;
+	private static int uniqueCount = Unit.FIRST_ROBOT_UNIT_ID;
 	
 	// Data members
 	/** Is the robot is inoperable. */
@@ -145,10 +145,24 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 		return uniqueCount++;
 	}
 	
+	/**
+	 * Get the unique identifier for this person
+	 * 
+	 * @return Identifier
+	 */
+	public int getIdentifier() {
+		return identifier;
+	}
+	
+	public void incrementID() {
+		// Gets the identifier
+		this.identifier = getNextIdentifier();
+	}
+	
 	protected Robot(String name, Settlement settlement, RobotType robotType) {
 		super(name, robotType.toString(), settlement.getCoordinates()); // extending equipment
 		
-		this.identifier = getNextIdentifier();
+//		this.identifier = getNextIdentifier();
 		unitManager.addRobotID(this);
 		
 //		// Set its container unit
@@ -314,7 +328,7 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 	 * @return true if the robot is just right outside of a settlement
 	 */
 	public boolean isRightOutsideSettlement() {
-		if (LocationStateType.OUTSIDE_SETTLEMENT_VICINITY  == currentStateType)
+		if (LocationStateType.WITHIN_SETTLEMENT_VICINITY  == currentStateType)
 			return true;
 		return false;
 	}
@@ -381,8 +395,7 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 	 */
 	@Override
 	public Settlement getSettlement() {
-		
-		if (getContainerID() == 0)
+		if (getContainerID() == Unit.MARS_SURFACE_UNIT_ID)
 			return null;
 		
 		Unit c = getContainerUnit();

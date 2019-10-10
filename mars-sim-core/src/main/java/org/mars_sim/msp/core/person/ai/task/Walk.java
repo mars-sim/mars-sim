@@ -481,9 +481,18 @@ public class Walk extends Task implements Serializable {
 	 */
 	public static boolean canWalkAllSteps(Person person, double xLoc, double yLoc, LocalBoundedObject interiorObject) {
 
-		WalkingSteps walkingSteps = new WalkingSteps(person, xLoc, yLoc, interiorObject);
+		WalkingSteps walkingSteps = null;
+		
+		try {
+			walkingSteps = new WalkingSteps(person, xLoc, yLoc, interiorObject);
+		} catch (Exception e) {
+			e.printStackTrace(System.err);
+		}
 
-		return canWalkAllSteps(person, walkingSteps);
+		if (walkingSteps != null)
+			return canWalkAllSteps(person, walkingSteps);
+		
+		return false;
 	}
 
 	public static boolean canWalkAllSteps(Robot robot, double xLoc, double yLoc, LocalBoundedObject interiorObject) {
@@ -1183,17 +1192,14 @@ public class Walk extends Task implements Serializable {
 					+ ".");
 
 			
-			// Exit a rover inside a garage
-//			person.exit(LocationCodeType.MOBILE_UNIT_3);
+			// Exit the rover parked inside a garage onto the settlement
+			if (person.isInVehicleInGarage()) {
+				person.transfer(rover, garageBuilding);
 			
-			if (person.isInVehicleInGarage())
-				rover.getInventory().retrieveUnit(person);
+//				rover.getInventory().retrieveUnit(person);
+//				garageBuilding.getSettlementInventory().storeUnit(person); 
 			
-			if (!person.isInSettlement()) {
-				garageBuilding.getSettlementInventory().storeUnit(person); 
-			// java.lang.IllegalStateException: Unit: Gerardo Marinez could not be stored.
-			// [Alpha Base] Gerardo Marinez was about to exit the rover Gypsea and reportedly in Garage 1.
-			
+				// Add the person onto the garage
 				BuildingManager.addPersonOrRobotToBuilding(person, garageBuilding);
 
 				LogConsolidated.log(Level.FINER, 0, sourceName + "::exitingRoverGaragePhase",
@@ -1212,14 +1218,11 @@ public class Walk extends Task implements Serializable {
 					+ " and was reportedly in " + robot.getLocationTag().getImmediateLocation()
 					+ ".");
 			
-			// Exit a rover inside a garage
-//			robot.exit(LocationCodeType.MOBILE_UNIT_3);
-			
-			if (robot.isInVehicleInGarage())
-				rover.getInventory().retrieveUnit(robot);
-			
-			if (!robot.isInSettlement()) {
-				garageBuilding.getSettlementInventory().storeUnit(robot);
+
+			if (robot.isInVehicleInGarage()) {
+				// Exit the rover inside a garage onto the settlement
+				robot.transfer(rover, garageBuilding);
+		
 				BuildingManager.addPersonOrRobotToBuilding(robot, garageBuilding);
 				
 				LogConsolidated.log(Level.FINER, 00, sourceName + "::exitingRoverGaragePhase",
@@ -1265,11 +1268,12 @@ public class Walk extends Task implements Serializable {
 					+ ".");
 			
 			// Place this person within a vehicle inside a garage in a settlement
-//			person.enter(LocationCodeType.MOBILE_UNIT_3);
+			person.transfer(garageBuilding, rover);
+//			garageBuilding.getSettlementInventory().retrieveUnit(person);
+//			rover.getInventory().storeUnit(person);
 			
-			garageBuilding.getSettlementInventory().retrieveUnit(person);
+			// Remove the person from the garage
 			BuildingManager.removePersonOrRobotFromBuilding(person, garageBuilding);		
-			rover.getInventory().storeUnit(person);
 			
 			LogConsolidated.log(Level.FINER, 0, sourceName + "::enteringRoverInsideGaragePhase",
 	  				"[" + person.getLocationTag().getLocale() + "] "
@@ -1286,11 +1290,14 @@ public class Walk extends Task implements Serializable {
 					+ ".");
 			
 			// Place this robot within a vehicle inside a garage in a settlement
-//			robot.enter(LocationCodeType.MOBILE_UNIT_3);
+			robot.transfer(garageBuilding, rover);
+						
+//			garageBuilding.getSettlementInventory().retrieveUnit(robot);
+//			rover.getInventory().storeUnit(robot);
 			
-			garageBuilding.getSettlementInventory().retrieveUnit(robot);
+			// Remove the robot from the garage
 			BuildingManager.removePersonOrRobotFromBuilding(robot, garageBuilding);
-			rover.getInventory().storeUnit(robot);
+
 			
 			LogConsolidated.log(Level.FINER, 0, sourceName + "::enteringRoverInsideGaragePhase",
 	  				"[" + robot.getLocationTag().getLocale() + "] "

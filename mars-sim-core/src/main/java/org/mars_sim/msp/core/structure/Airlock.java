@@ -101,8 +101,8 @@ public abstract class Airlock implements Serializable {
 
 	private static volatile Map<Integer, Person> lookupPerson;
 	
-    protected static UnitManager unitManager = Simulation.instance().getUnitManager();
-    protected static MarsSurface marsSurface = unitManager.getMarsSurface(); //getMars().getMarsSurface();
+    protected static UnitManager unitManager; //= Simulation.instance().getUnitManager();
+    protected static MarsSurface marsSurface;// = unitManager.getMarsSurface(); //getMars().getMarsSurface();
     
 	/**
 	 * Constructs an airlock object for a unit.
@@ -709,6 +709,18 @@ public abstract class Airlock implements Serializable {
 //			lookupPerson = new HashMap<>();
 		if (p != null && !lookupPerson.containsKey(p.getIdentifier()))
 			lookupPerson.put(p.getIdentifier(), p);
+	}
+	
+
+	/**
+	 * Initializes instances
+	 * 
+	 * @param um {@link UnitManager}
+	 * @param ms {@link MarsSurface}
+	 */
+	public static void initializeInstances(UnitManager um, MarsSurface ms) {
+		unitManager = um;
+		marsSurface = ms;
 	}
 	
 	/**

@@ -8,16 +8,14 @@ package org.mars_sim.msp.core.person.ai.task.meta;
 
 import java.io.Serializable;
 
+import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Inventory;
-
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.equipment.Bag;
-import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.job.Job;
-
 import org.mars_sim.msp.core.person.ai.task.DigLocalIce;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.taskUtil.MetaTask;
@@ -55,12 +53,19 @@ public class DigLocalIceMeta implements MetaTask, Serializable {
     @Override
     public double getProbability(Person person) {
 
+    	Settlement settlement = CollectionUtils.findSettlement(person.getCoordinates());
+        
         double result = 0D;
    
-        if (person.isInSettlement()) {
+        if (settlement != null) {
         	
-	    	Settlement settlement = person.getSettlement();
+//	    	Settlement settlement = person.getSettlement();
 	     
+        	double collectionRate = settlement.getIceCollectionRate();
+            
+            if (collectionRate <= 0)
+            	return 0; 
+            
 	    	// Check if an airlock is available
 	        if (EVAOperation.getWalkableAvailableAirlock(person) == null)
 	    		return 0;
@@ -85,13 +90,13 @@ public class DigLocalIceMeta implements MetaTask, Serializable {
             Inventory inv = settlement.getInventory();
 
             // Check at least one EVA suit at settlement.
-            int numSuits = inv.findNumUnitsOfClass(EVASuit.class);
+            int numSuits = inv.findNumEVASuits();
             if (numSuits == 0) {
                 return 0;
             }
 
             // Check if at least one empty bag at settlement.
-            int numEmptyBags = inv.findNumEmptyUnitsOfClass(Bag.class, false);
+            int numEmptyBags = inv.findNumBags();
             if (numEmptyBags == 0) {
                 return 0;
             }

@@ -65,10 +65,10 @@ public enum EquipmentType {
 	}
 	
 	/**
-	 * Obtains the resource id (not the ordinal id) of the equipment
+	 * Obtains the type id (not the ordinal id) of the equipment
 	 * 
 	 * @param name
-	 * @return resource id
+	 * @return type id
 	 */
 	public static int convertName2ID(String name) {
 		if (name != null) {
@@ -85,27 +85,27 @@ public enum EquipmentType {
 	 * Obtains the enum type of the equipment with its ordinal id
 	 * 
 	 * @param ordinalID
-	 * @return
+	 * @return {@link EquipmentType}
 	 */
 	public static EquipmentType convertOrdinalID2Enum(int ordinalID) {
 		return EquipmentType.values()[ordinalID];
 	}
 	
 	/**
-	 * Obtains the enum type of the equipment with its resource id
+	 * Obtains the enum type of the equipment with its type id
 	 * 
-	 * @param resourceID
-	 * @return
+	 * @param typeID
+	 * @return {@link EquipmentType}
 	 */
-	public static EquipmentType convertID2Enum(int resourceID) {
-		return EquipmentType.values()[resourceID - ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID];
+	public static EquipmentType convertID2Enum(int typeID) {
+		return EquipmentType.values()[typeID - ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID];
 	}
 	
 	/**
-	 * Obtains the resource id of the equipment class
+	 * Obtains the type id of the equipment class
 	 * 
 	 * @param equipmentClass
-	 * @return
+	 * @return type id
 	 */
 	public static int convertClass2ID(Class<?> equipmentClass) {
 		if (Bag.class.equals(equipmentClass)) return BAG.ordinal() + ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID;
@@ -121,7 +121,7 @@ public enum EquipmentType {
 	 * Obtains the enum type of the equipment class
 	 * 
 	 * @param equipmentClass
-	 * @return
+	 * @return {@link EquipmentType}
 	 */
 	public static EquipmentType convertClass2Type(Class<?> equipmentClass) {
 		if (Bag.class.equals(equipmentClass)) return BAG;
@@ -137,7 +137,7 @@ public enum EquipmentType {
 	 * Obtains the enum type of the equipment with its name
 	 * 
 	 * @param name
-	 * @return
+	 * @return {@link EquipmentType}
 	 */
 	public static EquipmentType convertName2Enum(String name) {
 		if (name != null) {

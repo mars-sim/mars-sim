@@ -48,7 +48,7 @@ public class Engineer extends Job implements Serializable {
 
 	// private static Logger logger = Logger.getLogger(Engineer.class.getName());
 
-	private final int JOB_ID = 8;
+	public final static int JOB_ID = 8;
 	
 	private double[] roleProspects = new double[] {5.0, 30.0, 10.0, 10.0, 15.0, 10.0, 20.0};
 	

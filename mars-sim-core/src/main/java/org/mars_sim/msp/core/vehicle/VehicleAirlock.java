@@ -115,10 +115,8 @@ extends Airlock {
     public void stepIntoAirlock(Person person) {
     	if (person.isOutside()) {
 									
-			// 1.1 Retrieve the person from the surface of Mars
-            marsSurface.getInventory().retrieveUnit(person);
-			// 1.2 store the person into the building inventory
-            vehicle.getInventory().storeUnit(person);
+            // 1.1. Transfer a person from the surface of Mars to the vehicle
+            person.transfer(marsSurface, vehicle);
         
 			LogConsolidated.log(Level.FINER, 0, sourceName, 
 					"[" + person.getLocationTag().getLocale() + "] "
@@ -139,14 +137,12 @@ extends Airlock {
     public void stepIntoMarsSurface(Person person) {
 		if (person.isInVehicle()) {
 
-			// 5.2 Retrieve the person from the settlement
-            vehicle.getInventory().retrieveUnit(person);
-			// 5.3 Store the person onto the surface of Mars
-			marsSurface.getInventory().storeUnit(person);
-			// 5.4 Set the person's coordinates to that of the settlement's
+            // 5.1. Transfer a person from the vehicle to the surface of Mars
+            person.transfer(vehicle, marsSurface);
+			
+			// 5.2 Set the person's coordinates to that of the settlement's
 			person.setCoordinates(vehicle.getCoordinates());
-			
-			
+					
 			LogConsolidated.log(Level.FINER, 0, sourceName, 
 					"[" + person.getLocationTag().getLocale() + "] "
 					+ person.getName() + " had just stepped outside rover " + vehicle.getName());

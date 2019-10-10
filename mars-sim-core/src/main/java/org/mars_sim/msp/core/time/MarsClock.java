@@ -1102,6 +1102,7 @@ public class MarsClock implements Serializable {
 	}
 	
 	public void destroy() {
+		orbitInfo.destroy();
 		orbitInfo = null;
 		sim = null;
 	}

@@ -32,7 +32,7 @@ public class Mars implements Serializable {
 	/** Orbital information. */
 	private OrbitInfo orbitInfo;
 	/** Mars Surface as a unit container */
-	private MarsSurface marsSurface;
+	private transient MarsSurface marsSurface;
 	
 	/**
 	 * Constructor.
@@ -89,7 +89,7 @@ public class Mars implements Serializable {
 	public SurfaceFeatures getSurfaceFeatures() {
 		return surfaceFeatures;
 	}
-
+	
 	/**
 	 * Returns Martian weather
 	 * 
@@ -119,19 +119,23 @@ public class Mars implements Serializable {
 	public MarsSurface getMarsSurface() {
 		return marsSurface;
 	}
-	
-//	public void setMarsSurface(MarsSurface ms) {
-//		//System.out.println("Mars : " + marsSurface + " has " + marsSurface.getCode());
-//		//System.out.println("Mars : " + ms + " has " + ms.getCode());
-//		marsSurface = ms;
+
+//	public void setMarsSurface(MarsSurface marsSurface) {
+//		if (this.marsSurface != null) System.out.println("Mars : " + this.marsSurface + " has " + this.marsSurface.getCode());
+//		this.marsSurface = marsSurface;
+//		System.out.println("Mars : " + marsSurface + " has " + marsSurface.getCode());
 //	}
 	
 	/**
 	 * Prepare object for garbage collection.
 	 */
 	public void destroy() {
-		surfaceFeatures = null;// .destroy();
+		surfaceFeatures.destroy();
+		orbitInfo.destroy();
+		weather.destroy();
+		surfaceFeatures.destroy();
 		orbitInfo = null;// .destroy();
 		weather = null;// .destroy();
+//		marsSurface = null;
 	}
 }

@@ -763,7 +763,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 		while (iE.hasNext() && (amountLoading > 0D)) {
 			Integer equipmentType = iE.next();
 			int numNeededTotal = requiredEquipment.get(equipmentType);
-			int numAlreadyLoaded = vInv.findNumUnitsOfClass(equipmentType);
+			int numAlreadyLoaded = vInv.findNumEquipment(equipmentType);
 			if (numAlreadyLoaded < numNeededTotal) {
 				int numNeeded = numNeededTotal - numAlreadyLoaded;
 				Collection<Unit> units = sInv.findAllUnitsOfClass(equipmentType);
@@ -782,8 +782,10 @@ public class LoadVehicleGarage extends Task implements Serializable {
 
 						if (isEmpty) {
 							if (vInv.canStoreUnit(eq, false)) {
-								sInv.retrieveUnit(eq);
-								vInv.storeUnit(eq);
+								// Put this equipment into a vehicle
+								eq.transfer(sInv, vInv);
+//								sInv.retrieveUnit(eq);
+//								vInv.storeUnit(eq);
 								amountLoading -= eq.getMass();
 								if (amountLoading < 0D) {
 									amountLoading = 0D;
@@ -817,8 +819,10 @@ public class LoadVehicleGarage extends Task implements Serializable {
 
 					for (int x = 0; x < numToRemove; x++) {
 						Equipment eq = (Equipment) array[x];
-						vInv.retrieveUnit(eq);
-						sInv.storeUnit(eq);
+						// Put this equipment into the settlement
+						eq.transfer(vInv, sInv);
+//						vInv.retrieveUnit(eq);
+//						sInv.storeUnit(eq);
 					}
 
 					array = null;
@@ -848,7 +852,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 			if (requiredEquipment.containsKey(equipmentType)) {
 				numNeededTotal += requiredEquipment.get(equipmentType);
 			}
-			int numAlreadyLoaded = vInv.findNumUnitsOfClass(equipmentType);
+			int numAlreadyLoaded = vInv.findNumEquipment(equipmentType);
 			if (numAlreadyLoaded < numNeededTotal) {
 				int numNeeded = numNeededTotal - numAlreadyLoaded;
 				Collection<Unit> units = sInv.findAllUnitsOfClass(equipmentType);
@@ -870,8 +874,10 @@ public class LoadVehicleGarage extends Task implements Serializable {
 
 					if (isEmpty) {
 						if (vInv.canStoreUnit(eq, false)) {
-							sInv.retrieveUnit(eq);
-							vInv.storeUnit(eq);
+							// Put this equipment into a vehicle
+							eq.transfer(sInv, vInv);
+//							sInv.retrieveUnit(eq);
+//							vInv.storeUnit(eq);
 							amountLoading -= eq.getMass();
 							if (amountLoading < 0D) {
 								amountLoading = 0D;
@@ -896,8 +902,10 @@ public class LoadVehicleGarage extends Task implements Serializable {
 
 				for (int x = 0; x < numToRemove; x++) {
 					Equipment eq = (Equipment) array[x];
-					vInv.retrieveUnit(eq);
-					sInv.storeUnit(eq);
+					// Put this equipment into the settlement
+					eq.transfer(vInv, sInv);
+//					vInv.retrieveUnit(eq);
+//					sInv.storeUnit(eq);
 				}
 
 				array = null;
@@ -1041,14 +1049,14 @@ public class LoadVehicleGarage extends Task implements Serializable {
 		// Check if there is enough equipment at the settlement.
 		Iterator<Integer> iE = equipment.keySet().iterator();
 		while (iE.hasNext()) {
-			Integer equipmentID = iE.next();			
-			String name = Conversion.capitalize(EquipmentType.convertID2Enum(equipmentID).toString());
+			Integer equipmentType = iE.next();			
+			String name = Conversion.capitalize(EquipmentType.convertID2Enum(equipmentType).toString());
 //			Class<?> c = EquipmentFactory.getEquipmentClass(equipmentID);
-			int needed = equipment.get(equipmentID);
-			int settlementNeed = getRemainingSettlementNum(settlement, vehicleCrewNum, equipmentID);
-			int numLoaded = vInv.findNumUnitsOfClass(equipmentID);
+			int needed = equipment.get(equipmentType);
+			int settlementNeed = getRemainingSettlementNum(settlement, vehicleCrewNum, equipmentType);
+			int numLoaded = vInv.findNumEquipment(equipmentType);
 			int totalNeeded = needed + settlementNeed - numLoaded;
-			int stored = inv.findNumEmptyUnitsOfClass(equipmentID, false);
+			int stored = inv.findNumEmptyUnitsOfClass(equipmentType, false);
 			if (stored < totalNeeded) {	
 				if (logger.isLoggable(Level.INFO))
 					LogConsolidated.log(Level.INFO, 0, sourceName,						
@@ -1359,7 +1367,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 		while (iE.hasNext() && sufficientSupplies) {
 			Integer equipmentType = iE.next();
 			int num = requiredEquipment.get(equipmentType);
-			if (vInv.findNumUnitsOfClass(equipmentType) < num) {
+			if (vInv.findNumEquipment(equipmentType) < num) {
 				sufficientSupplies = false;
 			}
 		}
@@ -1373,7 +1381,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 				num += requiredEquipment.get(equipmentType);
 			}
 
-			int storedNum = vInv.findNumUnitsOfClass(equipmentType);
+			int storedNum = vInv.findNumEquipment(equipmentType);
 			if (storedNum < num) {
 
 				// Check if enough stored in settlement.

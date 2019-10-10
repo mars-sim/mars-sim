@@ -1024,11 +1024,11 @@ public class Weather implements Serializable {
 	 * Prepare object for garbage collection.
 	 */
 	public void destroy() {
-
 		weatherDataMap = null;
 		dailyRecordMap = null;
 		todayWeather = null;
 		coordinateList = null;
+		
 		if (temperatureCacheMap != null) {
 			temperatureCacheMap.clear();
 			temperatureCacheMap = null;

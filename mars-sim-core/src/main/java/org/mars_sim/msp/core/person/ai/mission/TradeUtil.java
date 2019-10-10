@@ -732,19 +732,19 @@ public final class TradeUtil {
 
 		Equipment result = null;
 
-		Class<? extends Equipment> containerType = ContainerUtil.getContainerTypeNeeded(resource.getPhase());
+		Class<? extends Equipment> containerClass = ContainerUtil.getContainerTypeNeeded(resource.getPhase());
 
 		Inventory settlementInv = settlement.getInventory();
 
-		int containersStored = settlementInv.findNumEmptyContainersOfClass(containerType, false);
+		int containersStored = settlementInv.findNumEmptyContainersOfClass(containerClass, false);
 
-		Good containerGood = GoodsUtil.getEquipmentGood(containerType);
+		Good containerGood = GoodsUtil.getEquipmentGood(containerClass);
 		int containersTraded = 0;
 		if (tradedGoods.containsKey(containerGood))
 			containersTraded = tradedGoods.get(containerGood);
 
 		if (containersStored > containersTraded)
-			result = (Equipment) settlementInv.findUnitOfClass(containerType);
+			result = settlementInv.findAnEmptyEquipment(containerClass);
 
 		return result;
 	}

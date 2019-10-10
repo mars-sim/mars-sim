@@ -294,8 +294,9 @@ public class ExploreSite extends EVAOperation implements Serializable {
 		Unit container = findLeastFullContainer(rover);
 		if (container != null) {
 			if (person.getInventory().canStoreUnit(container, false)) {
-				rover.getInventory().retrieveUnit(container);
-				person.getInventory().storeUnit(container);
+				container.transfer(rover, person);
+//				rover.getInventory().retrieveUnit(container);
+//				person.getInventory().storeUnit(container);
 			}
 		}
 	}
@@ -310,9 +311,9 @@ public class ExploreSite extends EVAOperation implements Serializable {
 		SpecimenBox result = null;
 		double mostCapacity = 0D;
 
-		Iterator<Unit> i = rover.getInventory().findAllUnitsOfClass(SpecimenBox.class).iterator();
+		Iterator<SpecimenBox> i = rover.getInventory().findAllSpecimenBoxes().iterator();
 		while (i.hasNext()) {
-			SpecimenBox container = (SpecimenBox) i.next();
+			SpecimenBox container = i.next();
 			try {
 				// AmountResource rockSamples = ("rock samples");
 				double remainingCapacity = container.getInventory()
@@ -376,11 +377,10 @@ public class ExploreSite extends EVAOperation implements Serializable {
 		// Load specimen container in rover.
 		Inventory pInv = person.getInventory();
 		if (pInv.containsUnitClass(SpecimenBox.class)) {
-			Unit container = pInv.findUnitOfClass(SpecimenBox.class);
-			pInv.retrieveUnit(container);
-			// Place this equipment within a rover outside on Mars
-//            container.enter(LocationCodeType.MOBILE_UNIT_4);
-			rover.getInventory().storeUnit(container);
+			SpecimenBox box = pInv.findASpecimenBox();
+			box.transfer(pInv, rover);
+//			pInv.retrieveUnit(box);
+//			rover.getInventory().storeUnit(box);
 		}
 
 		super.endTask();

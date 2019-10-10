@@ -1,5 +1,7 @@
 package org.mars_sim.msp.core.person.ai.task;
 
+import java.util.logging.Logger;
+
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.person.Person;
@@ -19,6 +21,8 @@ import junit.framework.TestCase;
  */
 public class WalkInteriorTest extends TestCase {
 
+	private static Logger logger = Logger.getLogger(WalkInteriorTest.class.getName());
+	 
     private static final double SMALL_DELTA = .00001D;
 
     /**
@@ -31,6 +35,8 @@ public class WalkInteriorTest extends TestCase {
         Settlement settlement = new MockSettlement();
 
         MockBuilding building = new MockBuilding(settlement.getBuildingManager());
+    	System.out.println("WalkInteriorTest : " + building + "'s location state type : " + building.getLocationStateType());
+    	
         building.setWidth(10D);
         building.setLength(10D);
         settlement.getBuildingManager().addMockBuilding(building);
@@ -39,7 +45,10 @@ public class WalkInteriorTest extends TestCase {
         building.addFunction(new EVA(building, airlock0));
 
 		Person person = new Person(settlement);
-        
+		// Set currentStateType
+//		person.currentStateType = LocationStateType.INSIDE_SETTLEMENT;  
+		System.out.println("WalkInteriorTest : " + person + "'s location state type : " + person.getLocationStateType());
+		
 //		settlement.getInventory().storeUnit(person);
         person.setXLocation(0D);
         person.setYLocation(0D);

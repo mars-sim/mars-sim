@@ -167,15 +167,13 @@ public class ExitAirlock extends Task implements Serializable {
 			if (suit != null) {
 				// logger.info(person + " found an EVA suit.");
 				try {
-					// 1.1 retrieve the EVA suit from the entityInv
-					entityInv.retrieveUnit(suit);
-					// 1.2 store it under the person's inventory
-					person.getInventory().storeUnit(suit);
-					// 1.3 set the person as the owner
+					// 1.1 Transfer the EVA suit from entityInv to person
+					suit.transfer(entityInv, person);			
+					// 1.2 set the person as the owner
 					suit.setLastOwner(person);
-					// 1.4 register the suit the person will take into the airlock to don
+					// 1.3 register the suit the person will take into the airlock to don
 					person.registerSuit(suit);
-					// 1.5 Loads the resources into the EVA suit
+					// 1.4 Loads the resources into the EVA suit
 					loadEVASuit(suit);
 					// the person has a EVA suit
 					hasSuit = true;
@@ -704,25 +702,35 @@ public class ExitAirlock extends Task implements Serializable {
 	 * @return EVA suit or null if none available.
 	 */
 	public static EVASuit getGoodEVASuit(Inventory inv, Person p) {
-		List<EVASuit> suits = new ArrayList<>();
-		// Iterator<Unit> i = inv.findAllUnitsOfClass(EVASuit.class).iterator();
-		// while (i.hasNext() && (result == null)) {
-		// EVASuit suit = (EVASuit) i.next();
-		Collection<Unit> list = inv.findAllUnitsOfClass(EVASuit.class);
-		for (Unit u : list) {
-			EVASuit suit = (EVASuit) u;
+		List<EVASuit> malSuits = new ArrayList<>(0);
+		List<EVASuit> noResourceSuits = new ArrayList<>(0);
+		List<EVASuit> goodSuits = new ArrayList<>(0);
+		Collection<EVASuit> suits = inv.findAllEVASuits();
+		for (EVASuit suit : suits) {
 			boolean malfunction = suit.getMalfunctionManager().hasMalfunction();
-			if (malfunction) 
-				LogConsolidated.log(Level.SEVERE, 50_000, sourceName, "[" + p.getLocationTag().getLocale()
+			if (malfunction) {
+				LogConsolidated.log(Level.WARNING, 50_000, sourceName, "[" + p.getLocationTag().getLocale()
 					+ "] " + p + " spotted the malfunction with " + suit.getName() + " when examining it.");
+				malSuits.add(suit);
+				suits.remove(suit);
+			}
+			
 			try {
 				boolean hasEnoughResources = hasEnoughResourcesForSuit(inv, suit);
-				if (!malfunction && hasEnoughResources) {
-					if (p != null)
-						suits.add(suit);
-					else
+				if (!malfunction && hasEnoughResources) {			
+					if (p != null && suit.getLastOwner() == p)
+						// Prefers to pick the same suit that a person has been tagged in the past
 						return suit;
+					else
+						// tag it as good suit for possible use below
+						goodSuits.add(suit);
 				}
+				else if (!malfunction && !hasEnoughResources) {
+					// tag it as no resource suit for possible use below
+					noResourceSuits.add(suit);					
+				}
+				
+				
 			} catch (Exception e) {
 //				e.printStackTrace(System.err);
 				LogConsolidated.log(Level.SEVERE, 50_000, sourceName, "[" + p.getLocationTag().getLocale()
@@ -730,20 +738,21 @@ public class ExitAirlock extends Task implements Serializable {
 			}
 		}
 
-		for (EVASuit suit : suits) {
-			if (suit.getLastOwner() == p)
-				// Prefers to pick the same suit that a person has been tagged in the past
-				return suit;
-		}
-
 		// Picks any one of the good suits
-		int size = suits.size();
-		if (size == 0)
-			return null;
-		else if (size == 1)
-			return suits.get(0);
-		else
-			return suits.get(RandomUtil.getRandomInt(size - 1));
+		int size = goodSuits.size();
+		if (size == 1)
+			return goodSuits.get(0);
+		else if (size > 1)
+			return goodSuits.get(RandomUtil.getRandomInt(size - 1));
+		
+		// Picks any one of the good suits
+		size = noResourceSuits.size();
+		if (size == 1)
+			return noResourceSuits.get(0);
+		else if (size > 1)
+			return noResourceSuits.get(RandomUtil.getRandomInt(size - 1));
+		
+		return null;
 	}
 
 	/**

@@ -550,11 +550,12 @@ public class EmergencySupplyMission extends RoverMission implements Serializable
 			if (isRoverInAGarage()) {
 				
 				// Store one EVA suit for person (if possible).
-				if (emergencySettlement.getInventory().findNumUnitsOfClass(EVASuit.class) > 0) {
-					EVASuit suit = (EVASuit) emergencySettlement.getInventory().findUnitOfClass(EVASuit.class);
-					if (getVehicle().getInventory().canStoreUnit(suit, false)) {
-						emergencySettlement.getInventory().retrieveUnit(suit);
-						getVehicle().getInventory().storeUnit(suit);
+				if (emergencySettlement.getInventory().findNumEVASuits() > 0) {
+					EVASuit suit = emergencySettlement.getInventory().findAnEVAsuit(); //(EVASuit) emergencySettlement.getInventory().findUnitOfClass(EVASuit.class);
+					if (suit != null && getVehicle().getInventory().canStoreUnit(suit, false)) {
+						suit.transfer(emergencySettlement, getVehicle());
+//						emergencySettlement.getInventory().retrieveUnit(suit);
+//						getVehicle().getInventory().storeUnit(suit);
 					} else {
 						endMission("Equipment " + suit + " cannot be loaded in rover " + getVehicle());
 						return;
@@ -569,8 +570,7 @@ public class EmergencySupplyMission extends RoverMission implements Serializable
 			// Remove from garage if in garage.
 			Building garageBuilding = BuildingManager.getBuilding(getVehicle());
 			if (garageBuilding != null) {
-				VehicleMaintenance garage = (VehicleMaintenance) garageBuilding
-						.getFunction(FunctionType.GROUND_VEHICLE_MAINTENANCE);
+				VehicleMaintenance garage = garageBuilding.getGroundVehicleMaintenance();
 				garage.removeVehicle(getVehicle());
 			}
 
@@ -661,9 +661,9 @@ public class EmergencySupplyMission extends RoverMission implements Serializable
 		// Check if settlement has enough empty containers to hold emergency resources.
 		Iterator<Integer> j = emergencyContainersNeeded.keySet().iterator();
 		while (j.hasNext() && result) {
-			Integer container = j.next();
-			int numberRequired = emergencyContainersNeeded.get(container);
-			int numberAvailable = startingSettlement.getInventory().findNumEmptyUnitsOfClass(container, false);
+			Integer containerType = j.next();
+			int numberRequired = emergencyContainersNeeded.get(containerType);
+			int numberAvailable = startingSettlement.getInventory().findNumEmptyUnitsOfClass(containerType, false);
 			
 			// TODO: add tracking demand for containers
 			if (numberAvailable < numberRequired) {

@@ -247,7 +247,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 						Inventory roverInv = rover.getInventory();
 						int peopleOnboard = roverInv.findNumUnitsOfClass(Person.class);
 						if ((peopleOnboard > 0)) {
-							int numSuits = roverInv.findNumUnitsOfClass(EVASuit.class);
+							int numSuits = roverInv.findNumEVASuits();
 							double water = roverInv.getAmountResourceStored(ResourceUtil.waterID, false);
 							double oxygen = roverInv.getAmountResourceStored(ResourceUtil.oxygenID, false);
 							if ((numSuits == 0) || (water < WATER_NEED) || (oxygen < OXYGEN_NEED)) {
@@ -700,16 +700,16 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 
 		Iterator<Integer> iE = requiredEquipment.keySet().iterator();
 		while (iE.hasNext() && (amountLoading > 0D)) {
-			Integer id = iE.next();
-			int numNeededTotal = (Integer) requiredEquipment.get(id);
-			int numAlreadyLoaded = vInv.findNumUnitsOfClass(id);
+			Integer equipmentType = iE.next();
+			int numNeededTotal = (Integer) requiredEquipment.get(equipmentType);
+			int numAlreadyLoaded = vInv.findNumEquipment(equipmentType);
 			if (numAlreadyLoaded < numNeededTotal) {
 				int numNeeded = numNeededTotal - numAlreadyLoaded;
 //				System.out.println("LoadVehicleEVA's loadRequiredEquipment() id : " + id 
 //						+ "   amountLoading : " + amountLoading 
 //						+ "   numNeededTotal : " + numNeededTotal 
 //						+ "   numAlreadyLoaded : " + numAlreadyLoaded);
-				Collection<Unit> units = sInv.findAllUnitsOfClass(id);
+				Collection<Unit> units = sInv.findAllUnitsOfClass(equipmentType);
 				Object[] array = units.toArray();
 
 				if (units.size() >= numNeeded) {
@@ -725,8 +725,10 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 
 						if (isEmpty) {
 							if (vInv.canStoreUnit(eq, false)) {
-								sInv.retrieveUnit(eq);
-								vInv.storeUnit(eq);
+								// Put this equipment into a vehicle
+								eq.transfer(sInv, vInv);
+//								sInv.retrieveUnit(eq);
+//								vInv.storeUnit(eq);
 								amountLoading -= eq.getMass();
 								if (amountLoading < 0D) {
 									amountLoading = 0D;
@@ -746,21 +748,23 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 				}
 			} else {
 
-				if (optionalEquipment.containsKey(id)) {
-					numNeededTotal += (Integer) optionalEquipment.get(id);
+				if (optionalEquipment.containsKey(equipmentType)) {
+					numNeededTotal += (Integer) optionalEquipment.get(equipmentType);
 				}
 
 				if (numAlreadyLoaded > numNeededTotal) {
 
 					// In case vehicle wasn't fully unloaded first.
 					int numToRemove = numAlreadyLoaded - numNeededTotal;
-					Collection<Unit> units = vInv.findAllUnitsOfClass(id);
+					Collection<Unit> units = vInv.findAllUnitsOfClass(equipmentType);
 					Object[] array = units.toArray();
 
 					for (int x = 0; x < numToRemove; x++) {
 						Equipment eq = (Equipment) array[x];
-						vInv.retrieveUnit(eq);
-						sInv.storeUnit(eq);
+						// Put this equipment into the settlement
+						eq.transfer(vInv, sInv);
+//						vInv.retrieveUnit(eq);
+//						sInv.storeUnit(eq);
 					}
 
 					array = null;
@@ -785,14 +789,14 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 
 		Iterator<Integer> iE = optionalEquipment.keySet().iterator();
 		while (iE.hasNext() && (amountLoading > 0D)) {
-			Integer id = iE.next();
-			int numNeededTotal = optionalEquipment.get(id);
+			Integer equipmentType = iE.next();
+			int numNeededTotal = optionalEquipment.get(equipmentType);
 //			int i0 = numNeededTotal;
 			
-			if (requiredEquipment.containsKey(id)) {
-				numNeededTotal += requiredEquipment.get(id);
+			if (requiredEquipment.containsKey(equipmentType)) {
+				numNeededTotal += requiredEquipment.get(equipmentType);
 			}
-			int numAlreadyLoaded = vInv.findNumUnitsOfClass(id);
+			int numAlreadyLoaded = vInv.findNumEquipment(equipmentType);
 			
 //			System.out.println("LoadVehicleEVA's loadOptionalEquipment() id : " + id 
 //					+ "   amountLoading : " + amountLoading 
@@ -801,7 +805,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 //					+ "   numAlreadyLoaded : " + numAlreadyLoaded);
 			if (numAlreadyLoaded < numNeededTotal) {
 				int numNeeded = numNeededTotal - numAlreadyLoaded;
-				Collection<Unit> units = sInv.findAllUnitsOfClass(id);
+				Collection<Unit> units = sInv.findAllUnitsOfClass(equipmentType);
 				Object[] array = units.toArray();
 
 				if (units.size() < numNeeded) {
@@ -820,10 +824,10 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 
 					if (isEmpty) {
 						if (vInv.canStoreUnit(eq, false)) {
-							sInv.retrieveUnit(eq);
 							// Put this equipment into a vehicle
-//                            eq.enter(LocationCodeType.MOBILE_UNIT_4);
-							vInv.storeUnit(eq);
+							eq.transfer(sInv, vInv);
+//							sInv.retrieveUnit(eq);
+//							vInv.storeUnit(eq);
 							amountLoading -= eq.getMass();
 							if (amountLoading < 0D) {
 								amountLoading = 0D;
@@ -843,19 +847,15 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 
 				// In case vehicle wasn't fully unloaded first.
 				int numToRemove = numAlreadyLoaded - numNeededTotal;
-				Collection<Unit> units = vInv.findAllUnitsOfClass(id);
+				Collection<Unit> units = vInv.findAllUnitsOfClass(equipmentType);
 				Object[] array = units.toArray();
 
 				for (int x = 0; x < numToRemove; x++) {
 					Equipment eq = (Equipment) array[x];
-					// Take this equipment from a vehicle
-//                    eq.exit(LocationCodeType.MOBILE_UNIT_4);
-
-					vInv.retrieveUnit(eq);
-					// Put this equipment into a settlement
-//                    eq.enter(LocationCodeType.SETTLEMENT);
-
-					sInv.storeUnit(eq);
+					// Put this equipment into the settlement
+					eq.transfer(vInv, sInv);
+//					vInv.retrieveUnit(eq);
+//					sInv.storeUnit(eq);
 				}
 
 				array = null;
@@ -1094,7 +1094,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 		while (iE.hasNext() && sufficientSupplies) {
 			Integer equipmentType = iE.next();
 			int num = requiredEquipment.get(equipmentType);
-			if (vInv.findNumUnitsOfClass(equipmentType) < num) {
+			if (vInv.findNumEquipment(equipmentType) < num) {
 				sufficientSupplies = false;
 			}
 		}
@@ -1108,7 +1108,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 				num += requiredEquipment.get(equipmentType);
 			}
 
-			int storedNum = vInv.findNumUnitsOfClass(equipmentType);
+			int storedNum = vInv.findNumEquipment(equipmentType);
 			if (storedNum < num) {
 
 				// Check if enough stored in settlement.

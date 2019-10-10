@@ -214,15 +214,6 @@ public class ReturnLightUtilityVehicle extends Task implements Serializable {
 	 */
 	private double returnLUVPhase(double time) {
 
-		if (person != null)
-			// Remove person from light utility vehicle.
-			luv.getInventory().retrieveUnit(person);
-		else if (robot != null)
-			// Remove robot from light utility vehicle.
-			luv.getInventory().retrieveUnit(robot);
-
-		luv.setOperator(null);
-
 		Mission mission = null;
 
 		if (person != null)
@@ -234,7 +225,18 @@ public class ReturnLightUtilityVehicle extends Task implements Serializable {
 		if (mission == null) {
 			// Put light utility vehicle in return container.
 			if (returnContainer.getInventory().canStoreUnit(luv, false)) {
-				returnContainer.getInventory().storeUnit(luv);
+				
+				if (person != null)
+					// Remove person from light utility vehicle.
+					luv.getInventory().retrieveUnit(person);
+				else if (robot != null)
+					// Remove robot from light utility vehicle.
+					luv.getInventory().retrieveUnit(robot);
+
+				luv.setOperator(null);
+				
+				returnContainer.getInventory().storeUnit(luv);		
+				
 				if (returnContainer instanceof Settlement) {
 					luv.determinedSettlementParkedLocationAndFacing();
 				}
@@ -265,8 +267,9 @@ public class ReturnLightUtilityVehicle extends Task implements Serializable {
 		while (j.hasNext()) {
 			Unit unit = j.next();
 			if (rcInv.canStoreUnit(unit, false)) {
-				luvInv.retrieveUnit(unit);
-				rcInv.storeUnit(unit);
+				unit.transfer(luvInv, rcInv);
+//				luvInv.retrieveUnit(unit);
+//				rcInv.storeUnit(unit);
 			} else {
 				logger.severe(unit.getName() + " cannot be stored in " + returnContainer.getName());
 			}

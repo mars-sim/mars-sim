@@ -1269,9 +1269,9 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	}
 
 	/**
-	 * Gets the required equipment needed for loading the vehicle.
+	 * Gets the required type of equipment needed for loading the vehicle.
 	 * 
-	 * @return equipment and their number.
+	 * @return type of equipment and their number.
 	 */
 	public Map<Integer, Integer> getRequiredEquipmentToLoad() {
 		return getEquipmentNeededForRemainingMission(true);

@@ -45,7 +45,7 @@ public class Role implements Serializable {
 	public Role(Person person) {
 		this.person = person;
 		
-		marsClock = Simulation.instance().getMasterClock().getMarsClock();
+//		marsClock = Simulation.instance().getMasterClock().getMarsClock();
 	}
 
 	/**

@@ -3,6 +3,7 @@ package org.mars_sim.msp.core.structure.building;
 import java.util.ArrayList;
 
 import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.structure.BuildingTemplate;
 import org.mars_sim.msp.core.structure.building.function.Function;
@@ -11,15 +12,51 @@ import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 @SuppressWarnings("serial")
 public class MockBuilding extends Building {
 
+	/** The unit count for this building. */
+	private static int uniqueCount = Unit.FIRST_BUILDING_UNIT_ID;
+	/** Unique identifier for this settlement. */
+	private int identifier;
+	
 //	private BuildingManager manager;
 	
+	/**
+	 * Must be synchronised to prevent duplicate ids being assigned via different
+	 * threads.
+	 * 
+	 * @return
+	 */
+	private static synchronized int getNextIdentifier() {
+		return uniqueCount++;
+	}
+	
+	/**
+	 * Get the unique identifier for this settlement
+	 * 
+	 * @return Identifier
+	 */
+	public int getIdentifier() {
+		return identifier;
+	}
+	
+	public void incrementID() {
+		// Gets the identifier
+		this.identifier = getNextIdentifier();
+	}
+	
     public MockBuilding() {
-        this(null);
+    	super();
     }
     
     public MockBuilding(BuildingManager manager)  {
 		super(manager);
-		buildingType = "Mock Building";
+		buildingType = "Mock Type";
+		super.changeName("Mock Building");
+		
+		settlementID = (Integer) manager.getSettlement().getIdentifier();
+		
+//		sim.getUnitManager().addBuildingID(this);
+		sim.getUnitManager().addUnit(this);
+		
 //		this.manager = manager;
 		malfunctionManager = new MalfunctionManager(this, 0D, 0D);
 		functions = new ArrayList<Function>();
@@ -29,7 +66,15 @@ public class MockBuilding extends Building {
     
 	public MockBuilding(BuildingTemplate template, BuildingManager manager)  {
 		super(template, manager);
-		buildingType = "Mock Building";
+		buildingType = "Mock Type";
+		super.changeName("Mock Building");
+		
+		settlementID = (Integer) manager.getSettlement().getIdentifier();
+		
+//		sim.getUnitManager().addBuildingID(this);
+		sim.getUnitManager().addUnit(this);
+
+
 //		this.manager = manager;
 		malfunctionManager = new MalfunctionManager(this, 0D, 0D);
 		functions = new ArrayList<Function>();
@@ -72,5 +117,10 @@ public class MockBuilding extends Building {
 	@Override
 	public Inventory getInventory() {
 		return null;
+	}
+	
+	@Override
+	public String toString() {
+		return super.getName();
 	}
 }

@@ -29,7 +29,7 @@ public class SettlementVicinity implements LocationState, Serializable {
 	}
 
 	public LocationStateType getType() {
-		return LocationStateType.OUTSIDE_SETTLEMENT_VICINITY;
+		return LocationStateType.WITHIN_SETTLEMENT_VICINITY;
 	}
 /*	
 	public void leaveBuilding() {

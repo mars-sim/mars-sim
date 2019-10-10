@@ -401,7 +401,8 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<rover-name value="Areos Aster" /> <!-- Greek for "star of Ares" -->
 		<rover-name value="Blodstjarna" /> <!-- Viking for "Mars" (not certain) -->
 		<rover-name value="Huoxing" /> <!-- Chinese for "Mars" -->
-
+		<rover-name value="Vikram" /> <!-- a male Hindu/Sanskrit name for being valorous, wise, brave and strong as well as victorious-->
+		
 	</rover-name-list>
 
 </vehicle-configuration>

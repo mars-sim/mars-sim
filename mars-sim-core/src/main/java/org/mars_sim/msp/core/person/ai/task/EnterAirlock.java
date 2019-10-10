@@ -141,9 +141,10 @@ public class EnterAirlock extends Task implements Serializable {
 			// A person is supposed to be outside the settlement before starting the EnterAirlock
 			// If person is inside the settlement, change to exit airlock phase.
 			// TODO: why would a person be already inside and still in this phase ?
-			LogConsolidated.log(Level.WARNING, 0, sourceName, 
-					"[" + person.getLocationTag().getLocale() + "] " + person.getName() + 
-					" was about to enter the airlock from outside, but the location state was reportedly inside. Proceed to the exiting the airlock phase.");
+//			LogConsolidated.log(Level.WARNING, 0, sourceName, 
+//					"[" + person.getLocationTag().getLocale() + "] " + person.getName() + 
+//					" was about to enter the airlock from outside, but the location state was reportedly inside. "
+//					+ "Proceed to the exiting the airlock phase.");
 			setPhase(EXITING_AIRLOCK);
 			return remainingTime;
 		}
@@ -438,13 +439,13 @@ public class EnterAirlock extends Task implements Serializable {
 			suit.setLastOwner(person);
 			
 			Inventory suitInv = suit.getInventory();
-//			Inventory personInv = person.getInventory();
-			
+		
 			if (person.getContainerUnit() instanceof MarsSurface) {
 				LogConsolidated.log(Level.WARNING, 0, sourceName,
 						"[" + person.getLocationTag().getLocale() + "] "  
-									+ person + " had Mars surface as the container. Location state type : " 
-									+ person.getLocationStateType());
+									+ person + " was still " 
+									+ person.getLocationStateType() 
+									+ " with Mars surface as the container unit.");
 			}
 			
 			else {
@@ -457,10 +458,8 @@ public class EnterAirlock extends Task implements Serializable {
 				
 				if (entityInv != null && suitInv != null) {
 	
-					// 5.4 Retrieve the suit on the person
-					person.getInventory().retrieveUnit(suit);
+					// 5.4 Unloads the resources from the EVA suit to the entityEnv
 					
-					// 1.5 Unloads the resources into the EVA suit
 					try {
 						// Unload oxygen from suit.
 						double oxygenAmount = suitInv.getAmountResourceStored(oxygenID, false);
@@ -499,9 +498,9 @@ public class EnterAirlock extends Task implements Serializable {
 //						endTask();
 					}
 		
-					// 5.5 Store the EVA suit to the entityInv
-					entityInv.storeUnit(suit);
-					
+					// 5.5 Transfer the EVA suit from person to entityInv 
+					suit.transfer(person, entityInv);	
+			
 					// Return suit to entity's inventory.
 					LogConsolidated.log(Level.FINER, 0, sourceName, 
 							"[" + person.getLocationTag().getLocale() + "] " + person.getName() 

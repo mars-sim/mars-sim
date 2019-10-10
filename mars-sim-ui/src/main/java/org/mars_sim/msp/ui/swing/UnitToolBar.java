@@ -9,6 +9,7 @@ package org.mars_sim.msp.ui.swing;
 
 import org.mars_sim.msp.core.Unit;
 
+import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -39,7 +40,8 @@ public class UnitToolBar extends JToolBar implements ActionListener {
 	public static final int HEIGHT = 57;
 	
 	private static final Color antiqueBronze = new Color(102,93,30,128);
-	private static final Color almond = new Color(239,222,205,128);
+	private static final Color almond = new Color(239,222,205,0);
+	
 	private static final Color cafeNoir = new Color(75,54,33,128);
 	// maroon : 128,21,0; 
 	// almond : 239,222,205;
@@ -62,9 +64,9 @@ public class UnitToolBar extends JToolBar implements ActionListener {
 		// Use JToolBar constructor
 		super();
 
-		setOpaque(false);
 		setBackground(cafeNoir);
-
+		setOpaque(false);
+		
 		// Initialize data members
 		unitButtons = new ArrayList<UnitButton>();
 		this.parentMainWindow = parentMainWindow;
@@ -79,7 +81,8 @@ public class UnitToolBar extends JToolBar implements ActionListener {
 		setPreferredSize(new Dimension(0, HEIGHT));
 
 		// Set border around toolbar
-		setBorder(new BevelBorder(BevelBorder.RAISED));
+//		setBorder(new BevelBorder(BevelBorder.RAISED));
+//		setBorder(new LineBorder(Color.BLACK, 2));
 
 	}
 
@@ -169,11 +172,15 @@ public class UnitToolBar extends JToolBar implements ActionListener {
 
 	@Override
 	protected void paintComponent(Graphics g){
+		super.paintComponent(g);
 	    // Create the 2D copy
 	    Graphics2D g2 = (Graphics2D)g.create();
-
+	    
+//	    Graphics2D bgr = bimage.createGraphics();
+//	    bgr.setComposite(AlphaComposite.SRC);
+	    
 	    // Apply vertical gradient
-	    g2.setPaint(new GradientPaint(0, 0, almond, 0, getHeight(), antiqueBronze));
+	    g2.setPaint(new GradientPaint(0, 0, almond, 0, getHeight(), antiqueBronze, true));
 	    g2.fillRect(0, 0, getWidth(), getHeight());
 
 	    // Dipose of copy

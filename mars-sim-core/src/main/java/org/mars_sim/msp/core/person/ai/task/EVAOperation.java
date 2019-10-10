@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
@@ -634,14 +635,21 @@ public abstract class EVAOperation extends Task implements Serializable {
 	 */
 	static void rescueOperation(Rover r, Person p, Settlement s) {
 		
+		if (p.isDeclaredDead()) {
+			Unit cu = p.getPhysicalCondition().getDeathDetails().getContainerUnit();
+//			cu.getInventory().retrieveUnit(p);
+			p.transfer(cu, s);
+		}
 		// Retrieve the person from the rover
-		if (p.isInVehicle())
-			r.getInventory().retrieveUnit(p);
-		else if (p.isOutside())
-			unitManager.getMarsSurface().getInventory().retrieveUnit(p);
-			
-		// Store the person into the settlement
-		s.getInventory().storeUnit(p);
+		else if (r != null) {
+//			r.getInventory().retrieveUnit(p);
+			p.transfer(r, s);
+		}
+		else if (p.isOutside()) {
+//			unitManager.getMarsSurface().getInventory().retrieveUnit(p);
+			p.transfer(unitManager.getMarsSurface(), s);
+		}
+		
 		// Gets the settlement id
 		int id = s.getIdentifier();
 		// Store the person into a medical building

@@ -18,6 +18,36 @@ public class MockUnit3 extends Unit implements Container {
     // Data members.
     private PhaseType resourcePhase;
     
+	/** The unit count for this settlement. */
+	private static int uniqueCount = Unit.FIRST_SETTLEMENT_UNIT_ID;
+	/** Unique identifier for this settlement. */
+	private int identifier;
+
+	/**
+	 * Must be synchronised to prevent duplicate ids being assigned via different
+	 * threads.
+	 * 
+	 * @return
+	 */
+	private static synchronized int getNextIdentifier() {
+		return uniqueCount++;
+	}
+	
+	/**
+	 * Get the unique identifier for this settlement
+	 * 
+	 * @return Identifier
+	 */
+	public int getIdentifier() {
+		return identifier;
+	}
+	
+	public void incrementID() {
+		// Gets the identifier
+		this.identifier = getNextIdentifier();
+	}
+	
+
     public MockUnit3(PhaseType resourcePhase) {
         // Use Unit constructor.
         super("Mock Unit 3", new Coordinates(0D, 0D));
