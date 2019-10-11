@@ -155,7 +155,7 @@
 									</mapper>
 								</data>
 								<data>
-									<src>${project.basedir}/src/deb/changelog.gz</src>
+									<src>${project.basedir}/src/deb/changelog</src>
 									<type>file</type>
 									<mapper>
 										<type>perm</type>
@@ -179,7 +179,7 @@
 									</mapper>
 								</data>
 								<data>
-									<src>${project.basedir}/src/deb/man/mars-sim.1.gz</src>
+									<src>${project.basedir}/src/deb/man/mars-sim.1</src>
 									<type>file</type>
 									<mapper>
 										<type>perm</type>
