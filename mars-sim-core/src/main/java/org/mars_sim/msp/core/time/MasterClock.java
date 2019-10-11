@@ -41,6 +41,7 @@ public class MasterClock implements Serializable {
 	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 	
 	private static final int FACTOR = 4;
+	private static final double SMALL_NUMBER = 0.0000001;
 
 	// Data members
 	/** Runnable flag. */
@@ -750,7 +751,7 @@ public class MasterClock implements Serializable {
 							s = secs + " secs";
 						}
 						
-						if (overSleepSeconds > 0)
+						if (overSleepSeconds > 0 && keepRunning)
 							logger.config("On power saving for " + s); 
 						// e.g. overSleepTime : 598_216_631_335
 						
@@ -768,7 +769,7 @@ public class MasterClock implements Serializable {
 
 					int skips = 0;
 
-					while (!justReloaded && (Math.abs(excess) > currentTBU_ns) && (skips < maxFrameSkips)) {
+					while (!justReloaded && (Math.abs(excess) > currentTBU_ns) && (skips <= maxFrameSkips)) {
 						logger.config("excess : " + excess/1_000_000_000 + " secs");
 						// e.g. excess : -118289082
 						justReloaded = false;
@@ -776,31 +777,28 @@ public class MasterClock implements Serializable {
 						// Make up lost frames
 						skips++;
 
-						if (skips > maxFrameSkips) {
-							logger.config("# of skips (" + skips + ") exceeds the max skips (" + maxFrameSkips + ")."); 
-							// Reset the pulse count
-							resetTotalPulses();
-							// Adjust the time between update
-							if (currentTBU_ns > (long) (adjustedTBU_ns * 1.25))
-								currentTBU_ns = (long) (adjustedTBU_ns * 1.25);
-							else
-								currentTBU_ns = (long) (currentTBU_ns * .9925); // decrement by 2.5%
-							
-							logger.config("TBU : " + Math.round(100.0 * currentTBU_ns/1_000_000.0)/100.0 + " ms");
-						}
-						else {
-							logger.config("Recovering from a lost frame.  # of skips (" + skips + ")  Max skips (" + maxFrameSkips + ")."); 
-						}
-						
+						logger.config("Recovering from a lost frame.  # of skips (" + skips + ")  Max skips (" + maxFrameSkips + ")."); 
+	
 						// Call addTime once to get back each lost frame
 						addTime();
 					}
 					
-//					if (!keepRunning)
-//						logger.config("keepRunning : " + keepRunning);
-					
+					if (skips == maxFrameSkips) {
+						logger.config("# of skips (" + skips + ") exceeds the max skips (" + maxFrameSkips + ")."); 
+						// Reset the pulse count
+						resetTotalPulses();
+						// Adjust the time between update
+						if (currentTBU_ns > (long) (adjustedTBU_ns * 1.25))
+							currentTBU_ns = (long) (adjustedTBU_ns * 1.25);
+						else
+							currentTBU_ns = (long) (currentTBU_ns * .9925); // decrement by 2.5%
+						
+						logger.config("TBU : " + Math.round(100.0 * currentTBU_ns/1_000_000.0)/100.0 + " ms");
+					}
+									
 					// Set excess to zero to prevent getting stuck in the above while loop after
 					// waking up from power saving
+//					logger.config("Setting excess to zero");
 					excess = 0;
 
 					t1 = System.nanoTime();
@@ -854,7 +852,7 @@ public class MasterClock implements Serializable {
 			// Incrementing total time pulse number.
 			totalPulses++;
 
-			if (timePulse > 0 && keepRunning) {
+			if (timePulse > SMALL_NUMBER && keepRunning) {
 				if (clockListenerExecutor != null 
 					&& !clockListenerExecutor.isTerminated()
 					&& !clockListenerExecutor.isShutdown()) {	
@@ -862,7 +860,6 @@ public class MasterClock implements Serializable {
 					// Add time pulse length to Earth and Mars clocks.
 					earthClock.addTime(millis * currentTR);
 					marsClock.addTime(timePulse);
-					
 					fireClockPulse(timePulse);
 					
 					millisols += timePulse;

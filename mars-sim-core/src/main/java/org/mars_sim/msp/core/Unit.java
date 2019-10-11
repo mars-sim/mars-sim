@@ -404,29 +404,12 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 	public Unit getTopContainerUnit() {
 		Unit topUnit = getContainerUnit();
 		if (!(topUnit instanceof MarsSurface)) {
-			while (topUnit.getContainerUnit() != null && !(topUnit.getContainerUnit() instanceof MarsSurface)) {
+			while (topUnit != null && topUnit.getContainerUnit() != null && !(topUnit.getContainerUnit() instanceof MarsSurface)) {
 				topUnit = topUnit.getContainerUnit();
 			}
 		}
 
 		return topUnit;
-				
-		// Scenarios: 
-		// 1. If a person is having an EVA Suit, then his container is EVASuit
-		//    and his top container is EVA Suit
-		// 2. If a person is having an EVA Suit inside a vehicle, then his container is EVASuit
-		//    and his top container is that vehicle.
-
-		// WARNING : Under no circumstances should his top container be "MarsSurface".
-
-//		int topID = getContainerUnit().getContainerID();
-//		if (topID != 0) {
-//			while (topID != 0) {
-//				topID = getContainerUnit().getContainerID();
-//			}
-//		}
-//
-//		return unitManager.getUnitByID(topID);
 	}
 	
 	/**

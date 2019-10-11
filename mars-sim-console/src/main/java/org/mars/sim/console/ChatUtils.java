@@ -252,7 +252,9 @@ public class ChatUtils {
 			+ "  For MarsNet : Type in the NAME of a person, bot, vehicle" + System.lineSeparator()
 			+ "     or settlement to connect with OR keywords below : "
 			+ System.lineSeparator() + System.lineSeparator() 
-			+ getKeywordPage(SYSTEM_KEYS)			
+			+ getKeywordPage(SYSTEM_KEYS) + System.lineSeparator() + System.lineSeparator()		
+			+ "  For Expert Mode : " + System.lineSeparator() 
+			+ getKeywordPage(EXPERT_KEYS)
 			+ System.lineSeparator() + SCROLL_HELP;
 //			+ "    ------------------------------------------------------------------- ";
 	

@@ -392,30 +392,30 @@ public abstract class TravelMission extends Mission {
 	 */
 	public final double getTotalRemainingDistance() {
 		double remain = getCurrentLegRemainingDistance();
-//		int index = 0;
-//		double navDist = 0;
-//		if (AT_NAVPOINT.equals(travelStatus))
-//			index = getCurrentNavpointIndex();
-//		else if (TRAVEL_TO_NAVPOINT.equals(travelStatus))
-//			index = getNextNavpointIndex();
-//
-//		for (int x = (index + 1); x < getNumberOfNavpoints(); x++)
-//			navDist = getNavpoint(x - 1).getLocation().getDistance(getNavpoint(x).getLocation());
+		int index = 0;
+		double navDist = 0;
+		if (AT_NAVPOINT.equals(travelStatus))
+			index = getCurrentNavpointIndex();
+		else if (TRAVEL_TO_NAVPOINT.equals(travelStatus))
+			index = getNextNavpointIndex();
+
+		for (int x = (index + 1); x < getNumberOfNavpoints(); x++)
+			navDist += getNavpoint(x - 1).getLocation().getDistance(getNavpoint(x).getLocation());
+		
+//		System.out.print("    Nav Distance : " + Math.round(navDist*10.0)/10.0);
+//		System.out.println("    Total : " + Math.round((remain + navDist)*10.0)/10.0);
+		return Math.abs(remain + navDist);
+		
+//		if (this instanceof VehicleMission) {
+////			VehicleMission vehicleMission = (VehicleMission) this;
+////			String name = vehicleMission.getVehicle().getNickName();
+////			System.out.print("TravelMission " + name + " Current Leg Remaining : " + Math.round(remain*10.0)/10.0 + " km");
+//			double totalRemain = getProposedRouteTotalDistance() - getActualTotalDistanceTravelled();
+////			System.out.println("   Total Remaining : " + Math.round(totalRemain*10.0)/10.0 + " km");
+//			return totalRemain;
+//		}
 //		
-////		System.out.print("    Nav Distance : " + Math.round(navDist*10.0)/10.0);
-////		System.out.println("    Total : " + Math.round((remain + navDist)*10.0)/10.0);
-//		return Math.abs(remain + navDist);
-		
-		if (this instanceof VehicleMission) {
-//			VehicleMission vehicleMission = (VehicleMission) this;
-//			String name = vehicleMission.getVehicle().getNickName();
-//			System.out.print("TravelMission " + name + " Current Leg Remaining : " + Math.round(remain*10.0)/10.0 + " km");
-			double totalRemain = getProposedRouteTotalDistance() - getActualTotalDistanceTravelled();
-//			System.out.println("   Total Remaining : " + Math.round(totalRemain*10.0)/10.0 + " km");
-			return totalRemain;
-		}
-		
-		return 0;
+//		return 0;
 	}
 
 	/**

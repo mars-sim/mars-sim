@@ -37,6 +37,7 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 	private static final String VP_AT = "VP at ";
 	private static final String CATEGORY = "Category";
 	private static final String ONE_SPACE = " ";
+	
 	// Data members
 	private List<Good> goodsList;
 	private List<Settlement> settlements;
@@ -50,8 +51,6 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 
 		// Initialize goods list.
 		goodsList = GoodsUtil.getGoodsList();
-
-//		UnitManager unitManager = Simulation.instance().getUnitManager();
 
 		// Initialize settlements.
 		settlements = new ArrayList<Settlement>(unitManager.getSettlements());
@@ -85,7 +84,9 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 		while (i.hasNext()) i.next().removeUnitListener(this);
 
 		// Remove as listener to unit manager.
-		Simulation.instance().getUnitManager().removeUnitManagerListener(this);
+		unitManager.removeUnitManagerListener(this);
+		
+		unitManager = null;
 	}
 
 	/**
@@ -175,6 +176,8 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 				//Object result = settlement.getGoodsManager().getGoodValuePerItem(good);
 				//return result;
 				return settlements.get(columnIndex - 2).getGoodsManager().getGoodValuePerItem(goodsList.get(rowIndex));
+//				return Math.round(settlements.get(columnIndex - 2).getGoodsManager().getGoodValuePerItem(goodsList.get(rowIndex))*10_000.0)/10_000.0;
+
 			}
 			catch (Exception e) {
 				return null;

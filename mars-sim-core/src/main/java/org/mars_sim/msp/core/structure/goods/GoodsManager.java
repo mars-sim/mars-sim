@@ -289,7 +289,8 @@ public class GoodsManager implements Serializable {
 	public double getGoodValuePerItem(Good good) {
 		try {
 			if (goodsValues.containsKey(good))
-				return Math.round(goodsValues.get(good) * 1000.0) / 1000.0;
+				return goodsValues.get(good);
+//				return Math.round(goodsValues.get(good) * 10_000.0) / 10_000.0;
 			else
 				throw new IllegalArgumentException("Good: " + good + " not valid.");
 		} catch (Exception e) {
@@ -308,7 +309,8 @@ public class GoodsManager implements Serializable {
 		try {
 			Good good = GoodsUtil.getResourceGood(id);
 			if (goodsValues.containsKey(good))
-				return Math.round(goodsValues.get(good) * 1000.0) / 1000.0;
+				return goodsValues.get(good);
+//				return Math.round(goodsValues.get(good) * 1000.0) / 1000.0;
 			else
 				throw new IllegalArgumentException("Good: " + good + " not valid.");
 		} catch (Exception e) {
@@ -326,7 +328,8 @@ public class GoodsManager implements Serializable {
 	public double getGoodsDemandValue(Good good) {
 		try {
 			if (goodsDemandCache.containsKey(good))
-				return Math.round(goodsDemandCache.get(good) * 1000.0) / 1000.0;
+				return goodsDemandCache.get(good);
+//				return Math.round(goodsDemandCache.get(good) * 1000.0) / 1000.0;
 			else
 				throw new IllegalArgumentException("Good: " + good + " not valid.");
 		} catch (Exception e) {
@@ -345,7 +348,8 @@ public class GoodsManager implements Serializable {
 		try {
 			Good good = GoodsUtil.getResourceGood(id);
 			if (goodsDemandCache.containsKey(good))
-				return Math.round(goodsDemandCache.get(good) * 1000.0) / 1000.0;
+				return goodsDemandCache.get(good);
+//				return Math.round(goodsDemandCache.get(good) * 1000.0) / 1000.0;
 			else
 				throw new IllegalArgumentException("Good: " + good + " not valid.");
 		} catch (Exception e) {

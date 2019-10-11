@@ -26,6 +26,8 @@ implements Serializable {
 
 	private static final FunctionType FUNCTION = FunctionType.EVA;
 
+	private static final double MAINTENANCE_FACTOR = 5D; 
+	
 	private Airlock airlock;
 
 	/**
@@ -94,6 +96,7 @@ implements Serializable {
 
 		double airlockCapacityValue = demand / (supply + 1D);
 
+		// Note: building.getEVA().airlock.getCapacity() is the same as the airlockCapacity below
 		double airlockCapacity = buildingConfig.getAirlockCapacity(buildingName);
 
 		return airlockCapacity * airlockCapacityValue;
@@ -134,10 +137,8 @@ implements Serializable {
 
 	@Override
 	public double getMaintenanceTime() {
-		return airlock.getCapacity() * 5D;
+		return airlock.getCapacity() * MAINTENANCE_FACTOR;
 	}
-
-
 
 	@Override
 	public double getFullHeatRequired() {

@@ -729,16 +729,20 @@ public class EatMeal extends Task implements Serializable {
 		
 		if (!notThirsty) {
 			double currentThirst = Math.min(thirst, 1_000);
-			Unit containerUnit = person.getTopContainerUnit();
+			Unit containerUnit = person.getContainerUnit();
 			Inventory inv = null;
-			// Get water from one's EVA suit
-			if (containerUnit != null) {
-				inv = containerUnit.getInventory();
+			
+			if (containerUnit != null) {			
+				if (containerUnit instanceof MarsSurface) {
+					// Doing EVA outside. Get water from one's EVA suit
+					inv = person.getSuit().getInventory();
+				}
+				else {
+					// In a vehicle or settlement
+					inv = containerUnit.getInventory();
+				}
 			}
-			else {
-				inv = person.getSuit().getInventory();
-			}
-				
+			
 			double waterFinal = Math.min(waterEachServing, currentThirst);
 
 			if (inv != null && waterFinal > 0) {
@@ -916,14 +920,17 @@ public class EatMeal extends Task implements Serializable {
 			Unit containerUnit = person.getTopContainerUnit();
 			
 			Inventory inv = null;
-			// Get water from one's EVA suit
-			if (containerUnit != null) {
-				inv = containerUnit.getInventory();
+			
+			if (containerUnit != null) {			
+				if (containerUnit instanceof MarsSurface) {
+					// Get dessert from one's EVA suit
+					inv = person.getSuit().getInventory();
+				}
+				else {
+					inv = containerUnit.getInventory();
+				}
 			}
-			else {
-				inv = person.getSuit().getInventory();
-			}
-				
+			
 			if (inv != null) {
 				// Take dessert resource from inventory if it is available.
 				boolean hasDessert = false;

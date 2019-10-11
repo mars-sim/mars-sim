@@ -59,10 +59,14 @@ These gases are produced via chemical systems such as **Sabatier Reverse Water G
 An example of operation modeling is the sequence of steps involving the ingress and egress of airlocks 
 before and after an **Extra-Vehicular Activity (EVA)**. 
 
-In mars-sim, an *airlock* is an immediate place between a settlement and outside. To walk on the surface 
-of Mars, a settler must come through an airlock, which is found in a *Lander Hab* or a *Garage*. 
+In mars-sim, to walk on the surface of Mars, a settler must come through an intermediate chamber 
+called an *airlock* to exit the settlement. The airlock allows the passage of people between 
+a pressure vessel and its surroundings while minimizing the change of pressure in the vessel and loss of 
+air from it. One would find an airlock in *Astronomy Observatory*, any types of garage, all rovers, 
+and any *Hab* (which stands for habitation module, usually cylinderical in shape) buildings such as 
+*Lander Hab*, etc.
 
-To perform a team EVA, one of them will be selected as the *airlock operator*, who will ensure that proper
+To perform a team EVA, one of will be selected as the *airlock operator*, who will ensure that proper
 procedures be followed before going out for an EVA or after coming back from an EVA.
 
 In case of an egress operation, (1) the airlock would have to be *pressurized*. (2) The air would be heated 
@@ -87,13 +91,18 @@ Player may build numerous settlements spreading across the surface of Mars. Each
 
 As mars-sim loosely follows the *Mars Direct Mission Plan by Robert Zubrin*, there are 6 types of 
 [settlement templates](https://github.com/mars-sim/mars-sim/wiki/Settlement-Templates) to choose from. 
-A 4-settler initial base is called a MDP Phase 1. A 8-settler base is MDP Phase 2. A 12-settler base is MDP Phase 3. A 24-settler base is designated as Alpha Base. Besides, players may build a Trading Outpost as well as a Mining Depot near sites with high mineral concentration.
+A 4-settler initial base is called a *Mars Direct Plan (MDP) Phase 1* template. A 8-settler base is constructed 
+under *MDP Phase 2* template. A 12-settler base is *MDP Phase 3*. A 24-settler base is designated as 
+*Alpha Base*. Besides, players may build a *Trading Outpost* or a *Mining Depot* near sites with 
+high mineral concentration.
 
 ---
 
 ## Economics
 In terms of [economic](https://github.com/mars-sim/mars-sim/wiki/Economics) modeling, mars-sim implements the 
-**Value Point (VP)** system, which keeps track of the supply and demand on each good and resource. As there is no standard currency established on Mars yet, settlers barter trades with neighboring settlements by keeping track of the credits and deficit based on the VPs of the resources in exchange in each trading session.
+**Value Point (VP)** system, which keeps track of the supply and demand on each good and resource. 
+As there is no standard currency established on Mars yet, settlers barter trades with neighboring settlements 
+by keeping track of the credits and deficit based on the VPs of the resources in exchange in each trading session.
 
 ---
 
@@ -107,7 +116,8 @@ maintenance, ensuring life support resources are well balanced, growing crops in
 and equipment in workshops.
 
 Settlers will also go out on field [Missions](https://github.com/mars-sim/mars-sim/wiki/Missions) to explore and 
-study the surrounding landscapes, to prospect and mine minerals, and to trade with neighboring settlements, etc. They may even decide to migrate from one settlement to another.
+study the surrounding landscapes, to prospect and mine minerals, and to trade with neighboring settlements, etc. 
+They may even decide to migrate from one settlement to another.
 
 ---
 
@@ -118,10 +128,12 @@ The perils of living on Mars are very real. There are close to 30 types of [Malf
 
 ## Summary
 Mars is a harsh world but is certainly less unforgiving than our Moon. Settlers come face-to-face with accidents, 
-equipment malfunctions, illnesses, injuries, and even death. Survival depends on how well they work together, improve their survival skills and balance individual versus settlement needs. The reward of
+equipment malfunctions, illnesses, injuries, and even death. Survival depends on how well they work together, 
+improve their survival skills and balance individual versus settlement needs. The reward of
 
 As the settlers learn how to survive the hardship and build up their settlements, players are rewarded with the 
-pure joy of participating in this grand social experiment of creating a new branch of human society on another planetary surface.
+pure joy of participating in this grand social experiment of creating a new branch of human society on another 
+planetary surface.
 
 ---
 
@@ -159,7 +171,7 @@ Before r4945,
 * Require Java 8 (u77 or above) for binaries compiled under Java 8 
 * Require Java 9/10 for binaries compiled under Java 9
 
-As of r4945, 
+As of r4945 and afterward
 * Requires JRE 11 for running mars-sim
 * Requires openjdk 11 or JDK 11 for compiling binary
 
@@ -172,12 +184,15 @@ mars-sim to run it under Java 11.
 
 #### For linux
 
-1. The debian edition of mars-sim comes with debian installer for quick installation. However, you will have to install, configure and properly update the JDK or openJDK binary in your linux machine in order to run mars-sim. Please google to find out the most updated instructions for your distro.
+1. The debian edition of mars-sim comes with debian installer for quick installation. However, 
+you will have to install, configure and properly update the JDK or openJDK binary in your linux
+ machine in order to run mars-sim. Please google to find out the most updated instructions for your distro.
 
 
 #### For macOS
 
-1.  The directory of JDK is at `Library/Java/JavaVirtualMachines/jdk-11.jdk/Contents/Home`. See [DZone](https://dzone.com/articles/installing-openjdk-11-on-macos) for more instructions.
+1.  The directory of JDK is at `Library/Java/JavaVirtualMachines/jdk-11.jdk/Contents/Home`. 
+See [DZone](https://dzone.com/articles/installing-openjdk-11-on-macos) for more instructions.
 
 2. Enter `/usr/libexec/java_home -V` to find out which version of Java you have installed.
 
@@ -201,14 +216,15 @@ executable inside will be the one to be loaded by Windows OS.
 Note 3 : The BEST approach is to enable only one Java build (such as Java 11.0.3) 
 inside `PATH` and remove all other folders referencing other java versions/builds.
  ```
- 4. Remove any path similar to `C:\ProgramData\Oracle\Java\javapath;`  in `PATH` variable. It can interfere with 
- the correct version of Java that you would like to use. 
+ 4. Remove any path similar to `C:\ProgramData\Oracle\Java\javapath;`  in `PATH` variable. It can 
+ interfere with the correct version of Java that you would like to use. 
  ```
 Note 4 : Depending on the order of precedence in Path variable, 
 `C:\ProgramData\Oracle\Java\javapath` can load the undesired version of jre/jdk,
 instead of the java version you prefer.
  ```
- 5. Check if the correct version of Java is being enabled in the **Java Control Panel** in Windows's Control Panel. 
+ 5. Check if the correct version of Java is being enabled in the **Java Control Panel** in Windows's
+ Control Panel. 
  ```
 Note 5 : To test the version of Java that your machine is using, type "java -version"
 in a terminal/command prompt.
@@ -233,8 +249,8 @@ Help us by filling in the info below when submitting an issue
  - A clear and concise description of what the bug is.
 
 **Affected Area**
- - What area(s) are we dealing with ? [e.g. Construction, Mission, Resupply, Settlement Map, Mini-map, Saving/Loading 
- Sim, System Exceptions in Command Prompt/Terminal, etc..]
+ - What area(s) are we dealing with ? [e.g. Construction, Mission, Resupply, Settlement Map, Mini-map, 
+ Saving/Loading Sim, System Exceptions in Command Prompt/Terminal, etc..]
 
 **Expected behaviors**
  - A clear and concise description of what you expected to happen.
