@@ -254,15 +254,15 @@ extends TabPanel {
 	    //SwingUtilities.invokeLater(() -> ColumnResizer.adjustColumnPreferredWidths(heatTable));
 
 		heatTable.setRowSelectionAllowed(true);
-		heatTable.setDefaultRenderer(Double.class, new NumberCellRenderer());
+
 		heatTable.getColumnModel().getColumn(0).setPreferredWidth(10);
-		heatTable.getColumnModel().getColumn(1).setPreferredWidth(120);
-		heatTable.getColumnModel().getColumn(2).setPreferredWidth(15);
+		heatTable.getColumnModel().getColumn(1).setPreferredWidth(150);
+		heatTable.getColumnModel().getColumn(2).setPreferredWidth(30);
 		heatTable.getColumnModel().getColumn(3).setPreferredWidth(40);
 		heatTable.getColumnModel().getColumn(4).setPreferredWidth(40);
 		
 		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
-		renderer.setHorizontalAlignment(SwingConstants.CENTER);
+		renderer.setHorizontalAlignment(SwingConstants.RIGHT);
 		//heatTable.getColumnModel().getColumn(0).setCellRenderer(renderer);
 		heatTable.getColumnModel().getColumn(1).setCellRenderer(renderer);
 		heatTable.getColumnModel().getColumn(2).setCellRenderer(renderer);
@@ -272,7 +272,7 @@ extends TabPanel {
 		// Added the two methods below to make all heatTable columns
 		// Resizable automatically when its Panel resizes
 		heatTable.setPreferredScrollableViewportSize(new Dimension(225, -1));
-		//heatTable.setAutoResizeMode(WebTable.AUTO_RESIZE_ALL_COLUMNS);
+		heatTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 
 		// Added sorting
 		heatTable.setAutoCreateRowSorter(true);
@@ -524,7 +524,7 @@ extends TabPanel {
 					else return null;
 				}
 				else if (column == 1)
-					return buildings.get(row);
+					return buildings.get(row) + " ";
 				else if (column == 2)
 					// return temperature of the building;
 					return  Math.round(building.getCurrentTemperature()*10.0)/10.0;

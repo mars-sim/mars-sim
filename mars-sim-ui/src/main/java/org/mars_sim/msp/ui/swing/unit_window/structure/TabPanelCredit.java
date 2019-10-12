@@ -100,10 +100,13 @@ extends TabPanel {
 		creditTable = new ZebraJTable(creditTableModel);
 		creditScrollPanel.setViewportView(creditTable);
 		creditTable.setRowSelectionAllowed(true);
-		creditTable.setDefaultRenderer(Double.class, new NumberCellRenderer(2));
+		
+		creditTable.setDefaultRenderer(Double.class, new NumberCellRenderer(2, true));
+		
 		creditTable.getColumnModel().getColumn(0).setPreferredWidth(100);
 		creditTable.getColumnModel().getColumn(1).setPreferredWidth(120);
 		creditTable.getColumnModel().getColumn(2).setPreferredWidth(50);
+		
 		// Added the two methods below to make all heatTable columns
 		// Resizable automatically when its Panel resizes
 		creditTable.setPreferredScrollableViewportSize(new Dimension(225, -1));
@@ -113,9 +116,9 @@ extends TabPanel {
 
 		// Align the preference score to the center of the cell
 		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
-		renderer.setHorizontalAlignment(SwingConstants.CENTER);
+		renderer.setHorizontalAlignment(SwingConstants.RIGHT);
 		creditTable.getColumnModel().getColumn(0).setCellRenderer(renderer);
-		creditTable.getColumnModel().getColumn(1).setCellRenderer(renderer);
+//		creditTable.getColumnModel().getColumn(1).setCellRenderer(renderer);
 		creditTable.getColumnModel().getColumn(2).setCellRenderer(renderer);
 		
 		TableStyle.setTableStyle(creditTable);

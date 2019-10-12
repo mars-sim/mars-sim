@@ -281,14 +281,14 @@ public class TabPanelPowerGrid extends TabPanel {
 		// ColumnResizer.adjustColumnPreferredWidths(powerTable));
 
 		powerTable.setRowSelectionAllowed(true);
-		powerTable.setDefaultRenderer(Double.class, new NumberCellRenderer());
+		
 		powerTable.getColumnModel().getColumn(0).setPreferredWidth(10);
 		powerTable.getColumnModel().getColumn(1).setPreferredWidth(130);
 		powerTable.getColumnModel().getColumn(2).setPreferredWidth(50);
 		powerTable.getColumnModel().getColumn(3).setPreferredWidth(50);
 
 		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
-		renderer.setHorizontalAlignment(SwingConstants.CENTER);
+		renderer.setHorizontalAlignment(SwingConstants.RIGHT);
 		// powerTable.getColumnModel().getColumn(0).setCellRenderer(renderer);
 		powerTable.getColumnModel().getColumn(1).setCellRenderer(renderer);
 		powerTable.getColumnModel().getColumn(2).setCellRenderer(renderer);
@@ -485,7 +485,7 @@ public class TabPanelPowerGrid extends TabPanel {
 				} else
 					return null;
 			} else if (column == 1)
-				return buildings.get(row);
+				return buildings.get(row) + " ";
 			else if (column == 2) {
 				double generated = 0D;
 				if (building.hasFunction(FunctionType.POWER_GENERATION)) {

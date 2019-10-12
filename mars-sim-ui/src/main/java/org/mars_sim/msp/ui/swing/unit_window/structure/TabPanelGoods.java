@@ -12,7 +12,9 @@ import java.awt.Font;
 import java.util.List;
 
 import javax.swing.JTable;
+import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
@@ -95,18 +97,22 @@ public class TabPanelGoods extends TabPanel {
 		goodsTable = new ZebraJTable(goodsTableModel);
 		goodsScrollPane.setViewportView(goodsTable);
 		goodsTable.setRowSelectionAllowed(true);
-		goodsTable.setDefaultRenderer(Double.class, new NumberCellRenderer(3));
+		
+		// Override default cell renderer for formatting double values.
+		goodsTable.setDefaultRenderer(Double.class, new NumberCellRenderer(2, true));
+		
 		goodsTable.getColumnModel().getColumn(0).setPreferredWidth(140);
-		goodsTable.getColumnModel().getColumn(1).setPreferredWidth(140);
+		goodsTable.getColumnModel().getColumn(1).setPreferredWidth(80);
+		
 		// Added the two methods below to make all heatTable columns
 		// Resizable automatically when its Panel resizes
 		goodsTable.setPreferredScrollableViewportSize(new Dimension(225, -1));
 		//goodsTable.setAutoResizeMode(WebTable.AUTO_RESIZE_ALL_COLUMNS);
 
 		// Align the preference score to the center of the cell
-//		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
-//		renderer.setHorizontalAlignment(SwingConstants.CENTER);
-//		goodsTable.getColumnModel().getColumn(0).setCellRenderer(renderer);
+		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
+		renderer.setHorizontalAlignment(SwingConstants.RIGHT);
+		goodsTable.getColumnModel().getColumn(0).setCellRenderer(renderer);
 //		goodsTable.getColumnModel().getColumn(1).setCellRenderer(renderer);
 
 		// Added sorting
@@ -183,7 +189,7 @@ public class TabPanelGoods extends TabPanel {
 			if (row < getRowCount()) {
 				Good good = (Good) goods.get(row);
 				// Capitalized good's names
-				if (column == 0) return Conversion.capitalize(good.getName());
+				if (column == 0) return Conversion.capitalize(good.getName()) + " ";
 				else if (column == 1) {
 					try {
 						// Note: twoDecimal format is in conflict with Table column number sorting

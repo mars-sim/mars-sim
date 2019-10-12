@@ -36,7 +36,9 @@ extends DefaultTableCellRenderer {
 	private DecimalFormat dec3Formatter = new DecimalFormat("#,###,##0.000");
 	private DecimalFormat dec4Formatter = new DecimalFormat("#,###,##0.0000");
 	private DecimalFormat dec5Formatter = new DecimalFormat("#,###,##0.00000");
-	private DecimalFormat dec6Formatter = new DecimalFormat("#,###,##0.00000");
+	private DecimalFormat dec6Formatter = new DecimalFormat("#,###,##0.000000");
+	private DecimalFormat dec7Formatter = new DecimalFormat("#,###,##0.0000000");
+	private DecimalFormat dec8Formatter = new DecimalFormat("#,###,##0.00000000");
 	
 	private DecimalFormat formatter;
 	private DecimalFormat formatter1;
@@ -47,7 +49,9 @@ extends DefaultTableCellRenderer {
 																dec3Formatter,
 																dec4Formatter,
 																dec5Formatter,
-																dec6Formatter}; 
+																dec6Formatter,
+																dec7Formatter,
+																dec8Formatter}; 
 	
 	/**
 	 * Constructor.
@@ -69,6 +73,8 @@ extends DefaultTableCellRenderer {
 		else if (digits == 4) formatter = dec4Formatter;
 		else if (digits == 5) formatter = dec5Formatter;
 		else if (digits == 6) formatter = dec6Formatter;
+		else if (digits == 7) formatter = dec7Formatter;
+		else if (digits == 8) formatter = dec8Formatter;
 		else formatter = dec1Formatter;
 
 		// Set the horizontal alignment to right.
@@ -104,15 +110,18 @@ extends DefaultTableCellRenderer {
 							
 					int max = 0;
 					
-					if (v < 0.000_001) max = decimal + 6;
+					if (v < 0.000_000_01) max = decimal + 8;
+					else if (v < 0.000_000_1) max = decimal + 7;
+					else if (v < 0.000_001) max = decimal + 6;
 					else if (v < 0.000_01) max = decimal + 5;
 					else if (v < 0.000_1) max = decimal + 4;	
 					else if (v < 0.001) max = decimal + 3;
 					else if (v < 0.01) max = decimal + 2;
 					else if (v < 0.1) max = decimal + 1;
 					else if (v < 1) max = decimal;	
-	
-					if (max > 0 && max < 7)
+					else max = decimal;	
+					
+					if (max > 0 && max <= 8)
 						formatter1 = formatters[max];
 					else 
 						formatter1 = dec0Formatter;
@@ -123,15 +132,18 @@ extends DefaultTableCellRenderer {
 					float v = ((Float) value).floatValue();
 					int max = 0;
 					
-					if (v < 0.000_001) max = decimal + 6;
+					if (v < 0.000_000_01) max = decimal + 8;
+					else if (v < 0.000_000_1) max = decimal + 7;
+					else if (v < 0.000_001) max = decimal + 6;
 					else if (v < 0.000_01) max = decimal + 5;
 					else if (v < 0.000_1) max = decimal + 4;	
 					else if (v < 0.001) max = decimal + 3;
 					else if (v < 0.01) max = decimal + 2;
 					else if (v < 0.1) max = decimal + 1;
 					else if (v < 1) max = decimal;	
-	
-					if (max > 0 && max < 7)
+					else max = decimal;	
+					
+					if (max > 0 && max <= 8)
 						formatter1 = formatters[max];
 					else 
 						formatter1 = dec0Formatter;
@@ -143,15 +155,18 @@ extends DefaultTableCellRenderer {
 					
 					int max = 0;
 					
-					if (v < 0.000_001) max = decimal + 6;
+					if (v < 0.000_000_01) max = decimal + 8;
+					else if (v < 0.000_000_1) max = decimal + 7;
+					else if (v < 0.000_001) max = decimal + 6;
 					else if (v < 0.000_01) max = decimal + 5;
 					else if (v < 0.000_1) max = decimal + 4;	
 					else if (v < 0.001) max = decimal + 3;
 					else if (v < 0.01) max = decimal + 2;
 					else if (v < 0.1) max = decimal + 1;
 					else if (v < 1) max = decimal;	
-	
-					if (max > 0 && max < 7)
+					else max = decimal;	
+					
+					if (max > 0 && max <= 8)
 						formatter1 = formatters[max];
 					else 
 						formatter1 = dec0Formatter;

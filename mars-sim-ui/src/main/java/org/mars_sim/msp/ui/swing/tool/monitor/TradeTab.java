@@ -36,7 +36,7 @@ implements UnitManagerListener {
 		// Use TableTab constructor
 		super(window, new TradeTableModel(), true, false, MonitorWindow.TRADE_ICON);
 
-		// Override default cell renderer for format double values.
+		// Override default cell renderer for formatting double values.
 		table.setDefaultRenderer(Double.class, new NumberCellRenderer(NUM_DIGITS, true));
 
 		// Add as unit manager listener.

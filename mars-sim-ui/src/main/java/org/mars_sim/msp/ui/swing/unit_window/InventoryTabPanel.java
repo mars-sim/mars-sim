@@ -39,9 +39,7 @@ import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.Resource;
 import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
@@ -64,9 +62,6 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 	/** Is UI constructed. */
 	private boolean uiDone = false;
 	
-	/** The Settlement instance. */
-//	private Settlement settlement;
-	
 	/** The Inventory instance. */
 	private Inventory inv; 
 	
@@ -86,9 +81,6 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         super("Inventory", null, "Inventory", unit, desktop);
 
         inv = unit.getInventory();
-
-//		settlement = (Settlement) unit;
-
 	}
 	
 	public boolean isUIDone() {
@@ -123,23 +115,31 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         // Create resources table
         resourcesTable = new ZebraJTable(resourceTableModel);
         resourcesTable.setPreferredScrollableViewportSize(new Dimension(200, 75));
-        resourcesTable.setDefaultRenderer(Double.class, new NumberCellRenderer(2));
         resourcesTable.getColumnModel().getColumn(0).setPreferredWidth(120);
         resourcesTable.getColumnModel().getColumn(1).setPreferredWidth(50);
         resourcesTable.getColumnModel().getColumn(2).setPreferredWidth(50);
+        
         resourcesTable.setRowSelectionAllowed(true);//setCellSelectionEnabled(true);
         resourcesPanel.setViewportView(resourcesTable);
 
 		// Added sorting
         resourcesTable.setAutoCreateRowSorter(true);
+        
+		// Override default cell renderer for formatting double values.
+        resourcesTable.setDefaultRenderer(Double.class, new NumberCellRenderer(2, true));
+        
+		// Align the preference score to the left of the cell
+//		DefaultTableCellRenderer leftRenderer = new DefaultTableCellRenderer();
+//		leftRenderer.setHorizontalAlignment(SwingConstants.LEFT);
+//		resourcesTable.getColumnModel().getColumn(0).setCellRenderer(leftRenderer);
 
-		// Align the preference score to the center of the cell
-		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
-		renderer.setHorizontalAlignment(SwingConstants.CENTER);
-		resourcesTable.getColumnModel().getColumn(0).setCellRenderer(renderer);
-		resourcesTable.getColumnModel().getColumn(1).setCellRenderer(renderer);
-		resourcesTable.getColumnModel().getColumn(2).setCellRenderer(renderer);
-
+		// Align the preference score to the right of the cell
+		DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
+		rightRenderer.setHorizontalAlignment(SwingConstants.RIGHT);
+		resourcesTable.getColumnModel().getColumn(0).setCellRenderer(rightRenderer);
+//		resourcesTable.getColumnModel().getColumn(1).setCellRenderer(rightRenderer);
+//		resourcesTable.getColumnModel().getColumn(2).setCellRenderer(rightRenderer);
+		
 		// Added setTableStyle()
 		TableStyle.setTableStyle(resourcesTable);
 
@@ -167,7 +167,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 
 		// Align the preference score to the center of the cell
 		DefaultTableCellRenderer renderer2 = new DefaultTableCellRenderer();
-		renderer2.setHorizontalAlignment(SwingConstants.CENTER);
+		renderer2.setHorizontalAlignment(SwingConstants.RIGHT);
 		equipmentTable.getColumnModel().getColumn(0).setCellRenderer(renderer2);
 		equipmentTable.getColumnModel().getColumn(1).setCellRenderer(renderer2);
 
@@ -217,11 +217,14 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 		private static final long serialVersionUID = 1L;
 
 		private int counts = 0;
+		
 		private Inventory inventory;
+		
 		private Map<Resource, Number> resources;
 		private Map<Resource, Number> capacity;
 		private List<Resource> keys;
-		private DecimalFormat decFormatter = new DecimalFormat("#,###,##0.0");
+		
+//		private DecimalFormat decFormatter = new DecimalFormat("#,###,##0.0");
 
         private ResourceTableModel(Inventory inventory) {
             this.inventory = inventory;
@@ -260,7 +263,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 
         public Class<?> getColumnClass(int columnIndex) {
             Class<?> dataType = super.getColumnClass(columnIndex);
-            if (columnIndex == 1) dataType = Double.class;
+            if (columnIndex >= 1) dataType = Double.class;
             return dataType;
         }
 
@@ -276,21 +279,21 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
             if (column == 0) {
     			// Capitalize Resource Names
             	Object result = keys.get(row);
-            	return Conversion.capitalize(result.toString());
+            	return Conversion.capitalize(result.toString()) + " ";
             }
             else if (column == 1) {
             	Resource resource = keys.get(row);
             	String result = resources.get(resource).toString();
             	if (resource instanceof AmountResource) {
-            		double amount = (Double) resources.get(resource);
-            		result = decFormatter.format(amount);
+            		return (Double) resources.get(resource);
+//            		result = decFormatter.format(amount);
             		//result = amount + "";
             	}
             	return result;
             }
             else if (column == 2) {
             	Number number = capacity.get(keys.get(row));
-            	return (number == null) ? "-" : decFormatter.format(number);
+            	return (number == null) ? "-" : number; //decFormatter.format(number);
             	//return (number == null) ? "-" : number;
             }
             else return "unknown";
