@@ -769,7 +769,7 @@ public class MasterClock implements Serializable {
 
 					int skips = 0;
 
-					while (!justReloaded && (Math.abs(excess) > currentTBU_ns) && (skips <= maxFrameSkips)) {
+					while (!justReloaded && (Math.abs(excess) > currentTBU_ns) && (skips < maxFrameSkips)) {
 						logger.config("excess : " + excess/1_000_000_000 + " secs");
 						// e.g. excess : -118289082
 						justReloaded = false;
@@ -783,7 +783,7 @@ public class MasterClock implements Serializable {
 						addTime();
 					}
 					
-					if (skips == maxFrameSkips) {
+					if (skips >= maxFrameSkips) {
 						logger.config("# of skips (" + skips + ") exceeds the max skips (" + maxFrameSkips + ")."); 
 						// Reset the pulse count
 						resetTotalPulses();

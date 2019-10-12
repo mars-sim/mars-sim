@@ -46,7 +46,7 @@ public class MissionManager implements Serializable {
 	
 	private static final double PERCENT_PER_SCORE = 10D;
 	/** static mission identifier */
-	private static int missionIdentifer;
+	private int missionIdentifer;
 
 	/** Mission listeners. */
 	private transient List<MissionManagerListener> listeners;
@@ -115,7 +115,7 @@ public class MissionManager implements Serializable {
 	 * 
 	 * @return
 	 */
-	private static synchronized int getNextIdentifier() {
+	private synchronized int getNextIdentifier() {
 		return missionIdentifer++;
 	}
 	
@@ -135,7 +135,7 @@ public class MissionManager implements Serializable {
 		}
 	}
 	
-	public static String getMissionDesignationString(String settlementName) {
+	public String getMissionDesignationString(String settlementName) {
 		return padZeros(getSettlementID(settlementName)+"", 2) + "-" + padZeros(getNextIdentifier()+"", 3);
 	}
 	
@@ -848,8 +848,8 @@ public class MissionManager implements Serializable {
 					double score = mp.getScore();
 					mp.setScore(score + weight * newScore);
 					logger.info(mp.getMission().getStartingMember() + "'s " + mp.getMission().getDescription() 
-							+ ":  New score : " + mp.getScore() 
-							+ "  New percent : " + mp.getPercentComplete() + "%");
+							+ " mission plan - current score : " + mp.getScore() 
+							+ " (" + mp.getPercentComplete() + "% review completed)");
 					mp.setReviewedBy(reviewer.getName());
 					mp.getMission().fireMissionUpdate(MissionEventType.PHASE_DESCRIPTION_EVENT, mp.getMission().getPhaseDescription());
 					break;

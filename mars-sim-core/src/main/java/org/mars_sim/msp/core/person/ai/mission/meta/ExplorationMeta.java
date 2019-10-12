@@ -30,7 +30,7 @@ public class ExplorationMeta implements MetaMission {
 	/** Mission name */
 	private static final String NAME = Msg.getString("Mission.description.exploration"); //$NON-NLS-1$
 
-	private static final double FACTOR = 50D;
+	private static final double FACTOR = 200D;
 
     private static final double LIMIT = 20D;
 

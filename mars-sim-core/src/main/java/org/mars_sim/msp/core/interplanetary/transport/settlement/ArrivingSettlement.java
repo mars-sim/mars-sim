@@ -410,9 +410,9 @@ public class ArrivingSettlement implements Transportable, Serializable {
 				Equipment equipment = EquipmentFactory.createEquipment(equipmentType, newSettlement.getCoordinates(),
 						false);
 				equipment.setName(unitManager.getNewName(UnitType.EQUIPMENT, equipmentType, null, null));
-				unitManager.addUnit(equipment);
 				// Place this equipment within a settlement
 				newSettlement.getInventory().storeUnit(equipment);
+				unitManager.addUnit(equipment);
 			}
 		}
 	}

@@ -184,7 +184,7 @@ public class Trade extends RoverMission implements Serializable {
 		super(description, (MissionMember) members.toArray()[0], RoverMission.MIN_GOING_MEMBERS, rover);
 
 		Person person = null;
-		Robot robot = null;
+//		Robot robot = null;
 
 		outbound = true;
 		doNegotiation = false;

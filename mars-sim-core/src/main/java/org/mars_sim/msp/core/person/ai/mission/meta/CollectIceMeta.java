@@ -27,9 +27,9 @@ public class CollectIceMeta implements MetaMission {
 	/** Mission name */
 	private static final String NAME = Msg.getString("Mission.description.collectIce"); //$NON-NLS-1$
 
-	private static final double VALUE = 100D;
+	private static final double VALUE = 1D;
 
-    private static final double LIMIT = 10D;
+    private static final double LIMIT = 100D;
     
 	@Override
 	public String getName() {
@@ -91,48 +91,6 @@ public class CollectIceMeta implements MetaMission {
 		return missionProbability;
 	}
 
-//	public double getSettlementProbability(Settlement settlement) {
-//
-//        double missionProbability = CollectResourcesMission.getNewMissionProbability(settlement, Bag.class, 
-//                CollectRegolith.REQUIRED_BAGS, CollectRegolith.MIN_PEOPLE);
-//   		if (missionProbability == 0)
-//			return 0;
-//   		
-//		int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);	
-//		int numThisMission = missionManager.numParticularMissions(NAME, settlement);
-//		
-//		// Check for embarking missions.
-//		if (settlement.getNumCitizens() / 4.0 < numEmbarked + numThisMission) {
-//			return 0;
-//		}	
-//		
-//		else if (numThisMission > 1)
-//			return 0;
-//		
-//		else {
-//			missionProbability = settlement.getIceProbabilityValue() / VALUE;
-//		}
-//
-//		if (missionProbability <= 0)
-//			return 0;
-//		
-//		int f1 = numEmbarked + 1;
-//		int f2 = numThisMission + 1;
-//		
-//		missionProbability *= settlement.getNumCitizens() / f1 / f2 / 2D;
-//		
-//		// Crowding modifier.
-//		int crowding = settlement.getIndoorPeopleCount() - settlement.getPopulationCapacity();
-//		if (crowding > 0) {
-//			missionProbability *= (crowding + 1);
-//		}
-//
-////		 logger.info("CollectIceMeta's probability : " +
-////				 Math.round(result*100D)/100D);
-//		 
-//		return missionProbability;
-//	}
-	
 	@Override
 	public Mission constructInstance(Robot robot) {
 		// TODO Auto-generated method stub

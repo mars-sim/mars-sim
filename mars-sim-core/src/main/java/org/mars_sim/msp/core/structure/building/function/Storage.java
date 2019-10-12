@@ -108,7 +108,7 @@ public class Storage extends Function implements Serializable {
 			Iterator<Building> j = settlement.getBuildingManager().getBuildings(FUNCTION).iterator();
 			while (j.hasNext()) {
 				Building building = j.next();
-				Storage storageFunction = (Storage) building.getFunction(FUNCTION);
+				Storage storageFunction = building.getStorage();
 				double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
 				if (storageFunction.resourceCapacities.containsKey(resource))
 					existingStorage += storageFunction.resourceCapacities.get(resource) * wearModifier;

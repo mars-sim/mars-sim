@@ -21,6 +21,7 @@ import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.JobAssignment;
 import org.mars_sim.msp.core.person.ai.mission.AreologyStudyFieldMission;
 import org.mars_sim.msp.core.person.ai.mission.BiologyStudyFieldMission;
+import org.mars_sim.msp.core.person.ai.mission.CollectIce;
 import org.mars_sim.msp.core.person.ai.mission.CollectRegolith;
 import org.mars_sim.msp.core.person.ai.mission.EmergencySupplyMission;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
@@ -40,6 +41,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.Administration;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
+import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
@@ -165,6 +167,8 @@ public class ReviewMissionPlan extends Task implements Serializable {
 	private double reviewingPhase(double time) {	
         List<Mission> missions = missionManager.getPendingMissions(person.getAssociatedSettlement());
         
+        GoodsManager goodsManager = person.getAssociatedSettlement().getGoodsManager();
+        
 		// Iterates through each pending mission 
 		Iterator<Mission> i = missions.iterator();
 		while (i.hasNext()) {
@@ -248,24 +252,24 @@ public class ReviewMissionPlan extends Task implements Serializable {
 									|| m instanceof TravelToSettlement
 									|| m instanceof Exploration)
 									) {
-								obj += 10D * person.getAssociatedSettlement().getGoodsManager().getTourismFactor();
+								obj += 10D * goodsManager.getTourismFactor();
 							}				
 							
 							else if (person.getAssociatedSettlement().getObjective() == ObjectiveType.TRADE_CENTER
 									&& m instanceof Trade) {
-								obj += 10D * person.getAssociatedSettlement().getGoodsManager().getTradeFactor();
+								obj += 10D * goodsManager.getTradeFactor();
 							}	
 							
 							else if (person.getAssociatedSettlement().getObjective() == ObjectiveType.TRANSPORTATION_HUB
 									&& (m instanceof TravelToSettlement
 									|| m instanceof Exploration)) {
-								obj += 10D * person.getAssociatedSettlement().getGoodsManager().getTransportationFactor();
+								obj += 10D * goodsManager.getTransportationFactor();
 							}	
 							
 							else if (person.getAssociatedSettlement().getObjective() == ObjectiveType.MANUFACTURING_DEPOT
 									&& (m instanceof Mining
 									|| m instanceof CollectRegolith)) {
-								obj += 10D * person.getAssociatedSettlement().getGoodsManager().getManufacturingFactor();
+								obj += 10D * goodsManager.getManufacturingFactor();
 							}	
 							
 							// 5. emergency
@@ -275,38 +279,72 @@ public class ReviewMissionPlan extends Task implements Serializable {
 								emer = 50;
 							}	
 							
-							// 6. randomness
-							int rand = RandomUtil.getRandomInt(-30, 10);
+							// 6. site
+							int site = 10;
+							if (m instanceof CollectIce) {
+								site = (int)(((CollectIce) m).getTotalSiteScore()/50);
+								logger.info("Ice collection site score is " + site);
+							}	
 							
+							// 7. randomness
+							int rand = RandomUtil.getRandomInt(-5, 5);					
 	
-							// TODO: 6. Go to him/her to have a chat
-							// TODO: 7. look at the mission experience of a person
+							// 8. reviewer role weight
+							RoleType role = person.getRole().getType();
+							int weight = 0;
 							
-							score = rating + relation + qual + obj + emer + rand;
+							if (role == RoleType.PRESIDENT)
+								weight = 20;
+							else if (role == RoleType.MAYOR)
+								weight = 15;
+							else if (role == RoleType.COMMANDER)
+								weight = 10;
+							else if (role == RoleType.SUB_COMMANDER)
+								weight = 8;
+							else if (role == RoleType.CHIEF_OF_MISSION_PLANNING)
+								weight = 7;
+							else if (role == RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS)
+								weight = 6;
+							else if (role == RoleType.CHIEF_OF_AGRICULTURE
+								|| role == RoleType.CHIEF_OF_ENGINEERING
+								|| role == RoleType.CHIEF_OF_SAFETY_N_HEALTH
+								|| role == RoleType.CHIEF_OF_SCIENCE
+								|| role == RoleType.CHIEF_OF_SUPPLY_N_RESOURCES
+								)
+								weight = 5;
+							else if (role == RoleType.MISSION_SPECIALIST)
+								weight = 4;
+							else
+								weight = 2;
+							// TODO: 9. Go to him/her to have a chat
+							// TODO: 10. look at the mission experience of a person
+							
+							score = rating + relation + qual + obj + emer + site + weight + rand;
 							
 							// Updates the mission plan status
 							missionManager.scoreMissionPlan(mp, score, person);
 							
 							// Modify the sign for the random number
-							String sign = " + ";
+							String sign = "+";
 							if (rand < 0) {
 								rand = -rand;
-								sign = " - ";
+								sign = "-";
 							}
 							
-							LogConsolidated.log(Level.INFO, 2000, sourceName, 
-									"[" + s + "] " + reviewedBy + " gave " + requestedBy
-									+ "'s " + m.getDescription() + " mission plan a score of " + score 
-									+ " (" 
-									+ rating 
-									+ " + " + relation 
-									+ " + " + qual 
-									+ " + " + obj
-									+ " + " + emer
-									+ sign 
-									+ rand 
-									+ ").");
-							
+							LogConsolidated.log(Level.INFO, 0, sourceName, 
+									"[" + s + "] " + reviewedBy + " graded " + requestedBy
+									+ "'s " + m.getDescription() + " mission plan as follows :");
+							logger.info("------------------------------");
+							logger.info(" (1)         Rating : " + rating); 
+							logger.info(" (2)       Relation : " + relation); 
+							logger.info(" (3)  Qualification : "  + qual); 
+							logger.info(" (4)      Objective : "  + obj);
+							logger.info(" (5)      Emergency : " + emer);
+							logger.info(" (6)          Sites : " + site);
+							logger.info(" (7)  Reviewer Role : " + weight); 
+							logger.info(" (8)     Randomness : " + sign + rand); 
+							logger.info("------------------------------");
+							logger.info("        Total Score : " + score);
 						      // Add experience
 					        addExperience(time);
 				        

@@ -394,6 +394,7 @@ public class FoodProduction extends Function implements Serializable {
 									equipmentType, null, null));
 							// Place this equipment within a settlement
 							inv.storeUnit(equipment);
+							unitManager.addUnit(equipment);
 							// Add to the daily output
 							settlement.addOutput(equipment.getIdentifier(), number, process.getTotalWorkTime());
 						}

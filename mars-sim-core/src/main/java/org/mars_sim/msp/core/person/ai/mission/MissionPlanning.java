@@ -99,6 +99,12 @@ public class MissionPlanning implements Serializable {
 					return false;
 			}
 			else if (pop >= 12) {
+				if (num < 2)
+					return true;
+				else
+					return false;
+			}
+			else if (pop >= 10) {
 				if (num < 3)
 					return true;
 				else
@@ -110,20 +116,26 @@ public class MissionPlanning implements Serializable {
 				else
 					return false;
 			}			
-			else if (pop >= 4) {
+			else if (pop >= 6) {
 				if (num < 3)
+					return true;
+				else
+					return false;
+			}	
+			else if (pop >= 4) {
+				if (num < 4)
 					return true;
 				else
 					return false;
 			}
 			else if (pop == 3) {
-				if (num < 3)
+				if (num < 5)
 					return true;
 				else
 					return false;
 			}
 			else if (pop == 2) {
-				if (num < 2)
+				if (num < 6)
 					return true;
 				else
 					return false;

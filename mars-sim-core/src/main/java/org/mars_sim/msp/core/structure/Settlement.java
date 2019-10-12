@@ -1279,6 +1279,9 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 		// due to high cpu util during the change of day
 		if (millisols != 0 && millisols != 1000) {
 
+			// Reduce the recurrent passing score daily to its 90% value
+			minimumPassingScore = minimumPassingScore * .9;
+			
 			// Updates the goodsManager randomly 4 times per sol .
 			updateGoodsManager(time);
 

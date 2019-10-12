@@ -228,7 +228,8 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	private transient GroundVehicleMaintenance maint;
 	private transient AstronomicalObservation astro;
 	private transient Exercise gym;
-
+	private transient Storage storage;
+	
 	private static BuildingConfig buildingConfig;
 	private static Malfunction malfunctionMeteoriteImpact;
 
@@ -497,10 +498,139 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		return initialTemperature;
 	}
 
+	
+	public Administration getAdministration() {
+		if (admin == null)
+			admin = (Administration) getFunction(FunctionType.ADMINISTRATION);
+		return admin;
+	}
+
+
+	public AstronomicalObservation getAstronomicalObservation() {
+		if (astro == null)
+			astro = (AstronomicalObservation) getFunction(FunctionType.ASTRONOMICAL_OBSERVATIONS);
+		return astro;
+	}
+	
+	public Dining getDining() {
+		if (dine == null)
+			dine = (Dining) getFunction(FunctionType.DINING);
+		return dine;
+	}
+	
 	public LifeSupport getLifeSupport() {
 		if (lifeSupport == null)
 			lifeSupport = (LifeSupport) getFunction(FunctionType.LIFE_SUPPORT);
 		return lifeSupport;
+	}
+
+	public Farming getFarming() {
+		if (farm == null)
+			farm = (Farming) getFunction(FunctionType.FARMING);
+		return farm;
+	}
+
+	public Communication getComm() {
+		if (comm == null)
+			comm = (Communication) getFunction(FunctionType.COMMUNICATION);
+		return comm;
+	}
+
+
+	public Cooking getCooking() {
+		if (cooking == null)
+			cooking = (Cooking) getFunction(FunctionType.COOKING);
+		return cooking;
+	}
+
+
+	public Exercise getExercise() {
+		if (gym == null)
+			gym = (Exercise) getFunction(FunctionType.EXERCISE);
+		return gym;
+
+	}
+
+	public EVA getEVA() {
+		// if (hasFunction(BuildingFunction.EVA))
+		// eva = (EVA) getFunction(BuildingFunction.EVA);
+		// else
+		// return null;
+		if (eva == null)
+			eva = (EVA) getFunction(FunctionType.EVA);
+		return eva;
+	}
+	
+	public FoodProduction getFoodProduction() {
+		if (foodFactory == null)
+			foodFactory = (FoodProduction) getFunction(FunctionType.FOOD_PRODUCTION);
+		return foodFactory;
+	}
+	
+	public GroundVehicleMaintenance getGroundVehicleMaintenance() {
+		if (maint == null)
+			maint = (GroundVehicleMaintenance) getFunction(FunctionType.GROUND_VEHICLE_MAINTENANCE);
+		return maint;
+	}
+	
+	public LivingAccommodations getLivingAccommodations() {
+		if (livingAccommodations == null)
+			livingAccommodations = (LivingAccommodations) getFunction(FunctionType.LIVING_ACCOMODATIONS);
+		return livingAccommodations;
+	}
+
+	public Management getManagement() {
+		if (management == null)
+			management = (Management) getFunction(FunctionType.MANAGEMENT);
+		return management;
+	}
+	
+	public Manufacture getManufacture() {
+		if (workshop == null)
+			workshop = (Manufacture) getFunction(FunctionType.MANUFACTURE);
+		return workshop;
+	}
+	
+	public MedicalCare getMedical() {
+		if (medical == null)
+			medical = (MedicalCare) getFunction(FunctionType.MEDICAL_CARE);
+		return medical;
+	}
+
+	public PowerGeneration getPowerGeneration() {
+		if (powerGen == null)
+			powerGen = (PowerGeneration) getFunction(FunctionType.POWER_GENERATION);
+		return powerGen;
+	}
+
+	public PowerStorage getPowerStorage() {
+		if (powerStorage == null)
+			powerStorage = (PowerStorage) getFunction(FunctionType.POWER_STORAGE);
+		return powerStorage;
+	}
+
+	public PreparingDessert getPreparingDessert() {
+		if (preparingDessert == null)
+			preparingDessert = (PreparingDessert) getFunction(FunctionType.PREPARING_DESSERT);
+		return preparingDessert;
+	}
+
+	public Recreation getRecreation() {
+		if (rec == null)
+			rec = (Recreation) getFunction(FunctionType.RECREATION);
+		return rec;
+	}
+	
+	public Research getResearch() {
+		if (lab == null)
+			lab = (Research) getFunction(FunctionType.RESEARCH);
+		return lab;
+	}
+
+	public ResourceProcessing getResourceProcessing() {
+		if (processing == null)
+			processing = (ResourceProcessing) getFunction(FunctionType.RESOURCE_PROCESSING);
+		return processing;
 	}
 
 	public RoboticStation getRoboticStation() {
@@ -516,64 +646,12 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		return furnace;
 	}
 
-	public Farming getFarming() {
-		if (farm == null)
-			farm = (Farming) getFunction(FunctionType.FARMING);
-		return farm;
-	}
-
-	public Communication getComm() {
-		if (comm == null)
-			comm = (Communication) getFunction(FunctionType.COMMUNICATION);
-		return comm;
+	public Storage getStorage() {
+		if (storage == null)
+			storage = (Storage) getFunction(FunctionType.STORAGE);
+		return storage;
 	}
 	
-	public EVA getEVA() {
-		// if (hasFunction(BuildingFunction.EVA))
-		// eva = (EVA) getFunction(BuildingFunction.EVA);
-		// else
-		// return null;
-		if (eva == null)
-			eva = (EVA) getFunction(FunctionType.EVA);
-		return eva;
-	}
-
-	public PowerGeneration getPowerGeneration() {
-		if (powerGen == null)
-			powerGen = (PowerGeneration) getFunction(FunctionType.POWER_GENERATION);
-		return powerGen;
-	}
-
-	public PowerStorage getPowerStorage() {
-		if (powerStorage == null)
-			powerStorage = (PowerStorage) getFunction(FunctionType.POWER_STORAGE);
-		return powerStorage;
-	}
-
-	public LivingAccommodations getLivingAccommodations() {
-		if (livingAccommodations == null)
-			livingAccommodations = (LivingAccommodations) getFunction(FunctionType.LIVING_ACCOMODATIONS);
-		return livingAccommodations;
-	}
-
-	public PreparingDessert getPreparingDessert() {
-		if (preparingDessert == null)
-			preparingDessert = (PreparingDessert) getFunction(FunctionType.PREPARING_DESSERT);
-		return preparingDessert;
-	}
-
-	public Cooking getCooking() {
-		if (cooking == null)
-			cooking = (Cooking) getFunction(FunctionType.COOKING);
-		return cooking;
-	}
-
-	public MedicalCare getMedical() {
-		if (medical == null)
-			medical = (MedicalCare) getFunction(FunctionType.MEDICAL_CARE);
-		return medical;
-	}
-
 	public WasteDisposal getWaste() {
 		if (waste == null)
 			waste = (WasteDisposal) getFunction(FunctionType.WASTE_DISPOSAL);
@@ -584,73 +662,6 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		if (garage == null)
 			garage = (VehicleMaintenance) getFunction(FunctionType.GROUND_VEHICLE_MAINTENANCE);
 		return garage;
-	}
-
-	public FoodProduction getFoodProduction() {
-		if (foodFactory == null)
-			foodFactory = (FoodProduction) getFunction(FunctionType.FOOD_PRODUCTION);
-		return foodFactory;
-	}
-
-	public ResourceProcessing getResourceProcessing() {
-		if (processing == null)
-			processing = (ResourceProcessing) getFunction(FunctionType.RESOURCE_PROCESSING);
-		return processing;
-	}
-
-	public Research getResearch() {
-		if (lab == null)
-			lab = (Research) getFunction(FunctionType.RESEARCH);
-		return lab;
-	}
-
-	public Management getManagement() {
-		if (management == null)
-			management = (Management) getFunction(FunctionType.MANAGEMENT);
-		return management;
-	}
-	
-	public Manufacture getManufacture() {
-		if (workshop == null)
-			workshop = (Manufacture) getFunction(FunctionType.MANUFACTURE);
-		return workshop;
-	}
-
-	public Administration getAdministration() {
-		if (admin == null)
-			admin = (Administration) getFunction(FunctionType.ADMINISTRATION);
-		return admin;
-	}
-
-	public Recreation getRecreation() {
-		if (rec == null)
-			rec = (Recreation) getFunction(FunctionType.RECREATION);
-		return rec;
-	}
-
-	public Dining getDining() {
-		if (dine == null)
-			dine = (Dining) getFunction(FunctionType.DINING);
-		return dine;
-	}
-
-	public GroundVehicleMaintenance getGroundVehicleMaintenance() {
-		if (maint == null)
-			maint = (GroundVehicleMaintenance) getFunction(FunctionType.GROUND_VEHICLE_MAINTENANCE);
-		return maint;
-	}
-
-	public AstronomicalObservation getAstronomicalObservation() {
-		if (astro == null)
-			astro = (AstronomicalObservation) getFunction(FunctionType.ASTRONOMICAL_OBSERVATIONS);
-		return astro;
-	}
-
-	public Exercise getExercise() {
-		if (gym == null)
-			gym = (Exercise) getFunction(FunctionType.EXERCISE);
-		return gym;
-
 	}
 
 	/**

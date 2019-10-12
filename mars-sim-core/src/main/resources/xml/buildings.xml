@@ -579,22 +579,22 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				     store on top of the aformentioned stock-capacity -->
 				<!-- capacity: the additional capacity (kg) for a resource. -->
 
-				<resource-storage resource="toxic waste" capacity="1000.0" />
-				<resource-storage resource="solid waste" capacity="1000.0" />
-				<resource-storage resource="food waste" capacity="1000.0" />
-				<resource-storage resource="grey water" capacity="1000.0" />
-				<resource-storage resource="black water" capacity="1000.0" />
+				<resource-storage resource="toxic waste" capacity="500.0" />
+				<resource-storage resource="solid waste" capacity="500.0" />
+				<resource-storage resource="food waste" capacity="500.0" />
+				<resource-storage resource="grey water" capacity="500.0" />
+				<resource-storage resource="black water" capacity="500.0" />
 
-				<resource-storage resource="food" capacity="1000.0" />
-				<resource-storage resource="water" capacity="1000.0" />
-				<resource-storage resource="oxygen" capacity="1000.0" />
+				<resource-storage resource="food" capacity="500.0" />
+				<resource-storage resource="water" capacity="500.0" />
+				<resource-storage resource="oxygen" capacity="500.0" />
 				<resource-storage resource="carbon dioxide" capacity="500.0" />
 				<resource-storage resource="carbon monoxide" capacity="500.0" />
 				<resource-storage resource="argon" capacity="500.0" />
-				<resource-storage resource="nitrogen" capacity="1000.0" />
+				<resource-storage resource="nitrogen" capacity="500.0" />
 
-				<resource-storage resource="ice" capacity="1000.0" />
-				<resource-storage resource="regolith" capacity="1000.0" />
+				<resource-storage resource="ice" capacity="500.0" />
+				<resource-storage resource="regolith" capacity="500.0" />
 
 				<resource-storage resource="chlorine" capacity="100.0" />
 				<resource-storage resource="sodium hypochlorite" capacity="100.0" />
@@ -1255,14 +1255,14 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 			<storage stock-capacity="10000">
 				<resource-storage resource="oxygen" capacity="1000.0" />
-				<resource-storage resource="water" capacity="5000.0" />
+				<resource-storage resource="water" capacity="1000.0" />
 
 				<resource-storage resource="electronic waste" capacity="500.0" />
 				<resource-storage resource="solid waste" capacity="500.0" />
 				<resource-storage resource="food waste" capacity="500.0" />
 				<resource-storage resource="toxic waste" capacity="500.0" />
 				
-				<resource-storage resource="grey water" capacity="5000.0" />
+				<resource-storage resource="grey water" capacity="1000.0" />
 				<resource-storage resource="black water" capacity="500.0" />
 
 				<resource-storage resource="food" capacity="500.0" />
@@ -1409,9 +1409,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</robotic-station>
 
 			<storage stock-capacity="10000">
-				<resource-storage resource="oxygen" capacity="1000.0" />
-				<resource-storage resource="water" capacity="1000.0" />
-				<resource-storage resource="food" capacity="1000.0" />
+				<resource-storage resource="oxygen" capacity="500.0" />
+				<resource-storage resource="water" capacity="500.0" />
+				<resource-storage resource="food" capacity="500.0" />
 
 				<resource-storage resource="solid waste" capacity="500.0" />
 				<resource-storage resource="food waste" capacity="500.0" />
@@ -1422,13 +1422,12 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-storage resource="carbon monoxide" capacity="500.0" />
 				<resource-storage resource="chlorine" capacity="100.0" />
 				<resource-storage resource="ice" capacity="500.0" />
-				<resource-storage resource="Sodium Hypochlorite" capacity="300.0" />
-				<resource-storage resource="Acetic Acid Bacteria" capacity="300.0" />
+				<resource-storage resource="Sodium Hypochlorite" capacity="100.0" />
+				<resource-storage resource="Acetic Acid Bacteria" capacity="100.0" />
 
-
-				<resource-storage resource="toilet tissue" capacity="500.0" />
-				<resource-storage resource="paper" capacity="500.0" />
-				<resource-storage resource="napkin" capacity="500.0" />
+				<resource-storage resource="toilet tissue" capacity="100.0" />
+				<resource-storage resource="paper" capacity="100.0" />
+				<resource-storage resource="napkin" capacity="100.0" />
 
 				<resource-storage resource="Cane Fiber" capacity="500.0" />
 				<resource-storage resource="Yeast" capacity="500.0" />
@@ -2559,22 +2558,22 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</robotic-station>
 			<storage stock-capacity="5000">
 				<!-- The building's storage capacity for a variety of resource. -->
-				<resource-storage resource="toxic waste" capacity="1000.0" />
-				<resource-storage resource="solid waste" capacity="1000.0" />
-				<resource-storage resource="food waste" capacity="1000.0" />
-				<resource-storage resource="grey water" capacity="2000.0" />
-				<resource-storage resource="black water" capacity="2000.0" />
+				<resource-storage resource="toxic waste" capacity="500.0" />
+				<resource-storage resource="solid waste" capacity="500.0" />
+				<resource-storage resource="food waste" capacity="500.0" />
+				<resource-storage resource="grey water" capacity="500.0" />
+				<resource-storage resource="black water" capacity="500.0" />
 
-				<resource-storage resource="food" capacity="1000.0" />
-				<resource-storage resource="water" capacity="3000.0" />
-				<resource-storage resource="oxygen" capacity="1000.0" />
+				<resource-storage resource="food" capacity="500.0" />
+				<resource-storage resource="water" capacity="500.0" />
+				<resource-storage resource="oxygen" capacity="500.0" />
 				<resource-storage resource="carbon dioxide" capacity="500.0" />
 				<resource-storage resource="carbon monoxide" capacity="500.0" />
 				<resource-storage resource="argon" capacity="500.0" />
-				<resource-storage resource="nitrogen" capacity="1000.0" />
+				<resource-storage resource="nitrogen" capacity="500.0" />
 
-				<resource-storage resource="ice" capacity="1000.0" />
-				<resource-storage resource="regolith" capacity="1000.0" />
+				<resource-storage resource="ice" capacity="500.0" />
+				<resource-storage resource="regolith" capacity="500.0" />
 
 				<resource-storage resource="chlorine" capacity="100.0" />
 				<resource-storage resource="sodium hypochlorite" capacity="100.0" />

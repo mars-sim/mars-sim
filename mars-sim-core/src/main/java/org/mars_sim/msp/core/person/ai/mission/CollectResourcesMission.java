@@ -63,8 +63,14 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 	/** Estimated collection time multiplier for EVA. */
 	public final static double EVA_COLLECTION_OVERHEAD = 20D;
 
+	/** THe maximum number of sites under consideration. */
+	public final static int MAX_NUM_PRIMARY_SITES = 30;
+	/** THe maximum number of sites under consideration. */
+	public final static int MAX_NUM_SECONDARY_SITES = 5;
+	
 	// Data members
-
+	/** The total site score of this prospective resource collection mission. */
+	private double totalSiteScore;
 	/** The amount of resources (kg) collected at a collection site. */
 	private double siteCollectedResources;
 	/** The starting amount of resources in a rover at a collection site. */
@@ -72,7 +78,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 	/** The goal amount of resources to collect at a site (kg). */
 	private double siteResourceGoal;
 	/** The resource collection rate for a person (kg/millisol). */
-	private double resourceCollectionRate;
+	protected double resourceCollectionRate;
 	/** The number of containers needed for the mission. */
 	private int containerNum;
 	/** External flag for ending collection at the current site. */
@@ -220,7 +226,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 				new NavPoint(startingSettlement.getCoordinates(), startingSettlement, startingSettlement.getName()));
 
 		Person person = null;
-		Robot robot = null;
+//		Robot robot = null;
 
 		// Add mission members.
 		Iterator<MissionMember> i = members.iterator();
@@ -447,6 +453,26 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 				if (member instanceof Person) {
 					Person person = (Person) member;
 
+					if (resourceID == ResourceUtil.iceID) {
+						double rate = 0;
+						
+						if (resourceCollectionRate == CollectIce.collectionRate) {
+							// Calculate the rate at the site now
+							rate = CollectIce.computeCollectionRate(person.getCoordinates());
+						}
+
+						// Randomize the rate of collection upon arrival
+						rate = rate * (1 + RandomUtil.getRandomDouble(1)
+								- RandomUtil.getRandomDouble(1));
+						
+						// TODO: Add how areologists and some scientiific study may come up with better technique 
+						// to obtain better estimation of the collection rate. Go to a prospective site, rather 
+						// than going to a site coordinate in the blind.
+						
+						resourceCollectionRate = rate;
+
+					}
+					
 					// If person can collect resources, start him/her on that task.
 					if (CollectResources.canCollectResources(person, getRover(), containerID, resourceID)) {
 						CollectResources collectResources = new CollectResources("Collecting Resources", person,
@@ -487,29 +513,108 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 		// Get the current location.
 		Coordinates startingLocation = getCurrentMissionLocation();
 
+		double limit = 0;
+		Direction direction = null;
+		Coordinates newLocation = null;
+		Coordinates currentLocation = null;
+		double siteDistance = 0;
+	
 		// Determine the first collection site.
-		Direction direction = new Direction(RandomUtil.getRandomDouble(2 * Math.PI));
-		double limit = range / 4D;
-		double siteDistance = RandomUtil.getRandomDouble(limit);
-		Coordinates newLocation = startingLocation.getNewLocation(direction, siteDistance);
-		unorderedSites.add(newLocation);
-		Coordinates currentLocation = newLocation;
+		if (resourceID == ResourceUtil.iceID) {
+			boolean quit = false;
+			double bestScore = 0;
+			Coordinates bestLocation = null;
+			int count = 0;
+			while (!quit) {
+				direction = new Direction(RandomUtil.getRandomDouble(2 * Math.PI));
+				limit = range / 4D;
+				siteDistance = RandomUtil.getRandomDouble(limit);
+				newLocation = startingLocation.getNewLocation(direction, siteDistance);
+				double score = CollectIce.computeCollectionRate(newLocation);
+				if (score > bestScore) {
+					bestScore = score;
+					bestLocation = newLocation;
+					if (count >= MAX_NUM_PRIMARY_SITES)
+						quit = true;
+				}
+				count++;
+			}
+			totalSiteScore += bestScore;
+			unorderedSites.add(bestLocation);
+			currentLocation = bestLocation;
+		}
+		else {
+			// for ResourceUtil.regolithID
+			direction = new Direction(RandomUtil.getRandomDouble(2 * Math.PI));
+			limit = range / 4D;
+			siteDistance = RandomUtil.getRandomDouble(limit);
+			newLocation = startingLocation.getNewLocation(direction, siteDistance);
+			
+			unorderedSites.add(newLocation);
+			currentLocation = newLocation;
+		}
 
 		// Determine remaining collection sites.
 		double remainingRange = (range / 2D) - siteDistance;
-		for (int x = 1; x < numSites; x++) {
-			double currentDistanceToSettlement = currentLocation.getDistance(startingLocation);
-			if (remainingRange > currentDistanceToSettlement) {
-				direction = new Direction(RandomUtil.getRandomDouble(2D * Math.PI));
-				double tempLimit1 = Math.pow(remainingRange, 2D) - Math.pow(currentDistanceToSettlement, 2D);
-				double tempLimit2 = (2D * remainingRange)
-						- (2D * currentDistanceToSettlement * direction.getCosDirection());
-				limit = tempLimit1 / tempLimit2;
-				siteDistance = RandomUtil.getRandomDouble(limit);
-				newLocation = currentLocation.getNewLocation(direction, siteDistance);
-				unorderedSites.add(newLocation);
-				currentLocation = newLocation;
-				remainingRange -= siteDistance;
+		
+		// Determine the first collection site.
+		if (resourceID == ResourceUtil.iceID) {
+
+			for (int x = 1; x < numSites; x++) {
+				double currentDistanceToSettlement = currentLocation.getDistance(startingLocation);
+				if (remainingRange > currentDistanceToSettlement) {
+					boolean quit = false;
+					double bestScore = 0;
+					Coordinates bestLocation = null;
+					int count = 0;
+	
+					while (!quit) {
+							
+						direction = new Direction(RandomUtil.getRandomDouble(2D * Math.PI));
+						
+						double tempLimit1 = Math.pow(remainingRange, 2D) - Math.pow(currentDistanceToSettlement, 2D);
+						double tempLimit2 = (2D * remainingRange)
+								- (2D * currentDistanceToSettlement * direction.getCosDirection());
+						limit = tempLimit1 / tempLimit2;
+						
+						siteDistance = RandomUtil.getRandomDouble(limit);
+						newLocation = currentLocation.getNewLocation(direction, siteDistance);
+						
+						double score = CollectIce.computeCollectionRate(newLocation);
+						if (score > bestScore) {
+							bestScore = score;
+							bestLocation = newLocation;
+							if (count >= MAX_NUM_SECONDARY_SITES)
+								quit = true;
+						}
+						count++;
+					}
+					
+					totalSiteScore += bestScore;
+					unorderedSites.add(bestLocation);
+					currentLocation = bestLocation;
+				
+					remainingRange -= siteDistance;
+				}
+			}
+		}
+		
+		else {
+			// for regolith collection mission
+			for (int x = 1; x < numSites; x++) {
+				double currentDistanceToSettlement = currentLocation.getDistance(startingLocation);
+				if (remainingRange > currentDistanceToSettlement) {
+					direction = new Direction(RandomUtil.getRandomDouble(2D * Math.PI));
+					double tempLimit1 = Math.pow(remainingRange, 2D) - Math.pow(currentDistanceToSettlement, 2D);
+					double tempLimit2 = (2D * remainingRange)
+							- (2D * currentDistanceToSettlement * direction.getCosDirection());
+					limit = tempLimit1 / tempLimit2;
+					siteDistance = RandomUtil.getRandomDouble(limit);
+					newLocation = currentLocation.getNewLocation(direction, siteDistance);
+					unorderedSites.add(newLocation);
+					currentLocation = newLocation;
+					remainingRange -= siteDistance;
+				}
 			}
 		}
 
@@ -799,6 +904,14 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 		}
 	}
 
+	/**
+	 * Gets the computed site score of this prospective resource collection mission.
+	 * @return
+	 */
+	public double getTotalSiteScore() {
+		return totalSiteScore;
+	}
+	
 	/**
 	 * Gets the description of a collection site.
 	 * 

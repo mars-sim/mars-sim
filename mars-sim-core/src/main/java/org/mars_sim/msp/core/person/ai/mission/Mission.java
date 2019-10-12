@@ -1452,7 +1452,8 @@ public abstract class Mission implements Serializable {
 	}
 
 	public String createFullDesignation(Person p) {	
-		return Conversion.getInitials(getDescription()) + " " + MissionManager.getMissionDesignationString(p.getAssociatedSettlement().getName());
+		return Conversion.getInitials(getDescription()) + " " 
+				+ missionManager.getMissionDesignationString(p.getAssociatedSettlement().getName());
 	}
 	
 	public void setReservedVehicle(String name) {
