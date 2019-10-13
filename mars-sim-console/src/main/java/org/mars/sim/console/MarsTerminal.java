@@ -52,7 +52,7 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
 	
     private final JPopupMenu popup = new JPopupMenu();
     
-	private static MasterClock masterClock = Simulation.instance().getMasterClock();
+	private static MasterClock masterClock;
 	
 
     private static class PopupListener extends MouseAdapter {
@@ -81,9 +81,6 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
     	this.interactiveTerm = interactiveTerm;
 //    	System.out.println("w: " + getFrame().getWidth()); // w: 656  	
 //    	System.out.println("h: " + getFrame().getHeight()); // h: 519    	
-    	
-		// Add clock listener
-    	masterClock.addClockListener(this);
 		
         configureMainMenu();
 
@@ -220,6 +217,11 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
         JMenuItem pauseItem = new JMenuItem("Pause/Unpause", KeyEvent.VK_P);
         pauseItem.addActionListener(e -> {
 
+        	if (masterClock == null) {
+        		masterClock = Simulation.instance().getMasterClock();
+        		setMasterClock(masterClock);
+        	}		
+        	
         	if (masterClock != null) {
         		
 				if (masterClock.isPaused()) {
@@ -295,6 +297,12 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
 		}
 	}
 
+   public void setMasterClock(MasterClock masterClock) {
+	   this.masterClock = masterClock;
+	   // Add clock listener
+	   masterClock.addClockListener(this);
+	   logger.config("MarsTerminal's clock listener added");
+    }
 
 	@Override
 	public void clockPulse(double time) {
@@ -314,5 +322,6 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
 	public void pauseChange(boolean isPaused, boolean showPane) {
 		changeTitle(isPaused);
 	}
+	
 	
 }

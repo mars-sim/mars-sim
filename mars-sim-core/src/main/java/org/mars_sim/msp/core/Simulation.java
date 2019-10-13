@@ -926,16 +926,7 @@ public class Simulation implements ClockListener, Serializable {
 	 */
 	private void reinitializeInstances() {
 		// Re-initialize the utility class for getting lists of meta tasks.
-		new MetaTaskUtil();
-		
-		// Update/reset the identifier count for each type of units 
-		Person.reinitializeIdentifierCount();
-		Robot.reinitializeIdentifierCount();
-		Settlement.reinitializeIdentifierCount();
-		Vehicle.reinitializeIdentifierCount();
-		Building.reinitializeIdentifierCount();
-		Equipment.reinitializeIdentifierCount();
-		ConstructionSite.reinitializeIdentifierCount();
+		new MetaTaskUtil();		
 		
 		// Re-initialize the resources for the saved sim
 		ResourceUtil.getInstance().initializeInstances();
@@ -1008,6 +999,15 @@ public class Simulation implements ClockListener, Serializable {
 		// Start a chain of calls to set instances on each person
 		unitManager.reinit(marsClock);
 		
+		// Update/reset the identifier count for each type of units 
+		Person.reinitializeIdentifierCount();
+		Robot.reinitializeIdentifierCount();
+		Vehicle.reinitializeIdentifierCount();
+		Building.reinitializeIdentifierCount();
+		Equipment.reinitializeIdentifierCount();
+		Settlement.reinitializeIdentifierCount();
+		ConstructionSite.reinitializeIdentifierCount();
+
 		RelationshipManager.initializeInstances(unitManager);
 		MalfunctionManager.initializeInstances(masterClock, marsClock, malfunctionFactory, medicalManager, eventManager);
 		TransportManager.initializeInstances(marsClock, eventManager);

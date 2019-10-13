@@ -414,7 +414,9 @@ public class MasterClock implements Serializable {
 				hasIt = true;
 		}
 		if (!hasIt) {
-			clockListenerTasks.add(new ClockListenerTask(listener));
+			ClockListenerTask clt = new ClockListenerTask(listener);
+			clockListenerTasks.add(clt);
+			logger.config(clt.getClockListener().getClass().getSimpleName() + "'s clock listener added.");
 		}
 	}
 
@@ -1026,14 +1028,16 @@ public class MasterClock implements Serializable {
 			try {
 
 				// The most important job for CLockListener is to send a clock pulse to
-				// 0. Simulation
+				// 1. Simulation
+
 				// so that 
 				// 1. UpTimer,
 				// 2. Mars, 
 				// 3. MissionManager,
 				// 4. UnitManager, 
 				// 5. ScientificStudyManager, 
-				// 6. TransportManager
+				// 6. TransportManager,
+			
 				// gets updated.
 				listener.clockPulse(time);
 				timeCache += time;
@@ -1090,15 +1094,18 @@ public class MasterClock implements Serializable {
 					// windows
 					//
 					// It also sends an ui pulse out to the following class and map related panels:
-					// 1. SettlementMapPanel
-					// 2. ArrivingSettlementDetailPanel
-					// 3. GlobeDisplay
-					// 4. MapPanel
-					// 5. ResupplyDetailPanel
-					// 6. Telegraph
-					// 7. TimeWindow
-					// 8. EventTableModel
-					// 9. NotificationWindow
+
+					// 1. MarsTerminal
+					// 2. AudioPlayer
+					// 3. MainDesktopPane
+					// 4. GlobeDisplay
+					// 5. MapPanel (2x)
+					// 6. TimeWindow
+					// 7. SettlementMapPanel
+					// 8. NotificationWindow
+					// 9. ResupplyDetailPanel
+					//10. ArrivingSettlementDetailPanel
+					
 					
 					// Note: on a typical PC, approximately one ui pulse is sent out each second
 					listener.uiPulse(timeCache);

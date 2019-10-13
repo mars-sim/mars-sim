@@ -84,9 +84,9 @@ public class Telegraph implements ClockListener {
 	 * {@link Telegraph}
 	 */
 	private Timeline timelineAway;
-
-	// 2014-12-17 Added Timer	
+	
 	private Timer pauseTimer;
+	
 	private boolean isPaused = false;
 	
 	/**
@@ -102,7 +102,7 @@ public class Telegraph implements ClockListener {
 		config = new TelegraphConfig();
 		// Use it right now for this object
 		configure();
-		// 2014-12-17 Added addClockListener()
+		// Call addClockListener()
 		Simulation.instance().getMasterClock().addClockListener(this);
 
 	}
@@ -123,7 +123,7 @@ public class Telegraph implements ClockListener {
 		this.config = config;
 		// Call the configuration of this object
 		configure();
-		// 2014-12-17 Added addClockListener()
+		// call addClockListener()
 		Simulation.instance().getMasterClock().addClockListener(this);
 	}
 
@@ -137,23 +137,21 @@ public class Telegraph implements ClockListener {
 	public TelegraphConfig getConfig() {
 		return config;
 	}
-/*	
-	// 2014-12-17 Added
-	public Timeline getTimelineStay() {
-		return timelineStay;
-	}
 
-	// 2014-12-17 Added
-	public Timeline getTimelineIntro() {
-		return timelineIntro;
-	}
-	
-	// 2014-12-17 Added
-	public Timeline getTimelineAway() {
-		return timelineAway;
-	}
-	*/
-	
+//	public Timeline getTimelineStay() {
+//		return timelineStay;
+//	}
+//
+//
+//	public Timeline getTimelineIntro() {
+//		return timelineIntro;
+//	}
+//	
+//
+//	public Timeline getTimelineAway() {
+//		return timelineAway;
+//	}
+
 	/**
 	 * Checks if the animation is still running.
 	 * 
@@ -168,7 +166,6 @@ public class Telegraph implements ClockListener {
 	}
 
 	
-	// 2014-12-17 Added CancelTimer
 	public class CancelTimer extends TimerTask {
 		@Override
 		public void run() {
@@ -256,7 +253,7 @@ public class Telegraph implements ClockListener {
 			checkSimulationPause();
 	}
 
-	// 2014-12-17 Added checkSimulationPause()
+
 	public void checkSimulationPause() {
 		if (isPaused) {
 			// If the window is in position
@@ -296,7 +293,6 @@ public class Telegraph implements ClockListener {
 	}
 
 
-	// 2014-12-17 Added clockPulse()
 	public void clockPulse(double time) {
 		// TODO Auto-generated method stub			
 

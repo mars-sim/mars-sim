@@ -373,8 +373,6 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	private static int foodID = ResourceUtil.foodID;
 	private static int methaneID = ResourceUtil.methaneID;
 
-	private static UnitManager unitManager;
-
 	private static MaintenanceMeta maintenanceMeta;
 	private static MaintenanceEVAMeta maintenanceEVAMeta;
 	private static RepairMalfunctionMeta repairMalfunctionMeta;

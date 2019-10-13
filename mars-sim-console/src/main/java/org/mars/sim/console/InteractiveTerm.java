@@ -51,7 +51,7 @@ public class InteractiveTerm {
     
     private static boolean useCrew = true;
 	
-	private static MarsTerminal terminal;
+	private static MarsTerminal marsTerminal;
 	
 	private static ChatMenu chatMenu;
 	
@@ -61,6 +61,8 @@ public class InteractiveTerm {
 	
 	private static TextIO textIO;
 	
+	private static Simulation sim = Simulation.instance();
+    
 	private static MasterClock masterClock;
 	
 	private static SwingHandler handler;
@@ -73,10 +75,10 @@ public class InteractiveTerm {
 		this.consoleEdition = consoleEdition;
 		interactiveTerm = this;
 		
-		terminal = new MarsTerminal(this);
-        terminal.init();
+		marsTerminal = new MarsTerminal(this);
+        marsTerminal.init();
         
-        textIO = new TextIO(terminal);
+        textIO = new TextIO(marsTerminal);
         
         setUpArrows();
         
@@ -92,7 +94,7 @@ public class InteractiveTerm {
     		
             handler = new SwingHandler(textIO, "console", gm);
 //    		// Prevent allow users from arbitrarily close the terminal by clicking top right close button
-    		terminal.registerUserInterruptHandler(term -> {}, false);
+    		marsTerminal.registerUserInterruptHandler(term -> {}, false);
     		
     		setKeepRunning(true);
 
@@ -102,6 +104,7 @@ public class InteractiveTerm {
         else {
         	
         }
+        
 	}
 	
     
@@ -124,7 +127,7 @@ public class InteractiveTerm {
         handler = new SwingHandler(textIO, "console", gm);
         
 		// Prevent allow users from arbitrarily close the terminal by clicking top right close button
-		terminal.registerUserInterruptHandler(term -> {}, false);
+		marsTerminal.registerUserInterruptHandler(term -> {}, false);
 		
 		return selectMode();
 	}
@@ -138,7 +141,7 @@ public class InteractiveTerm {
 	public boolean selectMode() {
 		boolean useSCE = false;
 		
-		terminal.print(System.lineSeparator() 
+		marsTerminal.print(System.lineSeparator() 
 				+ " ---------------  M A R S   S I M U L A T I O N   P R O J E C T  ---------------\n"
 				+ System.lineSeparator()
 				+ "                        * * *   Mode Selection   * * *\n"
@@ -158,11 +161,9 @@ public class InteractiveTerm {
         handler.executeOneTask();
 
         if (GameManager.input.equals("0")) {
-            Simulation sim = Simulation.instance();
         	sim.endSimulation(); 
     		sim.getSimExecutor().shutdownNow();
-//    		if (sim.getMasterClock() != null)
-//    			sim.getMasterClock().exitProgram();
+
     		logger.info("Exiting the Simulation.");
     		setKeepRunning(false);
 			System.exit(0);
@@ -176,7 +177,7 @@ public class InteractiveTerm {
         	useSCE = selectSandoxMode();
         }
         
-		terminal.print(System.lineSeparator());
+		marsTerminal.print(System.lineSeparator());
 		
         return useSCE;
 	}
@@ -188,9 +189,9 @@ public class InteractiveTerm {
 	 */
 	public boolean selectSCE() {
 		boolean useSCE = false;
-		terminal.println(System.lineSeparator());
+		marsTerminal.println(System.lineSeparator());
 		
-	    terminal.println(System.lineSeparator() 
+	    marsTerminal.println(System.lineSeparator() 
         		+ System.lineSeparator()
         		+ "           * * *   Command Mode - Site Selection   * * *" 
          		+ System.lineSeparator()
@@ -209,25 +210,25 @@ public class InteractiveTerm {
         handler.executeOneTask();
 
         if ((GameManager.useSCE).equals("0")) {
-        	terminal.print(System.lineSeparator());
-			terminal.print("Starting the simulation...");	
+        	marsTerminal.print(System.lineSeparator());
+			marsTerminal.print("Starting the simulation...");	
         }
         
         else if ((GameManager.useSCE).equals("1")) {
         	if (consoleEdition) {
-				terminal.print(System.lineSeparator());
-				terminal.print("Sorry. The Console Edition of mars-sim does not come with the Site Editor.");	
-				terminal.print(System.lineSeparator());
+				marsTerminal.print(System.lineSeparator());
+				marsTerminal.print("Sorry. The Console Edition of mars-sim does not come with the Site Editor.");	
+				marsTerminal.print(System.lineSeparator());
         	}
         	else {
-				terminal.print(System.lineSeparator());
-				terminal.print("Loading the Site Editor...");
-				terminal.print(System.lineSeparator());
+				marsTerminal.print(System.lineSeparator());
+				marsTerminal.print("Loading the Site Editor...");
+				marsTerminal.print(System.lineSeparator());
 				useSCE = true;
         	}
         }
         
-		terminal.print(System.lineSeparator());
+		marsTerminal.print(System.lineSeparator());
 		
         return useSCE;
 	}
@@ -243,7 +244,7 @@ public class InteractiveTerm {
 		// Set the Game Mode to Command Mode in GameManager
 		GameManager.mode = GameMode.COMMAND;
 		
-        terminal.println(System.lineSeparator() 
+        marsTerminal.println(System.lineSeparator() 
         		+ System.lineSeparator()
         		+ "            * * *   Command Mode - Crew Selection   * * *" 
         		+ System.lineSeparator()
@@ -267,20 +268,20 @@ public class InteractiveTerm {
         handler.executeOneTask();
 
         if ((GameManager.command0).equals("0")) {
-			terminal.print(System.lineSeparator());
-			terminal.print("Back to the previous menu..");
+			marsTerminal.print(System.lineSeparator());
+			marsTerminal.print("Back to the previous menu..");
 			return selectMode();
         }
         
         else if ((GameManager.command0).equals("1")) {
-			terminal.print(System.lineSeparator());
+			marsTerminal.print(System.lineSeparator());
 			if (useCrew) {			
 				useCrew = false;
-				terminal.print("Loading the alpha crew will be DISABLED.");
+				marsTerminal.print("Loading the alpha crew will be DISABLED.");
 			}
 			else {
 				useCrew = true;
-				terminal.print("Loading the alpha crew will be ENABLED.");
+				marsTerminal.print("Loading the alpha crew will be ENABLED.");
 			}
 			
 	    	// Set the alpha crew use
@@ -291,7 +292,7 @@ public class InteractiveTerm {
     	}
     	
     	else if ((GameManager.command0).equals("2")) {
-			terminal.print(System.lineSeparator());
+			marsTerminal.print(System.lineSeparator());
 			// Set new profile
 			profile.accept(textIO, null);
 			
@@ -305,7 +306,7 @@ public class InteractiveTerm {
     		useSCE = selectSCE();
     	}
         
-		terminal.print(System.lineSeparator());
+		marsTerminal.print(System.lineSeparator());
 		
         return useSCE;
 	}
@@ -321,7 +322,7 @@ public class InteractiveTerm {
 		
 		GameManager.mode = GameMode.SANDBOX;
 
-        terminal.println(System.lineSeparator() 
+        marsTerminal.println(System.lineSeparator() 
         		+ System.lineSeparator()
         		+ "           * * *  Sandbox Mode - Crew and Site Selection  * * *" 
         		+ System.lineSeparator()
@@ -343,41 +344,41 @@ public class InteractiveTerm {
         handler.executeOneTask();
 
     	if ((GameManager.sandbox0).equals("0")) {
-			terminal.print(System.lineSeparator());
-			terminal.print("Starting the simulation...");
-			terminal.print(System.lineSeparator());
+			marsTerminal.print(System.lineSeparator());
+			marsTerminal.print("Starting the simulation...");
+			marsTerminal.print(System.lineSeparator());
     	}
     	
     	else if ((GameManager.sandbox0).equals("1")) {
         	if (consoleEdition) {
-				terminal.print(System.lineSeparator());
-				terminal.print("Sorry. The Console Edition of mars-sim does not come with the Site Editor.");	
-				terminal.println(System.lineSeparator());
+				marsTerminal.print(System.lineSeparator());
+				marsTerminal.print("Sorry. The Console Edition of mars-sim does not come with the Site Editor.");	
+				marsTerminal.println(System.lineSeparator());
 				
 				useSCE = selectSandoxMode();
         	}
         	else {
-				terminal.print(System.lineSeparator());
-				terminal.print("Loading the Site Editor...");
-				terminal.println(System.lineSeparator());
+				marsTerminal.print(System.lineSeparator());
+				marsTerminal.print("Loading the Site Editor...");
+				marsTerminal.println(System.lineSeparator());
 				
 				useSCE = true;
         	}
         }
         
         else if ((GameManager.sandbox0).equals("2")) {
-			terminal.print(System.lineSeparator());
+			marsTerminal.print(System.lineSeparator());
 			if (useCrew) {			
 				useCrew = false;
-				terminal.print("Loading the alpha crew will be DISABLED.");	
+				marsTerminal.print("Loading the alpha crew will be DISABLED.");	
 			}
 			else {
 				useCrew = true;
-				terminal.print("Loading the alpha crew will be ENABLED.");
+				marsTerminal.print("Loading the alpha crew will be ENABLED.");
 			}
 			
-			terminal.print(System.lineSeparator());
-			terminal.print(System.lineSeparator());
+			marsTerminal.print(System.lineSeparator());
+			marsTerminal.print(System.lineSeparator());
 			
 	    	// Set the alpha crew use
 	    	UnitManager.setCrew(useCrew);
@@ -401,7 +402,7 @@ public class InteractiveTerm {
 			boolean canLoad = CommanderProfile.loadProfile();
 			
 			if (canLoad) {
-	            terminal.println(System.lineSeparator() 
+	            marsTerminal.println(System.lineSeparator() 
 	            		+ System.lineSeparator()
 	            		+ "                * * *   Commander Profile  * * *" 
 	            		+ System.lineSeparator()
@@ -412,7 +413,7 @@ public class InteractiveTerm {
 	            boolean like = textIO.newBooleanInputReader().withDefaultValue(true).read("Would you like to use this profile ?");
 	            
 	        	if (!like) {
-	    			terminal.print(System.lineSeparator() 
+	    			marsTerminal.print(System.lineSeparator() 
 	    					+ "Back to the mode selection" 
 	    					+ System.lineSeparator()
 	    					+ System.lineSeparator());
@@ -421,7 +422,7 @@ public class InteractiveTerm {
 			}
 			
 			else {
-    			terminal.print(System.lineSeparator() 
+    			marsTerminal.print(System.lineSeparator() 
     					+ "Can't find the 'commander.profile' file." 
     					+ System.lineSeparator()
     					+ System.lineSeparator());
@@ -432,7 +433,7 @@ public class InteractiveTerm {
 			// TODO Auto-generated catch block
 //			e.printStackTrace();
 			logger.severe("Error loading the commander profile.");
-			terminal.print(System.lineSeparator() 
+			marsTerminal.print(System.lineSeparator() 
 					+ "Error loading the commander profile." 
 					+ System.lineSeparator()
 					+ System.lineSeparator());
@@ -477,18 +478,22 @@ public class InteractiveTerm {
 	
 	
 	public static void setUpRunningLoop() {
-		
+		if (sim == null) {
+			sim = Simulation.instance();
+		}
+    	if (masterClock == null) {
+    		masterClock = sim.getMasterClock();
+            setMasterClock();
+    	}
+    	
 		while (keepRunning) {
 			     
 		    BiConsumer<TextIO, RunnerData> menu = chooseMenu(textIO);
-		    terminal.printf(System.lineSeparator());
-	       
+		    marsTerminal.printf(System.lineSeparator());
+	    	
 		    // Set up the prompt for the menu
 		    menu.accept(textIO, null);
-	        
-	    	if (masterClock == null)
-	    		masterClock = Simulation.instance().getMasterClock();
-	    	
+	            		
 		    // if the sim is being saved, enter this while loop
 			while (masterClock.isSavingSimulation()) {
 		    	delay(500L);
@@ -584,9 +589,9 @@ public class InteractiveTerm {
      * Sets up arrow keys
      */
     public static void setUpArrows() {
-        terminal.registerHandler(KEY_STROKE_UP, t -> {
+        marsTerminal.registerHandler(KEY_STROKE_UP, t -> {
             if(choiceIndex < 0) {
-                originalInput = terminal.getPartialInput();
+                originalInput = marsTerminal.getPartialInput();
             }
             if(choiceIndex < choices.length - 1) {
                 choiceIndex++;
@@ -595,7 +600,7 @@ public class InteractiveTerm {
             return new ReadHandlerData(ReadInterruptionStrategy.Action.CONTINUE);
         });
 
-        terminal.registerHandler(KEY_STROKE_DOWN, t -> {
+        marsTerminal.registerHandler(KEY_STROKE_DOWN, t -> {
             if(choiceIndex >= 0) {
                 choiceIndex--;
                 String text = (choiceIndex < 0) ? originalInput : choices[choiceIndex];
@@ -609,18 +614,23 @@ public class InteractiveTerm {
      * Sets up the ESC key
      */
     public static void setUpESC() {
-        terminal.registerHandler(KEY_ESC, t -> {
-        	MasterClock mc = Simulation.instance().getMasterClock();
-        	if (mc != null) {
-				if (mc.isPaused()) {
-					mc.setPaused(false, false);
+        marsTerminal.registerHandler(KEY_ESC, t -> {
+    		if (sim == null) {
+    			sim = Simulation.instance();
+    		}
+        	if (masterClock == null) {
+        		masterClock = sim.getMasterClock();
+        	}
+        	if (masterClock != null) {
+				if (masterClock.isPaused()) {
+					masterClock.setPaused(false, false);
 //					terminal.printf(System.lineSeparator() + System.lineSeparator());
 //					terminal.printf("                          [ Simulation Resumed ]");
 					//terminal.printf(System.lineSeparator() + System.lineSeparator());
 				}
 				else {
 //					terminal.resetLine();
-					mc.setPaused(true, false);
+					masterClock.setPaused(true, false);
 //					terminal.printf(System.lineSeparator() + System.lineSeparator());
 //					terminal.printf("                           [ Simulation Paused ]");
 					//terminal.printf(System.lineSeparator() + System.lineSeparator());
@@ -655,7 +665,7 @@ public class InteractiveTerm {
 	
 
     public MarsTerminal getTerminal() {
-    	return terminal;
+    	return marsTerminal;
     }
     
     public static TextIO getTextIO() {
@@ -667,7 +677,7 @@ public class InteractiveTerm {
     }
     
     public static void disposeTerminal() {
-    	terminal.dispose(null);
+    	marsTerminal.dispose(null);
     }
     
     public SwingHandler getHandler() {
@@ -676,5 +686,9 @@ public class InteractiveTerm {
     
     public GameManager getGameManager() {
     	return gm;
+    }
+    
+    public static void setMasterClock() {
+    	marsTerminal.setMasterClock(masterClock);
     }
 }

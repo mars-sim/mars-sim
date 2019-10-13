@@ -39,9 +39,6 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
  * Events are based from HistoricalEvent.java
  */
 // TODO: Does subclassing JDialog have slower performance than not? 
-// 2014-11-29 Renamed NotificationManager to NotificationWindow 
-// 2014-11-29 Relocated its instantiation from EventTableModel to MonitorWindow
-// 2014-12-05 Added notification settings to msp
 public class NotificationWindow extends JDialog implements ClockListener {
 
 	private static final long serialVersionUID = 1L;
@@ -58,20 +55,14 @@ public class NotificationWindow extends JDialog implements ClockListener {
 	private boolean showMalfunctionCache = true;	
 	private boolean willNotify= false;
 	private boolean areAnySettingsChanged = false;
-	// 2014-12-17 Added isPaused	
+
 	private boolean isPaused = false;
 	
 	private int maxNumMsg = 99;
 	private int maxNumMsgCache = 99;
 	private int displayTime = 2;
 	private int displayTimeCache = 2;	
-	//private int messageCounter = 0;
-	//TODO: need to create an array of two element with name 
-	// as array[0] and header as array[1]
-	//private String header;
-	//private String message = "";		
-	//	private String matchedWord1 = "fixed";
-	//	private String matchedWord2 = "recovering";
+
 	protected String name;
 	private String oldMsgCache = "";
 	
@@ -139,7 +130,6 @@ public class NotificationWindow extends JDialog implements ClockListener {
 		
 	}
 	
-	// 2014-12-10 Added Timer
 	public class CancelTimer extends TimerTask {
 		@Override
 		public void run() {
@@ -167,8 +157,6 @@ public class NotificationWindow extends JDialog implements ClockListener {
 		}	
 	}
 
-	// 2014-11-15 Created sendAlert()
-	// 2014-12-10 Renamed to setupTelegraph() and moved some codes to setupTelegraph()
 	public void setupTelegraph(HistoricalEvent event, 
 			String message, String header) {
 
@@ -227,7 +215,6 @@ public class NotificationWindow extends JDialog implements ClockListener {
 	public void sendTelegraph(TelegraphConfig telegraphConfig, 
 			String msg, String header) {
 				
-		// 2014-12-17 Added isPaused and if then else clause
 		//boolean isPaused = Simulation.instance().getMasterClock().isPaused();
 		if (isPaused) {
 			System.out.println("NotificationWindow.java : sendTelegraph() : isPaused is true");
@@ -285,22 +272,19 @@ public class NotificationWindow extends JDialog implements ClockListener {
 //		if (willNotify) setupTelegraph(event, message, header);
 	}
 	
-	// 2014-11-16 Added modifyMsg()
-	//TODO: 
+
 	public String parseMsg(String msg) {
 		
 		// or use String replaced = string.replace("abcd", "dddd");
 		msg = msg.toUpperCase();
 		msg = msg.replaceAll("OCCURRED", "");
 
-		/*
-		message = message.replaceAll("COLD", "a COLD");
-		message = message.replaceAll("FLU", "a FLU");
-		message = message.replaceAll("NAVIGATION", "a NAVIGATION");
-		message = message.replaceAll("MAJOR", "a MAJOR");
-		message = message.replaceAll("MINOR", "a MINOR");
-		message = message.replaceAll("FUEL", "a FUEL");
-		 */
+//		message = message.replaceAll("COLD", "a COLD");
+//		message = message.replaceAll("FLU", "a FLU");
+//		message = message.replaceAll("NAVIGATION", "a NAVIGATION");
+//		message = message.replaceAll("MAJOR", "a MAJOR");
+//		message = message.replaceAll("MINOR", "a MINOR");
+//		message = message.replaceAll("FUEL", "a FUEL");
 
 		msg = "a " + msg;
 		
@@ -331,7 +315,13 @@ public class NotificationWindow extends JDialog implements ClockListener {
 		return msg;
 	}
 	
-	//prepare the notification box for displaying the message
+	/**
+	 * Prepare the notification box for displaying the message
+	 * 
+	 * @param event
+	 * @param msg
+	 * @return
+	 */
 	public String generateMsg(HistoricalEvent event, String msg)  {
 		//count++;
 
@@ -588,7 +578,6 @@ public class NotificationWindow extends JDialog implements ClockListener {
 		logger.info(message);
 		message = "<html><CENTER><FONT COLOR=RED>" + message + "</FONT COLOR=RED></CENTER></html>";
 
-		// 2014-11-16 Added modifyMsg()
 		return message;
 	}
 	
