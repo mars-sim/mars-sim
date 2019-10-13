@@ -1982,6 +1982,14 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		mind.reinit();
 		condition.reinit();
 	}
+
+	/**
+	 * Reset uniqueCount to the current number of people
+	 */
+	public static void reinitializeIdentifierCount() {
+		uniqueCount = unitManager.getTotalNumPeople() + Unit.FIRST_PERSON_UNIT_ID;
+	}
+	
 	
 	public boolean equals(Object obj) {
 		if (this == obj) return true;

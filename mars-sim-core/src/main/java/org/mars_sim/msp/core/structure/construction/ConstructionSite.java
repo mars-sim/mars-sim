@@ -509,12 +509,10 @@ implements Serializable, LocalBoundedObject {
         return result.toString();
     }
 
-    // 2015-12-18 Created getConstructionManager()
     public ConstructionManager getConstructionManager() {
     	return constructionManager;
     }
 
-    // 2015-12-18 Created getSettlement()
     public Settlement getSettlement() {
     	return settlement;
     }
@@ -585,5 +583,12 @@ implements Serializable, LocalBoundedObject {
 	public static void justReloaded(UnitManager u) {
 		unitManager = u;
 	}
+	
+	/**
+	 * Reset uniqueCount to the current number of building
+	 */
+	public static void reinitializeIdentifierCount() {
+		uniqueCount = unitManager.getSitesNum() + Unit.FIRST_SITE_UNIT_ID;
+	} 
 	
 }

@@ -310,6 +310,13 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 		return equipmentType;
 	}
 	
+	/**
+	 * Reset uniqueCount to the current number of equipment
+	 */
+	public static void reinitializeIdentifierCount() {
+		uniqueCount = unitManager.getEquipmentNum() + Unit.FIRST_EQUIPMENT_UNIT_ID;
+	}
+	
 	public boolean equals(Object obj) {
 		if (this == obj) return true;
 		if (obj == null) return false;

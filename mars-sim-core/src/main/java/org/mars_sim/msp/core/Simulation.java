@@ -40,6 +40,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.interplanetary.transport.TransportManager;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
@@ -54,6 +55,7 @@ import org.mars_sim.msp.core.mars.OrbitInfo;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.mars.Weather;
 import org.mars_sim.msp.core.person.CircadianClock;
+import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.Mind;
@@ -72,6 +74,7 @@ import org.mars_sim.msp.core.person.health.HealthProblem;
 import org.mars_sim.msp.core.person.health.MedicalManager;
 import org.mars_sim.msp.core.person.health.RadiationExposure;
 import org.mars_sim.msp.core.resource.ResourceUtil;
+import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.BotMind;
 import org.mars_sim.msp.core.robot.ai.job.RobotJob;
 import org.mars_sim.msp.core.science.ScientificStudy;
@@ -91,6 +94,7 @@ import org.mars_sim.msp.core.structure.building.function.ResourceProcess;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 import org.mars_sim.msp.core.structure.building.function.farming.Crop;
 import org.mars_sim.msp.core.structure.building.function.farming.Farming;
+import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.core.structure.construction.SalvageValues;
 import org.mars_sim.msp.core.structure.goods.CreditManager;
 import org.mars_sim.msp.core.structure.goods.GoodsManager;
@@ -102,6 +106,7 @@ import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.time.SystemDateTime;
 import org.mars_sim.msp.core.time.UpTimer;
 import org.mars_sim.msp.core.tool.CheckSerializedSize;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.tukaani.xz.FilterOptions;
 import org.tukaani.xz.LZMA2Options;
 import org.tukaani.xz.XZInputStream;
@@ -922,6 +927,16 @@ public class Simulation implements ClockListener, Serializable {
 	private void reinitializeInstances() {
 		// Re-initialize the utility class for getting lists of meta tasks.
 		new MetaTaskUtil();
+		
+		// Update/reset the identifier count for each type of units 
+		Person.reinitializeIdentifierCount();
+		Robot.reinitializeIdentifierCount();
+		Settlement.reinitializeIdentifierCount();
+		Vehicle.reinitializeIdentifierCount();
+		Building.reinitializeIdentifierCount();
+		Equipment.reinitializeIdentifierCount();
+		ConstructionSite.reinitializeIdentifierCount();
+		
 		// Re-initialize the resources for the saved sim
 		ResourceUtil.getInstance().initializeInstances();
 		// Re-initialize the MarsSurface instance

@@ -966,6 +966,13 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 		botMind.reinit();
 	}
 	
+	/**
+	 * Reset uniqueCount to the current number of robots
+	 */
+	public static void reinitializeIdentifierCount() {
+		uniqueCount = unitManager.getRobotsNum() + Unit.FIRST_ROBOT_UNIT_ID;
+	}
+	
 	@Override
 	public void destroy() {
 		super.destroy();

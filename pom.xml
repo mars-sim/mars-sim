@@ -7,7 +7,7 @@
 	<groupId>com.github</groupId>
 	<artifactId>mars-sim</artifactId>
 	<packaging>pom</packaging>
-	<version>${project.version}</version>
+	<version>3.1.0</version>
 	<name>mars-sim</name>
 	<url>https://github.com/mars-sim/mars-sim</url>
 	<inceptionYear>2009</inceptionYear>

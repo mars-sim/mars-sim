@@ -1349,6 +1349,14 @@ public abstract class Vehicle extends Unit
 		return false;
 	}
 	
+	/**
+	 * Reset uniqueCount to the current number of vehicles
+	 */
+	public static void reinitializeIdentifierCount() {
+		uniqueCount = unitManager.getVehiclesNum() + Unit.FIRST_VEHICLE_UNIT_ID;
+	}
+
+	
 	public boolean equals(Object obj) {
 		if (this == obj) return true;
 		if (obj == null) return false;

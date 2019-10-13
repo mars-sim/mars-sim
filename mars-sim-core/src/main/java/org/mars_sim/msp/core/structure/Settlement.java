@@ -4382,6 +4382,14 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
     	return iceCollectionRate;
     }
 	
+	/**
+	 * Reset uniqueCount to the current number of settlements
+	 */
+	public static void reinitializeIdentifierCount() {
+		uniqueCount = unitManager.getSettlementNum() + Unit.FIRST_SETTLEMENT_UNIT_ID;
+	}
+
+	
 	public boolean equals(Object obj) {
 		if (this == obj) return true;
 		if (obj == null) return false;

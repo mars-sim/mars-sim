@@ -1554,6 +1554,17 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		return this;
 	}
 
+	public void reinit() {
+		// transient instances
+	}
+	
+	/**
+	 * Reset uniqueCount to the current number of building
+	 */
+	public static void reinitializeIdentifierCount() {
+		uniqueCount = unitManager.getBuildingsNum() + Unit.FIRST_BUILDING_UNIT_ID;
+	} 
+	
 	public boolean equals(Object obj) {
 		if (this == obj) return true;
 		if (obj == null) return false;
@@ -1574,11 +1585,6 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		hashCode *= identifier;
 		hashCode *= buildingType.hashCode();
 		return hashCode;
-	}
-	
-	public void reinit() {
-		// transient instances
-		
 	}
 	
 	/**

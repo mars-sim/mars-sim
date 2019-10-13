@@ -2151,7 +2151,7 @@ public class UnitManager implements Serializable {
 	 *
 	 * @return the number of vehicles
 	 */
-	public int getVehicleNum() {
+	public int getVehiclesNum() {
 		return lookupVehicle.size();//CollectionUtils.getVehicle(units).size();
 	}
 
@@ -2238,7 +2238,7 @@ public class UnitManager implements Serializable {
 	 * 
 	 * @return number
 	 */
-	public int getBuildingNum() {
+	public int getBuildingsNum() {
 		return lookupBuilding.size();
 	}
 
@@ -2247,8 +2247,26 @@ public class UnitManager implements Serializable {
 	 * 
 	 * @return collection
 	 */
-	public Collection<Building> getBuilding() {
+	public Collection<Building> getBuildings() {
 		return lookupBuilding.values();
+	}
+	
+	/**
+	 * Get the number of construction sites.
+	 * 
+	 * @return number
+	 */
+	public int getSitesNum() {
+		return lookupSite.size();
+	}
+
+	/**
+	 * Get a collection of construction sites.
+	 * 
+	 * @return collection
+	 */
+	public Collection<ConstructionSite> getSites() {
+		return lookupSite.values();
 	}
 	
 //	/**
