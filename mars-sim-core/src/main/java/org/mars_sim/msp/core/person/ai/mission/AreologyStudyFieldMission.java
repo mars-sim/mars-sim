@@ -99,8 +99,10 @@ public class AreologyStudyFieldMission extends RoverMission implements Serializa
 			// Set the lead areology researcher and study.
 			leadResearcher = startingPerson;
 			study = determineStudy(leadResearcher);
-			if (study == null)
-				endMission(NO_ONGOING_SCIENTIFIC_STUDY);
+			if (study == null) {
+				addMissionStatus(MissionStatus.NO_ONGOING_SCIENTIFIC_STUDY);
+				endMission();
+			}
 
 			setStartingSettlement(s);
 
@@ -124,8 +126,10 @@ public class AreologyStudyFieldMission extends RoverMission implements Serializa
 			addNavpoint(new NavPoint(s.getCoordinates(), s, s.getName()));
 
 			// Check if vehicle can carry enough supplies for the mission.
-			if (hasVehicle() && !isVehicleLoadable())
-				endMission(VEHICLE_NOT_LOADABLE);
+			if (hasVehicle() && !isVehicleLoadable()) {
+				addMissionStatus(MissionStatus.VEHICLE_NOT_LOADABLE);
+				endMission();
+			}
 		}
 
 		if (s != null) {
@@ -194,7 +198,8 @@ public class AreologyStudyFieldMission extends RoverMission implements Serializa
 		
 		// Check if vehicle can carry enough supplies for the mission.
 		if (hasVehicle() && !isVehicleLoadable()) {
-			endMission(VEHICLE_NOT_LOADABLE);
+			addMissionStatus(MissionStatus.VEHICLE_NOT_LOADABLE);
+			endMission();
 		}
 	}
 
@@ -453,7 +458,8 @@ public class AreologyStudyFieldMission extends RoverMission implements Serializa
 		}
 		
 		else if (COMPLETED.equals(getPhase())) {
-			endMission(ALL_DISEMBARKED);
+			addMissionStatus(MissionStatus.MISSION_ACCOMPLISHED);
+			endMission();
 		}
 	}
 

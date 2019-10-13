@@ -1679,9 +1679,9 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 			List<Double> scores = missionExperiences.get(id);
 			scores.add(score);
 //			missionExperiences.get(id).add(score);
-			// Limit the size of each list to 20
-			if (scores.size() > 20)
-				scores.remove(0);
+//			// Limit the size of each list to 20
+//			if (scores.size() > 20)
+//				scores.remove(0);
 		} else {
 			List<Double> scores = new ArrayList<>();
 			scores.add(score);

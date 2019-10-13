@@ -20,14 +20,16 @@ public enum NaturalAttributeType {
 	ARTISTRY (Msg.getString("NaturalAttributeType.artistry")), //$NON-NLS-1$
 	ATTRACTIVENESS (Msg.getString("NaturalAttributeType.attractiveness")), //$NON-NLS-1$
 	COURAGE (Msg.getString("NaturalAttributeType.courage")), //$NON-NLS-1$
+	
 	CONVERSATION (Msg.getString("NaturalAttributeType.conversation")), //$NON-NLS-1$
 	EMOTIONAL_STABILITY (Msg.getString("NaturalAttributeType.emotionalStability")), //$NON-NLS-1$
 	ENDURANCE (Msg.getString("NaturalAttributeType.endurance")), //$NON-NLS-1$
 	EXPERIENCE_APTITUDE (Msg.getString("NaturalAttributeType.experienceAptitude")), //$NON-NLS-1$
 	LEADERSHIP (Msg.getString("NaturalAttributeType.leadership")), //$NON-NLS-1$
+	
+	SPIRITUALITY (Msg.getString("NaturalAttributeType.spirituality")), //$NON-NLS-1$
 	STRENGTH (Msg.getString("NaturalAttributeType.strength")), //$NON-NLS-1$
 	STRESS_RESILIENCE (Msg.getString("NaturalAttributeType.stressResilience")), //$NON-NLS-1$
-	SPIRITUALITY (Msg.getString("NaturalAttributeType.spirituality")), //$NON-NLS-1$
 	TEACHING (Msg.getString("NaturalAttributeType.teaching")); //$NON-NLS-1$
 
 

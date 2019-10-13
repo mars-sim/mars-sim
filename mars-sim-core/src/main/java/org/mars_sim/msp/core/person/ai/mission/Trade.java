@@ -126,7 +126,8 @@ public class Trade extends RoverMission implements Serializable {
 				TRADE_SETTLEMENT_CACHE.remove(getStartingSettlement());
 				TRADE_SETTLEMENT_CACHE.remove(tradingSettlement);
 			} else {
-				endMission(Mission.NO_TRADING_SETTLEMENT);
+				addMissionStatus(MissionStatus.NO_TRADING_SETTLEMENT);
+				endMission();
 			}
 
 			if (!isDone()) {
@@ -314,7 +315,8 @@ public class Trade extends RoverMission implements Serializable {
 		}
 		
 		else if (COMPLETED.equals(getPhase())) {
-			endMission(ALL_DISEMBARKED);
+			addMissionStatus(MissionStatus.MISSION_ACCOMPLISHED);
+			endMission();
 		}
 	}
 
@@ -388,7 +390,8 @@ public class Trade extends RoverMission implements Serializable {
 				}
 			} else {
 				logger.severe("No inhabitable buildings at " + tradingSettlement);
-				endMission("No inhabitable buildings at " + tradingSettlement);
+				addMissionStatus(MissionStatus.NO_INHABITABLE_BUILDING);
+				endMission();
 			}
 		}
 
@@ -537,7 +540,8 @@ public class Trade extends RoverMission implements Serializable {
 					}
 				}
 			} else {
-				endMission(VEHICLE_NOT_LOADABLE);//"Vehicle is not loadable (RoverMission).");
+				addMissionStatus(MissionStatus.VEHICLE_NOT_LOADABLE);
+				endMission();
 			}
 		} else {
 			setPhaseEnded(true);
@@ -571,8 +575,10 @@ public class Trade extends RoverMission implements Serializable {
 					getRover().setTowedVehicle(buyVehicle);
 					buyVehicle.setTowingVehicle(getRover());
 					tradingSettlement.getInventory().retrieveUnit(buyVehicle);
-				} else {
-					endMission("Selling vehicle (" + vehicleType + ") is not available (Trade).");
+				} else {	
+					logger.warning("Selling vehicle (" + vehicleType + ") is not available (Trade).");
+					addMissionStatus(MissionStatus.SELLING_VEHICLE_NOT_AVAILABLE_FOR_TRADE);
+					endMission();
 				}
 			}
 		}
@@ -594,23 +600,39 @@ public class Trade extends RoverMission implements Serializable {
 					getVehicle());
 			// TODO Refactor.
 			if (member instanceof Person) {
-				Person person = (Person) member;
-				if (person.isDeclaredDead())
-					endMission("The person is no longer alive.");
-				if (Walk.canWalkAllSteps(person, adjustedLoc.getX(), adjustedLoc.getY(), getVehicle())) {
-					assignTask(person, new Walk(person, adjustedLoc.getX(), adjustedLoc.getY(), getVehicle()));
+				Person trader = (Person) member;
+				if (trader.isDeclaredDead()) {
+					logger.info("The person is no longer alive.");
+					int bestSkillLevel = 0;
+					// Pick another member to do trading
+					for (MissionMember mm: getMembers()) {
+						Person p = (Person) mm;
+						if (p.isDeclaredDead()) {
+							int level = p.getSkillManager().getSkillExp(SkillType.TRADING);
+							if (level > bestSkillLevel) {
+								bestSkillLevel = level;
+								trader = p;
+							}
+						}
+					}
+				}
+				
+				
+				if (Walk.canWalkAllSteps(trader, adjustedLoc.getX(), adjustedLoc.getY(), getVehicle())) {
+					assignTask(trader, new Walk(trader, adjustedLoc.getX(), adjustedLoc.getY(), getVehicle()));
 				} else {
-					logger.severe(person.getName() + " unable to enter rover " + getVehicle());
-					endMission(person.getName() + " unable to enter rover " + getVehicle());
+					logger.severe(trader.getName() + " unable to enter rover " + getVehicle());
+					addMissionStatus(MissionStatus.CANNOT_ENTER_ROVER);
+					endMission();
 				}
 			} else if (member instanceof Robot) {
-				Robot robot = (Robot) member;
-				if (Walk.canWalkAllSteps(robot, adjustedLoc.getX(), adjustedLoc.getY(), getVehicle())) {
-					assignTask(robot, new Walk(robot, adjustedLoc.getX(), adjustedLoc.getY(), getVehicle()));
-				} else {
-					logger.severe(robot.getName() + " unable to enter rover " + getVehicle());
-					endMission(robot.getName() + " unable to enter rover " + getVehicle());
-				}
+//				Robot robot = (Robot) member;
+//				if (Walk.canWalkAllSteps(robot, adjustedLoc.getX(), adjustedLoc.getY(), getVehicle())) {
+//					assignTask(robot, new Walk(robot, adjustedLoc.getX(), adjustedLoc.getY(), getVehicle()));
+//				} else {
+//					logger.severe(robot.getName() + " unable to enter rover " + getVehicle());
+//					endMission(robot.getName() + " unable to enter rover " + getVehicle());
+//				}
 			}
 
 			if (!isDone() && isRoverInAGarage()) {
@@ -623,7 +645,10 @@ public class Trade extends RoverMission implements Serializable {
 //						tradingSettlement.getInventory().retrieveUnit(suit);
 //						getVehicle().getInventory().storeUnit(suit);
 					} else {
-						endMission("Equipment " + suit + " cannot be loaded in rover " + getVehicle());
+						logger.warning(suit + " cannot be loaded in rover " + getVehicle());
+						addMissionStatus(MissionStatus.EVA_SUIT_CANNOT_BE_LOADED);
+						// TODO: have the trading settlement deliver an EVA suit instead of terminating the trade
+						endMission();
 						return;
 					}
 				}
@@ -660,7 +685,9 @@ public class Trade extends RoverMission implements Serializable {
 					sellVehicle.setTowingVehicle(getRover());
 					getStartingSettlement().getInventory().retrieveUnit(sellVehicle);
 				} else {
-					endMission("Selling vehicle (" + vehicleType + ") is not available (Trade).");
+					logger.warning("Selling vehicle (" + vehicleType + ") is not available (Trade).");
+					addMissionStatus(MissionStatus.SELLING_VEHICLE_NOT_AVAILABLE_FOR_TRADE);
+					endMission();
 				}
 			}
 		}
@@ -683,8 +710,8 @@ public class Trade extends RoverMission implements Serializable {
 	}
 
 	@Override
-	public void endMission(String reason) {
-		super.endMission(reason);
+	public void endMission() {
+		super.endMission();
 
 		// Unreserve any towed vehicles.
 		if (getRover() != null) {
@@ -1016,7 +1043,8 @@ public class Trade extends RoverMission implements Serializable {
 			result = totalProfit - missionCost;
 		} catch (Exception e) {
 			e.printStackTrace(System.err);
-			endMission("Could not estimate trade profit.");
+			addMissionStatus(MissionStatus.COULD_NOT_ESTIMATE_TRADE_PROFIT);
+			endMission();
 		}
 
 		return result;

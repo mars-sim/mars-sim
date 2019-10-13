@@ -99,8 +99,10 @@ public class BiologyStudyFieldMission extends RoverMission implements Serializab
 			// Set the lead biology researcher and study.
 			leadResearcher = startingPerson;
 			study = determineStudy(leadResearcher);
-			if (study == null)
-				endMission(NO_ONGOING_SCIENTIFIC_STUDY);
+			if (study == null) {			
+				addMissionStatus(MissionStatus.NO_ONGOING_SCIENTIFIC_STUDY);
+				endMission();
+			}
 
 			// Set mission capacity.
 			if (hasVehicle())
@@ -125,8 +127,10 @@ public class BiologyStudyFieldMission extends RoverMission implements Serializab
 			addNavpoint(new NavPoint(getStartingSettlement().getCoordinates(), s, s.getName()));
 
 			// Check if vehicle can carry enough supplies for the mission.
-			if (hasVehicle() && !isVehicleLoadable())
-				endMission(VEHICLE_NOT_LOADABLE);
+			if (hasVehicle() && !isVehicleLoadable()) {
+				addMissionStatus(MissionStatus.VEHICLE_NOT_LOADABLE);
+				endMission();
+			}
 		}
 
 		if (s != null) {
@@ -194,8 +198,10 @@ public class BiologyStudyFieldMission extends RoverMission implements Serializab
 				, getStartingSettlement().getName()));
 
 		// Check if vehicle can carry enough supplies for the mission.
-		if (hasVehicle() && !isVehicleLoadable())
-			endMission(VEHICLE_NOT_LOADABLE);
+		if (hasVehicle() && !isVehicleLoadable()) {
+			addMissionStatus(MissionStatus.VEHICLE_NOT_LOADABLE);
+			endMission();
+		}
 	}
 
 	/**
@@ -454,7 +460,8 @@ public class BiologyStudyFieldMission extends RoverMission implements Serializab
 		}
 		
 		else if (COMPLETED.equals(getPhase())) {
-			endMission(ALL_DISEMBARKED);
+			addMissionStatus(MissionStatus.MISSION_ACCOMPLISHED);
+			endMission();
 		}
 	}
 

@@ -54,8 +54,8 @@ public class MissionManager implements Serializable {
 	// Cache variables.
 	private transient double totalProbCache;
 	
-	/** Current missions in the simulation. */
-	private List<Mission> missions;
+	/** The currently on-going missions in the simulation. */
+	private List<Mission> onGoingMissions;
 	/** A history of mission plans by sol. */
 	private Map<Integer, List<MissionPlanning>> historicalMissions;
 	
@@ -101,7 +101,7 @@ public class MissionManager implements Serializable {
 		
 		// Initialize data members
 		missionIdentifer = 0;
-		missions = new CopyOnWriteArrayList<>();
+		onGoingMissions = new CopyOnWriteArrayList<>();
 		historicalMissions = new HashMap<>();
 		settlementID = new HashMap<>();
 		listeners = new CopyOnWriteArrayList<>();//Collections.synchronizedList(new ArrayList<MissionManagerListener>(0));
@@ -196,7 +196,7 @@ public class MissionManager implements Serializable {
 	public int getNumActiveMissions() {
 		// Remove inactive missions.
 		//cleanMissions();
-		return missions.size();
+		return onGoingMissions.size();
 	}
 
 	/**
@@ -207,8 +207,8 @@ public class MissionManager implements Serializable {
 	public List<Mission> getMissions() {
 //		// Remove inactive missions.
 //		//cleanMissions();
-		if (missions != null)
-			return new ArrayList<Mission>(missions);
+		if (onGoingMissions != null)
+			return new ArrayList<Mission>(onGoingMissions);
 //			return missions;
 		else
 			return new ArrayList<Mission>();
@@ -223,7 +223,7 @@ public class MissionManager implements Serializable {
 	 */
 	public Mission getMission(MissionMember member) {
 		Mission result = null;
-		for (Mission tempMission : missions) {
+		for (Mission tempMission : onGoingMissions) {
 			if (tempMission.hasMember(member)) {
 				result = tempMission;
 			}
@@ -289,8 +289,8 @@ public class MissionManager implements Serializable {
 			throw new IllegalArgumentException("newMission is null");
 		}
 
-		if (!missions.contains(newMission)) {
-			missions.add(newMission);
+		if (!onGoingMissions.contains(newMission)) {
+			onGoingMissions.add(newMission);
 
 			// Update listeners.
 			if (listeners == null) {
@@ -317,8 +317,8 @@ public class MissionManager implements Serializable {
 	 */
 	public void removeMission(Mission oldMission) {
 
-		if (missions.contains(oldMission)) {
-			missions.remove(oldMission);
+		if (onGoingMissions.contains(oldMission)) {
+			onGoingMissions.remove(oldMission);
 
 			oldMission.fireMissionUpdate(MissionEventType.END_MISSION_EVENT);
 					
@@ -466,7 +466,7 @@ public class MissionManager implements Serializable {
 	 */
 	public int numParticularMissions(String mName, Settlement settlement) {
 		int num = 0;
-		List<Mission> m1 = missions;
+		List<Mission> m1 = onGoingMissions;
 		if (!m1.isEmpty()) {		
 			Iterator<Mission> i = m1.iterator();
 			while (i.hasNext()) {
@@ -523,7 +523,7 @@ public class MissionManager implements Serializable {
 		}
 		
 		List<Mission> m0 = new ArrayList<Mission>();
-		List<Mission> m1 = missions;
+		List<Mission> m1 = onGoingMissions;
 		if (!m1.isEmpty()) {		
 			Iterator<Mission> i = m1.iterator();
 			while (i.hasNext()) {
@@ -607,23 +607,26 @@ public class MissionManager implements Serializable {
 	 */
 	private void cleanMissions() {
 		int index = 0;		
-		if (missions != null) { // for passing maven test
-			while (index < missions.size()) {
-				Mission m = missions.get(index);
-				String reason = m.getReason().toLowerCase();
-				if (m == null
-//						|| m.isDone() 
-//						|| !m.isApproved() // initially it's not approved until it passes the approval phase
-//						|| m.getPlan() == null
-						|| m.getPhase() == null
-						|| reason.contains("aborted")
-						|| reason.contains("no ")
-						|| reason.contains("not ")
-						|| (m.getPlan() != null && m.getPlan().getStatus() == PlanType.NOT_APPROVED)
-						) {
-					removeMission(m);
-				} else {
-					index++;
+		if (onGoingMissions != null) { // for passing maven test
+			while (index < onGoingMissions.size()) {
+				Mission m = onGoingMissions.get(index);
+				for (MissionStatus ms: m.getMissionStatus()) {
+//					MissionStatus reason = m.getReason().toLowerCase();
+					if (ms == null
+	//						|| m.isDone() 
+	//						|| !m.isApproved() // initially it's not approved until it passes the approval phase
+	//						|| m.getPlan() == null
+							|| m.getPhase() == null
+							|| ms == MissionStatus.USER_ABORTED_MISSION
+							|| ms.getName().toLowerCase().contains("no ")
+							|| ms.getName().toLowerCase().contains("not ")
+							|| ms.getName().toLowerCase().contains("null")
+							|| (m.getPlan() != null && m.getPlan().getStatus() == PlanType.NOT_APPROVED)
+							) {
+						removeMission(m);
+					} else {
+						index++;
+					}
 				}
 			}
 		}
@@ -884,9 +887,9 @@ public class MissionManager implements Serializable {
 	 */
 	public void destroy() {
 		// take care to avoid null exceptions
-		if (missions != null) {
-			missions.clear();
-			missions = null;
+		if (onGoingMissions != null) {
+			onGoingMissions.clear();
+			onGoingMissions = null;
 		}
 		if (listeners != null) {
 			listeners.clear();

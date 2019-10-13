@@ -170,7 +170,9 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 						logger.log(Level.FINE, Msg.getString("BuildingSalvageMission.log.startStage" //$NON-NLS-1$
 								, constructionStage.toString()));
 					} else {
-						endMission(Msg.getString("BuildingSalvageMission.log.stageNotFound")); //$NON-NLS-1$
+						logger.warning(Msg.getString("BuildingSalvageMission.log.stageNotFound")); //$NON-NLS-1$
+						addMissionStatus(MissionStatus.SALVAGE_CONSTRUCTION_STAGE_NOT_FOUND);
+						endMission();
 					}
 				}
 
@@ -179,7 +181,9 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 					constructionSite.setUndergoingSalvage(true);
 				}
 			} else {
-				endMission(Msg.getString("BuildingSalvageMission.log.siteNotFound")); //$NON-NLS-1$
+				logger.warning(Msg.getString("BuildingSalvageMission.log.siteNotFound")); //$NON-NLS-1$
+				addMissionStatus(MissionStatus.SALVAGE_CONSTRUCTION_SITE_NOT_FOUND_OR_CREATED);
+				endMission();
 			}
 
 			// Reserve construction vehicles.
@@ -198,110 +202,7 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 		setPhaseDescription(Msg.getString("Mission.phase.prepareSalvageSite.description" //$NON-NLS-1$
 				, settlement.getName()));
 	}
-//	public BuildingSalvageMission(Robot startingRobot) {
-//		// Use Mission constructor.
-//		super(DEFAULT_DESCRIPTION, startingRobot, MIN_PEOPLE);
-//
-//		// Set wear condition to 100% by default.
-//		wearCondition = 100D;
-//
-//		if (!isDone()) {
-//			// Sets the settlement.
-//			settlement = startingRobot.getSettlement();
-//
-//			// Sets the mission capacity.
-//			setMissionCapacity(MAX_PEOPLE);
-//			int availableSuitNum = Mission
-//					.getNumberAvailableEVASuitsAtSettlement(settlement);
-//			if (availableSuitNum < getMissionCapacity()) {
-//				setMissionCapacity(availableSuitNum);
-//			}
-//
-//			// Recruit additional Robots to mission.
-//			recruitRobotsForMission(startingRobot);
-//
-//			// Determine construction site and stage.
-//			int constructionSkill = startingRobot.getBotMind().getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
-//			ConstructionManager manager = settlement.getConstructionManager();
-//			SalvageValues values = manager.getSalvageValues();
-//			values.clearCache();
-//			double existingSitesProfit = values
-//					.getAllSalvageSitesProfit(constructionSkill);
-//			double newSiteProfit = values
-//					.getNewSalvageSiteProfit(constructionSkill);
-//
-//			if (existingSitesProfit > newSiteProfit) {
-//				// Determine which existing construction site to work on.
-//				constructionSite = determineMostProfitableSalvageConstructionSite(
-//						settlement, constructionSkill);
-//			} else {
-//				// Determine existing building to salvage.
-//				Building salvageBuilding = determineBuildingToSalvage(
-//						settlement, constructionSkill);
-//
-//				if (salvageBuilding != null) {
-//					// Create new salvage construction site.
-//					constructionSite = manager
-//							.createNewSalvageConstructionSite(salvageBuilding);
-//
-//					// Set wear condition to salvaged building's wear condition.
-//					wearCondition = salvageBuilding.getMalfunctionManager()
-//							.getWearCondition();
-//				} else {
-//					logger.log(Level.WARNING,
-//							Msg.getString("BuildingSalvageMission.log.noBuildingFound")); //$NON-NLS-1$
-//				}
-//			}
-//
-//			// Prepare salvage construction site.
-//			if (constructionSite != null) {
-//
-//				// Determine new stage to work on.
-//				if (constructionSite.hasUnfinishedStage()) {
-//					constructionStage = constructionSite
-//							.getCurrentConstructionStage();
-//					finishingExistingStage = true;
-//					logger.log(Level.INFO, Msg.getString("BuildingSalvageMission.log.continueAt" //$NON-NLS-1$
-//							,settlement.getName()));
-//				} else {
-//					constructionStage = constructionSite
-//							.getCurrentConstructionStage();
-//					if (constructionStage != null) {
-//						constructionStage.setCompletedWorkTime(0D);
-//						constructionStage.setSalvaging(true);
-//						logger.log(Level.INFO, Msg.getString("BuildingSalvageMission.log.startStage" //$NON-NLS-1$
-//								,constructionStage.toString()));
-//					} else {
-//						endMission(Msg.getString("BuildingSalvageMission.log.stageNotFound")); //$NON-NLS-1$
-//					}
-//				}
-//
-//				// Mark construction site as undergoing salvage.
-//				if (constructionStage != null) {
-//					constructionSite.setUndergoingSalvage(true);
-//				}
-//			} else {
-//				endMission(Msg.getString("BuildingSalvageMission.log.siteNotFound")); //$NON-NLS-1$
-//			}
-//
-//			// Reserve construction vehicles.
-//			reserveConstructionVehicles();
-//
-//			// Retrieve construction LUV attachment parts.
-//			retrieveConstructionLUVParts();
-//		}
-//
-//		// Add phases.
-//		addPhase(PREPARE_SITE_PHASE);
-//		addPhase(SALVAGE_PHASE);
-//
-//		// Set initial mission phase.
-//		setPhase(PREPARE_SITE_PHASE);
-//		setPhaseDescription(Msg.getString(
-//				"Mission.phase.prepareSalvageSite.description" //$NON-NLS-1$
-//				,settlement.getName()));
-//	}
-
+	
 	/**
 	 * Constructor
 	 * 
@@ -347,15 +248,20 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 					constructionStage.setSalvaging(true);
 					logger.log(Level.FINE, Msg.getString("BuildingSalvageMission.log.startStage" //$NON-NLS-1$
 							, constructionStage.toString()));
-				} else
-					endMission(Msg.getString("BuildingSalvageMission.log.stageNotFound")); //$NON-NLS-1$
+				} else {
+					logger.warning(Msg.getString("BuildingSalvageMission.log.stageNotFound")); //$NON-NLS-1$					
+					addMissionStatus(MissionStatus.SALVAGE_CONSTRUCTION_STAGE_NOT_FOUND);
+					endMission();
+				}
 			}
 
 			// Mark construction site as undergoing salvage.
 			if (constructionStage != null)
 				constructionSite.setUndergoingSalvage(true);
 		} else {
-			endMission(Msg.getString("BuildingSalvageMission.log.siteNotFound")); //$NON-NLS-1$
+			logger.warning(Msg.getString("BuildingSalvageMission.log.siteNotFound")); //$NON-NLS-1$
+			addMissionStatus(MissionStatus.SALVAGE_CONSTRUCTION_SITE_NOT_FOUND_OR_CREATED);
+			endMission();
 		}
 
 		// Mark site as undergoing salvage.
@@ -394,8 +300,10 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 			} else {
 				logger.severe(Msg.getString("BuildingSalvageMission.log.cantRetrieve" //$NON-NLS-1$
 						, vehicle.getName(), settlement.getName()));
-				endMission(Msg.getString("BuildingSalvageMission.log.constructionVehicle" //$NON-NLS-1$
-						, vehicle.getName()));
+				addMissionStatus(MissionStatus.CONSTRUCTION_VEHICLE_NOT_RETRIEVED);
+				endMission();
+//				endMission(Msg.getString("BuildingSalvageMission.log.constructionVehicle" //$NON-NLS-1$
+//						, vehicle.getName()));
 			}
 		}
 
@@ -475,7 +383,9 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 			setPhaseDescription(Msg.getString("Mission.phase.salvage.description", //$NON-NLS-1$
 					constructionStage.getInfo().getName()));
 		} else if (SALVAGE_PHASE.equals(getPhase()))
-			endMission(Msg.getString("BuildingSalvageMission.log.success")); //$NON-NLS-1$
+			addMissionStatus(MissionStatus.BUILDING_SALVAGE_SUCCESSFULLY_ENDED);
+			endMission();
+//			endMission(Msg.getString("BuildingSalvageMission.log.success")); //$NON-NLS-1$
 	}
 
 	@Override
@@ -594,60 +504,10 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 			}
 		}
 	}
-//	private void salvagePhase(Robot robot) {
-//
-//		// Anyone in the crew or a single person at the home settlement has a
-//		// dangerous illness, end phase.
-//		if (hasEmergency())
-//			setPhaseEnded(true);
-//
-//		if (!getPhaseEnded()) {
-//
-//			// 75% chance of assigning task, otherwise allow break.
-//			if (RandomUtil.lessThanRandPercent(75D)) {
-//
-//				// Assign salvage building task to robot.
-//				if (SalvageBuilding.canSalvage(robot)) {
-//					assignTask(robot, new SalvageBuilding(robot,
-//							constructionStage, constructionSite,
-//							constructionVehicles));
-//				}
-//			}
-//		}
-//
-//		if (constructionStage.isComplete()) {
-//			setPhaseEnded(true);
-//			settlement.getConstructionManager().getConstructionValues()
-//			.clearCache();
-//
-//			// Remove salvaged construction stage from site.
-//			constructionSite.removeSalvagedStage(constructionStage);
-//
-//			// Salvage construction parts from the stage.
-//			salvageConstructionParts();
-//
-//			// Mark construction site as not undergoing salvage.
-//			constructionSite.setUndergoingSalvage(false);
-//
-//			// Remove construction site if all salvaging complete.
-//			if (constructionStage.getInfo().getType().equals(
-//					ConstructionStageInfo.FOUNDATION)) {
-//				settlement.getConstructionManager().removeConstructionSite(
-//						constructionSite);
-//				settlement.fireUnitUpdate(
-//						UnitEventType.FINISH_SALVAGE_EVENT,
-//						constructionSite);
-//				logger.log(Level.INFO,
-//						Msg.getString(
-//								"BuildingSalvageMission.salvagedAt" //$NON-NLS-1$
-//								,settlement.getName()));
-//			}
-//		}
-//	}
 
 	@Override
-	public void endMission(String reason) {
-		super.endMission(reason);
+	public void endMission() {
+		super.endMission();
 
 		// Mark site as not undergoing salvage.
 		if (constructionSite != null)
@@ -726,8 +586,11 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 					LightUtilityVehicle luv = reserveLightUtilityVehicle();
 					if (luv != null)
 						constructionVehicles.add(luv);
-					else
-						endMission(Msg.getString("BuildingSalvageMission.log.noLUV")); //$NON-NLS-1$
+					else {
+						logger.warning(Msg.getString("BuildingSalvageMission.log.noLUV")); //$NON-NLS-1$
+						addMissionStatus(MissionStatus.LUV_NOT_AVAILABLE);
+						endMission();
+					}				
 				}
 			}
 		}
@@ -760,8 +623,8 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 						Part p = ItemResourceUtil.findItemResource(part);
 						logger.log(Level.SEVERE, Msg.getString("BuildingSalvageMission.log.attachmentPart" //$NON-NLS-1$
 								, p.getName()));
-						endMission(Msg.getString("BuildingSalvageMission.log.attachmentPart" //$NON-NLS-1$
-								, p.getName()));
+						addMissionStatus(MissionStatus.CONSTRUCTION_ATTACHMENT_PART_NOT_RETRIEVED);
+						endMission();
 					}
 				}
 				vehicleIndex++;
@@ -800,8 +663,8 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 					} else {
 						logger.severe(Msg.getString("BuildingSalvageMission.log.cantRetrieve" //$NON-NLS-1$
 								, luvTemp.getName(), settlement.getName()));
-						endMission(Msg.getString("BuildingSalvageMission.log.constructionVehicle" //$NON-NLS-1$
-								, luvTemp.getName()));
+						addMissionStatus(MissionStatus.LUV_NOT_RETRIEVED);
+						endMission();
 					}
 				}
 			}

@@ -291,7 +291,8 @@ public abstract class RoverMission extends VehicleMission {
 		Vehicle v = getVehicle();
 		
 		if (v == null) {
-			endMission(Mission.NO_AVAILABLE_VEHICLES);
+			addMissionStatus(MissionStatus.NO_AVAILABLE_VEHICLES);
+			endMission();
 		}
 
 		else {
@@ -300,7 +301,8 @@ public abstract class RoverMission extends VehicleMission {
 				//throw new IllegalStateException(
 				LogConsolidated.log(Level.WARNING, 0, sourceName, 
 						Msg.getString("RoverMission.log.notAtSettlement", getPhase().getName())); //$NON-NLS-1$
-				endMission(Mission.NO_AVAILABLE_VEHICLES);
+				addMissionStatus(MissionStatus.NO_AVAILABLE_VEHICLES);
+				endMission();
 			}
 
 			// If the vehicle is currently not in a garage
@@ -353,7 +355,8 @@ public abstract class RoverMission extends VehicleMission {
 						}
 						
 					} else {
-						endMission(VEHICLE_NOT_LOADABLE);//Msg.getString("RoverMission.log.notLoadable")); //$NON-NLS-1$
+						addMissionStatus(MissionStatus.VEHICLE_NOT_LOADABLE);
+						endMission();
 						return;
 					}
 				}
@@ -376,8 +379,10 @@ public abstract class RoverMission extends VehicleMission {
 									"[" + person.getLocationTag().getLocale() + "] " 
 										+  Msg.getString("RoverMission.log.unableToEnter", person.getName(), //$NON-NLS-1$
 									v.getName()));
-							endMission(Msg.getString("RoverMission.log.unableToEnter", person.getName(), //$NON-NLS-1$
-									v.getName()));
+//							logger.warning(Msg.getString("RoverMission.log.unableToEnter", person.getName(), //$NON-NLS-1$
+//									v.getName()));
+							addMissionStatus(MissionStatus.CANNOT_ENTER_ROVER);
+							endMission();
 						}
 					} else if (member instanceof Robot) {
 						Robot robot = (Robot) member;
@@ -388,8 +393,10 @@ public abstract class RoverMission extends VehicleMission {
 									"[" + robot.getLocationTag().getLocale() + "] " 
 										+  Msg.getString("RoverMission.log.unableToEnter", robot.getName(), //$NON-NLS-1$
 									v.getName()));
-							endMission(Msg.getString("RoverMission.log.unableToEnter", robot.getName(), //$NON-NLS-1$
-									v.getName()));
+//							logger.warning(Msg.getString("RoverMission.log.unableToEnter", robot.getName(), //$NON-NLS-1$
+//									v.getName()));
+							addMissionStatus(MissionStatus.CANNOT_ENTER_ROVER);
+							endMission();
 						}
 					}
 
@@ -409,14 +416,18 @@ public abstract class RoverMission extends VehicleMission {
 								}
 
 								else {
-									endMission(Msg.getString("RoverMission.log.cannotBeLoaded", suit.getName(), //$NON-NLS-1$
+									logger.warning(Msg.getString("RoverMission.log.cannotBeLoaded", suit.getName(), //$NON-NLS-1$
 											v.getName()));
+									addMissionStatus(MissionStatus.EVA_SUIT_CANNOT_BE_LOADED);
+									endMission();
 									return;
 								}
 							}
 
 							else {
-								endMission(Msg.getString("RoverMission.log.noEVASuit", v.getName())); //$NON-NLS-1$
+								logger.warning(Msg.getString("RoverMission.log.noEVASuit", v.getName())); //$NON-NLS-1$
+								addMissionStatus(MissionStatus.NO_GOOD_EVA_SUIT);
+								endMission();
 								return;
 							}
 						}
@@ -676,7 +687,8 @@ public abstract class RoverMission extends VehicleMission {
 			
 			else {
 				logger.severe("No inhabitable buildings at " + disembarkSettlement);
-				endMission("No inhabitable buildings at " + disembarkSettlement);
+				addMissionStatus(MissionStatus.NO_INHABITABLE_BUILDING);
+				endMission();
 			}
 		}
 	}
@@ -956,20 +968,8 @@ public abstract class RoverMission extends VehicleMission {
 	}
 
 	@Override
-	public void endMission(String reason) {
-		// logger.info("endMission()'s reason : " + reason);
-		// If at a settlement, "associate" all members with this settlement.
-		// Iterator<MissionMember> i = getMembers().iterator();
-		// while (i.hasNext()) {
-		// MissionMember member = i.next();
-//		for (MissionMember member : getMembers()) {
-//			if (member.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-//				// TODO: when should we reset a person's associated settlement to the one he's at.
-//			    member.setAssociatedSettlement(member.getSettlement());
-//			}
-//		}
-
-		super.endMission(reason);
+	public void endMission() {//String reason) {
+		super.endMission();//reason);
 	}
 
 	/**
@@ -1012,9 +1012,11 @@ public abstract class RoverMission extends VehicleMission {
 			if (lastPerson != null) {
 				lastPerson.getMind().setMission(null);
 				if (getMembersNumber() < getMinMembers()) {
-					endMission(NOT_ENOUGH_MEMBERS);
+					addMissionStatus(MissionStatus.NOT_ENOUGH_MEMBERS);
+					endMission();
 				} else if (getPeopleNumber() == 0) {
-					endMission(NO_MEMBERS_ON_MISSION);
+					addMissionStatus(MissionStatus.NO_MEMBERS_ON_MISSION);
+					endMission();
 				}
 			}
 		}

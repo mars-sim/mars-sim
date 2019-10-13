@@ -12,6 +12,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
@@ -39,7 +40,7 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-//	private static Logger logger = Logger.getLogger(TravelToSettlement.class.getName());
+	private static Logger logger = Logger.getLogger(TravelToSettlement.class.getName());
 
 	/** Default description. */
 	public static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.travelToSettlement"); //$NON-NLS-1$
@@ -93,7 +94,9 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 				setDescription(Msg.getString("Mission.description.travelToSettlement.detail",
 						destinationSettlement.getName())); // $NON-NLS-1$)
 			} else {
-				endMission("Destination is null.");
+				logger.warning(MissionStatus.DESTINATION_IS_NULL.getName());
+				addMissionStatus(MissionStatus.DESTINATION_IS_NULL);
+				endMission();
 			}
 
 			// Check mission available space
@@ -113,7 +116,8 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 
 			// Check if vehicle can carry enough supplies for the mission.
 			if (hasVehicle() && !isVehicleLoadable()) {
-				endMission(VEHICLE_NOT_LOADABLE);// "Vehicle is not loadable. (TravelToSettlement)");
+				addMissionStatus(MissionStatus.VEHICLE_NOT_LOADABLE);
+				endMission();
 			}
 
 			// Set initial phase
@@ -163,7 +167,8 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 
 		// Check if vehicle can carry enough supplies for the mission.
 		if (hasVehicle() && !isVehicleLoadable()) {
-			endMission(VEHICLE_NOT_LOADABLE);// "Vehicle is not loadable. (TravelToSettlement)");
+			addMissionStatus(MissionStatus.VEHICLE_NOT_LOADABLE);
+			endMission();
 		}
 	}
 
@@ -206,7 +211,8 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 		}
 		
 		else if (COMPLETED.equals(getPhase())) {
-			endMission(ALL_DISEMBARKED);
+			addMissionStatus(MissionStatus.MISSION_ACCOMPLISHED);
+			endMission();
 		}
 	}
 

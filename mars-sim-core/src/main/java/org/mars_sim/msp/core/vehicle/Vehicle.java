@@ -296,8 +296,10 @@ public abstract class Vehicle extends Unit
 		// Gets the estimated average fuel consumption for a trip [km/kg]
 		estimatedAveFuelConsumption = baseFuelConsumption / (1 + beginningMass / endMass)  ;
 		
-		logger.config(Conversion.capitalize(vehicleType) + "'s base fuel consumption : " + Math.round(baseFuelConsumption*100.0)/100.0 + " km/kg");
-		logger.config(Conversion.capitalize(vehicleType) + "'s estimated average fuel consumption : " + Math.round(estimatedAveFuelConsumption*100.0)/100.0 + " km/kg");
+		logger.config(Conversion.capitalize(vehicleType) 
+				+ " -     base fuel consumption : " + Math.round(baseFuelConsumption*100.0)/100.0 + " km/kg");
+		logger.config(Conversion.capitalize(vehicleType) 
+				+ " -  average fuel consumption : " + Math.round(estimatedAveFuelConsumption*100.0)/100.0 + " km/kg");
 		
 		// Set initial parked location and facing at settlement.
 		determinedSettlementParkedLocationAndFacing();

@@ -41,7 +41,8 @@ public class MasterClock implements Serializable {
 	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 	
 	private static final int FACTOR = 4;
-	private static final double SMALL_NUMBER = 0.0000001;
+//	private static final double SMALL_NUMBER = 0.0028;
+	private static final double MILLISECONDS_PER_MILLISOL = MarsClock.SECONDS_PER_MILLISOL * 1000.0;
 
 	// Data members
 	/** Runnable flag. */
@@ -86,6 +87,8 @@ public class MasterClock implements Serializable {
 	private transient int count;
 	/** The total number of counts between two ui pulses. */
 	private transient int totalCount = 40;
+	/** The average of the last working millis and the current one. */
+	private long millisCache;
 	
 	/** Is FXGL is in use. */
 	public boolean isFXGL = false;
@@ -510,21 +513,24 @@ public class MasterClock implements Serializable {
 	 * Computes the time pulse in millisols in other words, the number of realworld
 	 * seconds that have elapsed since it was last called
 	 * 
+	 * @param elapsedMilliseconds time elapsed in milliseconds
 	 * @return time pulse length in millisols
 	 * @throws Exception if time pulse length could not be determined.
 	 */
 	public double computeTimePulseInMillisols(long elapsedMilliseconds) {
-		return computeTimePulseInSeconds(elapsedMilliseconds) / MarsClock.SECONDS_PER_MILLISOL;
+//		return computeTimePulseInSeconds(elapsedMilliseconds) / MarsClock.SECONDS_PER_MILLISOL;
+		return elapsedMilliseconds * currentTR / 1000D / MarsClock.SECONDS_PER_MILLISOL;
 	}
 
-	/**
-	 * Computes the time pulse in seconds. It varies, depending on the time ratio
-	 * 
-	 * @return time pulse length in seconds
-	 */
-	public double computeTimePulseInSeconds(long elapsedMilliseconds) {
-		return elapsedMilliseconds * currentTR / 1000D;
-	}
+//	/**
+//	 * Computes the time pulse in seconds. It varies, depending on the time ratio
+//	 * 
+//	 * @param elapsedMilliseconds time elapsed in milliseconds
+//	 * @return time pulse length in seconds
+//	 */
+//	public double computeTimePulseInSeconds(long elapsedMilliseconds) {
+//		return elapsedMilliseconds * currentTR / 1000D;
+//	}
 
 	/*
 	 * Gets the total number of pulses since the start of the sim
@@ -692,14 +698,20 @@ public class MasterClock implements Serializable {
 
 				long t1, t2, sleepTime, overSleepTime = 0L, excess = 0L;
 				int noDelays = 0;
+				
+				// Gets the initial t1
 				t1 = System.nanoTime();
 
 				while (keepRunning) {
-					// Refactored codes for variable sleepTime
-					t2 = System.nanoTime();
-					// Call addTime to increment time
+					// Gets the new t1
+					t1 = System.nanoTime();
+					
+					// Call addTime() to increment time in EarthClock and MarsClock
 					addTime();
 
+					// Gets t2 after a time pulse has been sent to EarthClock and MarsClock
+					t2 = System.nanoTime();
+					
 					// Benchmark CPU speed
 //	 		        long diff = 0;
 //
@@ -714,7 +726,9 @@ public class MasterClock implements Serializable {
 					// if (count == 0) logger.config("Benchmarking this machine : " + diff + " per
 					// 1000 frames");
 
-					// dt = t2 - t1;
+					// Note: dt = t2 - t1. It's the time where all the logics are done
+
+					// sleepTime varies, depending on the remaining time
 					sleepTime = currentTBU_ns - t2 + t1 - overSleepTime;
 					// System.out.print ("sleep : " + sleepTime/1_000_000 + "ms\t");
 
@@ -784,7 +798,7 @@ public class MasterClock implements Serializable {
 					}
 					
 					if (skips >= maxFrameSkips) {
-						logger.config("# of skips (" + skips + ") exceeds the max skips (" + maxFrameSkips + ")."); 
+						logger.config("# of skips (" + skips + ") is at the max skips (" + maxFrameSkips + ")."); 
 						// Reset the pulse count
 						resetTotalPulses();
 						// Adjust the time between update
@@ -794,18 +808,14 @@ public class MasterClock implements Serializable {
 							currentTBU_ns = (long) (currentTBU_ns * .9925); // decrement by 2.5%
 						
 						logger.config("TBU : " + Math.round(100.0 * currentTBU_ns/1_000_000.0)/100.0 + " ms");
+						
+						addTime();
 					}
 									
 					// Set excess to zero to prevent getting stuck in the above while loop after
 					// waking up from power saving
 //					logger.config("Setting excess to zero");
 					excess = 0;
-
-					t1 = System.nanoTime();
-
-					if (checkSave())
-						// Reset t1 time due to the long process of saving
-						t1 = System.nanoTime();
 
 					// Exit program if exitProgram flag is true.
 					if (exitProgram) {
@@ -822,6 +832,11 @@ public class MasterClock implements Serializable {
 						setPaused(true, false);
 					}
 					
+					// Check to see if the simulation should be saved at this point.
+					checkSave();
+//						// Reset t1 time due to the long process of saving
+//						t1 = System.nanoTime();
+
 					// For performance benchmarking
 //	 		       t2Cache = t2;
 //	 		       count++;
@@ -843,26 +858,43 @@ public class MasterClock implements Serializable {
 		if (!isPaused) {
 			// Update elapsed milliseconds.
 			long millis = calculateElapsedTime();
-			// Get the sim millisecond for EarthClock
-			// double ms = millis * timeRatio;
+			if (millis >= millisCache * .75) {
+				millisCache = (millisCache + millis) / 2;
+			}
+			else {
+				// Note: this usually happens when recovering from power saving
+				// Since millis is too far off, use millisCache instead to compute the correct timePulse 
+				millis = millisCache;
+			}
+				
+//			logger.config("millis : " + millis + "     millisCache : " + millisCache);
+
+			// The time elapsed for the EarthClock
+			double earthMillis = millis * currentTR;
 			// Get the time pulse length in millisols.
-			// double timePulse = millis / 1000 * timeRatio / MarsClock.SECONDS_IN_MILLISOL;
-			// Get the time pulse length in millisols.
-			double timePulse = computeTimePulseInMillisols(millis);
+			double timePulse = earthMillis / MILLISECONDS_PER_MILLISOL;
+
+//			logger.config("timePulse : " + Math.round(timePulse*1000.0)/1000.0);
+
 			// Incrementing total time pulse number.
 			totalPulses++;
 
-			if (timePulse > SMALL_NUMBER && keepRunning) {
+			// Note: after recovering from a power save
+			// millis = 0 or 1
+			// timePulse = 0.0 or 0.002883686808002465
+			 
+			if (timePulse > 0 && keepRunning) {
 				if (clockListenerExecutor != null 
 					&& !clockListenerExecutor.isTerminated()
 					&& !clockListenerExecutor.isShutdown()) {	
 					
 					// Add time pulse length to Earth and Mars clocks.
-					earthClock.addTime(millis * currentTR);
+					earthClock.addTime(earthMillis);
 					marsClock.addTime(timePulse);
 					fireClockPulse(timePulse);
 					
 					millisols += timePulse;
+//					logger.info("millisols : " + Math.round(millisols*1000.0)/1000.0);
 				}
 				else {
 					// NOTE: when resuming from power saving, timePulse becomes zero

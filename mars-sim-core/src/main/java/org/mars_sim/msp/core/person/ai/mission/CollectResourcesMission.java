@@ -160,7 +160,8 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 
 				// Check if vehicle can carry enough supplies for the mission.
 				if (hasVehicle() && !isVehicleLoadable()) {
-					endMission(VEHICLE_NOT_LOADABLE);// "Vehicle is not loadable at CollectingResourcesMission");
+					addMissionStatus(MissionStatus.VEHICLE_NOT_LOADABLE);
+					endMission();
 				}
 			}
 		}
@@ -250,8 +251,10 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 		setPhaseDescription(Msg.getString("Mission.phase.approval.description", getStartingSettlement().getName())); // $NON-NLS-1$
 
 		// Check if vehicle can carry enough supplies for the mission.
-		if (hasVehicle() && !isVehicleLoadable())
-			endMission(VEHICLE_NOT_LOADABLE);// "Vehicle is not loadable at CollectingResourcesMission");
+		if (hasVehicle() && !isVehicleLoadable()) {
+			addMissionStatus(MissionStatus.VEHICLE_NOT_LOADABLE);
+			endMission();
+		}
 	}
 
 	/**
@@ -351,7 +354,8 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 		}
 		
 		else if (COMPLETED.equals(getPhase())) {
-			endMission(ALL_DISEMBARKED);
+			addMissionStatus(MissionStatus.MISSION_ACCOMPLISHED);
+			endMission();
 		}
 	}
 

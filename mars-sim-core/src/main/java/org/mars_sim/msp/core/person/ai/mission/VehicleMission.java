@@ -105,8 +105,10 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		description = missionName;
 		this.startingMember = startingMember;
 
-		if (!reserveVehicle())
-			endMission(Mission.NO_AVAILABLE_VEHICLES);
+		if (!reserveVehicle()) {
+			addMissionStatus(MissionStatus.NO_AVAILABLE_VEHICLES);
+			endMission();
+		}
 		
 		// Add mission phases.
 		addPhase(APPROVAL);
@@ -150,7 +152,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	protected boolean reserveVehicle() {
 		// Reserve a vehicle.
 		if (!reserveVehicle(startingMember)) {
-			endMission(NO_RESERVABLE_VEHICLES);
+			addMissionStatus(MissionStatus.NO_RESERVABLE_VEHICLES);
+			endMission();
 			return false;
 		}
 		return true;
@@ -340,14 +343,14 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 * @param reason the reason of ending the mission.
 	 */
 
-	public void endMission(String reason) {
+	public void endMission() {
 		// logger.info("Reason : " + reason);
 		if (hasVehicle()) {
 			// if user hit the "End Mission" button to abort the mission
 			// Check if user aborted the mission and if
 			// the vehicle has been disembarked.
-			if (reason.equals(Mission.USER_ABORTED_MISSION)) {
-				
+//			if (reason.equals(Mission.USER_ABORTED_MISSION)) {
+			if (haveMissionStatus(MissionStatus.USER_ABORTED_MISSION)) {	
 				if (vehicle.getSettlement() == null) {
 					// if the vehicle has not arrived or departed a settlement yet
 					String s = null;
@@ -362,12 +365,10 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 				}
 				// TODO: May check on which phase the mission is at for fine grain decisions 			
 				setPhaseEnded(true);
-				super.endMission(reason);
+				super.endMission();
 			}
 
-			else if (reason.equals(Mission.NOT_ENOUGH_RESOURCES) || reason.equals(Mission.UNREPAIRABLE_MALFUNCTION)
-					|| reason.equals(Mission.NO_EMERGENCY_SETTLEMENT_DESTINATION_FOUND)
-					|| reason.equals(Mission.MEDICAL_EMERGENCY)) {
+			else if (needHelp()) {
 				// Set emergency beacon if vehicle is not at settlement.
 				// TODO: need to find out if there are other matching reasons for setting
 				// emergency beacon.
@@ -379,7 +380,12 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 						LogConsolidated.log(Level.WARNING, 0, sourceName,
 								"[" + startingMember.getLocationTag().getLocale() + "] " + startingMember
 										+ " turned on " + vehicle
-										+ "'s emergency beacon and request for towing. Reason : " + reason);
+										+ "'s emergency beacon and request for towing with the following status flag(s) :");
+							
+							for (int i=0; i< getMissionStatus().size(); i++) {
+								logger.warning(" (" + i + "). " + getMissionStatus().get(i).getName());
+							}
+							
 						vehicle.setEmergencyBeacon(true);
 
 						if (vehicle.isBeingTowed()) {
@@ -409,21 +415,22 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 						LogConsolidated.log(Level.WARNING, 0, sourceName,
 								"[" + startingMember.getLocationTag().getLocale() + "] " + startingMember
 										+ " turned on " + vehicle
-										+ "'s emergency beacon and request for towing. Reason : " + reason);
+										+ "'s emergency beacon and request for towing with the following status flag(s) :");
+							
+							for (int i=0; i< getMissionStatus().size(); i++) {
+								logger.warning(" (" + i + "). " + getMissionStatus().get(i).getName());
+							}
+						
 						vehicle.setEmergencyBeacon(true);
 					}
-					// e.g. unrepairable malfunction
-					LogConsolidated.log(Level.WARNING, 2000, sourceName, 
-							"[" + vehicle.getLocationTag().getLocale() + "] "
-							+ vehicle.getName() + " is currently at " + vehicle.getSettlement()
-							+ " and its mission ended. Reason : " + reason);
 					
 					// if the vehicle is still somewhere inside the settlement when it got broken
 					// down
 					// TODO: wait till the repair is done and the mission may resume ?!?
+					
 					leaveVehicle();
 					setPhaseEnded(true);
-					super.endMission(reason);
+					super.endMission();
 				}
 			} // end if for the 4 different reasons
 
@@ -432,15 +439,15 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 				// setPhaseEnded(true); // TODO: will setPhaseEnded cause NullPointerException ?
 				leaveVehicle();
 				setPhaseEnded(true);
-				super.endMission(reason);
+				super.endMission();
 			}
 		}
-
-		else if (reason.equals(Mission.ALL_DISEMBARKED)) {
+		
+		else if (haveMissionStatus(MissionStatus.MISSION_ACCOMPLISHED)) {
 			// logger.info("Returning the control of " + vehicle + " to the settlement");
 			setPhaseEnded(true);
 			// leaveVehicle();
-			super.endMission(reason);
+			super.endMission();
 		}
 
 		else { // if vehicles are NOT available
@@ -455,7 +462,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			// mission was still on-going
 			// and the occupants did not leave the vehicle.
 			setPhaseEnded(true);
-			super.endMission(reason);
+			super.endMission();
 		}
 	}
 
@@ -569,7 +576,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		}
 		
 		else if (COMPLETED.equals(getPhase())) {
-			endMission(ALL_DISEMBARKED);
+			addMissionStatus(MissionStatus.MISSION_ACCOMPLISHED);
+			endMission();
 		}
 	}
 
@@ -679,7 +687,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 
 		// If vehicle has unrepairable malfunction, end mission.
 		if (hasUnrepairableMalfunction()) {
-			endMission(UNREPAIRABLE_MALFUNCTION);
+			addMissionStatus(MissionStatus.UNREPAIRABLE_MALFUNCTION);
+			endMission();
 		}
 	}
 
@@ -1107,21 +1116,28 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 				
 				endCollectionPhase();		
 				// Don't have enough resources and can't go anywhere, turn on beacon next
-				if (hasMedicalEmergency)
-					endMission(MEDICAL_EMERGENCY);
-				else
-					endMission(NOT_ENOUGH_RESOURCES);
+				if (hasMedicalEmergency) {
+					addMissionStatus(MissionStatus.MEDICAL_EMERGENCY);
+					endMission();
+				}
+				else {
+					addMissionStatus(MissionStatus.NOT_ENOUGH_RESOURCES);
+					endMission();
+				}
 			}
 
 		} else { // newDestination is null. Can't find a destination
 			
 			endCollectionPhase();
 			
-			if (hasMedicalEmergency)
-				endMission(MEDICAL_EMERGENCY);
-			else
-				endMission(NO_EMERGENCY_SETTLEMENT_DESTINATION_FOUND);
-
+			if (hasMedicalEmergency) {
+				addMissionStatus(MissionStatus.MEDICAL_EMERGENCY);
+				endMission();
+			}
+			else {
+				addMissionStatus(MissionStatus.NO_EMERGENCY_SETTLEMENT_DESTINATION_FOUND);
+				endMission();
+			}
 		}
 	}
 

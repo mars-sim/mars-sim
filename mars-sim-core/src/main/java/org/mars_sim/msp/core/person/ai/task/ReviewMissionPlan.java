@@ -195,7 +195,9 @@ public class ReviewMissionPlan extends Task implements Serializable {
 		
 		            	double score = 0;
             			
-						String s = person.getAssociatedSettlement().getName();
+		            	Settlement reviewerSettlement = person.getAssociatedSettlement();
+						String s = reviewerSettlement.getName();
+						
 						
 						if (!reviewedBy.equals(requestedBy)
 								&& mp.isReviewerValid(reviewedBy, pop)) {
@@ -215,9 +217,21 @@ public class ReviewMissionPlan extends Task implements Serializable {
 							rating = (rating + cumulative_rating) * 2.5D;
 									
 							// 2. Relationship Score 
-							int relation = (int)(relationshipManager.getOpinionOfPerson(person, p)/5D);
+							
+							// 2a. Reviewer's view of the mission lead
+							double relationshipWithReviewer = relationshipManager.getOpinionOfPerson(person, p);
 							//Math.round(100D * relationshipManager.getOpinionOfPerson(person, p))/100D;
-												
+								
+							double relationshipWithOthers = 0;
+							int num = reviewerSettlement.getAllAssociatedPeople().size();
+							for (Person pp : reviewerSettlement.getAllAssociatedPeople()) {
+								relationshipWithOthers += relationshipManager.getOpinionOfPerson(person, pp);
+							}
+							
+							// 2b. Others' view of the mission lead
+							relationshipWithOthers = (int)(1.0 * relationshipWithOthers / num);
+							
+							int relation = (int)((relationshipWithReviewer + relationshipWithOthers) / 10D) ;
 							
 							// 3. Mission Qualification Score
 							double qual = 0;
@@ -286,8 +300,12 @@ public class ReviewMissionPlan extends Task implements Serializable {
 								logger.info("Ice collection site score is " + site);
 							}	
 							
-							// 7. randomness
-							int rand = RandomUtil.getRandomInt(-5, 5);					
+							
+							// 7. Leadership and Charisma
+							int leadership = (int)(.075 * person.getNaturalAttributeManager()
+												.getAttribute(NaturalAttributeType.LEADERSHIP)
+											+ .025 * person.getNaturalAttributeManager()
+												.getAttribute(NaturalAttributeType.ATTRACTIVENESS));				
 	
 							// 8. reviewer role weight
 							RoleType role = person.getRole().getType();
@@ -316,35 +334,36 @@ public class ReviewMissionPlan extends Task implements Serializable {
 								weight = 4;
 							else
 								weight = 2;
-							// TODO: 9. Go to him/her to have a chat
-							// TODO: 10. look at the mission experience of a person
 							
-							score = rating + relation + qual + obj + emer + site + weight + rand;
+							
+							// 9. luck
+							int luck = RandomUtil.getRandomInt(-5, 5);	
+							
+							// TODO: 9. Go to him/her to have a chat
+							// TODO: 10. mission lead's leadership/charisma
+							
+							score = rating + relation + qual + obj + emer + site + leadership + weight + luck;
 							
 							// Updates the mission plan status
 							missionManager.scoreMissionPlan(mp, score, person);
 							
-							// Modify the sign for the random number
-							String sign = "+";
-							if (rand < 0) {
-								rand = -rand;
-								sign = "-";
-							}
 							
 							LogConsolidated.log(Level.INFO, 0, sourceName, 
 									"[" + s + "] " + reviewedBy + " graded " + requestedBy
 									+ "'s " + m.getDescription() + " mission plan as follows :");
-							logger.info("------------------------------");
-							logger.info(" (1)         Rating : " + rating); 
-							logger.info(" (2)       Relation : " + relation); 
-							logger.info(" (3)  Qualification : "  + qual); 
-							logger.info(" (4)      Objective : "  + obj);
-							logger.info(" (5)      Emergency : " + emer);
-							logger.info(" (6)          Sites : " + site);
-							logger.info(" (7)  Reviewer Role : " + weight); 
-							logger.info(" (8)     Randomness : " + sign + rand); 
-							logger.info("------------------------------");
-							logger.info("        Total Score : " + score);
+							logger.info(" ---------------------------");
+							logger.info(" (1)          Rating : " + rating); 
+							logger.info(" (2)    Relationship : " + relation); 
+							logger.info(" (3)  Qualifications : " + qual); 
+							logger.info(" (4)       Objective : " + obj);
+							logger.info(" (5)       Emergency : " + emer);
+							logger.info(" (6) Sites Selection : " + site);
+							logger.info(" (7)      Leadership : " + leadership); 							
+							logger.info(" (8)   Reviewer Role : " + weight); 
+							logger.info(" (9)            Luck : " + luck); 
+							logger.info(" ----------------------------");
+							logger.info("           Sub Total : " + score);
+							
 						      // Add experience
 					        addExperience(time);
 				        

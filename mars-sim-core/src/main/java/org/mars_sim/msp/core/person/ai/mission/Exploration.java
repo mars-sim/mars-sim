@@ -132,15 +132,18 @@ public class Exploration extends RoverMission implements Serializable {
 							getTotalTripTimeLimit(getRover(), getPeopleNumber(), true), NUM_SITES, skill);
 				}
 			} catch (Exception e) {
-				endMission(NO_EXPLORATION_SITES);
+				addMissionStatus(MissionStatus.NO_EXPLORATION_SITES);
+				endMission();
 			}
 
 			// Add home settlement
 			addNavpoint(new NavPoint(getStartingSettlement().getCoordinates(), s, s.getName()));
 
 			// Check if vehicle can carry enough supplies for the mission.
-			if (hasVehicle() && !isVehicleLoadable())
-				endMission(VEHICLE_NOT_LOADABLE);
+			if (hasVehicle() && !isVehicleLoadable()) {
+				addMissionStatus(MissionStatus.VEHICLE_NOT_LOADABLE);
+				endMission();
+			}
 		}
 
 		if (s != null) {
@@ -218,8 +221,10 @@ public class Exploration extends RoverMission implements Serializable {
 		setPhaseDescription(Msg.getString("Mission.phase.approval.description", startingSettlement.getName())); // $NON-NLS-1$
 
 		// Check if vehicle can carry enough supplies for the mission.
-		if (hasVehicle() && !isVehicleLoadable())
-			endMission(VEHICLE_NOT_LOADABLE);
+		if (hasVehicle() && !isVehicleLoadable()) {
+			addMissionStatus(MissionStatus.VEHICLE_NOT_LOADABLE);
+			endMission();
+		}
 	}
 
 	/**
@@ -332,7 +337,8 @@ public class Exploration extends RoverMission implements Serializable {
 		}
 		
 		else if (COMPLETED.equals(getPhase())) {
-			endMission(ALL_DISEMBARKED);
+			addMissionStatus(MissionStatus.MISSION_ACCOMPLISHED);
+			endMission();
 		}
 	}
 

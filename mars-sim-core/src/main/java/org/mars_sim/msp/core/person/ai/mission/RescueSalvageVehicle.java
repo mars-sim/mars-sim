@@ -147,8 +147,9 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 				}
 
 				// Check if vehicle can carry enough supplies for the mission.
-				if (hasVehicle() && !isVehicleLoadable()) {
-					endMission(VEHICLE_NOT_LOADABLE);// "Vehicle is not loadable. (RescueSalvageVehicle)");
+				if (hasVehicle() && !isVehicleLoadable()) {			
+					addMissionStatus(MissionStatus.VEHICLE_NOT_LOADABLE);
+					endMission();
 				}
 
 				// Add rendezvous phase.
@@ -159,7 +160,8 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 				setPhaseDescription(
 						Msg.getString("Mission.phase.approval.description")); // $NON-NLS-1$
 			} else {
-				endMission(TARGET_VEHICLE_NOT_FOUND);
+				addMissionStatus(MissionStatus.TARGET_VEHICLE_NOT_FOUND);
+				endMission();
 			}
 		}
 	}
@@ -219,7 +221,8 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 
 		// Check if vehicle can carry enough supplies for the mission.
 		if (hasVehicle() && !isVehicleLoadable()) {
-			endMission(Mission.VEHICLE_NOT_LOADABLE);//"Vehicle is not loadable. (RescueSalvageVehicle)"); ?
+			addMissionStatus(MissionStatus.VEHICLE_NOT_LOADABLE);
+			endMission();
 		}
 	}
 
@@ -347,7 +350,8 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 		}
 		
 		else if (COMPLETED.equals(getPhase())) {
-			endMission(ALL_DISEMBARKED);
+			addMissionStatus(MissionStatus.MISSION_ACCOMPLISHED);
+			endMission();
 		}
 	}
 

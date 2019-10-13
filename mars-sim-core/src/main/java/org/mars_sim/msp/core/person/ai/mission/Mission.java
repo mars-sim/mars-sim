@@ -30,6 +30,7 @@ import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.ShiftType;
+import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.person.ai.taskUtil.Task;
@@ -59,8 +60,8 @@ public abstract class Mission implements Serializable {
 
 	public static final int MAX_CAP = 8;
 	
-	public static final String CONSTRUCTION_ENDED = "Construction ended.";
-	public static final String ALL_DISEMBARKED = "All members disembarked.";
+//	public static final String CONSTRUCTION_ENDED = "Construction ended.";
+//	public static final String MISSION_ACCOMPLISHED = "Mission Accomplished.";
 	public static final String USER_ABORTED_MISSION = "Mission aborted by user.";
 	public static final String UNREPAIRABLE_MALFUNCTION = "Unrepairable malfunction.";
 	public static final String NO_RESERVABLE_VEHICLES = "No reservable vehicles.";
@@ -84,7 +85,8 @@ public abstract class Mission implements Serializable {
 	public static final String LUV_NOT_AVAILABLE = "LUV not available.";
 	
 	public static final String LUV_ATTACHMENT_PARTS_NOT_LOADABLE = "LUV and/or its attachment parts could not be loaded.";
-
+	public static final String CURRENT_MISSION_PHASE_IS_NULL = "Current mission phase is null.";
+	
 	public static final String MISSION = " mission";
 	public static final String[] EXPRESSIONS = new String[] {
 			"Where is everybody when I need someone for ",
@@ -147,8 +149,10 @@ public abstract class Mission implements Serializable {
 	/** The full mission designation. */
 	private String fullMissionDesignation;
 	/** The reason for ending the mission. */
-	private String reason = "";
+//	private String reason = "";
 	
+	/** A list of mission status. */
+	private List<MissionStatus> missionStatus;
 	/** The current phase of the mission. */
 	private MissionPhase phase;
 	/** The name of the starting member */
@@ -206,6 +210,7 @@ public abstract class Mission implements Serializable {
 			
 		missionID = MissionManager.matchMissionID(missionName);
 		
+		missionStatus = new ArrayList<>();
 		members = new ConcurrentLinkedQueue<MissionMember>();
 		done = false;
 		phase = null;
@@ -474,7 +479,8 @@ public abstract class Mission implements Serializable {
 				fireMissionUpdate(MissionEventType.REMOVE_MEMBER_EVENT, member);
 
 				if ((members.size() == 0) && !done) {
-					endMission(NOT_ENOUGH_MEMBERS);
+					addMissionStatus(MissionStatus.NOT_ENOUGH_MEMBERS);
+					endMission();
 				}
 				// logger.fine(member.getName() + " removed from mission : " + name);
 			}
@@ -733,7 +739,8 @@ public abstract class Mission implements Serializable {
 	 */
 	protected void performPhase(MissionMember member) {
 		if (phase == null) {
-			endMission("Current mission phase is null.");
+			addMissionStatus(MissionStatus.CURRENT_MISSION_PHASE_IS_NULL);
+			endMission();
 		}
 	}
 
@@ -806,23 +813,26 @@ public abstract class Mission implements Serializable {
 	 * 
 	 * @param reason
 	 */
-	public void addMissionScore(String reason) {
-		if (reason.equals(ALL_DISEMBARKED)) {
+	public void addMissionScore() {//String reason) {
+		if (haveMissionStatus(MissionStatus.MISSION_ACCOMPLISHED)) {
 			for (MissionMember member : members) {
 				if (member instanceof Person) {
 					Person person = (Person) member;
 					
 					if (!person.isDeclaredDead()) {
 						if (!person.getPhysicalCondition().hasSeriousMedicalProblems()) {
-							person.addMissionExperience(missionID, 5);
+							person.addMissionExperience(missionID, 3);
 						}
 						else
 							// Note : there is a minor penalty for those who are sick 
 							// and thus unable to fully function during the mission
-							person.addMissionExperience(missionID, 2.5);
+							person.addMissionExperience(missionID, 3);
 						
 						if (person.equals(startingMember)) {
-							person.addMissionExperience(missionID, 2.5);
+							// The mission lead receive extra bonus
+							person.addMissionExperience(missionID, 3);
+							// Add a leadership point to the mission lead
+							person.getNaturalAttributeManager().adjustAttribute(NaturalAttributeType.LEADERSHIP, 1);	
 						}
 					}
 				}
@@ -836,21 +846,17 @@ public abstract class Mission implements Serializable {
 	 * 
 	 * @param reason
 	 */
-	public void endMission(String reason) {
-		this.reason = reason;
+	public void endMission() {//String reason) {
+//		this.reason = reason;
 		
 		// Add mission experience score
-		addMissionScore(reason);
+		addMissionScore();
 		
 		// Note: !done is very important to keep !
 		if (!done) {
 			// TODO : there can be custom reason such as "Equipment EVA Suit 12 cannot be
 			// loaded in rover Rahu" with mission name 'Trade With Camp Bradbury'
-
-			LogConsolidated.log(Level.INFO, 1000, sourceName,
-					"[" + startingMember.getLocationTag().getLocale() + "] " + startingMember.getName()
-							+ " ended the " + missionName + " mission. Reason : " + reason);
-
+	
 			done = true; // Note: done = true is very important to keep !
 //			fireMissionUpdate(MissionEventType.END_MISSION_EVENT);
 			// logger.info("done firing End_Mission_Event");
@@ -871,15 +877,17 @@ public abstract class Mission implements Serializable {
 					}
 				}
 			}
-		} 
+		}
 		
-		else
-			LogConsolidated.log(Level.INFO, 1000, sourceName,
-					"[" + startingMember.getLocationTag().getLocale() + "] " + startingMember.getName()
-							+ " is ending the " + missionName + ". Reason : '" + reason + "'");
+		LogConsolidated.log(Level.INFO, 0, sourceName,
+				"[" + startingMember.getLocationTag().getLocale() + "] " + startingMember.getName()
+						+ " ended the " + missionName + " with the following status flag(s) :");
 		
+		for (int i=0; i< missionStatus.size(); i++) {
+			logger.warning(" (" + i + "). " + missionStatus.get(i).getName());
+		}
 		
-		if (reason.equals(ALL_DISEMBARKED)) {
+		if (haveMissionStatus(MissionStatus.MISSION_ACCOMPLISHED)) {
 			if (this instanceof VehicleMission) {
 				setPhase(VehicleMission.COMPLETED);
 			}
@@ -888,8 +896,13 @@ public abstract class Mission implements Serializable {
 		}
 		
 		else {
+			String s = "";
+			for (MissionStatus ms : missionStatus) {
+				s += ms.getName();
+			}
+			
 			setPhaseDescription(
-					Msg.getString("Mission.phase.aborted.description", reason)); // $NON-NLS-1$
+					Msg.getString("Mission.phase.aborted.description", s)); // $NON-NLS-1$
 		}
 			
 		// Proactively call removeMission to update the list in MissionManager right away
@@ -1053,7 +1066,8 @@ public abstract class Mission implements Serializable {
 		}
 
 		if (getMembersNumber() < minMembers) {
-			endMission("Not enough members");
+			addMissionStatus(MissionStatus.NOT_ENOUGH_MEMBERS);
+			endMission();
 		}
 	}
 
@@ -1388,7 +1402,8 @@ public abstract class Mission implements Serializable {
 		
 		else if (plan != null) {
 			if (plan.getStatus() == PlanType.NOT_APPROVED) {
-				endMission(MISSION_NOT_APPROVED);
+				addMissionStatus(MissionStatus.MISSION_NOT_APPROVED);
+				endMission();
 			}
 			
 			else if (plan.getStatus() == PlanType.APPROVED) {
@@ -1464,8 +1479,50 @@ public abstract class Mission implements Serializable {
 		return vehicleReserved;
 	}
 	
-	public String getReason() {
-		return reason;
+	public List<MissionStatus> getMissionStatus() {
+		return missionStatus;
+	}
+	
+	/**
+	 * Checks if this mission has already been tagged with this mission status
+	 * 
+	 * @param status
+	 * @return
+	 */
+	public boolean haveMissionStatus(MissionStatus status) {
+		if (missionStatus.contains(status))
+			return true;
+		else
+			return false;
+	}
+	
+	/**
+	 * Check if the rover has mission status that prompts to turn on the beacon to ask for help 
+	 * 
+	 * @return
+	 */
+	public boolean needHelp() {
+		if (missionStatus.contains(MissionStatus.NOT_ENOUGH_RESOURCES)
+				|| missionStatus.contains(MissionStatus.UNREPAIRABLE_MALFUNCTION)
+				|| missionStatus.contains(MissionStatus.NO_EMERGENCY_SETTLEMENT_DESTINATION_FOUND)
+				|| missionStatus.contains(MissionStatus.MEDICAL_EMERGENCY)
+				|| missionStatus.contains(MissionStatus.REQUEST_RESCUE)
+				)
+			return true;
+		else
+			return false;
+	}
+	
+	/**
+	 * Add a new mission status
+	 * 
+	 * @param status
+	 */
+	public void addMissionStatus(MissionStatus status) {
+		if (!missionStatus.contains(status))
+			missionStatus.add(status);
+		else
+			logger.info(this + " has already been tagged with '" + status.getName() + "'");
 	}
 	
 	/**

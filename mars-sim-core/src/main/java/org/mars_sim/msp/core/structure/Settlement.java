@@ -568,9 +568,9 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 		if (iceCollectionRate < 0)
 			iceCollectionRate = 0;
 		
-		logger.info(this + " elevation : " + Math.round(elevation*1000.0)/1000.0);
-		logger.info(this + " gradient : " + Math.round(gradient*10.0)/10.0);
-		logger.info(this + " ice collection rate : " + Math.round(iceCollectionRate*100.0)/100.0);
+		logger.info(this + "           elevation : " + Math.round(elevation*1000.0)/1000.0 + " km");
+		logger.info(this + "     gradient factor : " + Math.round(gradient*10.0)/10.0);
+		logger.info(this + " ice collection rate : " + Math.round(iceCollectionRate*100.0)/100.0 + " kg/sol");
 		
 		// Set inventory total mass capacity.
 		getInventory().addGeneralCapacity(Double.MAX_VALUE); // 10_000_000);//100_000_000);//
@@ -1285,14 +1285,14 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 			// Updates the goodsManager randomly 4 times per sol .
 			updateGoodsManager(time);
 
-			int remainder = millisols % (int) (CHECK_MISSION / time);
+			int remainder = millisols % (int) (1.0 * CHECK_MISSION / time);
 			if (remainder == 0) {
 				// Reset the mission probability back to 1
 				missionProbability = -1;
 				mineralValue = -1;
 			}
 
-			remainder = millisols % (int) (SAMPLING_FREQ / time);
+			remainder = millisols % (int) (1.0 * SAMPLING_FREQ / time);
 			if (remainder == 0) {
 				// will NOT check for radiation at the exact 1000 millisols in order to balance
 				// the simulation load
@@ -1300,7 +1300,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 				sampleAllResources();
 			}
 
-			remainder = millisols % (int) (100 / time);
+			remainder = millisols % (int) (100.0 / time);
 			if (remainder == 0) {
 				// Recompute the water ration level
 				computeWaterRation();
@@ -1308,12 +1308,12 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 
 			// Check every RADIATION_CHECK_FREQ (in millisols)
 			// Compute whether a baseline, GCR, or SEP event has occurred
-			remainder = millisols % (int) (RadiationExposure.RADIATION_CHECK_FREQ / time);
+			remainder = millisols % (int) (1.0 * RadiationExposure.RADIATION_CHECK_FREQ / time);
 			if (remainder == 5) {
 				checkRadiationProbability(time);
 			}
 
-			remainder = millisols % (int) (RESOURCE_UPDATE_FREQ / time);
+			remainder = millisols % (int) (1.0 * RESOURCE_UPDATE_FREQ / time);
 			if (remainder == 5) {
 				iceProbabilityValue = computeIceProbability();
 			}

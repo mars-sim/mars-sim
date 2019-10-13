@@ -32,9 +32,10 @@ import org.beryx.textio.swing.SwingTextTerminal;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.GameManager;
 import org.mars_sim.msp.core.GameManager.GameMode;
+import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.time.MasterClock;
 
-public class MarsTerminal extends SwingTextTerminal {
+public class MarsTerminal extends SwingTextTerminal implements ClockListener {
     private static Logger logger = Logger.getLogger(MarsTerminal.class.getName());
 
 	/** Icon image filename for frame */
@@ -50,6 +51,9 @@ public class MarsTerminal extends SwingTextTerminal {
 	private InteractiveTerm interactiveTerm;
 	
     private final JPopupMenu popup = new JPopupMenu();
+    
+	private static MasterClock masterClock = Simulation.instance().getMasterClock();
+	
 
     private static class PopupListener extends MouseAdapter {
         private final JPopupMenu popup;
@@ -78,6 +82,9 @@ public class MarsTerminal extends SwingTextTerminal {
 //    	System.out.println("w: " + getFrame().getWidth()); // w: 656  	
 //    	System.out.println("h: " + getFrame().getHeight()); // h: 519    	
     	
+		// Add clock listener
+    	masterClock.addClockListener(this);
+		
         configureMainMenu();
 
         JTextPane textPane = getTextPane();
@@ -136,9 +143,11 @@ public class MarsTerminal extends SwingTextTerminal {
 	
     private void configureMainMenu() {
         frame = getFrame();
-//        frame.setTitle("Mars Simulation Project");
+        
         changeTitle(false);
+        
         setSize(WIDTH, HEIGHT);
+        
         frame.setResizable(false);
 //        frame.setPreferredSize(new Dimension(WIDTH, HEIGHT));
 //        TerminalProperties<SwingTextTerminal> props = getProperties();
@@ -211,8 +220,6 @@ public class MarsTerminal extends SwingTextTerminal {
         JMenuItem pauseItem = new JMenuItem("Pause/Unpause", KeyEvent.VK_P);
         pauseItem.addActionListener(e -> {
 
-        	MasterClock masterClock = Simulation.instance().getMasterClock();
-        	
         	if (masterClock != null) {
         		
 				if (masterClock.isPaused()) {
@@ -275,17 +282,37 @@ public class MarsTerminal extends SwingTextTerminal {
 	public void changeTitle(boolean isPaused) {
 		if (GameManager.mode == GameMode.COMMAND) {
 			if (isPaused) {
-				frame.setTitle(Simulation.title + "  -  Command Mode" + "  -  [ PAUSE ]");
+				setPaneTitle(Simulation.title + "  -  Command Mode" + "  -  [ P A U S E ]");
 			} else {
-				frame.setTitle(Simulation.title + "  -  Command Mode");
+				setPaneTitle(Simulation.title + "  -  Command Mode");
 			}
 		} else {
 			if (isPaused) {
-				frame.setTitle(Simulation.title + "  -  Sandbox Mode" + "  -  [ PAUSE ]");
+				setPaneTitle(Simulation.title + "  -  Sandbox Mode" + "  -  [ P A U S E ]");
 			} else {
-				frame.setTitle(Simulation.title + "  -  Sandbox Mode");
+				setPaneTitle(Simulation.title + "  -  Sandbox Mode");
 			}
 		}
+	}
+
+
+	@Override
+	public void clockPulse(double time) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void uiPulse(double time) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void pauseChange(boolean isPaused, boolean showPane) {
+		changeTitle(isPaused);
 	}
 	
 }

@@ -614,18 +614,19 @@ public class InteractiveTerm {
         	if (mc != null) {
 				if (mc.isPaused()) {
 					mc.setPaused(false, false);
-					terminal.printf(System.lineSeparator() + System.lineSeparator());
-					terminal.printf("                          [ Simulation Resumed ]");
+//					terminal.printf(System.lineSeparator() + System.lineSeparator());
+//					terminal.printf("                          [ Simulation Resumed ]");
 					//terminal.printf(System.lineSeparator() + System.lineSeparator());
 				}
 				else {
-					terminal.resetLine();
+//					terminal.resetLine();
 					mc.setPaused(true, false);
 //					terminal.printf(System.lineSeparator() + System.lineSeparator());
-					terminal.printf("                           [ Simulation Paused ]");
+//					terminal.printf("                           [ Simulation Paused ]");
 					//terminal.printf(System.lineSeparator() + System.lineSeparator());
 				}
         	}
+        	
             return new ReadHandlerData(ReadInterruptionStrategy.Action.CONTINUE);
         });
 

@@ -1368,13 +1368,13 @@ public class MainDesktopPane extends JDesktopPane
 	public void changeTitle(boolean isPaused) {
 		if (mode == GameMode.COMMAND) {
 			if (isPaused) {
-				mainWindow.getFrame().setTitle(Simulation.title + "  -  Command Mode" + "  -  [ PAUSE ]");
+				mainWindow.getFrame().setTitle(Simulation.title + "  -  Command Mode" + "  -  [ P A U S E ]");
 			} else {
 				mainWindow.getFrame().setTitle(Simulation.title + "  -  Command Mode");
 			}
 		} else {
 			if (isPaused) {
-				mainWindow.getFrame().setTitle(Simulation.title + "  -  Sandbox Mode" + "  -  [ PAUSE ]");
+				mainWindow.getFrame().setTitle(Simulation.title + "  -  Sandbox Mode" + "  -  [ P A U S E ]");
 			} else {
 				mainWindow.getFrame().setTitle(Simulation.title + "  -  Sandbox Mode");
 			}
@@ -1395,14 +1395,6 @@ public class MainDesktopPane extends JDesktopPane
 	@Override
 	public void pauseChange(boolean isPaused, boolean showPane) {
 		changeTitle(isPaused);
-
-//		if (isPaused) {
-////			marqueeTicker.pauseMarqueeTimer(true);
-//			soundPlayer.mute(true, true);
-//		} else {
-////			marqueeTicker.pauseMarqueeTimer(false);
-//			soundPlayer.unmute(true, true);
-//		}
 	}
 
 	public boolean isEmpty() {

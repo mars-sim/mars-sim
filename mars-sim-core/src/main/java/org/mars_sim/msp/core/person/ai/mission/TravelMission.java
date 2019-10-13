@@ -457,8 +457,8 @@ public abstract class TravelMission extends Mission {
 	public abstract void updateTravelDestination();
 
 	@Override
-	public void endMission(String reason) {
-		super.endMission(reason);
+	public void endMission() {
+		super.endMission();
 	}
 
 	@Override

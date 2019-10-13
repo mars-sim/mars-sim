@@ -64,16 +64,19 @@ public class NaturalAttributeManager implements Serializable {
 			attributeTable.put(attributeKey, attributeValue);
 		}
 
-		// Modify the attributes reflective of Martian settlers.
-		addAttributeModifier(NaturalAttributeType.ACADEMIC_APTITUDE, -10);
+		// Randomize the attributes reflective of the first generation Martian settlers.
+		addAttributeModifier(NaturalAttributeType.ACADEMIC_APTITUDE, 10);
 		addAttributeModifier(NaturalAttributeType.AGILITY, 30);
 		addAttributeModifier(NaturalAttributeType.ARTISTRY, -10);
-		addAttributeModifier(NaturalAttributeType.COURAGE, 40);
+		addAttributeModifier(NaturalAttributeType.COURAGE, 30);
 		addAttributeModifier(NaturalAttributeType.ATTRACTIVENESS, 20);
-		addAttributeModifier(NaturalAttributeType.EMOTIONAL_STABILITY, 30);
+		
+		addAttributeModifier(NaturalAttributeType.CONVERSATION, -10);
+		addAttributeModifier(NaturalAttributeType.EMOTIONAL_STABILITY, 20);
 		addAttributeModifier(NaturalAttributeType.ENDURANCE, 5);
 		addAttributeModifier(NaturalAttributeType.EXPERIENCE_APTITUDE, 10);
 		addAttributeModifier(NaturalAttributeType.LEADERSHIP, 20);
+		
 		addAttributeModifier(NaturalAttributeType.SPIRITUALITY, 10);
 		addAttributeModifier(NaturalAttributeType.STRENGTH, 5);
 		addAttributeModifier(NaturalAttributeType.STRESS_RESILIENCE, 30);
@@ -107,18 +110,28 @@ public class NaturalAttributeManager implements Serializable {
 	}
 
 	/**
-	 * Adds a random modifier to an attribute.
+	 * Modify an attribute.
 	 * 
 	 * @param attributeName the name of the attribute
-	 * @param modifier      the random ceiling of the modifier
+	 * @param modifier      a positive or negative random number ceiling 
 	 */
-	private void addAttributeModifier(NaturalAttributeType attributeName, int modifier) {
+	public void addAttributeModifier(NaturalAttributeType attributeName, int modifier) {
 		int random = RandomUtil.getRandomInt(Math.abs(modifier));
 		if (modifier < 0)
 			random *= -1;
 		setAttribute(attributeName, getAttribute(attributeName) + random);
 	}
 
+	/**
+	 * Adjust an attribute.
+	 * 
+	 * @param attributeName the name of the attribute
+	 * @param modifier      the modifier 
+	 */
+	public void adjustAttribute(NaturalAttributeType attributeName, int modifier) {
+		setAttribute(attributeName, getAttribute(attributeName) + modifier);
+	}
+	
 	/**
 	 * Returns the number of natural attributes.
 	 * 

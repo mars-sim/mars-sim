@@ -141,7 +141,9 @@ public class EmergencySupplyMission extends RoverMission implements Serializable
 					recruitMembersForMission(startingPerson);
 				}
 			} else {
-				endMission("No settlement could be found to deliver emergency supplies to.");
+				addMissionStatus(MissionStatus.NO_SETTLEMENT_FOUND_TO_DELIVER_EMERGENCY_SUPPLIES);
+				logger.warning("No settlement could be found to deliver emergency supplies to.");
+				endMission();
 			}
 		}
 
@@ -314,7 +316,8 @@ public class EmergencySupplyMission extends RoverMission implements Serializable
 		}
 		
 		else if (COMPLETED.equals(getPhase())) {
-			endMission(ALL_DISEMBARKED);
+			addMissionStatus(MissionStatus.MISSION_ACCOMPLISHED);
+			endMission();
 		}
 	}
 
@@ -415,7 +418,8 @@ public class EmergencySupplyMission extends RoverMission implements Serializable
 				}
 			} else {
 				logger.severe("No inhabitable buildings at " + emergencySettlement);
-				endMission("No inhabitable buildings at " + emergencySettlement);
+				addMissionStatus(MissionStatus.NO_INHABITABLE_BUILDING);
+				endMission();
 			}
 		}
 
@@ -504,7 +508,8 @@ public class EmergencySupplyMission extends RoverMission implements Serializable
 					}
 				}
 			} else {
-				endMission(VEHICLE_NOT_LOADABLE); // "Vehicle is not loadable (RoverMission)."
+				addMissionStatus(MissionStatus.VEHICLE_NOT_LOADABLE);
+				endMission();
 			}
 		} else {
 			setPhaseEnded(true);
@@ -534,7 +539,8 @@ public class EmergencySupplyMission extends RoverMission implements Serializable
 						assignTask(person, new Walk(person, adjustedLoc.getX(), adjustedLoc.getY(), getVehicle()));
 					} else {
 						logger.severe(person.getName() + " unable to enter rover " + getVehicle());
-						endMission(person.getName() + " unable to enter rover " + getVehicle());
+						addMissionStatus(MissionStatus.CANNOT_ENTER_ROVER);
+						endMission();
 					}
 				}
 			} else if (member instanceof Robot) {
@@ -543,7 +549,8 @@ public class EmergencySupplyMission extends RoverMission implements Serializable
 					assignTask(robot, new Walk(robot, adjustedLoc.getX(), adjustedLoc.getY(), getVehicle()));
 				} else {
 					logger.severe(robot.getName() + " unable to enter rover " + getVehicle());
-					endMission(robot.getName() + " unable to enter rover " + getVehicle());
+					addMissionStatus(MissionStatus.CANNOT_ENTER_ROVER);
+					endMission();
 				}
 			}
 
@@ -557,7 +564,9 @@ public class EmergencySupplyMission extends RoverMission implements Serializable
 //						emergencySettlement.getInventory().retrieveUnit(suit);
 //						getVehicle().getInventory().storeUnit(suit);
 					} else {
-						endMission("Equipment " + suit + " cannot be loaded in rover " + getVehicle());
+						logger.warning(suit + " cannot be loaded in rover " + getVehicle());
+						addMissionStatus(MissionStatus.EVA_SUIT_CANNOT_BE_LOADED);
+						endMission();
 						return;
 					}
 				}
@@ -1132,8 +1141,8 @@ public class EmergencySupplyMission extends RoverMission implements Serializable
 	}
 
 	@Override
-	public void endMission(String reason) {
-		super.endMission(reason);
+	public void endMission() {
+		super.endMission();
 
 		// Unreserve any towed vehicles.
 		if (getRover() != null) {
