@@ -11,8 +11,11 @@ import java.awt.AWTEvent;
 import java.awt.ActiveEvent;
 import java.awt.Component;
 import java.awt.EventQueue;
+import java.awt.Image;
 import java.awt.MenuComponent;
+import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
+import java.net.URL;
 
 import javax.swing.ImageIcon;
 import javax.swing.JInternalFrame;
@@ -160,4 +163,19 @@ public abstract class ModalInternalFrame extends JInternalFrame {
 	public boolean isModal() {
 		return this.modal;
 	}
+	
+	/**
+	 * Sets the icon image for the main window.
+	 */
+	public void setIconImage() {
+
+		String fullImageName = MainWindow.ICON_IMAGE;
+		URL resource = ImageLoader.class.getResource(fullImageName);
+		Toolkit kit = Toolkit.getDefaultToolkit();
+		Image img = kit.createImage(resource).getScaledInstance(16, 16, Image.SCALE_DEFAULT);
+//		ImageIcon icon = new ImageIcon(ClassLoader.getSystemResource("Iconos/icono.png"));
+		ImageIcon icon = new ImageIcon(img);
+		super.setFrameIcon(icon);
+	}
+	
 }

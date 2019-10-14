@@ -123,6 +123,9 @@ implements ActionListener {
 		//setResizable(false);
 		//setVisible(true);
 
+		// Set the icon
+		setIconImage();
+		
         // Add to its own tab pane
 //        if (desktop.getMainScene() != null)
 //        	desktop.add(this);
@@ -130,6 +133,7 @@ implements ActionListener {
 //        else 
         	desktop.add(this);
         
+        	
 		Dimension desktopSize = desktop.getParent().getSize();
 	    Dimension jInternalFrameSize = this.getSize();
 	    int width = (desktopSize.width - jInternalFrameSize.width) / 2;
@@ -138,7 +142,7 @@ implements ActionListener {
 	    
 	    setModal(true);
 	    setVisible(true);
-	    
+	    		
 		// Pause the game loop
 //		Simulation.instance().getMasterClock().setPaused(true, true);
 	}
@@ -165,6 +169,10 @@ implements ActionListener {
 		if (missionBean.isRemoteMission()) {
 			addWizardPanel(new StartingSettlementPanel(this));
 		}
+		else {
+			addWizardPanel(new ConstructionSettlementPanel(this));
+		}
+
 		if (missionBean.isScientificMission()) {
 			addWizardPanel(new StudyPanel(this));
 			addWizardPanel(new LeadResearcherPanel(this));
@@ -172,6 +180,7 @@ implements ActionListener {
 		if (missionBean.isRemoteMission()) {
 			addWizardPanel(new VehiclePanel(this));
 		}
+		
 		// TODO: Change members panel to use lead researcher as member.
 		addWizardPanel(new MembersPanel(this));
 		//addWizardPanel(new BotMembersPanel(this));
@@ -181,7 +190,7 @@ implements ActionListener {
 			addWizardPanel(new FieldSitePanel(this));
 		} 
 		
-		if( missionBean.isMiningMission() ) {
+		if (missionBean.isMiningMission() ) {
 			addWizardPanel(new MiningSitePanel(this));
 	    } else if (missionBean.isProspectingMission()) {
 			addWizardPanel(new ProspectingSitePanel(this));
@@ -194,7 +203,7 @@ implements ActionListener {
 		}
 		
 		// The cargo of the mission
-		if ( missionBean.isEmergencySupplyMission()) {
+		if (missionBean.isEmergencySupplyMission()) {
 			addWizardPanel(new EmergencySupplyPanel(this));
 		} else if (missionBean.isTradeMission()) {
 			addWizardPanel(new TradeGoodsPanel(this, false));
@@ -202,10 +211,10 @@ implements ActionListener {
 		}
 		
 		// Set construction or salvage projects
-		if ( missionBean.isConstructionMission() ) {
+		if (missionBean.isConstructionMission()) {
 			addWizardPanel(new ConstructionProjectPanel(this));
             addWizardPanel(new ConstructionVehiclePanel(this));
-		} else if ( missionBean.isSalvageMission() ) {
+		} else if (missionBean.isSalvageMission()) {
 			addWizardPanel(new SalvageProjectPanel(this));
             addWizardPanel(new SalvageVehiclePanel(this));
 		}

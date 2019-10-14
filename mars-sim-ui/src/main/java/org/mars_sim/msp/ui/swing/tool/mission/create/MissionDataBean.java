@@ -810,7 +810,7 @@ class MissionDataBean {
 	 * @return true, if a mission takes place outside the starting base
 	 */
 	protected boolean isRemoteMission() {
-		if ( type.equals(CONSTRUCTION_MISSION)
+		if (type.equals(CONSTRUCTION_MISSION)
 		|| type.equals(SALVAGE_MISSION) ) {
 			return false;
 		}

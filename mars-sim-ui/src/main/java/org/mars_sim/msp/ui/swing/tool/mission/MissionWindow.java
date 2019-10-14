@@ -143,7 +143,7 @@ public class MissionWindow extends ToolWindow {
 
 		buttonPane.add(abortButton);
 
-		setSize(new Dimension(640, 640));// 736));
+		setSize(new Dimension(640, 512));
 		setMaximizable(true);
 		setResizable(false);
 

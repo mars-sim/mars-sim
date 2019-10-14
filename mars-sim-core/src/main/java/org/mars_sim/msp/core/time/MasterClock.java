@@ -416,33 +416,25 @@ public class MasterClock implements Serializable {
 		if (!hasIt) {
 			ClockListenerTask clt = new ClockListenerTask(listener);
 			clockListenerTasks.add(clt);
-			logger.config(clt.getClockListener().getClass().getSimpleName() + "'s clock listener added.");
+//			logger.config(clt.getClockListener().getClass().getSimpleName() + "'s clock listener added.");
 		}
 	}
 
 	/**
-	 * Retrieve a clock listener task
+	 * Retrieve the clock listener task instance, given its clock listener
 	 * 
-	 * @param oldListener the clock listener task to remove.
+	 * @param listener the clock listener
 	 */
-	public ClockListenerTask retrieveClockListenerTask(ClockListener oldListener) {
-		
-//		 ClockListenerTask c = null; clockListenerTaskList.forEach(t -> {
-//		 ClockListenerTask l = c; 
-//		if (t.getClockListener().equals(oldListener)) l = t;
-//		 });
-		
-		ClockListenerTask t = null;
-		
+	public ClockListenerTask retrieveClockListenerTask(ClockListener listener) {	
 		if (clockListenerTasks != null) {
 			Iterator<ClockListenerTask> i = clockListenerTasks.iterator();
 			while (i.hasNext()) {
 				ClockListenerTask c = i.next();
-				if (c.getClockListener().equals(oldListener))
-					t = c;
+				if (c.getClockListener().equals(listener))
+					return c;
 			}
 		}
-		return t;
+		return null;
 	}
 
 	/**
@@ -452,7 +444,6 @@ public class MasterClock implements Serializable {
 	 */
 	public void loadSimulation(File file) {
 		this.setPaused(false, false);
-		// loadSimulation = true;
 		this.file = file;
 	}
 
@@ -462,13 +453,7 @@ public class MasterClock implements Serializable {
 	 * @param file save to file or null if default file.
 	 */
 	public void setSaveSim(int type, File file) {
-//		logger.config("setSaveSim() is on " + Thread.currentThread().getName());
-//		logger.config("setSaveSim(" + type + ", " + file + ");  saveType is " + saveType);
 		saveType = type;
-		//		if (type == 1) 
-//			saveType = new AtomicInteger(1);
-//		else if (type == 2) 
-//			saveType = new AtomicInteger(2);
 		this.file = file;
 //		logger.config("setSaveSim(" + type + ", " + file + ");  saveType is " + saveType);
 	}
@@ -497,7 +482,7 @@ public class MasterClock implements Serializable {
 	 * @return true if saving simulation.
 	 */
 	public boolean isSavingSimulation() {
-		if (saveType == 0) //saveType.equals(AtomicInteger(1))
+		if (saveType == 0)
 			return false;
 		else
 			return true;
@@ -558,10 +543,9 @@ public class MasterClock implements Serializable {
 	 * Resets the clock listener thread
 	 */
 	public void resetClockListeners() {
-		// If the clockListenerExecutor is not working,
-		// need to restart it
+		// If the clockListenerExecutor is not working, need to restart it
 //		LogConsolidated.log(Level.CONFIG, 0, sourceName, "The Clock Thread has died. Restarting...");
-	
+		
 		// Re-instantiate clockListenerExecutor
 		clockListenerExecutor = Executors.newSingleThreadExecutor();
 		// Re-instantiate clockListeners

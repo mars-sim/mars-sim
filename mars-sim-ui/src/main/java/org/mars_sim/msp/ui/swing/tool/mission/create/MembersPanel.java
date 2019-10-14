@@ -54,14 +54,18 @@ implements ActionListener {
 
 	// Data members.
 	private PeopleTableModel peopleTableModel;
-	private JTable peopleTable;
 	private MembersTableModel membersTableModel;
 
+	private JTable peopleTable;
 	private JTable membersTable;
+	
+	private WebLabel roverCapacityLabel;
 	private WebLabel errorMessageLabel;
+	
 	private WebButton addButton;
 	private WebButton removeButton;
-	private WebLabel roverCapacityLabel;
+	
+
 
 	/**
 	 * Constructor
@@ -102,7 +106,7 @@ implements ActionListener {
 		peopleTableModel = new PeopleTableModel();
 
 		// Create the people table.
-		peopleTable = new JTable(peopleTableModel);	
+		peopleTable = new ZebraJTable(peopleTableModel);	
 		TableStyle.setTableStyle(peopleTable);
 		// Added sorting
 		peopleTable.setAutoCreateRowSorter(true);
