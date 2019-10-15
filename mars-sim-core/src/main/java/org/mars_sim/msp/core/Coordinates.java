@@ -8,7 +8,9 @@ package org.mars_sim.msp.core;
 
 import java.io.Serializable;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
+import java.util.Locale;
 
 import org.mars_sim.msp.core.mars.Mars;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -373,6 +375,23 @@ public class Coordinates implements Serializable {
 	}
 
 	/**
+	 * Gets a coordinate string (with parenthesis and comma) to represent this location.
+	 * 
+	 * @return formatted longitude & latitude string for this coordinate
+	 * @see #getFormattedLongitudeString()
+	 * @see #getFormattedLatitudeString()
+	 */
+	public String getCoordinateString() {
+		StringBuilder buffer = new StringBuilder();
+		buffer.append('(');
+		buffer.append(getFormattedLatitudeString());
+		buffer.append(", ");
+		buffer.append(getFormattedLongitudeString());
+		buffer.append(')');
+		return buffer.toString();
+	}
+	
+	/**
 	 * Gets a common formatted string to represent longitude for this location. ex.
 	 * "35.6 E"
 	 * 
@@ -423,9 +442,11 @@ public class Coordinates implements Serializable {
 			direction = Msg.getString("direction.westShort"); //$NON-NLS-1$ ;
 		}
 
-		DecimalFormat formatter = new DecimalFormat(Msg.getString("direction.decimalFormat")); //$NON-NLS-1$
+//		DecimalFormat formatter = new DecimalFormat(Msg.getString("direction.decimalFormat")); //$NON-NLS-1$
 		// Add a whitespace in between the degree and its directional sign
-		return formatter.format(degrees) + Msg.getString("direction.degreeSign") + " " + direction; //$NON-NLS-1$
+//		return formatter.format(degrees) + Msg.getString("direction.degreeSign") + " " + direction; //$NON-NLS-1$
+		return String.format("%6.2f%s %s", degrees, Msg.getString("direction.degreeSign"), direction); //$NON-NLS-1$
+
 	}
 
 	/**
@@ -481,11 +502,21 @@ public class Coordinates implements Serializable {
 			direction = Msg.getString("direction.southShort"); //$NON-NLS-1$
 		}
 
-		DecimalFormat formatter = new DecimalFormat(Msg.getString("direction.decimalFormat")); //$NON-NLS-1$
+//		DecimalFormat formatter = new DecimalFormat(Msg.getString("direction.decimalFormat")); //$NON-NLS-1$
+		// Note : direction.decimalFormat = 0.0
 		// Add a whitespace in between the degree and its directional sign
-		return formatter.format(degrees) + Msg.getString("direction.degreeSign") + " " + direction; //$NON-NLS-1$
+//		return formatter.format(degrees) + Msg.getString("direction.degreeSign") + " " + direction; //$NON-NLS-1$
+		return String.format("%5.2f%s %s", degrees, Msg.getString("direction.degreeSign"), direction); //$NON-NLS-1$
 	}
 
+	private String formatValue(Number value, String formatString) {
+        DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(Locale.ENGLISH);
+        formatSymbols.setDecimalSeparator('.'); // or ','
+        formatSymbols.setGroupingSeparator(','); // or ' '
+        DecimalFormat formatter = new DecimalFormat(formatString, formatSymbols);
+        return formatter.format(value);
+    }
+	
 	/**
 	 * Converts phi to latitude
 	 * 

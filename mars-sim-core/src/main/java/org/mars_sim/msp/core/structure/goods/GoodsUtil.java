@@ -39,10 +39,12 @@ public class GoodsUtil {
 	
 	private static VehicleConfig vehicleConfig = SimulationConfig.instance().getVehicleConfiguration();
 	
+	
 	/**
 	 * Private constructor for utility class.
 	 */
 	private GoodsUtil() {
+
 	}
 
 	/**
@@ -145,6 +147,15 @@ public class GoodsUtil {
 	 */
 	public static Good getResourceGood(int id) {
 		return getGoodsMap().get(id);
+	}
+	
+	
+	public static Good getResourceGood(String name) {
+		for (Good g: getGoodsList()) {
+			if (name.equalsIgnoreCase(g.getName()))
+				return g;
+		}
+		return null;
 	}
 	
 	/**
@@ -358,4 +369,5 @@ public class GoodsUtil {
 
 		return result;
 	}
+	
 }

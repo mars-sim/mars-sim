@@ -137,11 +137,11 @@ public class GoodsManager implements Serializable {
 
 	private static final double EVA_SUIT_VALUE = 7.5D;
 	private static final double MINERAL_VALUE = 10D;
-	private static final double ROBOT_FACTOR = 500D;
-	private static final double TRANSPORT_VEHICLE_FACTOR = 1_000D;
-	private static final double CARGO_VEHICLE_FACTOR = 800D;
-	private static final double EXPLORER_VEHICLE_FACTOR = 600D;
-	private static final double LUV_VEHICLE_FACTOR = 250D;
+	private static final double ROBOT_FACTOR = 1;//500D;
+	private static final double TRANSPORT_VEHICLE_FACTOR = 500D;
+	private static final double CARGO_VEHICLE_FACTOR = 400D;
+	private static final double EXPLORER_VEHICLE_FACTOR = 300D;
+	private static final double LUV_VEHICLE_FACTOR = 120D;
 	
 	private static final double LUV_FACTOR = .8D;
 	private static final double LIFE_SUPPORT_FACTOR = 1D;
@@ -283,6 +283,30 @@ public class GoodsManager implements Serializable {
 	}
 
 	/**
+	 * Gets the price per item for a good
+	 * 
+	 * @param good
+	 * @return
+	 */
+	public double getPricePerItem(Good good) {
+		return getGoodValuePerItem(good) * (1 + good.getTotalCostOutput()); //+ good.computeInputPrice();
+	}
+
+	
+	/**
+	 * Gets the price per item for a good
+	 * 
+	 * @param id the good id
+	 * @return
+	 */
+	public double getPricePerItem(int id) {
+		return getPricePerItem(GoodsUtil.getResourceGood(id));
+	}
+	
+	/**
+	 * 
+	 */
+	/**
 	 * Gets the value per item of a good.
 	 * 
 	 * @param good the good to check.
@@ -292,7 +316,6 @@ public class GoodsManager implements Serializable {
 		try {
 			if (goodsValues.containsKey(good))
 				return goodsValues.get(good);
-//				return Math.round(goodsValues.get(good) * 10_000.0) / 10_000.0;
 			else
 				throw new IllegalArgumentException("Good: " + good + " not valid.");
 		} catch (Exception e) {
@@ -304,21 +327,11 @@ public class GoodsManager implements Serializable {
 	/**
 	 * Gets the value per item of a good.
 	 * 
-	 * @param good the good to check.
+	 * @param id the good id to check.
 	 * @return value (VP)
 	 */
 	public double getGoodValuePerItem(int id) {
-		try {
-			Good good = GoodsUtil.getResourceGood(id);
-			if (goodsValues.containsKey(good))
-				return goodsValues.get(good);
-//				return Math.round(goodsValues.get(good) * 1000.0) / 1000.0;
-			else
-				throw new IllegalArgumentException("Good: " + good + " not valid.");
-		} catch (Exception e) {
-			logger.log(Level.SEVERE, e.getMessage());
-			return 0;
-		}
+		return getGoodValuePerItem(GoodsUtil.getResourceGood(id));
 	}
 	
 	/**
@@ -331,7 +344,6 @@ public class GoodsManager implements Serializable {
 		try {
 			if (goodsDemandCache.containsKey(good))
 				return goodsDemandCache.get(good);
-//				return Math.round(goodsDemandCache.get(good) * 1000.0) / 1000.0;
 			else
 				throw new IllegalArgumentException("Good: " + good + " not valid.");
 		} catch (Exception e) {
@@ -347,17 +359,7 @@ public class GoodsManager implements Serializable {
 	 * @return value (VP)
 	 */
 	public double getGoodsDemandValue(int id) {
-		try {
-			Good good = GoodsUtil.getResourceGood(id);
-			if (goodsDemandCache.containsKey(good))
-				return goodsDemandCache.get(good);
-//				return Math.round(goodsDemandCache.get(good) * 1000.0) / 1000.0;
-			else
-				throw new IllegalArgumentException("Good: " + good + " not valid.");
-		} catch (Exception e) {
-			logger.log(Level.SEVERE, e.getMessage());
-			return 0;
-		}
+			return getGoodsDemandValue(GoodsUtil.getResourceGood(id));
 	}
 	
 	public double getGoodValuePerItem(Good good, double supply) {
@@ -405,7 +407,13 @@ public class GoodsManager implements Serializable {
 	 */
 	public void updateGoodValue(Good good, boolean collectiveUpdate) {
 		if (good != null) {
-			goodsValues.put(good, determineGoodValue(good, getNumberOfGoodForSettlement(good), false));
+			double value = determineGoodValue(good, getNumberOfGoodForSettlement(good), false);
+			// Add the good value of its input good
+//			value += good.computeInputValue();
+			// Save it in the good
+			good.setGoodValue(value);
+			// Save it in the goodsValues map
+			goodsValues.put(good, value);
 			if (!collectiveUpdate)
 				settlement.fireUnitUpdate(UnitEventType.GOODS_VALUE_EVENT, good);
 		} else

@@ -228,7 +228,7 @@ implements ListSelectionListener, MissionListener {
 		// Create the navpoint table panel.
 		WebPanel navpointTablePane = new WebPanel(new BorderLayout(0, 0));
 		navpointTablePane.setBorder(new MarsPanelBorder());
-		navpointTablePane.setPreferredSize(new Dimension(-1, 297));
+		navpointTablePane.setPreferredSize(new Dimension(-1, 130));
 		//mainPane.add(navpointTablePane);
 		add(navpointTablePane, BorderLayout.SOUTH);
 		

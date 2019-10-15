@@ -561,14 +561,14 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 		double elevation = terrainProfile[0];
 		double gradient = terrainProfile[1];		
 		
-		iceCollectionRate = (- 0.639 * elevation + 14.2492) / 2D  + gradient / 250;
+		iceCollectionRate = (- 0.639 * elevation + 14.2492) / 10D  + gradient / 250;
 		
 		if (iceCollectionRate < 0)
 			iceCollectionRate = 0;
 		
 		logger.info(this + "           elevation : " + Math.round(elevation*1000.0)/1000.0 + " km");
-		logger.info(this + "     gradient factor : " + Math.round(gradient*10.0)/10.0);
-		logger.info(this + " ice collection rate : " + Math.round(iceCollectionRate*100.0)/100.0 + " kg/sol");
+		logger.info(this + "   terrain steepness : " + Math.round(gradient*10.0)/10.0);
+		logger.info(this + " ice collection rate : " + Math.round(iceCollectionRate*100.0)/100.0 + " kg/millisol");
 		
 		// Set inventory total mass capacity.
 		getInventory().addGeneralCapacity(Double.MAX_VALUE); // 10_000_000);//100_000_000);//

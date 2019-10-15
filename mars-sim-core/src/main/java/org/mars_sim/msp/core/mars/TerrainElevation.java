@@ -80,6 +80,15 @@ public class TerrainElevation implements Serializable {
 		return result;
 	}
 
+	/**
+	 * Determines the slope factor or terrain steepness angle from location by sampling 11.1 km in given
+	 * direction and elevation
+	 * 
+	 * @param currentLocation
+	 * @param elevation
+	 * @param currentDirection
+	 * @return
+	 */
 	public static double determineTerrainSlopeFactor(Coordinates currentLocation, double elevation, Direction currentDirection) {
 		double newY = - RandomUtil.getRandomDouble(2.5) * currentDirection.getCosDirection();
 		double newX = RandomUtil.getRandomDouble(2.5) * currentDirection.getSinDirection();
@@ -88,6 +97,12 @@ public class TerrainElevation implements Serializable {
 		return Math.atan(elevationChange / 11.1D);
 	}
 	
+	/**
+	 * Gets the terrain profile of a location
+	 * 
+	 * @param currentLocation
+	 * @return
+	 */
 	public static double[] getTerrainProfile(Coordinates currentLocation) {
 		double slopeFactor = 0;
 		double elevation = getPatchedElevation(currentLocation);
@@ -98,6 +113,26 @@ public class TerrainElevation implements Serializable {
 		return new double[] {elevation, slopeFactor};
 	}
 	
+	/**
+	 * Obtains the ice collection rate of a location
+	 * 
+	 * @param currentLocation
+	 * @return
+	 */
+	public static double getIceCollectionRate(Coordinates currentLocation) {
+		// Get the elevation and terrain gradient factor
+		double[] terrainProfile = TerrainElevation.getTerrainProfile(currentLocation);
+				
+		double elevation = terrainProfile[0];
+		double gradient = terrainProfile[1];		
+		
+		double iceCollectionRate = (- 0.639 * elevation + 14.2492) / 10D  + gradient / 250;
+		
+		if (iceCollectionRate < 0)
+			iceCollectionRate = 0;	
+		
+		return iceCollectionRate;
+	}
 	
 	public static int[] getRGB(Coordinates location) {
 		// Find hue and saturation color components at location.

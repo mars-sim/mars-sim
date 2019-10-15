@@ -11,6 +11,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.mars_sim.msp.core.manufacture.ManufactureProcessItem;
+
 /**
  * Information about a type of manufacturing process.
  */
@@ -176,6 +178,21 @@ public class FoodProductionProcessInfo implements Serializable , Comparable<Food
 	}
 
 	/**
+	 * Gets a list of FoodProductionProcessItem having the given output resource name
+	 * 
+	 * @param name
+	 * @return
+	 */
+	public List<FoodProductionProcessItem> getFoodProductionProcessItem(String name) {
+		List<FoodProductionProcessItem> list = new ArrayList<>();
+		for (FoodProductionProcessItem item : outputList) {
+			if (name.equalsIgnoreCase(item.getName()))
+				list.add(item);
+		}
+		return list;
+	}
+	
+	/**
 	 * convenience method that gives back a list of
 	 * strings of the input items' names.
 	 * @return {@link List}<{@link String}>
@@ -202,7 +219,6 @@ public class FoodProductionProcessInfo implements Serializable , Comparable<Food
 	 * @return a negative integer, zero, or a positive integer as this object is less than,
 	 * equal to, or greater than the specified object.
 	 */
-	// 2015-10-15 Added compareTo()
 	public int compareTo(FoodProductionProcessInfo p) {
 		return name.compareToIgnoreCase(p.name);
 	}

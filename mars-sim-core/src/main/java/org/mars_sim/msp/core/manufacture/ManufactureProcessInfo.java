@@ -179,8 +179,22 @@ public class ManufactureProcessInfo implements Serializable, Comparable<Manufact
 	}
 
 	/**
-	 * convenience method that gives back a list of strings of the output items'
-	 * names.
+	 * Gets a list of ManufactureProcessItem having the given output resource name
+	 * 
+	 * @param name
+	 * @return
+	 */
+	public List<ManufactureProcessItem> getManufactureProcessItem(String name) {
+		List<ManufactureProcessItem> list = new ArrayList<>();
+		for (ManufactureProcessItem item : outputList) {
+			if (name.equalsIgnoreCase(item.getName()))
+				list.add(item);
+		}
+		return list;
+	}
+	
+	/**
+	 * Gives back a list of strings of the output items' names.
 	 * 
 	 * @return {@link List}<{@link String}>
 	 */
@@ -193,8 +207,7 @@ public class ManufactureProcessInfo implements Serializable, Comparable<Manufact
 	}
 
 	/**
-	 * convenience method that gives back a list of strings of the input items'
-	 * names.
+	 * Gives back a list of strings of the input items' names.
 	 * 
 	 * @return {@link List}<{@link String}>
 	 */

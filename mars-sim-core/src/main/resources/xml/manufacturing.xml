@@ -501,31 +501,29 @@ Note: 1 kg of H2 is 14.13 liter
 
 	<process name="extract silicon dioxide from sand"
 	tech="1" skill="0"
-			work-time="50"
+			work-time="20"
 			process-time="100"
 			power-required="0.2">
 		<inputs>
 			<resource name="sand" amount="50.0" />
 		</inputs>
 		<outputs>
-			<resource name="aluminum" amount="2.0" />
-			<resource name="silicon dioxide" amount="25.0" />
-			<resource name="sand" amount="15.0" />					
+			<resource name="aluminum" amount="5.0" />
+			<resource name="silicon dioxide" amount="45.0" />				
 		</outputs>
 	</process>
 	
 	<process name="extract silicon dioxide from sand (large batch)"
 	tech="1" skill="2"
-			work-time="250"
+			work-time="100"
 			process-time="500"
 			power-required="1.0">
 		<inputs>
 			<resource name="sand" amount="500.0" />
 		</inputs>
 		<outputs>
-			<resource name="aluminum" amount="20.0" />
-			<resource name="silicon dioxide" amount="250.0" />			
-			<resource name="sand" amount="15.0" />	
+			<resource name="aluminum" amount="50.0" />
+			<resource name="silicon dioxide" amount="450.0" />
 		</outputs>
 	</process>
 
@@ -708,9 +706,9 @@ Note: 1 kg of H2 is 14.13 liter
 
 	<!-- Produces 5 1kg aluminum ingots. -->
 	<process name="cast aluminum ingot"
-			tech="2" skill="2"
+			tech="1" skill="1"
 			work-time="50"
-			process-time="200"
+			process-time="50"
 			power-required=".2">
 		<description>Al&lt;sub&gt;2&lt;/sub&gt;O&lt;sub&gt;3&lt;/sub&gt; + 3C -> 2Al + 3CO</description>
 		<inputs>
@@ -724,7 +722,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Produces 50 1kg aluminum ingots. -->
-	<process name="cast aluminum ingot (large batch)" tech="2" skill="4" work-time="250" process-time="1000"
+	<process name="cast aluminum ingot (large batch)" tech="1" skill="1" work-time="250" process-time="250"
 			power-required="1">
 		<description>Al&lt;sub&gt;2&lt;/sub&gt;O&lt;sub&gt;3&lt;/sub&gt; + 3C -> 2Al + 3CO</description>
 		<inputs>
@@ -738,7 +736,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Produces 1m x 2m x 1mm (5kg) sheet of aluminum. -->
-	<process name="make aluminum sheet" tech="2" skill="2" work-time="50" process-time="200"
+	<process name="make aluminum sheet" tech="1" skill="1" work-time="50" process-time="20"
 			power-required=".7">
 		<description>Al&lt;sub&gt;2&lt;/sub&gt;O&lt;sub&gt;3&lt;/sub&gt; + 3C -> 2Al + 3CO</description>
 		<inputs>
@@ -752,7 +750,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Produces 1m x 2m x 1mm (5kg) sheet of aluminum. -->
-	<process name="do aluminum sheet rolling" tech="2" skill="2" work-time="50" process-time="200"
+	<process name="do aluminum sheet rolling" tech="1" skill="1" work-time="50" process-time="20"
 			power-required=".4">
 		<inputs>
 			<part name="aluminum ingot" number="5" />
@@ -763,7 +761,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Produces 1kg spool of thin aluminum wire. -->
-	<process name="do aluminum wire drawing" tech="2" skill="3" work-time="50" process-time="200"
+	<process name="do aluminum wire drawing" tech="1" skill="1" work-time="50" process-time="20"
 			power-required=".3">
 		<inputs>
 			<part name="aluminum sheet" number="1" />
@@ -798,7 +796,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Produces 5 5kg steel ingots. -->
-	<process name="do steel ingot alloying" tech="2" skill="3" work-time="50" process-time="100"
+	<process name="do steel ingot alloying" tech="1" skill="1" work-time="10" process-time="20"
 			power-required=".1">
 		<inputs>
 			<resource name="iron powder" amount="25.0" />
@@ -810,7 +808,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Produces 50 5kg steel ingots. -->
-	<process name="do steel ingot alloying (large batch)" tech="2" skill="5" work-time="250" process-time="500"
+	<process name="do steel ingot alloying (large batch)" tech="1" skill="1" work-time="50" process-time="100"
 			power-required=".5">
 		<inputs>
 			<resource name="iron powder" amount="250.0" />
@@ -822,7 +820,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Produces 1m x 2m x 1mm (15kg) sheet of steel. -->
-	<process name="make steel sheet" tech="2" skill="3" work-time="50" process-time="200"
+	<process name="make steel sheet" tech="0" skill="0" work-time="50" process-time="10"
 			power-required=".3">
 		<inputs>
 			<resource name="iron powder" amount="15.0" />
@@ -834,7 +832,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Produces 1m x 2m x 1mm (15kg) sheet of steel. -->
-	<process name="roll steel sheet" tech="2" skill="2" work-time="50" process-time="200"
+	<process name="roll steel sheet" tech="0" skill="0" work-time="50" process-time="10"
 			power-required=".3">
 		<inputs>
 			<part name="steel ingot" number="3" />
@@ -845,7 +843,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Produces 1kg spool of thick steel wire. -->
-	<process name="draw steel wire" tech="2" skill="3" work-time="50" process-time="200"
+	<process name="draw steel wire" tech="0" skill="0" work-time="50" process-time="20"
 			power-required=".2">
 		<inputs>
 			<part name="steel sheet" number="1" />
@@ -856,8 +854,8 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Produces 5kg of steel cable. -->
-	<process name="do steel cable winding" tech="2" skill="3" work-time="50" process-time="50"
-			power-required="0.2">
+	<process name="do steel cable winding" tech="0" skill="0" work-time="50" process-time="20"
+			power-required="0.1">
 		<inputs>
 			<part name="steel wire" number="5" />
 		</inputs>
@@ -867,7 +865,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Produces 10kg steel pipe. -->
-	<process name="make steel pipe" tech="2" skill="2" work-time="50" process-time="200"
+	<process name="make steel pipe" tech="0" skill="0" work-time="50" process-time="20"
 			power-required=".1">
 		<inputs>
 			<part name="steel sheet" number="2" />
@@ -878,7 +876,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Produces 10kg iron pipe. -->
-	<process name="make iron pipe" tech="2" skill="2" work-time="50" process-time="200"
+	<process name="make iron pipe" tech="0" skill="0" work-time="50" process-time="20"
 			power-required=".1">
 		<inputs>
 			<part name="iron sheet" number="2" />
@@ -889,7 +887,7 @@ Note: 1 kg of H2 is 14.13 liter
 	</process>
 
 	<!-- Produces 10kg steel canister. -->
-	<process name="make steel canister" tech="2" skill="2" work-time="50" process-time="100"
+	<process name="make steel canister" tech="1" skill="1" work-time="50" process-time="20"
 			 power-required=".1">
 		<inputs>
 			<part name="steel sheet" number="2" />
@@ -899,7 +897,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="make gas canister" tech="2" skill="3" work-time="100" process-time="0"
+	<process name="make gas canister" tech="1" skill="1" work-time="10" process-time="10"
 			power-required="0.1">
 		<inputs>
 			<part name="steel canister" number="1" />
@@ -911,7 +909,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="make fire extinguisher" tech="2" skill="3" work-time="100" process-time="50"
+	<process name="make fire extinguisher" tech="2" skill="1" work-time="100" process-time="50"
 			power-required="0.1">
 		<inputs>
 			<resource name="carbon dioxide" amount="10.0" />
@@ -925,7 +923,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="make steel valve" tech="2" skill="3" work-time="200" process-time="200"
+	<process name="make steel valve" tech="2" skill="1" work-time="200" process-time="200"
 			power-required="0.1">
 		<inputs>
 			<part name="steel ingot" number="1" />
@@ -952,7 +950,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="make steel barrel" tech="2" skill="2" work-time="250" process-time="200"
+	<process name="make steel barrel" tech="1" skill="1" work-time="25" process-time="20"
 			power-required="0.1">
 		<inputs>
 			<part name="steel sheet" number="2" />
@@ -1549,7 +1547,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 	</process>
 
 	<!-- Produces 1kg spool of fiber glass. -->
-	<process name="draw optical fiber glass" tech="3" skill="3" work-time="300" process-time="300"
+	<process name="draw optical fiber glass" tech="3" skill="1" work-time="300" process-time="300"
 			power-required=".1">
 		<inputs>
 			<resource name="sand" amount="2.0" />
@@ -1560,7 +1558,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 	</process>
 
     <!-- Produces 10 1kg spools of fiber glass. -->
-	<process name="draw optical fiber glass (large batch)" tech="3" skill="5" work-time="1500" process-time="1500"
+	<process name="draw optical fiber glass (large batch)" tech="3" skill="2" work-time="1500" process-time="1500"
 			power-required=".5">
 		<inputs>
 			<resource name="sand" amount="20.0" />
@@ -1571,7 +1569,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 	</process>
 
 	<!-- Produces 1m x 1m woven fiberglass cloth. -->
-	<process name="weave fiberglass cloth" tech="4" skill="4" work-time="400" process-time="400"
+	<process name="weave fiberglass cloth" tech="2" skill="1" work-time="400" process-time="400"
 			power-required="0">
 		<inputs>
 			<part name="fiberglass" number="1" />
@@ -1582,7 +1580,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 	</process>
 
 	<!-- Produces 1m x 1m thin sheet of plastic. -->
-	<process name="do plastic sheet extrusion" tech="4" skill="3" work-time="200" process-time="200"
+	<process name="do plastic sheet extrusion" tech="1" skill="1" work-time="200" process-time="200"
 			power-required=".2">
 		<inputs>
 			<resource name="polyester resin" amount="10.0" />
@@ -1629,7 +1627,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		</outputs>
 	</process>
 
-	<process name="make eva helmet" tech="4" skill="4" work-time="400" process-time="300"
+	<process name="make eva helmet" tech="2" skill="2" work-time="400" process-time="300"
 			power-required=".2">
 		<inputs>
 			<resource name="cane fiber" amount="0.2" />
@@ -1644,7 +1642,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		</outputs>
 	</process>
 
-	<process name="make helmet visor" tech="3" skill="4" work-time="300" process-time="200"
+	<process name="make helmet visor" tech="2" skill="2" work-time="300" process-time="200"
 			power-required=".1">
 		<inputs>
 			<resource name="polycarbonate resin" amount=".2" />
@@ -1655,7 +1653,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		</outputs>
 	</process>
 
-	<process name="make counter pressure suit" tech="4" skill="4" work-time="400" process-time="300"
+	<process name="make counter pressure suit" tech="2" skill="2" work-time="400" process-time="300"
 			power-required=".2">
 		<inputs>
 			<resource name="polyethylene" amount="1.0" />
@@ -1666,7 +1664,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		</outputs>
 	</process>
 
-	<process name="make coveralls" tech="2" skill="3" work-time="200" process-time="100"
+	<process name="make coveralls" tech="2" skill="2" work-time="200" process-time="100"
 			power-required=".2">
 		<inputs>
 			<resource name="cane fiber" amount="0.2" />
@@ -1719,7 +1717,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		</outputs>
 	</process>
 
-	<process name="make eva backpack" tech="4" skill="4" work-time="400" process-time="200"
+	<process name="make eva backpack" tech="2" skill="2" work-time="400" process-time="200"
 			power-required=".5">
 		<description>Polyethylene box with steel frame and fiberglass cloth straps.</description>
 		<inputs>
@@ -1816,7 +1814,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 
 
 	<!-- Rover tires are made with steel and steel wire. -->
-	<process name="make rover wheels" tech="4" skill="3" work-time="200" process-time="400"
+	<process name="make rover wheels" tech="2" skill="2" work-time="200" process-time="400"
 			power-required="0.5">
 		<inputs>
 			<part name="steel sheet" number="3" />
@@ -1827,77 +1825,17 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		</outputs>
 	</process>
 
-
-	<process name="manufacture utility vehicle control panel" tech="3" skill="3" work-time="500" process-time="200"
-			power-required="1.0">
-		<inputs>
-			<resource name="polyethylene" amount=".5" />
-			<resource name="polyester resin" amount="3.0" />
-			<resource name="styrene" amount="1.0" />
-			<part name="fiberglass" number="5" />
-			<part name="electrical wire" number="5" />
-			<part name="wire connector" number="5" />
-			<part name="epoxy resin bottle" number="1" />
-		</inputs>
-		<outputs>
-			<part name="utility vehicle control panel" number="1" />
-		</outputs>
-	</process>
-
-	<process name="assemble light utility vehicle" tech="3" skill="3" work-time="1000" process-time="0"
-			power-required="2.0">
-		<inputs>
-			<part name="small vehicle frame" number="1" />
-
-			<part name="large motor" number="2" />
-			<part name="rover battery" number="6" />
-			<part name="utility vehicle control panel" number="1" />
-			<part name="electrical wire" number="10" />
-			<part name="wire connector" number="10" />
-			<part name="epoxy resin bottle" number="1" />
-			<part name="lubricant bottle" number="1" />
-			<part name="small wheel" number="4" />
-			<part name="radio antenna" number="1" />
-		</inputs>
-		<outputs>
-			<vehicle name="light utility vehicle" number="1" />
-		</outputs>
-	</process>
-<!--
-	<process name="vehicle assembly remote controlled prospector"
-			tech="3" skill="3"
-			work-time="1000"
-			process-time="0"
-			power-required="0.0">
-		<inputs>
-			<part name="small vehicle frame" number="1" />
-			<part name="large motor" number="1" />
-			<part name="rover battery" number="1" />
-			<part name="utility vehicle control panel" number="1" />
-			<part name="electrical wire" number="10" />
-			<part name="wire connector" number="10" />
-			<part name="epoxy resin bottle" number="1" />
-			<part name="lubricant bottle" number="1" />
-			<part name="small wheel" number="4" />
-			<part name="radio antenna" number="1" />
-			<part name="satellite dish" number="1" />
-		</inputs>
-		<outputs>
-			<vehicle name="remote controlled prospector" number="1" />
-		</outputs>
-	</process>-->
-
-	<process name="create large vehicle frame" tech="4" skill="4" work-time="500" process-time="500"
+	<process name="create large vehicle frame" tech="1" skill="2" work-time="500" process-time="50"
 			power-required="1">
 		<inputs>
-			<part name="steel ingot" number="1000" />
+			<part name="steel ingot" number="50" />
 		</inputs>
 		<outputs>
 			<part name="large vehicle frame" number="1" />
 		</outputs>
 	</process>
 
-	<process name="manufacture rover chassis panel" tech="4" skill="4" work-time="200" process-time="400"
+	<process name="manufacture rover chassis panel" tech="3" skill="3" work-time="200" process-time="400"
 			power-required=".1">
 		<inputs>
 			<resource name="polyester resin" amount="25.0" />
@@ -1909,7 +1847,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		</outputs>
 	</process>
 
-	<process name="manufacture rover windshield" tech="3" skill="4" work-time="400" process-time="600"
+	<process name="manufacture rover windshield" tech="3" skill="3" work-time="400" process-time="600"
 			power-required=".1">
 		<inputs>
 			<part name="glass sheet" number="4" />
@@ -1919,7 +1857,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		</outputs>
 	</process>
 
-	<process name="manufacture rover window" tech="3" skill="4" work-time="400" process-time="600"
+	<process name="manufacture rover window" tech="1" skill="3" work-time="400" process-time="600"
 			power-required=".1">
 		<inputs>
 			<part name="glass sheet" number="2" />
@@ -1940,7 +1878,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		</outputs>
 	</process>
 
-	<process name="assemble rover generator" tech="4" skill="4" work-time="600" process-time="600"
+	<process name="assemble rover generator" tech="2" skill="3" work-time="600" process-time="600"
 			power-required="1.0">
 		<inputs>
 			<part name="steel ingot" number="90" />
@@ -2009,7 +1947,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		</outputs>
 	</process>
 
-	<process name="manufacture large motor" tech="4" skill="4" work-time="800" process-time="400"
+	<process name="manufacture large motor" tech="2" skill="3" work-time="800" process-time="400"
 			power-required=".3">
 		<inputs>
 			<part name="iron sheet" number="2" />
@@ -2024,7 +1962,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		</outputs>
 	</process>
 
-	<process name="manufacture rover control panel" tech="4" skill="4" work-time="400" process-time="400"
+	<process name="manufacture rover control panel" tech="2" skill="3" work-time="400" process-time="400"
 			power-required="1.0">
 		<inputs>
 			<resource name="polyethylene" amount="3.0" />
@@ -2143,7 +2081,68 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		</outputs>
 	</process>-->
 
-	<process name="assemble explorer rover" tech="4" skill="4" work-time="1800" process-time="100"
+
+	<process name="manufacture utility vehicle control panel" tech="3" skill="3" work-time="500" process-time="200"
+			power-required="1.0">
+		<inputs>
+			<resource name="polyethylene" amount=".5" />
+			<resource name="polyester resin" amount="3.0" />
+			<resource name="styrene" amount="1.0" />
+			<part name="fiberglass" number="5" />
+			<part name="electrical wire" number="5" />
+			<part name="wire connector" number="5" />
+			<part name="epoxy resin bottle" number="1" />
+		</inputs>
+		<outputs>
+			<part name="utility vehicle control panel" number="1" />
+		</outputs>
+	</process>
+
+	<!--process name="vehicle assembly remote controlled prospector"
+			tech="3" skill="3"
+			work-time="1000"
+			process-time="0"
+			power-required="0.0">
+		<inputs>
+			<part name="small vehicle frame" number="1" />
+			<part name="large motor" number="1" />
+			<part name="rover battery" number="1" />
+			<part name="utility vehicle control panel" number="1" />
+			<part name="electrical wire" number="10" />
+			<part name="wire connector" number="10" />
+			<part name="epoxy resin bottle" number="1" />
+			<part name="lubricant bottle" number="1" />
+			<part name="small wheel" number="4" />
+			<part name="radio antenna" number="1" />
+			<part name="satellite dish" number="1" />
+		</inputs>
+		<outputs>
+			<vehicle name="remote controlled prospector" number="1" />
+		</outputs>
+	</process>-->
+
+	<process name="assemble light utility vehicle" tech="3" skill="3" work-time="1000" process-time="500"
+			power-required="2.0">
+		<inputs>
+			<part name="small vehicle frame" number="1" />
+
+			<part name="large motor" number="2" />
+			<part name="rover battery" number="6" />
+			<part name="utility vehicle control panel" number="1" />
+			<part name="electrical wire" number="10" />
+			<part name="wire connector" number="10" />
+			<part name="epoxy resin bottle" number="1" />
+			<part name="lubricant bottle" number="1" />
+			<part name="small wheel" number="4" />
+			<part name="radio antenna" number="1" />
+			<part name="optical cable" number="4" />			
+		</inputs>
+		<outputs>
+			<vehicle name="light utility vehicle" number="1" />
+		</outputs>
+	</process>
+	
+	<process name="assemble explorer rover" tech="3" skill="4" work-time="1300" process-time="1000"
 			power-required="4.0">
 		<inputs>
 			<part name="large vehicle frame" number="1" />
@@ -2170,20 +2169,20 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="epoxy resin bottle" number="5" />
 			<part name="lubricant bottle" number="2" />
 			<part name="rover wheel" number="4" />
-			<part name="optical cable" number="10" />			
+			<part name="optical cable" number="6" />			
 		</inputs>
 		<outputs>
 			<vehicle name="explorer rover" number="1" />
 		</outputs>
 	</process>
 
-	<process name="assemble transport rover" tech="4" skill="4" work-time="1500" process-time="100"
-			power-required="4.0">
+	<process name="assemble transport rover" tech="3" skill="4" work-time="1500" process-time="1000"
+			power-required="5.0">
 		<inputs>
 			<part name="large vehicle frame" number="1" />
 			<part name="rover chassis panel" number="10" />
 			<part name="rover windshield" number="1" />
-			<part name="rover window" number="5" />
+			<part name="rover window" number="7" />
 			<part name="winch" number="1" />
 			<part name="rover generator" number="1" />
 			<part name="large motor" number="4" />
@@ -2203,25 +2202,25 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="steel pipe" number="2" />
 			<part name="epoxy resin bottle" number="5" />
 			<part name="lubricant bottle" number="2" />
-			<part name="rover wheel" number="4" />
-			<part name="optical cable" number="10" />			
+			<part name="rover wheel" number="6" />
+			<part name="optical cable" number="8" />			
 		</inputs>
 		<outputs>
 			<vehicle name="transport rover" number="1" />
 		</outputs>
 	</process>
 
-	<process name="assemble cargo rover" tech="4" skill="4" work-time="1200" process-time="100"
-			power-required="4.0">
+	<process name="assemble cargo rover" tech="3" skill="4" work-time="1700" process-time="1000"
+			power-required="6.0">
 		<inputs>
 			<part name="large vehicle frame" number="1" />
 			<part name="rover chassis panel" number="10" />
 			<part name="rover windshield" number="1" />
-			<part name="rover window" number="5" />
+			<part name="rover window" number="7" />
 			<part name="winch" number="1" />
 			<part name="rover generator" number="1" />
 			<part name="large motor" number="5" />
-			<part name="rover battery" number="3" />
+			<part name="rover battery" number="4" />
 			<part name="rover control panel" number="1" />
 			<part name="fuel tank" number="1" />
 			<part name="gas tank" number="1" />
@@ -2237,7 +2236,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="steel pipe" number="2" />
 			<part name="epoxy resin bottle" number="5" />
 			<part name="lubricant bottle" number="2" />
-			<part name="rover wheel" number="4" />
+			<part name="rover wheel" number="6" />
 			<part name="optical cable" number="10" />			
 		</inputs>
 		<outputs>
@@ -2245,7 +2244,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		</outputs>
 	</process>
 
-	<process name="do hematite smelting" tech="1" skill="2" work-time="100" process-time="100"
+	<process name="do hematite smelting" tech="1" skill="1" work-time="100" process-time="100"
 			power-required="5.0">
 		<inputs>
 			<resource name="hematite" amount="50.0" />
@@ -2257,7 +2256,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		</outputs>
 	</process>
 
-	<process name="do magnetite smelting" tech="1" skill="2" work-time="200" process-time="200"
+	<process name="do magnetite smelting" tech="1" skill="1" work-time="150" process-time="150"
 			power-required="5.0">
 		<inputs>
 			<resource name="magnetite" amount="50.0" />
@@ -2269,7 +2268,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		</outputs>
 	</process>
 
-	<process name="do goethite smelting" tech="1" skill="2" work-time="150" process-time="150"
+	<process name="do goethite smelting" tech="1" skill="1" work-time="150" process-time="150"
 			power-required="5.0">
 		<inputs>
 			<resource name="goethite" amount="50.0" />
@@ -2281,7 +2280,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		</outputs>
 	</process>
 
-	<process name="do olivine smelting" tech="1" skill="2" work-time="150" process-time="150"
+	<process name="do olivine smelting" tech="1" skill="1" work-time="150" process-time="150"
 			power-required="5.0">
 		<inputs>
 			<resource name="olivine" amount="50.0" />
@@ -2295,7 +2294,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		</outputs>
 	</process>
 
-	<process name="do magnesite smelting" tech="1" skill="2" work-time="200" process-time="200"
+	<process name="do magnesite smelting" tech="1" skill="1" work-time="200" process-time="200"
 			power-required="5.0">
 		<inputs>
 			<resource name="magnesite" amount="50.0" />
@@ -2308,7 +2307,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		</outputs>
 	</process>
 
-	<process name="do kamacite smelting" tech="1" skill="2" work-time="100" process-time="100"
+	<process name="do kamacite smelting" tech="1" skill="1" work-time="100" process-time="100"
 			power-required="5.0">
 		<inputs>
 			<resource name="kamacite" amount="50.0" />
@@ -2319,7 +2318,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		</outputs>
 	</process>
 
-	<process name="do taenite smelting" tech="1" skill="2" work-time="100" process-time="100"
+	<process name="do taenite smelting" tech="1" skill="1" work-time="100" process-time="100"
 			power-required="5.0">
 		<inputs>
 			<resource name="taenite" amount="50.0" />
@@ -2330,7 +2329,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		</outputs>
 	</process>
 
-	<process name="do chalcopyrite smelting" tech="1" skill="2" work-time="200" process-time="200"
+	<process name="do chalcopyrite smelting" tech="1" skill="1" work-time="200" process-time="200"
 			power-required="5.0">
 		<inputs>
 			<resource name="chalcopyrite" amount="50.0" />
@@ -2342,7 +2341,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		</outputs>
 	</process>
 
-	<process name="do malachite smelting" tech="1" skill="2" work-time="150" process-time="200"
+	<process name="do malachite smelting" tech="1" skill="1" work-time="150" process-time="200"
 			power-required="5.0">
 		<inputs>
 			<resource name="malachite" amount="50.0" />
@@ -2356,7 +2355,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 	</process>
 
 	<!-- Produces 5 5kg ingots of steel. -->
-	<process name="do steel ingot nickel alloying" tech="2" skill="3" work-time="100" process-time="100"
+	<process name="do steel ingot nickel alloying" tech="1" skill="1" work-time="100" process-time="50"
 			power-required="1.0">
 		<inputs>
 			<resource name="iron powder" amount="22.5" />
@@ -2369,7 +2368,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 	</process>
 
 	<!-- Produces 50 5kg ingots of steel. -->
-	<process name="do steel ingot nickel alloying (large batch)" tech="2" skill="5" work-time="500" process-time="500"
+	<process name="do steel ingot nickel alloying (large batch)" tech="1" skill="1" work-time="500" process-time="250"
 			power-required="5.0">
 		<inputs>
 			<resource name="iron powder" amount="225.0" />
@@ -2382,7 +2381,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 	</process>
 
 	<!-- Produces 1m x 2m x 1mm (5kg) sheet of copper. -->
-	<process name="make copper sheet" tech="2" skill="2" work-time="200" process-time="200"
+	<process name="make copper sheet" tech="1" skill="1" work-time="200" process-time="20"
 			power-required=".5">
 		<inputs>
 			<resource name="copper" amount="5.0" />
@@ -2393,7 +2392,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 	</process>
 
 	<!-- Produces 1kg spool of thin copper wire. -->
-	<process name="draw copper wire" tech="2" skill="3" work-time="300" process-time="200"
+	<process name="draw copper wire" tech="1" skill="1" work-time="300" process-time="20"
 			power-required="2.0">
 		<inputs>
 			<part name="copper sheet" number="1" />
@@ -2403,7 +2402,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		</outputs>
 	</process>
 
-	<process name="make copper electrical wire" tech="4" skill="3" work-time="200" process-time="400"
+	<process name="make copper electrical wire" tech="1" skill="1" work-time="200" process-time="40"
 			power-required=".5">
 		<inputs>
 			<resource name="styrene" amount="1.0" />
@@ -2414,7 +2413,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		</outputs>
 	</process>
 
-	<process name="make copper power cable" tech="4" skill="3" work-time="200" process-time="400"
+	<process name="make copper power cable" tech="1" skill="1" work-time="200" process-time="40"
 			power-required=".5">
 		<inputs>
 			<resource name="styrene" amount="1.0" />
@@ -2425,7 +2424,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		</outputs>
 	</process>
 
-	<process name="make copper wire connector" tech="4" skill="3" work-time="200" process-time="400"
+	<process name="make copper wire connector" tech="1" skill="1" work-time="200" process-time="40"
 			power-required=".3">
 		<inputs>
 			<resource name="styrene" amount=".5" />
@@ -2437,7 +2436,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 	</process>
 
 	<!-- Produces 10kg copper pipe. -->
-	<process name="make copper pipe" tech="2" skill="2" work-time="200" process-time="200"
+	<process name="make copper pipe" tech="1" skill="1" work-time="200" process-time="20"
 			power-required=".5">
 		<inputs>
 			<part name="copper sheet" number="2" />
@@ -2524,7 +2523,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		</outputs>
 	</process>
 
-	<process name="manufacture crane boom" tech="3" skill="4" work-time="400" process-time="400"
+	<process name="manufacture crane boom" tech="3" skill="4" work-time="400" process-time="100"
 			power-required="1.0">
 		<inputs>
 			<part name="steel sheet" number="4" />
@@ -2538,7 +2537,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		</outputs>
 	</process>
 
-	<process name="manufacture soil compactor" tech="2" skill="3" work-time="300" process-time="300"
+	<process name="manufacture soil compactor" tech="2" skill="3" work-time="300" process-time="100"
 			power-required="1.0">
 		<inputs>
 			<part name="steel sheet" number="2" />
@@ -2549,7 +2548,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		</outputs>
 	</process>
 
-	<process name="manufacture steel truss" tech="2" skill="2" work-time="200" process-time="300"
+	<process name="manufacture steel truss" tech="0" skill="0" work-time="10" process-time="20"
 			power-required="1.0">
 		<inputs>
 			<part name="steel ingot" number="10" />
@@ -2559,7 +2558,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		</outputs>
 	</process>
 
-	<process name="manufacture steel post" tech="2" skill="2" work-time="100" process-time="200"
+	<process name="manufacture steel post" tech="0" skill="0" work-time="10" process-time="20"
 			power-required="1.0">
 		<inputs>
 			<part name="steel ingot" number="10" />
@@ -2581,7 +2580,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		</outputs>
 	</process>
 
-	<process name="fabricate solar panel" tech="4" skill="4" work-time="200" process-time="200"
+	<process name="fabricate solar panel" tech="3" skill="4" work-time="200" process-time="200"
 			power-required="1.0">
 		<inputs>
 			<resource name="silicon" amount="25.0" />
@@ -2775,7 +2774,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 	</process>
 
 	<!-- Brick manufacturing with regolith, water, heat and pressure. -->
-	<process name="bake regolith brick" tech="1" skill="0" work-time="10" process-time="50"
+	<process name="bake regolith brick" tech="0" skill="0" work-time="5" process-time="50"
 			power-required=".1">
 		<inputs>
 			<resource name="regolith" amount="32.6" />
@@ -2788,7 +2787,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 	</process>
 
 	<!-- Brick manufacturing with sand, water, heat and pressure. -->
-	<process name="bake sand brick" tech="1" skill="0" work-time="10" process-time="50"
+	<process name="bake sand brick" tech="0" skill="0" work-time="5" process-time="50"
 			power-required=".5">
 		<inputs>
 			<resource name="sand" amount="32.6" />
@@ -2801,7 +2800,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 	</process>
 
 	<!-- Brick manufacturing with regolith, water, heat and pressure. -->
-	<process name="bake regolith brick (large batch)" tech="1" skill="2" work-time="50" process-time="250"
+	<process name="bake regolith brick (large batch)" tech="0" skill="1" work-time="25" process-time="200"
 			power-required=".1">
 		<inputs>
 			<resource name="regolith" amount="326.0" />
@@ -2814,7 +2813,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 	</process>
 
 	<!-- Brick manufacturing with sand, water, heat and pressure. -->
-	<process name="bake sand brick (large batch)" tech="1" skill="2" work-time="50" process-time="250"
+	<process name="bake sand brick (large batch)" tech="0" skill="1" work-time="25" process-time="250"
 			power-required=".5">
 		<inputs>
 			<resource name="sand" amount="326.0" />
@@ -2939,7 +2938,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 	</process>
 
 	<!-- Recycling steel scrap back into steel ingots. -->
-	<process name="recycle steel scrap" tech="2" skill="3" work-time="50" process-time="50"
+	<process name="recycle steel scrap" tech="0" skill="0" work-time="10" process-time="10"
 			power-required=".2">
 		<inputs>
 			<part name="steel scrap" number="1" />
@@ -2950,7 +2949,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 	</process>
 
 	<!-- Recycling aluminum scrap back into aluminum ingots. -->
-	<process name="recycle aluminum scrap" tech="2" skill="3" work-time="100" process-time="100"
+	<process name="recycle aluminum scrap" tech="0" skill="0" work-time="10" process-time="10"
 			power-required=".3">
 		<inputs>
 			<part name="aluminum scrap" number="1" />
@@ -3007,7 +3006,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 	</process>
 
 	<!-- Manufacturing a water pump. -->
-	<process name="make water pump" tech="4" skill="4" work-time="200" process-time="100"
+	<process name="make water pump" tech="1" skill="1" work-time="200" process-time="100"
 			power-required=".2">
 		<inputs>
 			<part name="iron ingot" number="3" />
@@ -3068,7 +3067,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 	</process>
 
 	<!-- 2014-11-19 Added manufacturing a small water pump. -->
-	<process name="make small water pump" tech="4" skill="4" work-time="200" process-time="50"
+	<process name="make small water pump" tech="1" skill="1" work-time="200" process-time="50"
 			power-required="1.0">
 		<inputs>
 			<part name="iron ingot" number="1" />
@@ -3083,7 +3082,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 	</process>
 
 	<!-- 2015-05-19 Added manufacturing heat pump. -->
-	<process name="make heat pump" tech="4" skill="4" work-time="200" process-time="50"
+	<process name="make heat pump" tech="1" skill="1" work-time="200" process-time="50"
 			power-required="1.0">
 		<inputs>
 			<part name="iron ingot" number="1" />
@@ -3101,7 +3100,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 	</process>
 
 	<!-- 2014-11-19 Added manufacturing an air compressor. -->
-	<process name="make air compressor" tech="4" skill="4" work-time="200" process-time="50"
+	<process name="make air compressor" tech="1" skill="1" work-time="200" process-time="50"
 			power-required="1.0">
 		<inputs>
 			<part name="aluminum wire" number="1" />
@@ -3115,7 +3114,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 	</process>
 
 	<!-- 2014-11-19 Added manufacturing a food blender. -->
-	<process name="manufacture food blender" tech="4" skill="4" work-time="400" process-time="50"
+	<process name="manufacture food blender" tech="1" skill="2" work-time="400" process-time="50"
 			power-required="1">
 		<inputs>
 			<part name="aluminum wire" number="1" />
@@ -3130,7 +3129,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 	</process>
 
 	<!-- 2014-11-19 Added manufacturing an oven. -->
-	<process name="manufacture oven" tech="4" skill="4" work-time="500" process-time="50"
+	<process name="manufacture oven" tech="1" skill="2" work-time="500" process-time="50"
 			power-required="1.0">
 		<inputs>
 			<part name="aluminum wire" number="1" />
@@ -3147,7 +3146,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 	</process>
 
 	<!-- 2014-11-19 Added Manufacturing a microwave. -->
-	<process name="manufacture microwave" tech="4" skill="4" work-time="500" process-time="20"
+	<process name="manufacture microwave" tech="1" skill="2" work-time="500" process-time="20"
 			power-required="1.0">
 		<inputs>
 			<part name="steel sheet" number="2" />
@@ -3166,7 +3165,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 	</process>
 
 	<!-- 2014-11-19 Added manufacturing a ventilation fan. -->
-	<process name="manufacture ventilation fan" tech="4" skill="4" work-time="100" process-time="20"
+	<process name="manufacture ventilation fan" tech="1" skill="1" work-time="100" process-time="20"
 			power-required=".5">
 		<inputs>
 			<part name="aluminum wire" number="1" />
@@ -3182,7 +3181,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 	</process>
 
 	<!-- 2014-11-19 Added manufacturing a kitchen stove. -->
-	<process name="manufacture kitchen stove" tech="4" skill="4" work-time="300" process-time="20"
+	<process name="manufacture kitchen stove" tech="1" skill="1" work-time="300" process-time="20"
 			power-required="1.0">
 		<inputs>
 			<part name="aluminum wire" number="2" />
@@ -3199,7 +3198,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 	</process>
 
 	<!-- 2014-11-19 Added manufacturing a refrigerator. -->
-	<process name="manufacture refrigerator" tech="4" skill="4" work-time="700" process-time="50"
+	<process name="manufacture refrigerator" tech="1" skill="2" work-time="700" process-time="50"
 			power-required="2.0">
 		<inputs>
 			<part name="aluminum wire" number="2" />
@@ -3216,7 +3215,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 	</process>
 
 	<!-- 2014-11-19 Added manufacturing an autoclave. -->
-	<process name="manufacture autoclave" tech="4" skill="4" work-time="700" process-time="50"
+	<process name="manufacture autoclave" tech="1" skill="2" work-time="700" process-time="50"
 			power-required="2.0">
 		<inputs>
 			<part name="aluminum wire" number="2" />
@@ -3259,7 +3258,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 	</process>
 
 	<!-- 2015-05-19 Added manufacturing navigation circuit board. -->
-	<process name="manufacture navigation circuit board" tech="4" skill="4" work-time="800" process-time="1400"
+	<process name="manufacture navigation circuit board" tech="3" skill="4" work-time="400" process-time="500"
 			power-required="1.0">
 		<inputs>
 			<part name="microcontroller" number="1" />
@@ -3276,7 +3275,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 	</process>
 
 	<!-- 2015-05-19 Added manufacturing communications circuit board. -->
-	<process name="manufacture communications circuit board" tech="4" skill="4" work-time="800" process-time="1400"
+	<process name="manufacture communications circuit board" tech="3" skill="4" work-time="400" process-time="500"
 			power-required="1.0">
 		<inputs>
 			<part name="microcontroller" number="1" />
@@ -3293,7 +3292,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 	</process>
 
 	<!-- 2015-05-19 Added manufacturing small semiconductor wafer. -->
-	<process name="fabricate small semiconductor wafer" tech="4" skill="4" work-time="800" process-time="1200"
+	<process name="fabricate small semiconductor wafer" tech="3" skill="4" work-time="400" process-time="800"
 			power-required="1.0">
 		<inputs>
 			<resource name="silicon" amount="1.2" />
@@ -3331,7 +3330,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 	</process>
 
 	<!-- 2015-05-19 Added manufacturing carbon dioxide laser. -->
-	<process name="manufacture carbon dioxide laser" tech="4" skill="4" work-time="800" process-time="1200"
+	<process name="manufacture carbon dioxide laser" tech="3" skill="4" work-time="400" process-time="600"
 			power-required="1.0">
 		<inputs>
 			<part name="small semiconductor wafer" number="1" />
@@ -3372,7 +3371,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 	</process>
 	
 	<!-- 2015-05-19 Added manufacturing a helium–neon laser. -->
-	<process name="manufacture helium neon laser" tech="4" skill="4" work-time="600" process-time="1000"
+	<process name="manufacture helium neon laser" tech="3" skill="4" work-time="400" process-time="600"
 			power-required="2.0">
 		<inputs>
 			<part name="small semiconductor wafer" number="1" />
@@ -3392,7 +3391,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 	</process>
 
 	<!-- 2015-05-19 Added manufacturing an ls 3D printer. -->
-	<process name="manufacture laser sintering 3D printer" tech="4" skill="4" work-time="2000" process-time="2000"
+	<process name="manufacture laser sintering 3D printer" tech="3" skill="4" work-time="1000" process-time="1000"
 			power-required="5.0">
 		<inputs>
 			<part name="aluminum wire" number="10" />
@@ -3413,7 +3412,8 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="timing belt" number="3" />
 			<part name="optical prism" number="3" />	
 			<part name="diode" number="5" />	
-			<part name="optical cable" number="3" />							
+			<part name="optical cable" number="3" />	
+			<part name="power cable" number="1" />										
 		</inputs>
 		<outputs>
 			<part name="laser sintering 3d printer" number="1" />
@@ -3567,7 +3567,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 	</process>
 
 		<!-- 2016-05-08 Added turbopump manufacturing -->
-	<process name="manufacture turbopump" tech="4" skill="4" work-time="1000" process-time="500"
+	<process name="manufacture turbopump" tech="3" skill="4" work-time="500" process-time="100"
 			power-required="1">
 		<inputs>
 			<part name="steel sheet" number="1" />
@@ -3646,18 +3646,19 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			
 		<!-- 2017-09-11 Added manufacture logic board -->
 	<process name="manufacture logic board" tech="3" skill="2" work-time="200" process-time="300"
-			power-required="20">
+			power-required="5">
 		<inputs>
 			<resource name="copper" amount="0.2" />
 			<resource name="iron" amount="0.2" />					
 			<resource name="aluminum" amount="0.1" />
 			<part name="glass sheet" number="1" />
+			<part name="plastic sheet" number="1" />			
 			<part name="resistor" number="40" />
 			<part name="capacitor" number="20" />
 			<part name="diode" number="10" />
 		</inputs>
 		<outputs>
-			<part name="logic board" number="2" />
+			<part name="logic board" number="4" />
 		</outputs>
 	</process>
 
@@ -3694,7 +3695,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 	</salvage>
 
 	<!-- Salvage process for an explorer rover. -->
-	<salvage item-name="explorer rover" type="vehicle" tech="4" skill="4" work-time="1000">
+	<salvage item-name="explorer rover" type="vehicle" tech="3" skill="4" work-time="1000">
 		<part-salvage name="large vehicle frame" number="1" />
 		<part-salvage name="rover chassis panel" number="10" />
 		<part-salvage name="rover windshield" number="1" />
@@ -3725,7 +3726,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 	</salvage>
 
 	<!-- Salvage process for a transport rover. -->
-	<salvage item-name="transport rover" type="vehicle" tech="4" skill="4" work-time="1000">
+	<salvage item-name="transport rover" type="vehicle" tech="3" skill="4" work-time="1000">
 		<part-salvage name="large vehicle frame" number="1" />
 		<part-salvage name="rover chassis panel" number="10" />
 		<part-salvage name="rover windshield" number="1" />
@@ -3756,7 +3757,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 	</salvage>
 
 	<!-- Salvage process for a cargo rover. -->
-	<salvage item-name="cargo rover" type="vehicle" tech="4" skill="4" work-time="1000">
+	<salvage item-name="cargo rover" type="vehicle" tech="3" skill="4" work-time="1000">
 		<part-salvage name="large vehicle frame" number="1" />
 		<part-salvage name="rover chassis panel" number="10" />
 		<part-salvage name="rover windshield" number="1" />

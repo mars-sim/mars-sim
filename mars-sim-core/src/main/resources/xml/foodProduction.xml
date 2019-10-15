@@ -654,12 +654,11 @@
 	</process>
 
 
-	<process name="Extract Minerals from Soybean Ash" tech="3" skill="4" work-time="100" process-time="500"
-			power-required="1.0">
+	<process name="Extract Minerals from Soybean Ash" tech="0" skill="0" work-time="20" process-time="50"
+			power-required=".1">
 		<description>Extract minerals from Soybean Ash. </description>
 		<inputs>
 			<resource name="Soybean Ash" amount="1" />
-
 		</inputs>
 		<outputs>
 			<resource name="Potassium" amount=".018" />
@@ -671,8 +670,8 @@
 <!-- http://www.soya.be/nutritional-values-of-soybeans.php -->
 
 	<process name="Make Blueberry Muffin"
-		tech="2" skill="2" work-time="100" process-time="100"
-			power-required="1.0">
+		tech="2" skill="2" work-time="50" process-time="100"
+			power-required="0.2">
 		<description>Mix flour, sugar, salt, baking powder, honey, and blueberry and bake in preheated oven at 200 deg C. </description>
 		<inputs>
 			<resource name="Blueberry" amount="0.2" />
@@ -690,7 +689,7 @@
 
 	<process name="Make Cranberry Juice from Cranberry"
 		tech="1" skill="2" work-time="50" process-time="100"
-			power-required="1.0">
+			power-required="0.3">
 		<description>The juice is obtained by
 		crushing cranberries in a mill or by hand cranked machine. </description>
 		<inputs>
@@ -707,7 +706,7 @@
 
 	<process name="Make Cranberry Sauce from Cranberry"
 		tech="1" skill="2" work-time="50" process-time="100"
-			power-required="1.0">
+			power-required=".3">
 		<description>Add sugar, slat, ginger to cranberries and cook in the pan over low heat, stirring occasionally for 10 mins,
 		 until the sugar dissolves and the cranberries are soft. Increase the heat to medium and cook until the
 		 cranberries burst in a few minutes. Reduce the heat to low and stir in the reserved cranberries.
@@ -728,7 +727,7 @@
 
 	<process name="Make Immune Booster"
 	 tech="3" skill="4" work-time="20" process-time="100"
-			power-required="1.0">
+			power-required="0.5">
 		<description>Make Immune Booster with minerals and fiber </description>
 		<inputs>
 			<resource name="Potassium" amount=".018" />

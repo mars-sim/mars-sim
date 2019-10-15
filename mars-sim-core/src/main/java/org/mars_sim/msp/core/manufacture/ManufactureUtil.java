@@ -112,8 +112,10 @@ public final class ManufactureUtil {
 		Iterator<ManufactureProcessInfo> i = ManufactureConfig.getManufactureProcessList().iterator();
 		while (i.hasNext()) {
 			ManufactureProcessInfo process = i.next();
-			if (process.getOutputNames().contains(name))
-				result.add(process);
+			for (String n : process.getOutputNames()) {
+				if (name.equalsIgnoreCase(n))
+					result.add(process);
+			}
 		}
 		return result;
 	}
@@ -121,16 +123,18 @@ public final class ManufactureUtil {
 	/**
 	 * Gets manufacturing processes with given input.
 	 * 
-	 * @param item {@link String} desired input
+	 * @param name {@link String} desired input
 	 * @return {@link List}<{@link ManufactureProcessItem}> list of processes
 	 */
-	public static List<ManufactureProcessInfo> getManufactureProcessesWithGivenInput(String item) {
+	public static List<ManufactureProcessInfo> getManufactureProcessesWithGivenInput(String name) {
 		List<ManufactureProcessInfo> result = new ArrayList<ManufactureProcessInfo>();
 		Iterator<ManufactureProcessInfo> i = ManufactureConfig.getManufactureProcessList().iterator();
 		while (i.hasNext()) {
 			ManufactureProcessInfo process = i.next();
-			if (process.getInputNames().contains(item))
-				result.add(process);
+			for (String n : process.getInputNames()) {
+				if (name.equalsIgnoreCase(n))
+					result.add(process);
+			}
 		}
 		return result;
 	}

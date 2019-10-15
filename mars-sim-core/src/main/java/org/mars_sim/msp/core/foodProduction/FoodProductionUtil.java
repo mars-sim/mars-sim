@@ -17,17 +17,16 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
+import org.mars_sim.msp.core.resource.ItemType;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.ResourceUtil;
-import org.mars_sim.msp.core.resource.ItemType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.FoodProduction;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.goods.Good;
 import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
@@ -98,8 +97,10 @@ public final class FoodProductionUtil {
 				.getFoodProductionProcessList().iterator();
 		while (i.hasNext()) {
 			FoodProductionProcessInfo process = i.next();
-			if (process.getOutputNames().contains(name))
-				result.add(process);
+			for (String n : process.getOutputNames()) {
+				if (name.equalsIgnoreCase(n))
+					result.add(process);
+			}
 		}
 		return result;
 	}
@@ -107,17 +108,19 @@ public final class FoodProductionUtil {
 	/**
 	 * gets foodProduction processes with given input.
 	 * 
-	 * @param item {@link String} desired input
+	 * @param name {@link String} desired input
 	 * @return {@link List}<{@link FoodProductionProcessItem}> list of processes
 	 */
-	public static List<FoodProductionProcessInfo> getFoodProductionProcessesWithGivenInput(String item) {
+	public static List<FoodProductionProcessInfo> getFoodProductionProcessesWithGivenInput(String name) {
 		List<FoodProductionProcessInfo> result = new ArrayList<FoodProductionProcessInfo>();
 		Iterator<FoodProductionProcessInfo> i = SimulationConfig.instance().getFoodProductionConfiguration()
 				.getFoodProductionProcessList().iterator();
 		while (i.hasNext()) {
 			FoodProductionProcessInfo process = i.next();
-			if (process.getInputNames().contains(item))
-				result.add(process);
+			for (String n : process.getInputNames()) {
+				if (name.equalsIgnoreCase(n))
+					result.add(process);
+			}
 		}
 		return result;
 	}
