@@ -1653,8 +1653,7 @@ public class BuildingManager implements Serializable {
 
 			// Subtract power costs per Sol.
 			double power = buildingConfig.getBasePowerRequirement(buildingType);
-			double hoursInSol = MarsClock.convertMillisolsToSeconds(1000D) / 60D / 60D;
-			double powerPerSol = power * hoursInSol;
+			double powerPerSol = power * MarsClock.HOURS_PER_MILLISOL;
 			double powerValue = powerPerSol * settlement.getPowerGrid().getPowerValue();
 			result -= powerValue;
 

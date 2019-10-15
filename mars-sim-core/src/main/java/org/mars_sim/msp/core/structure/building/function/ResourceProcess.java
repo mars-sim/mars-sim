@@ -66,8 +66,8 @@ public class ResourceProcess implements Serializable {
 		currentProductionLevel = 1D;
 		this.powerRequired = powerRequired;
 		
-		if (marsClock == null)
-			marsClock = Simulation.instance().getMasterClock().getMarsClock();
+//		if (marsClock == null)
+//			marsClock = Simulation.instance().getMasterClock().getMarsClock();
 	}
 
 	/**
@@ -366,6 +366,8 @@ public class ResourceProcess implements Serializable {
 	 * @return
 	 */
 	public boolean hasPassedTimeLimit() {
+		if (marsClock == null)
+			marsClock = Simulation.instance().getMasterClock().getMarsClock();
 		int sol = marsClock.getMissionSol();
 		int millisol = marsClock.getMillisolInt();
 		if (sol == timeLimit[0]) {

@@ -38,12 +38,10 @@ import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.goods.Good;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
-import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
@@ -65,8 +63,10 @@ public class Manufacture extends Function implements Serializable {
 
 	private static final double PROCESS_MAX_VALUE = 100D;
 
-	public static final String LASER_SINTERING_3D_PRINTER = "laser sintering 3d printer";
+	public static final String LASER_SINTERING_3D_PRINTER = ItemResourceUtil.LASER_SINTERING_3D_PRINTER;
 
+	private static int printerID = ItemResourceUtil.printerID;
+	
 	// Data members.
 	private int solCache = 0;
 	private int techLevel;
@@ -79,7 +79,6 @@ public class Manufacture extends Function implements Serializable {
 
 	private Building building;
 
-	private static int printerID = ItemResourceUtil.printerID;
 	
 	/**
 	 * Constructor.
@@ -106,16 +105,6 @@ public class Manufacture extends Function implements Serializable {
 	}
 
 	/**
-	 * Reloads instances after loading from a saved sim
-	 * 
-	 * @param clock
-	 */
-	public static void justReloaded(MarsClock clock, BuildingConfig bc) {
-		marsClock = clock;
-		buildingConfig = bc;
-	}
-	
-	/**
 	 * Gets the value of the function for a named building.
 	 * 
 	 * @param buildingName the building name.
@@ -128,8 +117,6 @@ public class Manufacture extends Function implements Serializable {
 
 		double result = 0D;
 
-		// BuildingConfig buildingConfig =
-		// SimulationConfig.instance().getBuildingConfiguration();
 		int buildingTech = buildingConfig.getManufactureTechLevel(buildingName);
 
 		double demand = 0D;
@@ -284,7 +271,10 @@ public class Manufacture extends Function implements Serializable {
 //				Part part = (Part) ItemResourceUtil.findItemResource(item.getName());
 				int id = ItemResourceUtil.findIDbyItemResourceName(item.getName());
 				inv.retrieveItemResources(id, (int) item.getAmount());
+				// Add tracking demand
+				inv.addItemDemand(id, (int) item.getAmount());
 			} else
+				// TODO: in future, add equipment here as the requirement for this process
 				throw new IllegalStateException("Manufacture process input: " + item.getType() + " not a valid type.");
 
 			// Recalculate settlement good value for input item.
@@ -536,7 +526,8 @@ public class Manufacture extends Function implements Serializable {
 							equipment.setName(unitManager.getNewName(UnitType.EQUIPMENT, equipmentType, null, null));
 							// Place this equipment within a settlement
 							inv.storeUnit(equipment);
-							unitManager.addUnit(equipment);
+//							unitManager.addUnit(equipment);
+							unitManager.addEquipmentID(equipment);
 							// TODO: how to add tracking supply for equipment
 							// Add to the daily output
 							settlement.addOutput(equipment.getIdentifier(), number, process.getTotalWorkTime());
@@ -549,7 +540,7 @@ public class Manufacture extends Function implements Serializable {
 						int number = (int) item.getAmount();
 						for (int x = 0; x < number; x++) {
 							if (LightUtilityVehicle.NAME.equalsIgnoreCase(vehicleType)) {
-								String name = unitManager.getNewName(UnitType.VEHICLE, "LUV", null, null);
+								String name = unitManager.getNewName(UnitType.VEHICLE, LightUtilityVehicle.NAME, null, null);
 								unitManager.addUnit(new LightUtilityVehicle(name, vehicleType, settlement));
 							} else {
 								String name = unitManager.getNewName(UnitType.VEHICLE, null, null, null);
@@ -631,7 +622,7 @@ public class Manufacture extends Function implements Serializable {
 						int number = (int) item.getAmount();
 						for (int x = 0; x < number; x++) {
 							if (LightUtilityVehicle.NAME.equalsIgnoreCase(vehicleType)) {
-								String name = unitManager.getNewName(UnitType.VEHICLE, "LUV", null, null);
+								String name = unitManager.getNewName(UnitType.VEHICLE, LightUtilityVehicle.NAME, null, null);
 								unitManager.addUnit(new LightUtilityVehicle(name, vehicleType, settlement));
 							} else {
 								String name = unitManager.getNewName(UnitType.VEHICLE, null, null, null);

@@ -41,9 +41,16 @@ public class MasterClock implements Serializable {
 	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 	
 	private static final int FACTOR = 4;
+	
 //	private static final double SMALL_NUMBER = 0.0028;
+	
+	/** The number of milliseconds for each millisols.  */	
 	private static final double MILLISECONDS_PER_MILLISOL = MarsClock.SECONDS_PER_MILLISOL * 1000.0;
 
+	/** (For Command Mode) the maximum number of millisols for pausing. */
+	private static final double MAX_SOLS = 7_000;
+	
+	
 	// Data members
 	/** Runnable flag. */
 	private transient volatile boolean keepRunning = false;
@@ -62,15 +69,15 @@ public class MasterClock implements Serializable {
 	/** Simulation time ratio. */
 	private volatile double currentTR = 0D;
 	/** Adjusted time ratio. */
-	private volatile double adjustedTR = 0D;
+	private volatile double baseTR = 0D;
 	/** Adjusted time between updates in nanoseconds. */
-	private volatile double adjustedTBU_ns = 0D;
+	private volatile double baseTBU_ns = 0D;
 	/** Adjusted time between updates in milliseconds. */
-	private volatile double adjustedTBU_ms = 0;
+	private volatile double baseTBU_ms = 0;
 	/** Adjusted time between updates in seconds. */
-	private volatile double adjustedTBU_s = 0;
+	private volatile double baseTBU_s = 0;
 	/** Adjusted frame per sec */
-	private volatile double adjustedFPS = 0;
+	private volatile double baseFPS = 0;
 	/** The pulse per seconds */
 	private volatile double pps = 0;
 	
@@ -88,7 +95,7 @@ public class MasterClock implements Serializable {
 	/** The total number of counts between two ui pulses. */
 	private transient int totalCount = 40;
 	/** The average of the last working millis and the current one. */
-	private long millisCache;
+//	private long millisCache;
 	
 	/** Is FXGL is in use. */
 	public boolean isFXGL = false;
@@ -115,7 +122,7 @@ public class MasterClock implements Serializable {
 	/** The file to save or load the simulation. */
 	private transient volatile File file;
 	/** The thread for running the clock listeners. */
-	private transient ExecutorService clockListenerExecutor;
+	private transient ExecutorService clockExecutor;
 	
 	/** A list of clock listeners. */
 	private transient List<ClockListener> clockListeners;
@@ -139,7 +146,7 @@ public class MasterClock implements Serializable {
 	// Note: ExecutorService may not stop after the program exits.
 	// see https://netopyr.com/2017/03/13/surprising-behavior-of-cached-thread-pool/
 
-	private static Simulation sim;
+	private static Simulation sim = Simulation.instance();
 	private static SimulationConfig simulationConfig;
 
 	/**
@@ -153,8 +160,6 @@ public class MasterClock implements Serializable {
 		this.isFXGL = isFXGL;
 		// logger.config("MasterClock's constructor is on " + Thread.currentThread().getName() + " Thread");
 		
-		// Gets an instance of the Simulation singleton 
-		sim = Simulation.instance();
 		// Gets an instance of the SimulationConfig singleton 
 		simulationConfig = SimulationConfig.instance();
 
@@ -201,48 +206,50 @@ public class MasterClock implements Serializable {
 
 		// Tune the time between update
 		if (threads <= 32) {
-			adjustedTBU_ms = 12D / (Math.sqrt(threads) * 2) * tbu;
+			baseTBU_ms = 12D / (Math.sqrt(threads) * 2) * tbu;
 		} else {
-			adjustedTBU_ms = 1.5 * tbu;
+			baseTBU_ms = 1.5 * tbu;
 		}
 
 		// Tune the time ratio
 		if (threads == 1) {
-			adjustedTR = tr / 32D;
+			baseTR = tr / 32D;
 		} else if (threads == 2) {
-			adjustedTR = tr / 16D;
+			baseTR = tr / 16D;
 		} else if (threads <= 3) {
-			adjustedTR = tr / 8D;
+			baseTR = tr / 8D;
 		} else if (threads <= 4) {
-			adjustedTR = tr / 4D;
+			baseTR = tr / 4D;
 		} else if (threads <= 6) {
-			adjustedTR = tr / 2D;
+			baseTR = tr / 2D;
 		} else if (threads <= 8) {
-			adjustedTR = tr;
+			baseTR = tr;
 		} else if (threads <= 12) {
-			adjustedTR = tr * 2D;
+			baseTR = tr * 2D;
 		} else if (threads <= 16) {
-			adjustedTR = tr * 4D;
+			baseTR = tr * 4D;
 		} else {
-			adjustedTR = tr * 8D;
+			baseTR = tr * 8D;
 		}
 
-		adjustedTBU_ns = adjustedTBU_ms * 1_000_000.0; // convert from millis to nano
-		adjustedTBU_s = adjustedTBU_ms / 1_000.0;
-		adjustedFPS = 1.0 / adjustedTBU_s;
-		currentTBU_ns = (long) adjustedTBU_ns;
+		baseTBU_ns = baseTBU_ms * 1_000_000.0; // convert from millis to nano
+		baseTBU_s = baseTBU_ms / 1_000.0;
+		baseFPS = 1.0 / baseTBU_s;
+		
+		// Set the current TBU
+		currentTBU_ns = (long) baseTBU_ns;
 
-		// Save a copy of the current time ratio
-		currentTR = adjustedTR;
+		// Set the current time ratio
+		currentTR = baseTR;
 
 		// Added loading the values below from SimulationConfig
 		setNoDelaysPerYield(simulationConfig.getNoDelaysPerYield());
 		setMaxFrameSkips(simulationConfig.getMaxFrameSkips());
 
 //		logger.config("Based on # CPU cores/threads, the following parameters have been re-adjusted as follows :");
-		logger.config("       Adjusted Time Ratio (TR) : " + (int) adjustedTR + "x");
-		logger.config("     Time between Updates (TBU) : " + Math.round(adjustedTBU_ms * 100D) / 100D + " ms");
-		logger.config("         Ticks Per Second (TPS) : " + Math.round(adjustedFPS * 100D) / 100D + " Hz");
+		logger.config("                Time Ratio (TR) : " + (int) baseTR + "x");
+		logger.config("         Ticks Per Second (TPS) : " + Math.round(baseFPS * 100D) / 100D + " Hz");
+		logger.config("     Time between Updates (TBU) : " + Math.round(baseTBU_ms * 100D) / 100D + " ms");
 		logger.config("   -------------------------------------------");
 //		logger.config(" - - - Welcome to Mars - - -");
 	}
@@ -547,7 +554,7 @@ public class MasterClock implements Serializable {
 //		LogConsolidated.log(Level.CONFIG, 0, sourceName, "The Clock Thread has died. Restarting...");
 		
 		// Re-instantiate clockListenerExecutor
-		clockListenerExecutor = Executors.newSingleThreadExecutor();
+		clockExecutor = Executors.newSingleThreadExecutor();
 		// Re-instantiate clockListeners
 		clockListeners = Collections.synchronizedList(new CopyOnWriteArrayList<ClockListener>());
 
@@ -577,8 +584,7 @@ public class MasterClock implements Serializable {
 				currentTBU_ns = (long) (currentTBU_ns * .9975); // decrement by .5%
 
 			logger.config("Time-ratio : " + (int)currentTR + "x ==> " + (int)ratio + "x");
-			
-			adjustedTBU_s = currentTBU_ns / 1_000_000_000D;
+				
 			currentTR = ratio;
 			
 		} 
@@ -601,7 +607,7 @@ public class MasterClock implements Serializable {
 	 * @return ratio
 	 */
 	public double getCalculatedTimeRatio() {
-		return adjustedTR;
+		return baseTR;
 	}
 
 	/**
@@ -788,8 +794,8 @@ public class MasterClock implements Serializable {
 						// Reset the pulse count
 						resetTotalPulses();
 						// Adjust the time between update
-						if (currentTBU_ns > (long) (adjustedTBU_ns * 1.25))
-							currentTBU_ns = (long) (adjustedTBU_ns * 1.25);
+						if (currentTBU_ns > (long) (baseTBU_ns * 1.25))
+							currentTBU_ns = (long) (baseTBU_ns * 1.25);
 						else
 							currentTBU_ns = (long) (currentTBU_ns * .9925); // decrement by 2.5%
 						
@@ -809,7 +815,7 @@ public class MasterClock implements Serializable {
 						System.exit(0);
 					}
 					
-					if (canPauseTime && millisols > pausingMillisols) {
+					if (canPauseTime && millisols >= pausingMillisols) {
 						
 						double m = marsClock.getMillisolOneDecimal();
 						
@@ -844,16 +850,17 @@ public class MasterClock implements Serializable {
 		if (!isPaused) {
 			// Update elapsed milliseconds.
 			long millis = calculateElapsedTime();
-			if (millis >= millisCache * .75) {
-				millisCache = (millisCache + millis) / 2;
-			}
-			else {
+			if (millis < baseTBU_ms * .75) {
 				// Note: this usually happens when recovering from power saving
 				// Since millis is too far off, use millisCache instead to compute the correct timePulse 
-				millis = millisCache;
+				// Reset currentTR
+				currentTR = baseTR;			
+				// reset millis back to its original value
+				millis = (long) (baseTBU_ms);
+//				millisCache = millis;
 			}
 				
-//			logger.config("millis : " + millis + "     millisCache : " + millisCache);
+//			logger.config("millis : " + millis + "     currentTR : " + currentTR);
 
 			// The time elapsed for the EarthClock
 			double earthMillis = millis * currentTR;
@@ -870,9 +877,9 @@ public class MasterClock implements Serializable {
 			// timePulse = 0.0 or 0.002883686808002465
 			 
 			if (timePulse > 0 && keepRunning) {
-				if (clockListenerExecutor != null 
-					&& !clockListenerExecutor.isTerminated()
-					&& !clockListenerExecutor.isShutdown()) {	
+				if (clockExecutor != null
+					&& !clockExecutor.isTerminated()
+					&& !clockExecutor.isShutdown()) {	
 					
 					// Add time pulse length to Earth and Mars clocks.
 					earthClock.addTime(earthMillis);
@@ -880,6 +887,8 @@ public class MasterClock implements Serializable {
 					fireClockPulse(timePulse);
 					
 					millisols += timePulse;
+					if (millisols > MAX_SOLS)
+						millisols = millisols - MAX_SOLS;
 //					logger.info("millisols : " + Math.round(millisols*1000.0)/1000.0);
 				}
 				else {
@@ -1130,7 +1139,7 @@ public class MasterClock implements Serializable {
 		for (ClockListenerTask task : clockListenerTasks) {
 			if (task != null) {
 				task.insertTime(time);
-				clockListenerExecutor.execute(task);
+				clockExecutor.execute(task);
 			}
 
 			else
@@ -1250,25 +1259,21 @@ public class MasterClock implements Serializable {
 	 * Starts clock listener thread pool executor
 	 */
 	public void startClockListenerExecutor() {
-		// if ( clockListenerExecutor.isTerminated() ||
-		// clockListenerExecutor.isShutdown() )
-		if (clockListenerExecutor == null)
-			// clockListenerExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(1);
-			clockListenerExecutor = Executors.newSingleThreadExecutor();
-
+		if (clockExecutor == null)
+			clockExecutor = Executors.newSingleThreadExecutor(); //(ThreadPoolExecutor) Executors.newFixedThreadPool(1);
 	}
 
 	/**
 	 * Shuts down clock listener thread pool executor
 	 */
 	public void endClockListenerExecutor() {
-		if (clockListenerExecutor != null)
-			clockListenerExecutor.shutdownNow();
+		if (clockExecutor != null)
+			clockExecutor.shutdownNow();
 	}
 
 	// To be called by TransportWizard and ConstructionWizard
 	public ExecutorService getClockListenerExecutor() {
-		return clockListenerExecutor;
+		return clockExecutor;
 	}
 
 
@@ -1280,7 +1285,7 @@ public class MasterClock implements Serializable {
 //			sum += list.get(i);
 //		}
 //		return size/sum;
-		return Math.round(10.0 / adjustedTBU_s) / 10.0;// 1_000_000/tbu_ns;
+		return Math.round(10.0 / baseTBU_s) / 10.0;// 1_000_000/tbu_ns;
 	}
 
 	/**
@@ -1291,7 +1296,7 @@ public class MasterClock implements Serializable {
 	public void onUpdate(double tpf) {
 		if (!isPaused) {
 			tpfCache += tpf;
-			if (tpfCache >= adjustedTBU_s) {
+			if (tpfCache >= baseTBU_s) {
 				
 				double t = tpfCache * currentTR;
 				// Get the time pulse length in millisols.
@@ -1300,9 +1305,10 @@ public class MasterClock implements Serializable {
 				// timePulse : 0.168
 
 				if (timePulse > 0 && keepRunning && !isPaused
-				// || !clockListenerExecutor.isTerminating()
-						&& clockListenerExecutor != null && !clockListenerExecutor.isTerminated()
-						&& !clockListenerExecutor.isShutdown()) {
+						&& clockExecutor != null 
+						&& !clockExecutor.isTerminated()
+//						&& !clockExecutor.isTerminating()
+						&& !clockExecutor.isShutdown()) {
 					// Add time pulse length to Earth and Mars clocks.
 					earthClock.addTime(1000D * t);
 					marsClock.addTime(timePulse);
@@ -1365,10 +1371,10 @@ public class MasterClock implements Serializable {
 		earthClock = null;
 		uptimer = null;
 		clockThreadTask = null;
-		clockListenerExecutor = null;
+		clockExecutor = null;
 		file = null;
 
 		clockListeners = null;
-		clockListenerExecutor = null;
+		clockExecutor = null;
 	}
 }

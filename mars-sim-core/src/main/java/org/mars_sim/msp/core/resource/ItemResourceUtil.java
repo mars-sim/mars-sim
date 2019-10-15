@@ -40,6 +40,8 @@ public class ItemResourceUtil implements Serializable {
 	public static final String WORK_GLOVES = "work gloves";
 	public static final String CONTAINMENT = "mushroom containment kit";
 	public static final String SMALL_HAMMER = "small hammer";
+	public static final String LASER_SINTERING_3D_PRINTER = "laser sintering 3d printer";
+	
 
 	public static Part pneumaticDrillAR = (Part) findItemResource(PNEUMATIC_DRILL);
 	public static Part backhoeAR = (Part) findItemResource(BACKHOE);
@@ -120,7 +122,7 @@ public class ItemResourceUtil implements Serializable {
 		mushroomBoxID = findIDbyItemResourceName(CONTAINMENT);
 		smallHammerID = findIDbyItemResourceName(SMALL_HAMMER);
 
-		printerID = findIDbyItemResourceName(Manufacture.LASER_SINTERING_3D_PRINTER);
+		printerID = findIDbyItemResourceName(LASER_SINTERING_3D_PRINTER);
 	}
 
 	/**

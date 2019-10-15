@@ -46,6 +46,9 @@ public class CollectResources extends EVAOperation implements Serializable {
 //	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
 //			 logger.getName().length());
 
+	/** The average labor time it takes to find the resource. */
+	public static final double LABOR_TIME = 50D;
+	
     private static String sourceName = logger.getName();
     
 	/** Task phases. */
@@ -82,7 +85,7 @@ public class CollectResources extends EVAOperation implements Serializable {
 			double targettedAmount, double startingCargo, Integer containerType) {
 
 		// Use EVAOperation parent constructor.
-		super(taskName, person, true, RandomUtil.getRandomDouble(50D) + 10D);
+		super(taskName, person, true, LABOR_TIME + RandomUtil.getRandomDouble(10D) - RandomUtil.getRandomDouble(10D));
 
 		// Initialize data members.
 		this.rover = rover;

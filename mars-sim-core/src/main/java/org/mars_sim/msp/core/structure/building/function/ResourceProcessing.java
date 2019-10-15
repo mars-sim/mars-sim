@@ -98,8 +98,8 @@ public class ResourceProcessing extends Function implements Serializable {
 			}
 
 			// Subtract value of require power.
-			double hoursInSol = MarsClock.convertMillisolsToSeconds(1000D) / 60D / 60D;
-			double powerHrsRequiredPerSol = process.getPowerRequired() * hoursInSol;
+//			double hoursInSol = MarsClock.convertMillisolsToSeconds(1000D) / 60D / 60D;
+			double powerHrsRequiredPerSol = process.getPowerRequired() * MarsClock.HOURS_PER_MILLISOL * 1000D;
 			double powerValue = powerHrsRequiredPerSol * settlement.getPowerGrid().getPowerValue();
 			processValue -= powerValue;
 

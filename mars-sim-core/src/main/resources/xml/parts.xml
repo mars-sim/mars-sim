@@ -715,8 +715,12 @@
 
 	<part name="helium neon laser" mass="1.0"/>
 
-	<part name="optical lens" mass=".1"/>
-
+	<part name="optical lens" mass=".1" >
+			<maintenance-entity-list>
+			<entity name="communication" probability="2" max-number="2" />
+		</maintenance-entity-list>	
+	</part>
+	
 	<part name="optical prism" mass=".1"/>
 
 	<part name="pathogen filtering system" mass="3.0">
@@ -867,8 +871,18 @@
 		
 	<part name="work gloves" mass="0.05">
 		<description>a pair of utility work gloves for medium to heavy use.</description>
+		<maintenance-entity-list>
+			<entity name="manufacture" probability="10" max-number="3" />
+		</maintenance-entity-list>
 	</part>			
-						
+			
+	<part name="optical cable" mass="0.01">
+		<description>a cable made of optic fiber</description>
+		<maintenance-entity-list>
+			<entity name="communication" probability="2" max-number="2" />
+		</maintenance-entity-list>		
+	</part>
+							
 <!-- Future:
 	1. work glove
 		<maintenance-entity-list>

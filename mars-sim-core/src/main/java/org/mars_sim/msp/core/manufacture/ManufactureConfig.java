@@ -72,7 +72,7 @@ public class ManufactureConfig implements Serializable {
 	 * @return list of manufacturing process information.
 	 * @throws Exception if error getting info.
 	 */
-	public List<ManufactureProcessInfo> getManufactureProcessList() {
+	public static List<ManufactureProcessInfo> getManufactureProcessList() {
 
 		if (manufactureProcessList == null) {
 
@@ -142,7 +142,7 @@ public class ManufactureConfig implements Serializable {
 	 * @param resourceNodes the node list.
 	 * @throws Exception if error parsing resources.
 	 */
-	private void parseResources(List<ManufactureProcessItem> list, List<Element> resourceNodes) {
+	private static void parseResources(List<ManufactureProcessItem> list, List<Element> resourceNodes) {
 		for (Element resourceElement : resourceNodes) {
 			ManufactureProcessItem resourceItem = new ManufactureProcessItem();
 			resourceItem.setType(ItemType.AMOUNT_RESOURCE);
@@ -165,7 +165,7 @@ public class ManufactureConfig implements Serializable {
 	 * @param partNodes the node list.
 	 * @throws Exception if error parsing parts.
 	 */
-	private void parseParts(List<ManufactureProcessItem> list, List<Element> partNodes) {
+	private static void parseParts(List<ManufactureProcessItem> list, List<Element> partNodes) {
 		for (Element partElement : partNodes) {
 			ManufactureProcessItem partItem = new ManufactureProcessItem();
 			partItem.setType(ItemType.PART);
@@ -190,7 +190,7 @@ public class ManufactureConfig implements Serializable {
 	 * @param equipmentNodes the node list.
 	 * @throws Exception if error parsing equipment.
 	 */
-	private void parseEquipment(List<ManufactureProcessItem> list, List<Element> equipmentNodes) {
+	private static void parseEquipment(List<ManufactureProcessItem> list, List<Element> equipmentNodes) {
 		for (Element equipmentElement : equipmentNodes) {
 			ManufactureProcessItem equipmentItem = new ManufactureProcessItem();
 			equipmentItem.setType(ItemType.EQUIPMENT);
@@ -221,7 +221,7 @@ public class ManufactureConfig implements Serializable {
 	 * @param vehicleNodes the node list.
 	 * @throws Exception if error parsing vehicles.
 	 */
-	private void parseVehicles(List<ManufactureProcessItem> list, List<Element> vehicleNodes) {
+	private static void parseVehicles(List<ManufactureProcessItem> list, List<Element> vehicleNodes) {
 		for (Element vehicleElement : vehicleNodes) {
 			ManufactureProcessItem vehicleItem = new ManufactureProcessItem();
 			vehicleItem.setType(ItemType.VEHICLE);

@@ -17,16 +17,21 @@ public class Skill implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
+	
+	/** The base factor. */
+	static final int BASE = 75;
+	
 	// Data members
 	/** The skill level (0 to infinity). */
 	private int level;
+	
 	/** The experience points towards the next skill level. */
 	private double experiencePoints;
 	/** The experience points needed to reach the next skill level. */
 	private double neededExperiencePoints;
 	/** The labor time of the skill. */
 	private double time;
+	
 	/** The unique (for each person) skill. */
 	private SkillType skill;
 
@@ -39,7 +44,7 @@ public class Skill implements Serializable {
 		this.skill = skill;
 		level = 0;
 		experiencePoints = 0D;
-		neededExperiencePoints = 25D;
+		neededExperiencePoints = BASE;
 	}
 
 	/**
@@ -81,7 +86,7 @@ public class Skill implements Serializable {
 		// Reset the exp points back to 0
 		experiencePoints = 0;
 		// Set the upper limit of exp points
-		neededExperiencePoints = 25D * Math.pow(2D, newLevel);
+		neededExperiencePoints = BASE * Math.pow(2D, newLevel);
 	}
 
 	/**

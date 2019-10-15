@@ -150,7 +150,7 @@ implements Serializable {
     double walkingPhase(double time) {
 
         // Determine walking distance.
-        double timeHours = MarsClock.convertMillisolsToSeconds(time) / 60D / 60D;
+        double timeHours = MarsClock.HOURS_PER_MILLISOL * time;
         double distanceKm = WALKING_SPEED * timeHours;
         double distanceMeters = distanceKm * 1000D;
         double remainingWalkingDistance = 0;

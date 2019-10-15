@@ -87,8 +87,8 @@ import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleConfig;
-import org.mars_sim.msp.core.vehicle.VehicleType;
 import org.mars_sim.msp.core.vehicle.VehicleConfig.VehicleDescription;
+import org.mars_sim.msp.core.vehicle.VehicleType;
 
 /**
  * A manager for computing the values of goods at a settlement.
@@ -105,6 +105,8 @@ public class GoodsManager implements Serializable {
 	
 //	public static final double SOFC_CONVERSION_EFFICIENCY = .57D;
 
+	private static final String SCRAP = "scrap";
+	
 	// TODO Mission types should be an enum.
 	private static final String TRAVEL_TO_SETTLEMENT_MISSION = "travel to settlement";
 	private static final String EXPLORATION_MISSION = "exploration";
@@ -1144,8 +1146,8 @@ public class GoodsManager implements Serializable {
 			double resourceInputRate = process.getMaxInputResourceRate(resource);
 
 			// Determine value of required process power.
-			double hoursInMillisol = MarsClock.convertMillisolsToSeconds(1D) / 60D / 60D;
-			double powerHrsRequiredPerMillisol = process.getPowerRequired() * hoursInMillisol;
+//			double hoursInMillisol = MarsClock.convertMillisolsToSeconds(1D) / 60D / 60D;
+			double powerHrsRequiredPerMillisol = process.getPowerRequired() * MarsClock.HOURS_PER_MILLISOL;
 			double powerValue = powerHrsRequiredPerMillisol * settlement.getPowerGrid().getPowerValue();
 
 			double totalInputsValue = (outputValue - powerValue) * RESOURCE_PROCESSING_INPUT_FACTOR;
@@ -1169,12 +1171,11 @@ public class GoodsManager implements Serializable {
 	 */
 	private List<ResourceProcess> getResourceProcesses() {
 		List<ResourceProcess> processes = new ArrayList<ResourceProcess>(0);
-		Iterator<Building> i = settlement.getBuildingManager().getBuildings().iterator();// getACopyOfBuildings().iterator();.getACopyOfBuildings().iterator();
+		Iterator<Building> i = settlement.getBuildingManager().getBuildings().iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
 			if (building.hasFunction(FunctionType.RESOURCE_PROCESSING)) {
-				ResourceProcessing processing = (ResourceProcessing) building
-						.getFunction(FunctionType.RESOURCE_PROCESSING);
+				ResourceProcessing processing = building.getResourceProcessing();
 				processes.addAll(processing.getProcesses());
 			}
 		}
@@ -1270,8 +1271,8 @@ public class GoodsManager implements Serializable {
 			}
 
 			// Determine value of required process power.
-			double hoursInMillisol = MarsClock.convertMillisolsToSeconds(1D) / 60D / 60D;
-			double powerHrsRequiredPerMillisol = process.getPowerRequired() * hoursInMillisol;
+//			double hoursInMillisol = MarsClock.convertMillisolsToSeconds(1D) / 60D / 60D;
+			double powerHrsRequiredPerMillisol = process.getPowerRequired() * MarsClock.HOURS_PER_MILLISOL;
 			double powerValue = powerHrsRequiredPerMillisol * settlement.getPowerGrid().getPowerValue();
 
 			double totalInputsValue = (outputsValue - powerValue) * trade_factor * manufacturing_factor
@@ -1320,8 +1321,8 @@ public class GoodsManager implements Serializable {
 			}
 
 			// Determine value of required process power.
-			double hoursInMillisol = MarsClock.convertMillisolsToSeconds(1D) / 60D / 60D;
-			double powerHrsRequiredPerMillisol = process.getPowerRequired() * hoursInMillisol;
+//			double hoursInMillisol = MarsClock.convertMillisolsToSeconds(1D) / 60D / 60D;
+			double powerHrsRequiredPerMillisol = process.getPowerRequired() * MarsClock.HOURS_PER_MILLISOL;
 			double powerValue = powerHrsRequiredPerMillisol * settlement.getPowerGrid().getPowerValue();
 
 			double totalInputsValue = (outputsValue - powerValue) * trade_factor * cropFarm_factor
@@ -1722,7 +1723,7 @@ public class GoodsManager implements Serializable {
 	}
 
 	/**
-	 * Gets the number of a good at the settlement.
+	 * Gets the number of a good being in use or being produced at this moment at the settlement.
 	 * 
 	 * @param good the good to check.
 	 * @return the number of the good (or amount (kg) if amount resource good).
@@ -1734,7 +1735,7 @@ public class GoodsManager implements Serializable {
 			if (GoodType.AMOUNT_RESOURCE == good.getCategory())
 				result = getAmountOfResourceForSettlement(ResourceUtil.findAmountResource(good.getID()));
 			else if (GoodType.ITEM_RESOURCE == good.getCategory())
-				result = getNumberOfResourceForSettlement(ItemResourceUtil.findItemResource(good.getID()));
+				result = getNumItemResourceForSettlement(ItemResourceUtil.findItemResource(good.getID()));
 			else if (GoodType.EQUIPMENT == good.getCategory())
 				result = getNumberOfEquipmentForSettlement(good, EquipmentFactory.getEquipmentClass(good.getID()));
 			else if (GoodType.VEHICLE == good.getCategory())
@@ -1746,7 +1747,7 @@ public class GoodsManager implements Serializable {
 	}
 
 	/**
-	 * Gets the amount of an amount resource for a settlement.
+	 * Gets the amount of an amount resource in use for a settlement.
 	 * 
 	 * @param resource the resource to check.
 	 * @return amount (kg) of resource for the settlement.
@@ -2185,8 +2186,9 @@ public class GoodsManager implements Serializable {
 		// Reduce the demand on the steel/aluminum scrap metal 
 		// since they can only be produced by salvaging a vehicle
 		// therefore it's not reasonable to have high VP
-		if (part.getName().contains("scrap"))
+		if (part.getName().contains(SCRAP))
 			demand *= SCRAP_METAL_DEMAND;
+		// May recycle the steel/AL scrap back to ingot
 		// Note: the VP of a scrap metal heavily influence the VP of regolith
 
 		return demand;
@@ -2207,7 +2209,8 @@ public class GoodsManager implements Serializable {
 		Iterator<ManufactureProcessItem> i = process.getInputList().iterator();
 		while (i.hasNext()) {
 			ManufactureProcessItem item = i.next();
-			if (ItemType.PART.equals(item.getType()) && part.getName().equalsIgnoreCase(item.getName())) {		
+//			if (ItemType.PART == item.getType() && 
+			if (part.getName().equalsIgnoreCase(item.getName())) {		
 				partInput = item;
 			}
 			totalInputNum += item.getAmount();
@@ -2225,8 +2228,8 @@ public class GoodsManager implements Serializable {
 			}
 
 			// Determine value of required process power.
-			double hoursInMillisol = MarsClock.convertMillisolsToSeconds(1D) / 60D / 60D;
-			double powerHrsRequiredPerMillisol = process.getPowerRequired() * hoursInMillisol;
+//			double hoursInMillisol = MarsClock.convertMillisolsToSeconds(1D) / 3600D;
+			double powerHrsRequiredPerMillisol = process.getPowerRequired() * MarsClock.HOURS_PER_MILLISOL;
 			double powerValue = powerHrsRequiredPerMillisol * settlement.getPowerGrid().getPowerValue();
 
 			double totalInputsValue = (outputsValue - powerValue) * trade_factor * manufacturing_factor
@@ -2298,8 +2301,8 @@ public class GoodsManager implements Serializable {
 			}
 
 			// Determine value of required process power.
-			double hoursInMillisol = MarsClock.convertMillisolsToSeconds(1D) / 60D / 60D;
-			double powerHrsRequiredPerMillisol = process.getPowerRequired() * hoursInMillisol;
+//			double hoursInMillisol = MarsClock.convertMillisolsToSeconds(1D) / 60D / 60D;
+			double powerHrsRequiredPerMillisol = process.getPowerRequired() * MarsClock.HOURS_PER_MILLISOL;
 			double powerValue = powerHrsRequiredPerMillisol * settlement.getPowerGrid().getPowerValue();
 
 			double totalInputsValue = (outputsValue - powerValue) * trade_factor * cropFarm_factor
@@ -2405,12 +2408,12 @@ public class GoodsManager implements Serializable {
 	}
 
 	/**
-	 * Gets the number of an item resource for a settlement.
+	 * Gets the number of an item resource in use for a settlement.
 	 * 
 	 * @param resource the resource to check.
 	 * @return number of resource for the settlement.
 	 */
-	private double getNumberOfResourceForSettlement(ItemResource resource) {
+	private double getNumItemResourceForSettlement(ItemResource resource) {
 		double number = 0D;
 
 		// Get number of resources in settlement storage.

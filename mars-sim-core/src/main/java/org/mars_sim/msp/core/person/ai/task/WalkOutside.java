@@ -684,7 +684,7 @@ public class WalkOutside extends Task implements Serializable {
 		double walkingSpeed = getWalkingSpeed();
 
 		// Determine walking distance.
-		double timeHours = MarsClock.convertMillisolsToSeconds(time) / 60D / 60D;
+		double timeHours = MarsClock.HOURS_PER_MILLISOL * time;
 		double distanceKm = walkingSpeed * timeHours;
 		double distanceMeters = distanceKm * 1000D;
 		double remainingPathDistance = getRemainingPathDistance();

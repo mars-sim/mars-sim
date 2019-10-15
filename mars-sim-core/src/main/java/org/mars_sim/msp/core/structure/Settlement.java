@@ -353,9 +353,9 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	 */
 	private Map<Integer, Map<Integer, Double>> waterConsumption;
 	/** The settlement's daily output (resources produced). */
-	private Map<Integer, Map<Integer, Double>> dailyOutput;
+	private Map<Integer, Map<Integer, Double>> dailyResourceOutput;
 	/** The settlement's daily labor hours output. */
-	private Map<Integer, Map<Integer, Double>> dailyLaborHours;
+	private Map<Integer, Map<Integer, Double>> dailyLaborTime;
 
 	// Static members
 	/**
@@ -623,9 +623,9 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 		// Create the water consumption map
 		waterConsumption = new ConcurrentHashMap<>();
 		// Create the daily output map
-		dailyOutput = new ConcurrentHashMap<>();
+		dailyResourceOutput = new ConcurrentHashMap<>();
 		// Create the daily labor hours map
-		dailyLaborHours = new ConcurrentHashMap<>();
+		dailyLaborTime = new ConcurrentHashMap<>();
 	}
 
 	/**
@@ -1479,7 +1479,6 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 
 	/**
 	 * Provides the daily statistics on inhabitant's food energy intake
-	 *
 	 */
 	public void getFoodEnergyIntakeReport() {
 		Iterator<Person> i = getAllAssociatedPeople().iterator();
@@ -1488,7 +1487,8 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 			PhysicalCondition condition = p.getPhysicalCondition();
 			double energy = Math.round(condition.getEnergy() * 100.0) / 100.0;
 			String name = p.getName();
-			System.out.print(name + " : " + energy + " kJ" + "\t");
+			LogConsolidated.log(Level.INFO, 0, sourceName,
+					"[" + this + "] " + name + "'s current energy level : " + energy + " kJ");
 		}
 	}
 
@@ -1505,8 +1505,8 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 				waterConsumption.remove(solElapsed - MAX_NUM_SOLS);
 
 			// Limit the size of the dailyWaterUsage to x key value pairs
-			if (dailyOutput.size() > MAX_SOLS_DAILY_OUTPUT)
-				dailyOutput.remove(solElapsed - MAX_SOLS_DAILY_OUTPUT);
+			if (dailyResourceOutput.size() > MAX_SOLS_DAILY_OUTPUT)
+				dailyResourceOutput.remove(solElapsed - MAX_SOLS_DAILY_OUTPUT);
 
 //			printTaskProbability();
 //			printMissionProbability();
@@ -4051,16 +4051,17 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	/**
 	 * Records the daily output.
 	 * 
-	 * @param id
-	 * @param amount
+	 * @param id the resource id of the good
+	 * @param amount the amount or quantity produced
+	 * @param millisols the labor time
 	 */
-	public void addOutput(int id, double amount, double millisols) {
+	public void addOutput(Integer id, double amount, double millisols) {
 
 		// Record the amount of resource produced
 		Map<Integer, Double> amountMap = null;
 
-		if (dailyOutput.containsKey(solCache)) {
-			amountMap = dailyOutput.get(solCache);
+		if (dailyResourceOutput.containsKey(solCache)) {
+			amountMap = dailyResourceOutput.get(solCache);
 			if (amountMap.containsKey(id)) {
 				double oldAmt = amountMap.get(id);
 				amountMap.put(id, amount + oldAmt);
@@ -4072,13 +4073,13 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 			amountMap.put(id, amount);
 		}
 
-		dailyOutput.put(solCache, amountMap);
+		dailyResourceOutput.put(solCache, amountMap);
 
 		// Record the labor hours
 		Map<Integer, Double> laborHrMap = null;
 
-		if (dailyLaborHours.containsKey(solCache)) {
-			laborHrMap = dailyLaborHours.get(solCache);
+		if (dailyLaborTime.containsKey(solCache)) {
+			laborHrMap = dailyLaborTime.get(solCache);
 			if (laborHrMap.containsKey(id)) {
 				double oldAmt = laborHrMap.get(id);
 				laborHrMap.put(id, millisols + oldAmt);
@@ -4090,10 +4091,34 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 			laborHrMap.put(id, millisols);
 		}
 
-		dailyLaborHours.put(solCache, amountMap);
+		dailyLaborTime.put(solCache, amountMap);
 
 	}
 
+	/**
+	 * Gets the daily resource output in kg or quantity 
+	 * 
+	 * @param id  the resource id of the good
+	 * @return
+	 */
+	public double getDailyesourceOutput(Integer id) {
+		if (solCache - 1 > 0)
+			return dailyResourceOutput.get(solCache-1).get(id);
+		return 0;
+	}
+	
+	/**
+	 * Gets the daily labor time [millisols]
+	 * 
+	 * @param id  the resource id of the good
+	 * @return
+	 */
+	public double getDailyLaborTime(Integer id) {
+		if (solCache - 1 > 0)
+			return dailyLaborTime.get(solCache-1).get(id);
+		return 0;
+	}
+	
 	/**
 	 * Records the amount of water being consumed.
 	 * 

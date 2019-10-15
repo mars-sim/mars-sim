@@ -269,15 +269,11 @@ implements Serializable {
 	                bag.getInventory().retrieveAmountResource(iceID, collectedAmount);
 	                sInv.storeAmountResource(iceID, collectedAmount, false);
 	                sInv.addAmountSupply(iceID, collectedAmount);
-	                
+	                // transfer the bag
 	                bag.transfer(person, sInv);
-	            	// Retrieve the bag from the person
-					// Place this equipment within a settlement
-//		            person.getInventory().retrieveUnit(bag);
-//		            sInv.storeUnit(bag);	      
-		            
+					// Add to the daily output
+					settlement.addOutput(iceID, collectedAmount, getTimeCompleted());
 		            // Recalculate settlement good value for output item.
-//		            GoodsManager goodsManager = settlement.getGoodsManager();
 		            settlement.getGoodsManager().updateGoodValue(GoodsUtil.getResourceGood(iceID), false);
 	            }
             }

@@ -472,7 +472,7 @@ public class ArrivingSettlement implements Transportable, Serializable {
 			for (int x = 0; x < number; x++) {
 				Vehicle vehicle = null;
 				if (LightUtilityVehicle.NAME.equalsIgnoreCase(vehicleType)) {
-					String name = unitManager.getNewName(UnitType.VEHICLE, "LUV", null, null);
+					String name = unitManager.getNewName(UnitType.VEHICLE, LightUtilityVehicle.NAME, null, null);
 					vehicle = new LightUtilityVehicle(name, vehicleType.toLowerCase(), newSettlement);
 				} else {
 					String name = unitManager.getNewName(UnitType.VEHICLE, null, null, null);

@@ -190,8 +190,8 @@ public class AstronomicalObservation extends Function {
 
 		// Subtract power usage cost per sol.
 		double power = buildingConfig.getAstronomicalObservationPowerRequirement(buildingName);
-		double hoursInSol = MarsClock.convertMillisolsToSeconds(1000D) / 60D / 60D;
-		double powerPerSol = power * hoursInSol;
+//		double hoursInSol = MarsClock.convertMillisolsToSeconds(1000D) / 60D / 60D;
+		double powerPerSol = power * MarsClock.HOURS_PER_MILLISOL * 1000D;
 		double powerValue = powerPerSol * settlement.getPowerGrid().getPowerValue();
 		result -= powerValue;
 

@@ -20,9 +20,15 @@ public class Good implements Serializable, Comparable<Good> {
 	private static final long serialVersionUID = 1L;
 	// Data members
 	private String name;
+	
 	private int id;
+	
 	private GoodType category;
-
+	
+//	private List<ManufactureProcessInfo> manufactureProcessInfos;
+//	private List<FoodProductionProcessInfo> foodProductionProcessInfos;
+//	private Map<String, List<ResourceProcess>> resourceProcesses;
+	
 	/**
 	 * Constructor with object.
 	 * 
@@ -41,6 +47,11 @@ public class Good implements Serializable, Comparable<Good> {
 			this.category = category;
 		else
 			throw new IllegalArgumentException("category: " + category + " not valid.");
+		
+//		manufactureProcessInfos = ManufactureUtil.getManufactureProcessesWithGivenOutput(name);	
+//		foodProductionProcessInfos = FoodProductionUtil.getFoodProductionProcessesWithGivenOutput(name);
+//		resourceProcesses = BuildingConfig.getResourceProcessMap();
+		
 	}
 
 
@@ -51,18 +62,24 @@ public class Good implements Serializable, Comparable<Good> {
 	 * @return true if valid category.
 	 */
 	private static boolean isValidCategory(GoodType category) {
-		boolean result = false;
-
-		if (GoodType.AMOUNT_RESOURCE == category)
-			result = true;
-		else if (GoodType.ITEM_RESOURCE == category)
-			result = true;
-		else if (GoodType.EQUIPMENT == category)
-			result = true;
-		else if (GoodType.VEHICLE == category)
-			result = true;
-
-		return result;
+		for (GoodType type : GoodType.values()) {
+			if (type == category)
+				return true;
+		}
+		return false;
+		
+//		boolean result = false;
+//
+//		if (GoodType.AMOUNT_RESOURCE == category)
+//			result = true;
+//		else if (GoodType.ITEM_RESOURCE == category)
+//			result = true;
+//		else if (GoodType.EQUIPMENT == category)
+//			result = true;
+//		else if (GoodType.VEHICLE == category)
+//			result = true;
+//
+//		return result;
 	}
 
 	/**
@@ -80,6 +97,7 @@ public class Good implements Serializable, Comparable<Good> {
 	 * @return equipment class
 	 */
 	public Class<? extends Equipment> getClassType() {
+//		if (getCategory() == GoodType.EQUIPMENT)
 		return EquipmentFactory.getEquipmentClass(name);
 	}
 
@@ -96,6 +114,65 @@ public class Good implements Serializable, Comparable<Good> {
 		return category;
 	}
 
+//	public void getCost() {
+//		double aveLaborTime = 0;
+//		double avePower = 0;
+//		double aveProcessTime = 0;
+//		double aveSkillLevel = 0;
+//		double aveTechLevel = 0;
+//		
+//		if (manufactureProcessInfos != null || !manufactureProcessInfos.isEmpty()) {
+//			int count = 0;
+//			for (ManufactureProcessInfo i: manufactureProcessInfos) {
+//				double laborTime = i.getWorkTimeRequired();
+//				double power = i.getPowerRequired();
+//				double processTime = i.getProcessTimeRequired();
+//				int skillLevel = i.getSkillLevelRequired();
+//				int techLevel = i.getTechLevelRequired();	
+//				
+//				aveLaborTime += laborTime;
+//				avePower += power;
+//				aveProcessTime += processTime;
+//				aveSkillLevel += skillLevel;
+//				aveTechLevel += techLevel;
+//				count++;
+//			}
+//			
+//			aveLaborTime += aveLaborTime/count;
+//			avePower += avePower/count;
+//			aveProcessTime += aveProcessTime/count;
+//			aveSkillLevel += aveSkillLevel/count;
+//			aveTechLevel += aveTechLevel/count;
+//			
+//		}
+//		
+//		if (foodProductionProcessInfos != null || !foodProductionProcessInfos.isEmpty()) {
+//			for (FoodProductionProcessInfo i: foodProductionProcessInfos) {
+//				double laborTime = i.getWorkTimeRequired();
+//				double power = i.getPowerRequired();
+//				double processTime = i.getProcessTimeRequired();
+//				int skillLevel = i.getSkillLevelRequired();
+//				int techLevel = i.getTechLevelRequired();			
+//			}
+//		}
+//		
+//		if (resourceProcesses != null || !resourceProcesses.isEmpty()) {
+//			Set<String> buildingTypes = BuildingConfig.getBuildingTypes();
+//			// Note: each settlement have different # of building types 
+//			for (String type : buildingTypes) {
+//				for (ResourceProcess i: resourceProcesses.get(type)) {
+//					Set<Integer> resources = i.getOutputResources();
+//					for (Integer ii : resources) {
+//						if (ii == id) {
+//							double power = i.getPowerRequired();
+//							double rate = i.getMaxOutputResourceRate(ii);
+//						}
+//					}
+//				}
+//			}
+//		}
+//	}
+	
 	/**
 	 * Gets a string representation of the good.
 	 * 
@@ -134,7 +211,7 @@ public class Good implements Serializable, Comparable<Good> {
 		if (this.getClass() != obj.getClass()) return false;
 		Good g = (Good) obj;
 		return this.getName().equals(g.getName())
-				&& this.getID() == g.getID();
+				&& this.id == g.getID();
 	}
 	
 }

@@ -294,7 +294,7 @@ public class MineSite extends EVAOperation implements Serializable {
 	 */
 	private void excavateMinerals(double time) {
 
-		Map<String, Double> minerals = Simulation.instance().getMars().getSurfaceFeatures().getMineralMap()
+		Map<String, Double> minerals = surface.getMineralMap()
 				.getAllMineralConcentrations(site);
 		Iterator<String> i = minerals.keySet().iterator();
 		while (i.hasNext()) {

@@ -167,8 +167,8 @@ public final class FoodProductionUtil {
 			outputsValue += getFoodProductionProcessItemValue(j.next(), settlement, true);
 
 		// Subtract power value.
-		double hoursInMillisol = MarsClock.convertMillisolsToSeconds(1D) / 60D / 60D;
-		double powerHrsRequiredPerMillisol = process.getPowerRequired() * hoursInMillisol;
+//		double hoursInMillisol = MarsClock.convertMillisolsToSeconds(1D) / 60D / 60D;
+		double powerHrsRequiredPerMillisol = process.getPowerRequired() * MarsClock.HOURS_PER_MILLISOL;
 		double powerValue = powerHrsRequiredPerMillisol * settlement.getPowerGrid().getPowerValue();
 
 		return outputsValue - inputsValue - powerValue;

@@ -248,7 +248,7 @@ public class WalkSettlementInterior extends Task implements Serializable {
 	 *         phase.
 	 */
 	double walkingPhase(double time) {
-		double timeHours = MarsClock.convertMillisolsToSeconds(time) / 60D / 60D;
+		double timeHours = MarsClock.HOURS_PER_MILLISOL * time;
 		double distanceKm = 0;
 
 		if (person != null) {

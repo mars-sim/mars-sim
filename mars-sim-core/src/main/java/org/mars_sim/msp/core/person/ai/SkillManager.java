@@ -35,9 +35,6 @@ public class SkillManager implements Serializable {
 //	private static String loggerName = logger.getName();
 //	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 	
-	/** The Multiplication factor  */
-	private static final int FACTOR = 50; 
-	
 	// Data members
 //	/** The person's ID. */
 //	private int personID;
@@ -162,10 +159,10 @@ public class SkillManager implements Serializable {
 					skillLevel = getInitialSkillLevel(2, (int)(2.5 + ageFactor/6));
 					addNewSkillNExperience(startingSkill, skillLevel);
 				}
-				else if (rand == 3) {
-					skillLevel = getInitialSkillLevel(3, (int)(1.25 + ageFactor/4));
-					addNewSkillNExperience(startingSkill, skillLevel);
-				}
+//				else if (rand == 3) {
+//					skillLevel = getInitialSkillLevel(3, (int)(1.25 + ageFactor/4));
+//					addNewSkillNExperience(startingSkill, skillLevel);
+//				}
 			}
 		}
 	}
@@ -181,7 +178,7 @@ public class SkillManager implements Serializable {
 		newSkill.setLevel(skillLevel);
 		addNewSkill(newSkill);
 		// Add some initial experience points
-		int exp = RandomUtil.getRandomInt(0, (int)(FACTOR * Math.pow(2, skillLevel)) - 1);
+		int exp = RandomUtil.getRandomInt(0, (int)(Skill.BASE * Math.pow(2, skillLevel)) - 1);
 		this.addExperience(startingSkill, exp, 0);
 	}
 	

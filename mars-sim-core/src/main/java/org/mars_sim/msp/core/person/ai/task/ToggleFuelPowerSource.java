@@ -280,8 +280,8 @@ implements Serializable {
 
         // Get settlement value for kW hr produced.
         double power = fuelSource.getMaxPower();
-        double hoursInSol = MarsClock.convertMillisolsToSeconds(1000D) / 60D / 60D;
-        double powerPerSol = power * hoursInSol;
+//        double hoursInSol = MarsClock.convertMillisolsToSeconds(1000D) / 60D / 60D;
+        double powerPerSol = power * MarsClock.HOURS_PER_MILLISOL * 1000D;
         double powerValue = powerPerSol * settlement.getPowerGrid().getPowerValue();
 
         return powerValue;

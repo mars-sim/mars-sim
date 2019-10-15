@@ -447,7 +447,8 @@
 			<part name="communications circuit board" number="1" probability="10" />
 			<part name="microcontroller" number="1" probability="1" />			
 			<part name="logic board" number="1" probability="1" />
-			<part name="rf power transistor" number="1" probability="3" />			
+			<part name="rf power transistor" number="1" probability="3" />
+			<part name="optical cable" number="1" probability="3" />						
 		</repair-parts-list>
 	</malfunction>
 
@@ -900,6 +901,7 @@
 			<part name="wire connector" number="2" probability="40" />
 			<part name="aluminum sheet" number="1" probability="10" />			
 			<part name="solar parabolic mirror" number="1" probability="10" />
+			<part name="optical lens" number="2" probability="2" />				
 		</repair-parts-list>
 	</malfunction>
 
@@ -921,7 +923,8 @@
 			<part name="wire connector" number="2" probability="30" />
 			<part name="logic board" number="1" probability="10" />			
 			<part name="light emitting diode bulb" number="5" probability="20" />
-			<part name="light emitting diode kit" number="1" probability="5" />			
+			<part name="light emitting diode kit" number="1" probability="5" />	
+			<part name="optical lens" number="1" probability="2" />						
 		</repair-parts-list>
 	</malfunction>
 
@@ -973,7 +976,9 @@
 			<part name="small stepper motor" number="3" probability="5" />
 			<part name="timing belt" number="3" probability="5" />
 			<part name="optical prism" number="3" probability="5" />
-			<part name="Laser Sintering 3D Printer" number="1" probability="5" />
+			<part name="Laser Sintering 3D Printer" number="1" probability="1" />
+			<part name="optical cable" number="2" probability="3" />		
+			<part name="optical lens" number="2" probability="2" />					
 		</repair-parts-list>
 	</malfunction>
 

@@ -264,16 +264,14 @@ implements Serializable {
             if (collectedAmount < settlementCap) {
                 bag.getInventory().retrieveAmountResource(regolithID, collectedAmount);
                 settlement.getInventory().storeAmountResource(regolithID, collectedAmount, false);
-        		// 2015-01-15 Add addSupplyAmount()
                 settlement.getInventory().addAmountSupply(regolithID, collectedAmount);
             }
 
+            // transfer the bag
             bag.transfer(person, settlement);
-//            person.getInventory().retrieveUnit(bag);
-//            settlement.getInventory().storeUnit(bag);
-
+			// Add to the daily output
+			settlement.addOutput(regolithID, collectedAmount, getTimeCompleted());
             // Recalculate settlement good value for output item.
-//            GoodsManager goodsManager = settlement.getGoodsManager();
             settlement.getGoodsManager().updateGoodValue(GoodsUtil.getResourceGood(regolithID), false);
         }
 

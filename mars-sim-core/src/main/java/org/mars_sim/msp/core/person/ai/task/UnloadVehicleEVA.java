@@ -33,10 +33,12 @@ import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.taskUtil.TaskPhase;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.RoboticAttributeManager;
 import org.mars_sim.msp.core.robot.RoboticAttributeType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.Towing;
@@ -57,7 +59,13 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
 			logger.getName().length());
 	
-
+	private static int iceID = ResourceUtil.iceID;
+	private static int regolithID = ResourceUtil.regolithID;
+	private static int oxygenID = ResourceUtil.oxygenID;
+	private static int waterID = ResourceUtil.waterID;
+	private static int foodID = ResourceUtil.foodID;
+	private static int methaneID = ResourceUtil.methaneID;
+	
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.unloadVehicleEVA"); //$NON-NLS-1$
 
@@ -433,6 +441,22 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 			try {
 				vehicleInv.retrieveAmountResource(resource, amount);
 				settlementInv.storeAmountResource(resource, amount, true);
+				
+				if (resource != waterID && resource != methaneID 
+						&& resource != foodID && resource != oxygenID) {
+					double laborTime = 0;
+					if (resource == iceID || resource == regolithID)
+						laborTime = CollectResources.LABOR_TIME;
+					else
+						laborTime = CollectMinedMinerals.LABOR_TIME;
+					
+					settlementInv.addAmountSupply(resource, amount);
+					// Add to the daily output
+					settlement.addOutput(resource, amount, laborTime);
+		            // Recalculate settlement good value for output item.
+		            settlement.getGoodsManager().updateGoodValue(GoodsUtil.getResourceGood(resource), false);	
+				}
+				
 			} catch (Exception e) {
 			}
 			amountUnloading -= amount;

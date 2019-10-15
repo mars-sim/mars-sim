@@ -19,6 +19,7 @@ import java.util.Map;
 import javax.swing.table.AbstractTableModel;
 
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.ai.mission.Mining;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
@@ -47,6 +48,8 @@ public class MiningMissionCustomInfoPanel extends MissionCustomInfoPanel {
 	private ConcentrationTableModel concentrationTableModel;
 	private ExcavationTableModel excavationTableModel;
 
+	private SurfaceFeatures surfaceFeatures = Simulation.instance().getMars().getSurfaceFeatures();
+	
 	/**
 	 * Constructor
 	 * 
@@ -348,7 +351,7 @@ public class MiningMissionCustomInfoPanel extends MissionCustomInfoPanel {
 		 */
 		private void updateTable() {
 			excavationMap.clear();
-			String[] mineralNames = Simulation.instance().getMars().getSurfaceFeatures().getMineralMap()
+			String[] mineralNames = surfaceFeatures.getMineralMap()
 					.getMineralTypeNames();
 			for (String mineralName : mineralNames) {
 				AmountResource mineral = ResourceUtil.findAmountResource(mineralName);

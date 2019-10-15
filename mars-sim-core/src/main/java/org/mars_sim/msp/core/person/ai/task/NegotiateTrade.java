@@ -167,10 +167,10 @@ public class NegotiateTrade extends Task implements Serializable {
 			double credit = creditManager.getCredit(buyingSettlement, sellingSettlement);
 			credit += soldLoadValue;
 			creditManager.setCredit(buyingSettlement, sellingSettlement, credit);
-			LogConsolidated.log(Level.INFO, 1000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
-					+ person.getName() + " completed a trade negotiation. "
+			LogConsolidated.log(Level.INFO, 0, sourceName, "[" + person.getLocationTag().getLocale() + "] "
+					+ person.getName() + " completed a trade negotiation as follows : "
 					+ "   Credit : " + credit 
-					+ "   Buyer : " + buyingSettlement.getName() 
+					+ "    Buyer : " + buyingSettlement.getName() 
 					+ "   Seller : " + sellingSettlement.getName());
 
 			// Check if buying settlement owes the selling settlement too much for them to
@@ -188,10 +188,8 @@ public class NegotiateTrade extends Task implements Serializable {
 				creditManager.setCredit(buyingSettlement, sellingSettlement, credit);
 				
 				LogConsolidated.log(Level.INFO, 1000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
-						+ person.getName() + " adjusted the credit/debit as follows : "
-						+ "   Credit : " + credit 
-						+ "   Buyer : " + buyingSettlement.getName() 
-						+ "   Seller : " + sellingSettlement.getName());
+						+ person.getName() + " updated the credit/debit as follows : "
+						+ "   Credit/Debit : " + credit);
 //				logger.fine("Credit at " + buyingSettlement.getName() + " for " + sellingSettlement.getName() + " is " + credit);
 			} else {
 				buyLoad = new HashMap<Good, Integer>(0);

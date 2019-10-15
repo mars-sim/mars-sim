@@ -400,9 +400,9 @@ public final class TradeUtil {
 
 		GoodsManager manager = settlement.getGoodsManager();
 
-		// Iterator<Good> i = load.keySet().iterator();
-		// while (i.hasNext()) {
-		for (Good good : load.keySet()) {// = i.next();
+		Iterator<Good> i = load.keySet().iterator();
+		while (i.hasNext()) {
+			Good good = i.next();
 			int goodNumber = load.get(good);
 			double supply = manager.getNumberOfGoodForSettlement(good);
 			double multiplier = 1D;
@@ -411,7 +411,10 @@ public final class TradeUtil {
 				goodNumber /= (int) tradeAmount;
 				multiplier = tradeAmount;
 			}
-
+			else {	
+				multiplier = 1D;
+			}
+			
 			for (int x = 0; x < goodNumber; x++) {
 
 				double supplyAmount = 0D;
@@ -824,4 +827,5 @@ public final class TradeUtil {
 
 		return result;
 	}
+	
 }

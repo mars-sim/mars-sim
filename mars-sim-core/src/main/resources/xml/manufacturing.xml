@@ -945,6 +945,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="aluminum sheet" number="1" />
 			<part name="electrical wire" number="10" />
 			<part name="wire connector" number="10" />
+			<part name="optical cable" number="2" />			
 		</inputs>
 		<outputs>
 			<part name="satellite dish" number="1" />
@@ -971,6 +972,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="aluminum sheet" number="1" />
 			<part name="electrical wire" number="10" />
 			<part name="wire connector" number="10" />
+			<part name="optical cable" number="1" />			
 		</inputs>
 		<outputs>
 			<part name="radio antenna" number="5" />
@@ -1748,6 +1750,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="aluminum sheet" number="1" />
 			<part name="electrical wire" number="10" />
 			<part name="wire connector" number="10" />
+			<part name="optical cable" number="1" />			
 		</inputs>
 		<outputs>
 			<part name="eva antenna" number="20" />
@@ -2167,6 +2170,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="epoxy resin bottle" number="5" />
 			<part name="lubricant bottle" number="2" />
 			<part name="rover wheel" number="4" />
+			<part name="optical cable" number="10" />			
 		</inputs>
 		<outputs>
 			<vehicle name="explorer rover" number="1" />
@@ -2200,6 +2204,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="epoxy resin bottle" number="5" />
 			<part name="lubricant bottle" number="2" />
 			<part name="rover wheel" number="4" />
+			<part name="optical cable" number="10" />			
 		</inputs>
 		<outputs>
 			<vehicle name="transport rover" number="1" />
@@ -2233,6 +2238,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="epoxy resin bottle" number="5" />
 			<part name="lubricant bottle" number="2" />
 			<part name="rover wheel" number="4" />
+			<part name="optical cable" number="10" />			
 		</inputs>
 		<outputs>
 			<vehicle name="cargo rover" number="1" />
@@ -3312,7 +3318,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 	<process name="make light emitting diode kit" tech="3" skill="3" work-time="200" process-time="500"
 			power-required="0.5">
 		<inputs>
-			<part name="steel sheet" number="1" />
+			<part name="aluminum ingot" number="1" />
 			<part name="electrical wire" number="1" />
 			<part name="wire connector" number="1" />
 			<part name="light emitting diode bulb" number="20" />
@@ -3336,6 +3342,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="glass sheet" number="1" />
 			<part name="optical lens" number="3" />
 			<part name="plastic sheet" number="1" />
+			<part name="diode" number="3" />			
 		</inputs>
 		<outputs>
 			<part name="carbon dioxide laser" number="5" />
@@ -3343,7 +3350,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 	</process>
 
 	<!-- 2015-05-19 Added manufacturing optical lens . -->
-	<process name="manufacture optical lens" tech="3" skill="3" work-time="200" process-time="500"
+	<process name="manufacture optical lens" tech="2" skill="2" work-time="200" process-time="300"
 			power-required="0.5">
 		<inputs>
 			<part name="glass sheet" number="1" />
@@ -3353,6 +3360,17 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		</outputs>
 	</process>
 
+	<!-- 2019-10-14 Added manufacturing optical cable . -->
+	<process name="manufacture optical cable" tech="2" skill="2" work-time="200" process-time="200"
+			power-required="0.5">
+		<inputs>
+			<part name="glass sheet" number="1" />
+		</inputs>
+		<outputs>
+			<part name="optical cable" number="20" />
+		</outputs>
+	</process>
+	
 	<!-- 2015-05-19 Added manufacturing a helium–neon laser. -->
 	<process name="manufacture helium neon laser" tech="4" skill="4" work-time="600" process-time="1000"
 			power-required="2.0">
@@ -3366,6 +3384,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="optical lens" number="3" />
 			<part name="optical prism" number="3" />
 			<part name="plastic sheet" number="1" />
+			<part name="diode" number="3" />				
 		</inputs>
 		<outputs>
 			<part name="helium neon laser" number="5" />
@@ -3392,7 +3411,9 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="glass sheet" number="1" />
 			<part name="small stepper motor" number="3" />
 			<part name="timing belt" number="3" />
-			<part name="optical prism" number="3" />		
+			<part name="optical prism" number="3" />	
+			<part name="diode" number="5" />	
+			<part name="optical cable" number="3" />							
 		</inputs>
 		<outputs>
 			<part name="laser sintering 3d printer" number="1" />
@@ -3585,7 +3606,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<resource name="carbon" amount="1" />		
 		</inputs>
 		<outputs>
-			<part name="resistor" number="400" />
+			<part name="resistor" number="200" />
 		</outputs>
 	</process>
 
@@ -3602,7 +3623,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<resource name="silicon" amount="1" />	
 		</inputs>
 		<outputs>
-			<part name="capacitor" number="300" />
+			<part name="capacitor" number="150" />
 		</outputs>
 	</process>
 		
@@ -3610,7 +3631,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 	https://en.wikipedia.org/wiki/Diode
 	Today, most diodes are made of silicon, but other semiconductors 
 	such as selenium and germanium are sometimes used.	-->
-	<process name="manufacture diodes" tech="1" skill="2" work-time="100" process-time="400"
+	<process name="manufacture diodes" tech="1" skill="2" work-time="200" process-time="500"
 			power-required="5">
 		<inputs>
 			<resource name="aluminum" amount="0.1" />
@@ -3636,7 +3657,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="diode" number="10" />
 		</inputs>
 		<outputs>
-			<part name="logic board" number="10" />
+			<part name="logic board" number="2" />
 		</outputs>
 	</process>
 
@@ -3699,7 +3720,8 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		<part-salvage name="lubricant bottle" number="2" />
 		<part-salvage name="rover wheel" number="4" />
 		<part-salvage name="steel scrap" number="4" />		
-		<part-salvage name="aluminum scrap" number="7" />		
+		<part-salvage name="aluminum scrap" number="7" />
+		<part-salvage name="optical cable" number="10" />				
 	</salvage>
 
 	<!-- Salvage process for a transport rover. -->
@@ -3729,7 +3751,8 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		<part-salvage name="lubricant bottle" number="2" />
 		<part-salvage name="rover wheel" number="4" />
 		<part-salvage name="steel scrap" number="5" />		
-		<part-salvage name="aluminum scrap" number="7" />		
+		<part-salvage name="aluminum scrap" number="7" />	
+		<part-salvage name="optical cable" number="10" />			
 	</salvage>
 
 	<!-- Salvage process for a cargo rover. -->
@@ -3759,7 +3782,8 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		<part-salvage name="lubricant bottle" number="2" />
 		<part-salvage name="rover wheel" number="4" />
 		<part-salvage name="steel scrap" number="4" />		
-		<part-salvage name="aluminum scrap" number="8" />		
+		<part-salvage name="aluminum scrap" number="8" />
+		<part-salvage name="optical cable" number="10" />				
 	</salvage>
 
 	<!-- Salvage process for a light utility vehicle (LUV) -->
@@ -3776,6 +3800,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		<part-salvage name="radio antenna" number="1" />
 		<part-salvage name="steel scrap" number="1" />		
 		<part-salvage name="aluminum scrap" number="2" />	
+		<part-salvage name="optical cable" number="3" />		
 	</salvage>
 
 	<!-- Salvage process for a barrel. -->

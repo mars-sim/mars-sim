@@ -168,9 +168,17 @@ public class BuildingConfig implements Serializable {
 
 	private static Set<String> buildingTypes;
 	private static List<FunctionType> functions;
+	
 	private static Map<String, Map<AmountResource, Double>> storageCapacities;
+	
 	private static Map<String, Map<AmountResource, Double>> initialResources;
 
+	private static Map<String, List<ResourceProcess>> resourceProcessMap;
+	
+	private static Map<String, List<ScienceType>> wasteSpecialties;
+	
+	private static Map<String, List<ScienceType>> researchSpecialties;
+	
 	/**
 	 * Constructor
 	 * 
@@ -187,8 +195,45 @@ public class BuildingConfig implements Serializable {
 			storageCapacities = new HashMap<String, Map<AmountResource, Double>>();
 		}
 
+		for (String type : getBuildingTypes()) {
+			if (!storageCapacities.containsKey(type))
+				storageCapacities.put(type, getStorageCapacities(type));
+		}
+		
 		if (initialResources == null) {
 			initialResources = new HashMap<String, Map<AmountResource, Double>>();
+		}
+		
+		for (String type : getBuildingTypes()) {
+			if (!initialResources.containsKey(type))
+				initialResources.put(type, getInitialResources(type));
+		}
+		
+		if (researchSpecialties == null) {
+			researchSpecialties = new HashMap<String, List<ScienceType>>();
+		}
+		
+		for (String type : getBuildingTypes()) {
+			if (!researchSpecialties.containsKey(type))
+				researchSpecialties.put(type, getResearchSpecialties(type));
+		}
+		
+		if (wasteSpecialties == null) {
+			wasteSpecialties = new HashMap<String, List<ScienceType>>();
+		}
+		
+//		for (String type : getBuildingTypes()) {
+//			if (!wasteSpecialties.containsKey(type))
+//				wasteSpecialties.put(type, getWasteSpecialties(type));
+//		}
+		
+		if (resourceProcessMap == null) {
+			resourceProcessMap = new HashMap<String, List<ResourceProcess>>();
+		}
+		
+		for (String type : getBuildingTypes()) {
+			if (!resourceProcessMap.containsKey(type))
+				resourceProcessMap.put(type, getResourceProcesses(type));
 		}
 	}
 
@@ -234,7 +279,7 @@ public class BuildingConfig implements Serializable {
 	 * @return set of building types.
 	 */
 	@SuppressWarnings("unchecked")
-	public Set<String> getBuildingTypes() {
+	public static Set<String> getBuildingTypes() {
 
 		if (buildingTypes == null) {
 			buildingTypes = new HashSet<String>();
@@ -256,7 +301,7 @@ public class BuildingConfig implements Serializable {
 	 * @throws Exception if building type could not be found.
 	 */
 	@SuppressWarnings("unchecked")
-	private Element getBuildingElement(String buildingType) {
+	private static Element getBuildingElement(String buildingType) {
 		Element result = null;
 
 		// Element root = buildingDoc.getRootElement();
@@ -527,21 +572,28 @@ public class BuildingConfig implements Serializable {
 	 * @return list of research specialties as {@link ScienceType}.
 	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
-	@SuppressWarnings("unchecked")
-	public List<ScienceType> getResearchSpecialties(String buildingType) {
-		List<ScienceType> result = new ArrayList<ScienceType>();
-		Element buildingElement = getBuildingElement(buildingType);
-		Element functionsElement = buildingElement.getChild(FUNCTIONS);
-		Element researchElement = functionsElement.getChild(RESEARCH);
-		List<Element> researchSpecialities = researchElement.getChildren(RESEARCH_SPECIALTY);
-
-		for (Element researchSpecialityElement : researchSpecialities) {
-			String value = researchSpecialityElement.getAttributeValue(NAME);
-			// take care that entries in buildings.xml conform to enum values of {@link
-			// ScienceType}
-			result.add(ScienceType.valueOf(ScienceType.class, value.toUpperCase().replace(" ", "_")));
+	public static List<ScienceType> getResearchSpecialties(String buildingType) {
+		if (!researchSpecialties.containsKey(buildingType)) {
+				
+			List<ScienceType> result = new ArrayList<ScienceType>();
+			Element buildingElement = getBuildingElement(buildingType);
+			Element functionsElement = buildingElement.getChild(FUNCTIONS);
+			Element researchElement = functionsElement.getChild(RESEARCH);
+//			System.out.println(buildingType + " : " + researchElement);
+			if (researchElement != null) {
+				List<Element> researchSpecialities = researchElement.getChildren(RESEARCH_SPECIALTY);		
+				for (Element researchSpecialityElement : researchSpecialities) {
+					String value = researchSpecialityElement.getAttributeValue(NAME);
+					// take care that entries in buildings.xml conform to enum values of {@link
+					// ScienceType}
+					result.add(ScienceType.valueOf(ScienceType.class, value.toUpperCase().replace(" ", "_")));
+				}
+			}
+			return result;
+			
 		}
-		return result;
+		
+		return researchSpecialties.get(buildingType);
 	}
 
 	/**
@@ -586,19 +638,27 @@ public class BuildingConfig implements Serializable {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<ScienceType> getWasteSpecialties(String buildingType) {
-		List<ScienceType> result = new ArrayList<ScienceType>();
-		Element buildingElement = getBuildingElement(buildingType);
-		Element functionsElement = buildingElement.getChild(FUNCTIONS);
-		Element wasteElement = functionsElement.getChild(WASTE_DISPOSAL);
-		List<Element> wasteSpecialities = wasteElement.getChildren(WASTE_SPECIALTY);
-
-		for (Element wasteSpecialityElement : wasteSpecialities) {
-			String value = wasteSpecialityElement.getAttributeValue(NAME);
-			// take care that entries in buildings.xml conform to enum values of {@link
-			// ScienceType}
-			result.add(ScienceType.valueOf(ScienceType.class, value.toUpperCase().replace(" ", "_")));
+		
+		if (!wasteSpecialties.containsKey(buildingType)) {
+			
+			List<ScienceType> result = new ArrayList<ScienceType>();
+			Element buildingElement = getBuildingElement(buildingType);
+			Element functionsElement = buildingElement.getChild(FUNCTIONS);
+			Element wasteElement = functionsElement.getChild(WASTE_DISPOSAL);
+//			System.out.println(buildingType + " : " + wasteElement);
+			if (wasteElement != null) {
+				List<Element> wasteSpecialities = wasteElement.getChildren(WASTE_SPECIALTY);
+				for (Element wasteSpecialityElement : wasteSpecialities) {
+					String value = wasteSpecialityElement.getAttributeValue(NAME);
+					// Take care that entries in buildings.xml conform to enum values of {@link
+					// ScienceType}
+					result.add(ScienceType.valueOf(ScienceType.class, value.toUpperCase().replace(" ", "_")));
+				}
+				return result;
+			}
 		}
-		return result;
+		
+		return wasteSpecialties.get(buildingType);
 	}
 
 	/**
@@ -766,52 +826,63 @@ public class BuildingConfig implements Serializable {
 	 * @return a list of resource processes.
 	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
-	@SuppressWarnings("unchecked")
 	public List<ResourceProcess> getResourceProcesses(String buildingType) {
-		List<ResourceProcess> resourceProcesses = new ArrayList<ResourceProcess>();
-		Element buildingElement = getBuildingElement(buildingType);
-		Element functionsElement = buildingElement.getChild(FUNCTIONS);
-		Element resourceProcessingElement = functionsElement.getChild(RESOURCE_PROCESSING);
-		List<Element> resourceProcessNodes = resourceProcessingElement.getChildren(PROCESS);
-
-		for (Element processElement : resourceProcessNodes) {
-
-			String defaultString = processElement.getAttributeValue(DEFAULT);
-			boolean defaultOn = true;
-			if (defaultString.equals("off"))
-				defaultOn = false;
-
-			double powerRequired = Double.parseDouble(processElement.getAttributeValue(POWER_REQUIRED));
-
-			ResourceProcess process = new ResourceProcess(processElement.getAttributeValue(NAME), powerRequired,
-					defaultOn);
-
-			// Get input resources.
-			List<Element> inputNodes = processElement.getChildren(INPUT);
-			for (Element inputElement : inputNodes) {
-				String resourceName = inputElement.getAttributeValue(RESOURCE).toLowerCase();
-				// AmountResource resource = ResourceUtil.findAmountResource(resourceName);
-				Integer id = ResourceUtil.findIDbyAmountResourceName(resourceName);
-				double rate = Double.parseDouble(inputElement.getAttributeValue(RATE)) / 1000D;
-				boolean ambient = Boolean.valueOf(inputElement.getAttributeValue(AMBIENT));
-				process.addMaxInputResourceRate(id, rate, ambient);
+		
+		if (!resourceProcessMap.containsKey(buildingType)) {
+			List<ResourceProcess> resourceProcesses = new ArrayList<ResourceProcess>();
+			Element buildingElement = getBuildingElement(buildingType);
+			Element functionsElement = buildingElement.getChild(FUNCTIONS);
+			Element resourceProcessingElement = functionsElement.getChild(RESOURCE_PROCESSING);
+//			System.out.println(buildingType + " : " + resourceProcessingElement);
+			if (resourceProcessingElement != null) {
+				List<Element> resourceProcessNodes = resourceProcessingElement.getChildren(PROCESS);
+	
+				for (Element processElement : resourceProcessNodes) {
+	
+					String defaultString = processElement.getAttributeValue(DEFAULT);
+					boolean defaultOn = true;
+					if (defaultString.equals("off"))
+						defaultOn = false;
+	
+					double powerRequired = Double.parseDouble(processElement.getAttributeValue(POWER_REQUIRED));
+	
+					ResourceProcess process = new ResourceProcess(processElement.getAttributeValue(NAME), powerRequired,
+							defaultOn);
+	
+					// Get input resources.
+					List<Element> inputNodes = processElement.getChildren(INPUT);
+					for (Element inputElement : inputNodes) {
+						String resourceName = inputElement.getAttributeValue(RESOURCE).toLowerCase();
+						// AmountResource resource = ResourceUtil.findAmountResource(resourceName);
+						Integer id = ResourceUtil.findIDbyAmountResourceName(resourceName);
+						double rate = Double.parseDouble(inputElement.getAttributeValue(RATE)) / 1000D;
+						boolean ambient = Boolean.valueOf(inputElement.getAttributeValue(AMBIENT));
+						process.addMaxInputResourceRate(id, rate, ambient);
+					}
+	
+					// Get output resources.
+					List<Element> outputNodes = processElement.getChildren(OUTPUT);
+					for (Element outputElement : outputNodes) {
+						String resourceName = outputElement.getAttributeValue(RESOURCE).toLowerCase();
+						// AmountResource resource = ResourceUtil.findAmountResource(resourceName);
+						Integer id = ResourceUtil.findIDbyAmountResourceName(resourceName);
+						double rate = Double.parseDouble(outputElement.getAttributeValue(RATE)) / 1000D;
+						boolean ambient = Boolean.valueOf(outputElement.getAttributeValue(AMBIENT));
+						process.addMaxOutputResourceRate(id, rate, ambient);
+					}
+	
+					resourceProcesses.add(process);
+				}
+				
+				// Save it in the resourceProcessMap
+	//			resourceProcessMap.put(buildingType, resourceProcesses);
+				// Note: now done in the constructor
+				
 			}
-
-			// Get output resources.
-			List<Element> outputNodes = processElement.getChildren(OUTPUT);
-			for (Element outputElement : outputNodes) {
-				String resourceName = outputElement.getAttributeValue(RESOURCE).toLowerCase();
-				// AmountResource resource = ResourceUtil.findAmountResource(resourceName);
-				Integer id = ResourceUtil.findIDbyAmountResourceName(resourceName);
-				double rate = Double.parseDouble(outputElement.getAttributeValue(RATE)) / 1000D;
-				boolean ambient = Boolean.valueOf(outputElement.getAttributeValue(AMBIENT));
-				process.addMaxOutputResourceRate(id, rate, ambient);
-			}
-
-			resourceProcesses.add(process);
+			return resourceProcesses;
 		}
 
-		return resourceProcesses;
+		return resourceProcessMap.get(buildingType);
 	}
 
 	/**
@@ -840,14 +911,17 @@ public class BuildingConfig implements Serializable {
 			Element buildingElement = getBuildingElement(buildingType);
 			Element functionsElement = buildingElement.getChild(FUNCTIONS);
 			Element storageElement = functionsElement.getChild(STORAGE);
-			List<Element> resourceStorageNodes = storageElement.getChildren(RESOURCE_STORAGE);
-			for (Element resourceStorageElement : resourceStorageNodes) {
-				String resourceName = resourceStorageElement.getAttributeValue(RESOURCE).toLowerCase();
-				AmountResource resource = ResourceUtil.findAmountResource(resourceName);
-				Double capacity = Double.valueOf(resourceStorageElement.getAttributeValue(CAPACITY));
-				map.put(resource, capacity);
+//			System.out.println(buildingType + " : " + storageElement);
+			if (storageElement != null) {
+				List<Element> resourceStorageNodes = storageElement.getChildren(RESOURCE_STORAGE);
+				for (Element resourceStorageElement : resourceStorageNodes) {
+					String resourceName = resourceStorageElement.getAttributeValue(RESOURCE).toLowerCase();
+					AmountResource resource = ResourceUtil.findAmountResource(resourceName);
+					Double capacity = Double.valueOf(resourceStorageElement.getAttributeValue(CAPACITY));
+					map.put(resource, capacity);
+				}
 			}
-			storageCapacities.put(buildingType, map);
+//			storageCapacities.put(buildingType, map);
 			return map;
 		}
 	}
@@ -887,12 +961,15 @@ public class BuildingConfig implements Serializable {
 			Element buildingElement = getBuildingElement(buildingType);
 			Element functionsElement = buildingElement.getChild(FUNCTIONS);
 			Element storageElement = functionsElement.getChild(STORAGE);
-			List<Element> resourceInitialNodes = storageElement.getChildren(RESOURCE_INITIAL);
-			for (Element resourceInitialElement : resourceInitialNodes) {
-				String resourceName = resourceInitialElement.getAttributeValue(RESOURCE).toLowerCase();
-				AmountResource resource = ResourceUtil.findAmountResource(resourceName);
-				Double amount = Double.valueOf(resourceInitialElement.getAttributeValue(AMOUNT));
-				map.put(resource, amount);
+//			System.out.println(buildingType + " : " + storageElement);
+			if (storageElement != null) {
+				List<Element> resourceInitialNodes = storageElement.getChildren(RESOURCE_INITIAL);
+				for (Element resourceInitialElement : resourceInitialNodes) {
+					String resourceName = resourceInitialElement.getAttributeValue(RESOURCE).toLowerCase();
+					AmountResource resource = ResourceUtil.findAmountResource(resourceName);
+					Double amount = Double.valueOf(resourceInitialElement.getAttributeValue(AMOUNT));
+					map.put(resource, amount);
+				}
 			}
 			return map;
 		}
@@ -1670,6 +1747,10 @@ public class BuildingConfig implements Serializable {
 		return (elements.size() > 0);
 	}
 
+	public static Map<String, List<ResourceProcess>> getResourceProcessMap() {
+		return resourceProcessMap;
+	}
+	
 	/**
 	 * Prepare object for garbage collection.
 	 */

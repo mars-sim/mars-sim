@@ -19,7 +19,6 @@ import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Bag;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.person.Person;
@@ -32,9 +31,10 @@ import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.ai.taskUtil.TaskPhase;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
-import org.mars_sim.msp.core.robot.RoboticAttributeType;
-import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.robot.RoboticAttributeManager;
+import org.mars_sim.msp.core.robot.RoboticAttributeType;
+import org.mars_sim.msp.core.structure.goods.GoodsUtil;
+import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Rover;
 
 /**
@@ -58,6 +58,9 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 	/** Rate of mineral collection (kg/millisol). */
 	private static final double MINERAL_COLLECTION_RATE = 10D;
 
+	/** The average labor time it takes to find the minerel */
+	public static final double LABOR_TIME = 50D;
+	
 	// Data members
 	private Rover rover; // Rover used.
 	protected AmountResource mineralType;
@@ -75,7 +78,7 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 	public CollectMinedMinerals(Person person, Rover rover, AmountResource mineralType) {
 
 		// Use EVAOperation parent constructor.
-		super(NAME, person, true, RandomUtil.getRandomDouble(50D) + 10D);
+		super(NAME, person, true, LABOR_TIME + RandomUtil.getRandomDouble(10D) - RandomUtil.getRandomDouble(10D));
 
 		// Initialize data members.
 		this.rover = rover;
@@ -278,12 +281,15 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 		addExperience(time);
 
 		// Collect minerals.
-		if (person != null)
+		if (person != null) {
 			person.getInventory().storeAmountResource(mineralType, mineralsCollected, true);
-		else if (robot != null)
+		}
+		else if (robot != null) {
 			robot.getInventory().storeAmountResource(mineralType, mineralsCollected, true);
-
+		}
+		
 		mission.collectMineral(mineralType, mineralsCollected);
+		
 		if (((mineralsExcavated - mineralsCollected) <= 0D) || (mineralsCollected >= remainingPersonCapacity)) {
 			setPhase(WALK_BACK_INSIDE);
 		}

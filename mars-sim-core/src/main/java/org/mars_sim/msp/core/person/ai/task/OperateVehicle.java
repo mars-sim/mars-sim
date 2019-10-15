@@ -274,8 +274,8 @@ public abstract class OperateVehicle extends Task implements Serializable {
         double startingDistanceToDestination = getDistanceToDestination();
 
         // Determine distance traveled in time given.
-        double secondsTime = MarsClock.convertMillisolsToSeconds(time);
-        double distanceTraveled = secondsTime * ((vehicle.getSpeed() / 60D) / 60D);
+        double hrsTime = MarsClock.HOURS_PER_MILLISOL * time;
+        double distanceTraveled = hrsTime * vehicle.getSpeed();
 
         // Consume fuel for distance traveled.
         double fuelConsumed = distanceTraveled / vehicle.getIFuelConsumption();
@@ -390,7 +390,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
 
         // Determine time difference from start of trip in millisols.
         double millisolsDiff = MarsClock.getTimeDiff(marsClock, startTripTime);
-        double hoursDiff = MarsClock.convertMillisolsToSeconds(millisolsDiff) / 60D / 60D;
+        double hoursDiff = MarsClock.HOURS_PER_MILLISOL * millisolsDiff;
 
         // Determine average speed so far in km/hr.
         double avgSpeed = (startTripDistance - getDistanceToDestination()) / hoursDiff;

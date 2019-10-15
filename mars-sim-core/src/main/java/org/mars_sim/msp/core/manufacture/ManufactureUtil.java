@@ -66,7 +66,7 @@ public final class ManufactureUtil {
 	 * @throws Exception if error getting processes.
 	 */
 	public static List<ManufactureProcessInfo> getAllManufactureProcesses() {
-		return manufactureConfig.getManufactureProcessList();
+		return ManufactureConfig.getManufactureProcessList();
 	}
 
 	/**
@@ -91,7 +91,7 @@ public final class ManufactureUtil {
 	 */
 	public static List<ManufactureProcessInfo> getManufactureProcessesForTechLevel(int techLevel) {
 		List<ManufactureProcessInfo> result = new ArrayList<ManufactureProcessInfo>();
-		Iterator<ManufactureProcessInfo> i = manufactureConfig.getManufactureProcessList().iterator();
+		Iterator<ManufactureProcessInfo> i = ManufactureConfig.getManufactureProcessList().iterator();
 		while (i.hasNext()) {
 			ManufactureProcessInfo process = i.next();
 			if (process.getTechLevelRequired() <= techLevel)
@@ -109,7 +109,7 @@ public final class ManufactureUtil {
 	 */
 	public static List<ManufactureProcessInfo> getManufactureProcessesWithGivenOutput(String name) {
 		List<ManufactureProcessInfo> result = new ArrayList<ManufactureProcessInfo>();
-		Iterator<ManufactureProcessInfo> i = manufactureConfig.getManufactureProcessList().iterator();
+		Iterator<ManufactureProcessInfo> i = ManufactureConfig.getManufactureProcessList().iterator();
 		while (i.hasNext()) {
 			ManufactureProcessInfo process = i.next();
 			if (process.getOutputNames().contains(name))
@@ -119,14 +119,14 @@ public final class ManufactureUtil {
 	}
 
 	/**
-	 * gets manufacturing processes with given input.
+	 * Gets manufacturing processes with given input.
 	 * 
 	 * @param item {@link String} desired input
 	 * @return {@link List}<{@link ManufactureProcessItem}> list of processes
 	 */
 	public static List<ManufactureProcessInfo> getManufactureProcessesWithGivenInput(String item) {
 		List<ManufactureProcessInfo> result = new ArrayList<ManufactureProcessInfo>();
-		Iterator<ManufactureProcessInfo> i = manufactureConfig.getManufactureProcessList().iterator();
+		Iterator<ManufactureProcessInfo> i = ManufactureConfig.getManufactureProcessList().iterator();
 		while (i.hasNext()) {
 			ManufactureProcessInfo process = i.next();
 			if (process.getInputNames().contains(item))
@@ -147,7 +147,7 @@ public final class ManufactureUtil {
 	public static List<ManufactureProcessInfo> getManufactureProcessesForTechSkillLevel(int techLevel, int skillLevel) {
 		List<ManufactureProcessInfo> result = new ArrayList<ManufactureProcessInfo>();
 
-		Iterator<ManufactureProcessInfo> i = manufactureConfig.getManufactureProcessList().iterator();
+		Iterator<ManufactureProcessInfo> i = ManufactureConfig.getManufactureProcessList().iterator();
 		while (i.hasNext()) {
 			ManufactureProcessInfo process = i.next();
 			if ((process.getTechLevelRequired() <= techLevel) && (process.getSkillLevelRequired() <= skillLevel))
@@ -220,8 +220,8 @@ public final class ManufactureUtil {
 			outputsValue += getManufactureProcessItemValue(j.next(), settlement, true);
 
 		// Subtract power value.
-		double hoursInMillisol = MarsClock.convertMillisolsToSeconds(1D) / 60D / 60D;
-		double powerHrsRequiredPerMillisol = process.getPowerRequired() * hoursInMillisol;
+//		double hoursInMillisol = MarsClock.convertMillisolsToSeconds(1D) / 60D / 60D;
+		double powerHrsRequiredPerMillisol = process.getPowerRequired() * MarsClock.HOURS_PER_MILLISOL;
 		double powerValue = powerHrsRequiredPerMillisol * settlement.getPowerGrid().getPowerValue();
 
 		return outputsValue - inputsValue - powerValue;

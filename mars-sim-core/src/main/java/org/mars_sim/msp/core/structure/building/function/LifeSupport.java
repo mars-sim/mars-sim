@@ -134,8 +134,8 @@ public class LifeSupport extends Function implements Serializable {
 
 		// Subtract power usage cost per sol.
 		double power = config.getLifeSupportPowerRequirement(buildingName);
-		double hoursInSol = MarsClock.convertMillisolsToSeconds(1000D) / 60D / 60D;
-		double powerPerSol = power * hoursInSol;
+//		double hoursInSol = MarsClock.convertMillisolsToSeconds(1000D) / 60D / 60D;
+		double powerPerSol = power * MarsClock.HOURS_PER_MILLISOL * 1000D;
 		double powerValue = powerPerSol * settlement.getPowerGrid().getPowerValue() / 1000D;
 		result -= powerValue;
 

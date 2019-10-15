@@ -739,7 +739,8 @@ public class UnitManager implements Serializable {
 			unitName = SETTLEMENT_NAME;
 
 		} else if (unitType == UnitType.VEHICLE) {
-			if (baseName != null && baseName.equalsIgnoreCase(LUV)) {
+			if (baseName != null && (baseName.equalsIgnoreCase(LUV)
+					|| baseName.equalsIgnoreCase(LightUtilityVehicle.NAME))) {
 				// for LUVs 
 				String tagID = "";
 				int number = 1;
