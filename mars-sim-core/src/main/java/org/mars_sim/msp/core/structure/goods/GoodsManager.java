@@ -414,11 +414,11 @@ public class GoodsManager implements Serializable {
 				// Save the newValue in the goodsValues map
 				goodsValues.put(good, newValue);
 				
-				logger.info(good.getName() + " +ve oldDelta : " + Math.round(oldDelta*1000.0)/1000.0
-						+ "   newDelta : " + Math.round(newDelta*1000.0)/1000.0	
-						+ "   oldValue : " + Math.round(oldValue*1000.0)/1000.0
-						+ "   newValue : " + Math.round(newValue*1000.0)/1000.0
-						);
+//				logger.info(good.getName() + " +ve oldDelta : " + Math.round(oldDelta*1000.0)/1000.0
+//						+ "   newDelta : " + Math.round(newDelta*1000.0)/1000.0	
+//						+ "   oldValue : " + Math.round(oldValue*1000.0)/1000.0
+//						+ "   newValue : " + Math.round(newValue*1000.0)/1000.0
+//						);
 				
 			} 
 			else if (oldDelta < 0) {
@@ -441,11 +441,11 @@ public class GoodsManager implements Serializable {
 				// Save the newValue in the goodsValues map
 				goodsValues.put(good, newValue);
 				
-				logger.info(good.getName() + " -ve oldDelta : " + Math.round(oldDelta*1000.0)/1000.0
-						+ "   newDelta : " + Math.round(newDelta*1000.0)/1000.0	
-						+ "   oldValue : " + Math.round(oldValue*1000.0)/1000.0
-						+ "   newValue : " + Math.round(newValue*1000.0)/1000.0
-						);
+//				logger.info(good.getName() + " -ve oldDelta : " + Math.round(oldDelta*1000.0)/1000.0
+//						+ "   newDelta : " + Math.round(newDelta*1000.0)/1000.0	
+//						+ "   oldValue : " + Math.round(oldValue*1000.0)/1000.0
+//						+ "   newValue : " + Math.round(newValue*1000.0)/1000.0
+//						);
 			}
 		}
 	}

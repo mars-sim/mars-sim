@@ -87,6 +87,7 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 	private List<SettlementMapLayer> mapLayers;
 	private Map<Settlement, Person> selectedPerson;
 	private Map<Settlement, Robot> selectedRobot;
+	private Map<Settlement, Building> selectedBuilding;
 
 	private static Simulation sim;
 	private static UnitManager unitManager;
@@ -133,6 +134,7 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 		showVehicleLabels = false;
 		showRobotLabels = false;
 		showDaylightLayer = false; // turn off by default
+		selectedBuilding = new HashMap<Settlement, Building>();
 		selectedPerson = new HashMap<Settlement, Person>();
 		selectedRobot = new HashMap<Settlement, Robot>();
 	}
@@ -233,12 +235,27 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 					moveCenter(xDiff, yDiff);
 					xLast = evt.getX();
 					yLast = evt.getY();
-				}
-//			}
+//				}
+			}
+			
+			@Override
+			public void mouseMoved(MouseEvent evt) {
+				int x = evt.getX();
+				int y = evt.getY();
+				
+				// Display building (x, y) coordinate of the mouse pointer within a building on the status bar
+				showBuildingCoord(x, y); 
+				
+				// Display the coordinate (with a reference to the settlement map) on the status bar
+				// Note: the top left most corner is (0,0)
+				settlementWindow.setMapXYCoord(x, y);
+			}
+
 			
 		});
 		
 		addMouseListener(new MouseAdapter() {
+				
 			@Override
 			public void mousePressed(MouseEvent evt) {
 				
@@ -247,12 +264,8 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 				
 					// Set initial mouse drag position.
 					xLast = evt.getX();
-					yLast = evt.getY();
-					
-					// Display the settlement's (x, y) coordinate of the mouse pointer on the status bar
-					settlementWindow.setMapXYCoord(xLast, yLast);
-//				}
-					
+					yLast = evt.getY();		
+//				}				
 			}
 
 			@Override
@@ -282,6 +295,72 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 		});
 	}
 
+	/**
+	 * Displays the specific x y coordinates within a building
+	 * (based upon where the mouse is pointing at)
+	 * 
+	 * @param xPixel the x pixel position on the displayed map.
+	 * @param yPixel the y pixel position on the displayed map.
+	 */
+	public void showBuildingCoord(int xPixel, int yPixel) {
+		Point.Double clickPosition = convertToSettlementLocation(xPixel, yPixel);
+
+		Iterator<Building> j = settlement.getBuildingManager().getBuildings().iterator();
+		while (j.hasNext()) {
+			Building building = j.next();
+
+			if (!building.getInTransport()) {
+
+				double width = building.getWidth();
+				double length = building.getLength();
+				int facing = (int) building.getFacing();
+				double x = building.getXLocation();
+				double y = building.getYLocation();
+				double xx = 0;
+				double yy = 0;
+
+				if (facing == 0) {
+					xx = width / 2D;
+					yy = length / 2D;
+				} else if (facing == 90) {
+					yy = width / 2D;
+					xx = length / 2D;
+				}
+				// Loading Dock Garage
+				if (facing == 180) {
+					xx = width / 2D;
+					yy = length / 2D;
+				} else if (facing == 270) {
+					yy = width / 2D;
+					xx = length / 2D;
+				}
+
+				// Note: Both ERV Base and Starting ERV Base have 45 / 135 deg facing
+				// Fortunately, they both have the same width and length
+				else if (facing == 45) {
+					yy = width / 2D;
+					xx = length / 2D;
+				} else if (facing == 135) {
+					yy = width / 2D;
+					xx = length / 2D;
+				}
+
+				double c_x = clickPosition.getX();
+				double c_y = clickPosition.getY();
+
+				double distanceX = Math.round((c_x - x) * 100.0) / 100.0; // Math.abs(x - c_x);
+				double distanceY = Math.round((c_y - y) * 100.0) / 100.0; // Math.abs(y - c_y);
+
+				if (Math.abs(distanceX) <= xx && Math.abs(distanceY) <= yy) {
+
+					settlementWindow.setBuildingXYCoord(distanceX, distanceY);
+
+					break;
+				}
+			}
+		}
+	}
+	
 	// Add vehicle detection
 	private void doPop(final MouseEvent evt) {
 		// System.out.println("doPop()");
@@ -455,7 +534,7 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 			selectPerson(selectedPerson);
 
 			//// paintDoubleBuffer();
-			// repaint();
+			 repaint();
 		}
 		return selectedPerson;
 	}
@@ -553,8 +632,10 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 				if (Math.abs(distanceX) <= xx && Math.abs(distanceY) <= yy) {
 					selectedBuilding = building;
 
-					settlementWindow.setBuildingXYCoord(distanceX, distanceY);
-
+					if (selectedBuilding != null) {
+						selectBuilding(selectedBuilding);
+					}
+					
 					break;
 				}
 			}
@@ -781,6 +862,35 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 		return result;
 	}
 
+	/**
+	 * Selects a building on the map.
+	 * 
+	 * @param person the selected building.
+	 */
+	public void selectBuilding(Building building) {
+		if ((settlement != null) && (building != null)) {
+			Building currentlySelected = selectedBuilding.get(settlement);
+			if (building.equals(currentlySelected)) {
+				selectedBuilding.put(settlement, null);
+			} else {
+				selectedBuilding.put(settlement, building);
+			}
+		}
+	}
+	
+	/**
+	 * Get the selected building for the current settlement.
+	 * 
+	 * @return the selected building.
+	 */
+	public Building getSelectedBuilding() {
+		Building result = null;
+		if (settlement != null) {
+			result = selectedBuilding.get(settlement);
+		}
+		return result;
+	}
+	
 	/**
 	 * Selects a robot on the map.
 	 * 
@@ -1045,7 +1155,7 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 
 	@Override
 	public void uiPulse(double time) {
-		if (desktop.isToolWindowOpen(SettlementWindow.NAME)) {
+		if (isShowing() && desktop.isToolWindowOpen(SettlementWindow.NAME)) {
 			repaint();
 		}
 	}

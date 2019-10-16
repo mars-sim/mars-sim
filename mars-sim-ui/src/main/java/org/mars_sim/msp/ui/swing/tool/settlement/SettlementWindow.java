@@ -9,6 +9,7 @@ package org.mars_sim.msp.ui.swing.tool.settlement;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.util.Formatter;
 
 import javax.swing.JLabel;
 import javax.swing.JLayer;
@@ -43,9 +44,12 @@ public class SettlementWindow extends ToolWindow {
 	public static final String SOL = " Sol : ";
 	public static final String POPULATION = "  Population : ";
 	public static final String CAP = "  Capacity : ";
-	public static final String POINTER = "\t\t\tPointer at (";
+	public static final String WHITESPACES_2 = "  ";
 	public static final String COMMA = ", ";
-	public static final String CLOSE_PARENT = ")";
+	public static final String CLOSE_PARENT = ")  ";
+	public static final String WITHIN_BLDG = "  Within Building : (";
+	public static final String SETTLEMENT_MAP = "  Settlement Map : (";
+
 
 	// public static final String MILLISOLS_UMST = " millisols (UMST) ";
 
@@ -67,6 +71,7 @@ public class SettlementWindow extends ToolWindow {
 	private MainDesktopPane desktop;
 	/** Map panel. */
 	private SettlementMapPanel mapPanel;
+
 	/** static MarsClock instance. */
 	private static MarsClock marsClock;
 
@@ -79,7 +84,7 @@ public class SettlementWindow extends ToolWindow {
 		// Use ToolWindow constructor
 		super(NAME, desktop);
 		this.desktop = desktop;
-
+		
 		if (marsClock == null)
 			marsClock = Simulation.instance().getMasterClock().getMarsClock();
 
@@ -164,16 +169,24 @@ public class SettlementWindow extends ToolWindow {
 		return desktop;
 	}
 
+	public String format(double x, double y) {
+		return String.format("%6.2f,%6.2f", x, y);
+	}
+	
 	public void setBuildingXYCoord(double x, double y) {
-		buildingXYLabel.setText("  Within Building : (" + Math.round(x*100.0)/100.0 + ", " + Math.round(y*100.0)/100.0 + ")  ");
+		StringBuilder sb = new StringBuilder();
+		sb.append(WITHIN_BLDG).append(format(x, y)).append(CLOSE_PARENT);
+		buildingXYLabel.setText(sb.toString());
 	}
 
 	public void setMapXYCoord(double x, double y) {
-		mapXYLabel.setText("  Map : (" + Math.round(x*100.0)/100.0 + ", " + Math.round(y*100.0)/100.0 + ")  ");
+		StringBuilder sb = new StringBuilder();
+		sb.append(SETTLEMENT_MAP).append(format(x, y)).append(CLOSE_PARENT);
+		mapXYLabel.setText(sb.toString());
 	}
 	
 	public void setPop(int pop) {
-        popLabel.setText("  Population : " + pop + "  ");	
+        popLabel.setText(POPULATION + pop + WHITESPACES_2);	
 	}
 	
 	@Override

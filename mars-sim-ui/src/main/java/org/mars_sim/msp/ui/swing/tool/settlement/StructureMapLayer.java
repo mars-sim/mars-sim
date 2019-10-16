@@ -37,6 +37,9 @@ public class StructureMapLayer implements SettlementMapLayer {
 
     // Static members
     private static final Color BUILDING_COLOR = Color.GREEN;
+    
+    private static final Color SELECTED_BUILDING_BORDER_COLOR = Color.WHITE;//new Color(119, 85, 0); // dark orange
+    
     private static final Color CONSTRUCTION_SITE_COLOR = new Color(119, 59, 0); // dark orange
     private static final Color SELECTED_CONSTRUCTION_SITE_COLOR = new Color(119, 85, 0); // dark orange
     
@@ -45,10 +48,20 @@ public class StructureMapLayer implements SettlementMapLayer {
 
     private static final Color SITE_BORDER_COLOR = Color.BLACK;
     private final static float dash[] = { 1.0f };
+    
     private final static BasicStroke dashed = new BasicStroke(0.2f,
     	      BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 5.0f, dash, 0.0f);
     
+
+//    private final static BasicStroke THICK_DASHES = new BasicStroke(3, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{5}, 0);
+    
+    private final static BasicStroke THICK_DASHES = new BasicStroke(2f,
+  	      BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 5.0f, dash, 0.0f);
+ 
+    
     // Data members
+    private boolean selected = false;
+    
     private double scale;
     private SettlementMapPanel mapPanel;
     private Map<Double, Map<BuildingKey, BufferedImage>> svgImageCache;
@@ -185,6 +198,12 @@ public class StructureMapLayer implements SettlementMapLayer {
      */
     public void drawBuilding(Building building, Graphics2D g2d) {
 
+    	// Check if it's drawing the mouse-picked building 
+    	if (building.equals(mapPanel.getSelectedBuilding()))
+   			selected = true;
+    	else
+    		selected = false;
+    	
         // Use SVG image for building if available.
 		// 2014-10-29 : Need to STAY getName() or getBuildingType(), NOT changing to getNickName()
     	// or else svg for the building won't load up
@@ -439,20 +458,25 @@ public class StructureMapLayer implements SettlementMapLayer {
         double translationY = (-1D * yLoc * scale) - centerY - boundsPosY;
         double facingRadian = facing / 180D * Math.PI;
 
-        // Apply graphic transforms for structure.
         AffineTransform newTransform = new AffineTransform();
+        AffineTransform newTransform1 = new AffineTransform();
+        
+        // Apply graphic transforms for structure.		
         newTransform.translate(translationX, translationY);
         newTransform.rotate(facingRadian, centerX + boundsPosX, centerY + boundsPosY);
-
+    
         if (isSVG) {
             // Draw buffered image of structure.
             BufferedImage image = getBufferedImage(svg, width, length, patternSVG);
             if (image != null) {
                 g2d.transform(newTransform);
                 
-                if (mapPanel != null)
+                if (mapPanel != null) {
+                	
                 	g2d.drawImage(image, 0, 0, mapPanel);
-                
+                	
+                 
+                }
             }
         }
         else {
@@ -472,9 +496,22 @@ public class StructureMapLayer implements SettlementMapLayer {
                 Stroke oldStroke = g2d.getStroke();
                 g2d.setStroke(oldStroke);
         	}
-              
         }
 
+        if (selected) {
+	
+        	newTransform1.scale(scalingWidth, scalingLength);
+            g2d.transform(newTransform1);
+         
+            Stroke oldStroke = g2d.getStroke();
+			// Draw the dashed border over the selected building
+			g2d.setPaint(SELECTED_BUILDING_BORDER_COLOR);
+			g2d.setStroke(THICK_DASHES);                                           
+			g2d.draw(bounds);
+			// Restore the stroke
+			g2d.setStroke(oldStroke);
+        }
+        
         // Restore original graphic transforms.
         g2d.setTransform(saveTransform);
     }
@@ -630,6 +667,10 @@ public class StructureMapLayer implements SettlementMapLayer {
         return bufferedImage;
     }
 
+    public void setSelected(boolean value) {
+    	selected = value;
+    }
+    
     @Override
     public void destroy() {
         // Clear all buffered image caches.

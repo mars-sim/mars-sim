@@ -1790,16 +1790,6 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		</outputs>
 	</process>
 	
-	<process name="create small vehicle frame" tech="3" skill="3" work-time="550" process-time="550"
-			power-required="10.0">
-		<inputs>
-			<part name="steel ingot" number="50" />
-		</inputs>
-		<outputs>
-			<part name="small vehicle frame" number="1" />
-		</outputs>
-	</process>
-
 	<!-- Small wheels are made with steel and steel wire. -->
 	<process name="make small wheels" tech="2" skill="2" work-time="100" process-time="200"
 			power-required=".5">
@@ -1825,8 +1815,18 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		</outputs>
 	</process>
 
-	<process name="create large vehicle frame" tech="1" skill="2" work-time="500" process-time="50"
-			power-required="1">
+	<process name="create small vehicle frame" tech="2" skill="3" work-time="550" process-time="550"
+			power-required="3.0">
+		<inputs>
+			<part name="steel ingot" number="30" />
+		</inputs>
+		<outputs>
+			<part name="small vehicle frame" number="1" />
+		</outputs>
+	</process>
+
+	<process name="create large vehicle frame" tech="2" skill="3" work-time="700" process-time="700"
+			power-required="5.0">
 		<inputs>
 			<part name="steel ingot" number="50" />
 		</inputs>
@@ -2146,6 +2146,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			power-required="4.0">
 		<inputs>
 			<part name="large vehicle frame" number="1" />
+			
 			<part name="rover chassis panel" number="10" />
 			<part name="rover windshield" number="1" />
 			<part name="rover window" number="5" />

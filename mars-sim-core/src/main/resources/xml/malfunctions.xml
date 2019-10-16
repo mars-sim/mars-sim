@@ -189,8 +189,8 @@
 			<medical-complaint name="Burns" probability="5.0" />
 		</medical-complaint-list>
 		<repair-parts-list>
-			<part name="fire extinguisher" number="2" probability="35" />		
-			<part name="gas tank" number="1" probability="5" />
+			<part name="fire extinguisher" number="2" probability="45" />		
+			<part name="gas tank" number="1" probability="25" />
 			<part name="aluminum sheet" number="1" probability="10" />
 			<part name="plastic sheet" number="1" probability="5" />
 			<part name="fiberglass" number="1" probability="5" />

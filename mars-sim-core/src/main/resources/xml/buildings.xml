@@ -210,8 +210,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<!-- The building has exercise facilities. -->
 			<exercise capacity="1">
 				<activity>
-					<activity-spot xloc="2.74" yloc=".91" />
-					<activity-spot xloc="2.6" yloc="-.04" />
+					<activity-spot xloc="2.93" yloc="1.07" />
+					<activity-spot xloc="2.55" yloc="0.73" />
 				</activity>
 			</exercise>
 

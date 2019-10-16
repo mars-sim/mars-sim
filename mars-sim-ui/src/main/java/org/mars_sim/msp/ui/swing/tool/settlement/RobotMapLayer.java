@@ -30,6 +30,13 @@ public class RobotMapLayer implements SettlementMapLayer {
 	private static final Color SELECTED_OUTLINE_COLOR = LabelMapLayer.SELECTED_ROBOT_LABEL_OUTLINE_COLOR;//.new Color(0, 0, 0, 190);
 
 	// Data members
+//	private int size = 1;
+	
+	private double circleDiameter = 10D;
+	private double centerX = circleDiameter / 2D;
+	private double centerY = circleDiameter / 2D;
+
+	
 	private SettlementMapPanel mapPanel;
 
 	/**
@@ -137,10 +144,6 @@ public class RobotMapLayer implements SettlementMapLayer {
 			// Save original graphics transforms.
 			AffineTransform saveTransform = g2d.getTransform();
 
-			double circleDiameter = 10D;
-			double centerX = circleDiameter / 2D;
-			double centerY = circleDiameter / 2D;
-
 			double translationX = (-1D * robot.getXLocation() * scale - centerX);
 			double translationY = (-1D * robot.getYLocation() * scale - centerY);
 
@@ -161,7 +164,7 @@ public class RobotMapLayer implements SettlementMapLayer {
 
 			int size = 1;
 			if (scale > 0)
-				size = (int)(size * scale/2.5);
+				size = (int)(size * scale/4.5);
 			else if (scale <= 0)
 				size = 1;
 			
@@ -175,6 +178,6 @@ public class RobotMapLayer implements SettlementMapLayer {
 
 	@Override
 	public void destroy() {
-		// Do nothing
+		mapPanel = null;
 	}
 }
