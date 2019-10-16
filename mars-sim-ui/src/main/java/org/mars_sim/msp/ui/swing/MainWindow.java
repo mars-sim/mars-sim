@@ -87,7 +87,8 @@ extends JComponent {
 //	private static final String themeSkin = "nimrod";
 	private static final String WHITESPACES = "   ";
 	
-	private static final int TIME_DELAY = 960;
+	/** The timer for update the status bar labels. */
+	private static final int TIME_DELAY = 2_000;
 
 	public enum ThemeType {
 		SYSTEM, NIMBUS, NIMROD, WEBLAF, METAL
@@ -140,7 +141,8 @@ extends JComponent {
 	private int memFree;
 
 	private static Simulation sim = Simulation.instance();
-	private static MasterClock masterClock;// = sim.getMasterClock();
+	// Warning: can't create the following instances at the start of the sim or else MainWindow won't load
+	private static MasterClock masterClock;// = sim.getMasterClock(); 
 	private static EarthClock earthClock;// = masterClock.getEarthClock();
 	private static MarsClock marsClock;// = masterClock.getMarsClock();
 
@@ -395,9 +397,8 @@ extends JComponent {
 					marsClock = masterClock.getMarsClock();
 				}
 
-				earthTimeLabel.setText(WHITESPACES + earthClock.getTimeStampF1() + WHITESPACES);
-
-				marsTimeLabel.setText(WHITESPACES + marsClock.getTrucatedDateTimeStamp()+ WHITESPACES);
+				// Increment both the earth and mars clocks
+				incrementClocks();
 				
 				int memFree = (int) Math.round(Runtime.getRuntime().freeMemory()) / 1_000_000;
 				int memTotal = (int) Math.round(Runtime.getRuntime().totalMemory()) / 1_000_000;
@@ -913,6 +914,16 @@ extends JComponent {
 	
 	public WebPanel getMainPane() {
 		return mainPane;
+	}
+	
+	/**
+	 * Increment the label of both the earth and mars clocks
+	 */
+	public void incrementClocks() {
+		if (earthTimeLabel != null && earthClock != null)
+			earthTimeLabel.setText(WHITESPACES + earthClock.getTimeStampF1() + WHITESPACES);
+		if (marsTimeLabel != null && marsClock != null)
+			marsTimeLabel.setText(WHITESPACES + marsClock.getTrucatedDateTimeStamp()+ WHITESPACES);
 	}
 	
 	/**

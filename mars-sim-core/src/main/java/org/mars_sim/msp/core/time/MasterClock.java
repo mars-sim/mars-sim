@@ -700,7 +700,7 @@ public class MasterClock implements Serializable {
 					
 					// Call addTime() to increment time in EarthClock and MarsClock
 					addTime();
-
+		
 					// Gets t2 after a time pulse has been sent to EarthClock and MarsClock
 					t2 = System.nanoTime();
 					
@@ -863,7 +863,7 @@ public class MasterClock implements Serializable {
 //			logger.config("millis : " + millis + "     currentTR : " + currentTR);
 
 			// The time elapsed for the EarthClock
-			double earthMillis = millis * currentTR;
+			int earthMillis = (int) (millis * currentTR);
 			// Get the time pulse length in millisols.
 			double timePulse = earthMillis / MILLISECONDS_PER_MILLISOL;
 
@@ -881,9 +881,13 @@ public class MasterClock implements Serializable {
 					&& !clockExecutor.isTerminated()
 					&& !clockExecutor.isShutdown()) {	
 					
-					// Add time pulse length to Earth and Mars clocks.
+					// Add time to the Earth clock.
 					earthClock.addTime(earthMillis);
+					
+					// Add time pulse to Mars clock.
 					marsClock.addTime(timePulse);
+					
+					// Run the clock listener tasks that are in other package
 					fireClockPulse(timePulse);
 					
 					millisols += timePulse;
@@ -1310,7 +1314,7 @@ public class MasterClock implements Serializable {
 //						&& !clockExecutor.isTerminating()
 						&& !clockExecutor.isShutdown()) {
 					// Add time pulse length to Earth and Mars clocks.
-					earthClock.addTime(1000D * t);
+					earthClock.addTime((int)(1000 * t));
 					marsClock.addTime(timePulse);
 					fireClockPulse(timePulse);
 				}

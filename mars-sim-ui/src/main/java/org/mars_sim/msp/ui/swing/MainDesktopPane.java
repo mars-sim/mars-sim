@@ -1383,13 +1383,18 @@ public class MainDesktopPane extends JDesktopPane
 
 	@Override
 	public void clockPulse(double time) {
-		// TODO Auto-generated method stub
+		if (time > 0 && mainWindow.isShowing()) {
+			// Increments the Earth and Mars clock labels.
+			mainWindow.incrementClocks();
+		}
 	}
 
 	@Override
 	public void uiPulse(double time) {
 //		SwingUtilities.invokeLater(() -> super.updateUI());
-		updateWindows();
+		if (time > 0 && mainWindow.isShowing()) {
+			updateWindows();
+		}
 	}
 
 	@Override

@@ -39,6 +39,8 @@ public class EarthClock implements Serializable {
 	 */
 	private static long millisAtStart;
 
+	private double leftoverCache;
+	
 	private GregorianCalendar gregCal;
 
 	private SimpleDateFormat f0;
@@ -301,10 +303,34 @@ public class EarthClock implements Serializable {
 	/**
 	 * Adds time to the calendar
 	 * 
-	 * @param ms milliseconds added to the calendar
+	 * @param milliseconds the time to be added to the calendar
 	 */
-	public void addTime(double ms) {
-		gregCal.add(Calendar.MILLISECOND, (int) (Math.round(ms)));
+	public void addTime(int milliseconds) {
+		gregCal.add(Calendar.MILLISECOND, milliseconds);
+		
+//		int trucated = 0;
+//		if (milliseconds < 1) {
+//			
+//		}
+//		else {
+//			trucated = (int) (milliseconds);
+//		}
+//		
+//		double delta = milliseconds - trucated;
+//		if (leftoverCache + delta > 1) {
+//			trucated++;
+//			leftoverCache = leftoverCache + delta - 1;
+//		}
+//		else {
+//			leftoverCache += delta;
+//		}
+//		System.out.println("leftoverCache : " + leftoverCache 
+//				+ "    delta : " + delta 
+//				+ "    milliseconds : " + Math.round(milliseconds*100.0)/100.0 
+//				+ "    trucated : " + trucated);
+//
+//		gregCal.add(Calendar.MILLISECOND, trucated);
+		
 	}
 
 	/**

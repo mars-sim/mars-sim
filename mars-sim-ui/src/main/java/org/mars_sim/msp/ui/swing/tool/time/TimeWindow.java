@@ -37,6 +37,7 @@ import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.time.UpTimer;
 import org.mars_sim.msp.ui.swing.JSliderMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.MainWindow;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
 
@@ -108,8 +109,8 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	private JSliderMW pulseSlider;
 	/** button for pause. */
 	private WebButton pauseButton;
-	/** MainScene instance . */
-//	private MainScene mainScene;
+	/** MainWindow instance . */
+	private MainWindow mainWindow;
 
 	private DecimalFormat formatter = new DecimalFormat(Msg.getString("TimeWindow.decimalFormat")); //$NON-NLS-1$
 
@@ -121,7 +122,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	public TimeWindow(final MainDesktopPane desktop) {
 		// Use TimeWindow constructor
 		super(NAME, desktop);
-//		mainScene = desktop.getMainScene();
+		mainWindow = desktop.getMainWindow();
 
 		// new ClockTool();
 
@@ -554,7 +555,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 
 	@Override
 	public void clockPulse(double time) {
-		if (desktop.isToolWindowOpen(TimeWindow.NAME)) {
+		if (mainWindow.isShowing() && desktop.isToolWindowOpen(TimeWindow.NAME)) {
 			// update the fast labels
 			updateFastLabels();
 		}
@@ -562,7 +563,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 
 	@Override
 	public void uiPulse(double time) {
-		if (desktop.isToolWindowOpen(TimeWindow.NAME)) {
+		if (mainWindow.isShowing() && desktop.isToolWindowOpen(TimeWindow.NAME)) {
 			// update the slow labels
 			updateSlowLabels();
 			// Update the slider based on the latest time ratio
