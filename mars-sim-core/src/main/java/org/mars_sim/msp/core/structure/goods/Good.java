@@ -51,10 +51,9 @@ public class Good implements Serializable, Comparable<Good> {
 	private double skill;
 	private double tech;
 	
+	private double goodValueBuffer;
 	private double modifier;
-	
 	private double goodValue;
-	
 	private double costOutput;
 	
 	private GoodType category;
@@ -249,6 +248,14 @@ public class Good implements Serializable, Comparable<Good> {
 	
 	public double getGoodValue() {
 		return goodValue;
+	}
+	
+	public void setGoodValueBuffer(double value) {
+		goodValueBuffer = value;
+	}
+	
+	public double getGoodValueBuffer() {
+		return goodValueBuffer;
 	}
 	
 	/**

@@ -107,6 +107,8 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 
 	private static String DETECTOR_GRID = "] The detector grid forecast a ";
 
+	public static final int CHECK_GOODS = 5;
+	
 	public static final int CHECK_MISSION = 20; // once every 10 millisols
 
 	public static final int MAX_NUM_SOLS = 3;
@@ -1280,10 +1282,17 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 			// Reduce the recurrent passing score daily to its 90% value
 			minimumPassingScore = minimumPassingScore * .9;
 			
-			// Updates the goodsManager randomly 4 times per sol .
+			// Updates the goods manager 
 			updateGoodsManager(time);
 
-			int remainder = millisols % (int) (1.0 * CHECK_MISSION / time);
+			int remainder = millisols % (int) (1.0 * CHECK_GOODS / time);
+			if (remainder == 0) {
+				// Update the goods value gradually with the use of buffers
+				if (goodsManager.isInitialized()) 
+					goodsManager.updateGoodsValueBuffers(time);
+			}
+			
+			remainder = millisols % (int) (1.0 * CHECK_MISSION / time);
 			if (remainder == 0) {
 				// Reset the mission probability back to 1
 				missionProbability = -1;

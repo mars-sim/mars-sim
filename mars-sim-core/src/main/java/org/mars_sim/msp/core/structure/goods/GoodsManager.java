@@ -269,7 +269,7 @@ public class GoodsManager implements Serializable {
 		Iterator<Good> i = goods.iterator();
 		while (i.hasNext()) {
 			Good good = i.next();
-			goodsValues.put(good, 1D);
+			goodsValues.put(good, 0D);
 			goodsDemandCache.put(good, 1D);
 			goodsTradeCache.put(good, 1D);
 		}
@@ -377,6 +377,78 @@ public class GoodsManager implements Serializable {
 	public void timePassing(double time) {
 		updateGoodsValues();
 	}
+	
+	/**
+	 * Update the goods value from buffers
+	 * 
+	 * @param time
+	 */
+	public void updateGoodsValueBuffers(double time) {
+		// Use buffer to gradually update 
+		for (Good good : goodsValues.keySet()) {
+			// Load the old good value
+			double oldValue = good.getGoodValue(); //goodsValues.get(good); //
+			// Gets the old delta
+			double oldDelta = good.getGoodValueBuffer();
+
+			double newValue = 0;
+			
+			double newDelta = 0;
+			
+			if (oldDelta > 0) {
+				
+				if (oldDelta > time) {
+					newValue = oldValue + time;
+					newDelta = oldDelta - time;
+				}
+				else {
+					newValue = oldValue + oldDelta;
+					newDelta = 0;
+				}
+				// Add the good value of its input good
+//				value += good.computeInputValue();
+				// Save the newDelta in the good's buffer
+				good.setGoodValueBuffer(newDelta);
+				// Save the newValue in the good
+				good.setGoodValue(newValue);
+				// Save the newValue in the goodsValues map
+				goodsValues.put(good, newValue);
+				
+				logger.info(good.getName() + " +ve oldDelta : " + Math.round(oldDelta*1000.0)/1000.0
+						+ "   newDelta : " + Math.round(newDelta*1000.0)/1000.0	
+						+ "   oldValue : " + Math.round(oldValue*1000.0)/1000.0
+						+ "   newValue : " + Math.round(newValue*1000.0)/1000.0
+						);
+				
+			} 
+			else if (oldDelta < 0) {
+				
+				if (-oldDelta > time) {
+					newValue = oldValue - time;
+					newDelta = oldDelta + time;
+				}
+				else {
+					newValue = oldValue + oldDelta;
+					newDelta = 0;
+				}
+				
+				// Add the good value of its input good
+//				value += good.computeInputValue();
+				// Save the newDelta in the good's buffer
+				good.setGoodValueBuffer(newDelta);
+				// Save the newValue in the good
+				good.setGoodValue(newValue);
+				// Save the newValue in the goodsValues map
+				goodsValues.put(good, newValue);
+				
+				logger.info(good.getName() + " -ve oldDelta : " + Math.round(oldDelta*1000.0)/1000.0
+						+ "   newDelta : " + Math.round(newDelta*1000.0)/1000.0	
+						+ "   oldValue : " + Math.round(oldValue*1000.0)/1000.0
+						+ "   newValue : " + Math.round(newValue*1000.0)/1000.0
+						);
+			}
+		}
+	}
 
 	/**
 	 * Updates the values for all the goods at the settlement.
@@ -407,13 +479,38 @@ public class GoodsManager implements Serializable {
 	 */
 	public void updateGoodValue(Good good, boolean collectiveUpdate) {
 		if (good != null) {
-			double value = determineGoodValue(good, getNumberOfGoodForSettlement(good), false);
-			// Add the good value of its input good
-//			value += good.computeInputValue();
-			// Save it in the good
-			good.setGoodValue(value);
-			// Save it in the goodsValues map
-			goodsValues.put(good, value);
+			
+			if (initialized) {
+				// Load the old good value
+				double oldValue = good.getGoodValue(); //goodsValues.get(good); // 
+				// Compute the new good value
+				double newValue = determineGoodValue(good, getNumberOfGoodForSettlement(good), false);
+//				// Gets the old delta
+//				double oldDelta = good.getGoodValueBuffer();
+//				// Compute the new delta
+//				double delta = oldDelta + newValue - oldValue;
+				// Compute the new delta
+				double newDelta = newValue - oldValue;
+				// Add the good value of its input good
+//				value += good.computeInputValue();
+				// Save the newDelta in the good's buffer
+				good.setGoodValueBuffer(newDelta);
+				
+//				if (delta > 0) logger.info(good.getName() + " - delta : " + Math.round(delta*1000.0)/1000.0);
+				// Save it in the good
+//				good.setGoodValue(newValue);
+				// Save it in the goodsValues map
+//				goodsValues.put(good, newValue);
+			}
+			else {
+				// Compute the new good value
+				double newValue = determineGoodValue(good, getNumberOfGoodForSettlement(good), false);
+				// Save it in the good
+				good.setGoodValue(newValue);
+				// Save it in the goodsValues map
+				goodsValues.put(good, newValue);
+			}
+			
 			if (!collectiveUpdate)
 				settlement.fireUnitUpdate(UnitEventType.GOODS_VALUE_EVENT, good);
 		} else
