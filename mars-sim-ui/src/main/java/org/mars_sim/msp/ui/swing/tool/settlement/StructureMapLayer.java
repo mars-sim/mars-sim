@@ -471,11 +471,8 @@ public class StructureMapLayer implements SettlementMapLayer {
             if (image != null) {
                 g2d.transform(newTransform);
                 
-                if (mapPanel != null) {
-                	
-                	g2d.drawImage(image, 0, 0, mapPanel);
-                	
-                 
+                if (mapPanel != null) {              	
+                	g2d.drawImage(image, 0, 0, mapPanel);      
                 }
             }
         }

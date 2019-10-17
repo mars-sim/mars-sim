@@ -17,14 +17,12 @@ import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
-import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.taskUtil.Task;
 import org.mars_sim.msp.core.person.ai.taskUtil.TaskPhase;
@@ -316,8 +314,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 
 		List<Mission> result = new ArrayList<Mission>();
 
-		MissionManager manager = Simulation.instance().getMissionManager();
-		Iterator<Mission> i = manager.getMissions().iterator();
+		Iterator<Mission> i = missionManager.getMissions().iterator();
 		while (i.hasNext()) {
 			Mission mission = (Mission) i.next();
 			if (mission instanceof VehicleMission) {

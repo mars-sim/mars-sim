@@ -22,7 +22,6 @@ import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
-import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
@@ -238,26 +237,32 @@ public abstract class Mission implements Serializable {
 
 			// Log mission starting.
 			int n = members.size();
-			String str = "";
+			String appendStr = "";
 			if (n == 0)
-				str = ".";
+				appendStr = ".";
 			else if (n == 1)
-				str = "' with 1 other.";
+				appendStr = "' with 1 other.";
 			else
-				str = "' with " + n + " others.";
+				appendStr = "' with " + n + " others.";
 			
 			String article = "a ";
 					
+			String missionStr = missionName;
+			
+			if (!missionStr.toLowerCase().contains("mission"))
+				missionStr = missionName + " mission";
+				
 			if(Conversion.isVowel(missionName))
 				article = "an ";
 
-			LogConsolidated.log(Level.INFO, 1000, sourceName, "[" + person.getSettlement() + "] "
-					+ startingMember.getName() + " was trying to organize " + article + missionName + " mission" + str);
+			LogConsolidated.log(Level.INFO, 0, sourceName, "[" + person.getSettlement() + "] "
+					+ startingMember.getName() + " began organizing " + article + missionStr + appendStr);
 
 			// Add starting member to mission.
-			// Temporarily set the shift type to none during the mission
 			startingMember.setMission(this);
 
+			// Note: do NOT set his shift to ON_CALL yet.
+			// let the mission lead have more sleep before departing
 //			if (startingMember instanceof Person)
 //				startingMember.setShiftType(ShiftType.ON_CALL);
 
@@ -813,7 +818,7 @@ public abstract class Mission implements Serializable {
 	 * 
 	 * @param reason
 	 */
-	public void addMissionScore() {//String reason) {
+	public void addMissionScore() {
 		if (haveMissionStatus(MissionStatus.MISSION_ACCOMPLISHED)) {
 			for (MissionMember member : members) {
 				if (member instanceof Person) {
@@ -1402,6 +1407,7 @@ public abstract class Mission implements Serializable {
 		
 		else if (plan != null) {
 			if (plan.getStatus() == PlanType.NOT_APPROVED) {
+				logger.info(this + " was not approved.");
 				addMissionStatus(MissionStatus.MISSION_NOT_APPROVED);
 				endMission();
 			}
@@ -1519,10 +1525,16 @@ public abstract class Mission implements Serializable {
 	 * @param status
 	 */
 	public void addMissionStatus(MissionStatus status) {
-		if (!missionStatus.contains(status))
+		if (!missionStatus.contains(status)) {
 			missionStatus.add(status);
+			LogConsolidated.log(Level.INFO, 0, sourceName, "[" + startingMember.getSettlement() + "] "
+					+ startingMember.getName() + "'s "
+					+ this + " was just being tagged with '" + status.getName() + "'.");
+		}
 		else
-			logger.info(this + " has already been tagged with '" + status.getName() + "'");
+			LogConsolidated.log(Level.WARNING, 0, sourceName, "[" + startingMember.getSettlement() + "] "
+					+ startingMember.getName() + "'s "
+					+ this + " has already been tagged with '" + status.getName() + "'");
 	}
 	
 	/**

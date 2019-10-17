@@ -1106,7 +1106,7 @@ public class Farming extends Function implements Serializable {
 		boolean hasIt = lab.hasTissueCulture(tissueName);
 		if (!hasIt) {
 			lab.markChecked(tissueName);
-
+			// TODO: ask trader to barter the tissue culture from other settlements
 			if (amountAvailable == 0) {
 				// if no tissue culture is available, go extract some tissues from the crop
 				double amount = building.getInventory().getAmountResourceStored(cropID, false);
@@ -1121,11 +1121,11 @@ public class Farming extends Function implements Serializable {
 					if (STANDARD_AMOUNT_TISSUE_CULTURE > 0) {
 						store(STANDARD_AMOUNT_TISSUE_CULTURE, tissueID, sourceName + "::growCropTissue");
 						LogConsolidated.log(Level.INFO, 3_000, sourceName,
-							"[" + building.getSettlement().getName() + "] In a sampling analysis, " + p
+							"[" + building.getSettlement().getName() + "] " + p
 								+ " found no " + cropName + TISSUE_CULTURE
-								+ " in stock. Producing " + STANDARD_AMOUNT_TISSUE_CULTURE
-										+ " kg from " + cropName + " in " + lab.getBuilding().getNickName()
-										+ ".");
+								+ " in stock. Extracted " + STANDARD_AMOUNT_TISSUE_CULTURE
+								+ " kg from " + cropName + " in the botany lab of " + lab.getBuilding().getNickName()
+								+ ".");
 						isDone = true;
 					}
 				}
@@ -1149,9 +1149,10 @@ public class Farming extends Function implements Serializable {
 					if (amountExtracted > 0) {
 						store(amountExtracted, tissueID, sourceName + "::growCropTissue");
 						LogConsolidated.log(Level.INFO, 3_000, sourceName,
-							"[" + building.getSettlement().getName() + "] During sampling analysis, " + p + " cloned and restocked "
+							"[" + building.getSettlement().getName() 
+							+ "] " + p + " cloned "
 							+ Math.round(amountExtracted*1000.0)/1000.0D + " kg "
-							+ cropName + TISSUE_CULTURE + " in "
+							+ cropName + TISSUE_CULTURE + " in the botany lab of "
 							+ lab.getBuilding().getNickName() + ".");
 
 						isDone = true;

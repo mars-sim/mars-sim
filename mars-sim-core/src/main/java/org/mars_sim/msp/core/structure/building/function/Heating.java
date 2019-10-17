@@ -6,21 +6,16 @@
  */
 package org.mars_sim.msp.core.structure.building.function;
 
+import java.io.Serializable;
+import java.util.List;
+import java.util.logging.Logger;
+
 import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.mars.Mars;
-import org.mars_sim.msp.core.mars.SurfaceFeatures;
-import org.mars_sim.msp.core.mars.Weather;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.farming.Crop;
 import org.mars_sim.msp.core.structure.building.function.farming.Farming;
 import org.mars_sim.msp.core.time.MarsClock;
-import org.mars_sim.msp.core.time.MasterClock;
-
-import java.io.Serializable;
-import java.util.List;
-import java.util.logging.Logger;
 
 /**
  * The Heating class is a building function for regulating temperature in a settlement..

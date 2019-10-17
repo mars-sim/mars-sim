@@ -968,8 +968,9 @@ public abstract class RoverMission extends VehicleMission {
 	}
 
 	@Override
-	public void endMission() {//String reason) {
-		super.endMission();//reason);
+	public void endMission() {
+		logger.info(this.getStartingMember() + " ended the " + this);
+		super.endMission();
 	}
 
 	/**

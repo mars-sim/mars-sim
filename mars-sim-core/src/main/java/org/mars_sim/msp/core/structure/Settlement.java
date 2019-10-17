@@ -119,6 +119,8 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 
 	private static final int RESOURCE_UPDATE_FREQ = 50;
 
+	private static final int CHECK_WATER_RATION = 100;
+	
 	private static final int SAMPLING_FREQ = 250; // in millisols
 
 	public static final int NUM_CRITICAL_RESOURCES = 9;
@@ -1285,42 +1287,45 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 			// Updates the goods manager 
 			updateGoodsManager(time);
 
-			int remainder = millisols % (int) (1.0 * CHECK_GOODS / time);
-			if (remainder == 0) {
+			int num = (int) (1.5 * CHECK_GOODS * time);
+			if (num == 0)
+				num = 1;
+			int remainder = millisols % num;
+			if (remainder == 1) {
 				// Update the goods value gradually with the use of buffers
 				if (goodsManager.isInitialized()) 
 					goodsManager.updateGoodsValueBuffers(time);
 			}
 			
-			remainder = millisols % (int) (1.0 * CHECK_MISSION / time);
-			if (remainder == 0) {
+			remainder = millisols % CHECK_MISSION;
+			if (remainder == 1) {
 				// Reset the mission probability back to 1
 				missionProbability = -1;
 				mineralValue = -1;
 			}
 
-			remainder = millisols % (int) (1.0 * SAMPLING_FREQ / time);
-			if (remainder == 0) {
+			remainder = millisols % SAMPLING_FREQ;
+			if (remainder == 1) {
 				// will NOT check for radiation at the exact 1000 millisols in order to balance
 				// the simulation load
 				// take a sample for each critical resource
 				sampleAllResources();
 			}
 
-			remainder = millisols % (int) (100.0 / time);
-			if (remainder == 0) {
+			remainder = millisols % CHECK_WATER_RATION;
+			if (remainder == 1) {
 				// Recompute the water ration level
 				computeWaterRation();
 			}
 
 			// Check every RADIATION_CHECK_FREQ (in millisols)
 			// Compute whether a baseline, GCR, or SEP event has occurred
-			remainder = millisols % (int) (1.0 * RadiationExposure.RADIATION_CHECK_FREQ / time);
+			remainder = millisols % (int) (1.5 * RadiationExposure.RADIATION_CHECK_FREQ * time);
 			if (remainder == 5) {
 				checkRadiationProbability(time);
 			}
 
-			remainder = millisols % (int) (1.0 * RESOURCE_UPDATE_FREQ / time);
+			remainder = millisols % (int) (1.5 * RESOURCE_UPDATE_FREQ * time);
 			if (remainder == 5) {
 				iceProbabilityValue = computeIceProbability();
 			}

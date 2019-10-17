@@ -177,7 +177,7 @@ implements Serializable {
             Building building = person.getBuildingLocation();//BuildingManager.getBuilding(person);
             
             if (building == null) {
-    			LogConsolidated.log(Level.FINER, 0, sourceName,
+    			LogConsolidated.log(Level.WARNING, 0, sourceName,
     					"[" 
     					+ person.getLocationTag().getLocale()
 //    					+ person.getLocationStateType().getName() 
@@ -192,24 +192,28 @@ implements Serializable {
 			LogConsolidated.log(Level.FINER, 0, sourceName,
 					"[" 
 					+ person.getLocationTag().getLocale()
-//					+ person.getLocationStateType().getName() 
 					+ "] " 
-					+ person.getName() +
-                    " is having WalkState.BUILDING_LOC");
+					+ person.getName()
+                    + " (" + person.getLocationStateType().getName() + ")"
+                    + " in " + building
+					+ " (WalkState.BUILDING_LOC)."
+					);
 
+//			// TODO: why is checkLocationWithinLocalBoundedObject() troublesome ?
 //            if (!LocalAreaUtil.checkLocationWithinLocalBoundedObject(person.getXLocation(),
 //                    person.getYLocation(), building)) {
 //
-//    			LogConsolidated.log(Level.SEVERE, 5_000, sourceName, 		
+//    			LogConsolidated.log(Level.WARNING, 0, sourceName, 		
 //// 				throw new IllegalStateException(
 //    					"[" 
-//    					+ person.getLocationTag().getLocale()
-////    					+ person.getLocationStateType().getName() 
+//    					+ person.getLocationTag().getLocale() 
 //    					+ "] " 
-//    					+ person.getName() + " has invalid walk start location. (" +
+//    					+ person.getName() 
+//    					+ " (" + person.getLocationStateType().getName() + ")"
+//    					+ " has invalid walk start loc @ (" +
 //                        Math.round(person.getXLocation()*10.0)/10.0 + ", " 
 // 						+ Math.round(person.getYLocation()*10.0)/10.0 
-// 						+ ") is not within " + building + " in " + person.getSettlement());
+// 						+ "). Should have been within " + building + " in " + person.getSettlement());
 // 				
 //            	return null;
 //            }
@@ -223,8 +227,14 @@ implements Serializable {
                 result.rover = (Rover) vehicle;
                 
     			LogConsolidated.log(Level.FINER, 0, sourceName,
-    					"[" + person.getLocationStateType().getName() + "] " + person.getName() +
-                        " is having WalkState.ROVER_LOC");
+    					"[" 
+    					+ person.getLocationTag().getLocale()
+    					+ "] " 
+    					+ person.getName()
+                        + " (" + person.getLocationStateType().getName() + ")"
+                        + " in " + vehicle
+    					+ " (WalkState.ROVER_LOC)."
+    					);
     			
 //                if (!LocalAreaUtil.checkLocationWithinLocalBoundedObject(person.getXLocation(),
 //                        person.getYLocation(), vehicle)) {
@@ -244,24 +254,29 @@ implements Serializable {
             }
             else {
                 result = new WalkState(WalkState.OUTSIDE_LOC);
+  
     			LogConsolidated.log(Level.FINER, 0, sourceName,
     					"[" 
     					+ person.getLocationTag().getLocale()
-//    					+ person.getLocationStateType().getName() 
     					+ "] " 
-    					+ person.getName() 
-    					+ " is having WalkState.OUTSIDE_LOC");
+    					+ person.getName()
+                        + " (" + person.getLocationStateType().getName() + ")"
+    					+ " (WalkState.OUTSIDE_LOC)."
+    					);
             }
         }
         
         else {
-			LogConsolidated.log(Level.SEVERE, 5_000, sourceName,
+        	
+			LogConsolidated.log(Level.WARNING, 0, sourceName,
 					"[" 
 					+ person.getLocationTag().getLocale()
-//					+ person.getLocationStateType().getName() 
 					+ "] " 
-					+ person.getName() 
-					+ " is in an invalid location situation for walking task.");
+					+ person.getName()
+                    + " (" + person.getLocationStateType().getName() + ")"
+					+ " (invalid WalkState)."
+					);
+			
             //throw new IllegalStateException(person.getName() +
             //        " is in an invalid location situation for walking task: " + locationSituation);
         }

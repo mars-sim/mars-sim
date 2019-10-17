@@ -265,7 +265,6 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 		showUnitBarItem.addActionListener(this);
 		showUnitBarItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_U, KeyEvent.CTRL_DOWN_MASK, false));
 		showUnitBarItem.setToolTipText(Msg.getString("mainMenu.tooltip.unitbar")); //$NON-NLS-1$
-		showUnitBarItem.setState(false);
 		settingsMenu.add(showUnitBarItem);
 
 		// Create Show Tool Bar menu item
@@ -619,6 +618,10 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 		effectMuteItem.setSelected(soundPlayer.isSoundMute());
 	}
 
+//	public void clickUnitBarMenuItem() {
+////		showUnitBarItem.doClick();
+//	}
+	
 	public void menuCanceled(MenuEvent event) {
 	}
 

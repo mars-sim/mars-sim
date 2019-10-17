@@ -23,6 +23,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
@@ -336,7 +337,7 @@ implements SettlementMapLayer {
 				Coordinates settlementLoc = settlement.getCoordinates();
 				Coordinates vehicleLoc = vehicle.getCoordinates();
 				if (vehicleLoc.equals(settlementLoc)) {
-					// 2015-12-15 Splitted up the name into multiple lines
+					// Split up the name into multiple lines
 					String words[] = vehicle.getName().split(" ");
 					int size = words.length;
 					for (int j = 0; j < size; j++) {
@@ -359,7 +360,7 @@ implements SettlementMapLayer {
 		boolean showNonSelectedPeople
 	) {
 
-		List<Person> people = PersonMapLayer.getPeopleToDisplay(settlement);
+		List<Person> people = CollectionUtils.getPeopleToDisplay(settlement);
 		Person selectedPerson = mapPanel.getSelectedPerson();
 		int offset = 8;
 
@@ -369,12 +370,12 @@ implements SettlementMapLayer {
 			while (i.hasNext()) {
 				Person person = i.next();
 				if (!person.equals(selectedPerson)) {
-					// 2015-12-15 Splitted up the name into 2 lines
+					// Split up the name into 2 lines
 					String words[] = person.getName().split(" ");
 					int size = words.length;
 					for (int j = 0; j < size; j++)
 						drawLabelRight(g2d, words[j], person.getXLocation(), person.getYLocation(),
-						PERSON_LABEL_COLOR, PERSON_LABEL_OUTLINE_COLOR, offset, j * 12);
+								PERSON_LABEL_COLOR, PERSON_LABEL_OUTLINE_COLOR, offset, j * 12);
 				}
 			}
 		}
@@ -385,14 +386,14 @@ implements SettlementMapLayer {
 			drawLabelRight(g2d, selectedPerson.getName(), selectedPerson.getXLocation(),
 				selectedPerson.getYLocation(), SELECTED_PERSON_LABEL_COLOR, SELECTED_PERSON_LABEL_OUTLINE_COLOR,
 				offset, 0);
-/*
-			String words[] = selectedPerson.getName().split(" ");
-			int size = words.length;
-			for (int j = 0; j < size; j++)
-				drawLabelRight(g2d, words[j], selectedPerson.getXLocation(),
-						selectedPerson.getYLocation(), SELECTED_LABEL_COLOR, SELECTED_LABEL_OUTLINE_COLOR,
-						offset, j * 12);
-*/
+
+//			String words[] = selectedPerson.getName().split(" ");
+//			int size = words.length;
+//			for (int j = 0; j < size; j++)
+//				drawLabelRight(g2d, words[j], selectedPerson.getXLocation(),
+//						selectedPerson.getYLocation(), SELECTED_LABEL_COLOR, SELECTED_LABEL_OUTLINE_COLOR,
+//						offset, j * 12);
+
 			//int yOffset = 12 * size;
 			// Draw task.
 			String taskString = Msg.getString("LabelMapLayer.activity", selectedPerson.getMind().getTaskManager().getTaskDescription(false)); //$NON-NLS-1$
@@ -491,7 +492,6 @@ implements SettlementMapLayer {
 	 * @param labelColor the color of the label.
 	 * @param labelOutlineColor the color of the outline of the label.
 	 */
-	// 2015-12-15 Added yOffset
 	private void drawLabel(
 		Graphics2D g2d, String label, double xLoc, double yLoc,
 		Color labelColor, Color labelOutlineColor, int yOffset
@@ -520,11 +520,8 @@ implements SettlementMapLayer {
 		newTransform.rotate(mapPanel.getRotation() * -1D, centerX, centerY);
 		g2d.setTransform(newTransform);
 
-		// Draw image label.
-		//g2d.drawImage(labelImage, 0, 0, mapPanel);
-		// 2015-12-15 Added yOffset-12
+		// Draw image label with yOffset-12
 		g2d.drawImage(labelImage, 0, yOffset-12, mapPanel);
-
 
 		// Restore original graphic transforms.
 		g2d.setTransform(saveTransform);
@@ -604,53 +601,53 @@ implements SettlementMapLayer {
 		return labelImage;
 	}
 
-	/**
-	 * Creates a label image.
-	 * @param label the label string.
-	 * @param font the font to use.
-	 * @param fontRenderContext the font render context to use.
-	 * @param labelColor the color of the label.
-	 * @param labelOutlineColor the color of the outline of the label.
-	 * @return buffered image of label.
+//	/**
+//	 * Creates a label image.
+//	 * @param label the label string.
+//	 * @param font the font to use.
+//	 * @param fontRenderContext the font render context to use.
+//	 * @param labelColor the color of the label.
+//	 * @param labelOutlineColor the color of the outline of the label.
+//	 * @return buffered image of label.
+//   */
+//	private BufferedImage createLabelImage(
+//		String label, Font font, FontRenderContext fontRenderContext, Color labelColor,
+//		Color labelOutlineColor) {
+//
+//		// Determine bounds.
+//		TextLayout textLayout1 = new TextLayout(label, font, fontRenderContext);
+//		Rectangle2D bounds1 = textLayout1.getBounds();
+//
+//		// Get label shape.
+//		Shape labelShape = textLayout1.getOutline(null);
+//
+//		// Create buffered image for label.
+//		int width = (int) (bounds1.getWidth() + bounds1.getX()) + 4;
+//		int height = (int) (bounds1.getHeight()) + 4;
+//		BufferedImage bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+//
+//		// Get graphics context from buffered image.
+//		Graphics2D g2d = (Graphics2D) bufferedImage.getGraphics();
+//		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+//		g2d.translate(2D - bounds1.getX(), 2D - bounds1.getY());
+//
+//		// Draw label outline.
+//		Stroke saveStroke = g2d.getStroke();
+//		g2d.setColor(labelOutlineColor);
+//		g2d.setStroke(new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+//		g2d.draw(labelShape);
+//		g2d.setStroke(saveStroke);
+//
+//		// Fill label
+//		g2d.setColor(labelColor);
+//		g2d.fill(labelShape);
+//
+//		// Dispose of image graphics context.
+//		g2d.dispose();
+//
+//		return bufferedImage;
+//	}
 
-	private BufferedImage createLabelImage(
-		String label, Font font, FontRenderContext fontRenderContext, Color labelColor,
-		Color labelOutlineColor) {
-
-		// Determine bounds.
-		TextLayout textLayout1 = new TextLayout(label, font, fontRenderContext);
-		Rectangle2D bounds1 = textLayout1.getBounds();
-
-		// Get label shape.
-		Shape labelShape = textLayout1.getOutline(null);
-
-		// Create buffered image for label.
-		int width = (int) (bounds1.getWidth() + bounds1.getX()) + 4;
-		int height = (int) (bounds1.getHeight()) + 4;
-		BufferedImage bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-
-		// Get graphics context from buffered image.
-		Graphics2D g2d = (Graphics2D) bufferedImage.getGraphics();
-		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		g2d.translate(2D - bounds1.getX(), 2D - bounds1.getY());
-
-		// Draw label outline.
-		Stroke saveStroke = g2d.getStroke();
-		g2d.setColor(labelOutlineColor);
-		g2d.setStroke(new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-		g2d.draw(labelShape);
-		g2d.setStroke(saveStroke);
-
-		// Fill label
-		g2d.setColor(labelColor);
-		g2d.fill(labelShape);
-
-		// Dispose of image graphics context.
-		g2d.dispose();
-
-		return bufferedImage;
-	}
-*/
 
 	/**
 	 * Creates a label image.
@@ -687,14 +684,14 @@ implements SettlementMapLayer {
 		g2d.setColor(labelOutlineColor);
 		g2d.setStroke(new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
 
-
+		// Draw outline
 		g2d.draw(labelShape);
 
-
+		// Restore stroke
 		g2d.setStroke(saveStroke);
-
-		// Fill label
+		
 		g2d.setColor(labelColor);
+		// Fill label
 		g2d.fill(labelShape);
 
 		// Dispose of image graphics context.

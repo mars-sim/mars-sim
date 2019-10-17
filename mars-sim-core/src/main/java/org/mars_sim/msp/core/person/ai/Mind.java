@@ -237,14 +237,17 @@ public class Mind implements Serializable {
 					e.printStackTrace(System.err);
 				}
 			}
-		} 
+		}
 		
 		else {
 			if ((mission != null) && mission.isDone()) {
+				// Set the mission to null since it is done
 				mission = null;
 			}
 
 			boolean hasAMission = hasAMission();
+//			if (hasAMission)
+//				return;
 			
 			boolean hasActiveMission = hasActiveMission();
 
@@ -265,7 +268,7 @@ public class Mind implements Serializable {
 //			if (hasActiveMission)
 //				System.out.println(person + "'s needMission is " + needMission);
 			// A person has no active task
-			if (!taskManager.hasActiveTask()) {
+//			if (!taskManager.hasActiveTask()) {
 				try {
 					getNewAction(true, newMission);
 				} catch (Exception e) {
@@ -273,7 +276,7 @@ public class Mind implements Serializable {
 							person.getName() + " could not get new action", e);
 					e.printStackTrace(System.err);
 				}
-			}
+//			}
 		}
 	}
 

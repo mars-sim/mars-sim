@@ -63,7 +63,7 @@ public class MissionPlanning implements Serializable {
 	public void setReviewer(String name) {
 		if (reviewers.containsKey(name)) {
 			int num = reviewers.get(name);
-			reviewers.put(name, num + 1);
+			reviewers.put(name, num++);
 		}
 		
 		else {

@@ -360,4 +360,37 @@ public class CollectionUtils {
 		return (Person) people.stream().filter(p -> p.getName() == name);
 	}
 	
+	
+	/**
+	 * Gets a list of people to display on a settlement map.
+	 * Note: a person can be either inside the settlement or within its vicinity
+	 * 
+	 * @param settlement the settlement
+	 * @return list of people to display.
+	 */
+	public static List<Person> getPeopleToDisplay(Settlement settlement) {
+
+		List<Person> result = new ArrayList<Person>();
+
+		if (settlement != null) {
+			Iterator<Person> i = unitManager.getPeople().iterator();
+			while (i.hasNext()) {
+				Person person = i.next();
+
+				// Only select living people.
+				if (!person.getPhysicalCondition().isDead()) {
+
+					// Select a person that is at the settlement location.
+					Coordinates settlementLoc = settlement.getCoordinates();
+					Coordinates personLoc = person.getCoordinates();
+					if (personLoc.equals(settlementLoc)) {
+						result.add(person);
+					}
+				}
+			}
+		}
+
+		return result;
+	}
+
 }

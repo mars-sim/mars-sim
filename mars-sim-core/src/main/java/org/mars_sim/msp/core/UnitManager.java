@@ -2111,19 +2111,16 @@ public class UnitManager implements Serializable {
 			justLoaded = false;
 		}
 		
-		marsSurface.timePassing(time);
-
-		lookupSite.values().stream().forEach(x -> x.timePassing(time));
-		
-		lookupSettlement.values().stream().forEach(x -> x.timePassing(time));
-		
-		lookupPerson.values().stream().forEach(x -> x.timePassing(time));
-
-		lookupRobot.values().stream().forEach(x -> x.timePassing(time));
-
-		lookupEquipment.values().stream().forEach(x -> x.timePassing(time));
-			
-		lookupVehicle.values().stream().forEach(x -> x.timePassing(time));
+		if (time > 0) {
+			marsSurface.timePassing(time);
+	
+			lookupSite.values().stream().forEach(x -> x.timePassing(time));
+			lookupSettlement.values().stream().forEach(x -> x.timePassing(time));
+			lookupPerson.values().stream().forEach(x -> x.timePassing(time));
+			lookupRobot.values().stream().forEach(x -> x.timePassing(time));
+			lookupEquipment.values().stream().forEach(x -> x.timePassing(time));	
+			lookupVehicle.values().stream().forEach(x -> x.timePassing(time));
+		}
 	}
 
 	/**

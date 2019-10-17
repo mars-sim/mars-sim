@@ -169,19 +169,24 @@ public class SettlementWindow extends ToolWindow {
 		return desktop;
 	}
 
-	public String format(double x, double y) {
-		return String.format("%6.2f,%6.2f", x, y);
+	public String format0(double x, double y) {
+//		return String.format("%6.2f,%6.2f", x, y);
+		return Math.round(x*100.00)/100.00 + ", " + Math.round(y*100.00)/100.00;
 	}
 	
+	public String format1(double x, double y) {
+//		return String.format("%6.2f,%6.2f", x, y);
+		return (int)x + ", " + (int)y;
+	}
 	public void setBuildingXYCoord(double x, double y) {
 		StringBuilder sb = new StringBuilder();
-		sb.append(WITHIN_BLDG).append(format(x, y)).append(CLOSE_PARENT);
+		sb.append(WITHIN_BLDG).append(format0(x, y)).append(CLOSE_PARENT);
 		buildingXYLabel.setText(sb.toString());
 	}
 
 	public void setMapXYCoord(double x, double y) {
 		StringBuilder sb = new StringBuilder();
-		sb.append(SETTLEMENT_MAP).append(format(x, y)).append(CLOSE_PARENT);
+		sb.append(SETTLEMENT_MAP).append(format1(x, y)).append(CLOSE_PARENT);
 		mapXYLabel.setText(sb.toString());
 	}
 	

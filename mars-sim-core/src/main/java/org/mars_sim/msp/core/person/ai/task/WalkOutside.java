@@ -676,7 +676,7 @@ public class WalkOutside extends Task implements Serializable {
 		} else if (robot != null) {
 			// If there are any EVA problems, end walking outside task.
 			// if (!ignoreEndEVA && EVAOperation.checkEVAProblem(robot)) {
-			endTask();
+//			endTask();
 			return time;
 			// }
 		}

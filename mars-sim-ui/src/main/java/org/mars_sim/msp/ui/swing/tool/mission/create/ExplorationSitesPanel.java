@@ -91,7 +91,7 @@ class ExplorationSitesPanel extends WizardPanel {
 		add(titleLabel);
 
 		// Add a vertical strut
-		add(Box.createVerticalStrut(10));
+		add(Box.createVerticalStrut(3));
 
 		// Create the center panel.
 		WebPanel centerPane = new WebPanel(new BorderLayout(0, 0));

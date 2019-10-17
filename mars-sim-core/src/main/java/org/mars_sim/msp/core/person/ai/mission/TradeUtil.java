@@ -115,7 +115,7 @@ public final class TradeUtil {
 
 					double profit = getEstimatedTradeProfit(startingSettlement, rover, s);
 					// double endTime = System.currentTimeMillis();
-					// logger.info("getEstimatedTradeProfit " + (endTime - startTime));
+//					 logger.finest("getEstimatedTradeProfit " + (endTime - startTime));
 					if (profit > bestProfit) {
 						bestProfit = profit;
 						bestSettlement = s;

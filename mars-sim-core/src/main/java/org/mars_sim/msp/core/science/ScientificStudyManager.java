@@ -71,7 +71,7 @@ public class ScientificStudyManager // extends Thread
 		ScientificStudy study = new ScientificStudy(researcher, science, difficultyLevel);
 		studies.add(study);
 
-		logger.fine(researcher.getName() + " begins writing proposal for new " + study.toString());
+		logger.fine(researcher.getName() + " began writing proposal for new " + study.toString());
 
 		return study;
 	}

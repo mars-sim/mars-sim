@@ -23,6 +23,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
@@ -282,6 +283,7 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 					else
 						setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 					
+					// Reset them to zero to prevent over-dragging of the settlement map
 					xLast = 0;
 					yLast = 0;
 //				}
@@ -295,6 +297,50 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 		});
 	}
 
+	/**
+	 * Checks if the player selected an unit
+	 * 
+	 * @param evt
+	 */
+	private void doPop(final MouseEvent evt) {
+		// System.out.println("doPop()");
+		int x = evt.getX();
+		int y = evt.getY();
+		
+		final ConstructionSite site = selectConstructionSiteAt(x, y);
+		final Building building = selectBuildingAt(x, y);
+		final Vehicle vehicle = selectVehicleAt(x, y);
+		final Person person = selectPersonAt(x, y);
+		final Robot robot = selectRobotAt(x, y);
+
+//		if (site != null || building != null || vehicle != null || person != null || robot != null) {
+
+			// Deconflict cases by the virtue of the if-else order below
+			// when one or more are detected
+			if (person != null) {
+				menu = new PopUpUnitMenu(settlementWindow, person);
+				menu.show(evt.getComponent(), x, y);
+			}
+			else if (robot != null) {
+				menu = new PopUpUnitMenu(settlementWindow, robot);
+				menu.show(evt.getComponent(), x, y);
+			}
+			else if (vehicle != null) {
+				menu = new PopUpUnitMenu(settlementWindow, vehicle);
+				menu.show(evt.getComponent(), x, y);
+			}
+			else if (building != null) {
+				menu = new PopUpUnitMenu(settlementWindow, building);
+				menu.show(evt.getComponent(), x, y);
+			}
+			else if (site != null) {
+				menu = new PopUpUnitMenu(settlementWindow, site);
+				menu.show(evt.getComponent(), x, y);
+			}
+//		}
+		repaint();
+	}
+		
 	/**
 	 * Displays the specific x y coordinates within a building
 	 * (based upon where the mouse is pointing at)
@@ -360,38 +406,7 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 			}
 		}
 	}
-	
-	// Add vehicle detection
-	private void doPop(final MouseEvent evt) {
-		// System.out.println("doPop()");
-		final ConstructionSite site = selectConstructionSiteAt(evt.getX(), evt.getY());
-		final Building building = selectBuildingAt(evt.getX(), evt.getY());
-		final Vehicle vehicle = selectVehicleAt(evt.getX(), evt.getY());
-		final Person person = selectPersonAt(evt.getX(), evt.getY());
-		final Robot robot = selectRobotAt(evt.getX(), evt.getY());
 
-		// if NO building is selected, do NOT call popup menu
-		if (site != null || building != null || vehicle != null || person != null || robot != null) {
-
-			// Deconflict cases by the virtue of the if-else order below
-			// when one or more are detected
-			if (person != null)
-				menu = new PopUpUnitMenu(settlementWindow, person);
-			else if (robot != null)
-				menu = new PopUpUnitMenu(settlementWindow, robot);
-			else if (vehicle != null)
-				menu = new PopUpUnitMenu(settlementWindow, vehicle);
-			else if (building != null)
-				menu = new PopUpUnitMenu(settlementWindow, building);
-			else if (site != null)
-				menu = new PopUpUnitMenu(settlementWindow, site);
-
-			// setComponentPopupMenu(menu);
-			menu.show(evt.getComponent(), evt.getX(), evt.getY());
-		}
-		 repaint();
-	}
-	
 	/**
 	 * Gets the settlement currently displayed.
 	 * 
@@ -519,7 +534,7 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 		Point.Double settlementPosition = convertToSettlementLocation(xPixel, yPixel);
 		Person selectedPerson = null;
 
-		Iterator<Person> i = PersonMapLayer.getPeopleToDisplay(settlement).iterator();
+		Iterator<Person> i = CollectionUtils.getPeopleToDisplay(settlement).iterator();
 		while (i.hasNext()) {
 			Person person = i.next();
 			double distanceX = person.getXLocation() - settlementPosition.getX();
@@ -533,8 +548,6 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 		if (selectedPerson != null) {
 			selectPerson(selectedPerson);
 
-			//// paintDoubleBuffer();
-			 repaint();
 		}
 		return selectedPerson;
 	}
@@ -565,8 +578,6 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 		if (selectedRobot != null) {
 			selectRobot(selectedRobot);
 
-			//// paintDoubleBuffer();
-			// repaint();
 		}
 		return selectedRobot;
 	}
@@ -1115,32 +1126,33 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 //		}
 //		Graphics2D g2d = (Graphics2D) dbg;
 
-		Graphics2D g2d = (Graphics2D) g;
+		if (isShowing() && desktop.isToolWindowOpen(SettlementWindow.NAME)) {
+			Graphics2D g2d = (Graphics2D) g;
+	
+			// long startTime = System.nanoTime();
+	
+			// Set graphics rendering hints.
+			g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+			g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+			g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+			g2d.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
+	
+			// Display all map layers.
+			Iterator<SettlementMapLayer> i = mapLayers.iterator();
+			while (i.hasNext()) {
+				// Add building parameter
+				i.next().displayLayer(g2d, settlement, building, xPos, yPos, getWidth(), getHeight(), rotation, scale);
+			}
 
-		// long startTime = System.nanoTime();
-
-		// Set graphics rendering hints.
-		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-		g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-		g2d.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
-
-		// Display all map layers.
-//		Iterator<SettlementMapLayer> i = mapLayers.iterator();
-//		while (i.hasNext()) {
-//			// Add building parameter
-//			i.next().displayLayer(g2d, settlement, building, xPos, yPos, getWidth(), getHeight(), rotation, scale);
+//		for (int i = 0; i < size; i++) {
+//			mapLayers.get(i).displayLayer(g2d, settlement, building, xPos, yPos, getWidth(), getHeight(), rotation,
+//					scale);
 //		}
-
-		for (int i = 0; i < size; i++) {
-			mapLayers.get(i).displayLayer(g2d, settlement, building, xPos, yPos, getWidth(), getHeight(), rotation,
-					scale);
-		}
 
 		// long endTime = System.nanoTime();
 		// double timeDiff = (endTime - startTime) / 1000000D;
 		// System.out.println("SMT paint time: " + (int) timeDiff + " ms");
-
+		}
 	}
 
 	public SettlementTransparentPanel getSettlementTransparentPanel() {

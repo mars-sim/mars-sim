@@ -30,6 +30,7 @@ public interface SettlementMapLayer {
 	 * 
 	 * @param g2d        the graphics context.
 	 * @param settlement the settlement to display.
+	 * @param building 	 the building of interest
 	 * @param xPos       the X center position.
 	 * @param yPos       the Y center position.
 	 * @param mapWidth   the width of the map.
@@ -37,8 +38,6 @@ public interface SettlementMapLayer {
 	 * @param rotation   the rotation (radians)
 	 * @param scale      the map scale.
 	 */
-	//
-	// Add building parameter
 	public void displayLayer(Graphics2D g2d, Settlement settlement, Building building, double xPos, double yPos,
 			int mapWidth, int mapHeight, double rotation, double scale);
 
@@ -46,4 +45,10 @@ public interface SettlementMapLayer {
 	 * Destroy the map layer.
 	 */
 	public void destroy();
+//	{
+//		sim = null;
+//		unitManager = null;
+//		missionManager = null;
+//		surfaceFeatures = null;
+//	}
 }

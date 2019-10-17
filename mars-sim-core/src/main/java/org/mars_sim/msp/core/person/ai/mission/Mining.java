@@ -168,6 +168,8 @@ public class Mining extends RoverMission {
 		// Set initial mission phase.
 		setPhase(VehicleMission.APPROVAL);//.EMBARKING);
 		setPhaseDescription(Msg.getString("Mission.phase.approval.description"));//, getStartingSettlement().getName())); // $NON-NLS-1$
+
+		logger.info("Done creating the Mining mission.");
 	}
 
 	/**
@@ -203,7 +205,7 @@ public class Mining extends RoverMission {
 		}
 
 		Person person = null;
-		Robot robot = null;
+//		Robot robot = null;
 
 		// Add mission members.
 		// TODO refactor this.

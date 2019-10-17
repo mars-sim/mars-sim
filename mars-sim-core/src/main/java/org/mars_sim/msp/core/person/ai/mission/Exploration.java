@@ -154,6 +154,8 @@ public class Exploration extends RoverMission implements Serializable {
 			setPhase(VehicleMission.APPROVAL);//.EMBARKING);
 			setPhaseDescription(Msg.getString("Mission.phase.approval.description"));//, s.getName())); // $NON-NLS-1$
 		}
+		
+		logger.info("Done creating the Exploration mission.");
 	}
 
 	/**
@@ -196,7 +198,7 @@ public class Exploration extends RoverMission implements Serializable {
 				new NavPoint(startingSettlement.getCoordinates(), startingSettlement, startingSettlement.getName()));
 
 		Person person = null;
-		Robot robot = null;
+//		Robot robot = null;
 
 		// Add mission members.
 		// TODO Refactor this.

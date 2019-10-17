@@ -51,11 +51,6 @@ public class Walk extends Task implements Serializable {
 
 	/** default serial id. */
 	private static Logger logger = Logger.getLogger(Walk.class.getName());
-//	private static Logger logger = 
-//			  Logger.getLogger(MethodHandles.lookup().lookupClass().getSimpleName());
-//
-//	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
-//			logger.getName().length());
 	private static String loggerName = logger.getName();
 	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 	
@@ -163,6 +158,7 @@ public class Walk extends Task implements Serializable {
 
 				} else {
 					// If not a rover, retrieve person from vehicle.
+					// TODO : should we call endTask() instead ?
 					vehicle.getInventory().retrieveUnit(person);
 				}
 			}

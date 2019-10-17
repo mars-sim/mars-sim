@@ -100,6 +100,13 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 	public static final int CB_WIDTH = 120;
 
 	public static final double RAD_PER_DEGREE = Math.PI / 180D;
+	
+	public static final String RGB = "   RGB : (";
+	public static final String COMMA = ", ";
+	public static final String CLOSE_PARENT = ")   ";
+	public static final String HSB = "   HSB : (";
+	public static final String KM = " km";
+	
 	// Data members
 	
 	/** The status bar. */
@@ -808,6 +815,11 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		}
 	}
 
+	/**
+	 * Checks if the mouse is hovering over a map
+	 * 
+	 * @param event
+	 */
 	public void checkHover(MouseEvent event) {
 
 		Coordinates mapCenter = mapLayerPanel.getCenterLocation();
@@ -819,16 +831,22 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 			
 			Coordinates clickedPosition = mapLayerPanel.getCenterLocation().convertRectToSpherical(x, y, rho);
 
-			double e = terrainElevation.getPatchedElevation(clickedPosition);
-			int[] rgb = terrainElevation.getRGB(clickedPosition);
-			float[] hsb = terrainElevation.getHSB(rgb);
-					
+			double e = TerrainElevation.getPatchedElevation(clickedPosition);
+			
 			String s0 = clickedPosition.getFormattedString(); 
-			String s1 = Math.round(e*1000.0)/1000.0 + " km";
-			String s2 ="   RGB (" + rgb[0] + ", " + rgb[1] + ", " + rgb[2] + ")   ";
-			String s3 ="   HSB (" +  Math.round(hsb[0]*1000.0)/1000.0 + ", " 
-					+  Math.round(hsb[1]*1000.0)/1000.0 + ", " 
-					+  Math.round(hsb[2]*1000.0)/1000.0 + ")   ";
+			String s1 = Math.round(e*1000.0)/1000.0 + KM;
+			String s2 = "";
+			String s3 = "";
+			
+			if (topoItem.isSelected()) {
+				int[] rgb = TerrainElevation.getRGB(clickedPosition);
+				float[] hsb = TerrainElevation.getHSB(rgb);
+				
+				s2 = RGB+ rgb[0] + COMMA + rgb[1] + COMMA + rgb[2] + CLOSE_PARENT;
+				s3 = HSB + Math.round(hsb[0]*1000.0)/1000.0 + COMMA
+						+  Math.round(hsb[1]*1000.0)/1000.0 + COMMA 
+						+  Math.round(hsb[2]*1000.0)/1000.0 + CLOSE_PARENT;
+			}
 			
 			setInfoLabel(s0, s1, s2, s3);
 			

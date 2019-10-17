@@ -198,6 +198,9 @@ public class ReviewMissionPlan extends Task implements Serializable {
 		            	Settlement reviewerSettlement = person.getAssociatedSettlement();
 						String s = reviewerSettlement.getName();
 						
+						LogConsolidated.log(Level.INFO, 0, sourceName, 
+								"[" + s + "] " + reviewedBy + " was going to review " + requestedBy
+								+ "'s " + m.getDescription() + " mission plan.");
 						
 						if (!reviewedBy.equals(requestedBy)
 								&& mp.isReviewerValid(reviewedBy, pop)) {

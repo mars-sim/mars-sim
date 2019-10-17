@@ -106,8 +106,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		this.startingMember = startingMember;
 
 		if (!reserveVehicle()) {
-			addMissionStatus(MissionStatus.NO_AVAILABLE_VEHICLES);
-			endMission();
+			return;
 		}
 		
 		// Add mission phases.
@@ -116,6 +115,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		addPhase(TRAVELLING);
 		addPhase(DISEMBARKING);
 		addPhase(COMPLETED);
+		
+		logger.info("Done adding all phases.");
 	}
 
 	/**
@@ -344,7 +345,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 */
 
 	public void endMission() {
-		// logger.info("Reason : " + reason);
+		 logger.fine("Calling endMission() in VehicleMission");
 		if (hasVehicle()) {
 			// if user hit the "End Mission" button to abort the mission
 			// Check if user aborted the mission and if
@@ -377,7 +378,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 					if (!vehicle.isBeaconOn()) {
 						// if the emergency beacon is off
 						// Question: could the emergency beacon itself be broken ?
-						LogConsolidated.log(Level.WARNING, 0, sourceName,
+						LogConsolidated.log(Level.INFO, 0, sourceName,
 								"[" + startingMember.getLocationTag().getLocale() + "] " + startingMember
 										+ " turned on " + vehicle
 										+ "'s emergency beacon and request for towing with the following status flag(s) :");
@@ -392,7 +393,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 							// Note: the vehicle is being towed, wait till the journey is over
 							// don't end the mission yet
 							// So do not called setPhaseEnded(true) and super.endMission(reason);
-							LogConsolidated.log(Level.WARNING, 2000, sourceName,
+							LogConsolidated.log(Level.INFO, 2000, sourceName,
 									"[" + vehicle.getLocationTag().getLocale() + "] "
 									+  vehicle.getName() + " is currently being towed by " + vehicle.getTowingVehicle());
 //									+ " Remaining distance : " + getClosestDistance() + " km.", null);
@@ -412,7 +413,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 					if (!vehicle.isBeaconOn()) {
 						// if the emergency beacon is off
 						// Question: could the emergency beacon itself be broken ?
-						LogConsolidated.log(Level.WARNING, 0, sourceName,
+						LogConsolidated.log(Level.INFO, 0, sourceName,
 								"[" + startingMember.getLocationTag().getLocale() + "] " + startingMember
 										+ " turned on " + vehicle
 										+ "'s emergency beacon and request for towing with the following status flag(s) :");
@@ -444,7 +445,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		}
 		
 		else if (haveMissionStatus(MissionStatus.MISSION_ACCOMPLISHED)) {
-			// logger.info("Returning the control of " + vehicle + " to the settlement");
+			logger.info("Returning the control of " + vehicle + " to the settlement");
 			setPhaseEnded(true);
 			// leaveVehicle();
 			super.endMission();

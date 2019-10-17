@@ -306,7 +306,7 @@ public class MissionManager implements Serializable {
 
 			// recordMission(newMission);
 
-			logger.fine("Added new mission : " + newMission.getName());
+			logger.fine("Added the new mission '" + newMission.getName() + "' mission.");
 		}
 	}
 
@@ -333,7 +333,7 @@ public class MissionManager implements Serializable {
 				}
 			}
 
-			logger.fine("Removing old mission : " + oldMission.getName());
+			logger.fine("Removing the old '" + oldMission.getName() + "' mission.");
 		}
 	}
 
@@ -610,22 +610,25 @@ public class MissionManager implements Serializable {
 		if (onGoingMissions != null) { // for passing maven test
 			while (index < onGoingMissions.size()) {
 				Mission m = onGoingMissions.get(index);
-				for (MissionStatus ms: m.getMissionStatus()) {
-//					MissionStatus reason = m.getReason().toLowerCase();
-					if (ms == null
-	//						|| m.isDone() 
-	//						|| !m.isApproved() // initially it's not approved until it passes the approval phase
-	//						|| m.getPlan() == null
-							|| m.getPhase() == null
-							|| ms == MissionStatus.USER_ABORTED_MISSION
-							|| ms.getName().toLowerCase().contains("no ")
-							|| ms.getName().toLowerCase().contains("not ")
-							|| ms.getName().toLowerCase().contains("null")
-							|| (m.getPlan() != null && m.getPlan().getStatus() == PlanType.NOT_APPROVED)
-							) {
-						removeMission(m);
-					} else {
-						index++;
+				List<MissionStatus> mss = m.getMissionStatus();
+				if (mss != null && !mss.isEmpty()) {
+					for (MissionStatus ms: mss) {
+	//					MissionStatus reason = m.getReason().toLowerCase();
+						if (// ms == null
+		//						|| m.isDone() 
+		//						|| !m.isApproved() // initially it's not approved until it passes the approval phase
+		//						|| m.getPlan() == null
+								//m.getPhase() == null
+								ms == MissionStatus.USER_ABORTED_MISSION
+								|| ms.getName().toLowerCase().contains("no ")
+								|| ms.getName().toLowerCase().contains("not ")
+								|| ms.getName().toLowerCase().contains("null")
+								|| (m.getPlan() != null && m.getPlan().getStatus() == PlanType.NOT_APPROVED)
+								) {
+							removeMission(m);
+						} else {
+							index++;
+						}
 					}
 				}
 			}
@@ -768,6 +771,8 @@ public class MissionManager implements Serializable {
 				historicalMissions.get(mSol-MAX_NUM_PLANS);
 			}
 		}
+		
+		logger.info("Done addMissionPlanning()");
 	}
 	
 	

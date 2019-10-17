@@ -155,23 +155,24 @@ public class MainDetailPanel extends WebPanel implements ListSelectionListener, 
 		scrollPane.setViewportView(mainBox);
 
 		// Create the description panel.
-		Box infoPane = new CustomBox();
-		infoPane.setAlignmentX(Component.LEFT_ALIGNMENT);
+		Box infoBox = new CustomBox();
+		infoBox.setAlignmentX(Component.LEFT_ALIGNMENT);
 		// infoPane.setSize(new Dimension(200, 200));
-		infoPane.setBorder(new MarsPanelBorder());
-		mainBox.add(infoPane);
+		infoBox.setBorder(new MarsPanelBorder());
+		mainBox.add(infoBox);
 
-		WebPanel topPane = new WebPanel(new SpringLayout());
-		infoPane.add(topPane);
+		// Create the desPane spring layout
+		WebPanel desPane = new WebPanel(new SpringLayout());
+		infoBox.add(desPane);
 
 		// Create the description label.
 		WebLabel descriptionLabel0 = new WebLabel(Msg.getString("MainDetailPanel.title.description", WebLabel.LEFT)); //$NON-NLS-1$
 		descriptionLabel0.setAlignmentX(Component.LEFT_ALIGNMENT);
-		topPane.add(descriptionLabel0);
+		desPane.add(descriptionLabel0);
 
 		descriptionTF = new WebTextField("");
 		descriptionTF.setEditable(false);
-		descriptionTF.setColumns(25);
+		descriptionTF.setColumns(20);
 		// descriptionTF.setOpaque(false);
 		// descriptionTF.setFont(new Font("Serif", Font.PLAIN, 10));
 		descriptionTF.setToolTipText(Msg.getString("MainDetailPanel.tf.description")); //$NON-NLS-1$
@@ -189,69 +190,88 @@ public class MainDetailPanel extends WebPanel implements ListSelectionListener, 
 
 		WebPanel wrapper0 = new WebPanel(new FlowLayout(FlowLayout.LEFT));
 		wrapper0.add(descriptionTF);
-		topPane.add(wrapper0);
+		desPane.add(wrapper0);
 
+		// Prepare SpringLayout
+		SpringUtilities.makeCompactGrid(desPane, 
+				1, 2, // rows, cols
+				3, 2, // initX, initY
+				25, 2); // xPad, yPad
+		
+		// Create the mission box.
+		Box missionBox = new CustomBox();
+		missionBox.setAlignmentX(Component.LEFT_ALIGNMENT);
+		// missionBox.setSize(new Dimension(200, 200));
+		missionBox.setBorder(new MarsPanelBorder());
+		mainBox.add(missionBox);
+				
+		// Create the mission pane spring layout
+		WebPanel missionPane = new WebPanel(new SpringLayout());
+		missionBox.add(missionPane);
+		
 		// Create the designation label.
 		WebLabel designationLabel0 = new WebLabel(Msg.getString("MainDetailPanel.designation", WebLabel.LEFT)); //$NON-NLS-1$
 		designationLabel0.setAlignmentX(Component.LEFT_ALIGNMENT);
-		topPane.add(designationLabel0);
+		missionPane.add(designationLabel0);
 
-		designationLabel = new WebLabel("", WebLabel.LEFT);
+		designationLabel = new WebLabel(" ", WebLabel.LEFT);
 		WebPanel wrapper1a = new WebPanel(new FlowLayout(FlowLayout.LEFT));
 		wrapper1a.add(designationLabel);
-		topPane.add(wrapper1a);
+		missionPane.add(wrapper1a);
 
 		// Create the type label.
 		WebLabel startingLabel0 = new WebLabel(Msg.getString("MainDetailPanel.startingMember", WebLabel.LEFT)); //$NON-NLS-1$
 		startingLabel0.setAlignmentX(Component.LEFT_ALIGNMENT);
-		topPane.add(startingLabel0);
+		missionPane.add(startingLabel0);
 		// startingLabel0.setToolTipText(Msg.getString("MainDetailPanel.starting"));//$NON-NLS-1$
 
-		startingLabel = new WebLabel("", WebLabel.LEFT);
+		startingLabel = new WebLabel(" ", WebLabel.LEFT);
 		// typeLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		WebPanel wrapper1 = new WebPanel(new FlowLayout(FlowLayout.LEFT));
 		wrapper1.add(startingLabel);
-		topPane.add(wrapper1);
+		missionPane.add(wrapper1);
 
 		// Create the type label.
 		WebLabel typeLabel0 = new WebLabel(Msg.getString("MainDetailPanel.type", WebLabel.LEFT)); //$NON-NLS-1$
 		typeLabel0.setAlignmentX(Component.LEFT_ALIGNMENT);
-		topPane.add(typeLabel0);
+		missionPane.add(typeLabel0);
 		// typeLabel0.setToolTipText(Msg.getString("MainDetailPanel.type"));//$NON-NLS-1$
 
-		typeLabel = new WebLabel("", WebLabel.LEFT);
+		typeLabel = new WebLabel(" ", WebLabel.LEFT);
 		// typeLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		WebPanel wrapper2 = new WebPanel(new FlowLayout(FlowLayout.LEFT));
 		wrapper2.add(typeLabel);
-		topPane.add(wrapper2);
+		missionPane.add(wrapper2);
 
 		// Create the phase label.
 		WebLabel phaseLabel0 = new WebLabel(Msg.getString("MainDetailPanel.phase", WebLabel.LEFT)); //$NON-NLS-1$
 		phaseLabel0.setAlignmentX(Component.LEFT_ALIGNMENT);
-		topPane.add(phaseLabel0);
+		missionPane.add(phaseLabel0);
 
-		phaseLabel = new WebLabel("", WebLabel.LEFT);
+		phaseLabel = new WebLabel(" ", WebLabel.LEFT);
 		// phaseLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		WebPanel wrapper3 = new WebPanel(new FlowLayout(FlowLayout.LEFT));
 		wrapper3.add(phaseLabel);
-		topPane.add(wrapper3);
+		missionPane.add(wrapper3);
 
 		// Prepare SpringLayout
-		SpringUtilities.makeCompactGrid(topPane, 5, 2, // rows, cols
-				3, 1, // initX, initY
-				25, 1); // xPad, yPad
+		SpringUtilities.makeCompactGrid(missionPane, 
+				4, 2, // rows, cols
+				3, 2, // initX, initY
+				25, 2); // xPad, yPad
 
 		// Create the travel panel.
 		Box travelBox = new CustomBox();
 		travelBox.setAlignmentX(Component.LEFT_ALIGNMENT);
-		// Prepare SpringLayout
+		
+		// Prepare travelPane Spring Layout
 		WebPanel travelPane = new WebPanel(new SpringLayout());
-		travelPane.setSize(new Dimension(200, 300));
+//		travelPane.setSize(new Dimension(200, 300));
 		// travelPane.setBorder(new MarsPanelBorder());
 		travelBox.add(travelPane);
 		mainBox.add(travelBox);
 
-		// Create the vehicle panel.
+		// Create the vehicle pane.
 		WebPanel vehiclePane = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
 		vehiclePane.setAlignmentX(Component.BOTTOM_ALIGNMENT);
 		travelPane.add(vehiclePane);
@@ -271,7 +291,7 @@ public class MainDetailPanel extends WebPanel implements ListSelectionListener, 
 		vehiclePane.add(centerMapButton);
 
 		// Create the vehicle label.
-		WebLabel vehicleLabel = new WebLabel("   " + Msg.getString("MainDetailPanel.vehicle"), WebLabel.RIGHT); //$NON-NLS-1$
+		WebLabel vehicleLabel = new WebLabel(" " + Msg.getString("MainDetailPanel.vehicle"), WebLabel.RIGHT); //$NON-NLS-1$
 		vehiclePane.add(vehicleLabel);
 
 		// Create the vehicle panel.
@@ -315,7 +335,7 @@ public class MainDetailPanel extends WebPanel implements ListSelectionListener, 
 		// vehicleStatusLabel0.setAlignmentX(Component.LEFT_ALIGNMENT);
 		travelPane.add(vehicleStatusLabel0);
 
-		vehicleStatusLabel = new WebLabel("", WebLabel.LEFT); //$NON-NLS-1$ //$NON-NLS-2$
+		vehicleStatusLabel = new WebLabel(" ", WebLabel.LEFT); //$NON-NLS-1$ //$NON-NLS-2$
 		// vehicleStatusLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		WebPanel wrapper01 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
 		wrapper01.add(vehicleStatusLabel);
@@ -326,7 +346,7 @@ public class MainDetailPanel extends WebPanel implements ListSelectionListener, 
 		// speedLabel0.setAlignmentX(Component.LEFT_ALIGNMENT);
 		travelPane.add(speedLabel0);
 
-		speedLabel = new WebLabel("", WebLabel.LEFT); //$NON-NLS-1$ //$NON-NLS-2$
+		speedLabel = new WebLabel(" ", WebLabel.LEFT); //$NON-NLS-1$ //$NON-NLS-2$
 		// speedLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		WebPanel wrapper02 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
 		wrapper02.add(speedLabel);
@@ -338,7 +358,7 @@ public class MainDetailPanel extends WebPanel implements ListSelectionListener, 
 		// distanceNextNavLabel0.setAlignmentX(Component.LEFT_ALIGNMENT);
 		travelPane.add(distanceNextNavLabel0);
 
-		distanceNextNavLabel = new WebLabel("", WebLabel.LEFT); //$NON-NLS-1$
+		distanceNextNavLabel = new WebLabel(" ", WebLabel.LEFT); //$NON-NLS-1$
 		// distanceNextNavLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		WebPanel wrapper03 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
 		wrapper03.add(distanceNextNavLabel);
@@ -349,17 +369,18 @@ public class MainDetailPanel extends WebPanel implements ListSelectionListener, 
 		// traveledLabel0.setAlignmentX(Component.LEFT_ALIGNMENT);
 		travelPane.add(traveledLabel0);
 
-		traveledLabel = new WebLabel("", WebLabel.LEFT); //$NON-NLS-1$
+		traveledLabel = new WebLabel(" ", WebLabel.LEFT); //$NON-NLS-1$
 		// traveledLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		WebPanel wrapper04 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
 		wrapper04.add(traveledLabel);
 		travelPane.add(wrapper04);
 
 		// Prepare SpringLayout
-		SpringUtilities.makeCompactGrid(travelPane, 5, 2, // rows, cols
-				10, 1, // initX, initY
-				3, 0); // xPad, yPad
-
+		SpringUtilities.makeCompactGrid(travelPane, 
+				5, 2, // rows, cols
+				3, 2, // initX, initY
+				25, 2); // xPad, yPad
+		
 		// Create the member panel.
 		Box memberPane = new CustomBox();
 		memberPane.setAlignmentX(Component.LEFT_ALIGNMENT);

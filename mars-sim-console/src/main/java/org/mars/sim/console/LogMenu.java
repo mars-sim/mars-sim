@@ -24,18 +24,37 @@ import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.person.ai.mission.AreologyStudyFieldMission;
 import org.mars_sim.msp.core.person.ai.mission.BiologyStudyFieldMission;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
+import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
+import org.mars_sim.msp.core.person.ai.mission.CollectIce;
+import org.mars_sim.msp.core.person.ai.mission.CollectRegolith;
 import org.mars_sim.msp.core.person.ai.mission.CollectResourcesMission;
 import org.mars_sim.msp.core.person.ai.mission.EmergencySupplyMission;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
+import org.mars_sim.msp.core.person.ai.mission.MeteorologyStudyFieldMission;
 import org.mars_sim.msp.core.person.ai.mission.Mining;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
+import org.mars_sim.msp.core.person.ai.mission.MissionPlanning;
 import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.person.ai.mission.Trade;
+import org.mars_sim.msp.core.person.ai.mission.TradeUtil;
 import org.mars_sim.msp.core.person.ai.mission.TravelMission;
 import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
+import org.mars_sim.msp.core.person.ai.mission.meta.AreologyStudyFieldMissionMeta;
+import org.mars_sim.msp.core.person.ai.mission.meta.BiologyStudyFieldMissionMeta;
+import org.mars_sim.msp.core.person.ai.mission.meta.BuildingConstructionMissionMeta;
+import org.mars_sim.msp.core.person.ai.mission.meta.BuildingSalvageMissionMeta;
+import org.mars_sim.msp.core.person.ai.mission.meta.CollectIceMeta;
+import org.mars_sim.msp.core.person.ai.mission.meta.CollectRegolithMeta;
+import org.mars_sim.msp.core.person.ai.mission.meta.EmergencySupplyMissionMeta;
+import org.mars_sim.msp.core.person.ai.mission.meta.ExplorationMeta;
+import org.mars_sim.msp.core.person.ai.mission.meta.MeteorologyStudyFieldMissionMeta;
+import org.mars_sim.msp.core.person.ai.mission.meta.MiningMeta;
+import org.mars_sim.msp.core.person.ai.mission.meta.RescueSalvageVehicleMeta;
+import org.mars_sim.msp.core.person.ai.mission.meta.TradeMeta;
+import org.mars_sim.msp.core.person.ai.mission.meta.TravelToSettlementMeta;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.EnterAirlock;
 import org.mars_sim.msp.core.person.ai.task.ExitAirlock;
@@ -627,23 +646,53 @@ public class LogMenu implements BiConsumer<TextIO, RunnerData> {
 
 			if (lvl != null) {
 				changeLogLevel(Mission.class, lvl);
-				changeLogLevel(VehicleMission.class, lvl);
-				changeLogLevel(RoverMission.class, lvl);
 				changeLogLevel(MissionManager.class, lvl);
+				changeLogLevel(MissionPlanning.class, lvl);
+				
 				changeLogLevel(RescueSalvageVehicle.class, lvl);
 				changeLogLevel(CollectResourcesMission.class, lvl);
-	
+				changeLogLevel(CollectIce.class, lvl);				
+				changeLogLevel(CollectRegolith.class, lvl);	
+				
+				changeLogLevel(RescueSalvageVehicleMeta.class, lvl);
+				changeLogLevel(CollectIceMeta.class, lvl);				
+				changeLogLevel(CollectRegolithMeta.class, lvl);	
+				
 				changeLogLevel(Exploration.class, lvl);
 				changeLogLevel(Mining.class, lvl);
 				changeLogLevel(BuildingConstructionMission.class, lvl);
+				changeLogLevel(BuildingSalvageMission.class, lvl);
 				changeLogLevel(EmergencySupplyMission.class, lvl);
-	
+				changeLogLevel(RescueSalvageVehicle.class, lvl);
+				
+				changeLogLevel(ExplorationMeta.class, lvl);
+				changeLogLevel(MiningMeta.class, lvl);
+				changeLogLevel(BuildingConstructionMissionMeta.class, lvl);
+				changeLogLevel(BuildingSalvageMissionMeta.class, lvl);
+				changeLogLevel(EmergencySupplyMissionMeta.class, lvl);
+				changeLogLevel(RescueSalvageVehicleMeta.class, lvl);
+				
 				changeLogLevel(Trade.class, lvl);
+				changeLogLevel(TradeUtil.class, lvl);
+				
+				changeLogLevel(TradeMeta.class, lvl);
+				
+				changeLogLevel(VehicleMission.class, lvl);
+				changeLogLevel(RoverMission.class, lvl);
 				changeLogLevel(TravelMission.class, lvl);
+				
 				changeLogLevel(TravelToSettlement.class, lvl);
+				
 				changeLogLevel(AreologyStudyFieldMission.class, lvl);
 				changeLogLevel(BiologyStudyFieldMission.class, lvl);
-	
+				changeLogLevel(MeteorologyStudyFieldMission.class, lvl);
+				
+				changeLogLevel(TravelToSettlementMeta.class, lvl);
+				
+				changeLogLevel(AreologyStudyFieldMissionMeta.class, lvl);
+				changeLogLevel(BiologyStudyFieldMissionMeta.class, lvl);
+				changeLogLevel(MeteorologyStudyFieldMissionMeta.class, lvl);
+				
 				saveLogLevel("all mission", lvl);
 	
 				responseText.append("Mission-related loggers are set to " + lvl);

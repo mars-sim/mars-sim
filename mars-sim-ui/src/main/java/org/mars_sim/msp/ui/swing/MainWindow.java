@@ -265,10 +265,6 @@ extends JComponent {
 		// Add main pane
 		mainPane.add(desktop, BorderLayout.CENTER);
 
-		// Prepare menu
-		mainWindowMenu = new MainWindowMenu(this, desktop);
-		frame.setJMenuBar(mainWindowMenu);
-
 		// Prepare tool toolbar
 		toolToolbar = new ToolToolBar(this);
 		mainPane.add(toolToolbar, BorderLayout.NORTH);
@@ -299,6 +295,13 @@ extends JComponent {
 		unitToolbar.setVisible(UIConfig.INSTANCE.showUnitBar());
 		toolToolbar.setVisible(UIConfig.INSTANCE.showToolBar());
 
+		// Prepare menu
+		mainWindowMenu = new MainWindowMenu(this, desktop);
+		frame.setJMenuBar(mainWindowMenu);
+
+		// Close the unit bar when starting up
+		unitToolbar.setVisible(false);
+		
 		// Create the status bar
 		statusBar = new JStatusBar();
 

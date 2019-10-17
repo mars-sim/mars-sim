@@ -139,41 +139,32 @@ public class RobotMapLayer implements SettlementMapLayer {
 	 */
 	private void drawRobot(Graphics2D g2d, Robot robot, Color iconColor, Color outlineColor, double scale) {
 
-		if (robot != null) {
+		// Save original graphics transforms.
+		AffineTransform saveTransform = g2d.getTransform();
 
-			// Save original graphics transforms.
-			AffineTransform saveTransform = g2d.getTransform();
+		double translationX = (-1D * robot.getXLocation() * scale - centerX);
+		double translationY = (-1D * robot.getYLocation() * scale - centerY);
 
-			double translationX = (-1D * robot.getXLocation() * scale - centerX);
-			double translationY = (-1D * robot.getYLocation() * scale - centerY);
+		// Apply graphic transforms for label.
+		AffineTransform newTransform = new AffineTransform(saveTransform);
+		newTransform.translate(translationX, translationY);
+		newTransform.rotate(mapPanel.getRotation() * -1D, centerX, centerY);
+		g2d.setTransform(newTransform);
 
-			// Apply graphic transforms for label.
-			AffineTransform newTransform = new AffineTransform(saveTransform);
-			newTransform.translate(translationX, translationY);
-			newTransform.rotate(mapPanel.getRotation() * -1D, centerX, centerY);
-			g2d.setTransform(newTransform);
+		// Set circle color.
+		g2d.setColor(iconColor);
 
-			// Set color outline color.
-			//g2d.setColor(outlineColor);
+		int size = 0;
+		if (scale > 0)
+			size = (int)(scale/4.5);
+		else if (scale <= 0)
+			size = 2;
+		
+		// Draw circle
+		g2d.fillOval(0, 0, size, size);
 
-			// Draw outline circle.
-			//g2d.fillOval(0,  0, 11, 11);
-
-			// Set circle color.
-			g2d.setColor(iconColor);
-
-			int size = 1;
-			if (scale > 0)
-				size = (int)(size * scale/4.5);
-			else if (scale <= 0)
-				size = 1;
-			
-			// Draw circle
-			g2d.fillOval(0, 0, size, size);
-
-			// Restore original graphic transforms.
-			g2d.setTransform(saveTransform);
-		}
+		// Restore original graphic transforms.
+		g2d.setTransform(saveTransform);
 	}
 
 	@Override

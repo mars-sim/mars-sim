@@ -305,7 +305,6 @@ public class LoadVehicleGarage extends Task implements Serializable {
 
 		List<Mission> result = new ArrayList<Mission>();
 
-//		MissionManager manager = Simulation.instance().getMissionManager();
 		Iterator<Mission> i = missionManager.getMissions().iterator();
 		while (i.hasNext()) {
 			Mission mission = i.next();

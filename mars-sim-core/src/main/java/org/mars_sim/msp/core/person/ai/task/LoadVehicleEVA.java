@@ -203,7 +203,6 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 
 		List<Mission> result = new ArrayList<Mission>();
 
-//        MissionManager missionManager = Simulation.instance().getMissionManager();
 		Iterator<Mission> i = missionManager.getMissions().iterator();
 		while (i.hasNext()) {
 			Mission mission = (Mission) i.next();
