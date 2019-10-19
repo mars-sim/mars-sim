@@ -13,7 +13,9 @@ import java.awt.Dimension;
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.JPanel;
+import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
+import javax.swing.JViewport;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 
@@ -77,6 +79,9 @@ public abstract class TabPanel extends JScrollPane {
 		createVerticalScrollBar();
 		setVerticalScrollBarPolicy(VERTICAL_SCROLLBAR_ALWAYS);
 
+		JScrollBar vertical = getVerticalScrollBar();
+		vertical.setValue(vertical.getMinimum());
+		
 		// Create top content panel
 		topContentPanel = new JPanel();
 		topContentPanel.setLayout(new BoxLayout(topContentPanel, BoxLayout.Y_AXIS));
@@ -156,6 +161,13 @@ public abstract class TabPanel extends JScrollPane {
 	}
 	
 	public abstract void initializeUI();
+	
+	public abstract boolean isUIDone();
+	
+	@Override
+	public  String toString() {
+		return tabTitle;
+	}
 	
 	/**
 	 * Prepares for deletion.

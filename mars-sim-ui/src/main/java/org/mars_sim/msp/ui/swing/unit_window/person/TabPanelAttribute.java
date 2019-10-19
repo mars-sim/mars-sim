@@ -141,7 +141,7 @@ extends TabPanel {
 	@Override
 	public void update() {
 		if (!uiDone)
-			this.initializeUI();
+			initializeUI();
 		
 		TableStyle.setTableStyle(attributeTable);
 		attributeTableModel.update();

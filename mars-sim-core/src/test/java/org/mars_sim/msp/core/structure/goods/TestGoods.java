@@ -5,6 +5,7 @@ import java.util.List;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
+import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 
 import junit.framework.TestCase;
@@ -21,10 +22,14 @@ public class TestGoods extends TestCase {
     protected void setUp() throws Exception {
         SimulationConfig.instance().loadConfig();
         ResourceUtil.getInstance();
-        hammer = ItemResourceUtil.createItemResource("hammer", 1, "a tool", 1.4D, 1);
+        hammer = ItemResourceUtil.createItemResource("hammer", 1100, "a tool", 1.4D, 1);
 //        goodsList = GoodsUtil.getGoodsList();
     }
 
+    public void testCreateItem() {
+    	Part microlens = ItemResourceUtil.createItemResource("microlens", 1102, "a test lense", 0.05D, 1);
+    }
+    
 //    public void testGoodsListNotNull() {
 //        assertNotNull(goodsList);
 //	}

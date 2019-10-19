@@ -16,6 +16,7 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.unit_window.LocationTabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.MaintenanceTabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.SalvageTabPanel;
+import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
 
 
@@ -30,6 +31,9 @@ public class EquipmentWindow extends UnitWindow {
 	// Data members
 	private boolean salvaged;
 
+	/** The cache for the currently selected TabPanel. */
+	private TabPanel oldTab;
+	
 	private Equipment equipment;
     /**
      * Constructor
@@ -71,7 +75,13 @@ public class EquipmentWindow extends UnitWindow {
 
 	@Override
 	public void stateChanged(ChangeEvent e) {
-		// TODO Auto-generated method stub
-		
+//		TabPanel newTab = getSelected();
+//
+//		if (oldTab == null || newTab != oldTab) {
+//			oldTab = newTab;
+//			
+//			if (!newTab.isUIDone());
+//				newTab.initializeUI();
+//		}
 	}
 }

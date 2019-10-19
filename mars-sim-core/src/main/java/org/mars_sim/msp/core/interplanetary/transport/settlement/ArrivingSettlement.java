@@ -340,10 +340,6 @@ public class ArrivingSettlement implements Transportable, Serializable {
 		// immigrants.
 		if (immigrants.size() > 0) {
 
-			// Call updateAllAssociatedPeople(), not getAllAssociatedPeople()()
-			newSettlement.updateAllAssociatedPeople();
-			newSettlement.updateAllAssociatedRobots();
-
 			int popSize = newSettlement.getNumCitizens();
 
 			// Reset work shift schedules at settlement.

@@ -137,6 +137,7 @@ implements ListSelectionListener {
 	/**
 	 * Updates this panel.
 	 */
+	@Override
 	public void update() {
 		if (!uiDone)
 			initializeUI();

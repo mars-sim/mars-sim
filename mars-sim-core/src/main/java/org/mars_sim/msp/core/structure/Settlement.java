@@ -171,12 +171,12 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	private transient boolean resourceProcessOverride = false;
 	/* Override flag for construction/salvage mission creation at settlement. */
 	private transient boolean constructionOverride = false;
-	/* Flag showing if the people list has been reloaded. */
-	public transient boolean justReloadedPeople = false;
-	/* Flag showing if the bots list has been reloaded. */
-	public transient boolean justReloadedRobots = false;
-	/* Flag showing if the vehicle list has been reloaded. */
-	public transient boolean justReloadedVehicles = false;
+//	/* Flag showing if the people list has been reloaded. */
+//	public transient boolean justReloadedPeople = false;
+//	/* Flag showing if the bots list has been reloaded. */
+//	public transient boolean justReloadedRobots = false;
+//	/* Flag showing if the vehicle list has been reloaded. */
+//	public transient boolean justReloadedVehicles = false;
 	/** The Flag showing if the settlement has been exposed to the last radiation event. */
 	private boolean[] exposed = { false, false, false };
 	/** The cache for the number of building connectors. */
@@ -210,12 +210,14 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	/** The settlement's map of adjacent buildings. */
 	private transient Map<Building, List<Building>> adjacentBuildingMap = new HashMap<>();
 	/** The settlement's list of citizens. */
-	private transient Collection<Person> allAssociatedPeople = new ConcurrentLinkedQueue<Person>();
-	/** The settlement's list of robots. */
-	private transient Collection<Robot> allAssociatedRobots = new ConcurrentLinkedQueue<Robot>();
-	/** The settlement's list of vehicles. */
-	private transient Collection<Vehicle> allAssociatedVehicles = new ConcurrentLinkedQueue<Vehicle>();
-
+	private Collection<Person> citizens = new ConcurrentLinkedQueue<Person>();
+	/** The settlement's list of owned robots. */
+	private Collection<Robot> ownedRobots = new ConcurrentLinkedQueue<Robot>();
+	/** The settlement's list of owned vehicles. */
+	private Collection<Vehicle> ownedVehicles = new ConcurrentLinkedQueue<Vehicle>();
+	/** The list of people currently within the settlement. */
+	private Collection<Person> peopleWithin = new ConcurrentLinkedQueue<Person>();
+	
 	/** The flag for checking if the simulation has just started. */
 	private boolean justLoaded = true;
 
@@ -255,12 +257,12 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	private int cropsNeedingTendingCache = 5;
 	/** The cache for millisol. */
 	private int millisolCache = -5;
-	/** Numbers of associated people in this settlement. */
+	/** Numbers of citizens of this settlement. */
 	private int numCitizens;
-	/** Numbers of associated bots in this settlement. */
-	private int numAssociatedBots;
-	/** Numbers of associated vehicles in this settlement. */
-	private int numVehicles;
+	/** Numbers of bots owned by this settlement. */
+	private int numOwnedBots;
+	/** Numbers of vehicles owned by this settlement. */
+	private int numOwnedVehicles;
 	/** Minimum amount of methane to stay in this settlement when considering a mission. */
 	private int minMethane = 50;
 	/** Minimum amount of oxygen to stay in this settlement when considering a mission. */
@@ -778,8 +780,10 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	 * @return the number indoor
 	 */
 	public int getIndoorPeopleCount() {
-		return Math.toIntExact(getInventory().getAllContainedUnits().stream().filter(p -> p instanceof Person)
-				.collect(Collectors.counting()));
+		return peopleWithin.size();	
+		
+//		return Math.toIntExact(getInventory().getAllContainedUnits().stream().filter(p -> p instanceof Person)
+//				.collect(Collectors.counting()));
 
 		// TODO: need to factor in those inside a vehicle parked inside a garage
 
@@ -801,16 +805,18 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	}
 
 	/**
-	 * Gets a collection of the people who are inside the settlement.
+	 * Gets a collection of the people who are currently inside the settlement.
 	 * 
-	 * @return Collection of inhabitants
+	 * @return Collection of people within
 	 */
 	public Collection<Person> getIndoorPeople() {
+		return getPeopleWithin();
+		
 //		return CollectionUtils.getPerson(getInventory().getContainedUnits());
-		return allAssociatedPeople
-				.stream().filter(p -> !p.isDeclaredDead()
-						&& p.getLocationStateType() == LocationStateType.INSIDE_SETTLEMENT && p.getSettlement() == this)
-				.collect(Collectors.toList());
+//		return allAssociatedPeople
+//				.stream().filter(p -> !p.isDeclaredDead()
+//						&& p.getLocationStateType() == LocationStateType.INSIDE_SETTLEMENT && p.getSettlement() == this)
+//				.collect(Collectors.toList());
 	}
 
 	/**
@@ -820,7 +826,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	 */
 	public Collection<Person> getOutsideEVAPeople() {
 
-		return allAssociatedPeople.stream().filter(
+		return citizens.stream().filter(
 				p -> !p.isDeclaredDead() && (p.getLocationStateType() == LocationStateType.WITHIN_SETTLEMENT_VICINITY
 						|| p.getLocationStateType() == LocationStateType.OUTSIDE_ON_THE_SURFACE_OF_MARS))
 				.collect(Collectors.toList());
@@ -834,7 +840,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	 */
 	public Collection<Person> getOnMissionPeople() {
 
-		return allAssociatedPeople.stream()
+		return citizens.stream()
 				.filter(p -> !p.isDeclaredDead() && p.getMind().getMission() != null
 						&& !p.getMind().getMission().getPhase().equals(VehicleMission.APPROVAL))
 				.collect(Collectors.toList());
@@ -934,7 +940,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	 * @return the available robots capacity
 	 */
 	public int getAvailableRobotCapacity() {
-		return getRobotCapacity() - numAssociatedBots;
+		return getRobotCapacity() - numOwnedBots;
 	}
 
 	/**
@@ -1289,10 +1295,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 			// Updates the goods manager 
 			updateGoodsManager(time);
 
-			int num = (int) (1.5 * CHECK_GOODS * time);
-			if (num == 0)
-				num = 1;
-			int remainder = millisols % num;
+			int remainder = millisols % CHECK_GOODS;
 			if (remainder == 1) {
 				// Update the goods value gradually with the use of buffers
 				if (goodsManager.isInitialized()) 
@@ -1322,12 +1325,12 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 
 			// Check every RADIATION_CHECK_FREQ (in millisols)
 			// Compute whether a baseline, GCR, or SEP event has occurred
-			remainder = millisols % (int) (1.5 * RadiationExposure.RADIATION_CHECK_FREQ * time);
+			remainder = millisols % RadiationExposure.RADIATION_CHECK_FREQ;
 			if (remainder == 5) {
 				checkRadiationProbability(time);
 			}
 
-			remainder = millisols % (int) (1.5 * RESOURCE_UPDATE_FREQ * time);
+			remainder = millisols % RESOURCE_UPDATE_FREQ;
 			if (remainder == 5) {
 				iceProbabilityValue = computeIceProbability();
 			}
@@ -1497,7 +1500,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	 * Provides the daily statistics on inhabitant's food energy intake
 	 */
 	public void getFoodEnergyIntakeReport() {
-		Iterator<Person> i = getAllAssociatedPeople().iterator();
+		Iterator<Person> i = citizens.iterator();
 		while (i.hasNext()) {
 			Person p = i.next();
 			PhysicalCondition condition = p.getPhysicalCondition();
@@ -1591,7 +1594,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	public void reassignWorkShift() {
 		// TODO: should call this method at, say, 800 millisols, not right at 1000
 		// millisols
-		Collection<Person> people = getAllAssociatedPeople();// getIndoorPeople();
+		Collection<Person> people = citizens;// getIndoorPeople();
 		int pop = people.size();
 
 		int nShift = 0;
@@ -2242,13 +2245,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	 * @return collection of associated people.
 	 */
 	public Collection<Person> getAllAssociatedPeople() {
-		if (justReloadedPeople)
-			return allAssociatedPeople;
-
-		else {
-			return updateAllAssociatedPeople();
-		}
-
+		return citizens;
 	}
 
 	/**
@@ -2288,56 +2285,100 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	 */
 	public Collection<Person> getDeceasedPeople() {
 		// using java 8 stream
-		return
-//				Simulation.instance().getUnitManager()
-		unitManager.getPeople().stream().filter(
+		return unitManager.getPeople().stream().filter(
 				p -> (p.getAssociatedSettlement() == this && p.isDeclaredDead()) || p.getBuriedSettlement() == this)
 				.collect(Collectors.toList());
 	}
 
 	/**
-	 * Updates all people associated with this settlement
+	 * Gets a list of people (may or may not be citizens) within this settlement
 	 * 
-	 * @return collection of associated people.
+	 * @return collection of people within.
 	 */
-	public Collection<Person> updateAllAssociatedPeople() {
-		// using java 8 stream
-		Collection<Person> result = unitManager.getPeople().stream().filter(p -> p.getAssociatedSettlement() == this)
-				.collect(Collectors.toList());
-
-		allAssociatedPeople = result;
-		justReloadedPeople = true;
-		numCitizens = result.size();
-
-		return result;
+	public Collection<Person> getPeopleWithin() {
+		return peopleWithin;
+	}
+		
+	/**
+	 * Makes this person within this settlement
+	 * 
+	 * @param p the person
+	 */
+	public void addPeopleWithin(Person p) {
+		peopleWithin.add(p);
+	}
+	
+	/**
+	 * Makes this person a legal citizen of this settlement
+	 * 
+	 * @param p the person
+	 */
+	public void addACitizen(Person p) {
+		citizens.add(p);
+		// Update the numCtizens
+		numCitizens = citizens.size();
 	}
 
-	public void addPerson(Person p) {
-		allAssociatedPeople.add(p);
-		// Set the flag to false so that it will update next time
-		// when getAllAssociatedPeople() is called.
-		justReloadedPeople = false;
-		// Call to update people list
-//		updateAllAssociatedPeople();
+	/**
+	 * Removes this person from being within this settlement
+	 * 
+	 * @param p the person
+	 */
+	public void removePeopleWithin(Person p) {
+		peopleWithin.remove(p);
+	}
+	
+	/**
+	 * Removes this person from being a legal citizen of this settlement
+	 * 
+	 * @param p the person
+	 */
+	public void removeACitizen(Person p) {
+		peopleWithin.remove(p);
+		// Update the numCtizens
+		numCitizens = citizens.size();
 	}
 
-	public void removePerson(Person p) {
-		allAssociatedPeople.remove(p);
-		// Set the flag to false so that it will update next time
-		// when getAllAssociatedPeople() is called.
-		justReloadedPeople = false;
-		// Call to update people list
-//		updateAllAssociatedPeople();
+	/**
+	 * Adds a robot to be owned by the settlement
+	 * 
+	 * @param r
+	 */
+	public void addOwnedRobot(Robot r) {
+		ownedRobots.add(r);
+		numOwnedBots = ownedRobots.size();
 	}
 
-	public void addRobot(Robot r) {
-		allAssociatedRobots.add(r);
+	/**
+	 * Removes a robot from being owned by the settlement
+	 * 
+	 * @param r
+	 */
+	public void removeOwnedRobot(Robot r) {
+		ownedRobots.remove(r);
+		numOwnedBots = ownedRobots.size();
 	}
 
-	public void removeRobot(Robot r) {
-		allAssociatedRobots.remove(r);
+	/**
+	 * Adds a vehicle to be owned by the settlement
+	 * 
+	 * @param r
+	 */
+	public void addOwnedVehicle(Vehicle v) {
+		ownedVehicles.add(v);
+		numOwnedVehicles = ownedVehicles.size();
 	}
 
+	/**
+	 * Removes a vehicle from being owned by the settlement
+	 * 
+	 * @param r
+	 */
+	public void removeOwnedVehicle(Vehicle v) {
+		ownedVehicles.remove(v);
+		numOwnedVehicles = ownedVehicles.size();
+	}
+	
 	/**
 	 * Checks if the settlement has a particular person
 	 * 
@@ -2346,7 +2387,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	 */
 	public boolean hasPerson(Person aPerson) {
 
-		return getAllAssociatedPeople().stream()
+		return citizens.stream()
 				// .filter(p -> p.equals(aPerson))
 				// .findFirst() != null;
 				.anyMatch(p -> p.equals(aPerson));
@@ -2400,7 +2441,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 			}
 		}
 
-		Set<Person> list = new HashSet<>(getAllAssociatedPeople());
+		Set<Person> list = new HashSet<>(citizens);
 
 		// Add those who are deceased
 		list.addAll(getDeceasedPeople());
@@ -2641,38 +2682,13 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 //	}
 
 	/**
-	 * Gets all Robots associated with this settlement, even if they are out on
+	 * Gets all robots owned by this settlement, even if they are out on
 	 * missions.
 	 * 
-	 * @return collection of associated Robots.
+	 * @return collection of owned robots.
 	 */
 	public Collection<Robot> getAllAssociatedRobots() {
-		if (justReloadedRobots)
-			// if (!allAssociatedPeople.isEmpty())
-			return allAssociatedRobots;
-
-		else {
-			// System.out.println("allAssociatedPeople.isEmpty() is true");
-			// using java 8 stream
-			return updateAllAssociatedRobots();
-		}
-
-	}
-
-	/**
-	 * Updates all robots associated with this settlement
-	 * 
-	 * @return collection of associated robots.
-	 */
-	public Collection<Robot> updateAllAssociatedRobots() {
-		// using java 8 stream
-		Collection<Robot> result = unitManager.getRobots().stream().filter(r -> r.getAssociatedSettlement() == this)
-				.collect(Collectors.toList());
-
-		allAssociatedRobots = result;
-		justReloadedRobots = true;
-		numAssociatedBots = result.size();
-		return result;
+		return ownedRobots;
 	}
 
 	/**
@@ -2681,7 +2697,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	 * @return the number of associated bots.
 	 */
 	public int getNumBots() {
-		return numAssociatedBots;
+		return numOwnedBots;
 	}
 
 	/**
@@ -2691,48 +2707,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	 * @return collection of associated vehicles.
 	 */
 	public Collection<Vehicle> getAllAssociatedVehicles() {
-		if (justReloadedVehicles)
-			// if (!allAssociatedVehicles.isEmpty())
-			return allAssociatedVehicles;
-
-		else {
-			// System.out.println("allAssociatedPeople.isEmpty() is true");
-			// using java 8 stream
-			return updateAllAssociatedVehicles();
-		}
-	}
-
-	public Collection<Vehicle> updateAllAssociatedVehicles() {
-		List<Vehicle> list = new ArrayList<>();
-		Collection<Vehicle> vehicles = unitManager.getVehicles();// CollectionUtils.getVehicle(unitManager.getUnits());
-		for (Vehicle v : vehicles) {
-			if (v.getAssociatedSettlement() == this)
-				list.add(v);
-		}
-
-		allAssociatedVehicles = list;
-		justReloadedVehicles = true;
-		numVehicles = list.size();
-		return list;
-
-//		Collection<Vehicle> result = getParkedVehicles();
-//		if (missionManager == null) // needed for passing maven test
-//			missionManager = Simulation.instance().getMissionManager();
-//		// Also add vehicle mission vehicles not parked at settlement.
-//		List<Mission> missions = missionManager.getMissionsForSettlement(this);
-//		if (!missions.isEmpty()) {
-//			Iterator<Mission> i = missions.iterator();
-//			while (i.hasNext()) {
-//				Mission mission = i.next();
-//				if (mission instanceof VehicleMission) {
-//					Vehicle vehicle = ((VehicleMission) mission).getVehicle();
-//					if ((vehicle != null) && !this.equals(vehicle.getSettlement()))
-//						result.add(vehicle);
-//				}
-//			}
-//		}
-//
-//		return result;
+		return ownedVehicles;
 	}
 
 	/**
@@ -2786,12 +2761,12 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	}
 
 	/**
-	 * Gets the number of vehicles parked or garaged at the settlement.
+	 * Gets the number of vehicles owned by the settlement.
 	 * 
-	 * @return parked vehicles number
+	 * @return number of owned vehicles
 	 */
 	public int getVehicleNum() {
-		return numVehicles;
+		return numOwnedVehicles;
 	}
 
 	public Collection<Vehicle> getLUVs(int mode) {
@@ -4407,7 +4382,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 
 	public double getAverageSettlerWeight() {
 		double value = 0;
-		for (Person p: this.allAssociatedPeople) {
+		for (Person p: citizens) {
 			value += p.getMass();
 		}
 		return value;

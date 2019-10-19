@@ -20,13 +20,10 @@ import javax.swing.border.TitledBorder;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.MBTIPersonality;
 import org.mars_sim.msp.core.person.ai.PersonalityTraitManager;
 import org.mars_sim.msp.core.person.ai.PersonalityTraitType;
-import org.mars_sim.msp.core.resource.ResourceUtil;
-import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.Conversion;

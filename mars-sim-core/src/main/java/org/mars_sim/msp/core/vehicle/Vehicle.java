@@ -221,15 +221,17 @@ public abstract class Vehicle extends Unit
 		if (unitManager == null)
 			unitManager = sim.getUnitManager();
 		
-//		this.identifier = getNextIdentifier();
-
+		// Add this vehicle to the lookup map
 		unitManager.addVehicleID(this);
 		
 		this.vehicleType = vehicleType;
+		
 		// Obtain the associated settlement ID 
 		associatedSettlementID = settlement.getIdentifier();
-//		// Set the containerID
-//		setContainerID(associatedSettlementID);
+
+		// Add this vehicle to be owned by the settlement
+		settlement.addOwnedVehicle(this);
+
 		// Store this vehicle in the settlement
 		settlement.getInventory().storeUnit(this);
 	

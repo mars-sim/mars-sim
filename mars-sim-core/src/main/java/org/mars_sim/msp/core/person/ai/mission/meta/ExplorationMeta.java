@@ -28,7 +28,7 @@ public class ExplorationMeta implements MetaMission {
 	/** Mission name */
 	private static final String NAME = Msg.getString("Mission.description.exploration"); //$NON-NLS-1$
 
-	private static final double FACTOR = 200D;
+	private static final double VALUE = 500D;
 
     private static final double LIMIT = 10D;
 
@@ -85,7 +85,7 @@ public class ExplorationMeta implements MetaMission {
 				Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(settlement, false);
 				if (rover != null) {
 					// Check if any mineral locations within rover range and obtain their concentration
-					missionProbability = settlement.getTotalMineralValue(rover) / FACTOR;
+					missionProbability = settlement.getTotalMineralValue(rover) / VALUE;
 					if (missionProbability < 0)
 						missionProbability = 0;
 				}

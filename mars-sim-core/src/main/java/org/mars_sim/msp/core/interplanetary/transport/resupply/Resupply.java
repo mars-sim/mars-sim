@@ -574,9 +574,6 @@ public class Resupply implements Serializable, Transportable {
 		// immigrants.
 		if (immigrants.size() > 0) {
 
-			settlement.updateAllAssociatedPeople();
-			settlement.updateAllAssociatedRobots();
-
 			// Reset work shift schedules at settlement.
 			// unitManager.setupShift(settlement, popSize);
 			settlement.reassignWorkShift();

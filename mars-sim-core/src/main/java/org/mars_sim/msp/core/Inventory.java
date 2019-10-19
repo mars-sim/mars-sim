@@ -31,12 +31,16 @@ import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.equipment.SpecimenBox;
 import org.mars_sim.msp.core.mars.MarsSurface;
+import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.AmountResourceStorage;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.PhaseType;
 import org.mars_sim.msp.core.resource.ResourceUtil;
+import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * The Inventory class represents what a unit contains in terms of resources and
@@ -2032,19 +2036,33 @@ public class Inventory implements Serializable {
 			if (owner != null)
 				unit.setContainerUnit(owner);
 //			System.out.println("Inventory::storeUnit - " + unit + " owned by " + owner + " (" + ownerID + ")");
-			// Try to empty amount resources into parent if container.
-			if (unit instanceof Container) {
-				Inventory containerInv = unit.getInventory();
-				for (Integer resource : containerInv.getAllARStored(false)) {
-					double containerAmount = containerInv.getAmountResourceStored(resource, false);
-					if (getAmountResourceRemainingCapacity(resource, false, false) >= containerAmount) {
-						containerInv.retrieveAmountResource(resource, containerAmount);
-						storeAmountResource(resource, containerAmount, false);
+			
+			if (owner instanceof Settlement) {
+				// Try to empty amount resources into parent if container.
+				if (unit instanceof Container) {
+					Inventory containerInv = unit.getInventory();
+					for (Integer resource : containerInv.getAllARStored(false)) {
+						double containerAmount = containerInv.getAmountResourceStored(resource, false);
+						if (getAmountResourceRemainingCapacity(resource, false, false) >= containerAmount) {
+							containerInv.retrieveAmountResource(resource, containerAmount);
+							storeAmountResource(resource, containerAmount, false);
+						}
 					}
 				}
+				
+				else if (unit instanceof Person) {
+					((Settlement) owner).addPeopleWithin((Person)unit);
+				}
+//				else if (unit instanceof Robot) {
+//					((Settlement) owner).addOwnedRobot((Robot)unit);
+//				}
+//				else if (unit instanceof Vehicle) {
+//					((Settlement) owner).addOwnedVehicle((Vehicle)unit);
+//				}
 			}
 			
-			// Update owner
+			// Update owner 
+			// TODO: will the owner be changed from above ?
 			owner = getOwner();
 			
 			if (owner != null) {
@@ -2111,6 +2129,18 @@ public class Inventory implements Serializable {
 				for (Integer resource : unit.getInventory().getAllItemResourcesStored()) {
 					owner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);//, ItemResourceUtil.findItemResource(resource));
 				}
+				
+				if (owner instanceof Settlement) {
+					if (unit instanceof Person) {
+						((Settlement) owner).removePeopleWithin((Person)unit);
+					}
+//					if (unit instanceof Robot) {
+//						((Settlement) owner).removeOwnedRobot((Robot)unit);
+//					}
+//					if (unit instanceof Vehicle) {
+//						((Settlement) owner).removeOwnedVehicle((Vehicle)unit);
+//					}
+				}
 			}
 
 			retrieved = true;
@@ -2141,16 +2171,29 @@ public class Inventory implements Serializable {
 //			System.out.println("Inventory::storeUnit - " + unit + "'s ownerID : " + ownerID + "   owner : " + owner);
 			unit.setContainerUnit(newOwner);
 //			System.out.println("Inventory::storeUnit - " + unit + " owned by " + owner + " (" + ownerID + ")");
-			// Try to empty amount resources into parent if container.
-			if (unit instanceof Container) {
-				Inventory containerInv = unit.getInventory();
-				for (Integer resource : containerInv.getAllARStored(false)) {
-					double containerAmount = containerInv.getAmountResourceStored(resource, false);
-					if (getAmountResourceRemainingCapacity(resource, false, false) >= containerAmount) {
-						containerInv.retrieveAmountResource(resource, containerAmount);
-						storeAmountResource(resource, containerAmount, false);
+
+			if (owner instanceof Settlement) {
+				// Try to empty amount resources into parent if container.
+				if (unit instanceof Container) {
+					Inventory containerInv = unit.getInventory();
+					for (Integer resource : containerInv.getAllARStored(false)) {
+						double containerAmount = containerInv.getAmountResourceStored(resource, false);
+						if (getAmountResourceRemainingCapacity(resource, false, false) >= containerAmount) {
+							containerInv.retrieveAmountResource(resource, containerAmount);
+							storeAmountResource(resource, containerAmount, false);
+						}
 					}
 				}
+				
+				else if (unit instanceof Person) {
+					((Settlement) owner).addPeopleWithin((Person)unit);
+				}
+//				else if (unit instanceof Robot) {
+//					((Settlement) owner).addOwnedRobot((Robot)unit);
+//				}
+//				else if (unit instanceof Vehicle) {
+//					((Settlement) owner).addOwnedVehicle((Vehicle)unit);
+//				}
 			}
 			
 			if (newOwner != null) {
@@ -2238,6 +2281,19 @@ public class Inventory implements Serializable {
 					for (Integer resource : unit.getInventory().getAllItemResourcesStored()) {
 						owner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);//, ItemResourceUtil.findItemResource(resource));
 					}
+					
+					if (owner instanceof Settlement) {
+						if (unit instanceof Person) {
+							((Settlement) owner).removePeopleWithin((Person)unit);
+						}
+//						if (unit instanceof Robot) {
+//							((Settlement) owner).removeOwnedRobot((Robot)unit);
+//						}
+//						if (unit instanceof Vehicle) {
+//							((Settlement) owner).removeOwnedVehicle((Vehicle)unit);
+//						}
+					}
+		
 				}
 
 				retrieved = true;

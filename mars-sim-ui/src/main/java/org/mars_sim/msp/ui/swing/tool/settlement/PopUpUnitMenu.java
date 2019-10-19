@@ -30,6 +30,7 @@ import javax.swing.plaf.UIResource;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -171,15 +172,12 @@ public class PopUpUnitMenu extends JPopupMenu {
         itemTwo.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
 	
-	            if (unit instanceof Vehicle) {
-//	            	Vehicle vehicle = (Vehicle) unit;
-//	            	System.out.println("Vehicle : " + vehicle.getName());
+	            if (unit instanceof Vehicle
+	            		|| unit instanceof Person
+	            		|| unit instanceof Robot) {
 	            	desktop.openUnitWindow(unit, false);
 	            }
-	            else if (unit instanceof Person) {
-//	            	Person person = (Person) unit;
-	            	desktop.openUnitWindow(unit, false);
-	            }
+	            
 	            else {
                 	Building building = (Building) unit;
 	            	final JDialog d = new JDialog();

@@ -129,7 +129,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	/** The cache for sol. */
 	private int solCache = 1;
 	/** The settlement the person is currently associated with. */
-	private Integer associatedSettlement = Integer.valueOf(-1);
+	private Integer associatedSettlementID = Integer.valueOf(-1);
 	/** The buried settlement if the person has been deceased. */
 	private Integer buriedSettlement = Integer.valueOf(-1);
 	/** The vehicle the person is on. */
@@ -269,16 +269,18 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		super("test person", settlement.getCoordinates());
 		this.xLoc = 0D;
 		this.yLoc = 0D;
-		this.associatedSettlement = settlement.getIdentifier();
+		this.associatedSettlementID = settlement.getIdentifier();
 		super.setDescription(settlement.getName());
+		
 		// Add the person to the lookup map
 		unitManager.addPersonID(this);
 		// Put person in settlement
 		settlement.getInventory().storeUnit(this);
-//		unitManager.getSettlementByID(associatedSettlement).getInventory().storeUnit(this);
-		// WARNING: setAssociatedSettlement(settlement) will cause suffocation when
+		// Add this person as a citizen
+		settlement.addACitizen(this);
+
 		// reloading from a saved sim
-		BuildingManager.addToRandomBuilding(this, associatedSettlement);
+		BuildingManager.addToRandomBuilding(this, associatedSettlementID);
 		// Construct the NaturalAttributeManager instance
 		attributes = new NaturalAttributeManager(this);
 	}
@@ -294,15 +296,14 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	public Person(String name, Settlement settlement) {
 		super(name, settlement.getCoordinates());
 		super.setDescription(settlement.getName());
-//		// Gets the identifier
-//		this.identifier = getNextIdentifier();
+
 		// Add the person to the lookup map
 		unitManager.addPersonID(this);
-//		// Set its container unit
-//		setContainerUnit(settlement);
-//		// Set the containerID
-//		setContainerID(settlement.getIdentifier());
-	
+		// Store this person in the settlement
+		settlement.getInventory().storeUnit(this);
+		// Add this person as a citizen
+		settlement.addACitizen(this);
+		
 		// Initialize data members
 		this.name = name;
 		super.setName(name);
@@ -310,7 +311,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		lastName = name.substring(name.indexOf(" ") + 1, name.length());
 		this.xLoc = 0D;
 		this.yLoc = 0D;
-		this.associatedSettlement = settlement.getIdentifier();
+		this.associatedSettlementID = settlement.getIdentifier();
 		
 		generatePriorTraining();
 		
@@ -342,13 +343,10 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 * Initialize field data and class 
 	 */
 	public void initialize() {
-		// Add the person to the lookup map
-		unitManager.addPersonID(this);
-		// Put person in proper building.
-		unitManager.getSettlementByID(associatedSettlement).getInventory().storeUnit(this);
+
 		// WARNING: setAssociatedSettlement(settlement) will cause suffocation when
 		// reloading from a saved sim
-		BuildingManager.addToRandomBuilding(this, associatedSettlement);
+		BuildingManager.addToRandomBuilding(this, associatedSettlementID);
 		
 		// why failed in
 		// testWalkingStepsRoverToExterior(org.mars_sim.msp.core.person.ai.task.WalkingStepsTest)
@@ -391,8 +389,8 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		if (unitManager == null) {
 			System.out.println("Person's initializeMock() : unitManager is null");
 		}
-		unitManager.getSettlementByID(associatedSettlement).getInventory().storeUnit(this);
-		BuildingManager.addToRandomBuilding(this, associatedSettlement);
+		unitManager.getSettlementByID(associatedSettlementID).getInventory().storeUnit(this);
+		BuildingManager.addToRandomBuilding(this, associatedSettlementID);
 		isBuried = false;
 		attributes = new NaturalAttributeManager(this);
 //		mind = new Mind(this);
@@ -922,7 +920,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		// Set his/her currentStateType
 		currentStateType = LocationStateType.WITHIN_SETTLEMENT_VICINITY;  
 		// Set his/her buried settlement
-		setBuriedSettlement(associatedSettlement);
+		setBuriedSettlement(associatedSettlementID);
 		// Remove the person from being a member of the associated settlement
 		setAssociatedSettlement(-1);
 		// Throw unit event.
@@ -1108,7 +1106,10 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 * @return the person's job name
 	 */
 	public String getJobName() {
-		return mind.getJob().getName(gender);
+		if (mind.getJob() != null)
+			return mind.getJob().getName(gender);
+		else
+			return "";
 	}
 
 	/**
@@ -1235,10 +1236,10 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	/**
 	 * Sets the gender of the person.
 	 *
-	 * @param g the GenderType
+	 * @param gender the GenderType
 	 */
-	public void setGender(GenderType g) {
-		gender = g;
+	public void setGender(GenderType gender) {
+		this.gender = gender;
 	}
 
 	/**
@@ -1319,12 +1320,12 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	public void setName(String newName) {
 		if (!getName().equals(newName)) {
 			logger.config("Replace the previous '" + getName() + "' with '" + newName + "' in "
-					+ unitManager.getSettlementByID(associatedSettlement) + ".");
+					+ unitManager.getSettlementByID(associatedSettlementID) + ".");
 			firstName = newName.substring(0, newName.indexOf(" "));
 			lastName = newName.substring(newName.indexOf(" ") + 1, newName.length());	
 			this.name = newName;
 			super.setName(newName);
-			super.setDescription(unitManager.getSettlementByID(associatedSettlement).getName());
+			super.setDescription(unitManager.getSettlementByID(associatedSettlementID).getName());
 		}
 	}
 
@@ -1334,7 +1335,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 * @return associated settlement or null if none.
 	 */
 	public Settlement getAssociatedSettlement() {
-		return unitManager.getSettlementByID(associatedSettlement);
+		return unitManager.getSettlementByID(associatedSettlementID);
 	}
 
 	/**
@@ -1344,22 +1345,22 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 */
 	public void setAssociatedSettlement(int newSettlement) {
 
-		if (associatedSettlement != newSettlement) {
+		if (associatedSettlementID != newSettlement) {
 
-			int oldSettlement = associatedSettlement;
-			associatedSettlement = newSettlement;
+			int oldSettlement = associatedSettlementID;
+			associatedSettlementID = newSettlement;
 
 			fireUnitUpdate(UnitEventType.ASSOCIATED_SETTLEMENT_EVENT,
-					unitManager.getSettlementByID(associatedSettlement));
+					unitManager.getSettlementByID(associatedSettlementID));
 
 			if (oldSettlement != -1) {
-				unitManager.getSettlementByID(oldSettlement).removePerson(this);
+				unitManager.getSettlementByID(oldSettlement).removeACitizen(this);
 				unitManager.getSettlementByID(oldSettlement)
 						.fireUnitUpdate(UnitEventType.REMOVE_ASSOCIATED_PERSON_EVENT, this);
 			}
 
 			if (newSettlement != -1) {
-				unitManager.getSettlementByID(newSettlement).addPerson(this);
+				unitManager.getSettlementByID(newSettlement).addACitizen(this);
 				unitManager.getSettlementByID(newSettlement).fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_PERSON_EVENT,
 						this);
 			}

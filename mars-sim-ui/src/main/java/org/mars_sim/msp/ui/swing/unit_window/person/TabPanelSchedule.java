@@ -323,6 +323,7 @@ public class TabPanelSchedule extends TabPanel {
 	/**
 	 * Updates the info on this panel.
 	 */
+	@Override
 	public void update() {
 		if (!uiDone)
 			initializeUI();

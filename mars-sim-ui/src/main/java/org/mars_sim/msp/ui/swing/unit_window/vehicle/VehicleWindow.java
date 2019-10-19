@@ -99,17 +99,14 @@ public class VehicleWindow extends UnitWindow {
 
     @Override
 	public void stateChanged(ChangeEvent e) {
-		// SwingUtilities.updateComponentTreeUI(this);
-		TabPanel newTab = getSelected();
-
-		if (newTab != oldTab) {
-
-			if (newTab instanceof TabPanelActivity) {
-//				if (tabPanelActivity.isUIDone());
-//				 	tabPanelActivity.initializeUI();
-			} else if (newTab instanceof TabPanelAttribute) {
-				
-			}
-		}
+//		// SwingUtilities.updateComponentTreeUI(this);
+//		TabPanel newTab = getSelected();
+//
+//		if (oldTab == null || newTab != oldTab) {
+//			oldTab = newTab;
+//			
+//			if (!newTab.isUIDone());
+//				newTab.initializeUI();		
+//		}
 	}
 }

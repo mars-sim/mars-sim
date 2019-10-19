@@ -662,6 +662,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 	/**
 	 * Updates the info on this panel.
 	 */
+	@Override
 	public void update() {
 		if (!uiDone)
 			initializeUI();

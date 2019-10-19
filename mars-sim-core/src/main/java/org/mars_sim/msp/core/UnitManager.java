@@ -1217,13 +1217,8 @@ public class UnitManager implements Serializable {
 			// Initialize emotional states
 			// person.setEmotionalStates(emotionJSONConfig.getEmotionalStates());
 			
-			// Updates the number of people
-			settlement.updateAllAssociatedPeople();
 		}
 
-		// Updates the number of robots
-		settlement.updateAllAssociatedRobots();
-		
 		// Create all configured relationships.
 		createConfiguredRelationships(personList);
 
@@ -1423,13 +1418,7 @@ public class UnitManager implements Serializable {
 
 					// Assign a job 
 					person.getMind().getInitialJob(JobUtil.MISSION_CONTROL);
-
-					// Updates the number of people
-					settlement.updateAllAssociatedPeople();
 				}
-
-				// Updates the number of robots
-				settlement.updateAllAssociatedRobots();
 
 				// Set up work shift
 				setupShift(settlement, initPop);
@@ -1618,7 +1607,6 @@ public class UnitManager implements Serializable {
 					while (!done) {
 						if (col.size() > 0) {
 							settlement = CollectionUtils.getRandomSettlement(col);
-							settlement.updateAllAssociatedRobots();
 							col.remove(settlement);
 							
 							boolean filled = (settlement.getNumBots() <= settlement.getProjectedNumOfRobots());
@@ -1650,7 +1638,6 @@ public class UnitManager implements Serializable {
 						while (!done) {
 							if (col.size() > 0) {
 								settlement = CollectionUtils.getRandomSettlement(col);
-								settlement.updateAllAssociatedRobots();
 								col.remove(settlement);
 								
 								if (filled) {
@@ -1675,7 +1662,6 @@ public class UnitManager implements Serializable {
 					if (col.size() > 0) {
 						settlement = CollectionUtils.getRandomSettlement(col);
 						
-						settlement.updateAllAssociatedRobots();
 						col.remove(settlement);
 						
 						if (settlement.getNumBots() <= settlement.getProjectedNumOfRobots()) {
@@ -1699,9 +1685,6 @@ public class UnitManager implements Serializable {
 			if (settlement == null) {
 				return;
 			}
-
-			// update the num of bots
-			settlement.updateAllAssociatedRobots();
 			
 //			System.out.println("settlement.getInitialNumOfRobots() : " + settlement.getInitialNumOfRobots());
 //			System.out.println("settlement.getNumBots() : " + settlement.getNumBots());
@@ -1790,14 +1773,7 @@ public class UnitManager implements Serializable {
 							robot.getBotMind().setRobotJob(robotJob, true);
 						}
 					}
-					// Updates the number of robots
-					settlement.updateAllAssociatedRobots();
-					
 				}
-
-				// Updates the number of people
-				settlement.updateAllAssociatedPeople();
-				
 			}
 		} catch (Exception e) {
 			e.printStackTrace(System.err);
@@ -2101,13 +2077,11 @@ public class UnitManager implements Serializable {
 			// Only need to run all these below once at the start of the sim
 			factory.computeReliability();
 
-			Collection<Settlement> c = lookupSettlement.values();
-			for (Settlement s : c) {
-				s.updateAllAssociatedPeople();
-				s.updateAllAssociatedRobots();
-				s.updateAllAssociatedVehicles();
-			}
-						
+//			Collection<Settlement> c = lookupSettlement.values();
+//			for (Settlement s : c) {
+//				s.updateAllAssociatedVehicles();
+//			}
+//						
 			justLoaded = false;
 		}
 		

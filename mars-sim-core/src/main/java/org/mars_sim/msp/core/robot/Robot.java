@@ -162,18 +162,13 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 	protected Robot(String name, Settlement settlement, RobotType robotType) {
 		super(name, robotType.toString(), settlement.getCoordinates()); // extending equipment
 		
-//		this.identifier = getNextIdentifier();
+		// Add this robot to the lookup map
 		unitManager.addRobotID(this);
-		
-//		// Set its container unit
-//		setContainerUnit(settlement);
-//		// Set the containerID
-//		setContainerID(settlement.getIdentifier());
-		
-//		// Place this person within a settlement
-//		enter(LocationCodeType.SETTLEMENT);
-//		// Place this person within a building
-//		enter(LocationCodeType.BUILDING);
+		// Store this robot to the settlement 
+		settlement.getInventory().storeUnit(this);
+		// Add this robot to be owned by the settlement
+		settlement.addOwnedRobot(this);
+
 		// Initialize data members.
 		this.name = name;
 		this.associatedSettlementID = (Integer) settlement.getIdentifier();
@@ -199,7 +194,9 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 	}
 
 	public void initialize() {
-
+		// Put robot in proper building.
+		BuildingManager.addToRandomBuilding(this, associatedSettlementID);
+		
 		robotConfig = SimulationConfig.instance().getRobotConfiguration();
 		unitManager = sim.getUnitManager();
 		
@@ -223,18 +220,6 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 		// Set inventory total mass capacity based on the robot's strength.
 		int strength = attributes.getAttribute(RoboticAttributeType.STRENGTH);
 		getInventory().addGeneralCapacity(BASE_CAPACITY + strength);
-
-		// Add the robot to the lookup map
-		unitManager.addRobotID(this);
-		
-//		System.out.println("(2) " + associatedSettlementID + " : " + unitManager.getSettlementByID(associatedSettlementID) + " : " + this);
-		// Put robot into the settlement.
-		if (unitManager.getSettlementByID(associatedSettlementID) != null) {
-			// TODO: need to find out why it's equals to null
-			unitManager.getSettlementByID(associatedSettlementID).getInventory().storeUnit(this);
-			// Put robot in proper building.
-			BuildingManager.addToRandomBuilding(this, associatedSettlementID);
-		}
 	}
 
 	/**
@@ -699,11 +684,11 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 			associatedSettlementID = newSettlement;
 			fireUnitUpdate(UnitEventType.ASSOCIATED_SETTLEMENT_EVENT, unitManager.getSettlementByID(associatedSettlementID));
 			if (oldSettlement != -1) {
-				unitManager.getSettlementByID(oldSettlement).removeRobot(this);
+				unitManager.getSettlementByID(oldSettlement).removeOwnedRobot(this);
 				unitManager.getSettlementByID(oldSettlement).fireUnitUpdate(UnitEventType.REMOVE_ASSOCIATED_ROBOT_EVENT, this);
 			}
 			if (newSettlement != -1) {
-				unitManager.getSettlementByID(newSettlement).addRobot(this);
+				unitManager.getSettlementByID(newSettlement).addOwnedRobot(this);
 				unitManager.getSettlementByID(newSettlement).fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_ROBOT_EVENT, this);
 			}
 

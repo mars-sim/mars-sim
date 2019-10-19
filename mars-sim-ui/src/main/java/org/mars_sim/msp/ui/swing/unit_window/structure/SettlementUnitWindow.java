@@ -98,17 +98,14 @@ public class SettlementUnitWindow extends UnitWindow {
 	@Override
 	public void stateChanged(ChangeEvent e) {
 		// SwingUtilities.updateComponentTreeUI(this);
-		TabPanel newTab = getSelected();
-
-		if (newTab != oldTab) {
-
-			if (newTab instanceof TabPanelAirComposition) {
-//				if (tabPanelActivity.isUIDone());
-//				 	tabPanelActivity.initializeUI();
-			} else if (newTab instanceof TabPanelAssociatedPeople) {
-				
-			}
-		}
+//		TabPanel newTab = getSelected();
+//
+//		if (oldTab == null || newTab != oldTab) {
+//			oldTab = newTab;
+//			
+//			if (!newTab.isUIDone());
+//				newTab.initializeUI();
+//		}
 	}
 
 }

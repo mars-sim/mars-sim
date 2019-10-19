@@ -261,8 +261,9 @@ public final class JobUtil implements Serializable {
 				while (i.hasNext()) {
 					Job job = i.next();
 					if (!job.equals(JobUtil.getJob(POLITICIAN))) {
+//						logger.config("job : " + job + "  ID: " + job.getJobID());
 						int numPositions = numJobs(job.getName(GenderType.MALE), settlement);
-//						logger.info(job.getName(GenderType.MALE) +  ": " + numPositions + "  ");
+//						logger.config(job.getName(GenderType.MALE) +  ": " + numPositions + "  ");
 						if (numPositions < maxPos) {
 						// Exclude politician job which is reserved for Mayor only
 							double jobProspect = getJobProspect(person, job, settlement, true);

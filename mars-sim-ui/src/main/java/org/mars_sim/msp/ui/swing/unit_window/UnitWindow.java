@@ -103,6 +103,9 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 	private JTabbedPane tabPane;
 //	private JideTabbedPane tabPanel;
 	
+	/** The cache for the currently selected TabPanel. */
+	private TabPanel oldTab;
+	
 	/** Main window. */
 	protected MainDesktopPane desktop;
 	/** Unit for this window. */
@@ -302,7 +305,7 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 //		tabPanel.setBorder(null);
 //
 //		tabPanel.setBoldActiveTab(true);
-//		tabPanel.setScrollSelectedTabOnWheel(true);
+//		tabPanel.set2SelectedTabOnWheel(true);
 //		tabPanel.setTabShape(JideTabbedPane.SHAPE_WINDOWS_SELECTED);
 //		
 //		// Setting foreground color for tab text.
@@ -318,7 +321,14 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 		// Add a listener for the tab changes
 		tabPane.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
-//				tabChanged(true);
+				TabPanel newTab = getSelected();
+//				System.out.println("oldTab : " + oldTab + "    newTab : " + newTab);
+				if (!newTab.isUIDone()) {
+					if (oldTab == null || newTab != oldTab) {
+						oldTab = newTab;
+						newTab.initializeUI();
+					}
+				}
 			}
 		});
 

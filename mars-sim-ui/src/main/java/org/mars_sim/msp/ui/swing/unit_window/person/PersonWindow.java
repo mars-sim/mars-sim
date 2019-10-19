@@ -25,22 +25,22 @@ public class PersonWindow extends UnitWindow {
 
 	private Person person;
 	
-	/** The cache for the currently selected TabPanel. */
-	private TabPanel oldTab;
+//	/** The cache for the currently selected TabPanel. */
+//	private TabPanel oldTab;
 	
-	private TabPanelActivity tabPanelActivity;
-	private TabPanelAttribute tabPanelAttribute;
-	private TabPanelCareer tabPanelCareer;
-	private TabPanelFavorite tabPanelFavorite;
-	private TabPanelGeneral tabPanelGeneral;
-	private TabPanelHealth tabPanelHealth;
-	private InventoryTabPanel inventoryTabPanel;
-	private LocationTabPanel locationTabPanel;
-	private TabPanelSchedule tabPanelSchedule;
-	private TabPanelScience tabPanelScience;
-	private TabPanelSkill tabPanelSkill;
-	private TabPanelSocial tabPanelSocial;
-	private TabPanelSponsorship tabPanelSponsorship;
+//	private TabPanelActivity tabPanelActivity;
+//	private TabPanelAttribute tabPanelAttribute;
+//	private TabPanelCareer tabPanelCareer;
+//	private TabPanelFavorite tabPanelFavorite;
+//	private TabPanelGeneral tabPanelGeneral;
+//	private TabPanelHealth tabPanelHealth;
+//	private InventoryTabPanel inventoryTabPanel;
+//	private LocationTabPanel locationTabPanel;
+//	private TabPanelSchedule tabPanelSchedule;
+//	private TabPanelScience tabPanelScience;
+//	private TabPanelSkill tabPanelSkill;
+//	private TabPanelSocial tabPanelSocial;
+//	private TabPanelSponsorship tabPanelSponsorship;
 
 	/**
 	 * Constructor.
@@ -55,12 +55,15 @@ public class PersonWindow extends UnitWindow {
 	
 		// Add tab panels
 		
-		tabPanelActivity = new TabPanelActivity(person, desktop);
-		addTabPanel(tabPanelActivity);
-
-		tabPanelAttribute = new TabPanelAttribute(person, desktop);
-		addTabPanel(tabPanelAttribute);
+//		tabPanelActivity = new TabPanelActivity(person, desktop);
+//		addTabPanel(tabPanelActivity);
+//
+//		tabPanelAttribute = new TabPanelAttribute(person, desktop);
+//		addTabPanel(tabPanelAttribute);
 		
+		addTabPanel(new TabPanelActivity(person, desktop));
+		
+		addTabPanel(new TabPanelAttribute(person, desktop));
 
 		addTabPanel(new TabPanelCareer(person, desktop));
 
@@ -118,17 +121,22 @@ public class PersonWindow extends UnitWindow {
 
 	@Override
 	public void stateChanged(ChangeEvent e) {
-		// SwingUtilities.updateComponentTreeUI(this);
-		TabPanel newTab = getSelected();
 
-		if (newTab != oldTab) {
-
-			if (newTab instanceof TabPanelActivity) {
-				if (tabPanelActivity.isUIDone());
-				 	tabPanelActivity.initializeUI();
-			} else if (newTab instanceof TabPanelAttribute) {
-				
-			}
-		}
+//		TabPanel newTab = (TabPanel)e.getSource();//getSelected();
+//		System.out.println("oldTab : " + oldTab + "    newTab : " + newTab);
+//		
+//		if (oldTab == null || newTab != oldTab) {
+//			oldTab = newTab;
+//			
+//			if (!newTab.isUIDone());
+//				newTab.initializeUI();
+//				
+////			if (newTab instanceof TabPanelActivity) {
+////				if (tabPanelActivity.isUIDone());
+////				 	tabPanelActivity.initializeUI();
+////			} else if (newTab instanceof TabPanelAttribute) {
+////				
+////			}
+//		}
 	}
 }
