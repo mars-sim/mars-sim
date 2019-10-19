@@ -4,7 +4,7 @@
  * @version 3.1.0 2017-02-20
  * @author Scott Davis
  */
-package org.mars_sim.msp.core.person.ai.taskUtil;
+package org.mars_sim.msp.core.person.ai.task.utils;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -214,7 +214,7 @@ public class TaskManager implements Serializable {
 	public String getTaskDescription(boolean subTask) {
 		if (currentTask != null) {
 			String t = currentTask.getDescription(subTask);
-			if (t != null)
+			if (t != null) // || !t.equals(""))
 				return t;
 			else
 				return "";

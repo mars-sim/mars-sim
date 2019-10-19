@@ -14,8 +14,6 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.goods.Good;
-import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 
 public class FuelHeatSource extends HeatSource implements Serializable {
@@ -163,8 +161,6 @@ public class FuelHeatSource extends HeatSource implements Serializable {
 	@Override
 	public double getAverageHeat(Settlement settlement) {
 		double fuelHeat = getMaxHeat();
-//		Good fuelGood = GoodsUtil.getResourceGood(methaneID);
-//		GoodsManager goodsManager = settlement.getGoodsManager();
 		double fuelValue = settlement.getGoodsManager().getGoodValuePerItem( GoodsUtil.getResourceGood(methaneID));
 		fuelValue *= getFuelConsumptionRate();
 		fuelHeat -= fuelValue;

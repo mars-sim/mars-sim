@@ -12,14 +12,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.LogConsolidated;
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.structure.PowerGrid;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.BuildingException;
-import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
@@ -153,7 +149,7 @@ implements Serializable {
 		
 		ampHours = 1000D * currentMaxCap/SECONDARY_LINE_VOLTAGE; 
 
-		// 2017-01-03 at the start of sim, set to a random value		
+		// At the start of sim, set to a random value		
 		kWhStored = RandomUtil.getRandomDouble(max_kWh_nameplate);		
 		//logger.info("initial kWattHoursStored is " + kWattHoursStored);
 		

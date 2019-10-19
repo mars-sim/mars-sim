@@ -28,7 +28,7 @@ import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.OperateVehicle;
-import org.mars_sim.msp.core.person.ai.taskUtil.TaskPhase;
+import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -116,7 +116,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		addPhase(DISEMBARKING);
 		addPhase(COMPLETED);
 		
-		logger.info("Done adding all phases.");
+		logger.info(getStartingMember() + " was done adding all phases.");
 	}
 
 	/**
@@ -522,6 +522,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			setApproval(false);		
 		}
 
+		logger.info(getStartingMember() + " was done with isVehicleLoadable()");
+		
 		return vehicleCapacity && settlementSupplies;
 	}
 
@@ -548,6 +550,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 * @throws MissionException if problem setting a new phase.
 	 */
 	protected void determineNewPhase() {
+		logger.info(getStartingMember() + " was at the '" + getPhase() + "' phase at determineNewPhase().");
 		if (APPROVAL.equals(getPhase())) {
 			//startTravelToNextNode();
 			setPhase(VehicleMission.EMBARKING);
@@ -584,6 +587,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 
 	@Override
 	protected void performPhase(MissionMember member) {
+		logger.info(getStartingMember() + " was at the '" + getPhase() + "' phase at performPhase().");
 		super.performPhase(member);
 		if (APPROVAL.equals(getPhase())) {
 			requestApprovalPhase(member);

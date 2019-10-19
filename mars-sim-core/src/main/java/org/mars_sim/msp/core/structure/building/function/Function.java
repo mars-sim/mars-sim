@@ -41,6 +41,7 @@ public abstract class Function implements Serializable {
 	private FunctionType type;
 	protected Building building;
 	private List<Point2D> activitySpots;
+	private List<Point2D> bedLocations;
 
 //	private static List<FunctionType> buildingFunctions;
 	
@@ -171,6 +172,20 @@ public abstract class Function implements Serializable {
 		}
 	}
 
+	/**
+	 * Loads bed locations into the building function.
+	 * 
+	 * @param newBedLocations bed locations to add.
+	 */
+	protected void loadBedLocations(Collection<Point2D> newBedLocations) {
+
+		if (bedLocations == null) {
+			bedLocations = new ArrayList<Point2D>(newBedLocations);
+		} else {
+			bedLocations.addAll(newBedLocations);
+		}
+	}
+	
 	/**
 	 * Gets an available activity spot for the person.
 	 * 

@@ -557,8 +557,8 @@ public class EmergencySupplyMission extends RoverMission implements Serializable
 			if (isRoverInAGarage()) {
 				
 				// Store one EVA suit for person (if possible).
-				if (emergencySettlement.getInventory().findNumEVASuits() > 0) {
-					EVASuit suit = emergencySettlement.getInventory().findAnEVAsuit(); //(EVASuit) emergencySettlement.getInventory().findUnitOfClass(EVASuit.class);
+				if (emergencySettlement.getInventory().findNumEVASuits(false) > 0) {
+					EVASuit suit = emergencySettlement.getInventory().findAnEVAsuit();
 					if (suit != null && getVehicle().getInventory().canStoreUnit(suit, false)) {
 						suit.transfer(emergencySettlement, getVehicle());
 //						emergencySettlement.getInventory().retrieveUnit(suit);

@@ -33,7 +33,7 @@ import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
-import org.mars_sim.msp.core.person.ai.taskUtil.TaskPhase;
+import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
@@ -246,7 +246,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 						Inventory roverInv = rover.getInventory();
 						int peopleOnboard = roverInv.findNumUnitsOfClass(Person.class);
 						if ((peopleOnboard > 0)) {
-							int numSuits = roverInv.findNumEVASuits();
+							int numSuits = roverInv.findNumEVASuits(false);
 							double water = roverInv.getAmountResourceStored(ResourceUtil.waterID, false);
 							double oxygen = roverInv.getAmountResourceStored(ResourceUtil.oxygenID, false);
 							if ((numSuits == 0) || (water < WATER_NEED) || (oxygen < OXYGEN_NEED)) {

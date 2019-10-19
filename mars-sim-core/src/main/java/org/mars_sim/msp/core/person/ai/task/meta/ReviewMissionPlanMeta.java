@@ -8,6 +8,7 @@ package org.mars_sim.msp.core.person.ai.task.meta;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.FavoriteType;
@@ -17,8 +18,8 @@ import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionPlanning;
 import org.mars_sim.msp.core.person.ai.mission.PlanType;
 import org.mars_sim.msp.core.person.ai.task.ReviewMissionPlan;
-import org.mars_sim.msp.core.person.ai.taskUtil.MetaTask;
-import org.mars_sim.msp.core.person.ai.taskUtil.Task;
+import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
+import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.Administration;
@@ -31,7 +32,11 @@ public class ReviewMissionPlanMeta implements MetaTask, Serializable {
     /** default serial id. */
     private static final long serialVersionUID = 1L;
 
-    
+	private static transient Logger logger = Logger.getLogger(ReviewMissionPlanMeta.class.getName());
+	private static String loggerName = logger.getName();
+	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+	
+	
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.reviewMissionPlan"); //$NON-NLS-1$
@@ -158,8 +163,8 @@ public class ReviewMissionPlanMeta implements MetaTask, Serializable {
 //            }
         }
 
-//      if (result > 0) 
-//    	  System.out.println(person + " " + person.getRole().getType() + " ReviewMissionPlanMeta : " + result);
+      if (result > 0) 
+  		logger.info(person + " (" + person.getRole().getType() + ") was at ReviewMissionPlanMeta : " + result);
 
         return result;
     }

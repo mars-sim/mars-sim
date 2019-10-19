@@ -17,8 +17,8 @@ import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.task.DigLocalIce;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
-import org.mars_sim.msp.core.person.ai.taskUtil.MetaTask;
-import org.mars_sim.msp.core.person.ai.taskUtil.Task;
+import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
+import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -89,13 +89,13 @@ public class DigLocalIceMeta implements MetaTask, Serializable {
             Inventory inv = settlement.getInventory();
 
             // Check at least one EVA suit at settlement.
-            int numSuits = inv.findNumEVASuits();
+            int numSuits = inv.findNumEVASuits(false);
             if (numSuits == 0) {
                 return 0;
             }
 
             // Check if at least one empty bag at settlement.
-            int numEmptyBags = inv.findNumBags();
+            int numEmptyBags = inv.findNumBags(true);
             if (numEmptyBags == 0) {
                 return 0;
             }

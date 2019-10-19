@@ -28,11 +28,12 @@ import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.location.LocationStateType;
+import org.mars_sim.msp.core.mars.TerrainElevation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.task.CollectResources;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
-import org.mars_sim.msp.core.person.ai.taskUtil.Task;
+import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
@@ -174,6 +175,8 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 			setPhase(VehicleMission.APPROVAL);//.EMBARKING);
 			setPhaseDescription(Msg.getString("Mission.phase.approval.description"));//, s.getName())); //$NON-NLS-1$
 		}
+		
+		logger.info(startingPerson + " had started CollectResourcesMission");
 	}
 
 	/**
@@ -303,6 +306,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 	 * @throws MissionException if problem setting a new phase.
 	 */
 	protected void determineNewPhase() {
+		logger.info(this.getStartingMember() + " was at '" + getPhase() + "' phase in determineNewPhase().");
 		if (APPROVAL.equals(getPhase())) {
 			setPhase(VehicleMission.EMBARKING);
 			setPhaseDescription(
@@ -462,7 +466,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 						
 						if (resourceCollectionRate == CollectIce.collectionRate) {
 							// Calculate the rate at the site now
-							rate = CollectIce.computeCollectionRate(person.getCoordinates());
+							rate = TerrainElevation.getIceCollectionRate(person.getCoordinates());
 						}
 
 						// Randomize the rate of collection upon arrival
@@ -534,7 +538,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 				limit = range / 4D;
 				siteDistance = RandomUtil.getRandomDouble(limit);
 				newLocation = startingLocation.getNewLocation(direction, siteDistance);
-				double score = CollectIce.computeCollectionRate(newLocation);
+				double score = TerrainElevation.getIceCollectionRate(newLocation);
 				if (score > bestScore) {
 					bestScore = score;
 					bestLocation = newLocation;
@@ -584,7 +588,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 						siteDistance = RandomUtil.getRandomDouble(limit);
 						newLocation = currentLocation.getNewLocation(direction, siteDistance);
 						
-						double score = CollectIce.computeCollectionRate(newLocation);
+						double score = TerrainElevation.getIceCollectionRate(newLocation);
 						if (score > bestScore) {
 							bestScore = score;
 							bestLocation = newLocation;

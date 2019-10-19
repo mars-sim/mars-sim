@@ -29,7 +29,7 @@ import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.task.CollectMinedMinerals;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.MineSite;
-import org.mars_sim.msp.core.person.ai.taskUtil.Task;
+import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
@@ -170,6 +170,7 @@ public class Mining extends RoverMission {
 		setPhaseDescription(Msg.getString("Mission.phase.approval.description"));//, getStartingSettlement().getName())); // $NON-NLS-1$
 
 		logger.info("Done creating the Mining mission.");
+
 	}
 
 	/**
@@ -316,6 +317,7 @@ public class Mining extends RoverMission {
 
 	@Override
 	protected void determineNewPhase() {
+		logger.info(this.getStartingMember() + " had the phase of " + getPhase() + " in determineNewPhase().");
 		if (APPROVAL.equals(getPhase())) {
 			setPhase(VehicleMission.EMBARKING);
 			setPhaseDescription(

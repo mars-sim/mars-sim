@@ -790,38 +790,44 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="portable gas chromatograph" mass="15.0">
-		<description>This lab instrument separates the constituents of a volatile substance 
+	<part name="gas chromatograph" mass="15.0">
+		<description>This portable lab instrument separates the constituents of a volatile substance 
 		and is used to gas content analysis. </description>
 	</part>
 
-	<part name="portable mass spectrometer" mass="10.0">
-		<description>This apparatus can separate isotopes and molecular fragments according to 
+	<part name="mass spectrometer" mass="10.0">
+		<description>This portable apparatus can separate isotopes and molecular fragments according to 
 		mass. The sample is vaporized and ionized, and the ions are accelerated in an electric 
 		field and deflected by a magnetic field into a curved trajectory that 
 		gives a distinctive mass spectrum. </description>
 	</part>
 
-	<part name="portable X-ray fluorescene spectrometer" mass="8.0">
-		<description>This apparatus is used to perform non-destructive chemical analyses of rocks, minerals, sediments and fluids. 
+	<part name="X-ray fluorescene spectrometer" mass="8.0">
+		<description>This portable apparatus is used to perform non-destructive chemical analyses of rocks, minerals, sediments and fluids. 
 		</description>
 	</part>
 
 	<part name="infra-red spectrometer" mass="10.0">
-		<description>This instrument can identify and study chemicals on a given sample (solid, liquid, or gaseous)
-		by using infrared spectroscopy to produce an infrared spectrum of the sample. </description>
+		<description>This portable instrument can identify and study chemicals on a given sample (solid, liquid, or gaseous)
+		by using IR spectroscopy to produce an infrared spectrum of the sample. </description>
 	</part>
 
 	<part name="heat probe" mass="1.0">
 		<description>This instrument is used for thermometry applications in that one can measure temperature inside 
 		fluid containers, tanks, and pipes and underground environment</description>
+		<maintenance-entity-list>
+			<entity name="manufacture" probability="5" max-number="1" />
+			<entity name="vehicle" probability="5" max-number="1" />
+			<entity name="Living Accommodations" probability="5" max-number="1" />
+			<entity name="Life Support" probability="5" max-number="1" />
+			<entity name="Farming" probability="5" max-number="1" />
+			<entity name="areothermal power source" probability="1" max-number="15" />							
+		</maintenance-entity-list>		
 	</part>
 
 	<part name="cmos camera" mass="0.5">
 		<description>Complementary Metal–Oxide–Semiconductor(CMOS) Camera has an array of CMOS sensors. Each sensor consists
-		of millions of pixel sensors, each of which includes a photodetector. As light enters the camera through the lens, 
-		it strikes the CMOS image sensor, which causes each photodetector to accumulate an electric charge based on the amount of light that strikes it. 
-		</description>
+		of millions of pixel sensors, each of which includes a photodetector.</description>
 	</part>
 
 	<part name="turbopump" mass="50.0">
@@ -831,16 +837,39 @@
 
 	<part name="heat pipe" mass="0.2">
 		<description>Heat pipe is a passive heat transfer device with an extremely 
-		high effective thermal conductivity. Its two-phase heat transfer mechanism
+		effective thermal conductivity. Its two-phase heat transfer mechanism
 		results in heat transfer capabilities from one hundred to several thousand 
 		times that of an equivalent piece of copper.</description>
+		<maintenance-entity-list>
+			<entity name="manufacture" probability="1" max-number="1" />
+			<entity name="vehicle" probability="1" max-number="1" />
+			<entity name="Living Accommodations" probability="1" max-number="1" />
+			<entity name="Life Support" probability="1" max-number="1" />
+			<entity name="Farming" probability="1" max-number="1" />
+			<entity name="Thermal Generation" probability="1" max-number="1" />				
+		</maintenance-entity-list>
 	</part>
 	
-	<part name="small hammer" mass="1.5"/>
+	<part name="small hammer" mass="1.5" >
+		<description>an utility hammer for light use</description>
+		<maintenance-entity-list>
+			<entity name="manufacture" probability="5" max-number="1" />
+		</maintenance-entity-list>
+	</part>		
 	
-	<part name="socket wrench" mass="1.0"/>
+	<part name="socket wrench" mass="1.0" >
+		<description>a socket wrench for vehicle</description>
+		<maintenance-entity-list>
+			<entity name="Vehicle Maintenance" probability="2" max-number="1" />
+		</maintenance-entity-list>
+	</part>		
 	
-	<part name="pipe wrench" mass="1.5"/>
+	<part name="pipe wrench" mass="1.5" >
+		<description>a socket wrench for vehicle</description>
+		<maintenance-entity-list>
+			<entity name="Vehicle Maintenance" probability="2" max-number="1" />
+		</maintenance-entity-list>
+	</part>		
 			
 	<part name="decontamination kit" mass="0.2">
 		<description>Useful for cleaning up a chemical spill.</description>
@@ -872,7 +901,8 @@
 	<part name="work gloves" mass="0.05">
 		<description>a pair of utility work gloves for medium to heavy use.</description>
 		<maintenance-entity-list>
-			<entity name="manufacture" probability="10" max-number="3" />
+			<entity name="manufacture" probability="5" max-number="1" />
+			<entity name="Vehicle Maintenance" probability="5" max-number="1" />			
 		</maintenance-entity-list>
 	</part>			
 			

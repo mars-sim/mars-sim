@@ -115,7 +115,7 @@ public enum UnitEventType {
 	HEAT_VALUE_EVENT				("heat value"),
 	
 	// For settlement sensor detection grid
-	LOW_DOSE_EVENT					("radiation event"),
+	BASELINE_EVENT					("baseline radiation event"),
 	SEP_EVENT						("SEP event"),	
 	GCR_EVENT						("GCR event"),
 	;

@@ -19,7 +19,6 @@ import org.mars_sim.msp.core.mars.TerrainElevation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Rover;
 
 /**
@@ -65,6 +64,7 @@ public class CollectIce extends CollectResourcesMission {
 		// Use CollectResourcesMission constructor.
 		super(DEFAULT_DESCRIPTION, startingPerson, ResourceUtil.iceID, SITE_GOAL, collectionRate,
 				EquipmentType.convertName2ID(Bag.TYPE), REQUIRED_BAGS, NUM_SITES, MIN_PEOPLE);
+		logger.info(startingPerson + " had started CollectIce");
 	}
 
 	/**
@@ -92,31 +92,12 @@ public class CollectIce extends CollectResourcesMission {
 		int size = locations.size();
 		
 		for (Coordinates location : locations) {
-			totalRate += computeCollectionRate(location);
+			totalRate += TerrainElevation.getIceCollectionRate(location);
 		}
 	
 		return totalRate / size;
 	}
 	
-	public static double computeCollectionRate(Coordinates location) {
-		// Get the elevation and terrain gradient factor
-		double[] terrainProfile = TerrainElevation.getTerrainProfile(location);
-				
-		double elevation = terrainProfile[0];
-		double gradient = terrainProfile[1];		
-		
-		double iceCollectionRate = (- 0.639 * elevation + 14.2492) / 2D  + gradient / 250;
-		
-		if (iceCollectionRate < 0)
-			iceCollectionRate = 0;
-		
-//		String coord = location.getFormattedString();
-//		logger.info(coord + " elevation : " + Math.round(elevation*1000.0)/1000.0);
-//		logger.info(coord + " gradient : " + Math.round(gradient*10.0)/10.0);
-//		logger.info(coord + " ice collection rate : " + Math.round(iceCollectionRate*100.0)/100.0);	
-		
-		return iceCollectionRate;
-	}
 	
 	/**
 	 * Gets the description of a collection site.

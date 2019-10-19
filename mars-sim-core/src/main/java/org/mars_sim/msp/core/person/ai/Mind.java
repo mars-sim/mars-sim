@@ -24,8 +24,8 @@ import org.mars_sim.msp.core.person.ai.job.Politician;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
-import org.mars_sim.msp.core.person.ai.taskUtil.Task;
-import org.mars_sim.msp.core.person.ai.taskUtil.TaskManager;
+import org.mars_sim.msp.core.person.ai.task.utils.Task;
+import org.mars_sim.msp.core.person.ai.task.utils.TaskManager;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.MathUtils;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -246,8 +246,8 @@ public class Mind implements Serializable {
 			}
 
 			boolean hasAMission = hasAMission();
-//			if (hasAMission)
-//				return;
+			if (hasAMission)
+				logger.info(person + " had the " + mission + " mission");;
 			
 			boolean hasActiveMission = hasActiveMission();
 
@@ -261,6 +261,7 @@ public class Mind implements Serializable {
 			boolean isInMissionWindow = taskManager.getTaskSchedule().isAtStartOfWorkShift();
 		
 			if (hasActiveMission) {
+				logger.info(person + " was to perform the " + mission + " mission");
 				mission.performMission(person);
 			}
 			// See if this person can ask for a mission

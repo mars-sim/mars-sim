@@ -32,7 +32,7 @@ import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
-import org.mars_sim.msp.core.person.ai.taskUtil.Task;
+import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.job.RobotJob;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
@@ -86,7 +86,7 @@ public abstract class Mission implements Serializable {
 	public static final String LUV_ATTACHMENT_PARTS_NOT_LOADABLE = "LUV and/or its attachment parts could not be loaded.";
 	public static final String CURRENT_MISSION_PHASE_IS_NULL = "Current mission phase is null.";
 	
-	public static final String MISSION = " mission";
+	public static final String MISSION_SUFFIX = " mission";
 	public static final String[] EXPRESSIONS = new String[] {
 			"Where is everybody when I need someone for ",
 			"So no one is available for ",
@@ -851,8 +851,7 @@ public abstract class Mission implements Serializable {
 	 * 
 	 * @param reason
 	 */
-	public void endMission() {//String reason) {
-//		this.reason = reason;
+	public void endMission() {
 		
 		// Add mission experience score
 		addMissionScore();
@@ -884,7 +883,8 @@ public abstract class Mission implements Serializable {
 			}
 		}
 		
-		LogConsolidated.log(Level.INFO, 0, sourceName,
+		else 
+			LogConsolidated.log(Level.INFO, 0, sourceName,
 				"[" + startingMember.getLocationTag().getLocale() + "] " + startingMember.getName()
 						+ " ended the " + missionName + " with the following status flag(s) :");
 		
@@ -1345,21 +1345,21 @@ public abstract class Mission implements Serializable {
 			else {
 				if (phase != null) {
 					s.append("Error : no crew members on the ").append(phase).append(" phase in ")
-						.append(missionName).append(MISSION).append(" (").append(fullMissionDesignation).append(").");
+						.append(missionName).append(MISSION_SUFFIX).append(" (").append(fullMissionDesignation).append(").");
 				}
 				else {
 //					int rand = RandomUtil.getRandomInt(2);
 					String theInitial = missionName.substring(0);
 					if (Conversion.isVowel(theInitial))
 						s.append("Error : no crew members for ")
-						.append("an ").append(missionName).append(MISSION).append(" (").append(fullMissionDesignation).append(").");
+						.append("an ").append(missionName).append(MISSION_SUFFIX).append(" (").append(fullMissionDesignation).append(").");
 					else
 						s.append("Error : no crew members for ")
-						.append("a ").append(missionName).append(MISSION).append(" (").append(fullMissionDesignation).append(").");
+						.append("a ").append(missionName).append(MISSION_SUFFIX).append(" (").append(fullMissionDesignation).append(").");
 				}
 			}
 			
-			LogConsolidated.log(Level.INFO, 10000, sourceName, s.toString());
+			LogConsolidated.log(Level.INFO, 0, sourceName, s.toString());
 		}
 
 		return result;
@@ -1378,7 +1378,7 @@ public abstract class Mission implements Serializable {
 			logger.severe("Settlement is null");
 
 		else {
-			result = settlement.getInventory().findNumEVASuits();
+			result = settlement.getInventory().findNumEVASuits(false);
 
 			// Leave one suit for settlement use.
 			if (result > 0) {

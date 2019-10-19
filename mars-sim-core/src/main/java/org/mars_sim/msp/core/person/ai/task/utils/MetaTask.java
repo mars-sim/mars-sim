@@ -4,7 +4,7 @@
  * @version 3.1.0 2017-08-30
  * @author Scott Davis
  */
-package org.mars_sim.msp.core.person.ai.taskUtil;
+package org.mars_sim.msp.core.person.ai.task.utils;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;

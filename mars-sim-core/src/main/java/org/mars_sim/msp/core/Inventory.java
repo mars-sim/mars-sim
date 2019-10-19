@@ -1774,17 +1774,53 @@ public class Inventory implements Serializable {
 
 	
 	/**
+	 * Finds the number of specimen box that are contained in storage.
+	 * 
+	 * @param isEmpty does it need to be empty ?
+	 * @return number of specimen box
+	 */
+	public int findNumSpecimenBoxes(boolean isEmpty) {
+		int result = 0;
+		if (containedUnitIDs != null) {
+			for (Integer id : containedUnitIDs) {
+				Equipment e = unitManager.getEquipmentByID(id);
+				if (e instanceof SpecimenBox) {
+					if (isEmpty) {
+						Inventory inv = e.getInventory();
+						// It must be empty inside
+						if ((inv != null) && inv.isEmpty(false)) {
+							result++;
+						}
+					}
+					else
+						result++;
+				}	
+			}
+		}
+		return result;
+	}
+	
+	/**
 	 * Finds the number of bags that are contained in storage.
 	 * 
+	 * @param isEmpty does it need to be empty ?
 	 * @return number of bags
 	 */
-	public <T extends Unit> int findNumBags() {
+	public int findNumBags(boolean isEmpty) {
 		int result = 0;
 		if (containedUnitIDs != null) {
 			for (Integer id : containedUnitIDs) {
 				Equipment e = unitManager.getEquipmentByID(id);
 				if (e instanceof Bag) {
-					result++;
+					if (isEmpty) {
+						Inventory inv = e.getInventory();
+						// It must be empty inside
+						if ((inv != null) && inv.isEmpty(false)) {
+							result++;
+						}
+					}
+					else
+						result++;
 				}	
 			}
 		}
@@ -1792,21 +1828,37 @@ public class Inventory implements Serializable {
 	}
 		
 	/**
-	 * Finds the number of EVA suits that are contained in storage.
+	 * Finds the number of EVA suits (may or may not have resources inside) that are contained in storage.
 	 * 
 	 * @return number of EVA suits
 	 */
-	public <T extends Unit> int findNumEVASuits() {
+	public int findNumEVASuits(boolean isEmpty) {
 		int result = 0;
 		if (containedUnitIDs != null) {
 			for (Integer id : containedUnitIDs) {
 				Equipment e = unitManager.getEquipmentByID(id);
 				if (e instanceof EVASuit) {
-					result++;
+					if (isEmpty) {
+						Inventory inv = e.getInventory();
+						// It must be empty inside
+						if ((inv != null) && inv.isEmpty(false)) {
+							result++;
+						}
+					}
+					else
+						result++;
 				}	
 			}
 		}
+		return result;
+	}
 		
+//	/**
+//	 * Finds the total number of EVA suits (may or may not be reserved for use) that are contained in storage.
+//	 * 
+//	 * @return number of EVA suits
+//	 */
+//	public int findNumEVASuits() {
 //		if (containsUnitClass(unitClass)) {
 //			for (Unit unit : getContainedUnits()) {
 //				if (unitClass.isInstance(unit)) {
@@ -1814,8 +1866,8 @@ public class Inventory implements Serializable {
 //				}
 //			}
 //		}
-		return result;
-	}
+//		return result;
+//	}
 	
 	/**
 	 * Finds the number of units of a class that are contained in storage and have
@@ -1857,19 +1909,19 @@ public class Inventory implements Serializable {
 	}
 
 	/**
-	 * Finds the number of units of a class that are contained in storage and have
+	 * Finds the number of empty containers of a class that are contained in storage and have
 	 * an empty inventory.
 	 * 
-	 * @param unitClass  the unit class.
+	 * @param containerClass  the unit class.
 	 * @param allowDirty will allow dirty (possibly out of date) results.
-	 * @return number of empty units.
+	 * @return number of empty containers.
 	 */
-	public <T extends Equipment> int findNumEmptyContainersOfClass(Class<T> unitClass, boolean allowDirty) {
+	public <T extends Equipment> int findNumEmptyContainersOfClass(Class<T> containerClass, boolean allowDirty) {
 		int result = 0;
 		if (containedUnitIDs != null) {
 			for (Integer id : containedUnitIDs) {
 				Equipment unit = unitManager.getEquipmentByID(id);
-				if (unitClass.isInstance(unit)) {
+				if (containerClass.isInstance(unit)) {
 					Inventory inv = unit.getInventory();
 					// It must be empty inside
 					if ((inv != null) && inv.isEmpty(allowDirty)) {

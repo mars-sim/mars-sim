@@ -4,7 +4,7 @@
  * @version 3.1.0 2017-08-30
  * @author Manny Kung
  */
-package org.mars_sim.msp.core.person.ai.taskUtil;
+package org.mars_sim.msp.core.person.ai.task.utils;
 
 import java.io.Serializable;
 import java.util.HashMap;

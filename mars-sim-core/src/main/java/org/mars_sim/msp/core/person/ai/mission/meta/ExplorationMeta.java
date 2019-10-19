@@ -6,12 +6,10 @@
  */
 package org.mars_sim.msp.core.person.ai.mission.meta;
 
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.equipment.SpecimenBox;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
@@ -32,7 +30,7 @@ public class ExplorationMeta implements MetaMission {
 
 	private static final double FACTOR = 200D;
 
-    private static final double LIMIT = 20D;
+    private static final double LIMIT = 10D;
 
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(ExplorationMeta.class.getName());
@@ -58,8 +56,7 @@ public class ExplorationMeta implements MetaMission {
 			
 			// 1. Check if there are enough specimen containers at the settlement for
 			// collecting rock samples.
-			if (settlement.getInventory().findNumEmptyUnitsOfClass(SpecimenBox.class,
-					false) < Exploration.REQUIRED_SPECIMEN_CONTAINERS) {
+			if (settlement.getInventory().findNumSpecimenBoxes(true) < Exploration.REQUIRED_SPECIMEN_CONTAINERS) {
 				return 0;
 			}
 			

@@ -755,8 +755,10 @@ public class MissionManager implements Serializable {
 	 * @param plan {@link MissionPlanning}
 	 */
 	public void addMissionPlanning(MissionPlanning plan) {
+		if (marsClock == null)
+			logger.info("marsClock is null");
 		int mSol = marsClock.getMissionSol();
-
+		logger.info("On sol " + mSol + ", " + plan.getMission().getStartingMember() + " was supposed to call addMissionPlanning()");
 		if (historicalMissions.containsKey(mSol)) {
 			List<MissionPlanning> plans = historicalMissions.get(mSol);
 			plans.add(plan);
@@ -782,6 +784,7 @@ public class MissionManager implements Serializable {
 	 * @param mission
 	 */
 	public void requestMissionApproval(MissionPlanning plan) {
+		logger.info(plan.getMission().getStartingMember() + " was supposed to call requestMissionApproval()");
 		addMissionPlanning(plan);
 	}
 	
@@ -793,7 +796,7 @@ public class MissionManager implements Serializable {
 	 * @param status
 	 */
 	public void approveMissionPlan(MissionPlanning missionPlan, Person person, PlanType newStatus) {
-		
+		logger.info(person + " was at approveMissionPlan()");
 		for (int mSol : historicalMissions.keySet()) {
 			List<MissionPlanning> plans = historicalMissions.get(mSol);
 			for (MissionPlanning mp : plans) {

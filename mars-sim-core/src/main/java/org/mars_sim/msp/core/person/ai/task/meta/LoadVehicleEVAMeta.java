@@ -20,8 +20,8 @@ import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleEVA;
-import org.mars_sim.msp.core.person.ai.taskUtil.MetaTask;
-import org.mars_sim.msp.core.person.ai.taskUtil.Task;
+import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
+import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -104,7 +104,7 @@ public class LoadVehicleEVAMeta implements MetaTask, Serializable {
 	
 	        // Check if any rovers are in need of EVA suits to allow occupants to exit.
 	        if (LoadVehicleEVA.getRoversNeedingEVASuits(settlement).size() > 0) {
-	            int numEVASuits = settlement.getInventory().findNumEmptyUnitsOfClass(EVASuit.class, false);
+	            int numEVASuits = settlement.getInventory().findNumEVASuits(false);
 	            if (numEVASuits >= 2) {
 	                result += 100D;
 	            }

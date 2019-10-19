@@ -10,7 +10,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.equipment.Bag;
 import org.mars_sim.msp.core.mars.ExploredLocation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
@@ -34,6 +33,8 @@ public class MiningMeta implements MetaMission {
     /** default logger. */
     private static Logger logger = Logger.getLogger(MiningMeta.class.getName());
 
+	private static final double FACTOR = 100D;
+	
     private static final double LIMIT = 10D;
     
     @Override
@@ -60,7 +61,7 @@ public class MiningMeta implements MetaMission {
     			return 0;
        		
             // Check if there are enough bags at the settlement for collecting minerals.
-            if (settlement.getInventory().findNumEmptyUnitsOfClass(Bag.class, false) < Mining.NUMBER_OF_BAGS)
+            if (settlement.getInventory().findNumBags(true) < Mining.NUMBER_OF_BAGS)
             	return 0;
 
             // Check if available light utility vehicles.
@@ -96,7 +97,7 @@ public class MiningMeta implements MetaMission {
                     ExploredLocation miningSite = Mining.determineBestMiningSite(
                             rover, settlement);
                     if (miningSite != null) {
-                        missionProbability = Mining.getMiningSiteValue(miningSite, settlement);
+                        missionProbability = Mining.getMiningSiteValue(miningSite, settlement) / FACTOR;;
     					if (missionProbability < 0)
     						missionProbability = 0;
                     }

@@ -386,7 +386,7 @@ class StartingSettlementPanel extends WizardPanel {
 					if (inv.getAmountResourceStored(ResourceUtil.methaneID, false) < 100D) result = true;
 				}
 				else if (column == 7) {
-					if (inv.findNumUnitsOfClass(EVASuit.class) == 0) result = true;
+					if (inv.findNumEVASuits(false) == 0) result = true;
 				}
 
 				String type = getWizard().getMissionData().getType();

@@ -29,7 +29,7 @@ public class CollectIceMeta implements MetaMission {
 
 	private static final double VALUE = 1D;
 
-    private static final double LIMIT = 100D;
+    private static final double LIMIT = 10D;
     
 	@Override
 	public String getName() {

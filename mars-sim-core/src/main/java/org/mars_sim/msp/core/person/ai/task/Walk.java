@@ -27,8 +27,8 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.ai.task.WalkingSteps.WalkStep;
-import org.mars_sim.msp.core.person.ai.taskUtil.Task;
-import org.mars_sim.msp.core.person.ai.taskUtil.TaskPhase;
+import org.mars_sim.msp.core.person.ai.task.utils.Task;
+import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Airlock;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -1074,8 +1074,9 @@ public class Walk extends Task implements Serializable {
 			// Check if person has reached the outside of the airlock.
 			WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
 			Airlock airlock = step.airlock;
-			// TODO: what does it mean to be outside in exitingAirlockPhase() ?
+
 			if (person.isOutside()) {
+				// the person is already outside
 				if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
 					walkingStepIndex++;
 					// setDescription("Walking outside to an airlock");
@@ -1087,12 +1088,13 @@ public class Walk extends Task implements Serializable {
 					endTask();
 				}
 			} else {
+				// the person is still inside the settlement before 
 				if (ExitAirlock.canExitAirlock(person, airlock)) {
 //					logger.finer(person + " to add ExitAirlock as a subTask");
 					LogConsolidated.log(Level.FINER, 0, sourceName,
 		      				"[" + person.getLocationTag().getLocale() + "] "
 							+ person + " was in " + person.getLocationTag().getImmediateLocation()
-							+ " and starting ExitAirlock subTask.");
+							+ " and can exit the airlock. Starting ExitAirlock subTask.");
 					addSubTask(new ExitAirlock(person, airlock));
 				} else {
 					LogConsolidated.log(Level.SEVERE, 5_000, sourceName, 
@@ -1144,10 +1146,11 @@ public class Walk extends Task implements Serializable {
 				LogConsolidated.log(Level.SEVERE, 0, sourceName + "::enteringAirlockPhase", 
 	      				"[" + person.getLocationTag().getLocale() + "] "
 	      						+ person + " is in " + person.getLocationTag().getImmediateLocation()
-								+ " is OUTSIDE, unable to physically enter the airlock in" + airlock.getEntityName());
+								+ " cannot enter the airlock in " + airlock.getEntityName());
 			}
 
-		} else {
+		} else { 
+			// the person is inside the settlement
 			if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
 				walkingStepIndex++;
 				// setDescription("Walking outside to an airlock to enter");

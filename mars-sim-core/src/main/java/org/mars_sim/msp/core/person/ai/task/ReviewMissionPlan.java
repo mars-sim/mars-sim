@@ -34,8 +34,8 @@ import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.core.person.ai.mission.Trade;
 import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
-import org.mars_sim.msp.core.person.ai.taskUtil.Task;
-import org.mars_sim.msp.core.person.ai.taskUtil.TaskPhase;
+import org.mars_sim.msp.core.person.ai.task.utils.Task;
+import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.structure.ObjectiveType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -86,6 +86,8 @@ public class ReviewMissionPlan extends Task implements Serializable {
 		// Use Task constructor.
 		super(NAME, person, true, false, STRESS_MODIFIER, true, 20D + RandomUtil.getRandomInt(0, 5));
 
+		logger.info(person + " was at ReviewMissionPlan.");
+		
 //		roleType = person.getRole().getType();
 		
 		if (person.isInside()) {// && roleType != null) {
@@ -164,7 +166,10 @@ public class ReviewMissionPlan extends Task implements Serializable {
 	 * @param time the amount of time (millisols) to perform the phase.
 	 * @return the amount of time (millisols) left over after performing the phase.
 	 */
-	private double reviewingPhase(double time) {	
+	private double reviewingPhase(double time) {
+		LogConsolidated.log(Level.INFO, 0, sourceName, 
+				"[" + person.getAssociatedSettlement() + "] " + person + " was going to review mission plans.");
+		
         List<Mission> missions = missionManager.getPendingMissions(person.getAssociatedSettlement());
         
         GoodsManager goodsManager = person.getAssociatedSettlement().getGoodsManager();

@@ -4,7 +4,7 @@
  * @version 3.1.0 2018-01-01
  * @author Scott Davis
  */
-package org.mars_sim.msp.core.person.ai.taskUtil;
+package org.mars_sim.msp.core.person.ai.task.utils;
 
 import java.awt.geom.Point2D;
 import java.io.Serializable;

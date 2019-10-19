@@ -114,32 +114,30 @@ implements Serializable {
 		double result = 0D;
 
 		for (HeatSource source : heatSources) {
-/*
-			if (source instanceof ElectricHeatSource) {
-				result += source.getMaxHeat();
-			}
-			else if (source instanceof SolarHeatSource) {
-				result += source.getMaxHeat();
-			}
-			else if (source instanceof FuelHeatSource) {
-				result += source.getMaxHeat();
-			}
-			else
-*/				
+
+//			if (source instanceof ElectricHeatSource) {
+//				result += source.getMaxHeat();
+//			}
+//			else if (source instanceof SolarHeatSource) {
+//				result += source.getMaxHeat();
+//			}
+//			else if (source instanceof FuelHeatSource) {
+//				result += source.getMaxHeat();
+//			}
+//			else				
 				result += source.getMaxHeat();
 		}
 
 		return result;
 	}
 
-	/**
-	 * Checks if there is enough heat  for all buildings to be set to full heat.
-	 * @return true if sufficient heat
-
-	public boolean isSufficientHeat() {
-		return sufficientHeat;
-	}
-	 */
+//	/**
+//	 * Checks if there is enough heat  for all buildings to be set to full heat.
+//	 * @return true if sufficient heat
+//	 */
+//	public boolean isSufficientHeat() {
+//		return sufficientHeat;
+//	}
 
 	/**
 	 * Gets the total amount of heat that this building is capable of producing (regardless malfunctions).
@@ -170,7 +168,6 @@ implements Serializable {
 	 * Calculate the total amount of heat that this building is CURRENTLY producing
 	 * @return heat generated in kW
 	 */
-	// 2014-11-02 Created calculateGeneratedHeat()
 	public double calculateGeneratedHeat(double time) {
 
 		double result = 0D;
@@ -282,7 +279,6 @@ implements Serializable {
 	 * Calculate the total amount of heat that this building is CURRENTLY producing
 	 * @return heat generated in kW
 	 */
-	// 2015-05-04 Created calculateGeneratedPower()
 	public double calculateGeneratedPower() {
 
 		double result = 0D;

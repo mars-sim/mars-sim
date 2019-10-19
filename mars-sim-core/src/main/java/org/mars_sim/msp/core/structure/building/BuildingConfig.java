@@ -138,6 +138,9 @@ public class BuildingConfig implements Serializable {
 	private static final String BUILDING_CONNECTION = "building-connection";
 	private static final String ACTIVITY = "activity";
 	private static final String ACTIVITY_SPOT = "activity-spot";
+	private static final String BED = "bed";
+	private static final String BED_LOCATION = "bed-location";
+	
 	private static final String ADMINISTRATION = "administration";
 
 	private static final String HEAT_REQUIRED = "heat-required";
@@ -1639,6 +1642,16 @@ public class BuildingConfig implements Serializable {
 	}
 
 	/**
+	 * Gets a list of beds for the medical care building function.
+	 * 
+	 * @param buildingType the type of the building.
+	 * @return list of activity spots as Point2D objects.
+	 */
+	public List<Point2D> getMedicalCareBedLocations(String buildingType) {
+		return getBedLocations(buildingType, MEDICAL_CARE);
+	}
+	
+	/**
 	 * Gets a list of activity spots for the recreation building function.
 	 * 
 	 * @param buildingType the type of the building.
@@ -1725,6 +1738,49 @@ public class BuildingConfig implements Serializable {
 		return result;
 	}
 
+	/**
+	 * Checks if the building function has beds.
+	 * 
+	 * @param buildingType the type of the building.
+	 * @param functionName the type of the building function.
+	 * @return true if building function has beds.
+	 */
+	private boolean hasBedsLocations(String buildingType, String functionName) {
+		Element buildingElement = getBuildingElement(buildingType);
+		Element functionsElement = buildingElement.getChild(FUNCTIONS);
+		Element functionElement = functionsElement.getChild(functionName);
+		List<?> bedElements = functionElement.getChildren(BEDS);
+		return (bedElements.size() > 0);
+	}
+	
+	/**
+	 * Gets a list of bed locations for a building's function.
+	 * 
+	 * @param buildingType the type of the building.
+	 * @param functionName the type of the building function.
+	 * @return list of bed locations as Point2D objects.
+	 */
+	@SuppressWarnings("unchecked")
+	private List<Point2D> getBedLocations(String buildingType, String functionName) {
+		List<Point2D> result = new ArrayList<Point2D>();
+
+		if (hasBedsLocations(buildingType, functionName)) {
+			Element buildingElement = getBuildingElement(buildingType);
+			Element functionsElement = buildingElement.getChild(FUNCTIONS);
+			Element functionElement = functionsElement.getChild(functionName);
+			Element activityElement = functionElement.getChild(BED);
+			Iterator<Element> i = activityElement.getChildren(BED_LOCATION).iterator();
+			while (i.hasNext()) {
+				Element activitySpot = i.next();
+				double xLocation = Double.parseDouble(activitySpot.getAttributeValue(X_LOCATION));
+				double yLocation = Double.parseDouble(activitySpot.getAttributeValue(Y_LOCATION));
+				result.add(new Point2D.Double(xLocation, yLocation));
+			}
+		}
+
+		return result;
+	}
+	
 	private int getValueAsInteger(String buildingType, String child, String subchild, String param) {
 		Element element1 = getBuildingElement(buildingType);
 		Element element2 = element1.getChild(child);

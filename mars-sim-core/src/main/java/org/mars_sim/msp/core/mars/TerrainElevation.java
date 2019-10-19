@@ -9,11 +9,14 @@ package org.mars_sim.msp.core.mars;
 
 import java.awt.Color;
 import java.io.Serializable;
+import java.util.logging.Logger;
 
 import org.mars_sim.mapdata.MapData;
 import org.mars_sim.mapdata.MapDataUtil;
+import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Direction;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
@@ -24,6 +27,8 @@ import org.mars_sim.msp.core.tool.RandomUtil;
 public class TerrainElevation implements Serializable {
 
 	private static final long serialVersionUID = 1L;
+
+	private static Logger logger = Logger.getLogger(TerrainElevation.class.getName());
 
 	private static final double DEG_TO_RAD = Math.PI/180;
 	
@@ -90,8 +95,8 @@ public class TerrainElevation implements Serializable {
 	 * @return
 	 */
 	public static double determineTerrainSlopeFactor(Coordinates currentLocation, double elevation, Direction currentDirection) {
-		double newY = - RandomUtil.getRandomDouble(2.5) * currentDirection.getCosDirection();
-		double newX = RandomUtil.getRandomDouble(2.5) * currentDirection.getSinDirection();
+		double newY = - RandomUtil.getRandomDouble(1.5) * currentDirection.getCosDirection();
+		double newX = RandomUtil.getRandomDouble(1.5) * currentDirection.getSinDirection();
 		Coordinates sampleLocation = currentLocation.convertRectToSpherical(newX, newY);
 		double elevationChange = getPatchedElevation(sampleLocation) - elevation;
 		return Math.atan(elevationChange / 11.1D);
@@ -131,6 +136,19 @@ public class TerrainElevation implements Serializable {
 		if (iceCollectionRate < 0)
 			iceCollectionRate = 0;	
 		
+		String nameLoc = "";
+		Settlement s = CollectionUtils.findSettlement(currentLocation);
+		if (s != null) {
+			nameLoc = "At " + s.getName() + ",";
+			logger.info(nameLoc + "           elevation : " + Math.round(elevation*1000.0)/1000.0 + " km");
+			logger.info(nameLoc + "   terrain steepness : " + Math.round(gradient*10.0)/10.0);
+			logger.info(nameLoc + " ice collection rate : " + Math.round(iceCollectionRate*100.0)/100.0 + " kg/millisol");
+			
+		}
+//		else
+//			nameLoc = "At " + currentLocation.getCoordinateString() + ",";
+		
+
 		return iceCollectionRate;
 	}
 	

@@ -82,6 +82,8 @@ public abstract class TravelMission extends Mission {
 
 			setTravelStatus(AT_NAVPOINT);
 		}
+		
+		logger.info(getStartingMember() + " was done with the navpoints.");
 	}
 
 	/**

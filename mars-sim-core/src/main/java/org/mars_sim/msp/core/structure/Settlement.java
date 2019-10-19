@@ -65,8 +65,8 @@ import org.mars_sim.msp.core.person.ai.task.meta.MaintenanceEVAMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.MaintenanceMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.RepairEVAMalfunctionMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.RepairMalfunctionMeta;
-import org.mars_sim.msp.core.person.ai.taskUtil.Task;
-import org.mars_sim.msp.core.person.ai.taskUtil.TaskSchedule;
+import org.mars_sim.msp.core.person.ai.task.utils.Task;
+import org.mars_sim.msp.core.person.ai.task.utils.TaskSchedule;
 import org.mars_sim.msp.core.person.health.RadiationExposure;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
@@ -559,20 +559,22 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	 */
 	public void initialize() {
 
-		// Get the elevation and terrain gradient factor
-		terrainProfile = TerrainElevation.getTerrainProfile(location);
-				
-		double elevation = terrainProfile[0];
-		double gradient = terrainProfile[1];		
+//		// Get the elevation and terrain gradient factor
+//		terrainProfile = TerrainElevation.getTerrainProfile(location);
+//				
+//		double elevation = terrainProfile[0];
+//		double gradient = terrainProfile[1];		
+//		
+//		iceCollectionRate = (- 0.639 * elevation + 14.2492) / 10D  + gradient / 250;
+//		
+//		if (iceCollectionRate < 0)
+//			iceCollectionRate = 0;
+//		
+//		logger.info(this + "           elevation : " + Math.round(elevation*1000.0)/1000.0 + " km");
+//		logger.info(this + "   terrain steepness : " + Math.round(gradient*10.0)/10.0);
+//		logger.info(this + " ice collection rate : " + Math.round(iceCollectionRate*100.0)/100.0 + " kg/millisol");
 		
-		iceCollectionRate = (- 0.639 * elevation + 14.2492) / 10D  + gradient / 250;
-		
-		if (iceCollectionRate < 0)
-			iceCollectionRate = 0;
-		
-		logger.info(this + "           elevation : " + Math.round(elevation*1000.0)/1000.0 + " km");
-		logger.info(this + "   terrain steepness : " + Math.round(gradient*10.0)/10.0);
-		logger.info(this + " ice collection rate : " + Math.round(iceCollectionRate*100.0)/100.0 + " kg/millisol");
+		iceCollectionRate = TerrainElevation.getIceCollectionRate(location);
 		
 		// Set inventory total mass capacity.
 		getInventory().addGeneralCapacity(Double.MAX_VALUE); // 10_000_000);//100_000_000);//

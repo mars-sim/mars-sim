@@ -35,7 +35,7 @@ import org.mars_sim.msp.core.person.ai.task.RequestMedicalTreatment;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.Walk;
-import org.mars_sim.msp.core.person.ai.taskUtil.TaskPhase;
+import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
@@ -106,6 +106,7 @@ public abstract class RoverMission extends VehicleMission {
 	protected RoverMission(String missionName, MissionMember startingMember, int minPeople) {
 		// Use VehicleMission constructor.
 		super(missionName, startingMember, minPeople);
+		logger.info(startingMember + " had started RoverMission");
 	}
 
 	/**
@@ -406,8 +407,8 @@ public abstract class RoverMission extends VehicleMission {
 						// Store one or two EVA suit for person (if possible).
 						int limit = RandomUtil.getRandomInt(1, 3);
 						while (numEVASuit <= limit) {
-							if (settlement.getInventory().findNumEVASuits() > 0) {
-								EVASuit suit = settlement.getInventory().findAnEVAsuit(); //(EVASuit) settlement.getInventory().findUnitOfClass(EVASuit.class);
+							if (settlement.getInventory().findNumEVASuits(false) > 0) {
+								EVASuit suit = settlement.getInventory().findAnEVAsuit();
 								if (suit != null && v.getInventory().canStoreUnit(suit, false)) {
 									suit.transfer(settlement, v);
 //									settlement.getInventory().retrieveUnit(suit);
