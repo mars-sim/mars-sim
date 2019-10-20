@@ -555,7 +555,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 
 	@Override
 	public void clockPulse(double time) {
-		if (mainWindow.isShowing() && desktop.isToolWindowOpen(TimeWindow.NAME)) {
+		if (desktop.isToolWindowOpen(TimeWindow.NAME)) {
 			// update the fast labels
 			updateFastLabels();
 		}
@@ -563,7 +563,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 
 	@Override
 	public void uiPulse(double time) {
-		if (mainWindow.isShowing() && desktop.isToolWindowOpen(TimeWindow.NAME)) {
+		if (desktop.isToolWindowOpen(TimeWindow.NAME)) {
 			// update the slow labels
 			updateSlowLabels();
 			// Update the slider based on the latest time ratio

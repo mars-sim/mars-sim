@@ -680,16 +680,16 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 	 */
 	public void setAssociatedSettlement(int newSettlement) {
 		if (associatedSettlementID != newSettlement) {
+			
 			int oldSettlement = associatedSettlementID;
 			associatedSettlementID = newSettlement;
-			fireUnitUpdate(UnitEventType.ASSOCIATED_SETTLEMENT_EVENT, unitManager.getSettlementByID(associatedSettlementID));
+
 			if (oldSettlement != -1) {
 				unitManager.getSettlementByID(oldSettlement).removeOwnedRobot(this);
-				unitManager.getSettlementByID(oldSettlement).fireUnitUpdate(UnitEventType.REMOVE_ASSOCIATED_ROBOT_EVENT, this);
 			}
+			
 			if (newSettlement != -1) {
 				unitManager.getSettlementByID(newSettlement).addOwnedRobot(this);
-				unitManager.getSettlementByID(newSettlement).fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_ROBOT_EVENT, this);
 			}
 
 			// set description for this robot

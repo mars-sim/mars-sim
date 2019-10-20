@@ -367,12 +367,12 @@ public class MissionTableModel extends AbstractTableModel
 					break;
 
 				case PHASE: {
-					if (mission.getPhaseDescription().contains("Approval")) {
+					if (mission.getPhase().equals(VehicleMission.APPROVAL)) {//.getPhaseDescription().contains("Approval")) {
 						int percent = (int) mission.getPlan().getPercentComplete();
 						if (percent > 100)
-							percent= 100;
+							percent = 100;
 						int score = (int)mission.getPlan().getScore();
-						result = percent + "% (" + score + ") "
+						result = percent + "% [" + score + "] "
 								+ mission.getPhaseDescription();
 					}
 					else

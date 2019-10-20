@@ -116,7 +116,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		addPhase(DISEMBARKING);
 		addPhase(COMPLETED);
 		
-		logger.info(getStartingMember() + " was done adding all phases.");
+//		logger.info(getStartingMember() + " was done adding all phases.");
 	}
 
 	/**
@@ -345,7 +345,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 */
 
 	public void endMission() {
-		 logger.fine("Calling endMission() in VehicleMission");
+//		 logger.fine("Calling endMission() in VehicleMission");
 		if (hasVehicle()) {
 			// if user hit the "End Mission" button to abort the mission
 			// Check if user aborted the mission and if
@@ -522,7 +522,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			setApproval(false);		
 		}
 
-		logger.info(getStartingMember() + " was done with isVehicleLoadable()");
+//		logger.info(getStartingMember() + " was done with isVehicleLoadable()");
 		
 		return vehicleCapacity && settlementSupplies;
 	}
@@ -550,7 +550,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 * @throws MissionException if problem setting a new phase.
 	 */
 	protected void determineNewPhase() {
-		logger.info(getStartingMember() + " was at the '" + getPhase() + "' phase at determineNewPhase().");
+//		logger.info(getStartingMember() + " was at the '" + getPhase() + "' phase at determineNewPhase().");
 		if (APPROVAL.equals(getPhase())) {
 			//startTravelToNextNode();
 			setPhase(VehicleMission.EMBARKING);
@@ -587,7 +587,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 
 	@Override
 	protected void performPhase(MissionMember member) {
-		logger.info(getStartingMember() + " was at the '" + getPhase() + "' phase at performPhase().");
+//		logger.info(getStartingMember() + " was at the '" + getPhase() + "' phase at performPhase().");
 		super.performPhase(member);
 		if (APPROVAL.equals(getPhase())) {
 			requestApprovalPhase(member);
@@ -1053,6 +1053,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 					addNavpoint(new NavPoint(newDestination.getCoordinates(), newDestination,
 							"emergency destination: " + newDestination.getName()));
 					// each member to switch the associated settlement to the new destination
+					// TODO: need to consider if enough beds are available at the destination settlement
+					// TODO: can they go back to the settlement of their origin ?
 					associateAllMembersWithSettlement(newDestination);
 					// Added updateTravelDestination() below
 					updateTravelDestination();

@@ -627,7 +627,6 @@ public class LocalAreaUtil {
 		return new Point2D.Double(x, y);
 	}
 
-	// 2015-12-08 Added getTwoBoundedOjectsArea()
 	public static Area getBoundedObjectArea(LocalBoundedObject object) {
 
 		Rectangle2D rect = new Rectangle2D.Double(object.getXLocation() - (object.getWidth() / 2D),

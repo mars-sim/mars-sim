@@ -99,13 +99,19 @@ public class TradeMeta implements MetaMission {
 			int f2 = 2*numThisMission + 1;
 			
 			missionProbability *= settlement.getNumCitizens() / f1 / f2 / 2D;
-			
+		
 			if (missionProbability > Trade.MAX_STARTING_PROBABILITY)
 				missionProbability = Trade.MAX_STARTING_PROBABILITY;
-			else if (missionProbability < 0)
+			
+			// if introvert, score  0 to  50 --> -2 to 0
+			// if extrovert, score 50 to 100 -->  0 to 2
+			// Reduce probability if introvert
+			int extrovert = person.getExtrovertmodifier();
+			missionProbability += extrovert;
+			
+			if (missionProbability < 0)
 				missionProbability = 0;
 		}
-//
 		
 //        if (missionProbability > 0)
 //        	logger.info("TradeMeta's probability : " +

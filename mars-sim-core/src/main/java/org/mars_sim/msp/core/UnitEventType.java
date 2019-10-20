@@ -30,6 +30,9 @@ public enum UnitEventType {
 
 	ADD_ASSOCIATED_ROBOT_EVENT		("add associated robot"),
 	REMOVE_ASSOCIATED_ROBOT_EVENT	("remove associated robot"),
+	
+	// For Person
+//	ASSOCIATED_SETTLEMENT_EVENT		("associated settlement"),
 
 
 	// For PhysicalCondition
@@ -44,8 +47,6 @@ public enum UnitEventType {
 	BURIAL_EVENT					("burial event"),
 	RADIATION_EVENT					("radiation event"),
 
-	// For Person
-	ASSOCIATED_SETTLEMENT_EVENT		("associated settlement"),
 
 	// For MalfunctionManager
 	MALFUNCTION_EVENT				("malfunction"),

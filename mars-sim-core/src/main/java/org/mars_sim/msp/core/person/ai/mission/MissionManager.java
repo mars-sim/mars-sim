@@ -306,7 +306,7 @@ public class MissionManager implements Serializable {
 
 			// recordMission(newMission);
 
-			logger.fine("Added the new mission '" + newMission.getName() + "' mission.");
+			logger.fine("Added a new '" + newMission.getName() + "' mission.");
 		}
 	}
 
@@ -333,7 +333,7 @@ public class MissionManager implements Serializable {
 				}
 			}
 
-			logger.fine("Removing the old '" + oldMission.getName() + "' mission.");
+			logger.fine("Removing an old '" + oldMission.getName() + "' mission.");
 		}
 	}
 
@@ -607,7 +607,8 @@ public class MissionManager implements Serializable {
 	 */
 	private void cleanMissions() {
 		int index = 0;		
-		if (onGoingMissions != null) { // for passing maven test
+		if (onGoingMissions != null && !onGoingMissions.isEmpty()) { 
+			// Check if onGoingMissions is null for passing maven test
 			while (index < onGoingMissions.size()) {
 				Mission m = onGoingMissions.get(index);
 				List<MissionStatus> mss = m.getMissionStatus();
@@ -617,20 +618,20 @@ public class MissionManager implements Serializable {
 						if (// ms == null
 		//						|| m.isDone() 
 		//						|| !m.isApproved() // initially it's not approved until it passes the approval phase
-		//						|| m.getPlan() == null
-								//m.getPhase() == null
-								ms == MissionStatus.USER_ABORTED_MISSION
+								m.getPlan() == null
+								|| m.getPhase() == null
+								|| ms == MissionStatus.USER_ABORTED_MISSION
 								|| ms.getName().toLowerCase().contains("no ")
 								|| ms.getName().toLowerCase().contains("not ")
 								|| ms.getName().toLowerCase().contains("null")
 								|| (m.getPlan() != null && m.getPlan().getStatus() == PlanType.NOT_APPROVED)
 								) {
 							removeMission(m);
-						} else {
-							index++;
-						}
+						} 
 					}
 				}
+				
+				index++;
 			}
 		}
 //		if (missions != null) {
@@ -758,7 +759,9 @@ public class MissionManager implements Serializable {
 		if (marsClock == null)
 			logger.info("marsClock is null");
 		int mSol = marsClock.getMissionSol();
-		logger.info("On sol " + mSol + ", " + plan.getMission().getStartingMember() + " was supposed to call addMissionPlanning()");
+		
+		logger.info("On sol " + mSol + ", " + plan.getMission().getStartingMember() + " put together his missio plan.");
+		
 		if (historicalMissions.containsKey(mSol)) {
 			List<MissionPlanning> plans = historicalMissions.get(mSol);
 			plans.add(plan);
@@ -774,7 +777,7 @@ public class MissionManager implements Serializable {
 			}
 		}
 		
-		logger.info("Done addMissionPlanning()");
+//		logger.info("Done addMissionPlanning()");
 	}
 	
 	
@@ -784,7 +787,7 @@ public class MissionManager implements Serializable {
 	 * @param mission
 	 */
 	public void requestMissionApproval(MissionPlanning plan) {
-		logger.info(plan.getMission().getStartingMember() + " was supposed to call requestMissionApproval()");
+//		logger.info(plan.getMission().getStartingMember() + " was supposed to call requestMissionApproval()");
 		addMissionPlanning(plan);
 	}
 	
@@ -796,7 +799,7 @@ public class MissionManager implements Serializable {
 	 * @param status
 	 */
 	public void approveMissionPlan(MissionPlanning missionPlan, Person person, PlanType newStatus) {
-		logger.info(person + " was at approveMissionPlan()");
+//		logger.info(person + " was at approveMissionPlan()");
 		for (int mSol : historicalMissions.keySet()) {
 			List<MissionPlanning> plans = historicalMissions.get(mSol);
 			for (MissionPlanning mp : plans) {
@@ -886,6 +889,7 @@ public class MissionManager implements Serializable {
 	 * 
 	 * @param clock
 	 */
+	
 	public static void initializeInstances(MarsClock clock) {
 		marsClock = clock;
 	}

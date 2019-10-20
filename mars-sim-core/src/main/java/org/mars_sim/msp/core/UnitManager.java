@@ -2088,12 +2088,41 @@ public class UnitManager implements Serializable {
 		if (time > 0) {
 			marsSurface.timePassing(time);
 	
-			lookupSite.values().stream().forEach(x -> x.timePassing(time));
-			lookupSettlement.values().stream().forEach(x -> x.timePassing(time));
-			lookupPerson.values().stream().forEach(x -> x.timePassing(time));
-			lookupRobot.values().stream().forEach(x -> x.timePassing(time));
-			lookupEquipment.values().stream().forEach(x -> x.timePassing(time));	
-			lookupVehicle.values().stream().forEach(x -> x.timePassing(time));
+//			lookupSite.values().stream().forEach(x -> x.timePassing(time));
+//			lookupSettlement.values().stream().forEach(x -> x.timePassing(time));
+//			lookupPerson.values().stream().forEach(x -> x.timePassing(time));
+//			lookupRobot.values().stream().forEach(x -> x.timePassing(time));
+//			lookupEquipment.values().stream().forEach(x -> x.timePassing(time));	
+//			lookupVehicle.values().stream().forEach(x -> x.timePassing(time));
+//			lookupUnit.values().stream().forEach(x -> x.timePassing(time));
+			
+			for (Settlement s : lookupSettlement.values()) {
+				s.timePassing(time);
+			}
+			
+			for (ConstructionSite s : lookupSite.values()) {
+				s.timePassing(time);
+			}
+			
+			for (Person p : lookupPerson.values()) {
+				p.timePassing(time);
+			}
+			
+			for (Robot r : lookupRobot.values()) {
+				r.timePassing(time);
+			}
+			
+			for (Equipment e : lookupEquipment.values()) {
+				e.timePassing(time);
+			}
+			
+			for (Vehicle v : lookupVehicle.values()) {
+				v.timePassing(time);
+			}
+			
+			for (Unit u : lookupUnit.values()) {
+				u.timePassing(time);
+			}
 		}
 	}
 

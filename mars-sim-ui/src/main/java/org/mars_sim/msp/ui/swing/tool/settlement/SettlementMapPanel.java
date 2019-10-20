@@ -1126,7 +1126,8 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 //		}
 //		Graphics2D g2d = (Graphics2D) dbg;
 
-		if (isShowing() && desktop.isToolWindowOpen(SettlementWindow.NAME)) {
+		if (building != null 
+				|| (desktop != null && settlementWindow.isShowing() && desktop.isToolWindowOpen(SettlementWindow.NAME))) {
 			Graphics2D g2d = (Graphics2D) g;
 	
 			// long startTime = System.nanoTime();

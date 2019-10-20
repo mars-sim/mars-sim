@@ -795,7 +795,7 @@ public abstract class Mission implements Serializable {
 	 * Go to the nearest settlement and end collection phase if necessary.
 	 */
 	// TODO : connect to determineEmergencyDestination() in VehicleMission
-	private void goToNearestSettlement() {
+	public void goToNearestSettlement() {
 		if (this instanceof VehicleMission) {
 			VehicleMission vehicleMission = (VehicleMission) this;
 			try {
@@ -1304,7 +1304,11 @@ public abstract class Mission implements Serializable {
 		Iterator<MissionMember> i = members.iterator();
 		while (i.hasNext()) {
 			MissionMember member = i.next();
-			member.setAssociatedSettlement(settlement.getIdentifier());
+//			member.setAssociatedSettlement(settlement.getIdentifier());
+			if (member instanceof Person) {
+				Person p = (Person) member;
+				settlement.addACitizen(p);
+			}
 		}
 	}
 

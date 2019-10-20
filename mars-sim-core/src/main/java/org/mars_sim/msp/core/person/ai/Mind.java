@@ -246,8 +246,8 @@ public class Mind implements Serializable {
 			}
 
 			boolean hasAMission = hasAMission();
-			if (hasAMission)
-				logger.info(person + " had the " + mission + " mission");;
+//			if (hasAMission)
+//				logger.info(person + " had the " + mission + " mission");;
 			
 			boolean hasActiveMission = hasActiveMission();
 
@@ -261,7 +261,7 @@ public class Mind implements Serializable {
 			boolean isInMissionWindow = taskManager.getTaskSchedule().isAtStartOfWorkShift();
 		
 			if (hasActiveMission) {
-				logger.info(person + " was to perform the " + mission + " mission");
+//				logger.info(person + " was to perform the " + mission + " mission");
 				mission.performMission(person);
 			}
 			// See if this person can ask for a mission

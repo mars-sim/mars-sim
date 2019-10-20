@@ -163,8 +163,8 @@ public class ReviewMissionPlanMeta implements MetaTask, Serializable {
 //            }
         }
 
-      if (result > 0) 
-  		logger.info(person + " (" + person.getRole().getType() + ") was at ReviewMissionPlanMeta : " + result);
+//      if (result > 0) 
+//  		logger.info(person + " (" + person.getRole().getType() + ") was at ReviewMissionPlanMeta : " + result);
 
         return result;
     }

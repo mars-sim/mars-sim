@@ -71,10 +71,17 @@ public class TravelToSettlementMeta implements MetaMission {
 	        if (job != null)
 	        	missionProbability *= job.getStartMissionProbabilityModifier(
 	                    TravelToSettlement.class)* settlement.getGoodsManager().getTourismFactor();
-
+			
 			if (missionProbability > LIMIT)
 				missionProbability = LIMIT;
-			else if (missionProbability < 0)
+			
+			// if introvert, score  0 to  50 --> -2 to 0
+			// if extrovert, score 50 to 100 -->  0 to 2
+			// Reduce probability if introvert
+			int extrovert = person.getExtrovertmodifier();
+			missionProbability += extrovert;
+			
+			if (missionProbability < 0)
 				missionProbability = 0;
         }
 

@@ -80,7 +80,7 @@ public abstract class TabPanel extends JScrollPane {
 		setVerticalScrollBarPolicy(VERTICAL_SCROLLBAR_ALWAYS);
 
 		JScrollBar vertical = getVerticalScrollBar();
-		vertical.setValue(vertical.getMinimum());
+		vertical.setValue(0);//vertical.getMinimum());
 		
 		// Create top content panel
 		topContentPanel = new JPanel();

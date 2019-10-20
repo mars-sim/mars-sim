@@ -32,6 +32,8 @@ public class BuildingSalvageMissionMeta implements MetaMission {
     /** default logger. */
     private static Logger logger = Logger.getLogger(BuildingSalvageMissionMeta.class.getName());
     
+    private static final double LIMIT = 100D;
+    
     @Override
     public String getName() {
         return NAME;
@@ -45,7 +47,7 @@ public class BuildingSalvageMissionMeta implements MetaMission {
     @Override
     public double getProbability(Person person) {
 
-        double result = 0D;
+        double missionProbability = 0D;
   
         // No construction until after the first ten sols of the simulation.
         //MarsClock startTime = Simulation.instance().getMasterClock().getInitialMarsTime();
@@ -99,9 +101,9 @@ public class BuildingSalvageMissionMeta implements MetaMission {
                         .getSalvageValues();
                 double salvageProfit = values
                         .getSettlementSalvageProfit(constructionSkill);
-                result = salvageProfit;
-                if (result > 10D) {
-                    result = 10D;
+                missionProbability = salvageProfit;
+                if (missionProbability > 10D) {
+                    missionProbability = 10D;
                 }
             } catch (Exception e) {
                 logger.log(Level.SEVERE,
@@ -113,11 +115,23 @@ public class BuildingSalvageMissionMeta implements MetaMission {
             // Job modifier.
             Job job = person.getMind().getJob();
             if (job != null) {
-                result *= job.getStartMissionProbabilityModifier(BuildingSalvageMission.class);
+                missionProbability *= job.getStartMissionProbabilityModifier(BuildingSalvageMission.class);
             }
+            
+			if (missionProbability > LIMIT)
+				missionProbability = LIMIT;
+			
+			// if introvert, score  0 to  50 --> -2 to 0
+			// if extrovert, score 50 to 100 -->  0 to 2
+			// Reduce probability if introvert
+			int extrovert = person.getExtrovertmodifier();
+			missionProbability += extrovert;
+			
+			if (missionProbability < 0)
+				missionProbability = 0;
         }
 
-        return result;
+        return missionProbability;
     }
 
 	@Override

@@ -2317,6 +2317,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 		citizens.add(p);
 		// Update the numCtizens
 		numCitizens = citizens.size();
+		fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_PERSON_EVENT, this);
 	}
 
 	/**
@@ -2335,6 +2336,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	 */
 	public void removeACitizen(Person p) {
 		peopleWithin.remove(p);
+		fireUnitUpdate(UnitEventType.REMOVE_ASSOCIATED_PERSON_EVENT, this);
 		// Update the numCtizens
 		numCitizens = citizens.size();
 	}
@@ -2346,6 +2348,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	 */
 	public void addOwnedRobot(Robot r) {
 		ownedRobots.add(r);
+		fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_ROBOT_EVENT, this);
 		numOwnedBots = ownedRobots.size();
 	}
 
@@ -2356,6 +2359,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	 */
 	public void removeOwnedRobot(Robot r) {
 		ownedRobots.remove(r);
+		fireUnitUpdate(UnitEventType.REMOVE_ASSOCIATED_ROBOT_EVENT, this);
 		numOwnedBots = ownedRobots.size();
 	}
 

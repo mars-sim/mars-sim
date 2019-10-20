@@ -35,6 +35,8 @@ public class BuildingConstructionMissionMeta implements MetaMission {
     /** default logger. */
     private static Logger logger = Logger.getLogger(MiningMeta.class.getName());
 
+    private static final double LIMIT = 100D;
+    
 //    private static MarsClock marsClock;
     
     @Override
@@ -50,7 +52,7 @@ public class BuildingConstructionMissionMeta implements MetaMission {
     @Override
     public double getProbability(Person person) {
 
-        double result = 0D;
+        double missionProbability = 0D;
         
 //        if (marsClock == null)
 //        	marsClock = Simulation.instance().getMasterClock().getMarsClock();
@@ -98,17 +100,17 @@ public class BuildingConstructionMissionMeta implements MetaMission {
                 // Add construction profit for existing or new construction sites.
                 double constructionProfit = values.getSettlementConstructionProfit(constructionSkill);
                 if (constructionProfit > 0D) {
-                    result = 100D;
+                    missionProbability = 100D;
 
                     double newSiteProfit = values.getNewConstructionSiteProfit(constructionSkill);
                     double existingSiteProfit = values.getAllConstructionSitesProfit(constructionSkill);
 
                     // Modify if construction is the person's favorite activity.
                     if (person.getFavorite().getFavoriteActivity() == FavoriteType.TINKERING)
-                        result *= 1.1D;
+                        missionProbability *= 1.1D;
 
                     if (newSiteProfit > existingSiteProfit) {
-                        result = getProbability(settlement);
+                        missionProbability = getProbability(settlement);
                     }
                 }
             }
@@ -120,12 +122,25 @@ public class BuildingConstructionMissionMeta implements MetaMission {
             // Job modifier.
             Job job = person.getMind().getJob();
             if (job != null) {
-                result *= job.getStartMissionProbabilityModifier(BuildingConstructionMission.class);
+                missionProbability *= job.getStartMissionProbabilityModifier(BuildingConstructionMission.class);
             }
+            
+			if (missionProbability > LIMIT)
+				missionProbability = LIMIT;
+			
+			// if introvert, score  0 to  50 --> -2 to 0
+			// if extrovert, score 50 to 100 -->  0 to 2
+			// Reduce probability if introvert
+			int extrovert = person.getExtrovertmodifier();
+			missionProbability += extrovert;
+			
+			if (missionProbability < 0)
+				missionProbability = 0;
+            
         }
 
         //if (result > 1.1) logger.info("probability : "+ result);
-        return result;
+        return missionProbability;
     }
 
     public double getProbability(Settlement settlement) {

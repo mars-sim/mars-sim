@@ -105,7 +105,11 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	private static double highW;
 	/** The average low weight of a person. */
 	private static double lowW;
-
+	
+	// Transient data members
+	/** The extrovert score of a person. */
+	private transient int extrovertScore = -1;
+	
 	// Data members
 	/** True if the person is a preconfigured crew member. */
 	private boolean preConfigured;
@@ -128,6 +132,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	private int age;
 	/** The cache for sol. */
 	private int solCache = 1;
+	
 	/** The settlement the person is currently associated with. */
 	private Integer associatedSettlementID = Integer.valueOf(-1);
 	/** The buried settlement if the person has been deceased. */
@@ -1350,19 +1355,12 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 			int oldSettlement = associatedSettlementID;
 			associatedSettlementID = newSettlement;
 
-			fireUnitUpdate(UnitEventType.ASSOCIATED_SETTLEMENT_EVENT,
-					unitManager.getSettlementByID(associatedSettlementID));
-
 			if (oldSettlement != -1) {
 				unitManager.getSettlementByID(oldSettlement).removeACitizen(this);
-				unitManager.getSettlementByID(oldSettlement)
-						.fireUnitUpdate(UnitEventType.REMOVE_ASSOCIATED_PERSON_EVENT, this);
 			}
 
 			if (newSettlement != -1) {
 				unitManager.getSettlementByID(newSettlement).addACitizen(this);
-				unitManager.getSettlementByID(newSettlement).fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_PERSON_EVENT,
-						this);
 			}
 		}
 	}
@@ -1979,6 +1977,23 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		return suit;
 	}
 	
+	public int getExtrovertScore() {
+		if (extrovertScore == -1) {
+			int score = mind.getTraitManager().getIntrovertExtrovertScore();
+			extrovertScore = score;
+			
+			// if introvert, score  0 to  50 --> -2 to 0
+			// if extrovert, score 50 to 100 -->  0 to 2
+			return score;
+		}
+		
+		return extrovertScore;
+	}
+	
+	public int getExtrovertmodifier() {
+		return (int)((getExtrovertScore() - 50) / 25D);
+	}
+	
 	public void reinit() {
 		mind.reinit();
 		condition.reinit();
@@ -1990,7 +2005,6 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	public static void reinitializeIdentifierCount() {
 		uniqueCount = unitManager.getTotalNumPeople() + Unit.FIRST_PERSON_UNIT_ID;
 	}
-	
 	
 	public boolean equals(Object obj) {
 		if (this == obj) return true;
@@ -2018,28 +2032,6 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		return hashCode;
 	}
 	
-//	public boolean equals(Object obj) {
-//		if (this == obj) return true;
-//		if (obj == null) return false;
-//		if (this.getClass() != obj.getClass()) return false;
-//		Person p = (Person) obj;
-//		return this.identifier == p.getIdentifier()
-//				&& this.name.equals(p.getName())
-//				&& this.age == p.getAge()
-//				&& this.getBirthDate() == p.getBirthDate();
-//	}
-//
-//	/**
-//	 * Gets the hash code for this object.
-//	 * 
-//	 * @return hash code.
-//	 */
-//	public int hashCode() {
-//		int hashCode = name.hashCode();
-//		hashCode *= age * identifier;
-//		hashCode *= getBirthDate().hashCode();
-//		return hashCode;
-//	}
 	
 //	@Override
 //	public String toString() {

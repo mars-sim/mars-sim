@@ -391,8 +391,8 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		optionsButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
 				SwingUtilities.invokeLater(() -> {
-					if (optionsMenu == null)
-						createOptionsMenu();
+//					if (optionsMenu == null)
+//						createOptionsMenu();
 					optionsMenu.show(optionsButton, 0, optionsButton.getHeight());
 				});
 			}
@@ -425,6 +425,10 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		statusBar.setLeftComponent(heightLabel, false);
 		statusBar.addRightComponent(rgbLabel, false);
 		statusBar.addRightComponent(hsbLabel, false);
+		
+		// Create the option menu
+		if (optionsMenu == null)
+			createOptionsMenu();
 		
 		setClosable(true);
 		setResizable(false);
@@ -842,7 +846,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 				int[] rgb = TerrainElevation.getRGB(clickedPosition);
 				float[] hsb = TerrainElevation.getHSB(rgb);
 				
-				s2 = RGB+ rgb[0] + COMMA + rgb[1] + COMMA + rgb[2] + CLOSE_PARENT;
+				s2 = RGB + rgb[0] + COMMA + rgb[1] + COMMA + rgb[2] + CLOSE_PARENT;
 				s3 = HSB + Math.round(hsb[0]*1000.0)/1000.0 + COMMA
 						+  Math.round(hsb[1]*1000.0)/1000.0 + COMMA 
 						+  Math.round(hsb[2]*1000.0)/1000.0 + CLOSE_PARENT;
