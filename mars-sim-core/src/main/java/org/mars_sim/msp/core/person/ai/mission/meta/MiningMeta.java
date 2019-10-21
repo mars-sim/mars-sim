@@ -27,7 +27,7 @@ import org.mars_sim.msp.core.vehicle.Rover;
 public class MiningMeta implements MetaMission {
 
     /** Mission name */
-    private static final String NAME = Msg.getString(
+    private static final String DEFAULT_DESCRIPTION = Msg.getString(
             "Mission.description.mining"); //$NON-NLS-1$
 
     /** default logger. */
@@ -39,7 +39,7 @@ public class MiningMeta implements MetaMission {
     
     @Override
     public String getName() {
-        return NAME;
+        return DEFAULT_DESCRIPTION;
     }
 
     @Override
@@ -75,7 +75,7 @@ public class MiningMeta implements MetaMission {
             	return 0;
 
 			int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);
-			int numThisMission = missionManager.numParticularMissions(NAME, settlement);
+			int numThisMission = missionManager.numParticularMissions(DEFAULT_DESCRIPTION, settlement);
 	
 	   		// Check for # of embarking missions.
     		if (Math.max(1, settlement.getNumCitizens() / 8.0) < numEmbarked + numThisMission) {
@@ -89,7 +89,7 @@ public class MiningMeta implements MetaMission {
     		
             try {
                 // Get available rover.
-                Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(
+                Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(DEFAULT_DESCRIPTION,
                         settlement, false);
 
                 if (rover != null) {

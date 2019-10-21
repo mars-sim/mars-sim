@@ -112,7 +112,7 @@ public class FieldSitePanel extends WizardPanel {
     @Override
     void updatePanel() {
         try {
-            double range = (getWizard().getMissionData().getRover().getRange() * RANGE_MODIFIER) / 2D;
+            double range = (getWizard().getMissionData().getRover().getRange(wizard.getMissionBean().getType()) * RANGE_MODIFIER) / 2D;
             pixelRange = convertRadiusToMapPixels(range);
             ellipseLayer.setEllipseDetails(new IntPoint(150, 150), new IntPoint(150, 150), (pixelRange * 2));
             IntPoint initialNavpointPos = new IntPoint(150, 150 - (pixelRange / 2));

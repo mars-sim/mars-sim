@@ -34,11 +34,21 @@ import org.mars_sim.msp.core.manufacture.Salvagable;
 import org.mars_sim.msp.core.manufacture.SalvageInfo;
 import org.mars_sim.msp.core.manufacture.SalvageProcessInfo;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.mission.AreologyFieldStudy;
+import org.mars_sim.msp.core.person.ai.mission.BiologyFieldStudy;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
+import org.mars_sim.msp.core.person.ai.mission.CollectIce;
+import org.mars_sim.msp.core.person.ai.mission.CollectRegolith;
+import org.mars_sim.msp.core.person.ai.mission.EmergencySupply;
+import org.mars_sim.msp.core.person.ai.mission.Exploration;
+import org.mars_sim.msp.core.person.ai.mission.MeteorologyFieldStudy;
 import org.mars_sim.msp.core.person.ai.mission.Mining;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.mission.MissionManager;
+import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.core.person.ai.mission.Trade;
+import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.task.HaveConversation;
 import org.mars_sim.msp.core.person.ai.task.Maintenance;
@@ -51,7 +61,6 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.Indoor;
 import org.mars_sim.msp.core.structure.building.function.SystemType;
-import org.mars_sim.msp.core.tool.Conversion;
 
 /**
  * The Vehicle class represents a generic vehicle. It keeps track of generic
@@ -761,7 +770,7 @@ public abstract class Vehicle extends Unit
 	 * @return the current range of the vehicle (in km)
 	 * @throws Exception if error getting range.
 	 */
-	public double getRange() {
+	public double getRange(String missionName) {
 		return totalEnergy * (getBaseMass() + fuelCapacity) / (getMass() + fuelCapacity);// / fuel_range_error_margin;
 	}
 
@@ -1299,6 +1308,212 @@ public abstract class Vehicle extends Unit
 		return this;
 	}
 
+	/**
+	 * Checks if this vehicle is involved in a mission
+	 * 
+	 * @return true if yes
+	 */
+	public Mission getMission() {
+		Iterator<Mission> i = missionManager.getMissions().iterator();
+		while (i.hasNext()) {
+			Mission mission = i.next();
+			if (!mission.isDone()) {
+				if (mission instanceof VehicleMission) {
+	
+					if (((VehicleMission) mission).getVehicle() == this) {
+						return mission;
+					}
+
+//					if (mission instanceof Mining) {
+//						if (((Mining) mission).getLightUtilityVehicle() == this) {
+//							return mission;
+//						}
+//					}
+
+//					if (mission instanceof Trade) {
+//						Rover towingRover = (Rover) ((Trade) mission).getVehicle();
+//						if (towingRover != null) {
+//							if (towingRover.getTowedVehicle() == this) {
+//								return mission;
+//							}
+//						}
+//					}
+//				} else if (mission instanceof BuildingConstructionMission) {
+//					BuildingConstructionMission construction = (BuildingConstructionMission) mission;
+//					if (construction.getConstructionVehicles() != null) {
+//						if (construction.getConstructionVehicles().contains(this)) {
+//							return mission;
+//						}
+//					}
+//					// else {
+//					// result = null;
+//					// }
+//				} else if (mission instanceof BuildingSalvageMission) {
+//					BuildingSalvageMission salvage = (BuildingSalvageMission) mission;
+//					if (salvage.getConstructionVehicles().contains(this)) {
+//						return mission;
+//					}
+				}
+			}
+		}
+
+		return null;
+	}
+	
+	/**
+	 * Checks if this vehicle is involved in a mission
+	 * 
+	 * @return true if yes
+	 */
+	public double getMissionRange(String missionName) {
+			
+		if (missionName.equalsIgnoreCase(AreologyFieldStudy.class.getSimpleName())) {
+			return getSettlement().getMaxMissionRange(0);
+		}
+		
+		if (missionName.equalsIgnoreCase(BiologyFieldStudy.class.getSimpleName())) {
+			return getSettlement().getMaxMissionRange(1);
+		}
+		
+		if (missionName.equalsIgnoreCase(CollectIce.class.getSimpleName())) {
+			return getSettlement().getMaxMissionRange(2);
+		}
+		
+		if (missionName.equalsIgnoreCase(CollectRegolith.class.getSimpleName())) {
+			return getSettlement().getMaxMissionRange(3);
+		}
+		
+		if (missionName.equalsIgnoreCase(EmergencySupply.class.getSimpleName())) {
+			return getSettlement().getMaxMissionRange(4);
+		}
+		
+		if (missionName.equalsIgnoreCase(Exploration.class.getSimpleName())) {
+			return getSettlement().getMaxMissionRange(5);
+		}
+		
+		if (missionName.equalsIgnoreCase(MeteorologyFieldStudy.class.getSimpleName())) {
+			return getSettlement().getMaxMissionRange(6);
+		}
+		
+		if (missionName.equalsIgnoreCase(Mining.class.getSimpleName())) {
+			return getSettlement().getMaxMissionRange(7);
+		}
+
+		if (missionName.equalsIgnoreCase(RescueSalvageVehicle.class.getSimpleName())) {
+			return getSettlement().getMaxMissionRange(8);
+		}
+		
+		if (missionName.equalsIgnoreCase(Trade.class.getSimpleName())) {
+			return getSettlement().getMaxMissionRange(9);
+		}
+		
+		if (missionName.equalsIgnoreCase(TravelToSettlement.class.getSimpleName())) {
+			return getSettlement().getMaxMissionRange(10);
+		}
+		
+		
+		return getSettlement().getMaxMssionRange();
+	}
+	
+	/**
+	 * Checks if this vehicle is involved in a mission
+	 * 
+	 * @return true if yes
+	 */
+	public double getMissionRange(Mission mission) {
+		if (!mission.isDone()) {
+			if (mission instanceof VehicleMission) {
+
+				if (mission instanceof AreologyFieldStudy) {
+					if (((AreologyFieldStudy) mission).getVehicle() == this) {
+						return getSettlement().getMaxMissionRange(0);
+					}
+				}
+				
+				if (mission instanceof BiologyFieldStudy) {
+					if (((BiologyFieldStudy) mission).getVehicle() == this) {
+						return getSettlement().getMaxMissionRange(1);
+					}
+				}
+				
+				if (mission instanceof CollectIce) {
+					if (((CollectIce) mission).getVehicle() == this) {
+						return getSettlement().getMaxMissionRange(2);
+					}
+				}
+				
+				if (mission instanceof CollectRegolith) {
+					if (((CollectRegolith) mission).getVehicle() == this) {
+						return getSettlement().getMaxMissionRange(3);
+					}
+				}
+				
+				if (mission instanceof EmergencySupply) {
+					if (((EmergencySupply) mission).getVehicle() == this) {
+						return getSettlement().getMaxMissionRange(4);
+					}
+				}
+				
+				if (mission instanceof Exploration) {
+					if (((Exploration) mission).getVehicle() == this) {
+						return getSettlement().getMaxMissionRange(5);
+					}
+				}
+				
+				if (mission instanceof MeteorologyFieldStudy) {
+					if (((MeteorologyFieldStudy) mission).getVehicle() == this) {
+						return getSettlement().getMaxMissionRange(6);
+					}
+				}
+				
+				if (mission instanceof Mining) {
+					if (((Mining) mission).getVehicle() == this) {
+						return getSettlement().getMaxMissionRange(7);
+					}
+				}
+	
+				
+				if (mission instanceof RescueSalvageVehicle) {
+					if (((RescueSalvageVehicle) mission).getVehicle() == this) {
+						return getSettlement().getMaxMissionRange(8);
+					}
+				}
+				
+				if (mission instanceof Trade) {
+					Rover towingRover = (Rover) ((Trade) mission).getVehicle();
+					if (towingRover != null) {
+						if (towingRover.getTowedVehicle() == this) {
+							return getSettlement().getMaxMissionRange(9);
+						}
+					}
+				}
+				
+				if (mission instanceof TravelToSettlement) {
+					if (((TravelToSettlement) mission).getVehicle() == this) {
+						return getSettlement().getMaxMissionRange(10);
+					}
+				}
+				
+//				if (mission instanceof BuildingConstructionMission) {
+//					BuildingConstructionMission construction = (BuildingConstructionMission) mission;
+//					if (construction.getConstructionVehicles() != null) {
+//						if (construction.getConstructionVehicles().contains(this)) {
+//							return true;
+//						}
+//					}
+//				}
+//				
+//				if (mission instanceof BuildingSalvageMission) {
+//					BuildingSalvageMission salvage = (BuildingSalvageMission) mission;
+//					if (salvage.getConstructionVehicles().contains(this)) {
+//						return true;
+//					}
+//				}
+			}
+		}
+			
+		return getSettlement().getMaxMssionRange();
+	}
 	
 	/**
 	 * Checks if this vehicle is involved in a mission
@@ -1350,6 +1565,7 @@ public abstract class Vehicle extends Unit
 
 		return false;
 	}
+	
 	
 	/**
 	 * Reset uniqueCount to the current number of vehicles

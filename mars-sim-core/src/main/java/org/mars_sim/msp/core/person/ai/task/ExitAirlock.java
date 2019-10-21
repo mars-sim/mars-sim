@@ -646,7 +646,7 @@ public class ExitAirlock extends Task implements Serializable {
 
 					if (airlock.getCheckEVASuit() > 21)
 						// Set the emergency beacon on since no EVA suit is available
-						((VehicleMission) m).setEmergencyBeacon(person, v, true, Mission.NO_GOOD_EVA_SUIT);
+						((VehicleMission) m).setEmergencyBeacon(person, v, true, "No good Eva Suit");
 
 				}
 

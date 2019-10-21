@@ -13,7 +13,7 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
-import org.mars_sim.msp.core.person.ai.mission.BiologyStudyFieldMission;
+import org.mars_sim.msp.core.person.ai.mission.BiologyFieldStudy;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
@@ -36,17 +36,16 @@ public class BiologyStudyFieldMissionMeta implements MetaMission {
     private static final double LIMIT = 10D;
     
     /** Mission name */
-    private static final String NAME = Msg.getString(
-            "Mission.description.biologyStudyFieldMission"); //$NON-NLS-1$
+    private static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.biologyFieldStudy"); //$NON-NLS-1$
 
     @Override
     public String getName() {
-        return NAME;
+        return DEFAULT_DESCRIPTION;
     }
 
     @Override
     public Mission constructInstance(Person person) {
-        return new BiologyStudyFieldMission(person);
+        return new BiologyFieldStudy(person);
     }
 
     @Override
@@ -62,7 +61,7 @@ public class BiologyStudyFieldMissionMeta implements MetaMission {
     			return 0;
        		
 			int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);
-			int numThisMission = missionManager.numParticularMissions(NAME, settlement);
+			int numThisMission = missionManager.numParticularMissions(DEFAULT_DESCRIPTION, settlement);
 
 	   		// Check for # of embarking missions.
     		if (Math.max(1, settlement.getNumCitizens() / 8.0) < numEmbarked + numThisMission) {
@@ -76,7 +75,7 @@ public class BiologyStudyFieldMissionMeta implements MetaMission {
     		
             try {
 	            // Get available rover.
-	            Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(settlement, false);
+	            Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(DEFAULT_DESCRIPTION, settlement, false);
 	            if (rover != null) {
 	
 	                ScienceType biology = ScienceType.BIOLOGY;
@@ -122,7 +121,7 @@ public class BiologyStudyFieldMissionMeta implements MetaMission {
             Job job = person.getMind().getJob();
             if (job != null) {
             	// If this town has a tourist objective, add bonus
-                missionProbability *= job.getStartMissionProbabilityModifier(BiologyStudyFieldMission.class) 
+                missionProbability *= job.getStartMissionProbabilityModifier(BiologyFieldStudy.class) 
                 	* (settlement.getGoodsManager().getTourismFactor()
                 	+ settlement.getGoodsManager().getResearchFactor())/1.5;
             }

@@ -128,7 +128,7 @@ public class Exploration extends RoverMission implements Serializable {
 			try {
 				if (hasVehicle()) {
 					int skill = startingPerson.getSkillManager().getEffectiveSkillLevel(SkillType.AREOLOGY);
-					determineExplorationSites(getVehicle().getRange(),
+					determineExplorationSites(getVehicle().getRange(DEFAULT_DESCRIPTION),
 							getTotalTripTimeLimit(getRover(), getPeopleNumber(), true), NUM_SITES, skill);
 				}
 			} catch (Exception e) {
@@ -239,7 +239,7 @@ public class Exploration extends RoverMission implements Serializable {
 	 */
 	public static boolean hasNearbyMineralLocations(Rover rover, Settlement homeSettlement) {
 
-		double roverRange = rover.getRange();
+		double roverRange = rover.getRange(DEFAULT_DESCRIPTION);
 		double tripTimeLimit = getTotalTripTimeLimit(rover, rover.getCrewCapacity(), true);
 		double tripRange = getTripTimeRange(tripTimeLimit, rover.getBaseSpeed() / 1.25D);
 		double range = roverRange;
@@ -265,7 +265,7 @@ public class Exploration extends RoverMission implements Serializable {
 	public static Map<String, Double> getNearbyMineral(Rover rover, Settlement homeSettlement) {
 		Map<String, Double> minerals = new HashMap<>();
 		
-		double roverRange = rover.getRange();
+		double roverRange = rover.getRange(DEFAULT_DESCRIPTION);
 		double tripTimeLimit = getTotalTripTimeLimit(rover, rover.getCrewCapacity(), true);
 		double tripRange = getTripTimeRange(tripTimeLimit, rover.getBaseSpeed() / 1.25D);
 		double range = roverRange;
@@ -716,7 +716,7 @@ public class Exploration extends RoverMission implements Serializable {
 		if (timeRange < range) {
 			range = timeRange;
 		}
-
+		
 		// Get the current location.
 		Coordinates startingLocation = getCurrentMissionLocation();
 
@@ -859,7 +859,7 @@ public class Exploration extends RoverMission implements Serializable {
 		double timeAtSites = getEstimatedTimeAtExplorationSites();
 		double tripTimeTravellingLimit = tripTimeLimit - timeAtSites;
 		double averageSpeed = getAverageVehicleSpeedForOperators();
-		double millisolsInHour = MarsClock.convertSecondsToMillisols(60D * 60D);
+		double millisolsInHour = MarsClock.MILLISOLS_PER_HOUR;
 		double averageSpeedMillisol = averageSpeed / millisolsInHour;
 		return tripTimeTravellingLimit * averageSpeedMillisol;
 	}

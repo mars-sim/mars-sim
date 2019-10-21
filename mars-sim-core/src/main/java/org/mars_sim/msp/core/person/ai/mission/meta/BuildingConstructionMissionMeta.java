@@ -29,7 +29,7 @@ import org.mars_sim.msp.core.structure.construction.ConstructionValues;
 public class BuildingConstructionMissionMeta implements MetaMission {
 
     /** Mission name */
-    private static final String NAME = Msg.getString(
+    private static final String DEFAULT_DESCRIPTION = Msg.getString(
             "Mission.description.buildingConstructionMission"); //$NON-NLS-1$
 
     /** default logger. */
@@ -41,7 +41,7 @@ public class BuildingConstructionMissionMeta implements MetaMission {
     
     @Override
     public String getName() {
-        return NAME;
+        return DEFAULT_DESCRIPTION;
     }
 
     @Override

@@ -9,7 +9,7 @@ package org.mars_sim.msp.core.person.ai.mission.meta;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
-import org.mars_sim.msp.core.person.ai.mission.EmergencySupplyMission;
+import org.mars_sim.msp.core.person.ai.mission.EmergencySupply;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
@@ -28,18 +28,18 @@ public class EmergencySupplyMissionMeta implements MetaMission {
     private static final double LIMIT = 50D;
     
     /** Mission name */
-    private static final String NAME = Msg.getString(
-            "Mission.description.emergencySupplyMission"); //$NON-NLS-1$
+    private static final String DEFAULT_DESCRIPTION = Msg.getString(
+            "Mission.description.emergencySupply"); //$NON-NLS-1$
 
     
     @Override
     public String getName() {
-        return NAME;
+        return DEFAULT_DESCRIPTION;
     }
 
     @Override
     public Mission constructInstance(Person person) {
-        return new EmergencySupplyMission(person);
+        return new EmergencySupply(person);
     }
 
     @Override
@@ -59,15 +59,15 @@ public class EmergencySupplyMissionMeta implements MetaMission {
 	        Job job = person.getMind().getJob();
 	        double jobModifier = 0D;
 	        if (job != null) {
-	            jobModifier = job.getStartMissionProbabilityModifier(EmergencySupplyMission.class);
+	            jobModifier = job.getStartMissionProbabilityModifier(EmergencySupply.class);
 	        }
 	
 	        // Check if person is in a settlement.
 	        if (jobModifier > 0D) {
 
-	            Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(settlement, false);
+	            Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(DEFAULT_DESCRIPTION, settlement, false);
 	            if (rover != null) {
-	                Settlement targetSettlement = EmergencySupplyMission.findSettlementNeedingEmergencySupplies(
+	                Settlement targetSettlement = EmergencySupply.findSettlementNeedingEmergencySupplies(
 	                        settlement, rover);
 	                if (targetSettlement == null) {
 	                    return 0;
@@ -92,10 +92,10 @@ public class EmergencySupplyMissionMeta implements MetaMission {
 	    	        return 0;
 	    	    }
 	
-	            missionProbability = EmergencySupplyMission.BASE_STARTING_PROBABILITY;
+	            missionProbability = EmergencySupply.BASE_STARTING_PROBABILITY;
 	
 	    		int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);	
-	    		int numThisMission = missionManager.numParticularMissions(NAME, settlement);
+	    		int numThisMission = missionManager.numParticularMissions(DEFAULT_DESCRIPTION, settlement);
 	    		
 		   		// Check for # of embarking missions.
 	    		if (Math.max(1, settlement.getNumCitizens() / 8.0) < numEmbarked + numThisMission) {

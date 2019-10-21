@@ -313,7 +313,7 @@ extends JComponent {
 		earthTimeLabel = new JLabel();
 		earthTimeLabel.setHorizontalAlignment(JLabel.LEFT);
 		TooltipManager.setTooltip(earthTimeLabel, "Earth Timestamp", TooltipWay.up);
-		statusBar.setLeftComponent(earthTimeLabel, true);
+		statusBar.setLeftComponent(earthTimeLabel, false);
 
 
 		leftLabel = new JLabel();
@@ -330,15 +330,15 @@ extends JComponent {
 		memUsed = memTotal - memFree;
 		memUsedLabel.setText(memUsed + " MB");// "Used Memory : " + memUsed + " MB");
 		TooltipManager.setTooltip(memUsedLabel, "Memory Used", TooltipWay.up);
-		statusBar.addRightComponent(memUsedLabel, false);
+		statusBar.addRightComponent(memUsedLabel, false, false);
 
 		memMaxLabel = new JLabel();
 		memMaxLabel.setHorizontalAlignment(JLabel.RIGHT);
 		memMax = (int) Math.round(Runtime.getRuntime().maxMemory()) / 1_000_000;
 		memMaxLabel.setText("[ " + memMax + " MB ] ");// "Total Designated Memory : " + memMax + " MB");
 		TooltipManager.setTooltip(memMaxLabel, "Memory Designated", TooltipWay.up);
-		statusBar.addRightComponent(memMaxLabel, true);
-		statusBar.addRightComponent(new JLabel(new AngledLinesWindowsCornerIcon()), true);
+		statusBar.addRightComponent(memMaxLabel, false, false);
+		statusBar.addRightComponent(new JLabel(new AngledLinesWindowsCornerIcon()), false, true);
 
 		bottomPane.add(statusBar, BorderLayout.SOUTH);
 

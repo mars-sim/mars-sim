@@ -14,8 +14,8 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.mission.AreologyStudyFieldMission;
-import org.mars_sim.msp.core.person.ai.mission.BiologyStudyFieldMission;
+import org.mars_sim.msp.core.person.ai.mission.AreologyFieldStudy;
+import org.mars_sim.msp.core.person.ai.mission.BiologyFieldStudy;
 import org.mars_sim.msp.core.person.ai.mission.CollectIce;
 import org.mars_sim.msp.core.person.ai.mission.CollectRegolith;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
@@ -79,10 +79,10 @@ public class Chemist extends Job implements Serializable {
 		jobTasks.add(ConsolidateContainers.class);
 
 		// Add chemist-related missions.
-		jobMissionStarts.add(AreologyStudyFieldMission.class);
-		jobMissionJoins.add(AreologyStudyFieldMission.class);
+		jobMissionStarts.add(AreologyFieldStudy.class);
+		jobMissionJoins.add(AreologyFieldStudy.class);
 		
-		jobMissionJoins.add(BiologyStudyFieldMission.class);
+		jobMissionJoins.add(BiologyFieldStudy.class);
 		
 		jobMissionJoins.add(Exploration.class);
 		

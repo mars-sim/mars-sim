@@ -76,19 +76,25 @@ public class MissionManager implements Serializable {
 		 * Creates an array of all missions
 		 */
 		missionNames = Arrays.asList(
-					AreologyStudyFieldMission.DEFAULT_DESCRIPTION,
-					BiologyStudyFieldMission.DEFAULT_DESCRIPTION,
+					AreologyFieldStudy.DEFAULT_DESCRIPTION,
+					BiologyFieldStudy.DEFAULT_DESCRIPTION,
 					BuildingConstructionMission.DEFAULT_DESCRIPTION, 
 					BuildingSalvageMission.DEFAULT_DESCRIPTION,
 					CollectIce.DEFAULT_DESCRIPTION,
 					CollectRegolith.DEFAULT_DESCRIPTION,
-					EmergencySupplyMission.DEFAULT_DESCRIPTION,
+					EmergencySupply.DEFAULT_DESCRIPTION,
 					Exploration.DEFAULT_DESCRIPTION,
+					MeteorologyFieldStudy.DEFAULT_DESCRIPTION,
 					Mining.DEFAULT_DESCRIPTION,
 					RescueSalvageVehicle.DEFAULT_DESCRIPTION,
 					Trade.DEFAULT_DESCRIPTION,
 					TravelToSettlement.DEFAULT_DESCRIPTION
 			);
+		}
+	
+	static {
+
+
 		}
 	
 	/**
@@ -107,6 +113,7 @@ public class MissionManager implements Serializable {
 		listeners = new CopyOnWriteArrayList<>();//Collections.synchronizedList(new ArrayList<MissionManagerListener>(0));
 		missionProbCache = new HashMap<MetaMission, Double>(MetaMissionUtil.getNumMetaMissions());
 		robotMissionProbCache = new HashMap<MetaMission, Double>();
+		
 	}
 
 	/**
@@ -889,6 +896,11 @@ public class MissionManager implements Serializable {
 	 * 
 	 * @param clock
 	 */
+	
+	public static List<String> getMissionNames() {
+		return missionNames;
+	}
+	
 	
 	public static void initializeInstances(MarsClock clock) {
 		marsClock = clock;

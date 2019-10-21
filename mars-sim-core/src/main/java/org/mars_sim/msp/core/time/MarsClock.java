@@ -82,12 +82,14 @@ public class MarsClock implements Serializable {
 	// public static final int THE_FIRST_SOL = 9353;
 
 	// Martian/Gregorian calendar conversion
+	// Note: 1 millisol = 88.775244 sec
 	
 	/** Number of seconds per millisol. */
 	public static final double SECONDS_PER_MILLISOL = 88.775244;
-	// 1 millisol = 88.775244 sec
 	/** Number of hours per millisol. */
 	public static final double HOURS_PER_MILLISOL  = SECONDS_PER_MILLISOL / 3600D;
+	/** Number of millisols per hour. */
+	public static final double MILLISOLS_PER_HOUR  = 3600D / SECONDS_PER_MILLISOL;
 	
 	// from https://www.teuse.net/games/mars/mars_dates.html
 	// Demios only takes 30hrs, and Phobos 7.6hrs to rotate around mars

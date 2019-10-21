@@ -1,8 +1,8 @@
 /**
  * Mars Simulation Project
- * MeteorologyStudyFieldMission.java
- * @version 3.1.0 2019-02-20
- * @author Manny Kung
+ * AreologyStudyFieldMission.java
+ * @version 3.1.0 2017-10-14
+ * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
 
@@ -21,7 +21,7 @@ import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
-import org.mars_sim.msp.core.person.ai.task.MeteorologyStudyFieldWork;
+import org.mars_sim.msp.core.person.ai.task.AreologyStudyFieldWork;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.science.ScienceType;
@@ -33,21 +33,21 @@ import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
- * A mission to do meteorology research at a remote field location for a scientific
+ * A mission to do areology research at a remote field location for a scientific
  * study. TODO externalize strings
  */
-public class MeteorologyStudyFieldMission extends RoverMission implements Serializable {
+public class AreologyFieldStudy extends RoverMission implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(MeteorologyStudyFieldMission.class.getName());
-//	private static String loggerName = logger.getName();
-//	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+	private static Logger logger = Logger.getLogger(AreologyFieldStudy.class.getName());
+	private static String loggerName = logger.getName();
+	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 	
 	/** Default description. */
-	public static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.meteorologyStudyFieldMission"); //$NON-NLS-1$
+	public static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.areologyFieldStudy"); //$NON-NLS-1$
 
 	/** Mission phase. */
 	final public static MissionPhase RESEARCH_SITE = new MissionPhase(
@@ -68,14 +68,14 @@ public class MeteorologyStudyFieldMission extends RoverMission implements Serial
 	private Coordinates fieldSite;
 	/** Scientific study to research. */
 	private ScientificStudy study;
-	/** The person leading the meteorology research. */
+	/** The person leading the areology research. */
 	private Person leadResearcher;
 
 	private static int oxygenID = ResourceUtil.oxygenID;
 	private static int waterID = ResourceUtil.waterID;
 	private static int foodID = ResourceUtil.foodID;
 
-	private static ScienceType meteorology = ScienceType.METEOROLOGY;
+	private static ScienceType areology = ScienceType.AREOLOGY;
 
 	/**
 	 * Constructor.
@@ -83,7 +83,7 @@ public class MeteorologyStudyFieldMission extends RoverMission implements Serial
 	 * @param startingPerson {@link Person} the person starting the mission.
 	 * @throws MissionException if problem constructing mission.
 	 */
-	public MeteorologyStudyFieldMission(Person startingPerson) {
+	public AreologyFieldStudy(Person startingPerson) {
 
 		// Use RoverMission constructor.
 		super(DEFAULT_DESCRIPTION, startingPerson, MIN_PEOPLE);
@@ -96,7 +96,7 @@ public class MeteorologyStudyFieldMission extends RoverMission implements Serial
 		Settlement s = startingPerson.getSettlement();
 
 		if (!isDone() && s != null) {
-			// Set the lead meteorology researcher and study.
+			// Set the lead areology researcher and study.
 			leadResearcher = startingPerson;
 			study = determineStudy(leadResearcher);
 			if (study == null) {
@@ -119,7 +119,7 @@ public class MeteorologyStudyFieldMission extends RoverMission implements Serial
 			// Determine field site location.
 			if (hasVehicle()) {
 				double tripTimeLimit = getTotalTripTimeLimit(getRover(), getPeopleNumber(), true);
-				determineFieldSite(getVehicle().getRange(), tripTimeLimit);
+				determineFieldSite(getVehicle().getRange(DEFAULT_DESCRIPTION), tripTimeLimit);
 			}
 
 			// Add home settlement
@@ -155,7 +155,7 @@ public class MeteorologyStudyFieldMission extends RoverMission implements Serial
 	 * @param description        the mission description.
 	 * @throws MissionException if error creating mission.
 	 */
-	public MeteorologyStudyFieldMission(Collection<Person> members, Settlement startingSettlement, Person leadResearcher,
+	public AreologyFieldStudy(Collection<Person> members, Settlement startingSettlement, Person leadResearcher,
 			ScientificStudy study, Rover rover, Coordinates fieldSite, String description) {
 
 		// Use RoverMission constructor.
@@ -230,6 +230,7 @@ public class MeteorologyStudyFieldMission extends RoverMission implements Serial
 	private ScientificStudy determineStudy(Person researcher) {
 		ScientificStudy result = null;
 
+		// ScienceType areology = ScienceType.AREOLOGY;
 		List<ScientificStudy> possibleStudies = new ArrayList<ScientificStudy>();
 
 		// Add primary study if in research phase.
@@ -237,7 +238,7 @@ public class MeteorologyStudyFieldMission extends RoverMission implements Serial
 		if (primaryStudy != null) {
 			if (ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase())
 					&& !primaryStudy.isPrimaryResearchCompleted()) {
-				if (meteorology == primaryStudy.getScience()) {
+				if (areology == primaryStudy.getScience()) {
 					// Primary study added twice to double chance of random selection.
 					possibleStudies.add(primaryStudy);
 					possibleStudies.add(primaryStudy);
@@ -251,7 +252,7 @@ public class MeteorologyStudyFieldMission extends RoverMission implements Serial
 			ScientificStudy collabStudy = i.next();
 			if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase())
 					&& !collabStudy.isCollaborativeResearchCompleted(researcher)) {
-				if (meteorology == collabStudy.getCollaborativeResearchers().get(researcher.getIdentifier())) {
+				if (areology == collabStudy.getCollaborativeResearchers().get(researcher.getIdentifier())) {
 					possibleStudies.add(collabStudy);
 				}
 			}
@@ -372,20 +373,21 @@ public class MeteorologyStudyFieldMission extends RoverMission implements Serial
 			Person person = (Person) member;
 
 			// Add modifier if person is a researcher on the same scientific study.
+			// ScienceType areology = ScienceType.AREOLOGY;
 			if (study != null) {
 				if (person == study.getPrimaryResearcher()) {
 					result += 2D;
 
-					// Check if study's primary science is meteorology.
-					if (meteorology.equals(study.getScience())) {
+					// Check if study's primary science is areology.
+					if (areology.equals(study.getScience())) {
 						result += 1D;
 					}
 				} else if (study.getCollaborativeResearchers().containsKey(person.getIdentifier())) {
 					result += 1D;
 
-					// Check if study collaboration science is in meteorology.
+					// Check if study collaboration science is in areology.
 					ScienceType collabScience = study.getCollaborativeResearchers().get(person.getIdentifier());
-					if (meteorology == collabScience) {
+					if (areology == collabScience) {
 						result += 1D;
 					}
 				}
@@ -476,15 +478,15 @@ public class MeteorologyStudyFieldMission extends RoverMission implements Serial
 		logger.warning("Research field site phase ended due to external trigger.");
 		endFieldSite = true;
 
-		// End each member's meteorology field work task.
+		// End each member's areology field work task.
 		Iterator<MissionMember> i = getMembers().iterator();
 		while (i.hasNext()) {
 			MissionMember member = i.next();
 			if (member instanceof Person) {
 				Person person = (Person) member;
 				Task task = person.getMind().getTaskManager().getTask();
-				if (task instanceof MeteorologyStudyFieldWork) {
-					((MeteorologyStudyFieldWork) task).endEVA();
+				if (task instanceof AreologyStudyFieldWork) {
+					((AreologyStudyFieldWork) task).endEVA();
 				}
 			}
 		}
@@ -527,7 +529,7 @@ public class MeteorologyStudyFieldMission extends RoverMission implements Serial
 			boolean nobodyFieldWork = true;
 			Iterator<MissionMember> j = getMembers().iterator();
 			while (j.hasNext()) {
-				if (MeteorologyStudyFieldWork.canResearchSite(j.next(), getRover())) {
+				if (AreologyStudyFieldWork.canResearchSite(j.next(), getRover())) {
 					nobodyFieldWork = false;
 				}
 			}
@@ -562,8 +564,8 @@ public class MeteorologyStudyFieldMission extends RoverMission implements Serial
 					if (tempMember instanceof Person) {
 						Person tempPerson = (Person) tempMember;
 						Task task = tempPerson.getMind().getTaskManager().getTask();
-						if ((task != null) && (task instanceof MeteorologyStudyFieldWork)) {
-							((MeteorologyStudyFieldWork) task).endEVA();
+						if ((task != null) && (task instanceof AreologyStudyFieldWork)) {
+							((AreologyStudyFieldWork) task).endEVA();
 						}
 					}
 				}
@@ -574,12 +576,12 @@ public class MeteorologyStudyFieldMission extends RoverMission implements Serial
 
 			if (!endFieldSite && !timeExpired) {
 				// If person can research the site, start that task.
-				if (MeteorologyStudyFieldWork.canResearchSite(member, getRover())) {
+				if (AreologyStudyFieldWork.canResearchSite(member, getRover())) {
 					// TODO Refactor
 					if (member instanceof Person) {
 						Person person = (Person) member;
 						assignTask(person,
-								new MeteorologyStudyFieldWork(person, leadResearcher, study, (Rover) getVehicle()));
+								new AreologyStudyFieldWork(person, leadResearcher, study, (Rover) getVehicle()));
 					}
 				}
 			}

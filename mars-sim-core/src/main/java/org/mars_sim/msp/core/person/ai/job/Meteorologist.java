@@ -14,8 +14,8 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.mission.AreologyStudyFieldMission;
-import org.mars_sim.msp.core.person.ai.mission.BiologyStudyFieldMission;
+import org.mars_sim.msp.core.person.ai.mission.AreologyFieldStudy;
+import org.mars_sim.msp.core.person.ai.mission.BiologyFieldStudy;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
 import org.mars_sim.msp.core.person.ai.task.AssistScientificStudyResearcher;
 import org.mars_sim.msp.core.person.ai.task.CompileScientificStudyResults;
@@ -69,10 +69,10 @@ public class Meteorologist extends Job implements Serializable {
 		jobTasks.add(ConsolidateContainers.class);
 
 		// Add meteorologist-related missions.
-		jobMissionStarts.add(AreologyStudyFieldMission.class);		
-		jobMissionJoins.add(AreologyStudyFieldMission.class);
+		jobMissionStarts.add(AreologyFieldStudy.class);		
+		jobMissionJoins.add(AreologyFieldStudy.class);
 		
-		jobMissionJoins.add(BiologyStudyFieldMission.class);
+		jobMissionJoins.add(BiologyFieldStudy.class);
 		
 		jobMissionStarts.add(Exploration.class);
 		jobMissionJoins.add(Exploration.class);

@@ -839,7 +839,7 @@ public class Mining extends RoverMission {
 		double bestValue = 0D;
 
 		try {
-			double roverRange = rover.getRange();
+			double roverRange = rover.getRange(DEFAULT_DESCRIPTION);
 			double tripTimeLimit = getTotalTripTimeLimit(rover, rover.getCrewCapacity(), true);
 			double tripRange = getTripTimeRange(tripTimeLimit, rover.getBaseSpeed() / 2D);
 			double range = roverRange;

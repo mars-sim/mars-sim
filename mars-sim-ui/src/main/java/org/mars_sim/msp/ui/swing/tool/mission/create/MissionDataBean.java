@@ -17,15 +17,15 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.mars.ExploredLocation;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.mission.AreologyStudyFieldMission;
-import org.mars_sim.msp.core.person.ai.mission.BiologyStudyFieldMission;
+import org.mars_sim.msp.core.person.ai.mission.AreologyFieldStudy;
+import org.mars_sim.msp.core.person.ai.mission.BiologyFieldStudy;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
 import org.mars_sim.msp.core.person.ai.mission.CollectIce;
 import org.mars_sim.msp.core.person.ai.mission.CollectRegolith;
-import org.mars_sim.msp.core.person.ai.mission.EmergencySupplyMission;
+import org.mars_sim.msp.core.person.ai.mission.EmergencySupply;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
-import org.mars_sim.msp.core.person.ai.mission.MeteorologyStudyFieldMission;
+import org.mars_sim.msp.core.person.ai.mission.MeteorologyFieldStudy;
 import org.mars_sim.msp.core.person.ai.mission.Mining;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
@@ -49,24 +49,25 @@ import org.mars_sim.msp.core.vehicle.Rover;
 class MissionDataBean {
 
 	// Mission type strings.
-    protected final static String AREOLOGY_FIELD_MISSION = Msg.getString("Mission.description.areologyStudyFieldMission"); //$NON-NLS-1$
-    protected final static String BIOLOGY_FIELD_MISSION = Msg.getString("Mission.description.biologyStudyFieldMission"); //$NON-NLS-1$
-    protected final static String METEOROLOGY_FIELD_MISSION = Msg.getString("Mission.description.meteorologyStudyFieldMission"); //$NON-NLS-1$
+    protected final static String AREOLOGY_FIELD_MISSION 	= AreologyFieldStudy.DEFAULT_DESCRIPTION; 
+    protected final static String BIOLOGY_FIELD_MISSION 	= BiologyFieldStudy.DEFAULT_DESCRIPTION;
+    protected final static String METEOROLOGY_FIELD_MISSION = MeteorologyFieldStudy.DEFAULT_DESCRIPTION;
 
-    protected final static String CONSTRUCTION_MISSION = Msg.getString("Mission.description.buildingConstructionMission"); //$NON-NLS-1$
+    protected final static String CONSTRUCTION_MISSION 		= BuildingConstructionMission.DEFAULT_DESCRIPTION;
+    protected final static String SALVAGE_MISSION 			= BuildingSalvageMission.DEFAULT_DESCRIPTION;
+    
+    protected final static String EMERGENCY_SUPPLY_MISSION 	= EmergencySupply.DEFAULT_DESCRIPTION;
+	protected final static String EXPLORATION_MISSION 		= Exploration.DEFAULT_DESCRIPTION;
+	protected final static String ICE_MISSION 				= CollectIce.DEFAULT_DESCRIPTION;
 
-    protected final static String EMERGENCY_SUPPLY_MISSION = Msg.getString("Mission.description.emergencySupplyMission"); //$NON-NLS-1$
-	protected final static String EXPLORATION_MISSION = Msg.getString("Mission.description.exploration"); //$NON-NLS-1$
-	protected final static String ICE_MISSION = Msg.getString("Mission.description.collectIce"); //$NON-NLS-1$
+	protected final static String MINING_MISSION 			= Mining.DEFAULT_DESCRIPTION;
 
-	protected final static String MINING_MISSION = Msg.getString("Mission.description.mining"); //$NON-NLS-1$
-
-	protected final static String REGOLITH_MISSION = Msg.getString("Mission.description.collectRegolith"); //$NON-NLS-1$
-	protected final static String RESCUE_MISSION = Msg.getString("Mission.description.rescueSalvageVehicle"); //$NON-NLS-1$
-	protected final static String TRADE_MISSION = Msg.getString("Mission.description.trade"); //$NON-NLS-1$
+	protected final static String REGOLITH_MISSION 			= CollectRegolith.DEFAULT_DESCRIPTION;
+	protected final static String RESCUE_MISSION 			= RescueSalvageVehicle.DEFAULT_DESCRIPTION;
+	protected final static String TRADE_MISSION 			= Trade.DEFAULT_DESCRIPTION;
 	
-	protected final static String TRAVEL_MISSION = Msg.getString("Mission.description.travelToSettlement"); //$NON-NLS-1$
-    protected final static String SALVAGE_MISSION = Msg.getString("Mission.description.salvageBuilding"); //$NON-NLS-1$
+	protected final static String TRAVEL_MISSION 			= TravelToSettlement.DEFAULT_DESCRIPTION;
+
 
     protected final static String[] MISSIONS = new String[] {
     		AREOLOGY_FIELD_MISSION,
@@ -137,17 +138,17 @@ class MissionDataBean {
     	
 	    Mission mission = null;
 	    if (AREOLOGY_FIELD_MISSION.equals(type)) {
-	        mission = new AreologyStudyFieldMission(members, startingSettlement, leadResearcher, study,
+	        mission = new AreologyFieldStudy(members, startingSettlement, leadResearcher, study,
 	                rover, fieldSite, description);
 	    }
 	    
 	    else if (BIOLOGY_FIELD_MISSION.equals(type)) {
-	        mission = new BiologyStudyFieldMission(members, startingSettlement, leadResearcher, study,
+	        mission = new BiologyFieldStudy(members, startingSettlement, leadResearcher, study,
 	                rover, fieldSite, description);
 	    }
 	    
 	    else if (METEOROLOGY_FIELD_MISSION.equals(type)) {
-	        mission = new MeteorologyStudyFieldMission(members, startingSettlement, leadResearcher, study,
+	        mission = new MeteorologyFieldStudy(members, startingSettlement, leadResearcher, study,
 	                rover, fieldSite, description);
 	    }
 	    
@@ -159,7 +160,7 @@ class MissionDataBean {
 	    }
 	    
 	    else if (EMERGENCY_SUPPLY_MISSION.equals(type)) {
-	        mission = new EmergencySupplyMission(members, startingSettlement, destinationSettlement,
+	        mission = new EmergencySupply(members, startingSettlement, destinationSettlement,
 	                emergencyGoods, rover, description);
 	    }
 	    
@@ -253,19 +254,19 @@ class MissionDataBean {
             result = BuildingConstructionMission.DEFAULT_DESCRIPTION;
         }
         else if (missionType.equals(AREOLOGY_FIELD_MISSION)) {
-            result = AreologyStudyFieldMission.DEFAULT_DESCRIPTION;
+            result = AreologyFieldStudy.DEFAULT_DESCRIPTION;
         }
         else if (missionType.equals(BIOLOGY_FIELD_MISSION)) {
-            result = BiologyStudyFieldMission.DEFAULT_DESCRIPTION;
+            result = BiologyFieldStudy.DEFAULT_DESCRIPTION;
         }
         else if (missionType.equals(METEOROLOGY_FIELD_MISSION)) {
-            result = MeteorologyStudyFieldMission.DEFAULT_DESCRIPTION;
+            result = MeteorologyFieldStudy.DEFAULT_DESCRIPTION;
         }
         else if (missionType.equals(SALVAGE_MISSION)) {
             result = BuildingSalvageMission.DEFAULT_DESCRIPTION;
         }
         else if (missionType.equals(EMERGENCY_SUPPLY_MISSION)) {
-            result = EmergencySupplyMission.DEFAULT_DESCRIPTION;
+            result = EmergencySupply.DEFAULT_DESCRIPTION;
         }
 		return result;
 	}

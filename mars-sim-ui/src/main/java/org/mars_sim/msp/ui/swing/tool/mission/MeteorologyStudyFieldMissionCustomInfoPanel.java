@@ -15,7 +15,7 @@ import java.awt.event.ActionListener;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.mission.MeteorologyStudyFieldMission;
+import org.mars_sim.msp.core.person.ai.mission.MeteorologyFieldStudy;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
 import org.mars_sim.msp.core.science.ScientificStudy;
@@ -39,7 +39,7 @@ public class MeteorologyStudyFieldMissionCustomInfoPanel extends MissionCustomIn
 	// Data members.
 	private MainDesktopPane desktop;
 	private ScientificStudy study;
-	private MeteorologyStudyFieldMission meteorologyMission;
+	private MeteorologyFieldStudy meteorologyMission;
 	private WebLabel studyNameLabel;
 	private WebLabel researcherNameLabel;
 	private WebProgressBar studyResearchBar;
@@ -118,8 +118,8 @@ public class MeteorologyStudyFieldMissionCustomInfoPanel extends MissionCustomIn
 
 	@Override
 	public void updateMission(Mission mission) {
-		if (mission instanceof MeteorologyStudyFieldMission) {
-			meteorologyMission = (MeteorologyStudyFieldMission) mission;
+		if (mission instanceof MeteorologyFieldStudy) {
+			meteorologyMission = (MeteorologyFieldStudy) mission;
 
 			// Remove as scientific study listener.
 			if (study != null) {

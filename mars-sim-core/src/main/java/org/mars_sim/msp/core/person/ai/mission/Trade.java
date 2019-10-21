@@ -889,9 +889,9 @@ public class Trade extends RoverMission implements Serializable {
 
 			// Vehicle with superior range should be ranked higher.
 			if (result == 0) {
-				if (firstVehicle.getRange() > secondVehicle.getRange()) {
+				if (firstVehicle.getRange(DEFAULT_DESCRIPTION) > secondVehicle.getRange(DEFAULT_DESCRIPTION)) {
 					result = 1;
-				} else if (firstVehicle.getRange() < secondVehicle.getRange()) {
+				} else if (firstVehicle.getRange(DEFAULT_DESCRIPTION) < secondVehicle.getRange(DEFAULT_DESCRIPTION)) {
 					result = -1;
 				}
 			}

@@ -25,7 +25,7 @@ public class CollectIceMeta implements MetaMission {
 	private static Logger logger = Logger.getLogger(CollectIceMeta.class.getName());
 
 	/** Mission name */
-	private static final String NAME = Msg.getString("Mission.description.collectIce"); //$NON-NLS-1$
+	private static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.collectIce"); //$NON-NLS-1$
 
 	private static final double VALUE = 500D;
 
@@ -33,7 +33,7 @@ public class CollectIceMeta implements MetaMission {
     
 	@Override
 	public String getName() {
-		return NAME;
+		return DEFAULT_DESCRIPTION;
 	}
 
 	@Override
@@ -56,7 +56,7 @@ public class CollectIceMeta implements MetaMission {
     		
 //			missionProbability = getSettlementProbability(settlement);
     		int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);
-    		int numThisMission = missionManager.numParticularMissions(NAME, settlement);
+    		int numThisMission = missionManager.numParticularMissions(DEFAULT_DESCRIPTION, settlement);
     	
 	   		// Check for # of embarking missions.
     		if (Math.max(1, settlement.getNumCitizens() / 8.0) < numEmbarked + numThisMission) {

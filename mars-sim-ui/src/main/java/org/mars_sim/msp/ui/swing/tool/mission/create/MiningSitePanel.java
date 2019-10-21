@@ -31,6 +31,7 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.IntPoint;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.mars.ExploredLocation;
+import org.mars_sim.msp.core.person.ai.mission.Mining;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
@@ -341,7 +342,7 @@ public class MiningSitePanel extends WizardPanel {
 		// return (getWizard().getMissionData().getRover().getRange() * RANGE_MODIFIER)
 		// / 2D;
 
-		double range = getWizard().getMissionData().getRover().getRange() * RANGE_MODIFIER;
+		double range = getWizard().getMissionData().getRover().getRange(Mining.DEFAULT_DESCRIPTION) * RANGE_MODIFIER;
 		if (range > MAX_RANGE)
 			range = MAX_RANGE;
 		return range / 2D;

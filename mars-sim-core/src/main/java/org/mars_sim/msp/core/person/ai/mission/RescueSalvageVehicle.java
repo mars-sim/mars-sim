@@ -105,7 +105,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 
 			if (hasVehicle()) {
 				if (vehicleTarget == null)
-					vehicleTarget = findBeaconVehicle(getStartingSettlement(), getVehicle().getRange());
+					vehicleTarget = findBeaconVehicle(getStartingSettlement(), getVehicle().getRange(DEFAULT_DESCRIPTION));
 
 				// Obtain a rescuing vehicle and ensure that vehicleTarget is not included.
 				if (!reserveVehicle())
@@ -403,7 +403,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 		// The member of the rescuing vehicle will turn off the target vehicle's
 		// emergency beacon.
 		if (vehicleTarget.isBeaconOn())
-			setEmergencyBeacon(member, vehicleTarget, false, "The 2 Vehicles Rendezvous");
+			setEmergencyBeacon(member, vehicleTarget, false, "Towing vehicles arrived");
 
 		// Set mission event.
 		HistoricalEvent newEvent = null;
@@ -864,7 +864,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 						while (iV.hasNext() && result) {
 							Vehicle vehicle = iV.next();
 							if (vehicle instanceof Rover) {
-								if (vehicle.getRange() >= (settlementDistance * 2D)) {
+								if (vehicle.getRange(DEFAULT_DESCRIPTION) >= (settlementDistance * 2D)) {
 									result = false;
 								}
 							}

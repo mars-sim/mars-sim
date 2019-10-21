@@ -25,12 +25,12 @@ public class RescueSalvageVehicleMeta implements MetaMission {
     private static final double LIMIT = 10D;
     
     /** Mission name */
-    private static final String NAME = Msg.getString(
+    private static final String DEFAULT_DESCRIPTION = Msg.getString(
             "Mission.description.rescueSalvageVehicle"); //$NON-NLS-1$
 
     @Override
     public String getName() {
-        return NAME;
+        return DEFAULT_DESCRIPTION;
     }
 
     @Override
@@ -53,10 +53,10 @@ public class RescueSalvageVehicleMeta implements MetaMission {
 
             // Check if there are any beacon vehicles within range that need help.
             try {
-                Vehicle vehicle = RoverMission.getVehicleWithGreatestRange(settlement, true);
+                Vehicle vehicle = RoverMission.getVehicleWithGreatestRange(DEFAULT_DESCRIPTION, settlement, true);
                 if (vehicle != null) {
                     vehicleTarget = RescueSalvageVehicle.findBeaconVehicle(settlement,
-                            vehicle.getRange());
+                            vehicle.getRange(DEFAULT_DESCRIPTION));
                     if (vehicle == vehicleTarget)
                         return 0;
                     else if (vehicleTarget == null)
@@ -138,7 +138,7 @@ public class RescueSalvageVehicleMeta implements MetaMission {
     			return 0;
     		
 			int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);
-			int numThisMission = missionManager.numParticularMissions(NAME, settlement);
+			int numThisMission = missionManager.numParticularMissions(DEFAULT_DESCRIPTION, settlement);
 	
 	   		// Check for # of embarking missions.
     		if (Math.max(1, settlement.getNumCitizens() / 8.0) < numEmbarked + numThisMission) {

@@ -15,7 +15,7 @@ import java.awt.event.ActionListener;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.mission.BiologyStudyFieldMission;
+import org.mars_sim.msp.core.person.ai.mission.BiologyFieldStudy;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
 import org.mars_sim.msp.core.science.ScientificStudy;
@@ -41,7 +41,7 @@ public class BiologyStudyFieldMissionCustomInfoPanel extends MissionCustomInfoPa
 	// Data members.
 	private MainDesktopPane desktop;
 	private ScientificStudy study;
-	private BiologyStudyFieldMission biologyMission;
+	private BiologyFieldStudy biologyMission;
 	private WebLabel studyNameLabel;
 	private WebLabel researcherNameLabel;
 	private WebProgressBar studyResearchBar;
@@ -120,8 +120,8 @@ public class BiologyStudyFieldMissionCustomInfoPanel extends MissionCustomInfoPa
 
 	@Override
 	public void updateMission(Mission mission) {
-		if (mission instanceof BiologyStudyFieldMission) {
-			biologyMission = (BiologyStudyFieldMission) mission;
+		if (mission instanceof BiologyFieldStudy) {
+			biologyMission = (BiologyFieldStudy) mission;
 
 			// Remove as scientific study listener.
 			if (study != null) {

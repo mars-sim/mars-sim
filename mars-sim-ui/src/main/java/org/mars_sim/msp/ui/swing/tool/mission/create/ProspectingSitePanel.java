@@ -137,7 +137,7 @@ class ProspectingSitePanel extends WizardPanel {
 	void updatePanel() {
 		try {
 			//double range = (getWizard().getMissionData().getRover().getRange() * RANGE_MODIFIER) / 2D;
-			double range = getWizard().getMissionData().getRover().getRange() * RANGE_MODIFIER;
+			double range = getWizard().getMissionData().getRover().getRange(wizard.getMissionBean().getType()) * RANGE_MODIFIER;
 			if (range > MAX_RANGE)
 				range = MAX_RANGE;
 			range = range / 2D;

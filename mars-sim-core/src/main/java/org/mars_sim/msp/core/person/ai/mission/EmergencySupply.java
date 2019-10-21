@@ -36,7 +36,6 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.VehicleMaintenance;
 import org.mars_sim.msp.core.structure.goods.Good;
 import org.mars_sim.msp.core.structure.goods.GoodType;
@@ -51,18 +50,18 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  * A mission for delivering emergency supplies from one settlement to another.
  * TODO externalize strings
  */
-public class EmergencySupplyMission extends RoverMission implements Serializable {
+public class EmergencySupply extends RoverMission implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(EmergencySupplyMission.class.getName());
+	private static Logger logger = Logger.getLogger(EmergencySupply.class.getName());
 //	private static String loggerName = logger.getName();
 //	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 	
 	/** Default description. */
-	public static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.emergencySupplyMission"); //$NON-NLS-1$
+	public static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.emergencySupply"); //$NON-NLS-1$
 
 	// Static members
 	private static final int MAX_MEMBERS = 2;
@@ -104,7 +103,7 @@ public class EmergencySupplyMission extends RoverMission implements Serializable
 	 * 
 	 * @param startingPerson the person starting the settlement.
 	 */
-	public EmergencySupplyMission(Person startingPerson) {
+	public EmergencySupply(Person startingPerson) {
 		// Use RoverMission constructor.
 		super(DEFAULT_DESCRIPTION, startingPerson);
 
@@ -176,7 +175,7 @@ public class EmergencySupplyMission extends RoverMission implements Serializable
 	 * @param rover               the rover used on the mission.
 	 * @param description         the mission's description.
 	 */
-	public EmergencySupplyMission(Collection<Person> members, Settlement startingSettlement,
+	public EmergencySupply(Collection<Person> members, Settlement startingSettlement,
 			Settlement emergencySettlement, Map<Good, Integer> emergencyGoods, Rover rover, String description) {
 		// Use RoverMission constructor.
 		super(description, (Person) members.toArray()[0], MIN_MEMBERS, rover);
@@ -612,7 +611,7 @@ public class EmergencySupplyMission extends RoverMission implements Serializable
 					// Check if settlement is within rover range.
 					double settlementRange = settlement.getCoordinates()
 							.getDistance(startingSettlement.getCoordinates());
-					if (settlementRange <= (rover.getRange() * .8D)) {
+					if (settlementRange <= (rover.getRange(DEFAULT_DESCRIPTION) * .8D)) {
 
 						// Find what emergency supplies are needed at settlement.
 						Map<Integer, Double> emergencyResourcesNeeded = getEmergencyAmountResourcesNeeded(settlement);
@@ -733,8 +732,8 @@ public class EmergencySupplyMission extends RoverMission implements Serializable
 		Iterator<Mission> i = missionManager.getMissions().iterator();
 		while (i.hasNext()) {
 			Mission mission = i.next();
-			if (mission instanceof EmergencySupplyMission) {
-				EmergencySupplyMission emergencyMission = (EmergencySupplyMission) mission;
+			if (mission instanceof EmergencySupply) {
+				EmergencySupply emergencyMission = (EmergencySupply) mission;
 				if (settlement.equals(emergencyMission.getEmergencySettlement())) {
 					result = true;
 					break;
@@ -859,7 +858,7 @@ public class EmergencySupplyMission extends RoverMission implements Serializable
 			if (mission instanceof RoverMission) {
 				RoverMission roverMission = (RoverMission) mission;
 				boolean isTradeMission = roverMission instanceof Trade;
-				boolean isEmergencySupplyMission = roverMission instanceof EmergencySupplyMission;
+				boolean isEmergencySupplyMission = roverMission instanceof EmergencySupply;
 				if (!isTradeMission && !isEmergencySupplyMission) {
 					Rover rover = roverMission.getRover();
 					if (rover != null) {
@@ -1023,9 +1022,9 @@ public class EmergencySupplyMission extends RoverMission implements Serializable
 
 			// Vehicle with superior range should be ranked higher.
 			if (result == 0) {
-				if (firstVehicle.getRange() > secondVehicle.getRange()) {
+				if (firstVehicle.getRange(DEFAULT_DESCRIPTION) > secondVehicle.getRange(DEFAULT_DESCRIPTION)) {
 					result = 1;
-				} else if (firstVehicle.getRange() < secondVehicle.getRange()) {
+				} else if (firstVehicle.getRange(DEFAULT_DESCRIPTION) < secondVehicle.getRange(DEFAULT_DESCRIPTION)) {
 					result = -1;
 				}
 			}

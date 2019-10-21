@@ -1071,9 +1071,9 @@ public class BuildingConstructionMission extends Mission implements Serializable
 			// Cancel construction mission if there are any beacon vehicles within range
 			// that need help.
 			Vehicle vehicleTarget = null;
-			Vehicle vehicle = RoverMission.getVehicleWithGreatestRange(settlement, true);
+			Vehicle vehicle = RoverMission.getVehicleWithGreatestRange(DEFAULT_DESCRIPTION, settlement, true);
 			if (vehicle != null) {
-				vehicleTarget = RescueSalvageVehicle.findBeaconVehicle(settlement, vehicle.getRange());
+				vehicleTarget = RescueSalvageVehicle.findBeaconVehicle(settlement, vehicle.getRange(DEFAULT_DESCRIPTION));
 				if (vehicleTarget != null) {
 					if (!RescueSalvageVehicle.isClosestCapableSettlement(settlement, vehicleTarget))
 						result = true;

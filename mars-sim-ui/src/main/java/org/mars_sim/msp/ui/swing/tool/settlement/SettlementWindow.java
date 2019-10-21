@@ -120,7 +120,7 @@ public class SettlementWindow extends ToolWindow {
 	    
         statusBar.setLeftComponent(popLabel, true);
         statusBar.setLeftComponent(mapXYLabel, false);   
-        statusBar.addRightComponent(buildingXYLabel, true);
+        statusBar.addRightComponent(buildingXYLabel, false, true);
  
         // Create subPanel for housing the settlement map
 		subPanel = new WebPanel(new BorderLayout());

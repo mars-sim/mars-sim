@@ -21,16 +21,16 @@ import org.beryx.textio.TextIO;
 import org.beryx.textio.TextIoFactory;
 import org.beryx.textio.swing.SwingTextTerminal;
 import org.mars_sim.msp.core.LogConsolidated;
-import org.mars_sim.msp.core.person.ai.mission.AreologyStudyFieldMission;
-import org.mars_sim.msp.core.person.ai.mission.BiologyStudyFieldMission;
+import org.mars_sim.msp.core.person.ai.mission.AreologyFieldStudy;
+import org.mars_sim.msp.core.person.ai.mission.BiologyFieldStudy;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
 import org.mars_sim.msp.core.person.ai.mission.CollectIce;
 import org.mars_sim.msp.core.person.ai.mission.CollectRegolith;
 import org.mars_sim.msp.core.person.ai.mission.CollectResourcesMission;
-import org.mars_sim.msp.core.person.ai.mission.EmergencySupplyMission;
+import org.mars_sim.msp.core.person.ai.mission.EmergencySupply;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
-import org.mars_sim.msp.core.person.ai.mission.MeteorologyStudyFieldMission;
+import org.mars_sim.msp.core.person.ai.mission.MeteorologyFieldStudy;
 import org.mars_sim.msp.core.person.ai.mission.Mining;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
@@ -662,7 +662,7 @@ public class LogMenu implements BiConsumer<TextIO, RunnerData> {
 				changeLogLevel(Mining.class, lvl);
 				changeLogLevel(BuildingConstructionMission.class, lvl);
 				changeLogLevel(BuildingSalvageMission.class, lvl);
-				changeLogLevel(EmergencySupplyMission.class, lvl);
+				changeLogLevel(EmergencySupply.class, lvl);
 				changeLogLevel(RescueSalvageVehicle.class, lvl);
 				
 				changeLogLevel(ExplorationMeta.class, lvl);
@@ -683,9 +683,9 @@ public class LogMenu implements BiConsumer<TextIO, RunnerData> {
 				
 				changeLogLevel(TravelToSettlement.class, lvl);
 				
-				changeLogLevel(AreologyStudyFieldMission.class, lvl);
-				changeLogLevel(BiologyStudyFieldMission.class, lvl);
-				changeLogLevel(MeteorologyStudyFieldMission.class, lvl);
+				changeLogLevel(AreologyFieldStudy.class, lvl);
+				changeLogLevel(BiologyFieldStudy.class, lvl);
+				changeLogLevel(MeteorologyFieldStudy.class, lvl);
 				
 				changeLogLevel(TravelToSettlementMeta.class, lvl);
 				

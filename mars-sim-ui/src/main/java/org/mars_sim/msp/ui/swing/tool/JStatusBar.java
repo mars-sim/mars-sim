@@ -17,6 +17,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 public class JStatusBar extends JPanel {
@@ -68,12 +69,14 @@ public class JStatusBar extends JPanel {
     }
 
     
-    public void addRightComponent(JComponent component, boolean isCornerIcon) {
+    public void addRightComponent(JComponent component, boolean separator, boolean cornerIcon) {
         JPanel panel = new JPanel(new FlowLayout(
                 FlowLayout.LEADING, 0, 0));
-        if (!isCornerIcon) 
+        if (separator) 
         	panel.add(new SeparatorPanel(Color.GRAY, Color.WHITE));
         panel.add(component);
+        if (cornerIcon) 
+        	panel.add(new JLabel(new AngledLinesWindowsCornerIcon()), true);
         rightPanel.add(panel);
     }
     

@@ -13,7 +13,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.mission.AreologyStudyFieldMission;
+import org.mars_sim.msp.core.person.ai.mission.AreologyFieldStudy;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
 import org.mars_sim.msp.core.person.ai.mission.Mining;
 import org.mars_sim.msp.core.person.ai.task.AssistScientificStudyResearcher;
@@ -75,8 +75,8 @@ public class Astronomer extends Job implements Serializable {
 		jobMissionStarts.add(Exploration.class);
 		jobMissionJoins.add(Exploration.class);
 		
-		jobMissionStarts.add(AreologyStudyFieldMission.class);
-		jobMissionJoins.add(AreologyStudyFieldMission.class);
+		jobMissionStarts.add(AreologyFieldStudy.class);
+		jobMissionJoins.add(AreologyFieldStudy.class);
 		
 		jobMissionStarts.add(Mining.class);
 		jobMissionJoins.add(Mining.class);

@@ -101,11 +101,16 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 
 	public static final double RAD_PER_DEGREE = Math.PI / 180D;
 	
-	public static final String RGB = "   RGB : (";
 	public static final String COMMA = ", ";
 	public static final String CLOSE_PARENT = ")   ";
+	
+	public static final String RGB = "   RGB : (";
 	public static final String HSB = "   HSB : (";
+	
+	public static final String ELEVATION = "  Elevation : ";
 	public static final String KM = " km";
+	
+	public static final String WHITESPACES_2 = "  ";
 	
 	// Data members
 	
@@ -423,8 +428,8 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		hsbLabel = new JLabel();
 		statusBar.setLeftComponent(coordLabel, true);
 		statusBar.setLeftComponent(heightLabel, false);
-		statusBar.addRightComponent(rgbLabel, false);
-		statusBar.addRightComponent(hsbLabel, false);
+		statusBar.addRightComponent(rgbLabel, false, false);
+		statusBar.addRightComponent(hsbLabel, false, true);
 		
 		// Create the option menu
 		if (optionsMenu == null)
@@ -837,8 +842,8 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 
 			double e = TerrainElevation.getPatchedElevation(clickedPosition);
 			
-			String s0 = clickedPosition.getFormattedString(); 
-			String s1 = Math.round(e*1000.0)/1000.0 + KM;
+			String s0 = clickedPosition.getFormattedString() + WHITESPACES_2; 
+			String s1 = ELEVATION + Math.round(e*1000.0)/1000.0 + KM;
 			String s2 = "";
 			String s3 = "";
 			

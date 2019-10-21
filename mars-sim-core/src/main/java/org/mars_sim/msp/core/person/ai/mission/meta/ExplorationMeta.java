@@ -26,7 +26,7 @@ import org.mars_sim.msp.core.vehicle.Rover;
 public class ExplorationMeta implements MetaMission {
 
 	/** Mission name */
-	private static final String NAME = Msg.getString("Mission.description.exploration"); //$NON-NLS-1$
+	private static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.exploration"); //$NON-NLS-1$
 
 	private static final double VALUE = 500D;
 
@@ -37,7 +37,7 @@ public class ExplorationMeta implements MetaMission {
 
 	@Override
 	public String getName() {
-		return NAME;
+		return DEFAULT_DESCRIPTION;
 	}
 
 	@Override
@@ -65,7 +65,7 @@ public class ExplorationMeta implements MetaMission {
     			return 0;
 	   		
 			int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);
-			int numThisMission = missionManager.numParticularMissions(NAME, settlement);
+			int numThisMission = missionManager.numParticularMissions(DEFAULT_DESCRIPTION, settlement);
 	
 //			if (numThisMission > 1)	System.out.println(settlement + "  " + NAME + "'s numThisMission : " + numThisMission);
 //			if (numEmbarked > 1) System.out.println(settlement + "  " + NAME + "'s numEmbarked : " + numEmbarked);
@@ -82,7 +82,7 @@ public class ExplorationMeta implements MetaMission {
 
 			try {
 				// Get available rover.
-				Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(settlement, false);
+				Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(DEFAULT_DESCRIPTION, settlement, false);
 				if (rover != null) {
 					// Check if any mineral locations within rover range and obtain their concentration
 					missionProbability = settlement.getTotalMineralValue(rover) / VALUE;

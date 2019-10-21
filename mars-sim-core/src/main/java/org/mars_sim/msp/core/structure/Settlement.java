@@ -308,6 +308,20 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	private double outside_temperature;
 	/** The maximum distance (in km) the rovers are allowed to travel. */
 	private double maxMssionRange = 2200;
+	/** The range [in km] limit for the rovers of this settlement for each type of mission . */
+	private double[] missionRange = new double[] {
+			500, // Areo
+			500, // Bio
+			1000, // CollectIce
+			1000, // CollectRegolith
+			1200, // Emergency
+			1000, // Exploration
+			500, // Meteorology
+			1000, // Mining
+			1200, // RescueSalvageVehicle
+			maxMssionRange, // Trade
+			maxMssionRange*2, // TravelToSettlement			
+	};
 	
 	/** The settlement sponsor. */
 	private String sponsor;
@@ -4019,6 +4033,27 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 		maxMssionRange = value;
 	}
 
+	/**
+	 * Gets the allowed traveled distance for a particular type of mission
+	 * 
+	 * @param missionType : must be a number from 0 to 10; 
+	 * 			0 : Areo, 
+	 *		    1 : Bio, 
+	 *		    2 : CollectIce, 
+	 *			3 : CollectRegolith, 
+	 *			4 : Emergency, 
+	 *			5 : Exploration, 
+	 * 			6 : Meteorology, 
+	 *			7 : Mining, 
+     * 			8 : RescueSalvageVehicle, 
+	 * 			9 : Trade, 
+	 * 		   10 : TravelToSettlement	
+	 * @return the range [in km]
+	 */
+	public double getMaxMissionRange(int missionType) {
+		return missionRange[missionType];
+	}
+	
 	public boolean hasDesignatedCommander() {
 		return hasDesignatedCommander;
 	}

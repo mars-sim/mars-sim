@@ -47,7 +47,7 @@ class ExplorationSitesPanel extends WizardPanel {
 
 	/** Range modifier. */
 	private final static double RANGE_MODIFIER = .95D;
-	private final static double MAX_RANGE = 2500D;
+//	private final static double MAX_RANGE = 2500D;
 
 	// Data members.
 	private MapPanel mapPane;
@@ -296,17 +296,11 @@ class ExplorationSitesPanel extends WizardPanel {
 	 * @return rover range.
 	 */
 	private double getRange() {
-		// try {
 		// Use range modifier.
-		double range = getWizard().getMissionData().getRover().getRange() * RANGE_MODIFIER;
-		if (range > MAX_RANGE)
-			range = MAX_RANGE;
+		double range = getWizard().getMissionData().getRover().getRange(Exploration.DEFAULT_DESCRIPTION) * RANGE_MODIFIER;
+//		if (range > MAX_RANGE)
+//			range = MAX_RANGE;
 		return range;
-		// }
-		// catch (Exception e) {
-		// return 0D;
-		// }
-
 	}
 
 	/**

@@ -142,6 +142,10 @@ public class MetaTaskUtil {
 
 			List<MetaTask> tasks = new ArrayList<MetaTask>();
 
+			// May use
+//			Class cls = Class.forName(clsName);
+//			MetaTask mt = cls.getDeclaredConstructor().newInstance()
+			
 			tasks.add(new EatMealMeta());
 			tasks.add(new HaveConversationMeta());
 			tasks.add(new ListenToMusicMeta());

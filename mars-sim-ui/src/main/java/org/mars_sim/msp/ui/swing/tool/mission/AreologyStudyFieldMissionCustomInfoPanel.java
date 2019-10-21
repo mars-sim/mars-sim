@@ -15,7 +15,7 @@ import java.awt.event.ActionListener;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.mission.AreologyStudyFieldMission;
+import org.mars_sim.msp.core.person.ai.mission.AreologyFieldStudy;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
 import org.mars_sim.msp.core.science.ScientificStudy;
@@ -40,7 +40,7 @@ implements ScientificStudyListener {
 	// Data members.
 	private MainDesktopPane desktop;
 	private ScientificStudy study;
-	private AreologyStudyFieldMission areologyMission;
+	private AreologyFieldStudy areologyMission;
 	private WebLabel studyNameLabel;
 	private WebLabel researcherNameLabel;
 	private WebProgressBar studyResearchBar;
@@ -114,8 +114,8 @@ implements ScientificStudyListener {
 
 	@Override
 	public void updateMission(Mission mission) {
-		if (mission instanceof AreologyStudyFieldMission) {
-			areologyMission = (AreologyStudyFieldMission) mission;
+		if (mission instanceof AreologyFieldStudy) {
+			areologyMission = (AreologyFieldStudy) mission;
 
 			// Remove as scientific study listener.
 			if (study != null) {

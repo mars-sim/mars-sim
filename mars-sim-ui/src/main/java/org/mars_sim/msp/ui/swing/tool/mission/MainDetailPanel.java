@@ -40,15 +40,15 @@ import org.mars_sim.msp.core.UnitEvent;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitListener;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.mission.AreologyStudyFieldMission;
-import org.mars_sim.msp.core.person.ai.mission.BiologyStudyFieldMission;
+import org.mars_sim.msp.core.person.ai.mission.AreologyFieldStudy;
+import org.mars_sim.msp.core.person.ai.mission.BiologyFieldStudy;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
 import org.mars_sim.msp.core.person.ai.mission.CollectIce;
 import org.mars_sim.msp.core.person.ai.mission.CollectRegolith;
-import org.mars_sim.msp.core.person.ai.mission.EmergencySupplyMission;
+import org.mars_sim.msp.core.person.ai.mission.EmergencySupply;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
-import org.mars_sim.msp.core.person.ai.mission.MeteorologyStudyFieldMission;
+import org.mars_sim.msp.core.person.ai.mission.MeteorologyFieldStudy;
 import org.mars_sim.msp.core.person.ai.mission.Mining;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
@@ -461,19 +461,19 @@ public class MainDetailPanel extends WebPanel implements ListSelectionListener, 
 
 		// Create custom areology field mission panel.
 		MissionCustomInfoPanel areologyFieldPanel = new AreologyStudyFieldMissionCustomInfoPanel(desktop);
-		String areologyMissionName = AreologyStudyFieldMission.class.getName();
+		String areologyMissionName = AreologyFieldStudy.class.getName();
 		customInfoPanels.put(areologyMissionName, areologyFieldPanel);
 		missionCustomPane.add(areologyFieldPanel, areologyMissionName);
 
 		// Create custom biology field mission panel.
 		MissionCustomInfoPanel biologyFieldPanel = new BiologyStudyFieldMissionCustomInfoPanel(desktop);
-		String biologyMissionName = BiologyStudyFieldMission.class.getName();
+		String biologyMissionName = BiologyFieldStudy.class.getName();
 		customInfoPanels.put(biologyMissionName, biologyFieldPanel);
 		missionCustomPane.add(biologyFieldPanel, biologyMissionName);
 		
 		// Create custom meteorology field mission panel.
 		MissionCustomInfoPanel meteorologyFieldPanel = new MeteorologyStudyFieldMissionCustomInfoPanel(desktop);
-		String meteorologyMissionName = MeteorologyStudyFieldMission.class.getName();
+		String meteorologyMissionName = MeteorologyFieldStudy.class.getName();
 		customInfoPanels.put(meteorologyMissionName, meteorologyFieldPanel);
 		missionCustomPane.add(meteorologyFieldPanel, meteorologyMissionName);
 		
@@ -528,7 +528,7 @@ public class MainDetailPanel extends WebPanel implements ListSelectionListener, 
 
 		// Create custom emergency supply mission panel.
 		MissionCustomInfoPanel emergencySupplyPanel = new EmergencySupplyMissionCustomInfoPanel();
-		String emergencySupplyMissionName = EmergencySupplyMission.class.getName();
+		String emergencySupplyMissionName = EmergencySupply.class.getName();
 		customInfoPanels.put(emergencySupplyMissionName, emergencySupplyPanel);
 		missionCustomPane.add(emergencySupplyPanel, emergencySupplyMissionName);
 	}

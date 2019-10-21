@@ -13,7 +13,7 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
-import org.mars_sim.msp.core.person.ai.mission.MeteorologyStudyFieldMission;
+import org.mars_sim.msp.core.person.ai.mission.MeteorologyFieldStudy;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
@@ -29,8 +29,8 @@ import org.mars_sim.msp.core.vehicle.Rover;
 public class MeteorologyStudyFieldMissionMeta implements MetaMission {
 
     /** Mission name */
-    private static final String NAME = Msg.getString(
-            "Mission.description.meteorologyStudyFieldMission"); //$NON-NLS-1$
+    private static final String DEFAULT_DESCRIPTION = Msg.getString(
+            "Mission.description.meteorologyFieldStudy"); //$NON-NLS-1$
 
     private static final double WEIGHT = 4D;
     
@@ -41,12 +41,12 @@ public class MeteorologyStudyFieldMissionMeta implements MetaMission {
 
     @Override
     public String getName() {
-        return NAME;
+        return DEFAULT_DESCRIPTION;
     }
 
     @Override
     public Mission constructInstance(Person person) {
-        return new MeteorologyStudyFieldMission(person);
+        return new MeteorologyFieldStudy(person);
     }
 
     @Override
@@ -62,7 +62,7 @@ public class MeteorologyStudyFieldMissionMeta implements MetaMission {
     			return 0;
     		
 			int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);
-			int numThisMission = missionManager.numParticularMissions(NAME, settlement);
+			int numThisMission = missionManager.numParticularMissions(DEFAULT_DESCRIPTION, settlement);
 	
 	   		// Check for # of embarking missions.
     		if (Math.max(1, settlement.getNumCitizens() / 8.0) < numEmbarked + numThisMission) {
@@ -76,7 +76,7 @@ public class MeteorologyStudyFieldMissionMeta implements MetaMission {
     		
             try {
                 // Get available rover.
-                Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(settlement, false);
+                Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(DEFAULT_DESCRIPTION, settlement, false);
                 if (rover != null) {
 
                     ScienceType meteorology = ScienceType.METEOROLOGY;
@@ -122,7 +122,7 @@ public class MeteorologyStudyFieldMissionMeta implements MetaMission {
             Job job = person.getMind().getJob();
             if (job != null) {
             	// If this town has a tourist objective, add bonus
-                missionProbability *= job.getStartMissionProbabilityModifier(MeteorologyStudyFieldMission.class) 
+                missionProbability *= job.getStartMissionProbabilityModifier(MeteorologyFieldStudy.class) 
                 	* (settlement.getGoodsManager().getTourismFactor()
                     + settlement.getGoodsManager().getResearchFactor())/1.5;
             }

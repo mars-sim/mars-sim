@@ -792,9 +792,12 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 	 * @return the range of the vehicle (in km)
 	 * @throws Exception if error getting range.
 	 */
-	public double getRange() {
-		double fuelRange = super.getRange();
-		double maxRange = super.getSettlement().getMaxMssionRange();
+	public double getRange(String missionName) {
+		double fuelRange = super.getRange(missionName);
+//		Mission m = super.getMission();
+		// Obtains the max traveled range [in km] based on the type of mission
+		double maxRange = super.getMissionRange(missionName);
+//		System.out.println(this + " - " + missionName + " - max range : " + maxRange + " km");
 		double distancePerSol = getEstimatedTravelDistancePerSol();
 
 		// Check food capacity as range limit.
@@ -817,7 +820,10 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 		double oxygenRange = distancePerSol * oxygenSols / Vehicle.getLifeSupportRangeErrorMargin();
 //    	if (oxygenRange < fuelRange) fuelRange = oxygenRange;
 
-		return Math.min(oxygenRange, Math.min(foodRange, Math.min(waterRange, Math.min(maxRange, fuelRange))));
+		double max = Math.min(oxygenRange, Math.min(foodRange, Math.min(waterRange, Math.min(maxRange, fuelRange))));
+//		System.out.println(missionName + " : " + max);
+		
+		return max;
 
 	}
 

@@ -30,7 +30,7 @@ import org.mars_sim.msp.core.vehicle.Rover;
 public class TradeMeta implements MetaMission {
 
 	/** Mission name */
-	private static final String NAME = Msg.getString("Mission.description.trade"); //$NON-NLS-1$
+	private static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.trade"); //$NON-NLS-1$
 
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(TradeMeta.class.getName());
@@ -42,7 +42,7 @@ public class TradeMeta implements MetaMission {
 
 	@Override
 	public String getName() {
-		return NAME;
+		return DEFAULT_DESCRIPTION;
 	}
 
 	@Override
@@ -84,7 +84,7 @@ public class TradeMeta implements MetaMission {
     			return 0;
     		
 			int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);
-			int numThisMission = Simulation.instance().getMissionManager().numParticularMissions(NAME, settlement);
+			int numThisMission = Simulation.instance().getMissionManager().numParticularMissions(DEFAULT_DESCRIPTION, settlement);
 	
 	   		// Check for # of embarking missions.
     		if (Math.max(1, settlement.getNumCitizens()) / 8.0 < numEmbarked + numThisMission) {
@@ -143,7 +143,7 @@ public class TradeMeta implements MetaMission {
 		// Check for the best trade settlement within range.
 		double tradeProfit = 0D;
 		try {
-			Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(settlement, false);
+			Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(DEFAULT_DESCRIPTION, settlement, false);
 			if (rover != null) {
 				// Only check every couple of Sols, else use cache.
 				// Note: this method is very CPU intensive.
@@ -191,7 +191,7 @@ public class TradeMeta implements MetaMission {
 		}
 
 		int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);
-		int numThisMission = Simulation.instance().getMissionManager().numParticularMissions(NAME, settlement);
+		int numThisMission = Simulation.instance().getMissionManager().numParticularMissions(DEFAULT_DESCRIPTION, settlement);
 
    		// Check for # of embarking missions.
 		if (Math.max(1, settlement.getNumCitizens() / 8.0) < numEmbarked + numThisMission) {

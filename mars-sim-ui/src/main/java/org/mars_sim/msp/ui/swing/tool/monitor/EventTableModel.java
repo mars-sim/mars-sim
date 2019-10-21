@@ -179,6 +179,7 @@ public class EventTableModel extends AbstractTableModel
 
 			else if (category.equals(HistoricalEventCategory.MISSION) && displayMission
 					&& (eventType == EventType.MISSION_EMERGENCY_BEACON_ON
+						|| eventType == EventType.MISSION_EMERGENCY_BEACON_OFF
 							|| eventType == EventType.MISSION_EMERGENCY_DESTINATION
 							|| eventType == EventType.MISSION_NOT_ENOUGH_RESOURCES
 							|| eventType == EventType.MISSION_MEDICAL_EMERGENCY
@@ -536,10 +537,10 @@ public class EventTableModel extends AbstractTableModel
 						willNotify = true;
 					}
 					else if (eventType == EventType.MISSION_EMERGENCY_BEACON_ON
+							|| eventType == EventType.MISSION_EMERGENCY_BEACON_OFF
 							|| eventType == EventType.MISSION_EMERGENCY_DESTINATION
 //							|| eventType == EventType.MISSION_NOT_ENOUGH_RESOURCES
-							|| eventType == EventType.MISSION_MEDICAL_EMERGENCY
-							) {
+							|| eventType == EventType.MISSION_MEDICAL_EMERGENCY) {
 						message = who + " has " + Conversion.setFirstWordLowercase(cause) 
 							+ " while " + during.toLowerCase() + " in " + location0 + " at " + location1;	
 						willNotify = true;

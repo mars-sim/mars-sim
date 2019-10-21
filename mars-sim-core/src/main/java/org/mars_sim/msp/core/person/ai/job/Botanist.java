@@ -14,8 +14,8 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.mission.AreologyStudyFieldMission;
-import org.mars_sim.msp.core.person.ai.mission.BiologyStudyFieldMission;
+import org.mars_sim.msp.core.person.ai.mission.AreologyFieldStudy;
+import org.mars_sim.msp.core.person.ai.mission.BiologyFieldStudy;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
 import org.mars_sim.msp.core.person.ai.task.AssistScientificStudyResearcher;
 import org.mars_sim.msp.core.person.ai.task.CompileScientificStudyResults;
@@ -80,10 +80,10 @@ implements Serializable {
 		// None
 
 		// Add botanist-related missions.
-		jobMissionJoins.add(AreologyStudyFieldMission.class);
+		jobMissionJoins.add(AreologyFieldStudy.class);
 		
-		jobMissionStarts.add(BiologyStudyFieldMission.class);
-		jobMissionJoins.add(BiologyStudyFieldMission.class);
+		jobMissionStarts.add(BiologyFieldStudy.class);
+		jobMissionJoins.add(BiologyFieldStudy.class);
 		
 		jobMissionJoins.add(Exploration.class);
 		

@@ -152,9 +152,15 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 				recruitMembersForMission(startingPerson);
 
 				// Determine collection sites
-				if (hasVehicle())
-					determineCollectionSites(getVehicle().getRange(),
+				if (hasVehicle()) {
+					if (resourceID == ResourceUtil.iceID)
+						determineCollectionSites(getVehicle().getRange(CollectIce.DEFAULT_DESCRIPTION),
+								getTotalTripTimeLimit(getRover(), getPeopleNumber(), true), numSites);
+					else if (resourceID == ResourceUtil.regolithID)
+						determineCollectionSites(getVehicle().getRange(CollectRegolith.DEFAULT_DESCRIPTION),
 							getTotalTripTimeLimit(getRover(), getPeopleNumber(), true), numSites);
+				}
+
 
 				// Add home settlement
 				addNavpoint(new NavPoint(s.getCoordinates(), s, s.getName()));

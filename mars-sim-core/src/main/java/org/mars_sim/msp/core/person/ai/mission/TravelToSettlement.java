@@ -244,7 +244,7 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 	 */
 	private Settlement getRandomDestinationSettlement(MissionMember member, Settlement startingSettlement) {
 
-		double range = getVehicle().getRange();
+		double range = getVehicle().getRange(DEFAULT_DESCRIPTION);
 		Settlement result = null;
 
 		// Find all desirable destination settlements.
@@ -622,9 +622,9 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 
 			// Vehicle with superior range should be ranked higher.
 			if (result == 0) {
-				if (firstVehicle.getRange() > secondVehicle.getRange()) {
+				if (firstVehicle.getRange(DEFAULT_DESCRIPTION) > secondVehicle.getRange(DEFAULT_DESCRIPTION)) {
 					result = 1;
-				} else if (firstVehicle.getRange() < secondVehicle.getRange()) {
+				} else if (firstVehicle.getRange(DEFAULT_DESCRIPTION) < secondVehicle.getRange(DEFAULT_DESCRIPTION)) {
 					result = -1;
 				}
 			}

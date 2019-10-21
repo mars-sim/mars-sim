@@ -26,8 +26,8 @@ import org.mars_sim.msp.core.structure.construction.SalvageValues;
 public class BuildingSalvageMissionMeta implements MetaMission {
 
     /** Mission name */
-    private static final String NAME = Msg.getString(
-            "Mission.description.salvageBuilding"); //$NON-NLS-1$
+    private static final String DEFAULT_DESCRIPTION = Msg.getString(
+            "Mission.description.buildingSalvageMission"); //$NON-NLS-1$
 
     /** default logger. */
     private static Logger logger = Logger.getLogger(BuildingSalvageMissionMeta.class.getName());
@@ -36,7 +36,7 @@ public class BuildingSalvageMissionMeta implements MetaMission {
     
     @Override
     public String getName() {
-        return NAME;
+        return DEFAULT_DESCRIPTION;
     }
 
     @Override

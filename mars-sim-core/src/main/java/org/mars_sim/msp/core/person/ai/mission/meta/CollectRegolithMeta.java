@@ -26,7 +26,7 @@ public class CollectRegolithMeta implements MetaMission {
 	private static Logger logger = Logger.getLogger(CollectRegolithMeta.class.getName());
 
 	/** Mission name */
-	private static final String NAME = Msg.getString("Mission.description.collectRegolith"); //$NON-NLS-1$
+	private static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.collectRegolith"); //$NON-NLS-1$
 
 	private static final double VALUE = 500D;
 
@@ -39,7 +39,7 @@ public class CollectRegolithMeta implements MetaMission {
     
 	@Override
 	public String getName() {
-		return NAME;
+		return DEFAULT_DESCRIPTION;
 	}
 
 	@Override
@@ -63,7 +63,7 @@ public class CollectRegolithMeta implements MetaMission {
     			return 0;
     	   		
     		int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);
-    		int numThisMission = missionManager.numParticularMissions(NAME, settlement);
+    		int numThisMission = missionManager.numParticularMissions(DEFAULT_DESCRIPTION, settlement);
     	
 	   		// Check for # of embarking missions.
     		if (Math.max(1, settlement.getNumCitizens() / 8.0) < numEmbarked + numThisMission) {

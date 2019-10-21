@@ -32,7 +32,8 @@ public enum EventType {
 	MISSION_EMERGENCY_DESTINATION	(Msg.getString("EventType.mission.emergencyDestination")), //$NON-NLS-1$
 	MISSION_NOT_ENOUGH_RESOURCES	(Msg.getString("EventType.mission.notEnoughResource")), //$NON-NLS-1$
 	MISSION_MEDICAL_EMERGENCY		(Msg.getString("EventType.mission.medicalEmergency")), //$NON-NLS-1$
-	MISSION_EMERGENCY_BEACON_ON		(Msg.getString("EventType.mission.emergencyBeacon")), //$NON-NLS-1$
+	MISSION_EMERGENCY_BEACON_ON		(Msg.getString("EventType.mission.emergencyBeaconOn")), //$NON-NLS-1$
+	MISSION_EMERGENCY_BEACON_OFF	(Msg.getString("EventType.mission.emergencyBeaconOff")), //$NON-NLS-1$
 	MISSION_RENDEZVOUS				(Msg.getString("EventType.mission.rendezvous")), //$NON-NLS-1$
 	MISSION_SALVAGE_VEHICLE			(Msg.getString("EventType.mission.salvageVehicle")), //$NON-NLS-1$
 	MISSION_RESCUE_PERSON			(Msg.getString("EventType.mission.rescuePerson")), //$NON-NLS-1$

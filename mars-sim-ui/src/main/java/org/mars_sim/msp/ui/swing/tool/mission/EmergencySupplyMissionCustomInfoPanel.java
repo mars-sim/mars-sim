@@ -17,7 +17,7 @@ import java.util.Map;
 import javax.swing.table.AbstractTableModel;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.person.ai.mission.EmergencySupplyMission;
+import org.mars_sim.msp.core.person.ai.mission.EmergencySupply;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
 import org.mars_sim.msp.core.structure.goods.Good;
@@ -33,7 +33,7 @@ public class EmergencySupplyMissionCustomInfoPanel
 extends MissionCustomInfoPanel {
 
 	// Data members.
-	private EmergencySupplyMission mission;
+	private EmergencySupply mission;
 	private EmergencySuppliesTableModel emergencySuppliesTableModel;
 
 	/**
@@ -68,8 +68,8 @@ extends MissionCustomInfoPanel {
 
 	@Override
 	public void updateMission(Mission mission) {
-		if (mission instanceof EmergencySupplyMission) {
-			this.mission = (EmergencySupplyMission) mission;
+		if (mission instanceof EmergencySupply) {
+			this.mission = (EmergencySupply) mission;
 			emergencySuppliesTableModel.updateTable();
 		}
 	}

@@ -62,7 +62,7 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 	
 	/** Default description. */
-	public static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.salvageBuilding"); //$NON-NLS-1$
+	public static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.buildingSalvageMission"); //$NON-NLS-1$
 
 	/** Mission phases. */
 	final public static MissionPhase PREPARE_SITE_PHASE = new MissionPhase(
@@ -778,9 +778,9 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 		// Cancel construction mission if there are any beacon vehicles within range
 		// that need help.
 		Vehicle vehicleTarget = null;
-		Vehicle vehicle = RoverMission.getVehicleWithGreatestRange(settlement, true);
+		Vehicle vehicle = RoverMission.getVehicleWithGreatestRange(DEFAULT_DESCRIPTION, settlement, true);
 		if (vehicle != null) {
-			vehicleTarget = RescueSalvageVehicle.findBeaconVehicle(settlement, vehicle.getRange());
+			vehicleTarget = RescueSalvageVehicle.findBeaconVehicle(settlement, vehicle.getRange(DEFAULT_DESCRIPTION));
 			if (vehicleTarget != null) {
 				if (!RescueSalvageVehicle.isClosestCapableSettlement(settlement, vehicleTarget)) {
 					result = true;

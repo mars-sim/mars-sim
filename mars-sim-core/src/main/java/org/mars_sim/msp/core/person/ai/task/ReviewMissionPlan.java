@@ -19,13 +19,13 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.JobAssignment;
-import org.mars_sim.msp.core.person.ai.mission.AreologyStudyFieldMission;
-import org.mars_sim.msp.core.person.ai.mission.BiologyStudyFieldMission;
+import org.mars_sim.msp.core.person.ai.mission.AreologyFieldStudy;
+import org.mars_sim.msp.core.person.ai.mission.BiologyFieldStudy;
 import org.mars_sim.msp.core.person.ai.mission.CollectIce;
 import org.mars_sim.msp.core.person.ai.mission.CollectRegolith;
-import org.mars_sim.msp.core.person.ai.mission.EmergencySupplyMission;
+import org.mars_sim.msp.core.person.ai.mission.EmergencySupply;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
-import org.mars_sim.msp.core.person.ai.mission.MeteorologyStudyFieldMission;
+import org.mars_sim.msp.core.person.ai.mission.MeteorologyFieldStudy;
 import org.mars_sim.msp.core.person.ai.mission.Mining;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionPlanning;
@@ -244,16 +244,16 @@ public class ReviewMissionPlan extends Task implements Serializable {
 							// 3. Mission Qualification Score
 							double qual = 0;
 							
-							if (m instanceof AreologyStudyFieldMission) {
+							if (m instanceof AreologyFieldStudy) {
 	//							AreologyStudyFieldMission aM = (AreologyStudyFieldMission)m;
 	//							qual = (int)m.getMissionQualification(person);
-								qual = 2D * ((AreologyStudyFieldMission)m).getMissionQualification(person);
+								qual = 2D * ((AreologyFieldStudy)m).getMissionQualification(person);
 							}
-							else if (m instanceof BiologyStudyFieldMission) {
-								qual = 2D * ((BiologyStudyFieldMission)m).getMissionQualification(person);
+							else if (m instanceof BiologyFieldStudy) {
+								qual = 2D * ((BiologyFieldStudy)m).getMissionQualification(person);
 							}
-							else if (m instanceof MeteorologyStudyFieldMission) {
-								qual = 2D * ((MeteorologyStudyFieldMission)m).getMissionQualification(person);
+							else if (m instanceof MeteorologyFieldStudy) {
+								qual = 2D * ((MeteorologyFieldStudy)m).getMissionQualification(person);
 							}
 							else if (m instanceof RescueSalvageVehicle) {
 								qual = 2D * ((RescueSalvageVehicle)m).getMissionQualification(person);
@@ -268,9 +268,9 @@ public class ReviewMissionPlan extends Task implements Serializable {
 							double obj = 0;
 							
 							if (person.getAssociatedSettlement().getObjective() == ObjectiveType.TOURISM
-									&& (m instanceof AreologyStudyFieldMission
-									|| m instanceof BiologyStudyFieldMission
-									|| m instanceof MeteorologyStudyFieldMission
+									&& (m instanceof AreologyFieldStudy
+									|| m instanceof BiologyFieldStudy
+									|| m instanceof MeteorologyFieldStudy
 									|| m instanceof TravelToSettlement
 									|| m instanceof Exploration)
 									) {
@@ -296,7 +296,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 							
 							// 5. emergency
 							int emer = 0;
-							if (m instanceof EmergencySupplyMission
+							if (m instanceof EmergencySupply
 									|| m instanceof RescueSalvageVehicle) {
 								emer = 50;
 							}	

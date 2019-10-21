@@ -108,7 +108,7 @@ public final class TradeUtil {
 				boolean hasCurrentTradeMission = hasCurrentTradeMission(startingSettlement, s);
 
 				double settlementRange = s.getCoordinates().getDistance(startingSettlement.getCoordinates());
-				boolean withinRange = (settlementRange <= (rover.getRange() * .8D));
+				boolean withinRange = (settlementRange <= (rover.getRange(Trade.DEFAULT_DESCRIPTION) * .8D));
 
 				if (!hasCurrentTradeMission && withinRange) {
 					// double startTime = System.currentTimeMillis();
