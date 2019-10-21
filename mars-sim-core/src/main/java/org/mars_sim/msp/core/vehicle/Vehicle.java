@@ -1368,47 +1368,47 @@ public abstract class Vehicle extends Unit
 	public double getMissionRange(String missionName) {
 			
 		if (missionName.equalsIgnoreCase(AreologyFieldStudy.class.getSimpleName())) {
-			return getSettlement().getMaxMissionRange(0);
+			return getSettlement().getMissionRadius(0);
 		}
 		
 		if (missionName.equalsIgnoreCase(BiologyFieldStudy.class.getSimpleName())) {
-			return getSettlement().getMaxMissionRange(1);
+			return getSettlement().getMissionRadius(1);
 		}
 		
 		if (missionName.equalsIgnoreCase(CollectIce.class.getSimpleName())) {
-			return getSettlement().getMaxMissionRange(2);
+			return getSettlement().getMissionRadius(2);
 		}
 		
 		if (missionName.equalsIgnoreCase(CollectRegolith.class.getSimpleName())) {
-			return getSettlement().getMaxMissionRange(3);
+			return getSettlement().getMissionRadius(3);
 		}
 		
 		if (missionName.equalsIgnoreCase(EmergencySupply.class.getSimpleName())) {
-			return getSettlement().getMaxMissionRange(4);
+			return getSettlement().getMissionRadius(4);
 		}
 		
 		if (missionName.equalsIgnoreCase(Exploration.class.getSimpleName())) {
-			return getSettlement().getMaxMissionRange(5);
+			return getSettlement().getMissionRadius(5);
 		}
 		
 		if (missionName.equalsIgnoreCase(MeteorologyFieldStudy.class.getSimpleName())) {
-			return getSettlement().getMaxMissionRange(6);
+			return getSettlement().getMissionRadius(6);
 		}
 		
 		if (missionName.equalsIgnoreCase(Mining.class.getSimpleName())) {
-			return getSettlement().getMaxMissionRange(7);
+			return getSettlement().getMissionRadius(7);
 		}
 
 		if (missionName.equalsIgnoreCase(RescueSalvageVehicle.class.getSimpleName())) {
-			return getSettlement().getMaxMissionRange(8);
+			return getSettlement().getMissionRadius(8);
 		}
 		
 		if (missionName.equalsIgnoreCase(Trade.class.getSimpleName())) {
-			return getSettlement().getMaxMissionRange(9);
+			return getSettlement().getMissionRadius(9);
 		}
 		
 		if (missionName.equalsIgnoreCase(TravelToSettlement.class.getSimpleName())) {
-			return getSettlement().getMaxMissionRange(10);
+			return getSettlement().getMissionRadius(10);
 		}
 		
 		
@@ -1426,56 +1426,56 @@ public abstract class Vehicle extends Unit
 
 				if (mission instanceof AreologyFieldStudy) {
 					if (((AreologyFieldStudy) mission).getVehicle() == this) {
-						return getSettlement().getMaxMissionRange(0);
+						return getSettlement().getMissionRadius(0);
 					}
 				}
 				
 				if (mission instanceof BiologyFieldStudy) {
 					if (((BiologyFieldStudy) mission).getVehicle() == this) {
-						return getSettlement().getMaxMissionRange(1);
+						return getSettlement().getMissionRadius(1);
 					}
 				}
 				
 				if (mission instanceof CollectIce) {
 					if (((CollectIce) mission).getVehicle() == this) {
-						return getSettlement().getMaxMissionRange(2);
+						return getSettlement().getMissionRadius(2);
 					}
 				}
 				
 				if (mission instanceof CollectRegolith) {
 					if (((CollectRegolith) mission).getVehicle() == this) {
-						return getSettlement().getMaxMissionRange(3);
+						return getSettlement().getMissionRadius(3);
 					}
 				}
 				
 				if (mission instanceof EmergencySupply) {
 					if (((EmergencySupply) mission).getVehicle() == this) {
-						return getSettlement().getMaxMissionRange(4);
+						return getSettlement().getMissionRadius(4);
 					}
 				}
 				
 				if (mission instanceof Exploration) {
 					if (((Exploration) mission).getVehicle() == this) {
-						return getSettlement().getMaxMissionRange(5);
+						return getSettlement().getMissionRadius(5);
 					}
 				}
 				
 				if (mission instanceof MeteorologyFieldStudy) {
 					if (((MeteorologyFieldStudy) mission).getVehicle() == this) {
-						return getSettlement().getMaxMissionRange(6);
+						return getSettlement().getMissionRadius(6);
 					}
 				}
 				
 				if (mission instanceof Mining) {
 					if (((Mining) mission).getVehicle() == this) {
-						return getSettlement().getMaxMissionRange(7);
+						return getSettlement().getMissionRadius(7);
 					}
 				}
 	
 				
 				if (mission instanceof RescueSalvageVehicle) {
 					if (((RescueSalvageVehicle) mission).getVehicle() == this) {
-						return getSettlement().getMaxMissionRange(8);
+						return getSettlement().getMissionRadius(8);
 					}
 				}
 				
@@ -1483,14 +1483,14 @@ public abstract class Vehicle extends Unit
 					Rover towingRover = (Rover) ((Trade) mission).getVehicle();
 					if (towingRover != null) {
 						if (towingRover.getTowedVehicle() == this) {
-							return getSettlement().getMaxMissionRange(9);
+							return getSettlement().getMissionRadius(9);
 						}
 					}
 				}
 				
 				if (mission instanceof TravelToSettlement) {
 					if (((TravelToSettlement) mission).getVehicle() == this) {
-						return getSettlement().getMaxMissionRange(10);
+						return getSettlement().getMissionRadius(10);
 					}
 				}
 				

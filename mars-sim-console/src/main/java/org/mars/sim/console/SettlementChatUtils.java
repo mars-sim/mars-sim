@@ -25,6 +25,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.ai.mission.MissionPlanning;
 import org.mars_sim.msp.core.person.ai.mission.PlanType;
@@ -708,52 +709,77 @@ public class SettlementChatUtils extends ChatUtils {
 			responseText.append(printLevel(s, mods));
 		}
 
-		else if (text.equalsIgnoreCase("vehicle range")) {
+		else if (text.equalsIgnoreCase("mission radius")) {
 //			questionText = YOU_PROMPT + "I'd like to change the vehicle range for this settlement." ; 
 
-			double oldRange = settlementCache.getMaxMssionRange();
+//			double oldRange = settlementCache.getMaxMssionRange();
 
-			String prompt = System.lineSeparator() + "Current Vehicle Range Limit is " + oldRange
-					+ " km. Would you like to change it?";
-			boolean change = textIO.newBooleanInputReader().read(prompt); // .withDefaultValue(true)
+			List<String> missionNames = Settlement.getTravelMissionNames();
+			int size = missionNames.size();
+			
+			String prompt = System.lineSeparator() 
+					+ " Type of Mission             Mission Radius" + System.lineSeparator() 
+					+ "--------------------------------------------" + System.lineSeparator();
+			
+			String WHITESPACE_1 = " ";
+			String WHITESPACE_2 = "  ";
+			String DOT = ". ";
+			String KM = "  km";
+			
+			StringBuilder sb = new StringBuilder(prompt);
+			for (int i=0; i < size; i++) {
+				if (i < 10)
+					sb.append(WHITESPACE_1);
 
-//	        handler.addStringTask("change", System.lineSeparator() + "Current Vehicle Range Limit is " + oldRange + " km. Would you like to change it? (y/n)", false)
-//	        		.addChoices("y", "n").constrainInputToChoices();
-//			handler.executeOneTask();
+				sb.append(i)
+				.append(DOT)
+				.append(addWhiteSpacesLeftName(missionNames.get(i), 28))
+				.append(WHITESPACE_2)
+				.append(settlementCache.getMissionRadius(i))
+				.append(KM)
+				.append(System.lineSeparator());
+			}
+			
+			sb.append(System.lineSeparator()).append("Which one would you like to change ?");
+			
+			int selected = textIO.newIntInputReader().withMinVal(0).withMaxVal(10).read(sb.toString());
+					
+			double newRange = textIO.newDoubleInputReader().withMinVal(50.0).withMaxVal(2200.0)
+					.read(System.lineSeparator() + "Enter the new mission radius (a number between 50.0 and 2200.0 [in km])");
+			
+			newRange = Math.round(newRange*10.0)/10.0;
+			
+			double oldRange = Math.round(settlementCache.getMissionRadius(selected)*10.0)/10.0;
+			
+			settlementCache.setMissionRadius(selected, newRange);
+		
+			String s = "";
+			
+			if (newRange >= 50.0 && newRange <= 2200.0) {
 
-			if (change) {
-//        	if (Input.change.equalsIgnoreCase("y")) {   		      		
-				double range = textIO.newDoubleInputReader().withMinVal(50.0).withMaxVal(4000.0)
-						.read("Enter a number between 50 and 3000 [km]");
-//        		handler.addIntTask("range", "Enter a number between 50 and 2000 (km)" , false)
-//        		.withInputReaderConfigurator(r -> r.withMinVal(50).withMaxVal(2000));
-//    	        handler.executeOneTask();
-				String s = "";
+				settlementCache.setMaxMssionRange(newRange);
 
-				if (range >= 50.0 && range <= 4000.0) {
-//    	        if (Input.range > 49 && Input.range < 2001) {
+				responseText.append(settlementCache + " : I've updated the mission range for '" 
+							+ missionNames.get(selected) + "' as follows : ");
+				responseText.append(System.lineSeparator());
+				responseText.append(System.lineSeparator());
+				s = "  Old Mission Radius :  " + oldRange + " km";
+				responseText.append("  Old Mission Radius :  ");
+				responseText.append(addWhiteSpacesLeftName(oldRange + "", 7));
+				responseText.append(" km");
+				logger.config(s);
+				responseText.append(System.lineSeparator());
+				s = "  New Mission Radius :  " + newRange + " km";
+				responseText.append("  New Mission Radius :  ");
+				responseText.append(addWhiteSpacesLeftName(newRange + "", 7));
+				responseText.append(" km");
+				logger.config(s);
 
-					settlementCache.setMaxMssionRange(range);
-
-//    				responseText.append(System.lineSeparator());
-					responseText.append(settlementCache + " : I've updated it for you as follows : ");
-					responseText.append(System.lineSeparator());
-					responseText.append(System.lineSeparator());
-					s = "     Old Vehicle Range Limit : " + oldRange + " km";
-					responseText.append(s);
-					logger.config(s);
-					responseText.append(System.lineSeparator());
-					s = "     New Vehicle Range Limit : " + range + " km";
-					responseText.append(s);
-//    				responseText.append("     New Vehicle Range Limit : ").append(Input.range).append(" km");
-					logger.config(s);
-
-				} else {
-//    	        	responseText.append(System.lineSeparator());
-					s = settlementCache + " : It's outside of the normal range. Aborted.";
-					responseText.append(s);
-					logger.config(s);
-				}
+			} else {
+//	    	       responseText.append(System.lineSeparator());
+				s = settlementCache + " : It's outside the normal range of radius. Aborted.";
+				responseText.append(s);
+				logger.config(s);
 			}
 
 		}

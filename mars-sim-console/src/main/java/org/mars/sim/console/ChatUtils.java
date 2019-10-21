@@ -118,7 +118,7 @@ public class ChatUtils {
 			{"robot", 			"what robots have been assigned to this settlement"},
 //			"bot", 
 			{"proposal", 		"what proposal have been represented"},
-			{"vehicle range", 	"what are the range of the vehicles we have"},
+			{"mission radius", 	"what are the range of radius for each type of mission"},
 //			{"dash", 			"what is on the settlement dashboard"},
 			{"dashboard", 		"what is on the settlement dashboard"},
 			{"repair", 			"what is the level of the repair effort"},

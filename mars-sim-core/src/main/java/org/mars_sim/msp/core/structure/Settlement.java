@@ -10,6 +10,7 @@ package org.mars_sim.msp.core.structure;
 import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -47,9 +48,21 @@ import org.mars_sim.msp.core.person.ai.job.JobAssignmentType;
 import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.job.Meteorologist;
 import org.mars_sim.msp.core.person.ai.job.Technician;
+import org.mars_sim.msp.core.person.ai.mission.AreologyFieldStudy;
+import org.mars_sim.msp.core.person.ai.mission.BiologyFieldStudy;
+import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
+import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
+import org.mars_sim.msp.core.person.ai.mission.CollectIce;
+import org.mars_sim.msp.core.person.ai.mission.CollectRegolith;
+import org.mars_sim.msp.core.person.ai.mission.EmergencySupply;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
+import org.mars_sim.msp.core.person.ai.mission.MeteorologyFieldStudy;
+import org.mars_sim.msp.core.person.ai.mission.Mining;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
+import org.mars_sim.msp.core.person.ai.mission.Trade;
+import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.mission.meta.BuildingConstructionMissionMeta;
 import org.mars_sim.msp.core.person.ai.mission.meta.CollectIceMeta;
@@ -405,6 +418,29 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 
 	private static SettlementConfig settlementConfig = SimulationConfig.instance().getSettlementConfiguration();
 	private static PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
+	
+	private static List<String> travelMissionNames;
+	
+	static {
+		/**
+		 * Creates an array of all missions
+		 */
+		travelMissionNames = Arrays.asList(
+					AreologyFieldStudy.DEFAULT_DESCRIPTION,
+					BiologyFieldStudy.DEFAULT_DESCRIPTION,
+					CollectIce.DEFAULT_DESCRIPTION,
+					CollectRegolith.DEFAULT_DESCRIPTION,
+					EmergencySupply.DEFAULT_DESCRIPTION,
+					
+					Exploration.DEFAULT_DESCRIPTION,
+					MeteorologyFieldStudy.DEFAULT_DESCRIPTION,
+					Mining.DEFAULT_DESCRIPTION,
+					RescueSalvageVehicle.DEFAULT_DESCRIPTION,
+					Trade.DEFAULT_DESCRIPTION,
+					
+					TravelToSettlement.DEFAULT_DESCRIPTION
+			);
+		}
 	
 	/**
 	 * Must be synchronised to prevent duplicate ids being assigned via different
@@ -4042,16 +4078,22 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	 *		    2 : CollectIce, 
 	 *			3 : CollectRegolith, 
 	 *			4 : Emergency, 
+	 *
 	 *			5 : Exploration, 
 	 * 			6 : Meteorology, 
 	 *			7 : Mining, 
      * 			8 : RescueSalvageVehicle, 
 	 * 			9 : Trade, 
+	 * 
 	 * 		   10 : TravelToSettlement	
 	 * @return the range [in km]
 	 */
-	public double getMaxMissionRange(int missionType) {
+	public double getMissionRadius(int missionType) {
 		return missionRange[missionType];
+	}
+	
+	public void setMissionRadius(int missionType, double newRange) {
+		missionRange[missionType] = newRange;
 	}
 	
 	public boolean hasDesignatedCommander() {
@@ -4434,6 +4476,13 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
     public double getIceCollectionRate() {
     	return iceCollectionRate;
     }
+	
+	/**
+	 * Gets a list of all travel related mission names
+	 */
+	public static List<String> getTravelMissionNames() {
+		return travelMissionNames;
+	}
 	
 	/**
 	 * Reset uniqueCount to the current number of settlements

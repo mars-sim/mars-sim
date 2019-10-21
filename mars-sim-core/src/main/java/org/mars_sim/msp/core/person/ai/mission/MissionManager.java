@@ -81,21 +81,19 @@ public class MissionManager implements Serializable {
 					BuildingConstructionMission.DEFAULT_DESCRIPTION, 
 					BuildingSalvageMission.DEFAULT_DESCRIPTION,
 					CollectIce.DEFAULT_DESCRIPTION,
+					
 					CollectRegolith.DEFAULT_DESCRIPTION,
 					EmergencySupply.DEFAULT_DESCRIPTION,
 					Exploration.DEFAULT_DESCRIPTION,
 					MeteorologyFieldStudy.DEFAULT_DESCRIPTION,
 					Mining.DEFAULT_DESCRIPTION,
+					
 					RescueSalvageVehicle.DEFAULT_DESCRIPTION,
 					Trade.DEFAULT_DESCRIPTION,
 					TravelToSettlement.DEFAULT_DESCRIPTION
 			);
 		}
 	
-	static {
-
-
-		}
 	
 	/**
 	 * Constructor.
@@ -892,15 +890,11 @@ public class MissionManager implements Serializable {
 	}
 	
 	/**
-	 * Set instances
-	 * 
-	 * @param clock
+	 * Gets a list of all mission names
 	 */
-	
 	public static List<String> getMissionNames() {
 		return missionNames;
 	}
-	
 	
 	public static void initializeInstances(MarsClock clock) {
 		marsClock = clock;
