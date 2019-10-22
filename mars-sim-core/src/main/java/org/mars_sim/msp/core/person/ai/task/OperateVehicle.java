@@ -329,12 +329,14 @@ public abstract class OperateVehicle extends Task implements Serializable {
                 vehicle.setParkedLocation(0D, 0D, degDir);
             }
             endTask();
-            result = time - MarsClock.convertSecondsToMillisols(distanceTraveled / vehicle.getSpeed() * 60D * 60D);
+
         }
         else {
             // Determine new position.
             vehicle.setCoordinates(vehicle.getCoordinates().getNewLocation(vehicle.getDirection(), distanceTraveled));
         }
+        
+        result = time - MarsClock.MILLISOLS_PER_HOUR * distanceTraveled / vehicle.getSpeed();
         
         // Add distance traveled to vehicle's odometer.
         vehicle.addTotalDistanceTraveled(distanceTraveled);

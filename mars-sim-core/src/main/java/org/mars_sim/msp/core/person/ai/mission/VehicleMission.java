@@ -1220,13 +1220,18 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	public final double getActualTotalDistanceTravelled() {
 		if (vehicle != null) {
 			double dist = vehicle.getTotalDistanceTraveled() - startingTravelledDistance;
-			if (dist > distanceTravelled)
+//			System.out.println("dist : " + (int)dist + "    total : " + (int)vehicle.getTotalDistanceTraveled() + "   starting : " + (int)startingTravelledDistance);
+			if (dist > distanceTravelled) {
 				// Record the distance
 				distanceTravelled = dist;
-			return distanceTravelled;
-		} else {
-			return distanceTravelled;
+				return dist;
+			}
+			else {
+				return distanceTravelled;
+			}
 		}
+		
+		return distanceTravelled;
 	}
 
 	/**
