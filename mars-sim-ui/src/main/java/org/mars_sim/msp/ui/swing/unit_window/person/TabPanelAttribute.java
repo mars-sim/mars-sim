@@ -9,6 +9,8 @@ package org.mars_sim.msp.ui.swing.unit_window.person;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -46,7 +48,7 @@ extends TabPanel {
 	private boolean uiDone = false;
 
 	/** The Person instance. */
-	private Person person = null;
+	private Person person;
 	private Robot robot;
 	
 	private AttributeTableModel attributeTableModel;
@@ -108,8 +110,11 @@ extends TabPanel {
 		centerContentPanel.add(attributeScrollPanel);
 
 		// Create attribute table model
-		attributeTableModel = new AttributeTableModel(person);
-
+		if (person != null)
+			attributeTableModel = new AttributeTableModel(person);
+		else
+			attributeTableModel = new AttributeTableModel(robot);
+		
 		// Create attribute table
 		attributeTable = new ZebraJTable(attributeTableModel); //new JTable(attributeTableModel);//
 		attributeTable.setPreferredScrollableViewportSize(new Dimension(225, 100));
@@ -159,8 +164,8 @@ extends TabPanel {
 @SuppressWarnings("serial")
 class AttributeTableModel extends AbstractTableModel {
 
-	private List<Map<String, NaturalAttributeType>> n_attributes;
-	private List<Map<String, RoboticAttributeType>> r_attributes;
+	private List<NaturalAttributeType> n_attributes;
+	private List<RoboticAttributeType> r_attributes;
 
 	private NaturalAttributeManager n_manager;
 	private RoboticAttributeManager r_manager;
@@ -178,14 +183,14 @@ class AttributeTableModel extends AbstractTableModel {
          	person = (Person) unit;
          	n_manager = person.getNaturalAttributeManager();
 
-    		n_attributes = n_manager.getAttributes();
+    		n_attributes = Arrays.asList(NaturalAttributeType.values());
         }
 
         else if (unit instanceof Robot) {
         	robot = (Robot) unit;
         	r_manager = robot.getRoboticAttributeManager();
 
-    		r_attributes = r_manager.getAttributes();
+    		r_attributes =  Arrays.asList(RoboticAttributeType.values());
         }
 	}
 
@@ -224,10 +229,9 @@ class AttributeTableModel extends AbstractTableModel {
 	public Object getValueAt(int row, int column) {
 		if (column == 0) {
 			if (person != null)
-				return n_attributes.get(row).keySet().iterator().next();
-
+				return n_attributes.get(row).getName();
 			else if (robot != null)
-				return r_attributes.get(row).keySet().iterator().next();
+				return r_attributes.get(row).getName();
 			else
 				return null;
 
@@ -235,10 +239,9 @@ class AttributeTableModel extends AbstractTableModel {
 
 		else if (column == 1) {
 			if (person != null)
-				return getLevelString(n_manager.getAttribute(n_attributes.get(row).values().iterator().next()));
-
+				return getLevelString(n_manager.getAttribute(n_attributes.get(row)));
 			else if (robot != null)
-				return getLevelString(r_manager.getAttribute(r_attributes.get(row).values().iterator().next()));
+				return getLevelString(r_manager.getAttribute(r_attributes.get(row)));
 			else
 				return null;
 		}

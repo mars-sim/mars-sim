@@ -9,6 +9,7 @@ package org.mars_sim.msp.ui.swing.tool.mission.create;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.IntPoint;
+import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.map.*;
 
@@ -59,9 +60,9 @@ class ProspectingSitePanel extends WizardPanel {
 		
 		// Create the title label.
 		String resource = "";
-		String type = getWizard().getMissionData().getType();
-		if (type.equals(MissionDataBean.ICE_MISSION)) resource = "ice";
-		else if (type.equals(MissionDataBean.REGOLITH_MISSION)) resource = "regolith";
+		MissionType type = getWizard().getMissionData().getMissionType();
+		if (MissionType.COLLECT_ICE == type) resource = "ice";
+		else if (MissionType.COLLECT_REGOLITH == type) resource = "regolith";
 		WebLabel titleLabel = new WebLabel("Choose " + resource + " collection site.");
 		titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD));
 		titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -115,10 +116,10 @@ class ProspectingSitePanel extends WizardPanel {
 		IntPoint navpointPixel = navLayer.getNavpointPosition(0);
 		Coordinates navpoint = getCenterCoords().convertRectToSpherical(navpointPixel.getiX() - 150, 
 				navpointPixel.getiY() - 150, CannedMarsMap.PIXEL_RHO);
-		String type = getWizard().getMissionData().getType();
-		if (type.equals(MissionDataBean.ICE_MISSION)) 
+		MissionType type = getWizard().getMissionData().getMissionType();
+		if (MissionType.COLLECT_ICE == type) 
 			getWizard().getMissionData().setIceCollectionSite(navpoint);
-		else if (type.equals(MissionDataBean.REGOLITH_MISSION)) 
+		else if (MissionType.COLLECT_REGOLITH == type) 
 			getWizard().getMissionData().setRegolithCollectionSite(navpoint);
 		return true;
 	}
@@ -137,7 +138,7 @@ class ProspectingSitePanel extends WizardPanel {
 	void updatePanel() {
 		try {
 			//double range = (getWizard().getMissionData().getRover().getRange() * RANGE_MODIFIER) / 2D;
-			double range = getWizard().getMissionData().getRover().getRange(wizard.getMissionBean().getType()) * RANGE_MODIFIER;
+			double range = getWizard().getMissionData().getRover().getRange(wizard.getMissionBean().getMissionType()) * RANGE_MODIFIER;
 			if (range > MAX_RANGE)
 				range = MAX_RANGE;
 			range = range / 2D;

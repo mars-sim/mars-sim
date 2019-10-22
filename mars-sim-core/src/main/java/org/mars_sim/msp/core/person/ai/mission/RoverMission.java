@@ -91,9 +91,9 @@ public abstract class RoverMission extends VehicleMission {
 	 * @param name           the name of the mission.
 	 * @param startingMember the mission member starting the mission.
 	 */
-	protected RoverMission(String name, MissionMember startingMember) {
+	protected RoverMission(String name, MissionType missionType, MissionMember startingMember) {
 		// Use VehicleMission constructor.
-		super(name, startingMember, MIN_GOING_MEMBERS);
+		super(name, missionType, startingMember, MIN_GOING_MEMBERS);
 	}
 
 	/**
@@ -103,9 +103,9 @@ public abstract class RoverMission extends VehicleMission {
 	 * @param startingMember the mission member starting the mission.
 	 * @param minPeople      the minimum number of members required for mission.
 	 */
-	protected RoverMission(String missionName, MissionMember startingMember, int minPeople) {
+	protected RoverMission(String missionName, MissionType missionType, MissionMember startingMember, int minPeople) {
 		// Use VehicleMission constructor.
-		super(missionName, startingMember, minPeople);
+		super(missionName, missionType, startingMember, minPeople);
 //		logger.info(startingMember + " had started RoverMission");
 	}
 
@@ -117,9 +117,9 @@ public abstract class RoverMission extends VehicleMission {
 	 * @param minPeople      the minimum number of people required for mission.
 	 * @param rover          the rover to use on the mission.
 	 */
-	protected RoverMission(String missionName, MissionMember startingMember, int minPeople, Rover rover) {
+	protected RoverMission(String missionName, MissionType missionType, MissionMember startingMember, int minPeople, Rover rover) {
 		// Use VehicleMission constructor.
-		super(missionName, startingMember, minPeople, rover);
+		super(missionName, missionType, startingMember, minPeople, rover);
 	}
 
 	/**
@@ -158,7 +158,7 @@ public abstract class RoverMission extends VehicleMission {
 	 * @return vehicle or null if none available.
 	 * @throws Exception if error finding vehicles.
 	 */
-	public static Vehicle getVehicleWithGreatestRange(String missionName, Settlement settlement, boolean allowMaintReserved) {
+	public static Vehicle getVehicleWithGreatestRange(MissionType missionType, Settlement settlement, boolean allowMaintReserved) {
 		Vehicle result = null;
 
 		Iterator<Vehicle> i = settlement.getParkedVehicles().iterator();
@@ -183,7 +183,7 @@ public abstract class RoverMission extends VehicleMission {
 				if (result == null)
 					// so far, this is the first vehicle being picked
 					result = vehicle;
-				else if (vehicle.getRange(missionName) > result.getRange(missionName))
+				else if (vehicle.getRange(missionType) > result.getRange(missionType))
 					// This vehicle has a better range than the previously selected vehicle
 					result = vehicle;
 			}
@@ -968,7 +968,7 @@ public abstract class RoverMission extends VehicleMission {
 
 	@Override
 	public void endMission() {
-		logger.info(this.getStartingMember() + " ended the " + this);
+//		logger.info(this.getStartingMember() + " ended the " + this);
 		super.endMission();
 	}
 

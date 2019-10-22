@@ -436,18 +436,18 @@ public class Malfunction implements Serializable {
 	 * @return true if any matches
 	 */
 	public boolean isMatched(Collection<String> scopes) {
-		boolean result = false;
+//		boolean result = false;
 
 		if ((systems.size() > 0) && (scopes.size() > 0)) {
 			for (String s : systems) {
 				for (String u : scopes) {
 					if (s.equalsIgnoreCase(u))
-						result = true;
+						return true;//result = true;
 				}
 			}
 		}
 
-		return result;
+		return false;
 	}
 
 	/**

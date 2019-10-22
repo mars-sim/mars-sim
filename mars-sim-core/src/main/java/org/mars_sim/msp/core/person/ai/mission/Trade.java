@@ -57,6 +57,9 @@ public class Trade extends RoverMission implements Serializable {
 	/** Default description. */
 	public static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.trade"); //$NON-NLS-1$
 
+	/** Mission Type enum. */
+	public static final MissionType missionType = MissionType.TRADE;
+	
 	/** Mission phases. */
 	final public static MissionPhase TRADE_DISEMBARKING = new MissionPhase(
 			Msg.getString("Mission.phase.tradeDisembarking")); //$NON-NLS-1$
@@ -97,7 +100,7 @@ public class Trade extends RoverMission implements Serializable {
 	 */
 	public Trade(MissionMember startingMember) {
 		// Use RoverMission constructor.
-		super(DEFAULT_DESCRIPTION, startingMember);
+		super(DEFAULT_DESCRIPTION, missionType, startingMember);
 
 		Settlement s = startingMember.getSettlement();
 		// Set the mission capacity.
@@ -182,7 +185,7 @@ public class Trade extends RoverMission implements Serializable {
 	public Trade(Collection<MissionMember> members, Settlement startingSettlement, Settlement tradingSettlement,
 			Rover rover, String description, Map<Good, Integer> sellGoods, Map<Good, Integer> buyGoods) {
 		// Use RoverMission constructor.
-		super(description, (MissionMember) members.toArray()[0], RoverMission.MIN_GOING_MEMBERS, rover);
+		super(description, missionType, (MissionMember) members.toArray()[0], RoverMission.MIN_GOING_MEMBERS, rover);
 
 		Person person = null;
 //		Robot robot = null;
@@ -889,9 +892,9 @@ public class Trade extends RoverMission implements Serializable {
 
 			// Vehicle with superior range should be ranked higher.
 			if (result == 0) {
-				if (firstVehicle.getRange(DEFAULT_DESCRIPTION) > secondVehicle.getRange(DEFAULT_DESCRIPTION)) {
+				if (firstVehicle.getRange(missionType) > secondVehicle.getRange(missionType)) {
 					result = 1;
-				} else if (firstVehicle.getRange(DEFAULT_DESCRIPTION) < secondVehicle.getRange(DEFAULT_DESCRIPTION)) {
+				} else if (firstVehicle.getRange(missionType) < secondVehicle.getRange(missionType)) {
 					result = -1;
 				}
 			}

@@ -45,6 +45,9 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 	/** Default description. */
 	public static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.travelToSettlement"); //$NON-NLS-1$
 
+	/** Mission Type enum. */
+	public static final MissionType missionType = MissionType.TRAVEL_TO_SETTLEMENT;
+	
 	// Static members
 	public static final double BASE_MISSION_WEIGHT = 1D;
 
@@ -68,7 +71,7 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 	 */
 	public TravelToSettlement(MissionMember startingMember) {
 		// Use RoverMission constructor
-		super(DEFAULT_DESCRIPTION, startingMember);
+		super(DEFAULT_DESCRIPTION, missionType, startingMember);
 
 		Settlement s = startingMember.getSettlement();
 
@@ -131,7 +134,7 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 	public TravelToSettlement(Collection<MissionMember> members, Settlement startingSettlement,
 			Settlement destinationSettlement, Rover rover, String description) {
 		// Use RoverMission constructor.
-		super(description, (MissionMember) members.toArray()[0], RoverMission.MIN_GOING_MEMBERS, rover);
+		super(description, missionType, (MissionMember) members.toArray()[0], RoverMission.MIN_GOING_MEMBERS, rover);
 
 		// Initialize data members
 		setStartingSettlement(startingSettlement);
@@ -244,7 +247,7 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 	 */
 	private Settlement getRandomDestinationSettlement(MissionMember member, Settlement startingSettlement) {
 
-		double range = getVehicle().getRange(DEFAULT_DESCRIPTION);
+		double range = getVehicle().getRange(missionType);
 		Settlement result = null;
 
 		// Find all desirable destination settlements.
@@ -622,9 +625,9 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 
 			// Vehicle with superior range should be ranked higher.
 			if (result == 0) {
-				if (firstVehicle.getRange(DEFAULT_DESCRIPTION) > secondVehicle.getRange(DEFAULT_DESCRIPTION)) {
+				if (firstVehicle.getRange(missionType) > secondVehicle.getRange(missionType)) {
 					result = 1;
-				} else if (firstVehicle.getRange(DEFAULT_DESCRIPTION) < secondVehicle.getRange(DEFAULT_DESCRIPTION)) {
+				} else if (firstVehicle.getRange(missionType) < secondVehicle.getRange(missionType)) {
 					result = -1;
 				}
 			}

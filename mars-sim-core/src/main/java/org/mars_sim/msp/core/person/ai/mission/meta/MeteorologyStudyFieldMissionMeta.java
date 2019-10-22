@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.person.ai.mission.AreologyFieldStudy;
 import org.mars_sim.msp.core.person.ai.mission.MeteorologyFieldStudy;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
@@ -76,7 +77,7 @@ public class MeteorologyStudyFieldMissionMeta implements MetaMission {
     		
             try {
                 // Get available rover.
-                Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(DEFAULT_DESCRIPTION, settlement, false);
+                Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(MeteorologyFieldStudy.missionType, settlement, false);
                 if (rover != null) {
 
                     ScienceType meteorology = ScienceType.METEOROLOGY;

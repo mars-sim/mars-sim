@@ -61,6 +61,9 @@ public class Mining extends RoverMission {
 	/** Default description. */
 	public static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.mining"); //$NON-NLS-1$
 
+	/** Mission Type enum. */
+	public static final MissionType missionType = MissionType.MINING;
+	
 	/** Mission phases */
 	final public static MissionPhase MINING_SITE = new MissionPhase(Msg.getString("Mission.phase.miningSite")); //$NON-NLS-1$
 
@@ -107,7 +110,7 @@ public class Mining extends RoverMission {
 	public Mining(Person startingPerson) {
 
 		// Use RoverMission constructor.
-		super(DEFAULT_DESCRIPTION, startingPerson, RoverMission.MIN_GOING_MEMBERS);
+		super(DEFAULT_DESCRIPTION, missionType, startingPerson, RoverMission.MIN_GOING_MEMBERS);
 
 		this.startingPerson = startingPerson;
 		
@@ -187,7 +190,7 @@ public class Mining extends RoverMission {
 			Rover rover, LightUtilityVehicle luv, String description) {
 
 		// Use RoverMission constructor.
-		super(description, (MissionMember) members.toArray()[0], RoverMission.MIN_GOING_MEMBERS, rover);
+		super(description, missionType, (MissionMember) members.toArray()[0], RoverMission.MIN_GOING_MEMBERS, rover);
 
 		this.startingPerson = this.getStartingMember();
 		
@@ -839,7 +842,7 @@ public class Mining extends RoverMission {
 		double bestValue = 0D;
 
 		try {
-			double roverRange = rover.getRange(DEFAULT_DESCRIPTION);
+			double roverRange = rover.getRange(missionType);
 			double tripTimeLimit = getTotalTripTimeLimit(rover, rover.getCrewCapacity(), true);
 			double tripRange = getTripTimeRange(tripTimeLimit, rover.getBaseSpeed() / 2D);
 			double range = roverRange;

@@ -92,7 +92,7 @@ public class NaturalAttributeManager implements Serializable {
 		n_attributes = new ArrayList<Map<String, NaturalAttributeType>>();
 		for (NaturalAttributeType type : NaturalAttributeType.values()) {
 			Map<String, NaturalAttributeType> map = new TreeMap<String, NaturalAttributeType>();
-			map.put(type.getName(),type);
+			map.put(type.getName(), type);
 			attributeList.add(type.getName());
 //			attributeMap.put(value.getName(), getAttribute(value));
 			n_attributes.add(map);

@@ -342,7 +342,7 @@ public class MiningSitePanel extends WizardPanel {
 		// return (getWizard().getMissionData().getRover().getRange() * RANGE_MODIFIER)
 		// / 2D;
 
-		double range = getWizard().getMissionData().getRover().getRange(Mining.DEFAULT_DESCRIPTION) * RANGE_MODIFIER;
+		double range = getWizard().getMissionData().getRover().getRange(Mining.missionType) * RANGE_MODIFIER;
 		if (range > MAX_RANGE)
 			range = MAX_RANGE;
 		return range / 2D;

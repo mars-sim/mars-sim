@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.person.ai.mission.AreologyFieldStudy;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
@@ -82,7 +83,7 @@ public class ExplorationMeta implements MetaMission {
 
 			try {
 				// Get available rover.
-				Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(DEFAULT_DESCRIPTION, settlement, false);
+				Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(Exploration.missionType, settlement, false);
 				if (rover != null) {
 					// Check if any mineral locations within rover range and obtain their concentration
 					missionProbability = settlement.getTotalMineralValue(rover) / VALUE;

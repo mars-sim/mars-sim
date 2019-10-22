@@ -63,6 +63,9 @@ public class EmergencySupply extends RoverMission implements Serializable {
 	/** Default description. */
 	public static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.emergencySupply"); //$NON-NLS-1$
 
+	/** Mission Type enum. */
+	public static final MissionType missionType = MissionType.EMERGENCY_SUPPLY;
+	
 	// Static members
 	private static final int MAX_MEMBERS = 2;
 	private static final int MIN_MEMBERS = 0;
@@ -105,7 +108,7 @@ public class EmergencySupply extends RoverMission implements Serializable {
 	 */
 	public EmergencySupply(Person startingPerson) {
 		// Use RoverMission constructor.
-		super(DEFAULT_DESCRIPTION, startingPerson);
+		super(DEFAULT_DESCRIPTION, missionType, startingPerson);
 
 		// Set the mission capacity.
 		setMissionCapacity(MAX_MEMBERS);
@@ -178,7 +181,7 @@ public class EmergencySupply extends RoverMission implements Serializable {
 	public EmergencySupply(Collection<Person> members, Settlement startingSettlement,
 			Settlement emergencySettlement, Map<Good, Integer> emergencyGoods, Rover rover, String description) {
 		// Use RoverMission constructor.
-		super(description, (Person) members.toArray()[0], MIN_MEMBERS, rover);
+		super(description, missionType, (Person) members.toArray()[0], MIN_MEMBERS, rover);
 
 		outbound = true;
 
@@ -611,7 +614,7 @@ public class EmergencySupply extends RoverMission implements Serializable {
 					// Check if settlement is within rover range.
 					double settlementRange = settlement.getCoordinates()
 							.getDistance(startingSettlement.getCoordinates());
-					if (settlementRange <= (rover.getRange(DEFAULT_DESCRIPTION) * .8D)) {
+					if (settlementRange <= (rover.getRange(missionType) * .8D)) {
 
 						// Find what emergency supplies are needed at settlement.
 						Map<Integer, Double> emergencyResourcesNeeded = getEmergencyAmountResourcesNeeded(settlement);
@@ -1022,9 +1025,9 @@ public class EmergencySupply extends RoverMission implements Serializable {
 
 			// Vehicle with superior range should be ranked higher.
 			if (result == 0) {
-				if (firstVehicle.getRange(DEFAULT_DESCRIPTION) > secondVehicle.getRange(DEFAULT_DESCRIPTION)) {
+				if (firstVehicle.getRange(missionType) > secondVehicle.getRange(missionType)) {
 					result = 1;
-				} else if (firstVehicle.getRange(DEFAULT_DESCRIPTION) < secondVehicle.getRange(DEFAULT_DESCRIPTION)) {
+				} else if (firstVehicle.getRange(missionType) < secondVehicle.getRange(missionType)) {
 					result = -1;
 				}
 			}

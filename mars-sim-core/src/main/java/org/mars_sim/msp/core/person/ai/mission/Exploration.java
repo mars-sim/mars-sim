@@ -57,6 +57,9 @@ public class Exploration extends RoverMission implements Serializable {
 	/** Default description. */
 	public static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.exploration"); //$NON-NLS-1$
 
+	/** Mission Type enum. */
+	public static final MissionType missionType = MissionType.EXPLORATION;
+	
 	/** Mission phase. */
 	final public static MissionPhase EXPLORE_SITE = new MissionPhase(Msg.getString("Mission.phase.exploreSite")); //$NON-NLS-1$
 
@@ -98,7 +101,7 @@ public class Exploration extends RoverMission implements Serializable {
 	public Exploration(Person startingPerson) {
 
 		// Use RoverMission constructor.
-		super(DEFAULT_DESCRIPTION, startingPerson, RoverMission.MIN_GOING_MEMBERS);
+		super(DEFAULT_DESCRIPTION, missionType, startingPerson, RoverMission.MIN_GOING_MEMBERS);
 
 		// Check if it has a vehicle 
 //		if (!hasVehicle()) {
@@ -128,7 +131,7 @@ public class Exploration extends RoverMission implements Serializable {
 			try {
 				if (hasVehicle()) {
 					int skill = startingPerson.getSkillManager().getEffectiveSkillLevel(SkillType.AREOLOGY);
-					determineExplorationSites(getVehicle().getRange(DEFAULT_DESCRIPTION),
+					determineExplorationSites(getVehicle().getRange(missionType),
 							getTotalTripTimeLimit(getRover(), getPeopleNumber(), true), NUM_SITES, skill);
 				}
 			} catch (Exception e) {
@@ -172,7 +175,7 @@ public class Exploration extends RoverMission implements Serializable {
 			List<Coordinates> explorationSites, Rover rover, String description) {
 
 		// Use RoverMission constructor.
-		super(description, (MissionMember) members.toArray()[0], RoverMission.MIN_GOING_MEMBERS, rover);
+		super(description, missionType, (MissionMember) members.toArray()[0], RoverMission.MIN_GOING_MEMBERS, rover);
 
 		setStartingSettlement(startingSettlement);
 
@@ -239,7 +242,7 @@ public class Exploration extends RoverMission implements Serializable {
 	 */
 	public static boolean hasNearbyMineralLocations(Rover rover, Settlement homeSettlement) {
 
-		double roverRange = rover.getRange(DEFAULT_DESCRIPTION);
+		double roverRange = rover.getRange(missionType);
 		double tripTimeLimit = getTotalTripTimeLimit(rover, rover.getCrewCapacity(), true);
 		double tripRange = getTripTimeRange(tripTimeLimit, rover.getBaseSpeed() / 1.25D);
 		double range = roverRange;
@@ -265,7 +268,7 @@ public class Exploration extends RoverMission implements Serializable {
 	public static Map<String, Double> getNearbyMineral(Rover rover, Settlement homeSettlement) {
 		Map<String, Double> minerals = new HashMap<>();
 		
-		double roverRange = rover.getRange(DEFAULT_DESCRIPTION);
+		double roverRange = rover.getRange(missionType);
 		double tripTimeLimit = getTotalTripTimeLimit(rover, rover.getCrewCapacity(), true);
 		double tripRange = getTripTimeRange(tripTimeLimit, rover.getBaseSpeed() / 1.25D);
 		double range = roverRange;

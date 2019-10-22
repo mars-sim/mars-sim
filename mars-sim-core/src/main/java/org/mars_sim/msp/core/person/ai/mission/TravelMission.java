@@ -60,9 +60,9 @@ public abstract class TravelMission extends Mission {
 	 * @param startingMember
 	 * @param minPeople
 	 */
-	protected TravelMission(String missionName, MissionMember startingMember, int minPeople) {
+	protected TravelMission(String missionName, MissionType missionType, MissionMember startingMember, int minPeople) {
 		// Use Mission constructor.
-		super(missionName, startingMember, minPeople);
+		super(missionName, missionType, startingMember, minPeople);
 
 		NavPoint startingNavPoint = null;
 		Coordinates c = getCurrentMissionLocation();

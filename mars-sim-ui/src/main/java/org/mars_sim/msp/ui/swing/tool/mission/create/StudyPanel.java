@@ -28,6 +28,7 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
@@ -78,12 +79,12 @@ public class StudyPanel extends WizardPanel {
 
 		// Create the study table model.
 		ScienceType studyScience = null;
-		String missionType = wizard.getMissionData().getType();
-		if (MissionDataBean.AREOLOGY_FIELD_MISSION.equals(missionType))
+		MissionType type = getWizard().getMissionData().getMissionType();
+		if (MissionType.AREOLOGY == type) 
 			studyScience = ScienceType.AREOLOGY;
-		else if (MissionDataBean.BIOLOGY_FIELD_MISSION.equals(missionType))
+		else if (MissionType.BIOLOGY == type) 
 			studyScience = ScienceType.BIOLOGY;
-		else if (MissionDataBean.METEOROLOGY_FIELD_MISSION.equals(missionType))
+		else if (MissionType.METEOROLOGY == type) 
 			studyScience = ScienceType.BIOLOGY;
 		studyTableModel = new StudyTableModel(studyScience);
 

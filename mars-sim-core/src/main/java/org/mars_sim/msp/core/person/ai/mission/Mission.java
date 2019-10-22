@@ -120,8 +120,9 @@ public abstract class Mission implements Serializable {
 	private String phaseDescription;
 	/** The full mission designation. */
 	private String fullMissionDesignation;
-	/** The reason for ending the mission. */
-//	private String reason = "";
+	
+	/** The mission type enum. */
+	private MissionType missionType;
 	
 	/** A list of mission status. */
 	private List<MissionStatus> missionStatus;
@@ -171,10 +172,11 @@ public abstract class Mission implements Serializable {
 	 * @param startingMember
 	 * @param minMembers
 	 */
-	public Mission(String missionName, MissionMember startingMember, int minMembers) {
+	public Mission(String missionName, MissionType missionType, MissionMember startingMember, int minMembers) {
 		// Initialize data members
 		this.identifier = getNextIdentifier();
 		this.missionName = missionName;
+		this.missionType = missionType;
 		this.startingMember = startingMember;
 		
 		// Create the date filed timestamp
@@ -598,6 +600,24 @@ public abstract class Mission implements Serializable {
 	}
 
 	/**
+	 * Gets the mission type enum.
+	 * 
+	 * @return
+	 */
+	public MissionType getMissionType() {
+		return missionType;
+	}
+	
+	/**
+	 * Sets the mission type enum.
+	 * 
+	 * @param missionType
+	 */
+	protected void setMissionType(MissionType missionType) {
+		this.missionType = missionType;
+	}
+	
+	/**
 	 * Gets the mission's description.
 	 * 
 	 * @return mission description
@@ -862,7 +882,7 @@ public abstract class Mission implements Serializable {
 						+ " ended the " + missionName + " with the following status flag(s) :");
 		
 		for (int i=0; i< missionStatus.size(); i++) {
-			logger.warning(" (" + i + "). " + missionStatus.get(i).getName());
+			logger.warning(" (" + (i+1) + "). " + missionStatus.get(i).getName());
 		}
 		
 		if (haveMissionStatus(MissionStatus.MISSION_ACCOMPLISHED)) {
@@ -1504,12 +1524,12 @@ public abstract class Mission implements Serializable {
 	public void addMissionStatus(MissionStatus status) {
 		if (!missionStatus.contains(status)) {
 			missionStatus.add(status);
-			LogConsolidated.log(Level.INFO, 0, sourceName, "[" + startingMember.getSettlement() + "] "
+			LogConsolidated.log(Level.INFO, 0, sourceName, "[" + startingMember.getAssociatedSettlement() + "] "
 					+ startingMember.getName() + "'s "
 					+ this + " was just being tagged with '" + status.getName() + "'.");
 		}
 		else
-			LogConsolidated.log(Level.WARNING, 0, sourceName, "[" + startingMember.getSettlement() + "] "
+			LogConsolidated.log(Level.WARNING, 10_000, sourceName, "[" + startingMember.getAssociatedSettlement() + "] "
 					+ startingMember.getName() + "'s "
 					+ this + " has already been tagged with '" + status.getName() + "'");
 	}

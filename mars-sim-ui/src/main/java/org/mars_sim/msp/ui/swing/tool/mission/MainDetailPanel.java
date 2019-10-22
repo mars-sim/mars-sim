@@ -506,7 +506,6 @@ public class MainDetailPanel extends WebPanel implements ListSelectionListener, 
 		String explorationMissionName = Exploration.class.getName();
 		customInfoPanels.put(explorationMissionName, explorationPanel);
 		missionCustomPane.add(explorationPanel, explorationMissionName);
-
 		
 		// Create custom collect regolith mission panel.
 		MissionCustomInfoPanel collectRegolithPanel = new CollectResourcesMissionCustomInfoPanel(regolithAR);
@@ -680,35 +679,41 @@ public class MainDetailPanel extends WebPanel implements ListSelectionListener, 
 			}
 
 			if (!isVehicle) {
-				// Clear vehicle info.
-				vehicleButton.setVisible(false);
-				vehicleStatusLabel.setText(""); //$NON-NLS-1$ //$NON-NLS-2$
-				speedLabel.setText(Msg.getString("MainDetailPanel.kmhSpeed", "0")); //$NON-NLS-1$ //$NON-NLS-2$
-				distanceNextNavLabel.setText(Msg.getString("MainDetailPanel.kmNextNavPoint", "0")); //$NON-NLS-1$ //$NON-NLS-2$
-				traveledLabel.setText(Msg.getString("MainDetailPanel.kmTraveled", "0", "0")); //$NON-NLS-1$ //$NON-NLS-2$
-				currentVehicle = null;
+				// NOTE: do NOT clear the vehicle info. Leave the info there for future viewing
+				
+//				// Clear vehicle info.
+//				vehicleButton.setVisible(false);
+//				vehicleStatusLabel.setText(""); //$NON-NLS-1$ //$NON-NLS-2$
+//				speedLabel.setText(Msg.getString("MainDetailPanel.kmhSpeed", "0")); //$NON-NLS-1$ //$NON-NLS-2$
+//				distanceNextNavLabel.setText(Msg.getString("MainDetailPanel.kmNextNavPoint", "0")); //$NON-NLS-1$ //$NON-NLS-2$
+//				traveledLabel.setText(Msg.getString("MainDetailPanel.kmTraveled", "0", "0")); //$NON-NLS-1$ //$NON-NLS-2$
+//				currentVehicle = null;
 			}
 
 			// Add mission listener.
 			mission.addMissionListener(this);
 			currentMission = mission;
-		} else {
-			// Clear mission info in UI.
-			descriptionTF.setText(""); //$NON-NLS-1$ //$NON-NLS-2$
-			typeLabel.setText(""); //$NON-NLS-1$ //$NON-NLS-2$
-			phaseLabel.setText(""); //$NON-NLS-1$ //$NON-NLS-2$
-			memberNumLabel.setText(""); //$NON-NLS-1$ //$NON-NLS-2$
-			memberTableModel.setMission(null);
-			centerMapButton.setEnabled(false);
-			vehicleButton.setVisible(false);
-			vehicleStatusLabel.setText(""); //$NON-NLS-1$ //$NON-NLS-2$
-			speedLabel.setText(Msg.getString("MainDetailPanel.kmhSpeed", "0")); //$NON-NLS-1$ //$NON-NLS-2$
-			distanceNextNavLabel.setText(Msg.getString("MainDetailPanel.kmNextNavPoint", "0")); //$NON-NLS-1$ //$NON-NLS-2$
-			traveledLabel.setText(Msg.getString("MainDetailPanel.kmTraveled", "0", "0")); //$NON-NLS-1$ //$NON-NLS-2$
-			currentMission = null;
-			currentVehicle = null;
-			customPanelLayout.show(missionCustomPane, EMPTY);
 		}
+		
+		// NOTE: do NOT clear the mission info. Leave the info there for future viewing
+		
+//		else {
+//			// Clear mission info in UI.
+//			descriptionTF.setText(""); //$NON-NLS-1$ //$NON-NLS-2$
+//			typeLabel.setText(""); //$NON-NLS-1$ //$NON-NLS-2$
+//			phaseLabel.setText(""); //$NON-NLS-1$ //$NON-NLS-2$
+//			memberNumLabel.setText(""); //$NON-NLS-1$ //$NON-NLS-2$
+//			memberTableModel.setMission(null);
+//			centerMapButton.setEnabled(false);
+//			vehicleButton.setVisible(false);
+//			vehicleStatusLabel.setText(""); //$NON-NLS-1$ //$NON-NLS-2$
+//			speedLabel.setText(Msg.getString("MainDetailPanel.kmhSpeed", "0")); //$NON-NLS-1$ //$NON-NLS-2$
+//			distanceNextNavLabel.setText(Msg.getString("MainDetailPanel.kmNextNavPoint", "0")); //$NON-NLS-1$ //$NON-NLS-2$
+//			traveledLabel.setText(Msg.getString("MainDetailPanel.kmTraveled", "0", "0")); //$NON-NLS-1$ //$NON-NLS-2$
+//			currentMission = null;
+//			currentVehicle = null;
+//			customPanelLayout.show(missionCustomPane, EMPTY);
+//		}
 
 		// Update custom mission panel.
 		updateCustomPanel(mission);

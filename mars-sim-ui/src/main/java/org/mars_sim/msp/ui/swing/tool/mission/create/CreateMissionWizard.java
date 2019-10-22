@@ -198,7 +198,7 @@ implements ActionListener {
 			addWizardPanel(new ExplorationSitesPanel(this));
 		} else if (missionBean.requiresDestinationSettlement()) {
 			addWizardPanel(new DestinationSettlementPanel(this));
-		} else if(missionBean.isRendezvousMission()) {
+		} else if(missionBean.isRescueRendezvousMission()) {
 			addWizardPanel(new RendezvousVehiclePanel(this));
 		}
 		
@@ -210,11 +210,11 @@ implements ActionListener {
 			addWizardPanel(new TradeGoodsPanel(this, true));
 		}
 		
-		// Set construction or salvage projects
+		// Set building construction or building salvage projects
 		if (missionBean.isConstructionMission()) {
 			addWizardPanel(new ConstructionProjectPanel(this));
             addWizardPanel(new ConstructionVehiclePanel(this));
-		} else if (missionBean.isSalvageMission()) {
+		} else if (missionBean.isBuildingSalvageMission()) {
 			addWizardPanel(new SalvageProjectPanel(this));
             addWizardPanel(new SalvageVehiclePanel(this));
 		}

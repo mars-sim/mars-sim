@@ -29,14 +29,12 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.equipment.EVASuit;
-import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.manufacture.Salvagable;
 import org.mars_sim.msp.core.manufacture.SalvageInfo;
 import org.mars_sim.msp.core.manufacture.SalvageProcessInfo;
-import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.AreologyFieldStudy;
 import org.mars_sim.msp.core.person.ai.mission.BiologyFieldStudy;
@@ -49,9 +47,7 @@ import org.mars_sim.msp.core.person.ai.mission.Exploration;
 import org.mars_sim.msp.core.person.ai.mission.MeteorologyFieldStudy;
 import org.mars_sim.msp.core.person.ai.mission.Mining;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
-import org.mars_sim.msp.core.person.ai.mission.MissionHistoricalEvent;
-import org.mars_sim.msp.core.person.ai.mission.MissionManager;
-import org.mars_sim.msp.core.person.ai.mission.MissionStatus;
+import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.core.person.ai.mission.Trade;
 import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
@@ -107,6 +103,10 @@ public abstract class Vehicle extends Unit
 	public static final double SOFC_CONVERSION_EFFICIENCY = .57;
 	/** Lifetime Wear in millisols **/
 	private static final double WEAR_LIFETIME = 668000D; // 668 Sols (1 orbit)
+	
+	/** Estimated Number of hours traveled each day. **/
+	private static final int ESTIMATED_NUM_HOURS = 16;
+	
 	/** The unit count for this person. */
 	private static int uniqueCount = Unit.FIRST_VEHICLE_UNIT_ID;
 	
@@ -778,12 +778,13 @@ public abstract class Vehicle extends Unit
 	}
 
 	/**
-	 * Gets the current range of the vehicle
+	 * Gets the current fuel range of the vehicle
+	 * Note : this method will be overridden by Rover's getRange(). 
 	 * 
-	 * @return the current range of the vehicle (in km)
-	 * @throws Exception if error getting range.
+	 * @param missionType the type of mission (needed in Rover's getRange())
+	 * @return the current fuel range of the vehicle (in km)
 	 */
-	public double getRange(String missionName) {
+	public double getRange(MissionType missionType) {
 		return totalEnergy * (getBaseMass() + fuelCapacity) / (getMass() + fuelCapacity);// / fuel_range_error_margin;
 	}
 
@@ -1401,7 +1402,7 @@ public abstract class Vehicle extends Unit
 		// Get estimated average speed (km / hr).
 //    	double estSpeed = baseSpeed / 2D;
 		// Return estimated average speed in km / sol.
-		return baseSpeed * 16; // 60D / 60D / MarsClock.convertSecondsToMillisols(1D) * 1000D;
+		return baseSpeed * ESTIMATED_NUM_HOURS; // 60D / 60D / MarsClock.convertSecondsToMillisols(1D) * 1000D;
 	}
 
 	/**
@@ -1585,49 +1586,58 @@ public abstract class Vehicle extends Unit
 	 * 
 	 * @return true if yes
 	 */
+	public double getMissionRange(MissionType missiontype) {
+		return getSettlement().getMissionRadius(missiontype);
+	}
+	
+	/**
+	 * Checks if this vehicle is involved in a mission
+	 * 
+	 * @return true if yes
+	 */
 	public double getMissionRange(String missionName) {
 			
-		if (missionName.equalsIgnoreCase(AreologyFieldStudy.class.getSimpleName())) {
+		if (missionName.equalsIgnoreCase(AreologyFieldStudy.DEFAULT_DESCRIPTION)) {
 			return getSettlement().getMissionRadius(0);
 		}
 		
-		if (missionName.equalsIgnoreCase(BiologyFieldStudy.class.getSimpleName())) {
+		if (missionName.equalsIgnoreCase(BiologyFieldStudy.DEFAULT_DESCRIPTION)) {
 			return getSettlement().getMissionRadius(1);
 		}
 		
-		if (missionName.equalsIgnoreCase(CollectIce.class.getSimpleName())) {
+		if (missionName.equalsIgnoreCase(CollectIce.DEFAULT_DESCRIPTION)) {
 			return getSettlement().getMissionRadius(2);
 		}
 		
-		if (missionName.equalsIgnoreCase(CollectRegolith.class.getSimpleName())) {
+		if (missionName.equalsIgnoreCase(CollectRegolith.DEFAULT_DESCRIPTION)) {
 			return getSettlement().getMissionRadius(3);
 		}
 		
-		if (missionName.equalsIgnoreCase(EmergencySupply.class.getSimpleName())) {
+		if (missionName.equalsIgnoreCase(EmergencySupply.DEFAULT_DESCRIPTION)) {
 			return getSettlement().getMissionRadius(4);
 		}
 		
-		if (missionName.equalsIgnoreCase(Exploration.class.getSimpleName())) {
+		if (missionName.equalsIgnoreCase(Exploration.DEFAULT_DESCRIPTION)) {
 			return getSettlement().getMissionRadius(5);
 		}
 		
-		if (missionName.equalsIgnoreCase(MeteorologyFieldStudy.class.getSimpleName())) {
+		if (missionName.equalsIgnoreCase(MeteorologyFieldStudy.DEFAULT_DESCRIPTION)) {
 			return getSettlement().getMissionRadius(6);
 		}
 		
-		if (missionName.equalsIgnoreCase(Mining.class.getSimpleName())) {
+		if (missionName.equalsIgnoreCase(Mining.DEFAULT_DESCRIPTION)) {
 			return getSettlement().getMissionRadius(7);
 		}
 
-		if (missionName.equalsIgnoreCase(RescueSalvageVehicle.class.getSimpleName())) {
+		if (missionName.equalsIgnoreCase(RescueSalvageVehicle.DEFAULT_DESCRIPTION)) {
 			return getSettlement().getMissionRadius(8);
 		}
 		
-		if (missionName.equalsIgnoreCase(Trade.class.getSimpleName())) {
+		if (missionName.equalsIgnoreCase(Trade.DEFAULT_DESCRIPTION)) {
 			return getSettlement().getMissionRadius(9);
 		}
 		
-		if (missionName.equalsIgnoreCase(TravelToSettlement.class.getSimpleName())) {
+		if (missionName.equalsIgnoreCase(TravelToSettlement.DEFAULT_DESCRIPTION)) {
 			return getSettlement().getMissionRadius(10);
 		}
 		

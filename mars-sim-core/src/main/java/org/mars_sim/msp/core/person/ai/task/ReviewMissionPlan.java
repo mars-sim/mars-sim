@@ -168,7 +168,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 	 */
 	private double reviewingPhase(double time) {
 		LogConsolidated.log(Level.INFO, 0, sourceName, 
-				"[" + person.getAssociatedSettlement() + "] " + person + " was going to review mission plans.");
+				"[" + person.getAssociatedSettlement() + "] " + person + " had time to review some mission plans.");
 		
         List<Mission> missions = missionManager.getPendingMissions(person.getAssociatedSettlement());
         
@@ -204,7 +204,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 						String s = reviewerSettlement.getName();
 						
 						LogConsolidated.log(Level.INFO, 0, sourceName, 
-								"[" + s + "] " + reviewedBy + " was going to review " + requestedBy
+								"[" + s + "] " + reviewedBy + " reviewed " + requestedBy
 								+ "'s " + m.getDescription() + " mission plan.");
 						
 						if (!reviewedBy.equals(requestedBy)
@@ -245,24 +245,37 @@ public class ReviewMissionPlan extends Task implements Serializable {
 							double qual = 0;
 							
 							if (m instanceof AreologyFieldStudy) {
-	//							AreologyStudyFieldMission aM = (AreologyStudyFieldMission)m;
-	//							qual = (int)m.getMissionQualification(person);
-								qual = 2D * ((AreologyFieldStudy)m).getMissionQualification(person);
+								qual = .5 * ((AreologyFieldStudy)m).getMissionQualification(person);
 							}
 							else if (m instanceof BiologyFieldStudy) {
-								qual = 2D * ((BiologyFieldStudy)m).getMissionQualification(person);
+								qual = .5 * ((BiologyFieldStudy)m).getMissionQualification(person);
+							}
+							else if (m instanceof CollectIce) {
+								qual = .25 * ((CollectIce)m).getMissionQualification(person);
+							}
+							else if (m instanceof CollectRegolith) {
+								qual = .15 * ((CollectRegolith)m).getMissionQualification(person);
+							}
+							else if (m instanceof Exploration) {
+								qual = .25 * ((Exploration)m).getMissionQualification(person);
 							}
 							else if (m instanceof MeteorologyFieldStudy) {
-								qual = 2D * ((MeteorologyFieldStudy)m).getMissionQualification(person);
+								qual = .5 * ((MeteorologyFieldStudy)m).getMissionQualification(person);
+							}
+							else if (m instanceof Mining) {
+								qual = .3 * ((Mining)m).getMissionQualification(person);
 							}
 							else if (m instanceof RescueSalvageVehicle) {
-								qual = 2D * ((RescueSalvageVehicle)m).getMissionQualification(person);
+								qual = .5 * ((RescueSalvageVehicle)m).getMissionQualification(person);
+							}
+							else if (m instanceof Trade) {
+								qual = .35 * ((Trade)m).getMissionQualification(person);
 							}
 							else if (m instanceof TravelToSettlement) {
-								qual = 2D * ((TravelToSettlement)m).getMissionQualification(person);
+								qual = .5 * ((TravelToSettlement)m).getMissionQualification(person);
 							}
 							else
-								qual = 2D * m.getMissionQualification(person);											
+								qual = .4 * m.getMissionQualification(person);											
 							
 							// 4. Settlement objective score
 							double obj = 0;
@@ -365,7 +378,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 							logger.info(" (3)  Qualifications : " + qual); 
 							logger.info(" (4)       Objective : " + obj);
 							logger.info(" (5)       Emergency : " + emer);
-							logger.info(" (6) Sites Selection : " + site);
+							logger.info(" (6)          Sites  : " + site);
 							logger.info(" (7)      Leadership : " + leadership); 							
 							logger.info(" (8)   Reviewer Role : " + weight); 
 							logger.info(" (9)            Luck : " + luck); 

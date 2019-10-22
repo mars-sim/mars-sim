@@ -78,19 +78,20 @@ public class MissionManager implements Serializable {
 		missionNames = Arrays.asList(
 					AreologyFieldStudy.DEFAULT_DESCRIPTION,
 					BiologyFieldStudy.DEFAULT_DESCRIPTION,
-					BuildingConstructionMission.DEFAULT_DESCRIPTION, 
-					BuildingSalvageMission.DEFAULT_DESCRIPTION,
 					CollectIce.DEFAULT_DESCRIPTION,
-					
 					CollectRegolith.DEFAULT_DESCRIPTION,
 					EmergencySupply.DEFAULT_DESCRIPTION,
+					
 					Exploration.DEFAULT_DESCRIPTION,
 					MeteorologyFieldStudy.DEFAULT_DESCRIPTION,
 					Mining.DEFAULT_DESCRIPTION,
-					
 					RescueSalvageVehicle.DEFAULT_DESCRIPTION,
 					Trade.DEFAULT_DESCRIPTION,
-					TravelToSettlement.DEFAULT_DESCRIPTION
+					
+					TravelToSettlement.DEFAULT_DESCRIPTION,
+					
+					BuildingConstructionMission.DEFAULT_DESCRIPTION, 
+					BuildingSalvageMission.DEFAULT_DESCRIPTION
 			);
 		}
 	

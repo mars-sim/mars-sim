@@ -31,6 +31,7 @@ import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.SpecimenBox;
 import org.mars_sim.msp.core.person.ai.mission.CollectIce;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
+import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -251,28 +252,27 @@ class StartingSettlementPanel extends WizardPanel {
 					else if (column == 7)
 						result = inv.findNumUnitsOfClass(EVASuit.class);
 
-					String type = getWizard().getMissionData().getType();
-
-					if (type.equals(MissionDataBean.EXPLORATION_MISSION)) {
+					MissionType type = getWizard().getMissionData().getMissionType();
+					if (MissionType.EXPLORATION == type) {
 						if (column == 8)
-							result = inv.findNumEmptyUnitsOfClass(SpecimenBox.class, true);
+							result = inv.findNumSpecimenBoxes(true, true);//.findNumEmptyUnitsOfClass(SpecimenBox.class, true);
 					}
-					else if (type.equals(MissionDataBean.ICE_MISSION) ||
-							type.equals(MissionDataBean.REGOLITH_MISSION)) {
+					else if (MissionType.COLLECT_ICE == type ||
+							MissionType.COLLECT_REGOLITH == type) {
 						if (column == 8)
-							result = inv.findNumEmptyUnitsOfClass(Bag.class, true);
+							result = inv.findNumBags(true, true);//findNumEmptyUnitsOfClass(Bag.class, true);
 					}
-					else if (type.equals(MissionDataBean.MINING_MISSION)) {
-						if (column == 8)
-							result = inv.findNumBags(true, true);//.findNumEmptyUnitsOfClass(Bag.class, true);
-						else if (column == 9)
+					else if (MissionType.MINING == type) {
+						if (column == 8) {
+							result = inv.findNumBags(true, true);
+						}
+						else if (column == 9) {
 							result = inv.findNumUnitsOfClass(LightUtilityVehicle.class);
+						}
 						else if (column == 10) {
-							//Part pneumaticDrill = (Part) Part.findItemResource(Mining.PNEUMATIC_DRILL);
 							result = inv.getItemResourceNum(ItemResourceUtil.pneumaticDrillAR);
 						}
 						else if (column == 11) {
-							//Part backhoe = (Part) Part.findItemResource(Mining.BACKHOE);
 							result = inv.getItemResourceNum(ItemResourceUtil.backhoeAR);
 						}
 					}
@@ -339,11 +339,13 @@ class StartingSettlementPanel extends WizardPanel {
 			if (columns.size() > 8) {
 				for (int x = 0; x < (columns.size() - 8); x++) columns.remove(8);
 			}
-			String type = getWizard().getMissionData().getType();
-			if (type.equals(MissionDataBean.EXPLORATION_MISSION)) columns.add("Specimen Containers");
-			else if (type.equals(MissionDataBean.ICE_MISSION) ||
-					type.equals(MissionDataBean.REGOLITH_MISSION)) columns.add("Bags");
-			else if (type.equals(MissionDataBean.MINING_MISSION)) {
+			
+			MissionType type = getWizard().getMissionData().getMissionType();
+			if (MissionType.EXPLORATION == type)
+				columns.add("Specimen Containers");
+			else if (MissionType.COLLECT_ICE == type || MissionType.COLLECT_REGOLITH == type)
+				columns.add("Bags");
+			else if (MissionType.MINING == type) {
 				columns.add("Bags");
 				columns.add("Light Utility Vehicles");
 				columns.add("Pneumatic Drills");
@@ -389,21 +391,21 @@ class StartingSettlementPanel extends WizardPanel {
 					if (inv.findNumEVASuits(false, true) == 0) result = true;
 				}
 
-				String type = getWizard().getMissionData().getType();
-				if (type.equals(MissionDataBean.EXPLORATION_MISSION)) {
+				MissionType type = getWizard().getMissionData().getMissionType();
+				if (MissionType.EXPLORATION == type) {
 					if (column == 8) {
 						if (inv.findNumSpecimenBoxes(true, true) < //.findNumEmptyUnitsOfClass(SpecimenBox.class, true) <
 								Exploration.REQUIRED_SPECIMEN_CONTAINERS) result = true;
 					}
 				}
-				else if (type.equals(MissionDataBean.ICE_MISSION) ||
-						type.equals(MissionDataBean.REGOLITH_MISSION)) {
+				else if (MissionType.COLLECT_ICE == type ||
+						MissionType.COLLECT_REGOLITH == type) {
 					if (column == 8) {
 						if (inv.findNumBags(true, true) < //.findNumEmptyUnitsOfClass(Bag.class, true) <
 								CollectIce.REQUIRED_BAGS) result = true;
 					}
 				}
-				else if (type.equals(MissionDataBean.MINING_MISSION)) {
+				else if (MissionType.MINING == type ) {
 					if (column == 8) {
 						if (inv.findNumBags(true, true) < //findNumEmptyUnitsOfClass(Bag.class, true) <
 								CollectIce.REQUIRED_BAGS) result = true;

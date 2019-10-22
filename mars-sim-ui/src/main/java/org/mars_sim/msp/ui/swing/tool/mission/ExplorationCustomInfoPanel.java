@@ -138,13 +138,13 @@ extends MissionCustomInfoPanel {
 
 			setLayout(new GridLayout(1, 2, 3, 3));
 
-			WebPanel namePanel = new WebPanel(new FlowLayout(FlowLayout.LEFT, 1, 0));
+			WebPanel namePanel = new WebPanel(new FlowLayout(FlowLayout.LEFT, 3, 3));
 			add(namePanel);
 
-			WebLabel nameLabel = new WebLabel(Conversion.capitalize(siteName), SwingConstants.LEFT);
+			WebLabel nameLabel = new WebLabel("  " + Conversion.capitalize(siteName), SwingConstants.LEFT);
 			namePanel.add(nameLabel);
 
-			WebPanel barPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER, 1, 0));
+			WebPanel barPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER, 3, 3));
 			add(barPanel);
 
 			completionBar = new WebProgressBar(0, 100);

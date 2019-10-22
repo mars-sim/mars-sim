@@ -68,6 +68,9 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 	/** Default description. */
 	public static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.rescueSalvageVehicle"); //$NON-NLS-1$
 
+	/** Mission Type enum. */
+	public static final MissionType missionType = MissionType.RESCUE_SALVAGE_VEHICLE;
+	
 	// Static members
 	public static final int MIN_STAYING_MEMBERS = 1;
 	public static final int MIN_GOING_MEMBERS = 2;
@@ -97,7 +100,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 	 */
 	public RescueSalvageVehicle(Person startingPerson) {
 		// Use RoverMission constructor
-		super(DEFAULT_DESCRIPTION, startingPerson, MIN_GOING_MEMBERS);
+		super(DEFAULT_DESCRIPTION, missionType, startingPerson, MIN_GOING_MEMBERS);
 
 		if (!isDone()) {
 			setStartingSettlement(startingPerson.getSettlement());
@@ -105,7 +108,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 
 			if (hasVehicle()) {
 				if (vehicleTarget == null)
-					vehicleTarget = findBeaconVehicle(getStartingSettlement(), getVehicle().getRange(DEFAULT_DESCRIPTION));
+					vehicleTarget = findBeaconVehicle(getStartingSettlement(), getVehicle().getRange(missionType));
 
 				// Obtain a rescuing vehicle and ensure that vehicleTarget is not included.
 				if (!reserveVehicle())
@@ -180,7 +183,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 			Rover rover, String description) {
 
 		// Use RoverMission constructor.
-		super(description, (MissionMember) members.toArray()[0], RoverMission.MIN_GOING_MEMBERS, rover);
+		super(description, missionType, (MissionMember) members.toArray()[0], RoverMission.MIN_GOING_MEMBERS, rover);
 
 		setStartingSettlement(startingSettlement);
 		this.vehicleTarget = vehicleTarget;
@@ -864,7 +867,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 						while (iV.hasNext() && result) {
 							Vehicle vehicle = iV.next();
 							if (vehicle instanceof Rover) {
-								if (vehicle.getRange(DEFAULT_DESCRIPTION) >= (settlementDistance * 2D)) {
+								if (vehicle.getRange(missionType) >= (settlementDistance * 2D)) {
 									result = false;
 								}
 							}

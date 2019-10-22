@@ -21,6 +21,7 @@ import javax.swing.BoxLayout;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
+import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 
@@ -82,11 +83,11 @@ public class TypePanel extends WizardPanel implements ItemListener {
 		typePane.add(typeLabel);
 		
 		// Create the mission types.
-		String[] missionTypes = MissionDataBean.getMissionTypes();
-		sortStringBubble(missionTypes);
-		String[] displayMissionTypes = new String[missionTypes.length + 1];
-		displayMissionTypes[0] = "";
-        System.arraycopy(missionTypes, 0, displayMissionTypes, 1, missionTypes.length);
+		MissionType[] missionTypes = MissionDataBean.getMissionTypes();
+//		sortStringBubble(missionTypes);
+		MissionType[] displayMissionTypes = new MissionType[missionTypes.length];
+//		displayMissionTypes[0] = "";
+//        System.arraycopy(missionTypes, 0, displayMissionTypes, 1, missionTypes.length);
 		typeSelect = new JComboBoxMW<Object>(displayMissionTypes);
 		typeSelect.addItemListener(this);
         typeSelect.setMaximumRowCount(typeSelect.getItemCount());
@@ -150,17 +151,16 @@ public class TypePanel extends WizardPanel implements ItemListener {
 	 * @param e the item event.
 	 */
 	public void itemStateChanged(ItemEvent e) {
-		String selectedMission = (String) typeSelect.getSelectedItem();
-		// 2015-12-15 Added "..."
-		int num = 1;
-	    //MissionManager manager = Simulation.instance().getMissionManager();
+		MissionType selectedMission = (MissionType) typeSelect.getSelectedItem();
+		// Add SUFFIX to distinguish between different mission having the same mission type
+		int suffix = 1;
 	    List<Mission> missions = missionManager.getMissions();
 		for (Mission m : missions) {
-			if (m.getName().equals(selectedMission))
-				num++;
+			if (m.getMissionType() == selectedMission)
+				suffix++;
 		}
-		String suffix = " (" + num + ")";
-		descriptionField.setText(MissionDataBean.getMissionDescription(selectedMission) + suffix);
+		String suffixString = " (" + suffix + ")";
+		descriptionField.setText(MissionDataBean.getMissionDescription(selectedMission) + suffixString);
 		boolean enableDescription = (typeSelect.getSelectedIndex() != 0);
 		descriptionInfoLabel.setEnabled(enableDescription);
 		descriptionLabel.setEnabled(enableDescription);
@@ -182,6 +182,7 @@ public class TypePanel extends WizardPanel implements ItemListener {
 	 */
 	boolean commitChanges() {
 		getWizard().getMissionData().setType((String) typeSelect.getSelectedItem());
+		getWizard().getMissionData().setMissionType(MissionType.valueOf((String) typeSelect.getSelectedItem()));	
 		getWizard().getMissionData().setDescription(descriptionField.getText());
 		getWizard().setFinalWizardPanels();
 		return true;

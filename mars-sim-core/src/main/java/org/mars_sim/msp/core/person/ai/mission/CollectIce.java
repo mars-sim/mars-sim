@@ -38,6 +38,9 @@ public class CollectIce extends CollectResourcesMission {
 	/** Default description. */
 	public static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.collectIce"); //$NON-NLS-1$
 
+	/** Mission Type enum. */
+	public static final MissionType missionType = MissionType.COLLECT_ICE;
+	
 	/** Amount of ice to be gathered at a given site (kg). */
 	private static final double SITE_GOAL = 1000D;
 
@@ -62,7 +65,7 @@ public class CollectIce extends CollectResourcesMission {
 	 */
 	public CollectIce(Person startingPerson) {
 		// Use CollectResourcesMission constructor.
-		super(DEFAULT_DESCRIPTION, startingPerson, ResourceUtil.iceID, SITE_GOAL, collectionRate,
+		super(DEFAULT_DESCRIPTION, missionType, startingPerson, ResourceUtil.iceID, SITE_GOAL, collectionRate,
 				EquipmentType.convertName2ID(Bag.TYPE), REQUIRED_BAGS, NUM_SITES, MIN_PEOPLE);
 		logger.info(startingPerson + " had started CollectIce");
 	}
@@ -81,7 +84,7 @@ public class CollectIce extends CollectResourcesMission {
 			List<Coordinates> iceCollectionSites, Rover rover, String description) {
 
 		// Use CollectResourcesMission constructor.
-		super(description, members, startingSettlement, ResourceUtil.iceID, SITE_GOAL, 
+		super(description, missionType, members, startingSettlement, ResourceUtil.iceID, SITE_GOAL, 
 				computeAverageCollectionRate(iceCollectionSites),
 				EquipmentType.convertName2ID(Barrel.TYPE), REQUIRED_BAGS, iceCollectionSites.size(),
 				RoverMission.MIN_GOING_MEMBERS, rover, iceCollectionSites);

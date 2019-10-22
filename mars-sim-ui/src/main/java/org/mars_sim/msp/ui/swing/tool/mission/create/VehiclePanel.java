@@ -27,6 +27,7 @@ import javax.swing.event.ListSelectionListener;
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.StatusType;
@@ -240,7 +241,7 @@ class VehiclePanel extends WizardPanel {
 					else if (column == 2)
 						result = vehicle.getCrewCapacity();
 					else if (column == 3)
-						result = (int) vehicle.getRange(wizard.getMissionBean().getType());
+						result = (int) vehicle.getRange(wizard.getMissionBean().getMissionType());
 					else if (column == 4)
 						result = vehicle.hasLab();
 					else if (column == 5)
@@ -305,11 +306,13 @@ class VehiclePanel extends WizardPanel {
 					result = true;
 
 				// Allow rescue/salvage mission to use vehicle undergoing maintenance.
-				String type = getWizard().getMissionData().getType();
-				if (MissionDataBean.RESCUE_MISSION.equals(type)) {
+				if (MissionType.RESCUE_SALVAGE_VEHICLE == getWizard().getMissionData().getMissionType()) {
 					if (vehicle.getStatus() == StatusType.MAINTENANCE)
 						result = false;
+					else
+						result = true;
 				}
+				
 			} else if (column == 9) {
 				Mission mission = missionManager.getMissionForVehicle(vehicle);
 				if (mission != null)

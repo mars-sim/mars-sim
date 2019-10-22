@@ -254,7 +254,7 @@ class DestinationSettlementPanel extends WizardPanel {
     			try {
     				Settlement startingSettlement = getWizard().getMissionData().getStartingSettlement();
     				double distance = startingSettlement.getCoordinates().getDistance(settlement.getCoordinates());
-    				double roverRange = getWizard().getMissionData().getRover().getRange(wizard.getMissionBean().getType());
+    				double roverRange = getWizard().getMissionData().getRover().getRange(wizard.getMissionBean().getMissionType());
     				if (roverRange < distance) result = true;
     			}
     			catch (Exception e) {}

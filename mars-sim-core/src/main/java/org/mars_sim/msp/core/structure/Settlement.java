@@ -59,6 +59,7 @@ import org.mars_sim.msp.core.person.ai.mission.Exploration;
 import org.mars_sim.msp.core.person.ai.mission.MeteorologyFieldStudy;
 import org.mars_sim.msp.core.person.ai.mission.Mining;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.person.ai.mission.Trade;
@@ -323,17 +324,17 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	private double maxMssionRange = 2200;
 	/** The range [in km] limit for the rovers of this settlement for each type of mission . */
 	private double[] missionRange = new double[] {
-			500, // Areo
-			500, // Bio
-			500, // CollectIce
-			500, // CollectRegolith
-			1000, // Emergency
-			500, // Exploration
-			500, // Meteorology
-			500, // Mining
-			1000, // RescueSalvageVehicle
-			maxMssionRange, // Trade
-			maxMssionRange*2, // TravelToSettlement			
+			500, // 0. Areo
+			500, // 1. Bio
+			500, // 2. CollectIce
+			500, // 3. CollectRegolith
+			1000,// 4. Emergency
+			500, // 5. Exploration
+			500, // 6. Meteorology
+			500, // 7. Mining
+			1000,// 8. RescueSalvageVehicle
+			maxMssionRange,   // 9. Trade
+			maxMssionRange*2, // 10.TravelToSettlement			
 	};
 	
 	/** The settlement sponsor. */
@@ -4094,6 +4095,10 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	
 	public void setMissionRadius(int missionType, double newRange) {
 		missionRange[missionType] = newRange;
+	}
+	
+	public double getMissionRadius(MissionType missionType) {
+		return missionRange[missionType.ordinal()];
 	}
 	
 	public boolean hasDesignatedCommander() {

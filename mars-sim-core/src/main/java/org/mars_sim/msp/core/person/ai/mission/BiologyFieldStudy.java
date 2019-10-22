@@ -51,6 +51,9 @@ public class BiologyFieldStudy extends RoverMission implements Serializable {
 	/** Default description. */
 	public static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.biologyFieldStudy"); //$NON-NLS-1$
 
+	/** Mission Type enum. */
+	public static final MissionType missionType = MissionType.BIOLOGY;
+	
 	/** Mission phase. */
 	final public static MissionPhase RESEARCH_SITE = new MissionPhase(
 			Msg.getString("Mission.phase.researchingFieldSite")); //$NON-NLS-1$
@@ -86,7 +89,7 @@ public class BiologyFieldStudy extends RoverMission implements Serializable {
 	public BiologyFieldStudy(Person startingPerson) {
 
 		// Use RoverMission constructor.
-		super(DEFAULT_DESCRIPTION, startingPerson, RoverMission.MIN_GOING_MEMBERS);
+		super(DEFAULT_DESCRIPTION, missionType, startingPerson, RoverMission.MIN_GOING_MEMBERS);
 
 		// Check if it has a vehicle 
 //		if (!hasVehicle()) {
@@ -120,7 +123,7 @@ public class BiologyFieldStudy extends RoverMission implements Serializable {
 			// Determine field site location.
 			if (hasVehicle()) {
 				double tripTimeLimit = getTotalTripTimeLimit(getRover(), getPeopleNumber(), true);
-				determineFieldSite(getVehicle().getRange(DEFAULT_DESCRIPTION), tripTimeLimit);
+				determineFieldSite(getVehicle().getRange(missionType), tripTimeLimit);
 			}
 
 			// Add home settlement
@@ -161,7 +164,7 @@ public class BiologyFieldStudy extends RoverMission implements Serializable {
 			ScientificStudy study, Rover rover, Coordinates fieldSite, String description) {
 
 		// Use RoverMission constructor.
-		super(description, leadResearcher, RoverMission.MIN_GOING_MEMBERS, rover);
+		super(description, missionType, leadResearcher, RoverMission.MIN_GOING_MEMBERS, rover);
 
 		// Check if it has a vehicle 
 //		if (!hasVehicle()) {

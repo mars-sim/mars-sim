@@ -118,11 +118,11 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 	 * @param minPeople              The mimimum number of people for the mission.
 	 * @throws MissionException if problem constructing mission.
 	 */
-	CollectResourcesMission(String missionName, Person startingPerson, Integer resourceID, double siteResourceGoal,
+	CollectResourcesMission(String missionName, MissionType missionType, Person startingPerson, Integer resourceID, double siteResourceGoal,
 			double resourceCollectionRate, Integer containerID, int containerNum, int numSites, int minPeople) {
 
 		// Use RoverMission constructor
-		super(missionName, startingPerson, minPeople);
+		super(missionName, missionType, startingPerson, minPeople);
 
 		Settlement s = startingPerson.getSettlement();
 		
@@ -154,10 +154,10 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 				// Determine collection sites
 				if (hasVehicle()) {
 					if (resourceID == ResourceUtil.iceID)
-						determineCollectionSites(getVehicle().getRange(CollectIce.DEFAULT_DESCRIPTION),
+						determineCollectionSites(getVehicle().getRange(CollectIce.missionType),
 								getTotalTripTimeLimit(getRover(), getPeopleNumber(), true), numSites);
 					else if (resourceID == ResourceUtil.regolithID)
-						determineCollectionSites(getVehicle().getRange(CollectRegolith.DEFAULT_DESCRIPTION),
+						determineCollectionSites(getVehicle().getRange(CollectRegolith.missionType),
 							getTotalTripTimeLimit(getRover(), getPeopleNumber(), true), numSites);
 				}
 
@@ -206,12 +206,12 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 	 * @param iceCollectionSites     the sites to collect ice.
 	 * @throws MissionException if problem constructing mission.
 	 */
-	CollectResourcesMission(String missionName, Collection<MissionMember> members, Settlement startingSettlement,
+	CollectResourcesMission(String missionName, MissionType missionType, Collection<MissionMember> members, Settlement startingSettlement,
 			Integer resourceID, double siteResourceGoal, double resourceCollectionRate, Integer containerID,
 			int containerNum, int numSites, int minPeople, Rover rover, List<Coordinates> collectionSites) {
 
 		// Use RoverMission constructor
-		super(missionName, (MissionMember) members.toArray()[0], minPeople, rover);
+		super(missionName, missionType, (MissionMember) members.toArray()[0], minPeople, rover);
 
 		setStartingSettlement(startingSettlement);
 

@@ -35,6 +35,9 @@ public class CollectRegolith extends CollectResourcesMission {
 	/** Default description. */
 	public static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.collectRegolith"); //$NON-NLS-1$
 
+	/** Mission Type enum. */
+	public static final MissionType missionType = MissionType.COLLECT_REGOLITH;
+	
 	/** Amount of regolith to be gathered at a given site (kg). */
 	private static final double SITE_GOAL = 1000D;
 
@@ -58,7 +61,7 @@ public class CollectRegolith extends CollectResourcesMission {
 	 */
 	public CollectRegolith(Person startingPerson) {
 		// Use CollectResourcesMission constructor.
-		super(DEFAULT_DESCRIPTION, startingPerson, ResourceUtil.regolithID, SITE_GOAL, COLLECTION_RATE,
+		super(DEFAULT_DESCRIPTION, missionType, startingPerson, ResourceUtil.regolithID, SITE_GOAL, COLLECTION_RATE,
 				EquipmentType.convertName2ID(Bag.TYPE), REQUIRED_BAGS, NUM_SITES, MIN_PEOPLE);
 	}
 
@@ -76,7 +79,7 @@ public class CollectRegolith extends CollectResourcesMission {
 			List<Coordinates> regolithCollectionSites, Rover rover, String description) {
 
 		// Use CollectResourcesMission constructor.
-		super(description, members, startingSettlement, ResourceUtil.regolithID, SITE_GOAL, COLLECTION_RATE,
+		super(description, missionType, members, startingSettlement, ResourceUtil.regolithID, SITE_GOAL, COLLECTION_RATE,
 				EquipmentType.convertName2ID(Bag.TYPE), REQUIRED_BAGS, regolithCollectionSites.size(),
 				RoverMission.MIN_GOING_MEMBERS, rover, regolithCollectionSites);
 	}

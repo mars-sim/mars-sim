@@ -31,6 +31,7 @@ import javax.swing.event.ListSelectionListener;
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
+import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
@@ -300,11 +301,11 @@ implements ActionListener {
 	 * Updates the rover capacity label.
 	 */
 	void updateRoverCapacityLabel() {
-		String type = getWizard().getMissionData().getType();
-		if (MissionDataBean.CONSTRUCTION_MISSION.equals(type)) {
+		MissionType type = getWizard().getMissionData().getMissionType();
+		if (MissionType.BUILDING_CONSTRUCTION == type) {
 			roverCapacityLabel.setText(" ");
 		}
-		else if (MissionDataBean.SALVAGE_MISSION.equals(type)) { 
+		else if (MissionType.BUILDING_SALVAGE == type) { 
 			roverCapacityLabel.setText(" ");
 		}
 		else {
@@ -317,9 +318,9 @@ implements ActionListener {
 	 * @return rover capacity.
 	 */
 	int getRemainingRoverCapacity() {
-		String type = getWizard().getMissionData().getType();
-		if (MissionDataBean.CONSTRUCTION_MISSION.equals(type)) return Integer.MAX_VALUE;
-		else if (MissionDataBean.SALVAGE_MISSION.equals(type)) return Integer.MAX_VALUE;
+		MissionType type = getWizard().getMissionData().getMissionType();
+		if (MissionType.BUILDING_CONSTRUCTION == type) return Integer.MAX_VALUE;
+		else if (MissionType.BUILDING_SALVAGE == type) return Integer.MAX_VALUE;
 		else {
 			int roverCapacity = getWizard().getMissionData().getRover().getCrewCapacity();
 			int memberNum = botMembersTableModel.getRowCount();
@@ -393,9 +394,9 @@ implements ActionListener {
 			units.clear();
 			MissionDataBean missionData = getWizard().getMissionData();
 			Settlement settlement = missionData.getStartingSettlement();
-			if (MissionDataBean.CONSTRUCTION_MISSION.equals(missionData.getType()))
+			if (MissionType.BUILDING_CONSTRUCTION == missionData.getMissionType())
 				settlement = missionData.getConstructionSettlement();
-			else if (MissionDataBean.SALVAGE_MISSION.equals(missionData.getType()))
+			else if (MissionType.BUILDING_SALVAGE == missionData.getMissionType())
 				settlement = missionData.getSalvageSettlement();
 			Collection<Robot> robots = CollectionUtils.sortByName(settlement.getRobots());
 			Iterator<Robot> i = robots.iterator();

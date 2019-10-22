@@ -25,6 +25,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
+import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
@@ -792,39 +793,45 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 	 * @return the range of the vehicle (in km)
 	 * @throws Exception if error getting range.
 	 */
-	public double getRange(String missionName) {
-		double fuelRange = super.getRange(missionName);
+	public double getRange(MissionType missionType) {
+		double fuelRange = super.getRange(missionType);
 //		Mission m = super.getMission();
-		// Obtains the max traveled range [in km] based on the type of mission
-		double maxRange = super.getMissionRange(missionName);
-//		System.out.println(this + " - " + missionName + " - max range : " + maxRange + " km");
+		// Obtains the max mission range [in km] based on the type of mission
+		double missionRange = super.getMissionRange(missionType);
+		// Estimate the distance traveled per sol
 		double distancePerSol = getEstimatedTravelDistancePerSol();
-
+		// Gets the life support resource margin
+		double margin = Vehicle.getLifeSupportRangeErrorMargin();
+		
 		// Check food capacity as range limit.
 		double foodConsumptionRate = personConfig.getFoodConsumptionRate();
 		double foodCapacity = getInventory().getARCapacity(ResourceUtil.foodID, false);
 		double foodSols = foodCapacity / (foodConsumptionRate * crewCapacity);
-		double foodRange = distancePerSol * foodSols / Vehicle.getLifeSupportRangeErrorMargin();
+		double foodRange = distancePerSol * foodSols / margin;
 
 		// Check water capacity as range limit.
 		double waterConsumptionRate = personConfig.getWaterConsumptionRate();
 		double waterCapacity = getInventory().getARCapacity(ResourceUtil.waterID, false);
 		double waterSols = waterCapacity / (waterConsumptionRate * crewCapacity);
-		double waterRange = distancePerSol * waterSols / Vehicle.getLifeSupportRangeErrorMargin();
+		double waterRange = distancePerSol * waterSols / margin;
 //    	if (waterRange < fuelRange) fuelRange = waterRange;
 
 		// Check oxygen capacity as range limit.
 		double oxygenConsumptionRate = personConfig.getNominalO2ConsumptionRate();
 		double oxygenCapacity = getInventory().getARCapacity(ResourceUtil.oxygenID, false);
 		double oxygenSols = oxygenCapacity / (oxygenConsumptionRate * crewCapacity);
-		double oxygenRange = distancePerSol * oxygenSols / Vehicle.getLifeSupportRangeErrorMargin();
+		double oxygenRange = distancePerSol * oxygenSols / margin;
 //    	if (oxygenRange < fuelRange) fuelRange = oxygenRange;
 
-		double max = Math.min(oxygenRange, Math.min(foodRange, Math.min(waterRange, Math.min(maxRange, fuelRange))));
-//		System.out.println(missionName + " : " + max);
+		double max = Math.min(oxygenRange, Math.min(foodRange, Math.min(waterRange, Math.min(missionRange, fuelRange))));
+
+//		String s0 = this + " - " + missionName + " \n";
+//		String s1 = String.format(" Radius : %5.0f km   Fuel : %5.0f km   Dist/sol : %5.0f km   Max : %5.0f km", 
+//				missionRange, fuelRange, distancePerSol, max);
+//		System.out.print(s0);
+//		System.out.println(s1);
 		
 		return max;
-
 	}
 
 	@Override

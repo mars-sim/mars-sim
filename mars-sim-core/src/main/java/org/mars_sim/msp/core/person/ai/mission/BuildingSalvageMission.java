@@ -64,6 +64,9 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 	/** Default description. */
 	public static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.buildingSalvageMission"); //$NON-NLS-1$
 
+	/** Mission Type enum. */
+	public static final MissionType missionType = MissionType.BUILDING_SALVAGE;
+	
 	/** Mission phases. */
 	final public static MissionPhase PREPARE_SITE_PHASE = new MissionPhase(
 			Msg.getString("Mission.phase.prepareSalvageSite")); //$NON-NLS-1$
@@ -100,7 +103,7 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 	 */
 	public BuildingSalvageMission(MissionMember startingMember) {
 		// Use Mission constructor.
-		super(DEFAULT_DESCRIPTION, startingMember, MIN_PEOPLE);
+		super(DEFAULT_DESCRIPTION, missionType, startingMember, MIN_PEOPLE);
 
 		// Set wear condition to 100% by default.
 		wearCondition = 100D;
@@ -216,7 +219,7 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 			ConstructionSite site, List<GroundVehicle> vehicles) {
 
 		// Use Mission constructor.
-		super(DEFAULT_DESCRIPTION, (MissionMember) members.toArray()[0], 1);
+		super(DEFAULT_DESCRIPTION, missionType, (MissionMember) members.toArray()[0], 1);
 
 		this.settlement = settlement;
 
@@ -778,9 +781,9 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 		// Cancel construction mission if there are any beacon vehicles within range
 		// that need help.
 		Vehicle vehicleTarget = null;
-		Vehicle vehicle = RoverMission.getVehicleWithGreatestRange(DEFAULT_DESCRIPTION, settlement, true);
+		Vehicle vehicle = RoverMission.getVehicleWithGreatestRange(missionType, settlement, true);
 		if (vehicle != null) {
-			vehicleTarget = RescueSalvageVehicle.findBeaconVehicle(settlement, vehicle.getRange(DEFAULT_DESCRIPTION));
+			vehicleTarget = RescueSalvageVehicle.findBeaconVehicle(settlement, vehicle.getRange(missionType));
 			if (vehicleTarget != null) {
 				if (!RescueSalvageVehicle.isClosestCapableSettlement(settlement, vehicleTarget)) {
 					result = true;

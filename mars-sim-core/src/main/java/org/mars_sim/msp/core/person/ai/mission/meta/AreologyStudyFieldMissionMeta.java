@@ -75,7 +75,7 @@ public class AreologyStudyFieldMissionMeta implements MetaMission {
     		
             try {
                 // Get available rover.
-                Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(DEFAULT_DESCRIPTION, settlement, false);
+                Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(AreologyFieldStudy.missionType, settlement, false);
                 if (rover != null) {
 
                     ScienceType areology = ScienceType.AREOLOGY;

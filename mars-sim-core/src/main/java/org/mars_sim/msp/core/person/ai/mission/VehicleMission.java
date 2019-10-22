@@ -98,11 +98,11 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 * @param startingMember
 	 * @param minPeople
 	 */
-	protected VehicleMission(String missionName, MissionMember startingMember, int minPeople) {
+	protected VehicleMission(String missionName, MissionType missionType, MissionMember startingMember, int minPeople) {
 		// Use TravelMission constructor.
-		super(missionName, startingMember, minPeople);
+		super(missionName, missionType, startingMember, minPeople);
 	
-		description = missionName;
+		description = missionType.getName();
 		this.startingMember = startingMember;
 
 		if (!reserveVehicle()) {
@@ -127,11 +127,11 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 * @param minPeople
 	 * @param vehicle
 	 */
-	protected VehicleMission(String missionName, MissionMember startingMember, int minPeople, Vehicle vehicle) {
+	protected VehicleMission(String missionName, MissionType missionType, MissionMember startingMember, int minPeople, Vehicle vehicle) {
 		// Use TravelMission constructor.
-		super(missionName, startingMember, minPeople);
+		super(missionName, missionType, startingMember, minPeople);
 	
-		description = missionName;
+		description = missionType.getName();
 		this.startingMember = startingMember;
 
 		// Add mission phases.

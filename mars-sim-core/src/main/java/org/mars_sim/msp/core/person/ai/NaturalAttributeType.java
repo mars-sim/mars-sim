@@ -66,4 +66,13 @@ public enum NaturalAttributeType {
 		Collections.sort(list);
 		return list.toArray(new String[] {});
 	}
+	
+//	public List<NaturalAttributeType> getNaturalAttributeTypes() {
+//		List<NaturalAttributeType> list = new ArrayList<NaturalAttributeType>();
+//		for (NaturalAttributeType value : NaturalAttributeType.values()) {
+//			list.add(value);
+//		}
+//		
+//		return list;
+//	}
 }

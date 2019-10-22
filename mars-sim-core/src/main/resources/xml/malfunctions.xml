@@ -314,7 +314,7 @@
 		<probability value="3.0" />
 		<eva-repair-time value="50.0" />
 		<system-list>
-			<system name="vehicle" />
+			<system name="rover" />
 		</system-list>
 		<repair-parts-list>
 			<part name="rover wheel" number="2" probability="60" />
@@ -378,7 +378,7 @@
 		<probability value="2.0" />
 		<repair-time value="50.0" />
 		<system-list>
-			<system name="vehicle" />
+			<system name="rover" />
 		</system-list>
 		<medical-complaint-list>
 			<medical-complaint name="Minor Burns" probability="3.0" />
@@ -443,7 +443,7 @@
 		<repair-time value="50.0" />
 		<eva-repair-time value="50.0" />
 		<system-list>
-			<system name="vehicle" />
+			<system name="rover" />
 			<system name="robot" />				
 			<system name="communication" />
 		</system-list>
@@ -467,7 +467,7 @@
 		<repair-time value="50.0" />
 		<eva-repair-time value="20.0" />
 		<system-list>
-			<system name="vehicle" />
+			<system name="rover" />
 		</system-list>
 		<repair-parts-list>
 			<part name="wire connector" number="2" probability="25" />
@@ -485,7 +485,7 @@
 		<probability value="2.0" />
 		<repair-time value="100.0" />
 		<system-list>
-			<system name="vehicle" />
+			<system name="rover" />
 		</system-list>
 		<repair-parts-list>
 			<part name="wire connector" number="2" probability="30" />
@@ -680,7 +680,7 @@
 		<repair-time value="50.0" />
 		<system-list>
 			<system name="robot" />			
-			<system name="vehicle" />
+			<system name="rover" />
 			<system name="EVA suit" />
 			<system name="power generation" />
 			<system name="power storage" />
@@ -705,7 +705,7 @@
 		<emergency-repair-time value="50.0" />
 		<system-list>
 			<system name="robot" />		
-			<system name="vehicle" />		
+			<system name="rover" />		
 		</system-list>
 		<repair-parts-list>
 			<part name="aluminum wire" number="2" probability="20" />
@@ -998,7 +998,7 @@
 		<repair-time value="200.0" />
 		<emergency-repair-time value="100" />
 		<system-list>
-			<system name="vehicle" />
+			<system name="rover" />
 			<system name="fuel power source" />
 			<system name="fuel heating source" />
 		</system-list>

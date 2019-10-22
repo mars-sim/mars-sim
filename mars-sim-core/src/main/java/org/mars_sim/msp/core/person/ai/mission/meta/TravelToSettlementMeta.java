@@ -109,19 +109,19 @@ public class TravelToSettlementMeta implements MetaMission {
 		
         // Check if there are any desirable settlements within range.
         double topSettlementDesirability = 0D;
-        Vehicle vehicle = RoverMission.getVehicleWithGreatestRange(DEFAULT_DESCRIPTION, settlement, false);
+        Vehicle vehicle = RoverMission.getVehicleWithGreatestRange(TravelToSettlement.missionType, settlement, false);
         if (vehicle != null) {
         	Map<Settlement, Double> desirableSettlements = null;
 			if (unit instanceof Person) {
 				person = (Person) unit;
 	            desirableSettlements = TravelToSettlement.getDestinationSettlements(
-	                    person, settlement, vehicle.getRange(DEFAULT_DESCRIPTION));
+	                    person, settlement, vehicle.getRange(TravelToSettlement.missionType));
 
 			}
 			else if (unit instanceof Robot) {
 				robot = (Robot) unit;
 	            desirableSettlements = TravelToSettlement.getDestinationSettlements(
-	                    robot, settlement, vehicle.getRange(DEFAULT_DESCRIPTION));
+	                    robot, settlement, vehicle.getRange(TravelToSettlement.missionType));
 			}
 
             if (desirableSettlements.size() == 0) {
