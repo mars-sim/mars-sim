@@ -224,7 +224,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 		private Map<Resource, Number> capacity;
 		private List<Resource> keys;
 		
-//		private DecimalFormat decFormatter = new DecimalFormat("#,###,##0.0");
+		private DecimalFormat decFormatter = new DecimalFormat("#,###,##0");
 
         private ResourceTableModel(Inventory inventory) {
             this.inventory = inventory;
@@ -263,7 +263,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 
         public Class<?> getColumnClass(int columnIndex) {
             Class<?> dataType = super.getColumnClass(columnIndex);
-            if (columnIndex >= 1) dataType = Double.class;
+            if (columnIndex >= 1) dataType = Number.class;
             return dataType;
         }
 
@@ -283,20 +283,19 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
             }
             else if (column == 1) {
             	Resource resource = keys.get(row);
-            	String result = resources.get(resource).toString();
+            	Number number = resources.get(resource);
             	if (resource instanceof AmountResource) {
-            		return (Double) resources.get(resource);
+            		number = Math.round((Double) resources.get(resource)*100.0)/100.0;
 //            		result = decFormatter.format(amount);
             		//result = amount + "";
             	}
-            	return result;
+            	return number;
             }
             else if (column == 2) {
             	Number number = capacity.get(keys.get(row));
-            	return (number == null) ? "-" : number; //decFormatter.format(number);
-            	//return (number == null) ? "-" : number;
+            	return (number == null) ? 0 : decFormatter.format(number);
             }
-            else return "unknown";
+            else return 0;
         }
 
 //        public void updateRow() {
