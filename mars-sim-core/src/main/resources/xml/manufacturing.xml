@@ -1792,10 +1792,10 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 	
 	<!-- Small wheels are made with steel and steel wire. -->
 	<process name="make small wheels" tech="2" skill="2" work-time="100" process-time="200"
-			power-required=".5">
+			power-required="0.5">
 		<inputs>
 			<part name="steel sheet" number="1" />
-			<part name="steel wire" number="5" />
+			<part name="steel wire" number="15" />
 		</inputs>
 		<outputs>
 			<part name="small wheel" number="2" />
@@ -1808,7 +1808,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			power-required="0.5">
 		<inputs>
 			<part name="steel sheet" number="3" />
-			<part name="steel wire" number="55" />
+			<part name="steel wire" number="45" />
 		</inputs>
 		<outputs>
 			<part name="rover wheel" number="2" />
@@ -2127,13 +2127,13 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="small vehicle frame" number="1" />
 
 			<part name="large motor" number="2" />
-			<part name="rover battery" number="6" />
+			<part name="rover battery" number="1" />
 			<part name="utility vehicle control panel" number="1" />
 			<part name="electrical wire" number="10" />
 			<part name="wire connector" number="10" />
 			<part name="epoxy resin bottle" number="1" />
 			<part name="lubricant bottle" number="1" />
-			<part name="small wheel" number="4" />
+			<part name="small wheel" number="8" />
 			<part name="radio antenna" number="1" />
 			<part name="optical cable" number="4" />			
 		</inputs>
@@ -2169,7 +2169,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="steel pipe" number="2" />
 			<part name="epoxy resin bottle" number="5" />
 			<part name="lubricant bottle" number="2" />
-			<part name="rover wheel" number="4" />
+			<part name="rover wheel" number="12" />
 			<part name="optical cable" number="6" />			
 		</inputs>
 		<outputs>
@@ -2203,7 +2203,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="steel pipe" number="2" />
 			<part name="epoxy resin bottle" number="5" />
 			<part name="lubricant bottle" number="2" />
-			<part name="rover wheel" number="6" />
+			<part name="rover wheel" number="16" />
 			<part name="optical cable" number="8" />			
 		</inputs>
 		<outputs>
@@ -2237,7 +2237,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="steel pipe" number="2" />
 			<part name="epoxy resin bottle" number="5" />
 			<part name="lubricant bottle" number="2" />
-			<part name="rover wheel" number="6" />
+			<part name="rover wheel" number="14" />
 			<part name="optical cable" number="10" />			
 		</inputs>
 		<outputs>
@@ -3718,7 +3718,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		<part-salvage name="steel pipe" number="2" />
 		<part-salvage name="epoxy resin bottle" number="5" />
 		<part-salvage name="lubricant bottle" number="2" />
-		<part-salvage name="rover wheel" number="4" />
+		<part-salvage name="rover wheel" number="12" />
 		<part-salvage name="steel scrap" number="4" />		
 		<part-salvage name="aluminum scrap" number="7" />
 		<part-salvage name="optical cable" number="10" />				
@@ -3749,7 +3749,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		<part-salvage name="steel pipe" number="2" />
 		<part-salvage name="epoxy resin bottle" number="5" />
 		<part-salvage name="lubricant bottle" number="2" />
-		<part-salvage name="rover wheel" number="4" />
+		<part-salvage name="rover wheel" number="16" />
 		<part-salvage name="steel scrap" number="5" />		
 		<part-salvage name="aluminum scrap" number="7" />	
 		<part-salvage name="optical cable" number="10" />			
@@ -3780,7 +3780,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		<part-salvage name="steel pipe" number="2" />
 		<part-salvage name="epoxy resin bottle" number="5" />
 		<part-salvage name="lubricant bottle" number="2" />
-		<part-salvage name="rover wheel" number="4" />
+		<part-salvage name="rover wheel" number="14" />
 		<part-salvage name="steel scrap" number="4" />		
 		<part-salvage name="aluminum scrap" number="8" />
 		<part-salvage name="optical cable" number="10" />				
@@ -3790,13 +3790,13 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 	<salvage item-name="light utility vehicle" type="vehicle" tech="3" skill="3" work-time="700">
 		<part-salvage name="small vehicle frame" number="1" />
 		<part-salvage name="large motor" number="2" />
-		<part-salvage name="rover battery" number="6" />
+		<part-salvage name="rover battery" number="1" />
 		<part-salvage name="utility vehicle control panel" number="1" />
 		<part-salvage name="electrical wire" number="10" />
 		<part-salvage name="wire connector" number="10" />
 		<part-salvage name="epoxy resin bottle" number="1" />
 		<part-salvage name="lubricant bottle" number="1" />
-		<part-salvage name="small wheel" number="4" />
+		<part-salvage name="small wheel" number="8" />
 		<part-salvage name="radio antenna" number="1" />
 		<part-salvage name="steel scrap" number="1" />		
 		<part-salvage name="aluminum scrap" number="2" />	

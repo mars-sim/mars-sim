@@ -24,15 +24,19 @@ import org.mars_sim.msp.core.Direction;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.LogConsolidated;
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
+import org.mars_sim.msp.core.equipment.EVASuit;
+import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.manufacture.Salvagable;
 import org.mars_sim.msp.core.manufacture.SalvageInfo;
 import org.mars_sim.msp.core.manufacture.SalvageProcessInfo;
+import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.AreologyFieldStudy;
 import org.mars_sim.msp.core.person.ai.mission.BiologyFieldStudy;
@@ -45,14 +49,22 @@ import org.mars_sim.msp.core.person.ai.mission.Exploration;
 import org.mars_sim.msp.core.person.ai.mission.MeteorologyFieldStudy;
 import org.mars_sim.msp.core.person.ai.mission.Mining;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.mission.MissionHistoricalEvent;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
+import org.mars_sim.msp.core.person.ai.mission.MissionStatus;
 import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.core.person.ai.mission.Trade;
 import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
+import org.mars_sim.msp.core.person.ai.task.EVAOperation;
+import org.mars_sim.msp.core.person.ai.task.ExitAirlock;
 import org.mars_sim.msp.core.person.ai.task.HaveConversation;
 import org.mars_sim.msp.core.person.ai.task.Maintenance;
 import org.mars_sim.msp.core.person.ai.task.Repair;
+import org.mars_sim.msp.core.person.ai.task.RequestMedicalTreatment;
+import org.mars_sim.msp.core.person.ai.task.UnloadVehicleEVA;
+import org.mars_sim.msp.core.person.ai.task.UnloadVehicleGarage;
+import org.mars_sim.msp.core.person.ai.task.Walk;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
@@ -61,6 +73,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.Indoor;
 import org.mars_sim.msp.core.structure.building.function.SystemType;
+import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * The Vehicle class represents a generic vehicle. It keeps track of generic
@@ -1015,9 +1028,216 @@ public abstract class Vehicle extends Unit
 			}
 			// TODO : will another person take his place as the driver
 		}
-
 	}
 
+	/**
+	 * Checks on a person's status to see if he can walk home or be rescued
+	 * 
+	 * @param rover
+	 * @param p
+	 * @param disembarkSettlement
+	 */
+	private void checkPersonStatus(Rover rover, Person p, Settlement disembarkSettlement) {
+		if (p.isInVehicle() || p.isOutside()) {
+			// Get random inhabitable building at emergency settlement.
+			Building destinationBuilding = disembarkSettlement.getBuildingManager().getRandomAirlockBuilding();
+			if (destinationBuilding != null) {
+				Point2D destinationLoc = LocalAreaUtil.getRandomInteriorLocation(destinationBuilding);
+				Point2D adjustedLoc = LocalAreaUtil.getLocalRelativeLocation(destinationLoc.getX(),
+						destinationLoc.getY(), destinationBuilding);
+
+				double fatigue = p.getFatigue(); // 0 to infinity
+				double perf = p.getPerformanceRating(); // 0 to 1
+				double stress = p.getStress(); // 0 to 100
+				double energy = p.getEnergy(); // 100 to infinity
+				double hunger = p.getHunger(); // 0 to infinity
+
+				boolean hasStrength = fatigue < 1000 && perf > .4 && stress < 60 && energy > 750 && hunger < 1000;
+				
+				if (p.isInVehicle()) {// && p.getInventory().findNumUnitsOfClass(EVASuit.class) == 0) {
+					// Checks to see if the person has an EVA suit	
+					if (!ExitAirlock.goodEVASuitAvailable(rover.getInventory(), p)) {
+
+						LogConsolidated.log(Level.WARNING, 0, sourceName, "[" + p.getLocationTag().getLocale() + "] "
+										+ p + " could not find a working EVA suit and needed to wait.");
+					
+						// If the person does not have an EVA suit	
+						int availableSuitNum = Mission.getNumberAvailableEVASuitsAtSettlement(disembarkSettlement);
+//						int suitVehicle = rover.getInventory().findNumUnitsOfClass(EVASuit.class);
+						
+						if (availableSuitNum > 0) {
+							// Deliver an EVA suit from the settlement to the rover
+							// TODO: Need to generate a task for a person to hand deliver an extra suit
+							EVASuit suit = disembarkSettlement.getInventory().findAnEVAsuit(); //(EVASuit) disembarkSettlement.getInventory().findUnitOfClass(EVASuit.class);
+							if (suit != null && rover.getInventory().canStoreUnit(suit, false)) {
+								
+								suit.transfer(disembarkSettlement, rover);
+//								disembarkSettlement.getInventory().retrieveUnit(suit);
+//								rover.getInventory().storeUnit(suit);
+								
+								LogConsolidated.log(Level.WARNING, 0, sourceName, "[" + p.getLocationTag().getLocale() + "] "
+										+ p + " received a spare EVA suit from the settlement.");
+							}
+						}
+					}
+				}
+				
+				if (Walk.canWalkAllSteps(p, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding)) {
+			
+					if (hasStrength) {
+						LogConsolidated.log(Level.INFO, 20_000, sourceName, 
+								"[" + disembarkSettlement.getName() + "] "
+								+ p.getName() + " still had strength left and would help unload cargo.");
+						// help unload the cargo
+						unloadCargo(p, rover);
+					}	
+					else {
+						LogConsolidated.log(Level.INFO, 20_000, sourceName, 
+								"[" + disembarkSettlement.getName() + "] "
+								+ p.getName() + " had no more strength and walked back to the settlement.");
+						// walk back home
+						assignTask(p, new Walk(p, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding));
+					}
+					
+				} 
+				
+				else if (!hasStrength) {
+
+					// Help this person put on an EVA suit
+					// TODO: consider inflatable medical tent for emergency transport of incapacitated personnel
+					
+					// This person needs to be rescued.
+					LogConsolidated.log(Level.INFO, 0, sourceName, 
+							"[" + disembarkSettlement.getName() + "] "
+							+ Msg.getString("RoverMission.log.emergencyEnterSettlement", p.getName(), 
+									disembarkSettlement.getNickName())); //$NON-NLS-1$
+					
+					// Initiate an rescue operation
+					// TODO: Gets a lead person to perform it and give him a rescue badge
+					rescueOperation(rover, p, disembarkSettlement);
+					
+					LogConsolidated.log(Level.INFO, 0, sourceName, 
+							"[" + disembarkSettlement.getName() + "] "
+							+ p.getName() 
+							+ " was transported to ("
+							+ Math.round(p.getXLocation()*10.0)/10.0 + ", " 
+							+ Math.round(p.getYLocation()*10.0)/10.0 + ") in "
+							+ p.getBuildingLocation().getNickName()); //$NON-NLS-1$
+					
+					// TODO: how to force the person to receive some form of medical treatment ?
+					p.getMind().getTaskManager().clearTask();
+					p.getMind().getTaskManager().addTask(new RequestMedicalTreatment(p));
+					
+				}
+
+			}
+			
+			else {
+				logger.severe("No inhabitable buildings at " + disembarkSettlement);
+			}
+		}
+	}
+	
+	/**
+	 * Rescue the person from the rover
+	 * 
+	 * @param r the rover
+	 * @param p the person
+	 * @param s the settlement
+	 */
+	private void rescueOperation(Rover r, Person p, Settlement s) {
+		
+		if (p.isDeclaredDead()) {
+			Unit cu = p.getPhysicalCondition().getDeathDetails().getContainerUnit();
+//			cu.getInventory().retrieveUnit(p);
+			p.transfer(cu, s);
+		}
+		// Retrieve the person from the rover
+		else if (r != null) {
+//			r.getInventory().retrieveUnit(p);
+			p.transfer(r, s);
+		}
+		else if (p.isOutside()) {
+//			unitManager.getMarsSurface().getInventory().retrieveUnit(p);
+			p.transfer(unitManager.getMarsSurface(), s);
+		}
+		
+		// Store the person into the settlement
+//		s.getInventory().storeUnit(p);
+		
+		// Gets the settlement id
+		int id = s.getIdentifier();
+		// Store the person into a medical building
+		BuildingManager.addToMedicalBuilding(p, id);
+
+		// Register the historical event
+//		HistoricalEvent rescueEvent = new MissionHistoricalEvent(EventType.MISSION_RESCUE_PERSON, 
+//				this,
+//				p.getPhysicalCondition().getHealthSituation(), 
+//				p.getTaskDescription(), 
+//				p.getName(),
+//				r.getNickName(), 
+//				p.getLocationTag().getLocale(),
+//				p.getAssociatedSettlement().getName()
+//				);
+//		eventManager.registerNewEvent(rescueEvent);
+	}
+	
+	/**
+	 * Give a person the task from unloading the vehicle
+	 * 
+	 * @param p
+	 * @param rover
+	 */
+	private void unloadCargo(Person p, Rover rover) {
+		if (RandomUtil.lessThanRandPercent(50)) {
+			if (isRoverInAGarage()) {
+				assignTask(p, new UnloadVehicleGarage(p, rover));
+			} 
+			
+			else {
+				// Check if it is day time.
+				if (!EVAOperation.isGettingDark(p)) {
+					assignTask(p, new UnloadVehicleEVA(p, rover));
+				}
+			}
+			
+//			return;	
+		}	
+	}
+	
+	/**
+	 * Adds a new task for a person in the mission. Task may be not assigned if it
+	 * is effort-driven and person is too ill to perform it.
+	 * 
+	 * @param person the person to assign to the task
+	 * @param task   the new task to be assigned
+	 * @return true if task can be performed.
+	 */
+	protected boolean assignTask(Person person, Task task) {
+		boolean canPerformTask = true;
+
+		// If task is effort-driven and person too ill, do not assign task.
+		if (task.isEffortDriven() && (person.getPerformanceRating() == 0D)) {
+			canPerformTask = false;
+		}
+
+		if (canPerformTask) {
+			person.getMind().getTaskManager().addTask(task);
+		}
+
+		return canPerformTask;
+	}
+	
+	/**
+	 * Checks if the rover is currently in a garage or not.
+	 * 
+	 * @return true if rover is in a garage.
+	 */
+	public boolean isRoverInAGarage() {
+		return (BuildingManager.getBuilding(this) != null);
+	}
+	
 	/**
 	 * Resets the vehicle reservation status
 	 */

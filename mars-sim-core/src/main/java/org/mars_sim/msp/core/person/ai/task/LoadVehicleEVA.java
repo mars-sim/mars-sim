@@ -246,7 +246,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 						Inventory roverInv = rover.getInventory();
 						int peopleOnboard = roverInv.findNumUnitsOfClass(Person.class);
 						if ((peopleOnboard > 0)) {
-							int numSuits = roverInv.findNumEVASuits(false);
+							int numSuits = roverInv.findNumEVASuits(false, false);
 							double water = roverInv.getAmountResourceStored(ResourceUtil.waterID, false);
 							double oxygen = roverInv.getAmountResourceStored(ResourceUtil.oxygenID, false);
 							if ((numSuits == 0) || (water < WATER_NEED) || (oxygen < OXYGEN_NEED)) {

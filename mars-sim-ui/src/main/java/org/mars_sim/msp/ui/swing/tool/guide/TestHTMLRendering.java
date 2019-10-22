@@ -36,7 +36,7 @@ import javax.swing.SwingUtilities;
         /**
          * URL of page we want to display
          */
-        private static final String URL = "https://www.google.com";//"file:///C:\\print.html";
+        private static final String URL = "https://github.com/mars-sim/mars-sim"; //"https://www.google.com";//"file:///C:\\print.html";
 
         /**
          * program version

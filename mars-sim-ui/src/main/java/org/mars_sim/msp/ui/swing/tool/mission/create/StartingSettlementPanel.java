@@ -264,7 +264,7 @@ class StartingSettlementPanel extends WizardPanel {
 					}
 					else if (type.equals(MissionDataBean.MINING_MISSION)) {
 						if (column == 8)
-							result = inv.findNumEmptyUnitsOfClass(Bag.class, true);
+							result = inv.findNumBags(true, true);//.findNumEmptyUnitsOfClass(Bag.class, true);
 						else if (column == 9)
 							result = inv.findNumUnitsOfClass(LightUtilityVehicle.class);
 						else if (column == 10) {
@@ -386,26 +386,26 @@ class StartingSettlementPanel extends WizardPanel {
 					if (inv.getAmountResourceStored(ResourceUtil.methaneID, false) < 100D) result = true;
 				}
 				else if (column == 7) {
-					if (inv.findNumEVASuits(false) == 0) result = true;
+					if (inv.findNumEVASuits(false, true) == 0) result = true;
 				}
 
 				String type = getWizard().getMissionData().getType();
 				if (type.equals(MissionDataBean.EXPLORATION_MISSION)) {
 					if (column == 8) {
-						if (inv.findNumEmptyUnitsOfClass(SpecimenBox.class, true) <
+						if (inv.findNumSpecimenBoxes(true, true) < //.findNumEmptyUnitsOfClass(SpecimenBox.class, true) <
 								Exploration.REQUIRED_SPECIMEN_CONTAINERS) result = true;
 					}
 				}
 				else if (type.equals(MissionDataBean.ICE_MISSION) ||
 						type.equals(MissionDataBean.REGOLITH_MISSION)) {
 					if (column == 8) {
-						if (inv.findNumEmptyUnitsOfClass(Bag.class, true) <
+						if (inv.findNumBags(true, true) < //.findNumEmptyUnitsOfClass(Bag.class, true) <
 								CollectIce.REQUIRED_BAGS) result = true;
 					}
 				}
 				else if (type.equals(MissionDataBean.MINING_MISSION)) {
 					if (column == 8) {
-						if (inv.findNumEmptyUnitsOfClass(Bag.class, true) <
+						if (inv.findNumBags(true, true) < //findNumEmptyUnitsOfClass(Bag.class, true) <
 								CollectIce.REQUIRED_BAGS) result = true;
 					}
 					if (column == 9) {

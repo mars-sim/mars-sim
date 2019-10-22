@@ -294,12 +294,12 @@
 		</medical-complaint-list>
 		<repair-parts-list>
 			<part name="fire extinguisher" number="3" probability="35" />		
-			<part name="ventilation fan" number="2" probability="10" />
-			<part name="blender" number="2" probability="10" />
-			<part name="refrigerator" number="2" probability="5" />
-			<part name="autoclave" number="2" probability="5" />
-			<part name="microwave" number="4" probability="5" />
-			<part name="oven" number="4" probability="5" />
+			<part name="ventilation fan" number="1" probability="10" />
+			<part name="blender" number="1" probability="10" />
+			<part name="refrigerator" number="1" probability="5" />
+			<part name="autoclave" number="1" probability="5" />
+			<part name="microwave" number="1" probability="5" />
+			<part name="oven" number="1" probability="5" />
 			<part name="electrical wire" number="4" probability="5" />
 			<part name="wire connector" number="4" probability="5" />	
 			<part name="fuel tank" number="1" probability="5" />	
@@ -317,7 +317,12 @@
 			<system name="vehicle" />
 		</system-list>
 		<repair-parts-list>
-			<part name="rover wheel" number="1" probability="100" />
+			<part name="rover wheel" number="2" probability="60" />
+			<part name="work gloves" number="1" probability="20" />	
+			<part name="valve" number="1" probability="10" />
+			<part name="plastic tubing" number="2" probability="10" />
+			<part name="epoxy resin bottle" number="1" probability="10" />
+			<part name="heat pipe" number="1" probability="5" />									
 		</repair-parts-list>
 	</malfunction>
 
@@ -385,6 +390,7 @@
 			<part name="microcontroller" number="1" probability="1" />
 			<part name="logic board" number="1" probability="5" />
 			<part name="power cable" number="1" probability="5" />		
+			<part name="fire extinguisher" number="1" probability="5" />						
 		</repair-parts-list>
 	</malfunction>
 

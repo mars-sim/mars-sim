@@ -55,27 +55,27 @@ public class RobotTableModel extends UnitTableModel {
 	private final static int TYPE = 1;
 	/** Location column. */
 	private final static int LOCATION = 2;
-	/** Robotality column. */
-	// private final static int PERSONALITY = 3;
+	/** Settlement column. */
+	 private final static int SETTLEMENT = 3;
 	/** Health column. */
-	private final static int HEALTH = 3;
+	private final static int HEALTH = 4;
 	/** Hunger column. */
-	private final static int BATTERY = 4;
+	private final static int BATTERY = 5;
 	/** Fatigue column. */
 	// private final static int FATIGUE = 6;
 	/** Stress column. */
 	// private final static int STRESS = 7;
 	/** Performance column. */
-	private final static int PERFORMANCE = 5;
+	private final static int PERFORMANCE = 6;
 	/** Job column. */
-	private final static int JOB = 6;
+	private final static int JOB = 7;
 	/** Task column. */
-	private final static int TASK = 7;
+	private final static int TASK = 8;
 	/** Mission column. */
-	private final static int MISSION = 8;
+	private final static int MISSION = 9;
 
 	/** The number of Columns. */
-	private final static int COLUMNCOUNT = 9;
+	private final static int COLUMNCOUNT = 10;
 	/** Names of Columns. */
 	private static String columnNames[];
 	/** Types of Columns. */
@@ -108,6 +108,8 @@ public class RobotTableModel extends UnitTableModel {
 		columnTypes[PERFORMANCE] = String.class;
 		columnNames[LOCATION] = Msg.getString("RobotTableModel.column.location"); //$NON-NLS-1$
 		columnTypes[LOCATION] = String.class;
+		columnNames[SETTLEMENT] = Msg.getString("RobotTableModel.column.settlement"); //$NON-NLS-1$
+		columnTypes[SETTLEMENT] = String.class;
 		columnNames[JOB] = Msg.getString("RobotTableModel.column.job"); //$NON-NLS-1$
 		columnTypes[JOB] = String.class;
 		columnNames[MISSION] = Msg.getString("RobotTableModel.column.mission"); //$NON-NLS-1$
@@ -342,6 +344,11 @@ public class RobotTableModel extends UnitTableModel {
 			}
 				break;
 
+			case SETTLEMENT: {
+				result = robot.getLocationTag().getLocale(); // getQuickLocation();//
+			}
+				break;
+
 			case JOB: {
 				result = RobotJob.getName(robot.getRobotType());
 			}
@@ -491,6 +498,8 @@ public class RobotTableModel extends UnitTableModel {
 			HashMap<UnitEventType, Integer> m = new HashMap<UnitEventType, Integer>();
 			m.put(UnitEventType.NAME_EVENT, NAME);
 			m.put(UnitEventType.LOCATION_EVENT, LOCATION);
+			m.put(UnitEventType.ADD_ASSOCIATED_ROBOT_EVENT, SETTLEMENT);
+			m.put(UnitEventType.REMOVE_ASSOCIATED_ROBOT_EVENT, SETTLEMENT);
 			m.put(UnitEventType.HUNGER_EVENT, BATTERY);
 			// m.put(UnitEventType.FATIGUE_EVENT, FATIGUE);
 			// m.put(UnitEventType.STRESS_EVENT, STRESS);

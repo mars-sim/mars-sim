@@ -1780,10 +1780,11 @@ public class Inventory implements Serializable {
 	/**
 	 * Finds the number of specimen box that are contained in storage.
 	 * 
-	 * @param isEmpty does it need to be empty ?
+	 * @param isEmpty    does it need to be empty ?
+	 * @param allowDirty will allow dirty (possibly out of date) results.
 	 * @return number of specimen box
 	 */
-	public int findNumSpecimenBoxes(boolean isEmpty) {
+	public int findNumSpecimenBoxes(boolean isEmpty, boolean allowDirty) {
 		int result = 0;
 		if (containedUnitIDs != null) {
 			for (Integer id : containedUnitIDs) {
@@ -1792,7 +1793,7 @@ public class Inventory implements Serializable {
 					if (isEmpty) {
 						Inventory inv = e.getInventory();
 						// It must be empty inside
-						if ((inv != null) && inv.isEmpty(false)) {
+						if ((inv != null) && inv.isEmpty(allowDirty)) {
 							result++;
 						}
 					}
@@ -1807,10 +1808,11 @@ public class Inventory implements Serializable {
 	/**
 	 * Finds the number of bags that are contained in storage.
 	 * 
-	 * @param isEmpty does it need to be empty ?
+	 * @param isEmpty    does it need to be empty ?
+	 * @param allowDirty will allow dirty (possibly out of date) results.
 	 * @return number of bags
 	 */
-	public int findNumBags(boolean isEmpty) {
+	public int findNumBags(boolean isEmpty, boolean allowDirty) {
 		int result = 0;
 		if (containedUnitIDs != null) {
 			for (Integer id : containedUnitIDs) {
@@ -1819,7 +1821,7 @@ public class Inventory implements Serializable {
 					if (isEmpty) {
 						Inventory inv = e.getInventory();
 						// It must be empty inside
-						if ((inv != null) && inv.isEmpty(false)) {
+						if ((inv != null) && inv.isEmpty(allowDirty)) {
 							result++;
 						}
 					}
@@ -1833,10 +1835,12 @@ public class Inventory implements Serializable {
 		
 	/**
 	 * Finds the number of EVA suits (may or may not have resources inside) that are contained in storage.
-	 * 
+	 *  
+	 * @param isEmpty    does it need to be empty ?
+	 * @param allowDirty will allow dirty (possibly out of date) results.
 	 * @return number of EVA suits
 	 */
-	public int findNumEVASuits(boolean isEmpty) {
+	public int findNumEVASuits(boolean isEmpty, boolean allowDirty) {
 		int result = 0;
 		if (containedUnitIDs != null) {
 			for (Integer id : containedUnitIDs) {
@@ -1845,7 +1849,7 @@ public class Inventory implements Serializable {
 					if (isEmpty) {
 						Inventory inv = e.getInventory();
 						// It must be empty inside
-						if ((inv != null) && inv.isEmpty(false)) {
+						if ((inv != null) && inv.isEmpty(allowDirty)) {
 							result++;
 						}
 					}

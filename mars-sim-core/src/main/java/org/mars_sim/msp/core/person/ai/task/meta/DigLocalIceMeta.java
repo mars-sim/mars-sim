@@ -89,13 +89,13 @@ public class DigLocalIceMeta implements MetaTask, Serializable {
             Inventory inv = settlement.getInventory();
 
             // Check at least one EVA suit at settlement.
-            int numSuits = inv.findNumEVASuits(false);
+            int numSuits = inv.findNumEVASuits(false, true);
             if (numSuits == 0) {
                 return 0;
             }
 
             // Check if at least one empty bag at settlement.
-            int numEmptyBags = inv.findNumBags(true);
+            int numEmptyBags = inv.findNumBags(true, true);
             if (numEmptyBags == 0) {
                 return 0;
             }

@@ -7,7 +7,7 @@ import java.util.Scanner;
 public class XML2HtmlConversion {
 
 	public XML2HtmlConversion() throws FileNotFoundException {
-	    String xmlFile = this.getClass().getResource("/docs/buildings.xml").toExternalForm();
+	    String xmlFile = this.getClass().getResource("/xml/buildings.xml").toExternalForm();
 //	    Scanner scanner = new Scanner(new File(xmlFile)).useDelimiter("\\Z");
 	    
 	    File f = new File(xmlFile);

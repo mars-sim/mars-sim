@@ -407,7 +407,7 @@ public abstract class RoverMission extends VehicleMission {
 						// Store one or two EVA suit for person (if possible).
 						int limit = RandomUtil.getRandomInt(1, 3);
 						while (numEVASuit <= limit) {
-							if (settlement.getInventory().findNumEVASuits(false) > 0) {
+							if (settlement.getInventory().findNumEVASuits(false, false) > 0) {
 								EVASuit suit = settlement.getInventory().findAnEVAsuit();
 								if (suit != null && v.getInventory().canStoreUnit(suit, false)) {
 									suit.transfer(settlement, v);
@@ -491,11 +491,6 @@ public abstract class RoverMission extends VehicleMission {
 					LogConsolidated.log(Level.FINER, 0, sourceName,
 							"[" + p.getLocationTag().getLocale() + "] " + p.getName() 
 							+ "'s body had been retrieved from rover " + v.getName() + ".");
-
-					// Initiate an rescue operation
-					// TODO: Gets a lead person to perform it and give him a rescue badge
-					rescueOperation(rover, p, disembarkSettlement);
-
 				}
 				
 				else {
@@ -504,9 +499,12 @@ public abstract class RoverMission extends VehicleMission {
 //					LogConsolidated.log(Level.INFO, 10_000, sourceName,
 //							"[" + p.getLocationTag().getLocale() + "] " + p.getName() 
 //							+ " came home safety on the rover "+ rover.getName() + ".");
-					
-					checkPersonStatus(rover, p, disembarkSettlement);
+
 				}
+				
+				// Initiate an rescue operation
+				// TODO: Gets a lead person to perform it and give him a rescue badge
+				rescueOperation(rover, p, disembarkSettlement);
 			}
 		}
 		
@@ -555,7 +553,9 @@ public abstract class RoverMission extends VehicleMission {
 				}
 			}
 		} else {
-			setPhaseEnded(true);
+			// TODO: Everyone needs to be unboarded
+			
+//			setPhaseEnded(true);
 		}
 	}
 
@@ -605,8 +605,6 @@ public abstract class RoverMission extends VehicleMission {
 				double hunger = p.getHunger(); // 0 to infinity
 
 				boolean hasStrength = fatigue < 1000 && perf > .4 && stress < 60 && energy > 750 && hunger < 1000;
-				
-				
 				
 				if (p.isInVehicle()) {// && p.getInventory().findNumUnitsOfClass(EVASuit.class) == 0) {
 					// Checks to see if the person has an EVA suit	

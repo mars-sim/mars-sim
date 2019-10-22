@@ -56,7 +56,7 @@ public class ExplorationMeta implements MetaMission {
 			
 			// 1. Check if there are enough specimen containers at the settlement for
 			// collecting rock samples.
-			if (settlement.getInventory().findNumSpecimenBoxes(true) < Exploration.REQUIRED_SPECIMEN_CONTAINERS) {
+			if (settlement.getInventory().findNumSpecimenBoxes(true, true) < Exploration.REQUIRED_SPECIMEN_CONTAINERS) {
 				return 0;
 			}
 			

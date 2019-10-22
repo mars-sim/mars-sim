@@ -325,13 +325,13 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	private double[] missionRange = new double[] {
 			500, // Areo
 			500, // Bio
-			1000, // CollectIce
-			1000, // CollectRegolith
-			1200, // Emergency
-			1000, // Exploration
+			500, // CollectIce
+			500, // CollectRegolith
+			1000, // Emergency
+			500, // Exploration
 			500, // Meteorology
-			1000, // Mining
-			1200, // RescueSalvageVehicle
+			500, // Mining
+			1000, // RescueSalvageVehicle
 			maxMssionRange, // Trade
 			maxMssionRange*2, // TravelToSettlement			
 	};

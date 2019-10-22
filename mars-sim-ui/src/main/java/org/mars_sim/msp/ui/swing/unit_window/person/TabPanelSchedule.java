@@ -170,7 +170,7 @@ public class TabPanelSchedule extends TabPanel {
 			shiftTF.setText(shiftCache.toString() + " : (" + start + " to " + end + ")");
 
 			shiftTF.setEditable(false);
-			shiftTF.setColumns(10);
+			shiftTF.setColumns(12);
 
 			shiftTF.setHorizontalAlignment(WebTextField.CENTER);
 			buttonPane.add(shiftTF);

@@ -1355,7 +1355,7 @@ public abstract class Mission implements Serializable {
 			logger.severe("Settlement is null");
 
 		else {
-			result = settlement.getInventory().findNumEVASuits(false);
+			result = settlement.getInventory().findNumEVASuits(false, false);
 
 			// Leave one suit for settlement use.
 			if (result > 0) {

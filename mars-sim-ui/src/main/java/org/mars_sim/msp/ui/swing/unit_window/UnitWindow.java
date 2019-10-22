@@ -485,7 +485,7 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 	public void update() {
 		// Update each of the tab panels.
 		for (TabPanel tabPanel : tabPanels) {
-			if (tabPanel.isVisible() && tabPanel.isShowing()) {
+			if (tabPanel.isVisible() && tabPanel.isShowing()) { // 
 				SwingUtilities.invokeLater(() -> 
 					tabPanel.update()
 				);

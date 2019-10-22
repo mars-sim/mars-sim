@@ -104,7 +104,7 @@ public class LoadVehicleEVAMeta implements MetaTask, Serializable {
 	
 	        // Check if any rovers are in need of EVA suits to allow occupants to exit.
 	        if (LoadVehicleEVA.getRoversNeedingEVASuits(settlement).size() > 0) {
-	            int numEVASuits = settlement.getInventory().findNumEVASuits(false);
+	            int numEVASuits = settlement.getInventory().findNumEVASuits(false, false);
 	            if (numEVASuits >= 2) {
 	                result += 100D;
 	            }
