@@ -14,6 +14,9 @@ import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
+import org.mars_sim.msp.core.person.ai.mission.EmergencySupply;
+import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
+import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.core.person.ai.task.ConsolidateContainers;
 import org.mars_sim.msp.core.person.ai.task.ConstructBuilding;
 import org.mars_sim.msp.core.person.ai.task.ManufactureConstructionMaterials;
@@ -58,15 +61,6 @@ implements Serializable {
 		
 		jobMissionStarts.add(BuildingSalvageMission.class);
 		jobMissionJoins.add(BuildingSalvageMission.class);
-		
-//		jobMissionStarts.add(TravelToSettlement.class);
-//		jobMissionJoins.add(TravelToSettlement.class);
-//		
-//		jobMissionStarts.add(RescueSalvageVehicle.class);
-//		jobMissionJoins.add(RescueSalvageVehicle.class);
-//		
-//		jobMissionStarts.add(EmergencySupplyMission.class);
-//		jobMissionJoins.add(EmergencySupplyMission.class);
 
 	}
 

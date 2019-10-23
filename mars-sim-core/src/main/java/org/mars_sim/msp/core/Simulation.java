@@ -1156,8 +1156,6 @@ public class Simulation implements ClockListener, Serializable {
 		Path destPath = null;
 		Path srcPath = null;
 
-		int missionSol = masterClock.getMarsClock().getMissionSol();
-		
 		// Use type to differentiate in what name/dir it is saved
 		if (type == SAVE_DEFAULT) {
 
@@ -1203,6 +1201,8 @@ public class Simulation implements ClockListener, Serializable {
 		}
 
 		else if (type == AUTOSAVE) {
+			int missionSol = masterClock.getMarsClock().getMissionSol();
+			
 			String autosaveFilename = lastSaveTimeStamp + "_Sol" + missionSol + "_r" + BUILD
 					+ SAVE_FILE_EXTENSION;
 			file = new File(AUTOSAVE_DIR, autosaveFilename);
@@ -1242,8 +1242,7 @@ public class Simulation implements ClockListener, Serializable {
             throws IOException {
 
 		// Replace gzip with xz compression (based on LZMA2)
-		// See (1)
-		// http://stackoverflow.com/questions/5481487/how-to-use-lzma-sdk-to-compress-decompress-in-java
+		// (1) http://stackoverflow.com/questions/5481487/how-to-use-lzma-sdk-to-compress-decompress-in-java
 		// (2) http://tukaani.org/xz/xz-javadoc/
 
 		// STEP 1: combine all objects into one single uncompressed file, namely

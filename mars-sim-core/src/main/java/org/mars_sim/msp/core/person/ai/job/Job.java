@@ -22,9 +22,11 @@ import org.mars_sim.msp.core.person.ai.mission.CollectRegolith;
 import org.mars_sim.msp.core.person.ai.mission.EmergencySupply;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
+import org.mars_sim.msp.core.person.ai.mission.Trade;
 import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.core.person.ai.task.DigLocalIce;
 import org.mars_sim.msp.core.person.ai.task.DigLocalRegolith;
+import org.mars_sim.msp.core.person.ai.task.PlanMission;
 import org.mars_sim.msp.core.person.ai.task.ReviewJobReassignment;
 import org.mars_sim.msp.core.person.ai.task.ReviewMissionPlan;
 import org.mars_sim.msp.core.person.ai.task.WriteReport;
@@ -70,6 +72,7 @@ public abstract class Job implements Serializable {
 	 */
 	public Job(Class<? extends Job> jobClass) {
 		this.jobClass = jobClass;
+		
 		jobTasks = new ArrayList<Class<?>>();
 		jobMissionStarts = new ArrayList<Class<?>>();
 		jobMissionJoins = new ArrayList<Class<?>>();
@@ -77,6 +80,7 @@ public abstract class Job implements Serializable {
 		// Every settler will need to tasks
 		jobTasks.add(DigLocalIce.class);
 		jobTasks.add(DigLocalRegolith.class);
+		jobTasks.add(PlanMission.class);
 		jobTasks.add(ReviewJobReassignment.class);
 		jobTasks.add(ReviewMissionPlan.class);
 		jobTasks.add(WriteReport.class);
@@ -97,6 +101,8 @@ public abstract class Job implements Serializable {
 		jobMissionJoins.add(CollectIce.class);
 
 		jobMissionJoins.add(CollectRegolith.class);
+		
+		jobMissionJoins.add(Trade.class);
 	}
 
 	/**

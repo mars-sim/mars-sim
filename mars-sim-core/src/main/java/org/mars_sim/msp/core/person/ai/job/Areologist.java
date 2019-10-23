@@ -16,12 +16,17 @@ import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.AreologyFieldStudy;
 import org.mars_sim.msp.core.person.ai.mission.BiologyFieldStudy;
+import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
+import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
 import org.mars_sim.msp.core.person.ai.mission.CollectIce;
 import org.mars_sim.msp.core.person.ai.mission.CollectRegolith;
+import org.mars_sim.msp.core.person.ai.mission.EmergencySupply;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
 import org.mars_sim.msp.core.person.ai.mission.Mining;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
+import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.core.person.ai.task.AssistScientificStudyResearcher;
 import org.mars_sim.msp.core.person.ai.task.CompileScientificStudyResults;
 import org.mars_sim.msp.core.person.ai.task.ConsolidateContainers;
@@ -63,7 +68,6 @@ public class Areologist extends Job implements Serializable {
 		// Use Job constructor
 		super(Areologist.class);
 
-
 		// Add areologist-related tasks.
 		jobTasks.add(StudyFieldSamples.class);
 
@@ -94,22 +98,13 @@ public class Areologist extends Job implements Serializable {
 		
 		jobMissionStarts.add(CollectRegolith.class);
 		jobMissionJoins.add(CollectRegolith.class);
-		
-//		jobMissionStarts.add(TravelToSettlement.class);
-//		jobMissionJoins.add(TravelToSettlement.class);
-//		
-//		jobMissionStarts.add(RescueSalvageVehicle.class);
-//		jobMissionJoins.add(RescueSalvageVehicle.class);
-		
+			
 		jobMissionStarts.add(Mining.class);
 		jobMissionJoins.add(Mining.class);
 		
-//		jobMissionJoins.add(BuildingConstructionMission.class);
+		jobMissionJoins.add(BuildingConstructionMission.class);
 //		
-//		jobMissionJoins.add(BuildingSalvageMission.class);
-
-//		jobMissionStarts.add(EmergencySupplyMission.class);
-//		jobMissionJoins.add(EmergencySupplyMission.class);
+		jobMissionJoins.add(BuildingSalvageMission.class);
 	}
 
 	/**

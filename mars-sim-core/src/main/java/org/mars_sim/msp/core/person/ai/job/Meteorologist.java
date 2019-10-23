@@ -77,14 +77,8 @@ public class Meteorologist extends Job implements Serializable {
 		jobMissionStarts.add(Exploration.class);
 		jobMissionJoins.add(Exploration.class);
 		
-//		jobMissionStarts.add(TravelToSettlement.class);
-//		jobMissionJoins.add(TravelToSettlement.class);
-//		jobMissionStarts.add(RescueSalvageVehicle.class);
-//		jobMissionJoins.add(RescueSalvageVehicle.class);
 //		jobMissionJoins.add(BuildingConstructionMission.class);
 //		jobMissionJoins.add(BuildingSalvageMission.class);
-//		jobMissionStarts.add(EmergencySupplyMission.class);
-//		jobMissionJoins.add(EmergencySupplyMission.class);
 	}
 
 	@Override

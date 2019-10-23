@@ -66,14 +66,9 @@ public class Technician extends Job implements Serializable {
 		// None
 
 		// Add engineer-related missions.
-//		jobMissionStarts.add(TravelToSettlement.class);
-//		jobMissionJoins.add(TravelToSettlement.class);
-//		jobMissionStarts.add(RescueSalvageVehicle.class);
-//		jobMissionJoins.add(RescueSalvageVehicle.class);
 //		jobMissionJoins.add(BuildingConstructionMission.class);
 //		jobMissionJoins.add(BuildingSalvageMission.class);
-//		jobMissionStarts.add(EmergencySupplyMission.class);
-//		jobMissionJoins.add(EmergencySupplyMission.class);
+
 	}
 
 	/**

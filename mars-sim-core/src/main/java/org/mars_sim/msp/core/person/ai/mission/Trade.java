@@ -237,7 +237,7 @@ public class Trade extends RoverMission implements Serializable {
 		addPhase(TRADE_EMBARKING);
 
 		// Set initial phase
-		setPhase(VehicleMission.APPROVAL);//.EMBARKING);
+		setPhase(VehicleMission.EMBARKING);
 		setPhaseDescription(Msg.getString("Mission.phase.approval.description"));//, getStartingSettlement().getName())); // $NON-NLS-1$
 		if (logger.isLoggable(Level.INFO)) {
 			MissionMember startingMember = (MissionMember) members.toArray()[0];

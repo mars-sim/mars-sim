@@ -14,8 +14,14 @@ import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.AreologyFieldStudy;
+import org.mars_sim.msp.core.person.ai.mission.BiologyFieldStudy;
+import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
+import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
+import org.mars_sim.msp.core.person.ai.mission.EmergencySupply;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
 import org.mars_sim.msp.core.person.ai.mission.Mining;
+import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
+import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.core.person.ai.task.AssistScientificStudyResearcher;
 import org.mars_sim.msp.core.person.ai.task.CompileScientificStudyResults;
 import org.mars_sim.msp.core.person.ai.task.ConsolidateContainers;
@@ -75,24 +81,19 @@ public class Astronomer extends Job implements Serializable {
 		jobMissionStarts.add(Exploration.class);
 		jobMissionJoins.add(Exploration.class);
 		
-		jobMissionStarts.add(AreologyFieldStudy.class);
+//		jobMissionStarts.add(AreologyFieldStudy.class);
 		jobMissionJoins.add(AreologyFieldStudy.class);
 		
-		jobMissionStarts.add(Mining.class);
+//		jobMissionStarts.add(BiologyFieldStudy.class);
+		jobMissionJoins.add(BiologyFieldStudy.class);
+		
+//		jobMissionStarts.add(Mining.class);
 		jobMissionJoins.add(Mining.class);
+				
+		jobMissionJoins.add(BuildingConstructionMission.class);
 		
-//		jobMissionStarts.add(TravelToSettlement.class);
-//		jobMissionJoins.add(TravelToSettlement.class);
+		jobMissionJoins.add(BuildingSalvageMission.class);
 		
-//		jobMissionStarts.add(RescueSalvageVehicle.class);
-//		jobMissionJoins.add(RescueSalvageVehicle.class);
-		
-//		jobMissionJoins.add(BuildingConstructionMission.class);
-//		
-//		jobMissionJoins.add(BuildingSalvageMission.class);
-		
-//		jobMissionStarts.add(EmergencySupplyMission.class);
-//		jobMissionJoins.add(EmergencySupplyMission.class);
 	}
 
 	@Override

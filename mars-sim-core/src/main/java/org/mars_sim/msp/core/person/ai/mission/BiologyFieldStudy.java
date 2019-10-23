@@ -196,7 +196,7 @@ public class BiologyFieldStudy extends RoverMission implements Serializable {
 		addPhase(RESEARCH_SITE);
 
 		// Set initial mission phase.
-		setPhase(VehicleMission.APPROVAL);//.EMBARKING);
+		setPhase(VehicleMission.EMBARKING);
 		setPhaseDescription(Msg.getString("Mission.phase.approval.description" //$NON-NLS-1$
 				, getStartingSettlement().getName()));
 

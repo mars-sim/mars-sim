@@ -245,7 +245,7 @@ public class EmergencySupply extends RoverMission implements Serializable {
 		addPhase(RETURN_TRIP_EMBARKING);
 
 		// Set initial phase
-		setPhase(VehicleMission.APPROVAL);//.EMBARKING);
+		setPhase(VehicleMission.EMBARKING);
 		setPhaseDescription(Msg.getString("Mission.phase.approval.description", getStartingSettlement().getName())); // $NON-NLS-1$
 		if (logger.isLoggable(Level.INFO)) {
 			Person startingPerson = (Person) members.toArray()[0];

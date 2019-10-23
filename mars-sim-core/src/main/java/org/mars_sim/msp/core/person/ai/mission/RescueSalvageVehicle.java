@@ -219,7 +219,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 		addPhase(RENDEZVOUS);
 
 		// Set initial phase
-		setPhase(VehicleMission.APPROVAL);// .EMBARKING);
+		setPhase(VehicleMission.EMBARKING);
 		setPhaseDescription(Msg.getString("Mission.phase.approval.description")); // $NON-NLS-1$
 
 		// Check if vehicle can carry enough supplies for the mission.

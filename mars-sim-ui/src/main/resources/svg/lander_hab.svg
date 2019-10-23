@@ -14,7 +14,7 @@
    inkscape:export-filename="/home/scud/Documents/msp/concept_art/lander_hab_color.png"
    version="1.0"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
-   sodipodi:docname="lander_hab.svg"
+   sodipodi:docname="lander_hab2.svg"
    inkscape:version="1.0beta1 (fe3e306, 2019-09-17)"
    sodipodi:version="0.32"
    id="svg2396"
@@ -68,7 +68,7 @@
     </linearGradient>
     <radialGradient
        gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(-0.1087551,1.2263264,1.2938297,0.1147415,209.63708,-242.29682)"
+       gradientTransform="matrix(-0.1087551,1.2263264,1.2938297,0.1147415,212.13875,-243.44624)"
        r="9.4972916"
        fy="93.1082"
        fx="295.45956"
@@ -79,7 +79,7 @@
        inkscape:collect="always" />
     <radialGradient
        gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(1.4881021,0.02657571,0.02141351,-1.1990457,-167.11822,233.04731)"
+       gradientTransform="matrix(1.4881021,0.02657571,0.02141351,-1.1990457,-169.21422,232.30357)"
        r="9.3880892"
        fy="93.485535"
        fx="337.68759"
@@ -90,7 +90,7 @@
        inkscape:collect="always" />
     <radialGradient
        gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(0.01624833,-1.1716506,-1.1461117,-0.01589417,485.43022,489.94556)"
+       gradientTransform="matrix(0.01624833,-1.1716506,-1.1461117,-0.01589417,483.80751,491.02736)"
        r="9.4417067"
        fy="134.02927"
        fx="336.77481"
@@ -105,7 +105,7 @@
        fx="293.59091"
        cy="134.23401"
        cx="293.59091"
-       gradientTransform="matrix(-1.1432233,0.01713534,0.01728499,1.1532927,630.65184,-66.402972)"
+       gradientTransform="matrix(-1.1432233,0.01713534,0.01728499,1.1532927,632.40977,-65.185942)"
        gradientUnits="userSpaceOnUse"
        id="radialGradient3319"
        xlink:href="#linearGradient3282"
@@ -141,7 +141,7 @@
      showgrid="true"
      inkscape:current-layer="layer1"
      inkscape:document-units="px"
-     inkscape:cy="40.379059"
+     inkscape:cy="32.941655"
      inkscape:cx="30.727527"
      inkscape:zoom="14.790108"
      inkscape:pageshadow="2"
@@ -195,25 +195,25 @@
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="ccc"
        id="path2415"
-       d="m 290.57301,122.70534 c 0,0 -7.4496,7.44028 0.4656,15.39499 8.15175,7.2566 15.05221,-0.57909 15.05221,-0.57909"
+       d="m 293.07468,121.55592 c 0,0 -7.4496,7.44028 0.4656,15.39499 8.15175,7.2566 15.05221,-0.57909 15.05221,-0.57909"
        style="display:inline;fill:url(#radialGradient3261);fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.299602px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
     <path
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="ccc"
        id="path2417"
-       d="m 329.69293,137.59531 c 0,0 7.44029,7.7831 15.395,-0.1321 7.2566,-8.15175 -0.57909,-14.94103 -0.57909,-14.94103"
+       d="m 327.59693,136.85157 c 0,0 7.44029,7.7831 15.395,-0.1321 7.2566,-8.15175 -0.57909,-14.94103 -0.57909,-14.94103"
        style="display:inline;fill:url(#radialGradient3270);fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.299602px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
     <path
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="ccc"
        id="path2419"
-       d="m 344.78505,100.77075 c 0,0 7.4496,-7.440292 -0.4656,-15.395002 -8.15175,-7.2566 -14.94104,0.69026 -14.94104,0.69026"
+       d="m 343.16234,101.85255 c 0,0 7.4496,-7.440288 -0.4656,-15.394998 -8.15175,-7.2566 -14.94104,0.69026 -14.94104,0.69026"
        style="display:inline;fill:url(#radialGradient3279);fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.299602px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
     <path
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="ccc"
        id="path2421"
-       d="m 305.84829,86.123308 c 0,0 -7.88496,-7.78311 -15.83968,0.13209 -7.25659,8.15175 0.9126,15.274552 0.9126,15.274552"
+       d="m 307.60622,87.340338 c 0,0 -7.88496,-7.78311 -15.83968,0.13209 -7.25659,8.15175 0.9126,15.274552 0.9126,15.274552"
        style="display:inline;fill:url(#radialGradient3319);fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.299602px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
   </g>
   <g

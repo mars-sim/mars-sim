@@ -37,6 +37,7 @@ import org.mars_sim.msp.core.person.ai.task.meta.PeerReviewStudyPaperMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.PerformLaboratoryExperimentMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.PerformLaboratoryResearchMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.PerformMathematicalModelingMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.PlanMissionMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.PlayHoloGameMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.PrepareDessertMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.PrescribeMedicationMeta;
@@ -219,6 +220,7 @@ public class MetaTaskUtil {
 			tasks.add(new PerformLaboratoryExperimentMeta());
 			tasks.add(new PerformLaboratoryResearchMeta());
 			tasks.add(new PerformMathematicalModelingMeta());
+			tasks.add(new PlanMissionMeta());
 			tasks.add(new PrepareDessertMeta());
 //	        tasks.add(new PrescribeMedicationMeta());
 			tasks.add(new ProduceFoodMeta());

@@ -222,7 +222,7 @@ public class Exploration extends RoverMission implements Serializable {
 		addPhase(EXPLORE_SITE);
 
 		// Set initial mission phase.
-		setPhase(VehicleMission.APPROVAL);//.EMBARKING);
+		setPhase(VehicleMission.EMBARKING);
 		setPhaseDescription(Msg.getString("Mission.phase.approval.description", startingSettlement.getName())); // $NON-NLS-1$
 
 		// Check if vehicle can carry enough supplies for the mission.

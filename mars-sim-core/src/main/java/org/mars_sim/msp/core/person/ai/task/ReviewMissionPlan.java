@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ReviewMissionPlan.java
-  * @version 3.1.0 2018-10-10
+ * @version 3.1.0 2018-10-10
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -86,7 +86,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 		// Use Task constructor.
 		super(NAME, person, true, false, STRESS_MODIFIER, true, 20D + RandomUtil.getRandomInt(0, 5));
 
-		logger.info(person + " was at ReviewMissionPlan.");
+//		logger.info(person + " was at ReviewMissionPlan.");
 		
 //		roleType = person.getRole().getType();
 		

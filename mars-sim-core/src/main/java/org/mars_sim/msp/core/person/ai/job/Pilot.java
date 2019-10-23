@@ -16,9 +16,12 @@ import org.mars_sim.msp.core.person.ai.mission.AreologyFieldStudy;
 import org.mars_sim.msp.core.person.ai.mission.BiologyFieldStudy;
 import org.mars_sim.msp.core.person.ai.mission.CollectIce;
 import org.mars_sim.msp.core.person.ai.mission.CollectRegolith;
+import org.mars_sim.msp.core.person.ai.mission.EmergencySupply;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
 import org.mars_sim.msp.core.person.ai.mission.Mining;
+import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.core.person.ai.mission.Trade;
+import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.core.person.ai.task.ConsolidateContainers;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
@@ -77,18 +80,18 @@ public class Pilot extends Job implements Serializable {
 		
 		jobMissionJoins.add(BiologyFieldStudy.class);
 		
-//		jobMissionStarts.add(TravelToSettlement.class);
-//		jobMissionJoins.add(TravelToSettlement.class);
-//		
-//		jobMissionStarts.add(RescueSalvageVehicle.class);
-//		jobMissionJoins.add(RescueSalvageVehicle.class);
-//		
+		jobMissionStarts.add(TravelToSettlement.class);
+		jobMissionJoins.add(TravelToSettlement.class);
+		
+		jobMissionStarts.add(RescueSalvageVehicle.class);
+		jobMissionJoins.add(RescueSalvageVehicle.class);
+		
 //		jobMissionJoins.add(BuildingConstructionMission.class);
-//		
+		
 //		jobMissionJoins.add(BuildingSalvageMission.class);
-//		
-//		jobMissionStarts.add(EmergencySupplyMission.class);
-//		jobMissionJoins.add(EmergencySupplyMission.class);
+		
+		jobMissionStarts.add(EmergencySupply.class);
+		jobMissionJoins.add(EmergencySupply.class);
 	}
 
 	/**

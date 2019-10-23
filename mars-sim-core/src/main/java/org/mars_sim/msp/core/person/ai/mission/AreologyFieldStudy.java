@@ -196,7 +196,7 @@ public class AreologyFieldStudy extends RoverMission implements Serializable {
 		addPhase(RESEARCH_SITE);
 
 		// Set initial mission phase.
-		setPhase(VehicleMission.APPROVAL);//.EMBARKING);
+		setPhase(VehicleMission.EMBARKING);
 		setPhaseDescription(Msg.getString("Mission.phase.approval.description", getStartingSettlement().getName())); // $NON-NLS-1$
 		
 		// Check if vehicle can carry enough supplies for the mission.

@@ -53,14 +53,10 @@ public class Trader extends Job implements Serializable {
 		// Add trader-related missions.
 		jobMissionStarts.add(Trade.class);
 		jobMissionJoins.add(Trade.class);
-//		jobMissionStarts.add(TravelToSettlement.class);
-//		jobMissionJoins.add(TravelToSettlement.class);
-//		jobMissionStarts.add(RescueSalvageVehicle.class);
-//		jobMissionJoins.add(RescueSalvageVehicle.class);
+
 //		jobMissionJoins.add(BuildingConstructionMission.class);
 //		jobMissionJoins.add(BuildingSalvageMission.class);
-//		jobMissionStarts.add(EmergencySupplyMission.class);
-//		jobMissionJoins.add(EmergencySupplyMission.class);
+
 	}
 
 	/**

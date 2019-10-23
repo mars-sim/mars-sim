@@ -165,7 +165,7 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 		}
 
 		// Set initial phase
-		setPhase(VehicleMission.APPROVAL);//.EMBARKING);
+		setPhase(VehicleMission.EMBARKING);
 		setPhaseDescription(Msg.getString("Mission.phase.approval.description"));//, getStartingSettlement().getName())); // $NON-NLS-1$
 
 		// Check if vehicle can carry enough supplies for the mission.

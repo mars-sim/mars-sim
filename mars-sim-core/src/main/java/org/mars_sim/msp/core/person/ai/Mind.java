@@ -245,33 +245,34 @@ public class Mind implements Serializable {
 				mission = null;
 			}
 
-			boolean hasAMission = hasAMission();
-//			if (hasAMission)
-//				logger.info(person + " had the " + mission + " mission");;
-			
+//			boolean hasAMission = hasAMission();
+////			if (hasAMission)
+////				logger.info(person + " had the " + mission + " mission");;
+//			
 			boolean hasActiveMission = hasActiveMission();
 
-			boolean overrideMission = false;
-
-			// Check if mission creation at settlement (if any) is overridden.
-			overrideMission = person.getAssociatedSettlement().getMissionCreationOverride();
-
-			// Check if it's within the mission request window 
-			// Within 50 millisols at the start of the work shift
-			boolean isInMissionWindow = taskManager.getTaskSchedule().isAtStartOfWorkShift();
-		
+//			boolean overrideMission = false;
+//
+//			// Check if mission creation at settlement (if any) is overridden.
+//			overrideMission = person.getAssociatedSettlement().getMissionCreationOverride();
+//
+//			// Check if it's within the mission request window 
+//			// Within 50 millisols at the start of the work shift
+//			boolean isInMissionWindow = taskManager.getTaskSchedule().isAtStartOfWorkShift();
+//		
 			if (hasActiveMission) {
 //				logger.info(person + " was to perform the " + mission + " mission");
 				mission.performMission(person);
 			}
-			// See if this person can ask for a mission
-			boolean newMission = !hasActiveMission && !hasAMission && !overrideMission && isInMissionWindow;
+			
+//			// See if this person can ask for a mission
+//			boolean newMission = !hasActiveMission && !hasAMission && !overrideMission && isInMissionWindow;
 //			if (hasActiveMission)
 //				System.out.println(person + "'s needMission is " + needMission);
 			// A person has no active task
 //			if (!taskManager.hasActiveTask()) {
 				try {
-					getNewAction(true, newMission);
+					getNewAction(true, false);
 				} catch (Exception e) {
 					LogConsolidated.log(Level.SEVERE, 5_000, sourceName,
 							person.getName() + " could not get new action", e);
@@ -281,6 +282,31 @@ public class Mind implements Serializable {
 		}
 	}
 
+	/**
+	 * Checks if a person can start a new mission
+	 * 
+	 * @return
+	 */
+	public boolean canStartNewMission() {
+		boolean hasAMission = hasAMission();
+//		if (hasAMission)
+//			logger.info(person + " had the " + mission + " mission");;
+		
+		boolean hasActiveMission = hasActiveMission();
+
+		boolean overrideMission = false;
+
+		// Check if mission creation at settlement (if any) is overridden.
+		overrideMission = person.getAssociatedSettlement().getMissionCreationOverride();
+
+		// Check if it's within the mission request window 
+		// Within 50 millisols at the start of the work shift
+		boolean isInMissionWindow = taskManager.getTaskSchedule().isAtStartOfWorkShift();
+
+		// See if this person can ask for a mission
+		return !hasActiveMission && !hasAMission && !overrideMission && isInMissionWindow;
+	}
+	
 	/**
 	 * Reassign the person's job.
 	 * 

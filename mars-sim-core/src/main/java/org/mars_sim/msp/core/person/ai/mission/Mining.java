@@ -252,7 +252,7 @@ public class Mining extends RoverMission {
 		addPhase(MINING_SITE);
 
 		// Set initial mission phase.
-		setPhase(VehicleMission.APPROVAL);//.EMBARKING);
+		setPhase(VehicleMission.EMBARKING);
 		setPhaseDescription(Msg.getString("Mission.phase.approval.description"));//, getStartingSettlement().getName())); // $NON-NLS-1$
 	}
 

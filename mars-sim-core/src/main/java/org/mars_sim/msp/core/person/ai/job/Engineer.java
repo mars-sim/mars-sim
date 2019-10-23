@@ -75,18 +75,10 @@ public class Engineer extends Job implements Serializable {
 		jobTasks.add(ConsolidateContainers.class);
 
 		// Add engineer-related missions.
-		jobMissionStarts.add(TravelToSettlement.class);
-		jobMissionJoins.add(TravelToSettlement.class);
-		
-		jobMissionStarts.add(RescueSalvageVehicle.class);
-		jobMissionJoins.add(RescueSalvageVehicle.class);
-		
 		jobMissionJoins.add(BuildingConstructionMission.class);
 		
 		jobMissionJoins.add(BuildingSalvageMission.class);
-		
-		jobMissionStarts.add(EmergencySupply.class);
-		jobMissionJoins.add(EmergencySupply.class);
+
 	}
 
 	/**

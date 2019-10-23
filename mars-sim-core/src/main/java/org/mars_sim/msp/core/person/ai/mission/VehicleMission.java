@@ -69,6 +69,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	
 	/** True if vehicle's emergency beacon has been turned on */
 	// private boolean isBeaconOn = false;
+	/** True if a person is submitting the mission plan request. */
+	private boolean isRequestSubmitted;
 	/** True if vehicle has been loaded. */
 	protected boolean loadedFlag = false;
 	/** Vehicle traveled distance at start of mission. */
@@ -584,13 +586,18 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			endMission();
 		}
 	}
+	
+	public void submitMissionPlan() {
+		isRequestSubmitted = true;
+	}
 
 	@Override
 	protected void performPhase(MissionMember member) {
 //		logger.info(getStartingMember() + " was at the '" + getPhase() + "' phase at performPhase().");
 		super.performPhase(member);
 		if (APPROVAL.equals(getPhase())) {
-			requestApprovalPhase(member);
+			if (isRequestSubmitted)
+				requestApprovalPhase(member);
 		}
 		else if (EMBARKING.equals(getPhase())) {
 			createDateEmbarked();

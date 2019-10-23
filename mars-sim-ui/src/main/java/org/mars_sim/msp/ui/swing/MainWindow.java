@@ -16,7 +16,6 @@ import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -29,6 +28,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -39,6 +39,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
@@ -238,8 +239,31 @@ extends JComponent {
 		// Set the icon image for the frame.
 		ImageIcon icon = new ImageIcon(CrewEditor.class.getResource(MainWindow.ICON_IMAGE));
 		frame.setIconImage(iconToImage(icon));
+	
+		// Set up the main pane
+		mainPane = new WebPanel(new BorderLayout());
+		frame.add(mainPane);
+		
+		// Set up the glassy wait layer for pausing
+//		jlayer = new JLayer<>(mainPane, layerUI);
+//		frame.add(jlayer);
+		
+		// Add main pane
+		mainPane.add(desktop, BorderLayout.CENTER);
 
-//		// Set up the ESC key for pausing 
+		// TODO: it doesn't work.
+		// Set up the ESC key for pausing 
+//		getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "pause");
+//		getActionMap().put("pause", new AbstractAction() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//            	if (masterClock == null)
+//        			masterClock = sim.getMasterClock();
+//        		System.out.println(masterClock);
+//        		masterClock.setPaused(!masterClock.isPaused(), true);
+//            }
+//        });
+        
 		// TODO: it doesn't work.
 //		frame.addKeyListener(new KeyAdapter() {
 //            public void keyPressed(KeyEvent ke) {  // handler
@@ -257,18 +281,7 @@ extends JComponent {
 //            	}
 //           } 
 //        });
-				
-		// Set up the main pane
-		mainPane = new WebPanel(new BorderLayout());
-		frame.add(mainPane);
 		
-		// Set up the glassy wait layer for pausing
-//		jlayer = new JLayer<>(mainPane, layerUI);
-//		frame.add(jlayer);
-		
-		// Add main pane
-		mainPane.add(desktop, BorderLayout.CENTER);
-
 		// Prepare tool toolbar
 		toolToolbar = new ToolToolBar(this);
 		mainPane.add(toolToolbar, BorderLayout.NORTH);

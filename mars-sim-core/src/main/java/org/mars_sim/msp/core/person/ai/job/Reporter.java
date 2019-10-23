@@ -50,16 +50,13 @@ public class Reporter extends Job implements Serializable {
 		// Add side tasks
 		jobTasks.add(ConsolidateContainers.class);
 
-		// Add Manager-related missions.
+		// Add reporter-related missions.
 		jobMissionStarts.add(Trade.class);
 		jobMissionJoins.add(Trade.class);
 		jobMissionStarts.add(TravelToSettlement.class);
 		jobMissionJoins.add(TravelToSettlement.class);
 
 		// Add missions
-//		jobMissionStarts.add(RescueSalvageVehicle.class);
-//		jobMissionJoins.add(RescueSalvageVehicle.class);
-
 	}
 
 	/**

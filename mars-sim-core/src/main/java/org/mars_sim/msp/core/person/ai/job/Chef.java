@@ -16,6 +16,9 @@ import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
+import org.mars_sim.msp.core.person.ai.mission.EmergencySupply;
+import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
+import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.core.person.ai.task.ConsolidateContainers;
 import org.mars_sim.msp.core.person.ai.task.CookMeal;
 import org.mars_sim.msp.core.person.ai.task.PrepareDessert;
@@ -53,18 +56,10 @@ public class Chef extends Job implements Serializable {
 		jobTasks.add(ConsolidateContainers.class);
 
 		// Add chef-related missions.
-//		jobMissionStarts.add(TravelToSettlement.class);
-//		jobMissionJoins.add(TravelToSettlement.class);
-		
-//		jobMissionStarts.add(RescueSalvageVehicle.class);
-//		jobMissionJoins.add(RescueSalvageVehicle.class);
-		
 		jobMissionJoins.add(BuildingConstructionMission.class);
 		
 		jobMissionJoins.add(BuildingSalvageMission.class);
-		
-//		jobMissionStarts.add(EmergencySupplyMission.class);
-//		jobMissionJoins.add(EmergencySupplyMission.class);
+
 	}
 
 	/**
