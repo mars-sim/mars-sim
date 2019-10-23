@@ -7,6 +7,13 @@
 
 package org.mars_sim.msp.core.malfunction;
 
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
@@ -17,13 +24,6 @@ import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.building.function.Storage;
 import org.mars_sim.msp.core.tool.RandomUtil;
-
-import java.io.Serializable;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * The Malfunction class represents a malfunction in a vehicle, structure or
@@ -585,6 +585,31 @@ public class Malfunction implements Serializable {
 		return mostTraumatized;
 	}
 
+	public int getIncidentNum() {
+		return incidentNum;
+	}
+	
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (obj == null) return false;
+		if (this.getClass() != obj.getClass()) return false;
+		Malfunction m = (Malfunction) obj;
+		return this.incidentNum == m.getIncidentNum()
+				&& this.name == m.getName();
+	}
+
+	/**
+	 * Gets the hash code for this object.
+	 * 
+	 * @return hash code.
+	 */
+	public int hashCode() {
+		int hashCode = (int)(1 + incidentNum);
+		hashCode *= (int)(1 + severity);
+		hashCode *= (1 + name.hashCode());
+		return hashCode;
+	}
+	
 	/**
 	 * Reloads instances after loading from a saved sim
 	 * 

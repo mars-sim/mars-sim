@@ -1420,8 +1420,8 @@ public abstract class Mission implements Serializable {
 
 				// Set the members' work shift to on-call to get ready
 				for (MissionMember m : members) {
-					Person pp = (Person) m;
-					pp.setShiftType(ShiftType.ON_CALL);
+//					Person pp = (Person) m;
+					 ((Person) m).setShiftType(ShiftType.ON_CALL);
 				}
 				
 				setPhaseEnded(true);
@@ -1532,6 +1532,28 @@ public abstract class Mission implements Serializable {
 			LogConsolidated.log(Level.WARNING, 10_000, sourceName, "[" + startingMember.getAssociatedSettlement() + "] "
 					+ startingMember.getName() + "'s "
 					+ this + " has already been tagged with '" + status.getName() + "'");
+	}
+	
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (obj == null) return false;
+		if (this.getClass() != obj.getClass()) return false;
+		Mission m = (Mission) obj;
+		return this.missionType == m.getMissionType()
+				&& this.startingMember.equals(m.getStartingMember())
+				&& this.identifier == m.getIdentifier();
+	}
+
+	/**
+	 * Gets the hash code for this object.
+	 * 
+	 * @return hash code.
+	 */
+	public int hashCode() {
+		int hashCode = (int)(1 + identifier);
+		hashCode *= missionType.hashCode();
+		hashCode *= startingMember.hashCode();
+		return hashCode;
 	}
 	
 	/**

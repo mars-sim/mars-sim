@@ -33,7 +33,7 @@ public class ProposeScientificStudyMeta implements MetaTask, Serializable {
     /** default serial id. */
     private static final long serialVersionUID = 1L;
     
-    private static final double FACTOR = 3D;
+    private static final double FACTOR = 1.2D;
     
     /** Task name */
     private static final String NAME = Msg.getString(

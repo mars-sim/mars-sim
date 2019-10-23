@@ -62,14 +62,12 @@ public class PlanMissionMeta implements MetaTask, Serializable {
             double stress = condition.getStress();
             double hunger = condition.getHunger();
             
-            result = 10.0 / (fatigue + 1) / (stress + 1) / (hunger + 1);
+            if (fatigue > 1000 || stress > 75 || hunger > 750)
+            	return 0;
+            
+            result = 100.0 * (1/(fatigue + 1) + 1/(stress + 1) + 1/(hunger + 1));
 
-
-    		
-//            if (fatigue > 1000 || stress > 75 || hunger > 750)
-//            	result = 0.01;
- 
-            if (result > .1D) {
+            if (result > 1) {
             	 
                 // Get an available office space.
                 Building building = Administration.getAvailableOffice(person);
@@ -96,7 +94,7 @@ public class PlanMissionMeta implements MetaTask, Serializable {
         }
 
 //      if (result > 0) 
-//  		logger.info(person + " (" + person.getRole().getType() + ") was at PlanMissionMeta : " + result);
+//  			logger.info(person + " (" + person.getRole().getType() + ") was at PlanMissionMeta : " + Math.round(result*100.0)/100.0);
 
         return result;
     }

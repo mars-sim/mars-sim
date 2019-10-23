@@ -26,6 +26,7 @@ import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskManager;
+import org.mars_sim.msp.core.person.ai.task.utils.TaskSchedule;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.MathUtils;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -270,15 +271,13 @@ public class Mind implements Serializable {
 //			if (hasActiveMission)
 //				System.out.println(person + "'s needMission is " + needMission);
 			// A person has no active task
-//			if (!taskManager.hasActiveTask()) {
-				try {
-					getNewAction(true, false);
-				} catch (Exception e) {
-					LogConsolidated.log(Level.SEVERE, 5_000, sourceName,
-							person.getName() + " could not get new action", e);
-					e.printStackTrace(System.err);
-				}
-//			}
+			try {
+				getNewAction(true, false);
+			} catch (Exception e) {
+				LogConsolidated.log(Level.SEVERE, 5_000, sourceName,
+						person.getName() + " could not get new action", e);
+				e.printStackTrace(System.err);
+			}
 		}
 	}
 
@@ -300,8 +299,8 @@ public class Mind implements Serializable {
 		overrideMission = person.getAssociatedSettlement().getMissionCreationOverride();
 
 		// Check if it's within the mission request window 
-		// Within 50 millisols at the start of the work shift
-		boolean isInMissionWindow = taskManager.getTaskSchedule().isAtStartOfWorkShift();
+		// Within 100 millisols at the start of the work shift
+		boolean isInMissionWindow = taskManager.getTaskSchedule().isPersonAtStartOfWorkShift(TaskSchedule.MISSION_WINDOW);
 
 		// See if this person can ask for a mission
 		return !hasActiveMission && !hasAMission && !overrideMission && isInMissionWindow;

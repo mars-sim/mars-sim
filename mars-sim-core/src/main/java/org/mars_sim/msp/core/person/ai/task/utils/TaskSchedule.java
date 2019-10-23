@@ -678,76 +678,72 @@ public class TaskSchedule implements Serializable {
 		return result;
 	}
 
-	/*
-	 * Checks if a person is on shift
+	/**
+	 * Checks if a person is at the beginning (within the mission window) of his work shift
 	 * 
-	 * @param time in millisols
-	 * 
+	 * @param missionWindow in millisols
 	 * @return true or false
 	 */
-	public boolean isAtStartOfWorkShift() {
-		boolean result = false;
+	public boolean isPersonAtStartOfWorkShift(int missionWindow) {
 		int millisols = startTime;
 
 		if (currentShiftType == ShiftType.ON_CALL) {
-			return isAtStartOfAShift();
+			return isTimeAtStartOfAShift(missionWindow);
 		}
 		
-		else if (currentShiftType == ShiftType.A) {
-			if (millisols == 1000 || (millisols >= A_START && millisols <= A_START + MISSION_WINDOW))
-				result = true;
+		if (currentShiftType == ShiftType.A) {
+			if (millisols == 1000 || (millisols >= A_START && millisols <= A_START + missionWindow))
+				return true;
 		}
 
-		else if (currentShiftType == ShiftType.B) {
-			if (millisols >= B_START && millisols <= B_START + MISSION_WINDOW)
-				result = true;
+		if (currentShiftType == ShiftType.B) {
+			if (millisols >= B_START && millisols <= B_START + missionWindow)
+				return true;
 		}
 
-		else if (currentShiftType == ShiftType.X) {
-			if (millisols == 1000 || (millisols >= X_START && millisols <= X_START + MISSION_WINDOW))
-				result = true;
+		if (currentShiftType == ShiftType.X) {
+			if (millisols == 1000 || (millisols >= X_START && millisols <= X_START + missionWindow))
+				return true;
 		}
 
-		else if (currentShiftType == ShiftType.Y) {
-			if (millisols >= Y_START && millisols <= Y_START + MISSION_WINDOW)
-				result = true;
+		if (currentShiftType == ShiftType.Y) {
+			if (millisols >= Y_START && millisols <= Y_START + missionWindow)
+				return true;
 		}
 
-		else if (currentShiftType == ShiftType.Z) {
-			if (millisols >= Z_START && millisols <= Z_START + MISSION_WINDOW)
-				result = true;
+		if (currentShiftType == ShiftType.Z) {
+			if (millisols >= Z_START && millisols <= Z_START + missionWindow)
+				return true;
 		}
 
-		return result;
+		return false;
 	}
 	
-	/*
-	 * Checks if a person is on shift
+	/**
+	 * Checks if the time now is at the beginning (within mission window) of a work shift
 	 * 
-	 * @param time in millisols
-	 * 
+	 * @param missionWindow in millisols
 	 * @return true or false
 	 */
-	public boolean isAtStartOfAShift() {
+	public boolean isTimeAtStartOfAShift(int missionWindow) {
 		int millisols = startTime;
-		boolean result = false;
-	
-		if ((millisols == 1000 || millisols >= A_START) && millisols <= A_START + MISSION_WINDOW)
-			result = true;
 
-		else if (millisols >= B_START && millisols <= B_START + MISSION_WINDOW)
-				result = true;
+		if ((millisols == 1000 || millisols >= A_START) && millisols <= A_START + missionWindow)
+			return true;
 
-		else if ((millisols == 1000 || millisols >= X_START) && millisols <= X_START + MISSION_WINDOW)
-				result = true;
+		if (millisols >= B_START && millisols <= B_START + missionWindow)
+			return true;
 
-		else if (millisols >= Y_START && millisols <= Y_START + MISSION_WINDOW)
-				result = true;
+		if ((millisols == 1000 || millisols >= X_START) && millisols <= X_START + missionWindow)
+			return true;
 
-		else if (millisols >= Z_START && millisols <= Z_START + MISSION_WINDOW)
-				result = true;
+		if (millisols >= Y_START && millisols <= Y_START + missionWindow)
+			return true;
 
-		return result;
+		if (millisols >= Z_START && millisols <= Z_START + missionWindow)
+			return true;
+
+		return false;
 	}
 	
 	/**

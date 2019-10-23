@@ -62,7 +62,7 @@ public class RelaxMeta implements MetaTask, Serializable {
             
             double pref = person.getPreference().getPreferenceScore(this);
             
-          	result *= pref/3D;
+          	result = result + result * pref/3D;
             if (result < 0) result = 0;
             
             if (fatigue > 1500 || stress > 75 || hunger > 750)
