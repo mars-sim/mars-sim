@@ -7,9 +7,6 @@
 
 package org.mars_sim.msp.ui.swing;
 
-import org.mars_sim.msp.core.Unit;
-
-import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -25,18 +22,16 @@ import java.util.List;
 import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.JToolBar;
-import javax.swing.border.BevelBorder;
+
+import org.mars_sim.msp.core.Unit;
 
 /**
  * The UnitToolBar class is a UI toolbar for holding unit buttons. There should
  * only be one instance and it is contained in the MainWindow instance.
  */
-// public class UnitToolBar extends TransparentToolBar implements ActionListener
-// {
+@SuppressWarnings("serial")
 public class UnitToolBar extends JToolBar implements ActionListener {
 
-	private static final long serialVersionUID = 1L;
-	
 	public static final int HEIGHT = 57;
 	
 	private static final Color antiqueBronze = new Color(102,93,30,128);

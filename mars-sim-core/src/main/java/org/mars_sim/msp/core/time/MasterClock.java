@@ -1342,9 +1342,7 @@ public class MasterClock implements Serializable {
 				AutosaveScheduler.cancel();
 				System.exit(0);
 			}
-
 		}
-
 	}
 
 	public double getTime() {

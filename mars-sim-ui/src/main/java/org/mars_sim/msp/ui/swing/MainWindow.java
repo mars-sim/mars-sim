@@ -222,6 +222,7 @@ extends JComponent {
 	/**
 	 * Initializes UI elements for the frame
 	 */
+	@SuppressWarnings("serial")
 	public void init() {
 			
 		frame.addWindowListener(new WindowAdapter() {
@@ -238,21 +239,24 @@ extends JComponent {
 		ImageIcon icon = new ImageIcon(CrewEditor.class.getResource(MainWindow.ICON_IMAGE));
 		frame.setIconImage(iconToImage(icon));
 
-		// Set up the ESC key for pausing 
-		frame.addKeyListener(new KeyAdapter() {
-            public void keyPressed(KeyEvent ke) {  // handler
-            	if (ke.getKeyCode() == KeyEvent.VK_ESCAPE) {
-            		if (masterClock == null)
-            			masterClock = sim.getMasterClock();
-            		if (masterClock.isPaused()) {
-    					masterClock.setPaused(false, false);
-    				}
-    				else {
-    					masterClock.setPaused(true, false);
-    				}
-            	}
-           } 
-        });
+//		// Set up the ESC key for pausing 
+		// TODO: it doesn't work.
+//		frame.addKeyListener(new KeyAdapter() {
+//            public void keyPressed(KeyEvent ke) {  // handler
+//            	if (ke.getKeyCode() == KeyEvent.VK_ESCAPE) {
+//            		if (masterClock == null)
+//            			masterClock = sim.getMasterClock();
+////            		if (masterClock.isPaused()) {
+////    					masterClock.setPaused(false, false);
+////    				}
+////    				else {
+////    					masterClock.setPaused(true, false);
+////    				}
+//            		System.out.println(masterClock);
+//            		masterClock.setPaused(!masterClock.isPaused(), true);
+//            	}
+//           } 
+//        });
 				
 		// Set up the main pane
 		mainPane = new WebPanel(new BorderLayout());
@@ -274,8 +278,6 @@ extends JComponent {
 
 		// Prepare unit toolbar
 		unitToolbar = new UnitToolBar(this) {
-			private static final long serialVersionUID = 1L;
-
 			@Override
 			protected JButton createActionComponent(Action a) {
 				JButton jb = super.createActionComponent(a);
@@ -559,17 +561,17 @@ extends JComponent {
 	}
 
 	/**
-	 * Save the current simulation. This displays a FileChooser to select the
-	 * location to save the simulation if the default is not to be used.
+	 * Saves the current simulation.
 	 * 
-	 * @param loadingDefault Should the user be allowed to override location?
+	 * @param defaultFile is the default.sim file be used
+	 * @param isAutosave
 	 */
-	public void saveSimulation(boolean loadingDefault, final boolean isAutosave) {
+	public void saveSimulation(boolean defaultFile, final boolean isAutosave) {
 //		if ((saveSimThread == null) || !saveSimThread.isAlive()) {
 //			saveSimThread = new Thread(Msg.getString("MainWindow.thread.saveSim")) { //$NON-NLS-1$
 //				@Override
 //				public void run() {
-		saveSimulationProcess(loadingDefault, isAutosave);
+		saveSimulationProcess(defaultFile, isAutosave);
 //				}
 //			};
 //			saveSimThread.start();
@@ -583,16 +585,20 @@ extends JComponent {
 
 	/**
 	 * Performs the process of saving a simulation.
+	 * Note: if defaultFile is false, displays a FileChooser to select the
+	 * location and new filename to save the simulation.
+	 * 
+	 * @param defaultFile is the default.sim file be used
+	 * @param isAutosave
 	 */
-	private void saveSimulationProcess(boolean loadingDefault, boolean isAutosave) {
+	private void saveSimulationProcess(boolean defaultFile, boolean isAutosave) {
 //		logger.config("saveSimulationProcess() is on " + Thread.currentThread().getName());
-		if (masterClock == null)
-			masterClock = sim.getMasterClock();
-		if (masterClock.isPaused()) {
-			logger.config("Cannot save when the simulation is on pause.");
-		}
-
-		else {
+//		if (masterClock == null)
+//			masterClock = sim.getMasterClock();
+//		if (masterClock.isPaused()) {
+//			logger.config("Cannot save when the simulation is on pause.");
+//		}
+//		else {
 
 			if (isAutosave) {
 //				SwingUtilities.invokeLater(() -> {
@@ -611,7 +617,7 @@ extends JComponent {
 					desktop.openAnnouncementWindow("  " + Msg.getString("MainWindow.savingSim") + "  "); //$NON-NLS-1$
 //				});
 
-				if (!loadingDefault) {
+				if (!defaultFile) {
 					JFileChooser chooser = new JFileChooser(Simulation.SAVE_DIR);
 					chooser.setDialogTitle(Msg.getString("MainWindow.dialogSaveSim")); //$NON-NLS-1$
 					if (chooser.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {
@@ -645,28 +651,16 @@ extends JComponent {
 				}
 				// do something here
 			}
-
-//			try {
-//				
-//				// Save the current main window ui config
-//	//			UIConfig.INSTANCE.saveFile(this);
-//		
-//				while (keepSleeping && masterClock.isSavingSimulation())
-//					TimeUnit.MILLISECONDS.sleep(100L);
-//	
-//			} catch (Exception e) {
-//				logger.log(Level.SEVERE, Msg.getString("MainWindow.log.sleepInterrupt") + e); //$NON-NLS-1$
-//				e.printStackTrace(System.err);
-//			}
-
-//	        
+			
+				// Save the current main window ui config
+				UIConfig.INSTANCE.saveFile(this);
 
 //			SwingUtilities.invokeLater(() -> {
 				desktop.disposeAnnouncementWindow();
 //			});
 			
 //			layerUI.stop();
-		}
+//		}
 	}
 
 	public void stopSleeping() {

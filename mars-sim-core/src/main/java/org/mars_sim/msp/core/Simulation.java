@@ -1138,8 +1138,12 @@ public class Simulation implements ClockListener, Serializable {
 	 */
 	public synchronized void saveSimulation(int type, File file) throws IOException {
 //		logger.config("saveSimulation(" + type + ", " + file + ")");
+		// Checks to see if the simulation is on pause
+		boolean isPause = masterClock.isPaused();
+		
 		Simulation sim = instance();
-		sim.halt();
+		// Stops the master clock and removes the Simulation clock listener
+		sim.halt(isPause);
 
 		// Experiment with saving in JSON format
 //		writeJSON();
@@ -1214,8 +1218,8 @@ public class Simulation implements ClockListener, Serializable {
 		// Serialize the file
 		serialize(type, file, srcPath, destPath);
 		
-		sim.proceed();
-
+		// Restarts the master clock and adds back the Simulation clock listener
+		sim.proceed(isPause);
 	}
 
 	/**
@@ -1576,23 +1580,27 @@ public class Simulation implements ClockListener, Serializable {
 	}
 
 	/*
-	 * Stops and removes the master clock and pauses the simulation
+	 * Stops the master clock and removes the Simulation clock listener 
+	 * 
+	 * @param isPause has it been on pause ?
 	 */
-	public void halt() {
+	public void halt(boolean isPause) {
 		if (masterClock != null) {
 			masterClock.stop();
-			masterClock.setPaused(true, false);
+			if (!isPause) masterClock.setPaused(true, false);
 			masterClock.removeClockListener(this);
 		}
 	}
 
 	/*
-	 * Adds and starts the master clock and unpauses the simulation
+	 * Restarts the master clock and adds back the Simulation clock listener
+	 * 
+	 * @param isPause has it been on pause ?
 	 */
-	public void proceed() {
+	public void proceed(boolean isPause) {
 		if (masterClock != null) {
 			masterClock.addClockListener(this);
-			masterClock.setPaused(false, false);
+			if (!isPause) masterClock.setPaused(false, false);
 			masterClock.restart();
 		}
 	}

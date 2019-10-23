@@ -9,10 +9,8 @@ package org.mars_sim.msp.ui.swing.unit_window.person;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
@@ -35,7 +33,6 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
-
 
 /**
  * The TabPanelAttribute is a tab panel for the natural attributes of a person.
