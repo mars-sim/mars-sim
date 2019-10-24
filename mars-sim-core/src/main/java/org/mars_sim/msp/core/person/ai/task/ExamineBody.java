@@ -19,6 +19,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -28,6 +29,7 @@ import org.mars_sim.msp.core.person.health.DeathInfo;
 import org.mars_sim.msp.core.person.health.HealthProblem;
 import org.mars_sim.msp.core.person.health.MedicalAid;
 import org.mars_sim.msp.core.person.health.MedicalEvent;
+import org.mars_sim.msp.core.person.health.MedicalManager;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.MedicalCare;
@@ -55,9 +57,9 @@ public class ExamineBody extends Task implements Serializable {
 	private static final String NAME = Msg.getString("Task.description.examineBody"); //$NON-NLS-1$
 
 	/** Task phases. */
-	private static final TaskPhase EXAMINING = new TaskPhase(Msg.getString("Task.phase.examiningBody")); //$NON-NLS-1$
+	private static final TaskPhase EXAMINING = new TaskPhase(Msg.getString("Task.phase.examineBody.examining")); //$NON-NLS-1$
 
-	private static final TaskPhase FINISHED = new TaskPhase(Msg.getString("Task.phase.examineBody.finished")); //$NON-NLS-1$
+	private static final TaskPhase RECORDING = new TaskPhase(Msg.getString("Task.phase.examineBody.finished")); //$NON-NLS-1$
 
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = 1D;
@@ -69,6 +71,8 @@ public class ExamineBody extends Task implements Serializable {
 	private MedicalAid medicalAid;
 	private Person patient;
 
+	private static MedicalManager medicalManager = Simulation.instance().getMedicalManager();
+	
 	/**
 	 * Constructor.
 	 * 
@@ -78,13 +82,22 @@ public class ExamineBody extends Task implements Serializable {
 		super(NAME, person, true, true, STRESS_MODIFIER, false, 10D);
 
 		if (person.isInSettlement()) {
+			// Probability affected by the person's stress and fatigue.
+	        PhysicalCondition condition = person.getPhysicalCondition();
+	        double fatigue = condition.getFatigue();
+	        double stress = condition.getStress();
+	        double hunger = condition.getHunger();
+	        
+	        if (fatigue > 1000 || stress > 50 || hunger > 500)
+	        	endTask();
+	        
 			// Choose available medical aid for treatment.
 			medicalAid = determineMedicalAid();
 	
 			if (medicalAid != null) {
 	
 				// Determine patient and health problem to treat.
-				List<DeathInfo> list = Simulation.instance().getMedicalManager().getPostmortemExams(person.getSettlement());
+				List<DeathInfo> list = medicalManager.getPostmortemExams(person.getSettlement());
 				int num = list.size();
 				boolean done = false;
 				
@@ -150,7 +163,7 @@ public class ExamineBody extends Task implements Serializable {
 	
 			// Initialize phase.
 			addPhase(EXAMINING);
-			addPhase(FINISHED);
+			addPhase(RECORDING);
 			setPhase(EXAMINING);
 		}
 		else
@@ -241,8 +254,8 @@ public class ExamineBody extends Task implements Serializable {
 			throw new IllegalArgumentException("Task phase is null");
 		} else if (EXAMINING.equals(getPhase())) {
 			return examiningPhase(time);
-		} else if (FINISHED.equals(getPhase())) {
-			return finishedPhase(time);
+		} else if (RECORDING.equals(getPhase())) {
+			return recordingPhase(time);
 		} else {
 			return time;
 		}
@@ -276,7 +289,16 @@ public class ExamineBody extends Task implements Serializable {
 		
 		if (timeExam > (deathInfo.getEstTimeExam() + duration)/2D) {
 			deathInfo.setExamDone(true);
-			setPhase(FINISHED);
+			
+			// Check for accident in medical aid.
+			checkForAccident(timeExam);
+	
+			// Add experience.
+			addExperience(timeExam);
+			
+			// Ready to go to the next task phase
+			setPhase(RECORDING);
+			
 			return timeLeft;
 		}
 
@@ -294,28 +316,23 @@ public class ExamineBody extends Task implements Serializable {
 			double stress = STRESS_MODIFIER * (1-stab) / 5D / skill + RandomUtil.getRandomInt(3);
 		
 			setStressModifier(stress);
-		
-			// Check for accident in medical aid.
-			checkForAccident(time);
-	
-			// Add experience.
-			addExperience(time);
 
 		}
+		
 		return timeLeft;
 	}
 
 	/**
-	 * Performs the finished phase of the task.
+	 * Performs the recording phase of the task.
 	 * 
 	 * @param time the amount of time (millisol) to perform the phase.
 	 * @return the amount of time (millisol) left over after performing the phase.
 	 */
-	private double finishedPhase(double time) {
+	private double recordingPhase(double time) {
 
 		double timeLeft = 0D;
 
-		int num = Simulation.instance().getMedicalManager().getPostmortemExams(person.getSettlement()).size();
+		int num = medicalManager.getPostmortemExams(person.getSettlement()).size();
 		
 		if (num > 0) {
 			// If medical aid has malfunction, end task.
@@ -329,7 +346,7 @@ public class ExamineBody extends Task implements Serializable {
 			// Bury the body
 			patient.buryBody();
 			
-			Simulation.instance().getMedicalManager().addDeathRegistry(person.getSettlement(), deathInfo);
+			medicalManager.addDeathRegistry(person.getSettlement(), deathInfo);
 					
 			// Check for accident in medical aid.
 			checkForAccident(time);
@@ -340,6 +357,8 @@ public class ExamineBody extends Task implements Serializable {
 			endTask();
 		
 		}
+		else
+			endTask();
 		
 		return timeLeft;
 	}

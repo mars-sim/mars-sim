@@ -11,6 +11,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
@@ -22,6 +23,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.Maintenance;
 import org.mars_sim.msp.core.person.ai.task.Repair;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
+import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -44,10 +46,14 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	private boolean isSalvaged;
 	/** Unique identifier for this equipment. */
 	private int identifier;
+	/** Unique identifier for the settlement that owns this equipment. */
+	private int associatedSettlementID;
+	
 	/** The identifier for the last owner of this equipment. */
 	private Integer lastOwner;
 	/** The equipment type. */
 	private String type;
+	
 	/** The SalvageInfo instatnce. */	
 	private SalvageInfo salvageInfo;
 	/** The equipment type enum. */
@@ -95,21 +101,21 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 		
 		lastOwner = Integer.valueOf(-1);
 		
-//		this.identifier = getNextIdentifier();
-		// Add this equipment to the equipment lookup map	
 		if (unitManager == null)
 			unitManager = Simulation.instance().getUnitManager();
+		
+		// Adds this equipment to the equipment lookup map	
 		unitManager.addEquipmentID(this);
 
-//		if (!(this instanceof Robot)) {
-//			Settlement s = CollectionUtils.findSettlement(location);
-//			if (s != null) {
-//				// Set its container unit
-//				setContainerUnit(s);
-//				// Set the containerID
-//				setContainerID(s.getIdentifier());
-//			}
-//		}
+		if (!(this instanceof Robot) && location != null && !location.equals(ContainerUtil.tempCoordinates)) {
+			Settlement s = CollectionUtils.findSettlement(location);
+			associatedSettlementID = s.getIdentifier();
+			
+			// Stores this equipment into its settlement
+			s.getInventory().storeUnit(this);
+			// Add this equipment as being owned by this settlement
+			s.addOwnedEquipment(this);
+		}
 	}
 	
 	/**
@@ -308,6 +314,10 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	
 	public EquipmentType getEquipmentType() {
 		return equipmentType;
+	}
+	
+	public Settlement getAssociatedSettlement() {
+		return unitManager.getSettlementByID(associatedSettlementID);
 	}
 	
 	/**

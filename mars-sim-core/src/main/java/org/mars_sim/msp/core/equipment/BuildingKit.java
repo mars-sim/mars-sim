@@ -31,7 +31,7 @@ public class BuildingKit extends Equipment implements Serializable, Malfunctiona
 	public static final double EMPTY_MASS = 30D;
 
 	/** 334 Sols (1/2 orbit). */
-	private static final double WEAR_LIFETIME = 334000D;
+	private static final double WEAR_LIFETIME = 334_000;
 	/** 100 millisols. */
 	private static final double MAINTENANCE_TIME = 100D;
 	// Data members.

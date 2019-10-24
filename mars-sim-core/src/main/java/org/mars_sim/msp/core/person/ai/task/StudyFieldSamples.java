@@ -116,7 +116,7 @@ public class StudyFieldSamples extends Task implements ResearchScientificStudy, 
 		}
 
 		// Check if person is in a moving rover.
-		if (inMovingRover(person)) {
+		if (Vehicle.inMovingRover(person)) {
 			endTask();
 		}
 
@@ -489,7 +489,7 @@ public class StudyFieldSamples extends Task implements ResearchScientificStudy, 
 
 
 		// Check if person is in a moving rover.
-		if (inMovingRover(person)) {
+		if (Vehicle.inMovingRover(person)) {
 			endTask();
 		}
 
@@ -687,31 +687,6 @@ public class StudyFieldSamples extends Task implements ResearchScientificStudy, 
 			if (settlementExploredLocations.size() > 0) {
 				int siteIndex = RandomUtil.getRandomInt(settlementExploredLocations.size() - 1);
 				result = settlementExploredLocations.get(siteIndex);
-			}
-		}
-
-		return result;
-	}
-
-	/**
-	 * Checks if the person is in a moving vehicle.
-	 * 
-	 * @param person the person.
-	 * @return true if person is in a moving vehicle.
-	 */
-	public static boolean inMovingRover(Person person) {
-
-		boolean result = false;
-
-		if (person.isInVehicle()) {
-			Vehicle vehicle = person.getVehicle();
-			if (vehicle.getStatus() == StatusType.MOVING) {
-				result = true;
-			} else if (vehicle.getStatus() == StatusType.TOWED) {
-				Vehicle towingVehicle = vehicle.getTowingVehicle();
-				if (towingVehicle.getStatus() == StatusType.MOVING || towingVehicle.getStatus() == StatusType.TOWED) {
-					result = false;
-				}
 			}
 		}
 

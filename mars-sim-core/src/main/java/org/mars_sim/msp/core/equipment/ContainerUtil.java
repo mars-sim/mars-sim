@@ -15,7 +15,7 @@ import org.mars_sim.msp.core.resource.ResourceUtil;
  */
 public final class ContainerUtil {
 
-	private static final Coordinates tempCoordinates = new Coordinates(0D, 0D);
+	public static final Coordinates tempCoordinates = new Coordinates(0D, 0D);
 
 	/**
 	 * Private constructor for utility class.

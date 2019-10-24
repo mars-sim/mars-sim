@@ -274,12 +274,7 @@ public class Mining extends RoverMission {
 				if (vehicle.isReserved())
 					usable = false;
 
-				if (vehicle.getStatus() == StatusType.MAINTENANCE 
-						|| vehicle.getStatus() == StatusType.TOWED
-						|| vehicle.getStatus() == StatusType.MOVING
-						|| vehicle.getStatus() == StatusType.STUCK
-						|| vehicle.getStatus() == StatusType.MALFUNCTION)
-					usable = false;
+				usable = vehicle.isVehicleReady();
 
 				if (((Crewable) vehicle).getCrewNum() > 0 || ((Crewable) vehicle).getRobotCrewNum() > 0)
 					usable = false;
@@ -1124,7 +1119,7 @@ public class Mining extends RoverMission {
 
 			if (vehicle instanceof LightUtilityVehicle) {
 				LightUtilityVehicle luvTemp = (LightUtilityVehicle) vehicle;
-				if ((luvTemp.getStatus() == StatusType.PARKED || luvTemp.getStatus() == StatusType.GARAGED)
+				if ((luvTemp.haveStatusType(StatusType.PARKED) || luvTemp.haveStatusType(StatusType.GARAGED))
 						&& !luvTemp.isReserved() && (luvTemp.getCrewNum() == 0) && (luvTemp.getRobotCrewNum() == 0)) {
 					result = luvTemp;
 					luvTemp.setReservedForMission(true);

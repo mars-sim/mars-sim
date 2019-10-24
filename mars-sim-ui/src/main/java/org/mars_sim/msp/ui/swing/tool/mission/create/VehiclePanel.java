@@ -251,7 +251,7 @@ class VehiclePanel extends WizardPanel {
 					else if (column == 7)
 						result = (int) inv.getTotalInventoryMass(true);
 					else if (column == 8)
-						result = vehicle.getStatus();
+						result = vehicle.printStatusTypes();
 					else if (column == 9) {
 						Mission mission = missionManager.getMissionForVehicle(vehicle);
 						if (mission != null)
@@ -302,12 +302,12 @@ class VehiclePanel extends WizardPanel {
 //                    e.printStackTrace(System.err);
 //                }
 			} else if (column == 8) {
-				if (vehicle.getStatus() != StatusType.PARKED && vehicle.getStatus() != StatusType.GARAGED)
+				if (!vehicle.haveStatusType(StatusType.PARKED) && !vehicle.haveStatusType(StatusType.GARAGED))
 					result = true;
 
 				// Allow rescue/salvage mission to use vehicle undergoing maintenance.
 				if (MissionType.RESCUE_SALVAGE_VEHICLE == getWizard().getMissionData().getMissionType()) {
-					if (vehicle.getStatus() == StatusType.MAINTENANCE)
+					if (vehicle.haveStatusType(StatusType.MAINTENANCE))
 						result = false;
 					else
 						result = true;

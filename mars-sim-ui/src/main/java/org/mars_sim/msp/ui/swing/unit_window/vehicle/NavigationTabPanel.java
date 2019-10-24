@@ -15,6 +15,7 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -89,7 +90,7 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
     private String etaCache;
     
     private VehicleOperator driverCache;
-    private StatusType statusCache;
+    private List<StatusType> statusCache;
 
 	/** The Vehicle instance. */
 	private Vehicle vehicle;
@@ -307,8 +308,8 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         drivingSpringPanel.add(statusHeaderLabel);
         
         // Prepare status label
-        statusCache = vehicle.getStatus();
-        statusLabel = new WebLabel("" + statusCache, WebLabel.LEFT);
+        statusCache = vehicle.getStatusTypes();
+        statusLabel = new WebLabel("" + statusCache.toString(), WebLabel.LEFT);
         drivingSpringPanel.add(statusLabel);
            
         // Prepare beacon header label
@@ -399,8 +400,8 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         }
 
         // Update status label
-        if (statusCache != vehicle.getStatus()) {
-            statusCache = vehicle.getStatus();
+        if (!vehicle.sameStatusTypes(statusCache, vehicle.getStatusTypes())) {
+            statusCache = vehicle.getStatusTypes();
             statusLabel.setText("" + statusCache);
         }
 

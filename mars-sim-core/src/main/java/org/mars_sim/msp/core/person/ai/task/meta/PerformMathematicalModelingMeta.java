@@ -16,7 +16,6 @@ import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.job.Job;
-import org.mars_sim.msp.core.person.ai.task.PerformLaboratoryExperiment;
 import org.mars_sim.msp.core.person.ai.task.PerformMathematicalModeling;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
@@ -26,6 +25,7 @@ import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.core.structure.Lab;
 import org.mars_sim.msp.core.tool.RandomUtil;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * Meta task for the PerformMathematicalModeling task.
@@ -70,7 +70,7 @@ public class PerformMathematicalModelingMeta implements MetaTask, Serializable {
         	return 0;
         
         // Check if person is in a moving rover.
-        if (person.isInVehicle() && PerformLaboratoryExperiment.inMovingRover(person)) {
+        if (person.isInVehicle() && Vehicle.inMovingRover(person)) {
 	        // the bonus for being inside a vehicle since there's little things to do
             result = 20D;
         }

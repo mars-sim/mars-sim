@@ -69,7 +69,7 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 	/** Unloaded mass of EVA suit (kg.). */
 	public static final double EMPTY_MASS = 80D;
 	/** 334 Sols (1/2 orbit). */
-	private static final double WEAR_LIFETIME = 334000D;
+	private static final double WEAR_LIFETIME = 334_000;
 	/** 100 millisols. */
 	private static final double MAINTENANCE_TIME = 100D;
 	/** The unit count for this robot. */
@@ -105,8 +105,8 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 	/** The cache for msol */
 	private double msolCache = -1D;
 
-	/** The name of the robot. */
-	private String name;
+	/** The nick name for this robot. e.g. Chefbot 001 */
+	private String nickName;
 	/** The country of the robot made. */
 	private String country;
 	/** The sponsor of the robot. */
@@ -170,7 +170,7 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 		settlement.addOwnedRobot(this);
 
 		// Initialize data members.
-		this.name = name;
+		this.nickName = name;
 		this.associatedSettlementID = (Integer) settlement.getIdentifier();
 //		System.out.println("(1) " + associatedSettlementID + " : " + settlement + " : " + name);
 		this.robotType = robotType;
@@ -263,7 +263,7 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 
 		// TODO: find out why sometimes day = 0 as seen on
 		if (day == 0) {
-			logger.warning(name + "'s date of birth is on the day 0th. Incrementing to the 1st.");
+			logger.warning(nickName + "'s date of birth is on the day 0th. Incrementing to the 1st.");
 			day = 1;
 		}
 
@@ -756,7 +756,7 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 	}
 
 	public String getName() {
-		return name;
+		return nickName;
 	}
 
 	/**
@@ -872,7 +872,7 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 
 	@Override
 	public String getNickName() {
-		return name;
+		return nickName;
 	}
 
 	@Override
@@ -944,7 +944,9 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 		if (obj == null) return false;
 		if (this.getClass() != obj.getClass()) return false;
 		Robot r = (Robot) obj;
-		return this.name.equals(r.getName());
+		return this.identifier == r.getIdentifier()
+				&& this.robotType == r.getRobotType(); 
+//				&& this.nickName.equals(r.getNickName());
 	}
 
 	public void reinit() {

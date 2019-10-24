@@ -130,7 +130,7 @@ public class RescueMissionCustomInfoPanel extends MissionCustomInfoPanel {
             rescueVehicleButton.setText(vehicle.getName());
 
             // Update rescue vehicle status.
-            vehicleStatusValueLabel.setText(vehicle.getStatus().getName());
+            vehicleStatusValueLabel.setText(vehicle.printStatusTypes());
 
             StringBuffer malfunctionBuff = new StringBuffer("");
             String serious = null;

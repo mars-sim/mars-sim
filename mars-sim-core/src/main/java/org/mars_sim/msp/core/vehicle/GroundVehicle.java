@@ -15,6 +15,7 @@ import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.mars.TerrainElevation;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -68,26 +69,24 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
 		setTerrainHandlingCapability(0D); // Default terrain capability
 
 //		terrain = surface.getTerrainElevation();
-		if (surfaceFeatures == null)
-			surfaceFeatures = Simulation.instance().getMars().getSurfaceFeatures();
-		elevation = surfaceFeatures.getTerrainElevation().getPatchedElevation(getCoordinates());
+//		if (surfaceFeatures == null)
+//			surfaceFeatures = Simulation.instance().getMars().getSurfaceFeatures();
+		elevation = TerrainElevation.getPatchedElevation(getCoordinates());
 	}
 
-	/**
-	 * Returns vehicle's current status
-	 * 
-	 * @return the vehicle's current status
-	 */
-	public StatusType getStatus() {
-		StatusType status = null;
-
-		if (isStuck)
-			status = StatusType.STUCK;
-		else
-			status = super.getStatus();
-
-		return status;
-	}
+//	/**
+//	 * Returns vehicle's current status
+//	 * 
+//	 * @return the vehicle's current status
+//	 */
+//	public StatusType getStatus() {
+//		StatusType status = null;
+//
+//		if (isStuck)
+//			super.addStatusType(StatusType.STUCK);
+//
+//		return status;
+//	}
 
 	/**
 	 * Returns the elevation of the vehicle in km.
@@ -146,7 +145,7 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
 	 */
 	public double getTerrainGrade(Direction direction) {
 		// Determine the terrain grade in a given direction from the vehicle.
-		return surfaceFeatures.getTerrainElevation().determineTerrainDifficulty(getCoordinates(), direction);
+		return TerrainElevation.determineTerrainDifficulty(getCoordinates(), direction);
 	}
 
 	/**
@@ -166,6 +165,7 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
 	public void setStuck(boolean stuck) {
 		isStuck = stuck;
 		if (isStuck) {
+			addStatus(StatusType.STUCK);
 			setSpeed(0D);
 			setParkedLocation(0D, 0D, getDirection().getDirection());
 		}
@@ -318,7 +318,7 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
 //		    	vInv.retrieveAmountResource(fuelType, fuelConsumed);
     		
     		if (remainingFuel < LEAST_AMOUNT) {
-    			v.setStatus(StatusType.OUT_OF_FUEL);
+    			v.addStatus(StatusType.OUT_OF_FUEL);
     			return false;
     		}
     			

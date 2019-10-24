@@ -31,6 +31,7 @@ import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
+import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
@@ -73,7 +74,7 @@ implements Serializable {
         vehicle = getNeedyGroundVehicle(person);
         if (vehicle != null) {
             vehicle.setReservedForMaintenance(true);
-
+            vehicle.addStatus(StatusType.MAINTENANCE);
             // Determine location for maintenance.
             Point2D maintenanceLoc = determineMaintenanceLocation();
             setOutsideSiteLocation(maintenanceLoc.getX(), maintenanceLoc.getY());
@@ -163,8 +164,11 @@ implements Serializable {
         MalfunctionManager manager = vehicle.getMalfunctionManager();
         boolean malfunction = manager.hasMalfunction();
         boolean finishedMaintenance = (manager.getEffectiveTimeSinceLastMaintenance() == 0D);
-        if (finishedMaintenance) vehicle.setReservedForMaintenance(false);
-
+        if (finishedMaintenance) {
+        	vehicle.setReservedForMaintenance(false);
+            vehicle.removeStatus(StatusType.MAINTENANCE);
+        }
+        
         if (finishedMaintenance || malfunction || shouldEndEVAOperation() ||
                 addTimeOnSite(time)) {
             setPhase(WALK_BACK_INSIDE);

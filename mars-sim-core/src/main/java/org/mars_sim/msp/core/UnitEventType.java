@@ -31,9 +31,10 @@ public enum UnitEventType {
 	ADD_ASSOCIATED_ROBOT_EVENT		("add associated robot"),
 	REMOVE_ASSOCIATED_ROBOT_EVENT	("remove associated robot"),
 	
-	// For Person
+	ADD_ASSOCIATED_EQUIPMENT_EVENT		("add associated equipment"),
+	REMOVE_ASSOCIATED_EQUIPMENT_EVENT	("remove associated equipment"),
+	
 //	ASSOCIATED_SETTLEMENT_EVENT		("associated settlement"),
-
 
 	// For PhysicalCondition
 	FATIGUE_EVENT					("fatigue event"),

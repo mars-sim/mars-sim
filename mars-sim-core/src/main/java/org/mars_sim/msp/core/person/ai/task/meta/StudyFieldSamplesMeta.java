@@ -19,7 +19,6 @@ import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.job.Job;
-import org.mars_sim.msp.core.person.ai.task.PerformLaboratoryExperiment;
 import org.mars_sim.msp.core.person.ai.task.StudyFieldSamples;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
@@ -28,6 +27,7 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.structure.Lab;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * Meta task for the StudyFieldSamples task.
@@ -70,7 +70,7 @@ public class StudyFieldSamplesMeta implements MetaTask, Serializable {
         
         if (person.isInVehicle()) {
 	        // Check if person is in a moving rover.
-	        if (PerformLaboratoryExperiment.inMovingRover(person)) {
+	        if (Vehicle.inMovingRover(person)) {
 	            result = -50D;
 	            return 0;
 	        }

@@ -288,7 +288,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
         	// TODO: need to turn on emergency beacon and ask for rescue here or in RoverMission ?
 	    	LogConsolidated.log(Level.SEVERE, 0, sourceName, "[" + vehicle.getName() + "] " 
 					+ "ran out of methane. Cannot drive.");
-        	vehicle.setStatus(StatusType.OUT_OF_FUEL);
+        	vehicle.addStatus(StatusType.OUT_OF_FUEL);
         	distanceTraveled = 0;
         	endTask();
         }
@@ -303,7 +303,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
 		    	LogConsolidated.log(Level.SEVERE, 0, sourceName, "[" + vehicle.getName() + "] " 
 						+ "can't retrieve methane. Cannot drive.");
 	        	distanceTraveled = 0;
-	        	vehicle.setStatus(StatusType.OUT_OF_FUEL);
+	        	vehicle.addStatus(StatusType.OUT_OF_FUEL);
 		    	endTask();
 		    }
         	

@@ -997,15 +997,20 @@ public class PersonRobotChatUtils extends ChatUtils {
 			questionText = YOU_PROMPT + "What vehicle are you in and where is it ?";
 			Vehicle v = u.getVehicle();
 			if (v != null) {
-				String d = u.getVehicle().getDescription();
-				StatusType status = u.getVehicle().getStatus();
-				responseText.append("My vehicle is ");
+//				String d = u.getVehicle().getDescription();
+				List<StatusType> statusTypes = u.getVehicle().getStatusTypes();
+				responseText.append("Status for ");
 				responseText.append(v.getName());
-				responseText.append(" (a ");
-				responseText.append(Conversion.capitalize(d));
-				responseText.append(" type). It's currently ");
-				responseText.append(status.getName().toLowerCase());
-				responseText.append(".");
+				responseText.append(System.lineSeparator());
+				responseText.append("----------------------");
+				responseText.append(System.lineSeparator());
+				int size = statusTypes.size();
+				for (int i=0; i< size; i++) {
+					StatusType st = statusTypes.get(i);
+					responseText.append((i+1) + ". " + Conversion.capitalize(st.getName()));
+					responseText.append(System.lineSeparator());
+				}
+				responseText.append(System.lineSeparator());
 			} else
 				responseText.append("I'm not in a vehicle.");
 		}

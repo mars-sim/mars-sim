@@ -321,7 +321,7 @@ public class VehicleTableModel extends UnitTableModel {
 
 				// Status is a combination of Mechanical failure and maintenance
 				case STATUS : {
-					result = vehicle.getStatus();
+					result = vehicle.printStatusTypes();
 				} break;
 
 				case BEACON : {

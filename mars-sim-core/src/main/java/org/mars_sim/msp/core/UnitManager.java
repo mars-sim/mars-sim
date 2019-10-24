@@ -956,7 +956,8 @@ public class UnitManager implements Serializable {
 								false);
 						String newName = getNewName(UnitType.EQUIPMENT, type, null, null);
 						equipment.setName(newName);
-						settlement.getInventory().storeUnit(equipment);
+//						settlement.getInventory().storeUnit(equipment);
+						settlement.addOwnedEquipment(equipment);
 //						System.out.println("UnitManager : Equipment " + newName + "  owned by " + equipment.getContainerUnit().getName());
 						addUnit(equipment);
 					}

@@ -10,11 +10,14 @@ package org.mars_sim.msp.core.vehicle;
 import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -102,13 +105,17 @@ public abstract class Vehicle extends Unit
 	/** The Solid Oxide Fuel Cell Conversion Efficiency (dimension-less) */
 	public static final double SOFC_CONVERSION_EFFICIENCY = .57;
 	/** Lifetime Wear in millisols **/
-	private static final double WEAR_LIFETIME = 668000D; // 668 Sols (1 orbit)
+	private static final double WEAR_LIFETIME = 668_000; // 668 Sols (1 orbit)
 	
 	/** Estimated Number of hours traveled each day. **/
 	private static final int ESTIMATED_NUM_HOURS = 16;
 	
 	/** The unit count for this person. */
 	private static int uniqueCount = Unit.FIRST_VEHICLE_UNIT_ID;
+	
+	/** The types of status types that make a vehicle unavailable for us. */
+	private static List<StatusType> badStatus = Arrays.asList(StatusType.MAINTENANCE, StatusType.TOWED, StatusType.MOVING,
+			StatusType.STUCK, StatusType.MALFUNCTION);
 	
 	// 1989 NASA Mars Manned Transportation Vehicle - Shuttle Fuel Cell Power Plant (FCP)  7.6 kg/kW
 	
@@ -182,21 +189,22 @@ public abstract class Vehicle extends Unit
 	private List<Point2D> operatorActivitySpots;
 	/** List of passenger activity spots. */
 	private List<Point2D> passengerActivitySpots;
+	/** List of status types. */
+	private List<StatusType> statusTypes;
+	/** The vehicle's status log. */
+	private Map<Integer, Map<Integer, List<StatusType>>> vehicleLog = new HashMap<>();
 	
-	/** The vehicle's status. */
-	private StatusType statusType; 
 	/** The malfunction manager for the vehicle. */
 	protected MalfunctionManager malfunctionManager; 
 	/** Direction vehicle is traveling */
 	private Direction direction;
 	/** The operator of the vehicle. */
 	private VehicleOperator vehicleOperator;
-	/** he vehicle that is currently towing this vehicle. */
+	/** The one currently towing this vehicle. */
 	private Vehicle towingVehicle;
 	/** The The vehicle's salvage info. */
 	private SalvageInfo salvageInfo; 
-	/** The vehicle's status log. */
-	private Map<Integer, Map<Integer, List<StatusType>>> vehicleLog = new HashMap<>();
+
 	
 	static {
 		life_support_range_error_margin = SimulationConfig.instance().getSettlementConfiguration()
@@ -262,7 +270,8 @@ public abstract class Vehicle extends Unit
 
 		direction = new Direction(0);
 		trail = new ArrayList<Coordinates>();
-
+		statusTypes = new ArrayList<>();
+		
 		isReservedMission = false;
 		distanceMark = false;
 		reservedForMaintenance = false;
@@ -273,15 +282,15 @@ public abstract class Vehicle extends Unit
 		malfunctionManager = new MalfunctionManager(this, WEAR_LIFETIME, maintenanceWorkTime);
 		malfunctionManager.addScopeString(SystemType.VEHICLE.getName());// "Vehicle");
 
-		setStatus(StatusType.PARKED);
+		addStatus(StatusType.PARKED);
 		
 		// Set width and length of vehicle.
 		width = vehicleConfig.getWidth(vehicleType);
 		length = vehicleConfig.getLength(vehicleType);
 
+		// Set description
 		setDescription(vehicleType);
-//		setDescription(vehicleConfig.getDescription(vehicleType));
-		
+	
 		// Set base speed.
 		setBaseSpeed(vehicleConfig.getBaseSpeed(vehicleType));
 
@@ -370,12 +379,20 @@ public abstract class Vehicle extends Unit
 		setContainerID(associatedSettlementID);
 		settlement.getInventory().storeUnit(this);
 
-		// Initialize vehicle data
-		setDescription(vehicleType);
 		direction = new Direction(0);
 		trail = new ArrayList<Coordinates>();
+		statusTypes = new ArrayList<>();
+		
+		// Set description
+		setDescription(vehicleType);
+	
+		// Set base speed.
 		setBaseSpeed(baseSpeed);
+
+		// Set the empty mass of the vehicle.
 		setBaseMass(baseMass);
+
+		
 		this.drivetrainEfficiency = fuelEfficiency / 100.0;
 		isReservedMission = false;
 		distanceMark = false;
@@ -394,7 +411,7 @@ public abstract class Vehicle extends Unit
 		malfunctionManager = new MalfunctionManager(this, WEAR_LIFETIME, maintenanceWorkTime);
 		malfunctionManager.addScopeString(SystemType.VEHICLE.getName());// "Vehicle");
 		
-		setStatus(StatusType.PARKED);
+		addStatus(StatusType.PARKED);
 	}
 
 	public String getDescription(String vehicleType) {
@@ -570,24 +587,106 @@ public abstract class Vehicle extends Unit
 	}
 
 	/**
-	 * Returns vehicle's current status
+	 * Returns a list of vehicle's status types
 	 * 
-	 * @return the vehicle's current status
+	 * @return the vehicle's status types
 	 */
-	public StatusType getStatus() {
-		return statusType;
+	public List<StatusType> getStatusTypes() {
+		return statusTypes;
 	}
 
+	public boolean sameStatusTypes(List<StatusType> st1, List<StatusType> st2) {
+		Set<StatusType> s1 = new HashSet<>(st1);
+		Set<StatusType> s2 = new HashSet<>(st2);
+		if (s1.equals(s2))
+			return true;
+		
+		return false;
+	}
+	
 	/**
-	 * Sets the status type of a vehicle
+	 * Prints a string list of status types
+	 * 
+	 * @return
+	 */
+	public String printStatusTypes() {
+		String s = "";
+		int size = statusTypes.size();
+		for (int i=0; i<size; i++) {
+			s += statusTypes.get(i).getName();
+			if (i != size - 1)
+				s += ", ";
+		}
+		
+		return s;
+	}
+	
+	/**
+	 * Checks if this vehicle has already been tagged with a status type
+	 * 
+	 * @param status the status type of interest
+	 * @return yes if it has it
+	 */
+	public boolean haveStatusType(StatusType status) {
+		if (statusTypes.contains(status))
+			return true;
+		
+		return false;
+	}
+	
+	/**
+	 * Checks if this vehicle has already been tagged with anyone of the provided status types
+	 * 
+	 * @param status a variable number of the status type of interest
+	 * @return yes if it has anyone of them
+	 */
+	public boolean haveStatusTypes(StatusType... statuses) {
+	    for (StatusType st : statuses) {
+			if (statusTypes.contains(st))
+				return true;
+	    }
+	    
+	    return false;
+	}
+	
+	/**
+	 * Checks if this vehicle has no issues and is ready for mission
+	 * 
+	 * @return yes if it has anyone of the bad status types
+	 */
+	public boolean isVehicleReady() {
+	    for (StatusType st : badStatus) {
+			if (statusTypes.contains(st))
+				return false;
+	    }
+	    
+	    return true;
+	}
+	
+	/**
+	 * Adds a status type for this vehicle
 	 * 
 	 * @param type
 	 */
-	public void setStatus(StatusType newStatus) {
-		// Update status based on current situation.		
-		if (statusType != newStatus) {
-			statusType = newStatus;
-			writeLog(newStatus);
+	public void addStatus(StatusType newStatus) {
+		// Update status based on current situation.
+		if (!statusTypes.contains(newStatus)) {
+			statusTypes.add(newStatus);
+			writeLog();
+			fireUnitUpdate(UnitEventType.STATUS_EVENT, newStatus);
+		}
+	}
+	
+	/**
+	 * Remove a status type for this vehicle
+	 * 
+	 * @param type
+	 */
+	public void removeStatus(StatusType newStatus) {
+		// Update status based on current situation.
+		if (statusTypes.contains(newStatus)) {
+			statusTypes.remove(newStatus);
+			writeLog();
 			fireUnitUpdate(UnitEventType.STATUS_EVENT, newStatus);
 		}
 	}
@@ -597,22 +696,44 @@ public abstract class Vehicle extends Unit
 	 */
 	private void checkStatus() {
 		// Update status based on current situation.
-		StatusType newStatus = null;
-		if (getGarage() != null)
-			newStatus = StatusType.GARAGED;
-		else
-			newStatus = StatusType.PARKED;
+		if (speed == 0) {
+			if (getGarage() != null) {
+				addStatus(StatusType.GARAGED);
+				removeStatus(StatusType.PARKED);
+				removeStatus(StatusType.MOVING);
+//				removeStatus(StatusType.TOWED);
+			}
+			else {
+				addStatus(StatusType.PARKED);
+				removeStatus(StatusType.GARAGED);
+				removeStatus(StatusType.MOVING);
+//				removeStatus(StatusType.TOWED);
+			}
+		}
 		
-		if (speed > 0D)
-			newStatus = StatusType.MOVING;
-		else if (towingVehicle != null)
-			newStatus = StatusType.TOWED;
-		else if (reservedForMaintenance)
-			newStatus = StatusType.MAINTENANCE;
-		else if (malfunctionManager.hasMalfunction())
-			newStatus = StatusType.MALFUNCTION;
+		if (speed > 0D) {
+			addStatus(StatusType.MOVING);
+			removeStatus(StatusType.GARAGED);
+			removeStatus(StatusType.PARKED);
+		}
+		
+		if (towingVehicle != null) {
+			addStatus(StatusType.TOWED);
+//			removeStatus(StatusType.GARAGED);
+//			removeStatus(StatusType.PARKED);
+		}
 
-		setStatus(newStatus);
+		if (reservedForMaintenance) {
+			addStatus(StatusType.MAINTENANCE);
+			removeStatus(StatusType.MOVING);
+		}
+		else {
+			removeStatus(StatusType.MAINTENANCE);
+		}
+		
+		if (malfunctionManager.hasMalfunction()) {
+			addStatus(StatusType.MALFUNCTION);	
+		}
 	}
 	
 	/**
@@ -620,7 +741,7 @@ public abstract class Vehicle extends Unit
 	 * 
 	 * @param type
 	 */
-	public void writeLog(StatusType type) {
+	public void writeLog() {
 		int today = marsClock.getMissionSol();
 		int millisols = marsClock.getMillisolInt();
 		
@@ -643,7 +764,7 @@ public abstract class Vehicle extends Unit
 			list = new ArrayList<>();
 		}
 		
-		list.add(type);
+		list.addAll(statusTypes);
 		eachSol.put(millisols, list);
 		vehicleLog.put(today, eachSol);
 //		System.out.println(getName() + " log's size : " + vehicleLog.size());
@@ -732,8 +853,8 @@ public abstract class Vehicle extends Unit
 	public boolean isBeingTowed() {
 		if (towingVehicle == null)
 			return false;
-		else
-			return true;
+		
+		return true;
 	}
 
 	/**
@@ -998,22 +1119,34 @@ public abstract class Vehicle extends Unit
 		// Checks status.
 		checkStatus();
 		
-		if (statusType == StatusType.MOVING) {
+		if (haveStatusType(StatusType.MOVING)) {
+			// Assume the wear and tear factor is at 100% by being used in a mission
 			malfunctionManager.activeTimePassing(time);
 		}
-		// Make sure reservedForMaintenance is false if vehicle needs no maintenance.
-		else if (statusType == StatusType.MAINTENANCE) {
-			if (malfunctionManager.getEffectiveTimeSinceLastMaintenance() <= 0D)
-				setReservedForMaintenance(false);
+		
+		// If it's back at a settlement and is NOT in a garage
+		if (getSettlement() != null && !isRoverInAGarage()) {
+			// Assume the wear and tear factor is 75% less by being exposed outdoor
+			malfunctionManager.activeTimePassing(time * .25);
 		}
-		else if (statusType == StatusType.OUT_OF_FUEL) {
-			setOperator(null);
-			setSpeed(0);
-		} 
+		
+		// Make sure reservedForMaintenance is false if vehicle needs no maintenance.
+		if (haveStatusType(StatusType.MAINTENANCE)) {
+			if (malfunctionManager.getEffectiveTimeSinceLastMaintenance() <= 0D) {
+				setReservedForMaintenance(false);
+				removeStatus(StatusType.MAINTENANCE);
+			}
+		}
 		else {
+			// Note: during maintenance, it doesn't need to be checking for malfunction.
 			malfunctionManager.timePassing(time);
 		}
 
+		if (haveStatusType(StatusType.OUT_OF_FUEL)) {
+			setOperator(null);
+			setSpeed(0);
+		} 
+		
 		addToTrail(getCoordinates());
 
 		correctVehicleReservation();
@@ -1796,6 +1929,30 @@ public abstract class Vehicle extends Unit
 		return false;
 	}
 	
+	/**
+	 * Checks if the person is in a moving vehicle.
+	 * 
+	 * @param person the person.
+	 * @return true if person is in a moving vehicle.
+	 */
+	public static boolean inMovingRover(Person person) {
+
+		boolean result = false;
+
+		if (person.isInVehicle()) {
+			Vehicle vehicle = person.getVehicle();
+			if (vehicle.haveStatusType(StatusType.MOVING)) {
+				result = true;
+			} else if (vehicle.haveStatusType(StatusType.TOWED)) {
+				Vehicle towingVehicle = vehicle.getTowingVehicle();
+				if (towingVehicle.haveStatusType(StatusType.MOVING) || towingVehicle.haveStatusType(StatusType.TOWING)) {
+					result = false;
+				}
+			}
+		}
+
+		return result;
+	}
 	
 	/**
 	 * Reset uniqueCount to the current number of vehicles
@@ -1840,7 +1997,8 @@ public abstract class Vehicle extends Unit
 		trail.clear();
 		trail = null;
 		towingVehicle = null;
-		statusType = null;
+		statusTypes.clear();
+		statusTypes = null;
 		if (salvageInfo != null)
 			salvageInfo.destroy();
 		salvageInfo = null;

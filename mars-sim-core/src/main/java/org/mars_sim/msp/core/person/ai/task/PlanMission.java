@@ -171,9 +171,11 @@ public class PlanMission extends Task implements Serializable {
 			endTask();
 		}
 		else {
-			person.getMind().getNewAction(false, canDo);
 			LogConsolidated.log(Level.INFO, 10_000, sourceName, 
-					"[" + person.getAssociatedSettlement() + "] " + person.getName() + " was looking into the mission needs of the settlement.");
+					"[" + person.getAssociatedSettlement() + "] " + person.getName() 
+					+ " was looking into the mission needs of the settlement.");
+			
+			person.getMind().getNewAction(false, canDo);
 			
 			Mission mission = person.getMind().getMission();
 			if (mission != null)

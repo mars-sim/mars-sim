@@ -56,7 +56,7 @@ abstract class VehicleDisplayInfoBean implements UnitDisplayInfo {
         if (vehicle.isSalvaged()) result = false;
         
         // Do not display towed vehicle on map.
-        if (vehicle.getStatus() == StatusType.TOWED) {
+        if (vehicle.haveStatusType(StatusType.TOWED)) {
             result = false;
         }
         

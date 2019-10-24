@@ -111,6 +111,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		this.startingMember = startingMember;
 
 		if (!reserveVehicle()) {
+			logger.info(getStartingMember() + " cannot get a vehicle");
 			return;
 		}
 		
@@ -251,12 +252,12 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			if (vehicle.isReserved())
 				usable = false;
 
-			if (vehicle.getStatus() != StatusType.PARKED && vehicle.getStatus() != StatusType.GARAGED)
-				usable = false;
+			usable = vehicle.isVehicleReady();
 
 			if (vehicle.getInventory().getTotalInventoryMass(false) > 0D)
 				usable = false;
 
+			logger.info(startingMember + " : " + getName() + " : " + vehicle + " - " + usable);
 			return usable;
 		} else {
 			throw new IllegalArgumentException("isUsableVehicle: newVehicle is null.");

@@ -34,6 +34,7 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.mars.DustStorm;
 import org.mars_sim.msp.core.mars.TerrainElevation;
@@ -231,6 +232,8 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	private Collection<Vehicle> ownedVehicles = new ConcurrentLinkedQueue<Vehicle>();
 	/** The list of people currently within the settlement. */
 	private Collection<Person> peopleWithin = new ConcurrentLinkedQueue<Person>();
+	/** The list of equipment currently within the settlement. */
+	private Collection<Equipment> ownedEquipment = new ConcurrentLinkedQueue<Equipment>();
 	
 	/** The flag for checking if the simulation has just started. */
 	private boolean justLoaded = true;
@@ -277,6 +280,8 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	private int numOwnedBots;
 	/** Numbers of vehicles owned by this settlement. */
 	private int numOwnedVehicles;
+	/** Numbers of equipment owned by this settlement. */
+	private int numOwnedEquipment;
 	/** Minimum amount of methane to stay in this settlement when considering a mission. */
 	private int minMethane = 50;
 	/** Minimum amount of oxygen to stay in this settlement when considering a mission. */
@@ -2356,7 +2361,20 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	 * @param p the person
 	 */
 	public void addPeopleWithin(Person p) {
-		peopleWithin.add(p);
+		if (!peopleWithin.contains(p)) {
+			peopleWithin.add(p);
+		}
+	}
+	
+	/**
+	 * Removes this person from being within this settlement
+	 * 
+	 * @param p the person
+	 */
+	public void removePeopleWithin(Person p) {
+		if (peopleWithin.contains(p)) {
+			peopleWithin.remove(p);
+		}
 	}
 	
 	/**
@@ -2365,19 +2383,12 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	 * @param p the person
 	 */
 	public void addACitizen(Person p) {
-		citizens.add(p);
-		// Update the numCtizens
-		numCitizens = citizens.size();
-		fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_PERSON_EVENT, this);
-	}
-
-	/**
-	 * Removes this person from being within this settlement
-	 * 
-	 * @param p the person
-	 */
-	public void removePeopleWithin(Person p) {
-		peopleWithin.remove(p);
+		if (!citizens.contains(p)) {
+			citizens.add(p);
+			// Update the numCtizens
+			numCitizens = citizens.size();
+			fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_PERSON_EVENT, this);
+		}
 	}
 	
 	/**
@@ -2386,10 +2397,12 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	 * @param p the person
 	 */
 	public void removeACitizen(Person p) {
-		peopleWithin.remove(p);
-		fireUnitUpdate(UnitEventType.REMOVE_ASSOCIATED_PERSON_EVENT, this);
-		// Update the numCtizens
-		numCitizens = citizens.size();
+		if (citizens.contains(p)) {
+			citizens.remove(p);
+			fireUnitUpdate(UnitEventType.REMOVE_ASSOCIATED_PERSON_EVENT, this);
+			// Update the numCtizens
+			numCitizens = citizens.size();
+		}
 	}
 
 	/**
@@ -2398,9 +2411,11 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	 * @param r
 	 */
 	public void addOwnedRobot(Robot r) {
-		ownedRobots.add(r);
-		fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_ROBOT_EVENT, this);
-		numOwnedBots = ownedRobots.size();
+		if (!ownedRobots.contains(r)) {
+			ownedRobots.add(r);
+			fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_ROBOT_EVENT, this);
+			numOwnedBots = ownedRobots.size();
+		}
 	}
 
 	/**
@@ -2409,9 +2424,11 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	 * @param r
 	 */
 	public void removeOwnedRobot(Robot r) {
-		ownedRobots.remove(r);
-		fireUnitUpdate(UnitEventType.REMOVE_ASSOCIATED_ROBOT_EVENT, this);
-		numOwnedBots = ownedRobots.size();
+		if (ownedRobots.contains(r)) {
+			ownedRobots.remove(r);
+			fireUnitUpdate(UnitEventType.REMOVE_ASSOCIATED_ROBOT_EVENT, this);
+			numOwnedBots = ownedRobots.size();
+		}
 	}
 
 	/**
@@ -2420,8 +2437,10 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	 * @param r
 	 */
 	public void addOwnedVehicle(Vehicle v) {
-		ownedVehicles.add(v);
-		numOwnedVehicles = ownedVehicles.size();
+		if (!ownedVehicles.contains(v)) {
+			ownedVehicles.add(v);
+			numOwnedVehicles = ownedVehicles.size();
+		}
 	}
 
 	/**
@@ -2430,8 +2449,36 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	 * @param r
 	 */
 	public void removeOwnedVehicle(Vehicle v) {
-		ownedVehicles.remove(v);
-		numOwnedVehicles = ownedVehicles.size();
+		if (ownedVehicles.contains(v)) {
+			ownedVehicles.remove(v);
+			numOwnedVehicles = ownedVehicles.size();
+		}
+	}
+	
+	/**
+	 * Adds an equipment to be owned by the settlement
+	 * 
+	 * @param r
+	 */
+	public void addOwnedEquipment(Equipment e) {
+		if (!ownedEquipment.contains(e)) {
+			ownedEquipment.add(e);
+			fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_EQUIPMENT_EVENT, this);
+			numOwnedEquipment = ownedEquipment.size();
+		}
+	}
+
+	/**
+	 * Removes an equipment from being owned by the settlement
+	 * 
+	 * @param r
+	 */
+	public void removeOwnedEquipment(Equipment e) {
+		if (ownedEquipment.contains(e)) {
+			ownedEquipment.remove(e);
+			fireUnitUpdate(UnitEventType.REMOVE_ASSOCIATED_EQUIPMENT_EVENT, this);
+			numOwnedEquipment = ownedEquipment.size();
+		}
 	}
 	
 	/**
@@ -2765,6 +2812,16 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 		return ownedVehicles;
 	}
 
+	/**
+	 * Gets all equipment associated with this settlement, even if they are out on
+	 * missions.
+	 *
+	 * @return collection of associated equipment.
+	 */
+	public Collection<Equipment> getAllAssociatedEquipment() {	
+		return ownedEquipment;
+	}
+	
 	/**
 	 * Gets all associated vehicles currently reserved for mission or on mission
 	 *

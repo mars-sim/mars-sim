@@ -892,7 +892,7 @@ public class BuildingManager implements Serializable {
 	 */
 	public static boolean addToGarage(GroundVehicle vehicle, Settlement settlement) {
 		// The following block of codes are for FIXING invalid states and setting them straight
-		if (vehicle.getStatus() == StatusType.GARAGED) {
+		if (vehicle.haveStatusType(StatusType.GARAGED)) {
 			if (vehicle.getSettlement() == null) {
 				// Place this vehicle inside a building
 //				vehicle.enter(LocationCodeType.BUILDING);
@@ -922,7 +922,7 @@ public class BuildingManager implements Serializable {
 				settlement.getInventory().storeUnit(vehicle);
 				LogConsolidated.log(Level.INFO, 1000, sourceName,
 						"[" + settlement.getName() + "] " +  vehicle.getName() + " has just been stowed inside " + getBuilding(vehicle, settlement));
-				vehicle.setStatus(StatusType.GARAGED);
+				vehicle.addStatus(StatusType.GARAGED);
 			}
 			return true;
 		}

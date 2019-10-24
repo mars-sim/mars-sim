@@ -248,10 +248,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 			if (vehicle.isReservedForMission())
 				usable = false;
 
-			StatusType status = vehicle.getStatus();
-			if (!(vehicle.getStatus() == StatusType.PARKED || vehicle.getStatus() == StatusType.GARAGED)
-					&& !status.equals(StatusType.MAINTENANCE))
-				usable = false;
+			usable = vehicle.isVehicleReady();
 
 			if (vehicle.getInventory().getTotalInventoryMass(false) > 0D)
 				usable = false;
@@ -268,6 +265,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 		if (getVehicle() == newVehicle) {
 			if (newVehicle.isReservedForMaintenance()) {
 				newVehicle.setReservedForMaintenance(false);
+				newVehicle.removeStatus(StatusType.MAINTENANCE);
 			}
 		}
 	}

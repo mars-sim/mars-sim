@@ -128,7 +128,7 @@ public class PartyUtils extends ChatUtils {
 			// For vehicles
 			else if (!vehicleList.isEmpty()) {
 				Vehicle vehicle = vehicleList.get(0);
-				if (vehicle.getStatus() == StatusType.MAINTENANCE) {
+				if (vehicle.haveStatusType(StatusType.MAINTENANCE)) {
 					// Case 4: decomissioned
 					responseText.append(SYSTEM_PROMPT);
 					responseText.append("I'm sorry. ");

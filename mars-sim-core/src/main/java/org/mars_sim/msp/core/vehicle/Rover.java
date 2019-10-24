@@ -217,6 +217,10 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 	public void setTowedVehicle(Vehicle towedVehicle) {
 		if (this == towedVehicle)
 			throw new IllegalArgumentException("Rover cannot tow itself.");
+		if (towedVehicle != null) {
+			// if towedVehicle is not null, it means this rover has just hooked up for towing the towedVehicle
+			addStatus(StatusType.TOWING);
+		}
 		this.towedVehicle = towedVehicle;
 		//updatedTowedVehicleSettlementLocation();
 	}
@@ -386,10 +390,10 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 		if (isInSettlement())
 			return true;
 		
-		StatusType st = getStatus();
-		if (st == StatusType.GARAGED)
+		if (haveStatusType(StatusType.GARAGED))
 			return true;
-		if (st == StatusType.TOWED)
+		
+		if (haveStatusType(StatusType.TOWED))
 			return true;
 		
 		return false;
@@ -527,7 +531,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 				// TODO: need to model the power usage
 				
 				double p = 0;
-				if (getStatus() == StatusType.GARAGED)
+				if (haveStatusType(StatusType.GARAGED))
 					p = getGarage().getCurrentTemperature();
 				else 
 					p = getSettlement().getTemperature();// * (malfunctionManager.getTemperatureModifier() / 100D);
@@ -575,7 +579,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 				// TODO: need to model the power usage
 				
 				double p = 0;
-				if (getStatus() == StatusType.GARAGED)
+				if (haveStatusType(StatusType.GARAGED))
 					p = getGarage().getCurrentAirPressure();
 				else 
 					p = getSettlement().getAirPressure();// * (malfunctionManager.getAirPressureModifier() / 100D);

@@ -98,6 +98,8 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
 
 		// Add vehicle to building.
 		vehicles.add(vehicle);
+		vehicle.addStatus(StatusType.PARKED);
+		vehicle.removeStatus(StatusType.MOVING);
 
 		// Put vehicle in assigned parking location within building.
 		ParkingLocation location = getEmptyParkingLocation();
@@ -138,9 +140,9 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
 			if (parkedLoc != null) {
 				parkedLoc.clearParking();
 			}
-			
 
-			vehicle.setStatus(StatusType.PARKED);
+			vehicle.removeStatus(StatusType.PARKED);
+			vehicle.removeStatus(StatusType.GARAGED);
 			
 			vehicle.determinedSettlementParkedLocationAndFacing();
 

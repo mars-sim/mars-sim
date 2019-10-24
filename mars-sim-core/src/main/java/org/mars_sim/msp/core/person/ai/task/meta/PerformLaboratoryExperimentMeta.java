@@ -26,6 +26,7 @@ import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.core.structure.Lab;
 import org.mars_sim.msp.core.tool.RandomUtil;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * Meta task for the PerformLaboratoryExperiment task.
@@ -70,7 +71,7 @@ public class PerformLaboratoryExperimentMeta implements MetaTask, Serializable {
         
         if (person.isInVehicle()) {	
 	        // Check if person is in a moving rover.
-	        if (PerformLaboratoryExperiment.inMovingRover(person)) {
+	        if (Vehicle.inMovingRover(person)) {
 	            return 0;
 	        }
 	        else

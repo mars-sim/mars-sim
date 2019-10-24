@@ -168,17 +168,18 @@ public abstract class RoverMission extends VehicleMission {
 			boolean usable = true;
 			if (vehicle.isReservedForMission())
 				usable = false;
+			
 			if (!allowMaintReserved && vehicle.isReserved())
 				usable = false;
-			if (vehicle.getStatus() != StatusType.PARKED && vehicle.getStatus() != StatusType.GARAGED)
-				usable = false;
+
+			usable = vehicle.isVehicleReady();
+			
 			if (vehicle.getInventory().getTotalInventoryMass(false) > 0D)
 				usable = false;
+			
 			if (!(vehicle instanceof Rover))
 				usable = false;
-			if (vehicle.getStatus() == StatusType.MAINTENANCE || vehicle.getStatus() == StatusType.MALFUNCTION)
-				usable = false;
-			
+
 			if (usable) {
 				if (result == null)
 					// so far, this is the first vehicle being picked
@@ -210,13 +211,13 @@ public abstract class RoverMission extends VehicleMission {
 			boolean usable = true;
 			if (vehicle.isReservedForMission())
 				usable = false;
+			
 			if (!allowMaintReserved && vehicle.isReserved())
 				usable = false;
-			if (vehicle.getStatus() != StatusType.PARKED && vehicle.getStatus() != StatusType.GARAGED)
-				usable = false;
+			
+			usable = vehicle.isVehicleReady();
+				
 			if (!(vehicle instanceof Rover))
-				usable = false;
-			if (vehicle.getStatus() == StatusType.MAINTENANCE || vehicle.getStatus() == StatusType.MALFUNCTION)
 				usable = false;
 			
 			if (vehicle.getInventory().getTotalInventoryMass(false) > 0D)

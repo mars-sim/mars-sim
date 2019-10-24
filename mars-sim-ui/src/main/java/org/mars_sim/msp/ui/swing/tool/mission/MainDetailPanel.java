@@ -63,7 +63,6 @@ import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
-import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -81,6 +80,7 @@ import com.alee.laf.text.WebTextField;
 /**
  * The tab panel for showing mission details.
  */
+@SuppressWarnings("serial")
 public class MainDetailPanel extends WebPanel implements ListSelectionListener, MissionListener, UnitListener {
 
 	// Custom mission panel IDs.
@@ -609,10 +609,10 @@ public class MainDetailPanel extends WebPanel implements ListSelectionListener, 
 					isVehicle = true;
 					vehicleButton.setText(vehicle.getName());
 					vehicleButton.setVisible(true);
-					StatusType s = vehicle.getStatus();
+//					List<StatusType> types = vehicle.getStatusTypes();
 					// if (s == null)
 					// s = "Not Applicable";
-					vehicleStatusLabel.setText(s.getName());
+					vehicleStatusLabel.setText(vehicle.printStatusTypes());
 					speedLabel.setText(Msg.getString("MainDetailPanel.kmhSpeed", formatter.format(vehicle.getSpeed()))); //$NON-NLS-1$
 					try {
 						int distanceNextNav = (int) vehicleMission.getCurrentLegRemainingDistance();
@@ -640,7 +640,7 @@ public class MainDetailPanel extends WebPanel implements ListSelectionListener, 
 						isVehicle = true;
 						vehicleButton.setText(vehicle.getName());
 						vehicleButton.setVisible(true);
-						vehicleStatusLabel.setText(vehicle.getStatus().getName()); // $NON-NLS-1$
+						vehicleStatusLabel.setText(vehicle.printStatusTypes());
 						speedLabel.setText(
 								Msg.getString("MainDetailPanel.kmhSpeed", formatter.format(vehicle.getSpeed()))); //$NON-NLS-1$
 						distanceNextNavLabel.setText(Msg.getString("MainDetailPanel.kmNextNavPoint", "0")); //$NON-NLS-1$ //$NON-NLS-2$
@@ -658,7 +658,7 @@ public class MainDetailPanel extends WebPanel implements ListSelectionListener, 
 						isVehicle = true;
 						vehicleButton.setText(vehicle.getName());
 						vehicleButton.setVisible(true);
-						vehicleStatusLabel.setText(vehicle.getStatus().getName()); // $NON-NLS-1$
+						vehicleStatusLabel.setText(vehicle.printStatusTypes());
 						speedLabel.setText(
 								Msg.getString("MainDetailPanel.kmhSpeed", formatter.format(vehicle.getSpeed()))); //$NON-NLS-1$
 						distanceNextNavLabel.setText(Msg.getString("MainDetailPanel.kmNextNavPoint", "0")); //$NON-NLS-1$ //$NON-NLS-2$
@@ -829,10 +829,7 @@ public class MainDetailPanel extends WebPanel implements ListSelectionListener, 
 				if (vehicle != null) {
 					vehicleButton.setText(vehicle.getName());
 					vehicleButton.setVisible(true);
-					StatusType s = vehicle.getStatus();
-					// if (s == null)
-					// s = "Not Applicable";
-					vehicleStatusLabel.setText(s.getName());
+					vehicleStatusLabel.setText(vehicle.printStatusTypes());
 					speedLabel.setText(Msg.getString("MainDetailPanel.kmhSpeed", formatter.format(vehicle.getSpeed()))); //$NON-NLS-1$
 					vehicle.addUnitListener(panel);
 					currentVehicle = vehicle;
@@ -878,10 +875,7 @@ public class MainDetailPanel extends WebPanel implements ListSelectionListener, 
 			UnitEventType type = event.getType();
 			Vehicle vehicle = (Vehicle) event.getSource();
 			if (type == UnitEventType.STATUS_EVENT) {
-				StatusType s = vehicle.getStatus();
-				// if (s == null)
-				// s = "Not Applicable";
-				vehicleStatusLabel.setText(s.getName());
+				vehicleStatusLabel.setText(vehicle.printStatusTypes());
 			} else if (type == UnitEventType.SPEED_EVENT)
 				speedLabel.setText(Msg.getString("MainDetailPanel.kmhSpeed", formatter.format(vehicle.getSpeed()))); //$NON-NLS-1$
 		}

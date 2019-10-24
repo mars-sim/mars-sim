@@ -89,7 +89,7 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 	/** Normal temperature (celsius). */
 	private static final double NORMAL_TEMP = 25D;
 	/** The wear lifetime value of 334 Sols (1/2 orbit). */
-	private static final double WEAR_LIFETIME = 334000D;
+	private static final double WEAR_LIFETIME = 334_000;
 	/** The maintenance time of 20 millisols. */
 	private static final double MAINTENANCE_TIME = 20D;
 	
@@ -411,11 +411,9 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 //				setLastOwner(person);
 				malfunctionManager.activeTimePassing(time);	
 			}
-			
-			malfunctionManager.timePassing(time);
 		}
 
-
+		malfunctionManager.timePassing(time);
 	}
 
 	/**
@@ -469,7 +467,9 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 
 	@Override
 	public Settlement getAssociatedSettlement() {
-		return getContainerUnit().getAssociatedSettlement();
+		Settlement s = getContainerUnit().getAssociatedSettlement();
+		if (s == null) s = super.getAssociatedSettlement();
+		return s;
 	}
 
 	@Override

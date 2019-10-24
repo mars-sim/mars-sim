@@ -117,10 +117,10 @@ public class MalfunctionManager implements Serializable {
 	/** The max percentage between 0% to 100%.  */
 //	private double maxCondition;
 	/**
-	 * The expected life time (millisols) of active use before the malfunctionable
+	 * The expected life time [in millisols] of active use before the malfunctionable
 	 * is worn out.
 	 */
-	private double wearLifeTime;
+	private final double wearLifeTime;
 
 	// Life support modifiers.
 //	private double oxygenFlowModifier = 100D;
@@ -131,6 +131,14 @@ public class MalfunctionManager implements Serializable {
 	/** The owning entity. */
 	private Malfunctionable entity;
 
+	private Unit unit;
+	private EVASuit suit;
+//	private Settlement settlement;
+	private Building building;
+	private Robot robot;
+	private Equipment equipment;
+	private Vehicle vehicle;
+	
 	/** The collection of affected scopes. */
 	private Collection<String> scopes;
 	/** The current malfunctions in the unit. */
@@ -165,6 +173,31 @@ public class MalfunctionManager implements Serializable {
 
 		// Initialize data members
 		this.entity = entity;
+		
+		if (entity.getUnit() instanceof Vehicle) {
+			vehicle = (Vehicle)entity.getUnit();
+		}
+
+		else if (entity.getUnit() instanceof EVASuit) {
+			suit = (EVASuit)entity.getUnit();
+		}
+
+		else if (entity.getUnit() instanceof Robot) {
+			robot = (Robot)entity.getUnit();
+		}
+
+		else if (entity.getUnit() instanceof Building) {
+			building = (Building)entity.getUnit();
+		}
+		
+		else if (entity.getUnit() instanceof Equipment) {
+			equipment = (Equipment)entity.getUnit();
+		}
+		else {
+			unit = (Unit)entity.getUnit();
+		}
+		
+		
 		timeSinceLastMaintenance = 0D;
 		effectiveTimeSinceLastMaintenance = 0D;
 		scopes = new ArrayList<String>();
@@ -793,7 +826,7 @@ public class MalfunctionManager implements Serializable {
 		effectiveTimeSinceLastMaintenance += time;
 
 		// Add time to wear condition.
-		wearCondition -= (time / wearLifeTime) * 100D;
+		wearCondition = wearCondition - (time / wearLifeTime) * 100D;
 		if (wearCondition < 0D)
 			wearCondition = 0D;
 
@@ -894,17 +927,14 @@ public class MalfunctionManager implements Serializable {
 				boolean gen = !m.isGeneralRepairDone();
 				if (emerg || eva || gen) {
 					Settlement settlement = null;
-					Vehicle vehicle = null;
-					EVASuit eVASuit = null;
+					Vehicle vehicle0 = null;
 					
 					Collection<Person> people = null;
 					
-					if (entity.getUnit() instanceof EVASuit) {
-						eVASuit = (EVASuit)(entity.getUnit());
-//						System.out.println(m.getName() + " : " + eVASuit.getName());
-						people = eVASuit.getAffectedPeople();
-						settlement = ((EVASuit)(entity.getUnit())).getSettlement();	
-						vehicle = ((EVASuit)(entity.getUnit())).getVehicle();
+					if (suit != null) {
+						people = suit.getAffectedPeople();
+						settlement = suit.getSettlement();	
+						vehicle0 = ((EVASuit)(entity.getUnit())).getVehicle();
 						if (!people.isEmpty()) {
 							people.stream()
 							.filter(p -> p.getJobName().contains(Engineer.class.getSimpleName())
@@ -912,11 +942,18 @@ public class MalfunctionManager implements Serializable {
 								.collect(Collectors.toList());
 						}
 						
-						if (people.isEmpty()) {
-							people = settlement.getIndoorPeople();			
+						if (people.isEmpty() && vehicle != null) {
+							people = vehicle.getAffectedPeople();		
 						}
 						if (people.isEmpty()) {
-							people = vehicle.getAffectedPeople();		
+							
+							if (settlement != null) {
+								people = settlement.getIndoorPeople();
+							}
+							else {
+								settlement = suit.getAssociatedSettlement();	
+								people = settlement.getIndoorPeople();
+							}
 						}
 					}
 					else if (entity.getUnit() instanceof Settlement 
@@ -925,8 +962,8 @@ public class MalfunctionManager implements Serializable {
 						settlement = entity.getUnit().getSettlement();
 //						System.out.println(m.getName() + " : " + settlement.getName());
 					}
-					else if (entity.getUnit() instanceof Vehicle) {
-						vehicle = (Vehicle) entity.getUnit();
+					else if (vehicle != null) {
+						vehicle0 = vehicle;
 //						System.out.println(m.getName() + " : " + vehicle.getName());
 					} 
 					
@@ -953,13 +990,13 @@ public class MalfunctionManager implements Serializable {
 						
 					}
 					
-					else if (vehicle != null) {
-						people = vehicle.getAffectedPeople();
+					else if (vehicle0 != null) {
+						people = vehicle0.getAffectedPeople();
 //						System.out.println(people);
 						Collection<Person> elites = people;
 						
-						if (people.size() == 0 && vehicle instanceof Rover) {
-							people = ((Rover)vehicle).getCrew();
+						if (people.size() == 0 && vehicle0 instanceof Rover) {
+							people = ((Rover)vehicle0).getCrew();
 //							System.out.println(people);
 						}
 						
@@ -997,8 +1034,8 @@ public class MalfunctionManager implements Serializable {
 						LogConsolidated.log(Level.INFO, 10_000, sourceName,
 								"[" + entity.getLocale() + "] " + chosen + " would handle the repair due to " 
 								+ Conversion.capitalize(m.getName()) + " on "
-								+ entity.getUnit() + " in "
-								+ entity.getImmediateLocation());
+								+ entity.getUnit());
+//								+ " in " + entity.getImmediateLocation());
 
 						if (emerg) chosen.getMind().getTaskManager().addTask(new RepairEmergencyMalfunction(chosen));	
 						else if (gen) chosen.getMind().getTaskManager().addTask(new RepairMalfunction(chosen));
@@ -1038,15 +1075,28 @@ public class MalfunctionManager implements Serializable {
 				}
 
 				String chiefRepairer = m.getChiefRepairer();
-
+				String loc = "";
+				if (vehicle != null)
+					loc = vehicle.getAssociatedSettlement().getName();
+				else if (suit != null)
+					loc = suit.getAssociatedSettlement().getName();
+				else if (building != null)
+					loc = building.getSettlement().getName();			
+				else if (robot != null)
+					loc = robot.getAssociatedSettlement().getName();
+				else if (equipment != null)
+					loc = equipment.getAssociatedSettlement().getName();
+				else if (unit != null)
+					loc = unit.getAssociatedSettlement().getName();
+				
 				HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_FIXED, m,
 						m.getName(), "Repairing", chiefRepairer, entity.getImmediateLocation(),
-						entity.getLocale(), entity.getUnit().getAssociatedSettlement().getName());
+						entity.getLocale(), loc);
 
 				eventManager.registerNewEvent(newEvent);
 				
 				LogConsolidated.log(Level.WARNING, 0, sourceName,
-						"[" + entity.getLocale() + "] The malfunction '" + m.getName() + "' has been fixed in "
+						"[" + entity.getLocale() + "] The malfunction '" + m.getName() + "' has been dealt with in "
 						+ entity.getImmediateLocation());
 			
 				// Remove the malfunction

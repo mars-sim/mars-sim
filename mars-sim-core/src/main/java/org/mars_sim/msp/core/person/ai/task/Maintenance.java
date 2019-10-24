@@ -382,7 +382,7 @@ public class Maintenance extends Task implements Serializable {
 		boolean result = false;
 		if (malfunctionable instanceof Vehicle) {
 			Vehicle v = (Vehicle) malfunctionable;
-			if (v.getStatus() == StatusType.MALFUNCTION) {
+			if (v.haveStatusType(StatusType.MALFUNCTION)) {
 				result = true;
 			}
 		}

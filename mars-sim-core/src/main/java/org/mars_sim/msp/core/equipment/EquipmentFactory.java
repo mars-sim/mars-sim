@@ -55,7 +55,6 @@ public final class EquipmentFactory {
 	 */
 	public static Equipment createEquipment(int id, Coordinates location, boolean temp) {
 		return createEquipment(EquipmentType.convertID2Enum(id).getName(), location, temp);
-//		return createEquipment(unitManager.getEquipmentByID(id).getName(), location, temp);
 	}
 
 	/**
@@ -106,31 +105,6 @@ public final class EquipmentFactory {
 	public static Equipment createEquipment(Class<? extends Equipment> equipmentClass, Coordinates location,
 			boolean temp) {
 		return createEquipment(EquipmentType.convertClass2Type(equipmentClass).getName(), location, temp);
-		
-//		if (temp) {
-//			String name = EquipmentType.convertClass2Type(equipmentClass).getName();
-//			if (equipmentTypeCache.containsKey(name))
-//				return equipmentTypeCache.get(name);
-//			else {
-//				Equipment equipment = createEquipment(name, location, false);
-//				equipmentTypeCache.put(name, equipment);
-//				return equipment;
-//			}
-//		}
-//		if (Bag.class.equals(equipmentClass))
-//			return new Bag(location);
-//		else if (Barrel.class.equals(equipmentClass))
-//			return new Barrel(location);
-//		else if (EVASuit.class.equals(equipmentClass))
-//			return new EVASuit(location);
-//		else if (GasCanister.class.equals(equipmentClass))
-//			return new GasCanister(location);
-//		else if (LargeBag.class.equals(equipmentClass))
-//			return new LargeBag(location);
-//		else if (SpecimenBox.class.equals(equipmentClass))
-//			return new SpecimenBox(location);
-//		else
-//			throw new IllegalStateException("Equipment: " + equipmentClass + " could not be constructed.");
 	}
 
 	/**

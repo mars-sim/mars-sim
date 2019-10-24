@@ -151,8 +151,8 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	protected transient List<Function> functions;
 //	private static List<FunctionType> functionTypes = buildingConfig.getBuildingFunctions();
 	
-	/** Default : 3340 Sols (5 orbits). */
-	private int wearLifeTime = 3340000;
+	/** Default : 3340 Sols (5 orbits). Will be overridden by the value from buildings.xml for each building type. */
+	private int wearLifeTime = 3_340_000;
 	/** Default : 50 millisols maintenance time. */
 	private int maintenanceTime = 50;
 	/** Default : 22.5 deg celsius. */

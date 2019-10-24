@@ -25,7 +25,6 @@ import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.tool.RandomUtil;
-import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
@@ -71,7 +70,7 @@ public class CompileScientificStudyResultsMeta implements MetaTask, Serializable
         
         if (person.isInVehicle()) {	
 	        // Check if person is in a moving rover.
-	        if (inMovingRover(person)) {
+	        if (Vehicle.inMovingRover(person)) {
 	            return 0;
 	        } 	       
 	        else
@@ -167,31 +166,6 @@ public class CompileScientificStudyResultsMeta implements MetaTask, Serializable
         return result;
     }
 
-    /**
-     * Checks if the person is in a moving vehicle.
-     * @param person the person.
-     * @return true if person is in a moving vehicle.
-     */
-    public static boolean inMovingRover(Person person) {
-
-        boolean result = false;
-
-        if (person.isInVehicle()) {
-            Vehicle vehicle = person.getVehicle();
-            if (vehicle.getStatus() == StatusType.MOVING) {
-                result = true;
-            }
-            else if (vehicle.getStatus() == StatusType.TOWED) {
-                Vehicle towingVehicle = vehicle.getTowingVehicle();
-                if (towingVehicle.getStatus() == StatusType.MOVING ||
-                        towingVehicle.getStatus() == StatusType.TOWED) {
-                    result = false;
-                }
-            }
-        }
-
-        return result;
-    }
     
 	@Override
 	public Task constructInstance(Robot robot) {

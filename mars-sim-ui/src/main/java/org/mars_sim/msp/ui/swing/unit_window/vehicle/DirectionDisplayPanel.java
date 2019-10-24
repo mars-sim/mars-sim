@@ -116,8 +116,7 @@ public class DirectionDisplayPanel extends JPanel {
 		g.drawString("E", centerX + letterRadius - (eWidth / 2), centerY + (fontHeight / 2));
 
 		// Draw direction line if necessary
-		StatusType status = vehicle.getStatus();
-		if (status == StatusType.MOVING || (status == StatusType.STUCK && vehicle.getSpeed() > 0D)) {
+		if (vehicle.haveStatusType(StatusType.MOVING) || (vehicle.haveStatusType(StatusType.STUCK) && vehicle.getSpeed() > 0D)) {
 			Direction direction = vehicle.getDirection();
 			double hyp = (double) (CIRCLE_RADIUS);
 			int newX = (int) Math.round(hyp * direction.getSinDirection());

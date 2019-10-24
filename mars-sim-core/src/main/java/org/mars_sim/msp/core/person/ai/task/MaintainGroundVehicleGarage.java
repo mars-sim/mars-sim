@@ -38,6 +38,7 @@ import org.mars_sim.msp.core.structure.building.function.VehicleMaintenance;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
+import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
@@ -87,6 +88,7 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 			vehicle = getNeedyGroundVehicle(person);
 			if (vehicle != null) {
 				vehicle.setReservedForMaintenance(true);
+	            vehicle.addStatus(StatusType.MAINTENANCE);
 			}
 		}
 
@@ -97,6 +99,7 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 			vehicle = getNeedyGroundVehicle(robot);
 			if (vehicle != null) {
 				vehicle.setReservedForMaintenance(true);
+	            vehicle.addStatus(StatusType.MAINTENANCE);
 			}
 		}
 
@@ -227,6 +230,8 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 			}
 		} else {
 			vehicle.setReservedForMaintenance(false);
+	        vehicle.removeStatus(StatusType.MAINTENANCE);
+	        
 			if (vehicle instanceof Crewable) {
 				Crewable crewableVehicle = (Crewable) vehicle;
 				if (crewableVehicle.getCrewNum() == 0 && crewableVehicle.getRobotCrewNum() == 0) {
@@ -266,6 +271,7 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 		if (manager.getEffectiveTimeSinceLastMaintenance() == 0D) {
 			// logger.info(person.getName() + " finished " + description);
 			vehicle.setReservedForMaintenance(false);
+			vehicle.removeStatus(StatusType.MAINTENANCE);
 			if (vehicle instanceof Crewable) {
 				Crewable crewableVehicle = (Crewable) vehicle;
 				if (crewableVehicle.getCrewNum() == 0) {

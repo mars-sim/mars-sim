@@ -7,6 +7,8 @@
 
 package org.mars.sim.console;
 
+import java.util.List;
+
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.resource.ResourceUtil;
@@ -14,6 +16,7 @@ import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
+import org.mars_sim.msp.core.vehicle.StatusType;
 
 public class VehicleChatUtils extends ChatUtils {
 
@@ -47,8 +50,18 @@ public class VehicleChatUtils extends ChatUtils {
 			int max = 28;
 
 			responseText.append(System.lineSeparator());
-			responseText.append(addWhiteSpacesRightName("Status : ", max) + vehicleCache.getStatus().getName());
+			responseText.append(addWhiteSpacesRightName("Status : ", max));
 
+			List<StatusType> statusTypes = vehicleCache.getStatusTypes();
+	
+			responseText.append(System.lineSeparator());
+			int size = statusTypes.size();
+			for (int i=0; i< size; i++) {
+				StatusType st = statusTypes.get(i);
+				responseText.append(addWhiteSpacesRightName((i+1) + ". " + Conversion.capitalize(st.getName()), max + 9));
+				responseText.append(System.lineSeparator());
+			}
+			
 			responseText.append(System.lineSeparator());
 			responseText.append(addWhiteSpacesRightName("Associated Settlement : ", max)
 					+ vehicleCache.getAssociatedSettlement().getName());
