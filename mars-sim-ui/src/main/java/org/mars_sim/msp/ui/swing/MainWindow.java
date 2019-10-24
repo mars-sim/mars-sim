@@ -352,8 +352,7 @@ extends JComponent {
 		memMax = (int) Math.round(Runtime.getRuntime().maxMemory()) / 1_000_000;
 		memMaxLabel.setText("[ " + memMax + " MB ] ");// "Total Designated Memory : " + memMax + " MB");
 		TooltipManager.setTooltip(memMaxLabel, "Memory Designated", TooltipWay.up);
-		statusBar.addRightComponent(memMaxLabel, false, false);
-		statusBar.addRightComponent(new JLabel(new AngledLinesWindowsCornerIcon()), false, true);
+		statusBar.addRightComponent(memMaxLabel, false, true);
 
 		bottomPane.add(statusBar, BorderLayout.SOUTH);
 
@@ -666,7 +665,7 @@ extends JComponent {
 			}
 			
 				// Save the current main window ui config
-				UIConfig.INSTANCE.saveFile(this);
+//				UIConfig.INSTANCE.saveFile(this);
 
 //			SwingUtilities.invokeLater(() -> {
 				desktop.disposeAnnouncementWindow();
@@ -719,7 +718,7 @@ extends JComponent {
 	 */
 	public void exitSimulation() {
 		// Save the UI configuration.
-		UIConfig.INSTANCE.saveFile(this);
+//		UIConfig.INSTANCE.saveFile(this);
 
 		// Save the simulation.
 //		Simulation sim = Simulation.instance();

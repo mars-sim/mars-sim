@@ -148,16 +148,12 @@ public class MainDetailPanel extends WebPanel implements ListSelectionListener, 
 
 		// Create the main panel.
 		Box mainBox = Box.createVerticalBox();
-		// JPanel mainPane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
 		mainBox.setBorder(new MarsPanelBorder());
-//		add(mainBox, BorderLayout.CENTER);
-//		scrollPane.add(mainBox, BorderLayout.CENTER);
 		scrollPane.setViewportView(mainBox);
 
 		// Create the description panel.
 		Box infoBox = new CustomBox();
 		infoBox.setAlignmentX(Component.LEFT_ALIGNMENT);
-		// infoPane.setSize(new Dimension(200, 200));
 		infoBox.setBorder(new MarsPanelBorder());
 		mainBox.add(infoBox);
 
@@ -177,14 +173,9 @@ public class MainDetailPanel extends WebPanel implements ListSelectionListener, 
 		// descriptionTF.setFont(new Font("Serif", Font.PLAIN, 10));
 		descriptionTF.setToolTipText(Msg.getString("MainDetailPanel.tf.description")); //$NON-NLS-1$
 
-//		descriptionLabel = new WebLabel("None", WebLabel.LEFT);
-//		//descriptionLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-//		descriptionLabel.setToolTipText(Msg.getString("MainDetailPanel.description")); //$NON-NLS-1$
-
-		String s = "";
 		// Implement the missing descriptionLabel
 		if (missionWindow.getCreateMissionWizard() != null) {
-			s = Conversion.capitalize(missionWindow.getCreateMissionWizard().getTypePanel().getDesignation());// getDescription());
+			String s = Conversion.capitalize(missionWindow.getCreateMissionWizard().getTypePanel().getDesignation());// getDescription());
 			descriptionTF.setText(s);
 		}
 
@@ -410,7 +401,6 @@ public class MainDetailPanel extends WebPanel implements ListSelectionListener, 
 		memberTableModel = new MemberTableModel();
 
 		// Create member table.
-		// memberTable = new JTable(memberTableModel);
 		memberTable = new ZebraJTable(memberTableModel);
 		// memberTable.setPreferredSize(new Dimension(300, 250));
 		memberTable.getColumnModel().getColumn(0).setPreferredWidth(40);
@@ -444,12 +434,9 @@ public class MainDetailPanel extends WebPanel implements ListSelectionListener, 
 
 		// Create the mission custom panel.
 		customPanelLayout = new CardLayout();
-		// missionCustomPane = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		missionCustomPane = new WebPanel(customPanelLayout);
-		// missionCustomPane.add(customPanelLayout);
 		missionCustomPane.setBorder(new MarsPanelBorder());
 		missionCustomPane.setAlignmentX(Component.LEFT_ALIGNMENT);
-		// scrollPane.add(missionCustomPane);
 		mainBox.add(missionCustomPane);
 
 		// Create custom empty panel.
@@ -552,16 +539,16 @@ public class MainDetailPanel extends WebPanel implements ListSelectionListener, 
 		if (mission != null) {
 			// Update mission info in UI.
 
-			if (missionWindow.getCreateMissionWizard() != null
-					&& missionWindow.getCreateMissionWizard().getTypePanel().getDesignation() != null) {
-				String now = missionWindow.getCreateMissionWizard().getTypePanel().getDesignation();// .getDescription();
-				// Set the description based on what has been input by the mission creation
-				// wizard
-				mission.setDescription(now);
-				descriptionTF.setText(now);
-			}
+//			if (missionWindow.getCreateMissionWizard() != null
+//					&& missionWindow.getCreateMissionWizard().getTypePanel().getDesignation() != null) {
+//				String now = missionWindow.getCreateMissionWizard().getTypePanel().getDesignation();// .getDescription();
+//				// Set the description based on what has been input by the mission creation
+//				// wizard
+//				mission.setDescription(now);
+//				descriptionTF.setText(now);
+//			}
 
-			else if (mission.getDescription() != null) {
+			if (mission.getDescription() != null) {
 				descriptionTF.setText(Conversion.capitalize(mission.getDescription()));
 			}
 
@@ -599,7 +586,7 @@ public class MainDetailPanel extends WebPanel implements ListSelectionListener, 
 				phaseText = phaseText.substring(0, 48) + "...";
 			phaseLabel.setText(phaseText); // $NON-NLS-1$
 
-			int memberNum = mission.getMembersNumber();
+			int memberNum = mission.getMembersNumberCache();
 			int minMembers = mission.getMinMembers();
 			String maxMembers = ""; //$NON-NLS-1$
 
@@ -609,8 +596,7 @@ public class MainDetailPanel extends WebPanel implements ListSelectionListener, 
 				maxMembers = Msg.getString("MainDetailPanel.unlimited"); //$NON-NLS-1$
 			}
 
-			memberNumLabel
-					.setText(Msg.getString("MainDetailPanel.missionMembersMinMax", memberNum, minMembers, maxMembers)); //$NON-NLS-1$
+			memberNumLabel.setText(Msg.getString("MainDetailPanel.missionMembersMinMax", memberNum, minMembers, maxMembers)); //$NON-NLS-1$
 			memberTableModel.setMission(mission);
 			centerMapButton.setEnabled(true);
 
@@ -618,7 +604,7 @@ public class MainDetailPanel extends WebPanel implements ListSelectionListener, 
 			boolean isVehicle = false;
 			if (mission instanceof VehicleMission) {
 				VehicleMission vehicleMission = (VehicleMission) mission;
-				Vehicle vehicle = vehicleMission.getVehicle();
+				Vehicle vehicle = vehicleMission.getVehicleCache();
 				if (vehicle != null) {
 					isVehicle = true;
 					vehicleButton.setText(vehicle.getName());
@@ -633,11 +619,15 @@ public class MainDetailPanel extends WebPanel implements ListSelectionListener, 
 						distanceNextNavLabel.setText(Msg.getString("MainDetailPanel.kmNextNavPoint", distanceNextNav)); //$NON-NLS-1$
 					} catch (Exception e2) {
 					}
+					
 					double travelledDistance = Math.round(vehicleMission.getActualTotalDistanceTravelled()*10.0)/10.0;
 					double totalDistance = Math.round(vehicleMission.getProposedRouteTotalDistance()*10.0)/10.0;
+					
 					traveledLabel.setText(Msg.getString("MainDetailPanel.kmTraveled", //$NON-NLS-1$
 							travelledDistance, totalDistance));
+					
 					vehicle.addUnitListener(this);
+					
 					currentVehicle = vehicle;
 				}
 			} else if (mission instanceof BuildingConstructionMission) {
@@ -681,13 +671,13 @@ public class MainDetailPanel extends WebPanel implements ListSelectionListener, 
 			if (!isVehicle) {
 				// NOTE: do NOT clear the vehicle info. Leave the info there for future viewing
 				
-//				// Clear vehicle info.
-//				vehicleButton.setVisible(false);
-//				vehicleStatusLabel.setText(""); //$NON-NLS-1$ //$NON-NLS-2$
-//				speedLabel.setText(Msg.getString("MainDetailPanel.kmhSpeed", "0")); //$NON-NLS-1$ //$NON-NLS-2$
-//				distanceNextNavLabel.setText(Msg.getString("MainDetailPanel.kmNextNavPoint", "0")); //$NON-NLS-1$ //$NON-NLS-2$
-//				traveledLabel.setText(Msg.getString("MainDetailPanel.kmTraveled", "0", "0")); //$NON-NLS-1$ //$NON-NLS-2$
-//				currentVehicle = null;
+				// Clear vehicle info.
+				vehicleButton.setVisible(false);
+				vehicleStatusLabel.setText(""); //$NON-NLS-1$ //$NON-NLS-2$
+				speedLabel.setText(Msg.getString("MainDetailPanel.kmhSpeed", "0")); //$NON-NLS-1$ //$NON-NLS-2$
+				distanceNextNavLabel.setText(Msg.getString("MainDetailPanel.kmNextNavPoint", "0")); //$NON-NLS-1$ //$NON-NLS-2$
+				traveledLabel.setText(Msg.getString("MainDetailPanel.kmTraveled", "0", "0")); //$NON-NLS-1$ //$NON-NLS-2$
+				currentVehicle = null;
 			}
 
 			// Add mission listener.
@@ -695,25 +685,26 @@ public class MainDetailPanel extends WebPanel implements ListSelectionListener, 
 			currentMission = mission;
 		}
 		
-		// NOTE: do NOT clear the mission info. Leave the info there for future viewing
-		
-//		else {
-//			// Clear mission info in UI.
-//			descriptionTF.setText(""); //$NON-NLS-1$ //$NON-NLS-2$
-//			typeLabel.setText(""); //$NON-NLS-1$ //$NON-NLS-2$
-//			phaseLabel.setText(""); //$NON-NLS-1$ //$NON-NLS-2$
-//			memberNumLabel.setText(""); //$NON-NLS-1$ //$NON-NLS-2$
-//			memberTableModel.setMission(null);
-//			centerMapButton.setEnabled(false);
-//			vehicleButton.setVisible(false);
-//			vehicleStatusLabel.setText(""); //$NON-NLS-1$ //$NON-NLS-2$
-//			speedLabel.setText(Msg.getString("MainDetailPanel.kmhSpeed", "0")); //$NON-NLS-1$ //$NON-NLS-2$
-//			distanceNextNavLabel.setText(Msg.getString("MainDetailPanel.kmNextNavPoint", "0")); //$NON-NLS-1$ //$NON-NLS-2$
-//			traveledLabel.setText(Msg.getString("MainDetailPanel.kmTraveled", "0", "0")); //$NON-NLS-1$ //$NON-NLS-2$
-//			currentMission = null;
-//			currentVehicle = null;
-//			customPanelLayout.show(missionCustomPane, EMPTY);
-//		}
+
+		else {
+			// NOTE: do NOT clear the mission info. Leave the info there for future viewing
+			
+			// Clear mission info in UI.
+			descriptionTF.setText(""); //$NON-NLS-1$ //$NON-NLS-2$
+			typeLabel.setText(""); //$NON-NLS-1$ //$NON-NLS-2$
+			phaseLabel.setText(""); //$NON-NLS-1$ //$NON-NLS-2$
+			memberNumLabel.setText(""); //$NON-NLS-1$ //$NON-NLS-2$
+			memberTableModel.setMission(null);
+			centerMapButton.setEnabled(false);
+			vehicleButton.setVisible(false);
+			vehicleStatusLabel.setText(""); //$NON-NLS-1$ //$NON-NLS-2$
+			speedLabel.setText(Msg.getString("MainDetailPanel.kmhSpeed", "0")); //$NON-NLS-1$ //$NON-NLS-2$
+			distanceNextNavLabel.setText(Msg.getString("MainDetailPanel.kmNextNavPoint", "0")); //$NON-NLS-1$ //$NON-NLS-2$
+			traveledLabel.setText(Msg.getString("MainDetailPanel.kmTraveled", "0", "0")); //$NON-NLS-1$ //$NON-NLS-2$
+			currentMission = null;
+			currentVehicle = null;
+			customPanelLayout.show(missionCustomPane, EMPTY);
+		}
 
 		// Update custom mission panel.
 		updateCustomPanel(mission);

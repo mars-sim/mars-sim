@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LogConsolidated;
@@ -26,12 +27,20 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.equipment.EVASuit;
+import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.PersonalityTraitType;
+import org.mars_sim.msp.core.person.ai.SkillType;
+import org.mars_sim.msp.core.person.ai.job.Engineer;
+import org.mars_sim.msp.core.person.ai.job.Technician;
+import org.mars_sim.msp.core.person.ai.task.RepairEVAMalfunction;
+import org.mars_sim.msp.core.person.ai.task.RepairEmergencyMalfunction;
+import org.mars_sim.msp.core.person.ai.task.RepairMalfunction;
+import org.mars_sim.msp.core.person.ai.task.meta.RepairMalfunctionMeta;
 import org.mars_sim.msp.core.person.health.Complaint;
 import org.mars_sim.msp.core.person.health.ComplaintType;
 import org.mars_sim.msp.core.person.health.MedicalManager;
@@ -45,6 +54,7 @@ import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.tool.RandomUtil;
+import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
@@ -774,7 +784,7 @@ public class MalfunctionManager implements Serializable {
 //	 }
 
 	/**
-	 * Time passing while the unit is being actively used.
+	 * Time passing for tracking the wear and tear condition while the unit is being actively used.
 	 * 
 	 * @param time amount of time passing (in millisols)
 	 */
@@ -879,48 +889,123 @@ public class MalfunctionManager implements Serializable {
 		// Check if any malfunctions are fixed.
 		if (hasMalfunction()) {
 			for (Malfunction m : malfunctions) {
-//				if (!m.isEmergencyRepairDone()) {
-//					
-//					Settlement settlement = null;
-//					
-//					if (entity.getUnit() instanceof EVASuit) {
-//						settlement = ((EVASuit)(entity.getUnit())).getSettlement();
-//					}
-//					else {
-//						settlement = entity.getUnit().getSettlement();
-//					}		
-//					
-//					if (settlement != null) {
-//						Collection<Person> people = settlement.getAffectedPeople();
-//						
-//						if (people.isEmpty()) {
-//							people.stream()
-//								.filter(p -> p.getJobName().toLowerCase().contains("engineer")
-//										|| p.getJobName().toLowerCase().contains("technician"))
-//								.collect(Collectors.toList());
-//						}
-//						
-//						if (people.isEmpty()) {
-//							people = settlement.getIndoorPeople();			
-//						}
-//						
-//						Person chosen = null;
-//						int highestScore = 0;
-//	
-//						for (Person p : people) {
-//							int score = p.getPreference().getPreferenceScore(new RepairMalfunctionMeta());
-//							if (highestScore < score) {
-//								highestScore = score;
-//								chosen = p;
-//							}
-//						}
-//						
-//						if (highestScore > 0 && chosen != null && chosen.isInside()) {
-//							System.out.println(chosen + " has been selected to perform RepairEmergencyMalfunction.");
-//							chosen.getMind().getTaskManager().addTask(new RepairEmergencyMalfunction(chosen));	
-//						}
-//					}
-//				}
+				boolean emerg = !m.isEmergencyRepairDone();
+				boolean eva = !m.isEVARepairDone();
+				boolean gen = !m.isGeneralRepairDone();
+				if (emerg || eva || gen) {
+					Settlement settlement = null;
+					Vehicle vehicle = null;
+					EVASuit eVASuit = null;
+					
+					Collection<Person> people = null;
+					
+					if (entity.getUnit() instanceof EVASuit) {
+						eVASuit = (EVASuit)(entity.getUnit());
+//						System.out.println(m.getName() + " : " + eVASuit.getName());
+						people = eVASuit.getAffectedPeople();
+						settlement = ((EVASuit)(entity.getUnit())).getSettlement();	
+						vehicle = ((EVASuit)(entity.getUnit())).getVehicle();
+						if (!people.isEmpty()) {
+							people.stream()
+							.filter(p -> p.getJobName().contains(Engineer.class.getSimpleName())
+									|| p.getJobName().contains(Technician.class.getSimpleName()))
+								.collect(Collectors.toList());
+						}
+						
+						if (people.isEmpty()) {
+							people = settlement.getIndoorPeople();			
+						}
+						if (people.isEmpty()) {
+							people = vehicle.getAffectedPeople();		
+						}
+					}
+					else if (entity.getUnit() instanceof Settlement 
+							|| entity.getUnit() instanceof Building
+							|| entity.getUnit() instanceof Equipment) {
+						settlement = entity.getUnit().getSettlement();
+//						System.out.println(m.getName() + " : " + settlement.getName());
+					}
+					else if (entity.getUnit() instanceof Vehicle) {
+						vehicle = (Vehicle) entity.getUnit();
+//						System.out.println(m.getName() + " : " + vehicle.getName());
+					} 
+					
+					
+					if (settlement != null) {
+						people = settlement.getAffectedPeople();
+						Collection<Person> elites = people;
+						
+						if (people.size() == 0) {
+							people = settlement.getIndoorPeople();
+						}
+						
+						if (!people.isEmpty()) {
+							elites = people.stream()
+									.filter(p -> p.getJobName().contains(Engineer.class.getSimpleName())
+											|| p.getJobName().contains(Technician.class.getSimpleName()))
+								.collect(Collectors.toList());
+						}
+						
+						
+						if (!elites.isEmpty() && elites.size() != 0) {
+							people = elites;			
+						}
+						
+					}
+					
+					else if (vehicle != null) {
+						people = vehicle.getAffectedPeople();
+//						System.out.println(people);
+						Collection<Person> elites = people;
+						
+						if (people.size() == 0 && vehicle instanceof Rover) {
+							people = ((Rover)vehicle).getCrew();
+//							System.out.println(people);
+						}
+						
+						if (!people.isEmpty()) {
+							elites = people.stream()
+								.filter(p -> p.getJobName().contains(Engineer.class.getSimpleName())
+										|| p.getJobName().contains(Technician.class.getSimpleName()))
+								.collect(Collectors.toList());
+//							System.out.println(elites);
+						}
+						
+						
+						if (!elites.isEmpty() && elites.size() != 0) {
+							people = elites;			
+						}
+						
+					}
+					
+					Person chosen = null;
+					int highestScore = -100;
+
+					for (Person p : people) {
+						int pref = p.getPreference().getPreferenceScore(new RepairMalfunctionMeta());
+						int skill = p.getSkillManager().getSkillLevel(SkillType.MECHANICS);
+						int exp = p.getSkillManager().getSkillExp(SkillType.MECHANICS);
+						int score = pref + skill * 3 + exp;
+						if (highestScore < score) {
+							highestScore = score;
+							chosen = p;
+//							System.out.println(chosen.getName() + " : " + highestScore);
+						}
+					}
+					
+					if (highestScore > 0 && chosen != null) {
+						LogConsolidated.log(Level.INFO, 10_000, sourceName,
+								"[" + entity.getLocale() + "] " + chosen + " would handle the repair due to " 
+								+ Conversion.capitalize(m.getName()) + " on "
+								+ entity.getUnit() + " in "
+								+ entity.getImmediateLocation());
+
+						if (emerg) chosen.getMind().getTaskManager().addTask(new RepairEmergencyMalfunction(chosen));	
+						else if (gen) chosen.getMind().getTaskManager().addTask(new RepairMalfunction(chosen));
+						else if (eva) chosen.getMind().getTaskManager().addTask(new RepairEVAMalfunction(chosen));
+					}
+					
+				}
 				
 				if (m.isFixed()) {
 					fixedMalfunctions.add(m);

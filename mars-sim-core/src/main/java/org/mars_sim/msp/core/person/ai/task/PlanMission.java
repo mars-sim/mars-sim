@@ -86,9 +86,9 @@ public class PlanMission extends Task implements Serializable {
 	 */
 	public PlanMission(Person person) {
 		// Use Task constructor.
-		super(NAME, person, true, false, STRESS_MODIFIER, true, 20D + RandomUtil.getRandomInt(0, 5));
+		super(NAME, person, true, false, STRESS_MODIFIER, true, 100D + RandomUtil.getRandomInt(0, 10) - RandomUtil.getRandomInt(0, 10));
 
-		logger.info(person + " was at PlanMission.");
+//		logger.info(person + " was at PlanMission.");
 		
 //		roleType = person.getRole().getType();
 		
@@ -166,12 +166,18 @@ public class PlanMission extends Task implements Serializable {
 		boolean canDo = person.getMind().canStartNewMission();
 		
 		if (!canDo) {
-			LogConsolidated.log(Level.INFO, 0, sourceName, 
-					"[" + person.getAssociatedSettlement() + "] " + person + " cannot select a new mission.");
+//			LogConsolidated.log(Level.INFO, 10_000, sourceName, 
+//					"[" + person.getAssociatedSettlement() + "] " + person.getName() + " cannot select a new mission.");
 			endTask();
 		}
 		else {
 			person.getMind().getNewAction(false, canDo);
+			LogConsolidated.log(Level.INFO, 10_000, sourceName, 
+					"[" + person.getAssociatedSettlement() + "] " + person.getName() + " was looking into the mission needs of the settlement.");
+			
+			Mission mission = person.getMind().getMission();
+			if (mission != null)
+				setPhase(SUBMITTING);
 		}
 		
         return 0;
@@ -207,8 +213,8 @@ public class PlanMission extends Task implements Serializable {
 			// 4. requestApprovalPhase() in VehicleMission will call requestApprovalPhase() in Mission
 		}
 			
-		LogConsolidated.log(Level.INFO, 0, sourceName, 
-				"[" + person.getAssociatedSettlement() + "] " + person + " just selected the " + mission.getMissionType().getName());
+		LogConsolidated.log(Level.INFO, 10_000, sourceName, 
+				"[" + person.getAssociatedSettlement() + "] " + person.getName() + " just selected the " + mission.toString());
 		
 		// Add experience
 		addExperience(time);     

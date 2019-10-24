@@ -82,6 +82,9 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	private String description;
 
 	// Data members
+	/** The vehicle recorded as being used in the mission. */	
+	private Vehicle vehicleCache;
+	/** The vehicle currently used in the mission. */
 	private Vehicle vehicle;
 	/** The last operator of this vehicle in the mission. */
 	private VehicleOperator lastOperator;
@@ -172,6 +175,16 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	}
 
 	/**
+	 * Gets the vehicle being used in this mission if there is one.
+	 * 
+	 * @return vehicle or null if none.
+	 */
+	public final Vehicle getVehicleCache() {
+		return vehicleCache;
+	}	
+	
+	
+	/**
 	 * Sets the vehicle for this mission.
 	 * 
 	 * @param newVehicle the vehicle to use.
@@ -183,6 +196,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			usable = isUsableVehicle(newVehicle);
 			if (usable) {
 				vehicle = newVehicle;
+				vehicleCache = newVehicle;
 				startingTravelledDistance = vehicle.getTotalDistanceTraveled();
 				newVehicle.setReservedForMission(true);
 				vehicle.addUnitListener(this);
@@ -215,6 +229,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		if (hasVehicle()) {
 			vehicle.setReservedForMission(false);
 			vehicle.removeUnitListener(this);
+//			vehicleCache = vehicle;
 			vehicle = null;
 			fireMissionUpdate(MissionEventType.VEHICLE_EVENT);
 		}
@@ -371,71 +386,9 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 				super.endMission();
 			}
 
-			else if (needHelp()) {
-				// Set emergency beacon if vehicle is not at settlement.
-				// TODO: need to find out if there are other matching reasons for setting
-				// emergency beacon.
-				if (vehicle.getSettlement() == null) {
-					// if the vehicle somewhere on Mars 
-					if (!vehicle.isBeaconOn()) {
-						// if the emergency beacon is off
-						// Question: could the emergency beacon itself be broken ?
-						LogConsolidated.log(Level.INFO, 0, sourceName,
-								"[" + startingMember.getLocationTag().getLocale() + "] " + startingMember
-										+ " turned on " + vehicle
-										+ "'s emergency beacon and request for towing with the following status flag(s) :");
-							
-							for (int i=0; i< getMissionStatus().size(); i++) {
-								logger.warning(" (" + i + "). " + getMissionStatus().get(i).getName());
-							}
-							
-						vehicle.setEmergencyBeacon(true);
-
-						if (vehicle.isBeingTowed()) {
-							// Note: the vehicle is being towed, wait till the journey is over
-							// don't end the mission yet
-							// So do not called setPhaseEnded(true) and super.endMission(reason);
-							LogConsolidated.log(Level.INFO, 2000, sourceName,
-									"[" + vehicle.getLocationTag().getLocale() + "] "
-									+  vehicle.getName() + " is currently being towed by " + vehicle.getTowingVehicle());
-//									+ " Remaining distance : " + getClosestDistance() + " km.", null);
-						}
-					}
-
-					else {
-						// Note : if the emergency beacon is on, don't end the mission yet
-						// So do not called setPhaseEnded(true) and super.endMission(reason);
-//						 logger.info(vehicle + "'s emergency beacon is on. awaiting the response for
-//						 rescue right now.");
-					}
-				}
-
-				else { // Vehicle is already in the settlement vicinity
-					
-					if (!vehicle.isBeaconOn()) {
-						// if the emergency beacon is off
-						// Question: could the emergency beacon itself be broken ?
-						LogConsolidated.log(Level.INFO, 0, sourceName,
-								"[" + startingMember.getLocationTag().getLocale() + "] " + startingMember
-										+ " turned on " + vehicle
-										+ "'s emergency beacon and request for towing with the following status flag(s) :");
-							
-							for (int i=0; i< getMissionStatus().size(); i++) {
-								logger.warning(" (" + i + "). " + getMissionStatus().get(i).getName());
-							}
-						
-						vehicle.setEmergencyBeacon(true);
-					}
-					
-					// if the vehicle is still somewhere inside the settlement when it got broken
-					// down
-					// TODO: wait till the repair is done and the mission may resume ?!?
-					
-					leaveVehicle();
-					setPhaseEnded(true);
-					super.endMission();
-				}
-			} // end if for the 4 different reasons
+			else if (needHelp()) {		
+				getHelp();
+			}
 
 			else {
 				// for ALL OTHER REASONS
@@ -469,6 +422,72 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		}
 	}
 
+	public void getHelp() {
+		// Set emergency beacon if vehicle is not at settlement.
+		// TODO: need to find out if there are other matching reasons for setting
+		// emergency beacon.
+		if (vehicle.getSettlement() == null) {
+			// if the vehicle somewhere on Mars 
+			if (!vehicle.isBeaconOn()) {
+				// if the emergency beacon is off
+				// Question: could the emergency beacon itself be broken ?
+				LogConsolidated.log(Level.INFO, 0, sourceName,
+						"[" + startingMember.getLocationTag().getLocale() + "] " + startingMember
+								+ " turned on " + vehicle
+								+ "'s emergency beacon and request for towing with the following status flag(s) :");
+					
+					for (int i=0; i< getMissionStatus().size(); i++) {
+						logger.warning(" (" + (i+1) + "). " + getMissionStatus().get(i).getName());
+					}
+					
+				vehicle.setEmergencyBeacon(true);
+
+				if (vehicle.isBeingTowed()) {
+					// Note: the vehicle is being towed, wait till the journey is over
+					// don't end the mission yet
+					// So do not called setPhaseEnded(true) and super.endMission(reason);
+					LogConsolidated.log(Level.INFO, 2000, sourceName,
+							"[" + vehicle.getLocationTag().getLocale() + "] "
+							+  vehicle.getName() + " is currently being towed by " + vehicle.getTowingVehicle());
+//							+ " Remaining distance : " + getClosestDistance() + " km.", null);
+				}
+			}
+
+			else {
+				// Note : if the emergency beacon is on, don't end the mission yet
+				// So do not called setPhaseEnded(true) and super.endMission(reason);
+//				 logger.info(vehicle + "'s emergency beacon is on. awaiting the response for
+//				 rescue right now.");
+			}
+		}
+
+		else { // Vehicle is already in the settlement vicinity
+			
+			if (!vehicle.isBeaconOn()) {
+				// if the emergency beacon is off
+				// Question: could the emergency beacon itself be broken ?
+				LogConsolidated.log(Level.INFO, 0, sourceName,
+						"[" + startingMember.getLocationTag().getLocale() + "] " + startingMember
+								+ " turned on " + vehicle
+								+ "'s emergency beacon and request for towing with the following status flag(s) :");
+					
+					for (int i=0; i< getMissionStatus().size(); i++) {
+						logger.warning(" (" + i + "). " + getMissionStatus().get(i).getName());
+					}
+				
+				vehicle.setEmergencyBeacon(true);
+			}
+			
+			// if the vehicle is still somewhere inside the settlement when it got broken
+			// down
+			// TODO: wait till the repair is done and the mission may resume ?!?
+			
+			leaveVehicle();
+			setPhaseEnded(true);
+			super.endMission();
+		}
+	}
+	
 	/**
 	 * Determine if a vehicle is sufficiently loaded with fuel and supplies.
 	 * 
@@ -700,7 +719,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		// If vehicle has unrepairable malfunction, end mission.
 		if (hasUnrepairableMalfunction()) {
 			addMissionStatus(MissionStatus.UNREPAIRABLE_MALFUNCTION);
-			endMission();
+			getHelp();
 		}
 	}
 
@@ -969,7 +988,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		boolean hasMedicalEmergency = false;
 		Person person = (Person) member;
 
-		if ((member instanceof Person && ((Person) member).getPhysicalCondition().hasSeriousMedicalProblems())
+		if ((member instanceof Person && person.getPhysicalCondition().hasSeriousMedicalProblems())
 				|| hasEmergencyAllCrew()) {
 			hasMedicalEmergency = true;
 			// Creating medical emergency mission event.
@@ -980,7 +999,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 					member.getName(), 
 					member.getVehicle().getName(),
 					member.getLocationTag().getLocale(),
-					((Person)member).getAssociatedSettlement().getName()
+					person.getAssociatedSettlement().getName()
 					);
 			eventManager.registerNewEvent(newEvent);
 		} else {
@@ -992,13 +1011,13 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 					member.getName(), 
 					member.getVehicle().getName(),
 					member.getLocationTag().getLocale(),
-					((Person)member).getAssociatedSettlement().getName()
+					person.getAssociatedSettlement().getName()
 					);
 			eventManager.registerNewEvent(newEvent);
 		}
 
 
-		Settlement oldHome = ((Person) member).getAssociatedSettlement();
+		Settlement oldHome = person.getAssociatedSettlement();
 		
 		double oldDistance = getCurrentMissionLocation().getDistance(oldHome.getCoordinates());
 
@@ -1049,7 +1068,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 							member.getName(), 
 							member.getVehicle().getName(),
 							member.getLocationTag().getLocale(),
-							((Person)member).getAssociatedSettlement().getName()
+							person.getAssociatedSettlement().getName()
 							);
 					eventManager.registerNewEvent(newEvent);
 
@@ -1111,7 +1130,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 							member.getName(), 
 							member.getVehicle().getName(),
 							member.getLocationTag().getLocale(),
-							((Person)member).getAssociatedSettlement().getName()
+							person.getAssociatedSettlement().getName()
 							);
 					eventManager.registerNewEvent(newEvent);
 
@@ -1132,11 +1151,11 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 				// Don't have enough resources and can't go anywhere, turn on beacon next
 				if (hasMedicalEmergency) {
 					addMissionStatus(MissionStatus.MEDICAL_EMERGENCY);
-					endMission();
+					getHelp();
 				}
 				else {
 					addMissionStatus(MissionStatus.NOT_ENOUGH_RESOURCES);
-					endMission();
+					getHelp();
 				}
 			}
 
@@ -1146,11 +1165,11 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			
 			if (hasMedicalEmergency) {
 				addMissionStatus(MissionStatus.MEDICAL_EMERGENCY);
-				endMission();
+				getHelp();
 			}
 			else {
 				addMissionStatus(MissionStatus.NO_EMERGENCY_SETTLEMENT_DESTINATION_FOUND);
-				endMission();
+				getHelp();
 			}
 		}
 	}

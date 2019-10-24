@@ -124,7 +124,7 @@ implements UnitListener {
 	private void updateCollectionValueLabel() {
 		double resourceAmount = 0D;
 		if (missionRover != null) {
-			resourceAmount = missionRover.getInventory().getAmountResourceStored(resource, true);
+			resourceAmount = mission.getTotalCollectedResources();//missionRover.getInventory().getAmountResourceStored(resource, true);
 			if (resourceAmount > resourceAmountCache) {
 				resourceAmountCache = resourceAmount;
 			}
@@ -132,7 +132,11 @@ implements UnitListener {
 				resourceAmount = resourceAmountCache;
 			}
 		}
-
+		else {
+			resourceAmount = resourceAmountCache;
+		}
+		// TODO: save the resource collected in Mission
+		
 		// Update collection value label.
 		collectionValueLabel.setText(
 			Msg.getString(

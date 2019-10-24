@@ -97,6 +97,8 @@ public abstract class Mission implements Serializable {
 	private int minMembers;
 	/** The number of people that can be in the mission. */
 	private int missionCapacity;
+	/** The recorded number of people participated in this mission. */
+	private int membersCache;
 	/** Has the current phase ended? */
 	private boolean phaseEnded;
 	/** True if mission is completed. */
@@ -492,9 +494,19 @@ public abstract class Mission implements Serializable {
 	 * @return number of members.
 	 */
 	public final int getMembersNumber() {
-		return members.size();
+		membersCache = members.size();
+		return membersCache;
 	}
 
+	/**
+	 * Gets the number of members in the mission.
+	 * 
+	 * @return number of members.
+	 */
+	public final int getMembersNumberCache() {
+		return membersCache;
+	}
+	
 	/**
 	 * Gets the number of people in the mission.
 	 * 

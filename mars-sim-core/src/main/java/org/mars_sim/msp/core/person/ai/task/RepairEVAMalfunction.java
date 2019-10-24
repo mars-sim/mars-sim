@@ -33,12 +33,11 @@ import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
-import org.mars_sim.msp.core.robot.RoboticAttributeType;
 import org.mars_sim.msp.core.robot.RoboticAttributeManager;
+import org.mars_sim.msp.core.robot.RoboticAttributeType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -508,7 +507,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 //		if (isDone()) {
 			// Check if there are no more malfunctions.
 			if (isEVAMalfunction && malfunction.needEVARepair() && malfunction.isEVARepairDone()) {
-				LogConsolidated.log(Level.INFO, 0, sourceName,
+				LogConsolidated.log(Level.INFO, 10_000, sourceName,
 					"[" + person.getLocationTag().getLocale() + "] " + person.getName()
 						+ " wrapped up the EVA Repair of " + malfunction.getName() 
 						+ " in "+ entity + " (" + Math.round(malfunction.getCompletedEVAWorkTime()*10.0)/10.0 + " millisols spent).");
@@ -516,11 +515,10 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 			}
 			
 			else if (!isEVAMalfunction && malfunction.needGeneralRepair() && malfunction.isGeneralRepairDone()) {
-				LogConsolidated.log(Level.INFO, 0, sourceName,
+				LogConsolidated.log(Level.INFO, 10_000, sourceName,
 					"[" + person.getLocationTag().getLocale() + "] " + person.getName()
 						+ " wrapped up the General Repair of " + malfunction.getName() 
-						+ " in "+ entity + " (" + Math.round(malfunction.getCompletedGeneralWorkTime()*10.0)/10.0 + " millisols spent).");
-	
+						+ " in "+ entity + " (" + Math.round(malfunction.getCompletedGeneralWorkTime()*10.0)/10.0 + " millisols spent).");	
 				setPhase(WALK_BACK_INSIDE);
 			}
 //		}

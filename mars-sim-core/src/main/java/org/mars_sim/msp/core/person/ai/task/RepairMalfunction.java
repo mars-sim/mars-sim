@@ -21,7 +21,6 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
-import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.mars.MarsSurface;
 import org.mars_sim.msp.core.person.Person;
@@ -535,38 +534,36 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 		if (person != null) {
 			// Check if there are no more malfunctions.
 			if (isEmerg && malfunction.needEmergencyRepair() && malfunction.isEmergencyRepairDone()) {
-				LogConsolidated.log(Level.INFO, 0, sourceName,
+				LogConsolidated.log(Level.INFO, 10_000, sourceName,
 					"[" + person.getLocationTag().getLocale() + "] " + person.getName()
 						+ " wrapped up the Emergency Repair of " + malfunction.getName() 
 						+ " in "+ entity + " (" + Math.round(malfunction.getCompletedEmergencyWorkTime()*10.0)/10.0 + " millisols spent).");
-//				endTask();
 			}
 			
 			else if (isGeneral && malfunction.needGeneralRepair() && malfunction.isGeneralRepairDone()) {
-				LogConsolidated.log(Level.INFO, 0, sourceName,
+				LogConsolidated.log(Level.INFO, 10_000, sourceName,
 					"[" + person.getLocationTag().getLocale() + "] " + person.getName()
 						+ " had completed the General Repair of " + malfunction.getName() 
 						+ " in "+ entity + " (" + Math.round(malfunction.getCompletedGeneralWorkTime()*10.0)/10.0 + " millisols spent).");
-//				endTask();
 			}
+			endTask();
 		} 
 		
 		else if (robot != null) {
 			// Check if there are no more malfunctions.
 			if (isEmerg && malfunction.needEmergencyRepair() && malfunction.isEmergencyRepairDone()) {
-				LogConsolidated.log(Level.INFO, 0, sourceName,
+				LogConsolidated.log(Level.INFO, 10_000, sourceName,
 					"[" + robot.getLocationTag().getLocale() + "] " + robot.getName()
 					+ " wrapped up the Emergency Repair of " + malfunction.getName() 
 					+ " in "+ entity + " (" + Math.round(malfunction.getCompletedEmergencyWorkTime()*10.0)/10.0 + " millisols spent).");
-//				endTask();
 			}
 			else if (isGeneral && malfunction.needGeneralRepair() && malfunction.isGeneralRepairDone()) {
-				LogConsolidated.log(Level.INFO, 0, sourceName,
+				LogConsolidated.log(Level.INFO, 10_000, sourceName,
 					"[" + robot.getLocationTag().getLocale() + "] " + robot.getName()
 					+ " had completed the General Repair of " + malfunction.getName() 
 					+ " in "+ entity + " (" + Math.round(malfunction.getCompletedGeneralWorkTime()*10.0)/10.0 + " millisols spent).");
-//				endTask();
 			}
+			endTask();
 		}
 
 		return workTimeLeft;

@@ -102,13 +102,13 @@ public class RepairEmergencyMalfunction extends Task implements Repair, Serializ
 		if (getCreateEvents() && !isDone()) {
 			if (person != null)
 				startingEvent = new TaskEvent(person, this, entity, EventType.TASK_START,
-						person.getSettlement().getName(), "Repair Emergency Malfunction");
+						person.getLocationTag().getImmediateLocation(), "Repair Emergency Malfunction");
         	else if (robot != null)
                 startingEvent = new TaskEvent(robot, 
                 		this, 
                 		entity,
                 		EventType.TASK_START, 
-                		robot.getSettlement().getName(), 
+                		robot.getLocationTag().getImmediateLocation(), 
                 		"Repair Emergency Malfunction");
 
 			Simulation.instance().getEventManager().registerNewEvent(startingEvent);
@@ -120,13 +120,13 @@ public class RepairEmergencyMalfunction extends Task implements Repair, Serializ
 
 		if (malfunction != null) {
 			if (person != null) {
-				LogConsolidated.log(Level.INFO, 0, sourceName,
+				LogConsolidated.log(Level.INFO, 10_000, sourceName,
 						"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " started repairing on emergency malfunction: " 
 				+ malfunction.getName() + " in "+ entity + ".");
 //				+ "@"+ Integer.toHexString(malfunction.hashCode()));
 			}
         	else if (robot != null) {
-				LogConsolidated.log(Level.INFO, 0, sourceName,
+				LogConsolidated.log(Level.INFO, 10_000, sourceName,
 						"[" + robot.getLocationTag().getLocale() + "] " + robot.getName() + " started repairing on emergency malfunction: " 
 				+ malfunction.getName() + " in "+ entity + ".");
 //				+ "@" + Integer.toHexString(malfunction.hashCode()));
@@ -187,20 +187,20 @@ public class RepairEmergencyMalfunction extends Task implements Repair, Serializ
 //		checkForAccident(time);
 
 		// Check if the emergency malfunction work is fixed.
-		if (malfunction.needEmergencyRepair() && malfunction.isEmergencyRepairDone()) {	
+		if (malfunction.needEmergencyRepair() && malfunction.isEmergencyRepairDone()) {
 			if (person != null) {
-			LogConsolidated.log(Level.INFO, 0, sourceName,
+			LogConsolidated.log(Level.INFO, 10_000, sourceName,
 					"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
 					+ " wrapped up the emergency repair of " + malfunction.getName() 
 					+ " in "+ entity + " (" + Math.round(malfunction.getCompletedEmergencyWorkTime()*10.0)/10.0 + " millisols spent).");
 			}
 			else {
-				LogConsolidated.log(Level.INFO, 0, sourceName,
+				LogConsolidated.log(Level.INFO, 10_000, sourceName,
 						"[" + robot.getLocationTag().getLocale() + "] " + robot.getName() 
 						+ " wrapped up the emergency repair of " + malfunction.getName() 
 						+ " in "+ entity + " (" + Math.round(malfunction.getCompletedEmergencyWorkTime()*10.0)/10.0 + " millisols spent).");
 			}
-//			endTask();
+			endTask();
 		}
 		
 		return remainingWorkTime;

@@ -10,6 +10,7 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.LifeSupportInterface;
@@ -423,26 +424,26 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 	 */
 	@Override
 	public Collection<Person> getAffectedPeople() {
-		Collection<Person> people = super.getAffectedPeople();
-		if (getContainerUnit() instanceof Person) {
-			if (!people.contains(getContainerUnit())) {
-				people.add((Person) getContainerUnit());
-			}
-		}
+//		Collection<Person> people = super.getAffectedPeople();
+//		if (getContainerUnit() instanceof Person) {
+//			if (!people.contains(getContainerUnit())) {
+//				people.add((Person) getContainerUnit());
+//			}
+//		}
 		
-
 //		Person p = (Person) getInventory().findUnitOfClass(Person.class);
 //		people.add(p);
 //		for (Unit u : getInventory().getContainedUnits()) {
 //		}
-//		List<Person> pp = getInventory().getAllContainedUnits()
-//				.stream()
-//				.filter(u -> u instanceof Person)
-//				.map(p -> (Person) p)
-//				.collect(Collectors.toList());
-//		people.addAll(pp);
 		
-		return people;
+		return getInventory().getAllContainedUnits()
+				.stream()
+				.filter(u -> u instanceof Person)
+				.map(p -> (Person) p)
+				.collect(Collectors.toList());
+		
+//		people.addAll(pp);
+//		return people;
 	}
 
 	@Override
