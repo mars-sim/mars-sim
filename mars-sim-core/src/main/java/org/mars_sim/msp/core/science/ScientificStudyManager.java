@@ -33,9 +33,9 @@ public class ScientificStudyManager // extends Thread
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(ScientificStudyManager.class.getName());
-	private static String loggerName = logger.getName();
-	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+	private static final Logger logger = Logger.getLogger(ScientificStudyManager.class.getName());
+	private static final String loggerName = logger.getName();
+	private static final String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 	
 	// Data members
 	private List<ScientificStudy> studies;

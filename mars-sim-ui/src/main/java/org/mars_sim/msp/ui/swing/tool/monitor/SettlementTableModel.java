@@ -42,7 +42,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 @SuppressWarnings("serial")
 public class SettlementTableModel extends UnitTableModel {
 
-	private static Logger logger = Logger.getLogger(SettlementTableModel.class.getName());
+	private final static Logger logger = Logger.getLogger(SettlementTableModel.class.getName());
 
 	// Column indexes
 	private final static int NAME = 0;
@@ -65,9 +65,9 @@ public class SettlementTableModel extends UnitTableModel {
 	/** The number of Columns. */
 	private final static int COLUMNCOUNT = 15;
 	/** Names of Columns. */
-	private static String columnNames[];
+	private final static String columnNames[];
 	/** Types of columns. */
-	private static Class<?> columnTypes[];
+	private final static Class<?> columnTypes[];
 
 	static {
 		columnNames = new String[COLUMNCOUNT];
@@ -111,19 +111,19 @@ public class SettlementTableModel extends UnitTableModel {
 
 	private Map<Unit, Map<Integer, Double>> resourceCache;
 
-	private DecimalFormat df = new DecimalFormat("#,###,##0.00");
+	private final DecimalFormat df = new DecimalFormat("#,###,##0.00");
 
-	private static int regolithID = ResourceUtil.regolithID;
-	private static int oxygenID = ResourceUtil.oxygenID;
-	private static int waterID = ResourceUtil.waterID;
-	private static int methaneID = ResourceUtil.methaneID;
-	private static int rockSamplesID = ResourceUtil.rockSamplesID;
-	private static int iceID = ResourceUtil.iceID;
+	private final static int regolithID = ResourceUtil.regolithID;
+	private final static int oxygenID = ResourceUtil.oxygenID;
+	private final static int waterID = ResourceUtil.waterID;
+	private final static int methaneID = ResourceUtil.methaneID;
+	private final static int rockSamplesID = ResourceUtil.rockSamplesID;
+	private final static int iceID = ResourceUtil.iceID;
 	
-	private static int greyWaterID = ResourceUtil.greyWaterID;
-	private static int blackWaterID = ResourceUtil.blackWaterID;
-	private static int co2ID = ResourceUtil.co2ID;
-	private static int hydrogenID = ResourceUtil.hydrogenID;
+	private final static int greyWaterID = ResourceUtil.greyWaterID;
+	private final static int blackWaterID = ResourceUtil.blackWaterID;
+	private final static int co2ID = ResourceUtil.co2ID;
+	private final static int hydrogenID = ResourceUtil.hydrogenID;
 	
 	/**
 	 * Constructs a SettlementTableModel model that displays all Settlements in the
@@ -414,7 +414,7 @@ public class SettlementTableModel extends UnitTableModel {
 	private double getResourceStored(Unit unit, int resource) {
 		// This is the quickest way but it may or may not work if the object reference
 		// of ARs have changed during (de)serialization.
-		return Math.round(unit.getInventory().getAmountResourceStored(resource, true) * 100.0) / 100.0;
+		return Math.round(unit.getInventory().getAmountResourceStored(resource, false) * 100.0) / 100.0;
 	}
 
 	/**

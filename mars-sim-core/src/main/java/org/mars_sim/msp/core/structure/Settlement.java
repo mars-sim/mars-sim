@@ -51,8 +51,6 @@ import org.mars_sim.msp.core.person.ai.job.Meteorologist;
 import org.mars_sim.msp.core.person.ai.job.Technician;
 import org.mars_sim.msp.core.person.ai.mission.AreologyFieldStudy;
 import org.mars_sim.msp.core.person.ai.mission.BiologyFieldStudy;
-import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
-import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
 import org.mars_sim.msp.core.person.ai.mission.CollectIce;
 import org.mars_sim.msp.core.person.ai.mission.CollectRegolith;
 import org.mars_sim.msp.core.person.ai.mission.EmergencySupply;
@@ -115,12 +113,12 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	/* default logger. */
-	private static Logger logger = Logger.getLogger(Settlement.class.getName());
+	private static final Logger logger = Logger.getLogger(Settlement.class.getName());
 
-	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
+	private static final String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
 			logger.getName().length());
 
-	private static String DETECTOR_GRID = "] The detector grid forecast a ";
+	private static final String DETECTOR_GRID = "] The detector grid forecast a ";
 
 	public static final int CHECK_GOODS = 5;
 	
@@ -403,14 +401,14 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	 */
 	private boolean hasDesignatedCommander = false;
 
-	private static int sample1 = ResourceUtil.findIDbyAmountResourceName("regolith");// "polyethylene");
-	private static int sample2 = ResourceUtil.findIDbyAmountResourceName("ice");// concrete");
+	private static final int sample1 = ResourceUtil.findIDbyAmountResourceName("regolith");// "polyethylene");
+	private static final int sample2 = ResourceUtil.findIDbyAmountResourceName("ice");// concrete");
 
-	private static int oxygenID = ResourceUtil.oxygenID;
-	private static int waterID = ResourceUtil.waterID;
-	private static int co2ID = ResourceUtil.co2ID;
-	private static int foodID = ResourceUtil.foodID;
-	private static int methaneID = ResourceUtil.methaneID;
+	private static final int oxygenID = ResourceUtil.oxygenID;
+	private static final int waterID = ResourceUtil.waterID;
+	private static final int co2ID = ResourceUtil.co2ID;
+	private static final int foodID = ResourceUtil.foodID;
+	private static final int methaneID = ResourceUtil.methaneID;
 
 	private static MaintenanceMeta maintenanceMeta;
 	private static MaintenanceEVAMeta maintenanceEVAMeta;
@@ -898,7 +896,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 
 		return citizens.stream()
 				.filter(p -> !p.isDeclaredDead() && p.getMind().getMission() != null
-						&& !p.getMind().getMission().getPhase().equals(VehicleMission.APPROVAL))
+						&& !p.getMind().getMission().getPhase().equals(VehicleMission.APPROVING))
 				.collect(Collectors.toList());
 
 	}

@@ -56,7 +56,7 @@ public class EmergencySupply extends RoverMission implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(EmergencySupply.class.getName());
+	private static final Logger logger = Logger.getLogger(EmergencySupply.class.getName());
 //	private static String loggerName = logger.getName();
 //	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 	
@@ -77,12 +77,12 @@ public class EmergencySupply extends RoverMission implements Serializable {
 	public static final double BASE_STARTING_PROBABILITY = 20D;
 
 	/** Mission phases. */
-	final public static MissionPhase SUPPLY_DELIVERY_DISEMBARKING = new MissionPhase(
+	public static final MissionPhase SUPPLY_DELIVERY_DISEMBARKING = new MissionPhase(
 			Msg.getString("Mission.phase.supplyDeliveryDisembarking")); //$NON-NLS-1$
-	final public static MissionPhase SUPPLY_DELIVERY = new MissionPhase(Msg.getString("Mission.phase.supplyDelivery")); //$NON-NLS-1$
-	final public static MissionPhase LOAD_RETURN_TRIP_SUPPLIES = new MissionPhase(
+	public static final MissionPhase SUPPLY_DELIVERY = new MissionPhase(Msg.getString("Mission.phase.supplyDelivery")); //$NON-NLS-1$
+	public static final MissionPhase LOAD_RETURN_TRIP_SUPPLIES = new MissionPhase(
 			Msg.getString("Mission.phase.loadReturnTripSupplies")); //$NON-NLS-1$
-	final public static MissionPhase RETURN_TRIP_EMBARKING = new MissionPhase(
+	public static final MissionPhase RETURN_TRIP_EMBARKING = new MissionPhase(
 			Msg.getString("Mission.phase.returnTripEmbarking")); //$NON-NLS-1$
 
 	// Data members.
@@ -157,8 +157,8 @@ public class EmergencySupply extends RoverMission implements Serializable {
 			addPhase(RETURN_TRIP_EMBARKING);
 
 			// Set initial phase
-			setPhase(VehicleMission.APPROVAL);//.EMBARKING);
-			setPhaseDescription(Msg.getString("Mission.phase.approval.description"));//, s.getName())); // $NON-NLS-1$
+			setPhase(VehicleMission.APPROVING);//.EMBARKING);
+			setPhaseDescription(Msg.getString("Mission.phase.approving.description"));//, s.getName())); // $NON-NLS-1$
 			if (logger.isLoggable(Level.INFO)) {
 				if (startingPerson != null && getRover() != null) {
 					logger.info("[" + s + "] " + startingPerson.getName()
@@ -246,7 +246,7 @@ public class EmergencySupply extends RoverMission implements Serializable {
 
 		// Set initial phase
 		setPhase(VehicleMission.EMBARKING);
-		setPhaseDescription(Msg.getString("Mission.phase.approval.description", getStartingSettlement().getName())); // $NON-NLS-1$
+		setPhaseDescription(Msg.getString("Mission.phase.embarking.description", getStartingSettlement().getName())); // $NON-NLS-1$
 		if (logger.isLoggable(Level.INFO)) {
 			Person startingPerson = (Person) members.toArray()[0];
 			if (startingPerson != null && getRover() != null) {
@@ -259,7 +259,7 @@ public class EmergencySupply extends RoverMission implements Serializable {
 
 	@Override
 	protected void determineNewPhase() {
-		if (APPROVAL.equals(getPhase())) {
+		if (APPROVING.equals(getPhase())) {
 			setPhase(VehicleMission.EMBARKING);
 			setPhaseDescription(
 					Msg.getString("Mission.phase.embarking.description", getCurrentNavpoint().getDescription()));//startingMember.getSettlement().toString())); // $NON-NLS-1$

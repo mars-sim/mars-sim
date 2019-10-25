@@ -54,9 +54,9 @@ public class Mining extends RoverMission {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(Mining.class.getName());
-	private static String loggerName = logger.getName();
-	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+	private static final Logger logger = Logger.getLogger(Mining.class.getName());
+	private static final String loggerName = logger.getName();
+	private static final String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 	
 	/** Default description. */
 	public static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.mining"); //$NON-NLS-1$
@@ -65,7 +65,7 @@ public class Mining extends RoverMission {
 	public static final MissionType missionType = MissionType.MINING;
 	
 	/** Mission phases */
-	final public static MissionPhase MINING_SITE = new MissionPhase(Msg.getString("Mission.phase.miningSite")); //$NON-NLS-1$
+	public static final MissionPhase MINING_SITE = new MissionPhase(Msg.getString("Mission.phase.miningSite")); //$NON-NLS-1$
 
 	/** Number of bags needed for mission. */
 	public static final int NUMBER_OF_BAGS = 20;
@@ -97,9 +97,9 @@ public class Mining extends RoverMission {
 	private Map<AmountResource, Double> excavatedMinerals;
 	private Map<AmountResource, Double> totalExcavatedMinerals;
 	
-	private static int oxygenID = ResourceUtil.oxygenID;
-	private static int waterID = ResourceUtil.waterID;
-	private static int foodID = ResourceUtil.foodID;
+	private static final int oxygenID = ResourceUtil.oxygenID;
+	private static final int waterID = ResourceUtil.waterID;
+	private static final int foodID = ResourceUtil.foodID;
 
 	/**
 	 * Constructor
@@ -169,8 +169,8 @@ public class Mining extends RoverMission {
 		addPhase(MINING_SITE);
 
 		// Set initial mission phase.
-		setPhase(VehicleMission.APPROVAL);//.EMBARKING);
-		setPhaseDescription(Msg.getString("Mission.phase.approval.description"));//, getStartingSettlement().getName())); // $NON-NLS-1$
+		setPhase(VehicleMission.APPROVING);//.EMBARKING);
+		setPhaseDescription(Msg.getString("Mission.phase.approving.description"));//, getStartingSettlement().getName())); // $NON-NLS-1$
 
 		logger.info("Done creating the Mining mission.");
 
@@ -253,7 +253,7 @@ public class Mining extends RoverMission {
 
 		// Set initial mission phase.
 		setPhase(VehicleMission.EMBARKING);
-		setPhaseDescription(Msg.getString("Mission.phase.approval.description"));//, getStartingSettlement().getName())); // $NON-NLS-1$
+		setPhaseDescription(Msg.getString("Mission.phase.embarking.description"));//, getStartingSettlement().getName())); // $NON-NLS-1$
 	}
 
 	/**
@@ -316,7 +316,7 @@ public class Mining extends RoverMission {
 	@Override
 	protected void determineNewPhase() {
 		logger.info(this.getStartingMember() + " had the phase of " + getPhase() + " in determineNewPhase().");
-		if (APPROVAL.equals(getPhase())) {
+		if (APPROVING.equals(getPhase())) {
 			setPhase(VehicleMission.EMBARKING);
 			setPhaseDescription(
 					Msg.getString("Mission.phase.embarking.description", getCurrentNavpoint().getDescription()));//startingMember.getSettlement().toString())); // $NON-NLS-1$

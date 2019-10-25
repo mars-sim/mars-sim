@@ -40,7 +40,7 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(TravelToSettlement.class.getName());
+	private static final Logger logger = Logger.getLogger(TravelToSettlement.class.getName());
 
 	/** Default description. */
 	public static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.travelToSettlement"); //$NON-NLS-1$
@@ -124,9 +124,9 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 			}
 
 			// Set initial phase
-			setPhase(VehicleMission.APPROVAL);//.EMBARKING);
+			setPhase(VehicleMission.APPROVING);//.EMBARKING);
 			setPhaseDescription(
-					Msg.getString("Mission.phase.approval.description", getStartingSettlement().getName())); // $NON-NLS-1$
+					Msg.getString("Mission.phase.approving.description", getStartingSettlement().getName())); // $NON-NLS-1$
 		}
 		// logger.info("Travel to Settlement mission");
 	}
@@ -166,7 +166,7 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 
 		// Set initial phase
 		setPhase(VehicleMission.EMBARKING);
-		setPhaseDescription(Msg.getString("Mission.phase.approval.description"));//, getStartingSettlement().getName())); // $NON-NLS-1$
+		setPhaseDescription(Msg.getString("Mission.phase.embarking.description"));//, getStartingSettlement().getName())); // $NON-NLS-1$
 
 		// Check if vehicle can carry enough supplies for the mission.
 		if (hasVehicle() && !isVehicleLoadable()) {
@@ -182,7 +182,7 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 	 */
 	@Override
 	protected void determineNewPhase() {
-		if (APPROVAL.equals(getPhase())) {
+		if (APPROVING.equals(getPhase())) {
 			setPhase(VehicleMission.EMBARKING);
 			setPhaseDescription(
 					Msg.getString("Mission.phase.embarking.description", getCurrentNavpoint().getDescription()));//startingMember.getSettlement().toString())); // $NON-NLS-1$

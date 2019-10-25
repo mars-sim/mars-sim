@@ -792,7 +792,7 @@ public class MissionManager implements Serializable {
 	 * 
 	 * @param mission
 	 */
-	public void requestMissionApproval(MissionPlanning plan) {
+	public void requestMissionApproving(MissionPlanning plan) {
 //		logger.info(plan.getMission().getStartingMember() + " was supposed to call requestMissionApproval()");
 		addMissionPlanning(plan);
 	}

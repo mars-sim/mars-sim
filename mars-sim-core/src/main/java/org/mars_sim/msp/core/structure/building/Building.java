@@ -84,12 +84,12 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	// default logger.
-	private static Logger logger = Logger.getLogger(Building.class.getName());
+	private static final Logger logger = Logger.getLogger(Building.class.getName());
 
-	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
+	private static final String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
 			logger.getName().length());
 	
-	public static String TYPE = SystemType.BUILDING.getName();
+	public static final String TYPE = SystemType.BUILDING.getName();
 	
 	public static final int TISSUE_CAPACITY = 20;
 	
@@ -129,19 +129,19 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	 * The safety factor when determining the wall/canopy thickness for an
 	 * inflatable greenhouse.
 	 */
-	private static double safety_factor = 1.5D;
+	private static final double safety_factor = 1.5D;
 	/**
 	 * The design pressure when determining the wall/canopy thickness for an
 	 * inflatable greenhouse.
 	 */
-	private static double design_pressure = 14.7 - 4; // [in psi]
+	private static final double design_pressure = 14.7 - 4; // [in psi]
 	/** The diameter of the canopy thickness for an inflatable greenhouse. */
 	private static double diameter;
 	/**
 	 * The tensile strength of the composite material when determining the
 	 * wall/canopy thickness for an inflatable greenhouse.
 	 */
-	private static double kevlar_tensile_strength = 100000; // [in psi] assume kevlar 49/epoxy
+	private static final double kevlar_tensile_strength = 100000; // [in psi] assume kevlar 49/epoxy
 
 	// Note : the typical values of penetrationThicknessOnAL for a 1 g/cm^3, 1 km/s
 	// meteorite can be .0010 to 0.0022 meter

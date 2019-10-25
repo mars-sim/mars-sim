@@ -14,15 +14,14 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
-import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
-import org.mars_sim.msp.core.structure.building.function.Manufacture;
 
 public class ItemResourceUtil implements Serializable {
 
@@ -43,15 +42,15 @@ public class ItemResourceUtil implements Serializable {
 	public static final String LASER_SINTERING_3D_PRINTER = "laser sintering 3d printer";
 	
 
-	public static Part pneumaticDrillAR = (Part) findItemResource(PNEUMATIC_DRILL);
-	public static Part backhoeAR = (Part) findItemResource(BACKHOE);
-	public static Part socketWrenchAR = (Part) findItemResource(SOCKET_WRENCH);
-	public static Part pipeWrenchAR = (Part) findItemResource(PIPE_WRENCH);
+	public static final Part pneumaticDrillAR = (Part) findItemResource(PNEUMATIC_DRILL);
+	public static final Part backhoeAR = (Part) findItemResource(BACKHOE);
+	public static final Part socketWrenchAR = (Part) findItemResource(SOCKET_WRENCH);
+	public static final Part pipeWrenchAR = (Part) findItemResource(PIPE_WRENCH);
 	
-	public static Part fireExtinguisherAR = (Part) findItemResource(EXTINGUSHER);
-	public static Part workGlovesAR = (Part) findItemResource(WORK_GLOVES);
-	public static Part mushroomBoxAR = (Part) findItemResource(CONTAINMENT);
-	public static Part smallHammerAR = (Part) findItemResource(SMALL_HAMMER);
+	public static final Part fireExtinguisherAR = (Part) findItemResource(EXTINGUSHER);
+	public static final Part workGlovesAR = (Part) findItemResource(WORK_GLOVES);
+	public static final Part mushroomBoxAR = (Part) findItemResource(CONTAINMENT);
+	public static final Part smallHammerAR = (Part) findItemResource(SMALL_HAMMER);
 
 	public static int pneumaticDrillID;
 	public static int backhoeID;

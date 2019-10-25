@@ -15,7 +15,6 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
@@ -58,12 +57,12 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 	private static final long serialVersionUID = 1L;
 
 	/* default logger. */
-	private static transient Logger logger = Logger.getLogger(Robot.class.getName());
+	private static final  Logger logger = Logger.getLogger(Robot.class.getName());
 //	private static String sourceName = logger.getName();
 
 	// Static members
 	/** The base carrying capacity (kg) of a robot. */
-	private final static double BASE_CAPACITY = 60D;
+	private static final double BASE_CAPACITY = 60D;
 	/** The enum type of this equipment. */
 	public static final String TYPE = "Robot";
 	/** Unloaded mass of EVA suit (kg.). */

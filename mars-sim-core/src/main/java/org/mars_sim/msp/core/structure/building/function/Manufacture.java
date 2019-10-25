@@ -525,7 +525,7 @@ public class Manufacture extends Function implements Serializable {
 									settlement.getCoordinates(), false);
 							equipment.setName(unitManager.getNewName(UnitType.EQUIPMENT, equipmentType, null, null));
 							// Place this equipment within a settlement
-							inv.storeUnit(equipment);
+//							inv.storeUnit(equipment);
 //							unitManager.addUnit(equipment);
 							unitManager.addEquipmentID(equipment);
 							// TODO: how to add tracking supply for equipment
@@ -610,9 +610,7 @@ public class Manufacture extends Function implements Serializable {
 							Equipment equipment = EquipmentFactory.createEquipment(equipmentType,
 									settlement.getCoordinates(), false);
 							equipment.setName(unitManager.getNewName(UnitType.EQUIPMENT, equipmentType, null, null));
-							// Place this equipment within a settlement
-//							equipment.enter(LocationCodeType.SETTLEMENT);
-							inv.storeUnit(equipment);
+//							inv.storeUnit(equipment);
 						}
 					} 
 					

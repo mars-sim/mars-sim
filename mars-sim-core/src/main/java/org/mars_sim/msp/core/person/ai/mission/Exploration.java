@@ -50,9 +50,9 @@ public class Exploration extends RoverMission implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(Exploration.class.getName());
-	private static String loggerName = logger.getName();
-	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+	private static final Logger logger = Logger.getLogger(Exploration.class.getName());
+	private static final String loggerName = logger.getName();
+	private static final String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 	
 	/** Default description. */
 	public static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.exploration"); //$NON-NLS-1$
@@ -61,7 +61,7 @@ public class Exploration extends RoverMission implements Serializable {
 	public static final MissionType missionType = MissionType.EXPLORATION;
 	
 	/** Mission phase. */
-	final public static MissionPhase EXPLORE_SITE = new MissionPhase(Msg.getString("Mission.phase.exploreSite")); //$NON-NLS-1$
+	public static final MissionPhase EXPLORE_SITE = new MissionPhase(Msg.getString("Mission.phase.exploreSite")); //$NON-NLS-1$
 
 	/** Number of specimen containers required for the mission. */
 	public static final int REQUIRED_SPECIMEN_CONTAINERS = 20;
@@ -70,10 +70,10 @@ public class Exploration extends RoverMission implements Serializable {
 	private static final int NUM_SITES = 5;
 
 	/** Amount of time to explore a site. */
-	public final static double EXPLORING_SITE_TIME = 1000D;
+	public static final double EXPLORING_SITE_TIME = 1000D;
 
 	/** Maximum mineral concentration estimation diff from actual. */
-	private final static double MINERAL_ESTIMATION_CEILING = 20D;
+	private static final double MINERAL_ESTIMATION_CEILING = 20D;
 
 	// Data members
 	/** Map of exploration sites and their completion. */
@@ -88,9 +88,9 @@ public class Exploration extends RoverMission implements Serializable {
 	private boolean endExploringSite;
 
 	// Static members
-	private static int oxygenID = ResourceUtil.oxygenID;
-	private static int waterID = ResourceUtil.waterID;
-	private static int foodID = ResourceUtil.foodID;
+	private static final int oxygenID = ResourceUtil.oxygenID;
+	private static final int waterID = ResourceUtil.waterID;
+	private static final int foodID = ResourceUtil.foodID;
 	
 	/**
 	 * Constructor.
@@ -154,8 +154,8 @@ public class Exploration extends RoverMission implements Serializable {
 			addPhase(EXPLORE_SITE);
 
 			// Set initial mission phase.
-			setPhase(VehicleMission.APPROVAL);//.EMBARKING);
-			setPhaseDescription(Msg.getString("Mission.phase.approval.description"));//, s.getName())); // $NON-NLS-1$
+			setPhase(VehicleMission.APPROVING);//.EMBARKING);
+			setPhaseDescription(Msg.getString("Mission.phase.approving.description"));//, s.getName())); // $NON-NLS-1$
 		}
 		
 		logger.info("Done creating the Exploration mission.");
@@ -223,7 +223,7 @@ public class Exploration extends RoverMission implements Serializable {
 
 		// Set initial mission phase.
 		setPhase(VehicleMission.EMBARKING);
-		setPhaseDescription(Msg.getString("Mission.phase.approval.description", startingSettlement.getName())); // $NON-NLS-1$
+		setPhaseDescription(Msg.getString("Mission.phase.embarking.description", startingSettlement.getName())); // $NON-NLS-1$
 
 		// Check if vehicle can carry enough supplies for the mission.
 		if (hasVehicle() && !isVehicleLoadable()) {
@@ -300,7 +300,7 @@ public class Exploration extends RoverMission implements Serializable {
 
 	@Override
 	protected void determineNewPhase() {
-		if (APPROVAL.equals(getPhase())) {
+		if (APPROVING.equals(getPhase())) {
 			setPhase(VehicleMission.EMBARKING);
 			setPhaseDescription(
 					Msg.getString("Mission.phase.embarking.description", getCurrentNavpoint().getDescription()));//startingMember.getSettlement().toString())); // $NON-NLS-1$

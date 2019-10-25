@@ -90,9 +90,9 @@ class MissionDataBean {
     private double constructionSiteFacing;
 
     private MissionType missionType;
-	private String type;
-	private String description;
-	private String designation;
+	private String type = "";
+	private String description = "";
+	private String designation = "";
 	
 	private Settlement startingSettlement;
 	private Settlement destinationSettlement;

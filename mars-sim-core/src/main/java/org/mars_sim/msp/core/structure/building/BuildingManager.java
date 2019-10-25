@@ -92,9 +92,9 @@ public class BuildingManager implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** default serial id. */
-	private static Logger logger = Logger.getLogger(BuildingManager.class.getName());
+	private static final Logger logger = Logger.getLogger(BuildingManager.class.getName());
 
-	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
+	private static final String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
 			logger.getName().length());
 
 	private transient MarsClock lastVPUpdateTime;

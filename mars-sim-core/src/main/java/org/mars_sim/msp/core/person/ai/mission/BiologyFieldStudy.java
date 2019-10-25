@@ -44,7 +44,7 @@ public class BiologyFieldStudy extends RoverMission implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(BiologyFieldStudy.class.getName());
+	private static final Logger logger = Logger.getLogger(BiologyFieldStudy.class.getName());
 //	private static String loggerName = logger.getName();
 //	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 	
@@ -55,11 +55,11 @@ public class BiologyFieldStudy extends RoverMission implements Serializable {
 	public static final MissionType missionType = MissionType.BIOLOGY;
 	
 	/** Mission phase. */
-	final public static MissionPhase RESEARCH_SITE = new MissionPhase(
+	public static final MissionPhase RESEARCH_SITE = new MissionPhase(
 			Msg.getString("Mission.phase.researchingFieldSite")); //$NON-NLS-1$
 
 	/** Amount of time to field a site. */
-	public final static double FIELD_SITE_TIME = 1000D;
+	public static final double FIELD_SITE_TIME = 1000D;
 
 	// Data members
 	/** External flag for ending research at the field site. */
@@ -74,11 +74,11 @@ public class BiologyFieldStudy extends RoverMission implements Serializable {
 	/** The person leading the biology research. */
 	private Person leadResearcher;
 
-	private static int oxygenID = ResourceUtil.oxygenID;
-	private static int waterID = ResourceUtil.waterID;
-	private static int foodID = ResourceUtil.foodID;
+	private static final int oxygenID = ResourceUtil.oxygenID;
+	private static final int waterID = ResourceUtil.waterID;
+	private static final int foodID = ResourceUtil.foodID;
 
-	private static ScienceType biology = ScienceType.BIOLOGY;
+	private static final ScienceType biology = ScienceType.BIOLOGY;
 
 	/**
 	 * Constructor.
@@ -141,8 +141,8 @@ public class BiologyFieldStudy extends RoverMission implements Serializable {
 			addPhase(RESEARCH_SITE);
 
 			// Set initial mission phase.
-			setPhase(VehicleMission.APPROVAL);//.EMBARKING);
-			setPhaseDescription(Msg.getString("Mission.phase.approval.description")); //$NON-NLS-1$
+			setPhase(VehicleMission.APPROVING);//.EMBARKING);
+			setPhaseDescription(Msg.getString("Mission.phase.approving.description")); //$NON-NLS-1$
 //					, s.getName()));
 
 		}
@@ -197,7 +197,7 @@ public class BiologyFieldStudy extends RoverMission implements Serializable {
 
 		// Set initial mission phase.
 		setPhase(VehicleMission.EMBARKING);
-		setPhaseDescription(Msg.getString("Mission.phase.approval.description" //$NON-NLS-1$
+		setPhaseDescription(Msg.getString("Mission.phase.embarking.description" //$NON-NLS-1$
 				, getStartingSettlement().getName()));
 
 		// Check if vehicle can carry enough supplies for the mission.
@@ -421,7 +421,7 @@ public class BiologyFieldStudy extends RoverMission implements Serializable {
 
 	@Override
 	protected void determineNewPhase() {
-		if (APPROVAL.equals(getPhase())) {
+		if (APPROVING.equals(getPhase())) {
 			setPhase(VehicleMission.EMBARKING);
 			setPhaseDescription(
 					Msg.getString("Mission.phase.embarking.description", getCurrentNavpoint().getDescription()));//startingMember.getSettlement().toString())); // $NON-NLS-1$

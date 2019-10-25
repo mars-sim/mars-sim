@@ -84,15 +84,13 @@ public abstract class Vehicle extends Unit
 
 	private static final long serialVersionUID = 1L;
 
-	private static Logger logger = Logger.getLogger(Vehicle.class.getName());
-	private static String loggerName = logger.getName();
-	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+	private static final Logger logger = Logger.getLogger(Vehicle.class.getName());
+	private static final String loggerName = logger.getName();
+	private static final String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 
 	/** The error margin for determining vehicle range. (Actual distance / Safe distance). */
-	private static double fuel_range_error_margin = SimulationConfig.instance().getSettlementConfiguration()
-			.loadMissionControl()[0];
-	private static double life_support_range_error_margin = SimulationConfig.instance().getSettlementConfiguration()
-			.loadMissionControl()[1];
+	private static double fuel_range_error_margin;// = SimulationConfig.instance().getSettlementConfiguration().loadMissionControl()[0];
+	private static double life_support_range_error_margin;// = SimulationConfig.instance().getSettlementConfiguration().loadMissionControl()[1];
 
 	// For Methane : 
 	// Specific energy is 55.5	MJ/kg, or 15,416 Wh/kg, or 15.416kWh / kg
@@ -114,7 +112,7 @@ public abstract class Vehicle extends Unit
 	private static int uniqueCount = Unit.FIRST_VEHICLE_UNIT_ID;
 	
 	/** The types of status types that make a vehicle unavailable for us. */
-	private static List<StatusType> badStatus = Arrays.asList(StatusType.MAINTENANCE, StatusType.TOWED, StatusType.MOVING,
+	private static final List<StatusType> badStatus = Arrays.asList(StatusType.MAINTENANCE, StatusType.TOWED, StatusType.MOVING,
 			StatusType.STUCK, StatusType.MALFUNCTION);
 	
 	// 1989 NASA Mars Manned Transportation Vehicle - Shuttle Fuel Cell Power Plant (FCP)  7.6 kg/kW
@@ -205,7 +203,6 @@ public abstract class Vehicle extends Unit
 	/** The The vehicle's salvage info. */
 	private SalvageInfo salvageInfo; 
 
-	
 	static {
 		life_support_range_error_margin = SimulationConfig.instance().getSettlementConfiguration()
 				.loadMissionControl()[0];

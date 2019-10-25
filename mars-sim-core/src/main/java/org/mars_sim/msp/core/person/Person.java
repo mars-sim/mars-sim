@@ -79,9 +79,9 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	/* default logger. */
-	private static transient Logger logger = Logger.getLogger(Person.class.getName());
-	private static String loggerName = logger.getName();
-	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+	private static final Logger logger = Logger.getLogger(Person.class.getName());
+	private static final String loggerName = logger.getName();
+	private static final String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 
 	public static final int MAX_NUM_SOLS = 3;
 
@@ -94,17 +94,17 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	/** The unit count for this person. */
 	private static int uniqueCount = Unit.FIRST_PERSON_UNIT_ID;
 	/** The average height of a person. */
-	private static double averageHeight;
+	private static final double averageHeight;
 	/** The average weight of a person. */
-	private static double averageWeight;
+	private static final double averageWeight;
 	/** The average upper height of a person. */
-	private static double tall;
+	private static final double tall;
 	/** The average low height of a person. */
-	private static double shortH;
+	private static final double shortH;
 	/** The average high weight of a person. */
-	private static double highW;
+	private static final double highW;
 	/** The average low weight of a person. */
-	private static double lowW;
+	private static final double lowW;
 	
 	// Transient data members
 	/** The extrovert score of a person. */

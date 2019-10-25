@@ -50,9 +50,9 @@ public class Trade extends RoverMission implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(Trade.class.getName());
-	private static String loggerName = logger.getName();
-	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+	private static final Logger logger = Logger.getLogger(Trade.class.getName());
+	private static final String loggerName = logger.getName();
+	private static final String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 	
 	/** Default description. */
 	public static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.trade"); //$NON-NLS-1$
@@ -61,13 +61,13 @@ public class Trade extends RoverMission implements Serializable {
 	public static final MissionType missionType = MissionType.TRADE;
 	
 	/** Mission phases. */
-	final public static MissionPhase TRADE_DISEMBARKING = new MissionPhase(
+	public static final MissionPhase TRADE_DISEMBARKING = new MissionPhase(
 			Msg.getString("Mission.phase.tradeDisembarking")); //$NON-NLS-1$
-	final public static MissionPhase TRADE_NEGOTIATING = new MissionPhase(
+	public static final MissionPhase TRADE_NEGOTIATING = new MissionPhase(
 			Msg.getString("Mission.phase.tradeNegotiating")); //$NON-NLS-1$
-	final public static MissionPhase UNLOAD_GOODS = new MissionPhase(Msg.getString("Mission.phase.unloadGoods")); //$NON-NLS-1$
-	final public static MissionPhase LOAD_GOODS = new MissionPhase(Msg.getString("Mission.phase.loadGoods")); //$NON-NLS-1$
-	final public static MissionPhase TRADE_EMBARKING = new MissionPhase(Msg.getString("Mission.phase.tradeEmbarking")); //$NON-NLS-1$
+	public static final MissionPhase UNLOAD_GOODS = new MissionPhase(Msg.getString("Mission.phase.unloadGoods")); //$NON-NLS-1$
+	public static final MissionPhase LOAD_GOODS = new MissionPhase(Msg.getString("Mission.phase.loadGoods")); //$NON-NLS-1$
+	public static final MissionPhase TRADE_EMBARKING = new MissionPhase(Msg.getString("Mission.phase.tradeEmbarking")); //$NON-NLS-1$
 
 	// Static members
 	public static final double MAX_STARTING_PROBABILITY = 100D;
@@ -172,8 +172,8 @@ public class Trade extends RoverMission implements Serializable {
 		addPhase(TRADE_EMBARKING);
 
 		// Set initial phase
-		setPhase(VehicleMission.APPROVAL);//.EMBARKING);
-		setPhaseDescription(Msg.getString("Mission.phase.approval.description")); //$NON-NLS-1$
+		setPhase(VehicleMission.APPROVING);//.EMBARKING);
+		setPhaseDescription(Msg.getString("Mission.phase.approving.description")); //$NON-NLS-1$
 		if (logger.isLoggable(Level.INFO)) {
 			if (startingMember != null && getRover() != null) {
 				logger.info("[" + startingMember.getLocationTag().getLocale() + "] " + startingMember.getName()
@@ -238,7 +238,7 @@ public class Trade extends RoverMission implements Serializable {
 
 		// Set initial phase
 		setPhase(VehicleMission.EMBARKING);
-		setPhaseDescription(Msg.getString("Mission.phase.approval.description"));//, getStartingSettlement().getName())); // $NON-NLS-1$
+		setPhaseDescription(Msg.getString("Mission.phase.embarking.description"));//, getStartingSettlement().getName())); // $NON-NLS-1$
 		if (logger.isLoggable(Level.INFO)) {
 			MissionMember startingMember = (MissionMember) members.toArray()[0];
 			if (startingMember != null && getRover() != null) {
@@ -252,7 +252,7 @@ public class Trade extends RoverMission implements Serializable {
 	 * Determines a new phase for the mission when the current phase has ended.
 	 */
 	protected void determineNewPhase() {
-		if (APPROVAL.equals(getPhase())) {
+		if (APPROVING.equals(getPhase())) {
 			setPhase(VehicleMission.EMBARKING);
 			setPhaseDescription(
 					Msg.getString("Mission.phase.embarking.description", getCurrentNavpoint().getDescription()));//startingMember.getSettlement().toString())); // $NON-NLS-1$

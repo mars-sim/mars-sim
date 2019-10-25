@@ -61,9 +61,9 @@ public class ReviewMissionPlan extends Task implements Serializable {
 
 	/** Task phases. */
 	private static final TaskPhase REVIEWING = new TaskPhase(
-			Msg.getString("Task.phase.reviewMissionPlan")); //$NON-NLS-1$
+			Msg.getString("Task.phase.reviewMissionPlan.reviewing")); //$NON-NLS-1$
 
-	private static final TaskPhase FINISHED = new TaskPhase(Msg.getString("Task.phase.reviewMissionPlan.finished")); //$NON-NLS-1$
+	private static final TaskPhase APPROVING = new TaskPhase(Msg.getString("Task.phase.reviewMissionPlan.approving")); //$NON-NLS-1$
 
 	// Static members
 	/** The stress modified per millisol. */
@@ -123,7 +123,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 
 		// Initialize phase
 		addPhase(REVIEWING);
-		addPhase(FINISHED);
+		addPhase(APPROVING);
 		
 		setPhase(REVIEWING);
 	}
@@ -153,8 +153,8 @@ public class ReviewMissionPlan extends Task implements Serializable {
 			throw new IllegalArgumentException("Task phase is null");
 		} else if (REVIEWING.equals(getPhase())) {
 			return reviewingPhase(time);
-		} else if (FINISHED.equals(getPhase())) {
-			return finishedPhase(time);
+		} else if (APPROVING.equals(getPhase())) {
+			return approvingPhase(time);
 		} else {
 			return time;
 		}
@@ -187,11 +187,12 @@ public class ReviewMissionPlan extends Task implements Serializable {
 	            	
 		            if (mp.getPercentComplete() >= 100D) {
 		            	// Go to the finished phase and finalize the approval
-		            	setPhase(FINISHED);
-		                return time; // return time is needed
+		            	setPhase(APPROVING);
+		                return time * .9; // return time is needed
 		            }
 		            
 		            else {
+		            	// if not 100% reviewed
 		            	
 						String reviewedBy = person.getName();
 						
@@ -390,19 +391,29 @@ public class ReviewMissionPlan extends Task implements Serializable {
 				        
 							// Do only one review each time
 					        //endTask();
-					        
-					        if (mp.getPercentComplete() >= 100D) {
-				            	// Go to the finished phase and finalize the approval
-				            	setPhase(FINISHED);
-				                return time * 0.1;
-				            }
 						}
-		            }
+						
+						if (mp.getPercentComplete() >= 100D) {
+			            	// Go to the finished phase and finalize the approval
+			            	setPhase(APPROVING);
+			                return time * 0.2;
+			            }
+				        else if (mp.getPercentComplete() >= 60D) {
+				        	int sol = marsClock.getMissionSol();
+				        	int solRequest = m.getPlan().getMissionSol();
+				        	if (sol - solRequest > 7) {
+	    						// If no one else is able to offer the review after x days, 
+	    						// do allow the review to go through even if the reviewer is not valid
+				            	setPhase(APPROVING);
+				                return time * 0.2;
+				        	}
+				        }
+		            } // end of else // if (mp.getPercentComplete() >= 100D) {
 				}
 			}
 		} // end of while
 		
-        return 0;
+        return time * 0.2;
 	}
 
 	/**
@@ -411,7 +422,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 	 * @param time the amount of time (millisols) to perform the phase.
 	 * @return the amount of time (millisols) left over after performing the phase.
 	 */
-	private double finishedPhase(double time) {
+	private double approvingPhase(double time) {
         
         List<Mission> missions = missionManager.getPendingMissions(person.getAssociatedSettlement());
  		// Iterates through each pending mission 
@@ -424,7 +435,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 	            PlanType status = mp.getStatus();
 	
 	            if (status != null && status == PlanType.PENDING
-	            		&& mp.getPercentComplete() >= 100D) {
+	            		&& mp.getPercentComplete() >= 60D) {
 	            	
 					String reviewedBy = person.getName();
 					

@@ -53,12 +53,12 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-  private static Logger logger = Logger.getLogger(CollectResourcesMission.class.getName());
-	private static String loggerName = logger.getName();
-	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+	private static final Logger logger = Logger.getLogger(CollectResourcesMission.class.getName());
+	private static final String loggerName = logger.getName();
+	private static final String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 	
 	/** Mission phase. */
-	public final static MissionPhase COLLECT_RESOURCES = new MissionPhase(
+	public static final MissionPhase COLLECT_RESOURCES = new MissionPhase(
 			Msg.getString("Mission.phase.collectResources")); //$NON-NLS-1$
 
 	/** Estimated collection time multiplier for EVA. */
@@ -95,10 +95,10 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 	private Integer resourceID;
 
 	// Static members
-	private static int oxygenID = ResourceUtil.oxygenID;
-	private static int waterID = ResourceUtil.waterID;
-	private static int foodID = ResourceUtil.foodID;
-	private static int methaneID = ResourceUtil.methaneID;
+	private static final int oxygenID = ResourceUtil.oxygenID;
+	private static final int waterID = ResourceUtil.waterID;
+	private static final int foodID = ResourceUtil.foodID;
+	private static final int methaneID = ResourceUtil.methaneID;
 
 	/**
 	 * Constructor
@@ -178,8 +178,8 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 			addPhase(COLLECT_RESOURCES);
 
 			// Set initial mission phase.
-			setPhase(VehicleMission.APPROVAL);//.EMBARKING);
-			setPhaseDescription(Msg.getString("Mission.phase.approval.description"));//, s.getName())); //$NON-NLS-1$
+			setPhase(VehicleMission.APPROVING);//.EMBARKING);
+			setPhaseDescription(Msg.getString("Mission.phase.approving.description"));//, s.getName())); //$NON-NLS-1$
 		}
 		
 		logger.info(startingPerson + " had started CollectResourcesMission");
@@ -257,7 +257,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 
 		// Set initial mission phase.
 		setPhase(VehicleMission.EMBARKING);
-		setPhaseDescription(Msg.getString("Mission.phase.approval.description", getStartingSettlement().getName())); // $NON-NLS-1$
+		setPhaseDescription(Msg.getString("Mission.phase.embarking.description", getStartingSettlement().getName())); // $NON-NLS-1$
 
 		// Check if vehicle can carry enough supplies for the mission.
 		if (hasVehicle() && !isVehicleLoadable()) {
@@ -313,7 +313,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 	 */
 	protected void determineNewPhase() {
 		logger.info(this.getStartingMember() + " was at '" + getPhase() + "' phase in determineNewPhase().");
-		if (APPROVAL.equals(getPhase())) {
+		if (APPROVING.equals(getPhase())) {
 			setPhase(VehicleMission.EMBARKING);
 			setPhaseDescription(
 					Msg.getString("Mission.phase.embarking.description", getStartingSettlement().getName()));//getCurrentNavpoint().getDescription()));//startingMember.getSettlement().toString())); // $NON-NLS-1$

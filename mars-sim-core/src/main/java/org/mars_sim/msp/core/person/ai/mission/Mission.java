@@ -52,21 +52,24 @@ public abstract class Mission implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(Mission.class.getName());
+	private static final Logger logger = Logger.getLogger(Mission.class.getName());
 
-	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
+	private static final String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
 			logger.getName().length());
 
-	public static final int MAX_CAP = 8;
-	
 	public static final String MISSION_SUFFIX = " mission";
 	public static final String[] EXPRESSIONS = new String[] {
 			"Where is everybody when I need someone for ",
 			"So no one is available for ",
 			"How come no one is available for "
-	};
-	
+	};	
 	public static final String OUTSIDE = "Outside";
+
+	
+	public static final int MAX_CAP = 8;
+
+	// Global mission identifier
+	private static int missionIdentifer = 0;
 
 	/**
 	 * The marginal factor for the amount of water to be brought during a mission.
@@ -85,9 +88,7 @@ public abstract class Mission implements Serializable {
 	 */
 	public final static double DESSERT_MARGIN = 1.5;
 
-	// Global mission identifier
-	private static int missionIdentifer = 0;
-
+	
 	// Data members
 	/** mission type id */
 	private int missionID;
@@ -121,7 +122,7 @@ public abstract class Mission implements Serializable {
 	/** The description of the current phase of operation. */
 	private String phaseDescription;
 	/** The full mission designation. */
-	private String fullMissionDesignation;
+	private String fullMissionDesignation = "";
 	
 	/** The mission type enum. */
 	private MissionType missionType;
@@ -190,7 +191,7 @@ public abstract class Mission implements Serializable {
 		members = new ConcurrentLinkedQueue<MissionMember>();
 		done = false;
 		phase = null;
-		phaseDescription = null;
+		phaseDescription = "";
 		phases = new ArrayList<MissionPhase>();
 		phaseEnded = false;
 		this.minMembers = minMembers;
@@ -672,7 +673,7 @@ public abstract class Mission implements Serializable {
 		} else if (phases.contains(newPhase)) {
 			phase = newPhase;
 			setPhaseEnded(false);
-			phaseDescription = null;
+			phaseDescription = "";
 			fireMissionUpdate(MissionEventType.PHASE_EVENT, newPhase);
 		} else {
 			throw new IllegalStateException(
@@ -699,7 +700,7 @@ public abstract class Mission implements Serializable {
 	 * @return phase description.
 	 */
 	public final String getPhaseDescription() {
-		if (phaseDescription != null) {
+		if (phaseDescription != null || !phaseDescription.equals("")) {
 			return phaseDescription;
 		} else if (phase != null) {
 			return phase.toString();
@@ -1402,7 +1403,7 @@ public abstract class Mission implements Serializable {
 	 * 
 	 * @param member the mission member currently performing the mission.
 	 */	
-	protected void requestApprovalPhase(MissionMember member) {	
+	protected void requestApprovingPhase(MissionMember member) {	
 		Person p = (Person)member;
 
 		if (plan == null) {			
@@ -1411,7 +1412,7 @@ public abstract class Mission implements Serializable {
 					+ p.getName() + " (" + p.getRole().getType() 
 					+ ") was requesting approval for " + getDescription() + ".");
 
-			 missionManager.requestMissionApproval(plan);
+			 missionManager.requestMissionApproving(plan);
 		}
 		
 		else if (plan != null) {

@@ -47,16 +47,16 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(VehicleMission.class.getName());
-	private static String loggerName = logger.getName();
-	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+	private static final Logger logger = Logger.getLogger(VehicleMission.class.getName());
+	private static final String loggerName = logger.getName();
+	private static final String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 
 	/** Mission phases. */
-	final public static MissionPhase APPROVAL = new MissionPhase(Msg.getString("Mission.phase.approval")); //$NON-NLS-1$
-	final public static MissionPhase EMBARKING = new MissionPhase(Msg.getString("Mission.phase.embarking")); //$NON-NLS-1$
-	final public static MissionPhase TRAVELLING = new MissionPhase(Msg.getString("Mission.phase.travelling")); //$NON-NLS-1$
-	final public static MissionPhase DISEMBARKING = new MissionPhase(Msg.getString("Mission.phase.disembarking")); //$NON-NLS-1$
-	final public static MissionPhase COMPLETED = new MissionPhase(Msg.getString("Mission.phase.completed")); //$NON-NLS-1$
+	public static final MissionPhase APPROVING = new MissionPhase(Msg.getString("Mission.phase.approving")); //$NON-NLS-1$
+	public static final MissionPhase EMBARKING = new MissionPhase(Msg.getString("Mission.phase.embarking")); //$NON-NLS-1$
+	public static final MissionPhase TRAVELLING = new MissionPhase(Msg.getString("Mission.phase.travelling")); //$NON-NLS-1$
+	public static final MissionPhase DISEMBARKING = new MissionPhase(Msg.getString("Mission.phase.disembarking")); //$NON-NLS-1$
+	public static final MissionPhase COMPLETED = new MissionPhase(Msg.getString("Mission.phase.completed")); //$NON-NLS-1$
 
 	// Static members
 
@@ -116,7 +116,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		}
 		
 		// Add mission phases.
-		addPhase(APPROVAL);
+		addPhase(APPROVING);
 		addPhase(EMBARKING);
 		addPhase(TRAVELLING);
 		addPhase(DISEMBARKING);
@@ -141,7 +141,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		this.startingMember = startingMember;
 
 		// Add mission phases.
-		addPhase(APPROVAL);
+		addPhase(APPROVING);
 		addPhase(EMBARKING);
 		addPhase(TRAVELLING);
 		addPhase(DISEMBARKING);
@@ -573,7 +573,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 */
 	protected void determineNewPhase() {
 //		logger.info(getStartingMember() + " was at the '" + getPhase() + "' phase at determineNewPhase().");
-		if (APPROVAL.equals(getPhase())) {
+		if (APPROVING.equals(getPhase())) {
 			//startTravelToNextNode();
 			setPhase(VehicleMission.EMBARKING);
 			setPhaseDescription(
@@ -615,9 +615,9 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	protected void performPhase(MissionMember member) {
 //		logger.info(getStartingMember() + " was at the '" + getPhase() + "' phase at performPhase().");
 		super.performPhase(member);
-		if (APPROVAL.equals(getPhase())) {
+		if (APPROVING.equals(getPhase())) {
 			if (isRequestSubmitted)
-				requestApprovalPhase(member);
+				requestApprovingPhase(member);
 		}
 		else if (EMBARKING.equals(getPhase())) {
 			createDateEmbarked();
@@ -745,8 +745,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 * 
 	 * @param member the mission member currently performing the mission.
 	 */	
-	protected void requestApprovalPhase(MissionMember member) {
-		super.requestApprovalPhase(member);	
+	protected void requestApprovingPhase(MissionMember member) {
+		super.requestApprovingPhase(member);	
 	}
 	
 	/**
@@ -869,7 +869,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		Map<Integer, Number> result = new HashMap<Integer, Number>();
 		if (vehicle != null) {
 			// Add the methane resource
-			if (getPhase() == null || getPhase().equals(VehicleMission.EMBARKING) || getPhase().equals(VehicleMission.APPROVAL))
+			if (getPhase() == null || getPhase().equals(VehicleMission.EMBARKING) || getPhase().equals(VehicleMission.APPROVING))
 				result.put(vehicle.getFuelType(), getFuelNeededForTrip(distance, vehicle.getEstimatedAveFuelConsumption(), useMargin));
 			else
 				result.put(vehicle.getFuelType(), getFuelNeededForTrip(distance, vehicle.getIFuelConsumption(), useMargin));
@@ -1245,8 +1245,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 * @return distance (km)
 	 */
 	public final double getActualTotalDistanceTravelled() {
-		if (vehicle != null) {
-			double dist = vehicle.getTotalDistanceTraveled() - startingTravelledDistance;
+		if (vehicleCache != null) {
+			double dist = vehicleCache.getTotalDistanceTraveled() - startingTravelledDistance;
 //			System.out.println("dist : " + (int)dist + "    total : " + (int)vehicle.getTotalDistanceTraveled() + "   starting : " + (int)startingTravelledDistance);
 			if (dist > distanceTravelled) {
 				// Record the distance
@@ -1479,7 +1479,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		int result = 0;
 		Iterator<Mission> i = missionManager.getMissionsForSettlement(settlement).iterator();
 		while (i.hasNext()) {
-			if (APPROVAL.equals(i.next().getPhase())) {
+			if (APPROVING.equals(i.next().getPhase())) {
 				result++;
 			}
 		}

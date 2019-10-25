@@ -61,9 +61,9 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(RescueSalvageVehicle.class.getName());
-	private static String loggerName = logger.getName();
-	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+	private static final Logger logger = Logger.getLogger(RescueSalvageVehicle.class.getName());
+	private static final String loggerName = logger.getName();
+	private static final String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 	
 	/** Default description. */
 	public static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.rescueSalvageVehicle"); //$NON-NLS-1$
@@ -81,16 +81,16 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 	private static final double RESCUE_RESOURCE_BUFFER = 1D;
 
 	// Mission phases
-	final public static MissionPhase RENDEZVOUS = new MissionPhase(Msg.getString("Mission.phase.rendezvous")); //$NON-NLS-1$
+	public static final MissionPhase RENDEZVOUS = new MissionPhase(Msg.getString("Mission.phase.rendezvous")); //$NON-NLS-1$
 
 	// Data members
 	private boolean rescue = false;
 
 	private Vehicle vehicleTarget;
 
-	private static int oxygenID = ResourceUtil.oxygenID;
-	private static int waterID = ResourceUtil.waterID;
-	private static int foodID = ResourceUtil.foodID;
+	private static final int oxygenID = ResourceUtil.oxygenID;
+	private static final int waterID = ResourceUtil.waterID;
+	private static final int foodID = ResourceUtil.foodID;
 
 	/**
 	 * Constructor
@@ -159,9 +159,9 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 				addPhase(RENDEZVOUS);
 
 				// Set initial phase
-				setPhase(VehicleMission.APPROVAL);// .EMBARKING);
+				setPhase(VehicleMission.APPROVING);// .EMBARKING);
 				setPhaseDescription(
-						Msg.getString("Mission.phase.approval.description")); // $NON-NLS-1$
+						Msg.getString("Mission.phase.approving.description")); // $NON-NLS-1$
 			} else {
 				addMissionStatus(MissionStatus.TARGET_VEHICLE_NOT_FOUND);
 				endMission();
@@ -220,7 +220,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 
 		// Set initial phase
 		setPhase(VehicleMission.EMBARKING);
-		setPhaseDescription(Msg.getString("Mission.phase.approval.description")); // $NON-NLS-1$
+		setPhaseDescription(Msg.getString("Mission.phase.embarking.description")); // $NON-NLS-1$
 
 		// Check if vehicle can carry enough supplies for the mission.
 		if (hasVehicle() && !isVehicleLoadable()) {
@@ -294,7 +294,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 	 * @throws MissionException if problem setting a new phase.
 	 */
 	protected void determineNewPhase() {
-		if (APPROVAL.equals(getPhase())) {
+		if (APPROVING.equals(getPhase())) {
 			setPhase(VehicleMission.EMBARKING);
 			setPhaseDescription(
 					Msg.getString("Mission.phase.embarking.description", getStartingSettlement().getDescription())); // $NON-NLS-1$

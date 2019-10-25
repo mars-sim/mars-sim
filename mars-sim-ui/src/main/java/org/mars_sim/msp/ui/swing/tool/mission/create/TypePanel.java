@@ -44,6 +44,8 @@ public class TypePanel extends WizardPanel implements ItemListener {
 	private WebLabel descriptionLabel;
 	private WebTextField descriptionField;
 	
+	private String description;
+	
 	private static MissionManager missionManager;
 
 	//private CreateMissionWizard wizard;
@@ -124,28 +126,6 @@ public class TypePanel extends WizardPanel implements ItemListener {
 		add(Box.createVerticalGlue());
 	}
 	
-	public static void sortStringBubble( String  x [ ] )
-    {
-          int j;
-          boolean flag = true;  // will determine when the sort is finished
-          String temp;
-
-          while ( flag )
-          {
-                flag = false;
-                for ( j = 0;  j < x.length - 1;  j++ )
-                {
-                        if ( x [ j ].compareToIgnoreCase( x [ j+1 ] ) > 0 )
-                        {                                             // ascending sort
-                                    temp = x [ j ];
-                                    x [ j ] = x [ j+1];     // swapping
-                                    x [ j+1] = temp; 
-                                    flag = true;
-                         } 
-                 } 
-          } 
-    } 
-	
 	/**
 	 * Invoked when an item has been selected or deselected by the user.
 	 * @param e the item event.
@@ -160,7 +140,8 @@ public class TypePanel extends WizardPanel implements ItemListener {
 				suffix++;
 		}
 		String suffixString = " (" + suffix + ")";
-		descriptionField.setText(MissionDataBean.getMissionDescription(selectedMission) + suffixString);
+		description = MissionDataBean.getMissionDescription(selectedMission) + suffixString;
+		descriptionField.setText(description);
 		boolean enableDescription = (typeSelect.getSelectedIndex() != 0);
 		descriptionInfoLabel.setEnabled(enableDescription);
 		descriptionLabel.setEnabled(enableDescription);
@@ -207,8 +188,8 @@ public class TypePanel extends WizardPanel implements ItemListener {
 		//return descriptionField.getText();
 	}
 	
-//	public String getDescription() {
-//		return getWizard().getMissionData().getDescription();
-//		//return descriptionField.getText();
-//	}
+	public String getDescription() {
+		return getWizard().getMissionData().getDescription();
+		//return descriptionField.getText();
+	}
 }
