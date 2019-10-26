@@ -1519,6 +1519,7 @@ public abstract class Mission implements Serializable {
 	 */
 	public boolean needHelp() {
 		if (missionStatus.contains(MissionStatus.NOT_ENOUGH_RESOURCES)
+				|| missionStatus.contains(MissionStatus.NO_METHANE)
 				|| missionStatus.contains(MissionStatus.UNREPAIRABLE_MALFUNCTION)
 				|| missionStatus.contains(MissionStatus.NO_EMERGENCY_SETTLEMENT_DESTINATION_FOUND)
 				|| missionStatus.contains(MissionStatus.MEDICAL_EMERGENCY)

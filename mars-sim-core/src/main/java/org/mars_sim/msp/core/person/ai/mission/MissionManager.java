@@ -626,10 +626,20 @@ public class MissionManager implements Serializable {
 		//						|| !m.isApproved() // initially it's not approved until it passes the approval phase
 								m.getPlan() == null
 								|| m.getPhase() == null
+								|| ms == MissionStatus.DESTINATION_IS_NULL								
 								|| ms == MissionStatus.USER_ABORTED_MISSION
-								|| ms.getName().toLowerCase().contains("no ")
-								|| ms.getName().toLowerCase().contains("not ")
-								|| ms.getName().toLowerCase().contains("null")
+								|| ms == MissionStatus.NO_RESERVABLE_VEHICLES
+								|| ms == MissionStatus.LUV_ATTACHMENT_PARTS_NOT_LOADABLE				
+								|| ms == MissionStatus.LUV_NOT_AVAILABLE
+								|| ms == MissionStatus.LUV_NOT_RETRIEVED
+								|| ms == MissionStatus.NO_AVAILABLE_VEHICLES
+								|| ms == MissionStatus.NO_EXPLORATION_SITES
+								|| ms == MissionStatus.EVA_SUIT_CANNOT_BE_LOADED
+								|| ms == MissionStatus.MINING_SITE_NOT_BE_DETERMINED
+								|| ms == MissionStatus.NEW_CONSTRUCTION_STAGE_NOT_DETERMINED
+								|| ms == MissionStatus.NO_TRADING_SETTLEMENT							
+//								|| ms.getName().toLowerCase().contains("no ")
+//								|| ms.getName().toLowerCase().contains("not ")
 								|| (m.getPlan() != null && m.getPlan().getStatus() == PlanType.NOT_APPROVED)
 								) {
 							removeMission(m);
@@ -766,7 +776,7 @@ public class MissionManager implements Serializable {
 			logger.info("marsClock is null");
 		int mSol = marsClock.getMissionSol();
 		
-		logger.info("On sol " + mSol + ", " + plan.getMission().getStartingMember() + " put together his missio plan.");
+		logger.info("On sol " + mSol + ", " + plan.getMission().getStartingMember() + " put together a mission plan.");
 		
 		if (historicalMissions.containsKey(mSol)) {
 			List<MissionPlanning> plans = historicalMissions.get(mSol);

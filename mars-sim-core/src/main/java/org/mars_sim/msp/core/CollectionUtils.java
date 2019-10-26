@@ -326,22 +326,33 @@ public class CollectionUtils {
 	}
 
 	/**
-	 * Gets a list of settlements that match the name
+	 * Gets a list of settlements that match the input text
 	 * 
 	 * @param text
 	 * @return {@link List<Settlement>}
 	 */
-	public static List<Settlement> returnSettlementList(String text) {
+	public static List<Settlement> matchSettlementList(String text, boolean exactMatch) {
 		List<Settlement> sList = new ArrayList<>();
 		Iterator<Settlement> j = unitManager.getSettlements().iterator();
 		while (j.hasNext()) {
 			Settlement settlement = j.next();
 			String s_name = settlement.getName();
+			int snum = s_name.length();
+			int tnum = text.length();
 
 			if (s_name.equalsIgnoreCase(text.toLowerCase())
-					|| s_name.toLowerCase().contains(text.toLowerCase())) {
+					|| (s_name.toLowerCase().contains(text.toLowerCase()) 
+							&& 2.5 * tnum > snum
+							&& tnum > 2)) {
 				sList.add(settlement);
 			} 
+			
+			else if (!exactMatch 
+						&& (s_name.toLowerCase().contains(text.toLowerCase()) 
+						&& 2 * tnum > snum
+						&& tnum > 2)) {
+				sList.add(settlement);
+			}
 		}
 		
 		return sList;

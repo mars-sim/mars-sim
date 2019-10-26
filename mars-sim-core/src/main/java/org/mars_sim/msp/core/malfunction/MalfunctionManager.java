@@ -547,7 +547,7 @@ public class MalfunctionManager implements Serializable {
 		for (Integer p : partSet) {
 			int num = parts.get(p);
 	
-			Inventory inv = entity.getUnit().getContainerUnit().getInventory();
+			Inventory inv = entity.getUnit().getAssociatedSettlement().getInventory();
 			// Add tracking demand
 			inv.addItemDemandTotalRequest(p, num);
 			inv.addItemDemand(p, num);
@@ -679,7 +679,7 @@ public class MalfunctionManager implements Serializable {
 				
 				LogConsolidated.log(Level.WARNING, 0, sourceName,
 						"[" + loc1 + "] " + object + " has " 
-						+ malfunction.getName() + ". Cause : Parts Fatigue.");
+						+ malfunction.getName() + ". Probable Cause : Parts Fatigue.");
 			} 
 			
 			else {
@@ -691,7 +691,7 @@ public class MalfunctionManager implements Serializable {
 					LogConsolidated.log(Level.WARNING, 0, sourceName, 
 							"[" + loc1 + "] " + object + " has "
 							+ malfunction.getName() + " as reported by " 
-							+ offender + ". Cause : Human Factors.");
+							+ offender + ". Probable Cause : Human Factors.");
 				} else if (robot != null) {
 					HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_PROGRAMMING_ERROR,
 							malfunction, malfunctionName, task, offender, loc0, loc1, settlement.getName());
@@ -700,7 +700,7 @@ public class MalfunctionManager implements Serializable {
 					LogConsolidated.log(Level.WARNING, 0, sourceName, 
 							"[" + loc1 + "] " + object + " has "
 							+ malfunction.getName() + " as reported by " 
-							+ offender + ". Cause : Software Quality Control.");
+							+ offender + ". Probable Cause : Software Quality Control.");
 				}
 			}
 		} 
@@ -713,7 +713,7 @@ public class MalfunctionManager implements Serializable {
 				
 				LogConsolidated.log(Level.WARNING, 0, sourceName,
 						"[" + loc1 + "] " + object + " has " 
-						+ malfunction.getName() + " in " + loc0 + ". Cause : Parts Fatigue.");					
+						+ malfunction.getName() + " in " + loc0 + ". Probable Cause : Parts Fatigue.");					
 			} 
 			
 			else {
@@ -725,7 +725,7 @@ public class MalfunctionManager implements Serializable {
 					LogConsolidated.log(Level.WARNING, 0, sourceName, 
 							"[" + loc1 + "] " + object + " has "
 							+ malfunction.getName() + " in " + loc0 + " as reported by " 
-							+ offender + ". Cause : Human Factors.");
+							+ offender + ". Probable Cause : Human Factors.");
 				} 
 				
 				else if (robot != null) {
@@ -736,7 +736,7 @@ public class MalfunctionManager implements Serializable {
 					LogConsolidated.log(Level.WARNING, 0, sourceName, 
 							"[" + loc1 + "] " + object + " has "
 							+ malfunction.getName() + " in " + loc0 + " as reported by " 
-							+ offender + ". Cause : Software Quality Control.");
+							+ offender + ". Probable Cause : Software Quality Control.");
 				}
 			}
 		}

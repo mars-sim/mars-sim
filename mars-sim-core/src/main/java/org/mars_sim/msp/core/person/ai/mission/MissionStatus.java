@@ -21,6 +21,8 @@ public enum MissionStatus {
 	
 	NOT_ENOUGH_RESOURCES 							("Not enough resources."),
 	
+	NO_METHANE										("No more methane."),
+	
 	NO_EMERGENCY_SETTLEMENT_DESTINATION_FOUND 		("No emergency settlement destination found."),
 	MEDICAL_EMERGENCY 								("A member has a medical emergency."),
 	NO_TRADING_SETTLEMENT 							("No trading settlement found."),

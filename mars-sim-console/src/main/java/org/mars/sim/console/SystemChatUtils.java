@@ -20,6 +20,7 @@ import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.mars.TerrainElevation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.health.Complaint;
 import org.mars_sim.msp.core.person.health.ComplaintType;
@@ -522,11 +523,11 @@ public class SystemChatUtils extends ChatUtils {
 //			double lat = Double.parseDouble(latitudeStr); //Coordinates.parseLatitude(latitudeStr);
 //			double lon = Double.parseDouble(longitudeStr); //Coordinates.parseLatitude(longitudeStr);
 //			System.out.println("lat : " + lat + "  lon : " + lon);
-			if (mars == null)
-				mars = sim.getMars();
-			if (terrainElevation == null)
-				terrainElevation =  mars.getSurfaceFeatures().getTerrainElevation();
-			return terrainElevation.getPatchedElevation(new Coordinates(latitudeStr, longitudeStr));//lon, lat));
+//			if (mars == null)
+//				mars = sim.getMars();
+//			if (terrainElevation == null)
+//				terrainElevation =  mars.getSurfaceFeatures().getTerrainElevation();
+			return TerrainElevation.getPatchedElevation(new Coordinates(latitudeStr, longitudeStr));//lon, lat));
 		} catch(IllegalStateException e) {
 			System.out.println(e);
 			return 0;
@@ -549,14 +550,14 @@ public class SystemChatUtils extends ChatUtils {
 					Math.round(phi*1_000_000.0)/1_000_000.0,
 					Math.round(theta*1_000_000.0)/1_000_000.0);
 			System.out.print(s);
-			if (mars == null)
-				mars = sim.getMars();
-			if (terrainElevation == null)
-				terrainElevation =  mars.getSurfaceFeatures().getTerrainElevation();
+//			if (mars == null)
+//				mars = sim.getMars();
+//			if (terrainElevation == null)
+//				terrainElevation =  mars.getSurfaceFeatures().getTerrainElevation();
 			
 			Coordinates location = new Coordinates(latitudeStr, longitudeStr);
 			
-			int rgb[] = terrainElevation.getRGB(location);
+			int rgb[] = TerrainElevation.getRGB(location);
 			int red = rgb[0];
 			int green = rgb[1];
 			int blue = rgb[2];
@@ -567,7 +568,7 @@ public class SystemChatUtils extends ChatUtils {
 							blue); 
 			System.out.print(s00);
 			
-			float[] hsb = terrainElevation.getHSB(rgb);
+			float[] hsb = TerrainElevation.getHSB(rgb);
 			float hue = hsb[0];
 			float saturation = hsb[1];
 			float brightness = hsb[2];
@@ -578,12 +579,12 @@ public class SystemChatUtils extends ChatUtils {
 					Math.round(brightness*1000.0)/1000.0); 
 			System.out.print(s1);
 			
-			double re = terrainElevation.getRawElevation(location);
+			double re = TerrainElevation.getRawElevation(location);
 			String s2 = String.format("%8.3f ", 
 					Math.round(re*1_000.0)/1_000.0);
 			System.out.print(s2);
 			
-			double pe = terrainElevation.getPatchedElevation(location);
+			double pe = TerrainElevation.getPatchedElevation(location);
 			
 			String s3 = String.format("%8.3f ", 
 					Math.round(pe*1_000.0)/1_000.0);
@@ -1196,7 +1197,7 @@ public class SystemChatUtils extends ChatUtils {
 		// Add asking about settlements in general
 		else if (text.toLowerCase().contains("settlement")) {
 
-			questionText = YOU_PROMPT + "What are the location information regarding the settlements ?";
+			questionText = YOU_PROMPT + "What are the location informations regarding the settlements ?";
 
 			responseText = findLocationInfo(responseText, unitManager.getSettlements());
 		}
@@ -1320,14 +1321,20 @@ public class SystemChatUtils extends ChatUtils {
 	 */
 	public static StringBuffer matchName(StringBuffer responseText, String text, int nameCase) {
 
+		List<Person> exactPersonList = new ArrayList<>();
+		List<Robot> exactRobotList = new ArrayList<>();
+		List<Vehicle> exactVehicleList = new ArrayList<>();
+		List<Settlement> exactSettlementList = new ArrayList<>();
+		
 		List<Person> personList = new ArrayList<>();
 		List<Robot> robotList = new ArrayList<>();
 		List<Vehicle> vehicleList = new ArrayList<>();
 		List<Settlement> settlementList = new ArrayList<>();
 
 		// check settlements
-		settlementList = CollectionUtils.returnSettlementList(text);
-
+		settlementList = CollectionUtils.matchSettlementList(text, false);
+		exactSettlementList = CollectionUtils.matchSettlementList(text, true);
+		
 		// person and robot
 		Iterator<Settlement> i = unitManager.getSettlements().iterator();
 		while (i.hasNext()) {
@@ -1336,60 +1343,100 @@ public class SystemChatUtils extends ChatUtils {
 			// and if he/she is still alive
 			if (text.contains("bot") || text.contains("Bot")) {
 				// Check if it is a bot
-				robotList.addAll(s.returnRobotList(text));
+				robotList.addAll(s.returnRobotList(text, false));
 				nameCase = robotList.size();
+				
+				exactRobotList.addAll(s.returnRobotList(text, true));
 			}
 
 			else { // if (text.contains("rover") || text.contains("vehicle")) {
 					// check vehicles/rovers
-				vehicleList.addAll(s.returnVehicleList(text));
+				vehicleList.addAll(s.returnVehicleList(text, false));
+				exactVehicleList.addAll(s.returnVehicleList(text, true));
 				// check persons
-				personList.addAll(s.returnPersonList(text));
+				personList.addAll(s.returnPersonList(text, false));
+				exactPersonList.addAll(s.returnPersonList(text, true));
 			}
 		}
 
-		if (vehicleList.size() + robotList.size() + settlementList.size() + personList.size() > 1) {
-			responseText.append(SYSTEM_PROMPT);
-			responseText.append("There are more than one '");
-			responseText.append(text);
-			responseText.append(
-					"'. Please be more specific by spelling out the full name of the party you would like to reach.");
-			// System.out.println(responseText);
+		int nameType = 0;
+		
+		int numOfSameNames = exactVehicleList.size() + exactRobotList.size() + exactSettlementList.size() + exactPersonList.size();
+		
+		if (numOfSameNames == 1) {
+			nameCase = 1;
+			
+			if (exactPersonList.size() == 1)
+				nameType = 1;
+			
+			else if (exactRobotList.size() == 1)
+				nameType = 2;
+			
+			else if (exactVehicleList.size() == 1)
+				nameType = 3;
+			
+			else if (exactSettlementList.size() == 1)
+				nameType = 4;
+			
+			// capitalize the first initial of a name
+//			text = Conversion.capitalize0(text);
 
-		}
-
-		else if (robotList.size() > 0) {
-			nameCase = robotList.size();
-		}
-
-		else if (vehicleList.size() > 0) {
-			nameCase = vehicleList.size();
-		}
-
-		else if (personList.size() > 0) {
-			nameCase = personList.size();
-		}
-
-		else if (settlementList.size() > 0) {
-			nameCase = settlementList.size();
+			responseText = PartyUtils.acquireParty(responseText, nameCase, text, nameType, 
+					exactPersonList, 
+					exactRobotList, 
+					exactVehicleList, 
+					exactSettlementList);
 		}
 		
 		else {
-			String[] txt = clarify(SYSTEM, text);
-//			questionText = txt[0];
-			responseText.append(txt[1]);	
+
+			numOfSameNames = vehicleList.size() + robotList.size() + settlementList.size() + personList.size();
 			
-			return responseText;
+			if (numOfSameNames == 1) {
+				nameCase = numOfSameNames;
+				
+				if (personList.size() == 1)
+					nameType = 1;
+				
+				else if (robotList.size() == 1)
+					nameType = 2;
+				
+				else if (vehicleList.size() == 1)
+					nameType = 3;
+				
+				else if (settlementList.size() == 1)
+					nameType = 4;
+			
+				responseText = PartyUtils.acquireParty(responseText, nameCase, text, nameType, 
+					personList, 
+					robotList, 
+					vehicleList, 
+					settlementList);
+			}
+			
+			else if (numOfSameNames == 0) {
+				nameType = 0;
+				nameCase = 0;
+				
+				responseText = PartyUtils.acquireParty(responseText, nameCase, text, nameType, 
+						personList, 
+						robotList, 
+						vehicleList, 
+						settlementList);
+			}
+			
+			else {//if (numOfSameNames > 1) {
+				nameType = -1;
+				nameCase = numOfSameNames;
+				
+				responseText = PartyUtils.acquireParty(responseText, nameCase, text, nameType, 
+						personList, 
+						robotList, 
+						vehicleList, 
+						settlementList);
+			}
+
 		}
-
-		// capitalize the first initial of a name
-		text = Conversion.capitalize0(text);
-
-		responseText = PartyUtils.acquireParty(responseText, nameCase, text, 
-				personList, 
-				robotList, 
-				vehicleList, 
-				settlementList);
 
 		return responseText;
 	}
@@ -1407,8 +1454,8 @@ public class SystemChatUtils extends ChatUtils {
 		
 		String[] header = new String[] { " Settlement ", " Lat & long ", " Elev [km]" };
 
-		responseText.append(System.lineSeparator());
-		responseText.append(System.lineSeparator());
+//		responseText.append(System.lineSeparator());
+//		responseText.append(System.lineSeparator());
 		responseText.append(System.lineSeparator());
 		responseText.append(addWhiteSpacesLeftName(header[0], 20));
 		responseText.append(addWhiteSpacesRightName(header[1], 20));
@@ -1420,7 +1467,7 @@ public class SystemChatUtils extends ChatUtils {
 		for (Settlement s: collection) {
 			responseText.append(addWhiteSpacesLeftName(" " + s.getName(), 20));
 			responseText.append(addWhiteSpacesRightName(s.getCoordinates().getFormattedString(), 20));
-			double elevation = Math.round(terrainElevation.getPatchedElevation(s.getCoordinates())*1000.0)/1000.0;
+			double elevation = Math.round(TerrainElevation.getPatchedElevation(s.getCoordinates())*1000.0)/1000.0;
 			responseText.append(addWhiteSpacesRightName(elevation +"", 13));
 			responseText.append(System.lineSeparator());
 		}

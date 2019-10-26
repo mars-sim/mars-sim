@@ -2497,9 +2497,10 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	 * Returns a list of persons with a given name (first or last)
 	 * 
 	 * @param aName a person's first/last name
+	 * @param exactMatch want an exact word-to-word match
 	 * @return a list of persons
 	 */
-	public List<Person> returnPersonList(String aName) {
+	public List<Person> returnPersonList(String aName, boolean exactMatch) {
 		List<Person> personList = new ArrayList<>();
 		aName = aName.trim();
 
@@ -2557,50 +2558,53 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 				// if (person.getPhysicalCondition().isDead())
 				// dead--;
 				// personList.add(person);
-			} else if (hasInitial) {
-				// Case 2: if aName is a first name + space + last initial
-				if (person.getName().toLowerCase().contains((aName + " " + initial).toLowerCase())) {
-					// found++;
-					personList.add(person);
-				}
-				// Case 3: if aName is a first initial + space + last name
-				else if (person.getName().toLowerCase().contains((initial + " " + aName).toLowerCase())) {
-					// found++;
-					personList.add(person);
-				}
-			} else {
-				String first = "";
-				String last = "";
-				String full = person.getName();
-				int len1 = full.length();
-				// int index1 = 0;
-
-				for (int j = len1 - 1; j > 0; j--) {
-					// Note: finding the whitespace from the end to 0 (from right to left) works
-					// better than from left to right
-					// e.g. Mary L. Smith (last name should be "Smith", not "L. Smith"
-					if (full.charAt(j) == ' ') {
-						// index1 = j;
-						first = full.substring(0, j);
-						last = full.substring(j + 1, len1);
-						break;
-					} else {
-						first = full;
-					}
-				}
-
-				// Case 4: if aName is a last name
-				if (first.equalsIgnoreCase(aName)) {
-					// found++;
-					personList.add(person);
-				}
-
-				// Case 5: if aName is a first name
-				else if (last != null)
-					if (last.equalsIgnoreCase(aName)) {
+			} else if (!exactMatch) {
+				
+				if (hasInitial) {
+					// Case 2: if aName is a first name + space + last initial
+					if (person.getName().toLowerCase().contains((aName + " " + initial).toLowerCase())) {
 						// found++;
 						personList.add(person);
 					}
+					// Case 3: if aName is a first initial + space + last name
+					else if (person.getName().toLowerCase().contains((initial + " " + aName).toLowerCase())) {
+						// found++;
+						personList.add(person);
+					}
+				} else {
+					String first = "";
+					String last = "";
+					String full = person.getName();
+					int len1 = full.length();
+					// int index1 = 0;
+	
+					for (int j = len1 - 1; j > 0; j--) {
+						// Note: finding the whitespace from the end to 0 (from right to left) works
+						// better than from left to right
+						// e.g. Mary L. Smith (last name should be "Smith", not "L. Smith"
+						if (full.charAt(j) == ' ') {
+							// index1 = j;
+							first = full.substring(0, j);
+							last = full.substring(j + 1, len1);
+							break;
+						} else {
+							first = full;
+						}
+					}
+	
+					// Case 4: if aName is a last name
+					if (first.equalsIgnoreCase(aName)) {
+						// found++;
+						personList.add(person);
+					}
+	
+					// Case 5: if aName is a first name
+					else if (last != null)
+						if (last.equalsIgnoreCase(aName)) {
+							// found++;
+							personList.add(person);
+						}
+				}
 			}
 		}
 
@@ -2630,10 +2634,11 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	 * Returns a list of robots containing a particular name
 	 * 
 	 * @param aName bot's name
+	 * @param exactMatch want an exact word-to-word match
 	 * @return a list of robots
 	 *
 	 */
-	public List<Vehicle> returnVehicleList(String aName) {
+	public List<Vehicle> returnVehicleList(String aName, boolean exactMatch) {
 		String[] aNameArray = aName.split(" ");
 //		String first = elements[0];
 //		String[] trailing = Arrays.copyOfRange(elements,1,elements.length);
@@ -2645,7 +2650,13 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 			String vName =  v.getName();
 			String[] vNameArray = vName.split(" ");
 			
-			if (hasAnyMatch(aNameArray, vNameArray)) {
+			// Case 1: exact match
+			if (vName.equalsIgnoreCase(aName)
+					|| vName.replace(" ", "").equalsIgnoreCase(aName.replace(" ", ""))) {
+				vList.add(v);
+			}
+			
+			else if (!exactMatch && hasAnyMatch(aNameArray, vNameArray)) {
 				vList.add(v);
 			}
 		}
@@ -2657,10 +2668,11 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	 * Returns a list of robots containing a particular name
 	 * 
 	 * @param aName bot's name
+	 * @param exactMatch want an exact word-to-word match
 	 * @return a list of robots
 	 *
 	 */
-	public List<Robot> returnRobotList(String aName) {
+	public List<Robot> returnRobotList(String aName, boolean exactMatch) {
 		List<Robot> robotList = new ArrayList<>();
 		aName = aName.trim();
 		aName = aName.replace(" ", "");
@@ -2704,7 +2716,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 				robotList.add(robot);
 			}
 			// Case 2: some parts are matched
-			else {
+			else if (!exactMatch) {
 				// Case 2 e.g. chefbot, chefbot0_, chefbot0__, chefbot1_, chefbot00_, chefbot01_
 				// need more information !
 				if (robot.getName().replace(" ", "").toLowerCase().contains(aName.toLowerCase().replace(" ", ""))) {
@@ -2745,7 +2757,6 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 							robotList.add(robot);
 					}
 				}
-
 			}
 		}
 

@@ -22,8 +22,6 @@ import org.mars_sim.msp.core.UnitEvent;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitListener;
 import org.mars_sim.msp.core.equipment.ContainerUtil;
-import org.mars_sim.msp.core.equipment.EVASuit;
-import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.malfunction.Malfunction;
@@ -38,8 +36,8 @@ import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
+import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
-import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleOperator;
 
@@ -355,7 +353,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		Collection<Vehicle> vList = settlement.getParkedVehicles();
 		if (vList != null && !vList.isEmpty()) {
 			for (Vehicle v : vList) {
-				if (isUsableVehicle(v)) {
+				if (isUsableVehicle(v) && !(v instanceof LightUtilityVehicle)) {
 					result.add(v);
 				}
 			}

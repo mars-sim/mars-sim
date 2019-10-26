@@ -1689,12 +1689,12 @@ public class SettlementChatUtils extends ChatUtils {
 			responseText.append(System.lineSeparator());
 			responseText.append("     EVA Operation : " + numEva);
 			responseText.append(System.lineSeparator());
-			responseText.append(" Deceased (Buried) : " + numDead + "(" + numBuried + ")");
+			responseText.append(" Deceased (Buried) : " + numDead + " (" + numBuried + ")");
 			responseText.append(System.lineSeparator());
 
 			// Indoor
 			responseText.append(System.lineSeparator());
-			responseText.append("  A. Registered");
+			responseText.append("  A. Registered Citizens");
 			responseText.append(System.lineSeparator());
 			responseText.append("  -------------");
 			responseText.append(System.lineSeparator());

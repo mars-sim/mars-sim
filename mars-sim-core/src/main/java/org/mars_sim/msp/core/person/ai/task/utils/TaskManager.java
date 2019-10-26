@@ -354,8 +354,7 @@ public class TaskManager implements Serializable {
 	public void addTask(Task newTask) {
 
 		if (hasActiveTask()) {
-			
-			if (currentTask != null && !currentTask.getName(false).equals(newTask.getName(false)))
+//			if (!currentTask.getTaskName().equals(newTask.getTaskName()))
 				currentTask.addSubTask(newTask);
 
 		} else {

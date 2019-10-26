@@ -12,12 +12,31 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 
 public class PartyUtils extends ChatUtils {
 	
-	public static StringBuffer acquireParty(StringBuffer responseText, int nameCase, String text, 
+	/**
+	 * Connects to a specific party based on player's input
+	 * 
+	 * @param responseText
+	 * @param nameCase
+	 * @param text
+	 * @param nameType
+	 * @param personList
+	 * @param robotList
+	 * @param vehicleList
+	 * @param settlementList
+	 * @return
+	 */
+	public static StringBuffer acquireParty(StringBuffer responseText, int nameCase, String text, int nameType,
 			List<Person> personList, 
 			List<Robot> robotList, 
 			List<Vehicle> vehicleList, 
 			List<Settlement> settlementList) {
 //		System.out.println("acquireParty() in PartyUtils   partyName: " + partyName);
+		
+		// Note: 
+		// nameType = 1 -> person
+		// nameType = 2 -> robot
+		// nameType = 3 -> vehicle
+		// nameType = 4 -> settlement
 		
 		ChatUtils.personCache = null;
 		ChatUtils.robotCache = null;
@@ -27,10 +46,10 @@ public class PartyUtils extends ChatUtils {
 		// Case 1: more than one with the same name
 		if (nameCase >= 2) {
 			responseText.append(SYSTEM_PROMPT);
-			responseText.append("There are more than one '");
+			responseText.append("There is more than one party with the name of '");
 			responseText.append(text);
 			responseText.append(
-					"'.Please be more specific by spelling out the full name of the party you would like to reach.");
+					"'. Please be more specific by spelling out the full name of the party you would like to reach.");
 			
 			return responseText;
 
@@ -39,9 +58,8 @@ public class PartyUtils extends ChatUtils {
 			String taskStr = "";
 
 			// for people
-			if (!personList.isEmpty()) {
-
-				nameCase = personList.size();
+//			if (!personList.isEmpty()) {
+			if (nameType == 1) {
 
 				String s = "";
 				taskStr = personList.get(0).getMind().getTaskManager().getTaskName();
@@ -98,9 +116,9 @@ public class PartyUtils extends ChatUtils {
 			}
 
 			// for robots
-			else if (!robotList.isEmpty()) {
-				nameCase = robotList.size();
-
+//			else if (!robotList.isEmpty()) {
+			else if (nameType == 2) {	
+				
 				Robot robot = robotList.get(0);
 				if (robot.getSystemCondition().isInoperable()) {
 					// Case 4: decomissioned
@@ -126,7 +144,9 @@ public class PartyUtils extends ChatUtils {
 			}
 
 			// For vehicles
-			else if (!vehicleList.isEmpty()) {
+//			else if (!vehicleList.isEmpty()) {
+			else if (nameType == 3) {	
+				
 				Vehicle vehicle = vehicleList.get(0);
 				if (vehicle.haveStatusType(StatusType.MAINTENANCE)) {
 					// Case 4: decomissioned
@@ -152,12 +172,12 @@ public class PartyUtils extends ChatUtils {
 			}
 
 			// For settlements
-			else if (!settlementList.isEmpty()) {
+//			else if (!settlementList.isEmpty()) {
+			else if (nameType == 4) {
 				Settlement settlement = settlementList.get(0);
 				settlementCache = settlement;
 				partyName = settlement.getName();
-				
-				
+						
 //				responseText.append(SYSTEM_PROMPT);
 				responseText.append("Switching over to ");
 				responseText.append(settlement.getName());
@@ -171,7 +191,20 @@ public class PartyUtils extends ChatUtils {
 				return responseText;
 			}
 			
-			else {
+			else if (nameType == -1) {
+				
+				responseText.append(SYSTEM_PROMPT);
+				responseText.append("There is more than one party with the name of '");
+				responseText.append(text);
+				responseText.append(
+						"'. Please be more specific by spelling out the full name of the party you would like to reach.");
+				// System.out.println(responseText);
+				
+				return responseText;
+			}
+			
+			else { //if (nameType == 0) {
+				
 				String[] txt = clarify(SYSTEM, text);
 //				questionText = txt[0];
 				responseText.append(txt[1]);	
@@ -180,15 +213,13 @@ public class PartyUtils extends ChatUtils {
 			}
 		}
 		
-		else {
+		else { //if (nameCase <= 0) {
 			String[] txt = clarify(SYSTEM, text);
 //			questionText = txt[0];
 			responseText.append(txt[1]);	
 			
 			return responseText;
 		}
-		
-//		return responseText;
 	}
 	
 	/**

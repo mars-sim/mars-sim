@@ -97,7 +97,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	private double timeCompleted;
 
 	/** The name of the task. */
-	private String name;
+	private String name = "";
 	/** Description of the task. */
 	private String description = "";
 
@@ -472,6 +472,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 
 			} else {
 //				if (!subTask.getName().equals(newSubTask.getName()))
+				if (!subTask.getTaskName().equals(newSubTask.getTaskName()))
 					subTask.addSubTask(newSubTask);
 			}
 		} else {

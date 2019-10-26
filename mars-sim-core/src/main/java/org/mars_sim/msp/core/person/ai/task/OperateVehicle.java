@@ -20,7 +20,10 @@ import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.mars.TerrainElevation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
+import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.mission.MissionStatus;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
+import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.robot.Robot;
@@ -284,11 +287,19 @@ public abstract class OperateVehicle extends Task implements Serializable {
         if (remainingFuel < LEAST_AMOUNT) {
         	// Case 1 : no fuel left
         	// TODO: need to turn on emergency beacon and ask for rescue here or in RoverMission ?
-	    	LogConsolidated.log(Level.SEVERE, 0, sourceName, "[" + vehicle.getName() + "] " 
+	    	LogConsolidated.log(Level.SEVERE, 30_000, sourceName, "[" + vehicle.getName() + "] " 
 					+ "ran out of methane. Cannot drive.");
 //        	distanceTraveled = 0;
 	    	vehicle.removeStatus(StatusType.MOVING);
         	vehicle.addStatus(StatusType.OUT_OF_FUEL);
+        	
+        	if (!vehicle.isBeaconOn()) {
+        		Mission m = vehicle.getMission();
+        		((VehicleMission)m).setEmergencyBeacon(person, vehicle, true, MissionStatus.NO_METHANE.getName());
+        		m.addMissionStatus(MissionStatus.NO_METHANE);
+        		((VehicleMission)m).getHelp();
+        	}
+        	
         	endTask();
         	return time;
         }

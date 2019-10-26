@@ -278,7 +278,7 @@ public class Malfunction implements Serializable {
 		if (t0 > 0) {
 			if (t == 0) {
 				String id_string = INCIDENT_NUM + incidentNum;
-				LogConsolidated.log(Level.INFO, 0, sourceName,
+				LogConsolidated.log(Level.INFO, 10_000, sourceName,
 						name + id_string + " - General repair work initiated by " + repairer + ".");
 			}
 			
@@ -289,9 +289,13 @@ public class Malfunction implements Serializable {
 			// but not exactly know its "actual" value. Use PRNG to simulate this Stochastic nature due to the 
 			// uncertainty and unpredictability of repair
 			// TODO: the mechanic skill or "troubleshooting" skill should contribute to reducing the randomness.
-			t0 = t0 + (t0 - t) * (RandomUtil.getRandomDouble(.2) - RandomUtil.getRandomDouble(.2));
+			t0 = t0 + (t0 - t) * (RandomUtil.getRandomDouble(.1) - RandomUtil.getRandomDouble(.1));
 			
-			generalWorkTimeExpected = t0;
+			if (t0 > 0)
+				generalWorkTimeExpected = t0;
+			else
+				t0 = generalWorkTimeExpected;
+		
 			generalWorkTimeCompleted = t;
 			
 			if (repairersWorkTime.containsKey(repairer)) {
@@ -302,7 +306,6 @@ public class Malfunction implements Serializable {
 			
 			if (t > t0) {
 				double remaining = t - t0;
-				t = t0;
 				
 				return remaining;
 			}
@@ -353,16 +356,20 @@ public class Malfunction implements Serializable {
 		if (t0 > 0) {
 			if (t == 0) {
 				String id_string = INCIDENT_NUM + incidentNum;
-				LogConsolidated.log(Level.INFO, 0, sourceName,
+				LogConsolidated.log(Level.INFO, 10_000, sourceName,
 						name + id_string + " - Emergency repair work initiated by " + repairer + ".");
 			}
 			
 			t += time;
 			
 			// Add randomness to the expected emergency work time
-			t0 = t0 + (t0 - t) * (RandomUtil.getRandomDouble(.2) - RandomUtil.getRandomDouble(.2));
+			t0 = t0 + (t0 - t) * (RandomUtil.getRandomDouble(.1) - RandomUtil.getRandomDouble(.1));
 			
-			emergencyWorkTimeExpected = t0;
+			if (t0 > 0)
+				emergencyWorkTimeExpected = t0;
+			else
+				t0 = emergencyWorkTimeExpected;
+		
 			emergencyWorkTimeCompleted = t;
 			
 			if (repairersWorkTime.containsKey(repairer)) {
@@ -423,16 +430,20 @@ public class Malfunction implements Serializable {
 		if (t0 > 0) {
 			if (t == 0) {
 				String id_string = INCIDENT_NUM + incidentNum;
-				LogConsolidated.log(Level.INFO, 0, sourceName,
+				LogConsolidated.log(Level.INFO, 10_000, sourceName,
 						name + id_string + " - EVA repair work initiated by " + repairer + ".");
 			}
 			
 			// Add randomness to the expected EVA work time
-			t0 = t0 + (t0 - t) * (RandomUtil.getRandomDouble(.2) - RandomUtil.getRandomDouble(.2));
-					
-			EVAWorkTimeExpected = t0;
+			t0 = t0 + (t0 - t) * (RandomUtil.getRandomDouble(.1) - RandomUtil.getRandomDouble(.1));
+				
+			if (t0 > 0)
+				EVAWorkTimeExpected = t0;
+			else
+				t0 = EVAWorkTimeExpected;
+		
 			EVAWorkTimeCompleted = t;
-	
+			
 			if (repairersWorkTime.containsKey(repairer)) {
 				repairersWorkTime.put(repairer, repairersWorkTime.get(repairer) + time);
 			} else {
@@ -441,8 +452,7 @@ public class Malfunction implements Serializable {
 			
 			if (t > t0) {
 				double remaining = t - t0;
-				t = t0;
-				
+	
 				return remaining;
 			}
 			
