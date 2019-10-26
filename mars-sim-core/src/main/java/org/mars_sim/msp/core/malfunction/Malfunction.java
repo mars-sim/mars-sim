@@ -46,12 +46,15 @@ public class Malfunction implements Serializable {
 	private int incidentNum;
 
 	private double probability;
+	
 	// Work time tracking
-	private double generalWorkTime = 0;
+	private double generalWorkTimeExpected = 0;
 	private double generalWorkTimeCompleted = 0;
-	private double emergencyWorkTime = 0;
+	
+	private double emergencyWorkTimeExpected = 0;
 	private double emergencyWorkTimeCompleted = 0;
-	private double EVAWorkTime = 0;
+	
+	private double EVAWorkTimeExpected = 0;
 	private double EVAWorkTimeCompleted = 0;
 
 	private String name;
@@ -87,9 +90,9 @@ public class Malfunction implements Serializable {
 		this.incidentNum = incidentNum;
 		this.severity = severity;
 		this.probability = probability;
-		this.emergencyWorkTime = computeWorkTime(emergencyWorkTime);
-		this.generalWorkTime = computeWorkTime(workTime);
-		this.EVAWorkTime = computeWorkTime(EVAWorkTime);
+		this.emergencyWorkTimeExpected = computeWorkTime(emergencyWorkTime);
+		this.generalWorkTimeExpected = computeWorkTime(workTime);
+		this.EVAWorkTimeExpected = computeWorkTime(EVAWorkTime);
 		this.systems = entities;
 		this.resourceEffects = resourceEffects;
 		this.lifeSupportEffects = lifeSupportEffects;
@@ -100,16 +103,23 @@ public class Malfunction implements Serializable {
 
 	}
 
+	/**
+	 * Computes the expected work time on a gaussian curve
+	 * 
+	 * @param time
+	 * @return
+	 */
 	public double computeWorkTime(double time) {
 		if (time < 1)
-			return 0;
+			return time;
 		
 		double t = 0;
 		
 		do {
 			t = time + RandomUtil.getGaussianDouble() * time/4D;
 		}
-		while (t <= 0);
+		// Limit the expected work time to no more than 5x the average work time.
+		while (t <= 0 || t > 5 * time);
 			
 		return t;
 		
@@ -135,14 +145,7 @@ public class Malfunction implements Serializable {
 	 * @return true if malfunction is fixed
 	 */
 	public boolean isFixed() {
-		if (generalWorkTime > 0 && generalWorkTimeCompleted < generalWorkTime)
-			return false;
-		if (emergencyWorkTime > 0 && emergencyWorkTimeCompleted < emergencyWorkTime)
-			return false;
-		if (EVAWorkTime > 0 && EVAWorkTimeCompleted < EVAWorkTime)
-			return false;
-
-		return true;
+		return isGeneralRepairDone() && isEmergencyRepairDone() && isEVARepairDone();
 	}
 
 	/**
@@ -151,7 +154,8 @@ public class Malfunction implements Serializable {
 	 * @return true if general repair is done
 	 */
 	public boolean isGeneralRepairDone() {
-		if (generalWorkTime > 0 && generalWorkTimeCompleted < generalWorkTime)
+		if (generalWorkTimeExpected > 0 && generalWorkTimeCompleted <= generalWorkTimeExpected)
+			// If generalWorkTimeExpected exists for this malfunction
 			return false;
 		return true;
 	}
@@ -162,7 +166,8 @@ public class Malfunction implements Serializable {
 	 * @return true if emergency repair is done
 	 */
 	public boolean isEmergencyRepairDone() {
-		if (emergencyWorkTime > 0 && emergencyWorkTimeCompleted < emergencyWorkTime)
+		if (emergencyWorkTimeExpected > 0 && emergencyWorkTimeCompleted <= emergencyWorkTimeExpected)
+			// If emergencyWorkTimeExpected exists for this malfunction
 			return false;
 		return true;
 	}
@@ -173,7 +178,8 @@ public class Malfunction implements Serializable {
 	 * @return true if EVA repair is done
 	 */
 	public boolean isEVARepairDone() {
-		if (EVAWorkTime > 0 && EVAWorkTimeCompleted < EVAWorkTime)
+		if (EVAWorkTimeExpected > 0 && EVAWorkTimeCompleted <= EVAWorkTimeExpected)
+			// If EVAWorkTimeExpected exists for this malfunction
 			return false;
 		return true;
 	}
@@ -184,7 +190,7 @@ public class Malfunction implements Serializable {
 	 * @return the percent
 	 */
 	public double getPercentageFixed() {
-		double totalRequiredWork = emergencyWorkTime + generalWorkTime + EVAWorkTime;
+		double totalRequiredWork = emergencyWorkTimeExpected + generalWorkTimeExpected + EVAWorkTimeExpected;
 		double totalCompletedWork = emergencyWorkTimeCompleted + generalWorkTimeCompleted
 				+ EVAWorkTimeCompleted;
 		int percentComplete = 0;
@@ -238,7 +244,7 @@ public class Malfunction implements Serializable {
 	 * @return work time (in millisols)
 	 */
 	public double getGeneralWorkTime() {
-		return generalWorkTime;
+		return generalWorkTimeExpected;
 	}
 
 	/**
@@ -247,7 +253,7 @@ public class Malfunction implements Serializable {
 	 * @return true if it does
 	 */
 	public boolean needGeneralRepair() {
-		return generalWorkTime > 0;
+		return generalWorkTimeExpected > 0;
 	}
 	
 	/**
@@ -267,14 +273,26 @@ public class Malfunction implements Serializable {
 	 */
 	public double addGeneralWorkTime(double time, String repairer) {
 		// if this malfunction has general repair work
-		if (generalWorkTime > 0) {
-			if (generalWorkTimeCompleted == 0) {
+		double t0 = generalWorkTimeExpected;
+		double t = generalWorkTimeCompleted;
+		if (t0 > 0) {
+			if (t == 0) {
 				String id_string = INCIDENT_NUM + incidentNum;
 				LogConsolidated.log(Level.INFO, 0, sourceName,
 						name + id_string + " - General repair work initiated by " + repairer + ".");
 			}
 			
-			generalWorkTimeCompleted += time;
+			t += time;
+			
+			// Since the general repair work time should be just an "estimated" figure, 
+			// each time a repair is being worked on, it should get closer to reveal the "actual" repair work time 
+			// but not exactly know its "actual" value. Use PRNG to simulate this Stochastic nature due to the 
+			// uncertainty and unpredictability of repair
+			// TODO: the mechanic skill or "troubleshooting" skill should contribute to reducing the randomness.
+			t0 = t0 + (t0 - t) * (RandomUtil.getRandomDouble(.2) - RandomUtil.getRandomDouble(.2));
+			
+			generalWorkTimeExpected = t0;
+			generalWorkTimeCompleted = t;
 			
 			if (repairersWorkTime.containsKey(repairer)) {
 				repairersWorkTime.put(repairer, repairersWorkTime.get(repairer) + time);
@@ -282,15 +300,16 @@ public class Malfunction implements Serializable {
 				repairersWorkTime.put(repairer, time);
 			}
 			
-			if (generalWorkTimeCompleted > generalWorkTime) {
-				double remaining = generalWorkTimeCompleted - generalWorkTime;
-				generalWorkTimeCompleted = generalWorkTime;
+			if (t > t0) {
+				double remaining = t - t0;
+				t = t0;
+				
 				return remaining;
 			}
+			
 		}
 		else
 			return time;
-		
 		return 0D;
 	}
 
@@ -300,7 +319,7 @@ public class Malfunction implements Serializable {
 	 * @return emergency work time (in millisols)
 	 */
 	public double getEmergencyWorkTime() {
-		return emergencyWorkTime;
+		return emergencyWorkTimeExpected;
 	}
 
 	/**
@@ -309,7 +328,7 @@ public class Malfunction implements Serializable {
 	 * @return true if it does
 	 */
 	public boolean needEmergencyRepair() {
-		return emergencyWorkTime > 0;
+		return emergencyWorkTimeExpected > 0;
 	}
 
 	/**
@@ -329,26 +348,35 @@ public class Malfunction implements Serializable {
 	 */
 	public double addEmergencyWorkTime(double time, String repairer) {
 		// if this malfunction has emergency repair work
-		if (emergencyWorkTime > 0) {
-			if (emergencyWorkTimeCompleted == 0) {
+		double t0 = emergencyWorkTimeExpected;
+		double t = emergencyWorkTimeCompleted;
+		if (t0 > 0) {
+			if (t == 0) {
 				String id_string = INCIDENT_NUM + incidentNum;
 				LogConsolidated.log(Level.INFO, 0, sourceName,
 						name + id_string + " - Emergency repair work initiated by " + repairer + ".");
 			}
 			
-			emergencyWorkTimeCompleted += time;
+			t += time;
+			
+			// Add randomness to the expected emergency work time
+			t0 = t0 + (t0 - t) * (RandomUtil.getRandomDouble(.2) - RandomUtil.getRandomDouble(.2));
+			
+			emergencyWorkTimeExpected = t0;
+			emergencyWorkTimeCompleted = t;
 			
 			if (repairersWorkTime.containsKey(repairer)) {
 				repairersWorkTime.put(repairer, repairersWorkTime.get(repairer) + time);
 			} else {
 				repairersWorkTime.put(repairer, time);
-			}
+			}		
 			
-			if (emergencyWorkTimeCompleted > emergencyWorkTime) {
-				double remaining = emergencyWorkTimeCompleted - emergencyWorkTime;
-				emergencyWorkTimeCompleted = emergencyWorkTime;
+			if (t > t0) {
+				double remaining = t - t0;
+				
 				return remaining;
 			}
+
 		}
 		else
 			return time;
@@ -361,7 +389,7 @@ public class Malfunction implements Serializable {
 	 * @return EVA work time (in millisols)
 	 */
 	public double getEVAWorkTime() {
-		return EVAWorkTime;
+		return EVAWorkTimeExpected;
 	}
 
 	/**
@@ -370,7 +398,7 @@ public class Malfunction implements Serializable {
 	 * @return true if it does
 	 */
 	public boolean needEVARepair() {
-		return EVAWorkTime > 0;
+		return EVAWorkTimeExpected > 0;
 	}
 
 	/**
@@ -390,26 +418,34 @@ public class Malfunction implements Serializable {
 	 */
 	public double addEVAWorkTime(double time, String repairer) {
 		// if this malfunction has EVA repair work
-		if (EVAWorkTime > 0) {
-			if (EVAWorkTimeCompleted == 0) {
+		double t0 = EVAWorkTimeExpected;
+		double t = EVAWorkTimeCompleted;
+		if (t0 > 0) {
+			if (t == 0) {
 				String id_string = INCIDENT_NUM + incidentNum;
 				LogConsolidated.log(Level.INFO, 0, sourceName,
 						name + id_string + " - EVA repair work initiated by " + repairer + ".");
 			}
 			
-			EVAWorkTimeCompleted += time;
-			
+			// Add randomness to the expected EVA work time
+			t0 = t0 + (t0 - t) * (RandomUtil.getRandomDouble(.2) - RandomUtil.getRandomDouble(.2));
+					
+			EVAWorkTimeExpected = t0;
+			EVAWorkTimeCompleted = t;
+	
 			if (repairersWorkTime.containsKey(repairer)) {
 				repairersWorkTime.put(repairer, repairersWorkTime.get(repairer) + time);
 			} else {
 				repairersWorkTime.put(repairer, time);
 			}
 			
-			if (EVAWorkTimeCompleted > EVAWorkTime) {
-				double remaining = EVAWorkTimeCompleted - EVAWorkTime;
-				EVAWorkTimeCompleted = EVAWorkTime;
+			if (t > t0) {
+				double remaining = t - t0;
+				t = t0;
+				
 				return remaining;
 			}
+			
 		}
 		else
 			return time;
@@ -486,22 +522,22 @@ public class Malfunction implements Serializable {
 	 */
 	public Malfunction getClone() {
 		int id = Simulation.instance().getMalfunctionFactory().getNewIncidentNum();
-		Malfunction clone = new Malfunction(name, id, severity, probability, emergencyWorkTime, generalWorkTime, EVAWorkTime,
+		Malfunction clone = new Malfunction(name, id, severity, probability, emergencyWorkTimeExpected, generalWorkTimeExpected, EVAWorkTimeExpected,
 				systems, resourceEffects, lifeSupportEffects, medicalComplaints);
 
 		String id_string = INCIDENT_NUM + id;
 
-		if (emergencyWorkTime > 0D) {
+		if (emergencyWorkTimeExpected > 0D) {
 			LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
 					name + id_string + " - an Emergency repair work order was requested.", null);
 		}
 
-		if (this.EVAWorkTime > 0) {
+		if (this.EVAWorkTimeExpected > 0) {
 			LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
 					name + id_string + " - an EVA repair work order was put in place.", null);
 		}
 
-		if (this.generalWorkTime > 0) {
+		if (this.generalWorkTimeExpected > 0) {
 			LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
 					name + id_string + " - a General repair work order was set up.", null);
 		}
@@ -526,7 +562,7 @@ public class Malfunction implements Serializable {
 //				inv.addItemDemandTotalRequest(id, number);
 //				inv.addItemDemand(id, number);
 				
-				repairParts.put(ItemResourceUtil.findIDbyItemResourceName(partName), number);
+				repairParts.put(id, number);
 				String id_string = INCIDENT_NUM + incidentNum;
 				
 

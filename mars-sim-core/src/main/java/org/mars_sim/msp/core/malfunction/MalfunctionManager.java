@@ -466,6 +466,7 @@ public class MalfunctionManager implements Serializable {
 	 */
 	private boolean selectMalfunction(Unit actor) {
 		boolean result = false;
+		// Clones a malfunction and determines repair parts
 		Malfunction malfunction = factory.pickAMalfunction(scopes);
 		if (malfunction != null) {
 			addMalfunction(malfunction, true, actor);
@@ -476,6 +477,21 @@ public class MalfunctionManager implements Serializable {
 		return result;
 	}
 
+	/**
+	 * Triggers a particular malfunction (used by VehicleChatUtils)
+	 * 
+	 * @param {@link Malfunction}
+	 * @param value
+	 */
+	public void triggerMalfunction(Malfunction m, boolean registerEvent) {
+		Malfunction malfunction = factory.determineRepairParts(m);
+		if (malfunction != null) {
+			addMalfunction(malfunction, registerEvent, null);
+			numberMalfunctions++;
+		}
+	}
+	
+	
 	/**
 	 * Activates the malfunction (used by Meteorite Damage)
 	 * 
@@ -544,8 +560,7 @@ public class MalfunctionManager implements Serializable {
 			if (part_name.equalsIgnoreCase("decontamination kit") || part_name.equalsIgnoreCase("airleak patch")
 					|| part_name.equalsIgnoreCase("fire extinguisher")) {
 				// NOTE : they do NOT contribute to the malfunctions and are tools to fix the
-				// malfunction
-				// and do NOT need to change their reliability.
+				// malfunction and therefore do NOT need to change their reliability.
 				return;
 			}
 
@@ -1128,9 +1143,15 @@ public class MalfunctionManager implements Serializable {
 
 				eventManager.registerNewEvent(newEvent);
 				
+				String loc1 = "";
+				if (entity.getImmediateLocation().toLowerCase().contains("outside"))
+					loc1 = entity.getImmediateLocation();
+				else
+					loc1 = "in " + entity.getImmediateLocation();
+				
 				LogConsolidated.log(Level.WARNING, 0, sourceName,
-						"[" + entity.getLocale() + "] The malfunction '" + m.getName() + "' has been dealt with in "
-						+ entity.getImmediateLocation());
+						"[" + entity.getLocale() + "] The malfunction '" + m.getName() + "' has been dealt with "
+						+ loc1);
 			
 				// Remove the malfunction
 				malfunctions.remove(m);				

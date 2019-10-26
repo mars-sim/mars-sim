@@ -141,6 +141,7 @@ public final class MalfunctionFactory implements Serializable {
 		// Note : the composite probability of a malfunction is dynamically updated as
 		// the field reliability data trickles in
 		if (RandomUtil.lessThanRandPercent(failure_rate)) {
+			// Clones a malfunction and determines repair parts
 			mal = determineRepairParts(mal);
 		}
 		else
@@ -151,7 +152,7 @@ public final class MalfunctionFactory implements Serializable {
 	}
 
 	/**
-	 * Determines the repair parts
+	 * Clones a malfunction and determines repair parts
 	 * 
 	 * @param mal
 	 * @return {@link Malfunction}

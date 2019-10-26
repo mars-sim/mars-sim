@@ -373,7 +373,7 @@ public class VehicleChatUtils extends ChatUtils {
 			
 			Malfunction malfunction = relatedMalfunctions.get(choice - 1);
 			
-			vehicleCache.getMalfunctionManager().addMalfunction(malfunction, true, null);
+			vehicleCache.getMalfunctionManager().triggerMalfunction(malfunction, true);
 			
 			responseText.append(vehicleCache.getNickName() + " just had '" 
 					+ malfunction.getName() + "'." + System.lineSeparator());

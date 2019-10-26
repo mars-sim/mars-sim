@@ -520,7 +520,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 				workTimeLeft = malfunction.addGeneralWorkTime(workTime, person.getName());
 			}
 			
-		} else {
+		} else if (robot != null) {
 			if (malfunction.needEmergencyRepair() && !malfunction.isEmergencyRepairDone()) {
 				isEmerg = true;
 				workTimeLeft = malfunction.addEmergencyWorkTime(workTime, robot.getName());

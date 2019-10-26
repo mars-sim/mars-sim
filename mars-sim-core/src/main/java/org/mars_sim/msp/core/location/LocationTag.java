@@ -229,7 +229,8 @@ public class LocationTag implements LocationState, Serializable {
 				} else {
 					return v.getBuildingLocation().getNickName();
 				}
-			} else if (p.isRightOutsideSettlement())
+			} 
+			else if (LocationStateType.WITHIN_SETTLEMENT_VICINITY == p.getLocationStateType() || p.isRightOutsideSettlement())
 				return findSettlementVicinity().getName() + VICINITY;
 			// TODO: check if it works in case of a trader arrives at any settlements for
 			// trades.
@@ -240,7 +241,7 @@ public class LocationTag implements LocationState, Serializable {
 		else if (e != null) {
 			if (LocationStateType.ON_A_PERSON_OR_ROBOT == e.getLocationStateType())
 				return e.getContainerUnit().getLocationTag().getImmediateLocation();
-			else if (e.isRightOutsideSettlement())
+			else if (LocationStateType.WITHIN_SETTLEMENT_VICINITY == e.getLocationStateType() || e.isRightOutsideSettlement())
 				return findSettlementVicinity().getName() + VICINITY;
 			else if (e.isInside()) //!(e.getContainerUnit() instanceof MarsSurface))
 				return e.getContainerUnit().getName();
@@ -262,7 +263,8 @@ public class LocationTag implements LocationState, Serializable {
 				} else {
 					return v.getBuildingLocation().getNickName();
 				}
-			} else if (r.isRightOutsideSettlement())
+			} 
+			else if (LocationStateType.WITHIN_SETTLEMENT_VICINITY == r.getLocationStateType() || r.isRightOutsideSettlement())
 				return findSettlementVicinity().getName() + VICINITY;
 			else
 				return OUTSIDE_ON_MARS;
@@ -279,7 +281,7 @@ public class LocationTag implements LocationState, Serializable {
 					return OUTSIDE_ON_MARS;
 				}
 			} 
-			else if (v.isRightOutsideSettlement())
+			else if (LocationStateType.WITHIN_SETTLEMENT_VICINITY == v.getLocationStateType() || v.isRightOutsideSettlement())
 				return findSettlementVicinity().getName() + VICINITY;
 			else
 				return OUTSIDE_ON_MARS;
