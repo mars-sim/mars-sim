@@ -354,7 +354,9 @@ public class TaskManager implements Serializable {
 	public void addTask(Task newTask) {
 
 		if (hasActiveTask()) {
-			currentTask.addSubTask(newTask);
+			
+			if (currentTask != null && !currentTask.getName(false).equals(newTask.getName(false)))
+				currentTask.addSubTask(newTask);
 
 		} else {
 			lastTask = currentTask;
@@ -413,9 +415,14 @@ public class TaskManager implements Serializable {
 //			 if (person.isInside()) {
 //			 checkForEmergency();
 //			 }
-
-			remainingTime = currentTask.performTask(time);
-
+			try {
+				remainingTime = currentTask.performTask(time);
+			} catch (Exception e) {
+				LogConsolidated.log(Level.SEVERE, 0, sourceName,
+						person.getName() + " had trouble calling performTask().", e);
+				e.printStackTrace(System.err);
+			}
+			
 			// Expend energy based on activity.
 			double energyTime = time - remainingTime;
 
@@ -589,7 +596,7 @@ public class TaskManager implements Serializable {
 			List<MetaTask> list = MetaTaskUtil.getNonWorkHourMetaTasks();
 			selectedMetaTask = list.get(RandomUtil.getRandomInt(list.size() - 1));
 
-		} else {
+		} else if (!taskProbCache.isEmpty()) {
 
 			double r = RandomUtil.getRandomDouble(totalProbability);
 

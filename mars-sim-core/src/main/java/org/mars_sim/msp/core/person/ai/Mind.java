@@ -48,6 +48,7 @@ public class Mind implements Serializable {
 	private static final int STRESS_UPDATE_CYCLE = 10;
 	private static final double MINIMUM_MISSION_PERFORMANCE = 0.3;
 	private static final double FACTOR = .05;
+	private static final double SMALL_AMOUNT_OF_TIME = 0.0001D;
 
 	// Data members
 	/** Is the job locked so another can't be chosen? */
@@ -226,9 +227,9 @@ public class Mind implements Serializable {
 	public void takeAction(double time) {
 		boolean hasActiveTask = taskManager.hasActiveTask();
 		// Perform a task if the person has one, or determine a new task/mission.
-		if (hasActiveTask) {
+		if (hasActiveTask && time > SMALL_AMOUNT_OF_TIME) {
 			double remainingTime = taskManager.executeTask(time, person.getPerformanceRating());
-			if (remainingTime > 0D) {
+			if (remainingTime > SMALL_AMOUNT_OF_TIME) {
 				try {
 					// Call takeAction recursively until time = 0
 					takeAction(remainingTime);

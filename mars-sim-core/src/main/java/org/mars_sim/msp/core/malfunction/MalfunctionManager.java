@@ -530,7 +530,12 @@ public class MalfunctionManager implements Serializable {
 
 		for (Integer p : partSet) {
 			int num = parts.get(p);
-
+	
+			Inventory inv = entity.getUnit().getContainerUnit().getInventory();
+			// Add tracking demand
+			inv.addItemDemandTotalRequest(p, num);
+			inv.addItemDemand(p, num);
+			
 			// Compute the new reliability and failure rate for this malfunction
 			int id = p;
 			Part part = ItemResourceUtil.findItemResource(p);
@@ -585,6 +590,12 @@ public class MalfunctionManager implements Serializable {
 
 	}
 
+	/**
+	 * Sets up a malfunction event
+	 * 
+	 * @param malfunction
+	 * @param actor
+	 */
 	public void registerAMalfunction(Malfunction malfunction, Unit actor) {
 		String malfunctionName = malfunction.getName();
 
@@ -937,54 +948,64 @@ public class MalfunctionManager implements Serializable {
 				boolean eva = !m.isEVARepairDone();
 				boolean gen = !m.isGeneralRepairDone();
 				if (emerg || eva || gen) {
-					Settlement settlement = null;
-					Vehicle vehicle0 = null;
+					
+					Settlement s0 = null;
+					Vehicle v0 = null;
 					
 					Collection<Person> people = null;
 					
 					if (suit != null) {
+						// Case 1: the suit has malfunction
 						people = suit.getAffectedPeople();
-						settlement = suit.getSettlement();	
-						vehicle0 = ((EVASuit)(entity.getUnit())).getVehicle();
-						if (!people.isEmpty()) {
+						int num = people.size();
+						s0 = suit.getSettlement();	
+						v0 = ((EVASuit)(entity.getUnit())).getVehicle();
+						
+						if (num > 1) {
 							people.stream()
 							.filter(p -> p.getJobName().contains(Engineer.class.getSimpleName())
 									|| p.getJobName().contains(Technician.class.getSimpleName()))
 								.collect(Collectors.toList());
 						}
-						
-						if (people.isEmpty() && vehicle != null) {
-							people = vehicle.getAffectedPeople();		
-						}
-						if (people.isEmpty()) {
+						else if (num == 1) {
 							
-							if (settlement != null) {
-								people = settlement.getIndoorPeople();
+						}
+						else if (num == 0) {
+							if (s0 != null) {
+								people = s0.getIndoorPeople();
 							}
-							else {
-								settlement = suit.getAssociatedSettlement();	
-								people = settlement.getIndoorPeople();
+							
+							if (people.isEmpty()) {
+								s0 = suit.getAssociatedSettlement();	
+								people = s0.getIndoorPeople();
+							}
+							
+							if (people.isEmpty() && v0 != null) {
+								people = v0.getAffectedPeople();		
 							}
 						}
 					}
+					
 					else if (entity.getUnit() instanceof Settlement 
 							|| entity.getUnit() instanceof Building
 							|| entity.getUnit() instanceof Equipment) {
-						settlement = entity.getUnit().getSettlement();
+						// Case 2: the malfunction occurs within a settlement
+						s0 = entity.getUnit().getSettlement();
 //						System.out.println(m.getName() + " : " + settlement.getName());
 					}
 					else if (vehicle != null) {
-						vehicle0 = vehicle;
+						// Case 3: the malfunction occurs in a vehicle
+						v0 = vehicle;
 //						System.out.println(m.getName() + " : " + vehicle.getName());
-					} 
+					} 		
 					
-					
-					if (settlement != null) {
-						people = settlement.getAffectedPeople();
+					if (s0 != null) {
+						// Could be Case 1 or Case 2
+						people = s0.getAffectedPeople();
 						Collection<Person> elites = people;
 						
 						if (people.size() == 0) {
-							people = settlement.getIndoorPeople();
+							people = s0.getIndoorPeople();
 						}
 						
 						if (!people.isEmpty()) {
@@ -1001,13 +1022,14 @@ public class MalfunctionManager implements Serializable {
 						
 					}
 					
-					else if (vehicle0 != null) {
-						people = vehicle0.getAffectedPeople();
+					else if (v0 != null) {
+						// For Case 3 only when the malfunction occurs in a vehicle
+						people = v0.getAffectedPeople();
 //						System.out.println(people);
 						Collection<Person> elites = people;
 						
-						if (people.size() == 0 && vehicle0 instanceof Rover) {
-							people = ((Rover)vehicle0).getCrew();
+						if (people.size() == 0 && v0 instanceof Rover) {
+							people = ((Rover)v0).getCrew();
 //							System.out.println(people);
 						}
 						
@@ -1018,8 +1040,7 @@ public class MalfunctionManager implements Serializable {
 								.collect(Collectors.toList());
 //							System.out.println(elites);
 						}
-						
-						
+											
 						if (!elites.isEmpty() && elites.size() != 0) {
 							people = elites;			
 						}
@@ -1042,9 +1063,10 @@ public class MalfunctionManager implements Serializable {
 					}
 					
 					if (highestScore > 0 && chosen != null) {
+						// TODO : how to avoid having the multiple person or the same person to do the following task repetitively ?
 						LogConsolidated.log(Level.INFO, 10_000, sourceName,
-								"[" + entity.getLocale() + "] " + chosen + " would handle the repair due to " 
-								+ Conversion.capitalize(m.getName()) + " on "
+								"[" + entity.getLocale() + "] " + chosen + " was going to handle the repair due to '" 
+								+ m.getName() + "' on "
 								+ entity.getUnit());
 //								+ " in " + entity.getImmediateLocation());
 

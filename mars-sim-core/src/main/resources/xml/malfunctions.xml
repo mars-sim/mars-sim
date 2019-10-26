@@ -116,10 +116,10 @@
 	<malfunction name="Vehicle Fire">
 		<severity value="60" />
 		<probability value="2.0" />
-		<repair-time value="100.0" />
+		<repair-time value="50.0" />
 		<emergency-repair-time value="10.0" />
 		<system-list>
-			<system name="vehicle" />
+			<system name="rover" />
 		</system-list>
 		<medical-complaint-list>
 			<medical-complaint name="Minor Burns" probability="5.0" />

@@ -201,6 +201,7 @@ public class ChatUtils {
 	};
 
 	public final static String[][] EXPERT_KEYS = new String[][] {
+		{"malfunction", 		"Cause a malfunction to occur"},
 		{"reset clock thread", 		"Resets the main clock thread"},
 		{"reset clock pulse",	"Resets the main clock pulse"},
 		{"reset clock listener", "Resets all the clock listeners"}
@@ -998,6 +999,8 @@ public class ChatUtils {
 		list.addAll(Arrays.asList(getColumn(ChatUtils.PERSON_KEYS, 0)));
 		// Add keywords specifically for a vehicles
 		list.addAll(Arrays.asList(getColumn(ChatUtils.VEHICLE_KEYS, 0)));
+		// Add keywords specifically for expert mode
+		list.addAll(Arrays.asList(getColumn(ChatUtils.EXPERT_KEYS, 0)));
 		// Add shortcuts
 		list.addAll(createShortcutHelp());
 

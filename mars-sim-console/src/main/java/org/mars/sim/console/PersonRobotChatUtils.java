@@ -999,8 +999,11 @@ public class PersonRobotChatUtils extends ChatUtils {
 			if (v != null) {
 //				String d = u.getVehicle().getDescription();
 				List<StatusType> statusTypes = u.getVehicle().getStatusTypes();
-				responseText.append("Status for ");
+				responseText.append("I'm inside ");
 				responseText.append(v.getName());
+				responseText.append(System.lineSeparator());
+				responseText.append(System.lineSeparator());
+				responseText.append(v.getName() + "'s Status");
 				responseText.append(System.lineSeparator());
 				responseText.append("----------------------");
 				responseText.append(System.lineSeparator());

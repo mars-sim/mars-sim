@@ -681,7 +681,6 @@ public class SystemChatUtils extends ChatUtils {
 			return askExpertMode(text, responseText);
 		}
 
-
 		// Add asking about settlements in general
 		else if (text.toLowerCase().contains("distance")) {
 

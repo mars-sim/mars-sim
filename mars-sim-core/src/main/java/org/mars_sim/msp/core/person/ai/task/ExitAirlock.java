@@ -464,8 +464,6 @@ public class ExitAirlock extends Task implements Serializable {
 //                throw new IllegalStateException(person + " has exited airlock of " + airlock.getEntityName() +
 //                        " but is not outside.");
 			LogConsolidated.log(Level.SEVERE, 5000, sourceName,
-//					"[" + person.getLocationTag().getLocale() + "] " + person + " was still inside the airlock at " 
-//					+ airlock.getEntityName() + " and should have been outside.");
 					"[" + person.getLocationTag().getLocale() + "] " + person + " was still inside the airlock at " 
 					+ airlock.getEntityName() + " and should have been outside.");
 			endTask();

@@ -145,6 +145,12 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 		Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(robot).iterator();
 		while (i.hasNext() && (result == null)) {
 			Malfunctionable entity = i.next();
+			
+            if (entity.getUnit() instanceof Vehicle) {
+            	// Note that currently robot cannot go outside and board a vehicle
+            	continue;
+            }
+            
 			if (entity.getMalfunctionManager().getMostSeriousEmergencyMalfunction() != null
 					|| entity.getMalfunctionManager().getMostSeriousGeneralMalfunction() != null) { 
 //				!requiresEVA(robot, entity) && 

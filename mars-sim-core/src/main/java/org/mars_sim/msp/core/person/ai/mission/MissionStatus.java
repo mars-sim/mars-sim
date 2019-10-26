@@ -32,6 +32,8 @@ public enum MissionStatus {
 
 	NO_EXPLORATION_SITES 							("Exploration sites could not be determined."),
 	
+	NO_ICE_COLLECTION_SITES 						("No ice collection sites are found."),
+	
 	NOT_ENOUGH_MEMBERS 								("Not enough members recruited."),
 	NO_MEMBERS_ON_MISSION 							("No members available for mission."),
 	

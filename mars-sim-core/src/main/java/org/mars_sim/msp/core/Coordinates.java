@@ -60,6 +60,8 @@ public class Coordinates implements Serializable {
 	/** Track if the coordinate of an unit has been changed */
 	private boolean changed;
 
+	private static DecimalFormat formatter = new DecimalFormat(Msg.getString("direction.decimalFormat")); //$NON-NLS-1$
+	
 	/**
 	 * Constructs a Coordinates object, hence a constructor.
 	 * 
@@ -442,10 +444,11 @@ public class Coordinates implements Serializable {
 			direction = Msg.getString("direction.westShort"); //$NON-NLS-1$ ;
 		}
 
-//		DecimalFormat formatter = new DecimalFormat(Msg.getString("direction.decimalFormat")); //$NON-NLS-1$
 		// Add a whitespace in between the degree and its directional sign
-//		return formatter.format(degrees) + Msg.getString("direction.degreeSign") + " " + direction; //$NON-NLS-1$
-		return String.format("%6.2f%s %s", degrees, Msg.getString("direction.degreeSign"), direction); //$NON-NLS-1$
+		return formatter.format(degrees) + Msg.getString("direction.degreeSign") + " " + direction; //$NON-NLS-1$
+		
+		// StackOverflowError caused by String.format()
+//		return String.format("%6.2f%s %s", degrees, Msg.getString("direction.degreeSign"), direction); //$NON-NLS-1$
 
 	}
 
@@ -502,11 +505,12 @@ public class Coordinates implements Serializable {
 			direction = Msg.getString("direction.southShort"); //$NON-NLS-1$
 		}
 
-//		DecimalFormat formatter = new DecimalFormat(Msg.getString("direction.decimalFormat")); //$NON-NLS-1$
 		// Note : direction.decimalFormat = 0.0
 		// Add a whitespace in between the degree and its directional sign
-//		return formatter.format(degrees) + Msg.getString("direction.degreeSign") + " " + direction; //$NON-NLS-1$
-		return String.format("%5.2f%s %s", degrees, Msg.getString("direction.degreeSign"), direction); //$NON-NLS-1$
+		return formatter.format(degrees) + Msg.getString("direction.degreeSign") + " " + direction; //$NON-NLS-1$
+		
+		// StackOverflowError caused by String.format()
+//		return String.format("%5.2f%s %s", degrees, Msg.getString("direction.degreeSign"), direction); //$NON-NLS-1$
 	}
 
 	private String formatValue(Number value, String formatString) {

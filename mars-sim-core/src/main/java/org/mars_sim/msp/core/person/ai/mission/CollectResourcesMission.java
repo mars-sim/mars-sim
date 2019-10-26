@@ -153,9 +153,21 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 
 				// Determine collection sites
 				if (hasVehicle()) {
-					if (resourceID == ResourceUtil.iceID)
-						determineCollectionSites(getVehicle().getRange(CollectIce.missionType),
+					if (resourceID == ResourceUtil.iceID) {					
+						for (int i=0; i < 10; i++) {
+							determineCollectionSites(getVehicle().getRange(CollectIce.missionType),
 								getTotalTripTimeLimit(getRover(), getPeopleNumber(), true), numSites);
+							if (totalSiteScore > 0)
+								// exit
+								i = 9;
+						}
+						
+						if (totalSiteScore == 0) {
+							addMissionStatus(MissionStatus.NO_ICE_COLLECTION_SITES);
+							endMission();
+						}
+					}
+					
 					else if (resourceID == ResourceUtil.regolithID)
 						determineCollectionSites(getVehicle().getRange(CollectRegolith.missionType),
 							getTotalTripTimeLimit(getRover(), getPeopleNumber(), true), numSites);

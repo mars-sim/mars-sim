@@ -225,6 +225,7 @@ public final class MalfunctionFactory implements Serializable {
 		Collection<Malfunctionable> entities = new ArrayList<>(settlement.getBuildingManager().getBuildings());
 
 		// Add all malfunctionable entities in settlement inventory.
+		// TODO: need to separate the malfunctionable in a vehicle ?
 		Collection<Unit> inventoryUnits = settlement.getInventory().getContainedUnits();
 		if (inventoryUnits.size() > 0) {
 			for (Unit unit : inventoryUnits) {

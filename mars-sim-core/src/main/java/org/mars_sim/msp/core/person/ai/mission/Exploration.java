@@ -133,6 +133,10 @@ public class Exploration extends RoverMission implements Serializable {
 					int skill = startingPerson.getSkillManager().getEffectiveSkillLevel(SkillType.AREOLOGY);
 					determineExplorationSites(getVehicle().getRange(missionType),
 							getTotalTripTimeLimit(getRover(), getPeopleNumber(), true), NUM_SITES, skill);
+					if (explorationSiteCompletion.size() == 0) {
+						addMissionStatus(MissionStatus.NO_EXPLORATION_SITES);
+						endMission();
+					}
 				}
 			} catch (Exception e) {
 				addMissionStatus(MissionStatus.NO_EXPLORATION_SITES);

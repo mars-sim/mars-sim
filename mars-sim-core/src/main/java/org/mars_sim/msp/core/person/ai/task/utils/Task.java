@@ -471,7 +471,8 @@ public abstract class Task implements Serializable, Comparable<Task> {
 				}
 
 			} else {
-				subTask.addSubTask(newSubTask);
+//				if (!subTask.getName().equals(newSubTask.getName()))
+					subTask.addSubTask(newSubTask);
 			}
 		} else {
 			subTask = newSubTask;

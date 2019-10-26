@@ -19,6 +19,7 @@ import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.person.health.ComplaintType;
+import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.ResourceUtil;
@@ -519,8 +520,17 @@ public class Malfunction implements Serializable {
 			if (RandomUtil.lessThanRandPercent(malfunctionConfig.getRepairPartProbability(name, partName))) {
 				int number = RandomUtil.getRandomRegressionInteger(malfunctionConfig.getRepairPartNumber(name, partName));
 				// Part part = (Part) ItemResource.findItemResource(partName);
+				
+				int id = ItemResourceUtil.findIDbyItemResourceName(partName);
+				// Add tracking demand
+//				inv.addItemDemandTotalRequest(id, number);
+//				inv.addItemDemand(id, number);
+				
 				repairParts.put(ItemResourceUtil.findIDbyItemResourceName(partName), number);
 				String id_string = INCIDENT_NUM + incidentNum;
+				
+
+				
 				LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
 						name + id_string + " - the repair requires " + partName + " (quantity: " + number + ").", null);
 			}

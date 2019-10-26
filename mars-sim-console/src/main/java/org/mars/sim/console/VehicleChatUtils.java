@@ -7,8 +7,14 @@
 
 package org.mars.sim.console;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
+import org.mars_sim.msp.core.malfunction.Malfunction;
+import org.mars_sim.msp.core.malfunction.MalfunctionConfig;
+import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.resource.ResourceUtil;
@@ -39,7 +45,11 @@ public class VehicleChatUtils extends ChatUtils {
 		String questionText = "";
 		StringBuffer responseText = new StringBuffer();
 
-		if (text.toLowerCase().contains("where")) {
+		if (expertMode) {
+			return askExpertMode(text, responseText);
+		}
+		
+		else if (text.toLowerCase().contains("where")) {
 			questionText = YOU_PROMPT + "Where are you located ?"; 
 			responseText.append("I'm located at ");
 			responseText.append(Conversion.capitalize(vehicleCache.getLocationTag().getQuickLocation()));
@@ -52,16 +62,18 @@ public class VehicleChatUtils extends ChatUtils {
 			responseText.append(System.lineSeparator());
 			responseText.append(addWhiteSpacesRightName("Status : ", max));
 
-			List<StatusType> statusTypes = vehicleCache.getStatusTypes();
-	
-			responseText.append(System.lineSeparator());
-			int size = statusTypes.size();
-			for (int i=0; i< size; i++) {
-				StatusType st = statusTypes.get(i);
-				responseText.append(addWhiteSpacesRightName((i+1) + ". " + Conversion.capitalize(st.getName()), max + 9));
-				responseText.append(System.lineSeparator());
-			}
+//			List<StatusType> statusTypes = vehicleCache.getStatusTypes();
+//			responseText.append(System.lineSeparator());
+//			int size = statusTypes.size();
+//			for (int i=0; i< size; i++) {
+//				StatusType st = statusTypes.get(i);
+//				responseText.append(addWhiteSpacesRightName((i+1) + ". " + Conversion.capitalize(st.getName()), max + 9));
+//				responseText.append(System.lineSeparator());
+//			}
 			
+			String statusString = vehicleCache.printStatusTypes();
+			
+			responseText.append(statusString);
 			responseText.append(System.lineSeparator());
 			responseText.append(addWhiteSpacesRightName("Associated Settlement : ", max)
 					+ vehicleCache.getAssociatedSettlement().getName());
@@ -77,14 +89,15 @@ public class VehicleChatUtils extends ChatUtils {
 				reserve = "No";
 			responseText.append(System.lineSeparator());
 			responseText.append(addWhiteSpacesRightName("Reserved : ", max) + reserve);
-
-			String missionStr = "None";
+			responseText.append(System.lineSeparator());
+			responseText.append(addWhiteSpacesRightName("On a Mission : ", max));
+//			String missionStr = "None";
 			if (missionManager.getMissionForVehicle(vehicleCache) != null) {
 				Mission m = missionManager.getMissionForVehicle(vehicleCache);
 				String lead = m.getStartingMember().getName();
-				missionStr = "Yes. " + m.getName();
+//				missionStr = "Yes. " + m.getName();
 				responseText.append(System.lineSeparator());
-				responseText.append(addWhiteSpacesRightName("On a Mission : ", max) + missionStr);
+				responseText.append("Yes. " + m.getName());
 				responseText.append(System.lineSeparator());
 				responseText.append(addWhiteSpacesRightName("Mission Lead : ", max) + lead);
 				responseText.append(System.lineSeparator());
@@ -102,8 +115,7 @@ public class VehicleChatUtils extends ChatUtils {
 				}
 
 			} else {
-				responseText.append(System.lineSeparator());
-				responseText.append(addWhiteSpacesRightName("Not on a Mission", max));
+				responseText.append("No");
 			}
 
 			if (vehicleCache instanceof Rover) {
@@ -315,4 +327,59 @@ public class VehicleChatUtils extends ChatUtils {
 		return new String[] { questionText, responseText.toString() };
 	}
 
+	/**
+	 * Asks a question in Expert Mode
+	 * 
+	 * @param text
+	 * @param responseText
+	 * @return
+	 */
+	public static String[] askExpertMode(String text, StringBuffer responseText) {
+		
+		String questionText = "";
+		
+		if (text.toLowerCase().contains("malfunction")) {
+			
+			MalfunctionManager malfunctionManager = vehicleCache.getMalfunctionManager();
+			
+			List<Malfunction> relatedMalfunctions = new ArrayList<>();
+					
+			Collection<Malfunction> malfunctions = MalfunctionConfig.getMalfunctionList();
+			if (malfunctions.size() > 0) {
+				for (Malfunction m : malfunctions) {
+					if (m.isMatched(malfunctionManager.getScopes())) {
+						relatedMalfunctions.add(m);
+					}
+				}
+			}
+			
+			int size = relatedMalfunctions.size();
+			
+//			Collections.sort(relatedMalfunctions);
+			
+			String s = "";
+			
+			for (int i=0; i<size; i++) {
+				if (i+1 < 10)
+					s += "  " + (i+1) + ". ";
+				else
+					s += " " + (i+1) + ". ";
+				
+				s += relatedMalfunctions.get(i) + System.lineSeparator();
+			}
+			
+			int choice = textIO.newIntInputReader().withMinVal(1).withMaxVal(size)
+					.read(s + System.lineSeparator() + "Pick a malfunction from above by entering a number : ");
+			
+			Malfunction malfunction = relatedMalfunctions.get(choice - 1);
+			
+			vehicleCache.getMalfunctionManager().addMalfunction(malfunction, true, null);
+			
+			responseText.append(vehicleCache.getNickName() + " just had '" 
+					+ malfunction.getName() + "'." + System.lineSeparator());
+
+		}
+		
+		return new String[] {questionText, responseText.toString()};
+	}
 }

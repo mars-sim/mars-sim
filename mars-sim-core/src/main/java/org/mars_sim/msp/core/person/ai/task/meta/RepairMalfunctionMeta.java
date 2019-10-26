@@ -10,6 +10,7 @@ import java.io.Serializable;
 import java.util.Iterator;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
@@ -24,6 +25,7 @@ import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.job.Repairbot;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * Meta task for the RepairMalfunction task.
@@ -66,7 +68,7 @@ public class RepairMalfunctionMeta implements MetaTask, Serializable {
             	return 0;
             
             if (person.isInSettlement()) 
-            	result = getSettlementProbability(person.getSettlement());
+            	result = computeProbability(person.getSettlement(), person);
 	
 	        // Effort-driven task modifier.
 	        result *= person.getPerformanceRating();
@@ -94,44 +96,91 @@ public class RepairMalfunctionMeta implements MetaTask, Serializable {
 
 
     public double getSettlementProbability(Settlement settlement) {
+        double result = 0D;
+        // Add probability for all malfunctionable entities in person's local.
+        Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(settlement).iterator();
+        while (i.hasNext()) {
+            Malfunctionable entity = i.next();
+  
+            MalfunctionManager manager = entity.getMalfunctionManager();
+            Iterator<Malfunction> j = manager.getGeneralMalfunctions().iterator();
+            while (j.hasNext()) {
+                Malfunction malfunction = j.next();
+                if (!malfunction.isGeneralRepairDone())
+                	result += WEIGHT/4D;
+                try {
+                    if (RepairMalfunction.hasRepairPartsForMalfunction(settlement, malfunction)) {
+                        result += WEIGHT/2D;
+                    }
+                }
+                catch (Exception e) {
+                    e.printStackTrace(System.err);
+                }
+            }
+            
+            Iterator<Malfunction> k = manager.getEmergencyMalfunctions().iterator();
+            while (k.hasNext()) {
+                Malfunction malfunction = k.next();
+                if (!malfunction.isEmergencyRepairDone())
+                	result += WEIGHT/2D;
+                try {
+                    if (RepairMalfunction.hasRepairPartsForMalfunction(settlement, malfunction)) {
+                        result += WEIGHT;
+                    }
+                }
+                catch (Exception e) {
+                    e.printStackTrace(System.err);
+                }
+            }
+        }
+        return result;
+    }
+    
+    public double computeProbability(Settlement settlement, Unit unit) {
 
         double result = 0D;
         // Add probability for all malfunctionable entities in person's local.
         Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(settlement).iterator();
         while (i.hasNext()) {
             Malfunctionable entity = i.next();
-//            if (!RepairMalfunction.requiresEVA(entity)) { // do NOT use requiresEVA() since it will filter out Emergency work repair
-                MalfunctionManager manager = entity.getMalfunctionManager();
-                Iterator<Malfunction> j = manager.getGeneralMalfunctions().iterator();
-                while (j.hasNext()) {
-                    Malfunction malfunction = j.next();
-                    if (!malfunction.isGeneralRepairDone())
-                    	result += WEIGHT/4D;
-                    try {
-                        if (RepairMalfunction.hasRepairPartsForMalfunction(settlement, malfunction)) {
-                            result += WEIGHT/2D;
-                        }
-                    }
-                    catch (Exception e) {
-                        e.printStackTrace(System.err);
-                    }
-                }
-                
-                Iterator<Malfunction> k = manager.getEmergencyMalfunctions().iterator();
-                while (k.hasNext()) {
-                    Malfunction malfunction = k.next();
-                    if (!malfunction.isEmergencyRepairDone())
-                    	result += WEIGHT/2D;
-                    try {
-                        if (RepairMalfunction.hasRepairPartsForMalfunction(settlement, malfunction)) {
-                            result += WEIGHT;
-                        }
-                    }
-                    catch (Exception e) {
-                        e.printStackTrace(System.err);
+            
+            if (unit instanceof Robot && entity.getUnit() instanceof Vehicle) {
+            	// Note that currently robot cannot go outside and board a vehicle
+            	continue;
+            }
+            
+//          if (!RepairMalfunction.requiresEVA(entity)) { // do NOT use requiresEVA() since it will filter out Emergency work repair
+            
+            MalfunctionManager manager = entity.getMalfunctionManager();
+            Iterator<Malfunction> j = manager.getGeneralMalfunctions().iterator();
+            while (j.hasNext()) {
+                Malfunction malfunction = j.next();
+                if (!malfunction.isGeneralRepairDone())
+                	result += WEIGHT/4D;
+                try {
+                    if (RepairMalfunction.hasRepairPartsForMalfunction(settlement, malfunction)) {
+                        result += WEIGHT/2D;
                     }
                 }
-//            }
+                catch (Exception e) {
+                    e.printStackTrace(System.err);
+                }
+            }
+            
+            Iterator<Malfunction> k = manager.getEmergencyMalfunctions().iterator();
+            while (k.hasNext()) {
+                Malfunction malfunction = k.next();
+                if (!malfunction.isEmergencyRepairDone())
+                	result += WEIGHT/2D;
+                try {
+                    if (RepairMalfunction.hasRepairPartsForMalfunction(settlement, malfunction)) {
+                        result += WEIGHT;
+                    }
+                }
+                catch (Exception e) {
+                    e.printStackTrace(System.err);
+                }
+            }
         }
         return result;
     }
@@ -143,36 +192,12 @@ public class RepairMalfunctionMeta implements MetaTask, Serializable {
 
 	@Override
 	public double getProbability(Robot robot) {
-
         double result = 0D;
 
-        if (robot.getBotMind().getRobotJob() instanceof Repairbot) {
-	        // Add probability for all malfunctionable entities in robot's local.
-	        Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(robot).iterator();
-	        while (i.hasNext()) {
-	            Malfunctionable entity = i.next();
-//	            if (!RepairMalfunction.requiresEVA(robot, entity)) {
-	                MalfunctionManager manager = entity.getMalfunctionManager();
-	                Iterator<Malfunction> j = manager.getGeneralMalfunctions().iterator();
-	                while (j.hasNext()) {
-	                    Malfunction malfunction = j.next();
-	                    result += WEIGHT/2D;
-	                    try {
-	                        if (RepairMalfunction.hasRepairPartsForMalfunction(robot, malfunction)) {
-	                            result += WEIGHT;
-	                        }
-	                    }
-	                    catch (Exception e) {
-	                        e.printStackTrace(System.err);
-	                    }
-	                }
-//	            }
-	        }
-
-	        // Effort-driven task modifier.
-	        result *= robot.getPerformanceRating();
-
-        }
+      	result = computeProbability(robot.getSettlement(), robot);
+      	
+	    // Effort-driven task modifier.
+	    result *= robot.getPerformanceRating();
 
         return result;
 	}

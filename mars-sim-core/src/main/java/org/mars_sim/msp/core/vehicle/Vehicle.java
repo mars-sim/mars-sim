@@ -626,7 +626,7 @@ public abstract class Vehicle extends Unit
 				s += ", ";
 		}
 		
-		return s;
+		return s.trim();
 	}
 	
 	/**
