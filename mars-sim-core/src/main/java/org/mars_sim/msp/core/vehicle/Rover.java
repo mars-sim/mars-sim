@@ -120,10 +120,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 		super(name, type, settlement, MAINTENANCE_WORK_TIME);
 
 		// Add scope to malfunction manager.
-		malfunctionManager.addScopeString(SystemType.ROVER.toString());
-		// malfunctionManager.addScopeString("Crewable");
-		malfunctionManager.addScopeString(FunctionType.LIFE_SUPPORT.getName());
-		// malfunctionManager.addScopeString(description);
+
 		// if (config.hasLab(description))
 		// malfunctionManager.addScopeString("Laboratory");
 		// if (config.hasSickbay(description))

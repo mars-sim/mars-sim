@@ -104,9 +104,10 @@ public abstract class Vehicle extends Unit
 	public static final double SOFC_CONVERSION_EFFICIENCY = .57;
 	/** Lifetime Wear in millisols **/
 	private static final double WEAR_LIFETIME = 668_000; // 668 Sols (1 orbit)
-	
 	/** Estimated Number of hours traveled each day. **/
 	private static final int ESTIMATED_NUM_HOURS = 16;
+	/** The scope name for Light Utility Vehicle.  **/
+	private static final String LUV = "LUV";
 	
 	/** The unit count for this person. */
 	private static int uniqueCount = Unit.FIRST_VEHICLE_UNIT_ID;
@@ -204,9 +205,9 @@ public abstract class Vehicle extends Unit
 	private SalvageInfo salvageInfo; 
 
 	static {
-		life_support_range_error_margin = SimulationConfig.instance().getSettlementConfiguration()
+		life_support_range_error_margin = simulationConfig.getSettlementConfiguration()
 				.loadMissionControl()[0];
-		fuel_range_error_margin = SimulationConfig.instance().getSettlementConfiguration().loadMissionControl()[1];
+		fuel_range_error_margin = simulationConfig.getSettlementConfiguration().loadMissionControl()[1];
 	}
 	
 	/**
@@ -277,8 +278,18 @@ public abstract class Vehicle extends Unit
 
 		// Initialize malfunction manager.
 		malfunctionManager = new MalfunctionManager(this, WEAR_LIFETIME, maintenanceWorkTime);
-		malfunctionManager.addScopeString(SystemType.VEHICLE.getName());// "Vehicle");
-
+		
+		// Add "vehicle" as scope
+		malfunctionManager.addScopeString(SystemType.VEHICLE.getName());
+		
+		// Add its vehicle type as scope
+		malfunctionManager.addScopeString(vehicleType);
+		
+		if (!vehicleType.equals(LightUtilityVehicle.class.getSimpleName())) {
+			// Add "rover" as scope
+			malfunctionManager.addScopeString(SystemType.ROVER.getName());
+		}
+		
 		addStatus(StatusType.PARKED);
 		
 		// Set width and length of vehicle.

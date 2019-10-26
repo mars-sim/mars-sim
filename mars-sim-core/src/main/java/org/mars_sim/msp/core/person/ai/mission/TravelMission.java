@@ -393,7 +393,8 @@ public abstract class TravelMission extends Mission {
 	 * @throws MissionException if error determining distance.
 	 */
 	public final double getTotalRemainingDistance() {
-		double remain = getCurrentLegRemainingDistance();
+		double leg = getCurrentLegRemainingDistance();
+//		System.out.println("leg Distance : " + Math.round(leg*10.0)/10.0);
 		int index = 0;
 		double navDist = 0;
 		if (AT_NAVPOINT.equals(travelStatus))
@@ -401,12 +402,15 @@ public abstract class TravelMission extends Mission {
 		else if (TRAVEL_TO_NAVPOINT.equals(travelStatus))
 			index = getNextNavpointIndex();
 
-		for (int x = (index + 1); x < getNumberOfNavpoints(); x++)
+		for (int x = index + 1; x < getNumberOfNavpoints(); x++) {
+//			System.out.print("     index = " + index + "     x = " + x);
+//			double dist =
 			navDist += getNavpoint(x - 1).getLocation().getDistance(getNavpoint(x).getLocation());
-		
+//			System.out.println("     Nav Distance from " + (x-1) + " to " + x + " : " + Math.round(dist*10.0)/10.0);
+		}
 //		System.out.print("    Nav Distance : " + Math.round(navDist*10.0)/10.0);
 //		System.out.println("    Total : " + Math.round((remain + navDist)*10.0)/10.0);
-		return Math.abs(remain + navDist);
+		return Math.abs(leg + navDist);
 		
 //		if (this instanceof VehicleMission) {
 ////			VehicleMission vehicleMission = (VehicleMission) this;

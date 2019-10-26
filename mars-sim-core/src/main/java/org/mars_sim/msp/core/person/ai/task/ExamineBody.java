@@ -59,7 +59,7 @@ public class ExamineBody extends Task implements Serializable {
 	/** Task phases. */
 	private static final TaskPhase EXAMINING = new TaskPhase(Msg.getString("Task.phase.examineBody.examining")); //$NON-NLS-1$
 
-	private static final TaskPhase RECORDING = new TaskPhase(Msg.getString("Task.phase.examineBody.finished")); //$NON-NLS-1$
+	private static final TaskPhase RECORDING = new TaskPhase(Msg.getString("Task.phase.examineBody.recording")); //$NON-NLS-1$
 
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = 1D;

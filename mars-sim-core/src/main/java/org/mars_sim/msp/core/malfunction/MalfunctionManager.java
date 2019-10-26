@@ -73,16 +73,23 @@ public class MalfunctionManager implements Serializable {
 	private static String loggerName = logger.getName();
 	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 	
+	/** Modifier for number of parts needed for a trip. */
+	public static final double PARTS_NUMBER_MODIFIER = 7.5;
+	/** Estimate number of broken parts per malfunctions */
+	public static final double AVERAGE_NUM_MALFUNCTION = 2.5;
+	/** Estimate number of broken parts per malfunctions for EVA suits. */
+	public static final double AVERAGE_EVA_MALFUNCTION = 2.0;
+	
 	/** Initial estimate for malfunctions per orbit for an entity. */
-	private static double ESTIMATED_MALFUNCTIONS_PER_ORBIT = 10D;
+	private static final double ESTIMATED_MALFUNCTIONS_PER_ORBIT = 10D;
 	/** Initial estimate for maintenances per orbit for an entity. */
-	private static double ESTIMATED_MAINTENANCES_PER_ORBIT = 10D;
+	private static final double ESTIMATED_MAINTENANCES_PER_ORBIT = 10D;
 	/** Factor for chance of malfunction by time since last maintenance. */
-	private static double MAINTENANCE_MALFUNCTION_FACTOR = .000_000_001D;
+	private static final double MAINTENANCE_MALFUNCTION_FACTOR = .000_000_001D;
 	/** Factor for chance of malfunction due to wear condition. */
-	private static double WEAR_MALFUNCTION_FACTOR = 9D;
+	private static final double WEAR_MALFUNCTION_FACTOR = 9D;
 	/** Factor for chance of accident due to wear condition. */
-	private static double WEAR_ACCIDENT_FACTOR = 1D;
+	private static final double WEAR_ACCIDENT_FACTOR = 1D;
 
 //	private static final String OXYGEN = "Oxygen";
 //	private static final String WATER = "Water";
@@ -224,11 +231,15 @@ public class MalfunctionManager implements Serializable {
 	 * @param scopeString
 	 */
 	public void addScopeString(String scopeString) {
-		if ((scopeString != null) && !scopes.contains(scopeString))
-			scopes.add(scopeString);
-
+		if ((scopeString != null) && !scopes.contains(scopeString.toLowerCase()))
+			scopes.add(scopeString.toLowerCase());
+//		System.out.println("ScopeString : " + scopeString.toLowerCase());
 		// Update maintenance parts.
 		determineNewMaintenanceParts();
+	}
+	
+	public Collection<String> getScopes() {
+		return scopes;
 	}
 
 	/**

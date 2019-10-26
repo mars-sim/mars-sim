@@ -3157,7 +3157,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 			<part name="microcontroller" number="1" />
 			<part name="small transformer" number="1" />
 <!--		<part name="magnetron tube" number="1" /> 		-->	
-			<part name="rf power transistor" number="1" />
+			<part name="power transistor" number="1" />
 			<part name="logic board" number="1" />			
 		</inputs>
 		<outputs>

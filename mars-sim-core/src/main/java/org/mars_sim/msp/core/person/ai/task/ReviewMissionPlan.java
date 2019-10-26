@@ -167,8 +167,8 @@ public class ReviewMissionPlan extends Task implements Serializable {
 	 * @return the amount of time (millisols) left over after performing the phase.
 	 */
 	private double reviewingPhase(double time) {
-		LogConsolidated.log(Level.INFO, 0, sourceName, 
-				"[" + person.getAssociatedSettlement() + "] " + person + " had time to review some mission plans.");
+//		LogConsolidated.log(Level.INFO, 20_000, sourceName, 
+//				"[" + person.getAssociatedSettlement() + "] " + person + " had time to review some mission plans.");
 		
         List<Mission> missions = missionManager.getPendingMissions(person.getAssociatedSettlement());
         

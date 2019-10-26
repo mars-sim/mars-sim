@@ -64,7 +64,7 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
 		super(name, description, settlement, maintenanceWorkTime);
 
 		// Add scope to malfunction manager.
-		malfunctionManager.addScopeString(SystemType.VEHICLE.getName());// "GroundVehicle");
+//		malfunctionManager.addScopeString(SystemType.VEHICLE.getName());// "GroundVehicle");
 
 		setTerrainHandlingCapability(0D); // Default terrain capability
 

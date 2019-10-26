@@ -27,6 +27,7 @@ import org.mars_sim.msp.core.structure.building.function.HeatSourceType;
 import org.mars_sim.msp.core.structure.building.function.PowerSourceType;
 import org.mars_sim.msp.core.structure.building.function.SystemType;
 import org.mars_sim.msp.core.tool.Conversion;
+import org.mars_sim.msp.core.vehicle.VehicleType;
 
 /**
  * Provides configuration information about malfunctions. Uses a DOM document to
@@ -138,31 +139,39 @@ public class MalfunctionConfig implements Serializable {
 						boolean exist = false;
 						String sys_name = Conversion.capitalize(systemElement.getAttributeValue(NAME));
 						for (FunctionType f : FunctionType.values()) {
-							if (sys_name.equals(f.getName())) {
-								systems.add(sys_name);
+							if (sys_name.equalsIgnoreCase(f.getName())) {
+								systems.add(sys_name.toLowerCase());
 								exist = true;
 							}
 						}
 						if (!exist) {
 							for (SystemType s : SystemType.values()) {
-								if (sys_name.equals(s.getName())) {
-									systems.add(sys_name);
+								if (sys_name.equalsIgnoreCase(s.getName())) {
+									systems.add(sys_name.toLowerCase());
 									exist = true;
 								}
 							}
 						}
 						if (!exist) {
 							for (HeatSourceType h : HeatSourceType.values()) {
-								if (sys_name.equals(h.getName())) {
-									systems.add(sys_name);
+								if (sys_name.equalsIgnoreCase(h.getName())) {
+									systems.add(sys_name.toLowerCase());
 									exist = true;
 								}
 							}
 						}
 						if (!exist) {
 							for (PowerSourceType p : PowerSourceType.values()) {
-								if (sys_name.equals(p.getName())) {
-									systems.add(sys_name);
+								if (sys_name.equalsIgnoreCase(p.getName())) {
+									systems.add(sys_name.toLowerCase());
+									exist = true;
+								}
+							}
+						}
+						if (!exist) {
+							for (VehicleType t : VehicleType.values()) {
+								if (sys_name.equalsIgnoreCase(t.getName())) {
+									systems.add(sys_name.toLowerCase());
 									exist = true;
 								}
 							}

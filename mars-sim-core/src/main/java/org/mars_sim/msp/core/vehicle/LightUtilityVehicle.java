@@ -44,19 +44,17 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
         // Use GroundVehicle constructor.
         super(name, type, settlement, MAINTENANCE_WORK_TIME);
 
-        // Get vehicle configuration.
-        VehicleConfig config = SimulationConfig.instance().getVehicleConfiguration();
 
-        if (config.hasPartAttachments(type)) {
-            attachments = config.getAttachableParts(type);
-            slotNumber = config.getPartAttachmentSlotNumber(type);
+        if (vehicleConfig.hasPartAttachments(type)) {
+            attachments = vehicleConfig.getAttachableParts(type);
+            slotNumber = vehicleConfig.getPartAttachmentSlotNumber(type);
         }
 
-        crewCapacity = config.getCrewSize(type);
-        robotCrewCapacity = config.getCrewSize(type);
+        crewCapacity = vehicleConfig.getCrewSize(type);
+        robotCrewCapacity = vehicleConfig.getCrewSize(type);
 
         Inventory inv = getInventory();
-        inv.addGeneralCapacity(config.getTotalCapacity(type));
+        inv.addGeneralCapacity(vehicleConfig.getTotalCapacity(type));
 
         // Set rover terrain modifier
         setTerrainHandlingCapability(0D);

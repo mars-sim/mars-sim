@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
+import org.mars_sim.msp.core.mars.TerrainElevation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
@@ -24,7 +25,6 @@ import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.building.function.Storage;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.StatusType;
@@ -234,7 +234,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
         double timeUsed = time - mobilizeVehicle(time);
         
         // Add experience to the operator
-        addExperience(time);
+        addExperience(timeUsed);
         
         // Check for accident.
         if (!isDone()) {
@@ -252,11 +252,17 @@ public abstract class OperateVehicle extends Task implements Serializable {
 	/**
 	 * Move the vehicle in its direction at its speed for the amount of time given.
 	 * Stop if reached destination.
+	 * 
 	 * @param time the amount of time (ms) to drive.
 	 * @return the amount of time (ms) left over after driving (if any)
 	 */
 	protected double mobilizeVehicle(double time) {
-		
+        double result = 0;
+        double distanceTraveled = 0;
+        
+        if (getDistanceToDestination() < DESTINATION_BUFFER)
+        	endTask();
+        	
 		if (person != null) {
 	        // Set person as the vehicle operator if he/she isn't already.
 	        if (!person.equals(vehicle.getOperator())) {
@@ -270,77 +276,137 @@ public abstract class OperateVehicle extends Task implements Serializable {
 
 		}	
 		
-        // Find starting distance to destination.
-        double startingDistanceToDestination = getDistanceToDestination();
-
-        // Determine distance traveled in time given.
-        double hrsTime = MarsClock.HOURS_PER_MILLISOL * time;
-        double distanceTraveled = hrsTime * vehicle.getSpeed();
-
-        // Consume fuel for distance traveled.
-        double fuelConsumed = distanceTraveled / vehicle.getIFuelConsumption();
         Inventory vInv = vehicle.getInventory();
         int fuelType = vehicle.getFuelType();
         
         double remainingFuel = vInv.getAmountResourceStored(fuelType, false);
 
         if (remainingFuel < LEAST_AMOUNT) {
+        	// Case 1 : no fuel left
         	// TODO: need to turn on emergency beacon and ask for rescue here or in RoverMission ?
 	    	LogConsolidated.log(Level.SEVERE, 0, sourceName, "[" + vehicle.getName() + "] " 
 					+ "ran out of methane. Cannot drive.");
+//        	distanceTraveled = 0;
+	    	vehicle.removeStatus(StatusType.MOVING);
         	vehicle.addStatus(StatusType.OUT_OF_FUEL);
-        	distanceTraveled = 0;
         	endTask();
+        	return time;
         }
-        	
-        if (fuelConsumed > remainingFuel) {
-        	fuelConsumed = remainingFuel;
+        
+        
+        // Determine distance traveled in time given.
+        double hrsTime = MarsClock.HOURS_PER_MILLISOL * time;
+
+        // Consume fuel for distance traveled.
+        double fuelNeeded = distanceTraveled / vehicle.getIFuelConsumption();
+        
+        if (fuelNeeded > remainingFuel) {
+        	// Case 2 : just used up the last drop of fuel 
+        	fuelNeeded = remainingFuel;
         	
         	try {
-		    	vInv.retrieveAmountResource(fuelType, fuelConsumed);
+		    	vInv.retrieveAmountResource(fuelType, fuelNeeded);
+	        	// Update and reduce the distanceTraveled since there is not enough fuel
+	        	distanceTraveled = fuelNeeded * vehicle.getIFuelConsumption();
+	        	
+	            // Add distance traveled to vehicle's odometer.
+	            vehicle.addTotalDistanceTraveled(distanceTraveled);
+	            vehicle.addDistanceLastMaintenance(distanceTraveled);
 		    }
 		    catch (Exception e) {
 		    	LogConsolidated.log(Level.SEVERE, 0, sourceName, "[" + vehicle.getName() + "] " 
 						+ "can't retrieve methane. Cannot drive.");
-	        	distanceTraveled = 0;
+//	        	distanceTraveled = 0;
 	        	vehicle.addStatus(StatusType.OUT_OF_FUEL);
-		    	endTask();
+	        	vehicle.removeStatus(StatusType.MOVING);
+	        	endTask();
+	        	return time;
 		    }
         	
-        	// Update and reduce the distanceTraveled since there is not enough fuel
-        	distanceTraveled =  fuelConsumed * vehicle.getIFuelConsumption();
         }
+        
+        else {
+        	
+            // Find starting distance to destination.
+            double startingDistanceToDestination = getDistanceToDestination();
 
-        double result = 0;
+            if (startingDistanceToDestination <= (distanceTraveled + DESTINATION_BUFFER)) {
+                // Case 3 : if starting distance to destination is less than distance traveled, stop at destination.
+                
+            	distanceTraveled = startingDistanceToDestination;
+                
+                // Update the fuel needed for distance traveled.
+                fuelNeeded = distanceTraveled / vehicle.getIFuelConsumption();
+                
+                try {
+    		    	vInv.retrieveAmountResource(fuelType, fuelNeeded);
+    		    	
+    		        // Add distance traveled to vehicle's odometer.
+    		        vehicle.addTotalDistanceTraveled(distanceTraveled);
+    		        vehicle.addDistanceLastMaintenance(distanceTraveled);
 
-        // If starting distance to destination is less than distance traveled, stop at destination.
-        if (startingDistanceToDestination <= (distanceTraveled + DESTINATION_BUFFER)) {
-            distanceTraveled = startingDistanceToDestination;
-            vehicle.setCoordinates(destination);
-            vehicle.setSpeed(0D);
-            vehicle.setOperator(null);
-            updateVehicleElevationAltitude();
-            if (isSettlementDestination()) {
-                determineInitialSettlementParkedLocation();
+    		    }
+    		    catch (Exception e) {
+    		    	LogConsolidated.log(Level.SEVERE, 0, sourceName, "[" + vehicle.getName() + "] " 
+    						+ "can't retrieve methane. Cannot drive.");
+//    	        	distanceTraveled = 0;
+    	        	vehicle.addStatus(StatusType.OUT_OF_FUEL);
+    	        	vehicle.removeStatus(StatusType.MOVING);
+    	        	endTask();
+    	        	return time;
+    		    }
+                
+                vehicle.setCoordinates(destination);
+                vehicle.setSpeed(0D);
+                vehicle.setOperator(null);
+                updateVehicleElevationAltitude();
+                if (isSettlementDestination()) {
+                    determineInitialSettlementParkedLocation();
+                }
+                else {
+                    double radDir = vehicle.getDirection().getDirection();
+                    double degDir = radDir * 180D / Math.PI;
+                    vehicle.setParkedLocation(0D, 0D, degDir);
+                }
+                
+                result = time - MarsClock.MILLISOLS_PER_HOUR * distanceTraveled / vehicle.getSpeed();
+//                endTask();
             }
             else {
-                double radDir = vehicle.getDirection().getDirection();
-                double degDir = radDir * 180D / Math.PI;
-                vehicle.setParkedLocation(0D, 0D, degDir);
-            }
-            endTask();
+            	
+            	// Case 4 : the rover may use all the prescribed time to drive 
+                distanceTraveled = hrsTime * vehicle.getSpeed();
+                
+             // Update the fuel needed for distance traveled.
+                fuelNeeded = distanceTraveled / vehicle.getIFuelConsumption();
+                
+                try {
+    		    	vInv.retrieveAmountResource(fuelType, fuelNeeded);
 
-        }
-        else {
-            // Determine new position.
-            vehicle.setCoordinates(vehicle.getCoordinates().getNewLocation(vehicle.getDirection(), distanceTraveled));
+    		    }
+    		    catch (Exception e) {
+    		    	LogConsolidated.log(Level.SEVERE, 0, sourceName, "[" + vehicle.getName() + "] " 
+    						+ "can't retrieve methane. Cannot drive.");
+//    	        	distanceTraveled = 0;
+    	        	vehicle.addStatus(StatusType.OUT_OF_FUEL);
+    	        	vehicle.removeStatus(StatusType.MOVING);
+    	        	endTask();
+    	        	return time;
+    		    }
+                
+                // Determine new position.
+                vehicle.setCoordinates(vehicle.getCoordinates().getNewLocation(vehicle.getDirection(), distanceTraveled));
+                
+                // Add distance traveled to vehicle's odometer.
+                vehicle.addTotalDistanceTraveled(distanceTraveled);
+                vehicle.addDistanceLastMaintenance(distanceTraveled);
+                
+                result = 0; //time - MarsClock.MILLISOLS_PER_HOUR * distanceTraveled / vehicle.getSpeed();
+                
+            }
+            
         }
         
-        result = time - MarsClock.MILLISOLS_PER_HOUR * distanceTraveled / vehicle.getSpeed();
-        
-        // Add distance traveled to vehicle's odometer.
-        vehicle.addTotalDistanceTraveled(distanceTraveled);
-        vehicle.addDistanceLastMaintenance(distanceTraveled);
 
         return result;
 	}
@@ -472,7 +538,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
     protected double getVehicleElevation() {
 //    	if (surface == null)
 //    		surface = Simulation.instance().getMars().getSurfaceFeatures();
-        return surface.getTerrainElevation().getPatchedElevation(vehicle.getCoordinates());
+        return TerrainElevation.getPatchedElevation(vehicle.getCoordinates());
     }
     
     /**

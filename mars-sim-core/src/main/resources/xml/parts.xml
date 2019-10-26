@@ -454,7 +454,7 @@
 
 	<part name="small wheel" mass="10.0" >
 		<maintenance-entity-list>
-			<entity name="light utility vehicle" probability="5" max-number="1" />
+			<entity name="" probability="5" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 
@@ -540,7 +540,7 @@
 
 	<part name="drilling rig" mass="135.0">
 		<description>
-			An attachment for LUV. A motor platform for supporting drilling (used in conjunction with the crane boom)
+			An attachment for light utility vehicle. A motor platform for supporting drilling (used in conjunction with the crane boom)
 		</description>
 	</part>
 
@@ -585,9 +585,9 @@
 	</part>
 	-->
 
-	<!-- 2016-05-27 Added RF power transistor, replacaing the use of heavy, bulky magnetron tube used in microwave oven. 
+	<!-- Add power transistor, replacaing the use of heavy, bulky magnetron tube used in microwave oven. 
 	see http://www.nxp.com/products/rf/rf-power-transistors/rf-cooking:RF-COOKING?cof=0&am=0   -->
-	<part name="rf power transistor" mass="0.01" >
+	<part name="power transistor" mass="0.01" >
 		<maintenance-entity-list>
 		<entity name="farming" probability="1" max-number="2" />
 		<entity name="vehicle" probability="1" max-number="2" />

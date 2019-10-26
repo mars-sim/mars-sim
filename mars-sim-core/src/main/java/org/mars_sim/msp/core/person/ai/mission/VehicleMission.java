@@ -22,8 +22,12 @@ import org.mars_sim.msp.core.UnitEvent;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitListener;
 import org.mars_sim.msp.core.equipment.ContainerUtil;
+import org.mars_sim.msp.core.equipment.EVASuit;
+import org.mars_sim.msp.core.equipment.EquipmentFactory;
+import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.malfunction.Malfunction;
+import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
@@ -34,6 +38,7 @@ import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
+import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleOperator;
@@ -61,11 +66,11 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	// Static members
 
 	/** Modifier for number of parts needed for a trip. */
-	private static final double PARTS_NUMBER_MODIFIER = 5.5;
+	private static final double PARTS_NUMBER_MODIFIER = MalfunctionManager.PARTS_NUMBER_MODIFIER;
 	/** Estimate number of broken parts per malfunctions */
-	private static final double AVERAGE_NUM_MALFUNCTION = 2.5;
+	private static final double AVERAGE_NUM_MALFUNCTION = MalfunctionManager.AVERAGE_NUM_MALFUNCTION;
 	/** Estimate number of broken parts per malfunctions for EVA suits. */
-	protected static final double AVERAGE_EVA_MALFUNCTION = 2.0;
+	protected static final double AVERAGE_EVA_MALFUNCTION = MalfunctionManager.AVERAGE_EVA_MALFUNCTION;
 	
 	/** True if vehicle's emergency beacon has been turned on */
 	// private boolean isBeaconOn = false;
@@ -111,7 +116,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		this.startingMember = startingMember;
 
 		if (!reserveVehicle()) {
-			logger.info(getStartingMember() + " cannot get a vehicle");
+			logger.finer(getStartingMember() + " cannot get a vehicle for a " + this + " mission.");
 			return;
 		}
 		
@@ -257,8 +262,10 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			if (vehicle.getInventory().getTotalInventoryMass(false) > 0D)
 				usable = false;
 
-			logger.info(startingMember + " : " + getName() + " : " + vehicle + " - " + usable);
+			logger.finer(startingMember + " was checking on the status of " + vehicle 
+					+ " (available : " + usable + ") for " + getName() + ".");
 			return usable;
+			
 		} else {
 			throw new IllegalArgumentException("isUsableVehicle: newVehicle is null.");
 		}
@@ -893,22 +900,85 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			double numberMalfunctions = numberAccidents * AVERAGE_NUM_MALFUNCTION;
 
 			Map<Integer, Double> parts = vehicle.getMalfunctionManager().getRepairPartProbabilities();
+			
+//			System.out.println(vehicle.getName() + " : " + vehicle.getVehicleType());
+//			for (String s : vehicle.getMalfunctionManager().getScopes()) {
+//				System.out.println(s);
+//			}
+			
+			// TODO: need to figure out why a vehicle's scope would contain the following parts :
+			parts = removeParts(parts, 
+					"laser", 
+					"stepper motor", 
+					"oven", 
+					"blender", 
+					"autoclave", 
+					"refrigerator", 
+					"stove", 
+					"microwave", 
+					"polycarbonate roofing", 
+					"lens",
+					"fiberglass", 
+					"sheet", 
+					"prism");
+			
 			for (Integer part : parts.keySet()) {
-				String name = ItemResourceUtil.findItemResourceName(part);
-				if (!name.contains("laser") 
-						&& !name.contains("stepper motor")
-						&& !name.contains("prism")) {
-					int number = (int) Math.round(parts.get(part) * numberMalfunctions * PARTS_NUMBER_MODIFIER);
+//				String name = ItemResourceUtil.findItemResourceName(part);
+//				System.out.println(name);
+
+//				if (!name.contains("laser") 
+//						&& !name.contains("stepper motor")
+//						&& !name.equalsIgnoreCase("oven")
+//						&& !name.equalsIgnoreCase("blender")
+//						&& !name.equalsIgnoreCase("autoclave")
+//						&& !name.equalsIgnoreCase("refrigerator")
+//						&& !name.equalsIgnoreCase("stove")
+//						&& !name.equalsIgnoreCase("microwave")
+//						&& !name.equalsIgnoreCase("polycarbonate roofing")
+//						&& !name.contains("lens")
+//						&& !name.equalsIgnoreCase("fiberglass")
+//						&& !name.contains("sheet")
+//						&& !name.contains("prism")) {
+					
+					double freq = parts.get(part) * numberMalfunctions * PARTS_NUMBER_MODIFIER;
+					
+					if (vehicle instanceof Rover) { 
+						Integer wheel = ItemResourceUtil.findIDbyItemResourceName("rover wheel");
+						Integer battery = ItemResourceUtil.findIDbyItemResourceName("rover battery");
+						result.put(wheel, 2);
+						result.put(battery, 1);
+//						System.out.println("part name : " + name + " x" + number + " (Rover).");
+					}
+					
+					int number = (int) Math.round(freq);
 					if (number > 0) {
 						result.put(part, number);
+//						System.out.println("part name : " + name + " x" + number + ".");
 					}
-				}
+//				}
 			}
 		}
 
 		return result;
 	}
 
+	
+	/**
+	 * Removes a variable list of parts from a resource part 
+	 * 
+	 * @param parts a map of parts
+	 * @param names
+	 * @return a map of parts
+	 */
+	public Map<Integer, Double> removeParts(Map<Integer, Double> parts, String... names) {
+		for (String n : names) {
+			parts.remove(ItemResourceUtil.findIDbyItemResourceName(n));
+		}
+		
+		return parts;
+	}
+	
+	
 	/**
 	 * Checks if there are enough resources available in the vehicle for the
 	 * remaining mission.
@@ -1333,9 +1403,30 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	}
 
 	/**
-	 * Gets the optional equipment needed for loading the vehicle.
+	 * Gets the number and types of equipment needed for the mission.
 	 * 
-	 * @return equipment and their number.
+	 * @param useBuffer use time buffers in estimation if true.
+	 * @return map of equipment types and number.
+	 */
+	public Map<Integer, Integer> getEquipmentNeededForRemainingMission(boolean useBuffer) {
+		
+		Map<Integer, Integer> result = ((Mission)this).getEquipmentNeededForRemainingMission(useBuffer);
+
+		// Provides an extra EVA suit for each 4 members in a mission
+		int num = (int) (getPeopleNumber() * .25);
+	
+		// Gets a temporarily reference to an EVA suit
+		int resourceID = EquipmentType.EVA_SUIT.ordinal() + ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID;
+		result.put(resourceID, num);
+		
+		return result;
+	}
+	
+
+	/**
+	 * Gets the optional containers needed for storing the resource when loading up the vehicle.
+	 * 
+	 * @return the containers needed.
 	 */
 	public Map<Integer, Integer> getOptionalEquipmentToLoad() {
 
@@ -1349,8 +1440,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			// Check if it's an amount resource that can be stored inside
 			if (id < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
 				double amount = (double) optionalResources.get(id);
-				// Class<? extends Container> containerClass =
-				// ContainerUtil.getContainerClassToHoldResource(resource);
+
+				// Obtain a container for storing the amount resource
 				int containerID = ContainerUtil.getContainerClassIDToHoldResource(id);
 				double capacity = ContainerUtil.getContainerCapacity(containerID);
 				int numContainers = (int) Math.ceil(amount / capacity);
@@ -1359,7 +1450,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 					numContainers += (int) (result.get(containerID));
 				}
 
-//				System.out.println("VehicleMission's getOptionalEquipmentToLoad() 1 id : " + id 
+//				logger.finer("Loading amount resources in getOptionalEquipmentToLoad() id : " + id 
 //						+ "   containerID : " + containerID
 //						+ "   numContainers : " + numContainers 
 //						+ "   numContainers : " + numContainers
@@ -1369,7 +1460,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			}  // Check if these resources are Parts
 			else if (id >= ResourceUtil.FIRST_ITEM_RESOURCE_ID && id < ResourceUtil.FIRST_VEHICLE_RESOURCE_ID) {
 				int num = (Integer) optionalResources.get(id);
-				// TODO: how to specify adding extra parts for EVASuit here ?
+
+				// Obtain a container for storing the amount resource
 				int containerID = ContainerUtil.getContainerClassIDToHoldResource(id);
 				double capacity = ContainerUtil.getContainerCapacity(containerID);
 				int numContainers = (int) Math.ceil(num / capacity);
@@ -1378,15 +1470,37 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 					numContainers += (int) (result.get(containerID));
 				}
 
-//				System.out.println("VehicleMission's getOptionalEquipmentToLoad() 2 id : " + id 
+//				logger.finer("Loading item resources in getOptionalEquipmentToLoad() id : " + id 
 //						+ "   containerID : " + containerID
 //						+ "   numContainers : " + numContainers 
 //						+ "   numContainers : " + numContainers
 //						+ "   capacity : " + capacity);
 				result.put(containerID, numContainers);
 			}
+			
+//			// Check if these resources are equipment
+//			else if (id >= ResourceUtil.FIRST_VEHICLE_RESOURCE_ID && id < ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID) {
+//				int num = (Integer) optionalResources.get(id);
+//				// TODO: how to specify adding extra parts for EVASuit here ?
+//				int containerID = ContainerUtil.getContainerClassIDToHoldResource(id);
+//				double capacity = ContainerUtil.getContainerCapacity(containerID);
+//				int numContainers = (int) Math.ceil(num / capacity);
+//
+//				if (result.containsKey(containerID)) {
+//					numContainers += (int) (result.get(containerID));
+//				}
+//
+////				logger.finer("Loading equipment in getOptionalEquipmentToLoad() id : " + id 
+////				+ "   containerID : " + containerID
+////				+ "   numContainers : " + numContainers 
+////				+ "   numContainers : " + numContainers
+////				+ "   capacity : " + capacity);
+//				result.put(containerID, numContainers);
+//			}
+			
 			else
 				System.out.println("VehicleMission's getOptionalEquipmentToLoad() 3 id : " + id);
+			
 //			else {
 //				int num = (Integer) optionalResources.get(id);
 //				if (result.containsKey(id)) {

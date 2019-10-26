@@ -9,7 +9,6 @@ package org.mars_sim.msp.core.person.ai.task;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -19,31 +18,13 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.job.JobAssignment;
-import org.mars_sim.msp.core.person.ai.mission.AreologyFieldStudy;
-import org.mars_sim.msp.core.person.ai.mission.BiologyFieldStudy;
-import org.mars_sim.msp.core.person.ai.mission.CollectIce;
-import org.mars_sim.msp.core.person.ai.mission.CollectRegolith;
-import org.mars_sim.msp.core.person.ai.mission.EmergencySupply;
-import org.mars_sim.msp.core.person.ai.mission.Exploration;
-import org.mars_sim.msp.core.person.ai.mission.MeteorologyFieldStudy;
-import org.mars_sim.msp.core.person.ai.mission.Mining;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
-import org.mars_sim.msp.core.person.ai.mission.MissionPlanning;
-import org.mars_sim.msp.core.person.ai.mission.PlanType;
-import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
-import org.mars_sim.msp.core.person.ai.mission.Trade;
-import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
-import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
-import org.mars_sim.msp.core.structure.ObjectiveType;
-import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.Administration;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
-import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 
@@ -145,11 +126,9 @@ public class PlanMission extends Task implements Serializable {
 		if (getPhase() == null) {
 			throw new IllegalArgumentException("Task phase is null");
 		} else if (SELECTING.equals(getPhase())) {
-			return selectingMissionPhase(time);			
-//		} else if (GATHERING.equals(getPhase())) {
-//			return gatheringDataPhase(time);			
+			return selectingPhase(time);			
 		} else if (SUBMITTING.equals(getPhase())) {
-			return submittingMissionPhase(time);
+			return submittingPhase(time);
 		} else {
 			return time;
 		}
@@ -161,7 +140,7 @@ public class PlanMission extends Task implements Serializable {
 	 * @param time the amount of time (millisols) to perform the phase.
 	 * @return the amount of time (millisols) left over after performing the phase.
 	 */
-	private double selectingMissionPhase(double time) {
+	private double selectingPhase(double time) {
 		
 		boolean canDo = person.getMind().canStartNewMission();
 		
@@ -201,45 +180,33 @@ public class PlanMission extends Task implements Serializable {
 	 * @param time the amount of time (millisols) to perform the phase.
 	 * @return the amount of time (millisols) left over after performing the phase.
 	 */
-	private double submittingMissionPhase(double time) {
+	private double submittingPhase(double time) {
 		
 		Mission mission = person.getMind().getMission();
 		
 		if (mission instanceof VehicleMission) {
+			LogConsolidated.log(Level.INFO, 10_000, sourceName, 
+					"[" + person.getLocationTag().getQuickLocation() + "] " + person.getName() + " submitted the " + mission.toString());
 			// Submit the mission plan
 			((VehicleMission)mission).submitMissionPlan();
-			// Note: the plan will go up the chain of command
-			// 1. takeAction() in Mind will call mission.performMission(person) 
-			// 2. performMission() in Mission will lead to calling  performPhase() in VehicleMission
-			// 3. performPhase() in VehicleMission will call requestApprovalPhase() 
-			// 4. requestApprovalPhase() in VehicleMission will call requestApprovalPhase() in Mission
+				// Note: the plan will go up the chain of command
+				// 1. takeAction() in Mind will call mission.performMission(person) 
+				// 2. performMission() in Mission will lead to calling  performPhase() in VehicleMission
+				// 3. performPhase() in VehicleMission will call requestApprovalPhase() 
+				// 4. requestApprovalPhase() in VehicleMission will call requestApprovalPhase() in Mission
 		}
-			
-		LogConsolidated.log(Level.INFO, 10_000, sourceName, 
-				"[" + person.getAssociatedSettlement() + "] " + person.getName() + " just selected the " + mission.toString());
+				
+		if (mission != null) {
+			// if the mission is approved/accepted after submission  
+		}
 		
 		// Add experience
-		addExperience(time);     
+		addExperience(time); 
+		
+		endTask();
 		
 		return 0;
 	}
-	
-
-	/**
-	 * Performs the finished phase.
-	 * 
-	 * @param time the amount of time (millisols) to perform the phase.
-	 * @return the amount of time (millisols) left over after performing the phase.
-	 */
-	private double finishedPhase(double time) {
-       
-		// Add experience
-		addExperience(time);
-		        
-		// Do only one review each time
-		return 0;//endTask();
-	}
-
 	
 	@Override
 	protected void addExperience(double time) {
