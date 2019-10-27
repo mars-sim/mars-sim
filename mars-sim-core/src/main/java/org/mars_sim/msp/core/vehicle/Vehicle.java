@@ -28,7 +28,6 @@ import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.equipment.EVASuit;
@@ -107,7 +106,7 @@ public abstract class Vehicle extends Unit
 	/** Estimated Number of hours traveled each day. **/
 	private static final int ESTIMATED_NUM_HOURS = 16;
 	/** The scope name for Light Utility Vehicle.  **/
-	private static final String LUV = "LUV";
+//	private static final String LUV = "LUV";
 	
 	/** The unit count for this person. */
 	private static int uniqueCount = Unit.FIRST_VEHICLE_UNIT_ID;
@@ -319,6 +318,7 @@ public abstract class Vehicle extends Unit
 		
 		// Gets the base fuel consumption of this vehicle [km/kg]
 		baseFuelConsumption = baseRange / fuelCapacity;
+		
 		// Gets the crew capacity
 		int numCrew = 0; 
 		if (this instanceof Rover)
@@ -335,7 +335,7 @@ public abstract class Vehicle extends Unit
 		endMass = getBaseMass() + estimatedTotalCrewWeight + cargoCapacity/10;
 		
 		// Gets the estimated average fuel consumption for a trip [km/kg]
-		estimatedAveFuelConsumption = baseFuelConsumption / (1 + beginningMass / endMass)  ;
+		estimatedAveFuelConsumption = baseFuelConsumption / (1 + beginningMass / endMass);
 		
 //		logger.config(Conversion.capitalize(vehicleType) 
 //				+ " -     base fuel consumption : " + Math.round(baseFuelConsumption*100.0)/100.0 + " km/kg");

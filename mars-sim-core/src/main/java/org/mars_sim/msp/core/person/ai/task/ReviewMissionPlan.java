@@ -278,6 +278,8 @@ public class ReviewMissionPlan extends Task implements Serializable {
 							else
 								qual = .4 * m.getMissionQualification(person);											
 							
+							qual = Math.round(qual * 10.0)/10.0;
+							
 							// 4. Settlement objective score
 							double obj = 0;
 							
@@ -364,12 +366,11 @@ public class ReviewMissionPlan extends Task implements Serializable {
 							// TODO: 9. Go to him/her to have a chat
 							// TODO: 10. mission lead's leadership/charisma
 							
-							score = rating + relation + qual + obj + emer + site + leadership + weight + luck;
-							
+							score = Math.round((rating + relation + qual + obj + emer + site + leadership + weight + luck)* 10.0)/10.0;
+
 							// Updates the mission plan status
 							missionManager.scoreMissionPlan(mp, score, person);
-							
-							
+														
 							LogConsolidated.log(Level.INFO, 0, sourceName, 
 									"[" + s + "] " + reviewedBy + " graded " + requestedBy
 									+ "'s " + m.getDescription() + " mission plan as follows :");

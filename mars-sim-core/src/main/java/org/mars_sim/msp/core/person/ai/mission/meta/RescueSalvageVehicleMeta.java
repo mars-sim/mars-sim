@@ -74,15 +74,14 @@ public class RescueSalvageVehicleMeta implements MetaMission {
             if (!RoverMission.areVehiclesAvailable(settlement, true)) {
                 return 0;
             }
-
-            
+    
             int min_num = 0;
             int all = settlement.getNumCitizens();
  
-            if (all == 2)
-            	min_num = 1;
-            else
-            	min_num = RescueSalvageVehicle.MIN_GOING_MEMBERS;
+            if (all <= 3)
+            	min_num = 0;
+            else if (all > 3)	
+            	min_num = RescueSalvageVehicle.MIN_STAYING_MEMBERS;
     	    
             // FIXME : need to know how many extra EVA suits needed in the broken vehicle
             
@@ -99,23 +98,22 @@ public class RescueSalvageVehicleMeta implements MetaMission {
             // Check if person is last remaining person at settlement (for salvage mission but not rescue mission).
             // Also check for backup rover for salvage mission.
             //boolean rescue = false;
-            if (vehicleTarget != null) {
-                rescuePeople = (RescueSalvageVehicle.getRescuePeopleNum(vehicleTarget) > 0);
-                if (rescuePeople) {
+//            if (vehicleTarget != null) {
+//                rescuePeople = (RescueSalvageVehicle.getRescuePeopleNum(vehicleTarget) > 0);
+//                if (rescuePeople) {
                     //if (!atLeastOnePersonRemainingAtSettlement(settlement, person))
                     //	return 0;
                 	//if (!RoverMission.minAvailablePeopleAtSettlement(settlement, 0))
                     //    return 0;
-                }
-                else {
-                    if (all == 2)
-                    	min_num = 0;
-                    else 
-                    	min_num = RescueSalvageVehicle.MIN_STAYING_MEMBERS;
+//                }
+//                else {
+//                    if (all <= 3)
+//                    	min_num = 0;
+//                    else if (all > 3)	
+//                    	min_num = RescueSalvageVehicle.MIN_STAYING_MEMBERS;
            	            	
                     // Check if minimum number of people are available at the settlement.
-                    if (!RoverMission.minAvailablePeopleAtSettlement(settlement,
-                            (RescueSalvageVehicle.MIN_STAYING_MEMBERS))) {
+                    if (!RoverMission.minAvailablePeopleAtSettlement(settlement, min_num)) {
                         return 0;
                     }
 
@@ -123,8 +121,8 @@ public class RescueSalvageVehicleMeta implements MetaMission {
                     else if (!RoverMission.hasBackupRover(settlement)) {
                         return 0;
                     }
-                }
-            }
+//                }
+//            }
 
             // Determine mission probability.
             if (rescuePeople) {

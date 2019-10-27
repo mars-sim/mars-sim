@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.person.ai;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -273,7 +274,7 @@ public class Mind implements Serializable {
 //				System.out.println(person + "'s needMission is " + needMission);
 			// A person has no active task
 			try {
-				getNewAction(true, false);
+				getNewTask();
 			} catch (Exception e) {
 				LogConsolidated.log(Level.SEVERE, 5_000, sourceName,
 						person.getName() + " could not get new action", e);
@@ -484,21 +485,11 @@ public class Mind implements Serializable {
 	}
 
 	/**
-	 * Determines a new action for the person based on available tasks, missions and
-	 * active missions.
-	 * 
-	 * @param tasks    can the action be a new task?
-	 * @param missions can the action be a new mission?
+	 * Determines a new task for the person.
 	 */
-	public void getNewAction(boolean tasks, boolean missions) {
-		// If this Person is too weak then they can not do Missions
-		if (person.getPerformanceRating() < MINIMUM_MISSION_PERFORMANCE) {
-			missions = false;
-		}
-
-		// Get probability weights from tasks, missions and active missions.
+	public void getNewTask() {
+		// Get probability weights from tasks.
 		double taskWeights = 0D;
-		double missionWeights = 0D;
 
 		// Determine sum of weights based on given parameters
 		double weightSum = 0D;
@@ -510,15 +501,11 @@ public class Mind implements Serializable {
 			return;
 		}
 		
-		else if (tasks) {
+		else {
 			taskWeights = taskManager.getTotalTaskProbability(false);
 			weightSum += taskWeights;
 		}
 
-		if (missions) {
-			missionWeights = missionManager.getTotalMissionProbability(person);
-			weightSum += missionWeights;
-		}
 
 		if (weightSum <= 0D || Double.isNaN(weightSum) || Double.isInfinite(weightSum)) {
 //			try {
@@ -532,32 +519,20 @@ public class Mind implements Serializable {
 //			
 //			LogConsolidated.log(Level.SEVERE, 20_000, sourceName,
 //					person.getName() + " has " + s + " weight sum" 
-//					+ " (tasks = " + tasks 
-//					+ ". missions = " + missions 
-//					+ ") and will pick one task to do randomly.");
+//					+ " and cannot pick a new task.");
 			
 //			taskManager.clearTask();
 //			throw new IllegalStateException("Mind.getNewAction(): " + person + " weight sum: " + weightSum);
 			
-			if (tasks) {
-				Task newTask = taskManager.getNewTask();
-				if (newTask != null)
-					taskManager.addTask(newTask);
-				else
-					logger.severe(person + "'s newTask is null ");
-				
-				return;
-			}
+//			Task newTask = taskManager.getNewTask();
+//			if (newTask != null)
+//				taskManager.addTask(newTask);
+//			else
+//				logger.severe(person + "'s newTask is null ");
 			
-//			if (missions) {
-//				Mission newMission = missionManager.getNewMission(person);
-//				if (newMission != null) {
-//					missionManager.addMission(newMission);
-//					setMission(newMission);
-//				}
-//
-//				return;
-//			}
+			// Return to takeAction() in Mind
+			return;
+	
 		}
 		
 		else {
@@ -565,43 +540,88 @@ public class Mind implements Serializable {
 			double rand = RandomUtil.getRandomDouble(weightSum);
 	
 			// Determine which type of action was selected and set new action accordingly.
-			if (tasks) {
-				if (rand < taskWeights) {
-					Task newTask = taskManager.getNewTask();
-					if (newTask != null)
-						taskManager.addTask(newTask);
-					else
-						logger.severe(person + "'s newTask is null ");
-	
-					return;
-				} else {
-					rand -= taskWeights;
-				}
-			}
-	
-			if (missions) {
-				if (rand < missionWeights) {
-					Mission newMission = missionManager.getNewMission(person);
-					if (newMission != null) {
-						missionManager.addMission(newMission);
-						setMission(newMission);
-					}
-	
-					return;
-				} else {
-					rand -= missionWeights;
-				}
+			if (rand < taskWeights) {
+				Task newTask = taskManager.getNewTask();
+				if (newTask != null)
+					taskManager.addTask(newTask);
+				else
+					logger.severe(person + "'s newTask is null ");
+
+				return;
+			} else {
+				rand -= taskWeights;
 			}
 		}
 		
 		// If reached this point, no task or mission has been found.
 		LogConsolidated.log(Level.SEVERE, 20_000, sourceName,
-					person.getName() + " couldn't determine new action - taskWeights: " + taskWeights
-				+ ", missionWeights: " + missionWeights);	
+					person.getName() + " could not determine a new task (taskWeights: " 
+					+ taskWeights + ").");	
 	}
 
 	/**
+	 * Determines a new mission for the person.
+	 */
+	public void getNewMission() {
+		// If this Person is too weak then they can not do Missions
+		if (person.getPerformanceRating() < MINIMUM_MISSION_PERFORMANCE) {
+			return;
+		}
+
+		// Get probability weights from tasks, missions and active missions.
+		double missionWeights = 0D;
+
+		// Determine sum of weights based on given parameters
+		double weightSum = 0D;
+
+		// Check if there are any assigned tasks
+		missionWeights = missionManager.getTotalMissionProbability(person);
+		weightSum += missionWeights;
+
+		if (weightSum <= 0D || Double.isNaN(weightSum) || Double.isInfinite(weightSum)) {
+//			try {
+//				TimeUnit.MILLISECONDS.sleep(100L);
+//			} catch (InterruptedException e) {
+//				e.printStackTrace();
+//			}
+//			String s = "zero";
+//			if (Double.isNaN(weightSum) || Double.isInfinite(weightSum))
+//				s = "infinite";
+////			
+//			LogConsolidated.log(Level.SEVERE, 20_000, sourceName,
+//					person.getName() + " has " + s + " weight sum"
+//					+ " and cannot pick a new mission.");
+			
+			return;
+		}
+		
+		else {
+			// Select randomly across the total weight sum.
+			double rand = RandomUtil.getRandomDouble(weightSum);
+	
+			// Determine which type of action was selected and set new action accordingly.	
+			if (rand < missionWeights) {
+				Mission newMission = missionManager.getNewMission(person);
+				if (newMission != null) {
+					missionManager.addMission(newMission);
+					setMission(newMission);
+				}
+				// Return to selectingPhase() in PlanMission
+				return;
+			} else {
+				rand -= missionWeights;
+			}
+		}
+		
+		// If reached this point, no mission has been found.
+		LogConsolidated.log(Level.SEVERE, 20_000, sourceName,
+					person.getName() + " could not determine a new mission (missionWeights: " + missionWeights + ").");	
+	}
+
+	
+	/**
 	 * Calls the psi function
+	 * 
 	 * @param av
 	 * @param pv
 	 * @return

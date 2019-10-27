@@ -347,7 +347,17 @@ public abstract class TravelMission extends Mission {
 				setNextNavpointIndex(getNumberOfNavpoints() - offset);
 				updateTravelDestination();
 			}
-			double dist = getCurrentMissionLocation().getDistance(getNextNavpoint().getLocation());
+			
+			Coordinates c = null;
+			
+			if (getNextNavpoint() != null) {
+				c = getNextNavpoint().getLocation();
+			}
+			else if (this instanceof TravelToSettlement) {
+				c = ((TravelToSettlement)this).getDestinationSettlement().getCoordinates();	
+			}
+			
+			double dist = getCurrentMissionLocation().getDistance(c);
 			
 			if (currentLegRemainingDistance != dist) {
 				currentLegRemainingDistance = dist;

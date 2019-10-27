@@ -154,7 +154,7 @@ public class PlanMission extends Task implements Serializable {
 //					"[" + person.getAssociatedSettlement() + "] " + person.getName() 
 //					+ " was looking into the mission needs of the settlement.");
 			
-			person.getMind().getNewAction(false, canDo);
+			person.getMind().getNewMission();
 			
 			Mission mission = person.getMind().getMission();
 			if (mission != null)

@@ -83,6 +83,8 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 	// Mission phases
 	public static final MissionPhase RENDEZVOUS = new MissionPhase(Msg.getString("Mission.phase.rendezvous")); //$NON-NLS-1$
 
+	private static final int MIN_MEMBER = 1;
+	
 	// Data members
 	private boolean rescue = false;
 
@@ -126,19 +128,13 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 			}
 
 			if (vehicleTarget != null) {
-				if (getRescuePeopleNum(vehicleTarget) > 0) {
+//				if (getRescuePeopleNum(vehicleTarget) > 0) {
 					rescue = true;
-					setMinMembers(1);
+					setMinMembers(MIN_MEMBER);
 					setDescription(
 							Msg.getString("Mission.description.rescueSalvageVehicle.rescue", vehicleTarget.getName())); // $NON-NLS-1$)
-				} else {
-					setDescription(
-							Msg.getString("Mission.description.rescueSalvageVehicle.salvage", vehicleTarget.getName())); // $NON-NLS-1$)
-				}
-//				
-//				setDescription(
-//						Msg.getString("Mission.description.rescueSalvageVehicle.rescue", vehicleTarget.getName())); // $NON-NLS-1$)
-				
+//				} 
+						
 				// Add navpoints for target vehicle and back home again.
 				addNavpoint(new NavPoint(vehicleTarget.getCoordinates(), vehicleTarget.getName()));
 				addNavpoint(new NavPoint(getStartingSettlement().getCoordinates(), getStartingSettlement(),

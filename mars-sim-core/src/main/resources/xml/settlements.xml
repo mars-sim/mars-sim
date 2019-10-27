@@ -102,12 +102,12 @@
 	<!-- Typical mission control parameters for a settlement  -->
 	<mission-control>
 
-		<!-- This vehicle range Error margin imposed on the life support/consumable. -->
+		<!-- This vehicle range error margin imposed on the life support/consumable. -->
 		<!-- The lower the value, the farther a rover can go  -->
 		<!-- default value : 1.5  Valid from 1.0 to 3.0 -->
 		<rover-life-support-range-error-margin value="1.5" />
 
-		<!-- This vehicle range Error margin imposed on the fuel of the vehicle. -->
+		<!-- This vehicle range error margin imposed on the fuel of the vehicle. -->
 		<!-- Actual distance / Safe distance   -->
 		<!-- The lower the value, the farther a rover can go  -->
 		<!-- default value : 2.0  Valid from 1.0 to 3.0 -->

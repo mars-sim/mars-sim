@@ -1044,12 +1044,17 @@ public abstract class Mission implements Serializable {
 			}
 		}
 
+		int pop = startingMember.getAssociatedSettlement().getNumCitizens();
+		
 		// Recruit the most qualified and most liked people first.
 		while (qualifiedPeople.size() > 0) {
 			double bestPersonValue = 0D;
 			Person bestPerson = null;
 			Iterator<Person> j = qualifiedPeople.iterator();
-			while (j.hasNext() && (getMembersNumber() < missionCapacity)) {
+			while (j.hasNext() 
+					&& (getMembersNumber() < missionCapacity)
+					// Limit # of member to no more than 40% of the population
+					&& (getMembersNumber() < pop * .4)) {
 				Person person = j.next();
 				// Determine the person's mission qualification.
 				double qualification = getMissionQualification(person) * 100D;
@@ -1329,9 +1334,21 @@ public abstract class Mission implements Serializable {
 
 		Coordinates result = null;
 
-		if (getMembersNumber() > 0) {
-			MissionMember member = (MissionMember) members.toArray()[0];
-			result = member.getCoordinates();
+//		if (getMembersNumber() > 0) {
+//			MissionMember member = (MissionMember) members.toArray()[0];
+//			result = member.getCoordinates();
+			
+		if (startingMember != null)	{
+			Person p = (Person)startingMember;
+			if (p.isInSettlement())
+				result = p.getSettlement().getCoordinates();
+				
+			else if (p.isInVehicle() && p.getVehicle() != null)
+				result = p.getVehicle().getCoordinates();
+			
+			else
+				result = p.getCoordinates();
+			
 		} else {
 			StringBuilder s = new StringBuilder();
 			String missionName = this.toString();
@@ -1341,15 +1358,16 @@ public abstract class Mission implements Serializable {
 					.append(missionName).append(" (").append(fullMissionDesignation).append(").");
 				}
 				else {
+					s.append("Error : no crew members for ");
+					
 //					int rand = RandomUtil.getRandomInt(2);
 					String theInitial = missionName.substring(0);
 					if (Conversion.isVowel(theInitial))
-						s.append("Error : no crew members for ")
-						.append("an ").append(missionName).append(" (").append(fullMissionDesignation).append(").");
+						s.append("an ");
 					else
-						s.append("Error : no crew members for ")
-							.append("a ").append(missionName).append(" (").append(fullMissionDesignation).append(").");
+						s.append("a ");
 						
+					s.append(missionName).append(" (").append(fullMissionDesignation).append(").");
 				}
 			}
 			
@@ -1359,14 +1377,16 @@ public abstract class Mission implements Serializable {
 						.append(missionName).append(MISSION_SUFFIX).append(" (").append(fullMissionDesignation).append(").");
 				}
 				else {
+					s.append("Error : no crew members for ");
+					
 //					int rand = RandomUtil.getRandomInt(2);
 					String theInitial = missionName.substring(0);
 					if (Conversion.isVowel(theInitial))
-						s.append("Error : no crew members for ")
-						.append("an ").append(missionName).append(MISSION_SUFFIX).append(" (").append(fullMissionDesignation).append(").");
+						s.append("an ");
 					else
-						s.append("Error : no crew members for ")
-						.append("a ").append(missionName).append(MISSION_SUFFIX).append(" (").append(fullMissionDesignation).append(").");
+						s.append("a ");
+				
+					s.append(missionName).append(MISSION_SUFFIX).append(" (").append(fullMissionDesignation).append(").");
 				}
 			}
 			
