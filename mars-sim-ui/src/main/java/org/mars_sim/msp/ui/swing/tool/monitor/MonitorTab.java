@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MonitorTab.java
-* @version 3.1.0 2017-09-14
+ * @version 3.1.0 2017-09-14
  * @author Barry Evans
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
@@ -31,7 +31,7 @@ public abstract class MonitorTab extends JPanel {
 	private boolean mandatory;
 
 	/**
-	 * constructor. Create a view within a tab displaying the specified model.
+	 * Tee constructor that creates a view within a tab displaying the specified model.
 	 * 
 	 * @param model     The model of entities to display.
 	 * @param mandatory This view is a mandatory view can can not be removed.
@@ -42,8 +42,6 @@ public abstract class MonitorTab extends JPanel {
 		this.icon = icon;
 		this.mandatory = mandatory;
 		this.setOpaque(false);
-
-		// TableStyle.setTableStyle(new ZebraJTable(model));
 
 		// Create a panel
 		setLayout(new BorderLayout());

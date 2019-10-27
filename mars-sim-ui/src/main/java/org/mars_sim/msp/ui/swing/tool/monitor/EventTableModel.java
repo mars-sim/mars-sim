@@ -34,6 +34,7 @@ import org.mars_sim.msp.ui.swing.notification.NotificationWindow;
  * provides a mean to display the Historical Event. This is actually an Adapter
  * onto the existing Event Manager.
  */
+@SuppressWarnings("serial")
 public class EventTableModel extends AbstractTableModel
 		implements MonitorModel, HistoricalEventListener, ClockListener {
 

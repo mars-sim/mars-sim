@@ -13,10 +13,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import javax.swing.SwingUtilities;
 
 import org.mars_sim.msp.core.GameManager;
+import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
@@ -27,7 +29,6 @@ import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.UnitManagerEvent;
 import org.mars_sim.msp.core.UnitManagerEventType;
 import org.mars_sim.msp.core.UnitManagerListener;
-import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ShiftType;
@@ -47,13 +48,10 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
  * source of the list is the Unit Manager. It maps key attributes of the Person
  * into Columns.
  */
+@SuppressWarnings("serial")
 public class PersonTableModel extends UnitTableModel {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
-	// private static final Logger logger =
-	// Logger.getLogger(PersonTableModel.class.getName());
+	 private static final Logger logger =  Logger.getLogger(PersonTableModel.class.getName());
 
 	// private static MainDesktopPane desktop;
 
@@ -226,13 +224,13 @@ public class PersonTableModel extends UnitTableModel {
 	 *                      displayed?
 	 */
 	public PersonTableModel(Settlement settlement, boolean allAssociated) {
-		super((allAssociated ? Msg.getString("PersonTableModel.nameAssociatedPeople", //$NON-NLS-1$
-				settlement.getName())
-				: Msg.getString("PersonTableModel.namePeople", //$NON-NLS-1$
+		super((allAssociated ? Msg.getString("PersonTableModel.nameCitizens", //$NON-NLS-1$
+						settlement.getName())
+							 : Msg.getString("PersonTableModel.nameIndoor", //$NON-NLS-1$
 						settlement.getName())),
-				(allAssociated ? "PersonTableModel.countingAssociatedPeople" : //$NON-NLS-1$
-						"PersonTableModel.countingResidents" //$NON-NLS-1$
-				), columnNames, columnTypes);
+				(allAssociated ? "PersonTableModel.countingCitizens" : //$NON-NLS-1$
+								 "PersonTableModel.countingIndoor"), //$NON-NLS-1$
+									columnNames, columnTypes);
 
 		this.settlement = settlement;
 		if (allAssociated) {
@@ -255,7 +253,7 @@ public class PersonTableModel extends UnitTableModel {
 	 * @param mission Monitored mission Person objects.
 	 */
 	public PersonTableModel(Mission mission) {
-		super(Msg.getString("PersonTableModel.namePeople", //$NON-NLS-1$
+		super(Msg.getString("PersonTableModel.nameMission", //$NON-NLS-1$
 				mission.getName()), "PersonTableModel.countingMissionMembers", //$NON-NLS-1$
 				columnNames, columnTypes);
 
@@ -654,7 +652,7 @@ public class PersonTableModel extends UnitTableModel {
 					String personName = unit.getName();
 					String announcement = personName + " has just passed away. ";
 					// desktop.openMarqueeBanner(announcement);
-					System.out.println(announcement);
+					logger.info(announcement);
 				}
 			} else if (eventType == UnitEventType.ILLNESS_EVENT) {
 				if (event.getTarget() instanceof Person) {

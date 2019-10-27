@@ -49,94 +49,6 @@ abstract class TableTab extends MonitorTab {
 	private TableCellRenderer tableCellRenderer;
 	private TableProperties propsWindow;
 
-	/**
-	 * This internal class provides a fixed image icon that is drawn using a
-	 * Graphics object. It represents an arrow Icon that can be other ascending or
-	 * or descending.
-	 */
-	static class ColumnSortIcon implements Icon {
-
-		static final int midw = 4;
-		private Color lightShadow;
-		private Color darkShadow;
-		private boolean downwards;
-
-		/** constructor. */
-		public ColumnSortIcon(boolean downwards, Color baseColor) {
-			this.downwards = downwards;
-			this.lightShadow = baseColor.brighter();
-			this.darkShadow = baseColor.darker().darker();
-		}
-
-		public void paintIcon(Component c, Graphics g, int xo, int yo) {
-			int w = getIconWidth();
-			int xw = xo + w - 1;
-			int h = getIconHeight();
-			int yh = yo + h - 1;
-
-			if (downwards) {
-				g.setColor(lightShadow);
-				g.drawLine(xo + midw + 1, yo, xw, yh - 1);
-				g.drawLine(xo, yh, xw, yh);
-				g.setColor(darkShadow);
-				g.drawLine(xo + midw - 1, yo, xo, yh - 1);
-			} else {
-				g.setColor(lightShadow);
-				g.drawLine(xw, yo + 1, xo + midw, yh);
-				g.setColor(darkShadow);
-				g.drawLine(xo + 1, yo + 1, xo + midw - 1, yh);
-				g.drawLine(xo, yo, xw, yo);
-			}
-		}
-
-		public int getIconWidth() {
-			return 2 * midw;
-		}
-
-		public int getIconHeight() {
-			return getIconWidth() - 1;
-		}
-	}
-
-	/**
-	 * This renderer use a delegation software design pattern to delegate this
-	 * rendering of the table cell header to the real default render, however this
-	 * renderer adds in an icon on the cells which are sorted.
-	 **/
-	class TableHeaderRenderer implements TableCellRenderer {
-		private TableCellRenderer defaultRenderer;
-
-		public TableHeaderRenderer(TableCellRenderer theRenderer) {
-			defaultRenderer = theRenderer;
-		}
-
-		/**
-		 * Renderer the specified Table Header cell
-		 **/
-		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
-				int row, int column) {
-			Component theResult = defaultRenderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row,
-					column);
-			if (theResult instanceof JLabel) {
-				// Must clear the icon if not sorted column. This is a renderer
-				// class used to render each column heading in turn.
-				JLabel cell = (JLabel) theResult;
-				Icon icon = null;
-				if (column == sortedColumn) {
-					if (sortAscending)
-						icon = ascendingIcon;
-					else
-						icon = descendingIcon;
-				}
-				// cell.setHorizontalAlignment(SwingConstants.CENTER); // not useful
-				// cell.setHorizontalAlignment(JLabel.CENTER); // not useful
-				cell.setIcon(icon);
-				cell.setOpaque(true);
-			}
-			return theResult;
-		}
-	}
-
 	// These icons are used to render the sorting images on the column header
 	private static Icon ascendingIcon = null;
 	private static Icon descendingIcon = null;
@@ -152,7 +64,7 @@ abstract class TableTab extends MonitorTab {
 	private int sortedColumn = 0;
 
 	/**
-	 * Create a WebTable within a tab displaying the specified model.
+	 * Create a table within a tab displaying the specified model.
 	 * 
 	 * @param model           The model of Units to display.
 	 * @param mandatory       Is this table view mandatory.
@@ -243,26 +155,22 @@ abstract class TableTab extends MonitorTab {
 
 			// Add a mouse listener for the mouse event selecting the sorted column
 			// Not the best way but no double click is provided on Header class
-			// Get the TableColumn header to display sorted column
-
+			// Get the TableColumn header to display sorted column	
 			header = (JTableHeader) table.getTableHeader();
 			// theRenderer = new TableHeaderRenderer(header.getDefaultRenderer());
 			// header.setDefaultRenderer(theRenderer);
 			header.addMouseListener(new MouseAdapter() {
 				public void mouseClicked(MouseEvent e) {
 					// Find the column at this point
-					int column = table.getTableHeader().columnAtPoint(e.getPoint());
+					int column = header.columnAtPoint(e.getPoint());
 					setSortColumn(column);
-					table.getTableHeader().repaint();
+					header.repaint();
 				}
 			});
 
 		} else {
 			// Simple WebTable
 			this.table = new JTable(model) {
-
-				/** default serial id. */
-				// private static final long serialVersionUID = 1L;
 				/**
 				 * Overriding table change so that selections aren't cleared when rows are
 				 * deleted.
@@ -470,4 +378,93 @@ abstract class TableTab extends MonitorTab {
 		propsWindow = null;
 
 	}
+	
+	/**
+	 * This internal class provides a fixed image icon that is drawn using a
+	 * Graphics object. It represents an arrow Icon that can be other ascending or
+	 * or descending.
+	 */
+	static class ColumnSortIcon implements Icon {
+
+		static final int midw = 4;
+		private Color lightShadow;
+		private Color darkShadow;
+		private boolean downwards;
+
+		/** constructor. */
+		public ColumnSortIcon(boolean downwards, Color baseColor) {
+			this.downwards = downwards;
+			this.lightShadow = baseColor.brighter();
+			this.darkShadow = baseColor.darker().darker();
+		}
+
+		public void paintIcon(Component c, Graphics g, int xo, int yo) {
+			int w = getIconWidth();
+			int xw = xo + w - 1;
+			int h = getIconHeight();
+			int yh = yo + h - 1;
+
+			if (downwards) {
+				g.setColor(lightShadow);
+				g.drawLine(xo + midw + 1, yo, xw, yh - 1);
+				g.drawLine(xo, yh, xw, yh);
+				g.setColor(darkShadow);
+				g.drawLine(xo + midw - 1, yo, xo, yh - 1);
+			} else {
+				g.setColor(lightShadow);
+				g.drawLine(xw, yo + 1, xo + midw, yh);
+				g.setColor(darkShadow);
+				g.drawLine(xo + 1, yo + 1, xo + midw - 1, yh);
+				g.drawLine(xo, yo, xw, yo);
+			}
+		}
+
+		public int getIconWidth() {
+			return 2 * midw;
+		}
+
+		public int getIconHeight() {
+			return getIconWidth() - 1;
+		}
+	}
+
+	/**
+	 * This renderer use a delegation software design pattern to delegate this
+	 * rendering of the table cell header to the real default render, however this
+	 * renderer adds in an icon on the cells which are sorted.
+	 **/
+	class TableHeaderRenderer implements TableCellRenderer {
+		private TableCellRenderer defaultRenderer;
+
+		public TableHeaderRenderer(TableCellRenderer theRenderer) {
+			defaultRenderer = theRenderer;
+		}
+
+		/**
+		 * Renderer the specified Table Header cell
+		 **/
+		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
+				int row, int column) {
+			Component theResult = defaultRenderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row,
+					column);
+			if (theResult instanceof JLabel) {
+				// Must clear the icon if not sorted column. This is a renderer
+				// class used to render each column heading in turn.
+				JLabel cell = (JLabel) theResult;
+				Icon icon = null;
+				if (column == sortedColumn) {
+					if (sortAscending)
+						icon = ascendingIcon;
+					else
+						icon = descendingIcon;
+				}
+				// cell.setHorizontalAlignment(SwingConstants.CENTER); // not useful
+				// cell.setHorizontalAlignment(JLabel.CENTER); // not useful
+				cell.setIcon(icon);
+				cell.setOpaque(true);
+			}
+			return theResult;
+		}
+	}
+	
 }

@@ -111,7 +111,7 @@ public class SettlementTableModel extends UnitTableModel {
 
 	private Map<Unit, Map<Integer, Double>> resourceCache;
 
-	private final DecimalFormat df = new DecimalFormat("#,###,##0.00");
+	private final static DecimalFormat df = new DecimalFormat("#,###,##0.00");
 
 	private final static int regolithID = ResourceUtil.regolithID;
 	private final static int oxygenID = ResourceUtil.oxygenID;
@@ -125,11 +125,14 @@ public class SettlementTableModel extends UnitTableModel {
 	private final static int co2ID = ResourceUtil.co2ID;
 	private final static int hydrogenID = ResourceUtil.hydrogenID;
 	
+	static {
+		df.setMinimumFractionDigits(2);
+		df.setMinimumIntegerDigits(1);
+	}
+	
 	/**
 	 * Constructs a SettlementTableModel model that displays all Settlements in the
 	 * simulation.
-	 *
-	 * @param unitManager Unit manager that holds settlements.
 	 */
 	public SettlementTableModel() {
 		super(Msg.getString("SettlementTableModel.tabName"), "SettlementTableModel.countingSettlements", //$NON-NLS-2$
@@ -143,10 +146,25 @@ public class SettlementTableModel extends UnitTableModel {
 		unitManagerListener = new LocalUnitManagerListener();
 		unitManager.addUnitManagerListener(unitManagerListener);
 		
-		df.setMinimumFractionDigits(2);
-		df.setMinimumIntegerDigits(1);
 	}
 
+	/**
+	 * Constructs a SettlementTableModel model that displays a specific settlement in the
+	 * simulation.
+	 *
+	 * @param settlement
+	 */
+	public SettlementTableModel(Settlement settlement) {
+		super(Msg.getString("SettlementTableModel.tabName"), "SettlementTableModel.countingSettlements", //$NON-NLS-2$
+				columnNames, columnTypes);
+
+		addUnit(settlement);
+
+		unitManagerListener = new LocalUnitManagerListener();
+		unitManager.addUnitManagerListener(unitManagerListener);
+
+	}
+	
 	/**
 	 * Return the value of a Cell
 	 * 

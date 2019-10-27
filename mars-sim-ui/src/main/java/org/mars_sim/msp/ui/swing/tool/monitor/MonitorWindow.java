@@ -24,6 +24,7 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MainWindow;
@@ -50,6 +51,7 @@ import com.jidesoft.swing.TableSearchable;
  * The MonitorWindow is a tool window that displays a selection of tables each
  * of which monitor a set of Units.
  */
+@SuppressWarnings("serial")
 public class MonitorWindow extends ToolWindow implements TableModelListener, ActionListener {
 
 	final private static int STATUSHEIGHT = 25;
@@ -226,6 +228,12 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 
 		addTab(new UnitTab(this, new SettlementTableModel(), true, BASE_ICON));
 
+		// Add a tab for each settlement
+		for (Settlement s : unitManager.getSettlements()) {
+//			addTab(new UnitTab(this, new SettlementTableModel(s), true, BASE_ICON));
+			addTab(new UnitTab(this, new PersonTableModel(s, true), true, PEOPLE_ICON));
+		}
+		
 		addTab(new UnitTab(this, new VehicleTableModel(), true, VEHICLE_ICON));
 
 		// Add a listener for the tab changes
@@ -542,6 +550,11 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 		}
 	}
 
+	/**
+	 * Adds a new tab to Monitor Tool
+	 * 
+	 * @param newTab
+	 */
 	private void addTab(MonitorTab newTab) {
 		tabs.add(newTab);
 		tabsSection.addTab(newTab.getName(), newTab.getIcon(), newTab); // "", newTab.getIcon(), newTab);//
@@ -549,6 +562,11 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 		// tabChanged(true);
 	}
 
+	/**
+	 * Removes a tab from Monitor Tool
+	 * 
+	 * @param oldTab
+	 */
 	private void removeTab(MonitorTab oldTab) {
 		tabs.remove(oldTab);
 		tabsSection.remove(oldTab);
@@ -605,8 +623,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 			MonitorTab selected = getSelected();
 			if (selected == eventsTab) {
 				rowCount.setText(eventsTab.getCountString());
-			}
-			
+			}		
 		}
 	}
 
