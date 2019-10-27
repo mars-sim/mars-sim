@@ -810,7 +810,8 @@ public abstract class Mission implements Serializable {
 					vehicleMission.clearRemainingNavpoints();
 					vehicleMission.addNavpoint(new NavPoint(nearestSettlement.getCoordinates(), nearestSettlement,
 							nearestSettlement.getName()));
-					vehicleMission.associateAllMembersWithSettlement(nearestSettlement);
+					// TODO: Not sure if they should become citizens of another settlement
+//					vehicleMission.associateAllMembersWithSettlement(nearestSettlement);
 					vehicleMission.updateTravelDestination();
 					endCollectionPhase();
 				}

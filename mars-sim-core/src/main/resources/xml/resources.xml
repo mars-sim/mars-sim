@@ -81,6 +81,7 @@
 
 
 <!-- Derived food resources from crop harvest -->
+	<resource name="sesame milk" type="food" phase="liquid" edible="true">Plant milk produced by soaking dry Soybean and sesame seeds and grinding them with water.</resource>
 	<resource name="blueberry muffin" type="food" phase="solid" edible="true"></resource>
 	<resource name="brown rice" type="food" phase="solid" edible="true"></resource>
 	<resource name="cranberry juice" type="food" phase="solid" edible="true">Juice made from Cranberries</resource>

@@ -243,7 +243,22 @@
 		</outputs>
 	</process>
 
+	<process name="make sesame milk from soymilk"
+		tech="1" skill="1" work-time="20" process-time="20"
+			power-required="1.0">
 
+		<description> Make sesame milk from soymilk </description>
+		<inputs>
+			<part name="blender" number="1" />
+			<resource name="sesame seed" amount="0.5" />
+			<resource name="soymilk" amount="4.5" />
+		</inputs>
+		<outputs>
+			<part name="blender" number="1" />
+			<resource name="sesame milk" amount="5.0" />
+		</outputs>
+	</process>
+	
 	<process name="Press and Refine Peanut Oil from Peanuts"
 		tech="2" skill="2" work-time="50" process-time="400"
 			power-required="2.0">

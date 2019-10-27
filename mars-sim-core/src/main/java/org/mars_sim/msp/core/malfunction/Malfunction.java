@@ -434,6 +434,8 @@ public class Malfunction implements Serializable {
 						name + id_string + " - EVA repair work initiated by " + repairer + ".");
 			}
 			
+			t += time;
+			
 			// Add randomness to the expected EVA work time
 			t0 = t0 + (t0 - t) * (RandomUtil.getRandomDouble(.1) - RandomUtil.getRandomDouble(.1));
 				
