@@ -387,6 +387,11 @@
 			<part name="plastic tubing" number="1" probability="5" />
 			<part name="lubricant bottle" number="1" probability="5" />
 			<part name="timing belt" number="1" probability="5" />
+			<part name="fuel cell stack" number="1" probability="2" />			
+			<part name="logic board" number="1" probability="2" />
+			<part name="valve" number="1" probability="10" />	
+			<part name="steel pipe" number="1" probability="5" />	
+			<part name="power cable" number="1" probability="5" />	
 		</repair-parts-list>
 	</malfunction>
 

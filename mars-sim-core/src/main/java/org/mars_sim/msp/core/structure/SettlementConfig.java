@@ -95,6 +95,9 @@ public class SettlementConfig implements Serializable {
 	private static final String NEW_ARRIVING_SETTLEMENT_LIST = "new-arriving-settlement-list";
 	private static final String ARRIVING_SETTLEMENT = "arriving-settlement";
 
+	
+	private static final String DEFAULT_SPONSOR = "Mars Society (MS)";
+	
 	// Random value indicator.
 	public static final String RANDOM = "random";
 
@@ -106,9 +109,12 @@ public class SettlementConfig implements Serializable {
 	private Collection<SettlementTemplate> settlementTemplates;
 	private List<InitialSettlement> initialSettlements;
 	private List<NewArrivingSettlement> newArrivingSettlements;
-	private Map<String, List<String>> settlementNamesMap = new ConcurrentHashMap<>();
 	private Map<Integer, String> scenarioMap = new HashMap<>();
+	
+	// A map of settlement id and its name
 	private Map<Integer, String> settlementMap = new ConcurrentHashMap<>();
+	// A map of sponsor and its list of settlement names
+	private Map<String, List<String>> settlementNamesMap = new ConcurrentHashMap<>();
 
 	private Document settlementDoc;
 
@@ -599,13 +605,19 @@ public class SettlementConfig implements Serializable {
 			// load names list
 			List<String> oldlist = settlementNamesMap.get(sponsor);
 			// add the settlement name
-			if (oldlist == null) { // oldlist.isEmpty() ||
+			if (oldlist == null) { // oldlist.isEmpty()
+				// This sponsor does not exist yet
 				List<String> newlist = new ArrayList<>();
 				newlist.add(name);
 				settlementNamesMap.put(sponsor, newlist);
 			} else {
-				oldlist.add(name);
-				settlementNamesMap.put(sponsor, oldlist);
+				if (oldlist.contains(name)) {
+					throw new IllegalStateException("Duplicated settlement name : " + name);
+				}
+				else {
+					oldlist.add(name);
+					settlementNamesMap.put(sponsor, oldlist);
+				}
 			}
 
 			int newID = settlementMap.size() + 1;
@@ -959,46 +971,30 @@ public class SettlementConfig implements Serializable {
 	public String getInitialSettlementSponsor(int index) {
 		if ((index >= 0) && (index < initialSettlements.size())) {
 			InitialSettlement settlement = initialSettlements.get(index);
-//			System.out.println(settlement + "'s sponsor is " + settlement.sponsor);
 			return settlement.sponsor;
 		} else
 			throw new IllegalArgumentException("index: " + index + "is out of bounds");
 	}
 
-//	/**
-//	 * Gets the maximum number of Mars Society delegates for an initial settlement.
-//	 * 
-//	 * @param index the index of the initial settlement.
-//	 * @return number of delegates.
-//	 */
-//	public int getInitialSettlementMaxMSD(int index) {
-//		if ((index >= 0) && (index < initialSettlements.size())) {
-//			InitialSettlement settlement = initialSettlements.get(index);
-//			//System.out.println("settlement.maxMSD is "+ settlement.maxMSD + "   index is " + index + "  initialSettlements.size() is " + initialSettlements.size());
-//			return settlement.maxMSD;
-//		}
-//		else throw new IllegalArgumentException("index: " + index + "is out of bounds");
-//	}
+	/**
+	 * Gets a list of default settlement names.
+	 * 
+	 * @return list of settlement names as strings
+	 */
+	public List<String> getDefaultSettlementNameList() {
+		return new ArrayList<String>(settlementNamesMap.get(DEFAULT_SPONSOR));
+	}
 
 	/**
 	 * Gets a list of possible settlement names.
 	 * 
+	 * @param sponsor the string name of the sponsor
 	 * @return list of settlement names as strings
 	 */
-	public List<String> getSettlementNameList() {
-		// return new ArrayList<String>(settlementNames);
-		return new ArrayList<String>(settlementNamesMap.get("Mars Society (MS)"));
+	public List<String> getSettlementNameList(String sponsor) {
+		return new ArrayList<String>(settlementNamesMap.get(sponsor));
 	}
-
-//	/**
-//	 * Gets a list of possible settlement names.
-//	 * 
-//	 * @return list of settlement names as strings
-//	 */
-//	public List<String> getSettlementNameList(String sponsor) {
-//		return new ArrayList<String>(settlementNamesMap.get(sponsor));
-//	}
-
+	
 	/**
 	 * Clears the list of initial settlements.
 	 */
@@ -1022,8 +1018,7 @@ public class SettlementConfig implements Serializable {
 		settlement.populationNumber = populationNum;
 		settlement.numOfRobots = numOfRobots;
 		settlement.sponsor = sponsor;
-		// System.out.println("SettmaxMSDg : numOfRobots is " + numOfRobots);
-		// settlement.scenarioID = scenarioMap.get(template);
+
 		settlement.scenarioID = getMapKey(scenarioMap, template);
 
 		// take care to internationalize the coordinates
@@ -1034,7 +1029,7 @@ public class SettlementConfig implements Serializable {
 
 		settlement.latitude = latitude;
 		settlement.longitude = longitude;
-		// settlement.maxMSD = maxMSD;
+
 		initialSettlements.add(settlement);
 
 	}
@@ -1053,8 +1048,8 @@ public class SettlementConfig implements Serializable {
 		initialSettlements = null;
 		settlementNamesMap.clear();
 		settlementNamesMap = null;
-		// settlementNames.clear();
-		// settlementNames = null;
+		settlementMap.clear();
+		settlementMap = null;
 	}
 
 	/**
@@ -1073,10 +1068,7 @@ public class SettlementConfig implements Serializable {
 		private String latitude;
 		private int populationNumber;
 		private int numOfRobots;
-		private String sponsor = Msg.getString("ReportingAuthorityType.MarsSociety"); //$NON-NLS-1$ //"Mars Society
-																						// (MS)";
-
-		// private int maxMSD;
+		private String sponsor = Msg.getString("ReportingAuthorityType.MarsSociety"); //$NON-NLS-1$
 		private int scenarioID;
 	}
 
@@ -1097,10 +1089,7 @@ public class SettlementConfig implements Serializable {
 		private String latitude;
 		private int populationNumber;
 		private int numOfRobots;
-		private String sponsor = Msg.getString("ReportingAuthorityType.MarsSociety"); //$NON-NLS-1$ //"Mars Society
-																						// (MS)";
-
-		// private int maxMSD;
+		private String sponsor = Msg.getString("ReportingAuthorityType.MarsSociety"); //$NON-NLS-1$
 		private int scenarioID;
 	}
 }

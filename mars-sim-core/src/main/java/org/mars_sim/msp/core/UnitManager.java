@@ -381,7 +381,7 @@ public class UnitManager implements Serializable {
 	 */
 	private void initializeSettlementNames() {
 		try {
-			settlementNames = settlementConfig.getSettlementNameList();
+			settlementNames = settlementConfig.getDefaultSettlementNameList();
 		} catch (Exception e) {
 			throw new IllegalStateException("settlement names could not be loaded: " + e.getMessage(), e);
 		}

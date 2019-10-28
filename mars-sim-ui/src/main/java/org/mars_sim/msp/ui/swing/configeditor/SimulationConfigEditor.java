@@ -95,12 +95,20 @@ public class SimulationConfigEditor {
 	
 	private GameMode mode;
 	
+	private static final int NAME = 0;
+	private static final int TEMPLATE = 1;
+	private static final int POP = 2;
+	private static final int NUM_BOTS = 3;
+	private static final int LAT = 4;
+	private static final int LON = 5;
+	private static final int SPONSOR = 6;
+	
 	private static Simulation sim = Simulation.instance();
 	private static SimulationConfig simulationConfig;
 	private static SettlementConfig settlementConfig;
 	private static PersonConfig personConfig;
 //	private static UnitManager unitManager;
-	
+
 	/**
 	 * Constructor
 	 * 
@@ -461,15 +469,15 @@ public class SimulationConfigEditor {
 
 		// Add configuration settlements from table data.
 		for (int x = 0; x < settlementTableModel.getRowCount(); x++) {
-			String name = (String) settlementTableModel.getValueAt(x, 0);
-			String template = (String) settlementTableModel.getValueAt(x, 1);
-			String population = (String) settlementTableModel.getValueAt(x, 2);
+			String name = (String) settlementTableModel.getValueAt(x, NAME);
+			String template = (String) settlementTableModel.getValueAt(x, TEMPLATE);
+			String population = (String) settlementTableModel.getValueAt(x, POP);
 			int populationNum = Integer.parseInt(population);
-			String numOfRobotsStr = (String) settlementTableModel.getValueAt(x, 3);
+			String numOfRobotsStr = (String) settlementTableModel.getValueAt(x, NUM_BOTS);
 			int numOfRobots = Integer.parseInt(numOfRobotsStr);
-			String latitude = (String) settlementTableModel.getValueAt(x, 4);
-			String longitude = (String) settlementTableModel.getValueAt(x, 5);
-			String sponsor = (String) settlementTableModel.getValueAt(x, 6);
+			String latitude = (String) settlementTableModel.getValueAt(x, LAT);
+			String longitude = (String) settlementTableModel.getValueAt(x, LON);
+			String sponsor = (String) settlementTableModel.getValueAt(x, SPONSOR);
 //			System.out.println("SimulationConfigEditor's  sponsor : " + sponsor);
 			settlementConfig.addInitialSettlement(name, template, populationNum, numOfRobots, sponsor, latitude,
 					longitude);
@@ -544,11 +552,10 @@ public class SimulationConfigEditor {
 	private String determineNewSettlementName() {
 		String result = null;
 
-		// Try to find unique name in configured settlement name list.
+		List<String> settlementNames = settlementConfig.getDefaultSettlementNameList();
 		// Randomly shuffle settlement name list first.
-		SettlementConfig settlementConfig = simulationConfig.getSettlementConfiguration();
-		List<String> settlementNames = settlementConfig.getSettlementNameList();
 		Collections.shuffle(settlementNames);
+		
 		Iterator<String> i = settlementNames.iterator();
 		while (i.hasNext()) {
 			String name = i.next();
@@ -556,7 +563,8 @@ public class SimulationConfigEditor {
 			// Make sure settlement name isn't already being used in table.
 			boolean nameUsed = false;
 			for (int x = 0; x < settlementTableModel.getRowCount(); x++) {
-				if (name.equals(settlementTableModel.getValueAt(x, 0))) {
+				if (name.equals(settlementTableModel.getValueAt(x, NAME))) {
+					// Label it as being used already in the table.
 					nameUsed = true;
 				}
 			}
@@ -578,7 +586,7 @@ public class SimulationConfigEditor {
 			// Make sure settlement name isn't already being used in table.
 			boolean nameUsed = false;
 			for (int x = 0; x < settlementTableModel.getRowCount(); x++) {
-				if (name.equals(settlementTableModel.getValueAt(x, 0))) {
+				if (name.equals(settlementTableModel.getValueAt(x, NAME))) {
 					nameUsed = true;
 				}
 			}
@@ -1071,8 +1079,8 @@ public class SimulationConfigEditor {
 			int size = settlementTableModel.getRowCount();
 			for (int x = 0; x < size; x++) {
 
-				String latStr = ((String) (settlementTableModel.getValueAt(x, 4))).trim().toUpperCase();
-				String longStr = ((String) (settlementTableModel.getValueAt(x, 5))).trim().toUpperCase();
+				String latStr = ((String) (settlementTableModel.getValueAt(x, LAT))).trim().toUpperCase();
+				String longStr = ((String) (settlementTableModel.getValueAt(x, LON))).trim().toUpperCase();
 
 				// check if the second from the last character is a digit or a letter, if a
 				// letter, setError
@@ -1099,8 +1107,8 @@ public class SimulationConfigEditor {
 
 				// System.out.println("settlement.latitude is "+ settlement.latitude);
 				if (x + 1 < size) {
-					String latNextStr = ((String) (settlementTableModel.getValueAt(x + 1, 4))).trim().toUpperCase();
-					String longNextStr = ((String) (settlementTableModel.getValueAt(x + 1, 5))).trim().toUpperCase();
+					String latNextStr = ((String) (settlementTableModel.getValueAt(x + 1, LAT))).trim().toUpperCase();
+					String longNextStr = ((String) (settlementTableModel.getValueAt(x + 1, LON))).trim().toUpperCase();
 
 					// System.out.println("latStr is "+ latStr);
 					// System.out.println("latNextStr is "+ latNextStr);

@@ -4530,6 +4530,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	public void setName(String value) {
 		super.setName(value);
 		this.name = value;
+		fireUnitUpdate(UnitEventType.NAME_EVENT, name);
 	}
 
 	public double getAverageSettlerWeight() {

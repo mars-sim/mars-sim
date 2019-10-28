@@ -76,7 +76,7 @@ public class TerrainElevation implements Serializable {
 	 * @param currentDirection the current direction (in radians)
 	 * @return terrain steepness angle (in radians)
 	 */
-	public static double determineTerrainDifficulty(Coordinates currentLocation, Direction currentDirection) {
+	public static double determineTerrainSteepness(Coordinates currentLocation, Direction currentDirection) {
 		double newY = -1.5D * currentDirection.getCosDirection();
 		double newX = 1.5D * currentDirection.getSinDirection();
 		Coordinates sampleLocation = currentLocation.convertRectToSpherical(newX, newY);
@@ -86,7 +86,7 @@ public class TerrainElevation implements Serializable {
 	}
 
 	/**
-	 * Determines the slope factor or terrain steepness angle from location by sampling 11.1 km in given
+	 * Determines the terrain steepness angle from location by sampling 11.1 km in given
 	 * direction and elevation
 	 * 
 	 * @param currentLocation
@@ -94,7 +94,24 @@ public class TerrainElevation implements Serializable {
 	 * @param currentDirection
 	 * @return
 	 */
-	public static double determineTerrainSlopeFactor(Coordinates currentLocation, double elevation, Direction currentDirection) {
+	public static double determineTerrainSteepness(Coordinates currentLocation, double elevation, Direction currentDirection) {
+		double newY = - 1.5 * currentDirection.getCosDirection();
+		double newX = 1.5 * currentDirection.getSinDirection();
+		Coordinates sampleLocation = currentLocation.convertRectToSpherical(newX, newY);
+		double elevationChange = getPatchedElevation(sampleLocation) - elevation;
+		return Math.atan(elevationChange / 11.1D);
+	}
+	
+	/**
+	 * Determines the terrain steepness angle from location by sampling a random coordinate set and 11.1 km in given
+	 * direction and elevation
+	 * 
+	 * @param currentLocation
+	 * @param elevation
+	 * @param currentDirection
+	 * @return
+	 */
+	public static double determineTerrainSteepnessRandom(Coordinates currentLocation, double elevation, Direction currentDirection) {
 		double newY = - RandomUtil.getRandomDouble(1.5) * currentDirection.getCosDirection();
 		double newX = RandomUtil.getRandomDouble(1.5) * currentDirection.getSinDirection();
 		Coordinates sampleLocation = currentLocation.convertRectToSpherical(newX, newY);
@@ -109,13 +126,13 @@ public class TerrainElevation implements Serializable {
 	 * @return
 	 */
 	public static double[] getTerrainProfile(Coordinates currentLocation) {
-		double slopeFactor = 0;
+		double steepness = 0;
 		double elevation = getPatchedElevation(currentLocation);
 		for (int i=0 ; i <= 360 ; i++) {
 			double rad = i * DEG_TO_RAD;
-			slopeFactor += Math.abs(determineTerrainSlopeFactor(currentLocation, elevation, new Direction(rad)));
+			steepness += Math.abs(determineTerrainSteepness(currentLocation, elevation, new Direction(rad)));
 		}
-		return new double[] {elevation, slopeFactor};
+		return new double[] {elevation, steepness};
 	}
 	
 	/**
@@ -126,12 +143,16 @@ public class TerrainElevation implements Serializable {
 	 */
 	public static double getIceCollectionRate(Coordinates currentLocation) {
 		// Get the elevation and terrain gradient factor
-		double[] terrainProfile = TerrainElevation.getTerrainProfile(currentLocation);
+		double[] terrainProfile = getTerrainProfile(currentLocation);
 				
 		double elevation = terrainProfile[0];
 		double gradient = terrainProfile[1];		
 		
 		double iceCollectionRate = (- 0.639 * elevation + 14.2492) / 10D  + gradient / 250;
+		
+//		https://science.nasa.gov/science-news/science-at-nasa/2002/28may_marsice/
+//		The ice-rich layer is about 60 centimeters (two feet) beneath the surface at 60 degrees south 
+//		latitude, and gets to within about 30 centimeters (one foot) of the surface at 75 degrees south latitude.
 		
 		if (iceCollectionRate < 0)
 			iceCollectionRate = 0;	
@@ -148,7 +169,6 @@ public class TerrainElevation implements Serializable {
 //		else
 //			nameLoc = "At " + currentLocation.getCoordinateString() + ",";
 		
-
 		return iceCollectionRate;
 	}
 	

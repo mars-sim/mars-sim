@@ -757,7 +757,7 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="solid oxide fuel cell" mass=".3">
+	<part name="solid oxide fuel cell" mass=".5">
 		<description>Each solid oxide fuel cell (SOFC) can generate 200W. 
 		It consumes methane and has attained a rating of 85% efficiency</description>
 		<!--maintenance-entity-list>
@@ -765,12 +765,12 @@
 		</maintenance-entity-list-->
 	</part>
 
-	<part name="fuel cell stack" mass="10">
-		<description>Each fuel cell stack comprises 25 solid oxide fuel cell 
+	<part name="fuel cell stack" mass="25">
+		<description>Each fuel cell stack comprises 25 solid oxide fuel cells 
 			(SOFC), totalling 5 kWe</description>
 	    <maintenance-entity-list>
 			<entity name="vehicle" probability="1" max-number="1" />
-			<entity name="fuel power source" probability="1" max-number="15" />
+			<entity name="fuel power source" probability="1" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 
@@ -803,7 +803,7 @@
 	</part>
 
 	<part name="X-ray fluorescene spectrometer" mass="8.0">
-		<description>This portable apparatus is used to perform non-destructive chemical analyses of rocks, minerals, sediments and fluids. 
+		<description>This portable apparatus is used to perform non-destructive chemical analysis of rocks, minerals, sediments and fluids. 
 		</description>
 	</part>
 

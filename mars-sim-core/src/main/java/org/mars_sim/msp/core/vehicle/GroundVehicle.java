@@ -145,7 +145,7 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
 	 */
 	public double getTerrainGrade(Direction direction) {
 		// Determine the terrain grade in a given direction from the vehicle.
-		return TerrainElevation.determineTerrainDifficulty(getCoordinates(), direction);
+		return TerrainElevation.determineTerrainSteepness(getCoordinates(), direction);
 	}
 
 	/**

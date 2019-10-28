@@ -100,6 +100,7 @@ public abstract class Mission implements Serializable {
 	private int missionCapacity;
 	/** The recorded number of people participated in this mission. */
 	private int membersCache;
+	
 	/** Has the current phase ended? */
 	private boolean phaseEnded;
 	/** True if mission is completed. */
@@ -1045,6 +1046,25 @@ public abstract class Mission implements Serializable {
 		}
 
 		int pop = startingMember.getAssociatedSettlement().getNumCitizens();
+		int max = 0;
+		
+		if (pop < 4)
+			max = 1;
+		else if (pop >= 4 && pop < 7)
+			max = 2;
+		else if (pop >= 7 && pop < 10)
+			max = 3;
+		else if (pop >= 10 && pop < 14)
+			max = 4;
+		else if (pop >= 14 && pop < 18)
+			max = 5;
+		else if (pop >= 18 && pop < 23)
+			max = 6;
+		else if (pop >= 23 && pop < 29)
+			max = 7;
+		else if (pop >= 29)
+			max = 8;
+		
 		
 		// Recruit the most qualified and most liked people first.
 		while (qualifiedPeople.size() > 0) {
@@ -1053,8 +1073,7 @@ public abstract class Mission implements Serializable {
 			Iterator<Person> j = qualifiedPeople.iterator();
 			while (j.hasNext() 
 					&& (getMembersNumber() < missionCapacity)
-					// Limit # of member to no more than 40% of the population
-					&& (getMembersNumber() < pop * .4)) {
+					&& (getMembersNumber() <= max)) {
 				Person person = j.next();
 				// Determine the person's mission qualification.
 				double qualification = getMissionQualification(person) * 100D;
@@ -1239,7 +1258,7 @@ public abstract class Mission implements Serializable {
 			// Get base result for job modifier.
 			Job job = person.getMind().getJob();
 			if (job != null) {
-				result *= 5 * job.getJoinMissionProbabilityModifier(this.getClass());
+				result = result + 2 * result * job.getJoinMissionProbabilityModifier(this.getClass());
 			}
 			
 		} else if (member instanceof Robot) {

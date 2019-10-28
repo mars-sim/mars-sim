@@ -537,11 +537,11 @@ public class Preference implements Serializable {
 	 * @param time amount of time passing (in millisols).
 	 */
 	public void timePassing(double time) {
-		if (marsClock == null)
-			marsClock = Simulation.instance().getMasterClock().getMarsClock();
-
-		int solElapsed = marsClock.getMissionSol();
-		if (solElapsed != solCache) {
+//		if (marsClock == null)
+//			marsClock = Simulation.instance().getMasterClock().getMarsClock();
+//
+//		int solElapsed = marsClock.getMissionSol();
+//		if (solElapsed != solCache) {
 
 //			Iterator<Entry<MarsClock, MetaTask>> i = futureTaskMap.entrySet().iterator();
 //			while (i.hasNext()) {
@@ -557,8 +557,8 @@ public class Preference implements Serializable {
 			// scheduleTask("WriteReportMeta", 500, 800, true, 750);
 			// scheduleTask("ConnectWithEarthMeta", 700, 900, true, 950);
 
-			solCache = solElapsed;
-		}
+//			solCache = solElapsed;
+//		}
 
 	}
 
@@ -593,7 +593,10 @@ public class Preference implements Serializable {
 		// if this accomplished meta task is once-a-day task, remove it.
 		if (value && oneADayMap.get(mt) != null && !oneADayMap.isEmpty())
 			if (oneADayMap.get(mt) != null && oneADayMap.get(mt)) {
-				futureTaskMap.remove(mt);
+				for (MarsClock c : futureTaskMap.keySet()) {
+					if (futureTaskMap.get(c).equals(mt))
+						futureTaskMap.remove(c);
+				}
 				oneADayMap.remove(mt);
 				taskAccomplishedMap.remove(mt);
 				priorityMap.remove(mt);
