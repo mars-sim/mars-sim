@@ -20,9 +20,9 @@ public class EventTab extends TableTab {
 	 * constructor.
 	 * 
 	 * @param window {@link MonitorWindow} the containing window
-	 * @param model  {@link EventTableModel}
+	 * @param notifyBox  {@link NotificationWindow}
+	 * @param desktop
 	 */
-	// Changed param list to include notifyBox and desktop
 	public EventTab(final MonitorWindow window, NotificationWindow notifyBox, MainDesktopPane desktop) {
 		// Use TableTab constructor
 		super(window, new EventTableModel(Simulation.instance().getEventManager(), notifyBox, desktop), true, false,

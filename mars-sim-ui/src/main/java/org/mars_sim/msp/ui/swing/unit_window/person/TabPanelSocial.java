@@ -124,7 +124,7 @@ implements ListSelectionListener {
 
 		// Align the content to the center of the cell
 		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
-		renderer.setHorizontalAlignment(SwingConstants.CENTER);
+		renderer.setHorizontalAlignment(SwingConstants.RIGHT);
 		relationshipTable.getColumnModel().getColumn(0).setCellRenderer(renderer);
 		relationshipTable.getColumnModel().getColumn(1).setCellRenderer(renderer);
 

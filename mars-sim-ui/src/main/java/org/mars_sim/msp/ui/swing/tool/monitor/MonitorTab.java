@@ -23,6 +23,7 @@ import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
  * Window. The view is displayed inside a tab panel within the window and
  * depends on a UnitTableModel
  */
+@SuppressWarnings("serial")
 public abstract class MonitorTab extends JPanel {
 
 	/** Model providing the data. */

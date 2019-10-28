@@ -71,6 +71,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.Indoor;
 import org.mars_sim.msp.core.structure.building.function.SystemType;
+import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
@@ -161,6 +162,8 @@ public abstract class Vehicle extends Unit
 	private double estimatedTotalCrewWeight;
 	/** The cargo capacity of the vehicle for a trip [km/kg]. */
 	private double cargoCapacity;
+	/** The actual start mass of the vehicle (base mass + crew weight + full cargo weight) for a trip [km/kg]. */
+	private double startMass;
 	/** The estimated beginning mass of the vehicle (base mass + crew weight + full cargo weight) for a trip [km/kg]. */
 	private double beginningMass;
 	/** The estimated end mass of the vehicle (base mass + crew weight + remaining cargo weight) for a trip [km/kg]. */
@@ -304,43 +307,51 @@ public abstract class Vehicle extends Unit
 		// Set the empty mass of the vehicle.
 		setBaseMass(vehicleConfig.getEmptyMass(vehicleType));
 
-		// Set the drivetrain efficiency of the vehicle.
+		// Set the drivetrain efficiency [in kWh/km] of the vehicle.
 		drivetrainEfficiency = vehicleConfig.getDrivetrainEfficiency(vehicleType) ;
 		
-		// Gets the capacity of vehicle's fuel tank 
+		// Gets the capacity [in kg] of vehicle's fuel tank 
 		fuelCapacity = vehicleConfig.getCargoCapacity(vehicleType, ResourceUtil.findAmountResourceName(getFuelType())); 
 
-		// Gets the total energy on a full tank of methane
+		// Gets the total energy [in kWh] on a full tank of methane
 		totalEnergy = METHANE_SPECIFIC_ENERGY * fuelCapacity * SOFC_CONVERSION_EFFICIENCY;// * drivetrainEfficiency;	
 
-		// Gets the base range of the vehicle
+		// Gets the base range [in km] of the vehicle
 		baseRange = totalEnergy / drivetrainEfficiency;
 		
-		// Gets the base fuel consumption of this vehicle [km/kg]
+		// Gets the base fuel consumption [in km/kg] of this vehicle 
 		baseFuelConsumption = baseRange / fuelCapacity;
 		
 		// Gets the crew capacity
 		int numCrew = 0; 
-		if (this instanceof Rover)
-			numCrew = ((Rover)this).getCrewCapacity();
-		else if (this instanceof LightUtilityVehicle)
-			numCrew = ((LightUtilityVehicle)this).getCrewCapacity();
+//		if (this instanceof Rover)
+			numCrew = vehicleConfig.getCrewSize(vehicleType);//((Rover)this).getCrewCapacity();
+//		else if (this instanceof LightUtilityVehicle)
+//			numCrew = vehicleConfig.getCrewSize(type);//Vehicle.((LightUtilityVehicle)this).getCrewCapacity();
 		
-		estimatedTotalCrewWeight = numCrew * settlement.getAverageSettlerWeight();
+		estimatedTotalCrewWeight = numCrew * Person.getAverageWeight();
 		
 		cargoCapacity = vehicleConfig.getTotalCapacity(vehicleType);
 		
-		beginningMass = getBaseMass() + estimatedTotalCrewWeight + cargoCapacity;
-		
-		endMass = getBaseMass() + estimatedTotalCrewWeight + cargoCapacity/10;
-		
-		// Gets the estimated average fuel consumption for a trip [km/kg]
-		estimatedAveFuelConsumption = baseFuelConsumption / (1 + beginningMass / endMass);
-		
-//		logger.config(Conversion.capitalize(vehicleType) 
-//				+ " -     base fuel consumption : " + Math.round(baseFuelConsumption*100.0)/100.0 + " km/kg");
-//		logger.config(Conversion.capitalize(vehicleType) 
-//				+ " -  average fuel consumption : " + Math.round(estimatedAveFuelConsumption*100.0)/100.0 + " km/kg");
+		if (this instanceof Rover) {
+			beginningMass = getBaseMass() + estimatedTotalCrewWeight + 400;//cargoCapacity/3;
+			
+			endMass = getBaseMass() + estimatedTotalCrewWeight + 40;//cargoCapacity/15;
+			
+			// Gets the estimated average fuel consumption for a trip [km/kg]
+			estimatedAveFuelConsumption = baseFuelConsumption * (beginningMass / endMass * .75);
+			
+			logger.config(Conversion.capitalize(vehicleType) 
+					+ " -            beginning mass : " + Math.round(beginningMass*100.0)/100.0 + " kg");
+			logger.config(Conversion.capitalize(vehicleType) 
+					+ " -                  end mass : " + Math.round(endMass*100.0)/100.0 + " kg");		
+			logger.config(Conversion.capitalize(vehicleType) 
+					+ " -     drivetrain efficiency : " + Math.round(drivetrainEfficiency*100.0)/100.0 + " kWh/km");
+			logger.config(Conversion.capitalize(vehicleType) 
+					+ " -     base fuel consumption : " + Math.round(baseFuelConsumption*100.0)/100.0 + " km/kg");
+			logger.config(Conversion.capitalize(vehicleType) 
+				+ " -  average fuel consumption : " + Math.round(estimatedAveFuelConsumption*100.0)/100.0 + " km/kg");
+		}
 		
 		// Set initial parked location and facing at settlement.
 		determinedSettlementParkedLocationAndFacing();
@@ -399,7 +410,6 @@ public abstract class Vehicle extends Unit
 
 		// Set the empty mass of the vehicle.
 		setBaseMass(baseMass);
-
 		
 		this.drivetrainEfficiency = fuelEfficiency / 100.0;
 		isReservedMission = false;
@@ -961,8 +971,17 @@ public abstract class Vehicle extends Unit
 	 * @return
 	 */
 	public double getIFuelConsumption() {
-		return baseFuelConsumption / (1 + getMass() / endMass); 
+		logger.info(this 
+				+ "   current mass : " + getMass() 
+				+ "   start mass : " + startMass 
+				+ "   driveTrain : " + drivetrainEfficiency 
+				+ "   IFC : " + estimatedAveFuelConsumption * startMass / getMass());
+		return estimatedAveFuelConsumption * startMass / getMass(); 
 		
+	}
+	
+	public void saveStartMass() {
+		startMass = getMass();	
 	}
 	
 	/**
@@ -1609,7 +1628,7 @@ public abstract class Vehicle extends Unit
 		typeOfDessertLoaded = dessertName;
 	}
 
-	public static double getErrorMargin() {
+	public static double getFuelRangeErrorMargin() {
 		return fuel_range_error_margin;
 	}
 

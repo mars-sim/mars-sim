@@ -102,7 +102,7 @@ public final class RandomUtil {
 	}
 
 	/**
-	 * Returns a random double number under Gaussian ("normally") distributed with
+	 * Returns a random double number (-infi to +infi) under Gaussian ("normally") distributed with
 	 * mean 0.0 and standard deviation 1.0 from this random number generator's
 	 * sequence
 	 * 

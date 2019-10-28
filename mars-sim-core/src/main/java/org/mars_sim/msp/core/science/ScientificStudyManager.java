@@ -174,6 +174,24 @@ public class ScientificStudyManager // extends Thread
 	}
 
 	/**
+	 * Gets the number of all completed scientific studies where researcher was the primary
+	 * researcher.
+	 * 
+	 * @param researcher the primary researcher.
+	 * @return the number of studies.
+	 */
+	public int getNumCompletedPrimaryStudies(Person researcher) {
+		int result = 0;
+		Iterator<ScientificStudy> i = studies.iterator();
+		while (i.hasNext()) {
+			ScientificStudy study = i.next();
+			if (study.isCompleted() && (study.getPrimaryResearcher().equals(researcher)))
+				result++;
+		}
+		return result;
+	}
+	
+	/**
 	 * Gets all completed scientific studies where researcher was the primary
 	 * researcher.
 	 * 
@@ -237,6 +255,24 @@ public class ScientificStudyManager // extends Thread
 		return result;
 	}
 
+	/**
+	 * Gets the number of all completed scientific studies where researcher was a collaborative
+	 * researcher.
+	 * 
+	 * @param researcher the collaborative researcher.
+	 * @return a number
+	 */
+	public int getNumCompletedCollaborativeStudies(Person researcher) {
+		int result = 0;
+		Iterator<ScientificStudy> i = studies.iterator();
+		while (i.hasNext()) {
+			ScientificStudy study = i.next();
+			if (study.isCompleted() && (study.getCollaborativeResearchers().containsKey(researcher.getIdentifier())))
+				result++;
+		}
+		return result;
+	}
+	
 	/**
 	 * Gets all completed scientific studies where researcher was a collaborative
 	 * researcher.

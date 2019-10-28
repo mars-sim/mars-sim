@@ -95,7 +95,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 
 		<!-- Empty mass of rover (kg) (required) -->
 		<!-- Default: varies according to the type of vehicle  -->
-		<empty-mass value="8000.0" />
+		<empty-mass value="4000.0" />
 
 		<!-- The crew size of an rover -->
 		<!-- Default: varies according to the type of vehicle -->
@@ -209,7 +209,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<description>A rover for transporting people from one settlement to another.</description>
 		<drivetrain-efficiency value=".18" />
 		<base-speed value="40.0" />
-		<empty-mass value="10000.0" />
+		<empty-mass value="5500.0" />
 		<crew-size value="8" />
 		<cargo total-capacity="7300.0">
 			<capacity resource="methane" value="600.0" />
@@ -248,7 +248,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<description>A rover for transporting cargo from one settlement to another.</description>
 		<drivetrain-efficiency value=".2" />
 		<base-speed value="40.0" />
-		<empty-mass value="8000.0" />
+		<empty-mass value="6000.0" />
 		<crew-size value="2" />
 		<cargo total-capacity="10300.0">
 			<capacity resource="methane" value="800.0" />

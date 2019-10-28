@@ -134,7 +134,7 @@ extends TabPanel {
 
 		// Align the content to the center of the cell
 		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
-		renderer.setHorizontalAlignment(SwingConstants.CENTER);
+		renderer.setHorizontalAlignment(SwingConstants.RIGHT);
 		skillTable.getColumnModel().getColumn(0).setCellRenderer(renderer);
 		skillTable.getColumnModel().getColumn(1).setCellRenderer(renderer);
 		skillTable.getColumnModel().getColumn(2).setCellRenderer(renderer);

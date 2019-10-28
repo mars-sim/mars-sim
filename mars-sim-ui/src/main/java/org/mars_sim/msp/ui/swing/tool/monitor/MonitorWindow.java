@@ -81,11 +81,16 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	// Data members
 	private WebTabbedPane tabsSection;
 	// private JideTabbedPane tabsSection;
+	
 	private WebLabel rowCount;
+	
 	private ArrayList<MonitorTab> tabs = new ArrayList<MonitorTab>();
+	
 	/** Tab showing historical events. */
 	private EventTab eventsTab;
+	
 	private MonitorTab oldTab = null;
+	
 	private WebButton buttonPie;
 	private WebButton buttonBar;
 	private WebButton buttonRemoveTab;
@@ -96,12 +101,14 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	private WebButton buttonProps;
 
 	private MainDesktopPane desktop;
-//	private MainScene mainScene;
+
 	private MainWindow mainWindow;
 
 	private WebPanel statusPanel;
+	
 	private JTable table;
 	private JTable rowTable;
+	
 	private Searchable searchable;
 	private SearchableBar searchBar;
 

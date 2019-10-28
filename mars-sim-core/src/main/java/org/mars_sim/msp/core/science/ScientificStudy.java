@@ -187,7 +187,10 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 		// Gets the average time from scientific_study.json
 		int mean = ScienceConfig.getAverageTime(index);
 		// Modify it with random gaussian (and limit it to not less than 1/4 of the mean) for this particular scientific study
-		return Math.max(mean/4D, mean + mean/5D * RandomUtil.getGaussianDouble());	
+		double mod = RandomUtil.getGaussianDouble();
+		if (mod > 10)
+			mod = 10;
+		return Math.max(mean / 4D, mean + mean * mod / 5D);	
 	}
 	
 	public double getPrimaryWorkDownTimeAllowed() {

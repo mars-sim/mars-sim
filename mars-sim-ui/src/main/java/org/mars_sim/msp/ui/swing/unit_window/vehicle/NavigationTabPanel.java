@@ -56,7 +56,7 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
 
     private static Logger logger = Logger.getLogger(NavigationTabPanel.class.getName());
 
-    private DecimalFormat formatter = new DecimalFormat("0.0");
+    private static DecimalFormat formatter = new DecimalFormat("0.0");
     
     private WebButton driverButton;
     private WebButton centerMapButton;
@@ -309,7 +309,7 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         
         // Prepare status label
         statusCache = vehicle.getStatusTypes();
-        statusLabel = new WebLabel("" + statusCache.toString(), WebLabel.LEFT);
+        statusLabel = new WebLabel("" + vehicle.printStatusTypes(), WebLabel.LEFT);
         drivingSpringPanel.add(statusLabel);
            
         // Prepare beacon header label
@@ -402,7 +402,7 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         // Update status label
         if (!vehicle.sameStatusTypes(statusCache, vehicle.getStatusTypes())) {
             statusCache = vehicle.getStatusTypes();
-            statusLabel.setText("" + statusCache);
+            statusLabel.setText(vehicle.printStatusTypes());
         }
 
         // Update beacon label

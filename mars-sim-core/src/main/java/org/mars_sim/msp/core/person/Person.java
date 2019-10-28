@@ -1867,14 +1867,14 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	/**
 	 * Gets the average height of a person.
 	 */
-	public double getAverageHeight() {
+	public static double getAverageHeight() {
 		return averageHeight;
 	}
 
 	/**
 	 * Gets the average weight of a person.
 	 */
-	public double getAverageWeight() {
+	public static double getAverageWeight() {
 		return averageWeight;
 	}
 

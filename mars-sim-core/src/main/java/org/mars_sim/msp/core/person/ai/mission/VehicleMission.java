@@ -565,7 +565,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	public static double getFuelNeededForTrip(double tripDistance, double fuelConsumption, boolean useMargin) {
 		double result = tripDistance / fuelConsumption;
 		if (useMargin) {
-			result *= Vehicle.getErrorMargin();
+			result *= Vehicle.getFuelRangeErrorMargin();
 		}
 
 		return result;
@@ -616,6 +616,10 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		isRequestSubmitted = true;
 	}
 
+	public void calculateStartMass() {
+		vehicle.saveStartMass();
+	}
+	
 	@Override
 	protected void performPhase(MissionMember member) {
 //		logger.info(getStartingMember() + " was at the '" + getPhase() + "' phase at performPhase().");
@@ -626,6 +630,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		}
 		else if (EMBARKING.equals(getPhase())) {
 			createDateEmbarked();
+			calculateStartMass();
 			performEmbarkFromSettlementPhase(member);
 		} 
 		else if (TRAVELLING.equals(getPhase())) {

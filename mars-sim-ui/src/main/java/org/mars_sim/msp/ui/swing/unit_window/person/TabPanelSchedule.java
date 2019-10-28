@@ -231,14 +231,13 @@ public class TabPanelSchedule extends TabPanel {
 		solBox.setMaximumRowCount(7);
 
 		WebPanel solPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));	
-//		WebLabel solLabel = new WebLabel("Sol : ");
-//		solPanel.add(solLabel);
 		solPanel.add(solBox);
 
 		box.add(solPanel);
 		box.add(Box.createHorizontalGlue());
 
 		selectedSol = (Integer) solBox.getSelectedItem();
+		
 		if (selectedSol == null)
 			solBox.setSelectedItem(todayInteger);
 
@@ -301,6 +300,9 @@ public class TabPanelSchedule extends TabPanel {
 		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
 		renderer.setHorizontalAlignment(SwingConstants.CENTER);
 		table.getColumnModel().getColumn(0).setCellRenderer(renderer);
+		
+		DefaultTableCellRenderer renderer1 = new DefaultTableCellRenderer();
+		renderer1.setHorizontalAlignment(SwingConstants.LEFT);
 		table.getColumnModel().getColumn(1).setCellRenderer(renderer);
 		table.getColumnModel().getColumn(2).setCellRenderer(renderer);
 		table.getColumnModel().getColumn(3).setCellRenderer(renderer);

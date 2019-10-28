@@ -55,9 +55,11 @@ public class TabPanelLog extends TabPanel {
 	private static final String WHITESPACES = "   ";
 	
 	// Data members
-	private int today;
-	private int selectedSol;
 	private int selectedSolCache;
+	
+	private Integer selectedSol;
+	private Integer todayInteger;
+	
 	private int theme;
 	
 	private JTable table;
@@ -107,11 +109,11 @@ public class TabPanelLog extends TabPanel {
 		panel.add(titleLabel);
 		topContentPanel.add(panel);
 		
-		today = marsClock.getMissionSol();
+		todayInteger = marsClock.getMissionSol();
 		solList = new CopyOnWriteArrayList<Integer>();
 
 		allStatuses = vehicle.getVehicleLog();
-		oneDayStatuses = allStatuses.get(today);
+		oneDayStatuses = allStatuses.get(todayInteger);
 		
 		for (int key : allStatuses.keySet()) {
 			solList.add(key);
@@ -128,15 +130,15 @@ public class TabPanelLog extends TabPanel {
 
 		// Create comboBox
 		solBox = new JComboBoxMW<Object>(comboBoxModel);
-//		solBox.setWide(true);
 		solBox.setPreferredSize(new Dimension(80, 25));
 		solBox.setPrototypeDisplayValue(new Dimension(80, 25));
+		solBox.setSelectedItem(todayInteger);
+		solBox.setWide(true);
+		
 		solBox.setRenderer(new PromptComboBoxRenderer());
 		solBox.setMaximumRowCount(7);
 				
 		WebPanel solPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
-//		WebLabel solLabel = new WebLabel("Sol : ");
-//		solPanel.add(solLabel);
 		solPanel.add(solBox);
 		centerContentPanel.add(solPanel, BorderLayout.NORTH);
 				
@@ -145,19 +147,31 @@ public class TabPanelLog extends TabPanel {
 		
 		box.add(Box.createHorizontalGlue());
 
-		if (solBox.getSelectedItem() == null) {
-			solBox.setSelectedItem(today);
-			selectedSol = (int) today;
-		}
-		else {
-			selectedSol = (int) solBox.getSelectedItem();
-		}
+//		if (solBox.getSelectedItem() == null) {
+//			solBox.setSelectedItem(today);
+//			selectedSol = (int) today;
+//		}
+//		else {
+//			selectedSol = (int) solBox.getSelectedItem();
+//		}
+//
+////		solBox.setSelectedItem((Integer) 1);
+//		solBox.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent e) {
+//				selectedSol = (int) solBox.getSelectedItem();
+////				if ((int)selectedSol == today)
+//			}
+//		});
+		
+		selectedSol = (Integer) solBox.getSelectedItem();
+		
+		if (selectedSol == null)
+			solBox.setSelectedItem(todayInteger);
 
-//		solBox.setSelectedItem((Integer) 1);
+		solBox.setSelectedItem((Integer) 1);
 		solBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				selectedSol = (int) solBox.getSelectedItem();
-//				if ((int)selectedSol == today)
+				selectedSol = (Integer) solBox.getSelectedItem();
 			}
 		});
 		
@@ -348,7 +362,7 @@ public class TabPanelLog extends TabPanel {
 		 * Prepares a list of activities done on the selected day
 		 */
 		public void update() {
-			today = marsClock.getMissionSol();
+			todayInteger = (Integer) marsClock.getMissionSol();
 
 			allStatuses = vehicle.getVehicleLog();
 		
@@ -373,9 +387,9 @@ public class TabPanelLog extends TabPanel {
 			if (selectedSolCache != selectedSol) {
 				selectedSolCache = selectedSol;
 
-				if (today == selectedSolCache) {
+				if (todayInteger == (Integer) selectedSolCache) {
 					// Load today's schedule
-					oneDayStatuses = allStatuses.get(today);
+					oneDayStatuses = allStatuses.get(todayInteger);
 				} 
 				
 				else {
