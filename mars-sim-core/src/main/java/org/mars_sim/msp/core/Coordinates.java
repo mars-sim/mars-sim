@@ -264,8 +264,9 @@ public class Coordinates implements Serializable {
 	 * @return the arc angle (radians).
 	 */
 	public double getAngle(Coordinates otherCoords) {
-
-		return getAngleVincenty(otherCoords);
+//		return getAngleSLC(otherCoords);
+//		return getAngleVincenty(otherCoords);
+		return getAngleHaversine(otherCoords);
 	}
 
 	/**
@@ -357,7 +358,7 @@ public class Coordinates implements Serializable {
 		double rho = Mars.MARS_RADIUS_KM;
 		double angle = getAngle(otherCoords);
 		double result = rho * angle;
-
+//		System.out.println("   c : " + otherCoords + "   this : " + this + "   rho : " + rho + "   angle : " + angle + "   rho*angle : " + result);
 		return result;
 	}
 

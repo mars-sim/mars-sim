@@ -1412,6 +1412,7 @@ public abstract class Mission implements Serializable {
 			LogConsolidated.log(Level.INFO, 0, sourceName, s.toString());
 		}
 
+//		System.out.println("   p is at " + result);
 		return result;
 	}
 

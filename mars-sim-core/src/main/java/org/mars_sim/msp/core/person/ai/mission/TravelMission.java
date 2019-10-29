@@ -348,22 +348,25 @@ public abstract class TravelMission extends Mission {
 				updateTravelDestination();
 			}
 			
-			Coordinates c = null;
+			Coordinates c1 = null;
 			
 			if (getNextNavpoint() != null) {
-				c = getNextNavpoint().getLocation();
+				c1 = getNextNavpoint().getLocation();
 			}
 			else if (this instanceof TravelToSettlement) {
-				c = ((TravelToSettlement)this).getDestinationSettlement().getCoordinates();	
+				c1 = ((TravelToSettlement)this).getDestinationSettlement().getCoordinates();	
 			}
 			
-			double dist = getCurrentMissionLocation().getDistance(c);
+			
+			Coordinates c0 = getCurrentMissionLocation();
+			double dist = c0.getDistance(c1);
 			
 			if (currentLegRemainingDistance != dist) {
 				currentLegRemainingDistance = dist;
 				fireMissionUpdate(MissionEventType.DISTANCE_EVENT);
 			}
-
+			
+//			System.out.println("   c0 : " + c0 + "   c1 : " + c1 + "   dist : " + dist);
 			return dist;
 		}
 
@@ -410,7 +413,7 @@ public abstract class TravelMission extends Mission {
 	 */
 	public final double getTotalRemainingDistance() {
 		double leg = getCurrentLegRemainingDistance();
-//		System.out.println("leg Distance : " + Math.round(leg*10.0)/10.0);
+//		System.out.print("leg : " + leg);//Math.round(leg*10.0)/10.0);
 		int index = 0;
 		double navDist = 0;
 		if (AT_NAVPOINT.equals(travelStatus))
@@ -420,24 +423,12 @@ public abstract class TravelMission extends Mission {
 
 		for (int x = index + 1; x < getNumberOfNavpoints(); x++) {
 //			System.out.print("     index = " + index + "     x = " + x);
-//			double dist =
 			navDist += getNavpoint(x - 1).getLocation().getDistance(getNavpoint(x).getLocation());
 //			System.out.println("     Nav Distance from " + (x-1) + " to " + x + " : " + Math.round(dist*10.0)/10.0);
 		}
-//		System.out.print("    Nav Distance : " + Math.round(navDist*10.0)/10.0);
-//		System.out.println("    Total : " + Math.round((remain + navDist)*10.0)/10.0);
-		return Math.abs(leg + navDist);
-		
-//		if (this instanceof VehicleMission) {
-////			VehicleMission vehicleMission = (VehicleMission) this;
-////			String name = vehicleMission.getVehicle().getNickName();
-////			System.out.print("TravelMission " + name + " Current Leg Remaining : " + Math.round(remain*10.0)/10.0 + " km");
-//			double totalRemain = getProposedRouteTotalDistance() - getActualTotalDistanceTravelled();
-////			System.out.println("   Total Remaining : " + Math.round(totalRemain*10.0)/10.0 + " km");
-//			return totalRemain;
-//		}
-//		
-//		return 0;
+//		System.out.print("    Nav : " + navDist);//Math.round(navDist*10.0)/10.0);
+//		System.out.println("    Total : " + (leg + navDist));//Math.round((leg + navDist)*10.0)/10.0);
+		return leg + navDist;
 	}
 
 	/**

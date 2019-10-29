@@ -565,7 +565,11 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	public static double getFuelNeededForTrip(double tripDistance, double fuelConsumption, boolean useMargin) {
 		double result = tripDistance / fuelConsumption;
 		if (useMargin) {
-			result *= Vehicle.getFuelRangeErrorMargin();
+			if (tripDistance <= 1000)
+				// Note: use formula below to add more extra fuel for short travel distance (up to 1000 km)
+				result *= (-0.006 * tripDistance + 7) * Vehicle.getFuelRangeErrorMargin();
+			else 
+				result *= Vehicle.getFuelRangeErrorMargin();
 		}
 
 		return result;

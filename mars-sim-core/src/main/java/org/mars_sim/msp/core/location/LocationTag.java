@@ -19,13 +19,14 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 public class LocationTag implements LocationState, Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	public static final String OUTSIDE_ON_MARS = LocationStateType.OUTSIDE_ON_THE_SURFACE_OF_MARS.getName();
+	public static final String OUTSIDE_ON_MARS = Conversion.capitalize(LocationStateType.OUTSIDE_ON_THE_SURFACE_OF_MARS.getName());
 
 	public static final String VICINITY = " vicinity";
 
