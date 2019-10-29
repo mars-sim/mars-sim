@@ -1019,7 +1019,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 					double amountStored = inv.getAmountResourceStored(id, false);
 
 					if (amountStored < amount) {
-						String newLog = "[" + vehicle.getLocationTag().getLocale() + "] " + vehicle.getName() + " does not have enough " 
+						String newLog = "[" + vehicle.getLocationTag().getLocale() + "] " + vehicle.getName() + " did not have enough " 
 								+ ResourceUtil.findAmountResourceName(id) + " to continue with "
 								+ getName() + " (Required: " + Math.round(amount * 100D) / 100D + " kg  Stored: "
 								+ Math.round(amountStored * 100D) / 100D + " kg).";
@@ -1033,7 +1033,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 					int numStored = inv.getItemResourceNum(id);
 
 					if (numStored < num) {
-						String newLog = "[" + vehicle.getLocationTag().getLocale() + "] " + vehicle.getName() + " does not have enough " 
+						String newLog = "[" + vehicle.getLocationTag().getLocale() + "] " + vehicle.getName() + " did not have enough " 
 								+ ItemResourceUtil.findItemResource(id).getName() + " to continue with "
 								+ getName() + " (Required: " + num + "  Stored: " + numStored + ").";
 						LogConsolidated.log(Level.WARNING, 10_000, sourceName, newLog);

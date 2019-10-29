@@ -413,11 +413,11 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 				if (person != null)
 					LogConsolidated.log(logger, Level.INFO, 3_000, sourceName, 
 						"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
-						+ " in " + person.getLocationTag().getImmediateLocation() + " unloaded " + equipment.getNickName() + " from " + vehicle.getName() + ".", null);
+						+ person.getLocationTag().getImmediateLocation().toLowerCase() + " unloaded " + equipment.getNickName() + " from " + vehicle.getName() + ".", null);
 				else
 					LogConsolidated.log(logger, Level.INFO, 3_000, sourceName, 
 						"[" + robot.getLocationTag().getLocale() + "] " + robot.getName() 
-						+ " in " + robot.getLocationTag().getImmediateLocation() + " unloaded " + equipment.getNickName() + " from " + vehicle.getName() + ".", null);
+						+ robot.getLocationTag().getImmediateLocation().toLowerCase() + " unloaded " + equipment.getNickName() + " from " + vehicle.getName() + ".", null);
 			}
 		}
 
