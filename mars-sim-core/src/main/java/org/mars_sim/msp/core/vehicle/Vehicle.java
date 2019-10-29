@@ -24,6 +24,7 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Direction;
+import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.LogConsolidated;
@@ -341,6 +342,8 @@ public abstract class Vehicle extends Unit
 			// Gets the estimated average fuel consumption for a trip [km/kg]
 			estimatedAveFuelConsumption = baseFuelConsumption * (beginningMass / endMass * .75);
 			
+			logger.config(Conversion.capitalize(vehicleType) 
+					+ " -              total energy : " + Math.round(totalEnergy*100.0)/100.0 + " kWh");
 			logger.config(Conversion.capitalize(vehicleType) 
 					+ " -            beginning mass : " + Math.round(beginningMass*100.0)/100.0 + " kg");
 			logger.config(Conversion.capitalize(vehicleType) 
@@ -926,7 +929,13 @@ public abstract class Vehicle extends Unit
 	 * @return the current fuel range of the vehicle (in km)
 	 */
 	public double getRange(MissionType missionType) {
-		return totalEnergy * (getBaseMass() + fuelCapacity) / (getMass() + fuelCapacity);// / fuel_range_error_margin;
+		Inventory vInv = getInventory();
+        int fuelType = getFuelType();
+        double amountOfFuel = vInv.getAmountResourceStored(fuelType, false);
+		if (amountOfFuel > 0)
+			return estimatedAveFuelConsumption * amountOfFuel * getBaseMass() / getMass();// / fuel_range_error_margin;
+		else
+			return estimatedAveFuelConsumption * fuelCapacity * getBaseMass() / getMass();// / fuel_range_error_margin;
 	}
 
 	/**
@@ -973,17 +982,20 @@ public abstract class Vehicle extends Unit
 	 * @return
 	 */
 	public double getIFuelConsumption() {
-		if (speed > 0 && startMass != getMass())
-			logger.info(this 
-				+ "   current mass : " + getMass() 
-				+ "   start mass : " + startMass 
-				+ "   driveTrain : " + drivetrainEfficiency 
-				+ "   IFC : " + Math.round(estimatedAveFuelConsumption * startMass / getMass()*10.0)/10.0);
+//		if (speed > 0 && startMass != getMass())
+//			logger.info(this 
+//				+ "   current mass : " + Math.round(getMass()*10.0)/10.0
+//				+ "   start mass : " + Math.round(startMass*10.0)/10.0 
+//				+ "   driveTrain : " + drivetrainEfficiency 
+//				+ "   IFC : " + Math.round(estimatedAveFuelConsumption * startMass / getMass()*10.0)/10.0);
 		return estimatedAveFuelConsumption * startMass / getMass(); 
 		
 	}
 	
-	public void saveStartMass() {
+	/**
+	 * Records the beginning weight of the vehicle and its payload
+	 */
+	public void recordStartMass() {
 		startMass = getMass();	
 	}
 	

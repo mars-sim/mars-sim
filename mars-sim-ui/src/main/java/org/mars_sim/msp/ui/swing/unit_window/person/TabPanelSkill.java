@@ -208,7 +208,7 @@ extends TabPanel {
 			if (columnIndex == 0) dataType = String.class;
 			else if (columnIndex == 1) dataType = Integer.class;
 			else if (columnIndex == 2) dataType = Integer.class;
-			else if (columnIndex == 3) dataType = Integer.class;
+			else if (columnIndex == 3) dataType = Double.class;
 			return dataType;
 		}
 
@@ -224,7 +224,8 @@ extends TabPanel {
 			if (column == 0) return skillNames.get(row);
 			else if (column == 1) return levels.get(skillNames.get(row));
 			else if (column == 2) return exps.get(skillNames.get(row));
-			else if (column == 3) return times.get(skillNames.get(row));
+			// Convert the labor time from the unit of millisol to sol
+			else if (column == 3) return Math.round(10.0 * times.get(skillNames.get(row)))/1_000.0;
 			else return null;
 		}
 

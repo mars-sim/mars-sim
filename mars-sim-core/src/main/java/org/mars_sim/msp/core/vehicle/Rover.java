@@ -795,13 +795,15 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 	 * @throws Exception if error getting range.
 	 */
 	public double getRange(MissionType missionType) {
-		double fuelRange = super.getRange(missionType);
-//		Mission m = super.getMission();
+		// Note: multiply by 0.5 would account for the extra distance travelled in between sites 
+		double fuelRange = super.getRange(missionType) * 0.5;
 		// Obtains the max mission range [in km] based on the type of mission
-		// Note: multiply by 1.75 would account for the extra distance travelled in between sites 
+		// Note: total route ~= mission radius * 2   
 		double missionRange = super.getMissionRange(missionType) * 2.25;
+		
 		// Estimate the distance traveled per sol
 		double distancePerSol = getEstimatedTravelDistancePerSol();
+		
 		// Gets the life support resource margin
 		double margin = Vehicle.getLifeSupportRangeErrorMargin();
 		

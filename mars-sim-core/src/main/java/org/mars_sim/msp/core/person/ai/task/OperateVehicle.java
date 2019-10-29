@@ -355,34 +355,38 @@ public abstract class OperateVehicle extends Task implements Serializable {
     		        // Add distance traveled to vehicle's odometer.
     		        vehicle.addTotalDistanceTraveled(distanceTraveled);
     		        vehicle.addDistanceLastMaintenance(distanceTraveled);
-
+    	            vehicle.setCoordinates(destination);
+	                vehicle.setSpeed(0D);
+    	        	vehicle.addStatus(StatusType.PARKED);
+    	        	vehicle.removeStatus(StatusType.MOVING);
+	                vehicle.setOperator(null);
+	                updateVehicleElevationAltitude();
+	                if (isSettlementDestination()) {
+	                    determineInitialSettlementParkedLocation();
+	                }
+	                else {
+	                    double radDir = vehicle.getDirection().getDirection();
+	                    double degDir = radDir * 180D / Math.PI;
+	                    vehicle.setParkedLocation(0D, 0D, degDir);
+	                }
+	                
+	                result = time - MarsClock.MILLISOLS_PER_HOUR * distanceTraveled / vehicle.getSpeed();
+//    	            endTask();
+    	                
     		    }
     		    catch (Exception e) {
     		    	LogConsolidated.log(Level.SEVERE, 0, sourceName, "[" + vehicle.getName() + "] " 
     						+ "can't retrieve methane. Cannot drive.");
 //    	        	distanceTraveled = 0;
+    		    	vehicle.setSpeed(0D);
     	        	vehicle.addStatus(StatusType.OUT_OF_FUEL);
     	        	vehicle.removeStatus(StatusType.MOVING);
     	        	endTask();
     	        	return time;
     		    }
                 
-                vehicle.setCoordinates(destination);
-                vehicle.setSpeed(0D);
-                vehicle.setOperator(null);
-                updateVehicleElevationAltitude();
-                if (isSettlementDestination()) {
-                    determineInitialSettlementParkedLocation();
-                }
-                else {
-                    double radDir = vehicle.getDirection().getDirection();
-                    double degDir = radDir * 180D / Math.PI;
-                    vehicle.setParkedLocation(0D, 0D, degDir);
-                }
-                
-                result = time - MarsClock.MILLISOLS_PER_HOUR * distanceTraveled / vehicle.getSpeed();
-//                endTask();
             }
+            
             else {
             	
             	// Case 4 : the rover may use all the prescribed time to drive 
@@ -393,7 +397,16 @@ public abstract class OperateVehicle extends Task implements Serializable {
                 
                 try {
     		    	vInv.retrieveAmountResource(fuelType, fuelNeeded);
-
+    		    	
+                    // Determine new position.
+                    vehicle.setCoordinates(vehicle.getCoordinates().getNewLocation(vehicle.getDirection(), distanceTraveled));
+                    
+                    // Add distance traveled to vehicle's odometer.
+                    vehicle.addTotalDistanceTraveled(distanceTraveled);
+                    vehicle.addDistanceLastMaintenance(distanceTraveled);
+                    
+                    result = 0; //time - MarsClock.MILLISOLS_PER_HOUR * distanceTraveled / vehicle.getSpeed();
+                    
     		    }
     		    catch (Exception e) {
     		    	LogConsolidated.log(Level.SEVERE, 0, sourceName, "[" + vehicle.getName() + "] " 
@@ -404,20 +417,8 @@ public abstract class OperateVehicle extends Task implements Serializable {
     	        	endTask();
     	        	return time;
     		    }
-                
-                // Determine new position.
-                vehicle.setCoordinates(vehicle.getCoordinates().getNewLocation(vehicle.getDirection(), distanceTraveled));
-                
-                // Add distance traveled to vehicle's odometer.
-                vehicle.addTotalDistanceTraveled(distanceTraveled);
-                vehicle.addDistanceLastMaintenance(distanceTraveled);
-                
-                result = 0; //time - MarsClock.MILLISOLS_PER_HOUR * distanceTraveled / vehicle.getSpeed();
-                
-            }
-            
+            }   
         }
-        
 
         return result;
 	}

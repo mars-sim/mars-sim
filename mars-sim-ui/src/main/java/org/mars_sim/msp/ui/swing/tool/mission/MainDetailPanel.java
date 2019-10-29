@@ -596,8 +596,7 @@ public class MainDetailPanel extends WebPanel implements ListSelectionListener, 
 					vehicleButton.setText(vehicle.getName());
 					vehicleButton.setVisible(true);
 //					List<StatusType> types = vehicle.getStatusTypes();
-					// if (s == null)
-					// s = "Not Applicable";
+
 					vehicleStatusLabel.setText(vehicle.printStatusTypes());
 					speedLabel.setText(Msg.getString("MainDetailPanel.kmhSpeed", formatter.format(vehicle.getSpeed()))); //$NON-NLS-1$
 					try {

@@ -454,7 +454,7 @@ public class PersonRobotChatUtils extends ChatUtils {
 			responseText.append("here's a list of my skills with level ane experience points : ");
 			responseText.append(System.lineSeparator());
 			responseText.append(System.lineSeparator());
-			responseText.append("       Type of Skill | Level | Exp Needed | Labor Time [millisols]");
+			responseText.append("       Type of Skill | Level | Exp Needed | Labor Time [sols]");
 			responseText.append(System.lineSeparator());
 			responseText.append("     ------------------------");
 			responseText.append(System.lineSeparator());

@@ -678,8 +678,8 @@ public class MalfunctionManager implements Serializable {
 				eventManager.registerNewEvent(newEvent);
 				
 				LogConsolidated.log(Level.WARNING, 0, sourceName,
-						"[" + loc1 + "] " + object + " has " 
-						+ malfunction.getName() + ". Probable Cause : Parts Fatigue.");
+						"[" + loc1 + "] " + object + " had '" 
+						+ malfunction.getName() + "'. Probable Cause : Parts Fatigue.");
 			} 
 			
 			else {
@@ -689,8 +689,8 @@ public class MalfunctionManager implements Serializable {
 					eventManager.registerNewEvent(newEvent);
 					
 					LogConsolidated.log(Level.WARNING, 0, sourceName, 
-							"[" + loc1 + "] " + object + " has "
-							+ malfunction.getName() + " as reported by " 
+							"[" + loc1 + "] " + object + " had '"
+							+ malfunction.getName() + "' as reported by " 
 							+ offender + ". Probable Cause : Human Factors.");
 				} else if (robot != null) {
 					HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_PROGRAMMING_ERROR,
@@ -698,8 +698,8 @@ public class MalfunctionManager implements Serializable {
 					eventManager.registerNewEvent(newEvent);
 					
 					LogConsolidated.log(Level.WARNING, 0, sourceName, 
-							"[" + loc1 + "] " + object + " has "
-							+ malfunction.getName() + " as reported by " 
+							"[" + loc1 + "] " + object + " had '"
+							+ malfunction.getName() + "' as reported by " 
 							+ offender + ". Probable Cause : Software Quality Control.");
 				}
 			}
@@ -712,8 +712,8 @@ public class MalfunctionManager implements Serializable {
 				eventManager.registerNewEvent(newEvent);
 				
 				LogConsolidated.log(Level.WARNING, 0, sourceName,
-						"[" + loc1 + "] " + object + " has " 
-						+ malfunction.getName() + " in " + loc0 + ". Probable Cause : Parts Fatigue.");					
+						"[" + loc1 + "] " + object + " had '" 
+						+ malfunction.getName() + "' in " + loc0 + ". Probable Cause : Parts Fatigue.");					
 			} 
 			
 			else {
@@ -723,8 +723,8 @@ public class MalfunctionManager implements Serializable {
 					eventManager.registerNewEvent(newEvent);
 					
 					LogConsolidated.log(Level.WARNING, 0, sourceName, 
-							"[" + loc1 + "] " + object + " has "
-							+ malfunction.getName() + " in " + loc0 + " as reported by " 
+							"[" + loc1 + "] " + object + " had '"
+							+ malfunction.getName() + "' in " + loc0 + " as reported by " 
 							+ offender + ". Probable Cause : Human Factors.");
 				} 
 				
@@ -734,8 +734,8 @@ public class MalfunctionManager implements Serializable {
 					eventManager.registerNewEvent(newEvent);
 					
 					LogConsolidated.log(Level.WARNING, 0, sourceName, 
-							"[" + loc1 + "] " + object + " has "
-							+ malfunction.getName() + " in " + loc0 + " as reported by " 
+							"[" + loc1 + "] " + object + " had '"
+							+ malfunction.getName() + "' in " + loc0 + " as reported by " 
 							+ offender + ". Probable Cause : Software Quality Control.");
 				}
 			}
@@ -1392,7 +1392,7 @@ public class MalfunctionManager implements Serializable {
 		}
 
 		if (hasMal) {
-			logger.warning("[" + entity.getLocale() + "] " + actor.getName() + " had an accident.");
+			logger.warning("[" + entity.getLocale() + "] " + actor.getName() + " had reported an incident.");
 			if (type == 1)
 				handleStringTypeOne(s, actor);
 			else if (type == 2)

@@ -674,8 +674,8 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 		double timeAtSites = getEstimatedTimeAtCollectionSite(useBuffer) * numSites;
 		double tripTimeTravellingLimit = tripTimeLimit - timeAtSites;
 		double averageSpeed = getAverageVehicleSpeedForOperators();
-		double millisolsInHour = MarsClock.convertSecondsToMillisols(60D * 60D);
-		double averageSpeedMillisol = averageSpeed / millisolsInHour;
+//		double millisolsInHour = MarsClock.convertSecondsToMillisols(60D * 60D);
+		double averageSpeedMillisol = averageSpeed / MarsClock.MILLISOLS_PER_HOUR;//millisolsInHour;
 		return tripTimeTravellingLimit * averageSpeedMillisol;
 	}
 

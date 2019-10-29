@@ -616,8 +616,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		isRequestSubmitted = true;
 	}
 
-	public void calculateStartMass() {
-		vehicle.saveStartMass();
+	public void recordStartMass() {
+		vehicle.recordStartMass();
 	}
 	
 	@Override
@@ -630,7 +630,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		}
 		else if (EMBARKING.equals(getPhase())) {
 			createDateEmbarked();
-			calculateStartMass();
+			recordStartMass();
+			computeProposedRouteTotalDistance();
 			performEmbarkFromSettlementPhase(member);
 		} 
 		else if (TRAVELLING.equals(getPhase())) {
@@ -880,9 +881,9 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		if (vehicle != null) {
 			// Add the methane resource
 			if (getPhase() == null || getPhase().equals(VehicleMission.EMBARKING) || getPhase().equals(VehicleMission.APPROVING))
-				result.put(vehicle.getFuelType(), getFuelNeededForTrip(distance, vehicle.getEstimatedAveFuelConsumption(), useMargin));
+				result.put(vehicle.getFuelType(), getFuelNeededForTrip(distance, vehicle.getEstimatedAveFuelConsumption(), true));
 			else
-				result.put(vehicle.getFuelType(), getFuelNeededForTrip(distance, vehicle.getIFuelConsumption(), useMargin));
+				result.put(vehicle.getFuelType(), getFuelNeededForTrip(distance, vehicle.getIFuelConsumption(), false));
 		}
 		return result;
 	}

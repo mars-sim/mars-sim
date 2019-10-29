@@ -372,11 +372,11 @@ public abstract class TravelMission extends Mission {
 	}
 
 	/**
-	 * Gets the proposed route total distance of the trip.
+	 * Computes the proposed route total distance of the trip.
 	 * 
 	 * @return distance (km)
 	 */
-	public final double getProposedRouteTotalDistance() {
+	public final void computeProposedRouteTotalDistance() {
 		if (navPoints.size() > 1) {
 			double result = 0D;
 			
@@ -390,12 +390,18 @@ public abstract class TravelMission extends Mission {
 			if (result > proposedRouteTotalDistance)
 				// Record the distance
 				proposedRouteTotalDistance = result;
-			return proposedRouteTotalDistance;
 		}
-		else
-			return proposedRouteTotalDistance;
 	}
 
+	/**
+	 * Gets the proposed route total distance of the trip.
+	 * 
+	 * @return distance (km)
+	 */
+	public final double getProposedRouteTotalDistance() {
+		return proposedRouteTotalDistance;
+	}
+	
 	/**
 	 * Gets the total remaining distance to travel in the mission.
 	 * 
