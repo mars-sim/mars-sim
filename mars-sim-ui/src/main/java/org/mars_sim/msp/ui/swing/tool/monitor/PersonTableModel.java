@@ -204,7 +204,7 @@ public class PersonTableModel extends UnitTableModel {
 	 * @param vehicle Monitored vehicle Person objects.
 	 */
 	public PersonTableModel(Crewable vehicle) {
-		super(Msg.getString("PersonTableModel.namePeople", //$NON-NLS-1$
+		super(Msg.getString("PersonTableModel.nameVehicle", //$NON-NLS-1$
 				((Unit) vehicle).getName()), "PersonTableModel.countingPeople", //$NON-NLS-1$
 				columnNames, columnTypes);
 

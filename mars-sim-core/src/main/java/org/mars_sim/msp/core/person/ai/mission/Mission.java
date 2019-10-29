@@ -1073,7 +1073,7 @@ public abstract class Mission implements Serializable {
 			Iterator<Person> j = qualifiedPeople.iterator();
 			while (j.hasNext() 
 					&& (getMembersNumber() < missionCapacity)
-					&& (getMembersNumber() <= max)) {
+					&& (getMembersNumber() < max)) {
 				Person person = j.next();
 				// Determine the person's mission qualification.
 				double qualification = getMissionQualification(person) * 100D;

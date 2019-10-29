@@ -1264,7 +1264,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 					reason,
 					this.getName(), 
 					member.getName(), 
-					member.getVehicle().getName(),
+					vehicle.getName(),
 					member.getLocationTag().getLocale(),
 					((Person)member).getAssociatedSettlement().getName()
 					);

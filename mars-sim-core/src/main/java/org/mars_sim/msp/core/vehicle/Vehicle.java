@@ -346,6 +346,8 @@ public abstract class Vehicle extends Unit
 			logger.config(Conversion.capitalize(vehicleType) 
 					+ " -                  end mass : " + Math.round(endMass*100.0)/100.0 + " kg");		
 			logger.config(Conversion.capitalize(vehicleType) 
+					+ " -              current Mass : " + Math.round(getMass()*100.0)/100.0 + " kg");	
+			logger.config(Conversion.capitalize(vehicleType) 
 					+ " -     drivetrain efficiency : " + Math.round(drivetrainEfficiency*100.0)/100.0 + " kWh/km");
 			logger.config(Conversion.capitalize(vehicleType) 
 					+ " -     base fuel consumption : " + Math.round(baseFuelConsumption*100.0)/100.0 + " km/kg");
@@ -971,11 +973,12 @@ public abstract class Vehicle extends Unit
 	 * @return
 	 */
 	public double getIFuelConsumption() {
-		logger.info(this 
+		if (speed > 0 && startMass != getMass())
+			logger.info(this 
 				+ "   current mass : " + getMass() 
 				+ "   start mass : " + startMass 
 				+ "   driveTrain : " + drivetrainEfficiency 
-				+ "   IFC : " + estimatedAveFuelConsumption * startMass / getMass());
+				+ "   IFC : " + Math.round(estimatedAveFuelConsumption * startMass / getMass()*10.0)/10.0);
 		return estimatedAveFuelConsumption * startMass / getMass(); 
 		
 	}
@@ -1981,6 +1984,10 @@ public abstract class Vehicle extends Unit
 		return result;
 	}
 	
+//	public double getMass() {
+//		return rover.getMass();
+//	}
+
 	/**
 	 * Reset uniqueCount to the current number of vehicles
 	 */
