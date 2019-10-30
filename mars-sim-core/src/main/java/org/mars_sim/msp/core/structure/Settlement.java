@@ -184,12 +184,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	private transient boolean resourceProcessOverride = false;
 	/* Override flag for construction/salvage mission creation at settlement. */
 	private transient boolean constructionOverride = false;
-//	/* Flag showing if the people list has been reloaded. */
-//	public transient boolean justReloadedPeople = false;
-//	/* Flag showing if the bots list has been reloaded. */
-//	public transient boolean justReloadedRobots = false;
-//	/* Flag showing if the vehicle list has been reloaded. */
-//	public transient boolean justReloadedVehicles = false;
+	
 	/** The Flag showing if the settlement has been exposed to the last radiation event. */
 	private boolean[] exposed = { false, false, false };
 	/** The cache for the number of building connectors. */
@@ -325,7 +320,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	private double outside_temperature;
 	/** The maximum distance (in km) the rovers are allowed to travel. */
 	private double maxMssionRange = 2200;
-	/** The range [in km] limit for the rovers of this settlement for each type of mission . */
+	/** The mission radius [in km] for the rovers of this settlement for each type of mission . */
 	private double[] missionRange = new double[] {
 			500, // 0. Areo
 			500, // 1. Bio
@@ -349,33 +344,24 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 
 	/** The settlement objective type instance. */
 	private ObjectiveType objectiveType;
+
 	/** The settlement's building manager. */
-//	@JsonIgnore
 	protected BuildingManager buildingManager;
 	/** The settlement's building connector manager. */
-//	@JsonIgnore
 	protected BuildingConnectorManager buildingConnectorManager;
 	/** The settlement's goods manager. */
-//	@JsonIgnore
 	protected GoodsManager goodsManager;
 	/** The settlement's construction manager. */
-//	@JsonIgnore
 	protected ConstructionManager constructionManager;
 	/** The settlement's building power grid. */
-//	@JsonIgnore
 	protected PowerGrid powerGrid;
-	// Added heating system
 	/** The settlement's heating system. */
-//	@JsonIgnore
 	protected ThermalSystem thermalSystem;
 	/** The settlement's chain of command. */
-//	@JsonIgnore
 	private ChainOfCommand chainOfCommand;
 	/** The settlement's composition of air. */
-//	@JsonIgnore
 	private CompositionOfAir compositionOfAir;
 	/** The settlement's location. */
-//	@JsonIgnore
 	private Coordinates location;
 	/** The settlement's last dust storm. */
 	private DustStorm storm;
@@ -384,10 +370,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	private List<Double> missionScores;
 	/** The settlement's achievement in scientific fields. */
 	private Map<ScienceType, Double> scientificAchievement;
-	/**
-	 * The settlement's water consumption in kitchen when preparing/cleaning meal
-	 * and dessert.
-	 */
+	/** The settlement's water consumption in kitchen when preparing/cleaning meal and dessert. */
 	private Map<Integer, Map<Integer, Double>> waterConsumption;
 	/** The settlement's daily output (resources produced). */
 	private Map<Integer, Map<Integer, Double>> dailyResourceOutput;

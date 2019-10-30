@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
@@ -612,8 +613,7 @@ public class EmergencySupply extends RoverMission implements Serializable {
 				if (!hasCurrentEmergencySupplyMission(settlement)) {
 
 					// Check if settlement is within rover range.
-					double settlementRange = settlement.getCoordinates()
-							.getDistance(startingSettlement.getCoordinates());
+					double settlementRange = Coordinates.computeDistance(settlement.getCoordinates(), startingSettlement.getCoordinates());
 					if (settlementRange <= (rover.getRange(missionType) * .8D)) {
 
 						// Find what emergency supplies are needed at settlement.

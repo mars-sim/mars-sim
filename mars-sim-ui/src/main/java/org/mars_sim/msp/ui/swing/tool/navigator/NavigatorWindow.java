@@ -872,7 +872,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 				UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
 				if (displayInfo != null && displayInfo.isMapDisplayed(unit)) {
 					Coordinates unitCoords = unit.getCoordinates();
-					double clickRange = unitCoords.getDistance(mousePos);
+					double clickRange = Coordinates.computeDistance(unitCoords, mousePos);
 					double unitClickRange = displayInfo.getMapClickRange();
 					if (clickRange < unitClickRange) {
 						// System.out.println("you're on a settlement or vehicle");
@@ -888,7 +888,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 				Landmark landmark = (Landmark) j.next();
 
 				Coordinates unitCoords = landmark.getLandmarkCoord();
-				double clickRange = unitCoords.getDistance(mousePos);
+				double clickRange = Coordinates.computeDistance(unitCoords, mousePos);
 				double unitClickRange = 40D;
 
 				if (clickRange < unitClickRange) {

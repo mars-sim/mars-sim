@@ -107,7 +107,7 @@ public final class TradeUtil {
 
 				boolean hasCurrentTradeMission = hasCurrentTradeMission(startingSettlement, s);
 
-				double settlementRange = s.getCoordinates().getDistance(startingSettlement.getCoordinates());
+				double settlementRange = Coordinates.computeDistance(s.getCoordinates(), startingSettlement.getCoordinates());
 				boolean withinRange = (settlementRange <= (rover.getRange(Trade.missionType) * .8D));
 
 				if (!hasCurrentTradeMission && withinRange) {

@@ -77,8 +77,8 @@ extends JPanel {
 		infoPane.setAlignmentX(Component.LEFT_ALIGNMENT);
 		mainPane.add(infoPane);
 
-		JPanel labelPane = new JPanel(new SpringLayout());//new GridLayout(2, 2, 0, 0));
-		infoPane.add(labelPane, BorderLayout.NORTH);
+		JPanel topSpringPane = new JPanel(new SpringLayout());//new GridLayout(2, 2, 0, 0));
+		infoPane.add(topSpringPane, BorderLayout.NORTH);
 		
 		scienceHeader = new JLabel(Msg.getString("StudyDetailPanel.science"), JLabel.RIGHT); //$NON-NLS-1$
 		scienceFieldLabel = new JLabel("N/A", JLabel.LEFT);
@@ -89,28 +89,20 @@ extends JPanel {
 		phaseHeader = new JLabel(Msg.getString("StudyDetailPanel.phase"), JLabel.RIGHT); //$NON-NLS-1$
 		phaseLabel = new JLabel("N/A", JLabel.LEFT); 
 
-		topicHeader = new JLabel("    " + Msg.getString("StudyDetailPanel.topic") + "    "); //$NON-NLS-1$
+		topicHeader = new JLabel("  " + Msg.getString("StudyDetailPanel.topic") + "    "); //$NON-NLS-1$
 		
-		labelPane.add(scienceHeader);
-		labelPane.add(scienceFieldLabel);
+		topSpringPane.add(scienceHeader);
+		topSpringPane.add(scienceFieldLabel);
 
-		labelPane.add(levelHeader);
-		labelPane.add(levelLabel);
+		topSpringPane.add(levelHeader);
+		topSpringPane.add(levelLabel);
 
-		labelPane.add(phaseHeader);
-		labelPane.add(phaseLabel);
+		topSpringPane.add(phaseHeader);
+		topSpringPane.add(phaseLabel);
 		
-//		labelPane.add(new JLabel("Other :"), JLabel.RIGHT);
-//		labelPane.add(new JLabel(" "), JLabel.LEFT);
-		
-//		topicHeader = new JLabel(Msg.getString("StudyDetailPanel.topic"));//, "[Work in Progress]")); //$NON-NLS-1$
 		WebStyledLabel noneLabel = new WebStyledLabel("{None:i;c(blue);background(grey)}"); // StyleId.styledlabelTag, 
 		noneLabel.setStyleId(StyleId.styledlabelShadow); // styledlabelTag
-//		noneLabel.setText(" None ");
-//		noneLabel.resetStyleId();
-//		noneLabel.setBackground(Color.DARK_GRAY);
-//		noneLabel.setForeground(Color.WHITE);
-		
+
 		topicPanel = new WebPanel(new BorderLayout());
 		topicPanel.add(topicHeader, BorderLayout.WEST);
 		topicPanel.add(noneLabel);
@@ -118,7 +110,7 @@ extends JPanel {
 		infoPane.add(topicPanel, BorderLayout.CENTER);
 		
 		// Prepare SpringLayout
-		SpringUtilities.makeCompactGrid(labelPane,
+		SpringUtilities.makeCompactGrid(topSpringPane,
 		                                3, 2, //rows, cols
 		                                5, 4,        //initX, initY
 		                                30, 3);       //xPad, yPad

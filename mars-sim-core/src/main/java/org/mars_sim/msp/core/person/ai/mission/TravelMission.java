@@ -357,9 +357,7 @@ public abstract class TravelMission extends Mission {
 				c1 = ((TravelToSettlement)this).getDestinationSettlement().getCoordinates();	
 			}
 			
-			
-			Coordinates c0 = getCurrentMissionLocation();
-			double dist = c0.getDistance(c1);
+			double dist = Coordinates.computeDistance(getCurrentMissionLocation(), c1);
 			
 			if (currentLegRemainingDistance != dist) {
 				currentLegRemainingDistance = dist;
@@ -386,7 +384,7 @@ public abstract class TravelMission extends Mission {
 			for (int x = 1; x < navPoints.size(); x++) {
 				NavPoint prevNav = navPoints.get(x - 1);
 				NavPoint currNav = navPoints.get(x);
-				double distance = currNav.getLocation().getDistance(prevNav.getLocation());
+				double distance = Coordinates.computeDistance(currNav.getLocation(), prevNav.getLocation());
 				result += distance;
 			}
 			
@@ -423,7 +421,7 @@ public abstract class TravelMission extends Mission {
 
 		for (int x = index + 1; x < getNumberOfNavpoints(); x++) {
 //			System.out.print("     index = " + index + "     x = " + x);
-			navDist += getNavpoint(x - 1).getLocation().getDistance(getNavpoint(x).getLocation());
+			navDist += Coordinates.computeDistance(getNavpoint(x - 1).getLocation(), getNavpoint(x).getLocation());
 //			System.out.println("     Nav Distance from " + (x-1) + " to " + x + " : " + Math.round(dist*10.0)/10.0);
 		}
 //		System.out.print("    Nav : " + navDist);//Math.round(navDist*10.0)/10.0);

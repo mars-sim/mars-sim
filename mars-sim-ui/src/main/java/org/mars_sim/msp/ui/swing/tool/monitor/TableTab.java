@@ -89,8 +89,6 @@ abstract class TableTab extends MonitorTab {
 			sortedModel = new TableSorter(model);
 			// Create scrollable table window
 			table = new JTable(sortedModel) {
-				/** default serial id. */
-				// private static final long serialVersionUID = 1L;
 
 				/**
 				 * Overriding table change so that selections aren't cleared when rows are

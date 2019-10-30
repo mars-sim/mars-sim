@@ -42,12 +42,12 @@ public abstract class MonitorTab extends JPanel {
 		this.model = model;
 		this.icon = icon;
 		this.mandatory = mandatory;
+		
 		this.setOpaque(false);
 
 		// Create a panel
 		setLayout(new BorderLayout());
 		// setBorder(MainDesktopPane.newEmptyBorder());
-
 	}
 
 	/**

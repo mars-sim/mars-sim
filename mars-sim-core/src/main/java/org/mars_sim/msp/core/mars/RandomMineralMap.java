@@ -322,7 +322,7 @@ public class RandomMineralMap implements Serializable, MineralMap {
 		Iterator<MineralConcentration> i = mineralConcentrations.iterator();
 		while (i.hasNext()) {
 			MineralConcentration mineralConc = i.next();
-			double distance = startingLocation.getDistance(mineralConc.getLocation());
+			double distance = Coordinates.computeDistance(startingLocation, mineralConc.getLocation());
 			if (range > (distance - mineralConc.getConcentration())) {
 				locales.add(mineralConc);
 			}
@@ -331,7 +331,7 @@ public class RandomMineralMap implements Serializable, MineralMap {
 		if (locales.size() > 0) {
 			int index = RandomUtil.getRandomInt(locales.size() - 1);
 			MineralConcentration concentration = locales.get(index);
-			double distance = startingLocation.getDistance(concentration.getLocation());
+			double distance = Coordinates.computeDistance(startingLocation, concentration.getLocation());
 			if (range < distance) {
 				Direction direction = startingLocation.getDirectionToPoint(concentration.getLocation());
 				result = startingLocation.getNewLocation(direction, range);

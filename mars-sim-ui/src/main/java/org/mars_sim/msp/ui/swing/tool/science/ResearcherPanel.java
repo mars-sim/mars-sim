@@ -8,8 +8,6 @@ package org.mars_sim.msp.ui.swing.tool.science;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
@@ -18,12 +16,14 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
+import javax.swing.SpringLayout;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 
 /**
  * A panel that displays study researcher information.
@@ -32,15 +32,19 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 class ResearcherPanel extends JPanel {
 
 	// Data members
+	private JLabel researcherHeader;
+	private JLabel scienceLabel;
+	private JLabel activityLabel;
+
+	private JButton nameButton;
+
+	private JProgressBar activityBar;
+
+	private JPanel activityBarPane;
+
 	private ScienceWindow scienceWindow;
 	private ScientificStudy study;
 	private Person researcher;
-	private JLabel titleLabel;
-	private JButton nameButton;
-	private JLabel scienceLabel;
-	private JLabel activityLabel;
-	private JProgressBar activityBar;
-	private JPanel activityBarPane;
 
 	/**
 	 * Constructor.
@@ -64,20 +68,16 @@ class ResearcherPanel extends JPanel {
 		researcherPane.setBorder(new MarsPanelBorder());
 		add(researcherPane, Msg.getString("ResearcherPanel.researcher")); //$NON-NLS-1$
 
-		// Create top panel.
-		JPanel topPane = new JPanel(new GridLayout(2, 1, 0, 0));
-		researcherPane.add(topPane, BorderLayout.NORTH);
-
-		// Create title panel.
-		JPanel titlePane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-		topPane.add(titlePane);
+		// Create the top spring pane
+		JPanel topSpringPane = new JPanel(new SpringLayout());// new GridLayout(2, 2, 0, 0));
+		researcherPane.add(topSpringPane, BorderLayout.CENTER);
 
 		// Create title label.
-		titleLabel = new JLabel(Msg.getString("ResearcherPanel.primaryResearcher")); //$NON-NLS-1$
-		titlePane.add(titleLabel);
+		researcherHeader = new JLabel(Msg.getString("ResearcherPanel.primaryResearcher"), JLabel.RIGHT); //$NON-NLS-1$
+		topSpringPane.add(researcherHeader);
 
 		// Create name button.
-		nameButton = new JButton(""); //$NON-NLS-1$
+		nameButton = new JButton("[ TBA ]"); //$NON-NLS-1$
 		nameButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				// Open window for researcher.
@@ -85,23 +85,25 @@ class ResearcherPanel extends JPanel {
 					openResearcherWindow(researcher);
 			}
 		});
-		titlePane.add(nameButton);
+		topSpringPane.add(nameButton);
 
 		// Create science label.
-		scienceLabel = new JLabel(Msg.getString("ResearcherPanel.scientificField", "")); //$NON-NLS-1$
-		topPane.add(scienceLabel);
+		JLabel scienceHeader = new JLabel(Msg.getString("ResearcherPanel.subjectHeader"), JLabel.RIGHT); //$NON-NLS-1$
+		topSpringPane.add(scienceHeader);
 
-		// Create bottom panel.
-		JPanel bottomPane = new JPanel(new BorderLayout());
-		researcherPane.add(bottomPane, BorderLayout.SOUTH);
+		scienceLabel = new JLabel("[ TBA ]"); //$NON-NLS-1$
+		topSpringPane.add(scienceLabel);
 
 		// Create activity label.
-		activityLabel = new JLabel(Msg.getString("ResearcherPanel.activity.none") + " "); //$NON-NLS-1$
-		bottomPane.add(activityLabel, BorderLayout.WEST);
+		JLabel activityHeader = new JLabel(Msg.getString("ResearcherPanel.phaseHeader"), JLabel.RIGHT); //$NON-NLS-1$
+		topSpringPane.add(activityHeader);// , BorderLayout.WEST);
+
+		activityLabel = new JLabel("[ TBA ]"); //$NON-NLS-1$
+		topSpringPane.add(activityLabel);// , BorderLayout.WEST);
 
 		// Create activity bar panel.
 		activityBarPane = new JPanel(new CardLayout());
-		bottomPane.add(activityBarPane, BorderLayout.CENTER);
+		researcherPane.add(activityBarPane, BorderLayout.SOUTH);
 
 		// Create blank activity bar panel.
 		JPanel blankActivityBarPane = new JPanel();
@@ -111,6 +113,11 @@ class ResearcherPanel extends JPanel {
 		activityBar = new JProgressBar(0, 100);
 		activityBar.setStringPainted(true);
 		activityBarPane.add(activityBar, Msg.getString("ResearcherPanel.showActivityBar")); //$NON-NLS-1$
+
+		// Prepare SpringLayout
+		SpringUtilities.makeCompactGrid(topSpringPane, 3, 2, // rows, cols
+				5, 4, // initX, initY
+				30, 3); // xPad, yPad
 	}
 
 	/**
@@ -140,12 +147,12 @@ class ResearcherPanel extends JPanel {
 			cardLayout.show(this, Msg.getString("ResearcherPanel.researcher")); //$NON-NLS-1$
 
 			if (researcher.equals(study.getPrimaryResearcher())) {
-				titleLabel.setText(Msg.getString("ResearcherPanel.primaryResearcher")); //$NON-NLS-1$
-				scienceLabel.setText(Msg.getString("ResearcherPanel.scientificField", study.getScience().getName())); //$NON-NLS-1$
+				researcherHeader.setText(Msg.getString("ResearcherPanel.primaryResearcher")); //$NON-NLS-1$
+				scienceLabel.setText(study.getScience().getName()); // $NON-NLS-1$
 			} else {
-				titleLabel.setText(Msg.getString("ResearcherPanel.collaborativeResearcher")); //$NON-NLS-1$
+				researcherHeader.setText(Msg.getString("ResearcherPanel.collaborativeResearcher")); //$NON-NLS-1$
 				ScienceType collabScience = study.getCollaborativeResearchers().get(researcher.getIdentifier());
-				scienceLabel.setText(Msg.getString("ResearcherPanel.scientificField", collabScience.getName())); //$NON-NLS-1$
+				scienceLabel.setText(collabScience.getName()); // $NON-NLS-1$
 			}
 
 			nameButton.setText(researcher.getName());

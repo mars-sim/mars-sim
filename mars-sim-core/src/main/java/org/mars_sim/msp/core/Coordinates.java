@@ -363,6 +363,22 @@ public class Coordinates implements Serializable {
 	}
 
 	/**
+	 * Computes the distance between the two given coordinates
+	 * 
+	 * @param c0
+	 * @param c1
+	 * @return distance (in km)
+	 */
+	public static double computeDistance(Coordinates c0, Coordinates c1) {
+
+		double rho = Mars.MARS_RADIUS_KM;
+		double angle = c0.getAngle(c1);
+		double result = rho * angle;
+//		System.out.println("   c0 : " + c0 + "   c1 : " + c1 + "   rho : " + rho + "   angle : " + angle + "   rho*angle : " + result);
+		return result;
+	}
+	
+	/**
 	 * Gets a common formatted string to represent this location.
 	 * 
 	 * @return formatted longitude & latitude string for this Coordinates object

@@ -18,6 +18,7 @@ import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LifeSupportInterface;
 import org.mars_sim.msp.core.Simulation;
@@ -141,7 +142,7 @@ public class GoodsManager implements Serializable {
 	private static final String SALVAGE_BUILDING_MISSION = "salvage building";
 	private static final String EMERGENCY_SUPPLY_MISSION = "deliver emergency supplies";
 
-	private static final double DAMPING_RATIO = .05;
+	private static final double DAMPING_RATIO = .1;
 	private static final double MIN = .000_001;
 	
 	// Number modifiers for outstanding repair and maintenance parts.
@@ -178,7 +179,11 @@ public class GoodsManager implements Serializable {
 	private static final double CONSTRUCTION_SITE_REQUIRED_RESOURCE_FACTOR = 100D;
 	private static final double CONSTRUCTION_SITE_REQUIRED_PART_FACTOR = 100D;
 
-	private static final double MINIMUM_SUPPLY = 0.1;
+	private static final double MINIMUM_SUPPLY = 0.01;
+	private static final double MINIMUM_DEMAND = 0.01;
+	private static final double MAXIMUM_SUPPLY = 10;
+	private static final double MAXIMUM_DEMAND = 10;
+	
 	private static final double METHANE_AVERAGE_DEMAND = 20;
 	private static final double TISSUE_CULTURE_FACTOR = 100;
 //	private static final double FOOD_FACTOR = .001;
@@ -599,12 +604,6 @@ public class GoodsManager implements Serializable {
 		// Compact and/or clear supply and demand maps every x days
 		int numSol = solElapsed % Settlement.SUPPLY_DEMAND_REFRESH + 1;
 
-		// supply++;
-		// Use MIMIMUM_STORED_SUPPLY instead of supply++ to avoid divide by zero when
-		// calculating VP
-		if (supply < MINIMUM_SUPPLY)
-			supply = MINIMUM_SUPPLY;
-
 		int id = resourceGood.getID();
 		
 		if (goodsDemandCache.containsKey(resourceGood)) {
@@ -714,19 +713,26 @@ public class GoodsManager implements Serializable {
 			// goodsSupplyCache.put(resourceGood, totalSupply);
 		}
 		
-		// Apply the universal damping ratio
-		if (previousAmountDemand > MIN) {
-			if (totalAmountDemand / previousAmountDemand > 1)
-				// Reduce the increase
-				totalAmountDemand = previousAmountDemand + (totalAmountDemand - previousAmountDemand) * DAMPING_RATIO;
-			
-			else if (totalAmountDemand / previousAmountDemand < 1)
-				// Reduce the decrease
-				totalAmountDemand = previousAmountDemand - (previousAmountDemand - totalAmountDemand) * DAMPING_RATIO;
-		}
+		if (totalAmountSupply < MINIMUM_SUPPLY)
+			totalAmountSupply = MINIMUM_SUPPLY;
 		
-		if (totalAmountDemand < 0.1)
-			totalAmountDemand = 0.1;
+		if (totalAmountSupply > MAXIMUM_SUPPLY)
+			totalAmountSupply = MAXIMUM_SUPPLY;
+		
+		// Apply the universal damping ratio
+		if (totalAmountDemand / previousAmountDemand > 1)
+			// Reduce the increase
+			totalAmountDemand = previousAmountDemand + (totalAmountDemand - previousAmountDemand) * DAMPING_RATIO;
+			
+		else //if (totalAmountDemand / previousAmountDemand < 1)
+			// Reduce the decrease
+			totalAmountDemand = previousAmountDemand - (previousAmountDemand - totalAmountDemand) * DAMPING_RATIO;
+	
+		if (totalAmountDemand < MINIMUM_DEMAND)
+			totalAmountDemand = MINIMUM_DEMAND;
+		
+		if (totalAmountDemand > MAXIMUM_DEMAND)
+			totalAmountDemand = MAXIMUM_DEMAND;
 		
 		// Save the goods demand
 		goodsDemandCache.put(resourceGood, totalAmountDemand);
@@ -734,8 +740,7 @@ public class GoodsManager implements Serializable {
 //		if (id == 157 || id == 13) 
 //			System.out.println("2. " + id + "   totalSupply: " + totalSupply);
 		
-		if (totalAmountSupply < MINIMUM_SUPPLY)
-			totalAmountSupply = MINIMUM_SUPPLY;
+
 		
 		amountValue = totalAmountDemand / totalAmountSupply;
 
@@ -819,17 +824,25 @@ public class GoodsManager implements Serializable {
 		
 		double demandPerGoodRequest = 0;
 		
-		double demandPerEstRequest = 0;
+		double demandEstRequest = 0;
 		
 		if (goodDemand > MIN && goodRequests != 0)
-			demandPerGoodRequest = goodDemand * goodRequests;
+			demandPerGoodRequest = goodDemand / goodRequests;
 		
-		if (estDemand > MIN && totalRequests != 0)
-			demandPerEstRequest = estDemand * totalRequests;
+		double demand = 0;
+		
+		if (demandPerGoodRequest == 0)
+			// Gets the total potential demand based on estimate 
+			demand = .1 * estDemand;
+		else
+			// Figure out the total potential demand based on good demand statistics
+			demand = .1 * demandPerGoodRequest * totalRequests;
+				
+		return demand;
+		
 		// Gets the potential demand based on estimate 
 		// TODO: what to do in case of ice, when getAmountDemandEstimated() is hundreds/thousands of times higher than its demand
-		double demand = 1 + demandPerGoodRequest + demandPerEstRequest;
-
+		
 //		if (resource == ResourceUtil.iceID) //157 || resource == 13) 
 //			System.out.println("0. " + resource + "   goodDemand: " + goodDemand 
 //				+ "   goodRequests: " + goodRequests 
@@ -839,7 +852,6 @@ public class GoodsManager implements Serializable {
 //				+ "   demand: " + demand 
 //				);
 				
-		return demand;
 	}
 
 	/**
@@ -857,6 +869,8 @@ public class GoodsManager implements Serializable {
 		int goodRequests = inv.getItemDemandMetRequest(resource);
 		// Gets the total # of requests
 		int totalRequests = inv.getItemDemandTotalRequest(resource);
+		// Gets the estimated demand on record
+		double estDemand = inv.getItemDemandEstimated(resource);
 		
 		double demandPerGoodRequest = 0;
 		
@@ -867,10 +881,10 @@ public class GoodsManager implements Serializable {
 		
 		if (demandPerGoodRequest == 0)
 			// Gets the total potential demand based on estimate 
-			demand = .5 * inv.getItemDemandEstimated(resource);
+			demand = .1 * estDemand;
 		else
 			// Figure out the total potential demand based on good demand statistics
-			demand = .5 * demandPerGoodRequest * totalRequests;
+			demand = .1 * demandPerGoodRequest * totalRequests;
 				
 		return demand;
 	}
@@ -2048,11 +2062,6 @@ public class GoodsManager implements Serializable {
 		// Compact and/or clear supply and demand maps every x days
 		int numSol = solElapsed % Settlement.SUPPLY_DEMAND_REFRESH + 1;
 
-		// Use MIMIMUM_STORED_SUPPLY instead of supply++ to avoid divide by zero when
-		// calculating VP
-		if (supply < MINIMUM_SUPPLY)
-			supply = MINIMUM_SUPPLY;
-
 		Integer id = resourceGood.getID();
 		Part part = null;
 		
@@ -2131,23 +2140,30 @@ public class GoodsManager implements Serializable {
 				
 				// Calculate total supply
 				totalItemSupply = getAverageItemSupply(id, supply * .1, solElapsed);
-				// goodsSupplyCache.put(resourceGood, totalSupply);
-				if (totalItemSupply < MINIMUM_SUPPLY)
-					totalItemSupply = MINIMUM_SUPPLY;
 			}
 				
+			// Use MIMIMUM_STORED_SUPPLY instead of supply++ to avoid divide by zero when
+			// calculating VP
+			if (totalItemSupply < MINIMUM_SUPPLY)
+				totalItemSupply = MINIMUM_SUPPLY;
+			
+			if (totalItemSupply > MAXIMUM_SUPPLY)
+				totalItemSupply = MAXIMUM_SUPPLY;
 			
 			// Apply the universal damping ratio
 			if (totalItemDemand / previousItemDemand > 1)
 				// Reduce the increase
 				totalItemDemand = previousItemDemand + (totalItemDemand - previousItemDemand) * DAMPING_RATIO;
 			
-			else if (totalItemDemand / previousItemDemand < 1)
+			else //if (totalItemDemand / previousItemDemand < 1)
 				// Reduce the decrease
 				totalItemDemand = previousItemDemand - (previousItemDemand - totalItemDemand) * DAMPING_RATIO;
 				
-			if (totalItemDemand < 0.001)
-				totalItemDemand = 0.001;
+			if (totalItemDemand < MINIMUM_DEMAND)
+				totalItemDemand = MINIMUM_DEMAND;
+			
+			if (totalItemDemand > MAXIMUM_DEMAND)
+				totalItemDemand = MAXIMUM_DEMAND;
 			
 			// Save the goods demand
 			goodsDemandCache.put(resourceGood, totalItemDemand);
@@ -3329,7 +3345,7 @@ public class GoodsManager implements Serializable {
 			for (Settlement tempSettlement : unitManager.getSettlements()) {
 				if (tempSettlement != settlement) {
 					double baseValue = tempSettlement.getGoodsManager().getGoodsDemandValue(good);
-					double distance = settlement.getCoordinates().getDistance(tempSettlement.getCoordinates());
+					double distance = Coordinates.computeDistance(settlement.getCoordinates(), tempSettlement.getCoordinates());
 					double tradeValue = baseValue / (1D + (distance / 1000D));
 					if (tradeValue > bestTradeValue)
 						bestTradeValue = tradeValue;

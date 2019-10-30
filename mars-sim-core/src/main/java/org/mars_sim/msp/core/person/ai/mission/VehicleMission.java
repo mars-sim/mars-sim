@@ -1053,7 +1053,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 
 	protected double getClosestDistance() {
 
-		return getCurrentMissionLocation().getDistance(findClosestSettlement().getCoordinates());
+		return Coordinates.computeDistance(getCurrentMissionLocation(), findClosestSettlement().getCoordinates());
 	}
 
 	/**
@@ -1098,14 +1098,14 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 
 		Settlement oldHome = person.getAssociatedSettlement();
 		
-		double oldDistance = getCurrentMissionLocation().getDistance(oldHome.getCoordinates());
+		double oldDistance = Coordinates.computeDistance(getCurrentMissionLocation(), oldHome.getCoordinates());
 
 		
 		// Determine closest settlement.
 		Settlement newDestination = findClosestSettlement();
 		if (newDestination != null) {
 
-			double newDistance = getCurrentMissionLocation().getDistance(newDestination.getCoordinates());
+			double newDistance = Coordinates.computeDistance(getCurrentMissionLocation(), newDestination.getCoordinates());
 
 			// Check if enough resources to get to settlement.
 			if (newDistance > 0 && hasEnoughResources(getResourcesNeededForTrip(false, newDistance))) {
@@ -1307,7 +1307,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		double closestDistance = Double.MAX_VALUE;
 
 		for (Settlement settlement : unitManager.getSettlements()) {
-			double distance = settlement.getCoordinates().getDistance(location);
+			double distance = Coordinates.computeDistance(settlement.getCoordinates(), location);
 			if (distance < closestDistance) {
 				result = settlement;
 				closestDistance = distance;

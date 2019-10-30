@@ -372,7 +372,7 @@ public class PersonTableModel extends UnitTableModel {
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		Object result = null;
 
-		if (rowIndex < getUnitNumber()) {
+		if (rowIndex < getUnitNumber() && getUnit(rowIndex) instanceof Person) {
 			Person person = (Person) getUnit(rowIndex);
 			// boolean isDead = person.getPhysicalCondition().isDead();
 			// PhysicalCondition pc = person.getPhysicalCondition();

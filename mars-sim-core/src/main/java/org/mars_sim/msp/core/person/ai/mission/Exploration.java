@@ -734,7 +734,7 @@ public class Exploration extends RoverMission implements Serializable {
 		} else
 			throw new IllegalStateException(getPhase() + " : Could not determine first exploration site.");
 
-		double siteDistance = startingLocation.getDistance(newLocation);
+		double siteDistance = Coordinates.computeDistance(startingLocation, newLocation);
 		Coordinates currentLocation = newLocation;
 
 		// Determine remaining exploration sites.
@@ -761,11 +761,11 @@ public class Exploration extends RoverMission implements Serializable {
 			currentLocation = startingLocation;
 			while (unorderedSites2.size() > 0) {
 				Coordinates shortest = unorderedSites2.get(0);
-				double shortestDistance = currentLocation.getDistance(shortest);
+				double shortestDistance = Coordinates.computeDistance(currentLocation, shortest);
 				Iterator<Coordinates> i = unorderedSites2.iterator();
 				while (i.hasNext()) {
 					Coordinates site = i.next();
-					double distance = currentLocation.getDistance(site);
+					double distance = Coordinates.computeDistance(currentLocation, site);
 					if (distance < shortestDistance) {
 						shortest = site;
 						shortestDistance = distance;
@@ -840,7 +840,7 @@ public class Exploration extends RoverMission implements Serializable {
 			}
 			double distance = RandomUtil.getRandomDouble(500D / areologySkill);
 			result = randomLocation.getNewLocation(direction, distance);
-			double distanceFromStart = startingLocation.getDistance(result);
+			double distanceFromStart = Coordinates.computeDistance(startingLocation, result);
 			if (distanceFromStart > range) {
 				Direction direction2 = startingLocation.getDirectionToPoint(result);
 				result = startingLocation.getNewLocation(direction2, range);

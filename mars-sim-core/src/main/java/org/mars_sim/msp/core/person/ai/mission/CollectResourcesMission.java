@@ -587,7 +587,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 		if (resourceID == ResourceUtil.iceID) {
 
 			for (int x = 1; x < numSites; x++) {
-				double currentDistanceToSettlement = currentLocation.getDistance(startingLocation);
+				double currentDistanceToSettlement = Coordinates.computeDistance(currentLocation, startingLocation);
 				if (remainingRange > currentDistanceToSettlement) {
 					boolean quit = false;
 					double bestScore = 0;
@@ -628,7 +628,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 		else {
 			// for regolith collection mission
 			for (int x = 1; x < numSites; x++) {
-				double currentDistanceToSettlement = currentLocation.getDistance(startingLocation);
+				double currentDistanceToSettlement = Coordinates.computeDistance(currentLocation, startingLocation);
 				if (remainingRange > currentDistanceToSettlement) {
 					direction = new Direction(RandomUtil.getRandomDouble(2D * Math.PI));
 					double tempLimit1 = Math.pow(remainingRange, 2D) - Math.pow(currentDistanceToSettlement, 2D);
@@ -652,7 +652,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 			Iterator<Coordinates> i = unorderedSites.iterator();
 			while (i.hasNext()) {
 				Coordinates site = i.next();
-				if (currentLocation.getDistance(site) < currentLocation.getDistance(shortest))
+				if (Coordinates.computeDistance(currentLocation, site) < Coordinates.computeDistance(currentLocation, shortest))
 					shortest = site;
 			}
 			addNavpoint(new NavPoint(shortest, getCollectionSiteDescription(collectionSiteNum)));

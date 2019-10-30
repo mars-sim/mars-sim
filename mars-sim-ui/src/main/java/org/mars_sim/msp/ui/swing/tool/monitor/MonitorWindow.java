@@ -122,10 +122,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 		super(NAME, desktop);
 		this.desktop = desktop;
 
-//		if (desktop.getMainScene() != null)
-//			mainScene = desktop.getMainScene();
-//		else if (desktop.getMainWindow() != null)
-			mainWindow = desktop.getMainWindow();
+		mainWindow = desktop.getMainWindow();
 
 		// Get content pane
 		WebPanel mainPane = new WebPanel(new BorderLayout());
@@ -212,8 +209,6 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 		rowCount.setPreferredSize(dims);
 
 		// Add the default table tabs
-		// UnitManager unitManager = Simulation.instance().getUnitManager();
-
 		// Added notifyBox
 		NotificationWindow notifyBox = new NotificationWindow(desktop);
 
@@ -231,9 +226,11 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 
 		addTab(new MissionTab(this));
 
-		addTab(new UnitTab(this, new PersonTableModel(desktop), true, PEOPLE_ICON));
-
 		addTab(new UnitTab(this, new SettlementTableModel(), true, BASE_ICON));
+
+		addTab(new UnitTab(this, new VehicleTableModel(), true, VEHICLE_ICON));
+
+		addTab(new UnitTab(this, new PersonTableModel(desktop), true, PEOPLE_ICON));
 
 		// Add a tab for each settlement
 		for (Settlement s : unitManager.getSettlements()) {
@@ -241,8 +238,6 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 			addTab(new UnitTab(this, new PersonTableModel(s, true), true, PEOPLE_ICON));
 		}
 		
-		addTab(new UnitTab(this, new VehicleTableModel(), true, VEHICLE_ICON));
-
 		// Add a listener for the tab changes
 		tabsSection.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {

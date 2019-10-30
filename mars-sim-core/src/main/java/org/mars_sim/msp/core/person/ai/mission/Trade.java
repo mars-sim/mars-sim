@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
@@ -1038,8 +1039,8 @@ public class Trade extends RoverMission implements Serializable {
 
 			double totalProfit = sellingProfit + buyingProfit;
 
-			double estimatedDistance = getStartingSettlement().getCoordinates()
-					.getDistance(tradingSettlement.getCoordinates()) * 2D;
+			double estimatedDistance = Coordinates.computeDistance(getStartingSettlement().getCoordinates(), 
+					tradingSettlement.getCoordinates()) * 2D;
 			double missionCost = TradeUtil.getEstimatedMissionCost(getStartingSettlement(), getRover(),
 					estimatedDistance);
 

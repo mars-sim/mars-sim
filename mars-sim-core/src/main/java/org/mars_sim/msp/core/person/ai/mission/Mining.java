@@ -857,7 +857,7 @@ public class Mining extends RoverMission {
 					if (homeSettlement.equals(site.getSettlement())) {
 						Coordinates siteLocation = site.getLocation();
 						Coordinates homeLocation = homeSettlement.getCoordinates();
-						if (homeLocation.getDistance(siteLocation) <= (range / 2D)) {
+						if (Coordinates.computeDistance(homeLocation, siteLocation) <= (range / 2D)) {
 							double value = getMiningSiteValue(site, homeSettlement);
 							if (value > bestValue) {
 								result = site;
