@@ -31,6 +31,7 @@ import org.mars_sim.msp.core.equipment.ContainerUtil;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
+import org.mars_sim.msp.core.equipment.LargeBag;
 import org.mars_sim.msp.core.equipment.SpecimenBox;
 import org.mars_sim.msp.core.foodProduction.FoodProductionProcess;
 import org.mars_sim.msp.core.foodProduction.FoodProductionProcessInfo;
@@ -107,6 +108,10 @@ public class GoodsManager implements Serializable {
 	private static final String INGOT = "ingot";
 	private static final String SHEET = "sheet";
 	private static final String TRUSS = "steel truss";
+	private static final String STEEL_WIRE = "steel wire";
+	private static final String STEEL_CAN = "steel canister";
+	private static final String AL_WIRE = "aluminum wire";
+	private static final String BOTTLE = "bottle";
 	
 	// TODO Mission types should be an enum.
 	private static final String TRAVEL_TO_SETTLEMENT_MISSION = "travel to settlement";
@@ -136,17 +141,17 @@ public class GoodsManager implements Serializable {
 	// Value multiplier factors for certain goods.
 	private static double eVASuitMod = EVA_SUIT_FACTOR;
 
-	private static final double EVA_SUIT_VALUE = 7.5D;
+	private static final double EVA_SUIT_VALUE = 75D;
 	private static final double MINERAL_VALUE = 10D;
-	private static final double ROBOT_FACTOR = 1;//500D;
-	private static final double TRANSPORT_VEHICLE_FACTOR = 10D;
-	private static final double CARGO_VEHICLE_FACTOR = 10D;
-	private static final double EXPLORER_VEHICLE_FACTOR = 10D;
-	private static final double LUV_VEHICLE_FACTOR = 10D;
+	private static final double ROBOT_FACTOR = 1;
+	private static final double TRANSPORT_VEHICLE_FACTOR = 100D;
+	private static final double CARGO_VEHICLE_FACTOR = 100D;
+	private static final double EXPLORER_VEHICLE_FACTOR = 100D;
+	private static final double LUV_VEHICLE_FACTOR = 100D;
 	
 	private static final double LUV_FACTOR = .5D;
-	private static final double LIFE_SUPPORT_FACTOR = 100_000D;
-	private static final double WATER_FACTOR = 1;//100_000_000D;
+	private static final double LIFE_SUPPORT_FACTOR = 100_000_000D;
+	private static final double WATER_FACTOR = 100_000_000D;
 	private static final double FUEL_FACTOR = 100_000D;
 	private static final double VEHICLE_FUEL_FACTOR = 1D;
 	private static final double RESOURCE_PROCESSING_INPUT_FACTOR = .5D;
@@ -155,11 +160,11 @@ public class GoodsManager implements Serializable {
 	private static final double COOKED_MEAL_INPUT_FACTOR = .5D;
 	private static final double DESSERT_FACTOR = .1D;
 	private static final double FOOD_PRODUCTION_INPUT_FACTOR = .5D;
-	private static final double FARMING_FACTOR = 1D;
+	private static final double FARMING_FACTOR = 1000D;
 	private static final double CONSTRUCTION_SITE_REQUIRED_RESOURCE_FACTOR = 100D;
 	private static final double CONSTRUCTION_SITE_REQUIRED_PART_FACTOR = 100D;
 
-	private static final double MINIMUM_STORED_SUPPLY = 1D;
+	private static final double MINIMUM_SUPPLY = 0.1;
 	private static final double METHANE_AVERAGE_DEMAND = 20;
 	private static final double TISSUE_CULTURE_FACTOR = 100;
 //	private static final double FOOD_FACTOR = .001;
@@ -177,6 +182,10 @@ public class GoodsManager implements Serializable {
 	private static final double SCRAP_METAL_DEMAND = .000_000_000_1D;
 	private static final double INGOT_METAL_DEMAND = .000_000_000_1D;
 	private static final double SHEET_METAL_DEMAND = .000_000_000_1D;
+	private static final double STEEL_WIRE_DEMAND = .000_000_1D;
+	private static final double STEEL_CAN_DEMAND = .000_1D;
+	private static final double AL_WIRE_DEMAND = .000_1D;
+	private static final double BOTTLE_DEMAND = .001D;
 	
 	/** VP probability modifier. */
 	public static double ICE_VALUE_MODIFIER = 1D;
@@ -562,14 +571,12 @@ public class GoodsManager implements Serializable {
 	 * @return value (value points / kg)
 	 */
 	private double determineAmountResourceGoodValue(Good resourceGood, double supply, boolean useCache) {
-		double value = 0D;
-
-		double totalDemand = 0D;
-		double previousDemand = 0D;
-		double projectedDemand = 0D;
-		double tradeDemand = 0;
-		
-		double totalSupply = 0;
+		double amountValue = 0;
+		double totalAmountDemand = 0;
+		double previousAmountDemand = 0;
+		double projectedAmountDemand = 0;
+		double tradeAmountDemand = 0;
+		double totalAmountSupply = 0;
 
 		// Needed for loading a saved sim
 		int solElapsed = marsClock.getMissionSol();
@@ -579,25 +586,25 @@ public class GoodsManager implements Serializable {
 		// supply++;
 		// Use MIMIMUM_STORED_SUPPLY instead of supply++ to avoid divide by zero when
 		// calculating VP
-		if (supply < MINIMUM_STORED_SUPPLY)
-			supply = MINIMUM_STORED_SUPPLY;
+		if (supply < MINIMUM_SUPPLY)
+			supply = MINIMUM_SUPPLY;
 
 		int id = resourceGood.getID();
 		
 		if (goodsDemandCache.containsKey(resourceGood)) {
 			// Get previous demand
-			previousDemand = goodsDemandCache.get(resourceGood);
+			previousAmountDemand = goodsDemandCache.get(resourceGood);
 		}
 		
 		if (useCache) {		
 			// Calculate total demand
-			if (previousDemand > 0)
-				totalDemand =  .9 * previousDemand + .1 * getAverageAmoundDemand(id, numSol);
+			if (previousAmountDemand > 0)
+				totalAmountDemand =  .75 * previousAmountDemand + .25 * AdjustLifeSupport(id, getAverageAmoundDemand(id, numSol));
 //			else
 //				totalDemand = getAverageAmoundDemand(id, numSol);
 			
 			// Calculate total supply
-			totalSupply = supply;
+			totalAmountSupply = supply;
 						
 //			if (id == 157 || id == 13) 
 //				System.out.println("1a. " + id + "   previousDemand: " + previousDemand 
@@ -605,74 +612,73 @@ public class GoodsManager implements Serializable {
 		} 
 		
 		else {
-
 		
 			// Tune ice demand.
-			previousDemand = adjustIceDemand(id, previousDemand);
-			projectedDemand = computeIceProjectedDemand(id);
+			previousAmountDemand = adjustIceDemand(id, previousAmountDemand);
+			projectedAmountDemand = computeIceProjectedDemand(id);
 			
 			// NOTE: the following estimates are for each orbit (Martian year) : 
 			
 			// Tune life support demand if applicable.
-			projectedDemand += getLifeSupportDemand(id);
+			projectedAmountDemand += getLifeSupportDemand(id);
 
 			// Tune fuel demand if applicable.
-			projectedDemand += getFuelDemand(id);
+			projectedAmountDemand += getFuelDemand(id);
 
 			// Tune potable water usage demand if applicable.
-			projectedDemand += getPotableWaterUsageDemand(id);
+			projectedAmountDemand += getPotableWaterUsageDemand(id);
 			
 			// Tune toiletry usage demand if applicable.
-			projectedDemand += getToiletryUsageDemand(id);
+			projectedAmountDemand += getToiletryUsageDemand(id);
 
 			// Tune vehicle demand if applicable.
-			projectedDemand += getVehicleDemand(id);
+			projectedAmountDemand += getVehicleDemand(id);
 
 			// Tune farming demand.
-			projectedDemand += getFarmingDemand(id);
+			projectedAmountDemand += getFarmingDemand(id);
 
 			// Tune resource processing demand.
-			projectedDemand += getResourceProcessingDemand(id);
+			projectedAmountDemand += getResourceProcessingDemand(id);
 
 			// Tune manufacturing demand.
-			projectedDemand += getResourceManufacturingDemand(id);
+			projectedAmountDemand += getResourceManufacturingDemand(id);
 
 			// Tune food production related demand.
-			projectedDemand += getResourceFoodProductionDemand(id);
+			projectedAmountDemand += getResourceFoodProductionDemand(id);
 
 			// Tune demand for the ingredients in a cooked meal.
-			projectedDemand += getResourceCookedMealIngredientDemand(id);
+			projectedAmountDemand += getResourceCookedMealIngredientDemand(id);
 
 			// Tune dessert demand.
-			projectedDemand += getResourceDessertDemand(id);
+			projectedAmountDemand += getResourceDessertDemand(id);
 
 			// Tune construction demand.
-			projectedDemand += getResourceConstructionDemand(id);
+			projectedAmountDemand += getResourceConstructionDemand(id);
 
 			// Tune construction site demand.
-			projectedDemand += getResourceConstructionSiteDemand(id);
+			projectedAmountDemand += getResourceConstructionSiteDemand(id);
 
 			// Adjust the demand on various waste products with the disposal cost.
-			projectedDemand = getWasteDisposalSinkCost(id, projectedDemand);
+			projectedAmountDemand = getWasteDisposalSinkCost(id, projectedAmountDemand);
 
 			// Adjust the demand on various waste products with the disposal cost.
-			projectedDemand = getMineralDemand(id, projectedDemand);
+			projectedAmountDemand = getMineralDemand(id, projectedAmountDemand);
 					
 			// Adjust the demand on various waste products with the disposal cost.
-			projectedDemand = AdjustLifeSupport(id, projectedDemand);
+//			projectedAmountDemand = AdjustLifeSupport(id, projectedAmountDemand);
 			
 			// Add trade value.
-			tradeDemand = determineTradeDemand(resourceGood, useCache);
+			tradeAmountDemand = determineTradeDemand(resourceGood, useCache);
 
 //			if (tradeDemand > totalDemand) {
 //				totalDemand = tradeDemand;
 //			}
 			
-			if (previousDemand > 0)
-				totalDemand = .99 * previousDemand 
-					+ .005 * projectedDemand / MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR 
-					+ .0025 * getAverageAmoundDemand(id, numSol) 
-					+ .0025 * tradeDemand;
+			if (previousAmountDemand > 0)
+				totalAmountDemand = .65 * previousAmountDemand 
+					+ .05 * projectedAmountDemand / MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR 
+					+ .25 * AdjustLifeSupport(id, getAverageAmoundDemand(id, numSol))
+					+ .05 * tradeAmountDemand;
 //			else
 //				totalDemand = 
 //				+ .6 * projectedDemand / MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR 
@@ -688,35 +694,36 @@ public class GoodsManager implements Serializable {
 //					);
 			
 			// Calculate total supply
-			totalSupply = getAverageAmountSupply(id, supply, solElapsed);
+			totalAmountSupply = getAverageAmountSupply(id, supply, solElapsed);
 			// goodsSupplyCache.put(resourceGood, totalSupply);
 		}
 		
 		// Apply the universal damping ratio
-		if (previousDemand > MIN) {
-			if (totalDemand / previousDemand > 1)
+		if (previousAmountDemand > MIN) {
+			if (totalAmountDemand / previousAmountDemand > 1)
 				// Reduce the increase
-				totalDemand = previousDemand + (totalDemand - previousDemand) * DAMPING_RATIO;
+				totalAmountDemand = previousAmountDemand + (totalAmountDemand - previousAmountDemand) * DAMPING_RATIO;
 			
-			else if (totalDemand / previousDemand < 1)
+			else if (totalAmountDemand / previousAmountDemand < 1)
 				// Reduce the decrease
-				totalDemand = previousDemand - (previousDemand - totalDemand) * DAMPING_RATIO;
+				totalAmountDemand = previousAmountDemand - (previousAmountDemand - totalAmountDemand) * DAMPING_RATIO;
 		}
 		
-		if (totalDemand < 0.1)
-			totalDemand = 0.1;
+		if (totalAmountDemand < 0.1)
+			totalAmountDemand = 0.1;
+		
 		// Save the goods demand
-		goodsDemandCache.put(resourceGood, totalDemand);
+		goodsDemandCache.put(resourceGood, totalAmountDemand);
 		
 //		if (id == 157 || id == 13) 
 //			System.out.println("2. " + id + "   totalSupply: " + totalSupply);
 		
-		if (totalSupply < 1)
-			totalSupply = 1;
+		if (totalAmountSupply < MINIMUM_SUPPLY)
+			totalAmountSupply = MINIMUM_SUPPLY;
 		
-		value = totalDemand / totalSupply;
+		amountValue = totalAmountDemand / totalAmountSupply;
 
-		return value;
+		return amountValue;
 	}
 
 	/**
@@ -731,13 +738,13 @@ public class GoodsManager implements Serializable {
 		// Gets the total produced or supplied since last time 
 		double goodSupply = getInventory().getAmountSupply(resource);
 		// Gets # of successful requests
-//		int goodRequests = inv.getAmountSupplyRequest(resource);
+		int goodRequests = getInventory().getAmountSupplyRequest(resource);
 		
 //		if (resource == 157 || resource == 13) 
 //		System.out.println("1. " + resource + "   goodSupply: " + goodSupply 
 //			+ "   ave supply: " + (goodSupply + supplyStored) / solElapsed);
 
-		return .1 * goodSupply + .9 * supplyStored;
+		return .2 * goodSupply / (goodRequests + 1) + .8 * supplyStored;
 
 //		if (goodSupply > MIN && supplyStored > MIN)
 //			return .1 * goodSupply + .9 * supplyStored;
@@ -799,13 +806,13 @@ public class GoodsManager implements Serializable {
 		double demandPerEstRequest = 0;
 		
 		if (goodDemand > MIN && goodRequests != 0)
-			demandPerGoodRequest = goodDemand / goodRequests;
+			demandPerGoodRequest = goodDemand * goodRequests;
 		
 		if (estDemand > MIN && totalRequests != 0)
-			demandPerEstRequest = estDemand / totalRequests;
+			demandPerEstRequest = estDemand * totalRequests;
 		// Gets the potential demand based on estimate 
 		// TODO: what to do in case of ice, when getAmountDemandEstimated() is hundreds/thousands of times higher than its demand
-		double demand = .4 * (demandPerGoodRequest + demandPerEstRequest);
+		double demand = 1 + demandPerGoodRequest + demandPerEstRequest;
 
 //		if (resource == ResourceUtil.iceID) //157 || resource == 13) 
 //			System.out.println("0. " + resource + "   goodDemand: " + goodDemand 
@@ -844,10 +851,10 @@ public class GoodsManager implements Serializable {
 		
 		if (demandPerGoodRequest == 0)
 			// Gets the total potential demand based on estimate 
-			demand = .9 * inv.getItemDemandEstimated(resource);
+			demand = .5 * inv.getItemDemandEstimated(resource);
 		else
 			// Figure out the total potential demand based on good demand statistics
-			demand = .9 * demandPerGoodRequest * totalRequests;
+			demand = .5 * demandPerGoodRequest * totalRequests;
 				
 		return demand;
 	}
@@ -872,11 +879,11 @@ public class GoodsManager implements Serializable {
 			}
 			else if (resource == ResourceUtil.foodID) {
 				amountNeededSol = personConfig.getFoodConsumptionRate();// * FOOD_FACTOR;
-				double amountNeededOrbit = amountNeededSol * MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR;
+				double amountNeededOrbit = amountNeededSol * MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR * LIFE_SUPPORT_FACTOR;
 				return Math.log(numPeople) * amountNeededOrbit * trade_factor;
 			}
 			
-			double amountNeededOrbit = amountNeededSol * MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR;
+			double amountNeededOrbit = amountNeededSol * MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR * LIFE_SUPPORT_FACTOR;
 			
 			return numPeople * amountNeededOrbit * trade_factor;
 			
@@ -1992,13 +1999,12 @@ public class GoodsManager implements Serializable {
 	 * @return value (Value Points / item)
 	 */
 	private double determineItemResourceGoodValue(Good resourceGood, double supply, boolean useCache) {
-		double value = 0D;
-		double demand = 0D;
-		double totalDemand = 0D;
-		double previousDemand = 0D;
-		double projectedDemand = 0D;
-		
-		double totalSupply = 0;		
+		double itemValue = 0;
+		double itemDemand = 0;
+		double totalItemDemand = 0;
+		double previousItemDemand = 0;
+		double projectedItemDemand = 0;
+		double totalItemSupply = 0;		
 
 		// Needed for loading a saved sim
 		int solElapsed = marsClock.getMissionSol();
@@ -2007,109 +2013,113 @@ public class GoodsManager implements Serializable {
 
 		// Use MIMIMUM_STORED_SUPPLY instead of supply++ to avoid divide by zero when
 		// calculating VP
-		if (supply < MINIMUM_STORED_SUPPLY)
-			supply = MINIMUM_STORED_SUPPLY;
+		if (supply < MINIMUM_SUPPLY)
+			supply = MINIMUM_SUPPLY;
 
 		Integer id = resourceGood.getID();
 		Part part = null;
-		if (id >= ResourceUtil.FIRST_ITEM_RESOURCE_ID)
-			part = (Part) ItemResourceUtil.findItemResource(resourceGood.getID());
 		
-		if (goodsDemandCache.containsKey(resourceGood)) {
-			// Get previous demand
-			previousDemand = goodsDemandCache.get(resourceGood);
-		}
+		if (id >= ResourceUtil.FIRST_ITEM_RESOURCE_ID
+			&& id < ResourceUtil.FIRST_VEHICLE_RESOURCE_ID) {
+			
+			part = (Part) ItemResourceUtil.findItemResource(id);
 		
-		if (useCache) {
-			
-				// Calculate total demand
-			if (previousDemand > 0)
-				totalDemand =  .8 * previousDemand + .2 * getAverageItemDemand(id, numSol);
-			else 
-				totalDemand = getAverageItemDemand(id, numSol);
-				
-			// Calculate total supply
-			totalSupply = supply;
-			
-			// Clear parts demand cache so it will be calculated next time.
-			partsDemandCache.clear();
-		} 
-	
-		else {
-			// Get demand for a part.
-
-			
-			// Recalculate the partsDemandCache
-			if (partsDemandCache.isEmpty())
-				determineRepairPartsDemand();
-			
-			if (partsDemandCache.containsKey(id))
-				projectedDemand += partsDemandCache.get(id);
-
-			
-			// NOTE: the following estimates are for each orbit (Martian year) : 
-				
-			// Add eva related parts demand.
-			projectedDemand += getEVASuitPartsDemand(projectedDemand, part);
-			
-			// Add manufacturing demand.
-			projectedDemand += getPartManufacturingDemand(part);
-
-			// Add food production demand.
-			projectedDemand += getPartFoodProductionDemand(part);
-
-			// Add construction demand.
-			projectedDemand += getPartConstructionDemand(id);
-
-			// Add construction site demand.
-			projectedDemand += getPartConstructionSiteDemand(id);
-		
-			// Flatten the part for certain parts.
-			projectedDemand = flattenPartDemand(part, projectedDemand);
-			
-			// Add trade demand.
-			double tradeDemand = determineTradeDemand(resourceGood, useCache);
-			if (demand < tradeDemand) {
-				demand = tradeDemand;
+			if (goodsDemandCache.containsKey(resourceGood)) {
+				// Get previous demand
+				previousItemDemand = goodsDemandCache.get(resourceGood);
 			}
-
-			if (previousDemand > 0)
-				totalDemand = .98 * previousDemand 
-					+ .01 * projectedDemand / MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR 
-					+ .005 * getAverageItemDemand(id, numSol) 
-					+ .005 * tradeDemand;
-//			else
-//				totalDemand = 
-//				+ .6 * projectedDemand / MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR 
-//				+ .2 * getAverageItemDemand(id, numSol) 
-//				+ .2 * tradeDemand;
 			
-			// Calculate total supply
-			totalSupply = getAverageItemSupply(id, supply, solElapsed);
-			// goodsSupplyCache.put(resourceGood, totalSupply);
-			if (totalSupply < 1)
-				totalSupply = 1;
+			if (useCache) {			
+				// Calculate total demand
+				if (previousItemDemand > 0)
+					totalItemDemand =  .75 * previousItemDemand + .25 * flattenRawPartDemand(part, getAverageItemDemand(id, numSol));
+	//			else 
+	//				totalDemand = getAverageItemDemand(id, numSol);
+					
+				// Calculate total supply
+				totalItemSupply = supply;
+				
+				// Clear parts demand cache so it will be calculated next time.
+				partsDemandCache.clear();
+			} 
+		
+			else {
+				// Get demand for a part.
+	
+				
+				// Recalculate the partsDemandCache
+				if (partsDemandCache.isEmpty())
+					determineRepairPartsDemand();
+				
+				if (partsDemandCache.containsKey(id))
+					projectedItemDemand += partsDemandCache.get(id);
+	
+				
+				// NOTE: the following estimates are for each orbit (Martian year) : 
+					
+				// Add eva related parts demand.
+				projectedItemDemand += getEVASuitPartsDemand(projectedItemDemand, part);
+				
+				// Add manufacturing demand.
+				projectedItemDemand += getPartManufacturingDemand(part);
+	
+				// Add food production demand.
+				projectedItemDemand += getPartFoodProductionDemand(part);
+	
+				// Add construction demand.
+				projectedItemDemand += getPartConstructionDemand(id);
+	
+				// Add construction site demand.
+				projectedItemDemand += getPartConstructionSiteDemand(id);
+			
+				// Flatten the part for certain parts.
+				projectedItemDemand = flattenRawPartDemand(part, projectedItemDemand);
+				
+				// Add trade demand.
+				double tradeDemand = determineTradeDemand(resourceGood, useCache);
+				if (itemDemand < tradeDemand) {
+					itemDemand = tradeDemand;
+				}
+	
+				if (previousItemDemand > 0)
+					totalItemDemand = .65 * previousItemDemand 
+						+ .05 * projectedItemDemand / MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR 
+						+ .25 * flattenRawPartDemand(part, getAverageItemDemand(id, numSol))
+						+ .05 * tradeDemand;
+	//			else
+	//				totalDemand = 
+	//				+ .6 * projectedDemand / MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR 
+	//				+ .2 * getAverageItemDemand(id, numSol) 
+	//				+ .2 * tradeDemand;
+				
+				// Calculate total supply
+				totalItemSupply = getAverageItemSupply(id, supply, solElapsed);
+				// goodsSupplyCache.put(resourceGood, totalSupply);
+				if (totalItemSupply < MINIMUM_SUPPLY)
+					totalItemSupply = MINIMUM_SUPPLY;
+			}
+				
+			
+			// Apply the universal damping ratio
+			if (totalItemDemand / previousItemDemand > 1)
+				// Reduce the increase
+				totalItemDemand = previousItemDemand + (totalItemDemand - previousItemDemand) * DAMPING_RATIO;
+			
+			else if (totalItemDemand / previousItemDemand < 1)
+				// Reduce the decrease
+				totalItemDemand = previousItemDemand - (previousItemDemand - totalItemDemand) * DAMPING_RATIO;
+				
+			if (totalItemDemand < 0.001)
+				totalItemDemand = 0.001;
+			
+			// Save the goods demand
+			goodsDemandCache.put(resourceGood, totalItemDemand);
+			
+			itemValue = totalItemDemand / totalItemSupply;
+
 		}
-			
 		
-		// Apply the universal damping ratio
-		if (totalDemand / previousDemand > 1)
-			// Reduce the increase
-			totalDemand = previousDemand + (totalDemand - previousDemand) * DAMPING_RATIO;
-		
-		else if (totalDemand / previousDemand < 1)
-			// Reduce the decrease
-			totalDemand = previousDemand - (previousDemand - totalDemand) * DAMPING_RATIO;
-			
-		if (totalDemand < 0.1)
-			totalDemand = 0.1;
-		
-		// Save the goods demand
-		goodsDemandCache.put(resourceGood, totalDemand);
-		
-		value = totalDemand / totalSupply;
-
-		return value;
+		return itemValue;
 	}
 
 	/**
@@ -2322,7 +2332,7 @@ public class GoodsManager implements Serializable {
 	 * @param demand the original demand.
 	 * @return the flattened demand
 	 */
-	private double flattenPartDemand(Part part, double demand) {
+	private double flattenRawPartDemand(Part part, double demand) {
 		// Reduce the demand on the steel/aluminum scrap metal 
 		// since they can only be produced by salvaging a vehicle
 		// therefore it's not reasonable to have high VP
@@ -2339,6 +2349,18 @@ public class GoodsManager implements Serializable {
 		
 		else if (part.getName().equalsIgnoreCase(TRUSS))
 			demand *= SHEET_METAL_DEMAND;
+		
+		else if (part.getName().equalsIgnoreCase(STEEL_WIRE))
+			demand *= STEEL_WIRE_DEMAND;
+		
+		else if (part.getName().equalsIgnoreCase(AL_WIRE))
+			demand *= AL_WIRE_DEMAND;
+		
+		else if (part.getName().equalsIgnoreCase(STEEL_CAN))
+			demand *= STEEL_CAN_DEMAND;
+		
+		else if (part.getName().equalsIgnoreCase(BOTTLE))
+			demand *= BOTTLE_DEMAND;
 		
 		return demand;
 	}
@@ -2640,7 +2662,7 @@ public class GoodsManager implements Serializable {
 	 * @return demand (# of equipment).
 	 */
 	private double determineEquipmentDemand(Class<? extends Equipment> equipmentClass) {				
-		double numDemand = 0D;
+		double numDemand = 0.01;
 
 		int areologistFactor = getJobNum(1) + 1;
 
@@ -2678,7 +2700,7 @@ public class GoodsManager implements Serializable {
 				}
 			}
 
-			numDemand = totalPhaseOverfill * containerCapacity / 10000D;
+			numDemand += totalPhaseOverfill * containerCapacity / 100D;
 		}
 
 		// Determine number of bags that are needed.
@@ -2689,6 +2711,14 @@ public class GoodsManager implements Serializable {
 			numDemand += CollectRegolith.REQUIRED_BAGS * areologistFactor * regolithValue;
 		}
 
+		if (LargeBag.class.equals(equipmentClass)) {
+			double iceValue = getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.iceID));
+			double regolithValue = getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.regolithID));
+			numDemand += CollectIce.REQUIRED_BAGS * areologistFactor * iceValue;
+			numDemand += CollectRegolith.REQUIRED_BAGS * areologistFactor * regolithValue;
+			numDemand *= .1;
+		}
+		
 		// Determine number of specimen containers that are needed.
 		if (SpecimenBox.class.equals(equipmentClass)) {
 			numDemand += Exploration.REQUIRED_SPECIMEN_CONTAINERS * areologistFactor * SPECIMEN_BOX_DEMAND;
