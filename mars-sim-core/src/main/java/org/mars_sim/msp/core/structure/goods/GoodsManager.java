@@ -111,7 +111,21 @@ public class GoodsManager implements Serializable {
 	private static final String STEEL_WIRE = "steel wire";
 	private static final String STEEL_CAN = "steel canister";
 	private static final String AL_WIRE = "aluminum wire";
+	
 	private static final String BOTTLE = "bottle";
+	private static final String FIBERGLASS = "fiberglass";
+	private static final String FIBERGLASS_CLOTH = "fiberglass cloth";
+	
+	private static final String METHANE = "methane";
+	
+	private static final String[] KITCHEN_WARE = new String[] {
+			"autoclave",
+			"blender",
+			"microwave",
+			"oven",
+			"refrigerator",
+			"stove"
+	};
 	
 	// TODO Mission types should be an enum.
 	private static final String TRAVEL_TO_SETTLEMENT_MISSION = "travel to settlement";
@@ -147,11 +161,11 @@ public class GoodsManager implements Serializable {
 	private static final double TRANSPORT_VEHICLE_FACTOR = 100D;
 	private static final double CARGO_VEHICLE_FACTOR = 100D;
 	private static final double EXPLORER_VEHICLE_FACTOR = 100D;
-	private static final double LUV_VEHICLE_FACTOR = 100D;
+	private static final double LUV_VEHICLE_FACTOR = 20D;
 	
 	private static final double LUV_FACTOR = .5D;
-	private static final double LIFE_SUPPORT_FACTOR = 100_000_000D;
-	private static final double WATER_FACTOR = 100_000_000D;
+	private static final double LIFE_SUPPORT_FACTOR = 100_000D;
+	private static final double WATER_FACTOR = 10_000_000D;
 	private static final double FUEL_FACTOR = 100_000D;
 	private static final double VEHICLE_FUEL_FACTOR = 1D;
 	private static final double RESOURCE_PROCESSING_INPUT_FACTOR = .5D;
@@ -186,6 +200,8 @@ public class GoodsManager implements Serializable {
 	private static final double STEEL_CAN_DEMAND = .000_1D;
 	private static final double AL_WIRE_DEMAND = .000_1D;
 	private static final double BOTTLE_DEMAND = .001D;
+	private static final double FIBERGLASS_DEMAND = .001D;
+	private static final double KITCHEN_DEMAND = .001D;
 	
 	/** VP probability modifier. */
 	public static double ICE_VALUE_MODIFIER = 1D;
@@ -599,12 +615,12 @@ public class GoodsManager implements Serializable {
 		if (useCache) {		
 			// Calculate total demand
 			if (previousAmountDemand > 0)
-				totalAmountDemand =  .75 * previousAmountDemand + .25 * AdjustLifeSupport(id, getAverageAmoundDemand(id, numSol));
+				totalAmountDemand =  .95 * previousAmountDemand + .05 * lowerLifeSupportDemand(id, getAverageAmoundDemand(id, numSol));
 //			else
 //				totalDemand = getAverageAmoundDemand(id, numSol);
 			
 			// Calculate total supply
-			totalAmountSupply = supply;
+			totalAmountSupply = lowerLifeSupportSupply(id, supply * .1);
 						
 //			if (id == 157 || id == 13) 
 //				System.out.println("1a. " + id + "   previousDemand: " + previousDemand 
@@ -675,9 +691,9 @@ public class GoodsManager implements Serializable {
 //			}
 			
 			if (previousAmountDemand > 0)
-				totalAmountDemand = .65 * previousAmountDemand 
+				totalAmountDemand = .85 * previousAmountDemand 
 					+ .05 * projectedAmountDemand / MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR 
-					+ .25 * AdjustLifeSupport(id, getAverageAmoundDemand(id, numSol))
+					+ .05 * lowerLifeSupportDemand(id, getAverageAmoundDemand(id, numSol))
 					+ .05 * tradeAmountDemand;
 //			else
 //				totalDemand = 
@@ -694,7 +710,7 @@ public class GoodsManager implements Serializable {
 //					);
 			
 			// Calculate total supply
-			totalAmountSupply = getAverageAmountSupply(id, supply, solElapsed);
+			totalAmountSupply = getAverageAmountSupply(id, lowerLifeSupportSupply(id, supply * .1), solElapsed);
 			// goodsSupplyCache.put(resourceGood, totalSupply);
 		}
 		
@@ -909,13 +925,23 @@ public class GoodsManager implements Serializable {
 	}
 
 	
-	private double AdjustLifeSupport(int resource, double demand) {
+	private double lowerLifeSupportDemand(int resource, double demand) {
 		if (resource == ResourceUtil.oxygenID
-			|| resource == ResourceUtil.waterID)			
-			return demand * LIFE_SUPPORT_FACTOR;
+			|| resource == ResourceUtil.waterID
+			|| resource == ResourceUtil.hydrogenID
+			|| resource == ResourceUtil.methaneID)			
+				return demand * LIFE_SUPPORT_FACTOR;
 		return demand;
 	}
 	
+	private double lowerLifeSupportSupply(int resource, double supply) {
+		if (resource == ResourceUtil.oxygenID
+				|| resource == ResourceUtil.waterID
+				|| resource == ResourceUtil.hydrogenID
+				|| resource == ResourceUtil.methaneID)	
+					return supply / LIFE_SUPPORT_FACTOR;
+		return supply;
+	}
 	
 	private double getMineralDemand(int resource, double demand) {
 		if (resource == ResourceUtil.rockSaltID
@@ -1221,7 +1247,7 @@ public class GoodsManager implements Serializable {
 			// demand = cropConfig.getWaterConsumptionRate() * totalCropArea * solsInOrbit;
 			demand = demand * 1D;
 		}
-//		else if (Farming.TISSUE_CULTURE.equalsIgnoreCase(resource.getType())) {
+
 		else if (ResourceUtil.findAmountResourceName(resource).contains(Farming.TISSUE_CULTURE)) {			
 			// Average use of tissue culture at greenhouse each orbit.
 			int numCropTypes = CropConfig.getNumCropTypes();
@@ -1229,6 +1255,17 @@ public class GoodsManager implements Serializable {
 					* averageGrowingCyclesPerOrbit;
 		}
 
+		else {
+			for (String s : CropConfig.getCropTypeNames()) {
+				if (ResourceUtil.findAmountResourceName(resource).equalsIgnoreCase(s)) {
+					int numCropTypes = CropConfig.getNumCropTypes();
+					demand = Farming.TISSUE_PER_SQM * TISSUE_CULTURE_FACTOR * (totalCropArea / numCropTypes)
+							* averageGrowingCyclesPerOrbit;
+				}
+			}
+		}
+		
+		
 		return demand;
 	}
 
@@ -2032,12 +2069,12 @@ public class GoodsManager implements Serializable {
 			if (useCache) {			
 				// Calculate total demand
 				if (previousItemDemand > 0)
-					totalItemDemand =  .75 * previousItemDemand + .25 * flattenRawPartDemand(part, getAverageItemDemand(id, numSol));
+					totalItemDemand =  .9 * previousItemDemand + .1 * flattenRawPartDemand(part, getAverageItemDemand(id, numSol));
 	//			else 
 	//				totalDemand = getAverageItemDemand(id, numSol);
 					
 				// Calculate total supply
-				totalItemSupply = supply;
+				totalItemSupply = supply * .1;
 				
 				// Clear parts demand cache so it will be calculated next time.
 				partsDemandCache.clear();
@@ -2082,9 +2119,9 @@ public class GoodsManager implements Serializable {
 				}
 	
 				if (previousItemDemand > 0)
-					totalItemDemand = .65 * previousItemDemand 
+					totalItemDemand = .85 * previousItemDemand 
 						+ .05 * projectedItemDemand / MarsClock.SOLS_PER_ORBIT_NON_LEAPYEAR 
-						+ .25 * flattenRawPartDemand(part, getAverageItemDemand(id, numSol))
+						+ .05 * flattenRawPartDemand(part, getAverageItemDemand(id, numSol))
 						+ .05 * tradeDemand;
 	//			else
 	//				totalDemand = 
@@ -2093,7 +2130,7 @@ public class GoodsManager implements Serializable {
 	//				+ .2 * tradeDemand;
 				
 				// Calculate total supply
-				totalItemSupply = getAverageItemSupply(id, supply, solElapsed);
+				totalItemSupply = getAverageItemSupply(id, supply * .1, solElapsed);
 				// goodsSupplyCache.put(resourceGood, totalSupply);
 				if (totalItemSupply < MINIMUM_SUPPLY)
 					totalItemSupply = MINIMUM_SUPPLY;
@@ -2362,9 +2399,34 @@ public class GoodsManager implements Serializable {
 		else if (part.getName().equalsIgnoreCase(BOTTLE))
 			demand *= BOTTLE_DEMAND;
 		
+		else if (part.getName().equalsIgnoreCase(FIBERGLASS_CLOTH))
+			demand *= FIBERGLASS_DEMAND;
+		
+		else if (part.getName().equalsIgnoreCase(FIBERGLASS))
+			demand *= FIBERGLASS_DEMAND;
+		
+		else
+			demand = flattenKitchenPartDemand(part, demand);
+		
 		return demand;
 	}
 
+	/**
+	 * Limit the demand for kitchen parts.
+	 * 
+	 * @param part the part.
+	 * @param demand the original demand.
+	 * @return the flattened demand
+	 */
+	private double flattenKitchenPartDemand(Part part, double demand) {
+		for (String s : KITCHEN_WARE) {
+			if (part.getName().equalsIgnoreCase(s))
+				return demand *= KITCHEN_DEMAND;	
+		}
+		return demand;
+	}
+	
+	
 	/**
 	 * Gets the demand of an input part in a manufacturing process.
 	 * 
@@ -3189,7 +3251,7 @@ public class GoodsManager implements Serializable {
 	private double getVehicleRange(VehicleDescription v) {
 		double range = 0D;
 
-		double fuelCapacity = v.getCargoCapacity("methane");
+		double fuelCapacity = v.getCargoCapacity(METHANE);
 		double fuelEfficiency = v.getDriveTrainEff();
 		range = fuelCapacity * fuelEfficiency * Vehicle.SOFC_CONVERSION_EFFICIENCY;// / 1.5D; ?
 
