@@ -307,7 +307,7 @@ public class CollectResources extends EVAOperation implements Serializable {
 		} else {
 			if (sampleLimit >= 0D) {
 				person.getInventory().storeAmountResource(resourceType, sampleLimit, true);
-				person.getInventory().addAmountSupply(resourceType, sampleLimit);
+//				person.getInventory().addAmountSupply(resourceType, sampleLimit);
 			}
 			setPhase(WALK_BACK_INSIDE);
 			return time - (sampleLimit / collectionRate);

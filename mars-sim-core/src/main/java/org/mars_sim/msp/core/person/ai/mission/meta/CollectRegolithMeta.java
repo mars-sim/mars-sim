@@ -106,44 +106,6 @@ public class CollectRegolithMeta implements MetaMission {
 		return missionProbability;
 	}
 
-//  public double getSettlementProbability(Settlement settlement) {
-//
-//        double missionProbability = CollectResourcesMission.getNewMissionProbability(settlement, Bag.class, 
-//                CollectRegolith.REQUIRED_BAGS, CollectRegolith.MIN_PEOPLE);
-//   		if (missionProbability == 0)
-//			return 0;
-//   		
-//		int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);
-//		int numThisMission = missionManager.numParticularMissions(NAME, settlement);
-//
-//		// Check for embarking missions.
-//		if (settlement.getNumCitizens() / 4.0 < numEmbarked + numThisMission) {
-//			return 0;
-//		}
-//		
-//		else if (numThisMission > 1)
-//			return 0;
-//		
-//		else {
-//			missionProbability = settlement.getRegolithProbabilityValue() / VALUE;
-//		}
-//		
-//		if (missionProbability <= 0)
-//			return 0;
-//
-//		// Check for embarking missions.
-//		if (settlement.getNumCitizens() / 4.0 < numEmbarked + numThisMission) {
-//			return 0;
-//		}	
-//	
-//		int f1 = numEmbarked + 1;
-//		int f2 = numThisMission + 1;
-//		
-//		missionProbability *= settlement.getNumCitizens() / f1 / f2 / 2D;
-//        
-//        return missionProbability;
-//    }
-	  
 	@Override
 	public Mission constructInstance(Robot robot) {
 		// TODO Auto-generated method stub

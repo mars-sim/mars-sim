@@ -27,6 +27,7 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.equipment.Bag;
+import org.mars_sim.msp.core.equipment.Barrel;
 import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.ContainerUtil;
 import org.mars_sim.msp.core.equipment.EVASuit;
@@ -57,6 +58,7 @@ import org.mars_sim.msp.core.person.ai.mission.Exploration;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
+import org.mars_sim.msp.core.person.ai.task.DigLocalRegolith;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
@@ -118,6 +120,8 @@ public class GoodsManager implements Serializable {
 	private static final String FIBERGLASS_CLOTH = "fiberglass cloth";
 	
 	private static final String METHANE = "methane";
+	
+	private static final String BRICK = "brick";
 	
 	private static final String[] KITCHEN_WARE = new String[] {
 			"autoclave",
@@ -198,15 +202,16 @@ public class GoodsManager implements Serializable {
 	
 	private static final double SPECIMEN_BOX_DEMAND = 5D;
 
-	private static final double SCRAP_METAL_DEMAND = .000_000_000_1D;
-	private static final double INGOT_METAL_DEMAND = .000_000_000_1D;
-	private static final double SHEET_METAL_DEMAND = .000_000_000_1D;
-	private static final double STEEL_WIRE_DEMAND = .000_000_1D;
-	private static final double STEEL_CAN_DEMAND = .000_1D;
-	private static final double AL_WIRE_DEMAND = .000_1D;
-	private static final double BOTTLE_DEMAND = .001D;
-	private static final double FIBERGLASS_DEMAND = .001D;
-	private static final double KITCHEN_DEMAND = .001D;
+	private static final double SCRAP_METAL_DEMAND = .0001;
+	private static final double INGOT_METAL_DEMAND = .0001;
+	private static final double SHEET_METAL_DEMAND = .0001;
+	private static final double STEEL_WIRE_DEMAND = .0001;
+	private static final double STEEL_CAN_DEMAND = .0001;
+	private static final double AL_WIRE_DEMAND = .0001;
+	private static final double BOTTLE_DEMAND = .01;
+	private static final double FIBERGLASS_DEMAND = .01;
+	private static final double KITCHEN_DEMAND = .01;
+	private static final double BRICK_DEMAND = .01;
 	
 	/** VP probability modifier. */
 	public static double ICE_VALUE_MODIFIER = 1D;
@@ -2390,41 +2395,42 @@ public class GoodsManager implements Serializable {
 		// since they can only be produced by salvaging a vehicle
 		// therefore it's not reasonable to have high VP
 		if (part.getName().contains(SCRAP))
-			demand *= SCRAP_METAL_DEMAND;
+			return SCRAP_METAL_DEMAND;
 		// May recycle the steel/AL scrap back to ingot
 		// Note: the VP of a scrap metal heavily influence the VP of regolith
 
-		else if (part.getName().contains(INGOT))
-			demand *= INGOT_METAL_DEMAND;
+		if (part.getName().contains(INGOT))
+			return INGOT_METAL_DEMAND;
 		
-		else if (part.getName().contains(SHEET))
-			demand *= SHEET_METAL_DEMAND;
+		if (part.getName().contains(SHEET))
+			return SHEET_METAL_DEMAND;
 		
-		else if (part.getName().equalsIgnoreCase(TRUSS))
-			demand *= SHEET_METAL_DEMAND;
+		if (part.getName().equalsIgnoreCase(TRUSS))
+			return SHEET_METAL_DEMAND;
 		
-		else if (part.getName().equalsIgnoreCase(STEEL_WIRE))
-			demand *= STEEL_WIRE_DEMAND;
+		if (part.getName().equalsIgnoreCase(STEEL_WIRE))
+			return STEEL_WIRE_DEMAND;
 		
-		else if (part.getName().equalsIgnoreCase(AL_WIRE))
-			demand *= AL_WIRE_DEMAND;
+		if (part.getName().equalsIgnoreCase(AL_WIRE))
+			return AL_WIRE_DEMAND;
 		
-		else if (part.getName().equalsIgnoreCase(STEEL_CAN))
-			demand *= STEEL_CAN_DEMAND;
+		if (part.getName().equalsIgnoreCase(STEEL_CAN))
+			return STEEL_CAN_DEMAND;
 		
-		else if (part.getName().equalsIgnoreCase(BOTTLE))
-			demand *= BOTTLE_DEMAND;
+		if (part.getName().equalsIgnoreCase(BOTTLE))
+			return BOTTLE_DEMAND;
 		
-		else if (part.getName().equalsIgnoreCase(FIBERGLASS_CLOTH))
-			demand *= FIBERGLASS_DEMAND;
+		if (part.getName().equalsIgnoreCase(FIBERGLASS_CLOTH))
+			return FIBERGLASS_DEMAND;
 		
-		else if (part.getName().equalsIgnoreCase(FIBERGLASS))
-			demand *= FIBERGLASS_DEMAND;
+		if (part.getName().equalsIgnoreCase(FIBERGLASS))
+			return FIBERGLASS_DEMAND;
 		
-		else
-			demand = flattenKitchenPartDemand(part, demand);
+		if (part.getName().equalsIgnoreCase(BRICK))
+			return BRICK_DEMAND;
 		
-		return demand;
+		return flattenKitchenPartDemand(part, demand);
+		
 	}
 
 	/**
@@ -2783,18 +2789,18 @@ public class GoodsManager implements Serializable {
 
 		// Determine number of bags that are needed.
 		if (Bag.class.equals(equipmentClass)) {
-			double iceValue = getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.iceID));
 			double regolithValue = getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.regolithID));
-			numDemand += CollectIce.REQUIRED_BAGS * areologistFactor * iceValue;
-			numDemand += CollectRegolith.REQUIRED_BAGS * areologistFactor * regolithValue;
+			numDemand += DigLocalRegolith.COLLECTION_RATE * areologistFactor * regolithValue;
 		}
 
 		if (LargeBag.class.equals(equipmentClass)) {
-			double iceValue = getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.iceID));
 			double regolithValue = getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.regolithID));
-			numDemand += CollectIce.REQUIRED_BAGS * areologistFactor * iceValue;
-			numDemand += CollectRegolith.REQUIRED_BAGS * areologistFactor * regolithValue;
-			numDemand *= .1;
+			numDemand += CollectRegolith.REQUIRED_LARGE_BAGS * areologistFactor * regolithValue;
+		}
+		
+		if (Barrel.class.equals(equipmentClass)) {
+			double iceValue = getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.iceID));
+			numDemand += CollectIce.REQUIRED_BARRELS * areologistFactor * iceValue;
 		}
 		
 		// Determine number of specimen containers that are needed.

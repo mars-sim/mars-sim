@@ -96,6 +96,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 	public static final int HORIZONTAL_LEFT_HALF = HORIZONTAL_SURFACE_MAP; 
 //	public static final int VERTICAL_MINIMAP = 340; //660; //700;// 695;
 	public static final int HEIGHT_BUTTON_PANE = 25; //700;// 695;
+	public static final int HEIGHT = HORIZONTAL_SURFACE_MAP + HEIGHT_BUTTON_PANE + HEIGHT_BUTTON_PANE + 5;
 	
 	public static final int CB_WIDTH = 120;
 
@@ -218,7 +219,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 //			// Remove border (not working)
 //			setBorder(null);
 
-		setPreferredSize(new Dimension(HORIZONTAL_FULL + 10, HORIZONTAL_SURFACE_MAP + 5 + HEIGHT_BUTTON_PANE));
+		setPreferredSize(new Dimension(HORIZONTAL_FULL + 10, HEIGHT));
 		setMaximumSize(getPreferredSize());
 		
 		// Prepare content pane		
@@ -227,7 +228,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		
 		// Prepare content pane
 		JPanel wholePane = new JPanel(new GridLayout(1, 2));
-		wholePane.setMaximumSize(new Dimension(HORIZONTAL_FULL + 10, HORIZONTAL_SURFACE_MAP + 5 + HEIGHT_BUTTON_PANE));
+		wholePane.setMaximumSize(new Dimension(HORIZONTAL_FULL + 10, HEIGHT));
 //		wholePane.setLayout(new BoxLayout(wholePane, BoxLayout.Y_AXIS));
 		// mainPane.setBorder(new MarsPanelBorder());
 		contentPane.add(wholePane, BorderLayout.CENTER);

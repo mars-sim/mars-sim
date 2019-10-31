@@ -59,12 +59,16 @@ public class SurfaceFeatures implements Serializable {
 	private MineralMap mineralMap;
 	private AreothermalMap areothermalMap;
 	
+	// The locations that have been explored and/or mined
 	private List<ExploredLocation> exploredLocations;
 
-	private Map<Coordinates, Double> opticalDepthMap;// = new ConcurrentHashMap<>();
+	private Map<Coordinates, Double> opticalDepthMap;
 	private Map<Coordinates, List<Double>> solarIrradianceCaches;
 	private Map<Coordinates, Double> solarIrradiance;
 
+	// The sites map for ice and regolith collection mission
+	private Map<Coordinates, Site> sites;
+	
 
 	// static instances
 	private static Simulation sim = Simulation.instance();
@@ -97,8 +101,9 @@ public class SurfaceFeatures implements Serializable {
 		terrainElevation = new TerrainElevation();
 		mineralMap = new RandomMineralMap();
 		exploredLocations = new CopyOnWriteArrayList<>(); // will need to make sure explored locations are serialized
+		sites = new ConcurrentHashMap<>();
 		areothermalMap = new AreothermalMap();
-//		terrainElevation = new TerrainElevation();
+
 		missionManager = sim.getMissionManager();
 
 //		try {
@@ -643,6 +648,7 @@ public class SurfaceFeatures implements Serializable {
 	 */
 	public ExploredLocation addExploredLocation(Coordinates location,
 			Map<String, Double> estimatedMineralConcentrations, Settlement settlement) {
+		
 		ExploredLocation result = new ExploredLocation(location, estimatedMineralConcentrations, settlement);
 		exploredLocations.add(result);
 		return result;
@@ -709,6 +715,27 @@ public class SurfaceFeatures implements Serializable {
 		}
 	}
 
+	/**
+	 * Gets the sites map
+	 * 
+	 * @return
+	 */
+	public Map<Coordinates, Site> getSites() {
+		return sites;
+	}
+	
+	/**
+	 * Set the sites map
+	 * 
+	 * @param location
+	 * @param site
+	 */
+	public void setSites(Coordinates location, Site site) {
+		if (!sites.containsKey(location)) {
+			sites.put(location, site);
+		}
+	}
+	
 	
 	/**
 	 * Reloads instances

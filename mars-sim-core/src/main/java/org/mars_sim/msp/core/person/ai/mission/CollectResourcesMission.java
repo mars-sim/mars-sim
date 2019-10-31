@@ -157,9 +157,11 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 						for (int i=0; i < 10; i++) {
 							determineCollectionSites(getVehicle().getRange(CollectIce.missionType),
 								getTotalTripTimeLimit(getRover(), getPeopleNumber(), true), numSites);
-							if (totalSiteScore > 0)
-								// exit
-								i = 9;
+							// Quit if totalSiteScore is > zero
+							if (totalSiteScore > 0) i = 10;
+							// Re-do the for loop again if totalSiteScore is zero
+							if (i == 9 && totalSiteScore == 0) i = 0;	
+								
 						}
 						
 						if (totalSiteScore == 0) {
@@ -480,23 +482,31 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 					Person person = (Person) member;
 
 					if (resourceID == ResourceUtil.iceID) {
-						double rate = 0;
 						
-						if (resourceCollectionRate == CollectIce.collectionRate) {
-							// Calculate the rate at the site now
-							rate = TerrainElevation.getIceCollectionRate(person.getCoordinates());
-						}
+						double rate = TerrainElevation.getIceCollectionRate(person.getCoordinates());
+						
+//						if (resourceCollectionRate == CollectIce.collectionRate) {
+//							// Calculate the rate at the site now
+//							rate = TerrainElevation.getIceCollectionRate(person.getCoordinates());
+//						}
 
 						// Randomize the rate of collection upon arrival
 						rate = rate * (1 + RandomUtil.getRandomDouble(1)
 								- RandomUtil.getRandomDouble(1));
 						
-						// TODO: Add how areologists and some scientiific study may come up with better technique 
+						// TODO: Add how areologists and some scientific study may come up with better technique 
 						// to obtain better estimation of the collection rate. Go to a prospective site, rather 
 						// than going to a site coordinate in the blind.
 						
-						resourceCollectionRate = rate;
+						resourceCollectionRate = Math.abs(rate);
 
+					}
+					
+					else if (resourceID == ResourceUtil.regolithID) {
+						// Randomize the rate of collection upon arrival
+						resourceCollectionRate = Math.abs(resourceCollectionRate 
+								* (1 + RandomUtil.getRandomDouble(1) - RandomUtil.getRandomDouble(1)));
+						System.out.println("Regolith resourceCollectionRate : " + resourceCollectionRate);
 					}
 					
 					// If person can collect resources, start him/her on that task.

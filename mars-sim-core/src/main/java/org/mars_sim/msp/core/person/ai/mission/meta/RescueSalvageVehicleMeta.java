@@ -12,7 +12,6 @@ import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
-import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -22,7 +21,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  */
 public class RescueSalvageVehicleMeta implements MetaMission {
 
-    private static final double LIMIT = 10D;
+    private static final double LIMIT = 100D;
     
     /** Mission name */
     private static final String DEFAULT_DESCRIPTION = Msg.getString(
@@ -49,7 +48,7 @@ public class RescueSalvageVehicleMeta implements MetaMission {
 
             Vehicle vehicleTarget = null;
 
-            boolean rescuePeople = false;
+//            boolean rescuePeople = false;
 
             // Check if there are any beacon vehicles within range that need help.
             try {
@@ -125,31 +124,31 @@ public class RescueSalvageVehicleMeta implements MetaMission {
 //            }
 
             // Determine mission probability.
-            if (rescuePeople) {
-                missionProbability = RescueSalvageVehicle.BASE_RESCUE_MISSION_WEIGHT;
-            }
-            else {
+//            if (rescuePeople) {
+//                missionProbability = RescueSalvageVehicle.BASE_RESCUE_MISSION_WEIGHT;
+//            }
+//            else {
                 missionProbability = RescueSalvageVehicle.BASE_SALVAGE_MISSION_WEIGHT;
-            }
+//            }
 
     		if (missionProbability <= 0)
     			return 0;
     		
-			int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);
+//			int numEmbarked = VehicleMission.numEmbarkingMissions(settlement);
 			int numThisMission = missionManager.numParticularMissions(DEFAULT_DESCRIPTION, settlement);
 	
 	   		// Check for # of embarking missions.
-    		if (Math.max(1, settlement.getNumCitizens() / 8.0) < numEmbarked + numThisMission) {
+    		if (Math.max(1, settlement.getNumCitizens() / 8.0) < numThisMission) {
     			return 0;
     		}	
     		
     		if (numThisMission > 1)
     			return 0;	
 
-			int f1 = 2*numEmbarked + 1;
-			int f2 = 2*numThisMission + 1;
+//			int f1 = 2 * numEmbarked + 1;
+			int f2 = 2 * numThisMission + 1;
 			
-			missionProbability *= settlement.getNumCitizens() / f1 / f2 / 2D;
+			missionProbability *= settlement.getNumCitizens() / f2 / 2D;
 			
             // Crowding modifier.
             int crowding = settlement.getIndoorPeopleCount() - settlement.getPopulationCapacity();

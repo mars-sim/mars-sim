@@ -110,7 +110,7 @@ public class LaboratoryTabPanel extends TabPanel {
         // Lay out the spring panel.
      	SpringUtilities.makeCompactGrid(springPanel,
      		                                2, 2, //rows, cols
-     		                               60, 10,        //initX, initY
+     		                               90, 10,        //initX, initY
     		                               10, 4);       //xPad, yPad
 				
 		// Get the research specialties of the building.

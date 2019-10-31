@@ -12,7 +12,6 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.equipment.Bag;
 import org.mars_sim.msp.core.equipment.Barrel;
 import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.mars.TerrainElevation;
@@ -42,10 +41,10 @@ public class CollectIce extends CollectResourcesMission {
 	public static final MissionType missionType = MissionType.COLLECT_ICE;
 	
 	/** Amount of ice to be gathered at a given site (kg). */
-	private static final double SITE_GOAL = 1000D;
+	private static final double SITE_GOAL = 2000D;
 
-	/** Number of bags required for the mission. */
-	public static final int REQUIRED_BAGS = 20;
+	/** Number of barrels required for the mission. */
+	public static final int REQUIRED_BARRELS = 15;
 
 	/** Collection rate of ice during EVA (kg/millisol). */
 //	private static final double COLLECTION_RATE = 1D;
@@ -66,7 +65,7 @@ public class CollectIce extends CollectResourcesMission {
 	public CollectIce(Person startingPerson) {
 		// Use CollectResourcesMission constructor.
 		super(DEFAULT_DESCRIPTION, missionType, startingPerson, ResourceUtil.iceID, SITE_GOAL, collectionRate,
-				EquipmentType.convertName2ID(Bag.TYPE), REQUIRED_BAGS, NUM_SITES, MIN_PEOPLE);
+				EquipmentType.convertName2ID(Barrel.TYPE), REQUIRED_BARRELS, NUM_SITES, MIN_PEOPLE);
 		logger.info(startingPerson + " had started CollectIce");
 	}
 
@@ -86,7 +85,7 @@ public class CollectIce extends CollectResourcesMission {
 		// Use CollectResourcesMission constructor.
 		super(description, missionType, members, startingSettlement, ResourceUtil.iceID, SITE_GOAL, 
 				computeAverageCollectionRate(iceCollectionSites),
-				EquipmentType.convertName2ID(Barrel.TYPE), REQUIRED_BAGS, iceCollectionSites.size(),
+				EquipmentType.convertName2ID(Barrel.TYPE), REQUIRED_BARRELS, iceCollectionSites.size(),
 				RoverMission.MIN_GOING_MEMBERS, rover, iceCollectionSites);
 	}
 

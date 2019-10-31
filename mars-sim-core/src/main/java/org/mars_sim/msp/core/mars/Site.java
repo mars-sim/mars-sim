@@ -15,9 +15,9 @@ public class Site {
 	// degree of uncertainty [in % ] of its content
 	private double uncertainty;
 	
-	private double steepness;
+	private double steepness = -1;
 	
-	private double elevation;
+	private double elevation = -10_000;
 	
 	public Site (Coordinates location) {
 		this.location = location;

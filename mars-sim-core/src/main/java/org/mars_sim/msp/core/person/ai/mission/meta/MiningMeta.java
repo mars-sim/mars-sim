@@ -13,7 +13,6 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.mars.ExploredLocation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
-import org.mars_sim.msp.core.person.ai.mission.AreologyFieldStudy;
 import org.mars_sim.msp.core.person.ai.mission.Mining;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
@@ -62,7 +61,7 @@ public class MiningMeta implements MetaMission {
     			return 0;
        		
             // Check if there are enough bags at the settlement for collecting minerals.
-            if (settlement.getInventory().findNumBags(true, true) < Mining.NUMBER_OF_BAGS)
+            if (settlement.getInventory().findNumBags(true, true) < Mining.NUMBER_OF_LARGE_BAGS)
             	return 0;
 
             // Check if available light utility vehicles.

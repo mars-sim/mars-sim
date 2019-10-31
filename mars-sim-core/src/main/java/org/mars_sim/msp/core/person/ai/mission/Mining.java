@@ -18,10 +18,10 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.equipment.Bag;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.equipment.EquipmentType;
+import org.mars_sim.msp.core.equipment.LargeBag;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.mars.ExploredLocation;
 import org.mars_sim.msp.core.person.Person;
@@ -67,14 +67,14 @@ public class Mining extends RoverMission {
 	/** Mission phases */
 	public static final MissionPhase MINING_SITE = new MissionPhase(Msg.getString("Mission.phase.miningSite")); //$NON-NLS-1$
 
-	/** Number of bags needed for mission. */
-	public static final int NUMBER_OF_BAGS = 20;
+	/** Number of large bags needed for mission. */
+	public static final int NUMBER_OF_LARGE_BAGS = 20;
 
 	/** Base amount (kg) of a type of mineral at a site. */
-	static final double MINERAL_BASE_AMOUNT = 1000D;
+	static final double MINERAL_BASE_AMOUNT = 2500D;
 
 	/** Amount of time(millisols) to spend at the mining site. */
-	private static final double MINING_SITE_TIME = 3000D;
+	private static final double MINING_SITE_TIME = 4000D;
 
 	/** Minimum amount (kg) of an excavated mineral that can be collected. */
 	private static final double MINIMUM_COLLECT_AMOUNT = 10D;
@@ -969,7 +969,7 @@ public class Mining extends RoverMission {
 			Map<Integer, Integer> result = new HashMap<>();
 
 			// Include required number of bags.
-			result.put(EquipmentType.convertName2ID(Bag.TYPE), NUMBER_OF_BAGS);
+			result.put(EquipmentType.convertName2ID(LargeBag.TYPE), NUMBER_OF_LARGE_BAGS);
 
 			equipmentNeededCache = result;
 			return result;

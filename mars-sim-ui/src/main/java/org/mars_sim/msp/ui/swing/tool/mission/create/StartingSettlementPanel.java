@@ -402,13 +402,13 @@ class StartingSettlementPanel extends WizardPanel {
 						MissionType.COLLECT_REGOLITH == type) {
 					if (column == 8) {
 						if (inv.findNumBags(true, true) < //.findNumEmptyUnitsOfClass(Bag.class, true) <
-								CollectIce.REQUIRED_BAGS) result = true;
+								CollectIce.REQUIRED_BARRELS) result = true;
 					}
 				}
 				else if (MissionType.MINING == type ) {
 					if (column == 8) {
 						if (inv.findNumBags(true, true) < //findNumEmptyUnitsOfClass(Bag.class, true) <
-								CollectIce.REQUIRED_BAGS) result = true;
+								CollectIce.REQUIRED_BARRELS) result = true;
 					}
 					if (column == 9) {
 						if (inv.findNumUnitsOfClass(LightUtilityVehicle.class) == 0) result = true;
