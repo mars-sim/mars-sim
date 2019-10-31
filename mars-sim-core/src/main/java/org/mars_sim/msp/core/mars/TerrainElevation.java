@@ -9,6 +9,8 @@ package org.mars_sim.msp.core.mars;
 
 import java.awt.Color;
 import java.io.Serializable;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
 import org.mars_sim.mapdata.MapData;
@@ -16,6 +18,7 @@ import org.mars_sim.mapdata.MapDataUtil;
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Direction;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
@@ -60,6 +63,8 @@ public class TerrainElevation implements Serializable {
 //	private static final double SOUTH_POLE_THETA = 0;
 	
 	private static MapData mapdata = MapDataUtil.instance().getTopoMapData();
+	
+	private static MarsSurface marsSurface = Simulation.instance().getMars().getMarsSurface();
 	
 	/**
 	 * Constructor
@@ -126,13 +131,28 @@ public class TerrainElevation implements Serializable {
 	 * @return
 	 */
 	public static double[] getTerrainProfile(Coordinates currentLocation) {
-		double steepness = 0;
-		double elevation = getPatchedElevation(currentLocation);
-		for (int i=0 ; i <= 360 ; i++) {
-			double rad = i * DEG_TO_RAD;
-			steepness += Math.abs(determineTerrainSteepness(currentLocation, elevation, new Direction(rad)));
-		}
-		return new double[] {elevation, steepness};
+//		if (marsSurface.getSites().containsKey(currentLocation)) {
+//			Site site = marsSurface.getSites().get(currentLocation);
+//			return new double[] {site.getElevation(), site.getSteepness()};
+//		}
+//		
+//		else {
+			double steepness = 0;
+			double elevation = getPatchedElevation(currentLocation);
+			for (int i=0 ; i <= 360 ; i++) {
+				double rad = i * DEG_TO_RAD;
+				steepness += Math.abs(determineTerrainSteepness(currentLocation, elevation, new Direction(rad)));
+			}
+//			// Create a new site
+//			Site site = new Site(currentLocation);
+//			site.setElevation(elevation);
+//			site.setSteepness(steepness);
+//			
+//			// Save this site
+//			marsSurface.setSites(currentLocation, site);
+			
+			return new double[] {elevation, steepness};
+//		}
 	}
 	
 	/**
@@ -142,34 +162,49 @@ public class TerrainElevation implements Serializable {
 	 * @return
 	 */
 	public static double getIceCollectionRate(Coordinates currentLocation) {
-		// Get the elevation and terrain gradient factor
-		double[] terrainProfile = getTerrainProfile(currentLocation);
-				
-		double elevation = terrainProfile[0];
-		double gradient = terrainProfile[1];		
-		
-		double iceCollectionRate = (- 0.639 * elevation + 14.2492) / 10D  + gradient / 250;
-		
-//		https://science.nasa.gov/science-news/science-at-nasa/2002/28may_marsice/
-//		The ice-rich layer is about 60 centimeters (two feet) beneath the surface at 60 degrees south 
-//		latitude, and gets to within about 30 centimeters (one foot) of the surface at 75 degrees south latitude.
-		
-		if (iceCollectionRate < 0)
-			iceCollectionRate = 0;	
-		
-		String nameLoc = "";
-		Settlement s = CollectionUtils.findSettlement(currentLocation);
-		if (s != null) {
-			nameLoc = "At " + s.getName() + ",";
-			logger.info(nameLoc + "           elevation : " + Math.round(elevation*1000.0)/1000.0 + " km");
-			logger.info(nameLoc + "   terrain steepness : " + Math.round(gradient*10.0)/10.0);
-			logger.info(nameLoc + " ice collection rate : " + Math.round(iceCollectionRate*100.0)/100.0 + " kg/millisol");
-			
+		if (marsSurface.getSites().containsKey(currentLocation)) {
+			IceSite site = (IceSite) marsSurface.getSites().get(currentLocation);
+			return site.getIceCollectionRate();
 		}
-//		else
-//			nameLoc = "At " + currentLocation.getCoordinateString() + ",";
 		
-		return iceCollectionRate;
+		else {
+			// Get the elevation and terrain gradient factor
+			double[] terrainProfile = getTerrainProfile(currentLocation);
+					
+			double elevation = terrainProfile[0];
+			double steepness = terrainProfile[1];		
+			
+			double iceCollectionRate = (- 0.639 * elevation + 14.2492) / 10D  + steepness / 250;
+			
+	//		https://science.nasa.gov/science-news/science-at-nasa/2002/28may_marsice/
+	//		The ice-rich layer is about 60 centimeters (two feet) beneath the surface at 60 degrees south 
+	//		latitude, and gets to within about 30 centimeters (one foot) of the surface at 75 degrees south latitude.
+			
+			if (iceCollectionRate < 0)
+				iceCollectionRate = 0;	
+			
+			// Create a new site
+			Site site = new IceSite(currentLocation);
+			site.setElevation(elevation);
+			site.setSteepness(steepness);
+			
+			// Save this site
+			marsSurface.setSites(currentLocation, site);
+			
+			String nameLoc = "";
+			Settlement s = CollectionUtils.findSettlement(currentLocation);
+			if (s != null) {
+				nameLoc = "At " + s.getName() + ",";
+				logger.info(nameLoc + "           elevation : " + Math.round(elevation*1000.0)/1000.0 + " km");
+				logger.info(nameLoc + "   terrain steepness : " + Math.round(steepness*10.0)/10.0);
+				logger.info(nameLoc + " ice collection rate : " + Math.round(iceCollectionRate*100.0)/100.0 + " kg/millisol");
+				
+			}
+	//		else
+	//			nameLoc = "At " + currentLocation.getCoordinateString() + ",";
+			
+			return iceCollectionRate;
+		}
 	}
 	
 	public static int[] getRGB(Coordinates location) {

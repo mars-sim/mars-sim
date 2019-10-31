@@ -8,7 +8,10 @@
 package org.mars_sim.msp.core.mars;
 
 import java.io.Serializable;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
+import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Unit;
 
 /**
@@ -24,6 +27,8 @@ public class MarsSurface extends Unit implements Serializable {
 	private static int uniqueCount = Unit.MARS_SURFACE_UNIT_ID;
 	
 	private int identifier;
+	
+	private Map<Coordinates, Site> sites = new ConcurrentHashMap<>();
 	
 	/**
 	 * Must be synchronised to prevent duplicate ids being assigned via different
@@ -59,6 +64,27 @@ public class MarsSurface extends Unit implements Serializable {
 				
 //		System.out.println("MarsSurface Container ID : " + getContainerID());
 		getInventory().addGeneralCapacity(Double.MAX_VALUE);
+	}
+	
+	/**
+	 * Gets the sites map
+	 * 
+	 * @return
+	 */
+	public Map<Coordinates, Site> getSites() {
+		return sites;
+	}
+	
+	/**
+	 * Set the sites map
+	 * 
+	 * @param location
+	 * @param site
+	 */
+	public void setSites(Coordinates location, Site site) {
+		if (!sites.containsKey(location)) {
+			sites.put(location, site);
+		}
 	}
 	
 	public boolean equals(Object obj) {

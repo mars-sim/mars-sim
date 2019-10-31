@@ -1160,7 +1160,9 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 					// each member to switch the associated settlement to the new destination
 					// TODO: need to consider if enough beds are available at the destination settlement
 					// TODO: can they go back to the settlement of their origin ?
-					associateAllMembersWithSettlement(newDestination);
+					
+					// Run into ConcurrentModificationException in Unit Line 908 : "i.next().unitUpdate(ue);"
+//					associateAllMembersWithSettlement(newDestination);
 					// Added updateTravelDestination() below
 					updateTravelDestination();
 					endCollectionPhase();
