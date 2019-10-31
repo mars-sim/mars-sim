@@ -220,19 +220,6 @@ public class GoodsManager implements Serializable {
 	public static double SAND_VALUE_MODIFIER = 2D;
 	public static double OXYGEN_VALUE_MODIFIER = 2D;
 	public static double METHANE_VALUE_MODIFIER = 2D;
-
-	private static String[] MINERALS = new String[] {
-	        "Chalcopyrite",
-			"Goethite",
-			"Hematite",
-			"Kamacite",
-			"Magnesite",
-			"Magnetite",
-			"Malachite",
-			"Olivine",
-			"Taenite",
-			"Sylvite"
-			};
 	
 	// Data members
 	private boolean initialized = false;
@@ -985,8 +972,13 @@ public class GoodsManager implements Serializable {
 		}
 		
 		else {
-			for (String name: MINERALS) {
-				if (resource == ResourceUtil.findIDbyAmountResourceName(name))
+			for (int id : ResourceUtil.mineralIDs) {
+				if (resource == id)
+					return demand * MINERAL_VALUE;
+			}
+			
+			for (int id : ResourceUtil.oreDepositIDs) {
+				if (resource == id)
 					return demand * MINERAL_VALUE;
 			}
 		}

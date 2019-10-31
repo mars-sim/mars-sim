@@ -35,6 +35,26 @@ public class ResourceUtil implements Serializable {
 
 	public static final int FIRST_EQUIPMENT_RESOURCE_ID = 4000;
 	
+	public static String[] MINERALS = new String[] {
+	        "Chalcopyrite",
+			"Goethite",
+			"Hematite",
+			"Kamacite",
+			"Magnesite",
+			"Magnetite",
+			"Malachite",
+			"Olivine",
+			"Taenite",
+			"Sylvite"};
+	
+	public static String[] ORE_DEPOSITS = new String[] {
+			"Allophane",
+			"Akaganeite",
+			"Basaltic",
+			"Bassanite",
+			"Gypsum",
+			"Smectite"};
+	
 	public static final String ARGON = "argon";
 	public static final String NITROGEN = "nitrogen";
 	public static final String CO = "carbon monoxide";
@@ -148,6 +168,10 @@ public class ResourceUtil implements Serializable {
 	public static int eWasteID;
 	
 	public static int napkinID;
+	
+	public static int[] mineralIDs = new int[MINERALS.length];
+	
+	public static int[] oreDepositIDs = new int[ORE_DEPOSITS.length];
 	
 	public static AmountResource foodAR;
 	public static AmountResource oxygenAR;
@@ -399,6 +423,17 @@ public class ResourceUtil implements Serializable {
 		toiletTissueID = findAmountResource(TOILET_TISSUE).getID();
 		napkinID = findAmountResource(NAPKIN).getID(); // 
 		
+		// Gets the mineralIDs
+		for (int i=0; i<MINERALS.length; i++) {
+			mineralIDs[i] = findIDbyAmountResourceName(MINERALS[i]);
+		}
+		
+		// Gets the oreDepositIDs
+		for (int i=0; i<ORE_DEPOSITS.length; i++) {
+			oreDepositIDs[i] = findIDbyAmountResourceName(ORE_DEPOSITS[i]);
+		}
+		
+		
 		// AmountResource instances as objects
 		foodAR = findAmountResource(LifeSupportInterface.FOOD); // 1
 		waterAR = findAmountResource(LifeSupportInterface.WATER); // 2
@@ -431,7 +466,6 @@ public class ResourceUtil implements Serializable {
 //		garlicOilAR = findAmountResource(GARLIC_OIL); // 41
 //		sesameOilAR = findAmountResource(SESAME_OIL); // 53
 //		peanutOilAR = findAmountResource(PEANUT_OIL); // 46
-
 	}
 
 	public static void createInstancesArray() {

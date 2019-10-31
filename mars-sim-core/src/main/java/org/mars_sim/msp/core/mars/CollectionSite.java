@@ -7,10 +7,15 @@
 
 package org.mars_sim.msp.core.mars;
 
+import java.io.Serializable;
+
 import org.mars_sim.msp.core.Coordinates;
 
-public class CollectionSite extends Site {
+public class CollectionSite extends Site implements Serializable {
 
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+	
 	private double iceCollectionRate;
 	
 	private double regolithCollectionRate;

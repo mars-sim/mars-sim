@@ -7,9 +7,17 @@
 
 package org.mars_sim.msp.core.mars;
 
+import java.io.Serializable;
+import java.util.logging.Logger;
+
 import org.mars_sim.msp.core.Coordinates;
 
-public class Site {
+public class Site implements Serializable {
+
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	private static Logger logger = Logger.getLogger(Site.class.getName());
 
 	private Coordinates location;
 	// degree of uncertainty [in % ] of its content
