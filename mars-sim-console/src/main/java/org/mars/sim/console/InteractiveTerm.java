@@ -196,8 +196,8 @@ public class InteractiveTerm {
         		+ "           * * *   Command Mode - Site Selection   * * *" 
          		+ System.lineSeparator()
         		+ System.lineSeparator()
-				+ "0. Proceed with default site selection."
         		+ System.lineSeparator()
+				+ "0. Proceed with default site selection."
         		+ System.lineSeparator()
 				+ "1. Open Site Editor."
 				+ System.lineSeparator()

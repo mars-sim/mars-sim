@@ -16,9 +16,9 @@ public class CollectionSite extends Site implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	
-	private double iceCollectionRate;
+	private double iceCollectionRate = -1;
 	
-	private double regolithCollectionRate;
+	private double regolithCollectionRate = -1;
 	
 	private double estimatedIceVolume;
 	

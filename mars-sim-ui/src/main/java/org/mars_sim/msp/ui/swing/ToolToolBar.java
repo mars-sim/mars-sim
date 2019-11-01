@@ -45,7 +45,7 @@ implements ActionListener {
 
 //	private static final int ICON_H = 16;
 //	private static final int ICON_W = 16;
-	private static final int EMPTY_W = GameManager.mode == GameMode.COMMAND  ? MainWindow.WIDTH - (15 + 4) * 18 - 280 : MainWindow.WIDTH - (15 + 4) * 18 - 300;//735;
+	private static final int EMPTY_W = GameManager.mode == GameMode.COMMAND  ? MainWindow.WIDTH - (15 + 4) * 18 - 330 : MainWindow.WIDTH - (15 + 4) * 18 - 300;//735;
 	private static final int EMPTY_H = 32;
 	
 	

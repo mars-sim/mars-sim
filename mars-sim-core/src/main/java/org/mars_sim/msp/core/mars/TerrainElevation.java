@@ -9,8 +9,6 @@ package org.mars_sim.msp.core.mars;
 
 import java.awt.Color;
 import java.io.Serializable;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
 import org.mars_sim.mapdata.MapData;
@@ -124,6 +122,23 @@ public class TerrainElevation implements Serializable {
 		return Math.atan(elevationChange / 11.1D);
 	}
 	
+	public static double[] computeTerrainProfile(Site site, Coordinates currentLocation) {
+		double steepness = 0;
+		double elevation = getPatchedElevation(currentLocation);
+		for (int i=0 ; i <= 360 ; i++) {
+			double rad = i * DEG_TO_RAD;
+			steepness += Math.abs(determineTerrainSteepness(currentLocation, elevation, new Direction(rad)));
+		}
+		// Create a new site
+		site.setElevation(elevation);
+		site.setSteepness(steepness);
+		
+		// Save this site
+		surfaceFeatures.setSites(currentLocation, site);
+		
+		return new double[] {elevation, steepness};
+	}
+	
 	/**
 	 * Gets the terrain profile of a location
 	 * 
@@ -138,21 +153,8 @@ public class TerrainElevation implements Serializable {
 			Site site = surfaceFeatures.getSites().get(currentLocation);
 			
 			if (site.getSteepness() == -1) {
-				double steepness = 0;
-				double elevation = getPatchedElevation(currentLocation);
-				for (int i=0 ; i <= 360 ; i++) {
-					double rad = i * DEG_TO_RAD;
-					steepness += Math.abs(determineTerrainSteepness(currentLocation, elevation, new Direction(rad)));
-				}
-				// Create a new site
-				site.setElevation(elevation);
-				site.setSteepness(steepness);
 				
-				// Save this site
-				surfaceFeatures.setSites(currentLocation, site);
-				
-				return new double[] {elevation, steepness};
-				
+				return computeTerrainProfile(site, currentLocation);			
 			}
 				
 			else
@@ -160,22 +162,45 @@ public class TerrainElevation implements Serializable {
 		}
 		
 		else {
-			double steepness = 0;
-			double elevation = getPatchedElevation(currentLocation);
-			for (int i=0 ; i <= 360 ; i++) {
-				double rad = i * DEG_TO_RAD;
-				steepness += Math.abs(determineTerrainSteepness(currentLocation, elevation, new Direction(rad)));
-			}
 			// Create a new site
-			Site site = new CollectionSite(currentLocation);
-			site.setElevation(elevation);
-			site.setSteepness(steepness);
+			CollectionSite site = new CollectionSite(currentLocation);
 			
-			// Save this site
-			surfaceFeatures.setSites(currentLocation, site);
-			
-			return new double[] {elevation, steepness};
+			return computeTerrainProfile(site, currentLocation);
 		}
+	}
+	
+	public static double computeCollectionRate(CollectionSite site, Coordinates currentLocation) {
+		
+		// Get the elevation and terrain gradient factor
+		double[] terrainProfile = getTerrainProfile(currentLocation);
+				
+		double elevation = terrainProfile[0];
+		double steepness = terrainProfile[1];		
+		
+		site.setElevation(elevation);
+		site.setSteepness(steepness);
+		
+		double iceCollectionRate = (- 0.639 * elevation + 14.2492) / 20D  + steepness / 10D;
+				
+		if (iceCollectionRate < 0)
+			iceCollectionRate = 0;	
+		
+		site.setIceCollectionRate(iceCollectionRate);
+		
+		// Save this site
+		surfaceFeatures.setSites(currentLocation, site);
+		
+		String nameLoc = "";
+		Settlement s = CollectionUtils.findSettlement(currentLocation);
+		if (s != null) {
+			nameLoc = "At " + s.getName() + ",";
+			logger.info(nameLoc + "           elevation : " + Math.round(elevation*1000.0)/1000.0 + " km");
+			logger.info(nameLoc + "   terrain steepness : " + Math.round(steepness*10.0)/10.0);
+			logger.info(nameLoc + " ice collection rate : " + Math.round(iceCollectionRate*100.0)/100.0 + " kg/millisol");
+			
+		}
+		
+		return iceCollectionRate;
 	}
 	
 	/**
@@ -190,36 +215,8 @@ public class TerrainElevation implements Serializable {
 		if (surfaceFeatures.getSites().containsKey(currentLocation)) {
 			CollectionSite site = (CollectionSite) surfaceFeatures.getSites().get(currentLocation);
 			
-			if (site.getIceCollectionRate() == 0) {
-				
-				// Get the elevation and terrain gradient factor
-				double[] terrainProfile = getTerrainProfile(currentLocation);
-						
-				double elevation = terrainProfile[0];
-				double steepness = terrainProfile[1];		
-				
-				double iceCollectionRate = (- 0.639 * elevation + 14.2492) / 10D  + steepness / 250;
-						
-				if (iceCollectionRate < 0)
-					iceCollectionRate = 0;	
-				
-				site.setElevation(elevation);
-				site.setSteepness(steepness);
-				
-				// Save this site
-				surfaceFeatures.setSites(currentLocation, site);
-				
-				String nameLoc = "";
-				Settlement s = CollectionUtils.findSettlement(currentLocation);
-				if (s != null) {
-					nameLoc = "At " + s.getName() + ",";
-					logger.info(nameLoc + "           elevation : " + Math.round(elevation*1000.0)/1000.0 + " km");
-					logger.info(nameLoc + "   terrain steepness : " + Math.round(steepness*10.0)/10.0);
-					logger.info(nameLoc + " ice collection rate : " + Math.round(iceCollectionRate*100.0)/100.0 + " kg/millisol");
-					
-				}
-
-				return iceCollectionRate;
+			if (site.getIceCollectionRate() == -1) {
+				return computeCollectionRate(site, currentLocation);
 			}
 			
 			else {
@@ -229,42 +226,10 @@ public class TerrainElevation implements Serializable {
 		}
 		
 		else {
-			// Get the elevation and terrain gradient factor
-			double[] terrainProfile = getTerrainProfile(currentLocation);
-					
-			double elevation = terrainProfile[0];
-			double steepness = terrainProfile[1];		
-			
-			double iceCollectionRate = (- 0.639 * elevation + 14.2492) / 10D  + steepness / 250;
-			
-	//		https://science.nasa.gov/science-news/science-at-nasa/2002/28may_marsice/
-	//		The ice-rich layer is about 60 centimeters (two feet) beneath the surface at 60 degrees south 
-	//		latitude, and gets to within about 30 centimeters (one foot) of the surface at 75 degrees south latitude.
-			
-			if (iceCollectionRate < 0)
-				iceCollectionRate = 0;	
-			
 			// Create a new site
-			Site site = new CollectionSite(currentLocation);
-			site.setElevation(elevation);
-			site.setSteepness(steepness);
+			CollectionSite site = new CollectionSite(currentLocation);
 			
-			// Save this site
-			surfaceFeatures.setSites(currentLocation, site);
-			
-			String nameLoc = "";
-			Settlement s = CollectionUtils.findSettlement(currentLocation);
-			if (s != null) {
-				nameLoc = "At " + s.getName() + ",";
-				logger.info(nameLoc + "           elevation : " + Math.round(elevation*1000.0)/1000.0 + " km");
-				logger.info(nameLoc + "   terrain steepness : " + Math.round(steepness*10.0)/10.0);
-				logger.info(nameLoc + " ice collection rate : " + Math.round(iceCollectionRate*100.0)/100.0 + " kg/millisol");
-				
-			}
-	//		else
-	//			nameLoc = "At " + currentLocation.getCoordinateString() + ",";
-			
-			return iceCollectionRate;
+			return computeCollectionRate(site, currentLocation);
 		}
 	}
 	
@@ -314,6 +279,9 @@ public class TerrainElevation implements Serializable {
 		}
 		
 		else {
+			// Create a new site
+			CollectionSite site = new CollectionSite(location);
+			
 			// Patch elevation problems at certain locations.
 			double elevation = patchElevation(getRawElevation(location), location);
 	
@@ -321,16 +289,13 @@ public class TerrainElevation implements Serializable {
 	//				Math.round(elevation*1_000.0)/1_000.0);
 	//		System.out.print(s3);
 			
-			// Create a new site
-			Site site = new CollectionSite(location);
+			// Save the elevation
 			site.setElevation(elevation);
 			
 			// Save this site
 			surfaceFeatures.setSites(location, site);
 			
 			return elevation;
-			
-			
 		}
 	}
 

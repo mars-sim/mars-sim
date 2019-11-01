@@ -272,7 +272,8 @@ public abstract class OperateVehicle extends Task implements Serializable {
         		// If attempting to switch the driver of this vehicle
 	        	if (vehicle.getOperator() != null) {
 		        	Person lastDriver = (Person) vehicle.getOperator();
-		        	lastDriver.getMind().getTaskManager().clearTask();
+		        	// Clear the OperateVehicle task from the last driver
+		        	lastDriver.getMind().getTaskManager().clearSpecificTask(OperateVehicle.class.getSimpleName());
 	        	}
 	            vehicle.setOperator(person);
 	        }

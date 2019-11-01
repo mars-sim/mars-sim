@@ -285,15 +285,38 @@ public class TaskManager implements Serializable {
 	 * Sets the current task to null.
 	 */
 	public void clearTask() {
+		
+		// TODO: Should we end the sub task as well ?
+		if (currentTask.getSubTask() != null) {
+			currentTask.getSubTask().endTask();
+			currentTask.getSubTask().clearSubTask();
+		}
+		
 		if (currentTask != null) {
 			currentTask.endTask();
 			currentTask = null;
+			person.fireUnitUpdate(UnitEventType.TASK_EVENT);
 		}
-
-		person.fireUnitUpdate(UnitEventType.TASK_EVENT);
 
 	}
 
+	public void clearSpecificTask(String taskString) {
+		if (currentTask.getSubTask() != null
+				&& currentTask.getSubTask().getClass().getSimpleName().equalsIgnoreCase(taskString)) {
+			currentTask.getSubTask().endTask();
+			currentTask.getSubTask().clearSubTask();
+		}
+		
+		if (currentTask != null 
+				&& currentTask.getClass().getSimpleName().equalsIgnoreCase(taskString)) {
+			currentTask.endTask();
+			currentTask = null;
+			person.fireUnitUpdate(UnitEventType.TASK_EVENT);
+		}
+		
+	}
+	
+	
 	public boolean isEVATask(String taskName) {
 		return (taskName.toLowerCase().contains("eva") || taskName.toLowerCase().contains("dig")
 				|| taskName.toLowerCase().contains("exploresite") || taskName.toLowerCase().contains("salvagebuilding")

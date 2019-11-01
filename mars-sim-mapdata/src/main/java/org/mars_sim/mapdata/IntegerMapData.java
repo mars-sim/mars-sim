@@ -12,11 +12,8 @@ import java.awt.Image;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
-import java.io.BufferedInputStream;
-import java.io.DataInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -34,10 +31,10 @@ abstract class IntegerMapData implements MapData {
 	public static int IMAGE_WIDTH = MapDataUtil.IMAGE_WIDTH;
 	public static int IMAGE_HEIGHT = MapDataUtil.IMAGE_HEIGHT;
 	
-	public static final int MAP_HEIGHT = 1440; // 2048; //1024; Source map height in pixels.
-	public static final int MAP_WIDTH = 2880; //4096; //2048; Source map width in pixels.
+	public static final int MAP_HEIGHT = 1440;	// 2048; //1024; Source map height in pixels.
+	public static final int MAP_WIDTH = 2880;	// 4096; //2048; Source map width in pixels.
 	
-	public static final double MAP_RATIO = 1;// 2048/1440;
+	public static final double MAP_RATIO = 1;
 	
 	public static final double HALF_MAP_ANGLE = .48587D;
 	public static final double PIXEL_RHO = (double) MAP_HEIGHT / Math.PI;

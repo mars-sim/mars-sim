@@ -498,6 +498,13 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		return subTask;
 	}
 
+	public void clearSubTask() {
+		if (subTask != null) {		
+			subTask.destroy();
+			subTask = null;
+		}
+	}
+	
 	/**
 	 * Perform the task for the given number of seconds. Children should override
 	 * and implement this.

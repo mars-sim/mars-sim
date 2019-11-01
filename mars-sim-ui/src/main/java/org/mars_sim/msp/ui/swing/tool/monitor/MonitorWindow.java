@@ -23,7 +23,9 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
+import org.mars_sim.msp.core.GameManager;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -232,10 +234,12 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 
 		addTab(new UnitTab(this, new PersonTableModel(desktop), true, PEOPLE_ICON));
 
-		// Add a tab for each settlement
-		for (Settlement s : unitManager.getSettlements()) {
-//			addTab(new UnitTab(this, new SettlementTableModel(s), true, BASE_ICON));
-			addTab(new UnitTab(this, new PersonTableModel(s, true), true, PEOPLE_ICON));
+		if (GameManager.mode != GameMode.COMMAND) {
+			// Add a tab for each settlement
+			for (Settlement s : unitManager.getSettlements()) {
+	//			addTab(new UnitTab(this, new SettlementTableModel(s), true, BASE_ICON));
+				addTab(new UnitTab(this, new PersonTableModel(s, true), true, PEOPLE_ICON));
+			}
 		}
 		
 		// Add a listener for the tab changes

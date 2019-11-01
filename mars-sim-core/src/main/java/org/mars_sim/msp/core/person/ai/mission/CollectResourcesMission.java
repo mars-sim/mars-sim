@@ -506,7 +506,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 						// Randomize the rate of collection upon arrival
 						resourceCollectionRate = Math.abs(resourceCollectionRate 
 								* (1 + RandomUtil.getRandomDouble(1) - RandomUtil.getRandomDouble(1)));
-						System.out.println("Regolith resourceCollectionRate : " + resourceCollectionRate);
+//						System.out.println("Regolith resourceCollectionRate : " + resourceCollectionRate);
 					}
 					
 					// If person can collect resources, start him/her on that task.

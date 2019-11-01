@@ -88,7 +88,6 @@ public class SurfaceFeatures implements Serializable {
 //	@JsonIgnore // Need to have both @JsonIgnore and transient for Jackson to ignore converting this list
 	private static List<Landmark> landmarks = simulationConfig.getLandmarkConfiguration().getLandmarkList();
 	
-
 	// private DecimalFormat fmt3 = new DecimalFormat("#0.000");
 
 	/**
