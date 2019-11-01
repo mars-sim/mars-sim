@@ -1273,8 +1273,19 @@
 
 	<!-- List of initial settlements in the simulation -->
 	<initial-settlement-list>
-
-		<settlement name="Star City" template="Mars Direct Base (Phase 2)">
+	<!-- For each settlement, use one of the followings as sponsors : 
+		- China National Space Administration (CNSA)
+		- Canadian Space Agency (CSA)
+		- European Space Agency (ESA)
+		- Indian Space Research Organisation (ISRO)
+		- Japan Aerospace Exploration Agency (JAXA)
+		- National Aeronautics and Space Administration (NASA)
+		- Roscosmos (RKA)
+		- Mars Society (MS)
+		- Space Exploration Technologies (SpaceX)
+	 -->
+	 
+		<settlement name="New Plymouth" template="Mars Direct Base (Phase 2)">
 			<location longitude="16.0 W" latitude="6.30 S" />
 			<population number="8" />
 			<number-of-robots number="4" />
@@ -1288,20 +1299,34 @@
 			<sponsor name="China National Space Administration (CNSA)"/>
 		</settlement>
 		
-		<settlement name="New Plymouth" template="Mars Direct Base (Phase 2)">
+		<settlement name="Columbus" template="Alpha Base (Phase 4)">
 			<location longitude="0.0 W" latitude="0.0 N" />
-			<population number="8" />
-			<number-of-robots number="4" />
+			<population number="24" />
+			<number-of-robots number="12" />
 			<sponsor name="National Aeronautics and Space Administration (NASA)"/>
 		</settlement>
 
 		<settlement name="New Pompeii" template="Mars Direct Base (Phase 2)">
-			<location longitude="20.0 E" latitude="4.0 N" />
+			<location longitude="7.0 W" latitude="39.31 S" />
 			<population number="8" />
 			<number-of-robots number="4" />
 			<sponsor name="Indian Space Research Organisation (ISRO)"/>
 		</settlement>
-		
+
+		<settlement name="Zvezda" template="Mars Direct Base (Phase 3)">
+			<location longitude="40.0 E" latitude="33.60 S" />
+			<population number="12" />
+			<number-of-robots number="8" />
+			<sponsor name="Roscosmos (RKA)"/>
+		</settlement>
+	
+		<settlement name="Elon City" template="Mars Direct Base (Phase 3)">
+			<location longitude="36.68 W" latitude="11.62 S" />
+			<population number="12" />
+			<number-of-robots number="8" />
+			<sponsor name="Space Exploration Technologies (SpaceX)"/>
+		</settlement>
+					
 		<!-- SpaceX's proposed landing sites
 		
 			 https://www.humanmars.net/2019/09/candidate-sites-for-spacex-starship.html?m=1

@@ -30,21 +30,21 @@ public class LandmarkMapLayer implements MapLayer {
 	private int AO_CIRCLE_DIAMETER = 3;
 	
 	/** Light pink color for landmarks on surface map. */
-	private Color SURFACE_COLOR = new Color(230, 186, 186);
+	private static final Color SURFACE_COLOR = new Color(230, 186, 186);
 
 	/** Dark pink color for landmarks on topo map. */
-	private Color TOPO_COLOR = new Color(95, 60, 60);
+	private static final Color TOPO_COLOR = new Color(95, 60, 60);
 
 	/** Light violet color for artificial objects on surface map. */
-	private Color AO_SURFACE_COLOR = new Color(127, 127, 255);
+	private static final Color AO_SURFACE_COLOR = new Color(127, 127, 255);
 
 	/** Gray color for artificial objects on topo map. */
-	private Color AO_TOPO_COLOR = new Color(173, 173, 173);
+	private static final Color AO_TOPO_COLOR = new Color(173, 173, 173);
 	
 	/** Label font for landmarks. */
-	private Font MAP_LABEL_FONT = new Font("Monospaced", Font.PLAIN, 18);
+	private static final Font MAP_LABEL_FONT = new Font("Monospaced", Font.PLAIN, 18);
 	/** Label font for artificial object. */
-	private Font AO_LABEL_FONT = new Font("Dialog", Font.ITALIC, 10);
+	private static final Font AO_LABEL_FONT = new Font("Dialog", Font.ITALIC, 10);
 	
 	/** Horizontal offset for label. */
 	private int LABEL_HORIZONTAL_OFFSET = 2;
@@ -52,9 +52,9 @@ public class LandmarkMapLayer implements MapLayer {
 	/** Horizontal offset for artificial objects. */
 	private int AO_LABEL_HORIZONTAL_OFFSET = 1;
 	
-	private static List<Landmark> landmarks = Simulation.instance().getMars().getSurfaceFeatures().getLandmarks();
+	private static final List<Landmark> landmarks = Simulation.instance().getMars().getSurfaceFeatures().getLandmarks();
 
-	private double angle = CannedMarsMap.HALF_MAP_ANGLE;
+	private static final double angle = CannedMarsMap.HALF_MAP_ANGLE;
 	
 //	private double width = 50;
 //	

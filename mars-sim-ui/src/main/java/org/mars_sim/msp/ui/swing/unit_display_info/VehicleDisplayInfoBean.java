@@ -9,6 +9,7 @@ package org.mars_sim.msp.ui.swing.unit_display_info;
 
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.mars.MarsSurface;
+import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.ImageLoader;
@@ -37,7 +38,7 @@ abstract class VehicleDisplayInfoBean implements UnitDisplayInfo {
         surfMapIcon = ImageLoader.getIcon("VehicleSymbol");
         topoMapIcon = ImageLoader.getIcon("VehicleSymbolBlack");
         geoMapIcon = ImageLoader.getIcon("VehicleSymbolBlack");
-        mapLabelFont = new Font("SansSerif", Font.PLAIN, 9);
+        mapLabelFont = new Font("Helvetica", Font.PLAIN, 10);
     }
     
     /** 
@@ -147,11 +148,16 @@ abstract class VehicleDisplayInfoBean implements UnitDisplayInfo {
     public boolean isGlobeDisplayed(Unit unit) {
         boolean result = true;
         
-        Unit container = unit.getContainerUnit();
-		if (!(container instanceof MarsSurface))
-        	result = false;
-        
         Vehicle vehicle = (Vehicle) unit;
+        
+        // Show the vehicle only if it's on a mission outside
+        int containerID = vehicle.getContainerID();
+		if (containerID == Unit.MARS_SURFACE_UNIT_ID
+				&& vehicle instanceof Rover)
+        	result = true;
+		else
+			result = false;
+		
         if (vehicle.isSalvaged()) 
         	result = false;
         

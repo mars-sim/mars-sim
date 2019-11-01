@@ -305,13 +305,13 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		// mapPaneInner.setAlignmentX(Component.CENTER_ALIGNMENT);
 		mapPaneInner.add(mapLayerPanel, BorderLayout.CENTER);
 		
+		// turn off day night layer
+		setMapLayer(false, 0, shadingLayer);
+		globeNav.setDayNightTracking(false);
+		
 		///////////////////////////////////////////////////////////////////////////
 		
-//		WebPanel controlPane = new WebPanel(new GridLayout(2, 1));
-//		controlPane.setBackground(new Color(0,0,0,55)
-//		controlPane.setOpaque(true);
-//		leftPane.add(controlPane, BorderLayout.SOUTH);
-		
+
 		// Prepare position entry panel
 		WebPanel coordPane = new WebPanel(new GridLayout(1, 6, 0, 0));
 //		controlPane.add(coordPane);
@@ -556,15 +556,14 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 			}
 		} else if (source == topoItem) {
 			if (topoItem.isSelected()) {
-				// turn off day night layer
-				setMapLayer(dayNightItem.isSelected(), 0, shadingLayer);
-				globeNav.setDayNightTracking(dayNightItem.isSelected());
 				// show topo map
 				mapLayerPanel.setMapType(TopoMarsMap.TYPE);
 				globeNav.showTopo();
-				// ruler.showColor();
-//				surfItem.setSelected(false);
-//				geoItem.setSelected(false);
+				// turn off day night layer
+				setMapLayer(false, 0, shadingLayer);
+				globeNav.setDayNightTracking(false);
+				// turn off mineral layer
+				setMapLayer(false, 1, mineralLayer);
 				mineralItem.setSelected(false);
 				mineralsButton.setEnabled(false);
 			}
@@ -574,21 +573,17 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 				// show surface map
 				mapLayerPanel.setMapType(SurfMarsMap.TYPE);
 				globeNav.showSurf();
-				// ruler.showMap();
-//				topoItem.setSelected(false);
-//				geoItem.setSelected(false);
 			}
 		}		
 		else if (source == geoItem) {
 			if (geoItem.isSelected()) {
-				// turn off day night layer
-				setMapLayer(dayNightItem.isSelected(), 0, shadingLayer);
 				// show geology map
 				mapLayerPanel.setMapType(GeologyMarsMap.TYPE);
 				globeNav.showGeo();
-				// ruler.showMap();
-//				surfItem.setSelected(false);
-//				topoItem.setSelected(false);
+				// turn off day night layer
+				setMapLayer(false, 0, shadingLayer);
+				// turn off mineral layer
+				setMapLayer(false, 1, mineralLayer);
 				mineralItem.setSelected(false);
 				mineralsButton.setEnabled(false);
 			}
@@ -608,10 +603,9 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		else if (source == mineralItem) {
 			setMapLayer(mineralItem.isSelected(), 1, mineralLayer);
 			mineralsButton.setEnabled(mineralItem.isSelected());
-			surfItem.doClick();
-//			topoItem.setSelected(false);
-//			geoItem.setSelected(false);
-			
+			if (mineralItem.isSelected()) {
+				surfItem.doClick();
+			}
 		}
 	}
 

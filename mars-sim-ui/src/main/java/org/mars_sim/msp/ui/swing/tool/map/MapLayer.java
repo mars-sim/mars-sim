@@ -12,12 +12,15 @@ import java.awt.Graphics;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 
 /**
  * The MapLayer interface is a graphics layer painted on the map display.
  */
 public interface MapLayer {
 
+	static MissionManager missionManager = Simulation.instance().getMissionManager();
+	
 	static UnitManager unitManager = Simulation.instance().getUnitManager();
 
 	/**

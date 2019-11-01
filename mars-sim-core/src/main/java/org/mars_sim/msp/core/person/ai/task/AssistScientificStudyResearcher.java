@@ -23,6 +23,7 @@ import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.social.Relationship;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
+import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
@@ -232,7 +233,8 @@ public class AssistScientificStudyResearcher extends Task implements Serializabl
 			if ((personsTask != null) && (personsTask instanceof ResearchScientificStudy)) {
 				ResearchScientificStudy researchTask = (ResearchScientificStudy) personsTask;
 				if (!researchTask.hasResearchAssistant()) {
-					SkillType scienceSkill = researchTask.getResearchScience().getSkill();
+					ScienceType type = researchTask.getResearchScience();
+					SkillType scienceSkill = type.getSkill();
 					int personSkill = person.getSkillManager().getEffectiveSkillLevel(scienceSkill);
 					int assistantSkill = assistant.getSkillManager().getEffectiveSkillLevel(scienceSkill);
 					if (assistantSkill < personSkill)
@@ -298,8 +300,7 @@ public class AssistScientificStudyResearcher extends Task implements Serializabl
 	@Override
 	public int getEffectiveSkillLevel() {
 		SkillType scienceSkill = researchTask.getResearchScience().getSkill();
-		SkillManager manager = person.getSkillManager();
-		return manager.getEffectiveSkillLevel(scienceSkill);
+		return person.getSkillManager().getEffectiveSkillLevel(scienceSkill);
 	}
 
 	@Override

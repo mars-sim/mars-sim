@@ -635,7 +635,6 @@ public class BuildingManager implements Serializable {
 	 * @param buildingType the building type.
 	 * @return list of buildings.
 	 */
-
 	public List<Building> getBuildingsOfSameType(String buildingType) {
 		// Called by Resupply.java and BuildingConstructionMission.java
 		// for putting new building next to the same building "type".
@@ -643,15 +642,17 @@ public class BuildingManager implements Serializable {
 				.collect(Collectors.toList());
 	}
 
-//	/**
-//	 * Gets the number of buildings at the settlement.
-//	 * 
-//	 * @return number of buildings
-//	 */
-//	public int countBuildingNum() {
-//		return buildings.size();
-//	}
-
+	/**
+	 * Gets the number of the same type of building.
+	 * 
+	 * @param buildingType
+	 * @return a number
+	 */
+	public Long getNumBuildingsOfSameType(String buildingType) {
+		return buildings.stream().filter(b -> b.getBuildingType().equalsIgnoreCase(buildingType))
+				.collect(Collectors.counting());
+	}
+	
 	/**
 	 * Gets the number of buildings at the settlement.
 	 * 

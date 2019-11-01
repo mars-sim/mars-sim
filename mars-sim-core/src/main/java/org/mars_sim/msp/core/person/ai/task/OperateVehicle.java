@@ -263,8 +263,9 @@ public abstract class OperateVehicle extends Task implements Serializable {
         double result = 0;
         double distanceTraveled = 0;
         
-        if (getDistanceToDestination() < DESTINATION_BUFFER)
+        if (getDistanceToDestination() < DESTINATION_BUFFER) {
         	endTask();
+        }
         	
 		if (person != null) {
 	        // Set person as the vehicle operator if he/she isn't already.
@@ -560,6 +561,13 @@ public abstract class OperateVehicle extends Task implements Serializable {
     public void endTask() {
     	// TODO Might need to change this for flying vehicles.
         vehicle.setSpeed(0D);
+        
+    	if (vehicle.getOperator() != null) {
+        	Person lastDriver = (Person) vehicle.getOperator();
+        	// Clear the OperateVehicle task from the last driver
+        	lastDriver.getMind().getTaskManager().clearSpecificTask(OperateVehicle.class.getSimpleName());
+    	}
+    	
         vehicle.setOperator(null);
     	
     	super.endTask();

@@ -143,6 +143,8 @@ public class UnitManager implements Serializable {
 	/** The core engine's original build. */
 	public String originalBuild;
 	
+	/** A map of all map display units (settlements and vehicles). */
+	private volatile List<Unit> displayUnits;
 	/** A map of all units with its unit identifier. */
 	private volatile Map<Integer, Unit> lookupUnit;// = new HashMap<>();
 	/** A map of settlements with its unit identifier. */
@@ -480,6 +482,8 @@ public class UnitManager implements Serializable {
 			lookupSettlement.put(s.getIdentifier(), s);
 			// Fire unit manager event.
 			fireUnitManagerUpdate(UnitManagerEventType.ADD_UNIT, s);
+			// Recompute the map display units
+			computeDisplayUnits();
 		}
 	}
 
@@ -626,6 +630,8 @@ public class UnitManager implements Serializable {
 			lookupVehicle.put(v.getIdentifier(), v);
 			// Fire unit manager event.
 			fireUnitManagerUpdate(UnitManagerEventType.ADD_UNIT, v);
+			// Recompute the map display units
+			computeDisplayUnits();
 		}
 	}
 
@@ -2298,14 +2304,21 @@ public class UnitManager implements Serializable {
 	}
 	
 	/**
-	 * Obtains the settlement and vehicle units for display
-	 * @return
+	 * Compute the settlement and vehicle units for map display
 	 */
-	public List<Unit> getDisplayUnits() {
-		return Stream.of(
+	public void computeDisplayUnits() {
+		displayUnits = Stream.of(
 				lookupSettlement.values(),
 				lookupVehicle.values())
 				.flatMap(Collection::stream).collect(Collectors.toList());	
+	}
+	
+	/**
+	 * Obtains the settlement and vehicle units for map display
+	 * @return
+	 */
+	public List<Unit> getDisplayUnits() {
+		return displayUnits;	
 	}
 	
 //	/**

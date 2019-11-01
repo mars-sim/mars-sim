@@ -14,13 +14,11 @@ import org.mars_sim.msp.core.Direction;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LogConsolidated;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.mars.TerrainElevation;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
-import org.mars_sim.msp.core.structure.building.function.SystemType;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
@@ -32,10 +30,13 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private static Logger logger = Logger.getLogger(GroundVehicle.class.getName());
-	private static String loggerName = logger.getName();
-	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+	private static final Logger logger = Logger.getLogger(GroundVehicle.class.getName());
+	private static final String loggerName = logger.getName();
+	private static final String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 	
+	public static final String LANDER_HAB = "Lander Hab";
+	public static final String OUTPOST_HUB = "Outpost Hub";
+			
 	// public final static String STUCK = "Stuck - using winch";
 
 	/** Comparison to indicate a small but non-zero amount of fuel (methane) in kg that can still work on the fuel cell to propel the engine. */
@@ -212,11 +213,11 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
 
 			int weight = 2;
 
-			int numHab = settlement.getBuildingManager().getBuildingsOfSameType("Lander Hab").size();
-			int numHub = settlement.getBuildingManager().getBuildingsOfSameType("Outpost Hub").size();
+			long numHab = settlement.getBuildingManager().getNumBuildingsOfSameType(LANDER_HAB);
+			long numHub = settlement.getBuildingManager().getNumBuildingsOfSameType(OUTPOST_HUB);
 			int numGarages = settlement.getBuildingManager().getBuildings(FunctionType.GROUND_VEHICLE_MAINTENANCE)
 					.size();
-			int total = numHab + numHub + numGarages * weight - 1;
+			int total = (int)(numHab + numHub + numGarages * weight - 1);
 			if (total < 0)
 				total = 0;
 			int rand = RandomUtil.getRandomInt(total);
@@ -224,13 +225,13 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
 			if (rand != 0) {
 
 				if (rand < numHab + numHub) {
-					int r0 = RandomUtil.getRandomInt(numHab - 1);
-					Building hab = settlement.getBuildingManager().getBuildingsOfSameType("Lander Hab").get(r0);
+					int r0 = RandomUtil.getRandomInt((int)numHab - 1);
+					Building hab = settlement.getBuildingManager().getBuildingsOfSameType(LANDER_HAB).get(r0);
 					int r1 = 0;
 					Building hub = null;
 					if (numHub > 0) {
-						r1 = RandomUtil.getRandomInt(numHub - 1);
-						hub = settlement.getBuildingManager().getBuildingsOfSameType("Outpost Hub").get(r1);
+						r1 = RandomUtil.getRandomInt((int)numHub - 1);
+						hub = settlement.getBuildingManager().getBuildingsOfSameType(OUTPOST_HUB).get(r1);
 					}
 
 					if (hab != null) {

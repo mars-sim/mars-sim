@@ -41,7 +41,7 @@ class SettlementDisplayInfoBean implements UnitDisplayInfo {
         topoMapIcon = ImageLoader.getIcon("SettlementSymbolBlack");
         geoMapIcon = ImageLoader.getIcon("SettlementSymbolBlack");
         buttonIcon = ImageLoader.getIcon("SettlementIcon");
-        mapLabelFont = new Font("SansSerif", Font.PLAIN, 12);
+        mapLabelFont = new Font("SansSerif", Font.BOLD, 12);
     }
 
     /**

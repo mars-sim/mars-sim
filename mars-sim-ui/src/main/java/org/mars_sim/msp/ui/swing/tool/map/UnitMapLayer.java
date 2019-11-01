@@ -59,14 +59,12 @@ abstract class UnitMapLayer implements MapLayer {
 		if (unitsToDisplay != null) {
 			units = unitsToDisplay;
 		} else {
-			units= unitManager.getDisplayUnits();
+			units = unitManager.getDisplayUnits();
 		}
 
 		for (Unit unit : units) {
 			if (UnitDisplayInfoFactory.getUnitDisplayInfo(unit) != null
 					&& UnitDisplayInfoFactory.getUnitDisplayInfo(unit).isMapDisplayed(unit)
-//					&& !(unit instanceof Building) 
-//					&& !(unit instanceof MarsSurface)
 					) {
 				double angle = CannedMarsMap.HALF_MAP_ANGLE;
 
@@ -76,45 +74,7 @@ abstract class UnitMapLayer implements MapLayer {
 			}
 		}
 
-//		Collection<Unit> units = null;
-//		
-//		if (unitsToDisplay != null) {
-//			units = unitsToDisplay;
-//			for (Unit unit : units) {
-//				// UnitDisplayInfo displayInfo =
-//				// UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
-//	
-//				if (UnitDisplayInfoFactory.getUnitDisplayInfo(unit) != null
-//						&& UnitDisplayInfoFactory.getUnitDisplayInfo(unit).isMapDisplayed(unit)) {
-//					double angle = CannedMarsMap.HALF_MAP_ANGLE;
-//	
-//					if (mapCenter != null && mapCenter.getAngle(unit.getCoordinates()) < angle) {
-//						displayUnit(unit, mapCenter, mapType, g);
-//					}
-//				}
-//			}
-//		} 
-//		
-//		else {
-//				
-//			for (Collection<Unit> units: unitManager.computeUnitArray()) {
-////				Collection<Unit> units = (Collection<Unit>)o;
-//				for (Unit unit : units) {
-//					// UnitDisplayInfo displayInfo =
-//					// UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
-//	
-//					if (UnitDisplayInfoFactory.getUnitDisplayInfo(unit) != null
-//							&& UnitDisplayInfoFactory.getUnitDisplayInfo(unit).isMapDisplayed(unit)) {
-//						double angle = CannedMarsMap.HALF_MAP_ANGLE;
-//	
-//						if (mapCenter != null && mapCenter.getAngle(unit.getCoordinates()) < angle) {
-//							displayUnit(unit, mapCenter, mapType, g);
-//						}
-//					}
-//				}
-//			}
-//		}
-		
+
 		long currentTime = System.currentTimeMillis();
 		if ((currentTime - blinkTime) > 1000L) {
 			blinkFlag = !blinkFlag;

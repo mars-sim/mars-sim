@@ -7,6 +7,7 @@
 package org.mars_sim.msp.ui.swing.unit_window.structure;
 
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -21,12 +22,17 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.swing.AbstractListModel;
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SpringLayout;
+import javax.swing.UIManager;
+import javax.swing.border.Border;
+import javax.swing.border.EtchedBorder;
+import javax.swing.border.TitledBorder;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
@@ -37,6 +43,9 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.tool.monitor.PersonTableModel;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
+
+import com.alee.laf.label.WebLabel;
+import com.alee.laf.panel.WebPanel;
 
 /**
  * This is a tab panel for population information.
@@ -52,12 +61,14 @@ implements MouseListener, ActionListener {
 	/** The Settlement instance. */
 	private Settlement settlement;
 	
-	private JLabel populationNumLabel;
-	private JLabel populationCapLabel;
+	private JLabel populationIndoorLabel;
+	private JLabel populationCapacityLabel;
+	
 	private PopulationListModel populationListModel;
 	private JList<Person> populationList;
 	private JScrollPane populationScrollPanel;
-	private int populationNumCache;
+	
+	private int populationIndoorCache;
 	private int populationCapacityCache;
 
 	/**
@@ -93,33 +104,49 @@ implements MouseListener, ActionListener {
 		//heading.setForeground(new Color(102, 51, 0)); // dark brown
 		titlePane.add(heading);
 
-
-		// Create population count panel
-		JPanel populationCountPanel = new JPanel(new GridLayout(2, 2, 0, 0));
-//		populationCountPanel.setBorder(new MarsPanelBorder());
-		topContentPanel.add(populationCountPanel);
-
-
-		// Create population num label
-		populationNumCache = settlement.getIndoorPeopleCount();
-		populationNumLabel = new JLabel(Msg.getString("TabPanelPopulation.population",
-		        populationNumCache), JLabel.CENTER); //$NON-NLS-1$
-		populationCountPanel.add(populationNumLabel);
-
+		// Prepare count spring layout panel.
+		WebPanel countPanel = new WebPanel(new SpringLayout());//GridLayout(3, 1, 0, 0));
+//		countPanel.setBorder(new MarsPanelBorder());
+		topContentPanel.add(countPanel);
+		
+		// Create population indoor label
+		WebLabel populationIndoorHeader = new WebLabel(Msg.getString("TabPanelPopulation.indoor"),
+				WebLabel.RIGHT); // $NON-NLS-1$
+		countPanel.add(populationIndoorHeader);
+		
+		populationIndoorCache = settlement.getIndoorPeopleCount();
+		populationIndoorLabel = new WebLabel(populationIndoorCache + "", WebLabel.LEFT);
+		countPanel.add(populationIndoorLabel);
+		
 		// Create population capacity label
+		WebLabel populationCapacityHeader = new WebLabel(Msg.getString("TabPanelPopulation.capacity"),
+				WebLabel.RIGHT); // $NON-NLS-1$
+		countPanel.add(populationCapacityHeader);
+		
 		populationCapacityCache = settlement.getPopulationCapacity();
-		populationCapLabel = new JLabel(Msg.getString("TabPanelPopulation.populationCapacity",
-		        populationCapacityCache), JLabel.CENTER); //$NON-NLS-1$
-		populationCountPanel.add(populationCapLabel);
-
+		populationCapacityLabel = new WebLabel(populationCapacityCache + "", WebLabel.RIGHT);
+		countPanel.add(populationCapacityLabel);
+		
+		// Lay out the spring panel.
+		SpringUtilities.makeCompactGrid(countPanel, 2, 2, // rows, cols
+				25, 10, // initX, initY
+				10, 10); // xPad, yPad
+		
+        UIManager.getDefaults().put("TitledBorder.titleColor", Color.darkGray);
+        Border lowerEtched = BorderFactory.createEtchedBorder(EtchedBorder.LOWERED);
+        TitledBorder title = BorderFactory.createTitledBorder(lowerEtched, " " + Msg.getString("TabPanelPopulation.title") + " ");
+//      title.setTitleJustification(TitledBorder.RIGHT);
+        Font titleFont = UIManager.getFont("TitledBorder.font");
+        title.setTitleFont( titleFont.deriveFont(Font.ITALIC + Font.BOLD));
+        
 		// Create spring layout population display panel
-		JPanel populationDisplayPanel = new JPanel(new SpringLayout());//FlowLayout(FlowLayout.LEFT));
-//		populationDisplayPanel.setBorder(new MarsPanelBorder());
+		JPanel populationDisplayPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		populationDisplayPanel.setBorder(title);
 		topContentPanel.add(populationDisplayPanel);
 
 		// Create scroll panel for population list.
 		populationScrollPanel = new JScrollPane();
-		populationScrollPanel.setPreferredSize(new Dimension(175, 250));
+		populationScrollPanel.setPreferredSize(new Dimension(200, 250));
 		populationDisplayPanel.add(populationScrollPanel);
 
 		// Create population list model
@@ -137,11 +164,6 @@ implements MouseListener, ActionListener {
 		monitorButton.setToolTipText(Msg.getString("TabPanelPopulation.tooltip.monitor")); //$NON-NLS-1$
 		populationDisplayPanel.add(monitorButton);
 
-		//Lay out the spring panel.
-		SpringUtilities.makeCompactGrid(populationDisplayPanel,
-		                                1, 2, //rows, cols
-		                                30, 10,        //initX, initY
-		                                10, 10);       //xPad, yPad
 	}
 
 	/**
@@ -154,19 +176,17 @@ implements MouseListener, ActionListener {
 		Settlement settlement = (Settlement) unit;
 
 		int num = settlement.getIndoorPeopleCount();
-		// Update population num
-		if (populationNumCache != num) {
-			populationNumCache = num;
-			populationNumLabel.setText(Msg.getString("TabPanelPopulation.population",
-			        populationNumCache)); //$NON-NLS-1$
+		// Update indoor num
+		if (populationIndoorCache != num) {
+			populationIndoorCache = num;
+			populationIndoorLabel.setText(populationIndoorCache + "");
 		}
 
 		int cap = settlement.getPopulationCapacity();
-		// Update population capacity
+		// Update capacity
 		if (populationCapacityCache != cap) {
 			populationCapacityCache = cap;
-			populationCapLabel.setText(Msg.getString("TabPanelPopulation.populationCapacity",
-			        populationCapacityCache)); //$NON-NLS-1$
+			populationCapacityLabel.setText(populationCapacityCache + "");
 		}
 
 		// Update population list
@@ -263,8 +283,8 @@ implements MouseListener, ActionListener {
 	 * Prepare object for garbage collection.
 	 */
 	public void destroy() {
-		populationNumLabel = null;
-		populationCapLabel = null;
+		populationIndoorLabel = null;
+		populationCapacityLabel = null;
 		populationListModel = null;
 		populationList = null;
 		populationScrollPanel = null;

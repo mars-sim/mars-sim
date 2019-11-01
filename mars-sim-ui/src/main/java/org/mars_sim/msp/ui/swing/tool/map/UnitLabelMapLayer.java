@@ -46,21 +46,27 @@ public class UnitLabelMapLayer extends UnitMapLayer {
 		IntPoint location = MapUtils.getRectPosition(unit.getCoordinates(), mapCenter, mapType);
 		UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
 
-		IntPoint labelLocation = getLabelLocation(location, displayInfo.getSurfMapIcon(unit));
-
+		IntPoint labelLocation = null;
+		
 		if (displayInfo != null) {
-			if (SurfMarsMap.TYPE.equals(mapType))
+			if (SurfMarsMap.TYPE.equals(mapType)) {
+				labelLocation = getLabelLocation(location, displayInfo.getSurfMapIcon(unit));
 				g2d.setColor(displayInfo.getSurfMapLabelColor());
-			else if (TopoMarsMap.TYPE.equals(mapType))
+			}
+			else if (TopoMarsMap.TYPE.equals(mapType)) {
+				labelLocation = getLabelLocation(location, displayInfo.getTopoMapIcon(unit));
 				g2d.setColor(displayInfo.getTopoMapLabelColor());
-			else if (GeologyMarsMap.TYPE.equals(mapType))
+			}
+			else if (GeologyMarsMap.TYPE.equals(mapType)) {
+				labelLocation = getLabelLocation(location, displayInfo.getGeologyMapIcon(unit));
 				g2d.setColor(displayInfo.getGeologyMapLabelColor());
-		}
+			}
 
-		g2d.setFont(displayInfo.getMapLabelFont());
-
-		if (!(displayInfo.isMapBlink(unit) && getBlinkFlag() && unit != null)) {
-			g2d.drawString(unit.getName(), labelLocation.getiX(), labelLocation.getiY());
+			g2d.setFont(displayInfo.getMapLabelFont());
+	
+			if (!(displayInfo.isMapBlink(unit) && getBlinkFlag() && unit != null)) {
+				g2d.drawString(unit.getName(), labelLocation.getiX(), labelLocation.getiY());
+			}
 		}
 	}
 

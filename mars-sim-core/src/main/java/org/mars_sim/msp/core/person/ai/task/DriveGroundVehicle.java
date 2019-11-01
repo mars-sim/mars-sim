@@ -54,7 +54,9 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = .2D;
-
+	/** Half the PI. */
+	private static final double HALF_PI = Math.PI / 2D;
+	
 	// Side directions.
 	private final static int NONE = 0;
 	private final static int LEFT = 1;
@@ -90,7 +92,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 		addPhase(AVOID_OBSTACLE);
 		addPhase(WINCH_VEHICLE);
 
-		LogConsolidated.log(logger, Level.FINER, 5000, sourceName,
+		LogConsolidated.log(logger, Level.INFO, 0, sourceName,
 				"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " took the wheel of rover "
 //						+ (person.getGender() == GenderType.MALE ? "his" : "her") + " driving " 
 						+ vehicle.getName()
@@ -426,8 +428,8 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 		if (angleModifier < 0D)
 			angleModifier = Math.abs(1D / angleModifier);
 		double tempAngle = Math.abs(vehicle.getTerrainGrade(direction) / angleModifier);
-		if (tempAngle > (Math.PI / 2D))
-			tempAngle = Math.PI / 2D;
+		if (tempAngle > HALF_PI)
+			tempAngle = HALF_PI;
 		return Math.cos(tempAngle);
 	}
 
@@ -552,11 +554,11 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 	 */
 	public void endTask() {
 		if (person != null)
-			LogConsolidated.log(logger, Level.FINER, 5000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
+			LogConsolidated.log(logger, Level.INFO, 0, sourceName, "[" + person.getLocationTag().getLocale() + "] "
 					+ person.getName() + " took a break from driving " + getVehicle().getName() + ".", null);
 
 		else if (robot != null)
-			logger.fine(robot.getName() + " finished driving " + getVehicle().getName());
+			logger.finer(robot.getName() + " finished driving " + getVehicle().getName());
 
 		// ((GroundVehicle) getVehicle()).setStuck(false);
 

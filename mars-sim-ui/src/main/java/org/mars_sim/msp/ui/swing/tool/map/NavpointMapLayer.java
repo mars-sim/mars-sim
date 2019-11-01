@@ -13,9 +13,7 @@ import javax.swing.Icon;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.IntPoint;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
-import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.NavPoint;
 import org.mars_sim.msp.core.person.ai.mission.TravelMission;
 import org.mars_sim.msp.ui.swing.ImageLoader;
@@ -34,13 +32,13 @@ public class NavpointMapLayer implements MapLayer {
 	private double angle;
 
 	private Component displayComponent;
+	
 	private Icon navpointIconColor;
 	private Icon navpointIconWhite;
 	private Icon navpointIconSelected;
+	
 	private Mission singleMission;
 	private NavPoint selectedNavpoint;
-
-	private static MissionManager missionManager;
 
 	/**
 	 * Constructor
@@ -53,7 +51,6 @@ public class NavpointMapLayer implements MapLayer {
 		this.displayComponent = displayComponent;
 
 		angle = CannedMarsMap.HALF_MAP_ANGLE;
-		missionManager = Simulation.instance().getMissionManager();
 
 		navpointIconColor = ImageLoader.getIcon(BLUE_ICON_NAME);
 		navpointIconWhite = ImageLoader.getIcon(WHITE_ICON_NAME);

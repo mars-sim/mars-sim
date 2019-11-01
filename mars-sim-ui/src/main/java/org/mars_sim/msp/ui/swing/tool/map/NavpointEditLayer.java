@@ -30,7 +30,8 @@ public class NavpointEditLayer implements MapLayer {
 	// Static members
 	private static final String BLUE_ICON_NAME = "FlagBlue";
 	private static final String GREEN_ICON_NAME = "FlagGreen";
-
+	private static final Font FONT = new Font("SansSerif", Font.PLAIN, 9);
+	
 	// Domain members.
 	private List<IntPoint> navpointPositions;
 	private int selectedNavpoint;
@@ -199,7 +200,7 @@ public class NavpointEditLayer implements MapLayer {
 
 			if (drawNavNumbers) {
 				g2d.setColor(Color.WHITE);
-				g2d.setFont(new Font("SansSerif", Font.PLAIN, 9));
+				g2d.setFont(FONT);
 				g2d.drawString("" + (x + 1), (currentPosition.getiX() + 5), (currentPosition.getiY() + 5));
 			}
 		}
