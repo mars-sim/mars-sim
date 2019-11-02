@@ -346,7 +346,7 @@ public abstract class Airlock implements Serializable {
 			deactivateAirlock();
 		}
 		
-		else if (size == 1) {	
+		else if (size >= 1) {
 			int evaExp = -1;
 			int evaLevel = -1;
 			for (Integer id : occupantIDs) {
@@ -547,6 +547,7 @@ public abstract class Airlock implements Serializable {
 	 * @param time amount of time (in millisols)
 	 */
 	public void timePassing(double time) {
+		
 		if (activated) {
 			
 			if (operatorID > 0) {//!= Integer.valueOf(-1)) {
@@ -560,7 +561,7 @@ public abstract class Airlock implements Serializable {
 				if (isDead) {
 					// If operator is dead, deactivate airlock.
 					String operatorName = p.getName();
-					LogConsolidated.log(Level.SEVERE, 0, sourceName, "[" + p.getLocationTag().getLocale() + "] "
+					LogConsolidated.log(Level.SEVERE, 10_000, sourceName, "[" + p.getLocationTag().getLocale() + "] "
 							+ "Airlock operator " + operatorName + " was dead."
 							+ getEntityName());
 					
@@ -574,7 +575,7 @@ public abstract class Airlock implements Serializable {
 
 					Task task = p.getMind().getTaskManager().getTask();
 
-					while (task != null) {
+					if (task != null) {
 						if ((task instanceof ExitAirlock) || (task instanceof EnterAirlock)) {
 							hasAirlockTask = true;
 						}
@@ -583,9 +584,9 @@ public abstract class Airlock implements Serializable {
 
 					if (!hasAirlockTask) {
 						String operatorName = p.getName();
-						LogConsolidated.log(Level.SEVERE, 0, sourceName, "[" + p.getLocationTag().getLocale() + "] "
-								+ "Airlock operator " + operatorName + " was no longer "
-								+ "operating the airlock in " + getEntityName());
+						LogConsolidated.log(Level.SEVERE, 10_000, sourceName, "[" + p.getLocationTag().getLocale() + "] "
+								+ "Airlock operator " + operatorName 
+								+ " was no longer operating the airlock in " + getEntityName());
 						
 						// Elect a new operator
 						electAnOperator();

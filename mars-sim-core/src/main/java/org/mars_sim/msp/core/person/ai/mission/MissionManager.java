@@ -878,7 +878,7 @@ public class MissionManager implements Serializable {
 					double score = mp.getScore();
 					mp.setScore(score + weight * newScore);
 					logger.info(mp.getMission().getStartingMember() + "'s " + mp.getMission().getDescription() 
-							+ " mission plan - current score : " + mp.getScore() 
+							+ " mission plan - current score : " + Math.round(mp.getScore()*10.0)/10.0 
 							+ " (" + mp.getPercentComplete() + "% review completed)");
 					mp.setReviewedBy(reviewer.getName());
 					mp.getMission().fireMissionUpdate(MissionEventType.PHASE_DESCRIPTION_EVENT, mp.getMission().getPhaseDescription());

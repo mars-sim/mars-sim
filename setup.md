@@ -10,7 +10,7 @@ https://github.com/mars-sim/mars-sim
 
 - Dual Core Pentium/Celeron 1.5GHz or higher
 
-- 1 GB free RAM
+- 1.5 GB free RAM
 
 - 220 MB free disk space
 

@@ -284,34 +284,36 @@ public class TaskManager implements Serializable {
 	/**
 	 * Sets the current task to null.
 	 */
-	public void clearTask() {
-		
-		// TODO: Should we end the sub task as well ?
-		if (currentTask.getSubTask() != null) {
-			currentTask.getSubTask().endTask();
-			currentTask.getSubTask().clearSubTask();
-		}
-		
+	public void clearAllTasks() {
+		endSubTask();
+		endCurrentTask();
+		logger.warning(person.getName() + " just cleared all tasks.");
+	}
+
+	public void endCurrentTask() {
 		if (currentTask != null) {
 			currentTask.endTask();
+//			currentTask.destroy();
 			currentTask = null;
 			person.fireUnitUpdate(UnitEventType.TASK_EVENT);
 		}
-
 	}
-
+	
+	public void endSubTask() {
+		if (currentTask.getSubTask() != null) {
+			currentTask.getSubTask().endTask();
+		}
+	}
+	
 	public void clearSpecificTask(String taskString) {
 		if (currentTask.getSubTask() != null
 				&& currentTask.getSubTask().getClass().getSimpleName().equalsIgnoreCase(taskString)) {
-			currentTask.getSubTask().endTask();
-			currentTask.getSubTask().clearSubTask();
+			endSubTask();
 		}
 		
 		if (currentTask != null 
 				&& currentTask.getClass().getSimpleName().equalsIgnoreCase(taskString)) {
-			currentTask.endTask();
-			currentTask = null;
-			person.fireUnitUpdate(UnitEventType.TASK_EVENT);
+			endCurrentTask();
 		}
 		
 	}
@@ -374,12 +376,15 @@ public class TaskManager implements Serializable {
 	 * 
 	 * @param newTask the task to be added
 	 */
-	public void addTask(Task newTask) {
+	public void addTask(Task newTask, boolean subTask) {
 
-		if (hasActiveTask()) {
-//			if (!currentTask.getTaskName().equals(newTask.getTaskName()))
-				currentTask.addSubTask(newTask);
-
+		if (hasActiveTask() && subTask) {
+			if (!currentTask.getTaskName().equals(newTask.getTaskName())) {
+				if (!currentTask.getSubTask().getTaskName().equals(newTask.getTaskName())) {
+					currentTask.addSubTask(newTask);
+				}
+			}
+			
 		} else {
 			lastTask = currentTask;
 			currentTask = newTask;
@@ -723,9 +728,9 @@ public class TaskManager implements Serializable {
 						LogConsolidated.log(Level.FINER, 5_000, sourceName, mind.getPerson().getName() + " - "
 								+ mt.getName() + " : Probability is " + Math.round(probability * 10.0) / 10.0 + ".");
 						if (mt.getName().contains("eat"))
-							addTask(new EatMeal(person));
+							addTask(new EatMeal(person), true);
 						else if (mt.getName().contains("sleep"))
-							addTask(new Sleep(person));
+							addTask(new Sleep(person), true);
 						else
 							probability = MAX_TASK_PROBABILITY;
 					}

@@ -1184,10 +1184,12 @@ public abstract class Vehicle extends Unit
 			malfunctionManager.timePassing(time);
 		}
 
-		if (haveStatusType(StatusType.OUT_OF_FUEL)) {
-			setOperator(null);
-			setSpeed(0);
-		} 
+//		if (haveStatusType(StatusType.OUT_OF_FUEL)
+//			|| haveStatusType(StatusType.PARKED)
+//			|| haveStatusType(StatusType.GARAGED)) {
+//			setOperator(null);
+//			setSpeed(0);
+//		} 
 		
 		addToTrail(getCoordinates());
 
@@ -1301,8 +1303,8 @@ public abstract class Vehicle extends Unit
 							+ p.getBuildingLocation().getNickName()); //$NON-NLS-1$
 					
 					// TODO: how to force the person to receive some form of medical treatment ?
-					p.getMind().getTaskManager().clearTask();
-					p.getMind().getTaskManager().addTask(new RequestMedicalTreatment(p));
+					p.getMind().getTaskManager().clearAllTasks();
+					p.getMind().getTaskManager().addTask(new RequestMedicalTreatment(p), false);
 					
 				}
 
@@ -1399,7 +1401,7 @@ public abstract class Vehicle extends Unit
 		}
 
 		if (canPerformTask) {
-			person.getMind().getTaskManager().addTask(task);
+			person.getMind().getTaskManager().addTask(task, false);
 		}
 
 		return canPerformTask;

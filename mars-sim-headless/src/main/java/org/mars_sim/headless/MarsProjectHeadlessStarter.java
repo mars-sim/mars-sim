@@ -56,9 +56,9 @@ public class MarsProjectHeadlessStarter {
 		List<String> argList = Arrays.asList(args);
 
 		if (argList.isEmpty()) {
-			// by default, use gui and 1GB
+			// by default, use gui and 1.5 GB
 			command.append(" -Xms256m");
-			command.append(" -Xmx1024m");
+            command.append(" -Xmx1536m");
 			command.append(" -new");
 		}
 
@@ -83,9 +83,9 @@ public class MarsProjectHeadlessStarter {
 				command.append(" -Xms256m");
 				command.append(" -Xmx1024m");
 			} else {
-				// Use 1GB by default
+				// Use 1.5 GB by default
 				command.append(" -Xms256m");
-				command.append(" -Xmx1024m");
+	            command.append(" -Xmx1536m");
 			}
 
 			// Check for the help switch

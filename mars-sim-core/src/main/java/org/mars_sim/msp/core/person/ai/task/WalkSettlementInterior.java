@@ -86,11 +86,11 @@ public class WalkSettlementInterior extends Task implements Serializable {
 
 		// Check that the person is currently inside the settlement.
 		if (!person.isInSettlement()) {
-			endTask();
 //			throw new IllegalStateException(
 			LogConsolidated.log(Level.WARNING, 20_000, sourceName, 
 					"[" + person.getLocationTag().getLocale() + "] "
 					+ person + "WalkSettlementInterior task started when person is not in settlement.");
+			person.getMind().getTaskManager().clearAllTasks();
 		}
 
 		// Initialize data members.
@@ -101,27 +101,21 @@ public class WalkSettlementInterior extends Task implements Serializable {
 
 		// Check that destination location is within destination building.
 		if (!LocalAreaUtil.checkLocationWithinLocalBoundedObject(destXLoc, destYLoc, destBuilding)) {
-			endTask();
 //			throw new IllegalStateException(
 			LogConsolidated.log(Level.WARNING, 20_000, sourceName, 
 					"[" + person.getLocationTag().getLocale() + "] "
 					+ person + " was unable to walk to the destination in " + person.getBuildingLocation());
-			// TODO: determine if a malfunction within this building can cause this IllegalStateException
-			// if that's the case, there is no need to throw IllegalStateException
-//			person.getMind().getTaskManager().getNewTask();
+			person.getMind().getTaskManager().clearAllTasks();
 		}
 
 		// Check that the person is currently inside a building.
 		Building startBuilding = BuildingManager.getBuilding(person);
 		if (startBuilding == null) {
-			// TODO: can we use a gentler approach as follows until it's clearly
-			// understood and resolved.
-			// logger.severe(person.getName() + " is not currently in a building.");
-			endTask();
 //			throw new IllegalStateException(
 			LogConsolidated.log(Level.WARNING, 20_000, sourceName,		
 					"[" + person.getLocationTag().getLocale() + "] "
 					+person.getName() + " is not currently in a building.");
+			person.getMind().getTaskManager().clearAllTasks();
 		}
 
 		// Determine the walking path to the destination.
@@ -138,7 +132,7 @@ public class WalkSettlementInterior extends Task implements Serializable {
 //							+ person.getName() + " was unable to walk from " + startBuilding.getNickName() + " to "
 //									+ destinationBuilding.getNickName() + ". No valid interior path.");
 							+ person.getName() + " was unable to walk. No valid interior path.");
-			endTask();
+			person.getMind().getTaskManager().clearAllTasks();
 			
 			// TODO: if it's the astronomy observatory building, it will call it thousands of time
 			// e.g (Warning) [x23507] WalkSettlementInterior : Jani Patokallio unable to walk from Lander Hab 2 to Astronomy Observatory 1.  Unable to find valid interior path.

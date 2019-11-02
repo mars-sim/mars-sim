@@ -939,7 +939,7 @@ public abstract class Mission implements Serializable {
 		}
 
 		if (canPerformTask) {
-			person.getMind().getTaskManager().addTask(task);
+			person.getMind().getTaskManager().addTask(task, false);
 		}
 
 		return canPerformTask;

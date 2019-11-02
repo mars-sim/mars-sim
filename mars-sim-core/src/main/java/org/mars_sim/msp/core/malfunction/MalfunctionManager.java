@@ -1085,9 +1085,9 @@ public class MalfunctionManager implements Serializable {
 								+ entity.getUnit());
 //								+ " in " + entity.getImmediateLocation());
 
-						if (emerg) chosen.getMind().getTaskManager().addTask(new RepairEmergencyMalfunction(chosen));	
-						else if (gen) chosen.getMind().getTaskManager().addTask(new RepairMalfunction(chosen));
-						else if (eva) chosen.getMind().getTaskManager().addTask(new RepairEVAMalfunction(chosen));
+						if (emerg) chosen.getMind().getTaskManager().addTask(new RepairEmergencyMalfunction(chosen), false);	
+						else if (gen) chosen.getMind().getTaskManager().addTask(new RepairMalfunction(chosen), false);
+						else if (eva) chosen.getMind().getTaskManager().addTask(new RepairEVAMalfunction(chosen), false);
 					}
 					
 				}

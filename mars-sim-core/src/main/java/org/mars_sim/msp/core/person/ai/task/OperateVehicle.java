@@ -216,12 +216,34 @@ public abstract class OperateVehicle extends Task implements Serializable {
 		return startTripDistance;
 	}
 	
+	protected void clearDrivingTask(VehicleOperator vo) {
+		if (vo != null) {
+        	// Clear the OperateVehicle task from the last driver
+        	((Person) vo).getMind().getTaskManager().clearSpecificTask(DriveGroundVehicle.class.getSimpleName());
+        	((Person) vo).getMind().getTaskManager().clearSpecificTask(OperateVehicle.class.getSimpleName());
+    	}
+	}
+	
 	/**
 	 * Perform the mobilize vehicle phase for the amount of time given.
 	 * @param time the amount of time (ms) to perform the phase.
 	 * @return the amount of time left over after performing the phase.
 	 */
 	protected double mobilizeVehiclePhase(double time) {
+		
+		// Select the vehicle operator
+		VehicleOperator vo = vehicle.getOperator();
+		Person driver = (Person) vo;
+		
+		if (vo != null && driver != null) {
+	        // Check if person is the vehicle operator.
+	        if (!person.equals(driver)) {
+        		// Remove the last driver
+	        	clearDrivingTask(vo);
+	        	// replace the last driver
+	            vehicle.setOperator(person);
+	        }
+		}	
 		
         // Find current direction and update vehicle.
         vehicle.setDirection(vehicle.getCoordinates().getDirectionToPoint(destination));
@@ -266,20 +288,6 @@ public abstract class OperateVehicle extends Task implements Serializable {
         if (getDistanceToDestination() < DESTINATION_BUFFER) {
         	endTask();
         }
-        	
-		if (person != null) {
-	        // Set person as the vehicle operator if he/she isn't already.
-	        if (!person.equals(vehicle.getOperator())) {
-        		// If attempting to switch the driver of this vehicle
-	        	if (vehicle.getOperator() != null) {
-		        	Person lastDriver = (Person) vehicle.getOperator();
-		        	// Clear the OperateVehicle task from the last driver
-		        	lastDriver.getMind().getTaskManager().clearSpecificTask(OperateVehicle.class.getSimpleName());
-	        	}
-	            vehicle.setOperator(person);
-	        }
-
-		}	
 		
         Inventory vInv = vehicle.getInventory();
         int fuelType = vehicle.getFuelType();
@@ -414,6 +422,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
     		    	LogConsolidated.log(Level.SEVERE, 0, sourceName, "[" + vehicle.getName() + "] " 
     						+ "can't retrieve methane. Cannot drive.");
 //    	        	distanceTraveled = 0;
+    		    	vehicle.setSpeed(0D);
     	        	vehicle.addStatus(StatusType.OUT_OF_FUEL);
     	        	vehicle.removeStatus(StatusType.MOVING);
     	        	endTask();
@@ -559,17 +568,10 @@ public abstract class OperateVehicle extends Task implements Serializable {
      * Ends the task and performs any final actions.
      */
     public void endTask() {
-    	// TODO Might need to change this for flying vehicles.
         vehicle.setSpeed(0D);
-        
-    	if (vehicle.getOperator() != null) {
-        	Person lastDriver = (Person) vehicle.getOperator();
-        	// Clear the OperateVehicle task from the last driver
-        	lastDriver.getMind().getTaskManager().clearSpecificTask(OperateVehicle.class.getSimpleName());
-    	}
-    	
+        VehicleOperator vo = vehicle.getOperator();
+    	clearDrivingTask(vo);
         vehicle.setOperator(null);
-    	
     	super.endTask();
     }
     

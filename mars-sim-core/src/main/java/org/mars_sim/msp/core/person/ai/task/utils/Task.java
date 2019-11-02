@@ -195,8 +195,10 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	public void endTask() {
 
 		// End subtask.
-		if ((getSubTask() != null) && (!getSubTask().isDone())) {
-			getSubTask().endTask();
+		if (subTask != null && !subTask.isDone()) {
+			subTask.endTask();
+//			subTask.destroy();
+			subTask = null;
 		}
 
 		done = true;
@@ -458,7 +460,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	public void addSubTask(Task newSubTask) {
 		if (subTask != null) {
 			if (subTask.done) {
-				subTask.destroy();
+//				subTask.destroy();
 				subTask = newSubTask;
 				if (person != null) {
 					// Note: need to avoid java.lang.StackOverflowError when calling
@@ -498,13 +500,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		return subTask;
 	}
 
-	public void clearSubTask() {
-		if (subTask != null) {		
-			subTask.destroy();
-			subTask = null;
-		}
-	}
-	
 	/**
 	 * Perform the task for the given number of seconds. Children should override
 	 * and implement this.
@@ -519,7 +514,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		double timeLeft = time;
 		if (subTask != null) {
 			if (subTask.isDone()) {
-				subTask.destroy();
+//				subTask.destroy();
 				subTask = null;
 			} else {
 				timeLeft = subTask.performTask(timeLeft);

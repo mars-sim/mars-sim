@@ -64,7 +64,8 @@ public class MarsProjectStarter {
         if (argList.isEmpty()) {
         	// by default, use gui and 1GB
             command.append(" -Xms256m");
-            command.append(" -Xmx1024m");
+//            command.append(" -Xmx1024m");
+            command.append(" -Xmx1536m");
         	command.append(" -new");
         }
 
@@ -95,9 +96,9 @@ public class MarsProjectStarter {
 	            command.append(" -Xmx1024m");
 	        }
 	        else {
-	        	//  use 1GB by default
+	        	//  use 1.5 GB by default
 	            command.append(" -Xms256m");
-	            command.append(" -Xmx1024m");
+	            command.append(" -Xmx1536m");
 	        }
 
 	        if (argList.contains("help") || argList.contains("-help")) {

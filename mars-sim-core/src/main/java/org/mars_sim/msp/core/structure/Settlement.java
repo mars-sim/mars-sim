@@ -837,7 +837,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 
 	public void endAllIndoorTasks() {
 		for (Person p : getIndoorPeople()) {
-			p.getMind().getTaskManager().clearTask();
+			p.getMind().getTaskManager().clearAllTasks();
 		}
 	}
 

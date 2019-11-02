@@ -81,6 +81,9 @@ public class MasterClock implements Serializable {
 	/** The pulse per seconds */
 	private volatile double pps = 0;
 	
+	
+	/** The sleep time */
+	private long sleepTime;
 	/** The last uptime in terms of number of pulses. */
 	private transient long tLast;
 	/** The cache for accumulating millisols up to a limit before sending out a clock pulse. */
@@ -688,7 +691,7 @@ public class MasterClock implements Serializable {
 
 			if (!isFXGL) {
 
-				long t1, t2, sleepTime, overSleepTime = 0L, excess = 0L;
+				long t1, t2, overSleepTime = 0L, excess = 0L;
 				int noDelays = 0;
 				
 				// Gets the initial t1
@@ -776,14 +779,14 @@ public class MasterClock implements Serializable {
 					int skips = 0;
 
 					while (!justReloaded && (Math.abs(excess) > currentTBU_ns) && (skips < maxFrameSkips)) {
-						logger.config("excess : " + excess/1_000_000_000 + " secs");
+						logger.warning("excess : " + excess + " ns");
 						// e.g. excess : -118289082
 						justReloaded = false;
 						excess -= currentTBU_ns;
 						// Make up lost frames
 						skips++;
 
-						logger.config("Recovering from a lost frame.  # of skips (" + skips + ")  Max skips (" + maxFrameSkips + ")."); 
+						logger.config("Recovering from a lost frame.  # of skips: " + skips + " (Max skips: " + maxFrameSkips + ")."); 
 	
 						// Call addTime once to get back each lost frame
 						addTime();
@@ -1347,6 +1350,15 @@ public class MasterClock implements Serializable {
 
 	public double getTime() {
 		return clockListenerTasks.get(0).getTime();
+	}
+	
+	/**
+	 * Gets the sleep time in milliseconds
+	 * 
+	 * @return
+	 */
+	public long getSleepTime() {
+		return sleepTime/1_000_000;
 	}
 	
 	/**

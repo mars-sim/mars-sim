@@ -200,17 +200,19 @@ public class Walk extends Task implements Serializable {
 					"[" + person.getLocationTag().getLocale() + "] "
       						+ person + " was in " + person.getLocationTag().getImmediateLocation()
       						+ " but walking steps could not be determined.");
+
 			endTask();
+//			person.getMind().getTaskManager().clearAllTasks();
 			
-			if (person != null) {
-				int rand1 = RandomUtil.getRandomInt(6);
-				if (rand1 == 0)
-					person.getMind().getTaskManager().addTask(new EatMeal(person));
-				else if (rand1 < 3)
-					person.getMind().getTaskManager().addTask(new Relax(person));
-//				else 
-//					person.getMind().getTaskManager().addTask(new Sleep(person));
-			}
+//			if (person != null) {
+//				int rand1 = RandomUtil.getRandomInt(6);
+//				if (rand1 == 0)
+//					person.getMind().getTaskManager().addTask(new EatMeal(person), false);
+//				else if (rand1 < 3)
+//					person.getMind().getTaskManager().addTask(new Relax(person), false);
+////				else 
+////					person.getMind().getTaskManager().addTask(new Sleep(person));
+//			}
 		} 
 		
 		else if (!canWalkAllSteps(person, walkingSteps)) {
@@ -218,17 +220,19 @@ public class Walk extends Task implements Serializable {
 					"[" + person.getLocationTag().getLocale() + "] "
       						+ person + " was in " + person.getLocationTag().getImmediateLocation()
 					+ " but Valid Walking steps could not be determined.");
+
 			endTask();
-			
-			if (person != null) {
-				int rand1 = RandomUtil.getRandomInt(6);
-				if (rand1 == 0)
-					person.getMind().getTaskManager().addTask(new EatMeal(person));
-				else if (rand1 < 3)
-					person.getMind().getTaskManager().addTask(new Relax(person));
-//				else 
-//					person.getMind().getTaskManager().addTask(new Sleep(person));
-			}
+//			person.getMind().getTaskManager().clearAllTasks();
+
+//			if (person != null) {
+//				int rand1 = RandomUtil.getRandomInt(6);
+//				if (rand1 == 0)
+//					person.getMind().getTaskManager().addTask(new EatMeal(person), false);
+//				else if (rand1 < 3)
+//					person.getMind().getTaskManager().addTask(new Relax(person), false);
+////				else 
+////					person.getMind().getTaskManager().addTask(new Sleep(person));
+//			}
 		}
 
 		// Initialize task phase.

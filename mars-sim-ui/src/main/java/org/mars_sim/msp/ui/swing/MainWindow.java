@@ -16,7 +16,6 @@ import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
@@ -28,7 +27,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -39,7 +37,6 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
@@ -54,7 +51,6 @@ import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.swing.configeditor.CrewEditor;
 import org.mars_sim.msp.ui.swing.configeditor.SimulationConfigEditor;
-import org.mars_sim.msp.ui.swing.tool.AngledLinesWindowsCornerIcon;
 import org.mars_sim.msp.ui.swing.tool.JStatusBar;
 
 //import com.alee.managers.UIManagers;
@@ -87,6 +83,8 @@ extends JComponent {
 	private static final String SOL = " Sol ";
 //	private static final String themeSkin = "nimrod";
 	private static final String WHITESPACES = "   ";
+	private static final String SLEEP_TIME = "   Sleep Time : ";
+	private static final String MS = " ms   ";
 	
 	/** The timer for update the status bar labels. */
 	private static final int TIME_DELAY = 2_000;
@@ -123,6 +121,7 @@ extends JComponent {
 
 	private JStatusBar statusBar;
 	
+	private JLabel sleepLabel;
 	private JLabel leftLabel;
 	private JLabel memMaxLabel;
 	private JLabel memUsedLabel;
@@ -328,8 +327,7 @@ extends JComponent {
 		earthTimeLabel = new JLabel();
 		earthTimeLabel.setHorizontalAlignment(JLabel.LEFT);
 		TooltipManager.setTooltip(earthTimeLabel, "Earth Timestamp", TooltipWay.up);
-		statusBar.setLeftComponent(earthTimeLabel, false);
-
+		statusBar.setLeftComponent(earthTimeLabel, true);
 
 		leftLabel = new JLabel();
 		leftLabel.setText(SOL + "1");
@@ -337,15 +335,25 @@ extends JComponent {
 		TooltipManager.setTooltip(leftLabel, "# of sols since the beginning of the sim", TooltipWay.up);
 		statusBar.add(leftLabel, 0);
 
-		memFree = (int) Math.round(Runtime.getRuntime().freeMemory()) / 1_000_000;
-
+		// Track the sleep time per frame
+		if (masterClock == null)
+			masterClock = sim.getMasterClock();
+		long sleepTime = masterClock.getSleepTime();
+		sleepLabel = new JLabel();
+		sleepLabel.setHorizontalAlignment(JLabel.RIGHT);
+		sleepLabel.setText(SLEEP_TIME + sleepTime + MS);
+		TooltipManager.setTooltip(sleepLabel, "Sleep Time in milliseconds in each frame", TooltipWay.up);
+		statusBar.addRightComponent(sleepLabel, true, false);
+		
+		
 		memUsedLabel = new JLabel();
 		memUsedLabel.setHorizontalAlignment(JLabel.RIGHT);
 		int memTotal = (int) Math.round(Runtime.getRuntime().totalMemory()) / 1_000_000;
+		memFree = (int) Math.round(Runtime.getRuntime().freeMemory()) / 1_000_000;
 		memUsed = memTotal - memFree;
-		memUsedLabel.setText(memUsed + " MB");// "Used Memory : " + memUsed + " MB");
+		memUsedLabel.setText(WHITESPACES + memUsed + " MB");// "Used Memory : " + memUsed + " MB");
 		TooltipManager.setTooltip(memUsedLabel, "Memory Used", TooltipWay.up);
-		statusBar.addRightComponent(memUsedLabel, false, false);
+		statusBar.addRightComponent(memUsedLabel, true, false);
 
 		memMaxLabel = new JLabel();
 		memMaxLabel.setHorizontalAlignment(JLabel.RIGHT);
@@ -409,7 +417,7 @@ extends JComponent {
 				if (earthClock == null) {
 					if (masterClock == null)
 						masterClock = sim.getMasterClock();
-					masterClock = sim.getMasterClock();
+//					masterClock = sim.getMasterClock();
 					earthClock = masterClock.getEarthClock();
 					marsClock = masterClock.getMarsClock();
 				}
@@ -417,17 +425,23 @@ extends JComponent {
 				// Increment both the earth and mars clocks
 				incrementClocks();
 				
+				// Track sleep time
+				long sleepTime = masterClock.getSleepTime();
+				sleepLabel.setText(SLEEP_TIME + sleepTime + MS);
+				
+				
+				// Track memory
 				int memFree = (int) Math.round(Runtime.getRuntime().freeMemory()) / 1_000_000;
 				int memTotal = (int) Math.round(Runtime.getRuntime().totalMemory()) / 1_000_000;
 				int memUsed = memTotal - memFree;
 
 				if (memUsed > memUsedCache * 1.1 && memUsed < memUsedCache * 0.9) {
 					memUsedCache = memUsed;
-					memUsedLabel.setText(
-//							"Used Memory : " + 
+					memUsedLabel.setText(WHITESPACES +  
 							memUsed + " MB" + WHITESPACES);
 				}
 
+				// Track mission sol
 				int sol = marsClock.getMissionSol();
 				if (solCache != sol) {
 					solCache = sol;

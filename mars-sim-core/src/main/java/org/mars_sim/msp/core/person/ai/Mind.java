@@ -9,7 +9,6 @@ package org.mars_sim.msp.core.person.ai;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -449,7 +448,7 @@ public class Mind implements Serializable {
 	 * aborted.
 	 */
 	public void setInactive() {
-		taskManager.clearTask();
+		taskManager.clearAllTasks();
 		if (hasActiveMission()) {
 			mission.removeMember(person);
 			mission = null;
@@ -497,7 +496,7 @@ public class Mind implements Serializable {
 		// Check if there are any assigned tasks
 		if (taskManager.hasPendingTask()) {
 			Task newTask = taskManager.getAPendingMetaTask().constructInstance(person);
-			taskManager.addTask(newTask); 
+			taskManager.addTask(newTask, false);
 			return;
 		}
 		
@@ -543,7 +542,7 @@ public class Mind implements Serializable {
 			if (rand < taskWeights) {
 				Task newTask = taskManager.getNewTask();
 				if (newTask != null)
-					taskManager.addTask(newTask);
+					taskManager.addTask(newTask, false);
 				else
 					logger.severe(person + "'s newTask is null ");
 

@@ -762,7 +762,7 @@ public class PhysicalCondition implements Serializable {
 				// Stop any on-going tasks
 //				taskMgr.clearTask();
 				// go eat a meal
-				taskMgr.addTask(new EatMeal(person));
+				taskMgr.addTask(new EatMeal(person), false);
 			}
 
 			// TODO : should check if a person is on a critical mission,
@@ -771,7 +771,7 @@ public class PhysicalCondition implements Serializable {
 
 		else if (isStarving) {
 			
-			taskMgr.addTask(new EatMeal(person));
+			taskMgr.addTask(new EatMeal(person), false);;
 			
 			if (hunger < 500D && kJoules > 800D) {
 		
@@ -803,13 +803,13 @@ public class PhysicalCondition implements Serializable {
 			// Stop any on-going tasks
 //				taskMgr.clearTask();
 			// go drink water by eating a meal
-			taskMgr.addTask(new EatMeal(person));
+			taskMgr.addTask(new EatMeal(person), true);
 
 		}
 
 		if (isDehydrated) {
 			
-			taskMgr.addTask(new EatMeal(person));
+			taskMgr.addTask(new EatMeal(person), true);
 			
 			if (thirst < 500D) {
 			
