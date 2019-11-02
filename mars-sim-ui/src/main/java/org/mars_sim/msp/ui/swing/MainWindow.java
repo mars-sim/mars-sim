@@ -46,6 +46,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.Simulation.SaveType;
 import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
@@ -632,7 +633,7 @@ extends JComponent {
 					desktop.openAnnouncementWindow("  " + Msg.getString("MainWindow.autosavingSim") + "  "); //$NON-NLS-1$
 //				});
 //				layerUI.start();
-				masterClock.setSaveSim(Simulation.AUTOSAVE, null);
+				masterClock.setSaveSim(SaveType.AUTOSAVE, null);
 //					sim.getSimExecutor().submit(() -> masterClock.setSaveSim(Simulation.AUTOSAVE, null));
 			}
 
@@ -649,7 +650,7 @@ extends JComponent {
 					if (chooser.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {
 						final File fileLocn = chooser.getSelectedFile();
 //						layerUI.start();
-						masterClock.setSaveSim(Simulation.SAVE_AS, fileLocn);
+						masterClock.setSaveSim(SaveType.SAVE_AS, fileLocn);
 //							sim.getSimExecutor().submit(() -> masterClock.setSaveSim(Simulation.SAVE_AS, fileLocn));
 					} else {
 						return;
@@ -659,7 +660,7 @@ extends JComponent {
 				else {
 //					layerUI.start();
 //					if (fileLocn == null)
-					masterClock.setSaveSim(Simulation.SAVE_DEFAULT, null);
+					masterClock.setSaveSim(SaveType.SAVE_DEFAULT, null);
 //						sim.getSimExecutor().submit(() -> masterClock.setSaveSim(Simulation.SAVE_DEFAULT, null));
 				}
 

@@ -25,6 +25,7 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.Simulation.SaveType;
 
 /**
  * The MasterClock represents the simulated time clock on virtual Mars and
@@ -59,9 +60,9 @@ public class MasterClock implements Serializable {
 	/** Flag for ending the simulation program. */
 	private transient volatile boolean exitProgram;
 	/** Flag for getting ready for autosaving. */
-	private transient volatile boolean autosave;
+//	private transient volatile boolean autosave;
 	/** Mode for saving a simulation. */
-	private transient volatile int saveType;
+	private transient volatile SaveType saveType = SaveType.NONE;
 //	private AtomicInteger saveType;
 	
 	/** The Current time between updates (TBU). */
@@ -462,29 +463,29 @@ public class MasterClock implements Serializable {
 	 * 
 	 * @param file save to file or null if default file.
 	 */
-	public void setSaveSim(int type, File file) {
+	public void setSaveSim(SaveType type, File file) {
 		saveType = type;
 		this.file = file;
 //		logger.config("setSaveSim(" + type + ", " + file + ");  saveType is " + saveType);
 	}
 
-	/**
-	 * Sets the value of autosave
-	 * 
-	 * @param value
-	 */
-	public void setAutosave(boolean value) {
-		autosave = value;
-	}
+//	/**
+//	 * Sets the value of autosave
+//	 * 
+//	 * @param value
+//	 */
+//	public void setAutosave(boolean value) {
+//		autosave = value;
+//	}
 
-	/**
-	 * Gets the value of autosave
-	 * 
-	 * @return autosave
-	 */
-	public boolean getAutosave() {
-		return autosave;
-	}
+//	/**
+//	 * Gets the value of autosave
+//	 * 
+//	 * @return autosave
+//	 */
+//	public boolean getAutosave() {
+//		return autosave;
+//	}
 
 	/**
 	 * Checks if in the process of saving a simulation.
@@ -492,7 +493,7 @@ public class MasterClock implements Serializable {
 	 * @return true if saving simulation.
 	 */
 	public boolean isSavingSimulation() {
-		if (saveType == 0)
+		if (saveType == SaveType.NONE)
 			return false;
 		else
 			return true;
@@ -779,7 +780,7 @@ public class MasterClock implements Serializable {
 					int skips = 0;
 
 					while (!justReloaded && (Math.abs(excess) > currentTBU_ns) && (skips < maxFrameSkips)) {
-						logger.warning("excess : " + excess + " ns");
+						logger.warning("excess : " + excess/1_000_000 + " ms");
 						// e.g. excess : -118289082
 						justReloaded = false;
 						excess -= currentTBU_ns;
@@ -936,7 +937,7 @@ public class MasterClock implements Serializable {
 	private boolean checkSave() {
 //		logger.config("checkSave() is on " + Thread.currentThread().getName()); // pool-4-thread-1
 //		logger.config("1. checkSave() : saveType is " + saveType); 
-		if (saveType != 0) {
+		if (saveType != SaveType.NONE) {
 //			logger.config("checkSave() is on " + Thread.currentThread().getName());
 //			logger.config("2. checkSave() : saveType is " + saveType); 
 			try {
@@ -953,7 +954,7 @@ public class MasterClock implements Serializable {
 			}
 			
 			// Reset saveType back to zero
-			saveType = 0;
+			saveType = SaveType.NONE;
 
 			return true;
 		}

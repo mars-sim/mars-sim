@@ -13,6 +13,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.Simulation.SaveType;
 
 
 // See https://stackoverflow.com/questions/14889143/how-to-stop-a-task-in-scheduledthreadpoolexecutor-once-i-think-its-completed
@@ -48,11 +49,12 @@ public class AutosaveScheduler {
         		masterClock = sim.getMasterClock();
         	
         	if (sim.getAutosaveDefault()) {
-        		// Choose the type of autosave based on the setting
-        		masterClock.setSaveSim(Simulation.AUTOSAVE_AS_DEFAULT, null);
+        		// Autosave as default
+        		masterClock.setSaveSim(SaveType.AUTOSAVE_AS_DEFAULT, null);
         	}
         	else {
-        		masterClock.setAutosave(true);
+        		// Autosave with build info and timestamp
+        		masterClock.setSaveSim(SaveType.AUTOSAVE, null);
         	}
         }
     }

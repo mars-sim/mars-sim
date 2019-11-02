@@ -126,17 +126,19 @@ public class Simulation implements ClockListener, Serializable {
 	private static Logger logger = Logger.getLogger(Simulation.class.getName());
 //	private static String loggerName = logger.getName();
 //	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
-	
-	/** The mode to load other file. */ 
-	public static final int OTHER = 0;
-	/** The mode to save as default.sim. */
-	public static final int SAVE_DEFAULT = 1;
-	/** The mode to save with other name. */
-	public static final int SAVE_AS = 2;
-	/** The mode to autosave as default.sim . */
-	public static final int AUTOSAVE_AS_DEFAULT = 3;
-	/**  The mode to autosave with build info/date/time stamp. */
-	public static final int AUTOSAVE = 4;
+	public enum SaveType {
+		/** Do not save */
+		NONE, 
+		/** Save as default.sim. */
+		SAVE_DEFAULT, 
+		/** Save as other name. */
+		SAVE_AS, 
+		/** Autosave as default.sim. */
+		AUTOSAVE_AS_DEFAULT, 
+		/** Autosave with build info and timestamp. */
+		AUTOSAVE;
+	};
+
 	/** # of thread(s). */
 	public static final int NUM_THREADS = Runtime.getRuntime().availableProcessors();
 	/** User's home directory string. */
@@ -1136,7 +1138,7 @@ public class Simulation implements ClockListener, Serializable {
 	 * 
 	 * @param file the file to be saved to.
 	 */
-	public synchronized void saveSimulation(int type, File file) throws IOException {
+	public synchronized void saveSimulation(SaveType type, File file) throws IOException {
 //		logger.config("saveSimulation(" + type + ", " + file + ")");
 		// Checks to see if the simulation is on pause
 		boolean isPause = masterClock.isPaused();
@@ -1157,7 +1159,7 @@ public class Simulation implements ClockListener, Serializable {
 		Path srcPath = null;
 
 		// Use type to differentiate in what name/dir it is saved
-		if (type == SAVE_DEFAULT) {
+		if (type == SaveType.SAVE_DEFAULT) {
 
 			file = new File(SAVE_DIR, SAVE_FILE + SAVE_FILE_EXTENSION);
 
@@ -1173,7 +1175,7 @@ public class Simulation implements ClockListener, Serializable {
 
 		}
 
-		else if (type == SAVE_AS) {
+		else if (type == SaveType.SAVE_AS) {
 			String f = file.getName();
 			String dir = file.getParentFile().getAbsolutePath();
 			if (!f.contains(".sim"))
@@ -1181,7 +1183,7 @@ public class Simulation implements ClockListener, Serializable {
 			logger.config("Saving the simulation as " + file + "...");
 		}
 
-		else if (type == AUTOSAVE_AS_DEFAULT) {
+		else if (type == SaveType.AUTOSAVE_AS_DEFAULT) {
 
 //            file = new File(DEFAULT_DIR, DEFAULT_FILE + DEFAULT_EXTENSION);
 //            logger.config("Autosaving as " + DEFAULT_FILE + DEFAULT_EXTENSION);
@@ -1200,13 +1202,13 @@ public class Simulation implements ClockListener, Serializable {
 
 		}
 
-		else if (type == AUTOSAVE) {
+		else if (type == SaveType.AUTOSAVE) {
 			int missionSol = masterClock.getMarsClock().getMissionSol();
 			
-			String autosaveFilename = lastSaveTimeStamp + "_Sol" + missionSol + "_r" + BUILD
+			String autosaveFilename = lastSaveTimeStamp + "_sol" + missionSol + "_r" + BUILD
 					+ SAVE_FILE_EXTENSION;
 			file = new File(AUTOSAVE_DIR, autosaveFilename);
-			logger.config("Autosaving the simulation as " + autosaveFilename + "...");
+			logger.config("Autosaving the simulation as " + autosaveFilename + ".");
 
 		}
 
@@ -1238,7 +1240,7 @@ public class Simulation implements ClockListener, Serializable {
     /**
      * Serialize the given object and save it to a given file.
      */
-    public void serialize(int type, File file, Path srcPath, Path destPath)
+    public void serialize(SaveType type, File file, Path srcPath, Path destPath)
             throws IOException {
 
 		// Replace gzip with xz compression (based on LZMA2)
@@ -1342,7 +1344,7 @@ public class Simulation implements ClockListener, Serializable {
 			logger.log(Level.SEVERE, oos.getClass().getSimpleName() + ": " + Msg.getString("Simulation.log.saveError"), e0); //$NON-NLS-1$
 			e0.printStackTrace();
 
-			if (type == AUTOSAVE_AS_DEFAULT || type == SAVE_DEFAULT) {
+			if (type == SaveType.AUTOSAVE_AS_DEFAULT || type == SaveType.SAVE_DEFAULT) {
 //	            backupFile = new File(DEFAULT_DIR, DEFAULT_FILE + DEFAULT_EXTENSION);
 //	            backupFile.renameTo(file);
 
@@ -1356,7 +1358,7 @@ public class Simulation implements ClockListener, Serializable {
 			logger.log(Level.SEVERE, oos.getClass().getSimpleName() + ": " + Msg.getString("Simulation.log.saveError"), e); //$NON-NLS-1$
 			e.printStackTrace();
 
-			if (type == AUTOSAVE_AS_DEFAULT || type == SAVE_DEFAULT) {
+			if (type == SaveType.AUTOSAVE_AS_DEFAULT || type == SaveType.SAVE_DEFAULT) {
 //	            backupFile = new File(DEFAULT_DIR, DEFAULT_FILE + DEFAULT_EXTENSION);
 //	            backupFile.renameTo(file);
 

@@ -752,9 +752,12 @@ public class EatMeal extends Task implements Serializable {
 				boolean haswater = false;
 				double amount = waterFinal / 1000D / level;
 
-				if (amount > MIN)
-					haswater = Storage.retrieveAnResource(amount, ResourceUtil.waterID, inv, false);
-			
+				if (amount > MIN) {
+					double available = inv.getAmountResourceStored(ResourceUtil.waterID, false);//Storage.retrieveAnResource(amount, ResourceUtil.waterID, inv, false);
+					if (available >= amount)
+						haswater = true;
+				}				
+					
 				if (haswater) {
 					new_thirst = new_thirst - amount * 5_000;
 					if (new_thirst < 0)
@@ -785,8 +788,11 @@ public class EatMeal extends Task implements Serializable {
 				else if (!haswater) {
 					// Test to see if there's just half of the amount of water
 					amount = waterFinal / 1000D / level / 1.5;
-					if (amount > MIN)
-						haswater = Storage.retrieveAnResource(amount, ResourceUtil.waterID, inv, false);
+					if (amount > MIN) {
+						double available = inv.getAmountResourceStored(ResourceUtil.waterID, false);//Storage.retrieveAnResource(amount, ResourceUtil.waterID, inv, false);
+						if (available >= amount)
+							haswater = true;
+					}
 					
 					if (haswater) {
 						new_thirst = new_thirst - amount * 5_000;
@@ -811,8 +817,12 @@ public class EatMeal extends Task implements Serializable {
 					}
 					else {
 						amount = waterFinal / 1000D / level / 3.0;
-						if (amount > MIN)
-							haswater = Storage.retrieveAnResource(amount, ResourceUtil.waterID, inv, false);
+
+						if (amount > MIN) {
+							double available = inv.getAmountResourceStored(ResourceUtil.waterID, false);//Storage.retrieveAnResource(amount, ResourceUtil.waterID, inv, false);
+							if (available >= amount)
+								haswater = true;
+						}
 						
 						if (haswater) {
 							new_thirst = new_thirst - amount * 5_000;
@@ -838,8 +848,11 @@ public class EatMeal extends Task implements Serializable {
 						
 						else {
 							amount = waterFinal / 1000D / level / 4.5;
-							if (amount > MIN)
-								haswater = Storage.retrieveAnResource(amount, ResourceUtil.waterID, inv, false);
+							if (amount > MIN) {
+								double available = inv.getAmountResourceStored(ResourceUtil.waterID, false);//Storage.retrieveAnResource(amount, ResourceUtil.waterID, inv, false);
+								if (available >= amount)
+									haswater = true;
+							}
 							
 							if (haswater) {
 								new_thirst = new_thirst - amount * 5_000;

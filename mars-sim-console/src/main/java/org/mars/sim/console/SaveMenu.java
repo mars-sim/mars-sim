@@ -12,6 +12,7 @@ import org.beryx.textio.swing.SwingTextTerminal;
 import org.mars.sim.console.AppUtil;
 import org.mars.sim.console.RunnerData;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.Simulation.SaveType;
 
 import java.util.function.BiConsumer;
 
@@ -38,7 +39,7 @@ public class SaveMenu implements BiConsumer<TextIO, RunnerData> {
 
         if (toSave) {
             terminal.printf("Saving Simulation..." + System.lineSeparator());
-        	Simulation.instance().getMasterClock().setSaveSim(Simulation.SAVE_DEFAULT, null); 
+        	Simulation.instance().getMasterClock().setSaveSim(SaveType.SAVE_DEFAULT, null); 
         }
         else {
             terminal.printf("You don't want to save the Simulation." + System.lineSeparator());
