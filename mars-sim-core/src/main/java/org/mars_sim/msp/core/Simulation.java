@@ -1398,6 +1398,8 @@ public class Simulation implements ClockListener, Serializable {
 	public StringBuilder printObjectSize(int type) {
       	StringBuilder sb = new StringBuilder();
 		
+      	System.out.println("# of collection sites : " + mars.getSurfaceFeatures().getSites().size());
+      	
 		List<Serializable> list = Arrays.asList( 
 				SimulationConfig.instance(),
 				ResourceUtil.getInstance(),

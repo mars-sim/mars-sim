@@ -67,7 +67,7 @@ public class SurfaceFeatures implements Serializable {
 	private Map<Coordinates, Double> solarIrradiance;
 
 	// The sites map for ice and regolith collection mission
-	private Map<Coordinates, Site> sites;
+	private Map<Coordinates, CollectionSite> sites;
 	
 
 	// static instances
@@ -719,7 +719,7 @@ public class SurfaceFeatures implements Serializable {
 	 * 
 	 * @return
 	 */
-	public Map<Coordinates, Site> getSites() {
+	public Map<Coordinates, CollectionSite> getSites() {
 		return sites;
 	}
 	
@@ -729,7 +729,7 @@ public class SurfaceFeatures implements Serializable {
 	 * @param location
 	 * @param site
 	 */
-	public void setSites(Coordinates location, Site site) {
+	public void setSites(Coordinates location, CollectionSite site) {
 		if (!sites.containsKey(location)) {
 			sites.put(location, site);
 		}
@@ -762,19 +762,39 @@ public class SurfaceFeatures implements Serializable {
 	 * Prepare object for garbage collection.
 	 */
 	public void destroy() {
-		terrainElevation.destroy();
-		terrainElevation = null;
-		orbitInfo = null;
-		mars = null;
-		missionManager = null;
-		sunDirection = null;
-		landmarks.clear();
-		landmarks = null;
+		sites.clear();
+		sites = null;
+		opticalDepthMap.clear();
+		opticalDepthMap = null;
+		solarIrradianceCaches.clear();
+		solarIrradianceCaches = null;
+		solarIrradiance.clear();
+		solarIrradiance = null;
+			
 		mineralMap.destroy();
 		mineralMap = null;
 		exploredLocations.clear();
 		exploredLocations = null;
 		areothermalMap.destroy();
 		areothermalMap = null;
+		
+		sim = null;
+		simulationConfig = null;
+		missionManager = null;
+		solarIrradianceMapCacheTime = null;
+		masterClock = null;
+		weather = null;
+		orbitInfo = null;
+		sunDirection = null;
+		terrainElevation = null;
+		terrainElevation.destroy();
+		terrainElevation = null;
+		orbitInfo = null;
+		mars = null;
+		missionManager = null;
+		sunDirection = null;
+		
+		landmarks.clear();
+		landmarks = null;
 	}
 }

@@ -877,4 +877,11 @@ public class Coordinates implements Serializable {
 		double theta = RandomUtil.getRandomDouble(Math.PI) - RandomUtil.getRandomDouble(Math.PI); 
 		return theta;
 	}
+	
+	/**
+	 * Prepare object for garbage collection.
+	 */
+	public void destroy() {
+		formatter = null;
+	}
 }

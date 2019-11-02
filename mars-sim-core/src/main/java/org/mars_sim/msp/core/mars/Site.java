@@ -8,7 +8,6 @@
 package org.mars_sim.msp.core.mars;
 
 import java.io.Serializable;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
 
@@ -17,9 +16,9 @@ public class Site implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private static Logger logger = Logger.getLogger(Site.class.getName());
+//	private static Logger logger = Logger.getLogger(Site.class.getName());
 
-	private Coordinates location;
+	protected Coordinates location;
 	// degree of uncertainty [in % ] of its content
 	private double uncertainty;
 	
@@ -63,6 +62,39 @@ public class Site implements Serializable {
 		this.elevation = elevation;
 	}
 	
+	/**
+	 * Returns true if the collection site have the same coordinates
+	 * 
+	 * @param o
+	 * @return true if matched, false otherwise
+	 */
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if ((o != null) && (o instanceof Site)) {
+			Site s = (Site) o;
+			if (this.location.equals(s.getLocation())
+					&& this.steepness == s.getSteepness()
+					&& this.elevation == s.getElevation())
+				return true;
+		}
+
+		return false;
+	}
 	
+	/**
+	 * Gets the hash code for this object.
+	 * 
+	 * @return hash code.
+	 */
+	public int hashCode() {
+		return (int)(Math.abs(steepness) + Math.abs(elevation)) + location.hashCode();
+	}
 	
+	/**
+	 * Prepare object for garbage collection.
+	 */
+	public void destroy() {
+		location.destroy();
+		location = null;
+	}
 }

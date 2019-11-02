@@ -122,7 +122,7 @@ public class TerrainElevation implements Serializable {
 		return Math.atan(elevationChange / 11.1D);
 	}
 	
-	public static double[] computeTerrainProfile(Site site, Coordinates currentLocation) {
+	public static double[] computeTerrainProfile(CollectionSite site, Coordinates currentLocation) {
 		double steepness = 0;
 		double elevation = getPatchedElevation(currentLocation);
 		for (int i=0 ; i <= 360 ; i++) {
@@ -150,7 +150,7 @@ public class TerrainElevation implements Serializable {
 			surfaceFeatures = Simulation.instance().getMars().getSurfaceFeatures();
 	
 		if (surfaceFeatures.getSites().containsKey(currentLocation)) {
-			Site site = surfaceFeatures.getSites().get(currentLocation);
+			CollectionSite site = surfaceFeatures.getSites().get(currentLocation);
 			
 			if (site.getSteepness() == -1) {
 				

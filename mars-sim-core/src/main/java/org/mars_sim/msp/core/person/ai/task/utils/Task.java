@@ -197,7 +197,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		// End subtask.
 		if (subTask != null && !subTask.isDone()) {
 			subTask.endTask();
-//			subTask.destroy();
+			subTask.destroy();
 			subTask = null;
 		}
 
@@ -460,7 +460,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	public void addSubTask(Task newSubTask) {
 		if (subTask != null) {
 			if (subTask.done) {
-//				subTask.destroy();
+				subTask.destroy();
 				subTask = newSubTask;
 				if (person != null) {
 					// Note: need to avoid java.lang.StackOverflowError when calling
@@ -514,7 +514,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		double timeLeft = time;
 		if (subTask != null) {
 			if (subTask.isDone()) {
-//				subTask.destroy();
+				subTask.destroy();
 				subTask = null;
 			} else {
 				timeLeft = subTask.performTask(timeLeft);

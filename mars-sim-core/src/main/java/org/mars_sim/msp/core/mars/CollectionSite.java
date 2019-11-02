@@ -50,4 +50,32 @@ public class CollectionSite extends Site implements Serializable {
 		this.estimatedIceVolume = estimatedVolume;
 	}
 
+	/**
+	 * Returns true if the collection site have the same coordinates
+	 * 
+	 * @param o
+	 * @return true if matched, false otherwise
+	 */
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if ((o != null) && (o instanceof CollectionSite)) {
+			CollectionSite s = (CollectionSite) o;
+			if (this.location.equals(s.getLocation())
+					&& this.iceCollectionRate == s.getIceCollectionRate()
+					&& this.regolithCollectionRate == s.getRegolithCollectionRate())
+				return true;
+		}
+
+		return false;
+	}
+	
+	/**
+	 * Gets the hash code for this object.
+	 * 
+	 * @return hash code.
+	 */
+	public int hashCode() {
+		return (int)(Math.abs(iceCollectionRate) + Math.abs(regolithCollectionRate)) + location.hashCode();
+	}
+
 }
