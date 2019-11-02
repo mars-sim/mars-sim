@@ -67,7 +67,7 @@ public class SurfaceFeatures implements Serializable {
 	private Map<Coordinates, Double> solarIrradiance;
 
 	// The sites map for ice and regolith collection mission
-	private Map<Coordinates, CollectionSite> sites;
+	private static Map<Coordinates, CollectionSite> sites;
 	
 
 	// static instances
