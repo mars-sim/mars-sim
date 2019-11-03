@@ -1669,6 +1669,23 @@ public class Inventory implements Serializable {
 	}
 
 	/**
+	 * Finds all of the equipment.
+	 * 
+	 * @return collection of equipment or empty collection if none.
+	 */
+	public <T extends Unit> Collection<Equipment> findAllEquipment() {
+		Collection<Equipment> result = new ConcurrentLinkedQueue<>();
+		if (containedUnitIDs != null) {
+			for (Integer id : containedUnitIDs) {
+				Equipment e = unitManager.getEquipmentByID(id);
+				if (e != null) 
+					result.add(e);
+			}
+		}
+		return result;
+	}
+	
+	/**
 	 * Finds all of the specimen boxes in storage.
 	 * 
 	 * @return collection of specimen boxes or empty collection if none.

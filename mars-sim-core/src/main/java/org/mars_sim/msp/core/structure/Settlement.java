@@ -471,8 +471,6 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 		// set location
 		location = getCoordinates();
 		
-//		updateAllAssociatedPeople();
-//		updateAllAssociatedRobots();
 	}
 
 	/**

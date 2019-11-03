@@ -159,7 +159,7 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 	}
 	
 	protected Robot(String name, Settlement settlement, RobotType robotType) {
-		super(name, robotType.toString(), settlement.getCoordinates()); // extending equipment
+		super(name, robotType.getName(), settlement.getCoordinates()); // extending equipment
 		
 		// Add this robot to the lookup map
 		unitManager.addRobotID(this);

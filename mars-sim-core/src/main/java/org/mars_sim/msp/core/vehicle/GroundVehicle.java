@@ -199,7 +199,7 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
 		Settlement settlement = getSettlement();
 		if (settlement == null) {
 			// throw new IllegalStateException("Vehicle not parked at a settlement");
-			logger.severe(this.getName() + " no longer parks at a settlement.");
+			logger.warning(this.getName() + " no longer parks at a settlement.");
 		}
 
 		else {
@@ -278,30 +278,6 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
 
 		}
 	}
-
-//	public boolean isGoodLocation(double centerXLoc, double centerYLoc) {
-//		double newXLoc = 0D;
-//		double newYLoc = 0D;
-//		double newFacing = 0D;
-//		boolean foundGoodLocation = false;
-//		// Try iteratively outward from 10m to 500m distance range.
-//		for (int x = 15; (x < 500) && !foundGoodLocation; x += 10) {
-//			// Try ten random locations at each distance range.
-//			for (int y = 0; (y < 10) && !foundGoodLocation; y++) {
-//				double distance = RandomUtil.getRandomDouble(10D) + x;
-//				double radianDirection = RandomUtil.getRandomDouble(Math.PI * 2D);
-//				newXLoc = centerXLoc - (distance * Math.sin(radianDirection));
-//				newYLoc = centerYLoc + (distance * Math.cos(radianDirection));
-//				newFacing = RandomUtil.getRandomDouble(360D);
-//
-//				// Check if new vehicle location collides with anything.
-//				foundGoodLocation = LocalAreaUtil.checkBoundedObjectNewLocationCollision(this, newXLoc, newYLoc,
-//						newFacing, getCoordinates());
-//			}
-//		}
-//		return foundGoodLocation;
-//	}
-
 
 	/**
 	 * Checks if the vehicle has enough amount of fuel as prescribed

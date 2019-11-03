@@ -83,19 +83,20 @@ public class UnitManager implements Serializable {
 	public static final String SETTLEMENT_NAME = "Settlement";
 	
 	public static final String LUV = "LUV";
+	public static final String EARTH = "Earth";
 	
 	/** True if the simulation has just started. */
 	private static boolean justStarting = true;
 	/** True if the simulation will start out with the default alpha crew members. */
-	private static boolean useCrew = true;
-	/** The total numbers of Unit instances. */
-	private static int totalNumUnits = 0;
-	
-	// Transient members
+	private static boolean useCrew = true;	
 	/** Flag true if the class has just been loaded */
 	public static boolean justLoaded = true;
 	/** Flag true if the class has just been reloaded/deserialized */
 	public static boolean justReloaded = false;
+	
+	/** The total numbers of Unit instances. */
+	private static int totalNumUnits = 0;
+	
 	/** List of unit manager listeners. */
 	private static List<UnitManagerListener> listeners;
 
@@ -961,6 +962,7 @@ public class UnitManager implements Serializable {
 						Equipment equipment = EquipmentFactory.createEquipment(type, settlement.getCoordinates(),
 								false);
 						String newName = getNewName(UnitType.EQUIPMENT, type, null, null);
+						// Set name at its parent class "Unit"
 						equipment.setName(newName);
 //						settlement.getInventory().storeUnit(equipment);
 						settlement.addOwnedEquipment(equipment);
@@ -1728,7 +1730,7 @@ public class UnitManager implements Serializable {
 						
 						// Adopt Static Factory Method and Factory Builder Pattern
 						Robot robot = Robot.create(name, settlement, robotType)
-								.setCountry("Earth")
+								.setCountry(EARTH)
 								.setSkill(skillMap, robotType)
 								.setAttribute(attributeMap)
 								.build();
@@ -1766,13 +1768,16 @@ public class UnitManager implements Serializable {
 					// Get a robotType randomly
 					RobotType robotType = getABot(settlement, initial);
 					// Adopt Static Factory Method and Factory Builder Pattern
-					Robot robot = Robot.create(getNewName(UnitType.ROBOT, null, null, robotType), settlement, robotType)
-							.setCountry("Earth")
+					String newName = getNewName(UnitType.ROBOT, null, null, robotType);
+					Robot robot = Robot.create(newName, settlement, robotType)
+							.setCountry(EARTH)
 							.setSkill(null, robotType)
 							.setAttribute(null)
 							.build();
 					robot.initialize();
-
+					// Set name at its parent class "Unit"
+					robot.setName(newName);
+					
 					String jobName = RobotJob.getName(robotType);
 					if (jobName != null) {
 						RobotJob robotJob = JobUtil.getRobotJob(robotType.getName());

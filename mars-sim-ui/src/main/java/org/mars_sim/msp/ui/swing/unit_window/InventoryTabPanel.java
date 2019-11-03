@@ -15,6 +15,7 @@ import java.awt.GridLayout;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -57,8 +58,9 @@ import com.jidesoft.swing.TableSearchable;
 public class InventoryTabPanel extends TabPanel implements ListSelectionListener {
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(InventoryTabPanel.class.getName());
-
+	private static final Logger logger = Logger.getLogger(InventoryTabPanel.class.getName());
+	private static final String WHITESPACE = "  ";
+	
 	/** Is UI constructed. */
 	private boolean uiDone = false;
 	
@@ -164,13 +166,21 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         equipmentTable.getSelectionModel().addListSelectionListener(this);
         equipmentPanel.setViewportView(equipmentTable);
 
-
+        equipmentTable.setDefaultRenderer(Double.class, new NumberCellRenderer(2, true));
+		
+        equipmentTable.getColumnModel().getColumn(0).setPreferredWidth(60);
+        equipmentTable.getColumnModel().getColumn(1).setPreferredWidth(80);
+        equipmentTable.getColumnModel().getColumn(2).setPreferredWidth(30);
+        equipmentTable.getColumnModel().getColumn(3).setPreferredWidth(70);
+		
 		// Align the preference score to the center of the cell
 		DefaultTableCellRenderer renderer2 = new DefaultTableCellRenderer();
 		renderer2.setHorizontalAlignment(SwingConstants.RIGHT);
 		equipmentTable.getColumnModel().getColumn(0).setCellRenderer(renderer2);
 		equipmentTable.getColumnModel().getColumn(1).setCellRenderer(renderer2);
-
+		equipmentTable.getColumnModel().getColumn(2).setCellRenderer(renderer2);
+		equipmentTable.getColumnModel().getColumn(3).setCellRenderer(renderer2);
+		
 		// Added sorting
         equipmentTable.setAutoCreateRowSorter(true);
 
@@ -366,9 +376,11 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 		private static final long serialVersionUID = 1L;
 
 		private Inventory inventory;
-		private List<Unit> list;
-		private Map<String,String> equipment;
-
+		private List<Equipment> names;
+		private Map<String, String> types;
+		private Map<String, String> equipment;
+		private Map<String, Double> mass;
+		
 		/**
 		 * hidden constructor.
 		 * @param inventory {@link Inventory}
@@ -376,30 +388,30 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 		private EquipmentTableModel(Inventory inventory) {
 			this.inventory = inventory;
 			// Sort equipment alphabetically by name.
-			list = new ArrayList<Unit>();
-
-			equipment = new HashMap<String,String>();
-			for (Unit unit : inventory.findAllUnitsOfClass(Equipment.class)) {
-				equipment.put(
-					unit.getName(),
-					showOwner(unit)//.getInventory())//.isEmpty(true))
-				);
-				list.add(unit);
+			names = new ArrayList<>();
+			types = new HashMap<>();
+			equipment = new HashMap<>();
+			mass = new HashMap<>();
+			for (Equipment e : inventory.findAllEquipment()) {
+				types.put(e.getName(), e.getType());
+				equipment.put(e.getName(), showOwner(e));
+				mass.put(e.getName(), e.getMass());
+				names.add(e);
 			}
-			Collections.sort(list);
+			Collections.sort(names, new NameComparator());
 		}
 
-		private String showOwner(Unit unit) {
+		private String showOwner(Equipment e) {
 			String s = "";
-			String item = unit.getName().toLowerCase();
+			String item = e.getName().toLowerCase();
 			if (item.contains("eva")) {
-				Person p = (Person) ((Equipment) unit).getLastOwner();
+				Person p = (Person) e.getLastOwner();
 				if (p != null)
 					s = p.getName();
 				//else 
 				//	s = unit.getContainerUnit().getName();		
 			}
-			else if (unit instanceof Robot) {
+			else if (e instanceof Robot) {
 				;// TODO: determine ownership of a bot
 			}
 			//if (item.contains("box") || item.contains("canister") 
@@ -407,8 +419,8 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 			//	Person p = (Person) ((Equipment) unit).getLastOwner();	
 			//}
 			else {		
-				List<AmountResource> ars = new ArrayList<>(unit.getInventory().getAllAmountResourcesStored(false));
-				if (ars.size() > 1) logger.info(unit.getName() + " has " + ars.size() + " resources.");
+				List<AmountResource> ars = new ArrayList<>(e.getInventory().getAllAmountResourcesStored(false));
+				if (ars.size() > 1) logger.info(e.getName() + " has " + ars.size() + " resources.");
 				//for (AmountResource ar : ars) {
 				//	s = Conversion.capitalize(ar.getName());
                 //}
@@ -424,56 +436,74 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 		}
 
 		public int getColumnCount() {
-			return 2;
+			return 4;
 		}
-
+		
 		public Class<?> getColumnClass(int columnIndex) {
 			Class<?> dataType = super.getColumnClass(columnIndex);
+			if (columnIndex == 0) dataType = String.class;
+			else if (columnIndex == 1) dataType = String.class;
+			else if (columnIndex == 2) dataType = Double.class;
+			else if (columnIndex == 3) dataType = String.class;
 			return dataType;
 		}
-
+		
 		public String getColumnName(int columnIndex) {
-			// 2014-11-17 Internationalize and Capitalize names
-			if (columnIndex == 0) return Msg.getString("InventoryTabPanel.Equipment.header.name"); //$NON-NLS-1$
-			else if (columnIndex == 1) return Msg.getString("InventoryTabPanel.Equipment.header.status"); //$NON-NLS-1$
+			if (columnIndex == 0) return Msg.getString("InventoryTabPanel.Equipment.header.type"); //$NON-NLS-1$
+			else if (columnIndex == 1) return Msg.getString("InventoryTabPanel.Equipment.header.name"); //$NON-NLS-1$
+			else if (columnIndex == 2) return Msg.getString("InventoryTabPanel.Equipment.header.mass"); //$NON-NLS-1$
+			else if (columnIndex == 3) return Msg.getString("InventoryTabPanel.Equipment.header.status"); //$NON-NLS-1$
 			else return "unknown";
 		}
 
 		public Object getValueAt(int row, int column) {
 			if ((row >= 0) && (row < equipment.size())) {
-				if (column == 0) return list.get(row);
-				else if (column == 1) return equipment.get(list.get(row).getName());
+				if (column == 0) return types.get(names.get(row).getName()) + WHITESPACE;
+				else if (column == 1) return names.get(row) + WHITESPACE;
+				else if (column == 2) return mass.get(names.get(row).getName()) + WHITESPACE;
+				else if (column == 3) return equipment.get(names.get(row).getName()) + WHITESPACE;
 			}
 			return "unknown";
 		}
 
 		public void update() {
-			List<Unit> newList = new ArrayList<Unit>();
-			Map<String,String> newMap = new HashMap<String,String>();
-			for (Unit unit : inventory.findAllUnitsOfClass(Equipment.class)) {
+			List<Equipment> newNames = new ArrayList<>();
+			Map<String, String> newTypes = new HashMap<>();
+			Map<String, String> newEquipment = new HashMap<>();
+			Map<String, Double> newMass = new HashMap<>();
+			for (Equipment e : inventory.findAllEquipment()) {
+				newTypes.put(e.getName(), e.getType());
+				newEquipment.put(e.getName(), showOwner(e));
+				newMass.put(e.getName(), e.getMass());
+				newNames.add(e);
+			}
+			Collections.sort(newNames, new NameComparator());
 
-//				newMap.put(
-//					unit.getName(),
-//					yesNo(unit.getInventory().isEmpty(true))
-//				);
-			
-				newMap.put(
-						unit.getName(),
-						showOwner(unit)//.getInventory())//.isEmpty(true))
-					);
-				newList.add(unit);
-			};
-
-			// Sort equipment alphabetically by name.
-			Collections.sort(newList);
-
-			if (list.size() != newList.size() && !list.equals(newList)) {
-				list = newList;
-				equipment = newMap;
+			if (names.size() != newNames.size() || !names.equals(newNames)) {
+				names = newNames;
+				equipment = newEquipment;
+				types = newTypes;
 				fireTableDataChanged();
 			}
 		}
 	}
+	
+	static class NameComparator implements Comparator<Equipment> {
+	     public int compare(Equipment e0, Equipment e1) {
+	    	 String[] names0 = e0.getName().split(" ");
+	    	 String[] names1 = e1.getName().split(" ");
+	    	 int size0 = names0.length;
+	    	 int size1 = names1.length;
+	    	 
+	    	 if (!names0[0].equals(names1[0]))
+	    		 return names0[0].compareTo(names1[0]);
+	    	 
+	    	 int num0 = Integer.parseInt(names0[size0-1]);
+	    	 int num1 = Integer.parseInt(names1[size1-1]);
+	    	 
+	    	 return num0 - num1;
+	     }
+	 }
 	
 	/**
 	 * Prepare object for garbage collection.
