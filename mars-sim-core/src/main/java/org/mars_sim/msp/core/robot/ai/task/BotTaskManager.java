@@ -160,16 +160,30 @@ implements Serializable {
 		else
 			return "";
 	}
-/*	
-	public FunctionType getFunction(boolean subTask) {
-		if (currentTask != null) {
-			return currentTask.getFunction(subTask);
+	
+	public String getSubTaskDescription() {
+		if (currentTask.getSubTask() != null) {
+			String t = currentTask.getSubTask().getDescription();
+			if (t != null)
+				return t;
+			else
+				return "";		
 		} 
-		else {
-			return FunctionType.UNKNOWN;
-		}
+		
+		else
+			return "";
 	}
-*/
+	
+
+//	public FunctionType getFunction(boolean subTask) {
+//		if (currentTask != null) {
+//			return currentTask.getFunction(subTask);
+//		} 
+//		else {
+//			return FunctionType.UNKNOWN;
+//		}
+//	}
+
 	/**
 	 * Returns the current task phase if there is one.
 	 * Returns null if current task has no phase.
@@ -184,6 +198,15 @@ implements Serializable {
 		}
 	}
 
+	
+	public TaskPhase getSubTaskPhase() {
+		if (currentTask.getSubTask() != null) {
+			return currentTask.getSubTask().getPhase();
+		} else {
+			return null;
+		}
+	}
+	
 	/**
 	 * Returns the current task.
 	 * Return null if there is no current task.

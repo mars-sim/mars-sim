@@ -57,10 +57,14 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 	/** Is UI constructed. */
 	private boolean uiDone = false;
 	
-	/** data cache */
+	/** current task text cache */
 	private String taskTextCache = ""; //$NON-NLS-1$
-	/** data cache */
+	/** current phase text cache */
 	private String taskPhaseCache = ""; //$NON-NLS-1$
+	/** sub task text cache */
+	private String subTaskTextCache = ""; //$NON-NLS-1$
+	/** sub phase text cache */
+	private String subTaskPhaseCache = ""; //$NON-NLS-1$
 	/** data cache */
 	private String missionTextCache = ""; //$NON-NLS-1$
 	/** data cache */
@@ -72,8 +76,13 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 	
 	private WebTextArea taskTextArea;
 	private WebTextArea taskPhaseArea;
+	
+	private WebTextArea subTaskTextArea;
+	private WebTextArea subTaskPhaseArea;
+	
 	private WebTextArea missionTextArea;
 	private WebTextArea missionPhaseTextArea;
+	
 	private WebButton monitorButton;
 	private WebButton missionButton;
 
@@ -142,17 +151,17 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 		centerContentPanel.add(activityPanel);
 
 		// Prepare task top panel
-		WebPanel taskTopPanel = new WebPanel(new GridLayout(2, 1, 0, 0));
+		WebPanel taskTopPanel = new WebPanel(new GridLayout(4, 1, 0, 0));
 //		taskTopPanel.setBorder(new MarsPanelBorder());
 		activityPanel.add(taskTopPanel);
 
 		// Prepare task panel
-		WebPanel taskPanel = new WebPanel(new BorderLayout(0, 0));
-		taskTopPanel.add(taskPanel);
+		WebPanel currentTaskPanel = new WebPanel(new BorderLayout(0, 0));
+		taskTopPanel.add(currentTaskPanel);
 
 		// Prepare task label
 		WebLabel taskLabel = new WebLabel(Msg.getString("TabPanelActivity.task"), WebLabel.CENTER); //$NON-NLS-1$
-		taskPanel.add(taskLabel, BorderLayout.NORTH);
+		currentTaskPanel.add(taskLabel, BorderLayout.NORTH);
 
 		// Prepare task text area
 		if (dead)
@@ -172,12 +181,12 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 			}
 		}
 
-		taskTextArea = new WebTextArea(4, COL_WDITH);
+		taskTextArea = new WebTextArea(1, COL_WDITH);
 		// if (taskText != null)
 		taskTextArea.setText(taskTextCache);
 		taskTextArea.setLineWrap(true);
 		taskTextArea.setEditable(false);
-		taskPanel.add(new WebScrollPane(taskTextArea), BorderLayout.CENTER);
+		currentTaskPanel.add(new WebScrollPane(taskTextArea), BorderLayout.CENTER);
 
 		// Prepare task phase panel
 		WebPanel taskPhasePanel = new WebPanel(new BorderLayout(0, 0));
@@ -206,13 +215,81 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 			}
 		}
 
-		taskPhaseArea = new WebTextArea(4, COL_WDITH);
+		taskPhaseArea = new WebTextArea(1, COL_WDITH);
 		// if (taskPhaseText != null)
 		taskPhaseArea.setText(taskPhaseCache);
 		taskPhaseArea.setLineWrap(true);
 		taskPhaseArea.setEditable(false);
 		taskPhasePanel.add(new WebScrollPane(taskPhaseArea), BorderLayout.CENTER);
 
+		// Prepare sub task panel
+		WebPanel subTaskPanel = new WebPanel(new BorderLayout(0, 0));
+		taskTopPanel.add(subTaskPanel);
+		
+		// Prepare Sub-task label
+		WebLabel subtaskLabel = new WebLabel(Msg.getString("TabPanelActivity.subTask"), WebLabel.CENTER); //$NON-NLS-1$
+		subTaskPanel.add(subtaskLabel, BorderLayout.NORTH);
+
+		// Prepare task text area
+		if (dead)
+			subTaskTextCache = deathInfo.getSubTask();
+		else {
+			if (person != null) {
+				String t = taskManager.getSubTaskDescription();
+				if (t != null) 
+//						&& !t.toLowerCase().contains("walk"))
+					subTaskTextCache = t;
+			}
+
+			else if (robot != null) {
+				String t = botTaskManager.getSubTaskDescription();
+				if (t != null)// && !t.toLowerCase().contains("walk"))
+					subTaskTextCache = t;
+			}
+		}
+
+		subTaskTextArea = new WebTextArea(1, COL_WDITH);
+		// if (taskText != null)
+		subTaskTextArea.setText(subTaskTextCache);
+		subTaskTextArea.setLineWrap(true);
+		subTaskTextArea.setEditable(false);
+		subTaskPanel.add(new WebScrollPane(subTaskTextArea), BorderLayout.CENTER);
+
+		// Prepare task phase panel
+		WebPanel subTaskPhasePanel = new WebPanel(new BorderLayout(0, 0));
+		taskTopPanel.add(subTaskPhasePanel);
+
+		// Prepare task phase label
+		WebLabel subTaskPhaseLabel = new WebLabel(Msg.getString("TabPanelActivity.subTaskPhase"), WebLabel.CENTER); //$NON-NLS-1$
+		subTaskPhasePanel.add(subTaskPhaseLabel, BorderLayout.NORTH);
+
+		// Prepare sub task phase text area
+		if (dead) {
+			subTaskPhaseCache = deathInfo.getSubTaskPhase();
+		} else {
+
+			TaskPhase phase = null;
+
+			if (person != null)
+				phase = taskManager.getSubTaskPhase();
+			else if (robot != null)
+				phase = botTaskManager.getSubTaskPhase();
+
+			if (phase != null) {
+				subTaskPhaseCache = phase.getName();
+			} else {
+				subTaskPhaseCache = "";
+			}
+		}
+
+		subTaskPhaseArea = new WebTextArea(1, COL_WDITH);
+		// if (taskPhaseText != null)
+		subTaskPhaseArea.setText(subTaskPhaseCache);
+		subTaskPhaseArea.setLineWrap(true);
+		subTaskPhaseArea.setEditable(false);
+		subTaskPhasePanel.add(new WebScrollPane(subTaskPhaseArea), BorderLayout.CENTER);
+
+		
 		// Prepare mission top panel
 		WebPanel missionTopPanel = new WebPanel(new BorderLayout(0, 0));// new FlowLayout(FlowLayout.CENTER));
 		// missionTopPanel.setBorder(new MarsPanelBorder());
@@ -381,6 +458,10 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 
 		String newTaskText = "";
 		String newTaskPhase = "";
+		
+		String newSubTaskText = "";
+		String newSubTaskPhase = "";
+		
 		String newMissionText = "";
 		String newMissionPhase = "";
 
@@ -388,7 +469,9 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 		if (dead) {
 			String t = deathInfo.getTask();
 			String tp = deathInfo.getTaskPhase();
-
+			String st = deathInfo.getSubTask();
+			String stp = deathInfo.getSubTaskPhase();
+			
 			if (t == null || t.equals(""))
 				newTaskText = NONE + DEAD_PHRASE;
 			else
@@ -398,6 +481,16 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 				newTaskPhase = NONE + DEAD_PHRASE;
 			else
 				newTaskPhase = tp + DEAD_PHRASE;
+			
+			if (st == null || st.equals(""))
+				newSubTaskText = NONE + DEAD_PHRASE;
+			else
+				newSubTaskText = st + DEAD_PHRASE;
+
+			if (stp == null || stp.equals(""))
+				newSubTaskPhase = NONE + DEAD_PHRASE;
+			else
+				newSubTaskPhase = stp + DEAD_PHRASE;		
 		}
 
 		else {
@@ -416,16 +509,23 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 
 			if (person != null) {
 				newTaskText = taskManager.getTaskDescription(false);
+				newSubTaskText = taskManager.getSubTaskDescription();
 			} else if (robot != null) {
 				newTaskText = botTaskManager.getTaskDescription(false);
+				newSubTaskText = botTaskManager.getSubTaskDescription();
 			}
 
 			TaskPhase phase = null;
-
-			if (person != null)
+			TaskPhase subTaskPhase = null;
+			
+			if (person != null) {
 				phase = taskManager.getPhase();
-			else
+				subTaskPhase = taskManager.getSubTaskPhase();
+			}
+			else {
 				phase = botTaskManager.getPhase();
+				subTaskPhase = botTaskManager.getSubTaskPhase();
+			}
 
 			if (phase != null) {
 				newTaskPhase = phase.getName();
@@ -433,6 +533,12 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 				newTaskPhase = "";
 			}
 
+			if (subTaskPhase != null) {
+				newSubTaskPhase = subTaskPhase.getName();
+			} else {
+				newSubTaskPhase = "";
+			}
+			
 		}
 
 //		if (!newTaskText.toLowerCase().contains("walk")) {
@@ -447,6 +553,16 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 			}
 //		}
 
+		if (!newSubTaskText.equals("") && !subTaskTextCache.equals(newSubTaskText)) {
+			subTaskTextCache = newSubTaskText;
+			subTaskTextArea.setText(newSubTaskText);
+		}
+
+		if (!newSubTaskPhase.equals("") && !subTaskPhaseCache.equals(newSubTaskPhase)) {
+			subTaskPhaseCache = newSubTaskPhase;
+			subTaskPhaseArea.setText(newSubTaskPhase);
+		}
+			
 		// Update mission text area if necessary.
 		if (dead) {
 			String m = deathInfo.getMission();
