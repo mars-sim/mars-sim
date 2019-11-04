@@ -808,7 +808,11 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 	 * @throws Exception if error getting the mass.
 	 */
 	public double getMass() {
-		return baseMass + inventory.getTotalInventoryMass(false);
+		double invMass = inventory.getTotalInventoryMass(false);
+		if (invMass == 0)
+			return baseMass;
+		
+		return baseMass + invMass;
 	}
 
 	/**

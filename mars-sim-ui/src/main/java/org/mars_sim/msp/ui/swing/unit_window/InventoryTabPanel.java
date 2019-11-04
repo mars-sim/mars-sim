@@ -398,7 +398,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 				mass.put(e.getName(), e.getMass());
 				names.add(e);
 			}
-			Collections.sort(names, new NameComparator());
+			Collections.sort(names);//, new NameComparator());
 		}
 
 		private String showOwner(Equipment e) {
@@ -414,21 +414,21 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 			else if (e instanceof Robot) {
 				;// TODO: determine ownership of a bot
 			}
-			//if (item.contains("box") || item.contains("canister") 
-			//		|| item.contains("barrel") || item.contains("bag")) {
-			//	Person p = (Person) ((Equipment) unit).getLastOwner();	
-			//}
+//			if (item.contains("box") || item.contains("canister") 
+//					|| item.contains("barrel") || item.contains("bag")) {
+//				Person p = (Person) ((Equipment) unit).getLastOwner();	
+//			}
 			else {		
 				List<AmountResource> ars = new ArrayList<>(e.getInventory().getAllAmountResourcesStored(false));
 				if (ars.size() > 1) logger.info(e.getName() + " has " + ars.size() + " resources.");
-				//for (AmountResource ar : ars) {
-				//	s = Conversion.capitalize(ar.getName());
-                //}
+//				for (AmountResource ar : ars) {
+//					s = Conversion.capitalize(ar.getName());
+//                }
 				if (ars.size() > 0)
 					s = Conversion.capitalize(ars.get(0).getName());
 			}
 			return s;
-			//return bool ? "yes" : "no";
+//			return bool ? "yes" : "no";
 		}
 
 		public int getRowCount() {
@@ -460,7 +460,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 			if ((row >= 0) && (row < equipment.size())) {
 				if (column == 0) return types.get(names.get(row).getName()) + WHITESPACE;
 				else if (column == 1) return names.get(row) + WHITESPACE;
-				else if (column == 2) return mass.get(names.get(row).getName()) + WHITESPACE;
+				else if (column == 2) return mass.get(names.get(row).getName());
 				else if (column == 3) return equipment.get(names.get(row).getName()) + WHITESPACE;
 			}
 			return "unknown";
@@ -477,7 +477,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 				newMass.put(e.getName(), e.getMass());
 				newNames.add(e);
 			}
-			Collections.sort(newNames, new NameComparator());
+			Collections.sort(newNames);//, new NameComparator());
 
 			if (names.size() != newNames.size() || !names.equals(newNames)) {
 				names = newNames;

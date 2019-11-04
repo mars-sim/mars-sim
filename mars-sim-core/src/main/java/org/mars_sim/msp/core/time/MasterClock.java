@@ -942,15 +942,19 @@ public class MasterClock implements Serializable {
 //			logger.config("2. checkSave() : saveType is " + saveType); 
 			try {
 				sim.saveSimulation(saveType, file);
+			} catch (NullPointerException e) {
+				logger.log(Level.SEVERE,
+						"NullPointerException. Could not save the simulation.", e);// as " + (file == null ? "null" : file.getPath()), e);
+				e.printStackTrace();	
 			} catch (IOException e) {
 				logger.log(Level.SEVERE,
-						"IOException. Could not save the simulation as " + (file == null ? "null" : file.getPath()), e);
+						"IOException. Could not save the simulation.", e);//  as " + (file == null ? "null" : file.getPath()), e);
 				e.printStackTrace();
 
-			} catch (Exception e1) {
+			} catch (Exception e) {
 				logger.log(Level.SEVERE,
-						"Exception. Could not save the simulation as " + (file == null ? "null" : file.getPath()), e1);
-				e1.printStackTrace();
+						"Exception. Could not save the simulation.", e);//  as " + (file == null ? "null" : file.getPath()), e1);
+				e.printStackTrace();
 			}
 			
 			// Reset saveType back to zero
