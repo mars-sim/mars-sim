@@ -33,8 +33,6 @@ import org.mars_sim.msp.core.structure.Airlock;
 import org.mars_sim.msp.core.structure.CompositionOfAir;
 import org.mars_sim.msp.core.structure.Lab;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.building.function.FunctionType;
-import org.mars_sim.msp.core.structure.building.function.SystemType;
 
 /**
  * The Rover class represents the rover type of ground vehicle. It contains
@@ -49,6 +47,10 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 	private static String loggerName = logger.getName();
 	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 
+	/** The fuel range modifier. */
+	public static final double FUEL_RANGE_FACTOR = 0.95;
+	/** The mission range modifier. */  
+	public static final double MISSION_RANGE_FACTOR = 1.9;
 	/** The reference small amount of resource. */
 	public static final double SMALL_AMOUNT = 0.1;
 	/** The amount of work time to perform maintenance (millisols) */
@@ -795,11 +797,11 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 	 * @throws Exception if error getting range.
 	 */
 	public double getRange(MissionType missionType) {
-		// Note: multiply by 0.5 would account for the extra distance travelled in between sites 
-		double fuelRange = super.getRange(missionType) * 0.5;
+		// Note: multiply by 0.9 would account for the extra distance travelled in between sites 
+		double fuelRange = super.getRange(missionType) * FUEL_RANGE_FACTOR;
 		// Obtains the max mission range [in km] based on the type of mission
 		// Note: total route ~= mission radius * 2   
-		double missionRange = super.getMissionRange(missionType) * 2.25;
+		double missionRange = super.getMissionRange(missionType) * MISSION_RANGE_FACTOR;
 		
 		// Estimate the distance traveled per sol
 		double distancePerSol = getEstimatedTravelDistancePerSol();

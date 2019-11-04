@@ -67,7 +67,7 @@ public class SurfaceFeatures implements Serializable {
 	private Map<Coordinates, Double> solarIrradiance;
 
 	// The sites map for ice and regolith collection mission
-	private static Map<Coordinates, CollectionSite> sites;
+//	private static Map<Coordinates, CollectionSite> sites;
 	
 
 	// static instances
@@ -100,7 +100,7 @@ public class SurfaceFeatures implements Serializable {
 		terrainElevation = new TerrainElevation();
 		mineralMap = new RandomMineralMap();
 		exploredLocations = new CopyOnWriteArrayList<>(); // will need to make sure explored locations are serialized
-		sites = new ConcurrentHashMap<>();
+//		sites = new ConcurrentHashMap<>();
 		areothermalMap = new AreothermalMap();
 
 		missionManager = sim.getMissionManager();
@@ -714,26 +714,26 @@ public class SurfaceFeatures implements Serializable {
 		}
 	}
 
-	/**
-	 * Gets the sites map
-	 * 
-	 * @return
-	 */
-	public Map<Coordinates, CollectionSite> getSites() {
-		return sites;
-	}
-	
-	/**
-	 * Set the sites map
-	 * 
-	 * @param location
-	 * @param site
-	 */
-	public void setSites(Coordinates location, CollectionSite site) {
-		if (!sites.containsKey(location)) {
-			sites.put(location, site);
-		}
-	}
+//	/**
+//	 * Gets the sites map
+//	 * 
+//	 * @return
+//	 */
+//	public Map<Coordinates, CollectionSite> getSites() {
+//		return sites;
+//	}
+//	
+//	/**
+//	 * Set the sites map
+//	 * 
+//	 * @param location
+//	 * @param site
+//	 */
+//	public void setSites(Coordinates location, CollectionSite site) {
+//		if (!sites.containsKey(location)) {
+//			sites.put(location, site);
+//		}
+//	}
 	
 	
 	/**
@@ -762,8 +762,8 @@ public class SurfaceFeatures implements Serializable {
 	 * Prepare object for garbage collection.
 	 */
 	public void destroy() {
-		sites.clear();
-		sites = null;
+//		sites.clear();
+//		sites = null;
 		opticalDepthMap.clear();
 		opticalDepthMap = null;
 		solarIrradianceCaches.clear();

@@ -455,7 +455,8 @@ public class ReviewMissionPlan extends Task implements Serializable {
 							
 						LogConsolidated.log(Level.INFO, 0, sourceName,
 								"[" + s + "] " + reviewedBy + " approved " + requestedBy
-								+ "'s " + m.getDescription() + " mission plan. Total Score: " + score 
+								+ "'s " + m.getDescription() + " mission plan. Total Score: " 
+								+ Math.round(score*10.0)/10.0 
 								+ " (Min: " + settlement.getMinimumPassingScore() + ").");
 					} else {
 						// Not Approved
@@ -464,7 +465,8 @@ public class ReviewMissionPlan extends Task implements Serializable {
 					
 						LogConsolidated.log(Level.INFO, 0, sourceName, 
 								"[" + s + "] " + reviewedBy + " did NOT approve " + requestedBy
-								+ "'s " + m.getDescription() + " mission plan. Total Score: " + score 
+								+ "'s " + m.getDescription() + " mission plan. Total Score: " 
+								+ Math.round(score*10.0)/10.0 
 								+ " (Min: " + settlement.getMinimumPassingScore() + ").");
 					}
 										

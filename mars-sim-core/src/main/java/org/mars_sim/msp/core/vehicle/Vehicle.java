@@ -102,7 +102,7 @@ public abstract class Vehicle extends Unit
 	/** The specific energy of CH4 [kWh/kg] */
 	private static final double METHANE_SPECIFIC_ENERGY = 15.416D;
 	/** The Solid Oxide Fuel Cell Conversion Efficiency (dimension-less) */
-	public static final double SOFC_CONVERSION_EFFICIENCY = .57;
+	public static final double SOFC_CONVERSION_EFFICIENCY = .65;
 	/** Lifetime Wear in millisols **/
 	private static final double WEAR_LIFETIME = 668_000; // 668 Sols (1 orbit)
 	/** Estimated Number of hours traveled each day. **/
@@ -150,15 +150,21 @@ public abstract class Vehicle extends Unit
 	/** Distance traveled by vehicle since last maintenance (km) . */
 	private double distanceMaint = 0; // 
 	/** The efficiency of the vehicle's drivetrain. (kWh/km). */
-	private double drivetrainEfficiency; // 
+	private double drivetrainEfficiency;
+	/** The continuous motor power output of the vehicle. (kW). */
+	private double continuousPower = 8;
+	/** The total number of hours the vehicle is capable of operating. (kW). */
+	private double totalHours;
 	/** The maximum fuel capacity of the vehicle [kg] */
 	private double fuelCapacity;
 	/** The total energy of the vehicle in full tank [kWh]. */
 	private double totalEnergy = 100D;
-	/** The base fuel consumption of the vehicle [km/kg]. */
+	/** The base fuel economy of the vehicle [km/kg]. */
+	private double baseFuelEconomy;
+	/** The base fuel consumption of the vehicle [km/kWh]. */
 	private double baseFuelConsumption;
-	/** The estimated average fuel consumption of the vehicle for a trip [km/kg]. */
-	private double estimatedAveFuelConsumption;
+	/** The estimated average fuel economy of the vehicle for a trip [km/kg]. */
+	private double estimatedAveFuelEconomy;
 	/** The estimated combined total crew weight for a trip [km/kg]. */
 	private double estimatedTotalCrewWeight;
 	/** The cargo capacity of the vehicle for a trip [km/kg]. */
@@ -303,7 +309,8 @@ public abstract class Vehicle extends Unit
 		setDescription(vehicleType);
 	
 		// Set base speed.
-		setBaseSpeed(vehicleConfig.getBaseSpeed(vehicleType));
+		baseSpeed = vehicleConfig.getBaseSpeed(vehicleType);
+//		setBaseSpeed(baseSpeed);
 
 		// Set the empty mass of the vehicle.
 		setBaseMass(vehicleConfig.getEmptyMass(vehicleType));
@@ -315,13 +322,23 @@ public abstract class Vehicle extends Unit
 		fuelCapacity = vehicleConfig.getCargoCapacity(vehicleType, ResourceUtil.findAmountResourceName(getFuelType())); 
 
 		// Gets the total energy [in kWh] on a full tank of methane
-		totalEnergy = METHANE_SPECIFIC_ENERGY * fuelCapacity * SOFC_CONVERSION_EFFICIENCY;// * drivetrainEfficiency;	
+		totalEnergy = METHANE_SPECIFIC_ENERGY * fuelCapacity * SOFC_CONVERSION_EFFICIENCY;
 
-		// Gets the base range [in km] of the vehicle
-		baseRange = totalEnergy / drivetrainEfficiency;
+		// Gets the maximum total # of hours the vehicle is capable of operating
+		totalHours = totalEnergy / continuousPower;
 		
-		// Gets the base fuel consumption [in km/kg] of this vehicle 
-		baseFuelConsumption = baseRange / fuelCapacity;
+		// Gets the average number of sols the vehicle is capable of operating
+		double sols = totalHours / ESTIMATED_NUM_HOURS;
+		
+		// Gets the base range [in km] of the vehicle
+		baseRange = baseSpeed * totalHours;
+//		baseRange = totalEnergy / drivetrainEfficiency;
+		
+		// Gets the base fuel economy [in km/kg] of this vehicle 
+		baseFuelEconomy = baseRange / fuelCapacity;
+		
+		// Gets the base fuel consumption [in km/kWh] of this vehicle 
+		baseFuelConsumption = baseRange / totalEnergy;
 		
 		// Gets the crew capacity
 		int numCrew = 0; 
@@ -335,27 +352,37 @@ public abstract class Vehicle extends Unit
 		cargoCapacity = vehicleConfig.getTotalCapacity(vehicleType);
 		
 		if (this instanceof Rover) {
-			beginningMass = getBaseMass() + estimatedTotalCrewWeight + 400;//cargoCapacity/3;
+			beginningMass = getBaseMass() + estimatedTotalCrewWeight + 500;	//cargoCapacity/3;
 			
-			endMass = getBaseMass() + estimatedTotalCrewWeight + 40;//cargoCapacity/15;
+			// Accounts for the rock sample, ice or regolith collected
+			endMass = getBaseMass() + estimatedTotalCrewWeight + 1000;	//cargoCapacity/15;
 			
-			// Gets the estimated average fuel consumption for a trip [km/kg]
-			estimatedAveFuelConsumption = baseFuelConsumption * (beginningMass / endMass * .75);
+			// Gets the estimated average fuel economy for a trip [km/kg]
+			estimatedAveFuelEconomy = baseFuelEconomy * (beginningMass / endMass * .75);
 			
 			logger.config(Conversion.capitalize(vehicleType) 
-					+ " -              total energy : " + Math.round(totalEnergy*100.0)/100.0 + " kWh");
+					+ " -          total energy : " + Math.round(totalEnergy*100.0)/100.0 + " kWh");
 			logger.config(Conversion.capitalize(vehicleType) 
-					+ " -            beginning mass : " + Math.round(beginningMass*100.0)/100.0 + " kg");
+					+ " -           total hours : " + Math.round(totalHours*100.0)/100.0 + " hrs");
 			logger.config(Conversion.capitalize(vehicleType) 
-					+ " -                  end mass : " + Math.round(endMass*100.0)/100.0 + " kg");		
+					+ " -             # of sols : " + Math.round(sols*100.0)/100.0);
 			logger.config(Conversion.capitalize(vehicleType) 
-					+ " -              current Mass : " + Math.round(getMass()*100.0)/100.0 + " kg");	
+					+ " -            base range : " + Math.round(baseRange*100.0)/100.0 + " km");
 			logger.config(Conversion.capitalize(vehicleType) 
-					+ " -     drivetrain efficiency : " + Math.round(drivetrainEfficiency*100.0)/100.0 + " kWh/km");
+					+ " - drivetrain efficiency : " + Math.round(drivetrainEfficiency*100.0)/100.0 + " kWh/km");
 			logger.config(Conversion.capitalize(vehicleType) 
-					+ " -     base fuel consumption : " + Math.round(baseFuelConsumption*100.0)/100.0 + " km/kg");
+					+ " -        beginning mass : " + Math.round(beginningMass*100.0)/100.0 + " kg");
 			logger.config(Conversion.capitalize(vehicleType) 
-				+ " -  average fuel consumption : " + Math.round(estimatedAveFuelConsumption*100.0)/100.0 + " km/kg");
+					+ " -              end mass : " + Math.round(endMass*100.0)/100.0 + " kg");		
+			logger.config(Conversion.capitalize(vehicleType) 
+					+ " -          current Mass : " + Math.round(getMass()*100.0)/100.0 + " kg");	
+			logger.config(Conversion.capitalize(vehicleType) 
+					+ " -     base fuel economy : " + Math.round(baseFuelEconomy*100.0)/100.0 + " km/kg");
+			logger.config(Conversion.capitalize(vehicleType) 
+					+ " -  average fuel economy : " + Math.round(estimatedAveFuelEconomy*100.0)/100.0 + " km/kg");
+			logger.config(Conversion.capitalize(vehicleType) 
+					+ " -  base fuel cosumption : " + Math.round(baseFuelConsumption*100.0)/100.0 + " km/kWh");
+			
 		}
 		
 		// Set initial parked location and facing at settlement.
@@ -376,11 +403,11 @@ public abstract class Vehicle extends Unit
 	 * @param settlement          the settlement the vehicle is parked at.
 	 * @param baseSpeed           the base speed of the vehicle (kph)
 	 * @param baseMass            the base mass of the vehicle (kg)
-	 * @param fuelEfficiency      the fuel efficiency of the vehicle (km/kg)
+	 * @param fuelEconomy		  the fuel economy of the vehicle (km/kg)
 	 * @param maintenanceWorkTime the work time required for maintenance (millisols)
 	 */
 	protected Vehicle(String name, String vehicleType, Settlement settlement, double baseSpeed, double baseMass,
-			double fuelEfficiency, double maintenanceWorkTime) {
+			double fuelEconomy, double maintenanceWorkTime) {
 
 		// Use Unit constructor
 		super(name, settlement.getCoordinates());
@@ -411,12 +438,13 @@ public abstract class Vehicle extends Unit
 		setDescription(vehicleType);
 	
 		// Set base speed.
-		setBaseSpeed(baseSpeed);
+		this.baseSpeed = baseSpeed;
+//		setBaseSpeed(baseSpeed);
 
 		// Set the empty mass of the vehicle.
 		setBaseMass(baseMass);
 		
-		this.drivetrainEfficiency = fuelEfficiency / 100.0;
+		this.drivetrainEfficiency = .15;
 		isReservedMission = false;
 		distanceMark = false;
 		reservedForMaintenance = false;
@@ -910,16 +938,16 @@ public abstract class Vehicle extends Unit
 		return baseSpeed;
 	}
 
-	/**
-	 * Sets the base speed of vehicle
-	 * 
-	 * @param speed the vehicle's base speed (in km/hr)
-	 */
-	public void setBaseSpeed(double speed) {
-		if (speed < 0D)
-			throw new IllegalArgumentException("Vehicle base speed cannot be less than 0 km/hr");
-		baseSpeed = speed;
-	}
+//	/**
+//	 * Sets the base speed of vehicle
+//	 * 
+//	 * @param speed the vehicle's base speed (in km/hr)
+//	 */
+//	public void setBaseSpeed(double speed) {
+//		if (speed < 0D)
+//			throw new IllegalArgumentException("Vehicle base speed cannot be less than 0 km/hr");
+//		baseSpeed = speed;
+//	}
 
 	/**
 	 * Gets the current fuel range of the vehicle
@@ -933,9 +961,9 @@ public abstract class Vehicle extends Unit
         int fuelType = getFuelType();
         double amountOfFuel = vInv.getAmountResourceStored(fuelType, false);
 		if (amountOfFuel > 0)
-			return estimatedAveFuelConsumption * amountOfFuel * getBaseMass() / getMass();// / fuel_range_error_margin;
+			return estimatedAveFuelEconomy * amountOfFuel * getBaseMass() / getMass();// / fuel_range_error_margin;
 		else
-			return estimatedAveFuelConsumption * fuelCapacity * getBaseMass() / getMass();// / fuel_range_error_margin;
+			return estimatedAveFuelEconomy * fuelCapacity * getBaseMass() / getMass();// / fuel_range_error_margin;
 	}
 
 	/**
@@ -968,27 +996,27 @@ public abstract class Vehicle extends Unit
 	}
 	
 	/**
-	 * Gets the base fuel consumption of the vehicle [km/kg].
+	 * Gets the base fuel economy of the vehicle [km/kg].
 	 * @return
 	 */
-	public double getBaseFuelConsumption() {
-		return baseFuelConsumption;
+	public double getBaseFuelEconomy() {
+		return baseFuelEconomy;
 	}
 
 	/**
-	 * Gets the instantaneous fuel consumption of the vehicle [km/kg] 
+	 * Gets the instantaneous fuel economy of the vehicle [km/kg] 
 	 * Note: assume that it is primarily dependent upon the current weight of the vehicle
 	 * 
 	 * @return
-	 */
-	public double getIFuelConsumption() {
+	 */ 
+	public double getIFuelEconomy() {
 //		if (speed > 0 && startMass != getMass())
 //			logger.info(this 
 //				+ "   current mass : " + Math.round(getMass()*10.0)/10.0
 //				+ "   start mass : " + Math.round(startMass*10.0)/10.0 
 //				+ "   driveTrain : " + drivetrainEfficiency 
-//				+ "   IFC : " + Math.round(estimatedAveFuelConsumption * startMass / getMass()*10.0)/10.0);
-		return estimatedAveFuelConsumption * startMass / getMass(); 
+//				+ "   IFC : " + Math.round(estimatedAveFuelEconomy * startMass / getMass()*10.0)/10.0);
+		return estimatedAveFuelEconomy * startMass / getMass(); 
 		
 	}
 	
@@ -1006,7 +1034,7 @@ public abstract class Vehicle extends Unit
 	 * @return
 	 */
 	public double getEstimatedAveFuelConsumption() {
-		return estimatedAveFuelConsumption;
+		return estimatedAveFuelEconomy;
 	}
 	
 	/**

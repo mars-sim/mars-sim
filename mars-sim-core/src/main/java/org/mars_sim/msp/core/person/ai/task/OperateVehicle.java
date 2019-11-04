@@ -319,7 +319,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
         double hrsTime = MarsClock.HOURS_PER_MILLISOL * time;
 
         // Consume fuel for distance traveled.
-        double fuelNeeded = distanceTraveled / vehicle.getIFuelConsumption();
+        double fuelNeeded = distanceTraveled / vehicle.getIFuelEconomy();
         
         if (fuelNeeded > remainingFuel) {
         	// Case 2 : just used up the last drop of fuel 
@@ -328,7 +328,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
         	try {
 		    	vInv.retrieveAmountResource(fuelType, fuelNeeded);
 	        	// Update and reduce the distanceTraveled since there is not enough fuel
-	        	distanceTraveled = fuelNeeded * vehicle.getIFuelConsumption();
+	        	distanceTraveled = fuelNeeded * vehicle.getIFuelEconomy();
 	        	
 	            // Add distance traveled to vehicle's odometer.
 	            vehicle.addTotalDistanceTraveled(distanceTraveled);
@@ -357,7 +357,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
             	distanceTraveled = startingDistanceToDestination;
                 
                 // Update the fuel needed for distance traveled.
-                fuelNeeded = distanceTraveled / vehicle.getIFuelConsumption();
+                fuelNeeded = distanceTraveled / vehicle.getIFuelEconomy();
                 
                 try {
     		    	vInv.retrieveAmountResource(fuelType, fuelNeeded);
@@ -403,7 +403,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
                 distanceTraveled = hrsTime * vehicle.getSpeed();
                 
              // Update the fuel needed for distance traveled.
-                fuelNeeded = distanceTraveled / vehicle.getIFuelConsumption();
+                fuelNeeded = distanceTraveled / vehicle.getIFuelEconomy();
                 
                 try {
     		    	vInv.retrieveAmountResource(fuelType, fuelNeeded);

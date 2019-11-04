@@ -887,7 +887,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			if (getPhase() == null || getPhase().equals(VehicleMission.EMBARKING) || getPhase().equals(VehicleMission.APPROVING))
 				result.put(vehicle.getFuelType(), getFuelNeededForTrip(distance, vehicle.getEstimatedAveFuelConsumption(), true));
 			else
-				result.put(vehicle.getFuelType(), getFuelNeededForTrip(distance, vehicle.getIFuelConsumption(), false));
+				result.put(vehicle.getFuelType(), getFuelNeededForTrip(distance, vehicle.getIFuelEconomy(), false));
 		}
 		return result;
 	}

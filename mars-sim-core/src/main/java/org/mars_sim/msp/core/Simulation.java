@@ -1284,7 +1284,7 @@ public class Simulation implements ClockListener, Serializable {
 //			System.out.println(printObjectSize(0).toString());
 			
 			// Using the default settings and the default integrity check type (CRC64)
-			LZMA2Options lzma2 = new LZMA2Options(7);
+			LZMA2Options lzma2 = new LZMA2Options(5);
 			// Set to 6. For mid sized archives (>8mb), 7 works better.
 			//lzma2.setPreset(8);
 			FilterOptions[] options = {lzma2};
@@ -1398,7 +1398,7 @@ public class Simulation implements ClockListener, Serializable {
 	public StringBuilder printObjectSize(int type) {
       	StringBuilder sb = new StringBuilder();
 		
-      	System.out.println("# of collection sites : " + mars.getSurfaceFeatures().getSites().size());
+//      	System.out.println("# of collection sites : " + mars.getSurfaceFeatures().getSites().size());
       	
 		List<Serializable> list = Arrays.asList( 
 				SimulationConfig.instance(),

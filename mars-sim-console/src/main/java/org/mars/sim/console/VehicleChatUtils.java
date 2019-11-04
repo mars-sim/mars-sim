@@ -186,7 +186,7 @@ public class VehicleChatUtils extends ChatUtils {
 				responseText.append(System.lineSeparator());
 
 				responseText.append(addWhiteSpacesRightName("Base Fuel Consumption : ", max)).append(
-						Math.round(vehicleCache.getBaseFuelConsumption() * 100.0) / 100.0 + " km/kg (Estimated)");
+						Math.round(vehicleCache.getBaseFuelEconomy() * 100.0) / 100.0 + " km/kg (Estimated)");
 				responseText.append(System.lineSeparator());
 			} else {
 				responseText.append(addWhiteSpacesRightName("Power Source : ", max) + fuel);

@@ -91,11 +91,11 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 
 		<!-- Base speed of rover (km/hr) (required) -->
 		<!-- Default: varies according to the type of vehicle -->
-		<base-speed value="50.0" />
+		<base-speed value="20.0" />
 
 		<!-- Empty mass of rover (kg) (required) -->
 		<!-- Default: varies according to the type of vehicle  -->
-		<empty-mass value="4000.0" />
+		<empty-mass value="2000.0" />
 
 		<!-- The crew size of an rover -->
 		<!-- Default: varies according to the type of vehicle -->
@@ -105,7 +105,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<!-- See Rover.java for adding capacity for each resource -->
 		<!-- total-capacity: total cargo capacity of rover. (kg) -->
 		<!-- Default: varies according to the type of vehicle -->
-		<cargo total-capacity="5800.0">
+		<cargo total-capacity="2500.0">
 
 			<!-- If assuming a 10 sol excursion, each person would 
       			 consume the following : -->
@@ -117,7 +117,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 			<!-- The methane cargo capacity of the rover (kg) -->
 			<!-- Default: varies according to the type of vehicle -->
 			<!-- The H2 tank on Toyota Mirai has a 5 kg capacity http://www.mytoyotamirai.com/toyota-mirai-specifications/ -->
-			<capacity resource="methane" value="400.0" />
+			<capacity resource="methane" value="180.0" />
 
 			<!-- The oxygen cargo capacity of the rover (kg) -->
 			<!-- Default: varies according to the type of vehicle  -->
@@ -208,11 +208,11 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 	<vehicle type="Transport Rover" width="3.5" length="9.5">
 		<description>A rover for transporting people from one settlement to another.</description>
 		<drivetrain-efficiency value=".18" />
-		<base-speed value="40.0" />
-		<empty-mass value="5500.0" />
+		<base-speed value="15.0" />
+		<empty-mass value="3000.0" />
 		<crew-size value="8" />
-		<cargo total-capacity="7300.0">
-			<capacity resource="methane" value="600.0" />
+		<cargo total-capacity="3500.0">
+			<capacity resource="methane" value="220.0" />
 			<capacity resource="oxygen" value="176.0" />
 			<capacity resource="nitrogen" value="176.0" />			
 			<capacity resource="water" value="800.0" />
@@ -247,11 +247,11 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 	<vehicle type="Cargo Rover" width="4.0" length="8.0">
 		<description>A rover for transporting cargo from one settlement to another.</description>
 		<drivetrain-efficiency value=".2" />
-		<base-speed value="40.0" />
-		<empty-mass value="6000.0" />
+		<base-speed value="15.0" />
+		<empty-mass value="2500.0" />
 		<crew-size value="2" />
-		<cargo total-capacity="10300.0">
-			<capacity resource="methane" value="800.0" />
+		<cargo total-capacity="5000.0">
+			<capacity resource="methane" value="260.0" />
 			<capacity resource="oxygen" value="66.0" />
 			<capacity resource="nitrogen" value="66.0" />		
 			<capacity resource="water" value="200.0" />
@@ -279,7 +279,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 	<vehicle type="Light Utility Vehicle" width="1.7" length="2.55">
 		<description>A small, unpressurized, one crew utility vehicle with attachable parts.</description>
 		<drivetrain-efficiency value=".35" />
-		<base-speed value="40.0" />
+		<base-speed value="30.0" />
 		<empty-mass value="300.0" />
 		<crew-size value="1" />
 		<part-attachment number-slots="2">

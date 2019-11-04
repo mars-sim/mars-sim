@@ -129,12 +129,12 @@ public class TerrainElevation implements Serializable {
 			double rad = i * DEG_TO_RAD;
 			steepness += Math.abs(determineTerrainSteepness(currentLocation, elevation, new Direction(rad)));
 		}
-		// Create a new site
-		site.setElevation(elevation);
-		site.setSteepness(steepness);
-		
-		// Save this site
-		surfaceFeatures.setSites(currentLocation, site);
+//		// Create a new site
+//		site.setElevation(elevation);
+//		site.setSteepness(steepness);
+//		
+//		// Save this site
+//		surfaceFeatures.setSites(currentLocation, site);
 		
 		return new double[] {elevation, steepness};
 	}
@@ -146,27 +146,27 @@ public class TerrainElevation implements Serializable {
 	 * @return
 	 */
 	public static double[] getTerrainProfile(Coordinates currentLocation) {
-		if (surfaceFeatures == null)
-			surfaceFeatures = Simulation.instance().getMars().getSurfaceFeatures();
-	
-		if (surfaceFeatures.getSites().containsKey(currentLocation)) {
-			CollectionSite site = surfaceFeatures.getSites().get(currentLocation);
+//		if (surfaceFeatures == null)
+//			surfaceFeatures = Simulation.instance().getMars().getSurfaceFeatures();
+//	
+//		if (surfaceFeatures.getSites().containsKey(currentLocation)) {
+//			CollectionSite site = surfaceFeatures.getSites().get(currentLocation);
+//			
+//			if (site.getSteepness() == -1) {
+//				
+//				return computeTerrainProfile(site, currentLocation);			
+//			}
+//				
+//			else
+//				return new double[] {site.getElevation(), site.getSteepness()};
+//		}
+//		
+//		else {
+//			// Create a new site
+//			CollectionSite site = new CollectionSite(currentLocation);
 			
-			if (site.getSteepness() == -1) {
-				
-				return computeTerrainProfile(site, currentLocation);			
-			}
-				
-			else
-				return new double[] {site.getElevation(), site.getSteepness()};
-		}
-		
-		else {
-			// Create a new site
-			CollectionSite site = new CollectionSite(currentLocation);
-			
-			return computeTerrainProfile(site, currentLocation);
-		}
+			return computeTerrainProfile(null, currentLocation);
+//		}
 	}
 	
 	public static double computeCollectionRate(CollectionSite site, Coordinates currentLocation) {
@@ -177,18 +177,18 @@ public class TerrainElevation implements Serializable {
 		double elevation = terrainProfile[0];
 		double steepness = terrainProfile[1];		
 		
-		site.setElevation(elevation);
-		site.setSteepness(steepness);
+//		site.setElevation(elevation);
+//		site.setSteepness(steepness);
 		
 		double iceCollectionRate = (- 0.639 * elevation + 14.2492) / 20D  + steepness / 10D;
 				
 		if (iceCollectionRate < 0)
 			iceCollectionRate = 0;	
 		
-		site.setIceCollectionRate(iceCollectionRate);
-		
-		// Save this site
-		surfaceFeatures.setSites(currentLocation, site);
+//		site.setIceCollectionRate(iceCollectionRate);
+//		
+//		// Save this site
+//		surfaceFeatures.setSites(currentLocation, site);
 		
 		String nameLoc = "";
 		Settlement s = CollectionUtils.findSettlement(currentLocation);
@@ -210,27 +210,27 @@ public class TerrainElevation implements Serializable {
 	 * @return
 	 */
 	public static double getIceCollectionRate(Coordinates currentLocation) {
-		if (surfaceFeatures == null)
-			surfaceFeatures = Simulation.instance().getMars().getSurfaceFeatures();
-		if (surfaceFeatures.getSites().containsKey(currentLocation)) {
-			CollectionSite site = (CollectionSite) surfaceFeatures.getSites().get(currentLocation);
-			
-			if (site.getIceCollectionRate() == -1) {
-				return computeCollectionRate(site, currentLocation);
-			}
-			
-			else {
-				return site.getIceCollectionRate();
-			}
-
-		}
-		
-		else {
-			// Create a new site
-			CollectionSite site = new CollectionSite(currentLocation);
-			
-			return computeCollectionRate(site, currentLocation);
-		}
+//		if (surfaceFeatures == null)
+//			surfaceFeatures = Simulation.instance().getMars().getSurfaceFeatures();
+//		if (surfaceFeatures.getSites().containsKey(currentLocation)) {
+//			CollectionSite site = (CollectionSite) surfaceFeatures.getSites().get(currentLocation);
+//			
+//			if (site.getIceCollectionRate() == -1) {
+				return computeCollectionRate(null, currentLocation);
+//			}
+//			
+//			else {
+//				return site.getIceCollectionRate();
+//			}
+//
+//		}
+//		
+//		else {
+//			// Create a new site
+//			CollectionSite site = new CollectionSite(currentLocation);
+//			
+//			return computeCollectionRate(site, currentLocation);
+//		}
 	}
 	
 	public static int[] getRGB(Coordinates location) {
@@ -271,16 +271,16 @@ public class TerrainElevation implements Serializable {
 	 * @return the elevation at the location (in km)
 	 */
 	public static double getPatchedElevation(Coordinates location) {
-		if (surfaceFeatures == null)
-			surfaceFeatures = Simulation.instance().getMars().getSurfaceFeatures();
-		if (surfaceFeatures.getSites().containsKey(location)) {
-			CollectionSite site = (CollectionSite) surfaceFeatures.getSites().get(location);
-			return site.getElevation();
-		}
-		
-		else {
-			// Create a new site
-			CollectionSite site = new CollectionSite(location);
+//		if (surfaceFeatures == null)
+//			surfaceFeatures = Simulation.instance().getMars().getSurfaceFeatures();
+//		if (surfaceFeatures.getSites().containsKey(location)) {
+//			CollectionSite site = (CollectionSite) surfaceFeatures.getSites().get(location);
+//			return site.getElevation();
+//		}
+//		
+//		else {
+//			// Create a new site
+//			CollectionSite site = new CollectionSite(location);
 			
 			// Patch elevation problems at certain locations.
 			double elevation = patchElevation(getRawElevation(location), location);
@@ -289,14 +289,14 @@ public class TerrainElevation implements Serializable {
 	//				Math.round(elevation*1_000.0)/1_000.0);
 	//		System.out.print(s3);
 			
-			// Save the elevation
-			site.setElevation(elevation);
-			
-			// Save this site
-			surfaceFeatures.setSites(location, site);
+//			// Save the elevation
+//			site.setElevation(elevation);
+//			
+//			// Save this site
+//			surfaceFeatures.setSites(location, site);
 			
 			return elevation;
-		}
+//		}
 	}
 
 	/**
