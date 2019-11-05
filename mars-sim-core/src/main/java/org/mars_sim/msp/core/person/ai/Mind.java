@@ -267,17 +267,19 @@ public class Mind implements Serializable {
 				mission.performMission(person);
 			}
 			
+			else {
 //			// See if this person can ask for a mission
 //			boolean newMission = !hasActiveMission && !hasAMission && !overrideMission && isInMissionWindow;
-//			if (hasActiveMission)
+				
 //				System.out.println(person + "'s needMission is " + needMission);
-			// A person has no active task
-			try {
-				getNewTask();
-			} catch (Exception e) {
-				LogConsolidated.log(Level.SEVERE, 5_000, sourceName,
-						person.getName() + " could not get new action", e);
-				e.printStackTrace(System.err);
+				try {
+					// A person has no active task
+					getNewTask();
+				} catch (Exception e) {
+					LogConsolidated.log(Level.SEVERE, 5_000, sourceName,
+							person.getName() + " could not get new action", e);
+					e.printStackTrace(System.err);
+				}
 			}
 		}
 	}

@@ -265,7 +265,8 @@ public abstract class RoverMission extends VehicleMission {
 	 * @return true if no one is aboard
 	 */
 	protected final boolean isNoOneInRover() {
-		if (getRover().getCrewNum() == 0)
+		if (getRover().getCrewNum() == 0
+			&& getRover().getRobotCrewNum() == 0)
 			return true;
 		
 		return false;
@@ -370,75 +371,60 @@ public abstract class RoverMission extends VehicleMission {
 		}
 		
 		else {
-			// If person is not aboard the rover, board rover.
-			if (!member.isInVehicle()) {
-				// Move person to random location within rover.
-				Point2D.Double vehicleLoc = LocalAreaUtil.getRandomInteriorLocation(v);
-				Point2D.Double adjustedLoc = LocalAreaUtil.getLocalRelativeLocation(vehicleLoc.getX(),
-						vehicleLoc.getY(), v);
-				// TODO Refactor.
-				if (member instanceof Person) {
-					Person person = (Person) member;
-					if (Walk.canWalkAllSteps(person, adjustedLoc.getX(), adjustedLoc.getY(), v)) {
-						assignTask(person, new Walk(person, adjustedLoc.getX(), adjustedLoc.getY(), v));
-					} else {
-						LogConsolidated.log(Level.SEVERE, 0, sourceName,
-								"[" + person.getLocationTag().getLocale() + "] " 
-									+  Msg.getString("RoverMission.log.unableToEnter", person.getName(), //$NON-NLS-1$
-								v.getName()));
+
+			// Gets a random location within rover.
+			Point2D.Double vehicleLoc = LocalAreaUtil.getRandomInteriorLocation(v);
+			Point2D.Double adjustedLoc = LocalAreaUtil.getLocalRelativeLocation(vehicleLoc.getX(),
+					vehicleLoc.getY(), v);
+
+			if (member instanceof Person) {
+				Person person = (Person) member;
+				// If person is not aboard the rover, board rover.
+				if (!getRover().isCrewmember(person)
+					&& Walk.canWalkAllSteps(person, adjustedLoc.getX(), adjustedLoc.getY(), v)) {
+					
+					assignTask(person, new Walk(person, adjustedLoc.getX(), adjustedLoc.getY(), v));
+					
+					if (!isDone() && isRoverInAGarage()) {
+						// Store one or two EVA suit for person (if possible).
+						int limit = RandomUtil.getRandomInt(1, 2);
+						for (int i=0; i<limit; i++) {
+							if (settlement.getInventory().findNumEVASuits(false, false) > 1) {
+								EVASuit suit = settlement.getInventory().findAnEVAsuit();
+								if (suit != null && v.getInventory().canStoreUnit(suit, false)) {
+									// TODL: should add codes to have a person carries the extra EVA suit physically
+									suit.transfer(settlement, v);
+								}
+							}
+						}
+					}
+				}
+				
+				else {
+					LogConsolidated.log(Level.SEVERE, 10_000, sourceName,
+							"[" + person.getLocationTag().getLocale() + "] " 
+								+  Msg.getString("RoverMission.log.unableToEnter", person.getName(), //$NON-NLS-1$
+							v.getName()));
 //							logger.warning(Msg.getString("RoverMission.log.unableToEnter", person.getName(), //$NON-NLS-1$
 //									v.getName()));
 //							addMissionStatus(MissionStatus.CANNOT_ENTER_ROVER);
 //							endMission();
-					}
-				} else if (member instanceof Robot) {
-					Robot robot = (Robot) member;
-					if (Walk.canWalkAllSteps(robot, adjustedLoc.getX(), adjustedLoc.getY(), v)) {
-						assignTask(robot, new Walk(robot, adjustedLoc.getX(), adjustedLoc.getY(), v));
-					} else {
-						LogConsolidated.log(Level.SEVERE, 0, sourceName,
-								"[" + robot.getLocationTag().getLocale() + "] " 
-									+  Msg.getString("RoverMission.log.unableToEnter", robot.getName(), //$NON-NLS-1$
-								v.getName()));
+				}
+			}
+			
+			else if (member instanceof Robot) {
+				Robot robot = (Robot) member;
+				if (Walk.canWalkAllSteps(robot, adjustedLoc.getX(), adjustedLoc.getY(), v)) {
+					assignTask(robot, new Walk(robot, adjustedLoc.getX(), adjustedLoc.getY(), v));
+				} else {
+					LogConsolidated.log(Level.SEVERE, 0, sourceName,
+							"[" + robot.getLocationTag().getLocale() + "] " 
+								+  Msg.getString("RoverMission.log.unableToEnter", robot.getName(), //$NON-NLS-1$
+							v.getName()));
 //							logger.warning(Msg.getString("RoverMission.log.unableToEnter", robot.getName(), //$NON-NLS-1$
 //									v.getName()));
 //							addMissionStatus(MissionStatus.CANNOT_ENTER_ROVER);
 //							endMission();
-					}
-				}
-
-				if (!isDone() && isRoverInAGarage()) {
-
-					int numEVASuit = 0;
-					// Store one or two EVA suit for person (if possible).
-					int limit = RandomUtil.getRandomInt(0, 2);
-					while (numEVASuit <= limit) {
-						if (settlement.getInventory().findNumEVASuits(false, false) > 0) {
-							EVASuit suit = settlement.getInventory().findAnEVAsuit();
-							if (suit != null && v.getInventory().canStoreUnit(suit, false)) {
-								// TODL: should add codes to have a person carries the extra EVA suit physically
-								suit.transfer(settlement, v);
-//									settlement.getInventory().retrieveUnit(suit);
-//									v.getInventory().storeUnit(suit);
-								numEVASuit++;
-							}
-
-//								else {
-//									logger.warning(Msg.getString("RoverMission.log.cannotBeLoaded", suit.getName(), //$NON-NLS-1$
-//											v.getName()));
-//									addMissionStatus(MissionStatus.EVA_SUIT_CANNOT_BE_LOADED);
-//									endMission();
-//									return;
-//								}
-						}
-
-//							else {
-//								logger.warning(Msg.getString("RoverMission.log.noEVASuit", v.getName())); //$NON-NLS-1$
-//								addMissionStatus(MissionStatus.NO_GOOD_EVA_SUIT);
-//								endMission();
-//								return;
-//							}
-					}
 				}
 			}
 

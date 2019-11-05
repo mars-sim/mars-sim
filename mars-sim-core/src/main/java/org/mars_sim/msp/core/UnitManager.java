@@ -592,7 +592,7 @@ public class UnitManager implements Serializable {
 		if (e != null && !lookupEquipment.containsKey(e.getIdentifier())) {
 			lookupEquipment.put(e.getIdentifier(), e);
 			// Fire unit manager event.
-			fireUnitManagerUpdate(UnitManagerEventType.ADD_UNIT, e);
+//			fireUnitManagerUpdate(UnitManagerEventType.ADD_UNIT, e);
 		}
 	}
 	
@@ -666,11 +666,14 @@ public class UnitManager implements Serializable {
 			else if (unit instanceof MarsSurface) {
 				marsSurface = (MarsSurface) unit;
 				// Fire unit manager event.
-				fireUnitManagerUpdate(UnitManagerEventType.ADD_UNIT, marsSurface);	
+//				fireUnitManagerUpdate(UnitManagerEventType.ADD_UNIT, marsSurface);	
 			}
 			else 
 				addUnitID(unit);
 
+			// Fire unit manager event.
+			fireUnitManagerUpdate(UnitManagerEventType.ADD_UNIT, unit);
+			
 			if (!justStarting) {
 				computeUnitNum();
 //				computeUnits();
