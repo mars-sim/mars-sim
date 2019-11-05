@@ -41,7 +41,7 @@ public abstract class TravelMission extends Mission {
 	private int navIndex = 0;
 	
 	/** The total distance travelled so far. */
-	private double proposedRouteTotalDistance;
+	private double proposedRouteTotalDistance = 0;
 	/** The current leg remaining distance so far. */
 	private double currentLegRemainingDistance;
 	/** The current traveling status of the mission. */
@@ -378,19 +378,21 @@ public abstract class TravelMission extends Mission {
 	 * @return distance (km)
 	 */
 	public final void computeProposedRouteTotalDistance() {
-		if (navPoints.size() > 1) {
-			double result = 0D;
-			
-			for (int x = 1; x < navPoints.size(); x++) {
-				NavPoint prevNav = navPoints.get(x - 1);
-				NavPoint currNav = navPoints.get(x);
-				double distance = Coordinates.computeDistance(currNav.getLocation(), prevNav.getLocation());
-				result += distance;
+		if (proposedRouteTotalDistance == 0) {
+			if (navPoints.size() > 1) {
+				double result = 0D;
+				
+				for (int x = 1; x < navPoints.size(); x++) {
+					NavPoint prevNav = navPoints.get(x - 1);
+					NavPoint currNav = navPoints.get(x);
+					double distance = Coordinates.computeDistance(currNav.getLocation(), prevNav.getLocation());
+					result += distance;
+				}
+				
+				if (result > proposedRouteTotalDistance)
+					// Record the distance
+					proposedRouteTotalDistance = result;
 			}
-			
-			if (result > proposedRouteTotalDistance)
-				// Record the distance
-				proposedRouteTotalDistance = result;
 		}
 	}
 

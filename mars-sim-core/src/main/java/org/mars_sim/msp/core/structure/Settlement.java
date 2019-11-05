@@ -2843,7 +2843,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	 * @return Collection of parked vehicles
 	 */
 	public Collection<Vehicle> getParkedVehicles() {
-		return CollectionUtils.getVehicle(getInventory().getContainedUnits());
+		return getInventory().getContainedVehicles();
 //		return getAllAssociatedVehicles()
 //				.stream()
 //				.filter(v -> !v.isSalvaged() && v.isParked())//!v.isReservedForMission())
@@ -2856,9 +2856,10 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	 * @return parked vehicles number
 	 */
 	public int getParkedVehicleNum() {
-		return Math.toIntExact(getAllAssociatedVehicles().stream()
-				.filter(v -> !v.isSalvaged() && v.isParked())// !v.isReservedForMission())
-				.collect(Collectors.counting()));
+		return getInventory().getNumContainedVehicles();
+//		return Math.toIntExact(getAllAssociatedVehicles().stream()
+//				.filter(v -> !v.isSalvaged() && v.isParked())// !v.isReservedForMission())
+//				.collect(Collectors.counting()));
 //		return getParkedVehicles().size();
 	}
 

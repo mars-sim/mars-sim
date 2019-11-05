@@ -422,6 +422,9 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 	 */
 	@Override
 	public Collection<Person> getAffectedPeople() {
+		return super.getAffectedPeople();
+//		return getInventory().getContainedPeople();
+		
 //		Collection<Person> people = super.getAffectedPeople();
 //		if (getContainerUnit() instanceof Person) {
 //			if (!people.contains(getContainerUnit())) {
@@ -433,12 +436,12 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 //		people.add(p);
 //		for (Unit u : getInventory().getContainedUnits()) {
 //		}
-		
-		return getInventory().getAllContainedUnits()
-				.stream()
-				.filter(u -> u instanceof Person)
-				.map(p -> (Person) p)
-				.collect(Collectors.toList());
+			
+//		return getInventory().getAllContainedUnits()
+//				.stream()
+//				.filter(u -> u instanceof Person)
+//				.map(p -> (Person) p)
+//				.collect(Collectors.toList());
 		
 //		people.addAll(pp);
 //		return people;

@@ -266,7 +266,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 				Vehicle vehicle = i.next();
 				boolean needsUnloading = false;
 				if (!vehicle.isReserved()) {
-					int peopleOnboard = CollectionUtils.getPerson(vehicle.getInventory().getContainedUnits()).size();
+					int peopleOnboard = vehicle.getInventory().getNumContainedPeople();
 					if (peopleOnboard == 0) {
 						if (BuildingManager.getBuilding(vehicle) != null) {
 							if (vehicle.getInventory().getTotalInventoryMass(false) > 0D) {
@@ -280,7 +280,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 						}
 					}
 
-					int robotsOnboard = CollectionUtils.getRobot(vehicle.getInventory().getContainedUnits()).size();
+					int robotsOnboard = vehicle.getInventory().getNumContainedRobots();
 					if (robotsOnboard == 0) {
 						if (BuildingManager.getBuilding(vehicle) != null) {
 							if (vehicle.getInventory().getTotalInventoryMass(false) > 0D) {
@@ -323,8 +323,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 					if (vehicleMission.hasVehicle()) {
 						Vehicle vehicle = vehicleMission.getVehicle();
 						if (settlement == vehicle.getSettlement()) {
-							int peopleOnboard = CollectionUtils.getPerson(vehicle.getInventory().getContainedUnits())
-									.size();
+							int peopleOnboard = vehicle.getInventory().getNumContainedPeople();
 							if (peopleOnboard == 0) {
 								if (!isFullyUnloaded(vehicle)) {
 									if (BuildingManager.getBuilding(vehicle) != null) {
@@ -333,8 +332,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 								}
 							}
 
-							int robotsOnboard = CollectionUtils.getRobot(vehicle.getInventory().getContainedUnits())
-									.size();
+							int robotsOnboard = vehicle.getInventory().getNumContainedRobots();
 							if (robotsOnboard == 0) {
 								if (!isFullyUnloaded(vehicle)) {
 									if (BuildingManager.getBuilding(vehicle) != null) {

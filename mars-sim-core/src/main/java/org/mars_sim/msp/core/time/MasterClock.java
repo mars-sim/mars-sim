@@ -499,6 +499,10 @@ public class MasterClock implements Serializable {
 			return true;
 	}
 
+	public void setSaveType() {
+		saveType = SaveType.NONE;
+	}
+	
 	/**
 	 * Sets the exit program flag.
 	 */
@@ -939,7 +943,7 @@ public class MasterClock implements Serializable {
 //		logger.config("1. checkSave() : saveType is " + saveType); 
 		if (saveType != SaveType.NONE) {
 //			logger.config("checkSave() is on " + Thread.currentThread().getName());
-//			logger.config("2. checkSave() : saveType is " + saveType); 
+//			logger.config("2. checkSave() : saveType is " + saveType + "     file is " + file); 
 			try {
 				sim.saveSimulation(saveType, file);
 			} catch (NullPointerException e) {

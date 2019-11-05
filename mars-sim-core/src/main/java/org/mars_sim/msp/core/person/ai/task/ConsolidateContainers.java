@@ -16,8 +16,7 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.equipment.Container;
+import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -147,11 +146,11 @@ implements Serializable {
         
         Set<Integer> partialResources = new HashSet<Integer>();
         
-        Iterator<Unit> i = inv.getContainedUnits().iterator();
+        Iterator<Equipment> i = inv.findAllContainers().iterator();
         while (i.hasNext() && !result) {
-            Unit unit = i.next();
-            if (unit instanceof Container) {
-                Inventory contInv = unit.getInventory();
+        	Equipment e = i.next();
+//            if (e instanceof Container) {
+                Inventory contInv = e.getInventory();
                 if (!contInv.isEmpty(false)) {
                     // Only check one type of amount resource for container.
                     Integer resource = null;
@@ -180,8 +179,7 @@ implements Serializable {
                         }
                     }
                 }
-            }
-            
+//            }
         }
     	
     	return result;
@@ -220,12 +218,12 @@ implements Serializable {
         double totalAmountLoading = LOAD_RATE * strengthModifier * time;
         double remainingAmountLoading = totalAmountLoading;
         
-        // Go through each container in top inventory.
-        Iterator<Unit> i = topInventory.getContainedUnits().iterator();
+        // Go through each container in top inventory.     
+        Iterator<Equipment> i = topInventory.findAllContainers().iterator();
         while (i.hasNext() && (remainingAmountLoading > 0D)) {
-            Unit unit = i.next();
-            if (unit instanceof Container) {
-                Inventory contInv = unit.getInventory();
+        	Equipment e = i.next();
+//            if (e instanceof Container) {  
+                Inventory contInv = e.getInventory();
                 if (!contInv.isEmpty(false)) {
                     // Only check one type of amount resource for container.
                 	Integer resource = null;
@@ -262,10 +260,10 @@ implements Serializable {
                         if (!isFull) {
                             
                             // Go through each other container in top inventory and try to consolidate resource.
-                            Iterator<Unit> k = topInventory.getContainedUnits().iterator();
+                            Iterator<Equipment> k = topInventory.findAllContainers().iterator();
                             while (k.hasNext() && (remainingAmountLoading > 0D) && (amount > 0D)) {
-                                Unit otherUnit = k.next();
-                                if ((otherUnit != unit) && (otherUnit instanceof Container)) {
+                            	Equipment otherUnit = k.next();
+                                if (otherUnit != e) {// && (otherUnit instanceof Container)) {
                                     Inventory otherContInv = otherUnit.getInventory();
                                     double otherAmount = otherContInv.getAmountResourceStored(resource, false);
                                     if (otherAmount > 0D) {
@@ -294,7 +292,7 @@ implements Serializable {
                         }
                     }
                 }
-            }
+//            }
         }
         
         double remainingTime = (remainingAmountLoading / totalAmountLoading) * time;

@@ -38,7 +38,9 @@ import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.PhaseType;
 import org.mars_sim.msp.core.resource.ResourceUtil;
+import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * The Inventory class represents what a unit contains in terms of resources and
@@ -1345,7 +1347,7 @@ public class Inventory implements Serializable {
 	 * Gets a collection of all the stored units.
 	 * 
 	 * @return Collection of all units
-	 */
+	 */ 
 	public Collection<Unit> getContainedUnits() {
 		List<Unit> result = new ArrayList<>();
 		if (containedUnitIDs != null) {
@@ -1356,6 +1358,108 @@ public class Inventory implements Serializable {
 		return result;
 	}
 
+	/**
+	 * Gets a collection of all the stored people.
+	 * 
+	 * @return Collection of all people
+	 */
+	public Collection<Person> getContainedPeople() {
+		List<Person> result = new ArrayList<>();
+		if (containedUnitIDs != null) {
+			for (Integer id : containedUnitIDs) {
+				Person p = unitManager.getPersonByID(id);
+				if (p != null)
+					result.add(p);
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * Counts the number of people.
+	 * 
+	 * @return the number of people contained
+	 */
+	public int getNumContainedPeople() {
+		int result = 0;
+		if (containedUnitIDs != null) {
+			for (Integer id : containedUnitIDs) {
+				Person p = unitManager.getPersonByID(id);
+				if (p != null)
+					result++;
+			}
+		}
+		return result;
+	}
+	
+	/**
+	 * Gets a collection of all the stored robots.
+	 * 
+	 * @return Collection of all robots
+	 */
+	public Collection<Robot> getContainedRobots() {
+		List<Robot> result = new ArrayList<>();
+		if (containedUnitIDs != null) {
+			for (Integer id : containedUnitIDs) {
+				Robot r = unitManager.getRobotByID(id);
+				if (r != null)
+					result.add(r);
+			}
+		}
+		return result;
+	}
+	
+	/**
+	 * Gets a number of robots.
+	 * 
+	 * @return a number of robots contained
+	 */
+	public int getNumContainedRobots() {
+		int result = 0;
+		if (containedUnitIDs != null) {
+			for (Integer id : containedUnitIDs) {
+				Robot r = unitManager.getRobotByID(id);
+				if (r != null)
+					result++;
+			}
+		}
+		return result;
+	}
+	
+	/**
+	 * Gets a collection of all the stored vehicles.
+	 * 
+	 * @return Collection of all vehicles
+	 */
+	public Collection<Vehicle> getContainedVehicles() {
+		List<Vehicle> result = new ArrayList<>();
+		if (containedUnitIDs != null) {
+			for (Integer id : containedUnitIDs) {
+				Vehicle v = unitManager.getVehicleByID(id);
+				if (v != null)
+					result.add(v);
+			}
+		}
+		return result;
+	}
+	
+	/**
+	 * Gets the number of the stored vehicles.
+	 * 
+	 * @return number of vehicles
+	 */
+	public int getNumContainedVehicles() {
+		int result = 0;
+		if (containedUnitIDs != null) {
+			for (Integer id : containedUnitIDs) {
+				Vehicle v = unitManager.getVehicleByID(id);
+				if (v != null)
+					result++;
+			}
+		}
+		return result;
+	}
+	
 	/**
 	 * Gets a collection of all the stored units.
 	 * 
@@ -1673,7 +1777,7 @@ public class Inventory implements Serializable {
 	 * 
 	 * @return collection of equipment or empty collection if none.
 	 */
-	public <T extends Unit> Collection<Equipment> findAllEquipment() {
+	public Collection<Equipment> findAllEquipment() {
 		Collection<Equipment> result = new ConcurrentLinkedQueue<>();
 		if (containedUnitIDs != null) {
 			for (Integer id : containedUnitIDs) {
@@ -1686,16 +1790,33 @@ public class Inventory implements Serializable {
 	}
 	
 	/**
+	 * Finds all of the containers.
+	 * 
+	 * @return collection of containers or empty collection if none.
+	 */
+	public Collection<Equipment> findAllContainers() {
+		Collection<Equipment> result = new ConcurrentLinkedQueue<>();
+		if (containedUnitIDs != null) {
+			for (Integer id : containedUnitIDs) {
+				Equipment e = unitManager.getEquipmentByID(id);
+				if (e != null && e instanceof Container) 
+					result.add(e);
+			}
+		}
+		return result;
+	}
+	
+	/**
 	 * Finds all of the specimen boxes in storage.
 	 * 
 	 * @return collection of specimen boxes or empty collection if none.
 	 */
-	public <T extends Unit> Collection<SpecimenBox> findAllSpecimenBoxes() {
+	public Collection<SpecimenBox> findAllSpecimenBoxes() {
 		Collection<SpecimenBox> result = new ConcurrentLinkedQueue<>();
 		if (containedUnitIDs != null) {
 			for (Integer id : containedUnitIDs) {
 				Equipment e = unitManager.getEquipmentByID(id);
-				if (e instanceof SpecimenBox) {
+				if (e != null && e instanceof SpecimenBox) {
 					result.add((SpecimenBox)e);
 				}	
 			}
@@ -1708,12 +1829,12 @@ public class Inventory implements Serializable {
 	 * 
 	 * @return collection of EVA suits or empty collection if none.
 	 */
-	public <T extends Unit> Collection<EVASuit> findAllEVASuits() {
+	public Collection<EVASuit> findAllEVASuits() {
 		Collection<EVASuit> result = new ConcurrentLinkedQueue<>();
 		if (containedUnitIDs != null) {
 			for (Integer id : containedUnitIDs) {
 				Equipment e = unitManager.getEquipmentByID(id);
-				if (e instanceof EVASuit) {
+				if (e != null && e instanceof EVASuit) {
 					result.add((EVASuit)e);
 				}	
 			}
@@ -1727,12 +1848,12 @@ public class Inventory implements Serializable {
 	 * 
 	 * @return collection of bags or empty collection if none.
 	 */
-	public <T extends Unit> Collection<Bag> findAllBags() {
+	public Collection<Bag> findAllBags() {
 		Collection<Bag> result = new ConcurrentLinkedQueue<>();
 		if (containedUnitIDs != null) {
 			for (Integer id : containedUnitIDs) {
 				Equipment e = unitManager.getEquipmentByID(id);
-				if (e instanceof Bag) {
+				if (e != null && e instanceof Bag) {
 					result.add((Bag)e);
 				}	
 			}
@@ -1759,17 +1880,27 @@ public class Inventory implements Serializable {
 	 */
 	public int findNumEquipment(int typeID) {
 		int result = 0;
-		if (containedUnitIDs != null && !containedUnitIDs.isEmpty()) {
-			Iterator<Unit> i = getContainedUnits().iterator();
-			while (i.hasNext()) {
-				Unit unit = i.next();
-				if (unit instanceof Equipment) {
-					if (((Equipment)unit).getEquipmentType() == EquipmentType.convertID2Enum(typeID)) {
-						result++;
-					}
+//		if (containedUnitIDs != null && !containedUnitIDs.isEmpty()) {
+//			Iterator<Unit> i = getContainedUnits().iterator();
+//			while (i.hasNext()) {
+//				Unit unit = i.next();
+//				if (unit instanceof Equipment) {
+//					if (((Equipment)unit).getEquipmentType() == EquipmentType.convertID2Enum(typeID)) {
+//						result++;
+//					}
+//				}
+//			}
+//		}
+		
+		if (containedUnitIDs != null) {
+			for (Integer id : containedUnitIDs) {
+				Equipment e = unitManager.getEquipmentByID(id);
+				if (e != null && e.getEquipmentType() == EquipmentType.convertID2Enum(typeID)) {
+					result++;
 				}
 			}
 		}
+
 		return result;
 	}
 

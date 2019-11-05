@@ -634,7 +634,6 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		}
 		else if (EMBARKING.equals(getPhase())) {
 			createDateEmbarked();
-			recordStartMass();
 			computeProposedRouteTotalDistance();
 			performEmbarkFromSettlementPhase(member);
 		} 

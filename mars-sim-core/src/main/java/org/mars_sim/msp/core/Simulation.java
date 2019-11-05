@@ -929,7 +929,10 @@ public class Simulation implements ClockListener, Serializable {
 	private void reinitializeInstances() {
 		// Re-initialize the utility class for getting lists of meta tasks.
 		new MetaTaskUtil();		
-		
+		// Restart the autosave scheduler
+		AutosaveScheduler.defaultStart();
+		// Set save type to NONE
+		masterClock.setSaveType();	
 		// Re-initialize the resources for the saved sim
 		ResourceUtil.getInstance().initializeInstances();
 		// Re-initialize the MarsSurface instance

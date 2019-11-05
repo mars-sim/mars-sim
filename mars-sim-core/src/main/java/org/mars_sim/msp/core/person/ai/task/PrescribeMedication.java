@@ -143,72 +143,72 @@ implements Serializable {
         setPhase(MEDICATING);
     }
 
-/*	
-	   public static int determineNumPatients(Unit doctor) {
-	        int result = 0;
-	        Person p = null;
-	        Robot r = null;
-	        if (doctor instanceof Person)
-	        	p = (Person) doctor;
-	        else
-	        	r = (Robot) doctor;
-	        
-	        // Get possible patient list.
-	        // Note: Doctor can also prescribe medication for himself.
-	        Collection<Person> patientList = null;
-	        
-	        if (p != null) {
-		        if (LocationSituation.IN_SETTLEMENT == p.getLocationSituation()) {
-		            patientList = p.getSettlement().getInhabitants();
-		        }
-		        else if (LocationSituation.IN_VEHICLE == p.getLocationSituation()) {
-		            Vehicle vehicle = p.getVehicle();
-		            if (vehicle instanceof Crewable) {
-		                Crewable crewVehicle = (Crewable) vehicle;
-		                patientList = crewVehicle.getCrew();
-		            }
-		        }
-	        }
-	        
-	        else if (r != null) {
-		        if (LocationSituation.IN_SETTLEMENT == r.getLocationSituation()) {
-		            patientList = r.getSettlement().getInhabitants();
-		        }
-		        else if (LocationSituation.IN_VEHICLE == r.getLocationSituation()) {
-		            Vehicle vehicle = r.getVehicle();
-		            if (vehicle instanceof Crewable) {
-		                Crewable crewVehicle = (Crewable) vehicle;
-		                patientList = crewVehicle.getCrew();
-		            }
-		        }
-	        }
 
-	        // Determine patient.
-	        if (patientList != null) {
-	            Iterator<Person> i = patientList.iterator();
-	            while (i.hasNext()) {
-	                Person person = i.next();
-	                PhysicalCondition condition = person.getPhysicalCondition();
-	                RadiationExposure exposure = condition.getRadiationExposure();
-	                if (!condition.isDead()) {
-	                	if (condition.isStressedOut()) {
-	                        // Only prescribing anti-stress medication at the moment.
-	                        if (!condition.hasMedication(AnxietyMedication.NAME)) {
-	                            result++;
-	                        }
-	                	}
-	                	else if (exposure.isSick()) {
-	                        if (!condition.hasMedication(RadioProtectiveAgent.NAME)) {
-	                            result++;
-	                        }
-	                	}
-	                }
-	            }
-	        }
+//	   public static int determineNumPatients(Unit doctor) {
+//	        int result = 0;
+//	        Person p = null;
+//	        Robot r = null;
+//	        if (doctor instanceof Person)
+//	        	p = (Person) doctor;
+//	        else
+//	        	r = (Robot) doctor;
+//	        
+//	        // Get possible patient list.
+//	        // Note: Doctor can also prescribe medication for himself.
+//	        Collection<Person> patientList = null;
+//	        
+//	        if (p != null) {
+//		        if (LocationSituation.IN_SETTLEMENT == p.getLocationSituation()) {
+//		            patientList = p.getSettlement().getInhabitants();
+//		        }
+//		        else if (LocationSituation.IN_VEHICLE == p.getLocationSituation()) {
+//		            Vehicle vehicle = p.getVehicle();
+//		            if (vehicle instanceof Crewable) {
+//		                Crewable crewVehicle = (Crewable) vehicle;
+//		                patientList = crewVehicle.getCrew();
+//		            }
+//		        }
+//	        }
+//	        
+//	        else if (r != null) {
+//		        if (LocationSituation.IN_SETTLEMENT == r.getLocationSituation()) {
+//		            patientList = r.getSettlement().getInhabitants();
+//		        }
+//		        else if (LocationSituation.IN_VEHICLE == r.getLocationSituation()) {
+//		            Vehicle vehicle = r.getVehicle();
+//		            if (vehicle instanceof Crewable) {
+//		                Crewable crewVehicle = (Crewable) vehicle;
+//		                patientList = crewVehicle.getCrew();
+//		            }
+//		        }
+//	        }
+//
+//	        // Determine patient.
+//	        if (patientList != null) {
+//	            Iterator<Person> i = patientList.iterator();
+//	            while (i.hasNext()) {
+//	                Person person = i.next();
+//	                PhysicalCondition condition = person.getPhysicalCondition();
+//	                RadiationExposure exposure = condition.getRadiationExposure();
+//	                if (!condition.isDead()) {
+//	                	if (condition.isStressedOut()) {
+//	                        // Only prescribing anti-stress medication at the moment.
+//	                        if (!condition.hasMedication(AnxietyMedication.NAME)) {
+//	                            result++;
+//	                        }
+//	                	}
+//	                	else if (exposure.isSick()) {
+//	                        if (!condition.hasMedication(RadioProtectiveAgent.NAME)) {
+//	                            result++;
+//	                        }
+//	                	}
+//	                }
+//	            }
+//	        }
+//
+//	        return result;
+//	    }
 
-	        return result;
-	    }
-*/
 	
     /**
      * Determines if there is a patient nearby needing medication.
@@ -267,15 +267,15 @@ implements Serializable {
         if (doctor.isInSettlement()) {
             patientList = doctor.getSettlement().getIndoorPeople();
         }
-/*        
-        else if (loc == LocationSituation.IN_VEHICLE) {
-            Vehicle vehicle = doctor.getVehicle();
-            if (vehicle instanceof Crewable) {
-                Crewable crewVehicle = (Crewable) vehicle;
-                patientList = crewVehicle.getCrew();
-            }
-        }
-*/
+       
+//        else if (loc == LocationSituation.IN_VEHICLE) {
+//            Vehicle vehicle = doctor.getVehicle();
+//            if (vehicle instanceof Crewable) {
+//                Crewable crewVehicle = (Crewable) vehicle;
+//                patientList = crewVehicle.getCrew();
+//            }
+//        }
+
         // Determine patient.
         if (patientList != null) {
             Iterator<Person> i = patientList.iterator();
@@ -303,16 +303,16 @@ implements Serializable {
     }
 
 
-    /**
-     * Determines a medication for the patient.
-     * @param patient the patient to medicate.
-     * @return medication.
-     
-    private Medication determineMedication(Person patient) {
-        // Only allow anti-stress medication for now.
-        return new AnxietyMedication(patient); 
-    }
-*/
+//    /**
+//     * Determines a medication for the patient.
+//     * @param patient the patient to medicate.
+//     * @return medication.
+//    */ 
+//    private Medication determineMedication(Person patient) {
+//        // Only allow anti-stress medication for now.
+//        return new AnxietyMedication(patient); 
+//    }
+
     
     /**
      * Performs the medicating phase.
@@ -414,32 +414,6 @@ implements Serializable {
         }
 	}
 
-/*
-	// 2015-02-06 Added storeAnResource()
-	public boolean storeAnResource(double amount, String name, Inventory inv) {
-		boolean result = false;
-		try {
-			AmountResource ar = AmountResource.findAmountResource(name);
-			double remainingCapacity = inv.getAmountResourceRemainingCapacity(ar, false, false);
-
-			if (remainingCapacity < amount) {
-			    // if the remaining capacity is smaller than the amount, set remaining capacity to full
-				amount = remainingCapacity;
-				result = false;
-
-			}
-			else {
-				inv.storeAmountResource(ar, amount, true);
-				inv.addAmountSupplyAmount(ar, amount);
-				result = true;
-			}
-		} catch (Exception e) {
-    		logger.log(Level.SEVERE,e.getMessage());
-		}
-
-		return result;
-	}
-*/
 	
     @Override
     protected void addExperience(double time) {

@@ -19,139 +19,144 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 
 /**
- * A light utility vehicle that can be used for construction, loading and mining.
+ * A light utility vehicle that can be used for construction, loading and
+ * mining.
  */
 public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
-    /** Vehicle name. */
-    public static final String NAME = "Light Utility Vehicle";
+	/** Vehicle name. */
+	public static final String NAME = "Light Utility Vehicle";
 
-    /** The amount of work time to perform maintenance (millisols) */
-    public static final double MAINTENANCE_WORK_TIME = 200D;
+	/** The amount of work time to perform maintenance (millisols) */
+	public static final double MAINTENANCE_WORK_TIME = 200D;
 
-    // Data members.
-    /** The LightUtilityVehicle's capacity for crewmembers. */
-    private int crewCapacity = 0;
-    private int robotCrewCapacity = 0;
+	// Data members.
+	/** The LightUtilityVehicle's capacity for crewmembers. */
+	private int crewCapacity = 0;
+	private int robotCrewCapacity = 0;
 
-    private Collection<Part> attachments = null;
-    private int slotNumber  = 0;
+	private Collection<Part> attachments = null;
+	private int slotNumber = 0;
 
-    public LightUtilityVehicle(String name, String type, Settlement settlement) {
-        // Use GroundVehicle constructor.
-        super(name, type, settlement, MAINTENANCE_WORK_TIME);
+	public LightUtilityVehicle(String name, String type, Settlement settlement) {
+		// Use GroundVehicle constructor.
+		super(name, type, settlement, MAINTENANCE_WORK_TIME);
 
+		if (vehicleConfig.hasPartAttachments(type)) {
+			attachments = vehicleConfig.getAttachableParts(type);
+			slotNumber = vehicleConfig.getPartAttachmentSlotNumber(type);
+		}
 
-        if (vehicleConfig.hasPartAttachments(type)) {
-            attachments = vehicleConfig.getAttachableParts(type);
-            slotNumber = vehicleConfig.getPartAttachmentSlotNumber(type);
-        }
+		crewCapacity = vehicleConfig.getCrewSize(type);
+		robotCrewCapacity = vehicleConfig.getCrewSize(type);
 
-        crewCapacity = vehicleConfig.getCrewSize(type);
-        robotCrewCapacity = vehicleConfig.getCrewSize(type);
+		Inventory inv = getInventory();
+		inv.addGeneralCapacity(vehicleConfig.getTotalCapacity(type));
 
-        Inventory inv = getInventory();
-        inv.addGeneralCapacity(vehicleConfig.getTotalCapacity(type));
+		// Set rover terrain modifier
+		setTerrainHandlingCapability(0D);
+	}
 
-        // Set rover terrain modifier
-        setTerrainHandlingCapability(0D);
-    }
+	@Override
+	public int getFuelType() {
+		return ResourceUtil.methaneID;
+	}
 
-    @Override
-    public int getFuelType() {
-    	return ResourceUtil.methaneID;
-    }
-
-    @Override
-    public boolean isAppropriateOperator(VehicleOperator operator) {
-    	boolean result = false;
-    	if (operator instanceof Person)
-        	result = (operator instanceof Person) && (getInventory().containsUnit((Unit) operator));
+	@Override
+	public boolean isAppropriateOperator(VehicleOperator operator) {
+		boolean result = false;
+		if (operator instanceof Person)
+			result = (operator instanceof Person) && (getInventory().containsUnit((Unit) operator));
 //    	else if (operator instanceof Robot)
 //        	result = (operator instanceof Robot) && (getInventory().containsUnit((Unit) operator));
-    	return result ;
-    }
+		return result;
+	}
 
-    /**
-     * Gets a collection of the crewmembers.
-     * @return crewmembers as Collection
-     */
-    public Collection<Person> getCrew() {
-        return CollectionUtils.getPerson(getInventory().getContainedUnits());
-    }
+	/**
+	 * Gets a collection of the crewmembers.
+	 * 
+	 * @return crewmembers as Collection
+	 */
+	public Collection<Person> getCrew() {
+		return getInventory().getContainedPeople();
+	}
 
+	/**
+	 * Gets the number of crewmembers the vehicle can carry.
+	 * 
+	 * @return capacity
+	 */
+	public int getCrewCapacity() {
+		return crewCapacity;
+	}
 
-    /**
-     * Gets the number of crewmembers the vehicle can carry.
-     * @return capacity
-     */
-    public int getCrewCapacity() {
-        return crewCapacity;
-    }
+	/**
+	 * Gets the current number of crewmembers.
+	 * 
+	 * @return number of crewmembers
+	 */
+	public int getCrewNum() {
+		return getInventory().getNumContainedPeople();
+	}
 
-    /**
-     * Gets the current number of crewmembers.
-     * @return number of crewmembers
-     */
-    public int getCrewNum() {
-        return getCrew().size();
-    }
-
-    /**
-     * Checks if person is a crewmember.
-     * @param person the person to check
-     * @return true if person is a crewmember
-     */
-    public boolean isCrewmember(Person person) {
-        return getInventory().containsUnit(person);
-    }
+	/**
+	 * Checks if person is a crewmember.
+	 * 
+	 * @param person the person to check
+	 * @return true if person is a crewmember
+	 */
+	public boolean isCrewmember(Person person) {
+		return getInventory().containsUnit(person);
+	}
 
 	@Override
 	public Collection<Robot> getRobotCrew() {
-        return CollectionUtils.getRobot(getInventory().getContainedUnits());
+		return getInventory().getContainedRobots();
 	}
 
 	@Override
 	public int getRobotCrewCapacity() {
-        return robotCrewCapacity;
+		return robotCrewCapacity;
 	}
 
 	@Override
 	public int getRobotCrewNum() {
-        return getRobotCrew().size();
+		return getInventory().getNumContainedRobots();
 	}
 
 	@Override
 	public boolean isRobotCrewmember(Robot robot) {
-        return getInventory().containsUnit(robot);
+		return getInventory().containsUnit(robot);
 	}
-    /**
-     * Gets a collection of parts that can be attached to this vehicle.
-     * @return collection of parts.
-     */
-    public Collection<Part> getPossibleAttachmentParts() {
-        return attachments;
-    }
 
-    /**
-     * Gets the number of part slots in the vehicle.
-     * @return number of part slots.
-     */
-    public int getAtachmentSlotNumber() {
-        return slotNumber;
-    }
+	/**
+	 * Gets a collection of parts that can be attached to this vehicle.
+	 * 
+	 * @return collection of parts.
+	 */
+	public Collection<Part> getPossibleAttachmentParts() {
+		return attachments;
+	}
 
-    @Override
-    public void timePassing(double time) {
-        super.timePassing(time);
-        // Add active time if crewed.
-        if (getCrewNum() > 0 || getRobotCrewNum() > 0 ) malfunctionManager.activeTimePassing(time);
-    }
+	/**
+	 * Gets the number of part slots in the vehicle.
+	 * 
+	 * @return number of part slots.
+	 */
+	public int getAtachmentSlotNumber() {
+		return slotNumber;
+	}
 
-
+	@Override
+	public void timePassing(double time) {
+		super.timePassing(time);
+		// Add active time if crewed.
+		if (getCrewNum() > 0 || getRobotCrewNum() > 0)
+			malfunctionManager.activeTimePassing(time);
+	}
 
 	@Override
 	public Collection<Unit> getUnitCrew() {
@@ -164,14 +169,13 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 		return getName();
 	}
 
-    @Override
-    public void destroy() {
-        super.destroy();
+	@Override
+	public void destroy() {
+		super.destroy();
 
-        attachments.clear();
-        attachments = null;
-    }
-
+		attachments.clear();
+		attachments = null;
+	}
 
 	public Vehicle getVehicle() {
 		if (getContainerUnit() instanceof Vehicle)

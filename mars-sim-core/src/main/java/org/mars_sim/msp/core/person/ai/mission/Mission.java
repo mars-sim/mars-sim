@@ -113,11 +113,11 @@ public abstract class Mission implements Serializable {
 	/** The name of the vehicle reserved. */
 	private String vehicleReserved;
 	/** The date the mission was filed. */
-	private String dateFiled;
+	private String dateFiled = "";
 	/** The date the mission embarked. */
-	private String dateEmbarked;
+	private String dateEmbarked = "";
 	/** The date the mission was completed. */
-	private String dateCompleted;
+	private String dateCompleted = "";
 	/** Name of mission. */
 	private String missionName;
 	/** The description of the current phase of operation. */
@@ -280,24 +280,30 @@ public abstract class Mission implements Serializable {
 	 * Creates the date filed timestamp of the mission.
 	 */
 	public void createDateFiled() {
-		dateFiled = marsClock.getTrucatedDateTimeStamp();
-		fireMissionUpdate(MissionEventType.DATE_EVENT, dateFiled);
+		if (dateFiled.equals("")) {
+			dateFiled = marsClock.getTrucatedDateTimeStamp();
+			fireMissionUpdate(MissionEventType.DATE_EVENT, dateFiled);
+		}
 	}
 	
 	/**
 	 * Creates the date completed timestamp of the mission.
 	 */
 	public void createDateCompleted() {
-		dateCompleted = marsClock.getTrucatedDateTimeStamp();
-		fireMissionUpdate(MissionEventType.DATE_EVENT, dateCompleted);
+		if (dateCompleted.equals("")) {
+			dateCompleted = marsClock.getTrucatedDateTimeStamp();
+			fireMissionUpdate(MissionEventType.DATE_EVENT, dateCompleted);
+		}
 	}
 
 	/**
 	 * Creates the date embarked timestamp of the mission.
 	 */
 	public void createDateEmbarked() {
-		dateEmbarked = marsClock.getTrucatedDateTimeStamp();
-		fireMissionUpdate(MissionEventType.DATE_EVENT, dateEmbarked);
+		if (dateEmbarked.equals("")) {
+			dateEmbarked = marsClock.getTrucatedDateTimeStamp();
+			fireMissionUpdate(MissionEventType.DATE_EVENT, dateEmbarked);
+		}
 	}
 	
 	/**

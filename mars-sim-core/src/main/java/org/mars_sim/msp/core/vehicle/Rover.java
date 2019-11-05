@@ -264,11 +264,11 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 	 * @return number of crewmembers
 	 */
 	public int getCrewNum() {
-		return getCrew().size();
+		return getInventory().getNumContainedPeople(); //getCrew().size();
 	}
 
 	public int getRobotCrewNum() {
-		return getRobotCrew().size();
+		return getInventory().getNumContainedRobots(); //return getRobotCrew().size();
 	}
 
 	/**
@@ -277,11 +277,13 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 	 * @return crewmembers as Collection
 	 */
 	public Collection<Person> getCrew() {
-		return CollectionUtils.getPerson(getInventory().getContainedUnits());
+		return getInventory().getContainedPeople();
+//		return CollectionUtils.getPerson(getInventory().getContainedUnits());
 	}
 
 	public Collection<Robot> getRobotCrew() {
-		return CollectionUtils.getRobot(getInventory().getContainedUnits());
+		return getInventory().getContainedRobots();
+//		return CollectionUtils.getRobot(getInventory().getContainedUnits());
 	}
 
 	/**
