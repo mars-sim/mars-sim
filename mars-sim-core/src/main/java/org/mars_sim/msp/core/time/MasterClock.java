@@ -724,20 +724,6 @@ public class MasterClock implements Serializable {
 					else
 						executionTime = t2 - t1;
 					
-					// Benchmark CPU speed
-//	 		        long diff = 0;
-//
-//	 		        if (count >= 1000)
-//	 		        	count = 0;
-//
-//	 		        if (count >= 0) {
-//	 			        diff = (long) ((t2 - t2Cache) / 1_000_000D);
-//	 		        	diffCache = (diff * count + diffCache)/(count + 1);
-//	 		        }
-
-					// if (count == 0) logger.config("Benchmarking this machine : " + diff + " per
-					// 1000 frames");
-
 					// Note: dt = t2 - t1. It's the time where all the logics are done
 
 					// sleepTime varies, depending on the remaining time
@@ -747,7 +733,6 @@ public class MasterClock implements Serializable {
 					if (sleepTime > 0 && keepRunning) {
 						// Pause simulation to allow other threads to complete.
 						try {
-							// Thread.yield();
 							TimeUnit.NANOSECONDS.sleep(sleepTime);
 						} catch (InterruptedException e) {
 							Thread.currentThread().interrupt();
@@ -757,8 +742,6 @@ public class MasterClock implements Serializable {
 						
 						overSleepTime = (t3 - t2) - sleepTime;
 
-						// timeBetweenUpdates = (long) (timeBetweenUpdates * .999905); // decrement by
-						// .0005%
 					}
 
 					else { // if sleepTime <= 0 ( if t2 is way bigger than t1
@@ -787,17 +770,13 @@ public class MasterClock implements Serializable {
 						overSleepTime = 0L;
 
 						if (++noDelays >= noDelaysPerYield) {
-//							Thread.yield(); // this may cause the simulation unrecoverable after the machine restores from the power saving.
 							noDelays = 0;
 						}
 
-						// timeBetweenUpdates = (long) (timeBetweenUpdates * 1.0025); // increment by
-						// 0.25%
 					}
 
 					int skips = 0;
 
-//					while (!justReloaded && (Math.abs(excess) > currentTBU_ns) && (skips < maxFrameSkips)) {
 					for (int i = 0; i < maxFrameSkips; i++) {	
 						boolean value = !justReloaded && (Math.abs(excess) > currentTBU_ns);
 						justReloaded = false;	
@@ -852,13 +831,9 @@ public class MasterClock implements Serializable {
 					}
 					
 					// Check to see if the simulation should be saved at this point.
-					checkSave();
-//						// Reset t1 time due to the long process of saving
-//						t1 = System.nanoTime();
-
-					// For performance benchmarking
-//	 		       t2Cache = t2;
-//	 		       count++;
+					if (checkSave())
+						t3 = System.nanoTime();
+					
 				} // end of while
 			} // if fxgl is not used
 		} // end of run
