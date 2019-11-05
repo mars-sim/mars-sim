@@ -120,7 +120,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 
 	private static final String DETECTOR_GRID = "] The detector grid forecast a ";
 
-	public static final int CHECK_GOODS = 5;
+	public static final int CHECK_GOODS = 15;
 	
 	public static final int CHECK_MISSION = 20; // once every 10 millisols
 

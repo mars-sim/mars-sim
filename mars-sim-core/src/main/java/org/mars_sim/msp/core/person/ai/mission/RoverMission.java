@@ -480,7 +480,6 @@ public abstract class RoverMission extends VehicleMission {
 	        	rover.determinedSettlementParkedLocationAndFacing();
 	        
 			for (Person p : rover.getCrew()) {
-
 				if (p.isDeclaredDead()) {
 					
 					LogConsolidated.log(Level.FINER, 0, sourceName,

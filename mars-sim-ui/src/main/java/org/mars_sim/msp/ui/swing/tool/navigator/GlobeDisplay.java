@@ -78,7 +78,7 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 	/** <code>true</code> if globe should be updated. */
 	private boolean update;
 	/** <code>true</code> if refresh thread should continue. */
-	private boolean keepRunning;
+//	private boolean keepRunning;
 	
 	/** Real surface sphere object. */
 	private MarsMap marsSphere;
@@ -177,7 +177,7 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 		update = true;
 		mapType = 0;
 		recreate = true;
-		keepRunning = true;
+//		keepRunning = true;
 		useUSGSMap = false;
 		shadingArray = new int[width * height * 2 * 2];
 		showDayNightShading = true;
@@ -353,7 +353,7 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 		 * loop, refreshing the globe display when necessary
 		 */
 //	public void refreshLoop() {
-		if (keepRunning) {
+//		if (keepRunning) {
 			if (recreate) {
 				// System.out.println("recreate is true");
 				recreate = false;
@@ -377,7 +377,7 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 				// e.printStackTrace(); // if enable, will print sleep interrupted
 				// }
 			}
-		}
+//		}
 	}
 
 	// active rendering the buffer image to the screen
@@ -736,13 +736,12 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 		if (desktop.isToolWindowOpen(NavigatorWindow.NAME)) {
 //			timeCache += time;
 //			if (timeCache > PERIOD_IN_MILLISOLS * time) {
-				keepRunning = true;
+//				keepRunning = true;
 				updateDisplay();
+//				keepRunning = false;
 //				timeCache = 0;
 //			}
 		}
-		else 
-			keepRunning = false;
 	}
 
 	@Override
@@ -782,8 +781,7 @@ public class GlobeDisplay extends WebComponent implements ClockListener {
 		desktop  = null;
 
 		// showThread = null;
-		update = false;
-		keepRunning = false;
+
 		marsSphere = null;
 		topoSphere = null;
 		centerCoords = null;

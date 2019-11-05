@@ -227,7 +227,11 @@ public class SettlementTableModel extends UnitTableModel {
 					break;
 
 				case POWER: {
-					result = df.format(settle.getPowerGrid().getGeneratedPower());
+					double power = settle.getPowerGrid().getGeneratedPower();
+					if (power < 0D || Double.isNaN(power) || Double.isInfinite(power))
+						result = 0;
+					else
+						result = df.format(power);
 				}
 					break;
 

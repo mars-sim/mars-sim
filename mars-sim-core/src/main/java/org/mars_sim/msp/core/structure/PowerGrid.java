@@ -334,14 +334,13 @@ public class PowerGrid implements Serializable {
 		// BuildingManager manager = settlement.getBuildingManager();
 		Iterator<Building> iPow = manager.getBuildings(FunctionType.POWER_GENERATION).iterator();
 		while (iPow.hasNext()) {
-			Building b = iPow.next();
-			power += b.getPowerGeneration().getGeneratedPower();
+			power += iPow.next().getPowerGeneration().getGeneratedPower();
 		}
 		setGeneratedPower(power);
 
 		if (logger.isLoggable(Level.FINEST)) {
 			logger.finest(Msg.getString("PowerGrid.log.totalPowerGenerated", //$NON-NLS-1$
-					Double.toString(powerGenerated)));
+					Double.toString(power)));
 		}
 	}
 

@@ -10,6 +10,7 @@ package org.mars_sim.msp.core.structure.building.function;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -65,9 +66,6 @@ public class ResourceProcess implements Serializable {
 		runningProcess = defaultOn;
 		currentProductionLevel = 1D;
 		this.powerRequired = powerRequired;
-		
-//		if (marsClock == null)
-//			marsClock = Simulation.instance().getMasterClock().getMarsClock();
 	}
 
 	/**
@@ -259,10 +257,9 @@ public class ResourceProcess implements Serializable {
 			// logger.info(name + " production level: " + productionLevel);
 
 			// Input resources from inventory.
-			// Iterator<AmountResource> inputI = maxInputResourceRates.keySet().iterator();
-			// while (inputI.hasNext()) {
-			// AmountResource resource = inputI.next();
-			for (Integer resource : maxInputResourceRates.keySet()) {
+			 Iterator<Integer> inputI = maxInputResourceRates.keySet().iterator();
+			 while (inputI.hasNext()) {
+				 Integer resource = inputI.next();
 				double maxRate = maxInputResourceRates.get(resource);
 				double resourceRate = maxRate * level;
 				double resourceAmount = resourceRate * time;
@@ -280,11 +277,9 @@ public class ResourceProcess implements Serializable {
 			}
 
 			// Output resources to inventory.
-			// Iterator<AmountResource> outputI =
-			// maxOutputResourceRates.keySet().iterator();
-			// while (outputI.hasNext()) {
-			// AmountResource resource = outputI.next();
-			for (Integer resource : maxOutputResourceRates.keySet()) {
+			 Iterator<Integer> outputI = maxOutputResourceRates.keySet().iterator();
+			 while (outputI.hasNext()) {
+				Integer resource = outputI.next();
 				double maxRate = maxOutputResourceRates.get(resource);
 				double resourceRate = maxRate * level;
 				double resourceAmount = resourceRate * time;
@@ -324,11 +319,10 @@ public class ResourceProcess implements Serializable {
 		// Convert time from millisols to seconds.
 		// double timeSec = MarsClock.convertMillisolsToSeconds(time);
 
-		// Iterator<AmountResource> inputI = maxInputResourceRates.keySet().iterator();
-		// while (inputI.hasNext()) {
-		// AmountResource resource = inputI.next();
-		// System.out.println(resource.getName());
-		for (Integer resource : maxInputResourceRates.keySet()) {
+		Iterator<Integer> inputI = maxInputResourceRates.keySet().iterator();
+		while (inputI.hasNext()) {
+			Integer resource = inputI.next();
+//			logger.info(resource.getName());
 			double maxRate = maxInputResourceRates.get(resource);
 			double desiredResourceAmount = maxRate * time;
 			double inventoryResourceAmount = inventory.getAmountResourceStored(resource, false);

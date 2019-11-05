@@ -154,9 +154,9 @@ public class PowerGeneration extends Function implements Serializable {
 				// System.out.println(heatSource.toString() + " at building "+
 				// building.getNickName() + " is HEAT_OFF");
 				powerSource.setTime(time);
-				result += powerSource.getCurrentPower(getBuilding());
-			} else
-				result += powerSource.getCurrentPower(getBuilding());
+			}
+			
+			result += powerSource.getCurrentPower(getBuilding());
 		}
 
 		if (thermalGeneration == null)

@@ -36,7 +36,7 @@ implements Serializable {
 	
 	private double efficiency_solar_to_electricity = .58;
 
-	private double maxHeat;
+	private double maxHeat = 0;
 	
 	private double factor = 1;
 
@@ -72,7 +72,6 @@ implements Serializable {
 	}
 	
 	public double getCollected(Building building) {
-
 		return surface.getSolarIrradiance(building.getCoordinates()) 
 				* building.getFloorArea() / 1000D ;
 	}
