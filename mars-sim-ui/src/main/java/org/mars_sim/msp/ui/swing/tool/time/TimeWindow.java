@@ -61,7 +61,17 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 
 	/** Tool name. */
 	public static final String NAME = Msg.getString("TimeWindow.title"); //$NON-NLS-1$
-
+	/** the execution time label string */
+	public static final String EXEC = "Execution : ";
+	/** the sleep time label string */
+	public static final String SLEEP_TIME = "Sleep : ";
+	/** the execution time unit */
+	public static final String US = " micro-secs";
+	/** the execution time label string */
+	public static final String BASE_TBU = "Base TBU : ";
+	/** the execution time unit */
+	public static final String MS = " ms";
+	/** the real second label string */	
 	public static final String ONE_REAL_SEC = "1 Real Sec = ";
 	/** the upper limit of the slider bar. */
 	public static final int MAX = 13;
@@ -103,6 +113,12 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	private WebLabel pulsesPerSecLabel;
 	/** label for time ratio. */
 	private WebLabel timeRatioLabel;
+	/** label for execution time. */
+	private WebLabel execTimeLabel;
+	/** label for base TBU. */
+	private WebLabel baseTBULabel;
+	/** label for sleep time. */
+	private WebLabel sleepTimeLabel;
 	/** label for time compression. */	
 	private WebLabel timeCompressionLabel;
 	/** slider for pulse. */
@@ -237,18 +253,18 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		uptimePane.setBorder(new CompoundBorder(new EtchedBorder(), MainDesktopPane.newEmptyBorder()));
 		simulationPane.add(uptimePane, BorderLayout.NORTH);
 
-		WebPanel pulsespersecondPane = new WebPanel(new BorderLayout());
-		pulsespersecondPane.setBorder(new CompoundBorder(new EtchedBorder(), MainDesktopPane.newEmptyBorder()));
-		uptimePane.add(pulsespersecondPane, BorderLayout.SOUTH);
+		WebPanel TPSPane = new WebPanel(new GridLayout(5, 1));//new BorderLayout());
+		TPSPane.setBorder(new CompoundBorder(new EtchedBorder(), MainDesktopPane.newEmptyBorder()));
+		uptimePane.add(TPSPane, BorderLayout.SOUTH);
 
 		// Create uptime header label
 		WebLabel uptimeHeaderLabel = new WebLabel(Msg.getString("TimeWindow.simUptime"), WebLabel.CENTER); //$NON-NLS-1$
 		uptimeHeaderLabel.setFont(new Font("Serif", Font.BOLD, 14));
 		uptimePane.add(uptimeHeaderLabel, BorderLayout.NORTH);
 
-		WebLabel pulsespersecondHeaderLabel = new WebLabel(Msg.getString("TimeWindow.ticksPerSecond"), WebLabel.CENTER); //$NON-NLS-1$
-		pulsespersecondHeaderLabel.setFont(new Font("Serif", Font.BOLD, 14));
-		pulsespersecondPane.add(pulsespersecondHeaderLabel, BorderLayout.NORTH);
+		WebLabel TPSHeaderLabel = new WebLabel(Msg.getString("TimeWindow.ticksPerSecond"), WebLabel.CENTER); //$NON-NLS-1$
+		TPSHeaderLabel.setFont(new Font("Serif", Font.BOLD, 14));
+		TPSPane.add(TPSHeaderLabel);
 
 		// Create uptime label
 		uptimeLabel = new WebLabel(uptimer.getUptime(), WebLabel.CENTER);
@@ -263,16 +279,28 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 			pulsePerSecond = formatter.format(masterClock.getPulsesPerSecond());
 		}
 		pulsesPerSecLabel = new WebLabel(pulsePerSecond, WebLabel.CENTER);
-		pulsespersecondPane.add(pulsesPerSecLabel, BorderLayout.CENTER);
+		TPSPane.add(pulsesPerSecLabel);
 
+		// Create execution time label
+		long execTime = masterClock.getExecutionTime();
+		execTimeLabel = new WebLabel(EXEC + execTime + US, WebLabel.CENTER);
+		
+		// Create TBU label
+		double baseTBU = Math.round(masterClock.getBaseTBU()*10.0)/10.0;
+		baseTBULabel = new WebLabel(BASE_TBU + baseTBU + MS, WebLabel.CENTER);
+		
+		// Create sleep time label
+		long sleepTime = masterClock.getSleepTime();
+		sleepTimeLabel = new WebLabel(SLEEP_TIME + sleepTime + MS, WebLabel.CENTER);
+		
+		TPSPane.add(execTimeLabel);
+		TPSPane.add(baseTBULabel);
+		TPSPane.add(sleepTimeLabel);
+		
 		// Create the pulse pane
 		WebPanel pulsePane = new WebPanel(new BorderLayout());
 //		pulsePane.setBorder(new CompoundBorder(new EtchedBorder(), MainDesktopPane.newEmptyBorder()));
 		simulationPane.add(pulsePane, BorderLayout.CENTER);
-
-		// Create the time compression label
-		timeCompressionLabel = new WebLabel(WebLabel.CENTER);
-		pulsePane.add(timeCompressionLabel, BorderLayout.CENTER);
 
 		// Create the time ratio label
 		timeRatioLabel = new WebLabel(WebLabel.CENTER); //$NON-NLS-1$
@@ -285,11 +313,18 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		speedLabel.setFont(new Font("Serif", Font.BOLD, 14));
 		
 		// Create the speed panel 
-		WebPanel speedPanel = new WebPanel(new GridLayout(2, 1));
+		WebPanel speedPanel = new WebPanel(new GridLayout(4, 1));
 		pulsePane.add(speedPanel, BorderLayout.NORTH);
-		speedPanel.add(speedLabel);
+		
+		// Create the simulation speed header label
+		WebLabel TRHeader = new WebLabel(Msg.getString("TimeWindow.timeRatioHeader"), WebLabel.CENTER); //$NON-NLS-1$
+		TRHeader.setFont(new Font("Serif", Font.BOLD, 14));
+		speedPanel.add(TRHeader);
 		speedPanel.add(timeRatioLabel);
-
+		speedPanel.add(speedLabel);
+		
+		// Create the time compression label
+		timeCompressionLabel = new WebLabel(WebLabel.CENTER);
 		timeCompressionLabel.addMouseListener(new MouseInputAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -298,7 +333,8 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 				updateTimeLabels();
 			}
 		});
-
+		speedPanel.add(timeCompressionLabel);
+		
 		// Create pulse slider
 		int sliderpos = calculateSliderValue(masterClock.getTimeRatio());
 		pulseSlider = new JSliderMW(MIN, MAX, sliderpos);
@@ -351,16 +387,25 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	public void updateTimeLabels() {
 		StringBuilder s0 = new StringBuilder();
 		int ratio = (int)masterClock.getTimeRatio();
-		String factor = String.format(Msg.getString("TimeWindow.timeFormat"), ratio); //$NON-NLS-1$
 		s0.append(ONE_REAL_SEC);
 		s0.append(ClockUtils.getTimeString(ratio));
-//		timeCompressionLabel.setText(s0.toString());
-//		timeRatioLabel.setText(Msg.getString("TimeWindow.timeRatioHeader", factor)); //$NON-NLS-1$
-//		
+
 		if (timeRatioLabel != null)
-			SwingUtilities.invokeLater(() -> timeRatioLabel.setText(Msg.getString("TimeWindow.timeRatioHeader", factor))); //$NON-NLS-1$
+			SwingUtilities.invokeLater(() -> timeRatioLabel.setText(ratio + "x")); //$NON-NLS-1$
 		if (timeCompressionLabel != null)
 			SwingUtilities.invokeLater(() -> timeCompressionLabel.setText(s0.toString()));
+		
+		// Create execution time label
+		long execTime = masterClock.getExecutionTime();
+		if (execTimeLabel != null) execTimeLabel.setText(EXEC + execTime + US);		
+		
+		// Create TBU label
+		double baseTBU = Math.round(masterClock.getBaseTBU()*10.0)/10.0;
+		if (baseTBULabel != null) baseTBULabel.setText(BASE_TBU + baseTBU + MS);
+		
+		// Create sleep time label
+		long sleepTime = masterClock.getSleepTime();
+		if (sleepTimeLabel != null) sleepTimeLabel.setText(SLEEP_TIME + sleepTime + MS);
 	}
 	
 	/**

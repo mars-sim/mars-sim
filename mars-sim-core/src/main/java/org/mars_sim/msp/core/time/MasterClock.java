@@ -47,7 +47,9 @@ public class MasterClock implements Serializable {
 	
 	/** The number of milliseconds for each millisols.  */	
 	private static final double MILLISECONDS_PER_MILLISOL = MarsClock.SECONDS_PER_MILLISOL * 1000.0;
-
+	/** The number of econds for each millisols.  */	
+	private static final double SECONDS_PER_MILLISOL = MarsClock.SECONDS_PER_MILLISOL;
+	
 	/** (For Command Mode) the maximum number of millisols for pausing. */
 	private static final double MAX_SOLS = 7_000;
 	
@@ -82,7 +84,8 @@ public class MasterClock implements Serializable {
 	/** The pulse per seconds */
 	private volatile double pps = 0;
 	
-	
+	/** The time taken to execute one frame in the game loop */
+	private volatile long executionTime;	
 	/** The sleep time */
 	private long sleepTime;
 	/** The last uptime in terms of number of pulses. */
@@ -251,9 +254,9 @@ public class MasterClock implements Serializable {
 		setMaxFrameSkips(simulationConfig.getMaxFrameSkips());
 
 //		logger.config("Based on # CPU cores/threads, the following parameters have been re-adjusted as follows :");
-		logger.config("                Time Ratio (TR) : " + (int) baseTR + "x");
-		logger.config("         Ticks Per Second (TPS) : " + Math.round(baseFPS * 100D) / 100D + " Hz");
-		logger.config("     Time between Updates (TBU) : " + Math.round(baseTBU_ms * 100D) / 100D + " ms");
+		logger.config("            Base Time Ratio (TR) : " + (int) baseTR + "x");
+		logger.config("     Base Ticks Per Second (TPS) : " + Math.round(baseFPS * 100D) / 100D + " Hz");
+		logger.config(" Base Time between Updates (TBU) : " + Math.round(baseTBU_ms * 100D) / 100D + " ms");
 		logger.config("   -------------------------------------------");
 //		logger.config(" - - - Welcome to Mars - - -");
 	}
@@ -696,7 +699,11 @@ public class MasterClock implements Serializable {
 
 			if (!isFXGL) {
 
-				long t1, t2, overSleepTime = 0L, excess = 0L;
+				long t1 = 0;
+				long t2 = 0;
+				long t3 = 0;
+				long overSleepTime = 0L;
+				long excess = 0L;
 				int noDelays = 0;
 				
 				// Gets the initial t1
@@ -704,13 +711,18 @@ public class MasterClock implements Serializable {
 
 				while (keepRunning) {
 					// Gets the new t1
-					t1 = System.nanoTime();
+//					t1 = System.nanoTime();
 					
 					// Call addTime() to increment time in EarthClock and MarsClock
 					addTime();
 		
 					// Gets t2 after a time pulse has been sent to EarthClock and MarsClock
 					t2 = System.nanoTime();
+					
+					if (t3 != 0)
+						executionTime = t2 - t3;
+					else
+						executionTime = t2 - t1;
 					
 					// Benchmark CPU speed
 //	 		        long diff = 0;
@@ -729,7 +741,7 @@ public class MasterClock implements Serializable {
 					// Note: dt = t2 - t1. It's the time where all the logics are done
 
 					// sleepTime varies, depending on the remaining time
-					sleepTime = currentTBU_ns - t2 + t1 - overSleepTime;
+					sleepTime = currentTBU_ns - executionTime - overSleepTime;
 					// System.out.print ("sleep : " + sleepTime/1_000_000 + "ms\t");
 
 					if (sleepTime > 0 && keepRunning) {
@@ -741,7 +753,9 @@ public class MasterClock implements Serializable {
 							Thread.currentThread().interrupt();
 						}
 
-						overSleepTime = (System.nanoTime() - t2) - sleepTime;
+						t3 = System.nanoTime();
+						
+						overSleepTime = (t3 - t2) - sleepTime;
 
 						// timeBetweenUpdates = (long) (timeBetweenUpdates * .999905); // decrement by
 						// .0005%
@@ -783,17 +797,22 @@ public class MasterClock implements Serializable {
 
 					int skips = 0;
 
-					while (!justReloaded && (Math.abs(excess) > currentTBU_ns) && (skips < maxFrameSkips)) {
-						logger.warning("excess : " + excess/1_000_000 + " ms");
-						// e.g. excess : -118289082
-						justReloaded = false;
+//					while (!justReloaded && (Math.abs(excess) > currentTBU_ns) && (skips < maxFrameSkips)) {
+					for (int i = 0; i < maxFrameSkips; i++) {	
+						boolean value = !justReloaded && (Math.abs(excess) > currentTBU_ns);
+						justReloaded = false;	
+						
+						if (!value) break;
+						
+						logger.warning("excess : " + excess/1_000_000 + " ms"); // e.g. excess : -118289082
+						
 						excess -= currentTBU_ns;
-						// Make up lost frames
-						skips++;
+						
+						skips = i;
 
-						logger.config("Recovering from a lost frame.  # of skips: " + skips + " (Max skips: " + maxFrameSkips + ")."); 
+						logger.config("Recovering from a lost frame.  # of skips: " + i + " (Max skips: " + maxFrameSkips + ")."); 
 	
-						// Call addTime once to get back each lost frame
+						// Call addTime once to get back the time lost in a frame
 						addTime();
 					}
 					
@@ -873,7 +892,7 @@ public class MasterClock implements Serializable {
 			// The time elapsed for the EarthClock
 			int earthMillis = (int) (millis * currentTR);
 			// Get the time pulse length in millisols.
-			double timePulse = earthMillis / MILLISECONDS_PER_MILLISOL;
+			double timePulse = earthMillis / MILLISECONDS_PER_MILLISOL; 
 
 //			logger.config("timePulse : " + Math.round(timePulse*1000.0)/1000.0);
 
@@ -1316,7 +1335,7 @@ public class MasterClock implements Serializable {
 				
 				double t = tpfCache * currentTR;
 				// Get the time pulse length in millisols.
-				double timePulse = t / MarsClock.SECONDS_PER_MILLISOL;
+				double timePulse = t / SECONDS_PER_MILLISOL;
 				// tpfCache : 0.117 tpfCache * timeRatio : 14.933 elapsedLast : 9315.0(inc)
 				// timePulse : 0.168
 
@@ -1368,6 +1387,24 @@ public class MasterClock implements Serializable {
 	 */
 	public long getSleepTime() {
 		return sleepTime/1_000_000;
+	}
+	
+	/** 
+	 * Gets the time [in microseconds] taken to execute one frame in the game loop 
+	 * 
+	 * @return
+	 */
+	public long getExecutionTime() {
+		return executionTime/1_000;	
+	}
+	
+	/** 
+	 * Gets the base time between update [in microseconds] in the game loop 
+	 * 
+	 * @return
+	 */
+	public double getBaseTBU() {
+		return baseTBU_ms;	
 	}
 	
 	/**
