@@ -100,6 +100,8 @@ public abstract class Mission implements Serializable {
 	private int missionCapacity;
 	/** The recorded number of people participated in this mission. */
 	private int membersCache;
+	/** The mission priority (between 1 and 5, with 1 the lowest, 5 the highest) */
+	private int priority = 2;
 	
 	/** Has the current phase ended? */
 	private boolean phaseEnded;
@@ -1478,12 +1480,13 @@ public abstract class Mission implements Serializable {
 						+ " was getting"// the rover " + startingMember.getVehicle() 
 						+ " ready to embark on " + getDescription());
 
-				// Set the members' work shift to on-call to get ready
-				for (MissionMember m : members) {
-//					Person pp = (Person) m;
-					 ((Person) m).setShiftType(ShiftType.ON_CALL);
+				if (!(this instanceof TravelMission)) {
+					// Set the members' work shift to on-call to get ready
+					for (MissionMember m : members) {
+	//					Person pp = (Person) m;
+						 ((Person) m).setShiftType(ShiftType.ON_CALL);
+					}
 				}
-				
 				setPhaseEnded(true);
 			}
 		}
@@ -1599,6 +1602,10 @@ public abstract class Mission implements Serializable {
 			LogConsolidated.log(Level.WARNING, 10_000, sourceName, "[" + startingMember.getAssociatedSettlement() + "] "
 					+ startingMember.getName() + "'s "
 					+ this + " has already been tagged with '" + status.getName() + "'");
+	}
+	
+	public int getPriority() {
+		return priority;
 	}
 	
 	public boolean equals(Object obj) {

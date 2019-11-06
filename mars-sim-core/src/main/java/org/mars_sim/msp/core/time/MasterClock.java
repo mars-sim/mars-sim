@@ -781,8 +781,11 @@ public class MasterClock implements Serializable {
 						boolean value = !justReloaded && (Math.abs(excess) > currentTBU_ns);
 						justReloaded = false;	
 						
-						if (!value) break;
-						
+						if (!value) {
+							excess = 0;
+							break;
+						}
+							
 						logger.warning("excess : " + excess/1_000_000 + " ms"); // e.g. excess : -118289082
 						
 						excess -= currentTBU_ns;

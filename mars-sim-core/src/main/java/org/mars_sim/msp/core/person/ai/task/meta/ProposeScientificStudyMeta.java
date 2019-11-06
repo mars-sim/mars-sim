@@ -33,7 +33,7 @@ public class ProposeScientificStudyMeta implements MetaTask, Serializable {
     /** default serial id. */
     private static final long serialVersionUID = 1L;
     
-    private static final double FACTOR = 1.2D;
+    private static final double FACTOR = 1D;
     
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -68,11 +68,14 @@ public class ProposeScientificStudyMeta implements MetaTask, Serializable {
         if (person.isInVehicle()) {	
 	        // Check if person is in a moving rover.
 	        if (Vehicle.inMovingRover(person)) {
-	            result = -20D;
+		        // the bonus for proposing scientific study inside a vehicle, 
+	        	// rather than having nothing to do if a person is not driving
+	        	result = 30;
 	        } 	       
 	        else
-	        // the penalty for performing experiment inside a vehicle
-	        	result = -10D;
+	        	// the bonus for proposing scientific study inside a vehicle,
+	        	// rather than having nothing to do if a person is not driving
+	        	result = 10;
         }
         
         if (person.isInside()) {
@@ -88,7 +91,7 @@ public class ProposeScientificStudyMeta implements MetaTask, Serializable {
 	                Job job = person.getMind().getJob();
 	                ScienceType science = study.getScience();
 	                if ((job != null) && science == ScienceType.getJobScience(job)) {
-	                    result += 50D;
+	                    result += 40D;
 	                }
 	                else {
 	                    result += 20D;
@@ -129,7 +132,7 @@ public class ProposeScientificStudyMeta implements MetaTask, Serializable {
 	        
 	        // Modify if research is the person's favorite activity.
 	        if (person.getFavorite().getFavoriteActivity() == FavoriteType.RESEARCH) {
-	        	result += RandomUtil.getRandomInt(1, 20);
+	        	result += RandomUtil.getRandomInt(1, 10);
 	        }
 
             if (result > 0D) {

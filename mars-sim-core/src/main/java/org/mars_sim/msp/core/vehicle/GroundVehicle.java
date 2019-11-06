@@ -172,23 +172,23 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
 		}
 	}
 
-	/**
-	 * Gets the driver of the ground vehicle.
-	 * 
-	 * @return the vehicle driver.
-	 */
-	public VehicleOperator getDriver() {
-		return getOperator();
-	}
-
-	/**
-	 * Sets the driver of the ground vehicle.
-	 * 
-	 * @param operator the driver
-	 */
-	public void setDriver(VehicleOperator operator) {
-		setOperator(operator);
-	}
+//	/**
+//	 * Gets the driver of the ground vehicle.
+//	 * 
+//	 * @return the vehicle driver.
+//	 */
+//	public VehicleOperator getDriver() {
+//		return getOperator();
+//	}
+//
+//	/**
+//	 * Sets the driver of the ground vehicle.
+//	 * 
+//	 * @param operator the driver
+//	 */
+//	public void setDriver(VehicleOperator operator) {
+//		setOperator(operator);
+//	}
 
 	/**
 	 * Find a new location and facing if a rover overlaps with a building

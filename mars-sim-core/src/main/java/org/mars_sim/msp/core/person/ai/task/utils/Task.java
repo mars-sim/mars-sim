@@ -196,7 +196,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 
 		// End subtask.
 		if (subTask != null && !subTask.isDone()) {
-			subTask.endTask();
+//			subTask.endTask();
 			subTask.destroy();
 			subTask = null;
 		}

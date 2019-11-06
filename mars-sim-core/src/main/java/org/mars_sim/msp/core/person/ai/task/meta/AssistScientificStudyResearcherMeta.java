@@ -62,11 +62,14 @@ public class AssistScientificStudyResearcherMeta implements MetaTask, Serializab
         if (person.isInVehicle()) {	
 	        // Check if person is in a moving rover.
 	        if (Vehicle.inMovingRover(person)) {
-	            return 0;
+		        // the bonus for proposing scientific study inside a vehicle, 
+	        	// rather than having nothing to do if a person is not driving
+	        	result = 30;
 	        } 	       
 	        else
-	        // the penalty for performing experiment inside a vehicle
-	        	result = -50D;
+		        // the bonus for proposing scientific study inside a vehicle, 
+	        	// rather than having nothing to do if a person is not driving
+	        	result = 10D;
         }
         
         if (person.isInside()) {

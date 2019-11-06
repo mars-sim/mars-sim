@@ -23,6 +23,7 @@ import org.mars_sim.msp.core.person.ai.job.JobUtil;
 import org.mars_sim.msp.core.person.ai.job.Politician;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
+import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskManager;
@@ -263,27 +264,49 @@ public class Mind implements Serializable {
 //			boolean isInMissionWindow = taskManager.getTaskSchedule().isAtStartOfWorkShift();
 //		
 			if (hasActiveMission) {
-//				logger.info(person + " was to perform the " + mission + " mission");
-				mission.performMission(person);
+				
+				if (VehicleMission.APPROVING.equals(mission.getPhase())
+						&& !mission.getStartingMember().equals(person)
+						) {
+					goNewTask();
+				}
+				
+				else if (mission.getPhase() != null) {
+					int priority = mission.getPriority();
+					
+					int rand = RandomUtil.getRandomInt(6);
+					
+					if (rand <= priority) {
+//						// See if this person can ask for a mission
+//						boolean newMission = !hasActiveMission && !hasAMission && !overrideMission && isInMissionWindow;
+							
+						mission.performMission(person);
+//						logger.info(person + " was to perform the " + mission + " mission");
+					}
+					
+					else {
+						goNewTask();
+					}
+				}
 			}
 			
 			else {
-//			// See if this person can ask for a mission
-//			boolean newMission = !hasActiveMission && !hasAMission && !overrideMission && isInMissionWindow;
-				
-//				System.out.println(person + "'s needMission is " + needMission);
-				try {
-					// A person has no active task
-					getNewTask();
-				} catch (Exception e) {
-					LogConsolidated.log(Level.SEVERE, 5_000, sourceName,
-							person.getName() + " could not get new action", e);
-					e.printStackTrace(System.err);
-				}
+				goNewTask();
 			}
 		}
 	}
 
+	public void goNewTask() {
+		try {
+			// A person has no active task
+			getNewTask();
+		} catch (Exception e) {
+			LogConsolidated.log(Level.SEVERE, 5_000, sourceName,
+					person.getName() + " could not get new action", e);
+			e.printStackTrace(System.err);
+		}
+	}
+	
 	/**
 	 * Checks if a person can start a new mission
 	 * 

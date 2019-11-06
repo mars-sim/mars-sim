@@ -112,7 +112,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 
 				// TODO: add other workplace if administration building is not available
 
-			} // end of roleType
+			}
 			else {
 				endTask();
 			}

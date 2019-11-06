@@ -75,8 +75,8 @@ public class PerformLaboratoryExperimentMeta implements MetaTask, Serializable {
 	            return 0;
 	        }
 	        else
-	        // the penalty for performing experiment inside a vehicle
-	        	result = -50D;
+	        	// the penalty for performing experiment inside a vehicle
+	        	result = -10D;
         }
 
         if (person.isInside()) {

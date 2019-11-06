@@ -18,12 +18,10 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
-import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.social.Relationship;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
-import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
@@ -232,9 +230,8 @@ public class AssistScientificStudyResearcher extends Task implements Serializabl
 			Task personsTask = person.getMind().getTaskManager().getTask();
 			if ((personsTask != null) && (personsTask instanceof ResearchScientificStudy)) {
 				ResearchScientificStudy researchTask = (ResearchScientificStudy) personsTask;
-				if (!researchTask.hasResearchAssistant()) {
-					ScienceType type = researchTask.getResearchScience();
-					SkillType scienceSkill = type.getSkill();
+				if (!researchTask.hasResearchAssistant() && researchTask.getResearchScience() != null) {
+					SkillType scienceSkill = researchTask.getResearchScience().getSkill();
 					int personSkill = person.getSkillManager().getEffectiveSkillLevel(scienceSkill);
 					int assistantSkill = assistant.getSkillManager().getEffectiveSkillLevel(scienceSkill);
 					if (assistantSkill < personSkill)
@@ -292,8 +289,10 @@ public class AssistScientificStudyResearcher extends Task implements Serializabl
 	@Override
 	public List<SkillType> getAssociatedSkills() {
 		List<SkillType> results = new ArrayList<SkillType>(1);
-		SkillType scienceSkill = researchTask.getResearchScience().getSkill();
-		results.add(scienceSkill);
+		if (researchTask != null) {
+			SkillType scienceSkill = researchTask.getResearchScience().getSkill();
+			results.add(scienceSkill);
+		}
 		return results;
 	}
 

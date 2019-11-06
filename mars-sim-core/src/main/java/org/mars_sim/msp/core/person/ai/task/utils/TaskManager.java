@@ -318,7 +318,7 @@ public class TaskManager implements Serializable {
 
 	public void endCurrentTask() {
 		if (currentTask != null) {
-			currentTask.endTask();
+//			currentTask.endTask();
 			currentTask.destroy();
 			currentTask = null;
 			person.fireUnitUpdate(UnitEventType.TASK_EVENT);
@@ -332,7 +332,7 @@ public class TaskManager implements Serializable {
 	}
 	
 	public void clearSpecificTask(String taskString) {
-		if (currentTask.getSubTask() != null
+		if (currentTask != null && currentTask.getSubTask() != null
 				&& currentTask.getSubTask().getClass().getSimpleName().equalsIgnoreCase(taskString)) {
 			endSubTask();
 		}
@@ -406,7 +406,8 @@ public class TaskManager implements Serializable {
 
 		if (hasActiveTask() && subTask) {
 			if (!currentTask.getTaskName().equals(newTask.getTaskName())) {
-				if (!currentTask.getSubTask().getTaskName().equals(newTask.getTaskName())) {
+				if (currentTask.getSubTask() != null 
+						&& !currentTask.getSubTask().getTaskName().equals(newTask.getTaskName())) {
 					currentTask.addSubTask(newTask);
 				}
 			}
@@ -754,11 +755,11 @@ public class TaskManager implements Serializable {
 						LogConsolidated.log(Level.FINER, 5_000, sourceName, mind.getPerson().getName() + " - "
 								+ mt.getName() + " : Probability is " + Math.round(probability * 10.0) / 10.0 + ".");
 						// If the person has a strong desire to eat, stop here and go to eat
-						if (mt.getName().contains("eat"))
-							addTask(new EatMeal(person), true);
 						// The person has a strong desire to sleep, stop here and go to sleep
-						else if (mt.getName().contains("sleep"))
-							addTask(new Sleep(person), true);
+						if (mt.getName().contains("sleep"))
+							addTask(new Sleep(person), false);
+						else if (mt.getName().contains("eat"))
+							addTask(new EatMeal(person), true);
 						else
 							probability = MAX_TASK_PROBABILITY;
 					}

@@ -36,7 +36,7 @@ import org.mars_sim.msp.core.vehicle.VehicleOperator;
 
 /**
  * The OperateVehicle class is an abstract task for operating a vehicle, 
- * driving/flying it to a destination.
+ * driving it to a destination.
  */
 public abstract class OperateVehicle extends Task implements Serializable {
 	
@@ -93,12 +93,34 @@ public abstract class OperateVehicle extends Task implements Serializable {
 		if (vehicle == null) {
 		    throw new IllegalArgumentException("vehicle is null");
 		}
+		
+		// Select the vehicle operator
+		VehicleOperator vo = vehicle.getOperator();
+		Person driver = (Person) vo;
+		
+        // Check if person is the vehicle operator.
+		if (vo == null) {
+			vehicle.setOperator(person);
+		}
+		
+		else if (!person.equals(driver)) {
+        	// Remove the last driver
+	        clearDrivingTask(vo);
+	        // replace the last driver
+	        vehicle.setOperator(person);
+		}	
+		
+//		else
+//			super.endTask();
+		
 		if (destination == null) {
 		    throw new IllegalArgumentException("destination is null");
 		}
+		
 		if (startTripTime == null) {
 		    throw new IllegalArgumentException("startTripTime is null");
 		}
+		
 		if (startTripDistance < 0D) {
 		    throw new IllegalArgumentException("startTripDistance is < 0");
 		}
@@ -122,6 +144,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
 		// Set initial phase
 		setPhase(MOBILIZE);
 	}
+	
 	public OperateVehicle(String name, Robot robot, Vehicle vehicle, Coordinates destination, 
 			MarsClock startTripTime, double startTripDistance, double stressModifier, 
 			boolean hasDuration, double duration) {
@@ -133,6 +156,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
 		if (vehicle == null) {
 		    throw new IllegalArgumentException("vehicle is null");
 		}
+		
 		if (destination == null) {
 		    throw new IllegalArgumentException("destination is null");
 		}
@@ -230,20 +254,6 @@ public abstract class OperateVehicle extends Task implements Serializable {
 	 * @return the amount of time left over after performing the phase.
 	 */
 	protected double mobilizeVehiclePhase(double time) {
-		
-		// Select the vehicle operator
-		VehicleOperator vo = vehicle.getOperator();
-		Person driver = (Person) vo;
-		
-		if (vo != null && driver != null) {
-	        // Check if person is the vehicle operator.
-	        if (!person.equals(driver)) {
-        		// Remove the last driver
-	        	clearDrivingTask(vo);
-	        	// replace the last driver
-	            vehicle.setOperator(person);
-	        }
-		}	
 		
         // Find current direction and update vehicle.
         vehicle.setDirection(vehicle.getCoordinates().getDirectionToPoint(destination));
@@ -569,9 +579,9 @@ public abstract class OperateVehicle extends Task implements Serializable {
      */
     public void endTask() {
         vehicle.setSpeed(0D);
-        VehicleOperator vo = vehicle.getOperator();
-    	clearDrivingTask(vo);
-        vehicle.setOperator(null);
+//        VehicleOperator vo = vehicle.getOperator();
+    	clearDrivingTask(vehicle.getOperator());
+//        vehicle.setOperator(null);
     	super.endTask();
     }
     

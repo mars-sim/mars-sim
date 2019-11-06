@@ -834,7 +834,7 @@ public class MissionManager implements Serializable {
 //							removeMission(mp.getMission());
 						}
 					}
-					break;
+					return;
 				}
 			}
 		}

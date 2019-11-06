@@ -22,6 +22,7 @@ import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.science.ScientificStudyUtil;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.tool.RandomUtil;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * Meta task for the InviteStudyCollaborator task.
@@ -49,7 +50,20 @@ public class InviteStudyCollaboratorMeta implements MetaTask, Serializable {
     public double getProbability(Person person) {
 
         double result = 0D;
-
+        
+        if (person.isInVehicle()) {	
+	        // Check if person is in a moving rover.
+	        if (Vehicle.inMovingRover(person)) {
+		        // the bonus for proposing scientific study inside a vehicle, 
+	        	// rather than having nothing to do if a person is not driving
+	        	result = 30;
+	        } 	       
+	        else
+		        // the bonus for proposing scientific study inside a vehicle, 
+	        	// rather than having nothing to do if a person is not driving
+	        	result = 10;
+        }
+        
         if (person.isInside()) {
 
             // Probability affected by the person's stress and fatigue.

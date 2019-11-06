@@ -796,7 +796,8 @@ public class MainDetailPanel extends WebPanel implements ListSelectionListener, 
 			else if (type == MissionEventType.DESIGNATION_EVENT) {
 				// Implement the missing descriptionLabel
 				if (missionWindow.getCreateMissionWizard() != null) {
-					String s = missionWindow.getCreateMissionWizard().getTypePanel().getDesignation().trim();
+//					String s = missionWindow.getCreateMissionWizard().getTypePanel().getDesignation().trim(); 
+					String s = mission.getFullMissionDesignation();
 					if (s == null || s.equals("")) {
 						s = "[TBA]";
 					} else {

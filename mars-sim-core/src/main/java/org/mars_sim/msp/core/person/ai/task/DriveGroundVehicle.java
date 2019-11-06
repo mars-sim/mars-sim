@@ -554,11 +554,12 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 	 */
 	public void endTask() {
 		if (person != null)
-			LogConsolidated.log(logger, Level.INFO, 0, sourceName, "[" + person.getLocationTag().getLocale() + "] "
+			LogConsolidated.log(logger, Level.INFO, 20_000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
 					+ person.getName() + " took a break from driving " + getVehicle().getName() + ".", null);
 
 		else if (robot != null)
-			logger.finer(robot.getName() + " finished driving " + getVehicle().getName());
+			LogConsolidated.log(logger, Level.INFO, 20_000, sourceName, "[" + robot.getLocationTag().getLocale() + "] "
+					+ robot.getName() +  " took a break from driving " + getVehicle().getName() + ".", null);
 
 		// ((GroundVehicle) getVehicle()).setStuck(false);
 

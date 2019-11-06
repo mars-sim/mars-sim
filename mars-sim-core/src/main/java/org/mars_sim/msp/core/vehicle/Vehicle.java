@@ -1223,17 +1223,17 @@ public abstract class Vehicle extends Unit
 
 		correctVehicleReservation();
 
-		// If operator is dead, remove operator and stop vehicle.
-		VehicleOperator operator = vehicleOperator;
-		if ((operator != null) && (operator instanceof Person)) {
-			Person personOperator = (Person) operator;
-			if (personOperator.getPhysicalCondition().isDead()) {
-				setOperator(null);
-				setSpeed(0);
-				setParkedLocation(0D, 0D, getDirection().getDirection());
-			}
-			// TODO : will another person take his place as the driver
-		}
+//		// If operator is dead, remove operator and stop vehicle.
+//		VehicleOperator operator = vehicleOperator;
+//		if ((operator != null) && (operator instanceof Person)) {
+//			Person personOperator = (Person) operator;
+//			if (personOperator.getPhysicalCondition().isDead()) {
+//				setOperator(null);
+//				setSpeed(0);
+//				setParkedLocation(0D, 0D, getDirection().getDirection());
+//			}
+//			// TODO : will another person take his place as the driver
+//		}
 	}
 
 	/**

@@ -698,7 +698,9 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 
 					else {
 						// If emergency, make sure current operate vehicle task is pointed home.
-						if (operateVehicleTask != null
+						if (operateVehicleTask != null 
+								&& destination.getLocation() != null
+								&& operateVehicleTask.getDestination() != null
 								&& !operateVehicleTask.getDestination().equals(destination.getLocation())) {
 							operateVehicleTask.setDestination(destination.getLocation());
 							setPhaseDescription(Msg.getString("Mission.phase.travelling.description",

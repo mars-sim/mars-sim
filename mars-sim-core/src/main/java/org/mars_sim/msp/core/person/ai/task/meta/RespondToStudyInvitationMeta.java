@@ -62,11 +62,14 @@ public class RespondToStudyInvitationMeta implements MetaTask, Serializable {
         if (person.isInVehicle()) {	
 	        // Check if person is in a moving rover.
 	        if (Vehicle.inMovingRover(person)) {
-	        	result = -30D;
-	        }
+		        // the bonus for proposing scientific study inside a vehicle, 
+	        	// rather than having nothing to do if a person is not driving
+	        	result = 30;
+	        } 	       
 	        else
-	        // the penalty for performing experiment inside a vehicle
-	        	result = -10D;
+		        // the bonus for proposing scientific study inside a vehicle, 
+	        	// rather than having nothing to do if a person is not driving
+	        	result = 10;
         }
         
         if (person.isInside()) {

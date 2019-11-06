@@ -21,10 +21,10 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.events.HistoricalEvent;
-import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
+import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.ai.task.DriveGroundVehicle;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.ExitAirlock;
@@ -429,20 +429,30 @@ public abstract class RoverMission extends VehicleMission {
 			}
 
 			// If rover is loaded and everyone is aboard, embark from settlement.
-			if (!isDone() && loadedFlag && isEveryoneInRover()) {
-
-				// Remove from garage if in garage.
-				Building garageBuilding = BuildingManager.getBuilding(v);
-				if (garageBuilding != null) {
-					garageBuilding.getVehicleMaintenance().removeVehicle(v);
+			if (!isDone() && loadedFlag) {
+				
+				// Set the members' work shift to on-call to get ready
+				for (MissionMember m : getMembers()) {
+					Person pp = (Person) m;
+					if (pp.getShiftType() != ShiftType.ON_CALL)
+						pp.setShiftType(ShiftType.ON_CALL);
 				}
 
-				// Record the start mass right before departing the settlement
-				recordStartMass();
-				
-				// Embark from settlement
-				settlement.getInventory().retrieveUnit(v);
-				setPhaseEnded(true);
+				if (isEveryoneInRover()) {
+			
+					// Remove from garage if in garage.
+					Building garageBuilding = BuildingManager.getBuilding(v);
+					if (garageBuilding != null) {
+						garageBuilding.getVehicleMaintenance().removeVehicle(v);
+					}
+	
+					// Record the start mass right before departing the settlement
+					recordStartMass();
+					
+					// Embark from settlement
+					settlement.getInventory().retrieveUnit(v);
+					setPhaseEnded(true);
+				}
 			}
 		}
 	}
@@ -672,10 +682,8 @@ public abstract class RoverMission extends VehicleMission {
 					
 					// TODO: how to force the person to receive some form of medical treatment ?
 					p.getMind().getTaskManager().clearAllTasks();
-					p.getMind().getTaskManager().addTask(new RequestMedicalTreatment(p), false);
-					
+					p.getMind().getTaskManager().addTask(new RequestMedicalTreatment(p), false);		
 				}
-
 			}
 			
 			else {

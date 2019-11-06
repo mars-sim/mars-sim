@@ -23,6 +23,7 @@ import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.Administration;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * The Meta task for the ReviewMissionPlan task.
@@ -56,6 +57,19 @@ public class ReviewMissionPlanMeta implements MetaTask, Serializable {
 
         double result = 0D;
 
+        if (person.isInVehicle()) {	
+	        // Check if person is in a moving rover.
+	        if (Vehicle.inMovingRover(person)) {
+		        // the bonus for proposing scientific study inside a vehicle, 
+	        	// rather than having nothing to do if a person is not driving
+	        	result = 30;
+	        } 	       
+	        else
+		        // the bonus for proposing scientific study inside a vehicle, 
+	        	// rather than having nothing to do if a person is not driving
+	        	result = 10;
+        }
+        
         if (person.isInside()) {
 
             // Probability affected by the person's stress and fatigue.
@@ -88,8 +102,8 @@ public class ReviewMissionPlanMeta implements MetaTask, Serializable {
                 		
 	                    PlanType status = mp.getStatus();
 
-	                    if (status != null && status == PlanType.PENDING
-	                    	&& mp.getPercentComplete() < 100D) {
+	                    if (status != null && status == PlanType.PENDING) {
+//	                    	&& mp.getPercentComplete() <= 100D) {
 	    		            	
 //	                    	System.out.println(person + " " + person.getRole().getType() + " on " 
 //	                    			+ mp.getMission().getDescription() + " has " 
