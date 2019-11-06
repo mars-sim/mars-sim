@@ -51,6 +51,10 @@ public class InviteStudyCollaboratorMeta implements MetaTask, Serializable {
 
         double result = 0D;
         
+        ScientificStudy study = scientificStudyManager.getOngoingPrimaryStudy(person);
+        if (study == null)
+        	return 0;
+        		
         if (person.isInVehicle()) {	
 	        // Check if person is in a moving rover.
 	        if (Vehicle.inMovingRover(person)) {
@@ -74,9 +78,6 @@ public class InviteStudyCollaboratorMeta implements MetaTask, Serializable {
             
             if (fatigue > 1000 || stress > 50 || hunger > 500)
             	return 0;
-            
-//	        ScientificStudyManager manager = Simulation.instance().getScientificStudyManager();
-	        ScientificStudy study = scientificStudyManager.getOngoingPrimaryStudy(person);
 
             // Check if study is in invitation phase.
             if (study != null && study.getPhase().equals(ScientificStudy.INVITATION_PHASE)) {

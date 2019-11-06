@@ -59,26 +59,29 @@ public class AssistScientificStudyResearcherMeta implements MetaTask, Serializab
         if (fatigue > 1000 || stress > 50 || hunger > 500)
         	return 0;
         
-        if (person.isInVehicle()) {	
-	        // Check if person is in a moving rover.
-	        if (Vehicle.inMovingRover(person)) {
-		        // the bonus for proposing scientific study inside a vehicle, 
-	        	// rather than having nothing to do if a person is not driving
-	        	result = 30;
-	        } 	       
-	        else
-		        // the bonus for proposing scientific study inside a vehicle, 
-	        	// rather than having nothing to do if a person is not driving
-	        	result = 10D;
-        }
-        
         if (person.isInside()) {
 	        // Find potential researchers.
 	        Collection<Person> potentialResearchers = AssistScientificStudyResearcher.getBestResearchers(person);
 	        int size = potentialResearchers.size();
-	        if (size > 0) {
+	        if (size == 0)
+	        	return 0;
+	        
+	        else {
 	            result += size * RandomUtil.getRandomInt(1, 10);
 
+	            if (person.isInVehicle()) {	
+	    	        // Check if person is in a moving rover.
+	    	        if (Vehicle.inMovingRover(person)) {
+	    		        // the bonus for proposing scientific study inside a vehicle, 
+	    	        	// rather than having nothing to do if a person is not driving
+	    	        	result = 20;
+	    	        } 	       
+	    	        else
+	    		        // the bonus for proposing scientific study inside a vehicle, 
+	    	        	// rather than having nothing to do if a person is not driving
+	    	        	result = 10;
+	            }
+	            
                 Person researcher = (Person) potentialResearchers.toArray()[0];
 
 	            // If assistant is in a settlement, use crowding modifier.
@@ -100,7 +103,7 @@ public class AssistScientificStudyResearcherMeta implements MetaTask, Serializab
 		        	result *= RandomUtil.getRandomDouble(3.0);
 	            }
 
-                // 2015-06-07 Added Preference modifier
+                // Add Preference modifier
 	            if (result > 0)
 	            	result = result + result * person.getPreference().getPreferenceScore(this)/2D;
 

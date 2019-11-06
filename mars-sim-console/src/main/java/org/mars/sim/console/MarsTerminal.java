@@ -219,7 +219,7 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
 
         	if (masterClock == null) {
         		masterClock = Simulation.instance().getMasterClock();
-        		setMasterClock(masterClock);
+//        		setMasterClock(masterClock);
         	}		
         	
         	if (masterClock != null) {

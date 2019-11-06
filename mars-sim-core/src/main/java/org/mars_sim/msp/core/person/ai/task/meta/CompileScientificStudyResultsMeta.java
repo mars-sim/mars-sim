@@ -11,7 +11,6 @@ import java.util.Iterator;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -22,7 +21,6 @@ import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
-import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -42,8 +40,6 @@ public class CompileScientificStudyResultsMeta implements MetaTask, Serializable
     /** default logger. */
     private static Logger logger = Logger.getLogger(CompileScientificStudyResultsMeta.class.getName());
 
-    private static ScientificStudyManager studyManager;
-    
     @Override
     public String getName() {
         return NAME;
@@ -58,6 +54,10 @@ public class CompileScientificStudyResultsMeta implements MetaTask, Serializable
     public double getProbability(Person person) {
 
         double result = 0D;
+        
+        ScientificStudy primaryStudy = scientificStudyManager.getOngoingPrimaryStudy(person);
+        if (primaryStudy == null)
+        	return 0;
         
         // Probability affected by the person's stress and fatigue.
         PhysicalCondition condition = person.getPhysicalCondition();
@@ -75,14 +75,12 @@ public class CompileScientificStudyResultsMeta implements MetaTask, Serializable
 	        } 	       
 	        else
 	        // the penalty for performing experiment inside a vehicle
-	        	result = -50D;
+	        	result = -10;
         }
         
         if (person.isInside()) {
+        	
 	        // Add probability for researcher's primary study (if any).
-	        if (studyManager == null)
-	        	studyManager = Simulation.instance().getScientificStudyManager();
-	        ScientificStudy primaryStudy = studyManager.getOngoingPrimaryStudy(person);
 	        if ((primaryStudy != null) 
         		&& ScientificStudy.PAPER_PHASE.equals(primaryStudy.getPhase())
             	&& !primaryStudy.isPrimaryPaperCompleted()) {
@@ -105,7 +103,7 @@ public class CompileScientificStudyResultsMeta implements MetaTask, Serializable
 	        }
 
 	        // Add probability for each study researcher is collaborating on.
-	        Iterator<ScientificStudy> i = studyManager.getOngoingCollaborativeStudies(person).iterator();
+	        Iterator<ScientificStudy> i = scientificStudyManager.getOngoingCollaborativeStudies(person).iterator();
 	        while (i.hasNext()) {
 	            ScientificStudy collabStudy = i.next();
 	            if (ScientificStudy.PAPER_PHASE.equals(collabStudy.getPhase())

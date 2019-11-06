@@ -8,7 +8,9 @@
 package org.mars_sim.msp.ui.swing;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
@@ -20,6 +22,9 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
@@ -44,9 +49,9 @@ import javax.swing.plaf.metal.MetalLookAndFeel;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.Simulation.SaveType;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.Simulation.SaveType;
 import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
@@ -54,12 +59,18 @@ import org.mars_sim.msp.ui.swing.configeditor.CrewEditor;
 import org.mars_sim.msp.ui.swing.configeditor.SimulationConfigEditor;
 import org.mars_sim.msp.ui.swing.tool.JStatusBar;
 
+import com.alee.extended.date.WebDateField;
+import com.alee.extended.label.WebStyledLabel;
+import com.alee.extended.statusbar.WebMemoryBar;
 //import com.alee.managers.UIManagers;
 import com.alee.laf.WebLookAndFeel;
 import com.alee.laf.panel.WebPanel;
 import com.alee.managers.UIManagers;
+import com.alee.managers.language.LanguageManager;
+import com.alee.managers.style.StyleId;
 import com.alee.managers.tooltip.TooltipManager;
 import com.alee.managers.tooltip.TooltipWay;
+import com.jidesoft.swing.StyledLabel;
 
 /**
  * The MainWindow class is the primary UI frame for the project. It contains the
@@ -81,7 +92,7 @@ extends JComponent {
 	public static final String ICON_IMAGE = "/icons/landerhab16.png";//"/images/LanderHab.png";
 	
 	public static final String OS = System.getProperty("os.name").toLowerCase(); // e.g. 'linux', 'mac os x'
-	private static final String SOL = " Sol ";
+	private static final String SOL = "   Sol ";
 //	private static final String themeSkin = "nimrod";
 	private static final String WHITESPACES = "   ";
 	private static final String SLEEP_TIME = "   Sleep Time : ";
@@ -122,13 +133,17 @@ extends JComponent {
 
 	private JStatusBar statusBar;
 	
-	private JLabel sleepLabel;
-	private JLabel leftLabel;
-	private JLabel memMaxLabel;
-	private JLabel memUsedLabel;
+//	private JLabel sleepLabel;
+	private WebStyledLabel solLabel;
+//	private JLabel memMaxLabel;
+//	private JLabel memUsedLabel;
 	
-	private JLabel marsTimeLabel;
-	private JLabel earthTimeLabel;
+	private WebStyledLabel marsTimeLabel;
+//	private JLabel earthTimeLabel;
+	
+	private WebDateField dateField;
+	
+//	private Date date;
 	
 	private WebPanel bottomPane;
 	private WebPanel mainPane;
@@ -136,10 +151,10 @@ extends JComponent {
 //	private JLayer<JPanel> jlayer;
 //	private WaitLayerUIPanel layerUI = new WaitLayerUIPanel();
 
-	private int memMax;
-	private int memUsed;
-	private int memUsedCache;
-	private int memFree;
+//	private int memMax;
+//	private int memUsed;
+//	private int memUsedCache;
+//	private int memFree;
 
 	private static Simulation sim = Simulation.instance();
 	// Warning: can't create the following instances at the start of the sim or else MainWindow won't load
@@ -320,49 +335,106 @@ extends JComponent {
 		// Create the status bar
 		statusBar = new JStatusBar();
 
-		marsTimeLabel = new JLabel();
-		marsTimeLabel.setHorizontalAlignment(JLabel.LEFT);
+		if (earthClock == null) {
+			if (masterClock == null)
+				masterClock = sim.getMasterClock();
+//			masterClock = sim.getMasterClock();
+			earthClock = masterClock.getEarthClock();
+			marsClock = masterClock.getMarsClock();
+		}
+		
+//		StyleId styledlabelShadow = StyleId.of ( "shadow" );
+		dateField = new WebDateField();//new Date(earthClock.getInstant().toEpochMilli()));
+//		dateField.setSize(22, 50);
+//		dateField.setFont(font);
+//		dateField.setForeground(Color.BLUE);
+		dateField.setAlignmentX(.5f);
+		dateField.setAlignmentY(0);
+		DateFormat d = new SimpleDateFormat ("yyyy-MMM-dd  HH:mm a '['z']'", LanguageManager.getLocale ());
+		dateField.setDateFormat(d);
+		Date date = new Date(earthClock.getInstant().toEpochMilli());
+//		date.setTime(earthClock.getInstant().toEpochMilli());
+		dateField.setDate(date);
+		dateField.setAllowUserInput(false);
+//	    dateField.addDateListener (new DateListener () {
+//	          @Override
+//	          public void dateChanged (final Date date) {
+//	              final String d = date != null ? dateField.getDateFormat ().format ( date ) : "null";
+//	              final WebInnerNotification notification = new WebInnerNotification ();
+//	              notification.setDisplayTime ( 3000 );
+//	              notification.setRequestFocusOnShow ( false );
+//	              notification.setContent ( new WebLabel ("Date changed", WebLabel.CENTER, d ) );
+//	              notification.setFocusable ( false );
+//	              NotificationManager.showInnerNotification ( dateField, notification );
+//	          }
+//	      });
+		statusBar.setLeftComponent(dateField, true);
+		
+//		earthTimeLabel = new JLabel();
+//		earthTimeLabel.setFont(font);
+//		earthTimeLabel.setForeground(Color.BLUE);
+//		earthTimeLabel.setHorizontalAlignment(JLabel.LEFT);
+//		earthTimeLabel.setVerticalAlignment(JLabel.CENTER);
+//		TooltipManager.setTooltip(earthTimeLabel, "Earth Timestamp", TooltipWay.up);
+//		statusBar.setLeftComponent(earthTimeLabel, true);
+        
+		Font font = new Font("Times New Roman", Font.BOLD, 12);
+
+		solLabel = new WebStyledLabel(StyleId.styledlabelShadow);
+		solLabel.setFont(font);
+		solLabel.setForeground(Color.DARK_GRAY);
+		solLabel.setText(SOL + "1" + WHITESPACES);
+		solLabel.setHorizontalAlignment(JLabel.CENTER);
+		solLabel.setVerticalAlignment(JLabel.CENTER);
+		TooltipManager.setTooltip(solLabel, "# of sols since the beginning of the sim", TooltipWay.up);
+//		statusBar.add(solLabel, 0);
+		statusBar.setLeftComponent(solLabel, true);
+		
+		font = new Font("Arial", Font.BOLD, 12);
+		
+		marsTimeLabel = new WebStyledLabel(StyleId.styledlabelShadow);
+		marsTimeLabel.setFont(font);
+		marsTimeLabel.setForeground(new Color(135,100,39));
+		marsTimeLabel.setHorizontalAlignment(JLabel.CENTER);
+		marsTimeLabel.setVerticalAlignment(JLabel.CENTER);
 		TooltipManager.setTooltip(marsTimeLabel, "Mars Timestamp", TooltipWay.up);
 		statusBar.setLeftComponent(marsTimeLabel, true);
 		
-		earthTimeLabel = new JLabel();
-		earthTimeLabel.setHorizontalAlignment(JLabel.LEFT);
-		TooltipManager.setTooltip(earthTimeLabel, "Earth Timestamp", TooltipWay.up);
-		statusBar.setLeftComponent(earthTimeLabel, true);
-
-		leftLabel = new JLabel();
-		leftLabel.setText(SOL + "1");
-		leftLabel.setHorizontalAlignment(JLabel.CENTER);
-		TooltipManager.setTooltip(leftLabel, "# of sols since the beginning of the sim", TooltipWay.up);
-		statusBar.add(leftLabel, 0);
-
 		// Track the sleep time per frame
-		if (masterClock == null)
-			masterClock = sim.getMasterClock();
-		long sleepTime = masterClock.getSleepTime();
-		sleepLabel = new JLabel();
-		sleepLabel.setHorizontalAlignment(JLabel.RIGHT);
-		sleepLabel.setText(SLEEP_TIME + sleepTime + MS);
-		TooltipManager.setTooltip(sleepLabel, "Sleep Time in milliseconds in each frame", TooltipWay.up);
-		statusBar.addRightComponent(sleepLabel, true, false);
+//		if (masterClock == null)
+//			masterClock = sim.getMasterClock();
+//		long sleepTime = masterClock.getSleepTime();
+//		sleepLabel = new JLabel();
+//		sleepLabel.setHorizontalAlignment(JLabel.RIGHT);
+//		sleepLabel.setText(SLEEP_TIME + sleepTime + MS);
+//		TooltipManager.setTooltip(sleepLabel, "Sleep Time in milliseconds in each frame", TooltipWay.up);
+//		statusBar.addRightComponent(sleepLabel, true, false);
 		
+//		JPanel memoryLabel = new JPanel();
+//		memoryLabel.setAlignmentX(0.5F);
+//		memoryLabel.setAlignmentY(0);
+		WebMemoryBar bar = new WebMemoryBar();
+		bar.setRefreshRate(3000);
+//		memoryLabel.add(bar);
+//		TooltipManager.setTooltip(bar, "Memory Usage", TooltipWay.up);
+		statusBar.addRightComponent(bar, false, true); //true, false);
 		
-		memUsedLabel = new JLabel();
-		memUsedLabel.setHorizontalAlignment(JLabel.RIGHT);
-		int memTotal = (int) Math.round(Runtime.getRuntime().totalMemory()) / 1_000_000;
-		memFree = (int) Math.round(Runtime.getRuntime().freeMemory()) / 1_000_000;
-		memUsed = memTotal - memFree;
-		memUsedLabel.setText(WHITESPACES + memUsed + " MB");// "Used Memory : " + memUsed + " MB");
-		TooltipManager.setTooltip(memUsedLabel, "Memory Used", TooltipWay.up);
-		statusBar.addRightComponent(memUsedLabel, true, false);
-
-		memMaxLabel = new JLabel();
-		memMaxLabel.setHorizontalAlignment(JLabel.RIGHT);
-		memMax = (int) Math.round(Runtime.getRuntime().maxMemory()) / 1_000_000;
-		memMaxLabel.setText("[ " + memMax + " MB ] ");// "Total Designated Memory : " + memMax + " MB");
-		TooltipManager.setTooltip(memMaxLabel, "Memory Designated", TooltipWay.up);
-		statusBar.addRightComponent(memMaxLabel, false, true);
-
+//		memUsedLabel = new JLabel();
+//		memUsedLabel.setHorizontalAlignment(JLabel.RIGHT);
+//		int memTotal = (int) Math.round(Runtime.getRuntime().totalMemory()) / 1_000_000;
+//		memFree = (int) Math.round(Runtime.getRuntime().freeMemory()) / 1_000_000;
+//		memUsed = memTotal - memFree;
+//		memUsedLabel.setText(WHITESPACES + memUsed + " MB");// "Used Memory : " + memUsed + " MB");
+//		TooltipManager.setTooltip(memUsedLabel, "Memory Used", TooltipWay.up);
+//		statusBar.addRightComponent(memUsedLabel, true, false);
+//
+//		memMaxLabel = new JLabel();
+//		memMaxLabel.setHorizontalAlignment(JLabel.RIGHT);
+//		memMax = (int) Math.round(Runtime.getRuntime().maxMemory()) / 1_000_000;
+//		memMaxLabel.setText("[ " + memMax + " MB ] ");// "Total Designated Memory : " + memMax + " MB");
+//		TooltipManager.setTooltip(memMaxLabel, "Memory Designated", TooltipWay.up);
+//		statusBar.addRightComponent(memMaxLabel, false, true);
+		
 		bottomPane.add(statusBar, BorderLayout.SOUTH);
 
 	}
@@ -427,26 +499,26 @@ extends JComponent {
 				incrementClocks();
 				
 				// Track sleep time
-				long sleepTime = masterClock.getSleepTime();
-				sleepLabel.setText(SLEEP_TIME + sleepTime + MS);
+//				long sleepTime = masterClock.getSleepTime();
+//				sleepLabel.setText(SLEEP_TIME + sleepTime + MS);
 				
 				
-				// Track memory
-				int memFree = (int) Math.round(Runtime.getRuntime().freeMemory()) / 1_000_000;
-				int memTotal = (int) Math.round(Runtime.getRuntime().totalMemory()) / 1_000_000;
-				int memUsed = memTotal - memFree;
-
-				if (memUsed > memUsedCache * 1.1 && memUsed < memUsedCache * 0.9) {
-					memUsedCache = memUsed;
-					memUsedLabel.setText(WHITESPACES +  
-							memUsed + " MB" + WHITESPACES);
-				}
+//				// Track memory
+//				int memFree = (int) Math.round(Runtime.getRuntime().freeMemory()) / 1_000_000;
+//				int memTotal = (int) Math.round(Runtime.getRuntime().totalMemory()) / 1_000_000;
+//				int memUsed = memTotal - memFree;
+//
+//				if (memUsed > memUsedCache * 1.1 && memUsed < memUsedCache * 0.9) {
+//					memUsedCache = memUsed;
+//					memUsedLabel.setText(WHITESPACES +  
+//							memUsed + " MB" + WHITESPACES);
+//				}
 
 				// Track mission sol
 				int sol = marsClock.getMissionSol();
 				if (solCache != sol) {
 					solCache = sol;
-					leftLabel.setText(SOL + sol);
+					solLabel.setText(SOL + sol + WHITESPACES);
 				}
 			
 				// Check if the music track should be played
@@ -944,8 +1016,11 @@ extends JComponent {
 	 * Increment the label of both the earth and mars clocks
 	 */
 	public void incrementClocks() {
-		if (earthTimeLabel != null && earthClock != null)
-			earthTimeLabel.setText(WHITESPACES + earthClock.getTimeStampF1() + WHITESPACES);
+		if (dateField != null && earthClock != null) {
+//			earthTimeLabel.setText(WHITESPACES + earthClock.getTimeStampF1() + WHITESPACES);
+			dateField.setDate(new Date(earthClock.getInstant().toEpochMilli()));
+		}
+		
 		if (marsTimeLabel != null && marsClock != null)
 			marsTimeLabel.setText(WHITESPACES + marsClock.getTrucatedDateTimeStamp()+ WHITESPACES);
 	}
@@ -968,10 +1043,10 @@ extends JComponent {
 //		autosaveTimer = null;
 		earthTimer = null;
 		statusBar = null;
-		leftLabel = null;
-		memMaxLabel = null;
-		memUsedLabel = null;
-		earthTimeLabel = null;
+		solLabel = null;
+//		memMaxLabel = null;
+//		memUsedLabel = null;
+//		earthTimeLabel = null;
 		bottomPane = null;
 		mainPane = null;
 		sim = null;

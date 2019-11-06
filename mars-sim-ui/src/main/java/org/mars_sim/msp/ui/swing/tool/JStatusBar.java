@@ -20,17 +20,17 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-public class JStatusBar extends JPanel {
+public class JStatusBar extends TexturedPanel {
 	
     private static final long serialVersionUID = 1L;
     	   
-	public static final int HEIGHT = 19;
+	public static final int HEIGHT = 30;
 	
 	private static final Color antiqueBronze = new Color(102,93,30,128);
 	private static final Color almond = new Color(239,222,205,128);
 	private static final Color cafeNoir = new Color(75,54,33,128);
 	
-	public JPanel contentPanel ;
+//	public JPanel contentPanel;
 	//public FormLayout layout;
     protected JPanel leftPanel;
     protected JPanel rightPanel;
@@ -50,15 +50,19 @@ public class JStatusBar extends JPanel {
         setPreferredSize(new Dimension(getWidth(), HEIGHT));
  
         leftPanel = new JPanel(new FlowLayout(
-                FlowLayout.LEADING, 3, 3));
-        //leftPanel.setOpaque(false);
-		//leftPanel.setBackground(new Color(0,0,0,128));
+                FlowLayout.LEADING, 3, 1));
+        leftPanel.setAlignmentX(.5F);
+        leftPanel.setAlignmentY(.5F);
+        leftPanel.setOpaque(false);
+		leftPanel.setBackground(new Color(0,0,0,128));
         add(leftPanel, BorderLayout.WEST);
         
         rightPanel = new JPanel(new FlowLayout(
-                FlowLayout.TRAILING, 3, 3));
-        //rightPanel.setOpaque(false);
-		//rightPanel.setBackground(new Color(0,0,0,128));
+                FlowLayout.TRAILING, 3, 2));
+        rightPanel.setAlignmentX(.5F);
+        rightPanel.setAlignmentY(.5F);
+        rightPanel.setOpaque(false);
+		rightPanel.setBackground(new Color(0,0,0,128));
         add(rightPanel, BorderLayout.EAST);
         
         leftPanel.setOpaque(false);

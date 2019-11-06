@@ -8,6 +8,7 @@
 package org.mars_sim.msp.ui.swing.tool.time;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -19,6 +20,7 @@ import java.text.DecimalFormat;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.CompoundBorder;
@@ -41,9 +43,11 @@ import org.mars_sim.msp.ui.swing.MainWindow;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
 
+import com.alee.extended.label.WebStyledLabel;
 import com.alee.laf.button.WebButton;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
+import com.alee.managers.style.StyleId;
 import com.alee.managers.tooltip.TooltipManager;
 import com.alee.managers.tooltip.TooltipWay;
 //import com.alee.managers.language.data.TooltipWay;
@@ -98,7 +102,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	/** Martian calendar panel. */
 	private MarsCalendarDisplay calendarDisplay;
 	/** label for Martian time. */
-	private WebLabel martianTimeLabel;
+	private WebStyledLabel martianTimeLabel;
 	/** label for Martian month. */
 	private WebLabel martianMonthLabel;
 	/** label for Northern hemisphere season. */
@@ -171,7 +175,14 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		martianTimePane.add(martianTimeHeaderLabel, BorderLayout.NORTH);
 
 		// Create Martian time label
-		martianTimeLabel = new WebLabel(marsTime.getDateTimeStamp(), WebLabel.CENTER);
+		Font font = new Font("Arial", Font.BOLD, 12);
+		
+		martianTimeLabel = new WebStyledLabel(StyleId.styledlabelShadow);
+		martianTimeLabel.setHorizontalAlignment(JLabel.CENTER);
+		martianTimeLabel.setVerticalAlignment(JLabel.CENTER);
+		martianTimeLabel.setFont(font);
+		martianTimeLabel.setForeground(new Color(135,100,39));
+		martianTimeLabel.setText(marsTime.getDateTimeStamp());
 		martianTimePane.add(martianTimeLabel, BorderLayout.SOUTH);
 
 		// Create Martian calendar panel

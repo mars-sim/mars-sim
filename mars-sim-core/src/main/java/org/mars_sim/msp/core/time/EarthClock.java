@@ -7,9 +7,13 @@
 
 package org.mars_sim.msp.core.time;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
@@ -75,7 +79,7 @@ public class EarthClock implements Serializable {
 
 		// Convert to GregorianCalendar
 		gregCal = GregorianCalendar.from(zonedDateTime);
-
+	
 		// Set GMT timezone for calendar
 		zone = new SimpleTimeZone(0, "GMT");
 
@@ -154,6 +158,11 @@ public class EarthClock implements Serializable {
 		return gregCal;
 	}
 
+	public Instant getInstant() {
+//		Instant time = 
+		return gregCal.toInstant();
+	}
+	
 	/**
 	 * Returns the current date/time
 	 * 
@@ -477,6 +486,27 @@ public class EarthClock implements Serializable {
 	// Date.from(java.time.ZonedDateTime.now().toInstant());
 	// }
 
+    /**
+     * Save the state of this object to a stream (i.e., serialize it).
+     *
+     * @serialData The value returned by {@code getTime()}
+     *             is emitted (long).  This represents the offset from
+     *             January 1, 1970, 00:00:00 GMT in milliseconds.
+     */
+    private void writeObject(ObjectOutputStream s) {
+//        s.defaultWriteObject();
+//        s.writeLong(getTimeImpl());
+    }
+
+    /**
+     * Reconstitute this object from a stream (i.e., deserialize it).
+     */
+    private void readObject(ObjectInputStream s)
+         throws IOException, ClassNotFoundException  {
+//        s.defaultReadObject();
+//        fastTime = s.readLong();
+    }
+    
 	public void destroy() {
 		gregCal = null;
 		f0 = null;
