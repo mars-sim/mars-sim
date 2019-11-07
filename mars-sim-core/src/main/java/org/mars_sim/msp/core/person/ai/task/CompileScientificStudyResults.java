@@ -187,7 +187,9 @@ implements Serializable {
      */
     public ScienceType getScience() {
         ScienceType result = null;
-
+        if (study == null)
+        	return null;
+        
         if (study.getPrimaryResearcher().equals(person)) {
             result = study.getScience();
         }

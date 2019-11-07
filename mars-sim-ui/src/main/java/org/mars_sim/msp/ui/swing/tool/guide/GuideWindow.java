@@ -28,7 +28,12 @@ import org.mars_sim.msp.ui.swing.HTMLContentPane;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
 
+import com.alee.extended.link.UrlLinkAction;
+import com.alee.extended.link.WebLink;
 import com.alee.laf.button.WebButton;
+import com.alee.managers.style.StyleId;
+import com.alee.managers.tooltip.TooltipManager;
+import com.alee.managers.tooltip.TooltipWay;
 
 /**
  * The GuideWindow is a tool window that displays the built-in User Guide, About
@@ -44,6 +49,10 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
 	/** Tool name. */
 	public static final String NAME = Msg.getString("GuideWindow.title"); //$NON-NLS-1$
 	public static final String HOME_ICON = Msg.getString("img.home"); //$NON-NLS-1$
+	
+	public static final String WIKI = "https://github.com/mars-sim/mars-sim/wiki";
+	
+	public static WebLink link;
 	
 	/** Data members. */
 //	private List<URL> history = new ArrayList<>();
@@ -134,11 +143,26 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
 //		wikiButton.setToolTipText(Msg.getString("GuideWindow.tooltip.wiki")); //$NON-NLS-1$
 //		wikiButton.addActionListener(this);
 
+		JPanel topPanel = new JPanel(new FlowLayout(3, 3, FlowLayout.CENTER));
+		mainPane.add(topPanel, BorderLayout.NORTH);
+		
 		// A toolbar to hold all our buttons
-		JPanel toolPanel = new JPanel(new FlowLayout(0,0, FlowLayout.LEADING));
+		JPanel toolPanel = new JPanel(new FlowLayout(3, 3, FlowLayout.CENTER));
+		topPanel.add(toolPanel, BorderLayout.NORTH);
+		
 		toolPanel.add(backButton);
 		toolPanel.add(homeButton);
 		toolPanel.add(forwardButton);
+		
+//		topPanel.add(new JLabel("    "), BorderLayout.WEST);
+		
+		JPanel linkPanel = new JPanel(new FlowLayout(3, 3, FlowLayout.CENTER));
+		topPanel.add(linkPanel, BorderLayout.EAST);
+		
+		link = new WebLink(StyleId.styledlabelShadow, new UrlLinkAction(WIKI));
+		TooltipManager.setTooltip(link, "The URL address for mars-sim wiki in GitHub site", TooltipWay.down);
+		linkPanel.add(link);
+
 //		toolPanel.add(aboutButton);
 //		toolPanel.add(tutorialButton);
 //		toolPanel.add(userguideButton);
@@ -146,7 +170,7 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
 //		toolPanel.add(projectsiteButton);
 //		toolPanel.add(wikiButton);
 		// toolPanel.add(discussionButton);
-		mainPane.add(toolPanel, BorderLayout.NORTH);
+
 			
 //		browser = desktop.getBrowserJFX();
 //		browserPanel = browser.getPanel();// .init();
@@ -165,7 +189,7 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
 //		viewPort.addComponentListener(this);
 		viewPort.setScrollMode(JViewport.BACKINGSTORE_SCROLL_MODE);
 		
-		mainPane.add(scrollPane);
+		mainPane.add(scrollPane,  BorderLayout.CENTER);
 		
 		updateButtons();
 		

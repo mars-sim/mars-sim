@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -23,7 +22,6 @@ import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
-import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.core.structure.Lab;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -43,7 +41,8 @@ public class PerformLaboratoryExperimentMeta implements MetaTask, Serializable {
     /** default logger. */
     private static Logger logger = Logger.getLogger(PerformLaboratoryExperimentMeta.class.getName());
 
-    private static ScientificStudyManager studyManager;
+    // Create list of experimental sciences.
+    private static List<ScienceType> experimentalSciences = PerformLaboratoryExperiment.getExperimentalSciences();
     
     @Override
     public String getName() {
@@ -57,7 +56,6 @@ public class PerformLaboratoryExperimentMeta implements MetaTask, Serializable {
 
     @Override
     public double getProbability(Person person) {
-
         double result = 0D;
         
         // Probability affected by the person's stress and fatigue.
@@ -69,25 +67,10 @@ public class PerformLaboratoryExperimentMeta implements MetaTask, Serializable {
         if (fatigue > 1000 || stress > 50 || hunger > 500)
         	return 0;
         
-        if (person.isInVehicle()) {	
-	        // Check if person is in a moving rover.
-	        if (Vehicle.inMovingRover(person)) {
-	            return 0;
-	        }
-	        else
-	        	// the penalty for performing experiment inside a vehicle
-	        	result = -10D;
-        }
-
         if (person.isInside()) {
-	        // Create list of experimental sciences.
-	        List<ScienceType> experimentalSciences = PerformLaboratoryExperiment.getExperimentalSciences();
 
 	        // Add probability for researcher's primary study (if any).
-	        if (studyManager == null)
-	        	studyManager = Simulation.instance().getScientificStudyManager();
-	        //ScientificStudyManager studyManager = Simulation.instance().getScientificStudyManager();
-	        ScientificStudy primaryStudy = studyManager.getOngoingPrimaryStudy(person);
+	        ScientificStudy primaryStudy = scientificStudyManager.getOngoingPrimaryStudy(person);
 	        if ((primaryStudy != null) && ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase())) {
 	            if (!primaryStudy.isPrimaryResearchCompleted()) {
 	                if (experimentalSciences.contains(primaryStudy.getScience())) {
@@ -119,7 +102,7 @@ public class PerformLaboratoryExperimentMeta implements MetaTask, Serializable {
 	        }
 
 	        // Add probability for each study researcher is collaborating on.
-	        Iterator<ScientificStudy> i = studyManager.getOngoingCollaborativeStudies(person).iterator();
+	        Iterator<ScientificStudy> i = scientificStudyManager.getOngoingCollaborativeStudies(person).iterator();
 	        while (i.hasNext()) {
 	            ScientificStudy collabStudy = i.next();
 	            if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase())) {
@@ -154,7 +137,19 @@ public class PerformLaboratoryExperimentMeta implements MetaTask, Serializable {
 	            }
 	        }
 
-	        if (result == 0) return 0;
+	        if (result > 0) {
+		        if (person.isInVehicle()) {	
+			        // Check if person is in a moving rover.
+			        if (Vehicle.inMovingRover(person)) {
+			            return 0;
+			        }
+			        else
+			        	// the penalty for performing experiment inside a vehicle
+			        	result = -10D;
+		        }
+	        }
+	        else
+	        	return 0;
 	        
 	        // Effort-driven task modifier.
 	        result *= person.getPerformanceRating();

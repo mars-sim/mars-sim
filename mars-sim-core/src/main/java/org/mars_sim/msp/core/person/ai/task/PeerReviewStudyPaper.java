@@ -197,7 +197,7 @@ implements Serializable {
     @Override
 	public List<SkillType> getAssociatedSkills() {
 		List<SkillType> results = new ArrayList<SkillType>(1);
-		results.add(study.getScience().getSkill());
+		if (study != null) results.add(study.getScience().getSkill());
         return results;
     }
 

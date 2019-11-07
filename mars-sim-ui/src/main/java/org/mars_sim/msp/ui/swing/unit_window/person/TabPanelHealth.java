@@ -94,8 +94,8 @@ extends TabPanel {
 	
 	protected String[] radiationToolTips = {
 		    "Exposure Interval",
-		    "[Max for BFO] 30-Day : 250; Annual : 500; Career : 1000",
-		    "[Max for Eye] 30-Day : 1000; Annual : 2000; Career : 4000",
+		    "[Max for BFO]  30-Day :  250; Annual :  500; Career : 1000",
+		    "[Max for Eye]  30-Day : 1000; Annual : 2000; Career : 4000",
 		    "[Max for Skin] 30-Day : 1500; Annual : 3000; Career : 6000"};
 
 	/**
@@ -205,8 +205,8 @@ extends TabPanel {
 		// Prepare SpringLayout
 		SpringUtilities.makeCompactGrid(conditionPanel,
 		                                3, 4, //rows, cols
-		                                35, 4,        //initX, initY
-		                                30, 3);       //xPad, yPad
+		                                10, 4,        //initX, initY
+		                                15, 3);       //xPad, yPad
 		
 		// Add radiation dose info
 		// Prepare radiation panel

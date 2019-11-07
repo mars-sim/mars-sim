@@ -90,7 +90,7 @@ public class InviteStudyCollaboratorMeta implements MetaTask, Serializable {
                     // Check that there's scientists available for invitation.
                     if (ScientificStudyUtil.getAvailableCollaboratorsForInvite(study).size() > 0) {
 
-                        result = 25D;
+                        result += 25D;
 
                         // Crowding modifier
                         Building adminBuilding = InviteStudyCollaborator.getAvailableAdministrationBuilding(person);

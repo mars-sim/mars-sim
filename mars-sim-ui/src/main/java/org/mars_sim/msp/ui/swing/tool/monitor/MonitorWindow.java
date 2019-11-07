@@ -56,8 +56,10 @@ import com.jidesoft.swing.TableSearchable;
 @SuppressWarnings("serial")
 public class MonitorWindow extends ToolWindow implements TableModelListener, ActionListener {
 
-	final private static int STATUSHEIGHT = 25;
-
+	private static final int STATUSHEIGHT = 25;
+	private static final int WIDTH = 1300;//1280;
+	private static final int HEIGHT = 512;
+	
 	public static final String NAME = Msg.getString("MonitorWindow.title"); //$NON-NLS-1$
 
 	// Added an custom icon for each tab
@@ -250,12 +252,12 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 		});
 
 		// Note: must use setSize() to define a starting size
-		setSize(new Dimension(1280, 512));
-		setMinimumSize(new Dimension(768, 200));
+		setSize(new Dimension(WIDTH, HEIGHT));
+//		setMinimumSize(new Dimension(768, 200));
 		// Need to verify why setPreferredSize() prevents Monitor Window from being
 		// resizable
 		// and create spurious error message in linux in some cases
-		// setPreferredSize(new Dimension(1280, 512));
+		setPreferredSize(new Dimension(WIDTH, HEIGHT));
 		setResizable(true);
 		setMaximizable(true);
 		setVisible(true);

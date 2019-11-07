@@ -107,7 +107,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	protected Person person;
 	/** The robot performing the task. */
 	protected Robot robot;
-	/** Sub-task of the current task. */
+	/** Sub-task of the sub task. */
 	protected Task subTask;
 	/** Phase of task completion. */
 	private TaskPhase phase;
@@ -181,10 +181,19 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		done = false;
 
 		timeCompleted = 0D;
+		
+		// For current task
 		description = name;
-		subTask = null;
 		phase = null;
 		phases = new ArrayList<TaskPhase>();
+		
+		// For sub task
+		setSubTaskPhase(null);
+		if (subTask != null)  {
+			subTask.setDescription("");
+			subTask = null;
+		}
+
 		// functionType = FunctionType.UNKNOWN;
 
 	}
@@ -196,8 +205,9 @@ public abstract class Task implements Serializable, Comparable<Task> {
 
 		// End subtask.
 		if (subTask != null && !subTask.isDone()) {
-//			subTask.endTask();
-			subTask.destroy();
+			setSubTaskPhase(null);
+			subTask.setDescription("");
+			subTask.destroy();		
 			subTask = null;
 		}
 
@@ -320,14 +330,14 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @param description the task description.
 	 */
 	protected void setDescription(String des) {
-		if (des != null && !des.equals("") && !des.equals(description)) {
+//		if (des != null && !des.equals("") && !des.equals(description)) {
 			description = des;
 			if (person != null) {
 				person.fireUnitUpdate(UnitEventType.TASK_DESCRIPTION_EVENT, des);
 			} else if (robot != null) {
 				robot.fireUnitUpdate(UnitEventType.TASK_DESCRIPTION_EVENT, des);
 			}
-		}
+//		}
 	}
 
 //    public FunctionType getFunction() {
@@ -381,6 +391,17 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		return phase;
 	}
 
+	public void setSubTaskPhase(TaskPhase newPhase) {
+		if (subTask != null) {
+			subTask.setPhase(newPhase);
+			if (person != null) {
+				person.fireUnitUpdate(UnitEventType.TASK_SUBTASK_EVENT, newPhase);
+			} else if (robot != null) {
+				robot.fireUnitUpdate(UnitEventType.TASK_SUBTASK_EVENT, newPhase);
+			}
+		}
+	}
+	
 	/**
 	 * Gets a string of the current phase of the task.
 	 * 
@@ -459,38 +480,39 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 */
 	public void addSubTask(Task newSubTask) {
 		if (subTask != null) {
-			if (subTask.done) {
-				subTask.destroy();
-				subTask = newSubTask;
-				if (person != null) {
-					// Note: need to avoid java.lang.StackOverflowError when calling
-					// PersonTableModel.unitUpdate()
-					person.fireUnitUpdate(UnitEventType.TASK_SUBTASK_EVENT, newSubTask);
-				} else if (robot != null) {
-					// Note: need to avoid java.lang.StackOverflowError when calling
-					// PersonTableModel.unitUpdate()
-					robot.fireUnitUpdate(UnitEventType.TASK_SUBTASK_EVENT, newSubTask);
-				}
-
-			} else {
-//				if (!subTask.getName().equals(newSubTask.getName()))
-				if (!subTask.getTaskName().equals(newSubTask.getTaskName()))
-					subTask.addSubTask(newSubTask);
-			}
+			subTask.setDescription("");
+			setSubTaskPhase(null);
+			subTask.destroy();
+			createSubTask(newSubTask);
+			
+//			if (subTask.done) {
+//				subTask.setDescription("");
+//				setSubTaskPhase(null);
+//				subTask.destroy();
+//				
+//				createSubTask(newSubTask);
+//			} else {
+//				// TODO: it could be troublesome to have recursive subtask (allowing subtask to have a subtask)
+////				if (!subTask.getTaskName().equals(newSubTask.getTaskName()))
+////					subTask.addSubTask(newSubTask);
+//				createSubTask(newSubTask);
+//			}
 		} else {
-			subTask = newSubTask;
-			if (person != null) {
-				// Note: need to avoid java.lang.StackOverflowError when calling
-				// PersonTableModel.unitUpdate()
-				person.fireUnitUpdate(UnitEventType.TASK_SUBTASK_EVENT, newSubTask);
-			} else if (robot != null) {
-				// Note: need to avoid java.lang.StackOverflowError when calling
-				// PersonTableModel.unitUpdate()
-				robot.fireUnitUpdate(UnitEventType.TASK_SUBTASK_EVENT, newSubTask);
-			}
+			createSubTask(newSubTask);
 		}
 	}
 
+	public void createSubTask(Task newSubTask) {
+		subTask = newSubTask;
+		subTask.setDescription(newSubTask.getDescription());
+		if (person != null) {
+
+			person.fireUnitUpdate(UnitEventType.TASK_SUBTASK_EVENT, newSubTask);
+		} else if (robot != null) {
+			robot.fireUnitUpdate(UnitEventType.TASK_SUBTASK_EVENT, newSubTask);
+		}
+	}
+	
 	/**
 	 * Gets the task's subtask. Returns null if none
 	 * 
@@ -514,6 +536,8 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		double timeLeft = time;
 		if (subTask != null) {
 			if (subTask.isDone()) {
+				setSubTaskPhase(null);
+				subTask.setDescription("");
 				subTask.destroy();
 				subTask = null;
 			} else {

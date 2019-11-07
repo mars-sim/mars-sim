@@ -297,6 +297,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
         
         if (getDistanceToDestination() < DESTINATION_BUFFER) {
         	endTask();
+        	return time;
         }
 		
         Inventory vInv = vehicle.getInventory();

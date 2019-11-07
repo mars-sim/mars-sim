@@ -8,6 +8,7 @@
 package org.mars_sim.msp.ui.swing.unit_window.structure;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
@@ -111,7 +112,6 @@ extends TabPanel {
 	private static MasterClock masterClock;
 	private static OrbitInfo orbitInfo;
 
-
 	private static DecimalFormat fmt = new DecimalFormat("##0");
 	//private static DecimalFormat fmt1 = new DecimalFormat("#0.0");
 	private static DecimalFormat fmt2 = new DecimalFormat("#0.00");
@@ -181,10 +181,10 @@ extends TabPanel {
         locationLabelPanel = new WebPanel();
 //        locationLabelPanel.setBorder(new EmptyBorder(1, 1, 1, 1) );
         locationLabelPanel.setLayout(new BorderLayout(0, 0));
-        WebLabel latLabel = new WebLabel("Latitude : ");//, JLabel.RIGHT);
+        WebLabel latLabel = new WebLabel("Lat : ");//, JLabel.RIGHT);
         latLabel.setFont(new Font("Serif", Font.PLAIN, 15));
         latLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-        WebLabel longLabel = new WebLabel("Longitude : ");//, JLabel.RIGHT);
+        WebLabel longLabel = new WebLabel("Lon : ");//, JLabel.RIGHT);
         longLabel.setFont(new Font("Serif", Font.PLAIN, 15));
         longLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         locationLabelPanel.add(latLabel, BorderLayout.NORTH);
@@ -198,8 +198,11 @@ extends TabPanel {
         locationPanel.add(locationCoordsPanel);
 
         WebPanel leftPanel = new WebPanel(new BorderLayout(0, 0));
+        leftPanel.setMaximumSize(new Dimension(180, 350));
+        leftPanel.setPreferredSize(new Dimension(180, 350));
 		//mainPanel.setBorder(new MarsPanelBorder());
         leftPanel.add(locationPanel, BorderLayout.NORTH);
+        
         
 //        centerContentPanel.setBorder(new MarsPanelBorder());
         centerContentPanel.add(leftPanel, BorderLayout.WEST);
@@ -371,8 +374,8 @@ extends TabPanel {
 		//Lay out the spring panel.
 		SpringUtilities.makeCompactGrid(springPanel,
 		                                8, 2, //rows, cols
-		                                10, 10,        //initX, initY
-		                                10, 10);       //xPad, yPad
+		                                0, 30,        //initX, initY
+		                                5, 5);       //xPad, yPad
 
         // TODO: have a meteorologist or Areologist visit the weather station daily to fine tune the equipment
 //        String personName = "ABC";

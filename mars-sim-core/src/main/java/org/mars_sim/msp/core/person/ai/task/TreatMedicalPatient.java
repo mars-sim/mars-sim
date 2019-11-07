@@ -423,7 +423,7 @@ public class TreatMedicalPatient extends Task implements Serializable {
         super.endTask();
 
         // Stop treatment.
-        if (medicalAid.getProblemsBeingTreated().contains(healthProblem)) {
+        if (medicalAid != null && medicalAid.getProblemsBeingTreated().contains(healthProblem)) {
             medicalAid.stopTreatment(healthProblem);
         }
     }

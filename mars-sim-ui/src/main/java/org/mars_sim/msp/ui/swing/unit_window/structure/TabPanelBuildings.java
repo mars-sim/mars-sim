@@ -154,7 +154,6 @@ public class TabPanelBuildings extends TabPanel implements ActionListener {
 
 	class PromptComboBoxRenderer extends DefaultListCellRenderer {
 
-		private static final long serialVersionUID = 1L;
 		private String prompt;
 
 		// public boolean isOptimizedDrawingEnabled();

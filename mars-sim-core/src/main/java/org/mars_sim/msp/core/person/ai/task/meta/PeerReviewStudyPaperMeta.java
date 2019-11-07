@@ -23,6 +23,7 @@ import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.core.tool.RandomUtil;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * Meta task for the PeerReviewStudyPaper task.
@@ -36,8 +37,6 @@ public class PeerReviewStudyPaperMeta implements MetaTask, Serializable {
     private static final String NAME = Msg.getString(
             "Task.description.peerReviewStudyPaper"); //$NON-NLS-1$
 
-    private static ScientificStudyManager studyManager;
-    
     @Override
     public String getName() {
         return NAME;
@@ -65,10 +64,7 @@ public class PeerReviewStudyPaperMeta implements MetaTask, Serializable {
             	return 0;
             
 	        // Get all studies in the peer review phase.
-	        if (studyManager == null)
-	        	studyManager = Simulation.instance().getScientificStudyManager();
-	        //ScientificStudyManager studyManager = Simulation.instance().getScientificStudyManager();
-	        Iterator<ScientificStudy> i = studyManager.getOngoingStudies().iterator();
+	        Iterator<ScientificStudy> i = scientificStudyManager.getOngoingStudies().iterator();
 	        while (i.hasNext()) {
 	            ScientificStudy study = i.next();
 	            if (ScientificStudy.PEER_REVIEW_PHASE.equals(study.getPhase())) {
@@ -87,8 +83,19 @@ public class PeerReviewStudyPaperMeta implements MetaTask, Serializable {
 	                        }
 	                    }
 	                }
-	            }
+	            }            
 	        }
+	        
+	        if (result == 0) return 0;
+	        
+            if (person.isInVehicle()) {	
+    	        // Check if person is in a moving rover.
+    	        if (Vehicle.inMovingRover(person)) {
+    	            return 0;
+    	        }
+    	        else
+    	        	result += 10D;
+            }
 
 	        if (result == 0) return 0;
 	        

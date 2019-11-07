@@ -277,7 +277,7 @@ public class TabPanelGeneral extends TabPanel {
 		ta.setBorder(new MarsPanelBorder());
 		
 		WebPanel listPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
-		listPanel.setSize(110, 160);
+		listPanel.setSize(110, 130);
 		listPanel.add(ta);
 
 		centerContentPanel.add(listPanel, BorderLayout.CENTER);
@@ -365,7 +365,7 @@ public class TabPanelGeneral extends TabPanel {
 		ta.setBorder(new MarsPanelBorder());
 		
 		WebPanel listPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
-		listPanel.setSize(110, 160);
+		listPanel.setSize(110, 150);
 		listPanel.add(ta);
 
 		centerContentPanel.add(listPanel, BorderLayout.SOUTH);

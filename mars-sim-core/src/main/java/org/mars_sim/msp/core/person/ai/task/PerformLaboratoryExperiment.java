@@ -138,6 +138,7 @@ implements ResearchScientificStudy, Serializable {
         experimentalSciences.add(ScienceType.CHEMISTRY);
         experimentalSciences.add(ScienceType.PHYSICS);
         experimentalSciences.add(ScienceType.MEDICINE);
+        experimentalSciences.add(ScienceType.METEOROLOGY);
         return experimentalSciences;
     }
 
@@ -276,7 +277,7 @@ implements ResearchScientificStudy, Serializable {
             Map<Building, Double> labBuildingProbs = BuildingManager.getBestRelationshipBuildings(
                     person, labBuildings);
             Building building = RandomUtil.getWeightedRandomObject(labBuildingProbs);
-            result = (Research) building.getFunction(FunctionType.RESEARCH);
+            result = building.getResearch();
         }
 
         return result;

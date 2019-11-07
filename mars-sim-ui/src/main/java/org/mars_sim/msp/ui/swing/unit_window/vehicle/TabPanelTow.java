@@ -17,7 +17,6 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.vehicle.Towing;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
 import com.alee.laf.button.WebButton;
@@ -25,6 +24,8 @@ import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 @SuppressWarnings("serial")
 public class TabPanelTow extends TabPanel {
+
+	private static final Font font = new Font("Monospaced", Font.BOLD, 12);
 
 	// Data members
 	private WebPanel towingLabelPanel;
@@ -67,16 +68,18 @@ public class TabPanelTow extends TabPanel {
 		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		panel.add(titleLabel);
 		topContentPanel.add(panel);
+		
 
 		if (unit instanceof Towing) {
 
 			// Create towing label panel.
-			towingLabelPanel = new WebPanel(new FlowLayout(FlowLayout.LEFT));
-			towingLabelPanel.setBorder(new MarsPanelBorder());
+			towingLabelPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
+//			towingLabelPanel.setBorder(new MarsPanelBorder());
 			topContentPanel.add(towingLabelPanel);
-
+			
 			// Create towing label.
-			WebLabel towLabel = new WebLabel(Msg.getString("TabPanelTow.towing"), WebLabel.CENTER); //$NON-NLS-1$
+			WebLabel towLabel = new WebLabel("  " + Msg.getString("TabPanelTow.towing"), WebLabel.CENTER); //$NON-NLS-1$
+			towLabel.setFont(font);
 			towingLabelPanel.add(towLabel);
 
 			// Create the towing button.
@@ -89,7 +92,8 @@ public class TabPanelTow extends TabPanel {
 
 			// Create the towing text label.
 			towingTextLabel = new WebLabel(Msg.getString("TabPanelTow.none"), WebLabel.LEFT); //$NON-NLS-1$
-
+			towingTextLabel.setFont(font);
+			
 			// Add the towing button or towing text label depending on the situation.
 			Vehicle towedVehicle = ((Towing) unit).getTowedVehicle();
 			if (towedVehicle != null) {
@@ -102,12 +106,13 @@ public class TabPanelTow extends TabPanel {
 		Vehicle vehicle = (Vehicle) unit;
 
 		// Create towed label panel.
-		towedLabelPanel = new WebPanel(new FlowLayout(FlowLayout.LEFT));
-		towedLabelPanel.setBorder(new MarsPanelBorder());
+		towedLabelPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
+//		towedLabelPanel.setBorder(new MarsPanelBorder());
 		topContentPanel.add(towedLabelPanel);
 
 		// Create towed label.
 		WebLabel towedLabel = new WebLabel(Msg.getString("TabPanelTow.towedBy"), WebLabel.CENTER); //$NON-NLS-1$
+		towedLabel.setFont(font);
 		towedLabelPanel.add(towedLabel);
 
 		// Create the towed button.
@@ -120,7 +125,8 @@ public class TabPanelTow extends TabPanel {
 
 		// Create towed text label.
 		towedTextLabel = new WebLabel(Msg.getString("TabPanelTow.none"), WebLabel.LEFT); //$NON-NLS-1$
-
+		towedTextLabel.setFont(font);
+		
 		// Add the towed button or towed text label depending on the situation.
 		if (vehicle.getTowingVehicle() != null) {
 			towedButton.setText(vehicle.getTowingVehicle().getName());

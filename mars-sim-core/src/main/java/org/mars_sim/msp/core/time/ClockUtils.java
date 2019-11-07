@@ -278,8 +278,7 @@ public class ClockUtils implements Serializable {
 	 * @return days
 	 */
 	public static double getJulianDateTT(EarthClock clock) {
-		double result = getJulianDateUT(clock) + getDeltaUTC_TT(clock) / 86400.0;// (35D + 32.184) / 86400D);
-		return result;
+		return getJulianDateUT(clock) + getDeltaUTC_TT(clock) / 86400.0;// (35D + 32.184) / 86400D);
 	}
 
 	/*
@@ -290,8 +289,7 @@ public class ClockUtils implements Serializable {
 	 * @return days
 	 */
 	public static double getDaysSinceJ2kEpoch(EarthClock clock) {
-		double result = getJulianDateTT(clock) - 2451545.0;
-		return result;
+		return getJulianDateTT(clock) - 2451545.0;
 	}
 
 	/*
@@ -303,8 +301,7 @@ public class ClockUtils implements Serializable {
 	 */
 	public static double getMarsMeanAnomaly(EarthClock clock) {
 		// 0.00096 is a slight adjustment as the midnights by Mars24
-		double result = 19.3871 + 0.52402073 * getDaysSinceJ2kEpoch(clock);
-		return result;
+		return 19.3871 + 0.52402073 * getDaysSinceJ2kEpoch(clock);
 	}
 
 	/*
@@ -313,8 +310,7 @@ public class ClockUtils implements Serializable {
 	 * @return degree AlphaFMS
 	 */
 	public static double getAlphaFMS(EarthClock clock) {
-		double result = 270.3871 + 0.524038496 * getDaysSinceJ2kEpoch(clock);
-		return result;
+		return 270.3871 + 0.524038496 * getDaysSinceJ2kEpoch(clock);
 	}
 
 	/*

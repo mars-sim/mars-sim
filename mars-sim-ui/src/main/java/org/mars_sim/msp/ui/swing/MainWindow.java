@@ -70,7 +70,6 @@ import com.alee.managers.language.LanguageManager;
 import com.alee.managers.style.StyleId;
 import com.alee.managers.tooltip.TooltipManager;
 import com.alee.managers.tooltip.TooltipWay;
-import com.jidesoft.swing.StyledLabel;
 
 /**
  * The MainWindow class is the primary UI frame for the project. It contains the
@@ -343,10 +342,12 @@ extends JComponent {
 			marsClock = masterClock.getMarsClock();
 		}
 		
+		Font font = new Font("Times New Roman", Font.BOLD, 12);
+
 //		StyleId styledlabelShadow = StyleId.of ( "shadow" );
-		dateField = new WebDateField();//new Date(earthClock.getInstant().toEpochMilli()));
-//		dateField.setSize(22, 50);
-//		dateField.setFont(font);
+		dateField = new WebDateField(StyleId.datefield);//new Date(earthClock.getInstant().toEpochMilli()));
+		dateField.setPreferredWidth(190);
+		dateField.setFont(font);
 //		dateField.setForeground(Color.BLUE);
 		dateField.setAlignmentX(.5f);
 		dateField.setAlignmentY(0);
@@ -378,8 +379,6 @@ extends JComponent {
 //		TooltipManager.setTooltip(earthTimeLabel, "Earth Timestamp", TooltipWay.up);
 //		statusBar.setLeftComponent(earthTimeLabel, true);
         
-		Font font = new Font("Times New Roman", Font.BOLD, 12);
-
 		solLabel = new WebStyledLabel(StyleId.styledlabelShadow);
 		solLabel.setFont(font);
 		solLabel.setForeground(Color.DARK_GRAY);

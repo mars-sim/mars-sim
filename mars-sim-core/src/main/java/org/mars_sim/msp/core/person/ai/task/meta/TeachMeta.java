@@ -18,6 +18,7 @@ import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * Meta task for the Teach task.
@@ -44,6 +45,11 @@ public class TeachMeta implements MetaTask, Serializable {
     @Override
     public double getProbability(Person person) {
 
+        // Find potential students.
+        Collection<Person> potentialStudents = Teach.getBestStudents(person);
+        if (potentialStudents.size() == 0)
+        	return 0;
+
         double result = 0D;
 
         if (person.isInside()) {
@@ -55,14 +61,25 @@ public class TeachMeta implements MetaTask, Serializable {
             double hunger = condition.getHunger();
             
             if (fatigue > 1000 || stress > 75 || hunger > 750)
-            	return 0;
-            
-	        // Find potential students.
-	        Collection<Person> potentialStudents = Teach.getBestStudents(person);
+            	return 0;          
+
 	        if (potentialStudents.size() > 0) {
 
-	            result = 50D;
+	            result = potentialStudents.size() * 20D;
 
+	            if (person.isInVehicle()) {	
+	    	        // Check if person is in a moving rover.
+	    	        if (Vehicle.inMovingRover(person)) {
+	    		        // the bonus for proposing scientific study inside a vehicle, 
+	    	        	// rather than having nothing to do if a person is not driving
+	    	        	result += 30;
+	    	        } 	       
+	    	        else
+	    		        // the bonus for proposing scientific study inside a vehicle, 
+	    	        	// rather than having nothing to do if a person is not driving
+	    	        	result += 10;
+	            }
+	            
 	            Person student = (Person) potentialStudents.toArray()[0];
                 Building building = BuildingManager.getBuilding(student);
 

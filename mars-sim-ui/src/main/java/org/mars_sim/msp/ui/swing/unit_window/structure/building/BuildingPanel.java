@@ -61,6 +61,9 @@ public class BuildingPanel extends JPanel {
 
 	private static final Logger logger = Logger.getLogger(BuildingPanel.class.getName());
 
+	public static final int WIDTH = UnitWindow.WIDTH - 170;
+	public static final int HEIGHT = UnitWindow.HEIGHT - 190;
+	
 	/** The name of the panel. */
 	private String panelName;
 
@@ -127,8 +130,8 @@ public class BuildingPanel extends JPanel {
 
 		setLayout(new BorderLayout(0, 5));
 
-		this.setMaximumSize(new Dimension(UnitWindow.WIDTH - 90, UnitWindow.HEIGHT - 190));
-		this.setPreferredSize(new Dimension(UnitWindow.WIDTH - 90, UnitWindow.HEIGHT - 190));
+		setMaximumSize(new Dimension(WIDTH, HEIGHT));
+		setPreferredSize(new Dimension(WIDTH, HEIGHT));
 	
 		namePanel = new JPanel(new GridLayout(2, 1, 0, 0));
 		buildingNameLabel = new JLabel(building.getNickName(), JLabel.CENTER);
@@ -162,7 +165,7 @@ public class BuildingPanel extends JPanel {
 		JScrollPane scrollPanel = new JScrollPane();
 		scrollPanel.setViewportView(functionListPanel);
 		// CustomScroll scrollPanel = new CustomScroll(functionListPanel);
-		scrollPanel.setPreferredSize(new Dimension(UnitWindow.WIDTH - 20, UnitWindow.HEIGHT - 300));
+		scrollPanel.setPreferredSize(new Dimension(WIDTH, HEIGHT));//UnitWindow.HEIGHT - 300));
 		scrollPanel.getVerticalScrollBar().setUnitIncrement(20);
 		add(scrollPanel, BorderLayout.CENTER);
 

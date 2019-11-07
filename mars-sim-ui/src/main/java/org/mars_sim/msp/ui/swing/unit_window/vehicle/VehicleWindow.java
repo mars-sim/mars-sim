@@ -17,10 +17,7 @@ import org.mars_sim.msp.ui.swing.unit_window.InventoryTabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.LocationTabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.MaintenanceTabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.SalvageTabPanel;
-import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
-import org.mars_sim.msp.ui.swing.unit_window.person.TabPanelActivity;
-import org.mars_sim.msp.ui.swing.unit_window.person.TabPanelAttribute;
 
 /**
  * The VehicleWindow is the window for displaying a vehicle.
@@ -31,9 +28,6 @@ public class VehicleWindow extends UnitWindow {
 	// Data members
 	private boolean salvaged;
 
-	/** The cache for the currently selected TabPanel. */
-	private TabPanel oldTab;
-	
 	private Vehicle vehicle;
 
 	/**

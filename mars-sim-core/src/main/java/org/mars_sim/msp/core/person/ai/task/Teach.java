@@ -282,7 +282,7 @@ public class Teach extends Task implements Serializable {
 			Person student = i.next();
 			boolean possibleStudent = false;
 			Task task = student.getMind().getTaskManager().getTask();
-			if (task != null) {
+			if (task != null && task.getAssociatedSkills() != null) {
 				Iterator<SkillType> j = task.getAssociatedSkills().iterator();
 				while (j.hasNext()) {
 					SkillType taskSkill = j.next();

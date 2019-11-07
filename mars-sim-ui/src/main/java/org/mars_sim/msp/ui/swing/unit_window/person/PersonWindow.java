@@ -12,7 +12,6 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.unit_window.InventoryTabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.LocationTabPanel;
-import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
 
 /**
@@ -24,9 +23,6 @@ public class PersonWindow extends UnitWindow {
 	private boolean deadCache = false;
 
 	private Person person;
-	
-//	/** The cache for the currently selected TabPanel. */
-//	private TabPanel oldTab;
 	
 //	private TabPanelActivity tabPanelActivity;
 //	private TabPanelAttribute tabPanelAttribute;

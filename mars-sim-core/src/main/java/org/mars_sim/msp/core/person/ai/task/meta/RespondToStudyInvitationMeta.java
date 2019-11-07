@@ -59,26 +59,25 @@ public class RespondToStudyInvitationMeta implements MetaTask, Serializable {
         if (fatigue > 1000 || stress > 50 || hunger > 500)
         	return 0;
         
-        if (person.isInVehicle()) {	
-	        // Check if person is in a moving rover.
-	        if (Vehicle.inMovingRover(person)) {
-		        // the bonus for proposing scientific study inside a vehicle, 
-	        	// rather than having nothing to do if a person is not driving
-	        	result = 30;
-	        } 	       
-	        else
-		        // the bonus for proposing scientific study inside a vehicle, 
-	        	// rather than having nothing to do if a person is not driving
-	        	result = 10;
-        }
-        
         if (person.isInside()) {
 
             // Check if person has been invited to collaborate on any scientific studies.
-//	        ScientificStudyManager manager = Simulation.instance().getScientificStudyManager();
 	        List<ScientificStudy> invitedStudies = scientificStudyManager.getOpenInvitationStudies(person);
 	        if (invitedStudies.size() > 0) {
 	            result += invitedStudies.size() * 100D;
+	            
+	            if (person.isInVehicle()) {	
+	    	        // Check if person is in a moving rover.
+	    	        if (Vehicle.inMovingRover(person)) {
+	    		        // the bonus for proposing scientific study inside a vehicle, 
+	    	        	// rather than having nothing to do if a person is not driving
+	    	        	result = 30;
+	    	        } 	       
+	    	        else
+	    		        // the bonus for proposing scientific study inside a vehicle, 
+	    	        	// rather than having nothing to do if a person is not driving
+	    	        	result = 10;
+	            }
 	        }
 	        
 	        if (result <= 0) return 0;

@@ -11,7 +11,6 @@ import java.util.Iterator;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -22,7 +21,6 @@ import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
-import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.core.structure.building.function.AstronomicalObservation;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
@@ -71,8 +69,6 @@ public class ObserveAstronomicalObjectsMeta implements MetaTask, Serializable {
             	return 0;
             
             // Check if it is completely dark outside.
-//            if (surface == null)
-//            	surface = Simulation.instance().getMars().getSurfaceFeatures();
             double sunlight = surface.getSolarIrradiance(person.getCoordinates());
 
             if (sunlight == 0D) {
@@ -80,8 +76,7 @@ public class ObserveAstronomicalObjectsMeta implements MetaTask, Serializable {
                 ScienceType astronomy = ScienceType.ASTRONOMY;
 
                 // Add probability for researcher's primary study (if any).
-                ScientificStudyManager studyManager = Simulation.instance().getScientificStudyManager();
-                ScientificStudy primaryStudy = studyManager.getOngoingPrimaryStudy(person);
+                ScientificStudy primaryStudy = scientificStudyManager.getOngoingPrimaryStudy(person);
                 if ((primaryStudy != null) && ScientificStudy.RESEARCH_PHASE.equals(
                         primaryStudy.getPhase())) {
                     if (!primaryStudy.isPrimaryResearchCompleted() &&
@@ -110,7 +105,7 @@ public class ObserveAstronomicalObjectsMeta implements MetaTask, Serializable {
                 }
 
                 // Add probability for each study researcher is collaborating on.
-                Iterator<ScientificStudy> i = studyManager.getOngoingCollaborativeStudies(person).iterator();
+                Iterator<ScientificStudy> i = scientificStudyManager.getOngoingCollaborativeStudies(person).iterator();
                 while (i.hasNext()) {
                     ScientificStudy collabStudy = i.next();
                     if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase())) {
@@ -171,8 +166,6 @@ public class ObserveAstronomicalObjectsMeta implements MetaTask, Serializable {
     	        if (result < 0) result = 0;
             }
         }
-
-
 
         return result;
     }

@@ -239,12 +239,16 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 				if (t != null) 
 //						&& !t.toLowerCase().contains("walk"))
 					subTaskTextCache = t;
+				else
+					subTaskTextCache = "";
 			}
 
 			else if (robot != null) {
 				String t = botTaskManager.getSubTaskDescription();
 				if (t != null)// && !t.toLowerCase().contains("walk"))
 					subTaskTextCache = t;
+				else
+					subTaskTextCache = "";
 			}
 		}
 
@@ -408,9 +412,6 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 		monitorButton.setSize(20, 20);
 		monitorButton.setMargin(new Insets(1, 1, 1, 1));
 		TooltipManager.setTooltip(monitorButton, Msg.getString("TabPanelActivity.tooltip.monitor"), TooltipWay.down);
-		// monitorButton.setToolTipText(Msg.getString("TabPanelActivity.tooltip.monitor"));
-		// //$NON-NLS-1$
-		// Msg.getString("TabPanelActivity.tooltip.monitor")); //$NON-NLS-1$
 		monitorButton.addActionListener(this);
 
 		if (person != null) {
@@ -542,23 +543,23 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 		}
 
 //		if (!newTaskText.toLowerCase().contains("walk")) {
-			if (!newTaskText.equals("") && !taskTextCache.equals(newTaskText)) {
+			if (!taskTextCache.equals(newTaskText)) {
 				taskTextCache = newTaskText;
 				taskTextArea.setText(newTaskText);
 			}
 
-			if (!newTaskPhase.equals("") && !taskPhaseCache.equals(newTaskPhase)) {
+			if (!taskPhaseCache.equals(newTaskPhase)) {
 				taskPhaseCache = newTaskPhase;
 				taskPhaseArea.setText(newTaskPhase);
 			}
 //		}
 
-		if (!newSubTaskText.equals("") && !subTaskTextCache.equals(newSubTaskText)) {
+		if (!subTaskTextCache.equals(newSubTaskText)) {
 			subTaskTextCache = newSubTaskText;
 			subTaskTextArea.setText(newSubTaskText);
 		}
 
-		if (!newSubTaskPhase.equals("") && !subTaskPhaseCache.equals(newSubTaskPhase)) {
+		if (!subTaskPhaseCache.equals(newSubTaskPhase)) {
 			subTaskPhaseCache = newSubTaskPhase;
 			subTaskPhaseArea.setText(newSubTaskPhase);
 		}
@@ -592,12 +593,12 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 				newMissionPhase = ""; //$NON-NLS-1$
 		}
 
-		if (!newMissionText.equals("") && !missionTextCache.equals(newMissionText)) {
+		if (!missionTextCache.equals(newMissionText)) {
 			missionTextCache = newMissionText;
 			missionTextArea.setText(newMissionText);
 		}
 
-		if (!newMissionPhase.equals("") && !missionPhaseCache.equals(newMissionPhase)) {
+		if (!missionPhaseCache.equals(newMissionPhase)) {
 			missionPhaseCache = newMissionPhase;
 			missionPhaseTextArea.setText(newMissionPhase);
 		}

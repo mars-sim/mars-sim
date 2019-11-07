@@ -52,12 +52,7 @@ public class CompileScientificStudyResultsMeta implements MetaTask, Serializable
 
     @Override
     public double getProbability(Person person) {
-
         double result = 0D;
-        
-        ScientificStudy primaryStudy = scientificStudyManager.getOngoingPrimaryStudy(person);
-        if (primaryStudy == null)
-        	return 0;
         
         // Probability affected by the person's stress and fatigue.
         PhysicalCondition condition = person.getPhysicalCondition();
@@ -68,19 +63,10 @@ public class CompileScientificStudyResultsMeta implements MetaTask, Serializable
         if (fatigue > 1000 || stress > 50 || hunger > 500)
         	return 0;
         
-        if (person.isInVehicle()) {	
-	        // Check if person is in a moving rover.
-	        if (Vehicle.inMovingRover(person)) {
-	            return 0;
-	        } 	       
-	        else
-	        // the penalty for performing experiment inside a vehicle
-	        	result = -10;
-        }
-        
         if (person.isInside()) {
         	
 	        // Add probability for researcher's primary study (if any).
+            ScientificStudy primaryStudy = scientificStudyManager.getOngoingPrimaryStudy(person);
 	        if ((primaryStudy != null) 
         		&& ScientificStudy.PAPER_PHASE.equals(primaryStudy.getPhase())
             	&& !primaryStudy.isPrimaryPaperCompleted()) {
@@ -128,7 +114,18 @@ public class CompileScientificStudyResultsMeta implements MetaTask, Serializable
                 }
 	        }
 
-	        if (result <= 0) return 0;
+	        if (result > 0) {
+	            if (person.isInVehicle()) {	
+	    	        // Check if person is in a moving rover.
+	    	        if (Vehicle.inMovingRover(person)) {
+	    	        	result = 20;
+	    	        }
+	    	        else
+	    	        	result = 10;
+	            }
+	        }
+	        else
+	        	return 0;
 	        
 	        // Crowding modifier
             Building adminBuilding = CompileScientificStudyResults.getAvailableAdministrationBuilding(person);

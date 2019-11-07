@@ -64,11 +64,21 @@ public class TreatMedicalPatientMeta implements MetaTask, Serializable {
 //        
 //        if (fatigue > 1000 || stress > 50 || hunger > 500)
 //        	return 0;
-        
+          
         if (person.isInside()) {
 	        // Get the local medical aids to use.
 	        if (hasNeedyMedicalAids(person)) {
-	            result = 300D;	
+	            result = 200D;	
+	            
+	            if (person.isInVehicle()) {	
+	    	        // Check if person is in a moving rover.
+	    	        if (Vehicle.inMovingRover(person)) {
+	    	        	result += -50;
+	    	        } 	       
+	    	        else
+	    	        	result += 50;
+	            }
+	            
 	        }
 	
 	        // Effort-driven task modifier.

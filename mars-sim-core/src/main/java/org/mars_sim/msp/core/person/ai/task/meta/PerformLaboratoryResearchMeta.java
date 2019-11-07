@@ -13,7 +13,6 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -24,7 +23,6 @@ import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
-import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.core.structure.Lab;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
@@ -45,8 +43,6 @@ public class PerformLaboratoryResearchMeta implements MetaTask, Serializable {
 
     private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1, logger.getName().length());
 
-    private static ScientificStudyManager studyManager;
-    
     @Override
     public String getName() {
         return NAME;
@@ -62,6 +58,10 @@ public class PerformLaboratoryResearchMeta implements MetaTask, Serializable {
 
         double result = 0D;
         
+        ScientificStudy primaryStudy = scientificStudyManager.getOngoingPrimaryStudy(person);
+        if (primaryStudy == null)
+        	return 0;
+        
         if (person.isInSettlement()) {
    
             // Probability affected by the person's stress and fatigue.
@@ -74,10 +74,6 @@ public class PerformLaboratoryResearchMeta implements MetaTask, Serializable {
             	return 0;
             
 	        // Add probability for researcher's primary study (if any).
-	        if (studyManager == null)
-	        	studyManager = Simulation.instance().getScientificStudyManager();
-	        //ScientificStudyManager studyManager = Simulation.instance().getScientificStudyManager();
-	        ScientificStudy primaryStudy = studyManager.getOngoingPrimaryStudy(person);
 	        if ((primaryStudy != null) && ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase())) {
 	            if (!primaryStudy.isPrimaryResearchCompleted()) {
 	                try {
@@ -109,7 +105,7 @@ public class PerformLaboratoryResearchMeta implements MetaTask, Serializable {
 	        }
 
 	        // Add probability for each study researcher is collaborating on.
-	        Iterator<ScientificStudy> i = studyManager.getOngoingCollaborativeStudies(person).iterator();
+	        Iterator<ScientificStudy> i = scientificStudyManager.getOngoingCollaborativeStudies(person).iterator();
 	        while (i.hasNext()) {
 	            ScientificStudy collabStudy = i.next();
 	            if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase())) {

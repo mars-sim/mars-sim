@@ -86,7 +86,7 @@ public class EarthClock implements Serializable {
 		// see http://www.diffen.com/difference/GMT_vs_UTC
 
 		gregCal.setTimeZone(zone);
-		gregCal.clear();
+//		gregCal.clear();
 
 		// Set Earth clock to Martian Zero-orbit date-time.
 		// This date may need to be adjusted if it is inaccurate.
@@ -159,7 +159,6 @@ public class EarthClock implements Serializable {
 	}
 
 	public Instant getInstant() {
-//		Instant time = 
 		return gregCal.toInstant();
 	}
 	
@@ -200,7 +199,10 @@ public class EarthClock implements Serializable {
 	 * @return long
 	 */
 	public static long getMillis(EarthClock clock) {
-		long millis = clock.getCalender().getTimeInMillis();
+		long millis = 0;
+		
+		if (clock.getCalender() != null)
+			millis = clock.getCalender().getTimeInMillis();
 
 		// Instant instant =
 		// Instant.ofEpochMilli(clock.getCalender().getTimeInMillis());
@@ -315,31 +317,7 @@ public class EarthClock implements Serializable {
 	 * @param milliseconds the time to be added to the calendar
 	 */
 	public void addTime(int milliseconds) {
-		gregCal.add(Calendar.MILLISECOND, milliseconds);
-		
-//		int trucated = 0;
-//		if (milliseconds < 1) {
-//			
-//		}
-//		else {
-//			trucated = (int) (milliseconds);
-//		}
-//		
-//		double delta = milliseconds - trucated;
-//		if (leftoverCache + delta > 1) {
-//			trucated++;
-//			leftoverCache = leftoverCache + delta - 1;
-//		}
-//		else {
-//			leftoverCache += delta;
-//		}
-//		System.out.println("leftoverCache : " + leftoverCache 
-//				+ "    delta : " + delta 
-//				+ "    milliseconds : " + Math.round(milliseconds*100.0)/100.0 
-//				+ "    trucated : " + trucated);
-//
-//		gregCal.add(Calendar.MILLISECOND, trucated);
-		
+		if (gregCal != null) gregCal.add(Calendar.MILLISECOND, milliseconds);
 	}
 
 	/**

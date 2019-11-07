@@ -43,10 +43,6 @@ import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import com.alee.managers.tooltip.TooltipManager;
 import com.alee.managers.tooltip.TooltipWay;
-//import com.jidesoft.plaf.LookAndFeelFactory;
-//import com.jidesoft.swing.JideTabbedPane;
-//import org.mars_sim.msp.ui.swing.tool.JideTabbedPane;
-//import org.mars_sim.msp.ui.swing.tool.LookAndFeelFactory;
 
 
 /**
@@ -57,8 +53,8 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 
 	// private static final int BLUR_SIZE = 7;
 
-	public static final int WIDTH = 480;// 512;
-	public static final int HEIGHT = 605;//605;
+	public static final int WIDTH = 530;// 512;
+	public static final int HEIGHT = 630;//605;
 
 	// private BufferedImage image;
 	public static final String USER = Msg.getString("icon.user");
@@ -128,16 +124,16 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 		this.hasDescription = hasDescription;
 
 		if (unit instanceof Person) {
-			this.setMaximumSize(new Dimension(WIDTH, HEIGHT + 17));
-			this.setPreferredSize(new Dimension(WIDTH, HEIGHT + 17));
+			setMaximumSize(new Dimension(WIDTH, HEIGHT));
+			setPreferredSize(new Dimension(WIDTH, HEIGHT));
 		}
 		else if (unit instanceof Settlement) {
-			this.setMaximumSize(new Dimension(WIDTH, HEIGHT + 35));
-			this.setPreferredSize(new Dimension(WIDTH, HEIGHT + 35));
+			setMaximumSize(new Dimension(WIDTH, HEIGHT + 30));
+			setPreferredSize(new Dimension(WIDTH, HEIGHT + 30));
 		}
 		else if (unit instanceof Vehicle) {
-			this.setMaximumSize(new Dimension(WIDTH, HEIGHT));
-			this.setPreferredSize(new Dimension(WIDTH, HEIGHT));
+			setMaximumSize(new Dimension(WIDTH, HEIGHT - 50));
+			setPreferredSize(new Dimension(WIDTH, HEIGHT - 50));
 		}		
 
 		this.setIconifiable(false);
@@ -312,7 +308,22 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 //		tabPanel.setForeground(Color.DARK_GRAY);
 //		tabPanel.setTabPlacement(JideTabbedPane.LEFT);
 
-		tabPane = new JTabbedPane();
+		tabPane = new JTabbedPane(JTabbedPane.LEFT, JTabbedPane.SCROLL_TAB_LAYOUT); // WRAP_TAB_LAYOUT);//
+//		tabPane.setPreferredSize(new Dimension(WIDTH - 50, HEIGHT - 40));
+		if (unit instanceof Person) {
+//			setMaximumSize(new Dimension(WIDTH, HEIGHT + 25));
+			tabPane.setPreferredSize(new Dimension(WIDTH - 45, HEIGHT - 120));
+		}
+		else if (unit instanceof Settlement) {
+//			setMaximumSize(new Dimension(WIDTH, HEIGHT + 35));
+			tabPane.setPreferredSize(new Dimension(WIDTH - 45, HEIGHT - 40));
+		}
+		else if (unit instanceof Vehicle) {
+//			setMaximumSize(new Dimension(WIDTH, HEIGHT - 20));
+			tabPane.setPreferredSize(new Dimension(WIDTH - 45, HEIGHT - 120));
+		}	
+		
+//		tabPane.putClientProperty ( StyleId.STYLE_PROPERTY, StyleId.tabbedpane);
 //		tabPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
 //		UIManager.put("TabbedPane.unselectedBackground", Color.GRAY);
 //		Color bk = tabPane.getBackground();

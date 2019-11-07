@@ -892,13 +892,17 @@ public class MasterClock implements Serializable {
 					// Add time pulse to Mars clock.
 					marsClock.addTime(timePulse);
 					
+//					long t0 = System.nanoTime();
 					// Run the clock listener tasks that are in other package
 					fireClockPulse(timePulse);
+					
+//					long t1 = System.nanoTime();
+					
 					
 					millisols += timePulse;
 					if (millisols > MAX_SOLS)
 						millisols = millisols - MAX_SOLS;
-//					logger.info("millisols : " + Math.round(millisols*1000.0)/1000.0);
+//					logger.info("dt : " + (t1- t0)/1_000 + " us");
 				}
 				else {
 					// NOTE: when resuming from power saving, timePulse becomes zero

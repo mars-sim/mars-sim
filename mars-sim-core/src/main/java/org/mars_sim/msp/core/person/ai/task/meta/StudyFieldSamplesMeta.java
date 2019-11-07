@@ -68,15 +68,17 @@ public class StudyFieldSamplesMeta implements MetaTask, Serializable {
         if (fatigue > 1000 || stress > 50 || hunger > 500)
         	return 0;
         
-        if (person.isInVehicle()) {
+        if (person.isInVehicle()) {	
 	        // Check if person is in a moving rover.
 	        if (Vehicle.inMovingRover(person)) {
-	            result = -50D;
-	            return 0;
-	        }
+		        // the bonus for proposing scientific study inside a vehicle, 
+	        	// rather than having nothing to do if a person is not driving
+	        	result = 30;
+	        } 	       
 	        else
-	        // the penalty for performing experiment inside a vehicle
-	        	result = -20D;
+		        // the bonus for proposing scientific study inside a vehicle, 
+	        	// rather than having nothing to do if a person is not driving
+	        	result = 10;
         }
         
         if (person.isInside()) {
