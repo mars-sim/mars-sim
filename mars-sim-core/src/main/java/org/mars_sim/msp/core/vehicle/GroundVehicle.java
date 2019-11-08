@@ -69,10 +69,7 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
 
 		setTerrainHandlingCapability(0D); // Default terrain capability
 
-//		terrain = surface.getTerrainElevation();
-//		if (surfaceFeatures == null)
-//			surfaceFeatures = Simulation.instance().getMars().getSurfaceFeatures();
-		elevation = TerrainElevation.getPatchedElevation(getCoordinates());
+		elevation = TerrainElevation.getMOLAElevation(getCoordinates());
 	}
 
 //	/**

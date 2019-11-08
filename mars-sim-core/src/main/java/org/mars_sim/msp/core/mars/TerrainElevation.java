@@ -16,7 +16,6 @@ import org.mars_sim.mapdata.MapDataUtil;
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Direction;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
@@ -69,6 +68,7 @@ public class TerrainElevation implements Serializable {
 	 */
 //	@JsonIgnoreProperties
 	public TerrainElevation() {
+		System.out.println(new Coordinates(1.27, 0.82).toString());
 	}
 
 	/**
@@ -83,7 +83,7 @@ public class TerrainElevation implements Serializable {
 		double newY = -1.5D * currentDirection.getCosDirection();
 		double newX = 1.5D * currentDirection.getSinDirection();
 		Coordinates sampleLocation = currentLocation.convertRectToSpherical(newX, newY);
-		double elevationChange = getPatchedElevation(sampleLocation) - getPatchedElevation(currentLocation);
+		double elevationChange = getMOLAElevation(sampleLocation) - getMOLAElevation(currentLocation);
 		double result = Math.atan(elevationChange / 11.1D);
 		return result;
 	}
@@ -101,7 +101,7 @@ public class TerrainElevation implements Serializable {
 		double newY = - 1.5 * currentDirection.getCosDirection();
 		double newX = 1.5 * currentDirection.getSinDirection();
 		Coordinates sampleLocation = currentLocation.convertRectToSpherical(newX, newY);
-		double elevationChange = getPatchedElevation(sampleLocation) - elevation;
+		double elevationChange = getMOLAElevation(sampleLocation) - elevation;
 		return Math.atan(elevationChange / 11.1D);
 	}
 	
@@ -118,13 +118,13 @@ public class TerrainElevation implements Serializable {
 		double newY = - RandomUtil.getRandomDouble(1.5) * currentDirection.getCosDirection();
 		double newX = RandomUtil.getRandomDouble(1.5) * currentDirection.getSinDirection();
 		Coordinates sampleLocation = currentLocation.convertRectToSpherical(newX, newY);
-		double elevationChange = getPatchedElevation(sampleLocation) - elevation;
+		double elevationChange = getMOLAElevation(sampleLocation) - elevation;
 		return Math.atan(elevationChange / 11.1D);
 	}
 	
 	public static double[] computeTerrainProfile(CollectionSite site, Coordinates currentLocation) {
 		double steepness = 0;
-		double elevation = getPatchedElevation(currentLocation);
+		double elevation = getMOLAElevation(currentLocation);
 		for (int i=0 ; i <= 360 ; i++) {
 			double rad = i * DEG_TO_RAD;
 			steepness += Math.abs(determineTerrainSteepness(currentLocation, elevation, new Direction(rad)));
@@ -265,12 +265,36 @@ public class TerrainElevation implements Serializable {
 	}
 	
 	/**
+	 * Returns the elevation in km at the given location, based on MOLA's dataset
+	 * 
+	 * @param phi
+	 * @param theta
+	 * @return the elevation at the location (in km)
+	 */
+	public static double getMOLAElevation(double phi, double theta) {
+		return mapdata.getElevationInt(phi, theta)/ 1000.0;
+	}
+		
+	/**
+	 * Returns the elevation in km at the given location, based on MOLA's dataset
+	 * 
+	 * @param location the location in question
+	 * @return the elevation at the location (in km)
+	 */
+	public static double getMOLAElevation(Coordinates location) {
+		return mapdata.getElevationInt(location.getPhi(), location.getTheta())/ 1000.0;
+	}
+	
+	/**
 	 * Returns the patched elevation in km at the given location
 	 * 
 	 * @param location the location in question
 	 * @return the elevation at the location (in km)
 	 */
 	public static double getPatchedElevation(Coordinates location) {
+		
+//		int elevationMOLA = mapdata.getElevationInt(location.getPhi(), location.getTheta());
+		
 //		if (surfaceFeatures == null)
 //			surfaceFeatures = Simulation.instance().getMars().getSurfaceFeatures();
 //		if (surfaceFeatures.getSites().containsKey(location)) {
@@ -285,9 +309,10 @@ public class TerrainElevation implements Serializable {
 			// Patch elevation problems at certain locations.
 			double elevation = patchElevation(getRawElevation(location), location);
 	
-	//		String s3 = String.format("%10.3f ", 
-	//				Math.round(elevation*1_000.0)/1_000.0);
-	//		System.out.print(s3);
+//			String s3 = String.format("RGB Elevation : %7.3f km   MOLA Elevation : %6d m", 
+//					Math.round(elevation*1_000.0)/1_000.0,
+//					elevationMOLA);
+//			System.out.println(s3);
 			
 //			// Save the elevation
 //			site.setElevation(elevation);
@@ -321,6 +346,9 @@ public class TerrainElevation implements Serializable {
 		// Determine elevation in meters.
 		// TODO This code (calculate terrain elevation) needs updating.
 		double elevation = 0;
+		
+		
+		// The minimum and maximum topography observations for the entire data set are -8068 and 21134 meters.
 		
 //		Note 1: Color Legends at https://astropedia.astrogeology.usgs.gov/download/Mars/GlobalSurveyor/MOLA/ancillary/colorhillshade_mola_lut.gif
 //		Note 2: Lookup Table at https://user-images.githubusercontent.com/1168584/65486713-0c855b80-de5a-11e9-9777-1ed3943c433b.gif

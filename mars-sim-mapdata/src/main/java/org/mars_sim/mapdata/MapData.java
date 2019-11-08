@@ -30,4 +30,6 @@ public interface MapData {
      * @return the RGB map color.
      */
     public Color getRGBColor(double phi, double theta);
+
+	public int getElevationInt(double phi, double theta);
 }

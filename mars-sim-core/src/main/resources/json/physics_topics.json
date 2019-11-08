@@ -10,6 +10,13 @@
 			{"topic": "Symmetry Breaking of Physical Processes"}, 		
 			{"topic": "Quantum Measurement & Accuracy"}, 
 			{"topic": "Scale Invariance of SPace-time Processes"},			
+			{"topic": "Mineralogical Mapping"},
+			{"topic": "Mineralogical Distribution"},
+			{"topic": "Remote Sensing"},
+			{"topic": "Thermal Emission Spectrometer"},
+			{"topic": "Hyperspectral Spectrometer"},
+			{"topic": "Image Spectra and Spectral Angles"},			
+			{"topic": "Photogrammetry"},
 			{"topic": "Localized Gravitational Gradient"}
 	]
 }

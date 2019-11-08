@@ -445,8 +445,8 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		pack();
 	}
 
-	public void setInfoLabel(String coord, String height, String rgb, String hsb) {
-		coordLabel.setText(coord);
+	public void setInfoLabel(String coord, String height, String rgb, String hsb, double phi, double theta) {
+		coordLabel.setText(coord + "  (" + phi + ", " + theta + ")  ");
 		heightLabel.setText(height);
 		rgbLabel.setText(rgb);
 		hsbLabel.setText(hsb);
@@ -835,13 +835,15 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 			
 			Coordinates clickedPosition = mapLayerPanel.getCenterLocation().convertRectToSpherical(x, y, rho);
 
-			double e = TerrainElevation.getPatchedElevation(clickedPosition);
+			double e = TerrainElevation.getMOLAElevation(clickedPosition);
 			
 			String s0 = clickedPosition.getFormattedString() + WHITESPACES_2; 
 			String s1 = ELEVATION + Math.round(e*1000.0)/1000.0 + KM;
 			String s2 = "";
 			String s3 = "";
-			
+			double phi = Math.round(clickedPosition.getPhi()*100.0)/100.0;
+			double theta = Math.round(clickedPosition.getTheta()*100.0)/100.0;
+					
 			if (topoItem.isSelected()) {
 				int[] rgb = TerrainElevation.getRGB(clickedPosition);
 				float[] hsb = TerrainElevation.getHSB(rgb);
@@ -852,7 +854,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 						+  Math.round(hsb[2]*1000.0)/1000.0 + CLOSE_PARENT;
 			}
 			
-			setInfoLabel(s0, s1, s2, s3);
+			setInfoLabel(s0, s1, s2, s3, phi, theta);
 			
 			// System.out.println("x is " + x + " y is " + y);
 			

@@ -288,9 +288,18 @@ public class TestCoordinates extends TestCase {
      */
     public void testParseLongitude() {
         
-        String lonString1 = "0.0" + Msg.getString("direction.degreeSign") + " E";
-        double lon1 = Coordinates.parseLongitude2Theta(lonString1);
-        assertEquals(0D, lon1);
+        String lonString0 = "226.98" + Msg.getString("direction.degreeSign") + " E";
+        double lon0 = Math.round(Coordinates.parseLongitude2Theta(lonString0)*100.0)/100.0;
+        assertEquals(3.96, lon0);
+        
+        String lonString1 = "46.98" + Msg.getString("direction.degreeSign") + " E";
+        double lon1 = Math.round(Coordinates.parseLongitude2Theta(lonString1)*100.0)/100.0;
+        assertEquals(.82, lon1);
+        
+        String lonString01 = "0" + Msg.getString("direction.degreeSign") + " E";
+        double lon01 = Math.round(Coordinates.parseLongitude2Theta(lonString01)*100.0)/100.0;
+//        System.out.println("lon01 : " + lon01);
+        assertEquals(0D, lon01);
         
         String lonString2 = "90.0" + Msg.getString("direction.degreeSign") + " W";
         double lon2 = Coordinates.parseLongitude2Theta(lonString2);
@@ -317,6 +326,14 @@ public class TestCoordinates extends TestCase {
         String latString2 = "90.0" + Msg.getString("direction.degreeSign") + " S";
         double lat2 = Coordinates.parseLatitude2Phi(latString2);
         assertEquals(Math.PI, lat2);
+        
+        String latString01 = "17.23" + Msg.getString("direction.degreeSign") + " N";
+        double lat01 = Math.round(Coordinates.parseLatitude2Phi(latString01)*100.0)/100.0;
+        assertEquals(1.27, lat01);
+        
+//        String latString02 = "18.5" + Msg.getString("direction.degreeSign") + " S";
+//        double lat02 = Coordinates.parseLatitude2Phi(latString02);
+//        assertEquals(Math.PI, lat02);
         
         String latString3 = "90.0 N";
         double lat3 = Coordinates.parseLatitude2Phi(latString3);

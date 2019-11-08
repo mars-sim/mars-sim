@@ -80,6 +80,11 @@ public class SystemChatUtils extends ChatUtils {
 		topographicExcursionCoords.put(15, new String[] {"19.0949", "326.5092", "-3682"});
 	}
 	
+//	public SystemChatUtils() {
+//		StringBuffer sb = new StringBuffer();
+//		System.out.println(displayReferenceElevation(sb).toString());
+//	}
+
 	
 	/**
 	 * Asks a question in Expert Mode
@@ -527,7 +532,7 @@ public class SystemChatUtils extends ChatUtils {
 //				mars = sim.getMars();
 //			if (terrainElevation == null)
 //				terrainElevation =  mars.getSurfaceFeatures().getTerrainElevation();
-			return TerrainElevation.getPatchedElevation(new Coordinates(latitudeStr, longitudeStr));//lon, lat));
+			return TerrainElevation.getMOLAElevation(new Coordinates(latitudeStr, longitudeStr));//lon, lat));
 		} catch(IllegalStateException e) {
 			System.out.println(e);
 			return 0;
@@ -589,9 +594,15 @@ public class SystemChatUtils extends ChatUtils {
 			String s3 = String.format("%8.3f ", 
 					Math.round(pe*1_000.0)/1_000.0);
 			System.out.print(s3);
+						
+			double mola = TerrainElevation.getMOLAElevation(location);
+			
+			String s4 = String.format("%8.3f ", 
+					Math.round(mola*1_000.0)/1_000.0);
+			System.out.print(s4);
 			
 //			System.out.println("e : " + e);
-			return pe;
+			return mola;
 		} catch(IllegalStateException e) {
 			System.out.println(e);
 			return 0;
@@ -620,19 +631,19 @@ public class SystemChatUtils extends ChatUtils {
 			String lonStr = value[1];
 			String elevStr = value[2];
 			double ref = Double.parseDouble(elevStr)/1_000.0;
-//			System.out.println("ref : " + ref);
+			System.out.println("ref : " + ref);
 									
 			double e = getElevationNoDir(latStr, lonStr);
-//			System.out.println("e : " + e);
+			System.out.println("e : " + e);
 			double delta = Math.round((e-ref)/e *100_000.0)/1_000.0;
-//			System.out.println("delta : " + delta);
+			System.out.println("delta : " + delta);
 			
 			responseText.append(addWhiteSpacesLeftName(" " + topographicExcursionNames.get(i), 15));
 			responseText.append(addWhiteSpacesRightName("" + latStr, 12));
 			responseText.append(addWhiteSpacesRightName("" + lonStr, 12));
 			responseText.append(addWhiteSpacesRightName(Math.round(e *1_000.0)/1_000.0 + " km", 15));
 			responseText.append(addWhiteSpacesRightName(Math.round(ref *1_000.0)/1_000.0 + " km", 15));	
-			responseText.append(addWhiteSpacesRightName(" " + delta + " %", 10));
+			responseText.append(addWhiteSpacesRightName(" " + delta + " percent", 10));
 			responseText.append(System.lineSeparator());
 //			responseText.append("The estimated elevation of " + topographicExcursionNames.get(i) 
 //					+ " at (" + latStr + ", " + lonStr + ") is "
@@ -793,6 +804,16 @@ public class SystemChatUtils extends ChatUtils {
 			
 		}
 		
+
+	
+		else if (text.equalsIgnoreCase("excursions")) {
+	
+			responseText = displayReferenceElevation(responseText);
+			
+//			responseText.append(System.lineSeparator());
+			
+		}
+		
 		else if (text.equalsIgnoreCase("elevation")) {			
 //			responseText = displayReferenceElevation(responseText);		
 			
@@ -844,7 +865,7 @@ public class SystemChatUtils extends ChatUtils {
 				} while (!good1);
 				
 				if (good0 && good1) {
-					double elevation = terrainElevation.getPatchedElevation(new Coordinates(lat, lon));
+					double elevation = TerrainElevation.getMOLAElevation(lat, lon);
 					responseText.append(System.lineSeparator());
 					
 					String ans = "The elevation of (" + latitudeStr + ", " + longitudeStr + ") is "
@@ -1467,7 +1488,7 @@ public class SystemChatUtils extends ChatUtils {
 		for (Settlement s: collection) {
 			responseText.append(addWhiteSpacesLeftName(" " + s.getName(), 20));
 			responseText.append(addWhiteSpacesRightName(s.getCoordinates().getFormattedString(), 20));
-			double elevation = Math.round(TerrainElevation.getPatchedElevation(s.getCoordinates())*1000.0)/1000.0;
+			double elevation = Math.round(TerrainElevation.getMOLAElevation(s.getCoordinates())*1000.0)/1000.0;
 			responseText.append(addWhiteSpacesRightName(elevation +"", 13));
 			responseText.append(System.lineSeparator());
 		}

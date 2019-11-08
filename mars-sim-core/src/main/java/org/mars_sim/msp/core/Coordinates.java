@@ -134,13 +134,21 @@ public class Coordinates implements Serializable {
 	 * @param newPhi the new phi angle value for the coordinate
 	 */
 	public void setPhi(double newPhi) {
-		if (newPhi <= 0D) {
-			phi = 0D;
-		} else if (newPhi > Math.PI) {
-			phi = Math.PI;
-		} else {
-			phi = newPhi;
-		}
+//		if (newPhi <= 0D) {
+//			phi = 0D;	
+//		} else if (newPhi > Math.PI) {
+//			phi = Math.PI;
+//		} else {
+//			phi = newPhi;
+//		}
+//		
+		// Make sure phi is between 0 and PI.
+		while (newPhi > Math.PI)
+			newPhi -= Math.PI;
+		while (newPhi < 0)
+			newPhi += Math.PI;
+		phi = newPhi;
+		
 		setTrigFunctions();
 	}
 
@@ -159,11 +167,13 @@ public class Coordinates implements Serializable {
 	 * @param newTheta the new theta angle value for the coordinate
 	 */
 	public void setTheta(double newTheta) {
+		// Make sure theta is between 0 and 2 PI.
+		while (newTheta < 0D)
+			newTheta += TWO_PI; 
+		while (newTheta > TWO_PI)
+			newTheta -= TWO_PI;
 		theta = newTheta;
-		while (theta < 0D)
-			theta += TWO_PI; 
-		while (theta > TWO_PI)
-			theta -= TWO_PI;
+		
 		setTrigFunctions();
 	}
 
@@ -739,7 +749,8 @@ public class Coordinates implements Serializable {
 
 	/**
 	 * Parse a latitude string into a phi value. e.g. input: "25.344 N"
-	 * Note: North is positive (+); South is negative (-)
+	 * For latitude string: North is positive (+); South is negative (-)
+	 * For phi : it starts from the north pole (phi = 0) to the south pole (phi = PI)
 	 * 
 	 * @param latitude as string
 	 * @return phi value in radians
@@ -753,6 +764,7 @@ public class Coordinates implements Serializable {
 		if (cleanLatitude.isEmpty())
 			throw new IllegalStateException("Latitude is blank !");
 
+		// Checks if the latitude string is a pure decimal number
 		boolean pureDecimal = true;
 		
 		try {
@@ -762,7 +774,7 @@ public class Coordinates implements Serializable {
 			if (latValue >= 0)
 				latValue = 90D - latValue;
 			else
-				latValue += 90D;		
+				latValue = -90D;
 		} catch (NumberFormatException e) {
 			pureDecimal = false;
 		}
@@ -813,10 +825,17 @@ public class Coordinates implements Serializable {
 		if (cleanLongitude.isEmpty())
 			throw new IllegalStateException("Longitude is blank !");
 
+		// Checks if the longitude string is a pure decimal number
 		boolean pureDecimal = true;
 		
 		try {
-			longValue = Double.parseDouble(longitude);		
+			longValue = Double.parseDouble(longitude);
+//			if ((longValue > 360D) || (longValue < 0))
+//				throw new IllegalStateException("Longitude value out of range : " + longValue);
+//			 if ((longValue > 180D) || (longValue < 0)) {
+//			 throw new IllegalStateException("The value of longitude " + longValue + "
+//			 needs to be between 0 and 180 degrees.");
+//			 }
 			while (longValue < 0D)
 				longValue += 360; 
 			while (longValue > 360)
@@ -848,10 +867,6 @@ public class Coordinates implements Serializable {
 				throw new IllegalStateException("Invalid Longitude direction : " + directionStr);
 
 		}
-		// if ((longValue > 180D) || (longValue < 0)) {
-		// throw new IllegalStateException("The value of longitude " + longValue + "
-		// needs to be between 0 and 180 degrees.");
-		// }
 
 		double theta = DEG_TO_RADIAN * longValue;
 		return theta;

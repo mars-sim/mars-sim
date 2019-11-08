@@ -570,9 +570,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
      *  @return elevation in km.
      */
     protected double getVehicleElevation() {
-//    	if (surface == null)
-//    		surface = Simulation.instance().getMars().getSurfaceFeatures();
-        return TerrainElevation.getPatchedElevation(vehicle.getCoordinates());
+        return TerrainElevation.getMOLAElevation(vehicle.getCoordinates());
     }
     
     /**

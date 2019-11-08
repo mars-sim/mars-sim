@@ -44,12 +44,17 @@ abstract class IntegerMapData implements MapData {
 //	private List<int[]> mapColors = null;
 	private int[][] pixels = null;
 	
+	private static ReadTopo readTopo = new ReadTopo();
+
+	private static int[] elevationArray = readTopo.getElevationArray();
+	
 	/**
 	 * Constructor
 	 * 
 	 * @param mapFileName   the map data file name.
 	 */
 	public IntegerMapData(String mapFileName) {
+	
 		try {
 			// Load data files
 			pixels = loadMapData(mapFileName);
@@ -319,8 +324,12 @@ abstract class IntegerMapData implements MapData {
 		while (phi < 0)
 			phi += Math.PI;
 
-		// Add PI to theta for offset.
-		theta += Math.PI;
+		// Adjust theta with PI for the map offset.
+		// Note: the center of the map is when theta = 0
+		if (theta > Math.PI)
+			theta -= Math.PI;
+		else
+			theta += Math.PI;
 
 		// Make sure theta is between 0 and 2 PI.
 		while (theta > TWO_PI)
@@ -341,14 +350,60 @@ abstract class IntegerMapData implements MapData {
 		if (row == pixels.length)
 			row--;
 
-		int[] colorRow = pixels[row];
-		int column = (int) Math.round(theta * ((double) colorRow.length / TWO_PI));
-		if (column == colorRow.length)
+		int column = (int) Math.round(theta * ((double) pixels[0].length / TWO_PI));
+		if (column == pixels[0].length)
 			column--;
 		
-		return colorRow[column];
+		return pixels[row][column];
 	}
 
+	/**
+	 * Gets the elevation as an integer at a given location.
+	 * 
+	 * @param phi   the phi location.
+	 * @param theta the theta location.
+	 * @return the elevation as an integer.
+	 */
+	@Override
+	public int getElevationInt(double phi, double theta) {
+		// Make sure phi is between 0 and PI.
+		while (phi > Math.PI)
+			phi -= Math.PI;
+		while (phi < 0)
+			phi += Math.PI;
+
+		// Adjust theta with PI for the map offset.
+		// Note: the center of the map is when theta = 0
+		if (theta > Math.PI)
+			theta -= Math.PI;
+		else
+			theta += Math.PI;
+		
+		// Make sure theta is between 0 and 2 PI.
+		while (theta > TWO_PI)
+			theta -= TWO_PI;
+		while (theta < 0)
+			theta += TWO_PI;
+
+		int row = (int) Math.round(phi * ReadTopo.HEIGHT / Math.PI);
+		if (row == ReadTopo.HEIGHT) 
+			row--;
+
+//		int[] oneRow = new int [ReadTopo.WIDTH];
+//		for (int i=0; i<ReadTopo.WIDTH; i++) {
+//			oneRow[i] = elevationArray[row * ReadTopo.WIDTH + i];
+//		}
+		
+		int column = ReadTopo.WIDTH /2 + (int) Math.round(theta * ReadTopo.WIDTH / TWO_PI);
+//		if (column < 0)
+//			column = 0;		
+		if (column == ReadTopo.WIDTH)
+			column--;
+		
+//		return oneRow[column];
+		return elevationArray[row * ReadTopo.WIDTH + column];
+	}
+	
 	/**
 	 * Converts spherical coordinates to rectangular coordinates. Returns integer x
 	 * and y display coordinates for spherical location.

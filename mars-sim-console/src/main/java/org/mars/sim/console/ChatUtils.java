@@ -220,7 +220,8 @@ public class ChatUtils {
 		{"social", 			"how are the settlements doing socially"},
 		{"science", 		"how are the scientific studies in all settlements"},
 		{"scores", 			"what are the achievement scores"},
-		{"elevation", 		"what is the elevation of a particular location"}
+		{"elevation", 		"what is the elevation of a particular location"},
+		{"excursions", 		"what are the elevation info on some topographical excursions"}
 	};
 
 	public final static String SWITCHES = 
@@ -245,7 +246,7 @@ public class ChatUtils {
 			+ "       obtain the NAMES of the established settlements." + System.lineSeparator() + System.lineSeparator()
 			+ SWITCHES + System.lineSeparator() + SCROLL_HELP;
 
-	public final static String HELP_HEIGHT = "  Type 'y_' to change the chat box height; '/y1'-> 256 pixels (default) '/y2'->512 pixels, '/y3'->768 pixels, '/y4'->1024 pixels"
+	public final static String HELP_HEIGHT = "  Type y_ to change the chat box height; /y1 -> 256 pixels (default); /y2 -> 512 pixels; /y3 -> 768 pixels; /y4 -> 1024 pixels"
 			+ System.lineSeparator();
 
 	public final static String SYSTEM_KEYWORDS = System.lineSeparator()
@@ -365,11 +366,11 @@ public class ChatUtils {
 		
 		int size = SystemChatUtils.topographicExcursionNames.size();
 		
-		String s00 = String.format("%16s %10s %10s %10s %10s %18s %8s %10s %6s"
-				, " Location ", " Ref Elev", " phi/lat ", " theta/lon ", "RGB   ", "HSB     ", "Est. E", "Patched E", "delta" );
+		String s00 = String.format("%16s %10s %10s %10s %10s %18s %8s %10s %10s %6s"
+				, " Location ", " Ref Elev", " phi lat ", " theta/lon ", "RGB   ", "HSB     ", "Est. E", "Patched E", "MOLA E", "delta" );
 		System.out.println(s00);
-		String s01 = String.format("%16s %10s %10s %10s %10s %18s %10s %8s %8s"
-				, "          ", " [km]  ", "[rad]", " [rad] ", "  ", "  ", "[km] ", "[km] ", "[%]");
+		String s01 = String.format("%16s %10s %10s %10s %10s %18s %10s %8s %8s %8s"
+				, "          ", " [km]  ", "[rad]", " [rad] ", "  ", "  ", "[km] ", "[km] ", "[km] ", "[Percent]");
 		System.out.println(s01);
 		System.out.println(" -------------------------------------------------------------------------------------------------------------------- ");
 		
