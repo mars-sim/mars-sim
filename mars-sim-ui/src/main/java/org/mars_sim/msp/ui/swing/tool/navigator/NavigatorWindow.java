@@ -12,6 +12,7 @@ import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.awt.Image;
@@ -67,6 +68,7 @@ import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfo;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 
+import com.alee.extended.label.WebStyledLabel;
 import com.alee.extended.window.PopOverDirection;
 import com.alee.extended.window.WebPopOver;
 import com.alee.laf.button.WebButton;
@@ -95,8 +97,8 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 	public static final int HORIZONTAL_FULL = HORIZONTAL_SURFACE_MAP * 2;//800; //310; //300;// 274
 	public static final int HORIZONTAL_LEFT_HALF = HORIZONTAL_SURFACE_MAP; 
 //	public static final int VERTICAL_MINIMAP = 340; //660; //700;// 695;
-	public static final int HEIGHT_BUTTON_PANE = 25; //700;// 695;
-	public static final int HEIGHT = HORIZONTAL_SURFACE_MAP + HEIGHT_BUTTON_PANE + HEIGHT_BUTTON_PANE + 5;
+	public static final int HEIGHT_BUTTON_PANE = 26; //700;// 695;
+	public static final int HEIGHT = (int)(HORIZONTAL_SURFACE_MAP + 3.5 * HEIGHT_BUTTON_PANE);
 	
 	public static final int CB_WIDTH = 120;
 
@@ -104,14 +106,16 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 	
 	public static final String COMMA = ", ";
 	public static final String CLOSE_PARENT = ")   ";
+	public static final String OPEN_PARENT = "   (";
+
 	
 	public static final String RGB = "   RGB : (";
 	public static final String HSB = "   HSB : (";
 	
-	public static final String ELEVATION = "  Elevation : ";
-	public static final String KM = " km";
+	public static final String ELEVATION = "Elevation : ";
+	public static final String KM = " km   ";
 	
-	public static final String WHITESPACES_2 = "  ";
+	public static final String WHITESPACES_4 = "    ";
 	
 	// Data members
 	
@@ -148,10 +152,10 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 	/** Minerals button. */
 	private WebButton mineralsButton;
 	/** The info label on the status bar. */
-	private JLabel coordLabel;
-	private JLabel heightLabel;
-	private JLabel rgbLabel;
-	private JLabel hsbLabel;
+	private WebStyledLabel coordLabel;
+	private WebStyledLabel heightLabel;
+	private WebStyledLabel rgbLabel;
+	private WebStyledLabel hsbLabel;
 	
 	/** Surface map menu item. */
 	private WebCheckBoxMenuItem surfItem;
@@ -226,21 +230,21 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		JPanel contentPane = new JPanel(new BorderLayout(0, 0));
 		setContentPane(contentPane);
 		
-		// Prepare content pane
+		// Prepare whole pane
 		JPanel wholePane = new JPanel(new GridLayout(1, 2));
-		wholePane.setMaximumSize(new Dimension(HORIZONTAL_FULL + 10, HEIGHT));
+		wholePane.setPreferredSize(new Dimension(HORIZONTAL_FULL + 10, HEIGHT));
 //		wholePane.setLayout(new BoxLayout(wholePane, BoxLayout.Y_AXIS));
 		// mainPane.setBorder(new MarsPanelBorder());
 		contentPane.add(wholePane, BorderLayout.CENTER);
 
 		JPanel leftPane = new JPanel(new BorderLayout(0, 0));
-		leftPane.setMaximumSize(new Dimension(HORIZONTAL_LEFT_HALF + 5, HORIZONTAL_SURFACE_MAP + 5 + HEIGHT_BUTTON_PANE));
+		leftPane.setPreferredSize(new Dimension(HORIZONTAL_LEFT_HALF + 5, HORIZONTAL_SURFACE_MAP + 5 + HEIGHT_BUTTON_PANE));
 		wholePane.add(leftPane);
 		
 		// Prepare globe display
 		globeNav = new GlobeDisplay(this);
 		WebPanel globePane = new WebPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
-		globePane.setMaximumSize(new Dimension(HORIZONTAL_LEFT_HALF + 5, HORIZONTAL_SURFACE_MAP + 5));
+		globePane.setPreferredSize(new Dimension(HORIZONTAL_LEFT_HALF + 5, HORIZONTAL_SURFACE_MAP + 5 + HEIGHT_BUTTON_PANE));
 		globePane.setBackground(Color.black);
 		globePane.setOpaque(true);
 		globePane.setBorder(new CompoundBorder(new BevelBorder(BevelBorder.LOWERED), new LineBorder(Color.gray)));
@@ -254,13 +258,13 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 
 		
 		JPanel rightPane = new JPanel(new BorderLayout(0, 0));
-		rightPane.setMaximumSize(new Dimension(HORIZONTAL_SURFACE_MAP  + 5, HORIZONTAL_SURFACE_MAP + 5 + HEIGHT_BUTTON_PANE));
+		rightPane.setPreferredSize(new Dimension(HORIZONTAL_SURFACE_MAP  + 5, HORIZONTAL_SURFACE_MAP + 5 + HEIGHT_BUTTON_PANE));
 		wholePane.add(rightPane);
 	
 		WebPanel detailPane = new WebPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
 		rightPane.add(detailPane, BorderLayout.CENTER);
 		
-		detailPane.setMaximumSize(new Dimension(HORIZONTAL_SURFACE_MAP + 5, HORIZONTAL_SURFACE_MAP + 5));
+		detailPane.setPreferredSize(new Dimension(HORIZONTAL_SURFACE_MAP + 5, HORIZONTAL_SURFACE_MAP + 5 + HEIGHT_BUTTON_PANE));
 		// detailPane.setBorder( new CompoundBorder(new BevelBorder(BevelBorder.LOWERED), new LineBorder(Color.gray)));
 //		detailPane.setBackground(Color.black);
 //		detailPane.setOpaque(true);
@@ -270,14 +274,14 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		
 		mapPaneInner.setBorder(new CompoundBorder(new BevelBorder(BevelBorder.LOWERED), new LineBorder(Color.gray)));
 		mapPaneInner.setBackground(Color.black);
-		mapPaneInner.setMaximumSize(new Dimension(HORIZONTAL_SURFACE_MAP + 5, HORIZONTAL_SURFACE_MAP + 5));
+		mapPaneInner.setPreferredSize(new Dimension(HORIZONTAL_SURFACE_MAP + 5, HORIZONTAL_SURFACE_MAP + 5 + HEIGHT_BUTTON_PANE));
 		mapPaneInner.setOpaque(true);
 		mapPaneInner.setAlignmentX(CENTER_ALIGNMENT);
 		mapPaneInner.setAlignmentY(TOP_ALIGNMENT);
 		// mapPaneInner.setCursor(new Cursor(java.awt.Cursor.DEFAULT_CURSOR));
 
 		mapLayerPanel = new MapPanel(desktop, 500L);
-		mapLayerPanel.setMaximumSize(new Dimension(HORIZONTAL_SURFACE_MAP + 5, HORIZONTAL_SURFACE_MAP + 5));
+		mapLayerPanel.setPreferredSize(new Dimension(HORIZONTAL_SURFACE_MAP + 5, HORIZONTAL_SURFACE_MAP + 5 + HEIGHT_BUTTON_PANE));
 		mapLayerPanel.setNavWin(this);
 		mapLayerPanel.addMouseListener(new MouseListener());
 		mapLayerPanel.addMouseMotionListener(new MouseMotionListener());
@@ -314,6 +318,8 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 
 		// Prepare position entry panel
 		WebPanel coordPane = new WebPanel(new GridLayout(1, 6, 0, 0));
+		coordPane.setAlignmentX(Component.CENTER_ALIGNMENT);
+		coordPane.setAlignmentY(Component.BOTTOM_ALIGNMENT);
 //		controlPane.add(coordPane);
 		leftPane.add(coordPane, BorderLayout.SOUTH);
 		
@@ -379,9 +385,10 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 //		controlPane.add(optionsPane);
 		rightPane.add(optionsPane, BorderLayout.SOUTH);
 		
-		optionsPane.setMaximumHeight(HEIGHT_BUTTON_PANE);
+		optionsPane.setPreferredHeight(HEIGHT_BUTTON_PANE);
 //		optionsPane.setMaximumSize(new Dimension(300, HEIGHT_BUTTON_PANE));
 		optionsPane.setAlignmentX(Component.CENTER_ALIGNMENT);
+		optionsPane.setAlignmentY(Component.BOTTOM_ALIGNMENT);
 //		rightPane.add(optionsPane, BorderLayout.SOUTH);
 		
 		// Prepare location entry submit button
@@ -421,16 +428,30 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		optionsPane.add(mineralsButton);
 
 		// Create the status bar
-		statusBar = new JStatusBar();
+		statusBar = new JStatusBar(3, 3, 18);
+//		statusBar.setPreferredSize(new Dimension(HORIZONTAL_FULL + 10, 20));
 		contentPane.add(statusBar, BorderLayout.SOUTH);
-		coordLabel = new JLabel();
-		heightLabel = new JLabel();
-		rgbLabel = new JLabel();
-		hsbLabel = new JLabel();
-		statusBar.setLeftComponent(coordLabel, true);
-		statusBar.setLeftComponent(heightLabel, false);
-		statusBar.addRightComponent(rgbLabel, false, false);
-		statusBar.addRightComponent(hsbLabel, false, true);
+		
+		Font font = new Font("Times New Roman", Font.PLAIN, 12);
+
+		coordLabel = new WebStyledLabel(StyleId.styledlabelShadow);
+		coordLabel.setFont(font);
+		coordLabel.setForeground(Color.GRAY);
+		heightLabel = new WebStyledLabel(StyleId.styledlabelShadow);
+		heightLabel.setFont(font);
+		heightLabel.setForeground(Color.GRAY);
+		rgbLabel = new WebStyledLabel(StyleId.styledlabelShadow);
+		rgbLabel.setFont(font);
+		rgbLabel.setForeground(Color.GRAY);
+		hsbLabel = new WebStyledLabel(StyleId.styledlabelShadow);
+		hsbLabel.setFont(font);
+		hsbLabel.setForeground(Color.GRAY);
+        
+		statusBar.addCenterComponent(coordLabel, false);
+		statusBar.addLeftComponent(heightLabel, false);
+		statusBar.addRightComponent(rgbLabel, false);
+		statusBar.addRightComponent(hsbLabel, false);
+		statusBar.addRightCorner();
 		
 		// Create the option menu
 		if (optionsMenu == null)
@@ -446,7 +467,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 	}
 
 	public void setInfoLabel(String coord, String height, String rgb, String hsb, double phi, double theta) {
-		coordLabel.setText(coord + "  (" + phi + ", " + theta + ")  ");
+		coordLabel.setText(coord + OPEN_PARENT + phi + COMMA + theta + CLOSE_PARENT);
 		heightLabel.setText(height);
 		rgbLabel.setText(rgb);
 		hsbLabel.setText(hsb);
@@ -837,10 +858,16 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 
 			double e = TerrainElevation.getMOLAElevation(clickedPosition);
 			
-			String s0 = clickedPosition.getFormattedString() + WHITESPACES_2; 
-			String s1 = ELEVATION + Math.round(e*1000.0)/1000.0 + KM;
-			String s2 = "";
-			String s3 = "";
+			StringBuilder s0 = new StringBuilder();
+			s0.append(WHITESPACES_4).append(clickedPosition.getFormattedString()).append(WHITESPACES_4);
+			
+			StringBuilder s1 = new StringBuilder();
+			s1.append(WHITESPACES_4).append(ELEVATION).append(Math.round(e*1000.0)/1000.0).append(KM);
+			
+			StringBuilder s2 = new StringBuilder();
+			
+			StringBuilder s3 = new StringBuilder();
+			
 			double phi = Math.round(clickedPosition.getPhi()*100.0)/100.0;
 			double theta = Math.round(clickedPosition.getTheta()*100.0)/100.0;
 					
@@ -848,13 +875,14 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 				int[] rgb = TerrainElevation.getRGB(clickedPosition);
 				float[] hsb = TerrainElevation.getHSB(rgb);
 				
-				s2 = RGB + rgb[0] + COMMA + rgb[1] + COMMA + rgb[2] + CLOSE_PARENT;
-				s3 = HSB + Math.round(hsb[0]*1000.0)/1000.0 + COMMA
-						+  Math.round(hsb[1]*1000.0)/1000.0 + COMMA 
-						+  Math.round(hsb[2]*1000.0)/1000.0 + CLOSE_PARENT;
+				s2.append(RGB).append(rgb[0]).append(COMMA).append(rgb[1]).append(COMMA).append(rgb[2]).append(CLOSE_PARENT);
+				
+				s3.append(HSB).append(Math.round(hsb[0]*1000.0)/1000.0).append(COMMA)
+					.append(Math.round(hsb[1]*1000.0)/1000.0).append(COMMA)
+					.append(Math.round(hsb[2]*1000.0)/1000.0).append(CLOSE_PARENT);
 			}
 			
-			setInfoLabel(s0, s1, s2, s3, phi, theta);
+			setInfoLabel(s0.toString(), s1.toString(), s2.toString(), s3.toString(), phi, theta);
 			
 			// System.out.println("x is " + x + " y is " + y);
 			

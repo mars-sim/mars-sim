@@ -235,7 +235,8 @@ public class ProposeScientificStudy extends Task implements Serializable {
 	@Override
 	public List<SkillType> getAssociatedSkills() {
 		List<SkillType> skills = new ArrayList<SkillType>(1);
-		skills.add(study.getScience().getSkill());
+		if (study != null && study.getScience() != null)
+			skills.add(study.getScience().getSkill());
 		return skills;
 	}
 

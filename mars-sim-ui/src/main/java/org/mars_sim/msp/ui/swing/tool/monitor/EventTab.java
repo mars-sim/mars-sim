@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.notification.NotificationWindow;
 
@@ -14,6 +13,7 @@ import org.mars_sim.msp.ui.swing.notification.NotificationWindow;
  * This class represents a historical event table displayed within the Monitor
  * Window.
  */
+@SuppressWarnings("serial")
 public class EventTab extends TableTab {
 
 	/**
@@ -25,7 +25,7 @@ public class EventTab extends TableTab {
 	 */
 	public EventTab(final MonitorWindow window, NotificationWindow notifyBox, MainDesktopPane desktop) {
 		// Use TableTab constructor
-		super(window, new EventTableModel(Simulation.instance().getEventManager(), notifyBox, desktop), true, false,
+		super(window, new EventTableModel(notifyBox, desktop), true, false,
 				MonitorWindow.EVENT_ICON);
 
 	}

@@ -27,20 +27,22 @@ import org.mars_sim.msp.core.UnitManager;
 abstract public class UnitTableModel extends AbstractTableModel implements MonitorModel, UnitListener {
 
 	// Data members
-	/** Collection of units. */
-	private Collection<Unit> units;
+	/** Should it be refreshed to get the number of units. */
+	private boolean refreshSize = true;
+	/** The number of the units */
+	private int size = -1;
+
 	/** Model name. */
 	private String name;
-	/**
-	 * key for calling the internationalized text that counts the number of units.
-	 */
+	/** Key for calling the internationalized text that counts the number of units. */
 	private String countingMsgKey;
 	/** Names of the displayed columns. */
 	private String columnNames[];
+	
 	/** Types of the individual columns. */
 	private Class<?> columnTypes[];
-	private int size = -1;
-	private boolean refreshSize = true;
+	/** Collection of units. */
+	private Collection<Unit> units;
 
 	protected static UnitManager unitManager = Simulation.instance().getUnitManager();
 

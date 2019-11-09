@@ -385,7 +385,8 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @return the current phase of the task
 	 */
 	public TaskPhase getPhase() {
-		if ((subTask != null) && !subTask.done) {
+		// TODO: should it checks for subtask's phase first ?
+		if ((subTask != null) && !subTask.done && subTask.getPhase() != null) {
 			return subTask.getPhase();
 		}
 		return phase;
@@ -560,23 +561,28 @@ public abstract class Task implements Serializable, Comparable<Task> {
 				} else {
 
 					// Perform phases of task until time is up or task is done.
-					while ((timeLeft > 0D) && !isDone() && ((subTask == null) || subTask.isDone())) {
+					while ((timeLeft > 0D) && !isDone() 
+							&& getPhase() != null
+							&& ((subTask == null) || subTask.isDone())) {
+						
 						if (hasDuration) {
-
 							// Keep track of the duration of the task.
 							if ((timeCompleted + timeLeft) >= duration) {
 								double performTime = duration - timeCompleted;
 								double extraTime = timeCompleted + timeLeft - duration;
-								timeLeft = performMappedPhase(performTime) + extraTime;
+								if (getPhase() != null)
+									timeLeft = performMappedPhase(performTime) + extraTime;
 								timeCompleted = duration;
 								endTask();
 							} else {
 								double remainingTime = timeLeft;
-								timeLeft = performMappedPhase(timeLeft);
+								if (getPhase() != null)
+									timeLeft = performMappedPhase(timeLeft);
 								timeCompleted += remainingTime;
 							}
 						} else {
-							timeLeft = performMappedPhase(timeLeft);
+							if (getPhase() != null)
+								timeLeft = performMappedPhase(timeLeft);
 						}
 					}
 				}
@@ -598,16 +604,19 @@ public abstract class Task implements Serializable, Comparable<Task> {
 							if ((timeCompleted + timeLeft) >= duration) {
 								double performTime = duration - timeCompleted;
 								double extraTime = timeCompleted + timeLeft - duration;
-								timeLeft = performMappedPhase(performTime) + extraTime;
+								if (getPhase() != null)
+									timeLeft = performMappedPhase(performTime) + extraTime;
 								timeCompleted = duration;
 								endTask();
 							} else {
 								double remainingTime = timeLeft;
-								timeLeft = performMappedPhase(timeLeft);
+								if (getPhase() != null)
+									timeLeft = performMappedPhase(timeLeft);
 								timeCompleted += remainingTime;
 							}
 						} else {
-							timeLeft = performMappedPhase(timeLeft);
+							if (getPhase() != null)
+								timeLeft = performMappedPhase(timeLeft);
 						}
 					}
 				}

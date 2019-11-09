@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import javax.swing.BorderFactory;
+import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
@@ -200,7 +201,8 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 		statusPanel.add(buttonFilter);
 
 		// Create tabbed pane for the table
-		tabsSection = new WebTabbedPane();
+		tabsSection = new WebTabbedPane(WebTabbedPane.TOP, WebTabbedPane.SCROLL_TAB_LAYOUT); // WRAP_TAB_LAYOUT);//
+		
 		tabsSection.setForeground(Color.DARK_GRAY);
 		mainPane.add(tabsSection, BorderLayout.CENTER);
 		
@@ -635,16 +637,6 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 		}
 	}
 
-	/**
-	 * Prepare tool window for deletion.
-	 */
-	public void destroy() {
-		Iterator<MonitorTab> i = tabs.iterator();
-		while (i.hasNext())
-			i.next().removeTab();
-		tabs.clear();
-	}
-
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		Object source = e.getSource();
@@ -670,4 +662,39 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 		}
 	}
 
+	/**
+	 * Prepare tool window for deletion.
+	 */
+	public void destroy() {
+		Iterator<MonitorTab> i = tabs.iterator();
+		while (i.hasNext())
+			i.next().removeTab();
+		tabs.clear();
+		tabs = null;
+		tabsSection = null;
+		rowCount = null;
+		eventsTab = null;
+		oldTab = null;
+		buttonPie = null;
+		buttonBar = null;
+		buttonRemoveTab = null;
+		buttonMap = null;
+		buttonDetails = null;
+		buttonMissions = null;
+		buttonFilter = null;
+		buttonProps = null;
+
+		desktop = null;
+
+		mainWindow = null;
+
+		statusPanel = null;
+		
+		table = null;
+		rowTable = null;
+		
+		searchable = null;
+		searchBar = null;
+
+	}
 }

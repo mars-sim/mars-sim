@@ -13,10 +13,10 @@ import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 
 import org.mars_sim.msp.core.GameManager;
+import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
-import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.events.HistoricalEventCategory;
 import org.mars_sim.msp.core.events.HistoricalEventListener;
@@ -106,17 +106,17 @@ public class EventTableModel extends AbstractTableModel
 //	private transient List<HistoricalEvent> cachedEvents = new ArrayList<HistoricalEvent>();
 	private transient List<SimpleEvent> cachedEvents = new ArrayList<>();
 
-	private static HistoricalEventManager eventManager;
 	private static UnitManager unitManager = Simulation.instance().getUnitManager();
-
+	private static HistoricalEventManager eventManager = Simulation.instance().getEventManager();
+	
 	/**
 	 * constructor. Create a new Event model based on the specified event manager.
 	 * 
 	 * @param manager   Manager to extract events from.
 	 * @param notifyBox to present notification message to user.
 	 */
-	public EventTableModel(HistoricalEventManager manager, NotificationWindow notifyBox, MainDesktopPane desktop) {
-		this.eventManager = manager;
+	public EventTableModel(NotificationWindow notifyBox, MainDesktopPane desktop) {
+
 		this.notifyBox = notifyBox;
 		this.desktop = desktop;
 
@@ -126,7 +126,7 @@ public class EventTableModel extends AbstractTableModel
 		updateCachedEvents();
 
 		// Add this model as an event listener.
-		manager.addListener(this);
+		eventManager.addListener(this);
 
 //		appIconSet.put(0, icon_mal);
 //		appIconSet.put(1, icon_med);

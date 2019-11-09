@@ -10,6 +10,7 @@ package org.mars_sim.msp.ui.swing;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
@@ -38,7 +39,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -65,6 +65,7 @@ import com.alee.extended.statusbar.WebMemoryBar;
 //import com.alee.managers.UIManagers;
 import com.alee.laf.WebLookAndFeel;
 import com.alee.laf.panel.WebPanel;
+import com.alee.laf.window.WebFrame;
 import com.alee.managers.UIManagers;
 import com.alee.managers.language.LanguageManager;
 import com.alee.managers.style.StyleId;
@@ -106,7 +107,7 @@ extends JComponent {
 
 	public ThemeType defaultThemeType = ThemeType.NIMBUS;//WEBLAF;
 
-	private static JFrame frame;
+	private static WebFrame frame;
 
 	// Data members
 	private boolean useDefault = true;
@@ -173,10 +174,12 @@ extends JComponent {
 		initializeTheme();
 		
 		// Set up the frame
-		frame = new JFrame();
+		frame = new WebFrame();//StyleId.rootpane);
 		frame.setSize(new Dimension(WIDTH, HEIGHT));
 		frame.setResizable(false);
 
+//		frame.setIconImages(WebLookAndFeel.getImages());
+		
 		// Disable the close button on top right
 //		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		
@@ -192,18 +195,24 @@ extends JComponent {
 		desktop = new MainDesktopPane(this);
 
 		// Initialize UI elements for the frame
-		init();
+		EventQueue.invokeLater(new Runnable(){
+	        public void run() {
+	        	init();    
+	        	
+	    		// Set up timers for use on the status bar
+	    		setupDelayTimer();
 
-		// Set up timers for use on the status bar
-		setupDelayTimer();
+	    		// Show frame
+//	    		frame.pack();
+	    		frame.setLocationRelativeTo(null);
+	    		frame.setVisible(true);
 
-		// Show frame
-//		frame.pack();
-		frame.setLocationRelativeTo(null);
-		frame.setVisible(true);
+	        }
+	    });  
 
 		// Open all initial windows.
 		desktop.openInitialWindows();
+
 
 		// Set up timers for caching the settlement windows
 //		setupSettlementWindowTimer();
@@ -332,7 +341,7 @@ extends JComponent {
 		unitToolbar.setVisible(false);
 		
 		// Create the status bar
-		statusBar = new JStatusBar();
+		statusBar = new JStatusBar(1, 1, 28);
 
 		if (earthClock == null) {
 			if (masterClock == null)
@@ -369,7 +378,7 @@ extends JComponent {
 //	              NotificationManager.showInnerNotification ( dateField, notification );
 //	          }
 //	      });
-		statusBar.setLeftComponent(dateField, true);
+		statusBar.addLeftComponent(dateField, true);
 		
 //		earthTimeLabel = new JLabel();
 //		earthTimeLabel.setFont(font);
@@ -387,7 +396,7 @@ extends JComponent {
 		solLabel.setVerticalAlignment(JLabel.CENTER);
 		TooltipManager.setTooltip(solLabel, "# of sols since the beginning of the sim", TooltipWay.up);
 //		statusBar.add(solLabel, 0);
-		statusBar.setLeftComponent(solLabel, true);
+		statusBar.addLeftComponent(solLabel, true);
 		
 		font = new Font("Arial", Font.BOLD, 12);
 		
@@ -397,7 +406,7 @@ extends JComponent {
 		marsTimeLabel.setHorizontalAlignment(JLabel.CENTER);
 		marsTimeLabel.setVerticalAlignment(JLabel.CENTER);
 		TooltipManager.setTooltip(marsTimeLabel, "Mars Timestamp", TooltipWay.up);
-		statusBar.setLeftComponent(marsTimeLabel, true);
+		statusBar.addLeftComponent(marsTimeLabel, true);
 		
 		// Track the sleep time per frame
 //		if (masterClock == null)
@@ -416,7 +425,8 @@ extends JComponent {
 		bar.setRefreshRate(3000);
 //		memoryLabel.add(bar);
 //		TooltipManager.setTooltip(bar, "Memory Usage", TooltipWay.up);
-		statusBar.addRightComponent(bar, false, true); //true, false);
+		statusBar.addRightComponent(bar, false);
+		statusBar.addRightCorner();
 		
 //		memUsedLabel = new JLabel();
 //		memUsedLabel.setHorizontalAlignment(JLabel.RIGHT);
@@ -533,7 +543,7 @@ extends JComponent {
 	 * 
 	 * @return the frame.
 	 */
-	public JFrame getFrame() {
+	public WebFrame getFrame() {
 		return frame;
 	}
 
@@ -839,21 +849,20 @@ extends JComponent {
 	}
 
 	public void initializeWeblaf() {
-//		if (choice0 == ThemeType.WEBLAF) {
+
 		try {
 			// use the weblaf skin
 //			UIManager.setLookAndFeel(new WebLookAndFeel());
 //				WebLookAndFeel.setForceSingleEventsThread ( true );
 			WebLookAndFeel.install();
 			UIManagers.initialize();
-//				changed = true;
-
-//				logger.config(UIManager.getLookAndFeel().getName() + " is used in MainWindow.");
+            // They contain all custom styles demo application uses
+//            StyleManager.addExtensions ( new AdaptiveExtension (), new LightSkinExtension (), new DarkSkinExtension () );
 
 		} catch (Exception e) {
 			logger.log(Level.WARNING, Msg.getString("MainWindow.log.lookAndFeelError"), e); //$NON-NLS-1$
 		}
-//		}
+
 	}
 
 	/**

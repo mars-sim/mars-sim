@@ -9,9 +9,8 @@ package org.mars_sim.msp.ui.swing.tool.settlement;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.util.Formatter;
+import java.awt.Font;
 
-import javax.swing.JLabel;
 import javax.swing.JLayer;
 import javax.swing.WindowConstants;
 import javax.swing.plaf.LayerUI;
@@ -20,11 +19,13 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.tool.JStatusBar;
 import org.mars_sim.msp.ui.swing.tool.SpotlightLayerUI;
 import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
 
+import com.alee.extended.label.WebStyledLabel;
+import com.alee.extended.statusbar.WebStatusBar;
 import com.alee.laf.panel.WebPanel;
+import com.alee.managers.style.StyleId;
 
 /**
  * The SettlementWindow is a tool window that displays the Settlement Map Tool.
@@ -47,8 +48,8 @@ public class SettlementWindow extends ToolWindow {
 	public static final String WHITESPACES_2 = "  ";
 	public static final String COMMA = ", ";
 	public static final String CLOSE_PARENT = ")  ";
-	public static final String WITHIN_BLDG = "  Within Building : (";
-	public static final String SETTLEMENT_MAP = "  Settlement Map : (";
+	public static final String WITHIN_BLDG = "  Building : (";
+	public static final String SETTLEMENT_MAP = "  Panel : (";
 
 
 	// public static final String MILLISOLS_UMST = " millisols (UMST) ";
@@ -60,13 +61,13 @@ public class SettlementWindow extends ToolWindow {
 //	private DoubleProperty width = new SimpleDoubleProperty(HORIZONTAL);
 //	private DoubleProperty height = new SimpleDoubleProperty(VERTICAL);
 
-	private JLabel buildingXYLabel;
-	private JLabel mapXYLabel;
-	private JLabel popLabel;
+	private WebStyledLabel buildingXYLabel;
+	private WebStyledLabel mapXYLabel;
+	private WebStyledLabel popLabel;
 	private WebPanel subPanel;
 	
 	/** The status bar. */
-	private JStatusBar statusBar;
+	private WebStatusBar statusBar;
 	/** The main desktop. */
 	private MainDesktopPane desktop;
 	/** Map panel. */
@@ -111,17 +112,30 @@ public class SettlementWindow extends ToolWindow {
 		setContentPane(mainPanel);
 
 		// Creates the status bar for showing the x/y coordinates and population
-        statusBar = new JStatusBar();
+        statusBar = new WebStatusBar();//JStatusBar(3, 3, 18);
         mainPanel.add(statusBar, BorderLayout.SOUTH);
 
-        popLabel = new JLabel();
-	    buildingXYLabel = new JLabel();
-	    mapXYLabel = new JLabel();
+		Font font = new Font("Times New Roman", Font.BOLD, 12);
+
+        popLabel = new WebStyledLabel(StyleId.styledlabelShadow);
+        popLabel.setFont(font);
+        popLabel.setForeground(Color.GRAY);
+	    buildingXYLabel = new WebStyledLabel(StyleId.styledlabelShadow);
+	    buildingXYLabel.setFont(font);
+	    buildingXYLabel.setForeground(Color.GRAY);
+	    mapXYLabel = new WebStyledLabel(StyleId.styledlabelShadow);
+	    mapXYLabel.setFont(font);
+	    mapXYLabel.setForeground(Color.GRAY);
 	    
-        statusBar.setLeftComponent(popLabel, true);
-        statusBar.setLeftComponent(mapXYLabel, false);   
-        statusBar.addRightComponent(buildingXYLabel, false, true);
- 
+//        statusBar.addLeftComponent(mapXYLabel, false);  
+//        statusBar.addCenterComponent(popLabel, false);
+//        statusBar.addRightComponent(buildingXYLabel, false);
+//		statusBar.addRightCorner();
+        statusBar.add(mapXYLabel);  
+        statusBar.addToMiddle(popLabel);
+        statusBar.addToEnd(buildingXYLabel);
+//		statusBar.addRightCorner();
+		
         // Create subPanel for housing the settlement map
 		subPanel = new WebPanel(new BorderLayout());
 		mainPanel.add(subPanel, BorderLayout.CENTER);

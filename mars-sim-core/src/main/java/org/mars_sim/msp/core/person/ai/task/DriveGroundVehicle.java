@@ -185,9 +185,9 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 		time = super.performMappedPhase(time);
 
 		if (getPhase() == null) {
-			throw new IllegalArgumentException("Task phase is null");
+//			throw new IllegalArgumentException("Task phase is null");
 //			endTask();
-//			return time;
+			return 0;
 		} else if (AVOID_OBSTACLE.equals(getPhase())) {
 			return obstaclePhase(time);
 		} else if (WINCH_VEHICLE.equals(getPhase())) {

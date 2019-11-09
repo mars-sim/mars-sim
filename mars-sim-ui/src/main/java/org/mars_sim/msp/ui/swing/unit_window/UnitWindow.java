@@ -41,6 +41,7 @@ import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
+import com.alee.laf.tabbedpane.WebTabbedPane;
 import com.alee.managers.tooltip.TooltipManager;
 import com.alee.managers.tooltip.TooltipWay;
 
@@ -308,7 +309,7 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 //		tabPanel.setForeground(Color.DARK_GRAY);
 //		tabPanel.setTabPlacement(JideTabbedPane.LEFT);
 
-		tabPane = new JTabbedPane(JTabbedPane.LEFT, JTabbedPane.SCROLL_TAB_LAYOUT); // WRAP_TAB_LAYOUT);//
+		tabPane = new WebTabbedPane(WebTabbedPane.LEFT, WebTabbedPane.SCROLL_TAB_LAYOUT); // WRAP_TAB_LAYOUT);//
 //		tabPane.setPreferredSize(new Dimension(WIDTH - 50, HEIGHT - 40));
 		if (unit instanceof Person) {
 //			setMaximumSize(new Dimension(WIDTH, HEIGHT + 25));

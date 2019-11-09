@@ -45,11 +45,6 @@ public class TeachMeta implements MetaTask, Serializable {
     @Override
     public double getProbability(Person person) {
 
-        // Find potential students.
-        Collection<Person> potentialStudents = Teach.getBestStudents(person);
-        if (potentialStudents.size() == 0)
-        	return 0;
-
         double result = 0D;
 
         if (person.isInside()) {
@@ -63,7 +58,12 @@ public class TeachMeta implements MetaTask, Serializable {
             if (fatigue > 1000 || stress > 75 || hunger > 750)
             	return 0;          
 
-	        if (potentialStudents.size() > 0) {
+            // Find potential students.
+            Collection<Person> potentialStudents = Teach.getBestStudents(person);
+            if (potentialStudents.size() == 0)
+            	return 0;
+
+            else {
 
 	            result = potentialStudents.size() * 20D;
 
@@ -91,7 +91,7 @@ public class TeachMeta implements MetaTask, Serializable {
 
                 }
                 
-    	        // 2015-06-07 Added Preference modifier
+    	        // Add Preference modifier
     	        if (result > 0)
     	         	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
     	    	

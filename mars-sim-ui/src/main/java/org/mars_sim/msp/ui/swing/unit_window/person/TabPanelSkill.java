@@ -156,8 +156,10 @@ extends TabPanel {
 		if (!uiDone)
 			initializeUI();
 		
-		TableStyle.setTableStyle(skillTable);
-		skillTableModel.update();
+		if (skillTable != null) {
+			TableStyle.setTableStyle(skillTable);
+			skillTableModel.update();
+		}
 	}
 
 	/**

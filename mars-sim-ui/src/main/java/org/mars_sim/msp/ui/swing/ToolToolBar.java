@@ -6,21 +6,18 @@
  */
 package org.mars_sim.msp.ui.swing;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Vector;
 
-import javax.swing.Box;
-import javax.swing.JPanel;
 import javax.swing.JToolBar;
 import javax.swing.border.BevelBorder;
 
 import org.mars_sim.msp.core.GameManager;
 import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.swing.tool.commander.CommanderWindow;
 import org.mars_sim.msp.ui.swing.tool.guide.GuideWindow;
 import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
@@ -32,12 +29,15 @@ import org.mars_sim.msp.ui.swing.tool.search.SearchWindow;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
 import org.mars_sim.msp.ui.swing.tool.time.TimeWindow;
 
+import com.alee.laf.toolbar.WebToolBar;
+import com.alee.managers.style.StyleId;
+
 /**
  * The ToolToolBar class is a UI toolbar for holding tool buttons. There should
  * only be one instance and it is contained in the {@link MainWindow} instance.
  */
 public class ToolToolBar
-extends JToolBar
+extends WebToolBar
 implements ActionListener {
 
 	/** default serial id. */
@@ -45,9 +45,8 @@ implements ActionListener {
 
 //	private static final int ICON_H = 16;
 //	private static final int ICON_W = 16;
-	private static final int EMPTY_W = GameManager.mode == GameMode.COMMAND  ? MainWindow.WIDTH - (15 + 4) * 18 - 330 : MainWindow.WIDTH - (15 + 4) * 18 - 300;//735;
-	private static final int EMPTY_H = 32;
-	
+//	private static final int EMPTY_W = GameManager.mode == GameMode.COMMAND  ? MainWindow.WIDTH - (15 + 4) * 18 - 330 : MainWindow.WIDTH - (15 + 4) * 18 - 300;//735;
+//	private static final int EMPTY_H = 32;
 	
 	// Data members
 	/** List of tool buttons. */
@@ -55,7 +54,7 @@ implements ActionListener {
 	/** Main window that contains this toolbar. */
 	private MainWindow parentMainWindow;
 	
-	private MasterClock masterClock;
+//	private MasterClock masterClock;
 
 	/**
 	 * Constructs a ToolToolBar object
@@ -66,21 +65,26 @@ implements ActionListener {
 		// Use JToolBar constructor
 		super(JToolBar.HORIZONTAL);
 
+		setStyleId(StyleId.toolbarAttachedNorth);
+		
 		// Initialize data members
-		masterClock = Simulation.instance().getMasterClock();
+//		masterClock = Simulation.instance().getMasterClock();
 		
 		// Initialize data members
 		toolButtons = new Vector<ToolButton>();
 		this.parentMainWindow = parentMainWindow;
-
+		
 		// Set name
 		setName(Msg.getString("ToolToolBar.toolbar")); //$NON-NLS-1$
-
 		// Fix tool bar
 		setFloatable(false);
 
 		setPreferredSize(new Dimension(0, 32));
 
+		setOpaque(false);
+		
+		setBackground(new Color(0,0,0,128));
+		
 		// Prepare tool buttons
 		prepareToolButtons();
 
@@ -90,8 +94,6 @@ implements ActionListener {
           
 	/** Prepares tool buttons */
 	private void prepareToolButtons() {
-
-		// Add utilise buttons
 
 		ToolButton openButton = new ToolButton(Msg.getString("mainMenu.open"), Msg.getString("img.open")); //$NON-NLS-1$ //$NON-NLS-2$
 		openButton.addActionListener(new ActionListener() {
@@ -192,68 +194,73 @@ implements ActionListener {
 			toolButtons.addElement(dashboardButton);
 		}
 		
-		
-		addSeparator();
+//		addSeparator();
+
+	    // Skin chooser combobox
+//        addToEnd(new SkinChooserTool());
+        
+//		addSeparator();
 
 		// Add guide button
 		ToolButton guideButton = new ToolButton(GuideWindow.NAME, Msg.getString("img.guide")); //$NON-NLS-1$
 		guideButton.addActionListener(this);
-		add(guideButton);
+		addToEnd(guideButton);
 		toolButtons.addElement(guideButton);
 
 		addSeparator();
 
-		JPanel emptyPanel = new JPanel();
-		emptyPanel.setPreferredSize(new Dimension(EMPTY_W, EMPTY_H));
-		add(emptyPanel);
+//		JPanel emptyPanel = new JPanel();
+//		emptyPanel.setPreferredSize(new Dimension(EMPTY_W, EMPTY_H));
+//		add(emptyPanel);
 		 
-		add(Box.createGlue());
+//		add(Box.createGlue());
+//		
+//		addSeparator();
 		
-		addSeparator();
+//		ToolButton slowDownButton = new ToolButton("Slow Down", Msg.getString("img.speed.slowDown")); //$NON-NLS-1$ //$NON-NLS-2$
+////		slowDownButton.setPreferredSize(new Dimension(ICON_W, ICON_H));
+//		slowDownButton.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent e) {
+//				int ratio = (int)masterClock.getTimeRatio();
+//				if (ratio >= 2)
+//					masterClock.setTimeRatio(ratio/2.0);
+//			};
+//		});
+//		add(slowDownButton);
+//
+//		ToolButton pauseButton = new ToolButton("Pause", Msg.getString("img.speed.pause")); //$NON-NLS-1$ //$NON-NLS-2$
+////		pauseButton.setPreferredSize(new Dimension(ICON_W, ICON_H));
+//		pauseButton.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent e) {
+//				if (!masterClock.isPaused())
+//					masterClock.setPaused(true, false);
+//			};
+//		});
+//		add(pauseButton);
+//		
+//		
+//		ToolButton resumeButton = new ToolButton("Resume", Msg.getString("img.speed.play")); //$NON-NLS-1$ //$NON-NLS-2$
+////		resumeButton.setPreferredSize(new Dimension(ICON_W, ICON_H));
+//		resumeButton.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent e) {
+//				if (masterClock.isPaused())
+//					masterClock.setPaused(false, false);
+//			};
+//		});
+//		add(resumeButton);
+//		
+//		ToolButton speedUpButton = new ToolButton("Speed Up", Msg.getString("img.speed.speedUp")); //$NON-NLS-1$ //$NON-NLS-2$
+////		speedUpButton.setPreferredSize(new Dimension(ICON_W, ICON_H));
+//		speedUpButton.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent e) {
+//				int ratio = (int)masterClock.getTimeRatio();
+//				if (ratio <= 4096)
+//					masterClock.setTimeRatio(ratio*2.0);
+//			};
+//		});
+//		add(speedUpButton);
 		
-		ToolButton slowDownButton = new ToolButton("Slow Down", Msg.getString("img.speed.slowDown")); //$NON-NLS-1$ //$NON-NLS-2$
-//		slowDownButton.setPreferredSize(new Dimension(ICON_W, ICON_H));
-		slowDownButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				int ratio = (int)masterClock.getTimeRatio();
-				if (ratio >= 2)
-					masterClock.setTimeRatio(ratio/2.0);
-			};
-		});
-		add(slowDownButton);
-
-		ToolButton pauseButton = new ToolButton("Pause", Msg.getString("img.speed.pause")); //$NON-NLS-1$ //$NON-NLS-2$
-//		pauseButton.setPreferredSize(new Dimension(ICON_W, ICON_H));
-		pauseButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (!masterClock.isPaused())
-					masterClock.setPaused(true, false);
-			};
-		});
-		add(pauseButton);
-		
-		
-		ToolButton resumeButton = new ToolButton("Resume", Msg.getString("img.speed.play")); //$NON-NLS-1$ //$NON-NLS-2$
-//		resumeButton.setPreferredSize(new Dimension(ICON_W, ICON_H));
-		resumeButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (masterClock.isPaused())
-					masterClock.setPaused(false, false);
-			};
-		});
-		add(resumeButton);
-		
-		ToolButton speedUpButton = new ToolButton("Speed Up", Msg.getString("img.speed.speedUp")); //$NON-NLS-1$ //$NON-NLS-2$
-//		speedUpButton.setPreferredSize(new Dimension(ICON_W, ICON_H));
-		speedUpButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				int ratio = (int)masterClock.getTimeRatio();
-				if (ratio <= 4096)
-					masterClock.setTimeRatio(ratio*2.0);
-			};
-		});
-		add(speedUpButton);
-		
+//		addToEnd(new MagnifierToggleTool(parentMainWindow.getFrame()) );
 	}
 
 	/** ActionListener method overridden */

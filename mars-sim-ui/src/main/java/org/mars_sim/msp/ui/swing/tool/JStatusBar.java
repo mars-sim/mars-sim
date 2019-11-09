@@ -24,71 +24,130 @@ public class JStatusBar extends TexturedPanel {
 	
     private static final long serialVersionUID = 1L;
     	   
-	public static final int HEIGHT = 30;
-	
+
 	private static final Color antiqueBronze = new Color(102,93,30,128);
 	private static final Color almond = new Color(239,222,205,128);
 	private static final Color cafeNoir = new Color(75,54,33,128);
 	
-//	public JPanel contentPanel;
-	//public FormLayout layout;
+	public int height = 25;
+	private int leftPadding;
+	private int rightPadding;
+	
     protected JPanel leftPanel;
     protected JPanel rightPanel;
+    protected JPanel centerPanel;
     	 
-    public JStatusBar() {
+    public JStatusBar(int leftPadding, int rightPadding, int barHeight) { 
+    	if (barHeight != 0) 
+    		height = barHeight;
+    	if (leftPadding != 0)
+    		leftPadding = 1;
+    	if (rightPadding != 0)
+    		rightPadding = 1;
+    	this.leftPadding = leftPadding;
+    	this.rightPadding = rightPadding;
+    	
     	createPartControl();
     	//setOpaque(false);
     	//setBackground(new Color(0,0,0,128));
     }
     	 
     protected void createPartControl() {    
-
+    	
 		setOpaque(false);
 		setBackground(almond);
 		
         setLayout(new BorderLayout());
-        setPreferredSize(new Dimension(getWidth(), HEIGHT));
+        setPreferredSize(new Dimension(getWidth(), height));
  
         leftPanel = new JPanel(new FlowLayout(
-                FlowLayout.LEADING, 3, 1));
-        leftPanel.setAlignmentX(.5F);
-        leftPanel.setAlignmentY(.5F);
-        leftPanel.setOpaque(false);
-		leftPanel.setBackground(new Color(0,0,0,128));
+                FlowLayout.LEADING, 3, 0));
+//        leftPanel.setAlignmentX(.5F);
+//        leftPanel.setAlignmentY(.5F);
+//        leftPanel.setOpaque(false);
+//		leftPanel.setBackground(new Color(0,0,0,128));
         add(leftPanel, BorderLayout.WEST);
         
+        centerPanel = new JPanel(new FlowLayout(
+                FlowLayout.CENTER, 3, 0));
+//        centerPanel.setAlignmentX(.5F);
+//        centerPanel.setAlignmentY(.5F);
+//        centerPanel.setOpaque(false);
+//        centerPanel.setBackground(new Color(0,0,0,128));
+        add(centerPanel, BorderLayout.CENTER);
+        
         rightPanel = new JPanel(new FlowLayout(
-                FlowLayout.TRAILING, 3, 2));
-        rightPanel.setAlignmentX(.5F);
-        rightPanel.setAlignmentY(.5F);
-        rightPanel.setOpaque(false);
-		rightPanel.setBackground(new Color(0,0,0,128));
+                FlowLayout.TRAILING, 3, 0));
+//        rightPanel.setAlignmentX(.5F);
+//        rightPanel.setAlignmentY(.5F);
+//        rightPanel.setOpaque(false);
+//		rightPanel.setBackground(new Color(0,0,0,128));
         add(rightPanel, BorderLayout.EAST);
         
-        leftPanel.setOpaque(false);
-        leftPanel.setBackground(almond);
+//        JLabel label = new JLabel(new AngledLinesWindowsCornerIcon());
+//        label.setAlignmentX(1F);
+//        label.setAlignmentY(1F);
+//        add(label);
         
-        rightPanel.setOpaque(false);
-        rightPanel.setBackground(almond);
+//        leftPanel.setOpaque(false);
+//        leftPanel.setBackground(almond);
+//        
+//        centerPanel.setOpaque(false);
+//        centerPanel.setBackground(almond);
+//        
+//        rightPanel.setOpaque(false);
+//        rightPanel.setBackground(almond);
     }
-
     
-    public void addRightComponent(JComponent component, boolean separator, boolean cornerIcon) {
-        JPanel panel = new JPanel(new FlowLayout(
-                FlowLayout.LEADING, 0, 0));
+    public void addLeftComponent(JComponent component, boolean separator) {
+    	JPanel panel = new JPanel(new FlowLayout(
+                FlowLayout.LEADING, 0, leftPadding));
+//        panel.setOpaque(false);
+//        panel.setBackground(almond);
         if (separator) 
         	panel.add(new SeparatorPanel(Color.GRAY, Color.WHITE));
         panel.add(component);
-        if (cornerIcon) 
-        	panel.add(new JLabel(new AngledLinesWindowsCornerIcon()), true);
+        leftPanel.add(panel);
+    }
+    
+    public void addCenterComponent(JComponent component, boolean separator) {
+    	JPanel panel = new JPanel(new FlowLayout(
+                FlowLayout.LEADING, 0, leftPadding));
+//      panel.setOpaque(false);
+//      panel.setBackground(almond);
+        if (separator) 
+        	panel.add(new SeparatorPanel(Color.GRAY, Color.WHITE));
+        panel.add(component);
+        centerPanel.add(panel);
+    }
+    
+    
+    public void addRightComponent(JComponent component, boolean separator) {
+        JPanel panel = new JPanel(new FlowLayout(
+                FlowLayout.LEADING, 0, rightPadding));
+//        panel.setOpaque(false);
+//        panel.setBackground(almond);
+        if (separator) 
+        	panel.add(new SeparatorPanel(Color.GRAY, Color.WHITE));
+        panel.add(component);
         rightPanel.add(panel);
     }
     
-    public void setLeftComponent(JComponent component, boolean separator) {
-        leftPanel.add(component);
-        if (separator) 
-        	leftPanel.add(new SeparatorPanel(Color.GRAY, Color.WHITE));
-        
+    public void addRightCorner() {
+        JPanel panel = new JPanel(new FlowLayout(
+                FlowLayout.TRAILING, 0, 0));
+//        panel.setOpaque(false);
+//        panel.setBackground(almond);
+        JLabel label = new JLabel(new AngledLinesWindowsCornerIcon());
+//        label.setAlignmentX(1F);
+//        label.setAlignmentY(1F);
+        panel.setAlignmentX(1F);
+        panel.setAlignmentY(1F);
+        label.setHorizontalAlignment(JLabel.RIGHT);
+        label.setVerticalAlignment(JLabel.BOTTOM);
+        panel.add(label);
+        rightPanel.add(panel);
+//        rightPanel.add(label);
     }
     
     @Override
