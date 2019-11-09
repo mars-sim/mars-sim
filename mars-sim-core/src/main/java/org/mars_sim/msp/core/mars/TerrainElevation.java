@@ -68,7 +68,7 @@ public class TerrainElevation implements Serializable {
 	 */
 //	@JsonIgnoreProperties
 	public TerrainElevation() {
-		System.out.println(new Coordinates(1.27, 0.82).toString());
+//		System.out.println(new Coordinates(1.27, 0.82).toString());
 	}
 
 	/**

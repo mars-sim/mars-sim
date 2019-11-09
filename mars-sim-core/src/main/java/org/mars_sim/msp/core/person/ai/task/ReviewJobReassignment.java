@@ -141,7 +141,7 @@ public class ReviewJobReassignment extends Task implements Serializable {
 	 */
 	private double reviewingPhase(double time) {
 		// Iterates through each person
-		Iterator<Person> i = person.getSettlement().getAllAssociatedPeople().iterator();
+		Iterator<Person> i = person.getAssociatedSettlement().getAllAssociatedPeople().iterator();
 		while (i.hasNext()) {
 			Person tempPerson = i.next();
 			List<JobAssignment> list = tempPerson.getJobHistory().getJobAssignmentList();

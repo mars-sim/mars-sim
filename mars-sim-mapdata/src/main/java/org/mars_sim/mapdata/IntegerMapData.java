@@ -44,7 +44,7 @@ abstract class IntegerMapData implements MapData {
 //	private List<int[]> mapColors = null;
 	private int[][] pixels = null;
 	
-	private static ReadTopo readTopo = new ReadTopo();
+	private static MEGDRMapReader readTopo = new MEGDRMapReader();
 
 	private static int[] elevationArray = readTopo.getElevationArray();
 	
@@ -385,23 +385,17 @@ abstract class IntegerMapData implements MapData {
 		while (theta < 0)
 			theta += TWO_PI;
 
-		int row = (int) Math.round(phi * ReadTopo.HEIGHT / Math.PI);
-		if (row == ReadTopo.HEIGHT) 
+		int row = (int) Math.round(phi * MEGDRMapReader.HEIGHT / Math.PI);
+		if (row == MEGDRMapReader.HEIGHT) 
 			row--;
-
-//		int[] oneRow = new int [ReadTopo.WIDTH];
-//		for (int i=0; i<ReadTopo.WIDTH; i++) {
-//			oneRow[i] = elevationArray[row * ReadTopo.WIDTH + i];
-//		}
 		
-		int column = ReadTopo.WIDTH /2 + (int) Math.round(theta * ReadTopo.WIDTH / TWO_PI);
+		int column = MEGDRMapReader.WIDTH /2 + (int) Math.round(theta * MEGDRMapReader.WIDTH / TWO_PI);
 //		if (column < 0)
 //			column = 0;		
-		if (column == ReadTopo.WIDTH)
+		if (column == MEGDRMapReader.WIDTH)
 			column--;
-		
-//		return oneRow[column];
-		return elevationArray[row * ReadTopo.WIDTH + column];
+
+		return elevationArray[row * MEGDRMapReader.WIDTH + column];
 	}
 	
 	/**
