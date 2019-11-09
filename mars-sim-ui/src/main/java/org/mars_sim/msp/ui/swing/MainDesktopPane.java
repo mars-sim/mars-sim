@@ -573,9 +573,9 @@ public class MainDesktopPane extends JDesktopPane
 						if (toolName.equals(TimeWindow.NAME))
 							window.setLocation(getStartingLocation(window));
 						else if (toolName.equals(MonitorWindow.NAME))
-							window.setLocation(new Point(0, 0));
+							window.setLocation(new Point(30, 0));
 						else
-							window.setLocation(getRandomLocation(window));
+							window.setLocation(getCenterLocation(window));
 					}
 //					}
 					window.setWasOpened(true);
@@ -1023,7 +1023,7 @@ public class MainDesktopPane extends JDesktopPane
 		Dimension window_size = tempWindow.getSize();
 
 		int rX = (int) Math.round((desktop_size.width - window_size.width) / 2D);
-		int rY = (int) Math.round((desktop_size.height - window_size.height) / 2D);
+		int rY = (int) Math.round((desktop_size.height - window_size.height - 100) / 2D);
 
 		// Added rX checking
 		if (rX < 0) {

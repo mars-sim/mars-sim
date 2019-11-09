@@ -362,9 +362,8 @@ extends JComponent {
 		dateField.setAlignmentY(0);
 		DateFormat d = new SimpleDateFormat ("yyyy-MMM-dd  HH:mm a '['z']'", LanguageManager.getLocale ());
 		dateField.setDateFormat(d);
-		Date date = new Date(earthClock.getInstant().toEpochMilli());
-//		date.setTime(earthClock.getInstant().toEpochMilli());
-		dateField.setDate(date);
+		if (earthClock.getInstant() != null)
+			dateField.setDate(new Date(earthClock.getInstant().toEpochMilli()));
 		dateField.setAllowUserInput(false);
 //	    dateField.addDateListener (new DateListener () {
 //	          @Override
@@ -1024,13 +1023,13 @@ extends JComponent {
 	 * Increment the label of both the earth and mars clocks
 	 */
 	public void incrementClocks() {
-		if (dateField != null && earthClock != null) {
-//			earthTimeLabel.setText(WHITESPACES + earthClock.getTimeStampF1() + WHITESPACES);
+		if (dateField != null && earthClock != null && earthClock.getInstant() != null) {
 			dateField.setDate(new Date(earthClock.getInstant().toEpochMilli()));
 		}
 		
-		if (marsTimeLabel != null && marsClock != null)
-			marsTimeLabel.setText(WHITESPACES + marsClock.getTrucatedDateTimeStamp()+ WHITESPACES);
+		if (marsTimeLabel != null && marsClock != null) {
+			marsTimeLabel.setText(WHITESPACES + marsClock.getTrucatedDateTimeStamp() + WHITESPACES);
+		}
 	}
 	
 	/**

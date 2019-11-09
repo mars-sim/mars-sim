@@ -7,22 +7,18 @@
 
 package org.mars_sim.msp.core.time;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.sql.Timestamp;
 import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-
+import java.time.format.TextStyle;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.SimpleTimeZone;
 import java.util.TimeZone;
@@ -43,9 +39,9 @@ public class EarthClock implements Serializable {
 	 */
 	private static long millisAtStart;
 
-	private double leftoverCache;
+//	private double leftoverCache;
 	
-	private GregorianCalendar gregCal;
+//	private GregorianCalendar gregCal;
 
 	private SimpleDateFormat f0;
 	private SimpleDateFormat f1;
@@ -76,16 +72,16 @@ public class EarthClock implements Serializable {
 
 		// Use ZonedDate
 		zonedDateTime = ZonedDateTime.now(ZoneOffset.UTC);
-
+		
 		// Convert to GregorianCalendar
-		gregCal = GregorianCalendar.from(zonedDateTime);
+//		gregCal = GregorianCalendar.from(zonedDateTime);
 	
 		// Set GMT timezone for calendar
 		zone = new SimpleTimeZone(0, "GMT");
 
 		// see http://www.diffen.com/difference/GMT_vs_UTC
 
-		gregCal.setTimeZone(zone);
+//		gregCal.setTimeZone(zone);
 //		gregCal.clear();
 
 		// Set Earth clock to Martian Zero-orbit date-time.
@@ -124,7 +120,10 @@ public class EarthClock implements Serializable {
 //		String formattedDateTime = dateOfFirstLanding.format(formatter); 
 
 		try {
-			gregCal.setTime(f2.parse(fullDateTimeString));
+//			gregCal.setTime(f2.parse(fullDateTimeString));
+//			zonedDateTime = gregCal.toZonedDateTime();
+			zonedDateTime = dateOfFirstLanding;
+
 			computeMillisAtStart();
 		} catch (Exception ex) {// ParseException ex) {
 			ex.printStackTrace();
@@ -137,7 +136,8 @@ public class EarthClock implements Serializable {
 		TimeZone gmt = TimeZone.getTimeZone("GMT");
 		f3.setTimeZone(gmt);
 		f3.setLenient(false);
-
+		
+//		System.out.println(getTimeStampF3());
 	}
 
 	public static String getMonthForInt(int m) {
@@ -154,12 +154,14 @@ public class EarthClock implements Serializable {
 		return clock.getYear();
 	}
 
-	public Calendar getCalender() {
-		return gregCal;
-	}
+//	public Calendar getCalender() {
+//		if (gregCal != null)
+//			return gregCal;
+//		return null;
+//	}
 
 	public Instant getInstant() {
-		return gregCal.toInstant();
+		return zonedDateTime.toInstant();
 	}
 	
 	/**
@@ -168,7 +170,8 @@ public class EarthClock implements Serializable {
 	 * @return date
 	 */
 	public Date getCurrentDateTime() {
-		return gregCal.getTime();
+		return Date.from(getInstant());
+//		return gregCal.getTime();
 	}
 
 	public static ZonedDateTime getDateOfFirstLanding() {
@@ -190,7 +193,7 @@ public class EarthClock implements Serializable {
 	 * @return long
 	 */
 	public void computeMillisAtStart() {
-		millisAtStart = gregCal.getTimeInMillis();
+		millisAtStart = getInstant().toEpochMilli();//gregCal.getTimeInMillis();
 	}
 
 	/**
@@ -199,41 +202,7 @@ public class EarthClock implements Serializable {
 	 * @return long
 	 */
 	public static long getMillis(EarthClock clock) {
-		long millis = 0;
-		
-		if (clock.getCalender() != null)
-			millis = clock.getCalender().getTimeInMillis();
-
-		// Instant instant =
-		// Instant.ofEpochMilli(clock.getCalender().getTimeInMillis());
-		// System.out.println("millis from cal is " +
-		// clock.getCalender().getTimeInMillis());
-		// System.out.println("instant is " + instant);
-
-		// ZoneId zoneId = ZoneId.of("UTC-0");
-		// LocalDateTime ldt = LocalDateTime.ofInstant(instant, zoneId);//
-		// ZoneId.systemDefault());
-
-		// convert formatter_millis to dtFormatter
-		// String s = getCurrentDateTimeString(clock);
-		// s = s.substring(0, 21) + "0" + s.substring(22, 24);
-
-		// System.out.println("s mod is "+ s);
-
-		// LocalDateTime ldt = LocalDateTime.parse(s, dtFormatter_millis);
-
-		// ZoneOffset offset = ZoneOffset.of("+00:00");
-		// ZonedDateTime dt = ZonedDateTime.now( ZoneOffset.UTC );
-		// ZoneId zoneId = ZoneId.of("UTC-0");
-		// LocalDateTime ldt = LocalDateTime.of(2043, 9, 30, 00, 00, 00);
-		// ZonedDateTime zdt = ldt.atZone(ZoneId.of("UTC-0"));
-		// ZonedDateTime zdt = ZonedDateTime.of(2043, 9, 30, 00, 00, 00, 0000, zoneId);
-		// long millis = zdt.toInstant().toEpochMilli();
-		// long sec = zdt.getEpochSecond();
-		// long millis2 = zdt.get(ChronoField.MILLI_OF_SECOND);
-		// System.out.println("millis2 is " + millis2);
-
-		return millis;
+		return clock.getZonedDateTime().toInstant().toEpochMilli();
 	}
 
 	/**
@@ -242,7 +211,7 @@ public class EarthClock implements Serializable {
 	 * @return date/time formatted in a string. eg "2055-May-06 03:37:22"
 	 */
 	public String getCurrentDateTimeString(EarthClock clock) {
-		return f3.format(clock.getCalender().getTime());
+		return f3.format(Timestamp.from(clock.getZonedDateTime().toInstant()));
 	}
 
 	/**
@@ -250,11 +219,8 @@ public class EarthClock implements Serializable {
 	 * 
 	 * @return date/time formatted in a string. ex "2055-05-06 03:37:22 (UT)"
 	 */
-	public String getTimeStampF0() {
-		String result = f0.format(gregCal.getTime());
-		if (result == null)
-			result = "0";
-		return result;
+	public String getTimeStampF0() {		
+		return f0.format(Timestamp.from(zonedDateTime.toInstant()));
 	}
 
 	/**
@@ -263,10 +229,7 @@ public class EarthClock implements Serializable {
 	 * @return date/time formatted in a string. ex "2055-05-06 03:37 (UT)"
 	 */
 	public String getTimeStampF1() {
-		String result = f1.format(gregCal.getTime());
-		if (result == null)
-			result = "0";
-		return result;
+		return f1.format(Timestamp.from(zonedDateTime.toInstant()));
 	}
 
 	/**
@@ -275,10 +238,7 @@ public class EarthClock implements Serializable {
 	 * @return date/time formatted in a string. ex "2055-May-06 03:37:22"
 	 */
 	public String getTimeStampF3() {
-		String result = f3.format(gregCal.getTime());
-		if (result == null)
-			result = "0";
-		return result;
+		return f3.format(Timestamp.from(zonedDateTime.toInstant()));
 	}
 
 	/**
@@ -317,25 +277,28 @@ public class EarthClock implements Serializable {
 	 * @param milliseconds the time to be added to the calendar
 	 */
 	public void addTime(int milliseconds) {
-		if (gregCal != null) gregCal.add(Calendar.MILLISECOND, milliseconds);
+//		if (gregCal != null) gregCal.add(Calendar.MILLISECOND, milliseconds);
+//		System.out.println(milliseconds*1_000_000);
+		zonedDateTime = zonedDateTime.plusNanos(milliseconds*1_000_000);
+//		System.out.println(zonedDateTime);//getTimeStampF3());
+//		LocalDateTime hourLater = LocalDateTime.now().plusHours(1);
 	}
 
 	/**
 	 * Displays the string version of the clock.
 	 * 
 	 * @return time stamp string.
-	 * @deprecated
 	 */
 	public String toString() {
 		return getTimeStampF0();
 	}
 
 	public int getDayOfMonth() {
-		return gregCal.get(Calendar.DATE);
+		return zonedDateTime.getDayOfMonth();//gregCal.get(Calendar.DATE);
 	}
 
 	public int getMonth() {
-		return gregCal.get(Calendar.MONTH);
+		return zonedDateTime.getMonthValue();//gregCal.get(Calendar.MONTH);
 	}
 
 	// Used by scheduleSecondTask() in EarthMinimalClock only
@@ -370,15 +333,15 @@ public class EarthClock implements Serializable {
 	}
 
 	public int getYear() {
-		return gregCal.get(Calendar.YEAR);
+		return zonedDateTime.getYear();//gregCal.get(Calendar.YEAR);
 	}
 
-	public void setYear(int year) {
-		gregCal.set(Calendar.YEAR, year);
-	}
+//	public void setYear(int year) {
+//		zonedDateTime.plu //gregCal.set(Calendar.YEAR, year);
+//	}
 
 	public int getSecond() {
-		return gregCal.get(Calendar.SECOND);
+		return zonedDateTime.getSecond();//gregCal.get(Calendar.SECOND);
 	}
 
 	public String getSecondString() {
@@ -392,7 +355,7 @@ public class EarthClock implements Serializable {
 	}
 
 	public int getMinute() {
-		return gregCal.get(Calendar.MINUTE);
+		return zonedDateTime.getMinute();//gregCal.get(Calendar.MINUTE);
 	}
 
 	public String getMinuteString() {
@@ -406,7 +369,7 @@ public class EarthClock implements Serializable {
 	}
 
 	public int getHour() {
-		return gregCal.get(Calendar.HOUR);
+		return zonedDateTime.getHour();//gregCal.get(Calendar.HOUR);
 	}
 
 	public String getHourString() {
@@ -420,42 +383,43 @@ public class EarthClock implements Serializable {
 	}
 
 	public String getDayOfWeekString() {
-		int w = gregCal.get(Calendar.DAY_OF_WEEK);
-		StringBuilder s = new StringBuilder();
-		if (w == Calendar.SUNDAY)
-			s.append("Sunday");
-		else if (w == Calendar.MONDAY)
-			s.append("Monday");
-		else if (w == Calendar.TUESDAY)
-			s.append("Tuesday");
-		else if (w == Calendar.WEDNESDAY)
-			s.append("Wednesday");
-		else if (w == Calendar.THURSDAY)
-			s.append("Thursday");
-		else if (w == Calendar.FRIDAY)
-			s.append("Friday");
-		else if (w == Calendar.SATURDAY)
-			s.append("Saturaday");
-		// else
-		// s = "";
-		return s.toString();
+		return zonedDateTime.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.ENGLISH);//gregCal.get(Calendar.DAY_OF_WEEK);
+		
+//		StringBuilder s = new StringBuilder();
+//		if (w == Calendar.SUNDAY)
+//			s.append("Sunday");
+//		else if (w == Calendar.MONDAY)
+//			s.append("Monday");
+//		else if (w == Calendar.TUESDAY)
+//			s.append("Tuesday");
+//		else if (w == Calendar.WEDNESDAY)
+//			s.append("Wednesday");
+//		else if (w == Calendar.THURSDAY)
+//			s.append("Thursday");
+//		else if (w == Calendar.FRIDAY)
+//			s.append("Friday");
+//		else if (w == Calendar.SATURDAY)
+//			s.append("Saturaday");
+//		// else
+//		// s = "";
+//		return s.toString();
 	}
 
-	public ZonedDateTime convert2ZonedDT() {
-		return zonedDateTime = ZonedDateTime.ofInstant(gregCal.toInstant(), ZoneId.of("UTC"));
-		// return zonedDateTime = gregCal.toZonedDateTime();
-	}
+//	public ZonedDateTime convert2ZonedDT() {
+//		return zonedDateTime; //= ZonedDateTime.ofInstant(gregCal.toInstant(), ZoneId.of("UTC"));
+//		// return zonedDateTime = gregCal.toZonedDateTime();
+//	}
 
 	public ZonedDateTime getZonedDateTime() {
 		return zonedDateTime;
 	}
 
 	public LocalDate getLocalDate() {
-		return convert2ZonedDT().toLocalDate();
+		return zonedDateTime.toLocalDate();
 	}
 
 	public LocalTime getLocalTime() {
-		return convert2ZonedDT().toLocalTime();
+		return zonedDateTime.toLocalTime();
 	}
 
 	// public Date getDT() {
@@ -464,33 +428,35 @@ public class EarthClock implements Serializable {
 	// Date.from(java.time.ZonedDateTime.now().toInstant());
 	// }
 
-    /**
-     * Save the state of this object to a stream (i.e., serialize it).
-     *
-     * @serialData The value returned by {@code getTime()}
-     *             is emitted (long).  This represents the offset from
-     *             January 1, 1970, 00:00:00 GMT in milliseconds.
-     */
-    private void writeObject(ObjectOutputStream s) {
-//        s.defaultWriteObject();
-//        s.writeLong(getTimeImpl());
-    }
-
-    /**
-     * Reconstitute this object from a stream (i.e., deserialize it).
-     */
-    private void readObject(ObjectInputStream s)
-         throws IOException, ClassNotFoundException  {
-//        s.defaultReadObject();
-//        fastTime = s.readLong();
-    }
+//    /**
+//     * Save the state of this object to a stream (i.e., serialize it).
+//     *
+//     * @serialData The value returned by {@code getTime()}
+//     *             is emitted (long).  This represents the offset from
+//     *             January 1, 1970, 00:00:00 GMT in milliseconds.
+//     */
+//    private void writeObject(ObjectOutputStream s) {
+////        s.defaultWriteObject();
+////        s.writeLong(getTimeImpl());
+//    }
+//
+//    /**
+//     * Reconstitute this object from a stream (i.e., deserialize it).
+//     */
+//    private void readObject(ObjectInputStream s)
+//         throws IOException, ClassNotFoundException  {
+////        s.defaultReadObject();
+////        fastTime = s.readLong();
+//    }
     
 	public void destroy() {
-		gregCal = null;
+//		gregCal = null;
 		f0 = null;
 		f2 = null;
 		f1 = null;
 		f3 = null;
 		zone = null;
+		zonedDateTime = null;
+		dateOfFirstLanding = null;
 	}
 }

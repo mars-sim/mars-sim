@@ -78,7 +78,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		<dependency>
 			<groupId>org.apache.xmlgraphics</groupId>
 			<artifactId>batik-transcoder</artifactId>
-			<version>1.11</version>
+			<version>1.12</version>
 		</dependency>
 	
 		<!-- https://mvnrepository.com/artifact/com.googlecode.soundlibs/jorbis -->
