@@ -692,13 +692,13 @@ public class VehicleTableModel extends UnitTableModel {
 		}
 
 		private void updateVehicleMissionCell(Mission mission) {
-			//    		if (mission instanceof VehicleMission) {
-			//    			Vehicle vehicle = ((VehicleMission) mission).getVehicle();
-			//    			if (vehicle != null) {
-			//    				int unitIndex = getUnitIndex(vehicle);
-			//    				SwingUtilities.invokeLater(new VehicleTableCellUpdater(unitIndex, MISSION));
-			//    			}
-			//    		}
+//			if (mission instanceof VehicleMission) {
+//				Vehicle vehicle = ((VehicleMission) mission).getVehicle();
+//				if (vehicle != null) {
+//					int unitIndex = getUnitIndex(vehicle);
+//					SwingUtilities.invokeLater(new VehicleTableCellUpdater(unitIndex, MISSION));
+//				}
+//			}
 
 			// Update all table cells because construction/salvage mission may affect more than one vehicle.
 			fireTableDataChanged();

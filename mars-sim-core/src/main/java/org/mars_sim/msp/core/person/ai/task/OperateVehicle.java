@@ -16,15 +16,18 @@ import org.mars_sim.msp.core.Direction;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.mars.TerrainElevation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
+import org.mars_sim.msp.core.person.ai.job.Pilot;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionStatus;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
+import org.mars_sim.msp.core.person.ai.task.utils.TaskManager;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -99,20 +102,16 @@ public abstract class OperateVehicle extends Task implements Serializable {
 		Person driver = (Person) vo;
 		
         // Check if person is the vehicle operator.
-		if (vo == null) {
+		if (vo == null) 
 			vehicle.setOperator(person);
-		}
-		
+			
 		else if (!person.equals(driver)) {
-        	// Remove the last driver
+        	// Remove the task from the last driver
 	        clearDrivingTask(vo);
-	        // replace the last driver
-	        vehicle.setOperator(person);
+	        // Replace the driver
+			vehicle.setOperator(person);
 		}	
-		
-//		else
-//			super.endTask();
-		
+	
 		if (destination == null) {
 		    throw new IllegalArgumentException("destination is null");
 		}
@@ -243,8 +242,10 @@ public abstract class OperateVehicle extends Task implements Serializable {
 	protected void clearDrivingTask(VehicleOperator vo) {
 		if (vo != null) {
         	// Clear the OperateVehicle task from the last driver
-        	((Person) vo).getMind().getTaskManager().clearSpecificTask(DriveGroundVehicle.class.getSimpleName());
-        	((Person) vo).getMind().getTaskManager().clearSpecificTask(OperateVehicle.class.getSimpleName());
+			TaskManager taskManager = ((Person) vo).getMind().getTaskManager();
+			taskManager.clearSpecificTask(DriveGroundVehicle.class.getSimpleName());
+			taskManager.clearSpecificTask(OperateVehicle.class.getSimpleName());
+        	taskManager.getNewTask();	
     	}
 	}
 	
@@ -391,6 +392,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
 	                    vehicle.setParkedLocation(0D, 0D, degDir);
 	                }
 	                
+	                // Calculate the remaining time
 	                result = time - MarsClock.MILLISOLS_PER_HOUR * distanceTraveled / vehicle.getSpeed();
 //    	            endTask();
     	                
@@ -426,8 +428,8 @@ public abstract class OperateVehicle extends Task implements Serializable {
                     vehicle.addTotalDistanceTraveled(distanceTraveled);
                     vehicle.addDistanceLastMaintenance(distanceTraveled);
                     
-                    result = 0; //time - MarsClock.MILLISOLS_PER_HOUR * distanceTraveled / vehicle.getSpeed();
-                    
+                    // Use up all of the available time
+                    result = 0; 
     		    }
     		    catch (Exception e) {
     		    	LogConsolidated.log(Level.SEVERE, 0, sourceName, "[" + vehicle.getName() + "] " 
@@ -488,9 +490,11 @@ public abstract class OperateVehicle extends Task implements Serializable {
      * @return MarsClock instance of date/time for ETA
      */
     public MarsClock getETA() {
-//        MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
+    	
+    	if (marsClock == null)
+    		marsClock = Simulation.instance().getMasterClock().getMarsClock();
 
-        // Determine time difference from start of trip in millisols.
+        // Determine time difference between now and from start of trip in millisols.
         double millisolsDiff = MarsClock.getTimeDiff(marsClock, startTripTime);
         double hoursDiff = MarsClock.HOURS_PER_MILLISOL * millisolsDiff;
 
@@ -543,19 +547,31 @@ public abstract class OperateVehicle extends Task implements Serializable {
      * @return speed modifier (km/hr)
      */
     protected double getSpeedSkillModifier() {
-    	double result = 0D;
+    	double mod = 0D;
         double baseSpeed = vehicle.getBaseSpeed();
         if (getEffectiveSkillLevel() <= 5) {
-            result = 0D - ((baseSpeed / 2D) * ((5D - getEffectiveSkillLevel()) / 5D));
+            mod = 0D - ((baseSpeed / 4D) * ((5D - getEffectiveSkillLevel()) / 5D));
         }
         else {
             double tempSpeed = baseSpeed;
             for (int x=0; x < getEffectiveSkillLevel() - 5; x++) {
                 tempSpeed /= 2D;
-                result += tempSpeed;
+                mod += tempSpeed;
             }
         }
-        return result;
+        
+        if (person.getJobName().equalsIgnoreCase(Pilot.class.getSimpleName())) {
+        	mod += baseSpeed * 0.25; 
+		}
+		
+		// Look up a person's prior pilot related training.
+        mod += baseSpeed * person.getPilotingMod();
+        	
+        // Check for any crew emergency
+		if (vehicle.getMission().hasEmergencyAllCrew())
+			mod += baseSpeed * 0.25;
+		
+        return mod;
     }
     
     /**
@@ -577,10 +593,16 @@ public abstract class OperateVehicle extends Task implements Serializable {
      * Ends the task and performs any final actions.
      */
     public void endTask() {
-        vehicle.setSpeed(0D);
-//        VehicleOperator vo = vehicle.getOperator();
-    	clearDrivingTask(vehicle.getOperator());
-//        vehicle.setOperator(null);
+    	if (vehicle != null) {
+    		vehicle.setSpeed(0D);
+    		VehicleOperator vo = vehicle.getOperator();
+    		// Need to set the vehicle operator to null before clearing the driving task 
+        	if (vehicle != null)
+        		vehicle.setOperator(null);
+        	if (vo != null)
+        		clearDrivingTask(vo);
+    	}
+    	
     	super.endTask();
     }
     
@@ -594,19 +616,20 @@ public abstract class OperateVehicle extends Task implements Serializable {
     	if (vehicle != null) {
     		// Need to update this to reflect the particular operator's average speed operating the vehicle.
     		double baseSpeed = vehicle.getBaseSpeed();
-//    		System.out.println("OperateVehicle : base speed : " + baseSpeed);
-    		double speed = 0;
     		double mod = 0;
     		Person p = null;
     		if (operator instanceof Person) {
     			p = (Person)operator;
-    			if (p.getJobName().toLowerCase().contains("driver")) {
-    				speed = baseSpeed * 1.1; 
+    			if (p.getJobName().equalsIgnoreCase(Pilot.class.getSimpleName())) {
+    				mod += baseSpeed * 0.25; 
     			}
+    			
+    			// Look up a person's prior pilot related training.
+    			mod += baseSpeed * p.getPilotingMod();
     			
     			int skill = p.getSkillManager().getEffectiveSkillLevel(SkillType.PILOTING);
     			if (skill <= 5) {
-    				mod = 0D - ((baseSpeed / 2D) * ((5D - skill) / 5D));
+    				mod += 0D - ((baseSpeed / 4D) * ((5D - skill) / 5D));
     	        }
     	        else {
     	            double tempSpeed = baseSpeed;
@@ -615,9 +638,15 @@ public abstract class OperateVehicle extends Task implements Serializable {
     	                mod += tempSpeed;
     	            }
     	        }
+    			
+    			// TODO: Should account for a person's attributes
+    			
+    			// Check for any crew emergency
+    			if (vehicle.getMission().hasEmergencyAllCrew())
+    				mod += baseSpeed * 0.25;
     		}
-    		speed = baseSpeed + mod;
-    		return speed;
+    		
+    		return baseSpeed + mod;
     	}
     	else
     		return 0;

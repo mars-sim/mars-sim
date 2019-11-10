@@ -268,35 +268,44 @@ public class Mind implements Serializable {
 				if (VehicleMission.APPROVING.equals(mission.getPhase())
 						&& !mission.getStartingMember().equals(person)
 						) {
-					goNewTask();
+					selectNewTask();
 				}
 				
 				else if (mission.getPhase() != null) {
-					int priority = mission.getPriority();
 					
-					int rand = RandomUtil.getRandomInt(6);
-					
-					if (rand <= priority) {
-//						// See if this person can ask for a mission
-//						boolean newMission = !hasActiveMission && !hasAMission && !overrideMission && isInMissionWindow;
-							
+					if (mission.getPhase().equals(VehicleMission.TRAVELLING)
+						&& person.getVehicle().getOperator() == null) {
+						// if no one is driving the vehicle and nobody is NOT doing field work, 
+						// need to elect a driver right away
 						mission.performMission(person);
-//						logger.info(person + " was to perform the " + mission + " mission");
 					}
-					
 					else {
-						goNewTask();
+
+						int priority = mission.getPriority();
+						
+						int rand = RandomUtil.getRandomInt(6);
+						
+						if (rand <= priority) {
+	//						// See if this person can ask for a mission
+	//						boolean newMission = !hasActiveMission && !hasAMission && !overrideMission && isInMissionWindow;							
+							mission.performMission(person);
+	//						logger.info(person + " was to perform the " + mission + " mission");
+						}
+						
+						else {
+							selectNewTask();
+						}
 					}
 				}
 			}
 			
 			else {
-				goNewTask();
+				selectNewTask();
 			}
 		}
 	}
 
-	public void goNewTask() {
+	public void selectNewTask() {
 		try {
 			// A person has no active task
 			getNewTask();

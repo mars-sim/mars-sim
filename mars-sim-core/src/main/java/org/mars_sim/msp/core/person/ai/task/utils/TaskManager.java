@@ -231,7 +231,7 @@ public class TaskManager implements Serializable {
 	}
 	
 	public String getSubTaskDescription() {
-		if (currentTask.getSubTask() != null) {
+		if (currentTask != null && currentTask.getSubTask() != null) {
 			String t = currentTask.getSubTask().getDescription();
 			if (t != null) // || !t.equals(""))
 				return t;
@@ -269,7 +269,7 @@ public class TaskManager implements Serializable {
 	}
 
 	public TaskPhase getSubTaskPhase() {
-		if (currentTask.getSubTask() != null) {
+		if (currentTask != null && currentTask.getSubTask() != null) {
 			return currentTask.getSubTask().getPhase();
 		} else {
 			return null;
@@ -326,7 +326,7 @@ public class TaskManager implements Serializable {
 	}
 	
 	public void endSubTask() {
-		if (currentTask.getSubTask() != null) {
+		if (currentTask != null && currentTask.getSubTask() != null) {
 			currentTask.getSubTask().endTask();
 		}
 	}
@@ -650,7 +650,7 @@ public class TaskManager implements Serializable {
 			List<MetaTask> list = MetaTaskUtil.getNonWorkHourMetaTasks();
 			selectedMetaTask = list.get(RandomUtil.getRandomInt(list.size() - 1));
 
-		} else if (!taskProbCache.isEmpty()) {
+		} else if (taskProbCache != null && !taskProbCache.isEmpty()) {
 
 			double r = RandomUtil.getRandomDouble(totalProbability);
 

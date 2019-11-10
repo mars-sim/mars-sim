@@ -1931,7 +1931,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 //	}
 
 	/**
-	 * Randomly generate a list of training the person attended
+	 * Randomly generate a list of training the person may have attended
 	 */
 	public void generatePriorTraining() {
 		if (trainings == null) {
@@ -1958,6 +1958,18 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 */
 	public List<TrainingType> getTrainings() {
 		return trainings;
+	}
+	
+	public double getPilotingMod() {
+		double mod = 0;
+		if (trainings.contains(TrainingType.AVIATION_CERTIFICATION))
+			mod += .2;
+		if (trainings.contains(TrainingType.FLIGHT_SAFETY))
+			mod += .25;
+		if (trainings.contains(TrainingType.NASA_DESERT_RATS))
+			mod += .15;
+		
+		return mod;
 	}
 	
 	/**

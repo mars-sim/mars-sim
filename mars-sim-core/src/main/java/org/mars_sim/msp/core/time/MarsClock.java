@@ -811,14 +811,14 @@ public class MarsClock implements Serializable {
 	/**
 	 * Returns the total number of millisols of a given time.
 	 *
-	 * @param time {@link MarsClock} instance
+	 * @param clock {@link MarsClock} instance
 	 * @return total millisols
 	 */
-	public static double getTotalMillisols(MarsClock time) {
+	public static double getTotalMillisols(MarsClock clock) {
 		double result = 0D;
 
 		// Add millisols up to current orbit
-		for (int x = 0; x < time.orbit; x++) {
+		for (int x = 0; x < clock.getOrbit(); x++) {
 			if (isLeapOrbit(x))
 				result += SOLS_PER_ORBIT_LEAPYEAR * 1000D;
 			else
@@ -826,14 +826,14 @@ public class MarsClock implements Serializable {
 		}
 
 		// Add millisols up to current month
-		for (int x = 1; x < time.month; x++)
-			result += getSolsInMonth(x, time.orbit) * 1000D;
+		for (int x = 1; x < clock.getMonth(); x++)
+			result += getSolsInMonth(x, clock.getOrbit()) * 1000D;
 
 		// Add millisols up to current sol
-		result += (time.sol - 1) * 1000D;
+		result += (clock.getSolOfMonth() - 1) * 1000D;
 
 		// Add millisols in current sol
-		result += time.millisol;
+		result += clock.getMillisol();
 
 		// System.out.println("MarsClock : result : " + result);
 

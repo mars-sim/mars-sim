@@ -25,23 +25,17 @@ import java.util.TimeZone;
 
 /**
  * The EarthClock class keeps track of Earth Universal Time. It should be
- * synchronized with the Mars clock. TODO format date strings in an
- * internationalized fashion depending on user locale.
+ * synchronized with the running MarsClock.
  */
 public class EarthClock implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	/*
-	 * number of milliseconds since 1 January 1970 00:00:00 at the start of the sim
-	 * (2043 Sep 30 00:00:00 UTC0)
+	/**
+	 * Tracks the number of milliseconds since 1 January 1970 00:00:00 at the start of the sim
 	 */
 	private static long millisAtStart;
-
-//	private double leftoverCache;
-	
-//	private GregorianCalendar gregCal;
 
 	private SimpleDateFormat f0;
 	private SimpleDateFormat f1;
@@ -61,28 +55,19 @@ public class EarthClock implements Serializable {
 	 * @throws Exception if date string is invalid.
 	 */
 	public EarthClock(String fullDateTimeString) {
-		// To fully utilize Java 8's Date/Time API in java.time package, see
+		// Java 8's Date/Time API in java.time package, see
 		// https://docs.oracle.com/javase/tutorial/datetime/TOC.html
-		// dtFormatter_millis = DateTimeFormatter.ofPattern("yyyy-MMM-dd
-		// HH:mm:ss");//.AAAA");//AAAA");
+		
+		// dtFormatter_millis = DateTimeFormatter.ofPattern("yyyy-MMM-dd HH:mm:ss");//.AAAA");//AAAA");
 
-		// use ZonedDateTime utc = ZonedDateTime.now(ZoneOffset.UTC);
-		// see
-		// http://stackoverflow.com/questions/26142864/how-to-get-utc0-date-in-java-8
+		// see http://stackoverflow.com/questions/26142864/how-to-get-utc0-date-in-java-8
 
 		// Use ZonedDate
 		zonedDateTime = ZonedDateTime.now(ZoneOffset.UTC);
 		
-		// Convert to GregorianCalendar
-//		gregCal = GregorianCalendar.from(zonedDateTime);
-	
 		// Set GMT timezone for calendar
 		zone = new SimpleTimeZone(0, "GMT");
-
 		// see http://www.diffen.com/difference/GMT_vs_UTC
-
-//		gregCal.setTimeZone(zone);
-//		gregCal.clear();
 
 		// Set Earth clock to Martian Zero-orbit date-time.
 		// This date may need to be adjusted if it is inaccurate.
@@ -120,14 +105,10 @@ public class EarthClock implements Serializable {
 //		String formattedDateTime = dateOfFirstLanding.format(formatter); 
 
 		try {
-//			gregCal.setTime(f2.parse(fullDateTimeString));
-//			zonedDateTime = gregCal.toZonedDateTime();
 			zonedDateTime = dateOfFirstLanding;
-
 			computeMillisAtStart();
-		} catch (Exception ex) {// ParseException ex) {
+		} catch (Exception ex) {
 			ex.printStackTrace();
-			// throw new IllegalStateException(ex);
 		}
 
 		// Initialize a second formatter
@@ -136,8 +117,7 @@ public class EarthClock implements Serializable {
 		TimeZone gmt = TimeZone.getTimeZone("GMT");
 		f3.setTimeZone(gmt);
 		f3.setLenient(false);
-		
-//		System.out.println(getTimeStampF3());
+
 	}
 
 	public static String getMonthForInt(int m) {
@@ -154,12 +134,6 @@ public class EarthClock implements Serializable {
 		return clock.getYear();
 	}
 
-//	public Calendar getCalender() {
-//		if (gregCal != null)
-//			return gregCal;
-//		return null;
-//	}
-
 	public Instant getInstant() {
 		return zonedDateTime.toInstant();
 	}
@@ -171,7 +145,6 @@ public class EarthClock implements Serializable {
 	 */
 	public Date getCurrentDateTime() {
 		return Date.from(getInstant());
-//		return gregCal.getTime();
 	}
 
 	public static ZonedDateTime getDateOfFirstLanding() {
@@ -193,7 +166,7 @@ public class EarthClock implements Serializable {
 	 * @return long
 	 */
 	public void computeMillisAtStart() {
-		millisAtStart = getInstant().toEpochMilli();//gregCal.getTimeInMillis();
+		millisAtStart = getInstant().toEpochMilli();
 	}
 
 	/**
@@ -277,11 +250,7 @@ public class EarthClock implements Serializable {
 	 * @param milliseconds the time to be added to the calendar
 	 */
 	public void addTime(int milliseconds) {
-//		if (gregCal != null) gregCal.add(Calendar.MILLISECOND, milliseconds);
-//		System.out.println(milliseconds*1_000_000);
 		zonedDateTime = zonedDateTime.plusNanos(milliseconds*1_000_000);
-//		System.out.println(zonedDateTime);//getTimeStampF3());
-//		LocalDateTime hourLater = LocalDateTime.now().plusHours(1);
 	}
 
 	/**
@@ -294,11 +263,11 @@ public class EarthClock implements Serializable {
 	}
 
 	public int getDayOfMonth() {
-		return zonedDateTime.getDayOfMonth();//gregCal.get(Calendar.DATE);
+		return zonedDateTime.getDayOfMonth();
 	}
 
 	public int getMonth() {
-		return zonedDateTime.getMonthValue();//gregCal.get(Calendar.MONTH);
+		return zonedDateTime.getMonthValue();
 	}
 
 	// Used by scheduleSecondTask() in EarthMinimalClock only
@@ -333,15 +302,11 @@ public class EarthClock implements Serializable {
 	}
 
 	public int getYear() {
-		return zonedDateTime.getYear();//gregCal.get(Calendar.YEAR);
+		return zonedDateTime.getYear();
 	}
 
-//	public void setYear(int year) {
-//		zonedDateTime.plu //gregCal.set(Calendar.YEAR, year);
-//	}
-
 	public int getSecond() {
-		return zonedDateTime.getSecond();//gregCal.get(Calendar.SECOND);
+		return zonedDateTime.getSecond();
 	}
 
 	public String getSecondString() {
@@ -355,7 +320,7 @@ public class EarthClock implements Serializable {
 	}
 
 	public int getMinute() {
-		return zonedDateTime.getMinute();//gregCal.get(Calendar.MINUTE);
+		return zonedDateTime.getMinute();
 	}
 
 	public String getMinuteString() {
@@ -369,7 +334,7 @@ public class EarthClock implements Serializable {
 	}
 
 	public int getHour() {
-		return zonedDateTime.getHour();//gregCal.get(Calendar.HOUR);
+		return zonedDateTime.getHour();
 	}
 
 	public String getHourString() {
@@ -405,11 +370,6 @@ public class EarthClock implements Serializable {
 //		return s.toString();
 	}
 
-//	public ZonedDateTime convert2ZonedDT() {
-//		return zonedDateTime; //= ZonedDateTime.ofInstant(gregCal.toInstant(), ZoneId.of("UTC"));
-//		// return zonedDateTime = gregCal.toZonedDateTime();
-//	}
-
 	public ZonedDateTime getZonedDateTime() {
 		return zonedDateTime;
 	}
@@ -422,35 +382,13 @@ public class EarthClock implements Serializable {
 		return zonedDateTime.toLocalTime();
 	}
 
-	// public Date getDT() {
-	// DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-	// LocalDate localDate = zonedDateTime //LocalDate.parse(dateString, formatter);
-	// Date.from(java.time.ZonedDateTime.now().toInstant());
-	// }
-
-//    /**
-//     * Save the state of this object to a stream (i.e., serialize it).
-//     *
-//     * @serialData The value returned by {@code getTime()}
-//     *             is emitted (long).  This represents the offset from
-//     *             January 1, 1970, 00:00:00 GMT in milliseconds.
-//     */
-//    private void writeObject(ObjectOutputStream s) {
-////        s.defaultWriteObject();
-////        s.writeLong(getTimeImpl());
-//    }
-//
-//    /**
-//     * Reconstitute this object from a stream (i.e., deserialize it).
-//     */
-//    private void readObject(ObjectInputStream s)
-//         throws IOException, ClassNotFoundException  {
-////        s.defaultReadObject();
-////        fastTime = s.readLong();
-//    }
+//	public Date getDT() {
+//		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+//		LocalDate localDate = zonedDateTime //LocalDate.parse(dateString, formatter);
+//		Date.from(java.time.ZonedDateTime.now().toInstant());
+//	}
     
 	public void destroy() {
-//		gregCal = null;
 		f0 = null;
 		f2 = null;
 		f1 = null;

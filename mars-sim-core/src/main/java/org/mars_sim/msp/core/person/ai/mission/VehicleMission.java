@@ -1332,6 +1332,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			if (dist > distanceTravelled) {
 				// Record the distance
 				distanceTravelled = dist;
+				fireMissionUpdate(MissionEventType.DISTANCE_EVENT);
 				return dist;
 			}
 			else {

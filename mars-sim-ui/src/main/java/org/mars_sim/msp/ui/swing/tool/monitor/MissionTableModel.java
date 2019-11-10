@@ -38,7 +38,7 @@ public class MissionTableModel extends AbstractTableModel
 		implements MonitorModel, MissionManagerListener, MissionListener {
 
 	private DecimalFormat decFormatter = new DecimalFormat("#,###,##0.0");
-
+	/** Track the GameMode */
 	private GameMode mode;
 	
 	// Column indexes
@@ -115,8 +115,6 @@ public class MissionTableModel extends AbstractTableModel
 		columnNames[PROPOSED_ROUTE_DISTANCE] = Msg.getString("MissionTableModel.column.proposedDistance"); //$NON-NLS-1$
 		columnTypes[PROPOSED_ROUTE_DISTANCE] = Integer.class;
 
-		
-		
 		if (GameManager.mode == GameMode.COMMAND) {
 			mode = GameMode.COMMAND;
 			commanderSettlement = Simulation.instance().getUnitManager().getCommanderSettlement();
@@ -252,61 +250,71 @@ public class MissionTableModel extends AbstractTableModel
 	 */
 	public void missionUpdate(MissionEvent event) {		
 		MissionEventType eventType = event.getType();
-		
-//		if (eventType == MissionEventType.END_MISSION_EVENT) {
-//			removeMission((Mission)event.getSource());
-//			// Update the missionCache
-//			missionCache = missionManager.getMissions();
-//		}
-		
-//		else {
-			int index = missionCache.indexOf(event.getSource());
+		Mission mission = (Mission) event.getSource();
+
+		int index = missionCache.indexOf(mission);
+		if ((index > -1) && (index < missionCache.size())) {
 			
-			if ((index > -1) && (index < missionCache.size())) {
+			int column0 = -1;
+					
+			if (eventType == MissionEventType.VEHICLE_EVENT)
+				column0 = VEHICLE;
+			else if (eventType == MissionEventType.STARTING_SETTLEMENT_EVENT)
+				column0 = STARTING_SETTLEMENT;
+			else if (eventType == MissionEventType.DESCRIPTION_EVENT)
+				column0 = DESC;
+			else if (eventType == MissionEventType.DESIGNATION_EVENT)
+				column0 = DESIGNATION;
+			else if (eventType == MissionEventType.ADD_MEMBER_EVENT
+					|| eventType == MissionEventType.REMOVE_MEMBER_EVENT)
+				column0 = MEMBER_NUM;
+			else if (eventType == MissionEventType.DATE_EVENT)
+				column0 = DATE_FILED;
+			else if (eventType == MissionEventType.NAME_EVENT)
+				column0 = STARTING_MEMBER;
+			
+			if (column0 > -1)
+				SwingUtilities.invokeLater(new MissionTableCellUpdater(index, column0));
+		
+			if (mission instanceof VehicleMission) {
+				
 				int column1 = -1;
 				int column2 = -1;
 				int column3 = -1;
+				int column4 = -1;
+				int column5 = -1;
 				
-				if (eventType == MissionEventType.DATE_EVENT)
-					column1 = DATE_FILED;
-				else if (eventType == MissionEventType.NAME_EVENT)
-					column1 = STARTING_MEMBER;
-				else if (eventType == MissionEventType.DESCRIPTION_EVENT)
-					column1 = DESC;
-				else if (eventType == MissionEventType.DESIGNATION_EVENT)
-					column1 = DESIGNATION;
-				else if (eventType == MissionEventType.PHASE_EVENT
-						|| eventType == MissionEventType.PHASE_DESCRIPTION_EVENT
-						|| eventType == MissionEventType.END_MISSION_EVENT)
-					column1 = PHASE;
-				else if (eventType == MissionEventType.ADD_MEMBER_EVENT
-						|| eventType == MissionEventType.REMOVE_MEMBER_EVENT)
-					column1 = MEMBER_NUM;
-				else if (eventType == MissionEventType.NAVPOINTS_EVENT)
-					column1 = NAVPOINT_NUM;
-				else if (eventType == MissionEventType.VEHICLE_EVENT)
-					column1 = VEHICLE;
-				else if (eventType == MissionEventType.STARTING_SETTLEMENT_EVENT)
-					column1 = STARTING_SETTLEMENT;
-				else if (eventType == MissionEventType.DISTANCE_EVENT) {
+				if (eventType == MissionEventType.DISTANCE_EVENT) {
 					column1 = TRAVELLED_DISTANCE;
 					column2 = REMAINING_DISTANCE;
 					column3 = PROPOSED_ROUTE_DISTANCE;
-				}
-		
+				} 
+				
+				if (eventType == MissionEventType.NAVPOINTS_EVENT)
+					column4 = NAVPOINT_NUM;
+				if (eventType == MissionEventType.PHASE_EVENT
+						|| eventType == MissionEventType.PHASE_DESCRIPTION_EVENT
+						|| eventType == MissionEventType.END_MISSION_EVENT)
+					column5 = PHASE;
+				
 				if (column1 > -1)
 					SwingUtilities.invokeLater(new MissionTableCellUpdater(index, column1));
 				if (column2 > -1)
 					SwingUtilities.invokeLater(new MissionTableCellUpdater(index, column2));
 				if (column3 > -1)
 					SwingUtilities.invokeLater(new MissionTableCellUpdater(index, column3));
+				if (column4 > -1)
+					SwingUtilities.invokeLater(new MissionTableCellUpdater(index, column4));
+				if (column5 > -1)
+					SwingUtilities.invokeLater(new MissionTableCellUpdater(index, column5));
 			}
-			
-			else {
-				// Update the missionCache
-				missionCache = missionManager.getMissions();
-			}
-//		}
+
+		}
+		
+		else {
+			// Update the missionCache
+			missionCache = missionManager.getMissions();
+		}
 	}
 
 	public int getRowCount() {

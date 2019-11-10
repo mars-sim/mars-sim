@@ -94,7 +94,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
         super(NAME_ON, person, true, false, STRESS_MODIFIER, true, 5D + RandomUtil.getRandomInt(5));
 		//super(NAME_ON, person, false, 0D);
 
-        if (person.isInSettlement()) {      	  
+        if (person.isInSettlement()) {
 //			resourceProcessBuilding = getResourceProcessingBuilding(person);
 			process = selectResourceProcess(person);
 			

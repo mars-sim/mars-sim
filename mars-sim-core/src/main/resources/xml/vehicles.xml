@@ -91,7 +91,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 
 		<!-- Base speed of rover (km/hr) (required) -->
 		<!-- Default: varies according to the type of vehicle -->
-		<base-speed value="20.0" />
+		<base-speed value="30.0" />
 
 		<!-- Empty mass of rover (kg) (required) -->
 		<!-- Default: varies according to the type of vehicle  -->
@@ -208,7 +208,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 	<vehicle type="Transport Rover" width="3.5" length="9.5">
 		<description>A rover for transporting people from one settlement to another.</description>
 		<drivetrain-efficiency value=".18" />
-		<base-speed value="15.0" />
+		<base-speed value="25.0" />
 		<empty-mass value="3000.0" />
 		<crew-size value="8" />
 		<cargo total-capacity="3500.0">
@@ -247,7 +247,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 	<vehicle type="Cargo Rover" width="4.0" length="8.0">
 		<description>A rover for transporting cargo from one settlement to another.</description>
 		<drivetrain-efficiency value=".2" />
-		<base-speed value="15.0" />
+		<base-speed value="25.0" />
 		<empty-mass value="2500.0" />
 		<crew-size value="2" />
 		<cargo total-capacity="5000.0">

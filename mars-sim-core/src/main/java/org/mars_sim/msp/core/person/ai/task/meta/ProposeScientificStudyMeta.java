@@ -9,7 +9,6 @@ package org.mars_sim.msp.core.person.ai.task.meta;
 import java.io.Serializable;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -20,7 +19,6 @@ import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
-import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -33,14 +31,12 @@ public class ProposeScientificStudyMeta implements MetaTask, Serializable {
     /** default serial id. */
     private static final long serialVersionUID = 1L;
     
-    private static final double FACTOR = 1D;
+    private static final double FACTOR = .5D;
     
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.proposeScientificStudy"); //$NON-NLS-1$
 
-    private static ScientificStudyManager studyManager;
-    
     @Override
     public String getName() {
         return NAME;
@@ -65,23 +61,9 @@ public class ProposeScientificStudyMeta implements MetaTask, Serializable {
         if (fatigue > 1000 || stress > 50 || hunger > 500)
         	return 0;
         
-        if (person.isInVehicle()) {	
-	        // Check if person is in a moving rover.
-	        if (Vehicle.inMovingRover(person)) {
-		        // the bonus for proposing scientific study inside a vehicle, 
-	        	// rather than having nothing to do if a person is not driving
-	        	result = 20;
-	        } 	       
-	        else
-	        	// the bonus for proposing scientific study inside a vehicle,
-	        	// rather than having nothing to do if a person is not driving
-	        	result = 10;
-        }
-        
         if (person.isInside()) {
-	        if (studyManager == null)
-	        	studyManager = Simulation.instance().getScientificStudyManager();
-	        ScientificStudy study = studyManager.getOngoingPrimaryStudy(person);
+
+	        ScientificStudy study = scientificStudyManager.getOngoingPrimaryStudy(person);
 	        if (study != null) {
 
 	            // Check if study is in proposal phase.
@@ -91,10 +73,10 @@ public class ProposeScientificStudyMeta implements MetaTask, Serializable {
 	                Job job = person.getMind().getJob();
 	                ScienceType science = study.getScience();
 	                if ((job != null) && science == ScienceType.getJobScience(job)) {
-	                    result += 40D;
+	                    result += 20D;
 	                }
 	                else {
-	                    result += 20D;
+	                    result += 10D;
 	                }
 	            }
 	        }
@@ -103,11 +85,11 @@ public class ProposeScientificStudyMeta implements MetaTask, Serializable {
 
 	            // Check if scientist job.
 	            if (ScienceType.isScienceJob(person.getMind().getJob())) {
-	                result += 50D;
+	                result += 20D;
 	            }
 
 	            // Modify if researcher is already collaborating in studies.
-	            int numCollabStudies = studyManager.getOngoingCollaborativeStudies(person).size();
+	            int numCollabStudies = scientificStudyManager.getOngoingCollaborativeStudies(person).size();
 	            result /= (numCollabStudies * 1.5 + 1D);
 	        }
 
@@ -123,6 +105,19 @@ public class ProposeScientificStudyMeta implements MetaTask, Serializable {
 	            }
 	        }
 
+	        if (person.isInVehicle()) {	
+		        // Check if person is in a moving rover.
+		        if (Vehicle.inMovingRover(person)) {
+			        // the bonus for proposing scientific study inside a vehicle, 
+		        	// rather than having nothing to do if a person is not driving
+		        	result = 20;
+		        } 	       
+		        else
+		        	// the bonus for proposing scientific study inside a vehicle,
+		        	// rather than having nothing to do if a person is not driving
+		        	result = 10;
+	        }
+	        
 	        // Job modifier.
 	        Job job = person.getMind().getJob();
 	        if (job != null) {

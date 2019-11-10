@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.LogConsolidated;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.time.MarsClock;
 
 /**
@@ -44,6 +45,9 @@ public abstract class TravelMission extends Mission {
 	private double proposedRouteTotalDistance = 0;
 	/** The current leg remaining distance so far. */
 	private double currentLegRemainingDistance;
+	/** The total remaining distance so far. */
+	private double totalRemainingDistance;
+	
 	/** The current traveling status of the mission. */
 	private String travelStatus;
 	
@@ -282,6 +286,8 @@ public abstract class TravelMission extends Mission {
 	protected final void startTravelToNextNode() {
 		setNextNavpointIndex(navIndex + 1);
 		setTravelStatus(TRAVEL_TO_NAVPOINT);
+		if (marsClock == null)
+			marsClock = Simulation.instance().getMasterClock().getMarsClock();
 		legStartingTime = (MarsClock) marsClock.clone();
 	}
 
@@ -312,7 +318,7 @@ public abstract class TravelMission extends Mission {
 		if (legStartingTime != null) {
 			return (MarsClock) legStartingTime.clone();
 		} else {
-			return null;
+			throw new IllegalArgumentException("legStartingTime is null");
 		}
 	}
 
@@ -389,9 +395,11 @@ public abstract class TravelMission extends Mission {
 					result += distance;
 				}
 				
-				if (result > proposedRouteTotalDistance)
+				if (result > proposedRouteTotalDistance) {
 					// Record the distance
 					proposedRouteTotalDistance = result;
+					fireMissionUpdate(MissionEventType.DISTANCE_EVENT);	
+				}
 			}
 		}
 	}
@@ -428,7 +436,14 @@ public abstract class TravelMission extends Mission {
 		}
 //		System.out.print("    Nav : " + navDist);//Math.round(navDist*10.0)/10.0);
 //		System.out.println("    Total : " + (leg + navDist));//Math.round((leg + navDist)*10.0)/10.0);
-		return leg + navDist;
+		double total = leg + navDist;
+		
+		if (total > totalRemainingDistance) {
+			totalRemainingDistance = total;
+			fireMissionUpdate(MissionEventType.DISTANCE_EVENT);	
+		}
+			
+		return total;
 	}
 
 	/**

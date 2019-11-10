@@ -573,7 +573,7 @@ public class MainDesktopPane extends JDesktopPane
 						if (toolName.equals(TimeWindow.NAME))
 							window.setLocation(getStartingLocation(window));
 						else if (toolName.equals(MonitorWindow.NAME))
-							window.setLocation(new Point(30, 0));
+							window.setLocation(new Point(25, 0));
 						else
 							window.setLocation(getCenterLocation(window));
 					}

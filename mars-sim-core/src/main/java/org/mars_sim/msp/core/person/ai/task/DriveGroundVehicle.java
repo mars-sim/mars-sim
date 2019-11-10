@@ -16,9 +16,7 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Direction;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
-import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillManager;
@@ -29,6 +27,7 @@ import org.mars_sim.msp.core.robot.RoboticAttributeType;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
+import org.mars_sim.msp.core.vehicle.VehicleOperator;
 
 /**
  * The Drive Ground Vehicle class is a task for driving a ground vehicle to a
@@ -65,9 +64,6 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 	// Data members
 	private int sideDirection = NONE;
 
-	private static SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-	// private MalfunctionManager malfunctionManager;
-
 	/**
 	 * Default Constructor.
 	 * 
@@ -84,15 +80,12 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 		super(NAME, person, vehicle, destination, startTripTime, startTripDistance, STRESS_MODIFIER, true,
 				(300D + RandomUtil.getRandomDouble(100D)));
 
-		// surface = Simulation.instance().getMars().getSurfaceFeatures();
-		// malfunctionManager = vehicle.getMalfunctionManager();
-
 		// Set initial parameters
 		setDescription(Msg.getString("Task.description.driveGroundVehicle.detail", vehicle.getName())); // $NON-NLS-1$
 		addPhase(AVOID_OBSTACLE);
 		addPhase(WINCH_VEHICLE);
 
-		LogConsolidated.log(logger, Level.INFO, 0, sourceName,
+		LogConsolidated.log(logger, Level.INFO, 20_000, sourceName,
 				"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " took the wheel of rover "
 //						+ (person.getGender() == GenderType.MALE ? "his" : "her") + " driving " 
 						+ vehicle.getName()
@@ -107,15 +100,16 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 		super(NAME, robot, vehicle, destination, startTripTime, startTripDistance, STRESS_MODIFIER, true,
 				(300D + RandomUtil.getRandomDouble(100D)));
 
-		// surface = Simulation.instance().getMars().getSurfaceFeatures();
-		// malfunctionManager = vehicle.getMalfunctionManager();
-
 		// Set initial parameters
 		setDescription(Msg.getString("Task.description.driveGroundVehicle.detail", vehicle.getName())); // $NON-NLS-1$
 		addPhase(AVOID_OBSTACLE);
 		addPhase(WINCH_VEHICLE);
 
-		logger.fine(robot.getName() + " is driving " + vehicle.getName());
+		LogConsolidated.log(logger, Level.INFO, 20_000, sourceName,
+				"[" + robot.getLocationTag().getLocale() + "] " + robot.getName() + " took the wheel of rover " 
+						+ vehicle.getName()
+						+ ".",
+				null);
 	}
 
 	/**
@@ -134,9 +128,6 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 		// Use OperateVehicle constructor
 		super(NAME, person, vehicle, destination, startTripTime, startTripDistance, STRESS_MODIFIER, true,
 				(100D + RandomUtil.getRandomDouble(100D)));
-
-		// surface = Simulation.instance().getMars().getSurfaceFeatures();
-		// malfunctionManager = vehicle.getMalfunctionManager();
 
 		// Set initial parameters
 		setDescription(Msg.getString("Task.description.driveGroundVehicle.detail", vehicle.getName())); // $NON-NLS-1$
@@ -161,9 +152,6 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 		super(NAME, robot, vehicle, destination, startTripTime, startTripDistance, STRESS_MODIFIER, true,
 				(100D + RandomUtil.getRandomDouble(100D)));
 
-		// surface = Simulation.instance().getMars().getSurfaceFeatures();
-		// malfunctionManager = vehicle.getMalfunctionManager();
-
 		// Set initial parameters
 		setDescription(Msg.getString("Task.description.driveGroundVehicle.detail", vehicle.getName())); // $NON-NLS-1$
 		addPhase(AVOID_OBSTACLE);
@@ -186,8 +174,13 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 
 		if (getPhase() == null) {
 //			throw new IllegalArgumentException("Task phase is null");
-//			endTask();
-			return 0;
+//			LogConsolidated.log(logger, Level.INFO, 10_000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
+//					+ person.getName() + " had an undefined phase when driving " + getVehicle().getName() + ".", null);
+			// If it called endTask() in OperateVehicle, then Task is no longer available
+			// WARNING: do NOT call endTask() here or it will end up calling endTask() 
+			// recursively.
+			return 0;		
+			
 		} else if (AVOID_OBSTACLE.equals(getPhase())) {
 			return obstaclePhase(time);
 		} else if (WINCH_VEHICLE.equals(getPhase())) {
@@ -456,7 +449,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 		// Get task phase modification.
 		if (AVOID_OBSTACLE.equals(getPhase()))
 			chance *= 1.2D;
-		if (WINCH_VEHICLE.equals(getPhase()))
+		else if (WINCH_VEHICLE.equals(getPhase()))
 			chance *= 1.3D;
 
 		// Terrain modification.
@@ -565,6 +558,16 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 
 		// ((GroundVehicle) getVehicle()).setStuck(false);
 
+		if (getVehicle() != null) {
+			getVehicle().setSpeed(0D);
+	        VehicleOperator vo = getVehicle().getOperator();
+	        if (getVehicle() != null)
+		        // Need to set the vehicle operator to null before clearing the driving task 
+	        	getVehicle().setOperator(null);
+	        if (vo != null)
+	        	clearDrivingTask(vo);
+		}
+		
 		super.endTask();
 	}
 }

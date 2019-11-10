@@ -334,15 +334,24 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 		else 
 			inv = getInventory();
 		
-		if (inv.getAmountResourceStored(ResourceUtil.oxygenID, false) <= massO2MinimumLimit) {
-			LogConsolidated.log(Level.WARNING, 5000, sourceName,
+		double o2 = inv.getAmountResourceStored(ResourceUtil.oxygenID, false);
+		if (o2 < SMALL_AMOUNT) {
+			LogConsolidated.log(Level.WARNING, 30_000, sourceName,
 					"[" + this.getLocationTag().getLocale() + "] " 
-							+ this.getName() + " ran out of oxygen and has less than " 
-							+ massO2MinimumLimit + " kg (below the safety limit).");
+							+ this.getName() + " had no more oxygen.");
 			result = false;
 		}
+		
+		else if (o2 <= massO2MinimumLimit) {
+			LogConsolidated.log(Level.WARNING, 10_000, sourceName,
+					"[" + this.getLocationTag().getLocale() + "] " 
+							+ this.getName() + "'s remaining oxygen was below the safety threshold (" 
+							+ massO2MinimumLimit + " kg) ");
+			result = false;
+		}
+		
 		if (inv.getAmountResourceStored(ResourceUtil.waterID, false) <= 0D) {
-			LogConsolidated.log(Level.WARNING, 5000, sourceName,
+			LogConsolidated.log(Level.WARNING, 10_000, sourceName,
 					"[" + this.getLocationTag().getLocale() + "] " 
 							+ this.getName() + " ran out of water.");
 			result = false;

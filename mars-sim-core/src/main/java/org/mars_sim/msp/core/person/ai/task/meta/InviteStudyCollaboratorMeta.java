@@ -51,23 +51,6 @@ public class InviteStudyCollaboratorMeta implements MetaTask, Serializable {
 
         double result = 0D;
         
-        ScientificStudy study = scientificStudyManager.getOngoingPrimaryStudy(person);
-        if (study == null)
-        	return 0;
-        		
-        if (person.isInVehicle()) {	
-	        // Check if person is in a moving rover.
-	        if (Vehicle.inMovingRover(person)) {
-		        // the bonus for proposing scientific study inside a vehicle, 
-	        	// rather than having nothing to do if a person is not driving
-	        	result = 30;
-	        } 	       
-	        else
-		        // the bonus for proposing scientific study inside a vehicle, 
-	        	// rather than having nothing to do if a person is not driving
-	        	result = 10;
-        }
-        
         if (person.isInside()) {
 
             // Probability affected by the person's stress and fatigue.
@@ -80,7 +63,11 @@ public class InviteStudyCollaboratorMeta implements MetaTask, Serializable {
             	return 0;
 
             // Check if study is in invitation phase.
-            if (study != null && study.getPhase().equals(ScientificStudy.INVITATION_PHASE)) {
+            ScientificStudy study = scientificStudyManager.getOngoingPrimaryStudy(person);
+            if (study == null)
+            	return 0;
+            		
+            else if (study.getPhase().equals(ScientificStudy.INVITATION_PHASE)) {
 
                 // Check that there isn't a full set of open invitations already sent out.
                 int collabNum = study.getCollaborativeResearchers().size();
@@ -92,6 +79,19 @@ public class InviteStudyCollaboratorMeta implements MetaTask, Serializable {
 
                         result += 25D;
 
+                        if (person.isInVehicle()) {	
+                	        // Check if person is in a moving rover.
+                	        if (Vehicle.inMovingRover(person)) {
+                		        // the bonus for proposing scientific study inside a vehicle, 
+                	        	// rather than having nothing to do if a person is not driving
+                	        	result = 30;
+                	        } 	       
+                	        else
+                		        // the bonus for proposing scientific study inside a vehicle, 
+                	        	// rather than having nothing to do if a person is not driving
+                	        	result = 10;
+                        }
+                        
                         // Crowding modifier
                         Building adminBuilding = InviteStudyCollaborator.getAvailableAdministrationBuilding(person);
                         if (adminBuilding != null) {

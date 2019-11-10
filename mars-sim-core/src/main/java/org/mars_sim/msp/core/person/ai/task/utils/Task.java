@@ -174,10 +174,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			this.robot = robot;
 		}
 
-		taskCompute();
-	}
-
-	public void taskCompute() {
 		done = false;
 
 		timeCompleted = 0D;
@@ -194,7 +190,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			subTask = null;
 		}
 
-		// functionType = FunctionType.UNKNOWN;
 
 	}
 
@@ -210,7 +205,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			subTask.destroy();		
 			subTask = null;
 		}
-
+	
 		done = true;
 
 		if (person != null) { 
@@ -428,12 +423,14 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @throws Exception if newPhase is not in the task's collection of phases.
 	 */
 	protected void setPhase(TaskPhase newPhase) {
+//		System.out.println("phases is " + phases);
+		// e.g. phases is [Walking inside a Settlement, Walking inside a Rover, Walking outside, Exiting Airlock, Entering Airlock, Exiting Rover In Garage, Entering Rover In Garage]
 		if (newPhase == null) {
 //			throw new IllegalArgumentException("newPhase is null");
 			endTask();
 		} 
 		
-		else if (phases.contains(newPhase)) {
+		else if ((phases != null && !phases.isEmpty() && phases.contains(newPhase))) {
 			phase = newPhase;
 			if (person != null) {
 				// Note: need to avoid java.lang.StackOverflowError when calling
@@ -460,7 +457,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	protected void addPhase(TaskPhase newPhase) {
 		if (newPhase == null) {
 			throw new IllegalArgumentException("newPhase is null");
-		} else if (!phases.contains(newPhase)) {
+		} else if ((phases != null && (phases.isEmpty() || !phases.contains(newPhase)))) {
 			phases.add(newPhase);
 		}
 	}
@@ -486,18 +483,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			subTask.destroy();
 			createSubTask(newSubTask);
 			
-//			if (subTask.done) {
-//				subTask.setDescription("");
-//				setSubTaskPhase(null);
-//				subTask.destroy();
-//				
-//				createSubTask(newSubTask);
-//			} else {
-//				// TODO: it could be troublesome to have recursive subtask (allowing subtask to have a subtask)
-////				if (!subTask.getTaskName().equals(newSubTask.getTaskName()))
-////					subTask.addSubTask(newSubTask);
-//				createSubTask(newSubTask);
-//			}
 		} else {
 			createSubTask(newSubTask);
 		}
@@ -1360,7 +1345,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		subTask = null;
 		phase = null;
 		teacher = null;
-		phases.clear();
+//		phases.clear();
 		phases = null;
 	}
 }

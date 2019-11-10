@@ -65,7 +65,6 @@ public class ProposeScientificStudy extends Task implements Serializable {
 
 		study = scientificStudyManager.getOngoingPrimaryStudy(person);
 		if (study == null) {
-
 			// Create new scientific study.
 			Job job = person.getMind().getJob();
 			ScienceType science = ScienceType.getJobScience(job);
@@ -74,7 +73,8 @@ public class ProposeScientificStudy extends Task implements Serializable {
 				int level = person.getSkillManager().getSkillLevel(skill);
 				study = scientificStudyManager.createScientificStudy(person, science, level);
 			} else {
-				logger.severe("Person's job: " + job.getName(person.getGender()) + " not scientist.");
+				logger.severe(person.getName() + " is a " 
+					+ job.getName(person.getGender()).toLowerCase() + "-- not a scientist");
 				endTask();
 			}
 		}

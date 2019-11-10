@@ -75,7 +75,6 @@ implements Serializable {
     public InviteStudyCollaborator(Person person) {
         super(NAME, person, false, true, STRESS_MODIFIER, true, DURATION);
 
-//        ScientificStudyManager manager = Simulation.instance().getScientificStudyManager();
         study = scientificStudyManager.getOngoingPrimaryStudy(person);
         if (study != null) {
 

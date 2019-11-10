@@ -978,8 +978,8 @@ public class MalfunctionManager implements Serializable {
 						
 						if (num > 1) {
 							people.stream()
-							.filter(p -> p.getJobName().contains(Engineer.class.getSimpleName())
-									|| p.getJobName().contains(Technician.class.getSimpleName()))
+							.filter(p -> p.getJobName().equalsIgnoreCase(Engineer.class.getSimpleName())
+									|| p.getJobName().equalsIgnoreCase(Technician.class.getSimpleName()))
 								.collect(Collectors.toList());
 						}
 						else if (num == 1) {
@@ -1025,8 +1025,8 @@ public class MalfunctionManager implements Serializable {
 						
 						if (!people.isEmpty()) {
 							elites = people.stream()
-									.filter(p -> p.getJobName().contains(Engineer.class.getSimpleName())
-											|| p.getJobName().contains(Technician.class.getSimpleName()))
+									.filter(p -> p.getJobName().equalsIgnoreCase(Engineer.class.getSimpleName())
+											|| p.getJobName().equalsIgnoreCase(Technician.class.getSimpleName()))
 								.collect(Collectors.toList());
 						}
 						
@@ -1050,8 +1050,8 @@ public class MalfunctionManager implements Serializable {
 						
 						if (!people.isEmpty()) {
 							elites = people.stream()
-								.filter(p -> p.getJobName().contains(Engineer.class.getSimpleName())
-										|| p.getJobName().contains(Technician.class.getSimpleName()))
+								.filter(p -> p.getJobName().equalsIgnoreCase(Engineer.class.getSimpleName())
+										|| p.getJobName().equalsIgnoreCase(Technician.class.getSimpleName()))
 								.collect(Collectors.toList());
 //							System.out.println(elites);
 						}

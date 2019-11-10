@@ -157,7 +157,7 @@ public abstract class Mission implements Serializable {
 	protected static ScientificStudyManager scientificManager;
 	protected static SurfaceFeatures surface;
 	protected static PersonConfig personConfig;
-	protected static MarsClock marsClock;
+	protected static MarsClock marsClock;// = sim.getMasterClock().getMarsClock();
 	protected static RelationshipManager relationshipManager;
 	protected static CreditManager creditManager;
 	
@@ -698,7 +698,7 @@ public abstract class Mission implements Serializable {
 	public final void addPhase(MissionPhase newPhase) {
 		if (newPhase == null) {
 			throw new IllegalArgumentException("newPhase is null");
-		} else if (!phases.contains(newPhase)) {
+		} else if (phases.isEmpty() || !phases.contains(newPhase)) {
 			phases.add(newPhase);
 		}
 	}
@@ -1032,7 +1032,7 @@ public abstract class Mission implements Serializable {
 	 * 
 	 * @return true if emergency affecting all.
 	 */
-	protected boolean hasEmergencyAllCrew() {
+	public boolean hasEmergencyAllCrew() {
 		return hasDangerousMedicalProblemsAllCrew();
 	}
 

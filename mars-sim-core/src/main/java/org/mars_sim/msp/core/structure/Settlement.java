@@ -1320,9 +1320,9 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 		// Sample a data point every SAMPLE_FREQ (in millisols)
 		int millisols = marsClock.getMillisolInt();
 
-		// Avoid checking at 0 or 1000 millisols
+		// Avoid checking at < 10 or 1000 millisols
 		// due to high cpu util during the change of day
-		if (millisols != 0 && millisols != 1000) {
+		if (millisols >= 10 && millisols != 1000) {
 
 			// Reduce the recurrent passing score daily to its 90% value
 			minimumPassingScore = minimumPassingScore * .9;
