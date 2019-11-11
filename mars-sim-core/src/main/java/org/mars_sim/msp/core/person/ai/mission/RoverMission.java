@@ -752,6 +752,7 @@ public abstract class RoverMission extends VehicleMission {
 		if (member instanceof Person) {
 			Person person = (Person) member;
 
+			// TODO: should it check for fatigue only ?
 			if (person.getFatigue() < 750) {
 				if (lastOperateVehicleTaskPhase != null) {
 					result = new DriveGroundVehicle(person, getRover(), getNextNavpoint().getLocation(),

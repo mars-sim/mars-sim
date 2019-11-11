@@ -63,7 +63,11 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 
 	// Data members
 	private int sideDirection = NONE;
-
+	/** The person performing the task. */
+	protected Person person;
+	/** The robot performing the task. */
+	protected Robot robot;
+	
 	/**
 	 * Default Constructor.
 	 * 
@@ -78,8 +82,10 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 
 		// Use OperateVehicle constructor
 		super(NAME, person, vehicle, destination, startTripTime, startTripDistance, STRESS_MODIFIER, true,
-				(300D + RandomUtil.getRandomDouble(100D)));
+				(300D + RandomUtil.getRandomDouble(20D)));
 
+		this.person = person;
+		
 		// Set initial parameters
 		setDescription(Msg.getString("Task.description.driveGroundVehicle.detail", vehicle.getName())); // $NON-NLS-1$
 		addPhase(AVOID_OBSTACLE);
@@ -98,8 +104,10 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 
 		// Use OperateVehicle constructor
 		super(NAME, robot, vehicle, destination, startTripTime, startTripDistance, STRESS_MODIFIER, true,
-				(300D + RandomUtil.getRandomDouble(100D)));
+				(300D + RandomUtil.getRandomDouble(20D)));
 
+		this.robot = robot;
+		
 		// Set initial parameters
 		setDescription(Msg.getString("Task.description.driveGroundVehicle.detail", vehicle.getName())); // $NON-NLS-1$
 		addPhase(AVOID_OBSTACLE);
@@ -127,8 +135,10 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 
 		// Use OperateVehicle constructor
 		super(NAME, person, vehicle, destination, startTripTime, startTripDistance, STRESS_MODIFIER, true,
-				(100D + RandomUtil.getRandomDouble(100D)));
+				(100D + RandomUtil.getRandomDouble(20D)));
 
+		this.person = person;
+		
 		// Set initial parameters
 		setDescription(Msg.getString("Task.description.driveGroundVehicle.detail", vehicle.getName())); // $NON-NLS-1$
 		addPhase(AVOID_OBSTACLE);
@@ -136,11 +146,11 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 		if (startingPhase != null)
 			setPhase(startingPhase);
 
-		LogConsolidated.log(logger, Level.FINER, 5000, sourceName,
+		LogConsolidated.log(logger, Level.INFO, 20_000, sourceName,
 				"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " took the wheel of rover "
 //						+ (person.getGender() == GenderType.MALE ? "his" : "her") + " driving " 
 						+ vehicle.getName()
-						+ ".",
+						+ " at the starting phase of '" + startingPhase + "'.",
 				null);
 
 	}
@@ -150,8 +160,10 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 
 		// Use OperateVehicle constructor
 		super(NAME, robot, vehicle, destination, startTripTime, startTripDistance, STRESS_MODIFIER, true,
-				(100D + RandomUtil.getRandomDouble(100D)));
+				(100D + RandomUtil.getRandomDouble(20D)));
 
+		this.robot = robot;
+		
 		// Set initial parameters
 		setDescription(Msg.getString("Task.description.driveGroundVehicle.detail", vehicle.getName())); // $NON-NLS-1$
 		addPhase(AVOID_OBSTACLE);
@@ -159,7 +171,11 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 		if (startingPhase != null)
 			setPhase(startingPhase);
 
-		logger.fine(robot.getName() + " is driving " + vehicle.getName());
+		LogConsolidated.log(logger, Level.INFO, 20_000, sourceName,
+				"[" + robot.getLocationTag().getLocale() + "] " + robot.getName() + " took the wheel of rover "
+						+ vehicle.getName()
+						+ " at the starting phase of '" + startingPhase + "'.",
+				null);
 	}
 
 	/**
@@ -174,12 +190,13 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 
 		if (getPhase() == null) {
 //			throw new IllegalArgumentException("Task phase is null");
-//			LogConsolidated.log(logger, Level.INFO, 10_000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
-//					+ person.getName() + " had an undefined phase when driving " + getVehicle().getName() + ".", null);
+			LogConsolidated.log(Level.INFO, 10_000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
+					+ person.getName() + " had an unknown phase when driving " 
+					+ getVehicle().getName() + ".");
 			// If it called endTask() in OperateVehicle, then Task is no longer available
 			// WARNING: do NOT call endTask() here or it will end up calling endTask() 
 			// recursively.
-			return 0;		
+			return time;		
 			
 		} else if (AVOID_OBSTACLE.equals(getPhase())) {
 			return obstaclePhase(time);
@@ -498,7 +515,8 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 			manager = person.getSkillManager();
 		else if (robot != null)
 			manager = robot.getSkillManager();
-
+		if (person == null) System.out.println("person : " + person);
+		if (manager == null) System.out.println("manager : " + manager);
 		return manager.getEffectiveSkillLevel(SkillType.PILOTING);
 	}
 
@@ -560,12 +578,12 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 
 		if (getVehicle() != null) {
 			getVehicle().setSpeed(0D);
-	        VehicleOperator vo = getVehicle().getOperator();
+//	        VehicleOperator vo = getVehicle().getOperator();
 	        if (getVehicle() != null)
 		        // Need to set the vehicle operator to null before clearing the driving task 
 	        	getVehicle().setOperator(null);
-	        if (vo != null)
-	        	clearDrivingTask(vo);
+//	        if (vo != null)
+//	        	clearDrivingTask(vo);
 		}
 		
 		super.endTask();

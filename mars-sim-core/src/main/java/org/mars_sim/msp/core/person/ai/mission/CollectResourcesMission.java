@@ -540,7 +540,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 
 		List<Coordinates> unorderedSites = new ArrayList<Coordinates>();
 
-		// Determining the actual travelling range.
+		// Determining the actual traveling range.
 		double range = roverRange;
 		double timeRange = getTripTimeRange(tripTimeLimit, numSites, true);
 		if (timeRange < range)

@@ -337,7 +337,7 @@ implements Serializable {
             LogConsolidated.log(Level.INFO, 0, sourceName, 
 	    		"[" + person.getLocationTag().getLocale() +  "] " +
 	    		person.getName() + " collected " + Math.round(totalCollected*100D)/100D 
-	    		+ " kg of ice outside " + person.getAssociatedSettlement());
+	    		+ " kg of ice outside at " + person.getCoordinates().getFormattedString());
  
         }
         // Add experience points

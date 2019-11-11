@@ -94,7 +94,7 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 
 			// If bags are not available, end task.
 			if (!hasBags()) {
-				LogConsolidated.log(logger, Level.INFO, 5000, sourceName, 
+				LogConsolidated.log(logger, Level.INFO, 5_000, sourceName, 
 		        		"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
 		        		+ " was not able to find more bags to collect mined minerals.", null);
 				endTask();
@@ -341,11 +341,12 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 			if (!ExitAirlock.canExitAirlock(person, rover.getAirlock()))
 				return false;
 
-			if (surface.getSolarIrradiance(person.getCoordinates()) == 0D) {
-				LogConsolidated.log(logger, Level.FINE, 5000, sourceName, 
-		        		"[" + person.getLocationTag().getLocale() + "] " + person.getName()
-		        			+ " ended collecting minerals: night time",   null);
-				if (!surface.inDarkPolarRegion(person.getCoordinates()))
+			if (surface.getSolarIrradiance(person.getCoordinates()) <= 15D
+				&& !surface.inDarkPolarRegion(person.getCoordinates())) {
+					LogConsolidated.log(Level.FINE, 5_000, sourceName, 
+			        		"[" + person.getLocationTag().getLocale() + "] " + person.getName()
+			        			+ " ended mining minerals due to low light level outside at " 
+			        				+ person.getCoordinates().getFormattedString());
 					return false;
 			}
 

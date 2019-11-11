@@ -1148,7 +1148,7 @@ public class Farming extends Function implements Serializable {
 					// store the tissues
 					if (amountExtracted > 0) {
 						store(amountExtracted, tissueID, sourceName + "::growCropTissue");
-						LogConsolidated.log(Level.INFO, 3_000, sourceName,
+						LogConsolidated.log(Level.FINE, 3_000, sourceName,
 							"[" + building.getSettlement().getName() 
 							+ "] " + p + " cloned "
 							+ Math.round(amountExtracted*1000.0)/1000.0D + " kg "

@@ -586,7 +586,7 @@ public abstract class Airlock implements Serializable {
 						String operatorName = p.getName();
 						LogConsolidated.log(Level.SEVERE, 10_000, sourceName, "[" + p.getLocationTag().getLocale() + "] "
 								+ "Airlock operator " + operatorName 
-								+ " was no longer operating the airlock in " + getEntityName());
+								+ " was no longer operating the airlock.");// + getEntityName());
 						
 						// Elect a new operator
 						electAnOperator();

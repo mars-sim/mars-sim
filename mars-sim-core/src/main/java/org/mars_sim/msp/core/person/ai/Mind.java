@@ -15,7 +15,9 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEventType;
+import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.job.JobAssignmentType;
 import org.mars_sim.msp.core.person.ai.job.JobHistory;
@@ -84,6 +86,7 @@ public class Mind implements Serializable {
 	private static MissionManager missionManager;
 	private static MarsClock marsClock;
 	private static RelationshipManager relationshipManager;
+	private static SurfaceFeatures surfaceFeatures;
 
 	static {
 		Simulation sim = Simulation.instance();
@@ -93,6 +96,8 @@ public class Mind implements Serializable {
 		missionManager = sim.getMissionManager();
 		// Load the relationship manager
 		relationshipManager = sim.getRelationshipManager();
+		// Load SurfaceFeatures
+		surfaceFeatures = sim.getMars().getSurfaceFeatures();
 	}
 	
 	/**
@@ -264,17 +269,41 @@ public class Mind implements Serializable {
 //			boolean isInMissionWindow = taskManager.getTaskSchedule().isAtStartOfWorkShift();
 //		
 			if (hasActiveMission) {
+							
+				// Probability affected by the person's stress and fatigue.
+		        PhysicalCondition condition = person.getPhysicalCondition();
+		        double fatigue = condition.getFatigue();
+		        double stress = condition.getStress();
+		        double hunger = condition.getHunger();
+		        
+		        boolean inDarkPolarRegion = surfaceFeatures.inDarkPolarRegion(mission.getCurrentMissionLocation());
+				double sunlight = surfaceFeatures.getSolarIrradiance(mission.getCurrentMissionLocation());
+				if ((sunlight == 0) && !inDarkPolarRegion) {
+					selectNewTask();
+				}
 				
-				if (VehicleMission.APPROVING.equals(mission.getPhase())
+				// Test if a person is tired, too stressful or hungry and need 
+				// to take break, eat and/or sleep
+		        if ((fatigue > 1500 || stress > 55 || hunger > 1000)
+		        	&& !mission.hasDangerousMedicalProblemsAllCrew())
+		        	// Cannot perform the mission if a person is not well
+		        	// Note: If everyone has dangerous medical condition during a mission, 
+		        	// then it won't matter and someone needs to drive the rover home.
+		        	selectNewTask();
+				
+		        else if (VehicleMission.APPROVING.equals(mission.getPhase())
 						&& !mission.getStartingMember().equals(person)
 						) {
+		        	// If the mission is still pending upon approving, then only the mission lead
+		        	// needs to perform the mission and rest of the crew can do something else to 
+		        	// get themselves ready.
 					selectNewTask();
 				}
 				
 				else if (mission.getPhase() != null) {
 					
 					if (mission.getPhase().equals(VehicleMission.TRAVELLING)
-						&& person.getVehicle().getOperator() == null) {
+						&& mission.getVehicle().getOperator() == null) {
 						// if no one is driving the vehicle and nobody is NOT doing field work, 
 						// need to elect a driver right away
 						mission.performMission(person);

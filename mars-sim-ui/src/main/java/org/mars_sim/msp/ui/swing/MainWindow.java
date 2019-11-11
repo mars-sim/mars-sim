@@ -357,6 +357,8 @@ extends JComponent {
 		dateField = new WebDateField(StyleId.datefield);//new Date(earthClock.getInstant().toEpochMilli()));
 		dateField.setPreferredWidth(190);
 		dateField.setAllowUserInput(false);
+//		Customizer<WebCalendar> c = dateField.getCalendarCustomizer();
+//		c.customize();
 		dateField.setFont(font);
 //		dateField.setForeground(Color.BLUE);
 		dateField.setAlignmentX(.5f);

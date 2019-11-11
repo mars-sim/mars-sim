@@ -140,7 +140,8 @@ public class AreologyStudyFieldWork extends EVAOperation implements Serializable
 			if (isGettingDark(person)) {
 				LogConsolidated.log(Level.FINE, 5000, sourceName,
 						"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " ended "
-								+ person.getTaskDescription() + " : too dark to continue with the EVA.");
+								+ person.getTaskDescription() + " due to getting too dark "
+								+ " at " + person.getCoordinates().getFormattedString());
 				return false;
 			}
 

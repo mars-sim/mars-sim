@@ -425,11 +425,11 @@ public class MineSite extends EVAOperation implements Serializable {
 			if (RandomUtil.lessThanRandPercent(chance * time)) {
 				if (person != null) {
 					logger.info(person.getName() + " has an accident while performing maintenance on " + luv.getName()
-							+ ".");
+					+ " at " + person.getCoordinates().getFormattedString());
 					luv.getMalfunctionManager().createASeriesOfMalfunctions(luv.getName(), person);
 				} else if (robot != null) {
 					logger.info(robot.getName() + " has an accident while performing maintenance on " + luv.getName()
-							+ ".");
+					+ " at " + person.getCoordinates().getFormattedString());
 					luv.getMalfunctionManager().createASeriesOfMalfunctions(luv.getName(), robot);
 				}
 			}

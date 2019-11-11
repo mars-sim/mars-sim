@@ -41,6 +41,7 @@ import org.mars_sim.msp.core.structure.goods.CreditManager;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.tool.RandomUtil;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * The Mission class represents a large multi-person task There is at most one
@@ -1005,7 +1006,7 @@ public abstract class Mission implements Serializable {
 	 * 
 	 * @return true if all have dangerous medical problems
 	 */
-	protected final boolean hasDangerousMedicalProblemsAllCrew() {
+	public final boolean hasDangerousMedicalProblemsAllCrew() {
 		boolean result = true;
 		for (MissionMember member : members) {
 			if (member instanceof Person) {
@@ -1607,6 +1608,15 @@ public abstract class Mission implements Serializable {
 	public int getPriority() {
 		return priority;
 	}
+	
+	
+	public Vehicle getVehicle() {
+		if (this instanceof VehicleMission) {
+			return ((VehicleMission)this).getVehicle();
+		}
+		return null;	
+	}
+	
 	
 	public boolean equals(Object obj) {
 		if (this == obj) return true;

@@ -502,6 +502,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
         double avgSpeed = (startTripDistance - getDistanceToDestination()) / hoursDiff;
 
         // Determine estimated speed in km/hr.
+        // Assume the crew will drive the overall 50 % of the time (including the time for stopping by various sites)
         double estimatorConstant = .5D;
         double estimatedSpeed = estimatorConstant * (vehicle.getBaseSpeed() + getSpeedSkillModifier());
 
@@ -512,7 +513,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
 
         // Determine time to destination in millisols.
         double hoursToDestination = getDistanceToDestination() / finalEstimatedSpeed;
-        double millisolsToDestination = MarsClock.convertSecondsToMillisols(hoursToDestination * 60D * 60D);
+        double millisolsToDestination = hoursToDestination / MarsClock.HOURS_PER_MILLISOL;// MarsClock.convertSecondsToMillisols(hoursToDestination * 60D * 60D);
 
         // Determine ETA
         MarsClock eta = (MarsClock) marsClock.clone();
@@ -595,12 +596,12 @@ public abstract class OperateVehicle extends Task implements Serializable {
     public void endTask() {
     	if (vehicle != null) {
     		vehicle.setSpeed(0D);
-    		VehicleOperator vo = vehicle.getOperator();
+//    		VehicleOperator vo = vehicle.getOperator();
     		// Need to set the vehicle operator to null before clearing the driving task 
         	if (vehicle != null)
         		vehicle.setOperator(null);
-        	if (vo != null)
-        		clearDrivingTask(vo);
+//        	if (vo != null)
+//        		clearDrivingTask(vo);
     	}
     	
     	super.endTask();
@@ -612,7 +613,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
      * @param operator the vehicle operator.
      * @return average operating speed (km/h)
      */
-    public static double getAverageVehicleSpeed(Vehicle vehicle, VehicleOperator operator) {
+    public static double getAverageVehicleSpeed(Vehicle vehicle, VehicleOperator operator, Mission mission) {
     	if (vehicle != null) {
     		// Need to update this to reflect the particular operator's average speed operating the vehicle.
     		double baseSpeed = vehicle.getBaseSpeed();
@@ -642,7 +643,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
     			// TODO: Should account for a person's attributes
     			
     			// Check for any crew emergency
-    			if (vehicle.getMission().hasEmergencyAllCrew())
+    			if (mission.hasEmergencyAllCrew())
     				mod += baseSpeed * 0.25;
     		}
     		

@@ -516,12 +516,12 @@ public class Mining extends RoverMission {
 				}
 			}
 
-			// If no one can mine or collect minerals at the site and this is not due to it
-			// just being
+			// If no one can mine minerals at the site or is low light level (except in dark polar region)
 			// night time, end the mining phase.
 			boolean inDarkPolarRegion = surface.inDarkPolarRegion(getCurrentMissionLocation());
 			double sunlight = surface.getSolarIrradiance(getCurrentMissionLocation());
-			if (nobodyMineOrCollect && ((sunlight > 0D) || inDarkPolarRegion)) {
+			if (nobodyMineOrCollect 
+					|| ((sunlight < 12D) && !inDarkPolarRegion)) {
 				setPhaseEnded(true);
 			}
 

@@ -160,12 +160,22 @@ public class LocationTag implements LocationState, Serializable {
 	/**
 	 * Obtains the general locale (settlement or coordinates)
 	 * 
-	 * @return the settlement or the coordinates
+	 * @return the exact or nearby settlement/vehicle
 	 */
 	public String getLocale() {
 		if (p != null) {
 			if (LocationStateType.INSIDE_SETTLEMENT == p.getLocationStateType())
 				return p.getSettlement().getName();
+			else if (LocationStateType.INSIDE_VEHICLE == p.getLocationStateType())
+				return p.getVehicle().getName();
+			else if (isInSettlementVicinity()
+					|| LocationStateType.WITHIN_SETTLEMENT_VICINITY == p.getLocationStateType())
+				return findSettlementVicinity().getName();
+			else if (LocationStateType.OUTSIDE_ON_THE_SURFACE_OF_MARS == p.getLocationStateType()) {
+				Vehicle v = findNearbyVehicleVicinity();
+				if (v != null)
+					return v.getName();				
+			}
 			else
 				return p.getCoordinates().getFormattedString();
 		}
@@ -313,6 +323,26 @@ public class LocationTag implements LocationState, Serializable {
 	}
 
 	/**
+	 * Finds the vehicle that drops off a person/robot outside on Mars
+	 * 
+	 * @return {@link Vehicle}
+	 */
+	public Vehicle findNearbyVehicleVicinity() {
+		Coordinates c = unit.getCoordinates();
+
+		if (unitManager == null)
+			unitManager = Simulation.instance().getUnitManager();
+				
+		Collection<Vehicle> list = unitManager.getVehicles();
+		for (Vehicle v : list) {
+			if (v.getCoordinates().equals(c) || v.getCoordinates() == c)
+				return v;
+		}
+
+		return null; 
+	}
+	
+	/**
 	 * Checks if an unit is in the vicinity of a settlement
 	 * 
 	 * @return true if it is
@@ -325,7 +355,7 @@ public class LocationTag implements LocationState, Serializable {
 				
 		Collection<Settlement> ss = unitManager.getSettlements();
 		for (Settlement s : ss) {
-			if (s.getCoordinates().equals(c) || s.getCoordinates() == c)
+			if (s.getCoordinates() == c || s.getCoordinates().equals(c))
 				return true;
 		}
 

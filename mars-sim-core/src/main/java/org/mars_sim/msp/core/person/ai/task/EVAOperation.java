@@ -391,8 +391,8 @@ public abstract class EVAOperation extends Task implements Serializable {
 	public static boolean hasLittleSunlight(Person person) {
 
 		// Check if it is night time.
-		if (surface.getSolarIrradiance(person.getCoordinates()) < 12D) {
-			if (!surface.inDarkPolarRegion(person.getCoordinates()))
+		if (surface.getSolarIrradiance(person.getCoordinates()) < 12D
+			&& !surface.inDarkPolarRegion(person.getCoordinates())) {
 				return false;
 		}
 		
@@ -410,7 +410,8 @@ public abstract class EVAOperation extends Task implements Serializable {
 		if (isGettingDark(person)) {
 			LogConsolidated.log(Level.FINE, 5000, sourceName,
 					"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " ended "
-					+ person.getTaskDescription() + " : too dark to continue with the EVA.");
+					+ person.getTaskDescription() + " : too dark to continue with the EVA outside at " 
+					+ person.getCoordinates().getFormattedString());
 			return false;
 		}
 		
@@ -431,8 +432,10 @@ public abstract class EVAOperation extends Task implements Serializable {
 			if (oxygen <= (oxygenCap * .2D)) {
 				LogConsolidated.log(Level.INFO, 5000, sourceName,
 						"[" + person.getLocationTag().getLocale() + "] " + person.getName()
-								+ " reported less than 20% O2 level left. Ending "
-								+ person.getTaskDescription() + " : " + suit.getName());
+								+ " reported less than 20% O2 level left in "
+								+ suit.getName() + " Ending "
+								+ person.getTaskDescription() 
+								+ " at " + person.getCoordinates().getFormattedString());
 				return false;
 			}
 

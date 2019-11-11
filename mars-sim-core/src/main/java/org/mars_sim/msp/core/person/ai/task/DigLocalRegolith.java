@@ -310,7 +310,8 @@ implements Serializable {
         int agility = nManager.getAttribute(NaturalAttributeType.AGILITY);
         int eva = person.getSkillManager().getSkillLevel(SkillType.EVA_OPERATIONS);
         
-        double regolithCollected = .25 + RandomUtil.getRandomDouble(.25) * time * COLLECTION_RATE * ((.5 * agility + strength) / 150D) * (eva + .1)/ 5D ;
+        double regolithCollected = .25 + RandomUtil.getRandomDouble(.25) 
+        	* time * COLLECTION_RATE * ((.5 * agility + strength) / 150D) * (eva + .1)/ 5D ;
         totalCollected += regolithCollected;
         
         boolean finishedCollecting = false;
@@ -332,7 +333,7 @@ implements Serializable {
             LogConsolidated.log(Level.INFO, 0, sourceName, 
         		"[" + person.getLocationTag().getLocale() +  "] " +
         		person.getName() + " collected " + Math.round(totalCollected*100D)/100D 
-        		+ " kg of regolith outside " + person.getAssociatedSettlement());
+        		+ " kg of regolith outside at " + person.getCoordinates().getFormattedString());
  
     	}
         

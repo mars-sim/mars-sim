@@ -50,7 +50,7 @@ public class PlanMissionMeta implements MetaTask, Serializable {
 
         double result = 0D;
 
-        if (person.isInside()) {
+        if (person.isInSettlement()) {
 
     		boolean canDo = person.getMind().canStartNewMission();
     		if (!canDo)

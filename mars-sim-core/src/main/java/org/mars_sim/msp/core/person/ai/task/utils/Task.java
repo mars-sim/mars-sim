@@ -206,6 +206,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			subTask = null;
 		}
 	
+		// Set done to true
 		done = true;
 
 		if (person != null) { 
@@ -232,6 +233,8 @@ public abstract class Task implements Serializable, Comparable<Task> {
 
 			eventManager.registerNewEvent(endingEvent);
 		}
+		
+//		person.getMind().getTaskManager().endCurrentTask();
 	}
 
 	/**

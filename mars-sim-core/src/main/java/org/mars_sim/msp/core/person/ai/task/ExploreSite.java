@@ -90,7 +90,7 @@ public class ExploreSite extends EVAOperation implements Serializable {
 
 			// If specimen containers are not available, end task.
 			if (!hasSpecimenContainer()) {
-				logger.fine(person.getName() + " not able to find specimen container to collect rock samples.");
+				logger.fine(person.getName() + " was unable to find any specimen containers to collect rock samples.");
 				endTask();
 			}
 		}
@@ -144,12 +144,12 @@ public class ExploreSite extends EVAOperation implements Serializable {
 				return false;
 
 			if (EVAOperation.isGettingDark(person)) {
-				logger.fine(person.getName() + " ended exploring site due to night time");
+				logger.fine(person.getName() + " ended exploring site due to getting dark.");
 				return false;
 			}
 
 			if (EVAOperation.isHungryAtMealTime(person)) {
-				logger.fine(person.getName() + " ended exploring site due to meal time");
+				logger.fine(person.getName() + " ended exploring site due to meal time.");
 				return false;
 			}
 
@@ -271,7 +271,8 @@ public class ExploreSite extends EVAOperation implements Serializable {
 			// Add to site mineral concentration estimation improvement number.
 			site.addEstimationImprovement();
 			LogConsolidated.log(Level.FINE, 5000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
-					+ person.getName() + " was exploring the site at " + site.getLocation().getFormattedString() + ". Estimation Improvement: "
+					+ person.getName() + " was exploring the site at " + site.getLocation().getFormattedString() 
+					+ ". Estimation Improvement: "
 					+ site.getNumEstimationImprovement() + ".");
 		}
 	}
@@ -295,8 +296,6 @@ public class ExploreSite extends EVAOperation implements Serializable {
 		if (container != null) {
 			if (person.getInventory().canStoreUnit(container, false)) {
 				container.transfer(rover, person);
-//				rover.getInventory().retrieveUnit(container);
-//				person.getInventory().storeUnit(container);
 			}
 		}
 	}
@@ -315,7 +314,6 @@ public class ExploreSite extends EVAOperation implements Serializable {
 		while (i.hasNext()) {
 			SpecimenBox container = i.next();
 			try {
-				// AmountResource rockSamples = ("rock samples");
 				double remainingCapacity = container.getInventory()
 						.getAmountResourceRemainingCapacity(ResourceUtil.rockSamplesID, false, false);
 
@@ -379,8 +377,6 @@ public class ExploreSite extends EVAOperation implements Serializable {
 		if (pInv.containsUnitClass(SpecimenBox.class)) {
 			SpecimenBox box = pInv.findASpecimenBox();
 			box.transfer(pInv, rover);
-//			pInv.retrieveUnit(box);
-//			rover.getInventory().storeUnit(box);
 		}
 
 		super.endTask();

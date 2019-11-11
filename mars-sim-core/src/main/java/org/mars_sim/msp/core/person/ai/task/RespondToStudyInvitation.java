@@ -100,7 +100,7 @@ public class RespondToStudyInvitation extends Task implements Serializable {
 			}
 		} else {
 			LogConsolidated.log(Level.SEVERE, 0, sourceName, "[" + person.getLocationTag().getLocale() + "] "
-					+ person.getName() + " cannot find any openly invited studies.");
+					+ person.getName() + " could not find any openly invited studies.");
 			endTask();
 		}
 

@@ -91,7 +91,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	private Vehicle vehicle;
 	/** The last operator of this vehicle in the mission. */
 	private VehicleOperator lastOperator;
-
+	/** The mission lead of this mission. */
 	private MissionMember startingMember;
 	/** The current operate vehicle task. */
 	private OperateVehicle operateVehicleTask;
@@ -663,13 +663,12 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		// destination.
 		boolean reachedDestination = false;
 		boolean malfunction = false;
-		// Avoid NullPointerException by checking if vehicle/destination is
-		// null
-		if (vehicle != null && destination != null) {
-			if (vehicle.getCoordinates() != null && destination.getLocation() != null) {
-				reachedDestination = vehicle.getCoordinates().equals(destination.getLocation());
-			}
 
+		if (vehicle != null && destination != null 
+				&& vehicle.getCoordinates() != null 
+				&& destination.getLocation() != null) {
+			
+			reachedDestination = vehicle.getCoordinates().equals(destination.getLocation());
 			malfunction = vehicle.getMalfunctionManager().hasMalfunction();
 		}
 
@@ -680,7 +679,10 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 
 				// Drivers should rotate. Filter out this person if he/she was the last
 				// operator.
-				if (person != lastOperator && vehicle != null) {
+				// TODO: what if other people are incapacitated ? Will need this person to continue
+				// to drive back home
+				if ((hasDangerousMedicalProblemsAllCrew() || person != lastOperator)
+						&& vehicle != null) {
 					// If vehicle doesn't currently have an operator, set this person as the
 					// operator.
 					if (vehicle.getOperator() == null) {
@@ -697,7 +699,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 					}
 
 					else {
-						// If emergency, make sure current operate vehicle task is pointed home.
+						// If emergency, make sure the current operateVehicleTask is pointed home.
 						if (operateVehicleTask != null 
 								&& destination.getLocation() != null
 								&& operateVehicleTask.getDestination() != null
@@ -856,7 +858,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 * @return average speed (km/h)
 	 */
 	private double getAverageVehicleSpeedForOperator(VehicleOperator operator) {
-		return OperateVehicle.getAverageVehicleSpeed(vehicle, operator);
+		return OperateVehicle.getAverageVehicleSpeed(vehicle, operator, this);
 	}
 
 	/**
