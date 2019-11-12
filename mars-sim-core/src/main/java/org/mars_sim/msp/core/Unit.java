@@ -72,6 +72,8 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 	private String name;
 	/** TODO Unit description needs to be internationalized. */
 	private String description;
+	/** Commander's notes on this unit. */
+	private String notes = "";
 
 	/** The unit's location tag. */
 	private LocationTag tag;
@@ -337,6 +339,26 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 		fireUnitUpdate(UnitEventType.DESCRIPTION_EVENT, description);
 	}
 
+	/**
+	 * Gets the commander's notes on this unit.
+	 * 
+	 * @return notes
+	 */
+	public String getNotes() {
+		return notes;
+	}
+
+	/**
+	 * Sets the commander's notes on this unit.
+	 * 
+	 * @param notes.
+	 */
+	public void setNotes(String notes) {
+		this.notes = notes;
+		fireUnitUpdate(UnitEventType.NOTES_EVENT, notes);
+	}
+	
+	
 	/**
 	 * Gets the unit's location
 	 * 

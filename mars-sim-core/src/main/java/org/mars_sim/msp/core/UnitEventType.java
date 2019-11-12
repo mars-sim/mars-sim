@@ -23,7 +23,8 @@ public enum UnitEventType {
 	MASS_EVENT						("mass"),
 	LOCATION_EVENT					("location"),
 	CONTAINER_UNIT_EVENT			("container unit"),
-
+	NOTES_EVENT						("notes"),
+	
 	// For Settlement
 	ADD_ASSOCIATED_PERSON_EVENT		("add associated person"),
 	REMOVE_ASSOCIATED_PERSON_EVENT	("remove associated person"),

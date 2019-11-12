@@ -17,6 +17,8 @@ public enum MissionStatus {
 
 	USER_ABORTED_MISSION 							("Mission aborted by user."),
 	
+	MISSION_ABORTED									("Mission aborted."),
+	
 	UNREPAIRABLE_MALFUNCTION  						("Unrepairable malfunction."),
 	
 	NOT_ENOUGH_RESOURCES 							("Not enough resources."),

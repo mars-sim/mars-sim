@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LogConsolidated;
@@ -411,11 +410,13 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 				if (person != null)
 					LogConsolidated.log(logger, Level.INFO, 3_000, sourceName, 
 						"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
-						+ person.getLocationTag().getImmediateLocation().toLowerCase() + " unloaded " + equipment.getNickName() + " from " + vehicle.getName() + ".", null);
+//						+ person.getLocationTag().getImmediateLocation().toLowerCase() 
+						+ " unloaded " + equipment.getNickName() + " from " + vehicle.getName() + ".", null);
 				else
 					LogConsolidated.log(logger, Level.INFO, 3_000, sourceName, 
 						"[" + robot.getLocationTag().getLocale() + "] " + robot.getName() 
-						+ robot.getLocationTag().getImmediateLocation().toLowerCase() + " unloaded " + equipment.getNickName() + " from " + vehicle.getName() + ".", null);
+//						+ robot.getLocationTag().getImmediateLocation().toLowerCase() 
+						+ " unloaded " + equipment.getNickName() + " from " + vehicle.getName() + ".", null);
 			}
 		}
 
@@ -463,11 +464,13 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 			if (person != null)
 				LogConsolidated.log(logger, Level.INFO, 3_000, sourceName, 
 				"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
-				+ " in " + person.getLocationTag().getImmediateLocation() + " just unloaded a total of " + Math.round(totalAmount*100.0)/100.0 + " kg of resources from " + vehicle.getName() + ".", null);
+//				+ person.getLocationTag().getImmediateLocation() 
+				+ " just unloaded a total of " + Math.round(totalAmount*100.0)/100.0 + " kg of resources from " + vehicle.getName() + ".", null);
 			else
 				LogConsolidated.log(logger, Level.INFO, 3_000, sourceName, 
 				"[" + robot.getLocationTag().getLocale() + "] " + robot.getName() 
-				+ " in " + robot.getLocationTag().getImmediateLocation() + " just unloaded a total of " + Math.round(totalAmount*100.0)/100.0 + " kg of resources from " + vehicle.getName() + ".", null);
+//				+ robot.getLocationTag().getImmediateLocation() 
+				+ " just unloaded a total of " + Math.round(totalAmount*100.0)/100.0 + " kg of resources from " + vehicle.getName() + ".", null);
 		}
 		
 		int totalItems = 0;
@@ -496,11 +499,13 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 				if (person != null)
 					LogConsolidated.log(logger, Level.INFO, 3_000, sourceName, 
 						"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
-						+ " in " + person.getLocationTag().getImmediateLocation() + " just unloaded a total of " + totalItems + " items from " + vehicle.getName() + ".", null);
+//						+ " in " + person.getLocationTag().getImmediateLocation() 
+						+ " just unloaded a total of " + totalItems + " items from " + vehicle.getName() + ".", null);
 				else
 					LogConsolidated.log(logger, Level.INFO, 3_000, sourceName, 
 						"[" + robot.getLocationTag().getLocale() + "] " + robot.getName() 
-						+ " in " + robot.getLocationTag().getImmediateLocation() + " just unloaded a total of " + totalItems + " items from " + vehicle.getName() + ".", null);
+//						+ " in " + robot.getLocationTag().getImmediateLocation() 
+						+ " just unloaded a total of " + totalItems + " items from " + vehicle.getName() + ".", null);
 			}
 		}
 

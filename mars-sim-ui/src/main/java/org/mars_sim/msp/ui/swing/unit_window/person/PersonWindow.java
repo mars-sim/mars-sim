@@ -12,11 +12,13 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.unit_window.InventoryTabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.LocationTabPanel;
+import org.mars_sim.msp.ui.swing.unit_window.NotesTabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
 
 /**
  * The PersonWindow is the window for displaying a person.
  */
+@SuppressWarnings("serial")
 public class PersonWindow extends UnitWindow {
 
 	/** Is person dead? */
@@ -76,6 +78,8 @@ public class PersonWindow extends UnitWindow {
 
 		addTabPanel(new TabPanelHealth(person, desktop));
 
+		addTabPanel(new NotesTabPanel(person, desktop));
+		
 		addTabPanel(new InventoryTabPanel(person, desktop));
 
 		addTopPanel(new LocationTabPanel(person, desktop));

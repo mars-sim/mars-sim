@@ -304,7 +304,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
         
         double remainingFuel = vInv.getAmountResourceStored(fuelType, false);
 
-        if (remainingFuel < LEAST_AMOUNT) {
+        if (!vehicle.isInSettlement() && remainingFuel < LEAST_AMOUNT) {
         	// Case 1 : no fuel left
         	// TODO: need to turn on emergency beacon and ask for rescue here or in RoverMission ?
 	    	LogConsolidated.log(Level.SEVERE, 30_000, sourceName, "[" + vehicle.getName() + "] " 
@@ -565,7 +565,9 @@ public abstract class OperateVehicle extends Task implements Serializable {
         mod += baseSpeed * person.getPilotingMod();
         	
         // Check for any crew emergency
-		if (vehicle.getMission().hasEmergencyAllCrew())
+//        System.out.println("vehicle : " + vehicle);
+//        System.out.println("vehicle.getMission() : " + vehicle.getMission());
+        if (vehicle.getMission() != null && vehicle.getMission().hasEmergencyAllCrew())
 			mod += baseSpeed * 0.25;
 		
         return mod;

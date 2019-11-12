@@ -858,6 +858,10 @@ extends JComponent {
 //				WebLookAndFeel.setForceSingleEventsThread ( true );
 			WebLookAndFeel.install();
 			UIManagers.initialize();
+			
+			// Installing our extension for default skin
+//	        StyleManager.addExtensions ( new XmlSkinExtension ( MainWindow.class, "SimpleExtension.xml" ) );
+
             // They contain all custom styles demo application uses
 //            StyleManager.addExtensions ( new AdaptiveExtension (), new LightSkinExtension (), new DarkSkinExtension () );
 

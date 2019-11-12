@@ -12,12 +12,14 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.unit_window.InventoryTabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.LocationTabPanel;
+import org.mars_sim.msp.ui.swing.unit_window.NotesTabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
 
 /**
  * The RobotWindow is the window for displaying a robot.
  */
+@SuppressWarnings("serial")
 public class RobotWindow extends UnitWindow {
 
 	/** Is robot inoperable? */
@@ -52,6 +54,7 @@ public class RobotWindow extends UnitWindow {
 
 		addTabPanel(new InventoryTabPanel(robot, desktop));
 		addTopPanel(new LocationTabPanel(robot, desktop));
+		addTabPanel(new NotesTabPanel(robot, desktop));
 		addTabPanel(new TabPanelSchedule(robot, desktop));
 		addTabPanel(new TabPanelSkill(robot, desktop));
 		// addTabPanel(new TabPanelHealth(robot, desktop));

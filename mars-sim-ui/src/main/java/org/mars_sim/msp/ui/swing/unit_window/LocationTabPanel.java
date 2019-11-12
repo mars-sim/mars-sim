@@ -394,14 +394,6 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
 
 	}
 
-//	private String getLatitudeString() {
-//		return locationCache.getFormattedLatitudeString();
-//	}
-//
-//	private String getLongitudeString() {
-//		return locationCache.getFormattedLongitudeString();
-//	}
-
 	/**
 	 * Action event occurs.
 	 *
@@ -412,7 +404,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
 
 		// If the center map button was pressed, update navigator tool.
 		if (source == locatorButton) {
-			// 2015-12-19 Added codes to open the settlement map tool and center the map to
+			// Add codes to open the settlement map tool and center the map to
 			// show the exact/building location inside a settlement if possible
 			Person p = null;
 			Robot r = null;
@@ -427,17 +419,10 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
 				p = (Person) unit;
 				// SettlementMapPanel mapPanel = desktop.getSettlementWindow().getMapPanel();
 
-				if (p.isInSettlement()) {// .getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+				if (p.isInSettlement()) {
+					desktop.openToolWindow(SettlementWindow.NAME);
 
-//					if (mainScene != null) {
-//						mainScene.setSettlement(p.getSettlement());
-//					} else {
-						desktop.openToolWindow(SettlementWindow.NAME);
-//						if (mainScene != null)
-//							mainScene.setSettlement(p.getSettlement());
-//						else
-							combox.setSelectedItem(p.getSettlement());
-//					}
+					combox.setSelectedItem(p.getSettlement());
 
 					Building b = p.getBuildingLocation();
 					double xLoc = b.getXLocation();
@@ -450,7 +435,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
 					mapPanel.selectPerson(p);
 				}
 
-				else if (p.isInVehicle()) {// .getLocationSituation() == LocationSituation.IN_VEHICLE) {
+				else if (p.isInVehicle()) {
 
 					Vehicle vv = p.getVehicle();
 
@@ -458,19 +443,12 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
 
 						// out there on a mission
 						desktop.openToolWindow(NavigatorWindow.NAME);
-//						if (mainScene != null)
-//							Platform.runLater(() -> mainScene.openMinimap());
-
 						desktop.centerMapGlobe(p.getCoordinates());
 					} else {
 						// still parked inside a garage or within the premise of a settlement
 						desktop.openToolWindow(SettlementWindow.NAME);
-						// System.out.println("Just open Settlement Map Tool");
 
-//						if (mainScene != null)
-//							mainScene.setSettlement(vv.getSettlement());
-//						else
-							combox.setSelectedItem(vv.getSettlement());
+						combox.setSelectedItem(vv.getSettlement());
 
 						double xLoc = vv.getXLocation();
 						double yLoc = vv.getYLocation();
@@ -518,8 +496,6 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
 
 							// out there on a mission
 							desktop.openToolWindow(NavigatorWindow.NAME);
-//							if (mainScene != null)
-//								Platform.runLater(() -> mainScene.openMinimap());
 							// he's stepped outside a vehicle
 							desktop.centerMapGlobe(p.getCoordinates());
 						}
@@ -531,13 +507,10 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
 				r = (Robot) unit;
 				// SettlementMapPanel mapPanel = desktop.getSettlementWindow().getMapPanel();
 
-				if (r.isInSettlement()) {// .getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+				if (r.isInSettlement()) {
 					desktop.openToolWindow(SettlementWindow.NAME);
-					// System.out.println("Just open Settlement Map Tool");
-//					if (mainScene != null)
-//						mainScene.setSettlement(r.getSettlement());
-//					else
-						combox.setSelectedItem(r.getSettlement());
+
+					combox.setSelectedItem(r.getSettlement());
 
 					Building b = r.getBuildingLocation();
 					double xLoc = b.getXLocation();
@@ -550,7 +523,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
 					mapPanel.selectRobot(r);
 				}
 
-				else if (r.isInVehicle()) {// .getLocationSituation() == LocationSituation.IN_VEHICLE) {
+				else if (r.isInVehicle()) {
 
 					Vehicle vv = r.getVehicle();
 					if (vv.getSettlement() == null) {
@@ -559,11 +532,8 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
 					} else {
 						// still parked inside a garage or within the premise of a settlement
 						desktop.openToolWindow(SettlementWindow.NAME);
-						// System.out.println("Just open Settlement Map Tool");
-//						if (mainScene != null)
-//							mainScene.setSettlement(vv.getSettlement());
-//						else
-							combox.setSelectedItem(vv.getSettlement());
+
+						combox.setSelectedItem(vv.getSettlement());
 
 						double xLoc = vv.getXLocation();
 						double yLoc = vv.getYLocation();
@@ -577,7 +547,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
 					}
 				}
 
-				else if (r.isOutside()) {// .getLocationSituation() == LocationSituation.OUTSIDE) {
+				else if (r.isOutside()) {
 					Vehicle vv = r.getVehicle();
 
 					if (vv == null) {
@@ -613,11 +583,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
 
 				if (v.getSettlement() != null) {
 					desktop.openToolWindow(SettlementWindow.NAME);
-					// System.out.println("Just open Settlement Map Tool");
-//					if (mainScene != null)
-//						mainScene.setSettlement(v.getSettlement());
-//					else
-						combox.setSelectedItem(v.getSettlement());
+					combox.setSelectedItem(v.getSettlement());
 
 					double xLoc = v.getXLocation();
 					double yLoc = v.getYLocation();
@@ -643,10 +609,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
 				if (e.isInSettlement()) {// .getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 					desktop.openToolWindow(SettlementWindow.NAME);
 
-//					if (mainScene != null)
-//						mainScene.setSettlement(e.getSettlement());
-//					else
-						combox.setSelectedItem(e.getSettlement());
+					combox.setSelectedItem(e.getSettlement());
 
 //	    			Building b = e.getBuildingLocation();
 //	    			double xLoc = b.getXLocation();
@@ -659,7 +622,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
 //	    			mapPanel.selectRobot(r);
 				}
 
-				else if (e.isInVehicle()) {// .getLocationSituation() == LocationSituation.IN_VEHICLE) {
+				else if (e.isInVehicle()) {
 
 					Vehicle vv = e.getVehicle();
 					if (vv.getSettlement() == null) {
@@ -685,7 +648,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
 					}
 				}
 
-				else if (e.isOutside()) {// .getLocationSituation() == LocationSituation.OUTSIDE) {
+				else if (e.isOutside()) {
 
 				}
 

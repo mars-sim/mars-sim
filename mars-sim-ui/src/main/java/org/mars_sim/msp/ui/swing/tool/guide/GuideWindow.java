@@ -37,6 +37,7 @@ import com.alee.extended.label.WebStyledLabel;
 import com.alee.extended.link.UrlLinkAction;
 import com.alee.extended.link.WebLink;
 import com.alee.extended.statusbar.WebStatusBar;
+import com.alee.extended.svg.SvgIcon;
 import com.alee.laf.button.WebButton;
 import com.alee.laf.label.WebLabel;
 import com.alee.managers.style.StyleId;
@@ -127,11 +128,11 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
 		JPanel linkPanel = new JPanel(new FlowLayout(3, 3, FlowLayout.TRAILING));
 		topPanel.add(linkPanel, BorderLayout.EAST);
 		
-//		link = new WebLink(StyleId.linkShadow, new LazyIcon("github19"), WIKI_TEXT, new UrlLinkAction(WIKI_URL));
+//		link = new WebLink(StyleId.linkShadow, new SvgIcon("github19"), WIKI_TEXT, new UrlLinkAction(WIKI_URL));
 		link = new WebLink(StyleId.linkShadow, new UrlLinkAction(WIKI_URL));
-		link.setAlignmentY(.5f);
+		link.setAlignmentY(1f);
 		link.setText(WIKI_TEXT);
-//		link.setIcon(new LazyIcon("github16"));
+//		link.setIcon(new SvgIcon("github.svg")); // github19
 		TooltipManager.setTooltip(link, "Open mars-sim wiki in GitHub", TooltipWay.down);
 		linkPanel.add(link);
 

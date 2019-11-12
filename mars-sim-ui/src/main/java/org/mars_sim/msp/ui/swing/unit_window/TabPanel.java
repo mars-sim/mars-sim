@@ -15,7 +15,6 @@ import javax.swing.Icon;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
-import javax.swing.JViewport;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 

@@ -60,7 +60,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	public static final MissionPhase TRAVELLING = new MissionPhase(Msg.getString("Mission.phase.travelling")); //$NON-NLS-1$
 	public static final MissionPhase DISEMBARKING = new MissionPhase(Msg.getString("Mission.phase.disembarking")); //$NON-NLS-1$
 	public static final MissionPhase COMPLETED = new MissionPhase(Msg.getString("Mission.phase.completed")); //$NON-NLS-1$
-
+	public static final MissionPhase INCOMPLETED = new MissionPhase(Msg.getString("Mission.phase.incompleted")); //$NON-NLS-1$
+	
 	// Static members
 
 	/** Modifier for number of parts needed for a trip. */
@@ -467,7 +468,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			}
 		}
 
-		else { // Vehicle is already in the settlement vicinity
+		else { // Vehicle is still in the settlement vicinity or has arrived in a settlement
 			
 			if (!vehicle.isBeaconOn()) {
 				// if the emergency beacon is off
@@ -478,7 +479,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 								+ "'s emergency beacon and request for towing with the following status flag(s) :");
 					
 					for (int i=0; i< getMissionStatus().size(); i++) {
-						logger.warning(" (" + i + "). " + getMissionStatus().get(i).getName());
+						logger.warning("Mission Status (" + i + "). " + getMissionStatus().get(i).getName());
 					}
 				
 				vehicle.setEmergencyBeacon(true);
@@ -612,6 +613,11 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		
 		else if (COMPLETED.equals(getPhase())) {
 			addMissionStatus(MissionStatus.MISSION_ACCOMPLISHED);
+			endMission();
+		}
+		
+		else if (INCOMPLETED.equals(getPhase())) {
+			addMissionStatus(MissionStatus.MISSION_ABORTED);
 			endMission();
 		}
 	}

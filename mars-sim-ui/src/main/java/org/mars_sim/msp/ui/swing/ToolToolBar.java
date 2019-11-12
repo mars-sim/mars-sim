@@ -202,7 +202,9 @@ implements ActionListener {
 //		addSeparator();
 
 		WebSwitch ws = new WebSwitch(true);
-		ws.setSwitchComponents(ImageLoader.getIcon(Msg.getString("img.speed.play")), 
+		ws.setSwitchComponents(
+//				new SvgIcon("play16"), new SvgIcon("pause16"));
+				ImageLoader.getIcon(Msg.getString("img.speed.play")), 
 				ImageLoader.getIcon(Msg.getString("img.speed.pause")));
 		TooltipManager.setTooltip(ws, "play OR pause the Simulation", TooltipWay.down);
 		ws.addActionListener(new ActionListener() {
