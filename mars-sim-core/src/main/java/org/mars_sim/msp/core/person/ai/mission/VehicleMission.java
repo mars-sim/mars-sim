@@ -676,29 +676,14 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 
 			if (member instanceof Person) {
 				Person person = (Person) member;
-
+		
 				// Drivers should rotate. Filter out this person if he/she was the last
 				// operator.
 				// TODO: what if other people are incapacitated ? Will need this person to continue
 				// to drive back home
-				if ((hasDangerousMedicalProblemsAllCrew() || person != lastOperator)
-						&& vehicle != null) {
-					// If vehicle doesn't currently have an operator, set this person as the
-					// operator.
-					if (vehicle.getOperator() == null) {
-						if (operateVehicleTask != null) {
-							operateVehicleTask = getOperateVehicleTask(person, operateVehicleTask.getTopPhase());
-						} else {
-							operateVehicleTask = getOperateVehicleTask(person, null);
-						}
-
-						if (operateVehicleTask != null) {
-							assignTask(person, operateVehicleTask);
-							lastOperator = person;
-						}
-					}
-
-					else {
+				if (hasDangerousMedicalProblemsAllCrew() || person != lastOperator) {
+					// Note: Check if there is an emergency medical problem separately ?
+					if (hasEmergency()) {
 						// If emergency, make sure the current operateVehicleTask is pointed home.
 						if (operateVehicleTask != null 
 								&& destination.getLocation() != null
@@ -709,11 +694,29 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 									getNextNavpoint().getDescription())); // $NON-NLS-1$
 						}
 					}
+
+					if (vehicle.getOperator() == null 
+							&& (person.getPhysicalCondition().isFit() || hasDangerousMedicalProblemsAllCrew())) {
+						// If vehicle doesn't currently have an operator, set this person as the
+						// operator.
+						if (operateVehicleTask != null) {
+							operateVehicleTask = createOperateVehicleTask(person, operateVehicleTask.getTopPhase());
+							lastOperator = person;
+						} else {
+							operateVehicleTask = createOperateVehicleTask(person, null);
+							lastOperator = person;
+						}
+
+						if (operateVehicleTask != null) {
+							assignTask(person, operateVehicleTask);
+							lastOperator = person;
+						}
+					}
 				}
 
-				else {
-					lastOperator = null;
-				}
+//				else {
+//					lastOperator = null;
+//				}
 			}
 		}
 
@@ -721,10 +724,6 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		if (reachedDestination) {
 			reachedNextNode();
 			setPhaseEnded(true);
-		}
-
-		// Note: Check if there is an emergency medical problem separately ?
-		if (hasEmergency()) {
 		}
 
 		// remaining trip. false = not using margin.
@@ -748,7 +747,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 * @param member the mission member operating the vehicle.
 	 * @return an OperateVehicle task for the person.
 	 */
-	protected abstract OperateVehicle getOperateVehicleTask(MissionMember member,
+	protected abstract OperateVehicle createOperateVehicleTask(MissionMember member,
 			TaskPhase lastOperateVehicleTaskPhase);
 
 	/**

@@ -39,14 +39,22 @@ public final class TaskPhase implements Serializable {
     public String toString() {
         return name;
     }
-
+    
+	/**
+	 * Gets the hash code for this object.
+	 * 
+	 * @return hash code.
+	 */
+	public int hashCode() {
+		return name.hashCode();
+	}
+	
     @Override
     public boolean equals(Object obj) {
-        boolean result = false;
         if ((obj != null) && (obj instanceof TaskPhase) &&
-                obj.toString().equals(toString())) {
-            result = true;
+                ((TaskPhase)obj).getName().equals(name)) {
+            return true;
         }
-        return result;
+        return false;
     }
 }

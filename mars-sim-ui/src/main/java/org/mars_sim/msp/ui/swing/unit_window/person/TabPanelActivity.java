@@ -516,20 +516,20 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 				newSubTaskText = botTaskManager.getSubTaskDescription();
 			}
 
-			TaskPhase phase = null;
+			TaskPhase taskPhase = null;
 			TaskPhase subTaskPhase = null;
 			
 			if (person != null) {
-				phase = taskManager.getPhase();
+				taskPhase = taskManager.getPhase();
 				subTaskPhase = taskManager.getSubTaskPhase();
 			}
 			else {
-				phase = botTaskManager.getPhase();
+				taskPhase = botTaskManager.getPhase();
 				subTaskPhase = botTaskManager.getSubTaskPhase();
 			}
 
-			if (phase != null) {
-				newTaskPhase = phase.getName();
+			if (taskPhase != null) {
+				newTaskPhase = taskPhase.getName();
 			} else {
 				newTaskPhase = "";
 			}

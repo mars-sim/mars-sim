@@ -1679,6 +1679,36 @@ public class PhysicalCondition implements Serializable {
 		return result;
 	}
 
+	public boolean isFit() {
+        if (fatigue > 1250 || stress > 75 || hunger > 1000 || thirst > 500 || kJoules < 500
+	        	|| hasSeriousMedicalProblems())
+        	return false;
+        
+        return true;
+	}
+	
+	public int computeFitnessLevel() {
+		int level = 5;
+		if (hasSeriousMedicalProblems()) {
+			return 0;
+		}
+		
+        if (fatigue > 300 || stress > 15 || hunger > 200 || thirst > 100 || kJoules < 12000)
+        	level = 4;
+        else if (fatigue > 500 || stress > 30 || hunger > 400 || thirst > 200 || kJoules < 6000)
+        	level = 3;
+        else if (fatigue > 800 || stress > 45 || hunger > 600 || thirst > 300 || kJoules < 3000)
+        	level = 2;
+        else if (fatigue > 1000 || stress > 60 || hunger > 800 || thirst > 400 || kJoules < 1500)
+        	level = 1;
+        else if (fatigue > 1250 || stress > 75 || hunger > 1000 || thirst > 500 || kJoules < 500)
+        	level = 0;
+        else 
+        	level = -1;
+        
+        return level;
+	}
+	
 	/**
 	 * Gets a list of medication affecting the person.
 	 * 

@@ -269,28 +269,29 @@ public class Mind implements Serializable {
 //			boolean isInMissionWindow = taskManager.getTaskSchedule().isAtStartOfWorkShift();
 //		
 			if (hasActiveMission) {
-							
-				// Probability affected by the person's stress and fatigue.
-		        PhysicalCondition condition = person.getPhysicalCondition();
-		        double fatigue = condition.getFatigue();
-		        double stress = condition.getStress();
-		        double hunger = condition.getHunger();
-		        
+
 		        boolean inDarkPolarRegion = surfaceFeatures.inDarkPolarRegion(mission.getCurrentMissionLocation());
 				double sunlight = surfaceFeatures.getSolarIrradiance(mission.getCurrentMissionLocation());
 				if ((sunlight == 0) && !inDarkPolarRegion) {
-					selectNewTask();
+					if (mission.getPhase() != null)
+						resumeMission(-2);
+					else
+						selectNewTask();
 				}
 				
 				// Test if a person is tired, too stressful or hungry and need 
 				// to take break, eat and/or sleep
-		        if ((fatigue > 1500 || stress > 55 || hunger > 1000)
+				else if (!person.getPhysicalCondition().isFit()
 		        	&& !mission.hasDangerousMedicalProblemsAllCrew())
 		        	// Cannot perform the mission if a person is not well
 		        	// Note: If everyone has dangerous medical condition during a mission, 
 		        	// then it won't matter and someone needs to drive the rover home.
-		        	selectNewTask();
-				
+					// Add penalty in resuming the mission
+					if (mission.getPhase() != null)
+						resumeMission(-1);
+					else
+						selectNewTask();
+
 		        else if (VehicleMission.APPROVING.equals(mission.getPhase())
 						&& !mission.getStartingMember().equals(person)
 						) {
@@ -301,31 +302,10 @@ public class Mind implements Serializable {
 				}
 				
 				else if (mission.getPhase() != null) {
-					
-					if (mission.getPhase().equals(VehicleMission.TRAVELLING)
-						&& mission.getVehicle().getOperator() == null) {
-						// if no one is driving the vehicle and nobody is NOT doing field work, 
-						// need to elect a driver right away
-						mission.performMission(person);
-					}
-					else {
-
-						int priority = mission.getPriority();
-						
-						int rand = RandomUtil.getRandomInt(6);
-						
-						if (rand <= priority) {
-	//						// See if this person can ask for a mission
-	//						boolean newMission = !hasActiveMission && !hasAMission && !overrideMission && isInMissionWindow;							
-							mission.performMission(person);
-	//						logger.info(person + " was to perform the " + mission + " mission");
-						}
-						
-						else {
-							selectNewTask();
-						}
-					}
+					resumeMission(0);
 				}
+				else
+					selectNewTask();
 			}
 			
 			else {
@@ -334,6 +314,38 @@ public class Mind implements Serializable {
 		}
 	}
 
+	public void resumeMission(int modifier) {
+		if (mission.getPhase().equals(VehicleMission.TRAVELLING)) {
+			if (mission.getVehicle().getOperator() == null) {
+				// if no one is driving the vehicle and nobody is NOT doing field work, 
+				// need to elect a driver right away
+				checkMissionFitness(modifier);
+			}
+			else 
+				selectNewTask();
+		}
+		else {
+			checkMissionFitness(modifier);
+		}
+	}
+	
+	
+	public void checkMissionFitness(int modifier) {
+		int fitness = person.getPhysicalCondition().computeFitnessLevel();
+		int priority = mission.getPriority();
+		int rand = RandomUtil.getRandomInt(6);
+		if (rand + modifier - (fitness)/1.5D <= priority) {
+//					// See if this person can ask for a mission
+//					boolean newMission = !hasActiveMission && !hasAMission && !overrideMission && isInMissionWindow;							
+			mission.performMission(person);
+//					logger.info(person + " was to perform the " + mission + " mission");
+		}
+		
+		else {
+			selectNewTask();
+		}
+	}
+	
 	public void selectNewTask() {
 		try {
 			// A person has no active task

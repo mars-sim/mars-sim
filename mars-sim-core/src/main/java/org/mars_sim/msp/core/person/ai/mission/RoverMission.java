@@ -747,13 +747,13 @@ public abstract class RoverMission extends VehicleMission {
 	 * @param member the mission member operating the vehicle.
 	 * @return an OperateVehicle task for the person.
 	 */
-	protected OperateVehicle getOperateVehicleTask(MissionMember member, TaskPhase lastOperateVehicleTaskPhase) {
+	protected OperateVehicle createOperateVehicleTask(MissionMember member, TaskPhase lastOperateVehicleTaskPhase) {
 		OperateVehicle result = null;
 		if (member instanceof Person) {
 			Person person = (Person) member;
 
 			// TODO: should it check for fatigue only ?
-			if (person.getFatigue() < 750) {
+//			if (person.getFatigue() < 750) {
 				if (lastOperateVehicleTaskPhase != null) {
 					result = new DriveGroundVehicle(person, getRover(), getNextNavpoint().getLocation(),
 							getCurrentLegStartingTime(), getCurrentLegDistance(), lastOperateVehicleTaskPhase);
@@ -761,7 +761,7 @@ public abstract class RoverMission extends VehicleMission {
 					result = new DriveGroundVehicle(person, getRover(), getNextNavpoint().getLocation(),
 							getCurrentLegStartingTime(), getCurrentLegDistance());
 				}
-			}
+//			}
 		}
 
 		return result;

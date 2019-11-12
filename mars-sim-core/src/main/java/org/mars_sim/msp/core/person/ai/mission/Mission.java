@@ -932,8 +932,7 @@ public abstract class Mission implements Serializable {
 	}
 
 	/**
-	 * Adds a new task for a person in the mission. Task may be not assigned if it
-	 * is effort-driven and person is too ill to perform it.
+	 * Checks if a person has any issues in starting a new task 
 	 * 
 	 * @param person the person to assign to the task
 	 * @param task   the new task to be assigned

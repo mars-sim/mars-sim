@@ -66,7 +66,7 @@ public class TaskManager implements Serializable {
 	/** The cache for total probability. */
 	private double totalProbCache;
 	/** The cache for task name. */
-	private String taskNameCache = "";
+//	private String taskNameCache = "";
 	/** The cache for task description. */
 	private String taskDescriptionCache = "Relaxing";
 	/** The cache for task phase. */
@@ -276,19 +276,19 @@ public class TaskManager implements Serializable {
 		}
 	}
 	
-	/**
-	 * Returns the current task phase if there is one. Returns null if current task
-	 * has no phase. Returns null if there is no current task.
-	 * 
-	 * @return the current task phase
-	 */
-	public TaskPhase getMainTaskPhase() {
-		if (currentTask != null) {
-			return currentTask.getMainTaskPhase();
-		} else {
-			return null;
-		}
-	}
+//	/**
+//	 * Returns the current task phase if there is one. Returns null if current task
+//	 * has no phase. Returns null if there is no current task.
+//	 * 
+//	 * @return the current task phase
+//	 */
+//	public TaskPhase getMainTaskPhase() {
+//		if (currentTask != null) {
+//			return currentTask.getMainTaskPhase();
+//		} else {
+//			return null;
+//		}
+//	}
 
 	/**
 	 * Returns the current task. Return null if there is no current task.
@@ -300,7 +300,7 @@ public class TaskManager implements Serializable {
 	}
 
 	public String getLastTaskName() {
-		return taskNameCache;
+		return lastTask.getDescription();
 	}
 
 	public String getLastTaskDescription() {
@@ -380,18 +380,19 @@ public class TaskManager implements Serializable {
 //				&& !taskDescription.toLowerCase().contains(WALK) 
 					&& !taskDescription.equals("")) {
 
-				String taskPhaseName = null;
-				TaskPhase tp = getMainTaskPhase();
+				String taskPhaseName = "";
+				TaskPhase tp = getPhase();
 
 				if (tp != null) {
 					taskPhaseName = tp.getName();
-					if (!taskPhaseNameCache.equals(taskPhaseName)) {
-						// Note : can taskPhaseName be null ?
-						// TODO: decide if it needs to record the same task description as the last
-						taskSchedule.recordTask(taskName, taskDescription, taskPhaseName, missionName);
-						taskPhaseNameCache = taskPhaseName;
-						taskDescriptionCache = taskDescription;
-					}
+				}	
+
+				if (!taskPhaseNameCache.equals(taskPhaseName)) {
+					// Note : can taskPhaseName be null ?
+					// TODO: decide if it needs to record the same task description as the last
+					taskSchedule.recordTask(taskName, taskDescription, taskPhaseName, missionName);
+					taskPhaseNameCache = taskPhaseName;
+					taskDescriptionCache = taskDescription;
 				}
 			}
 		}
@@ -415,7 +416,7 @@ public class TaskManager implements Serializable {
 		} else {
 			lastTask = currentTask;
 			currentTask = newTask;
-			taskNameCache = currentTask.getTaskName();
+//			taskNameCache = currentTask.getTaskName();
 			taskDescriptionCache = currentTask.getDescription();
 
 			TaskPhase tp = currentTask.getPhase();

@@ -153,7 +153,8 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			boolean hasDuration, double duration) {
 
 		this.name = name;
-		effortDriven = effort;
+		this.description = name;
+		this.effortDriven = effort;
 		this.createEvents = createEvents;
 		this.stressModifier = stressModifier;
 		this.hasDuration = hasDuration;
@@ -178,8 +179,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 
 		timeCompleted = 0D;
 		
-		// For current task
-		description = name;
 		phase = null;
 		phases = new ArrayList<TaskPhase>();
 		
@@ -189,8 +188,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			subTask.setDescription("");
 			subTask = null;
 		}
-
-
 	}
 
 	/**
@@ -384,9 +381,9 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 */
 	public TaskPhase getPhase() {
 		// TODO: should it checks for subtask's phase first ?
-		if ((subTask != null) && !subTask.done && subTask.getPhase() != null) {
-			return subTask.getPhase();
-		}
+//		if ((subTask != null) && !subTask.done && subTask.getPhase() != null) {
+//			return subTask.getPhase();
+//		}
 		return phase;
 	}
 
@@ -493,9 +490,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 
 	public void createSubTask(Task newSubTask) {
 		subTask = newSubTask;
-		subTask.setDescription(newSubTask.getDescription());
 		if (person != null) {
-
 			person.fireUnitUpdate(UnitEventType.TASK_SUBTASK_EVENT, newSubTask);
 		} else if (robot != null) {
 			robot.fireUnitUpdate(UnitEventType.TASK_SUBTASK_EVENT, newSubTask);
@@ -1310,6 +1305,24 @@ public abstract class Task implements Serializable, Comparable<Task> {
 
 	}
 	
+	/**
+	 * Gets the hash code for this object.
+	 * 
+	 * @return hash code.
+	 */
+	public int hashCode() {
+		return name.hashCode();
+	}
+	
+    @Override
+    public boolean equals(Object obj) {
+        if ((obj != null) && (obj instanceof Task) &&
+                ((Task)obj).getName().equals(name)) {
+            return true;
+        }
+        return false;
+    }
+    
 	/**
 	 * Reloads instances after loading from a saved sim
 	 * 
