@@ -68,11 +68,6 @@ public class PerformMathematicalModelingMeta implements MetaTask, Serializable {
         if (fatigue > 1000 || stress > 50 || hunger > 500)
         	return 0;
         
-        // Check if person is in a moving rover.
-        if (person.isInVehicle() && Vehicle.inMovingRover(person)) {
-	        // the bonus for being inside a vehicle since there's little things to do
-            result = 20D;
-        }
         
         if (person.isInside()) {
 
@@ -100,6 +95,12 @@ public class PerformMathematicalModelingMeta implements MetaTask, Serializable {
 	                            }
 
 	                            result += primaryResult;
+	                            
+	                            // Check if person is in a moving rover.
+	                            if (person.isInVehicle() && Vehicle.inMovingRover(person)) {
+	                    	        // the bonus for being inside a vehicle since there's little things to do
+	                                result = 20D;
+	                            }
 	                        }
 	                    }
 	                    catch (Exception e) {

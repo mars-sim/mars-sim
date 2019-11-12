@@ -56,19 +56,6 @@ public class ReviewMissionPlanMeta implements MetaTask, Serializable {
     public double getProbability(Person person) {
 
         double result = 0D;
-
-        if (person.isInVehicle()) {	
-	        // Check if person is in a moving rover.
-	        if (Vehicle.inMovingRover(person)) {
-		        // the bonus for proposing scientific study inside a vehicle, 
-	        	// rather than having nothing to do if a person is not driving
-	        	result = 30;
-	        } 	       
-	        else
-		        // the bonus for proposing scientific study inside a vehicle, 
-	        	// rather than having nothing to do if a person is not driving
-	        	result = 10;
-        }
         
         if (person.isInside()) {
 
@@ -119,7 +106,21 @@ public class ReviewMissionPlanMeta implements MetaTask, Serializable {
     							result -= 100D;
     						}
 	    						
-	                    	result += 100D;                    	
+	                    	result += 100D;       
+	                    	
+	                        if (person.isInVehicle()) {	
+	                	        // Check if person is in a moving rover.
+	                	        if (Vehicle.inMovingRover(person)) {
+	                		        // the bonus for proposing scientific study inside a vehicle, 
+	                	        	// rather than having nothing to do if a person is not driving
+	                	        	result = 30;
+	                	        } 	       
+	                	        else
+	                		        // the bonus for proposing scientific study inside a vehicle, 
+	                	        	// rather than having nothing to do if a person is not driving
+	                	        	result = 10;
+	                        }
+	                        
 	                    	// Add adjustment based on how many sol the request has since been submitted
                             // if the job assignment submitted date is > 1 sol
                             int sol = marsClock.getMissionSol();

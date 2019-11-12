@@ -296,10 +296,8 @@ public abstract class OperateVehicle extends Task implements Serializable {
         double result = 0;
         double distanceTraveled = 0;
         
-        if (getDistanceToDestination() < DESTINATION_BUFFER) {
-        	endTask();
-        	return time;
-        }
+        // Find starting distance to destination.
+        double startingDistanceToDestination = getDistanceToDestination();
 		
         Inventory vInv = vehicle.getInventory();
         int fuelType = vehicle.getFuelType();
@@ -360,8 +358,6 @@ public abstract class OperateVehicle extends Task implements Serializable {
         
         else {
         	
-            // Find starting distance to destination.
-            double startingDistanceToDestination = getDistanceToDestination();
 
             if (startingDistanceToDestination <= (distanceTraveled + DESTINATION_BUFFER)) {
                 // Case 3 : if starting distance to destination is less than distance traveled, stop at destination.

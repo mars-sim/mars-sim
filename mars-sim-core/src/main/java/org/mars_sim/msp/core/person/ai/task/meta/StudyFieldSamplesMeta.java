@@ -68,19 +68,6 @@ public class StudyFieldSamplesMeta implements MetaTask, Serializable {
         if (fatigue > 1000 || stress > 50 || hunger > 500)
         	return 0;
         
-        if (person.isInVehicle()) {	
-	        // Check if person is in a moving rover.
-	        if (Vehicle.inMovingRover(person)) {
-		        // the bonus for proposing scientific study inside a vehicle, 
-	        	// rather than having nothing to do if a person is not driving
-	        	result = 30;
-	        } 	       
-	        else
-		        // the bonus for proposing scientific study inside a vehicle, 
-	        	// rather than having nothing to do if a person is not driving
-	        	result = 10;
-        }
-        
         if (person.isInside()) {
 	
 	        // Check that there are available field samples to study.
@@ -90,7 +77,6 @@ public class StudyFieldSamplesMeta implements MetaTask, Serializable {
 	                Inventory inv = container.getInventory();
 	                //AmountResource rockSamples = AmountResource.findAmountResource("rock samples");
 	                if (inv.getAmountResourceStored(ResourceUtil.rockSamplesID, false) < StudyFieldSamples.SAMPLE_MASS) {
-	                    result = 0D;
 	                    return 0;
 	                }
 	            }
@@ -193,7 +179,20 @@ public class StudyFieldSamplesMeta implements MetaTask, Serializable {
 	
 	    }
         
-        if (result < 0) result = 0;
+        if (result <= 0) 
+        	result = 0;
+        else  if (person.isInVehicle()) {	
+	        // Check if person is in a moving rover.
+	        if (Vehicle.inMovingRover(person)) {
+		        // the bonus inside a vehicle, 
+	        	// rather than having nothing to do if a person is not driving
+	        	result = 30;
+	        } 	       
+	        else
+		        // the bonus inside a vehicle, 
+	        	// rather than having nothing to do if a person is not driving
+	        	result = 10;
+        }
         
         return result;
     }

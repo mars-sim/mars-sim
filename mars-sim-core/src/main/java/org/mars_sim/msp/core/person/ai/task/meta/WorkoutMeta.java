@@ -18,6 +18,7 @@ import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.tool.RandomUtil;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * Meta task for the Workout task.
@@ -83,11 +84,23 @@ public class WorkoutMeta implements MetaTask, Serializable {
             
             // Get an available gym.
             Building building = Workout.getAvailableGym(person);
+            
             if (building != null) {
                 result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building);
                 result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
             } // a person can still have workout on his own without a gym in MDP Phase 1-3
 
+            else if (person.isInVehicle()) {	
+    	        // Check if person is in a moving rover.
+    	        if (Vehicle.inMovingRover(person)) {
+    		        // the bonus inside a vehicle
+    	        	result = 30;
+    	        } 	       
+    	        else
+    	        	// the penalty inside a vehicle
+    	        	result = -30;
+            }
+            
             // Modify if working out is the person's favorite activity.
             if (person.getFavorite().getFavoriteActivity() == FavoriteType.SPORT) {
                 result += RandomUtil.getRandomInt(1, 20);

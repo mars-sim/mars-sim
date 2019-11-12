@@ -101,7 +101,6 @@ public class HaveConversationMeta implements MetaTask, Serializable {
                 }
         	}
 
- 
         	if (result > 0) {
 	            // Check if there is a local dining building.
 	            Building diningBuilding = EatMeal.getAvailableDiningBuilding(person, true);
@@ -150,6 +149,14 @@ public class HaveConversationMeta implements MetaTask, Serializable {
         		double rand = RandomUtil.getRandomDouble(num)+ 1;
             	result = result + rand*result;
             }
+            
+	        // Check if person is in a moving rover.
+	        if (Vehicle.inMovingRover(person)) {
+	        	result += 25D;
+	        }
+	        else
+	        	result += 5D;
+
         }
 
 

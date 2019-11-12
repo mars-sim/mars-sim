@@ -18,6 +18,7 @@ import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.tool.RandomUtil;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * Meta task for the ConnectWithEarth task.
@@ -86,14 +87,15 @@ public class ConnectWithEarthMeta implements MetaTask, Serializable {
 
 
             }
-            else {
-            //if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {            	
-                if (result > 0)
-                	result *= RandomUtil.getRandomDouble(2); // more likely than not if on a vehicle
-            }   	
             
+            else if (person.isInVehicle()) {	
+    	        // Check if person is in a moving rover.
+    	        if (Vehicle.inMovingRover(person)) {
+    	        	result += 20D;
+    	        }
+            }
 
-            // 2015-06-07 Added Preference modifier
+            // Add Preference modifier
             if (result > 0D) {
                 result = result + result * person.getPreference().getPreferenceScore(this)/2D;
             }

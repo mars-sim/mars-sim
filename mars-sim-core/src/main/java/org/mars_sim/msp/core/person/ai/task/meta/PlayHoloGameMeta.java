@@ -24,6 +24,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * Meta task for the PlayHoloGame task.
@@ -95,8 +96,17 @@ public class PlayHoloGameMeta implements MetaTask, Serializable {
             }
 
             
-            if (person.isInVehicle()) {
-            	result *= RandomUtil.getRandomDouble(1.5);
+            if (person.isInVehicle()) {	
+    	        // Check if person is in a moving rover.
+    	        if (Vehicle.inMovingRover(person)) {
+    		        // the bonus inside a vehicle, 
+    	        	// rather than having nothing to do if a person is not driving
+    	        	result = -20;
+    	        } 	       
+    	        else
+    		        // the bonus inside a vehicle, 
+    	        	// rather than having nothing to do if a person is not driving
+    	        	result = 20;
             }
             
             else {

@@ -25,6 +25,7 @@ import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.structure.Lab;
 import org.mars_sim.msp.core.tool.RandomUtil;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * Meta task for the PerformLaboratoryResearch task.
@@ -142,8 +143,24 @@ public class PerformLaboratoryResearchMeta implements MetaTask, Serializable {
 	            }
 	        }
 
-	        if (result == 0) return 0;
+	        if (result <= 0) 
+	        	return 0;
 	        
+	        else {
+	            if (person.isInVehicle()) {	
+	    	        // Check if person is in a moving rover.
+	    	        if (Vehicle.inMovingRover(person)) {
+	    		        // the bonus for proposing scientific study inside a vehicle, 
+	    	        	// rather than having nothing to do if a person is not driving
+	    	        	result = -20;
+	    	        } 	       
+	    	        else
+	    		        // the bonus for proposing scientific study inside a vehicle, 
+	    	        	// rather than having nothing to do if a person is not driving
+	    	        	result = 20;
+	            }
+	        }
+            
 	        // Effort-driven task modifier.
 	        result *= person.getPerformanceRating();
 

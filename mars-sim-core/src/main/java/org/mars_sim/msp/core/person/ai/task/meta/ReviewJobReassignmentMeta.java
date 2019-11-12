@@ -55,20 +55,7 @@ public class ReviewJobReassignmentMeta implements MetaTask, Serializable {
     public double getProbability(Person person) {
 
         double result = 0D;
-
-        if (person.isInVehicle()) {	
-	        // Check if person is in a moving rover.
-	        if (Vehicle.inMovingRover(person)) {
-		        // the bonus for proposing scientific study inside a vehicle, 
-	        	// rather than having nothing to do if a person is not driving
-	        	result = 30;
-	        } 	       
-	        else
-		        // the bonus for proposing scientific study inside a vehicle, 
-	        	// rather than having nothing to do if a person is not driving
-	        	result = 10;
-        }
-        
+    
         if (person.isInside()) {
 
             // Probability affected by the person's stress and fatigue.
@@ -109,6 +96,17 @@ public class ReviewJobReassignmentMeta implements MetaTask, Serializable {
 
 	                    	result += 100D;
 	                    	
+	                        if (person.isInVehicle()) {	
+	                	        // Check if person is in a moving rover.
+	                	        if (Vehicle.inMovingRover(person)) {
+	                		        // the bonus inside a vehicle
+	                	        	result = 30;
+	                	        } 	       
+	                	        else
+	                		        // the bonus inside a vehicle
+	                	        	result = 10;
+	                        }
+	                        
 		                    RoleType role2 = p.getRole().getType();
 		                    
 		                    // Adjust the probability with penalty if approving his/her own job reassignment 

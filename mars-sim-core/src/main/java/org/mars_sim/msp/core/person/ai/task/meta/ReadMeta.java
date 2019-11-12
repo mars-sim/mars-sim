@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.tool.RandomUtil;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * Meta task for the Read task.
@@ -54,11 +55,20 @@ public class ReadMeta implements MetaTask, Serializable {
         	return 0;
         
         if (person.isInside()) {
-        	result += 10D;
+        	result += 20D;
 
-        	if (person.isInVehicle())
-        		result *= RandomUtil.getRandomDouble(2); // more likely than not if on a vehicle
-
+            if (person.isInVehicle()) {	
+    	        // Check if person is in a moving rover.
+    	        if (Vehicle.inMovingRover(person)) {
+    		        // the penalty inside a vehicle
+    	        	result = -20;
+    	        } 	       
+    	        else
+    		        // the bonus inside a vehicle, 
+    	        	// rather than having nothing to do if a person is not driving
+    	        	result = 20;
+            }
+            
 	        // Effort-driven task modifier.
 	        //result *= person.getPerformanceRating();
 

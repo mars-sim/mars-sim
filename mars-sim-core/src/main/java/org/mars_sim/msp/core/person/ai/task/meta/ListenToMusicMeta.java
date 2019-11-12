@@ -22,6 +22,7 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * Meta task for the ListenToMusic task.
@@ -79,10 +80,6 @@ public class ListenToMusicMeta implements MetaTask, Serializable {
         
         // Crowding modifier
         if (person.isInSettlement()) {
-        	
-           if (person.isInVehicle()) {
-        	   result *= RandomUtil.getRandomDouble(2); // more likely to listen to music than not if on a vehicle
-            }
             
             try {
             	// Check if a person has a designated bed
@@ -119,7 +116,18 @@ public class ListenToMusicMeta implements MetaTask, Serializable {
             
         }
         
-        if (result < 0) result = 0;
+        if (result <= 0) 
+        	result = 0;
+        
+        else if (person.isInVehicle()) {	
+	        // Check if person is in a moving rover.
+	        if (Vehicle.inMovingRover(person)) {
+	        	result += 20D;
+	        }
+	        else
+	        	result += 5D;
+        }
+        
         
         return result;
     }
