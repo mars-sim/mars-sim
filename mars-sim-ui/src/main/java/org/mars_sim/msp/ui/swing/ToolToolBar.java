@@ -18,6 +18,8 @@ import javax.swing.border.BevelBorder;
 import org.mars_sim.msp.core.GameManager;
 import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.swing.tool.commander.CommanderWindow;
 import org.mars_sim.msp.ui.swing.tool.guide.GuideWindow;
 import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
@@ -29,8 +31,11 @@ import org.mars_sim.msp.ui.swing.tool.search.SearchWindow;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
 import org.mars_sim.msp.ui.swing.tool.time.TimeWindow;
 
+import com.alee.extended.button.WebSwitch;
 import com.alee.laf.toolbar.WebToolBar;
 import com.alee.managers.style.StyleId;
+import com.alee.managers.tooltip.TooltipManager;
+import com.alee.managers.tooltip.TooltipWay;
 
 /**
  * The ToolToolBar class is a UI toolbar for holding tool buttons. There should
@@ -54,7 +59,7 @@ implements ActionListener {
 	/** Main window that contains this toolbar. */
 	private MainWindow parentMainWindow;
 	
-//	private MasterClock masterClock;
+	private MasterClock masterClock;
 
 	/**
 	 * Constructs a ToolToolBar object
@@ -68,7 +73,7 @@ implements ActionListener {
 		setStyleId(StyleId.toolbarAttachedNorth);
 		
 		// Initialize data members
-//		masterClock = Simulation.instance().getMasterClock();
+		masterClock = Simulation.instance().getMasterClock();
 		
 		// Initialize data members
 		toolButtons = new Vector<ToolButton>();
@@ -196,10 +201,22 @@ implements ActionListener {
 		
 //		addSeparator();
 
-	    // Skin chooser combobox
-//        addToEnd(new SkinChooserTool());
-        
-//		addSeparator();
+		WebSwitch ws = new WebSwitch(true);
+		ws.setSwitchComponents(ImageLoader.getIcon(Msg.getString("img.speed.play")), 
+				ImageLoader.getIcon(Msg.getString("img.speed.pause")));
+		TooltipManager.setTooltip(ws, "play OR pause the Simulation", TooltipWay.down);
+		ws.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (ws.isSelected())
+					masterClock.setPaused(false, false);
+				else
+					masterClock.setPaused(true, false);
+			};
+		});
+			
+		addToEnd(ws);
+		
+		addSeparatorToMiddle();
 
 		// Add guide button
 		ToolButton guideButton = new ToolButton(GuideWindow.NAME, Msg.getString("img.guide")); //$NON-NLS-1$
@@ -207,7 +224,7 @@ implements ActionListener {
 		addToEnd(guideButton);
 		toolButtons.addElement(guideButton);
 
-		addSeparator();
+//		addSeparator();
 
 //		JPanel emptyPanel = new JPanel();
 //		emptyPanel.setPreferredSize(new Dimension(EMPTY_W, EMPTY_H));
