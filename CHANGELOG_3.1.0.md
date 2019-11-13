@@ -5,17 +5,17 @@ Copyright (C) 2019 Scott Davis
 
 -----------------------------------------------------------------------------------------
 
-## v3.1.0 (build 505_) - 2019-09-2_
+## v3.1.0 (build 51__) - 2019-11-__
 
 ### CORE ENGINE IMPROVEMENTS :
 
-1. Apply the natural logarithm when computing value of goods.
+1. Adopt the use of Java 11 SE for running mars-sim.
 
 2. Allow time-ratio switches in full headless mode.
 
-3. Adopt the use of Java 11 SE for running mars-sim.
+3. Reduce jar file size.
 
-4. Add mission approval phase and score mission plans.
+4. Improve mission planning - add mission approval phase, tasks to plan and score a mission plan.
 
 5. Track/record settler's sleep time on each sol.
 
@@ -39,20 +39,23 @@ Copyright (C) 2019 Scott Davis
     
 15. Add role prospect scores (like job prospects) on each role.
 
-16. Export xml files to player's home folder.
+16. Export xml config files to player's home folder and backup old xml files.
 
-17. Allow playing external ogg music files.
+17. Allow playing external ogg music files in player's home folder.
 
 18. Add vehicle log for tracking changes to a vehicle's status.
  
 
 
-
 ### UI IMPROVEMENT :
 
-1. Add speed buttons on top right of tool bar.
+1. Add play and pause switch on top right of tool bar.
 
 2. Add geological map to Mars Navigator.
+
+3. Add earth calendar on bottom status bar.
+
+4. Add x/y coordinate, its elevation on Mars Navigator surface Map (and RGB/HSV values on the topo map)  
 
 
 
@@ -75,6 +78,10 @@ Copyright (C) 2019 Scott Davis
 8. Fix food consumption during missions.
 
 9. Fix loading alpha crew MBTI personality into crew editor.
+
+10. Improve vehicle fuel usage modeling.
+
+11. Fix not being able to fix vehicle malfunctions.
 
 
 -----------------------------------------------------------------------------------------

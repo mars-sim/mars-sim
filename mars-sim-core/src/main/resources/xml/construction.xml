@@ -227,9 +227,9 @@
 		
 		<frame name="brick bin frame" width="2.0" length="3.0" base-level="0" constructable="true" 
 		 salvagable="true" work-time="5.0" skill-required="1" foundation="surface foundation 3m x 2m" >
-			<resource name="mortar" amount="1680.0" />
-			<resource name="water" amount="1680.0" />
-			<part name="brick" number="1680" />
+			<resource name="mortar" amount="90.0" />
+			<resource name="water" amount="90.0" />
+			<part name="brick" number="200" />
 			<vehicle type="light utility vehicle" >
 				<attachment-part name="crane boom" />
 			</vehicle>
@@ -237,9 +237,9 @@
 		
 		<frame name="small brick shed frame" width="5.0" length="5.0" base-level="-1" constructable="true" 
 		 salvagable="true" work-time="40.0" skill-required="1" foundation="subsurface foundation 5m x 5m x 3m" >
-			<resource name="mortar" amount="5926.0" />
-			<resource name="water" amount="5926.0" />
-			<part name="brick" number="5926" />
+			<resource name="mortar" amount="250.0" />
+			<resource name="water" amount="250.0" />
+			<part name="brick" number="250" />
 			<vehicle type="light utility vehicle" >
 				<attachment-part name="crane boom" />
 			</vehicle>
@@ -248,92 +248,92 @@
 		<!-- Note: the round hab frame is just for salvaging and cannot be constructed insitu. -->
 		<frame name="round hab frame" width="9.0" length="9.0" base-level="0" constructable="false" 
 		 salvagable="true" work-time="10.0" skill-required="2" foundation="surface foundation 9m x 9m" >
-			<part name="steel scrap" number="50" />
-			<part name="aluminum scrap" number="50" />
-			<part name="plastic pipe" number="20" />
+			<part name="steel ingot" number="90" />
+			<part name="aluminum ingot" number="90" />
+			<part name="plastic pipe" number="50" />
 			<part name="valve" number="10" />
-			<part name="electrical wire" number="20" />
-			<part name="wire connector" number="20" />
-			<part name="power cable" number="10" />
-			<part name="steel pipe" number="4" />
-			<part name="gasket" number="10" />
+			<part name="electrical wire" number="200" />
+			<part name="wire connector" number="200" />
+			<part name="power cable" number="20" />
+			<part name="steel pipe" number="40" />
+			<part name="gasket" number="40" />
 			<part name="solar panel" number="4" />
 		</frame>
 		
 		<!-- Note: the inflatable frame is just for salvaging and cannot be constructed insitu. -->
 		<frame name="inflatable frame" width="6.0" length="9.0" base-level="0" constructable="false" 
 		 salvagable="true" work-time="10.0" skill-required="2" foundation="surface foundation 7m x 9m" >
-			<part name="aluminum scrap" number="5" />
+			<part name="aluminum ingot" number="60" />
 			<part name="plastic sheet" number="50" />
-			<part name="plastic pipe" number="5" />
-			<part name="valve" number="3" />
-			<part name="gasket" number="3" />
-			<part name="electrical wire" number="4" />
-			<part name="wire connector" number="4" />
-			<part name="power cable" number="2" />
+			<part name="plastic pipe" number="50" />
+			<part name="valve" number="30" />
+			<part name="gasket" number="30" />
+			<part name="electrical wire" number="40" />
+			<part name="wire connector" number="40" />
+			<part name="power cable" number="12" />
 		</frame>
 		
 		
 		<!-- Note: the atmospheric processor frame is just for salvaging and cannot be constructed insitu. -->
 		<frame name="atmospheric processor frame" width="8.0" length="11.0" base-level="0" constructable="false" 
 		 salvagable="true" work-time="12.0" skill-required="3" foundation="surface foundation 8m x 11m" >
-			<part name="steel scrap" number="100" />
-			<part name="aluminum scrap" number="100" />
+			<part name="steel ingot" number="90" />
+			<part name="aluminum ingot" number="90" />
 			<part name="plastic pipe" number="50" />
 			<part name="valve" number="20" />
 			<part name="electrical wire" number="50" />
 			<part name="wire connector" number="50" />
 			<part name="power cable" number="10" />
 			<part name="steel pipe" number="10" />
-			<part name="gasket" number="20" />
+			<part name="gasket" number="18" />
 		</frame>
 		
 		<!-- Note: the medium modular frame is just for salvaging and cannot be constructed insitu. -->
 		<frame name="medium modular frame" width="7.0" length="9.0" base-level="0" constructable="false" 
 		 salvagable="true" work-time="10.0" skill-required="2" foundation="surface foundation 7m x 9m" >
-			<part name="steel scrap" number="25" />
-			<part name="aluminum scrap" number="25" />
-			<part name="plastic pipe" number="10" />
-			<part name="valve" number="5" />
-			<part name="electrical wire" number="5" />
-			<part name="wire connector" number="5" />
-			<part name="power cable" number="2" />
-			<part name="gasket" number="4" />
+			<part name="steel ingot" number="60" />
+			<part name="aluminum ingot" number="60" />
+			<part name="plastic pipe" number="40" />
+			<part name="valve" number="50" />
+			<part name="electrical wire" number="50" />
+			<part name="wire connector" number="50" />
+			<part name="power cable" number="15" />
+			<part name="gasket" number="15" />
 		</frame>
 		
 		<!-- Note: the large greenhouse frame is just for salvaging and cannot be constructed insitu. -->
 		<frame name="large greenhouse frame" width="12.0" length="18.0" base-level="0" constructable="false" 
 		 salvagable="true" work-time="16.0" skill-required="3" foundation="surface foundation 12m x 18m" >
-			<part name="steel scrap" number="10" />
-			<part name="aluminum scrap" number="15" />
-			<part name="glass sheet" number="20" />
-			<part name="plastic pipe" number="15" />
-			<part name="valve" number="9" />
-			<part name="gasket" number="9" />
-			<part name="electrical wire" number="12" />
-			<part name="wire connector" number="12" />
-			<part name="power cable" number="6" />
+			<part name="steel ingot" number="200" />
+			<part name="aluminum ingot" number="200" />
+			<part name="glass sheet" number="50" />
+			<part name="plastic pipe" number="150" />
+			<part name="valve" number="90" />
+			<part name="gasket" number="90" />
+			<part name="electrical wire" number="120" />
+			<part name="wire connector" number="120" />
+			<part name="power cable" number="30" />
 		</frame>
 		
 		<!-- Note: the garage frame is just for salvaging and cannot be constructed insitu. -->
 		<frame name="garage frame" width="12.0" length="16.0" base-level="0" constructable="false" 
 		 salvagable="true" work-time="14.0" skill-required="2" foundation="surface foundation 12m x 18m" >
-			<part name="steel scrap" number="25" />
-			<part name="aluminum scrap" number="25" />
-			<part name="plastic pipe" number="10" />
-			<part name="valve" number="5" />
-			<part name="electrical wire" number="5" />
-			<part name="wire connector" number="5" />
-			<part name="power cable" number="2" />
-			<part name="gasket" number="4" />
+			<part name="steel ingot" number="190" />
+			<part name="aluminum ingot" number="190" />
+			<part name="plastic pipe" number="100" />
+			<part name="valve" number="50" />
+			<part name="electrical wire" number="50" />
+			<part name="wire connector" number="50" />
+			<part name="power cable" number="20" />
+			<part name="gasket" number="40" />
 		</frame>
 		
 		<frame name="small areothermal well frame" width="5.0" length="10.0" base-level="0" constructable="true" 
 		 salvagable="true" work-time="7.0" skill-required="2" foundation="shallow borehole drilling site" >
-			<resource name="concrete" amount="25.0" />
-			<resource name="water" amount="10.0" />
+			<resource name="concrete" amount="700.0" />
+			<resource name="water" amount="700.0" />
 			<part name="steel truss" number="10" />
-			<part name="steel sheet" number="5" />
+			<part name="steel sheet" number="15" />
 			<vehicle type="light utility vehicle" >
 				<attachment-part name="crane boom" />
 			</vehicle>
@@ -341,10 +341,10 @@
 		
 		<frame name="large areothermal well frame" width="10.0" length="15.0" base-level="0" constructable="true" 
 		 salvagable="true" work-time="12.0" skill-required="3" foundation="deep borehole drilling site" >
-			<resource name="concrete" amount="75.0" />
-			<resource name="water" amount="30.0" />
-			<part name="steel truss" number="30" />
-			<part name="steel sheet" number="15" />
+			<resource name="concrete" amount="2000.0" />
+			<resource name="water" amount="2000.0" />
+			<part name="steel truss" number="20" />
+			<part name="steel sheet" number="30" />
 			<vehicle type="light utility vehicle" >
 				<attachment-part name="crane boom" />
 			</vehicle>
@@ -352,9 +352,9 @@
 		
 		<frame name="round vaulted brick frame" width="10.0" length="10.0" base-level="-1" constructable="true" 
 		 salvagable="true" work-time="10.0" skill-required="2" foundation="subsurface foundation 10m x 10m x 3m" >
-			<resource name="mortar" amount="2400.0" />
-			<resource name="water" amount="2400.0" />
-			<part name="brick" number="2400" />
+			<resource name="mortar" amount="1200.0" />
+			<resource name="water" amount="1200.0" />
+			<part name="brick" number="1200" />
 			<vehicle type="light utility vehicle" >
 				<attachment-part name="crane boom" />
 			</vehicle>
@@ -362,18 +362,18 @@
 		
 		<frame name="large garage brick frame" width="15.0" length="18.0" base-level="-1" constructable="true" 
 		 salvagable="true" work-time="15.0" skill-required="3" foundation="ramped subsurface foundation 15m x 18m x 5m" >
-			<resource name="mortar" amount="4000.0" />
-			<resource name="water" amount="4000.0" />
-			<part name="brick" number="4000" />
-			<part name="steel truss" number="2" />
-			<part name="steel sheet" number="5" />
-			<part name="aluminum sheet" number="5" />
-			<part name="plastic pipe" number="10" />
-			<part name="valve" number="5" />
-			<part name="electrical wire" number="5" />
-			<part name="wire connector" number="5" />
-			<part name="power cable" number="2" />
-			<part name="gasket" number="4" />
+			<resource name="mortar" amount="3500.0" />
+			<resource name="water" amount="3500.0" />
+			<part name="brick" number="3500" />
+			<part name="steel truss" number="30" />
+			<part name="steel sheet" number="50" />
+			<part name="aluminum sheet" number="50" />
+			<part name="plastic pipe" number="100" />
+			<part name="valve" number="50" />
+			<part name="electrical wire" number="50" />
+			<part name="wire connector" number="50" />
+			<part name="power cable" number="20" />
+			<part name="gasket" number="40" />
 			<vehicle type="light utility vehicle" >
 				<attachment-part name="crane boom" />
 			</vehicle>
@@ -401,17 +401,17 @@
 		<!-- Note hallway frame length is variable. -->
 		<frame name="hallway frame" width="2.0" length="-1.0" base-level="0" constructable="true" 
 		 salvagable="true" work-time="3.0" skill-required="1" foundation="surface foundation variable size" >
-			<resource name="concrete" amount="100.0" />
-			<resource name="water" amount="40.0" />
+			<resource name="concrete" amount="60.0" />
+			<resource name="water" amount="60.0" />
 			<part name="steel post" number="5" />
 		</frame>
 		
 		<!-- Note brick tunnel frame length is variable. -->
 		<frame name="brick tunnel frame" width="3.0" length="-1.0" base-level="-1" constructable="true" 
 		 salvagable="true" work-time="6.0" skill-required="1" foundation="subsurface foundation variable size" >
-			<resource name="mortar" amount="200.0" />
-			<resource name="water" amount="200.0" />
-			<part name="brick" number="200" />
+			<resource name="mortar" amount="90.0" />
+			<resource name="water" amount="90.0" />
+			<part name="brick" number="90" />
 			<vehicle type="light utility vehicle" >
 				<attachment-part name="crane boom" />
 			</vehicle>

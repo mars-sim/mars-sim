@@ -368,8 +368,6 @@ public class MarsProject {
 					exitWithError("Problem loading simulation. No valid saved sim is found.", null);
 				}
 			}
-				
-
 
 		} catch (Exception e) {
 			// logger.log(Level.SEVERE, "Problem loading existing simulation", e);
@@ -378,24 +376,37 @@ public class MarsProject {
 	}
 
 	public void setupMainWindow() {
-		new Timer().schedule(new WindowDelayTimer(), 100);
-	}
-	
-	/**
-	 * Defines the delay timer class
-	 */
-	class WindowDelayTimer extends TimerTask {
-		public void run() {
-			// Create main window
-			SwingUtilities.invokeLater(() -> new MainWindow(true));
+//		new Timer().schedule(new WindowDelayTimer(), 100);
+		while (true) {
+			try {
+				Thread.sleep(250L);
+			} catch (InterruptedException e) {
+			}
+			
+			if (!sim.isUpdating()) {
+				new MainWindow(true);
+				break;
+			}
 		}
 	}
+	
+//	/**
+//	 * Defines the delay timer class
+//	 */
+//	class WindowDelayTimer extends TimerTask {
+//		public void run() {
+//			// Create main window
+//			SwingUtilities.invokeLater(() -> new MainWindow(true));
+//		}
+//	}
 	
 	/**
 	 * Create a new simulation instance.
 	 */
 	private void handleNewSimulation() {
-//		 logger.config("handleNewSimulation() is on " + Thread.currentThread().getName());
+		logger.config("handleNewSimulation() is on " + Thread.currentThread().getName());
+		// Alert the user to see the interactive terminal 
+		logger.config("Please proceed to selecting the type of Game Mode in the popped-up console.");
 
 		try {
 			if (useGUI) {
@@ -420,6 +431,8 @@ public class MarsProject {
 					startSimThread(false);
 					// Create main window
 					setupMainWindow();
+					
+					logger.config("Done with setupMainWindow()");
 				}
 			} 
 			
@@ -437,9 +450,7 @@ public class MarsProject {
 				startSimThread(true);					
 			}
 			
-			// Alert the user to see the interactive terminal 
-			logger.config("Please proceed to selecting the type of Game Mode in the popped-up console.");
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			exitWithError("Could not create a new simulation, startup cannot continue", e);
@@ -465,7 +476,7 @@ public class MarsProject {
 		}
 	
 		public void run() {
-//			logger.config("StartTask's run() is on " + Thread.currentThread().getName());
+			logger.config("StartTask's run() is on " + Thread.currentThread().getName());
 			Simulation.instance().startClock(autosaveDefault);
 			// Load the menu choice
 			InteractiveTerm.loadTerminalMenu();

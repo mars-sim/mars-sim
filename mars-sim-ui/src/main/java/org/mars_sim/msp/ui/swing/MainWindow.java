@@ -168,7 +168,7 @@ extends JComponent {
 	 * @param cleanUI true if window should display a clean UI.
 	 */
 	public MainWindow(boolean cleanUI) {
-//		logger.config("MainWindow is on " + Thread.currentThread().getName() + " Thread");
+		logger.config("MainWindow is on " + Thread.currentThread().getName() + " Thread");
 		// this.cleanUI = cleanUI;
 		// Set up the look and feel library to be used
 		initializeTheme();
@@ -225,23 +225,23 @@ extends JComponent {
 	 * @return
 	 */
 	public static Image iconToImage(Icon icon) {
-		   if (icon instanceof ImageIcon) {
-		      return ((ImageIcon)icon).getImage();
-		   } 
-		   else {
-		      int w = icon.getIconWidth();
-		      int h = icon.getIconHeight();
-		      GraphicsEnvironment ge = 
-		        GraphicsEnvironment.getLocalGraphicsEnvironment();
-		      GraphicsDevice gd = ge.getDefaultScreenDevice();
-		      GraphicsConfiguration gc = gd.getDefaultConfiguration();
-		      BufferedImage image = gc.createCompatibleImage(w, h);
-		      Graphics2D g = image.createGraphics();
-		      icon.paintIcon(null, g, 0, 0);
-		      g.dispose();
-		      return image;
-		   }
-		 }
+		if (icon instanceof ImageIcon) {
+			return ((ImageIcon)icon).getImage();
+		} 
+		else {
+			int w = icon.getIconWidth();
+			int h = icon.getIconHeight();
+			GraphicsEnvironment ge = 
+					GraphicsEnvironment.getLocalGraphicsEnvironment();
+			GraphicsDevice gd = ge.getDefaultScreenDevice();
+			GraphicsConfiguration gc = gd.getDefaultConfiguration();
+			BufferedImage image = gc.createCompatibleImage(w, h);
+			Graphics2D g = image.createGraphics();
+			icon.paintIcon(null, g, 0, 0);
+			g.dispose();
+			return image;
+		}
+	}
 	
 	/**
 	 * Initializes UI elements for the frame
@@ -447,7 +447,7 @@ extends JComponent {
 //		statusBar.addRightComponent(memMaxLabel, false, true);
 		
 		bottomPane.add(statusBar, BorderLayout.SOUTH);
-
+		logger.config("Done with init()");
 	}
 
 	/**

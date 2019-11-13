@@ -234,7 +234,7 @@ public class MarsProjectHeadless {
 			// Start interactive terminal 
 			interactiveTerm.startModeSelection(); 
 			
-			sim.destroyOldSimulation();
+//			sim.destroyOldSimulation();
 
 			sim.createNewSimulation(userTimeRatio, false);
 			// Start the sim thread
@@ -258,14 +258,14 @@ public class MarsProjectHeadless {
 	}
 	
 	class StartTask implements Runnable {
-	boolean autosaveDefault;
+		boolean autosaveDefault;
 
 		StartTask(boolean autosaveDefault) {
 			this.autosaveDefault = autosaveDefault;
 		}
 	
 		public void run() {
-//			logger.config("StartTask's run() is on " + Thread.currentThread().getName());
+			logger.config("StartTask's run() is on " + Thread.currentThread().getName());
 			Simulation.instance().startClock(autosaveDefault);
 			// Load the menu choice
 			InteractiveTerm.loadTerminalMenu();

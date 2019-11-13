@@ -78,12 +78,18 @@ public class InteractiveTerm {
 		marsTerminal = new MarsTerminal(this);
         marsTerminal.init();
         
+		logger.config("Done with MarsTerminal on " + Thread.currentThread().getName());
+		
         textIO = new TextIO(marsTerminal);
         
         setUpArrows();
         
+    	logger.config("Done with setUpArrows on " + Thread.currentThread().getName());
+
         setUpESC();
         
+    	logger.config("Done with setUpESC on " + Thread.currentThread().getName());
+
         if (restart) {
         	
 //    		profile = new CommanderProfile(this);
@@ -101,10 +107,7 @@ public class InteractiveTerm {
     		loadTerminalMenu();
         }
         
-        else {
-        	
-        }
-        
+		logger.config("Done with InteractiveTerm's constructor is on " + Thread.currentThread().getName());
 	}
 	
     
@@ -117,6 +120,7 @@ public class InteractiveTerm {
 	 * Asks users what mode to run in a text-io terminal.
 	 */
 	public boolean startModeSelection() {
+		logger.config("Staring startModeSelection()");
 
 		initializeTerminal();
 		
@@ -128,7 +132,7 @@ public class InteractiveTerm {
         
 		// Prevent allow users from arbitrarily close the terminal by clicking top right close button
 		marsTerminal.registerUserInterruptHandler(term -> {}, false);
-		
+			
 		return selectMode();
 	}
 	
@@ -462,7 +466,10 @@ public class InteractiveTerm {
 
 		// Call ChatUils' default constructor to initialize instances
 		chatUtils = new ChatUtils();
+		logger.config("Done with ChatUtils() on " + Thread.currentThread().getName());
+		
 		chatMenu = new ChatMenu(consoleEdition);
+		logger.config("Done with ChatMenu() on " + Thread.currentThread().getName());
 		
 		// Prevent allow users from arbitrarily close the terminal by clicking top right close button
 //		terminal.registerUserInterruptHandler(term -> {
@@ -474,17 +481,21 @@ public class InteractiveTerm {
 //        terminal.setBookmark("MENU");
 		
 		setUpRunningLoop();
+		
+		logger.config("Done with loadTerminalMenu() on " + Thread.currentThread().getName());
 	}
 	
 	
 	public static void setUpRunningLoop() {
+		logger.config("Starting setUpRunningLoop() on " + Thread.currentThread().getName());
+		
 		if (sim == null) {
 			sim = Simulation.instance();
 		}
-    	if (masterClock == null) {
-    		masterClock = sim.getMasterClock();
-            setMasterClock();
-    	}
+//    	if (masterClock == null) {
+//    		masterClock = sim.getMasterClock();
+//            setMasterClock();
+//    	}
     	
 		while (keepRunning) {
 			     
@@ -677,6 +688,7 @@ public class InteractiveTerm {
     }
     
     public static void disposeTerminal() {
+    	marsTerminal.getFrame().setVisible(false);
     	marsTerminal.dispose(null);
     }
     
@@ -688,7 +700,7 @@ public class InteractiveTerm {
     	return gm;
     }
     
-    public static void setMasterClock() {
-    	marsTerminal.setMasterClock(masterClock);
-    }
+//    public static void setMasterClock() {
+//    	marsTerminal.setMasterClock(masterClock);
+//    }
 }

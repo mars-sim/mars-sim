@@ -103,25 +103,24 @@ public class Role implements Serializable {
 			// Turn in the old role
 			relinquishOldRoleType();
 
-			if (oldType != null) {				
-				String s = String.format("[%s] %18s (Role) : %s -> %s",
-						person.getLocationTag().getLocale(), 
-						person.getName(), 
-						oldType,
-						newType);
-				
-				LogConsolidated.log(Level.CONFIG, 0, sourceName, s);
-			}
-
-			else {
-				String s = String.format("[%s] %18s (Role) -> %s",
-						person.getLocationTag().getLocale(), 
-						person.getName(), 
-						newType);
-				
-				LogConsolidated.log(Level.CONFIG, 0, sourceName, s);
-				
-			}
+//			if (oldType != null) {				
+//				String s = String.format("[%s] %18s (Role) : %s -> %s",
+//						person.getLocationTag().getLocale(), 
+//						person.getName(), 
+//						oldType,
+//						newType);
+//				
+//				LogConsolidated.log(Level.CONFIG, 0, sourceName, s);
+//			}
+//
+//			else {
+//				String s = String.format("[%s] %18s (Role) -> %s",
+//						person.getLocationTag().getLocale(), 
+//						person.getName(), 
+//						newType);
+//				
+//				LogConsolidated.log(Level.CONFIG, 0, sourceName, s);
+//			}
 			
 			// Save the new role in roleHistory
 			roleHistory.put(newType, marsClock);

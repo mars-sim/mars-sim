@@ -131,7 +131,7 @@ public class Mars implements Serializable {
 		surfaceFeatures.destroy();
 		orbitInfo.destroy();
 		weather.destroy();
-		surfaceFeatures.destroy();
+		surfaceFeatures = null;
 		orbitInfo = null;// .destroy();
 		weather = null;// .destroy();
 //		marsSurface = null;

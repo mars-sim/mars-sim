@@ -11,6 +11,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.util.logging.Logger;
 
@@ -140,6 +142,28 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
 	
     private void configureMainMenu() {
         frame = getFrame();
+         
+		frame.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent event) {
+				// Save simulation and UI configuration when window is closed.
+				int reply = JOptionPane.showConfirmDialog(null, "Are you sure you want to quit?", "Exit", JOptionPane.YES_NO_OPTION);
+		        if (reply == JOptionPane.YES_OPTION) {
+		            printf("Exiting the Simulation..." + System.lineSeparator());
+		            Simulation sim = Simulation.instance();
+		        	sim.endSimulation(); 
+		    		sim.getSimExecutor().shutdownNow();
+		    		if (sim.getMasterClock() != null)
+		    			sim.getMasterClock().exitProgram();
+		    		logger.info("Exiting the Simulation.");
+		    		InteractiveTerm.setKeepRunning(false);
+					System.exit(0);
+					frame.setVisible(false);
+			    	dispose(null);
+		        }
+			}
+		});
+        
         
         changeTitle(false);
         
@@ -297,12 +321,12 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
 		}
 	}
 
-   public void setMasterClock(MasterClock masterClock) {
-	   this.masterClock = masterClock;
-	   // Add clock listener
-	   masterClock.addClockListener(this);
-	   logger.config("MarsTerminal's clock listener added");
-    }
+//   public void setMasterClock(MasterClock masterClock) {
+//	   this.masterClock = masterClock;
+//	   // Add clock listener
+//	   masterClock.addClockListener(this);
+//	   logger.config("MarsTerminal's clock listener added");
+//    }
 
 	@Override
 	public void clockPulse(double time) {

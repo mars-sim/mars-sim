@@ -44,9 +44,9 @@ abstract class IntegerMapData implements MapData {
 //	private List<int[]> mapColors = null;
 	private int[][] pixels = null;
 	
-	private static MEGDRMapReader readTopo = new MEGDRMapReader();
+	private static MEGDRMapReader reader = new MEGDRMapReader();
 
-	private static int[] elevationArray = readTopo.getElevationArray();
+	private static int[] elevationArray = reader.getElevationArray();
 	
 	/**
 	 * Constructor

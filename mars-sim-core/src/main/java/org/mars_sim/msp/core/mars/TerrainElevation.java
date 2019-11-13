@@ -190,15 +190,14 @@ public class TerrainElevation implements Serializable {
 //		// Save this site
 //		surfaceFeatures.setSites(currentLocation, site);
 		
-		String nameLoc = "";
-		Settlement s = CollectionUtils.findSettlement(currentLocation);
-		if (s != null) {
-			nameLoc = "At " + s.getName() + ",";
-			logger.info(nameLoc + "           elevation : " + Math.round(elevation*1000.0)/1000.0 + " km");
-			logger.info(nameLoc + "   terrain steepness : " + Math.round(steepness*10.0)/10.0);
-			logger.info(nameLoc + " ice collection rate : " + Math.round(iceCollectionRate*100.0)/100.0 + " kg/millisol");
-			
-		}
+//		String nameLoc = "";
+//		Settlement s = CollectionUtils.findSettlement(currentLocation);
+//		if (s != null) {
+//			nameLoc = "At " + s.getName() + ",";
+//			logger.info(nameLoc + "           elevation : " + Math.round(elevation*1000.0)/1000.0 + " km");
+//			logger.info(nameLoc + "   terrain steepness : " + Math.round(steepness*10.0)/10.0);
+//			logger.info(nameLoc + " ice collection rate : " + Math.round(iceCollectionRate*100.0)/100.0 + " kg/millisol");
+//		}
 		
 		return iceCollectionRate;
 	}

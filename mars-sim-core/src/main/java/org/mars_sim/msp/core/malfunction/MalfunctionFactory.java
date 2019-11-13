@@ -558,7 +558,30 @@ public final class MalfunctionFactory implements Serializable {
 	 */
 	public void destroy() {
 //		malfunctions = null;
+		
+		namePartMap.clear();
+		MTBF_map.clear();
+		reliability_map.clear();
+		failure_map.clear();
+		repairPartProbabilities.clear();
+		maintenancePartProbabilities.clear();
+		
+		namePartMap = null;
+		MTBF_map = null;
+		reliability_map = null;
+		failure_map = null;
+		repairPartProbabilities = null;
+		maintenancePartProbabilities = null;
+		
+		partConfig = null;
+		
+		sim = null;
+		simulationConfig = null;
+		meteoriteImpactMalfunction = null;
+		missionManager = null;
 		marsClock = null;
+		unitManager = null;
+		
 		malfunctionConfig = null;
 		meteoriteImpactMalfunction = null;
 		missionManager = null;

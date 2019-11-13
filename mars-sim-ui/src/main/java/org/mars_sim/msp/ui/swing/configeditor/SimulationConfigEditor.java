@@ -55,6 +55,7 @@ import org.mars_sim.msp.core.GameManager;
 import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.Simulation.CreateNewSimTask;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.PersonConfig;
@@ -351,9 +352,13 @@ public class SimulationConfigEditor {
 					// Finalizes the simulation configuration
 					finalizeSettlementConfig();		
 					// Destroy old simulation
-					sim.destroyOldSimulation();
+//					sim.destroyOldSimulation();
+					
+					// Run this class in sim executor
+					sim.runCreateNewSimTask();					
 					// Create new simulation
-					sim.createNewSimulation(-1, false);
+//					sim.createNewSimulation(-1, false);
+	
 					// Close simulation config editor
 					closeWindow();
 					// Start the simulation
@@ -415,6 +420,8 @@ public class SimulationConfigEditor {
 		
 		JRootPane rootPane = SwingUtilities.getRootPane(defaultButton); 
 		rootPane.setDefaultButton(defaultButton);
+		
+		logger.config("Done with SimulationConfigEditor's constructor on " + Thread.currentThread().getName());
 	}
 	
 
@@ -1194,19 +1201,31 @@ public class SimulationConfigEditor {
 		}
 	}
 	
+
 	public void setupMainWindow() {
-		new Timer().schedule(new WindowDelayTimer(), 1000);
-	}
-	
-	/**
-	 * Defines the delay timer class
-	 */
-	class WindowDelayTimer extends TimerTask {
-		public void run() {
-			// Create main window
-			SwingUtilities.invokeLater(() -> new MainWindow(true));
+//		new Timer().schedule(new WindowDelayTimer(), 100);
+		while (true) {
+			try {
+				Thread.sleep(250L);
+			} catch (InterruptedException e) {
+			}
+			
+			if (!sim.isUpdating()) {
+				new MainWindow(true);
+				break;
+			}
 		}
 	}
+	
+//	/**
+//	 * Defines the delay timer class
+//	 */
+//	class WindowDelayTimer extends TimerTask {
+//		public void run() {
+//			// Create main window
+//			SwingUtilities.invokeLater(() -> new MainWindow(true));
+//		}
+//	}
 	
 	/**
 	 * Prepare for deletion.

@@ -18,6 +18,7 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -40,7 +41,7 @@ public class MEGDRMapReader {
 
 	private static final String FILE = "/maps/megt90n000cb.img";
 	private static final String COMPRESSED = "720x1440_JavaFastPFOR_compressed";
-	private static final String UNCOMPRESSED = "720x1440_uncompressed";
+//	private static final String UNCOMPRESSED = "720x1440_uncompressed";
 	
 	public static final int HEIGHT = 720; //2880;
 	public static final int WIDTH = 1440; //5760;
@@ -74,9 +75,16 @@ public class MEGDRMapReader {
 	 * @see <a href="https://github.com/mars-sim/mars-sim/issues/225">GitHub Discussion #225</a>
 	 */
 	public MEGDRMapReader() {
-		
-		InputStream inputStream = MEGDRMapReader.class.getResourceAsStream(FILE); //new BufferedInputStream(new FileInputStream(inputFile));
-		
+		URL url = MEGDRMapReader.class.getResource(FILE);
+		InputStream inputStream = null;
+		try {
+			inputStream = url.openStream();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+//		InputStream inputStream = MEGDRMapReader.class.getResourceAsStream(FILE); //new BufferedInputStream(new FileInputStream(inputFile));
+			
 	    int i = 0;
 	    
         try {
@@ -85,13 +93,13 @@ public class MEGDRMapReader {
 //				elevation[i] =  (0xff & buffer[0] << 8) | (0xff & buffer[1]);
 				elevation[i] =  (buffer[0] << 8) | (buffer[1] & 0xff);
 //				if (i % WIDTH == 0) System.out.println();
-//				System.out.print(elevation[i] + " " + buffer[0] + " " + buffer[1] + " " + el2[i]);
+//				System.out.print(elevation[i] + " ");// + buffer[0] + " " + buffer[1]);
 				i++;
 			}
 			
-//	        System.out.println("Size of unsorted integers from "+elevation.length*4/1024+" KB ");
+//	        System.out.println("Size of unsorted integers from " + elevation.length * 4/1024 + " KB ");
 //	        System.out.println("elevation.length : " + elevation.length);
-
+//
 //	        System.out.println(i);
 //	        System.out.println(elevation.length);
 			
@@ -106,7 +114,7 @@ public class MEGDRMapReader {
 //		} catch (IOException e) {
 //			e.printStackTrace();
 //		}
-        
+//        
 //        write2ByteArray(UNCOMPRESSED, elevation);
 //        
 //        int[] uncompressed = read2ByteArray(UNCOMPRESSED);

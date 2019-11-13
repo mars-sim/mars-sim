@@ -40,6 +40,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.Simulation.CreateNewSimTask;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.interplanetary.transport.TransportManager;
@@ -344,6 +345,18 @@ public class Simulation implements ClockListener, Serializable {
 		return simExecutor;
 	}
 
+	public void runCreateNewSimTask() {
+		startSimExecutor();
+		simExecutor.submit(new CreateNewSimTask());
+	}
+	
+	public class CreateNewSimTask implements Runnable {
+
+		public void run() {
+			createNewSimulation(-1, false);
+		}
+	}
+	
 	/**
 	 * Checks if the simulation is in a state of creating a new simulation or
 	 * loading a saved simulation.
@@ -364,6 +377,8 @@ public class Simulation implements ClockListener, Serializable {
 
 		Simulation sim = instance();
 
+		logger.config("Getting an instance of Simulation");
+		 
 		// Destroy old simulation.
 		if (sim.initialSimulationCreated) {
 			sim.destroyOldSimulation();
@@ -392,6 +407,8 @@ public class Simulation implements ClockListener, Serializable {
 		unitManager.originalBuild = Simulation.BUILD;
 
 //		masterClock.start();
+		
+		logger.config("Done with createNewSimulation()");
 	}
 
 //	/**
@@ -441,6 +458,7 @@ public class Simulation implements ClockListener, Serializable {
 	 * Initialize intransient data in the simulation.
 	 */
 	private void initializeIntransientData(int timeRatio, boolean loadSaveSim) {
+		logger.config("initializeIntransientData() is on " + Thread.currentThread().getName());
 		// Initialize resources
 		ResourceUtil.getInstance();
 		
@@ -448,10 +466,15 @@ public class Simulation implements ClockListener, Serializable {
 		malfunctionFactory = new MalfunctionFactory();
 		mars = new Mars();
 		mars.createInstances();
+		
+		logger.config("Done with Mars");
+		
 		missionManager = new MissionManager();
 		relationshipManager = new RelationshipManager();
 		medicalManager = new MedicalManager();
 		masterClock = new MasterClock(isFXGL, timeRatio);
+		
+		logger.config("Done with MasterClock");
 		
 		// Note : marsSurface is needed before creating Inventory and Unit
 		// When loading from saved sim, it's at unitManager
@@ -461,6 +484,8 @@ public class Simulation implements ClockListener, Serializable {
 		// Gets the SurfaceFeatures instance
 		SurfaceFeatures surfaceFeatures = mars.getSurfaceFeatures();
 		
+		logger.config("Done with SurfaceFeatures");
+		
 		// Create clock instances
 		MarsClock marsClock = masterClock.getMarsClock();
 		EarthClock earthClock = masterClock.getEarthClock();
@@ -469,6 +494,8 @@ public class Simulation implements ClockListener, Serializable {
 		Unit.initializeInstances(masterClock, marsClock, earthClock, this, mars, null, 
 				mars.getWeather(), surfaceFeatures, missionManager);
 		
+		logger.config("Done with Unit");
+
 		// Initialize serializable managers
 		unitManager = new UnitManager(); 
 		Inventory.setUnitManager(unitManager);
@@ -484,6 +511,8 @@ public class Simulation implements ClockListener, Serializable {
 		creditManager = new CreditManager();
 		scientificStudyManager = new ScientificStudyManager();
 		transportManager = new TransportManager();
+
+		logger.config("Done with TransportManager()");
 
 		// Initialize meta tasks
 		new MetaTaskUtil();
@@ -513,6 +542,8 @@ public class Simulation implements ClockListener, Serializable {
 		//  Re-initialize the GameManager
 		GameManager.initializeInstances(unitManager);
 					
+		logger.config("Done with GameManager()");
+		
 		// Set instances for classes that extend Unit and Task and Mission
 		Mission.initializeInstances(this, marsClock, eventManager, unitManager, scientificStudyManager, 
 				surfaceFeatures, missionManager, relationshipManager, pc, creditManager);
@@ -1884,7 +1915,7 @@ public class Simulation implements ClockListener, Serializable {
 	 * simulation.
 	 */
 	public void destroyOldSimulation() {
-		// logger.config("starting Simulation's destroyOldSimulation()");
+		logger.config("Starting destroyOldSimulation()");
 
 //		autosaveService = null;
 		AutosaveScheduler.cancel();
@@ -1898,6 +1929,8 @@ public class Simulation implements ClockListener, Serializable {
 			mars.destroy();
 			mars = null;
 		}
+		
+		logger.config("Done with mars");
 
 		if (missionManager != null) {
 			missionManager.destroy();
@@ -1914,6 +1947,8 @@ public class Simulation implements ClockListener, Serializable {
 			medicalManager = null;
 		}
 
+		logger.config("Done with medicalManager");
+		
 		if (masterClock != null) {
 			masterClock.destroy();
 			masterClock = null;
@@ -1939,7 +1974,7 @@ public class Simulation implements ClockListener, Serializable {
 			eventManager = null;
 		}
 
-		 logger.config("Simulation's destroyOldSimulation() is done");
+		 logger.config("Done with destroyOldSimulation()");
 	}
 
 }
