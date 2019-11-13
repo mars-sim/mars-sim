@@ -223,11 +223,13 @@ public class InteractiveTerm {
 				marsTerminal.print(System.lineSeparator());
 				marsTerminal.print("Sorry. The Console Edition of mars-sim does not come with the Site Editor.");	
 				marsTerminal.print(System.lineSeparator());
+				
         	}
         	else {
 				marsTerminal.print(System.lineSeparator());
 				marsTerminal.print("Loading the Site Editor...");
 				marsTerminal.print(System.lineSeparator());
+				
 				useSCE = true;
         	}
         }
@@ -390,9 +392,9 @@ public class InteractiveTerm {
 	    	useSCE = selectSandoxMode();
     	}
     	
-//        else {
-//        	useSCE = selectSandoxMode();
-//        }
+        else {
+        	useSCE = selectSandoxMode();
+        }
     	
     	return useSCE;
 	}

@@ -26,6 +26,7 @@ import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
+import org.mars_sim.msp.core.mars.TerrainElevation;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
@@ -55,7 +56,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	private static final String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 
 	/** Mission phases. */
-	public static final MissionPhase APPROVING = new MissionPhase(Msg.getString("Mission.phase.approving")); //$NON-NLS-1$
+	public static final MissionPhase REVIEWING = new MissionPhase(Msg.getString("Mission.phase.reviewing")); //$NON-NLS-1$
 	public static final MissionPhase EMBARKING = new MissionPhase(Msg.getString("Mission.phase.embarking")); //$NON-NLS-1$
 	public static final MissionPhase TRAVELLING = new MissionPhase(Msg.getString("Mission.phase.travelling")); //$NON-NLS-1$
 	public static final MissionPhase DISEMBARKING = new MissionPhase(Msg.getString("Mission.phase.disembarking")); //$NON-NLS-1$
@@ -74,7 +75,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	/** True if vehicle's emergency beacon has been turned on */
 	// private boolean isBeaconOn = false;
 	/** True if a person is submitting the mission plan request. */
-	private boolean isRequestSubmitted;
+	private boolean isMissionPlanReady;
 	/** True if vehicle has been loaded. */
 	protected boolean loadedFlag = false;
 	/** Vehicle traveled distance at start of mission. */
@@ -100,6 +101,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	/** Caches */
 	protected Map<Integer, Integer> equipmentNeededCache;
 	
+	protected static TerrainElevation terrainElevation;
+	
 	/**
 	 * Constructor 1
 	 * 
@@ -120,7 +123,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		}
 		
 		// Add mission phases.
-		addPhase(APPROVING);
+		addPhase(REVIEWING);
 		addPhase(EMBARKING);
 		addPhase(TRAVELLING);
 		addPhase(DISEMBARKING);
@@ -145,7 +148,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		this.startingMember = startingMember;
 
 		// Add mission phases.
-		addPhase(APPROVING);
+		addPhase(REVIEWING);
 		addPhase(EMBARKING);
 		addPhase(TRAVELLING);
 		addPhase(DISEMBARKING);
@@ -583,7 +586,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 */
 	protected void determineNewPhase() {
 //		logger.info(getStartingMember() + " was at the '" + getPhase() + "' phase at determineNewPhase().");
-		if (APPROVING.equals(getPhase())) {
+		if (REVIEWING.equals(getPhase())) {
 			//startTravelToNextNode();
 			setPhase(VehicleMission.EMBARKING);
 			setPhaseDescription(
@@ -622,8 +625,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		}
 	}
 	
-	public void submitMissionPlan() {
-		isRequestSubmitted = true;
+	public void flag4Submission() {
+		isMissionPlanReady = true;
 	}
 
 	public void recordStartMass() {
@@ -634,9 +637,9 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	protected void performPhase(MissionMember member) {
 //		logger.info(getStartingMember() + " was at the '" + getPhase() + "' phase at performPhase().");
 		super.performPhase(member);
-		if (APPROVING.equals(getPhase())) {
-			if (isRequestSubmitted)
-				requestApprovingPhase(member);
+		if (REVIEWING.equals(getPhase())) {
+			if (isMissionPlanReady)
+				requestReviewPhase(member);
 		}
 		else if (EMBARKING.equals(getPhase())) {
 			createDateEmbarked();
@@ -649,7 +652,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		else if (DISEMBARKING.equals(getPhase())) {
 			performDisembarkToSettlementPhase(member, getCurrentNavpoint().getSettlement());
 		}
-		else if (COMPLETED.equals(getPhase())) {
+		else if (COMPLETED.equals(getPhase())
+				|| INCOMPLETED.equals(getPhase())) {
 			// createAfterActionReport();
 			createDateCompleted();
 			setPhaseEnded(true);
@@ -768,8 +772,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 * 
 	 * @param member the mission member currently performing the mission.
 	 */	
-	protected void requestApprovingPhase(MissionMember member) {
-		super.requestApprovingPhase(member);	
+	protected void requestReviewPhase(MissionMember member) {
+		super.requestReviewPhase(member);	
 	}
 	
 	/**
@@ -892,7 +896,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		Map<Integer, Number> result = new HashMap<Integer, Number>();
 		if (vehicle != null) {
 			// Add the methane resource
-			if (getPhase() == null || getPhase().equals(VehicleMission.EMBARKING) || getPhase().equals(VehicleMission.APPROVING))
+			if (getPhase() == null || getPhase().equals(VehicleMission.EMBARKING) || getPhase().equals(VehicleMission.REVIEWING))
 				result.put(vehicle.getFuelType(), getFuelNeededForTrip(distance, vehicle.getEstimatedAveFuelConsumption(), true));
 			else
 				result.put(vehicle.getFuelType(), getFuelNeededForTrip(distance, vehicle.getIFuelEconomy(), false));
@@ -1612,7 +1616,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		int result = 0;
 		Iterator<Mission> i = missionManager.getMissionsForSettlement(settlement).iterator();
 		while (i.hasNext()) {
-			if (APPROVING.equals(i.next().getPhase())) {
+			if (REVIEWING.equals(i.next().getPhase())) {
 				result++;
 			}
 		}

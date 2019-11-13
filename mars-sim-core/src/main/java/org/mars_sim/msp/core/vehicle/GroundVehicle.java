@@ -68,8 +68,6 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
 //		malfunctionManager.addScopeString(SystemType.VEHICLE.getName());// "GroundVehicle");
 
 		setTerrainHandlingCapability(0D); // Default terrain capability
-
-		elevation = TerrainElevation.getMOLAElevation(getCoordinates());
 	}
 
 //	/**
@@ -92,7 +90,6 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
 	 * @return elevation of the ground vehicle (in km)
 	 */
 	public double getElevation() {
-		// return terrain.getElevation(getCoordinates());
 		return elevation;
 	}
 
@@ -143,7 +140,9 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
 	 */
 	public double getTerrainGrade(Direction direction) {
 		// Determine the terrain grade in a given direction from the vehicle.
-		return TerrainElevation.determineTerrainSteepness(getCoordinates(), direction);
+		if (terrainElevation == null)
+			terrainElevation = surfaceFeatures.getTerrainElevation();
+		return terrainElevation.determineTerrainSteepness(getCoordinates(), direction);
 	}
 
 	/**

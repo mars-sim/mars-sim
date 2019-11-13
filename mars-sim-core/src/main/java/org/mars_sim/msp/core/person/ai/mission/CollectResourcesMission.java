@@ -100,6 +100,8 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 	private static final int foodID = ResourceUtil.foodID;
 	private static final int methaneID = ResourceUtil.methaneID;
 
+	protected static TerrainElevation terrainElevation;
+	
 	/**
 	 * Constructor
 	 * 
@@ -192,8 +194,8 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 			addPhase(COLLECT_RESOURCES);
 
 			// Set initial mission phase.
-			setPhase(VehicleMission.APPROVING);//.EMBARKING);
-			setPhaseDescription(Msg.getString("Mission.phase.approving.description"));//, s.getName())); //$NON-NLS-1$
+			setPhase(VehicleMission.REVIEWING);
+			setPhaseDescription(Msg.getString("Mission.phase.reviewing.description"));//, s.getName())); //$NON-NLS-1$
 		}
 		
 		logger.info(startingPerson + " had started CollectResourcesMission");
@@ -327,7 +329,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 	 */
 	protected void determineNewPhase() {
 		logger.info(this.getStartingMember() + " was at '" + getPhase() + "' phase in determineNewPhase().");
-		if (APPROVING.equals(getPhase())) {
+		if (REVIEWING.equals(getPhase())) {
 			setPhase(VehicleMission.EMBARKING);
 			setPhaseDescription(
 					Msg.getString("Mission.phase.embarking.description", getStartingSettlement().getName()));//getCurrentNavpoint().getDescription()));//startingMember.getSettlement().toString())); // $NON-NLS-1$
@@ -483,7 +485,8 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 
 					if (resourceID == ResourceUtil.iceID) {
 						
-						double rate = TerrainElevation.getIceCollectionRate(person.getCoordinates());
+						
+						double rate = terrainElevation.getIceCollectionRate(person.getCoordinates());
 						
 //						if (resourceCollectionRate == CollectIce.collectionRate) {
 //							// Calculate the rate at the site now
@@ -566,7 +569,9 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 				limit = range / 4D;
 				siteDistance = RandomUtil.getRandomDouble(limit);
 				newLocation = startingLocation.getNewLocation(direction, siteDistance);
-				double score = TerrainElevation.getIceCollectionRate(newLocation);
+				if (terrainElevation == null)
+					terrainElevation = sim.getMars().getSurfaceFeatures().getTerrainElevation();
+				double score = terrainElevation.getIceCollectionRate(newLocation);
 				if (score > bestScore) {
 					bestScore = score;
 					bestLocation = newLocation;
@@ -616,7 +621,10 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 						siteDistance = RandomUtil.getRandomDouble(limit);
 						newLocation = currentLocation.getNewLocation(direction, siteDistance);
 						
-						double score = TerrainElevation.getIceCollectionRate(newLocation);
+						if (terrainElevation == null)
+							terrainElevation = sim.getMars().getSurfaceFeatures().getTerrainElevation();
+
+						double score = terrainElevation.getIceCollectionRate(newLocation);
 						if (score > bestScore) {
 							bestScore = score;
 							bestLocation = newLocation;

@@ -376,13 +376,14 @@ public class MissionTableModel extends AbstractTableModel
 					break;
 
 				case PHASE: {
-					if (mission.getPlan() != null && mission.getPhase().equals(VehicleMission.APPROVING)) {
+					if (mission.getPlan() != null && mission.getPhase().equals(VehicleMission.REVIEWING)) {
 						int percent = (int) mission.getPlan().getPercentComplete();
 						if (percent > 100)
 							percent = 100;
 						int score = (int)mission.getPlan().getScore();
-						result = percent + "% Graded [Score : " + score + "] "
-								+ mission.getPhaseDescription();
+						int min = (int)mission.getStartingMember().getSettlement().getMinimumPassingScore();
+						result = percent + "% Done. Score : " + score + " (Min : " + min + ") "
+								+ Conversion.capitalize(mission.getPhaseDescription());
 					}
 					else
 						result = Conversion.capitalize(mission.getPhaseDescription());

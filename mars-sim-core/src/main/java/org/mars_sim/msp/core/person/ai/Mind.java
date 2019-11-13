@@ -282,7 +282,7 @@ public class Mind implements Serializable {
 				// Test if a person is tired, too stressful or hungry and need 
 				// to take break, eat and/or sleep
 				else if (!person.getPhysicalCondition().isFit()
-		        	&& !mission.hasDangerousMedicalProblemsAllCrew())
+		        	&& !mission.hasDangerousMedicalProblemsAllCrew()) {
 		        	// Cannot perform the mission if a person is not well
 		        	// Note: If everyone has dangerous medical condition during a mission, 
 		        	// then it won't matter and someone needs to drive the rover home.
@@ -291,14 +291,17 @@ public class Mind implements Serializable {
 						resumeMission(-1);
 					else
 						selectNewTask();
-
-		        else if (VehicleMission.APPROVING.equals(mission.getPhase())
-						&& !mission.getStartingMember().equals(person)
-						) {
-		        	// If the mission is still pending upon approving, then only the mission lead
-		        	// needs to perform the mission and rest of the crew can do something else to 
-		        	// get themselves ready.
-					selectNewTask();
+				}
+				
+		        else if (VehicleMission.REVIEWING.equals(mission.getPhase())) {
+		        	if (!mission.getStartingMember().equals(person)) {
+			        	// If the mission is still pending upon approving, then only the mission lead
+			        	// needs to perform the mission and rest of the crew can do something else to 
+			        	// get themselves ready.
+						selectNewTask();
+		        	}
+		        	else
+		        		resumeMission(0);		
 				}
 				
 				else if (mission.getPhase() != null) {
@@ -315,7 +318,7 @@ public class Mind implements Serializable {
 	}
 
 	public void resumeMission(int modifier) {
-		if (mission.getPhase().equals(VehicleMission.TRAVELLING)) {
+		if (VehicleMission.TRAVELLING.equals(mission.getPhase())) {
 			if (taskManager.getPhase() != null && mission.getVehicle().getOperator() == null) {
 				// if no one is driving the vehicle and nobody is NOT doing field work, 
 				// need to elect a driver right away
@@ -324,10 +327,9 @@ public class Mind implements Serializable {
 			else 
 				selectNewTask();
 		}
-		else if (taskManager.getPhase() != null
-				&& !mission.getPhase().equals(VehicleMission.INCOMPLETED)
-				&& !mission.getPhase().equals(VehicleMission.APPROVING)
-				) {
+		else if (taskManager.getPhase() != null) {
+//				&& mission.getPhase().equals(VehicleMission.REVIEWING)
+//				) {
 			checkMissionFitness(modifier);
 		}
 		else
@@ -339,7 +341,7 @@ public class Mind implements Serializable {
 		int fitness = person.getPhysicalCondition().computeFitnessLevel();
 		int priority = mission.getPriority();
 		int rand = RandomUtil.getRandomInt(6);
-		if (rand + modifier - (fitness)/1.5D <= priority) {
+		if (rand - (fitness)/1.5D <= priority + modifier) {
 //					// See if this person can ask for a mission
 //					boolean newMission = !hasActiveMission && !hasAMission && !overrideMission && isInMissionWindow;							
 			mission.performMission(person);

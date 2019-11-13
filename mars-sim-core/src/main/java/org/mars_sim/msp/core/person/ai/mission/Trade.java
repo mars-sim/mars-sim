@@ -173,8 +173,8 @@ public class Trade extends RoverMission implements Serializable {
 		addPhase(TRADE_EMBARKING);
 
 		// Set initial phase
-		setPhase(VehicleMission.APPROVING);//.EMBARKING);
-		setPhaseDescription(Msg.getString("Mission.phase.approving.description")); //$NON-NLS-1$
+		setPhase(VehicleMission.REVIEWING);
+		setPhaseDescription(Msg.getString("Mission.phase.reviewing.description")); //$NON-NLS-1$
 		if (logger.isLoggable(Level.INFO)) {
 			if (startingMember != null && getRover() != null) {
 				logger.info("[" + startingMember.getLocationTag().getLocale() + "] " + startingMember.getName()
@@ -253,7 +253,7 @@ public class Trade extends RoverMission implements Serializable {
 	 * Determines a new phase for the mission when the current phase has ended.
 	 */
 	protected void determineNewPhase() {
-		if (APPROVING.equals(getPhase())) {
+		if (REVIEWING.equals(getPhase())) {
 			setPhase(VehicleMission.EMBARKING);
 			setPhaseDescription(
 					Msg.getString("Mission.phase.embarking.description", getCurrentNavpoint().getDescription()));//startingMember.getSettlement().toString())); // $NON-NLS-1$

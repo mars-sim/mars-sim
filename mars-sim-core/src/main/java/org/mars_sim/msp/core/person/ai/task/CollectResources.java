@@ -292,7 +292,7 @@ public class CollectResources extends EVAOperation implements Serializable {
 
 		// Modify collection rate by polar region if ice collecting.
 		if (resourceType == ResourceUtil.iceID) {
-			if (surface.inPolarRegion(person.getCoordinates())) {
+			if (surfaceFeatures.inPolarRegion(person.getCoordinates())) {
 				samplesCollected *= 3D;
 			}
 		}

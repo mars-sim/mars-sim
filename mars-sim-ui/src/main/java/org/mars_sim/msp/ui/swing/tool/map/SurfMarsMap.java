@@ -22,6 +22,8 @@ public class SurfMarsMap extends CannedMarsMap {
 	// The map type.
 	public static final String TYPE = "surface map";
 
+	private static MapDataUtil mapDataUtil = MapDataUtil.instance();
+	
 	/**
 	 * Constructor
 	 *
@@ -30,6 +32,6 @@ public class SurfMarsMap extends CannedMarsMap {
 	public SurfMarsMap(JComponent displayArea) {
 
 		// Parent constructor
-		super(displayArea, MapDataUtil.instance().getSurfaceMapData());
+		super(displayArea, mapDataUtil.getSurfaceMapData());
 	}
 }

@@ -195,8 +195,9 @@ extends JComponent {
 		desktop = new MainDesktopPane(this);
 
 		// Initialize UI elements for the frame
-		EventQueue.invokeLater(new Runnable(){
-	        public void run() {
+//		EventQueue.invokeLater(new Runnable(){
+//	        public void run() {
+		SwingUtilities.invokeLater(() -> {    	
 	        	init();    
 	        	
 	    		// Set up timers for use on the status bar
@@ -207,11 +208,10 @@ extends JComponent {
 	    		frame.setLocationRelativeTo(null);
 	    		frame.setVisible(true);
 
+	    		// Open all initial windows.
+	    		desktop.openInitialWindows();
 	        }
-	    });  
-
-		// Open all initial windows.
-		desktop.openInitialWindows();
+	    );  
 
 
 		// Set up timers for caching the settlement windows

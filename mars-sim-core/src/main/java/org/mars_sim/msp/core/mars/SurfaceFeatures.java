@@ -138,7 +138,8 @@ public class SurfaceFeatures implements Serializable {
 		weather = mars.getWeather();
 		
 		sunDirection = orbitInfo.getSunDirection();
-		masterClock = sim.getMasterClock();
+		
+//		masterClock = sim.getMasterClock();
 	}
 
 	/**
@@ -320,6 +321,8 @@ public class SurfaceFeatures implements Serializable {
 	 * @return solar irradiance (W/m2)
 	 */
 	public double getSolarIrradiance(Coordinates location) {
+		if (masterClock == null)
+			masterClock = sim.getMasterClock();
 		MarsClock currentTime = masterClock.getMarsClock();
 		if (!currentTime.equals(solarIrradianceMapCacheTime)) {
 			// Call here once per frame because getSolarIrradiance()

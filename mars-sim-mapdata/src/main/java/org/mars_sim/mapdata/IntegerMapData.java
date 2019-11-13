@@ -44,9 +44,17 @@ abstract class IntegerMapData implements MapData {
 //	private List<int[]> mapColors = null;
 	private int[][] pixels = null;
 	
-	private static MEGDRMapReader reader = new MEGDRMapReader();
-
-	private static int[] elevationArray = reader.getElevationArray();
+//	private static MapDataUtil mapDataUtil = MapDataUtil.instance();
+	
+//	private static MEGDRMapReader reader;
+//
+//	private static int[] elevationArray;
+//	
+//	static {
+//		reader = new MEGDRMapReader();
+//
+//		elevationArray = reader.getElevationArray();
+//	}
 	
 	/**
 	 * Constructor
@@ -357,46 +365,7 @@ abstract class IntegerMapData implements MapData {
 		return pixels[row][column];
 	}
 
-	/**
-	 * Gets the elevation as an integer at a given location.
-	 * 
-	 * @param phi   the phi location.
-	 * @param theta the theta location.
-	 * @return the elevation as an integer.
-	 */
-	@Override
-	public int getElevationInt(double phi, double theta) {
-		// Make sure phi is between 0 and PI.
-		while (phi > Math.PI)
-			phi -= Math.PI;
-		while (phi < 0)
-			phi += Math.PI;
-
-		// Adjust theta with PI for the map offset.
-		// Note: the center of the map is when theta = 0
-		if (theta > Math.PI)
-			theta -= Math.PI;
-		else
-			theta += Math.PI;
-		
-		// Make sure theta is between 0 and 2 PI.
-		while (theta > TWO_PI)
-			theta -= TWO_PI;
-		while (theta < 0)
-			theta += TWO_PI;
-
-		int row = (int) Math.round(phi * MEGDRMapReader.HEIGHT / Math.PI);
-		if (row == MEGDRMapReader.HEIGHT) 
-			row--;
-		
-		int column = MEGDRMapReader.WIDTH /2 + (int) Math.round(theta * MEGDRMapReader.WIDTH / TWO_PI);
-//		if (column < 0)
-//			column = 0;		
-		if (column == MEGDRMapReader.WIDTH)
-			column--;
-
-		return elevationArray[row * MEGDRMapReader.WIDTH + column];
-	}
+	
 	
 	/**
 	 * Converts spherical coordinates to rectangular coordinates. Returns integer x

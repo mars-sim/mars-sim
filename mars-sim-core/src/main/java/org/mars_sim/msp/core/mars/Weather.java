@@ -161,8 +161,8 @@ public class Weather implements Serializable {
 		if (terrainElevation == null)
 			terrainElevation = surfaceFeatures.getTerrainElevation();
 
-		if (unitManager == null)
-			unitManager = sim.getUnitManager();
+//		if (unitManager == null)
+//			unitManager = sim.getUnitManager();
 		
 	}
 	
@@ -231,6 +231,9 @@ public class Weather implements Serializable {
 				// solCache = newSol;
 				double ds_speed = 0;
 
+				if (unitManager == null)
+					unitManager = sim.getUnitManager();
+				
 				List<Settlement> settlements = new ArrayList<>(unitManager.getSettlements());
 				for (Settlement s : settlements) {
 					if (s.getCoordinates().equals(location)) {
@@ -406,7 +409,7 @@ public class Weather implements Serializable {
 		double elevation = 0;
 
 		if (height == 0)
-			elevation = TerrainElevation.getMOLAElevation(location); // in km since getElevation() return the value in km
+			elevation = terrainElevation.getMOLAElevation(location); // in km since getElevation() return the value in km
 		else
 			elevation = height;
 
@@ -579,7 +582,11 @@ public class Weather implements Serializable {
 			// T = -31 - 0.000998 * h
 			// The upper stratosphere model is used for altitudes above 7,000 meters.
 			// T = -23.4 - 0.00222 * h
-			double elevation = TerrainElevation.getMOLAElevation(location); // in km from getElevation(location)
+			
+			if (terrainElevation == null)
+				terrainElevation = sim.getMars().getSurfaceFeatures().getTerrainElevation();
+
+			double elevation = terrainElevation.getMOLAElevation(location); // in km from getElevation(location)
 			double terrain_dt;
 
 			// Assume a typical temperature of -31 deg celsius
@@ -804,6 +811,8 @@ public class Weather implements Serializable {
 	 * @param L_s_int
 	 */
 	public void createDustDevils(double probability, double L_s) {
+		if (unitManager == null)
+			unitManager = sim.getUnitManager();
 		List<Settlement> settlements = new ArrayList<>(unitManager.getSettlements());
 		for (Settlement s : settlements) {
 			if (s.getDustStorm() == null) {
@@ -1017,7 +1026,7 @@ public class Weather implements Serializable {
 		surfaceFeatures = s;
 		terrainElevation = s.getTerrainElevation();
 		orbitInfo = o;
-		unitManager = u;
+//		unitManager = u;
 	}
 	
 	/**

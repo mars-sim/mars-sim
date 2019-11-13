@@ -119,7 +119,9 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 			logger.getName().length());
 
 	private static final String DETECTOR_GRID = "] The detector grid forecast a ";
-
+	private static final String TRADING_OUTPOST = "Trading Outpost";
+	private static final String MINING_OUTPOST = "Mining Outpost";
+	
 	public static final int CHECK_GOODS = 15;
 	
 	public static final int CHECK_MISSION = 20; // once every 10 millisols
@@ -285,7 +287,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	private int minFood = 50;
 
 	/** The average ice collection rate of the water ice nearby */
-	private double iceCollectionRate;
+	private double iceCollectionRate = 1;
 	/** The composite value of the minerals nearby. */
 	public double mineralValue = -1;
 	/** The rate [kg per millisol] of filtering grey water for irrigating the crop. */
@@ -611,13 +613,13 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 //		logger.info(this + "   terrain steepness : " + Math.round(gradient*10.0)/10.0);
 //		logger.info(this + " ice collection rate : " + Math.round(iceCollectionRate*100.0)/100.0 + " kg/millisol");
 		
-		iceCollectionRate = TerrainElevation.getIceCollectionRate(location);
+//		if (terrainElevation == null)
+//			terrainElevation = surfaceFeatures.getTerrainElevation();
+//		iceCollectionRate = terrainElevation.getIceCollectionRate(location);
+		logger.config("Done iceCollectionRate");
 		
 		// Set inventory total mass capacity.
 		getInventory().addGeneralCapacity(Double.MAX_VALUE); // 10_000_000);//100_000_000);//
-
-//		updateAllAssociatedPeople();
-//		updateAllAssociatedRobots();
 
 		double max = 500;
 		// Initialize inventory of this building for resource storage
@@ -627,30 +629,34 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 				getInventory().addAmountResourceTypeCapacity(ar, max);
 			}
 		}
-
+		logger.config("Done addAmountResourceTypeCapacity()");
 		// Initialize building manager
 		buildingManager = new BuildingManager(this);
+		logger.config("Done BuildingManager()");
 		// Initialize building connector manager.
 		buildingConnectorManager = new BuildingConnectorManager(this);
 		// Initialize goods manager.
 		goodsManager = new GoodsManager(this);
+		logger.config("Done GoodsManager()");
 		// Initialize construction manager.
 		constructionManager = new ConstructionManager(this);
 		// Initialize power grid
 		powerGrid = new PowerGrid(this);
 		// Added thermal control system
 		thermalSystem = new ThermalSystem(this);
+		logger.config("Done ThermalSystem()");
 		// Initialize scientific achievement.
 		scientificAchievement = new HashMap<ScienceType, Double>(0);
 		// Add chain of command
 		chainOfCommand = new ChainOfCommand(this);
+		logger.config("Done ChainOfCommand()");
 		// Add tracking composition of air
 		compositionOfAir = new CompositionOfAir(this);
-
+		logger.config("Done CompositionOfAir()");
 		// Set objective()
-		if (template.equals("Trading Outpost"))
+		if (template.equals(TRADING_OUTPOST))
 			setObjective(ObjectiveType.TRADE_CENTER, 2);
-		else if (template.equals("Mining Outpost"))
+		else if (template.equals(MINING_OUTPOST))
 			setObjective(ObjectiveType.MANUFACTURING_DEPOT, 2);
 		else
 			setObjective(ObjectiveType.CROP_FARM, 2);
@@ -669,6 +675,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 		dailyResourceOutput = new ConcurrentHashMap<>();
 		// Create the daily labor hours map
 		dailyLaborTime = new ConcurrentHashMap<>();
+		logger.config("Done initialize()");
 	}
 
 	/**
@@ -877,7 +884,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 
 		return citizens.stream()
 				.filter(p -> !p.isDeclaredDead() && p.getMind().getMission() != null
-						&& !p.getMind().getMission().getPhase().equals(VehicleMission.APPROVING))
+						&& !p.getMind().getMission().getPhase().equals(VehicleMission.REVIEWING))
 				.collect(Collectors.toList());
 
 	}
@@ -4528,6 +4535,11 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
     }
     
     public double getIceCollectionRate() {
+//    	if (iceCollectionRate == -1) {
+//			if (terrainElevation == null)
+//				terrainElevation = surfaceFeatures.getTerrainElevation();
+//			iceCollectionRate = terrainElevation.getIceCollectionRate(location);
+//    	}
     	return iceCollectionRate;
     }
 	

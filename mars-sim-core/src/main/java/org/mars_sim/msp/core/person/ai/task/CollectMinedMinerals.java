@@ -341,8 +341,8 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 			if (!ExitAirlock.canExitAirlock(person, rover.getAirlock()))
 				return false;
 
-			if (surface.getSolarIrradiance(person.getCoordinates()) <= 15D
-				&& !surface.inDarkPolarRegion(person.getCoordinates())) {
+			if (surfaceFeatures.getSolarIrradiance(person.getCoordinates()) <= 15D
+				&& !surfaceFeatures.inDarkPolarRegion(person.getCoordinates())) {
 					LogConsolidated.log(Level.FINE, 5_000, sourceName, 
 			        		"[" + person.getLocationTag().getLocale() + "] " + person.getName()
 			        			+ " ended mining minerals due to low light level outside at " 

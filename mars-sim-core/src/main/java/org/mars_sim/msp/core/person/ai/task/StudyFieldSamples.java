@@ -588,7 +588,7 @@ public class StudyFieldSamples extends Task implements ResearchScientificStudy, 
 			// Determine explored site to improve estimations.
 			ExploredLocation site = determineExplorationSite();
 			if (site != null) {
-				MineralMap mineralMap = surface.getMineralMap();
+				MineralMap mineralMap = surfaceFeatures.getMineralMap();
 				Map<String, Double> estimatedMineralConcentrations = site.getEstimatedMineralConcentrations();
 				Iterator<String> i = estimatedMineralConcentrations.keySet().iterator();
 				while (i.hasNext()) {
@@ -675,7 +675,7 @@ public class StudyFieldSamples extends Task implements ResearchScientificStudy, 
 		Settlement settlement = person.getAssociatedSettlement();
 		if (settlement != null) {
 			List<ExploredLocation> settlementExploredLocations = new ArrayList<ExploredLocation>();
-			List<ExploredLocation> allExploredLocations = surface.getExploredLocations();
+			List<ExploredLocation> allExploredLocations = surfaceFeatures.getExploredLocations();
 			Iterator<ExploredLocation> i = allExploredLocations.iterator();
 			while (i.hasNext()) {
 				ExploredLocation location = i.next();

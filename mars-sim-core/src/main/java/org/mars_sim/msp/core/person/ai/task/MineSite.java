@@ -293,7 +293,7 @@ public class MineSite extends EVAOperation implements Serializable {
 	 */
 	private void excavateMinerals(double time) {
 
-		Map<String, Double> minerals = surface.getMineralMap()
+		Map<String, Double> minerals = surfaceFeatures.getMineralMap()
 				.getAllMineralConcentrations(site);
 		Iterator<String> i = minerals.keySet().iterator();
 		while (i.hasNext()) {

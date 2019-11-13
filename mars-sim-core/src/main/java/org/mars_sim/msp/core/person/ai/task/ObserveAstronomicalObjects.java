@@ -277,7 +277,7 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 		}
 
 		// Check sunlight and end the task if sunrise
-		double sunlight = surface.getSolarIrradiance(person.getCoordinates());
+		double sunlight = surfaceFeatures.getSolarIrradiance(person.getCoordinates());
 		if (sunlight > 0) {
 			endTask();
 		}

@@ -25,6 +25,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Equipment;
+import org.mars_sim.msp.core.mars.Mars;
 import org.mars_sim.msp.core.mars.TerrainElevation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.robot.Robot;
@@ -100,9 +101,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
 //	private JComboBoxMW<?> combox;
 	private WebComboBox combox;
 
-	private TerrainElevation terrainElevation;
 	private Coordinates locationCache;
-//	private MainScene mainScene;
 
 	private WebButton locatorButton;
 	private SettlementMapPanel mapPanel;
@@ -110,6 +109,9 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
 	private DisplaySingle lcdLong, lcdLat, lcdText; // lcdElev,
 	private DisplayCircular gauge;// RadialQuarterN gauge;
 
+	private static Mars mars;
+	private static TerrainElevation terrainElevation;
+	
 	/**
 	 * Constructor.
 	 * 
@@ -203,7 +205,12 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
 		// locationPanel.add(lcdLat, BorderLayout.WEST);
 		northPanel.add(lcdLat);
 
-		elevationCache = Math.round(TerrainElevation.getMOLAElevation(unit.getCoordinates()) * 1000.0) / 1000.0;
+		if (mars == null)
+			mars = Simulation.instance().getMars();
+		if (terrainElevation == null)
+			terrainElevation =  mars.getSurfaceFeatures().getTerrainElevation();
+
+		elevationCache = Math.round(terrainElevation.getMOLAElevation(unit.getCoordinates()) * 1000.0) / 1000.0;
 
 		logger.info(unit.getName() + "'s elevation is " + elevationCache + " km.");
 
@@ -693,7 +700,12 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
 			lcdLat.setLcdValueAnimated(Math.abs(locationCache.getLatitudeDouble()));
 			lcdLong.setLcdValueAnimated(Math.abs(locationCache.getLongitudeDouble()));
 
-			double elevationCache = Math.round(TerrainElevation.getMOLAElevation(unit.getCoordinates()) 
+			if (mars == null)
+				mars = Simulation.instance().getMars();
+			if (terrainElevation == null)
+				terrainElevation =  mars.getSurfaceFeatures().getTerrainElevation();
+
+			double elevationCache = Math.round(terrainElevation.getMOLAElevation(unit.getCoordinates()) 
 					* 1000.0) / 1000.0;
 
 			setGauge(gauge, elevationCache);

@@ -677,7 +677,7 @@ public abstract class Mission implements Serializable {
 	 * @throws MissionException if newPhase is not in the mission's collection of
 	 *                          phases.
 	 */
-	protected final void setPhase(MissionPhase newPhase) {
+	public final void setPhase(MissionPhase newPhase) {
 		if (newPhase == null) {
 			throw new IllegalArgumentException("newPhase is null");
 		} else if (phases.contains(newPhase)) {
@@ -1448,13 +1448,13 @@ public abstract class Mission implements Serializable {
 	}
 
 	/**
-	 * Request approval from the commander of the settlement for the mission.
+	 * Request review for the mission.
 	 * 
-	 * @param member the mission member currently performing the mission.
+	 * @param member the mission lead.
 	 */	
-	protected void requestApprovingPhase(MissionMember member) {	
+	protected void requestReviewPhase(MissionMember member) {	
 		Person p = (Person)member;
-
+		
 		if (plan == null) {			
 			plan = new MissionPlanning(this, p.getName(), p.getRole().getType());		
 			LogConsolidated.log(Level.INFO, 0, sourceName, "[" + p.getLocationTag().getLocale() + "] " 

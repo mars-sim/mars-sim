@@ -856,7 +856,12 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 			
 			Coordinates clickedPosition = mapLayerPanel.getCenterLocation().convertRectToSpherical(x, y, rho);
 
-			double e = TerrainElevation.getMOLAElevation(clickedPosition);
+			if (mars == null)
+				mars = sim.getMars();
+			if (terrainElevation == null)
+				terrainElevation =  mars.getSurfaceFeatures().getTerrainElevation();
+
+			double e = terrainElevation.getMOLAElevation(clickedPosition);
 			
 			StringBuilder s0 = new StringBuilder();
 			s0.append(WHITESPACES_4).append(clickedPosition.getFormattedString()).append(WHITESPACES_4);
@@ -872,8 +877,8 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 			double theta = Math.round(clickedPosition.getTheta()*100.0)/100.0;
 					
 			if (topoItem.isSelected()) {
-				int[] rgb = TerrainElevation.getRGB(clickedPosition);
-				float[] hsb = TerrainElevation.getHSB(rgb);
+				int[] rgb = terrainElevation.getRGB(clickedPosition);
+				float[] hsb = terrainElevation.getHSB(rgb);
 				
 				s2.append(RGB).append(rgb[0]).append(COMMA).append(rgb[1]).append(COMMA).append(rgb[2]).append(CLOSE_PARENT);
 				

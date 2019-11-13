@@ -169,8 +169,8 @@ public class Mining extends RoverMission {
 		addPhase(MINING_SITE);
 
 		// Set initial mission phase.
-		setPhase(VehicleMission.APPROVING);//.EMBARKING);
-		setPhaseDescription(Msg.getString("Mission.phase.approving.description"));//, getStartingSettlement().getName())); // $NON-NLS-1$
+		setPhase(VehicleMission.REVIEWING);
+		setPhaseDescription(Msg.getString("Mission.phase.reviewing.description"));//, getStartingSettlement().getName())); // $NON-NLS-1$
 
 //		logger.info("Done creating the Mining mission.");
 
@@ -316,7 +316,7 @@ public class Mining extends RoverMission {
 	@Override
 	protected void determineNewPhase() {
 		logger.info(this.getStartingMember() + " had the phase of " + getPhase() + " in determineNewPhase().");
-		if (APPROVING.equals(getPhase())) {
+		if (REVIEWING.equals(getPhase())) {
 			setPhase(VehicleMission.EMBARKING);
 			setPhaseDescription(
 					Msg.getString("Mission.phase.embarking.description", getCurrentNavpoint().getDescription()));//startingMember.getSettlement().toString())); // $NON-NLS-1$

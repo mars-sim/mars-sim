@@ -155,9 +155,9 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 				addPhase(RENDEZVOUS);
 
 				// Set initial phase
-				setPhase(VehicleMission.APPROVING);// .EMBARKING);
+				setPhase(VehicleMission.REVIEWING);
 				setPhaseDescription(
-						Msg.getString("Mission.phase.approving.description")); // $NON-NLS-1$
+						Msg.getString("Mission.phase.reviewing.description")); // $NON-NLS-1$
 			} else {
 				addMissionStatus(MissionStatus.TARGET_VEHICLE_NOT_FOUND);
 				endMission();
@@ -290,7 +290,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 	 * @throws MissionException if problem setting a new phase.
 	 */
 	protected void determineNewPhase() {
-		if (APPROVING.equals(getPhase())) {
+		if (REVIEWING.equals(getPhase())) {
 			setPhase(VehicleMission.EMBARKING);
 			setPhaseDescription(
 					Msg.getString("Mission.phase.embarking.description", getStartingSettlement().getDescription())); // $NON-NLS-1$

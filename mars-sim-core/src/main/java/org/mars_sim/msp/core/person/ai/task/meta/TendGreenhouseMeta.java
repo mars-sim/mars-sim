@@ -29,7 +29,7 @@ public class TendGreenhouseMeta implements MetaTask, Serializable {
     /** default serial id. */
     private static final long serialVersionUID = 1L;
 
-    private static final double VALUE = 50D;
+    private static final double VALUE = 25D;
     
     /** Task name */
     private static final String NAME = Msg.getString(

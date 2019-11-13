@@ -21,12 +21,14 @@ public class TopoMarsMap extends CannedMarsMap {
 	// The map type.
 	public static final String TYPE = "topographical map";
 
+	private static MapDataUtil mapDataUtil = MapDataUtil.instance();
+	
 	/**
 	 * Constructor
 	 * 
 	 * @param displayArea the display component
 	 */
 	public TopoMarsMap(JComponent displayArea) {
-		super(displayArea, MapDataUtil.instance().getTopoMapData());
+		super(displayArea, mapDataUtil.getTopoMapData());
 	}
 }

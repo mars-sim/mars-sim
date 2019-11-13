@@ -110,12 +110,12 @@ public class ProposeScientificStudyMeta implements MetaTask, Serializable {
 		        if (Vehicle.inMovingRover(person)) {
 			        // the bonus for proposing scientific study inside a vehicle, 
 		        	// rather than having nothing to do if a person is not driving
-		        	result = 20;
+		        	result += 20;
 		        } 	       
 		        else
 		        	// the bonus for proposing scientific study inside a vehicle,
 		        	// rather than having nothing to do if a person is not driving
-		        	result = 10;
+		        	result += 10;
 	        }
 	        
 	        // Job modifier.

@@ -287,7 +287,7 @@ public class TabPanelSchedule extends TabPanel {
 		table = new ZebraJTable(scheduleTableModel);
 		TableStyle.setTableStyle(table);
 		table.setPreferredScrollableViewportSize(new Dimension(225, 100));
-		table.getColumnModel().getColumn(0).setPreferredWidth(8);
+		table.getColumnModel().getColumn(0).setPreferredWidth(7);
 		table.getColumnModel().getColumn(1).setPreferredWidth(100);
 		table.getColumnModel().getColumn(2).setPreferredWidth(60);
 		table.getColumnModel().getColumn(3).setPreferredWidth(50);
@@ -303,9 +303,9 @@ public class TabPanelSchedule extends TabPanel {
 		
 		DefaultTableCellRenderer renderer1 = new DefaultTableCellRenderer();
 		renderer1.setHorizontalAlignment(SwingConstants.LEFT);
-		table.getColumnModel().getColumn(1).setCellRenderer(renderer);
-		table.getColumnModel().getColumn(2).setCellRenderer(renderer);
-		table.getColumnModel().getColumn(3).setCellRenderer(renderer);
+		table.getColumnModel().getColumn(1).setCellRenderer(renderer1);
+		table.getColumnModel().getColumn(2).setCellRenderer(renderer1);
+		table.getColumnModel().getColumn(3).setCellRenderer(renderer1);
 
 		// SwingUtilities.invokeLater(() ->
 		// ColumnResizer.adjustColumnPreferredWidths(table));

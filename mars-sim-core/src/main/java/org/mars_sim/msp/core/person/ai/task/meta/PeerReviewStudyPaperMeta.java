@@ -89,7 +89,7 @@ public class PeerReviewStudyPaperMeta implements MetaTask, Serializable {
             if (person.isInVehicle()) {	
     	        // Check if person is in a moving rover.
     	        if (Vehicle.inMovingRover(person)) {
-    	        	result -= 10D;
+    	        	result += -10D;
     	        }
     	        else
     	        	result += 10D;

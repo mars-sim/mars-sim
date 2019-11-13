@@ -75,8 +75,6 @@ public class ReviewMissionPlan extends Task implements Serializable {
 	/** The role of the person who is reviewing the mission plan. */
 	public RoleType roleType;
 	
-	private int pop = 0;
-	
 	/**
 	 * Constructor. This is an effort-driven task.
 	 * 
@@ -84,18 +82,13 @@ public class ReviewMissionPlan extends Task implements Serializable {
 	 */
 	public ReviewMissionPlan(Person person) {
 		// Use Task constructor.
-		super(NAME, person, true, false, STRESS_MODIFIER, true, 20D + RandomUtil.getRandomInt(0, 5));
+		super(NAME, person, true, false, STRESS_MODIFIER, true, 50D + RandomUtil.getRandomInt(-5, 5));
 
-//		logger.info(person + " was at ReviewMissionPlan.");
-		
-//		roleType = person.getRole().getType();
-		
-		if (person.isInside()) {// && roleType != null) {
+//		logger.info(person + " was reviewing mission plan.");
+				
+		if (person.isInside()) {
 
-			pop = person.getAssociatedSettlement().getNumCitizens();
-//			if (pop <= 4		
-//				|| (pop <= 8 && roleType == RoleType.RESOURCE_SPECIALIST)
-//				|| ReviewMissionPlan.isRoleValid(roleType)) {
+//			int pop = person.getAssociatedSettlement().getNumCitizens();
 
 				// If person is in a settlement, try to find an office building.
 				Building officeBuilding = Administration.getAvailableOffice(person);
@@ -208,8 +201,8 @@ public class ReviewMissionPlan extends Task implements Serializable {
 								"[" + s + "] " + reviewedBy + " reviewed " + requestedBy
 								+ "'s " + m.getDescription() + " mission plan.");
 						
-						if (!reviewedBy.equals(requestedBy)
-								&& mp.isReviewerValid(reviewedBy, pop)) {
+//						if (!reviewedBy.equals(requestedBy)
+//								&& mp.isReviewerValid(reviewedBy, pop)) {
 							
 							List<JobAssignment> list = p.getJobHistory().getJobAssignmentList();
 							int last = list.size() - 1;
@@ -392,7 +385,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 				        
 							// Do only one review each time
 					        //endTask();
-						}
+//						}
 						
 						if (mp.getPercentComplete() >= 100D) {
 			            	// Go to the finished phase and finalize the approval

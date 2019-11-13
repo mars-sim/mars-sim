@@ -158,8 +158,8 @@ public class EmergencySupply extends RoverMission implements Serializable {
 			addPhase(RETURN_TRIP_EMBARKING);
 
 			// Set initial phase
-			setPhase(VehicleMission.APPROVING);//.EMBARKING);
-			setPhaseDescription(Msg.getString("Mission.phase.approving.description"));//, s.getName())); // $NON-NLS-1$
+			setPhase(VehicleMission.REVIEWING);
+			setPhaseDescription(Msg.getString("Mission.phase.reviewing.description"));//, s.getName())); // $NON-NLS-1$
 			if (logger.isLoggable(Level.INFO)) {
 				if (startingPerson != null && getRover() != null) {
 					logger.info("[" + s + "] " + startingPerson.getName()
@@ -260,7 +260,7 @@ public class EmergencySupply extends RoverMission implements Serializable {
 
 	@Override
 	protected void determineNewPhase() {
-		if (APPROVING.equals(getPhase())) {
+		if (REVIEWING.equals(getPhase())) {
 			setPhase(VehicleMission.EMBARKING);
 			setPhaseDescription(
 					Msg.getString("Mission.phase.embarking.description", getCurrentNavpoint().getDescription()));//startingMember.getSettlement().toString())); // $NON-NLS-1$

@@ -16,7 +16,6 @@ import org.mars_sim.msp.core.person.ai.task.Read;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
@@ -61,12 +60,12 @@ public class ReadMeta implements MetaTask, Serializable {
     	        // Check if person is in a moving rover.
     	        if (Vehicle.inMovingRover(person)) {
     		        // the penalty inside a vehicle
-    	        	result = -20;
+    	        	result += -20;
     	        } 	       
     	        else
     		        // the bonus inside a vehicle, 
     	        	// rather than having nothing to do if a person is not driving
-    	        	result = 20;
+    	        	result += 20;
             }
             
 	        // Effort-driven task modifier.

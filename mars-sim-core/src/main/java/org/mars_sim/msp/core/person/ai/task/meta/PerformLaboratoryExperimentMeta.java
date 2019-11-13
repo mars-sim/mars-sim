@@ -141,11 +141,11 @@ public class PerformLaboratoryExperimentMeta implements MetaTask, Serializable {
 		        if (person.isInVehicle()) {	
 			        // Check if person is in a moving rover.
 			        if (Vehicle.inMovingRover(person)) {
-			        	result = -20D;
+			        	result += -20D;
 			        }
 			        else
 			        	// the penalty for performing experiment inside a vehicle
-			        	result = 20D;
+			        	result += 20D;
 		        }
 	        }
 	        else

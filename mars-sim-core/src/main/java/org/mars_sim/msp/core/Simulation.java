@@ -217,7 +217,9 @@ public class Simulation implements ClockListener, Serializable {
 	private transient boolean useGUI = true;
 	/** Flag to indicate that a new simulation is being created or loaded. */
 	private transient boolean isUpdating = false;
-
+	/** Flag to keep track of whether the initial state of simulation has been initialized. */
+	private transient boolean doneInitializing = false;
+	
 	private transient boolean defaultLoad = false;
 
 	private transient boolean justSaved = true;
@@ -466,7 +468,7 @@ public class Simulation implements ClockListener, Serializable {
 		malfunctionFactory = new MalfunctionFactory();
 		mars = new Mars();
 		mars.createInstances();
-		
+	
 		logger.config("Done with Mars");
 		
 		missionManager = new MissionManager();
@@ -483,12 +485,19 @@ public class Simulation implements ClockListener, Serializable {
 		
 		// Gets the SurfaceFeatures instance
 		SurfaceFeatures surfaceFeatures = mars.getSurfaceFeatures();
+		surfaceFeatures.initializeTransientData();
 		
 		logger.config("Done with SurfaceFeatures");
 		
 		// Create clock instances
 		MarsClock marsClock = masterClock.getMarsClock();
 		EarthClock earthClock = masterClock.getEarthClock();
+		
+		OrbitInfo.initializeInstances(marsClock, earthClock);
+		
+		// Initialize Mars environmental objects
+//		mars.initializeTransientData(); // requires terrain, weather, orbit
+		mars.getWeather().initializeTransientData();
 		
 		// Initialize units prior to starting the unit manager
 		Unit.initializeInstances(masterClock, marsClock, earthClock, this, mars, null, 
@@ -498,15 +507,25 @@ public class Simulation implements ClockListener, Serializable {
 
 		// Initialize serializable managers
 		unitManager = new UnitManager(); 
+		
+		logger.config("Done with UnitManager");
+		
 		Inventory.setUnitManager(unitManager);
 		Airlock.initializeInstances(unitManager, marsSurface);
+		
+		logger.config("Done with Airlock.initializeInstances()");
 		
 		// Gets the MarsSurface instance
 //		MarsSurface marsSurface = unitManager.getMarsSurface();//mars.getMarsSurface();
 		Unit.setMarsSurface(marsSurface);
 		Unit.setUnitManager(unitManager);
 		
+		logger.config("Done with Unit.setUnitManager()");
+		
 		unitManager.constructInitialUnits(loadSaveSim); // unitManager needs to be on the same thread as masterClock
+		
+		logger.config("Done with unitManager.constructInitialUnits()");
+		
 		eventManager = new HistoricalEventManager();
 		creditManager = new CreditManager();
 		scientificStudyManager = new ScientificStudyManager();
@@ -532,12 +551,7 @@ public class Simulation implements ClockListener, Serializable {
 		MissionManager.initializeInstances(marsClock);
 		MalfunctionManager.initializeInstances(masterClock, marsClock, malfunctionFactory, medicalManager, eventManager);
 		RelationshipManager.initializeInstances(unitManager);
-//		MedicalManager.initializeInstances();
-		
-		// Initialize Mars environmental objects
-		mars.initializeTransientData();
-		OrbitInfo.initializeInstances(marsClock, earthClock);
-		mars.getWeather().initializeTransientData();
+//		MedicalManager.initializeInstances();		
 		
 		//  Re-initialize the GameManager
 		GameManager.initializeInstances(unitManager);
@@ -552,6 +566,7 @@ public class Simulation implements ClockListener, Serializable {
 		
 		ut = masterClock.getUpTimer();
 
+		doneInitializing = true;
 		logger.config("Done initializing intransient data.");
 	}
 
@@ -1008,8 +1023,11 @@ public class Simulation implements ClockListener, Serializable {
 		
 		// Re-initialize Mars environmental instances
 		Weather.initializeInstances(masterClock, marsClock, mars, surfaceFeatures, orbit, unitManager); // terrain
+
+		OrbitInfo.initializeInstances(marsClock, earthClock);	
+		
 		SurfaceFeatures.initializeInstances(masterClock, mars, this, weather, orbit, missionManager);  // sunDirection, landmarks
-		OrbitInfo.initializeInstances(marsClock, earthClock);		
+
 		DustStorm.initializeInstances(weather);
 			
 //		logger.config("Done DustStorm");
@@ -1125,9 +1143,14 @@ public class Simulation implements ClockListener, Serializable {
 //		RescueSalvageVehicle.justReloaded(eventManager);  // eventManager
 		MissionPlanning.initializeInstances(marsClock);
 
+		doneInitializing = true;
+		
 //		logger.config("Done MissionPlanning");
 	}
 	
+	public boolean isDoneInitializing() {
+		return doneInitializing;
+	}
 	
 	/**
 	 * Writes the JSON file
@@ -1844,7 +1867,7 @@ public class Simulation implements ClockListener, Serializable {
 	 */
 	@Override
 	public void clockPulse(double time) {
-		if (ut != null && !clockOnPause && !masterClock.isPaused() && time > Double.MIN_VALUE) {
+		if (doneInitializing && ut != null && !clockOnPause && !masterClock.isPaused() && time > Double.MIN_VALUE) {
 
 			ut.updateTime();
 

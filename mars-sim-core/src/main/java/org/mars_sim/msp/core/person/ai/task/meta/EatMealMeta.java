@@ -61,7 +61,7 @@ public class EatMealMeta implements MetaTask, Serializable {
 
 		// When thirst is greater than 100, a person may start feeling thirsty
 		if (!notThirsty) {
-			result = Math.pow((thirst - PhysicalCondition.THIRST_THRESHOLD), 2.0);
+			result = Math.pow((thirst - PhysicalCondition.THIRST_THRESHOLD), 3);
 		}
 		
 		// Only eat a meal if person is sufficiently hungry or low on caloric energy.
@@ -79,7 +79,7 @@ public class EatMealMeta implements MetaTask, Serializable {
 
 			if (!CookMeal.isLocalMealTime(person.getCoordinates(), 0)) {
 				// If it's not meal time yet, reduce the probability
-				result /= 4;
+				result /= 4D;
 			}
 			
 			// Check if a cooked meal is available in a kitchen building at the settlement.

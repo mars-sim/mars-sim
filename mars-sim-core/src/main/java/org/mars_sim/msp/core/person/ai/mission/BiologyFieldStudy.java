@@ -141,8 +141,8 @@ public class BiologyFieldStudy extends RoverMission implements Serializable {
 			addPhase(RESEARCH_SITE);
 
 			// Set initial mission phase.
-			setPhase(VehicleMission.APPROVING);//.EMBARKING);
-			setPhaseDescription(Msg.getString("Mission.phase.approving.description")); //$NON-NLS-1$
+			setPhase(VehicleMission.REVIEWING);
+			setPhaseDescription(Msg.getString("Mission.phase.reviewing.description")); //$NON-NLS-1$
 //					, s.getName()));
 
 		}
@@ -421,7 +421,7 @@ public class BiologyFieldStudy extends RoverMission implements Serializable {
 
 	@Override
 	protected void determineNewPhase() {
-		if (APPROVING.equals(getPhase())) {
+		if (REVIEWING.equals(getPhase())) {
 			setPhase(VehicleMission.EMBARKING);
 			setPhaseDescription(
 					Msg.getString("Mission.phase.embarking.description", getCurrentNavpoint().getDescription()));//startingMember.getSettlement().toString())); // $NON-NLS-1$

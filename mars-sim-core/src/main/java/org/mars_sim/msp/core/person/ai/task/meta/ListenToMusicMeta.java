@@ -124,8 +124,6 @@ public class ListenToMusicMeta implements MetaTask, Serializable {
 	        if (Vehicle.inMovingRover(person)) {
 	        	result += 20D;
 	        }
-	        else
-	        	result += 5D;
         }
         
         

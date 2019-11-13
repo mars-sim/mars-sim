@@ -67,7 +67,7 @@ public class PlanMissionMeta implements MetaTask, Serializable {
             
             result = 100.0 * (1/(fatigue + 1) + 1/(stress + 1) + 1/(hunger + 1));
 
-            if (result > 1) {
+            if (result > 0) {
             	 
                 // Get an available office space.
                 Building building = Administration.getAvailableOffice(person);

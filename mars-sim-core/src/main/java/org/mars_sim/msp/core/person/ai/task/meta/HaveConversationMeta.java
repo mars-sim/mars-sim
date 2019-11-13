@@ -152,10 +152,8 @@ public class HaveConversationMeta implements MetaTask, Serializable {
             
 	        // Check if person is in a moving rover.
 	        if (Vehicle.inMovingRover(person)) {
-	        	result += 25D;
+	        	result += 40D;
 	        }
-	        else
-	        	result += 5D;
 
         }
 

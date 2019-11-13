@@ -94,11 +94,11 @@ public class WorkoutMeta implements MetaTask, Serializable {
     	        // Check if person is in a moving rover.
     	        if (Vehicle.inMovingRover(person)) {
     		        // the bonus inside a vehicle
-    	        	result = 30;
+    	        	result += 30;
     	        } 	       
     	        else
     	        	// the penalty inside a vehicle
-    	        	result = -30;
+    	        	result += -30;
             }
             
             // Modify if working out is the person's favorite activity.

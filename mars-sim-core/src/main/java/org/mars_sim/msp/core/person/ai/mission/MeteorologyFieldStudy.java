@@ -140,8 +140,8 @@ public class MeteorologyFieldStudy extends RoverMission implements Serializable 
 			addPhase(RESEARCH_SITE);
 
 			// Set initial mission phase.
-			setPhase(VehicleMission.APPROVING);//.EMBARKING);
-			setPhaseDescription(Msg.getString("Mission.phase.approving.description"));//, s.getName())); // $NON-NLS-1$
+			setPhase(VehicleMission.REVIEWING);
+			setPhaseDescription(Msg.getString("Mission.phase.reviewing.description"));//, s.getName())); // $NON-NLS-1$
 
 		}
 	}
@@ -416,7 +416,7 @@ public class MeteorologyFieldStudy extends RoverMission implements Serializable 
 
 	@Override
 	protected void determineNewPhase() {
-		if (APPROVING.equals(getPhase())) {
+		if (REVIEWING.equals(getPhase())) {
 			setPhase(VehicleMission.EMBARKING);
 			setPhaseDescription(
 					Msg.getString("Mission.phase.embarking.description", getCurrentNavpoint().getDescription()));//startingMember.getSettlement().toString())); // $NON-NLS-1$

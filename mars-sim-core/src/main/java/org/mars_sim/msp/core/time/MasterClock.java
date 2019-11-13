@@ -697,7 +697,7 @@ public class MasterClock implements Serializable {
 			// Keep running until told not to by calling stop()
 			keepRunning = true;
 
-			if (!isFXGL) {
+			if (sim.isDoneInitializing() && !isFXGL) {
 
 				long t1 = 0;
 				long t2 = 0;
@@ -1045,96 +1045,97 @@ public class MasterClock implements Serializable {
 		
 		@Override
 		public void run() {
-			try {
-
-				// The most important job for CLockListener is to send a clock pulse to
-				// 1. Simulation
-
-				// so that 
-				// 1. UpTimer,
-				// 2. Mars, 
-				// 3. MissionManager,
-				// 4. UnitManager, 
-				// 5. ScientificStudyManager, 
-				// 6. TransportManager,
-			
-				// gets updated.
-				listener.clockPulse(time);
-				timeCache += time;
-				count++;
-//				long t02 = System.currentTimeMillis();//.nanoTime();
-//				// Discard the very first pulseTime since it's not invalid
-//				// at the start of the sim
-//				if (t01 != 0) {
-//					timeIntervals.add((t02-t01)/1_000F);
-//				}
-//				t01 = t02;
-//				if (timeIntervals.size() > 15)
-//					timeIntervals.remove(0);
+			if (sim.isDoneInitializing()) {
+				try {
+					// The most important job for CLockListener is to send a clock pulse to
+					// 1. Simulation
+	
+					// so that 
+					// 1. UpTimer,
+					// 2. Mars, 
+					// 3. MissionManager,
+					// 4. UnitManager, 
+					// 5. ScientificStudyManager, 
+					// 6. TransportManager,
 				
-				// period is in seconds
-//				double period = timeCache / currentTR * MarsClock.SECONDS_PER_MILLISOL;
-
-				if (count > FACTOR) {
-//					int speed = getCurrentSpeed();
-//					if (speed == 0)
-//						speed = 1;
-//					totalCount = speed * speed / FACTOR ;
-//					System.out.println(totalCount);
-//					if (totalCount < 4)
-//						totalCount = 4;
-//					totalCount = (int) (3D/computePulsesPerSecond());
-					count = 0;
+					// gets updated.
+					listener.clockPulse(time);
+					timeCache += time;
+					count++;
+	//				long t02 = System.currentTimeMillis();//.nanoTime();
+	//				// Discard the very first pulseTime since it's not invalid
+	//				// at the start of the sim
+	//				if (t01 != 0) {
+	//					timeIntervals.add((t02-t01)/1_000F);
+	//				}
+	//				t01 = t02;
+	//				if (timeIntervals.size() > 15)
+	//					timeIntervals.remove(0);
 					
-//					long t02 = System.nanoTime();
-					long t02 = System.currentTimeMillis();//.nanoTime();
-					// Discard the very first pulseTime since it's not invalid
-					// at the start of the sim
-					if (t01 != 0) {
-						timeIntervals.add((t02-t01)/1_000F);
+					// period is in seconds
+	//				double period = timeCache / currentTR * MarsClock.SECONDS_PER_MILLISOL;
+	
+					if (count > FACTOR) {
+	//					int speed = getCurrentSpeed();
+	//					if (speed == 0)
+	//						speed = 1;
+	//					totalCount = speed * speed / FACTOR ;
+	//					System.out.println(totalCount);
+	//					if (totalCount < 4)
+	//						totalCount = 4;
+	//					totalCount = (int) (3D/computePulsesPerSecond());
+						count = 0;
+						
+	//					long t02 = System.nanoTime();
+						long t02 = System.currentTimeMillis();//.nanoTime();
+						// Discard the very first pulseTime since it's not invalid
+						// at the start of the sim
+						if (t01 != 0) {
+							timeIntervals.add((t02-t01)/1_000F);
+						}
+						t01 = t02;
+	
+						if (timeIntervals.size() > 30)
+							timeIntervals.remove(0);
+	
+	//					System.out.println(
+	//							"time : " + Math.round(time*100.0)/100.0 
+	//							+ "   timeCache : " + Math.round(timeCache*100.0)/100.0 
+	//							  "   r : " + Math.round(r*100.0)/100.0 
+	//							+ "   refresh : " + Math.round(getRefresh()*100.0)/100.0 
+	//							"   time between pulses : " + pulseTime
+	//							+ "   currentTR : " + currentTR
+	//							+ "   Period : " + Math.round(period*1000.0)/1000.0
+	//							);
+	
+						// The secondary job of CLockListener is to send uiPulse() out to
+						// 0. MainDesktopPane,
+						// which in terms sends a clock pulse out to update all unit windows and tool
+						// windows
+						//
+						// It also sends an ui pulse out to the following class and map related panels:
+	
+						// 1. MarsTerminal
+						// 2. AudioPlayer
+						// 3. MainDesktopPane
+						// 4. GlobeDisplay
+						// 5. MapPanel (2x)
+						// 6. TimeWindow
+						// 7. SettlementMapPanel
+						// 8. NotificationWindow
+						// 9. ResupplyDetailPanel
+						//10. ArrivingSettlementDetailPanel
+						
+						
+						// Note: on a typical PC, approximately one ui pulse is sent out each second
+						listener.uiPulse(timeCache);
+						timeCache = 0;
+	
 					}
-					t01 = t02;
-
-					if (timeIntervals.size() > 30)
-						timeIntervals.remove(0);
-
-//					System.out.println(
-//							"time : " + Math.round(time*100.0)/100.0 
-//							+ "   timeCache : " + Math.round(timeCache*100.0)/100.0 
-//							  "   r : " + Math.round(r*100.0)/100.0 
-//							+ "   refresh : " + Math.round(getRefresh()*100.0)/100.0 
-//							"   time between pulses : " + pulseTime
-//							+ "   currentTR : " + currentTR
-//							+ "   Period : " + Math.round(period*1000.0)/1000.0
-//							);
-
-					// The secondary job of CLockListener is to send uiPulse() out to
-					// 0. MainDesktopPane,
-					// which in terms sends a clock pulse out to update all unit windows and tool
-					// windows
-					//
-					// It also sends an ui pulse out to the following class and map related panels:
-
-					// 1. MarsTerminal
-					// 2. AudioPlayer
-					// 3. MainDesktopPane
-					// 4. GlobeDisplay
-					// 5. MapPanel (2x)
-					// 6. TimeWindow
-					// 7. SettlementMapPanel
-					// 8. NotificationWindow
-					// 9. ResupplyDetailPanel
-					//10. ArrivingSettlementDetailPanel
-					
-					
-					// Note: on a typical PC, approximately one ui pulse is sent out each second
-					listener.uiPulse(timeCache);
-					timeCache = 0;
-
+	
+				} catch (ConcurrentModificationException e) {
+					e.printStackTrace();
 				}
-
-			} catch (ConcurrentModificationException e) {
-				e.printStackTrace();
 			}
 		}
 	}

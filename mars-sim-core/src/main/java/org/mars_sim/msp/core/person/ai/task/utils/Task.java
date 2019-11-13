@@ -26,6 +26,7 @@ import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
+import org.mars_sim.msp.core.mars.TerrainElevation;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
@@ -131,12 +132,14 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	/** The static instance of the ScientificStudyManager */
 	protected static ScientificStudyManager scientificStudyManager;// = sim.getScientificStudyManager();
 	/** The static instance of the SurfaceFeatures */
-	protected static SurfaceFeatures surface;// = sim.getMars().getSurfaceFeatures();
+	protected static SurfaceFeatures surfaceFeatures;// = sim.getMars().getSurfaceFeatures();
 	/** The static instance of the MissionManager */
 	protected static MissionManager missionManager;// = sim.getMissionManager();
 	/** The static instance of the personConfig */
 	protected static PersonConfig personConfig = SimulationConfig.instance().getPersonConfig();
-
+	/** The static instance of the TerrainElevation */
+	protected static TerrainElevation terrainElevation;
+	
 	/**
 	 * Constructs a Task object.
 	 * 
@@ -667,7 +670,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 
 				Job job = person.getMind().getJob();
 
-				if ((job != null) && job.isJobRelatedTask(this.getClass())) {
+				if ((job != null) && job.isJobRelatedTask(getClass())) {
 					effectiveStressModifier *= JOB_STRESS_MODIFIER;
 				}
 
@@ -1342,7 +1345,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		relationshipManager = r;
 		unitManager = u;
 		scientificStudyManager = s;
-		surface = sf;
+		surfaceFeatures = sf;
 		missionManager = m;
 		personConfig = pc;
 	}

@@ -124,9 +124,9 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 			}
 
 			// Set initial phase
-			setPhase(VehicleMission.APPROVING);//.EMBARKING);
+			setPhase(VehicleMission.REVIEWING);
 			setPhaseDescription(
-					Msg.getString("Mission.phase.approving.description", getStartingSettlement().getName())); // $NON-NLS-1$
+					Msg.getString("Mission.phase.reviewing.description", getStartingSettlement().getName())); // $NON-NLS-1$
 		}
 		// logger.info("Travel to Settlement mission");
 	}
@@ -182,7 +182,7 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 	 */
 	@Override
 	protected void determineNewPhase() {
-		if (APPROVING.equals(getPhase())) {
+		if (REVIEWING.equals(getPhase())) {
 			setPhase(VehicleMission.EMBARKING);
 			setPhaseDescription(
 					Msg.getString("Mission.phase.embarking.description", getCurrentNavpoint().getDescription()));//startingMember.getSettlement().toString())); // $NON-NLS-1$

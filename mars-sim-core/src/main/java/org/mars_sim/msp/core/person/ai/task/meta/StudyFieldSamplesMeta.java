@@ -186,12 +186,12 @@ public class StudyFieldSamplesMeta implements MetaTask, Serializable {
 	        if (Vehicle.inMovingRover(person)) {
 		        // the bonus inside a vehicle, 
 	        	// rather than having nothing to do if a person is not driving
-	        	result = 30;
+	        	result += 30;
 	        } 	       
 	        else
 		        // the bonus inside a vehicle, 
 	        	// rather than having nothing to do if a person is not driving
-	        	result = 10;
+	        	result += 10;
         }
         
         return result;

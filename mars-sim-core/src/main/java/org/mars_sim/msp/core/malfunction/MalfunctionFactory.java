@@ -432,8 +432,8 @@ public final class MalfunctionFactory implements Serializable {
 		// double old_mtbf = MTBF_map.get(id);
 		double new_mtbf = 0;
 
-//		if (marsClock == null)
-//			marsClock = Simulation.instance().getMasterClock().getMarsClock();
+		if (marsClock == null)
+			marsClock = Simulation.instance().getMasterClock().getMarsClock();
 
 		int sol = marsClock.getMissionSol();
 		int numSols = sol - p.getStartSol();

@@ -118,10 +118,10 @@ public class CompileScientificStudyResultsMeta implements MetaTask, Serializable
 	            if (person.isInVehicle()) {	
 	    	        // Check if person is in a moving rover.
 	    	        if (Vehicle.inMovingRover(person)) {
-	    	        	result = 20;
+	    	        	result += 20;
 	    	        }
 	    	        else
-	    	        	result = 10;
+	    	        	result += 10;
 	            }
 	        }
 	        else

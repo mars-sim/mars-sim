@@ -76,110 +76,100 @@ public class ReviewMissionPlanMeta implements MetaTask, Serializable {
 //			if (pop <= 4		
 //				|| (pop <= 8 && roleType == RoleType.RESOURCE_SPECIALIST)
 //				|| ReviewMissionPlan.isRoleValid(roleType)) {
+//        	System.out.println("missionManager :" + missionManager); 
+            List<Mission> missions = missionManager.getPendingMissions(person.getAssociatedSettlement());
+//   		    if (missions.size() > 0)
+//   		    	System.out.println(person + " " + person.getRole().getType() + " has " + missions.size() + " to review.");
 
-                List<Mission> missions = missionManager.getPendingMissions(person.getAssociatedSettlement());
-//   		     	if (missions.size() > 0)
-//   		     		System.out.println(person + " " + person.getRole().getType() + " has " + missions.size() + " to review.");
+            for (Mission m : missions) {
+            	
+            	if (m.getPlan() != null) {
 
-                for (Mission m : missions) {
-                	
-                	if (m.getPlan() != null) {
+            		MissionPlanning mp = m.getPlan();
+            		
+                    PlanType status = mp.getStatus();
 
-                		MissionPlanning mp = m.getPlan();
-                		
-	                    PlanType status = mp.getStatus();
-
-	                    if (status != null && status == PlanType.PENDING) {
+                    if (status != null && status == PlanType.PENDING) {
 //	                    	&& mp.getPercentComplete() <= 100D) {
-	    		            	
+    		            		
+                    	result += missions.size() * 1500D / pop;   
+                    	
 //	                    	System.out.println(person + " " + person.getRole().getType() + " on " 
 //	                    			+ mp.getMission().getDescription() + " has " 
 //	                    			+ mp.getPercentComplete() + "%");
 
-    						String reviewedBy = person.getName();
-    						
-    						Person p = m.getStartingMember();
-    						String requestedBy = p.getName();
-    						
-    						if (reviewedBy.equals(requestedBy)) {
-    							// Add penalty to the probability score if reviewer is the same as requester
-    							result -= 100D;
-    						}
-	    						
-	                    	result += 100D;       
-	                    	
-	                        if (person.isInVehicle()) {	
-	                	        // Check if person is in a moving rover.
-	                	        if (Vehicle.inMovingRover(person)) {
-	                		        // the bonus for proposing scientific study inside a vehicle, 
-	                	        	// rather than having nothing to do if a person is not driving
-	                	        	result = 30;
-	                	        } 	       
-	                	        else
-	                		        // the bonus for proposing scientific study inside a vehicle, 
-	                	        	// rather than having nothing to do if a person is not driving
-	                	        	result = 10;
-	                        }
-	                        
-	                    	// Add adjustment based on how many sol the request has since been submitted
-                            // if the job assignment submitted date is > 1 sol
-                            int sol = marsClock.getMissionSol();
-                            int solRequest = m.getPlan().getMissionSol();
-                            
-	                    	// Check if this reviewer has already exceeded the max # of reviews allowed
-    						if (!mp.isReviewerValid(reviewedBy, pop)) {
-    							if (sol - solRequest > 7) {
-    								// If no one else is able to offer the review after x days, 
-    								// do allow the review to go through even if the reviewer is not valid
-    								result += 100;
-    							}
-    							else
-    								return 0;
-    						}
-    						
-                            if (sol - solRequest == 1)
-                                result += 200D;
-                            else if (sol - solRequest == 2)
-                                result += 3000D;
-                            else if (sol - solRequest == 3)
-                                result += 400D;
-                            else if (sol - solRequest > 3)
-                                result += 500D;
-                            
-	                    }
-                	}
+						String reviewedBy = person.getName();
+						
+						Person p = m.getStartingMember();
+						String requestedBy = p.getName();
+						
+						if (reviewedBy.equals(requestedBy)) {
+							// Add penalty to the probability score if reviewer is the same as requester
+							result -= 300D;
+						}
+                    	
+                        
+                    	// Add adjustment based on how many sol the request has since been submitted
+                        // if the job assignment submitted date is > 1 sol
+                        int sol = marsClock.getMissionSol();
+                        int solRequest = m.getPlan().getMissionSol();
+                        
+                    	// Check if this reviewer has already exceeded the max # of reviews allowed
+						if (!mp.isReviewerValid(reviewedBy, pop)) {
+							if (sol - solRequest > 7) {
+								// If no one else is able to offer the review after x days, 
+								// do allow the review to go through even if the reviewer is not valid
+								result += 800;
+							}
+							else
+								result += (sol - solRequest) * 100;
+						}                        
+                    }
+            	}
+            }
+            
+            if (result > 0D) {
+            	 
+                // Get an available office space.
+                Building building = Administration.getAvailableOffice(person);
+                if (building != null) {
+                    result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building);
+                    result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
+                }
+                else if (person.isInVehicle()) {	
+        	        // Check if person is in a moving rover.
+        	        if (Vehicle.inMovingRover(person)) {
+        		        // the bonus for proposing scientific study inside a vehicle, 
+        	        	// rather than having nothing to do if a person is not driving
+        	        	result += 40;
+        	        } 	       
+        	        else
+        		        // the bonus for proposing scientific study inside a vehicle, 
+        	        	// rather than having nothing to do if a person is not driving
+        	        	result += 10;
                 }
                 
-                if (result > 0D) {
-                	 
-                    // Get an available office space.
-                    Building building = Administration.getAvailableOffice(person);
-                    if (building != null) {
-                        result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building);
-                        result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
-                    }
-
-                    // Modify if operation is the person's favorite activity.
-                    if (person.getFavorite().getFavoriteActivity() == FavoriteType.OPERATION) {
-                        result *= 1.5D;
-                    }
-
-                    if (result > 0)
-                        //result += result / 8D * person.getPreference().getPreferenceScore(this);
-                    	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
-
-                    // Effort-driven task modifier.
-                    result *= person.getPerformanceRating();
+                // Modify if operation is the person's favorite activity.
+                if (person.getFavorite().getFavoriteActivity() == FavoriteType.OPERATION) {
+                    result *= 1.5D;
                 }
-                
-                if (result < 0) {
-                    result = 0;
-                }
-//            }
+
+                if (result > 0)
+                    //result += result / 8D * person.getPreference().getPreferenceScore(this);
+                	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
+
+                // Effort-driven task modifier.
+                result *= person.getPerformanceRating();
+            }
+            
+            if (result < 0) {
+                result = 0;
+            }
         }
 
-//      if (result > 0) 
-//  		logger.info(person + " (" + person.getRole().getType() + ") was at ReviewMissionPlanMeta : " + result);
+//        if (result > 0) 
+//        	logger.info(person + " (" + person.getRole().getType() + ") had a probability score of " 
+//        			+ result + " at ReviewMissionPlanMeta");
 
         return result;
     }

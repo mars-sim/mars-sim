@@ -76,6 +76,7 @@ import org.mars_sim.msp.ui.swing.unit_window.UnitWindowListener;
  * contains all tool and unit windows, and is itself contained, along with the
  * tool bars, by the main window.
  */
+@SuppressWarnings("serial")
 public class MainDesktopPane extends JDesktopPane
 		implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 
@@ -142,8 +143,27 @@ public class MainDesktopPane extends JDesktopPane
 	 */
 	public MainDesktopPane(MainWindow mainWindow) {
 		super();
-		
+
 		this.mainWindow = mainWindow;
+		
+		// Initialize data members
+		soundPlayer = new AudioPlayer(this);
+		// Play music
+		if (!soundPlayer.isSoundDisabled())
+			soundPlayer.playRandomMusicTrack();
+		// Prepare unit windows.
+		unitWindows = new CopyOnWriteArrayList<UnitWindow>();
+		// Add clock listener
+		sim.getMasterClock().addClockListener(this);
+		// Prepare tool windows.
+		toolWindows = new CopyOnWriteArrayList<ToolWindow>();
+		
+		prepareListeners();
+		
+		SwingUtilities.invokeLater(() -> init());
+	}		
+		
+	public void init() {
 		// Set background color to black
 		setBackground(Color.black);
 		// set desktop manager
@@ -166,17 +186,6 @@ public class MainDesktopPane extends JDesktopPane
 		setPreferredSize(new Dimension(1366, 768 - 35));
 		// Prep listeners
 		prepareListeners();
-		// Initialize data members
-		soundPlayer = new AudioPlayer(this);
-		// Play music
-		if (!soundPlayer.isSoundDisabled())
-			soundPlayer.playRandomMusicTrack();
-		// Prepare unit windows.
-		unitWindows = new CopyOnWriteArrayList<UnitWindow>();
-		// Add clock listener
-		sim.getMasterClock().addClockListener(this);
-		// Prepare tool windows.
-		toolWindows = new CopyOnWriteArrayList<ToolWindow>();
 		// Instantiate BrowserJFX
 //		browserJFX = new BrowserJFX(this);
 		// Create update thread.

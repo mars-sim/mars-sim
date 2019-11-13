@@ -20,6 +20,7 @@ import org.mars_sim.msp.core.location.LocationTag;
 import org.mars_sim.msp.core.mars.Mars;
 import org.mars_sim.msp.core.mars.MarsSurface;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
+import org.mars_sim.msp.core.mars.TerrainElevation;
 import org.mars_sim.msp.core.mars.Weather;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
@@ -104,6 +105,7 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 	protected static Mars mars;
 	protected static Weather weather;
 	protected static SurfaceFeatures surfaceFeatures;
+	protected static TerrainElevation terrainElevation;
 	
 	protected static PersonConfig personConfig = simulationConfig.getPersonConfig();
 	protected static VehicleConfig vehicleConfig = simulationConfig.getVehicleConfiguration();
@@ -1184,10 +1186,8 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 		mars = m;
 		marsSurface = ms;
 		weather = w;
-//		unitManager = u;
-		missionManager = mm;
-		
 		surfaceFeatures = sf;
+		missionManager = mm;
 	}
 	
 	public static void setUnitManager(UnitManager u) {

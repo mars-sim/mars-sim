@@ -67,7 +67,7 @@ public class PlanMission extends Task implements Serializable {
 	 */
 	public PlanMission(Person person) {
 		// Use Task constructor.
-		super(NAME, person, true, false, STRESS_MODIFIER, true, 100D + RandomUtil.getRandomInt(0, 10) - RandomUtil.getRandomInt(0, 10));
+		super(NAME, person, true, false, STRESS_MODIFIER, true, 150D + RandomUtil.getRandomInt(-15, 15));
 
 //		logger.info(person + " was at PlanMission.");
 		
@@ -145,8 +145,8 @@ public class PlanMission extends Task implements Serializable {
 		boolean canDo = person.getMind().canStartNewMission();
 		
 		if (!canDo) {
-//			LogConsolidated.log(Level.INFO, 10_000, sourceName, 
-//					"[" + person.getAssociatedSettlement() + "] " + person.getName() + " cannot select a new mission.");
+			LogConsolidated.log(Level.INFO, 10_000, sourceName, 
+					"[" + person.getAssociatedSettlement() + "] " + person.getName() + " cannot select a new mission.");
 			endTask();
 		}
 		else {
@@ -154,6 +154,7 @@ public class PlanMission extends Task implements Serializable {
 //					"[" + person.getAssociatedSettlement() + "] " + person.getName() 
 //					+ " was looking into the mission needs of the settlement.");
 			
+			// Start a new mission
 			person.getMind().getNewMission();
 			
 			Mission mission = person.getMind().getMission();
@@ -163,16 +164,6 @@ public class PlanMission extends Task implements Serializable {
 		
         return 0;
 	}
-	
-//	/**
-//	 * Performs the gathering data phase.
-//	 * 
-//	 * @param time the amount of time (millisols) to perform the phase.
-//	 * @return the amount of time (millisols) left over after performing the phase.
-//	 */
-//	private double gatheringDataPhase(double time) {
-//	}
-	
 	
 	/**
 	 * Performs the submitting the mission phase.
@@ -185,20 +176,21 @@ public class PlanMission extends Task implements Serializable {
 		Mission mission = person.getMind().getMission();
 		
 		if (mission instanceof VehicleMission) {
-			LogConsolidated.log(Level.INFO, 10_000, sourceName, 
-					"[" + person.getLocationTag().getQuickLocation() + "] " + person.getName() + " submitted the " + mission.toString());
-			// Submit the mission plan
-			((VehicleMission)mission).submitMissionPlan();
+			LogConsolidated.log(Level.INFO, 0, sourceName, 
+					"[" + person.getLocationTag().getQuickLocation() + "] " + person.getName() + " submitted a mission plan for " + mission.toString());
+			// Flag the mission plan ready for submission
+			((VehicleMission)mission).flag4Submission();
+//			mission.setPhase(VehicleMission.REVIEWING);
 				// Note: the plan will go up the chain of command
 				// 1. takeAction() in Mind will call mission.performMission(person) 
 				// 2. performMission() in Mission will lead to calling  performPhase() in VehicleMission
 				// 3. performPhase() in VehicleMission will call requestApprovalPhase() 
-				// 4. requestApprovalPhase() in VehicleMission will call requestApprovalPhase() in Mission
+				// 4. requestReviewPhase() in VehicleMission will call requestApprovalPhase() in Mission
 		}
 				
-		if (mission != null) {
-			// if the mission is approved/accepted after submission  
-		}
+//		if (mission != null) {
+//			// if the mission is approved/accepted after submission  
+//		}
 		
 		// Add experience
 		addExperience(time); 

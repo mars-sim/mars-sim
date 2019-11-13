@@ -101,6 +101,7 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
 		guideURL = getClass().getResource(Msg.getString("doc.guide")); //$NON-NLS-1$
 
 		homeButton.setToolTipText(Msg.getString("GuideWindow.tooltip.home")); //$NON-NLS-1$
+		homeButton.setSize(16, 16);
 		homeButton.addActionListener(this);
 
 		backButton.setToolTipText(Msg.getString("GuideWindow.tooltip.back")); //$NON-NLS-1$
@@ -177,7 +178,6 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
 		// WARNING: this will shrink the window to one line tall in swing mode
 //		pack(); 
 
-
 	}
 
     /**
@@ -210,79 +210,6 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
 		if (htmlPane != null)
 			htmlPane.goToURL(getClass().getResource(fileloc));
 	}
-	
-//	/** 
-//	 * Set a display URL. Added displaying the hyperlink's path and html filename.
-//	 * @param fileloc
-//	 * 
-//	 */
-//	public void setURL(String fileloc) {
-//		// goToURL(getClass().getResource(fileloc));
-//		// browser.getStatusBarLabel().setText(fileloc);
-//		String fullLink = getClass().getResource(fileloc).toExternalForm();
-////		Platform.runLater(() -> {
-////			browser.setTextInputCache(fullLink);
-////			browser.checkInputURLType(fullLink);// , BrowserJFX.REMOTE_HTML);
-////			browser.showFormattedURL();
-////			browser.fireButtonGo(fullLink);
-////		});
-//	}
-//
-//	/** Gets the full URL string for internal html files. */
-//	// Added displaying the hyperlink's path and html filename.
-//	public String getFullURL(String fileloc) {
-//		return getClass().getResource(fileloc).toExternalForm();
-//	}
-
-//	/** Implementing ActionListener method. */
-//	@SuppressWarnings("restriction")
-//	@Override
-//	public void actionPerformed(ActionEvent event) {
-//		Object source = event.getSource();
-//		if (source == this.userguideButton) {
-//			String input = guideURL.toExternalForm();
-////			Platform.runLater(() -> {
-////				browser.setTextInputCache(input);
-////				browser.checkInputURLType(input);
-////				browser.showFormattedURL();
-////			});
-//		}
-//
-//		else if (source == this.shortcutsButton) {
-//			String input = shortcutsURL.toExternalForm();
-////			Platform.runLater(() -> {
-////				browser.setTextInputCache(input);
-////				browser.checkInputURLType(input);
-////				browser.showFormattedURL();
-////			});
-//		}
-//
-//		else if (source == this.aboutButton) {
-//			String input = aboutURL.toExternalForm();
-////			Platform.runLater(() -> {
-////				browser.setTextInputCache(input);
-////				browser.checkInputURLType(input);
-////				browser.showFormattedURL();
-////			});
-//		}
-//
-//		else if (source == this.tutorialButton) {
-//			String input = tutorialURL.toExternalForm();
-////			Platform.runLater(() -> {
-////				browser.setTextInputCache(input);
-////				browser.checkInputURLType(input);
-////				browser.showFormattedURL();
-////			});
-//		}
-//
-//		else if (source == this.projectsiteButton || source == this.wikiButton) {
-////			Platform.runLater(() -> {
-////				browser.setTextInputCache(projectsiteURLstring);
-////				browser.checkInputURLType(projectsiteURLstring);
-////				browser.showFormattedURL();
-////			});
-//		}
-//	}
 
 	/** Implementing ActionListener method. */
 	@Override

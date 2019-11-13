@@ -13,10 +13,8 @@ import java.util.logging.Logger;
 
 import org.mars_sim.mapdata.MapData;
 import org.mars_sim.mapdata.MapDataUtil;
-import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Direction;
-import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
@@ -59,9 +57,11 @@ public class TerrainElevation implements Serializable {
 //	private static final double SOUTH_POLE_PHI = Math.PI; 
 //	private static final double SOUTH_POLE_THETA = 0;
 	
-	private static MapData mapdata = MapDataUtil.instance().getTopoMapData();
+	private static MapData mapdata;
 	
-	private static SurfaceFeatures surfaceFeatures;
+	private static MapDataUtil mapDataUtil = MapDataUtil.instance();
+	
+//	private static SurfaceFeatures surfaceFeatures;
 	
 	/**
 	 * Constructor
@@ -79,7 +79,7 @@ public class TerrainElevation implements Serializable {
 	 * @param currentDirection the current direction (in radians)
 	 * @return terrain steepness angle (in radians)
 	 */
-	public static double determineTerrainSteepness(Coordinates currentLocation, Direction currentDirection) {
+	public double determineTerrainSteepness(Coordinates currentLocation, Direction currentDirection) {
 		double newY = -1.5D * currentDirection.getCosDirection();
 		double newX = 1.5D * currentDirection.getSinDirection();
 		Coordinates sampleLocation = currentLocation.convertRectToSpherical(newX, newY);
@@ -97,7 +97,7 @@ public class TerrainElevation implements Serializable {
 	 * @param currentDirection
 	 * @return
 	 */
-	public static double determineTerrainSteepness(Coordinates currentLocation, double elevation, Direction currentDirection) {
+	public double determineTerrainSteepness(Coordinates currentLocation, double elevation, Direction currentDirection) {
 		double newY = - 1.5 * currentDirection.getCosDirection();
 		double newX = 1.5 * currentDirection.getSinDirection();
 		Coordinates sampleLocation = currentLocation.convertRectToSpherical(newX, newY);
@@ -114,7 +114,7 @@ public class TerrainElevation implements Serializable {
 	 * @param currentDirection
 	 * @return
 	 */
-	public static double determineTerrainSteepnessRandom(Coordinates currentLocation, double elevation, Direction currentDirection) {
+	public double determineTerrainSteepnessRandom(Coordinates currentLocation, double elevation, Direction currentDirection) {
 		double newY = - RandomUtil.getRandomDouble(1.5) * currentDirection.getCosDirection();
 		double newX = RandomUtil.getRandomDouble(1.5) * currentDirection.getSinDirection();
 		Coordinates sampleLocation = currentLocation.convertRectToSpherical(newX, newY);
@@ -122,7 +122,7 @@ public class TerrainElevation implements Serializable {
 		return Math.atan(elevationChange / 11.1D);
 	}
 	
-	public static double[] computeTerrainProfile(CollectionSite site, Coordinates currentLocation) {
+	public double[] computeTerrainProfile(CollectionSite site, Coordinates currentLocation) {
 		double steepness = 0;
 		double elevation = getMOLAElevation(currentLocation);
 		for (int i=0 ; i <= 360 ; i++) {
@@ -145,7 +145,7 @@ public class TerrainElevation implements Serializable {
 	 * @param currentLocation
 	 * @return
 	 */
-	public static double[] getTerrainProfile(Coordinates currentLocation) {
+	public double[] getTerrainProfile(Coordinates currentLocation) {
 //		if (surfaceFeatures == null)
 //			surfaceFeatures = Simulation.instance().getMars().getSurfaceFeatures();
 //	
@@ -169,7 +169,7 @@ public class TerrainElevation implements Serializable {
 //		}
 	}
 	
-	public static double computeCollectionRate(CollectionSite site, Coordinates currentLocation) {
+	public double computeCollectionRate(CollectionSite site, Coordinates currentLocation) {
 		
 		// Get the elevation and terrain gradient factor
 		double[] terrainProfile = getTerrainProfile(currentLocation);
@@ -208,7 +208,7 @@ public class TerrainElevation implements Serializable {
 	 * @param currentLocation
 	 * @return
 	 */
-	public static double getIceCollectionRate(Coordinates currentLocation) {
+	public double getIceCollectionRate(Coordinates currentLocation) {
 //		if (surfaceFeatures == null)
 //			surfaceFeatures = Simulation.instance().getMars().getSurfaceFeatures();
 //		if (surfaceFeatures.getSites().containsKey(currentLocation)) {
@@ -232,8 +232,10 @@ public class TerrainElevation implements Serializable {
 //		}
 	}
 	
-	public static int[] getRGB(Coordinates location) {
+	public int[] getRGB(Coordinates location) {
 		// Find hue and saturation color components at location.
+		if (mapdata == null)
+			mapdata = mapDataUtil.getTopoMapData();
 		Color color = mapdata.getRGBColor(location.getPhi(), location.getTheta());
 		int red = color.getRed();
 		int green = color.getGreen();
@@ -270,8 +272,10 @@ public class TerrainElevation implements Serializable {
 	 * @param theta
 	 * @return the elevation at the location (in km)
 	 */
-	public static double getMOLAElevation(double phi, double theta) {
-		return mapdata.getElevationInt(phi, theta)/ 1000.0;
+	public double getMOLAElevation(double phi, double theta) {
+//		if (mapdata == null)
+//			mapdata = mapDataUtil.getTopoMapData();
+		return mapDataUtil.getElevationInt(phi, theta)/ 1000.0;
 	}
 		
 	/**
@@ -280,8 +284,11 @@ public class TerrainElevation implements Serializable {
 	 * @param location the location in question
 	 * @return the elevation at the location (in km)
 	 */
-	public static double getMOLAElevation(Coordinates location) {
-		return mapdata.getElevationInt(location.getPhi(), location.getTheta())/ 1000.0;
+	public double getMOLAElevation(Coordinates location) {
+//		if (mapdata == null)
+//			mapdata = mapDataUtil.getTopoMapData();
+//		logger.config("Calling getMOLAElevation().  mapdata : " + mapdata);
+		return mapDataUtil.getElevationInt(location.getPhi(), location.getTheta())/ 1000.0;
 	}
 	
 	/**
@@ -290,7 +297,7 @@ public class TerrainElevation implements Serializable {
 	 * @param location the location in question
 	 * @return the elevation at the location (in km)
 	 */
-	public static double getPatchedElevation(Coordinates location) {
+	public double getPatchedElevation(Coordinates location) {
 		
 //		int elevationMOLA = mapdata.getElevationInt(location.getPhi(), location.getTheta());
 		
@@ -329,7 +336,7 @@ public class TerrainElevation implements Serializable {
 	 * @param location the location in question
 	 * @return the elevation at the location (in km)
 	 */
-	public static double getRawElevation(Coordinates location) {
+	public double getRawElevation(Coordinates location) {
 
 		// Find hue and saturation color components at location.
 		int rgb[] = getRGB(location);

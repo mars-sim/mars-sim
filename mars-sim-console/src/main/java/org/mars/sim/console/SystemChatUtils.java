@@ -42,6 +42,8 @@ public class SystemChatUtils extends ChatUtils {
 	static Map<Integer, String> topographicExcursionNames = new HashMap<>();
 	static Map<Integer, String[]> topographicExcursionCoords = new HashMap<>();
 			
+	protected static TerrainElevation terrainElevation;
+	
 	static {
 		topographicExcursionNames.put(1, "Olympus Mons");
 		topographicExcursionNames.put(2, "Ascraeus Mons");
@@ -528,11 +530,11 @@ public class SystemChatUtils extends ChatUtils {
 //			double lat = Double.parseDouble(latitudeStr); //Coordinates.parseLatitude(latitudeStr);
 //			double lon = Double.parseDouble(longitudeStr); //Coordinates.parseLatitude(longitudeStr);
 //			System.out.println("lat : " + lat + "  lon : " + lon);
-//			if (mars == null)
-//				mars = sim.getMars();
-//			if (terrainElevation == null)
-//				terrainElevation =  mars.getSurfaceFeatures().getTerrainElevation();
-			return TerrainElevation.getMOLAElevation(new Coordinates(latitudeStr, longitudeStr));//lon, lat));
+			if (mars == null)
+				mars = sim.getMars();
+			if (terrainElevation == null)
+				terrainElevation =  mars.getSurfaceFeatures().getTerrainElevation();
+			return terrainElevation.getMOLAElevation(new Coordinates(latitudeStr, longitudeStr));//lon, lat));
 		} catch(IllegalStateException e) {
 			System.out.println(e);
 			return 0;
@@ -555,14 +557,14 @@ public class SystemChatUtils extends ChatUtils {
 					Math.round(phi*1_000_000.0)/1_000_000.0,
 					Math.round(theta*1_000_000.0)/1_000_000.0);
 			System.out.print(s);
-//			if (mars == null)
-//				mars = sim.getMars();
-//			if (terrainElevation == null)
-//				terrainElevation =  mars.getSurfaceFeatures().getTerrainElevation();
+			if (mars == null)
+				mars = sim.getMars();
+			if (terrainElevation == null)
+				terrainElevation =  mars.getSurfaceFeatures().getTerrainElevation();
 			
 			Coordinates location = new Coordinates(latitudeStr, longitudeStr);
 			
-			int rgb[] = TerrainElevation.getRGB(location);
+			int rgb[] = terrainElevation.getRGB(location);
 			int red = rgb[0];
 			int green = rgb[1];
 			int blue = rgb[2];
@@ -584,18 +586,18 @@ public class SystemChatUtils extends ChatUtils {
 					Math.round(brightness*1000.0)/1000.0); 
 			System.out.print(s1);
 			
-			double re = TerrainElevation.getRawElevation(location);
+			double re = terrainElevation.getRawElevation(location);
 			String s2 = String.format("%8.3f ", 
 					Math.round(re*1_000.0)/1_000.0);
 			System.out.print(s2);
 			
-			double pe = TerrainElevation.getPatchedElevation(location);
+			double pe = terrainElevation.getPatchedElevation(location);
 			
 			String s3 = String.format("%8.3f ", 
 					Math.round(pe*1_000.0)/1_000.0);
 			System.out.print(s3);
 						
-			double mola = TerrainElevation.getMOLAElevation(location);
+			double mola = terrainElevation.getMOLAElevation(location);
 			
 			String s4 = String.format("%8.3f ", 
 					Math.round(mola*1_000.0)/1_000.0);
@@ -865,7 +867,11 @@ public class SystemChatUtils extends ChatUtils {
 				} while (!good1);
 				
 				if (good0 && good1) {
-					double elevation = TerrainElevation.getMOLAElevation(lat, lon);
+					if (mars == null)
+						mars = sim.getMars();
+					if (terrainElevation == null)
+						terrainElevation =  mars.getSurfaceFeatures().getTerrainElevation();							
+					double elevation = terrainElevation.getMOLAElevation(lat, lon);
 					responseText.append(System.lineSeparator());
 					
 					String ans = "The elevation of (" + latitudeStr + ", " + longitudeStr + ") is "
@@ -1488,7 +1494,11 @@ public class SystemChatUtils extends ChatUtils {
 		for (Settlement s: collection) {
 			responseText.append(addWhiteSpacesLeftName(" " + s.getName(), 20));
 			responseText.append(addWhiteSpacesRightName(s.getCoordinates().getFormattedString(), 20));
-			double elevation = Math.round(TerrainElevation.getMOLAElevation(s.getCoordinates())*1000.0)/1000.0;
+			if (mars == null)
+				mars = sim.getMars();
+			if (terrainElevation == null)
+				terrainElevation =  mars.getSurfaceFeatures().getTerrainElevation();
+			double elevation = Math.round(terrainElevation.getMOLAElevation(s.getCoordinates())*1000.0)/1000.0;
 			responseText.append(addWhiteSpacesRightName(elevation +"", 13));
 			responseText.append(System.lineSeparator());
 		}

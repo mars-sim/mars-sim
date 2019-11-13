@@ -418,7 +418,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 	 */
 	protected double getSpeedLightConditionModifier() {
 		// Ground vehicles travel at 30% speed at night.
-		double lightConditions = surface.getSunlightRatio(getVehicle().getCoordinates());
+		double lightConditions = surfaceFeatures.getSunlightRatio(getVehicle().getCoordinates());
 		double result = (lightConditions * .7D) + .3D;
 		return result;
 	}
@@ -476,7 +476,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 		chance /= (1D + vehicle.getTerrainHandlingCapability());
 
 		// Light condition modification.
-		double lightConditions = surface.getSunlightRatio(vehicle.getCoordinates());
+		double lightConditions = surfaceFeatures.getSunlightRatio(vehicle.getCoordinates());
 		chance *= (5D * (1D - lightConditions)) + 1D;
 		if (chance < 0D) {
 			chance = 0D;

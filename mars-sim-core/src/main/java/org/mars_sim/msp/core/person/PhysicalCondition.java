@@ -771,7 +771,9 @@ public class PhysicalCondition implements Serializable {
 
 		else if (isStarving) {
 			
-			taskMgr.addTask(new EatMeal(person), true);;
+			if (person.isInside()) {
+				taskMgr.addTask(new EatMeal(person), true);
+			}
 			
 			if (hunger < 500D && kJoules > 800D) {
 		
@@ -803,15 +805,19 @@ public class PhysicalCondition implements Serializable {
 			// Stop any on-going tasks
 //				taskMgr.clearTask();
 			// go drink water by eating a meal
-			taskMgr.addTask(new EatMeal(person), true);
+			if (person.isInside()) {
+				taskMgr.addTask(new EatMeal(person), true);;
+			}
 
 		}
 
 		if (isDehydrated) {
 			
-			taskMgr.addTask(new EatMeal(person), true);
+			if (person.isInside()) {
+				taskMgr.addTask(new EatMeal(person), true);;
+			}
 			
-			if (thirst < 500D) {
+			if (thirst < THIRST_THRESHOLD * 2) {
 			
 				if (dehydrated == null)
 					dehydrated = problems.get(dehydration);

@@ -101,12 +101,12 @@ public class PlayHoloGameMeta implements MetaTask, Serializable {
     	        if (Vehicle.inMovingRover(person)) {
     		        // the bonus inside a vehicle, 
     	        	// rather than having nothing to do if a person is not driving
-    	        	result = -20;
+    	        	result += -20;
     	        } 	       
     	        else
     		        // the bonus inside a vehicle, 
     	        	// rather than having nothing to do if a person is not driving
-    	        	result = 20;
+    	        	result += 20;
             }
             
             else {

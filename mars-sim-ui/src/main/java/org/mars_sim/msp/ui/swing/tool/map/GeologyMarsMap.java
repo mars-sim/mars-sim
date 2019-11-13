@@ -22,6 +22,8 @@ public class GeologyMarsMap extends CannedMarsMap {
 	// The map type.
 	public static final String TYPE = "geological map";
 
+	private static MapDataUtil mapDataUtil = MapDataUtil.instance();
+	
 	/**
 	 * Constructor
 	 *
@@ -30,6 +32,6 @@ public class GeologyMarsMap extends CannedMarsMap {
 	public GeologyMarsMap(JComponent displayArea) {
 
 		// Parent constructor
-		super(displayArea, MapDataUtil.instance().getGeologyMapData());
+		super(displayArea, mapDataUtil.getGeologyMapData());
 	}
 }

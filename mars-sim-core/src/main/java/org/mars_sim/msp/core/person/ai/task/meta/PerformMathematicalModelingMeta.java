@@ -99,7 +99,7 @@ public class PerformMathematicalModelingMeta implements MetaTask, Serializable {
 	                            // Check if person is in a moving rover.
 	                            if (person.isInVehicle() && Vehicle.inMovingRover(person)) {
 	                    	        // the bonus for being inside a vehicle since there's little things to do
-	                                result = 20D;
+	                                result += 20D;
 	                            }
 	                        }
 	                    }

@@ -14,7 +14,6 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.equipment.Barrel;
 import org.mars_sim.msp.core.equipment.EquipmentType;
-import org.mars_sim.msp.core.mars.TerrainElevation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -93,8 +92,11 @@ public class CollectIce extends CollectResourcesMission {
 		double totalRate = 0;
 		int size = locations.size();
 		
+		if (terrainElevation == null)
+			terrainElevation = sim.getMars().getSurfaceFeatures().getTerrainElevation();
+
 		for (Coordinates location : locations) {
-			totalRate += TerrainElevation.getIceCollectionRate(location);
+			totalRate += terrainElevation.getIceCollectionRate(location);
 		}
 	
 		return totalRate / size;
