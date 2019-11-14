@@ -647,8 +647,8 @@ public class CompositionOfAir implements Serializable {
 	 */
 //	public void addAirNew(List<Building> buildings, int numID) {
 	public void addAirNew(Building building) {
-		int size = building.getBuildingManager().getNumInhabitables();
-		int id = size;
+//		int size = building.getBuildingManager().getNumInhabitables();
+		int id = building.getInhabitableID();
 		
 		int diff = 1;//numID - numIDsCache;
 
@@ -658,13 +658,13 @@ public class CompositionOfAir implements Serializable {
 		double[] new_totalMoles = Arrays.copyOf(totalMoles, totalMoles.length + diff);
 		double[] new_totalMass = Arrays.copyOf(totalMass, totalMass.length + diff);
 
-		double[][] new_temperature = createGasArray(temperature, size);
-		double[][] new_percent = createGasArray(percent, size);
+		double[][] new_temperature = createGasArray(temperature, id);
+		double[][] new_percent = createGasArray(percent, id);
 
-		double[][] new_partialPressure = createGasArray(partialPressure, size);
-		double[][] new_numMoles = createGasArray(numMoles, size);
-		double[][] new_standard_moles = createGasArray(standardMoles, size);
-		double[][] new_mass = createGasArray(mass, size);
+		double[][] new_partialPressure = createGasArray(partialPressure, id);
+		double[][] new_numMoles = createGasArray(numMoles, id);
+		double[][] new_standard_moles = createGasArray(standardMoles, id);
+		double[][] new_mass = createGasArray(mass, id);
 
 		new_totalPressure[id] = 1.0;
 

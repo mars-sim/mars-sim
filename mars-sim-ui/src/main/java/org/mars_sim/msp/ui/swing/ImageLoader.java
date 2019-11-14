@@ -11,6 +11,7 @@ import java.awt.Image;
 import java.awt.Toolkit;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.logging.Logger;
 
 import javax.swing.ImageIcon;
 
@@ -21,6 +22,9 @@ import javax.swing.ImageIcon;
  * strategies can be easily implemented within this class.
  */
 public class ImageLoader {
+	
+	/** default logger. */
+	private static Logger logger = Logger.getLogger(ImageLoader.class.getName());
 
 	private static HashMap<String, ImageIcon> iconCache = new HashMap<String, ImageIcon>();
 	private static HashMap<String, Image> imageCache = new HashMap<String, Image>();
@@ -77,6 +81,10 @@ public class ImageLoader {
 
 			/* [landrus, 26.11.09]: don't use the system classloader in a webstart env. */
 			URL resource = ImageLoader.class.getResource(fileName);// ClassLoader.getSystemResource(fileName);
+			if (resource == null) {
+    			logger.severe("'" + fileName + "' cannot be found");
+    		}
+			
 			found = new ImageIcon(resource);
 			iconCache.put(fullImageName, found);
 		}
@@ -123,9 +131,11 @@ public class ImageLoader {
 			if (usedToolkit == null) {
 				usedToolkit = Toolkit.getDefaultToolkit();
 			}
-			/* [landrus, 26.11.09]: don't use the system classloader in a webstart env. */
+
 			URL imageURL = ImageLoader.class.getResource(IMAGE_DIR + imagename);
-			// ClassLoader.getSystemResource(IMAGE_DIR + imagename);
+			if (imageURL == null) {
+    			logger.severe("'" + IMAGE_DIR + imagename + "' cannot be found");
+    		}
 
 			newImage = usedToolkit.createImage(imageURL);
 			imageCache.put(imagename, newImage);

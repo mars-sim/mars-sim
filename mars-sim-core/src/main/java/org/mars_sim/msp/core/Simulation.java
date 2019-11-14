@@ -379,8 +379,6 @@ public class Simulation implements ClockListener, Serializable {
 
 		Simulation sim = instance();
 
-		logger.config("Getting an instance of Simulation");
-		 
 		// Destroy old simulation.
 		if (sim.initialSimulationCreated) {
 			sim.destroyOldSimulation();
@@ -410,7 +408,7 @@ public class Simulation implements ClockListener, Serializable {
 
 //		masterClock.start();
 		
-		logger.config("Done with createNewSimulation()");
+//		logger.config("Done with createNewSimulation()");
 	}
 
 //	/**
@@ -469,14 +467,14 @@ public class Simulation implements ClockListener, Serializable {
 		mars = new Mars();
 		mars.createInstances();
 	
-		logger.config("Done with Mars");
+//		logger.config("Done with Mars");
 		
 		missionManager = new MissionManager();
 		relationshipManager = new RelationshipManager();
 		medicalManager = new MedicalManager();
 		masterClock = new MasterClock(isFXGL, timeRatio);
 		
-		logger.config("Done with MasterClock");
+//		logger.config("Done with MasterClock");
 		
 		// Note : marsSurface is needed before creating Inventory and Unit
 		// When loading from saved sim, it's at unitManager
@@ -487,7 +485,7 @@ public class Simulation implements ClockListener, Serializable {
 		SurfaceFeatures surfaceFeatures = mars.getSurfaceFeatures();
 		surfaceFeatures.initializeTransientData();
 		
-		logger.config("Done with SurfaceFeatures");
+//		logger.config("Done with SurfaceFeatures");
 		
 		// Create clock instances
 		MarsClock marsClock = masterClock.getMarsClock();
@@ -503,35 +501,35 @@ public class Simulation implements ClockListener, Serializable {
 		Unit.initializeInstances(masterClock, marsClock, earthClock, this, mars, null, 
 				mars.getWeather(), surfaceFeatures, missionManager);
 		
-		logger.config("Done with Unit");
+//		logger.config("Done with Unit");
 
 		// Initialize serializable managers
 		unitManager = new UnitManager(); 
 		
-		logger.config("Done with UnitManager");
+//		logger.config("Done with UnitManager");
 		
 		Inventory.setUnitManager(unitManager);
 		Airlock.initializeInstances(unitManager, marsSurface);
 		
-		logger.config("Done with Airlock.initializeInstances()");
+//		logger.config("Done with Airlock.initializeInstances()");
 		
 		// Gets the MarsSurface instance
 //		MarsSurface marsSurface = unitManager.getMarsSurface();//mars.getMarsSurface();
 		Unit.setMarsSurface(marsSurface);
 		Unit.setUnitManager(unitManager);
 		
-		logger.config("Done with Unit.setUnitManager()");
+//		logger.config("Done with Unit.setUnitManager()");
 		
 		unitManager.constructInitialUnits(loadSaveSim); // unitManager needs to be on the same thread as masterClock
 		
-		logger.config("Done with unitManager.constructInitialUnits()");
+//		logger.config("Done with unitManager.constructInitialUnits()");
 		
 		eventManager = new HistoricalEventManager();
 		creditManager = new CreditManager();
 		scientificStudyManager = new ScientificStudyManager();
 		transportManager = new TransportManager();
 
-		logger.config("Done with TransportManager()");
+//		logger.config("Done with TransportManager()");
 
 		// Initialize meta tasks
 		new MetaTaskUtil();
@@ -556,7 +554,7 @@ public class Simulation implements ClockListener, Serializable {
 		//  Re-initialize the GameManager
 		GameManager.initializeInstances(unitManager);
 					
-		logger.config("Done with GameManager()");
+//		logger.config("Done with GameManager()");
 		
 		// Set instances for classes that extend Unit and Task and Mission
 		Mission.initializeInstances(this, marsClock, eventManager, unitManager, scientificStudyManager, 
@@ -567,7 +565,7 @@ public class Simulation implements ClockListener, Serializable {
 		ut = masterClock.getUpTimer();
 
 		doneInitializing = true;
-		logger.config("Done initializing intransient data.");
+//		logger.config("Done initializing intransient data.");
 	}
 
 
@@ -590,7 +588,7 @@ public class Simulation implements ClockListener, Serializable {
 		}
 
 		public void run() {
-			logger.config("StartTask's run() is on " + Thread.currentThread().getName());
+//			logger.config("StartTask's run() is on " + Thread.currentThread().getName());
 			startClock(autosaveDefault);
 		}
 	}

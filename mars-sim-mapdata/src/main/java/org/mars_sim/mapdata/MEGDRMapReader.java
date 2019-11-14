@@ -1,6 +1,6 @@
 /**
  * Mars Simulation Project
- * ReadTopo.java
+ * MEGDRMapReader.java
  * @version 3.1.0 2019-11-07
  * @author Manny Kung
  */
@@ -9,6 +9,7 @@ package org.mars_sim.mapdata;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -18,7 +19,7 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -26,6 +27,8 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+
+import com.google.common.io.ByteStreams;
 
 import me.lemire.integercompression.Composition;
 import me.lemire.integercompression.FastPFOR;
@@ -66,7 +69,7 @@ public class MEGDRMapReader {
 	private int[] elevation = new int[HEIGHT*WIDTH]; // has 1036800 values ; OR [720*2880] = 2073600 values
 	
 	public static void main(String[] args) throws IOException {
-		new MEGDRMapReader();
+		new MEGDRMapReader().loadElevation();
 	}
 	
 	/**
@@ -75,39 +78,128 @@ public class MEGDRMapReader {
 	 * @see <a href="https://github.com/mars-sim/mars-sim/issues/225">GitHub Discussion #225</a>
 	 */
 	public MEGDRMapReader() {
-		URL url = MEGDRMapReader.class.getResource(FILE);
-		InputStream inputStream = null;
-		try {
-			inputStream = url.openStream();
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-//		InputStream inputStream = MEGDRMapReader.class.getResourceAsStream(FILE); //new BufferedInputStream(new FileInputStream(inputFile));
+	}
+	
+	private int convert4BytesToInt(byte[] data) {
+	    if (data == null || data.length != 4) return 0x0;
+	    // ----------
+	    return (int)( // NOTE: type cast not necessary for int
+	            (0xff & data[0]) << 24  |
+	            (0xff & data[1]) << 16  |
+	            (0xff & data[2]) << 8   |
+	            (0xff & data[3]) << 0
+	            );
+	}
+	
+	private int convert2ByteToInt(byte[] data) {
+	    if (data == null || data.length != 2) return 0x0;
+	    // ----------
+	    return (int)( // NOTE: type cast not necessary for int
+	            (0xff & data[0]) << 8  |
+	            (data[0]) << 8  |
+	            (0xff & data[1]) << 0
+	            );
+	}
+	
+	public int[] convertByteArrayToIntArray(byte[] data) {
+        if (data == null || data.length % 2 != 0) return null;
+        // ----------
+        int[] ints = new int[data.length / 2];
+        for (int i = 0; i < ints.length; i++)
+            ints[i] = ( convert2ByteToInt(new byte[] {
+                    data[(i*2)],
+                    data[(i*2)+1],
+            } ));
+        return ints;
+    }
+	
+	
+	public int[] loadElevation() {
+//		URL url = MEGDRMapReader.class.getResource(FILE);
+//		InputStream inputStream = null;
+//		try {
+//			inputStream = url.openStream();
+//		} catch (IOException e1) {
+//			// TODO Auto-generated catch block
+//			e1.printStackTrace();
+//		}
+//		ClassLoader classloader = Thread.currentThread().getContextClassLoader();
+//		InputStream inputStream = ClassLoaderUtil.getResourceAsStream(FILE, MEGDRMapReader.class);	
+		 
+		InputStream inputStream = MEGDRMapReader.class.getResourceAsStream(FILE); //new BufferedInputStream(new FileInputStream(inputFile));
+
+	    try {
+	    	
+//			System.out.println("inputStream is " + inputStream + "   av : " + inputStream.available()); //  av : 2073600
 			
-	    int i = 0;
-	    
-        try {
-			while (inputStream.read(buffer) != -1) {
-				// Combine the 2 bytes into a 16-bit number
-//				elevation[i] =  (0xff & buffer[0] << 8) | (0xff & buffer[1]);
-				elevation[i] =  (buffer[0] << 8) | (buffer[1] & 0xff);
-//				if (i % WIDTH == 0) System.out.println();
-//				System.out.print(elevation[i] + " ");// + buffer[0] + " " + buffer[1]);
-				i++;
+			byte[] bytes = ByteStreams.toByteArray(inputStream);
+			
+			elevation = convertByteArrayToIntArray(bytes);
+			int size = elevation.length;
+			for (int j=0; j<size; j++) {
+//				if (j % WIDTH == 0) System.out.println();
+//				System.out.print(elevation[j] + " ");
 			}
 			
-//	        System.out.println("Size of unsorted integers from " + elevation.length * 4/1024 + " KB ");
-//	        System.out.println("elevation.length : " + elevation.length);
-//
-//	        System.out.println(i);
-//	        System.out.println(elevation.length);
-			
+//		    int i = 0;  
+//			while (inputStream.read(buffer) != -1) {
+//				// Combine the 2 bytes into a 16-bit number
+//				//				elevation[i] =  (0xff & buffer[0] << 8) | (0xff & buffer[1]);
+//				elevation[i] = (buffer[0] << 8 ) | (buffer[1] & 0xff);
+//				if (i % WIDTH == 0) System.out.println();
+//				System.out.print(elevation[i] + " ");// + buffer[0] + " " + buffer[1]);
+//				i++;
+//			}
+//        
 	        inputStream.close();
 	        
 		} catch (IOException e) {
 			e.printStackTrace();
-		}    
+		}
+//			
+////	        System.out.println("Size of unsorted integers from " + elevation.length * 4/1024 + " KB ");
+////	        System.out.println("elevation.length : " + elevation.length);
+//	    	System.out.println();
+//	        System.out.println("last index is : " + i);
+////	        System.out.println(elevation.length);
+// 
+
+//        BufferedReader in = new BufferedReader(new InputStreamReader(inputStream));
+//        
+//        int i = 0;
+//	    
+//	    try {
+//	    	
+//	    	byte num = 0;
+//	    	int last = 0;
+//			System.out.println("inputStream is " + inputStream + "   av : " + inputStream.available()); //  av : 2073600
+//			
+//			while ((num = in.read()) != -1) {
+//				// Combine the 2 bytes into a 16-bit number
+//				//				elevation[i] =  (0xff & buffer[0] << 8) | (0xff & buffer[1]);
+//				if (i % 2 == 0) {
+//					elevation[i] = (last << 8) | (num & 0xff);
+//					if (i % WIDTH == 0) System.out.println();
+//						System.out.print(elevation[i] + " ");
+//				}
+//				else
+//					last = num;
+//
+//				i++;
+//			}
+//        
+//	        inputStream.close();
+//	        
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+			
+//		        System.out.println("Size of unsorted integers from " + elevation.length * 4/1024 + " KB ");
+//		        System.out.println("elevation.length : " + elevation.length);
+//	    System.out.println();
+//	    System.out.println("last index is : " + (i - 1));
+		        
+        return elevation;
         
 //        try {
 //			write(OUTPUT, elevation);

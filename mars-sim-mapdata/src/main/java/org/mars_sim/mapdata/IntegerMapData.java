@@ -41,20 +41,7 @@ abstract class IntegerMapData implements MapData {
 	private static final double TWO_PI = Math.PI * 2D;
 
 	// Data members.
-//	private List<int[]> mapColors = null;
 	private int[][] pixels = null;
-	
-//	private static MapDataUtil mapDataUtil = MapDataUtil.instance();
-	
-//	private static MEGDRMapReader reader;
-//
-//	private static int[] elevationArray;
-//	
-//	static {
-//		reader = new MEGDRMapReader();
-//
-//		elevationArray = reader.getElevationArray();
-//	}
 	
 	/**
 	 * Constructor

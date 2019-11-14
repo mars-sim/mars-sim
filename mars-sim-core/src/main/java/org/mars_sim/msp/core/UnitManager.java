@@ -206,20 +206,20 @@ public class UnitManager implements Serializable {
 		settlementConfig = simulationConfig.getSettlementConfiguration();
 		vehicleConfig = simulationConfig.getVehicleConfiguration();
 		
-		logger.config("Done with vehicleConfig");
+//		logger.config("Done with vehicleConfig");
 		
 		relationshipManager = sim.getRelationshipManager();
 		factory = sim.getMalfunctionFactory();		
 
 		marsClock = sim.getMasterClock().getMarsClock();
 		
-		logger.config("Done with marsClock");
+//		logger.config("Done with marsClock");
 		
 		// Gets the mars surface
 		marsSurface = sim.getMars().getMarsSurface(); //new MarsSurface();
 //		if (marsSurface != null) System.out.println("UnitManager : " + this.marsSurface + " has " + this.marsSurface.getCode());
 //		marsSurface = sim.getMars().getMarsSurface();
-		logger.config("Done with marsSurface");
+//		logger.config("Done with marsSurface");
 	}
 
 	/**
@@ -247,29 +247,29 @@ public class UnitManager implements Serializable {
 		initializeSettlementNames();
 		initializeVehicleNames();
 		
-		logger.config("Done with initializeVehicleNames()");
+//		logger.config("Done with initializeVehicleNames()");
 		
 		if (!loadSaveSim) {
 			// Create initial units.
 			createInitialSettlements();
 			
-			logger.config("Done with createInitialSettlements()");
+//			logger.config("Done with createInitialSettlements()");
 			
 			createInitialVehicles();
 			
-			logger.config("Done with createInitialVehicles()");
+//			logger.config("Done with createInitialVehicles()");
 			
 			createInitialEquipment();
 			
-			logger.config("Done with createInitialEquipment()");
+//			logger.config("Done with createInitialEquipment()");
 			
 			createInitialResources();
 			
-			logger.config("Done with createInitialResources()");
+//			logger.config("Done with createInitialResources()");
 			
 			createInitialParts();
 			
-			logger.config("Done with createInitialParts()");
+//			logger.config("Done with createInitialParts()");
 			
 			// Find the settlement match for the user proposed commander's sponsor 
 			if (GameManager.mode == GameMode.COMMAND)
@@ -280,7 +280,7 @@ public class UnitManager implements Serializable {
 			// Create more robots to fill the settlement(s)
 			createInitialRobots();
 			
-			logger.config("Done with createInitialRobots()");
+//			logger.config("Done with createInitialRobots()");
 			
 			// Initialize the role prospect array
 			RoleUtil.initialize();
@@ -290,7 +290,7 @@ public class UnitManager implements Serializable {
 			// Create more settlers to fill the settlement(s)
 			createInitialPeople();
 			
-			logger.config("Done with createInitialPeople()");
+//			logger.config("Done with createInitialPeople()");
 			
 			// Manually add job positions
 			tuneJobDeficit();
@@ -302,7 +302,7 @@ public class UnitManager implements Serializable {
 
 		justStarting = false;
 		
-		logger.config("Done with constructInitialUnits()");
+//		logger.config("Done with constructInitialUnits()");
 	}
 
 	/**
@@ -945,11 +945,11 @@ public class UnitManager implements Serializable {
 				
 				Settlement settlement = Settlement.createNewSettlement(name, scenarioID, template, sponsor, location, populationNumber,
 						initialNumOfRobots);
-				logger.config("settlement : " + settlement);
+//				logger.config("settlement : " + settlement);
 				settlement.initialize();
-				logger.config("settlement.initialize()");
+//				logger.config("settlement.initialize()");
 				addUnit(settlement);
-				logger.config("addUnit(settlement)");
+//				logger.config("addUnit(settlement)");
 			}
 		} catch (Exception e) {
 			e.printStackTrace(System.err);
@@ -968,7 +968,7 @@ public class UnitManager implements Serializable {
 
 		try {
 			for (Settlement settlement : getSettlements()) {
-				logger.config("settlement : " + settlement);
+//				logger.config("settlement : " + settlement);
 				SettlementTemplate template = settlementConfig.getSettlementTemplate(settlement.getTemplate());
 				Map<String, Integer> vehicleMap = template.getVehicles();
 				Iterator<String> j = vehicleMap.keySet().iterator();
@@ -976,19 +976,19 @@ public class UnitManager implements Serializable {
 					String vehicleType = j.next();
 					int number = vehicleMap.get(vehicleType);
 					vehicleType = vehicleType.toLowerCase();
-					logger.config("vehicleType : " + vehicleType);
+//					logger.config("vehicleType : " + vehicleType);
 					for (int x = 0; x < number; x++) {
 						if (LightUtilityVehicle.NAME.equalsIgnoreCase(vehicleType)) {
 							String name = getNewName(UnitType.VEHICLE, LUV, null, null);
-							logger.config("name : " + name);
+//							logger.config("name : " + name);
 							LightUtilityVehicle luv = new LightUtilityVehicle(name, vehicleType, settlement);
-							logger.config("luv : " + luv);
+//							logger.config("luv : " + luv);
 							addUnit(luv);
 						} else {
 							String name = getNewName(UnitType.VEHICLE, null, null, null);
-							logger.config("name : " + name);
+//							logger.config("name : " + name);
 							Rover rover = new Rover(name, vehicleType, settlement);
-							logger.config("rover : " + rover);
+//							logger.config("rover : " + rover);
 							addUnit(rover);
 						}
 					}

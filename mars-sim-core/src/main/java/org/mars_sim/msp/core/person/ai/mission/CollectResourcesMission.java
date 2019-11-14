@@ -485,7 +485,9 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 
 					if (resourceID == ResourceUtil.iceID) {
 						
-						
+						if (terrainElevation == null)
+							terrainElevation = sim.getMars().getSurfaceFeatures().getTerrainElevation();
+								
 						double rate = terrainElevation.getIceCollectionRate(person.getCoordinates());
 						
 //						if (resourceCollectionRate == CollectIce.collectionRate) {

@@ -7,6 +7,8 @@
 
 package org.mars_sim.mapdata;
 
+import java.io.IOException;
+
 /**
  * Static utility class for accessing Mars map data.
  */
@@ -14,13 +16,15 @@ public final class MapDataUtil {
 	
 	public static final int IMAGE_WIDTH = 300;
 	public static final int IMAGE_HEIGHT = IMAGE_WIDTH;
+	private static final int HEIGHT = MEGDRMapReader.HEIGHT;
+	private static final int WIDTH = MEGDRMapReader.WIDTH;
 	
+	private static final double PI = Math.PI;
 	private static final double TWO_PI = Math.PI * 2D;
 
     // Singleton instance.
     private static MapDataUtil instance;
     private static MapDataFactory mapDataFactory;
-    
     private static MEGDRMapReader reader;
 
 	private static int[] elevationArray;
@@ -36,10 +40,14 @@ public final class MapDataUtil {
     private MapDataUtil() {
         mapDataFactory = new MapDataFactory();
 		reader = new MEGDRMapReader();
-		elevationArray = reader.getElevationArray();
     }
     
-    public static int[] getElevationArray() {
+    public int[] getElevationArray() {
+    	
+    	if (elevationArray == null) {		
+    		elevationArray = reader.loadElevation();
+    	}
+    		
 		return elevationArray;
 	}
 	
@@ -52,17 +60,17 @@ public final class MapDataUtil {
 	 */
 	public int getElevationInt(double phi, double theta) {
 		// Make sure phi is between 0 and PI.
-		while (phi > Math.PI)
-			phi -= Math.PI;
+		while (phi > PI)
+			phi -= PI;
 		while (phi < 0)
-			phi += Math.PI;
+			phi += PI;
 
 		// Adjust theta with PI for the map offset.
 		// Note: the center of the map is when theta = 0
-		if (theta > Math.PI)
-			theta -= Math.PI;
+		if (theta > PI)
+			theta -= PI;
 		else
-			theta += Math.PI;
+			theta += PI;
 		
 		// Make sure theta is between 0 and 2 PI.
 		while (theta > TWO_PI)
@@ -70,17 +78,21 @@ public final class MapDataUtil {
 		while (theta < 0)
 			theta += TWO_PI;
 
-		int row = (int) Math.round(phi * MEGDRMapReader.HEIGHT / Math.PI);
-		if (row == MEGDRMapReader.HEIGHT) 
+		int row = (int) Math.round(phi * HEIGHT / PI);
+		if (row == HEIGHT) 
 			row--;
 		
-		int column = MEGDRMapReader.WIDTH /2 + (int) Math.round(theta * MEGDRMapReader.WIDTH / TWO_PI);
+		int column = WIDTH /2 + (int) Math.round(theta * WIDTH / TWO_PI);
 //		if (column < 0)
 //			column = 0;		
-		if (column == MEGDRMapReader.WIDTH)
+		if (column == WIDTH)
 			column--;
 
-		return MapDataUtil.getElevationArray()[row * MEGDRMapReader.WIDTH + column];
+		int index = row * WIDTH + column;
+		if (index >= HEIGHT * WIDTH)
+			index = HEIGHT * WIDTH - 1;
+		
+		return getElevationArray()[index];
 	}
 	
     /**

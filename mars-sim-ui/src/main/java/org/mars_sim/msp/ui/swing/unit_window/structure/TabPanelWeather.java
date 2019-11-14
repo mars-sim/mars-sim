@@ -16,6 +16,7 @@ import java.awt.Image;
 import java.awt.Toolkit;
 import java.net.URL;
 import java.text.DecimalFormat;
+import java.util.logging.Logger;
 
 import javax.swing.ImageIcon;
 import javax.swing.SpringLayout;
@@ -47,6 +48,9 @@ import com.alee.laf.text.WebTextField;
 @SuppressWarnings("serial")
 public class TabPanelWeather
 extends TabPanel {
+	
+	/** default logger. */
+	private static Logger logger = Logger.getLogger(TabPanelWeather.class.getName());
 
 	private static final String DUSTY_SKY = Msg.getString("img.dust128"); //$NON-NLS-1$
 	private static final String SUNNY = Msg.getString("img.sunny128"); //$NON-NLS-1$
@@ -417,6 +421,10 @@ extends TabPanel {
 	 */
 	public void setImage(String image) {
         URL resource = ImageLoader.class.getResource(image);
+		if (resource == null) {
+			logger.severe("'" + image + "' cannot be found");
+		}
+		
         Toolkit kit = Toolkit.getDefaultToolkit();
         Image img = kit.createImage(resource);
         ImageIcon weatherImageIcon = new ImageIcon(img);

@@ -37,7 +37,6 @@ import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.mars.DustStorm;
-import org.mars_sim.msp.core.mars.TerrainElevation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -293,11 +292,11 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	/** The rate [kg per millisol] of filtering grey water for irrigating the crop. */
 	public double greyWaterFilteringRate = 1;
 	/** The currently minimum passing score for mission approval. */
-	private double minimumPassingScore = 0;
+	private double minimumPassingScore = 100;
 	/** The trending score for curving the minimum score for mission approval. */
 	private double trendingScore = 30D;
 	/** The recently computed average score of the missions. */
-	private double currentAverageScore = 0;
+	private double currentAverageScore = 100;
 	/** Goods manager update time. */
 	private double goodsManagerUpdateTime = 0D;
 	/** The settlement's current indoor temperature. */
@@ -613,10 +612,10 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 //		logger.info(this + "   terrain steepness : " + Math.round(gradient*10.0)/10.0);
 //		logger.info(this + " ice collection rate : " + Math.round(iceCollectionRate*100.0)/100.0 + " kg/millisol");
 		
-//		if (terrainElevation == null)
-//			terrainElevation = surfaceFeatures.getTerrainElevation();
-//		iceCollectionRate = terrainElevation.getIceCollectionRate(location);
-		logger.config("Done iceCollectionRate");
+		if (terrainElevation == null)
+			terrainElevation = surfaceFeatures.getTerrainElevation();
+		iceCollectionRate = terrainElevation.getIceCollectionRate(location);
+//		logger.config("Done iceCollectionRate");
 		
 		// Set inventory total mass capacity.
 		getInventory().addGeneralCapacity(Double.MAX_VALUE); // 10_000_000);//100_000_000);//
@@ -629,30 +628,30 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 				getInventory().addAmountResourceTypeCapacity(ar, max);
 			}
 		}
-		logger.config("Done addAmountResourceTypeCapacity()");
+//		logger.config("Done addAmountResourceTypeCapacity()");
 		// Initialize building manager
 		buildingManager = new BuildingManager(this);
-		logger.config("Done BuildingManager()");
+//		logger.config("Done BuildingManager()");
 		// Initialize building connector manager.
 		buildingConnectorManager = new BuildingConnectorManager(this);
 		// Initialize goods manager.
 		goodsManager = new GoodsManager(this);
-		logger.config("Done GoodsManager()");
+//		logger.config("Done GoodsManager()");
 		// Initialize construction manager.
 		constructionManager = new ConstructionManager(this);
 		// Initialize power grid
 		powerGrid = new PowerGrid(this);
 		// Added thermal control system
 		thermalSystem = new ThermalSystem(this);
-		logger.config("Done ThermalSystem()");
+//		logger.config("Done ThermalSystem()");
 		// Initialize scientific achievement.
 		scientificAchievement = new HashMap<ScienceType, Double>(0);
 		// Add chain of command
 		chainOfCommand = new ChainOfCommand(this);
-		logger.config("Done ChainOfCommand()");
+//		logger.config("Done ChainOfCommand()");
 		// Add tracking composition of air
 		compositionOfAir = new CompositionOfAir(this);
-		logger.config("Done CompositionOfAir()");
+//		logger.config("Done CompositionOfAir()");
 		// Set objective()
 		if (template.equals(TRADING_OUTPOST))
 			setObjective(ObjectiveType.TRADE_CENTER, 2);
@@ -675,7 +674,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 		dailyResourceOutput = new ConcurrentHashMap<>();
 		// Create the daily labor hours map
 		dailyLaborTime = new ConcurrentHashMap<>();
-		logger.config("Done initialize()");
+//		logger.config("Done initialize()");
 	}
 
 	/**

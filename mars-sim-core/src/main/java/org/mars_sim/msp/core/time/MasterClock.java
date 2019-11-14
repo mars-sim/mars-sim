@@ -779,8 +779,8 @@ public class MasterClock implements Serializable {
 
 					int skips = 0;
 
-					if (excess/1_000_000 > 5000) {
-						// If the pause is more than 5 seconds, this is most likely due to the machine 
+					if (excess/1_000_000 > 3000) {
+						// If the pause is more than 3 seconds, this is most likely due to the machine 
 						// just recovering from a power saving event
 						
 						// Reset the pulse count
@@ -806,6 +806,9 @@ public class MasterClock implements Serializable {
 		
 							// Call addTime once to get back the time lost in a frame
 							addTime();
+							
+							// Reset the pulse count
+							resetTotalPulses();
 						}
 						
 						if (skips >= maxFrameSkips) {

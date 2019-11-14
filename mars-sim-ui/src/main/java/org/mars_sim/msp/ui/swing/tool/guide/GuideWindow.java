@@ -130,9 +130,10 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
 		topPanel.add(linkPanel, BorderLayout.EAST);
 		
 //		link = new WebLink(StyleId.linkShadow, new SvgIcon("github19"), WIKI_TEXT, new UrlLinkAction(WIKI_URL));
-		link = new WebLink(StyleId.linkShadow, new UrlLinkAction(WIKI_URL));
+//		link = new WebLink(StyleId.linkShadow, new UrlLinkAction(WIKI_URL));
+		link = new WebLink(StyleId.linkShadow, WIKI_TEXT, new UrlLinkAction(WIKI_URL));
 		link.setAlignmentY(1f);
-		link.setText(WIKI_TEXT);
+//		link.setText(WIKI_TEXT);
 //		link.setIcon(new SvgIcon("github.svg")); // github19
 		TooltipManager.setTooltip(link, "Open mars-sim wiki in GitHub", TooltipWay.down);
 		linkPanel.add(link);
