@@ -93,13 +93,17 @@ public class ResourceUtil implements Serializable {
 	public static final String SESAME_OIL = "sesame oil";
 	public static final String PEANUT_OIL = "peanut oil";
 	public static final String RICE_BRAN_OIL = "rice bran oil";
-
+	public static final String FISH_OIL = "fish oil";
+	
 	public static final String TOILET_TISSUE = "toilet tissue";
 	
 	public static final String SOYMILK = "soymilk";
 	
 	public static final String LEAVES = "leaves";
 
+	public static final String FISH_MEAT = "fish meat";
+
+	
 	// Data members.
 	// private Set<AmountResource> resources;// = new TreeSet<AmountResource>();
 	private static Map<String, AmountResource> amountResourceMap;
@@ -160,7 +164,8 @@ public class ResourceUtil implements Serializable {
 	public static int sesameOilID;
 	public static int peanutOilID;
 	public static int riceBranOilID;
-
+	public static int fishOilID;
+	
 	public static int epsomSaltID;
 	public static int tableSaltID;
 	public static int rockSaltID;
@@ -172,6 +177,8 @@ public class ResourceUtil implements Serializable {
 	public static int[] mineralIDs = new int[MINERALS.length];
 	
 	public static int[] oreDepositIDs = new int[ORE_DEPOSITS.length];
+	
+	public static int fishMeatID;
 	
 	public static AmountResource foodAR;
 	public static AmountResource oxygenAR;
@@ -414,7 +421,8 @@ public class ResourceUtil implements Serializable {
 		garlicOilID = findAmountResource(GARLIC_OIL).getID(); // 41
 		sesameOilID = findAmountResource(SESAME_OIL).getID(); // 53
 		peanutOilID = findAmountResource(PEANUT_OIL).getID(); // 46
-		riceBranOilID = findAmountResource(RICE_BRAN_OIL).getID(); // 46
+		riceBranOilID = findAmountResource(RICE_BRAN_OIL).getID(); // 
+		fishOilID = findAmountResource(FISH_OIL).getID(); // 
 		
 		tableSaltID = findAmountResource(TABLE_SALT).getID(); // 23
 		rockSaltID = findAmountResource(ROCK_SALT).getID(); // 
@@ -433,6 +441,8 @@ public class ResourceUtil implements Serializable {
 			oreDepositIDs[i] = findIDbyAmountResourceName(ORE_DEPOSITS[i]);
 		}
 		
+		fishMeatID = findAmountResource(FISH_MEAT).getID(); // 
+
 		
 		// AmountResource instances as objects
 		foodAR = findAmountResource(LifeSupportInterface.FOOD); // 1

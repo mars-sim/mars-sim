@@ -781,15 +781,15 @@
 		</outputs>
 	</process>
 
-	<process name="Process fish Oil from fish meats"
-		tech="2" skill="2" work-time="50" process-time="400"
-			power-required="2.0">
+	<process name="Process fish oil from fish meat"
+		tech="1" skill="1" work-time="50" process-time="50"
+			power-required="0.2">
 
 		<description>Derive fish oil from fish meats. Press and refine it
 			for use </description>
 
 		<inputs>
-			<resource name="fish meats" amount="1.0" />
+			<resource name="fish meat" amount="1.0" />
 		</inputs>
 		<outputs>
 			<resource name="fish oil" amount="0.25" />
