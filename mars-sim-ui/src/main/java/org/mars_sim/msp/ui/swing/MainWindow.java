@@ -447,7 +447,7 @@ extends JComponent {
 //		statusBar.addRightComponent(memMaxLabel, false, true);
 		
 		bottomPane.add(statusBar, BorderLayout.SOUTH);
-		logger.config("Done with init()");
+//		logger.config("Done with init()");
 	}
 
 	/**

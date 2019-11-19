@@ -146,7 +146,7 @@ public class Organism
    *   <CODE>expire</CODE> is activated to set both size and growth rate to 
    *   zero.
    **/
-   public void simulateWeek( )
+   public void growPerFrame( )
    {
       alterSize(rate);
    }

@@ -2018,8 +2018,10 @@ public abstract class Vehicle extends Unit
 				result = true;
 			} else if (vehicle.haveStatusType(StatusType.TOWED)) {
 				Vehicle towingVehicle = vehicle.getTowingVehicle();
-				if (towingVehicle.haveStatusType(StatusType.MOVING) || towingVehicle.haveStatusType(StatusType.TOWING)) {
-					result = false;
+				if (towingVehicle != null 
+						&& (towingVehicle.haveStatusType(StatusType.MOVING) 
+						|| towingVehicle.haveStatusType(StatusType.TOWING))) {
+					result = true;
 				}
 			}
 		}

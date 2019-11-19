@@ -6,6 +6,8 @@ package org.mars_sim.msp.core.structure.building.function.farming;
 //import edu.colorado.simulations.*; // Provides Organism, Plant, Herbivore classes
 import java.util.Vector;
 
+import org.mars_sim.msp.core.tool.RandomUtil;
+
 /******************************************************************************
 * The <CODE>PondLife</CODE> Java application runs a simple simulation that
 * models the fish and weeds in a pond.
@@ -40,6 +42,13 @@ import java.util.Vector;
 * @see edu.colorado.simulations.Herbivore
 ******************************************************************************/
 public class PondLife {
+	
+	// Convert from kg to ounce
+	public static final double KG_PER_OUNCE = 0.02834952;
+	
+	// Convert from ounce to kg
+	public static final double OUNCE_PER_KG = 35.27396195;
+	
 	// Number of weeds in the pond
 	public static final int MANY_WEEDS = 2000;
 	
@@ -67,7 +76,7 @@ public class PondLife {
 	public static final double BIRTH_RATE = 0.05;
 	
 	// Number of weeks to simulate
-	public static final int MANY_WEEKS  = 38; 
+	public static final int MANY_WEEKS  = 500; 
 	
 	
 	/**
@@ -77,18 +86,22 @@ public class PondLife {
 	**/                                                    
 	public static void main(String[ ] args)   
 	{
-	    Vector<Herbivore> fish = new Vector<Herbivore>(INIT_FISH);   // A Vector of our fish
-	    Vector<Plant> weeds = new Vector<Plant>(MANY_WEEDS); // A Vector of our weeds
+	    int numFish = (int)(RandomUtil.getRandomDouble(1.0) * INIT_FISH);
+	    int numWeeds = (int)(RandomUtil.getRandomDouble(1.0) * MANY_WEEDS);
+	    
+		Vector<Herbivore> fish = new Vector<Herbivore>(numFish);   // A Vector of our fish
+	    Vector<Plant> weeds = new Vector<Plant>(numWeeds); // A Vector of our weeds
 	    int i;                                 // Loop control variable
 	
+	    		
 	    // Initialize the bags of fish and weeds
-	    for (i = 0; i < INIT_FISH; i++)
+	    for (i = 0; i < numFish; i++)
 	       fish.addElement(new Herbivore(FISH_SIZE, 0, FISH_SIZE * FRACTION));
-	    for (i = 0; i < MANY_WEEDS; i++)
+	    for (i = 0; i < numWeeds; i++)
 	       weeds.addElement(new Plant(WEED_SIZE, WEED_RATE));
 	
 	    System.out.println("Week \tNumber \tPlant Mass");
-	    System.out.println("     \tof     \t(in ounces)");
+	    System.out.println("     \tof     \t(in kg)");
 	    System.out.println("     \tFish");
 	
 	    // Simulate the weeks
@@ -97,7 +110,7 @@ public class PondLife {
 	       pondWeek(fish, weeds);
 	       System.out.print(i + "\t");
 	       System.out.print(fish.size( ) + "\t");
-	       System.out.print((int) totalMass(weeds) + "\n");
+	       System.out.print(Math.round(totalMass(weeds)/ OUNCE_PER_KG * 100.0)/100.0 + "\n");
 	    }
 	}
 	
@@ -122,9 +135,9 @@ public class PondLife {
 	   manyIterations = AVERAGE_NIBBLES * fish.size( );
 	   for (i = 0; i < manyIterations; i++)
 	   {
-	      index = (int) (Math.random( ) * fish.size( ));
+	      index = (int) (RandomUtil.getRandomDouble(1.0) * fish.size( ));
 	      nextFish = fish.elementAt(index);
-	      index = (int) (Math.random( ) * weeds.size( ));
+	      index = (int) (RandomUtil.getRandomDouble(1.0) * weeds.size( ));
 	      nextWeed = weeds.elementAt(index);
 	      nextFish.nibble(nextWeed);
 	   }
@@ -134,7 +147,7 @@ public class PondLife {
 	   while (i < fish.size( ))
 	   {
 	      nextFish = fish.elementAt(i);
-	      nextFish.simulateWeek( );
+	      nextFish.growPerFrame( );
 	      if (nextFish.isAlive( ))
 	         i++;
 	      else
@@ -145,11 +158,11 @@ public class PondLife {
 	   for (i = 0; i <weeds.size( ); i++)
 	   {
 	      nextWeed = weeds.elementAt(i);
-	      nextWeed.simulateWeek( );
+	      nextWeed.growPerFrame( );
 	   }
 	
 	   // Create some new fish, according to the BIRTH_RATE constant
-	   manyIterations = (int) (BIRTH_RATE * fish.size( ));
+	   manyIterations = (int) (BIRTH_RATE * fish.size() * RandomUtil.getRandomDouble(2.0));
 	   for (i = 0; i < manyIterations; i++)
 	       fish.addElement(new Herbivore(FISH_SIZE, 0, FISH_SIZE * FRACTION));
 	}

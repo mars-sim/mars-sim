@@ -30,16 +30,12 @@ import org.mars_sim.msp.ui.swing.HTMLContentPane;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
 
-import com.alee.api.data.CompassDirection;
-import com.alee.extended.behavior.ComponentResizeBehavior;
 import com.alee.extended.canvas.WebCanvas;
 import com.alee.extended.label.WebStyledLabel;
 import com.alee.extended.link.UrlLinkAction;
 import com.alee.extended.link.WebLink;
 import com.alee.extended.statusbar.WebStatusBar;
-import com.alee.extended.svg.SvgIcon;
 import com.alee.laf.button.WebButton;
-import com.alee.laf.label.WebLabel;
 import com.alee.managers.style.StyleId;
 import com.alee.managers.tooltip.TooltipManager;
 import com.alee.managers.tooltip.TooltipWay;
@@ -130,10 +126,10 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
 		topPanel.add(linkPanel, BorderLayout.EAST);
 		
 //		link = new WebLink(StyleId.linkShadow, new SvgIcon("github19"), WIKI_TEXT, new UrlLinkAction(WIKI_URL));
-//		link = new WebLink(StyleId.linkShadow, new UrlLinkAction(WIKI_URL));
-		link = new WebLink(StyleId.linkShadow, WIKI_TEXT, new UrlLinkAction(WIKI_URL));
+		link = new WebLink(StyleId.linkShadow, new UrlLinkAction(WIKI_URL));
+//		link = new WebLink(StyleId.linkShadow, WIKI_TEXT, new UrlLinkAction(WIKI_URL));
 		link.setAlignmentY(1f);
-//		link.setText(WIKI_TEXT);
+		link.setText(WIKI_TEXT);
 //		link.setIcon(new SvgIcon("github.svg")); // github19
 		TooltipManager.setTooltip(link, "Open mars-sim wiki in GitHub", TooltipWay.down);
 		linkPanel.add(link);

@@ -22,21 +22,24 @@ package org.mars_sim.msp.core.structure.building.function.farming;
 * @see Herbivore
 * @see Plant
 ******************************************************************************/
-public class Animal extends Organism
-{ 
-   private double needEachWeek;  // Amount of food needed (in ounces per week)
-   private double eatenThisWeek; // Ounces of food eaten so far this week
+public class Animal extends Organism { 
+	
+   // The period of time a fish can survive without eating
+   public static final double ONE_SOL = 1000;
+   private double needEachFrame;  // Amount of food needed (in ounces per frame)
+   private double eatenThisFrame; // Ounces of food eaten so far this frame
+   private double totalTime; // The cumulative amount of time
 
    /**
    * Construct an <CODE>Animal</CODE> with a specified size, growth rate, and
-   * weekly eating need.
+   * eating need.
    * @param initSize
    *   the initial size of this <CODE>Animal</CODE>, in ounces
    * @param initRate
    *   the initial growth rate of this <CODE>Animal</CODE>, in ounces
    * @param initNeed
-   *   the initial weekly eating requirement of this <CODE>Animal</CODE>, in
-   *   ounces per week
+   *   the initial eating requirement of this <CODE>Animal</CODE>, in
+   *   ounces per frame
    * <b>Precondition:</b>
    *   <CODE>initSize &gt;= 0</CODE> and <CODE>initNeed &gt;= 0</CODE>.
    *   Also, if <CODE>initSize</CODE> is zero, then
@@ -46,7 +49,7 @@ public class Animal extends Organism
    *   <CODE>getSize()</CODE> is now <CODE>initSize</CODE>, the value
    *   returned from <CODE>getRate()</CODE> is now <CODE>initRate</CODE>, and
    *   this <CODE>Animal</CODE> must eat at least <CODE>initNeed</CODE> ounces
-   *   of food each week to survive.
+   *   of food each frame to survive.
    * @exception IllegalArgumentException
    *   Indicates that <CODE>initSize</CODE>, <CODE>initRate</CODE>, or  
    *   <CODE>initNeed</CODE> violates the precondition.
@@ -56,8 +59,8 @@ public class Animal extends Organism
       super(initSize, initRate);
       if (initNeed < 0)
          throw new IllegalArgumentException("initNeed is negative");
-      needEachWeek = initNeed;
-      // eatenThisWeek will be given its default value of zero.
+      needEachFrame = initNeed;
+      // eatenThisFrame will be given its default value of zero.
    }
 
    
@@ -69,7 +72,7 @@ public class Animal extends Organism
    *    <CODE>amount &gt;= 0.</CODE>
    *  <b>Postcondition:</b>
    *    The given amount (in ounces) has been added to the amount of food that
-   *    this <CODE>Animal</CODE> has eaten this week.
+   *    this <CODE>Animal</CODE> has eaten this frame.
    *  throw IllegalArgumentException
    *    Indicates that <CODE>amount</CODE> is negative.
    **/
@@ -77,31 +80,31 @@ public class Animal extends Organism
    {
        if(amount < 0)
          throw new IllegalArgumentException("amount is negative");
-       eatenThisWeek += amount;
+       eatenThisFrame += amount;
    }
 
 
    /**
    * Determine the amount of food that this <CODE>Animal</CODE> needs each
-   * week.
+   * frame.
    * @return
    *   the total amount of food that this <CODE>Animal</CODE> needs to survive
-   *   one week (measured in ounces)
+   *   one frame (measured in ounces)
    **/
    public double getNeed( )   
    {
-      return needEachWeek;
+      return needEachFrame;
    }
 
    
    /**
-   * Set the current growth weekly food requirement of this <CODE>Animal</CODE>.
+   * Set the current growth food requirement of this <CODE>Animal</CODE>.
    * @param newNeed
-   *   the new weekly food requirement for this <CODE>Animal</CODE> (in ounces)
+   *   the new food requirement for this <CODE>Animal</CODE> (in ounces)
    * <b>Precondition:</b>
    *   <CODE>newNeed &gt;= 0.</CODE>
    * <b>Postcondition:</b>
-   *   The weekly food requirement for this <CODE>Animal</CODE> has been set to
+   *   The food requirement for this <CODE>Animal</CODE> has been set to
    *   <CODE>newNeed</CODE>.
    * @exception IllegalArgumentException
    *   Indicates that <CODE>newNeed</CODE> is negative.
@@ -110,41 +113,46 @@ public class Animal extends Organism
    {
        if(newNeed < 0)
          throw new IllegalArgumentException("newNeed is negative");
-       needEachWeek = newNeed;
+       needEachFrame = newNeed;
    }
    
    
    /**
-   * Simulate the passage of one week in the life of this <CODE>Animal</CODE>.
+   * Simulate the passage in the life of this <CODE>Animal</CODE>.
    * <b>Postcondition:</b>
    *   The size of this <CODE>Animal</CODE> has been changed by its current 
    *   growth rate. If the new size is less than or equal to zero, then 
    *   <CODE>expire</CODE> is activated to set both size and growth rate to 
    *   zero. Also, if this <CODE>Animal</CODE> has eaten less than its need 
-   *   over the past week, then <CODE>expire</CODE> has been activated.
+   *   over the past frame, then <CODE>expire</CODE> has been activated.
    **/
-   public void simulateWeek( ) 
+   public void growPerFrame(double time) 
    {
-      super.simulateWeek( );
-      if (eatenThisWeek < needEachWeek)
-         expire( );
-      eatenThisWeek = 0;
+      super.growPerFrame( );
+      totalTime += time;
+      // For each day
+      if (totalTime > ONE_SOL && eatenThisFrame < needEachFrame) {
+         totalTime = totalTime - ONE_SOL;
+    	 expire( );
+         eatenThisFrame = 0;
+      }
+ 
    }
 
 
    /**
    * Determine the amount of food that this <CODE>Animal</CODE> still needs to
-   * survive this week.
+   * survive this frame.
    * @return
    *   the ounces of food that this <CODE>Animal</CODE> still needs to survive 
-   *   this week (which is the total need minus the amount eaten so far).
+   *   this frame (which is the total need minus the amount eaten so far).
    **/
    public double stillNeed( )
    {
-      if (eatenThisWeek >= needEachWeek)
+      if (eatenThisFrame >= needEachFrame)
          return 0;
       else
-         return needEachWeek - eatenThisWeek;
+         return needEachFrame - eatenThisFrame;
    }
    
 }

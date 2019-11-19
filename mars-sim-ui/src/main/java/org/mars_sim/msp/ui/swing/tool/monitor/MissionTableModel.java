@@ -249,28 +249,31 @@ public class MissionTableModel extends AbstractTableModel
 	 * @param event the mission event.
 	 */
 	public void missionUpdate(MissionEvent event) {
-		MissionEventType eventType = event.getType();
-		Mission mission = (Mission) event.getSource();
-
-		if (mission != null) {
-			List<Mission> list = missionManager.getMissions();
-			int numMissions = list.size();
-			int index = missionCache.indexOf(mission);
-			if (index <= -1 
-					|| index < missionCache.size()
-					|| missionCache.size() != numMissions
-					|| (!missionCache.contains(mission)
-							&& list.contains(mission))
-//					|| !missionCache.equals(missionManager.getMissions()) {	
-					){
-				// Update the missionCache
-				missionCache = missionManager.getMissions();
-			}
+		int index = missionCache.indexOf(event.getSource());
+		
+//		MissionEventType eventType = event.getType();
+//		Mission mission = (Mission) event.getSource();
+//
+//		if (mission != null) {
+//			List<Mission> list = missionManager.getMissions();
+//			int numMissions = list.size();
+//			int index = missionCache.indexOf(mission);
+//			if (index <= -1 
+//					|| index < missionCache.size()
+//					|| missionCache.size() != numMissions
+//					|| (!missionCache.contains(mission)
+//							&& list.contains(mission))
+////					|| !missionCache.equals(missionManager.getMissions()) {	
+//					){
+//				// Update the missionCache
+//				missionCache = missionManager.getMissions();
+//			}
 
 			if ((index > -1) && (index < missionCache.size())) {
+				MissionEventType eventType = event.getType();
 				
 				int column0 = -1;
-						
+				
 				if (eventType == MissionEventType.VEHICLE_EVENT)
 					column0 = VEHICLE;
 				else if (eventType == MissionEventType.STARTING_SETTLEMENT_EVENT)
@@ -290,7 +293,7 @@ public class MissionTableModel extends AbstractTableModel
 				if (column0 > -1)
 					SwingUtilities.invokeLater(new MissionTableCellUpdater(index, column0));
 			
-				if (mission instanceof VehicleMission) {
+				if (event.getSource() instanceof VehicleMission) {
 					
 					int column1 = -1;
 					int column2 = -1;
@@ -306,9 +309,10 @@ public class MissionTableModel extends AbstractTableModel
 					
 					if (eventType == MissionEventType.NAVPOINTS_EVENT)
 						column4 = NAVPOINT_NUM;
+									
 					if (eventType == MissionEventType.PHASE_EVENT
 							|| eventType == MissionEventType.PHASE_DESCRIPTION_EVENT)
-	//						|| eventType == MissionEventType.END_MISSION_EVENT)
+//							|| eventType == MissionEventType.END_MISSION_EVENT)
 						column5 = PHASE;
 					
 					if (column1 > -1)
@@ -323,7 +327,10 @@ public class MissionTableModel extends AbstractTableModel
 						SwingUtilities.invokeLater(new MissionTableCellUpdater(index, column5));
 				}
 			}
-		}
+			else 
+				// Update the missionCache
+				missionCache = missionManager.getMissions();
+//		}
 	}
 
 	public int getRowCount() {

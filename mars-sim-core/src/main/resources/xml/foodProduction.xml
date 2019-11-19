@@ -113,6 +113,7 @@
 		</outputs>
 	</process>
 
+
 	<process name="Package Quinoa into Granola Bar"
 			tech="1" skill="0"
 			work-time="50"
@@ -780,6 +781,20 @@
 		</outputs>
 	</process>
 
+	<process name="Process fish Oil from fish meats"
+		tech="2" skill="2" work-time="50" process-time="400"
+			power-required="2.0">
+
+		<description>Derive fish oil from fish meats. Press and refine it
+			for use </description>
+
+		<inputs>
+			<resource name="fish meats" amount="1.0" />
+		</inputs>
+		<outputs>
+			<resource name="fish oil" amount="0.25" />
+		</outputs>
+	</process>
 
 
 </foodProduction-processes>

@@ -833,6 +833,7 @@ public class MissionManager implements Serializable {
 							// Do NOT remove this on-going mission from the current mission list
 //							removeMission(mp.getMission());
 						}
+						mp.getMission().fireMissionUpdate(MissionEventType.PHASE_EVENT, mp.getMission().getPhaseDescription());
 					}
 					return;
 				}
@@ -857,20 +858,20 @@ public class MissionManager implements Serializable {
 					double percent = mp.getPercentComplete();
 					
 					if (role == RoleType.COMMANDER)
-						weight = 4D;
+						weight = 2.5;
 					else if (role == RoleType.SUB_COMMANDER
 							|| role == RoleType.CHIEF_OF_MISSION_PLANNING)
-						weight = 3D;
+						weight = 2D;
 					else if (role == RoleType.CHIEF_OF_AGRICULTURE
 							|| role == RoleType.CHIEF_OF_ENGINEERING
 							|| role == RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS
 							|| role == RoleType.CHIEF_OF_SAFETY_N_HEALTH
 							|| role == RoleType.CHIEF_OF_SCIENCE
 							|| role == RoleType.CHIEF_OF_SUPPLY_N_RESOURCES
-							)
-						weight = 2D;
-					else if (role == RoleType.MISSION_SPECIALIST)
+							|| role == RoleType.MISSION_SPECIALIST)
 						weight = 1.5;
+					else
+						weight = 1;
 					double totalPercent = percent + weight * PERCENT_PER_SCORE;
 					if (totalPercent > 100)
 						totalPercent = 100;

@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Vector;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -76,8 +77,34 @@ public class Farming extends Function implements Serializable {
 	public static final double O2_RATE = .75;
 	public static final double MIN  = .00001D;// 0.0000000001;
 
+	// Convert from kg to ounce
+	public static final double KG_PER_OUNCE = 0.02834952;
+	// Convert from ounce to kg
+	public static final double OUNCE_PER_KG = 35.27396195;
+	// Initial size of each weed, in ounces 
+	public static final double WEED_SIZE = 15;
+	// Growth rate of weeds, in ounces/millisols  
+	public static final double WEED_RATE = 0.000357;
+	// Fish size, in ounces 
+	public static final double FISH_SIZE = 50; 
+	// A fish must eat FRACTION times its size during a frame, or it will die.
+	public static final double FRACTION = 0.4;
+	// At the end of each millisol, some fish have babies. The total number of new
+	// fish born is the current number of fish times the BIRTH_RATE 
+	// (rounded down to an integer).
+	public static final double BIRTH_RATE = 0.000008;
+	
+	// Number of inspections
 	private static final int NUM_INSPECTIONS = 2;
+	// Number of cleaning
 	private static final int NUM_CLEANING = 2;
+	
+	// Number of weeds in the pond
+	public static final int MANY_WEEDS = 120;
+	// Initial number of fish in the pond 
+	public static final int INIT_FISH = 6;
+	// Average number of weeds nibbled by a fish per frame
+	public static final double AVERAGE_NIBBLES = 0.005;
 	
 //	 private static ItemResource LED_Item;
 //	 private static ItemResource HPS_Item;
@@ -108,7 +135,11 @@ public class Farming extends Function implements Serializable {
 	private double o2 = 0;
 	/** The amount of CO2 consumed in the greenhouse */
 	private double cO2 = 0;
-
+	/** The amount iteration for birthing fish */
+	private double birthIterationCache;
+	/** The amount iteration for nibbling weed */
+	private double nibbleIterationCache;
+	
 	private String cropInQueue;
 
 	/** List of crop types in queue */
@@ -136,6 +167,11 @@ public class Farming extends Function implements Serializable {
 	/** The daily water usage in this facility [kg/sol]. */
 	private Map<Integer, Double> dailyWaterUsage;
 	
+	/** A Vector of our fish. */
+	private Vector<Herbivore> fish;   
+	/** A Vector of our weeds. */
+	private Vector<Plant> weeds;
+    
 	private Building building;
 	private Research lab;
 
@@ -202,6 +238,37 @@ public class Farming extends Function implements Serializable {
 		// Create BeeGrowing
 		// TODO: write codes to incorporate the idea of bee growing
 		// beeGrowing = new BeeGrowing(this);
+		
+		createFishAquarium();
+	}
+	
+	/**
+	 * Create fish and weeds
+	 */
+	public void createFishAquarium() {	
+	    int numFish = 0;
+	    int numWeeds = 0;
+	    if ("Inflatable Greenhouse".equalsIgnoreCase(building.getBuildingType())) {
+	    	numFish = 1 + (int)((1 + .01 * RandomUtil.getRandomInt(-10, 10)) * INIT_FISH);
+		    numWeeds = (int)((numFish * 30 + MANY_WEEDS)/2);
+	    }
+	    else {//if ("Large Greenhouse".equals(building.getBuildingType())) 
+	    	numFish = 1 + (int)((1 + .01 * RandomUtil.getRandomInt(-10, 10)) * INIT_FISH * 5);
+		    numWeeds = (int)((numFish * 30 + MANY_WEEDS * 5)/2);
+	    }
+	        
+		fish = new Vector<Herbivore>(numFish);
+	    weeds = new Vector<Plant>(numWeeds);
+	    
+	    int i;
+	    // Initialize the bags of fish and weeds
+	    for (i = 0; i < numFish; i++)
+	       fish.addElement(new Herbivore(FISH_SIZE, 0, FISH_SIZE * FRACTION));
+	    for (i = 0; i < numWeeds; i++)
+	       weeds.addElement(new Plant(WEED_SIZE, WEED_RATE));
+
+//	    System.out.print(building.getNickName() + " - # of fish : " + fish.size( ));
+//	    System.out.println("   Amount of weeds : " + Math.round(totalMass(weeds)/ OUNCE_PER_KG * 100.0)/100.0 + " kg");
 	}
 
 	/**
@@ -810,10 +877,16 @@ public class Farming extends Function implements Serializable {
 	 */
 	public void timePassing(double time) {
 
+	    // Account for fish and weeds
+	    simulatePond(fish, weeds, time);
+
 		// check for the passing of each day
 		int solElapsed = marsClock.getMissionSol();
 		if (solCache != solElapsed) {
 			solCache = solElapsed;
+		    
+//		    System.out.print(building.getNickName() + " - # of fish : " + fish.size( ));
+//		    System.out.println("   Amount of weeds : " + Math.round(totalMass(weeds)/ OUNCE_PER_KG * 100.0)/100.0 + " kg");
 
 			for (String s : cleaningMap.keySet()) {
 				cleaningMap.put(s, 0);
@@ -825,7 +898,7 @@ public class Farming extends Function implements Serializable {
 			// Limit the size of the dailyWaterUsage to x key value pairs
 			if (dailyWaterUsage.size() > MAX_NUM_SOLS)
 				dailyWaterUsage.remove(solElapsed - MAX_NUM_SOLS);
-			
+
 			// TODO: will need to limit the size of the other usage maps
 		}
 
@@ -869,6 +942,100 @@ public class Farming extends Function implements Serializable {
 		// beeGrowing.timePassing(time);
 
 	}
+	
+	/**
+	* Simulate life in the pond, using the values indicated in the
+	* documentation.
+	* @param fish
+	*   Vector of fish
+	* @param weeds
+	*   Vector of weeds
+	* @param time
+	**/
+	public void simulatePond(Vector<Herbivore> fish, Vector<Plant> weeds, double time) {
+	   int i;
+	   int manyIterations;
+	   int index;
+	   Herbivore nextFish;
+	   Plant nextWeed;
+	
+	   int numFish = fish.size();
+	   int numWeeds = weeds.size();
+	   // Have randomly selected fish nibble on randomly selected plants
+	   nibbleIterationCache += AVERAGE_NIBBLES * time * numFish;
+	   
+	   if (nibbleIterationCache > numFish) {
+		   manyIterations = (int)nibbleIterationCache;
+		   if (manyIterations > numFish * 3)
+			   manyIterations = numFish * 3;
+		   if (manyIterations < numFish)
+			   manyIterations = numFish;
+		   if (manyIterations > numWeeds)
+			   manyIterations = numWeeds;
+		   nibbleIterationCache = nibbleIterationCache - manyIterations;
+//		   System.out.println("time: " + Math.round(time*100.0)/100.0 
+//				   + "   nibbleIterationCache : " + Math.round(nibbleIterationCache*100.0)/100.0
+//				   + "   manyIterations : " + Math.round(manyIterations*100.0)/100.0
+//				   );
+		   for (i = 0; i < manyIterations; i++) {
+			   index = RandomUtil.getRandomInt(numFish-1);// (int) (RandomUtil.getRandomDouble(1.0) * fish.size()); //
+			   nextFish = fish.elementAt(index);
+			   index = RandomUtil.getRandomInt(numWeeds-1);// (int) (RandomUtil.getRandomDouble(1.0) * weeds.size()); //
+			   nextWeed = weeds.elementAt(index);
+			   nextFish.nibble(nextWeed);
+		   } 
+		   
+		   // Simulate the fish
+		   i = 0;
+		   while (i < fish.size()) {
+		      nextFish = fish.elementAt(i);
+		      nextFish.growPerFrame();
+		      if (nextFish.isAlive())
+		         i++;
+		      else
+		         fish.removeElementAt(i);
+		   }
+		
+		   // Simulate the weeds
+		   for (i = 0; i < weeds.size(); i++) {
+		      nextWeed = weeds.elementAt(i);
+		      nextWeed.growPerFrame();
+		   }
+	   }
+	
+	   // Create some new fish, according to the BIRTH_RATE constant
+	   birthIterationCache += BIRTH_RATE * time * fish.size() * (1 + .01 * RandomUtil.getRandomInt(-10, 10));
+	   if (birthIterationCache > 1) {
+		   manyIterations = (int)birthIterationCache;
+		   birthIterationCache = birthIterationCache - manyIterations;
+		   for (i = 0; i < manyIterations; i++)
+		       fish.addElement(new Herbivore(FISH_SIZE, 0, FISH_SIZE * FRACTION));
+	   }
+	}
+	
+	
+	/**
+	* Calculate the total mass of a collection of <CODE>Organism</CODE>s.
+	* @param organisms
+	*   a <CODE>Vector</CODE> of <CODE>Organism</CODE> objects
+	* @param <T>
+	*   component type of the elements in the organisms Vector
+	* <b>Precondition:</b>
+	*   Every object in <CODE>organisms</CODE> is an <CODE>Organism</CODE>.
+	* @return
+	*   the total mass of all the objects in <CODE>Organism</CODE> (in ounces).
+	**/
+	public static <T extends Organism> double totalMass(Vector<T> organisms) {
+	   double answer = 0;
+	   
+	   for (Organism next : organisms)
+	   {
+	      if (next != null)
+	         answer += next.getSize( );
+	   }
+	   return answer;
+	}
+
 
 	public void transferSeedling(double time, Person p) {
 			
@@ -1512,6 +1679,14 @@ public class Farming extends Function implements Serializable {
 
 	public int getNumCrops2Plant() {
 		return numCrops2Plant;
+	}
+	
+	public int getNumFish() {
+		return fish.size();
+	}
+	
+	public double getWeedMass() {
+		return Math.round(totalMass(weeds)/ OUNCE_PER_KG * 100.0)/100.0;
 	}
 	
 	public boolean retrieve(double amount, int resource, boolean value) {
