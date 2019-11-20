@@ -4,6 +4,8 @@
 
 package org.mars_sim.msp.core.structure.building.function.farming;
 
+import java.io.Serializable;
+
 /******************************************************************************
 * An <CODE>Organism</CODE> object simulates a growing organism such as a
 * plant or animal.
@@ -21,8 +23,11 @@ package org.mars_sim.msp.core.structure.building.function.farming;
 * @see Animal
 * @see Plant
 ******************************************************************************/
-public class Organism
-{   
+public class Organism implements Serializable {
+	
+	/** default serial id. */
+    private static final long serialVersionUID = 1L;
+    
    private double size;  // The current size of this Organism, in ounces
    private double rate;  // The current growth rate , in ounces per week
    

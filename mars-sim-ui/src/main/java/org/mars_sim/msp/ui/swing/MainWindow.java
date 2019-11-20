@@ -168,7 +168,7 @@ extends JComponent {
 	 * @param cleanUI true if window should display a clean UI.
 	 */
 	public MainWindow(boolean cleanUI) {
-		logger.config("MainWindow is on " + Thread.currentThread().getName() + " Thread");
+//		logger.config("MainWindow is on " + Thread.currentThread().getName() + " Thread");
 		// this.cleanUI = cleanUI;
 		// Set up the look and feel library to be used
 		initializeTheme();

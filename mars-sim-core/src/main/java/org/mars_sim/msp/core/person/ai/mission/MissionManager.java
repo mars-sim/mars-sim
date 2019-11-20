@@ -17,6 +17,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.meta.MetaMission;
 import org.mars_sim.msp.core.person.ai.mission.meta.MetaMissionUtil;
@@ -826,14 +827,16 @@ public class MissionManager implements Serializable {
 						if (newStatus == PlanType.APPROVED) {
 							mp.setStatus(PlanType.APPROVED);
 							mp.getMission().setApproval(true);
+//							mp.getMission().setPhase();
 						}
 						else if (newStatus == PlanType.NOT_APPROVED) {
 							mp.setStatus(PlanType.NOT_APPROVED);
 							mp.getMission().setApproval(false);
+//							mp.getMission().setPhase();
 							// Do NOT remove this on-going mission from the current mission list
 //							removeMission(mp.getMission());
 						}
-						mp.getMission().fireMissionUpdate(MissionEventType.PHASE_EVENT, mp.getMission().getPhaseDescription());
+//						mp.getMission().fireMissionUpdate(MissionEventType.PHASE_EVENT, mp.getMission().getPhaseDescription());
 					}
 					return;
 				}
@@ -882,7 +885,8 @@ public class MissionManager implements Serializable {
 							+ " mission plan - current score : " + Math.round(mp.getScore()*10.0)/10.0 
 							+ " (" + mp.getPercentComplete() + "% review completed)");
 					mp.setReviewedBy(reviewer.getName());
-					mp.getMission().fireMissionUpdate(MissionEventType.PHASE_DESCRIPTION_EVENT, mp.getMission().getPhaseDescription());
+					mp.getMission().setPhaseDescription(mp.getMission().getPhaseDescription());
+//					mp.getMission().fireMissionUpdate(MissionEventType.PHASE_DESCRIPTION_EVENT, mp.getMission().getPhaseDescription());
 					break;
 				}
 			}

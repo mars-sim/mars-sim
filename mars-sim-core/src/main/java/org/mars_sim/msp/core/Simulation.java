@@ -458,7 +458,7 @@ public class Simulation implements ClockListener, Serializable {
 	 * Initialize intransient data in the simulation.
 	 */
 	private void initializeIntransientData(int timeRatio, boolean loadSaveSim) {
-		logger.config("initializeIntransientData() is on " + Thread.currentThread().getName());
+//		logger.config("initializeIntransientData() is on " + Thread.currentThread().getName());
 		// Initialize resources
 		ResourceUtil.getInstance();
 		
@@ -731,9 +731,8 @@ public class Simulation implements ClockListener, Serializable {
     /**
      * Deserialize to Object from given file.
      */
-    public void deserialize(File file) throws IOException,
-            ClassNotFoundException {
-		logger.config("deserialize() is on " + Thread.currentThread().getName());
+    public void deserialize(File file) throws IOException, ClassNotFoundException {
+//		logger.config("deserialize() is on " + Thread.currentThread().getName());
 		
 //		byte[] buf = new byte[8192];
 		FileInputStream in = null;

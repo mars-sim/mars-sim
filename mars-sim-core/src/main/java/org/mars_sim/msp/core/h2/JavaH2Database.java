@@ -13,7 +13,7 @@ public class JavaH2Database
 {
  
 	private static final String DATABASE_DRIVER = "org.h2.Driver";
-    private static final String DATABASE_CONNECTION = "jdbc:h2:./mars-sim;IFEXISTS=TRUE";//;DB_CLOSE_DELAY=-1";
+    private static final String DATABASE_CONNECTION = "jdbc:h2:./mars-sim";//IFEXISTS=TRUE";//;DB_CLOSE_DELAY=-1";
      
     private static final String DATABASE_USER = "sa";
     private static final String DATABASE_PASSWORD = "s$cret";
@@ -35,13 +35,15 @@ public class JavaH2Database
   
     	createDatabase();
     	
-//      insertRecordInTableUsingStatement();
+    	insertRecordInTableUsingStatement();
 		
         insertRecordInTableUsingPreparedStatement();
         
         getRecordCount();
         
         printRecord();
+        
+        selectAllUsingPreparedStatement();
     }
     
      
@@ -198,24 +200,56 @@ public class JavaH2Database
 	    }
 	}
 	 
-	  private void printRecord() {
-	        var query = "SELECT * FROM SETTLERS";
-	        
-	        try (var con = DriverManager.getConnection(DATABASE_CONNECTION, DATABASE_USER, DATABASE_PASSWORD);
-	             var st = con.createStatement();
-	             var rs = st.executeQuery(query)
-	            ) {
+	private void printRecord() {
+        var query = "SELECT * FROM SETTLERS";
+        
+        try (var con = DriverManager.getConnection(DATABASE_CONNECTION, DATABASE_USER, DATABASE_PASSWORD);
+             var st = con.createStatement();
+             var rs = st.executeQuery(query)
+            ) {
 
-	            while (rs.next()) {
+            while (rs.next()) {
 
-	                System.out.printf("%d %s %d%n", rs.getInt(1),
-	                        rs.getString(2), rs.getInt(3));
-	            }
-	            
-	        } catch (SQLException ex) {
+                System.out.printf("%d %s %d%n", rs.getInt(1),
+                        rs.getString(2), rs.getInt(3));
+            }
+            
+        } catch (SQLException ex) {
 
-	            var lgr = Logger.getLogger(JavaH2Database.class.getName());
-	            lgr.log(Level.SEVERE, ex.getMessage(), ex);
+            var lgr = Logger.getLogger(JavaH2Database.class.getName());
+            lgr.log(Level.SEVERE, ex.getMessage(), ex);
+        }
+	}
+	
+	//Select all records in the SETTLERS table
+	public static void selectAllUsingPreparedStatement() {
+	    //Create H2 DB Connection Object
+	    Connection connection = getDBConnection();
+	             
+	    PreparedStatement prepStatement;
+	             
+	    try
+	    {
+	        prepStatement = connection.prepareStatement("select * from SETTLERS");    
+	        ResultSet resultSet = prepStatement.executeQuery();
+	         
+	        while (resultSet.next()) 
+	        {
+	            System.out.println("Person ID: "+resultSet.getInt("personid")
+	                             +" \nFirst Name: "+resultSet.getString("firstname")
+	                             +" \nLast Name: "+resultSet.getString("lastname")
+	                             +" \nHometown: "+resultSet.getString("hometown")
+	                             +" \nLocation: "+resultSet.getString("location"));
+	            System.out.println();
 	        }
+	        prepStatement.close();
+	     
 	    }
+	    catch(Exception ex) 
+	    {
+	        System.out.println(ex.toString());
+	    }
+	 
+	}
+	
 }

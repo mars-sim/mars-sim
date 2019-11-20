@@ -383,5 +383,6 @@ implements Serializable {
 
 	@Override
 	public void destroy() {
+		building = null;
 	}
 }

@@ -55,6 +55,7 @@ import com.jidesoft.swing.TableSearchable;
 /**
  * The InventoryTabPanel is a tab panel for displaying inventory information.
  */
+@SuppressWarnings("serial")
 public class InventoryTabPanel extends TabPanel implements ListSelectionListener {
 
 	/** default logger. */
@@ -460,7 +461,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 			if ((row >= 0) && (row < equipment.size())) {
 				if (column == 0) return types.get(names.get(row).getName()) + WHITESPACE;
 				else if (column == 1) return names.get(row) + WHITESPACE;
-				else if (column == 2) return mass.get(names.get(row).getName());
+				else if (column == 2) return Math.round(mass.get(names.get(row).getName())*100.0)/100.0;
 				else if (column == 3) return equipment.get(names.get(row).getName()) + WHITESPACE;
 			}
 			return "unknown";

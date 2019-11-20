@@ -4,6 +4,8 @@
 
 package org.mars_sim.msp.core.structure.building.function.farming;
 
+import java.io.Serializable;
+
 /******************************************************************************
 * An <CODE>Animal</CODE> is an <CODE>Organism</CODE> with extra methods that
 * deal with eating.
@@ -22,8 +24,10 @@ package org.mars_sim.msp.core.structure.building.function.farming;
 * @see Herbivore
 * @see Plant
 ******************************************************************************/
-public class Animal extends Organism { 
+public class Animal extends Organism implements Serializable {
 	
+	/** default serial id. */
+    private static final long serialVersionUID = 1L;
    // The period of time a fish can survive without eating
    public static final double ONE_SOL = 1000;
    private double needEachFrame;  // Amount of food needed (in ounces per frame)

@@ -4,6 +4,8 @@
 
 package org.mars_sim.msp.core.structure.building.function.farming;
 
+import java.io.Serializable;
+
 /******************************************************************************
 * A <CODE>Herbivore</CODE> is an <CODE>Animal</CODE> with extra methods that
 * allow it to eat <CODE>Plant</CODE> objects.
@@ -22,8 +24,11 @@ package org.mars_sim.msp.core.structure.building.function.farming;
 * @see Plant
 ******************************************************************************/
 
-public class Herbivore extends Animal
-{ 
+public class Herbivore extends Animal implements Serializable {
+	
+	/** default serial id. */
+    private static final long serialVersionUID = 1L;
+
    /**
    * Construct an <CODE>Herbivore</CODE> with a specified size, growth rate, and
    * eating need.

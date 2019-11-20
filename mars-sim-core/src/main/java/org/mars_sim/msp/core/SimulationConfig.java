@@ -237,7 +237,7 @@ public class SimulationConfig implements Serializable {
 	 * @throws Exception if error loading or parsing configuration files.
 	 */
 	public void loadConfig() {
-		logger.config("Staring loadConfig() on " + Thread.currentThread().getName());
+//		logger.config("Staring loadConfig() on " + Thread.currentThread().getName());
 		SimulationConfig.instance();
 
 		if (simulationDoc != null) {
@@ -248,7 +248,7 @@ public class SimulationConfig implements Serializable {
     	
 		loadDefaultConfiguration();
 		
-		logger.config("Done with loadConfig() on " + Thread.currentThread().getName());
+//		logger.config("Done with loadConfig() on " + Thread.currentThread().getName());
 	}
 	
 	/**

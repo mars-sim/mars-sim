@@ -87,9 +87,10 @@ public class MissionListModel extends AbstractListModel<Mission> implements Miss
 	 */
 	@Override
 	public void missionUpdate(MissionEvent event) {
-		if (event.getType() == MissionEventType.DESIGNATION_EVENT 
-				|| event.getType() == MissionEventType.PHASE_EVENT
-				|| event.getType() == MissionEventType.PHASE_DESCRIPTION_EVENT) {
+		MissionEventType eventType = event.getType();
+		if (eventType == MissionEventType.DESIGNATION_EVENT 
+				|| eventType == MissionEventType.PHASE_EVENT
+				|| eventType == MissionEventType.PHASE_DESCRIPTION_EVENT) {
 			int index = missions.indexOf(event.getSource());
 			if ((index > -1) && (index < missions.size())) {
 				SwingUtilities.invokeLater(new MissionListUpdater(MissionListUpdater.CHANGE, this, index));

@@ -11,11 +11,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.goods.Good;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
@@ -305,8 +302,10 @@ public class PowerGeneration extends Function implements Serializable {
 		return 0;
 	}
 
-	// 2015-09-28 Added removeFromSettlement() to return the fuel cell stacks to the
-	// inventory
+	
+	/**
+	 * Return the fuel cell stacks to the inventory
+	 */
 	public void removeFromSettlement() {
 		Iterator<PowerSource> i = powerSources.iterator();
 		while (i.hasNext()) {
