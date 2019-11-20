@@ -68,9 +68,10 @@ public class Walk extends Task implements Serializable {
 	private static final TaskPhase EXITING_AIRLOCK = new TaskPhase(Msg.getString("Task.phase.exitingAirlock")); //$NON-NLS-1$
 	private static final TaskPhase ENTERING_AIRLOCK = new TaskPhase(Msg.getString("Task.phase.enteringAirlock")); //$NON-NLS-1$
 	private static final TaskPhase EXITING_ROVER_GARAGE = new TaskPhase(Msg.getString("Task.phase.exitingRoverGarage")); //$NON-NLS-1$
-	private static final TaskPhase ENTERING_ROVER_GARAGE = new TaskPhase(
-			Msg.getString("Task.phase.enteringRoverGarage")); //$NON-NLS-1$
-
+	private static final TaskPhase ENTERING_ROVER_GARAGE = new TaskPhase(Msg.getString("Task.phase.enteringRoverGarage")); //$NON-NLS-1$
+	private static final TaskPhase CLIMB_UP_LADDER = new TaskPhase(Msg.getString("Task.phase.climbUpLadder")); //$NON-NLS-1$
+	private static final TaskPhase CLIMB_DOWN_LADDER = new TaskPhase(Msg.getString("Task.phase.climbDownLadder")); //$NON-NLS-1$
+	
 	// Data members
 	private int walkingStepIndex;
 
@@ -688,6 +689,10 @@ public class Walk extends Task implements Serializable {
 			return exitingRoverGaragePhase(time);
 		} else if (ENTERING_ROVER_GARAGE.equals(getPhase())) {
 			return enteringRoverInsideGaragePhase(time);
+		} else if (CLIMB_UP_LADDER.equals(getPhase())) {
+			return climbingUpLadder(time);			
+		} else if (CLIMB_DOWN_LADDER.equals(getPhase())) {
+			return climbingDownLadder(time);						
 		} else {
 			return time;
 		}
@@ -1319,6 +1324,150 @@ public class Walk extends Task implements Serializable {
 		return timeLeft;
 	}
 
+	/**
+	 * Climbing up the ladder to the next level
+	 * 
+	 * @param time
+	 * @return
+	 */
+	public double climbingUpLadder(double time) {
+
+		double timeLeft = time;
+
+		WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
+	
+//		Building building = step.building;
+		
+		setDescription(Msg.getString("Task.description.walk.climbingUpLadder")); //$NON-NLS-1$
+		
+		if (person != null) {
+//			LogConsolidated.log(Level.FINER, 0, sourceName + "::enteringRoverInsideGaragePhase",
+//	  				"[" + person.getLocationTag().getLocale() + "] "
+//					+ person + " was about to enter rover " + rover.getName() 
+//					+ " and was reportedly in " + person.getLocationTag().getImmediateLocation()
+//					+ ".");
+//			
+//			// Place this person within a vehicle inside a garage in a settlement
+//			person.transfer(garageBuilding, rover);
+////			garageBuilding.getSettlementInventory().retrieveUnit(person);
+////			rover.getInventory().storeUnit(person);
+//			
+//			// Remove the person from the garage
+//			BuildingManager.removePersonOrRobotFromBuilding(person, garageBuilding);		
+//			
+//			LogConsolidated.log(Level.FINER, 0, sourceName + "::enteringRoverInsideGaragePhase",
+//	  				"[" + person.getLocationTag().getLocale() + "] "
+//					+ person + " had just entered rover " + rover.getName() 
+//					+ " and was reportedly in " + person.getLocationTag().getImmediateLocation()
+//					+ ".");
+		} 
+		
+		else if (robot != null) {
+//			LogConsolidated.log(Level.FINER, 0, sourceName + "::enteringRoverInsideGaragePhase",
+//	  				"[" + robot.getLocationTag().getLocale() + "] "
+//					+ robot + " was about to enter rover " + rover.getName() 
+//					+ " and was reportedly in " + robot.getLocationTag().getImmediateLocation()
+//					+ ".");
+//			
+//			// Place this robot within a vehicle inside a garage in a settlement
+//			robot.transfer(garageBuilding, rover);
+//						
+////			garageBuilding.getSettlementInventory().retrieveUnit(robot);
+////			rover.getInventory().storeUnit(robot);
+//			
+//			// Remove the robot from the garage
+//			BuildingManager.removePersonOrRobotFromBuilding(robot, garageBuilding);
+//
+//			
+//			LogConsolidated.log(Level.FINER, 0, sourceName + "::enteringRoverInsideGaragePhase",
+//	  				"[" + robot.getLocationTag().getLocale() + "] "
+//					+ robot + " had just entered rover " + rover.getName()
+//					+ " and was reportedly in " + robot.getLocationTag().getImmediateLocation()
+//					+ ".");
+		}
+
+		if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
+			walkingStepIndex++;
+			setPhase(getWalkingStepPhase());
+		} else {
+			endTask();
+		}
+
+		return timeLeft;
+	}
+
+	/**
+	 * Climbing down the ladder to the lower level
+	 * 
+	 * @param time
+	 * @return
+	 */
+	public double climbingDownLadder(double time) {
+
+		double timeLeft = time;
+
+		WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
+//		Rover rover = step.rover;
+//		Building garageBuilding = step.building;
+		
+		setDescription(Msg.getString("Task.description.walk.climbingDownLadder")); //$NON-NLS-1$
+		
+		if (person != null) {
+//			LogConsolidated.log(Level.FINER, 0, sourceName + "::enteringRoverInsideGaragePhase",
+//	  				"[" + person.getLocationTag().getLocale() + "] "
+//					+ person + " was about to enter rover " + rover.getName() 
+//					+ " and was reportedly in " + person.getLocationTag().getImmediateLocation()
+//					+ ".");
+//			
+//			// Place this person within a vehicle inside a garage in a settlement
+//			person.transfer(garageBuilding, rover);
+////			garageBuilding.getSettlementInventory().retrieveUnit(person);
+////			rover.getInventory().storeUnit(person);
+//			
+//			// Remove the person from the garage
+//			BuildingManager.removePersonOrRobotFromBuilding(person, garageBuilding);		
+//			
+//			LogConsolidated.log(Level.FINER, 0, sourceName + "::enteringRoverInsideGaragePhase",
+//	  				"[" + person.getLocationTag().getLocale() + "] "
+//					+ person + " had just entered rover " + rover.getName() 
+//					+ " and was reportedly in " + person.getLocationTag().getImmediateLocation()
+//					+ ".");
+		} 
+		
+		else if (robot != null) {
+//			LogConsolidated.log(Level.FINER, 0, sourceName + "::enteringRoverInsideGaragePhase",
+//	  				"[" + robot.getLocationTag().getLocale() + "] "
+//					+ robot + " was about to enter rover " + rover.getName() 
+//					+ " and was reportedly in " + robot.getLocationTag().getImmediateLocation()
+//					+ ".");
+//			
+//			// Place this robot within a vehicle inside a garage in a settlement
+//			robot.transfer(garageBuilding, rover);
+//						
+////			garageBuilding.getSettlementInventory().retrieveUnit(robot);
+////			rover.getInventory().storeUnit(robot);
+//			
+//			// Remove the robot from the garage
+//			BuildingManager.removePersonOrRobotFromBuilding(robot, garageBuilding);
+//
+//			
+//			LogConsolidated.log(Level.FINER, 0, sourceName + "::enteringRoverInsideGaragePhase",
+//	  				"[" + robot.getLocationTag().getLocale() + "] "
+//					+ robot + " had just entered rover " + rover.getName()
+//					+ " and was reportedly in " + robot.getLocationTag().getImmediateLocation()
+//					+ ".");
+		}
+
+		if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
+			walkingStepIndex++;
+			setPhase(getWalkingStepPhase());
+		} else {
+			endTask();
+		}
+
+		return timeLeft;
+	}
+	
 	/**
 	 * Checks if the person or robot is walking through a given building.
 	 * 

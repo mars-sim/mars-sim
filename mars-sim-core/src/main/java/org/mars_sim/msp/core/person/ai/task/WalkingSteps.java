@@ -507,6 +507,9 @@ implements Serializable {
 	            case WalkState.OUTSIDE_LOC:     determineOutsideWalkingSteps(initialWalkState,
 	                    destinationWalkState);
 	                                            break;
+	            case WalkState.LADDER_LOC:		determineLadderWalkingSteps(initialWalkState,
+	                    destinationWalkState);
+	                                            break;                                
 	            default:                        throw new IllegalArgumentException("Invalid walk state type: " +
 	                    initialWalkState.stateType);
 	        }
@@ -1551,9 +1554,7 @@ implements Serializable {
             	LogConsolidated.log(Level.WARNING, 10000, sourceName,
     					"[" + robot.getLocationTag().getLocale() + "] " + robot.getName()
                 		+ " in " + robot.getBuildingLocation().getNickName()
-                		+ " cannot find walkable airlock from outside to building interior.");
-            
-            
+                		+ " cannot find walkable airlock from outside to building interior.");    
         }
     }
 
@@ -1639,6 +1640,57 @@ implements Serializable {
     }
 
     /**
+     * Determine the walking steps in climbing up and down the ladder of a multi-level building
+     * 
+     * @param initialWalkState the initial walk state.
+     * @param destinationWalkState the destination walk state.
+     */
+    private void determineLadderWalkingSteps(WalkState initialWalkState,
+            WalkState destinationWalkState) {
+
+//        Building destinationBuilding = destinationWalkState.building;
+//        Settlement settlement = destinationBuilding.getSettlement();
+//
+//        // Determine closest airlock to destination building.
+//        Airlock destinationAirlock = settlement.getClosestWalkableAvailableAirlock(destinationBuilding,
+//                initialWalkState.xLoc, initialWalkState.yLoc);
+//        if (destinationAirlock != null) {
+//
+//            // Create walk step to exterior airlock position.
+//            Point2D destinationAirlockExteriorPosition = destinationAirlock.getAvailableExteriorPosition();
+//            createWalkExteriorStep(destinationAirlockExteriorPosition.getX(),
+//                    destinationAirlockExteriorPosition.getY());
+//
+//            // Create exterior airlock walk state.
+//            WalkState exteriorAirlockState = new WalkState(WalkState.EXTERIOR_AIRLOCK);
+//            exteriorAirlockState.airlock = destinationAirlock;
+//            exteriorAirlockState.xLoc = destinationAirlockExteriorPosition.getX();
+//            exteriorAirlockState.yLoc = destinationAirlockExteriorPosition.getY();
+//
+//            determineWalkingSteps(exteriorAirlockState, destinationWalkState);
+//        }
+//        else {
+//
+//            // Cannot walk to destination building.
+//            canWalkAllSteps = false;
+////            logger.severe("Cannot find walkable airlock from outside to building interior.");
+//            
+//            if (person != null)
+//            	LogConsolidated.log(Level.WARNING, 10000, sourceName,
+//    					"[" + person.getLocationTag().getLocale() + "] " + person.getName()
+//    					+ " in " + person.getBuildingLocation().getNickName()
+//                		+ " cannot find walkable airlock from outside to building interior.");
+//            else if (robot != null)
+//            	LogConsolidated.log(Level.WARNING, 10000, sourceName,
+//    					"[" + robot.getLocationTag().getLocale() + "] " + robot.getName()
+//                		+ " in " + robot.getBuildingLocation().getNickName()
+//                		+ " cannot find walkable airlock from outside to building interior.");
+//            
+//            
+//        }
+    }
+    
+    /**
      * Create a rover interior walking step.
      * @param destXLoc the destination X location.
      * @param destYLoc the destination Y location.
@@ -1714,6 +1766,7 @@ implements Serializable {
         walkingSteps.add(enterAirlockStep);
     }
 
+    
     /**
      * Inner class for representing a walking state.
      */
@@ -1725,11 +1778,13 @@ implements Serializable {
         private static final int EXTERIOR_AIRLOCK = 2;
         private static final int ROVER_LOC = 3;
         private static final int OUTSIDE_LOC = 4;
-
+        private static final int LADDER_LOC = 5;
+        
         // Data members
         private int stateType;
         private double xLoc;
         private double yLoc;
+        
         private Building building;
         private Rover rover;
         private Airlock airlock;
@@ -1755,11 +1810,14 @@ implements Serializable {
         static final int ENTER_AIRLOCK = 4;
         static final int ENTER_GARAGE_ROVER = 5;
         static final int EXIT_GARAGE_ROVER = 6;
-
+        static final int UP_LADDER = 7;
+        static final int DOWN_LADDER = 8;
+        
         // Data members
         int stepType;
         double xLoc;
         double yLoc;
+        
         Building building;
         Rover rover;
         Airlock airlock;
