@@ -386,7 +386,7 @@ public class EnterAirlock extends Task implements Serializable {
 								"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
 								+ " was walking from " + startBuilding + " toward the outer door of the airlock at " + airlockBuilding);
 						addSubTask(new WalkSettlementInterior(person, airlockBuilding, interiorAirlockPos.getX(),
-								interiorAirlockPos.getY()));
+								interiorAirlockPos.getY(), 0));
 					} else {
 						LogConsolidated.log(Level.WARNING, 0, sourceName, 
 								"[" + person.getLocationTag().getLocale() + "] " + person.getName() 

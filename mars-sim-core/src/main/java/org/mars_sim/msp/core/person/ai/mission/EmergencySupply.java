@@ -405,16 +405,16 @@ public class EmergencySupply extends RoverMission implements Serializable {
 
 				if (member instanceof Person) {
 					Person person = (Person) member;
-					if (Walk.canWalkAllSteps(person, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding)) {
+					if (Walk.canWalkAllSteps(person, adjustedLoc.getX(), adjustedLoc.getY(), 0, destinationBuilding)) {
 						assignTask(person,
-								new Walk(person, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding));
+								new Walk(person, adjustedLoc.getX(), adjustedLoc.getY(), 0, destinationBuilding));
 					} else {
 						logger.severe("Unable to walk to building " + destinationBuilding);
 					}
 				} else if (member instanceof Robot) {
 					Robot robot = (Robot) member;
-					if (Walk.canWalkAllSteps(robot, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding)) {
-						assignTask(robot, new Walk(robot, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding));
+					if (Walk.canWalkAllSteps(robot, adjustedLoc.getX(), adjustedLoc.getY(), 0, destinationBuilding)) {
+						assignTask(robot, new Walk(robot, adjustedLoc.getX(), adjustedLoc.getY(), 0, destinationBuilding));
 					} else {
 						logger.severe("Unable to walk to building " + destinationBuilding);
 					}
@@ -538,8 +538,8 @@ public class EmergencySupply extends RoverMission implements Serializable {
 			if (member instanceof Person) {
 				Person person = (Person) member;
 				if (!person.getPhysicalCondition().isDead()) { 
-					if (Walk.canWalkAllSteps(person, adjustedLoc.getX(), adjustedLoc.getY(), getVehicle())) {
-						assignTask(person, new Walk(person, adjustedLoc.getX(), adjustedLoc.getY(), getVehicle()));
+					if (Walk.canWalkAllSteps(person, adjustedLoc.getX(), adjustedLoc.getY(), 0, getVehicle())) {
+						assignTask(person, new Walk(person, adjustedLoc.getX(), adjustedLoc.getY(), 0, getVehicle()));
 					} else {
 						logger.severe(person.getName() + " unable to enter rover " + getVehicle());
 						addMissionStatus(MissionStatus.CANNOT_ENTER_ROVER);
@@ -548,8 +548,8 @@ public class EmergencySupply extends RoverMission implements Serializable {
 				}
 			} else if (member instanceof Robot) {
 				Robot robot = (Robot) member;
-				if (Walk.canWalkAllSteps(robot, adjustedLoc.getX(), adjustedLoc.getY(), getVehicle())) {
-					assignTask(robot, new Walk(robot, adjustedLoc.getX(), adjustedLoc.getY(), getVehicle()));
+				if (Walk.canWalkAllSteps(robot, adjustedLoc.getX(), adjustedLoc.getY(), 0, getVehicle())) {
+					assignTask(robot, new Walk(robot, adjustedLoc.getX(), adjustedLoc.getY(), 0, getVehicle()));
 				} else {
 					logger.severe(robot.getName() + " unable to enter rover " + getVehicle());
 					addMissionStatus(MissionStatus.CANNOT_ENTER_ROVER);

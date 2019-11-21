@@ -98,6 +98,10 @@ public class MockBuilding extends Building {
 	    this.yLoc = yLoc;
 	}
 
+	public void setZLocation(double zLoc) {
+	    this.zLoc = zLoc;
+	}
+	
 	public void setWidth(double width) {
 	    this.width = width;
 	}

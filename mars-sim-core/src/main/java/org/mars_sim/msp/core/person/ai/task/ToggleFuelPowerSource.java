@@ -155,11 +155,11 @@ implements Serializable {
         Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(),
                 buildingLoc.getY(), powerBuilding);
 
-        if (Walk.canWalkAllSteps(person, settlementLoc.getX(), settlementLoc.getY(),
+        if (Walk.canWalkAllSteps(person, settlementLoc.getX(), settlementLoc.getY(), 0,
                 powerBuilding)) {
 
             // Add subtask for walking to power building.
-            addSubTask(new Walk(person, settlementLoc.getX(), settlementLoc.getY(),
+            addSubTask(new Walk(person, settlementLoc.getX(), settlementLoc.getY(), 0,
                     powerBuilding));
         }
         else {

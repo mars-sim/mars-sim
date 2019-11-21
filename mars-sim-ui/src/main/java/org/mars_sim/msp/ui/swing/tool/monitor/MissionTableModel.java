@@ -400,8 +400,8 @@ public class MissionTableModel extends AbstractTableModel
 						if (percent > 100)
 							percent = 100;
 						int score = (int)mission.getPlan().getScore();
-						int min = (int)mission.getStartingMember().getSettlement().getMinimumPassingScore();
-						result = percent + "% Done. Score : " + score + " (Min : " + min + ") "
+						int min = (int)mission.getStartingMember().getAssociatedSettlement().getMinimumPassingScore();
+						result = percent + "%. Score : " + score + " (Min : " + min + ") "
 								+ Conversion.capitalize(mission.getPhaseDescription());
 					}
 					else

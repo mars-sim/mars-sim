@@ -56,8 +56,8 @@ public class WalkSettlementInterior extends Task implements Serializable {
 	private static final TaskPhase WALKING = new TaskPhase(Msg.getString("Task.phase.walking")); //$NON-NLS-1$
 
 	// Static members
-	private static final double PERSON_WALKING_SPEED = 2D; // km / hr.
-	private static final double ROBOT_WALKING_SPEED = 0.5; // km / hr.
+	static final double PERSON_WALKING_SPEED = 2D; // [km per hr].
+	static final double ROBOT_WALKING_SPEED = 0.5; // [km per hr].
 
 	private static final double VERY_SMALL_DISTANCE = .00001D;
 	private static final double STRESS_MODIFIER = -.2D;
@@ -81,7 +81,7 @@ public class WalkSettlementInterior extends Task implements Serializable {
 	 * @param destinationYLocation the destination Y location at the settlement.
 	 */
 	public WalkSettlementInterior(Person person, Building destinationBuilding, double destinationXLocation,
-			double destinationYLocation) {
+			double destinationYLocation, double destinationZLocation) {
 		super(NAME, person, false, false, STRESS_MODIFIER, false, 0D);
 
 		// Check that the person is currently inside the settlement.
@@ -283,7 +283,7 @@ public class WalkSettlementInterior extends Task implements Serializable {
 		double timeLeft = 0D;
 		if (distanceMeters > remainingPathDistance) {
 			double overDistance = distanceMeters - remainingPathDistance;
-			timeLeft = MarsClock.convertSecondsToMillisols(overDistance / 1000D / PERSON_WALKING_SPEED * 60D * 60D);
+			timeLeft = MarsClock.MILLISOLS_PER_HOUR * overDistance / PERSON_WALKING_SPEED / 1000D; //MarsClock.convertSecondsToMillisols(overDistance / 1000D / PERSON_WALKING_SPEED * 60D * 60D); ?
 			distanceMeters = remainingPathDistance;
 		}
 

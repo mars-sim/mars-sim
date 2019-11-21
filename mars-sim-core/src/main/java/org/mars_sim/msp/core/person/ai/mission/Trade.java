@@ -372,9 +372,9 @@ public class Trade extends RoverMission implements Serializable {
 				// TODO Refactor.
 				if (member instanceof Person) {
 					Person person = (Person) member;
-					if (Walk.canWalkAllSteps(person, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding)) {
+					if (Walk.canWalkAllSteps(person, adjustedLoc.getX(), adjustedLoc.getY(), 0, destinationBuilding)) {
 						assignTask(person,
-								new Walk(person, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding));
+								new Walk(person, adjustedLoc.getX(), adjustedLoc.getY(), 0, destinationBuilding));
 					} else {
 							LogConsolidated.log(Level.SEVERE, 5000, sourceName,
 									"[" + person.getLocationTag().getLocale() + "] " + person.getName()
@@ -383,8 +383,8 @@ public class Trade extends RoverMission implements Serializable {
 					}
 				} else if (member instanceof Robot) {
 					Robot robot = (Robot) member;
-					if (Walk.canWalkAllSteps(robot, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding)) {
-						assignTask(robot, new Walk(robot, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding));
+					if (Walk.canWalkAllSteps(robot, adjustedLoc.getX(), adjustedLoc.getY(), 0, destinationBuilding)) {
+						assignTask(robot, new Walk(robot, adjustedLoc.getX(), adjustedLoc.getY(), 0, destinationBuilding));
 					} else {
 						LogConsolidated.log(Level.SEVERE, 5009, sourceName,
 								"[" + robot.getLocationTag().getLocale() + "] " + robot.getName()
@@ -622,8 +622,8 @@ public class Trade extends RoverMission implements Serializable {
 				}
 				
 				
-				if (Walk.canWalkAllSteps(trader, adjustedLoc.getX(), adjustedLoc.getY(), getVehicle())) {
-					assignTask(trader, new Walk(trader, adjustedLoc.getX(), adjustedLoc.getY(), getVehicle()));
+				if (Walk.canWalkAllSteps(trader, adjustedLoc.getX(), adjustedLoc.getY(), 0, getVehicle())) {
+					assignTask(trader, new Walk(trader, adjustedLoc.getX(), adjustedLoc.getY(), 0, getVehicle()));
 				} else {
 					logger.severe(trader.getName() + " unable to enter rover " + getVehicle());
 					addMissionStatus(MissionStatus.CANNOT_ENTER_ROVER);

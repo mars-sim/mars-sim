@@ -51,7 +51,7 @@ implements Serializable {
 	/**
 	 * constructor 1.
 	 */
-	public WalkingSteps(Person person, double xLoc, double yLoc, LocalBoundedObject interiorObject) {
+	public WalkingSteps(Person person, double xLoc, double yLoc, double zLoc, LocalBoundedObject interiorObject) {
         this.person = person;
 
         // Initialize data members.
@@ -77,7 +77,7 @@ implements Serializable {
 	/**
 	 * constructor 2.
 	 */
-	public WalkingSteps(Robot robot, double xLoc, double yLoc, LocalBoundedObject interiorObject) {
+	public WalkingSteps(Robot robot, double xLoc, double yLoc, double zLoc, LocalBoundedObject interiorObject) {
         this.robot = robot;
 
         // Initialize data members.
@@ -182,7 +182,7 @@ implements Serializable {
     					+ person.getLocationTag().getLocale()
 //    					+ person.getLocationStateType().getName() 
     					+ "] " + person.getName() +
-                        " is inside the settlement and having a bad WalkState");
+                        " is inside the settlement but isn't in a building");
             	return null;
             }
 
@@ -196,7 +196,7 @@ implements Serializable {
 					+ person.getName()
                     + " (" + person.getLocationStateType().getName() + ")"
                     + " in " + building
-					+ " (WalkState.BUILDING_LOC)."
+					+ " (WalkState : BUILDING_LOC)."
 					);
 
 //			// TODO: why is checkLocationWithinLocalBoundedObject() troublesome ?
@@ -233,7 +233,7 @@ implements Serializable {
     					+ person.getName()
                         + " (" + person.getLocationStateType().getName() + ")"
                         + " in " + vehicle
-    					+ " (WalkState.ROVER_LOC)."
+    					+ " (WalkState : ROVER_LOC)."
     					);
     			
 //                if (!LocalAreaUtil.checkLocationWithinLocalBoundedObject(person.getXLocation(),
@@ -261,7 +261,7 @@ implements Serializable {
     					+ "] " 
     					+ person.getName()
                         + " (" + person.getLocationStateType().getName() + ")"
-    					+ " (WalkState.OUTSIDE_LOC)."
+    					+ " (WalkState : OUTSIDE_LOC)."
     					);
             }
         }
@@ -1648,46 +1648,18 @@ implements Serializable {
     private void determineLadderWalkingSteps(WalkState initialWalkState,
             WalkState destinationWalkState) {
 
-//        Building destinationBuilding = destinationWalkState.building;
+        Building destinationBuilding = destinationWalkState.building;
 //        Settlement settlement = destinationBuilding.getSettlement();
-//
-//        // Determine closest airlock to destination building.
-//        Airlock destinationAirlock = settlement.getClosestWalkableAvailableAirlock(destinationBuilding,
-//                initialWalkState.xLoc, initialWalkState.yLoc);
-//        if (destinationAirlock != null) {
-//
-//            // Create walk step to exterior airlock position.
-//            Point2D destinationAirlockExteriorPosition = destinationAirlock.getAvailableExteriorPosition();
-//            createWalkExteriorStep(destinationAirlockExteriorPosition.getX(),
-//                    destinationAirlockExteriorPosition.getY());
-//
-//            // Create exterior airlock walk state.
-//            WalkState exteriorAirlockState = new WalkState(WalkState.EXTERIOR_AIRLOCK);
-//            exteriorAirlockState.airlock = destinationAirlock;
-//            exteriorAirlockState.xLoc = destinationAirlockExteriorPosition.getX();
-//            exteriorAirlockState.yLoc = destinationAirlockExteriorPosition.getY();
-//
-//            determineWalkingSteps(exteriorAirlockState, destinationWalkState);
-//        }
-//        else {
-//
-//            // Cannot walk to destination building.
-//            canWalkAllSteps = false;
-////            logger.severe("Cannot find walkable airlock from outside to building interior.");
-//            
-//            if (person != null)
-//            	LogConsolidated.log(Level.WARNING, 10000, sourceName,
-//    					"[" + person.getLocationTag().getLocale() + "] " + person.getName()
-//    					+ " in " + person.getBuildingLocation().getNickName()
-//                		+ " cannot find walkable airlock from outside to building interior.");
-//            else if (robot != null)
-//            	LogConsolidated.log(Level.WARNING, 10000, sourceName,
-//    					"[" + robot.getLocationTag().getLocale() + "] " + robot.getName()
-//                		+ " in " + robot.getBuildingLocation().getNickName()
-//                		+ " cannot find walkable airlock from outside to building interior.");
-//            
-//            
-//        }
+
+        if (destinationBuilding.isAHabOrHub()) {
+        	
+//        	createClimbUpStep(destinationWalkState.xLoc, destinationWalkState.yLoc, destinationWalkState.zLoc,
+//                    destinationBuilding);
+//        	
+//        	createClimbDownStep(destinationWalkState.xLoc, destinationWalkState.yLoc, destinationWalkState.zLoc,
+//                    destinationBuilding);
+        }
+  
     }
     
     /**
@@ -1731,6 +1703,60 @@ implements Serializable {
 
     }
 
+    /**
+     * Create a climb up step.
+     * 
+     * @param destXLoc the destination X location.
+     * @param destYLoc the destination Y location.
+     * @param destZLoc the destination Z location.
+     * @param destinationBuilding the destination building.
+     */
+    private void createClimbUpStep(double destXLoc, double destYLoc, double destZLoc,
+            Building destinationBuilding) {
+       if (person != null) {
+           WalkStep walkStep = new WalkStep(WalkStep.UP_LADDER);
+           walkStep.xLoc = destXLoc;
+           walkStep.yLoc = destYLoc;
+           walkStep.zLoc = destZLoc;
+           walkStep.building = destinationBuilding;
+           walkingSteps.add(walkStep);        	
+        }
+        else if (robot != null ){
+//            RobotWalkStep walkStep = new RobotWalkStep(RobotWalkStep.UP_LADDER);
+//            walkStep.xLoc = destXLoc;
+//            walkStep.yLoc = destYLoc;
+//            walkStep.building = destinationBuilding;
+//            robotWalkingSteps.add(walkStep);       	
+        }
+    }
+    
+    /**
+     * Create a climb up step.
+     * 
+     * @param destXLoc the destination X location.
+     * @param destYLoc the destination Y location.
+     * @param destZLoc the destination Z location.
+     * @param destinationBuilding the destination building.
+     */
+    private void createClimbDownStep(double destXLoc, double destYLoc, double destZLoc,
+            Building destinationBuilding) {
+       if (person != null) {
+           WalkStep walkStep = new WalkStep(WalkStep.DOWN_LADDER);
+           walkStep.xLoc = destXLoc;
+           walkStep.yLoc = destYLoc;
+           walkStep.zLoc = destZLoc;
+           walkStep.building = destinationBuilding;
+           walkingSteps.add(walkStep);        	
+        }
+        else if (robot != null ){
+//            RobotWalkStep walkStep = new RobotWalkStep(RobotWalkStep.UP_LADDER);
+//            walkStep.xLoc = destXLoc;
+//            walkStep.yLoc = destYLoc;
+//            walkStep.building = destinationBuilding;
+//            robotWalkingSteps.add(walkStep);       	
+        }
+    }
+    
     /**
      * Create an exterior walking step.
      * @param destXLoc the destination X location.
@@ -1784,6 +1810,7 @@ implements Serializable {
         private int stateType;
         private double xLoc;
         private double yLoc;
+        private double zLoc;
         
         private Building building;
         private Rover rover;
@@ -1817,6 +1844,7 @@ implements Serializable {
         int stepType;
         double xLoc;
         double yLoc;
+        double zLoc;
         
         Building building;
         Rover rover;

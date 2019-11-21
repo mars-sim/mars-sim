@@ -357,7 +357,7 @@ public class ExitAirlock extends Task implements Serializable {
 					
 					Building airlockBuilding = (Building) airlock.getEntity();
 					addSubTask(new WalkSettlementInterior(person, airlockBuilding, insideAirlockPos.getX(),
-							insideAirlockPos.getY()));
+							insideAirlockPos.getY(), 0));
 					
 				} else if (airlock.getEntity() instanceof Rover) {
 

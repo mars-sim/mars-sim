@@ -224,8 +224,8 @@ public abstract class EVAOperation extends Task implements Serializable {
 		
 		else {
 
-			if (Walk.canWalkAllSteps(person, outsideSiteXLoc, outsideSiteYLoc, null)) {
-				Task walkingTask = new Walk(person, outsideSiteXLoc, outsideSiteYLoc, null);
+			if (Walk.canWalkAllSteps(person, outsideSiteXLoc, outsideSiteYLoc, 0, null)) {
+				Task walkingTask = new Walk(person, outsideSiteXLoc, outsideSiteYLoc, 0, null);
 				addSubTask(walkingTask);
 			} else {
 				// LogConsolidated.log(logger, Level.WARNING, 3000, sourceName,
@@ -313,8 +313,8 @@ public abstract class EVAOperation extends Task implements Serializable {
 							+ Math.round(returnInsideLoc.getY()*10.0)/10.0 
 							+ ") and was attempting to enter its airlock.");
 				
-				if (Walk.canWalkAllSteps(person, returnInsideLoc.getX(), returnInsideLoc.getY(), interiorObject)) {
-					Task walkingTask = new Walk(person, returnInsideLoc.getX(), returnInsideLoc.getY(), interiorObject);
+				if (Walk.canWalkAllSteps(person, returnInsideLoc.getX(), returnInsideLoc.getY(), 0, interiorObject)) {
+					Task walkingTask = new Walk(person, returnInsideLoc.getX(), returnInsideLoc.getY(), 0, interiorObject);
 					addSubTask(walkingTask);
 				} 
 				

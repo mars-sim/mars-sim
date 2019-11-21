@@ -1278,10 +1278,10 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	private void createWalkingSubtask(LocalBoundedObject interiorObject, Point2D settlementPos, boolean allowFail) {
 
 		if (person != null) {
-			if (Walk.canWalkAllSteps(person, settlementPos.getX(), settlementPos.getY(), interiorObject)) {
+			if (Walk.canWalkAllSteps(person, settlementPos.getX(), settlementPos.getY(), 0, interiorObject)) {
 
 				// Add subtask for walking to destination.
-				addSubTask(new Walk(person, settlementPos.getX(), settlementPos.getY(), interiorObject));
+				addSubTask(new Walk(person, settlementPos.getX(), settlementPos.getY(), 0, interiorObject));
 			} else {
 //				logger.fine(person.getName() + " unable to walk to " + interiorObject);
 				LogConsolidated.log(Level.FINER, 5000, sourceName,
@@ -1292,9 +1292,9 @@ public abstract class Task implements Serializable, Comparable<Task> {
 				}
 			}
 		} else if (robot != null) {
-			if (Walk.canWalkAllSteps(robot, settlementPos.getX(), settlementPos.getY(), interiorObject)) {
+			if (Walk.canWalkAllSteps(robot, settlementPos.getX(), settlementPos.getY(), 0, interiorObject)) {
 				// Add subtask for walking to destination.
-				addSubTask(new Walk(robot, settlementPos.getX(), settlementPos.getY(), interiorObject));
+				addSubTask(new Walk(robot, settlementPos.getX(), settlementPos.getY(), 0, interiorObject));
 			} else {
 //				logger.fine(robot.getName() + " unable to walk to " + interiorObject);
 				LogConsolidated.log(Level.FINER, 5000, sourceName,

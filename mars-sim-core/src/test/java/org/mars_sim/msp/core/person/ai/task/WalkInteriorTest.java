@@ -54,7 +54,7 @@ public class WalkInteriorTest extends TestCase {
         person.setYLocation(0D);
         BuildingManager.addPersonOrRobotToBuilding(person, building);
 
-        WalkSettlementInterior walkTask = new WalkSettlementInterior(person, building, 0D, 0D);
+        WalkSettlementInterior walkTask = new WalkSettlementInterior(person, building, 0D, 0D, 0);
 
         assertEquals(0D, walkTask.determineDirection(0D, 5D), SMALL_DELTA);
         assertEquals((Math.PI / 2D), walkTask.determineDirection(-5D, 0D), SMALL_DELTA);
@@ -86,7 +86,7 @@ public class WalkInteriorTest extends TestCase {
         person.setYLocation(0D);
         BuildingManager.addPersonOrRobotToBuilding(person, building);
 
-        WalkSettlementInterior walkTask = new WalkSettlementInterior(person, building, 0D, 0D);
+        WalkSettlementInterior walkTask = new WalkSettlementInterior(person, building, 0D, 0D, 0);
 
         // Walk North 5m.
         walkTask.walkInDirection(0D, 5D);
@@ -168,9 +168,9 @@ public class WalkInteriorTest extends TestCase {
         BuildingManager.addPersonOrRobotToBuilding(person, building0);
 
         // Walking time (millisols) for 1m. distance.
-        double walkingTimeMeter = .008110369D;
+        double walkingTimeMeter =  0.020275896;// WalkSettlementInterior.PERSON_WALKING_SPEED has changed from 5 to 2 km/hr
 
-        WalkSettlementInterior walkTask = new WalkSettlementInterior(person, building1, -11D, 1D);
+        WalkSettlementInterior walkTask = new WalkSettlementInterior(person, building1, -11D, 1D, 0);
 
         assertEquals(0D, walkTask.walkingPhase(walkingTimeMeter), SMALL_DELTA);
 

@@ -1289,7 +1289,7 @@ public abstract class Vehicle extends Unit
 					}
 				}
 				
-				if (Walk.canWalkAllSteps(p, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding)) {
+				if (Walk.canWalkAllSteps(p, adjustedLoc.getX(), adjustedLoc.getY(), 0, destinationBuilding)) {
 			
 					if (hasStrength) {
 						LogConsolidated.log(Level.INFO, 20_000, sourceName, 
@@ -1303,7 +1303,7 @@ public abstract class Vehicle extends Unit
 								"[" + disembarkSettlement.getName() + "] "
 								+ p.getName() + " had no more strength and walked back to the settlement.");
 						// walk back home
-						assignTask(p, new Walk(p, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding));
+						assignTask(p, new Walk(p, adjustedLoc.getX(), adjustedLoc.getY(), 0, destinationBuilding));
 					}
 					
 				} 

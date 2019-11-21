@@ -181,6 +181,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	protected double floorArea;
 	protected double xLoc;
 	protected double yLoc;
+	protected double zLoc;
 	protected double facing;
 	protected double basePowerRequirement;
 	protected double basePowerDownPowerRequirement;
@@ -1556,6 +1557,13 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 
 	public void reinit() {
 		// transient instances
+	}
+	
+	public boolean isAHabOrHub() {
+		if (buildingType.contains(" Hab")
+				|| buildingType.contains(" Hub"))
+			return true;
+		return false;
 	}
 	
 	/**

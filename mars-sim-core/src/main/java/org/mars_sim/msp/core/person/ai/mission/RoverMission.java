@@ -381,9 +381,9 @@ public abstract class RoverMission extends VehicleMission {
 				Person person = (Person) member;
 				// If person is not aboard the rover, board rover.
 				if (!getRover().isCrewmember(person)
-					&& Walk.canWalkAllSteps(person, adjustedLoc.getX(), adjustedLoc.getY(), v)) {
+					&& Walk.canWalkAllSteps(person, adjustedLoc.getX(), adjustedLoc.getY(), 0, v)) {
 					
-					assignTask(person, new Walk(person, adjustedLoc.getX(), adjustedLoc.getY(), v));
+					assignTask(person, new Walk(person, adjustedLoc.getX(), adjustedLoc.getY(), 0, v));
 					
 					if (!isDone() && isRoverInAGarage()) {
 						// Store one or two EVA suit for person (if possible).
@@ -414,8 +414,8 @@ public abstract class RoverMission extends VehicleMission {
 			
 			else if (member instanceof Robot) {
 				Robot robot = (Robot) member;
-				if (Walk.canWalkAllSteps(robot, adjustedLoc.getX(), adjustedLoc.getY(), v)) {
-					assignTask(robot, new Walk(robot, adjustedLoc.getX(), adjustedLoc.getY(), v));
+				if (Walk.canWalkAllSteps(robot, adjustedLoc.getX(), adjustedLoc.getY(), 0, v)) {
+					assignTask(robot, new Walk(robot, adjustedLoc.getX(), adjustedLoc.getY(), 0, v));
 				} else {
 					LogConsolidated.log(Level.SEVERE, 0, sourceName,
 							"[" + robot.getLocationTag().getLocale() + "] " 
@@ -638,7 +638,7 @@ public abstract class RoverMission extends VehicleMission {
 					}
 				}
 				
-				if (Walk.canWalkAllSteps(p, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding)) {
+				if (Walk.canWalkAllSteps(p, adjustedLoc.getX(), adjustedLoc.getY(), 0, destinationBuilding)) {
 			
 					if (hasStrength) {
 						LogConsolidated.log(Level.INFO, 20_000, sourceName, 
@@ -652,7 +652,7 @@ public abstract class RoverMission extends VehicleMission {
 								"[" + disembarkSettlement.getName() + "] "
 								+ p.getName() + " had no more strength and walked back to the settlement.");
 						// walk back home
-						assignTask(p, new Walk(p, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding));
+						assignTask(p, new Walk(p, adjustedLoc.getX(), adjustedLoc.getY(), 0, destinationBuilding));
 					}
 					
 				} 
