@@ -1,4 +1,4 @@
-package org.github.jamm;
+package org.mars_sim.msp.core.memory;
 
 import java.lang.instrument.Instrumentation;
 import java.lang.ref.Reference;
@@ -199,8 +199,8 @@ public class MemoryMeter {
      */
     public long measure(Object object) {
         switch (guess) {
-            case ALWAYS_UNSAFE:
-                return MemoryLayoutSpecification.sizeOfWithUnsafe(object);
+//            case ALWAYS_UNSAFE:
+//                return MemoryLayoutSpecification.sizeOfWithUnsafe(object);
             case ALWAYS_SPEC:
                 return MemoryLayoutSpecification.sizeOf(object);
             default:
@@ -208,13 +208,13 @@ public class MemoryMeter {
                     switch (guess) {
                         case NEVER:
                             throw new IllegalStateException("Instrumentation is not set; Jamm must be set as -javaagent");
-                        case FALLBACK_UNSAFE:
-                            if (!MemoryLayoutSpecification.hasUnsafe())
-                                throw new IllegalStateException("Instrumentation is not set and sun.misc.Unsafe could not be obtained; Jamm must be set as -javaagent, or the SecurityManager must permit access to sun.misc.Unsafe");
-                            //$FALL-THROUGH$
-                        case FALLBACK_BEST:
-                            if (MemoryLayoutSpecification.hasUnsafe())
-                                return MemoryLayoutSpecification.sizeOfWithUnsafe(object);
+//                        case FALLBACK_UNSAFE:
+//                            if (!MemoryLayoutSpecification.hasUnsafe())
+//                                throw new IllegalStateException("Instrumentation is not set and sun.misc.Unsafe could not be obtained; Jamm must be set as -javaagent, or the SecurityManager must permit access to sun.misc.Unsafe");
+//                            //$FALL-THROUGH$
+//                        case FALLBACK_BEST:
+//                            if (MemoryLayoutSpecification.hasUnsafe())
+//                                return MemoryLayoutSpecification.sizeOfWithUnsafe(object);
                             //$FALL-THROUGH$
                         case FALLBACK_SPEC:
                             return MemoryLayoutSpecification.sizeOf(object);

@@ -14,8 +14,6 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
@@ -430,11 +428,12 @@ public class MarsProject {
 					// sim.createNewSimulation(-1, false);
 					// Run this class in sim executor
 					sim.runCreateNewSimTask();	
-					// Start the simulation
-					startSimThread(false);
+
 					// Create main window
 					setupMainWindow();
 					
+					// Start the simulation
+					startSimThread(false);
 //					logger.config("Done with setupMainWindow()");
 				}
 			} 

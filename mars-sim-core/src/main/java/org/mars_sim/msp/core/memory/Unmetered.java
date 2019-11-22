@@ -1,4 +1,4 @@
-package org.github.jamm;
+package org.mars_sim.msp.core.memory;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

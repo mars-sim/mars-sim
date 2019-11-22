@@ -508,13 +508,14 @@ public class InteractiveTerm {
 		    menu.accept(textIO, null);
 	            		
 		    // if the sim is being saved, enter this while loop
-			while (masterClock.isSavingSimulation()) {
-		    	delay(500L);
-		    }
+//			for (int i=0; i<10; i++) {
+//				if (masterClock.isSavingSimulation())
+//					delay(500L);
+//		    }
 		}
 //        terminal.resetToBookmark("MENU");
 		
-		return;
+//		return;
 	}
 	
 //	/**

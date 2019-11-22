@@ -10,16 +10,20 @@ package org.mars_sim.msp.core.time;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Simulation.SaveType;
+import org.mars_sim.msp.core.SimulationConfig;
 
 
 // See https://stackoverflow.com/questions/14889143/how-to-stop-a-task-in-scheduledthreadpoolexecutor-once-i-think-its-completed
 // regarding the issue of calling cancel()
 
 public class AutosaveScheduler {
+	
+	private static Logger logger = Logger.getLogger(AutosaveScheduler.class.getName());
+	
 //    static ScheduledExecutorService autosaveService = Executors.newSingleThreadScheduledExecutor();
     static ScheduledThreadPoolExecutor autosaveService = new ScheduledThreadPoolExecutor(1);
     static ScheduledFuture<?> t;
@@ -65,10 +69,10 @@ public class AutosaveScheduler {
     public static void cancel() {
     	if (t != null) {
     		lastRemainingSeconds = getRemainingSeconds();
-//        	System.out.println("Autosave remaining seconds : " + lastRemainingSeconds);
+//        	logger.config("Autosave's remaining seconds : " + lastRemainingSeconds);
     		t.cancel(true);
 //    		if (t.isCancelled())
-//    			System.out.println("the autosave timer was cancelled.");
+//    			logger.config("the autosave timer was cancelled.");
     		t = null;
     	}
     }

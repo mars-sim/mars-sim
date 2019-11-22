@@ -91,6 +91,18 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	
 	public static final String TYPE = SystemType.BUILDING.getName();
 	
+	public static final String GREENHOUSE = "greenhouse";
+
+	public static final String INFLATABLE_GREENHOUSE = "inflatable greenhouse";
+	
+	public static final String INGROUND_GREENHOUSE = "inground greenhouse";
+	
+	public static final String LARGE_GREENHOUSE = "large greenhouse";
+		
+	public static final String HALLWAY = "hallway";
+	
+	public static final String TUNNEL = "tunnel";
+			
 	public static final int TISSUE_CAPACITY = 20;
 	
 	/** The unit count for this robot. */
@@ -340,13 +352,13 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 //			b_inv.addGeneralCapacity(100_000);
 //		}
 
-		if (buildingType.toLowerCase().contains("greenhouse")) {
+		if (buildingType.toLowerCase().contains(GREENHOUSE)) {
 
-			if (buildingType.equalsIgnoreCase("inflatable greenhouse"))
+			if (buildingType.equalsIgnoreCase(INFLATABLE_GREENHOUSE))
 				diameter = 6;
-			else if (buildingType.equalsIgnoreCase("inground greenhouse"))
+			else if (buildingType.equalsIgnoreCase(INGROUND_GREENHOUSE))
 				diameter = 5;
-			else if (buildingType.equalsIgnoreCase("large greenhouse"))
+			else if (buildingType.equalsIgnoreCase(LARGE_GREENHOUSE))
 				diameter = 12;
 
 			wall_thickness_inflatable = diameter * safety_factor * design_pressure / (2 * kevlar_tensile_strength);
@@ -357,7 +369,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		powerModeCache = PowerMode.FULL_POWER;
 		heatModeCache = HeatMode.HALF_HEAT;
 
-		if (buildingType.toLowerCase().contains("hallway") || buildingType.toLowerCase().contains("tunnel")) {
+		if (buildingType.toLowerCase().contains(HALLWAY) || buildingType.toLowerCase().contains(TUNNEL)) {
 			length = l;
 			width = buildingConfig.getWidth(buildingType);
 		} 

@@ -1,6 +1,6 @@
-package org.github.jamm;
+package org.mars_sim.msp.core.memory;
 
-import sun.misc.Unsafe;
+//import sun.misc.Unsafe;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryPoolMXBean;
@@ -14,19 +14,19 @@ import java.util.List;
 public abstract class MemoryLayoutSpecification
 {
 
-    static final Unsafe unsafe;
-    static
-    {
-        Unsafe tryGetUnsafe;
-        try {
-            Field field = sun.misc.Unsafe.class.getDeclaredField("theUnsafe");
-            field.setAccessible(true);
-            tryGetUnsafe = (sun.misc.Unsafe) field.get(null);
-        } catch (Exception e) {
-            tryGetUnsafe = null;
-        }
-        unsafe = tryGetUnsafe;
-    }
+//    static final Unsafe unsafe;
+//    static
+//    {
+//        Unsafe tryGetUnsafe;
+//        try {
+//            Field field = sun.misc.Unsafe.class.getDeclaredField("theUnsafe");
+//            field.setAccessible(true);
+//            tryGetUnsafe = (sun.misc.Unsafe) field.get(null);
+//        } catch (Exception e) {
+//            tryGetUnsafe = null;
+//        }
+//        unsafe = tryGetUnsafe;
+//    }
 
     public static final MemoryLayoutSpecification SPEC = getEffectiveMemoryLayoutSpecification();
 
@@ -41,9 +41,9 @@ public abstract class MemoryLayoutSpecification
     public abstract int getSuperclassFieldPadding();
 
     /* Indicates if UNSAFE object size determination is available */
-    public static boolean hasUnsafe() {
-        return unsafe != null;
-    }
+//    public static boolean hasUnsafe() {
+//        return unsafe != null;
+//    }
 
     /** @return sizeOfField(field.getType()) */
     public static int sizeOf(Field field) {
@@ -78,16 +78,16 @@ public abstract class MemoryLayoutSpecification
         return sizeOfInstance(type);
     }
 
-    /**
-     * @return this allocated heap size of the instance provided; for arrays this is equivalent to sizeOf(obj),
-     * which uses the memory layout specification, however for objects this method uses
-     */
-    public static long sizeOfWithUnsafe(Object obj) {
-        Class<?> type = obj.getClass();
-        if (type.isArray())
-            return sizeOfArray(obj, type);
-        return sizeOfInstanceWithUnsafe(type);
-    }
+//    /**
+//     * @return this allocated heap size of the instance provided; for arrays this is equivalent to sizeOf(obj),
+//     * which uses the memory layout specification, however for objects this method uses
+//     */
+//    public static long sizeOfWithUnsafe(Object obj) {
+//        Class<?> type = obj.getClass();
+//        if (type.isArray())
+//            return sizeOfArray(obj, type);
+//        return sizeOfInstanceWithUnsafe(type);
+//    }
 
     // this is very close to accurate, but occasionally yields a slightly incorrect answer (when long fields are used
     // and cannot be 8-byte aligned, an extra 4-bytes is allocated.
@@ -100,18 +100,18 @@ public abstract class MemoryLayoutSpecification
     }
 
     // attemps to use sun.misc.Unsafe to find the maximum object offset, this work around helps deal with long alignment
-    public static long sizeOfInstanceWithUnsafe(Class<?> type) {
-        while (type != null)
-        {
-            long size = 0;
-            for (Field f : declaredFieldsOf(type))
-                size = Math.max(size, unsafe.objectFieldOffset(f) + sizeOf(f));
-            if (size > 0)
-                return roundTo(size, SPEC.getObjectPadding());
-            type = type.getSuperclass();
-        }
-        return roundTo(SPEC.getObjectHeaderSize(), SPEC.getObjectPadding());
-    }
+//    public static long sizeOfInstanceWithUnsafe(Class<?> type) {
+//        while (type != null)
+//        {
+//            long size = 0;
+//            for (Field f : declaredFieldsOf(type))
+//                size = Math.max(size, unsafe.objectFieldOffset(f) + sizeOf(f));
+//            if (size > 0)
+//                return roundTo(size, SPEC.getObjectPadding());
+//            type = type.getSuperclass();
+//        }
+//        return roundTo(SPEC.getObjectHeaderSize(), SPEC.getObjectPadding());
+//    }
 
     public static long sizeOfArray(Object instance, Class<?> type) {
         return sizeOfArray(Array.getLength(instance), sizeOfField(type.getComponentType()));

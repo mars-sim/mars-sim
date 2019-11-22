@@ -1,4 +1,4 @@
-package org.github.jamm;
+package org.mars_sim.msp.core.memory;
 
 import java.util.Collection;
 import java.util.Collections;

@@ -102,7 +102,7 @@
 
 		<!-- autosave-interval is the number of minutes the simulation will wait between two successive autosave events -->
 		<!-- Value must be a positive number between 1 and 1440 and cannot be zero -->
-		<!-- Min : 1 ; Max : 1440 -->
+		<!-- Min : 1 ; Max : 360 -->
 		<!-- Default: 15 -->
 		<autosave-interval value="15" />
 
