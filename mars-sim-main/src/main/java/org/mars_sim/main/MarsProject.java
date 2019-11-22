@@ -400,6 +400,7 @@ public class MarsProject {
 //		}
 //	}
 	
+	
 	/**
 	 * Create a new simulation instance.
 	 */
@@ -426,7 +427,9 @@ public class MarsProject {
 				
 				else { // Since SCE is not used, manually set up each of the followings 
 					// Create new simulation
-					sim.createNewSimulation(-1, false);
+					// sim.createNewSimulation(-1, false);
+					// Run this class in sim executor
+					sim.runCreateNewSimTask();	
 					// Start the simulation
 					startSimThread(false);
 					// Create main window
