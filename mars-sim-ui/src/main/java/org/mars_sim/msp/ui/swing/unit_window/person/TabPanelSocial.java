@@ -97,7 +97,8 @@ implements ListSelectionListener {
 		relationshipTable = new ZebraJTable(relationshipTableModel);
 		relationshipTable.setPreferredScrollableViewportSize(new Dimension(225, 100));
 		relationshipTable.getColumnModel().getColumn(0).setPreferredWidth(80);
-		relationshipTable.getColumnModel().getColumn(1).setPreferredWidth(70);
+		relationshipTable.getColumnModel().getColumn(1).setPreferredWidth(80);
+		relationshipTable.getColumnModel().getColumn(2).setPreferredWidth(40);
 		relationshipTable.setRowSelectionAllowed(true);
 		
 		// For single clicking on a person to pop up his person window.
@@ -107,7 +108,7 @@ implements ListSelectionListener {
 		// Add a mouse listener to hear for double-clicking a person (rather than single click using valueChanged()
 		relationshipTable.addMouseListener(new MouseAdapter() {
 		    public void mousePressed(MouseEvent me) {
-		        WebTable table =(WebTable) me.getSource();
+		    	JTable table =(JTable) me.getSource();
 		        Point p = me.getPoint();
 		        int row = table.rowAtPoint(p);
 		        int col = table.columnAtPoint(p);
@@ -127,7 +128,8 @@ implements ListSelectionListener {
 		renderer.setHorizontalAlignment(SwingConstants.RIGHT);
 		relationshipTable.getColumnModel().getColumn(0).setCellRenderer(renderer);
 		relationshipTable.getColumnModel().getColumn(1).setCellRenderer(renderer);
-
+		relationshipTable.getColumnModel().getColumn(2).setCellRenderer(renderer);
+		
 		// Added sorting
 		relationshipTable.setAutoCreateRowSorter(true); // in conflict with valueChanged(), throw exception if clicking on a person
 
@@ -169,7 +171,7 @@ implements ListSelectionListener {
 		private static final long serialVersionUID = 1L;
 
 		private RelationshipManager manager;
-		private Collection<?> knownPeople;
+		private Collection<Person> knownPeople;
 		private Person person;
 
 		private RelationshipTableModel(Person person) {
@@ -183,26 +185,30 @@ implements ListSelectionListener {
 		}
 
 		public int getColumnCount() {
-			return 2;
+			return 3;
 		}
 
 		public Class<?> getColumnClass(int columnIndex) {
 			Class<?> dataType = super.getColumnClass(columnIndex);
 			if (columnIndex == 0) dataType = Object.class;
-			if (columnIndex == 1) dataType = Object.class;
+			else if (columnIndex == 1) dataType = Object.class;
+			else if (columnIndex == 2) dataType = Object.class;
 			return dataType;
 		}
 
 		public String getColumnName(int columnIndex) {
-			if (columnIndex == 0) return Msg.getString("TabPanelSocial.column.person"); //$NON-NLS-1$
-			else if (columnIndex == 1) return Msg.getString("TabPanelSocial.column.relationship"); //$NON-NLS-1$
+			if (columnIndex == 0) return Msg.getString("TabPanelSocial.column.settlement"); //$NON-NLS-1$
+			else if (columnIndex == 1) return Msg.getString("TabPanelSocial.column.person"); //$NON-NLS-1$
+			else if (columnIndex == 2) return Msg.getString("TabPanelSocial.column.relationship"); //$NON-NLS-1$
 			else return null;
 		}
 
 		public Object getValueAt(int row, int column) {
-			if (column == 0) return knownPeople.toArray()[row];
-			// TODO: why on above line Exception in thread "pool-1924-thread-1" java.lang.ArrayIndexOutOfBoundsException: -1
-			else if (column == 1) {
+			if (column == 0) 
+				return ((Person)knownPeople.toArray()[row]).getAssociatedSettlement();		
+			else if (column == 1) 
+				return knownPeople.toArray()[row];
+			else if (column == 2) {
 				double opinion = manager.getOpinionOfPerson(person, (Person) knownPeople.toArray()[row]);
 				return getRelationshipString(opinion);
 			}
@@ -210,7 +216,7 @@ implements ListSelectionListener {
 		}
 
 		public void update() {
-			Collection<?> newKnownPeople = manager.getAllKnownPeople(person);
+			Collection<Person> newKnownPeople = manager.getAllKnownPeople(person);
 			if (!knownPeople.equals(newKnownPeople)) {
 				knownPeople = newKnownPeople;
 				//fireTableDataChanged();

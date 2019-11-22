@@ -66,6 +66,7 @@ import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.mission.meta.BuildingConstructionMissionMeta;
 import org.mars_sim.msp.core.person.ai.mission.meta.CollectIceMeta;
 import org.mars_sim.msp.core.person.ai.mission.meta.CollectRegolithMeta;
+import org.mars_sim.msp.core.person.ai.task.EatMeal;
 import org.mars_sim.msp.core.person.ai.task.HaveConversation;
 import org.mars_sim.msp.core.person.ai.task.Maintenance;
 import org.mars_sim.msp.core.person.ai.task.Read;
@@ -1967,17 +1968,17 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	 *                       invitee is in a chat)
 	 * @param sameBuilding   true if the invitee is at the same building as the
 	 *                       initiator (false if it doesn't matter)
-	 * @param allSettlements true if the collection includes all settlements (false
+	 * @param sameSettlement true if the collection includes all settlements (false
 	 *                       if only the initiator's settlement)
 	 * @return person a collection of invitee(s)
 	 */
 	public Collection<Person> getChattingPeople(Person initiator, boolean checkIdle, boolean sameBuilding,
-			boolean allSettlements) {
+			boolean sameSettlement) {
 		Collection<Person> people = new ConcurrentLinkedQueue<Person>();
 		Iterator<Person> i;
 		// TODO: set up rules that allows
 
-		if (allSettlements) {
+		if (sameSettlement) {
 			// could be either radio (non face-to-face) conversation, don't care
 			i = unitManager.getPeople().iterator();
 			sameBuilding = false;
@@ -1997,35 +1998,11 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 					// face-to-face conversation
 					if (initiator.getBuildingLocation().equals(person.getBuildingLocation())) {
 						if (checkIdle) {
-							if (task instanceof Relax
-							// | task instanceof Read
-							// | task instanceof Workout
-							) {
+							if (isIdleTask(task)) {
 								if (!person.equals(initiator))
 									people.add(person);
 							}
-						} else {
-							if (task instanceof HaveConversation) {
-								// boolean isOff =
-								// person.getTaskSchedule().getShiftType().equals(ShiftType.OFF);
-								// if (isOff)
-								if (!person.equals(initiator))
-									people.add(person);
-							}
-						}
-					}
-				}
-
-				else {
-					// may be radio (non face-to-face) conversation
-					// if (!initiator.getBuildingLocation().equals(person.getBuildingLocation())) {
-					if (checkIdle) {
-						if (task instanceof Relax | task instanceof Read | task instanceof Workout) {
-							if (!person.equals(initiator))
-								people.add(person);
-						}
-					} else {
-						if (task instanceof HaveConversation) {
+						} else if (task instanceof HaveConversation) {
 							// boolean isOff =
 							// person.getTaskSchedule().getShiftType().equals(ShiftType.OFF);
 							// if (isOff)
@@ -2034,12 +2011,39 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 						}
 					}
 				}
+
+				else {
+					// may be radio (non face-to-face) conversation
+					// if (!initiator.getBuildingLocation().equals(person.getBuildingLocation())) {
+					if (checkIdle) {
+						if (isIdleTask(task)) {
+							if (!person.equals(initiator))
+								people.add(person);
+						}
+					} else if (task instanceof HaveConversation) {
+						// boolean isOff =
+						// person.getTaskSchedule().getShiftType().equals(ShiftType.OFF);
+						// if (isOff)
+						if (!person.equals(initiator))
+							people.add(person);
+					}
+				}
 			}
 		}
 
 		return people;
 	}
 
+	public boolean isIdleTask(Task task) {
+		if (task instanceof Relax
+				 || task instanceof Read
+				 || task instanceof HaveConversation
+				 || task instanceof EatMeal)
+			return true;
+		
+		return false;
+	}
+	
 	/**
 	 * Gets the settlement's building manager.
 	 *

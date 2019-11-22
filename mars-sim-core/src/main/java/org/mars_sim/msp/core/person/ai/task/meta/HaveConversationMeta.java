@@ -37,6 +37,8 @@ public class HaveConversationMeta implements MetaTask, Serializable {
     private static final String NAME = Msg.getString(
             "Task.description.haveConversation"); //$NON-NLS-1$
     
+    private static final int VALUE = 2;
+    
     private static MarsClock marsClock;
     
     @Override
@@ -61,7 +63,7 @@ public class HaveConversationMeta implements MetaTask, Serializable {
         
             Set<Person> pool = new HashSet<Person>();
 
-            // Person initiator, boolean checkIdle, boolean sameBuilding, boolean allSettlements      
+            // Gets a list of people willing to have conversations  
             Collection<Person> p_talking_all = settlement.getChattingPeople(person, false, false, true);         
                  	      	              
             pool.addAll(p_talking_all); 
@@ -71,14 +73,14 @@ public class HaveConversationMeta implements MetaTask, Serializable {
             
             int num = pool.size();
         	// check if someone is idling somewhere and ready for a chat 
-            if (num > 0) {         
+            if (num > 0) {      
             	// Note: having people who are already chatting will increase the probability of having this person to join
                 double rand = RandomUtil.getRandomDouble(num) + 1;
-                result = rand*result;
+                result = rand * VALUE;
             }
             else {
             	result = 0; // if there is no one else in the settlement, set result to 0
-            	return 0;
+//            	return 0;
             }
             // get a list of "idle" people
             Collection<Person> p_idle_all = settlement.getChattingPeople(person, true, false, true);  
@@ -93,11 +95,11 @@ public class HaveConversationMeta implements MetaTask, Serializable {
 
                 if (num == 1) {
             		double rand = RandomUtil.getRandomDouble(.3);
-                	result = result + rand*result;
+                	result = result + rand * VALUE;
                 }
                 else {
             		double rand = RandomUtil.getRandomDouble(.3*(num+1));
-                	result = result + rand*result;
+                	result = result + rand * VALUE;
                 }
         	}
 
@@ -125,7 +127,7 @@ public class HaveConversationMeta implements MetaTask, Serializable {
         	Collection<Person> affected = v.getAffectedPeople();       	
             //Collection<Person> crew = ((Rover) v).getCrew();     
             Collection<Person> talking = v.getTalkingPeople();
-            // Person initiator, boolean checkIdle, boolean sameBuilding, boolean allSettlements
+            // Gets a list of people willing to have conversations  
             Collection<Person> p_talking_all = s.getChattingPeople(person, false, false, true);         
             
             pool.addAll(affected);
@@ -136,27 +138,21 @@ public class HaveConversationMeta implements MetaTask, Serializable {
             //System.out.println("talking folks : " + talking);
             //TODO: get some candidates to switch their tasks to HaveConversation       
             // need to have at least two people to have a social conversation
-            //if (num == 0) {
-            	// no one is chatting to yet
-            	// but he could the first person to start the chat 
-            //}
             if (num == 1) {
         		double rand = RandomUtil.getRandomDouble(1);
-            	result = result + rand*result;
+            	result = result + rand * VALUE;
             }
-            else {
+            else  if (num > 1) {
         		//result = (num + 1)*result;
         		double rand = RandomUtil.getRandomDouble(num)+ 1;
-            	result = result + rand*result;
+            	result = result + rand * VALUE;
             }
             
 	        // Check if person is in a moving rover.
 	        if (Vehicle.inMovingRover(person)) {
-	        	result += 40D;
+	        	result += 30D;
 	        }
-
         }
-
 
         // Effort-driven task modifier.
         result *= person.getPerformanceRating();
@@ -166,11 +162,10 @@ public class HaveConversationMeta implements MetaTask, Serializable {
     	int now = marsClock.getMillisolInt();
         boolean isOnShiftNow = person.getTaskSchedule().isShiftHour(now);
         if (isOnShiftNow)
-        	result = result/2.0;
+        	result = result/3.0;
         
         if (result > 0)
-        	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
-
+        	result = result + result * person.getPreference().getPreferenceScore(this)/4D;
 
         if (result < 0) 
         	result = 0;

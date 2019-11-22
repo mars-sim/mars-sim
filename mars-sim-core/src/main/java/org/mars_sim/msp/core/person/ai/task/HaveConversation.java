@@ -19,6 +19,7 @@ import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.social.Relationship;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
@@ -76,6 +77,7 @@ implements Serializable {
         Same_Vehicle
     }
    
+    private static RelationshipManager relationshipManager;
     
     /**
      * Constructor. This is an effort-driven task.
@@ -83,7 +85,8 @@ implements Serializable {
      */
     public HaveConversation(Person person) {
         // Use Task constructor.
-        super(NAME, person, true, false, STRESS_MODIFIER - RandomUtil.getRandomDouble(.2), true, 5D + RandomUtil.getRandomDouble(10));
+        super(NAME, person, true, false, STRESS_MODIFIER - RandomUtil.getRandomDouble(.2), true, 
+        		3D + RandomUtil.getRandomDouble(person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.CONVERSATION))/10); 
         
     	// List 8 situations for having a conversation
         if (person.isInSettlement()) {
@@ -91,18 +94,19 @@ implements Serializable {
             Set<Person> pool = new HashSet<Person>();
             Settlement s = person.getSettlement();
             
-            Collection<Person> p_same_bldg_talking = s.getChattingPeople(person, false, true, false);        	          
+            // Gets a list of chatty people in the same building
+            Collection<Person> p_same_bldg_talking = s.getChattingPeople(person, false, true, true);        	          
             pool.addAll(p_same_bldg_talking);
         	invitee_location = Location.Same_Building;
-        	
-        	
+        	   	
             if (pool.size() == 0) {
             	// Go to a chatty chow hall
                 Building diningBuilding = EatMeal.getAvailableDiningBuilding(person, true);
                 if (diningBuilding != null) {
                 	// Walk to that building.
                 	walkToActivitySpotInBuilding(diningBuilding, FunctionType.DINING, true);
-                    Collection<Person> p_dining = s.getChattingPeople(person, false, true, false);
+                    // Gets a list of chatty people in the same building
+                	Collection<Person> p_dining = s.getChattingPeople(person, false, true, true);
                 	pool.addAll(p_dining);
                 	invitee_location = Location.Dining_Building;
                 }
@@ -116,6 +120,7 @@ implements Serializable {
 //            }           
           
             if (pool.size() == 0) {
+            	// Gets a list of people from other settlements
                 Collection<Person> p_diff_bldg_talking = s.getChattingPeople(person, false, false, false);                 
             	pool.addAll(p_diff_bldg_talking);
             	invitee_location = Location.Another_Building;
@@ -152,10 +157,11 @@ implements Serializable {
 	        		talkTo(invitee);
 	            }
 	            else if (num > 1) {
-	            	int rand = RandomUtil.getRandomInt(num-1);           	
+	            	int rand = RandomUtil.getRandomInt(num-1);          
+	            	
 	            	// half of the time, talk to just one person
 	            	if (RandomUtil.getRandomInt(1) == 0) {
-	            		invitee = list.get(rand);
+	            		invitee = getLikablePerson(list);
 	            		invitees.add(invitee);
 	            		talkTo(invitee);
 	            	}
@@ -211,7 +217,7 @@ implements Serializable {
             	int rand = RandomUtil.getRandomInt(num-1);           	
             	// half of the time, talk to just one person
             	if (RandomUtil.getRandomInt(1) == 0) {
-            		invitee = list.get(rand);
+            		invitee = getLikablePerson(list);
             		invitees.add(invitee);
             		talkTo(invitee);
             	}
@@ -235,6 +241,23 @@ implements Serializable {
         setPhase(HAVING_CONVERSATION);
     }
 
+    
+    public Person getLikablePerson(List<Person> list) {
+    	int size = list.size();
+    	double bestScore = 0;
+    	Person bestFriend = null;
+    	if (relationshipManager == null)
+    		relationshipManager = Simulation.instance().getRelationshipManager();
+    	for (int i= 0; i<size; i++) {
+    		double score = relationshipManager.getOpinionOfPerson(person, list.get(i));
+    		if (score > bestScore) {
+    			bestScore = score;
+    			bestFriend = list.get(i);
+    		}
+    	}
+    	return bestFriend;
+    }
+    
     // Add conditional checking to append " via radio" in two cases
     public void talkTo(Person invitee) {
     	String detail = invitee.getName();
@@ -280,11 +303,12 @@ implements Serializable {
             // TODO: switch the invitee(s) to HaveConversation.           
 
             // Check if existing relationship between primary researcher and invitee.
-            RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
             int size = invitees.size();
                      
             for (int i= 0; i< size; i++) {
             	Person invitee = invitees.get(i);
+            	if (relationshipManager == null)
+            		relationshipManager = Simulation.instance().getRelationshipManager();
 	            if (!relationshipManager.hasRelationship(person, invitee)) {
 	                // Add new communication meeting relationship.
 	                relationshipManager.addRelationship(person, invitee, Relationship.COMMUNICATION_MEETING);
