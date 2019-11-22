@@ -29,7 +29,6 @@ public class ItemResource extends ResourceAbstract implements Serializable {
 
 	public ItemResource() {
 //		partConfig = SimulationConfig.instance().getPartConfiguration();
-
 		ResourceUtil.getInstance();
 	}
 

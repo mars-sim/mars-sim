@@ -1,4 +1,3 @@
-
 /**
  * Mars Simulation Project
  * Indoor.java
@@ -20,7 +19,5 @@ public interface Indoor {
 
 	public Settlement getAssociatedSettlement();
 
-//	public Settlement getBuriedSettlement();
-	
 }
 

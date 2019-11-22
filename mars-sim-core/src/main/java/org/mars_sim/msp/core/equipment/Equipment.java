@@ -78,6 +78,9 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 		return identifier;
 	}
 	
+	/**
+	 * Increments the identifier
+	 */
 	public void incrementID() {
 		// Gets the identifier
 		this.identifier = getNextIdentifier();
@@ -166,10 +169,6 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 	public boolean isSalvaged() {
 		return isSalvaged;
 	}
-
-	// public String getName() {
-	// return name;
-	// }
 
 	/**
 	 * Indicate the start of a salvage process on the item.
@@ -327,6 +326,12 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 		uniqueCount = unitManager.getEquipmentNum() + Unit.FIRST_EQUIPMENT_UNIT_ID;
 	}
 	
+	
+	/**
+	 * Compares if an object is the same as this equipment 
+	 * 
+	 * @param obj
+	 */
 	public boolean equals(Object obj) {
 		if (this == obj) return true;
 		if (obj == null) return false;

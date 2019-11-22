@@ -181,62 +181,77 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 
 		unitManager = sim.getUnitManager();
 		
-		listeners = Collections.synchronizedList(new ArrayList<UnitListener>()); // Unit listeners.
+		// Set up unit listeners.
+		listeners = Collections.synchronizedList(new ArrayList<UnitListener>()); 
 
 		// Creates a new location tag instance for each unit
 		tag = new LocationTag(this);
 
 		incrementID();
-//		System.out.println("Unit : " + this + " (" + getIdentifier() + ")");
-		
-		this.inventory = new Inventory(this);
-		this.location = new Coordinates(0D, 0D);
-
-		if (location != null) {
-			// Set the unit's location coordinates
-			this.location.setCoords(location);
-			// Set the unit's inventory location coordinates
-			this.inventory.setCoordinates(location);
-		}
-		
+//		logger.config("Unit : " + this + " (" + getIdentifier() + ")");
+			
 		// Define the default LocationStateType of an unit at the start of the sim
+		// Instantiate Inventory as needed
 		if (this instanceof Robot) {
 			currentStateType = LocationStateType.INSIDE_SETTLEMENT;
 //			containerID = FIRST_SETTLEMENT_ID;
+			this.inventory = new Inventory(this);
 		}
 		else if (this instanceof Equipment) {
 			currentStateType = LocationStateType.INSIDE_SETTLEMENT;
 //			containerID = FIRST_SETTLEMENT_ID;
+			this.inventory = new Inventory(this);
 		}
 		else if (this instanceof Person) {
 			currentStateType = LocationStateType.INSIDE_SETTLEMENT;
-//			System.out.println("Unit : " + this + "'s location state type : " + this.getLocationStateType());
 //			containerID = FIRST_SETTLEMENT_ID;
+			this.inventory = new Inventory(this);
 		}
-		else if (this instanceof Building) {
+		else if (this instanceof Building) {// || this instanceof MockBuilding) {
 			currentStateType = LocationStateType.INSIDE_SETTLEMENT;
 //			containerID = FIRST_SETTLEMENT_ID;
 		}
 		else if (this instanceof Vehicle) {
 			currentStateType = LocationStateType.WITHIN_SETTLEMENT_VICINITY;
 			containerID = (Integer) MARS_SURFACE_UNIT_ID;
+			this.inventory = new Inventory(this);
 		}
-		else if (this instanceof Settlement) {
+		else if (this instanceof Settlement) {// || this instanceof MockSettlement) {
 			currentStateType = LocationStateType.OUTSIDE_ON_THE_SURFACE_OF_MARS;
 			containerID = (Integer) MARS_SURFACE_UNIT_ID;
+			this.inventory = new Inventory(this);
 		}
 		else if (this instanceof ConstructionSite) {
 			currentStateType = LocationStateType.OUTSIDE_ON_THE_SURFACE_OF_MARS;
 			containerID = (Integer) MARS_SURFACE_UNIT_ID;
 		}
-		else if (this instanceof Unit) {
+//		else if (this instanceof MarsSurface) {
+//			currentStateType = LocationStateType.IN_OUTER_SPACE;
+//			containerID = (Integer) OUTER_SPACE_UNIT_ID;
+////			System.out.println(this + " has containerID " + containerID + " and is " + currentStateType);
+//			this.inventory = new Inventory(this);
+//		}
+		else { //if (this instanceof Unit) {
 			currentStateType = LocationStateType.OUTSIDE_ON_THE_SURFACE_OF_MARS;
-			containerID = (Integer) MARS_SURFACE_UNIT_ID;
+			containerID = (Integer) MARS_SURFACE_UNIT_ID;	
+			this.inventory = new Inventory(this);
 		}
-		else {
-			currentStateType = LocationStateType.IN_OUTER_SPACE;
-			containerID = (Integer) OUTER_SPACE_UNIT_ID;
-//			System.out.println(this + " has containerID " + containerID + " and is " + currentStateType);
+//		else {
+//			currentStateType = LocationStateType.IN_OUTER_SPACE;
+//			containerID = (Integer) OUTER_SPACE_UNIT_ID;
+////			System.out.println(this + " has containerID " + containerID + " and is " + currentStateType);
+//			this.inventory = new Inventory(this);
+//		}
+		
+		this.location = new Coordinates(0D, 0D);
+
+		if (location != null) {
+			// Set the unit's location coordinates
+			this.location.setCoords(location);
+			// Set the unit's inventory location coordinates
+			if (inventory != null) {
+				inventory.setCoordinates(location);
+			}
 		}
 	}
 
