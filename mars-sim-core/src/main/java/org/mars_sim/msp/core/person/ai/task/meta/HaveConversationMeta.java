@@ -37,7 +37,7 @@ public class HaveConversationMeta implements MetaTask, Serializable {
     private static final String NAME = Msg.getString(
             "Task.description.haveConversation"); //$NON-NLS-1$
     
-    private static final int VALUE = 2;
+    private static final double VALUE = 1.1;
     
     private static MarsClock marsClock;
     

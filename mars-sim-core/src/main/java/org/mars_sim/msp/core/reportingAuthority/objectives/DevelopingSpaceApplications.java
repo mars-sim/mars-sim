@@ -22,6 +22,28 @@ public class DevelopingSpaceApplications implements MissionAgenda, Serializable 
 			"Test New Flexible Space Suit Micro Fabric", 
 			"Improve Water and Gas Filtration Systems"};
 
+	// Note : index for missionModifiers : 
+	//	0 : AreologyFieldStudy
+	//	1 : BiologyFieldStudy
+	//	2 : CollectIce
+	//	3 : CollectRegolith	
+	//	4 : Exploration
+	//	5 : MeteorologyFieldStudy
+	//	6 : Mining
+	//  7 : Trade
+	//  8 : TravelToSettlement
+	
+	private final int[][] missionModifiers = new int[][] {
+			{3, 0, 0, 0, 3, 3, 0, 1, 0},
+			{0, 3, 0, 0, 0, 3, 0, 1, 0},
+			{0, 0, 9, 0, 3, 0, 3, 0, 0}
+	};
+	
+	@Override	
+	public int[][] getMissionModifiers() {
+		return missionModifiers;
+	}
+	
 	@Override
 	public String[] getPhases() {
 		return phases;

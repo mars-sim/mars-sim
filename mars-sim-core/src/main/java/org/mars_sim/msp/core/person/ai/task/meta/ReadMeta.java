@@ -26,6 +26,8 @@ public class ReadMeta implements MetaTask, Serializable {
     /** default serial id. */
     private static final long serialVersionUID = 1L;
 
+    private static final double VALUE = 5D;
+    
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.read"); //$NON-NLS-1$
@@ -54,7 +56,7 @@ public class ReadMeta implements MetaTask, Serializable {
         	return 0;
         
         if (person.isInside()) {
-        	result += 20D;
+        	result += VALUE;
 
             if (person.isInVehicle()) {	
     	        // Check if person is in a moving rover.

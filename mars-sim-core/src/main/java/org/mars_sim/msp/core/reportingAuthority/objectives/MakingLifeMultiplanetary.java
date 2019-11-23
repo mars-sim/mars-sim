@@ -17,10 +17,33 @@ public class MakingLifeMultiplanetary implements MissionAgenda, Serializable  {
 	private final String name = "Making Life Multiplanetary";
 
 	private final String[] phases = new String[] {
-								"Construct Interplanetary Transportation Network",
-								"Terraform Mars", 
-								"Provide Environmentally Sustainable Energy Solution",
-								"Build Self-Sustaining Colonies"};
+								"Investigate Interplanetary Transportation Network",
+								"Study Terraforming Mars environment", 
+								"Investigate Environmentally Sustainable Energy Solutions"
+//								"Build Self-Sustaining Colonies"
+								};
+	
+	// Note : index for missionModifiers : 
+	//	0 : AreologyFieldStudy
+	//	1 : BiologyFieldStudy
+	//	2 : CollectIce
+	//	3 : CollectRegolith	
+	//	4 : Exploration
+	//	5 : MeteorologyFieldStudy
+	//	6 : Mining
+	//  7 : Trade
+	//  8 : TravelToSettlement
+	
+	private final int[][] missionModifiers = new int[][] {
+			{0, 0, 0, 0, 3, 3, 0, 0, 9},
+			{3, 3, 0, 0, 3, 0, 0, 0, 0},
+			{2, 2, 2, 2, 2, 2, 2, 2, 0}
+	};
+	
+	@Override	
+	public int[][] getMissionModifiers() {
+		return missionModifiers;
+	}
 	
 	@Override
 	public String[] getPhases() {

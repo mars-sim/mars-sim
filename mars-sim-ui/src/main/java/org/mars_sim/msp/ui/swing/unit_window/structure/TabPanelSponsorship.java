@@ -4,7 +4,7 @@
  * @version 3.1.0 2017-10-18
  * @author Manny Kung
  */
-package org.mars_sim.msp.ui.swing.unit_window.person;
+package org.mars_sim.msp.ui.swing.unit_window.structure;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
@@ -19,6 +19,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
@@ -38,27 +39,28 @@ extends TabPanel {
 	/** Is UI constructed. */
 	private boolean uiDone = false;
 	
-	/** The Person instance. */
-	private Person person = null;
+	/** The Settlement instance. */
+	private Settlement settlement;
 	
 	/**
 	 * Constructor.
-	 * @param unit the unit to display.
+	 * @param settlement the settlement.
 	 * @param desktop the main desktop.
 	 */
-	public TabPanelSponsorship(Unit unit, MainDesktopPane desktop) {
+	public TabPanelSponsorship(Settlement settlement, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(
 			Msg.getString("TabPanelSponsorship.title"), //$NON-NLS-1$
 			null,
 			Msg.getString("TabPanelSponsorship.tooltip"), //$NON-NLS-1$
-			unit, desktop
+			settlement, desktop
 		);
 
+		this.settlement = settlement;
+		
 		//TabPanelSponsorship.missionControl		= Sponsored Organization : {0}
 		//TabPanelSponsorship.missionObjective		= Mission Objective : {0}
 
-		person = (Person) unit;
 	}
 	
 	public boolean isUIDone() {
@@ -90,16 +92,17 @@ extends TabPanel {
 		// Prepare sponsor label
 		JTextField sponsorTF = new JTextField();
 		ReportingAuthorityType sponsor = null;
-		if (person.getReportingAuthority() != null) {
-		    sponsor = person.getReportingAuthority().getOrg();
+		if (settlement.getReportingAuthority() != null) {
+		    sponsor = settlement.getReportingAuthority().getOrg();
 		    sponsorTF.setText(sponsor+""); // Conversion.capitalize(sponsor)
 		}
 		sponsorTF.setEditable(false);
 		sponsorTF.setColumns(8);
 		sponsorTF.setCaretPosition(0);
-		if (person.getReportingAuthority() != null) {
-			TooltipManager.setTooltip (sponsorTF, person.getReportingAuthority().getToolTipStr(), TooltipWay.down);
+		if (settlement.getReportingAuthority() != null) {
+			TooltipManager.setTooltip(sponsorTF, settlement.getReportingAuthority().getToolTipStr(), TooltipWay.down);
 		}
+		//JLabel sponsorLabel = new JLabel(sponsor, JLabel.RIGHT);
 		infoPanel.add(sponsorTF);
 
 
@@ -111,8 +114,8 @@ extends TabPanel {
 		// Prepare birth location label
 		String objective = null;
 		JTextField objectiveTF = new JTextField();
-		if (person.getReportingAuthority() != null) {
-			objective = person.getReportingAuthority().getMissionAgenda().getObjectiveName();
+		if (settlement.getReportingAuthority() != null) {
+			objective = settlement.getReportingAuthority().getMissionAgenda().getObjectiveName();
 		}
 		//JLabel objectiveLabel = new JLabel(objective, JLabel.RIGHT);
 		objectiveTF.setText(Conversion.capitalize(objective));
@@ -135,8 +138,7 @@ extends TabPanel {
 	public void update() {
 		if (!uiDone)
 			initializeUI();
-		
-		// Person person = (Person) unit;
+
 		// Fill in as we have more to update on this panel.
 	}
 }

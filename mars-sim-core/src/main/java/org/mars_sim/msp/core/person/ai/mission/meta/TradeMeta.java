@@ -13,7 +13,6 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Trader;
-import org.mars_sim.msp.core.person.ai.mission.AreologyFieldStudy;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.person.ai.mission.Trade;
@@ -99,7 +98,7 @@ public class TradeMeta implements MetaMission {
 			int f1 = 2*numEmbarked + 1;
 			int f2 = 2*numThisMission + 1;
 			
-			missionProbability *= settlement.getNumCitizens() / f1 / f2 / 2D;
+			missionProbability *= settlement.getNumCitizens() / f1 / f2 / 2D * ( 1 + settlement.getMissionDirectiveModifier(7));
 		
 			if (missionProbability > Trade.MAX_STARTING_PROBABILITY)
 				missionProbability = Trade.MAX_STARTING_PROBABILITY;

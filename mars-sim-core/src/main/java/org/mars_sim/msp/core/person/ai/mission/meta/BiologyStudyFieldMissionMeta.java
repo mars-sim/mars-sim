@@ -13,7 +13,6 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
-import org.mars_sim.msp.core.person.ai.mission.AreologyFieldStudy;
 import org.mars_sim.msp.core.person.ai.mission.BiologyFieldStudy;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
@@ -67,12 +66,7 @@ public class BiologyStudyFieldMissionMeta implements MetaMission {
 	   		// Check for # of embarking missions.
     		if (Math.max(1, settlement.getNumCitizens() / 8.0) < numEmbarked + numThisMission) {
     			return 0;
-    		}	
-    		
-    		if (numThisMission > 1)
-    			return 0;	
-    		
-    		missionProbability = 0;
+    		}
     		
             try {
 	            // Get available rover.
@@ -112,7 +106,7 @@ public class BiologyStudyFieldMissionMeta implements MetaMission {
             int f1 = 2*numEmbarked + 1;
 			int f2 = 2*numThisMission + 1;
 			
-			missionProbability *= settlement.getNumCitizens() / f1 / f2 / 2D;
+			missionProbability *= settlement.getNumCitizens() / f1 / f2 / 2D * ( 1 + settlement.getMissionDirectiveModifier(1));
 			
             // Crowding modifier
             int crowding = settlement.getIndoorPeopleCount() - settlement.getPopulationCapacity();

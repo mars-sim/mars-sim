@@ -18,9 +18,32 @@ public class ProspectingMinerals implements MissionAgenda, Serializable  {
 	private final String name = "Prospercting Precious Minerals on Mars";
 	
 	private final String[] phases = new String[] {
+			"Analyze Various Signature of Minerals",
 			"Corroborate Surface Geological Data with On-Orbit Scans",
 			"Core Drill Rock Samples from Selected Locations"};
 
+	// Note : index for missionModifiers : 
+	//	0 : AreologyFieldStudy
+	//	1 : BiologyFieldStudy
+	//	2 : CollectIce
+	//	3 : CollectRegolith	
+	//	4 : Exploration
+	//	5 : MeteorologyFieldStudy
+	//	6 : Mining
+	//  7 : Trade
+	//  8 : TravelToSettlement
+	
+	private final int[][] missionModifiers = new int[][] {
+			{3, 0, 0, 3, 3, 3, 3, 0, 0},
+			{3, 0, 0, 0, 0, 3, 0, 0, 0},
+			{0, 0, 0, 0, 4, 0, 6, 0, 0}
+	};
+	
+	@Override	
+	public int[][] getMissionModifiers() {
+		return missionModifiers;
+	}
+	
 	@Override
 	public String[] getPhases() {
 		return phases;

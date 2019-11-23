@@ -72,7 +72,6 @@ import org.mars_sim.msp.core.person.ai.task.Maintenance;
 import org.mars_sim.msp.core.person.ai.task.Read;
 import org.mars_sim.msp.core.person.ai.task.Relax;
 import org.mars_sim.msp.core.person.ai.task.Repair;
-import org.mars_sim.msp.core.person.ai.task.Workout;
 import org.mars_sim.msp.core.person.ai.task.meta.ConstructBuildingMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.MaintenanceEVAMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.MaintenanceMeta;
@@ -81,6 +80,17 @@ import org.mars_sim.msp.core.person.ai.task.meta.RepairMalfunctionMeta;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskSchedule;
 import org.mars_sim.msp.core.person.health.RadiationExposure;
+import org.mars_sim.msp.core.reportingAuthority.CNSAMissionControl;
+import org.mars_sim.msp.core.reportingAuthority.CSAMissionControl;
+import org.mars_sim.msp.core.reportingAuthority.ESAMissionControl;
+import org.mars_sim.msp.core.reportingAuthority.ISROMissionControl;
+import org.mars_sim.msp.core.reportingAuthority.JAXAMissionControl;
+import org.mars_sim.msp.core.reportingAuthority.MarsSocietyMissionControl;
+import org.mars_sim.msp.core.reportingAuthority.NASAMissionControl;
+import org.mars_sim.msp.core.reportingAuthority.RKAMissionControl;
+import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
+import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
+import org.mars_sim.msp.core.reportingAuthority.SpaceXMissionControl;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
@@ -170,8 +180,6 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	public static double minimum_air_pressure;
 	/** The settlement life support requirements. */
 	public static double[][] life_support_value = new double[2][7];
-	/** The settlement terrain profile. */
-	public static double[] terrainProfile = new double[2];
 	
 	/** Amount of time (millisols) required for periodic maintenance. */
 	// private static final double MAINTENANCE_TIME = 1000D;
@@ -336,6 +344,10 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 			maxMssionRange,   // 9. Trade
 			maxMssionRange*2, // 10.TravelToSettlement			
 	};
+	/** The settlement terrain profile. */
+	public double[] terrainProfile = new double[2];
+	/** The settlement mission directive modifiers. */
+	public double[] missionModifiers = new double[7];
 	
 	/** The settlement sponsor. */
 	private String sponsor;
@@ -344,6 +356,9 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	/** The settlement name. */
 	private String name;
 
+	/** The settlement's ReportingAuthority instance. */
+	private ReportingAuthority ra;
+	
 	/** The settlement objective type instance. */
 	private ObjectiveType objectiveType;
 
@@ -555,6 +570,11 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 		this.projectedNumOfRobots = projectedNumOfRobots;
 		this.initialPopulation = populationNumber;
 
+		// Determine the reporting authority
+		setReportingAuthority(sponsor);
+		// Determine the mission directive modifiers
+		determineMissionAgenda();
+		
 //		// The surface of Mars contains this settlement
 //		setContainerUnit(marsSurface);
 //		// Set the containerID
@@ -597,9 +617,11 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	 * Initialize field data, class and maps
 	 */
 	public void initialize() {
-
+		if (terrainElevation == null)
+			terrainElevation = surfaceFeatures.getTerrainElevation();
+		
 //		// Get the elevation and terrain gradient factor
-//		terrainProfile = TerrainElevation.getTerrainProfile(location);
+		terrainProfile = terrainElevation.getTerrainProfile(location);
 //				
 //		double elevation = terrainProfile[0];
 //		double gradient = terrainProfile[1];		
@@ -613,8 +635,6 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 //		logger.info(this + "   terrain steepness : " + Math.round(gradient*10.0)/10.0);
 //		logger.info(this + " ice collection rate : " + Math.round(iceCollectionRate*100.0)/100.0 + " kg/millisol");
 		
-		if (terrainElevation == null)
-			terrainElevation = surfaceFeatures.getTerrainElevation();
 		iceCollectionRate = terrainElevation.getIceCollectionRate(location);
 //		logger.config("Done iceCollectionRate");
 		
@@ -676,6 +696,66 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 		// Create the daily labor hours map
 		dailyLaborTime = new ConcurrentHashMap<>();
 //		logger.config("Done initialize()");
+	}
+
+	/*
+	 * Sets sponsoring agency for this settlement
+	 */
+	public void setReportingAuthority(String sponsor) {
+		
+		if (sponsor.contains(ReportingAuthorityType.CNSA.getName())) {
+			ra = CNSAMissionControl.createMissionControl(); // ProspectingMineral
+
+		} else if (sponsor.contains(ReportingAuthorityType.CSA.getName())) {
+			ra = CSAMissionControl.createMissionControl(); // AdvancingSpaceKnowledge
+
+		} else if (sponsor.contains(ReportingAuthorityType.ESA.getName())) {
+			ra = ESAMissionControl.createMissionControl(); // DevelopingSpaceActivity;
+
+		} else if (sponsor.contains(ReportingAuthorityType.ISRO.getName())) {
+			ra = ISROMissionControl.createMissionControl(); // DevelopingAdvancedTechnology
+
+		} else if (sponsor.contains(ReportingAuthorityType.JAXA.getName())) {
+			ra = JAXAMissionControl.createMissionControl(); // ResearchingSpaceApplication
+
+		} else if (sponsor.contains(ReportingAuthorityType.NASA.getName())) {
+			ra = NASAMissionControl.createMissionControl(); // FindingLife
+
+		} else if (sponsor.contains(ReportingAuthorityType.RKA.getName())) {
+			ra = RKAMissionControl.createMissionControl(); // ResearchingHealthHazard
+
+		} else if (sponsor.contains(ReportingAuthorityType.MS.getName())) {
+			ra = MarsSocietyMissionControl.createMissionControl(); // SettlingMars
+
+		} else if (sponsor.contains(ReportingAuthorityType.SPACEX.getName())) {
+			ra = SpaceXMissionControl.createMissionControl(); // BuildingSelfSustainingColonies
+
+		} else {
+			logger.warning(getName() + " has no reporting authority!");
+		}
+	}
+	
+	
+	public void determineMissionAgenda() {
+		int[][] mod = ra.getMissionAgenda().getMissionModifiers();
+		int row = mod.length;
+		for (int i=0; i<row; i++) {
+			int sum = 0;
+			int column = mod[0].length;
+			for (int j=0; j<column; j++) {
+				sum += mod[i][j];
+			}
+			double total = 1D * sum / row;
+			setMissionDirectiveModifiers(i, total);
+		}
+		
+	}
+
+	/*
+	 * Gets sponsoring agency for the person
+	 */
+	public ReportingAuthority getReportingAuthority() {
+		return ra;
 	}
 
 	/**
@@ -3937,7 +4017,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	 * @return probability of finding regolith
 	 */
 	public double computeRegolithProbability() {
-		double result = 0;
+		double result = 0;//missionModifiers[3]/3D;
 
 		double regolith_value = goodsManager.getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.regolithID));
 		regolith_value = regolith_value * GoodsManager.REGOLITH_VALUE_MODIFIER;
@@ -3986,7 +4066,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	 * @return probability of finding ice
 	 */
 	public double computeIceProbability() {
-		double result = 0;
+		double result = 0;//missionModifiers[2]/3D;
 
 		double ice_value = goodsManager.getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.iceID));
 		ice_value = ice_value * GoodsManager.ICE_VALUE_MODIFIER;
@@ -4551,6 +4631,20 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	 */
 	public static List<String> getTravelMissionNames() {
 		return travelMissionNames;
+	}
+	
+	/** 
+	 * Sets the settlement mission directive modifiers. 
+	 * 
+	 * @param index
+	 * @param value
+	 */
+	public void setMissionDirectiveModifiers(int index, double value) {
+		missionModifiers[index] = value;
+	}
+	
+	public double getMissionDirectiveModifier(int index) {
+		return missionModifiers[index];
 	}
 	
 	/**

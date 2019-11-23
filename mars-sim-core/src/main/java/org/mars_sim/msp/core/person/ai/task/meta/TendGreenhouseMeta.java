@@ -29,7 +29,7 @@ public class TendGreenhouseMeta implements MetaTask, Serializable {
     /** default serial id. */
     private static final long serialVersionUID = 1L;
 
-    private static final double VALUE = 25D;
+    private static final double VALUE = 7.5D;
     
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -84,20 +84,20 @@ public class TendGreenhouseMeta implements MetaTask, Serializable {
                     // Job modifier.
                     Job job = person.getMind().getJob();
                     if (job != null) {
-                        result *= job.getStartTaskProbabilityModifier(TendGreenhouse.class)
+                        result *= 2 * job.getStartTaskProbabilityModifier(TendGreenhouse.class)
                         		* (person.getSettlement().getGoodsManager().getCropFarmFactor()
                         				+ .5 * person.getAssociatedSettlement().getGoodsManager().getTourismFactor());
                     }
 
                     // Modify if tending plants is the person's favorite activity.
                     if (person.getFavorite().getFavoriteActivity() == FavoriteType.TENDING_PLANTS) {
-                        result += RandomUtil.getRandomInt(1, 20);
+                        result += RandomUtil.getRandomInt(1, 10);
                     }
                 
         	        // Add Preference modifier
                     double pref = person.getPreference().getPreferenceScore(this);
                    
-       	         	result = result + result * pref/5D;        	        	
+       	         	result = result + result * pref/2D;        	        	
 
         	        if (result < 0) result = 0;
                 }

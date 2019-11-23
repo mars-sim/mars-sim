@@ -76,7 +76,7 @@ public class CollectRegolithMeta implements MetaMission {
     		int f1 = 2*numEmbarked + 1;
     		int f2 = 2*numThisMission + 1;
     		
-    		missionProbability *= settlement.getNumCitizens() / f1 / f2 / 2D;
+    		missionProbability *= settlement.getNumCitizens() / f1 / f2 / 2D * ( 1 + settlement.getMissionDirectiveModifier(3));
     		
 			// Job modifier.
 			Job job = person.getMind().getJob();

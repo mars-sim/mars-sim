@@ -13,7 +13,6 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
-import org.mars_sim.msp.core.person.ai.mission.AreologyFieldStudy;
 import org.mars_sim.msp.core.person.ai.mission.MeteorologyFieldStudy;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
@@ -113,7 +112,7 @@ public class MeteorologyStudyFieldMissionMeta implements MetaMission {
 			int f1 = 2*numEmbarked + 1;
 			int f2 = 2*numThisMission + 1;
 			
-			missionProbability *= settlement.getNumCitizens() / f1 / f2 / 2D;
+			missionProbability *= settlement.getNumCitizens() / f1 / f2 / 2D * ( 1 + settlement.getMissionDirectiveModifier(5));
 			
             // Crowding modifier
             int crowding = settlement.getIndoorPeopleCount() - settlement.getPopulationCapacity();

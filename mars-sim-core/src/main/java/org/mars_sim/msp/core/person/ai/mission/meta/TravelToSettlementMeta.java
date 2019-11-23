@@ -159,7 +159,7 @@ public class TravelToSettlementMeta implements MetaMission {
 		int f1 = 2*numEmbarked + 1;
 		int f2 = 2*numThisMission + 1;
 		
-		missionProbability *= settlement.getNumCitizens() / f1 / f2 / 2D;
+		missionProbability *= settlement.getNumCitizens() / f1 / f2 / 2D * ( 1 + settlement.getMissionDirectiveModifier(8));
 		
         // Crowding modifier.
         int crowding = settlement.getIndoorPeopleCount()

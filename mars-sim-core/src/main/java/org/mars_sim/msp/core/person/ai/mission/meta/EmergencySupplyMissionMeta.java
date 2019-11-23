@@ -9,7 +9,6 @@ package org.mars_sim.msp.core.person.ai.mission.meta;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
-import org.mars_sim.msp.core.person.ai.mission.AreologyFieldStudy;
 import org.mars_sim.msp.core.person.ai.mission.EmergencySupply;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
@@ -32,7 +31,6 @@ public class EmergencySupplyMissionMeta implements MetaMission {
     private static final String DEFAULT_DESCRIPTION = Msg.getString(
             "Mission.description.emergencySupply"); //$NON-NLS-1$
 
-    
     @Override
     public String getName() {
         return DEFAULT_DESCRIPTION;

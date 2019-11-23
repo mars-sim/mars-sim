@@ -17,6 +17,7 @@ import org.mars_sim.msp.ui.swing.unit_window.LocationTabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.NotesTabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
+import org.mars_sim.msp.ui.swing.unit_window.structure.TabPanelSponsorship;
 import org.mars_sim.msp.ui.swing.unit_window.structure.building.food.TabPanelCooking;
 import org.mars_sim.msp.ui.swing.unit_window.structure.building.food.TabPanelFoodProduction;
 
@@ -81,6 +82,8 @@ public class SettlementUnitWindow extends UnitWindow {
 
 		addTabPanel(new TabPanelScience(settlement, desktop));
 
+		addTabPanel(new TabPanelSponsorship(settlement, desktop));
+		
 		addTabPanel(new TabPanelThermalSystem(settlement, desktop));
 
 		addTabPanel(new TabPanelVehicles(settlement, desktop));

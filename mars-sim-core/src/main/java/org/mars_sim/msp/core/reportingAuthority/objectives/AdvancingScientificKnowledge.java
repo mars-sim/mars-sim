@@ -19,9 +19,31 @@ public class AdvancingScientificKnowledge implements MissionAgenda, Serializable
 	
 	private final String[] phases = new String[] {
 			"Collect Astronomical Data",
-			"Collect Aerological Data", 
-			"Collect Geomagnetic Data"};
+			"Sample Aerological Data", 
+			"Analyze Bio-signature in Rocks"};
 
+	// Note : index for missionModifiers : 
+	//	0 : AreologyFieldStudy
+	//	1 : BiologyFieldStudy
+	//	2 : CollectIce
+	//	3 : CollectRegolith	
+	//	4 : Exploration
+	//	5 : MeteorologyFieldStudy
+	//	6 : Mining
+	//  7 : Trade
+	//  8 : TravelToSettlement
+	
+	private final int[][] missionModifiers = new int[][] {
+			{3, 0, 0, 0, 0, 6, 0, 0, 0},
+			{9, 0, 0, 0, 3, 0, 0, 0, 0},
+			{0, 6, 2, 0, 0, 6, 2, 0, 0}
+		};
+		
+	@Override	
+	public int[][] getMissionModifiers() {
+		return missionModifiers;
+	}
+	
 	@Override
 	public String[] getPhases() {
 		return phases;

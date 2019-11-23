@@ -22,6 +22,28 @@ public class PrototypingAdvancedTechnologies implements MissionAgenda, Serializa
 			"Prototype New Building Material", 
 			"Test New Propulsion Systems"};
 
+	// Note : index for missionModifiers : 
+	//	0 : AreologyFieldStudy
+	//	1 : BiologyFieldStudy
+	//	2 : CollectIce
+	//	3 : CollectRegolith	
+	//	4 : Exploration
+	//	5 : MeteorologyFieldStudy
+	//	6 : Mining
+	//  7 : Trade
+	//  8 : TravelToSettlement
+	
+	private final int[][] missionModifiers = new int[][] {
+			{2, 2, 2, 2, 2, 2, 2, 3, 3},
+			{0, 0, 0, 4, 0, 0, 4, 2, 0},
+			{0, 0, 0, 0, 0, 0, 0, 1, 2}
+	};
+	
+	@Override	
+	public int[][] getMissionModifiers() {
+		return missionModifiers;
+	}
+	
 	@Override
 	public String[] getPhases() {
 		return phases;

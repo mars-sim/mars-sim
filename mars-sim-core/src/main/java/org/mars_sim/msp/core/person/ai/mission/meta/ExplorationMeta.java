@@ -12,7 +12,6 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
-import org.mars_sim.msp.core.person.ai.mission.AreologyFieldStudy;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
@@ -98,7 +97,7 @@ public class ExplorationMeta implements MetaMission {
 			int f1 = 2*numEmbarked + 1;
 			int f2 = 2*numThisMission + 1;
 			
-			missionProbability *= settlement.getNumCitizens() / f1 / f2;
+			missionProbability *= settlement.getNumCitizens() / f1 / f2 * ( 1 + settlement.getMissionDirectiveModifier(4));
 			
 			// Job modifier.
 			Job job = person.getMind().getJob();

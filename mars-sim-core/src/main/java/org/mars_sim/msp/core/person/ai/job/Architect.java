@@ -14,9 +14,6 @@ import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
-import org.mars_sim.msp.core.person.ai.mission.EmergencySupply;
-import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
-import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.core.person.ai.task.ConsolidateContainers;
 import org.mars_sim.msp.core.person.ai.task.ConstructBuilding;
 import org.mars_sim.msp.core.person.ai.task.ManufactureConstructionMaterials;
@@ -39,7 +36,6 @@ implements Serializable {
 	public final static int JOB_ID = 0;
 	
 	private double[] roleProspects = new double[] {5.0, 30.0, 10.0, 15.0, 10.0, 15.0, 15.0};
-	
 	
 	/** Constructor. */
 	public Architect() {

@@ -18,10 +18,34 @@ public class SettlingMars implements MissionAgenda, Serializable {
 	
 	private final String[] phases = new String[] {
 			"Engineer soil capable of hosting and sustaining organic microbial life",
-			"Test Building Structural Integrity", 
-			"Minimize Physiological Effects of Long Term Exposure to Martian Environment", 
-			"Gather Hydro-Meteorological Data"};
+			"Improve Building Structural Integrity", 
+			"Minimize Physiological Effects of Long Term Exposure to Martian Environment" 
+//			"Gather Hydro-Meteorological Data"
+			};
 
+
+	// Note : index for missionModifiers : 
+	//	0 : AreologyFieldStudy
+	//	1 : BiologyFieldStudy
+	//	2 : CollectIce
+	//	3 : CollectRegolith	
+	//	4 : Exploration
+	//	5 : MeteorologyFieldStudy
+	//	6 : Mining
+	//  7 : Trade
+	//  8 : TravelToSettlement
+	
+	private final int[][] missionModifiers = new int[][] {
+			{0, 0, 0, 3, 0, 0, 0, 0, 0},
+			{0, 0, 0, 1, 0, 0, 0, 2, 0},
+			{1, 1, 1, 1, 1, 1, 1, 1, 1}
+	};
+	
+	@Override	
+	public int[][] getMissionModifiers() {
+		return missionModifiers;
+	}
+		
 	@Override
 	public String[] getPhases() {
 		return phases;
@@ -42,5 +66,8 @@ public class SettlingMars implements MissionAgenda, Serializable {
 	public void gatherSamples() {
 		System.out.println("I'm putting together a report of the local in-situ resources "
 				+ "that we can collect and process for our immediate uses.");
+	}
+	
+	public void setMissionModifiers() {
 	}
 }
