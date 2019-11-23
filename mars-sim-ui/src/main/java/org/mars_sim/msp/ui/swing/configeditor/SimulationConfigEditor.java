@@ -222,7 +222,7 @@ public class SimulationConfigEditor {
 		settlementTable.setRowSelectionAllowed(true);
 		settlementTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		settlementTable.getColumnModel().getColumn(0).setPreferredWidth(80);
-		settlementTable.getColumnModel().getColumn(1).setPreferredWidth(120);
+		settlementTable.getColumnModel().getColumn(1).setPreferredWidth(140);
 		settlementTable.getColumnModel().getColumn(2).setPreferredWidth(30);
 		settlementTable.getColumnModel().getColumn(3).setPreferredWidth(30);
 		settlementTable.getColumnModel().getColumn(4).setPreferredWidth(35);

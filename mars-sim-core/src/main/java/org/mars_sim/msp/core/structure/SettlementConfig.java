@@ -41,6 +41,8 @@ public class SettlementConfig implements Serializable {
 
 	private static Logger logger = Logger.getLogger(SettlementConfig.class.getName());
 
+	private static int templateID = 0;
+	
 	// Element names
 	private static final String ROVER_LIFE_SUPPORT_RANGE_ERROR_MARGIN = "rover-life-support-range-error-margin";
 	private static final String ROVER_FUEL_RANGE_ERROR_MARGIN = "rover-fuel-range-error-margin";
@@ -95,7 +97,6 @@ public class SettlementConfig implements Serializable {
 	private static final String NEW_ARRIVING_SETTLEMENT_LIST = "new-arriving-settlement-list";
 	private static final String ARRIVING_SETTLEMENT = "arriving-settlement";
 
-	
 	private static final String DEFAULT_SPONSOR = "Mars Society (MS)";
 	
 	// Random value indicator.
@@ -109,7 +110,7 @@ public class SettlementConfig implements Serializable {
 	private Collection<SettlementTemplate> settlementTemplates;
 	private List<InitialSettlement> initialSettlements;
 	private List<NewArrivingSettlement> newArrivingSettlements;
-	private Map<Integer, String> scenarioMap = new HashMap<>();
+	private Map<Integer, String> templateMap = new HashMap<>();
 	
 	// A map of settlement id and its name
 	private Map<Integer, String> settlementMap = new ConcurrentHashMap<>();
@@ -140,9 +141,9 @@ public class SettlementConfig implements Serializable {
 
 	}
 
-	// public void setMultiplayerClient(MultiplayerClient multiplayerClient) {
-	// return multiplayerClient;
-	// }
+//	 public void setMultiplayerClient(MultiplayerClient multiplayerClient) {
+//		 return multiplayerClient;
+//	 }
 
 	public Collection<SettlementTemplate> GetSettlementTemplates() {
 		return settlementTemplates;
@@ -261,24 +262,24 @@ public class SettlementConfig implements Serializable {
 
 		Element root = settlementDoc.getRootElement();
 		Element templateList = root.getChild(SETTLEMENT_TEMPLATE_LIST);
-		// Add settlement id to Settlement.xml and loaded settlement id here
-		// Set<Integer> existingSIDs = new HashSet<Integer>();
+
 		List<Element> templateNodes = templateList.getChildren(TEMPLATE);
+		
 		for (Element templateElement : templateNodes) {
-			int scenarioID = Integer.parseInt(templateElement.getAttributeValue(ID));
+//			int scenarioID = Integer.parseInt(templateElement.getAttributeValue(ID));
 			String settlementTemplateName = templateElement.getAttributeValue(NAME);
 
-			if (scenarioMap.containsKey(scenarioID)) {
-				throw new IllegalStateException("Error in SettlementConfig.xml: scenarioID in settlement template "
+			if (templateMap.containsKey(templateID)) {
+				throw new IllegalStateException("Error in SettlementConfig.xml: templateID in settlement template "
 						+ settlementTemplateName + " is not unique.");
 			} else
-				scenarioMap.put(scenarioID, settlementTemplateName);
+				templateMap.put(templateID, settlementTemplateName);
 
 			int defaultPopulation = Integer.parseInt(templateElement.getAttributeValue(DEFAULT_POPULATION));
 			int defaultNumOfRobots = Integer.parseInt(templateElement.getAttributeValue(DEFAULT_NUM_ROBOTS));
 
 			// Add scenarioID
-			SettlementTemplate template = new SettlementTemplate(settlementTemplateName, scenarioID, defaultPopulation,
+			SettlementTemplate template = new SettlementTemplate(settlementTemplateName, templateID, defaultPopulation,
 					defaultNumOfRobots);
 			settlementTemplates.add(template);
 
@@ -323,7 +324,7 @@ public class SettlementConfig implements Serializable {
 
 				// Create a building nickname for every building
 				// by appending the settlement id and building id to that building's type.
-				String scenario = getCharForNumber(scenarioID + 1);
+				String scenario = getCharForNumber(templateID + 1);
 				// NOTE: i = sid + 1 since i must be > 1, if i = 0, s = null
 				// Add buildingTypeID
 				int buildingTypeID = buildingTypeIDMap.get(buildingType);
@@ -445,6 +446,8 @@ public class SettlementConfig implements Serializable {
 					template.addResupplyMissionTemplate(resupplyMissionTemplate);
 				}
 			}
+			// Increments the templateID to be used for the next template
+			templateID++;
 		}
 	}
 
@@ -762,7 +765,7 @@ public class SettlementConfig implements Serializable {
 	public int getNewArrivingSettlementScenarioID(int index) {
 		if ((index >= 0) && (index < newArrivingSettlements.size()))
 			// return scenarioMap.get(newArrivingSettlements.get(index).template);
-			return getMapKey(scenarioMap, newArrivingSettlements.get(index).template);
+			return getMapKey(templateMap, newArrivingSettlements.get(index).template);
 		else
 			throw new IllegalArgumentException("index: " + index + "is out of bounds");
 	}
@@ -880,7 +883,7 @@ public class SettlementConfig implements Serializable {
 	 */
 	public int getInitialSettlementScenarioID(int index) {
 		if ((index >= 0) && (index < initialSettlements.size()))
-			return getMapKey(scenarioMap, initialSettlements.get(index).template);
+			return getMapKey(templateMap, initialSettlements.get(index).template);
 		else
 			throw new IllegalArgumentException("index: " + index + "is out of bounds");
 	}
@@ -1019,7 +1022,7 @@ public class SettlementConfig implements Serializable {
 		settlement.numOfRobots = numOfRobots;
 		settlement.sponsor = sponsor;
 
-		settlement.scenarioID = getMapKey(scenarioMap, template);
+		settlement.scenarioID = getMapKey(templateMap, template);
 
 		// take care to internationalize the coordinates
 		latitude = latitude.replace("N", Msg.getString("direction.northShort")); //$NON-NLS-1$ //$NON-NLS-2$
@@ -1034,6 +1037,10 @@ public class SettlementConfig implements Serializable {
 
 	}
 
+	public Map<Integer, String> getTemplateMap() {
+		return templateMap;
+	}
+	
 	/**
 	 * Prepare object for garbage collection.
 	 */
@@ -1050,6 +1057,8 @@ public class SettlementConfig implements Serializable {
 		settlementNamesMap = null;
 		settlementMap.clear();
 		settlementMap = null;
+		templateMap.clear();
+		templateMap = null;
 	}
 
 	/**

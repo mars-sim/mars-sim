@@ -37,7 +37,6 @@
 	<!ELEMENT settlement-template-list (template*)>
 	<!ELEMENT template (building*, vehicle*, equipment*, resource*, part*, part-package*, resupply?)>
 	<!ATTLIST template name CDATA #REQUIRED>
-	<!ATTLIST template id CDATA #REQUIRED>
 	<!ATTLIST template default-population CDATA #REQUIRED>
 	<!ATTLIST template number-of-robots CDATA #REQUIRED>
 	<!ATTLIST template sponsor CDATA #REQUIRED>
@@ -73,10 +72,12 @@
 	<!ELEMENT resupply-mission EMPTY>
 	<!ATTLIST resupply-mission name CDATA #REQUIRED>
 	<!ATTLIST resupply-mission arrival-time CDATA #REQUIRED>
+	
 	<!ELEMENT initial-settlement-list (settlement*)>
 	<!ELEMENT settlement (location, population, number-of-robots, sponsor)>
 	<!ATTLIST settlement name CDATA #REQUIRED>
 	<!ATTLIST settlement template CDATA #REQUIRED>
+	
 	<!ELEMENT new-arriving-settlement-list (arriving-settlement*)>
 	<!ELEMENT arriving-settlement (location, population, number-of-robots, sponsor)>
 	<!ATTLIST arriving-settlement name CDATA #REQUIRED>
@@ -91,6 +92,7 @@
 	<!ATTLIST number-of-robots number CDATA #REQUIRED>
 	<!ELEMENT sponsor EMPTY>
 	<!ATTLIST sponsor name CDATA #REQUIRED>
+	
 	<!ELEMENT settlement-name-list (settlement-name*)>
 	<!ELEMENT settlement-name EMPTY>
 	<!ATTLIST settlement-name sponsor CDATA #REQUIRED>
@@ -149,32 +151,32 @@
 		<!-- default-population: the default population capacity for the template. -->
 		<!-- number-of-robots: the default number of robots for the template. -->
 		<!-- sponsor: the name of the sponsoring organization for the template. -->
-		<template id="0" name="Mars Direct Base (Phase 1)" default-population="4" number-of-robots="2"
+		<template name="Mars Direct Base (Phase 1)" default-population="4" number-of-robots="2"
 		    sponsor="Mars Society (MS)">
 
 			<!-- Lander habitat building is the main habitation in the Mars Direct mission plan. -->
 			<building id="0" type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0">
 				<!-- List of all connections to other buildings (optional). -->
 				<connection-list>
-					<!-- Connection to another building.  "id" is other building's ID value. -->
-					<!-- X & Y locations are relative to this building, not settlement locale. -->
-					<connection id="2" x-location="-4.5" y-location="0.0" />
-				</connection-list>
-			</building>
-
-			<!-- Inflatable greenhouse can be used to grow crops. -->
-			<building id="1" type="Inflatable Greenhouse" x-location="-12.0" y-location="0.0" facing="270.0">
-				<connection-list>
-					<connection id="2" x-location="0.0" y-location="4.5" />
+					<!-- Connection to another building.  "id" is other building's ID. -->
+					<!-- X & Y locations are relative to this building, not in the settlement locale. -->
+					<connection id="1" x-location="-4.5" y-location="0.0" />
 				</connection-list>
 			</building>
 
 			<!-- Hallway connecting lander hab and inflatable greenhouse. -->
-			<!-- Note: hallways have variable length but fixed width, so length argument is given here. -->
-			<building id="2" type="Hallway" length="3.0" x-location="-6.0" y-location="0.0" facing="270.0">
+			<!-- Note: Aa hallway has fixed width but variable length. Therefore, the length argument must be provided below. -->
+			<building id="1" type="Hallway" length="3.0" x-location="-6.0" y-location="0.0" facing="270.0">
 				<connection-list>
 					<connection id="0" x-location="0.0" y-location="1.5" />
-					<connection id="1" x-location="0.0" y-location="-1.5" />
+					<connection id="2" x-location="0.0" y-location="-1.5" />
+				</connection-list>
+			</building>
+			
+			<!-- Inflatable greenhouse can be used to grow crops. -->
+			<building id="2" type="Inflatable Greenhouse" x-location="-12.0" y-location="0.0" facing="270.0">
+				<connection-list>
+					<connection id="1" x-location="0.0" y-location="4.5" />
 				</connection-list>
 			</building>
 
@@ -182,7 +184,6 @@
 			<building id="3" type="MD1 Nuclear Reactor" x-location="40.0" y-location="-60.0" facing="0.0" />
 			<building id="4" type="MD1 Nuclear Reactor" x-location="40.0" y-location="-80.0" facing="0.0" />
 			<building id="5" type="MD1 Nuclear Reactor" x-location="60.0" y-location="-60.0" facing="0.0" />
-
 			
 			<!-- Earth Return Vehicle base building with Sabatier reactor for converting
 			     hydrogen and carbon dioxide into methane, water and oxygen.
@@ -213,7 +214,6 @@
 			<!-- type: the type of resource (see resources.txt) -->
 			<!-- amount: the amount of the resource (kg) -->
 			
-			
 			<!-- Mars Direct Mission Plan : 
 			
 			(1). ERV - 
@@ -227,8 +227,7 @@
 
 			(2). Hab -
 			(a). Payload imported from Earth -
-			 	 Consumables : 7000 kg			
-			 
+			 	 Consumables : 7000 kg				 
 			 -->
 		
 			<!-- Crop -->
@@ -241,7 +240,6 @@
 
 			<!-- The resupply missions from Earth scheduled for this type of settlement. -->
 			<resupply>
-
 				<!-- Resupply mission from Earth. -->
 			    <!-- name: the resupply mission's name  -->
 				<!-- arrival-time: arrival time (in Sols) since the settlement is founded.  -->
@@ -252,7 +250,74 @@
 			</resupply>
 		</template>
 
-		<template id="1" name="Mars Direct Base (Phase 2)" default-population="8" number-of-robots="4" sponsor="Mars Society (MS)">
+		<template name="Mars Direct Base (Phase 1A)" default-population="4" number-of-robots="2"
+		    sponsor="Mars Society (MS)">
+
+			<building id="0" type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0">
+				<connection-list>
+					<connection id="1" x-location="-4.5" y-location="0.0" />
+				</connection-list>
+			</building>
+
+			<building id="1" type="Hallway" length="3.0" x-location="-6.0" y-location="0.0" facing="270.0">
+				<connection-list>
+					<connection id="0" x-location="0.0" y-location="1.5" />
+					<connection id="2" x-location="0.0" y-location="-1.5" />
+				</connection-list>
+			</building>
+			
+			<building id="2" type="Workshop" x-location="-12.0" y-location="0.0" facing="270.0">
+				<connection-list>
+					<connection id="1" x-location="0.0" y-location="4.5" />
+					<connection id="3" x-location="0.0" y-location="-4.5" />
+				</connection-list>
+			</building>
+			
+			<building id="3" type="Hallway" length="3.0" x-location="-18.0" y-location="0.0" facing="270.0">
+				<connection-list>
+					<connection id="2" x-location="0.0" y-location="1.5" />
+					<connection id="4" x-location="0.0" y-location="-1.5" />
+				</connection-list>
+			</building>
+			
+			<building id="4" type="Inflatable Greenhouse" x-location="-24.0" y-location="0.0" facing="270.0">
+				<connection-list>
+					<connection id="3" x-location="0.0" y-location="4.5" />
+				</connection-list>
+			</building>
+
+			<building id="5" type="MD1 Nuclear Reactor" x-location="40.0" y-location="-60.0" facing="0.0" />
+			<building id="6" type="MD1 Nuclear Reactor" x-location="40.0" y-location="-80.0" facing="0.0" />
+			<building id="7" type="MD1 Nuclear Reactor" x-location="60.0" y-location="-60.0" facing="0.0" />
+
+			<building id="8" type="Starting ERV Base" x-location="40.0" y-location="15.0" facing="135.0" />
+
+			<building id="9" type="ERV Base" x-location="40.0" y-location="-15.0" facing="45.0" />
+
+			<building id="10" type="Large Sabatier Processor" x-location="0.0" y-location="-40.0" facing="90.0" />
+
+			<building id="11" type="Large Sabatier Processor" x-location="0.0" y-location="-65.0" facing="90.0" />		
+
+			<vehicle type="Explorer Rover" number="2" />
+			<vehicle type="Light Utility Vehicle" number="1" />
+
+			<equipment type="EVA Suit" number="8" />
+			<equipment type="Gas Canister" number="40" />
+			<equipment type="Barrel" number="40" />
+			<equipment type="Bag" number="40" />
+			<equipment type="Large Bag" number="10" />
+			<equipment type="Specimen Box" number="50" />
+
+			<part-package name="package 1" number="1" />
+
+			<resupply>
+				<resupply-mission name="Mars Direct Base Resupply 1" arrival-time="668.0" />
+				<resupply-mission name="Mars Direct Base Resupply 2" arrival-time="1336.0" />
+				<resupply-mission name="Mars Direct Base Resupply 3" arrival-time="2004.0" />
+			</resupply>
+		</template>
+		
+		<template name="Mars Direct Base (Phase 2)" default-population="8" number-of-robots="4" sponsor="Mars Society (MS)">
 			<building id="0" type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0">
 				<connection-list>
 					<connection id="1" x-location="0.0" y-location="4.5" />
@@ -436,7 +501,7 @@
 			</resupply>
 		</template>
 
-		<template id="2" name="Mars Direct Base (Phase 3)" default-population="12" number-of-robots="6"  sponsor="Mars Society (MS)">
+		<template name="Mars Direct Base (Phase 3)" default-population="12" number-of-robots="6"  sponsor="Mars Society (MS)">
 			<building id="0" type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0">
 				<connection-list>
 					<connection id="1" x-location="0.0" y-location="4.5" />
@@ -644,7 +709,7 @@
 			</resupply>
 		</template>
 
-		<template id="3" name="Alpha Base (Phase 4)" default-population="24" number-of-robots="12"  sponsor="Mars Society (MS)">
+		<template name="Alpha Base (Phase 4)" default-population="24" number-of-robots="12"  sponsor="Mars Society (MS)">
 
 			<building id="0" type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0">
 				<connection-list>
@@ -952,7 +1017,7 @@
 			<part-package name="package 4" number="1" />
 		</template>
 
-		<template id="4" name="Trading Outpost" default-population="4" number-of-robots="2"  sponsor="Mars Society (MS)">
+		<template name="Trading Outpost" default-population="4" number-of-robots="2"  sponsor="Mars Society (MS)">
 			<building id="0" type="Outpost Hub" x-location="0.0" y-location="0.0" facing="0.0">
 				<connection-list>
 					<connection id="1" x-location="-5.0" y-location="2.5" />
@@ -1103,7 +1168,7 @@
 			<part-package name="package 1" number="1" />
 		</template>
 
-		<template id="5" name="Mining Outpost" default-population="4" number-of-robots="2"  sponsor="Mars Society (MS)">
+		<template name="Mining Outpost" default-population="4" number-of-robots="2"  sponsor="Mars Society (MS)">
 			<building id="0" type="Outpost Hub" x-location="0.0" y-location="0.0" facing="0.0">
 				<connection-list>
 					<connection id="1" x-location="-5.0" y-location="2.5" />

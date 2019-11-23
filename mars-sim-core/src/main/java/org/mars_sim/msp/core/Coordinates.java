@@ -879,7 +879,8 @@ public class Coordinates implements Serializable {
 	 */
 	public static double getRandomLatitude() {
 		// Random latitude should be less likely to be near the poles.
-		double phi = .8 * (RandomUtil.getRandomDouble(PI_HALF) - RandomUtil.getRandomDouble(PI_HALF));
+		// Make sure phi is between 0 and PI.
+		double phi = .7 * RandomUtil.getRandomDouble(Math.PI);
 		return phi;
 	}
 
@@ -889,7 +890,8 @@ public class Coordinates implements Serializable {
 	 * @return longitude
 	 */
 	public static double getRandomLongitude() {
-		double theta = RandomUtil.getRandomDouble(Math.PI) - RandomUtil.getRandomDouble(Math.PI); 
+		// Make sure theta is between 0 and 2 PI.
+		double theta = RandomUtil.getRandomDouble(2D * Math.PI);
 		return theta;
 	}
 	

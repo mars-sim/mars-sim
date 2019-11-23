@@ -173,33 +173,33 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<administration population-support="2">
 				<activity>
 					<!-- temporarily using two of the activity-spots/chairs in the dining space for now -->
-					<activity-spot xloc="-0.67" yloc="-1.95" />
-					<activity-spot xloc="-0.67" yloc="-2.58" />
+					<activity-spot xloc="-0.8" yloc="-1.8" />
+					<activity-spot xloc="-0.8" yloc="-2.4" />
 				</activity>
 			</administration>
 
 			<!-- The building has communication capabilities. -->
 			<communication>
 				<activity>
-					<activity-spot xloc="-0.67" yloc="-1.32" />
+					<activity-spot xloc="-0.8" yloc="-1.2" />
 				</activity>
 			</communication>
 
 			<!-- The building has facilities for cooking/preparing meals. -->
 			<cooking capacity="2">
 				<activity>
-					<activity-spot xloc="2.75" yloc="-2.27" />
-					<activity-spot xloc="2.25" yloc="-2.68" />
+					<activity-spot xloc="2.6"  yloc="-1.0" />
+					<activity-spot xloc="1.75" yloc="-1.0" />
 				</activity>
 			</cooking>
 
 			<!-- The building has facilities for eating meals. -->
 			<dining capacity="4">
 				<activity>
-					<activity-spot xloc="1.05" yloc="-2.27" />
-					<activity-spot xloc="1.05" yloc="-3.58" />
-					<activity-spot xloc="1.73" yloc="-2.9" />
-					<activity-spot xloc="0.42" yloc="-2.9" />
+					<activity-spot xloc="1.54" yloc="-2.34" />
+					<activity-spot xloc=".55" yloc="-2.34" />
+					<activity-spot xloc="1.54" yloc="-3.18" />
+					<activity-spot xloc=".55" yloc="-3.18" />
 				</activity>
 			</dining>
 
@@ -214,16 +214,16 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<!-- The building has exercise facilities. -->
 			<exercise capacity="2">
 				<activity>
-					<activity-spot xloc="2.13" yloc="2.28" />
-					<activity-spot xloc="2.9" yloc="1.65" />
+					<activity-spot xloc="2.74" yloc=".91" />
+					<activity-spot xloc="1.8" yloc="1.0" />
 				</activity>
 			</exercise>
 
 			<food-production tech-level="2" concurrent-processes="3">
 				<activity>
-					<activity-spot xloc="0.65" yloc="-1.2" />
-					<activity-spot xloc="0.65" yloc="-1.68" />
-					<activity-spot xloc="2.13" yloc="-1.87" />
+					<activity-spot xloc="2.8" yloc="-1.4" />
+					<activity-spot xloc="2.3" yloc="-1.9" />					
+					<activity-spot xloc="1.9" yloc="-2.3" />					
 				</activity>
 			</food-production>
 
@@ -236,10 +236,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<!-- beds: the number of sleeping quarters provided. -->
 			<living-accommodations beds="4">
 				<activity>
-					<activity-spot xloc="1.4" yloc="2.87" />
-					<activity-spot xloc="-0.25" yloc="3.25" />
-					<activity-spot xloc="-3.2" yloc="0.5" />
-					<activity-spot xloc="-3.2" yloc="-0.55" />
+					<activity-spot xloc="1.06" yloc="2.45" />
+					<activity-spot xloc="-.33" yloc="2.74" />
+					<activity-spot xloc="-2.74" yloc=".55" />
+					<activity-spot xloc="-2.6" yloc="-1.06" />
 				</activity>
 			</living-accommodations>
 
@@ -249,8 +249,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			     can support -->
 			<manufacture tech-level="4" concurrent-processes="2">
 				<activity>
-					<activity-spot xloc="-1.22" yloc="-3.05" />
-					<activity-spot xloc="-1.82" yloc="-2.77" />
+					<activity-spot xloc="-1.43" yloc="-1.87" />
+					<activity-spot xloc="-1.43" yloc="-1.87" />					
 				</activity>
 			</manufacture>
 
@@ -259,8 +259,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<!-- beds: the number of patients the infirmary can support. -->
 			<medical-care tech-level="4" beds="1">
 				<activity>
-					<activity-spot xloc="-1.97" yloc="1.83" />
-					<activity-spot xloc="-1.51" yloc="1.51" />
+					<activity-spot xloc="1.06" yloc="2.45" />
+					<activity-spot xloc="-.33" yloc="2.74" />
 				</activity>
 				<bed>
 					<bed-location xloc="-1.8" yloc="2.65" />
@@ -281,8 +281,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<!-- The building has recreation facilities (movies, games, music, etc.). -->
 			<recreation population-support="2">
 				<activity>
-					<activity-spot xloc="-0.3" yloc="-3.28" />
-					<activity-spot xloc="-0.75" yloc="-3.73" />
+					<activity-spot xloc="0.5" yloc="-1.3" />
+					<activity-spot xloc="0.5" yloc="-1.7" />
 				</activity>
 			</recreation>
 
@@ -302,9 +302,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<research-specialty name="PHYSICS" />
 			
 				<activity>
-					<activity-spot xloc="-2.68" yloc="-2.68" />
-					<activity-spot xloc="-1.65" yloc="-1.92" />
-					<activity-spot xloc="-2.2" yloc="-2.32" />					
+					<activity-spot xloc="-1.0" yloc="-3.0" />
+					<activity-spot xloc="-0.4" yloc="-3.1" />
+					<activity-spot xloc="1.8"  yloc="-2.6" />			
 				</activity>
 			</research>
 
@@ -337,8 +337,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		through evaporation.
 -->	
 				
-				<!-- Grey Water Recycling process for cleaning grey water. -->
-				
+				<!-- Grey Water Recycling process for cleaning grey water. -->		
 				<process name="Grey Water Processor" power-required=".32" default="on">
 					<!-- Input: grey water, oxygen, chlorine  -->
 					<!-- resource: the resource added to the process. -->
@@ -563,7 +562,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				
 				<!-- Activity spot for toggling resource process on and off. -->
 				<activity>
-					<activity-spot xloc="-1.3" yloc="-1.25" />	
+					<activity-spot xloc="-0.35" yloc="-2.8" />	
 				</activity>
 
 			</resource-processing>
@@ -2205,6 +2204,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<thermal-generation>
 				<heat-source type="Solar Heating Source" capacity="5.0" />
 				<heat-source type="Electric Heating Source" capacity="15.0" />
+				<heat-source type="Fuel Heating Source" toggle="true"
+					fuel-type="methane"	consumption-rate="31.919" capacity="20.0"/>		
 			</thermal-generation>
 		</functions>
 	</building>
@@ -2253,6 +2254,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<thermal-generation>
 				<heat-source type="Solar Heating Source" capacity="5.0" />
 				<heat-source type="Electric Heating Source" capacity="15.0" />
+				<heat-source type="Fuel Heating Source" toggle="true"
+					fuel-type="methane"	consumption-rate="31.919" capacity="20.0"/>		
 			</thermal-generation>
 	</functions>
 	</building>
@@ -2293,6 +2296,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<thermal-generation>
 				<heat-source type="Solar Heating Source" capacity="5.0" />
 				<heat-source type="Electric Heating Source" capacity="15.0" />
+				<heat-source type="Fuel Heating Source" toggle="true"
+					fuel-type="methane"	consumption-rate="31.919" capacity="20.0"/>		
 			</thermal-generation>
 		</functions>
 	</building>
@@ -2337,6 +2342,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<thermal-generation>
 				<heat-source type="Solar Heating Source" capacity="5.0" />
 				<heat-source type="Electric Heating Source" capacity="15.0" />
+				<heat-source type="Fuel Heating Source" toggle="true"
+					fuel-type="methane"	consumption-rate="31.919" capacity="20.0"/>		
 			</thermal-generation>
 		</functions>
 	</building>
@@ -2354,17 +2361,18 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<EVA airlock-capacity="4" xloc="4.0" yloc="0.0" interior-xloc="3.5" interior-yloc="0.0"
 			exterior-xloc="5.5" exterior-yloc="0.0" />
 			<life-support capacity="8" power-required="0.4" />
-			<manufacture tech-level="3" concurrent-processes="3">
+			<manufacture tech-level="4" concurrent-processes="4">
 				<activity>
 					<activity-spot xloc="2.16" yloc="1.45" />
 					<activity-spot xloc="-.26" yloc=".29" />
+					<activity-spot xloc="-.26" yloc="1.45" />
 					<activity-spot xloc="-2.52" yloc=".99" />
 				</activity>
 			</manufacture>
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
 			</power-generation>	
-			<power-storage capacity="20.0" />			
+			<power-storage capacity="40.0" />			
 			<robotic-station slots="2">
 				<activity>
 					<activity-spot xloc="-0.5" yloc="0.5" />
@@ -2391,6 +2399,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<thermal-generation>
 				<heat-source type="Solar Heating Source" capacity="5.0" />
 				<heat-source type="Electric Heating Source" capacity="15.0" />
+				<heat-source type="Fuel Heating Source" toggle="true"
+					fuel-type="methane"	consumption-rate="31.919" capacity="20.0"/>		
+				
 			</thermal-generation>
 		</functions>
 	</building>
