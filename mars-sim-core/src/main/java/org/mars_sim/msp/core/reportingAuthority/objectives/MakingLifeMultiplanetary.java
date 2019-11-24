@@ -35,7 +35,7 @@ public class MakingLifeMultiplanetary implements MissionAgenda, Serializable  {
 	//  8 : TravelToSettlement
 	
 	private final int[][] missionModifiers = new int[][] {
-			{0, 0, 0, 0, 3, 3, 0, 0, 9},
+			{0, 0, 0, 0, 3, 3, 0, 0, 3},
 			{3, 3, 0, 0, 3, 0, 0, 0, 0},
 			{2, 2, 2, 2, 2, 2, 2, 2, 0}
 	};

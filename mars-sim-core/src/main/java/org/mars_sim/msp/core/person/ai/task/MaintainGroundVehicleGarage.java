@@ -90,6 +90,8 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 				vehicle.setReservedForMaintenance(true);
 	            vehicle.addStatus(StatusType.MAINTENANCE);
 			}
+			else
+				endTask();
 		}
 
 		else {
@@ -101,6 +103,8 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 				vehicle.setReservedForMaintenance(true);
 	            vehicle.addStatus(StatusType.MAINTENANCE);
 			}
+			else
+				endTask();
 		}
 
 		// Determine the garage it's in.

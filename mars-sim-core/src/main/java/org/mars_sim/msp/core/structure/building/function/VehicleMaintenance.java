@@ -131,8 +131,8 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
 	 */
 	public void removeVehicle(Vehicle vehicle) {
 		if (!containsVehicle(vehicle))
-			throw new IllegalStateException("Vehicle not in building.");
-
+//			throw new IllegalStateException("Vehicle not in building.");
+			return;
 		else {
 			vehicles.remove(vehicle);
 

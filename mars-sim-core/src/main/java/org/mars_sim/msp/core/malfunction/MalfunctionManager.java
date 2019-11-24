@@ -1101,7 +1101,9 @@ public class MalfunctionManager implements Serializable {
 		int size = fixedMalfunctions.size();
 		
 		if (size > 0) {
-			for (Malfunction m : fixedMalfunctions) {
+			Iterator<Malfunction> i = fixedMalfunctions.iterator();
+			while (i.hasNext()) {
+				Malfunction m = i.next();
 
 				// Reset the modifiers
 //				Map<String, Double> effects = malfunction.getLifeSupportEffects();
@@ -1145,15 +1147,16 @@ public class MalfunctionManager implements Serializable {
 				
 				String loc1 = "";
 				if (entity.getImmediateLocation().toLowerCase().contains("outside"))
-					loc1 = entity.getImmediateLocation();
+					loc1 = "outside of " + entity.getImmediateLocation();
 				else
 					loc1 = "in " + entity.getImmediateLocation();
 				
 				LogConsolidated.log(Level.WARNING, 0, sourceName,
-						"[" + entity.getLocale() + "] The malfunction '" + m.getName() + "' has been dealt with "
+						"[" + entity.getLocale() + "] The malfunction '" + m.getName() + "' had been dealt with "
 						+ loc1);
 			
 				// Remove the malfunction
+				fixedMalfunctions.remove(m);
 				malfunctions.remove(m);				
 			}
 		}

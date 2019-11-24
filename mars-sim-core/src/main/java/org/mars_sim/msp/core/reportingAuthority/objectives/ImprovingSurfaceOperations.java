@@ -36,8 +36,8 @@ public class ImprovingSurfaceOperations implements MissionAgenda, Serializable  
 	//  8 : TravelToSettlement
 	
 	private final int[][] missionModifiers = new int[][] {
-			{0, 0, 0, 0, 3, 0, 0, 0, 3},
-			{0, 0, 0, 0, 0, 0, 0, 0, 3},
+			{0, 0, 0, 0, 3, 0, 0, 0, 2},
+			{0, 0, 0, 0, 0, 0, 0, 0, 2},
 			{1, 1, 1, 1, 1, 1, 1, 1, 1},
 			{1, 1, 1, 1, 1, 1, 1, 1, 1},
 	};

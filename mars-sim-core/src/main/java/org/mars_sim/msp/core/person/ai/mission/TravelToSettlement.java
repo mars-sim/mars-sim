@@ -370,7 +370,8 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 		// Determine relationship factor in destination settlement relative to
 		// starting settlement.
 		double relationshipFactor = 0D;
-		RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
+		if (relationshipManager == null)
+			relationshipManager = Simulation.instance().getRelationshipManager();
 		if (member instanceof Person) {
 			Person person = (Person) member;
 			double currentOpinion = relationshipManager.getAverageOpinionOfPeople(person,
