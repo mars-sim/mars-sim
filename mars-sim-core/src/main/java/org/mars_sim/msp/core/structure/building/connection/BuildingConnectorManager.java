@@ -106,7 +106,10 @@ public class BuildingConnectorManager implements Serializable {
 			Building building = buildingManager.getBuildingByTemplateID(buildingID);
 			// Building building = buildingManager.getBuilding(0);
 			if (building == null) {
-				throw new IllegalStateException("Building ID: 0 does not exist for settlement " + settlement.getName());
+				throw new IllegalStateException(
+						"On buildingTemplate " + buildingTemplate
+						+ "    buildingID " + buildingID 
+						+ " does not exist for settlement " + settlement.getName());
 			}
 
 			Iterator<BuildingConnectionTemplate> j = buildingTemplate.getBuildingConnectionTemplates().iterator();
@@ -116,7 +119,10 @@ public class BuildingConnectorManager implements Serializable {
 				Building connectionBuilding = buildingManager.getBuildingByTemplateID(connectionID);
 				if (connectionBuilding == null) {
 					throw new IllegalStateException(
-							"Building ID: " + connectionID + " does not exist for settlement " + settlement.getName());
+							"On buildingTemplate " + buildingTemplate
+							+ "    buildingID " + buildingID 
+							+ "    connectionID " + connectionID 
+							+ " does not exist for settlement " + settlement.getName());
 				}
 
 				double connectionXLoc = connectionTemplate.getXLocation();
@@ -190,11 +196,15 @@ public class BuildingConnectorManager implements Serializable {
 					partialBuildingConnectorList.remove(bestFitConnector);
 				} else {
 					throw new IllegalStateException("Unable to find building connection for "
-							+ partialConnector.building.getBuildingType() + " in " + settlement.getName());
+							+ partialConnector.building.getBuildingType() 
+							+ " (buildingID: " + partialConnector.building.getBuildingID()
+							+ ") in " + settlement.getName());
 				}
 			} else {
 				throw new IllegalStateException("Unable to find building connection for "
-						+ partialConnector.building.getBuildingType() + " in " + settlement.getName());
+						+ partialConnector.building.getBuildingType() 
+						+ " (buildingID: " + partialConnector.building.getBuildingID()
+						+ ") in " + settlement.getName());
 			}
 		}
 	}

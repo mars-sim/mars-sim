@@ -202,7 +202,8 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	boolean isImpactImminent = false;
 	/** Checked by getAllImmovableBoundedObjectsAtLocation() in LocalAreaUtil */
 	boolean inTransportMode = true;
-
+	/** building id on the building template. */
+	private int bid;
 	/** Type of building. */
 	protected String buildingType;
 	/** Nick name for this building. */
@@ -287,6 +288,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		this(template.getID(), template.getBuildingType(), template.getNickName(), template.getWidth(),
 				template.getLength(), template.getXLoc(), template.getYLoc(), template.getFacing(), manager);
 		
+		this.bid = template.getID();
 		this.manager = manager;
 		buildingType = template.getBuildingType();
 		
@@ -1565,6 +1567,10 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	@Override
 	public Unit getUnit() {
 		return this;
+	}
+	
+	public int getBuildingID() {
+		return bid;
 	}
 
 	public void reinit() {

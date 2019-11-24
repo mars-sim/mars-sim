@@ -309,7 +309,7 @@ public class SettlementConfig implements Serializable {
 				int bid = Integer.parseInt(buildingElement.getAttributeValue(ID));
 				if (existingIDs.contains(bid)) {
 					throw new IllegalStateException(
-							"Error in SettlementConfig.xml : building ID in settlement template "
+							"Error in SettlementConfig : building ID " + existingIDs + " in settlement template "
 									+ settlementTemplateName + " is not unique.");
 				} else
 					existingIDs.add(bid);

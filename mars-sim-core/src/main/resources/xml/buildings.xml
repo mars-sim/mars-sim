@@ -294,7 +294,6 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<research-specialty name="AREOLOGY" />
 				<research-specialty name="ASTRONOMY" />
 				<research-specialty name="BIOLOGY" />
-				<research-specialty name="BOTANY" />
 				<research-specialty name="CHEMISTRY" />				
 				<research-specialty name="MATHEMATICS" />				
 				<research-specialty name="MEDICINE" />
@@ -1225,7 +1224,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			wear-lifetime="3340000" maintenance-time="50" room-temperature="22.5">
 		<description> The Residential Quarters is the first full living accommodation building
 			that is configured to house as many as twelve beds. It also provides storage space
-			for critical amount resources. It is furnised with a solar panel rooftop.
+			for critical amount resources. It is furnished with a solar panel rooftop.
 		</description>
 		<power-required base-power="2.0" base-power-down-power="0.2" />
 
@@ -1487,12 +1486,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-storage resource="Sesame Seed" capacity="100.0" />
 				<resource-storage resource="Sesame Oil" capacity="100.0" />
 				
-
 				<resource-initial resource="toilet tissue" amount="100.0" />
 				<resource-initial resource="paper" amount="100.0" />
 				<resource-initial resource="napkin" amount="100.0" />
-				
-							
+									
 			</storage>
 
 			<thermal-generation>
@@ -1550,6 +1547,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<thermal-generation>
 				<heat-source type="Solar Heating Source" capacity="5.0" />
 				<heat-source type="Electric Heating Source" capacity="15.0" />
+				<heat-source type="Fuel Heating Source" toggle="true"
+					fuel-type="methane"	consumption-rate="31.919" capacity="20.0" />				
 			</thermal-generation>
 		</functions>
 	</building>
@@ -1592,17 +1591,19 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
   			<EVA airlock-capacity="8" xloc="-3.0" yloc="2.3" interior-xloc="-2.5" interior-yloc="2.3"
 			exterior-xloc="-4.5" exterior-yloc="2.3" />
 -->
-			<life-support capacity="12" power-required="0.6" />
-			<management population-support="25">
+			<life-support capacity="24" power-required="0.6" />
+			<management population-support="24">
 				<activity>
 					<activity-spot xloc="1.32" yloc="0.92" />
 					<activity-spot xloc="1.32" yloc="0.28" />
 					<activity-spot xloc="1.32" yloc="-0.4" />
 					<activity-spot xloc="1.32" yloc="-1.08" />
+					
 					<activity-spot xloc="-1.42" yloc="0.86" />
 					<activity-spot xloc="-1.42" yloc="0.26" />
 					<activity-spot xloc="-1.42" yloc="-0.4" />
 					<activity-spot xloc="-1.42" yloc="-1.08" />
+					
 					<activity-spot xloc="0.42" yloc="1.92" />
 					<activity-spot xloc="-0.53" yloc="1.92" />
 					<activity-spot xloc="0.42" yloc="-2.1" />
@@ -1650,7 +1651,6 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<research-specialty name="AREOLOGY" />
 				<research-specialty name="ASTRONOMY" />
 				<research-specialty name="BIOLOGY" />
-				<research-specialty name="BOTANY" />
 				<research-specialty name="CHEMISTRY" />				
 				<research-specialty name="MATHEMATICS" />				
 				<research-specialty name="MEDICINE" />
@@ -2183,7 +2183,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<functions>
 			<EVA airlock-capacity="4" xloc="4.0" yloc="0.0" interior-xloc="3.5" interior-yloc="0.0"
 			exterior-xloc="5.5" exterior-yloc="0.0" />
-			<life-support capacity="8" power-required="0.4" />
+			<life-support capacity="12" power-required="0.6" />
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
 			</power-generation>
@@ -2194,7 +2194,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="2.6" yloc="-2.5" />
 				</activity>
 			</robotic-station>
-			<storage stock-capacity="10000">
+			<storage stock-capacity="15000">
 				<resource-storage resource="oxygen" capacity="2000.0" />
 				<resource-storage resource="water" capacity="2000.0" />
 				<resource-storage resource="grey water" capacity="2000.0" />
@@ -2222,16 +2222,15 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<functions>
 			<EVA airlock-capacity="4" xloc="4.0" yloc="0.0" interior-xloc="3.5" interior-yloc="0.0"
 			exterior-xloc="5.5" exterior-yloc="0.0" />
-			<life-support capacity="8" power-required="0.4" />
+			<life-support capacity="12" power-required="0.6" />
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
 			</power-generation>
 			<power-storage capacity="20.0" />
-			<research tech-level="2" capacity="4">
+			<research tech-level="2" capacity="8">
 				<research-specialty name="AREOLOGY" />
 				<research-specialty name="ASTRONOMY" />
 				<research-specialty name="BIOLOGY" />
-				<research-specialty name="BOTANY" />
 				<research-specialty name="CHEMISTRY" />				
 				<research-specialty name="MATHEMATICS" />				
 				<research-specialty name="MEDICINE" />
@@ -2240,14 +2239,19 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<activity>
 					<activity-spot xloc=".4" yloc="3.05" />
 					<activity-spot xloc="-2.73" yloc="-.15" />
-					<activity-spot xloc="2.67" yloc="-.25" />
-					<activity-spot xloc="-.77" yloc="-2.52" />
+					<activity-spot xloc="2.67" yloc="-1.18" />
+					<activity-spot xloc="-.77" yloc="-3.0" />
+					
+					<activity-spot xloc="-0.75" yloc="-2.5" />
+					<activity-spot xloc="-2.5" yloc="1.3" />
+					<activity-spot xloc="-1.45" yloc="3.0" />
+					<activity-spot xloc="1.58" yloc="2.7" />					
 				</activity>
 			</research>
 			<robotic-station slots="2">
 				<activity>
-					<activity-spot xloc="0.5" yloc="0.5" />
-					<activity-spot xloc="-0.5" yloc="-0.5" />
+					<activity-spot xloc="-0.86" yloc="-0.86" />
+					<activity-spot xloc="-0.86" yloc="1.0" />
 				</activity>
 			</robotic-station>
 			<storage stock-capacity="5000"/>
@@ -2272,7 +2276,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<functions>
 			<EVA airlock-capacity="4" xloc="4.0" yloc="0.0" interior-xloc="3.5" interior-yloc="0.0"
 			exterior-xloc="5.5" exterior-yloc="0.0" />
-			<life-support capacity="8" power-required="0.4" />
+			<life-support capacity="12" power-required="0.6" />
 			<living-accommodations beds="5">
 				<activity>
 					<activity-spot xloc="1.13" yloc="2.67" />
@@ -2315,21 +2319,41 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<functions>
 			<EVA airlock-capacity="4" xloc="4.0" yloc="0.0" interior-xloc="3.5" interior-yloc="0.0"
 			exterior-xloc="5.5" exterior-yloc="0.0" />
-			<life-support capacity="8" power-required="0.4" />
+			<exercise capacity="4">
+				<activity>
+					<activity-spot xloc="-3.0" yloc="1.5" />
+					<activity-spot xloc="-3.3" yloc="0.0" />
+					<activity-spot xloc="-3.0" yloc="-1.2" />
+					<activity-spot xloc="-2.3" yloc="-1.7" />					
+				</activity>
+			</exercise>	
+			<life-support capacity="12" power-required="0.6" />
 			<medical-care tech-level="4" beds="4">
 				<activity>
 					<activity-spot xloc="3.04" yloc="-1.3" />
+					<activity-spot xloc="1.75" yloc="2.33" />					
 				</activity>
 			</medical-care>
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
 			</power-generation>
 			<power-storage capacity="20.0" />			
-			<research tech-level="2" capacity="2">
+			<research tech-level="2" capacity="8">
+				<research-specialty name="CHEMISTRY" />				
+				<research-specialty name="MATHEMATICS" />				
 				<research-specialty name="MEDICINE" />
+				<research-specialty name="PHYSICS" />	
+				<research-specialty name="METEOROLOGY" />							
 				<activity>
 					<activity-spot xloc=".77" yloc="-2.52" />
 					<activity-spot xloc="-2.09" yloc="2.06" />
+					<activity-spot xloc="1.4" yloc="-2.7" />
+					<activity-spot xloc=".8" yloc="-3.0" />
+					
+					<activity-spot xloc="-0.8" yloc="-2.5" />
+					<activity-spot xloc="0.7" yloc="2.8" />
+					<activity-spot xloc="-1.4" yloc="2.85" />																														
+					<activity-spot xloc="-.5" yloc="-3.0" />
 				</activity>
 			</research>
 			<robotic-station slots="2">
@@ -2360,13 +2384,18 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<functions>
 			<EVA airlock-capacity="4" xloc="4.0" yloc="0.0" interior-xloc="3.5" interior-yloc="0.0"
 			exterior-xloc="5.5" exterior-yloc="0.0" />
-			<life-support capacity="8" power-required="0.4" />
-			<manufacture tech-level="4" concurrent-processes="4">
+			<life-support capacity="12" power-required="0.6" />
+			<manufacture tech-level="5" concurrent-processes="8">
 				<activity>
 					<activity-spot xloc="2.16" yloc="1.45" />
-					<activity-spot xloc="-.26" yloc=".29" />
-					<activity-spot xloc="-.26" yloc="1.45" />
-					<activity-spot xloc="-2.52" yloc=".99" />
+					<activity-spot xloc="0.8" yloc="3.0" />
+					<activity-spot xloc="-2.7" yloc="1.0" />
+					<activity-spot xloc="-3.0" yloc="-1.0" />
+					
+					<activity-spot xloc="-1.3" yloc="-2.1" />
+					<activity-spot xloc=".85" yloc="-2.0" />
+					<activity-spot xloc="2.1" yloc="0.0" />
+					<activity-spot xloc="-1.35" yloc="3.0" />
 				</activity>
 			</manufacture>
 			<power-generation>

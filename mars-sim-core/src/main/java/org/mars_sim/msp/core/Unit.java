@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.equipment.EVASuit;
@@ -182,7 +183,7 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 		unitManager = sim.getUnitManager();
 		
 		// Set up unit listeners.
-		listeners = Collections.synchronizedList(new ArrayList<UnitListener>()); 
+		listeners = Collections.synchronizedList(new CopyOnWriteArrayList<UnitListener>()); 
 
 		// Creates a new location tag instance for each unit
 		tag = new LocationTag(this);
@@ -888,7 +889,7 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 		if (newListener == null)
 			throw new IllegalArgumentException();
 		if (listeners == null)
-			listeners = Collections.synchronizedList(new ArrayList<UnitListener>());
+			listeners = Collections.synchronizedList(new CopyOnWriteArrayList<UnitListener>());
 
 		if (!listeners.contains(newListener)) {
 			listeners.add(newListener);
@@ -913,7 +914,7 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 			throw new IllegalArgumentException();
 
 		if (listeners == null) {
-			listeners = Collections.synchronizedList(new ArrayList<UnitListener>());
+			listeners = Collections.synchronizedList(new CopyOnWriteArrayList<UnitListener>());
 		}
 		if (listeners.size() < 1)
 			return;

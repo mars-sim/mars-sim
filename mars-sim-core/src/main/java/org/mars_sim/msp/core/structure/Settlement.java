@@ -347,7 +347,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	/** The settlement terrain profile. */
 	public double[] terrainProfile = new double[2];
 	/** The settlement mission directive modifiers. */
-	public double[] missionModifiers = new double[7];
+	public double[] missionModifiers = new double[9];
 	
 	/** The settlement sponsor. */
 	private String sponsor;
@@ -4017,7 +4017,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	 * @return probability of finding regolith
 	 */
 	public double computeRegolithProbability() {
-		double result = 0;//missionModifiers[3]/3D;
+		double result = 0;
 
 		double regolith_value = goodsManager.getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.regolithID));
 		regolith_value = regolith_value * GoodsManager.REGOLITH_VALUE_MODIFIER;
@@ -4066,7 +4066,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	 * @return probability of finding ice
 	 */
 	public double computeIceProbability() {
-		double result = 0;//missionModifiers[2]/3D;
+		double result = 0;
 
 		double ice_value = goodsManager.getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.iceID));
 		ice_value = ice_value * GoodsManager.ICE_VALUE_MODIFIER;

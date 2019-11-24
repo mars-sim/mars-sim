@@ -441,7 +441,9 @@ public class StructureMapLayer implements SettlementMapLayer {
 
         // Save original graphics transforms.
         AffineTransform saveTransform = g2d.getTransform();
-
+        // Save original stroke
+        Stroke oldStroke = g2d.getStroke();
+        
         // Determine bounds.
         Rectangle2D bounds = null;
         if (isSVG) bounds = svg.getBounds();
@@ -490,7 +492,6 @@ public class StructureMapLayer implements SettlementMapLayer {
                 g2d.setPaint(SITE_BORDER_COLOR);
                 g2d.setStroke(dashed);
                 g2d.draw(bounds);
-                Stroke oldStroke = g2d.getStroke();
                 g2d.setStroke(oldStroke);
         	}
         }
@@ -500,7 +501,6 @@ public class StructureMapLayer implements SettlementMapLayer {
         	newTransform1.scale(scalingWidth, scalingLength);
             g2d.transform(newTransform1);
          
-            Stroke oldStroke = g2d.getStroke();
 			// Draw the dashed border over the selected building
 			g2d.setPaint(SELECTED_BUILDING_BORDER_COLOR);
 			g2d.setStroke(THICK_DASHES);                                           
