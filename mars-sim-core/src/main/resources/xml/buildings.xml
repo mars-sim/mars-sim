@@ -208,14 +208,15 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<!-- xloc, yloc: the relative X/Y location inside the airlock. -->
 			<!-- interior-xloc, interior-yloc: the relative X/Y location inside the building. -->
 			<!-- exterior-xloc, exterior-yloc: the relative X/Y location outside the building. -->
+<!--
 			<EVA airlock-capacity="4" xloc="4.0" yloc="0.0" interior-xloc="3.5" interior-yloc="0.0"
 			exterior-xloc="5.5" exterior-yloc="0.0" />
-
+ -->
 			<!-- The building has exercise facilities. -->
 			<exercise capacity="2">
 				<activity>
-					<activity-spot xloc="2.74" yloc=".91" />
-					<activity-spot xloc="1.8" yloc="1.0" />
+					<activity-spot xloc="2.1" yloc="2.2" />
+					<activity-spot xloc="2.8" yloc="1.5" />
 				</activity>
 			</exercise>
 
@@ -703,6 +704,37 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 	</building>
 <!-- end of Lander Hab-->
+
+	<building type="EVA Airlock" width="5.0" length="5.0" base-level="-1"
+			wear-lifetime="3340000" maintenance-time="50" room-temperature="22.5">
+		<description> The Airlock is a node to be attached to building that need to have direct access 
+			performing EVA operations.
+		</description>
+		<power-required base-power=".5" base-power-down-power="0.05" />
+		<functions>
+			<!-- The building has an airlock and changing room for EVA operations. -->
+			<!-- airlock-capacity: the number of people who can use the airlock at once. -->
+			<!-- xloc, yloc: the relative X/Y location inside the airlock. -->
+			<!-- interior-xloc, interior-yloc: the relative X/Y location inside the building. -->
+			<!-- exterior-xloc, exterior-yloc: the relative X/Y location outside the building. -->
+			<EVA airlock-capacity="4" xloc="0.0" yloc="0.0" 
+				interior-xloc="-2.5" interior-yloc="0.0"
+				exterior-xloc="2.5" exterior-yloc="0.0" />
+			<life-support capacity="4" power-required="0.2" />
+			<power-generation>
+				<power-source type="Solar Power Source" power="5.0" />
+			</power-generation>
+			<power-storage capacity="20.0" />
+			<thermal-generation>
+				<heat-source type="Solar Heating Source" capacity="5.0" />
+				<heat-source type="Electric Heating Source" capacity="15.0" />
+				<heat-source type="Fuel Heating Source" toggle="true"
+					fuel-type="methane"	consumption-rate="31.919" capacity="20.0"/>					
+			</thermal-generation>
+
+		</functions>
+	</building>
+<!-- end of Storage Shed -->
 
 	<building type="Inflatable Greenhouse" width="6.0" length="9.0" base-level="0"
 		wear-lifetime="3340000" maintenance-time="50" room-temperature="24.0">

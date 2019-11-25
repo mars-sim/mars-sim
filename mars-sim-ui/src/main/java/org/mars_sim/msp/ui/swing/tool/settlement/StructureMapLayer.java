@@ -50,13 +50,12 @@ public class StructureMapLayer implements SettlementMapLayer {
     private final static float dash[] = { 1.0f };
     
     private final static BasicStroke dashed = new BasicStroke(0.2f,
-    	      BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 5.0f, dash, 0.0f);
+    	      BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1.0f, dash, 0.0f);
     
-
 //    private final static BasicStroke THICK_DASHES = new BasicStroke(3, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{5}, 0);
     
     private final static BasicStroke THICK_DASHES = new BasicStroke(2f,
-  	      BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 5.0f, dash, 0.0f);
+  	      BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1.0f, dash, 0.0f);
  
     
     // Data members
@@ -205,7 +204,7 @@ public class StructureMapLayer implements SettlementMapLayer {
     		selected = false;
     	
         // Use SVG image for building if available.
-		// 2014-10-29 : Need to STAY getName() or getBuildingType(), NOT changing to getNickName()
+		// Need to STAY getName() or getBuildingType(), NOT changing to getNickName()
     	// or else svg for the building won't load up
         GraphicsNode svg = SVGMapUtil.getBuildingSVG(building.getBuildingType().toLowerCase());
         if (svg != null) {

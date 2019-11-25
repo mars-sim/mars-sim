@@ -22,6 +22,8 @@ import org.mars_sim.msp.ui.swing.SVGLoader;
 public final class SVGMapUtil {
 
     // Static members.
+	private static final String fileName = SVGLoader.SVG_DIR + "svg_image_mapping.properties";
+	 
     private static Properties svgMapProperties;
 
     /**
@@ -36,7 +38,6 @@ public final class SVGMapUtil {
 
         svgMapProperties = new Properties();
 
-        String fileName = SVGLoader.SVG_DIR + "svg_image_mapping.properties";
         URL resource = SVGLoader.class.getResource(fileName);
         InputStream inputStream = null;
         try {
@@ -80,7 +81,7 @@ public final class SVGMapUtil {
 
         // Append name.
         if (name != null) {
-            String prepName = name.trim().toLowerCase();
+            String prepName = name.trim().toLowerCase().replace(" ", "_");
             propertyNameBuff.append(prepName);
         }
 
