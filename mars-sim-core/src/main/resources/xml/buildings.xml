@@ -196,10 +196,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<!-- The building has facilities for eating meals. -->
 			<dining capacity="4">
 				<activity>
-					<activity-spot xloc="1.54" yloc="-2.34" />
-					<activity-spot xloc=".55" yloc="-2.34" />
-					<activity-spot xloc="1.54" yloc="-3.18" />
-					<activity-spot xloc=".55" yloc="-3.18" />
+					<activity-spot xloc="1.6" yloc="-2.4" />
+					<activity-spot xloc=".6" yloc="-2.4" />
+					<activity-spot xloc="1.6" yloc="-3.3" />
+					<activity-spot xloc=".6" yloc="-3.3" />
 				</activity>
 			</dining>
 
@@ -250,8 +250,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			     can support -->
 			<manufacture tech-level="4" concurrent-processes="2">
 				<activity>
-					<activity-spot xloc="-1.43" yloc="-1.87" />
-					<activity-spot xloc="-1.43" yloc="-1.87" />					
+					<activity-spot xloc="-0.75" yloc="-1.3" />
+					<activity-spot xloc="-0.75" yloc="-1.85" />					
 				</activity>
 			</manufacture>
 
@@ -260,8 +260,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<!-- beds: the number of patients the infirmary can support. -->
 			<medical-care tech-level="4" beds="1">
 				<activity>
-					<activity-spot xloc="1.06" yloc="2.45" />
-					<activity-spot xloc="-.33" yloc="2.74" />
+					<activity-spot xloc="3.25" yloc="-1.0" />
 				</activity>
 				<bed>
 					<bed-location xloc="-1.8" yloc="2.65" />
@@ -282,8 +281,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<!-- The building has recreation facilities (movies, games, music, etc.). -->
 			<recreation population-support="2">
 				<activity>
-					<activity-spot xloc="0.5" yloc="-1.3" />
-					<activity-spot xloc="0.5" yloc="-1.7" />
+					<activity-spot xloc="1.9" yloc="-1.0" />
+					<activity-spot xloc="2.4" yloc="-1.5" />
 				</activity>
 			</recreation>
 

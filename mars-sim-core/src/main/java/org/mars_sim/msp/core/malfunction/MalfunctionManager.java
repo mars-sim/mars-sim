@@ -16,6 +16,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -203,12 +204,11 @@ public class MalfunctionManager implements Serializable {
 		else {
 			unit = (Unit)entity.getUnit();
 		}
-		
-		
+			
 		timeSinceLastMaintenance = 0D;
 		effectiveTimeSinceLastMaintenance = 0D;
 		scopes = new ArrayList<String>();
-		malfunctions = new ArrayList<Malfunction>();
+		malfunctions = new CopyOnWriteArrayList<Malfunction>();
 		this.maintenanceWorkTime = maintenanceWorkTime;
 		this.wearLifeTime = wearLifeTime;
 		wearCondition = 100D;
@@ -954,7 +954,7 @@ public class MalfunctionManager implements Serializable {
 	 * @param time
 	 */
 	public void checkFixedMalfunction(double time) { 
-		Collection<Malfunction> fixedMalfunctions = new ArrayList<Malfunction>();
+		Collection<Malfunction> fixedMalfunctions = new CopyOnWriteArrayList<Malfunction>();
 
 		// Check if any malfunctions are fixed.
 		if (hasMalfunction()) {

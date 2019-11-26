@@ -465,8 +465,11 @@ public abstract class RoverMission extends VehicleMission {
 	 * @param disembarkSettlement the settlement to be disembarked to.
 	 */
 	protected void performDisembarkToSettlementPhase(MissionMember member, Settlement disembarkSettlement) {
-
-		Vehicle v = getVehicle();
+		disembark(member, getVehicle(), disembarkSettlement);
+	}
+	
+	
+	public void disembark(MissionMember member, Vehicle v, Settlement disembarkSettlement) {
 		Rover rover = (Rover) v;
 
 		if (v != null) {// && v.getSettlement() == null) {

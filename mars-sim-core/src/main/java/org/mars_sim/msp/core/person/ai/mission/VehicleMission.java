@@ -619,10 +619,10 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			endMission();
 		}
 		
-		else if (INCOMPLETED.equals(getPhase())) {
-			addMissionStatus(MissionStatus.MISSION_ABORTED);
-			endMission();
-		}
+//		else if (INCOMPLETED.equals(getPhase())) {
+//			addMissionStatus(MissionStatus.MISSION_ABORTED);
+//			endMission();
+//		}
 	}
 	
 	public void flag4Submission() {

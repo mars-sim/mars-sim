@@ -320,13 +320,16 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 		
 		// TODO: need to draw the the hose connecting between the vehicle and the settlement to supply resources
 		
-		if (isPluggedIn()) {		
-			if (getSettlement() == null) {
-				LogConsolidated.log(Level.SEVERE, 1_000, sourceName, "[" + this.getName() + "] " 
-						+ getNickName() + "'s settlement is null");
-			
-				inv = getInventory();
+		if (isPluggedIn()) {
+			if (haveStatusType(StatusType.TOWED) && !isInSettlement()) {
+				inv = getTowingVehicle().getInventory();
 			}
+//			if (getSettlement() == null) {
+//				LogConsolidated.log(Level.SEVERE, 1_000, sourceName, "[" + this.getName() + "] " 
+//						+ getNickName() + "'s settlement is null");
+//			
+//				inv = getInventory();
+//			}
 			else
 				// Use the settlement's inventory
 				inv = getSettlement().getInventory();
@@ -422,12 +425,17 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 		// TODO: need to draw the the hose connecting between the vehicle and the settlement to supply resources
 		
 		if (isPluggedIn()) {
-			if (getSettlement() == null) {
-				LogConsolidated.log(Level.SEVERE, 1_000, sourceName, "[" + this.getName() + "] " 
-					+ getNickName() + "'s settlement is null");
-		
-				inv = getInventory();
+			if (haveStatusType(StatusType.TOWED) && !isInSettlement()) {
+				inv = getTowingVehicle().getInventory();
 			}
+				
+//			if (getSettlement() == null) {
+//				LogConsolidated.log(Level.SEVERE, 1_000, sourceName, "[" + this.getName() + "] " 
+//					+ getNickName() + "'s settlement is null");
+//		
+//				
+//				inv = getInventory();
+//			}
 			else
 				// Use the settlement's inventory
 				inv = getSettlement().getInventory();
@@ -461,12 +469,15 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 		// TODO: need to draw the the hose connecting between the vehicle and the settlement to supply resources
 		
 		if (isPluggedIn()) {
-			if (getSettlement() == null) {
-				LogConsolidated.log(Level.SEVERE, 1_000, sourceName, "[" + this.getName() + "] " 
-					+ getNickName() + "'s settlement is null");
-		
-				inv = getInventory();
+			if (haveStatusType(StatusType.TOWED) && !isInSettlement()) {
+				inv = getTowingVehicle().getInventory();
 			}
+//			if (getSettlement() == null) {
+//				LogConsolidated.log(Level.SEVERE, 1_000, sourceName, "[" + this.getName() + "] " 
+//					+ getNickName() + "'s settlement is null");
+//		
+//				inv = getInventory();
+//			}
 			else
 				// Use the settlement's inventory
 				inv = getSettlement().getInventory();
@@ -648,8 +659,10 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 		
 		boolean onAMission = isOnAMission();
 		if (onAMission || isReservedForMission()) {
-			plugInTemperature(time);
-			plugInAirPressure(time);	
+			if (isInSettlement()) {
+				plugInTemperature(time);
+				plugInAirPressure(time);	
+			}
 //			String s = this + " is plugged in.  " +  + airPressure + " kPa  " + temperature + " C";
 //			if (!sCache.equals(s)) {
 //				sCache = s;

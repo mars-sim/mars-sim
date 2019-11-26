@@ -774,7 +774,10 @@ public abstract class Vehicle extends Unit
 //			removeStatus(StatusType.GARAGED);
 //			removeStatus(StatusType.PARKED);
 		}
-
+		else {
+			removeStatus(StatusType.TOWED);
+		}
+		
 		if (reservedForMaintenance) {
 			addStatus(StatusType.MAINTENANCE);
 			removeStatus(StatusType.MOVING);

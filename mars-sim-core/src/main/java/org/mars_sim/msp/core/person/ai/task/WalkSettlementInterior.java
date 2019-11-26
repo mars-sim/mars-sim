@@ -118,33 +118,43 @@ public class WalkSettlementInterior extends Task implements Serializable {
 			person.getMind().getTaskManager().clearAllTasks();
 		}
 
-		// Determine the walking path to the destination.
-//		System.out.println("WalkSettlementInterior : settlement : " + settlement);
-//		System.out.println("WalkSettlementInterior : person's settlement : " + person.getSettlement());
-		if (settlement != null)
-			walkingPath = settlement.getBuildingConnectorManager().determineShortestPath(startBuilding,
-				person.getXLocation(), person.getYLocation(), destinationBuilding, destinationXLocation,
-				destinationYLocation);
-
-		// If no valid walking path is found, end task.
-		if (walkingPath == null) {
-			LogConsolidated.log(Level.WARNING, 20_000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
-//							+ person.getName() + " was unable to walk from " + startBuilding.getNickName() + " to "
-//									+ destinationBuilding.getNickName() + ". No valid interior path.");
-							+ person.getName() + " was unable to walk. No valid interior path.");
-			person.getMind().getTaskManager().clearAllTasks();
+		try {
+			// Determine the walking path to the destination.
+	//		System.out.println("WalkSettlementInterior : settlement : " + settlement);
+	//		System.out.println("WalkSettlementInterior : person's settlement : " + person.getSettlement());
+			if (settlement != null)
+				walkingPath = settlement.getBuildingConnectorManager().determineShortestPath(startBuilding,
+					person.getXLocation(), person.getYLocation(), destinationBuilding, destinationXLocation,
+					destinationYLocation);
+	
+			// If no valid walking path is found, end task.
+			if (walkingPath == null) {
+				LogConsolidated.log(Level.WARNING, 20_000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
+	//							+ person.getName() + " was unable to walk from " + startBuilding.getNickName() + " to "
+	//									+ destinationBuilding.getNickName() + ". No valid interior path.");
+								+ person.getName() + " was unable to walk. No valid interior path.");
+				person.getMind().getTaskManager().clearAllTasks();
+				
+				// TODO: if it's the astronomy observatory building, it will call it thousands of time
+				// e.g (Warning) [x23507] WalkSettlementInterior : Jani Patokallio unable to walk from Lander Hab 2 to Astronomy Observatory 1.  Unable to find valid interior path.
+	//			person.getMind().getTaskManager().getNewTask();
+			}
 			
-			// TODO: if it's the astronomy observatory building, it will call it thousands of time
-			// e.g (Warning) [x23507] WalkSettlementInterior : Jani Patokallio unable to walk from Lander Hab 2 to Astronomy Observatory 1.  Unable to find valid interior path.
-//			person.getMind().getTaskManager().getNewTask();
+			LogConsolidated.log(Level.FINER, 20_000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
+					+ person.getName() + " proceeded to the walking phase in WalkSettlementInterior.");
+			
+			// Initialize task phase.
+			addPhase(WALKING);
+			setPhase(WALKING);
+		
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			LogConsolidated.log(Level.WARNING, 20_000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
+//					+ person.getName() + " was unable to walk from " + startBuilding.getNickName() + " to "
+//							+ destinationBuilding.getNickName() + ". No valid interior path.");
+					+ person.getName() + " was unable to walk. No valid interior path.");
+			person.getMind().getTaskManager().clearAllTasks();
 		}
-		
-		LogConsolidated.log(Level.FINER, 20_000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
-				+ person.getName() + " proceeded to the walking phase in WalkSettlementInterior.");
-		
-		// Initialize task phase.
-		addPhase(WALKING);
-		setPhase(WALKING);
 	}
 
 	public WalkSettlementInterior(Robot robot, Building destinationBuilding, double destinationXLocation,

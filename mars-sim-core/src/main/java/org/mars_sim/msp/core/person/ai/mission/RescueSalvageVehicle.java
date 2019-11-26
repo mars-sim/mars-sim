@@ -336,10 +336,6 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 					Msg.getString("Mission.phase.travelling.description", getNextNavpoint().getDescription())); // $NON-NLS-1$
 		}
 
-//		else if (DISEMBARKING.equals(getPhase())) {
-//			endMission(ALL_DISEMBARKED);
-//		}
-		
 		else if (DISEMBARKING.equals(getPhase())) {
 			setPhase(VehicleMission.COMPLETED);
 			setPhaseDescription(
@@ -438,6 +434,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 		// Put towed vehicle and crew in settlement if necessary.
 		if (hasVehicle()) {
 			disembarkTowedVehicles(person, getRover(), disembarkSettlement);
+			super.disembark(person, getRover().getTowedVehicle(), disembarkSettlement);
 		}
 
 		super.performDisembarkToSettlementPhase(person, disembarkSettlement);
@@ -454,27 +451,20 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 
 		if (rover.getTowedVehicle() != null) {
 			Vehicle towedVehicle = rover.getTowedVehicle();
-
-			// Unhook towed vehicle.
-			rover.setTowedVehicle(null);
-			towedVehicle.setTowingVehicle(null);
-			LogConsolidated.log(Level.FINER, 0, sourceName,
-					"[" + rover.getLocationTag().getLocale() + "] " + rover 
-					+ " was being unhooked from " + towedVehicle + " at " + disembarkSettlement);
-
-			// Place this vehicle near settlement vicinity
-//			towedVehicle.enter(LocationCodeType.SETTLEMENT_VICINITY);
-			// Store towing and towed vehicle in settlement.
-			disembarkSettlement.getInventory().storeUnit(towedVehicle);		
-
-			// Add towed vehicle to a garage if available.
-	        boolean	garaged = false;
-	        if (towedVehicle.getGarage() == null) 
-	        	garaged = BuildingManager.addToGarage((GroundVehicle) towedVehicle, disembarkSettlement);
-
-			// Make sure the rover chasis is not overlapping a building structure in the settlement map
-	        if (!garaged)
-	        	towedVehicle.determinedSettlementParkedLocationAndFacing();
+//
+//			// Place this vehicle near settlement vicinity
+////			towedVehicle.enter(LocationCodeType.SETTLEMENT_VICINITY);
+//			// Store towing and towed vehicle in settlement.
+//			disembarkSettlement.getInventory().storeUnit(towedVehicle);		
+//
+//			// Add towed vehicle to a garage if available.
+//	        boolean	garaged = false;
+//	        if (towedVehicle.getGarage() == null) 
+//	        	garaged = BuildingManager.addToGarage((GroundVehicle) towedVehicle, disembarkSettlement);
+//
+//			// Make sure the rover chasis is not overlapping a building structure in the settlement map
+//	        if (!garaged)
+//	        	towedVehicle.determinedSettlementParkedLocationAndFacing();
 	                
 			// towedVehicle.determinedSettlementParkedLocationAndFacing();
 	    	LogConsolidated.log(Level.INFO, 0, sourceName,
@@ -548,6 +538,12 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 					}
 				}
 			}
+			// Unhook towed vehicle.
+			rover.setTowedVehicle(null);
+			towedVehicle.setTowingVehicle(null);
+			LogConsolidated.log(Level.FINER, 0, sourceName,
+					"[" + rover.getLocationTag().getLocale() + "] " + rover 
+					+ " was being unhooked from " + towedVehicle + " at " + disembarkSettlement);
 		}
 	}
 
