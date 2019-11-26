@@ -12,11 +12,11 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
-import org.mars_sim.msp.core.structure.building.function.HeatMode;
 
 /**
  * The ThermalGeneration class handles how the buildings of a settlement
@@ -30,7 +30,7 @@ implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-//	private static Logger logger = Logger.getLogger(ThermalGeneration.class.getName());
+	private static Logger logger = Logger.getLogger(ThermalGeneration.class.getName());
 
 	DecimalFormat fmt = new DecimalFormat("#.#####");
 
@@ -212,24 +212,24 @@ implements Serializable {
 				while (i.hasNext()) {
 					HeatSource heatSource = i.next();
 				    if (heatSource.getType().equals(HeatSourceType.SOLAR_HEATING)) {
-				    	heatSource.switch2Half();
+				    	heatSource.switch2ThreeQuarters();
 				    	result += heatSource.getCurrentHeat(getBuilding());
-				    	heatSource.switch2Quarter();
-				    	result += heatSource.getCurrentHeat(getBuilding());
+//				    	heatSource.switch2Quarter();
+//				    	result += heatSource.getCurrentHeat(getBuilding());
 				    }
 				    else if (heatSource.getType().equals(HeatSourceType.ELECTRIC_HEATING)) {
-				    	heatSource.switch2Half();
+				    	heatSource.switch2ThreeQuarters();
 				    	powerReq2 = heatSource.getCurrentHeat(getBuilding());
-				    	heatSource.switch2Quarter();
-				    	powerReq2 += heatSource.getCurrentHeat(getBuilding());
+//				    	heatSource.switch2Quarter();
+//				    	powerReq2 += heatSource.getCurrentHeat(getBuilding());
 				    	result += powerReq2;
 				    }
 				    else if (heatSource.getType().equals(HeatSourceType.FUEL_HEATING)) {
 				    	heatSource.setTime(time);
-				    	heatSource.switch2Half();
+				    	heatSource.switch2ThreeQuarters();
 				    	result += heatSource.getCurrentHeat(getBuilding());
-				    	heatSource.switch2Quarter();
-				    	result += heatSource.getCurrentHeat(getBuilding());
+//				    	heatSource.switch2Quarter();
+//				    	result += heatSource.getCurrentHeat(getBuilding());
 				    }
 				}
 			}
@@ -258,24 +258,25 @@ implements Serializable {
 				while (i.hasNext()) {
 					HeatSource heatSource = i.next();
 				    if (heatSource.getType().equals(HeatSourceType.SOLAR_HEATING)) {
-				    	heatSource.switch2Quarter();
+				    	heatSource.switch2OneQuarter();
 				    	result += heatSource.getCurrentHeat(getBuilding());
 				    }
 				    else if (heatSource.getType().equals(HeatSourceType.ELECTRIC_HEATING)) {
-				    	heatSource.switch2Quarter();
+				    	heatSource.switch2OneQuarter();
 				    	powerReq4 = heatSource.getCurrentHeat(getBuilding());
 				    	result += powerReq4;
 				    }
 				    else if (heatSource.getType().equals(HeatSourceType.FUEL_HEATING)) {
 				    	heatSource.setTime(time);
-				    	heatSource.switch2Quarter();
+				    	heatSource.switch2OneQuarter();
 				    	result +=  heatSource.getCurrentHeat(getBuilding());
 				    }
 				}
 			}
 		//}
-
-		building.setPowerRequiredForHeating(powerReq1 + powerReq2 + powerReq3 + powerReq4);
+		double req = powerReq1 + powerReq2 + powerReq3 + powerReq4;
+//		logger.info(building.getNickName() + " power required: " + Math.round(req * 100.0)/100.0 + " kW");
+		building.setPowerRequiredForHeating(req);
 			
 		return result;
 	}
@@ -318,12 +319,12 @@ implements Serializable {
 				while (i.hasNext()) {
 					HeatSource heatSource = i.next();
 				    if (heatSource.getType().equals(HeatSourceType.SOLAR_HEATING)) {
-				    	heatSource.switch2Quarter();
+				    	heatSource.switch2OneQuarter();
 				    	result += heatSource.getCurrentPower(getBuilding());
 				    }
 				    else if (heatSource.getType().equals(HeatSourceType.FUEL_HEATING)) {
 					    if (!sufficientPower) {
-					    	heatSource.switch2Quarter();
+					    	heatSource.switch2OneQuarter();
 					    	result += heatSource.getCurrentPower(getBuilding());
 					    }
 				    }
@@ -352,16 +353,13 @@ implements Serializable {
 				while (i.hasNext()) {
 					HeatSource heatSource = i.next();
 				    if (heatSource.getType().equals(HeatSourceType.SOLAR_HEATING)) {
-				    	// Note : May get up to three quarters of power (and one quarter of heat)
-				    	heatSource.switch2Quarter();
-				    	// multiply result by 3
-				    	result += heatSource.getCurrentPower(getBuilding())*3D;
+				    	// Note : May get up to three quarters for power (and one quarter for heat)
+				    	heatSource.switch2ThreeQuarters();
+				    	result += heatSource.getCurrentPower(getBuilding());
 				    }
 				    else if (heatSource.getType().equals(HeatSourceType.FUEL_HEATING)) {
 					    if (!sufficientPower) {
-					    	heatSource.switch2Quarter();
-					    	result += heatSource.getCurrentPower(getBuilding());
-					    	heatSource.switch2Half();
+					    	heatSource.switch2ThreeQuarters();
 					    	result += heatSource.getCurrentPower(getBuilding());
 					    }
 				    }

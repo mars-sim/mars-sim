@@ -231,7 +231,7 @@ public class FuelHeatSource extends HeatSource implements Serializable {
 	}
 
 	@Override
-	public void switch2Quarter() {
+	public void switch2OneQuarter() {
 		factor = 1 / 4D;
 		toggle = true;
 	}
@@ -242,6 +242,11 @@ public class FuelHeatSource extends HeatSource implements Serializable {
 		toggle = true;
 	}
 
+	@Override
+	public void switch2ThreeQuarters() {
+		factor = .75;
+	}
+	
 	@Override
 	public void destroy() {
 		super.destroy();

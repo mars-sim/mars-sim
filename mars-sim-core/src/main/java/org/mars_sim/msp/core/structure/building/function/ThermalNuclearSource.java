@@ -75,13 +75,18 @@ implements Serializable {
 	}
 	
 	@Override
-	public void switch2Quarter() {
+	public void switch2OneQuarter() {
 		factor = 1/4D;
 	}
 	
 	@Override
 	public void switch2Full() {
 		factor = 1D;
+	}
+	
+	@Override
+	public void switch2ThreeQuarters() {
+		factor = .75;
 	}
 	
 	@Override

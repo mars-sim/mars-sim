@@ -11,7 +11,6 @@ import java.io.Serializable;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingManager;
 
 /**
  * A solar thermal power source.
@@ -61,7 +60,7 @@ implements Serializable {
 
 	@Override
 	public double getAveragePower(Settlement settlement) {
-		return getMaxPower() / 2.5D;
+		return getMaxPower() * 0.707;
 	}
 
 	@Override

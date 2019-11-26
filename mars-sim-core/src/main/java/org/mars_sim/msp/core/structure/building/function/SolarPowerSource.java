@@ -7,6 +7,7 @@
 package org.mars_sim.msp.core.structure.building.function;
 
 import java.io.Serializable;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -24,7 +25,7 @@ implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	/** default logger. */
-//	private static Logger logger = Logger.getLogger(SolarPowerSource.class.getName());
+	private static Logger logger = Logger.getLogger(SolarPowerSource.class.getName());
 	
 	private static final double MAINTENANCE_FACTOR = 2.5D;	
 	/** NASA MER has an observable solar cell degradation rate of 0.14% per sol, 
@@ -137,15 +138,19 @@ implements Serializable {
 				/1000D * area * efficiency_solar_panel; 
 		// add noise with * (.99 + RandomUtil.getRandomDouble(.2));
 		double capable = getMaxPower();
-		if (available >= capable)
+		if (available >= capable) {
+//			logger.info(building.getNickName() + " solar power capable : " + Math.round(capable * 100.0)/100.0 + " kW");
 			return capable;
-		else
+		}
+		else {
+//			logger.info(building.getNickName() + " solar power available : " + Math.round(available * 100.0)/100.0 + " kW");
 			return available;
+		}
 	}
 
 	@Override
 	public double getAveragePower(Settlement settlement) {
-		return getMaxPower() / 2.5;
+		return getMaxPower() * 0.707;
 	}
 
 	@Override

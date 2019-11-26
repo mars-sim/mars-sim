@@ -10,6 +10,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -24,7 +25,9 @@ public class PowerGeneration extends Function implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
+	/** default logger. */
+	private static Logger logger = Logger.getLogger(PowerGeneration.class.getName());
+	
 	/** TODO Name of the building function needs to be internationalized. */
 	private static final FunctionType FUNCTION = FunctionType.POWER_GENERATION;
 
@@ -83,7 +86,6 @@ public class PowerGeneration extends Function implements Serializable {
 
 		double existingPowerValue = demand / (supply + 1D);
 
-//		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 		double powerSupply = getPowerSourceSupply(buildingConfig.getPowerSources(buildingName), settlement);
 
 		return powerSupply * existingPowerValue;
@@ -156,13 +158,18 @@ public class PowerGeneration extends Function implements Serializable {
 			result += powerSource.getCurrentPower(getBuilding());
 		}
 
+//		logger.info(building.getNickName() + " generated power : " + Math.round(result * 100.0)/100.0 + " kW");
+		
 		if (thermalGeneration == null)
 			thermalGeneration = building.getThermalGeneration();
 
 		// Note: some buildings don't have thermal generation function
-		if (thermalGeneration != null)
-			result += thermalGeneration.getGeneratedPower();// calculateGeneratedPower();
-
+		if (thermalGeneration != null) {
+			double p = thermalGeneration.getGeneratedPower();
+//			logger.info(building.getNickName() + " thermal power : " + Math.round(p * 100.0)/100.0 + " kW");
+			result += p;// calculateGeneratedPower();
+		}
+	
 		return result;
 	}
 

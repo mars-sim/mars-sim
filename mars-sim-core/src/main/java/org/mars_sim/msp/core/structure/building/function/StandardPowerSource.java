@@ -39,7 +39,7 @@ implements Serializable {
 
 
 	public double getAveragePower(Settlement settlement) {
-		return getMaxPower();
+		return getMaxPower() * 0.707;
 	}
 
 	@Override

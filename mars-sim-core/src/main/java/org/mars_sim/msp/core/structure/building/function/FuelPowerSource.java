@@ -96,7 +96,8 @@ implements Serializable {
 	 * @return the amount of fuel consumed
 	 */
 	public double consumeFuel(double time, Inventory inv) {
-
+		this.time = time;
+		 
 		double rate_millisol = rate / 1000D;
 		
 		maxFuel = time * rate_millisol;
@@ -141,6 +142,12 @@ implements Serializable {
 		 
 		 if (toggle) {
 			 double spentFuel = consumeFuel(time, building.getInventory());
+			 
+			 logger.info("getCurrentPower(). spentFuel: " +  Math.round(spentFuel* 100.0)/100.0 + " kW"
+					 + "   spentFuel: " +  Math.round(spentFuel* 100.0)/100.0 + " kW"
+					 + "   getMaxPower(): " +  Math.round(getMaxPower()* 100.0)/100.0 + " kW"
+					 + "   spentFuel/maxFuel * ELECTRICAL_EFFICIENCY: " +  Math.round(spentFuel/maxFuel * ELECTRICAL_EFFICIENCY * 100.0)/100.0 + " kW"
+					 );		 
 			 return getMaxPower() * spentFuel/maxFuel * ELECTRICAL_EFFICIENCY;
 		 }
 		 
@@ -205,9 +212,11 @@ implements Serializable {
 //			Good fuelGood = GoodsUtil.getResourceGood(methaneID);
 //			GoodsManager goodsManager = settlement.getGoodsManager();
 		double fuelValue = settlement.getGoodsManager().getGoodValuePerItem(GoodsUtil.getResourceGood(methaneID));
-		fuelValue *= getFuelConsumptionRate();
+		fuelValue *= getFuelConsumptionRate() / 1000D * time;
 		fuelPower -= fuelValue;
 		if (fuelPower < 0D) fuelPower = 0D;
+		
+		logger.info("getAveragePower(). fuelPower: " +  Math.round(fuelPower* 100.0)/100.0 + " kW");
 		return fuelPower;
 	 }
 

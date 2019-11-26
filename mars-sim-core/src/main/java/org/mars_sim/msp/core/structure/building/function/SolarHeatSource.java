@@ -7,6 +7,7 @@
 package org.mars_sim.msp.core.structure.building.function;
 
 import java.io.Serializable;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
@@ -22,6 +23,9 @@ implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
+	/** default logger. */
+	private static Logger logger = Logger.getLogger(SolarHeatSource.class.getName());
+
 	// Tentatively set to 0.14% or (.0014) efficiency degradation per sol as reported by NASA MER
 	public static double DEGRADATION_RATE_PER_SOL = .0014;
 	
@@ -95,20 +99,28 @@ implements Serializable {
 	@Override
 	public double getCurrentHeat(Building building) {
 		double collected = getCollected(building);// * efficiency_solar_to_heat;
-		return maxHeat * collected * factor;
+//		logger.info(building.getNickName() + " getCurrentHeat(): " + Math.round(maxHeat * collected * factor * 100.0)/100.0 + " kW");	
+		if (collected > maxHeat * factor)
+			return maxHeat * factor;
+		
+		return collected;
 	}
 
 	@Override
 	public double getCurrentPower(Building building) {
 		double collected = getCollected(building);// * efficiency_solar_to_electricity;
-		//System.out.println(building.getNickName() + "'s maxHeat is " + maxHeat + " collected is " + collected);
-		return maxHeat * collected * factor;
+//		logger.info(building.getNickName() + "'s maxHeat is " + maxHeat 
+//				+ " collected is " + collected
+//				+ " getCurrentPower(): " + Math.round(maxHeat * collected * factor * 100.0)/100.0 + " kW");		
+		if (collected > maxHeat * factor)
+			return maxHeat * factor;
+		
+		return collected;
 	}
 	
 	@Override
 	public double getAverageHeat(Settlement settlement) {
-		// NOTE: why divide by 2 ? why settlement ?		
-		return getMaxHeat() / 2D;
+		return getMaxHeat() *.707;
 	}
 
 	@Override
@@ -132,13 +144,18 @@ implements Serializable {
 	}
 	
 	@Override
-	public void switch2Quarter() {
+	public void switch2OneQuarter() {
 		factor = 1/4D;
 	}
 	
 	@Override
 	public void switch2Full() {
 		factor = 1D;
+	}
+	
+	@Override
+	public void switch2ThreeQuarters() {
+		factor = .75;
 	}
 	
 	@Override

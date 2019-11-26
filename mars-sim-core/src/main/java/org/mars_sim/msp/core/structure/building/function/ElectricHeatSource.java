@@ -83,8 +83,8 @@ implements Serializable {
 	}
 	
 	@Override
-	public void switch2Quarter() {
-		factor = 1/4D;
+	public void switch2OneQuarter() {
+		factor = .25;
 	}
 	
 	@Override
@@ -95,6 +95,11 @@ implements Serializable {
 	@Override
 	public void destroy() {
 		super.destroy();
+	}
+
+	@Override
+	public void switch2ThreeQuarters() {
+		factor = .75;
 	}
 
 

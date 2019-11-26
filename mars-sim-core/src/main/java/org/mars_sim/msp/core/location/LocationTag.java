@@ -164,7 +164,7 @@ public class LocationTag implements LocationState, Serializable {
 	 */
 	public String getLocale() {
 		if (p != null) {
-			if (p.getPhysicalCondition().isDead())
+			if (p.getPhysicalCondition() != null && p.getPhysicalCondition().isDead())
 				return p.getPhysicalCondition().getDeathDetails().getPlaceOfDeath();
 			else if (LocationStateType.INSIDE_SETTLEMENT == p.getLocationStateType())
 				return p.getSettlement().getName();

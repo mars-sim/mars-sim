@@ -134,7 +134,8 @@ public class WalkSettlementInterior extends Task implements Serializable {
 	
 			// If no valid walking path is found, end task.
 			if (walkingPath == null) {
-				LogConsolidated.log(Level.WARNING, 20_000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
+				LogConsolidated.log(Level.WARNING, 20_000, sourceName, 
+						"[" + person.getLocationTag().getLocale() + "] "
 	//							+ person.getName() + " was unable to walk from " + startBuilding.getNickName() + " to "
 	//									+ destinationBuilding.getNickName() + ". No valid interior path.");
 								+ person.getName() + " was unable to walk. No valid interior path.");

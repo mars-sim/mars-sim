@@ -152,6 +152,8 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	private double xLoc;
 	/** Settlement Y location (meters) from settlement center. */
 	private double yLoc;
+	/** Settlement Z location (meters) from settlement center. */
+	private double zLoc;
 	
 	/** The birth timestamp of the person. */
 	private String birthTimeStamp;
@@ -856,6 +858,24 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		this.yLoc = yLocation;
 	}
 
+	/**
+	 * Gets the person's Z location at a settlement.
+	 *
+	 * @return Z distance (meters) from the settlement's center.
+	 */
+	public double getZLocation() {
+		return zLoc;
+	}
+
+	/**
+	 * Sets the person's Z location at a settlement.
+	 *
+	 * @param zLocation the Z distance (meters) from the settlement's center.
+	 */
+	public void setZLocation(double zLocation) {
+		this.zLoc = zLocation;
+	}
+	
 	/**
 	 * Get settlement person is at, null if person is not at a settlement
 	 *

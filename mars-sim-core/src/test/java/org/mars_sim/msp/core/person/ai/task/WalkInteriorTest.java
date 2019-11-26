@@ -35,8 +35,8 @@ public class WalkInteriorTest extends TestCase {
         Settlement settlement = new MockSettlement();
 
         MockBuilding building = new MockBuilding(settlement.getBuildingManager());
-    	System.out.println("WalkInteriorTest : " + building + "'s location state type : " + building.getLocationStateType());
-    	
+        logger.info("WalkInteriorTest : " + building + "'s location state type : " + building.getLocationStateType());
+
         building.setWidth(10D);
         building.setLength(10D);
         settlement.getBuildingManager().addMockBuilding(building);
@@ -45,9 +45,7 @@ public class WalkInteriorTest extends TestCase {
         building.addFunction(new EVA(building, airlock0));
 
 		Person person = new Person(settlement);
-		// Set currentStateType
-//		person.currentStateType = LocationStateType.INSIDE_SETTLEMENT;  
-		System.out.println("WalkInteriorTest : " + person + "'s location state type : " + person.getLocationStateType());
+		logger.info("WalkInteriorTest : " + person + "'s location state type : " + person.getLocationStateType());
 		
 //		settlement.getInventory().storeUnit(person);
         person.setXLocation(0D);

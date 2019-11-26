@@ -134,8 +134,13 @@ public abstract class HeatSource implements Serializable {
 	/**
 	 * Switch to producing only a quarter of the output
 	 */
-	public abstract void switch2Quarter();
+	public abstract void switch2OneQuarter();
 
+	/**
+	 * Switch to producing only three quarters of the output
+	 */
+	public abstract void switch2ThreeQuarters();
+	
 	/**
 	 * Reloads instances after loading from a saved sim
 	 * 
