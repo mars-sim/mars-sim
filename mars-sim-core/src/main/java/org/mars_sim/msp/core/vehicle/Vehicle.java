@@ -1216,6 +1216,11 @@ public abstract class Vehicle extends Unit
 			malfunctionManager.timePassing(time);
 		}
 
+		if (haveStatusType(StatusType.MALFUNCTION)) {
+			if (malfunctionManager.getMalfunctions().size() == 0)
+				removeStatus(StatusType.MALFUNCTION);
+		}
+				
 //		if (haveStatusType(StatusType.OUT_OF_FUEL)
 //			|| haveStatusType(StatusType.PARKED)
 //			|| haveStatusType(StatusType.GARAGED)) {

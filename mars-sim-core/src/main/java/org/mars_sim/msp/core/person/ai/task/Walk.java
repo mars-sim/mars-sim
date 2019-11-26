@@ -742,8 +742,9 @@ public class Walk extends Task implements Serializable {
 					// Going from building to step.building
 					// setDescription("Walking inside from " + building.getNickName() + " to " +
 					// step.building.getNickName());
-					if (step.building != null)
+					if (step.building != null) {
 						addSubTask(new WalkSettlementInterior(person, step.building, x, y, 0));
+					}
 					else {
 						LogConsolidated.log(Level.SEVERE, 5_000, sourceName,
 			      				"[" + person.getLocationTag().getLocale() + "] "

@@ -19,6 +19,7 @@ import org.mars_sim.msp.core.GameManager;
 import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.swing.tool.commander.CommanderWindow;
 import org.mars_sim.msp.ui.swing.tool.guide.GuideWindow;
@@ -41,9 +42,7 @@ import com.alee.managers.tooltip.TooltipWay;
  * The ToolToolBar class is a UI toolbar for holding tool buttons. There should
  * only be one instance and it is contained in the {@link MainWindow} instance.
  */
-public class ToolToolBar
-extends WebToolBar
-implements ActionListener {
+public class ToolToolBar extends WebToolBar implements ActionListener, ClockListener {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -56,6 +55,10 @@ implements ActionListener {
 	// Data members
 	/** List of tool buttons. */
 	private Vector<ToolButton> toolButtons;
+	
+	/** WebSwitch for the control of play or pause the simulation*/
+	private WebSwitch ws;
+	
 	/** Main window that contains this toolbar. */
 	private MainWindow parentMainWindow;
 	
@@ -201,14 +204,15 @@ implements ActionListener {
 		
 //		addSeparator();
 
-		WebSwitch ws = new WebSwitch(true);
+		ws = new WebSwitch(true);
 		ws.setSwitchComponents(
 //				new SvgIcon("play16"), new SvgIcon("pause16"));
 				ImageLoader.getIcon(Msg.getString("img.speed.play")), 
 				ImageLoader.getIcon(Msg.getString("img.speed.pause")));
-		TooltipManager.setTooltip(ws, "play OR pause the Simulation", TooltipWay.down);
+		TooltipManager.setTooltip(ws, "Pause or Resume  the Simulation", TooltipWay.down);
 		ws.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+//				masterClock.setPaused(!masterClock.isPaused(), false);
 				if (ws.isSelected())
 					masterClock.setPaused(false, false);
 				else
@@ -289,5 +293,45 @@ implements ActionListener {
 		parentMainWindow.getDesktop().openToolWindow(
 			((ToolButton) event.getSource()).getToolName()
 		);
+	}
+	
+	/**
+	 * Change the pause status. Called by Masterclock's firePauseChange() since
+	 * TimeWindow is on clocklistener.
+	 * 
+	 * @param isPaused true if set to pause
+	 * @param showPane true if the pane will show up
+	 */
+	@Override
+	public void pauseChange(boolean isPaused, boolean showPane) {
+		// Update pause/resume button text based on master clock pause state.
+//		ws.setSelected(!ws.isSelected());
+//		if (isPaused) {
+//			// To pause
+//			ws.setSelected(!ws.isSelected());
+////			ws.startAnimation();
+////			ws.setSelected(false, true);
+////			ws.fireActionPerformed();
+//		} else {
+//			// To play or to resume 
+//			ws.setSelected(!ws.isSelected());
+////			ws.setSelected(true, true);
+////			ws.fireActionPerformed();
+//		}
+	}
+
+	@Override
+	public void clockPulse(double time) {
+	}
+
+	@Override
+	public void uiPulse(double time) {
+	}
+	
+	public void destroy() {
+		toolButtons.clear();
+		toolButtons = null;
+		parentMainWindow = null;
+		masterClock = null;
 	}
 }

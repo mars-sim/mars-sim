@@ -669,7 +669,6 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 		if (currentStateType != null) {
 			return;
 		}
-		// Case 4 : a person gets buried outside the settlement
 		else {
 		
 			if (tag.isInSettlementVicinity())

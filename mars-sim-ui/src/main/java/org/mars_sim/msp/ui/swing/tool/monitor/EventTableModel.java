@@ -615,7 +615,7 @@ public class EventTableModel extends AbstractTableModel
 
 			if (nMenu == null) {
 //				try {
-					nMenu = desktop.getMainWindow().getMainWindowMenu().getNotificationMenu();
+//					nMenu = desktop.getMainWindow().getMainWindowMenu().getNotificationMenu();
 //				} catch (NullPointerException e) {
 					// TODO Auto-generated catch block
 					// e.printStackTrace();

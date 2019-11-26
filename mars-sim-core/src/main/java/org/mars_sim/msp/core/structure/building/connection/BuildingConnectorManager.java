@@ -369,9 +369,9 @@ public class BuildingConnectorManager implements Serializable {
 	public InsideBuildingPath determineShortestPath(Building building1, double building1XLoc, double building1YLoc,
 			Building building2, double building2XLoc, double building2YLoc) {
 
-		if ((building1 == null) || (building2 == null)) {
-			throw new IllegalArgumentException("Building arguments cannot be null");
-		}
+//		if ((building1 == null) || (building2 == null)) {
+//			throw new IllegalArgumentException("Building arguments cannot be null");
+//		}
 
 		BuildingLocation startingLocation = new BuildingLocation(building1, building1XLoc, building1YLoc);
 		BuildingLocation endingLocation = new BuildingLocation(building2, building2XLoc, building2YLoc);
@@ -382,6 +382,7 @@ public class BuildingConnectorManager implements Serializable {
 		InsideBuildingPath finalPath = null;
 		if (!building1.equals(building2)) {
 			// Check shortest path to target building from this building.
+//			logger.config(building1.getNickName() + " " + building2.getNickName());
 			finalPath = determineShortestPath(startingPath, building1, building2, endingLocation);
 		} else {
 			finalPath = startingPath;
@@ -468,6 +469,9 @@ public class BuildingConnectorManager implements Serializable {
 				newPath.addPathLocation(connectionBuilding);
 
 				// Recursively call this method with new path and connection building.
+				// TODO: how to avoid StackOverflow ?
+//				logger.config(connectionBuilding.getNickName() + " -> " + targetBuilding.getNickName() 
+//					+ " (" + endingLocation.getXLocation() + ", " + endingLocation.getYLocation() + ")");
 				bestPath = determineShortestPath(newPath, connectionBuilding, targetBuilding, endingLocation);
 			}
 

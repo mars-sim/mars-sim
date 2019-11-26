@@ -17,9 +17,6 @@ import java.util.List;
  */
 public class InsideBuildingPath implements Serializable, Cloneable {
 
-    /**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	// Data members.
     private List<InsidePathLocation> pathLocations;

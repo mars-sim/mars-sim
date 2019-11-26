@@ -116,9 +116,11 @@ public class Malfunction implements Serializable {
 		
 		do {
 			t = time + RandomUtil.getGaussianDouble() * time/4D;
+			if (t < 0)
+				t = -t;
 		}
 		// Limit the expected work time to no more than 5x the average work time.
-		while (t <= 0 || t > 5 * time);
+		while (t == 0 || t > 5 * time);
 			
 		return t;
 		

@@ -549,7 +549,6 @@
 			<system name="living accommodations" />
 			<system name="farming" />
 			<system name="manufacture" />
-			<system name="EVA suit" />
 			<system name="cooking" />
 		</system-list>
 		<effect-list>
@@ -563,11 +562,7 @@
 			<part name="copper pipe" number="1" probability="15" />
 		<!-- 2014-11-19 Added water tank and small water pump -->
 			<part name="water tank" number="1" probability="10" />
-			<part name="small water pump" number="1" probability="15" />
-			<part name="eva boots" number="1" probability="15" />		
-			<part name="coveralls" number="1" probability="10" />
-			<part name="eva backpack" number="1" probability="10" />	
-										
+			<part name="small water pump" number="1" probability="15" />										
 		</repair-parts-list>
 	</malfunction>
 

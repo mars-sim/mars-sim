@@ -164,12 +164,13 @@ public class LocationTag implements LocationState, Serializable {
 	 */
 	public String getLocale() {
 		if (p != null) {
-			if (LocationStateType.INSIDE_SETTLEMENT == p.getLocationStateType())
+			if (p.getPhysicalCondition().isDead())
+				return p.getPhysicalCondition().getDeathDetails().getPlaceOfDeath();
+			else if (LocationStateType.INSIDE_SETTLEMENT == p.getLocationStateType())
 				return p.getSettlement().getName();
 			else if (LocationStateType.INSIDE_VEHICLE == p.getLocationStateType())
 				return p.getVehicle().getName();
-			else if (isInSettlementVicinity()
-					|| LocationStateType.WITHIN_SETTLEMENT_VICINITY == p.getLocationStateType())
+			else if (LocationStateType.WITHIN_SETTLEMENT_VICINITY == p.getLocationStateType())
 				return findSettlementVicinity().getName();
 			else if (LocationStateType.OUTSIDE_ON_THE_SURFACE_OF_MARS == p.getLocationStateType()) {
 				Vehicle v = findNearbyVehicleVicinity();
@@ -318,8 +319,10 @@ public class LocationTag implements LocationState, Serializable {
 				return s;
 		}
 
+//		if (unit instanceof Person && ((Person) unit).getPhysicalCondition().isDead())
+//			return ((Person) unit).getBuriedSettlement();
+		
 		return unit.getAssociatedSettlement(); 
-		// WARNING : using associated settlement needs to exercise more caution
 	}
 
 	/**

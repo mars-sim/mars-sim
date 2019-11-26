@@ -16,6 +16,8 @@ import org.mars_sim.msp.core.structure.building.Building;
  */
 public class Hatch implements Serializable, LocalBoundedObject, InsidePathLocation {
 
+	private static final long serialVersionUID = 1L;
+	
 	// Static members.
 	public static final double LENGTH = .6D;
 	public static final double WIDTH = 2.76D;
@@ -127,5 +129,6 @@ public class Hatch implements Serializable, LocalBoundedObject, InsidePathLocati
 	 */
 	public void destroy() {
 		building = null;
+		connector = null;
 	}
 }

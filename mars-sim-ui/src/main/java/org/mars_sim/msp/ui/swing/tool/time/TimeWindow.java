@@ -20,6 +20,7 @@ import java.text.DecimalFormat;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
 import javax.swing.border.BevelBorder;
@@ -37,6 +38,7 @@ import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.time.UpTimer;
+import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.JSliderMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MainWindow;
@@ -129,6 +131,14 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	private JSliderMW pulseSlider;
 	/** button for pause. */
 	private WebButton pauseButton;
+	/** button for play. */
+	private WebButton playButton;
+	
+	/** Icon for play. */
+	private Icon playIcon; 
+	/** Icon for pause. */
+	private Icon pauseIcon;
+	
 	/** MainWindow instance . */
 	private MainWindow mainWindow;
 
@@ -372,17 +382,54 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		setTimeRatioSlider(masterClock.getTimeRatio());
 
 		WebPanel pausePane = new WebPanel(new FlowLayout());
+		playButton = new WebButton();
+		playButton.setSize(40, 25);
+		playIcon = ImageLoader.getIcon(Msg.getString("img.speed.play")); 
+		playButton.setIcon(playIcon);
+		TooltipManager.setTooltip(playButton, "Play/Resume the simulation", TooltipWay.up);
+		playButton.setEnabled(false);
+		
+		playButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+					masterClock.setPaused(!masterClock.isPaused(), false);
+//					if (playButton.isSelected())
+//						masterClock.setPaused(false, false);
+//					else
+//						masterClock.setPaused(true, false);		
+			}
+		});
+		
 		pauseButton = new WebButton();
-		if (masterClock.isPaused())
-			pauseButton.setText("  " + Msg.getString("TimeWindow.button.resume") + "  "); //$NON-NLS-1$		
-		else
-			pauseButton.setText("    " + Msg.getString("TimeWindow.button.pause") + "    ");  //$NON-NLS-1$
+		pauseButton.setSize(40, 25);
+		pauseIcon = ImageLoader.getIcon(Msg.getString("img.speed.pause"));
+		pauseButton.setIcon(pauseIcon);
+		TooltipManager.setTooltip(pauseButton, "Resume the simulation", TooltipWay.up);
+
+		
+//		if (masterClock.isPaused()) {
+////			pauseButton.setText("  " + Msg.getString("TimeWindow.button.resume") + "  "); //$NON-NLS-1$	
+//			pauseButton.setIcon(playIcon);
+//			TooltipManager.setTooltip(pauseButton, "Resume the simulation", TooltipWay.up);			
+//		}
+//		else {
+////			pauseButton.setText("    " + Msg.getString("TimeWindow.button.pause") + "    ");  //$NON-NLS-1$
+//			pauseButton.setIcon(pauseIcon);
+//			TooltipManager.setTooltip(pauseButton, "Pause the simulation", TooltipWay.up);
+//		}
+			
 		pauseButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 					masterClock.setPaused(!masterClock.isPaused(), false);
+//					if (!pauseButton.isSelected())
+//						masterClock.setPaused(false, false);
+//					else
+//						masterClock.setPaused(true, false);					
 			}
 		});
+		
+		pausePane.add(playButton);
 		pausePane.add(pauseButton);
 			
 		simulationPane.add(pausePane, BorderLayout.SOUTH);
@@ -584,14 +631,19 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		if (isPaused) {
 //			if (showPane && mainScene != null && !masterClock.isSavingSimulation())
 //				mainScene.startPausePopup();
-			pauseButton.setText("  " + Msg.getString("TimeWindow.button.resume") + "  "); //$NON-NLS-1$
+//			pauseButton.setIcon(playIcon);
+//			pauseButton.setText("  " + Msg.getString("TimeWindow.button.resume") + "  "); //$NON-NLS-1$
 			// desktop.getMarqueeTicker().pauseMarqueeTimer(true);
-
+			pauseButton.setEnabled(false);
+			playButton.setEnabled(true);
 		} else {
-			pauseButton.setText("    " + Msg.getString("TimeWindow.button.pause") + "    "); //$NON-NLS-1$
+//			pauseButton.setIcon(pauseIcon);
+//			pauseButton.setText("    " + Msg.getString("TimeWindow.button.pause") + "    "); //$NON-NLS-1$
 			// desktop.getMarqueeTicker().pauseMarqueeTimer(false);
 //			if (showPane && mainScene != null)
 //				mainScene.stopPausePopup();
+			pauseButton.setEnabled(true);
+			playButton.setEnabled(false);
 		}
 	}
 
@@ -602,6 +654,8 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	 */
 	public void enablePauseButton(boolean value) {
 		pauseButton.setEnabled(value);
+		playButton.setEnabled(!value);
+
 		// Note : when a wizard or a dialog box is opened/close,
 		// need to call below to remove/add the ability to use ESC to
 		// unpause/pause
