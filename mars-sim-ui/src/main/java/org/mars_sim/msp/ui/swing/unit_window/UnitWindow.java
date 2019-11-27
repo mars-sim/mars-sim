@@ -26,6 +26,7 @@ import javax.swing.event.ChangeListener;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskSchedule;
@@ -132,11 +133,15 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 			setMaximumSize(new Dimension(WIDTH, HEIGHT + 30));
 			setPreferredSize(new Dimension(WIDTH, HEIGHT + 30));
 		}
-		else if (unit instanceof Vehicle) {
+		else { //if (unit instanceof Vehicle) {
 			setMaximumSize(new Dimension(WIDTH, HEIGHT - 50));
 			setPreferredSize(new Dimension(WIDTH, HEIGHT - 50));
 		}		
-
+//		else if (unit instanceof Equipment) {
+//			setMaximumSize(new Dimension(WIDTH, HEIGHT - 50));
+//			setPreferredSize(new Dimension(WIDTH, HEIGHT - 50));
+//		}	
+		
 		this.setIconifiable(false);
 		
 		initializeUI();
@@ -319,10 +324,14 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 //			setMaximumSize(new Dimension(WIDTH, HEIGHT + 35));
 			tabPane.setPreferredSize(new Dimension(WIDTH - 45, HEIGHT - 40));
 		}
-		else if (unit instanceof Vehicle) {
+		else  { //if (unit instanceof Vehicle) {
 //			setMaximumSize(new Dimension(WIDTH, HEIGHT - 20));
 			tabPane.setPreferredSize(new Dimension(WIDTH - 45, HEIGHT - 120));
 		}	
+//		else if (unit instanceof Equipment) {
+////			setMaximumSize(new Dimension(WIDTH, HEIGHT - 20));
+//			tabPane.setPreferredSize(new Dimension(WIDTH - 45, HEIGHT - 120));
+//		}	
 		
 //		tabPane.putClientProperty ( StyleId.STYLE_PROPERTY, StyleId.tabbedpane);
 //		tabPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
@@ -385,7 +394,7 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 	 * Updates the status of an unit
 	 */
 	public void statusUpdate() {
-
+	
 		Person p = (Person) unit;
 
 		String townString = null;

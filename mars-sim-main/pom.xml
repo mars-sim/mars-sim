@@ -71,7 +71,7 @@
                			<argument>-classpath</argument>
             			<classpath/>
             			<argument>org.mars_sim.main.MarsProject</argument>           			
-               			<argument>-Xms256m -Xmx1024m -new</argument>
+               			<argument>-Xms256m -Xmx1536m -new</argument>
               		</arguments>
 		        </configuration>
 		    </plugin>		
@@ -79,7 +79,7 @@
 				<!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-jar-plugin  : 27 KB -->
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
-				<version>3.1.2</version>
+				<version>3.2.0</version>
 				<configuration>
 					<archive>
 						<manifest>
@@ -94,7 +94,7 @@
 					https://maven.apache.org/plugins/maven-assembly-plugin/ : 235 KB -->
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
-				<version>3.1.1</version>
+				<version>3.2.0</version>
 				<configuration>
 					<descriptorRefs>
 						<descriptorRef>jar-with-dependencies</descriptorRef>

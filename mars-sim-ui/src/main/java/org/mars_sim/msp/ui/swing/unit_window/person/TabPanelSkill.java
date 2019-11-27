@@ -106,8 +106,13 @@ extends TabPanel {
 		uiDone = true;
 
 		// Create skill table model
-		skillTableModel = new SkillTableModel(person);
-		
+        if (unit instanceof Person) {
+    		skillTableModel = new SkillTableModel(person);
+        }
+        else if (unit instanceof Robot) {
+    		skillTableModel = new SkillTableModel(robot);
+        }
+
 		// Create skill label panel.
 		WebPanel skillLabelPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
 		topContentPanel.add(skillLabelPanel);

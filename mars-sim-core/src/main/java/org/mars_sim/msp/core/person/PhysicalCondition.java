@@ -98,7 +98,9 @@ public class PhysicalCondition implements Serializable {
 	public static final double MAXIMUM_AIR_PRESSURE = 68D; // Assume 68 kPa time dependent
 	/** Period of time (millisols) over which random ailments may happen. */
 	private static final double RANDOM_AILMENT_PROBABILITY_TIME = 100_000D;
-
+	/** A decimal number a little bigger than zero for comparing doubles. */
+	private static final double SMALL_AMOUNT = 0.001;
+	
 	private static final double h2o_consumption;
 	private static final double minimum_air_pressure;
 	private static final double min_temperature;
@@ -758,12 +760,7 @@ public class PhysicalCondition implements Serializable {
 			}
 
 			// TODO : how to tell a person to walk back to the settlement ?
-			if (person.isInside()) {
-				// Stop any on-going tasks
-//				taskMgr.clearTask();
-				// go eat a meal
-				taskMgr.addTask(new EatMeal(person), true);
-			}
+			goEatOrDrink();
 
 			// TODO : should check if a person is on a critical mission,
 
@@ -771,9 +768,7 @@ public class PhysicalCondition implements Serializable {
 
 		else if (isStarving) {
 			
-			if (person.isInside()) {
-				taskMgr.addTask(new EatMeal(person), true);
-			}
+			goEatOrDrink();
 			
 			if (hunger < 500D && kJoules > 800D) {
 		
@@ -788,6 +783,14 @@ public class PhysicalCondition implements Serializable {
 		}
 	}
 
+	public void goEatOrDrink() {
+		if (person.isInside() 
+				&& person.getContainerUnit().getInventory()
+				.getAmountResourceStored(ResourceUtil.waterID, false) > SMALL_AMOUNT) {
+			taskMgr.addTask(new EatMeal(person), false);
+		}
+	}
+	
 	/**
 	 * Checks if a person is dehydrated
 	 * 
@@ -805,17 +808,13 @@ public class PhysicalCondition implements Serializable {
 			// Stop any on-going tasks
 //				taskMgr.clearTask();
 			// go drink water by eating a meal
-			if (person.isInside()) {
-				taskMgr.addTask(new EatMeal(person), true);;
-			}
+			goEatOrDrink();
 
 		}
 
 		if (isDehydrated) {
 			
-			if (person.isInside()) {
-				taskMgr.addTask(new EatMeal(person), true);;
-			}
+			goEatOrDrink();
 			
 			if (thirst < THIRST_THRESHOLD * 2) {
 			

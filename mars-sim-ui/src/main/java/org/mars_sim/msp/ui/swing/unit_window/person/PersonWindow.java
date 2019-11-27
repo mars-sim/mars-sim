@@ -110,7 +110,7 @@ public class PersonWindow extends UnitWindow {
 	@Override
 	public void update() {
 		super.update();
-		// Person person = (Person) unit;
+
 		if (!deadCache) {
 			if (person.isDeclaredDead()) {
 				deadCache = true;

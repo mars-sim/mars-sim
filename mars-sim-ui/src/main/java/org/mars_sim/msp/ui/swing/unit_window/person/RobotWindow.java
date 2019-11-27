@@ -24,9 +24,6 @@ public class RobotWindow extends UnitWindow {
 
 	/** Is robot inoperable? */
 	private boolean inoperableCache = false;
-
-	/** The cache for the currently selected TabPanel. */
-	private TabPanel oldTab;
 	
 	private Robot robot;
 
@@ -71,7 +68,7 @@ public class RobotWindow extends UnitWindow {
 	@Override
 	public void update() {
 		super.update();
-		// Robot robot = (Robot) unit;
+
 		if (!inoperableCache) {
 			if (robot.getSystemCondition().isInoperable()) {
 				inoperableCache = true;
@@ -83,16 +80,16 @@ public class RobotWindow extends UnitWindow {
 	@Override
 	public void stateChanged(ChangeEvent e) {
 		// SwingUtilities.updateComponentTreeUI(this);
-		TabPanel newTab = getSelected();
-
-		if (newTab != oldTab) {
-
-			if (newTab instanceof TabPanelActivity) {
-//				if (tabPanelActivity.isUIDone());
-//				 	tabPanelActivity.initializeUI();
-			} else if (newTab instanceof TabPanelAttribute) {
-				
-			}
-		}
+//		TabPanel newTab = getSelected();
+//
+//		if (newTab != oldTab) {
+//
+//			if (newTab instanceof TabPanelActivity) {
+////				if (tabPanelActivity.isUIDone());
+////				 	tabPanelActivity.initializeUI();
+//			} else if (newTab instanceof TabPanelAttribute) {
+//				
+//			}
+//		}
 	}
 }

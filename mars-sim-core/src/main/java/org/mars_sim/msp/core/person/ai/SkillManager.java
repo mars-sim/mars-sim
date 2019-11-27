@@ -60,10 +60,10 @@ public class SkillManager implements Serializable {
 //		this.coreMind = coreMind;
 		
 		if (unit instanceof Person) {
-			person = ((Person)unit);
+			person = (Person)unit;
 //			personID = ((Person)unit).getIdentifier();
 		} else if (unit instanceof Robot) {
-			robot = ((Robot)unit);
+			robot = (Robot)unit;
 //			robotID = ((Robot)unit).getIdentifier();
 		}
 

@@ -54,6 +54,9 @@ public class TravelToSettlementMeta implements MetaMission {
     @Override
     public double getProbability(Person person) {
 
+    	if (marsClock.getMissionSol() < 10)
+    		return 0;
+    	
         double missionProbability = 0D;
 
         if (person.isInSettlement()) {

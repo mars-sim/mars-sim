@@ -54,6 +54,8 @@ implements ListSelectionListener {
 	private JTable relationshipTable;
 	private RelationshipTableModel relationshipTableModel;
 
+	private Collection<Person> knownPeople;
+	
 	/**
 	 * Constructor.
 	 * @param person the person.
@@ -113,8 +115,8 @@ implements ListSelectionListener {
 		        int row = table.rowAtPoint(p);
 		        int col = table.columnAtPoint(p);
 		        if (me.getClickCount() == 2) {
-		            if (row > 0 && col == 0) {
-		    			Person selectedPerson = (Person) relationshipTable.getValueAt(row, 0);
+		            if (row > 0 && col > 0) {
+		    			Person selectedPerson = (Person) relationshipTable.getValueAt(row, 1);  			
 		    			if (selectedPerson != null) desktop.openUnitWindow(selectedPerson, false);
 		    	    }
 		        }
@@ -165,13 +167,12 @@ implements ListSelectionListener {
 	/**
 	 * Internal class used as model for the relationship table.
 	 */
-	private static class RelationshipTableModel extends AbstractTableModel {
+	private class RelationshipTableModel extends AbstractTableModel {
 
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
 
 		private RelationshipManager manager;
-		private Collection<Person> knownPeople;
 		private Person person;
 
 		private RelationshipTableModel(Person person) {

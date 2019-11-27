@@ -30,6 +30,7 @@ import org.mars_sim.msp.core.person.ai.task.RepairEmergencyMalfunction;
 import org.mars_sim.msp.core.person.ai.task.RepairEmergencyMalfunctionEVA;
 import org.mars_sim.msp.core.person.ai.task.Sleep;
 import org.mars_sim.msp.core.person.ai.task.Walk;
+import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -57,7 +58,9 @@ public class TaskManager implements Serializable {
 	private static final String WALK = "walk";
 
 	private static final int MAX_TASK_PROBABILITY = 3000;
-
+	/** A decimal number a little bigger than zero for comparing doubles. */
+	private static final double SMALL_AMOUNT = 0.001;
+	
 	// Data members
 	/** The cache for work shift. */
 	private int shiftCache;
@@ -759,10 +762,12 @@ public class TaskManager implements Serializable {
 						// The person has a strong desire to sleep, stop here and go to sleep
 						if (mt.getName().contains("sleep"))
 							addTask(new Sleep(person), false);
-						else if (mt.getName().contains("eat"))
-							addTask(new EatMeal(person), true);
-						else
-							probability = MAX_TASK_PROBABILITY;
+						else {
+							if (mt.getName().contains("eat")) 
+								goEatOrDrink();
+							else
+								probability = MAX_TASK_PROBABILITY;
+						}
 					}
 //					if (person.getName().contains("Enrique")) // && mt.getName().contains("Review"))
 //						System.out.println(person + " " + mt.getName() + " " + Math.round(probability*10.0)/10.0);
@@ -781,6 +786,14 @@ public class TaskManager implements Serializable {
 		}
 	}
 
+	public void goEatOrDrink() {
+		if (person.isInside() 
+				&& person.getContainerUnit().getInventory()
+				.getAmountResourceStored(ResourceUtil.waterID, false) > SMALL_AMOUNT) {
+			addTask(new EatMeal(person), false);
+		}
+	}
+	
 	/**
 	 * Checks if task probability cache should be used.
 	 * 

@@ -36,6 +36,7 @@ import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 /**
  * A tab panel with info about an item's salvage.
  */
+@SuppressWarnings("serial")
 public class SalvageTabPanel extends TabPanel {
 
     // Data members

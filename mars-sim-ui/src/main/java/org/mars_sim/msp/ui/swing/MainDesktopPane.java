@@ -678,7 +678,7 @@ public class MainDesktopPane extends JDesktopPane
 				tempWindow.setLocation(UIConfig.INSTANCE.getInternalWindowLocation(unit.getName()));
 			} else {
 				// Put window in random position on desktop.
-				tempWindow.setLocation(getRandomLocation(tempWindow));
+				tempWindow.setLocation(0, 0);//getRandomLocation(tempWindow)); 
 			}
 
 			// Add unit window to unit windows

@@ -12,6 +12,9 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.Point;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -73,6 +76,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
     private JTable equipmentTable;
     private JTable resourcesTable;
     
+	private List<Equipment> equipmentList = new ArrayList<>();
 
     /**
      * Constructor
@@ -185,6 +189,29 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 		// Added sorting
         equipmentTable.setAutoCreateRowSorter(true);
 
+		// Add a mouse listener to hear for double-clicking a person (rather than single click using valueChanged()
+        equipmentTable.addMouseListener(new MouseAdapter() {
+		    public void mousePressed(MouseEvent me) {
+		    	JTable table =(JTable) me.getSource();
+		        Point p = me.getPoint();
+		        int row = table.rowAtPoint(p);
+		        int col = table.columnAtPoint(p);
+		        if (me.getClickCount() == 2) {
+		            if (row > 0 && col > 0) {
+		    		    String name = (String) equipmentTable.getValueAt(row, 1);
+//    		    		System.out.println("name : " + name + "   row : " + row);
+		    		    for (Equipment e : equipmentList) {
+//	    		    		System.out.println("nickname : " + e.getNickName());
+		    		    	if (e.getNickName().equalsIgnoreCase(name)) {
+//		    		    		System.out.println("name : " + name + "   nickname : " + e.getNickName());
+				    		    desktop.openUnitWindow(e, false);
+		    		    	}
+		    		    } 	    			
+		    	    }
+		        }
+		    }
+		});
+		
 		// Added setTableStyle()
 		TableStyle.setTableStyle(equipmentTable);
 
@@ -210,19 +237,28 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
      *
      * @param e the event that characterizes the change.
      */
-    public void valueChanged(ListSelectionEvent e) {
-        int index = equipmentTable.getSelectedRow();
-        if (index > 0) {
-	        Object selectedEquipment = equipmentTable.getValueAt(index, 0);
-	        if ((selectedEquipment != null) && (selectedEquipment instanceof Equipment))
-	            desktop.openUnitWindow((Equipment) selectedEquipment, false);
+    public void valueChanged(ListSelectionEvent ev) {
+        int row = equipmentTable.getSelectedRow();
+        if (row > 0) {
+//	        Object selectedEquipment = equipmentTable.getValueAt(index, 0);
+//	        if ((selectedEquipment != null) && (selectedEquipment instanceof Equipment))
+//	            desktop.openUnitWindow((Equipment) selectedEquipment, false);
+	        String name = (String) equipmentTable.getValueAt(row, 1);
+//    		System.out.println("name : " + name + "   row : " + row);
+		    for (Equipment e : equipmentList) {
+//	    		System.out.println("nickname : " + e.getNickName());
+		    	if (e.getNickName().equalsIgnoreCase(name)) {
+//		    		System.out.println("name : " + name + "   nickname : " + e.getNickName());
+	    		    desktop.openUnitWindow(e, false);
+		    	}
+		    } 	
         }
     }
 
 	/**
 	 * Internal class used as model for the resource table.
 	 */
-	private static class ResourceTableModel extends AbstractTableModel {
+	private class ResourceTableModel extends AbstractTableModel {
 
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
@@ -371,13 +407,12 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 	/**
 	 * Internal class used as model for the equipment table.
 	 */
-	private static class EquipmentTableModel extends AbstractTableModel {
+	private class EquipmentTableModel extends AbstractTableModel {
 
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
 
 		private Inventory inventory;
-		private List<Equipment> names;
 		private Map<String, String> types;
 		private Map<String, String> equipment;
 		private Map<String, Double> mass;
@@ -389,7 +424,6 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 		private EquipmentTableModel(Inventory inventory) {
 			this.inventory = inventory;
 			// Sort equipment alphabetically by name.
-			names = new ArrayList<>();
 			types = new HashMap<>();
 			equipment = new HashMap<>();
 			mass = new HashMap<>();
@@ -397,9 +431,9 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 				types.put(e.getName(), e.getType());
 				equipment.put(e.getName(), showOwner(e));
 				mass.put(e.getName(), e.getMass());
-				names.add(e);
+				equipmentList.add(e);
 			}
-			Collections.sort(names);//, new NameComparator());
+			Collections.sort(equipmentList);//, new NameComparator());
 		}
 
 		private String showOwner(Equipment e) {
@@ -458,11 +492,14 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 		}
 
 		public Object getValueAt(int row, int column) {
-			if ((row >= 0) && (row < equipment.size())) {
-				if (column == 0) return types.get(names.get(row).getName()) + WHITESPACE;
-				else if (column == 1) return names.get(row) + WHITESPACE;
-				else if (column == 2) return Math.round(mass.get(names.get(row).getName())*100.0)/100.0;
-				else if (column == 3) return equipment.get(names.get(row).getName()) + WHITESPACE;
+			if (row >= 0 && row < equipment.size() && equipmentList != null) {
+				if (column == 0) return types.get(equipmentList.get(row).getName()) + WHITESPACE;
+				else if (column == 1) return equipmentList.get(row) + WHITESPACE;
+				else if (column == 2) {
+					if (equipmentList.get(row).getName() != null)
+						return Math.round(mass.get(equipmentList.get(row).getName())*100.0)/100.0;
+				}
+				else if (column == 3) return equipment.get(equipmentList.get(row).getName()) + WHITESPACE;
 			}
 			return "unknown";
 		}
@@ -480,8 +517,8 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 			}
 			Collections.sort(newNames);//, new NameComparator());
 
-			if (names.size() != newNames.size() || !names.equals(newNames)) {
-				names = newNames;
+			if (equipmentList.size() != newNames.size() || !equipmentList.equals(newNames)) {
+				equipmentList = newNames;
 				equipment = newEquipment;
 				types = newTypes;
 				fireTableDataChanged();
@@ -515,6 +552,8 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 		equipmentTableModel = null;
 		equipmentTable = null;
 		resourcesTable = null;
+		equipmentList.clear();
+		equipmentList = null;
 		    
 	}
 	

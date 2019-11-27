@@ -12,12 +12,11 @@ import javax.swing.event.ChangeEvent;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-
+import org.mars_sim.msp.ui.swing.unit_window.InventoryTabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.LocationTabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.MaintenanceTabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.NotesTabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.SalvageTabPanel;
-import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
 
 
@@ -31,9 +30,6 @@ public class EquipmentWindow extends UnitWindow {
 
 	// Data members
 	private boolean salvaged;
-
-	/** The cache for the currently selected TabPanel. */
-	private TabPanel oldTab;
 	
 	private Equipment equipment;
     /**
@@ -49,7 +45,9 @@ public class EquipmentWindow extends UnitWindow {
 
         // Add tab panels
         addTabPanel(new LocationTabPanel(equipment, desktop));
-        //addTabPanel(new InventoryTabPanel(equipment, desktop));
+        
+        addTabPanel(new InventoryTabPanel(equipment, desktop));
+        
         if (equipment instanceof Malfunctionable)
         	addTabPanel(new MaintenanceTabPanel(equipment, desktop));
 
@@ -69,7 +67,6 @@ public class EquipmentWindow extends UnitWindow {
     public void update() {
         super.update();
         // Check if equipment has been salvaged.
-       // Equipment equipment = (Equipment) getUnit();
         if (!salvaged && equipment.isSalvaged()) {
             addTabPanel(new SalvageTabPanel(equipment, desktop));
             salvaged = true;

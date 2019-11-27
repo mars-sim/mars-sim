@@ -111,7 +111,7 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 	/** The sponsor of the robot. */
 	private String sponsor;
 	
-	/** The person's skill manager. */
+	/** The robot's skill manager. */
 	private SkillManager skillManager;
 	/** Manager for robot's natural attributes. */
 	private RoboticAttributeManager attributes;
