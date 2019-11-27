@@ -915,7 +915,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 
 		// Determine vehicle parts.
 		if (vehicle != null) {
-			double drivingTime = getEstimatedTripTime(false, distance);
+			double drivingTime = getEstimatedTripTime(true, distance);
 			double numberAccidents = drivingTime * OperateVehicle.BASE_ACCIDENT_CHANCE;
 			double numberMalfunctions = numberAccidents * AVERAGE_NUM_MALFUNCTION;
 

@@ -56,7 +56,7 @@ implements Serializable {
 	/*
 	 * The theoretical max efficiency of the triple-junction solar cells 
 	 */
-	private double efficiency_solar_panel = .68;
+	private double efficiency_solar_panel = .55;
 
 	/**
 	 * The dust deposition rates is proportional to the dust loading. Here we use MER program's extended the analysis 
@@ -137,7 +137,7 @@ implements Serializable {
 		double available = surface.getSolarIrradiance(location) 
 				/1000D * area * efficiency_solar_panel; 
 		// add noise with * (.99 + RandomUtil.getRandomDouble(.2));
-		double capable = getMaxPower();
+		double capable = getMaxPower() * efficiency_solar_panel;
 		if (available >= capable) {
 //			logger.info(building.getNickName() + " solar power capable : " + Math.round(capable * 100.0)/100.0 + " kW");
 			return capable;

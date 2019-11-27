@@ -30,7 +30,7 @@ public class TravelToSettlementMeta implements MetaMission {
 	/** default logger. */
 //	private static Logger logger = Logger.getLogger(TravelToSettlementMeta.class.getName());
 
-    private static final double LIMIT = 5D;
+    private static final double LIMIT = 1D;
     
     /** Mission name */
     private static final String DEFAULT_DESCRIPTION = Msg.getString(

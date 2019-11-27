@@ -193,7 +193,7 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 			setPhase(VehicleMission.TRAVELLING);
 			setPhaseDescription(
 					Msg.getString("Mission.phase.travelling.description", getNextNavpoint().getDescription())); // $NON-NLS-1$
-			associateAllMembersWithSettlement(destinationSettlement);
+//			associateAllMembersWithSettlement(destinationSettlement);
 		} 
 		
 		else if (TRAVELLING.equals(getPhase())) {

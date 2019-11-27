@@ -36,9 +36,9 @@ implements Serializable {
 	 */
 	private double dust_deposition_rate = 0;
 	
-	private double efficiency_solar_to_heat = .58;
+	private double efficiency_solar_to_heat = .68;
 	
-	private double efficiency_solar_to_electricity = .58;
+	private double efficiency_solar_to_electricity = .55;
 
 	private double maxHeat = 0;
 	
@@ -77,7 +77,7 @@ implements Serializable {
 	
 	public double getCollected(Building building) {
 		return surface.getSolarIrradiance(building.getCoordinates()) 
-				* building.getFloorArea() / 1000D ;
+				* building.getFloorArea() / 1000D;
 	}
 
 	public double getEfficiencySolarHeat() {
@@ -98,24 +98,26 @@ implements Serializable {
 
 	@Override
 	public double getCurrentHeat(Building building) {
-		double collected = getCollected(building);// * efficiency_solar_to_heat;
+		double available = getCollected(building) * efficiency_solar_to_heat;
+		double col = maxHeat * factor * efficiency_solar_to_heat;
 //		logger.info(building.getNickName() + " getCurrentHeat(): " + Math.round(maxHeat * collected * factor * 100.0)/100.0 + " kW");	
-		if (collected > maxHeat * factor)
-			return maxHeat * factor;
+		if (available > col)
+			return col;
 		
-		return collected;
+		return available;
 	}
 
 	@Override
 	public double getCurrentPower(Building building) {
-		double collected = getCollected(building);// * efficiency_solar_to_electricity;
+		double available = getCollected(building) * efficiency_solar_to_electricity;
+		double col = maxHeat * factor * efficiency_solar_to_electricity;
 //		logger.info(building.getNickName() + "'s maxHeat is " + maxHeat 
 //				+ " collected is " + collected
 //				+ " getCurrentPower(): " + Math.round(maxHeat * collected * factor * 100.0)/100.0 + " kW");		
-		if (collected > maxHeat * factor)
-			return maxHeat * factor;
+		if (available > col)
+			return col;
 		
-		return collected;
+		return available;
 	}
 	
 	@Override
