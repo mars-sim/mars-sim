@@ -1471,6 +1471,7 @@ public abstract class Vehicle extends Unit
 				LogConsolidated.log(Level.FINE, 500, sourceName,
 						"[" + getLocationTag().getLocale() + "] " + getName()
 						+ " is on a mission but is not registered as mission reserved. Correcting it.");
+				setReservedForMission(true);
 			}
 		}
 	}

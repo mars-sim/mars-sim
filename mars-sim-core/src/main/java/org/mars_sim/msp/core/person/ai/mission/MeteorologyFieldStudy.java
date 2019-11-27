@@ -230,7 +230,7 @@ public class MeteorologyFieldStudy extends RoverMission implements Serializable 
 	 * @param researcher the science researcher.
 	 * @return scientific study or null if none determined.
 	 */
-	private ScientificStudy determineStudy(Person researcher) {
+	public static ScientificStudy determineStudy(Person researcher) {
 		ScientificStudy result = null;
 
 		List<ScientificStudy> possibleStudies = new ArrayList<ScientificStudy>();

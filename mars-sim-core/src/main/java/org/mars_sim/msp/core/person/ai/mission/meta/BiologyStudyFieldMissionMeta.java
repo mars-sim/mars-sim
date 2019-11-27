@@ -51,6 +51,9 @@ public class BiologyStudyFieldMissionMeta implements MetaMission {
     @Override
     public double getProbability(Person person) {
 
+    	if (BiologyFieldStudy.determineStudy(person) == null)
+			return 0;
+    	
         double missionProbability = 0D;
 
         if (person.isInSettlement()) {

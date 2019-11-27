@@ -52,6 +52,9 @@ public class MeteorologyStudyFieldMissionMeta implements MetaMission {
     @Override
     public double getProbability(Person person) {
 
+    	if (MeteorologyFieldStudy.determineStudy(person) == null)
+			return 0;
+    	
         double missionProbability = 0D;
 
         if (person.isInSettlement()) {
@@ -71,9 +74,7 @@ public class MeteorologyStudyFieldMissionMeta implements MetaMission {
     		
     		if (numThisMission > 1)
     			return 0;	
-    		
-    		missionProbability = 0;
-    		
+	
             try {
                 // Get available rover.
                 Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(MeteorologyFieldStudy.missionType, settlement, false);
