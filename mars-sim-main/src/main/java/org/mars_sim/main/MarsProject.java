@@ -277,7 +277,6 @@ public class MarsProject {
 		sim.createNewSimulation(-1, true);
 		
 		try {
-//			sim.loadSimulation(null);
 			// Prompt to open the file cHooser to select a saved sim
 			MainWindow.loadSimulationProcess(false);
 //			logger.config("Done with MainWindow.loadSimulationProcess(true)");
@@ -294,7 +293,7 @@ public class MarsProject {
 			}
 			
 			// Initialize interactive terminal and load menu
-			initTerminalLoadMenu();
+//			initTerminalLoadMenu();
 			
 		} catch (Exception e) {
 			// logger.log(Level.WARNING, "Could not load default simulation", e);
@@ -325,6 +324,8 @@ public class MarsProject {
 			if (hasDefault || !hasSim) {
 				// Prompt to open the file cHooser to select a saved sim
 				MainWindow.loadSimulationProcess(false);
+				// Initialize interactive terminal 
+				InteractiveTerm.initializeTerminal();	
 				// Start simulation.
 				startSimThread(false);
 				
@@ -346,6 +347,8 @@ public class MarsProject {
 				File loadFile = new File(argList.get(index + 1));
 				if (loadFile.exists() && loadFile.canRead()) {
 					sim.loadSimulation(loadFile);
+					// Initialize interactive terminal 
+					InteractiveTerm.initializeTerminal();	
 					// Start simulation.
 					startSimThread(false);	
 					
@@ -412,18 +415,13 @@ public class MarsProject {
 				// Initialize the simulation.
 				simulationConfig.loadConfig();
 				// Start interactive terminal
-				boolean useSCE = interactiveTerm.startModeSelection();
+				int type = interactiveTerm.startConsoleMainMenu();
 				// Initialize interactive terminal 
 				InteractiveTerm.initializeTerminal();	
 				// Start sim config editor
-				
-				if (useSCE) {
-					SwingUtilities.invokeLater(() -> {
-						new SimulationConfigEditor(SimulationConfig.instance(), null);
-					});
-				}
-				
-				else { // Since SCE is not used, manually set up each of the followings 
+				logger.config("type is " + type);
+				if (type == 0) {
+					// Since SCE is not used, manually set up each of the followings 
 					// Create new simulation
 					// sim.createNewSimulation(-1, false);
 					// Run this class in sim executor
@@ -436,6 +434,29 @@ public class MarsProject {
 					startSimThread(false);
 //					logger.config("Done with setupMainWindow()");
 				}
+				
+				else if (type == 1) {
+					SwingUtilities.invokeLater(() -> {
+						new SimulationConfigEditor(SimulationConfig.instance(), null);
+					});
+				}
+			
+				else if (type == 2) {
+					// initialize class but do NOT recreate simulation
+					sim.createNewSimulation(-1, true);
+
+					// Prompt to open the file cHooser to select a saved sim
+					MainWindow.loadSimulationProcess(false);
+					// Start simulation.
+					startSimThread(false);
+					
+					if (useGUI) {
+//						logger.config("useGUI is " + useGUI);
+						setupMainWindow();
+					} 
+					
+//					logger.config("Done with setupMainWindow()");
+				}
 			} 
 			
 			else {
@@ -445,7 +466,7 @@ public class MarsProject {
 				// Create serializable class 
 				sim.createNewSimulation(-1, true);
 				// Start interactive terminal
-				interactiveTerm.startModeSelection();
+				interactiveTerm.startConsoleMainMenu();
 				// Initialize interactive terminal 
 				InteractiveTerm.initializeTerminal();	
 				// Start the simulation.

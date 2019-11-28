@@ -879,7 +879,8 @@ public class EventTableModel extends AbstractTableModel
 	 * Prepares the model for deletion.
 	 */
 	public void destroy() {
-		Simulation.instance().getMasterClock().removeClockListener(this);
+		if (Simulation.instance().getMasterClock() != null)
+			Simulation.instance().getMasterClock().removeClockListener(this);
 		eventManager.removeListener(this);
 		eventManager = null;
 		notifyBox = null;

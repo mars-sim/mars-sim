@@ -232,7 +232,7 @@ public class MarsProjectHeadless {
 			// Alert the user to see the interactive terminal 
 			logger.config("Please proceed to selecting the type of Game Mode in the popped-up console.");
 			// Start interactive terminal 
-			interactiveTerm.startModeSelection(); 
+			interactiveTerm.startConsoleMainMenu(); 
 			
 //			sim.destroyOldSimulation();
 

@@ -764,7 +764,7 @@ public class TaskManager implements Serializable {
 							addTask(new Sleep(person), false);
 						else {
 							if (mt.getName().contains("eat")) 
-								goEatOrDrink();
+								goEat();
 							else
 								probability = MAX_TASK_PROBABILITY;
 						}
@@ -786,7 +786,15 @@ public class TaskManager implements Serializable {
 		}
 	}
 
-	public void goEatOrDrink() {
+	public void goEat() {
+		if (person.isInside() 
+				&& person.getContainerUnit().getInventory()
+				.getAmountResourceStored(ResourceUtil.foodID, false) > SMALL_AMOUNT) {
+			addTask(new EatMeal(person), false);
+		}
+	}
+	
+	public void goDrink() {
 		if (person.isInside() 
 				&& person.getContainerUnit().getInventory()
 				.getAmountResourceStored(ResourceUtil.waterID, false) > SMALL_AMOUNT) {

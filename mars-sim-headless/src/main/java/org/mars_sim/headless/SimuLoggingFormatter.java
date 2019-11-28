@@ -50,18 +50,25 @@ public class SimuLoggingFormatter extends Formatter {
     		masterClock = Simulation.instance().getMasterClock();
     	
 		String msg = formatMessage(record);
-
-		boolean context = msg.contains(CONTEXT1);
-		
-		if (context) {
-			if (LogConsolidated.showRateLimit()) {
-				// Remove the rate limit comment from google flogger
-				boolean skip = msg.contains(SKIPPED);
-				if (skip) {
-					msg = fastReplace(msg, CONTEXT2, "[");
-	//				msg = fastReplace(msg, " MILLISECONDS\" ", "");
-					msg = fastReplace(msg, MILLISECONDS, ",");
-					msg = fastReplace(msg, BRACKET1, "]");
+		if (msg != null) {
+			boolean context = msg.contains(CONTEXT1);
+			
+			if (context) {
+				if (LogConsolidated.showRateLimit()) {
+					// Remove the rate limit comment from google flogger
+					boolean skip = msg.contains(SKIPPED);
+					if (skip) {
+						msg = fastReplace(msg, CONTEXT2, "[");
+		//				msg = fastReplace(msg, " MILLISECONDS\" ", "");
+						msg = fastReplace(msg, MILLISECONDS, ",");
+						msg = fastReplace(msg, BRACKET1, "]");
+					}
+					
+					else {
+						int index = msg.indexOf(CONTEXT3);
+						if (index > 0)
+							msg = msg.substring(0, msg.indexOf(CONTEXT3)-1);
+					}
 				}
 				
 				else {
@@ -70,71 +77,65 @@ public class SimuLoggingFormatter extends Formatter {
 						msg = msg.substring(0, msg.indexOf(CONTEXT3)-1);
 				}
 			}
+	
+			sb.delete(0,sb.length());
 			
-			else {
-				int index = msg.indexOf(CONTEXT3);
-				if (index > 0)
-					msg = msg.substring(0, msg.indexOf(CONTEXT3)-1);
-			}
-		}
-
-		sb.delete(0,sb.length());
-		
-		int timeStamp = LogConsolidated.getTimeStampType();
-		
-		if (masterClock == null || timeStamp == 0) {
-			appendLocalTime();
-		}
-		
-		else if (timeStamp == 1 && LogConsolidated.getEarthClock() != null) {
-			sb.append(LogConsolidated.getEarthClock().getTimeStampF0());
-		}
-		
-		else if (timeStamp == 2 && LogConsolidated.getMarsClock() != null && isMarsClockValid()) {
-			sb.append(MarsClock.getDateTimeStamp(LogConsolidated.getMarsClock()));
-		}
-		
-		else {
-			appendLocalTime();
-		}
-
-		// Get the level name and add it to the buffer
-		sb.append(O_PAREN);
-		sb.append(Conversion.capitalize(record.getLevel().getName().toLowerCase()));
-		sb.append(C_PAREN);
-		
-		// If not using LogConsolidated class to generate the log statement
-		// do the following to extract the source class name
-		String path = null;
-		String source = null;
-		path = record.getSourceClassName();
-		source = path.substring(path.lastIndexOf(PERIOD) + 1, path.length());
-		if (!source.equalsIgnoreCase(LOGCON)) {
-			sb.append(source);
-			sb.append(COLON);
-		}
-		
-		if (msg != null) {
+			int timeStamp = LogConsolidated.getTimeStampType();
 			
-			if (msg.contains(BRAC_X1)) {
-				msg = msg.substring(msg.indexOf(C_BRAC) + 2, msg.length());
-				sb.append(msg);
+			if (masterClock == null || timeStamp == 0) {
+				appendLocalTime();
 			}
 			
-			else if (msg.contains(O_BRAC_X) && msg.contains(C_BRAC)) {
-				sb.append(msg);
+			else if (timeStamp == 1 && LogConsolidated.getEarthClock() != null) {
+				sb.append(LogConsolidated.getEarthClock().getTimeStampF0());
 			}
 			
-			else if (msg.contains(O_BRAC) && msg.contains(C_BRAC)) {
-				sb.append(msg);
+			else if (timeStamp == 2 && LogConsolidated.getMarsClock() != null && isMarsClockValid()) {
+				sb.append(MarsClock.getDateTimeStamp(LogConsolidated.getMarsClock()));
 			}
 			
 			else {
-				msg = msg.substring(msg.indexOf(C_BRAC) + 1, msg.length());
-				sb.append(msg);
+				appendLocalTime();
+			}
+	
+			// Get the level name and add it to the buffer
+			sb.append(O_PAREN);
+			sb.append(Conversion.capitalize(record.getLevel().getName().toLowerCase()));
+			sb.append(C_PAREN);
+			
+			// If not using LogConsolidated class to generate the log statement
+			// do the following to extract the source class name
+			String path = null;
+			String source = null;
+			path = record.getSourceClassName();
+			source = path.substring(path.lastIndexOf(PERIOD) + 1, path.length());
+			if (!source.equalsIgnoreCase(LOGCON)) {
+				sb.append(source);
+				sb.append(COLON);
 			}
 			
-			sb.append(LINEFEED);
+			if (msg != null) {
+				
+				if (msg.contains(BRAC_X1)) {
+					msg = msg.substring(msg.indexOf(C_BRAC) + 2, msg.length());
+					sb.append(msg);
+				}
+				
+				else if (msg.contains(O_BRAC_X) && msg.contains(C_BRAC)) {
+					sb.append(msg);
+				}
+				
+				else if (msg.contains(O_BRAC) && msg.contains(C_BRAC)) {
+					sb.append(msg);
+				}
+				
+				else {
+					msg = msg.substring(msg.indexOf(C_BRAC) + 1, msg.length());
+					sb.append(msg);
+				}
+				
+				sb.append(LINEFEED);
+			}
 		}
 	
 		return sb.toString();

@@ -21,6 +21,9 @@ public class GameManager {
     /** An instance of GameMode. */
     public static GameMode mode;
 
+    /** The menu variable captures the initial choice in the console main menu. */
+    public static String menu;
+    
     /** The input variable captures the game mode choice. */
     public static String input;
 
@@ -28,7 +31,7 @@ public class GameManager {
     public static String useSCE;
 
     /** The command0 variable captures the first choice in the Command Mode. */
-    public static String command0;
+    public static String commanderProfile;
     
     /** The sandbox0 variable captures the first choice in the Sandbox Mode. */
     public static String sandbox0;

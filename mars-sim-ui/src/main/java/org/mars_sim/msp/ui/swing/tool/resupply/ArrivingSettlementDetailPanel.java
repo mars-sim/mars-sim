@@ -71,8 +71,8 @@ implements ClockListener, HistoricalEventListener {
 		this.desktop = desktop;
 //		this.mainScene = desktop.getMainScene();
 		
-		currentTime = Simulation.instance().getMasterClock().getMarsClock();
 		masterClock = Simulation.instance().getMasterClock();
+		currentTime = masterClock.getMarsClock();
 		
 		setLayout(new BorderLayout(0, 10));
 		setBorder(new MarsPanelBorder());
@@ -179,7 +179,7 @@ implements ClockListener, HistoricalEventListener {
 		locationPane.add(locationValueLabel);
 
 		// Set as clock listener.
-		Simulation.instance().getMasterClock().addClockListener(this);
+		masterClock.addClockListener(this);
 
 		// Set as historical event listener.
 		Simulation.instance().getEventManager().addListener(this);
@@ -317,8 +317,10 @@ implements ClockListener, HistoricalEventListener {
 	 * Prepares the panel for deletion.
 	 */
 	public void destroy() {
-		Simulation.instance().getEventManager().removeListener(this);
-		Simulation.instance().getMasterClock().removeClockListener(this);
+		if (Simulation.instance().getEventManager() != null)
+			Simulation.instance().getEventManager().removeListener(this);
+		if (masterClock != null)
+			masterClock.removeClockListener(this);
 		
 		nameValueLabel = null;
 		stateValueLabel = null;

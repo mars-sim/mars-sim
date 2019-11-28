@@ -10,7 +10,6 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.LifeSupportInterface;
@@ -197,7 +196,7 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 			if (getInventory().getAmountResourceStored(ResourceUtil.oxygenID, false) <= massO2MinimumLimit) {
 				LogConsolidated.log(Level.WARNING, 5000, sourceName,
 						"[" + this.getLocationTag().getLocale() + "] " 
-								+ this.getName() + " ran out of oxygen and is less than 0.1792 kg and below the safety limit.");
+								+ this.getName() + " had less than 0.1792 kg oxygen (below the safety limit).");
 				return false;
 			}
 			if (getInventory().getAmountResourceStored(ResourceUtil.waterID, false) <= 0D) {

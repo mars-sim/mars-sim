@@ -103,21 +103,21 @@ public class ToolToolBar extends WebToolBar implements ActionListener, ClockList
 	/** Prepares tool buttons */
 	private void prepareToolButtons() {
 
-		ToolButton openButton = new ToolButton(Msg.getString("mainMenu.open"), Msg.getString("img.open")); //$NON-NLS-1$ //$NON-NLS-2$
-		openButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				parentMainWindow.loadSimulation(false);
-			};
-		});
-		add(openButton);
-		
-		ToolButton openAutosaveButton = new ToolButton(Msg.getString("mainMenu.openAutosave"), Msg.getString("img.openAutosave")); //$NON-NLS-1$ //$NON-NLS-2$
-		openAutosaveButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				parentMainWindow.loadSimulation(true);
-			};
-		});
-		add(openAutosaveButton);
+//		ToolButton openButton = new ToolButton(Msg.getString("mainMenu.open"), Msg.getString("img.open")); //$NON-NLS-1$ //$NON-NLS-2$
+//		openButton.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent e) {
+//				parentMainWindow.loadSimulation(false);
+//			};
+//		});
+//		add(openButton);
+//		
+//		ToolButton openAutosaveButton = new ToolButton(Msg.getString("mainMenu.openAutosave"), Msg.getString("img.openAutosave")); //$NON-NLS-1$ //$NON-NLS-2$
+//		openAutosaveButton.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent e) {
+//				parentMainWindow.loadSimulation(true);
+//			};
+//		});
+//		add(openAutosaveButton);
 
 		ToolButton saveButton = new ToolButton(Msg.getString("mainMenu.save"), Msg.getString("img.save")); //$NON-NLS-1$ //$NON-NLS-2$
 		saveButton.addActionListener(new ActionListener() {

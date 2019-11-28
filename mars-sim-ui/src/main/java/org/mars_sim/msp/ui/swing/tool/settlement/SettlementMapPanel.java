@@ -1184,7 +1184,8 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 	 */
 	public void destroy() {
 		// Remove clock listener.
-		Simulation.instance().getMasterClock().removeClockListener(this);
+		if (masterClock != null)
+			masterClock.removeClockListener(this);
 
 		menu = null;
 		settlement = null;

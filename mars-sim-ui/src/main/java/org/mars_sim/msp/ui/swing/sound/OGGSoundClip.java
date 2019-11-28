@@ -622,7 +622,8 @@ public class OGGSoundClip {
 					bytes = bitStream.read(buffer, index, BUFSIZE);
 				} catch (Exception e) {
 					// throw new InternalException(e);
-					logger.log(Level.SEVERE, "Exception in reading bitstream.", e.getMessage());
+					// Note: when loading from a saved sim, the following log statement appears excessively
+//					logger.log(Level.SEVERE, "Exception in reading bitstream.", e.getMessage());
 				}
 				
 				if (bytes == 0 && i < 2) {

@@ -582,8 +582,8 @@ public class Simulation implements ClockListener, Serializable {
 	class StartTask implements Runnable {
 		boolean autosaveDefault;
 
-		StartTask(boolean autosaveDefault) {
-			this.autosaveDefault = autosaveDefault;
+		StartTask(boolean useDefaultName) {
+			this.autosaveDefault = useDefaultName;
 		}
 
 		public void run() {
@@ -629,7 +629,7 @@ public class Simulation implements ClockListener, Serializable {
 	 * @param file the file to be loaded from.
 	 */
 	public void loadSimulation(final File file) {
-//		logger.config("Simulation's loadSimulation() is on " + Thread.currentThread().getName());
+		logger.config("Simulation's loadSimulation() is on " + Thread.currentThread().getName());
 		isUpdating = true;
 
 		File f = file;
@@ -731,7 +731,7 @@ public class Simulation implements ClockListener, Serializable {
      * Deserialize to Object from given file.
      */
     public void deserialize(File file) throws IOException, ClassNotFoundException {
-//		logger.config("deserialize() is on " + Thread.currentThread().getName());
+		logger.config("deserialize() is on " + Thread.currentThread().getName());
 		
 //		byte[] buf = new byte[8192];
 		FileInputStream in = null;
@@ -930,7 +930,7 @@ public class Simulation implements ClockListener, Serializable {
 			loadBuild = "unknown";
 		
 		logger.config(" --------------------------------------------------------------------");
-		logger.config("                      Saved Simulation                               ");
+		logger.config("                   Info on The Saved Simulation                      ");
 		logger.config(" --------------------------------------------------------------------");
 		logger.config("                   Filename : " + filename);
 		logger.config("                       Path : " + path);

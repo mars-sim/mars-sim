@@ -10,7 +10,6 @@ package org.mars_sim.msp.ui.swing;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
@@ -40,7 +39,6 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -601,61 +599,61 @@ extends JComponent {
 		}
 	}
 
-	/**
-	 * Performs the process of creating a new simulation.
-	 */
-	void newSimulationProcess() {
-		logger.config("newSimulationProces() is on " + Thread.currentThread().getName());
-
-		if (JOptionPane.showConfirmDialog(desktop, Msg.getString("MainWindow.abandonRunningSim"), //$NON-NLS-1$
-				UIManager.getString("OptionPane.titleText"), //$NON-NLS-1$
-				JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-			desktop.openAnnouncementWindow("  " + Msg.getString("MainWindow.creatingNewSim") + "  "); //$NON-NLS-1$
-
-			// Break up the creation of the new simulation, to allow interfering with the
-			// single steps.
-			sim.endSimulation();
-			sim.endMasterClock();
-
-			desktop.closeAllToolWindow();
-			desktop.disposeAnnouncementWindow();
-
-			try {
-				desktop.clearDesktop();
-
-				if (earthTimer != null) {
-					earthTimer.stop();
-				}
-				earthTimer = null;
-
-			} catch (Exception e) {
-				// New simulation process should continue even if there's an exception in the
-				// UI.
-				logger.severe(e.getMessage());
-				e.printStackTrace(System.err);
-			}
-
-			try {
-				sim.startSimExecutor();
-				// sim.runLoadConfigTask();
-				sim.getSimExecutor().submit(new SimConfigTask(this));
-
-			} catch (Exception e) {
-				logger.warning("error in restarting a new sim.");
-				e.printStackTrace();
-			}
-
-			try {
-				desktop.resetDesktop();
-			} catch (Exception e) {
-				// New simulation process should continue even if there's an exception in the
-				// UI.
-				logger.severe(e.getMessage());
-				e.printStackTrace(System.err);
-			}
-
-		}
-	}
+//	/**
+//	 * Performs the process of creating a new simulation.
+//	 */
+//	void newSimulationProcess() {
+//		logger.config("newSimulationProces() is on " + Thread.currentThread().getName());
+//
+//		if (JOptionPane.showConfirmDialog(desktop, Msg.getString("MainWindow.abandonRunningSim"), //$NON-NLS-1$
+//				UIManager.getString("OptionPane.titleText"), //$NON-NLS-1$
+//				JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+//			desktop.openAnnouncementWindow("  " + Msg.getString("MainWindow.creatingNewSim") + "  "); //$NON-NLS-1$
+//
+//			// Break up the creation of the new simulation, to allow interfering with the
+//			// single steps.
+//			sim.endSimulation();
+//			sim.endMasterClock();
+//
+//			desktop.closeAllToolWindow();
+//			desktop.disposeAnnouncementWindow();
+//
+//			try {
+//				desktop.clearDesktop();
+//
+//				if (earthTimer != null) {
+//					earthTimer.stop();
+//				}
+//				earthTimer = null;
+//
+//			} catch (Exception e) {
+//				// New simulation process should continue even if there's an exception in the
+//				// UI.
+//				logger.severe(e.getMessage());
+//				e.printStackTrace(System.err);
+//			}
+//
+//			try {
+//				sim.startSimExecutor();
+//				// sim.runLoadConfigTask();
+//				sim.getSimExecutor().submit(new SimConfigTask(this));
+//
+//			} catch (Exception e) {
+//				logger.warning("error in restarting a new sim.");
+//				e.printStackTrace();
+//			}
+//
+//			try {
+//				desktop.resetDesktop();
+//			} catch (Exception e) {
+//				// New simulation process should continue even if there's an exception in the
+//				// UI.
+//				logger.severe(e.getMessage());
+//				e.printStackTrace(System.err);
+//			}
+//
+//		}
+//	}
 
 	public class SimConfigTask implements Runnable {
 		MainWindow win;

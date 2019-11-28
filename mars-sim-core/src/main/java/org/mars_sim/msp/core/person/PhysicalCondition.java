@@ -760,7 +760,7 @@ public class PhysicalCondition implements Serializable {
 			}
 
 			// TODO : how to tell a person to walk back to the settlement ?
-			goEatOrDrink();
+			goEat();
 
 			// TODO : should check if a person is on a critical mission,
 
@@ -768,7 +768,7 @@ public class PhysicalCondition implements Serializable {
 
 		else if (isStarving) {
 			
-			goEatOrDrink();
+			goEat();
 			
 			if (hunger < 500D && kJoules > 800D) {
 		
@@ -782,8 +782,16 @@ public class PhysicalCondition implements Serializable {
 			}
 		}
 	}
-
-	public void goEatOrDrink() {
+	
+	public void goEat() {
+		if (person.isInside() 
+				&& person.getContainerUnit().getInventory()
+				.getAmountResourceStored(ResourceUtil.foodID, false) > SMALL_AMOUNT) {
+			taskMgr.addTask(new EatMeal(person), false);
+		}
+	}
+	
+	public void goDrink() {
 		if (person.isInside() 
 				&& person.getContainerUnit().getInventory()
 				.getAmountResourceStored(ResourceUtil.waterID, false) > SMALL_AMOUNT) {
@@ -808,13 +816,13 @@ public class PhysicalCondition implements Serializable {
 			// Stop any on-going tasks
 //				taskMgr.clearTask();
 			// go drink water by eating a meal
-			goEatOrDrink();
+			goDrink();
 
 		}
 
 		if (isDehydrated) {
 			
-			goEatOrDrink();
+			goDrink();
 			
 			if (thirst < THIRST_THRESHOLD * 2) {
 			

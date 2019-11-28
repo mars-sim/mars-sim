@@ -987,8 +987,10 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 	}
 
 	public void destroy() {
-		mapLayerPanel.destroy();
-		globeNav.destroy();
+		if (mapLayerPanel != null)
+			mapLayerPanel.destroy();
+		if (globeNav != null)
+			globeNav.destroy();
 
 		sim = null;
 		unitManager = null;
