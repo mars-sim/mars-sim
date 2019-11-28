@@ -37,7 +37,6 @@ import org.mars_sim.msp.core.structure.building.function.PowerSource;
 import org.mars_sim.msp.core.structure.building.function.SolarPowerSource;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
@@ -90,7 +89,7 @@ public class TabPanelPowerGrid extends TabPanel {
 	private WebLabel energyStorageCapacityLabel;
 	/** The total power stored label. */
 	private WebLabel energyStoredLabel;
-
+	/** The power efficiency label. */
 	private WebLabel electricEfficiencyLabel;
 
 	private WebTextField powerGeneratedTF;

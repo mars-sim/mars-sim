@@ -616,10 +616,10 @@ public class Sleep extends Task implements Serializable {
 		Settlement s = person.getLocationTag().findSettlementVicinity();
 		if (s != null) {
 			interiorObject = (Building)(s.getClosestAvailableAirlock(person).getEntity()); 
-			System.out.println("interiorObject is " + interiorObject);
+//			System.out.println("interiorObject is " + interiorObject);
 			if (interiorObject == null)
 				interiorObject = (LocalBoundedObject)(s.getClosestAvailableAirlock(person).getEntity());
-			System.out.println("interiorObject is " + interiorObject);
+//			System.out.println("interiorObject is " + interiorObject);
 			LogConsolidated.log(Level.INFO, 0, sourceName,
 					"[" + person.getLocationTag().getLocale() + "] " + person.getName()
 					+ " in " + person.getLocationTag().getImmediateLocation()

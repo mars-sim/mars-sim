@@ -156,7 +156,12 @@ public class PowerGeneration extends Function implements Serializable {
 				powerSource.setTime(time);
 			}
 			
-			result += powerSource.getCurrentPower(getBuilding());
+			double p = powerSource.getCurrentPower(getBuilding());
+			
+			if (!Double.isNaN(p) && !Double.isInfinite(p)) {
+				result += p;
+			}
+			
 		}
 
 //		logger.info(building.getNickName() + " generated power : " + Math.round(result * 100.0)/100.0 + " kW");

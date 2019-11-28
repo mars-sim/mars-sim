@@ -111,8 +111,10 @@ public class PowerGrid implements Serializable {
 	 * @param newGeneratedPower the new generated power (kW).
 	 */
 	private void setGeneratedPower(double newGeneratedPower) {
-		if (powerGenerated != newGeneratedPower) {
-			powerGenerated = newGeneratedPower;
+		double p = Math.round(newGeneratedPower*1000.0)/1000.0;
+//		if (!Double.isNaN(p) && !Double.isInfinite(p) 
+		if (powerGenerated != p) {
+			powerGenerated = p;
 			settlement.fireUnitUpdate(UnitEventType.GENERATED_POWER_EVENT);
 		}
 	}
