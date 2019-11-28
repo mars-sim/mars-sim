@@ -198,7 +198,7 @@ public class MarsProject {
 				
 				// FIXME : make it work
 			} catch (Exception e) {
-				showError("Could not load the desired simulation, trying to create a new Simulation...", e);
+				showError("Could not load the saved simulation, trying to create a new Simulation...", e);
 				
 				handleNewSimulation();
 
@@ -278,19 +278,28 @@ public class MarsProject {
 		
 		try {
 			// Prompt to open the file cHooser to select a saved sim
-			MainWindow.loadSimulationProcess(false);
-//			logger.config("Done with MainWindow.loadSimulationProcess(true)");
-			// Start simulation.
-			startSimThread(true);
-			
-//			logger.config("useGUI is " + useGUI);
-			if (useGUI) {
-				setupMainWindow();
-			} 
-			
-			else {
-				// Go headless				
+			boolean canLoad = MainWindow.loadSimulationProcess(false);
+			if (!canLoad) {
+				// Create class instances
+				sim.createNewSimulation(-1, false);	
 			}
+			else {		
+				// Start simulation.
+				startSimThread(true);
+				
+				if (useGUI) {
+					// Create main window
+					setupMainWindow();
+				} 
+				
+				else {
+					// Go headless				
+				}
+			}
+			
+
+//			logger.config("useGUI is " + useGUI);
+
 			
 			// Initialize interactive terminal and load menu
 //			initTerminalLoadMenu();
@@ -321,21 +330,28 @@ public class MarsProject {
 			int index = argList.indexOf("-load");
 			boolean hasSim = argList.contains(".sim");
 			
+			// Initialize interactive terminal 
+			InteractiveTerm.initializeTerminal();	
+			
 			if (hasDefault || !hasSim) {
 				// Prompt to open the file cHooser to select a saved sim
-				MainWindow.loadSimulationProcess(false);
-				// Initialize interactive terminal 
-				InteractiveTerm.initializeTerminal();	
-				// Start simulation.
-				startSimThread(false);
-				
-				if (useGUI) {
-//					logger.config("useGUI is " + useGUI);
-					setupMainWindow();
-				} 
-				
-				else {
-					// Go headless				
+				boolean canLoad = MainWindow.loadSimulationProcess(false);
+				if (!canLoad) {
+					// Create class instances
+					sim.createNewSimulation(-1, false);	
+				}
+				else {		
+					// Start simulation.
+					startSimThread(true);
+					
+					if (useGUI) {
+						// Create main window
+						setupMainWindow();
+					} 
+					
+					else {
+						// Go headless				
+					}
 				}
 
 				// Initialize interactive terminal and load menu
@@ -419,7 +435,7 @@ public class MarsProject {
 				// Initialize interactive terminal 
 				InteractiveTerm.initializeTerminal();	
 				// Start sim config editor
-				logger.config("type is " + type);
+//				logger.config("type is " + type);
 				if (type == 0) {
 					// Since SCE is not used, manually set up each of the followings 
 					// Create new simulation
@@ -442,22 +458,26 @@ public class MarsProject {
 				}
 			
 				else if (type == 2) {
-					// initialize class but do NOT recreate simulation
+					// initialize class instances but do NOT recreate simulation
 					sim.createNewSimulation(-1, true);
 
 					// Prompt to open the file cHooser to select a saved sim
-					MainWindow.loadSimulationProcess(false);
-					// Start simulation.
-					startSimThread(false);
+					boolean canLoad = MainWindow.loadSimulationProcess(false);
 					
-					if (useGUI) {
-//						logger.config("useGUI is " + useGUI);
+					if (!canLoad) {
+						// initialize class instances
+						sim.createNewSimulation(-1, false);
+					}
+					else {		
+						// Start simulation.
+						startSimThread(false);
+						
+						// Create main window
 						setupMainWindow();
-					} 
-					
+					}
 //					logger.config("Done with setupMainWindow()");
 				}
-			} 
+			}
 			
 			else {
 				// Go headless

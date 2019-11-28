@@ -57,7 +57,7 @@ public class ToolToolBar extends WebToolBar implements ActionListener, ClockList
 	private Vector<ToolButton> toolButtons;
 	
 	/** WebSwitch for the control of play or pause the simulation*/
-	private WebSwitch ws;
+	private WebSwitch webSwitch;
 	
 	/** Main window that contains this toolbar. */
 	private MainWindow parentMainWindow;
@@ -204,23 +204,23 @@ public class ToolToolBar extends WebToolBar implements ActionListener, ClockList
 		
 //		addSeparator();
 
-		ws = new WebSwitch(true);
-		ws.setSwitchComponents(
+		webSwitch = new WebSwitch(true);
+		webSwitch.setSwitchComponents(
 //				new SvgIcon("play16"), new SvgIcon("pause16"));
 				ImageLoader.getIcon(Msg.getString("img.speed.play")), 
 				ImageLoader.getIcon(Msg.getString("img.speed.pause")));
-		TooltipManager.setTooltip(ws, "Pause or Resume  the Simulation", TooltipWay.down);
-		ws.addActionListener(new ActionListener() {
+		TooltipManager.setTooltip(webSwitch, "Pause or Resume the Simulation", TooltipWay.down);
+		webSwitch.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 //				masterClock.setPaused(!masterClock.isPaused(), false);
-				if (ws.isSelected())
+				if (webSwitch.isSelected())
 					masterClock.setPaused(false, false);
 				else
 					masterClock.setPaused(true, false);
 			};
 		});
 			
-		addToEnd(ws);
+		addToEnd(webSwitch);
 		
 		addSeparatorToMiddle();
 
@@ -304,20 +304,15 @@ public class ToolToolBar extends WebToolBar implements ActionListener, ClockList
 	 */
 	@Override
 	public void pauseChange(boolean isPaused, boolean showPane) {
-		// Update pause/resume button text based on master clock pause state.
-//		ws.setSelected(!ws.isSelected());
-//		if (isPaused) {
-//			// To pause
-//			ws.setSelected(!ws.isSelected());
-////			ws.startAnimation();
-////			ws.setSelected(false, true);
-////			ws.fireActionPerformed();
-//		} else {
-//			// To play or to resume 
-//			ws.setSelected(!ws.isSelected());
-////			ws.setSelected(true, true);
-////			ws.fireActionPerformed();
-//		}
+		// Update pause/resume webswitch buttons, based on masterclock's pause state.
+		if (isPaused) {
+			// To pause
+			webSwitch.setSelected(false);
+
+		} else {
+			// To play or to resume 
+			webSwitch.setSelected(false);
+		}
 	}
 
 	@Override

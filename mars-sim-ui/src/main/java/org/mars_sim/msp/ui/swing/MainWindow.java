@@ -566,18 +566,11 @@ extends JComponent {
 	}
 
 	/**
-	 * Load a previously saved simulation.
-	 */
-	public void loadSimulation(boolean autosave) {
-		loadSimulationProcess(autosave);
-	}
-
-	/**
 	 * Performs the process of loading a simulation.
 	 * 
 	 * @param autosave
 	 */
-	public static void loadSimulationProcess(boolean autosave) {
+	public static boolean loadSimulationProcess(boolean autosave) {
 		sim.stop();
 
 		String dir = null;
@@ -596,7 +589,10 @@ extends JComponent {
 		chooser.setDialogTitle(title); // $NON-NLS-1$
 		if (chooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) {
 			sim.loadSimulation(chooser.getSelectedFile());
+			return true;
 		}
+		
+		return false;
 	}
 
 //	/**

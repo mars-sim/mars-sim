@@ -17,8 +17,6 @@ import java.util.function.BiConsumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.swing.JFileChooser;
-
 import org.beryx.textio.AbstractTextTerminal;
 import org.beryx.textio.ReadHandlerData;
 import org.beryx.textio.ReadInterruptionStrategy;
@@ -28,7 +26,7 @@ import org.beryx.textio.jline.JLineTextTerminal;
 import org.beryx.textio.swing.SwingTextTerminal;
 import org.mars_sim.msp.core.GameManager;
 import org.mars_sim.msp.core.GameManager.GameMode;
-import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.time.MasterClock;
@@ -39,7 +37,9 @@ import org.mars_sim.msp.core.time.MasterClock;
 public class InteractiveTerm {
 
 	private static Logger logger = Logger.getLogger(InteractiveTerm.class.getName());
-
+	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
+			logger.getName().length());
+	
     private static final String KEY_STROKE_UP = "pressed UP";
     private static final String KEY_STROKE_DOWN = "pressed DOWN";
     private static final String KEY_ESC = "ESCAPE";
@@ -147,6 +147,8 @@ public class InteractiveTerm {
 	 */
 	public int selectMenu() {
 		int useSCE = 0;
+	
+		try {
 		
 		marsTerminal.print(System.lineSeparator() 
 				+ " ---------------  M A R S   S I M U L A T I O N   P R O J E C T  ---------------\n"
@@ -191,6 +193,12 @@ public class InteractiveTerm {
         }
         
 		marsTerminal.print(System.lineSeparator());
+		
+		} catch(RuntimeException e) {
+//            throw new RuntimeException("read interrupted", e);
+			e.printStackTrace();
+			LogConsolidated.log(Level.SEVERE, 0, sourceName, "RuntimeException detected.");
+		}
 		
         return useSCE;
 	}

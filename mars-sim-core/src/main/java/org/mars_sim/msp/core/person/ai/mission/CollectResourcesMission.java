@@ -198,7 +198,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 			setPhaseDescription(Msg.getString("Mission.phase.reviewing.description"));//, s.getName())); //$NON-NLS-1$
 		}
 		
-		logger.info(startingPerson + " had started CollectResourcesMission");
+//		logger.info(startingPerson + " had started CollectResourcesMission");
 	}
 
 	/**

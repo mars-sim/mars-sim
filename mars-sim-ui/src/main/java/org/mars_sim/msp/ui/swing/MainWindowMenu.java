@@ -54,10 +54,10 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 	private AudioPlayer soundPlayer;
 	/** New menu item. */
 	// private JMenuItem newItem;
-	/** Load menu item. */
-	private JMenuItem loadItem;
-	/** Load Autosave menu item. */
-	private JMenuItem loadAutosaveItem;
+//	/** Load menu item. */
+//	private JMenuItem loadItem;
+//	/** Load Autosave menu item. */
+//	private JMenuItem loadAutosaveItem;
 	/** Save menu item. */
 	private JMenuItem saveItem;
 	/** Save As menu item. */
@@ -137,21 +137,21 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 		fileMenu.setMnemonic(KeyEvent.VK_F); // Alt + F
 		add(fileMenu);
 
-		// Create load menu item
-		ImageIcon loadicon = new ImageIcon(getClass().getResource(Msg.getString("img.open"))); //$NON-NLS-1$
-		loadItem = new JMenuItem(Msg.getString("mainMenu.open"), loadicon); //$NON-NLS-1$
-		loadItem.addActionListener(this);
-		loadItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK, false));
-		loadItem.setToolTipText(Msg.getString("mainMenu.tooltip.open")); //$NON-NLS-1$
-		fileMenu.add(loadItem);
-
-		// Create load autosave menu item
-		ImageIcon loadAutosaveicon = new ImageIcon(getClass().getResource(Msg.getString("img.openAutosave"))); //$NON-NLS-1$
-		loadAutosaveItem = new JMenuItem(Msg.getString("mainMenu.openAutosave"), loadAutosaveicon); //$NON-NLS-1$
-		loadAutosaveItem.addActionListener(this);
-		loadAutosaveItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, KeyEvent.CTRL_DOWN_MASK, false));
-		loadAutosaveItem.setToolTipText(Msg.getString("mainMenu.tooltip.openAutosave")); //$NON-NLS-1$
-		fileMenu.add(loadAutosaveItem);
+//		// Create load menu item
+//		ImageIcon loadicon = new ImageIcon(getClass().getResource(Msg.getString("img.open"))); //$NON-NLS-1$
+//		loadItem = new JMenuItem(Msg.getString("mainMenu.open"), loadicon); //$NON-NLS-1$
+//		loadItem.addActionListener(this);
+//		loadItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK, false));
+//		loadItem.setToolTipText(Msg.getString("mainMenu.tooltip.open")); //$NON-NLS-1$
+//		fileMenu.add(loadItem);
+//
+//		// Create load autosave menu item
+//		ImageIcon loadAutosaveicon = new ImageIcon(getClass().getResource(Msg.getString("img.openAutosave"))); //$NON-NLS-1$
+//		loadAutosaveItem = new JMenuItem(Msg.getString("mainMenu.openAutosave"), loadAutosaveicon); //$NON-NLS-1$
+//		loadAutosaveItem.addActionListener(this);
+//		loadAutosaveItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, KeyEvent.CTRL_DOWN_MASK, false));
+//		loadAutosaveItem.setToolTipText(Msg.getString("mainMenu.tooltip.openAutosave")); //$NON-NLS-1$
+//		fileMenu.add(loadAutosaveItem);
 
 		fileMenu.add(new JSeparator());
 
@@ -422,10 +422,10 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 			mainWindow.saveSimulation(true, false);
 		else if (selectedItem == saveAsItem)
 			mainWindow.saveSimulation(false, false);
-		else if (selectedItem == loadItem)
-			mainWindow.loadSimulation(false);
-		else if (selectedItem == loadAutosaveItem)
-			mainWindow.loadSimulation(true);
+//		else if (selectedItem == loadItem)
+//			mainWindow.loadSimulation(false);
+//		else if (selectedItem == loadAutosaveItem)
+//			mainWindow.loadSimulation(true);
 		
 		else if (selectedItem == marsNavigatorItem) {
 			if (marsNavigatorItem.isSelected())

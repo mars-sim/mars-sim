@@ -1119,7 +1119,7 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 			return true;
 		
 		if (this instanceof Vehicle) {
-			if (LocationStateType.WITHIN_SETTLEMENT_VICINITY == currentStateType)
+			if (LocationStateType.INSIDE_SETTLEMENT == currentStateType)
 				return true;
 		}
 		

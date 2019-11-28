@@ -65,7 +65,7 @@ public class CollectIce extends CollectResourcesMission {
 		// Use CollectResourcesMission constructor.
 		super(DEFAULT_DESCRIPTION, missionType, startingPerson, ResourceUtil.iceID, SITE_GOAL, collectionRate,
 				EquipmentType.convertName2ID(Barrel.TYPE), REQUIRED_BARRELS, NUM_SITES, MIN_PEOPLE);
-		logger.info(startingPerson + " had started CollectIce");
+//		logger.info(startingPerson + " had started CollectIce");
 	}
 
 	/**

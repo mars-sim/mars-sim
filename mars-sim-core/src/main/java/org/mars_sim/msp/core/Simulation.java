@@ -109,6 +109,7 @@ import org.mars_sim.msp.core.tool.CheckSerializedSize;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.tukaani.xz.FilterOptions;
 import org.tukaani.xz.LZMA2Options;
+import org.tukaani.xz.XZFormatException;
 import org.tukaani.xz.XZInputStream;
 import org.tukaani.xz.XZOutputStream;
 
@@ -748,8 +749,16 @@ public class Simulation implements ClockListener, Serializable {
 			// needed here to improve performance.
 			// in = new BufferedInputStream(in);
 			
-			// Limit memory usage to 256 MB
-			xzin = new XZInputStream(new BufferedInputStream(in), 256 * 1024);
+			try {
+				// Limit memory usage to 256 MB
+				xzin = new XZInputStream(new BufferedInputStream(in), 256 * 1024);
+			} catch (XZFormatException e) {
+				e.printStackTrace();
+				// Thrown when reading a stream terminated by an exception that occurred while the stream was being written.
+				logger.log(Level.SEVERE, "Quitting mars-sim with XZFormatException when loading " + file + " : " + e.getMessage());
+				System.exit(1);	
+			}
+			
 //			int size;
 //			while ((size = xzin.read(buf)) != -1)
 //				baos.write(buf, 0, size);			
@@ -780,7 +789,7 @@ public class Simulation implements ClockListener, Serializable {
 			eventManager = (HistoricalEventManager) ois.readObject();
 			relationshipManager = (RelationshipManager) ois.readObject();		
 			unitManager = (UnitManager) ois.readObject();		
-			masterClock = (MasterClock) ois.readObject();
+			masterClock = (MasterClock) ois.readObject();	
 	
 		// Note: see https://docs.oracle.com/javase/7/docs/platform/serialization/spec/exceptions.html
 		} catch (WriteAbortedException e) {

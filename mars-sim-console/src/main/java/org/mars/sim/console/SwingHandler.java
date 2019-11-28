@@ -24,6 +24,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
@@ -42,8 +44,14 @@ import org.beryx.textio.ReadInterruptionStrategy;
 import org.beryx.textio.StringInputReader;
 import org.beryx.textio.TextIO;
 import org.beryx.textio.swing.SwingTextTerminal;
+import org.mars_sim.msp.core.LogConsolidated;
 
 public class SwingHandler {
+	
+	private static Logger logger = Logger.getLogger(SwingHandler.class.getName());
+	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
+			logger.getName().length());
+	
     private static final String KEY_STROKE_UP = "pressed UP";
     private static final String KEY_STROKE_DOWN = "pressed DOWN";
     private static final String KEY_PREV_HISTORY = "ctrl pressed LEFT";
@@ -342,10 +350,15 @@ public class SwingHandler {
     		tasks.remove(0);
         terminal.setBookmark("bookmark_" + 0);
         try {
-            tasks.get(0).run();
+            if (tasks.get(0) != null)
+            	tasks.get(0).run();
         } catch (ReadAbortedException e) {
             terminal.resetToBookmark("bookmark_" + 0);
+        } catch (RuntimeException e) {
+			e.printStackTrace();
+			LogConsolidated.log(Level.SEVERE, 0, sourceName, "RuntimeException detected.");
         }
+        
     }
     
     private Field getField(String fieldName) {

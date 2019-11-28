@@ -2190,13 +2190,11 @@ public class Inventory implements Serializable {
 			}
 
 			containedUnitIDs.add(unit.getIdentifier());
-			Unit owner = getOwner();
+
+			Unit newOwner = getOwner();
 //			System.out.println("Inventory::storeUnit - " + unit + "'s ownerID : " + ownerID + "   owner : " + owner);
-			if (owner != null)
-				unit.setContainerUnit(owner);
-//			System.out.println("Inventory::storeUnit - " + unit + " owned by " + owner + " (" + ownerID + ")");
-			
-			if (owner instanceof Settlement) {
+
+			if (newOwner instanceof Settlement) {
 				// Try to empty amount resources into parent if container.
 				if (unit instanceof Container) {
 					Inventory containerInv = unit.getInventory();
@@ -2208,9 +2206,9 @@ public class Inventory implements Serializable {
 						}
 					}
 				}
-				
+
 				else if (unit instanceof Person) {
-					((Settlement) owner).addPeopleWithin((Person)unit);
+					((Settlement) newOwner).addPeopleWithin((Person)unit);
 				}
 //				else if (unit instanceof Robot) {
 //					((Settlement) owner).addOwnedRobot((Robot)unit);
@@ -2219,27 +2217,25 @@ public class Inventory implements Serializable {
 //					((Settlement) owner).addOwnedVehicle((Vehicle)unit);
 //				}
 			}
-			
-			// Update owner 
-			// TODO: will the owner be changed from above ?
-			owner = getOwner();
-			
-			if (owner != null) {
-				
-				if (!(owner instanceof MarsSurface)) {
+
+			if (newOwner != null) {
+				unit.setContainerUnit(newOwner);
+//				System.out.println("Inventory::storeUnit - " + unit + " owned by " + owner + " (" + ownerID + ")");
+
+				if (!(newOwner instanceof MarsSurface)) {
 					// Note: MarsSurface represents the whole surface of Mars does not have coordinates
 					// If MarsSurface is a container of an unit, that unit may keep its own coordinates
-					unit.setCoordinates(owner.getCoordinates());
+					unit.setCoordinates(newOwner.getCoordinates());
 				}	
 				
-				owner.fireUnitUpdate(UnitEventType.INVENTORY_STORING_UNIT_EVENT, unit);
+				newOwner.fireUnitUpdate(UnitEventType.INVENTORY_STORING_UNIT_EVENT, unit);
 				for (Integer resource : unit.getInventory().getAllARStored(false)) {
 					updateAmountResourceCapacityCache(resource);
 					updateAmountResourceStoredCache(resource);
-					owner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);
+					newOwner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);
 				}
 				for (Integer itemResource : unit.getInventory().getAllItemResourcesStored()) {
-					owner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, itemResource);
+					newOwner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, itemResource);
 				}
 			}
 		} else {
@@ -2257,12 +2253,12 @@ public class Inventory implements Serializable {
 	 */
 	public void transferUnit(Unit unit, Unit newOwner) {
 		boolean retrieved = false;
-		Unit owner = getOwner();
+		Unit oldOwner = getOwner();
 		
-		String ownerName = "null";
+		String oldOwnerName = null;
 		
-		if (owner != null)
-			ownerName = owner.getName();
+		if (oldOwner != null)
+			oldOwnerName = oldOwner.getName();
 		
 		Integer id = unit.getIdentifier();
 		
@@ -2277,21 +2273,21 @@ public class Inventory implements Serializable {
 			containedUnitIDs.remove(id);
 
 			// Update owner
-			if (owner != null) {
-				owner.fireUnitUpdate(UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT, unit);
+			if (oldOwner != null) {
+				oldOwner.fireUnitUpdate(UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT, unit);
 
 				for (Integer resource : unit.getInventory().getAllARStored(false)) {
 					updateAmountResourceCapacityCache(resource);
 					updateAmountResourceStoredCache(resource);
-					owner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);//ResourceUtil.findAmountResource(resource)); 
+					oldOwner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);
 				}
 				for (Integer resource : unit.getInventory().getAllItemResourcesStored()) {
-					owner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);//, ItemResourceUtil.findItemResource(resource));
+					oldOwner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);
 				}
 				
-				if (owner instanceof Settlement) {
+				if (oldOwner instanceof Settlement) {
 					if (unit instanceof Person) {
-						((Settlement) owner).removePeopleWithin((Person)unit);
+						((Settlement) oldOwner).removePeopleWithin((Person)unit);
 					}
 //					if (unit instanceof Robot) {
 //						((Settlement) owner).removeOwnedRobot((Robot)unit);
@@ -2310,9 +2306,9 @@ public class Inventory implements Serializable {
 		
 		if (!retrieved) {
 			 LogConsolidated.log(Level.SEVERE, 5_000, sourceName + "::transferUnit",
-					  unit + " could not be retrieved by " + ownerName + ".");
+					  unit + " could not be retrieved by " + oldOwnerName + ".");
 			// The statement below is needed for maven test in testInventoryUnitStoredNull() in TestInventory
-			throw new IllegalStateException("Unit: " + unit + " could not be retrieved by " + ownerName + "."); 
+			throw new IllegalStateException("Unit: " + unit + " could not be retrieved by " + oldOwnerName + "."); 
 		}
 
 		else if (newInv.canStoreUnit(unit, false)) {
@@ -2327,25 +2323,23 @@ public class Inventory implements Serializable {
 			// Add the unit's identifier
 			newInv.addAContainedUnitID(unit.getIdentifier());
 			
-//			System.out.println("Inventory::storeUnit - " + unit + "'s ownerID : " + ownerID + "   owner : " + owner);
-			unit.setContainerUnit(newOwner);
-//			System.out.println("Inventory::storeUnit - " + unit + " owned by " + owner + " (" + ownerID + ")");
-
-			if (owner instanceof Settlement) {
+			if (newOwner instanceof Settlement) {
 				// Try to empty amount resources into parent if container.
 				if (unit instanceof Container) {
 					Inventory containerInv = unit.getInventory();
 					for (Integer resource : containerInv.getAllARStored(false)) {
 						double containerAmount = containerInv.getAmountResourceStored(resource, false);
 						if (getAmountResourceRemainingCapacity(resource, false, false) >= containerAmount) {
+							// Retrieve AR from the oldOwner
 							containerInv.retrieveAmountResource(resource, containerAmount);
+							// Store AR in the newOwner
 							storeAmountResource(resource, containerAmount, false);
 						}
 					}
 				}
 				
 				else if (unit instanceof Person) {
-					((Settlement) owner).addPeopleWithin((Person)unit);
+					((Settlement) newOwner).addPeopleWithin((Person)unit);
 				}
 //				else if (unit instanceof Robot) {
 //					((Settlement) owner).addOwnedRobot((Robot)unit);
@@ -2356,7 +2350,10 @@ public class Inventory implements Serializable {
 			}
 			
 			if (newOwner != null) {
-				
+//				System.out.println("Inventory::storeUnit - " + unit + "'s ownerID : " + ownerID + "   owner : " + owner);
+				unit.setContainerUnit(newOwner);
+//				System.out.println("Inventory::storeUnit - " + unit + " owned by " + owner + " (" + ownerID + ")");
+
 				if (!(newOwner instanceof MarsSurface)) {
 					// Note: MarsSurface represents the whole surface of Mars does not have coordinates
 					// If MarsSurface is a container of an unit, that unit may keep its own coordinates
@@ -2415,8 +2412,6 @@ public class Inventory implements Serializable {
 //		System.out.println("   unit size " + containedUnitIDs.size());
 		
 		if (containedUnitIDs.contains(id)) {
-//		if (containsUnit(unit)) {
-//			System.out.println("containsUnit(unit) is true");
 			// Set modified cache values as dirty.
 			setAmountResourceCapacityCacheAllDirty(true);
 			setAmountResourceStoredCacheAllDirty(true);
@@ -2424,39 +2419,36 @@ public class Inventory implements Serializable {
 			setTotalAmountResourcesStoredCacheDirty();
 			setUnitTotalMassCacheDirty();
 
-//			if (containedUnitIDs.contains(id)) {
-//				System.out.println("containedUnitIDs.contains(unit) is true");
-				containedUnitIDs.remove(id);
+			containedUnitIDs.remove(id);
 
-				// Update owner
-				if (owner != null) {
-					owner.fireUnitUpdate(UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT, unit);
+			// Update owner
+			if (owner != null) {
+				owner.fireUnitUpdate(UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT, unit);
 
-					for (Integer resource : unit.getInventory().getAllARStored(false)) {
-						updateAmountResourceCapacityCache(resource);
-						updateAmountResourceStoredCache(resource);
-						owner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);//ResourceUtil.findAmountResource(resource)); 
+				for (Integer resource : unit.getInventory().getAllARStored(false)) {
+					updateAmountResourceCapacityCache(resource);
+					updateAmountResourceStoredCache(resource);
+					owner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);//ResourceUtil.findAmountResource(resource)); 
+				}
+				for (Integer resource : unit.getInventory().getAllItemResourcesStored()) {
+					owner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);//, ItemResourceUtil.findItemResource(resource));
+				}
+				
+				if (owner instanceof Settlement) {
+					if (unit instanceof Person) {
+						((Settlement) owner).removePeopleWithin((Person)unit);
 					}
-					for (Integer resource : unit.getInventory().getAllItemResourcesStored()) {
-						owner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);//, ItemResourceUtil.findItemResource(resource));
-					}
-					
-					if (owner instanceof Settlement) {
-						if (unit instanceof Person) {
-							((Settlement) owner).removePeopleWithin((Person)unit);
-						}
 //						if (unit instanceof Robot) {
 //							((Settlement) owner).removeOwnedRobot((Robot)unit);
 //						}
 //						if (unit instanceof Vehicle) {
 //							((Settlement) owner).removeOwnedVehicle((Vehicle)unit);
 //						}
-					}
-		
 				}
+	
+			}
 
-				retrieved = true;
-//			}
+			retrieved = true;
 		}
 
 		if (retrieved) {

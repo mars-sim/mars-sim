@@ -563,8 +563,10 @@ public final class MalfunctionFactory implements Serializable {
 		MTBF_map.clear();
 		reliability_map.clear();
 		failure_map.clear();
-		repairPartProbabilities.clear();
-		maintenancePartProbabilities.clear();
+		if (repairPartProbabilities != null)
+			repairPartProbabilities.clear();
+		if (maintenancePartProbabilities != null)	
+			maintenancePartProbabilities.clear();
 		
 		namePartMap = null;
 		MTBF_map = null;

@@ -157,9 +157,9 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
 		    			sim.getMasterClock().exitProgram();
 		    		logger.info("Exiting the Simulation.");
 		    		InteractiveTerm.setKeepRunning(false);
-					System.exit(0);
 					frame.setVisible(false);
 			    	dispose(null);
+					System.exit(0);
 		        }
 			}
 		});

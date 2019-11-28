@@ -223,13 +223,23 @@ Note 4 : Depending on the order of precedence in Path variable,
 `C:\ProgramData\Oracle\Java\javapath` can load the undesired version of jre/jdk,
 instead of the java version you prefer.
  ```
- 5. Check if the correct version of Java is being enabled in the **Java Control Panel** in Windows's
- Control Panel. 
- ```
-Note 5 : To test the version of Java that your machine is using, type "java -version"
-in a terminal/command prompt.
- ```
+ 5. To test the version of Java that your machine is using, type "java -version"
+in a command prompt window.
 
+ 6. To check if a particular official version of Java is being *enabled*, 
+ start **Java Control Panel** in Windows's Control Panel as follows :  
+
+ a. Move your mouse to the magnifier icon (the 2nd icon from the left) on win 10 task bar. 
+ b. Type `Configure Java` 
+ c. Hover your mouse over the `Configure Java` and click to start the `Java Control Panel`
+ d. Click on `Java` tab on top.
+ e. Click on `View` button to open up another panel window.
+ f. Click on the checkbox on the `Enable` column to enable or disable any official Oracle versions of Java you might have installed in the past.
+ ```
+Note 5. each row shows multiple versions of Java shown such as 1.8.0_211 and 1.10.0_1_1. 
+Unfornately, it only tracks the official Oracle versions. If you install any dozens of 
+openJDK on your machine, it won't recognize them. 
+ ```
 
 ---
 

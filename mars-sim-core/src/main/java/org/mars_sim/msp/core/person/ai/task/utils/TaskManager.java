@@ -760,8 +760,9 @@ public class TaskManager implements Serializable {
 								+ mt.getName() + " : Probability is " + Math.round(probability * 10.0) / 10.0 + ".");
 						// If the person has a strong desire to eat, stop here and go to eat
 						// The person has a strong desire to sleep, stop here and go to sleep
-						if (mt.getName().contains("sleep"))
+						if (person.isInside() && mt.getName().contains("sleep")) { 
 							addTask(new Sleep(person), false);
+						}
 						else {
 							if (mt.getName().contains("eat")) 
 								goEat();
