@@ -121,14 +121,15 @@ public class PowerGeneration extends Function implements Serializable {
 					fuelPower = 0D;
 				result += fuelPower;
 			} else if (source instanceof SolarPowerSource) {
-				result += source.getMaxPower() / 2D;
+				result += source.getMaxPower() * .707;
 			} else if (source instanceof SolarThermalPowerSource) {
-				result += source.getMaxPower() / 2D;
+				result += source.getMaxPower() * .707;
 			} else if (source instanceof WindPowerSource) {
-				result += source.getMaxPower() / 2D;
+				result += source.getMaxPower() * .707;
 			} else if (source instanceof AreothermalPowerSource) {
 				double areothermalHeat = surface.getAreothermalPotential(settlement.getCoordinates());
-				result += source.getMaxPower() * (areothermalHeat / 100D);
+				// TODO: why divided by 100D
+				result += source.getMaxPower()  * .707 * areothermalHeat / 100D;
 			}
 		}
 

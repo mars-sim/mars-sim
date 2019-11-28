@@ -163,9 +163,9 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 		setBaseMass(emptyMass);
 
 		// Set the resource capacities of the EVA suit.
-		getInventory().addARTypeCapacity(ResourceUtil.oxygenID, OXYGEN_CAPACITY);
-		getInventory().addARTypeCapacity(ResourceUtil.waterID, WATER_CAPACITY);
-		getInventory().addARTypeCapacity(ResourceUtil.co2ID, CO2_CAPACITY);
+		getInventory().addAmountResourceTypeCapacity(ResourceUtil.oxygenID, OXYGEN_CAPACITY);
+		getInventory().addAmountResourceTypeCapacity(ResourceUtil.waterID, WATER_CAPACITY);
+		getInventory().addAmountResourceTypeCapacity(ResourceUtil.co2ID, CO2_CAPACITY);
 		
 		// Set the load carrying capacity of the EVA suit to an arbitrary value of 250 kg.
 		getInventory().addGeneralCapacity(250);

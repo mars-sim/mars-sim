@@ -140,6 +140,8 @@ public class Inventory implements Serializable {
 //			unitManager = Simulation.instance().getUnitManager();
 		if (sim.getMars() != null) 
 			marsSurface = sim.getMars().getMarsSurface();
+		
+//		allStoredARCache = getAllARStored(false);//new HashSet<Integer>();
 	}
 
 	public int getAmountSupplyRequest(Integer r) {
@@ -510,7 +512,7 @@ public class Inventory implements Serializable {
 	 * @param capacity the extra capacity amount (kg).
 	 */
 	public void addAmountResourceTypeCapacity(AmountResource resource, double capacity) {
-		addARTypeCapacity(resource.getID(), capacity);  
+		addAmountResourceTypeCapacity(resource.getID(), capacity);  
 	}
 
 	/**
@@ -520,16 +522,20 @@ public class Inventory implements Serializable {
 	 * @param capacity the extra capacity amount (kg).
 	 */
 	public void addAmountResourceTypeCapacity(int resource, double capacity) {
-		addARTypeCapacity(resource, capacity);
-	}
-
-	/**
-	 * Adds capacity for a resource type.
-	 * 
-	 * @param resource the resource.
-	 * @param capacity the extra capacity amount (kg).
-	 */
-	public void addARTypeCapacity(int resource, double capacity) {
+//		addARTypeCapacity(resource, capacity);
+//	}
+//
+//	/**
+//	 * Adds capacity for a resource type.
+//	 * 
+//	 * @param resource the resource.
+//	 * @param capacity the extra capacity amount (kg).
+//	 */
+//	public void addARTypeCapacity(int resource, double capacity) {
+		// Initialize amount resource capacity cache if necessary.
+		if (capacityCache == null) {
+			initializeAmountResourceCapacityCache();
+		}
 		// Set capacity cache to dirty because capacity values are changing.
 		setARCapacityCacheDirty(resource);
 		// Initialize resource storage if necessary.
@@ -556,7 +562,10 @@ public class Inventory implements Serializable {
 	 * @param capacity the capacity amount (kg).
 	 */
 	public void removeARTypeCapacity(int resource, double capacity) {
-
+		// Initialize amount resource capacity cache if necessary.
+		if (capacityCache == null) {
+			initializeAmountResourceCapacityCache();
+		}
 		// Set capacity cache to dirty because capacity values are changing.
 		setARCapacityCacheDirty(resource);
 		// Initialize resource storage if necessary.
@@ -2532,20 +2541,21 @@ public class Inventory implements Serializable {
 	 * Initializes the amount resource capacity cache.
 	 */
 	public synchronized void initializeAmountResourceCapacityCache() {
-		initializeARCapacityCache();
-	}
+//		initializeARCapacityCache();
+//	}
+//
+//	/**
+//	 * Initializes the amount resource capacity cache.
+//	 */
+//	public synchronized void initializeARCapacityCache() {
 
-	/**
-	 * Initializes the amount resource capacity cache.
-	 */
-	public synchronized void initializeARCapacityCache() {
-
-		Collection<Integer> resources = ResourceUtil.getIDs();
+		Collection<Integer> resources = ResourceUtil.getIDs(); // allStoredARCache;
 		capacityCache = new HashMap<Integer, Double>();
 		capacityCacheDirty = new HashMap<Integer, Boolean>();
 		containersCapacityCache = new HashMap<Integer, Double>();
 		containersCapacityCacheDirty = new HashMap<Integer, Boolean>();
 
+		if (resources != null )
 		for (int resource : resources) {
 			capacityCache.put(resource, 0D);
 			capacityCacheDirty.put(resource, true);
@@ -2600,10 +2610,10 @@ public class Inventory implements Serializable {
 	 */
 	private void setARCapacityCacheDirty(int resource) {
 
-		// Initialize amount resource capacity cache if necessary.
-		if (capacityCache == null) {
-			initializeAmountResourceCapacityCache();
-		}
+//		// Initialize amount resource capacity cache if necessary.
+//		if (capacityCache == null) {
+//			initializeAmountResourceCapacityCache();
+//		}
 
 		capacityCacheDirty.put(resource, true);
 	}
@@ -2616,7 +2626,6 @@ public class Inventory implements Serializable {
 	 */
 	private void setAmountResourceCapacityCacheAllDirty(boolean containersDirty) {
 		setARCapacityCacheAllDirty(containersDirty);
-
 	}
 
 	/**
@@ -2631,8 +2640,8 @@ public class Inventory implements Serializable {
 		if (capacityCache == null) {
 			initializeAmountResourceCapacityCache();
 		}
-
-		for (int amountResource : ResourceUtil.getIDs()) {
+		
+		for (int amountResource : ResourceUtil.getIDs()) { //allStoredARCache
 			setARCapacityCacheDirty(amountResource);
 
 			if (containersDirty) {
@@ -2797,7 +2806,7 @@ public class Inventory implements Serializable {
 	 * Initializes the amount resource stored cache.
 	 */
 	private synchronized void initializeARStoredCache() {
-		Collection<Integer> resources = ResourceUtil.getIDs();
+		Collection<Integer> resources = ResourceUtil.getIDs(); // allStoredARCache
 		storedCache = new HashMap<Integer, Double>();
 		storedCacheDirty = new HashMap<Integer, Boolean>();
 		containersStoredCache = new HashMap<Integer, Double>();
@@ -2871,23 +2880,23 @@ public class Inventory implements Serializable {
 	 *                        dirty.
 	 */
 	private void setAmountResourceStoredCacheAllDirty(boolean containersDirty) {
-		setARStoredCacheAllDirty(containersDirty);
-	}
-
-	/**
-	 * Sets all of the resources in the amount resource stored cache to dirty.
-	 * 
-	 * @param containersDirty true if containers cache should be marked as all
-	 *                        dirty.
-	 */
-	private void setARStoredCacheAllDirty(boolean containersDirty) {
+//		setARStoredCacheAllDirty(containersDirty);
+//	}
+//
+//	/**
+//	 * Sets all of the resources in the amount resource stored cache to dirty.
+//	 * 
+//	 * @param containersDirty true if containers cache should be marked as all
+//	 *                        dirty.
+//	 */
+//	private void setARStoredCacheAllDirty(boolean containersDirty) {
 
 		// Initialize amount resource stored cache if necessary.
 		if (storedCache == null) {
 			initializeAmountResourceStoredCache();
 		}
 
-		for (int id : ResourceUtil.getIDs()) {
+		for (int id : ResourceUtil.getIDs()) { //allStoredARCache
 			setARStoredCacheDirty(id);
 
 			if (containersDirty) {
@@ -3361,7 +3370,7 @@ public class Inventory implements Serializable {
 				if (type == 0)
 					container.getInventory().setAmountResourceCapacityCacheAllDirty(true);
 				else if (type == 1)
-					container.getInventory().setARStoredCacheAllDirty(true);
+					container.getInventory().setAmountResourceStoredCacheAllDirty(true);
 				else if (type == 2)
 					container.getInventory().setAllStoredARCacheDirty();
 				else if (type == 3)

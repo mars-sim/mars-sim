@@ -47,11 +47,6 @@ implements Serializable {
 	
 	private boolean toggle = false;
 	
-//	private double maxPower;
-	
-	//private ItemResource cellStack;
-//	private Building building;
-
 	private static int oxygenID = ResourceUtil.oxygenID;
 	private static int methaneID = ResourceUtil.methaneID;
 
@@ -142,12 +137,11 @@ implements Serializable {
 		 
 		 if (toggle) {
 			 double spentFuel = consumeFuel(time, building.getInventory());
-			 
-			 logger.info("getCurrentPower(). spentFuel: " +  Math.round(spentFuel* 100.0)/100.0 + " kW"
-					 + "   spentFuel: " +  Math.round(spentFuel* 100.0)/100.0 + " kW"
-					 + "   getMaxPower(): " +  Math.round(getMaxPower()* 100.0)/100.0 + " kW"
-					 + "   spentFuel/maxFuel * ELECTRICAL_EFFICIENCY: " +  Math.round(spentFuel/maxFuel * ELECTRICAL_EFFICIENCY * 100.0)/100.0 + " kW"
-					 );		 
+//			 logger.info("getCurrentPower(). spentFuel: " +  Math.round(spentFuel* 100.0)/100.0 + " kW"
+//					 + "   spentFuel: " +  Math.round(spentFuel* 100.0)/100.0 + " kW"
+//					 + "   getMaxPower(): " +  Math.round(getMaxPower()* 100.0)/100.0 + " kW"
+//					 + "   spentFuel/maxFuel * ELECTRICAL_EFFICIENCY: " +  Math.round(spentFuel/maxFuel * ELECTRICAL_EFFICIENCY * 100.0)/100.0 + " kW"
+//					 );		 
 			 return getMaxPower() * spentFuel/maxFuel * ELECTRICAL_EFFICIENCY;
 		 }
 		 
@@ -215,8 +209,7 @@ implements Serializable {
 		fuelValue *= getFuelConsumptionRate() / 1000D * time;
 		fuelPower -= fuelValue;
 		if (fuelPower < 0D) fuelPower = 0D;
-		
-		logger.info("getAveragePower(). fuelPower: " +  Math.round(fuelPower* 100.0)/100.0 + " kW");
+//		logger.info("getAveragePower(). fuelPower: " +  Math.round(fuelPower* 100.0)/100.0 + " kW");
 		return fuelPower;
 	 }
 
