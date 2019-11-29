@@ -340,10 +340,7 @@ public class MarsProject {
 					// Create class instances
 					sim.createNewSimulation(-1, false);	
 				}
-				else {		
-					// Start beryx console
-					startConsoleThread();
-					
+				else {			
 					// Start simulation clock
 					startSimThread(true);
 					
@@ -356,6 +353,9 @@ public class MarsProject {
 						// Go headless				
 					}
 					
+					// Start beryx console
+					startConsoleThread();
+				
 				}
 
 				// Initialize interactive terminal and load menu
@@ -368,9 +368,6 @@ public class MarsProject {
 				if (loadFile.exists() && loadFile.canRead()) {
 					sim.loadSimulation(loadFile);
 
-					// Start beryx console
-					startConsoleThread();
-					
 					// Start simulation.
 					startSimThread(false);	
 					
@@ -382,7 +379,10 @@ public class MarsProject {
 					else {
 						// Go headless				
 					}
-
+					
+					// Start beryx console
+					startConsoleThread();
+				
 				}
 				else {
 //					logger.config("Invalid param.");
@@ -409,6 +409,7 @@ public class MarsProject {
 				break;
 			}
 		}
+		Simulation.delay(1000);
 	}
 	
 //	/**
@@ -440,22 +441,22 @@ public class MarsProject {
 				InteractiveTerm.initializeTerminal();	
 				// Start sim config editor
 //				logger.config("type is " + type);
-				if (type == 0) {
-					// Start beryx console
-					startConsoleThread();
-					
+				if (type == 0) {		
 					// Since SCE is not used, manually set up each of the followings 
 					// Create new simulation
 					// sim.createNewSimulation(-1, false);
 					// Run this class in sim executor
 					sim.runCreateNewSimTask();	
 
-					// Create main window
-					setupMainWindow();
-					
 					// Start the simulation
 					startSimThread(false);
 					
+					// Create main window
+					setupMainWindow();
+					
+					// Start beryx console
+					startConsoleThread();
+				
 //					logger.config("Done with setupMainWindow()");
 				}
 				
@@ -476,15 +477,16 @@ public class MarsProject {
 						// initialize class instances
 						sim.createNewSimulation(-1, false);
 					}
-					else {		
-						// Start beryx console
-						startConsoleThread();
-						
+					else {
 						// Start simulation.
 						startSimThread(false);
 						
 						// Create main window
 						setupMainWindow();
+						
+						// Start beryx console
+						startConsoleThread();
+					
 					}
 //					logger.config("Done with setupMainWindow()");
 				}
@@ -534,10 +536,18 @@ public class MarsProject {
 		}
 	
 		public void run() {
-//			logger.config("StartTask's run() is on " + Thread.currentThread().getName());
-			sim.startClock(autosaveDefault);
-			// Load the menu choice
-//			InteractiveTerm.loadTerminalMenu();
+//			while (true) {
+//				try {
+//					Thread.sleep(250L);
+//				} catch (InterruptedException e) {
+//				}
+//				
+//				if (!sim.isUpdating()) {
+//					logger.config("StartTask's run() is on " + Thread.currentThread().getName());
+					sim.startClock(autosaveDefault);
+//					break;
+//				}
+//			}
 		}
 	}
 	
@@ -556,12 +566,21 @@ public class MarsProject {
 
 		ConsoleTask() {
 		}
-	
+		
 		public void run() {
-//			logger.config("ConsoleTask run() is on " + Thread.currentThread().getName());
-			// Load the menu choice
-			InteractiveTerm.loadTerminalMenu();
-			Simulation.delay(1000);
+//			while (true) {
+//				try {
+//					Thread.sleep(100L);
+//				} catch (InterruptedException e) {
+//				}
+//				
+//				if (!sim.isUpdating()) {
+//					logger.config("ConsoleTask run() is on " + Thread.currentThread().getName());
+					// Load the menu choice
+					InteractiveTerm.loadTerminalMenu();
+//					break;
+//				}
+//			}
 		}
 	}
 	

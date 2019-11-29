@@ -65,7 +65,7 @@ public class EarthClock implements Serializable {
 		// Use ZonedDate
 		zonedDateTime = ZonedDateTime.now(ZoneOffset.UTC);
 		
-		// Set GMT timezone for calendar
+		// Set Greenwich Mean Time (GMT) timezone for calendar
 		zone = new SimpleTimeZone(0, "GMT");
 		// see http://www.diffen.com/difference/GMT_vs_UTC
 
@@ -89,20 +89,13 @@ public class EarthClock implements Serializable {
 		f2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.US);
 		f2.setTimeZone(zone);
 
-		String iso8601 = null;// "2043-09-30T00:00:00.000Z"; //"2043-09-30T00:00:00";
+		String iso8601 = null;
 
+		// The default value for fullDateTimeString from simulations.xml is "2028-08-17 15:23:13.740"
 		iso8601 = fullDateTimeString.replace(" ", "T") + "Z";
 
 		dateOfFirstLanding = ZonedDateTime.parse(iso8601);
 		// LocalDateTime ldt = zdt.toLocalDateTime();
-
-		// DateTimeFormatter formatter =
-		// DateTimeFormatter.ofPattern("yyyy-MM-ddTHH:m:ss.fff+zz:zz[Etc/UTC]");
-		// //2043-09-30T00:0:00.000+00:00[Etc/UTC]
-		// dateOfFirstLanding = ZonedDateTime.parse(fullDateTimeString);//, formatter);
-
-//		LocalDateTime dateOfFirstLanding = LocalDateTime.of(2043, Month.SEPTEMBER, 30, 0, 0);
-//		String formattedDateTime = dateOfFirstLanding.format(formatter); 
 
 		try {
 			zonedDateTime = dateOfFirstLanding;

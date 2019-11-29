@@ -24,7 +24,13 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.Date;
+import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
@@ -139,7 +145,7 @@ extends JComponent {
 	private WebStyledLabel marsTimeLabel;
 //	private JLabel earthTimeLabel;
 	
-	private WebDateField dateField;
+	private WebDateField earthDateField;
 	
 //	private Date date;
 	
@@ -352,20 +358,27 @@ extends JComponent {
 		Font font = new Font("Times New Roman", Font.BOLD, 12);
 
 //		StyleId styledlabelShadow = StyleId.of ( "shadow" );
-		dateField = new WebDateField(StyleId.datefield);//new Date(earthClock.getInstant().toEpochMilli()));
-		dateField.setPreferredWidth(190);
-		dateField.setAllowUserInput(false);
+		earthDateField = new WebDateField(StyleId.datefield);//new Date(earthClock.getInstant().toEpochMilli()));
+		earthDateField.setPreferredWidth(190);
+		earthDateField.setAllowUserInput(false);
 //		Customizer<WebCalendar> c = dateField.getCalendarCustomizer();
 //		c.customize();
-		dateField.setFont(font);
+		earthDateField.setFont(font);
 //		dateField.setForeground(Color.BLUE);
-		dateField.setAlignmentX(.5f);
-		dateField.setAlignmentY(0);
-		DateFormat d = new SimpleDateFormat ("yyyy-MMM-dd  HH:mm a '['z']'", LanguageManager.getLocale ());
-		dateField.setDateFormat(d);
-		if (earthClock.getInstant() != null)
-			dateField.setDate(new Date(earthClock.getInstant().toEpochMilli()));
-		dateField.setAllowUserInput(false);
+		earthDateField.setAlignmentX(.5f);
+		earthDateField.setAlignmentY(0);
+		DateFormat d = new SimpleDateFormat("yyyy-MMM-dd  HH:mm a '['z']'", LanguageManager.getLocale());
+		d.setTimeZone(TimeZone.getTimeZone("GMT"));
+		earthDateField.setDateFormat(d); 
+		
+		if (earthClock.getInstant() != null) {
+//			LocalDateTime ldt = LocalDateTime.ofInstant(earthClock.getInstant(), ZoneId.of("UTC"));
+//			ZonedDateTime zdt = ldt.atZone(ZoneId.of("UTC"));
+//			Date date = Date.from(zdt.toInstant());
+//			earthDateField.setDate(date);
+			earthDateField.setDate(new Date(earthClock.getInstant().toEpochMilli()));
+		}
+		earthDateField.setAllowUserInput(false);
 //	    dateField.addDateListener (new DateListener () {
 //	          @Override
 //	          public void dateChanged (final Date date) {
@@ -378,7 +391,7 @@ extends JComponent {
 //	              NotificationManager.showInnerNotification ( dateField, notification );
 //	          }
 //	      });
-		statusBar.addLeftComponent(dateField, true);
+		statusBar.addLeftComponent(earthDateField, true);
 		
 //		earthTimeLabel = new JLabel();
 //		earthTimeLabel.setFont(font);
@@ -1024,8 +1037,12 @@ extends JComponent {
 	 * Increment the label of both the earth and mars clocks
 	 */
 	public void incrementClocks() {
-		if (dateField != null && earthClock != null && earthClock.getInstant() != null) {
-			dateField.setDate(new Date(earthClock.getInstant().toEpochMilli()));
+		if (earthDateField != null && earthClock != null && earthClock.getInstant() != null) {
+			earthDateField.setDate(new Date(earthClock.getInstant().toEpochMilli()));
+//			LocalDateTime ldt = LocalDateTime.ofInstant(earthClock.getInstant(), ZoneId.of("UTC"));
+//			ZonedDateTime zdt = ldt.atZone(ZoneId.of("UTC"));
+//			Date date = Date.from(LocalDateTime.ofInstant(earthClock.getInstant(), ZoneId.of("UTC")).atZone(ZoneId.of("UTC")).toInstant());
+//			earthDateField.setDate(Date.from(LocalDateTime.ofInstant(earthClock.getInstant(), ZoneId.of("UTC")).atZone(ZoneId.of("UTC")).toInstant()));
 		}
 		
 		if (marsTimeLabel != null && marsClock != null) {

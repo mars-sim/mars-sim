@@ -17,12 +17,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
 
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.JComboBox;
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.SpringLayout;
@@ -51,6 +50,7 @@ import org.mars_sim.msp.core.structure.ChainOfCommand;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.tool.StarRater;
@@ -99,12 +99,13 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 	private WebLabel jobLabel;
 	private WebLabel roleLabel;
 	private WebLabel jobChangeLabel;
+	private WebLabel roleChangeLabel;
 	private WebLabel ratingLabel;
 	
 //	private WebTextField roleTF;
 
 	private WebComboBox jobComboBox;
-	private JComboBox roleComboBox;
+	private JComboBoxMW<Object> roleComboBox;
 	
 	private JobHistoryTableModel jobHistoryTableModel;
 
@@ -187,7 +188,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 			// Prepare job panel
 			WebPanel topSpringPanel = new WebPanel(new SpringLayout());// GridLayout(2, 2, 0, 0));
 
-			firstPanel.add(topSpringPanel, BorderLayout.CENTER);
+			firstPanel.add(topSpringPanel, BorderLayout.NORTH);
 
 			// Prepare job label
 			jobLabel = new WebLabel(Msg.getString("TabPanelCareer.jobType"), WebLabel.RIGHT); //$NON-NLS-1$
@@ -226,7 +227,11 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 			roleCache = person.getRole().getType().toString();
 			List<String> roleNames = getRoleNames();
 
-			roleComboBox = new JComboBox(roleNames.toArray());
+			roleComboBox = new JComboBoxMW<>();
+			
+			Iterator<String> k = roleNames.iterator();
+			while (k.hasNext()) roleComboBox.addItem(k.next());
+			
 			roleComboBox.setSelectedItem(roleCache);
 			roleComboBox.addActionListener(this);
 			
@@ -246,11 +251,19 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 			jobChangeLabel = new WebLabel();
 			// jobChangeLabel.setSize(300, 30);
 			jobChangeLabel.setHorizontalAlignment(SwingConstants.CENTER);
-			jobChangeLabel.setFont(new Font("Courier New", Font.ITALIC, 12));
+			jobChangeLabel.setFont(new Font("Courier New", Font.ITALIC, 10));
 			jobChangeLabel.setForeground(Color.blue);
-			firstPanel.add(jobChangeLabel, BorderLayout.SOUTH);
-			TooltipManager.setTooltip(roleLabel, Msg.getString("TabPanelCareer.roleType.tooltip"), TooltipWay.down);//$NON-NLS-1$
+			firstPanel.add(jobChangeLabel, BorderLayout.CENTER);
+			TooltipManager.setTooltip(jobChangeLabel, Msg.getString("TabPanelCareer.roleType.tooltip"), TooltipWay.down);//$NON-NLS-1$
 
+			roleChangeLabel = new WebLabel();
+			// roleChangeLabel.setSize(300, 30);
+			roleChangeLabel.setHorizontalAlignment(SwingConstants.CENTER);
+			roleChangeLabel.setFont(new Font("Courier New", Font.ITALIC, 10));
+			roleChangeLabel.setForeground(Color.blue);
+			firstPanel.add(roleChangeLabel, BorderLayout.SOUTH);
+			TooltipManager.setTooltip(roleChangeLabel, Msg.getString("TabPanelCareer.roleType.tooltip"), TooltipWay.down);//$NON-NLS-1$
+			
 			// Prepare SpringLayout
 			SpringUtilities.makeCompactGrid(topSpringPanel, 2, 2, // rows, cols
 					80, 5, // initX, initY
@@ -509,6 +522,9 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 		if (!roleCache.equalsIgnoreCase(newRole)) {
 			roleCache = newRole;
 			roleComboBox.setSelectedItem(roleCache);
+			
+			String s = person + "'s role has just been changed to " + newRole;
+			roleChangeLabel.setText(s);
 		}
 	}
 	
@@ -732,36 +748,39 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent event) {
 		Object source = event.getSource();
+		
 		if (source == roleComboBox) {
 			Person person = (Person) unit;
-			
 			String selected = (String) roleComboBox.getSelectedItem();
+			String roleStr = person.getRole().getType().getName();
 			
-			if (RoleUtil.isLeadershipRole(RoleType.getType(selected))) {
-				int box = JOptionPane.showConfirmDialog(desktop.getMainWindow().getFrame(), 
-						"Are you sure you want to replace the " + selected + " role ?");  
-				if (box == JOptionPane.YES_OPTION) { 
-//					roleComboBox.setSelectedItem(selected);
-					roleCache = selected;
-					person.getRole().setNewRoleType(RoleType.getType(selected));
-					desktop.getMainWindow().getFrame().setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);  
+			if (!selected.equalsIgnoreCase(roleStr)) {
+				if (RoleUtil.isLeadershipRole(RoleType.getType(selected))) {
+					int box = JOptionPane.showConfirmDialog(desktop.getMainWindow().getFrame(), 
+							"Are you sure you want to change the role to " + selected + " ?");  
+					if (box == JOptionPane.YES_OPTION) { 
+	//					roleComboBox.setSelectedItem(selected);
+						roleCache = selected;
+						person.getRole().setNewRoleType(RoleType.getType(selected));
+	//					desktop.getMainWindow().getFrame().setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);  
+					}
+					else {
+						roleComboBox.setSelectedItem(roleStr);
+					}
 				}
+				
 				else {
-					roleComboBox.setSelectedItem(roleCache);
-				}
-			}
-			
-			else {
-				int box = JOptionPane.showConfirmDialog(desktop.getMainWindow().getFrame(), 
-						"Are you sure you want to change the role to " + selected + " ?");  
-				if (box == JOptionPane.YES_OPTION) { 
-//					roleComboBox.setSelectedItem(selected);
-					roleCache = selected;
-					person.getRole().setNewRoleType(RoleType.getType(selected));
-					desktop.getMainWindow().getFrame().setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);  
-				}
-				else {
-					roleComboBox.setSelectedItem(roleCache);
+					int box = JOptionPane.showConfirmDialog(desktop.getMainWindow().getFrame(), 
+							"Are you sure you want to change the role to " + selected + " ?");  
+					if (box == JOptionPane.YES_OPTION) { 
+	//					roleComboBox.setSelectedItem(selected);
+						roleCache = selected;
+						person.getRole().setNewRoleType(RoleType.getType(selected));
+	//					desktop.getMainWindow().getFrame().setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);  
+					}
+					else {
+						roleComboBox.setSelectedItem(roleStr);
+					}
 				}
 			}
 		}
@@ -776,17 +795,19 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 				String selectedJobStr = (String) jobComboBox.getSelectedItem();
 				String jobStrCache = person.getMind().getJob().getName(person.getGender());
 
-				int box = JOptionPane.showConfirmDialog(desktop.getMainWindow().getFrame(), 
-						"Are you sure you want to change the job to " + selectedJobStr + " ?");  
-				if (box == JOptionPane.YES_OPTION) { 
-//					
-					considerJobChange(jobStrCache, selectedJobStr);
-					
-					desktop.getMainWindow().getFrame().setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);  
+				if (!selectedJobStr.equalsIgnoreCase(jobStrCache)) {
+					int box = JOptionPane.showConfirmDialog(desktop.getMainWindow().getFrame(), 
+							"Are you sure you want to change the job to " + selectedJobStr + " ?");  
+					if (box == JOptionPane.YES_OPTION) { 
+	//					
+						considerJobChange(jobStrCache, selectedJobStr);
+						
+//						desktop.getMainWindow().getFrame().setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);  
+					}
+					else {
+						jobComboBox.setSelectedItem(jobStrCache);
+					}		
 				}
-				else {
-					roleComboBox.setSelectedItem(roleCache);
-				}		
 			}
 		}
 	}
@@ -810,19 +831,17 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 		else if (JobType.getJobType(selectedJobStr) == JobType.getJobType(POLITICIAN)) {
 			jobComboBox.setSelectedItem(jobStrCache);
 			jobChangeLabel.setForeground(Color.red);
-			jobChangeLabel.setText("The Job Politician is currently reserved for Mayor only.");
+			jobChangeLabel.setText("The Politician job is currently reserved for Mayor only.");
 			jobChangeLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		}
 
-		else if (JobType.getJobType(jobCache) != JobType.getJobType(selectedJobStr)) {
+		else if (JobType.getJobType(jobStrCache) != JobType.getJobType(selectedJobStr)) {
 			// Use getAssociatedSettlement instead of getSettlement()
 			int pop = 0;
 			Settlement settlement = null;
 			if (person.getAssociatedSettlement() != null) {
 				settlement = person.getAssociatedSettlement();
-//			else if (person.isOutside()) {// .getLocationSituation() == LocationSituation.OUTSIDE) {
-//				settlement = (Settlement) person.getTopContainerUnit();
-			} else if (person.isInVehicle()) {// .getLocationSituation() == LocationSituation.IN_VEHICLE) {
+			} else if (person.isInVehicle()) {
 				Vehicle vehicle = (Vehicle) person.getContainerUnit();
 				settlement = vehicle.getSettlement();
 			}
@@ -844,9 +863,9 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 				statusCache = JobAssignmentType.PENDING;
 
 				jh.savePendingJob(selectedJobStr, JobUtil.USER, statusCache, null, true);
-				// set the combobox selection back to its previous job type for the time being
+				// Set the combobox selection back to its previous job type for the time being
 				// until the reassignment is approved
-				jobComboBox.setSelectedItem(jobCache);
+				jobComboBox.setSelectedItem(jobStrCache);
 				// disable the combobox so that user cannot submit job reassignment for a period
 				// of time
 				jobComboBox.setEnabled(false);
@@ -871,6 +890,8 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 
 			}
 		}
+		else
+			jobComboBox.setSelectedItem(jobStrCache);
 	}
 	
 	public void destroy() {
