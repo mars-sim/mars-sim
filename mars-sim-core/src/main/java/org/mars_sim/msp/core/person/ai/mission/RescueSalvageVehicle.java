@@ -76,8 +76,8 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 	public static final int MIN_GOING_MEMBERS = 2;
 	private static final int MAX_GOING_MEMBERS = 3;
 
-	public static final double BASE_RESCUE_MISSION_WEIGHT = 1000D;
-	public static final double BASE_SALVAGE_MISSION_WEIGHT = 5D;
+	public static final double BASE_RESCUE_MISSION_WEIGHT = 100D;
+	public static final double BASE_SALVAGE_MISSION_WEIGHT = 20D;
 	private static final double RESCUE_RESOURCE_BUFFER = 1D;
 
 	// Mission phases
@@ -163,6 +163,8 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 				endMission();
 			}
 		}
+		
+		logger.info(startingPerson + " had started RescueSalvageVehicle");
 	}
 
 	/**
@@ -223,6 +225,8 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 			addMissionStatus(MissionStatus.VEHICLE_NOT_LOADABLE);
 			endMission();
 		}
+		
+		logger.info(startingSettlement + " had started RescueSalvageVehicle");
 	}
 
 	@Override

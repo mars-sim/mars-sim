@@ -47,6 +47,7 @@ import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDesser
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
+import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
@@ -76,6 +77,10 @@ public abstract class RoverMission extends VehicleMission {
 	private static int waterID = ResourceUtil.waterID;
 	private static int foodID = ResourceUtil.foodID;
 	private static int methaneID = ResourceUtil.methaneID;
+
+	public static final String PHASE_1 = "phase 1";
+	public static final String MINING = "mining";
+	public static final String TRADING = "trading";
 
 	public static AmountResource[] availableDesserts = PreparingDessert.getArrayOfDessertsAR();
 
@@ -754,9 +759,10 @@ public abstract class RoverMission extends VehicleMission {
 		OperateVehicle result = null;
 		if (member instanceof Person) {
 			Person person = (Person) member;
-
+			Vehicle v = (Vehicle)getRover();
 			// TODO: should it check for fatigue only ?
 //			if (person.getFatigue() < 750) {
+			if (!v.haveStatusType(StatusType.OUT_OF_FUEL)) {
 				if (lastOperateVehicleTaskPhase != null) {
 					result = new DriveGroundVehicle(person, getRover(), getNextNavpoint().getLocation(),
 							getCurrentLegStartingTime(), getCurrentLegDistance(), lastOperateVehicleTaskPhase);
@@ -764,7 +770,7 @@ public abstract class RoverMission extends VehicleMission {
 					result = new DriveGroundVehicle(person, getRover(), getNextNavpoint().getLocation(),
 							getCurrentLegStartingTime(), getCurrentLegDistance());
 				}
-//			}
+			}
 		}
 
 		return result;
@@ -808,8 +814,9 @@ public abstract class RoverMission extends VehicleMission {
 
 			String template = settlement.getTemplate();
 			// Override the mininum num req if the settlement is too small
-			if (template.toLowerCase().contains("phase 1") || template.toLowerCase().contains("mining")
-					|| template.toLowerCase().contains("trading"))
+			if (template.toLowerCase().contains(PHASE_1) 
+					|| template.toLowerCase().contains(MINING)
+					|| template.toLowerCase().contains(TRADING)) 
 				min = 0;
 
 			int numAvailable = 0;

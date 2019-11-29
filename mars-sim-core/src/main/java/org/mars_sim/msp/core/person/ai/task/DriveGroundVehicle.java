@@ -27,7 +27,6 @@ import org.mars_sim.msp.core.robot.RoboticAttributeType;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
-import org.mars_sim.msp.core.vehicle.VehicleOperator;
 
 /**
  * The Drive Ground Vehicle class is a task for driving a ground vehicle to a
