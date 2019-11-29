@@ -13,6 +13,8 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.Box;
@@ -39,7 +41,7 @@ public class TypePanel extends WizardPanel implements ItemListener {
 	private final static String NAME = "Mission Type";
 	
 	// Private members.
-	private JComboBoxMW<?> typeSelect;
+	private JComboBoxMW<Object> typeSelect;
 	private WebLabel descriptionInfoLabel;
 	private WebLabel descriptionLabel;
 	private WebTextField descriptionField;
@@ -87,11 +89,21 @@ public class TypePanel extends WizardPanel implements ItemListener {
 		// Create the mission types.
 		MissionType[] missionTypes = MissionDataBean.getMissionTypes();
 //		sortStringBubble(missionTypes);
-		MissionType[] displayMissionTypes = new MissionType[missionTypes.length];
+//		MissionType[] displayMissionTypes = new MissionType[missionTypes.length];
+		List<String> types = new ArrayList<>();
+		int size = missionTypes.length;
+		for (int i=0; i<size; i++) {
+			types.add(missionTypes[i].getName());
+		}
 //		displayMissionTypes[0] = "";
 //        System.arraycopy(missionTypes, 0, displayMissionTypes, 1, missionTypes.length);
-		typeSelect = new JComboBoxMW<Object>(displayMissionTypes);
+		typeSelect = new JComboBoxMW<>();
+		Iterator<String> k = types.iterator();
+		while (k.hasNext()) typeSelect.addItem(k.next());
+		typeSelect.setSelectedIndex(-1);
+		
 		typeSelect.addItemListener(this);
+
         typeSelect.setMaximumRowCount(typeSelect.getItemCount());
 		typePane.add(typeSelect);
 		typePane.setMaximumSize(new Dimension(Short.MAX_VALUE, typeSelect.getPreferredSize().height));
@@ -131,18 +143,18 @@ public class TypePanel extends WizardPanel implements ItemListener {
 	 * @param e the item event.
 	 */
 	public void itemStateChanged(ItemEvent e) {
-		MissionType selectedMission = (MissionType) typeSelect.getSelectedItem();
+		String selectedMission = (String)typeSelect.getSelectedItem();
 		// Add SUFFIX to distinguish between different mission having the same mission type
 		int suffix = 1;
 	    List<Mission> missions = missionManager.getMissions();
 		for (Mission m : missions) {
-			if (m.getMissionType() == selectedMission)
+			if (m.getMissionType().getName().equalsIgnoreCase(selectedMission))
 				suffix++;
 		}
 		String suffixString = " (" + suffix + ")";
-		description = MissionDataBean.getMissionDescription(selectedMission) + suffixString;
+		description = selectedMission + suffixString;
 		descriptionField.setText(description);
-		boolean enableDescription = (typeSelect.getSelectedIndex() != 0);
+		boolean enableDescription = (typeSelect.getSelectedIndex() != -1);
 		descriptionInfoLabel.setEnabled(enableDescription);
 		descriptionLabel.setEnabled(enableDescription);
 		descriptionField.setEnabled(enableDescription);
@@ -163,7 +175,7 @@ public class TypePanel extends WizardPanel implements ItemListener {
 	 */
 	boolean commitChanges() {
 		getWizard().getMissionData().setType((String) typeSelect.getSelectedItem());
-		getWizard().getMissionData().setMissionType(MissionType.valueOf((String) typeSelect.getSelectedItem()));	
+		getWizard().getMissionData().setMissionType(MissionType.lookup((String) typeSelect.getSelectedItem()));	
 		getWizard().getMissionData().setDescription(descriptionField.getText());
 		getWizard().setFinalWizardPanels();
 		return true;

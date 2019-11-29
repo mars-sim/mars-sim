@@ -82,8 +82,9 @@ public class PreparingDessert extends Function implements Serializable {
 
 	private static double dessertMassPerServing;
 
-	private static String[] availableDesserts = { "sesame milk", "soymilk", "sugarcane juice", "cranberry juice",
-			"strawberry", "granola bar", "blueberry muffin", };
+	private static String[] availableDesserts = { "sesame milk", 
+			"soymilk", "sugarcane juice", "cranberry juice",
+			"strawberry", "granola bar", "blueberry muffin"};
 
 	private static int NUM_DESSERTS = availableDesserts.length;
 
@@ -92,7 +93,8 @@ public class PreparingDessert extends Function implements Serializable {
 	private static int foodWasteID = ResourceUtil.foodWasteID;
 	public static int NaClOID = ResourceUtil.NaClOID;
 
-	public static AmountResource[] availableDessertsAR = { ResourceUtil.findAmountResource(availableDesserts[0]),
+	public static AmountResource[] availableDessertsAR = { 
+			ResourceUtil.findAmountResource(availableDesserts[0]),
 			ResourceUtil.findAmountResource(availableDesserts[1]),
 			ResourceUtil.findAmountResource(availableDesserts[2]),
 			ResourceUtil.findAmountResource(availableDesserts[3]),

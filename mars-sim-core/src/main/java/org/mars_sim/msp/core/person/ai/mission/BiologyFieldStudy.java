@@ -1,6 +1,6 @@
 /**
  * Mars Simulation Project
- * BiologyStudyFieldMission.java
+ * BiologyFieldStudy.java
  * @version 3.1.0 2017-10-14
  * @author Scott Davis
  */

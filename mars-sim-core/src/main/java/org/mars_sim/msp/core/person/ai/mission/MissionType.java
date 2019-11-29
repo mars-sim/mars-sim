@@ -52,12 +52,19 @@ public enum MissionType {
 	
 
     public static MissionType lookup(int ordinal) {
-        // Could just run through the array of values but I will us a Map.
         if (lookup == null) {
             // Late construction - not thread-safe.
             lookup = Arrays.stream(MissionType.values())
                     .collect(Collectors.toMap(s -> s.ordinal(), s -> s));
         }
         return lookup.get(ordinal);
+    }
+    
+    public static MissionType lookup(String name) {
+    	for (MissionType t : MissionType.values()) {
+    		if (t.getName().equalsIgnoreCase(name))
+    			return t;
+    	}
+    	return null;
     }
 }

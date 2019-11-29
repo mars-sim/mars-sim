@@ -48,42 +48,6 @@ import org.mars_sim.msp.core.vehicle.Rover;
  */
 class MissionDataBean {
 
-	// Mission type strings.
-//    protected final static String AREOLOGY_FIELD_MISSION 	= AreologyFieldStudy.DEFAULT_DESCRIPTION; 
-//    protected final static String BIOLOGY_FIELD_MISSION 	= BiologyFieldStudy.DEFAULT_DESCRIPTION;
-//    protected final static String METEOROLOGY_FIELD_MISSION = MeteorologyFieldStudy.DEFAULT_DESCRIPTION;
-//
-//    protected final static String CONSTRUCTION_MISSION 		= BuildingConstructionMission.DEFAULT_DESCRIPTION;
-//    protected final static String SALVAGE_MISSION 			= BuildingSalvageMission.DEFAULT_DESCRIPTION;
-//    
-//    protected final static String EMERGENCY_SUPPLY_MISSION 	= EmergencySupply.DEFAULT_DESCRIPTION;
-//	protected final static String EXPLORATION_MISSION 		= Exploration.DEFAULT_DESCRIPTION;
-//	protected final static String ICE_MISSION 				= CollectIce.DEFAULT_DESCRIPTION;
-//
-//	protected final static String MINING_MISSION 			= Mining.DEFAULT_DESCRIPTION;
-//
-//	protected final static String REGOLITH_MISSION 			= CollectRegolith.DEFAULT_DESCRIPTION;
-//	protected final static String RESCUE_MISSION 			= RescueSalvageVehicle.DEFAULT_DESCRIPTION;
-//	protected final static String TRADE_MISSION 			= Trade.DEFAULT_DESCRIPTION;
-//	
-//	protected final static String TRAVEL_MISSION 			= TravelToSettlement.DEFAULT_DESCRIPTION;
-
-//    protected final static String[] MISSIONS = new String[] {
-//    		AREOLOGY_FIELD_MISSION,
-//    		BIOLOGY_FIELD_MISSION,
-//    		METEOROLOGY_FIELD_MISSION,
-//    		CONSTRUCTION_MISSION,
-//    		EMERGENCY_SUPPLY_MISSION,
-//    		EXPLORATION_MISSION,
-//    		ICE_MISSION,
-//    		MINING_MISSION,
-//    		REGOLITH_MISSION,
-//    		RESCUE_MISSION,
-//    		TRADE_MISSION,
-//    		TRAVEL_MISSION,
-//    		SALVAGE_MISSION
-//    };
-    
 	// Data members.
     private double constructionSiteXLoc;
     private double constructionSiteYLoc;
@@ -834,9 +798,8 @@ class MissionDataBean {
     	return missionType == MissionType.BUILDING_SALVAGE;
 	}
 
-	
 	protected boolean requiresFieldSite() {
-		return  (isScientificMission());// || isMiningMission() || isExplorationMission() );
+		return isScientificMission();// || isMiningMission() || isExplorationMission() );
 	}
 
 	protected boolean requiresDestinationSettlement() {

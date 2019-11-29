@@ -41,7 +41,7 @@ public class MeteorologyStudyFieldWork extends EVAOperation implements Serializa
 	private static String sourceName = logger.getName();
 
 	/** Task name */
-	private static final String NAME = Msg.getString("Task.description.meteorologyStudyFieldWork"); //$NON-NLS-1$
+	private static final String NAME = Msg.getString("Task.description.meteorologyFieldWork"); //$NON-NLS-1$
 
 	/** Task phases. */
 	private static final TaskPhase FIELD_WORK = new TaskPhase(Msg.getString("Task.phase.fieldWork.meteorology")); //$NON-NLS-1$

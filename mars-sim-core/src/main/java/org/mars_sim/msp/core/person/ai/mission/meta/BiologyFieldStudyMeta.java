@@ -1,6 +1,6 @@
 /**
  * Mars Simulation Project
- * BiologyStudyFieldMissionMeta.java
+ * BiologyFieldStudyMeta.java
  * @version 3.1.0 2017-05-02
  * @author Scott Davis
  */
@@ -24,12 +24,12 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Rover;
 
 /**
- * A meta mission for the BiologyStudyFieldMission mission.
+ * A meta mission for the BiologyFieldStudy.
  */
-public class BiologyStudyFieldMissionMeta implements MetaMission {
+public class BiologyFieldStudyMeta implements MetaMission {
 
     /** default logger. */
-	private static Logger logger = Logger.getLogger(BiologyStudyFieldMissionMeta.class.getName());
+	private static Logger logger = Logger.getLogger(BiologyFieldStudyMeta.class.getName());
 
     private static final double WEIGHT = 4D;
     

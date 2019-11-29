@@ -962,11 +962,13 @@ public class Simulation implements ClockListener, Serializable {
 		// Initialize transient data.
 //	    instance().initializeTransientData();
 		instance().initialSimulationCreated = true;
-		isUpdating = false;
 		
         try {
     		// Re-initialize instances
     		reinitializeInstances();
+    		// Set this flag to false
+    		isUpdating = false;
+    		
 //    		logger.config("Done reinitializeInstances");
         } catch (Exception e) {
             e.printStackTrace();

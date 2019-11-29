@@ -1,6 +1,6 @@
 /**
  * Mars Simulation Project
- * MeteorologyStudyFieldMission.java
+ * MeteorologyFieldStudy.java
  * @version 3.1.0 2019-02-20
  * @author Manny Kung
  */

@@ -1208,6 +1208,8 @@ public class MainDesktopPane extends JDesktopPane
 			openToolWindow(TimeWindow.NAME);
 			openToolWindow(CommanderWindow.NAME);
 		}
+		
+//		doneLoading = true;
 	}
 
 	/**

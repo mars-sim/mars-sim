@@ -893,8 +893,6 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 //		else
 //			return unitManager.getSettlementByID(getContainerID());
 
-		// TODO: what if a person is in a EVASuit inside an airlock in a settlement ?
-
 		Unit c = getContainerUnit();
 
 		if (c instanceof Settlement) {

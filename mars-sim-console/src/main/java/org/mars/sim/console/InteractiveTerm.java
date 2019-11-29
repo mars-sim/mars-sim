@@ -17,6 +17,8 @@ import java.util.function.BiConsumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.swing.SwingUtilities;
+
 import org.beryx.textio.AbstractTextTerminal;
 import org.beryx.textio.ReadHandlerData;
 import org.beryx.textio.ReadInterruptionStrategy;
@@ -79,39 +81,43 @@ public class InteractiveTerm {
 		this.consoleEdition = consoleEdition;
 		interactiveTerm = this;
 		
-		marsTerminal = new MarsTerminal(this);
-        marsTerminal.init();
-        
-		logger.config("Done with MarsTerminal on " + Thread.currentThread().getName());
-		
-        textIO = new TextIO(marsTerminal);
-        
-        setUpArrows();
-        
-    	logger.config("Done with setUpArrows on " + Thread.currentThread().getName());
+		SwingUtilities.invokeLater(() -> {
+			marsTerminal = new MarsTerminal(this);
+	        marsTerminal.init();
+	        
+			logger.config("Done with MarsTerminal on " + Thread.currentThread().getName());
+			
+	        textIO = new TextIO(marsTerminal);
+	        
+	        setUpArrows();
+	        
+	    	logger.config("Done with setUpArrows on " + Thread.currentThread().getName());
 
-        setUpESC();
-        
-    	logger.config("Done with setUpESC on " + Thread.currentThread().getName());
+	        setUpESC();
+	        
+	    	logger.config("Done with setUpESC on " + Thread.currentThread().getName());
 
-        if (restart) {
-        	
-//    		profile = new CommanderProfile(this);
-//
-//    		gm = new GameManager();
-//    		//  Re-initialize the GameManager
-//    		GameManager.initializeInstances(Simulation.instance().getUnitManager());
-    		
-            handler = new SwingHandler(textIO, "console", gm);
-//    		// Prevent allow users from arbitrarily close the terminal by clicking top right close button
-    		marsTerminal.registerUserInterruptHandler(term -> {}, false);
-    		
-    		setKeepRunning(true);
-
-    		loadTerminalMenu();
-        }
-        
-		logger.config("Done with InteractiveTerm's constructor is on " + Thread.currentThread().getName());
+	        if (restart) {
+	        	
+	//    		profile = new CommanderProfile(this);
+	//
+	//    		gm = new GameManager();
+	//    		//  Re-initialize the GameManager
+	//    		GameManager.initializeInstances(Simulation.instance().getUnitManager());
+	    		
+	            handler = new SwingHandler(textIO, "console", gm);
+	//    		// Prevent allow users from arbitrarily close the terminal by clicking top right close button
+	    		marsTerminal.registerUserInterruptHandler(term -> {}, false);
+	    		
+	    		setKeepRunning(true);
+	
+	    		loadTerminalMenu();
+	        }
+	        
+			logger.config("Done with InteractiveTerm's constructor is on " + Thread.currentThread().getName());
+			
+		});
+		  
 	}
 	
     

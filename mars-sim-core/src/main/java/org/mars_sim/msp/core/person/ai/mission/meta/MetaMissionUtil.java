@@ -34,15 +34,15 @@ public class MetaMissionUtil {
 		metaMissions = new ArrayList<MetaMission>(13);
 
 		// Populate metaMissions list with all meta missions.
-		metaMissions.add(new AreologyStudyFieldMissionMeta());
-		metaMissions.add(new BiologyStudyFieldMissionMeta());
+		metaMissions.add(new AreologyFieldStudyMeta());
+		metaMissions.add(new BiologyFieldStudyMeta());
 		metaMissions.add(new BuildingConstructionMissionMeta());
 		metaMissions.add(new BuildingSalvageMissionMeta());
 		metaMissions.add(new CollectIceMeta());
 		metaMissions.add(new CollectRegolithMeta());
 		metaMissions.add(new EmergencySupplyMissionMeta());
 		metaMissions.add(new ExplorationMeta());
-		metaMissions.add(new MeteorologyStudyFieldMissionMeta());
+		metaMissions.add(new MeteorologyFieldStudyMeta());
 		metaMissions.add(new MiningMeta());
 		metaMissions.add(new RescueSalvageVehicleMeta());
 		metaMissions.add(new TradeMeta());

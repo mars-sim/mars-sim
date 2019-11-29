@@ -42,15 +42,15 @@ import org.mars_sim.msp.core.person.ai.mission.TradeUtil;
 import org.mars_sim.msp.core.person.ai.mission.TravelMission;
 import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
-import org.mars_sim.msp.core.person.ai.mission.meta.AreologyStudyFieldMissionMeta;
-import org.mars_sim.msp.core.person.ai.mission.meta.BiologyStudyFieldMissionMeta;
+import org.mars_sim.msp.core.person.ai.mission.meta.AreologyFieldStudyMeta;
+import org.mars_sim.msp.core.person.ai.mission.meta.BiologyFieldStudyMeta;
 import org.mars_sim.msp.core.person.ai.mission.meta.BuildingConstructionMissionMeta;
 import org.mars_sim.msp.core.person.ai.mission.meta.BuildingSalvageMissionMeta;
 import org.mars_sim.msp.core.person.ai.mission.meta.CollectIceMeta;
 import org.mars_sim.msp.core.person.ai.mission.meta.CollectRegolithMeta;
 import org.mars_sim.msp.core.person.ai.mission.meta.EmergencySupplyMissionMeta;
 import org.mars_sim.msp.core.person.ai.mission.meta.ExplorationMeta;
-import org.mars_sim.msp.core.person.ai.mission.meta.MeteorologyStudyFieldMissionMeta;
+import org.mars_sim.msp.core.person.ai.mission.meta.MeteorologyFieldStudyMeta;
 import org.mars_sim.msp.core.person.ai.mission.meta.MiningMeta;
 import org.mars_sim.msp.core.person.ai.mission.meta.RescueSalvageVehicleMeta;
 import org.mars_sim.msp.core.person.ai.mission.meta.TradeMeta;
@@ -689,9 +689,9 @@ public class LogMenu implements BiConsumer<TextIO, RunnerData> {
 				
 				changeLogLevel(TravelToSettlementMeta.class, lvl);
 				
-				changeLogLevel(AreologyStudyFieldMissionMeta.class, lvl);
-				changeLogLevel(BiologyStudyFieldMissionMeta.class, lvl);
-				changeLogLevel(MeteorologyStudyFieldMissionMeta.class, lvl);
+				changeLogLevel(AreologyFieldStudyMeta.class, lvl);
+				changeLogLevel(BiologyFieldStudyMeta.class, lvl);
+				changeLogLevel(MeteorologyFieldStudyMeta.class, lvl);
 				
 				saveLogLevel("all mission", lvl);
 	
