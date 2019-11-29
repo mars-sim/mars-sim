@@ -665,7 +665,9 @@ public class CrewEditor implements ActionListener {
 		        model.removeAllElements();
 
 	            model.addElement(ReportingAuthorityType.MARS_SOCIETY_L.getName());
-
+	            model.addElement(ReportingAuthorityType.SPACEX_L.getName());
+	            
+	            
 				String countryStr = (String) item;
 				
 	            if (!countryStr.isBlank()) {

@@ -2551,6 +2551,12 @@ public class UnitManager implements Serializable {
 		return allSponsors.get(id);
 	}
 	
+	/**
+	 * Get the sponsor string name by a country's ID
+	 * 
+	 * @param id
+	 * @return
+	 */
 	public static String getSponsorByCountryID(int id) {
 		if (id == 0)
 			return ReportingAuthorityType.CNSA_L.getName();
@@ -2564,14 +2570,14 @@ public class UnitManager implements Serializable {
 			return ReportingAuthorityType.NASA_L.getName(); 
 		else if (id == 5)			
 			return ReportingAuthorityType.RKA_L.getName();	
-		else if (id == 6)
+		else //if (id >= 6)
 			return ReportingAuthorityType.ESA_L.getName();
-		else if (id == 7)
-			return ReportingAuthorityType.MARS_SOCIETY_L.getName();
-		else if (id == 8)
-			return ReportingAuthorityType.SPACEX_L.getName();
-		else
-			return "None";
+//		else if (id == 7)
+//			return ReportingAuthorityType.MARS_SOCIETY_L.getName();
+//		else if (id == 8)
+//			return ReportingAuthorityType.SPACEX_L.getName();
+//		else
+//			return "None";
 	}
 	
 	/**
