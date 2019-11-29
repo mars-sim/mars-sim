@@ -12,7 +12,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 
 public enum RoleType {
 

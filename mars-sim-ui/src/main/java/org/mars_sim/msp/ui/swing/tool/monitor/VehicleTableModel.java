@@ -288,7 +288,7 @@ public class VehicleTableModel extends UnitTableModel {
 				case MISSION : {
 					Mission mission = missionManager.getMissionForVehicle(vehicle);
 					if (mission != null) {
-						result = mission.getName();
+						result = mission.getFullMissionDesignation();//getDescription();.getName();
 					}
 					else result = null;
 				} break;

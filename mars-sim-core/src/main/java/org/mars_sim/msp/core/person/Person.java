@@ -143,7 +143,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	/** The cache for msol1 */
 	private double msolCache = -1D;
 	/** The eating speed of the person [kg/millisol]. */
-	private double eatingSpeed = Math.max(.075, .1 + .1 / 5D * RandomUtil.getGaussianDouble());
+	private double eatingSpeed = Math.max(.075, .1 + .1 * RandomUtil.getRandomRegressionInteger(5) - .1 * RandomUtil.getRandomRegressionInteger(5));
 	/** The height of the person (in cm). */
 	private double height;
 	/** The height of the person (in kg). */

@@ -26,8 +26,8 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
-import org.mars_sim.msp.core.person.ai.task.EatMeal;
-import org.mars_sim.msp.core.person.ai.task.meta.EatMealMeta;
+import org.mars_sim.msp.core.person.ai.task.EatDrink;
+import org.mars_sim.msp.core.person.ai.task.meta.EatDrinkMeta;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskManager;
 import org.mars_sim.msp.core.person.health.Complaint;
 import org.mars_sim.msp.core.person.health.ComplaintType;
@@ -213,7 +213,7 @@ public class PhysicalCondition implements Serializable {
 	private static MarsClock marsClock;
 	private static MasterClock masterClock;
 	
-	private static EatMealMeta eatMealMeta = new EatMealMeta();
+	private static EatDrinkMeta eatMealMeta = new EatDrinkMeta();
 	private static MedicalManager medicalManager;
 	private static Complaint depression;
 	private static Complaint panicAttack;
@@ -311,19 +311,12 @@ public class PhysicalCondition implements Serializable {
 		musculoskeletal[0] = RandomUtil.getRandomInt(-10, 10) + (int) es; // pain tolerance
 		musculoskeletal[1] = 50; // muscle health index; 50 being the average
 		musculoskeletal[2] = RandomUtil.getRandomRegressionInteger(100); // muscle soreness
-
-		performance = 1.0D;
-		thirst = RandomUtil.getRandomRegressionInteger(100);
-		fatigue = RandomUtil.getRandomRegressionInteger(50);
-		stress = RandomUtil.getRandomRegressionInteger(50);
-		hunger = RandomUtil.getRandomRegressionInteger(100);
-		kJoules = 1000 + RandomUtil.getRandomDouble(1500);
-
+		
 		personalMaxEnergy = MAX_DAILY_ENERGY_INTAKE;
 		appetite = personalMaxEnergy / MAX_DAILY_ENERGY_INTAKE;
 		
-		bodyMassDeviation = Math.sqrt(person.getBaseMass() / person.getAverageWeight() 
-				* person.getHeight() / person.getAverageHeight());
+		bodyMassDeviation = Math.sqrt(person.getBaseMass() / Person.getAverageWeight() 
+				* person.getHeight() / Person.getAverageHeight());
 		// Note: p = mean + RandomUtil.getGaussianDouble() * standardDeviation
 		bodyMassDeviation = bodyMassDeviation + RandomUtil.getGaussianDouble() * bodyMassDeviation / 7D;		
 		// Assume a person drinks 10 times a day, each time ~375 mL
@@ -341,6 +334,21 @@ public class PhysicalCondition implements Serializable {
 		isDehydrated = false;
 	}
 
+	public void initializeHealthIndices() {
+		// Set up random physical healt index
+		thirst = RandomUtil.getRandomRegressionInteger(100);
+		
+		fatigue = RandomUtil.getRandomRegressionInteger(50);
+		stress = RandomUtil.getRandomRegressionInteger(50);
+		
+		hunger = RandomUtil.getRandomRegressionInteger(200);
+		// kJoules somewhat corelates with hunger
+		kJoules = 10000 + (200 - hunger) * 100;
+
+		performance = 1.0D - (50 - fatigue) * .002 - (50 - stress) * .002 - (200 - hunger) * .002;
+		
+	}
+	
 	/**
 	 * Initialize values and instances at the beginning of sol 1
 	 * (Note : Must skip this when running maven test or else having exceptions)
@@ -349,13 +357,15 @@ public class PhysicalCondition implements Serializable {
 		// Modify personalMaxEnergy at the start of the sim
 		int d1 = 2 * (35 - person.updateAge()); 
 		// Assume that after age 35, metabolism slows down
-		double d2 = person.getBaseMass() - person.getAverageWeight();
+		double d2 = person.getBaseMass() - Person.getAverageWeight();
 		double preference = person.getPreference().getPreferenceScore(eatMealMeta) * 10D;
 
 		// Update the personal max energy and appetite based on one's age and weight
 		personalMaxEnergy = personalMaxEnergy + d1 + d2 + preference;
 		appetite = personalMaxEnergy / MAX_DAILY_ENERGY_INTAKE;
 
+		// Set up the initial values for each physical health index
+		initializeHealthIndices();
 	}
 
 	public void recoverFromSoreness(double value) {
@@ -787,7 +797,7 @@ public class PhysicalCondition implements Serializable {
 		if (person.isInside() 
 				&& person.getContainerUnit().getInventory()
 				.getAmountResourceStored(ResourceUtil.foodID, false) > SMALL_AMOUNT) {
-			taskMgr.addTask(new EatMeal(person), false);
+			taskMgr.addTask(new EatDrink(person), false);
 		}
 	}
 	
@@ -795,7 +805,7 @@ public class PhysicalCondition implements Serializable {
 		if (person.isInside() 
 				&& person.getContainerUnit().getInventory()
 				.getAmountResourceStored(ResourceUtil.waterID, false) > SMALL_AMOUNT) {
-			taskMgr.addTask(new EatMeal(person), false);
+			taskMgr.addTask(new EatDrink(person), false);
 		}
 	}
 	
@@ -1577,16 +1587,20 @@ public class PhysicalCondition implements Serializable {
 	 */
 	public static String getHungerStatus(double hunger, double energy) {
 		String status = "N/A";
-		if (hunger < 200 || energy > 5000)
+		if (hunger < 50 && energy > 19000) // Full
 			status = Msg.getString("PersonTableModel.column.energy.level1");
-		else if (hunger < 500 || energy > 3000)
+		else if (hunger < 150 && energy > 14000) // Satisfied
 			status = Msg.getString("PersonTableModel.column.energy.level2");
-		else if (hunger < 1000 || energy > 1500)
+		else if (hunger < 300 && energy > 9000) // Comfy
 			status = Msg.getString("PersonTableModel.column.energy.level3");
-		else if (hunger < 2000 || energy > 300)
+		else if (hunger < 450 && energy > 4000) // Adequate
 			status = Msg.getString("PersonTableModel.column.energy.level4");
-		else
-			status = Msg.getString("PersonTableModel.column.energy.level5"); // very hungry
+		else if (hunger < 600 && energy > 1500) // Rumbling
+			status = Msg.getString("PersonTableModel.column.energy.level5");
+		else if (hunger < 900 && energy > 750) // Ravenous
+			status = Msg.getString("PersonTableModel.column.energy.level6");		
+		else // Famished
+			status = Msg.getString("PersonTableModel.column.energy.level7");
 		return status;
 	}
 

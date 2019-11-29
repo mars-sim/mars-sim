@@ -26,7 +26,7 @@ import org.mars_sim.msp.core.person.ai.task.meta.ConstructBuildingMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.CookMealMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.DigLocalIceMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.DigLocalRegolithMeta;
-import org.mars_sim.msp.core.person.ai.task.meta.EatMealMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.EatDrinkMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.HaveConversationMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.InviteStudyCollaboratorMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.ListenToMusicMeta;
@@ -216,7 +216,7 @@ public class Preference implements Serializable {
 			if (metaTask instanceof ObserveAstronomicalObjectsMeta)
 				rand += ast * RandomUtil.getRandomDouble(3);
 			
-			if (metaTask instanceof EatMealMeta 
+			if (metaTask instanceof EatDrinkMeta 
 					|| metaTask instanceof ProduceFoodMeta 
 					|| metaTask instanceof CookMealMeta
 					|| metaTask instanceof PrepareDessertMeta)
@@ -291,7 +291,7 @@ public class Preference implements Serializable {
 			// Endurance & strength related
 			if (metaTask instanceof ConsolidateContainersMeta || metaTask instanceof ConstructBuildingMeta
 					|| metaTask instanceof DigLocalIceMeta || metaTask instanceof DigLocalRegolithMeta
-					|| metaTask instanceof EatMealMeta 
+					|| metaTask instanceof EatDrinkMeta 
 					|| metaTask instanceof LoadVehicleEVAMeta || metaTask instanceof LoadVehicleGarageMeta 
 					|| metaTask instanceof UnloadVehicleEVAMeta || metaTask instanceof UnloadVehicleGarageMeta 
 					|| metaTask instanceof SalvageBuildingMeta || metaTask instanceof SalvageGoodMeta

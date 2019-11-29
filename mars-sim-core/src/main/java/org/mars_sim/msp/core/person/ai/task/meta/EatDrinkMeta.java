@@ -1,6 +1,6 @@
 /**
  * Mars Simulation Project
- * EatMealMeta.java
+ * EatNDrinkMeta.java
  * @version 3.1.0 2017-03-08
  * @author Scott Davis
  */
@@ -12,7 +12,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.task.CookMeal;
-import org.mars_sim.msp.core.person.ai.task.EatMeal;
+import org.mars_sim.msp.core.person.ai.task.EatDrink;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.robot.Robot;
@@ -20,15 +20,15 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 
 /**
- * Meta task for the EatMeal task.
+ * Meta task for the EatNDrink task.
  */
-public class EatMealMeta implements MetaTask, Serializable {
+public class EatDrinkMeta implements MetaTask, Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
 	/** Task name */
-	private static final String NAME = Msg.getString("Task.description.eatMeal"); //$NON-NLS-1$
+	private static final String NAME = Msg.getString("Task.description.eatDrink"); //$NON-NLS-1$
 
 	@Override
 	public String getName() {
@@ -37,7 +37,7 @@ public class EatMealMeta implements MetaTask, Serializable {
 
 	@Override
 	public Task constructInstance(Person person) {
-		return new EatMeal(person);
+		return new EatDrink(person);
 	}
 
 	@Override
@@ -83,7 +83,7 @@ public class EatMealMeta implements MetaTask, Serializable {
 			}
 			
 			// Check if a cooked meal is available in a kitchen building at the settlement.
-			Cooking kitchen = EatMeal.getKitchenWithMeal(person);
+			Cooking kitchen = EatDrink.getKitchenWithMeal(person);
 			if (kitchen != null) {
 				// Increase probability to eat meal if a cooked meal is available.
 				result *= 1.5 * kitchen.getNumberOfAvailableCookedMeals();
@@ -91,14 +91,14 @@ public class EatMealMeta implements MetaTask, Serializable {
 			
 			else { // no kitchen has available meals
 					// If no cooked meal, check if preserved food is available to eat.
-				if (!EatMeal.isPreservedFoodAvailable(person)) {
+				if (!EatDrink.isPreservedFoodAvailable(person)) {
 					// If no preserved food, person can still drink
 					result /= 2;
 				}
 			}
 
 			// Check if there is a local dining building.
-			Building diningBuilding = EatMeal.getAvailableDiningBuilding(person, false);
+			Building diningBuilding = EatDrink.getAvailableDiningBuilding(person, false);
 			if (diningBuilding != null) {
 				// Modify probability by social factors in dining building.
 				result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, diningBuilding);
@@ -114,7 +114,7 @@ public class EatMealMeta implements MetaTask, Serializable {
 			if (!CookMeal.isLocalMealTime(person.getCoordinates(), 0))
 				result /= 4;
 
-			if (!EatMeal.isPreservedFoodAvailable(person)) {
+			if (!EatDrink.isPreservedFoodAvailable(person)) {
 				// If no preserved food, person can still drink
 				result /= 2;
 			}
@@ -124,13 +124,19 @@ public class EatMealMeta implements MetaTask, Serializable {
 		else if (person.isOutside()) {
 
 			if (notHungry && notThirsty) {
-				// person cannot consume food while being outside doing EVA
 				return 0;
 			}
-			else if (CookMeal.isLocalMealTime(person.getCoordinates(), 10)) {
-				result = hunger; 
-			} else
+			else if (!notThirsty) {
+				// Note: a person may drink water from EVA suit while being outside doing EVA
 				result /= 4;
+			}
+			
+			// Note: a person cannot consume food while being outside doing EVA
+			
+//			else if (CookMeal.isLocalMealTime(person.getCoordinates(), 10)) {
+//				result = hunger; 
+//			} else
+//				result /= 4;
 		}
 
 		// Add Preference modifier

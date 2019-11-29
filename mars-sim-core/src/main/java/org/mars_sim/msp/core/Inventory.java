@@ -2768,10 +2768,11 @@ public class Inventory implements Serializable {
 			} else {
 				containedStored = containersStoredCache.get(resource);
 			}
-		} else {
+		} 
+//		else {
 			// amountResourceContainersStoredCacheDirty.put(resource, false);
 			// containedStored = amountResourceContainersStoredCache.get(resource);
-		}
+//		}
 
 		// Limit container capacity to this inventory's remaining general capacity.
 		// Add container's resource stored as this is already factored into inventory's
@@ -2791,13 +2792,13 @@ public class Inventory implements Serializable {
 	 * Initializes the amount resource stored cache.
 	 */
 	private synchronized void initializeAmountResourceStoredCache() {
-		initializeARStoredCache();
-	}
-
-	/**
-	 * Initializes the amount resource stored cache.
-	 */
-	private synchronized void initializeARStoredCache() {
+//		initializeARStoredCache();
+//	}
+//
+//	/**
+//	 * Initializes the amount resource stored cache.
+//	 */
+//	private synchronized void initializeARStoredCache() {
 		Collection<Integer> resources = ResourceUtil.getIDs(); // allStoredARCache
 		storedCache = new HashMap<Integer, Double>();
 		storedCacheDirty = new HashMap<Integer, Boolean>();
@@ -2922,7 +2923,7 @@ public class Inventory implements Serializable {
 
 		// Initialize amount resource stored cache if necessary.
 		if (storedCache == null) {
-			initializeARStoredCache();
+			initializeAmountResourceStoredCache();
 		}
 
 		// Update amount resource stored cache if it is dirty.
@@ -3382,6 +3383,7 @@ public class Inventory implements Serializable {
 	
 	public static void setUnitManager(UnitManager um) {
 		unitManager = um;
+//		initializeAmountResourceStoredCache();
 	}
 	
 	/**

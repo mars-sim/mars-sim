@@ -98,7 +98,7 @@ public class ChainOfCommand implements Serializable {
 		int pop = settlement.getInitialPopulation();
 //		System.out.println("" + settlement + " : " + pop);
 		
-		RoleType[] types = RoleUtil.roleTypes;
+		RoleType[] types = RoleUtil.specialistRoles;
 		
 		// Shuffle the role types randomize
 		Collections.shuffle(Arrays.asList(types));	

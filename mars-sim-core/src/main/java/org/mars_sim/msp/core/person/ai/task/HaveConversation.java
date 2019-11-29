@@ -101,7 +101,7 @@ implements Serializable {
         	   	
             if (pool.size() == 0) {
             	// Go to a chatty chow hall
-                Building diningBuilding = EatMeal.getAvailableDiningBuilding(person, true);
+                Building diningBuilding = EatDrink.getAvailableDiningBuilding(person, true);
                 if (diningBuilding != null) {
                 	// Walk to that building.
                 	walkToActivitySpotInBuilding(diningBuilding, FunctionType.DINING, true);

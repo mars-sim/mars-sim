@@ -14,7 +14,7 @@ import java.util.Set;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.task.EatMeal;
+import org.mars_sim.msp.core.person.ai.task.EatDrink;
 import org.mars_sim.msp.core.person.ai.task.HaveConversation;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
@@ -105,7 +105,7 @@ public class HaveConversationMeta implements MetaTask, Serializable {
 
         	if (result > 0) {
 	            // Check if there is a local dining building.
-	            Building diningBuilding = EatMeal.getAvailableDiningBuilding(person, true);
+	            Building diningBuilding = EatDrink.getAvailableDiningBuilding(person, true);
 	            if (diningBuilding != null) {
 	            	// Walk to that building.
 	            	//pool.addAll(p_same_bldg_talking);

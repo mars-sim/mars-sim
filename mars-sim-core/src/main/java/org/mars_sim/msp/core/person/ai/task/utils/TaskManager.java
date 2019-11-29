@@ -23,7 +23,7 @@ import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.ai.Mind;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
-import org.mars_sim.msp.core.person.ai.task.EatMeal;
+import org.mars_sim.msp.core.person.ai.task.EatDrink;
 import org.mars_sim.msp.core.person.ai.task.EnterAirlock;
 import org.mars_sim.msp.core.person.ai.task.ExitAirlock;
 import org.mars_sim.msp.core.person.ai.task.RepairEmergencyMalfunction;
@@ -57,7 +57,7 @@ public class TaskManager implements Serializable {
 
 	private static final String WALK = "walk";
 
-	private static final int MAX_TASK_PROBABILITY = 3000;
+	private static final int MAX_TASK_PROBABILITY = 5000;
 	/** A decimal number a little bigger than zero for comparing doubles. */
 	private static final double SMALL_AMOUNT = 0.001;
 	
@@ -791,7 +791,7 @@ public class TaskManager implements Serializable {
 		if (person.isInside() 
 				&& person.getContainerUnit().getInventory()
 				.getAmountResourceStored(ResourceUtil.foodID, false) > SMALL_AMOUNT) {
-			addTask(new EatMeal(person), false);
+			addTask(new EatDrink(person), false);
 		}
 	}
 	
@@ -799,7 +799,7 @@ public class TaskManager implements Serializable {
 		if (person.isInside() 
 				&& person.getContainerUnit().getInventory()
 				.getAmountResourceStored(ResourceUtil.waterID, false) > SMALL_AMOUNT) {
-			addTask(new EatMeal(person), false);
+			addTask(new EatDrink(person), false);
 		}
 	}
 	

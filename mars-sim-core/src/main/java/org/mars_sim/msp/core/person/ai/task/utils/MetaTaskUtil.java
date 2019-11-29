@@ -18,7 +18,7 @@ import org.mars_sim.msp.core.person.ai.task.meta.ConstructBuildingMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.CookMealMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.DigLocalIceMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.DigLocalRegolithMeta;
-import org.mars_sim.msp.core.person.ai.task.meta.EatMealMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.EatDrinkMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.ExamineBodyMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.HaveConversationMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.InviteStudyCollaboratorMeta;
@@ -147,7 +147,7 @@ public class MetaTaskUtil {
 //			Class cls = Class.forName(clsName);
 //			MetaTask mt = cls.getDeclaredConstructor().newInstance()
 			
-			tasks.add(new EatMealMeta());
+			tasks.add(new EatDrinkMeta());
 			tasks.add(new HaveConversationMeta());
 			tasks.add(new ListenToMusicMeta());
 			tasks.add(new LoadVehicleEVAMeta());

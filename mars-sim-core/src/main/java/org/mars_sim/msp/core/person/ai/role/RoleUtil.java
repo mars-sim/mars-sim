@@ -27,7 +27,7 @@ public class RoleUtil implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	// Define the order of each specialist role in a role prospect array
-	public static RoleType[] roleTypes = new RoleType[] {
+	public static RoleType[] specialistRoles = new RoleType[] {
 			RoleType.AGRICULTURE_SPECIALIST,
 			RoleType.ENGINEERING_SPECIALIST,
 			RoleType.LOGISTIC_SPECIALIST,
@@ -76,7 +76,7 @@ public class RoleUtil implements Serializable {
 	 */
 	public static RoleType findBestRole(Person p) {
 
-		RoleType role1 = roleTypes[RandomUtil.getRandomInt(6)];
+		RoleType role1 = specialistRoles[RandomUtil.getRandomInt(6)];
 //		RoleType role2 = roleTypes[RandomUtil.getRandomInt(6)];
 		
 		double highestWeight = 0;
@@ -88,20 +88,20 @@ public class RoleUtil implements Serializable {
 		
 
 		for (int i=0; i<7; i++) {
-			boolean isRoleAvailable = p.getSettlement().getChainOfCommand().isRoleAvailable(roleTypes[i]);		
+			boolean isRoleAvailable = p.getSettlement().getChainOfCommand().isRoleAvailable(specialistRoles[i]);		
 			
 			if (isRoleAvailable) {
 				
 				double jobScore = weights[i];
 				
-				double trainingScore = getTrainingScore(p, roleTypes[i], weights);
+				double trainingScore = getTrainingScore(p, specialistRoles[i], weights);
 				
 				double totalScore = jobScore + trainingScore;
 				
 				if (totalScore > highestWeight) {
 					
 					// Pick the role based on the highest weight
-					role1 = roleTypes[i];
+					role1 = specialistRoles[i];
 					highestWeight = totalScore;
 				}
 			}	

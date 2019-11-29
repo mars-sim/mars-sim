@@ -405,7 +405,7 @@ public class PersonTableModel extends UnitTableModel {
 			case MISSION: {
 				Mission mission = person.getMind().getMission();
 				if (mission != null) {
-					result = mission.getDescription();
+					result = mission.getFullMissionDesignation();//getDescription();
 				}
 			}
 				break;

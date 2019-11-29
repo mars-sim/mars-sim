@@ -186,7 +186,7 @@ public class PersonRobotChatUtils extends ChatUtils {
 			responseText.append("See the breakdown of my role prospect scores below : ");
 			responseText.append(System.lineSeparator());
 
-			List<RoleType> list = Arrays.asList(RoleUtil.roleTypes);
+			List<RoleType> list = Arrays.asList(RoleUtil.specialistRoles);
 			Collections.sort(list);
 
 			int num1 = 1;

@@ -66,7 +66,7 @@ import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.mission.meta.BuildingConstructionMissionMeta;
 import org.mars_sim.msp.core.person.ai.mission.meta.CollectIceMeta;
 import org.mars_sim.msp.core.person.ai.mission.meta.CollectRegolithMeta;
-import org.mars_sim.msp.core.person.ai.task.EatMeal;
+import org.mars_sim.msp.core.person.ai.task.EatDrink;
 import org.mars_sim.msp.core.person.ai.task.HaveConversation;
 import org.mars_sim.msp.core.person.ai.task.Maintenance;
 import org.mars_sim.msp.core.person.ai.task.Read;
@@ -2118,7 +2118,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 		if (task instanceof Relax
 				 || task instanceof Read
 				 || task instanceof HaveConversation
-				 || task instanceof EatMeal)
+				 || task instanceof EatDrink)
 			return true;
 		
 		return false;

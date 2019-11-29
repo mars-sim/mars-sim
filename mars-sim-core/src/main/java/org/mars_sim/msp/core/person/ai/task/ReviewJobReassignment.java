@@ -90,7 +90,7 @@ public class ReviewJobReassignment extends Task implements Serializable {
 					walkToActivitySpotInBuilding(officeBuilding, true);
 				}
 				else {
-					Building dining = EatMeal.getAvailableDiningBuilding(person, false);
+					Building dining = EatDrink.getAvailableDiningBuilding(person, false);
 					// Note: dining building is optional
 					if (dining != null) {
 						// Walk to the dining building.
