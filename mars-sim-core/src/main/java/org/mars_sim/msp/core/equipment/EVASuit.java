@@ -194,23 +194,31 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 			// With the minimum required O2 partial pressure of 11.94 kPa (1.732 psi), the minimum mass of O2 is 0.1792 kg 
 			
 			if (getInventory().getAmountResourceStored(ResourceUtil.oxygenID, false) <= massO2MinimumLimit) {
-				LogConsolidated.log(Level.WARNING, 5000, sourceName,
+				String name = ((Person)(super.getLastOwner())).getName();
+				
+				LogConsolidated.log(Level.WARNING, 10_000, sourceName,
 						"[" + this.getLocationTag().getLocale() + "] " 
-								+ this.getName() + " had less than 0.1792 kg oxygen (below the safety limit).");
+								+ getName() + " worned by " + name
+								+ " had less than 0.1792 kg oxygen (below the safety limit).");
 				return false;
 			}
+			
 			if (getInventory().getAmountResourceStored(ResourceUtil.waterID, false) <= 0D) {
-				LogConsolidated.log(Level.WARNING, 5000, sourceName,
+				String name = ((Person)(super.getLastOwner())).getName();
+				
+				LogConsolidated.log(Level.WARNING, 10_000, sourceName,
 						"[" + this.getLocationTag().getLocale() + "] " 
-								+ this.getName() + " ran out of water.");
+								+ getName() + " worned by " + name + " ran out of water.");
 //				return false;
 			}
-//			if (malfunctionManager.getOxygenFlowModifier() < 100D) {
-//				LogConsolidated.log(Level.INFO, 5000, sourceName,
-//						"[" + this.getLocationTag().getLocale() + "] " 
-//								+ person.getName() + "'s " + this.getName() + "'s oxygen flow sensor detected malfunction.", null);
-//				return false;
-//			}
+			
+			if (malfunctionManager.getOxygenFlowModifier() < 100D) {
+				String name = ((Person)(super.getLastOwner())).getName();
+				LogConsolidated.log(Level.WARNING, 10_000, sourceName,
+						"[" + this.getLocationTag().getLocale() + "] " 
+								+ getName() + " worned by " + name + "had oxygen flow sensor malfunction.", null);
+				return false;
+			}
 //			if (malfunctionManager.getWaterFlowModifier() < 100D) {
 //				LogConsolidated.log(Level.INFO, 5000, sourceName,
 //						"[" + this.getLocationTag().getLocale() + "] " 

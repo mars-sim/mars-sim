@@ -86,7 +86,15 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 	private boolean endCollectingSite;
 	/** The total amount (kg) of resource collected. */
 	private double totalResourceCollected;
-
+	/** The total amount (kg) of ice collected. */
+//	private double totalCollectedIce;
+//	/** The total amount (kg) of Regolith-B collected. */
+//	private double totalCollectedRegolithB;
+//	/** The total amount (kg) of Regolith-C collected. */
+//	private double totalCollectedRegolithC;
+//	/** The total amount (kg) of Regolith-D collected. */
+//	private double totalCollectedRegolithD;
+	
 	/** The type of container needed for the mission or null if none. */
 	private Integer containerID;
 	/** The start time at the current collection site. */
@@ -98,8 +106,13 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 	private static final int oxygenID = ResourceUtil.oxygenID;
 	private static final int waterID = ResourceUtil.waterID;
 	private static final int foodID = ResourceUtil.foodID;
-	private static final int methaneID = ResourceUtil.methaneID;
+//	private static final int methaneID = ResourceUtil.methaneID;
 
+	private static final int[] REGOLITH_TYPES = new int[] {
+			ResourceUtil.regolithBID,
+			ResourceUtil.regolithCID,
+			ResourceUtil.regolithDID};
+	
 	protected static TerrainElevation terrainElevation;
 	
 	/**
@@ -155,7 +168,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 
 				// Determine collection sites
 				if (hasVehicle()) {
-					if (resourceID == ResourceUtil.iceID) {					
+					if (resourceID == ResourceUtil.iceID) {		
 						for (int i=0; i < 10; i++) {
 							determineCollectionSites(getVehicle().getRange(CollectIce.missionType),
 								getTotalTripTimeLimit(getRover(), getPeopleNumber(), true), numSites);
@@ -172,9 +185,10 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 						}
 					}
 					
-					else if (resourceID == ResourceUtil.regolithID)
+					else { //if (resourceID == ResourceUtil.regolithID)
 						determineCollectionSites(getVehicle().getRange(CollectRegolith.missionType),
 							getTotalTripTimeLimit(getRover(), getPeopleNumber(), true), numSites);
+					}
 				}
 
 
@@ -412,31 +426,56 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 	}
 
 	/**
+	 * Updates the resources collected
+	 * 
+	 * @param inv
+	 * @return
+	 */
+	private double updateResources(Inventory inv) {
+
+		double resourcesCollected = 0;
+		double resourcesCapacity = 0;
+		
+		if (resourceID == ResourceUtil.iceID) {
+			resourcesCollected = inv.getAmountResourceStored(resourceID, false);
+			resourcesCapacity = inv.getAmountResourceCapacity(resourceID, false);
+		}
+		else {
+			for (Integer type : REGOLITH_TYPES) {
+				resourcesCollected += inv.getAmountResourceStored(type, false);
+				resourcesCapacity += inv.getAmountResourceCapacity(type, false);
+			}
+		}
+		
+		// Set total collected resources.
+		totalResourceCollected = resourcesCollected;
+
+		// Calculate resources collected at the site so far.
+		siteCollectedResources = resourcesCollected - collectingStart;
+		
+		// Check if rover capacity for resources is met, then end this phase.
+		if (resourcesCollected >= resourcesCapacity) {
+			setPhaseEnded(true);
+		}
+		
+		return resourcesCapacity;
+	}
+	
+	/**
 	 * Performs the collecting phase of the mission.
 	 * 
 	 * @param member the mission member currently performing the mission
 	 */
 	private void collectingPhase(MissionMember member) {
 		Inventory inv = getRover().getInventory();
-		double resourcesCollected = inv.getAmountResourceStored(resourceID, false);
-		double resourcesCapacity = inv.getAmountResourceCapacity(resourceID, false);
-
-		// Set total collected resources.
-		totalResourceCollected = resourcesCollected;
-
-		// Calculate resources collected at the site so far.
-		siteCollectedResources = resourcesCollected - collectingStart;
+		
+		double resourcesCapacity = updateResources(inv);
 
 		if (isEveryoneInRover()) {
 
 			// Check if end collecting flag is set.
 			if (endCollectingSite) {
 				endCollectingSite = false;
-				setPhaseEnded(true);
-			}
-
-			// Check if rover capacity for resources is met, then end this phase.
-			if (resourcesCollected >= resourcesCapacity) {
 				setPhaseEnded(true);
 			}
 
@@ -449,16 +488,25 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 			// Determine if no one can start the collect resources task.
 			boolean nobodyCollect = true;
 			Iterator<MissionMember> j = getMembers().iterator();
-			while (j.hasNext()) {
-				if (CollectResources.canCollectResources(j.next(), getRover(), containerID, resourceID)) {
-					nobodyCollect = false;
+			while (j.hasNext()) {				
+				if (resourceID == ResourceUtil.iceID) {
+					if (CollectResources.canCollectResources(j.next(), getRover(), containerID, resourceID)) {
+						nobodyCollect = false;
+					}
+				}
+				else {
+					for (Integer type : REGOLITH_TYPES) {
+						if (CollectResources.canCollectResources(j.next(), getRover(), containerID, type)) {
+							nobodyCollect = false;
+						}
+					}
 				}
 			}
 
 			// If no one can collect resources and this is not due to it just being
 			// night time, end the collecting phase.
-			boolean inDarkPolarRegion = surface.inDarkPolarRegion(getCurrentMissionLocation());
-			double sunlight = surface.getSolarIrradiance(getCurrentMissionLocation());
+			boolean inDarkPolarRegion = surfaceFeatures.inDarkPolarRegion(getCurrentMissionLocation());
+			double sunlight = surfaceFeatures.getSolarIrradiance(getCurrentMissionLocation());
 			if (nobodyCollect && ((sunlight > 0D) || inDarkPolarRegion)) {
 				setPhaseEnded(true);
 			}
@@ -484,34 +532,37 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 					Person person = (Person) member;
 
 					if (resourceID == ResourceUtil.iceID) {
-						
+					
 						if (terrainElevation == null)
 							terrainElevation = sim.getMars().getSurfaceFeatures().getTerrainElevation();
 								
-						double rate = terrainElevation.getIceCollectionRate(person.getCoordinates());
+						double iceCollectionRate = terrainElevation.getIceCollectionRate(person.getCoordinates());
 						
-//						if (resourceCollectionRate == CollectIce.collectionRate) {
-//							// Calculate the rate at the site now
-//							rate = TerrainElevation.getIceCollectionRate(person.getCoordinates());
-//						}
-
 						// Randomize the rate of collection upon arrival
-						rate = rate * (1 + RandomUtil.getRandomDouble(1)
+						iceCollectionRate = iceCollectionRate * (2 + RandomUtil.getRandomDouble(1)
 								- RandomUtil.getRandomDouble(1));
 						
 						// TODO: Add how areologists and some scientific study may come up with better technique 
 						// to obtain better estimation of the collection rate. Go to a prospective site, rather 
 						// than going to a site coordinate in the blind.
 						
-						resourceCollectionRate = Math.abs(rate);
-
+						if (iceCollectionRate > 0)
+							resourceCollectionRate = iceCollectionRate;
 					}
-					
-					else if (resourceID == ResourceUtil.regolithID) {
+
+					else { //if (resourceID == ResourceUtil.regolithID) {
+						
+						int rand = RandomUtil.getRandomInt(2);
+						// Randomly pick a regolith
+						resourceID = REGOLITH_TYPES[rand];
+						
 						// Randomize the rate of collection upon arrival
-						resourceCollectionRate = Math.abs(resourceCollectionRate 
-								* (1 + RandomUtil.getRandomDouble(1) - RandomUtil.getRandomDouble(1)));
-//						System.out.println("Regolith resourceCollectionRate : " + resourceCollectionRate);
+						double regolithCollectionRate = resourceCollectionRate 
+								* (1 + RandomUtil.getRandomDouble(.5) - RandomUtil.getRandomDouble(.5));
+						
+						if (regolithCollectionRate > 0)
+							resourceCollectionRate = regolithCollectionRate;
+//							System.out.println("Regolith resourceCollectionRate : " + resourceCollectionRate);
 					}
 					
 					// If person can collect resources, start him/her on that task.
@@ -532,13 +583,17 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 				siteCollectedResources = 0D;
 			}
 		}
+		
+		// This will update the siteCollectedResources and totalResourceCollected after the last on-site collection activity
+		updateResources(inv);
 	}
 
 	/**
 	 * Determine the locations of the sample collection sites.
 	 * 
-	 * @param roverRange the rover's driving range
-	 * @param numSites   the number of collection sites
+	 * @param roverRange the rover's driving range.
+	 * @param tripTimeLimit the time limit of trip (millisols).
+	 * @param numSites   the number of collection sites.
 	 * @throws MissionException of collection sites can not be determined.
 	 */
 	private void determineCollectionSites(double roverRange, double tripTimeLimit, int numSites) {
@@ -572,7 +627,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 				siteDistance = RandomUtil.getRandomDouble(limit);
 				newLocation = startingLocation.getNewLocation(direction, siteDistance);
 				if (terrainElevation == null)
-					terrainElevation = sim.getMars().getSurfaceFeatures().getTerrainElevation();
+					terrainElevation = surfaceFeatures.getTerrainElevation();
 				double score = terrainElevation.getIceCollectionRate(newLocation);
 				if (score > bestScore) {
 					bestScore = score;
@@ -586,6 +641,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 			unorderedSites.add(bestLocation);
 			currentLocation = bestLocation;
 		}
+		
 		else {
 			// for ResourceUtil.regolithID
 			direction = new Direction(RandomUtil.getRandomDouble(2 * Math.PI));

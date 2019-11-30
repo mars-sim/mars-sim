@@ -542,8 +542,8 @@ public class BiologyFieldStudy extends RoverMission implements Serializable {
 
 			// If no one can research the site and this is not due to it just being
 			// night time, end the field work phase.
-			boolean inDarkPolarRegion = surface.inDarkPolarRegion(getCurrentMissionLocation());
-			double sunlight = surface.getSolarIrradiance(getCurrentMissionLocation());
+			boolean inDarkPolarRegion = surfaceFeatures.inDarkPolarRegion(getCurrentMissionLocation());
+			double sunlight = surfaceFeatures.getSolarIrradiance(getCurrentMissionLocation());
 			if (nobodyFieldWork && ((sunlight > 0D) || inDarkPolarRegion)) {
 				setPhaseEnded(true);
 			}

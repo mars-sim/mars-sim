@@ -27,16 +27,22 @@ import com.alee.laf.panel.WebPanel;
 /**
  * A panel for displaying collect resources mission information.
  */
+@SuppressWarnings("serial")
 public class CollectResourcesMissionCustomInfoPanel
 extends MissionCustomInfoPanel
 implements UnitListener {
 
 	// Data members.
+	private double resourceAmountCache;
+	
 	private CollectResourcesMission mission;
 	private AmountResource resource;
+	private AmountResource[] REGOLITH_TYPES;
+	
+	
 	private Rover missionRover;
 	private WebLabel collectionValueLabel;
-	private double resourceAmountCache;
+
 
 	/**
 	 * Constructor.
@@ -47,6 +53,14 @@ implements UnitListener {
 
 		// Initialize data members.
 		this.resource = resource;
+		
+		if (resource == ResourceUtil.regolithAR) {
+			REGOLITH_TYPES = new AmountResource[] {
+					ResourceUtil.regolithBAR,
+					ResourceUtil.regolithCAR,
+					ResourceUtil.regolithDAR
+			};
+		}
 
 		// Set layout.
 		setLayout(new BorderLayout());
@@ -58,7 +72,9 @@ implements UnitListener {
 		// Create collection title label.
 		String resourceString = resource.getName().substring(0, 1).toUpperCase() + 
 				resource.getName().substring(1);
-		WebLabel collectionTitleLabel = new WebLabel(Msg.getString("CollectResourcesMissionCustomInfoPanel.totalCollected", Conversion.capitalize(resourceString))); //$NON-NLS-1$
+		WebLabel collectionTitleLabel = new WebLabel(
+				Msg.getString("CollectResourcesMissionCustomInfoPanel.totalCollected", 
+						Conversion.capitalize(resourceString))); //$NON-NLS-1$
 		contentPanel.add(collectionTitleLabel);
 
 		// Create collection value label.
@@ -105,13 +121,20 @@ implements UnitListener {
 		if (UnitEventType.INVENTORY_RESOURCE_EVENT == event.getType()) {
 			Object source = event.getTarget();
 			if (source instanceof AmountResource) {
-				updateCollectionValueLabel(); 
+				if (resource.equals(event.getTarget())){
+					updateCollectionValueLabel(); 
+				}
+				for (AmountResource ar : REGOLITH_TYPES) {
+					if (ar.equals(event.getTarget())) {
+						updateCollectionValueLabel(); 
+					}
+				}
 			}
 				
-			else if (source instanceof Integer) {
-				if ((Integer)source < ResourceUtil.FIRST_ITEM_RESOURCE_ID)
-					updateCollectionValueLabel();
-			}
+//			else if (source instanceof Integer) {
+//				if ((Integer)source < ResourceUtil.FIRST_ITEM_RESOURCE_ID)
+//					updateCollectionValueLabel();
+//			}
 //			if (resource.equals(event.getTarget())) {
 //				updateCollectionValueLabel();   
 //			}
@@ -125,7 +148,7 @@ implements UnitListener {
 		double resourceAmount = 0D;
 		if (missionRover != null) {
 			resourceAmount = mission.getTotalCollectedResources();//missionRover.getInventory().getAmountResourceStored(resource, true);
-			if (resourceAmount > resourceAmountCache) {
+			if (resourceAmountCache < resourceAmount) {
 				resourceAmountCache = resourceAmount;
 			}
 			else {
@@ -135,8 +158,7 @@ implements UnitListener {
 		else {
 			resourceAmount = resourceAmountCache;
 		}
-		// TODO: save the resource collected in Mission
-		
+				
 		// Update collection value label.
 		collectionValueLabel.setText(
 			Msg.getString(

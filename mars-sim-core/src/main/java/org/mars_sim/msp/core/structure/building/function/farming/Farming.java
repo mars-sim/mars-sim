@@ -1291,8 +1291,8 @@ public class Farming extends Function implements Serializable {
 							"[" + building.getSettlement().getName() + "] " + p
 								+ " found no " + cropName + TISSUE_CULTURE
 								+ " in stock. Extracted " + STANDARD_AMOUNT_TISSUE_CULTURE
-								+ " kg from " + cropName + " in the botany lab of " + lab.getBuilding().getNickName()
-								+ ".");
+								+ " kg from " + cropName + " in " + lab.getBuilding().getNickName()
+								+ "'s botany lab.");
 						isDone = true;
 					}
 				}
@@ -1319,8 +1319,9 @@ public class Farming extends Function implements Serializable {
 							"[" + building.getSettlement().getName() 
 							+ "] " + p + " cloned "
 							+ Math.round(amountExtracted*1000.0)/1000.0D + " kg "
-							+ cropName + TISSUE_CULTURE + " in the botany lab of "
-							+ lab.getBuilding().getNickName() + ".");
+							+ cropName + TISSUE_CULTURE 
+							+ " in " + lab.getBuilding().getNickName()
+							+ "'s botany lab.");
 
 						isDone = true;
 					}

@@ -45,7 +45,7 @@ public class CollectRegolith extends CollectResourcesMission {
 	public static final int REQUIRED_LARGE_BAGS = 15;
 
 	/** Collection rate of regolith during EVA (kg/millisol). */
-	private static final double COLLECTION_RATE = 5D;
+	private static final double BASE_COLLECTION_RATE = 10D;
 
 	/** Number of collection sites. */
 	private static final int NUM_SITES = 1;
@@ -61,7 +61,7 @@ public class CollectRegolith extends CollectResourcesMission {
 	 */
 	public CollectRegolith(Person startingPerson) {
 		// Use CollectResourcesMission constructor.
-		super(DEFAULT_DESCRIPTION, missionType, startingPerson, ResourceUtil.regolithID, SITE_GOAL, COLLECTION_RATE,
+		super(DEFAULT_DESCRIPTION, missionType, startingPerson, ResourceUtil.regolithID, SITE_GOAL, BASE_COLLECTION_RATE,
 				EquipmentType.convertName2ID(LargeBag.TYPE), REQUIRED_LARGE_BAGS, NUM_SITES, MIN_PEOPLE);
 	}
 
@@ -79,7 +79,7 @@ public class CollectRegolith extends CollectResourcesMission {
 			List<Coordinates> regolithCollectionSites, Rover rover, String description) {
 
 		// Use CollectResourcesMission constructor.
-		super(description, missionType, members, startingSettlement, ResourceUtil.regolithID, SITE_GOAL, COLLECTION_RATE,
+		super(description, missionType, members, startingSettlement, ResourceUtil.regolithID, SITE_GOAL, BASE_COLLECTION_RATE,
 				EquipmentType.convertName2ID(LargeBag.TYPE), REQUIRED_LARGE_BAGS, regolithCollectionSites.size(),
 				RoverMission.MIN_GOING_MEMBERS, rover, regolithCollectionSites);
 	}

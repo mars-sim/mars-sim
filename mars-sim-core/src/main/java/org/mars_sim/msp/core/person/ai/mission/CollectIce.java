@@ -46,8 +46,7 @@ public class CollectIce extends CollectResourcesMission {
 	public static final int REQUIRED_BARRELS = 15;
 
 	/** Collection rate of ice during EVA (kg/millisol). */
-//	private static final double COLLECTION_RATE = 1D;
-	protected static final double collectionRate = 1;
+	protected static final double BASE_COLLECTION_RATE = 1;
 	
 	/** Number of collection sites. */
 	private static final int NUM_SITES = 1;
@@ -63,7 +62,7 @@ public class CollectIce extends CollectResourcesMission {
 	 */
 	public CollectIce(Person startingPerson) {
 		// Use CollectResourcesMission constructor.
-		super(DEFAULT_DESCRIPTION, missionType, startingPerson, ResourceUtil.iceID, SITE_GOAL, collectionRate,
+		super(DEFAULT_DESCRIPTION, missionType, startingPerson, ResourceUtil.iceID, SITE_GOAL, BASE_COLLECTION_RATE,
 				EquipmentType.convertName2ID(Barrel.TYPE), REQUIRED_BARRELS, NUM_SITES, MIN_PEOPLE);
 //		logger.info(startingPerson + " had started CollectIce");
 	}

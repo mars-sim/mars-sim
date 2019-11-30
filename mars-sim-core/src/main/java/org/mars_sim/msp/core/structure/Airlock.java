@@ -290,7 +290,7 @@ public abstract class Airlock implements Serializable {
 			} else if (AirlockState.DEPRESSURIZED == airlockState) {
 				setState(AirlockState.PRESSURIZING);
 			} else {
-				LogConsolidated.log(Level.SEVERE, 0, sourceName,
+				LogConsolidated.log(Level.SEVERE, 5_000, sourceName,
 						"[" + operator.getLocationTag().getLocale() + "] " 
 					+ operator.getName() + " reported the airlock was having incorrect state for activation: '" + airlockState + "'.");
 				return false;
@@ -561,7 +561,7 @@ public abstract class Airlock implements Serializable {
 				if (isDead) {
 					// If operator is dead, deactivate airlock.
 					String operatorName = p.getName();
-					LogConsolidated.log(Level.SEVERE, 10_000, sourceName, "[" + p.getLocationTag().getLocale() + "] "
+					LogConsolidated.log(Level.WARNING, 10_000, sourceName, "[" + p.getLocationTag().getLocale() + "] "
 							+ "Airlock operator " + operatorName + " was dead."
 							+ getEntityName());
 					
@@ -584,9 +584,9 @@ public abstract class Airlock implements Serializable {
 
 					if (!hasAirlockTask) {
 						String operatorName = p.getName();
-						LogConsolidated.log(Level.SEVERE, 10_000, sourceName, "[" + p.getLocationTag().getLocale() + "] "
-								+ "Airlock operator " + operatorName 
-								+ " was no longer operating the airlock.");// + getEntityName());
+						LogConsolidated.log(Level.FINE, 10_000, sourceName, "[" + p.getLocationTag().getLocale() + "] "
+								+ operatorName 
+								+ " was no longer being the Airlock operator operating the airlock at " + getEntityName());
 						
 						// Elect a new operator
 						electAnOperator();

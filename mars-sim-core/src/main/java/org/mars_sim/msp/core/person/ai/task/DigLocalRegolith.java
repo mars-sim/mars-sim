@@ -19,7 +19,6 @@ import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.equipment.Bag;
-import org.mars_sim.msp.core.equipment.EquipmentType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
@@ -57,7 +56,7 @@ implements Serializable {
             "Task.phase.collectRegolith")); //$NON-NLS-1$
 
 	/** Collection rate of regolith during EVA (kg/millisol). */
-	public static final double COLLECTION_RATE = 1D;
+	public static final double COLLECTION_RATE = .2D;
 
 	/** The resource id for a bag. */
 //	private static final int BAG  = EquipmentType.convertName2ID("bag");
@@ -72,6 +71,10 @@ implements Serializable {
 	private Bag bag;
 	private Settlement settlement;
 
+	private int strength;
+	private int agility;
+	private int eva;
+    
 	private static int regolithID = ResourceUtil.regolithID;
 
 	/**
@@ -80,7 +83,7 @@ implements Serializable {
 	 */
 	public DigLocalRegolith(Person person) {
         // Use EVAOperation constructor.
-        super(NAME, person, false, 10D);
+        super(NAME, person, false, 100 + RandomUtil.getRandomInt(20) - RandomUtil.getRandomInt(20));
 
         settlement = person.getAssociatedSettlement();
         
@@ -107,6 +110,11 @@ implements Serializable {
         // Add task phases
         addPhase(COLLECT_REGOLITH);
 
+        NaturalAttributeManager nManager = person.getNaturalAttributeManager();
+        strength = nManager.getAttribute(NaturalAttributeType.STRENGTH);
+        agility = nManager.getAttribute(NaturalAttributeType.AGILITY);
+        eva = person.getSkillManager().getSkillLevel(SkillType.EVA_OPERATIONS);
+        
         logger.finest(person.getName() + " was going to start digging for regolith.");
     }
 
@@ -186,8 +194,7 @@ implements Serializable {
         double evaExperience = time / 100D;
 
         // Experience points adjusted by person's "Experience Aptitude" attribute.
-        NaturalAttributeManager nManager = person.getNaturalAttributeManager();
-        int experienceAptitude = nManager.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
+        int experienceAptitude = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
         double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
         evaExperience += evaExperience * experienceAptitudeModifier;
         evaExperience *= getTeachingExperienceModifier();
@@ -254,7 +261,6 @@ implements Serializable {
 
         // Unload bag to rover's inventory.
         if (bag != null) {
-//            AmountResource regolithID = ResourceUtil.regolithAR;
             double collectedAmount = bag.getInventory().getAmountResourceStored(regolithID, false);
             double settlementCap = settlement.getInventory().getAmountResourceRemainingCapacity(
                     regolithID, false, false);
@@ -288,7 +294,7 @@ implements Serializable {
         // Check for an accident during the EVA operation.
         checkForAccident(time);
 
-        // 2015-05-29 Check for radiation exposure during the EVA operation.
+        // Check for radiation exposure during the EVA operation.
         if (isRadiationDetected(time)){
             setPhase(WALK_BACK_INSIDE);
             return time;
@@ -301,16 +307,10 @@ implements Serializable {
             return time;
         }
 
-        //AmountResource regolith = AmountResource.findAmountResource("regolith");
         double remainingPersonCapacity = person.getInventory().getAmountResourceRemainingCapacity(
         		regolithID, true, false);
-
-        NaturalAttributeManager nManager = person.getNaturalAttributeManager();
-        int strength = nManager.getAttribute(NaturalAttributeType.STRENGTH);
-        int agility = nManager.getAttribute(NaturalAttributeType.AGILITY);
-        int eva = person.getSkillManager().getSkillLevel(SkillType.EVA_OPERATIONS);
         
-        double regolithCollected = .25 + RandomUtil.getRandomDouble(.25) 
+        double regolithCollected = .1 + RandomUtil.getRandomDouble(.25) 
         	* time * COLLECTION_RATE * ((.5 * agility + strength) / 150D) * (eva + .1)/ 5D ;
         totalCollected += regolithCollected;
         

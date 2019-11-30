@@ -1131,7 +1131,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 					3 smectite 
 					
 	-->
-	<process name="process regolith rich in poly-hydrated sulfate" tech="1" skill="1" work-time="100" process-time="0"
+	<process name="process regolith-B rich in poly-hydrated sulfate" tech="1" skill="1" work-time="100" process-time="0"
 			power-required="0.1">
 		<description>
 			Gypsum is CaSO&lt;sub&gt;4&lt;/sub&gt; * 2H&lt;sub&gt;2&lt;/sub&gt;O. 
@@ -1142,7 +1142,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 					3% smectite;  
 		</description>
 		<inputs>
-			<resource name="regolith" amount="50.0" />
+			<resource name="regolith-B" amount="50.0" />
 		</inputs>
 		<outputs>
 			<resource name="gypsum" amount="20.0" />
@@ -1153,7 +1153,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		</outputs>
 	</process>
 
-	<process name="process regolith rich in phyllo-silicate" tech="1" skill="1" work-time="100" process-time="0"
+	<process name="process regolith-C rich in phyllo-silicate" tech="1" skill="1" work-time="100" process-time="0"
 			power-required="0.1">
 		<description>
 			Gypsum is CaSO&lt;sub&gt;4&lt;/sub&gt; * 2H&lt;sub&gt;2&lt;/sub&gt;O. 
@@ -1164,7 +1164,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 					3% bassanite;  
 		</description>
 		<inputs>
-			<resource name="regolith" amount="50.0" />
+			<resource name="regolith-C" amount="50.0" />
 		</inputs>
 		<outputs>
 			<resource name="smectite" amount="20.0" />
@@ -1175,7 +1175,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 		</outputs>
 	</process>
 
-	<process name="process typical regolith" tech="1" skill="1" work-time="100" process-time="0"
+	<process name="process regolith-D basaltic" tech="1" skill="1" work-time="100" process-time="0"
 			power-required="0.1">
 		<description>
 			Gypsum is CaSO&lt;sub&gt;4&lt;/sub&gt; * 2H&lt;sub&gt;2&lt;/sub&gt;O. 
@@ -1187,7 +1187,7 @@ oxide or super oxide and can be converted into soda. Just dissolve the sodium ox
 					3% smectite;  
 		</description>
 		<inputs>
-			<resource name="regolith" amount="50.0" />
+			<resource name="regolith-D" amount="50.0" />
 		</inputs>
 		<outputs>
 			<resource name="basaltic" amount="11.75" />

@@ -48,8 +48,8 @@ public abstract class EVAOperation extends Task implements Serializable {
 
 	/** default serial id. */
 	private static Logger logger = Logger.getLogger(EVAOperation.class.getName());
-
-	private static String sourceName = logger.getName();
+	private static String loggerName = logger.getName();
+	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 
 	/** Task phases. */
 	protected static final TaskPhase WALK_TO_OUTSIDE_SITE = new TaskPhase(

@@ -218,7 +218,12 @@
 
 
 <!-- Regolith and its directly derived mineral deposits -->
-	<resource name="regolith" phase="solid">Martian soil</resource>
+
+	<resource name="regolith-b" phase="solid">Type B Martian soil rich in poly-hydrated sulfate. 40% gypsum.</resource>
+	<resource name="regolith-c" phase="solid">Type C Martian soil rich in phyllo-silicate. 40% smectite.</resource>
+	<resource name="regolith-d" phase="solid">Type D Martian soil 23.5% basaltic.</resource>
+	<resource name="regolith" phase="solid">Unspecified type of Martian soil.</resource>
+				
 	<resource name="gypsum" phase="solid">Gypsum is a soft sulfate mineral composed of calcium sulfate dihydrate, 
 		with the chemical formula CaSO4·2H2O. It is widely mined and used as a fertilizer. A typical regolith 
 		derived mineral deposit in NASA Water ISRU Study Reference Case B</resource>

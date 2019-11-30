@@ -92,7 +92,7 @@ public class MalfunctionManager implements Serializable {
 	/** Factor for chance of accident due to wear condition. */
 	private static final double WEAR_ACCIDENT_FACTOR = 1D;
 
-//	private static final String OXYGEN = "Oxygen";
+	private static final String OXYGEN = "Oxygen";
 //	private static final String WATER = "Water";
 //	private static final String PRESSURE = "Air Pressure";
 //	private static final String TEMPERATURE = "Temperature";
@@ -131,7 +131,7 @@ public class MalfunctionManager implements Serializable {
 	private final double wearLifeTime;
 
 	// Life support modifiers.
-//	private double oxygenFlowModifier = 100D;
+	private double oxygenFlowModifier = 100D;
 //	private double waterFlowModifier = 100D;
 //	private double airPressureModifier = 100D;
 //	private double temperatureModifier = 100D;
@@ -579,23 +579,24 @@ public class MalfunctionManager implements Serializable {
 			double new_rel = factory.getReliability(id);
 			double new_prob = malfunctionConfig.getRepairPartProbability(malfunctionName, part_name);
 			double new_failure = (100 - new_rel) * new_prob / 100D;
-			double new_mal_prob_failure = 0;
+			double new_mal_prob_failure = (old_mal_probl_failure + new_failure) / 2.0;
 			double new_MTBF = factory.getMTBFs().get(id);
 			
-			logger.warning("  --- Part : " + part_name + " ---");
+			logger.warning("          *** Part : " + part_name + " ***");
+			
 			logger.warning(" (1).   Reliability : " + addWhiteSpace(Math.round(old_rel * 1000.0) / 1000.0 + " %") 
-					+ "  -->  " + Math.round(new_rel * 1000.0) / 1000.0 + " %");
+							+ "  -->  " + Math.round(new_rel * 1000.0) / 1000.0 + " %");
 
 			logger.warning(" (2).  Failure Rate : " + addWhiteSpace(Math.round(old_failure * 1000.0) / 1000.0 + " %") 
-					+ "  -->  " + Math.round(new_failure * 1000.0) / 1000.0 + " %");
-			new_mal_prob_failure = (old_mal_probl_failure + new_failure) / 2.0;
+							+ "  -->  " + Math.round(new_failure * 1000.0) / 1000.0 + " %");
 
 			logger.warning(" (3).          MTBF : " + addWhiteSpace(Math.round(old_MTBF * 1000.0) / 1000.0 + " hr") 
-					+ "  -->  " + Math.round(new_MTBF * 1000.0) / 1000.0 + " hr");
+							+ "  -->  " + Math.round(new_MTBF * 1000.0) / 1000.0 + " hr");
 
-			logger.warning("  --- Malfunction : " + malfunctionName + " ---");
+			logger.warning("          *** Malfunction : " + malfunctionName + " ***");
+			
 			logger.warning(" (4).   Probability : " + addWhiteSpace(Math.round(old_mal_probl_failure * 1000.0) / 1000.0 + " %") 
-					+ "  -->  " + Math.round(new_mal_prob_failure * 1000.0) / 1000.0 + " %");
+							+ "  -->  " + Math.round(new_mal_prob_failure * 1000.0) / 1000.0 + " %");
 			
 			malfunction.setProbability(new_mal_prob_failure);
 
@@ -910,20 +911,20 @@ public class MalfunctionManager implements Serializable {
 		timeSinceLastMaintenance += time;
 	}
 
-//	/**
-//	 * Resets one or more flow modifier
-//	 * 
-//	 * @param type
-//	 */
-//	public void resetModifiers(int type) {
-//		// compare from previous modifier
-//		System.out.println("MalfunctionManager : Calling resetModifiers type " + type );
-//		if (type == 0) {
-//			oxygenFlowModifier = 100D;
-//			LogConsolidated.log(Level.WARNING, 0, sourceName,
-//					"[" + entity.getLocale() + "] The oxygen flow retrictor has been fixed in "
-//					+ entity.getImmediateLocation(), null);
-//		}
+	/**
+	 * Resets one or more flow modifier
+	 * 
+	 * @param type
+	 */
+	public void resetModifiers(int type) {
+		// compare from previous modifier
+//		logger.info("Reseting modifiers type " + type );
+		if (type == 0) {
+			oxygenFlowModifier = 100D;
+			LogConsolidated.log(Level.WARNING, 0, sourceName,
+					"[" + entity.getLocale() + "] The oxygen flow retrictor has been fixed in "
+					+ entity.getImmediateLocation(), null);
+		}
 //		
 //		else if (type == 1) {
 //			waterFlowModifier = 100D;
@@ -946,7 +947,7 @@ public class MalfunctionManager implements Serializable {
 //					+ entity.getImmediateLocation(), null);
 //			
 //		}
-//	}
+	}
 	
 	/**
 	 * Checks if any malfunctions have been fixed
@@ -1106,17 +1107,17 @@ public class MalfunctionManager implements Serializable {
 				Malfunction m = i.next();
 
 				// Reset the modifiers
-//				Map<String, Double> effects = malfunction.getLifeSupportEffects();
-//				if (!effects.isEmpty()) {
-//					if (effects.containsKey(OXYGEN))
-//						resetModifiers(0);
+				Map<String, Double> effects = m.getLifeSupportEffects();
+				if (!effects.isEmpty()) {
+					if (effects.containsKey(OXYGEN))
+						resetModifiers(0);
 //					if (effects.containsKey(WATER))
 //						resetModifiers(1);
 //					if (effects.containsKey(PRESSURE))
 //						resetModifiers(2);
 //					if (effects.containsKey(TEMPERATURE))
 //						resetModifiers(3);
-//				}
+				}
 				
 				try {
 					getUnit().fireUnitUpdate(UnitEventType.MALFUNCTION_EVENT, m);
@@ -1162,42 +1163,43 @@ public class MalfunctionManager implements Serializable {
 		}
 	}
 	
-//	/**
-//	 * Determine life support modifiers for given time.
-//	 * 
-//	 * @param time amount of time passing (in millisols)
-//	 */
-//	public void setLifeSupportModifiers(double time) {
-//
-//		double tempOxygenFlowModifier = 0D;
+	/**
+	 * Determine life support modifiers for given time.
+	 * 
+	 * @param time amount of time passing (in millisols)
+	 */
+	public void setLifeSupportModifiers(double time) {
+
+		double tempOxygenFlowModifier = 0D;
 //		double tempWaterFlowModifier = 0D;
 //		double tempAirPressureModifier = 0D;
 //		double tempTemperatureModifier = 0D;
-//
-//		// Make any life support modifications.
-//		if (hasMalfunction()) {
-//			for (Malfunction malfunction : malfunctions) {
-//				if (!malfunction.isFixed()) {
-//					Map<String, Double> effects = malfunction.getLifeSupportEffects();
-//					if (effects.get(OXYGEN) != null)
-//						tempOxygenFlowModifier += effects.get(OXYGEN) * (100D - malfunction.getPercentageFixed())/100D;
+
+		// Make any life support modifications.
+		if (hasMalfunction()) {
+			for (Malfunction malfunction : malfunctions) {
+				if (!malfunction.isFixed()) {
+					Map<String, Double> effects = malfunction.getLifeSupportEffects();
+					if (effects.get(OXYGEN) != null)
+						tempOxygenFlowModifier += effects.get(OXYGEN) * (100D - malfunction.getPercentageFixed())/100D;
 //					if (effects.get(WATER) != null)
 //						tempWaterFlowModifier += effects.get(WATER) * (100D - malfunction.getPercentageFixed())/100D;
 //					if (effects.get(PRESSURE) != null)
 //						tempAirPressureModifier += effects.get(PRESSURE) * (100D - malfunction.getPercentageFixed())/100D;
 //					if (effects.get(TEMPERATURE) != null)
 //						tempTemperatureModifier += effects.get(TEMPERATURE) * (100D - malfunction.getPercentageFixed())/100D;
-//				}
-//			}
-//
-//			if (tempOxygenFlowModifier < 0D) {
-//				oxygenFlowModifier += tempOxygenFlowModifier * time ;
-//				if (oxygenFlowModifier < 0)
-//					oxygenFlowModifier = 0;
-//				LogConsolidated.log(Level.WARNING, 20_000, sourceName,
-//						"[" + getUnit().getLocationTag().getLocale() + "] Oxygen flow restricted to "
-//								+ Math.round(oxygenFlowModifier*10.0)/10.0 + "% capacity in " + getUnit().getLocationTag().getImmediateLocation()+ ".", null);
-//			} 
+				}
+			}
+
+			if (tempOxygenFlowModifier < 0D) {
+				oxygenFlowModifier += tempOxygenFlowModifier * time ;
+				if (oxygenFlowModifier < 0)
+					oxygenFlowModifier = 0;
+				LogConsolidated.log(Level.WARNING, 20_000, sourceName,
+						"[" + getUnit().getLocationTag().getLocale() + "] Oxygen flow restricted to "
+								+ Math.round(oxygenFlowModifier*10.0)/10.0 + "% capacity in " 
+								+ getUnit().getLocationTag().getImmediateLocation()+ ".", null);
+			} 
 //
 //			if (tempWaterFlowModifier < 0D) {
 //				waterFlowModifier += tempWaterFlowModifier * time;
@@ -1226,8 +1228,8 @@ public class MalfunctionManager implements Serializable {
 //						"[" + getUnit().getLocationTag().getLocale() + "] Temperature regulator malfunctioned at "
 //								+ Math.round(temperatureModifier*10.0)/10.0 + "% capacity in " + getUnit().getLocationTag().getImmediateLocation() + ".", null);
 //			}
-//		}
-//	}
+		}
+	}
 
 	/**
 	 * Depletes resources due to malfunctions.
@@ -1537,14 +1539,14 @@ public class MalfunctionManager implements Serializable {
 		}
 	}
 
-//	/**
-//	 * Gets the oxygen flow modifier.
-//	 * 
-//	 * @return modifier
-//	 */
-//	public double getOxygenFlowModifier() {
-//		return oxygenFlowModifier;
-//	}
+	/**
+	 * Gets the oxygen flow modifier.
+	 * 
+	 * @return modifier
+	 */
+	public double getOxygenFlowModifier() {
+		return oxygenFlowModifier;
+	}
 //
 //	/**
 //	 * Gets the water flow modifier.

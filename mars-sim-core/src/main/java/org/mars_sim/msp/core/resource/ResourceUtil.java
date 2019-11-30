@@ -66,6 +66,9 @@ public class ResourceUtil implements Serializable {
 	public static final String COMPOST = "compost";
 
 	public static final String REGOLITH = "regolith";
+	public static final String REGOLITH_B = "regolith-b";
+	public static final String REGOLITH_C = "regolith-c";
+	public static final String REGOLITH_D = "regolith-d";
 	public static final String ROCK_SAMLES = "rock samples";
 	public static final String SAND = "sand";
 
@@ -137,6 +140,9 @@ public class ResourceUtil implements Serializable {
 
 	public static int iceID;
 	public static int regolithID;
+	public static int regolithBID;
+	public static int regolithCID;
+	public static int regolithDID;
 	public static int soilID;
 	public static int sandID;
 	public static int soymilkID;
@@ -197,7 +203,10 @@ public class ResourceUtil implements Serializable {
 //	public static AmountResource compostAR;
 
 	public static AmountResource regolithAR;
-
+	public static AmountResource regolithBAR;
+	public static AmountResource regolithCAR;
+	public static AmountResource regolithDAR;
+	
 //	public static AmountResource tableSaltAR;
 	public static AmountResource NaClOAR;
 	public static AmountResource greyWaterAR;
@@ -410,6 +419,10 @@ public class ResourceUtil implements Serializable {
 		leavesID = findAmountResource(LEAVES).getID();
 		
 		regolithID = findAmountResource(REGOLITH).getID(); // 156
+		regolithBID = findAmountResource(REGOLITH_B).getID(); // 
+		regolithCID = findAmountResource(REGOLITH_C).getID(); // 
+		regolithDID = findAmountResource(REGOLITH_D).getID(); // 
+		
 		soilID = findAmountResource(REGOLITH).getID();  // 12
 		sandID = findAmountResource(SAND).getID();
 
@@ -466,10 +479,16 @@ public class ResourceUtil implements Serializable {
 		blackWaterAR = findAmountResource(BLACK_WATER); // 21
 //		tableSaltAR = findAmountResource(TABLE_SALT); // 23
 //		fertilizerAR = findAmountResource(FERTILIZER); // 139
+		
 		regolithAR = findAmountResource(REGOLITH); // 156
-		rockSamplesAR = findAmountResource(ROCK_SAMLES); // 157
+		regolithBAR = findAmountResource(REGOLITH_B);
+		regolithCAR = findAmountResource(REGOLITH_C);
+		regolithDAR = findAmountResource(REGOLITH_D);
+		
+		rockSamplesAR = findAmountResource(ROCK_SAMLES); //
 		sandAR = findAmountResource(SAND); // 159
 		NaClOAR = findAmountResource(SODIUM_HYPOCHLORITE); // 146
+		
 //		napkinAR = findAmountResource(NAPKIN); // 161
 //		toiletTissueAR = findAmountResource(TOILET_TISSUE); // 164
 //		soybeanOilAR = findAmountResource(SOYBEAN_OIL); // 27
@@ -486,7 +505,8 @@ public class ResourceUtil implements Serializable {
 				methaneAR, 
 				iceAR,
 				greyWaterAR, blackWaterAR,
-				regolithAR, rockSamplesAR, sandAR,
+				regolithAR, regolithBAR, regolithCAR, regolithDAR,
+				rockSamplesAR, sandAR,
 				NaClOAR, 
 				};
 //        for (int i=0; i< 33; i++) {

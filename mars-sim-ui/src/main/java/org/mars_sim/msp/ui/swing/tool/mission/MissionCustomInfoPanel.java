@@ -14,6 +14,7 @@ import com.alee.laf.panel.WebPanel;
 /**
  * A panel for displaying custom mission information.
  */
+@SuppressWarnings("serial")
 public abstract class MissionCustomInfoPanel
 extends WebPanel {
 

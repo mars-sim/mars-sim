@@ -529,7 +529,7 @@ public class MainDetailPanel extends WebPanel implements ListSelectionListener, 
 		String collectRegolithMissionName = CollectRegolith.class.getName();
 		customInfoPanels.put(collectRegolithMissionName, collectRegolithPanel);
 		missionCustomPane.add(collectRegolithPanel, collectRegolithMissionName);
-
+		
 		// Create custom collect ice mission panel.
 		MissionCustomInfoPanel collectIcePanel = new CollectResourcesMissionCustomInfoPanel(iceAR);
 		String collectIceMissionName = CollectIce.class.getName();

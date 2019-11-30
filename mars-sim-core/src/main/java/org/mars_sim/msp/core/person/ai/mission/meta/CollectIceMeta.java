@@ -6,8 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.mission.meta;
 
-import java.util.logging.Logger;
-
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
@@ -22,12 +20,14 @@ import org.mars_sim.msp.core.structure.Settlement;
  */
 public class CollectIceMeta implements MetaMission {
 
-	private static Logger logger = Logger.getLogger(CollectIceMeta.class.getName());
-
+//	private static Logger logger = Logger.getLogger(CollectIceMeta.class.getName());
+//	private static final String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
+//			logger.getName().length());
+	
 	/** Mission name */
 	private static final String DEFAULT_DESCRIPTION = Msg.getString("Mission.description.collectIce"); //$NON-NLS-1$
 
-	private static final double VALUE = 500D;
+	private static final double VALUE = 50D;
 
     private static final double LIMIT = 10D;
     

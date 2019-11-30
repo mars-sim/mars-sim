@@ -229,12 +229,12 @@ in a command prompt window.
 7. To check if a particular official version of Java is being *enabled*, 
 start **Java Control Panel** in Windows's Control Panel as follows :  
 
--a. Move your mouse to the magnifier icon (the 2nd icon from the left) on win 10 task bar. 
--b. Type `Configure Java` 
--c. Hover your mouse over the `Configure Java` and click to start the `Java Control Panel`
--d. Click on `Java` tab on top.
--e. Click on `View` button to open up another panel window.
--f. Click on the checkbox on the `Enable` column to enable or disable any official Oracle versions of Java you might have installed in the past.
+* Move your mouse to the magnifier icon (the 2nd icon from the left) on win 10 task bar. 
+* Type `Configure Java`. 
+* Hover your mouse over the `Configure Java` and click to start the `Java Control Panel`.
+* Click on `Java` tab on top.
+* Click on `View` button to open up another panel window.
+* Click on the checkbox on the `Enable` column to enable or disable any official Oracle versions of Java installed.
  ```
 Note 5. each row shows multiple versions of Java shown such as 1.8.0_211 and 1.10.0_1_1. 
 Unfornately, it only tracks the official Oracle versions. If you install any dozens of 

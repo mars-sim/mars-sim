@@ -158,7 +158,7 @@ public abstract class Mission implements Serializable {
 	protected static HistoricalEventManager eventManager;
 	protected static MissionManager missionManager;
 	protected static ScientificStudyManager scientificManager;
-	protected static SurfaceFeatures surface;
+	protected static SurfaceFeatures surfaceFeatures;
 	protected static PersonConfig personConfig;
 	protected static MarsClock marsClock;// = sim.getMasterClock().getMarsClock();
 	protected static RelationshipManager relationshipManager;
@@ -1661,7 +1661,7 @@ public abstract class Mission implements Serializable {
 		eventManager = e;
 		unitManager = u;
 		scientificManager = s;
-		surface = sf;
+		surfaceFeatures = sf;
 		missionManager = m;
 		personConfig = pc;
 		relationshipManager = r;

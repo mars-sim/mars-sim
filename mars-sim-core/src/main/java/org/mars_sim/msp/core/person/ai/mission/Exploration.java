@@ -253,7 +253,7 @@ public class Exploration extends RoverMission implements Serializable {
 		if (tripRange < range)
 			range = tripRange;
 
-		MineralMap map = surface.getMineralMap();
+		MineralMap map = surfaceFeatures.getMineralMap();
 		Coordinates mineralLocation = map.findRandomMineralLocation(homeSettlement.getCoordinates(), range / 2D);
 		
 		boolean result = (mineralLocation != null);
@@ -279,7 +279,7 @@ public class Exploration extends RoverMission implements Serializable {
 		if (tripRange < range)
 			range = tripRange;
 
-		MineralMap map = surface.getMineralMap();
+		MineralMap map = surfaceFeatures.getMineralMap();
 		Coordinates mineralLocation = map.findRandomMineralLocation(homeSettlement.getCoordinates(), range / 2D);
 		
 		if (mineralLocation != null)
@@ -435,8 +435,8 @@ public class Exploration extends RoverMission implements Serializable {
 
 			// If no one can explore the site and this is not due to it just being
 			// night time, end the exploring phase.
-			boolean inDarkPolarRegion = surface.inDarkPolarRegion(getCurrentMissionLocation());
-			double sunlight = surface.getSolarIrradiance(getCurrentMissionLocation());
+			boolean inDarkPolarRegion = surfaceFeatures.inDarkPolarRegion(getCurrentMissionLocation());
+			double sunlight = surfaceFeatures.getSolarIrradiance(getCurrentMissionLocation());
 			if (nobodyExplore && ((sunlight > 0D) || inDarkPolarRegion))
 				setPhaseEnded(true);
 
@@ -495,7 +495,7 @@ public class Exploration extends RoverMission implements Serializable {
 	 */
 	private void createNewExploredSite() {
 //		SurfaceFeatures surfaceFeatures = Simulation.instance().getMars().getSurfaceFeatures();
-		MineralMap mineralMap = surface.getMineralMap();
+		MineralMap mineralMap = surfaceFeatures.getMineralMap();
 		String[] mineralTypes = mineralMap.getMineralTypeNames();
 		Map<String, Double> initialMineralEstimations = new HashMap<String, Double>(mineralTypes.length);
 		for (String mineralType : mineralTypes) {
@@ -509,7 +509,7 @@ public class Exploration extends RoverMission implements Serializable {
 				estimation = 100D - estimation;
 			initialMineralEstimations.put(mineralType, estimation);
 		}
-		currentSite = surface.addExploredLocation(new Coordinates(getCurrentMissionLocation()),
+		currentSite = surfaceFeatures.addExploredLocation(new Coordinates(getCurrentMissionLocation()),
 				initialMineralEstimations, getAssociatedSettlement());
 		exploredSites.add(currentSite);
 	}
@@ -831,7 +831,7 @@ public class Exploration extends RoverMission implements Serializable {
 		Coordinates result = null;
 
 		Coordinates startingLocation = getCurrentMissionLocation();
-		MineralMap map = surface.getMineralMap();
+		MineralMap map = surfaceFeatures.getMineralMap();
 		Coordinates randomLocation = map.findRandomMineralLocation(startingLocation, range);
 		if (randomLocation != null) {
 			Direction direction = new Direction(RandomUtil.getRandomDouble(2D * Math.PI));
