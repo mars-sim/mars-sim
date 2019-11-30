@@ -13,12 +13,21 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.SwingUtilities;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.text.Document;
+import javax.swing.text.JTextComponent;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
@@ -44,9 +53,9 @@ public class TypePanel extends WizardPanel implements ItemListener {
 	private JComboBoxMW<Object> typeSelect;
 	private WebLabel descriptionInfoLabel;
 	private WebLabel descriptionLabel;
-	private WebTextField descriptionField;
+	private WebTextField descriptionTF;
 	
-	private String description;
+	private String descriptionText;
 	
 	private static MissionManager missionManager;
 
@@ -129,14 +138,75 @@ public class TypePanel extends WizardPanel implements ItemListener {
 		descriptionPane.add(descriptionLabel);
 		
 		// Create the description text field.
-		descriptionField = new WebTextField(20);
-		descriptionField.setEnabled(false);
-		descriptionPane.add(descriptionField);
-		descriptionPane.setMaximumSize(new Dimension(Short.MAX_VALUE, descriptionField.getPreferredSize().height));
+		descriptionTF = new WebTextField(20);
+		descriptionTF.setEnabled(false);
+		descriptionPane.add(descriptionTF);
+		descriptionPane.setMaximumSize(new Dimension(Short.MAX_VALUE, descriptionTF.getPreferredSize().height));
+
+		// Listen for changes in the text
+		addChangeListener(descriptionTF, e -> {
+			  descriptionText = descriptionTF.getText();
+//			  System.out.println("descriptionText: " + descriptionText);
+		});
 		
 		// Add a vertical glue.
 		add(Box.createVerticalGlue());
 	}
+	
+
+	/**
+	 * Installs a listener to receive notification when the text of any
+	 * {@code JTextComponent} is changed. Internally, it installs a
+	 * {@link DocumentListener} on the text component's {@link Document},
+	 * and a {@link PropertyChangeListener} on the text component to detect
+	 * if the {@code Document} itself is replaced.
+	 * 
+	 * @see https://stackoverflow.com/questions/3953208/value-change-listener-to-jtextfield#3953219
+	 * @param text any text component, such as a {@link JTextField}
+	 *        or {@link JTextArea}
+	 * @param changeListener a listener to receieve {@link ChangeEvent}s
+	 *        when the text is changed; the source object for the events
+	 *        will be the text component
+	 * @throws NullPointerException if either parameter is null
+	 */
+	public static void addChangeListener(JTextComponent text, ChangeListener changeListener) {
+	    Objects.requireNonNull(text);
+	    Objects.requireNonNull(changeListener);
+	    DocumentListener dl = new DocumentListener() {
+	        private int lastChange = 0, lastNotifiedChange = 0;
+
+	        @Override
+	        public void insertUpdate(DocumentEvent e) {
+	            changedUpdate(e);
+	        }
+
+	        @Override
+	        public void removeUpdate(DocumentEvent e) {
+	            changedUpdate(e);
+	        }
+
+	        @Override
+	        public void changedUpdate(DocumentEvent e) {
+	            lastChange++;
+	            SwingUtilities.invokeLater(() -> {
+	                if (lastNotifiedChange != lastChange) {
+	                    lastNotifiedChange = lastChange;
+	                    changeListener.stateChanged(new ChangeEvent(text));
+	                }
+	            });
+	        }
+	    };
+	    text.addPropertyChangeListener("document", (PropertyChangeEvent e) -> {
+	        Document d1 = (Document)e.getOldValue();
+	        Document d2 = (Document)e.getNewValue();
+	        if (d1 != null) d1.removeDocumentListener(dl);
+	        if (d2 != null) d2.addDocumentListener(dl);
+	        dl.changedUpdate(null);
+	    });
+	    Document d = text.getDocument();
+	    if (d != null) d.addDocumentListener(dl);
+	}
+	
 	
 	/**
 	 * Invoked when an item has been selected or deselected by the user.
@@ -152,12 +222,12 @@ public class TypePanel extends WizardPanel implements ItemListener {
 				suffix++;
 		}
 		String suffixString = " (" + suffix + ")";
-		description = selectedMission + suffixString;
-		descriptionField.setText(description);
+		descriptionText = selectedMission + suffixString;
+		descriptionTF.setText(descriptionText);
 		boolean enableDescription = (typeSelect.getSelectedIndex() != -1);
 		descriptionInfoLabel.setEnabled(enableDescription);
 		descriptionLabel.setEnabled(enableDescription);
-		descriptionField.setEnabled(enableDescription);
+		descriptionTF.setEnabled(enableDescription);
 		getWizard().setButtons(enableDescription);
 	}
 	
@@ -176,7 +246,7 @@ public class TypePanel extends WizardPanel implements ItemListener {
 	boolean commitChanges() {
 		getWizard().getMissionData().setType((String) typeSelect.getSelectedItem());
 		getWizard().getMissionData().setMissionType(MissionType.lookup((String) typeSelect.getSelectedItem()));	
-		getWizard().getMissionData().setDescription(descriptionField.getText());
+		getWizard().getMissionData().setDescription(descriptionTF.getText());
 		getWizard().setFinalWizardPanels();
 		return true;
 	}

@@ -38,7 +38,6 @@ import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.manufacture.Salvagable;
 import org.mars_sim.msp.core.manufacture.SalvageInfo;
 import org.mars_sim.msp.core.manufacture.SalvageProcessInfo;
-import org.mars_sim.msp.core.mars.TerrainElevation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.AreologyFieldStudy;
 import org.mars_sim.msp.core.person.ai.mission.BiologyFieldStudy;
@@ -73,7 +72,6 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.Indoor;
 import org.mars_sim.msp.core.structure.building.function.SystemType;
-import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
@@ -329,7 +327,7 @@ public abstract class Vehicle extends Unit
 		totalHours = totalEnergy / continuousPower;
 		
 		// Gets the average number of sols the vehicle is capable of operating
-		double sols = totalHours / ESTIMATED_NUM_HOURS;
+//		double sols = totalHours / ESTIMATED_NUM_HOURS;
 		
 		// Gets the base range [in km] of the vehicle
 		baseRange = baseSpeed * totalHours;

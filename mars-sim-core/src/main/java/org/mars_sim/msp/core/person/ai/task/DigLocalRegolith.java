@@ -57,10 +57,10 @@ implements Serializable {
             "Task.phase.collectRegolith")); //$NON-NLS-1$
 
 	/** Collection rate of regolith during EVA (kg/millisol). */
-	public static final double COLLECTION_RATE = 20D;
+	public static final double COLLECTION_RATE = 1D;
 
 	/** The resource id for a bag. */
-	private static final int BAG  = EquipmentType.convertName2ID("bag");
+//	private static final int BAG  = EquipmentType.convertName2ID("bag");
 	
 	// Domain members
 	/** Total ice collected in kg. */

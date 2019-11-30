@@ -29,6 +29,7 @@ import com.alee.laf.tabbedpane.WebTabbedPane;
 /**
  * Window for the mission tool.
  */
+@SuppressWarnings("serial")
 public class MissionWindow extends ToolWindow {
 
 	/** Tool name. */

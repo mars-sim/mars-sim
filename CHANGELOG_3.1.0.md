@@ -5,7 +5,7 @@ Copyright (C) 2019 Scott Davis
 
 -----------------------------------------------------------------------------------------
 
-## v3.1.0 (build 51__) - 2019-11-__
+## v3.1.0 (build 5194) - 2019-11-29
 
 ### CORE ENGINE IMPROVEMENTS :
 
@@ -13,7 +13,7 @@ Copyright (C) 2019 Scott Davis
 
 2. Allow time-ratio switches in full headless mode.
 
-3. Reduce jar file size.
+3. Significantly reduce the size of jarfile.
 
 4. Improve mission planning - add mission approval phase, tasks to plan and score a mission plan.
 
@@ -31,11 +31,11 @@ Copyright (C) 2019 Scott Davis
 
 11. Streamline saving and loading simulation.
 
-12. Reduce the file size of saved simulation.
+12. Add beryx terminal for use in headless and non-headless mode.
 
 13. Create a death report on a deceased person.
 
-14. Add topics for scientific studies. 
+14. Add 'topics' for each scientific study. 
     
 15. Add role prospect scores (like job prospects) on each role.
 
@@ -43,8 +43,20 @@ Copyright (C) 2019 Scott Davis
 
 17. Allow playing external ogg music files in player's home folder.
 
-18. Add vehicle log for tracking changes to a vehicle's status.
+18. Add vehicle status log for tracking changes to a vehicle.
  
+19. Add mission status log for tracking changes to a mission.
+
+21. Incorporate more accurate MOLA elevation data.
+ 
+20. Link sponsor's mission directives to settlement's mission decisions.
+
+22. Add the price of a good.
+
+23. Add training certification prior to arrival on Mars.
+
+24. Add role prospect score for determining the need of a role in a
+    settlement.
 
 
 ### UI IMPROVEMENT :
@@ -55,8 +67,9 @@ Copyright (C) 2019 Scott Davis
 
 3. Add earth calendar on bottom status bar.
 
-4. Add x/y coordinate, its elevation on Mars Navigator surface Map (and RGB/HSV values on the topo map)  
+4. Add (x, y) coordinates, elevation info on Mars Navigator surface Map (and RGB/HSV values on the topo map)  
 
+5. Attach a separate 'EVA Airlock' building to Lander Hab.
 
 
 ### FIXES :
@@ -75,15 +88,19 @@ Copyright (C) 2019 Scott Davis
 
 7. Fix recovering the simulation from machine's power saving.
 
-8. Fix food consumption during missions.
+8. Fix food & water consumption.
 
-9. Fix loading alpha crew MBTI personality into crew editor.
+9. Fix loading alpha crew MBTI personality into Crew Editor.
 
 10. Improve vehicle fuel usage modeling.
 
 11. Fix not being able to fix vehicle malfunctions.
 
+12. Fix choosing sponsors (after choosing the country) in Crew Editor.
 
+13. Correct inconsistency in the quantity/amount of input resources in 
+    construction.xml.
+    
 -----------------------------------------------------------------------------------------
 
 ## v3.1.0-beta1 (build 4421) - 2018-07-30

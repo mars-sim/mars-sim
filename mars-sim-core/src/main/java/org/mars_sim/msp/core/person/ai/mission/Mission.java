@@ -121,8 +121,10 @@ public abstract class Mission implements Serializable {
 	private String dateEmbarked = "";
 	/** The date the mission was completed. */
 	private String dateCompleted = "";
-	/** Name of mission. */
+	/** The Name of this mission. */
 	private String missionName;
+	/** The description of this mission. */
+	private String description;
 	/** The description of the current phase of operation. */
 	private String phaseDescription;
 	/** The full mission designation. */
@@ -185,6 +187,7 @@ public abstract class Mission implements Serializable {
 		this.missionName = missionName;
 		this.missionType = missionType;
 		this.startingMember = startingMember;
+		this.description = missionName;
 		
 		// Create the date filed timestamp
 		createDateFiled();
@@ -384,7 +387,7 @@ public abstract class Mission implements Serializable {
 	 * Gets the string representation of this mission.
 	 */
 	public String toString() {
-		return missionName;
+		return description;//missionName;
 	}
 
 	public final void addMember(MissionMember member) {
@@ -646,7 +649,7 @@ public abstract class Mission implements Serializable {
 	 * @return mission description
 	 */
 	public final String getDescription() {
-		return missionName;
+		return description;
 	}
 
 	/**
@@ -655,8 +658,8 @@ public abstract class Mission implements Serializable {
 	 * @param description the new description.
 	 */
 	public final void setDescription(String description) {
-		if (!this.missionName.equals(description)) {
-			this.missionName = description;
+		if (!this.description.equals(description)) {
+			this.description = description;
 			fireMissionUpdate(MissionEventType.DESIGNATION_EVENT, description);
 		}
 	}

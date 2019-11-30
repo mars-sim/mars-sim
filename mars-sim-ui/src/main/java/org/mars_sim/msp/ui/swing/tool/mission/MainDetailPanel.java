@@ -14,6 +14,7 @@ import java.awt.FlowLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -23,6 +24,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -31,9 +33,15 @@ import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SpringLayout;
 import javax.swing.SwingUtilities;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.text.Document;
+import javax.swing.text.JTextComponent;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.UnitEvent;
@@ -91,6 +99,8 @@ public class MainDetailPanel extends WebPanel implements ListSelectionListener, 
 	private final static int HEIGHT = 100;
 	
 	// Private members
+	private String descriptionText;
+
 	private WebTextField descriptionTF;
 
 //	private WebLabel descriptionLabel;
@@ -172,16 +182,22 @@ public class MainDetailPanel extends WebPanel implements ListSelectionListener, 
 //		desBox.add(Box.createHorizontalGlue());
 		
 		descriptionTF = new WebTextField(" ");
-		descriptionTF.setEditable(false);
+		descriptionTF.setEditable(true);
 		descriptionTF.setColumns(20);
 		descriptionTF.setAlignmentX(Component.CENTER_ALIGNMENT);
 		// descriptionTF.setOpaque(false);
 		// descriptionTF.setFont(new Font("Serif", Font.PLAIN, 10));
 		descriptionTF.setToolTipText(Msg.getString("MainDetailPanel.tf.description")); //$NON-NLS-1$
 
-		// Implement the missing descriptionLabel.
+		// Listen for changes in the text
+		addChangeListener(descriptionTF, e -> {
+			  descriptionText = descriptionTF.getText();
+//			  System.out.println("descriptionText: " + descriptionText);
+		});
+		
+		// Prepare description textfield.
 		if (missionWindow.getCreateMissionWizard() != null) {
-			String s = Conversion.capitalize(missionWindow.getCreateMissionWizard().getTypePanel().getDesignation());// getDescription());
+			String s = Conversion.capitalize(currentMission.getDescription());//missionWindow.getCreateMissionWizard().getTypePanel().getDesignation());// getDescription());
 			descriptionTF.setText(s);
 		}
 
@@ -534,11 +550,62 @@ public class MainDetailPanel extends WebPanel implements ListSelectionListener, 
 	}
 
 	/**
+	 * Installs a listener to receive notification when the text of any
+	 * {@code JTextComponent} is changed. Internally, it installs a
+	 * {@link DocumentListener} on the text component's {@link Document},
+	 * and a {@link PropertyChangeListener} on the text component to detect
+	 * if the {@code Document} itself is replaced.
+	 * 
+	 * @param text any text component, such as a {@link JTextField}
+	 *        or {@link JTextArea}
+	 * @param changeListener a listener to receieve {@link ChangeEvent}s
+	 *        when the text is changed; the source object for the events
+	 *        will be the text component
+	 * @throws NullPointerException if either parameter is null
+	 */
+	public static void addChangeListener(JTextComponent text, ChangeListener changeListener) {
+	    Objects.requireNonNull(text);
+	    Objects.requireNonNull(changeListener);
+	    DocumentListener dl = new DocumentListener() {
+	        private int lastChange = 0, lastNotifiedChange = 0;
+
+	        @Override
+	        public void insertUpdate(DocumentEvent e) {
+	            changedUpdate(e);
+	        }
+
+	        @Override
+	        public void removeUpdate(DocumentEvent e) {
+	            changedUpdate(e);
+	        }
+
+	        @Override
+	        public void changedUpdate(DocumentEvent e) {
+	            lastChange++;
+	            SwingUtilities.invokeLater(() -> {
+	                if (lastNotifiedChange != lastChange) {
+	                    lastNotifiedChange = lastChange;
+	                    changeListener.stateChanged(new ChangeEvent(text));
+	                }
+	            });
+	        }
+	    };
+	    text.addPropertyChangeListener("document", (PropertyChangeEvent e) -> {
+	        Document d1 = (Document)e.getOldValue();
+	        Document d2 = (Document)e.getNewValue();
+	        if (d1 != null) d1.removeDocumentListener(dl);
+	        if (d2 != null) d2.addDocumentListener(dl);
+	        dl.changedUpdate(null);
+	    });
+	    Document d = text.getDocument();
+	    if (d != null) d.addDocumentListener(dl);
+	}
+	
+	/**
 	 * Implemented from ListSelectionListener. Note: this is called when a mission
 	 * is selected on MissionWindow's mission list.
 	 */
 	public void valueChanged(ListSelectionEvent e) {
-
 		TableStyle.setTableStyle(memberTable);
 
 		// Remove mission and unit listeners.
@@ -550,11 +617,72 @@ public class MainDetailPanel extends WebPanel implements ListSelectionListener, 
 		// Get the selected mission.
 		Mission mission = (Mission) ((JList<?>) e.getSource()).getSelectedValue();
 
+//		System.out.println(//"MainDetailPanel's valueChanged()"
+//				"mission: " + mission
+//				+ "   currentMission: " + currentMission
+//				);
+		
 		if (mission != null) {
 			// Update mission info in UI.
-
-			if (mission.getDescription() != null) {
-				descriptionTF.setText(Conversion.capitalize(mission.getDescription()));
+			String oldDes = mission.getDescription();
+			String newDes = descriptionTF.getText();
+			
+			if (mission != currentMission) {
+				// Switching to a new mission from JList
+				if (currentMission == null) {
+					// If first time opening the Mission Tool
+					if (descriptionText == null) {
+//						System.out.println("1");
+						// if descriptionText is null (first time loading MainDetailPanel
+						// Use the default description
+						descriptionTF.setText(Conversion.capitalize(oldDes));
+					}
+					else if (descriptionText != null && currentMission != null 
+							&& currentMission.getDescription().equals(descriptionText)){
+//						System.out.println("2");
+						// Update the previous mission to the new descriptionText
+						currentMission.setDescription(descriptionText);
+					}
+//					else {
+//						System.out.println("2.5");
+//					}
+	
+				}
+				else if (newDes == null || newDes.trim().equalsIgnoreCase("")) {
+//					 System.out.println("3");//. newDes: " + newDes 
+//							 + "   oldDes: " + oldDes
+//							 + "  descriptionText: " + descriptionText);
+					// If blank, use the default one
+					descriptionTF.setText(Conversion.capitalize(oldDes));
+				}
+				else if (!newDes.equalsIgnoreCase(oldDes)) {
+//					 System.out.println("4");//. newDes: " + newDes 
+//							 + "   oldDes: " + oldDes
+//							 + "  descriptionText: " + descriptionText);
+					if (!currentMission.getDescription().equals(descriptionText)){
+//						System.out.println("4.5");
+						// Update the previous mission to the new descriptionText
+						currentMission.setDescription(descriptionText);
+					}
+						
+					descriptionTF.setText(Conversion.capitalize(oldDes));
+	//				mission.setDescription(newDes);
+				}
+//				else
+//					System.out.println("5");
+			}
+			
+			else { // mission is no different from currentMission
+				if (!newDes.equalsIgnoreCase(oldDes)) {
+					// if player already typed up something in descriptionTF
+//					 System.out.println("6");//. newDes: " + newDes 
+//							 + "   oldDes: " + oldDes
+//							 + "  descriptionText: " + descriptionText);
+					descriptionTF.setText(oldDes);
+					mission.setDescription(oldDes);
+				}
+//				else
+//					System.out.println("7");
 			}
 
 			String d = mission.getFullMissionDesignation();
@@ -674,7 +802,7 @@ public class MainDetailPanel extends WebPanel implements ListSelectionListener, 
 			// NOTE: do NOT clear the mission info. Leave the info there for future viewing
 			
 			// Clear mission info in UI.
-			descriptionTF.setText(" "); //$NON-NLS-1$ //$NON-NLS-2$
+			descriptionTF.setText(currentMission.getDescription()); //$NON-NLS-1$ //$NON-NLS-2$
 			designationLabel.setText("[TBD]");
 			typeLabel.setText(" "); //$NON-NLS-1$ //$NON-NLS-2$
 			phaseLabel.setText(" "); //$NON-NLS-1$ //$NON-NLS-2$
@@ -777,21 +905,26 @@ public class MainDetailPanel extends WebPanel implements ListSelectionListener, 
 				typeLabel.setText(mission.getMissionType().getName()); // $NON-NLS-1$
 			else if (type == MissionEventType.DESCRIPTION_EVENT) {
 				// Implement the missing descriptionLabel
-				if (missionWindow.getCreateMissionWizard() != null) {
-					String s = missionWindow.getCreateMissionWizard().getTypePanel().getDescription().trim();
-					if (s == null || s.equals("")) {
-						s = "[TBA]";
-					} else {
-						s = Conversion.capitalize(s);
-					}
-					descriptionTF.setText(s);
-				} else {
-					String s = mission.getDescription().trim();
-					if (s == null || s.equals("")) {
-						s = "[TBA]";
-					}
-					descriptionTF.setText(s);
-				}
+//				if (missionWindow.getCreateMissionWizard() != null) {
+//					String s = missionWindow.getCreateMissionWizard().getTypePanel().getDescription().trim();
+//					if (s == null || s.equals("")) {
+//						s = "[TBA]";
+//					} else {
+//						s = Conversion.capitalize(s);
+//					}
+//					descriptionTF.setText(s);
+//				} else {
+//					String s = mission.getDescription().trim();
+//					if (s == null || s.equals("")) {
+//						s = "[TBA]";
+//					}
+//					descriptionTF.setText(s);
+//				}
+//				descriptionTF.setText(mission.getDescription());
+				 System.out.println("MissionEventUpdater");
+//				 -  newDes: " + descriptionTF.getText() 
+//						 + "   oldDes: " + mission.getDescription()
+//						 + "   descriptionText: " + descriptionText);
 			}
 			else if (type == MissionEventType.DESIGNATION_EVENT) {
 				// Implement the missing descriptionLabel
@@ -800,17 +933,17 @@ public class MainDetailPanel extends WebPanel implements ListSelectionListener, 
 					String s = mission.getFullMissionDesignation();
 					if (s == null || s.equals("")) {
 						s = "[TBA]";
-					} else {
-						s = Conversion.capitalize(s);
-					}
-					designationLabel.setText(s);
-				} else {
-					String s = mission.getDescription().trim();
-					if (s == null || s.equals("")) {
-						s = "[TBA]";
-					}
-					designationLabel.setText(s);
+					} 
+					
+					designationLabel.setText(Conversion.capitalize(s));
 				}
+//				else {
+//					String s = mission.getDescription().trim();
+//					if (s == null || s.equals("")) {
+//						s = "[TBA]";
+//					}
+//					designationLabel.setText(s);
+//				}
 			} else if (type == MissionEventType.PHASE_DESCRIPTION_EVENT) {
 				String phaseText = mission.getPhaseDescription();
 				if (phaseText.length() > 45)

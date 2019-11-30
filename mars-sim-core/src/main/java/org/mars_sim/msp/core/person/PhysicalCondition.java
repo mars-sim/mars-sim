@@ -111,8 +111,12 @@ public class PhysicalCondition implements Serializable {
 	private static final double stressBreakdownChance;
 
 	public static final String WELL = "Well";
-	public static final String DEAD = "Dead : ";
-	public static final String ILL = "Sick : ";
+	public static final String DEAD = "Dead";
+	public static final String DEAD_COLON = "Dead : ";
+	public static final String SICK_COLON = "Sick : ";
+	public static final String TBD = "(To be determined)";
+	public static final String SUICIDE = "Suicide";
+	public static final String INSTRUCTED = " committed suicide as instructed.";
 	
 	private static double o2_consumption;
 	
@@ -1159,7 +1163,7 @@ public class PhysicalCondition implements Serializable {
 			clocks.add(marsClock.getDateTimeStamp());
 			healthHistory.put(type, clocks);
 
-			String n = type.getName().toLowerCase();
+//			String n = type.getName().toLowerCase();
 			String prefix = "[" + person.getLocationTag().getLocale() + "] ";
 			String phrase = "";
 			String suffix = ".";
@@ -1323,8 +1327,10 @@ public class PhysicalCondition implements Serializable {
 				reading = "High Temperature sensor";
 				unit = " C";
 			}
-			String s = "[" + loc0 + "] " + reading + " triggered.   Affected : " + name + "   Immediate Location : " + loc1 
-					+ "   Actual : " + Math.round(actual*decimals)/decimals + unit + "   Required : " + Math.round(required*decimals)/decimals + unit;
+			String s = "[" + loc0 + "] " + reading + " triggered.   Affected : " + name 
+					+ "   Immediate Location : " + loc1 
+					+ "   Actual : " + Math.round(actual*decimals)/decimals + unit
+					+ "   Required : " + Math.round(required*decimals)/decimals + unit;
 			LogConsolidated.log(Level.SEVERE, 1000, sourceName, s);
 			
 			addMedicalComplaint(complaint);
@@ -1384,20 +1390,16 @@ public class PhysicalCondition implements Serializable {
 	 */
 	public void setDead(HealthProblem problem, Boolean causedByUser, String lastWord) {
 		alive = false;
-		String cause = "(To be determined)";
-//		setFatigue(0D);
-//		setHunger(0D);
-//		setPerformanceFactor(0D);
-//		setStress(0D);
+		String reason = TBD;
 		if (causedByUser) {
-			cause = "Suicide";
-			logger.warning(person + " committed suicide as instructed.");
+			logger.warning(person + INSTRUCTED);
+			reason = SUICIDE;
 		}
 		else {
 			this.serious = problem;
 		}
 		
-		deathDetails = new DeathInfo(person, problem, cause, lastWord);
+		deathDetails = new DeathInfo(person, problem, reason, lastWord);
 		// Declare the person dead
 		person.setDeclaredDead();
 		// Set unit description to "Dead"
@@ -1480,9 +1482,9 @@ public class PhysicalCondition implements Serializable {
 		String situation = WELL;
 		if (serious != null) {
 			if (isDead()) {
-				situation = DEAD + serious.getIllness().getType().toString();
+				situation = DEAD_COLON + serious.getIllness().getType().toString();
 			} else {
-				situation = ILL + serious.getSituation();
+				situation = SICK_COLON + serious.getSituation();
 			}
 			// else situation = "Not Well";
 		}

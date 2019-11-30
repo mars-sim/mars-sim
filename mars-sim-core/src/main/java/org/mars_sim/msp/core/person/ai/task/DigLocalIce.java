@@ -57,7 +57,7 @@ implements Serializable {
             "Task.phase.collectIce")); //$NON-NLS-1$
 
 	/** The resource id for a bag. */
-	private static final int BAG  = EquipmentType.convertName2ID("bag");
+//	private static final int BAG  = EquipmentType.convertName2ID("bag");
 	
 	/**  Collection rate of ice during EVA (kg/millisol). */
 	private double collectionRate;
