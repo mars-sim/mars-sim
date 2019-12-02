@@ -102,23 +102,23 @@ public final class TradeUtil {
 		double bestProfit = 0D;
 		Settlement bestSettlement = null;
 
-		for (Settlement s : unitManager.getSettlements()) {
-			if (s != startingSettlement) {
+		for (Settlement tradingSettlement : unitManager.getSettlements()) {
+			if (tradingSettlement != startingSettlement && tradingSettlement.isMissionDisable(Trade.DEFAULT_DESCRIPTION)) {
 
-				boolean hasCurrentTradeMission = hasCurrentTradeMission(startingSettlement, s);
+				boolean hasCurrentTradeMission = hasCurrentTradeMission(startingSettlement, tradingSettlement);
 
-				double settlementRange = Coordinates.computeDistance(s.getCoordinates(), startingSettlement.getCoordinates());
+				double settlementRange = Coordinates.computeDistance(tradingSettlement.getCoordinates(), startingSettlement.getCoordinates());
 				boolean withinRange = (settlementRange <= (rover.getRange(Trade.missionType) * .8D));
 
 				if (!hasCurrentTradeMission && withinRange) {
 					// double startTime = System.currentTimeMillis();
 
-					double profit = getEstimatedTradeProfit(startingSettlement, rover, s);
+					double profit = getEstimatedTradeProfit(startingSettlement, rover, tradingSettlement);
 					// double endTime = System.currentTimeMillis();
 //					 logger.finest("getEstimatedTradeProfit " + (endTime - startTime));
 					if (profit > bestProfit) {
 						bestProfit = profit;
-						bestSettlement = s;
+						bestSettlement = tradingSettlement;
 					}
 				}
 			}

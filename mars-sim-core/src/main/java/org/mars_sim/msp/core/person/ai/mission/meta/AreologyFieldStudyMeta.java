@@ -59,7 +59,7 @@ public class AreologyFieldStudyMeta implements MetaMission {
         if (person.isInSettlement()) {
             Settlement settlement = person.getSettlement();
 
-            missionProbability = settlement.getMissionBaseProbability();
+            missionProbability = settlement.getMissionBaseProbability(DEFAULT_DESCRIPTION);
     		if (missionProbability <= 0)
     			return 0;
     		

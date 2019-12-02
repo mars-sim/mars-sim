@@ -296,36 +296,39 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 		}
 	}
 
-	/**
-	 * Gets the weighted probability that a given person would start this mission.
-	 * 
-	 * @param person        the given person
-	 * @param containerType = the required container class.
-	 * @param containerNum  = the number of containers required.
-	 * @param minPeople     = the minimum number of people required.
-	 * @param missionType   the mission class.
-	 * @return the weighted probability
-	 */
-	public static double getNewMissionProbability(Settlement settlement, Class<? extends Unit> containerType, int containerNum,
-			int minPeople) {
-		double result = 1;
-		
-		if (settlement == null) {
-			return 0;
-		}
-
-		else {
-			result = settlement.getMissionBaseProbability();
-	
-			// Check if there are enough specimen containers at the settlement for
-			// collecting rock samples.
-			if ((numCollectingContainersAvailable(settlement, containerType) < containerNum))
-				return 0;
-
-		}
-
-		return result;
-	}
+//	/**
+//	 * Gets the weighted probability that a given person would start this mission.
+//	 * 
+//	 * @param person        the given person
+//	 * @param containerType = the required container class.
+//	 * @param containerNum  = the number of containers required.
+//	 * @param minPeople     = the minimum number of people required.
+//	 * @param missionType   the mission class.
+//	 * @return the weighted probability
+//	 */
+//	public static double getNewMissionProbability(Settlement settlement, Class<? extends Unit> containerType, int containerNum,
+//			int minPeople) {
+//		double result = 1;
+//		
+//		if (settlement == null) {
+//			return 0;
+//		}
+//
+//		else {
+//			if (resourceID == ResourceUtil.iceID)
+//				result = settlement.getMissionBaseProbability(CollectIce.DEFAULT_DESCRIPTION);
+//			else
+//				result = settlement.getMissionBaseProbability(CollectRegolith.DEFAULT_DESCRIPTION);
+//			
+//			// Check if there are enough specimen containers at the settlement for
+//			// collecting rock samples.
+//			if ((numCollectingContainersAvailable(settlement, containerType) < containerNum))
+//				return 0;
+//
+//		}
+//
+//		return result;
+//	}
 
 	/**
 	 * Gets the total amount of resources collected so far in the mission.

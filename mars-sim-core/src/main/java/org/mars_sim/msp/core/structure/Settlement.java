@@ -57,6 +57,7 @@ import org.mars_sim.msp.core.person.ai.mission.Exploration;
 import org.mars_sim.msp.core.person.ai.mission.MeteorologyFieldStudy;
 import org.mars_sim.msp.core.person.ai.mission.Mining;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.MissionType;
 import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
@@ -294,6 +295,11 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	/** Minimum amount of food to stay in this settlement when considering a mission. */
 	private int minFood = 50;
 
+	/** The flag signifying this settlement as the destination of the user-defined commander. */
+	private boolean hasDesignatedCommander = false;
+	/** Flags that track if each of the 13 missions have been disable. */
+	private boolean[] missionsDisable = new boolean[12];
+
 	/** The average ice collection rate of the water ice nearby */
 	private double iceCollectionRate = 1;
 	/** The composite value of the minerals nearby. */
@@ -348,7 +354,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	public double[] terrainProfile = new double[2];
 	/** The settlement mission directive modifiers. */
 	public double[] missionModifiers = new double[9];
-	
+
 	/** The settlement sponsor. */
 	private String sponsor;
 	/** The settlement template name. */
@@ -394,13 +400,9 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	/** The settlement's daily labor hours output. */
 	private Map<Integer, Map<Integer, Double>> dailyLaborTime;
 
-	// Static members
-	/**
-	 * The flag signifying this settlement as the destination of the user-defined
-	 * commander.
-	 */
-	private boolean hasDesignatedCommander = false;
-
+	private Map<Integer, Boolean> allowTradeMissionSettlements;
+	
+	// Static members	
 	private static final int sample1 = ResourceUtil.findIDbyAmountResourceName("regolith");// "polyethylene");
 	private static final int sample2 = ResourceUtil.findIDbyAmountResourceName("ice");// concrete");
 
@@ -444,7 +446,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 					
 					TravelToSettlement.DEFAULT_DESCRIPTION
 			);
-		}
+	}
 	
 	/**
 	 * Must be synchronised to prevent duplicate ids being assigned via different
@@ -591,6 +593,13 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 		collectRegolithMeta = new CollectRegolithMeta();
 		collectIceMeta = new CollectIceMeta();
 
+		int size = missionsDisable.length;
+		for (int i=0; i<size; i++) {
+			missionsDisable[i] = false;
+		}
+		
+		allowTradeMissionSettlements = new HashMap<Integer, Boolean>(); 
+		
 	}
 
 	
@@ -4468,15 +4477,68 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 		}
 	}
 
+	public void setMissionDisable(String missionName, boolean disable) {
+		List<String> names = MissionManager.getMissionNames();
+		int size = missionsDisable.length;
+		for (int i=0; i<size; i++) {
+			if (missionName.equalsIgnoreCase(names.get(i)) 
+					&& missionsDisable[i] == true) {
+				missionsDisable[i] = disable;
+			}
+		}
+	}
+	
+	public boolean isMissionDisable(String missionName) {
+		List<String> names = MissionManager.getMissionNames();
+		int size = missionsDisable.length;
+		for (int i=0; i<size; i++) {
+			if (missionName.equalsIgnoreCase(names.get(i))) {
+				return missionsDisable[i];
+			}
+		}
+		// by default it's false
+		return false;
+	}
+	
+	public void setAllowTradeMissionFromASettlement(Settlement settlement, boolean allowed) {
+		allowTradeMissionSettlements.put(settlement.getIdentifier(), allowed);
+	}
+	
+	public void allowTradeMissionFromAllSettlements(boolean allowed) {
+		for (Settlement s: unitManager.getSettlements()) {
+			allowTradeMissionSettlements.put(s.getIdentifier(), allowed);
+		}
+	}
+	
+	public boolean isTradeMissionAllowedFromASettlement(Settlement settlement) {
+		if (allowTradeMissionSettlements.containsKey(settlement.getIdentifier())) {
+			return allowTradeMissionSettlements.get(settlement.getIdentifier());
+		}
+		// by default it's allowed
+		return true;
+	}
+	
 	/**
 	 * Calculate the base mission probability used by all missions
 	 * 
+	 * @param missionName the name of the mission calling this method
 	 * @return probability value
 	 */
-	public double getMissionBaseProbability() {
+	public double getMissionBaseProbability(String missionName) {
 
 		if (missionProbability == -1) {
-
+			
+			List<String> names = MissionManager.getMissionNames();
+			int size = names.size();
+			// 0. Check if a mission has been overridden
+			for (int i=0; i<size; i++) {
+				if (missionName.equalsIgnoreCase(names.get(i)) 
+					&& missionsDisable[i] == true) {
+					missionProbability = 0;
+					return 0;
+				}
+			}
+		
 			// 1. Check if a mission-capable rover is available.
 			if (!RoverMission.areVehiclesAvailable(this, false)) {
 				missionProbability = 0;

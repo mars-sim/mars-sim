@@ -104,7 +104,7 @@ public class TravelToSettlementMeta implements MetaMission {
     	Person person = null;
     	Robot robot = null;
 
-        double missionProbability = settlement.getMissionBaseProbability();
+        double missionProbability = settlement.getMissionBaseProbability(DEFAULT_DESCRIPTION);
 		if (missionProbability == 0)
 			return 0;
 		

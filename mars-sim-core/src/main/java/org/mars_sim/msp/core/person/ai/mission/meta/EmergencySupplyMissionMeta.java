@@ -50,7 +50,7 @@ public class EmergencySupplyMissionMeta implements MetaMission {
         		
             Settlement settlement = person.getSettlement();
         	
-            missionProbability = settlement.getMissionBaseProbability();
+            missionProbability = settlement.getMissionBaseProbability(DEFAULT_DESCRIPTION);
     		if (missionProbability == 0)
     			return 0;
     		

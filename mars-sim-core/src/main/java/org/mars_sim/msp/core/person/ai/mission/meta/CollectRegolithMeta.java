@@ -56,7 +56,7 @@ public class CollectRegolithMeta implements MetaMission {
 
 			Settlement settlement = person.getSettlement();
 
-			missionProbability = settlement.getMissionBaseProbability() / VALUE;
+			missionProbability = settlement.getMissionBaseProbability(DEFAULT_DESCRIPTION) / VALUE;
     		if (missionProbability <= 0)
     			return 0;
     	   		

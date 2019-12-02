@@ -60,7 +60,7 @@ public class ExplorationMeta implements MetaMission {
 				return 0;
 			}
 			
-			missionProbability = settlement.getMissionBaseProbability();
+			missionProbability = settlement.getMissionBaseProbability(DEFAULT_DESCRIPTION);
 	   		if (missionProbability <= 0)
     			return 0;
 	   		

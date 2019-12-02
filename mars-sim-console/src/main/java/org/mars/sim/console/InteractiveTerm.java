@@ -283,7 +283,6 @@ public class InteractiveTerm {
         		+ System.lineSeparator()
 				+ "1. Open site editor"
 				+ System.lineSeparator()
-				+ System.lineSeparator()
 				+ "2. Proceed with default site selection"
 				+ System.lineSeparator()
 				+ System.lineSeparator()

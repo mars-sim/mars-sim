@@ -133,7 +133,7 @@ public class TradeMeta implements MetaMission {
 
 	public double getSettlementProbability(Settlement settlement) {
 
-		double missionProbability = settlement.getMissionBaseProbability();
+		double missionProbability = settlement.getMissionBaseProbability(DEFAULT_DESCRIPTION);
 
 		if (missionProbability == 0)
 			return 0;

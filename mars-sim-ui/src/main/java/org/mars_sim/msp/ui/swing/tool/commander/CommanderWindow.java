@@ -25,7 +25,6 @@ import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
@@ -40,6 +39,8 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.person.Commander;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.mission.Trade;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
@@ -47,20 +48,31 @@ import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.tool.SmartScroller;
 import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
 
+import com.alee.extended.list.CheckBoxCellData;
+import com.alee.extended.list.CheckBoxListModel;
+import com.alee.extended.list.WebCheckBoxList;
 import com.alee.laf.label.WebLabel;
+import com.alee.laf.scroll.WebScrollPane;
+import com.alee.managers.style.StyleId;
 
 /**
  * Window for the Commander Dashboard.
  */
-public class CommanderWindow
-extends ToolWindow {
+@SuppressWarnings("serial")
+public class CommanderWindow extends ToolWindow {
 
 	/** Tool name. */
 	public static final String NAME = "Commander Dashboard";
 	public static final String TASK_TAB = "Task";
 	public static final String INTERVAL_TAB = "Time";
+	public static final String POLICY_TAB = "Policy";
 	
 	// Private members
+//	private int deletingTaskIndex;
+	
+	private String deletingTaskType;
+	private String taskName;
+	
 	private JTabbedPane tabPane;
 	private DefaultComboBoxModel<String> comboBoxModel;
 	private JComboBoxMW<String> comboBox;
@@ -74,29 +86,29 @@ extends ToolWindow {
 	private JRadioButton r1;
 	private JRadioButton r2;
 	private JRadioButton r3;
-	private JRadioButton r4;
-			
+	private JRadioButton r4;		
+	
+	private WebCheckBoxList<?> settlementMissionList;
+	
 	private Commander commander = SimulationConfig.instance().getPersonConfig().getCommander();
 
 	private Person person;
 	
+	private Settlement settlement;
+	
 	private List<String> taskCache;
-	
-	private int deletingTaskIndex;
-	
-	private String deletingTaskType;
-	private String taskName;
+
 	
 	/**
 	 * Constructor.
 	 * @param desktop {@link MainDesktopPane} the main desktop panel.
 	 */
 	public CommanderWindow(MainDesktopPane desktop) {
-
 		// Use ToolWindow constructor
 		super(NAME, desktop);
 
 		person = GameManager.commanderPerson;
+		settlement = person.getAssociatedSettlement();
 		
 		// Create content panel.
 		JPanel mainPane = new JPanel(new BorderLayout());
@@ -133,6 +145,8 @@ extends ToolWindow {
 		createTaskPanel();
 		
 		createTimePanel();
+		
+		createPolicyPanel();
 		
 		setSize(new Dimension(480, 480));
 		setMaximizable(true);
@@ -323,6 +337,139 @@ extends ToolWindow {
 		
 	}
 	
+	public void createPolicyPanel() {
+		JPanel policyPanel = new JPanel(new BorderLayout());
+		
+		tabPane.add(policyPanel, BorderLayout.NORTH);
+		tabPane.setTitleAt(2, POLICY_TAB);
+	     
+		JPanel mainPanel = new JPanel(new BorderLayout());
+		policyPanel.add(mainPanel, BorderLayout.NORTH);
+		mainPanel.setPreferredSize(new Dimension(250, 120));
+		mainPanel.setMaximumSize(new Dimension(250, 120));
+		
+		// Create a button panel
+		JPanel buttonPanel = new JPanel(new GridLayout(4,1));
+//		buttonPanel.setPreferredSize(new Dimension(250, 120));
+		mainPanel.add(buttonPanel, BorderLayout.CENTER);
+		
+		buttonPanel.setBorder(BorderFactory.createTitledBorder("Trade with settlements"));
+		buttonPanel.setToolTipText("Select the trade policy with other settlements");
+		
+		ButtonGroup group0 = new ButtonGroup();
+		ButtonGroup group1 = new ButtonGroup();
+	
+		r0 = new JRadioButton("Can initiate Trading Mission", true);
+		r1 = new JRadioButton("Cannot initiate Trading Mission");
+
+		// Set up initial conditions
+		if (settlement.isMissionDisable(Trade.DEFAULT_DESCRIPTION)) {
+			r0.setSelected(false);
+			r1.setSelected(true);
+		}
+		else {
+			r0.setSelected(true);
+			r1.setSelected(false);
+		}
+		
+		
+		r2 = new JRadioButton("No Trading Missions from all settlements");
+		r3 = new JRadioButton("Allow Trading Missions from other settlements");
+
+		// Set up initial conditions
+		boolean noTrading = true;
+		if (settlement.isTradeMissionAllowedFromASettlement(settlement)) {
+			List<Settlement> list = getOtherSettlements();
+//			List<Settlement> allowedSettlements = settlementMissionList.getCheckedValues();
+			for (Settlement s: list) {
+				if (!settlement.isTradeMissionAllowedFromASettlement(s)) {
+					noTrading = false;
+					break;
+				}
+			}
+		}
+		
+		// Set settlement check boxes
+		settlementMissionList = new WebCheckBoxList<>(StyleId.checkboxlist, createModel(getOtherSettlements()));
+		settlementMissionList.setVisibleRowCount(3);
+		WebScrollPane WebScrollPane = new WebScrollPane(settlementMissionList);
+		WebScrollPane.setMaximumWidth(200);
+		mainPanel.add(WebScrollPane, BorderLayout.EAST);
+		
+		if (noTrading) {			
+			r2.setSelected(true);
+			r3.setSelected(false);
+			settlementMissionList.setEnabled(false);
+		}
+		else {
+			r2.setSelected(false);
+			r3.setSelected(true);
+			settlementMissionList.setEnabled(true);
+		}
+		
+		group0.add(r0);
+		group0.add(r1);
+		group1.add(r2);
+		group1.add(r3);
+		
+		buttonPanel.add(r0);
+		buttonPanel.add(r1);
+		buttonPanel.add(r2);
+		buttonPanel.add(r3);
+		
+		PolicyRadioActionListener actionListener = new PolicyRadioActionListener();
+		r0.addActionListener(actionListener);
+		r1.addActionListener(actionListener);
+		r2.addActionListener(actionListener);
+		r3.addActionListener(actionListener);
+
+	}
+
+	class PolicyRadioActionListener implements ActionListener {
+	    @Override
+	    public void actionPerformed(ActionEvent event) {
+	        JRadioButton button = (JRadioButton) event.getSource();
+	 
+	        if (button == r0) {
+	        	settlement.setMissionDisable(Trade.DEFAULT_DESCRIPTION, false);
+	        } else if (button == r1) {
+	        	settlement.setMissionDisable(Trade.DEFAULT_DESCRIPTION, true);
+	        } else if (button == r2) {
+	        	disableAllCheckedSettlement();
+	        	settlementMissionList.setEnabled(false);
+	        } else if (button == r3) {
+	        	settlementMissionList.setEnabled(true);
+	        }
+	    }
+	}
+	
+    /**
+     * Returns sample check box list model.
+     *
+     * @param data sample data
+     * @return sample check box list model
+     */
+    protected static CheckBoxListModel<?> createModel (final List<Settlement> settlements) {
+        final CheckBoxListModel<?> model = new CheckBoxListModel();
+        for (final Settlement element : settlements) {
+            model.add(new CheckBoxCellData(element));
+        }
+        return model;
+    }
+
+    /**
+     * Returns a list of other settlements.
+     *
+     * @return sample long list data
+     */
+    protected List<Settlement> getOtherSettlements() {
+    	List<Settlement> list = new ArrayList<Settlement>(unitManager.getSettlements());
+    	list.remove(settlement);
+//    	list.removeIf(x -> list.contains(settlement));
+        return list;
+//        return new ArrayList<Settlement>(unitManager.getSettlements()).remove(settlement);
+    }
+    
 	public MainDesktopPane getDesktop() {
 		return desktop;
 	}
@@ -334,7 +481,7 @@ extends ToolWindow {
 		String n = (String) list.getSelectedValue();
 		if (n != null) {
 			deletingTaskType = n;
-			deletingTaskIndex = list.getSelectedIndex();
+//			deletingTaskIndex = list.getSelectedIndex();
 			person.getMind().getTaskManager().deleteAPendingTask(deletingTaskType);
 			jta.append("Delete '" + n + "' from the list.\n");
 		} 
@@ -366,6 +513,29 @@ extends ToolWindow {
 		
 		// Update list
 		listUpdate();
+		
+		// Update the settlement that are being checked
+		if (r3.isSelected()) {
+			List<?> allowedSettlements =  settlementMissionList.getCheckedValues();
+			for (Object o: allowedSettlements) {
+				Settlement s = (Settlement) o;
+				if (!settlement.isTradeMissionAllowedFromASettlement(s))
+					// If this settlement hasn't been set to allow trade mission, allow it now
+					settlement.setAllowTradeMissionFromASettlement(s, true);
+			}
+		}
+	}
+	
+	public void disableAllCheckedSettlement() {
+		List<?> allowedSettlements = settlementMissionList.getCheckedValues(); //getOtherSettlements(); //
+		int size = allowedSettlements.size();
+		for (int i=0; i<size; i++) {
+			if (settlementMissionList.isCheckBoxSelected(i)) {
+				Settlement s = (Settlement) allowedSettlements.get(i);
+				settlementMissionList.setCheckBoxSelected(i, false);
+				settlement.setAllowTradeMissionFromASettlement(s, false);
+			}	
+		}
 	}
 	
 	/**

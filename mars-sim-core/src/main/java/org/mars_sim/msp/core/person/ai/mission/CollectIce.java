@@ -92,7 +92,7 @@ public class CollectIce extends CollectResourcesMission {
 		int size = locations.size();
 		
 		if (terrainElevation == null)
-			terrainElevation = sim.getMars().getSurfaceFeatures().getTerrainElevation();
+			terrainElevation = surfaceFeatures.getTerrainElevation();
 
 		for (Coordinates location : locations) {
 			totalRate += terrainElevation.getIceCollectionRate(location);
