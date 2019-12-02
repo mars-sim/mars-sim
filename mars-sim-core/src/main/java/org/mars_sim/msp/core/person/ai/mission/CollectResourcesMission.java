@@ -498,8 +498,9 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 					}
 				}
 				else {
+					MissionMember m = j.next();
 					for (Integer type : REGOLITH_TYPES) {
-						if (CollectResources.canCollectResources(j.next(), getRover(), containerID, type)) {
+						if (CollectResources.canCollectResources(m, getRover(), containerID, type)) {
 							nobodyCollect = false;
 						}
 					}

@@ -17,6 +17,10 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.GameManager;
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.meta.MetaMission;
 import org.mars_sim.msp.core.person.ai.mission.meta.MetaMissionUtil;
@@ -70,6 +74,7 @@ public class MissionManager implements Serializable {
 	// Note : MissionManager is instantiated before MarsClock
 	// Need to call setMarsClock() right after MarsClock is initialized
 	private static MarsClock marsClock;
+	private static UnitManager unitManager = Simulation.instance().getUnitManager();
 
 	static {
 		/**
@@ -112,7 +117,6 @@ public class MissionManager implements Serializable {
 		listeners = new CopyOnWriteArrayList<>();//Collections.synchronizedList(new ArrayList<MissionManagerListener>(0));
 		missionProbCache = new HashMap<MetaMission, Double>(MetaMissionUtil.getNumMetaMissions());
 		robotMissionProbCache = new HashMap<MetaMission, Double>();
-		
 	}
 
 	/**
@@ -213,8 +217,25 @@ public class MissionManager implements Serializable {
 	public List<Mission> getMissions() {
 //		// Remove inactive missions.
 //		//cleanMissions();
-		if (onGoingMissions != null)
-			return new ArrayList<Mission>(onGoingMissions);
+		if (onGoingMissions != null) {
+			if (GameManager.mode == GameMode.COMMAND) {
+				List<Mission> missions = new ArrayList<Mission>();
+				if (unitManager == null)
+					unitManager = Simulation.instance().getUnitManager();
+				Iterator<Mission> i = onGoingMissions.iterator();
+				while (i.hasNext()) {
+					Mission m = i.next(); 
+					if (m.getAssociatedSettlement().equals(unitManager.getCommanderSettlement()))
+						missions.add(m);
+				}
+				
+				return missions;
+			}
+			else {
+				return new ArrayList<Mission>(onGoingMissions);
+			}
+
+		}			
 //			return missions;
 		else
 			return new ArrayList<Mission>();

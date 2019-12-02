@@ -52,6 +52,7 @@ import com.alee.extended.list.CheckBoxCellData;
 import com.alee.extended.list.CheckBoxListModel;
 import com.alee.extended.list.WebCheckBoxList;
 import com.alee.laf.label.WebLabel;
+import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
 import com.alee.managers.style.StyleId;
 
@@ -66,6 +67,8 @@ public class CommanderWindow extends ToolWindow {
 	public static final String TASK_TAB = "Task";
 	public static final String INTERVAL_TAB = "Time";
 	public static final String POLICY_TAB = "Policy";
+	public static final String ALLOW = "Allow Trading Missions from other settlements";
+	public static final String SEE_RIGHT = ".    -->";
 	
 	// Private members
 //	private int deletingTaskIndex;
@@ -82,6 +85,13 @@ public class CommanderWindow extends ToolWindow {
 //	private JLabel leadershipPointsLabel;
 	private JTextArea jta;
 
+	private WebPanel emptyPanel = new WebPanel();
+	private WebPanel mainPane;
+	private WebPanel policyMainPanel;
+	private WebPanel innerPanel;
+	
+	private WebScrollPane WebScrollPane;
+	
 	private JRadioButton r0;
 	private JRadioButton r1;
 	private JRadioButton r2;
@@ -111,7 +121,7 @@ public class CommanderWindow extends ToolWindow {
 		settlement = person.getAssociatedSettlement();
 		
 		// Create content panel.
-		JPanel mainPane = new JPanel(new BorderLayout());
+		mainPane = new WebPanel(new BorderLayout());
 		mainPane.setBorder(MainDesktopPane.newEmptyBorder());
 		setContentPane(mainPane);
 
@@ -120,7 +130,7 @@ public class CommanderWindow extends ToolWindow {
 //		listPane.setPreferredSize(new Dimension(200, 200));
 //		mainPane.add(listPane, BorderLayout.WEST);
 
-		JPanel bottomPane = new JPanel(new GridLayout(1, 4));
+		WebPanel bottomPane = new WebPanel(new GridLayout(1, 4));
 		bottomPane.setPreferredSize(new Dimension(200, 50));
 		mainPane.add(bottomPane, BorderLayout.SOUTH);
 		
@@ -338,22 +348,22 @@ public class CommanderWindow extends ToolWindow {
 	}
 	
 	public void createPolicyPanel() {
-		JPanel policyPanel = new JPanel(new BorderLayout());
+		WebPanel policyPanel = new WebPanel(new BorderLayout());
 		
 		tabPane.add(policyPanel, BorderLayout.NORTH);
 		tabPane.setTitleAt(2, POLICY_TAB);
 	     
-		JPanel mainPanel = new JPanel(new BorderLayout());
-		policyPanel.add(mainPanel, BorderLayout.NORTH);
-		mainPanel.setPreferredSize(new Dimension(250, 120));
-		mainPanel.setMaximumSize(new Dimension(250, 120));
+		policyMainPanel = new WebPanel(new BorderLayout());
+		policyPanel.add(policyMainPanel, BorderLayout.NORTH);
+		policyMainPanel.setPreferredSize(new Dimension(200, 125));
+		policyMainPanel.setMaximumSize(new Dimension(200, 125));
 		
 		// Create a button panel
-		JPanel buttonPanel = new JPanel(new GridLayout(4,1));
+		WebPanel buttonPanel = new WebPanel(new GridLayout(4,1));
 //		buttonPanel.setPreferredSize(new Dimension(250, 120));
-		mainPanel.add(buttonPanel, BorderLayout.CENTER);
+		policyMainPanel.add(buttonPanel, BorderLayout.CENTER);
 		
-		buttonPanel.setBorder(BorderFactory.createTitledBorder("Trade with settlements"));
+		buttonPanel.setBorder(BorderFactory.createTitledBorder("Trade With Other Settlements"));
 		buttonPanel.setToolTipText("Select the trade policy with other settlements");
 		
 		ButtonGroup group0 = new ButtonGroup();
@@ -371,10 +381,9 @@ public class CommanderWindow extends ToolWindow {
 			r0.setSelected(true);
 			r1.setSelected(false);
 		}
-		
-		
+			
 		r2 = new JRadioButton("No Trading Missions from all settlements");
-		r3 = new JRadioButton("Allow Trading Missions from other settlements");
+		r3 = new JRadioButton(ALLOW);
 
 		// Set up initial conditions
 		boolean noTrading = true;
@@ -389,22 +398,38 @@ public class CommanderWindow extends ToolWindow {
 			}
 		}
 		
+		WebLabel selectLabel = new WebLabel(" Choose :");
+		selectLabel.setMinimumSize(new Dimension(150, 25));
+		selectLabel.setPreferredSize(150, 25);
+		
+		innerPanel = new WebPanel(new BorderLayout());
+		innerPanel.add(selectLabel, BorderLayout.NORTH);
+		
 		// Set settlement check boxes
 		settlementMissionList = new WebCheckBoxList<>(StyleId.checkboxlist, createModel(getOtherSettlements()));
 		settlementMissionList.setVisibleRowCount(3);
-		WebScrollPane WebScrollPane = new WebScrollPane(settlementMissionList);
-		WebScrollPane.setMaximumWidth(200);
-		mainPanel.add(WebScrollPane, BorderLayout.EAST);
+		innerPanel.add(settlementMissionList, BorderLayout.CENTER);
+		
+		WebScrollPane = new WebScrollPane(innerPanel);
+		WebScrollPane.setMaximumWidth(250);
+
+		
+//		mainPanel.add(WebScrollPane, BorderLayout.EAST);
 		
 		if (noTrading) {			
 			r2.setSelected(true);
 			r3.setSelected(false);
-			settlementMissionList.setEnabled(false);
+			policyMainPanel.remove(WebScrollPane);
+			policyMainPanel.add(emptyPanel, BorderLayout.EAST);
+//			settlementMissionList.setEnabled(false);
 		}
 		else {
 			r2.setSelected(false);
 			r3.setSelected(true);
-			settlementMissionList.setEnabled(true);
+			r3.setText(ALLOW + SEE_RIGHT);
+			policyMainPanel.remove(emptyPanel);
+			policyMainPanel.add(WebScrollPane, BorderLayout.EAST);
+//			settlementMissionList.setEnabled(true);
 		}
 		
 		group0.add(r0);
@@ -435,10 +460,16 @@ public class CommanderWindow extends ToolWindow {
 	        } else if (button == r1) {
 	        	settlement.setMissionDisable(Trade.DEFAULT_DESCRIPTION, true);
 	        } else if (button == r2) {
+				r3.setText(ALLOW);
 	        	disableAllCheckedSettlement();
-	        	settlementMissionList.setEnabled(false);
+//	        	settlementMissionList.setEnabled(false);
+				policyMainPanel.remove(WebScrollPane);
+				policyMainPanel.add(emptyPanel, BorderLayout.EAST);
 	        } else if (button == r3) {
-	        	settlementMissionList.setEnabled(true);
+//	        	settlementMissionList.setEnabled(true);
+				r3.setText(ALLOW + SEE_RIGHT);
+				policyMainPanel.remove(emptyPanel);
+				policyMainPanel.add(WebScrollPane, BorderLayout.EAST);
 	        }
 	    }
 	}
@@ -527,7 +558,7 @@ public class CommanderWindow extends ToolWindow {
 	}
 	
 	public void disableAllCheckedSettlement() {
-		List<?> allowedSettlements = settlementMissionList.getCheckedValues(); //getOtherSettlements(); //
+		List<?> allowedSettlements = settlementMissionList.getCheckedValues();
 		int size = allowedSettlements.size();
 		for (int i=0; i<size; i++) {
 			if (settlementMissionList.isCheckBoxSelected(i)) {

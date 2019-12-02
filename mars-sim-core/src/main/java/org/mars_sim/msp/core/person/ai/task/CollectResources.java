@@ -179,8 +179,8 @@ public class CollectResources extends EVAOperation implements Serializable {
 		double evaExperience = time / 100D;
 
 		// Experience points adjusted by person's "Experience Aptitude" attribute.
-		NaturalAttributeManager nManager = person.getNaturalAttributeManager();
-		int experienceAptitude = nManager.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
+//		NaturalAttributeManager nManager = person.getNaturalAttributeManager();
+		int experienceAptitude = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
 		double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
 		evaExperience += evaExperience * experienceAptitudeModifier;
 		evaExperience *= getTeachingExperienceModifier();
@@ -212,12 +212,8 @@ public class CollectResources extends EVAOperation implements Serializable {
 	 */
 	private void takeContainer() {
 		Unit container = findLeastFullContainer(rover.getInventory(), containerType, resourceType);
-		if (container != null) {
-			if (person.getInventory().canStoreUnit(container, false)) {
-				container.transfer(rover, person);
-//				rover.getInventory().retrieveUnit(container);
-//				person.getInventory().storeUnit(container);
-			}
+		if (container != null && person.getInventory().canStoreUnit(container, false)) {
+			container.transfer(rover, person);
 		}
 	}
 
