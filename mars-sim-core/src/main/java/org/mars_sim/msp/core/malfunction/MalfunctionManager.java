@@ -921,9 +921,9 @@ public class MalfunctionManager implements Serializable {
 //		logger.info("Reseting modifiers type " + type );
 		if (type == 0) {
 			oxygenFlowModifier = 100D;
-			LogConsolidated.log(Level.WARNING, 0, sourceName,
-					"[" + entity.getLocale() + "] The oxygen flow retrictor has been fixed in "
-					+ entity.getImmediateLocation(), null);
+			LogConsolidated.log(Level.WARNING, 5_000, sourceName,
+					"[" + entity.getLocale() + "] The oxygen flow retrictor had been fixed in "
+					+ entity.getNickName());
 		}
 //		
 //		else if (type == 1) {
@@ -1148,9 +1148,9 @@ public class MalfunctionManager implements Serializable {
 				
 				String loc1 = "";
 				if (entity.getImmediateLocation().toLowerCase().contains("outside"))
-					loc1 = "outside of " + entity.getImmediateLocation();
+					loc1 = "outside.";
 				else
-					loc1 = "in " + entity.getImmediateLocation();
+					loc1 = "in " + entity.getImmediateLocation() + ".";
 				
 				LogConsolidated.log(Level.WARNING, 0, sourceName,
 						"[" + entity.getLocale() + "] The malfunction '" + m.getName() + "' had been dealt with "
@@ -1309,10 +1309,6 @@ public class MalfunctionManager implements Serializable {
 			sb.insert(0, "in ");
 		}
 
-		if (s.contains("EVA")) {
-			sb.insert(0, "with ");
-		}
-
 //		 else { // if it's a vehicle, no need of a/an sb.insert(0, "in ");
 //		 
 //			 if (s.startsWith("A") || s.startsWith("E") || s.startsWith("I") ||
@@ -1320,10 +1316,24 @@ public class MalfunctionManager implements Serializable {
 //				 sb.insert(0, "in an "); else sb.insert(0, "in a "); 
 //		 }
 
-		LogConsolidated.log(Level.WARNING, 3000, sourceName,
+		if (u.getLocationTag().getImmediateLocation().equalsIgnoreCase("outside")) {
+			Settlement ss = u.getLocationTag().findSettlementVicinity();
+			if (ss != null)
+				LogConsolidated.log(Level.WARNING, 3000, sourceName,
+					"[" + u.getLocationTag().getLocale() + "] A Type-I accident occurred " 
+					+ sb.toString() + " outside of " + ss.getName());
+			else
+				LogConsolidated.log(Level.WARNING, 3000, sourceName,
+						"[" + u.getLocationTag().getLocale() + "] A Type-I accident occurred " 
+						+ sb.toString() + " outside.");
+				
+		}
+		else {
+			LogConsolidated.log(Level.WARNING, 3000, sourceName,
 				"[" + u.getLocationTag().getLocale() + "] A Type-I accident occurred " 
 				+ sb.toString() + " in " + u.getLocationTag().getImmediateLocation() + ".");
 
+		}
 	}
 
 	/**
@@ -1371,6 +1381,7 @@ public class MalfunctionManager implements Serializable {
 				// "[" + locationName + "] An accident occurs " + sb.toString() + ".", null);
 				"[" + entity.getLocale() + "] A Type-II accident occurred in " 
 						+ Conversion.capitalize(n) + ".");
+		
 	}
 
 	/**

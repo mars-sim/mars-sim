@@ -8,9 +8,7 @@ package org.mars_sim.msp.core.vehicle;
 
 import java.util.Collection;
 
-import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.resource.Part;

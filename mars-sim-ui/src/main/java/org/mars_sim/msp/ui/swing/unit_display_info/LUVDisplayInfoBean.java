@@ -7,15 +7,15 @@
 
 package org.mars_sim.msp.ui.swing.unit_display_info;
 
+import java.awt.Color;
+
+import javax.swing.Icon;
+
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.sound.SoundConstants;
-
-import java.awt.Color;
-
-import javax.swing.*;
 
 /**
  * Provides display information about a light utility vehicle.
@@ -23,7 +23,7 @@ import javax.swing.*;
 public class LUVDisplayInfoBean extends VehicleDisplayInfoBean {
 
 	// Data members
-	private Icon buttonIcon;
+	private Icon buttonIcon = ImageLoader.getIcon("LUVIcon", ImageLoader.VEHICLE_ICON_DIR);
 
 	/**
 	 * Constructor
@@ -31,8 +31,7 @@ public class LUVDisplayInfoBean extends VehicleDisplayInfoBean {
 	public LUVDisplayInfoBean() {
 		// Use VehicleDisplayInfoBean
 		super();
-
-		buttonIcon = ImageLoader.getIcon("LUVIcon", ImageLoader.TOOLBAR_ICON_DIR);
+//		buttonIcon = ImageLoader.getIcon("LUVIcon", ImageLoader.VEHICLE_ICON_DIR);
 	}
 
 
@@ -48,6 +47,7 @@ public class LUVDisplayInfoBean extends VehicleDisplayInfoBean {
 
     /**
      * Gets icon for unit button.
+     * 
      * @return icon
      */
 	public Icon getButtonIcon(Unit unit) {

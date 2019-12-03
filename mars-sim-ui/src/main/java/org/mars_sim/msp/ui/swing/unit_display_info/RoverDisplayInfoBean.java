@@ -6,14 +6,14 @@
  */
 package org.mars_sim.msp.ui.swing.unit_display_info;
 
+import javax.swing.Icon;
+
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+import org.mars_sim.msp.core.vehicle.VehicleType;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.sound.SoundConstants;
-
-import javax.swing.*;
 
 /**
  * Provides display information about a rover.
@@ -40,17 +40,19 @@ public class RoverDisplayInfoBean extends VehicleDisplayInfoBean {
 	 * @return the icon
 	 */
 	public Icon getButtonIcon(Unit unit) {
-		Vehicle v = (Vehicle) unit;
-		Rover rover = (Rover) v;
-		String type = rover.getVehicleType().toLowerCase();
+//		Vehicle v = (Vehicle) unit;
+//		Rover rover = (Rover) v;
+		String type = ((Vehicle) unit).getVehicleType();
 		
-		if (type.contains("explorer"))
-			buttonIcon = ImageLoader.getIcon("ExplorerRoverIcon", ImageLoader.TOOLBAR_ICON_DIR);
-		else if (type.contains("cargo"))
-			buttonIcon = ImageLoader.getIcon("CargoRoverIcon", ImageLoader.TOOLBAR_ICON_DIR);
-		else if (type.contains("transport"))
-			buttonIcon = ImageLoader.getIcon("TransportRoverIcon", ImageLoader.TOOLBAR_ICON_DIR);
-		
+		if (type.equalsIgnoreCase(VehicleType.EXPLORER_ROVER.getName()))
+			buttonIcon = ImageLoader.getIcon("ExplorerRoverIcon", ImageLoader.VEHICLE_ICON_DIR);
+		else if (type.equalsIgnoreCase(VehicleType.CARGO_ROVER.getName()))
+			buttonIcon = ImageLoader.getIcon("CargoRoverIcon", ImageLoader.VEHICLE_ICON_DIR);
+		else if (type.equalsIgnoreCase(VehicleType.TRANSPORT_ROVER.getName()))
+			buttonIcon = ImageLoader.getIcon("TransportRoverIcon", ImageLoader.VEHICLE_ICON_DIR);
+//		else 
+//			buttonIcon = ImageLoader.getIcon("LUVIcon", ImageLoader.VEHICLE_ICON_DIR);
+//		
 		return buttonIcon;
 	}
 

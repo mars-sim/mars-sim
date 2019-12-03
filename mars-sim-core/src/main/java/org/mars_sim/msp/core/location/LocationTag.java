@@ -172,7 +172,10 @@ public class LocationTag implements LocationState, Serializable {
 				return p.getVehicle().getName();
 			else if (LocationStateType.WITHIN_SETTLEMENT_VICINITY == p.getLocationStateType())
 				return findSettlementVicinity().getName();
-			else if (LocationStateType.OUTSIDE_ON_THE_SURFACE_OF_MARS == p.getLocationStateType()) {
+			else if (LocationStateType.OUTSIDE_ON_THE_SURFACE_OF_MARS == p.getLocationStateType()) {			
+				Settlement s = findSettlementVicinity();
+				if (s != null)
+					return s.getName();	
 				Vehicle v = findNearbyVehicleVicinity();
 				if (v != null)
 					return v.getName();				

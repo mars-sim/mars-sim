@@ -14,6 +14,7 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+import org.mars_sim.msp.core.vehicle.VehicleType;
 
 /**
  * Factory for unit display info beans.
@@ -53,15 +54,16 @@ public final class UnitDisplayInfoFactory {
 		else if (unit instanceof Vehicle) {
 			Vehicle vehicle = (Vehicle) unit;
 			if (vehicle instanceof Rover) {
-				if (vehicle.getVehicleType().equalsIgnoreCase("explorer rover"))
+				String type = vehicle.getVehicleType();
+				if (type.equalsIgnoreCase(VehicleType.EXPLORER_ROVER.getName()))
 					return explorerRoverBean;
-				else if (vehicle.getVehicleType().equalsIgnoreCase("transport rover"))
+				else if (type.equalsIgnoreCase(VehicleType.TRANSPORT_ROVER.getName()))
 					return transportRoverBean;
-				else if (vehicle.getVehicleType().equalsIgnoreCase("cargo rover"))
+				else if (type.equalsIgnoreCase(VehicleType.CARGO_ROVER.getName()))
 					return cargoRoverBean;
 				else
 					return roverBean;
-			} else if (vehicle.getVehicleType().equalsIgnoreCase("light utilitiy vehicle"))
+			} else if (vehicle.getVehicleType().equalsIgnoreCase(VehicleType.LUV.getName()))
 				return luvBean;
 			else
 				return null;

@@ -1017,9 +1017,10 @@ public class UnitManager implements Serializable {
 					for (int x = 0; x < number; x++) {
 						Equipment equipment = EquipmentFactory.createEquipment(type, settlement.getCoordinates(),
 								false);
-						String newName = getNewName(UnitType.EQUIPMENT, type, null, null);
+//						String newName = getNewName(UnitType.EQUIPMENT, type, null, null);
 						// Set name at its parent class "Unit"
-						equipment.setName(newName);
+//						equipment.setName(newName);
+						equipment.setName(getNewName(UnitType.EQUIPMENT, type, null, null));
 //						settlement.getInventory().storeUnit(equipment);
 						settlement.addOwnedEquipment(equipment);
 //						System.out.println("UnitManager : Equipment " + newName + "  owned by " + equipment.getContainerUnit().getName());
@@ -2533,7 +2534,7 @@ public class UnitManager implements Serializable {
 			return allCountries.get(RandomUtil.getRandomInt(0, allCountries.size() - 1));
 		else if (ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.SPACEX
 			||	ReportingAuthorityType.getType(sponsor) == ReportingAuthorityType.SPACEX_L)
-			return "USA";
+			return allCountries.get(RandomUtil.getRandomInt(0, allCountries.size() - 1));
 		else
 			return "USA";
 

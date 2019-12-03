@@ -188,4 +188,12 @@ abstract class VehicleDisplayInfoBean implements UnitDisplayInfo {
         return Color.black;
     }
     
+    /** 
+     * Gets icon for unit button.
+     * @return icon
+     */
+    public Icon getButtonIcon() {
+        return null;
+    }
+    
 }

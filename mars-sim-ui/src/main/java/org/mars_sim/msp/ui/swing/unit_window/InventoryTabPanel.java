@@ -198,12 +198,12 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 		        int col = table.columnAtPoint(p);
 		        if (me.getClickCount() == 2) {
 		            if (row > 0 && col > 0) {
-		    		    String name = (String) equipmentTable.getValueAt(row, 1);
+		    		    String name = ((Equipment)equipmentTable.getValueAt(row, 1)).getName();
 //    		    		System.out.println("name : " + name + "   row : " + row);
 		    		    for (Equipment e : equipmentList) {
-//	    		    		System.out.println("nickname : " + e.getNickName());
-		    		    	if (e.getNickName().equalsIgnoreCase(name)) {
-//		    		    		System.out.println("name : " + name + "   nickname : " + e.getNickName());
+//	    		    		System.out.println("nickname : " + e.getName());
+		    		    	if (e.getName().equalsIgnoreCase(name)) {
+//		    		    		System.out.println("name : " + name + "   nickname : " + e.getName());
 				    		    desktop.openUnitWindow(e, false);
 		    		    	}
 		    		    } 	    			
@@ -238,21 +238,21 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
      * @param e the event that characterizes the change.
      */
     public void valueChanged(ListSelectionEvent ev) {
-        int row = equipmentTable.getSelectedRow();
-        if (row > 0) {
-//	        Object selectedEquipment = equipmentTable.getValueAt(index, 0);
-//	        if ((selectedEquipment != null) && (selectedEquipment instanceof Equipment))
-//	            desktop.openUnitWindow((Equipment) selectedEquipment, false);
-	        String name = (String) equipmentTable.getValueAt(row, 1);
-//    		System.out.println("name : " + name + "   row : " + row);
-		    for (Equipment e : equipmentList) {
-//	    		System.out.println("nickname : " + e.getNickName());
-		    	if (e.getNickName().equalsIgnoreCase(name)) {
-//		    		System.out.println("name : " + name + "   nickname : " + e.getNickName());
-	    		    desktop.openUnitWindow(e, false);
-		    	}
-		    } 	
-        }
+//        int row = equipmentTable.getSelectedRow();
+//        if (row > 0) {
+////	        Object selectedEquipment = equipmentTable.getValueAt(index, 0);
+////	        if ((selectedEquipment != null) && (selectedEquipment instanceof Equipment))
+////	            desktop.openUnitWindow((Equipment) selectedEquipment, false);
+//        	String name = ((Equipment)equipmentTable.getValueAt(row, 1)).getName();
+////    		System.out.println("name : " + name + "   row : " + row);
+//		    for (Equipment e : equipmentList) {
+////	    		System.out.println("nickname : " + e.getNickName());
+//		    	if (e.getNickName().equalsIgnoreCase(name)) {
+////		    		System.out.println("name : " + name + "   nickname : " + e.getNickName());
+//	    		    desktop.openUnitWindow(e, false);
+//		    	}
+//		    } 	
+//        }
     }
 
 	/**
@@ -310,7 +310,9 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 
         public Class<?> getColumnClass(int columnIndex) {
             Class<?> dataType = super.getColumnClass(columnIndex);
-            if (columnIndex >= 1) dataType = Number.class;
+            if (columnIndex >= 0) dataType = String.class;
+            else if (columnIndex >= 1) dataType = Number.class;
+            else if (columnIndex >= 2) dataType = Number.class;
             return dataType;
         }
 
@@ -477,7 +479,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 		public Class<?> getColumnClass(int columnIndex) {
 			Class<?> dataType = super.getColumnClass(columnIndex);
 			if (columnIndex == 0) dataType = String.class;
-			else if (columnIndex == 1) dataType = String.class;
+			else if (columnIndex == 1) dataType = Equipment.class;
 			else if (columnIndex == 2) dataType = Double.class;
 			else if (columnIndex == 3) dataType = String.class;
 			return dataType;
@@ -494,10 +496,11 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 		public Object getValueAt(int row, int column) {
 			if (row >= 0 && row < equipment.size() && equipmentList != null) {
 				if (column == 0) return types.get(equipmentList.get(row).getName()) + WHITESPACE;
-				else if (column == 1) return equipmentList.get(row) + WHITESPACE;
+				else if (column == 1) return equipmentList.get(row);
 				else if (column == 2) {
-					if (equipmentList.get(row).getName() != null)
-						return Math.round(mass.get(equipmentList.get(row).getName())*100.0)/100.0;
+					String name = equipmentList.get(row).getName();
+					if (name != null && mass.get(name) != null)
+						return Math.round(mass.get(name)*100.0)/100.0;
 				}
 				else if (column == 3) return equipment.get(equipmentList.get(row).getName()) + WHITESPACE;
 			}

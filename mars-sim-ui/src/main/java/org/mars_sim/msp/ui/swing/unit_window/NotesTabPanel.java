@@ -10,8 +10,6 @@ package org.mars_sim.msp.ui.swing.unit_window;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.logging.Logger;
 
 import javax.swing.Icon;
@@ -25,7 +23,6 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.text.WebTextArea;
-import com.alee.laf.text.WebTextPane;
 import com.alee.managers.style.StyleId;
 
 
@@ -34,10 +31,10 @@ import com.alee.managers.style.StyleId;
  */
 public class NotesTabPanel extends TabPanel{
 
-	public NotesTabPanel(String tabTitle, Icon tabIcon, String tabToolTip, Unit unit, MainDesktopPane desktop) {
-		super(tabTitle, tabIcon, tabToolTip, unit, desktop);
-		// TODO Auto-generated constructor stub
-	}
+//	public NotesTabPanel(String tabTitle, Icon tabIcon, String tabToolTip, Unit unit, MainDesktopPane desktop) {
+//		super(tabTitle, tabIcon, tabToolTip, unit, desktop);
+//		// TODO Auto-generated constructor stub
+//	}
 
 	/** default serial id. */
 	private static final long serialVersionUID = 12L;

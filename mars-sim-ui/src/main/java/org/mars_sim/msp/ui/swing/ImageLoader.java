@@ -38,7 +38,7 @@ public class ImageLoader {
 
 	public final static String ICON_DIR = "/icons/";
 
-	public final static String TOOLBAR_ICON_DIR = "/icons/monitor_tool/toolbar/";
+	public final static String VEHICLE_ICON_DIR = "/icons/vehicle/";
 	
 	/**
 	 * Static singleton
@@ -109,8 +109,13 @@ public class ImageLoader {
 		ImageIcon found = iconCache.get(fullImageName);
 		if (found == null) {
 			String fileName = fullImageName.startsWith("/") ? fullImageName : dir + fullImageName;
+//			logger.config("Filename : " + fileName + "   imagename : " + imagename + "    ext : "+ ext + "    dir : " + dir);
 			found = new ImageIcon(ImageLoader.class.getResource(fileName));
-			iconCache.put(fullImageName, found);
+//			if (found == null) {
+//				logger.severe("Filename : " + fileName + " NOT found !");
+//			}
+//			else
+				iconCache.put(fullImageName, found);
 		}
 		
 		return found;

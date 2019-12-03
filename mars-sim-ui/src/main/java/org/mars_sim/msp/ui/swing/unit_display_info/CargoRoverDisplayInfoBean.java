@@ -17,14 +17,14 @@ import javax.swing.*;
 class CargoRoverDisplayInfoBean extends RoverDisplayInfoBean {
 	
     // Data members
-    private Icon buttonIcon;
+    private Icon buttonIcon = ImageLoader.getIcon("CargoRoverIcon", ImageLoader.VEHICLE_ICON_DIR);
     
     /**
      * Constructor
      */
     CargoRoverDisplayInfoBean() {
         super();
-        buttonIcon = ImageLoader.getIcon("CargoRoverIcon", ImageLoader.TOOLBAR_ICON_DIR);
+//        buttonIcon = ImageLoader.getIcon("CargoRoverIcon", ImageLoader.VEHICLE_ICON_DIR);
     }
     
     /** 
