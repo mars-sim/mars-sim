@@ -257,9 +257,9 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 		
 		double weight = 0;
 		if (person != null)
-			weight = person.getInventory().getTotalInventoryMass(false);
+			weight = person.getMass();
 		else if (robot != null)
-			weight = robot.getInventory().getTotalInventoryMass(false);
+			weight = robot.getMass();
 		
 		if (roverRemainingCap < weight + 5) {
 			setPhase(WALK_BACK_INSIDE);

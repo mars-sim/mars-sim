@@ -22,22 +22,22 @@ public class GameManager {
     public static GameMode mode;
 
     /** The menu variable captures the first menu choice in the console main menu. */
-    public static String menu;
+    public static String menu = "";
     
     /** The resolution variable captures the choice of the screen resolution in the console main menu. */
-    public static String resolution;
+    public static String resolution = "";
     
     /** The input variable captures the game mode choice. */
-    public static String input;
+    public static String input = "";
 
     /** The useSCE variable captures the choice of using useSCE. */
-    public static String useSCE;
+    public static String useSCE = "";
 
     /** The command0 variable captures the first choice in the Command Mode. */
-    public static String commanderProfile;
+    public static String commanderProfile = "";
     
     /** The sandbox0 variable captures the first choice in the Sandbox Mode. */
-    public static String sandbox0;
+    public static String sandbox0 = "";
     
     /** The Commander instance. */
     public static Person commanderPerson;

@@ -474,7 +474,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 		
 		double roverRemainingCap = inv.getRemainingGeneralCapacity(false);
 		
-		double weight = ((Person)member).getInventory().getTotalInventoryMass(false);
+		double weight = ((Person)member).getMass();
 
 		if (roverRemainingCap < weight + 5) {
 			endCollectingSite = false;

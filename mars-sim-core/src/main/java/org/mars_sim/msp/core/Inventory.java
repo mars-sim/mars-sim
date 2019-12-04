@@ -2181,7 +2181,8 @@ public class Inventory implements Serializable {
 	 * 
 	 * @param unit the unit
 	 */
-	public void storeUnit(Unit unit) {
+	public boolean storeUnit(Unit unit) {
+		boolean successful = true;
 		
 		if (canStoreUnit(unit, false)) {
 
@@ -2202,31 +2203,31 @@ public class Inventory implements Serializable {
 			Unit newOwner = getOwner();
 //			System.out.println("Inventory::storeUnit - " + unit + "'s ownerID : " + ownerID + "   owner : " + owner);
 
-			if (newOwner instanceof Settlement) {
-				// Try to empty amount resources into parent if container.
-				if (unit instanceof Container) {
-					Inventory containerInv = unit.getInventory();
-					for (Integer resource : containerInv.getAllARStored(false)) {
-						double containerAmount = containerInv.getAmountResourceStored(resource, false);
-						if (getAmountResourceRemainingCapacity(resource, false, false) >= containerAmount) {
-							containerInv.retrieveAmountResource(resource, containerAmount);
-							storeAmountResource(resource, containerAmount, false);
+			if (newOwner != null) {
+				if (newOwner instanceof Settlement) {
+					// Try to empty amount resources into parent if container.
+					if (unit instanceof Container) {
+						Inventory containerInv = unit.getInventory();
+						for (Integer resource : containerInv.getAllARStored(false)) {
+							double containerAmount = containerInv.getAmountResourceStored(resource, false);
+							if (getAmountResourceRemainingCapacity(resource, false, false) >= containerAmount) {
+								containerInv.retrieveAmountResource(resource, containerAmount);
+								storeAmountResource(resource, containerAmount, false);
+							}
 						}
 					}
+	
+					else if (unit instanceof Person) {
+						((Settlement) newOwner).addPeopleWithin((Person)unit);
+					}
+//					else if (unit instanceof Robot) {
+//						((Settlement) owner).addOwnedRobot((Robot)unit);
+//					}
+//					else if (unit instanceof Vehicle) {
+//						((Settlement) owner).addOwnedVehicle((Vehicle)unit);
+//					}
 				}
 
-				else if (unit instanceof Person) {
-					((Settlement) newOwner).addPeopleWithin((Person)unit);
-				}
-//				else if (unit instanceof Robot) {
-//					((Settlement) owner).addOwnedRobot((Robot)unit);
-//				}
-//				else if (unit instanceof Vehicle) {
-//					((Settlement) owner).addOwnedVehicle((Vehicle)unit);
-//				}
-			}
-
-			if (newOwner != null) {
 				unit.setContainerUnit(newOwner);
 //				System.out.println("Inventory::storeUnit - " + unit + " owned by " + owner + " (" + ownerID + ")");
 
@@ -2249,9 +2250,12 @@ public class Inventory implements Serializable {
 		} else {
 			 LogConsolidated.log(Level.SEVERE, 5_000, sourceName + "::storeUnit",
 					  unit + " could not be stored.");
+			 successful = false;
 			// The statement below is needed for maven test in testInventoryUnitStoredNull() in TestInventory
 			throw new IllegalStateException("Unit: " + unit + " could not be stored in " + getOwner().getName()); 
 		}
+		
+		return successful;
 	}
 
 	/**
@@ -2261,13 +2265,8 @@ public class Inventory implements Serializable {
 	 * @return true if successful
 	 */
 	public boolean transferUnit(Unit unit, Unit newOwner) {
-		boolean successful = true;
+		boolean successful0 = true;
 		Unit oldOwner = getOwner();
-		
-		String oldOwnerName = null;
-		
-		if (oldOwner != null)
-			oldOwnerName = oldOwner.getName();
 		
 		Integer id = unit.getIdentifier();
 		
@@ -2300,116 +2299,19 @@ public class Inventory implements Serializable {
 					if (unit instanceof Person) {
 						((Settlement) oldOwner).removePeopleWithin((Person)unit);
 					}
-//					if (unit instanceof Robot) {
-//						((Settlement) owner).removeOwnedRobot((Robot)unit);
-//					}
-//					if (unit instanceof Vehicle) {
-//						((Settlement) owner).removeOwnedVehicle((Vehicle)unit);
-//					}
 				}
 			}
-
-//			retrieved = true;
 
 		}
 		else
-			successful = false;
+			successful0 = false;
 
 		Inventory newInv = newOwner.getInventory();
 		
-//		if (retrieved) {
-//            unit.setContainerUnit(null);
-//		}
-//		else {
-//		}
+		boolean successful1 = newInv.storeUnit(unit);
 		
-		if (containedUnitIDs.contains(id)) {
-			 LogConsolidated.log(Level.SEVERE, 5_000, sourceName + "::transferUnit",
-					  unit + " could not be retrieved by " + oldOwnerName + ".");
-			 successful = false;
-			// The statement below is needed for maven test in testInventoryUnitStoredNull() in TestInventory
-			throw new IllegalStateException("Unit: " + unit + " could not be retrieved by " + oldOwnerName + "."); 
-		}
+		return successful0 && successful1;
 
-		else if (newInv.canStoreUnit(unit, false)) {
-					
-			// Set modified cache values as dirty.
-			setAmountResourceCapacityCacheAllDirty(true);
-			setAmountResourceStoredCacheAllDirty(true);
-			setAllStoredAmountResourcesCacheDirty();
-			setTotalAmountResourcesStoredCacheDirty();
-			setUnitTotalMassCacheDirty();
-
-			// Add the unit's identifier
-			newInv.addAContainedUnitID(id);
-				
-			if (newOwner != null) {
-				
-				if (newOwner instanceof Settlement) {
-					// Try to empty amount resources into parent if container.
-					if (unit instanceof Container) {
-						Inventory containerInv = unit.getInventory();
-						for (Integer resource : containerInv.getAllARStored(false)) {
-							double containerAmount = containerInv.getAmountResourceStored(resource, false);
-							if (getAmountResourceRemainingCapacity(resource, false, false) >= containerAmount) {
-								// Retrieve AR from the oldOwner
-								containerInv.retrieveAmountResource(resource, containerAmount);
-								// Store AR in the newOwner
-								storeAmountResource(resource, containerAmount, false);
-							}
-						}
-					}
-					
-					else if (unit instanceof Person) {
-						((Settlement) newOwner).addPeopleWithin((Person)unit);
-					}
-	//				else if (unit instanceof Robot) {
-	//					((Settlement) owner).addOwnedRobot((Robot)unit);
-	//				}
-	//				else if (unit instanceof Vehicle) {
-	//					((Settlement) owner).addOwnedVehicle((Vehicle)unit);
-	//				}
-				}
-
-//				System.out.println("Inventory::storeUnit - " + unit + "'s ownerID : " + ownerID + "   owner : " + owner);
-				unit.setContainerUnit(newOwner);
-//				System.out.println("Inventory::storeUnit - " + unit + " owned by " + owner + " (" + ownerID + ")");
-
-				if (!(newOwner instanceof MarsSurface)) {
-					// Note: MarsSurface represents the whole surface of Mars does not have coordinates
-					// If MarsSurface is a container of an unit, that unit may keep its own coordinates
-					unit.setCoordinates(newOwner.getCoordinates());
-				
-					newOwner.fireUnitUpdate(UnitEventType.INVENTORY_STORING_UNIT_EVENT, unit);
-					for (Integer resource : unit.getInventory().getAllARStored(false)) {
-						updateAmountResourceCapacityCache(resource);
-						updateAmountResourceStoredCache(resource);
-						newOwner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);
-					}
-					for (Integer itemResource : unit.getInventory().getAllItemResourcesStored()) {
-						newOwner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, itemResource);
-					}
-				}
-			}
-			
-			else {
-				 LogConsolidated.log(Level.SEVERE, 5_000, sourceName + "::transferUnit",
-						  unit + " was asked to store in a null container."); 
-				// The statement below is needed for maven test in testInventoryUnitStoredNull() in TestInventory
-//				throw new IllegalStateException("Unit: " + unit + " could not be stored in " + newOwner.getName()); 
-			}
-			
-		}
-		
-		else {
-			 LogConsolidated.log(Level.SEVERE, 5_000, sourceName + "::transferUnit",
-					  unit + " could not be stored in " + newOwner.getName()); 
-			 successful = false;
-			// The statement below is needed for maven test in testInventoryUnitStoredNull() in TestInventory
-			throw new IllegalStateException("Unit: " + unit + " could not be stored in " + newOwner.getName()); 
-		}
-		
-		return successful;
 	}
 	
 	/**
