@@ -400,15 +400,16 @@ public class TaskSchedule implements Serializable {
 	 * @return
 	 */
 	public boolean isEVATask(String taskName) {
-		return (taskName.toLowerCase().contains("eva")
-				|| taskName.toLowerCase().contains("dig")
-				|| taskName.toLowerCase().contains("exploresite")
-				|| taskName.toLowerCase().contains("salvagebuilding")
-				|| taskName.toLowerCase().contains("walkoutside")
-				|| taskName.toLowerCase().contains("minesite")
-				|| taskName.toLowerCase().contains("collectmined")
-				|| taskName.toLowerCase().contains("fieldwork")
-				|| taskName.toLowerCase().contains("collectresources")
+		String t = taskName.toLowerCase();
+		return (t.contains("eva")
+				|| t.contains("dig")
+				|| t.contains("exploresite")
+				|| t.contains("salvagebuilding")
+				|| t.contains("walkoutside")
+				|| t.contains("minesite")
+				|| t.contains("collectmined")
+				|| t.contains("fieldwork")
+				|| t.contains("collectresources")
 				);
 	}
 	

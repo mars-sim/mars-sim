@@ -2138,22 +2138,30 @@ public class Inventory implements Serializable {
 			if (unit.getMass() <= getRemainingGeneralCapacity(allowDirty)) {
 				result = true;
 			} else {
+				Unit owner = getOwner();
 				LogConsolidated.log(Level.SEVERE, 0, sourceName + "::canStoreUnit",
-						  unit.getName() + " has a mass of " + unit.getMass() 
-						  + " and is too big for the owner to carry. Remaining Cap : " 
-						  + getRemainingGeneralCapacity(allowDirty));
+						  unit.getName() + " had a mass of " + Math.round(unit.getMass()*10.0)/10.0 
+						  + " kg - too much to put on '"
+						  + owner.getName() 
+						  + "' to carry. Remaining Cap : " 
+						  +  Math.round(getRemainingGeneralCapacity(allowDirty)*10.0)/10.0
+						  + " kg. (Gen Cap : " 
+						  +  Math.round(this.getGeneralCapacity()*10.0)/10.0
+						  + " kg)"
+						);
+				
 				result = false;
 			}
 
 			if (unitID == ownerID) {
 				LogConsolidated.log(Level.SEVERE, 0, sourceName + "::canStoreUnit",
-						  unit.getName() + " is the same as its owner.");
+						  unit.getName() + " was the same as its owner.");
 				result = false;
 			}
 			
 			if (containsUnit(unit)) {
 				LogConsolidated.log(Level.SEVERE, 0, sourceName + "::canStoreUnit",
-						  unit.getName() + " is already inside.");
+						  unit.getName() + " was already inside.");
 				result = false;
 			}
 			
@@ -2161,7 +2169,7 @@ public class Inventory implements Serializable {
 			
 			if (owner != null && unit.getInventory().containsUnit(owner)) {
 				LogConsolidated.log(Level.SEVERE, 0, sourceName + "::canStoreUnit",
-						owner.getName() + " is owned by " + unit);
+						owner.getName() + " was owned by " + unit);
 				result = false;
 			}
 		}
@@ -2250,9 +2258,10 @@ public class Inventory implements Serializable {
 	 * Transfer the ownership of a unit from one owner to another.
 	 * 
 	 * @param unit the unit.
+	 * @return true if successful
 	 */
-	public void transferUnit(Unit unit, Unit newOwner) {
-		boolean retrieved = false;
+	public boolean transferUnit(Unit unit, Unit newOwner) {
+		boolean successful = true;
 		Unit oldOwner = getOwner();
 		
 		String oldOwnerName = null;
@@ -2276,12 +2285,14 @@ public class Inventory implements Serializable {
 			if (oldOwner != null) {
 				oldOwner.fireUnitUpdate(UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT, unit);
 
-				for (Integer resource : unit.getInventory().getAllARStored(false)) {
+				Inventory containerInv = unit.getInventory();
+				
+				for (Integer resource : containerInv.getAllARStored(false)) {
 					updateAmountResourceCapacityCache(resource);
 					updateAmountResourceStoredCache(resource);
 					oldOwner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);
 				}
-				for (Integer resource : unit.getInventory().getAllItemResourcesStored()) {
+				for (Integer resource : containerInv.getAllItemResourcesStored()) {
 					oldOwner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);
 				}
 				
@@ -2298,15 +2309,24 @@ public class Inventory implements Serializable {
 				}
 			}
 
-			retrieved = true;
+//			retrieved = true;
 
 		}
+		else
+			successful = false;
 
 		Inventory newInv = newOwner.getInventory();
 		
-		if (!retrieved) {
+//		if (retrieved) {
+//            unit.setContainerUnit(null);
+//		}
+//		else {
+//		}
+		
+		if (containedUnitIDs.contains(id)) {
 			 LogConsolidated.log(Level.SEVERE, 5_000, sourceName + "::transferUnit",
 					  unit + " could not be retrieved by " + oldOwnerName + ".");
+			 successful = false;
 			// The statement below is needed for maven test in testInventoryUnitStoredNull() in TestInventory
 			throw new IllegalStateException("Unit: " + unit + " could not be retrieved by " + oldOwnerName + "."); 
 		}
@@ -2321,35 +2341,36 @@ public class Inventory implements Serializable {
 			setUnitTotalMassCacheDirty();
 
 			// Add the unit's identifier
-			newInv.addAContainedUnitID(unit.getIdentifier());
-			
-			if (newOwner instanceof Settlement) {
-				// Try to empty amount resources into parent if container.
-				if (unit instanceof Container) {
-					Inventory containerInv = unit.getInventory();
-					for (Integer resource : containerInv.getAllARStored(false)) {
-						double containerAmount = containerInv.getAmountResourceStored(resource, false);
-						if (getAmountResourceRemainingCapacity(resource, false, false) >= containerAmount) {
-							// Retrieve AR from the oldOwner
-							containerInv.retrieveAmountResource(resource, containerAmount);
-							// Store AR in the newOwner
-							storeAmountResource(resource, containerAmount, false);
+			newInv.addAContainedUnitID(id);
+				
+			if (newOwner != null) {
+				
+				if (newOwner instanceof Settlement) {
+					// Try to empty amount resources into parent if container.
+					if (unit instanceof Container) {
+						Inventory containerInv = unit.getInventory();
+						for (Integer resource : containerInv.getAllARStored(false)) {
+							double containerAmount = containerInv.getAmountResourceStored(resource, false);
+							if (getAmountResourceRemainingCapacity(resource, false, false) >= containerAmount) {
+								// Retrieve AR from the oldOwner
+								containerInv.retrieveAmountResource(resource, containerAmount);
+								// Store AR in the newOwner
+								storeAmountResource(resource, containerAmount, false);
+							}
 						}
 					}
+					
+					else if (unit instanceof Person) {
+						((Settlement) newOwner).addPeopleWithin((Person)unit);
+					}
+	//				else if (unit instanceof Robot) {
+	//					((Settlement) owner).addOwnedRobot((Robot)unit);
+	//				}
+	//				else if (unit instanceof Vehicle) {
+	//					((Settlement) owner).addOwnedVehicle((Vehicle)unit);
+	//				}
 				}
-				
-				else if (unit instanceof Person) {
-					((Settlement) newOwner).addPeopleWithin((Person)unit);
-				}
-//				else if (unit instanceof Robot) {
-//					((Settlement) owner).addOwnedRobot((Robot)unit);
-//				}
-//				else if (unit instanceof Vehicle) {
-//					((Settlement) owner).addOwnedVehicle((Vehicle)unit);
-//				}
-			}
-			
-			if (newOwner != null) {
+
 //				System.out.println("Inventory::storeUnit - " + unit + "'s ownerID : " + ownerID + "   owner : " + owner);
 				unit.setContainerUnit(newOwner);
 //				System.out.println("Inventory::storeUnit - " + unit + " owned by " + owner + " (" + ownerID + ")");
@@ -2358,24 +2379,37 @@ public class Inventory implements Serializable {
 					// Note: MarsSurface represents the whole surface of Mars does not have coordinates
 					// If MarsSurface is a container of an unit, that unit may keep its own coordinates
 					unit.setCoordinates(newOwner.getCoordinates());
-				}	
 				
-				newOwner.fireUnitUpdate(UnitEventType.INVENTORY_STORING_UNIT_EVENT, unit);
-				for (Integer resource : unit.getInventory().getAllARStored(false)) {
-					updateAmountResourceCapacityCache(resource);
-					updateAmountResourceStoredCache(resource);
-					newOwner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);
-				}
-				for (Integer itemResource : unit.getInventory().getAllItemResourcesStored()) {
-					newOwner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, itemResource);
+					newOwner.fireUnitUpdate(UnitEventType.INVENTORY_STORING_UNIT_EVENT, unit);
+					for (Integer resource : unit.getInventory().getAllARStored(false)) {
+						updateAmountResourceCapacityCache(resource);
+						updateAmountResourceStoredCache(resource);
+						newOwner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);
+					}
+					for (Integer itemResource : unit.getInventory().getAllItemResourcesStored()) {
+						newOwner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, itemResource);
+					}
 				}
 			}
-		} else {
+			
+			else {
+				 LogConsolidated.log(Level.SEVERE, 5_000, sourceName + "::transferUnit",
+						  unit + " was asked to store in a null container."); 
+				// The statement below is needed for maven test in testInventoryUnitStoredNull() in TestInventory
+//				throw new IllegalStateException("Unit: " + unit + " could not be stored in " + newOwner.getName()); 
+			}
+			
+		}
+		
+		else {
 			 LogConsolidated.log(Level.SEVERE, 5_000, sourceName + "::transferUnit",
 					  unit + " could not be stored in " + newOwner.getName()); 
+			 successful = false;
 			// The statement below is needed for maven test in testInventoryUnitStoredNull() in TestInventory
 			throw new IllegalStateException("Unit: " + unit + " could not be stored in " + newOwner.getName()); 
 		}
+		
+		return successful;
 	}
 	
 	/**

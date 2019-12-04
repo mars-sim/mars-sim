@@ -472,21 +472,30 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 	private void collectingPhase(MissionMember member) {
 		Inventory inv = getRover().getInventory();
 		
+		double roverRemainingCap = inv.getRemainingGeneralCapacity(false);
+		
+		double weight = ((Person)member).getInventory().getTotalInventoryMass(false);
+
+		if (roverRemainingCap < weight + 5) {
+			endCollectingSite = false;
+			setPhaseEnded(true);
+		}
+		
 		double resourcesCapacity = updateResources(inv);
 
+		// Check if end collecting flag is set.
+		if (endCollectingSite) {
+			endCollectingSite = false;
+			setPhaseEnded(true);
+		}
+
+		// If collected resources are sufficient for this site, end the collecting
+		// phase.
+		if (siteCollectedResources >= siteResourceGoal) {
+			setPhaseEnded(true);
+		}
+
 		if (isEveryoneInRover()) {
-
-			// Check if end collecting flag is set.
-			if (endCollectingSite) {
-				endCollectingSite = false;
-				setPhaseEnded(true);
-			}
-
-			// If collected resources are sufficient for this site, end the collecting
-			// phase.
-			if (siteCollectedResources >= siteResourceGoal) {
-				setPhaseEnded(true);
-			}
 
 			// Determine if no one can start the collect resources task.
 			boolean nobodyCollect = true;
@@ -507,11 +516,15 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 				}
 			}
 
+			if (nobodyCollect) {
+				setPhaseEnded(true);
+			}
+			
 			// If no one can collect resources and this is not due to it just being
 			// night time, end the collecting phase.
 			boolean inDarkPolarRegion = surfaceFeatures.inDarkPolarRegion(getCurrentMissionLocation());
 			double sunlight = surfaceFeatures.getSolarIrradiance(getCurrentMissionLocation());
-			if (nobodyCollect && ((sunlight > 0D) || inDarkPolarRegion)) {
+			if (sunlight > 0D || inDarkPolarRegion) {
 				setPhaseEnded(true);
 			}
 

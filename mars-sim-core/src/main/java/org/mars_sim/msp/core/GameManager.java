@@ -21,8 +21,11 @@ public class GameManager {
     /** An instance of GameMode. */
     public static GameMode mode;
 
-    /** The menu variable captures the initial choice in the console main menu. */
+    /** The menu variable captures the first menu choice in the console main menu. */
     public static String menu;
+    
+    /** The resolution variable captures the choice of the screen resolution in the console main menu. */
+    public static String resolution;
     
     /** The input variable captures the game mode choice. */
     public static String input;

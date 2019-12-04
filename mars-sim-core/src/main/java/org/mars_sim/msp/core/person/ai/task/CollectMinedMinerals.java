@@ -33,7 +33,6 @@ import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.RoboticAttributeManager;
 import org.mars_sim.msp.core.robot.RoboticAttributeType;
-import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Rover;
 
@@ -235,13 +234,13 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 		// Check for radiation exposure during the EVA operation.
 		if (isRadiationDetected(time)) {
 			setPhase(WALK_BACK_INSIDE);
-			return time;
+			return .5 * time;
 		}
 		// Check if site duration has ended or there is reason to cut the collect
 		// minerals phase short and return to the rover.
 		if (shouldEndEVAOperation() || addTimeOnSite(time)) {
 			setPhase(WALK_BACK_INSIDE);
-			return time;
+			return .5 * time;
 		}
 
 		Mining mission = null;
@@ -253,6 +252,20 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 		double mineralsExcavated = mission.getMineralExcavationAmount(mineralType);
 		double remainingPersonCapacity = 0;
 
+		double roverRemainingCap = rover.getInventory().getAmountResourceRemainingCapacity(mineralType, true,
+				false);
+		
+		double weight = 0;
+		if (person != null)
+			weight = person.getInventory().getTotalInventoryMass(false);
+		else if (robot != null)
+			weight = robot.getInventory().getTotalInventoryMass(false);
+		
+		if (roverRemainingCap < weight + 5) {
+			setPhase(WALK_BACK_INSIDE);
+			return .5 * time;
+		}
+			
 		if (person != null)
 			remainingPersonCapacity = person.getInventory().getAmountResourceRemainingCapacity(mineralType, true,
 					false);

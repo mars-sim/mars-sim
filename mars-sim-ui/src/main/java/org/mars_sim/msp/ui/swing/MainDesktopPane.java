@@ -34,6 +34,7 @@ import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
+import org.mars.sim.console.InteractiveTerm;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.GameManager;
 import org.mars_sim.msp.core.GameManager.GameMode;
@@ -183,7 +184,7 @@ public class MainDesktopPane extends JDesktopPane
 		// Initialize firstDisplay to true
 		firstDisplay = true;
 		// Set background paper size
-		setPreferredSize(new Dimension(1366, 768 - 35));
+		setPreferredSize(new Dimension(InteractiveTerm.getWidth(), InteractiveTerm.getHeight()- 35));
 		// Prep listeners
 		prepareListeners();
 		// Instantiate BrowserJFX

@@ -123,7 +123,8 @@ public class TabPanelLog extends TabPanel {
 //			solList.add(today);
 
 		// Create comboBoxModel
-		Collections.sort(solList);
+//		Collections.sort(solList);
+		Collections.sort(solList, Collections.reverseOrder());
 		comboBoxModel = new DefaultComboBoxModel<Object>();
 		// Using internal iterator in lambda expression
 		solList.forEach(s -> comboBoxModel.addElement(s));
@@ -374,7 +375,8 @@ public class TabPanelLog extends TabPanel {
 				}
 			}
 
-			Collections.sort(solList);
+//			Collections.sort(solList);
+			Collections.sort(solList, Collections.reverseOrder());
 //			solList.forEach(s -> comboBoxModel.addElement(s));
 					
 			for (int s : solList) {

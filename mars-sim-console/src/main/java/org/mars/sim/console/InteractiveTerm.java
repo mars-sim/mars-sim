@@ -50,7 +50,10 @@ public class InteractiveTerm {
     private static String[] choices = {};
 
     private static int choiceIndex = -1;
-
+    
+    private volatile static int width = 1366;
+    private volatile static int height = 768;
+	
     private static boolean consoleEdition = false;
     
     private volatile static boolean keepRunning;
@@ -165,14 +168,16 @@ public class InteractiveTerm {
 				+ System.lineSeparator()
 				+ "0. Exit "
 				+ System.lineSeparator()
-				+ "1. Start a New Sim"
+				+ "1. Start a new Sim"
 				+ System.lineSeparator()
-				+ "2. Load an Saved Sim"
+				+ "2. Load a saved Sim"
+				+ System.lineSeparator()
+				+ "3. Change screen resolution"
 				+ System.lineSeparator()
 				+ System.lineSeparator()
 				);
 			
-        handler.addStringTask("menu", "Choose an option :", false).addChoices("0", "1", "2").constrainInputToChoices();
+        handler.addStringTask("menu", "Choose an option :", false).addChoices("0", "1", "2", "3").constrainInputToChoices();
         handler.executeOneTask();
 
         if (GameManager.menu.equals("0")) {
@@ -197,6 +202,88 @@ public class InteractiveTerm {
         	marsTerminal.print(System.lineSeparator());
         	useSCE = 2;
         }
+        
+        else if (GameManager.menu.equals("3")) {
+        	marsTerminal.print(System.lineSeparator() 
+    				+ System.lineSeparator()
+    				+ "                        * * *   Resolution Menu   * * *\n"
+    				+ System.lineSeparator()
+    				+ System.lineSeparator()
+    				+ "0. 1366 x 768 (Default)"
+    				+ System.lineSeparator()
+    				+ "1. 1280 x 800"
+    				+ System.lineSeparator()
+    				+ "2. 1280 x 1024"
+    				+ System.lineSeparator()
+    				+ "3. 1600 x 900"
+    				+ System.lineSeparator()
+       				+ "4. 1920 x 1080"
+    				+ System.lineSeparator()
+    	        	+ System.lineSeparator()
+        			);
+        	        			
+        	String oldRes = "1366 x 768";
+        	String newRes = "";
+        	
+        	marsTerminal.print("Current resolution : " + oldRes);
+        	marsTerminal.print(System.lineSeparator());
+        	marsTerminal.print(System.lineSeparator());
+        	
+        	handler.addStringTask("resolution", "Choose an option :", false).addChoices("0", "1", "2", "3", "4").constrainInputToChoices();
+            handler.executeOneTask();
+
+            if (GameManager.resolution.equals("0")) {
+            	if (width != 1366)
+            		width = 1366;
+            	if (height != 768)
+            		height = 768;
+            	
+            	newRes = width + " x " + height;
+            }
+        	
+            else if (GameManager.resolution.equals("1")) {
+            	if (width != 1280)
+            		width = 1280;
+            	if (height != 800)
+            		height = 800;
+            	
+            	newRes = width + " x " + height;
+            }
+
+            else if (GameManager.resolution.equals("2")) {
+            	if (width != 1280)
+            		width = 1280;
+            	if (height != 1024)
+            		height = 1024;
+            	
+            	newRes = width + " x " + height;
+            }
+        	
+            else if (GameManager.resolution.equals("3")) {
+            	if (width != 1600)
+            		width = 1600;
+            	if (height != 900)
+            		height = 900;
+            	
+            	newRes = width + " x " + height;
+            }
+
+            else if (GameManager.resolution.equals("4")) {
+            	if (width != 1920)
+            		width = 1920;
+            	if (height != 1080)
+            		height = 1080;
+            	
+            	newRes = width + " x " + height;
+            }
+            
+        	marsTerminal.print(System.lineSeparator());
+			marsTerminal.print("The screen resolution has been changed from '" + oldRes + "' to '" + newRes + "'");
+        	marsTerminal.print(System.lineSeparator());
+        	
+        	return selectMenu();
+        }
+        
         
 		marsTerminal.print(System.lineSeparator());
 		
@@ -826,7 +913,16 @@ public class InteractiveTerm {
     	return gm;
     }
     
+	public static int getWidth() {
+		return width;
+	}
+	
+	public static int getHeight() {
+		return height;
+	}
+	
 //    public static void setMasterClock() {
 //    	marsTerminal.setMasterClock(masterClock);
 //    }
+	
 }

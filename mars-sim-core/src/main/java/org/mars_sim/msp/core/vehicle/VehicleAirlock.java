@@ -113,14 +113,14 @@ extends Airlock {
      * @param person
      */
     public void stepIntoAirlock(Person person) {
-    	if (person.isOutside()) {
-									
+    	if (person.isOutside()) {						
             // 1.1. Transfer a person from the surface of Mars to the vehicle
             person.transfer(marsSurface, vehicle);
         
-			LogConsolidated.log(Level.FINER, 0, sourceName, 
+            LogConsolidated.log(Level.FINER, 0, sourceName, 
 					"[" + person.getLocationTag().getLocale() + "] "
 					+ person.getName() + " had just stepped inside rover " + vehicle.getName());
+
 		}
 		else if (person.isInSettlement()) {
 			LogConsolidated.log(Level.SEVERE, 0, sourceName, 

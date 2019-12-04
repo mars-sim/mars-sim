@@ -162,8 +162,12 @@ implements Serializable {
 	            	// half of the time, talk to just one person
 	            	if (RandomUtil.getRandomInt(1) == 0) {
 	            		invitee = getLikablePerson(list);
-	            		invitees.add(invitee);
-	            		talkTo(invitee);
+	            		if (invitee != null) {
+		            		invitees.add(invitee);
+		            		talkTo(invitee);
+	            		}
+	            		else
+	            			endTask();
 	            	}
 	            	else {	
 	            	// speak to a group of people

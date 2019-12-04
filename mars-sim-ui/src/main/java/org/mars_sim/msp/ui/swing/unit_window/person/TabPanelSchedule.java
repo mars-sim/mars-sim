@@ -362,6 +362,10 @@ public class TabPanelSchedule extends TabPanel {
 			if (!solList.contains(today))
 				solList.add(today);
 			// int max = todayCache;
+			
+			// Update allActivities
+			allActivities = taskSchedule.getAllActivities();
+			
 			for (int key : allActivities.keySet()) {
 				// System.out.println("key is " + key);
 				// if (key > max) max = key;

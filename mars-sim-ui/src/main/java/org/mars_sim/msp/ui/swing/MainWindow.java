@@ -24,11 +24,6 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.TimeZone;
 import java.util.Timer;
@@ -51,6 +46,7 @@ import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 
+import org.mars.sim.console.InteractiveTerm;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Simulation.SaveType;
@@ -89,8 +85,8 @@ extends JComponent {
 //	private static String loggerName = logger.getName();
 //	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 	
-	public static final int WIDTH = 1366;
-	public static final int HEIGHT = 768;
+//	public static int width = InteractiveTerm.getWidth();//1366;
+//	public static int height = InteractiveTerm.getHeight();//768;
 	
 	/** Icon image filename for frame */
 	public static final String ICON_IMAGE = "/icons/landerhab16.png";//"/images/LanderHab.png";
@@ -173,13 +169,14 @@ extends JComponent {
 	 */
 	public MainWindow(boolean cleanUI) {
 //		logger.config("MainWindow is on " + Thread.currentThread().getName() + " Thread");
+		logger.config("width : " + InteractiveTerm.getWidth() + "    height : " + InteractiveTerm.getHeight());
 		// this.cleanUI = cleanUI;
 		// Set up the look and feel library to be used
 		initializeTheme();
 		
 		// Set up the frame
 		frame = new WebFrame();//StyleId.rootpane);
-		frame.setSize(new Dimension(WIDTH, HEIGHT));
+		frame.setSize(new Dimension(InteractiveTerm.getWidth(), InteractiveTerm.getHeight()));
 		frame.setResizable(false);
 
 //		frame.setIconImages(WebLookAndFeel.getImages());
