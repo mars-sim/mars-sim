@@ -104,7 +104,7 @@ implements UnitListener {
 				missionRover.addUnitListener(this);
 			}
 
-			resourceAmountCache = this.mission.getTotalCollectedResources();
+//			resourceAmountCache = this.mission.getTotalCollectedResources();
 
 			// Update the collection value label.
 			updateCollectionValueLabel();
@@ -145,9 +145,9 @@ implements UnitListener {
 	 * Updates the collection value label.
 	 */
 	private void updateCollectionValueLabel() {
-		double resourceAmount = 0D;
+		double resourceAmount = mission.getTotalCollectedResources();
 		if (missionRover != null) {
-			resourceAmount = mission.getTotalCollectedResources();//missionRover.getInventory().getAmountResourceStored(resource, true);
+//			resourceAmount = missionRover.getInventory().getAmountResourceStored(resource, true);
 			if (resourceAmountCache < resourceAmount) {
 				resourceAmountCache = resourceAmount;
 			}
@@ -158,11 +158,10 @@ implements UnitListener {
 		else {
 			resourceAmount = resourceAmountCache;
 		}
-				
+
 		// Update collection value label.
 		collectionValueLabel.setText(
-			Msg.getString(
-				"CollectResourcesMissionCustomInfoPanel.kilograms", //$NON-NLS-1$
+			Msg.getString("CollectResourcesMissionCustomInfoPanel.kilograms", //$NON-NLS-1$
 				Integer.toString((int) resourceAmount)
 			)
 		);

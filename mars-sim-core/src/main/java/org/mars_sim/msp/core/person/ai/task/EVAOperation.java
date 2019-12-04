@@ -8,6 +8,7 @@ package org.mars_sim.msp.core.person.ai.task;
 
 import java.awt.geom.Point2D;
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -25,6 +26,8 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
+import org.mars_sim.msp.core.person.health.Complaint;
+import org.mars_sim.msp.core.person.health.HealthProblem;
 import org.mars_sim.msp.core.person.health.MedicalEvent;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
@@ -656,8 +659,18 @@ public abstract class EVAOperation extends Task implements Serializable {
 		BuildingManager.addToMedicalBuilding(p, id);
 		// Register the person
 //		p.setAssociatedSettlement(id);
+		
+		
+		Collection<HealthProblem> problems = p.getPhysicalCondition().getProblems();
+		Complaint complaint = p.getPhysicalCondition().getMostSerious();
+		HealthProblem problem = null;
+		for (HealthProblem hp : problems) {
+			if (problem.equals(hp))
+				problem = hp;
+		}
+		
 		// Register the historical event
-		HistoricalEvent rescueEvent = new MedicalEvent(p, null, EventType.MEDICAL_RESCUE);
+		HistoricalEvent rescueEvent = new MedicalEvent(p, problem, EventType.MEDICAL_RESCUE);
 		Simulation.instance().getEventManager().registerNewEvent(rescueEvent);
 	}
 	

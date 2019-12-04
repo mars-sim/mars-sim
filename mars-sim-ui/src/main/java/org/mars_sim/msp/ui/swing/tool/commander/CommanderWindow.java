@@ -31,6 +31,7 @@ import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -460,11 +461,14 @@ public class CommanderWindow extends ToolWindow {
 	        } else if (button == r1) {
 	        	settlement.setMissionDisable(Trade.DEFAULT_DESCRIPTION, true);
 	        } else if (button == r2) {
-				r3.setText(ALLOW);
-	        	disableAllCheckedSettlement();
-//	        	settlementMissionList.setEnabled(false);
-				policyMainPanel.remove(WebScrollPane);
-				policyMainPanel.add(emptyPanel, BorderLayout.EAST);
+	        	SwingUtilities.invokeLater(() -> {
+					r3.setText(ALLOW);
+//					System.out.println("r2 selected");
+		        	disableAllCheckedSettlement();
+	//	        	settlementMissionList.setEnabled(false);
+					policyMainPanel.remove(WebScrollPane);
+					policyMainPanel.add(emptyPanel, BorderLayout.EAST);
+	        	});
 	        } else if (button == r3) {
 //	        	settlementMissionList.setEnabled(true);
 				r3.setText(ALLOW + SEE_RIGHT);
@@ -560,9 +564,11 @@ public class CommanderWindow extends ToolWindow {
 	public void disableAllCheckedSettlement() {
 		List<?> allowedSettlements = settlementMissionList.getCheckedValues();
 		int size = allowedSettlements.size();
+//		System.out.println(allowedSettlements);
 		for (int i=0; i<size; i++) {
 			if (settlementMissionList.isCheckBoxSelected(i)) {
 				Settlement s = (Settlement) allowedSettlements.get(i);
+//				System.out.println("i : " + i + "  " + s);
 				settlementMissionList.setCheckBoxSelected(i, false);
 				settlement.setAllowTradeMissionFromASettlement(s, false);
 			}	

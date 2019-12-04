@@ -2182,7 +2182,7 @@ public class Inventory implements Serializable {
 	 * @param unit the unit
 	 */
 	public boolean storeUnit(Unit unit) {
-		boolean successful = true;
+		boolean stored = true;
 		
 		if (canStoreUnit(unit, false)) {
 
@@ -2247,15 +2247,16 @@ public class Inventory implements Serializable {
 					newOwner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, itemResource);
 				}
 			}
+			
 		} else {
 			 LogConsolidated.log(Level.SEVERE, 5_000, sourceName + "::storeUnit",
 					  unit + " could not be stored.");
-			 successful = false;
+			 stored = false;
 			// The statement below is needed for maven test in testInventoryUnitStoredNull() in TestInventory
 			throw new IllegalStateException("Unit: " + unit + " could not be stored in " + getOwner().getName()); 
 		}
 		
-		return successful;
+		return stored;
 	}
 
 	/**
@@ -2265,88 +2266,34 @@ public class Inventory implements Serializable {
 	 * @return true if successful
 	 */
 	public boolean transferUnit(Unit unit, Unit newOwner) {
-		boolean successful0 = true;
-		Unit oldOwner = getOwner();
 		
-		Integer id = unit.getIdentifier();
-		
-		if (containedUnitIDs.contains(id)) {
-			// Set modified cache values as dirty.
-			setAmountResourceCapacityCacheAllDirty(true);
-			setAmountResourceStoredCacheAllDirty(true);
-			setAllStoredAmountResourcesCacheDirty();
-			setTotalAmountResourcesStoredCacheDirty();
-			setUnitTotalMassCacheDirty();
-
-			containedUnitIDs.remove(id);
-
-			// Update owner
-			if (oldOwner != null) {
-				oldOwner.fireUnitUpdate(UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT, unit);
-
-				Inventory containerInv = unit.getInventory();
-				
-				for (Integer resource : containerInv.getAllARStored(false)) {
-					updateAmountResourceCapacityCache(resource);
-					updateAmountResourceStoredCache(resource);
-					oldOwner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);
-				}
-				for (Integer resource : containerInv.getAllItemResourcesStored()) {
-					oldOwner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);
-				}
-				
-				if (oldOwner instanceof Settlement) {
-					if (unit instanceof Person) {
-						((Settlement) oldOwner).removePeopleWithin((Person)unit);
-					}
-				}
-			}
-
-		}
-		else
-			successful0 = false;
-
-		Inventory newInv = newOwner.getInventory();
-		
-		boolean successful1 = newInv.storeUnit(unit);
-		
-		return successful0 && successful1;
-
+		return retrieveUnit(unit, false) && newOwner.getInventory().storeUnit(unit);
 	}
-	
+
 	/**
 	 * Retrieves a unit from storage.
 	 * 
 	 * @param unit the unit.
 	 */
 	public void retrieveUnit(Unit unit) {
-
-		boolean retrieved = false;
+		
+		retrieveUnit(unit, true);	
+	}
+	
+	/**
+	 * Retrieves a unit from storage.
+	 * 
+	 * @param unit the unit.
+	 * @param changeContainerUnit should it change or keep the container unit
+	 */
+	public boolean retrieveUnit(Unit unit, boolean changeContainerUnit) {
+		
+		boolean retrieved = true;
 
 		Unit owner = getOwner();
 		
 		Integer id = unit.getIdentifier();
-//		
-//		if (unitManager == null)
-//			unitManager= Simulation.instance().getUnitManager();
-//		//unit = unitManager.getUnitByID(id);
-//		
-//		String s = String.format("Inventory::retrieveUnit - %20s (%4d)", unit.getName(), id);
-//		System.out.print(s);
-//		
-//		if (owner != null) {
-//			String s1 = String.format(" %20s (%4d) - size:%4d ", owner.getName(), ownerID, containedUnitIDs.size());
-//			System.out.print(s1);
-//		}
-//		
-//		System.out.println();
-		
-//		System.out.print("unit id " + id);
-//		System.out.print("   unit " + unit.getName());
-//		System.out.print("   owner id " + owner.getIdentifier());
-//		System.out.print("   owner " + owner.getName());
-//		System.out.println("   unit size " + containedUnitIDs.size());
-		
+
 		if (containedUnitIDs.contains(id)) {
 			// Set modified cache values as dirty.
 			setAmountResourceCapacityCacheAllDirty(true);
@@ -2364,39 +2311,34 @@ public class Inventory implements Serializable {
 				for (Integer resource : unit.getInventory().getAllARStored(false)) {
 					updateAmountResourceCapacityCache(resource);
 					updateAmountResourceStoredCache(resource);
-					owner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);//ResourceUtil.findAmountResource(resource)); 
+					owner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);
 				}
+				
 				for (Integer resource : unit.getInventory().getAllItemResourcesStored()) {
-					owner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);//, ItemResourceUtil.findItemResource(resource));
+					owner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);
 				}
 				
 				if (owner instanceof Settlement) {
 					if (unit instanceof Person) {
 						((Settlement) owner).removePeopleWithin((Person)unit);
 					}
-//						if (unit instanceof Robot) {
-//							((Settlement) owner).removeOwnedRobot((Robot)unit);
-//						}
-//						if (unit instanceof Vehicle) {
-//							((Settlement) owner).removeOwnedVehicle((Vehicle)unit);
-//						}
 				}
-	
 			}
-
-			retrieved = true;
-		}
-
-		if (retrieved) {
-            unit.setContainerUnit(null);
+			
+			if (changeContainerUnit) {
+	            unit.setContainerUnit(null);
+			}
 		}
 
 		else {
-			 LogConsolidated.log(Level.SEVERE, 5_000, sourceName +
-					 "::retrieveUnit", "'" + unit + "' could not be retrieved.");
+			LogConsolidated.log(Level.SEVERE, 5_000, sourceName +
+					"::retrieveUnit", "'" + unit + "' could not be retrieved.");
+			retrieved = false;
 			// The statement below is needed for maven test
 			throw new IllegalStateException("'" + unit + "' could not be retrieved from '" + owner.getName() + "'");
 		}
+		
+		return retrieved;
 	}
 
 	/**
@@ -2492,23 +2434,13 @@ public class Inventory implements Serializable {
 		}
 	}
 
-//	/**
-//	 * Checks if the amount resource capacity cache is dirty for a resource.
-//	 * 
-//	 * @param resource the resource to check.
-//	 * @return true if resource is dirty in cache.
-//	 */
-//	private boolean isAmountResourceCapacityCacheDirty(AmountResource resource) {
-//		return isARCapacityCacheDirty(resource.getID());
-//	}
-
 	/**
 	 * Checks if the amount resource capacity cache is dirty for a resource.
 	 * 
 	 * @param resource the resource to check.
 	 * @return true if resource is dirty in cache.
 	 */
-	private boolean isARCapacityCacheDirty(int resource) {
+	private boolean isAmountResourceCapacityCacheDirty(int resource) {
 
 		// Initialize amount resource capacity cache if necessary.
 		if (capacityCache == null) {
@@ -2616,7 +2548,7 @@ public class Inventory implements Serializable {
 		}
 
 		// Update amount resource capacity cache if it is dirty.
-		if (isARCapacityCacheDirty(resource) && !allowDirty) {
+		if (isAmountResourceCapacityCacheDirty(resource) && !allowDirty) {
 			updateAmountResourceCapacityCache(resource);
 		}
 
@@ -2629,15 +2561,6 @@ public class Inventory implements Serializable {
 		}
 		// return amountResourceCapacityCache.get(resource);
 	}
-
-//	/**
-//	 * Update the amount resource capacity cache for an amount resource.
-//	 * 
-//	 * @param resource the resource to update.
-//	 */
-//	private void updateAmountResourceCapacityCache(AmountResource resource) {
-//		updateAmountResourceCapacityCache(resource.getID());
-//	}
 
 	/**
 	 * Update the amount resource capacity cache for an amount resource.
@@ -2690,6 +2613,7 @@ public class Inventory implements Serializable {
 
 		// Add checking for amountResourceContainersStoredCacheDirty and add if else
 		// clause
+//		logger.config(ResourceUtil.findAmountResource(resource) + " (id : " + resource + ")"); 
 		if (containersStoredCacheDirty.containsKey(resource)) {
 			if (containersStoredCacheDirty.get(resource)) {
 				if (containedUnitIDs != null) {
