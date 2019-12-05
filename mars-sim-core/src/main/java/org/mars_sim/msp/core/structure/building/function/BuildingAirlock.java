@@ -68,20 +68,20 @@ public class BuildingAirlock extends Airlock {
     }
        
     @Override
-    protected void exitAirlock(Person person) {
-
+    protected boolean exitAirlock(Person person) {
+    	boolean successful = false;
+    	
         if (inAirlock(person)) {
-
             if (AirlockState.PRESSURIZED == getState()) {
             	// check if the airlock has been sealed from outside and pressurized, ready to 
             	// open the inner door to release the person into the settlement
-            	stepInside(person);
+            	successful = stepInside(person);
             }
             
             else if (AirlockState.DEPRESSURIZED == getState()) {
             	// check if the airlock has been de-pressurized, ready to open the outer door to 
             	// get exposed to the outside air and release the person
-            	stepIntoMarsSurface(person);
+            	successful = stepIntoMarsSurface(person);
             }
             else {
                 logger.severe("Building airlock in incorrect state for exiting: " + getState());
@@ -90,6 +90,8 @@ public class BuildingAirlock extends Airlock {
         else {
             throw new IllegalStateException(person.getName() + " not in airlock of " + getEntityName());
         }
+        
+        return successful;
     }
 
     /**
@@ -97,7 +99,8 @@ public class BuildingAirlock extends Airlock {
      * 
      * @param person
      */
-    public void stepInside(Person person) {
+    public boolean stepInside(Person person) {
+    	boolean successful = false;
       	LogConsolidated.log(Level.FINER, 0, sourceName,
 	  				"[" + person.getLocationTag().getLocale() 
 	  				+ "] The airlock had been pressurized and is ready to open the inner door to release " + person + ".");
@@ -116,20 +119,26 @@ public class BuildingAirlock extends Airlock {
 			settlement.getCompositionOfAir().releaseOrRecaptureAir(building.getInhabitableID(), true, building);
 
             // 1.1. Transfer a person from the surface of Mars to the building inventory
-            person.transfer(marsSurface, settlement);
+			successful = person.transfer(marsSurface, settlement);
             
-            // 1.2 Add the person to the building
-            BuildingManager.addPersonOrRobotToBuilding(person, building);
-            
-			// 1.3 Set the person's coordinates to that of the settlement's
-			person.setCoordinates(settlement.getCoordinates());
-			
-   			LogConsolidated.log(Level.FINER, 0, sourceName,
-	  				"[" + person.getLocationTag().getLocale() + "] "
-					+ person + " doffed the EVA suit, came through the inner door of the airlock at " 
-	  				+ building + " and went inside " 
-        			+ settlement
-        			+ ".");
+			if (successful) {
+	            // 1.2 Add the person to the building
+	            BuildingManager.addPersonOrRobotToBuilding(person, building);
+	            
+				// 1.3 Set the person's coordinates to that of the settlement's
+				person.setCoordinates(settlement.getCoordinates());
+				
+	   			LogConsolidated.log(Level.FINER, 0, sourceName,
+		  				"[" + person.getLocationTag().getLocale() + "] "
+						+ person + " doffed the EVA suit, came through the inner door of the airlock at " 
+		  				+ building + " and went inside " 
+	        			+ settlement
+	        			+ ".");
+			}
+			else
+				LogConsolidated.log(Level.SEVERE, 0, sourceName, 
+						"[" + person.getLocationTag().getLocale() + "] "
+						+ person.getName() + " could not step inside " + settlement.getName());
         }
         
         else if (!person.isBuried() || !person.isDeclaredDead()) {
@@ -138,6 +147,8 @@ public class BuildingAirlock extends Airlock {
           		 + person +  " was supposed to be entering " + getEntityName() 
           		 + "'s airlock but already in " + person.getLocationTag().getImmediateLocation());
         }
+    	
+    	return successful;
     }
  
     /**
@@ -145,7 +156,8 @@ public class BuildingAirlock extends Airlock {
      * 
      * @param person
      */
-    public void stepIntoMarsSurface(Person person) {
+    public boolean stepIntoMarsSurface(Person person) {
+    	boolean successful = false;
     	LogConsolidated.log(Level.FINER, 0, sourceName,
   				"[" + person.getLocationTag().getLocale() 
   				+ "] The airlock had been depressurized and is ready to open the outer door to release " + person + ".");
@@ -166,23 +178,29 @@ public class BuildingAirlock extends Airlock {
             			
             // 5.0. Recapture air from the airlock before depressurizing it
   			settlement.getCompositionOfAir().releaseOrRecaptureAir(building.getInhabitableID(), false, building);
-            
-			// 5.1 Remove the person from the building
-            BuildingManager.removePersonOrRobotFromBuilding(person, building);
-                     
+                        
             // 5.2. Transfer a person from the building to the surface of Mars to the vehicle
-            person.transfer(settlement, marsSurface);
+            successful = person.transfer(settlement, marsSurface);
             
-			// 5.3. Set the person's coordinates to that of the settlement's
-			person.setCoordinates(settlement.getCoordinates());
-			
-  			LogConsolidated.log(Level.FINER, 0, sourceName,
+			if (successful) {
+				// 5.1 Remove the person from the building
+	            BuildingManager.removePersonOrRobotFromBuilding(person, building);
+	         
+				// 5.3. Set the person's coordinates to that of the settlement's
+				person.setCoordinates(settlement.getCoordinates());
+				
+	  			LogConsolidated.log(Level.FINER, 0, sourceName,
 	  				"[" + person.getLocationTag().getLocale() + "] "
 					+ person
         			+ " donned the EVA suit, came through the outer door of the airlock at " 
 					+ building + " in " 
         			+ settlement
         			+ " and stepped outside.");
+			}
+			else
+				LogConsolidated.log(Level.SEVERE, 0, sourceName, 
+						"[" + person.getLocationTag().getLocale() + "] "
+						+ person.getName() + " could not step outside " + settlement.getName());
         }
     	
         else if (!person.isBuried() || !person.isDeclaredDead()) {
@@ -191,6 +209,8 @@ public class BuildingAirlock extends Airlock {
             		+ person +  " was supposed to be exiting " + getEntityName()
                     + "'s airlock but already " + person.getLocationTag().getImmediateLocation());
         }
+    	
+    	return successful;
     }
     
     @Override

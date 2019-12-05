@@ -662,10 +662,17 @@ public abstract class Vehicle extends Unit
 	public String printStatusTypes() {
 		String s = "";
 		int size = statusTypes.size();
-		for (int i=0; i<size; i++) {
-			s += statusTypes.get(i).getName();
-			if (i != size - 1)
-				s += ", ";
+		if (size == 0)
+			return s;
+		else if (size == 1) {
+			s = statusTypes.get(0).getName();
+		}
+		else if (size > 1) {
+			for (int i=0; i<size; i++) {
+				s += statusTypes.get(i).getName();
+				if (i != size - 1)
+					s += ", ";
+			}
 		}
 		
 		return s.trim();

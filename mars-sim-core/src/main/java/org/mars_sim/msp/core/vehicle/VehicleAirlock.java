@@ -81,7 +81,8 @@ extends Airlock {
 	 * @param person the person to exit.
 	 * @throws Exception if person is not in the airlock.
 	 */
-	protected void exitAirlock(Person person) {
+	protected boolean exitAirlock(Person person) {
+    	boolean successful = false;
 		// TODO: how to detect and bypass going through the airlock if a vehicle is inside a garage in a settlement
 		// see exitingRoverGaragePhase() in Walk
 		
@@ -89,22 +90,24 @@ extends Airlock {
 			if (AirlockState.PRESSURIZED == getState()) {
 				// check if the airlock has been sealed from outside and pressurized, ready to 
             	// open the inner door to release the person into the vehicle
-				stepIntoAirlock(person);
+				successful = stepIntoAirlock(person);
 				
 			}
 			else if (AirlockState.DEPRESSURIZED == getState()) {
             	// check if the airlock has been de-pressurized, ready to open the outer door to 
             	// get exposed to the outside air and release the person
-				stepIntoMarsSurface(person);
+				successful = stepIntoMarsSurface(person);
 
 			}
 			else {
-				logger.severe(Msg.getString("VehicleAirlock.error.badState",getState())); //$NON-NLS-1$
+				logger.severe(Msg.getString("VehicleAirlock.error.badState", getState())); //$NON-NLS-1$
 			}
 		}
 		else {
 			throw new IllegalStateException(Msg.getString("VehicleAirlock.error.notInAirlock",person.getName(),getEntityName())); //$NON-NLS-1$
 		}
+		
+		return successful;
 	}
 
 	   /**
@@ -112,14 +115,20 @@ extends Airlock {
      * 
      * @param person
      */
-    public void stepIntoAirlock(Person person) {
+    public boolean stepIntoAirlock(Person person) {
+    	boolean successful = false;
     	if (person.isOutside()) {						
             // 1.1. Transfer a person from the surface of Mars to the vehicle
-            person.transfer(marsSurface, vehicle);
+    		successful = person.transfer(marsSurface, vehicle);
         
-            LogConsolidated.log(Level.FINER, 0, sourceName, 
+			if (successful)
+				LogConsolidated.log(Level.FINER, 0, sourceName, 
 					"[" + person.getLocationTag().getLocale() + "] "
 					+ person.getName() + " had just stepped inside rover " + vehicle.getName());
+			else
+				LogConsolidated.log(Level.SEVERE, 0, sourceName, 
+						"[" + person.getLocationTag().getLocale() + "] "
+						+ person.getName() + " could not step inside rover " + vehicle.getName());
 
 		}
 		else if (person.isInSettlement()) {
@@ -127,6 +136,8 @@ extends Airlock {
 					Msg.getString("VehicleAirlock.error.notOutside", person.getName(), getEntityName()));
 			//throw new IllegalStateException(Msg.getString("VehicleAirlock.error.notOutside",person.getName(),getEntityName())); //$NON-NLS-1$
 		}
+    	
+		return successful;
     }
     
     /**
@@ -134,24 +145,33 @@ extends Airlock {
      * 
      * @param person
      */
-    public void stepIntoMarsSurface(Person person) {
+    public boolean stepIntoMarsSurface(Person person) {
+    	boolean successful = false;
 		if (person.isInVehicle()) {
 
             // 5.1. Transfer a person from the vehicle to the surface of Mars
-            person.transfer(vehicle, marsSurface);
+			successful = person.transfer(vehicle, marsSurface);
 			
-			// 5.2 Set the person's coordinates to that of the settlement's
-			person.setCoordinates(vehicle.getCoordinates());
-					
-			LogConsolidated.log(Level.FINER, 0, sourceName, 
+			if (successful) {
+				// 5.2 Set the person's coordinates to that of the settlement's
+				person.setCoordinates(vehicle.getCoordinates());
+						
+				LogConsolidated.log(Level.FINER, 0, sourceName, 
 					"[" + person.getLocationTag().getLocale() + "] "
 					+ person.getName() + " had just stepped outside rover " + vehicle.getName());
+			}
+			else
+				LogConsolidated.log(Level.SEVERE, 0, sourceName, 
+						"[" + person.getLocationTag().getLocale() + "] "
+						+ person.getName() + " could not step outside rover " + vehicle.getName());
 		}
 		else if (person.isOutside()) {
 			LogConsolidated.log(Level.SEVERE, 0, sourceName, 
 					Msg.getString("VehicleAirlock.error.notInside", person.getName(), getEntityName()));
 			//throw new IllegalStateException(Msg.getString("VehicleAirlock.error.notInside",person.getName(),getEntityName())); //$NON-NLS-1$
 		}
+		
+		return successful;
     }
     
     

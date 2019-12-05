@@ -7,9 +7,9 @@
 
 package org.mars_sim.msp.ui.swing.tool.mission;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.swing.AbstractListModel;
 import javax.swing.SwingUtilities;
@@ -31,24 +31,47 @@ public class MissionListModel extends AbstractListModel<Mission> implements Miss
 	// Private members.
 	private List<Mission> missions;
 
+	private MissionWindow missionWindow;
+	
 	private static MissionManager missionManager;
 
+	
 	/**
 	 * Constructor.
 	 */
-	public MissionListModel() {
-		missions = new ArrayList<Mission>();
+	public MissionListModel(MissionWindow missionWindow) {
+		this.missionWindow = missionWindow;
+		
+		missions = new CopyOnWriteArrayList<Mission>();
 
 		missionManager = Simulation.instance().getMissionManager();
-
-		// Add all current missions.
-		// MissionManager manager = Simulation.instance().getMissionManager();
-		Iterator<Mission> i = missionManager.getMissions().iterator();
-		while (i.hasNext())
-			addMission(i.next());
-
+	
 		// Add list as mission manager listener.
 		missionManager.addListener(this);
+		
+//		Iterator<Mission> i = missionManager.getMissions().iterator();
+//		while (i.hasNext()) {
+//			addMission(i.next());
+//		}	
+	}
+
+
+	public void populateMissions() {
+		// Remove old missions.
+
+		Iterator<Mission> i = missions.iterator();
+		while (i.hasNext()) {
+			removeMission(i.next());
+		}			
+		
+		// Add all current missions.
+		Iterator<Mission> ii = missionManager.getMissions().iterator();
+		while (ii.hasNext()) {
+			Mission mission = ii.next();
+			if (!missions.contains(mission) && missionWindow.getSettlement().equals(mission.getAssociatedSettlement())) {
+				addMission(mission);
+			}
+		}
 	}
 
 	/**
@@ -58,7 +81,9 @@ public class MissionListModel extends AbstractListModel<Mission> implements Miss
 	 */
 	@Override
 	public void addMission(Mission mission) {
-		if (!missions.contains(mission)) {
+		if (!missions.contains(mission) 
+				&& missionWindow.getSettlement() != null 
+				&& missionWindow.getSettlement().equals(mission.getAssociatedSettlement())) {
 			missions.add(mission);
 			mission.addMissionListener(this);
 			SwingUtilities.invokeLater(new MissionListUpdater(MissionListUpdater.ADD, this, missions.size() - 1));
@@ -73,6 +98,8 @@ public class MissionListModel extends AbstractListModel<Mission> implements Miss
 	@Override
 	public void removeMission(Mission mission) {
 		if (missions.contains(mission)) {
+//				&& missionWindow.getSettlement() != null 
+//				&& missionWindow.getSettlement().equals(mission.getAssociatedSettlement())) {
 			int index = missions.indexOf(mission);
 			missions.remove(mission);
 			mission.removeMissionListener(this);
@@ -152,7 +179,8 @@ public class MissionListModel extends AbstractListModel<Mission> implements Miss
 	public void destroy() {
 		missions.clear();
 		missions = null;
-		Simulation.instance().getMissionManager().removeListener(this);
+		missionManager.removeListener(this);
+		missionManager = null;
 	}
 
 	/**

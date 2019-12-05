@@ -802,7 +802,11 @@ public class MainDetailPanel extends WebPanel implements ListSelectionListener, 
 			// NOTE: do NOT clear the mission info. Leave the info there for future viewing
 			
 			// Clear mission info in UI.
-			descriptionTF.setText(currentMission.getDescription()); //$NON-NLS-1$ //$NON-NLS-2$
+			if (currentMission != null) {
+				descriptionTF.setText(currentMission.getDescription()); //$NON-NLS-1$ //$NON-NLS-2$
+			}
+			else
+				descriptionTF.setText("");
 			designationLabel.setText("[TBD]");
 			typeLabel.setText(" "); //$NON-NLS-1$ //$NON-NLS-2$
 			phaseLabel.setText(" "); //$NON-NLS-1$ //$NON-NLS-2$

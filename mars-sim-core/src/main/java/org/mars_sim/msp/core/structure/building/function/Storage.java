@@ -34,7 +34,7 @@ public class Storage extends Function implements Serializable {
 	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
 			logger.getName().length());
 
-	private Map<AmountResource, Double> resourceCapacities;
+	private Map<Integer, Double> resourceCapacities;
 	
 	private static final FunctionType FUNCTION = FunctionType.STORAGE;
 
@@ -53,8 +53,8 @@ public class Storage extends Function implements Serializable {
 		resourceCapacities = buildingConfig.getStorageCapacities(building.getBuildingType());
 
 		// Initialize resource capacities for this building.
-		Set<AmountResource> capSet = resourceCapacities.keySet();
-		for (AmountResource ar : capSet) {
+		Set<Integer> capSet = resourceCapacities.keySet();
+		for (Integer ar : capSet) {
 			double capacity = resourceCapacities.get(ar);
 			// Note : A capacity of a resource in a settlement is the sum of the capacity of
 			// the same resource
@@ -72,9 +72,9 @@ public class Storage extends Function implements Serializable {
 //		 }
 
 		// Fill up initial resources for this building.
-		Map<AmountResource, Double> initialResources = buildingConfig.getInitialResources(building.getBuildingType());
-		Set<AmountResource> initialSet = initialResources.keySet();
-		for (AmountResource ar : initialSet) {
+		Map<Integer, Double> initialResources = buildingConfig.getInitialResources(building.getBuildingType());
+		Set<Integer> initialSet = initialResources.keySet();
+		for (Integer ar : initialSet) {
 			double initialAmount = initialResources.get(ar);
 			double remainingCap = inv.getAmountResourceRemainingCapacity(ar, true, false);
 
@@ -99,11 +99,10 @@ public class Storage extends Function implements Serializable {
 
 		double result = 0D;
 
-		Map<AmountResource, Double> storageMap = buildingConfig.getStorageCapacities(buildingName);
-		Iterator<AmountResource> i = storageMap.keySet().iterator();
+		Map<Integer, Double> storageMap = buildingConfig.getStorageCapacities(buildingName);
+		Iterator<Integer> i = storageMap.keySet().iterator();
 		while (i.hasNext()) {
-			AmountResource resource = i.next();
-
+			Integer resource = i.next();
 			double existingStorage = 0D;
 			Iterator<Building> j = settlement.getBuildingManager().getBuildings(FUNCTION).iterator();
 			while (j.hasNext()) {
@@ -123,7 +122,7 @@ public class Storage extends Function implements Serializable {
 			}
 
 //			Good resourceGood = GoodsUtil.getResourceGood(ResourceUtil.findIDbyAmountResourceName(resource.getName()));
-			double resourceValue = settlement.getGoodsManager().getGoodValuePerItem(resource.getID());
+			double resourceValue = settlement.getGoodsManager().getGoodValuePerItem(resource);
 			double resourceStored = settlement.getInventory().getAmountResourceStored(resource, false);
 			double resourceDemand = resourceValue * (resourceStored + 1D);
 
@@ -152,7 +151,7 @@ public class Storage extends Function implements Serializable {
 	 * 
 	 * @return Map of resource keys and amount Double values.
 	 */
-	public Map<AmountResource, Double> getResourceStorageCapacity() {
+	public Map<Integer, Double> getResourceStorageCapacity() {
 		return resourceCapacities;
 	}
 
@@ -193,9 +192,9 @@ public class Storage extends Function implements Serializable {
 
 	public void removeResources() {
 		// Remove excess amount resources that can no longer be stored.
-		Iterator<AmountResource> i = resourceCapacities.keySet().iterator();
+		Iterator<Integer> i = resourceCapacities.keySet().iterator();
 		while (i.hasNext()) {
-			AmountResource resource = i.next();
+			Integer resource = i.next();
 			double storageCapacityAmount = resourceCapacities.get(resource);
 			Inventory inv = getBuilding().getSettlementInventory();
 			double totalStorageCapacityAmount = inv.getAmountResourceCapacity(resource, false);
@@ -210,27 +209,14 @@ public class Storage extends Function implements Serializable {
 	
 	public void removeStorageCapacity() {
 		// Remove storage capacity from settlement.
-		Iterator<AmountResource> j = resourceCapacities.keySet().iterator();
+		Iterator<Integer> j = resourceCapacities.keySet().iterator();
 		while (j.hasNext()) {
-			AmountResource resource = j.next();
+			Integer resource = j.next();
 			double storageCapacityAmount = resourceCapacities.get(resource);
 			Inventory inv = getBuilding().getSettlementInventory();
 			inv.removeAmountResourceTypeCapacity(resource, storageCapacityAmount);
 		}
 	}
-	
-//	public static void removeResource(int id, Inventory inv) {
-////		AmountResource resource = ResourceUtil.findAmountResource(id);
-//		// Remove 1% amount resources.
-//		double storageCapacityAmount = resourceCapacities.get(ResourceUtil.findAmountResource(id));
-////		double totalStorageCapacityAmount = inv.getAmountResourceCapacity(id, false);
-////		double remainingStorageCapacityAmount = totalStorageCapacityAmount - storageCapacityAmount;
-////		double totalStoredAmount = inv.getAmountResourceStored(id, false);
-////		if (remainingStorageCapacityAmount < totalStoredAmount) {
-////			double resourceAmountRemoved = totalStoredAmount - remainingStorageCapacityAmount;
-//			inv.retrieveAmountResource(id, storageCapacityAmount *.01);
-////		}
-//	}
 	
 	@Override
 	public double getMaintenanceTime() {

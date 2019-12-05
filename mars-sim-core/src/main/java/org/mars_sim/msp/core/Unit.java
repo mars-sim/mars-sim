@@ -1219,8 +1219,8 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 	 * @param origin {@link Unit} the original container unit
 	 * @param destination {@link Unit} the destination container unit
 	 */
-	public void transfer(Unit origin, Unit destination) {
-		origin.getInventory().transferUnit(this, destination);
+	public boolean transfer(Unit origin, Unit destination) {
+		return origin.getInventory().transferUnit(this, destination);
 	}
 
 	/**
@@ -1229,8 +1229,8 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 	 * @param originInv {@link Inventory} the inventory of the original container unit
 	 * @param destination {@link Unit} the destination container unit
 	 */
-	public void transfer(Inventory originInv, Unit destination) {
-		originInv.transferUnit(this, destination);
+	public boolean transfer(Inventory originInv, Unit destination) {
+		return originInv.transferUnit(this, destination);
 	}
 	
 	/**
@@ -1239,8 +1239,8 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 	 * @param origin {@link Unit} the original container unit
 	 * @param destinationInv {@link Inventory} the inventory of the destination container unit
 	 */
-	public void transfer(Unit origin, Inventory destinationInv) {
-		origin.getInventory().transferUnit(this, destinationInv.getOwner());
+	public boolean transfer(Unit origin, Inventory destinationInv) {
+		return origin.getInventory().transferUnit(this, destinationInv.getOwner());
 	}
 	
 	/**
@@ -1249,8 +1249,8 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 	 * @param originInv {@link Inventory} the inventory of the original container unit
 	 * @param destinationInv {@link Inventory} the inventory of the destination container unit
 	 */
-	public void transfer(Inventory originInv, Inventory destinationInv) {
-		originInv.transferUnit(this, destinationInv.getOwner());
+	public boolean transfer(Inventory originInv, Inventory destinationInv) {
+		return originInv.transferUnit(this, destinationInv.getOwner());
 	}
 	/**
 	 * Compares this object with the specified object for order.

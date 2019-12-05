@@ -8,10 +8,7 @@
 package org.mars_sim.msp.core.mars;
 
 import java.io.Serializable;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
-import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Unit;
 
 /**
@@ -25,6 +22,8 @@ public class MarsSurface extends Unit implements Serializable {
 	/** Unique identifier. */
 	/** The unit count for this robot. */
 	private static int uniqueCount = Unit.MARS_SURFACE_UNIT_ID;
+	
+	private static final String NAME = "Mars Surface";
 	
 	private int identifier;
 
@@ -54,7 +53,7 @@ public class MarsSurface extends Unit implements Serializable {
 	}
 	
 	public MarsSurface() {
-		super("Mars Surface", null);
+		super(NAME, null);
 //		this.identifier = getNextIdentifier();
 		
 		setContainerUnit(null);
@@ -83,4 +82,8 @@ public class MarsSurface extends Unit implements Serializable {
 		return hashCode;
 	}
 	
+//	@Override
+//	public String toString() {
+//		return NAME;
+//	}
 }

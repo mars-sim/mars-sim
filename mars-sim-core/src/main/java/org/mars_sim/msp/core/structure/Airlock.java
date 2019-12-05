@@ -11,6 +11,7 @@ import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -98,7 +99,7 @@ public abstract class Airlock implements Serializable {
     private volatile List<Integer> awaitingOuterDoor;
 //	private List<Person> awaitingOuterDoor;
 
-	private static volatile Map<Integer, Person> lookupPerson;
+	private volatile Map<Integer, Person> lookupPerson;
 	
     protected static UnitManager unitManager; //= Simulation.instance().getUnitManager();
     protected static MarsSurface marsSurface;// = unitManager.getMarsSurface(); //getMars().getMarsSurface();
@@ -316,7 +317,7 @@ public abstract class Airlock implements Serializable {
 			remainingCycleTime -= time;
 			if (remainingCycleTime <= 0D) {
 				remainingCycleTime = 0D;
-				result = deactivateAirlock();
+//				result = deactivateAirlock();
 			} else {
 				result = true;
 			}
@@ -341,12 +342,13 @@ public abstract class Airlock implements Serializable {
 //			return list.get(rand);
 //		}
 		
-		if (size == 0) {
-			// No operator, deactivate the air lock
-			deactivateAirlock();
-		}
-		
-		else if (size >= 1) {
+//		if (size == 0) {
+//			// No operator, deactivate the air lock
+//			deactivateAirlock();
+//		}
+//		
+//		else 
+		if (size >= 1) {
 			int evaExp = -1;
 			int evaLevel = -1;
 			for (Integer id : occupantIDs) {
@@ -384,7 +386,7 @@ public abstract class Airlock implements Serializable {
 	 * 
 	 * @return true if airlock was deactivated successfully.
 	 */
-	private boolean deactivateAirlock() {
+	public boolean deactivateAirlock() {
 
 		boolean result = false;
 
@@ -402,13 +404,15 @@ public abstract class Airlock implements Serializable {
 			}
 
 			// Occupants are to leave the airlock one by one
-			leaveAirlock();
-
-			occupantIDs.clear();
-
-			operatorID = Integer.valueOf(-1);
-
-			result = true;
+			boolean successful = leaveAirlock();
+			if (successful) {
+				occupantIDs.clear();
+				operatorID = Integer.valueOf(-1);
+				result = true;
+			}
+			else {
+				result = false;
+			}
 		}
 
 		return result;
@@ -417,25 +421,25 @@ public abstract class Airlock implements Serializable {
 	/**
 	 * Occupants are to exit/leave the airlock one by one
 	 */
-	public void leaveAirlock() {
+	public boolean leaveAirlock() {
+		boolean successful = true;
 		Iterator<Integer> i = occupantIDs.iterator();
 		while (i.hasNext()) {
 			Integer id = i.next();
-//			if (occupant instanceof Person) {
-				Person p = getPersonByID(id);
-		    	if (p == null) {
-		    		p = unitManager.getPersonByID(id);
-		    		lookupPerson.put(id, p);
-		    	}
-				LogConsolidated.log(Level.FINER, 0, sourceName,
-						"[" + p.getLocationTag().getLocale() + "] " + p.getName()
-						+ " reported that the airlock in " + getEntity() + " had been " 
-						+ getState().toString().toLowerCase() + ".");
-				
-				// Call BuildingAirlock or VehicleAirlock's exitAirlock() to change the state of the his container unit, namely, the EVA suit
-				exitAirlock(p);
-//			}
+			Person p = getPersonByID(id);
+	    	if (p == null) {
+	    		p = unitManager.getPersonByID(id);
+	    		lookupPerson.put(id, p);
+	    	}
+			LogConsolidated.log(Level.FINER, 0, sourceName,
+					"[" + p.getLocationTag().getLocale() + "] " + p.getName()
+					+ " reported that the airlock in " + getEntity() + " had been " 
+					+ getState().toString().toLowerCase() + ".");
+			
+			// Call BuildingAirlock or VehicleAirlock's exitAirlock() to change the state of the his container unit, namely, the EVA suit
+			successful = successful && exitAirlock(p);
 		}
+		return successful;
 	}
 	
 	/**
@@ -443,7 +447,7 @@ public abstract class Airlock implements Serializable {
 	 * 
 	 * @param occupant the person to exit.
 	 */
-	protected abstract void exitAirlock(Person occupant);
+	protected abstract boolean exitAirlock(Person occupant);
 
 	/**
 	 * Checks if the airlock's outer door is locked.
@@ -705,8 +709,8 @@ public abstract class Airlock implements Serializable {
 	}
 
 	public void addPersonID(Person p) {
-//		if (lookupPerson == null)
-//			lookupPerson = new HashMap<>();
+		if (lookupPerson == null)
+			lookupPerson = new HashMap<>();
 		if (p != null && !lookupPerson.containsKey(p.getIdentifier()))
 			lookupPerson.put(p.getIdentifier(), p);
 	}

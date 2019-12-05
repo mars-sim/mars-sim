@@ -19,14 +19,13 @@ import java.util.Set;
 import org.jdom2.DataConversionException;
 import org.jdom2.Document;
 import org.jdom2.Element;
-import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.building.function.AreothermalPowerSource;
-import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.ElectricHeatSource;
 import org.mars_sim.msp.core.structure.building.function.FuelHeatSource;
 import org.mars_sim.msp.core.structure.building.function.FuelPowerSource;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.HeatSource;
 import org.mars_sim.msp.core.structure.building.function.HeatSourceType;
 import org.mars_sim.msp.core.structure.building.function.PowerSource;
@@ -172,9 +171,9 @@ public class BuildingConfig implements Serializable {
 	private static Set<String> buildingTypes;
 	private static List<FunctionType> functions;
 	
-	private static Map<String, Map<AmountResource, Double>> storageCapacities;
+	private static Map<String, Map<Integer, Double>> storageCapacities;
 	
-	private static Map<String, Map<AmountResource, Double>> initialResources;
+	private static Map<String, Map<Integer, Double>> initialResources;
 
 	private static Map<String, List<ResourceProcess>> resourceProcessMap;
 	
@@ -195,7 +194,7 @@ public class BuildingConfig implements Serializable {
 		generateBuildingFunctions();
 
 		if (storageCapacities == null) {
-			storageCapacities = new HashMap<String, Map<AmountResource, Double>>();
+			storageCapacities = new HashMap<String, Map<Integer, Double>>();
 		}
 
 		for (String type : getBuildingTypes()) {
@@ -204,7 +203,7 @@ public class BuildingConfig implements Serializable {
 		}
 		
 		if (initialResources == null) {
-			initialResources = new HashMap<String, Map<AmountResource, Double>>();
+			initialResources = new HashMap<String, Map<Integer, Double>>();
 		}
 		
 		for (String type : getBuildingTypes()) {
@@ -906,11 +905,11 @@ public class BuildingConfig implements Serializable {
 	 * @return list of storage capacities
 	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
-	public Map<AmountResource, Double> getStorageCapacities(String buildingType) {
+	public Map<Integer, Double> getStorageCapacities(String buildingType) {
 		if (storageCapacities.containsKey(buildingType)) {
 			return storageCapacities.get(buildingType);
 		} else {
-			Map<AmountResource, Double> map = new HashMap<AmountResource, Double>();
+			Map<Integer, Double> map = new HashMap<Integer, Double>();
 			Element buildingElement = getBuildingElement(buildingType);
 			Element functionsElement = buildingElement.getChild(FUNCTIONS);
 			Element storageElement = functionsElement.getChild(STORAGE);
@@ -919,7 +918,7 @@ public class BuildingConfig implements Serializable {
 				List<Element> resourceStorageNodes = storageElement.getChildren(RESOURCE_STORAGE);
 				for (Element resourceStorageElement : resourceStorageNodes) {
 					String resourceName = resourceStorageElement.getAttributeValue(RESOURCE).toLowerCase();
-					AmountResource resource = ResourceUtil.findAmountResource(resourceName);
+					Integer resource = ResourceUtil.findIDbyAmountResourceName(resourceName);
 					Double capacity = Double.valueOf(resourceStorageElement.getAttributeValue(CAPACITY));
 					map.put(resource, capacity);
 				}
@@ -956,11 +955,11 @@ public class BuildingConfig implements Serializable {
 	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
 	@SuppressWarnings("unchecked")
-	public Map<AmountResource, Double> getInitialResources(String buildingType) {
+	public Map<Integer, Double> getInitialResources(String buildingType) {
 		if (initialResources.containsKey(buildingType)) {
 			return initialResources.get(buildingType);
 		} else {
-			Map<AmountResource, Double> map = new HashMap<AmountResource, Double>();
+			Map<Integer, Double> map = new HashMap<Integer, Double>();
 			Element buildingElement = getBuildingElement(buildingType);
 			Element functionsElement = buildingElement.getChild(FUNCTIONS);
 			Element storageElement = functionsElement.getChild(STORAGE);
@@ -969,7 +968,7 @@ public class BuildingConfig implements Serializable {
 				List<Element> resourceInitialNodes = storageElement.getChildren(RESOURCE_INITIAL);
 				for (Element resourceInitialElement : resourceInitialNodes) {
 					String resourceName = resourceInitialElement.getAttributeValue(RESOURCE).toLowerCase();
-					AmountResource resource = ResourceUtil.findAmountResource(resourceName);
+					Integer resource = ResourceUtil.findIDbyAmountResourceName(resourceName);
 					Double amount = Double.valueOf(resourceInitialElement.getAttributeValue(AMOUNT));
 					map.put(resource, amount);
 				}

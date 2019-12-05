@@ -172,10 +172,13 @@ public class EnterAirlock extends Task implements Serializable {
 					remainingTime = 0D;
 				}
 				boolean activationSuccessful = airlock.addCycleTime(activationTime);
-				if (!activationSuccessful) {
+				boolean deactivated = airlock.deactivateAirlock();
+				if (!activationSuccessful || !deactivated) {
 					LogConsolidated.log(Level.WARNING, 0, sourceName,
 							"[" + person.getLocationTag().getLocale() + "] " + person.getName() +
 							" had problem with airlock activation.");
+					endTask();
+					return 0;
 				}
 			} else {
 				// If person is not airlock operator, just wait.
@@ -257,10 +260,13 @@ public class EnterAirlock extends Task implements Serializable {
 						remainingTime = 0D;
 					}
 					boolean activationSuccessful = airlock.addCycleTime(activationTime);
-					if (!activationSuccessful) {
+					boolean deactivated = airlock.deactivateAirlock();
+					if (!activationSuccessful || !deactivated) {
 						LogConsolidated.log(Level.WARNING, 0, sourceName,
 								"[" + person.getLocationTag().getLocale() + "] " + person.getName() +
 								" had problem with airlock activation.");
+						endTask();
+						return 0;
 					}
 				} else {
 					// If person is not airlock operator, just wait.
@@ -269,7 +275,8 @@ public class EnterAirlock extends Task implements Serializable {
 			}
 		} else if (person.isOutside()) {
 			// Walk to inside airlock position.
-			addSubTask(new WalkOutside(person, person.getXLocation(), person.getYLocation(), insideAirlockPos.getX(),
+			addSubTask(new WalkOutside(person, person.getXLocation(), 
+					person.getYLocation(), insideAirlockPos.getX(),
 					insideAirlockPos.getY(), true));
 		}
 
@@ -315,9 +322,13 @@ public class EnterAirlock extends Task implements Serializable {
 				}
 				
 				boolean activationSuccessful = airlock.addCycleTime(activationTime);
-				if (!activationSuccessful) {
-					LogConsolidated.log(Level.WARNING, 0, sourceName, "[" + person.getLocationTag().getLocale() + "] "
+				boolean deactivated = airlock.deactivateAirlock();
+				if (!activationSuccessful || !deactivated) {
+					LogConsolidated.log(Level.WARNING, 0, sourceName, "[" 
+							+ person.getLocationTag().getLocale() + "] "
 							+ person.getName() + " has problems with airlock activation.");
+					endTask();
+					return 0;
 				}
 			} 
 			

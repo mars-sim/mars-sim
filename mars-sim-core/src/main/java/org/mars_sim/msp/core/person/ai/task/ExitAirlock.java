@@ -251,9 +251,13 @@ public class ExitAirlock extends Task implements Serializable {
 					remainingTime = 0D;
 				}
 				boolean activationSuccessful = airlock.addCycleTime(activationTime);
-				if (!activationSuccessful) {
-					LogConsolidated.log(Level.WARNING, 0, sourceName, "[" + person.getLocationTag().getLocale() + "] "
+				boolean deactivated = airlock.deactivateAirlock();
+				if (!activationSuccessful || !deactivated) {
+					LogConsolidated.log(Level.WARNING, 0, sourceName, 
+							"[" + person.getLocationTag().getLocale() + "] "
 							+ person.getName() + " has problems with airlock activation.");
+					endTask();
+					return 0;
 				}
 			} else {
 				// If person is not airlock operator, just wait.
@@ -332,10 +336,13 @@ public class ExitAirlock extends Task implements Serializable {
 						remainingTime = 0D;
 					}
 					boolean activationSuccessful = airlock.addCycleTime(activationTime);
-					if (!activationSuccessful) {
-							LogConsolidated.log(Level.WARNING, 0, sourceName, 
+					boolean deactivated = airlock.deactivateAirlock();
+					if (!activationSuccessful || !deactivated) {
+						LogConsolidated.log(Level.WARNING, 0, sourceName, 
 									"[" + person.getLocationTag().getLocale() + "] " + person.getName()
 									+ " had problems with airlock activation.");
+						endTask();
+						return 0;
 					}
 				} else {
 					// If person is not airlock operator, just wait.
@@ -413,10 +420,13 @@ public class ExitAirlock extends Task implements Serializable {
 						remainingTime = 0D;
 					}
 					boolean activationSuccessful = airlock.addCycleTime(activationTime);
-					if (!activationSuccessful) {
+					boolean deactivated = airlock.deactivateAirlock();
+					if (!activationSuccessful || !deactivated) {
 						LogConsolidated.log(Level.SEVERE, 0, sourceName,
 								"[" + person.getLocationTag().getLocale() + "] " + person.getName() +
 								" had problem with airlock activation.");
+						endTask();
+						return 0;
 					}
 				} 
 				

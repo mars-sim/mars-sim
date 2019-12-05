@@ -427,16 +427,19 @@ public class Simulation implements ClockListener, Serializable {
 		mars = Mars.createTest();
 		masterClock = new MasterClock(false, 256);
 		unitManager = new UnitManager();
-		Inventory.setUnitManager(unitManager);
-		
-		unitManager.constructInitialUnits(true);
-		
-		medicalManager = new MedicalManager();
 		
 		// Gets the SurfaceFeatures instance
 		SurfaceFeatures surfaceFeatures = mars.getSurfaceFeatures();
 		// Re-initialize the MarsSurface instance
 		MarsSurface marsSurface = unitManager.getMarsSurface();
+		
+		Inventory.initializeInstances(unitManager, marsSurface);
+		
+		unitManager.constructInitialUnits(true);
+		
+		medicalManager = new MedicalManager();
+		
+	
 		
 		// Create marsClock instance
 		MarsClock marsClock = masterClock.getMarsClock();
@@ -508,7 +511,7 @@ public class Simulation implements ClockListener, Serializable {
 		
 //		logger.config("Done with UnitManager");
 		
-		Inventory.setUnitManager(unitManager);
+		Inventory.initializeInstances(unitManager, marsSurface);
 		Airlock.initializeInstances(unitManager, marsSurface);
 		
 //		logger.config("Done with Airlock.initializeInstances()");
@@ -993,8 +996,8 @@ public class Simulation implements ClockListener, Serializable {
 //		mars.setMarsSurface(marsSurface);
 		Airlock.initializeInstances(unitManager, marsSurface);
 		
-		Inventory.setUnitManager(unitManager);
-//		Inventory inv = marsSurface.getInventory();
+		Inventory.initializeInstances(unitManager, marsSurface);
+
 //		for (Unit u: inv.getContainedUnits()) {
 //			String s = String.format("Simulation : %20s (%4d)", u.getName(), u.getIdentifier());
 //			System.out.println(s);
