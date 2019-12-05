@@ -2684,15 +2684,6 @@ public class UnitManager implements Serializable {
 		return personConfig.getCommander().getPhase();
 	}
 	
-//	/**
-//	 * Returns Mars surface instance
-//	 * 
-//	 * @return {@Link MarsSurface}
-//	 */
-//	public MarsSurface getMarsSurface() {
-//		return marsSurface;
-//	}
-	
 	/**
 	 * Reloads instances after loading from a saved sim
 	 * 

@@ -124,7 +124,7 @@ public class Inventory implements Serializable {
 	
 	private static UnitManager unitManager;
 
-	private static MarsSurface marsSurface;
+	private volatile static MarsSurface marsSurface;
 
 	/**
 	 * Constructor
@@ -849,8 +849,9 @@ public class Inventory implements Serializable {
 				}
 
 				// Fire inventory event.
-				if (getOwner() != null) {
-					getOwner().fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);
+				Unit o = getOwner();
+				if (o != null) {
+					o.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);
 				}
 			} else {
 				LogConsolidated.log(logger, Level.SEVERE, 0, sourceName, "Insufficient capacity to store " + resource.getName() + ", capacity: "
@@ -909,8 +910,8 @@ public class Inventory implements Serializable {
 					remainingAmount -= storageAmount;
 				}
 
+				// Store remaining resource in contained units in general capacity.
 				if (useContainedUnits && (remainingAmount > 0D) && (containedUnitIDs != null)) {
-					// Store remaining resource in contained units in general capacity.
 					for (Integer id : containedUnitIDs) {
 						Unit unit = unitManager.getUnitByID(id);
 						// Use only contained units that implement container interface.
@@ -936,8 +937,9 @@ public class Inventory implements Serializable {
 				}
 
 				// Fire inventory event.
-				if (getOwner() != null) {
-					getOwner().fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);
+				Unit o = getOwner();
+				if (o != null) {
+					o.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);
 //							ResourceUtil.findAmountResourceName(resource));
 				}
 			} else {
@@ -1018,8 +1020,9 @@ public class Inventory implements Serializable {
 				updateAmountResourceStoredCache(resource);
 
 				// Fire inventory event.
-				if (getOwner() != null) {
-					getOwner().fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);
+				Unit o = getOwner();
+				if (o != null) {
+					o.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);
 //							ResourceUtil.findAmountResource(resource));
 				}
 			} else {
@@ -1204,8 +1207,9 @@ public class Inventory implements Serializable {
 				}
 
 				// Fire inventory event.
-				if (getOwner() != null) {
-					getOwner().fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);
+				Unit o = getOwner();
+				if (o != null) {
+					o.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);
 				}
 			} else {
 				throw new IllegalStateException("Could not store item resources.");
@@ -1254,8 +1258,9 @@ public class Inventory implements Serializable {
 				}
 
 				// Fire inventory event.
-				if (getOwner() != null) {
-					getOwner().fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);//ItemResourceUtil.findItemResource(resource));
+				Unit o = getOwner();
+				if (o != null) {
+					o.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);//ItemResourceUtil.findItemResource(resource));
 				}
 
 				if (remainingNum > 0) {
@@ -2166,11 +2171,6 @@ public class Inventory implements Serializable {
 		
 		if (canStoreUnit(unit, false)) {
 
-			// Set modified cache values as dirty.
-			setAmountResourceCapacityCacheAllDirty(true);
-			setAmountResourceStoredCacheAllDirty(true);
-			setAllStoredAmountResourcesCacheDirty();
-			setTotalAmountResourcesStoredCacheDirty();
 			setUnitTotalMassCacheDirty();
 
 			// Initialize containedUnitIDs if necessary.
@@ -2184,6 +2184,28 @@ public class Inventory implements Serializable {
 //			System.out.println("Inventory::storeUnit - " + unit + "'s ownerID : " + ownerID + "   owner : " + owner);
 
 			if (newOwner != null) {
+				if (!(newOwner instanceof MarsSurface)) {
+					// Set modified cache values as dirty.
+					setAmountResourceCapacityCacheAllDirty(true);
+					setAmountResourceStoredCacheAllDirty(true);
+					setAllStoredAmountResourcesCacheDirty();
+					setTotalAmountResourcesStoredCacheDirty();
+					
+					// Note: MarsSurface represents the whole surface of Mars does not have coordinates
+					// If MarsSurface is a container of an unit, that unit may keep its own coordinates
+					unit.setCoordinates(newOwner.getCoordinates());
+					
+					newOwner.fireUnitUpdate(UnitEventType.INVENTORY_STORING_UNIT_EVENT, unit);
+					for (Integer resource : unit.getInventory().getAllARStored(false)) {
+						updateAmountResourceCapacityCache(resource);
+						updateAmountResourceStoredCache(resource);
+						newOwner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);
+					}
+					for (Integer itemResource : unit.getInventory().getAllItemResourcesStored()) {
+						newOwner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, itemResource);
+					}
+				}
+				
 				if (newOwner instanceof Settlement) {
 					// Try to empty amount resources into parent if container.
 					if (unit instanceof Container) {
@@ -2211,21 +2233,6 @@ public class Inventory implements Serializable {
 				unit.setContainerUnit(newOwner);
 //				System.out.println("Inventory::storeUnit - " + unit + " owned by " + owner + " (" + ownerID + ")");
 
-				if (!(newOwner instanceof MarsSurface)) {
-					// Note: MarsSurface represents the whole surface of Mars does not have coordinates
-					// If MarsSurface is a container of an unit, that unit may keep its own coordinates
-					unit.setCoordinates(newOwner.getCoordinates());
-					
-					newOwner.fireUnitUpdate(UnitEventType.INVENTORY_STORING_UNIT_EVENT, unit);
-					for (Integer resource : unit.getInventory().getAllARStored(false)) {
-						updateAmountResourceCapacityCache(resource);
-						updateAmountResourceStoredCache(resource);
-						newOwner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);
-					}
-					for (Integer itemResource : unit.getInventory().getAllItemResourcesStored()) {
-						newOwner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, itemResource);
-					}
-				}
 			}
 			
 		} else {
@@ -2269,27 +2276,27 @@ public class Inventory implements Serializable {
 	public boolean retrieveUnit(Unit unit, boolean changeContainerUnit) {
 		
 		boolean retrieved = true;
-
-		Unit owner = getOwner();
 		
 		Integer id = unit.getIdentifier();
 
-//		System.out.println(unit + " (" + id + ") "  + owner  + " (" + owner.getIdentifier() + ") : "  + containedUnitIDs);
 		if (containedUnitIDs.contains(id)) {
-			// Set modified cache values as dirty.
-			setAmountResourceCapacityCacheAllDirty(true);
-			setAmountResourceStoredCacheAllDirty(true);
-			setAllStoredAmountResourcesCacheDirty();
-			setTotalAmountResourcesStoredCacheDirty();
+			
 			setUnitTotalMassCacheDirty();
 
 			containedUnitIDs.remove(id);
 
 			// Update owner
+			Unit owner = getOwner();
 			if (owner != null) {
 				owner.fireUnitUpdate(UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT, unit);
 
 				if (!(owner instanceof MarsSurface)) {
+					// Set modified cache values as dirty.
+					setAmountResourceCapacityCacheAllDirty(true);
+					setAmountResourceStoredCacheAllDirty(true);
+					setAllStoredAmountResourcesCacheDirty();
+					setTotalAmountResourcesStoredCacheDirty();
+					
 					for (Integer resource : unit.getInventory().getAllARStored(false)) {
 						updateAmountResourceCapacityCache(resource);
 						updateAmountResourceStoredCache(resource);
@@ -2314,6 +2321,12 @@ public class Inventory implements Serializable {
 		}
 
 		else {
+			Unit owner = getOwner();
+			System.out.println(unit + " (" + id + ") "  
+			+ owner  
+			+ " (" 
+			+ owner.getIdentifier() + ") : "  + containedUnitIDs);
+			
 			LogConsolidated.log(Level.SEVERE, 5_000, sourceName +
 					"::retrieveUnit", "'" + unit + "' could not be retrieved.");
 			retrieved = false;
@@ -2372,10 +2385,13 @@ public class Inventory implements Serializable {
 		
 		Unit owner = getOwner();
 		
-		if (owner != null && (owner.getContainerID() != Unit.OUTER_SPACE_UNIT_ID)) {
+		if (owner != null 
+				&& (owner.getIdentifier() != Unit.MARS_SURFACE_UNIT_ID 
+				|| owner.getContainerID() != Unit.OUTER_SPACE_UNIT_ID)) {
+			Unit cu = owner.getContainerUnit();
 			Inventory containerInv = null;
-			if (owner.getContainerUnit() != null) {
-				containerInv = owner.getContainerUnit().getInventory();
+			if (cu != null) {
+				containerInv = cu.getInventory();
 //				System.out.println("Inventory : containerInv is " + containerInv);
 				if (containerInv.getRemainingGeneralCapacity(allowDirty) < result) {
 					result = containerInv.getRemainingGeneralCapacity(allowDirty);
@@ -2468,16 +2484,6 @@ public class Inventory implements Serializable {
 	 *                        dirty.
 	 */
 	private void setAmountResourceCapacityCacheAllDirty(boolean containersDirty) {
-		setARCapacityCacheAllDirty(containersDirty);
-	}
-
-	/**
-	 * Sets all of the resources in the amount resource capacity cache to dirty.
-	 * 
-	 * @param containersDirty true if containers cache should be marked as all
-	 *                        dirty.
-	 */
-	private void setARCapacityCacheAllDirty(boolean containersDirty) {
 
 		// Initialize amount resource capacity cache if necessary.
 		if (capacityCache == null) {
@@ -2495,7 +2501,9 @@ public class Inventory implements Serializable {
 		Unit owner = getOwner();
 		
 		// Set owner unit's amount resource capacity cache as dirty (if any).
-		if (owner != null && (owner.getContainerID() != Unit.OUTER_SPACE_UNIT_ID)) {
+		if (owner != null 
+				&& (owner.getIdentifier() != Unit.MARS_SURFACE_UNIT_ID 
+				|| owner.getContainerID() != Unit.OUTER_SPACE_UNIT_ID)) {
 
 			if (owner instanceof MarsSurface) {
 				return;
@@ -3149,32 +3157,22 @@ public class Inventory implements Serializable {
 		return result;
 	}
 
-//	public Unit getOwner() {
-//		return owner;
-//	}
-
 	public Unit getOwner() {
-		if (unitManager == null)
-			unitManager = Simulation.instance().getUnitManager();
 //		System.out.println("Inventory ownerID : " + ownerID);
 		if (ownerID != null) {	
-			if (ownerID == Unit.MARS_SURFACE_UNIT_ID) {
-//				if (marsSurface == null)
-//					marsSurface = sim.getMars().getMarsSurface();
-//				System.out.println("marsSurface : " + marsSurface);
-				return marsSurface;
-			}
-			
-			if (unitManager != null)
+			if (unitManager == null)
+				unitManager = Simulation.instance().getUnitManager();
+			if (unitManager != null) {
+				if (ownerID == Unit.MARS_SURFACE_UNIT_ID) {
+					return unitManager.getMarsSurface();
+				}
+//				System.out.println("getOwner() : " + unitManager.getUnitByID(ownerID));
 				return unitManager.getUnitByID(ownerID);
+			}
 		}
 
 		return null;
 	}
-	
-//	public void setOwnerID(Integer id) {
-//		ownerID = id;
-//	}
 	
 	public void restoreARs(AmountResource[] ars) {
 		if (resourceStorage != null)
@@ -3202,20 +3200,22 @@ public class Inventory implements Serializable {
 	public void setCacheDirty(int type) {
 		// Set owner unit's amount resource stored cache as dirty (if any).	
 		Unit owner = getOwner();
-		if (owner != null && (owner.getContainerID() != Unit.OUTER_SPACE_UNIT_ID)) {
-			Unit container = owner.getContainerUnit();
-			if (container != null) {
+		if (owner != null 
+				&& (owner.getIdentifier() != Unit.MARS_SURFACE_UNIT_ID 
+				|| owner.getContainerID() != Unit.OUTER_SPACE_UNIT_ID)) {
+			Unit cu = owner.getContainerUnit();
+			if (cu != null) {
 		
 				if (type == 0)
-					container.getInventory().setAmountResourceCapacityCacheAllDirty(true);
+					cu.getInventory().setAmountResourceCapacityCacheAllDirty(true);
 				else if (type == 1)
-					container.getInventory().setAmountResourceStoredCacheAllDirty(true);
+					cu.getInventory().setAmountResourceStoredCacheAllDirty(true);
 				else if (type == 2)
-					container.getInventory().setAllStoredARCacheDirty();
+					cu.getInventory().setAllStoredARCacheDirty();
 				else if (type == 3)
-					container.getInventory().setTotalAmountResourcesStoredCacheDirty();
+					cu.getInventory().setTotalAmountResourcesStoredCacheDirty();
 				else if (type == 4)
-					container.getInventory().setUnitTotalMassCacheDirty();
+					cu.getInventory().setUnitTotalMassCacheDirty();
 			}
 		}
 		
