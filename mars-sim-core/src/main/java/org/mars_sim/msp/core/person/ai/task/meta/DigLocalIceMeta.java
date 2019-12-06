@@ -105,17 +105,17 @@ public class DigLocalIceMeta implements MetaTask, Serializable {
             double stress = condition.getStress();
             double fatigue = condition.getFatigue();
             
-            if (fatigue > 1000)
+            if (fatigue > 1000 || stress > 50)
             	return 0;
             
             result = settlement.getIceProbabilityValue();
 
             // Stress modifier
-            result -= stress * 1D;
+            result -= stress * 5D;
             // fatigue modifier
-            result -= (person.getFatigue()-100) / 50D;
+            result -= (fatigue - 100) / 10D;
 
-            if (result < 1)
+            if (result < 0)
             	return 0;
 
             // Crowded settlement modifier

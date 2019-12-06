@@ -61,7 +61,7 @@ public abstract class EVAOperation extends Task implements Serializable {
 
 	// Static members
 	/** The stress modified per millisol. */
-	private static final double STRESS_MODIFIER = .5D;
+	private static final double STRESS_MODIFIER = .25D;
 	/** The base chance of an accident per millisol. */
 	public static final double BASE_ACCIDENT_CHANCE = .01;
 
@@ -100,7 +100,7 @@ public abstract class EVAOperation extends Task implements Serializable {
 			if (interiorObject == null) {
 				// throw new IllegalStateException(person.getName() + " is in " +
 				// person.getSettlement() + " but not in building : interiorObject is null.");
-				LogConsolidated.log(Level.WARNING, 0, sourceName,
+				LogConsolidated.log(Level.WARNING, 10_000, sourceName,
 						"[" + person.getLocationTag().getLocale() + "] " + person.getName() + 
 						" in " + person.getLocationTag().getImmediateLocation()
 								+ " is supposed to be in a building but interiorObject is null.");
@@ -121,7 +121,7 @@ public abstract class EVAOperation extends Task implements Serializable {
 				if (interiorObject == null) {
 					// throw new IllegalStateException(person.getName() + " not in a vehicle and
 					// interiorObject is null.");
-					LogConsolidated.log(Level.WARNING, 3000, sourceName,
+					LogConsolidated.log(Level.WARNING, 10_000, sourceName,
 							"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " in "
 								+ person.getLocationTag().getImmediateLocation() 
 								+ " is supposed to be in a vehicle but interiorObject is null.");
@@ -133,7 +133,7 @@ public abstract class EVAOperation extends Task implements Serializable {
 				// Set initial phase.
 				setPhase(WALK_TO_OUTSIDE_SITE);
 			} else {
-				LogConsolidated.log(Level.SEVERE, 3000, sourceName,
+				LogConsolidated.log(Level.SEVERE, 10_000, sourceName,
 						"[" + person.getName() + " not in a rover vehicle: " + person.getVehicle());
 			}
 		}

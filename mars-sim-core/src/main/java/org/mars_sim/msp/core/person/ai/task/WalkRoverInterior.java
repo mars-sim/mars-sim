@@ -45,7 +45,7 @@ implements Serializable {
 
 	// Static members
 	/** km per hour. */
-	private static final double WALKING_SPEED = 2D;
+	private static final double WALKING_SPEED = Walk.PERSON_WALKING_SPEED;
 	private static final double STRESS_MODIFIER = -.1D;
 	private static final double VERY_SMALL_DISTANCE = .00001D;
 
@@ -151,7 +151,9 @@ implements Serializable {
 
         // Determine walking distance.
         double timeHours = MarsClock.HOURS_PER_MILLISOL * time;
-        double distanceKm = WALKING_SPEED * timeHours;
+		person.caculateWalkSpeedMod();
+		double mod = person.getWalkSpeedMod();
+        double distanceKm = WALKING_SPEED * timeHours * mod;
         double distanceMeters = distanceKm * 1000D;
         double remainingWalkingDistance = 0;
         if (person != null) {

@@ -64,7 +64,7 @@ public class ConnectWithEarth extends Task implements Serializable {
 	 */
 	public ConnectWithEarth(Person person) {
 		// Use Task constructor.
-		super(NAME, person, true, false, STRESS_MODIFIER, true, 5D + RandomUtil.getRandomDouble(5D));
+		super(NAME, person, true, false, STRESS_MODIFIER, true, 10D + RandomUtil.getRandomDouble(5D) - RandomUtil.getRandomDouble(5D));
 
 		if (person.isInSettlement()) {
 			// If person is in a settlement, try to find an comm facility.

@@ -40,6 +40,8 @@ import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.ai.role.Role;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
+import org.mars_sim.msp.core.person.ai.task.meta.WorkoutMeta;
+import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskSchedule;
 import org.mars_sim.msp.core.person.health.MedicalAid;
 import org.mars_sim.msp.core.reportingAuthority.CNSAMissionControl;
@@ -154,6 +156,8 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	private double yLoc;
 	/** Settlement Z location (meters) from settlement center. */
 	private double zLoc;
+	/** The walking speed modifier. */
+	private double walkSpeedMod = 1.1;
 	
 	/** The birth timestamp of the person. */
 	private String birthTimeStamp;
@@ -320,8 +324,8 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		this.yLoc = 0D;
 		this.associatedSettlementID = settlement.getIdentifier();
 		
+		// create a prior training profile
 		generatePriorTraining();
-		
 		// Construct the NaturalAttributeManager instance
 		attributes = new NaturalAttributeManager(this);
 		// Construct the SkillManager instance
@@ -354,21 +358,21 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		// WARNING: setAssociatedSettlement(settlement) will cause suffocation when
 		// reloading from a saved sim
 		BuildingManager.addToRandomBuilding(this, associatedSettlementID);
-		
-		// why failed in
-		// testWalkingStepsRoverToExterior(org.mars_sim.msp.core.person.ai.task.WalkingStepsTest)
+
+		favorite = new Favorite(this);
+
+		preference = new Preference(this);
+
 		// Set up genetic make-up. Notes it requires attributes.
 		setupChromosomeMap();
-
-		jobHistory = new JobHistory(this);
-
+		
 		circadian = new CircadianClock(this);
 
 		condition = new PhysicalCondition(this);
+		
+		jobHistory = new JobHistory(this);
 
 		scientificAchievement = new HashMap<ScienceType, Double>(0);
-
-		favorite = new Favorite(this);
 
 		role = new Role(this);
 
@@ -376,15 +380,17 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 
 		mind.getTaskManager().initialize();
 
-		preference = new Preference(this);
-
 		support = getLifeSupportType();
+		
 		// Create the mission experiences map
 		missionExperiences = new ConcurrentHashMap<>();
 		// Create the EVA hours map
 		eVATaskTime = new ConcurrentHashMap<>();
 		// Create the consumption map
 		consumption = new ConcurrentHashMap<>();
+		
+
+
 		// Asssume the person is not a preconfigured crew member
 		preConfigured = false;
 	}
@@ -426,7 +432,6 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 			// Set up personality traits: id 40 - 59
 			setupAttributeTrait();
 		}
-
 	}
 
 	/**
@@ -439,9 +444,21 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		boolean dominant = false;
 
 		int strength = attributes.getAttribute(NaturalAttributeType.STRENGTH);
+		int endurance = attributes.getAttribute(NaturalAttributeType.ENDURANCE);
+		double gym = 2 * getPreference().getPreferenceScore(new WorkoutMeta());
+		if (getFavorite().getFavoriteActivity() == FavoriteType.FIELD_WORK)
+			gym += RandomUtil.getRandomRegressionInteger(20);
+		else if (getFavorite().getFavoriteActivity() == FavoriteType.SPORT)
+			gym += RandomUtil.getRandomRegressionInteger(10);
+
+		int carryCap = (int)(gym + personConfig.getBaseCapacity() + weight/6.0 + strength/4.0 + endurance/4.5 
+				+ RandomUtil.getRandomRegressionInteger(10));
+//		logger.info(name + " (" + weight + " kg) with strength " + strength 
+//				+ " & endurance " + endurance  
+//				+ " can carry " + carryCap + " kg");
 		
-		int carryCap = (int)(personConfig.getBaseCapacity() + weight/2.5 + strength/1.5);
-//		logger.info(name + " can carry " + carryCap + " kg");
+		// Calculate the walking speed modifier
+		caculateWalkSpeedMod();
 		// Set inventory total mass capacity based on the person's weight and strength.
 		getInventory().addGeneralCapacity(carryCap); 
 
@@ -2022,6 +2039,22 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	
 	public int getExtrovertmodifier() {
 		return (int)((getExtrovertScore() - 50) / 25D);
+	}
+	
+	/**
+	 * Calculate the modifier for walking speed based on how much this unit is carrying
+	 * 
+	 * @return modifier
+	 */
+	public void caculateWalkSpeedMod() {
+		double mass = getInventory().getTotalInventoryMass(false);
+		double cap = getInventory().getGeneralCapacity();
+		// At full capacity, may still move at 10% 
+		walkSpeedMod = 1.1 - mass/cap;
+	}
+	
+	public double getWalkSpeedMod() {
+		return walkSpeedMod;
 	}
 	
 	public void reinit() {

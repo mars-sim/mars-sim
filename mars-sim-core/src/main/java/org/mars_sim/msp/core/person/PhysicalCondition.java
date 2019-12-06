@@ -367,7 +367,8 @@ public class PhysicalCondition implements Serializable {
 		// Update the personal max energy and appetite based on one's age and weight
 		personalMaxEnergy = personalMaxEnergy + d1 + d2 + preference;
 		appetite = personalMaxEnergy / MAX_DAILY_ENERGY_INTAKE;
-
+		
+//		logger.info(person + " : " + personalMaxEnergy + "   appetite : " + Math.round(appetite*1000.0)/1000.0);
 		// Set up the initial values for each physical health index
 		initializeHealthIndices();
 	}
@@ -676,18 +677,18 @@ public class PhysicalCondition implements Serializable {
 		// kJoules += foodAmount * xdelta * Math.log(FOOD_COMPOSITION_ENERGY_RATIO /
 		// kJoules) / ENERGY_FACTOR;
 
-		if (kJoules > 10000D) {
+		if (kJoules > 10_000D) {
+			kJoules += xdelta * .65;
+		} else if (kJoules > 9_000D) {
+			kJoules += xdelta * .6;
+		} else if (kJoules > 8_000D) {
 			kJoules += xdelta * .75;
-		} else if (kJoules > 9000D) {
+		} else if (kJoules > 7_000D) {
 			kJoules += xdelta * .8;
-		} else if (kJoules > 8000D) {
+		} else if (kJoules > 6_000D) {
 			kJoules += xdelta * .85;
-		} else if (kJoules > 7000D) {
-			kJoules += xdelta * .9;
-		} else if (kJoules > 6000D) {
-			kJoules += xdelta * .95;
 		} else
-			kJoules += xdelta;
+			kJoules += xdelta * .9;
 
 		circadian.eatFood(kJoules / 50D);
 

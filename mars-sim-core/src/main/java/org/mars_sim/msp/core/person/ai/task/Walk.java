@@ -54,8 +54,12 @@ public class Walk extends Task implements Serializable {
 	private static String loggerName = logger.getName();
 	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 	
+	// Static members
+	static final double PERSON_WALKING_SPEED = 2D; // [km per hr].
+	static final double ROBOT_WALKING_SPEED = 0.5; // [km per hr].
+	
 	/** The stress modified per millisol. */
-	private static final double STRESS_MODIFIER = -.2D;
+	private static final double STRESS_MODIFIER = -.25D;
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.walk"); //$NON-NLS-1$
 

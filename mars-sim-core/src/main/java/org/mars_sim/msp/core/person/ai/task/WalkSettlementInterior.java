@@ -56,8 +56,8 @@ public class WalkSettlementInterior extends Task implements Serializable {
 	private static final TaskPhase WALKING = new TaskPhase(Msg.getString("Task.phase.walking")); //$NON-NLS-1$
 
 	// Static members
-	static final double PERSON_WALKING_SPEED = 2D; // [km per hr].
-	static final double ROBOT_WALKING_SPEED = 0.5; // [km per hr].
+	private static final double PERSON_WALKING_SPEED = Walk.PERSON_WALKING_SPEED; // [km per hr].
+	private static final double ROBOT_WALKING_SPEED = Walk.ROBOT_WALKING_SPEED; // [km per hr].
 
 	private static final double VERY_SMALL_DISTANCE = .00001D;
 	private static final double STRESS_MODIFIER = -.2D;
@@ -271,24 +271,27 @@ public class WalkSettlementInterior extends Task implements Serializable {
 		double distanceKm = 0;
 
 		if (person != null) {
-			distanceKm = PERSON_WALKING_SPEED * timeHours;
+			person.caculateWalkSpeedMod();
+			double mod = person.getWalkSpeedMod();
+			distanceKm = PERSON_WALKING_SPEED * timeHours * mod;
 			// Check that remaining path locations are valid.
 			if (!checkRemainingPathLocations()) {
 				// Exception in thread "pool-4-thread-1" java.lang.StackOverflowError
 				// Flooding with the following statement in stacktrace
 				LogConsolidated.log(Level.SEVERE, 1000, sourceName,
-						person.getName() + " unable to continue walking due to missing path objects.");
+						person.getName() + " was unable to continue walking due to missing path objects.");
 				// endTask();
 				return time / 2D;
 			}
 		} else if (robot != null) {
-			distanceKm = ROBOT_WALKING_SPEED * timeHours;
+			double mod = robot.getWalkSpeedMod();
+			distanceKm = ROBOT_WALKING_SPEED * timeHours * mod;
 			// Check that remaining path locations are valid.
 			if (!checkRemainingPathLocations()) {
 				// Exception in thread "pool-4-thread-1" java.lang.StackOverflowError
 				// Flooding with the following statement in stacktrace
 				LogConsolidated.log(Level.SEVERE, 1000, sourceName,
-						robot.getName() + " unable to continue walking due to missing path objects.");
+						robot.getName() + " was unable to continue walking due to missing path objects.");
 				// endTask();
 				return time / 2D;
 			}

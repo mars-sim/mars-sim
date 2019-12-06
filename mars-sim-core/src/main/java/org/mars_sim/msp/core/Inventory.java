@@ -114,7 +114,7 @@ public class Inventory implements Serializable {
 	private Map<Integer, Integer> itemSupplyRequestMap = new HashMap<>();
 	
 	/** The unit that owns this inventory. */
-//	private Unit owner;
+	private transient Unit owner;
 	private Integer ownerID;
 
 	/** Resource storage. */
@@ -134,6 +134,7 @@ public class Inventory implements Serializable {
 	public Inventory(Unit owner) {
 		// Set owning unit.
 		if (owner != null) {
+			this.owner = owner;
 			this.ownerID = (Integer) owner.getIdentifier();
 		}
 //		if (unitManager == null)
@@ -3158,16 +3159,22 @@ public class Inventory implements Serializable {
 	}
 
 	public Unit getOwner() {
-//		System.out.println("Inventory ownerID : " + ownerID);
+		if (owner != null) {
+			return owner;
+		}
+		
 		if (ownerID != null) {	
+//			System.out.println("Inventory ownerID : " + ownerID);
 			if (unitManager == null)
 				unitManager = Simulation.instance().getUnitManager();
 			if (unitManager != null) {
 				if (ownerID == Unit.MARS_SURFACE_UNIT_ID) {
-					return unitManager.getMarsSurface();
+					owner = unitManager.getMarsSurface();
+					return owner;
 				}
 //				System.out.println("getOwner() : " + unitManager.getUnitByID(ownerID));
-				return unitManager.getUnitByID(ownerID);
+				owner = unitManager.getUnitByID(ownerID);
+				return owner;
 			}
 		}
 

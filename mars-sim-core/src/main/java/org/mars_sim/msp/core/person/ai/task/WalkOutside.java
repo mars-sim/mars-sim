@@ -58,9 +58,9 @@ public class WalkOutside extends Task implements Serializable {
 
 	// Static members
 	/** in km / hr. */
-	private static final double BASE_WALKING_SPEED = 2D;
+	private static final double BASE_WALKING_SPEED = Walk.PERSON_WALKING_SPEED;
 	/** in km / hr. */
-	private static final double MAX_WALKING_SPEED = 5D;
+	private static final double MAX_WALKING_SPEED = 3 * BASE_WALKING_SPEED;
 	private static final double VERY_SMALL_DISTANCE = .00001D;
 
 	/** The stress modified per millisol. */
@@ -803,7 +803,9 @@ public class WalkOutside extends Task implements Serializable {
 	 */
 	private double getWalkingSpeed() {
 
-		double result = BASE_WALKING_SPEED;
+		person.caculateWalkSpeedMod();
+		double mod = person.getWalkSpeedMod();
+		double result = BASE_WALKING_SPEED * mod;
 
 		// Modify walking speed by EVA operations skill level.
 		double evaSkill = getEffectiveSkillLevel();
@@ -811,8 +813,8 @@ public class WalkOutside extends Task implements Serializable {
 		result += speedModifyer;
 
 		// Don't allow walking speed to exceed maximum walking speed.
-		if (result > MAX_WALKING_SPEED) {
-			result = MAX_WALKING_SPEED;
+		if (result > MAX_WALKING_SPEED * mod) {
+			result = MAX_WALKING_SPEED * mod;
 		}
 
 		return result;

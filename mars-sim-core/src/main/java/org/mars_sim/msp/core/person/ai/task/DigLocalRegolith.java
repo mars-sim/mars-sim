@@ -20,6 +20,7 @@ import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.equipment.Bag;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillManager;
@@ -56,12 +57,13 @@ implements Serializable {
             "Task.phase.collectRegolith")); //$NON-NLS-1$
 
 	/** Collection rate of regolith during EVA (kg/millisol). */
-	public static final double COLLECTION_RATE = .2D;
+	public static final double COLLECTION_RATE = 5D;
 
 	/** The resource id for a bag. */
 //	private static final int BAG  = EquipmentType.convertName2ID("bag");
 	
 	// Domain members
+//	private double duration = 40; // + RandomUtil.getRandomInt(10) - RandomUtil.getRandomInt(10);
 	/** Total ice collected in kg. */
 	private double totalCollected;
 
@@ -71,9 +73,8 @@ implements Serializable {
 	private Bag bag;
 	private Settlement settlement;
 
-	private int strength;
-	private int agility;
-	private int eva;
+	private double compositeRate;
+	private double factor = .9;
     
 	private static int regolithID = ResourceUtil.regolithID;
 
@@ -83,10 +84,10 @@ implements Serializable {
 	 */
 	public DigLocalRegolith(Person person) {
         // Use EVAOperation constructor.
-        super(NAME, person, false, 100 + RandomUtil.getRandomInt(20) - RandomUtil.getRandomInt(20));
-
-        settlement = person.getAssociatedSettlement();
+        super(NAME, person, false, 50);
         
+        settlement = person.getAssociatedSettlement();
+           
         // Get an available airlock.
         airlock = getWalkableAvailableAirlock(person);
         if (airlock == null) {
@@ -111,10 +112,16 @@ implements Serializable {
         addPhase(COLLECT_REGOLITH);
 
         NaturalAttributeManager nManager = person.getNaturalAttributeManager();
-        strength = nManager.getAttribute(NaturalAttributeType.STRENGTH);
-        agility = nManager.getAttribute(NaturalAttributeType.AGILITY);
-        eva = person.getSkillManager().getSkillLevel(SkillType.EVA_OPERATIONS);
+        int strength = nManager.getAttribute(NaturalAttributeType.STRENGTH);
+        int agility = nManager.getAttribute(NaturalAttributeType.AGILITY);
+        int eva = person.getSkillManager().getSkillLevel(SkillType.EVA_OPERATIONS);
         
+        factor = .9 * (1 - (agility + strength) / 200D);
+        compositeRate  = COLLECTION_RATE * ((.5 * agility + strength) / 150D) * (eva + .1)/ 5D ;
+        
+		// set the boolean to true so that it won't be done again today
+		person.getPreference().setTaskDue(this, true);
+		
         logger.finest(person.getName() + " was going to start digging for regolith.");
     }
 
@@ -291,6 +298,11 @@ implements Serializable {
      */
     private double collectRegolith(double time) {
 
+    	if (getTimeCompleted() > getDuration()) {
+            setPhase(WALK_BACK_INSIDE);
+            return time;
+    	}
+    	
         // Check for an accident during the EVA operation.
         checkForAccident(time);
 
@@ -310,22 +322,33 @@ implements Serializable {
         double remainingPersonCapacity = person.getInventory().getAmountResourceRemainingCapacity(
         		regolithID, true, false);
         
-        double regolithCollected = .1 + RandomUtil.getRandomDouble(.25) 
-        	* time * COLLECTION_RATE * ((.5 * agility + strength) / 150D) * (eva + .1)/ 5D ;
+        double regolithCollected = .5 * time * compositeRate;
+        
+		// Modify collection rate by "Areology" skill.
+		int areologySkill = person.getSkillManager().getEffectiveSkillLevel(SkillType.AREOLOGY);
+		if (areologySkill == 0) {
+			regolithCollected /= 2D;
+		}
+		if (areologySkill > 1) {
+			regolithCollected += regolithCollected * (.2D * areologySkill);
+		}
+		
         totalCollected += regolithCollected;
         
         boolean finishedCollecting = false;
-        if (regolithCollected >= remainingPersonCapacity) {
+        if (regolithCollected >= remainingPersonCapacity
+        		|| totalCollected > .4 * person.getInventory().getGeneralCapacity()) {
             regolithCollected = remainingPersonCapacity;
             finishedCollecting = true;
         }
         
         person.getInventory().storeAmountResource(regolithID, regolithCollected, true);
-        
+ 
+        PhysicalCondition condition = person.getPhysicalCondition();
+        double stress = condition.getStress();
+        double fatigue = condition.getFatigue();
         // Add penalty to the fatigue
-        double factor = 1 - (agility + strength) / 400D;
-        double fatigue = person.getPhysicalCondition().getFatigue();
-        person.getPhysicalCondition().setFatigue(fatigue + time * factor);
+        condition.setFatigue(fatigue + time * factor);
         
         if (finishedCollecting) {
             setPhase(WALK_BACK_INSIDE);
@@ -340,6 +363,15 @@ implements Serializable {
         // Add experience points
         addExperience(time);
 
+        if (fatigue > 1000 || stress > 50) {
+            LogConsolidated.log(Level.INFO, 0, sourceName, 
+        		"[" + person.getLocationTag().getLocale() +  "] " +
+        		person.getName() + " took a break from collecting regolith (fatigue: " + Math.round(fatigue*10D)/10D 
+        		+ " ; stress: " + Math.round(stress*100D)/100D + " %)");
+//            endTask();
+            setPhase(WALK_BACK_INSIDE);
+        }
+        
         return 0D;
     }
 

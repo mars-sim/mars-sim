@@ -938,6 +938,18 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 		return (int) Math.round(getPerformanceRating() * skillManager.getSkillLevel(skillType));
 	}
 	
+	/**
+	 * Calculate the modifier for walking speed based on how much this unit is carrying
+	 * 
+	 * @return modifier
+	 */
+	public double getWalkSpeedMod() {
+		double mass = getInventory().getTotalInventoryMass(false);
+		double cap = getInventory().getGeneralCapacity();
+		// At full capacity, may still move at 10% 
+		return 1.1 - mass/cap;
+	}
+	
 	public boolean equals(Object obj) {
 		if (this == obj) return true;
 		if (obj == null) return false;

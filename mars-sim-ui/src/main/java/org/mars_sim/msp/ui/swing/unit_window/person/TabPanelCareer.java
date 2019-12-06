@@ -117,6 +117,8 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 	/** The Robot instance. */
 	private Robot robot = null;
 	
+	private Settlement settlement;
+	
 	private static MarsClock marsClock;
 
 	/**
@@ -136,10 +138,22 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 		
 		if (unit instanceof Person) {
 			person = (Person) unit;
+			if (person.getAssociatedSettlement() != null) {
+				settlement = person.getAssociatedSettlement();
+			} 
+			else if (person.isInVehicle()) {
+				Vehicle vehicle = (Vehicle) person.getContainerUnit();
+				settlement = vehicle.getSettlement();
+			}
+			if (settlement == null) {
+				settlement = person.getBuriedSettlement();
+			}
 		} else if (unit instanceof Robot) {
 			robot = (Robot) unit;
+			if (robot.getAssociatedSettlement() != null) {
+				settlement = robot.getAssociatedSettlement();
+			}
 		}
-		
 	}
 
 	public boolean isUIDone() {
@@ -534,10 +548,6 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 	 * @return
 	 */
 	public List<String> getRoleNames() {
-		Settlement settlement = null;
-		if (person.getAssociatedSettlement() != null) {
-			settlement = person.getAssociatedSettlement();
-		} 
 
 		int pop = settlement.getNumCitizens();
 		List<String> roleNames = new ArrayList<String>();
@@ -583,11 +593,6 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 
 		int pop = 0;
 
-		Settlement settlement = null;
-		if (person.getAssociatedSettlement() != null) {
-			settlement = person.getAssociatedSettlement();
-		} 
-		
 //		else if (person.isInVehicle()) {
 //			Vehicle vehicle = (Vehicle) person.getContainerUnit();
 //			settlement = vehicle.getSettlement();
@@ -838,13 +843,6 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 		else if (JobType.getJobType(jobStrCache) != JobType.getJobType(selectedJobStr)) {
 			// Use getAssociatedSettlement instead of getSettlement()
 			int pop = 0;
-			Settlement settlement = null;
-			if (person.getAssociatedSettlement() != null) {
-				settlement = person.getAssociatedSettlement();
-			} else if (person.isInVehicle()) {
-				Vehicle vehicle = (Vehicle) person.getContainerUnit();
-				settlement = vehicle.getSettlement();
-			}
 
 			pop = settlement.getNumCitizens();
 

@@ -491,6 +491,11 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		}
 	}
 
+	/**
+	 * Create a new sub-task.
+	 * 
+	 * @param newSubTask the new sub-task to be added
+	 */
 	public void createSubTask(Task newSubTask) {
 		subTask = newSubTask;
 		if (person != null) {
@@ -955,7 +960,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		if (f == null) {
 			// If the functionType does not exist in this building, go to random location in
 			// building.
-			walkToRandomLocInBuilding(building, allowFail);
+//			walkToRandomLocInBuilding(building, allowFail);
 			return;
 		}
 
@@ -971,10 +976,11 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		if (settlementLoc != null) {
 			// Create subtask for walking to destination.
 			createWalkingSubtask(building, settlementLoc, allowFail);
-		} else {
-			// If no available activity spot, go to random location in building.
-			walkToRandomLocInBuilding(building, allowFail);
-		}
+		} 
+//		else {
+//			// If no available activity spot, go to random location in building.
+//			walkToRandomLocInBuilding(building, allowFail);
+//		}
 	}
 
 	/**

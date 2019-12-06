@@ -59,9 +59,11 @@ public class EatDrink extends Task implements Serializable {
 	private static final int RATIO = 250;
 	
 	/** The minimal amount of resource to be retrieved. */
-	private static final double MIN = 0.00001;
+	private static final double MIN = 0.01;
 	
 	/** Task name */
+	private static final String JUICE = "juice";
+	private static final String MILK = "milk";
 	private static final String NAME = Msg.getString("Task.description.eatDrink"); //$NON-NLS-1$
 
 	/** Task phases. */
@@ -73,8 +75,8 @@ public class EatDrink extends Task implements Serializable {
 
 	// Static members
 	/** The stress modified per millisol. */
-	private static final double STRESS_MODIFIER = -.4D;
-	private static final double DESSERT_STRESS_MODIFIER = -.4D;
+	private static final double STRESS_MODIFIER = -.75D;
+	private static final double DESSERT_STRESS_MODIFIER = -.6D;
 	private static final int NUMBER_OF_MEAL_PER_SOL = 4;
 	private static final int NUMBER_OF_DESSERT_PER_SOL = 4;
 	/** The proportion of the task for eating a meal. */
@@ -446,6 +448,10 @@ public class EatDrink extends Task implements Serializable {
 		if (currentHunger < 0D) {
 			currentHunger = 0D;
 		}
+		
+//		logger.info(person 
+//				+ " new Hunger " + Math.round(currentHunger*100.0)/100.0
+//				+ "   hungerRelieved " + Math.round(hungerRelieved*100.0)/100.0);
 		condition.setHunger(currentHunger);
 	}
 	
@@ -604,7 +610,7 @@ public class EatDrink extends Task implements Serializable {
 
 	private void checkInDescription(AmountResource dessertAR, boolean prepared) {
 		String s = dessertAR.getName();
-		if (s.contains("milk") || s.contains("juice")) {
+		if (s.contains(MILK) || s.contains(JUICE)) {
 			if (prepared)
 				setDescription(
 						Msg.getString("Task.description.eatDrink.preparedDessert.drink", Conversion.capitalize(s))); //$NON-NLS-1$
@@ -677,10 +683,8 @@ public class EatDrink extends Task implements Serializable {
 					// Not enough dessert resource available to eat.
 	//				result = false;
 				}
-	
 			}
 		}
-
 	}
 
 	/**
@@ -689,7 +693,7 @@ public class EatDrink extends Task implements Serializable {
 	 * @param dryMass of the dessert
 	 */
 	public void consumeDessertWater(double dryMass) {
-		double currentThirst = Math.min(thirst, 1_000);
+		double currentThirst = Math.min(thirst, THIRST_CEILING);
 		double waterFinal = Math.min(waterEachServing, currentThirst);
 		// Note that the water content within the dessert has already been deducted from
 		// the settlement
@@ -703,8 +707,8 @@ public class EatDrink extends Task implements Serializable {
 			double new_thirst = (currentThirst - waterFinal) / 8 - waterFinal * 5;
 			if (new_thirst < 0)
 				new_thirst = 0;
-			else if (new_thirst > 500)
-				new_thirst = 500;
+			else if (new_thirst > THIRST_CEILING)
+				new_thirst = THIRST_CEILING;
 			condition.setThirst(new_thirst);
 
 			double newStress = condition.getStress() - waterFinal;
@@ -722,7 +726,7 @@ public class EatDrink extends Task implements Serializable {
 		boolean notThirsty = !condition.isThirsty();
 		
 		if (!notThirsty) {
-			double currentThirst = Math.min(thirst, 1_000);
+			double currentThirst = Math.min(thirst, THIRST_CEILING);
 			Unit containerUnit = person.getContainerUnit();
 			Inventory inv = null;
 			
@@ -990,7 +994,7 @@ public class EatDrink extends Task implements Serializable {
 			AmountResource[] ARs = PreparingDessert.getArrayOfDessertsAR();
 			for (AmountResource ar : ARs) {
 				if (isThirsty)
-					option = ar.getName().contains("juice") || ar.getName().contains("milk");
+					option = ar.getName().contains(JUICE) || ar.getName().contains(MILK);
 				
 				boolean hasAR = false;
 				if (amountNeeded > MIN) {
@@ -1106,9 +1110,9 @@ public class EatDrink extends Task implements Serializable {
 		Unit containerUnit = person.getTopContainerUnit();
 		if (!(containerUnit instanceof MarsSurface)) {
 			Inventory inv = containerUnit.getInventory();
-
 			if (inv != null && foodConsumptionRate > MIN)
-				result = Storage.retrieveAnResource(foodConsumptionRate, ResourceUtil.foodID, inv, false);
+				result = inv.getAmountResourceStored(ResourceUtil.foodID, false) > MIN;
+//				Storage.retrieveAnResource(foodConsumptionRate, ResourceUtil.foodID, inv, false);
 		}
 		return result;
 	}

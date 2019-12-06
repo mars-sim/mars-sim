@@ -75,7 +75,7 @@ public class Sleep extends Task implements Serializable {
 	// Data members
 	/** The previous time (millisols). */
 	private double previousTime;
-	private double timeFactor;
+	private double timeFactor = 12; // TODO: should vary this factor by person
 	
 	private LocalBoundedObject interiorObject;
 	private Point2D returnInsideLoc;
@@ -93,13 +93,12 @@ public class Sleep extends Task implements Serializable {
 	 */
 	//
 	public Sleep(Person person) {
-		super(NAME, person, false, false, STRESS_MODIFIER, true, (100D + RandomUtil.getRandomDouble(10D)));
+		super(NAME, person, false, false, STRESS_MODIFIER, true, (50D 
+				+ RandomUtil.getRandomDouble(20D) - RandomUtil.getRandomDouble(20D)));
 
 		pc = person.getPhysicalCondition();
 		circadian = person.getCircadianClock();
 
-		timeFactor = 6D; // TODO: should vary this factor by person
-		
 //		boolean canWalkInside = true;
 		
 		// Organized into 9 branching decisions
@@ -379,23 +378,22 @@ public class Sleep extends Task implements Serializable {
 			pc.recoverFromSoreness(.05);
 
 			// Obtain the fractionOfRest to restore fatigue faster in high fatigue case
-			double fractionOfRest = time / 1000 * timeFactor;
-
-			// Note : timeFactor is 3 since a person typically spent 1/3 of time sleeping in
-			// a day.
+			double fractionOfRest = time * timeFactor;
 
 			double f = pc.getFatigue();
-			if (f > MAX_FATIGUE)
+			if (f > MAX_FATIGUE) {
 				f = MAX_FATIGUE;
-			
+				pc.setFatigue(MAX_FATIGUE);
+			}
+				
 			double residualFatigue = 0;
 
 			if (f > 1000)
-				residualFatigue = (f - 1000) / 2000;
+				residualFatigue = (f - 1000) / 10;
 
 			// Reduce person's fatigue
-			double newFatigue = f - f * fractionOfRest + residualFatigue;
-
+			double newFatigue = f - fractionOfRest + residualFatigue;
+//			logger.info(person + " fractionOfRest : " + fractionOfRest + "   fatigue : " + newFatigue);
 			pc.setFatigue(newFatigue);
 
 			circadian.setAwake(false);

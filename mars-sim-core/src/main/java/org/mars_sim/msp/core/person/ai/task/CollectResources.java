@@ -63,6 +63,9 @@ public class CollectResources extends EVAOperation implements Serializable {
 	protected double targettedAmount;
 	/** Amount of resource already in rover cargo at start of task. (kg) */
 	protected double startingCargo;
+	/** The composite rate of collection. */	
+	private double compositeRate;
+	
 	/** The resource type. */
 	protected Integer resourceType;
 	/** The container type to use to collect resource. */
@@ -111,6 +114,13 @@ public class CollectResources extends EVAOperation implements Serializable {
 			}
 		}
 
+		NaturalAttributeManager nManager = person.getNaturalAttributeManager();
+		int strength = nManager.getAttribute(NaturalAttributeType.STRENGTH);
+		int agility = nManager.getAttribute(NaturalAttributeType.AGILITY);
+		int eva = person.getSkillManager().getSkillLevel(SkillType.EVA_OPERATIONS);
+	        
+		compositeRate  = collectionRate * ((.5 * agility + strength) / 150D) * (eva + .1)/ 5D ;
+	        
 		// Add task phases
 		addPhase(COLLECT_RESOURCES);
 	}
@@ -275,7 +285,7 @@ public class CollectResources extends EVAOperation implements Serializable {
 			sampleLimit = remainingSamplesNeeded;
 		}
 
-		double samplesCollected = time * collectionRate;
+		double samplesCollected = time * compositeRate;
 
 		// Modify collection rate by "Areology" skill.
 		int areologySkill = person.getSkillManager().getEffectiveSkillLevel(SkillType.AREOLOGY);

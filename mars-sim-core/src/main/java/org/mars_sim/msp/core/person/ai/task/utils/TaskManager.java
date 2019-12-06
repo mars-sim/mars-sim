@@ -23,14 +23,11 @@ import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.ai.Mind;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
-import org.mars_sim.msp.core.person.ai.task.EatDrink;
 import org.mars_sim.msp.core.person.ai.task.EnterAirlock;
 import org.mars_sim.msp.core.person.ai.task.ExitAirlock;
 import org.mars_sim.msp.core.person.ai.task.RepairEmergencyMalfunction;
 import org.mars_sim.msp.core.person.ai.task.RepairEmergencyMalfunctionEVA;
-import org.mars_sim.msp.core.person.ai.task.Sleep;
 import org.mars_sim.msp.core.person.ai.task.Walk;
-import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -756,19 +753,20 @@ public class TaskManager implements Serializable {
 				double probability = mt.getProbability(person);
 				if ((probability >= 0D) && (!Double.isNaN(probability)) && (!Double.isInfinite(probability))) {
 					if (probability > MAX_TASK_PROBABILITY) {
-						LogConsolidated.log(Level.FINER, 5_000, sourceName, mind.getPerson().getName() + " - "
+						LogConsolidated.log(Level.WARNING, 10_000, sourceName, mind.getPerson().getName() + " - "
 								+ mt.getName() + " : Probability is " + Math.round(probability * 10.0) / 10.0 + ".");
 						// If the person has a strong desire to eat, stop here and go to eat
 						// The person has a strong desire to sleep, stop here and go to sleep
-						if (person.isInside() && mt.getName().contains("sleep")) { 
-							addTask(new Sleep(person), false);
-						}
-						else {
-							if (mt.getName().contains("eat")) 
-								goEat();
-							else
-								probability = MAX_TASK_PROBABILITY;
-						}
+//						if (person.isInside() && mt.getName().contains("sleep")) { 
+//							addTask(new Sleep(person), false);
+//						}
+//						else {
+//							if (mt.getName().contains("eat")) 
+//								goEat();
+//							else
+//								probability = MAX_TASK_PROBABILITY;
+//						}
+						probability = MAX_TASK_PROBABILITY;
 					}
 //					if (person.getName().contains("Enrique")) // && mt.getName().contains("Review"))
 //						System.out.println(person + " " + mt.getName() + " " + Math.round(probability*10.0)/10.0);
@@ -787,21 +785,21 @@ public class TaskManager implements Serializable {
 		}
 	}
 
-	public void goEat() {
-		if (person.isInside() 
-				&& person.getContainerUnit().getInventory()
-				.getAmountResourceStored(ResourceUtil.foodID, false) > SMALL_AMOUNT) {
-			addTask(new EatDrink(person), false);
-		}
-	}
-	
-	public void goDrink() {
-		if (person.isInside() 
-				&& person.getContainerUnit().getInventory()
-				.getAmountResourceStored(ResourceUtil.waterID, false) > SMALL_AMOUNT) {
-			addTask(new EatDrink(person), false);
-		}
-	}
+//	public void goEat() {
+//		if (person.isInside() 
+//				&& person.getContainerUnit().getInventory()
+//				.getAmountResourceStored(ResourceUtil.foodID, false) > SMALL_AMOUNT) {
+//			addTask(new EatDrink(person), false);
+//		}
+//	}
+//	
+//	public void goDrink() {
+//		if (person.isInside() 
+//				&& person.getContainerUnit().getInventory()
+//				.getAmountResourceStored(ResourceUtil.waterID, false) > SMALL_AMOUNT) {
+//			addTask(new EatDrink(person), false);
+//		}
+//	}
 	
 	/**
 	 * Checks if task probability cache should be used.

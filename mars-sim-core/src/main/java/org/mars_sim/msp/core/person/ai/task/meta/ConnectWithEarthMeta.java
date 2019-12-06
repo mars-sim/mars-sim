@@ -17,7 +17,6 @@ import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
@@ -49,6 +48,7 @@ public class ConnectWithEarthMeta implements MetaTask, Serializable {
 
         double result = 0D;
 
+        // Check if a person has done this once today
         if (!person.getPreference().isTaskDue(this) && person.isInside()) {
         		
             // Probability affected by the person's stress and fatigue.

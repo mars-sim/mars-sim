@@ -37,6 +37,8 @@ public class TreatMedicalPatientMeta implements MetaTask, Serializable {
     /** default serial id. */
     private static final long serialVersionUID = 1L;
     
+	private static final int VALUE = 1000;
+	
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.treatMedicalPatient"); //$NON-NLS-1$
@@ -68,7 +70,7 @@ public class TreatMedicalPatientMeta implements MetaTask, Serializable {
         if (person.isInside()) {
 	        // Get the local medical aids to use.
 	        if (hasNeedyMedicalAids(person)) {
-	            result = 200D;	
+	            result = VALUE;	
 	            
 	            if (person.isInVehicle()) {	
 	    	        // Check if person is in a moving rover.

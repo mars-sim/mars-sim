@@ -31,10 +31,8 @@ public class SleepMeta implements MetaTask, Serializable {
 
     /** default logger. */
     private static Logger logger = Logger.getLogger(SleepMeta.class.getName());
-
-//	private static String loggerName = logger.getName();
-//
-//	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+	private static String loggerName = logger.getName();
+	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 
     /** Task name */
     private static final String NAME = Msg.getString("Task.description.sleep"); //$NON-NLS-1$
@@ -56,14 +54,13 @@ public class SleepMeta implements MetaTask, Serializable {
 
         double result = 0;
 
-        if (person.isInside()) {
+//        if (person.isInside()) {
         	
            	boolean proceed = false;
 
         	// Note : each millisol generates 1 fatigue point
         	// 500 millisols is ~12 hours
 
-        	int now = marsClock.getMillisolInt();
            // boolean isOnCall = ts.getShiftType() == ShiftType.ON_CALL;
             
             double fatigue = person.getPhysicalCondition().getFatigue();
@@ -80,13 +77,13 @@ public class SleepMeta implements MetaTask, Serializable {
          	
         	// 1000 millisols is 24 hours, if a person hasn't slept for 24 hours,
             // he is supposed to want to sleep right away.
-        	if (fatigue > 500D || stress > 50D || ghrelin-leptin > 300) {
+        	if (fatigue > 333 || stress > 50 || ghrelin-leptin > 300) {
         		proceed = true;
         	}
         	
-            if (proceed) {   		
+            if (proceed) {
 	        	// the desire to go to bed increase linearly after 12 hours of wake time
-	            result += (fatigue - 100) * 2D + stress * 5D + (ghrelin-leptin - 300)/10D;
+	            result += (fatigue - 100) * 5 + stress * 6 + (ghrelin-leptin - 300)/10D;
 	            
                 double pref = person.getPreference().getPreferenceScore(this);
                 
@@ -135,7 +132,6 @@ public class SleepMeta implements MetaTask, Serializable {
 				}
 
 				else {
-
 			        // Add checking if a person has a designated bed
 	                quarters = person.getQuarters();
 	                
@@ -191,15 +187,16 @@ public class SleepMeta implements MetaTask, Serializable {
 	    	    	int bestSleepTime[] = person.getPreferredSleepHours();
 	    	    	// is now falling two of the best sleep time ?
 	    	    	for (int time : bestSleepTime) {
+	    	        	int now = marsClock.getMillisolInt();
 	    		    	int diff = time - now;
 	    		    	if (diff < 50 || diff > -50) {
 	    		    		proceed = true;
-	    		    		result = 1000;
+	    		    		result += 1000;
 	    		    		break;
 	    		    	}
 	    		    	else {
 	    		    		// Reduce the probability by a factor of 10
-	    		    		result = result/10D;
+	    		    		result = result/5D;
 	    		    	}
 	    	    	}
 	            }
@@ -215,22 +212,23 @@ public class SleepMeta implements MetaTask, Serializable {
     	        // Reduce the probability if it's not the right time to sleep
     	    	refreshSleepHabit(person);  
             }
-        }
+//        }
 
         // No sleeping outside.
         //else if (person.getLocationSituation() == LocationSituation.OUTSIDE) {
         //   result = 0D;
         //}
 
-        //if (result > 0)
-        //	LogConsolidated.log(logger, Level.INFO, 2000, sourceName,
-        //		str + Math.round(result*100.0)/100.0, null);
+//        if (result > 0)
+//        	LogConsolidated.log(logger, Level.INFO, 0, sourceName,
+//        		person + " " + Math.round(result*100.0)/100.0, null);
         
         return result;
     }
     
     public double modifyProbability(double value, Person person, Building quarters) {
-    	return value * TaskProbabilityUtil.getCrowdingProbabilityModifier(person, quarters) * TaskProbabilityUtil.getRelationshipModifier(person, quarters);
+    	return value * TaskProbabilityUtil.getCrowdingProbabilityModifier(person, quarters) 
+    			* TaskProbabilityUtil.getRelationshipModifier(person, quarters);
     }
     
     

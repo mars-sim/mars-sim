@@ -30,7 +30,7 @@ public class DigLocalRegolithMeta implements MetaTask, Serializable {
     /** default serial id. */
     private static final long serialVersionUID = 1L;
 
-	private static final double VALUE = 150D;
+	private static final double VALUE = .6D;
     
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -54,6 +54,10 @@ public class DigLocalRegolithMeta implements MetaTask, Serializable {
 
         double result = 0D;
        
+        // Check if a person has done this once today
+        if (person.getPreference().isTaskDue(this))
+        	return 0;	
+        		
         if (person.isInSettlement()) {
         	
 	    	Settlement settlement = person.getSettlement();
@@ -64,7 +68,6 @@ public class DigLocalRegolithMeta implements MetaTask, Serializable {
 	        
 	        //Checked for radiation events
 	    	boolean[]exposed = settlement.getExposed();
-	
 	
 			if (exposed[2]) {
 				// SEP can give lethal dose of radiation
@@ -98,15 +101,15 @@ public class DigLocalRegolithMeta implements MetaTask, Serializable {
             double stress = condition.getStress();
             double fatigue = condition.getFatigue();
             
-            if (fatigue > 1000)
+            if (fatigue > 1000 || stress > 50)
             	return 0;
             
 	        result = settlement.getRegolithProbabilityValue() * VALUE;
 	    	
             // Stress modifier
-            result -= stress * 1D;
+            result -= stress * 5D;
             // fatigue modifier
-            result -= (person.getFatigue()-100) / 50D;
+            result -= (fatigue - 100) / 50D;
             
 	        if (result < 1)
 	        	return 0;

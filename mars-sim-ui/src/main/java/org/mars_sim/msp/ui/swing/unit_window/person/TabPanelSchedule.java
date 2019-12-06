@@ -139,7 +139,7 @@ public class TabPanelSchedule extends TabPanel {
 			taskSchedule = robot.getTaskSchedule();
 		}
 
-		allActivities = taskSchedule.getAllActivities();
+//		allActivities = taskSchedule.getAllActivities();
 
 		// Create label panel.
 		WebPanel labelPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
@@ -556,6 +556,7 @@ public class TabPanelSchedule extends TabPanel {
 			} 
 			
 			else {
+				allActivities = taskSchedule.getAllActivities();
 				// Load the schedule of a particular sol
 				temp.addAll(allActivities.get(selectedSol));
 			}

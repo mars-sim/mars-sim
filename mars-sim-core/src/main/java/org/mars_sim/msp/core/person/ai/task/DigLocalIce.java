@@ -20,6 +20,7 @@ import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.equipment.Bag;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillManager;
@@ -58,6 +59,9 @@ implements Serializable {
 	/** The resource id for a bag. */
 //	private static final int BAG  = EquipmentType.convertName2ID("bag");
 	
+	private double compositeRate;
+    private double factor;
+    
 	/**  Collection rate of ice during EVA (kg/millisol). */
 	private double collectionRate;
 
@@ -80,11 +84,19 @@ implements Serializable {
 	 */
 	public DigLocalIce(Person person) {
         // Use EVAOperation constructor.
-        super(NAME, person, false, 100 + RandomUtil.getRandomInt(20) - RandomUtil.getRandomInt(20));
+        super(NAME, person, false, 50);//+ RandomUtil.getRandomInt(10) - RandomUtil.getRandomInt(10));
 
         settlement = person.getAssociatedSettlement();
         
         collectionRate = settlement.getIceCollectionRate();
+        
+        NaturalAttributeManager nManager = person.getNaturalAttributeManager();
+        int strength = nManager.getAttribute(NaturalAttributeType.STRENGTH);
+        int agility = nManager.getAttribute(NaturalAttributeType.AGILITY);
+        int eva = person.getSkillManager().getSkillLevel(SkillType.EVA_OPERATIONS);
+        
+        factor = .9 * (1 - (agility + strength) / 200D);
+        compositeRate  = collectionRate * ((.5 * agility + strength) / 150D) * (eva + .1)/ 5D ;
         
         // Get an available airlock.
         airlock = getWalkableAvailableAirlock(person);
@@ -288,6 +300,11 @@ implements Serializable {
      */
     private double collectIce(double time) {
 
+    	if (getTimeCompleted() > getDuration()) {
+            setPhase(WALK_BACK_INSIDE);
+            return time;
+    	}
+    			
         // Check for an accident during the EVA operation.
         checkForAccident(time);
 
@@ -306,28 +323,25 @@ implements Serializable {
         double remainingPersonCapacity = person.getInventory().getAmountResourceRemainingCapacity(
         		iceID, true, false);
 
-        NaturalAttributeManager nManager = person.getNaturalAttributeManager();
-        int strength = nManager.getAttribute(NaturalAttributeType.STRENGTH);
-        int agility = nManager.getAttribute(NaturalAttributeType.AGILITY);
-        int eva = person.getSkillManager().getSkillLevel(SkillType.EVA_OPERATIONS);
-        
-        double iceCollected = RandomUtil.getRandomDouble(.25) * time * collectionRate 
-        		* ((.5 * agility + strength) / 150D) * (eva + .1)/ 5D ;
+        double iceCollected = .5 * time * compositeRate;
         
         totalCollected += iceCollected;
         
         boolean finishedCollecting = false;
-        if (iceCollected >= remainingPersonCapacity) {
+        if (iceCollected > remainingPersonCapacity 
+        		|| totalCollected > .4 * person.getInventory().getGeneralCapacity()) {
             iceCollected = remainingPersonCapacity;
             finishedCollecting = true;
         }
 
         person.getInventory().storeAmountResource(iceID, iceCollected, true);
 
+        PhysicalCondition condition = person.getPhysicalCondition();
+        double stress = condition.getStress();
+        double fatigue = condition.getFatigue();
+        
         // Add penalty to the fatigue
-        double factor = 1 - (agility + strength) / 400D;
-        double fatigue = person.getPhysicalCondition().getFatigue();
-        person.getPhysicalCondition().setFatigue(fatigue + time * factor);
+        condition.setFatigue(fatigue + time * factor);
         
         if (finishedCollecting) {
             setPhase(WALK_BACK_INSIDE);
@@ -341,6 +355,10 @@ implements Serializable {
         // Add experience points
         addExperience(time);
 
+        if (fatigue > 1000 || stress > 50) {
+//            endTask();
+            setPhase(WALK_BACK_INSIDE);
+        }
         return 0D;
     }
 

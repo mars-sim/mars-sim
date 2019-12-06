@@ -34,6 +34,8 @@ public class SelfTreatHealthProblemMeta implements MetaTask, Serializable {
     /** default serial id. */
     private static final long serialVersionUID = 1L;
 
+	private static final int VALUE = 1000;
+	
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.selfTreatHealthProblem"); //$NON-NLS-1$
@@ -55,14 +57,16 @@ public class SelfTreatHealthProblemMeta implements MetaTask, Serializable {
 
         if (person.isInside()) {
 	        // Check if person has health problems that can be self-treated.
-	        boolean hasSelfTreatableProblems = (getSelfTreatableHealthProblems(person).size() > 0);
+        	int size = getSelfTreatableHealthProblems(person).size();
+        	
+	        boolean hasSelfTreatableProblems = (size > 0);
 	
 	        // Check if person has available medical aids.
 	        boolean hasAvailableMedicalAids = hasAvailableMedicalAids(person);
 	
 	
 	        if (hasSelfTreatableProblems && hasAvailableMedicalAids) {
-	            result = 300D;
+	            result = VALUE * size;
 	        }
 	
 	        double pref = person.getPreference().getPreferenceScore(this);

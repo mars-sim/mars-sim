@@ -10,7 +10,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
@@ -39,11 +38,13 @@ public class RequestMedicalTreatmentMeta implements MetaTask, Serializable {
     /** default serial id. */
     private static final long serialVersionUID = 1L;
     
-	private static Logger logger = Logger.getLogger(RequestMedicalTreatmentMeta.class.getName());
+//	private static Logger logger = Logger.getLogger(RequestMedicalTreatmentMeta.class.getName());
 
 //	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
 //			logger.getName().length());
 
+	private static final int VALUE = 500;
+	
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.requestMedicalTreatment"); //$NON-NLS-1$
@@ -70,7 +71,7 @@ public class RequestMedicalTreatmentMeta implements MetaTask, Serializable {
         	return 0;
         
         // Get person's medical skill level.
-        int personMedicalSkill = person.getSkillManager().getEffectiveSkillLevel(SkillType.MEDICINE);
+//        int personMedicalSkill = person.getSkillManager().getEffectiveSkillLevel(SkillType.MEDICINE);
 
         // Get the best medical skill level of local people.
         int bestMedicalSkill = getBestLocalMedicalSkill(person);
@@ -88,20 +89,20 @@ public class RequestMedicalTreatmentMeta implements MetaTask, Serializable {
                     // Can other person with best medical skill treat health problem.
                     boolean canTreat = false;
                     if (bestMedicalSkill >= treatment.getSkill()) {
-                        result += 150D;
+                        result += VALUE;
                         canTreat = true;
                     }
 
-                    // Check if person can treat the health problem himself/herself.
-                    boolean selfTreat = false;
-                    if (treatment.getSelfAdminister()) {
-                        if (personMedicalSkill >= treatment.getSkill()) {
-                            result += 150D;
-                            selfTreat = true;
-                        }
-                    }
+//                    // Check if person can treat the health problem himself/herself.
+//                    boolean selfTreat = false;
+//                    if (treatment.getSelfAdminister()) {
+//                        if (personMedicalSkill >= treatment.getSkill()) {
+//                            result += VALUE;
+//                            selfTreat = true;
+//                        }
+//                    }
 
-                    if (canTreat && !selfTreat) {
+                    if (canTreat) {// && !selfTreat) {
                         problemsNeedingTreatment.add(problem);
                     }
                 }
@@ -123,7 +124,7 @@ public class RequestMedicalTreatmentMeta implements MetaTask, Serializable {
                     HealthProblem problem = k.next();
                     if (aid.canTreatProblem(problem)) {
                         canTreatProblems = true;
-                        result += 150D;
+                        result += VALUE;
                     }
                 }
 
@@ -134,7 +135,7 @@ public class RequestMedicalTreatmentMeta implements MetaTask, Serializable {
 
             // If any useful medical aids for treating person's health problems, return probability.
             if (usefulMedicalAids) {
-                result += 150D;
+                result += VALUE;
             }
 
             if (result > 0)

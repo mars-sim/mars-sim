@@ -33,11 +33,16 @@ public class HaveConversationMeta implements MetaTask, Serializable {
     /** default serial id. */
     private static final long serialVersionUID = 1L;
 
+    /** default logger. */
+//    private static Logger logger = Logger.getLogger(HaveConversationMeta.class.getName());
+//	private static String loggerName = logger.getName();
+//	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.haveConversation"); //$NON-NLS-1$
     
-    private static final double VALUE = 0.5;
+    private static final double VALUE = 0.1;
     
     private static MarsClock marsClock;
     
@@ -76,7 +81,7 @@ public class HaveConversationMeta implements MetaTask, Serializable {
             if (num > 0) {      
             	// Note: having people who are already chatting will increase the probability of having this person to join
                 double rand = RandomUtil.getRandomDouble(num) + 1;
-                result = rand * VALUE;
+                result = rand * VALUE * 2;
             }
             else {
             	result = 0; // if there is no one else in the settlement, set result to 0
@@ -150,19 +155,19 @@ public class HaveConversationMeta implements MetaTask, Serializable {
             
 	        // Check if person is in a moving rover.
 	        if (Vehicle.inMovingRover(person)) {
-	        	result += 30D;
+	        	result += 10D;
 	        }
         }
 
         // Effort-driven task modifier.
-        result *= person.getPerformanceRating();
+//        result *= person.getPerformanceRating();
 
         if (marsClock == null)
         	marsClock = Simulation.instance().getMasterClock().getMarsClock();
     	int now = marsClock.getMillisolInt();
         boolean isOnShiftNow = person.getTaskSchedule().isShiftHour(now);
         if (isOnShiftNow)
-        	result = result/3.0;
+        	result = result/50.0;
         
         if (result > 0)
         	result = result + result * person.getPreference().getPreferenceScore(this)/4D;
@@ -170,6 +175,10 @@ public class HaveConversationMeta implements MetaTask, Serializable {
         if (result < 0) 
         	result = 0;
         
+//      if (result > 0)
+//    	LogConsolidated.log(Level.INFO, 0, sourceName,
+//    		person + " " + Math.round(result*100.0)/100.0);
+    
         return result;
     }
 
