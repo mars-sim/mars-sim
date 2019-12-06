@@ -273,6 +273,7 @@ public class WalkSettlementInterior extends Task implements Serializable {
 		if (person != null) {
 			person.caculateWalkSpeedMod();
 			double mod = person.getWalkSpeedMod();
+//			System.out.println("mod : " + mod);
 			distanceKm = PERSON_WALKING_SPEED * timeHours * mod;
 			// Check that remaining path locations are valid.
 			if (!checkRemainingPathLocations()) {

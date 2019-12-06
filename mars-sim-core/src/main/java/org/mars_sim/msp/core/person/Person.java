@@ -41,7 +41,6 @@ import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.ai.role.Role;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.person.ai.task.meta.WorkoutMeta;
-import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskSchedule;
 import org.mars_sim.msp.core.person.health.MedicalAid;
 import org.mars_sim.msp.core.reportingAuthority.CNSAMissionControl;
@@ -86,7 +85,9 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	private static final String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 
 	public static final int MAX_NUM_SOLS = 3;
-
+	
+	private static final double SMALL_AMOUNT = 0.00001;
+	
 	private final static String POLITICIAN = Politician.class.getSimpleName();
 	private final static String EARTH = "Earth";
 	private final static String MARS = "Mars";
@@ -2050,7 +2051,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		double mass = getInventory().getTotalInventoryMass(false);
 		double cap = getInventory().getGeneralCapacity();
 		// At full capacity, may still move at 10% 
-		walkSpeedMod = 1.1 - mass/cap;
+		walkSpeedMod = 1.1 - mass/Math.max(cap, SMALL_AMOUNT);
 	}
 	
 	public double getWalkSpeedMod() {

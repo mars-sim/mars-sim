@@ -13,6 +13,7 @@ import org.mars_sim.msp.core.structure.building.connection.BuildingConnector;
 import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
 import org.mars_sim.msp.core.structure.building.function.BuildingAirlock;
 import org.mars_sim.msp.core.structure.building.function.EVA;
+import org.mars_sim.msp.core.time.ClockUtils;
 
 import junit.framework.TestCase;
 
@@ -165,8 +166,9 @@ public class WalkInteriorTest extends TestCase {
         person.setYLocation(0D);
         BuildingManager.addPersonOrRobotToBuilding(person, building0);
 
+        double walkSpeedMod = person.getWalkSpeedMod();
         // Walking time (millisols) for 1m. distance.
-        double walkingTimeMeter =  0.020275896;// WalkSettlementInterior.PERSON_WALKING_SPEED has changed from 5 to 2 km/hr
+        double walkingTimeMeter = 3.6 / walkSpeedMod / Walk.PERSON_WALKING_SPEED / ClockUtils.SECONDS_PER_MILLISOL;//  0.020275896;// WalkSettlementInterior.PERSON_WALKING_SPEED has changed from 5 to 2 km/hr
 
         WalkSettlementInterior walkTask = new WalkSettlementInterior(person, building1, -11D, 1D, 0);
 

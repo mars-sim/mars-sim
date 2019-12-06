@@ -153,6 +153,7 @@ implements Serializable {
         double timeHours = MarsClock.HOURS_PER_MILLISOL * time;
 		person.caculateWalkSpeedMod();
 		double mod = person.getWalkSpeedMod();
+//		System.out.println("mod : " + mod);
         double distanceKm = WALKING_SPEED * timeHours * mod;
         double distanceMeters = distanceKm * 1000D;
         double remainingWalkingDistance = 0;
