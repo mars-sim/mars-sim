@@ -77,13 +77,13 @@ public class SleepMeta implements MetaTask, Serializable {
          	
         	// 1000 millisols is 24 hours, if a person hasn't slept for 24 hours,
             // he is supposed to want to sleep right away.
-        	if (fatigue > 333 || stress > 50 || ghrelin-leptin > 300) {
+        	if (fatigue > 333 || stress > 50 || ghrelin-leptin > 500) {
         		proceed = true;
         	}
         	
             if (proceed) {
 	        	// the desire to go to bed increase linearly after 12 hours of wake time
-	            result += (fatigue - 100) * 5 + stress * 6 + (ghrelin-leptin - 300)/10D;
+	            result += (fatigue - 100) * 5 + stress * 6 + (ghrelin-leptin - 500)/10D;
 	            
                 double pref = person.getPreference().getPreferenceScore(this);
                 

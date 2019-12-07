@@ -216,7 +216,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 							}
 							cumulative_rating = cumulative_rating / size;
 			
-							rating = (rating + cumulative_rating) * 2D;
+							rating = (rating + cumulative_rating);
 									
 							// 2. Relationship Score 
 							
@@ -327,6 +327,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 							int dist = 0;
 							if (m instanceof TravelToSettlement) {
 								int max = (int)(((TravelToSettlement) m).getAssociatedSettlement().getMaxMssionRange());
+								((TravelToSettlement) m).computeProposedRouteTotalDistance();
 								int proposed = (int)(((TravelToSettlement) m).getProposedRouteTotalDistance());
 								dist = (int)(1.0 * (max - proposed) / max * 10);
 							}

@@ -468,11 +468,19 @@ public class PhysicalCondition implements Serializable {
 				if (!isStressedOut)
 					if (stress > MENTAL_BREAKDOWN)
 						checkForStressBreakdown(time);
-
+//					else if (stress < 33) {
+//						isStressedOut = false;
+//						checkHealth(time);// remove highFatigue
+//					}
+				
 				// Check if person is at very high fatigue may collapse.
 				if (!isCollapsed)
 					if (fatigue > COLLAPSE_IMMINENT)
 						checkForHighFatigueCollapse(time);
+//					else if (fatigue < 333) {
+//						isCollapsed = false;
+//						checkHealth(time);// remove highFatigue
+//					}
 
 				if (!isRadiationPoisoned)
 					checkRadiationPoisoning(time);
@@ -507,6 +515,13 @@ public class PhysicalCondition implements Serializable {
 				// remove this one.
 				Complaint nextPhase = problem.timePassing(time, this);
 	
+				// After sleeping sufficiently, the high fatigue collapse should no longer exist.
+				if (problem.getIllness().getType() == ComplaintType.HIGH_FATIGUE_COLLAPSE
+						&& fatigue < 500) {
+					isCollapsed = false;
+					problems.remove(problem.getIllness());	
+				}
+				
 				if (problem.isCured() || (nextPhase != null)) {
 					Complaint c = problem.getIllness();
 	

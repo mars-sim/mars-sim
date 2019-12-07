@@ -42,6 +42,7 @@ import org.mars_sim.msp.core.person.ai.task.RepairEVAMalfunction;
 import org.mars_sim.msp.core.person.ai.task.RepairEmergencyMalfunction;
 import org.mars_sim.msp.core.person.ai.task.RepairMalfunction;
 import org.mars_sim.msp.core.person.ai.task.meta.RepairMalfunctionMeta;
+import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.health.Complaint;
 import org.mars_sim.msp.core.person.health.ComplaintType;
 import org.mars_sim.msp.core.person.health.MedicalManager;
@@ -1086,9 +1087,15 @@ public class MalfunctionManager implements Serializable {
 								+ entity.getUnit());
 //								+ " in " + entity.getImmediateLocation());
 
-						if (emerg) chosen.getMind().getTaskManager().addTask(new RepairEmergencyMalfunction(chosen), false);	
-						else if (gen) chosen.getMind().getTaskManager().addTask(new RepairMalfunction(chosen), false);
-						else if (eva) chosen.getMind().getTaskManager().addTask(new RepairEVAMalfunction(chosen), false);
+						String chiefRepairer = m.getChiefRepairer();
+						if (chiefRepairer == null || chiefRepairer.equals("")) {
+							if (emerg) 
+								addTask(chosen, new RepairEmergencyMalfunction(chosen));	
+							else if (gen) 
+								addTask(chosen, new RepairMalfunction(chosen));
+							else if (eva) 
+								addTask(chosen, new RepairEVAMalfunction(chosen));
+						}
 					}
 					
 				}
@@ -1160,6 +1167,21 @@ public class MalfunctionManager implements Serializable {
 				fixedMalfunctions.remove(m);
 				malfunctions.remove(m);				
 			}
+		}
+	}
+	
+	/**
+	 * Adds a new repair task for a person to perform
+	 * 
+	 * @param person
+	 * @param task
+	 */
+	private void addTask(Person person, Task task) {
+		// Give 50% of chance for a person to do other important things so that 
+		// he would not be locked up to do just this task
+		int rand = RandomUtil.getRandomInt(1);
+		if (rand == 0) {
+			person.getMind().getTaskManager().addTask(task, false);		
 		}
 	}
 	

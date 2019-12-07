@@ -118,6 +118,7 @@ public class Sleep extends Task implements Serializable {
 			}
 			else
 				walkToPassengerActivitySpotInRover((Rover) person.getVehicle(), true);
+//				logger.info(person + " is in " + person.getVehicle());
 		}
 
 		// If person is in a settlement, try to find a living accommodations building.
@@ -125,9 +126,9 @@ public class Sleep extends Task implements Serializable {
 
 			Settlement s1 = person.getSettlement();
 			Settlement s0 = person.getAssociatedSettlement();
-
 			// check to see if a person is a trader or on a trading mission
 			if (s1 != null && !s1.equals(s0)) {
+//				logger.info(person + " (from " + person.getAssociatedSettlement() + ") is in " + person.getSettlement());
 				// yes he is a trader/guest (Case 1-3)
 				// logger.info(person + " is a guest of a trade mission and will use an
 				// unoccupied bed randomly.");
@@ -174,7 +175,8 @@ public class Sleep extends Task implements Serializable {
 
 			} else {
 				// He/she is an inhabitant in this settlement
-
+//				logger.info(person + " (from " + person.getAssociatedSettlement() + ") is also in " + person.getSettlement());
+				
 				// Check if a person has a designated bed
 				Building pq = person.getQuarters();
 
@@ -379,23 +381,38 @@ public class Sleep extends Task implements Serializable {
 
 			// Obtain the fractionOfRest to restore fatigue faster in high fatigue case
 			double fractionOfRest = time * timeFactor;
-
+			double newFatigue = 0;
+			double residualFatigue = 0;
 			double f = pc.getFatigue();
 			if (f > MAX_FATIGUE) {
 				f = MAX_FATIGUE;
-				pc.setFatigue(MAX_FATIGUE);
+
+				if (f > 1000)
+					residualFatigue = (f - 1000) / 75;
+
+				// Reduce person's fatigue
+				newFatigue = f - fractionOfRest - residualFatigue;
+//				logger.info(person + " f : " + Math.round(f*10.0)/10.0 
+//						+ "   residualFatigue : " + Math.round(residualFatigue*10.0)/10.0  
+//						+ "   fractionOfRest : " + Math.round(fractionOfRest*10.0)/10.0  
+//								+ "   newFatigue : " + Math.round(newFatigue*10.0)/10.0);
+			}
+			else {
+				
+				if (f > 1000)
+					residualFatigue = (f - 1000) / 150;
+				else if (f > 500)
+					residualFatigue = (f - 500) / 200;
+				
+				newFatigue = f - fractionOfRest - residualFatigue;	
+//				logger.info(person + " f : " + Math.round(f*10.0)/10.0
+//						+ "   residualFatigue : " + Math.round(residualFatigue*10.0)/10.0  
+//						+ "   fractionOfRest : " + Math.round(fractionOfRest*10.0)/10.0  
+//								+ "   newFatigue : " + Math.round(newFatigue*10.0)/10.0);
 			}
 				
-			double residualFatigue = 0;
-
-			if (f > 1000)
-				residualFatigue = (f - 1000) / 10;
-
-			// Reduce person's fatigue
-			double newFatigue = f - fractionOfRest + residualFatigue;
-//			logger.info(person + " fractionOfRest : " + fractionOfRest + "   fatigue : " + newFatigue);
 			pc.setFatigue(newFatigue);
-
+				
 			circadian.setAwake(false);
 			circadian.getRested(time);
 
@@ -405,17 +422,22 @@ public class Sleep extends Task implements Serializable {
 			circadian.setNumSleep(circadian.getNumSleep() + 1);
 			circadian.updateSleepCycle((int) marsClock.getMillisol(), true);
     	
-			// Check if alarm went off
-			double newTime = marsClock.getMillisol();
-			double alarmTime = getAlarmTime();
-
-			if ((previousTime <= alarmTime) && (newTime >= alarmTime)) {
+			if (newFatigue <= 0) {
+				logger.finest(person.getName() + " woke up from a nap.");
 				endTask();
-				logger.finest(person.getName() + " woke up from alarm.");
-			} else {
-				previousTime = newTime;
 			}
-
+			else {
+				// Check if alarm went off
+				double newTime = marsClock.getMillisol();
+				double alarmTime = getAlarmTime();
+	
+				if ((previousTime <= alarmTime) && (newTime >= alarmTime)) {
+					endTask();
+					logger.finest(person.getName() + " woke up from alarm.");
+				} else {
+					previousTime = newTime;
+				}
+			}
 		}
 
 		else if (robot != null) {
