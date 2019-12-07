@@ -420,8 +420,10 @@ public abstract class TravelMission extends Mission {
 	 * @throws MissionException if error determining distance.
 	 */
 	public final double getTotalRemainingDistance() {
+		// TODO: check for Double.isInfinite() and Double.isNaN()
 		double leg = getCurrentLegRemainingDistance();
-//		System.out.print("leg : " + leg);//Math.round(leg*10.0)/10.0);
+//		if (getVehicle().getName().equalsIgnoreCase("Opportunity"))
+//			System.out.print("leg : " + leg);//Math.round(leg*10.0)/10.0);
 		int index = 0;
 		double navDist = 0;
 		if (AT_NAVPOINT.equals(travelStatus))
@@ -430,12 +432,16 @@ public abstract class TravelMission extends Mission {
 			index = getNextNavpointIndex();
 
 		for (int x = index + 1; x < getNumberOfNavpoints(); x++) {
-//			System.out.print("     index = " + index + "     x = " + x);
 			navDist += Coordinates.computeDistance(getNavpoint(x - 1).getLocation(), getNavpoint(x).getLocation());
-//			System.out.println("     Nav Distance from " + (x-1) + " to " + x + " : " + Math.round(dist*10.0)/10.0);
+//			if (getVehicle().getName().equalsIgnoreCase("Opportunity")) {
+//				System.out.print("     index = " + index + "     x = " + x);
+//				System.out.println("     Nav Distance from " + (x-1) + " to " + x + " : " + Math.round(navDist*10.0)/10.0);
+//			}
 		}
-//		System.out.print("    Nav : " + navDist);//Math.round(navDist*10.0)/10.0);
-//		System.out.println("    Total : " + (leg + navDist));//Math.round((leg + navDist)*10.0)/10.0);
+//		if (getVehicle().getName().equalsIgnoreCase("Opportunity")) {
+//			System.out.print("    Nav : " + navDist);//Math.round(navDist*10.0)/10.0);
+//			System.out.println("    Total : " + (leg + navDist));//Math.round((leg + navDist)*10.0)/10.0);
+//		}
 		double total = leg + navDist;
 		
 		if (total > totalRemainingDistance) {

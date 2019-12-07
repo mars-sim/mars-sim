@@ -216,7 +216,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 							}
 							cumulative_rating = cumulative_rating / size;
 			
-							rating = (rating + cumulative_rating) * 2.5D;
+							rating = (rating + cumulative_rating) * 2D;
 									
 							// 2. Relationship Score 
 							
@@ -271,36 +271,42 @@ public class ReviewMissionPlan extends Task implements Serializable {
 							else
 								qual = .4 * m.getMissionQualification(person);											
 							
-							qual = Math.round(qual * 10.0)/10.0;
+							qual = 2.5 * Math.round(qual * 10.0)/10.0;
 							
 							// 4. Settlement objective score
 							double obj = 0;
 							
-							if (person.getAssociatedSettlement().getObjective() == ObjectiveType.TOURISM
+							if (person.getAssociatedSettlement().getObjective() == ObjectiveType.CROP_FARM
+									&& (m instanceof CollectIce
+										|| m instanceof BiologyFieldStudy)) {
+								obj += 5D * goodsManager.getCropFarmFactor();
+							}	
+							
+							else if (person.getAssociatedSettlement().getObjective() == ObjectiveType.TOURISM
 									&& (m instanceof AreologyFieldStudy
 									|| m instanceof BiologyFieldStudy
 									|| m instanceof MeteorologyFieldStudy
 									|| m instanceof TravelToSettlement
 									|| m instanceof Exploration)
 									) {
-								obj += 10D * goodsManager.getTourismFactor();
+								obj += 5D * goodsManager.getTourismFactor();
 							}				
 							
 							else if (person.getAssociatedSettlement().getObjective() == ObjectiveType.TRADE_CENTER
 									&& m instanceof Trade) {
-								obj += 10D * goodsManager.getTradeFactor();
+								obj += 5D * goodsManager.getTradeFactor();
 							}	
 							
 							else if (person.getAssociatedSettlement().getObjective() == ObjectiveType.TRANSPORTATION_HUB
 									&& (m instanceof TravelToSettlement
 									|| m instanceof Exploration)) {
-								obj += 10D * goodsManager.getTransportationFactor();
+								obj += 5D * goodsManager.getTransportationFactor();
 							}	
 							
 							else if (person.getAssociatedSettlement().getObjective() == ObjectiveType.MANUFACTURING_DEPOT
 									&& (m instanceof Mining
 									|| m instanceof CollectRegolith)) {
-								obj += 10D * goodsManager.getManufacturingFactor();
+								obj += 5D * goodsManager.getManufacturingFactor();
 							}	
 							
 							// 5. emergency
@@ -311,20 +317,27 @@ public class ReviewMissionPlan extends Task implements Serializable {
 							}	
 							
 							// 6. site
-							int site = 10;
+							int site = 0;
 							if (m instanceof CollectIce) {
-								site = (int)(((CollectIce) m).getTotalSiteScore()/50);
+								site = (int)(((CollectIce) m).getTotalSiteScore()/50 - 5);
 								logger.info("Ice collection site score is " + site);
 							}	
 							
+							// 7. proposed route distance (0 to 10 points)
+							int dist = 0;
+							if (m instanceof TravelToSettlement) {
+								int max = (int)(((TravelToSettlement) m).getAssociatedSettlement().getMaxMssionRange());
+								int proposed = (int)(((TravelToSettlement) m).getProposedRouteTotalDistance());
+								dist = (int)(1.0 * (max - proposed) / max * 10);
+							}
 							
-							// 7. Leadership and Charisma
+							// 8. Leadership and Charisma
 							int leadership = (int)(.075 * person.getNaturalAttributeManager()
 												.getAttribute(NaturalAttributeType.LEADERSHIP)
 											+ .025 * person.getNaturalAttributeManager()
 												.getAttribute(NaturalAttributeType.ATTRACTIVENESS));				
 	
-							// 8. reviewer role weight
+							// 9. reviewer role weight
 							RoleType role = person.getRole().getType();
 							int weight = 0;
 							
@@ -353,13 +366,13 @@ public class ReviewMissionPlan extends Task implements Serializable {
 								weight = 2;
 							
 							
-							// 9. luck
+							// 10. luck
 							int luck = RandomUtil.getRandomInt(-5, 5);	
 							
 							// TODO: 9. Go to him/her to have a chat
 							// TODO: 10. mission lead's leadership/charisma
 							
-							score = Math.round((rating + relation + qual + obj + emer + site + leadership + weight + luck)* 10.0)/10.0;
+							score = Math.round((rating + relation + qual + obj + emer + site + dist + leadership + weight + luck)* 10.0)/10.0;
 
 							// Updates the mission plan status
 							missionManager.scoreMissionPlan(mp, score, person);
@@ -374,9 +387,10 @@ public class ReviewMissionPlan extends Task implements Serializable {
 							logger.info(" (4)       Objective : " + obj);
 							logger.info(" (5)       Emergency : " + emer);
 							logger.info(" (6)          Sites  : " + site);
-							logger.info(" (7)      Leadership : " + leadership); 							
-							logger.info(" (8)   Reviewer Role : " + weight); 
-							logger.info(" (9)            Luck : " + luck); 
+							logger.info(" (7)       Distance  : " + dist);
+							logger.info(" (8)      Leadership : " + leadership); 							
+							logger.info(" (9)   Reviewer Role : " + weight); 
+							logger.info(" (10)           Luck : " + luck); 
 							logger.info(" ----------------------------");
 							logger.info("           Sub Total : " + score);
 							

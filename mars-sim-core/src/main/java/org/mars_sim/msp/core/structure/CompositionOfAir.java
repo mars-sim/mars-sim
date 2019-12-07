@@ -645,10 +645,9 @@ public class CompositionOfAir implements Serializable {
 	 * @param buildings a list of {@link Building}
 	 * @param numID     numbers of buildings
 	 */
-//	public void addAirNew(List<Building> buildings, int numID) {
 	public void addAirNew(Building building) {
 //		int size = building.getBuildingManager().getNumInhabitables();
-		int id = building.getInhabitableID();
+		int id = building.getBuildingManager().obtainNextInhabitableID();//getInhabitableID();
 		
 		int diff = 1;//numID - numIDsCache;
 

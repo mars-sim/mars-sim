@@ -364,17 +364,19 @@ public class Coordinates implements Serializable {
 	 * @return distance (in km) to the remote Coordinates object
 	 */
 	public double getDistance(Coordinates otherCoords) {
-
+		if (otherCoords == null) {
+			return 0;
+		}
+		
 		if (otherCoords.equals(this)) {
 			return 0;
 		}
-		else {
-			double rho = Mars.MARS_RADIUS_KM;
-			double angle = getAngle(otherCoords);
-			double result = rho * angle;
-	//		System.out.println("   c : " + otherCoords + "   this : " + this + "   rho : " + rho + "   angle : " + angle + "   rho*angle : " + result);
-			return result;
-		}
+		
+		double rho = Mars.MARS_RADIUS_KM;
+		double angle = getAngle(otherCoords);
+		double result = rho * angle;
+//		System.out.println("   c : " + otherCoords + "   this : " + this + "   rho : " + rho + "   angle : " + angle + "   rho*angle : " + result);
+		return result;
 	}
 
 	/**
@@ -385,16 +387,19 @@ public class Coordinates implements Serializable {
 	 * @return distance (in km)
 	 */
 	public static double computeDistance(Coordinates c0, Coordinates c1) {
+		if (c0 == null || c1 == null) {
+			return 0;
+		}
+		
 		if (c0.equals(c1)) {
 			return 0;
 		}
-		else {
-			double rho = Mars.MARS_RADIUS_KM;
-			double angle = c0.getAngle(c1);
-			double result = rho * angle;
-	//		System.out.println("   c0 : " + c0 + "   c1 : " + c1 + "   rho : " + rho + "   angle : " + angle + "   rho*angle : " + result);
-			return result;
-		}
+				
+		double rho = Mars.MARS_RADIUS_KM;
+		double angle = c0.getAngle(c1);
+		double result = rho * angle;
+//		System.out.println("   c0 : " + c0 + "   c1 : " + c1 + "   rho : " + rho + "   angle : " + angle + "   rho*angle : " + result);
+		return result;
 	}
 	
 	/**
