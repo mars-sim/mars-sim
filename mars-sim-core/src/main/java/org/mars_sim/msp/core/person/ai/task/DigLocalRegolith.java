@@ -120,9 +120,9 @@ implements Serializable {
         compositeRate  = COLLECTION_RATE * ((.5 * agility + strength) / 150D) * (eva + .1)/ 5D ;
         
 		// set the boolean to true so that it won't be done again today
-		person.getPreference().setTaskDue(this, true);
+//		person.getPreference().setTaskDue(this, true);
 		
-        logger.finest(person.getName() + " was going to start digging for regolith.");
+        logger.fine(person.getName() + " was going to start digging for regolith.");
     }
 
     /**

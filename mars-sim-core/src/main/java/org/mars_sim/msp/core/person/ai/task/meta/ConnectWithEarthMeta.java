@@ -49,7 +49,10 @@ public class ConnectWithEarthMeta implements MetaTask, Serializable {
         double result = 0D;
 
         // Check if a person has done this once today
-        if (!person.getPreference().isTaskDue(this) && person.isInside()) {
+//      if (person.getPreference().isTaskDue(this))
+//      	return 0;	
+        
+        if (person.isInside()) {
         		
             // Probability affected by the person's stress and fatigue.
             PhysicalCondition condition = person.getPhysicalCondition();
@@ -62,16 +65,17 @@ public class ConnectWithEarthMeta implements MetaTask, Serializable {
             
             double pref = person.getPreference().getPreferenceScore(this);
             
-         	result = pref * 5D;
+            // Use preference modifier
+         	result = pref * .1D;
          	
             if (pref > 0) {
-             	if (stress > 45D)
+             	if (stress < 25)
              		result*=1.5;
-             	else if (stress > 65D)
+             	else if (stress < 50)
              		result*=2D;
-             	else if (stress > 85D)
+             	else if (stress > 75)
              		result*=3D;
-             	else
+             	else if (stress < 90)
              		result*=4D;
             }
 
@@ -79,13 +83,11 @@ public class ConnectWithEarthMeta implements MetaTask, Serializable {
             Building building = ConnectWithEarth.getAvailableBuilding(person);
 
             if (building != null) {
-            	result = 10D;
+            	result += .1;
             	// A comm facility has terminal equipment that provides communication access with Earth
             	// It is necessary
                 result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building);
                 result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
-
-
             }
             
             else if (person.isInVehicle()) {	
@@ -94,17 +96,11 @@ public class ConnectWithEarthMeta implements MetaTask, Serializable {
     	        	result += 20D;
     	        }
             }
-
-            // Add Preference modifier
-            if (result > 0D) {
-                result = result + result * person.getPreference().getPreferenceScore(this)/2D;
-            }
-         
+        
 	        if (result < 0) result = 0;
 
         }
             
-
         return result;
     }
 

@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.task.meta.AssistScientificStudyResearcherMeta;
@@ -92,7 +93,7 @@ public class Preference implements Serializable {
 	/** A map of priority scores for scheduled task. */
 	private Map<MetaTask, Integer> priorityMap;
 	/** A map of MetaTasks that can only be done once a day. */
-	private Map<MetaTask, Boolean> oneADayMap;
+	private Map<MetaTask, Boolean> onceADayMap;
 	/** A map of MetaTasks that has been accomplished once a day. */
 	private Map<MetaTask, Boolean> taskAccomplishedMap;
 	/**  A string map of tasks and preference scores. */
@@ -119,7 +120,7 @@ public class Preference implements Serializable {
 		futureTaskMap = new ConcurrentHashMap<>();
 		taskAccomplishedMap = new ConcurrentHashMap<>();
 		priorityMap = new ConcurrentHashMap<>();
-		oneADayMap = new ConcurrentHashMap<>();
+		onceADayMap = new ConcurrentHashMap<>();
 
 		// scheduleTask("WriteReportMeta", 600, 900);
 		// scheduleTask("ConnectWithEarthMeta", 700, 950);
@@ -418,7 +419,7 @@ public class Preference implements Serializable {
 		}
 
 		if (futureTaskMap.containsValue(metaTask) && (taskAccomplishedMap.get(metaTask) != null)
-				&& !taskAccomplishedMap.get(metaTask) && oneADayMap.get(metaTask)) {
+				&& !taskAccomplishedMap.get(metaTask) && onceADayMap.get(metaTask)) {
 			// preference scores are not static. They are influenced by priority scores
 			result += obtainPrioritizedScore(metaTask);
 		}
@@ -541,24 +542,23 @@ public class Preference implements Serializable {
 //
 //		int solElapsed = marsClock.getMissionSol();
 //		if (solElapsed != solCache) {
-
 //			Iterator<Entry<MarsClock, MetaTask>> i = futureTaskMap.entrySet().iterator();
 //			while (i.hasNext()) {
 //				MetaTask mt = i.next().getValue();
 //				// if this meta task is not a recurrent task, remove it.
-//				if (!frequencyMap.get(mt)) {
-//					futureTaskMap.remove(mt);
-//					frequencyMap.remove(mt);
-//					statusMap.remove(mt);
+//				if (!onceADayMap.get(mt)) {
+////					futureTaskMap.remove(mt);
 //					priorityMap.remove(mt);
+//					onceADayMap.remove(mt);
+//					taskAccomplishedMap.remove(mt);
 //				}
 //			}
-			// scheduleTask("WriteReportMeta", 500, 800, true, 750);
-			// scheduleTask("ConnectWithEarthMeta", 700, 900, true, 950);
-
+//			
+//			// scheduleTask("WriteReportMeta", 500, 800, true, 750);
+////			 scheduleTask("ConnectWithEarthMeta", 700, 900, true, 950);
+//
 //			solCache = solElapsed;
 //		}
-
 	}
 
 	/**
@@ -590,13 +590,13 @@ public class Preference implements Serializable {
 		MetaTask mt = convertTask2MetaTask(task);
 
 		// if this accomplished meta task is once-a-day task, remove it.
-		if (value && oneADayMap.get(mt) != null && !oneADayMap.isEmpty())
-			if (oneADayMap.get(mt) != null && oneADayMap.get(mt)) {
+		if (value && onceADayMap.get(mt) != null && !onceADayMap.isEmpty())
+			if (onceADayMap.get(mt) != null && onceADayMap.get(mt)) {
 				for (MarsClock c : futureTaskMap.keySet()) {
 					if (futureTaskMap.get(c).equals(mt))
 						futureTaskMap.remove(c);
 				}
-				oneADayMap.remove(mt);
+				onceADayMap.remove(mt);
 				taskAccomplishedMap.remove(mt);
 				priorityMap.remove(mt);
 			} else
@@ -641,7 +641,7 @@ public class Preference implements Serializable {
 		// metaMissionList = null;
 		scoreMap = null;
 		priorityMap = null;
-		oneADayMap = null;
+		onceADayMap = null;
 		taskAccomplishedMap = null;
 		scoreStringMap = null;
 		futureTaskMap = null;

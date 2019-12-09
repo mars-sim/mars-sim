@@ -167,7 +167,7 @@ public class HaveConversationMeta implements MetaTask, Serializable {
     	int now = marsClock.getMillisolInt();
         boolean isOnShiftNow = person.getTaskSchedule().isShiftHour(now);
         if (isOnShiftNow)
-        	result = result/50.0;
+        	result = result/100.0;
         
         if (result > 0)
         	result = result + result * person.getPreference().getPreferenceScore(this)/4D;

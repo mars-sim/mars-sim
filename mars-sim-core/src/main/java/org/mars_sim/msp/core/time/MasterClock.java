@@ -744,7 +744,7 @@ public class MasterClock implements Serializable {
 
 					}
 
-					else { 
+					else {
 						// if sleepTime <= 0 ( if t2 is way bigger than t1
 						// last frame went beyond the PERIOD
 						int secs = 0;
@@ -779,15 +779,15 @@ public class MasterClock implements Serializable {
 
 					int skips = 0;
 
-					if (excess/1_000_000 > 3000) {
-						// If the pause is more than 3 seconds, this is most likely due to the machine 
+					if (excess/1_000_000 > 1000) {
+						// If the pause is more than 1 seconds, this is most likely due to the machine 
 						// just recovering from a power saving event
 						
 						// Reset the pulse count
 						resetTotalPulses();
 					}
 					else {
-						for (int i = 1; i <= maxFrameSkips; i++) {	
+						for (int i = 1; i <= maxFrameSkips; i++) {
 							boolean value = !justReloaded && (Math.abs(excess) > currentTBU_ns);
 							justReloaded = false;	
 							

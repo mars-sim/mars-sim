@@ -76,7 +76,7 @@ public class ConnectWithEarth extends Task implements Serializable {
 				comm = bldg.getComm();
 
 				// set the boolean to true so that it won't be done again today
-				person.getPreference().setTaskDue(this, true);
+//				person.getPreference().setTaskDue(this, true);
 			} else {
 				endTask();
 			}

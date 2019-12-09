@@ -55,8 +55,8 @@ public class DigLocalRegolithMeta implements MetaTask, Serializable {
         double result = 0D;
        
         // Check if a person has done this once today
-        if (person.getPreference().isTaskDue(this))
-        	return 0;	
+//        if (person.getPreference().isTaskDue(this))
+//        	return 0;	
         		
         if (person.isInSettlement()) {
         	
@@ -106,12 +106,15 @@ public class DigLocalRegolithMeta implements MetaTask, Serializable {
             
 	        result = settlement.getRegolithProbabilityValue() * VALUE;
 	    	
+	        if (result > 5000)
+	        	result = 5000;
+	        
             // Stress modifier
-            result -= stress * 5D;
+            result = result - stress * 2.5D;
             // fatigue modifier
-            result -= (fatigue - 100) / 50D;
+            result = result - (fatigue - 100) / 2D;
             
-	        if (result < 1)
+	        if (result < 0)
 	        	return 0;
 	
 	        // Crowded settlement modifier

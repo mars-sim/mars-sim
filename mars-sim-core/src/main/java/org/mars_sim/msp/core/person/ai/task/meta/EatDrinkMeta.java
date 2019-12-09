@@ -92,7 +92,7 @@ public class EatDrinkMeta implements MetaTask, Serializable {
 		if (!notHungry) {// || ghrelin-leptin > 300) {
 			result += hunger / 4D;
 			if (energy < 2525)
-				result += (2525 - energy) / 50D; // (ghrelin-leptin - 300);
+				result += (2525 - energy) / 30D; // (ghrelin-leptin - 300);
 //			logger.info(person + "'s hunger p : " +  Math.round(result*10D)/10D);
 		}
 
@@ -104,7 +104,7 @@ public class EatDrinkMeta implements MetaTask, Serializable {
 
 			if (!CookMeal.isLocalMealTime(person.getCoordinates(), 0)) {
 				// If it's not meal time yet, reduce the probability
-				result /= 4D;
+				result /= 3D;
 			}
 			
 			// Check if a cooked meal is available in a kitchen building at the settlement.
@@ -142,7 +142,7 @@ public class EatDrinkMeta implements MetaTask, Serializable {
 			// may be a person is more likely to become thirsty and/or hungry due to on-call shift ?
 			
 			if (!CookMeal.isLocalMealTime(person.getCoordinates(), 0))
-				result /= 4;
+				result /= 3;
 
 			// If no cooked meal, check if preserved food is available to eat.
 			if (!EatDrink.isPreservedFoodAvailable(person)) {
@@ -178,15 +178,15 @@ public class EatDrinkMeta implements MetaTask, Serializable {
 
 		// Add Preference modifier
 		if (result > 0D) {
-			result = result + result * person.getPreference().getPreferenceScore(this) / 5D;
+			result = result + result * person.getPreference().getPreferenceScore(this) / 4D;
 		}
 
 		if (result < 0)
 			return 0;
 
-//		 if (result > 1000) 
-//			 logger.warning(person + "'s EatMealMeta : " 
-//				 +  Math.round(result*10D)/10D);
+		 if (result > 500) 
+			 logger.warning(person + "'s EatMealMeta : " 
+				 +  Math.round(result*10D)/10D);
 		 
 		return result;
 	}

@@ -471,9 +471,11 @@ public class Malfunction implements Serializable {
 	 * @return the name of the person
 	 */
 	public String getChiefRepairer() {
-		Map.Entry<String, Double> maxEntry = repairersWorkTime.entrySet().stream().max(Map.Entry.comparingByValue())
-				.get(); // may get null ?
-    	if (maxEntry.getKey() != null)
+		Map.Entry<String, Double> maxEntry = repairersWorkTime.entrySet()
+				.stream()
+				.max(Map.Entry.comparingByValue())
+				.orElse(null); // .get()
+    	if (maxEntry != null && maxEntry.getKey() != null)
     		return maxEntry.getKey();
     	else
     		return null;

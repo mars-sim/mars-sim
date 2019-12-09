@@ -1148,7 +1148,10 @@ implements Serializable {
 
 		if (mass == 0) {
 			int id = building.getInhabitableID();
-			mass = building.getSettlement().getCompositionOfAir().getTotalMass()[id];
+			double[] totalMass = building.getSettlement().getCompositionOfAir().getTotalMass();
+			if (totalMass.length <= id)
+				return;
+			mass = totalMass[id]; 
 			conversion_factor = C_s * mass / timeSlice; 
 			//System.out.println(building.getNickName() + "'s total mass : " + mass);
 			// also, mass = density * HEIGHT * floorArea * M_TO_FT * M_TO_FT * M_TO_FT;

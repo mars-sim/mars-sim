@@ -2606,8 +2606,8 @@ public class Inventory implements Serializable {
 		// Add checking for amountResourceContainersStoredCacheDirty and add if else
 		// clause
 //		logger.config(ResourceUtil.findAmountResource(resource) + " (id : " + resource + ")"); 
-		if (containersStoredCacheDirty.containsKey(resource)) {
-			if (containersStoredCacheDirty.get(resource)) {
+		if (containersStoredCacheDirty != null && containersStoredCacheDirty.containsKey(resource)) {
+			if (containersStoredCacheDirty.get(resource) != null && containersStoredCacheDirty.get(resource)) {
 				if (containedUnitIDs != null) {
 					for (Unit unit : getContainedUnits()) {
 						if (unit instanceof Container) {
@@ -2644,13 +2644,6 @@ public class Inventory implements Serializable {
 	 * Initializes the amount resource stored cache.
 	 */
 	private synchronized void initializeAmountResourceStoredCache() {
-//		initializeARStoredCache();
-//	}
-//
-//	/**
-//	 * Initializes the amount resource stored cache.
-//	 */
-//	private synchronized void initializeARStoredCache() {
 		Collection<Integer> resources = ResourceUtil.getIDs(); // allStoredARCache
 		storedCache = new HashMap<Integer, Double>();
 		storedCacheDirty = new HashMap<Integer, Boolean>();
@@ -2819,8 +2812,8 @@ public class Inventory implements Serializable {
 
 		double containerStored = 0D;
 		// Add checking for amountResourceContainersStoredCacheDirty
-		if (containersStoredCacheDirty.containsKey(resource)) {
-			if (containersStoredCacheDirty.get(resource)) {
+		if (containersStoredCacheDirty != null && containersStoredCacheDirty.containsKey(resource)) {
+			if (containersStoredCacheDirty.get(resource) != null && containersStoredCacheDirty.get(resource)) {
 				if (containedUnitIDs != null) {
 					for (Unit unit : getContainedUnits()) {
 						if (unit instanceof Container) {

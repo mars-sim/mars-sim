@@ -754,7 +754,7 @@ public class TaskManager implements Serializable {
 				if ((probability >= 0D) && (!Double.isNaN(probability)) && (!Double.isInfinite(probability))) {
 					if (probability > MAX_TASK_PROBABILITY) {
 						LogConsolidated.log(Level.WARNING, 10_000, sourceName, mind.getPerson().getName() + " - "
-								+ mt.getName() + " : Probability is " + Math.round(probability * 10.0) / 10.0 + ".");
+								+ mt.getName() + "'s probability is at all time high : " + Math.round(probability * 10.0) / 10.0 + ".");
 						// If the person has a strong desire to eat, stop here and go to eat
 						// The person has a strong desire to sleep, stop here and go to sleep
 //						if (person.isInside() && mt.getName().contains("sleep")) { 
