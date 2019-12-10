@@ -124,11 +124,11 @@ public class UnloadVehicleEVAMeta implements MetaTask, Serializable {
 	        }
 	
 	    	if (exposed[0]) {
-				result = result/2D;// Baseline can give a fair amount dose of radiation
+				result = result/3D;// Baseline can give a fair amount dose of radiation
 			}
 	
 	    	if (exposed[1]) {// GCR can give nearly lethal dose of radiation
-				result = result/4D;
+				result = result/6D;
 			}
 	
 	        if (result < 0) result = 0;

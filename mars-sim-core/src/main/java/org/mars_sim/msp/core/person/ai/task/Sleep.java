@@ -75,7 +75,7 @@ public class Sleep extends Task implements Serializable {
 	// Data members
 	/** The previous time (millisols). */
 	private double previousTime;
-	private double timeFactor = 8; // TODO: should vary this factor by person
+	private double timeFactor = 6; // TODO: should vary this factor by person
 	
 	private LocalBoundedObject interiorObject;
 	private Point2D returnInsideLoc;
@@ -642,7 +642,7 @@ public class Sleep extends Task implements Serializable {
 //			System.out.println("interiorObject is " + interiorObject);
 			LogConsolidated.log(Level.INFO, 0, sourceName,
 					"[" + person.getLocationTag().getLocale() + "] " + person.getName()
-					+ " in " + person.getLocationTag().getImmediateLocation()
+					+ person.getLocationTag().getImmediateLocation()
 					+ " found " + ((Building)interiorObject).getNickName()
 					+ " as the closet building with an airlock to enter.");
 		}
@@ -655,17 +655,31 @@ public class Sleep extends Task implements Serializable {
 					+ " was near " + r.getName()
 					+ " and had to walk back inside the vehicle.");
 		}
-		if (interiorObject == null) 
+		if (interiorObject == null) {
+			LogConsolidated.log(Level.WARNING, 0, sourceName,
+				"[" + person.getLocationTag().getLocale() + "] " + person.getName()
+				+ " was near " + person.getLocationTag().getImmediateLocation()
+				+ " at (" + Math.round(returnInsideLoc.getX()*10.0)/10.0 + ", " 
+				+ Math.round(returnInsideLoc.getY()*10.0)/10.0 + ") "
+				+ " but interiorObject is null.");
 			canWalkInside = false;
-		
-		if (interiorObject != null 
-				&& (returnInsideLoc == null)) {
-//					|| !LocalAreaUtil.checkLocationWithinLocalBoundedObject(returnInsideLoc.getX(),
-//						returnInsideLoc.getY(), interiorObject))) {
+		}
+		else {
 			// Set return location.
 			Point2D rawReturnInsideLoc = LocalAreaUtil.getRandomInteriorLocation(interiorObject);
 			returnInsideLoc = LocalAreaUtil.getLocalRelativeLocation(rawReturnInsideLoc.getX(),
 					rawReturnInsideLoc.getY(), interiorObject);
+			
+			if (returnInsideLoc != null && !LocalAreaUtil.checkLocationWithinLocalBoundedObject(returnInsideLoc.getX(),
+						returnInsideLoc.getY(), interiorObject)) {
+				LogConsolidated.log(Level.WARNING, 0, sourceName,
+						"[" + person.getLocationTag().getLocale() + "] " + person.getName()
+						+ " was near " + ((Building)interiorObject).getNickName() //person.getLocationTag().getImmediateLocation()
+						+ " at (" + Math.round(returnInsideLoc.getX()*10.0)/10.0 + ", " 
+						+ Math.round(returnInsideLoc.getY()*10.0)/10.0 + ") "
+						+ " but could not be found inside " + interiorObject);
+				canWalkInside = false;
+			}
 		}
 
 		// If not at return inside location, create walk inside subtask.

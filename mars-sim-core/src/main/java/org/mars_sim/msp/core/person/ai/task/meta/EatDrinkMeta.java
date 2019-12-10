@@ -184,9 +184,9 @@ public class EatDrinkMeta implements MetaTask, Serializable {
 		if (result < 0)
 			return 0;
 
-		 if (result > 500) 
-			 logger.warning(person + "'s EatMealMeta : " 
-				 +  Math.round(result*10D)/10D);
+//		 if (result > 500) 
+//			 logger.warning(person + "'s EatMealMeta : " 
+//				 +  Math.round(result*10D)/10D);
 		 
 		return result;
 	}

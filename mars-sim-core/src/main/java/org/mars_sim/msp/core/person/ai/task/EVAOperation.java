@@ -12,6 +12,7 @@ import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
@@ -194,16 +195,6 @@ public abstract class EVAOperation extends Task implements Serializable {
 	protected double performMappedPhase(double time) {
 		if (getPhase() == null) {
 			throw new IllegalArgumentException("EVAOoperation's task phase is null");
-//			if (!EVAOperation.noEVAProblem(person)) {
-//				logger.finer(person + " was " + person.getTaskDescription().toLowerCase() + " and had no EVA problems but had no task phase. Ending EVA now.");
-//				return walkBackInsidePhase(time);
-//			}
-//			else if (isHungryAtMealTime(person)) {
-//				logger.finer(person + " was " + person.getTaskDescription().toLowerCase() + " and is hungry and now during at meal time but had no task phase. Setting " 
-//						+ ((person.getGender() == GenderType.MALE) ? "him" : "her") + " up to walk back inside.");
-//				return walkBackInsidePhase(time);
-//			}
-			
 		} else if (WALK_TO_OUTSIDE_SITE.equals(getPhase())) {
 			return walkToOutsideSitePhase(time);
 		} else if (WALK_BACK_INSIDE.equals(getPhase())) {
@@ -251,7 +242,7 @@ public abstract class EVAOperation extends Task implements Serializable {
 		if (person.isOutside()) {
 			if (interiorObject == null) {
 			// Get closest airlock building at settlement.
-				Settlement s = person.getLocationTag().findSettlementVicinity();
+				Settlement s = CollectionUtils.findSettlement(person.getCoordinates());
 				if (s != null) {
 					interiorObject = (Building)(s.getClosestAvailableAirlock(person).getEntity()); 
 					System.out.println("interiorObject is " + interiorObject);
@@ -275,24 +266,31 @@ public abstract class EVAOperation extends Task implements Serializable {
 				}
 			}
 			
-			if (interiorObject == null) 
+			if (interiorObject == null) {
+				LogConsolidated.log(Level.WARNING, 0, sourceName,
+					"[" + person.getLocationTag().getLocale() + "] " + person.getName()
+					+ " was near " + person.getLocationTag().getImmediateLocation()
+					+ " at (" + Math.round(returnInsideLoc.getX()*10.0)/10.0 + ", " 
+					+ Math.round(returnInsideLoc.getY()*10.0)/10.0 + ") "
+					+ " but interiorObject is null.");
 				endTask();
-		
-//			LogConsolidated.log(Level.INFO, 0, sourceName,
-//				"[" + person.getLocationTag().getLocale() + "] " + person.getName()
-//				+ " was near " + ((Building)interiorObject).getNickName() //person.getLocationTag().getImmediateLocation()
-////				+ " at (" + Math.round(returnInsideLoc.getX()*10.0)/10.0 + ", " 
-////				+ Math.round(returnInsideLoc.getY()*10.0)/10.0 + ") "
-//				+ " and was attempting to enter its airlock.");
-			
-			if (interiorObject != null 
-					&& (returnInsideLoc == null)) {
-	//					|| !LocalAreaUtil.checkLocationWithinLocalBoundedObject(returnInsideLoc.getX(),
-	//						returnInsideLoc.getY(), interiorObject))) {
+			}
+			else {
 				// Set return location.
 				Point2D rawReturnInsideLoc = LocalAreaUtil.getRandomInteriorLocation(interiorObject);
 				returnInsideLoc = LocalAreaUtil.getLocalRelativeLocation(rawReturnInsideLoc.getX(),
 						rawReturnInsideLoc.getY(), interiorObject);
+				
+				if (returnInsideLoc != null && !LocalAreaUtil.checkLocationWithinLocalBoundedObject(returnInsideLoc.getX(),
+							returnInsideLoc.getY(), interiorObject)) {
+					LogConsolidated.log(Level.WARNING, 0, sourceName,
+							"[" + person.getLocationTag().getLocale() + "] " + person.getName()
+							+ " was near " + ((Building)interiorObject).getNickName() //person.getLocationTag().getImmediateLocation()
+							+ " at (" + Math.round(returnInsideLoc.getX()*10.0)/10.0 + ", " 
+							+ Math.round(returnInsideLoc.getY()*10.0)/10.0 + ") "
+							+ " but could not be found inside " + interiorObject);
+					endTask();
+				}
 			}
 	
 			// If not at return inside location, create walk inside subtask.
@@ -330,7 +328,7 @@ public abstract class EVAOperation extends Task implements Serializable {
 			} else {
 				LogConsolidated.log(Level.SEVERE, 0, sourceName,
 						person.getName() + " was " + person.getTaskDescription().toLowerCase() 
-						+ " and cannot find the building airlock to  walk back inside. Will see what to do.");
+						+ " and cannot find the building airlock to walk back inside. Will see what to do.");
 				endTask();
 			}
 		}

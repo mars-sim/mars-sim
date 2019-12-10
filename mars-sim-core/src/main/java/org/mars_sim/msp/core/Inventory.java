@@ -637,17 +637,6 @@ public class Inventory implements Serializable {
 	}
 
 	/**
-	 * Gets the storage capacity for a resource.
-	 * 
-	 * @param resource   the resource.
-	 * @param allowDirty will allow dirty (possibly out of date) results.
-	 * @return capacity amount (kg).
-	 */
-	public double getARCapacity(int resource, boolean allowDirty) {
-		return getAmountResourceCapacityCacheValue(resource, allowDirty);
-	}
-
-	/**
 	 * Gets the storage capacity for a resource not counting containers.
 	 * 
 	 * @param resource the resource.
@@ -2580,7 +2569,7 @@ public class Inventory implements Serializable {
 				if (containedUnitIDs != null) {
 					for (Unit unit : getContainedUnits()) {
 						if (unit instanceof Container) {
-							containedCapacity += unit.getInventory().getARCapacity(resource, false);
+							containedCapacity += unit.getInventory().getAmountResourceCapacity(resource, false);
 						}
 					}
 				}
@@ -2607,7 +2596,7 @@ public class Inventory implements Serializable {
 		// clause
 //		logger.config(ResourceUtil.findAmountResource(resource) + " (id : " + resource + ")"); 
 		if (containersStoredCacheDirty != null && containersStoredCacheDirty.containsKey(resource)) {
-			if (containersStoredCacheDirty.get(resource) != null && containersStoredCacheDirty.get(resource)) {
+			if (containersStoredCacheDirty.get(resource)) {
 				if (containedUnitIDs != null) {
 					for (Unit unit : getContainedUnits()) {
 						if (unit instanceof Container) {

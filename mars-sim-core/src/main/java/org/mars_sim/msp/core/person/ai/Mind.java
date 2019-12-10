@@ -185,7 +185,6 @@ public class Mind implements Serializable {
 				takeAction(time);
 			}
 		}
-
 	}
 
 	/*
@@ -252,23 +251,18 @@ public class Mind implements Serializable {
 				mission = null;
 			}
 
-//			boolean hasAMission = hasAMission();
-////			if (hasAMission)
-////				logger.info(person + " had the " + mission + " mission");;
-//			
 			boolean hasActiveMission = hasActiveMission();
 
-//			boolean overrideMission = false;
-//
-//			// Check if mission creation at settlement (if any) is overridden.
-//			overrideMission = person.getAssociatedSettlement().getMissionCreationOverride();
-//
-//			// Check if it's within the mission request window 
-//			// Within 50 millisols at the start of the work shift
-//			boolean isInMissionWindow = taskManager.getTaskSchedule().isAtStartOfWorkShift();
-//		
 			if (hasActiveMission) {
 
+				// If the mission vehicle has embarked but the person is not on board, 
+				// then release the person from the mission
+				if (!mission.getCurrentMissionLocation().equals(person.getCoordinates())) {
+					mission.removeMember(person);
+					selectNewTask();
+					return;
+				}
+					
 		        boolean inDarkPolarRegion = surfaceFeatures.inDarkPolarRegion(mission.getCurrentMissionLocation());
 				double sunlight = surfaceFeatures.getSolarIrradiance(mission.getCurrentMissionLocation());
 				if ((sunlight == 0) && !inDarkPolarRegion) {
@@ -316,6 +310,7 @@ public class Mind implements Serializable {
 		}
 	}
 
+	
 	public void resumeMission(int modifier) {
 		if (VehicleMission.TRAVELLING.equals(mission.getPhase())) {
 			if (taskManager.getPhase() != null && mission.getVehicle().getOperator() == null) {

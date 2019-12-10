@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
@@ -86,8 +87,10 @@ implements Serializable {
         // Use EVAOperation constructor.
         super(NAME, person, false, 50);//+ RandomUtil.getRandomInt(10) - RandomUtil.getRandomInt(10));
 
-        settlement = person.getAssociatedSettlement();
-        
+     	settlement = CollectionUtils.findSettlement(person.getCoordinates());
+     	if (settlement == null)
+     		endTask();
+     
         collectionRate = settlement.getIceCollectionRate();
         
         NaturalAttributeManager nManager = person.getNaturalAttributeManager();
@@ -302,6 +305,7 @@ implements Serializable {
 
     	if (getTimeCompleted() > getDuration()) {
             setPhase(WALK_BACK_INSIDE);
+            endTask();
             return time;
     	}
     			
@@ -311,12 +315,14 @@ implements Serializable {
         // Check for radiation exposure during the EVA operation.
         if (isRadiationDetected(time)){
             setPhase(WALK_BACK_INSIDE);
+            endTask();
             return time;
         }
         // Check if there is reason to cut the collect
         // ice phase short and return.
         if (shouldEndEVAOperation()) {
             setPhase(WALK_BACK_INSIDE);
+            endTask();
             return time;
         }
 
@@ -344,20 +350,23 @@ implements Serializable {
         condition.setFatigue(fatigue + time * factor);
         
         if (finishedCollecting) {
-            setPhase(WALK_BACK_INSIDE);
-
             LogConsolidated.log(Level.INFO, 0, sourceName, 
 	    		"[" + person.getLocationTag().getLocale() +  "] " +
 	    		person.getName() + " collected " + Math.round(totalCollected*100D)/100D 
 	    		+ " kg of ice outside at " + person.getCoordinates().getFormattedString());
- 
+            setPhase(WALK_BACK_INSIDE);
+            endTask();
         }
         // Add experience points
         addExperience(time);
 
         if (fatigue > 1000 || stress > 50) {
-//            endTask();
+            LogConsolidated.log(Level.INFO, 0, sourceName, 
+        		"[" + person.getLocationTag().getLocale() +  "] " +
+        		person.getName() + " took a break from collecting ice (fatigue: " + Math.round(fatigue*10D)/10D 
+        		+ " ; stress: " + Math.round(stress*100D)/100D + " %)");
             setPhase(WALK_BACK_INSIDE);
+            endTask();
         }
         return 0D;
     }

@@ -213,8 +213,7 @@ public class EatDrink extends Task implements Serializable {
 				// Take napkin from inventory if available.
 				Inventory inv = person.getSettlement().getInventory();
 				if (inv != null) {
-					if (NAPKIN_MASS > MIN)
-						hasNapkin = Storage.retrieveAnResource(NAPKIN_MASS, ResourceUtil.napkinID, inv, false);
+					hasNapkin = Storage.retrieveAnResource(NAPKIN_MASS, ResourceUtil.napkinID, inv, false);
 				}
 			}
 
@@ -297,9 +296,10 @@ public class EatDrink extends Task implements Serializable {
 				walkToActivitySpotInBuilding(kitchen.getBuilding(), FunctionType.DINING, true);
 			} 
 			
-//			else {
-//				// If no kitchen found, look for dessert.
-//			}
+			else {
+				// If no kitchen found, look for dessert.
+				setPhase(PICK_UP_DESSERT);
+			}
 		}
 
 		if (kitchen != null) {

@@ -56,10 +56,9 @@ public class DigLocalIceMeta implements MetaTask, Serializable {
         
         double result = 0D;
    
+    	// If a person is on a mission out there, he/she should not run this task
         if (settlement != null) {
-        	
-//	    	Settlement settlement = person.getSettlement();
-	     
+        	 
         	double collectionRate = settlement.getIceCollectionRate();
             
             if (collectionRate <= 0)
@@ -71,7 +70,6 @@ public class DigLocalIceMeta implements MetaTask, Serializable {
 	
 	        // Checked for radiation events
 	    	boolean[] exposed = settlement.getExposed();
-	
 	
 			if (exposed[2]) {
 				// SEP can give lethal dose of radiation

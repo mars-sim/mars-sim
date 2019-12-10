@@ -918,7 +918,7 @@ public class Mining extends RoverMission {
 		// AmountResource food =
 		// ResourceUtil.findAmountResource(LifeSupportType.FOOD);
 		double foodConsumptionRate = personConfig.getFoodConsumptionRate();// * Mission.FOOD_MARGIN;
-		double foodCapacity = vInv.getARCapacity(foodID, false);
+		double foodCapacity = vInv.getAmountResourceCapacity(foodID, false);
 		double foodTimeLimit = foodCapacity / (foodConsumptionRate * memberNum);
 		if (foodTimeLimit < timeLimit) {
 			timeLimit = foodTimeLimit;
@@ -936,7 +936,7 @@ public class Mining extends RoverMission {
 		// AmountResource water =
 		// ResourceUtil.findAmountResource(LifeSupportType.WATER);
 		double waterConsumptionRate = personConfig.getWaterConsumptionRate();// * Mission.WATER_MARGIN;
-		double waterCapacity = vInv.getARCapacity(waterID, false);
+		double waterCapacity = vInv.getAmountResourceCapacity(waterID, false);
 		double waterTimeLimit = waterCapacity / (waterConsumptionRate * memberNum);
 		if (waterTimeLimit < timeLimit) {
 			timeLimit = waterTimeLimit;
@@ -946,7 +946,7 @@ public class Mining extends RoverMission {
 		// AmountResource oxygen =
 		// ResourceUtil.findAmountResource(LifeSupportType.OXYGEN);
 		double oxygenConsumptionRate = personConfig.getHighO2ConsumptionRate();// * Mission.OXYGEN_MARGIN;
-		double oxygenCapacity = vInv.getARCapacity(oxygenID, false);
+		double oxygenCapacity = vInv.getAmountResourceCapacity(oxygenID, false);
 		double oxygenTimeLimit = oxygenCapacity / (oxygenConsumptionRate * memberNum);
 		if (oxygenTimeLimit < timeLimit) {
 			timeLimit = oxygenTimeLimit;

@@ -207,6 +207,7 @@ public class Walk extends Task implements Serializable {
       						+ " but walking steps could not be determined.");
 
 			endTask();
+			return;
 //			person.getMind().getTaskManager().clearAllTasks();
 			
 //			if (person != null) {
@@ -227,6 +228,7 @@ public class Walk extends Task implements Serializable {
 					+ " but Valid Walking steps could not be determined.");
 
 			endTask();
+			return;
 //			person.getMind().getTaskManager().clearAllTasks();
 
 //			if (person != null) {

@@ -8,6 +8,7 @@ package org.mars_sim.msp.core.person.ai.task.meta;
 
 import java.io.Serializable;
 
+import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.FavoriteType;
@@ -52,16 +53,17 @@ public class DigLocalRegolithMeta implements MetaTask, Serializable {
     @Override
     public double getProbability(Person person) {
 
+    	Settlement settlement = CollectionUtils.findSettlement(person.getCoordinates());
+        
         double result = 0D;
-       
+   
+    	// If a person is on a mission out there, he/she should not run this task
+        if (settlement != null) {
+        	
         // Check if a person has done this once today
 //        if (person.getPreference().isTaskDue(this))
 //        	return 0;	
-        		
-        if (person.isInSettlement()) {
-        	
-	    	Settlement settlement = person.getSettlement();
-	     
+        		     
 	    	// Check if an airlock is available
 	        if (EVAOperation.getWalkableAvailableAirlock(person) == null)
 	    		return 0;   
@@ -106,20 +108,20 @@ public class DigLocalRegolithMeta implements MetaTask, Serializable {
             
 	        result = settlement.getRegolithProbabilityValue() * VALUE;
 	    	
-	        if (result > 5000)
-	        	result = 5000;
+	        if (result > 2000)
+	        	result = 2000;
 	        
             // Stress modifier
-            result = result - stress * 2.5D;
+            result = result - stress * 3.5D;
             // fatigue modifier
-            result = result - (fatigue - 100) / 2D;
+            result = result - (fatigue - 100) / 1.5D;
             
 	        if (result < 0)
 	        	return 0;
 	
 	        // Crowded settlement modifier
 	        if (settlement.getIndoorPeopleCount() > settlement.getPopulationCapacity())
-	            result *= 1.5D;
+	            result = result * (settlement.getIndoorPeopleCount() - settlement.getPopulationCapacity());
 	
 	        if (settlement.getIndoorPeopleCount() <= 4)
 	            result *= 1.5D;
@@ -142,11 +144,11 @@ public class DigLocalRegolithMeta implements MetaTask, Serializable {
 	        //logger.info("DigLocalRegolithMeta's probability : " + Math.round(result*100D)/100D);
 	
 	    	if (exposed[0]) {
-				result = result/2D;// Baseline can give a fair amount dose of radiation
+				result = result/5D;// Baseline can give a fair amount dose of radiation
 			}
 	
 	    	if (exposed[1]) {// GCR can give nearly lethal dose of radiation
-				result = result/4D;
+				result = result/10D;
 			}
 	    	
 	        if (result <= 0)

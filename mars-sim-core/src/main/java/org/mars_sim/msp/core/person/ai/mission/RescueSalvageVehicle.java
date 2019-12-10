@@ -884,10 +884,10 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 		// Override and full rover with fuel and life support resources.
 		Map<Integer, Number> result = new HashMap<Integer, Number>(4);
 		Inventory inv = getVehicle().getInventory();
-		result.put(getVehicle().getFuelType(), inv.getARCapacity(getVehicle().getFuelType(), false));
-		result.put(oxygenID, inv.getARCapacity(oxygenID, false));
-		result.put(waterID, inv.getARCapacity(waterID, false));
-		result.put(foodID, inv.getARCapacity(foodID, false));
+		result.put(getVehicle().getFuelType(), inv.getAmountResourceCapacity(getVehicle().getFuelType(), false));
+		result.put(oxygenID, inv.getAmountResourceCapacity(oxygenID, false));
+		result.put(waterID, inv.getAmountResourceCapacity(waterID, false));
+		result.put(foodID, inv.getAmountResourceCapacity(foodID, false));
 
 		// Get parts too.
 		result.putAll(getPartsNeededForTrip(getTotalRemainingDistance()));

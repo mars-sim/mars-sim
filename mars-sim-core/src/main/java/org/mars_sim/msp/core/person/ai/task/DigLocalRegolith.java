@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.LogConsolidated;
@@ -86,8 +87,10 @@ implements Serializable {
         // Use EVAOperation constructor.
         super(NAME, person, false, 50);
         
-        settlement = person.getAssociatedSettlement();
-           
+     	settlement = CollectionUtils.findSettlement(person.getCoordinates());
+     	if (settlement == null)
+     		endTask();
+     	
         // Get an available airlock.
         airlock = getWalkableAvailableAirlock(person);
         if (airlock == null) {
@@ -300,7 +303,8 @@ implements Serializable {
 
     	if (getTimeCompleted() > getDuration()) {
             setPhase(WALK_BACK_INSIDE);
-            return time;
+            endTask();
+            return .5 * time;
     	}
     	
         // Check for an accident during the EVA operation.
@@ -309,14 +313,16 @@ implements Serializable {
         // Check for radiation exposure during the EVA operation.
         if (isRadiationDetected(time)){
             setPhase(WALK_BACK_INSIDE);
-            return time;
+            endTask();
+            return .5 * time;
         }
 
         // Check if there is reason to cut the collection phase short and return
         // to the airlock.
         if (shouldEndEVAOperation()) {
             setPhase(WALK_BACK_INSIDE);
-            return time;
+            endTask();
+            return .5 * time;
         }
 
         double remainingPersonCapacity = person.getInventory().getAmountResourceRemainingCapacity(
@@ -351,13 +357,12 @@ implements Serializable {
         condition.setFatigue(fatigue + time * factor);
         
         if (finishedCollecting) {
-            setPhase(WALK_BACK_INSIDE);
-
             LogConsolidated.log(Level.INFO, 0, sourceName, 
         		"[" + person.getLocationTag().getLocale() +  "] " +
         		person.getName() + " collected " + Math.round(totalCollected*100D)/100D 
         		+ " kg of regolith outside at " + person.getCoordinates().getFormattedString());
- 
+            setPhase(WALK_BACK_INSIDE);
+            endTask();
     	}
         
         // Add experience points
@@ -368,8 +373,8 @@ implements Serializable {
         		"[" + person.getLocationTag().getLocale() +  "] " +
         		person.getName() + " took a break from collecting regolith (fatigue: " + Math.round(fatigue*10D)/10D 
         		+ " ; stress: " + Math.round(stress*100D)/100D + " %)");
-//            endTask();
             setPhase(WALK_BACK_INSIDE);
+            endTask();
         }
         
         return 0D;

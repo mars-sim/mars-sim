@@ -301,14 +301,14 @@ public class BiologyFieldStudy extends RoverMission implements Serializable {
 
 		// Check water capacity as time limit.
 		double waterConsumptionRate = personConfig.getWaterConsumptionRate();
-		double waterCapacity = vInv.getARCapacity(waterID, false);
+		double waterCapacity = vInv.getAmountResourceCapacity(waterID, false);
 		double waterTimeLimit = waterCapacity / (waterConsumptionRate * memberNum);
 		if (waterTimeLimit < timeLimit)
 			timeLimit = waterTimeLimit;
 
 		// Check oxygen capacity as time limit.
 		double oxygenConsumptionRate = personConfig.getNominalO2ConsumptionRate();
-		double oxygenCapacity = vInv.getARCapacity(oxygenID, false);
+		double oxygenCapacity = vInv.getAmountResourceCapacity(oxygenID, false);
 		double oxygenTimeLimit = oxygenCapacity / (oxygenConsumptionRate * memberNum);
 		if (oxygenTimeLimit < timeLimit)
 			timeLimit = oxygenTimeLimit;

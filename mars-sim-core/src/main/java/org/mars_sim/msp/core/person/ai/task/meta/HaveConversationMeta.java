@@ -10,6 +10,7 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
@@ -34,15 +35,15 @@ public class HaveConversationMeta implements MetaTask, Serializable {
     private static final long serialVersionUID = 1L;
 
     /** default logger. */
-//    private static Logger logger = Logger.getLogger(HaveConversationMeta.class.getName());
-//	private static String loggerName = logger.getName();
-//	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+    private static Logger logger = Logger.getLogger(HaveConversationMeta.class.getName());
+	private static String loggerName = logger.getName();
+	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.haveConversation"); //$NON-NLS-1$
     
-    private static final double VALUE = 0.1;
+    private static final double VALUE = 0.5;
     
     private static MarsClock marsClock;
     
@@ -172,12 +173,12 @@ public class HaveConversationMeta implements MetaTask, Serializable {
         if (result > 0)
         	result = result + result * person.getPreference().getPreferenceScore(this)/4D;
 
-        if (result < 0) 
+        if (result < 1) 
         	result = 0;
         
-//      if (result > 0)
-//    	LogConsolidated.log(Level.INFO, 0, sourceName,
-//    		person + " " + Math.round(result*100.0)/100.0);
+//        if (result > 0)
+//        	LogConsolidated.log(Level.INFO, 0, sourceName,
+//        			person + " " + Math.round(result*100.0)/100.0);
     
         return result;
     }
