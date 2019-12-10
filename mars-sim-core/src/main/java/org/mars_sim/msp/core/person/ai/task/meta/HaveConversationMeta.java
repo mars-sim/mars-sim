@@ -43,7 +43,7 @@ public class HaveConversationMeta implements MetaTask, Serializable {
     private static final String NAME = Msg.getString(
             "Task.description.haveConversation"); //$NON-NLS-1$
     
-    private static final double VALUE = 0.5;
+    private static final double VALUE = 0.1;
     
     private static MarsClock marsClock;
     
@@ -171,12 +171,12 @@ public class HaveConversationMeta implements MetaTask, Serializable {
         	result = result/100.0;
         
         if (result > 0)
-        	result = result + result * person.getPreference().getPreferenceScore(this)/4D;
+        	result = result + result * person.getPreference().getPreferenceScore(this)/8D;
 
         if (result < 1) 
         	result = 0;
         
-//        if (result > 0)
+//        if (result > 30)
 //        	LogConsolidated.log(Level.INFO, 0, sourceName,
 //        			person + " " + Math.round(result*100.0)/100.0);
     

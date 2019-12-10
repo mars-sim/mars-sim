@@ -166,7 +166,7 @@ public class MineSite extends EVAOperation implements Serializable {
 				return false;
 
 			// Check if person's medical condition will not allow task.
-			if (person.getPerformanceRating() < .5D)
+			if (person.getPerformanceRating() < .2D)
 				return false;
 		}
 

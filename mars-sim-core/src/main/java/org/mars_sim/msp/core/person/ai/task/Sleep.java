@@ -75,7 +75,7 @@ public class Sleep extends Task implements Serializable {
 	// Data members
 	/** The previous time (millisols). */
 	private double previousTime;
-	private double timeFactor = 6; // TODO: should vary this factor by person
+	private double timeFactor = 4; // TODO: should vary this factor by person
 	
 	private LocalBoundedObject interiorObject;
 	private Point2D returnInsideLoc;

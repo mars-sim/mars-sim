@@ -77,6 +77,8 @@ public abstract class Task implements Serializable, Comparable<Task> {
 
 	protected static final int FIRST_EQUIPMENT_RESOURCE_ID = ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID;
 
+	private static final double SMALL_AMOUNT_OF_TIME = 0.00111D;
+	
 	// Data members
 	/** True if task is finished. */
 	private boolean done;
@@ -614,7 +616,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			}
 		}
 
-		if (person != null)
+		if (person != null && time - timeLeft > SMALL_AMOUNT_OF_TIME)
 			// Modify stress performing task.
 			modifyStress(time - timeLeft);
 

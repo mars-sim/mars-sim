@@ -903,7 +903,6 @@ public class Exploration extends RoverMission implements Serializable {
 
 		for (String mineralType : minerals.keySet()) {
 			int mineralResource = ResourceUtil.findIDbyAmountResourceName(mineralType);
-//			Good mineralGood = GoodsUtil.createResourceGood(ResourceUtil.findAmountResource(mineralType));
 			double mineralValue = settlement.getGoodsManager().getGoodValuePerItem(mineralResource);
 			double concentration = minerals.get(mineralType);
 			double mineralAmount = (concentration / 100D) * Mining.MINERAL_BASE_AMOUNT;

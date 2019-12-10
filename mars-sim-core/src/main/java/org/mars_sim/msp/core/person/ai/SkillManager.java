@@ -239,13 +239,13 @@ public class SkillManager implements Serializable {
 	 * Returns the integer skill level from a named skill if it exists in the
 	 * SkillManager. Returns 0 otherwise.
 	 * 
-	 * @param skill {@link SkillType}
+	 * @param skillType {@link SkillType}
 	 * @return {@link Integer} >= 0
 	 */
-	public int getSkillLevel(SkillType skill) {
+	public int getSkillLevel(SkillType skillType) {
 		int result = 0;
-		if (skills.containsKey(skill)) {
-			result = skills.get(skill).getLevel();
+		if (skills.containsKey(skillType)) {
+			result = skills.get(skillType).getLevel();
 		}
 		return result;
 	}

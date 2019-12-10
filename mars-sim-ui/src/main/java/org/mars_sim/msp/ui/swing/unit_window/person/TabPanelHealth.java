@@ -91,6 +91,7 @@ extends TabPanel {
 	/** The PhysicalCondition instance. */
 	private PhysicalCondition condition;
 
+	private Font font = new Font("SansSerif", Font.ITALIC, 12);
 	
 	protected String[] radiationToolTips = {
 		    "Exposure Interval",
@@ -216,6 +217,7 @@ extends TabPanel {
 
 		// Prepare radiation label
 		WebLabel radiationLabel = new WebLabel(Msg.getString("TabPanelHealth.rad"), WebLabel.CENTER); //$NON-NLS-1$
+		radiationPanel.setFont(font);
 		radiationPanel.add(radiationLabel, BorderLayout.NORTH);
 		TooltipManager.setTooltip (radiationLabel, Msg.getString("TabPanelHealth.radiation.tooltip"), TooltipWay.down); //$NON-NLS-1$
 			 
@@ -282,6 +284,7 @@ extends TabPanel {
 
 		// Prepare sleep time label
 		WebLabel sleepLabel = new WebLabel(Msg.getString("TabPanelHealth.sleep"), WebLabel.CENTER); //$NON-NLS-1$
+		sleepLabel.setFont(font);
 		sleepPanel.add(sleepLabel, BorderLayout.NORTH);
 
 		// Prepare sleep time scroll panel
@@ -320,6 +323,7 @@ extends TabPanel {
 		// Prepare health problem label
 		WebLabel healthProblemLabel = new WebLabel(Msg.getString("TabPanelHealth.healthProblems"), WebLabel.CENTER); //$NON-NLS-1$
 		healthProblemLabel.setPadding(7, 0, 0, 0);
+		healthProblemLabel.setFont(font);
 		healthProblemPanel.add(healthProblemLabel, BorderLayout.NORTH);
 
 		// Prepare health problem scroll panel
@@ -351,6 +355,7 @@ extends TabPanel {
 		// Prepare medication label.
 		WebLabel medicationLabel = new WebLabel(Msg.getString("TabPanelHealth.medication"), WebLabel.CENTER); //$NON-NLS-1$
 		medicationLabel.setPadding(7, 0, 0, 0);
+		medicationLabel.setFont(font);
 		medicationPanel.add(medicationLabel, BorderLayout.NORTH);
 
 		// Prepare medication scroll panel
@@ -458,6 +463,7 @@ extends TabPanel {
 		
 		// Update sleep time table model
 		sleepTableModel.update();
+    	
 	}
 
 //	public class IconTextCellRenderer extends DefaultTableCellRenderer {
@@ -468,10 +474,6 @@ extends TabPanel {
 //	                                  int row,
 //	                                  int column) {
 //	        super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-//	        //setToolTipText(...);
-//	        //BalloonToolTip balloonToolTip = new BalloonToolTip();
-//	        //balloonToolTip.createBalloonTip(value, ""); //$NON-NLS-1$
-//
 //	        return this;
 //	    }
 //	}

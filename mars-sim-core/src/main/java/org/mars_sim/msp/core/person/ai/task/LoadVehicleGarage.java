@@ -82,7 +82,9 @@ public class LoadVehicleGarage extends Task implements Serializable {
 	private static double DURATION = RandomUtil.getRandomDouble(50D) + 10D;
 
 	// Data members
-
+	/** Flag if this task has ended. */
+	private boolean ended = false;
+	
 	/** Resources required to load. */
 	private Map<Integer, Number> requiredResources;
 	/** Resources desired to load but not required. */
@@ -113,7 +115,16 @@ public class LoadVehicleGarage extends Task implements Serializable {
 		super(NAME, person, true, false, STRESS_MODIFIER, true, DURATION);
 
 		VehicleMission mission = getMissionNeedingLoading();
-		if (mission != null) {
+		if (mission == null) {
+			endTask();
+		}
+		
+		settlement = person.getSettlement();
+		if (settlement == null) {
+			endTask();
+		}
+
+		if (!ended) {
 			vehicle = mission.getVehicle();
 			setDescription(Msg.getString("Task.description.loadVehicleGarage.detail", vehicle.getName())); // $NON-NLS-1$
 			requiredResources = mission.getRequiredResourcesToLoad();
@@ -121,14 +132,9 @@ public class LoadVehicleGarage extends Task implements Serializable {
 			requiredEquipment = mission.getRequiredEquipmentToLoad();
 			optionalEquipment = mission.getOptionalEquipmentToLoad();
 
-//			if (requiredResources.containsKey(1))
-//				logger.info("1. food : " + Math.round((double)requiredResources.get(1)*100.0)/100.0);
+//				if (requiredResources.containsKey(1))
+//					logger.info("1. food : " + Math.round((double)requiredResources.get(1)*100.0)/100.0);
 			
-			settlement = person.getSettlement();
-			if (settlement == null) {
-				endTask();
-			}
-
 			// If vehicle is in a garage, add person to garage.
 			Building garageBuilding = BuildingManager.getBuilding(vehicle);
 			if (garageBuilding != null) {
@@ -145,8 +151,6 @@ public class LoadVehicleGarage extends Task implements Serializable {
 			// Initialize task phase
 			addPhase(LOADING);
 			setPhase(LOADING);
-		} else {
-			endTask();
 		}
 	}
 
@@ -229,18 +233,25 @@ public class LoadVehicleGarage extends Task implements Serializable {
 //			logger.info("3. food : " + Math.round((double)requiredResources.get(1)*100.0)/100.0);
 		
 		settlement = person.getSettlement();
-
+		if (settlement == null) {
+			endTask();
+		}
+		
 		// If vehicle is in a garage, add person to garage.
 		Building garage = BuildingManager.getBuilding(vehicle);
 		if (garage != null) {
-
 			// Walk to garage.
 			walkToActivitySpotInBuilding(garage, false);
 		}
+		else {
+			endTask();
+		}
 
-		// Initialize task phase
-		addPhase(LOADING);
-		setPhase(LOADING);
+		if (!ended) {
+			// Initialize task phase
+			addPhase(LOADING);
+			setPhase(LOADING);
+		}
 	}
 
 	public LoadVehicleGarage(Robot robot, Vehicle vehicle, Map<Integer, Number> requiredResources,
@@ -283,6 +294,15 @@ public class LoadVehicleGarage extends Task implements Serializable {
 		setPhase(LOADING);
 	}
 
+	/**
+	 * Ends the task and performs any final actions.
+	 */
+	public void endTask() {
+		ended = true;
+		
+		super.endTask();
+	}
+	
 	@Override
 	public FunctionType getLivingFunction() {
 		return FunctionType.GROUND_VEHICLE_MAINTENANCE;
@@ -384,54 +404,52 @@ public class LoadVehicleGarage extends Task implements Serializable {
 	 */
 	double loadingPhase(double time) {
 
-		if (settlement == null) {
-			endTask();
-			return 0D;
-		}
-		int strength = 0;
-		// Determine load rate.
-		if (person != null)
-			strength = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.STRENGTH);
-		else if (robot != null)
-			strength = robot.getRoboticAttributeManager().getAttribute(RoboticAttributeType.STRENGTH);
-		double strengthModifier = .1D + (strength * .018D);
-		double amountLoading = LOAD_RATE * strengthModifier * time / 12D;
-
-		// Temporarily remove rover from settlement so that inventory doesn't get mixed
-		// in.
-		Inventory sInv = settlement.getInventory();
-		boolean roverInSettlement = false;
-		if (sInv.containsUnit(vehicle)) {
-			roverInSettlement = true;
-			sInv.retrieveUnit(vehicle);
-		}
-
-		// Load equipment
-		if (amountLoading > 0D) {
-			amountLoading = loadEquipment(amountLoading);
+		if (!ended) {
+			int strength = 0;
+			// Determine load rate.
+			if (person != null)
+				strength = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.STRENGTH);
+			else if (robot != null)
+				strength = robot.getRoboticAttributeManager().getAttribute(RoboticAttributeType.STRENGTH);
+			double strengthModifier = .1D + (strength * .018D);
+			double amountLoading = LOAD_RATE * strengthModifier * time / 12D;
+	
+			// Temporarily remove rover from settlement so that inventory doesn't get mixed
+			// in.
+			Inventory sInv = settlement.getInventory();
+			boolean roverInSettlement = false;
+			if (sInv.containsUnit(vehicle)) {
+				roverInSettlement = true;
+				sInv.retrieveUnit(vehicle);
+			}
+	
+			// Load equipment
+			if (amountLoading > 0D) {
+				amountLoading = loadEquipment(amountLoading);
+			}
+			
+			// Load resources
+			try {
+				if (amountLoading > 0D) {
+					amountLoading = loadResources(amountLoading);
+				}
+			} catch (Exception e) {
+				// logger.severe(e.getMessage());
+				LogConsolidated.log(Level.WARNING, 0, sourceName + "::loadingPhase", "Error in loadResources()" + e.getMessage());
+			}
+	
+	
+			// Put rover back into settlement.
+			if (roverInSettlement) {
+				sInv.storeUnit(vehicle);
+			}
+	
+			if (isFullyLoaded(requiredResources, optionalResources, requiredEquipment, optionalEquipment, vehicle,
+					settlement)) {
+				endTask();
+			}
 		}
 		
-		// Load resources
-		try {
-			if (amountLoading > 0D) {
-				amountLoading = loadResources(amountLoading);
-			}
-		} catch (Exception e) {
-			// logger.severe(e.getMessage());
-			LogConsolidated.log(Level.WARNING, 0, sourceName + "::loadingPhase", "Error in loadResources()" + e.getMessage());
-		}
-
-
-		// Put rover back into settlement.
-		if (roverInSettlement) {
-			sInv.storeUnit(vehicle);
-		}
-
-		if (isFullyLoaded(requiredResources, optionalResources, requiredEquipment, optionalEquipment, vehicle,
-				settlement)) {
-			endTask();
-		}
-
 		return 0D;
 	}
 

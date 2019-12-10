@@ -54,7 +54,7 @@ public class TaskManager implements Serializable {
 
 	private static final String WALK = "walk";
 
-	private static final int MAX_TASK_PROBABILITY = 5000;
+	private static final int MAX_TASK_PROBABILITY = 8000;
 	/** A decimal number a little bigger than zero for comparing doubles. */
 	private static final double SMALL_AMOUNT = 0.001;
 	
@@ -459,8 +459,8 @@ public class TaskManager implements Serializable {
 
 		if (currentTask != null) {
 			// For effort driven task, reduce the effective time based on efficiency.
-			if (efficiency < .1D) {
-				efficiency = .1D;
+			if (efficiency <= 0D) {
+				efficiency = 0D;
 			}
 
 			if (currentTask.isEffortDriven()) {
@@ -476,6 +476,8 @@ public class TaskManager implements Serializable {
 				LogConsolidated.log(Level.SEVERE, 0, sourceName,
 						person.getName() + " had trouble calling performTask().", e);
 				e.printStackTrace(System.err);
+				logger.info("remainingTime : " + remainingTime + "   time : " + time); // 1x = 0.001126440159375963 -> 8192 = 8.950963852039651
+				return 0;
 			}
 			
 			// Expend energy based on activity.

@@ -87,7 +87,7 @@ public class SleepMeta implements MetaTask, Serializable {
 	            
                 double pref = person.getPreference().getPreferenceScore(this);
                 
-             	result += result * pref/4D;                            	
+             	result = result + result * pref/8D;                            	
             	
 	    	    if (result < 0)
 	    	    	return 0;
@@ -175,9 +175,9 @@ public class SleepMeta implements MetaTask, Serializable {
 	        	int maxNumSleep = 0;
 
 	        	if (person.getTaskSchedule().getShiftType() == ShiftType.ON_CALL)
-	            	maxNumSleep = 7;
+	            	maxNumSleep = 8;
 	            else
-	            	maxNumSleep = 3;
+	            	maxNumSleep = 4;
 
 	        	int sol = marsClock.getMissionSol();
 	        	
