@@ -614,13 +614,10 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 
 	@Override
 	public int getEffectiveSkillLevel() {
-		SkillManager manager = null;
 		if (person != null)
-			manager = person.getSkillManager();
-		else if (robot != null)
-			manager = robot.getSkillManager();
-		int EVAOperationsSkill = manager.getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
-		return EVAOperationsSkill;
+			return person.getSkillManager().getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
+		else 
+			return robot.getSkillManager().getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
 	}
 
 	@Override

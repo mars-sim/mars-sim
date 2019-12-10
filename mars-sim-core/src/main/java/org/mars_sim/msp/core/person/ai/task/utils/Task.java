@@ -680,7 +680,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 				}
 
 				// Reduce stress modifier for person's skill related to the task.
-				int skill = this.getEffectiveSkillLevel();
+				int skill = getEffectiveSkillLevel();
 				effectiveStressModifier -= (effectiveStressModifier * (double) skill * SKILL_STRESS_MODIFIER);
 
 				// If effective stress modifier < 0, set it to 0.

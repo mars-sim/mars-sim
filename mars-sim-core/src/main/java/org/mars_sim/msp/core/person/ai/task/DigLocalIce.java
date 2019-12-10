@@ -76,6 +76,8 @@ implements Serializable {
 	private Bag bag;
 	private Settlement settlement;
 
+	private boolean ended = false;
+	
 	private static int iceID = ResourceUtil.iceID;
 	
 	/**
@@ -88,23 +90,24 @@ implements Serializable {
         super(NAME, person, false, 50);//+ RandomUtil.getRandomInt(10) - RandomUtil.getRandomInt(10));
 
      	settlement = CollectionUtils.findSettlement(person.getCoordinates());
-     	if (settlement == null)
-     		endTask();
-     
-        collectionRate = settlement.getIceCollectionRate();
-        
-        NaturalAttributeManager nManager = person.getNaturalAttributeManager();
-        int strength = nManager.getAttribute(NaturalAttributeType.STRENGTH);
-        int agility = nManager.getAttribute(NaturalAttributeType.AGILITY);
-        int eva = person.getSkillManager().getSkillLevel(SkillType.EVA_OPERATIONS);
-        
-        factor = .9 * (1 - (agility + strength) / 200D);
-        compositeRate  = collectionRate * ((.5 * agility + strength) / 150D) * (eva + .1)/ 5D ;
+     	if (settlement == null) {
+        	if (person.isOutside()){
+                setPhase(WALK_BACK_INSIDE);
+         		endTask();
+            }
+        	else
+        		endTask();
+     	}
         
         // Get an available airlock.
         airlock = getWalkableAvailableAirlock(person);
         if (airlock == null) {
-            endTask();
+        	if (person.isOutside()){
+                setPhase(WALK_BACK_INSIDE);
+         		endTask();
+            }
+        	else
+        		endTask();
         }
 
         // Determine digging location.
@@ -117,14 +120,31 @@ implements Serializable {
 
             // If bags are not available, end task.
             if (!hasBags()) {
-                endTask();
+            	if (person.isOutside()){
+                    setPhase(WALK_BACK_INSIDE);
+             		endTask();
+                }
+            	else
+            		endTask();
             }
         }
 
-        // Add task phases
-        addPhase(COLLECT_ICE);
-
-        logger.finest(person.getName() + " was going to start digging for ice.");
+        if (!ended) {
+	        collectionRate = settlement.getIceCollectionRate();
+	        
+	        NaturalAttributeManager nManager = person.getNaturalAttributeManager();
+	        int strength = nManager.getAttribute(NaturalAttributeType.STRENGTH);
+	        int agility = nManager.getAttribute(NaturalAttributeType.AGILITY);
+	        int eva = person.getSkillManager().getSkillLevel(SkillType.EVA_OPERATIONS);
+	        
+	        factor = .9 * (1 - (agility + strength) / 200D);
+	        compositeRate  = collectionRate * ((.5 * agility + strength) / 150D) * (eva + .1)/ 5D ;
+	        
+	        // Add task phases
+	        addPhase(COLLECT_ICE);
+	
+	        logger.finest(person.getName() + " was going to start digging for ice.");
+        }
     }
 
     /**

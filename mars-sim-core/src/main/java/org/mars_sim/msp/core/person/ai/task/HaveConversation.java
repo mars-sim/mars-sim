@@ -297,33 +297,23 @@ implements Serializable {
      */
     private double havingConversation(double time) {
 
-        if (isDone()) {
+        if (isDone() || invitee == null) {
             return time;
         }
 
         // If duration, send invitation.
         if (getDuration() <= (getTimeCompleted() + time)) {
-
-            // TODO: switch the invitee(s) to HaveConversation.           
-
-            // Check if existing relationship between primary researcher and invitee.
-            int size = invitees.size();
-                     
-            for (int i= 0; i< size; i++) {
-            	Person invitee = invitees.get(i);
-            	if (relationshipManager == null)
-            		relationshipManager = Simulation.instance().getRelationshipManager();
-	            if (!relationshipManager.hasRelationship(person, invitee)) {
-	                // Add new communication meeting relationship.
-	                relationshipManager.addRelationship(person, invitee, Relationship.COMMUNICATION_MEETING);
-	            }
-	
-	            // Add 1 point to invitee's opinion of the one who starts the conversation
-	            Relationship relationship = relationshipManager.getRelationship(invitee, person);
-	            double currentOpinion = relationship.getPersonOpinion(invitee);
-	            relationship.setPersonOpinion(invitee, currentOpinion + RandomUtil.getRandomDouble(1));
-	
+        	if (relationshipManager == null)
+        		relationshipManager = Simulation.instance().getRelationshipManager();
+            if (invitee != null && !relationshipManager.hasRelationship(person, invitee)) {
+                // Add new communication meeting relationship.
+                relationshipManager.addRelationship(person, invitee, Relationship.COMMUNICATION_MEETING);
             }
+
+            // Add 1 point to invitee's opinion of the one who starts the conversation
+            Relationship relationship = relationshipManager.getRelationship(invitee, person);
+            double currentOpinion = relationship.getPersonOpinion(invitee);
+            relationship.setPersonOpinion(invitee, currentOpinion + RandomUtil.getRandomDouble(1));
         }
 
         return 0D;

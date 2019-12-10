@@ -365,7 +365,7 @@ public class WalkSettlementInterior extends Task implements Serializable {
 				Building startBuilding = BuildingManager.getBuilding(person);
 				if (startBuilding == null || destBuilding == null) {
 					Vehicle v = person.getVehicle();
-					System.out.println("WalkSettlementInterior : [" + person.getLocationTag().getLocale()
+					logger.fine("WalkSettlementInterior : [" + person.getLocationTag().getLocale()
 							+ "] " + person + " in " + person.getLocationTag().getImmediateLocation() 
 							+ " [vehicle : " + v + "] [start : " + startBuilding
 							+ "] [destination :  " + destBuilding + "]");

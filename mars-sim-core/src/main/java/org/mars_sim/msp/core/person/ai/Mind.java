@@ -50,7 +50,7 @@ public class Mind implements Serializable {
 	private static final int STRESS_UPDATE_CYCLE = 10;
 	private static final double MINIMUM_MISSION_PERFORMANCE = 0.3;
 	private static final double FACTOR = .05;
-	private static final double SMALL_AMOUNT_OF_TIME = 0.0001D;
+	private static final double SMALL_AMOUNT_OF_TIME = 0.00111D;
 
 	// Data members
 	/** Is the job locked so another can't be chosen? */
@@ -229,20 +229,22 @@ public class Mind implements Serializable {
 	 * @throws Exception if error during action.
 	 */
 	public void takeAction(double time) {
-		boolean hasActiveTask = taskManager.hasActiveTask();
 		// Perform a task if the person has one, or determine a new task/mission.
-		if (hasActiveTask && time > SMALL_AMOUNT_OF_TIME) {
-			double remainingTime = taskManager.executeTask(time, person.getPerformanceRating());
-			if (remainingTime > SMALL_AMOUNT_OF_TIME) {
-				try {
-					// Call takeAction recursively until time = 0
-					takeAction(remainingTime);
-				} catch (Exception e) {
-					LogConsolidated.log(Level.SEVERE, 0, sourceName,
-							person.getName() + " had trouble calling takeAction(). remaining time : " + Math.round(remainingTime *1000.0)/1000.0, e);
-					e.printStackTrace(System.err);
-				}
-			}
+		if (taskManager.hasActiveTask() && time > 0) {//SMALL_AMOUNT_OF_TIME) {
+//			double remainingTime = 
+			taskManager.executeTask(time, person.getPerformanceRating());
+//			logger.info("remainingTime : " + remainingTime + "   time : " + time); // 1x = 0.001126440159375963 -> 8192 = 8.950963852039651
+//			if (remainingTime > time / 8D
+//					&& taskManager.hasActiveTask()) {
+//				try {
+//					// Call takeAction recursively until time = 0
+//					takeAction(remainingTime);
+//				} catch (Exception e) {
+//					LogConsolidated.log(Level.SEVERE, 0, sourceName,
+//							person.getName() + " had trouble calling takeAction(). remaining time : " + Math.round(remainingTime *1000.0)/1000.0, e);
+//					e.printStackTrace(System.err);
+//				}
+//			}
 		}
 		
 		else {
@@ -260,48 +262,49 @@ public class Mind implements Serializable {
 				if (!mission.getCurrentMissionLocation().equals(person.getCoordinates())) {
 					mission.removeMember(person);
 					selectNewTask();
-					return;
 				}
 					
-		        boolean inDarkPolarRegion = surfaceFeatures.inDarkPolarRegion(mission.getCurrentMissionLocation());
-				double sunlight = surfaceFeatures.getSolarIrradiance(mission.getCurrentMissionLocation());
-				if ((sunlight == 0) && !inDarkPolarRegion) {
-					if (mission.getPhase() != null)
-						resumeMission(-2);
+				else {
+			        boolean inDarkPolarRegion = surfaceFeatures.inDarkPolarRegion(mission.getCurrentMissionLocation());
+					double sunlight = surfaceFeatures.getSolarIrradiance(mission.getCurrentMissionLocation());
+					if ((sunlight == 0) && !inDarkPolarRegion) {
+						if (mission.getPhase() != null)
+							resumeMission(-2);
+						else
+							selectNewTask();
+					}
+					
+					// Test if a person is tired, too stressful or hungry and need 
+					// to take break, eat and/or sleep
+					else if (!person.getPhysicalCondition().isFit()
+			        	&& !mission.hasDangerousMedicalProblemsAllCrew()) {
+			        	// Cannot perform the mission if a person is not well
+			        	// Note: If everyone has dangerous medical condition during a mission, 
+			        	// then it won't matter and someone needs to drive the rover home.
+						// Add penalty in resuming the mission
+						if (mission.getPhase() != null)
+							resumeMission(-1);
+						else
+							selectNewTask();
+					}
+					
+			        else if (VehicleMission.REVIEWING.equals(mission.getPhase())) {
+			        	if (!mission.getStartingMember().equals(person)) {
+				        	// If the mission is still pending upon approving, then only the mission lead
+				        	// needs to perform the mission and rest of the crew can do something else to 
+				        	// get themselves ready.
+							selectNewTask();
+			        	}
+			        	else
+			        		resumeMission(0);		
+					}
+					
+					else if (mission.getPhase() != null) {
+						resumeMission(0);
+					}
 					else
 						selectNewTask();
 				}
-				
-				// Test if a person is tired, too stressful or hungry and need 
-				// to take break, eat and/or sleep
-				else if (!person.getPhysicalCondition().isFit()
-		        	&& !mission.hasDangerousMedicalProblemsAllCrew()) {
-		        	// Cannot perform the mission if a person is not well
-		        	// Note: If everyone has dangerous medical condition during a mission, 
-		        	// then it won't matter and someone needs to drive the rover home.
-					// Add penalty in resuming the mission
-					if (mission.getPhase() != null)
-						resumeMission(-1);
-					else
-						selectNewTask();
-				}
-				
-		        else if (VehicleMission.REVIEWING.equals(mission.getPhase())) {
-		        	if (!mission.getStartingMember().equals(person)) {
-			        	// If the mission is still pending upon approving, then only the mission lead
-			        	// needs to perform the mission and rest of the crew can do something else to 
-			        	// get themselves ready.
-						selectNewTask();
-		        	}
-		        	else
-		        		resumeMission(0);		
-				}
-				
-				else if (mission.getPhase() != null) {
-					resumeMission(0);
-				}
-				else
-					selectNewTask();
 			}
 			
 			else {

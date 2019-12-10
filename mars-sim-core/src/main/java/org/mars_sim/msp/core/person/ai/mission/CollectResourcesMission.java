@@ -345,7 +345,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 	 * @throws MissionException if problem setting a new phase.
 	 */
 	protected void determineNewPhase() {
-		logger.info(this.getStartingMember() + " was at '" + getPhase() + "' phase in determineNewPhase().");
+//		logger.info(this.getStartingMember() + " was at '" + getPhase() + "' phase in determineNewPhase().");
 		if (REVIEWING.equals(getPhase())) {
 			setPhase(VehicleMission.EMBARKING);
 			setPhaseDescription(

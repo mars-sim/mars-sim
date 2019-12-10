@@ -77,6 +77,8 @@ implements Serializable {
 	private double compositeRate;
 	private double factor = .9;
     
+	private boolean ended = false;
+	
 	private static int regolithID = ResourceUtil.regolithID;
 
 	/**
@@ -88,13 +90,24 @@ implements Serializable {
         super(NAME, person, false, 50);
         
      	settlement = CollectionUtils.findSettlement(person.getCoordinates());
-     	if (settlement == null)
-     		endTask();
+     	if (settlement == null) {
+            if (person.isOutside()){
+                setPhase(WALK_BACK_INSIDE);
+         		endTask();
+            }
+        	else
+        		endTask();
+     	}
      	
         // Get an available airlock.
         airlock = getWalkableAvailableAirlock(person);
         if (airlock == null) {
-            endTask();
+        	if (person.isOutside()){
+                setPhase(WALK_BACK_INSIDE);
+         		endTask();
+            }
+        	else
+        		endTask();
         }
 
         // Determine digging location.
@@ -107,25 +120,33 @@ implements Serializable {
 
             // If bags are not available, end task.
             if (!hasBags()) {
-                endTask();
+            	if (person.isOutside()){
+                    setPhase(WALK_BACK_INSIDE);
+             		endTask();
+                }
+            	else
+            		endTask();
             }
         }
 
-        // Add task phases
-        addPhase(COLLECT_REGOLITH);
+        if (!ended) {
+ 
+	        NaturalAttributeManager nManager = person.getNaturalAttributeManager();
+	        int strength = nManager.getAttribute(NaturalAttributeType.STRENGTH);
+	        int agility = nManager.getAttribute(NaturalAttributeType.AGILITY);
+	        int eva = person.getSkillManager().getSkillLevel(SkillType.EVA_OPERATIONS);
+	        
+	        factor = .9 * (1 - (agility + strength) / 200D);
+	        compositeRate  = COLLECTION_RATE * ((.5 * agility + strength) / 150D) * (eva + .1)/ 5D ;
+	        
+			// set the boolean to true so that it won't be done again today
+	//		person.getPreference().setTaskDue(this, true);
+			
+	       	// Add task phases
+        	addPhase(COLLECT_REGOLITH);
 
-        NaturalAttributeManager nManager = person.getNaturalAttributeManager();
-        int strength = nManager.getAttribute(NaturalAttributeType.STRENGTH);
-        int agility = nManager.getAttribute(NaturalAttributeType.AGILITY);
-        int eva = person.getSkillManager().getSkillLevel(SkillType.EVA_OPERATIONS);
-        
-        factor = .9 * (1 - (agility + strength) / 200D);
-        compositeRate  = COLLECTION_RATE * ((.5 * agility + strength) / 150D) * (eva + .1)/ 5D ;
-        
-		// set the boolean to true so that it won't be done again today
-//		person.getPreference().setTaskDue(this, true);
-		
-        logger.fine(person.getName() + " was going to start digging for regolith.");
+	        logger.fine(person.getName() + " was going to start digging for regolith.");
+        }
     }
 
     /**
@@ -268,8 +289,9 @@ implements Serializable {
 
     @Override
     public void endTask() {
-
-        // Unload bag to rover's inventory.
+    	ended = true;
+        
+    	// Unload bag to rover's inventory.
         if (bag != null) {
             double collectedAmount = bag.getInventory().getAmountResourceStored(regolithID, false);
             double settlementCap = settlement.getInventory().getAmountResourceRemainingCapacity(
