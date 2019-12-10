@@ -94,23 +94,23 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
         <dependency>
             <groupId>com.weblookandfeel</groupId>
             <artifactId>weblaf-ui</artifactId>        
-            <version>1.2.10</version>
+            <version>1.2.11</version>
         </dependency>	
 		<dependency>
 		    <groupId>com.weblookandfeel</groupId>
 		    <artifactId>weblaf-core</artifactId>       
-            <version>1.2.10</version>
+            <version>1.2.11</version>
 		</dependency>
 		<dependency>
 		    <groupId>com.weblookandfeel</groupId>
 		    <artifactId>weblaf-plugin</artifactId>        
-            <version>1.2.10</version>
+            <version>1.2.11</version>
 		</dependency>
-		<dependency>
+		<!--dependency>
 		    <groupId>com.weblookandfeel</groupId>
 		    <artifactId>weblaf-demo</artifactId>        
-            <version>1.2.10</version>
-		</dependency>
+            <version>1.2.11</version>
+		</dependency-->
 						
 		<!-- https://mvnrepository.com/artifact/com.jidesoft/jide-oss : 1.2 MB
 			https://github.com/jidesoft/jide-oss-->

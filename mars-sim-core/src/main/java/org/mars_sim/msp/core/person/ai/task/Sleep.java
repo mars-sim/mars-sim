@@ -75,7 +75,7 @@ public class Sleep extends Task implements Serializable {
 	// Data members
 	/** The previous time (millisols). */
 	private double previousTime;
-	private double timeFactor = 12; // TODO: should vary this factor by person
+	private double timeFactor = 8; // TODO: should vary this factor by person
 	
 	private LocalBoundedObject interiorObject;
 	private Point2D returnInsideLoc;
@@ -388,7 +388,7 @@ public class Sleep extends Task implements Serializable {
 				f = MAX_FATIGUE;
 
 				if (f > 1000)
-					residualFatigue = (f - 1000) / 75;
+					residualFatigue = (f - 1000) / 100;
 
 				// Reduce person's fatigue
 				newFatigue = f - fractionOfRest - residualFatigue;
@@ -400,9 +400,9 @@ public class Sleep extends Task implements Serializable {
 			else {
 				
 				if (f > 1000)
-					residualFatigue = (f - 1000) / 150;
+					residualFatigue = (f - 1000) / 175;
 				else if (f > 500)
-					residualFatigue = (f - 500) / 200;
+					residualFatigue = (f - 500) / 225;
 				
 				newFatigue = f - fractionOfRest - residualFatigue;	
 //				logger.info(person + " f : " + Math.round(f*10.0)/10.0

@@ -65,6 +65,9 @@ public class RestingMedicalRecoveryMeta implements MetaTask, Serializable {
         if (bedRestNeeded) {
             result = 200D;
 
+            int hunger = (int) person.getPhysicalCondition().getHunger();
+            result = result - (hunger - 333) / 3;
+            
             // Determine if any available medical aids can be used for bed rest.
             if (hasUsefulMedicalAids(person)) {
                 result+= 100D;
@@ -73,7 +76,7 @@ public class RestingMedicalRecoveryMeta implements MetaTask, Serializable {
 	        double pref = person.getPreference().getPreferenceScore(this);
 	        
 	        if (pref > 0)
-	        	result = result * 3D;
+	        	result = result + pref * 10;
 	        
             if (result < 0) result = 0;
         }

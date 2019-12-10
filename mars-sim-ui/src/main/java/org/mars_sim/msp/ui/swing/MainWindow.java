@@ -61,8 +61,7 @@ import org.mars_sim.msp.ui.swing.tool.JStatusBar;
 
 import com.alee.extended.date.WebDateField;
 import com.alee.extended.label.WebStyledLabel;
-import com.alee.extended.statusbar.WebMemoryBar;
-//import com.alee.managers.UIManagers;
+import com.alee.extended.memorybar.WebMemoryBar;
 import com.alee.laf.WebLookAndFeel;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.window.WebFrame;
@@ -352,7 +351,7 @@ extends JComponent {
 			marsClock = masterClock.getMarsClock();
 		}
 		
-		Font font = new Font("Times New Roman", Font.BOLD, 12);
+		Font font = new Font("Times New Roman", Font.PLAIN, 12);
 
 //		StyleId styledlabelShadow = StyleId.of ( "shadow" );
 		earthDateField = new WebDateField(StyleId.datefield);//new Date(earthClock.getInstant().toEpochMilli()));
@@ -361,7 +360,7 @@ extends JComponent {
 //		Customizer<WebCalendar> c = dateField.getCalendarCustomizer();
 //		c.customize();
 		earthDateField.setFont(font);
-//		dateField.setForeground(Color.BLUE);
+		earthDateField.setForeground(Color.BLUE);
 		earthDateField.setAlignmentX(.5f);
 		earthDateField.setAlignmentY(0);
 		DateFormat d = new SimpleDateFormat("yyyy-MMM-dd  HH:mm a '['z']'", LanguageManager.getLocale());
@@ -432,6 +431,7 @@ extends JComponent {
 //		memoryLabel.setAlignmentX(0.5F);
 //		memoryLabel.setAlignmentY(0);
 		WebMemoryBar bar = new WebMemoryBar();
+		earthDateField.setPreferredWidth(150);
 		bar.setRefreshRate(3000);
 //		memoryLabel.add(bar);
 //		TooltipManager.setTooltip(bar, "Memory Usage", TooltipWay.up);

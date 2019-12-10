@@ -17,9 +17,6 @@
 
 package org.mars_sim.msp.ui.swing.tool;
 
-import com.alee.demo.DemoApplication;
-import com.alee.demo.skin.DemoIcons;
-import com.alee.demo.skin.DemoStyles;
 import com.alee.extended.layout.HorizontalFlowLayout;
 import com.alee.extended.magnifier.MagnifierGlass;
 import com.alee.laf.WebLookAndFeel;
@@ -58,7 +55,7 @@ public final class MagnifierToggleTool extends WebPanel
         magnifier = new MagnifierGlass ();
 
         // Magnifier glass switcher button
-        final WebToggleButton magnifierButton = new WebToggleButton ( DemoStyles.toolButton, DemoIcons.magnifier16 );
+        final WebToggleButton magnifierButton = new WebToggleButton ();// DemoStyles.toolButton, DemoIcons.magnifier16 );
         magnifierButton.setLanguage ( "demo.tool.magnifier" );
         magnifierButton.setSelected ( magnifier.isDisplayed () );
         magnifierButton.addActionListener ( new ActionListener ()
@@ -72,7 +69,7 @@ public final class MagnifierToggleTool extends WebPanel
         add ( magnifierButton );
 
         // Dummy cursor display switcher button
-        final WebToggleButton dummyCursorButton = new WebToggleButton ( DemoStyles.toolIconButton, DemoIcons.cursor16 );
+        final WebToggleButton dummyCursorButton = new WebToggleButton ();// DemoStyles.toolIconButton, DemoIcons.cursor16 );
         dummyCursorButton.setLanguage ( "demo.tool.magnifier.cursor" );
         dummyCursorButton.setSelected ( magnifier.isDisplayDummyCursor () );
         dummyCursorButton.addActionListener ( new ActionListener ()
