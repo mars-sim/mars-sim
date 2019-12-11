@@ -145,9 +145,9 @@ public abstract class Vehicle extends Unit
 	/** The base range of the vehicle (with full tank of fuel and no cargo) (km). */
 	private double baseRange = 0;
 	/** Total distance traveled by vehicle (km). */
-	private double distanceTraveled = 0; // 
+	private double distanceTraveled; // 
 	/** Distance traveled by vehicle since last maintenance (km) . */
-	private double distanceMaint = 0; // 
+	private double distanceMaint; // 
 	/** The efficiency of the vehicle's drivetrain. (kWh/km). */
 	private double drivetrainEfficiency;
 	/** The continuous motor power output of the vehicle. (kW). */
@@ -306,7 +306,10 @@ public abstract class Vehicle extends Unit
 
 		// Set description
 		setDescription(vehicleType);
-	
+		// Set total distance traveled by vehicle (km)
+		distanceTraveled = 0;
+		// Set distance traveled by vehicle since last maintenance (km)
+		distanceMaint = 0;
 		// Set base speed.
 		baseSpeed = vehicleConfig.getBaseSpeed(vehicleType);
 //		setBaseSpeed(baseSpeed);
@@ -435,7 +438,10 @@ public abstract class Vehicle extends Unit
 		
 		// Set description
 		setDescription(vehicleType);
-	
+		// Set total distance traveled by vehicle (km)
+		distanceTraveled = 0;
+		// Set distance traveled by vehicle since last maintenance (km)
+		distanceMaint = 0;
 		// Set base speed.
 		this.baseSpeed = baseSpeed;
 //		setBaseSpeed(baseSpeed);
@@ -1065,7 +1071,7 @@ public abstract class Vehicle extends Unit
 	}
 
 	/**
-	 * Adds a distance (in km.) to the vehicle's total distance traveled
+	 * Adds a distance ]in km] to the vehicle's odometer (total distance traveled)
 	 * 
 	 * @param distance distance to add to total distance traveled (in km)
 	 */
@@ -2043,10 +2049,6 @@ public abstract class Vehicle extends Unit
 		return result;
 	}
 	
-//	public double getMass() {
-//		return rover.getMass();
-//	}
-
 	/**
 	 * Reset uniqueCount to the current number of vehicles
 	 */

@@ -341,6 +341,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
 	        	distanceTraveled = fuelNeeded * vehicle.getIFuelEconomy();
 	        	
 	            // Add distance traveled to vehicle's odometer.
+//	        	vehicle.addOdometerReading(distanceTraveled);
 	            vehicle.addTotalDistanceTraveled(distanceTraveled);
 	            vehicle.addDistanceLastMaintenance(distanceTraveled);
 		    }
@@ -358,7 +359,6 @@ public abstract class OperateVehicle extends Task implements Serializable {
         
         else {
         	
-
             if (startingDistanceToDestination <= (distanceTraveled + DESTINATION_BUFFER)) {
                 // Case 3 : if starting distance to destination is less than distance traveled, stop at destination.
                 
@@ -373,6 +373,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
     		        // Add distance traveled to vehicle's odometer.
     		        vehicle.addTotalDistanceTraveled(distanceTraveled);
     		        vehicle.addDistanceLastMaintenance(distanceTraveled);
+    		        
     	            vehicle.setCoordinates(destination);
 	                vehicle.setSpeed(0D);
     	        	vehicle.addStatus(StatusType.PARKED);

@@ -243,11 +243,11 @@ implements Serializable {
 
 			taskPhase = getPhase().getName();
 
-			if (!taskPhase.equals(taskPhaseCache)) {		
+//			if (!taskPhase.equals(taskPhaseCache)) {		
 				robot.getTaskSchedule().recordTask(taskName, taskDescription, taskPhase, "");
 				taskPhaseCache = taskPhase;
 				taskDescriptionCache = taskDescription;
-			}
+//			}
 		}
 	}
 

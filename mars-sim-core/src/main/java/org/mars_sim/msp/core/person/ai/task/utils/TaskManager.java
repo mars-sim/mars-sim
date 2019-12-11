@@ -387,13 +387,13 @@ public class TaskManager implements Serializable {
 					taskPhaseName = tp.getName();
 				}	
 
-				if (!taskPhaseNameCache.equals(taskPhaseName)) {
+//				if (!taskPhaseNameCache.equals(taskPhaseName)) {
 					// Note : can taskPhaseName be null ?
 					// TODO: decide if it needs to record the same task description as the last
 					taskSchedule.recordTask(taskName, taskDescription, taskPhaseName, missionName);
 					taskPhaseNameCache = taskPhaseName;
 					taskDescriptionCache = taskDescription;
-				}
+//				}
 			}
 		}
 	}

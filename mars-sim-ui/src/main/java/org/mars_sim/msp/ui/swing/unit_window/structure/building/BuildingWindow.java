@@ -24,6 +24,7 @@ import org.mars_sim.msp.ui.swing.unit_window.person.TabPanelAttribute;
 /**
  * The BuildingWindow is the window for displaying a piece of building.
  */
+@SuppressWarnings("serial")
 public class BuildingWindow extends UnitWindow {
 
 	// Data members

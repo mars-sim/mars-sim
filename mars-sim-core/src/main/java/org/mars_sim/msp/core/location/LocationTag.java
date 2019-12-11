@@ -219,6 +219,8 @@ public class LocationTag implements LocationState, Serializable {
 	 * @return the name string of the location the unit is at
 	 */
 	public String getExtendedLocations() {
+		if (getImmediateLocation().equalsIgnoreCase(getLocale()))
+			return getImmediateLocation();
 		return getImmediateLocation() + IN + getLocale();
 	}
 

@@ -155,8 +155,7 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
    
 		// Prepare the main panel for housing the driving  spring layout.
 		WebPanel mainPanel = new WebPanel(new BorderLayout());
-		topContentPanel.add(mainPanel);
-		
+		topContentPanel.add(mainPanel);	
 		
 		// Prepare the destination panel for housing the center map button, the destination header label, and the coordinates
 		WebPanel destinationPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
@@ -287,7 +286,9 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
                 (((VehicleMission) mission).getLegETA() != null)) {
             etaCache = ((VehicleMission) mission).getLegETA().toString();
         }
-        else etaCache = "";
+        else 
+        	etaCache = "";
+        
         etaLabel = new WebLabel("" + etaCache, WebLabel.LEFT);
         destinationSpringPanel.add(etaLabel);
 

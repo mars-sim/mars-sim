@@ -779,8 +779,8 @@ public class MasterClock implements Serializable {
 
 					int skips = 0;
 
-					if (excess/1_000_000 > 1000) {
-						// If the pause is more than 1 seconds, this is most likely due to the machine 
+					if (excess/1_000_000 > 3000) {
+						// If the pause is more than 3 seconds, this is most likely due to the machine 
 						// just recovering from a power saving event
 						
 						// Reset the pulse count
@@ -804,28 +804,28 @@ public class MasterClock implements Serializable {
 	
 							logger.config("Recovering from a lost frame (Skips # " + i + ").");// of (Max :" + maxFrameSkips + ")."); 
 		
-							// Call addTime once to get back the time lost in a frame
-							addTime();
-							
 							// Reset the pulse count
 							resetTotalPulses();
+							
+							// Call addTime once to get back the time lost in a frame
+							addTime();	
 						}
 						
-						if (skips >= maxFrameSkips) {
-//							logger.config("# of skips (" + skips + ") is at the max skips (" + maxFrameSkips + ")."); 
-							// Reset the pulse count
-							resetTotalPulses();
-							// Adjust the time between update
-							if (currentTBU_ns > (long) (baseTBU_ns * 1.25))
-								currentTBU_ns = (long) (baseTBU_ns * 1.25);
-							else
-								currentTBU_ns = (long) (currentTBU_ns * .9925); // decrement by 2.5%
-							
-							logger.config("Reset total pulses and set TBU to " + Math.round(100.0 * currentTBU_ns/1_000_000.0)/100.0 + " ms");
-							
-							addTime();
-						}
-					}			
+//						if (skips >= maxFrameSkips) {
+////							logger.config("# of skips (" + skips + ") is at the max skips (" + maxFrameSkips + ")."); 
+//							// Reset the pulse count
+//							resetTotalPulses();
+//							// Adjust the time between update
+//							if (currentTBU_ns > (long) (baseTBU_ns * 1.25))
+//								currentTBU_ns = (long) (baseTBU_ns * 1.25);
+//							else
+//								currentTBU_ns = (long) (currentTBU_ns * .9925); // decrement by 2.5%
+//							
+//							logger.config("Reset total pulses and set TBU to " + Math.round(100.0 * currentTBU_ns/1_000_000.0)/100.0 + " ms");
+//							
+//							addTime();
+//						}
+					}
 					// Set excess to zero to prevent getting stuck in the above while loop after
 					// waking up from power saving
 //					logger.config("Setting excess to zero");

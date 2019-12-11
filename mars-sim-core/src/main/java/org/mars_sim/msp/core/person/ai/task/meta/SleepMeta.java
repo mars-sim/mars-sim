@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.CircadianClock;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.ai.job.Astronomer;
 import org.mars_sim.msp.core.person.ai.task.Sleep;
@@ -40,6 +41,10 @@ public class SleepMeta implements MetaTask, Serializable {
 
     private static final int MAX_SUPPRESSION = 10;
 
+    private CircadianClock circadian;
+    
+    private PhysicalCondition pc;
+		
     @Override
     public String getName() {
         return NAME;
@@ -53,6 +58,9 @@ public class SleepMeta implements MetaTask, Serializable {
     @Override
     public double getProbability(Person person) {
 
+   		circadian = person.getCircadianClock();
+   		pc = person.getPhysicalCondition();
+   		
         double result = 0;
 	
        	boolean proceed = false;
@@ -62,12 +70,12 @@ public class SleepMeta implements MetaTask, Serializable {
 
        // boolean isOnCall = ts.getShiftType() == ShiftType.ON_CALL;
         
-        double fatigue = person.getPhysicalCondition().getFatigue();
-    	double stress = person.getPhysicalCondition().getStress();
-    	double ghrelin = person.getCircadianClock().getSurplusGhrelin();
-    	double leptin = person.getCircadianClock().getSurplusLeptin();
-    	double hunger = person.getPhysicalCondition().getHunger();
-    	double energy = person.getPhysicalCondition().getEnergy();
+        double fatigue = pc.getFatigue();
+    	double stress = pc.getStress();
+    	double ghrelin = circadian.getSurplusGhrelin();
+    	double leptin = circadian.getSurplusLeptin();
+    	double hunger = pc.getHunger();
+    	double energy = pc.getEnergy();
     	
     	// When we are sleep deprived. The 2 hormones (Leptin and Ghrelin) are "out of sync" and that is 
     	// when we eat more than we should without even realizing.
@@ -83,12 +91,12 @@ public class SleepMeta implements MetaTask, Serializable {
     	}
     	
     	int rand = RandomUtil.getRandomInt(1);
-    	if (rand == 1 && (hunger > 667 || energy < 500))
+    	if (rand == 1 && (hunger > 667 || energy < 1000))
     		proceed = false;
     	
         if (proceed) {
         	// the desire to go to bed increase linearly after 12 hours of wake time
-            result = result + (fatigue - 100) * 5 + stress * 6 
+            result = result + (fatigue - 100) * 3 + stress * 6 
             		+ (ghrelin-leptin - 500)/10D
             		- hunger/50;
             
@@ -96,9 +104,12 @@ public class SleepMeta implements MetaTask, Serializable {
             
          	result = result + result * pref/8D;                            	
         	
-    	    if (result < 0)
+    	    if (result < 0) {
+    	    	// Reduce the probability if it's not the right time to sleep
+    	    	refreshSleepHabit(person); 
     	    	return 0;
-            
+    	    }
+    	    	
             // Check if person is an astronomer.
             boolean isAstronomer = (person.getMind().getJob() instanceof Astronomer);
 
@@ -114,6 +125,14 @@ public class SleepMeta implements MetaTask, Serializable {
                 result *= 2D;
             }
 
+            boolean isOnShift = person.getTaskSchedule().isShiftHour(marsClock.getMillisolInt());
+            if (isOnShift) {
+         	   // Reduce the probability if it's not the right time to sleep
+         	   refreshSleepHabit(person);
+         	   // probability of sleep reduces to one fifth of its value
+               result = result / 5D;
+            }
+            
         	Building quarters = null;
         	Settlement s1 = person.getSettlement();
         	Settlement s0 = person.getAssociatedSettlement();
@@ -222,6 +241,8 @@ public class SleepMeta implements MetaTask, Serializable {
 
        // No sleeping outside.
        if (person.isOutside()) {
+    	   // Reduce the probability if it's not the right time to sleep
+    	   refreshSleepHabit(person);  
     	   result = 0D;
        }
        
@@ -283,7 +304,7 @@ public class SleepMeta implements MetaTask, Serializable {
         if (person.getTaskSchedule().getShiftType() != ShiftType.ON_CALL) {
 	        // if a person is on shift right now
            	if (person.getTaskSchedule().isShiftHour(now)) {
-           		CircadianClock circadian = person.getCircadianClock();
+//           		CircadianClock circadian = person.getCircadianClock();
            		int habit = circadian.getSuppressHabit();
            		int spaceOut = circadian.getSpaceOut();
 	           	// limit adjustment to 10 times and space it out to at least 50 millisols apart

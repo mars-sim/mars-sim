@@ -7,6 +7,7 @@
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.building.function.ResourceProcess;
 import org.mars_sim.msp.core.structure.building.function.ResourceProcessing;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -14,6 +15,7 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
+import com.alee.laf.text.WebTextArea;
 
 import javax.swing.ImageIcon;
 import javax.swing.border.EmptyBorder;
@@ -36,9 +38,9 @@ extends BuildingFunctionPanel {
 
 	// Data members
 	private ResourceProcessing processor;
-	private List<WebLabel> processLabels;
-	private ImageIcon greenDot;
-	private ImageIcon redDot;
+//	private List<WebLabel> processLabels;
+//	private ImageIcon greenDot;
+//	private ImageIcon redDot;
 
 	/**
 	 * Constructor.
@@ -69,64 +71,89 @@ extends BuildingFunctionPanel {
 
 		// Get all processes at building.
 		List<ResourceProcess> processes = processor.getProcesses();
-
+		int size = processes.size();
 		// Prepare resource processes list panel.
-		WebPanel resourceProcessesListPanel = new WebPanel(new GridLayout(processes.size(), 2, 10, 3));
-		resourceProcessesListPanel.setBorder(new EmptyBorder(3, 20, 3, 20)); //(int top, int left, int bottom, int right)
+//		WebPanel resourceProcessesListPanel = new WebPanel(new GridLayout(processes.size(), 2, 10, 3));
+//		resourceProcessesListPanel.setBorder(new EmptyBorder(3, 20, 3, 20)); //(int top, int left, int bottom, int right)
 		//resourceProcessesListPanel.setOpaque(false);
 		//resourceProcessesListPanel.setBackground(new Color(0,0,0,128));
 
+		WebTextArea processesTA = new WebTextArea();
+		processesTA.setEditable(false);
+		processesTA.setFont(new Font("SansSerif", Font.ITALIC, 12));
+		processesTA.setColumns(12);
+
+		// For each specialty, add specialty name panel.
+		for (ResourceProcess p : processes) {
+			processesTA.append(" " + p.getProcessName()+ " ");
+			if (!p.equals(processes.get(size-1)))
+				//if it's NOT the last one
+				processesTA.append("\n");
+			
+//			if (p.isProcessRunning()) {
+//				processLabel.setIcon(greenDot);
+//				processLabel.setToolTipText(p.getProcessName() + " process is running.");
+//			}
+//			else {
+//				processLabel.setIcon(redDot);
+//				processLabel.setToolTipText(p.getProcessName() + " process is not running.");
+//			}
+			
+		}
+
 		WebPanel listPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
-		resourceProcessesListPanel.setBorder(new MarsPanelBorder());
-		listPanel.add(resourceProcessesListPanel);
+		listPanel.add(processesTA);
+		processesTA.setBorder(new MarsPanelBorder());
+//		resourceProcessesListPanel.setBorder(new MarsPanelBorder());
+//		listPanel.add(resourceProcessesListPanel);
 		add(listPanel, BorderLayout.SOUTH);
 		//listPanel.setOpaque(false);
 		//listPanel.setBackground(new Color(0,0,0,128));
 
 		// Load green and red dots.
-		greenDot = new ImageIcon("images/GreenDot.png", "Process is running.");
-		redDot = new ImageIcon("images/RedDot.png", "Process is not running");
+//		greenDot = new ImageIcon("images/GreenDot.png", "Process is running.");
+//		redDot = new ImageIcon("images/RedDot.png", "Process is not running");
 
 		// For each resource process, add a label.
-		processLabels = new ArrayList<WebLabel>(processes.size());
-		Iterator<ResourceProcess> i = processes.iterator();
-		while (i.hasNext()) {
-			ResourceProcess process = i.next();
-			WebLabel processLabel = new WebLabel(process.getProcessName(), WebLabel.LEFT);
-			//processLabel.setForeground(Color.DARK_GRAY);
-			//processLabel.setBackground(Color.WHITE);
-			processLabel.setFont(new Font("SansSerif", Font.ITALIC, 12));
-
-			if (process.isProcessRunning()) {
-				processLabel.setIcon(greenDot);
-				processLabel.setToolTipText(process.getProcessName() + " process is running.");
-			}
-			else {
-				processLabel.setIcon(redDot);
-				processLabel.setToolTipText(process.getProcessName() + " process is not running.");
-			}
-
-			resourceProcessesListPanel.add(processLabel);
-			processLabels.add(processLabel);
-		}
+//		processLabels = new ArrayList<WebLabel>(processes.size());
+//		Iterator<ResourceProcess> i = processes.iterator();
+//		while (i.hasNext()) {
+//			ResourceProcess process = i.next();
+//			WebLabel processLabel = new WebLabel(process.getProcessName(), WebLabel.LEFT);
+//			//processLabel.setForeground(Color.DARK_GRAY);
+//			//processLabel.setBackground(Color.WHITE);
+//			processLabel.setFont(new Font("SansSerif", Font.ITALIC, 12));
+//
+//			if (process.isProcessRunning()) {
+//				processLabel.setIcon(greenDot);
+//				processLabel.setToolTipText(process.getProcessName() + " process is running.");
+//			}
+//			else {
+//				processLabel.setIcon(redDot);
+//				processLabel.setToolTipText(process.getProcessName() + " process is not running.");
+//			}
+//
+////			resourceProcessesListPanel.add(processLabel);
+//			processLabels.add(processLabel);
+//		}
 	}
 
 	/**
 	 * Update this panel.
 	 */
 	public void update() {
-		List<ResourceProcess> processes = processor.getProcesses();
-		for (int x=0; x < processes.size(); x++) {
-			ResourceProcess process = processes.get(x);
-			WebLabel processLabel = processLabels.get(x);
-			if (process.isProcessRunning()) {
-				processLabel.setIcon(greenDot);
-				processLabel.setToolTipText(process.getProcessName() + " process is running.");
-			}
-			else {
-				processLabel.setIcon(redDot);
-				processLabel.setToolTipText(process.getProcessName() + " process is not running.");
-			}
-		}
+//		List<ResourceProcess> processes = processor.getProcesses();
+//		for (int x=0; x < processes.size(); x++) {
+//			ResourceProcess process = processes.get(x);
+//			WebLabel processLabel = processLabels.get(x);
+//			if (process.isProcessRunning()) {
+//				processLabel.setIcon(greenDot);
+//				processLabel.setToolTipText(process.getProcessName() + " process is running.");
+//			}
+//			else {
+//				processLabel.setIcon(redDot);
+//				processLabel.setToolTipText(process.getProcessName() + " process is not running.");
+//			}
+//		}
 	}
 }

@@ -31,12 +31,14 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskSchedule;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskSchedule.OneActivity;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
@@ -101,6 +103,8 @@ public class TabPanelSchedule extends TabPanel {
 	private Robot robot = null;
 	
 	private TaskSchedule taskSchedule;
+	
+	private static MarsClock marsClock;
 
 	/**
 	 * Constructor.
@@ -128,6 +132,9 @@ public class TabPanelSchedule extends TabPanel {
 	
 	public void initializeUI() {
 		uiDone = true;
+		
+		if (marsClock == null)
+			marsClock = Simulation.instance().getMasterClock().getMarsClock();
 		
 //		this.desktop = desktop;
 		isRealTimeUpdate = true;
@@ -202,17 +209,25 @@ public class TabPanelSchedule extends TabPanel {
 		box.add(hideBox);
 		box.add(Box.createHorizontalGlue());
 
-		today = taskSchedule.getSolCache();
+//		today = taskSchedule.getSolCache();
+		today = marsClock.getMissionSol();
+		
 		todayInteger = (Integer) today;
 		solList = new CopyOnWriteArrayList<Integer>();
 
 		allActivities = taskSchedule.getAllActivities();
-		for (int key : allActivities.keySet()) {
-			solList.add(key);
-		}
 
-		if (!solList.contains(today))
-			solList.add(today);
+		for (int i = 1; i < today + 1; i++) {
+			if (!solList.contains(i))
+				solList.add(i);
+		}
+		
+//		for (int key : allActivities.keySet()) {
+//			solList.add(key);
+//		}
+//
+//		if (!solList.contains(today))
+//			solList.add(today);
 
 		// Create comboBoxModel
 		Collections.sort(solList, Collections.reverseOrder());
@@ -350,7 +365,9 @@ public class TabPanelSchedule extends TabPanel {
 			}
 		}
 
-		today = taskSchedule.getSolCache();
+//		today = taskSchedule.getSolCache();
+		today = marsClock.getMissionSol();
+		
 		todayInteger = (Integer) today;
 
 		selectedSol = (Integer) solBox.getSelectedItem(); 
@@ -358,32 +375,41 @@ public class TabPanelSchedule extends TabPanel {
 
 		// Update the sol combobox at the beginning of a new sol
 		if (today != todayCache) {
-			solList.clear();
-			if (!solList.contains(today))
-				solList.add(today);
-			// int max = todayCache;
+
+			for (int i = 1; i < today + 1; i++) {
+				if (!solList.contains(i))
+					solList.add(i);
+			}
 			
 			// Update allActivities
 			allActivities = taskSchedule.getAllActivities();
 			
-			for (int key : allActivities.keySet()) {
-				// System.out.println("key is " + key);
-				// if (key > max) max = key;
-				solList.add(key);
-			}
-			// OptionalInt max = solList.stream().mapToInt((x) -> x).max();
-			// solList.add(max + 1);
-			if (!solList.contains(today))
-				solList.add(today);
+//			for (int key : allActivities.keySet()) {
+//				// System.out.println("key is " + key);
+//				// if (key > max) max = key;
+//				solList.add(key);
+//			}
+//			// OptionalInt max = solList.stream().mapToInt((x) -> x).max();
+//			// solList.add(max + 1);
+//			if (!solList.contains(today))
+//				solList.add(today);
 
 			Collections.sort(solList, Collections.reverseOrder());
-			DefaultComboBoxModel<Object> newComboBoxModel = new DefaultComboBoxModel<Object>();
-			solList.forEach(s -> newComboBoxModel.addElement(s));
+//			DefaultComboBoxModel<Object> newComboBoxModel = new DefaultComboBoxModel<Object>();
+//			solList.forEach(s -> newComboBoxModel.addElement(s));
 
+			for (int s : solList) {
+				// Check if this element exist
+				if (comboBoxModel.getIndexOf(s) == -1) {
+					comboBoxModel.addElement(s);
+				}
+			}
+			
 			// Update the solList comboBox
-			solBox.setModel(newComboBoxModel);
+			solBox.setModel(comboBoxModel);
 			solBox.setRenderer(new PromptComboBoxRenderer());
-
+			solBox.setMaximumRowCount(7);
+			
 			// Note: Below is needed or else users will be constantly interrupted
 			// as soon as the combobox got updated with the new day's schedule
 			// and will be swapped out without warning.
@@ -558,7 +584,8 @@ public class TabPanelSchedule extends TabPanel {
 			else {
 				allActivities = taskSchedule.getAllActivities();
 				// Load the schedule of a particular sol
-				temp.addAll(allActivities.get(selectedSol));
+				if (allActivities.containsKey(selectedSol))
+					temp.addAll(allActivities.get(selectedSol));
 			}
 			
 			if (hideRepeatedTasks) {

@@ -147,7 +147,8 @@ public class TaskSchedule implements Serializable {
 		
 		startTime = marsClock.getMillisolInt();
 		int solElapsed = marsClock.getMissionSol();
-		if (solElapsed != solCache) {
+		if (solCache != solElapsed) {
+
 			if (allActivities == null)
 				allActivities = new ConcurrentHashMap<>();
 			
@@ -162,7 +163,7 @@ public class TaskSchedule implements Serializable {
 			// save yesterday's schedule (except on the very first day when there's nothing
 			// to save from the prior day
 			allActivities.put(solCache, todayActivities);
-
+			// Update solCache
 			solCache = solElapsed;
 			// Create a new schedule for the new day
 			todayActivities = new CopyOnWriteArrayList<OneActivity>();

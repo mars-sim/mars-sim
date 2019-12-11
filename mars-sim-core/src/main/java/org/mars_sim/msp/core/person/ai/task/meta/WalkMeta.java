@@ -38,33 +38,36 @@ public class WalkMeta implements MetaTask, Serializable {
 
 	@Override
 	public double getProbability(Person person) {
-
-		double result = 0;
-
-		// If person is outside, give high probability to walk to emergency airlock
-		// location.
-		if (person.isOutside()) {
-			result = .1;
-		} 
+		// WalkMeta should be a subtask only 
+		// or else it causes a person to go outside improperly
+		return 0;
 		
-		else if (person.isInVehicle()) {
-			// If person is inside a rover, may walk to random location within rover.
-			result = .05;
-		} 
-		
-		else if (person.isInSettlement()) {
-			// If person is inside a settlement building, may walk to a random location
-			// within settlement.
-			result = .05;
-		}
-		
-        double pref = person.getPreference().getPreferenceScore(this);  
-        result = result + result * pref/12D;
-
-		if (result < 0)
-			result = 0;
-
-		return result;
+//		double result = 0;
+//
+//		// If person is outside, give high probability to walk to emergency airlock
+//		// location.
+//		if (person.isOutside()) {
+//			result = 0;
+//		} 
+//		
+//		else if (person.isInVehicle()) {
+//			// If person is inside a rover, may walk to random location within rover.
+//			result = 0;
+//		} 
+//		
+//		else if (person.isInSettlement()) {
+//			// If person is inside a settlement building, may walk to a random location
+//			// within settlement.
+//			result = 0;
+//		}
+//		
+////        double pref = person.getPreference().getPreferenceScore(this);  
+////        result = result + result * pref/12D;
+//
+//		if (result < 0)
+//			result = 0;
+//
+//		return result;
 	}
 
 	@Override

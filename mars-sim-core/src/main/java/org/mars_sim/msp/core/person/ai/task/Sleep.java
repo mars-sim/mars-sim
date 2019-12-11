@@ -93,8 +93,8 @@ public class Sleep extends Task implements Serializable {
 	 */
 	//
 	public Sleep(Person person) {
-		super(NAME, person, false, false, STRESS_MODIFIER, true, (50D 
-				+ RandomUtil.getRandomDouble(20D) - RandomUtil.getRandomDouble(20D)));
+		super(NAME, person, false, false, STRESS_MODIFIER, true, 
+				(25 + RandomUtil.getRandomDouble(2.5) - RandomUtil.getRandomDouble(2.5)));
 
 		pc = person.getPhysicalCondition();
 		circadian = person.getCircadianClock();
@@ -119,6 +119,12 @@ public class Sleep extends Task implements Serializable {
 			else
 				walkToPassengerActivitySpotInRover((Rover) person.getVehicle(), true);
 //				logger.info(person + " is in " + person.getVehicle());
+			
+			previousTime = marsClock.getMillisol();
+
+			// Initialize phase
+			addPhase(SLEEPING);
+			setPhase(SLEEPING);
 		}
 
 		// If person is in a settlement, try to find a living accommodations building.
@@ -272,13 +278,14 @@ public class Sleep extends Task implements Serializable {
 					}
 				}
 			}
+			
+
+			previousTime = marsClock.getMillisol();
+
+			// Initialize phase
+			addPhase(SLEEPING);
+			setPhase(SLEEPING);
 		}
-
-		previousTime = marsClock.getMillisol();
-
-		// Initialize phase
-		addPhase(SLEEPING);
-		setPhase(SLEEPING);
 	}
 
 	public Sleep(Robot robot) {
@@ -609,11 +616,11 @@ public class Sleep extends Task implements Serializable {
 			else if (shiftType == ShiftType.B)
 				modifiedAlarmTime = 450;
 			else if (shiftType == ShiftType.X)
-				modifiedAlarmTime = 950;
+				modifiedAlarmTime = 967;
 			else if (shiftType == ShiftType.Y)
-				modifiedAlarmTime = 283;
+				modifiedAlarmTime = 300;
 			else if (shiftType == ShiftType.Z)
-				modifiedAlarmTime = 616;
+				modifiedAlarmTime = 634;
 			else if (shiftType == ShiftType.ON_CALL) { // if only one person is at the settlement, go with this schedule
 				timeDiff = 1000D * (person.getCoordinates().getTheta() / (2D * Math.PI));
 				modifiedAlarmTime = BASE_ALARM_TIME - timeDiff;

@@ -233,6 +233,7 @@ public class Mind implements Serializable {
 	 * @throws Exception if error during action.
 	 */
 	public void takeAction(double time) {
+		boolean startNew = false;
 		if (time > SMALL_AMOUNT_OF_TIME) {
 			// Perform a task if the person has one, or determine a new task/mission.
 			if (taskManager.hasActiveTask()) {
@@ -246,18 +247,27 @@ public class Mind implements Serializable {
 						} catch (Exception e) {
 	//						e.printStackTrace(System.err);
 							LogConsolidated.log(Level.SEVERE, 0, sourceName,
-							person.getName() + " had called takeAction() " + counts + " times when doing " 
-							+ taskManager.getTaskName() + "   remainingTime : " + remainingTime + "   time : " + time); // 1x = 0.001126440159375963 -> 8192 = 8.950963852039651
+							person.getName() + " had called takeAction() " + counts + " times doing " 
+							+ taskManager.getTaskName() + "   remainingTime : " +  Math.round(remainingTime *1000.0)/1000.0 
+							+ "   time : " + Math.round(time *1000.0)/1000.0); // 1x = 0.001126440159375963 -> 8192 = 8.950963852039651
 							return;
 						}
 					}
+					else
+						startNew = true;
 				}
-				else
-					logger.info("counts : " + counts + "   remainingTime : " + Math.round(remainingTime *1000.0)/1000.0 
+				else {
+					LogConsolidated.log(Level.WARNING, 5_000, sourceName,
+							person + " had " + counts + " times doing " 
+							+ taskManager.getTaskName() + "   remainingTime : " + Math.round(remainingTime *1000.0)/1000.0 
 							+ "   time : " + Math.round(time *1000.0)/1000.0); // 1x = 0.001126440159375963 -> 8192 = 8.950963852039651
+					startNew = true;
+				}
 			}
+			else
+				startNew = true;
 			
-			else {
+			if (startNew) {
 				if ((mission != null) && mission.isDone()) {
 					// Set the mission to null since it is done
 					mission = null;

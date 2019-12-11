@@ -744,7 +744,7 @@ public class Walk extends Task implements Serializable {
 					endTask();
 				}
 			} else {
-				if (building != null) { // && step.building != null) {
+				if (building != null) {
 					// Going from building to step.building
 					// setDescription("Walking inside from " + building.getNickName() + " to " +
 					// step.building.getNickName());
@@ -758,14 +758,14 @@ public class Walk extends Task implements Serializable {
 								+ " but couldn't find a destination building to go.");
 						endTask();
 					}
-				} else {
+				} else if (person.isOutside()) {
 					LogConsolidated.log(Level.SEVERE, 5_000, sourceName,
 		      				"[" + person.getLocationTag().getLocale() + "] "
-							+ person + " was in " + person.getLocationTag().getImmediateLocation() 
+							+ person + " was outside" //+ person.getLocationTag().getImmediateLocation() 
 							+ " and was not in a building.");
-					endTask();
+//					endTask();
 					// do this for now so as to debug why this happen and how often
-					// setPhase(WALKING_EXTERIOR); // TODO: this certainly violate the logic and is
+					setPhase(WALKING_EXTERIOR); // TODO: this certainly violate the logic and is
 					// considered "cheating"
 					// logger.severe(person + " set phase to WALKING_EXTERIOR.");
 				}

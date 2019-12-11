@@ -62,29 +62,24 @@ public class ManufactureConstructionMaterialsMeta implements MetaTask, Serializa
             double stress = condition.getStress();
             double hunger = condition.getHunger();
             
-            if (fatigue > 1000 || stress > 50 || hunger > 500)
+            if (fatigue > 1000 || stress > 50 || hunger > 667)
             	return 0;
+            
+            // If settlement has manufacturing override, no new
+            // manufacturing processes can be created.
+            if (person.getSettlement().getManufactureOverride()) {
+                return 0;
+            }
             
             try {
                 // See if there is an available manufacturing building.
                 Building manufacturingBuilding = ManufactureConstructionMaterials.getAvailableManufacturingBuilding(person);
                 if (manufacturingBuilding != null) {
+                	
+                	if (manufacturingBuilding.getManufacture().getBuilding().getMalfunctionManager().hasMalfunction())
+                		return 0;
+                	
                     result = 1D;
-
-                    // Crowding modifier.
-                    result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person,
-                            manufacturingBuilding);
-                    result *= TaskProbabilityUtil.getRelationshipModifier(person,
-                            manufacturingBuilding);
-
-                    // Manufacturing good value modifier.
-                    result *= ManufactureConstructionMaterials.getHighestManufacturingProcessValue(person,
-                            manufacturingBuilding);
-
-                    // Cap the result to a max value of 100.
-                    if (result > 100D) {
-                        result = 100D;
-                    }
 
                     // If manufacturing building has process requiring work, add
                     // modifier.
@@ -94,13 +89,16 @@ public class ManufactureConstructionMaterialsMeta implements MetaTask, Serializa
                     if (ManufactureConstructionMaterials.hasProcessRequiringWork(manufacturingBuilding, skill)) {
                         result += 10D;
                     }
+                    
+                    // Crowding modifier.
+                    result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person,
+                            manufacturingBuilding);
+                    result *= TaskProbabilityUtil.getRelationshipModifier(person,
+                            manufacturingBuilding);
 
-                    // If settlement has manufacturing override, no new
-                    // manufacturing processes can be created.
-                    else if (person.getSettlement().getManufactureOverride()) {
-                        result = 0;
-                        return 0;
-                    }
+                    // Manufacturing good value modifier.
+                    result *= ManufactureConstructionMaterials.getHighestManufacturingProcessValue(person,
+                            manufacturingBuilding);
                 }
                 
             } catch (Exception e) {
@@ -125,7 +123,7 @@ public class ManufactureConstructionMaterialsMeta implements MetaTask, Serializa
 
             // Added Preference modifier
             if (result > 0D) {
-                result = result + result * person.getPreference().getPreferenceScore(this)/5D;
+                result = result + result * person.getPreference().getPreferenceScore(this)/6D;
             }
             
             if (result < 0) result = 0;

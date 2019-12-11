@@ -27,6 +27,7 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JList;
 import javax.swing.JTable;
+import javax.swing.SpringLayout;
 import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -40,6 +41,7 @@ import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
@@ -47,6 +49,7 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
+import com.alee.laf.text.WebTextField;
 
 @SuppressWarnings("serial")
 public class TabPanelLog extends TabPanel {
@@ -59,14 +62,20 @@ public class TabPanelLog extends TabPanel {
 	
 	private Integer selectedSol;
 	private Integer todayInteger;
+	private Integer todayCache;
 	
 	private int theme;
 	
 	private JTable table;
 	private JComboBoxMW<Object> solBox;
+	
+	private WebTextField odometerTF;
+	private WebTextField maintTF;
+	
 	private DefaultComboBoxModel<Object> comboBoxModel;
 	private ScheduleTableModel scheduleTableModel;
 
+	
 	private List<Integer> solList;
 	private List<Integer> millisolList;
 	private Map<Integer, Map<Integer, List<StatusType>>> allStatuses;
@@ -79,7 +88,7 @@ public class TabPanelLog extends TabPanel {
 	/** The Vehicle instance. */
 	private Vehicle vehicle;
 	
-	private MarsClock marsClock = Simulation.instance().getMasterClock().getMarsClock();
+	private static MarsClock marsClock;
 
 	public TabPanelLog(Vehicle vehicle, MainDesktopPane desktop) {
 		// Use TabPanel constructor.
@@ -101,13 +110,54 @@ public class TabPanelLog extends TabPanel {
 	
 	public void initializeUI() {
 		uiDone = true;
-			
+		
+		if (marsClock == null)
+			marsClock = Simulation.instance().getMasterClock().getMarsClock();
+		
 		// Create towing label.
 		WebPanel panel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
 		WebLabel titleLabel = new WebLabel(Msg.getString("TabPanelLog.title"), WebLabel.CENTER); //$NON-NLS-1$
 		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		panel.add(titleLabel);
-		topContentPanel.add(panel);
+		topContentPanel.add(panel, BorderLayout.NORTH);
+		
+        // Create spring layout dataPanel
+        WebPanel springPanel = new WebPanel(new SpringLayout());
+		topContentPanel.add(springPanel, BorderLayout.CENTER);
+		
+	    WebLabel odometerLabel = new WebLabel(Msg.getString("TabPanelLog.label.odometer"), WebLabel.RIGHT);
+	    odometerLabel.setOpaque(false);
+	    odometerLabel.setFont(new Font("Serif", Font.PLAIN, 12));
+	    springPanel.add(odometerLabel);
+
+		WebPanel wrapper = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEFT));
+		odometerTF = new WebTextField(Math.round(vehicle.getTotalDistanceTraveled()*100.0)/100.0 + "");
+		odometerTF.setEditable(false);
+		odometerTF.setColumns(8);
+		odometerTF.setOpaque(false);
+		odometerTF.setFont(new Font("Serif", Font.PLAIN, 12));
+	    wrapper.add(odometerTF);
+	    springPanel.add(wrapper);
+	        
+	    WebLabel maintLabel = new WebLabel(Msg.getString("TabPanelLog.label.maintDist"), WebLabel.RIGHT);
+	    maintLabel.setOpaque(false);
+	    maintLabel.setFont(new Font("Serif", Font.PLAIN, 12));
+	    springPanel.add(maintLabel);
+
+		WebPanel wrapper1 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEFT));
+		maintTF = new WebTextField(Math.round(vehicle.getDistanceLastMaintenance()*100.0)/100.0 + "");
+		maintTF.setEditable(false);
+		maintTF.setColumns(8);
+		maintTF.setOpaque(false);
+		maintTF.setFont(new Font("Serif", Font.PLAIN, 12));
+	    wrapper1.add(maintTF);
+	    springPanel.add(wrapper1);
+	    
+	    // Lay out the spring panel.
+	    SpringUtilities.makeCompactGrid(springPanel,
+	     		                                2, 2, //rows, cols
+	     		                               50, 10,        //initX, initY
+	    		                               7, 7);       //xPad, yPad     	
 		
 		todayInteger = marsClock.getMissionSol();
 		solList = new CopyOnWriteArrayList<Integer>();
@@ -115,15 +165,19 @@ public class TabPanelLog extends TabPanel {
 		allStatuses = vehicle.getVehicleLog();
 		oneDayStatuses = allStatuses.get(todayInteger);
 		
-		for (int key : allStatuses.keySet()) {
-			solList.add(key);
+		for (int i = 1; i < todayInteger + 1; i++) {
+			if (!solList.contains(i))
+				solList.add(i);
 		}
-
+		
+//		for (int key : allStatuses.keySet()) {
+//			solList.add(key);
+//		}
+//		
 //		if (!solList.contains(today))
 //			solList.add(today);
 
 		// Create comboBoxModel
-//		Collections.sort(solList);
 		Collections.sort(solList, Collections.reverseOrder());
 		comboBoxModel = new DefaultComboBoxModel<Object>();
 		// Using internal iterator in lambda expression
@@ -180,7 +234,6 @@ public class TabPanelLog extends TabPanel {
 		if (unit instanceof Vehicle)
 			scheduleTableModel = new ScheduleTableModel((Vehicle) unit);
 
-
 		// Create attribute scroll panel
 		WebScrollPane scrollPanel = new WebScrollPane();
 //		scrollPanel.setBorder(new MarsPanelBorder());
@@ -226,8 +279,61 @@ public class TabPanelLog extends TabPanel {
 			TableStyle.setTableStyle(table);
 		}
 		
-		scheduleTableModel.update();
 		
+		// Update the odometer reading
+		odometerTF.setText(Math.round(vehicle.getTotalDistanceTraveled()*100.0)/100.0 + "");
+				
+		// Update distance last maintenance 
+		maintTF.setText(Math.round(vehicle.getDistanceLastMaintenance()*100.0)/100.0 + "");
+				
+		todayInteger = marsClock.getMissionSol();
+
+		allStatuses = vehicle.getVehicleLog();
+		oneDayStatuses = allStatuses.get(todayInteger);
+		
+		selectedSol = (Integer) solBox.getSelectedItem(); 
+
+		// Update the sol combobox at the beginning of a new sol
+		if (todayInteger != todayCache) {
+	
+			for (int i = 1; i < todayInteger + 1; i++) {
+				if (!solList.contains(i))
+					solList.add(i);
+			}
+					
+			Collections.sort(solList, Collections.reverseOrder());
+			
+//			DefaultComboBoxModel<Object> newComboBoxModel = new DefaultComboBoxModel<Object>();
+//			solList.forEach(s -> newComboBoxModel.addElement(s));
+
+			for (int s : solList) {
+				// Check if this element exist
+				if (comboBoxModel.getIndexOf(s) == -1) {
+					comboBoxModel.addElement(s);
+				}
+			}
+			
+			
+			// Update the solList comboBox
+			solBox.setModel(comboBoxModel);
+			solBox.setRenderer(new PromptComboBoxRenderer());
+			solBox.setMaximumRowCount(7);
+			
+			// Note: Below is needed or else users will be constantly interrupted
+			// as soon as the combobox got updated with the new day's schedule
+			// and will be swapped out without warning.
+			if (selectedSol != null)
+				solBox.setSelectedItem(selectedSol);
+			else {
+				solBox.setSelectedItem(todayInteger);
+				selectedSol = null;
+			}
+
+			todayCache = todayInteger;
+		}
+		
+		scheduleTableModel.update();
+
 	}
 	
 	class PromptComboBoxRenderer extends DefaultListCellRenderer {
@@ -363,22 +469,7 @@ public class TabPanelLog extends TabPanel {
 		 * Prepares a list of activities done on the selected day
 		 */
 		public void update() {
-			todayInteger = (Integer) marsClock.getMissionSol();
-
-			allStatuses = vehicle.getVehicleLog();
-		
-//			solList = new ArrayList<>(allStatuses.keySet());
-			
-			for (int key : allStatuses.keySet()) {
-				if (!solList.contains(key)) {
-					solList.add(key);
-				}
-			}
-
-//			Collections.sort(solList);
-			Collections.sort(solList, Collections.reverseOrder());
-//			solList.forEach(s -> comboBoxModel.addElement(s));
-					
+				
 			for (int s : solList) {
 				// Check if this element exist
 				if (comboBoxModel.getIndexOf(s) == -1) {
