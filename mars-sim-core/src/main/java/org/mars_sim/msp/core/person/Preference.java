@@ -16,7 +16,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.task.meta.AssistScientificStudyResearcherMeta;
@@ -85,7 +84,7 @@ public class Preference implements Serializable {
 	private int solCache = 0;
 
 	/** A list of MetaTasks. */
-	private List<MetaTask> metaTaskList;
+//	private List<MetaTask> metaTaskList;
 	/** A string list of Tasks. */
 	private List<String> taskList;
 	/** A map of MetaTasks and preference scores. */
@@ -111,7 +110,7 @@ public class Preference implements Serializable {
 
 		this.person = person;
 
-		metaTaskList = MetaTaskUtil.getAllMetaTasks();
+//		metaTaskList = MetaTaskUtil.getAllMetaTasks();
 		taskList = new ArrayList<>();
 
 		scoreMap = new ConcurrentHashMap<>();
@@ -200,7 +199,7 @@ public class Preference implements Serializable {
 
 		// TODO: how to incorporate EXPERIENCE_APTITUDE ?
 
-		Iterator<MetaTask> i = metaTaskList.iterator();
+		Iterator<MetaTask> i = MetaTaskUtil.getMetaTasksSet().iterator();
 		while (i.hasNext()) {
 			MetaTask metaTask = i.next();
 
@@ -636,7 +635,7 @@ public class Preference implements Serializable {
 //		naturalAttributeManager = null;
 		person = null;
 		marsClock = null;
-		metaTaskList = null;
+//		metaTaskList = null;
 		taskList = null;
 		// metaMissionList = null;
 		scoreMap = null;

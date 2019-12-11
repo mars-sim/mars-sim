@@ -90,7 +90,7 @@ public class EatDrinkMeta implements MetaTask, Serializable {
 		
 		// Only eat a meal if person is sufficiently hungry or low on caloric energy.
 		if (!notHungry) {// || ghrelin-leptin > 300) {
-			result += hunger / 4D;
+			result += hunger / 2D;
 			if (energy < 2525)
 				result += (2525 - energy) / 30D; // (ghrelin-leptin - 300);
 //			logger.info(person + "'s hunger p : " +  Math.round(result*10D)/10D);
@@ -104,7 +104,7 @@ public class EatDrinkMeta implements MetaTask, Serializable {
 
 			if (!CookMeal.isLocalMealTime(person.getCoordinates(), 0)) {
 				// If it's not meal time yet, reduce the probability
-				result /= 3D;
+				result /= 2D;
 			}
 			
 			// Check if a cooked meal is available in a kitchen building at the settlement.
@@ -121,10 +121,12 @@ public class EatDrinkMeta implements MetaTask, Serializable {
 					if (EatDrink.getKitchenWithDessert(person) == null) {
 						// If no preserved food, person can still drink
 						if (notThirsty)
-							result /= 4;
+							result /= 3;
 					}
-					result /= 2;
+					result /= 1.5;
 				}
+				else
+					result *= 1.1;
 			}
 
 			// Check if there is a local dining building.
@@ -141,8 +143,8 @@ public class EatDrinkMeta implements MetaTask, Serializable {
 			// Note: consider how is the probability compared to that of inside a settlement 
 			// may be a person is more likely to become thirsty and/or hungry due to on-call shift ?
 			
-			if (!CookMeal.isLocalMealTime(person.getCoordinates(), 0))
-				result /= 3;
+//			if (!CookMeal.isLocalMealTime(person.getCoordinates(), 0))
+//				result /= 3;
 
 			// If no cooked meal, check if preserved food is available to eat.
 			if (!EatDrink.isPreservedFoodAvailable(person)) {
@@ -150,11 +152,13 @@ public class EatDrinkMeta implements MetaTask, Serializable {
 				if (EatDrink.getKitchenWithDessert(person) == null) {
 					// If no preserved food, person can still drink
 					if (notThirsty)
-						result /= 4;
-					result /= 2;
+						result /= 3;
 				}
 				result /= 1.5;
 			}
+			else
+				result *= 1.1;
+			
 			// TODO : how to ration food and water if running out of it ?
 		} 
 		
@@ -165,7 +169,7 @@ public class EatDrinkMeta implements MetaTask, Serializable {
 			}
 			else if (!notThirsty) {
 				// Note: a person may drink water from EVA suit while being outside doing EVA
-				result /= 4;
+				result /= 2;
 			}
 			
 			// Note: a person cannot consume food while being outside doing EVA
@@ -178,7 +182,7 @@ public class EatDrinkMeta implements MetaTask, Serializable {
 
 		// Add Preference modifier
 		if (result > 0D) {
-			result = result + result * person.getPreference().getPreferenceScore(this) / 4D;
+			result = result + result * person.getPreference().getPreferenceScore(this) / 8D;
 		}
 
 		if (result < 0)

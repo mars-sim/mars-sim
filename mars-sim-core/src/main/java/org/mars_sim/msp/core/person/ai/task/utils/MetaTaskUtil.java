@@ -7,8 +7,10 @@
 package org.mars_sim.msp.core.person.ai.task.utils;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.mars_sim.msp.core.person.ai.task.meta.AssistScientificStudyResearcherMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.CompileScientificStudyResultsMeta;
@@ -343,6 +345,15 @@ public class MetaTaskUtil {
 	}
 
 	/**
+	 * Gets a list of all meta tasks.
+	 * 
+	 * @return list of meta tasks.
+	 */
+	public static Set<MetaTask> getMetaTasksSet() {
+		return new HashSet<MetaTask>(getAllMetaTasks());
+	}
+	
+	/**
 	 * Gets a list of all work hour meta tasks.
 	 * 
 	 * @return list of work hour meta tasks.
@@ -426,7 +437,7 @@ public class MetaTaskUtil {
 	 */
 	public static MetaTask getMetaTask(String name) {
 		MetaTask metaTask = null;
-		Iterator<MetaTask> i = getAllMetaTasks().iterator();
+		Iterator<MetaTask> i = getMetaTasksSet().iterator();
 		while (i.hasNext()) {
 			MetaTask t = i.next();
 			if (t.getClass().getSimpleName().equalsIgnoreCase(name)) {

@@ -476,7 +476,7 @@ public class TaskManager implements Serializable {
 				LogConsolidated.log(Level.SEVERE, 0, sourceName,
 						person.getName() + " had trouble calling performTask().", e);
 				e.printStackTrace(System.err);
-				logger.info("remainingTime : " + remainingTime + "   time : " + time); // 1x = 0.001126440159375963 -> 8192 = 8.950963852039651
+				logger.info(person + " had " + currentTask.getName() + "   remainingTime : " + remainingTime + "   time : " + time); // 1x = 0.001126440159375963 -> 8192 = 8.950963852039651
 				return 0;
 			}
 			

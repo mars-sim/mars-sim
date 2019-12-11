@@ -50,7 +50,7 @@ public class Mind implements Serializable {
 	private static final int STRESS_UPDATE_CYCLE = 10;
 	private static final double MINIMUM_MISSION_PERFORMANCE = 0.3;
 	private static final double FACTOR = .05;
-	private static final double SMALL_AMOUNT_OF_TIME = 0.00111D;
+	private static final double SMALL_AMOUNT_OF_TIME = 0.001;
 
 	// Data members
 	/** Is the job locked so another can't be chosen? */
@@ -238,9 +238,10 @@ public class Mind implements Serializable {
 						// Call takeAction recursively until time = 0
 						takeAction(remainingTime);
 					} catch (Exception e) {
-						LogConsolidated.log(Level.SEVERE, 0, sourceName,
-								person.getName() + " had trouble calling takeAction(). remaining time : " + Math.round(remainingTime *1000.0)/1000.0, e);
 						e.printStackTrace(System.err);
+						LogConsolidated.log(Level.SEVERE, 0, sourceName,
+						person.getName() + " had trouble calling takeAction() when doing " 
+						+ taskManager.getTaskName() + "   remainingTime : " + remainingTime + "   time : " + time); // 1x = 0.001126440159375963 -> 8192 = 8.950963852039651
 						return;
 					}
 				}

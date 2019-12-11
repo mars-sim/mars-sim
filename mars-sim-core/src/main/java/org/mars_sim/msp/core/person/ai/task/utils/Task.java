@@ -236,7 +236,9 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			eventManager.registerNewEvent(endingEvent);
 		}
 		
-//		person.getMind().getTaskManager().endCurrentTask();
+//		if (person != null) { 
+//			person.getMind().getTaskManager().endCurrentTask();
+//		}
 	}
 
 	/**
@@ -544,12 +546,11 @@ public abstract class Task implements Serializable, Comparable<Task> {
 
 			if (person != null) {
 
-				double perf = person.getPerformanceRating();
 				// If task is effort-driven and person is incapacitated, end task.
-				if (effortDriven && (perf == 0D)) {
+				if (effortDriven && (person.getPerformanceRating() == 0D)) {
 					// "Resurrect" him a little to give him a chance to make amend
 					condition.setPerformanceFactor(.1);
-					endTask();
+//					endTask();
 
 				} else {
 
@@ -616,7 +617,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			}
 		}
 
-		if (person != null && time - timeLeft > SMALL_AMOUNT_OF_TIME)
+		if (person != null && time - timeLeft > time / 8D) //SMALL_AMOUNT_OF_TIME)
 			// Modify stress performing task.
 			modifyStress(time - timeLeft);
 

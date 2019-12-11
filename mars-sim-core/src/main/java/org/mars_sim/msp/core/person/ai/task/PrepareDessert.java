@@ -32,7 +32,6 @@ import org.mars_sim.msp.core.tool.RandomUtil;
 /**
  * The PrepareDessert class is a task for making dessert
  */
-
 public class PrepareDessert extends Task implements Serializable {
 
 	/** default serial id. */

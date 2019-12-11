@@ -355,7 +355,7 @@ extends JComponent {
 
 //		StyleId styledlabelShadow = StyleId.of ( "shadow" );
 		earthDateField = new WebDateField(StyleId.datefield);//new Date(earthClock.getInstant().toEpochMilli()));
-		earthDateField.setPreferredWidth(190);
+		earthDateField.setPreferredWidth(240);
 		earthDateField.setAllowUserInput(false);
 //		Customizer<WebCalendar> c = dateField.getCalendarCustomizer();
 //		c.customize();
@@ -431,7 +431,7 @@ extends JComponent {
 //		memoryLabel.setAlignmentX(0.5F);
 //		memoryLabel.setAlignmentY(0);
 		WebMemoryBar bar = new WebMemoryBar();
-		earthDateField.setPreferredWidth(150);
+		earthDateField.setPreferredWidth(170);
 		bar.setRefreshRate(3000);
 //		memoryLabel.add(bar);
 //		TooltipManager.setTooltip(bar, "Memory Usage", TooltipWay.up);

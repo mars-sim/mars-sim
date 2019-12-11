@@ -96,7 +96,7 @@ public abstract class EVAOperation extends Task implements Serializable {
 		sourceName = sourceName.substring(sourceName.lastIndexOf(".") + 1, sourceName.length());
 
 		// Check if person is in a settlement or a rover.
-		if (person.isInSettlement() || person.isInVehicleInGarage()) {
+		if (person.isInSettlement()) {
 			interiorObject = BuildingManager.getBuilding(person);
 			if (interiorObject == null) {
 				// throw new IllegalStateException(person.getName() + " is in " +
@@ -105,6 +105,26 @@ public abstract class EVAOperation extends Task implements Serializable {
 						"[" + person.getLocationTag().getLocale() + "] " + person.getName() + 
 						" in " + person.getLocationTag().getImmediateLocation()
 								+ " is supposed to be in a building but interiorObject is null.");
+				endTask();
+			} else {
+				// Add task phases.
+				addPhase(WALK_TO_OUTSIDE_SITE);
+				addPhase(WALK_BACK_INSIDE);
+
+				// Set initial phase.
+				setPhase(WALK_TO_OUTSIDE_SITE);
+			}
+		}
+		
+		else if (person.isInVehicleInGarage()) {
+			interiorObject = person.getVehicle();
+			if (interiorObject == null) {
+				// throw new IllegalStateException(person.getName() + " is in " +
+				// person.getSettlement() + " but not in building : interiorObject is null.");
+				LogConsolidated.log(Level.WARNING, 10_000, sourceName,
+						"[" + person.getLocationTag().getLocale() + "] " + person.getName() + 
+						" in " + person.getLocationTag().getImmediateLocation()
+								+ " is supposed to be in a vehicle hosued inside a garage interiorObject is null.");
 				endTask();
 			} else {
 				// Add task phases.

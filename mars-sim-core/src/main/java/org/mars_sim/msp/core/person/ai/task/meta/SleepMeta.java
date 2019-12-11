@@ -20,6 +20,7 @@ import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * Meta task for the Sleep task.
@@ -53,172 +54,175 @@ public class SleepMeta implements MetaTask, Serializable {
     public double getProbability(Person person) {
 
         double result = 0;
+	
+       	boolean proceed = false;
 
-//        if (person.isInside()) {
-        	
-           	boolean proceed = false;
+    	// Note : each millisol generates 1 fatigue point
+    	// 500 millisols is ~12 hours
 
-        	// Note : each millisol generates 1 fatigue point
-        	// 500 millisols is ~12 hours
-
-           // boolean isOnCall = ts.getShiftType() == ShiftType.ON_CALL;
-            
-            double fatigue = person.getPhysicalCondition().getFatigue();
-        	double stress = person.getPhysicalCondition().getStress();
-        	double ghrelin = person.getCircadianClock().getSurplusGhrelin();
-        	double leptin = person.getCircadianClock().getSurplusLeptin();
+       // boolean isOnCall = ts.getShiftType() == ShiftType.ON_CALL;
+        
+        double fatigue = person.getPhysicalCondition().getFatigue();
+    	double stress = person.getPhysicalCondition().getStress();
+    	double ghrelin = person.getCircadianClock().getSurplusGhrelin();
+    	double leptin = person.getCircadianClock().getSurplusLeptin();
+    	double hunger = person.getPhysicalCondition().getHunger();
+    	double energy = person.getPhysicalCondition().getEnergy();
     	
-        	// When we are sleep deprived. The 2 hormones (Leptin and Ghrelin) are "out of sync" and that is 
-        	// when we eat more than we should without even realizing.
+    	// When we are sleep deprived. The 2 hormones (Leptin and Ghrelin) are "out of sync" and that is 
+    	// when we eat more than we should without even realizing.
+    	
+    	// People who don't sleep enough end up with too much ghrelin in their system, so the body thinks 
+    	// it's hungry and it needs more calories, and it stops burning those calories because it thinks 
+    	// there's a shortage.
+    	
+    	// 1000 millisols is 24 hours, if a person hasn't slept for 24 hours,
+        // he is supposed to want to sleep right away.
+    	if (fatigue > 333 || stress > 50 || ghrelin-leptin > 500) {
+    		proceed = true;
+    	}
+    	
+    	int rand = RandomUtil.getRandomInt(1);
+    	if (rand == 1 && (hunger > 667 || energy < 500))
+    		proceed = false;
+    	
+        if (proceed) {
+        	// the desire to go to bed increase linearly after 12 hours of wake time
+            result += (fatigue - 100) * 5 + stress * 6 + (ghrelin-leptin - 500)/10D;
+            
+            double pref = person.getPreference().getPreferenceScore(this);
+            
+         	result = result + result * pref/8D;                            	
         	
-        	// People who don't sleep enough end up with too much ghrelin in their system, so the body thinks 
-        	// it's hungry and it needs more calories, and it stops burning those calories because it thinks 
-        	// there's a shortage.
-         	
-        	// 1000 millisols is 24 hours, if a person hasn't slept for 24 hours,
-            // he is supposed to want to sleep right away.
-        	if (fatigue > 333 || stress > 50 || ghrelin-leptin > 500) {
-        		proceed = true;
-        	}
-        	
-            if (proceed) {
-	        	// the desire to go to bed increase linearly after 12 hours of wake time
-	            result += (fatigue - 100) * 5 + stress * 6 + (ghrelin-leptin - 500)/10D;
-	            
-                double pref = person.getPreference().getPreferenceScore(this);
-                
-             	result = result + result * pref/8D;                            	
-            	
-	    	    if (result < 0)
-	    	    	return 0;
-   	            
-	            // Check if person is an astronomer.
-	            boolean isAstronomer = (person.getMind().getJob() instanceof Astronomer);
+    	    if (result < 0)
+    	    	return 0;
+            
+            // Check if person is an astronomer.
+            boolean isAstronomer = (person.getMind().getJob() instanceof Astronomer);
 
-	            // Dark outside modifier.
-	            boolean isDark = (surface.getSolarIrradiance(person.getCoordinates()) == 0);
-	            
-	            if (isDark && !isAstronomer) {
-	                // Non-astronomers more likely to sleep when it's dark out.
-	                result *= 2D;
-	            }
-	            else if (!isDark && isAstronomer) {
-	                // Astronomers more likely to sleep when it's not dark out.
-	                result *= 2D;
-	            }
+            // Dark outside modifier.
+            boolean isDark = (surface.getSolarIrradiance(person.getCoordinates()) == 0);
+            
+            if (isDark && !isAstronomer) {
+                // Non-astronomers more likely to sleep when it's dark out.
+                result *= 2D;
+            }
+            else if (!isDark && isAstronomer) {
+                // Astronomers more likely to sleep when it's not dark out.
+                result *= 2D;
+            }
 
-	        	Building quarters = null;
-	        	Settlement s1 = person.getSettlement();
-	        	Settlement s0 = person.getAssociatedSettlement();
+        	Building quarters = null;
+        	Settlement s1 = person.getSettlement();
+        	Settlement s0 = person.getAssociatedSettlement();
 
-	        	// Note: !s1.equals(s2) is troublesome if s1 or s2 is null
+        	// Note: !s1.equals(s2) is troublesome if s1 or s2 is null
 
-				// check to see if a person is a trader or on a trading mission
-				if (s1 != null && !s1.equals(s0)) {
-	        	//if (person.getMind().getJob() instanceof Trader) {
-	        		// yes he is a trader/guest
-	            	logger.fine("SleepMeta : " + person + " is a trader or a guest of a trade mission and will need to "
-	            			+ "use an unoccupied bed randomly if being too tired.");
-	            	// Get a quarters that has an "unoccupied bed" (even if that bed has been designated to someone else)
-	            	quarters = Sleep.getBestAvailableQuarters(person, false);
+			// check to see if a person is a trader or on a trading mission
+			if (s1 != null && !s1.equals(s0)) {
+        	//if (person.getMind().getJob() instanceof Trader) {
+        		// yes he is a trader/guest
+            	logger.fine("SleepMeta : " + person + " is a trader or a guest of a trade mission and will need to "
+            			+ "use an unoccupied bed randomly if being too tired.");
+            	// Get a quarters that has an "unoccupied bed" (even if that bed has been designated to someone else)
+            	quarters = Sleep.getBestAvailableQuarters(person, false);
 
-	                if (quarters != null) {
-                		result = modifyProbability(result, person, quarters);
-	                }
+                if (quarters != null) {
+            		result = modifyProbability(result, person, quarters);
+                }
 //	                else {
-	                   	//logger.fine("SleepMeta : " + person + " couldn't find an empty bed at all. Falling asleep at any spot if being too tired.");
-	                	// TODO: should allow him/her to go sleep in gym or medical station.
+                   	//logger.fine("SleepMeta : " + person + " couldn't find an empty bed at all. Falling asleep at any spot if being too tired.");
+                	// TODO: should allow him/her to go sleep in gym or medical station.
 //		            }
-				}
+			}
 
-				else {
-			        // Add checking if a person has a designated bed
-	                quarters = person.getQuarters();
-	                
-	                if (quarters != null) {
-		            	// if this person has already been assigned a quarter and a bed, not a shared/guest bed
-	                	// he should be "more" inclined to fall asleep this way
-	                	result = 1.2D * modifyProbability(result, person, quarters);
-	                }
-	                else {
-		            	// if this person has never been assigned a quarter and a bed so far
-		            	logger.fine("SleepMeta : " + person + " has never been designated a bed");
+			else {
+		        // Add checking if a person has a designated bed
+                quarters = person.getQuarters();
+                
+                if (quarters != null) {
+	            	// if this person has already been assigned a quarter and a bed, not a shared/guest bed
+                	// he should be "more" inclined to fall asleep this way
+                	result = 1.2D * modifyProbability(result, person, quarters);
+                }
+                else {
+	            	// if this person has never been assigned a quarter and a bed so far
+	            	logger.fine("SleepMeta : " + person + " has never been designated a bed");
 
-	       				quarters = Sleep.getBestAvailableQuarters(person, true);
+       				quarters = Sleep.getBestAvailableQuarters(person, true);
 
-			            if (quarters != null) {
-		            		logger.fine("SleepMeta : " + person + " will be designated a bed in " 
-		            				+ quarters.getNickName());
-		                    // set it as his quarters
+		            if (quarters != null) {
+	            		logger.fine("SleepMeta : " + person + " will be designated a bed in " 
+	            				+ quarters.getNickName());
+	                    // set it as his quarters
+                		result = modifyProbability(result, person, quarters);
+		            }
+		            else {
+	              		// There are no undesignated beds left in any quarters
+	                	logger.info("SleepMeta : " + person + " cannot find any empty, undesignated beds in any "
+	                			+ "quarters. Will use an unoccupied bed randomly.");
+	                	// Get a quarters that has an "unoccupied bed" (even if that bed has been designated to someone else)
+	                	quarters = Sleep.getBestAvailableQuarters(person, false);
+	                	if (quarters != null) {
 	                		result = modifyProbability(result, person, quarters);
-			            }
-			            else {
-		              		// There are no undesignated beds left in any quarters
-		                	logger.info("SleepMeta : " + person + " cannot find any empty, undesignated beds in any "
-		                			+ "quarters. Will use an unoccupied bed randomly.");
-		                	// Get a quarters that has an "unoccupied bed" (even if that bed has been designated to someone else)
-		                	quarters = Sleep.getBestAvailableQuarters(person, false);
-		                	if (quarters != null) {
-		                		result = modifyProbability(result, person, quarters);
-		                	}
-		                    else {
-		                    	logger.info("Sleep : " + person + " couldn't find an empty bed. Falling asleep at "
-		                    			+ "right where he/she is.");
-		                    	// TODO: should allow him/her to sleep in gym or anywhere.
-	    	                	// he should be "less" inclined to fall asleep this way
-		                    	result /= 1.2D;
-		                    }
-		                }
+	                	}
+	                    else {
+	                    	logger.info("Sleep : " + person + " couldn't find an empty bed. Falling asleep at "
+	                    			+ "right where he/she is.");
+	                    	// TODO: should allow him/her to sleep in gym or anywhere.
+    	                	// he should be "less" inclined to fall asleep this way
+	                    	result /= 1.2D;
+	                    }
 	                }
-				}
+                }
+			}
 
-	        	int maxNumSleep = 0;
+        	int maxNumSleep = 0;
 
-	        	if (person.getTaskSchedule().getShiftType() == ShiftType.ON_CALL)
-	            	maxNumSleep = 8;
-	            else
-	            	maxNumSleep = 4;
+        	if (person.getTaskSchedule().getShiftType() == ShiftType.ON_CALL)
+            	maxNumSleep = 8;
+            else
+            	maxNumSleep = 4;
 
-	        	int sol = marsClock.getMissionSol();
-	        	
-	        	// Skip the first sol since the sleep time pattern has not been established
-	            if (sol != 1 && person.getCircadianClock().getNumSleep() <= maxNumSleep) {
-	            	// Checks the current time against the sleep habit heat map
-	    	    	int bestSleepTime[] = person.getPreferredSleepHours();
-	    	    	// is now falling two of the best sleep time ?
-	    	    	for (int time : bestSleepTime) {
-	    	        	int now = marsClock.getMillisolInt();
-	    		    	int diff = time - now;
-	    		    	if (diff < 50 || diff > -50) {
-	    		    		proceed = true;
-	    		    		result += 1000;
-	    		    		break;
-	    		    	}
-	    		    	else {
-	    		    		// Reduce the probability by a factor of 10
-	    		    		result = result/5D;
-	    		    	}
-	    	    	}
-	            }
-	            
-	    	    if (result < 0)
-	    	    	result = 0;
-
+        	int sol = marsClock.getMissionSol();
+        	
+        	// Skip the first sol since the sleep time pattern has not been established
+            if (sol != 1 && person.getCircadianClock().getNumSleep() <= maxNumSleep) {
+            	// Checks the current time against the sleep habit heat map
+    	    	int bestSleepTime[] = person.getPreferredSleepHours();
+    	    	// is now falling two of the best sleep time ?
+    	    	for (int time : bestSleepTime) {
+    	        	int now = marsClock.getMillisolInt();
+    		    	int diff = time - now;
+    		    	if (diff < 50 || diff > -50) {
+    		    		proceed = true;
+    		    		result += 1000;
+    		    		break;
+    		    	}
+    		    	else {
+    		    		// Reduce the probability by a factor of 10
+    		    		result = result/5D;
+    		    	}
+    	    	}
             }
             
-            else {
-            	// if process is false
-            	
-    	        // Reduce the probability if it's not the right time to sleep
-    	    	refreshSleepHabit(person);  
-            }
-//        }
+    	    if (result < 0)
+    	    	result = 0;
 
-        // No sleeping outside.
-        //else if (person.getLocationSituation() == LocationSituation.OUTSIDE) {
-        //   result = 0D;
-        //}
+        }
+        
+        else {
+        	// if process is false
+        	
+	        // Reduce the probability if it's not the right time to sleep
+	    	refreshSleepHabit(person);  
+       }
 
+       // No sleeping outside.
+       if (person.isOutside()) {
+    	   result = 0D;
+       }
+       
 //        if (result > 0)
 //        	LogConsolidated.log(logger, Level.INFO, 0, sourceName,
 //        		person + " " + Math.round(result*100.0)/100.0, null);
