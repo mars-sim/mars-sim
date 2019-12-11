@@ -528,7 +528,7 @@ public class Inventory implements Serializable {
 			initializeAmountResourceCapacityCache();
 		}
 		// Set capacity cache to dirty because capacity values are changing.
-		setARCapacityCacheDirty(resource);
+		setAmountResourceCapacityCacheDirty(resource);
 		// Initialize resource storage if necessary.
 		if (resourceStorage == null) {
 			resourceStorage = new AmountResourceStorage();
@@ -548,7 +548,7 @@ public class Inventory implements Serializable {
 			initializeAmountResourceCapacityCache();
 		}
 		// Set capacity cache to dirty because capacity values are changing.
-		setARCapacityCacheDirty(resource);
+		setAmountResourceCapacityCacheDirty(resource);
 		// Initialize resource storage if necessary.
 		if (resourceStorage == null) {
 			resourceStorage = new AmountResourceStorage();
@@ -2436,28 +2436,21 @@ public class Inventory implements Serializable {
 			initializeAmountResourceCapacityCache();
 		}
 		// Check if amountResourceCapacityCacheDirty contains the resource
-		if (capacityCacheDirty.containsKey(resource))
-			return capacityCacheDirty.get(resource);
+		if (capacityCacheDirty.containsKey(resource)) {
+			boolean value = capacityCacheDirty.get(resource);
+			return value;
+		}
 		else
 			return true;
 
 	}
-
-//	/**
-//	 * Sets a resource in the amount resource capacity cache to dirty.
-//	 * 
-//	 * @param resource the dirty resource.
-//	 */
-//	private void setAmountResourceCapacityCacheDirty(AmountResource resource) {
-//		setARCapacityCacheDirty(resource.getID());
-//	}
 
 	/**
 	 * Sets a resource in the amount resource capacity cache to dirty.
 	 * 
 	 * @param resource the dirty resource.
 	 */
-	private void setARCapacityCacheDirty(int resource) {
+	private void setAmountResourceCapacityCacheDirty(int resource) {
 
 //		// Initialize amount resource capacity cache if necessary.
 //		if (capacityCache == null) {
@@ -2481,7 +2474,7 @@ public class Inventory implements Serializable {
 		}
 		
 		for (int amountResource : ResourceUtil.getIDs()) { //allStoredARCache
-			setARCapacityCacheDirty(amountResource);
+			setAmountResourceCapacityCacheDirty(amountResource);
 
 			if (containersDirty) {
 				containersCapacityCacheDirty.put(amountResource, true);

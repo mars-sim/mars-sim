@@ -355,7 +355,8 @@ extends JComponent {
 
 //		StyleId styledlabelShadow = StyleId.of ( "shadow" );
 		earthDateField = new WebDateField(StyleId.datefield);//new Date(earthClock.getInstant().toEpochMilli()));
-		earthDateField.setPreferredWidth(240);
+		TooltipManager.setTooltip(earthDateField, "Earth's Timestamp", TooltipWay.up);
+		earthDateField.setPreferredWidth(280);
 		earthDateField.setAllowUserInput(false);
 //		Customizer<WebCalendar> c = dateField.getCalendarCustomizer();
 //		c.customize();
@@ -397,6 +398,8 @@ extends JComponent {
 //		TooltipManager.setTooltip(earthTimeLabel, "Earth Timestamp", TooltipWay.up);
 //		statusBar.setLeftComponent(earthTimeLabel, true);
         
+		font = new Font("SansSerif", Font.BOLD, 13);
+		
 		solLabel = new WebStyledLabel(StyleId.styledlabelShadow);
 		solLabel.setFont(font);
 		solLabel.setForeground(Color.DARK_GRAY);
@@ -431,7 +434,7 @@ extends JComponent {
 //		memoryLabel.setAlignmentX(0.5F);
 //		memoryLabel.setAlignmentY(0);
 		WebMemoryBar bar = new WebMemoryBar();
-		earthDateField.setPreferredWidth(170);
+		earthDateField.setPreferredWidth(200);
 		bar.setRefreshRate(3000);
 //		memoryLabel.add(bar);
 //		TooltipManager.setTooltip(bar, "Memory Usage", TooltipWay.up);

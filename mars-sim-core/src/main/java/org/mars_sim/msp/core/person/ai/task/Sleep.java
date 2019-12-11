@@ -75,7 +75,7 @@ public class Sleep extends Task implements Serializable {
 	// Data members
 	/** The previous time (millisols). */
 	private double previousTime;
-	private double timeFactor = 4; // TODO: should vary this factor by person
+	private double timeFactor = 3; // TODO: should vary this factor by person
 	
 	private LocalBoundedObject interiorObject;
 	private Point2D returnInsideLoc;
@@ -640,8 +640,9 @@ public class Sleep extends Task implements Serializable {
 			if (interiorObject == null)
 				interiorObject = (LocalBoundedObject)(s.getClosestAvailableAirlock(person).getEntity());
 //			System.out.println("interiorObject is " + interiorObject);
-			LogConsolidated.log(Level.INFO, 0, sourceName,
+			LogConsolidated.log(Level.FINE, 0, sourceName,
 					"[" + person.getLocationTag().getLocale() + "] " + person.getName()
+					+ " at "
 					+ person.getLocationTag().getImmediateLocation()
 					+ " found " + ((Building)interiorObject).getNickName()
 					+ " as the closet building with an airlock to enter.");

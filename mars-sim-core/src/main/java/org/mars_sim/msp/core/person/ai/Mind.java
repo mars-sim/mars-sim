@@ -47,6 +47,7 @@ public class Mind implements Serializable {
 	private static String loggerName = logger.getName();
 	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 	
+	private static final int MAX_COUNTS = 100;
 	private static final int STRESS_UPDATE_CYCLE = 10;
 	private static final double MINIMUM_MISSION_PERFORMANCE = 0.3;
 	private static final double FACTOR = .05;
@@ -55,6 +56,9 @@ public class Mind implements Serializable {
 	// Data members
 	/** Is the job locked so another can't be chosen? */
 	private boolean jobLock;
+	
+	/** The counter for calling takeAction(). */
+	private int counts = 0;
 	/** The cache for sol. */
 	private int solCache = 1;
 	/** The cache for msol. */
@@ -233,20 +237,24 @@ public class Mind implements Serializable {
 			// Perform a task if the person has one, or determine a new task/mission.
 			if (taskManager.hasActiveTask()) {
 				double remainingTime = taskManager.executeTask(time, person.getPerformanceRating());
-				if (remainingTime > SMALL_AMOUNT_OF_TIME) {
-					try {
-						// Call takeAction recursively until time = 0
-						takeAction(remainingTime);
-					} catch (Exception e) {
-						e.printStackTrace(System.err);
-						LogConsolidated.log(Level.SEVERE, 0, sourceName,
-						person.getName() + " had trouble calling takeAction() when doing " 
-						+ taskManager.getTaskName() + "   remainingTime : " + remainingTime + "   time : " + time); // 1x = 0.001126440159375963 -> 8192 = 8.950963852039651
-						return;
+				if (counts < MAX_COUNTS) {				
+					if (remainingTime > SMALL_AMOUNT_OF_TIME) {
+						// Allow calling takeAction recursively until 'counts' exceed the limit
+						try {
+							counts++;
+							takeAction(remainingTime);
+						} catch (Exception e) {
+	//						e.printStackTrace(System.err);
+							LogConsolidated.log(Level.SEVERE, 0, sourceName,
+							person.getName() + " had called takeAction() " + counts + " times when doing " 
+							+ taskManager.getTaskName() + "   remainingTime : " + remainingTime + "   time : " + time); // 1x = 0.001126440159375963 -> 8192 = 8.950963852039651
+							return;
+						}
 					}
 				}
-//				else
-//					logger.info("remainingTime : " + remainingTime + "   time : " + time); // 1x = 0.001126440159375963 -> 8192 = 8.950963852039651
+				else
+					logger.info("counts : " + counts + "   remainingTime : " + Math.round(remainingTime *1000.0)/1000.0 
+							+ "   time : " + Math.round(time *1000.0)/1000.0); // 1x = 0.001126440159375963 -> 8192 = 8.950963852039651
 			}
 			
 			else {
@@ -578,6 +586,7 @@ public class Mind implements Serializable {
 		// Check if there are any assigned tasks
 		if (taskManager.hasPendingTask()) {
 			Task newTask = taskManager.getAPendingMetaTask().constructInstance(person);
+			counts = 0;
 			taskManager.addTask(newTask, false);
 			return;
 		}
@@ -623,8 +632,10 @@ public class Mind implements Serializable {
 			// Determine which type of action was selected and set new action accordingly.
 			if (rand < taskWeights) {
 				Task newTask = taskManager.getNewTask();
-				if (newTask != null)
+				if (newTask != null) {
+					counts = 0;
 					taskManager.addTask(newTask, false);
+				}
 				else
 					logger.severe(person + "'s newTask is null ");
 

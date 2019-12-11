@@ -88,7 +88,9 @@ public class SleepMeta implements MetaTask, Serializable {
     	
         if (proceed) {
         	// the desire to go to bed increase linearly after 12 hours of wake time
-            result += (fatigue - 100) * 5 + stress * 6 + (ghrelin-leptin - 500)/10D;
+            result = result + (fatigue - 100) * 5 + stress * 6 
+            		+ (ghrelin-leptin - 500)/10D
+            		- hunger/50;
             
             double pref = person.getPreference().getPreferenceScore(this);
             

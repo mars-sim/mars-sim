@@ -49,25 +49,29 @@ public class RelaxMeta implements MetaTask, Serializable {
 
     @Override
     public double getProbability(Person person) {
-        double result = 1D;
+        double result = 0D;
 
         // Crowding modifier
         if (person.isInside()) {
 
+        	result = 0.1D;
+        	
             // Probability affected by the person's stress and fatigue.
             PhysicalCondition condition = person.getPhysicalCondition();
             double fatigue = condition.getFatigue();
             double stress = condition.getStress();
             double hunger = condition.getHunger();
+              
+            if (fatigue > 1000 || stress > 75 || hunger > 667)
+            	return 0;
+            else
+            	result += fatigue / 1000 + stress / 100 + hunger / 1000;
             
             double pref = person.getPreference().getPreferenceScore(this);
             
-          	result = result + result * pref/3D;
+          	result = result + result * pref/6D;
             if (result < 0) result = 0;
             
-            if (fatigue > 1500 || stress > 75 || hunger > 750)
-            	return 0;
-               
             try {
                 Building recBuilding = Relax.getAvailableRecreationBuilding(person);
                 if (recBuilding != null) {
@@ -78,17 +82,17 @@ public class RelaxMeta implements MetaTask, Serializable {
             catch (Exception e) {
                 logger.log(Level.SEVERE, e.getMessage());
             }
+            
+
+            // Modify probability if during person's work shift.
+            int millisols = marsClock.getMillisolInt();
+            boolean isShiftHour = person.getTaskSchedule().isShiftHour(millisols);
+            if (isShiftHour) {
+                result*= WORK_SHIFT_MODIFIER;
+            }
+            
+            if (result < 0) result = 0;
         }
-
-
-        // Modify probability if during person's work shift.
-        int millisols = marsClock.getMillisolInt();
-        boolean isShiftHour = person.getTaskSchedule().isShiftHour(millisols);
-        if (isShiftHour) {
-            result*= WORK_SHIFT_MODIFIER;
-        }
-
-        if (result < 0) result = 0;
 
         return result;
     }
