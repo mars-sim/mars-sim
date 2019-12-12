@@ -63,40 +63,13 @@ public class RecordActivityMeta implements MetaTask, Serializable {
         
         double pref = person.getPreference().getPreferenceScore(this);
          
-      	result += pref * 5D;
+      	result = result + result * pref/6D;
         
-        if (person.isInside()) {
-                    
-            if (fatigue < 1200D || stress < 75D || hunger < 750D) {
-            	
-            	result -= (fatigue/150D + stress/15D + hunger/150);
-            }
-            
-            // TODO: what drives a person go to a particular building ? 
-          
-    	}
-        
-        else {
-            if (fatigue < 600D && stress< 25D|| hunger < 500D) {
-            	result -= (fatigue/100D + stress/10D + hunger/100);
-            }
-            else
-            	result = 0;
-        }
-	            	
-        // Effort-driven task modifier.
-        result *= person.getPerformanceRating();
-
-        // Modify if operation is the person's favorite activity.
-        if (person.getFavorite().getFavoriteActivity() == FavoriteType.OPERATION) {
-            result *= 1.25D;
-        }
-
         if (result > 0) {
             RoleType roleType = person.getRole().getType();
 
             if (roleType != null && roleType == RoleType.PRESIDENT)
-            	result -= 400D;
+            	result -= 300D;
             
         	else if (roleType == RoleType.MAYOR)
             	result -= 200D;
@@ -119,6 +92,33 @@ public class RecordActivityMeta implements MetaTask, Serializable {
             }
         }
         
+
+        // Modify if operation is the person's favorite activity.
+        if (person.getFavorite().getFavoriteActivity() == FavoriteType.OPERATION) {
+            result *= 1.25D;
+        }
+        if (person.isInside()) {
+                    
+            if (fatigue < 1200D || stress < 75D || hunger < 750D) {
+            	
+            	result -= (fatigue/50 + stress/15 + hunger/50);
+            }
+            
+            // TODO: what drives a person go to a particular building ? 
+          
+    	}
+        
+        else {
+            if (fatigue < 600D && stress< 25D|| hunger < 500D) {
+            	result -= (fatigue/100 + stress/10 + hunger/50);
+            }
+            else
+            	result = 0;
+        }
+	            	
+        // Effort-driven task modifier.
+        result *= person.getPerformanceRating();
+
         result *= person.getAssociatedSettlement().getGoodsManager().getTourismFactor();
         
         if (result < 0) result = 0;

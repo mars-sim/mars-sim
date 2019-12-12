@@ -66,19 +66,6 @@ public class ProduceFoodMeta implements MetaTask, Serializable {
             Building foodProductionBuilding = ProduceFood.getAvailableFoodProductionBuilding(person);
             
             if (foodProductionBuilding != null) {
-            	result += 1D;
-
-                // Crowding modifier.
-                result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, foodProductionBuilding);
-                result *= TaskProbabilityUtil.getRelationshipModifier(person, foodProductionBuilding);
-
-                // FoodProduction good value modifier.
-                result *= ProduceFood.getHighestFoodProductionProcessValue(person, foodProductionBuilding);
-
-                // Capping the probability at 100 as food production process values can be very large numbers.
-                if (result > 100D) {
-                    result = 100D;
-                }
 
                 // If foodProduction building has process requiring work, add
                 // modifier.
@@ -87,8 +74,20 @@ public class ProduceFoodMeta implements MetaTask, Serializable {
                 skill += skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE) * 2;
                 skill = (int) Math.round(skill / 7D);
                 if (ProduceFood.hasProcessRequiringWork(foodProductionBuilding, skill)) {
-                    result += 10D;
+                    result += 15D;
                 }
+                
+                // Stress modifier
+                result = result - stress * 3.5D;
+                // fatigue modifier
+                result = result - (fatigue - 100) / 2.5D;
+
+                // Crowding modifier.
+                result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, foodProductionBuilding);
+                result *= TaskProbabilityUtil.getRelationshipModifier(person, foodProductionBuilding);
+
+                // FoodProduction good value modifier.
+                result *= ProduceFood.getHighestFoodProductionProcessValue(person, foodProductionBuilding);
 
     	        // Effort-driven task modifier.
     	        result *= person.getPerformanceRating();
@@ -102,22 +101,19 @@ public class ProduceFoodMeta implements MetaTask, Serializable {
 
                 // Modify if cooking is the person's favorite activity.
                 if (person.getFavorite().getFavoriteActivity() == FavoriteType.COOKING) {
-                    result *= 1.5D;
+                    result *= 1.2D;
                 }
 
     	        // Add Preference modifier
-                if (result > 0D) {
-                    result = result + result * person.getPreference().getPreferenceScore(this)/5D;
+                result = result + result * person.getPreference().getPreferenceScore(this)/6D;
+       
+                // Capping the probability as food production process values can be very large numbers.
+                if (result > 5000D) {
+                	result = 5000D;
                 }
-                
+
     	        if (result < 0) result = 0;
             }
-	        
-	        // Cancel any foodProduction processes that's beyond the skill of any people
-	        // associated with the settlement.
-	        if (result > 0)
-	        	ProduceFood.cancelDifficultFoodProductionProcesses(person);
-
         }
         
         return result;
@@ -163,13 +159,7 @@ public class ProduceFoodMeta implements MetaTask, Serializable {
 			            result *= robot.getPerformanceRating();
 
 		            }
-
 		        }
-		        // Cancel any foodProduction processes that's beyond the skill of any people
-		        // associated with the settlement.
-		        if (result > 0)
-		        	ProduceFood.cancelDifficultFoodProductionProcesses(robot);
-
 			}
         }
 

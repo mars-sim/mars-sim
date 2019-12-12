@@ -397,11 +397,11 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	public void setSubTaskPhase(TaskPhase newPhase) {
 		if (subTask != null) {
 			subTask.setPhase(newPhase);
-			if (person != null) {
-				person.fireUnitUpdate(UnitEventType.TASK_SUBTASK_EVENT, newPhase);
-			} else if (robot != null) {
-				robot.fireUnitUpdate(UnitEventType.TASK_SUBTASK_EVENT, newPhase);
-			}
+//			if (person != null) {
+//				person.fireUnitUpdate(UnitEventType.TASK_SUBTASK_EVENT, newPhase);
+//			} else if (robot != null) {
+//				robot.fireUnitUpdate(UnitEventType.TASK_SUBTASK_EVENT, newPhase);
+//			}
 		}
 	}
 	
@@ -430,15 +430,16 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @throws Exception if newPhase is not in the task's collection of phases.
 	 */
 	protected void setPhase(TaskPhase newPhase) {
+		phase = newPhase;
 //		System.out.println("phases is " + phases);
 		// e.g. phases is [Walking inside a Settlement, Walking inside a Rover, Walking outside, Exiting Airlock, Entering Airlock, Exiting Rover In Garage, Entering Rover In Garage]
 		if (newPhase == null) {
 //			throw new IllegalArgumentException("newPhase is null");
 			endTask();
 		} 
-		
+//		
 		else if ((phases != null && !phases.isEmpty() && phases.contains(newPhase))) {
-			phase = newPhase;
+
 			if (person != null) {
 				// Note: need to avoid java.lang.StackOverflowError when calling
 				// PersonTableModel.unitUpdate()
@@ -451,9 +452,9 @@ public abstract class Task implements Serializable, Comparable<Task> {
 
 		} 
 		
-		else {
-			throw new IllegalStateException("newPhase: " + newPhase + " is not a valid phase for this task.");
-		}
+//		else {
+//			throw new IllegalStateException("newPhase: " + newPhase + " is not a valid phase for this task.");
+//		}
 	}
 
 	/**
@@ -1374,6 +1375,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		phase = null;
 		teacher = null;
 //		phases.clear();
+		condition = null;
 		phases = null;
 	}
 }

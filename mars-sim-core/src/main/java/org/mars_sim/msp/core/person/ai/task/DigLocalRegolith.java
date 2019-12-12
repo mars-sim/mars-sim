@@ -91,23 +91,13 @@ implements Serializable {
         
      	settlement = CollectionUtils.findSettlement(person.getCoordinates());
      	if (settlement == null) {
-            if (person.isOutside()){
-                setPhase(WALK_BACK_INSIDE);
-         		endTask();
-            }
-        	else
-        		endTask();
+        	endTask();
      	}
      	
         // Get an available airlock.
         airlock = getWalkableAvailableAirlock(person);
         if (airlock == null) {
-        	if (person.isOutside()){
-                setPhase(WALK_BACK_INSIDE);
-         		endTask();
-            }
-        	else
-        		endTask();
+        	endTask();
         }
 
         // Determine digging location.
@@ -122,10 +112,8 @@ implements Serializable {
             if (!hasBags()) {
             	if (person.isOutside()){
                     setPhase(WALK_BACK_INSIDE);
-             		endTask();
                 }
-            	else
-            		endTask();
+            	endTask();
             }
         }
 
@@ -144,7 +132,8 @@ implements Serializable {
 			
 	       	// Add task phases
         	addPhase(COLLECT_REGOLITH);
-
+//        	setPhase(COLLECT_REGOLITH);
+        	
 	        logger.fine(person.getName() + " was going to start digging for regolith.");
         }
     }
@@ -324,8 +313,9 @@ implements Serializable {
     private double collectRegolith(double time) {
 
     	if (getTimeCompleted() > getDuration()) {
-            setPhase(WALK_BACK_INSIDE);
-            endTask();
+    		endTask();
+    		if (person.isOutside())
+    			setPhase(WALK_BACK_INSIDE);
             return .5 * time;
     	}
     	
@@ -333,17 +323,17 @@ implements Serializable {
         checkForAccident(time);
 
         // Check for radiation exposure during the EVA operation.
-        if (isRadiationDetected(time)){
+        if (isRadiationDetected(time) && person.isOutside()){
+    		endTask();
             setPhase(WALK_BACK_INSIDE);
-            endTask();
             return .5 * time;
         }
 
         // Check if there is reason to cut the collection phase short and return
         // to the airlock.
-        if (shouldEndEVAOperation()) {
+        if (shouldEndEVAOperation() && person.isOutside()) {
+    		endTask();
             setPhase(WALK_BACK_INSIDE);
-            endTask();
             return .5 * time;
         }
 
@@ -382,9 +372,10 @@ implements Serializable {
             LogConsolidated.log(Level.INFO, 0, sourceName, 
         		"[" + person.getLocationTag().getLocale() +  "] " +
         		person.getName() + " collected " + Math.round(totalCollected*100D)/100D 
-        		+ " kg of regolith outside at " + person.getCoordinates().getFormattedString());
-            setPhase(WALK_BACK_INSIDE);
-            endTask();
+        		+ " kg regolith outside at " + person.getCoordinates().getFormattedString());
+    		endTask();
+            if (person.isOutside())
+            	setPhase(WALK_BACK_INSIDE);
     	}
         
         // Add experience points
@@ -393,10 +384,13 @@ implements Serializable {
         if (fatigue > 1000 || stress > 50) {
             LogConsolidated.log(Level.INFO, 0, sourceName, 
         		"[" + person.getLocationTag().getLocale() +  "] " +
-        		person.getName() + " took a break from collecting regolith (fatigue: " + Math.round(fatigue*10D)/10D 
-        		+ " ; stress: " + Math.round(stress*100D)/100D + " %)");
-            setPhase(WALK_BACK_INSIDE);
-            endTask();
+        		person.getName() + " took a break from collecting regolith ("
+        		+ Math.round(totalCollected*100D)/100D + " kg collected) " 
+        		+ "; fatigue: " + Math.round(fatigue*10D)/10D 
+        		+ "; stress: " + Math.round(stress*100D)/100D + " %");
+    		endTask();
+            if (person.isOutside())
+            	setPhase(WALK_BACK_INSIDE);
         }
         
         return 0D;

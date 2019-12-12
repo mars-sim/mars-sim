@@ -60,9 +60,13 @@ implements Serializable {
 	 * @param person the person to perform the task
 	 */
 	public ListenToMusic(Person person) {
-		super(NAME, person, false, false, STRESS_MODIFIER, true, 10D +
-				RandomUtil.getRandomDouble(40D));
-
+		super(NAME, person, false, false, STRESS_MODIFIER, true, 
+				10D + RandomUtil.getRandomDouble(2.5D) - RandomUtil.getRandomDouble(2.5D));
+		
+		if (person.isOutside()) {
+			endTask();
+		}
+		
 		// If during person's work shift, only relax for short period.
 		int millisols = Simulation.instance().getMasterClock().getMarsClock().getMillisolInt();
         boolean isShiftHour = person.getTaskSchedule().isShiftHour(millisols);
@@ -75,21 +79,19 @@ implements Serializable {
 		if (person.isInSettlement()) {
 
 			try {
-
 				Building recBuilding = getAvailableRecreationBuilding(person);
 				if (recBuilding != null) {
 					// Walk to recreation building.
-					// 2016-01-10 Added BuildingFunction.RECREATION
 				    walkToActivitySpotInBuilding(recBuilding, FunctionType.RECREATION, true);
 				    walkSite = true;
 				} else {
-                	// 2016-01-10 if rec building is not available, go to a gym
+                	// if rec building is not available, go to a gym
                 	Building gym = Workout.getAvailableGym(person);
                 	if (gym != null) {
 	                	walkToActivitySpotInBuilding(gym, FunctionType.EXERCISE, true);
 	                	walkSite = true;
 	                } else {
-						// 2016-01-10 if gym is not available, go back to his quarters
+						// if gym is not available, go back to his quarters
 		                Building quarters = person.getQuarters();    
 		                if (quarters != null) {
 		                	walkToActivitySpotInBuilding(quarters, FunctionType.LIVING_ACCOMODATIONS, true);
@@ -99,8 +101,8 @@ implements Serializable {
 				}
 				
             	setDescription(Msg.getString("Task.description.listenToMusic"));
-			}
-			catch (Exception e) {
+        		
+			} catch (Exception e) {
 				logger.log(Level.SEVERE,"ListenToMusic's constructor(): " + e.getMessage());
 				endTask();
 			}
@@ -108,24 +110,33 @@ implements Serializable {
 
 		if (!walkSite) {
 		    if (person.isInVehicle()) {
-                // If person is in rover, walk to passenger activity spot.
                 if (person.getVehicle() instanceof Rover) {
+                    // If person is in rover, walk to passenger activity spot.
                     walkToPassengerActivitySpotInRover((Rover) person.getVehicle(), true);
+                    
+            		// Initialize phase
+            		addPhase(FINDING_A_SONG);
+            		addPhase(LISTENING_TO_MUSIC);
+
+            		setPhase(FINDING_A_SONG);
+
                 }
+    
             }
 		    else {
                 // Walk to random location.
                 walkToRandomLocation(true);
+                
+        		// Initialize phase
+        		addPhase(FINDING_A_SONG);
+        		addPhase(LISTENING_TO_MUSIC);
+
+        		setPhase(FINDING_A_SONG);
+
             }
 		    
         	setDescription(Msg.getString("Task.description.listenToMusic"));
 		}
-
-		// Initialize phase
-		addPhase(FINDING_A_SONG);
-		addPhase(LISTENING_TO_MUSIC);
-
-		setPhase(FINDING_A_SONG);
 
 	}
 
@@ -138,10 +149,6 @@ implements Serializable {
     public FunctionType getLivingFunction() {
         return FunctionType.LIVING_ACCOMODATIONS;//.RECREATION;
     }
-
-    //protected BuildingFunction getRelatedBuildingRoboticFunction() {
-    //    return BuildingFunction.ROBOTIC_STATION;
-    //}
 
 	@Override
 	protected double performMappedPhase(double time) {
@@ -181,9 +188,10 @@ implements Serializable {
 	 * @return the amount of time (millisol) left after performing the phase.
 	 */
 	private double findingPhase(double time) {
+        setDescription(Msg.getString("Task.description.listenToMusic.findingSong"));//$NON-NLS-1$
 		// TODO: add codes for selecting a particular type of music		
 		setPhase(LISTENING_TO_MUSIC);
-		return time*.9D;
+		return time*.8D;
 	}
 
 	@Override

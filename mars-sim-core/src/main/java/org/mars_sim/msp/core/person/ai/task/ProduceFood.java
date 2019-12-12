@@ -71,7 +71,7 @@ implements Serializable {
 	 */
 	public ProduceFood(Person person) {
 		super(NAME, person, true, false, STRESS_MODIFIER, true,
-				10D + RandomUtil.getRandomDouble(50D));
+				25);
 
 		// Initialize data members
 		if (person.isInSettlement()) {
@@ -85,16 +85,18 @@ implements Serializable {
 	
 				// Walk to foodProduction building.
 				walkToActivitySpotInBuilding(foodProductionBuilding, false);
+						
+				skillManager = person.getSkillManager();
+		
+				// Initialize phase
+				addPhase(PRODUCE_FOOD);
+				setPhase(PRODUCE_FOOD);
+				
 			}
 			else {
 				endTask();
 			}
-	
-			skillManager = person.getSkillManager();
-	
-			// Initialize phase
-			addPhase(PRODUCE_FOOD);
-			setPhase(PRODUCE_FOOD);
+
 		}
 		else {
 			endTask();
@@ -116,18 +118,19 @@ implements Serializable {
 				foodFactory = foodProductionBuilding.getFoodProduction();
 				// Walk to foodProduction building.
 				walkToActivitySpotInBuilding(foodProductionBuilding, false);
+							
+				skillManager = robot.getSkillManager();
+		
+				// Initialize phase
+				addPhase(PRODUCE_FOOD);
+				setPhase(PRODUCE_FOOD);
 			}
 			else {
 				endTask();
 			}
-	
-			skillManager = robot.getSkillManager();
-	
-			// Initialize phase
-			addPhase(PRODUCE_FOOD);
-			setPhase(PRODUCE_FOOD);
 		}
 	}
+	
     @Override
     public FunctionType getLivingFunction() {
         return FunctionType.FOOD_PRODUCTION;
@@ -143,14 +146,13 @@ implements Serializable {
 	 * associated with the settlement.
 	 * @param person the person
 	 */
-	public static void cancelDifficultFoodProductionProcesses(Person person) {
+	public static void cancelDifficultFoodProductionProcesses(Settlement settlement) {
 
-		Settlement settlement = person.getSettlement();
 		if (settlement != null) {
 		    int highestSkillLevel = getHighestSkillAtSettlement(settlement);
 
-			BuildingManager manager = person.getSettlement().getBuildingManager();
-			Iterator<Building> j = manager.getBuildings(FunctionType.FOOD_PRODUCTION).iterator();
+//			BuildingManager buildingManager = person.getSettlement().getBuildingManager();
+			Iterator<Building> j = settlement.getBuildingManager().getBuildings(FunctionType.FOOD_PRODUCTION).iterator();
 			while (j.hasNext()) {
 				Building building = (Building) j.next();
 				FoodProduction foodProductionFunction = building.getFoodProduction();
@@ -169,31 +171,31 @@ implements Serializable {
 		}
 	}
 
-	public static void cancelDifficultFoodProductionProcesses(Robot robot) {
-
-		Settlement settlement = robot.getSettlement();
-		if (settlement != null) {
-			int highestSkillLevel = getHighestSkillAtSettlement(settlement);
-
-			BuildingManager buildingManager = robot.getSettlement().getBuildingManager();
-			Iterator<Building> j = buildingManager.getBuildings(FunctionType.FOOD_PRODUCTION).iterator();
-			while (j.hasNext()) {
-				Building building = (Building) j.next();
-				FoodProduction foodProductionFunction = building.getFoodProduction();
-				List<FoodProductionProcess> processes = new ArrayList<FoodProductionProcess>(
-						foodProductionFunction.getProcesses());
-				Iterator<FoodProductionProcess> k = processes.iterator();
-				while (k.hasNext()) {
-					FoodProductionProcess process = k.next();
-					int processSkillLevel = process.getInfo().getSkillLevelRequired();
-					if (processSkillLevel > highestSkillLevel) {
-						// Cancel foodProduction process.
-						foodProductionFunction.endFoodProductionProcess(process, true);
-					}
-				}
-			}
-		}
-	}
+//	public static void cancelDifficultFoodProductionProcesses(Robot robot) {
+//
+//		Settlement settlement = robot.getSettlement();
+//		if (settlement != null) {
+//			int highestSkillLevel = getHighestSkillAtSettlement(settlement);
+//
+//			BuildingManager buildingManager = robot.getSettlement().getBuildingManager();
+//			Iterator<Building> j = buildingManager.getBuildings(FunctionType.FOOD_PRODUCTION).iterator();
+//			while (j.hasNext()) {
+//				Building building = (Building) j.next();
+//				FoodProduction foodProductionFunction = building.getFoodProduction();
+//				List<FoodProductionProcess> processes = new ArrayList<FoodProductionProcess>(
+//						foodProductionFunction.getProcesses());
+//				Iterator<FoodProductionProcess> k = processes.iterator();
+//				while (k.hasNext()) {
+//					FoodProductionProcess process = k.next();
+//					int processSkillLevel = process.getInfo().getSkillLevelRequired();
+//					if (processSkillLevel > highestSkillLevel) {
+//						// Cancel foodProduction process.
+//						foodProductionFunction.endFoodProductionProcess(process, true);
+//					}
+//				}
+//			}
+//		}
+//	}
 
 	/**
 	 * Gets the highest skill level for food production at a settlement.
@@ -209,8 +211,7 @@ implements Serializable {
 	    Iterator<Person> i = settlement.getAllAssociatedPeople().iterator();
         while (i.hasNext()) {
             Person tempPerson = i.next();
-            //if (skillManager == null)
-				skillManager = tempPerson.getSkillManager();
+            skillManager = tempPerson.getSkillManager();
             int skill = skillManager.getSkillLevel(SkillType.COOKING) * 5;
             skill += skillManager.getSkillLevel(SkillType.MATERIALS_SCIENCE) * 2;
             skill = (int) Math.round(skill / 7D);
@@ -219,14 +220,13 @@ implements Serializable {
             }
         }
 
-        skillManager = null;
+//        skillManager = null;
         // Get highest robot skill level.
         Iterator<Robot> j = settlement.getAllAssociatedRobots().iterator();
 
         while (j.hasNext()) {
             Robot tempRobot = j.next();
-            //if (skillManager == null)
-            	skillManager = tempRobot.getSkillManager();
+            skillManager = tempRobot.getSkillManager();
             int skill = skillManager.getSkillLevel(SkillType.COOKING) * 5;
             skill += skillManager.getSkillLevel(SkillType.MATERIALS_SCIENCE) * 2;
             skill = (int) Math.round(skill / 7D);
@@ -253,7 +253,7 @@ implements Serializable {
         skill += skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE) * 2;
         skill = (int) Math.round(skill / 7D);
 
-		if (person.isInSettlement()) {//.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+		if (person.isInSettlement()) {
 			BuildingManager buildingManager = person.getSettlement().getBuildingManager();
 			List<Building> foodProductionBuildings = buildingManager.getBuildings(FunctionType.FOOD_PRODUCTION);
 			foodProductionBuildings = BuildingManager.getNonMalfunctioningBuildings(foodProductionBuildings);
@@ -276,12 +276,8 @@ implements Serializable {
 
 		Building result = null;
 		int skill = robot.getProduceFoodSkill();
-		//SkillManager skillManager = robot.getBotMind().getSkillManager();
-		//int skill = skillManager.getEffectiveSkillLevel(SkillType.COOKING) * 5;
-        //skill += skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE) * 2;
-        //skill = (int) Math.round(skill / 7D);
 
-		if (robot.isInSettlement()) {//getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+		if (robot.isInSettlement()) {
 			BuildingManager buildingManager = robot.getSettlement().getBuildingManager();
 			List<Building> foodProductionBuildings = buildingManager.getBuildings(FunctionType.FOOD_PRODUCTION);
 			foodProductionBuildings = BuildingManager.getNonMalfunctioningBuildings(foodProductionBuildings);
@@ -547,72 +543,79 @@ implements Serializable {
 			return time;
 		}
 
-        double workTime = 0;
-
-		if (person != null) {
-	        workTime = time;
-		}
-		else if (robot != null) {
-		     // A robot moves slower than a person and incurs penalty on workTime
-	        workTime = time/2;
-		}
-
-		int skill = getEffectiveSkillLevel();
-		if (skill == 0) {
-			workTime /= 2;
-		}
 		else {
-			workTime += workTime * (.2D * (double) skill);
-		}
-
-		// Apply work time to foodProduction processes.
-		while ((workTime > 0D) && !isDone()) {
-			FoodProductionProcess process = getRunningFoodProductionProcess();
-			if (process != null) {
-				double remainingWorkTime = process.getWorkTimeRemaining();
-				double providedWorkTime = workTime;
-				if (providedWorkTime > remainingWorkTime) {
-					providedWorkTime = remainingWorkTime;
-				}
-				process.addWorkTime(providedWorkTime);
-				workTime -= providedWorkTime;
-
-				if ((process.getWorkTimeRemaining() <= 0D) &&
-						(process.getProcessTimeRemaining() <= 0D)) {
-					foodFactory.endFoodProductionProcess(process, false);
-				}
-			} else {
-
-				if (person != null) {
-					if (!person.getAssociatedSettlement().getFoodProductionOverride()) {
-						process = createNewFoodProductionProcess();
-					}
-				}
-				else if (robot != null) {
-					if (!robot.getAssociatedSettlement().getFoodProductionOverride()) {
-						process = createNewFoodProductionProcess();
-					}
-				}
-
-				if (process == null) {
-					endTask();
-				}
+	        // Cancel any foodProduction processes that's beyond the skill of any people
+	        // associated with the settlement.
+	        ProduceFood.cancelDifficultFoodProductionProcesses(foodFactory.getBuilding().getSettlement());
+	        
+	        double workTime = 0;
+	
+			if (person != null) {
+		        workTime = time;
 			}
+			else if (robot != null) {
+			     // A robot moves slower than a person and incurs penalty on workTime
+		        workTime = time/2;
+			}
+	
+			int skill = getEffectiveSkillLevel();
+			if (skill == 0) {
+				workTime /= 2;
+			}
+			else {
+				workTime += workTime * (.2D * (double) skill);
+			}
+			
+			// Apply work time to foodProduction processes.
+			while ((workTime > 0D) && !isDone()) {
+				FoodProductionProcess process = getRunningFoodProductionProcess();
+				if (process != null) {
+					double remainingWorkTime = process.getWorkTimeRemaining();
+					double providedWorkTime = workTime;
+					if (providedWorkTime > remainingWorkTime) {
+						providedWorkTime = remainingWorkTime;
+					}
+					process.addWorkTime(providedWorkTime);
+					workTime -= providedWorkTime;
+	
+					if ((process.getWorkTimeRemaining() <= 0D) &&
+							(process.getProcessTimeRemaining() <= 0D)) {
+						foodFactory.endFoodProductionProcess(process, false);
+					}
+				} else {
+	
+					if (person != null) {
+						if (!person.getAssociatedSettlement().getFoodProductionOverride()) {
+							process = createNewFoodProductionProcess();
+						}
+					}
+					else if (robot != null) {
+						if (!robot.getAssociatedSettlement().getFoodProductionOverride()) {
+							process = createNewFoodProductionProcess();
+						}
+					}
+	
+					if (process == null) {
+						endTask();
+					}
+				}
+	
+				if (process != null)
+					// Insert process into setDescription()
+					setDescription(Msg.getString("Task.description.produceFood.detail",
+	                    Conversion.capitalize(process.toString()))); //$NON-NLS-1$
+				else
+					setDescription(Msg.getString("Task.description.produceFood.checking")); //$NON-NLS-1$
+			}
+	
+			// Add experience
+			addExperience(time);
+	
+			// Check for accident in foodFactory.
+			checkForAccident(time);
 
-			if (process != null)
-				// 2016-11-26 Inserted process into setDescription()
-				setDescription(Msg.getString("Task.description.produceFood.detail",
-                    Conversion.capitalize(process.toString()))); //$NON-NLS-1$
-			else
-				setDescription(Msg.getString("Task.description.produceFood.checking")); //$NON-NLS-1$
 		}
-
-		// Add experience
-		addExperience(time);
-
-		// Check for accident in foodFactory.
-		checkForAccident(time);
-
+		
 		return 0D;
 	}
 

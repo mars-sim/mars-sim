@@ -88,9 +88,14 @@ public class WorkoutMeta implements MetaTask, Serializable {
             if (building != null) {
                 result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building);
                 result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
-            } // a person can still have workout on his own without a gym in MDP Phase 1-3
+            } 
 
-            else if (person.isInVehicle()) {	
+            else {
+                // a person can still have workout on his own without a gym in MDP Phase 1-3
+            	return 0;
+            }
+                 
+            if (person.isInVehicle()) {	
     	        // Check if person is in a moving rover.
     	        if (Vehicle.inMovingRover(person)) {
     		        // the bonus inside a vehicle

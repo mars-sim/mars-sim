@@ -839,8 +839,8 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 	}
 
 	public int getProduceFoodSkill() {
-		int skill = getSkillManager().getEffectiveSkillLevel(SkillType.COOKING) * 5;
-		skill += getSkillManager().getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE) * 2;
+		int skill = skillManager.getEffectiveSkillLevel(SkillType.COOKING) * 5;
+		skill += skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE) * 2;
 		skill = (int) Math.round(skill / 7D);
 		return skill;
 	}

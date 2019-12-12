@@ -26,7 +26,7 @@ public class ReadMeta implements MetaTask, Serializable {
     /** default serial id. */
     private static final long serialVersionUID = 1L;
 
-    private static final double VALUE = 5D;
+    private static final double VALUE = 2.5D;
     
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -94,11 +94,11 @@ public class ReadMeta implements MetaTask, Serializable {
 //         	else
 //         		result/=4D;
          	
-            result -= fatigue/100;           
+            result -= fatigue/75;           
             
             double pref = person.getPreference().getPreferenceScore(this);
             
-        	result = pref * 5D;
+        	result = pref * 2.5D;
 	        if (result < 0) result = 0;
 	        
             if (pref > 0) {

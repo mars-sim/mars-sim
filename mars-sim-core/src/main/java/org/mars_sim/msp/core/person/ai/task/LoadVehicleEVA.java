@@ -107,8 +107,8 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 	 */
 	public LoadVehicleEVA(Person person) {
 		// Use Task constructor
-		super(NAME, person, true, RandomUtil.getRandomDouble(50D) + 10D);
-
+		super(NAME, person, true, 20 + RandomUtil.getRandomInt(5) - RandomUtil.getRandomInt(5));
+		
 		List<Rover> roversNeedingEVASuits = getRoversNeedingEVASuits(person.getSettlement());
 		if (roversNeedingEVASuits.size() > 0) {
 			int roverIndex = RandomUtil.getRandomInt(roversNeedingEVASuits.size() - 1);
@@ -159,6 +159,10 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 
 			// Initialize task phase
 			addPhase(LOADING);
+			
+//			if (person.isOutside()) {
+//				setPhase(WALK_BACK_INSIDE);
+//			}
 		}
 	}
 
@@ -176,7 +180,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 			Map<Integer, Number> optionalResources, Map<Integer, Integer> requiredEquipment,
 			Map<Integer, Integer> optionalEquipment) {
 		// Use Task constructor.
-		super(NAME, person, true, RandomUtil.getRandomDouble(50D) + 10D);
+		super(NAME, person, true, 20 + RandomUtil.getRandomInt(5) - RandomUtil.getRandomInt(5));
 
 		settlement = CollectionUtils.findSettlement(person.getCoordinates());
 		if (settlement == null) {
@@ -344,9 +348,9 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 	protected double performMappedPhase(double time) {
 		time = super.performMappedPhase(time);
 		if (getPhase() == null) {
-			endTask();
-			return time;
-//            throw new IllegalArgumentException(person + "'s Task phase is null");
+//			endTask();
+//			return time;
+            throw new IllegalArgumentException(person + "'s Task phase is null");
 		} else if (LOADING.equals(getPhase())) {
 			return loadingPhase(time);
 		} else {
@@ -362,12 +366,15 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 	 */
 	double loadingPhase(double time) {
 
+		// NOTE: in the course of the loadingPhase, a person may go from inside 
+		// to outside and come back in
+		
 		if (!ended) {
 			// Check for an accident during the EVA operation.
 			checkForAccident(time);
 	
 			// Check for radiation exposure during the EVA operation.
-			if (isRadiationDetected(time)) {
+			if (isRadiationDetected(time) && person.isOutside()) {
 				setPhase(WALK_BACK_INSIDE);
 				endTask();
 				return .5 * time;
@@ -375,7 +382,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 	
 			// Check if site duration has ended or there is reason to cut the loading
 			// phase short and return to the rover.
-			if (shouldEndEVAOperation() || addTimeOnSite(time)) {
+			if (person.isOutside() && (shouldEndEVAOperation() || addTimeOnSite(time))) {
 				setPhase(WALK_BACK_INSIDE);
 				endTask();
 				return .5 * time;
@@ -419,7 +426,8 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 	
 			if (isFullyLoaded(requiredResources, optionalResources, requiredEquipment, optionalEquipment, vehicle,
 					settlement)) {
-				setPhase(WALK_BACK_INSIDE);
+				if (person.isOutside())
+					setPhase(WALK_BACK_INSIDE);
 			}
 		}
 		
@@ -1189,6 +1197,8 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 	public void endTask() {
 		ended = true;
 		
+		setPhase(WALK_BACK_INSIDE);
+		
 		super.endTask();
 	}
 	
@@ -1198,6 +1208,8 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 
 		vehicle = null;
 		settlement = null;
+		
+		LOADING.destroy();
 
 		if (requiredResources != null) {
 			requiredResources.clear();

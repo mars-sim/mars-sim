@@ -41,9 +41,7 @@ public class ListenToMusicMeta implements MetaTask, Serializable {
 
     /** default logger. */
     private static Logger logger = Logger.getLogger(ListenToMusicMeta.class.getName());
-
-    private static MarsClock marsClock;
-    
+ 
     @Override
     public String getName() {
         return NAME;
@@ -58,27 +56,27 @@ public class ListenToMusicMeta implements MetaTask, Serializable {
     public double getProbability(Person person) {
         double result = 0D;
 
-        double pref = person.getPreference().getPreferenceScore(this);
-        
-     	result = pref * 5D;
-     	
-        // Probability affected by the person's stress and fatigue.
-        PhysicalCondition condition = person.getPhysicalCondition();
-        double stress = condition.getStress();
-        
-        if (pref > 0) {
-         	if (stress > 45D)
-         		result*=1.5;
-         	else if (stress > 65D)
-         		result*=2D;
-         	else if (stress > 85D)
-         		result*=3D;
-         	else
-         		result*=4D;
+        if (person.isInside()) {
+	        double pref = person.getPreference().getPreferenceScore(this);
+	        
+	     	result = pref * 2.5D;
+	     	
+	        // Probability affected by the person's stress and fatigue.
+	        PhysicalCondition condition = person.getPhysicalCondition();
+	        double stress = condition.getStress();
+	        
+	        if (pref > 0) {
+	         	if (stress > 45D)
+	         		result*=1.5;
+	         	else if (stress > 65D)
+	         		result*=2D;
+	         	else if (stress > 85D)
+	         		result*=3D;
+	         	else
+	         		result*=4D;
+	        }
         }
-
         
-        // Crowding modifier
         if (person.isInSettlement()) {
             
             try {
@@ -103,8 +101,6 @@ public class ListenToMusicMeta implements MetaTask, Serializable {
                 logger.log(Level.SEVERE, e.getMessage());
             }
             
-            if (marsClock == null)
-            	marsClock = Simulation.instance().getMasterClock().getMarsClock();
             // Modify probability if during person's work shift.
             int millisols = marsClock.getMillisolInt();
             boolean isShiftHour = person.getTaskSchedule().isShiftHour(millisols);
@@ -116,8 +112,6 @@ public class ListenToMusicMeta implements MetaTask, Serializable {
             
         }
         
-        if (result <= 0) 
-        	result = 0;
         
         else if (person.isInVehicle()) {	
 	        // Check if person is in a moving rover.

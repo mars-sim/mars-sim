@@ -88,8 +88,6 @@ public class Walk extends Task implements Serializable {
 
 	private Map<Integer, TaskPhase> walkingStepPhaseMap;
 
-	private static UnitManager unitManager = Simulation.instance().getUnitManager();
-
 	/**
 	 * Constructor.
 	 * 
@@ -104,7 +102,7 @@ public class Walk extends Task implements Serializable {
 		// Initialize data members.
 		walkingStepIndex = 0;
 
-		if (person.isInSettlement()) {// || person.isInVehicleInGarage()) {
+		if (person.isInSettlement()) {
 
 			// Walk to random inhabitable building at settlement.
 			//Building currentBuilding = BuildingManager.getBuilding(person);
@@ -130,6 +128,7 @@ public class Walk extends Task implements Serializable {
 				Settlement settlement = vehicle.getSettlement();
 
 				// Check if vehicle is in garage.
+				// person.isInVehicleInGarage()
 				Building garageBuilding = BuildingManager.getBuilding(vehicle);
 				if (garageBuilding != null) {
 
@@ -162,7 +161,7 @@ public class Walk extends Task implements Serializable {
 					}
 
 				} else {
-					// If not a rover, retrieve person from vehicle.
+					// If on a LUV, retrieve person from vehicle.
 					// TODO : should we call endTask() instead ?
 					vehicle.getInventory().retrieveUnit(person);
 				}
@@ -171,7 +170,7 @@ public class Walk extends Task implements Serializable {
 			if (!walkToSettlement) {
 
 				// Walk to random location within rover.
-				if (person.getVehicle() instanceof Rover) {
+				if (vehicle instanceof Rover) {
 					Rover rover = (Rover) person.getVehicle();
 					Point2D interiorPos = LocalAreaUtil.getRandomInteriorLocation(rover);
 					Point2D adjustedInteriorPos = LocalAreaUtil.getLocalRelativeLocation(interiorPos.getX(),
@@ -290,11 +289,13 @@ public class Walk extends Task implements Serializable {
 		if (walkingSteps == null) {
 			logger.severe("Walking steps could not be determined for " + robot.getName());
 			endTask();
+			return;
 		} 
 		
 		else if (!canWalkAllSteps(robot, walkingSteps)) {
 			logger.fine("Valid Walking steps could not be determined for " + robot.getName());
 			endTask();
+			return;
 		}
 
 		// Initialize task phase.
@@ -331,6 +332,7 @@ public class Walk extends Task implements Serializable {
       						+ person + " was in " + person.getLocationTag().getImmediateLocation()
 					+ " and could not find valid walking steps to " + interiorObject);
 			endTask();
+			return;
 		}
 
 		// Initialize task phase.
@@ -365,6 +367,7 @@ public class Walk extends Task implements Serializable {
       						+ robot + " was in " + robot.getLocationTag().getImmediateLocation()
       						+ " and could not find valid walking steps to " + interiorObject);
 			endTask();
+			return;
 		}
 
 		// Initialize task phase.
@@ -761,8 +764,7 @@ public class Walk extends Task implements Serializable {
 				} else if (person.isOutside()) {
 					LogConsolidated.log(Level.SEVERE, 5_000, sourceName,
 		      				"[" + person.getLocationTag().getLocale() + "] "
-							+ person + " was outside" //+ person.getLocationTag().getImmediateLocation() 
-							+ " and was not in a building.");
+							+ person + " was outside and was not in a building.");
 //					endTask();
 					// do this for now so as to debug why this happen and how often
 					setPhase(WALKING_EXTERIOR); // TODO: this certainly violate the logic and is
@@ -1016,7 +1018,6 @@ public class Walk extends Task implements Serializable {
 							+ " but already physically outside.");
 					endTask();
 				}
-
 			}
 
 		} else if (robot != null) {
@@ -1066,9 +1067,7 @@ public class Walk extends Task implements Serializable {
 							+ " but already physically outside.");
 					endTask();
 				}
-
 			}
-
 		}
 
 		return timeLeft;
@@ -1484,6 +1483,7 @@ public class Walk extends Task implements Serializable {
 	
 	public void destroy() {
 		walkingSteps = null;
+		walkingStepPhaseMap.clear();
 		walkingStepPhaseMap = null;
 		unitManager = null;
 	}

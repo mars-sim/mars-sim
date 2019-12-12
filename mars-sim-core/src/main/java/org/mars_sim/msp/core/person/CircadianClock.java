@@ -44,10 +44,10 @@ public class CircadianClock implements Serializable {
 
 	private boolean awake = true;
 
-	private int solCache = 0;
-	private int numSleep = 0;
-	private int suppressHabit = 0;
-	private int spaceOut = 0;
+	private int solCache;
+	private int numSleep;
+	private int suppressHabit;
+	private int spaceOut;
 
 	// From http://www.webmd.com/diet/features/your-hunger-hormones#1,
 	// Leptin, aka the safety hormone, is a hormone, made by fat cells, that
@@ -117,7 +117,7 @@ public class CircadianClock implements Serializable {
 
 			if (solCache == 0) {
 				double dev = Math.sqrt(
-						person.getBaseMass() / person.getAverageWeight() * person.getHeight() / person.getAverageHeight()); 
+						person.getBaseMass() / Person.getAverageWeight() * person.getHeight() / Person.getAverageHeight()); 
 				// condition.getBodyMassDeviation();
 				// person.getBaseMass()
 				// Person.AVERAGE_WEIGHT;
@@ -501,10 +501,10 @@ public class CircadianClock implements Serializable {
 	public void recordSleep(double time) {
 		int size = sleepTime.size();
 		if (size == solCache) {
-			double msol = sleepTime.get(size-1);
+			double oldTime = sleepTime.get(size-1);
 			sleepTime.remove(size-1);
-			double newMSol = msol + time;
-			sleepTime.add(newMSol);
+			double newTime = oldTime + time;
+			sleepTime.add(newTime);
 		}
 		else {
 			sleepTime.add(time);

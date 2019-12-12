@@ -477,7 +477,7 @@ public class TaskManager implements Serializable {
 						person.getName() + " had trouble calling performTask().", e);
 //				e.printStackTrace(System.err);
 				logger.info(person + " had " + currentTask.getName() + "   remainingTime : " + remainingTime + "   time : " + time); // 1x = 0.001126440159375963 -> 8192 = 8.950963852039651
-				return 0;
+				return remainingTime;
 			}
 			
 			// Expend energy based on activity.

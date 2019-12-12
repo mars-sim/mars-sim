@@ -770,17 +770,16 @@ public class MasterClock implements Serializable {
 						
 						excess -= sleepTime;
 						overSleepTime = 0L;
-
+						sleepTime = 0;
+						
 						if (++noDelays >= noDelaysPerYield) {
 							noDelays = 0;
 						}
 
 					}
 
-					int skips = 0;
-
-					if (excess/1_000_000 > 3000) {
-						// If the pause is more than 3 seconds, this is most likely due to the machine 
+					if (excess/1_000_000 > 500) {
+						// If the pause is more than .5 seconds, this is most likely due to the machine 
 						// just recovering from a power saving event
 						
 						// Reset the pulse count
@@ -796,19 +795,19 @@ public class MasterClock implements Serializable {
 								break;
 							}
 								
-							logger.warning("excess : " + excess/1_000_000 + " ms"); // e.g. excess : -118289082
+							logger.warning("excess: " + excess/1_000_000 + " ms"
+									 + ". Recovering from a lost frame (Skips # " + i + ")."
+									); // e.g. excess : -118289082
 							
 							excess -= currentTBU_ns;
-							
-							skips = i;
 	
-							logger.config("Recovering from a lost frame (Skips # " + i + ").");// of (Max :" + maxFrameSkips + ")."); 
-		
 							// Reset the pulse count
 							resetTotalPulses();
 							
 							// Call addTime once to get back the time lost in a frame
-							addTime();	
+							addTime();
+							
+							t3 = System.nanoTime();
 						}
 						
 //						if (skips >= maxFrameSkips) {
@@ -1401,6 +1400,24 @@ public class MasterClock implements Serializable {
 	 */
 	public double getBaseTBU() {
 		return baseTBU_ms;	
+	}
+	
+	public void increaseTimeRatio() {
+        int currentSpeed = getCurrentSpeed();
+        int newSpeed = currentSpeed + 1;
+		if (newSpeed >= 0 && newSpeed <= 13) {
+        	double ratio = Math.pow(2, newSpeed);
+        	setTimeRatio(ratio);  
+		}
+	}
+	
+	public void decreaseTimeRatio() {
+        int currentSpeed = getCurrentSpeed();
+        int newSpeed = currentSpeed - 1;
+		if (newSpeed >= 0 && newSpeed <= 13) {
+        	double ratio = Math.pow(2, newSpeed);
+        	setTimeRatio(ratio);  
+		}
 	}
 	
 	/**

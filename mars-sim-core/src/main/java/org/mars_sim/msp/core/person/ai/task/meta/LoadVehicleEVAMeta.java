@@ -7,10 +7,12 @@
 package org.mars_sim.msp.core.person.ai.task.meta;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
@@ -54,8 +56,12 @@ public class LoadVehicleEVAMeta implements MetaTask, Serializable {
 
     @Override
     public double getProbability(Person person) {
-        double result = 0D;
-
+    	if (person.isOutside()) {
+    		return 0;
+    	}
+    	
+    	double result = 0D;
+        
     	if (person.isInSettlement()) {
  
             // Probability affected by the person's stress and fatigue.
@@ -67,11 +73,15 @@ public class LoadVehicleEVAMeta implements MetaTask, Serializable {
             if (fatigue > 1000 || stress > 50 || hunger > 500)
             	return 0;
             
-        	Settlement settlement = person.getSettlement();
+        	Settlement settlement = CollectionUtils.findSettlement(person.getCoordinates());
             
-	    	// Check for radiation events
-	    	boolean[] exposed = settlement.getExposed();
-	
+        	boolean[] exposed = {false, false, false};
+        	
+        	if (settlement != null) {
+        		// Check for radiation events
+        		exposed = settlement.getExposed();
+        	}
+        	
 			if (exposed[2]) {// SEP can give lethal dose of radiation
 	            return 0;
 			}
@@ -126,7 +136,7 @@ public class LoadVehicleEVAMeta implements MetaTask, Serializable {
 	        if (person.getFavorite().getFavoriteActivity() == FavoriteType.OPERATION)
 	            result += RandomUtil.getRandomInt(1, 20);
 	
-	        // 2015-06-07 Added Preference modifier
+	        // Add Preference modifier
 	        if (result > 0D) {
 	            result = result + result * person.getPreference().getPreferenceScore(this)/5D;
 	        }

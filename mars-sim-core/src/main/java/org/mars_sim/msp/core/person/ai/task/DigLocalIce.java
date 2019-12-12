@@ -91,23 +91,13 @@ implements Serializable {
 
      	settlement = CollectionUtils.findSettlement(person.getCoordinates());
      	if (settlement == null) {
-        	if (person.isOutside()){
-                setPhase(WALK_BACK_INSIDE);
-         		endTask();
-            }
-        	else
-        		endTask();
+        	endTask();
      	}
         
         // Get an available airlock.
         airlock = getWalkableAvailableAirlock(person);
         if (airlock == null) {
-        	if (person.isOutside()){
-                setPhase(WALK_BACK_INSIDE);
-         		endTask();
-            }
-        	else
-        		endTask();
+        	endTask();
         }
 
         // Determine digging location.
@@ -120,12 +110,7 @@ implements Serializable {
 
             // If bags are not available, end task.
             if (!hasBags()) {
-            	if (person.isOutside()){
-                    setPhase(WALK_BACK_INSIDE);
-             		endTask();
-                }
-            	else
-            		endTask();
+            	endTask();
             }
         }
 
@@ -142,7 +127,8 @@ implements Serializable {
 	        
 	        // Add task phases
 	        addPhase(COLLECT_ICE);
-	
+//	        setPhase(COLLECT_ICE);
+	        
 	        logger.finest(person.getName() + " was going to start digging for ice.");
         }
     }
@@ -324,8 +310,9 @@ implements Serializable {
     private double collectIce(double time) {
 
     	if (getTimeCompleted() > getDuration()) {
-            setPhase(WALK_BACK_INSIDE);
-            endTask();
+    		endTask();
+    		if (person.isOutside())
+    			setPhase(WALK_BACK_INSIDE);
             return time;
     	}
     			
@@ -333,16 +320,16 @@ implements Serializable {
         checkForAccident(time);
 
         // Check for radiation exposure during the EVA operation.
-        if (isRadiationDetected(time)){
+        if (isRadiationDetected(time) && person.isOutside()) {
+    		endTask();
             setPhase(WALK_BACK_INSIDE);
-            endTask();
             return time;
         }
         // Check if there is reason to cut the collect
         // ice phase short and return.
-        if (shouldEndEVAOperation()) {
+        if (shouldEndEVAOperation() && person.isOutside()) {
+    		endTask();
             setPhase(WALK_BACK_INSIDE);
-            endTask();
             return time;
         }
 
@@ -374,8 +361,9 @@ implements Serializable {
 	    		"[" + person.getLocationTag().getLocale() +  "] " +
 	    		person.getName() + " collected " + Math.round(totalCollected*100D)/100D 
 	    		+ " kg of ice outside at " + person.getCoordinates().getFormattedString());
-            setPhase(WALK_BACK_INSIDE);
-            endTask();
+    		endTask();
+            if (person.isOutside())
+            	setPhase(WALK_BACK_INSIDE);
         }
         // Add experience points
         addExperience(time);
@@ -383,10 +371,12 @@ implements Serializable {
         if (fatigue > 1000 || stress > 50) {
             LogConsolidated.log(Level.INFO, 0, sourceName, 
         		"[" + person.getLocationTag().getLocale() +  "] " +
-        		person.getName() + " took a break from collecting ice (fatigue: " + Math.round(fatigue*10D)/10D 
-        		+ " ; stress: " + Math.round(stress*100D)/100D + " %)");
-            setPhase(WALK_BACK_INSIDE);
-            endTask();
+                		+ Math.round(totalCollected*100D)/100D + " kg collected) " 
+                		+ "; fatigue: " + Math.round(fatigue*10D)/10D 
+                		+ "; stress: " + Math.round(stress*100D)/100D + " %");
+    		endTask();
+            if (person.isOutside())
+            	setPhase(WALK_BACK_INSIDE);
         }
         return 0D;
     }

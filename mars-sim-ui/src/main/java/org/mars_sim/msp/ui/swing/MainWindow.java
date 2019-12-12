@@ -142,6 +142,8 @@ extends JComponent {
 	
 	private WebDateField earthDateField;
 	
+	private WebMemoryBar memoryBar;
+	
 //	private Date date;
 	
 	private WebPanel bottomPane;
@@ -356,7 +358,7 @@ extends JComponent {
 //		StyleId styledlabelShadow = StyleId.of ( "shadow" );
 		earthDateField = new WebDateField(StyleId.datefield);//new Date(earthClock.getInstant().toEpochMilli()));
 		TooltipManager.setTooltip(earthDateField, "Earth's Timestamp", TooltipWay.up);
-		earthDateField.setPreferredWidth(280);
+		earthDateField.setPreferredWidth(220);
 		earthDateField.setAllowUserInput(false);
 //		Customizer<WebCalendar> c = dateField.getCalendarCustomizer();
 //		c.customize();
@@ -433,12 +435,12 @@ extends JComponent {
 //		JPanel memoryLabel = new JPanel();
 //		memoryLabel.setAlignmentX(0.5F);
 //		memoryLabel.setAlignmentY(0);
-		WebMemoryBar bar = new WebMemoryBar();
-		earthDateField.setPreferredWidth(200);
-		bar.setRefreshRate(3000);
+		memoryBar = new WebMemoryBar();
+		memoryBar.setPreferredWidth(180);
+		memoryBar.setRefreshRate(3000);
 //		memoryLabel.add(bar);
 //		TooltipManager.setTooltip(bar, "Memory Usage", TooltipWay.up);
-		statusBar.addRightComponent(bar, false);
+		statusBar.addRightComponent(memoryBar, false);
 		statusBar.addRightCorner();
 		
 //		memUsedLabel = new JLabel();
@@ -509,10 +511,10 @@ extends JComponent {
 		earthTimer = new javax.swing.Timer(TIME_DELAY, new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent evt) {
-				if (earthClock == null) {
+				if (earthClock == null || marsClock == null) {
 					if (masterClock == null)
 						masterClock = sim.getMasterClock();
-//					masterClock = sim.getMasterClock();
+
 					earthClock = masterClock.getEarthClock();
 					marsClock = masterClock.getMarsClock();
 				}
@@ -520,11 +522,17 @@ extends JComponent {
 				// Increment both the earth and mars clocks
 				incrementClocks();
 				
+				double maxMem = memoryBar.getMemoryUsage().getMax();
+				double usedMem = memoryBar.getMemoryUsage().getUsed();
+				
+				if (usedMem >= maxMem * .85) {
+					masterClock.decreaseTimeRatio();
+				}
+				
 				// Track sleep time
 //				long sleepTime = masterClock.getSleepTime();
 //				sleepLabel.setText(SLEEP_TIME + sleepTime + MS);
-				
-				
+							
 //				// Track memory
 //				int memFree = (int) Math.round(Runtime.getRuntime().freeMemory()) / 1_000_000;
 //				int memTotal = (int) Math.round(Runtime.getRuntime().totalMemory()) / 1_000_000;
@@ -541,6 +549,10 @@ extends JComponent {
 				if (solCache != sol) {
 					solCache = sol;
 					solLabel.setText(SOL + sol + WHITESPACES);
+					
+					if (usedMem >= maxMem * .1 && usedMem <= maxMem * .6) {
+						masterClock.increaseTimeRatio();
+					}
 				}
 			
 				// Check if the music track should be played

@@ -49,22 +49,26 @@ public class RecordActivity extends Task implements Serializable {
 
 		if (person.isInSettlement()) {
 			walkToRandomLocation(false);
+			
+			// Initialize phase
+			addPhase(RECORDING);
+			setPhase(RECORDING);
 		}
 
 		else if (person.isInVehicle()) {
-
 			if (person.getVehicle() instanceof Rover) {
 				walkToPassengerActivitySpotInRover((Rover) person.getVehicle(), true);
 			}
+			
+			// Initialize phase
+			addPhase(RECORDING);
+			setPhase(RECORDING);
 		}
 
 		else {
 			endTask();
 		}
 
-		// Initialize phase
-		addPhase(RECORDING);
-		setPhase(RECORDING);
 	}
 
 	@Override

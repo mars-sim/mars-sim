@@ -78,13 +78,14 @@ public class ManufactureGood extends Task implements Serializable {
 				workshop = manufactureBuilding.getManufacture();
 				// Walk to manufacturing building.
 				walkToActivitySpotInBuilding(manufactureBuilding, false);
+				
+				// Initialize phase
+				addPhase(MANUFACTURE);
+				setPhase(MANUFACTURE);
+				
 			} else {
 				endTask();
 			}
-
-			// Initialize phase
-			addPhase(MANUFACTURE);
-			setPhase(MANUFACTURE);
 
 		} else {
 			endTask();
@@ -106,13 +107,15 @@ public class ManufactureGood extends Task implements Serializable {
 				workshop = manufactureBuilding.getManufacture();
 				// Walk to manufacturing building.
 				walkToActivitySpotInBuilding(manufactureBuilding, false);
+				
+				// Initialize phase
+				addPhase(MANUFACTURE);
+				setPhase(MANUFACTURE);
 			} else {
 				endTask();
 			}
 
-			// Initialize phase
-			addPhase(MANUFACTURE);
-			setPhase(MANUFACTURE);
+
 		} else {
 			endTask();
 		}

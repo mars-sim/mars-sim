@@ -39,15 +39,13 @@ public class WalkMeta implements MetaTask, Serializable {
 	@Override
 	public double getProbability(Person person) {
 		// WalkMeta should be a subtask only 
-		// or else it causes a person to go outside improperly
-		return 0;
-		
-//		double result = 0;
-//
-//		// If person is outside, give high probability to walk to emergency airlock
-//		// location.
+		// or else it causes a person to go outside improperly	
+		double result = 0;
+
+		// If person is outside, give high probability to walk to emergency airlock
+		// location.
 //		if (person.isOutside()) {
-//			result = 0;
+//			result = .01;
 //		} 
 //		
 //		else if (person.isInVehicle()) {
@@ -67,7 +65,7 @@ public class WalkMeta implements MetaTask, Serializable {
 //		if (result < 0)
 //			result = 0;
 //
-//		return result;
+		return result;
 	}
 
 	@Override

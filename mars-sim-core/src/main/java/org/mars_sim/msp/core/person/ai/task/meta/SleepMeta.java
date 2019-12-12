@@ -39,7 +39,7 @@ public class SleepMeta implements MetaTask, Serializable {
     /** Task name */
     private static final String NAME = Msg.getString("Task.description.sleep"); //$NON-NLS-1$
 
-    private static final int MAX_SUPPRESSION = 10;
+    private static final int MAX_SUPPRESSION = 100;
 
     private CircadianClock circadian;
     
@@ -96,9 +96,9 @@ public class SleepMeta implements MetaTask, Serializable {
     	
         if (proceed) {
         	// the desire to go to bed increase linearly after 12 hours of wake time
-            result = result + (fatigue - 100) * 3 + stress * 6 
-            		+ (ghrelin-leptin - 500)/10D
-            		- hunger/50;
+            result = result + (fatigue - 333) * 10 + stress * 10 
+            		+ (ghrelin-leptin - 500)/2.5D
+            		- hunger/20;
             
             double pref = person.getPreference().getPreferenceScore(this);
             
@@ -130,8 +130,10 @@ public class SleepMeta implements MetaTask, Serializable {
          	   // Reduce the probability if it's not the right time to sleep
          	   refreshSleepHabit(person);
          	   // probability of sleep reduces to one fifth of its value
-               result = result / 5D;
+               result = result / 10D;
             }
+            else
+            	result = result * 10D;
             
         	Building quarters = null;
         	Settlement s1 = person.getSettlement();
@@ -209,22 +211,7 @@ public class SleepMeta implements MetaTask, Serializable {
         	
         	// Skip the first sol since the sleep time pattern has not been established
             if (sol != 1 && person.getCircadianClock().getNumSleep() <= maxNumSleep) {
-            	// Checks the current time against the sleep habit heat map
-    	    	int bestSleepTime[] = person.getPreferredSleepHours();
-    	    	// is now falling two of the best sleep time ?
-    	    	for (int time : bestSleepTime) {
-    	        	int now = marsClock.getMillisolInt();
-    		    	int diff = time - now;
-    		    	if (diff < 50 || diff > -50) {
-    		    		proceed = true;
-    		    		result += 1000;
-    		    		break;
-    		    	}
-    		    	else {
-    		    		// Reduce the probability by a factor of 10
-    		    		result = result/5D;
-    		    	}
-    	    	}
+            	result = modifiedBySleepHabit(person, result);
             }
             
     	    if (result < 0)
@@ -292,6 +279,26 @@ public class SleepMeta implements MetaTask, Serializable {
         return result;
 	}
 	
+	public double modifiedBySleepHabit(Person person, double result) {
+        	// Checks the current time against the sleep habit heat map
+	    	int bestSleepTime[] = person.getPreferredSleepHours();
+	    	// is now falling two of the best sleep time ?
+	    	for (int time : bestSleepTime) {
+	        	int now = marsClock.getMillisolInt();
+		    	int diff = time - now;
+		    	if (diff < 30 || diff > -30) {
+		    		result = result*5;
+		    		return result;
+		    	}
+		    	else {
+		    		// Reduce the probability by a factor of 10
+		    		result = result/5;
+		    		return result;
+		    	}
+	    	}
+	    	return result;
+	}
+	
 	/**
      * Refreshes a person's sleep habit based on his/her latest work shift 
      * 
@@ -304,7 +311,7 @@ public class SleepMeta implements MetaTask, Serializable {
         if (person.getTaskSchedule().getShiftType() != ShiftType.ON_CALL) {
 	        // if a person is on shift right now
            	if (person.getTaskSchedule().isShiftHour(now)) {
-//           		CircadianClock circadian = person.getCircadianClock();
+
            		int habit = circadian.getSuppressHabit();
            		int spaceOut = circadian.getSpaceOut();
 	           	// limit adjustment to 10 times and space it out to at least 50 millisols apart
@@ -313,12 +320,15 @@ public class SleepMeta implements MetaTask, Serializable {
 		  	  		person.updateSleepCycle(now, false);
 			    	//System.out.println("spaceOut : " + spaceOut + "   now : " + now + "  suppressHabit : " + habit);
 
-			    	circadian.setSuppressHabit(habit+1);
-			    	spaceOut = now + 20;
-			    	if (spaceOut > 1000) {
-			    		spaceOut = spaceOut - 1000;
-			    	}
-			    	circadian.setSpaceOut(spaceOut);
+		  	  		int rand = RandomUtil.getRandomInt(2);
+		  	  		if (rand == 2) {
+				    	circadian.setSuppressHabit(habit+1);
+				    	spaceOut = now + 20;
+				    	if (spaceOut > 1000) {
+				    		spaceOut = spaceOut - 1000;
+				    	}
+				    	circadian.setSpaceOut(spaceOut);
+		  	  		}
            		}
 		    }
 

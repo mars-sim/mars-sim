@@ -64,7 +64,7 @@ public class Sleep extends Task implements Serializable {
 	private static final String SLEEP_MODE = Msg.getString("Task.description.sleepMode"); //$NON-NLS-1$
 
 	/** Task phases for robot. */
-	private static final TaskPhase SLEEP_MODE_PHASE = new TaskPhase(Msg.getString("Task.phase.sleepMode")); //$NON-NLS-1$
+	private static final TaskPhase SLEEPING_MODE = new TaskPhase(Msg.getString("Task.phase.sleepMode")); //$NON-NLS-1$
 
 	// Static members
 	/** The stress modified per millisol. */
@@ -339,8 +339,8 @@ public class Sleep extends Task implements Serializable {
 		previousTime = marsClock.getMillisol();
 
 		// Initialize phase
-		addPhase(SLEEP_MODE_PHASE);
-		setPhase(SLEEP_MODE_PHASE);
+		addPhase(SLEEPING_MODE);
+		setPhase(SLEEPING_MODE);
 	}
 
 	@Override
@@ -367,7 +367,7 @@ public class Sleep extends Task implements Serializable {
 		else if (robot != null) {
 			if (getPhase() == null)
 				throw new IllegalArgumentException("Task phase is null");
-			else if (SLEEP_MODE_PHASE.equals(getPhase()))
+			else if (SLEEPING_MODE.equals(getPhase()))
 				return sleepingPhase(time);
 			else
 				return time;
@@ -395,7 +395,7 @@ public class Sleep extends Task implements Serializable {
 				f = MAX_FATIGUE;
 
 				if (f > 1000)
-					residualFatigue = (f - 1000) / 100;
+					residualFatigue = (f - 1000) / 125;
 
 				// Reduce person's fatigue
 				newFatigue = f - fractionOfRest - residualFatigue;
@@ -433,18 +433,19 @@ public class Sleep extends Task implements Serializable {
 				logger.finest(person.getName() + " woke up from a nap.");
 				endTask();
 			}
-			else {
+
+//			else {
 				// Check if alarm went off
 				double newTime = marsClock.getMillisol();
 				double alarmTime = getAlarmTime();
 	
 				if ((previousTime <= alarmTime) && (newTime >= alarmTime)) {
 					endTask();
-					logger.finest(person.getName() + " woke up from alarm.");
+					logger.info(person.getName() + " woke up from the alarm at " + (int)alarmTime);
 				} else {
 					previousTime = newTime;
 				}
-			}
+//			}
 		}
 
 		else if (robot != null) {
@@ -746,12 +747,15 @@ public class Sleep extends Task implements Serializable {
 	@Override
 	public void destroy() {
 		super.destroy();
+		
+		SLEEPING_MODE.destroy();
+		SLEEPING.destroy();
+		
 		station = null;
 		accommodations = null;
 		circadian = null;
 		pc = null;
-		// sim = null;
-		// masterClock = null;
-		// marsClock = null;
+		interiorObject = null;
+		returnInsideLoc = null;
 	}
 }

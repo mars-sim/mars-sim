@@ -51,7 +51,8 @@ public class Workout extends Task implements Serializable {
 	 */
 	public Workout(Person person) {
 		// Use Task constructor.
-		super(NAME, person, true, false, STRESS_MODIFIER, true, 10D + RandomUtil.getRandomDouble(10D));
+		super(NAME, person, true, false, STRESS_MODIFIER, true, 
+				20 + RandomUtil.getRandomInt(5) - RandomUtil.getRandomInt(5));
 
 		if (person.isInside()) {
 
@@ -61,17 +62,19 @@ public class Workout extends Task implements Serializable {
 				// Walk to gym building.
 				walkToActivitySpotInBuilding(gymBuilding, false);
 				gym = gymBuilding.getExercise();
+				
+				// Initialize phase
+				addPhase(EXERCISING);
+				setPhase(EXERCISING);
 			}
-			// else {
-			// endTask();
-			// }
+			else {
+				endTask();
+			}
+			
 		} else {
 			endTask();
 		}
 
-		// Initialize phase
-		addPhase(EXERCISING);
-		setPhase(EXERCISING);
 	}
 
 	@Override

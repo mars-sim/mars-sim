@@ -246,8 +246,8 @@ public class Mind implements Serializable {
 							takeAction(remainingTime);
 						} catch (Exception e) {
 	//						e.printStackTrace(System.err);
-							LogConsolidated.log(Level.SEVERE, 0, sourceName,
-							person.getName() + " had called takeAction() " + counts + " times doing " 
+							LogConsolidated.log(Level.WARNING, 20_000, sourceName,
+							person.getName() + " had called takeAction() " + counts + "x doing " 
 							+ taskManager.getTaskName() + "   remainingTime : " +  Math.round(remainingTime *1000.0)/1000.0 
 							+ "   time : " + Math.round(time *1000.0)/1000.0); // 1x = 0.001126440159375963 -> 8192 = 8.950963852039651
 							return;
@@ -257,8 +257,8 @@ public class Mind implements Serializable {
 						startNew = true;
 				}
 				else {
-					LogConsolidated.log(Level.WARNING, 5_000, sourceName,
-							person + " had " + counts + " times doing " 
+					LogConsolidated.log(Level.WARNING, 20_000, sourceName,
+							person + " had " + counts + "x doing " 
 							+ taskManager.getTaskName() + "   remainingTime : " + Math.round(remainingTime *1000.0)/1000.0 
 							+ "   time : " + Math.round(time *1000.0)/1000.0); // 1x = 0.001126440159375963 -> 8192 = 8.950963852039651
 					startNew = true;

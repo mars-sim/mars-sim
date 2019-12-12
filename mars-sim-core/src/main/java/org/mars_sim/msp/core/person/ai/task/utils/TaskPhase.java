@@ -57,4 +57,11 @@ public final class TaskPhase implements Serializable {
         }
         return false;
     }
+    
+
+	/**
+	 * Prepare object for garbage collection.
+	 */
+	public void destroy() {
+	}
 }
