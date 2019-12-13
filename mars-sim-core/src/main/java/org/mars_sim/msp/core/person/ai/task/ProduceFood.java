@@ -308,11 +308,9 @@ implements Serializable {
 		List<Building> buildingList, int skill) {
 
 		List<Building> result = new ArrayList<Building>();
-
-		for (Building building : buildingList) {
-		//Iterator<Building> i = buildingList.iterator();
-		//while (i.hasNext()) {
-		//	Building building = i.next();
+		Iterator<Building> i = buildingList.iterator();
+		while (i.hasNext()) {
+			Building building = i.next();
 			FoodProduction foodProductionFunction = building.getFoodProduction();
 			if (foodProductionFunction.requiresFoodProductionWork(skill)) {
 				result.add(building);
@@ -336,10 +334,9 @@ implements Serializable {
 		List<Building> result = new ArrayList<Building>();
 
 		// Add all buildings with processes requiring work.
-		for (Building building : buildingList) {
-		//Iterator<Building> i = buildingList.iterator();
-		//while (i.hasNext()) {
-		//	Building building = i.next();
+		Iterator<Building> i = buildingList.iterator();
+		while (i.hasNext()) {
+			Building building = i.next();
 			if (hasProcessRequiringWork(building, skill)) {
 				result.add(building);
 			}

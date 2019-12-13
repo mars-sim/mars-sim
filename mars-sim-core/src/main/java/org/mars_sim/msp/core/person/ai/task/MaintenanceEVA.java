@@ -73,7 +73,12 @@ implements Serializable {
 	public MaintenanceEVA(Person person) {
 		super(NAME, person, true, RandomUtil.getRandomDouble(50D) + 10D);
 
-      	Settlement settlement = CollectionUtils.findSettlement(person.getCoordinates());
+		if (shouldEndEVAOperation()) {
+        	endTask();
+        	return;
+        }
+			
+      	settlement = CollectionUtils.findSettlement(person.getCoordinates());
         if (settlement == null) {
         	endTask();
         	return;
@@ -81,7 +86,13 @@ implements Serializable {
         	
 		try {
 			entity = getMaintenanceMalfunctionable();
-			if (entity == null) {
+			if (entity != null) {
+				if (!Maintenance.hasMaintenanceParts(settlement.getInventory(), entity)) {		
+				    endTask();
+				    return;
+				}
+			}
+			else {
 			    endTask();
 			    return;
 			}
@@ -99,7 +110,7 @@ implements Serializable {
 		// Initialize phase
 		addPhase(MAINTAIN);
 
-		logger.finest(person.getName() + " is starting " + getDescription());
+		logger.fine(person.getName() + " was starting " + getDescription());
 	}
 
 	public MaintenanceEVA(Robot robot) {
@@ -219,18 +230,18 @@ implements Serializable {
 
 	/**
 	 * Perform the maintenance phase of the task.
+	 * 
 	 * @param time the time to perform this phase (in millisols)
 	 * @return the time remaining after performing this phase (in millisols)
 	 * @throws Exception if error during maintenance.
 	 */
 	private double maintenancePhase(double time) {
-
         // Check for radiation exposure during the EVA operation.
         if (person.isOutside() && isRadiationDetected(time)){
             setPhase(WALK_BACK_INSIDE);
             return 0;
         }
-
+	
 		MalfunctionManager manager = entity.getMalfunctionManager();
 		boolean malfunction = manager.hasMalfunction();
 		boolean finishedMaintenance = (manager.getEffectiveTimeSinceLastMaintenance() < 1000D);
@@ -247,7 +258,7 @@ implements Serializable {
 			mechanicSkill = person.getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
 		else if (robot != null)
 			mechanicSkill = robot.getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
-
+	
 		if (mechanicSkill == 0) {
 		    workTime /= 2;
 		}
@@ -257,7 +268,10 @@ implements Serializable {
 
         // Add repair parts if necessary.
 		Inventory inv = settlement.getInventory();
-		if (Maintenance.hasMaintenanceParts(inv, entity)) {
+		entity = getMaintenanceMalfunctionable();
+		
+		if (entity != null && Maintenance.hasMaintenanceParts(inv, entity)) {
+			
 			Map<Integer, Integer> parts = new HashMap<>(manager.getMaintenanceParts());
 			Iterator<Integer> j = parts.keySet().iterator();
 			while (j.hasNext()) {
@@ -266,20 +280,21 @@ implements Serializable {
 				inv.retrieveItemResources(part, number);
 				manager.maintainWithParts(part, number);
 			}
+
+	        // Add work to the maintenance
+			manager.addMaintenanceWorkTime(workTime);
+			
+	        // Add experience points
+	        addExperience(time);
+
+			// Check if an accident happens during maintenance.
+			checkForAccident(time);
+			
         }
 		else {
 			setPhase(WALK_BACK_INSIDE);
 			return 0;
 		}
-
-        // Add work to the maintenance
-		manager.addMaintenanceWorkTime(workTime);
-
-        // Add experience points
-        addExperience(time);
-
-		// Check if an accident happens during maintenance.
-		checkForAccident(time);
 
 		return 0D;
 	}
@@ -350,8 +365,6 @@ implements Serializable {
 	            }
 	        }
 		}
-
-
 
         if (!malfunctionables.isEmpty()) {
             result = RandomUtil.getWeightedRandomObject(malfunctionables);

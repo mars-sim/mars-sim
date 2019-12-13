@@ -86,8 +86,11 @@ public class ReviewJobReassignment extends Task implements Serializable {
 				if (officeBuilding != null) {
 					// Walk to the office building.
 					office = officeBuilding.getAdministration();
-					office.addstaff();
-					walkToActivitySpotInBuilding(officeBuilding, true);
+					if (!office.isFull()) {
+						office.addStaff();
+						// Walk to the office building.
+						walkToActivitySpotInBuilding(officeBuilding, true);
+					}
 				}
 				else {
 					Building dining = EatDrink.getAvailableDiningBuilding(person, false);

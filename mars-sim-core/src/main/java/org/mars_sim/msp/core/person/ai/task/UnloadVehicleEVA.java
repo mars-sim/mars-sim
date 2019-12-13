@@ -383,7 +383,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 		Inventory vehicleInv = vehicle.getInventory();
 		
 		if (settlement == null) {
-			endTask();
+//			endTask();
 			return 0D;
 		}
 		

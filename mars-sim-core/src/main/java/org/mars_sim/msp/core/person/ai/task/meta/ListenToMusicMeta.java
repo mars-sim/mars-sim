@@ -54,27 +54,6 @@ public class ListenToMusicMeta implements MetaTask, Serializable {
     @Override
     public double getProbability(Person person) {
         double result = 0D;
-
-        if (person.isInside()) {
-	        double pref = person.getPreference().getPreferenceScore(this);
-	        
-	     	result = pref * 2.5D;
-	     	
-	        // Probability affected by the person's stress and fatigue.
-	        PhysicalCondition condition = person.getPhysicalCondition();
-	        double stress = condition.getStress();
-	        
-	        if (pref > 0) {
-	         	if (stress > 45D)
-	         		result*=1.5;
-	         	else if (stress > 65D)
-	         		result*=2D;
-	         	else if (stress > 85D)
-	         		result*=3D;
-	         	else
-	         		result*=4D;
-	        }
-        }
         
         if (person.isInSettlement()) {
             
@@ -118,6 +97,28 @@ public class ListenToMusicMeta implements MetaTask, Serializable {
 	        }
         }
         
+        if (person.isInside() && result > 0) {
+	        double pref = person.getPreference().getPreferenceScore(this);
+	        
+	     	result = pref * 2.5D;
+	     	
+	        // Probability affected by the person's stress and fatigue.
+	        PhysicalCondition condition = person.getPhysicalCondition();
+	        double stress = condition.getStress();
+	        
+	        if (pref > 0) {
+	         	if (stress > 45D)
+	         		result*=1.5;
+	         	else if (stress > 65D)
+	         		result*=2D;
+	         	else if (stress > 85D)
+	         		result*=3D;
+	         	else
+	         		result*=4D;
+	        }
+        }
+        
+        if (result < 0) result = 0;
         
         return result;
     }

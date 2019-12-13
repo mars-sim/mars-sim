@@ -373,6 +373,11 @@ public abstract class EVAOperation extends Task implements Serializable {
 			return true;
 		}
 
+		// Check for sunlight
+		if (isGettingDark(person)) {
+			return true;
+		}
+				
 		// Check if any EVA problem.
 		else if (!noEVAProblem(person)) {
 			return true;
@@ -428,19 +433,19 @@ public abstract class EVAOperation extends Task implements Serializable {
 	 */
 	public static boolean noEVAProblem(Person person) {
 		
-		if (isGettingDark(person)) {
-			LogConsolidated.log(Level.FINE, 5000, sourceName,
-					"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " ended "
-					+ person.getTaskDescription() + " : too dark to continue with the EVA outside at " 
-					+ person.getCoordinates().getFormattedString());
-			return false;
-		}
+//		if (isGettingDark(person)) {
+//			LogConsolidated.log(Level.FINE, 5000, sourceName,
+//					"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " ended "
+//					+ person.getTaskDescription() + " : too dark to continue with the EVA outside at " 
+//					+ person.getCoordinates().getFormattedString());
+//			return false;
+//		}
 		
 		EVASuit suit = person.getSuit();//(EVASuit) person.getInventory().findUnitOfClass(EVASuit.class);
 		if (suit == null) {
-			LogConsolidated.log(Level.WARNING, 5000, sourceName, 
-					"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " ended " 
-							+ person.getTaskDescription() + " : no EVA suit is available.");
+//			LogConsolidated.log(Level.WARNING, 5000, sourceName, 
+//					"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " ended " 
+//							+ person.getTaskDescription() + " : no EVA suit is available.");
 			return false;
 		}
 

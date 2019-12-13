@@ -10,11 +10,14 @@ import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
@@ -28,9 +31,15 @@ public class Administration extends Function implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private static Logger logger = Logger.getLogger(Administration.class.getName());
+	private static String loggerName = logger.getName();
+	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 
 	private static final FunctionType FUNCTION = FunctionType.ADMINISTRATION;
 
+	private static final String CC = "Command and Control";
+	private static final String LANDER_HAB = "Lander Hab";
+	private static final String OUTPOST_HUB = "Outpost Hub";
+	
 	// Data members
 	private int populationSupport;
 	private int staff;
@@ -52,11 +61,11 @@ public class Administration extends Function implements Serializable {
 		buildingType = building.getBuildingType();
 		
 		// Populate data members.
-		if (buildingType.equalsIgnoreCase("Command and Control"))
+		if (buildingType.equalsIgnoreCase(CC))
 			populationSupport = 16;
-		else if (buildingType.equalsIgnoreCase("Lander Hab"))
+		else if (buildingType.equalsIgnoreCase(LANDER_HAB))
 			populationSupport = 8;
-		else if (buildingType.equalsIgnoreCase("Outpost Hub"))
+		else if (buildingType.equalsIgnoreCase(OUTPOST_HUB))
 			populationSupport = 6;
 
 		staffCapacity = buildingConfig.getAdministrationPopulationSupport(buildingType);
@@ -165,7 +174,7 @@ public class Administration extends Function implements Serializable {
 	}
 
 	public boolean isFull() {
-		if (staff == staffCapacity)
+		if (staff >= staffCapacity)
 			return true;
 		else
 			return false;
@@ -176,12 +185,14 @@ public class Administration extends Function implements Serializable {
 	 * 
 	 * @throws BuildingException if person would exceed office space capacity.
 	 */
-	public void addstaff() {
-		staff++;
-		if (staff > staffCapacity) {
-			staff = staffCapacity;
-			logger.info("[" + building.getSettlement() + "] The office space in " + building.getNickName() + " is full.");
+	public void addStaff() {
+		if (staff >= staffCapacity) {
+			LogConsolidated.log(Level.INFO, 10_000, sourceName,
+					"[" + building.getSettlement() + "] The office space in " 
+					+ building.getNickName() + " was full.");
 		}
+		else
+			staff++;
 	}
 
 	/**
@@ -193,7 +204,9 @@ public class Administration extends Function implements Serializable {
 		staff--;
 		if (staff < 0) {
 			staff = 0;
-			logger.severe("[" + building.getSettlement() + "] Miscalculating the office space occupancy in " + building.getNickName() + ".");
+			LogConsolidated.log(Level.SEVERE, 10_000, sourceName,
+					"[" + building.getSettlement() 
+					+ "] Miscalculating the office space occupancy in " + building.getNickName() + ".");
 		}
 	}
 

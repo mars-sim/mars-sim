@@ -1033,43 +1033,66 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 					
 					// check for the passing of each day
 					int solElapsed = marsClock.getMissionSol();
-
+	
 					if (solCache != solElapsed) {
 						
-						// Adjust the sleep habit according to the current work shift
-						for (int i=0; i< 5; i++) {
-							int projectedMillisols = getTaskSchedule().getShiftEnd() + 5 * (i+1);
-							circadian.updateSleepCycle(projectedMillisols, true);
+						if (solElapsed == 1) {
+							// On the first mission sol,
+							// adjust the sleep habit according to the current work shift
+							for (int i=0; i< 15; i++) {
+								int shiftEnd = getTaskSchedule().getShiftEnd();
+								int m = shiftEnd - 20 * (i+1);
+								if (m < 0)
+									m = m + 1000;
+								// suppress sleep during the work shift
+								circadian.updateSleepCycle(m, false);
+								
+								m = shiftEnd + 10 * (i+1);
+								if (m > 1000)
+									m = m - 1000;
+								// encourage sleep after the work shift
+								circadian.updateSleepCycle(m, true);
+							}
+							
 						}
-						
-						// Check if a person's age should be updated
-						age = updateAge();
-						
-						// Update the solCache
-						solCache = solElapsed;
-						
-						// Checks if a person has a role
-						if (role.getType() == null)
-							role.obtainRole();
-
-						// Limit the size of the dailyWaterUsage to x key value pairs
-						if (consumption.size() > MAX_NUM_SOLS)
-							consumption.remove(solElapsed - MAX_NUM_SOLS);
-
-						if (solElapsed % 3 == 0) {
-							// Adjust the shiftChoice once every 3 sols based on sleep hour
-							int bestSleepTime[] = getPreferredSleepHours();
-							taskSchedule.adjustShiftChoice(bestSleepTime);
-						}
-
-						if (solElapsed % 4 == 0) {
-							// Increment the shiftChoice once every 4 sols
-							taskSchedule.incrementShiftChoice();
-						}
-
-						if (solElapsed % 7 == 0) {
-							// Normalize the shiftChoice once every week
-							taskSchedule.normalizeShiftChoice();
+						else {
+							// Adjust the sleep habit according to the current work shift
+							for (int i=0; i< 5; i++) {
+								int m = getTaskSchedule().getShiftEnd() + 10 * (i+1);
+								if (m > 1000)
+									m = m - 1000;
+								circadian.updateSleepCycle(m, true);
+							}
+							
+							// Check if a person's age should be updated
+							age = updateAge();
+							
+							// Update the solCache
+							solCache = solElapsed;
+							
+							// Checks if a person has a role
+							if (role.getType() == null)
+								role.obtainRole();
+	
+							// Limit the size of the dailyWaterUsage to x key value pairs
+							if (consumption.size() > MAX_NUM_SOLS)
+								consumption.remove(solElapsed - MAX_NUM_SOLS);
+	
+							if (solElapsed % 3 == 0) {
+								// Adjust the shiftChoice once every 3 sols based on sleep hour
+								int bestSleepTime[] = getPreferredSleepHours();
+								taskSchedule.adjustShiftChoice(bestSleepTime);
+							}
+	
+							if (solElapsed % 4 == 0) {
+								// Increment the shiftChoice once every 4 sols
+								taskSchedule.incrementShiftChoice();
+							}
+	
+							if (solElapsed % 7 == 0) {
+								// Normalize the shiftChoice once every week
+								taskSchedule.normalizeShiftChoice();
+							}
 						}
 					}
 				}

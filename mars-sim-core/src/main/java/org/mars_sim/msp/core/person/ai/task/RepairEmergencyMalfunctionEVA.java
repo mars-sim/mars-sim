@@ -74,7 +74,7 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements Repai
 	 */
 	public RepairEmergencyMalfunctionEVA(Person person) {
 		super(NAME, person, false, 25);
-
+		
 		// Factor in a person's preference for the new stress modifier
 		int score = person.getPreference().getPreferenceScore(new RepairEVAMalfunctionMeta());
 		// Override the stress modifier of EVAOperation since it's a very
@@ -189,7 +189,7 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements Repai
 		}
 
 		// Check if person is inside
-		if (person.isInSettlement() || person.isInVehicleInGarage()) {
+		if (person.isInside()) {//.isInSettlement() || person.isInVehicleInGarage()) {
 
 			// Check if an airlock is available
 			Airlock airlock = EVAOperation.getWalkableAvailableAirlock(person);

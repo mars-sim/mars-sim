@@ -86,7 +86,7 @@ public class RepairEmergencyMalfunction extends Task implements Repair, Serializ
 		}
         else if (unit instanceof Robot) {
         	this.robot = (Robot) unit;
-        	endTask();
+//        	endTask();
         }
 
 		claimMalfunction();
@@ -95,6 +95,7 @@ public class RepairEmergencyMalfunction extends Task implements Repair, Serializ
 			addPersonOrRobotToMalfunctionLocation(entity);
 		} else {
 			endTask();
+			return;
 		}
 
 		// Create starting task event if needed.

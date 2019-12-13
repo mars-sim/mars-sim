@@ -8,10 +8,8 @@
 package org.mars_sim.msp.core.person;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import org.mars_sim.msp.core.LifeSupportInterface;
@@ -89,7 +87,7 @@ public class CircadianClock implements Serializable {
 	private Map<Integer, Integer> sleepCycleMap;
 
 	/** The amount of Sleep [millisols] a person on each mission sol */
-	private List<Double> sleepTime;
+	private Map<Integer, Double> sleepTime;
 
 	private static MarsClock marsClock;
 
@@ -101,7 +99,7 @@ public class CircadianClock implements Serializable {
 		this.person = person;
 
 		sleepCycleMap = new HashMap<>();
-		sleepTime = new ArrayList<>();
+		sleepTime = new HashMap<>();
 		
 	}
 	
@@ -499,19 +497,18 @@ public class CircadianClock implements Serializable {
 	 * @param time in millisols
 	 */
 	public void recordSleep(double time) {
-		int size = sleepTime.size();
-		if (size == solCache) {
-			double oldTime = sleepTime.get(size-1);
-			sleepTime.remove(size-1);
+		int today = marsClock.getMissionSol();
+		if (sleepTime.containsKey(today)) {
+			double oldTime = sleepTime.get(today);
 			double newTime = oldTime + time;
-			sleepTime.add(newTime);
+			sleepTime.put(today, newTime);
 		}
 		else {
-			sleepTime.add(time);
+			sleepTime.put(today, time);
 		}
 	}
 	
-	public List<Double> getSleepTime() {
+	public Map<Integer, Double> getSleepTime() {
 		return sleepTime;
 	}
 	

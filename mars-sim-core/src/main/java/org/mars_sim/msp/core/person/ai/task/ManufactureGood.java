@@ -309,7 +309,6 @@ public class ManufactureGood extends Task implements Serializable {
 	private static List<Building> getBuildingsWithProcessesRequiringWork(List<Building> buildingList, int skill) {
 
 		List<Building> result = new ArrayList<Building>();
-
 		// Add all buildings with processes requiring work.
 		Iterator<Building> i = buildingList.iterator();
 		while (i.hasNext()) {

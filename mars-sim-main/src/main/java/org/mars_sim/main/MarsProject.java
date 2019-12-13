@@ -427,7 +427,7 @@ public class MarsProject {
 	 * Create a new simulation instance.
 	 */
 	private void handleNewSimulation() {
-		logger.config("handleNewSimulation() is on " + Thread.currentThread().getName());
+//		logger.config("handleNewSimulation() is on " + Thread.currentThread().getName());
 		// Alert the user to see the interactive terminal 
 		logger.config("Please proceed to selecting the type of Game Mode in the popped-up console.");
 

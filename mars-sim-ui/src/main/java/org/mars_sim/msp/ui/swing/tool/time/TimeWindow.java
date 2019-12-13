@@ -71,6 +71,8 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	public static final String EXEC = "Execution : ";
 	/** the sleep time label string */
 	public static final String SLEEP_TIME = "Sleep : ";
+	/** the residual time label string */
+	public static final String RESIDUAL_TIME = "Residual Time : ";
 	/** the execution time unit */
 	public static final String US = " micro-secs";
 	/** the execution time label string */
@@ -125,6 +127,8 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	private WebLabel baseTBULabel;
 	/** label for sleep time. */
 	private WebLabel sleepTimeLabel;
+	/** label for residual time. */
+	private WebLabel residualTimeLabel;
 	/** label for time compression. */	
 	private WebLabel timeCompressionLabel;
 	/** slider for pulse. */
@@ -274,7 +278,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		uptimePane.setBorder(new CompoundBorder(new EtchedBorder(), MainDesktopPane.newEmptyBorder()));
 		simulationPane.add(uptimePane, BorderLayout.NORTH);
 
-		WebPanel TPSPane = new WebPanel(new GridLayout(5, 1));//new BorderLayout());
+		WebPanel TPSPane = new WebPanel(new GridLayout(6, 1));//new BorderLayout());
 		TPSPane.setBorder(new CompoundBorder(new EtchedBorder(), MainDesktopPane.newEmptyBorder()));
 		uptimePane.add(TPSPane, BorderLayout.SOUTH);
 
@@ -314,9 +318,14 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		long sleepTime = masterClock.getSleepTime();
 		sleepTimeLabel = new WebLabel(SLEEP_TIME + sleepTime + MS, WebLabel.CENTER);
 		
+		// Create residual time label
+		long residualTime = masterClock.getResidualTime();
+		residualTimeLabel = new WebLabel(RESIDUAL_TIME + residualTime + MS, WebLabel.CENTER);
+				
 		TPSPane.add(execTimeLabel);
 		TPSPane.add(baseTBULabel);
 		TPSPane.add(sleepTimeLabel);
+		TPSPane.add(residualTimeLabel);
 		
 		// Create the pulse pane
 		WebPanel pulsePane = new WebPanel(new BorderLayout());
@@ -464,6 +473,10 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		// Create sleep time label
 		long sleepTime = masterClock.getSleepTime();
 		if (sleepTimeLabel != null) sleepTimeLabel.setText(SLEEP_TIME + sleepTime + MS);
+		
+		// Create residual time label
+		long residualTime = masterClock.getResidualTime();
+		if (residualTimeLabel != null) residualTimeLabel.setText(RESIDUAL_TIME + residualTime + MS);
 	}
 	
 	/**

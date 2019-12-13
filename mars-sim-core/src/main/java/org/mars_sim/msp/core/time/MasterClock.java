@@ -88,6 +88,8 @@ public class MasterClock implements Serializable {
 	private volatile long executionTime;	
 	/** The sleep time */
 	private long sleepTime;
+	/** The residual time */
+	private long residualTime;
 	/** The last uptime in terms of number of pulses. */
 	private transient long tLast;
 	/** The cache for accumulating millisols up to a limit before sending out a clock pulse. */
@@ -729,8 +731,8 @@ public class MasterClock implements Serializable {
 						} catch (InterruptedException e) {
 							Thread.currentThread().interrupt();
 						}
-	
-						overSleepTime = currentTBU_ns - executionTime - sleepTime - (t1 - t3);
+						residualTime = t1 - t3;
+						overSleepTime = currentTBU_ns - executionTime - sleepTime - residualTime;
 //						logger.config("overSleepTime : " + overSleepTime/1_000_000 + " ms");
 					}
 
@@ -1381,6 +1383,15 @@ public class MasterClock implements Serializable {
 	 */
 	public long getSleepTime() {
 		return sleepTime/1_000_000;
+	}
+	
+	/**
+	 * Gets the residual time in milliseconds
+	 * 
+	 * @return
+	 */
+	public long getResidualTime() {
+		return residualTime/1_000_000;
 	}
 	
 	/** 

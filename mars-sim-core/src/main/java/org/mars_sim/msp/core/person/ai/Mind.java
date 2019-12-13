@@ -47,7 +47,7 @@ public class Mind implements Serializable {
 	private static String loggerName = logger.getName();
 	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 	
-	private static final int MAX_COUNTS = 100;
+	private static final int MAX_COUNTS = 50;
 	private static final int STRESS_UPDATE_CYCLE = 10;
 	private static final double MINIMUM_MISSION_PERFORMANCE = 0.3;
 	private static final double FACTOR = .05;

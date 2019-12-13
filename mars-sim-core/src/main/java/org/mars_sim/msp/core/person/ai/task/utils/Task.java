@@ -201,12 +201,12 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	public void endTask() {
 
 		// End subtask.
-		if (subTask != null && !subTask.isDone()) {
-			setSubTaskPhase(null);
-			subTask.setDescription("");
-			subTask.destroy();		
-			subTask = null;
-		}
+//		if (subTask != null && !subTask.isDone()) {
+//			setSubTaskPhase(null);
+//			subTask.setDescription("");
+//			subTask.destroy();		
+//			subTask = null;
+//		}
 	
 		// Set done to true
 		done = true;
@@ -404,6 +404,39 @@ public abstract class Task implements Serializable, Comparable<Task> {
 //			}
 		}
 	}
+
+	/**
+	 * Sets the task's current phase.
+	 * 
+	 * @param newPhase the phase to set the a task at.
+	 * @throws Exception if newPhase is not in the task's collection of phases.
+	 */
+	protected void setPhase(TaskPhase newPhase) {
+		phase = newPhase;
+//		System.out.println("phases is " + phases);
+		// e.g. phases is [Walking inside a Settlement, Walking inside a Rover, Walking outside, Exiting Airlock, Entering Airlock, Exiting Rover In Garage, Entering Rover In Garage]
+//		if (newPhase == null) {
+//			throw new IllegalArgumentException("newPhase is null");
+//			endTask();
+//		} 		
+		if (newPhase != null && phases != null && !phases.isEmpty() && phases.contains(newPhase)) {
+
+			if (person != null) {
+				// Note: need to avoid java.lang.StackOverflowError when calling
+				// PersonTableModel.unitUpdate()
+				person.fireUnitUpdate(UnitEventType.TASK_PHASE_EVENT, newPhase);
+			} else if (robot != null) {
+				// Note: need to avoid java.lang.StackOverflowError when calling
+				// PersonTableModel.unitUpdate()
+				robot.fireUnitUpdate(UnitEventType.TASK_PHASE_EVENT, newPhase);
+			}
+		} 
+		
+//		else {
+//			throw new IllegalStateException("newPhase: " + newPhase + " is not a valid phase for this task.");
+//		}
+	}
+
 	
 	/**
 	 * Gets a string of the current phase of the task.
@@ -421,40 +454,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 */
 	public TaskPhase getTopPhase() {
 		return phase;
-	}
-
-	/**
-	 * Sets the task's current phase.
-	 * 
-	 * @param newPhase the phase to set the a task at.
-	 * @throws Exception if newPhase is not in the task's collection of phases.
-	 */
-	protected void setPhase(TaskPhase newPhase) {
-		phase = newPhase;
-//		System.out.println("phases is " + phases);
-		// e.g. phases is [Walking inside a Settlement, Walking inside a Rover, Walking outside, Exiting Airlock, Entering Airlock, Exiting Rover In Garage, Entering Rover In Garage]
-		if (newPhase == null) {
-//			throw new IllegalArgumentException("newPhase is null");
-			endTask();
-		} 
-//		
-		else if ((phases != null && !phases.isEmpty() && phases.contains(newPhase))) {
-
-			if (person != null) {
-				// Note: need to avoid java.lang.StackOverflowError when calling
-				// PersonTableModel.unitUpdate()
-				person.fireUnitUpdate(UnitEventType.TASK_PHASE_EVENT, newPhase);
-			} else if (robot != null) {
-				// Note: need to avoid java.lang.StackOverflowError when calling
-				// PersonTableModel.unitUpdate()
-				robot.fireUnitUpdate(UnitEventType.TASK_PHASE_EVENT, newPhase);
-			}
-
-		} 
-		
-//		else {
-//			throw new IllegalStateException("newPhase: " + newPhase + " is not a valid phase for this task.");
-//		}
 	}
 
 	/**
@@ -592,9 +591,11 @@ public abstract class Task implements Serializable, Comparable<Task> {
 				} else {
 
 					// Perform phases of task until time is up or task is done.
-					while ((timeLeft > 0D) && !done && ((subTask == null) || subTask.done)) {
+					while ((timeLeft > 0D) && !done
+						&& getPhase() != null
+						&& ((subTask == null) || subTask.done)) {
+						
 						if (hasDuration) {
-
 							// Keep track of the duration of the task.
 							if ((timeCompleted + timeLeft) >= duration) {
 								double performTime = duration - timeCompleted;

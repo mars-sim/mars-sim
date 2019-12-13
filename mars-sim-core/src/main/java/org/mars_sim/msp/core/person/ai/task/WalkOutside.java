@@ -669,7 +669,7 @@ public class WalkOutside extends Task implements Serializable {
 			// Check for radiation exposure during the EVA operation.
 			// checkForRadiation(time);
 			// If there are any EVA problems, end walking outside task.
-			if (!ignoreEndEVA && !noEVAProblem(person)) {
+			if (!ignoreEndEVA && !noEVAProblem(person) && EVAOperation.isGettingDark(person)) {
 				endTask();
 				return time;
 			}

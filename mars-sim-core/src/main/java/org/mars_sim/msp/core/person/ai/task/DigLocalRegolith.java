@@ -316,7 +316,7 @@ implements Serializable {
     private double collectRegolith(double time) {
 
     	if (getTimeCompleted() > getDuration()) {
-    		endTask();
+//    		endTask();
     		if (person.isOutside())
     			setPhase(WALK_BACK_INSIDE);
             return 0;
@@ -327,7 +327,7 @@ implements Serializable {
 
         // Check for radiation exposure during the EVA operation.
         if (isRadiationDetected(time) && person.isOutside()){
-    		endTask();
+//    		endTask();
             setPhase(WALK_BACK_INSIDE);
             return 0;
         }
@@ -335,7 +335,7 @@ implements Serializable {
         // Check if there is reason to cut the collection phase short and return
         // to the airlock.
         if (shouldEndEVAOperation() && person.isOutside()) {
-    		endTask();
+//    		endTask();
             setPhase(WALK_BACK_INSIDE);
             return 0;
         }
@@ -391,7 +391,7 @@ implements Serializable {
         		+ Math.round(totalCollected*100D)/100D + " kg collected) " 
         		+ "; fatigue: " + Math.round(fatigue*10D)/10D 
         		+ "; stress: " + Math.round(stress*100D)/100D + " %");
-    		endTask();
+//    		endTask();
             if (person.isOutside())
             	setPhase(WALK_BACK_INSIDE);
         }

@@ -73,8 +73,12 @@ public class MaintenanceEVAMeta implements MetaTask, Serializable {
             	return 0;
 
             // Checks if the person's settlement is at meal time and is hungry
-            if ((EVAOperation.isHungryAtMealTime(person)))
+            if (EVAOperation.isHungryAtMealTime(person))
             	return 0;
+            
+            // Checks if a EVA suit is good
+            if (EVAOperation.noEVAProblem(person))
+            	return 0;	
             
             // Probability affected by the person's stress and fatigue.
             PhysicalCondition condition = person.getPhysicalCondition();
@@ -93,10 +97,6 @@ public class MaintenanceEVAMeta implements MetaTask, Serializable {
     		if (exposed[2]) {// SEP can give lethal dose of radiation
     			return 0;
     		}
-
-            
-            if (settlement.getIndoorPeopleCount() > settlement.getPopulationCapacity())
-                result *= 2D;
 
             try {
                 // Total probabilities for all malfunctionable entities in person's local.
@@ -127,6 +127,10 @@ public class MaintenanceEVAMeta implements MetaTask, Serializable {
                 logger.log(Level.SEVERE,"getProbability()",e);
             }
 
+            
+            if (settlement.getIndoorPeopleCount() > settlement.getPopulationCapacity())
+                result *= 2D;
+            
             // Job modifier.
             Job job = person.getMind().getJob();
             if (job != null) {

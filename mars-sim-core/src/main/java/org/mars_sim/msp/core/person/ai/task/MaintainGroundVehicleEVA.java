@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Msg;
@@ -68,8 +69,11 @@ implements Serializable {
     public MaintainGroundVehicleEVA(Person person) {
         super(NAME, person, true, 25);
 
-        settlement = person.getSettlement();
-
+     	settlement = CollectionUtils.findSettlement(person.getCoordinates());
+     	if (settlement == null) {
+        	return;
+     	}
+     	
         // Choose an available needy ground vehicle.
         vehicle = getNeedyGroundVehicle(person);
         if (vehicle != null) {
@@ -78,15 +82,15 @@ implements Serializable {
             // Determine location for maintenance.
             Point2D maintenanceLoc = determineMaintenanceLocation();
             setOutsideSiteLocation(maintenanceLoc.getX(), maintenanceLoc.getY());
+            
+            // Initialize phase.
+            addPhase(MAINTAIN_VEHICLE);
+
+            logger.finest(person.getName() + " starting MaintainGroundVehicleEVA task.");
         }
         else {
             endTask();
         }
-
-        // Initialize phase.
-        addPhase(MAINTAIN_VEHICLE);
-
-        logger.finest(person.getName() + " starting MaintainGroundVehicleEVA task.");
     }
 
     /**

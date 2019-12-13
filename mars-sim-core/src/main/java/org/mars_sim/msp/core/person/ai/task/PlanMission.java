@@ -82,12 +82,22 @@ public class PlanMission extends Task implements Serializable {
 			if (officeBuilding != null) {
 				office = officeBuilding.getAdministration();	
 				if (!office.isFull()) {
-					office.addstaff();
+					office.addStaff();
 					// Walk to the office building.
 					walkToActivitySpotInBuilding(officeBuilding, true);
 				}
 			}
-
+			else {
+				Building dining = EatDrink.getAvailableDiningBuilding(person, false);
+				// Note: dining building is optional
+				if (dining != null) {
+					// Walk to the dining building.
+					walkToActivitySpotInBuilding(dining, true);
+				}
+//				else {
+//					// work anywhere
+//				}				
+			}
 			// TODO: add other workplace if administration building is not available
 
 		} // end of roleType

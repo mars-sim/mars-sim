@@ -501,7 +501,7 @@ public class Maintenance extends Task implements Serializable {
 			if (inv.getItemResourceNum(part) < number)
 				result = false;
 		}
-
+//		logger.info("Inside hasMaintenanceParts(): result is " + result);
 		return result;
 	}
 

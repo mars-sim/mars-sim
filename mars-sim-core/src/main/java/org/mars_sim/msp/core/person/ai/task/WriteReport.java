@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * WriteReport.java
-  * @version 3.1.0 2017-09-13
+ * @version 3.1.0 2017-09-13
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -55,7 +55,7 @@ public class WriteReport extends Task implements Serializable {
 	 */
 	public WriteReport(Person person) {
 		// Use Task constructor.
-		super(NAME, person, true, false, STRESS_MODIFIER, true, 10D + RandomUtil.getRandomDouble(20D));
+		super(NAME, person, true, false, STRESS_MODIFIER, true, 10 + RandomUtil.getRandomInt(20));
 
 		if (person.isInSettlement()) {
 
@@ -65,11 +65,29 @@ public class WriteReport extends Task implements Serializable {
 				// Walk to the office building.
 				walkToActivitySpotInBuilding(officeBuilding, false);
 				office = officeBuilding.getAdministration();
-				office.addstaff();
+				if (!office.isFull()) {
+					office.addStaff();
+					// Walk to the dining building.
+					walkToActivitySpotInBuilding(officeBuilding, true);
+				}
 			}
-
+			else {
+				Building dining = EatDrink.getAvailableDiningBuilding(person, false);
+				// Note: dining building is optional
+				if (dining != null) {
+					// Walk to the dining building.
+					walkToActivitySpotInBuilding(dining, true);
+				}
+//				else {
+//					// work anywhere
+//				}				
+			}
+			// Initialize phase
+			addPhase(WRITING_REPORT);
+			setPhase(WRITING_REPORT);
+			
 			// set the boolean to true so that it won't be done again today
-			person.getPreference().setTaskDue(this, true);
+//			person.getPreference().setTaskDue(this, true);
 			// }
 		} else if (person.isInVehicle()) {
 
@@ -77,18 +95,18 @@ public class WriteReport extends Task implements Serializable {
 				walkToPassengerActivitySpotInRover((Rover) person.getVehicle(), true);
 
 				// set the boolean to true so that it won't be done again today
-				person.getPreference().setTaskDue(this, true);
+//				person.getPreference().setTaskDue(this, true);
+				
+				// Initialize phase
+				addPhase(WRITING_REPORT);
+				setPhase(WRITING_REPORT);
 			}
-
 		}
 
 		else {
 			endTask();
 		}
 
-		// Initialize phase
-		addPhase(WRITING_REPORT);
-		setPhase(WRITING_REPORT);
 	}
 
 	@Override

@@ -16,6 +16,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.JTable;
 import javax.swing.SpringLayout;
@@ -730,7 +731,7 @@ extends TabPanel {
 		private DecimalFormat fmt = new DecimalFormat("0.0");
 
 		private CircadianClock circadian;
-		private List<Double> sleepTime;
+		private Map<Integer, Double> sleepTime;
 
 		private SleepTableModel(Person person) {
 			circadian = person.getCircadianClock();
@@ -775,7 +776,10 @@ extends TabPanel {
 				    result = row + 1;
 				}
 				else if (column == 1) {
-				    result = fmt.format(sleepTime.get(row));
+					if (sleepTime.containsKey(row + 1))
+						result = fmt.format(sleepTime.get(row + 1));
+					else
+						result = fmt.format(0);
 				}
 			}
 			return result;

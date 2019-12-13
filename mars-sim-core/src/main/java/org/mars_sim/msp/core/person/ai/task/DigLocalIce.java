@@ -91,14 +91,14 @@ implements Serializable {
 
      	settlement = CollectionUtils.findSettlement(person.getCoordinates());
      	if (settlement == null) {
-        	endTask();
+//        	endTask();
         	return;
      	}
         
         // Get an available airlock.
         airlock = getWalkableAvailableAirlock(person);
         if (airlock == null) {
-        	endTask();
+//        	endTask();
         	return;
         }
 
@@ -115,7 +115,7 @@ implements Serializable {
             	if (person.isOutside()){
                     setPhase(WALK_BACK_INSIDE);
                 }
-            	endTask();
+//            	endTask();
             	return;
             }
         }
