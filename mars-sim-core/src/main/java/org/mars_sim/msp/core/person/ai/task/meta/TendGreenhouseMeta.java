@@ -29,7 +29,7 @@ public class TendGreenhouseMeta implements MetaTask, Serializable {
     /** default serial id. */
     private static final long serialVersionUID = 1L;
 
-    private static final double VALUE = 7.5D;
+    private static final double VALUE = 4D;
     
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -97,7 +97,7 @@ public class TendGreenhouseMeta implements MetaTask, Serializable {
         	        // Add Preference modifier
                     double pref = person.getPreference().getPreferenceScore(this);
                    
-       	         	result = result + result * pref/2D;        	        	
+       	         	result = result + result * pref/4D;        	        	
 
         	        if (result < 0) result = 0;
                 }

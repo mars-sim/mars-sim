@@ -117,12 +117,16 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 			settlement = CollectionUtils.findSettlement(person.getCoordinates());
 			if (settlement == null) {
 				endTask();
+				return;
 			}
 		}
 		
-		else
+		else {
 			endTask();
-		
+			return;
+		}
+			
+			
 		if (!ended) {
 			setDescription(Msg.getString("Task.description.loadVehicleEVA.detail", vehicle.getName())); // $NON-NLS-1$
 			
@@ -149,9 +153,12 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 			requiredEquipment = mission.getRequiredEquipmentToLoad();
 			optionalEquipment = mission.getOptionalEquipmentToLoad();
 		}
-		else
+		
+		else {
 			endTask();
-
+			return;
+		}
+		
 		if (vehicle != null && !ended) {
 			// Determine location for loading.
 			Point2D loadingLoc = determineLoadingLocation();
@@ -185,6 +192,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 		settlement = CollectionUtils.findSettlement(person.getCoordinates());
 		if (settlement == null) {
 			endTask();
+			return;
 		}
 			
 		if (!ended) {
@@ -377,7 +385,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 			if (isRadiationDetected(time) && person.isOutside()) {
 				setPhase(WALK_BACK_INSIDE);
 				endTask();
-				return .5 * time;
+				return 0;
 			}
 	
 			// Check if site duration has ended or there is reason to cut the loading
@@ -385,7 +393,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 			if (person.isOutside() && (shouldEndEVAOperation() || addTimeOnSite(time))) {
 				setPhase(WALK_BACK_INSIDE);
 				endTask();
-				return .5 * time;
+				return 0;
 			}
 	
 			// Determine load rate.

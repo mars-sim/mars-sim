@@ -70,8 +70,7 @@ implements Serializable {
 	 * @param person the person to perform the task
 	 */
 	public ProduceFood(Person person) {
-		super(NAME, person, true, false, STRESS_MODIFIER, true,
-				25);
+		super(NAME, person, true, false, STRESS_MODIFIER, true, 25);
 
 		// Initialize data members
 		if (person.isInSettlement()) {
@@ -536,11 +535,24 @@ implements Serializable {
 	 * @return remaining time after performing (millisols)
 	 */
 	private double foodProductionPhase(double time) {
-
+		
+		if (person != null) {
+			if (person.isOutside()) {
+				endTask();
+				return 0;
+			}
+		}
+		else if (robot != null) {
+			if (robot.isOutside()) {
+				endTask();
+				return 0;
+			}
+		}
+		
 		// Check if foodFactory has malfunction.
 		if (foodFactory.getBuilding().getMalfunctionManager().hasMalfunction()) {
 			endTask();
-			return time;
+			return 0;
 		}
 
 		else {

@@ -35,7 +35,6 @@ import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.structure.Airlock;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
@@ -74,7 +73,7 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements Repai
 	 * @param person the person to perform the task
 	 */
 	public RepairEmergencyMalfunctionEVA(Person person) {
-		super(NAME, person, false, 25D);
+		super(NAME, person, false, 25);
 
 		// Factor in a person's preference for the new stress modifier
 		int score = person.getPreference().getPreferenceScore(new RepairEVAMalfunctionMeta());
@@ -108,14 +107,12 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements Repai
 	}
 
 	public void init2() {
-
 		// Determine location for repairing malfunction.
 		Point2D malfunctionLoc = determineMalfunctionLocation();
 		setOutsideSiteLocation(malfunctionLoc.getX(), malfunctionLoc.getY());
 
 		// Initialize phase
 		addPhase(REPAIRING);
-
 	}
 
 	/**
@@ -294,14 +291,14 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements Repai
 		String name = null;
 
 		// Check for radiation exposure during the EVA operation.
-		if (isRadiationDetected(time)) {
+		if (person.isOutside() && isRadiationDetected(time)) {
 			setPhase(WALK_BACK_INSIDE);
-			return time;
+			return 0;
 		}
 
-		if (shouldEndEVAOperation() || addTimeOnSite(time)) {
+		if (person.isOutside() && (shouldEndEVAOperation() || addTimeOnSite(time))) {
 			setPhase(WALK_BACK_INSIDE);
-			return time;
+			return 0;
 		}
 
 		// Check if there emergency malfunction work is fixed.
@@ -359,7 +356,7 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements Repai
 						+ " in "+ entity + " (" + Math.round(malfunction.getCompletedEmergencyWorkTime()*10.0)/10.0 + " millisols spent).");
 			}
 			setPhase(WALK_BACK_INSIDE);
-//			return remainingWorkTime;
+			return 0;
 		}
 		
 		return remainingWorkTime;

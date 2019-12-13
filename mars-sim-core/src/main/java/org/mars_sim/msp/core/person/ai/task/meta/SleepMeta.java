@@ -106,7 +106,7 @@ public class SleepMeta implements MetaTask, Serializable {
         	
     	    if (result < 0) {
     	    	// Reduce the probability if it's not the right time to sleep
-    	    	refreshSleepHabit(person); 
+//    	    	refreshSleepHabit(person); 
     	    	return 0;
     	    }
     	    	
@@ -126,7 +126,7 @@ public class SleepMeta implements MetaTask, Serializable {
             }
 
             boolean isOnShift = person.getTaskSchedule().isShiftHour(marsClock.getMillisolInt());
-            if (isOnShift) {
+            if (isOnShift && person.getShiftType() != ShiftType.ON_CALL) {
          	   // Reduce the probability if it's not the right time to sleep
          	   refreshSleepHabit(person);
          	   // probability of sleep reduces to one fifth of its value
@@ -223,13 +223,13 @@ public class SleepMeta implements MetaTask, Serializable {
         	// if process is false
         	
 	        // Reduce the probability if it's not the right time to sleep
-	    	refreshSleepHabit(person);  
+//	    	refreshSleepHabit(person);  
        }
 
        // No sleeping outside.
        if (person.isOutside()) {
     	   // Reduce the probability if it's not the right time to sleep
-    	   refreshSleepHabit(person);  
+//    	   refreshSleepHabit(person);  
     	   result = 0D;
        }
        

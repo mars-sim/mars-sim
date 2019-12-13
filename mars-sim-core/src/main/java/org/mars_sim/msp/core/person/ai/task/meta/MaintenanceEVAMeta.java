@@ -64,6 +64,18 @@ public class MaintenanceEVAMeta implements MetaTask, Serializable {
   
         if (person.isInSettlement()) {
         	
+            // Check if an airlock is available
+            if (EVAOperation.getWalkableAvailableAirlock(person) == null)
+	    		return 0;
+
+            // Check if it is night time.
+            if (EVAOperation.isGettingDark(person))
+            	return 0;
+
+            // Checks if the person's settlement is at meal time and is hungry
+            if ((EVAOperation.isHungryAtMealTime(person)))
+            	return 0;
+            
             // Probability affected by the person's stress and fatigue.
             PhysicalCondition condition = person.getPhysicalCondition();
             double fatigue = condition.getFatigue();
@@ -82,17 +94,6 @@ public class MaintenanceEVAMeta implements MetaTask, Serializable {
     			return 0;
     		}
 
-            // Check if an airlock is available
-            if (EVAOperation.getWalkableAvailableAirlock(person) == null)
-	    		return 0;
-
-            // Check if it is night time.
-            if (EVAOperation.isGettingDark(person))
-            	return 0;
-
-            // Checks if the person's settlement is at meal time and is hungry
-            if ((EVAOperation.isHungryAtMealTime(person)))
-            	return 0;
             
             if (settlement.getIndoorPeopleCount() > settlement.getPopulationCapacity())
                 result *= 2D;

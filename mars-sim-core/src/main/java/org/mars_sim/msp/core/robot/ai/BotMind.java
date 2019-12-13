@@ -105,27 +105,25 @@ public class BotMind implements Serializable {
 	 */
 	public void timePassing(double time) {
 
-		if (botTaskManager != null)
+		if (botTaskManager != null) {
+			// Take action as necessary.
+			takeAction(time);
 			botTaskManager.recordTask();
-
+		}
+		
 //	    if (missionManager != null)
 //	    	missionManager.recordMission(robot);
 
-		int msolInt = marsClock.getMillisolInt();
+//		int msolInt = marsClock.getMillisolInt();
 
-		if (msolCache != msolInt) {
-			msolCache = msolInt;
-
+//		if (msolCache != msolInt) {
+//			msolCache = msolInt;
 			// I don't think robots should be changing jobs on their own. - Scott
 			// Check if this robot needs to get a new job or change jobs.
 //		        if (!jobLock) {
 //		        	setRobotJob(JobManager.getNewRobotJob(robot), false);
 //		        }
-
-			if (botTaskManager != null)
-				// Take action as necessary.
-				takeAction(time);
-		}
+//		}
 
 	}
 

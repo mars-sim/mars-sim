@@ -75,6 +75,11 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 	public RepairMalfunction(Person person) {
 		super(NAME, person, true, false, STRESS_MODIFIER, true, 25D + RandomUtil.getRandomDouble(10D));
 
+		if (person.isOutside()) {
+			endTask();
+			return;
+		}
+		
 		// Get the malfunctioning entity.
 		entity = getMalfunctionEntity(person);
 		if (entity != null) {
@@ -82,6 +87,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 			addPersonOrRobotToMalfunctionLocation(entity);
 		} else {
 			endTask();
+			return;
 		}
 
 		// Initialize phase
@@ -93,7 +99,12 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 
 	public RepairMalfunction(Robot robot) {
 		super(NAME, robot, true, false, STRESS_MODIFIER, true, 50D);
-
+		
+		if (robot.isOutside()) {
+			endTask();
+			return;
+		}
+		
 		// Get the malfunctioning entity.
 		entity = getMalfunctionEntity(robot);
 		if (entity != null) {
@@ -101,6 +112,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 			addPersonOrRobotToMalfunctionLocation(entity);
 		} else {
 			endTask();
+			return;
 		}
 
 		// Initialize phase

@@ -448,8 +448,21 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 	 * @param time amount of time passing (in millisols).
 	 */
 	public void timePassing(double time) {
-		// convert to using owner
+		
+		// If robot is dead, then skip
+		if (health != null && !health.isInoperable()) {
+			
+			if (health.timePassing(time, robotConfig)) {
 
+				// Mental changes with time passing.
+				if (botMind != null)
+					botMind.timePassing(time);
+			} else {
+				// robot has died as a result of physical condition
+				setInoperable();
+			}
+		}
+		
 //		Unit container = getContainerUnit();
 //		if (container instanceof Person) {
 //			Person person = (Person) container;
@@ -477,23 +490,6 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 				age = updateAge();
 				
 				solCache = solElapsed;
-			}
-			
-			// If robot is dead, then skip
-			if (health != null && !health.isInoperable()) {
-
-				// support = getLifeSupportType();
-				// Pass the time in the physical condition first as this may
-				// result in death.
-				if (health.timePassing(time, robotConfig)) {
-
-					// Mental changes with time passing.
-					if (botMind != null)
-						botMind.timePassing(time);
-				} else {
-					// robot has died as a result of physical condition
-					setInoperable();
-				}
 			}
 		}
 	}

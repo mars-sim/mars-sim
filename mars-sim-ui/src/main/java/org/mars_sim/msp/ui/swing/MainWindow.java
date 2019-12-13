@@ -525,9 +525,9 @@ extends JComponent {
 				double maxMem = memoryBar.getMemoryUsage().getMax();
 				double usedMem = memoryBar.getMemoryUsage().getUsed();
 				
-				if (usedMem >= maxMem * .85) {
-					masterClock.decreaseTimeRatio();
-				}
+//				if (usedMem >= maxMem * .85) {
+//					masterClock.decreaseTimeRatio();
+//				}
 				
 				// Track sleep time
 //				long sleepTime = masterClock.getSleepTime();
@@ -550,9 +550,9 @@ extends JComponent {
 					solCache = sol;
 					solLabel.setText(SOL + sol + WHITESPACES);
 					
-					if (usedMem >= maxMem * .1 && usedMem <= maxMem * .6) {
-						masterClock.increaseTimeRatio();
-					}
+//					if (usedMem >= maxMem * .1 && usedMem <= maxMem * .6) {
+//						masterClock.increaseTimeRatio();
+//					}
 				}
 			
 				// Check if the music track should be played

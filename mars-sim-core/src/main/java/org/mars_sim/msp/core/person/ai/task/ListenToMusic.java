@@ -65,17 +65,19 @@ implements Serializable {
 		
 		if (person.isOutside()) {
 			endTask();
+			return;
 		}
 		
-		// If during person's work shift, only relax for short period.
+		// If during person's work shift, reduce the time to 1/4.
 		int millisols = Simulation.instance().getMasterClock().getMarsClock().getMillisolInt();
         boolean isShiftHour = person.getTaskSchedule().isShiftHour(millisols);
 		if (isShiftHour) {
-		    setDuration(5D);
+		    setDuration(this.getDuration()/4D);
 		}
 
 		// If person is in a settlement, try to find a place to relax.
 		boolean walkSite = false;
+		
 		if (person.isInSettlement()) {
 
 			try {
@@ -137,6 +139,14 @@ implements Serializable {
 		    
         	setDescription(Msg.getString("Task.description.listenToMusic"));
 		}
+		
+		else {
+    		// Initialize phase
+    		addPhase(FINDING_A_SONG);
+    		addPhase(LISTENING_TO_MUSIC);
+
+    		setPhase(FINDING_A_SONG);
+		}
 
 	}
 
@@ -172,14 +182,20 @@ implements Serializable {
 	 * @return the amount of time (millisol) left after performing the phase.
 	 */
 	private double listeningPhase(double time) {
-        // Reduce person's fatigue
-        double newFatigue = person.getPhysicalCondition().getFatigue() - (2D * time);
-        if (newFatigue < 0D) {
-            newFatigue = 0D;
-        }
-        person.getPhysicalCondition().setFatigue(newFatigue);
-        setDescription(Msg.getString("Task.description.listenToMusic"));//$NON-NLS-1$
-		return 0D;
+		if (person.isOutside()) {
+			endTask();
+			return 0;
+		}
+		else {
+	        // Reduce person's fatigue
+	        double newFatigue = person.getPhysicalCondition().getFatigue() - (2D * time);
+	        if (newFatigue < 0D) {
+	            newFatigue = 0D;
+	        }
+	        person.getPhysicalCondition().setFatigue(newFatigue);
+	        setDescription(Msg.getString("Task.description.listenToMusic"));//$NON-NLS-1$
+			return 0D;
+		}
 	}
 
 	/**
@@ -188,10 +204,16 @@ implements Serializable {
 	 * @return the amount of time (millisol) left after performing the phase.
 	 */
 	private double findingPhase(double time) {
-        setDescription(Msg.getString("Task.description.listenToMusic.findingSong"));//$NON-NLS-1$
-		// TODO: add codes for selecting a particular type of music		
-		setPhase(LISTENING_TO_MUSIC);
-		return time*.8D;
+		if (person.isOutside()) {
+			endTask();
+			return 0;
+		}
+		else {
+	        setDescription(Msg.getString("Task.description.listenToMusic.findingSong"));//$NON-NLS-1$
+			// TODO: add codes for selecting a particular type of music		
+			setPhase(LISTENING_TO_MUSIC);
+			return time * .75D;
+		}
 	}
 
 	@Override
@@ -210,8 +232,8 @@ implements Serializable {
 		Building result = null;
 
 		if (person.isInSettlement()) {
-			BuildingManager manager = person.getSettlement().getBuildingManager();
-			List<Building> recreationBuildings = manager.getBuildings(FunctionType.RECREATION);
+//			BuildingManager manager = person.getSettlement().getBuildingManager();
+			List<Building> recreationBuildings = person.getSettlement().getBuildingManager().getBuildings(FunctionType.RECREATION);
 			recreationBuildings = BuildingManager.getNonMalfunctioningBuildings(recreationBuildings);
 			recreationBuildings = BuildingManager.getLeastCrowdedBuildings(recreationBuildings);
 

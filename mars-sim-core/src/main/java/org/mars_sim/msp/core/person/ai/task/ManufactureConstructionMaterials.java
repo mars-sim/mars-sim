@@ -59,10 +59,10 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = .1D;
 
-	/** List of construction material resources. */
-	private static List<Integer> constructionResources;
-	/** List of construction material parts. */
-	private static List<Integer> constructionParts;
+//	/** List of construction material resources. */
+//	private List<Integer> constructionResources;
+//	/** List of construction material parts. */
+//	private List<Integer> constructionParts;
 
 	// Data members
 	/** The manufacturing workshop the person is using. */
@@ -74,7 +74,7 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
 	 * @param person the person to perform the task
 	 */
 	public ManufactureConstructionMaterials(Person person) {
-		super(NAME, person, true, false, STRESS_MODIFIER, true, 10D + RandomUtil.getRandomDouble(50D));
+		super(NAME, person, true, false, STRESS_MODIFIER, true, 25);
 
 		// Initialize data members
 		if (person.getSettlement() != null) {
@@ -338,8 +338,7 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
 
 		int skillLevel = person.getSkillManager().getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
 
-		Manufacture manufacturingFunction = manufacturingBuilding.getManufacture();// (Manufacture)
-																					// manufacturingBuilding.getFunction(FunctionType.MANUFACTURE);
+		Manufacture manufacturingFunction = manufacturingBuilding.getManufacture();
 		int techLevel = manufacturingFunction.getTechLevel();
 
 		Iterator<ManufactureProcessInfo> i = ManufactureUtil
@@ -406,13 +405,16 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
 	 */
 	private static boolean producesConstructionMaterials(ManufactureProcessInfo info) {
 		boolean result = false;
-
-		if (constructionResources == null) {
-			determineConstructionResources();
-		}
-		if (constructionParts == null) {
-			determineConstructionParts();
-		}
+//		if (constructionResources == null) {
+//			determineConstructionResources();
+//		}
+//		if (constructionParts == null) {
+//			determineConstructionParts();
+//		}
+		List<Integer> constructionResources = determineConstructionResources();
+		
+		List<Integer> constructionParts = determineConstructionParts();
+		
 		Iterator<ManufactureProcessItem> i = info.getOutputList().iterator();
 		while (!result && i.hasNext()) {
 			ManufactureProcessItem item = i.next();
@@ -435,8 +437,8 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
 	/**
 	 * Determines all resources needed for construction projects.
 	 */
-	private static void determineConstructionResources() {
-		constructionResources = new ArrayList<>();
+	private static List<Integer> determineConstructionResources() {
+		List<Integer> constructionResources = new ArrayList<>();
 
 		Iterator<ConstructionStageInfo> i = ConstructionUtil.getAllConstructionStageInfoList().iterator();
 		while (i.hasNext()) {
@@ -451,13 +453,15 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
 				}
 			}
 		}
+		
+		return constructionResources;
 	}
 
 	/**
 	 * Determines all parts needed for construction projects.
 	 */
-	private static void determineConstructionParts() {
-		constructionParts = new ArrayList<>();
+	private static List<Integer> determineConstructionParts() {
+		List<Integer> constructionParts = new ArrayList<>();
 
 		Iterator<ConstructionStageInfo> i = ConstructionUtil.getAllConstructionStageInfoList().iterator();
 		while (i.hasNext()) {
@@ -472,6 +476,8 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
 				}
 			}
 		}
+		
+		return constructionParts;
 	}
 
 	@Override
@@ -525,10 +531,23 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
 	 */
 	private double manufacturePhase(double time) {
 
+		if (person != null) {
+			if (person.isOutside()) {
+				endTask();
+				return 0;
+			}
+		}
+		else if (robot != null) {
+			if (robot.isOutside()) {
+				endTask();
+				return 0;
+			}
+		}
+		
 		// Check if workshop has malfunction.
 		if (workshop.getBuilding().getMalfunctionManager().hasMalfunction()) {
 			endTask();
-			return time;
+			return 0;
 		}
 
 		// Determine amount of effective work time based on "Materials Science"

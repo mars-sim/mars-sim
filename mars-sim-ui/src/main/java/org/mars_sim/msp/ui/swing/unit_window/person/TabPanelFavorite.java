@@ -55,8 +55,6 @@ extends TabPanel {
 	private boolean uiDone = false;
 	/** The Preference Table. */	
 	private JTable table;
-	/** The sleep hour text field. */	
-	private WebTextField sleepTF;
 	/** The Preference Table Model. */	
 	private PreferenceTableModel tableModel;
 	/** The Person instance. */
@@ -162,30 +160,9 @@ extends TabPanel {
 		wrapper4.add(activityTF);
 		infoPanel.add(wrapper4);
 
-		// Prepare sleep hour name label
-		WebLabel sleepLabel = new WebLabel(Msg.getString("TabPanelFavorite.sleepHour"), WebLabel.RIGHT); //$NON-NLS-1$
-//		sleepLabel.setFont(font);
-		infoPanel.add(sleepLabel);
-
-		// Checks the two best sleep hours
-    	int bestSleepTime[] = person.getPreferredSleepHours();		
-		WebPanel wrapper5 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		Arrays.sort(bestSleepTime);
-		
-		// Prepare sleep hour TF
-		sleepTF = new WebTextField(bestSleepTime[0] + " and " + bestSleepTime[1]);
-		sleepTF.setEditable(false);
-		sleepTF.setColumns(17);
-		//activityTF.requestFocus();
-		sleepTF.setCaretPosition(0);
-		wrapper5.add(sleepTF);
-		infoPanel.add(wrapper5);
-
-		TooltipManager.setTooltip (sleepTF, "Time in millisols", TooltipWay.down); //$NON-NLS-1$
-				
 		// Prepare SpringLayout
 		SpringUtilities.makeCompactGrid(infoPanel,
-		                                5, 2, //rows, cols
+		                                4, 2, //rows, cols
 		                                50, 10,        //initX, initY
 		                                10, 2);       //xPad, yPad
 
@@ -239,13 +216,6 @@ extends TabPanel {
 			initializeUI();
 		
 		TableStyle.setTableStyle(table);
-		
-		// Checks the two best sleep hours
-    	int bestSleepTime[] = person.getPreferredSleepHours();		
-		Arrays.sort(bestSleepTime);
-		
-		// Prepare sleep hour TF
-		sleepTF.setText(bestSleepTime[0] + " and " + bestSleepTime[1]);
 	}
 
 

@@ -143,11 +143,16 @@ public class Mind implements Serializable {
 	 * @throws Exception if error.
 	 */
 	public void timePassing(double time) {
-		if (taskManager != null)
+		if (taskManager != null) {
+			// Take action as necessary.
+			takeAction(time);
+			// Record the action (task/mission)
 			taskManager.recordFilterTask(time);
-
+		}
+		
 		double msol1 = marsClock.getMillisolOneDecimal();
 
+		
 		if (msolCache1 != msol1) {
 			msolCache1 = msol1;
 
@@ -182,11 +187,6 @@ public class Mind implements Serializable {
 					}
 				} else
 					checkJob();
-			}
-
-			// Take action as necessary.
-			if (taskManager != null) {
-				takeAction(time);
 			}
 		}
 	}

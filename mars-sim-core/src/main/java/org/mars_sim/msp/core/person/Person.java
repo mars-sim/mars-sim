@@ -997,11 +997,23 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 */
 	public void timePassing(double time) {
 
+		if (!condition.isDead()) {
+
+			try {
+				// Mental changes with time passing.
+				mind.timePassing(time);
+			} catch (Exception ex) {
+				ex.printStackTrace();
+				LogConsolidated.log(Level.SEVERE, 20_000, sourceName, "[" + getLocationTag().getLocale() + "] "
+						+ getName() + "'s Mind was having trouble processing task selection.", ex);
+			}
+		}
+		
 		double msol1 = marsClock.getMillisolOneDecimal();
 
 		if (msolCache != msol1) {
 			msolCache = msol1;
-
+			
 			// If Person is dead, then skip
 			if (!condition.isDead() && getLifeSupportType() != null) {// health.getDeathDetails() == null) {
 
@@ -1013,15 +1025,6 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 
 				if (!condition.isDead()) {
 
-					try {
-						// Mental changes with time passing.
-						mind.timePassing(time);
-					} catch (Exception ex) {
-						ex.printStackTrace();
-						LogConsolidated.log(Level.SEVERE, 2000, sourceName, "[" + getLocationTag().getLocale() + "] "
-								+ getName() + "'s Mind was having trouble processing task selection.", ex);
-					}
-
 //					// Check on the EVA suit donned by the person
 //					if (suit != null) {
 //						suit.getMalfunctionManager().activeTimePassing(time);	
@@ -1032,6 +1035,13 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 					int solElapsed = marsClock.getMissionSol();
 
 					if (solCache != solElapsed) {
+						
+						// Adjust the sleep habit according to the current work shift
+						for (int i=0; i< 5; i++) {
+							int projectedMillisols = getTaskSchedule().getShiftEnd() + 5 * (i+1);
+							circadian.updateSleepCycle(projectedMillisols, true);
+						}
+						
 						// Check if a person's age should be updated
 						age = updateAge();
 						

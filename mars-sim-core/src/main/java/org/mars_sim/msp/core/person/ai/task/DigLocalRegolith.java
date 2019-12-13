@@ -92,12 +92,14 @@ implements Serializable {
      	settlement = CollectionUtils.findSettlement(person.getCoordinates());
      	if (settlement == null) {
         	endTask();
+        	return;
      	}
      	
         // Get an available airlock.
         airlock = getWalkableAvailableAirlock(person);
         if (airlock == null) {
         	endTask();
+        	return;
         }
 
         // Determine digging location.
@@ -114,6 +116,7 @@ implements Serializable {
                     setPhase(WALK_BACK_INSIDE);
                 }
             	endTask();
+            	return;
             }
         }
 
@@ -316,7 +319,7 @@ implements Serializable {
     		endTask();
     		if (person.isOutside())
     			setPhase(WALK_BACK_INSIDE);
-            return .5 * time;
+            return 0;
     	}
     	
         // Check for an accident during the EVA operation.
@@ -326,7 +329,7 @@ implements Serializable {
         if (isRadiationDetected(time) && person.isOutside()){
     		endTask();
             setPhase(WALK_BACK_INSIDE);
-            return .5 * time;
+            return 0;
         }
 
         // Check if there is reason to cut the collection phase short and return
@@ -334,7 +337,7 @@ implements Serializable {
         if (shouldEndEVAOperation() && person.isOutside()) {
     		endTask();
             setPhase(WALK_BACK_INSIDE);
-            return .5 * time;
+            return 0;
         }
 
         double remainingPersonCapacity = person.getInventory().getAmountResourceRemainingCapacity(
@@ -368,6 +371,9 @@ implements Serializable {
         // Add penalty to the fatigue
         condition.setFatigue(fatigue + time * factor);
         
+        // Add experience points
+        addExperience(time);
+        
         if (finishedCollecting) {
             LogConsolidated.log(Level.INFO, 0, sourceName, 
         		"[" + person.getLocationTag().getLocale() +  "] " +
@@ -378,9 +384,6 @@ implements Serializable {
             	setPhase(WALK_BACK_INSIDE);
     	}
         
-        // Add experience points
-        addExperience(time);
-
         if (fatigue > 1000 || stress > 50) {
             LogConsolidated.log(Level.INFO, 0, sourceName, 
         		"[" + person.getLocationTag().getLocale() +  "] " +

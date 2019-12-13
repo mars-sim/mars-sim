@@ -31,7 +31,7 @@ public class ManufactureGoodMeta implements MetaTask, Serializable {
     /** default serial id. */
     private static final long serialVersionUID = 1L;
     
-    private static final double CAP = 500D; 
+    private static final double CAP = 3000D; 
     
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -67,19 +67,6 @@ public class ManufactureGoodMeta implements MetaTask, Serializable {
             // See if there is an available manufacturing building.
             Building manufacturingBuilding = ManufactureGood.getAvailableManufacturingBuilding(person);
             if (manufacturingBuilding != null) {
-                result = 1D;
-
-                // Crowding modifier.
-                result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, manufacturingBuilding);
-                result *= TaskProbabilityUtil.getRelationshipModifier(person, manufacturingBuilding);
-
-                // Manufacturing good value modifier.
-                result *= ManufactureGood.getHighestManufacturingProcessValue(person, manufacturingBuilding);
-
-                // Capping the probability at 100 as manufacturing process values can be very large numbers.
-                if (result > CAP) {
-                    result = CAP;
-                }
 
                 // If manufacturing building has process requiring work, add
                 // modifier.
@@ -88,6 +75,18 @@ public class ManufactureGoodMeta implements MetaTask, Serializable {
                 if (ManufactureGood.hasProcessRequiringWork(manufacturingBuilding, skill)) {
                     result += 10D;
                 }
+
+                // Stress modifier
+                result = result - stress * 3.5D;
+                // fatigue modifier
+                result = result - (fatigue - 100) / 2.5D;
+
+                // Crowding modifier.
+                result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, manufacturingBuilding);
+                result *= TaskProbabilityUtil.getRelationshipModifier(person, manufacturingBuilding);
+
+                // Manufacturing good value modifier.
+                result *= ManufactureGood.getHighestManufacturingProcessValue(person, manufacturingBuilding);
 
                 // Effort-driven task modifier.
                 result *= person.getPerformanceRating();
@@ -101,24 +100,21 @@ public class ManufactureGoodMeta implements MetaTask, Serializable {
 
                 // Modify if tinkering is the person's favorite activity.
                 if (person.getFavorite().getFavoriteActivity() == FavoriteType.TINKERING) {
-                    result += RandomUtil.getRandomInt(1, 20);
+                    result *= RandomUtil.getRandomDouble(2D);
                 }
 
-                // 2015-06-07 Added Preference modifier
+                // Add Preference modifier
                 if (result > 0D) {
-                    result = result + result * person.getPreference().getPreferenceScore(this)/5D;
+                    result = result + result * person.getPreference().getPreferenceScore(this)/6D;
+                }
+                
+                // Capping the probability at 100 as manufacturing process values can be very large numbers.
+                if (result > CAP) {
+                    result = CAP;
                 }
                 
                 if (result < 0) result = 0;
-
-
             }
-            
-            // Cancel any manufacturing processes that's beyond the skill of any people
-            // associated with the settlement.
-            if (result > 0)
-            	ManufactureGood.cancelDifficultManufacturingProcesses(person);
-
         }
 
         return result;

@@ -59,7 +59,19 @@ public class LoadVehicleEVAMeta implements MetaTask, Serializable {
     	if (person.isOutside()) {
     		return 0;
     	}
-    	
+    		
+        // Check if an airlock is available
+        if (EVAOperation.getWalkableAvailableAirlock(person) == null)
+    		return 0;
+
+        // Check if it is night time.
+		if (EVAOperation.isGettingDark(person))
+			return 0;
+
+        // Checks if the person's settlement is at meal time and is hungry
+        if ((EVAOperation.isHungryAtMealTime(person)))
+        	return 0;
+        
     	double result = 0D;
         
     	if (person.isInSettlement()) {
@@ -85,18 +97,6 @@ public class LoadVehicleEVAMeta implements MetaTask, Serializable {
 			if (exposed[2]) {// SEP can give lethal dose of radiation
 	            return 0;
 			}
-	
-	        // Check if an airlock is available
-	        if (EVAOperation.getWalkableAvailableAirlock(person) == null)
-	    		return 0;
-	
-	        // Check if it is night time.
-			if (EVAOperation.isGettingDark(person))
-				return 0;
-	
-            // Checks if the person's settlement is at meal time and is hungry
-            if ((EVAOperation.isHungryAtMealTime(person)))
-            	return 0;
             
 	        // Check all vehicle missions occurring at the settlement.
 	        try {
@@ -105,7 +105,7 @@ public class LoadVehicleEVAMeta implements MetaTask, Serializable {
                	if (num == 0)
                		return 0;
                	else 
-               		result = 100D * num;
+               		result += 100D * num;
 	        }
 	        catch (Exception e) {
 	            logger.log(Level.SEVERE, "Error finding loading missions.", e);
@@ -114,7 +114,9 @@ public class LoadVehicleEVAMeta implements MetaTask, Serializable {
 	        // Check if any rovers are in need of EVA suits to allow occupants to exit.
 	        if (LoadVehicleEVA.getRoversNeedingEVASuits(settlement).size() > 0) {
 	            int numEVASuits = settlement.getInventory().findNumEVASuits(false, false);
-	            if (numEVASuits >= 2) {
+	            if (numEVASuits == 0)
+	            	return 0;
+	            else if (numEVASuits >= 2) {
 	                result += 100D;
 	            }
 	        }
@@ -134,19 +136,19 @@ public class LoadVehicleEVAMeta implements MetaTask, Serializable {
 	
 	        // Modify if operations is the person's favorite activity.
 	        if (person.getFavorite().getFavoriteActivity() == FavoriteType.OPERATION)
-	            result += RandomUtil.getRandomInt(1, 20);
+	            result *= RandomUtil.getRandomDouble(2D);
 	
 	        // Add Preference modifier
 	        if (result > 0D) {
-	            result = result + result * person.getPreference().getPreferenceScore(this)/5D;
+	            result = result + result * person.getPreference().getPreferenceScore(this)/6D;
 	        }
 	
 	    	if (exposed[0]) {
-				result = result/2D;// Baseline can give a fair amount dose of radiation
+				result = result/3D;// Baseline can give a fair amount dose of radiation
 			}
 	
 	    	if (exposed[1]) {// GCR can give nearly lethal dose of radiation
-				result = result/4D;
+				result = result/6D;
 			}
 
     	}

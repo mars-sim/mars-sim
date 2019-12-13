@@ -470,6 +470,7 @@ public class TaskManager implements Serializable {
 //			 if (person.isInside()) {
 //			 checkForEmergency();
 //			 }
+			
 			try {
 				remainingTime = currentTask.performTask(time);
 			} catch (Exception e) {
@@ -496,7 +497,7 @@ public class TaskManager implements Serializable {
 						circadian = person.getCircadianClock();
 
 					// it takes more energy to be in EVA doing work
-					reduceEnergy(energyTime);
+					reduceEnergy(energyTime*1.1);
 					circadian.exercise(time);
 				} else
 					reduceEnergy(energyTime);

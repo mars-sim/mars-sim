@@ -22,6 +22,7 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.job.Chefbot;
 import org.mars_sim.msp.core.robot.ai.job.Makerbot;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * Meta task for the ProduceFood task.
@@ -35,6 +36,8 @@ public class ProduceFoodMeta implements MetaTask, Serializable {
     private static final String NAME = Msg.getString(
             "Task.description.produceFood"); //$NON-NLS-1$
 
+    private static final double CAP = 3000D;
+    
     @Override
     public String getName() {
         return NAME;
@@ -47,7 +50,10 @@ public class ProduceFoodMeta implements MetaTask, Serializable {
 
     @Override
     public double getProbability(Person person) {
-
+    	if (person.isOutside() || person.isInVehicle()) {
+    		return 0;
+    	}
+    	
         double result = 0D;
 
         if (person.isInSettlement() && !person.getSettlement().getFoodProductionOverride()) {
@@ -101,15 +107,15 @@ public class ProduceFoodMeta implements MetaTask, Serializable {
 
                 // Modify if cooking is the person's favorite activity.
                 if (person.getFavorite().getFavoriteActivity() == FavoriteType.COOKING) {
-                    result *= 1.2D;
+                    result *= RandomUtil.getRandomDouble(2D);
                 }
 
     	        // Add Preference modifier
                 result = result + result * person.getPreference().getPreferenceScore(this)/6D;
        
-                // Capping the probability as food production process values can be very large numbers.
-                if (result > 5000D) {
-                	result = 5000D;
+                // Capping the probability at 100 as manufacturing process values can be very large numbers.
+                if (result > CAP) {
+                    result = CAP;
                 }
 
     	        if (result < 0) result = 0;

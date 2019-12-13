@@ -11,16 +11,15 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
+import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.ai.task.ListenToMusic;
 import org.mars_sim.msp.core.person.ai.task.Sleep;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -90,11 +89,11 @@ public class ListenToMusicMeta implements MetaTask, Serializable {
 			                if (recBuilding != null) {
 			                    result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, recBuilding);
 			                    result *= TaskProbabilityUtil.getRelationshipModifier(person, recBuilding);
-			                    result *= RandomUtil.getRandomDouble(3);
+//			                    result *= RandomUtil.getRandomDouble(3);
 			                }
 	            	}
-	            	else
-	            		result *= RandomUtil.getRandomDouble(2);
+//	            	else
+//	            		result *= RandomUtil.getRandomDouble(1.5);
 	            }
 	
             } catch (Exception e) {
@@ -104,15 +103,14 @@ public class ListenToMusicMeta implements MetaTask, Serializable {
             // Modify probability if during person's work shift.
             int millisols = marsClock.getMillisolInt();
             boolean isShiftHour = person.getTaskSchedule().isShiftHour(millisols);
-            if (isShiftHour) {
+            if (isShiftHour && person.getShiftType() != ShiftType.ON_CALL) {
                 result*= WORK_SHIFT_MODIFIER;
             }
             
             if (result < 0) result = 0;
             
         }
-        
-        
+            
         else if (person.isInVehicle()) {	
 	        // Check if person is in a moving rover.
 	        if (Vehicle.inMovingRover(person)) {

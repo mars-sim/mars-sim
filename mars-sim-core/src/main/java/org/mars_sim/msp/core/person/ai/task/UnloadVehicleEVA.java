@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LogConsolidated;
@@ -23,7 +24,6 @@ import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
-import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
@@ -88,10 +88,13 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 	 */
 	public UnloadVehicleEVA(Person person) {
 		// Use EVAOperation constructor.
-		super(NAME, person, true, RandomUtil.getRandomDouble(10D) + 10D);
+		super(NAME, person, true, 25);
 
-		settlement = person.getAssociatedSettlement();
-
+		settlement = CollectionUtils.findSettlement(person.getCoordinates());
+		if (settlement == null) {
+			endTask();
+		}
+		
 		VehicleMission mission = getMissionNeedingUnloading();
 		if (mission != null) {
 			vehicle = mission.getVehicle();
@@ -146,8 +149,11 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 		Point2D unloadingLoc = determineUnloadingLocation();
 		setOutsideSiteLocation(unloadingLoc.getX(), unloadingLoc.getY());
 
-		settlement = person.getAssociatedSettlement();
-
+		settlement = CollectionUtils.findSettlement(person.getCoordinates());
+		if (settlement == null) {
+			endTask();
+		}
+				
 		// Initialize phase
 		addPhase(UNLOADING);
 //		setPhase(UNLOADING); 
@@ -331,10 +337,10 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 		time = super.performMappedPhase(time);
 
 		if (getPhase() == null) {
-			logger.finer(person + " had no task phase. Ending the task of unloading vehicle with EVA.");
-			endTask();
-			return time;
-//			throw new IllegalArgumentException("Task phase is null");
+//			logger.finer(person + " had no task phase. Ending the task of unloading vehicle with EVA.");
+//			endTask();
+//			return time;
+			throw new IllegalArgumentException("Task phase is null");
 		} else if (UNLOADING.equals(getPhase())) {
 			return unloadingPhase(time);
 		} else {
@@ -353,15 +359,15 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 		// Check for an accident during the EVA operation.
 		checkForAccident(time);
 		// Check for radiation exposure during the EVA operation.
-		if (isRadiationDetected(time)) {
+		if (person.isOutside() && isRadiationDetected(time)) {
 			setPhase(WALK_BACK_INSIDE);
-			return time;
+			return 0;
 		}
 
 		// Check if person should end EVA operation.
-		if (shouldEndEVAOperation() || addTimeOnSite(time)) {
+		if (person.isOutside() && (shouldEndEVAOperation() || addTimeOnSite(time))) {
 			setPhase(WALK_BACK_INSIDE);
-			return time;
+			return 0;
 		}
 
 	

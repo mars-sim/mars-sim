@@ -48,6 +48,11 @@ public class MarsProjectHeadlessStarter {
 		// command.append(" -generateHelp");
 		// command.append(" -new");
 
+        // Use new Shenandoah Garbage Collector from Java 12 
+        command.append(" -XX:+UnlockExperimentalVMOptions")
+        	.append(" -XX:+UseShenandoahGC");
+//        	.append(" -Xlog:gc*");
+        
 		command.append(" -Djava.util.logging.config.file=logging.properties").append(" -cp .")
 				.append(File.pathSeparator).append("*").append(File.pathSeparator).append("jars").append(File.separator)
 				.append("*").append(" org.mars_sim.headless.MarsProjectHeadless");

@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
@@ -72,8 +73,12 @@ implements Serializable {
 	public MaintenanceEVA(Person person) {
 		super(NAME, person, true, RandomUtil.getRandomDouble(50D) + 10D);
 
-		settlement = person.getSettlement();
-
+      	Settlement settlement = CollectionUtils.findSettlement(person.getCoordinates());
+        if (settlement == null) {
+        	endTask();
+        	return;
+        }
+        	
 		try {
 			entity = getMaintenanceMalfunctionable();
 			if (entity == null) {
@@ -84,6 +89,7 @@ implements Serializable {
 		catch (Exception e) {
 		    logger.log(Level.SEVERE,"MaintenanceEVA.constructor()",e);
 			endTask();
+			return;
 		}
 
         // Determine location for maintenance.
@@ -219,19 +225,19 @@ implements Serializable {
 	 */
 	private double maintenancePhase(double time) {
 
-        // 2015-05-29 Check for radiation exposure during the EVA operation.
-        if (isRadiationDetected(time)){
+        // Check for radiation exposure during the EVA operation.
+        if (person.isOutside() && isRadiationDetected(time)){
             setPhase(WALK_BACK_INSIDE);
-            return time;
+            return 0;
         }
 
 		MalfunctionManager manager = entity.getMalfunctionManager();
 		boolean malfunction = manager.hasMalfunction();
 		boolean finishedMaintenance = (manager.getEffectiveTimeSinceLastMaintenance() < 1000D);
 
-		if (finishedMaintenance || malfunction || shouldEndEVAOperation() || addTimeOnSite(time)) {
+		if (person.isOutside() && (finishedMaintenance || malfunction || shouldEndEVAOperation() || addTimeOnSite(time))) {
 			setPhase(WALK_BACK_INSIDE);
-			return time;
+			return 0;
 		}
 
 		// Determine effective work time based on "Mechanic" skill.
@@ -263,7 +269,7 @@ implements Serializable {
         }
 		else {
 			setPhase(WALK_BACK_INSIDE);
-			return time;
+			return 0;
 		}
 
         // Add work to the maintenance

@@ -83,6 +83,7 @@ public class TendGreenhouse extends Task implements Serializable {
 
 		if (person.isOutside()) {
 			endTask();
+			return;
 		}
 
 		// Get available greenhouse if any.
@@ -92,17 +93,19 @@ public class TendGreenhouse extends Task implements Serializable {
 
 			// Walk to greenhouse.
 			walkToActivitySpotInBuilding(farmBuilding, false);
+			
+			// Initialize phase
+			addPhase(TENDING);
+			addPhase(INSPECTING);
+			addPhase(CLEANING);
+			addPhase(SAMPLING);
+			addPhase(GROWING_TISSUE);
+			setPhase(TENDING);
+			
 		} else {
 			endTask();
+			return;
 		}
-
-		// Initialize phase
-		addPhase(TENDING);
-		addPhase(INSPECTING);
-		addPhase(CLEANING);
-		addPhase(SAMPLING);
-		addPhase(GROWING_TISSUE);
-		setPhase(TENDING);
 	}
 
 	/**
@@ -117,6 +120,7 @@ public class TendGreenhouse extends Task implements Serializable {
 		// Initialize data members
 		if (robot.isOutside()) {
 			endTask();
+			return;
 		}
 
 		// Get available greenhouse if any.
@@ -126,13 +130,15 @@ public class TendGreenhouse extends Task implements Serializable {
 
 			// Walk to greenhouse.
 			walkToActivitySpotInBuilding(farmBuilding, false);
+			
+			// Initialize phase
+			addPhase(TENDING);
+			setPhase(TENDING);
+			
 		} else {
 			endTask();
+			return;
 		}
-
-		// Initialize phase
-		addPhase(TENDING);
-		setPhase(TENDING);
 	}
 
 	@Override

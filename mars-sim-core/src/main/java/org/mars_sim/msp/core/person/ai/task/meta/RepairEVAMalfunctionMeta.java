@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.person.ai.task.meta;
 import java.io.Serializable;
 import java.util.Iterator;
 
+import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.malfunction.Malfunction;
@@ -48,6 +49,11 @@ public class RepairEVAMalfunctionMeta implements MetaTask, Serializable {
 
 	@Override
 	public double getProbability(Person person) {
+		Settlement settlement = CollectionUtils.findSettlement(person.getCoordinates());
+		if (settlement == null) {
+			return 0;
+		}
+				
 		double result = 0D;
 
         // Probability affected by the person's stress and fatigue.
@@ -59,10 +65,6 @@ public class RepairEVAMalfunctionMeta implements MetaTask, Serializable {
         if (fatigue > 1000 || stress > 50 || hunger > 500)
         	return 0;
         
-		Settlement s = person.getAssociatedSettlement();
-
-		Settlement vs = person.getLocationTag().findSettlementVicinity();
-		
 		boolean returnFromMission = false;
 		
 		// TODO: need to analyze if checking the location state this way can properly verify if a person return from a mission
@@ -70,17 +72,17 @@ public class RepairEVAMalfunctionMeta implements MetaTask, Serializable {
 			returnFromMission = true;
 		}
 		
-		if (returnFromMission || person.isInSettlement() || s == vs) {
+		if (returnFromMission || person.isInSettlement()) {
 			
 			// Check for radiation events
-			boolean[] exposed = s.getExposed();
+			boolean[] exposed = settlement.getExposed();
 
 			if (exposed[2]) {// SEP can give lethal dose of radiation
 				return 0;
 			}
 
 			// Check if an airlock is available
-			if (person.isInSettlement() || person.isInVehicle())
+//			if (person.isInSettlement() || person.isInVehicle())
 				if (EVAOperation.getWalkableAvailableAirlock(person) == null)
 					return 0;
 
@@ -88,7 +90,7 @@ public class RepairEVAMalfunctionMeta implements MetaTask, Serializable {
 			// Even if it's night time, technicians/engineers are assigned to man that work shift 
 			// to take care of the the repair.
 			
-			result = getSettlementProbability(vs);
+			result = getSettlementProbability(settlement);
 
 			// Effort-driven task modifier.
 			result *= person.getPerformanceRating();
@@ -133,20 +135,23 @@ public class RepairEVAMalfunctionMeta implements MetaTask, Serializable {
 		Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(settlement).iterator();
 		while (i.hasNext()) {
 			Malfunctionable entity = i.next();
-			MalfunctionManager manager = entity.getMalfunctionManager();
+//			MalfunctionManager manager = entity.getMalfunctionManager();
 			if (RepairEVAMalfunction.hasEVA(entity)) {
 				// Check if entity has any EVA malfunctions.
-				Iterator<Malfunction> j = manager.getEVAMalfunctions().iterator();
+				Iterator<Malfunction> j = entity.getMalfunctionManager().getEVAMalfunctions().iterator();
 				while (j.hasNext()) {
+					double score = 0;
 					Malfunction malfunction = j.next();
-					if (!malfunction.isEVARepairDone())
-						result += WEIGHT;
-					try {
-						if (RepairEVAMalfunction.hasRepairPartsForMalfunction(settlement, malfunction)) {
-							result += WEIGHT;
+					if (!malfunction.isEVARepairDone()) {
+//						score = WEIGHT;
+						try {
+							if (RepairEVAMalfunction.hasRepairPartsForMalfunction(settlement, malfunction)) {
+								score = WEIGHT * 2;
+							}
+						} catch (Exception e) {
+							e.printStackTrace(System.err);
 						}
-					} catch (Exception e) {
-						e.printStackTrace(System.err);
+						result += score;
 					}
 				}
 			}

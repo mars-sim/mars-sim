@@ -66,7 +66,7 @@ implements Serializable {
      * @param person the person to perform the task
      */
     public MaintainGroundVehicleEVA(Person person) {
-        super(NAME, person, true, RandomUtil.getRandomDouble(50D) + 10D);
+        super(NAME, person, true, 25);
 
         settlement = person.getSettlement();
 
@@ -169,10 +169,10 @@ implements Serializable {
             vehicle.removeStatus(StatusType.MAINTENANCE);
         }
         
-        if (finishedMaintenance || malfunction || shouldEndEVAOperation() ||
-                addTimeOnSite(time)) {
+        if (person.isOutside() && (finishedMaintenance || malfunction || shouldEndEVAOperation() ||
+                addTimeOnSite(time))) {
             setPhase(WALK_BACK_INSIDE);
-            return time;
+            return 0;
         }
 
         // Determine effective work time based on "Mechanic" and "EVA Operations" skills.
@@ -195,7 +195,7 @@ implements Serializable {
         }
         else {
             setPhase(WALK_BACK_INSIDE);
-            return time;
+            return 0;
         }
 
         // Add work to the maintenance

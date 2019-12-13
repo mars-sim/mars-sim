@@ -167,19 +167,23 @@ Alternatively, you may use SourceForge's button below to automatically sense the
 
 ### Prerequisites
 
-Before r4945,
-* Require Java 8 (u77 or above) for binaries compiled under Java 8 
-* Require Java 9/10 for binaries compiled under Java 9
+As of r5217 and afterward,
+* Requires JRE 12 for running mars-sim
+* Requires JDK 12 (or openjdk 12) for compiling binary
 
-As of r4945 and afterward
+As of r4945,
 * Requires JRE 11 for running mars-sim
-* Requires openjdk 11 or JDK 11 for compiling binary
+* Requires JDK 11 (or openjdk 11) for compiling binary
+
+Before r4945,
+* Require JDK 8 (u77 or above) for compiling Java 8 compatible binary
+* Require JDK 9/10 for for compiling Java 9/10 compatible binary
 
 ```
 Note 1 : Beginning Java 11, the JRE/JDK is decoupled from the graphic JavaFX API. 
 For the JavaFX edition of mars-sim, make sure you also download and configure 
 OpenJFK 11 SEPARATELY. See ticket #156 to read the discussions on how to set up
-mars-sim to run it under Java 11. 
+mars-sim to run it under Java 11 for JavaFX UI. 
 ```
 
 #### For linux
@@ -193,27 +197,27 @@ see this [DZone article](https://dzone.com/articles/how-to-install-multiple-vers
 
 #### For macOS
 
-1.  The directory of JDK is at `Library/Java/JavaVirtualMachines/jdk-11.jdk/Contents/Home`. 
-See [DZone](https://dzone.com/articles/installing-openjdk-11-on-macos) for more instructions.
+1.  The directory of JDK is at `Library/Java/JavaVirtualMachines/jdk-12.jdk/Contents/Home`. 
+See [DZone](https://dzone.com/articles/installing-openjdk-12-on-macos) for more instructions.
 
 2. Enter `/usr/libexec/java_home -V` to find out which version of Java you have installed.
 
 
 #### For Windows OS
  
-1. Start a command prompt and type this `set PATH="C:\Program Files\Java\jre-11.0.3\bin";%PATH%`.
+1. Start a command prompt and type this `set PATH="C:\Program Files\Java\jre-12.0.2\bin";%PATH%`.
 
 2. Edit the `JAVA_HOME` and `PATH` in the *Environment Variables* in Control Panel 
  ```
 Note 2 : The order of precedence inside `PATH` is crucial. The first available folder having Java 
 executable inside will be the one to be loaded by Windows OS. 
  ```
-3. Set `JAVA_HOME` to a JRE or JDK's destination such as `C:\Program Files\Java\jdk-11.0.3` or 
-`C:\Program Files\Java\jre-11.0.3`. 
+3. Set `JAVA_HOME` to a JRE or JDK's destination such as `C:\Program Files\Java\jdk-12.0.2` or 
+`C:\Program Files\Java\jre-12.0.2`. 
  
 4. Add `%JAVA_HOME%;%JAVA_HOME%\bin;` to `PATH`         
  ```
-Note 3 : The BEST approach is to enable only one Java build (such as Java 11.0.3) 
+Note 3 : The BEST approach is to enable only one Java build (such as Java 12.0.2) 
 inside `PATH` and remove all other folders referencing other java versions/builds.
  ```
 5. Remove any path similar to `C:\ProgramData\Oracle\Java\javapath;`  in `PATH` variable. It can 

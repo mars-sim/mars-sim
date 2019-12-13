@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
@@ -96,6 +95,10 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 		// Use Task constructor.
 		super(NAME, person, true, false, STRESS_MODIFIER, true, DURATION);
 
+		if (person.isOutside()) {
+			endTask();
+		}
+		
 		settlement = person.getSettlement();
 
 		VehicleMission mission = getMissionNeedingUnloading();
@@ -139,6 +142,10 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 		// Use Task constructor.
 		super(NAME, robot, true, false, STRESS_MODIFIER, true, DURATION);
 
+		if (robot.isOutside()) {
+			endTask();
+		}
+		
 		settlement = robot.getSettlement();
 
 		VehicleMission mission = getMissionNeedingUnloading();
@@ -188,6 +195,10 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 		// Use Task constructor.
 		super("Unloading vehicle", person, true, false, STRESS_MODIFIER, true, DURATION);
 
+		if (person.isOutside()) {
+			endTask();
+		}
+		
 		setDescription(Msg.getString("Task.description.unloadVehicleGarage.detail", vehicle.getName())); // $NON-NLS-1$;
 		this.vehicle = vehicle;
 
@@ -216,6 +227,10 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 		// Use Task constructor.
 		super("Unloading vehicle", robot, true, false, STRESS_MODIFIER, true, DURATION);
 
+		if (robot.isOutside()) {
+			endTask();
+		}
+		
 		setDescription(Msg.getString("Task.description.unloadVehicleGarage.detail", vehicle.getName())); // $NON-NLS-1$;
 		this.vehicle = vehicle;
 

@@ -37,7 +37,8 @@ public class MarsProjectStarter {
             if (javaHome.contains(" "))
             	command.append("\"");
         }
-        else command.append("java");
+        else 
+        	command.append("java");
 
         //command.append(" -Dswing.aatext=true");
         //command.append(" -Dswing.plaf.metal.controlFont=Tahoma"); // the compiled jar won't run
@@ -45,6 +46,11 @@ public class MarsProjectStarter {
         //command.append(" -generateHelp");
         //command.append(" -new");
 
+        // Use new Shenandoah Garbage Collector from Java 12 
+        command.append(" -XX:+UnlockExperimentalVMOptions")
+        	.append(" -XX:+UseShenandoahGC");
+//        	.append(" -Xlog:gc*");
+        
         command.append(" -Djava.util.logging.config.file=logging.properties")
         	.append(" -cp .")
         	.append(File.pathSeparator)

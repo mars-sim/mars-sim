@@ -76,7 +76,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 	private Unit containerUnit;
 
 	public RepairEVAMalfunction(Person person) {
-		super(NAME, person, true, RandomUtil.getRandomDouble(10D) + 25D);
+		super(NAME, person, true, 25);
 
 		containerUnit = person.getTopContainerUnit();
 
@@ -419,9 +419,9 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 	private double repairMalfunctionPhase(double time) {
 
 		// Check for radiation exposure during the EVA operation.
-		if (isRadiationDetected(time)) {
+		if (person.isOutside() && isRadiationDetected(time)) {
 			setPhase(WALK_BACK_INSIDE);
-			return time;
+			return 0;
 		}
 
 		
@@ -442,9 +442,9 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 				finishedRepair = true;
 		}
 
-		if (finishedRepair || shouldEndEVAOperation() || addTimeOnSite(time)) {
+		if (person.isOutside() && (finishedRepair || shouldEndEVAOperation() || addTimeOnSite(time))) {
 			setPhase(WALK_BACK_INSIDE);
-			return time;
+			return 0;
 		}
 
 		double workTime = 0;
@@ -485,7 +485,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 				}
 			} else {
 				setPhase(WALK_BACK_INSIDE);
-				return time;
+				return 0;
 			}
 
 		}
@@ -512,6 +512,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 						+ " wrapped up the EVA Repair of " + malfunction.getName() 
 						+ " in "+ entity + " (" + Math.round(malfunction.getCompletedEVAWorkTime()*10.0)/10.0 + " millisols spent).");
 				setPhase(WALK_BACK_INSIDE);
+				return 0;
 			}
 			
 			else if (!isEVAMalfunction && malfunction.needGeneralRepair() && malfunction.isGeneralRepairDone()) {
@@ -520,6 +521,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 						+ " wrapped up the General Repair of " + malfunction.getName() 
 						+ " in "+ entity + " (" + Math.round(malfunction.getCompletedGeneralWorkTime()*10.0)/10.0 + " millisols spent).");	
 				setPhase(WALK_BACK_INSIDE);
+				return 0;
 			}
 //		}
 		

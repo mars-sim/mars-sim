@@ -226,17 +226,17 @@ public class MasterClock implements Serializable {
 		} else if (threads <= 3) {
 			baseTR = tr / 8D;
 		} else if (threads <= 4) {
-			baseTR = tr / 4D;
+			baseTR = tr / 6D;
 		} else if (threads <= 6) {
-			baseTR = tr / 2D;
+			baseTR = tr / 4D;
 		} else if (threads <= 8) {
-			baseTR = tr;
+			baseTR = tr / 2D;
 		} else if (threads <= 12) {
-			baseTR = tr * 2D;
+			baseTR = tr;
 		} else if (threads <= 16) {
-			baseTR = tr * 4D;
+			baseTR = tr * 2D;
 		} else {
-			baseTR = tr * 8D;
+			baseTR = tr * 4D;
 		}
 
 		baseTBU_ns = baseTBU_ms * 1_000_000.0; // convert from millis to nano
@@ -550,11 +550,11 @@ public class MasterClock implements Serializable {
 	 * @return totalPulses
 	 */
 	public void resetTotalPulses() {
-		long old = totalPulses;
+//		long old = totalPulses;
 		totalPulses = 1;// (long) (1D / adjustedTBU_ms * uptimer.getLastUptime());
 		// At the start of the sim, totalPulses is zero
-		if (totalPulses > 1)
-			logger.config("Resetting the pulse count from " + old + " to " + totalPulses + ".");
+//		if (totalPulses > 1)
+//			logger.config("Resetting the pulse count from " + old + " to " + totalPulses + ".");
 	}
 
 	/**
@@ -587,20 +587,18 @@ public class MasterClock implements Serializable {
 	 * @param ratio
 	 */
 	public void setTimeRatio(double ratio) {
-		if (ratio >= 1D && ratio <= 65536D) {
+		if (ratio >= 1D && ratio <= 65536D && currentTR != ratio) {
 
 			if (ratio > currentTR)
 				currentTBU_ns = (long) (currentTBU_ns * 1.0025); // increment by .5%
 			else
 				currentTBU_ns = (long) (currentTBU_ns * .9975); // decrement by .5%
 
-			logger.config("Time-ratio : " + (int)currentTR + "x ==> " + (int)ratio + "x");
+			logger.config("Time-ratio : " + (int)currentTR + "x -> " + (int)ratio + "x");
 				
 			currentTR = ratio;
 			
-		} 
-		
-		else throw new IllegalArgumentException("Time ratio is out of bounds ");
+		}
 	}
 
 	/**
@@ -705,13 +703,10 @@ public class MasterClock implements Serializable {
 				long overSleepTime = 0L;
 				long excess = 0L;
 				int noDelays = 0;
-				
-				// Gets the initial t1
-				t1 = System.nanoTime();
 
 				while (keepRunning) {
 					// Gets the new t1
-//					t1 = System.nanoTime();
+					t1 = System.nanoTime();
 					
 					// Call addTime() to increment time in EarthClock and MarsClock
 					addTime();
@@ -719,16 +714,13 @@ public class MasterClock implements Serializable {
 					// Gets t2 after a time pulse has been sent to EarthClock and MarsClock
 					t2 = System.nanoTime();
 					
-					if (t3 != 0)
-						executionTime = t2 - t3;
-					else
-						executionTime = t2 - t1;
+					executionTime = t2 - t1;
 					
 					// Note: dt = t2 - t1. It's the time where all the logics are done
 
 					// sleepTime varies, depending on the remaining time
-					sleepTime = currentTBU_ns - executionTime - overSleepTime;
-					// System.out.print ("sleep : " + sleepTime/1_000_000 + "ms\t");
+					sleepTime = currentTBU_ns - executionTime;
+//					logger.config("sleepTime : " + sleepTime/1_000_000 + " ms");
 
 					if (sleepTime > 0 && keepRunning) {
 						// Pause simulation to allow other threads to complete.
@@ -737,11 +729,9 @@ public class MasterClock implements Serializable {
 						} catch (InterruptedException e) {
 							Thread.currentThread().interrupt();
 						}
-
-						t3 = System.nanoTime();
-						
-						overSleepTime = (t3 - t2) - sleepTime;
-
+	
+						overSleepTime = currentTBU_ns - executionTime - sleepTime - (t1 - t3);
+//						logger.config("overSleepTime : " + overSleepTime/1_000_000 + " ms");
 					}
 
 					else {
@@ -776,55 +766,60 @@ public class MasterClock implements Serializable {
 							noDelays = 0;
 						}
 
-					}
-
-					if (excess/1_000_000 > 500) {
-						// If the pause is more than .5 seconds, this is most likely due to the machine 
-						// just recovering from a power saving event
-						
-						// Reset the pulse count
-						resetTotalPulses();
-					}
-					else {
-						for (int i = 1; i <= maxFrameSkips; i++) {
-							boolean value = !justReloaded && (Math.abs(excess) > currentTBU_ns);
-							justReloaded = false;	
+						if (excess/1_000_000 > 500) {
+							// If the pause is more than .5 seconds, this is most likely due to the machine 
+							// just recovering from a power saving event
 							
-							if (!value) {
-								excess = 0;
-								break;
-							}
-								
-							logger.warning("excess: " + excess/1_000_000 + " ms"
-									 + ". Recovering from a lost frame (Skips # " + i + ")."
-									); // e.g. excess : -118289082
-							
-							excess -= currentTBU_ns;
-	
 							// Reset the pulse count
 							resetTotalPulses();
-							
-							// Call addTime once to get back the time lost in a frame
-							addTime();
-							
-							t3 = System.nanoTime();
 						}
 						
-//						if (skips >= maxFrameSkips) {
-////							logger.config("# of skips (" + skips + ") is at the max skips (" + maxFrameSkips + ")."); 
-//							// Reset the pulse count
-//							resetTotalPulses();
-//							// Adjust the time between update
-//							if (currentTBU_ns > (long) (baseTBU_ns * 1.25))
-//								currentTBU_ns = (long) (baseTBU_ns * 1.25);
-//							else
-//								currentTBU_ns = (long) (currentTBU_ns * .9925); // decrement by 2.5%
-//							
-//							logger.config("Reset total pulses and set TBU to " + Math.round(100.0 * currentTBU_ns/1_000_000.0)/100.0 + " ms");
-//							
-//							addTime();
-//						}
+						else {
+							for (int i = 1; i <= maxFrameSkips; i++) {
+								boolean value = !justReloaded && (Math.abs(excess) > currentTBU_ns);
+								justReloaded = false;	
+								
+								if (!value) {
+									excess = 0;
+									break;
+								}
+									
+								logger.warning("excess: " + excess/1_000_000 
+										 + " ms. currentTBU : " + currentTBU_ns/1_000_000
+										 + " ms. executionTime : " + executionTime/1_000_000
+										 + " ms. Recovering from a lost frame (Skips # " + i + ")."
+										); // e.g. excess : -118289082
+								
+								excess -= currentTBU_ns;
+		
+								// Reset the pulse count
+								resetTotalPulses();
+								
+								// Call addTime once to get back the time lost in a frame
+								addTime();
+								
+							}
+							
+//							if (skips >= maxFrameSkips) {
+////								logger.config("# of skips (" + skips + ") is at the max skips (" + maxFrameSkips + ")."); 
+//								// Reset the pulse count
+//								resetTotalPulses();
+//								// Adjust the time between update
+//								if (currentTBU_ns > (long) (baseTBU_ns * 1.25))
+//									currentTBU_ns = (long) (baseTBU_ns * 1.25);
+//								else
+//									currentTBU_ns = (long) (currentTBU_ns * .9925); // decrement by 2.5%
+//								
+//								logger.config("Reset total pulses and set TBU to " + Math.round(100.0 * currentTBU_ns/1_000_000.0)/100.0 + " ms");
+//								
+//								addTime();
+//							}
+						}
+						
+						// Gets t3
+						t3 = System.nanoTime();
 					}
+					
 					// Set excess to zero to prevent getting stuck in the above while loop after
 					// waking up from power saving
 //					logger.config("Setting excess to zero");
@@ -836,6 +831,9 @@ public class MasterClock implements Serializable {
 						System.exit(0);
 					}
 					
+					// Gets t3
+					t3 = System.nanoTime();
+					
 					if (canPauseTime && millisols >= pausingMillisols) {
 						
 						double m = marsClock.getMillisolOneDecimal();
@@ -846,8 +844,7 @@ public class MasterClock implements Serializable {
 					}
 					
 					// Check to see if the simulation should be saved at this point.
-					if (checkSave())
-						t3 = System.nanoTime();
+					checkSave();
 					
 				} // end of while
 			} // if fxgl is not used
@@ -870,11 +867,15 @@ public class MasterClock implements Serializable {
 			if (millis < baseTBU_ms * .75) {
 				// Note: this usually happens when recovering from power saving
 				// Since millis is too far off, use millisCache instead to compute the correct timePulse 
+				
 				// Reset currentTR
-				currentTR = baseTR;			
+				if (currentTR == baseTR)
+					currentTR = baseTR/2D;
+				else
+					currentTR = baseTR;
+				
 				// reset millis back to its original value
 				millis = (long) (baseTBU_ms);
-//				millisCache = millis;
 			}
 				
 //			logger.config("millis : " + millis + "     currentTR : " + currentTR);
@@ -883,7 +884,6 @@ public class MasterClock implements Serializable {
 			int earthMillis = (int) (millis * currentTR);
 			// Get the time pulse length in millisols.
 			double timePulse = earthMillis / MILLISECONDS_PER_MILLISOL; 
-
 //			logger.config("timePulse : " + Math.round(timePulse*1000.0)/1000.0);
 
 			// Incrementing total time pulse number.
@@ -909,8 +909,7 @@ public class MasterClock implements Serializable {
 					fireClockPulse(timePulse);
 					
 //					long t1 = System.nanoTime();
-					
-					
+									
 					millisols += timePulse;
 					if (millisols > MAX_SOLS)
 						millisols = millisols - MAX_SOLS;

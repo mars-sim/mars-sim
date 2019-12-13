@@ -12,6 +12,7 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.text.DecimalFormat;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -39,6 +40,7 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
+import com.alee.laf.text.WebTextField;
 //import com.alee.managers.language.data.TooltipWay;
 import com.alee.managers.tooltip.TooltipManager;
 import com.alee.managers.tooltip.TooltipWay;
@@ -72,6 +74,9 @@ extends TabPanel {
 	private WebLabel energyLabel;
 	private WebLabel stressLabel;
 	private WebLabel performanceLabel;
+	
+	/** The sleep hour text field. */	
+	private WebTextField sleepTF;
 	
 	private MedicationTableModel medicationTableModel;
 	private HealthProblemTableModel healthProblemTableModel;
@@ -128,7 +133,7 @@ extends TabPanel {
 		
 		// Create health label panel.
 		WebPanel healthLabelPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
-		topContentPanel.add(healthLabelPanel);
+		topContentPanel.add(healthLabelPanel, BorderLayout.NORTH);
 
 		// Prepare health label
 		WebLabel healthLabel = new WebLabel(Msg.getString("TabPanelHealth.label"), WebLabel.CENTER); //$NON-NLS-1$
@@ -139,7 +144,7 @@ extends TabPanel {
 		WebPanel conditionPanel = new WebPanel(new SpringLayout());//GridLayout(5, 2, 0, 0));
 //		conditionPanel.setBorder(new MarsPanelBorder());
 		//conditionPanel.setSize(180, 60);
-		centerContentPanel.add(conditionPanel, BorderLayout.NORTH);
+		topContentPanel.add(conditionPanel, BorderLayout.CENTER);
 
 		// Prepare fatigue name label
 		WebLabel fatigueNameLabel = new WebLabel(Msg.getString("TabPanelHealth.fatigue"), WebLabel.RIGHT); //$NON-NLS-1$
@@ -209,15 +214,56 @@ extends TabPanel {
 		                                10, 4,        //initX, initY
 		                                15, 3);       //xPad, yPad
 		
+
+		// Prepare SpringLayout for info panel.
+		WebPanel springPanel = new WebPanel(new SpringLayout());//GridLayout(4, 2, 0, 0));
+//		infoPanel.setBorder(new MarsPanelBorder());
+		topContentPanel.add(springPanel, BorderLayout.SOUTH);
+		
+		// Prepare sleep hour name label
+		WebLabel sleepHrLabel = new WebLabel(Msg.getString("TabPanelFavorite.sleepHour"), WebLabel.RIGHT); //$NON-NLS-1$
+//		sleepLabel.setFont(font);
+		springPanel.add(sleepHrLabel);
+
+		// Checks the two best sleep hours
+    	int bestSleepTime[] = person.getPreferredSleepHours();		
+		WebPanel wrapper5 = new WebPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
+		Arrays.sort(bestSleepTime);
+		
+		// Prepare sleep hour TF
+		String text = "";
+		int size = bestSleepTime.length;
+		for (int i=0; i<size; i++) {
+			text += bestSleepTime[i] + "";
+			if (i != size - 1)
+				text += " and ";
+		}
+		sleepTF = new WebTextField(text);
+		sleepTF.setEditable(false);
+		sleepTF.setColumns(8);
+		//activityTF.requestFocus();
+		sleepTF.setCaretPosition(0);
+		wrapper5.add(sleepTF);
+		springPanel.add(wrapper5);
+
+		TooltipManager.setTooltip (sleepTF, "Time in millisols", TooltipWay.down); //$NON-NLS-1$
+				
+		// Prepare SpringLayout
+		SpringUtilities.makeCompactGrid(springPanel,
+		                                1, 2, //rows, cols
+		                                120, 10,        //initX, initY
+		                                7, 3);       //xPad, yPad
+	
+		
 		// Add radiation dose info
 		// Prepare radiation panel
 		WebPanel radiationPanel = new WebPanel(new BorderLayout(0, 0));//new GridLayout(2, 1, 0, 0));
 //		radiationPanel.setBorder(new MarsPanelBorder());
-		centerContentPanel.add(radiationPanel, BorderLayout.CENTER);
+		centerContentPanel.add(radiationPanel, BorderLayout.NORTH);
 
 		// Prepare radiation label
 		WebLabel radiationLabel = new WebLabel(Msg.getString("TabPanelHealth.rad"), WebLabel.CENTER); //$NON-NLS-1$
-		radiationPanel.setFont(font);
+		radiationLabel.setFont(font);
 		radiationPanel.add(radiationLabel, BorderLayout.NORTH);
 		TooltipManager.setTooltip (radiationLabel, Msg.getString("TabPanelHealth.radiation.tooltip"), TooltipWay.down); //$NON-NLS-1$
 			 
@@ -272,6 +318,7 @@ extends TabPanel {
 		//}
 		// Add setTableStyle()
 		TableStyle.setTableStyle(radiationTable);
+
 
 		// Prepare table panel.
 		WebPanel tablePanel = new WebPanel(new GridLayout(3, 1));
@@ -451,7 +498,21 @@ extends TabPanel {
 			performanceLabel.setText(Msg.getString("TabPanelHealth.percentage", //$NON-NLS-1$
 			        formatter.format(performanceCache)));
 		}
-
+		
+		// Checks the two best sleep hours
+    	int bestSleepTime[] = person.getPreferredSleepHours();		
+		Arrays.sort(bestSleepTime);
+		
+		// Prepare sleep hour TF
+		String text = "";
+		int size = bestSleepTime.length;
+		for (int i=0; i<size; i++) {
+			text += bestSleepTime[i] + "";
+			if (i != size - 1)
+				text += " and ";
+		}
+		sleepTF.setText(text);
+		
 		// Update medication table model.
 		medicationTableModel.update();
 

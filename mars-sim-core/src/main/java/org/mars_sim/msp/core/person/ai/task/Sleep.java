@@ -383,7 +383,11 @@ public class Sleep extends Task implements Serializable {
 	 */
 	private double sleepingPhase(double time) {
 		if (person != null) {
-
+			if (person.isOutside()) {
+				endTask();
+				return 0;
+			}
+			
 			pc.recoverFromSoreness(.05);
 
 			// Obtain the fractionOfRest to restore fatigue faster in high fatigue case
@@ -432,6 +436,7 @@ public class Sleep extends Task implements Serializable {
 			if (newFatigue <= 0) {
 				logger.finest(person.getName() + " woke up from a nap.");
 				endTask();
+				return 0;
 			}
 
 //			else {

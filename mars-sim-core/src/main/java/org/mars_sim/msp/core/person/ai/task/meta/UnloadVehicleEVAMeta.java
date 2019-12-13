@@ -10,6 +10,7 @@ import java.io.Serializable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
@@ -63,15 +64,14 @@ public class UnloadVehicleEVAMeta implements MetaTask, Serializable {
             if (fatigue > 1000 || stress > 50 || hunger > 500)
             	return 0;
             
-	    	Settlement settlement = person.getSettlement();
-	     
+        	Settlement settlement = CollectionUtils.findSettlement(person.getCoordinates());
+            
 	    	// Check for radiation events
 	    	boolean[] exposed = settlement.getExposed();
 	
 			if (exposed[2]) // SEP can give lethal dose of radiation
 	            return 0;
 		
-	
 	        // Check if an airlock is available
 	        if (EVAOperation.getWalkableAvailableAirlock(person) == null)
 	    		return 0;
@@ -118,7 +118,7 @@ public class UnloadVehicleEVAMeta implements MetaTask, Serializable {
 	            result += RandomUtil.getRandomInt(1, 20);
 	        }
 	
-	        // 2015-06-07 Added Preference modifier
+	        // Add Preference modifier
 	        if (result > 0D) {
 	            result = result + result * person.getPreference().getPreferenceScore(this)/5D;
 	        }
