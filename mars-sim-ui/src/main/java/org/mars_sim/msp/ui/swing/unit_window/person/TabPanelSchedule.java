@@ -573,27 +573,26 @@ public class TabPanelSchedule extends TabPanel {
 		 */
 		public void update(boolean hideRepeatedTasks, int selectedSol) {		
 			int todaySol = taskSchedule.getSolCache();
-			List<OneActivity> temp = new ArrayList<OneActivity>();
+			List<OneActivity> activityList = new ArrayList<OneActivity>();
 			
-			// Load previous day's schedule if selected
 			if (todaySol == selectedSol) {
 				// Load today's schedule
-				temp.addAll(taskSchedule.getTodayActivities());
+				activityList.addAll(taskSchedule.getTodayActivities());
 			} 
 			
 			else {
 				allActivities = taskSchedule.getAllActivities();
 				// Load the schedule of a particular sol
 				if (allActivities.containsKey(selectedSol))
-					temp.addAll(allActivities.get(selectedSol));
+					activityList.addAll(allActivities.get(selectedSol));
 			}
 			
 			if (hideRepeatedTasks) {
-				hideRepeated(temp);
+				hideRepeated(activityList);
 				
 			}
 			else {
-				activities = temp;
+				activities = activityList;
 				fireTableDataChanged();
 			}
 		}

@@ -92,7 +92,8 @@ public class CircadianClock implements Serializable {
 	private static MarsClock marsClock;
 
 	static {
-		marsClock = Simulation.instance().getMasterClock().getMarsClock();
+		if (marsClock == null)
+			marsClock = Simulation.instance().getMasterClock().getMarsClock();
 	}
 	
 	public CircadianClock(Person person) {
@@ -529,7 +530,11 @@ public class CircadianClock implements Serializable {
 		// personConfig = null;
 		marsClock = null;
 		// condition = null;
+		sleepCycleMap.clear();
 		sleepCycleMap = null;
+		
+		sleepTime.clear();
+		sleepTime = null;
 
 	}
 

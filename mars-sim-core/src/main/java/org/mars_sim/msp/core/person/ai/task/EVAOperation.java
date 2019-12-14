@@ -596,24 +596,44 @@ public abstract class EVAOperation extends Task implements Serializable {
 	public static Airlock getClosestWalkableAvailableAirlock(Person person, double xLocation, double yLocation) {
 		Airlock result = null;
 
+//		Settlement settlement = CollectionUtils.findSettlement(person.getCoordinates());
+//		if (settlement != null) {
+//			result = settlement.getClosestWalkableAvailableAirlock(person, xLocation, yLocation);
+//			// logger.info(person.getName() + " is walking toward an airlock.");
+//		} else {
+//			Vehicle vehicle = CollectionUtils.findVehicle(person.getCoordinates());	
+//			if (vehicle != null && vehicle instanceof Airlockable) {
+//				result = ((Airlockable) vehicle).getAirlock();
+//			}
+//		}
+
 		if (person.isInSettlement()) {
 			Settlement settlement = person.getSettlement();
 			result = settlement.getClosestWalkableAvailableAirlock(person, xLocation, yLocation);
-			// logger.info(person.getName() + " is walking to an airlock.
-			// getClosestWalkableAvailableAirlock()");
 		} else if (person.isInVehicle()) {
 			Vehicle vehicle = person.getVehicle();
 			if (vehicle instanceof Airlockable) {
 				result = ((Airlockable) vehicle).getAirlock();
 			}
 		}
-
+		
 		return result;
 	}
 
 	public static Airlock getClosestWalkableAvailableAirlock(Robot robot, double xLocation, double yLocation) {
 		Airlock result = null;
 
+//		Settlement settlement = CollectionUtils.findSettlement(robot.getCoordinates());
+//		if (settlement != null) {
+//			result = settlement.getClosestWalkableAvailableAirlock(robot, xLocation, yLocation);
+//			// logger.info(person.getName() + " is walking toward an airlock.");
+//		} else {
+//			Vehicle vehicle = CollectionUtils.findVehicle(robot.getCoordinates());	
+//			if (vehicle != null && vehicle instanceof Airlockable) {
+//				result = ((Airlockable) vehicle).getAirlock();
+//			}
+//		}
+		
 		if (robot.isInSettlement()) {
 			Settlement settlement = robot.getSettlement();
 			result = settlement.getClosestWalkableAvailableAirlock(robot, xLocation, yLocation);

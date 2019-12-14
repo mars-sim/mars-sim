@@ -63,10 +63,12 @@ public class ConnectWithEarthMeta implements MetaTask, Serializable {
             if (fatigue > 1000 || hunger > 500)
             	return 0;
             
+            result -= fatigue/15;
+            
             double pref = person.getPreference().getPreferenceScore(this);
             
             // Use preference modifier
-         	result = pref * .1D;
+         	result += pref * .1D;
          	
             if (pref > 0) {
              	if (stress < 25)
@@ -83,7 +85,7 @@ public class ConnectWithEarthMeta implements MetaTask, Serializable {
             Building building = ConnectWithEarth.getAvailableBuilding(person);
 
             if (building != null) {
-            	result += .1;
+            	result += 5;
             	// A comm facility has terminal equipment that provides communication access with Earth
             	// It is necessary
                 result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building);

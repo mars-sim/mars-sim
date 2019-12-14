@@ -2229,7 +2229,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 			// this major bug is due to getBuilding(robot) above in BuildingManager
 			// what if a person is out there in ERV building for maintenance. ERV building
 			// has no LifeSupport function. currentBuilding will be null
-			System.err.println(person.getName() + " is not currently in a building.");
+			LogConsolidated.log(Level.WARNING, 10_000, sourceName, person.getName() + " is not currently in a building.");
 			return null;
 		}
 
@@ -2249,7 +2249,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 			// need to refine the concept of where a robot can go. They are thought to need
 			// RoboticStation function to "survive",
 			// much like a person who needs LifeSupport function
-			System.err.println(robot.getName() + " is not currently in a building.");
+			LogConsolidated.log(Level.WARNING, 10_000, sourceName, robot.getName() + " is not currently in a building.");
 			return null;
 		}
 
@@ -2262,8 +2262,8 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 		Airlock result = null;
 
 		double leastDistance = Double.MAX_VALUE;
-		BuildingManager manager = buildingManager;
-		Iterator<Building> i = manager.getBuildings(FunctionType.EVA).iterator();
+//		BuildingManager manager = buildingManager;
+		Iterator<Building> i = buildingManager.getBuildings(FunctionType.EVA).iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
 
@@ -2295,8 +2295,8 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 		Airlock result = null;
 
 		double leastDistance = Double.MAX_VALUE;
-		BuildingManager manager = buildingManager;
-		Iterator<Building> i = manager.getBuildings(FunctionType.EVA).iterator();
+//		BuildingManager manager = buildingManager;
+		Iterator<Building> i = buildingManager.getBuildings(FunctionType.EVA).iterator();
 		while (i.hasNext()) {
 			Building nextBuilding = i.next();
 

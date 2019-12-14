@@ -1035,6 +1035,8 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 					int solElapsed = marsClock.getMissionSol();
 	
 					if (solCache != solElapsed) {
+						// Update the solCache
+						solCache = solElapsed;
 						
 						if (solElapsed == 1) {
 							// On the first mission sol,
@@ -1054,6 +1056,16 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 								circadian.updateSleepCycle(m, true);
 							}
 							
+							if (getShiftType() == ShiftType.B) {
+								condition.setFatigue(getFatigue() + RandomUtil.getRandomInt(500));
+							}
+							else if (getShiftType() == ShiftType.Y) {
+								condition.setFatigue(getFatigue() + RandomUtil.getRandomInt(333));
+							}
+							else if (getShiftType() == ShiftType.Z) {
+								condition.setFatigue(getFatigue() + RandomUtil.getRandomInt(667));
+							}
+								
 						}
 						else {
 							// Adjust the sleep habit according to the current work shift
@@ -1065,10 +1077,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 							}
 							
 							// Check if a person's age should be updated
-							age = updateAge();
-							
-							// Update the solCache
-							solCache = solElapsed;
+							age = updateAge();					
 							
 							// Checks if a person has a role
 							if (role.getType() == null)
@@ -1153,7 +1162,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 			if (infirmaries.size() > 0) {
 				int rand = RandomUtil.getRandomInt(infirmaries.size() - 1);
 				Building foundBuilding = infirmaries.get(rand);
-				found = (MedicalAid) foundBuilding.getMedical();// .getFunction(FunctionType.MEDICAL_CARE);
+				found = (MedicalAid) foundBuilding.getMedical();
 			}
 		}
 

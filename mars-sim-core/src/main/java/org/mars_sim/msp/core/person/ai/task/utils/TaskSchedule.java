@@ -147,6 +147,8 @@ public class TaskSchedule implements Serializable {
 		
 		startTime = marsClock.getMillisolInt();
 		int solElapsed = marsClock.getMissionSol();
+		
+		// For a new day
 		if (solCache != solElapsed) {
 
 			if (allActivities == null)

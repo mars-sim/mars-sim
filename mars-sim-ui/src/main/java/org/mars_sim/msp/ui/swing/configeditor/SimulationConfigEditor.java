@@ -1191,8 +1191,8 @@ public class SimulationConfigEditor {
 		}
 	
 		public void run() {
-			logger.config("StartTask's run() is on " + Thread.currentThread().getName());
-			Simulation.instance().startClock(autosaveDefault);
+//			logger.config("StartTask's run() is on " + Thread.currentThread().getName());
+			sim.startClock(autosaveDefault);
 			// Load the menu choice
 			InteractiveTerm.loadTerminalMenu();
 		}

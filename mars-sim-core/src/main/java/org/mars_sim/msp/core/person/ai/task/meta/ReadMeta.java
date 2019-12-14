@@ -94,7 +94,7 @@ public class ReadMeta implements MetaTask, Serializable {
 //         	else
 //         		result/=4D;
          	
-            result -= fatigue/75;           
+            result -= fatigue/5;           
             
             double pref = person.getPreference().getPreferenceScore(this);
             

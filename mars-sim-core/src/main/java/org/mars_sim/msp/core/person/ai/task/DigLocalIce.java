@@ -91,16 +91,18 @@ implements Serializable {
 
      	settlement = CollectionUtils.findSettlement(person.getCoordinates());
      	if (settlement == null) {
-//        	endTask();
+        	endTask();
         	return;
      	}
         
         // Get an available airlock.
-        airlock = getWalkableAvailableAirlock(person);
-        if (airlock == null) {
-//        	endTask();
-        	return;
-        }
+     	if (person.isInside()) {
+	        airlock = getWalkableAvailableAirlock(person);
+	        if (airlock == null) {
+	        	endTask();
+	        	return;
+	        }
+     	}
 
         // Determine digging location.
         Point2D.Double diggingLoc = determineDiggingLocation();
@@ -115,7 +117,7 @@ implements Serializable {
             	if (person.isOutside()){
                     setPhase(WALK_BACK_INSIDE);
                 }
-//            	endTask();
+            	endTask();
             	return;
             }
         }
@@ -316,10 +318,10 @@ implements Serializable {
     private double collectIce(double time) {
 
     	if (getTimeCompleted() > getDuration()) {
-    		endTask();
+//    		endTask();
     		if (person.isOutside())
     			setPhase(WALK_BACK_INSIDE);
-            return 0;
+            return time;
     	}
     			
         // Check for an accident during the EVA operation.
@@ -327,16 +329,16 @@ implements Serializable {
 
         // Check for radiation exposure during the EVA operation.
         if (isRadiationDetected(time) && person.isOutside()) {
-    		endTask();
+//    		endTask();
             setPhase(WALK_BACK_INSIDE);
-            return 0;
+            return time;
         }
         // Check if there is reason to cut the collect
         // ice phase short and return.
         if (shouldEndEVAOperation() && person.isOutside()) {
-    		endTask();
+//    		endTask();
             setPhase(WALK_BACK_INSIDE);
-            return 0;
+            return time;
         }
 
         double remainingPersonCapacity = person.getInventory().getAmountResourceRemainingCapacity(
@@ -370,9 +372,10 @@ implements Serializable {
 	    		"[" + person.getLocationTag().getLocale() +  "] " +
 	    		person.getName() + " collected " + Math.round(totalCollected*100D)/100D 
 	    		+ " kg of ice outside at " + person.getCoordinates().getFormattedString());
-    		endTask();
-            if (person.isOutside())
+            if (person.isOutside()) {
             	setPhase(WALK_BACK_INSIDE);
+//        		endTask();
+            }
         }
 
         if (fatigue > 1000 || stress > 50) {
@@ -381,10 +384,16 @@ implements Serializable {
                 		+ Math.round(totalCollected*100D)/100D + " kg collected) " 
                 		+ "; fatigue: " + Math.round(fatigue*10D)/10D 
                 		+ "; stress: " + Math.round(stress*100D)/100D + " %");
-    		endTask();
-            if (person.isOutside())
+            if (person.isOutside()) {
             	setPhase(WALK_BACK_INSIDE);
+//        		endTask();
+            }
         }
+        
+        if (person.isInside()) {
+    		endTask();
+        }
+        
         return 0D;
     }
 

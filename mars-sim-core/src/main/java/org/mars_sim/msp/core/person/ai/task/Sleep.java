@@ -106,9 +106,10 @@ public class Sleep extends Task implements Serializable {
 		// designated(D).
 		// thus a 2x2 matrix with 4 possibilities: EU, ED, OU, OD
 
-		if (person.isOutside())
+		if (person.isOutside()) {
 			walkBackInside();
-		
+//			endTask();
+		}
 		// If person is in rover, walk to passenger activity spot.
 		else if (person.isInVehicle() && person.getVehicle() instanceof Rover) {
 			
@@ -384,7 +385,8 @@ public class Sleep extends Task implements Serializable {
 	private double sleepingPhase(double time) {
 		if (person != null) {
 			if (person.isOutside()) {
-				endTask();
+				walkBackInside();
+//				endTask();
 				return 0;
 			}
 			
@@ -435,7 +437,6 @@ public class Sleep extends Task implements Serializable {
     	
 			if (newFatigue <= 0) {
 				logger.finest(person.getName() + " woke up from a nap.");
-				endTask();
 				return 0;
 			}
 
@@ -445,7 +446,7 @@ public class Sleep extends Task implements Serializable {
 				double alarmTime = getAlarmTime();
 	
 				if ((previousTime <= alarmTime) && (newTime >= alarmTime)) {
-					endTask();
+//					endTask();
 					logger.info(person.getName() + " woke up from the alarm at " + (int)alarmTime);
 				} else {
 					previousTime = newTime;
@@ -458,7 +459,6 @@ public class Sleep extends Task implements Serializable {
 			double newTime = marsClock.getMillisol();
 			double alarmTime = getAlarmTime();
 			if ((previousTime <= alarmTime) && (newTime >= alarmTime)) {
-				endTask();
 				logger.finest(robot.getName() + " woke up from alarm.");
 			} else {
 				previousTime = newTime;
@@ -475,8 +475,6 @@ public class Sleep extends Task implements Serializable {
 
 	@Override
 	public void endTask() {
-		super.endTask();
-
 		if (person != null) {
 			// Remove person from living accommodations bed so others can use it.
 			if (accommodations != null && accommodations.getSleepers() > 0) {
@@ -494,6 +492,8 @@ public class Sleep extends Task implements Serializable {
 				walkToAssignedDutyLocation(robot, false);
 			}
 		}
+		
+		super.endTask();
 	}
 
 	/**

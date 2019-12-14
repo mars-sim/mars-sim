@@ -361,13 +361,13 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 		// Check for radiation exposure during the EVA operation.
 		if (person.isOutside() && isRadiationDetected(time)) {
 			setPhase(WALK_BACK_INSIDE);
-			return 0;
+			return time;
 		}
 
 		// Check if person should end EVA operation.
 		if (person.isOutside() && (shouldEndEVAOperation() || addTimeOnSite(time))) {
 			setPhase(WALK_BACK_INSIDE);
-			return 0;
+			return time;
 		}
 
 	
@@ -384,7 +384,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 		
 		if (settlement == null) {
 //			endTask();
-			return 0D;
+			return time;
 		}
 		
 		Inventory settlementInv = settlement.getInventory();
@@ -576,8 +576,16 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 
 		if (isFullyUnloaded(vehicle)) {
 			setPhase(WALK_BACK_INSIDE);
+			
+			if (person.isOutside()) {
+				setPhase(WALK_BACK_INSIDE);	
+			}
+			else if (person.isInside()) {
+	    		endTask();
+	        }
+			
 		}
-
+        
 		return 0D;
 	}
 

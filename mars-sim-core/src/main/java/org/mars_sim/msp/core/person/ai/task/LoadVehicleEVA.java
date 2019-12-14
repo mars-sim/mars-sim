@@ -384,16 +384,14 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 			// Check for radiation exposure during the EVA operation.
 			if (isRadiationDetected(time) && person.isOutside()) {
 				setPhase(WALK_BACK_INSIDE);
-//				endTask();
-				return 0;
+				return time;
 			}
 	
 			// Check if site duration has ended or there is reason to cut the loading
 			// phase short and return to the rover.
 			if (person.isOutside() && (shouldEndEVAOperation() || addTimeOnSite(time))) {
 				setPhase(WALK_BACK_INSIDE);
-//				endTask();
-				return 0;
+				return time;
 			}
 	
 			// Determine load rate.
@@ -434,9 +432,15 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 	
 			if (isFullyLoaded(requiredResources, optionalResources, requiredEquipment, optionalEquipment, vehicle,
 					settlement)) {
-				if (person.isOutside())
-					setPhase(WALK_BACK_INSIDE);
+				if (person.isOutside()) {
+					setPhase(WALK_BACK_INSIDE);	
+				}
+				else if (person.isInside()) {
+		    		endTask();
+		        }
 			}
+			
+
 		}
 		
 		return 0D;

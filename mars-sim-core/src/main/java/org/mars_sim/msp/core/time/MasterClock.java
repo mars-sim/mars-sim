@@ -1302,12 +1302,22 @@ public class MasterClock implements Serializable {
 			clockExecutor.shutdownNow();
 	}
 
-	// To be called by TransportWizard and ConstructionWizard
+
+	/**
+	 * Gets the clock listener executor. To be called by TransportWizard and ConstructionWizard
+	 * 
+	 * @return
+	 */
 	public ExecutorService getClockListenerExecutor() {
 		return clockExecutor;
 	}
 
 
+	/**
+	 * Gets the Frame per second
+	 * 
+	 * @return
+	 */
 	public double getFPS() {
 //		List<Double> list = new ArrayList<>(TPFList);
 //		double sum = 0;

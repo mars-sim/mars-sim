@@ -271,7 +271,7 @@ public class CollectionUtils {
 	
 	
 	/**
-	 * Finds the settlement instance based on its name
+	 * Finds a nearby settlement based on its coordinate
 	 * 
 	 * @param c {@link Coordinates}
 	 * @return
@@ -290,6 +290,24 @@ public class CollectionUtils {
 		// WARNING : using associated settlement needs to exercise more caution
 	}
 	
+	/**
+	 * Find a nearby vehicle based on its coordinate
+	 * 
+	 * @param c {@link Coordinates}
+	 * @return
+	 */
+	public static Vehicle findVehicle(Coordinates c) {
+		if (unitManager == null)
+			unitManager = Simulation.instance().getUnitManager();
+				
+		Collection<Vehicle> vv = unitManager.getVehicles();
+		for (Vehicle v : vv) {
+			if (v.getCoordinates().equals(c) || v.getCoordinates() == c)
+				return v;
+		}
+
+		return null; 
+	}
 	
 	public static <T extends Unit> Collection<T> sortByName(
 		Collection<T> collection

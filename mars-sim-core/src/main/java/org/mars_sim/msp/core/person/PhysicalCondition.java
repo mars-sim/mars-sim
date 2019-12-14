@@ -340,9 +340,9 @@ public class PhysicalCondition implements Serializable {
 
 	public void initializeHealthIndices() {
 		// Set up random physical healt index
-		thirst = RandomUtil.getRandomRegressionInteger(100);
+		thirst = RandomUtil.getRandomRegressionInteger(50);
 		
-		fatigue = RandomUtil.getRandomRegressionInteger(50);
+//		fatigue = RandomUtil.getRandomRegressionInteger(50);
 		stress = RandomUtil.getRandomRegressionInteger(50);
 		
 		hunger = RandomUtil.getRandomRegressionInteger(200);

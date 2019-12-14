@@ -260,8 +260,8 @@ public class EatDrink extends Task implements Serializable {
 	 */
 	protected double performMappedPhase(double time) {
 		if (getPhase() == null) {
-			return time;
-//			throw new IllegalArgumentException(person + "'s Task phase is null");
+//			return time;
+			throw new IllegalArgumentException(person + "'s Task phase is null");
 		}
 		
 		if (DRINK_WATER.equals(getPhase())) {
@@ -330,7 +330,7 @@ public class EatDrink extends Task implements Serializable {
 	private double drinkingWaterPhase(double time) {
 		consumeWater(true);
 //		endTask();
-		return time *.5;
+		return time *.75;
 	}
 	
 	
@@ -350,7 +350,7 @@ public class EatDrink extends Task implements Serializable {
 			// If not enough preserved food available, change to dessert phase.
 			if (!enoughFood) {
 				setPhase(PICK_UP_DESSERT);
-				remainingTime = time * .5;
+				remainingTime = time * .75;
 			}
 			else {
 				// Report eating preserved food.
@@ -358,18 +358,14 @@ public class EatDrink extends Task implements Serializable {
 			}
 		}
 		else {
-	
-			if ((totalMealEatingTime + eatingTime) >= mealEatingDuration) {
-				eatingTime = mealEatingDuration - totalMealEatingTime;
-			}
-	
+
 			if (eatingTime > 0D) {
 				boolean enoughFood = eatPreservedFood(eatingTime);
 
 				// If not enough preserved food available, change to dessert phase.
 				if (!enoughFood) {
 					setPhase(PICK_UP_DESSERT);
-					remainingTime = time * .5;
+					remainingTime = time * .75;
 				}
 				else {
 					// Report eating preserved food.
@@ -378,12 +374,15 @@ public class EatDrink extends Task implements Serializable {
 			}
 		}
 		
+		if ((totalMealEatingTime + eatingTime) >= mealEatingDuration) {
+			eatingTime = mealEatingDuration - totalMealEatingTime;
+		}
+
 		totalMealEatingTime += eatingTime;
 
-		// If finished eating, change to dessert phase.
 		if (eatingTime < time) {
-			setPhase(PICK_UP_DESSERT);// EATING_DESSERT);
-			remainingTime = time * .5 - eatingTime;
+//			setPhase(PICK_UP_DESSERT);// EATING_DESSERT);
+			remainingTime = time - eatingTime;
 		}
 
 		consumeWater(false);
@@ -402,11 +401,11 @@ public class EatDrink extends Task implements Serializable {
 		double remainingTime = 0D;
 		double eatingTime = time;
 		
+		if ((totalMealEatingTime + eatingTime) >= mealEatingDuration) {
+			eatingTime = mealEatingDuration - totalMealEatingTime;
+		}
+
 		if (!person.isInVehicle()) {
-	
-			if ((totalMealEatingTime + eatingTime) >= mealEatingDuration) {
-				eatingTime = mealEatingDuration - totalMealEatingTime;
-			}
 	
 			if (eatingTime > 0D) {
 	
@@ -421,7 +420,7 @@ public class EatDrink extends Task implements Serializable {
 					// If not enough preserved food available, change to dessert phase.
 					if (!enoughFood) {
 						setPhase(PICK_UP_DESSERT);
-						remainingTime = time * .6;
+						remainingTime = time * .75;
 					}
 					else {
 						// Report eating preserved food.
@@ -429,15 +428,14 @@ public class EatDrink extends Task implements Serializable {
 					}
 				}
 			}
-
 		}
 		
 		totalMealEatingTime += eatingTime;
 
 		// If finished eating, change to dessert phase.
 		if (eatingTime < time) {
-			setPhase(PICK_UP_DESSERT);// EATING_DESSERT);
-			remainingTime = time * .6 - eatingTime;
+//			setPhase(PICK_UP_DESSERT);// EATING_DESSERT);
+			remainingTime = time - eatingTime;
 		}
 
 		consumeWater(false);
@@ -600,7 +598,7 @@ public class EatDrink extends Task implements Serializable {
 		} else {
 			// Person is not inside a container unit, so end task.
 			result = false;
-			endTask();
+//			endTask();
 		}
 
 		return result;
@@ -641,7 +639,7 @@ public class EatDrink extends Task implements Serializable {
 				// If not enough unprepared dessert available, end task.
 				else {// if (!enoughDessert) {
 					remainingTime = time;
-					endTask();
+//					endTask();
 				}
 			}
 		}
@@ -651,7 +649,7 @@ public class EatDrink extends Task implements Serializable {
 		// If finished eating, end task.
 		if (eatingTime < time) {
 			remainingTime = time - eatingTime;
-			endTask();
+//			endTask();
 		}
 
 		return remainingTime;
@@ -1180,8 +1178,6 @@ public class EatDrink extends Task implements Serializable {
 	
 	@Override
 	public void endTask() {
-		super.endTask();
-
 		// Throw away napkin waste if one was used.
 		if (hasNapkin) {
 			Unit containerUnit = person.getContainerUnit();
@@ -1191,6 +1187,7 @@ public class EatDrink extends Task implements Serializable {
 					Storage.storeAnResource(NAPKIN_MASS, ResourceUtil.solidWasteID, inv, sourceName + "::endTask");
 			}
 		}
+		super.endTask();
 	}
 
 	@Override

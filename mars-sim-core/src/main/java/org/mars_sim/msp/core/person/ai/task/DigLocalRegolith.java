@@ -96,11 +96,13 @@ implements Serializable {
      	}
      	
         // Get an available airlock.
-        airlock = getWalkableAvailableAirlock(person);
-        if (airlock == null) {
-        	endTask();
-        	return;
-        }
+     	if (person.isInside()) {
+	        airlock = getWalkableAvailableAirlock(person);
+	        if (airlock == null) {
+	        	endTask();
+	        	return;
+	        }
+     	}
 
         // Determine digging location.
         Point2D.Double diggingLoc = determineDiggingLocation();
@@ -137,7 +139,7 @@ implements Serializable {
         	addPhase(COLLECT_REGOLITH);
 //        	setPhase(COLLECT_REGOLITH);
         	
-	        logger.fine(person.getName() + " was going to start digging for regolith.");
+//	        logger.info(person.getName() + " was going to start digging for regolith.");
         }
     }
 
@@ -319,7 +321,7 @@ implements Serializable {
 //    		endTask();
     		if (person.isOutside())
     			setPhase(WALK_BACK_INSIDE);
-            return 0;
+            return time;
     	}
     	
         // Check for an accident during the EVA operation.
@@ -329,7 +331,7 @@ implements Serializable {
         if (isRadiationDetected(time) && person.isOutside()){
 //    		endTask();
             setPhase(WALK_BACK_INSIDE);
-            return 0;
+            return time;
         }
 
         // Check if there is reason to cut the collection phase short and return
@@ -337,7 +339,7 @@ implements Serializable {
         if (shouldEndEVAOperation() && person.isOutside()) {
 //    		endTask();
             setPhase(WALK_BACK_INSIDE);
-            return 0;
+            return time;
         }
 
         double remainingPersonCapacity = person.getInventory().getAmountResourceRemainingCapacity(
@@ -379,9 +381,10 @@ implements Serializable {
         		"[" + person.getLocationTag().getLocale() +  "] " +
         		person.getName() + " collected " + Math.round(totalCollected*100D)/100D 
         		+ " kg regolith outside at " + person.getCoordinates().getFormattedString());
-    		endTask();
-            if (person.isOutside())
+            if (person.isOutside()) {
             	setPhase(WALK_BACK_INSIDE);
+//        		endTask();
+            }
     	}
         
         if (fatigue > 1000 || stress > 50) {
@@ -391,9 +394,14 @@ implements Serializable {
         		+ Math.round(totalCollected*100D)/100D + " kg collected) " 
         		+ "; fatigue: " + Math.round(fatigue*10D)/10D 
         		+ "; stress: " + Math.round(stress*100D)/100D + " %");
-//    		endTask();
-            if (person.isOutside())
+            if (person.isOutside()) {
             	setPhase(WALK_BACK_INSIDE);
+//        		endTask();
+            }
+        }
+        
+        if (person.isInside()) {
+    		endTask();
         }
         
         return 0D;
