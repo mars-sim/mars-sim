@@ -146,8 +146,6 @@ public class Mind implements Serializable {
 		if (taskManager != null) {
 			// Take action as necessary.
 			takeAction(time);
-			// Record the action (task/mission)
-			taskManager.recordFilterTask(time);
 		}
 		
 		double msol1 = marsClock.getMillisolOneDecimal();
@@ -253,19 +251,28 @@ public class Mind implements Serializable {
 							return;
 						}
 					}
-					else
+					else {
+//						LogConsolidated.log(Level.INFO, 20_000, sourceName,
+//								person + " had been doing " + counts + "x " 
+//								+ taskManager.getTaskName() + "   remainingTime is smaller than " + SMALL_AMOUNT_OF_TIME 
+//								+ " (" + Math.round(remainingTime *1000.0)/1000.0 
+//								+ ")   time : " + Math.round(time *1000.0)/1000.0); // 1x = 0.001126440159375963 -> 8192 = 8.950963852039651
 						startNew = true;
+					}
 				}
 				else {
 					LogConsolidated.log(Level.WARNING, 20_000, sourceName,
-							person + " had " + counts + "x doing " 
+							person + " had been doing " + counts + "x " 
 							+ taskManager.getTaskName() + "   remainingTime : " + Math.round(remainingTime *1000.0)/1000.0 
 							+ "   time : " + Math.round(time *1000.0)/1000.0); // 1x = 0.001126440159375963 -> 8192 = 8.950963852039651
 					startNew = true;
 				}
 			}
-			else
+			else {
+				LogConsolidated.log(Level.WARNING, 20_000, sourceName,
+						person + " had no active task.");
 				startNew = true;
+			}
 			
 			if (startNew) {
 				if ((mission != null) && mission.isDone()) {

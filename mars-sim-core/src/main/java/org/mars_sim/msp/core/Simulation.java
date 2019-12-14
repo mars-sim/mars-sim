@@ -1284,9 +1284,24 @@ public class Simulation implements ClockListener, Serializable {
 			file.getParentFile().mkdirs();
 		}
 
-		// Serialize the file
-		serialize(type, file, srcPath, destPath);
+		// Get current size of heap in bytes
+		long heapSize = Runtime.getRuntime().totalMemory();
+		// Get maximum size of heap in bytes. The heap cannot grow beyond this size.// Any attempt will result in an OutOfMemoryException.
+		long heapMaxSize = Runtime.getRuntime().maxMemory();
+		 // Get amount of free memory within the heap in bytes. This size will increase // after garbage collection and decrease as new objects are created.
+		long heapFreeSize = Runtime.getRuntime().freeMemory(); 
 		
+		logger.config("heapSize: " + formatSize(heapSize) 
+		+ "    heapMaxSize: " + formatSize(heapMaxSize) 
+		+ "    heapFreeSize: " + formatSize(heapFreeSize) + "");
+		
+		if (heapFreeSize < 150) {
+			logger.config("Please try again. Ensure enough free heap space available beforehand.");
+		}
+		else {
+			// Serialize the file
+			serialize(type, file, srcPath, destPath);
+		}
 		// Restarts the master clock and adds back the Simulation clock listener
 		sim.proceed(isPause);
 	}
@@ -1302,6 +1317,12 @@ public class Simulation implements ClockListener, Serializable {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+    
+    public static String formatSize(long v) {
+        if (v < 1024) return v + " B";
+        int z = (63 - Long.numberOfLeadingZeros(v)) / 10;
+        return String.format("%.2f %sB", (double)v / (1L << (z*10)), " KMGTPE".charAt(z));
     }
     
     /**
@@ -1325,7 +1346,7 @@ public class Simulation implements ClockListener, Serializable {
 		try {
 	
 			// Set a delay for 200 millis to avoid java.util.ConcurrentModificationException
-			delay(1000L);
+			delay(500L);
 			
 			// Store the in-transient objects.
 //			oos.writeObject(SimulationConfig.instance());
@@ -1364,17 +1385,16 @@ public class Simulation implements ClockListener, Serializable {
 		              + Math.round(FilterOptions.getEncoderMemoryUsage(options)/1_000.0*100.00)/100.00 + " MB");
 			logger.config("Decoder memory usage : "
 		              + Math.round(FilterOptions.getDecoderMemoryUsage(options)/1_000.0*100.00)/100.00 + " MB");
-		
+	
 			xzout = new XZOutputStream(new BufferedOutputStream(new FileOutputStream(file)), options);
-		
+			
 			ByteStreams.copy(is, xzout);
 			
 			xzout.finish();
-			
 			// Print the size of the saved sim
 			logger.config("           File size : " + computeFileSize(file));
-			
 			logger.config("Done saving. The simulation resumes.");
+
 		// Note: see https://docs.oracle.com/javase/7/docs/platform/serialization/spec/exceptions.html
 		} catch (WriteAbortedException e) {
 			// Thrown when reading a stream terminated by an exception that occurred while the stream was being written.
@@ -1455,7 +1475,7 @@ public class Simulation implements ClockListener, Serializable {
 			
 			justSaved = true;
 
-		} 
+		}
     }
     
 	/**

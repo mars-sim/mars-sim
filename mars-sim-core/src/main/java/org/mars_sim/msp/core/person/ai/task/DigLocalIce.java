@@ -104,10 +104,6 @@ implements Serializable {
 	        }
      	}
 
-        // Determine digging location.
-        Point2D.Double diggingLoc = determineDiggingLocation();
-        setOutsideSiteLocation(diggingLoc.getX(), diggingLoc.getY());
-
         // Take bags for collecting ice.
         if (!hasBags()) {
             takeBag();
@@ -123,6 +119,10 @@ implements Serializable {
         }
 
         if (!ended) {
+            // Determine digging location.
+            Point2D.Double diggingLoc = determineDiggingLocation();
+            setOutsideSiteLocation(diggingLoc.getX(), diggingLoc.getY());
+
 	        collectionRate = settlement.getIceCollectionRate();
 	        
 	        NaturalAttributeManager nManager = person.getNaturalAttributeManager();
@@ -135,10 +135,96 @@ implements Serializable {
 	        
 	        // Add task phases
 	        addPhase(COLLECT_ICE);
-//	        setPhase(COLLECT_ICE);
-	        
+
+//	        	setPhase(WALK_TO_OUTSIDE_SITE);
+        	
 	        logger.finest(person.getName() + " was going to start digging for ice.");
         }
+    }
+
+    /**
+     * Perform collect ice phase.
+     * @param time time (millisol) to perform phase.
+     * @return time (millisol) remaining after performing phase.
+     */
+    private double collectIce(double time) {
+
+    	if (getTimeCompleted() > getDuration()) {
+//    		endTask();
+    		if (person.isOutside())
+    			setPhase(WALK_BACK_INSIDE);
+            return time;
+    	}
+    			
+        // Check for an accident during the EVA operation.
+        checkForAccident(time);
+
+        // Check for radiation exposure during the EVA operation.
+        if (isRadiationDetected(time) && person.isOutside()) {
+//    		endTask();
+            setPhase(WALK_BACK_INSIDE);
+            return time;
+        }
+        // Check if there is reason to cut the collect
+        // ice phase short and return.
+        if (shouldEndEVAOperation() && person.isOutside()) {
+//    		endTask();
+            setPhase(WALK_BACK_INSIDE);
+            return time;
+        }
+
+        double remainingPersonCapacity = person.getInventory().getAmountResourceRemainingCapacity(
+        		iceID, true, false);
+
+        double iceCollected = .5 * time * compositeRate;
+        
+        totalCollected += iceCollected;
+        
+        boolean finishedCollecting = false;
+        if (iceCollected > remainingPersonCapacity 
+        		|| totalCollected > .4 * person.getInventory().getGeneralCapacity()) {
+            iceCollected = remainingPersonCapacity;
+            finishedCollecting = true;
+        }
+
+        bag.getInventory().storeAmountResource(iceID, iceCollected, true);
+
+        PhysicalCondition condition = person.getPhysicalCondition();
+        double stress = condition.getStress();
+        double fatigue = condition.getFatigue();
+        
+        // Add penalty to the fatigue
+        condition.setFatigue(fatigue + time * factor);
+        
+        // Add experience points
+        addExperience(time);
+        
+        if (finishedCollecting) {
+            LogConsolidated.log(Level.INFO, 0, sourceName, 
+	    		"[" + person.getLocationTag().getLocale() +  "] " +
+	    		person.getName() + " collected " + Math.round(totalCollected*100D)/100D 
+	    		+ " kg of ice outside at " + person.getCoordinates().getFormattedString());
+            if (person.isOutside()) {
+            	setPhase(WALK_BACK_INSIDE);
+            }
+            else if (person.isInside()) {
+        		endTask();
+            }
+        }
+
+        if (fatigue > 1000 || stress > 50) {
+            LogConsolidated.log(Level.INFO, 0, sourceName, 
+        		"[" + person.getLocationTag().getLocale() +  "] " +
+                		+ Math.round(totalCollected*100D)/100D + " kg collected) " 
+                		+ "; fatigue: " + Math.round(fatigue*10D)/10D 
+                		+ "; stress: " + Math.round(stress*100D)/100D + " %");
+            if (person.isOutside()) {
+            	setPhase(WALK_BACK_INSIDE);
+//        		endTask();
+            }
+        }
+
+        return 0D;
     }
 
     /**
@@ -286,21 +372,25 @@ implements Serializable {
 
         // Unload bag to rover's inventory.
         if (bag != null) {
-            double collectedAmount = bag.getInventory().getAmountResourceStored(iceID, false);
+            double ice0 = bag.getInventory().getAmountResourceStored(iceID, false);
+            double ice1 = person.getInventory().getAmountResourceStored(iceID, false);
             double settlementCap = settlement.getInventory().getAmountResourceRemainingCapacity(
             		iceID, false, false);
 
-            if (settlement.getInventory() != null) {
-            	Inventory sInv = settlement.getInventory();
+        	Inventory sInv = settlement.getInventory();
+            if (sInv != null) {
 	            // Try to store ice in settlement.
-	            if (collectedAmount < settlementCap) {
-	                bag.getInventory().retrieveAmountResource(iceID, collectedAmount);
-	                sInv.storeAmountResource(iceID, collectedAmount, false);
-	                sInv.addAmountSupply(iceID, collectedAmount);
-	                // transfer the bag
+	            if (ice0 + ice1 < settlementCap) {
+	                bag.getInventory().retrieveAmountResource(iceID, ice0);
+	                person.getInventory().retrieveAmountResource(iceID, ice1);
+	                // Store the ice
+	                sInv.storeAmountResource(iceID, ice0 + ice1, false);
+	                // Track supply
+	                sInv.addAmountSupply(iceID, ice0 + ice1);
+	                // Transfer the bag
 	                bag.transfer(person, sInv);
 					// Add to the daily output
-					settlement.addOutput(iceID, collectedAmount, getTimeCompleted());
+					settlement.addOutput(iceID, ice0 + ice1, getTimeCompleted());
 		            // Recalculate settlement good value for output item.
 		            settlement.getGoodsManager().updateGoodValue(GoodsUtil.getResourceGood(iceID), false);
 	            }
@@ -308,93 +398,6 @@ implements Serializable {
         }
 
         super.endTask();
-    }
-
-    /**
-     * Perform collect ice phase.
-     * @param time time (millisol) to perform phase.
-     * @return time (millisol) remaining after performing phase.
-     */
-    private double collectIce(double time) {
-
-    	if (getTimeCompleted() > getDuration()) {
-//    		endTask();
-    		if (person.isOutside())
-    			setPhase(WALK_BACK_INSIDE);
-            return time;
-    	}
-    			
-        // Check for an accident during the EVA operation.
-        checkForAccident(time);
-
-        // Check for radiation exposure during the EVA operation.
-        if (isRadiationDetected(time) && person.isOutside()) {
-//    		endTask();
-            setPhase(WALK_BACK_INSIDE);
-            return time;
-        }
-        // Check if there is reason to cut the collect
-        // ice phase short and return.
-        if (shouldEndEVAOperation() && person.isOutside()) {
-//    		endTask();
-            setPhase(WALK_BACK_INSIDE);
-            return time;
-        }
-
-        double remainingPersonCapacity = person.getInventory().getAmountResourceRemainingCapacity(
-        		iceID, true, false);
-
-        double iceCollected = .5 * time * compositeRate;
-        
-        totalCollected += iceCollected;
-        
-        boolean finishedCollecting = false;
-        if (iceCollected > remainingPersonCapacity 
-        		|| totalCollected > .4 * person.getInventory().getGeneralCapacity()) {
-            iceCollected = remainingPersonCapacity;
-            finishedCollecting = true;
-        }
-
-        person.getInventory().storeAmountResource(iceID, iceCollected, true);
-
-        PhysicalCondition condition = person.getPhysicalCondition();
-        double stress = condition.getStress();
-        double fatigue = condition.getFatigue();
-        
-        // Add penalty to the fatigue
-        condition.setFatigue(fatigue + time * factor);
-        
-        // Add experience points
-        addExperience(time);
-        
-        if (finishedCollecting) {
-            LogConsolidated.log(Level.INFO, 0, sourceName, 
-	    		"[" + person.getLocationTag().getLocale() +  "] " +
-	    		person.getName() + " collected " + Math.round(totalCollected*100D)/100D 
-	    		+ " kg of ice outside at " + person.getCoordinates().getFormattedString());
-            if (person.isOutside()) {
-            	setPhase(WALK_BACK_INSIDE);
-//        		endTask();
-            }
-        }
-
-        if (fatigue > 1000 || stress > 50) {
-            LogConsolidated.log(Level.INFO, 0, sourceName, 
-        		"[" + person.getLocationTag().getLocale() +  "] " +
-                		+ Math.round(totalCollected*100D)/100D + " kg collected) " 
-                		+ "; fatigue: " + Math.round(fatigue*10D)/10D 
-                		+ "; stress: " + Math.round(stress*100D)/100D + " %");
-            if (person.isOutside()) {
-            	setPhase(WALK_BACK_INSIDE);
-//        		endTask();
-            }
-        }
-        
-        if (person.isInside()) {
-    		endTask();
-        }
-        
-        return 0D;
     }
 
     @Override

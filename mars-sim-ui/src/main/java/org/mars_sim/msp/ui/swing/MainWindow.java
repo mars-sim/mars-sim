@@ -255,6 +255,7 @@ extends JComponent {
 			@Override
 			public void windowClosing(WindowEvent event) {
 				// Save simulation and UI configuration when window is closed.
+				// TODO: should we check if a simulation is being saved ?
 				exitSimulation();
 			}
 		});

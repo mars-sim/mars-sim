@@ -270,6 +270,8 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 		// Prepare sub task phase text area
 		if (dead) {
 			subTaskPhaseCache = deathInfo.getSubTaskPhase();
+		} else if (subTaskTextCache.equals("")) {
+			subTaskPhaseCache = "";
 		} else {
 
 			TaskPhase phase = null;

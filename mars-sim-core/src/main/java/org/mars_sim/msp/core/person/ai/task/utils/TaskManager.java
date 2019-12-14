@@ -183,20 +183,20 @@ public class TaskManager implements Serializable {
 	 * @return task name
 	 */
 	public String getFilteredTaskName() {
-		String s = getTaskName();
-		if (s.toLowerCase().contains(WALK)) {
-			// check if the last task is walking related
-			if (lastTask != null) {
-				s = lastTask.getName();
-				if (lastTask != null && !s.toLowerCase().contains(WALK)) {
-					return s;
-				} else
-					return "";
-			} else
-				return "";
-		} else
-			return s;
-
+		return getTaskName();
+//		String s = getTaskName();
+//		if (s.toLowerCase().contains(WALK)) {
+//			// check if the last task is walking related
+//			if (lastTask != null) {
+//				s = lastTask.getName();
+//				if (lastTask != null && !s.toLowerCase().contains(WALK)) {
+//					return s;
+//				} else
+//					return "";
+//			} else
+//				return "";
+//		} else
+//			return s;
 	}
 
 	/**
@@ -251,8 +251,7 @@ public class TaskManager implements Serializable {
 //		else {
 //			return FunctionType.UNKNOWN; 
 //		} 
-//	}
-	
+//	}	
 
 	/**
 	 * Returns the current task phase if there is one. Returns null if current task
@@ -349,8 +348,7 @@ public class TaskManager implements Serializable {
 		return (taskName.toLowerCase().contains("eva") || taskName.toLowerCase().contains("dig")
 				|| taskName.toLowerCase().contains("exploresite") || taskName.toLowerCase().contains("salvagebuilding")
 				|| taskName.toLowerCase().contains("walkoutside") || taskName.toLowerCase().contains("minesite")
-				|| taskName.toLowerCase().contains("collectmined") || taskName.toLowerCase().contains("fieldwork")
-				|| taskName.toLowerCase().contains("collectresources"));
+				|| taskName.toLowerCase().contains("collect") || taskName.toLowerCase().contains("fieldwork"));
 	}
 
 	/**
@@ -369,7 +367,7 @@ public class TaskManager implements Serializable {
 		// Remove tasks such as Walk, WalkRoverInterior, WalkSettlementInterior,
 		// WalkSteps
 		// Filters off descriptions such as "Walking inside a settlement"
-		if (taskName != null) {
+		if (taskName != null && !taskName.equals("")) {
 
 			if (isEVATask(taskName)) {
 				person.addEVATime(taskName, time);
@@ -473,6 +471,8 @@ public class TaskManager implements Serializable {
 			
 			try {
 				remainingTime = currentTask.performTask(time);
+				// Record the action (task/mission)
+				recordFilterTask(time);
 			} catch (Exception e) {
 //				LogConsolidated.log(Level.SEVERE, 0, sourceName,
 //						person.getName() + " had trouble calling performTask().", e);

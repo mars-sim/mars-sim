@@ -1076,6 +1076,12 @@ public abstract class Mission implements Serializable {
 		else if (pop >= 29)
 			max = 8;
 		
+		// 50% tendency to have 1 less person
+		int rand = RandomUtil.getRandomInt(1);
+		if (rand == 1) {
+			if (max >= 5)
+			max--;
+		}
 		
 		// Recruit the most qualified and most liked people first.
 		while (qualifiedPeople.size() > 0) {

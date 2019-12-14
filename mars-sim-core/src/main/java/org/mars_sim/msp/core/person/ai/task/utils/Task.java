@@ -201,12 +201,12 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	public void endTask() {
 
 		// End subtask.
-//		if (subTask != null && !subTask.isDone()) {
-//			setSubTaskPhase(null);
-//			subTask.setDescription("");
-//			subTask.destroy();		
-//			subTask = null;
-//		}
+		if (subTask != null && !subTask.isDone()) {
+			setSubTaskPhase(null);
+			subTask.setDescription("");
+			subTask.destroy();		
+			subTask = null;
+		}
 	
 		// Set done to true
 		done = true;
@@ -305,11 +305,11 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @return the description of what the task is currently doing
 	 */
 	public String getDescription() {
-		if ((subTask != null) && !subTask.done) {
-			return subTask.getDescription();
-		} else {
+//		if ((subTask != null) && !subTask.done) {
+//			return subTask.getDescription();
+//		} else {
 			return description;
-		}
+//		}
 	}
 
 	/**
@@ -485,9 +485,10 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 */
 	public void addSubTask(Task newSubTask) {
 		if (subTask != null) {
-			subTask.setDescription("");
+//			subTask.setDescription("");
 			setSubTaskPhase(null);
 			subTask.destroy();
+			subTask = null;
 			createSubTask(newSubTask);
 			
 		} else {
@@ -502,6 +503,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 */
 	public void createSubTask(Task newSubTask) {
 		subTask = newSubTask;
+//		subTask.setDescription(newSubTask.getDescription());
 		if (person != null) {
 			person.fireUnitUpdate(UnitEventType.TASK_SUBTASK_EVENT, newSubTask);
 		} else if (robot != null) {
@@ -533,7 +535,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		if (subTask != null) {
 			if (subTask.isDone()) {
 				setSubTaskPhase(null);
-				subTask.setDescription("");
+//				subTask.setDescription("");
 				subTask.destroy();
 				subTask = null;
 			} else {
@@ -545,87 +547,74 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		if ((subTask == null) || subTask.isDone()) {
 
 			if (person != null) {
-
 				// If task is effort-driven and person is incapacitated, end task.
 				if (effortDriven && (person.getPerformanceRating() == 0D)) {
 					// "Resurrect" him a little to give him a chance to make amend
 					condition.setPerformanceFactor(.1);
 //					endTask();
-
 				} else {
-
-					// Perform phases of task until time is up or task is done.
-					while ((timeLeft > 0D) && !isDone() 
-							&& getPhase() != null
-							&& ((subTask == null) || subTask.isDone())) {
-						
-						if (hasDuration) {
-							// Keep track of the duration of the task.
-							if ((timeCompleted + timeLeft) >= duration) {
-								double performTime = duration - timeCompleted;
-								double extraTime = timeCompleted + timeLeft - duration;
-								if (getPhase() != null)
-									timeLeft = performMappedPhase(performTime) + extraTime;
-								timeCompleted = duration;
-								endTask();
-							} else {
-								double remainingTime = timeLeft;
-								if (getPhase() != null)
-									timeLeft = performMappedPhase(timeLeft);
-								timeCompleted += remainingTime;
-							}
-						} else {
-							if (getPhase() != null)
-								timeLeft = performMappedPhase(timeLeft);
-						}
-					}
+					timeLeft = executeMappedPhase(timeLeft, time);
 				}
+				
+				if (time - timeLeft > time / 8D) //SMALL_AMOUNT_OF_TIME)
+					// Modify stress performing task.
+					modifyStress(time - timeLeft);
+				
 			}
 
 			else if (robot != null) {
-
 				// If task is effort-driven and person is incapacitated, end task.
 				if (effortDriven && (robot.getPerformanceRating() == 0D)) {
-					endTask();
-
+//					endTask();
 				} else {
-
-					// Perform phases of task until time is up or task is done.
-					while ((timeLeft > 0D) && !done
-						&& getPhase() != null
-						&& ((subTask == null) || subTask.done)) {
-						
-						if (hasDuration) {
-							// Keep track of the duration of the task.
-							if ((timeCompleted + timeLeft) >= duration) {
-								double performTime = duration - timeCompleted;
-								double extraTime = timeCompleted + timeLeft - duration;
-								if (getPhase() != null)
-									timeLeft = performMappedPhase(performTime) + extraTime;
-								timeCompleted = duration;
-								endTask();
-							} else {
-								double remainingTime = timeLeft;
-								if (getPhase() != null)
-									timeLeft = performMappedPhase(timeLeft);
-								timeCompleted += remainingTime;
-							}
-						} else {
-							if (getPhase() != null)
-								timeLeft = performMappedPhase(timeLeft);
-						}
-					}
+					timeLeft = executeMappedPhase(timeLeft, time);
 				}
 			}
 		}
 
-		if (person != null && time - timeLeft > time / 8D) //SMALL_AMOUNT_OF_TIME)
-			// Modify stress performing task.
-			modifyStress(time - timeLeft);
-
 		return timeLeft;
 	}
-
+	
+	
+	/**
+	 * Execute the mapped phase repeatedly 
+	 * 
+	 * @param timeLeft
+	 * @param time
+	 * @return
+	 */
+	private double executeMappedPhase(double timeLeft, double time) {
+		// Perform phases of task until time is up or task is done.
+		while ((timeLeft > 0D) && !done
+			&& getPhase() != null
+			&& ((subTask == null) || subTask.done)) {
+			
+			if (hasDuration) {
+				// Keep track of the duration of the task.
+				if ((timeCompleted + timeLeft) > duration) {
+					double performTime = duration - timeCompleted;
+					double extraTime = timeCompleted + timeLeft - duration;
+					if (getPhase() != null)
+						timeLeft = performMappedPhase(performTime) + extraTime;
+//					timeCompleted = duration;
+					// TODO: will endTask() cut short of a person walking back to the settlement/vehicle ?
+					endTask();
+				} else {
+					double remainingTime = timeLeft;
+					if (getPhase() != null)
+						timeLeft = performMappedPhase(timeLeft);
+					timeCompleted += remainingTime;
+				}
+			} else {
+				if (getPhase() != null)
+					timeLeft = performMappedPhase(timeLeft);
+			}
+		}
+		
+		
+		return timeLeft;
+	}
+	
 	/**
 	 * Performs the method mapped to the task's current phase.
 	 * 

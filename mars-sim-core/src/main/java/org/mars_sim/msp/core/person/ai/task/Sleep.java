@@ -75,7 +75,7 @@ public class Sleep extends Task implements Serializable {
 	// Data members
 	/** The previous time (millisols). */
 	private double previousTime;
-	private double timeFactor = 3; // TODO: should vary this factor by person
+	private double timeFactor = 4; // TODO: should vary this factor by person
 	
 	private LocalBoundedObject interiorObject;
 	private Point2D returnInsideLoc;
@@ -383,11 +383,11 @@ public class Sleep extends Task implements Serializable {
 	 * @return the amount of time (millisols) left over after performing the phase.
 	 */
 	private double sleepingPhase(double time) {
+		
 		if (person != null) {
 			if (person.isOutside()) {
 				walkBackInside();
-//				endTask();
-				return 0;
+				return time;
 			}
 			
 			pc.recoverFromSoreness(.05);
@@ -401,27 +401,29 @@ public class Sleep extends Task implements Serializable {
 				f = MAX_FATIGUE;
 
 				if (f > 1000)
-					residualFatigue = (f - 1000) / 125;
+					residualFatigue = (f - 1000) / 15; //75;
 
 				// Reduce person's fatigue
 				newFatigue = f - fractionOfRest - residualFatigue;
-//				logger.info(person + " f : " + Math.round(f*10.0)/10.0 
-//						+ "   residualFatigue : " + Math.round(residualFatigue*10.0)/10.0  
-//						+ "   fractionOfRest : " + Math.round(fractionOfRest*10.0)/10.0  
-//								+ "   newFatigue : " + Math.round(newFatigue*10.0)/10.0);
+				logger.info(person + " f : " + Math.round(f*10.0)/10.0 
+						+ "   time : " + Math.round(time*1000.0)/1000.0
+						+ "   residualFatigue : " + Math.round(residualFatigue*10.0)/10.0  
+						+ "   fractionOfRest : " + Math.round(fractionOfRest*10.0)/10.0  
+								+ "   newFatigue : " + Math.round(newFatigue*10.0)/10.0);
 			}
 			else {
 				
 				if (f > 1000)
-					residualFatigue = (f - 1000) / 175;
+					residualFatigue = (f - 1000) / 25;//125;
 				else if (f > 500)
-					residualFatigue = (f - 500) / 225;
+					residualFatigue = (f - 500) / 35;//175;
 				
 				newFatigue = f - fractionOfRest - residualFatigue;	
-//				logger.info(person + " f : " + Math.round(f*10.0)/10.0
-//						+ "   residualFatigue : " + Math.round(residualFatigue*10.0)/10.0  
-//						+ "   fractionOfRest : " + Math.round(fractionOfRest*10.0)/10.0  
-//								+ "   newFatigue : " + Math.round(newFatigue*10.0)/10.0);
+				logger.info(person + " f : " + Math.round(f*10.0)/10.0
+						+ "   time : " + Math.round(time*1000.0)/1000.0
+						+ "   residualFatigue : " + Math.round(residualFatigue*10.0)/10.0  
+						+ "   fractionOfRest : " + Math.round(fractionOfRest*10.0)/10.0  
+								+ "   newFatigue : " + Math.round(newFatigue*10.0)/10.0);
 			}
 				
 			pc.setFatigue(newFatigue);
@@ -435,31 +437,32 @@ public class Sleep extends Task implements Serializable {
 			circadian.setNumSleep(circadian.getNumSleep() + 1);
 			circadian.updateSleepCycle((int) marsClock.getMillisol(), true);
     	
+			// Check if alarm went off
+			double newTime = marsClock.getMillisol();
+			double alarmTime = getAlarmTime();
+
+			if ((previousTime <= alarmTime) && (newTime >= alarmTime)) {
+				logger.info(person.getName() + " woke up from the alarm at " + (int)alarmTime);
+				endTask();
+			} else {
+				previousTime = newTime;
+			}
+			
 			if (newFatigue <= 0) {
-				logger.finest(person.getName() + " woke up from a nap.");
-				return 0;
+				logger.finest(person.getName() + " woke up from sleep.");
+				endTask();
 			}
 
-//			else {
-				// Check if alarm went off
-				double newTime = marsClock.getMillisol();
-				double alarmTime = getAlarmTime();
-	
-				if ((previousTime <= alarmTime) && (newTime >= alarmTime)) {
-//					endTask();
-					logger.info(person.getName() + " woke up from the alarm at " + (int)alarmTime);
-				} else {
-					previousTime = newTime;
-				}
-//			}
 		}
 
 		else if (robot != null) {
 			// Check if alarm went off.
 			double newTime = marsClock.getMillisol();
 			double alarmTime = getAlarmTime();
+			
 			if ((previousTime <= alarmTime) && (newTime >= alarmTime)) {
 				logger.finest(robot.getName() + " woke up from alarm.");
+				endTask();
 			} else {
 				previousTime = newTime;
 			}
@@ -616,25 +619,26 @@ public class Sleep extends Task implements Serializable {
 
 		if (person != null) {
 			ShiftType shiftType = person.getTaskSchedule().getShiftType();
-			// Set to 50 millisols prior to the beginning of the duty shift hour
+			// Set to 33 millisols prior to the beginning of the duty shift hour
 			if (shiftType == ShiftType.A)
-				modifiedAlarmTime = 950;
+				modifiedAlarmTime = 967;
 			else if (shiftType == ShiftType.B)
-				modifiedAlarmTime = 450;
+				modifiedAlarmTime = 467;
 			else if (shiftType == ShiftType.X)
 				modifiedAlarmTime = 967;
 			else if (shiftType == ShiftType.Y)
 				modifiedAlarmTime = 300;
 			else if (shiftType == ShiftType.Z)
 				modifiedAlarmTime = 634;
-			else if (shiftType == ShiftType.ON_CALL) { // if only one person is at the settlement, go with this schedule
+			else if (shiftType == ShiftType.ON_CALL) { 
+				// if only one person is at the settlement, go with this schedule
 				timeDiff = 1000D * (person.getCoordinates().getTheta() / (2D * Math.PI));
 				modifiedAlarmTime = BASE_ALARM_TIME - timeDiff;
 			}
 
 		} else if (robot != null) {
 			timeDiff = 1000D * (robot.getCoordinates().getTheta() / (2D * Math.PI));
-
+			modifiedAlarmTime = BASE_ALARM_TIME - timeDiff;
 		}
 
 		if (modifiedAlarmTime < 0D) {

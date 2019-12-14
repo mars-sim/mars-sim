@@ -15,6 +15,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.CollectionUtils;
+import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.LogConsolidated;
@@ -104,10 +105,6 @@ implements Serializable {
 	        }
      	}
 
-        // Determine digging location.
-        Point2D.Double diggingLoc = determineDiggingLocation();
-        setOutsideSiteLocation(diggingLoc.getX(), diggingLoc.getY());
-
         // Take bags for collecting regolith.
         if (!hasBags()) {
             takeBag();
@@ -123,7 +120,10 @@ implements Serializable {
         }
 
         if (!ended) {
- 
+            // Determine digging location.
+            Point2D.Double diggingLoc = determineDiggingLocation();
+            setOutsideSiteLocation(diggingLoc.getX(), diggingLoc.getY());
+
 	        NaturalAttributeManager nManager = person.getNaturalAttributeManager();
 	        int strength = nManager.getAttribute(NaturalAttributeType.STRENGTH);
 	        int agility = nManager.getAttribute(NaturalAttributeType.AGILITY);
@@ -137,10 +137,107 @@ implements Serializable {
 			
 	       	// Add task phases
         	addPhase(COLLECT_REGOLITH);
-//        	setPhase(COLLECT_REGOLITH);
+        	
+//	        setPhase(WALK_TO_OUTSIDE_SITE);
         	
 //	        logger.info(person.getName() + " was going to start digging for regolith.");
         }
+    }
+
+	   /**
+     * Perform collect regolith phase.
+     * @param time time (millisol) to perform phase.
+     * @return time (millisol) remaining after performing phase.
+     * @throws Exception
+     */
+    private double collectRegolith(double time) {
+
+    	if (getTimeCompleted() > getDuration()) {
+//    		endTask();
+    		if (person.isOutside())
+    			setPhase(WALK_BACK_INSIDE);
+            return time;
+    	}
+    	
+        // Check for an accident during the EVA operation.
+        checkForAccident(time);
+
+        // Check for radiation exposure during the EVA operation.
+        if (person.isOutside() && isRadiationDetected(time)){
+//    		endTask();
+            setPhase(WALK_BACK_INSIDE);
+            return time;
+        }
+
+        // Check if there is reason to cut the collection phase short and return
+        // to the airlock.
+        if (person.isOutside() && shouldEndEVAOperation()) {
+//    		endTask();
+            setPhase(WALK_BACK_INSIDE);
+            return time;
+        }
+
+        double remainingPersonCapacity = person.getInventory().getAmountResourceRemainingCapacity(
+        		regolithID, true, false);
+        
+        double regolithCollected = .5 * time * compositeRate;
+        
+		// Modify collection rate by "Areology" skill.
+		int areologySkill = person.getSkillManager().getEffectiveSkillLevel(SkillType.AREOLOGY);
+		if (areologySkill == 0) {
+			regolithCollected /= 2D;
+		}
+		if (areologySkill > 1) {
+			regolithCollected += regolithCollected * (.2D * areologySkill);
+		}
+		
+        totalCollected += regolithCollected;
+        
+        boolean finishedCollecting = false;
+        if (regolithCollected >= remainingPersonCapacity
+        		|| totalCollected > .4 * person.getInventory().getGeneralCapacity()) {
+            regolithCollected = remainingPersonCapacity;
+            finishedCollecting = true;
+        }
+        
+        bag.getInventory().storeAmountResource(regolithID, regolithCollected, true);
+ 
+        PhysicalCondition condition = person.getPhysicalCondition();
+        double stress = condition.getStress();
+        double fatigue = condition.getFatigue();
+        // Add penalty to the fatigue
+        condition.setFatigue(fatigue + time * factor);
+        
+        // Add experience points
+        addExperience(time);
+        
+        if (finishedCollecting) {
+            LogConsolidated.log(Level.INFO, 0, sourceName, 
+        		"[" + person.getLocationTag().getLocale() +  "] " +
+        		person.getName() + " collected " + Math.round(totalCollected*100D)/100D 
+        		+ " kg regolith outside at " + person.getCoordinates().getFormattedString());
+            if (person.isOutside()) {
+            	setPhase(WALK_BACK_INSIDE);
+            }
+            else if (person.isInside()) {
+        		endTask();
+            }
+    	}
+        
+        if (fatigue > 1000 || stress > 50) {
+            LogConsolidated.log(Level.INFO, 0, sourceName, 
+        		"[" + person.getLocationTag().getLocale() +  "] " +
+        		person.getName() + " took a break from collecting regolith ("
+        		+ Math.round(totalCollected*100D)/100D + " kg collected) " 
+        		+ "; fatigue: " + Math.round(fatigue*10D)/10D 
+        		+ "; stress: " + Math.round(stress*100D)/100D + " %");
+            if (person.isOutside()) {
+            	setPhase(WALK_BACK_INSIDE);
+//        		endTask();
+            }
+        }
+        
+        return 0D;
     }
 
     /**
@@ -287,126 +384,35 @@ implements Serializable {
         
     	// Unload bag to rover's inventory.
         if (bag != null) {
-            double collectedAmount = bag.getInventory().getAmountResourceStored(regolithID, false);
+            double reg0 = bag.getInventory().getAmountResourceStored(regolithID, false);
+            double reg1 = person.getInventory().getAmountResourceStored(regolithID, false);
             double settlementCap = settlement.getInventory().getAmountResourceRemainingCapacity(
                     regolithID, false, false);
 
-            // Try to store regolith in settlement.
-            if (collectedAmount < settlementCap) {
-                bag.getInventory().retrieveAmountResource(regolithID, collectedAmount);
-                settlement.getInventory().storeAmountResource(regolithID, collectedAmount, false);
-                settlement.getInventory().addAmountSupply(regolithID, collectedAmount);
+          	Inventory sInv = settlement.getInventory();
+            if (sInv != null) {
+	            // Try to store regolith in settlement.
+	            if (reg0 + reg1 < settlementCap) {
+	                bag.getInventory().retrieveAmountResource(regolithID, reg0);
+	                person.getInventory().retrieveAmountResource(regolithID, reg1);
+	                // Store the ice
+	                sInv.storeAmountResource(regolithID, reg0 + reg1, false);
+	                // Track supply
+	                sInv.addAmountSupply(regolithID, reg0 + reg1);
+		            // Transfer the bag
+		            bag.transfer(person, settlement);
+					// Add to the daily output
+					settlement.addOutput(regolithID, reg0 + reg1, getTimeCompleted());
+		            // Recalculate settlement good value for output item.
+		            settlement.getGoodsManager().updateGoodValue(GoodsUtil.getResourceGood(regolithID), false);
+	            }
             }
-
-            // transfer the bag
-            bag.transfer(person, settlement);
-			// Add to the daily output
-			settlement.addOutput(regolithID, collectedAmount, getTimeCompleted());
-            // Recalculate settlement good value for output item.
-            settlement.getGoodsManager().updateGoodValue(GoodsUtil.getResourceGood(regolithID), false);
         }
 
         super.endTask();
     }
 
-    /**
-     * Perform collect regolith phase.
-     * @param time time (millisol) to perform phase.
-     * @return time (millisol) remaining after performing phase.
-     * @throws Exception
-     */
-    private double collectRegolith(double time) {
-
-    	if (getTimeCompleted() > getDuration()) {
-//    		endTask();
-    		if (person.isOutside())
-    			setPhase(WALK_BACK_INSIDE);
-            return time;
-    	}
-    	
-        // Check for an accident during the EVA operation.
-        checkForAccident(time);
-
-        // Check for radiation exposure during the EVA operation.
-        if (isRadiationDetected(time) && person.isOutside()){
-//    		endTask();
-            setPhase(WALK_BACK_INSIDE);
-            return time;
-        }
-
-        // Check if there is reason to cut the collection phase short and return
-        // to the airlock.
-        if (shouldEndEVAOperation() && person.isOutside()) {
-//    		endTask();
-            setPhase(WALK_BACK_INSIDE);
-            return time;
-        }
-
-        double remainingPersonCapacity = person.getInventory().getAmountResourceRemainingCapacity(
-        		regolithID, true, false);
-        
-        double regolithCollected = .5 * time * compositeRate;
-        
-		// Modify collection rate by "Areology" skill.
-		int areologySkill = person.getSkillManager().getEffectiveSkillLevel(SkillType.AREOLOGY);
-		if (areologySkill == 0) {
-			regolithCollected /= 2D;
-		}
-		if (areologySkill > 1) {
-			regolithCollected += regolithCollected * (.2D * areologySkill);
-		}
-		
-        totalCollected += regolithCollected;
-        
-        boolean finishedCollecting = false;
-        if (regolithCollected >= remainingPersonCapacity
-        		|| totalCollected > .4 * person.getInventory().getGeneralCapacity()) {
-            regolithCollected = remainingPersonCapacity;
-            finishedCollecting = true;
-        }
-        
-        person.getInventory().storeAmountResource(regolithID, regolithCollected, true);
  
-        PhysicalCondition condition = person.getPhysicalCondition();
-        double stress = condition.getStress();
-        double fatigue = condition.getFatigue();
-        // Add penalty to the fatigue
-        condition.setFatigue(fatigue + time * factor);
-        
-        // Add experience points
-        addExperience(time);
-        
-        if (finishedCollecting) {
-            LogConsolidated.log(Level.INFO, 0, sourceName, 
-        		"[" + person.getLocationTag().getLocale() +  "] " +
-        		person.getName() + " collected " + Math.round(totalCollected*100D)/100D 
-        		+ " kg regolith outside at " + person.getCoordinates().getFormattedString());
-            if (person.isOutside()) {
-            	setPhase(WALK_BACK_INSIDE);
-//        		endTask();
-            }
-    	}
-        
-        if (fatigue > 1000 || stress > 50) {
-            LogConsolidated.log(Level.INFO, 0, sourceName, 
-        		"[" + person.getLocationTag().getLocale() +  "] " +
-        		person.getName() + " took a break from collecting regolith ("
-        		+ Math.round(totalCollected*100D)/100D + " kg collected) " 
-        		+ "; fatigue: " + Math.round(fatigue*10D)/10D 
-        		+ "; stress: " + Math.round(stress*100D)/100D + " %");
-            if (person.isOutside()) {
-            	setPhase(WALK_BACK_INSIDE);
-//        		endTask();
-            }
-        }
-        
-        if (person.isInside()) {
-    		endTask();
-        }
-        
-        return 0D;
-    }
-
     @Override
     public void destroy() {
         super.destroy();

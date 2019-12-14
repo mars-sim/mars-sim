@@ -109,9 +109,9 @@ public class DigLocalIceMeta implements MetaTask, Serializable {
             result = settlement.getIceProbabilityValue();
 
             // Stress modifier
-            result -= stress * 5D;
+            result -= stress * 3.5D;
             // fatigue modifier
-            result -= (fatigue - 100) / 10D;
+            result -= (fatigue - 100) / 1.5D;
 
             if (result < 0)
             	return 0;
@@ -141,11 +141,11 @@ public class DigLocalIceMeta implements MetaTask, Serializable {
             //logger.info("DigLocalIceMeta's probability : " + Math.round(result*100D)/100D);
 
 	    	if (exposed[0]) {
-				result = result/2D;// Baseline can give a fair amount dose of radiation
+				result = result/5D;// Baseline can give a fair amount dose of radiation
 			}
 
 	    	if (exposed[1]) {// GCR can give nearly lethal dose of radiation
-				result = result/4D;
+				result = result/10D;
 			}
 	    	
             if (result < 0D) {

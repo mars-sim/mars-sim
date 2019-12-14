@@ -120,7 +120,7 @@ public class Coordinates implements Serializable {
 	}
 
 	/**
-	 * phi accessor
+	 * phi accessor (related to latitude)
 	 * 
 	 * @return the phi angle value of the coordinate
 	 */
@@ -129,7 +129,7 @@ public class Coordinates implements Serializable {
 	}
 
 	/**
-	 * phi mutator
+	 * phi mutator (related to latitude)
 	 * 
 	 * @param newPhi the new phi angle value for the coordinate
 	 */
@@ -153,7 +153,7 @@ public class Coordinates implements Serializable {
 	}
 
 	/**
-	 * theta accessor
+	 * theta accessor (related to longitude)
 	 * 
 	 * @return the theta angle value of the coordinate
 	 */
@@ -162,7 +162,7 @@ public class Coordinates implements Serializable {
 	}
 
 	/**
-	 * theta mutator
+	 * theta mutator (related to longitude)
 	 * 
 	 * @param newTheta the new theta angle value for the coordinate
 	 */

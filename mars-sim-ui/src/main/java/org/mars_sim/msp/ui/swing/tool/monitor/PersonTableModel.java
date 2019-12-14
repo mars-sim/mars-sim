@@ -152,7 +152,7 @@ public class PersonTableModel extends UnitTableModel {
 
 	private static UnitManager unitManager = Simulation.instance().getUnitManager();
 
-	private String taskCache = "Relaxing";
+//	private String taskCache = "Relaxing";
 
 	private ValidSourceType sourceType;
 
@@ -383,15 +383,15 @@ public class PersonTableModel extends UnitTableModel {
 			case TASK: {
 				// If the Person is dead, there is no Task Manager
 				TaskManager mgr = person.getMind().getTaskManager();
-				String t = null;
+				String t = "";
 
 				if (mgr != null) {
 
 					t = mgr.getTaskDescription(false);
 
-					if (t != null && !t.equals(taskCache)) // !t.toLowerCase().contains(WALK) && 
-						result = t;
-					else
+//					if (t != null && !t.equals(taskCache)) // !t.toLowerCase().contains(WALK) && 
+//						result = t;
+//					else
 						result = t;
 
 				} else

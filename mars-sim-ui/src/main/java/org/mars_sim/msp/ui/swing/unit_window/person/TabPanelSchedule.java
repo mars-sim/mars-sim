@@ -588,50 +588,65 @@ public class TabPanelSchedule extends TabPanel {
 			}
 			
 			if (hideRepeatedTasks) {
-				hideRepeated(activityList);
-				
+				activities = hideRepeated(activityList);
 			}
 			else {
 				activities = activityList;
-				fireTableDataChanged();
 			}
+			
+			fireTableDataChanged();
 		}
 		
 		/**
 		 * Hides all the repeated tasks from the schedule on a particular selected sol
 		 * 
-		 * @param temp
+		 * @param oneDaySchedule
 		 */
-		public void hideRepeated(List<OneActivity> temp) {
+		public List<OneActivity> hideRepeated(List<OneActivity> oneDaySchedule) {
 			OneActivity lastTask = null;
-			String lastDes = null;
+			String lastDes = "";
+			String lastPhase = "";
+			String lastMission = "";
+			
 			OneActivity currentTask = null;
-			String currentDes = null;
-		
+			String currentDes = "";
+			String currentPhase = "";
+			String currentMission = "";
+			
 			// Check if user selected hide repeated tasks checkbox
-			if (temp != null) {
+			if (oneDaySchedule != null) {
 				// Show only non-repeating consecutive tasks
-				List<OneActivity> displaySchedule = new ArrayList<OneActivity>(temp);
+				List<OneActivity> displaySchedule = new ArrayList<OneActivity>(oneDaySchedule);
 
 				int size = displaySchedule.size();
 
 				for (int i = size - 1; i >= 0; i--) {
 					currentTask = displaySchedule.get(i);
 					currentDes = taskSchedule.convertTaskDescription(currentTask.getDescription());
+					currentPhase = taskSchedule.convertTaskPhase(currentTask.getPhase());
+					currentMission = taskSchedule.convertTaskPhase(currentTask.getMission());
+					
 					// Make sure this is NOT the very first task (i = 0) of the day
 					if (i != 0) {
 						lastTask = displaySchedule.get(i - 1);
 						lastDes = taskSchedule.convertTaskDescription(lastTask.getDescription());
-
+						lastPhase = taskSchedule.convertTaskPhase(lastTask.getPhase());
+						lastMission = taskSchedule.convertTaskPhase(lastTask.getMission());
+						
 						// Check if the last task is the same as the current task
-						if (lastDes.equals(currentDes)) {
+						if (lastTask.equals(currentTask)
+								&& lastDes.equals(currentDes)
+								&& lastPhase.equals(currentPhase)
+								&& lastMission.equals(currentMission)
+								) {
 							displaySchedule.remove(i);
+							size = displaySchedule.size();
 						}
 					}
 				}
-				activities = displaySchedule;
+				return displaySchedule;
 			}
-			fireTableDataChanged();
+			return oneDaySchedule;
 		}
 	}
 

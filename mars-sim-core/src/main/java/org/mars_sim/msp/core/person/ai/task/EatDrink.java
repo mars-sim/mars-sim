@@ -97,8 +97,8 @@ public class EatDrink extends Task implements Serializable {
 	// Data members
 	/** how much eaten [in kg]. */ 
 	private double cumulativeProportion = 0;
-	private double totalMealEatingTime = 0D;
-	private double mealEatingDuration = 0D;
+	private double totalEatingTime = 0D;
+	private double eatingDuration = 0D;
 	private double totalDessertEatingTime = 0D;
 	private double dessertEatingDuration = 0D;
 	private double startingHunger;
@@ -218,7 +218,7 @@ public class EatDrink extends Task implements Serializable {
 
 			// Initialize data members.
 			double dur = getDuration();
-			mealEatingDuration = dur * MEAL_EATING_PROPORTION;
+			eatingDuration = dur * MEAL_EATING_PROPORTION;
 			dessertEatingDuration = dur * DESSERT_EATING_PROPORTION;
 	
 			PersonConfig config = SimulationConfig.instance().getPersonConfig();
@@ -329,7 +329,6 @@ public class EatDrink extends Task implements Serializable {
 	 */
 	private double drinkingWaterPhase(double time) {
 		consumeWater(true);
-//		endTask();
 		return time *.75;
 	}
 	
@@ -374,11 +373,11 @@ public class EatDrink extends Task implements Serializable {
 			}
 		}
 		
-		if ((totalMealEatingTime + eatingTime) >= mealEatingDuration) {
-			eatingTime = mealEatingDuration - totalMealEatingTime;
+		if ((totalEatingTime + eatingTime) >= eatingDuration) {
+			eatingTime = eatingDuration - totalEatingTime;
 		}
 
-		totalMealEatingTime += eatingTime;
+		totalEatingTime += eatingTime;
 
 		if (eatingTime < time) {
 //			setPhase(PICK_UP_DESSERT);// EATING_DESSERT);
@@ -386,7 +385,11 @@ public class EatDrink extends Task implements Serializable {
 		}
 
 		consumeWater(false);
-
+		
+		if (remainingTime <= 0)
+			// Need endTask() below to quit EatDrink
+			endTask();
+		
 		return remainingTime;
 	}
 	
@@ -401,8 +404,8 @@ public class EatDrink extends Task implements Serializable {
 		double remainingTime = 0D;
 		double eatingTime = time;
 		
-		if ((totalMealEatingTime + eatingTime) >= mealEatingDuration) {
-			eatingTime = mealEatingDuration - totalMealEatingTime;
+		if ((totalEatingTime + eatingTime) >= eatingDuration) {
+			eatingTime = eatingDuration - totalEatingTime;
 		}
 
 		if (!person.isInVehicle()) {
@@ -430,7 +433,7 @@ public class EatDrink extends Task implements Serializable {
 			}
 		}
 		
-		totalMealEatingTime += eatingTime;
+		totalEatingTime += eatingTime;
 
 		// If finished eating, change to dessert phase.
 		if (eatingTime < time) {
@@ -458,25 +461,26 @@ public class EatDrink extends Task implements Serializable {
 			if (dessertKitchen != null) {
 				// Walk to dessert kitchen.
 				walkToActivitySpotInBuilding(dessertKitchen.getBuilding(), FunctionType.DINING, true);
+				
+				// Pick up a dessert at kitchen if one is available.
+				nameOfDessert = dessertKitchen.chooseADessert(person);
+
+				if (nameOfDessert != null) {
+					LogConsolidated.log(Level.FINE, 0, sourceName,
+							"[" + person.getLocationTag().getLocale() + "] " + person
+									+ " picked up prepared dessert '" + nameOfDessert.getName() 
+									+ "' to eat/drink in " + person.getLocationTag().getImmediateLocation() + ".");
+					
+					setPhase(EAT_DESSERT);
+				}
+				
 			} else {
-				// If no dessert kitchen found, go eat meal ?
+				// If no dessert kitchen found, go eat preserved food
+				setPhase(EAT_PRESERVED_FOOD);
+				return time *.9;
 			}
 		}
 
-		if (dessertKitchen != null) {
-			// Pick up a dessert at kitchen if one is available.
-			nameOfDessert = dessertKitchen.chooseADessert(person);
-			if (nameOfDessert != null) {
-				LogConsolidated.log(Level.FINE, 0, sourceName,
-						"[" + person.getLocationTag().getLocale() + "] " + person
-								+ " picked up prepared dessert '" + nameOfDessert.getName() 
-								+ "' to eat/drink in " + person.getLocationTag().getImmediateLocation() + ".");
-			}
-		}
-
-		// if one can't find a dessert kitchen, i.e. in a vehicle
-		setPhase(EAT_DESSERT);
-		
 		return time *.8;
 	}
 
@@ -598,7 +602,9 @@ public class EatDrink extends Task implements Serializable {
 		} else {
 			// Person is not inside a container unit, so end task.
 			result = false;
-//			endTask();
+			// Need endTask() below to quit EatDrink
+			endTask();
+
 		}
 
 		return result;
@@ -639,19 +645,23 @@ public class EatDrink extends Task implements Serializable {
 				// If not enough unprepared dessert available, end task.
 				else {// if (!enoughDessert) {
 					remainingTime = time;
-//					endTask();
+					// Need endTask() below to quit EatDrink
+					endTask();
 				}
 			}
 		}
 
-		totalMealEatingTime += eatingTime;
+		totalEatingTime += eatingTime;
 
 		// If finished eating, end task.
 		if (eatingTime < time) {
 			remainingTime = time - eatingTime;
-//			endTask();
 		}
 
+		if (remainingTime <= 0)
+			// Need endTask() below to quit EatDrink
+			endTask();
+		
 		return remainingTime;
 	}
 
@@ -714,6 +724,7 @@ public class EatDrink extends Task implements Serializable {
 					double hungerRelieved = RATIO * proportion / dryMass;
 								
 					// Consume unpreserved dessert.
+					logger.info(person + " hungerRelieved : " + hungerRelieved);
 					reduceHunger(hungerRelieved);
 					
 					// Reduce person's stress after eating a prepared dessert.
@@ -1130,9 +1141,9 @@ public class EatDrink extends Task implements Serializable {
 	 */
 	public static PreparingDessert getKitchenWithDessert(Person person) {
 		PreparingDessert result = null;
-
-		if (person.isInSettlement()) {
-			Settlement settlement = person.getSettlement();
+		Settlement settlement = person.getSettlement();
+		
+		if (settlement != null) {
 			BuildingManager manager = settlement.getBuildingManager();
 			List<Building> dessertBuildings = manager.getBuildings(FunctionType.PREPARING_DESSERT);
 			for (Building building : dessertBuildings) {
