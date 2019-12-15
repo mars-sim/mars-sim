@@ -106,11 +106,11 @@ implements Serializable {
      	}
 
         // Take bags for collecting regolith.
-        if (!hasBags()) {
+        if (bag == null || !hasBags()) {
             takeBag();
 
             // If bags are not available, end task.
-            if (!hasBags()) {
+            if (bag == null || !hasBags()) {
             	if (person.isOutside()){
                     setPhase(WALK_BACK_INSIDE);
                 }
@@ -273,6 +273,7 @@ implements Serializable {
     					+ person.getLocationTag().getLocale()
     					+ "] "  + person.getName() 
     					+ " was strangely unable to carry an empty bag.");
+            	endTask();
             }
         }
         else {
@@ -281,6 +282,7 @@ implements Serializable {
 					+ person.getLocationTag().getLocale()
 					+ "] "  + person.getName() 
 					+ " was unable to find an empty bag in the inventory.");
+        	endTask();
         }
     }
 

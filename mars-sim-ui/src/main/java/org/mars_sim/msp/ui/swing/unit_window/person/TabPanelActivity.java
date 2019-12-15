@@ -544,24 +544,29 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 			
 		}
 
-//		if (!newTaskText.toLowerCase().contains("walk")) {
-			if (!taskTextCache.equals(newTaskText)) {
-				taskTextCache = newTaskText;
-				taskTextArea.setText(newTaskText);
-			}
+		if (!taskTextCache.equals(newTaskText)) {
+			taskTextCache = newTaskText;
+			taskTextArea.setText(newTaskText);
+		}
 
-			if (!taskPhaseCache.equals(newTaskPhase)) {
-				taskPhaseCache = newTaskPhase;
-				taskPhaseArea.setText(newTaskPhase);
-			}
-//		}
+		if (taskTextCache.equals(""))
+			taskPhaseArea.setText("");
+		
+		else if (!taskPhaseCache.equals(newTaskPhase)) {
+			taskPhaseCache = newTaskPhase;
+			taskPhaseArea.setText(newTaskPhase);
+		}
+		
 
 		if (!subTaskTextCache.equals(newSubTaskText)) {
 			subTaskTextCache = newSubTaskText;
 			subTaskTextArea.setText(newSubTaskText);
 		}
 
-		if (!subTaskPhaseCache.equals(newSubTaskPhase)) {
+		if (subTaskTextCache.equals(""))
+			subTaskPhaseArea.setText("");
+		
+		else if (!subTaskPhaseCache.equals(newSubTaskPhase)) {
 			subTaskPhaseCache = newSubTaskPhase;
 			subTaskPhaseArea.setText(newSubTaskPhase);
 		}

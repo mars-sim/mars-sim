@@ -74,6 +74,7 @@ implements Serializable {
 	private Airlock airlock;
 	/** Bag for collecting ice. */
 	private Bag bag;
+	/** The Settlement vicinity for collecting ice. */
 	private Settlement settlement;
 
 	private boolean ended = false;
@@ -105,11 +106,11 @@ implements Serializable {
      	}
 
         // Take bags for collecting ice.
-        if (!hasBags()) {
+        if (bag == null || !hasBags()) {
             takeBag();
 
             // If bags are not available, end task.
-            if (!hasBags()) {
+            if (bag == null || !hasBags()) {
             	if (person.isOutside()){
                     setPhase(WALK_BACK_INSIDE);
                 }
@@ -188,7 +189,7 @@ implements Serializable {
         }
 
         bag.getInventory().storeAmountResource(iceID, iceCollected, true);
-
+        
         PhysicalCondition condition = person.getPhysicalCondition();
         double stress = condition.getStress();
         double fatigue = condition.getFatigue();
@@ -250,8 +251,6 @@ implements Serializable {
         if (aBag != null) {
             if (person.getInventory().canStoreUnit(aBag, false)) {
             	aBag.transfer(settlement, person);
-//                settlement.getInventory().retrieveUnit(emptyBag);
-//                person.getInventory().storeUnit(emptyBag);
                 bag = aBag;
             }
             else {
@@ -260,6 +259,7 @@ implements Serializable {
     					+ person.getLocationTag().getLocale()
     					+ "] "  + person.getName() 
     					+ " was strangely unable to carry an empty bag.");
+            	endTask();
             }
         }
         else {
@@ -268,6 +268,7 @@ implements Serializable {
 					+ person.getLocationTag().getLocale()
 					+ "] "  + person.getName() 
 					+ " was unable to find an empty bag in the inventory.");
+        	endTask();
         }
     }
     

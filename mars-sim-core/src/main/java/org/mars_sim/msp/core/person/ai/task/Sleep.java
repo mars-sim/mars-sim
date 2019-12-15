@@ -405,11 +405,11 @@ public class Sleep extends Task implements Serializable {
 
 				// Reduce person's fatigue
 				newFatigue = f - fractionOfRest - residualFatigue;
-				logger.info(person + " f : " + Math.round(f*10.0)/10.0 
-						+ "   time : " + Math.round(time*1000.0)/1000.0
-						+ "   residualFatigue : " + Math.round(residualFatigue*10.0)/10.0  
-						+ "   fractionOfRest : " + Math.round(fractionOfRest*10.0)/10.0  
-								+ "   newFatigue : " + Math.round(newFatigue*10.0)/10.0);
+//				logger.info(person + " f : " + Math.round(f*10.0)/10.0 
+//						+ "   time : " + Math.round(time*1000.0)/1000.0
+//						+ "   residualFatigue : " + Math.round(residualFatigue*10.0)/10.0  
+//						+ "   fractionOfRest : " + Math.round(fractionOfRest*10.0)/10.0  
+//								+ "   newFatigue : " + Math.round(newFatigue*10.0)/10.0);
 			}
 			else {
 				
@@ -419,11 +419,11 @@ public class Sleep extends Task implements Serializable {
 					residualFatigue = (f - 500) / 35;//175;
 				
 				newFatigue = f - fractionOfRest - residualFatigue;	
-				logger.info(person + " f : " + Math.round(f*10.0)/10.0
-						+ "   time : " + Math.round(time*1000.0)/1000.0
-						+ "   residualFatigue : " + Math.round(residualFatigue*10.0)/10.0  
-						+ "   fractionOfRest : " + Math.round(fractionOfRest*10.0)/10.0  
-								+ "   newFatigue : " + Math.round(newFatigue*10.0)/10.0);
+//				logger.info(person + " f : " + Math.round(f*10.0)/10.0
+//						+ "   time : " + Math.round(time*1000.0)/1000.0
+//						+ "   residualFatigue : " + Math.round(residualFatigue*10.0)/10.0  
+//						+ "   fractionOfRest : " + Math.round(fractionOfRest*10.0)/10.0  
+//								+ "   newFatigue : " + Math.round(newFatigue*10.0)/10.0);
 			}
 				
 			pc.setFatigue(newFatigue);
