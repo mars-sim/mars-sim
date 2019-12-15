@@ -85,16 +85,19 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 				walkToActivitySpotInBuilding(observatory.getBuilding(), false);
 				observatory.addObserver();
 				isActiveObserver = true;
+				
+				// Initialize phase
+				addPhase(OBSERVING);
+				setPhase(OBSERVING);
+				
 			} else {
 				LogConsolidated.log(Level.SEVERE, 5000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
 						+ person.getName() + " could not find the observatory.");
 				endTask();
 			}
 		}
-
-		// Initialize phase
-		addPhase(OBSERVING);
-		setPhase(OBSERVING);
+		else
+			endTask();
 	}
 
 	@Override

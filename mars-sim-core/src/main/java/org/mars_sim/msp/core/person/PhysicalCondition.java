@@ -336,6 +336,8 @@ public class PhysicalCondition implements Serializable {
 		isStressedOut = false;
 		isCollapsed = false;
 		isDehydrated = false;
+		// Initially set performance to 1.0 (=100%) to avoid issues at startup
+		performance = 1.0D;
 	}
 
 	public void initializeHealthIndices() {
@@ -358,6 +360,8 @@ public class PhysicalCondition implements Serializable {
 	 * (Note : Must skip this when running maven test or else having exceptions)
 	 */
 	public void initialize() {
+		// Set up the initial values for each physical health index
+		initializeHealthIndices();
 		// Modify personalMaxEnergy at the start of the sim
 		int d1 = 2 * (35 - person.updateAge()); 
 		// Assume that after age 35, metabolism slows down
@@ -369,8 +373,6 @@ public class PhysicalCondition implements Serializable {
 		appetite = personalMaxEnergy / MAX_DAILY_ENERGY_INTAKE;
 		
 //		logger.info(person + " : " + personalMaxEnergy + "   appetite : " + Math.round(appetite*1000.0)/1000.0);
-		// Set up the initial values for each physical health index
-		initializeHealthIndices();
 	}
 
 	public void recoverFromSoreness(double value) {

@@ -132,6 +132,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	private static final String DETECTOR_GRID = "] The detector grid forecast a ";
 	private static final String TRADING_OUTPOST = "Trading Outpost";
 	private static final String MINING_OUTPOST = "Mining Outpost";
+	private static final String ASTRONOMY_OBSERVATORY = "Astronomy Observatory";
 	
 	public static final int CHECK_GOODS = 15;
 	
@@ -2174,13 +2175,14 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 		Iterator<Building> i = manager.getBuildings(FunctionType.EVA).iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
-
-			double distance = Point2D.distance(building.getXLocation(), building.getYLocation(), person.getXLocation(),
-					person.getYLocation());
-			if (distance < leastDistance) {
-				// EVA eva = (EVA) building.getFunction(BuildingFunction.EVA);
-				result = building.getEVA().getAirlock();
-				leastDistance = distance;
+			if (!ASTRONOMY_OBSERVATORY.equalsIgnoreCase(building.getBuildingType())) {
+				double distance = Point2D.distance(building.getXLocation(), building.getYLocation(), person.getXLocation(),
+						person.getYLocation());
+				if (distance < leastDistance) {
+					// EVA eva = (EVA) building.getFunction(BuildingFunction.EVA);
+					result = building.getEVA().getAirlock();
+					leastDistance = distance;
+				}
 			}
 		}
 
@@ -2195,13 +2197,14 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 		Iterator<Building> i = manager.getBuildings(FunctionType.EVA).iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
-
-			double distance = Point2D.distance(building.getXLocation(), building.getYLocation(), robot.getXLocation(),
-					robot.getYLocation());
-			if (distance < leastDistance) {
-				// EVA eva = (EVA) building.getFunction(BuildingFunction.EVA);
-				result = building.getEVA().getAirlock();
-				leastDistance = distance;
+			if (!ASTRONOMY_OBSERVATORY.equalsIgnoreCase(building.getBuildingType())) {
+				double distance = Point2D.distance(building.getXLocation(), building.getYLocation(), robot.getXLocation(),
+						robot.getYLocation());
+				if (distance < leastDistance) {
+					// EVA eva = (EVA) building.getFunction(BuildingFunction.EVA);
+					result = building.getEVA().getAirlock();
+					leastDistance = distance;
+				}
 			}
 		}
 

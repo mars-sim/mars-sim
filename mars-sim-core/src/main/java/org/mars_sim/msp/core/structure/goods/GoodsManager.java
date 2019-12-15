@@ -2782,7 +2782,7 @@ public class GoodsManager implements Serializable {
 		// Determine number of bags that are needed.
 		if (Bag.class.equals(equipmentClass)) {
 			double regolithValue = getGoodValuePerItem(GoodsUtil.getResourceGood(ResourceUtil.regolithID));
-			numDemand += DigLocalRegolith.COLLECTION_RATE * areologistFactor * regolithValue;
+			numDemand += DigLocalRegolith.BASE_COLLECTION_RATE * areologistFactor * regolithValue;
 		}
 
 		if (LargeBag.class.equals(equipmentClass)) {

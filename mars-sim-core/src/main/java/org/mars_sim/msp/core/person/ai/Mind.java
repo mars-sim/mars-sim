@@ -269,8 +269,8 @@ public class Mind implements Serializable {
 				}
 			}
 			else {
-				LogConsolidated.log(Level.WARNING, 20_000, sourceName,
-						person + " had no active task.");
+//				LogConsolidated.log(Level.INFO, 20_000, sourceName,
+//						person + " had no active task.");
 				startNew = true;
 			}
 			

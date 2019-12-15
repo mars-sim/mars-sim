@@ -190,7 +190,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		// For sub task
 		setSubTaskPhase(null);
 		if (subTask != null)  {
-			subTask.setDescription("");
+//			subTask.setDescription("");
 			subTask = null;
 		}
 	}
@@ -203,7 +203,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		// End subtask.
 		if (subTask != null && !subTask.isDone()) {
 			setSubTaskPhase(null);
-			subTask.setDescription("");
+//			subTask.setDescription("");
 			subTask.destroy();		
 			subTask = null;
 		}

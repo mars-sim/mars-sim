@@ -66,6 +66,7 @@ public class RecordActivity extends Task implements Serializable {
 		}
 
 		else {
+			// TODO: Move to where other settlers are working outside or near a building
 			endTask();
 		}
 
@@ -95,7 +96,8 @@ public class RecordActivity extends Task implements Serializable {
 	 */
 	private double recordingPhase(double time) {
 		// TODO: need to define what to do with this activity
-
+		// Take snapshot of pics and tap video clips, etc.
+		
 		return 0D;
 	}
 

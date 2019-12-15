@@ -57,6 +57,8 @@ implements Serializable {
     private static final TaskPhase COLLECT_ICE = new TaskPhase(Msg.getString(
             "Task.phase.collectIce")); //$NON-NLS-1$
 
+	public static final double SMALL_AMOUNT = 0.001;
+	
 	/** The resource id for a bag. */
 //	private static final int BAG  = EquipmentType.convertName2ID("bag");
 	
@@ -73,7 +75,7 @@ implements Serializable {
 	/** Airlock to be used for EVA. */
 	private Airlock airlock;
 	/** Bag for collecting ice. */
-	private Bag bag;
+//	private Bag bag;
 	/** The Settlement vicinity for collecting ice. */
 	private Settlement settlement;
 
@@ -92,7 +94,8 @@ implements Serializable {
 
      	settlement = CollectionUtils.findSettlement(person.getCoordinates());
      	if (settlement == null) {
-        	endTask();
+     		ended = true;
+        	super.endTask();
         	return;
      	}
         
@@ -100,21 +103,23 @@ implements Serializable {
      	if (person.isInside()) {
 	        airlock = getWalkableAvailableAirlock(person);
 	        if (airlock == null) {
-	        	endTask();
+	        	ended = true;
+	        	super.endTask();
 	        	return;
 	        }
      	}
 
         // Take bags for collecting ice.
-        if (bag == null || !hasBags()) {
+        if (!hasBags() && person.getInventory().findABag(true) == null) {
             takeBag();
 
             // If bags are not available, end task.
-            if (bag == null || !hasBags()) {
+            if (!hasBags()) {
             	if (person.isOutside()){
                     setPhase(WALK_BACK_INSIDE);
                 }
-            	endTask();
+            	ended = true;
+            	super.endTask();
             	return;
             }
         }
@@ -151,7 +156,6 @@ implements Serializable {
     private double collectIce(double time) {
 
     	if (getTimeCompleted() > getDuration()) {
-//    		endTask();
     		if (person.isOutside())
     			setPhase(WALK_BACK_INSIDE);
             return time;
@@ -161,70 +165,112 @@ implements Serializable {
         checkForAccident(time);
 
         // Check for radiation exposure during the EVA operation.
-        if (isRadiationDetected(time) && person.isOutside()) {
-//    		endTask();
+        if (person.isOutside() && isRadiationDetected(time)){
             setPhase(WALK_BACK_INSIDE);
             return time;
         }
+        
         // Check if there is reason to cut the collect
         // ice phase short and return.
-        if (shouldEndEVAOperation() && person.isOutside()) {
-//    		endTask();
+        if (person.isOutside() && shouldEndEVAOperation()) {
             setPhase(WALK_BACK_INSIDE);
             return time;
         }
 
-        double remainingPersonCapacity = person.getInventory().getAmountResourceRemainingCapacity(
-        		iceID, true, false);
-
-        double iceCollected = .5 * time * compositeRate;
-        
-        totalCollected += iceCollected;
-        
-        boolean finishedCollecting = false;
-        if (iceCollected > remainingPersonCapacity 
-        		|| totalCollected > .4 * person.getInventory().getGeneralCapacity()) {
-            iceCollected = remainingPersonCapacity;
-            finishedCollecting = true;
+        if (person.isInside()) {
+            setPhase(WALK_TO_OUTSIDE_SITE);
+            return time;
         }
-
-        bag.getInventory().storeAmountResource(iceID, iceCollected, true);
         
-        PhysicalCondition condition = person.getPhysicalCondition();
-        double stress = condition.getStress();
-        double fatigue = condition.getFatigue();
-        
-        // Add penalty to the fatigue
-        condition.setFatigue(fatigue + time * factor);
-        
-        // Add experience points
-        addExperience(time);
-        
-        if (finishedCollecting) {
-            LogConsolidated.log(Level.INFO, 0, sourceName, 
-	    		"[" + person.getLocationTag().getLocale() +  "] " +
-	    		person.getName() + " collected " + Math.round(totalCollected*100D)/100D 
-	    		+ " kg of ice outside at " + person.getCoordinates().getFormattedString());
-            if (person.isOutside()) {
-            	setPhase(WALK_BACK_INSIDE);
-            }
-            else if (person.isInside()) {
-        		endTask();
-            }
+        else {
+        	Inventory pInv = person.getInventory();
+	        Inventory bInv = pInv.findABag(false).getInventory();
+	        
+	        double collected = RandomUtil.getRandomDouble(1) * time * compositeRate;
+	        
+			// Modify collection rate by "Areology" skill.
+			int areologySkill = person.getSkillManager().getEffectiveSkillLevel(SkillType.AREOLOGY);
+			if (areologySkill == 0) {
+				collected /= 2D;
+			}
+			if (areologySkill >= 1) {
+				collected += collected * (.2D * areologySkill);
+			}
+			
+	        boolean finishedCollecting = false;
+	        
+	        double personRemainingCap = bInv.getAmountResourceRemainingCapacity(
+	        		iceID, false, false);
+	        
+	        double bagRemainingCap = bInv.getAmountResourceRemainingCapacity(
+	        		iceID, false, false);
+	
+	        if (personRemainingCap < SMALL_AMOUNT) {
+//	        	logger.info(person + " case 1");
+	            finishedCollecting = true;
+	            collected = 0;
+	        }
+	        
+	        else if (bagRemainingCap < SMALL_AMOUNT) {
+	            finishedCollecting = true;
+	            collected = 0;
+	        }
+	        		
+	        else if (collected > SMALL_AMOUNT 
+	        		&& (collected >= bagRemainingCap || collected >= personRemainingCap)) {
+	        	finishedCollecting = true;
+	        	collected = bagRemainingCap;    	
+	        }
+	        		
+	        else if (totalCollected + collected >= bInv.getGeneralCapacity()
+	        		|| totalCollected + collected >= pInv.getGeneralCapacity()) {     	
+	            finishedCollecting = true;
+	            collected = bagRemainingCap;
+	        }
+	
+	        if (collected > 0) {
+	        	totalCollected += collected;
+	        	bInv.storeAmountResource(iceID, collected, true);
+	        }
+	        
+	        PhysicalCondition condition = person.getPhysicalCondition();
+	        double stress = condition.getStress();
+	        double fatigue = condition.getFatigue();
+	        
+	        // Add penalty to the fatigue
+	        condition.setFatigue(fatigue + time * factor);
+	        
+	        // Add experience points
+	        addExperience(time);
+	        
+	        if (finishedCollecting && totalCollected > 0) {
+	            LogConsolidated.log(Level.INFO, 0, sourceName, 
+		    		"[" + person.getLocationTag().getLocale() +  "] " +
+		    		person.getName() + " collected " + Math.round(totalCollected*100D)/100D 
+		    		+ " kg of ice outside at " + person.getCoordinates().getFormattedString());
+	            if (person.isOutside()) {
+	            	setPhase(WALK_BACK_INSIDE);
+	            }
+	            else if (person.isInside()) {
+	        		endTask();
+	            }
+	        }
+	
+	        if (fatigue > 1000 || stress > 50) {
+	            LogConsolidated.log(Level.INFO, 0, sourceName, 
+	        		"[" + person.getLocationTag().getLocale() +  "] " +
+	                		+ Math.round(totalCollected*100D)/100D + " kg collected) " 
+	                		+ "; fatigue: " + Math.round(fatigue*10D)/10D 
+	                		+ "; stress: " + Math.round(stress*100D)/100D + " %");
+	            if (person.isOutside()) {
+	            	setPhase(WALK_BACK_INSIDE);
+	            }
+	            else if (person.isInside()) {
+	        		endTask();
+	            }
+	        }
         }
-
-        if (fatigue > 1000 || stress > 50) {
-            LogConsolidated.log(Level.INFO, 0, sourceName, 
-        		"[" + person.getLocationTag().getLocale() +  "] " +
-                		+ Math.round(totalCollected*100D)/100D + " kg collected) " 
-                		+ "; fatigue: " + Math.round(fatigue*10D)/10D 
-                		+ "; stress: " + Math.round(stress*100D)/100D + " %");
-            if (person.isOutside()) {
-            	setPhase(WALK_BACK_INSIDE);
-//        		endTask();
-            }
-        }
-
+        
         return 0D;
     }
 
@@ -251,7 +297,7 @@ implements Serializable {
         if (aBag != null) {
             if (person.getInventory().canStoreUnit(aBag, false)) {
             	aBag.transfer(settlement, person);
-                bag = aBag;
+//                bag = aBag;
             }
             else {
             	LogConsolidated.log(Level.WARNING, 10_000, sourceName,
@@ -259,7 +305,8 @@ implements Serializable {
     					+ person.getLocationTag().getLocale()
     					+ "] "  + person.getName() 
     					+ " was strangely unable to carry an empty bag.");
-            	endTask();
+            	ended = true;
+            	super.endTask();
             }
         }
         else {
@@ -268,7 +315,8 @@ implements Serializable {
 					+ person.getLocationTag().getLocale()
 					+ "] "  + person.getName() 
 					+ " was unable to find an empty bag in the inventory.");
-        	endTask();
+        	ended = true;
+        	super.endTask();
         }
     }
     
@@ -370,20 +418,26 @@ implements Serializable {
 
     @Override
     public void endTask() {
-
+    	ended = true;
+    	Inventory pInv = person.getInventory();
+    	Bag bag = pInv.findABag(false);
+    	 
         // Unload bag to rover's inventory.
         if (bag != null) {
-            double ice0 = bag.getInventory().getAmountResourceStored(iceID, false);
-            double ice1 = person.getInventory().getAmountResourceStored(iceID, false);
-            double settlementCap = settlement.getInventory().getAmountResourceRemainingCapacity(
-            		iceID, false, false);
+            Inventory bInv = bag.getInventory();
+            double ice0 = bInv.getAmountResourceStored(iceID, false);
+            double ice1 = pInv.getAmountResourceStored(iceID, false);
 
         	Inventory sInv = settlement.getInventory();
+        	
+            double settlementCap = sInv.getAmountResourceRemainingCapacity(
+            		iceID, false, false);
+
             if (sInv != null) {
 	            // Try to store ice in settlement.
 	            if (ice0 + ice1 < settlementCap) {
-	                bag.getInventory().retrieveAmountResource(iceID, ice0);
-	                person.getInventory().retrieveAmountResource(iceID, ice1);
+	            	bInv.retrieveAmountResource(iceID, ice0);
+	            	pInv.retrieveAmountResource(iceID, ice1);
 	                // Store the ice
 	                sInv.storeAmountResource(iceID, ice0 + ice1, false);
 	                // Track supply
@@ -406,7 +460,7 @@ implements Serializable {
         super.destroy();
 
         airlock = null;
-        bag = null;
+//        bag = null;
         settlement = null;
     }
 }

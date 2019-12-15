@@ -2169,8 +2169,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="0.0" yloc="0.0" />
 				</activity>
 			</astronomical-observation>
-			<EVA airlock-capacity="2" xloc="0.0" yloc="3.0" interior-xloc="0.0" interior-yloc="2.5"
-			exterior-xloc="0.0" exterior-yloc="4.5" />
+			<!--EVA airlock-capacity="2" xloc="0.0" yloc="3.0" interior-xloc="0.0" interior-yloc="2.5"
+			exterior-xloc="0.0" exterior-yloc="4.5" /-->
 			<life-support capacity="8" power-required="0.4" />
 
 			<power-storage capacity="40.0" />
@@ -2212,8 +2212,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<power-required base-power="1.0" base-power-down-power="0.1" />
 
 		<functions>
-			<EVA airlock-capacity="4" xloc="4.0" yloc="0.0" interior-xloc="3.5" interior-yloc="0.0"
-			exterior-xloc="5.5" exterior-yloc="0.0" />
+			<!-- EVA airlock-capacity="4" xloc="4.0" yloc="0.0" interior-xloc="3.5" interior-yloc="0.0"
+			exterior-xloc="5.5" exterior-yloc="0.0"/ -->
+			
 			<life-support capacity="12" power-required="0.6" />
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
@@ -2251,8 +2252,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<power-required base-power="2.0" base-power-down-power="0.2" />
 
 		<functions>
-			<EVA airlock-capacity="4" xloc="4.0" yloc="0.0" interior-xloc="3.5" interior-yloc="0.0"
-			exterior-xloc="5.5" exterior-yloc="0.0" />
+			<!--EVA airlock-capacity="4" xloc="4.0" yloc="0.0" interior-xloc="3.5" interior-yloc="0.0"
+			exterior-xloc="5.5" exterior-yloc="0.0" /-->
 			<life-support capacity="12" power-required="0.6" />
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
@@ -2305,8 +2306,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<power-required base-power="2.0" base-power-down-power="0.2" />
 
 		<functions>
-			<EVA airlock-capacity="4" xloc="4.0" yloc="0.0" interior-xloc="3.5" interior-yloc="0.0"
-			exterior-xloc="5.5" exterior-yloc="0.0" />
+			<!--EVA airlock-capacity="4" xloc="4.0" yloc="0.0" interior-xloc="3.5" interior-yloc="0.0"
+			exterior-xloc="5.5" exterior-yloc="0.0" /!-->
 			<life-support capacity="12" power-required="0.6" />
 			<living-accommodations beds="5">
 				<activity>
@@ -2348,8 +2349,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<power-required base-power="2.0" base-power-down-power="0.2" />
 
 		<functions>
-			<EVA airlock-capacity="4" xloc="4.0" yloc="0.0" interior-xloc="3.5" interior-yloc="0.0"
-			exterior-xloc="5.5" exterior-yloc="0.0" />
+			<!--EVA airlock-capacity="4" xloc="4.0" yloc="0.0" interior-xloc="3.5" interior-yloc="0.0"
+			exterior-xloc="5.5" exterior-yloc="0.0" /!-->
 			<exercise capacity="4">
 				<activity>
 					<activity-spot xloc="-3.0" yloc="1.5" />
@@ -2413,8 +2414,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<power-required base-power="3.0" base-power-down-power=".3" />
 
 		<functions>
-			<EVA airlock-capacity="4" xloc="4.0" yloc="0.0" interior-xloc="3.5" interior-yloc="0.0"
-			exterior-xloc="5.5" exterior-yloc="0.0" />
+			<!--EVA airlock-capacity="4" xloc="4.0" yloc="0.0" interior-xloc="3.5" interior-yloc="0.0"
+			exterior-xloc="5.5" exterior-yloc="0.0" /!-->
 			<life-support capacity="12" power-required="0.6" />
 			<manufacture tech-level="5" concurrent-processes="8">
 				<activity>

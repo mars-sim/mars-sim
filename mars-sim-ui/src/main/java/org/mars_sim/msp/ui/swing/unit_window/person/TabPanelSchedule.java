@@ -634,8 +634,7 @@ public class TabPanelSchedule extends TabPanel {
 						lastMission = taskSchedule.convertTaskPhase(lastTask.getMission());
 						
 						// Check if the last task is the same as the current task
-						if (lastTask.equals(currentTask)
-								&& lastDes.equals(currentDes)
+						if (lastDes.equals(currentDes)
 								&& lastPhase.equals(currentPhase)
 								&& lastMission.equals(currentMission)
 								) {

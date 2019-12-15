@@ -434,14 +434,14 @@ public class Sleep extends Task implements Serializable {
 			// Record the sleep time [in millisols]
 			circadian.recordSleep(time);
 			
-			circadian.setNumSleep(circadian.getNumSleep() + 1);
-			circadian.updateSleepCycle((int) marsClock.getMillisol(), true);
     	
 			// Check if alarm went off
 			double newTime = marsClock.getMillisol();
 			double alarmTime = getAlarmTime();
 
 			if ((previousTime <= alarmTime) && (newTime >= alarmTime)) {
+				circadian.setNumSleep(circadian.getNumSleep() + 1);
+				circadian.updateSleepCycle((int) marsClock.getMillisol(), true);
 				logger.info(person.getName() + " woke up from the alarm at " + (int)alarmTime);
 				endTask();
 			} else {

@@ -2235,16 +2235,27 @@
 			<building id="37" type="ERV Base" x-location="80.0" y-location="15.0" facing="135.0" />		
 			<building id="38" type="ERV Base" x-location="80.0" y-location="-15.0" facing="45.0" />			
 			
-			<building id="39" type="Astronomy Observatory" x-location="-55.0" y-location="-20.0" facing="90.0" />
+			<building id="39" type="Atmospheric Processor" x-location="0.0" y-location="-20.0" facing="90.0" />
 			
-			<building id="40" type="Atmospheric Processor" x-location="0.0" y-location="-20.0" facing="90.0" />
-			
-			<building id="41" type="Large Sabatier Processor" x-location="0.0" y-location="-40.0" facing="90.0" />
-			<building id="42" type="Large Sabatier Processor" x-location="0.0" y-location="-45.0" facing="90.0" />
-			<building id="43" type="Large Sabatier Processor" x-location="0.0" y-location="-50.0" facing="90.0" />
-			<building id="44" type="Large Sabatier Processor" x-location="0.0" y-location="-55.0" facing="90.0" />
-			<building id="45" type="Large Sabatier Processor" x-location="0.0" y-location="-60.0" facing="90.0" />
-			<building id="46" type="Large Sabatier Processor" x-location="0.0" y-location="-65.0" facing="90.0" />					
+			<building id="40" type="Large Sabatier Processor" x-location="0.0" y-location="-40.0" facing="90.0" />
+			<building id="41" type="Large Sabatier Processor" x-location="0.0" y-location="-45.0" facing="90.0" />
+			<building id="42" type="Large Sabatier Processor" x-location="0.0" y-location="-50.0" facing="90.0" />
+			<building id="43" type="Large Sabatier Processor" x-location="0.0" y-location="-55.0" facing="90.0" />
+			<building id="44" type="Large Sabatier Processor" x-location="0.0" y-location="-60.0" facing="90.0" />
+			<building id="45" type="Large Sabatier Processor" x-location="0.0" y-location="-65.0" facing="90.0" />
+	
+			<building id="46" type="Astronomy Observatory" x-location="-55.0" y-location="-20.0" facing="180.0">
+				<connection-list>
+					<connection id="47" x-location="-3.5" y-location="0.0" />					
+				</connection-list>
+			</building>
+							
+			<!-- EVA Airlock is attached to the lander hab -->
+			<building id="47" type="EVA Airlock" x-location="-49.0" y-location="-20.0" facing="0.0">
+				<connection-list>
+					<connection id="46" x-location="-2.5" y-location="0.0" />
+				</connection-list>
+			</building>
 			
 			<vehicle type="Explorer Rover" number="3" />
 			<vehicle type="Transport Rover" number="2" />
@@ -2714,13 +2725,6 @@
 			<sponsor name="China National Space Administration (CNSA)"/>
 		</settlement>
 		
-		<settlement name="Columbus" template="Alpha Base (Phase 4)">
-			<location longitude="0.0 W" latitude="0.0 N" />
-			<population number="24" />
-			<number-of-robots number="12" />
-			<sponsor name="National Aeronautics and Space Administration (NASA)"/>
-		</settlement>
-
 		<settlement name="New Pompeii" template="Mars Direct Base (Phase 2C)">
 			<location longitude="7.0 W" latitude="39.31 S" />
 			<population number="8" />
@@ -2735,11 +2739,18 @@
 			<sponsor name="Roscosmos (RKA)"/>
 		</settlement>
 	
-		<settlement name="Elon City" template="Mars Direct Base (Phase 3A)">
+		<settlement name="Teslaville" template="Mars Direct Base (Phase 3A)">
 			<location longitude="36.68 W" latitude="11.62 S" />
 			<population number="12" />
 			<number-of-robots number="8" />
 			<sponsor name="Space Exploration Technologies (SpaceX)"/>
+		</settlement>
+					
+		<settlement name="Columbus" template="Alpha Base (Phase 4)">
+			<location longitude="0.0 W" latitude="0.0 N" />
+			<population number="24" />
+			<number-of-robots number="12" />
+			<sponsor name="National Aeronautics and Space Administration (NASA)"/>
 		</settlement>
 					
 		<!-- SpaceX's proposed landing sites
@@ -2766,6 +2777,7 @@
 			<sponsor name="Space Exploration Technologies (SpaceX)"/>
 		</settlement>
 		-->
+		
 	</initial-settlement-list>
 
 	<!--  List of settlements that will arrive on Mars at a later time -->

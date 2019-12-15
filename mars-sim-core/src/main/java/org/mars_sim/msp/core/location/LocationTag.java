@@ -215,13 +215,17 @@ public class LocationTag implements LocationState, Serializable {
 
 	/**
 	 * Obtains the extended location details
-	 * 
+	 * e.g. Lander Hab 1 in New Pompeii
 	 * @return the name string of the location the unit is at
 	 */
 	public String getExtendedLocations() {
-		if (getImmediateLocation().equalsIgnoreCase(getLocale()))
-			return getImmediateLocation();
-		return getImmediateLocation() + IN + getLocale();
+		String immediate = getImmediateLocation();
+		if (immediate.equals(OUTSIDE_ON_MARS))
+			return OUTSIDE_ON_MARS + " of " + getLocale();
+		if (immediate.equalsIgnoreCase(getLocale()))
+			return immediate;
+		
+		return immediate + IN + getLocale();
 	}
 
 	/**
