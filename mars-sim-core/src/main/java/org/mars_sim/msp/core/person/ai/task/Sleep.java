@@ -108,7 +108,7 @@ public class Sleep extends Task implements Serializable {
 
 		if (person.isOutside()) {
 			walkBackInside();
-//			endTask();
+			endTask();
 		}
 		// If person is in rover, walk to passenger activity spot.
 		else if (person.isInVehicle() && person.getVehicle() instanceof Rover) {

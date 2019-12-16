@@ -46,7 +46,6 @@ public class CookMeal extends Task implements Serializable {
 
 	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
 			 logger.getName().length());
-
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.cookMeal"); //$NON-NLS-1$
 
@@ -84,9 +83,12 @@ public class CookMeal extends Task implements Serializable {
 	public CookMeal(Person person) {
 		// Use Task constructor
 		super(NAME, person, true, false, STRESS_MODIFIER, false, 0D);
-
-		sourceName = sourceName.substring(sourceName.lastIndexOf(".") + 1, sourceName.length());
-
+		
+		if (person.isOutside()) {
+//			walkBackInside();
+			endTask();
+		}
+		
 		// Initialize data members
 		setDescription(Msg.getString("Task.description.cookMeal.detail", getTypeOfMeal())); // $NON-NLS-1$
 
@@ -111,10 +113,7 @@ public class CookMeal extends Task implements Serializable {
 					size = kitchen.getMealRecipesWithAvailableIngredients().size();
 					kitchen.setNumCookableMeal(size);
 				}
-			}
-
-			if (size == 0) {
-
+			
 //	        	// display the msg when no ingredients are detected at first and after n warnings
 //	        	if (counter % 30 == 0 && counter < 150) {
 //	        		logger.severe("Warning: cannot cook meals in "
@@ -126,7 +125,7 @@ public class CookMeal extends Task implements Serializable {
 
 				log.append("[" + person.getSettlement().getName() + "] ").append(person).append(NO_INGREDIENT);
 
-				LogConsolidated.log(logger, Level.WARNING, 5000, sourceName, log.toString(), null);
+				LogConsolidated.log(Level.WARNING, 10_000, sourceName, log.toString());
 
 				endTask();
 

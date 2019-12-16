@@ -417,7 +417,6 @@ public class ChainOfCommand implements Serializable {
 						cv_combined = p_combined;
 					}
 				}
-
 			}
 		}
 		// TODO: look at other attributes and/or skills when comparing
@@ -429,7 +428,7 @@ public class ChainOfCommand implements Serializable {
 			unitManager.updateCommander(cc);
 			cc.setAssociatedSettlement(settlement.getIdentifier());
 			logger.config("[" + cc.getLocationTag().getLocale() + "] " + cc
-					+ " has been assigned as the settlement's commander.");
+					+ " had been assigned as the commander of " + settlement + ".");
 
 			// Determine the initial leadership points
 			determineLeadershipPoints(cc);
@@ -441,35 +440,6 @@ public class ChainOfCommand implements Serializable {
 					+ cc + " got elected as the "
 					+ RoleType.COMMANDER.getName() + ".");
 		}
-
-//		if (isProfileRetrieved) {
-//			cc.setRole(RoleType.COMMANDER);
-//		}
-//		
-//		else {
-//			
-//			String newCountry = personConfig.getCountry(getCountry()); 
-//			String newSponsor = personConfig.getSponsorFromCountry(newCountry);
-//			
-//			// If the user's commander has the sponsor that match this settlement's sponsor
-//			if (settlement.getSponsor().equals(newSponsor) || settlement.goCommander()) {
-////				String oldName = cc.getName();
-////				GenderType oldGender = cc.getGender();			
-//				String newName = getFullname();
-//				String newGender = getGender();
-//
-//				// Replace the commander 
-//				cc.setName(newName);
-//				cc.setGender(newGender);
-//				cc.changeAge(getAge());
-//				cc.setRole(RoleType.COMMANDER);
-//				setJob(cc, getJob());
-//				cc.setCountry(newCountry);
-//				cc.setSponsor(newSponsor);		
-//				isProfileRetrieved = true;
-//				
-//			}
-//		}
 
 		if (pop >= POPULATION_WITH_SUB_COMMANDER) {
 			cv.setRole(RoleType.SUB_COMMANDER);

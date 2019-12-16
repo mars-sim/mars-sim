@@ -63,14 +63,19 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 	// Static members
 	/** The base carrying capacity (kg) of a robot. */
 	private static final double BASE_CAPACITY = 60D;
-	/** The enum type of this equipment. */
-	public static final String TYPE = "Robot";
 	/** Unloaded mass of EVA suit (kg.). */
 	public static final double EMPTY_MASS = 80D;
 	/** 334 Sols (1/2 orbit). */
 	private static final double WEAR_LIFETIME = 334_000;
 	/** 100 millisols. */
 	private static final double MAINTENANCE_TIME = 100D;
+	
+	/** The enum type of this equipment. */
+	public static final String TYPE = "Robot";
+	
+	private static final String OPERABLE = "Operable";
+	private static final String INOPERABLE = "Inoperable";
+	
 	/** The unit count for this robot. */
 	private static int uniqueCount = Unit.FIRST_ROBOT_UNIT_ID;
 	
@@ -175,10 +180,13 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 		this.robotType = robotType;
 		xLoc = 0D;
 		yLoc = 0D;
+		
 		isSalvaged = false;
 		salvageInfo = null;
 		isInoperable = false;
-		
+		// set description for this robot
+		super.setDescription(OPERABLE);
+
 		// Construct the SkillManager instance.
 		skillManager = new SkillManager(this);
 		// Construct the RoboticAttributeManager instance.
@@ -431,15 +439,18 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 			containerUnit.getInventory().retrieveUnit(this);
 		}
 		isInoperable = true;
+		// Set home town
 		setAssociatedSettlement(-1);
 	}
 
 	// TODO: allow robot parts to be stowed in storage
 	void setInoperable() {
+		// set description for this robot
+		super.setDescription(INOPERABLE);  
+		
 		botMind.setInactive();
+		
 		toBeSalvaged();
-		// if inoperable, set containerID to be ZERO 
-//		setContainerUnit(marsSurface);
 	}
 
 	/**
@@ -682,16 +693,6 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 			if (oldSettlement != -1) {
 				unitManager.getSettlementByID(oldSettlement).removeOwnedRobot(this);
 			}
-			
-			if (newSettlement != -1) {
-				unitManager.getSettlementByID(newSettlement).addOwnedRobot(this);
-			}
-
-			// set description for this robot
-			if (associatedSettlementID == -1) {
-				super.setDescription("Inoperable");
-			} else
-				super.setDescription(unitManager.getSettlementByID(associatedSettlementID).getName());
 		}
 	}
 

@@ -601,18 +601,18 @@ public class PhysicalCondition implements Serializable {
 			try {
 				if (lackOxygen(support, o2_consumption * (time / 1000D)))
 					LogConsolidated.log(Level.SEVERE, 1000, sourceName,
-							"[" + loc0 + "] " + name + loc1 + " reported lack of oxygen.");
+							"[" + loc0 + "] " + name + " " + loc1 + " reported lack of oxygen.");
 				if (badAirPressure(support, minimum_air_pressure))
 					LogConsolidated.log(Level.SEVERE, 1000, sourceName,
-							"[" + loc0 + "] " + name + loc1 + " reported non-optimal air pressure.");
+							"[" + loc0 + "] " + name + " " + loc1 + " reported non-optimal air pressure.");
 				if (badTemperature(support, min_temperature, max_temperature))
 					LogConsolidated.log(Level.SEVERE, 1000, sourceName,
-							"[" + loc0 + "] " + name + loc1 + " reported non-optimal temperature.");
+							"[" + loc0 + "] " + name + " " + loc1 + " reported non-optimal temperature.");
 				
 			} catch (Exception e) {
 				e.printStackTrace();
 				LogConsolidated.log(Level.SEVERE, 1000, sourceName,
-						"[" + loc0 + "] " + name + loc1 + " reported anomaly in the life support system.");
+						"[" + loc0 + "] " + name + " " + loc1 + " reported anomaly in the life support system.");
 			}
 		}
 	}

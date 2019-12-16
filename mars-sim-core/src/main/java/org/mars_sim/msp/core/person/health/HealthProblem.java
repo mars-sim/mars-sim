@@ -378,13 +378,18 @@ public class HealthProblem implements Serializable {
 					}
 
 					if (nextPhase == null) {
-						logger.info(sufferer + " has been suffering from " 
-								+ illness + " long enough and is now dead.");
+						if (illness.toString().equalsIgnoreCase("suffocation")) {
+							logger.info(sufferer + " was suffocated for too long and was dead.");
+						}
+						else {
+							logger.info(sufferer + " had been suffering from '" 
+									+ illness + "' too long and was dead.");
+						}
 						setState(DEAD);
 						condition.setDead(this, false, "");
 					} else {
-						logger.info(sufferer + " had been suffering from " 
-								+ illness + ", which was just degraded to " + nextPhase + ".");
+						logger.info(sufferer + " had been suffering from '" 
+								+ illness + "', which was just degraded to " + nextPhase + ".");
 						result = nextPhase;
 					}
 				}

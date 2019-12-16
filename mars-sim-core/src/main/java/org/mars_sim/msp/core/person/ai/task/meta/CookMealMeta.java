@@ -39,10 +39,6 @@ public class CookMealMeta implements MetaTask, Serializable {
     /** default logger. */
     //private static Logger logger = Logger.getLogger(CookMealMeta.class.getName());
 
-    public CookMealMeta () {
-
-    }
-
     @Override
     public String getName() {
         return NAME;
@@ -55,10 +51,12 @@ public class CookMealMeta implements MetaTask, Serializable {
 
     @Override
     public double getProbability(Person person) {
-
+    	if (person.isOutside())
+    		return 0;
+    		
         double result = 0D;
 
-        if (person.isInside() && CookMeal.isLocalMealTime(person.getCoordinates(), 20)) {
+        if (person.isInSettlement() && CookMeal.isLocalMealTime(person.getCoordinates(), 20)) {
         	
             // Probability affected by the person's stress and fatigue.
             PhysicalCondition condition = person.getPhysicalCondition();

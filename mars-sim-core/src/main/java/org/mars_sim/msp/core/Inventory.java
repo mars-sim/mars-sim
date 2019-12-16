@@ -2110,10 +2110,14 @@ public class Inventory implements Serializable {
 		boolean result = false;
 		Integer unitID = unit.getIdentifier();
 		if (unit != null) {
+			Unit owner = getOwner();
+			
 			if (unit.getMass() <= getRemainingGeneralCapacity(allowDirty)) {
-				result = true;
-			} else {
-				Unit owner = getOwner();
+				return true;
+			} 
+			
+			else {
+
 				LogConsolidated.log(Level.SEVERE, 0, sourceName + "::canStoreUnit",
 						  unit.getName() + " had a mass of " + Math.round(unit.getMass()*10.0)/10.0 
 						  + " kg - too much to put on '"
@@ -2135,13 +2139,18 @@ public class Inventory implements Serializable {
 			}
 			
 			if (containsUnit(unit)) {
-				LogConsolidated.log(Level.SEVERE, 0, sourceName + "::canStoreUnit",
-						  unit.getName() + " was already inside.");
-				result = false;
+				String ownerName = owner.getName();
+				
+				if (ownerName.equalsIgnoreCase("Mars Surface"))
+					LogConsolidated.log(Level.SEVERE, 0, sourceName + "::canStoreUnit",
+						  unit.getName() + " was already on " + ownerName);
+				else
+					LogConsolidated.log(Level.SEVERE, 0, sourceName + "::canStoreUnit",
+							  unit.getName() + " was already inside " + ownerName);
+				// TODO: see if there is a better way to deal with this
+				result = true;
 			}
-			
-			Unit owner = getOwner();
-			
+					
 			if (owner != null && unit.getInventory().containsUnit(owner)) {
 				LogConsolidated.log(Level.SEVERE, 0, sourceName + "::canStoreUnit",
 						owner.getName() + " was owned by " + unit);
@@ -2230,7 +2239,7 @@ public class Inventory implements Serializable {
 					  unit + " could not be stored.");
 			 stored = false;
 			// The statement below is needed for maven test in testInventoryUnitStoredNull() in TestInventory
-			throw new IllegalStateException("Unit: " + unit + " could not be stored in " + getOwner().getName()); 
+			throw new IllegalStateException("Unit: " + unit + " could not be stored in/on " + getOwner().getName()); 
 		}
 		
 		return stored;

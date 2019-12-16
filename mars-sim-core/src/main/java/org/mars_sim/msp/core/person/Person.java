@@ -93,7 +93,10 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	private final static String MARS = "Mars";
 	private final static String HEIGHT = "Height";
 	private final static String WEIGHT = "Weight";
-
+	
+	private final static String EARTHLING = "Earthling";
+	private final static String MARTIAN = "Martian";
+	
 	/** The unit count for this person. */
 	private static int uniqueCount = Unit.FIRST_PERSON_UNIT_ID;
 	/** The average height of a person. */
@@ -282,7 +285,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		this.xLoc = 0D;
 		this.yLoc = 0D;
 		this.associatedSettlementID = settlement.getIdentifier();
-		super.setDescription(settlement.getName());
+		super.setDescription(EARTHLING);
 		
 		// Add the person to the lookup map
 		unitManager.addPersonID(this);
@@ -307,7 +310,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 */
 	public Person(String name, Settlement settlement) {
 		super(name, settlement.getCoordinates());
-		super.setDescription(settlement.getName());
+		super.setDescription(EARTHLING);
 
 		// Add the person to the lookup map
 		unitManager.addPersonID(this);
@@ -1408,7 +1411,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 			lastName = newName.substring(newName.indexOf(" ") + 1, newName.length());	
 			this.name = newName;
 			super.setName(newName);
-			super.setDescription(unitManager.getSettlementByID(associatedSettlementID).getName());
+			super.setDescription(EARTHLING);
 		}
 	}
 

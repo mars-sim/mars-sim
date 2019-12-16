@@ -329,6 +329,8 @@ public class EatDrink extends Task implements Serializable {
 	 */
 	private double drinkingWaterPhase(double time) {
 		consumeWater(true);
+		// Note: must call endTask here to end this task
+		super.endTask();
 		return time *.75;
 	}
 	
