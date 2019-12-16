@@ -1283,7 +1283,7 @@ public class Simulation implements ClockListener, Serializable {
 		if (!file.getParentFile().exists()) {
 			file.getParentFile().mkdirs();
 		}
-
+		
 		// Get current size of heap in bytes
 		long heapSize = Runtime.getRuntime().totalMemory();
 		// Get maximum size of heap in bytes. The heap cannot grow beyond this size.// Any attempt will result in an OutOfMemoryException.
@@ -1295,13 +1295,24 @@ public class Simulation implements ClockListener, Serializable {
 		+ "    heapMaxSize: " + formatSize(heapMaxSize) 
 		+ "    heapFreeSize: " + formatSize(heapFreeSize) + "");
 		
-		if (heapFreeSize < 150) {
+		while (heapFreeSize < 250) {
 			logger.config("Please try again. Ensure enough free heap space available beforehand.");
+			delay(500);
+			// Get current size of heap in bytes
+			heapSize = Runtime.getRuntime().totalMemory();
+			// Get maximum size of heap in bytes. The heap cannot grow beyond this size.// Any attempt will result in an OutOfMemoryException.
+			heapMaxSize = Runtime.getRuntime().maxMemory();
+			 // Get amount of free memory within the heap in bytes. This size will increase // after garbage collection and decrease as new objects are created.
+			heapFreeSize = Runtime.getRuntime().freeMemory(); 
+			
+			logger.config("heapSize: " + formatSize(heapSize) 
+			+ "    heapMaxSize: " + formatSize(heapMaxSize) 
+			+ "    heapFreeSize: " + formatSize(heapFreeSize) + "");
 		}
-		else {
-			// Serialize the file
-			serialize(type, file, srcPath, destPath);
-		}
+
+		// Serialize the file
+		serialize(type, file, srcPath, destPath);
+
 		// Restarts the master clock and adds back the Simulation clock listener
 		sim.proceed(isPause);
 	}
