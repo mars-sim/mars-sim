@@ -137,6 +137,10 @@ public enum ReportingAuthorityType {
 		return longSponsorList;
 	}
 	
+	public static int getSponsorID(String longSponsor) {
+		return getType(longSponsor).ordinal() - 9;
+	}
+	
 //	public static List<String> StringList() {
 //		String sponsor = (String) newValue;
 //		// System.out.println("sponsor is " + sponsor);

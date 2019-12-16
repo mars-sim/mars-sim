@@ -57,13 +57,13 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
     private String[] choices = {};
     
 	private String[] fields = {
-			"First Name",
-			"Last Name",
-			"Gender (M, F)",
-			"Age (18-80)",
-			"Job (1-16), Ctrl-J",
+			"                      First Name",
+			"                       Last Name",
+			"                   Gender (M, F)",
+			"                     Age (18-80)",
+			"              Job (1-16), Ctrl-J",
 			"Country of Origin (1-28), Ctrl-O",
-			"Sponsor (1-9), Ctrl-S"
+			"           Sponsor (1-9), Ctrl-S"
 			};
 	
 	private static Commander commander;
@@ -344,7 +344,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
         operations.add(() -> {
         	setChoices();
         	valueSetter.accept(textIO.newIntInputReader()
-                .withDefaultValue(8)
+//                .withDefaultValue(8)
                 .withMinVal(1)
                 .withMaxVal(9)//defaultValueSupplier.get())
                 .read(prompt));
@@ -355,7 +355,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
         operations.add(() -> {
         	setChoices();
         	valueSetter.accept(textIO.newIntInputReader()
-                .withDefaultValue(5)
+//                .withDefaultValue(5)
                 .withMinVal(1)
                 .withMaxVal(28)//defaultValueSupplier.get())
                 .read(prompt));
@@ -462,7 +462,6 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
 		p.setProperty("commander.job", commander.getJobStr());
 		p.setProperty("commander.country", commander.getCountryStr());
 		p.setProperty("commander.sponsor", commander.getSponsorStr());
-//		p.setProperty("commander.MarsSociety", commander.isMarsSocietyStr());
 	    storeProperties(p);
 
 	}

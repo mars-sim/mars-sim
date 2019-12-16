@@ -1544,7 +1544,7 @@ public class UnitManager implements Serializable {
 	 */
 	public void updateCommander(Person cc) {
 		String newCountry = getCountryStr();
-		String newSponsor = getSponsor();		
+		String newSponsor = getSponsorStr();		
 		String newName = getFullname();
 		String newGender = getGender();
 		String newJob = getJobStr();
@@ -1575,7 +1575,7 @@ public class UnitManager implements Serializable {
 	public void matchSettlement() {
 		
 		String country = getCountryStr();
-		String sponsor = getSponsor();
+		String sponsor = getSponsorStr();
 		
 		List<Settlement> list = new ArrayList<>(getSettlements());
 		int size = list.size();
@@ -2675,7 +2675,7 @@ public class UnitManager implements Serializable {
 	}
 	
 	/** Gets the commander's sponsor */
-	public String getSponsor() {
+	public String getSponsorStr() {
 		return personConfig.getCommander().getSponsorStr();
 	}
 	

@@ -94,7 +94,7 @@ public class Commander implements Serializable {
     
     public int getSponsorInt() {
     	if (sponsorInt == -1)
-    		sponsorInt = SimulationConfig.instance().getPersonConfig().getCountryNum(countryStr) + 1;
+    		sponsorInt = ReportingAuthorityType.getSponsorID(sponsorStr) + 1;
     	return sponsorInt - 1;
     }
     

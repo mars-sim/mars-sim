@@ -1224,12 +1224,18 @@ public class PersonConfig implements Serializable {
 		return allCountries.get(id);
 	}
 
-	public int getCountryNum(String c) {
+	/**
+	 * Gets the country number from its name
+	 * 
+	 * @param country
+	 * @return
+	 */
+	public int getCountryNum(String country) {
 		if (allCountries == null) {
 			allCountries = createAllCountryList();
 		}
-		for (int i=0; i<allCountries.size(); i++) {
-			if (allCountries.get(i).equalsIgnoreCase(c))
+		for (int i = 0; i < allCountries.size(); i++) {
+			if (allCountries.get(i).equalsIgnoreCase(country))
 				return i;
 		}
 		
