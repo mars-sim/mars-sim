@@ -62,8 +62,9 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
 			"Gender (M, F)",
 			"Age (18-80)",
 			"Job (1-16), Ctrl-J",
-			"Sponsor (1-9), Ctrl-S",
-			"Country of Origin (1-28), Ctrl-O"};
+			"Country of Origin (1-28), Ctrl-O",
+			"Sponsor (1-9), Ctrl-S"
+			};
 	
 	private static Commander commander;
     	
@@ -106,20 +107,21 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
         
 //        setUpMouseCopyKey();
         setUpArrows();
-            
+        
         addString(textIO, getFieldName(fields[0]), () -> commander.getFirstName(), s -> commander.setFirstName(s));
         addString(textIO, getFieldName(fields[1]), () -> commander.getLastName(), s -> commander.setLastName(s));     
         addGender(textIO, getFieldName(fields[2]), () -> commander.getGender(), s -> commander.setGender(s));
         addAge(textIO, getFieldName(fields[3]), () -> commander.getAge(), s -> commander.setAge(s));	      
         addJobTask(textIO, getFieldName(fields[4]), () -> commander.getJob(), s -> commander.setJob(s));
-        addSponsorTask(textIO, getFieldName(fields[5]), () -> commander.getSponsorInt(), s -> commander.setSponsorInt(s));
-        addCountryTask(textIO, getFieldName(fields[6]), () -> commander.getCountryInt(), s -> commander.setCountryInt(s));
+        addCountryTask(textIO, getFieldName(fields[5]), () -> commander.getCountryInt(), s -> commander.setCountryInt(s));
+        addSponsorTask(textIO, getFieldName(fields[6]), () -> commander.getSponsorInt(), s -> commander.setSponsorInt(s));
           
-        setUpCountryKey();
         setUpJobKey();
+        setUpCountryKey();
         setUpSponsorKey();
+  
         setUpUndoKey();
-       
+        
         terminal.println(System.lineSeparator() 
         		+ "                * * *  Commander's Profile  * * *" 
         		+ System.lineSeparator()
@@ -138,8 +140,6 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
 				e.printStackTrace();
 			}
     	}
-    	
-
     }
     
     public void setUpAbortKey() {

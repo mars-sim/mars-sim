@@ -108,7 +108,7 @@ public class Commander implements Serializable {
     
     public String getSponsorStr() {
     	if (sponsorStr.equals(""))
-    		sponsorStr = UnitManager.getCountryByID(sponsorInt-1);
+    		sponsorStr = UnitManager.getSponsorByID(sponsorInt-1);
     	return sponsorStr;
     }
     

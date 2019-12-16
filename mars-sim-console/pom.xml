@@ -31,7 +31,7 @@ xmlns="http://maven.apache.org/POM/4.0.0"
 	     https://mvnrepository.com/artifact/org.beryx/text-io -->
 		<groupId>org.beryx</groupId>
 		<artifactId>text-io</artifactId>
-		<version>3.3.0</version>
+		<version>3.4.0</version>
 	</dependency>
   </dependencies>
 </project>

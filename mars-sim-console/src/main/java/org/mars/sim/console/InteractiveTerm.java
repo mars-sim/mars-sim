@@ -380,7 +380,7 @@ public class InteractiveTerm {
         handler.addStringTask("useSCE", "Enter your choice:", false).addChoices("0", "1", "2").constrainInputToChoices();
         handler.executeOneTask();
 
-        if (GameManager.input.equals("0")) {
+        if (GameManager.useSCE.equals("0")) {
         	sim.endSimulation(); 
     		sim.getSimExecutor().shutdownNow();
 
@@ -438,7 +438,7 @@ public class InteractiveTerm {
         		+ System.lineSeparator()
 				+ "0. Exit"
 				+ System.lineSeparator()
-				+ "1. Enable/disable Loading the alpha crew will be DISABLED"
+				+ "1. Enable/disable the alpha crew"
 				+ System.lineSeparator()
 				+ "2. Set up commander profile"
 				+ System.lineSeparator()
@@ -447,7 +447,7 @@ public class InteractiveTerm {
 				+ "4. Back to previous menu"
 				+ System.lineSeparator()
 				+ System.lineSeparator()
-				+ "NOTE 1: The alpha crew defined in crew.xml will be loaded by default."
+				+ "NOTE 1: By default, the alpha crew as defined in crew.xml is ENABLED unless it is changed."
 				+ System.lineSeparator()
 //				+ "Note 2: Console Editon does NOT have the Site Editor."
 //				+ System.lineSeparator()
@@ -470,12 +470,12 @@ public class InteractiveTerm {
 			marsTerminal.print(System.lineSeparator());
 			if (useCrew) {			
 				useCrew = false;
-				marsTerminal.print("Loading the alpha crew will be DISABLED.");
+				marsTerminal.print("The alpha crew has been DISABLE.");
 	        	marsTerminal.print(System.lineSeparator());
 			}
 			else {
 				useCrew = true;
-				marsTerminal.print("Loading the alpha crew will be ENABLED.");
+				marsTerminal.print("The alpha crew has been ENABLED.");
 	        	marsTerminal.print(System.lineSeparator());
 			}
 			
