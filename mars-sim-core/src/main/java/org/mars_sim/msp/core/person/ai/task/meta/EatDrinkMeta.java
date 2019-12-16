@@ -80,25 +80,27 @@ public class EatDrinkMeta implements MetaTask, Serializable {
 		// Each meal (.155 kg = .62/4) has an average of 2525 kJ. Thus ~10,000 kJ
 		// persson per sol
 
-		// When thirst is greater than 100, a person may start feeling thirsty
-		if (!notThirsty) {
-			if (waterAmount < SMALL_AMOUNT)
-				return 0;
-			result = 2 * (thirst - PhysicalCondition.THIRST_THRESHOLD); //Math.pow((thirst - PhysicalCondition.THIRST_THRESHOLD), 3);
-//			logger.info(person + "'s thirst p : " +  Math.round(result*10D)/10D);
-		}
-		
-		// Only eat a meal if person is sufficiently hungry or low on caloric energy.
-		if (!notHungry) {// || ghrelin-leptin > 300) {
-			result += hunger / 2D;
-			if (energy < 2525)
-				result += (2525 - energy) / 30D; // (ghrelin-leptin - 300);
-//			logger.info(person + "'s hunger p : " +  Math.round(result*10D)/10D);
-		}
-
-		else if (notHungry && notThirsty)
+		if (notHungry && notThirsty)
 			// if not thirsty and not hungry
-			result = 0;
+			return 0;
+		
+		// When thirst is greater than 100, a person may start feeling thirsty
+		else  {			
+			if (!notThirsty) {
+				if (waterAmount < SMALL_AMOUNT)
+					return 0;
+				result = 2 * (thirst - PhysicalCondition.THIRST_THRESHOLD); //Math.pow((thirst - PhysicalCondition.THIRST_THRESHOLD), 3);
+	//			logger.info(person + "'s thirst p : " +  Math.round(result*10D)/10D);
+			}
+			
+			// Only eat a meal if person is sufficiently hungry or low on caloric energy.
+			else if (!notHungry) {// || ghrelin-leptin > 300) {
+				result += hunger / 2D;
+				if (energy < 2525)
+					result += (2525 - energy) / 30D; // (ghrelin-leptin - 300);
+	//			logger.info(person + "'s hunger p : " +  Math.round(result*10D)/10D);
+			}
+		}
 
 		if (person.isInSettlement()) {
 
@@ -167,6 +169,7 @@ public class EatDrinkMeta implements MetaTask, Serializable {
 			if (notHungry && notThirsty) {
 				return 0;
 			}
+			
 			else if (!notThirsty) {
 				// Note: a person may drink water from EVA suit while being outside doing EVA
 				result /= 2;

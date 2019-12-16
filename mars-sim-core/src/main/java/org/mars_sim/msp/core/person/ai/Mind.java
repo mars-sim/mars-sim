@@ -231,7 +231,7 @@ public class Mind implements Serializable {
 	 * @throws Exception if error during action.
 	 */
 	public void takeAction(double time) {
-		boolean startNew = false;
+
 		if (time > SMALL_AMOUNT_OF_TIME) {
 			// Perform a task if the person has one, or determine a new task/mission.
 			if (taskManager.hasActiveTask()) {
@@ -257,7 +257,6 @@ public class Mind implements Serializable {
 //								+ taskManager.getTaskName() + "   remainingTime is smaller than " + SMALL_AMOUNT_OF_TIME 
 //								+ " (" + Math.round(remainingTime *1000.0)/1000.0 
 //								+ ")   time : " + Math.round(time *1000.0)/1000.0); // 1x = 0.001126440159375963 -> 8192 = 8.950963852039651
-						startNew = true;
 					}
 				}
 				else {
@@ -265,16 +264,12 @@ public class Mind implements Serializable {
 							person + " had been doing " + counts + "x " 
 							+ taskManager.getTaskName() + "   remainingTime : " + Math.round(remainingTime *1000.0)/1000.0 
 							+ "   time : " + Math.round(time *1000.0)/1000.0); // 1x = 0.001126440159375963 -> 8192 = 8.950963852039651
-					startNew = true;
 				}
 			}
 			else {
 //				LogConsolidated.log(Level.INFO, 20_000, sourceName,
 //						person + " had no active task.");
-				startNew = true;
-			}
-			
-			if (startNew) {
+
 				if ((mission != null) && mission.isDone()) {
 					// Set the mission to null since it is done
 					mission = null;
@@ -380,7 +375,7 @@ public class Mind implements Serializable {
 	
 	public void selectNewTask() {
 		try {
-			// A person has no active task
+			// A person has no active task 
 			getNewTask();
 		} catch (Exception e) {
 			LogConsolidated.log(Level.SEVERE, 5_000, sourceName,
@@ -594,6 +589,7 @@ public class Mind implements Serializable {
 	 * Determines a new task for the person.
 	 */
 	public void getNewTask() {
+//		logger.info(person + " was calling getNewTask()");
 		// Get probability weights from tasks.
 		double taskWeights = 0D;
 
@@ -646,7 +642,7 @@ public class Mind implements Serializable {
 			// Select randomly across the total weight sum.
 			double rand = RandomUtil.getRandomDouble(weightSum);
 	
-			// Determine which type of action was selected and set new action accordingly.
+			// Determine which task should be selected.
 			if (rand < taskWeights) {
 				Task newTask = taskManager.getNewTask();
 				if (newTask != null) {

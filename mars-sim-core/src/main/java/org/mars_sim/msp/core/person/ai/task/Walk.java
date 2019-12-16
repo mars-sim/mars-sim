@@ -702,10 +702,10 @@ public class Walk extends Task implements Serializable {
 			return exitingRoverGaragePhase(time);
 		} else if (ENTERING_ROVER_GARAGE.equals(getPhase())) {
 			return enteringRoverInsideGaragePhase(time);
-		} else if (CLIMB_UP_LADDER.equals(getPhase())) {
-			return climbingUpLadder(time);			
-		} else if (CLIMB_DOWN_LADDER.equals(getPhase())) {
-			return climbingDownLadder(time);						
+//		} else if (CLIMB_UP_LADDER.equals(getPhase())) {
+//			return climbingUpLadder(time);			
+//		} else if (CLIMB_DOWN_LADDER.equals(getPhase())) {
+//			return climbingDownLadder(time);						
 		} else {
 			return time;
 		}
@@ -1164,8 +1164,8 @@ public class Walk extends Task implements Serializable {
 				endTask();
 				LogConsolidated.log(Level.SEVERE, 0, sourceName + "::enteringAirlockPhase", 
 	      				"[" + person.getLocationTag().getLocale() + "] "
-	      						+ person + " is in " + person.getLocationTag().getImmediateLocation()
-								+ " cannot enter the airlock in " + airlock.getEntityName());
+	      						+ person + " was in " + person.getLocationTag().getImmediateLocation()
+								+ " and ended the walk task since he/she could not enter the airlock in " + airlock.getEntityName());
 			}
 
 		} else { 
@@ -1176,7 +1176,7 @@ public class Walk extends Task implements Serializable {
 				// setDescription("is INSIDE and still walking toward an airlock");
 				setPhase(getWalkingStepPhase());
 			} else {
-				// setDescription("is INSIDE and arrived at an airlock");
+				setDescription("arrived at an airlock");
 				endTask();
 			}
 		}

@@ -189,7 +189,7 @@ public class EatDrink extends Task implements Serializable {
 			}	
 		}
 		
-		else if (person.isInSettlement()) {
+		else if (person.isInSettlement()) {	
 			
 			boolean want2Chat = true;
 			// See if a person wants to chat while eating
@@ -227,11 +227,16 @@ public class EatDrink extends Task implements Serializable {
 		
 			// if a person is just a little thirsty and NOT that hungry
 			if (notHungry) {
-				// Initialize task phase.
-				addPhase(PICK_UP_DESSERT);
-				addPhase(EAT_DESSERT);
-
-				setPhase(PICK_UP_DESSERT);			
+				
+				if (notThirsty) {
+//					LogConsolidated.log(Level.WARNING, 3000, sourceName,
+//						person + " was trying to eat a meal, but is not inside a settlement/vehicle.");
+					endTask();
+				}
+				else {
+					addPhase(DRINK_WATER);
+					setPhase(DRINK_WATER);
+				}		
 			} 
 			
 			else {

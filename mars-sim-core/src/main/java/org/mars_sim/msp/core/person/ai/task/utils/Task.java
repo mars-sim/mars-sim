@@ -199,7 +199,8 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * Ends the task and performs any final actions.
 	 */
 	public void endTask() {
-
+//    	if (!toString().contains("Walk"))
+//    		logger.info("Called " + this + "'s super.endTask().");
 		// End subtask.
 		if (subTask != null && !subTask.isDone()) {
 			setSubTaskPhase(null);
@@ -551,7 +552,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 				if (effortDriven && (person.getPerformanceRating() == 0D)) {
 					// "Resurrect" him a little to give him a chance to make amend
 					condition.setPerformanceFactor(.1);
-//					endTask();
+					endTask();
 				} else {
 					timeLeft = executeMappedPhase(timeLeft, time);
 				}
@@ -565,7 +566,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			else if (robot != null) {
 				// If task is effort-driven and person is incapacitated, end task.
 				if (effortDriven && (robot.getPerformanceRating() == 0D)) {
-//					endTask();
+					endTask();
 				} else {
 					timeLeft = executeMappedPhase(timeLeft, time);
 				}
@@ -594,20 +595,23 @@ public abstract class Task implements Serializable, Comparable<Task> {
 				if ((timeCompleted + timeLeft) > duration) {
 					double performTime = duration - timeCompleted;
 					double extraTime = timeCompleted + timeLeft - duration;
-					if (getPhase() != null)
-						timeLeft = performMappedPhase(performTime) + extraTime;
-//					timeCompleted = duration;
-					// TODO: will endTask() cut short of a person walking back to the settlement/vehicle ?
+//					logger.info("performTime: " + Math.round(performTime*1000.0)/1000.0
+//								+ "  duration: " + Math.round(duration*1000.0)/1000.0
+//								+ "  timeCompleted: " + Math.round(timeCompleted*1000.0)/1000.0
+//								+ "  extraTime: " + Math.round(extraTime*1000.0)/1000.0
+//								);
+					timeLeft = performMappedPhase(performTime) + extraTime;
+					timeCompleted = duration;
+					// NOTE: does endTask() cause Sleep task to unncessarily end and restart ? 
 					endTask();
 				} else {
 					double remainingTime = timeLeft;
-					if (getPhase() != null)
-						timeLeft = performMappedPhase(timeLeft);
+//					if (getPhase() != null)
+					timeLeft = performMappedPhase(timeLeft);
 					timeCompleted += remainingTime;
 				}
 			} else {
-				if (getPhase() != null)
-					timeLeft = performMappedPhase(timeLeft);
+				timeLeft = performMappedPhase(timeLeft);
 			}
 		}
 		
@@ -1283,12 +1287,17 @@ public abstract class Task implements Serializable, Comparable<Task> {
 				// Add subtask for walking to destination.
 				addSubTask(new Walk(person, settlementPos.getX(), settlementPos.getY(), 0, interiorObject));
 			} else {
-//				logger.fine(person.getName() + " unable to walk to " + interiorObject);
-				LogConsolidated.log(Level.FINER, 5000, sourceName,
-						"[" + person.getLocationTag().getLocale() + "] " 
-								+ person.getName() + " was unable to walk to " + interiorObject);
+
 				if (!allowFail) {
+					LogConsolidated.log(Level.INFO, 0, sourceName,
+							"[" + person.getLocationTag().getLocale() + "] " 
+									+ person.getName() + " ended the task of walking to " + interiorObject);
 					endTask();
+				}
+				else {
+					LogConsolidated.log(Level.INFO, 0, sourceName,
+							"[" + person.getLocationTag().getLocale() + "] " 
+									+ person.getName() + " was unable to walk to " + interiorObject);
 				}
 			}
 		} else if (robot != null) {
@@ -1296,16 +1305,19 @@ public abstract class Task implements Serializable, Comparable<Task> {
 				// Add subtask for walking to destination.
 				addSubTask(new Walk(robot, settlementPos.getX(), settlementPos.getY(), 0, interiorObject));
 			} else {
-//				logger.fine(robot.getName() + " unable to walk to " + interiorObject);
-				LogConsolidated.log(Level.FINER, 5000, sourceName,
-						"[" + robot.getLocationTag().getLocale() + "] " 
-								+ robot.getName() + " was unable to walk to " + interiorObject);
 				if (!allowFail) {
+					LogConsolidated.log(Level.INFO, 0, sourceName,
+							"[" + robot.getLocationTag().getLocale() + "] " 
+									+ robot.getName() + " ended the task of walking to " + interiorObject);
 					endTask();
+				}
+				else {
+					LogConsolidated.log(Level.INFO, 0, sourceName,
+							"[" + robot.getLocationTag().getLocale() + "] " 
+									+ robot.getName() + " was unable to walk to " + interiorObject);
 				}
 			}
 		}
-
 	}
 	
 	/**

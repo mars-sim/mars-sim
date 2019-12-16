@@ -2172,6 +2172,8 @@ public class UnitManager implements Serializable {
 				s.timePassing(time);
 			}
 			
+//			logger.info("time: " + Math.round(time*1000.0)/1000.0);
+			
 			for (Person p : lookupPerson.values()) {
 				p.timePassing(time);
 			}

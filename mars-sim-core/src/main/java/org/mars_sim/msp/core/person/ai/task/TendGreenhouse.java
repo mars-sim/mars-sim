@@ -79,7 +79,7 @@ public class TendGreenhouse extends Task implements Serializable {
 	 */
 	public TendGreenhouse(Person person) {
 		// Use Task constructor
-		super(NAME, person, false, false, STRESS_MODIFIER, true, 10D + RandomUtil.getRandomDouble(5D));
+		super(NAME, person, false, false, STRESS_MODIFIER, true, 20D);
 
 		if (person.isOutside()) {
 			endTask();
@@ -100,6 +100,7 @@ public class TendGreenhouse extends Task implements Serializable {
 			addPhase(CLEANING);
 			addPhase(SAMPLING);
 			addPhase(GROWING_TISSUE);
+			
 			setPhase(TENDING);
 			
 		} else {

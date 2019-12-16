@@ -326,6 +326,7 @@ public class TaskManager implements Serializable {
 	
 	public void endSubTask() {
 		if (currentTask != null && currentTask.getSubTask() != null) {
+//			logger.info(person + " endedd the subtask " + currentTask.getSubTask());
 			currentTask.getSubTask().endTask();
 		}
 	}
@@ -471,6 +472,10 @@ public class TaskManager implements Serializable {
 			
 			try {
 				remainingTime = currentTask.performTask(time);
+//				logger.info(person 
+//						+ " currentTask: " + currentTask.getName()
+//						+ "   performTask(time: " + Math.round(time*1000.0)/1000.0 + ")"
+//						+ "   remainingTime: " + Math.round(remainingTime*1000.0)/1000.0 + "");
 				// Record the action (task/mission)
 				recordFilterTask(time);
 			} catch (Exception e) {
@@ -681,6 +686,9 @@ public class TaskManager implements Serializable {
 		// Clear time cache.
 		msolCache = -1;
 
+//		LogConsolidated.log(Level.INFO, 0, sourceName,
+//				person.getName() + " will return the task of '" + result + "' from getNewTask()"); 
+		
 		return result;
 	}
 

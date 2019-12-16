@@ -76,6 +76,7 @@ public class Sleep extends Task implements Serializable {
 	/** The previous time (millisols). */
 	private double previousTime;
 	private double timeFactor = 4; // TODO: should vary this factor by person
+	private double totalSleepTime;
 	
 	private LocalBoundedObject interiorObject;
 	private Point2D returnInsideLoc;
@@ -98,15 +99,9 @@ public class Sleep extends Task implements Serializable {
 
 		pc = person.getPhysicalCondition();
 		circadian = person.getCircadianClock();
-
-//		boolean canWalkInside = true;
 		
-		// Organized into 9 branching decisions
-		// A bed can be either empty(E) or occupied(O), either unmarked(U) or
-		// designated(D).
-		// thus a 2x2 matrix with 4 possibilities: EU, ED, OU, OD
-
 		if (person.isOutside()) {
+			logger.warning(person + " was not supposed to be outside when calling Sleep");
 			walkBackInside();
 			endTask();
 		}
@@ -126,10 +121,16 @@ public class Sleep extends Task implements Serializable {
 			// Initialize phase
 			addPhase(SLEEPING);
 			setPhase(SLEEPING);
+			
+			logger.info(person + " will sleep at " + person.getVehicle());
 		}
 
 		// If person is in a settlement, try to find a living accommodations building.
 		else if (person.isInSettlement()) {
+			// Organized into 9 branching decisions
+			// A bed can be either empty(E) or occupied(O), either unmarked(U) or
+			// designated(D).
+			// thus a 2x2 matrix with 4 possibilities: EU, ED, OU, OD
 
 			Settlement s1 = person.getSettlement();
 			Settlement s0 = person.getAssociatedSettlement();
@@ -149,7 +150,7 @@ public class Sleep extends Task implements Serializable {
 						// Case 1 : (the BEST case for a guest) the settlement does have one or more
 						// empty, unmarked (EU) bed(s)
 						accommodations = q1.getLivingAccommodations();
-						walkToActivitySpotInBuilding(q1, getLivingFunction(), false);
+						walkToActivitySpotInBuilding(q1, getLivingFunction(), true);
 						// Building startBuilding = BuildingManager.getBuilding(person);
 						// logger.fine("Case 1: " + person + " is walking from " + startBuilding + " to
 						// use his/her temporary quarters at " + q1);
@@ -159,7 +160,7 @@ public class Sleep extends Task implements Serializable {
 						// Question : will the owner of this bed be coming back soon from duty ?
 						// TODO : will split into Case 2a and Case 2b.
 						accommodations = q2.getLivingAccommodations();
-						walkToActivitySpotInBuilding(q2, getLivingFunction(), false);
+						walkToActivitySpotInBuilding(q2, getLivingFunction(), true);
 						// Building startBuilding = BuildingManager.getBuilding(person);
 						// logger.fine("Case 2: " + person + " is walking from " + startBuilding + " to
 						// use his/her temporary quarters at " + q2);
@@ -177,7 +178,7 @@ public class Sleep extends Task implements Serializable {
 					// preferences
 					// endTask();
 					// Just walk to a random location.
-					walkToRandomLocation(false);
+					walkToRandomLocation(true);
 				}
 
 			} else {
@@ -205,7 +206,7 @@ public class Sleep extends Task implements Serializable {
 						// addSubTask(new WalkSettlementInterior(person, quarters, bed.getX(),
 						// bed.getY()));
 						accommodations.registerSleeper(person, false);
-						walkToBed(accommodations, person, false); // can cause StackOverflowError from excessive log or
+						walkToBed(accommodations, person, true); // can cause StackOverflowError from excessive log or
 																	// calling ExitAirlock
 					} else {
 						// Case 5: this designated bed is currently occupied (OD)
@@ -214,7 +215,7 @@ public class Sleep extends Task implements Serializable {
 						// TODO: should allow him/her to sleep in gym or anywhere based on his/her usual
 						// preferences
 						// Just walk to a random location.
-						walkToRandomLocation(false);
+						walkToRandomLocation(true);
 					}
 
 				} else {
@@ -242,7 +243,7 @@ public class Sleep extends Task implements Serializable {
 							// Point2D bed = person.getBed();
 							accommodations = q6.getLivingAccommodations();
 							accommodations.registerSleeper(person, false);
-							walkToBed(accommodations, person, false);
+							walkToBed(accommodations, person, true);
 							// walkToActivitySpotInBuilding(q7, BuildingFunction.LIVING_ACCOMODATIONS,
 							// false);
 							// Building startBuilding = BuildingManager.getBuilding(person);
@@ -265,7 +266,7 @@ public class Sleep extends Task implements Serializable {
 							// logger.info("Case 7b: " + person + " will look for a spot to fall asleep.");
 
 							// Walk to random location.
-							walkToRandomLocation(false);
+							walkToRandomLocation(true);
 						}
 
 					} else {
@@ -275,17 +276,18 @@ public class Sleep extends Task implements Serializable {
 								+ " couldn't find an empty bed at all. will look for a spot to fall asleep.");
 						// TODO: should allow him/her to sleep in gym or anywhere.
 						// Walk to random location.
-						walkToRandomLocation(false);
+						walkToRandomLocation(true);
 					}
 				}
 			}
-			
 
 			previousTime = marsClock.getMillisol();
 
 			// Initialize phase
 			addPhase(SLEEPING);
 			setPhase(SLEEPING);
+			
+//			logger.info(person + " will sleep at " + person.getSettlement());
 		}
 	}
 
@@ -383,6 +385,7 @@ public class Sleep extends Task implements Serializable {
 	 * @return the amount of time (millisols) left over after performing the phase.
 	 */
 	private double sleepingPhase(double time) {
+//		logger.info(person + " at sleepingPhase()");
 		
 		if (person != null) {
 			if (person.isOutside()) {
@@ -429,16 +432,21 @@ public class Sleep extends Task implements Serializable {
 			pc.setFatigue(newFatigue);
 				
 			circadian.setAwake(false);
+			
+			totalSleepTime += time;
+//			logger.info(person + "  time: " + Math.round(time*1000.0)/1000.0
+//					+ "  totalSleepTime: " + Math.round(totalSleepTime*1000.0)/1000.0);
+			
+			// Adjust the leptin and ghrelin level
 			circadian.getRested(time);
 
 			// Record the sleep time [in millisols]
 			circadian.recordSleep(time);
 			
-    	
-			// Check if alarm went off
 			double newTime = marsClock.getMillisol();
 			double alarmTime = getAlarmTime();
 
+			// Check if alarm went off
 			if ((previousTime <= alarmTime) && (newTime >= alarmTime)) {
 				circadian.setNumSleep(circadian.getNumSleep() + 1);
 				circadian.updateSleepCycle((int) marsClock.getMillisol(), true);
@@ -452,14 +460,13 @@ public class Sleep extends Task implements Serializable {
 				logger.finest(person.getName() + " woke up from sleep.");
 				endTask();
 			}
-
 		}
 
 		else if (robot != null) {
-			// Check if alarm went off.
 			double newTime = marsClock.getMillisol();
 			double alarmTime = getAlarmTime();
 			
+			// Check if alarm went off
 			if ((previousTime <= alarmTime) && (newTime >= alarmTime)) {
 				logger.finest(robot.getName() + " woke up from alarm.");
 				endTask();
@@ -479,6 +486,7 @@ public class Sleep extends Task implements Serializable {
 	@Override
 	public void endTask() {
 		if (person != null) {
+//	    	logger.info(person.getNickName() + " called endTask() in " + this);
 			// Remove person from living accommodations bed so others can use it.
 			if (accommodations != null && accommodations.getSleepers() > 0) {
 				accommodations.removeSleeper(person);

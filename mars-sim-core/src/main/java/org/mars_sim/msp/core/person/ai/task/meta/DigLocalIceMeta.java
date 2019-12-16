@@ -36,6 +36,8 @@ public class DigLocalIceMeta implements MetaTask, Serializable {
     private static final String NAME = Msg.getString(
             "Task.description.digLocalIce"); //$NON-NLS-1$
 
+    private static final double VALUE = .5;
+    
     /** default logger. */
     //private static Logger logger = Logger.getLogger(DigLocalIceMeta.class.getName());
 
@@ -106,7 +108,7 @@ public class DigLocalIceMeta implements MetaTask, Serializable {
             if (fatigue > 1000 || stress > 50)
             	return 0;
             
-            result = settlement.getIceProbabilityValue();
+            result = settlement.getIceProbabilityValue() / VALUE;
 
             // Stress modifier
             result -= stress * 3.5D;
@@ -133,10 +135,10 @@ public class DigLocalIceMeta implements MetaTask, Serializable {
 
             // Modify if field work is the person's favorite activity.
             if (person.getFavorite().getFavoriteActivity() == FavoriteType.FIELD_WORK)
-                result += RandomUtil.getRandomInt(1, 20);
+                result += RandomUtil.getRandomInt(1, 5);
 
             if (result > 0)
-            	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
+            	result = result + result * person.getPreference().getPreferenceScore(this)/8D;
 
             //logger.info("DigLocalIceMeta's probability : " + Math.round(result*100D)/100D);
 
