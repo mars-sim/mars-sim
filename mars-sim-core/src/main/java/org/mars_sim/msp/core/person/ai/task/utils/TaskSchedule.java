@@ -14,6 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
 
+import org.apache.commons.collections.bidimap.TreeBidiMap;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ShiftType;
@@ -22,6 +23,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 //import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.time.MarsClock;
 
+import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
 /**
@@ -85,10 +87,10 @@ public class TaskSchedule implements Serializable {
 //	private Map<String, Integer> taskPhases;
 //	private Map<String, Integer> functions;
 
-	private HashBiMap<Integer, String> taskDescriptions = HashBiMap.create();
-	private HashBiMap<Integer, String> taskNames = HashBiMap.create();
-	private HashBiMap<Integer, String> missionNames = HashBiMap.create();
-	private HashBiMap<Integer, String> taskPhases = HashBiMap.create();
+	private BiMap<Integer, String> taskDescriptions = HashBiMap.create();
+	private BiMap<Integer, String> taskNames = HashBiMap.create();
+	private BiMap<Integer, String> missionNames = HashBiMap.create();
+	private BiMap<Integer, String> taskPhases = HashBiMap.create();
 	
 	private List<OneActivity> todayActivities;
 
@@ -209,13 +211,13 @@ public class TaskSchedule implements Serializable {
 	}
 
 	/**
-	 * Gets the ID of a HashBiMap
+	 * Gets the ID of a BiMap
 	 * 
 	 * @param map
 	 * @param value
 	 * @return
 	 */
-	public int getID(HashBiMap<Integer, String> map, String value) {
+	public int getID(BiMap<Integer, String> map, String value) {
 		if (map.containsValue(value)) {
 			return map.inverse().get(value);
 		} else {

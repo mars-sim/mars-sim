@@ -14,6 +14,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -98,7 +100,7 @@ public class UnitManager implements Serializable {
 	private static int totalNumUnits = 0;
 	
 	/** List of unit manager listeners. */
-	private static List<UnitManagerListener> listeners;
+	private static CopyOnWriteArrayList<UnitManagerListener> listeners;
 
 	// Static members
 	/** A list of all units. */
@@ -185,17 +187,25 @@ public class UnitManager implements Serializable {
 	 */
 	public UnitManager() {
 		// Initialize unit collection
-		lookupUnit = new HashMap<>();
-		lookupSite = new HashMap<>();
-		lookupSettlement = new HashMap<>();
-		lookupPerson = new HashMap<>();
-		lookupRobot = new HashMap<>();
-		lookupEquipment = new HashMap<>();
-		lookupVehicle = new HashMap<>();
-		lookupBuilding = new HashMap<>();
+//		lookupUnit       = Collections.synchronizedMap(new HashMap<>());
+//		lookupSite       = Collections.synchronizedMap(new HashMap<>());
+//		lookupSettlement = Collections.synchronizedMap(new HashMap<>());
+//		lookupPerson     = Collections.synchronizedMap(new HashMap<>());
+//		lookupRobot      = Collections.synchronizedMap(new HashMap<>());
+//		lookupEquipment  = Collections.synchronizedMap(new HashMap<>());
+//		lookupVehicle    = Collections.synchronizedMap(new HashMap<>());
+//		lookupBuilding   = Collections.synchronizedMap(new HashMap<>());
+		lookupUnit       = new ConcurrentHashMap<>();
+		lookupSite       = new ConcurrentHashMap<>();
+		lookupSettlement = new ConcurrentHashMap<>();
+		lookupPerson     = new ConcurrentHashMap<>();
+		lookupRobot      = new ConcurrentHashMap<>();
+		lookupEquipment  = new ConcurrentHashMap<>();
+		lookupVehicle    = new ConcurrentHashMap<>();
+		lookupBuilding   = new ConcurrentHashMap<>();
 		
 //		units = new CopyOnWriteArrayList<>();//ConcurrentLinkedQueue<Unit>();
-		listeners = Collections.synchronizedList(new ArrayList<UnitManagerListener>());
+		listeners = new CopyOnWriteArrayList<>();//Collections.synchronizedList(new ArrayList<UnitManagerListener>());
 		equipmentNumberMap = new HashMap<String, Integer>();
 		vehicleNumberMap = new HashMap<String, Integer>();
 		
@@ -589,7 +599,7 @@ public class UnitManager implements Serializable {
 	}
 
 	public Map<Integer, Person> getLookupPerson() {
-		return new HashMap<>(lookupPerson);
+		return lookupPerson; //new HashMap<>(lookupPerson);
 	}
 
 	public void addPersonID(Person p) {
@@ -2456,7 +2466,7 @@ public class UnitManager implements Serializable {
 	 */
 	public final void addUnitManagerListener(UnitManagerListener newListener) {
 		if (listeners == null) {
-			listeners = Collections.synchronizedList(new ArrayList<UnitManagerListener>());
+			listeners = new CopyOnWriteArrayList<>();//Collections.synchronizedList(new ArrayList<UnitManagerListener>());
 		}
 		if (!listeners.contains(newListener)) {
 			listeners.add(newListener);
@@ -2470,7 +2480,7 @@ public class UnitManager implements Serializable {
 	 */
 	public final void removeUnitManagerListener(UnitManagerListener oldListener) {
 		if (listeners == null) {
-			listeners = Collections.synchronizedList(new ArrayList<UnitManagerListener>());
+			listeners = new CopyOnWriteArrayList<>();//Collections.synchronizedList(new ArrayList<UnitManagerListener>());
 		}
 		if (listeners.contains(oldListener)) {
 			listeners.remove(oldListener);
@@ -2485,7 +2495,7 @@ public class UnitManager implements Serializable {
 	 */
 	public final void fireUnitManagerUpdate(UnitManagerEventType eventType, Unit unit) {
 		if (listeners == null) {
-			listeners = Collections.synchronizedList(new ArrayList<UnitManagerListener>());
+			listeners = new CopyOnWriteArrayList<>();//Collections.synchronizedList(new ArrayList<UnitManagerListener>());
 		}
 		synchronized (listeners) {
 			for (UnitManagerListener listener : listeners) {
