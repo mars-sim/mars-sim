@@ -1295,7 +1295,9 @@ public class Simulation implements ClockListener, Serializable {
 		+ "    heapMaxSize: " + formatSize(heapMaxSize) 
 		+ "    heapFreeSize: " + formatSize(heapFreeSize) + "");
 		
-		while (heapFreeSize < 250) {
+		int counts = 0;
+		while (heapFreeSize < 250 && counts <= 5) {
+			counts++;
 			logger.config("Please try again. Ensure enough free heap space available beforehand.");
 			delay(500);
 			// Get current size of heap in bytes
@@ -1310,8 +1312,10 @@ public class Simulation implements ClockListener, Serializable {
 			+ "    heapFreeSize: " + formatSize(heapFreeSize) + "");
 		}
 
-		// Serialize the file
-		serialize(type, file, srcPath, destPath);
+		if (counts <= 5) {
+			// Serialize the file
+			serialize(type, file, srcPath, destPath);
+		}
 
 		// Restarts the master clock and adds back the Simulation clock listener
 		sim.proceed(isPause);

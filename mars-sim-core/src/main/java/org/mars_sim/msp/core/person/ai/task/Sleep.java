@@ -122,7 +122,7 @@ public class Sleep extends Task implements Serializable {
 			addPhase(SLEEPING);
 			setPhase(SLEEPING);
 			
-			logger.info(person + " will sleep at " + person.getVehicle());
+//			logger.info(person + " will sleep at " + person.getVehicle());
 		}
 
 		// If person is in a settlement, try to find a living accommodations building.
