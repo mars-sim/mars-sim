@@ -582,7 +582,14 @@ public class UnitManager implements Serializable {
 	}
 	
 	public Person getPersonByID(Integer id) {
-		return lookupPerson.get(id);
+		return getLookupPerson().get(id);
+//		if (lookupPerson.containsKey(id))
+//			return lookupPerson.get(id);
+//		return null;
+	}
+
+	public  Map<Integer, Person> getLookupPerson() {
+		return new HashMap<>(lookupPerson);
 	}
 
 	public void addPersonID(Person p) {

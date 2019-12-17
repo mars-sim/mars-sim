@@ -162,12 +162,12 @@ public class TaskSchedule implements Serializable {
 					allActivities.remove(diff - 1);
 			}
 
-			// save yesterday's schedule (except on the very first day when there's nothing
+			// Save yesterday's schedule (except on the very first day when there's nothing
 			// to save from the prior day
 			allActivities.put(solCache, todayActivities);
 			// Update solCache
 			solCache = solElapsed;
-			// Create a new schedule for the new day
+			// Create a new schedule for this brand new day
 			todayActivities = new CopyOnWriteArrayList<OneActivity>();
 			// Add recordYestersolTask()
 			recordYestersolLastTask();

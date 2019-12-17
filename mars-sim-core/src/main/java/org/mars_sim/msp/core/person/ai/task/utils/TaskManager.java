@@ -52,11 +52,11 @@ public class TaskManager implements Serializable {
 
 	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 
-	private static final String WALK = "walk";
+//	private static final String WALK = "walk";
 
-	private static final int MAX_TASK_PROBABILITY = 8000;
+	private static final int MAX_TASK_PROBABILITY = 20000;
 	/** A decimal number a little bigger than zero for comparing doubles. */
-	private static final double SMALL_AMOUNT = 0.001;
+//	private static final double SMALL_AMOUNT = 0.001;
 	
 	// Data members
 	/** The cache for work shift. */
@@ -764,7 +764,12 @@ public class TaskManager implements Serializable {
 				double probability = mt.getProbability(person);
 				if ((probability >= 0D) && (!Double.isNaN(probability)) && (!Double.isInfinite(probability))) {
 					if (probability > MAX_TASK_PROBABILITY) {
-						LogConsolidated.log(Level.WARNING, 10_000, sourceName, mind.getPerson().getName() + " - "
+						if (mt.getName().equalsIgnoreCase("sleepmeta")) {
+							LogConsolidated.log(Level.WARNING, 10_000, sourceName, mind.getPerson().getName() + " - "
+									+ mt.getName() + " felt very sleepy (" + Math.round(probability * 10.0) / 10.0 + ").");
+						}
+						else 
+							LogConsolidated.log(Level.WARNING, 10_000, sourceName, mind.getPerson().getName() + " - "
 								+ mt.getName() + "'s probability is at all time high : " + Math.round(probability * 10.0) / 10.0 + ".");
 						// If the person has a strong desire to eat, stop here and go to eat
 						// The person has a strong desire to sleep, stop here and go to sleep

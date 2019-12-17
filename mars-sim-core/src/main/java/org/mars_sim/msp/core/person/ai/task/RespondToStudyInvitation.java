@@ -16,6 +16,7 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -218,15 +219,24 @@ public class RespondToStudyInvitation extends Task implements Serializable {
 				double primaryAchievement = study.getPrimaryResearcher().getScientificAchievement(studyScience);
 				acceptChance += primaryAchievement;
 
+//				logger.info("studyScience: " + studyScience.getName() + "    jobScience: " + jobScience
+//						+ "    collaborators: " + study.getCollaborativeResearchers().keySet());
+//				logger.info("LookupPerson: " + unitManager.getLookupPerson());
+				
+//				if (unitManager != null)
+//					unitManager = Simulation.instance().getUnitManager();
+				
+				Map<Integer, Person> lookupPerson = unitManager.getLookupPerson();
+				
 				// Modify based on study collaborative researchers' achievements.
 				Iterator<Integer> i = study.getCollaborativeResearchers().keySet().iterator();
 				while (i.hasNext()) {
 					Integer id = i.next();
-					if (unitManager.getPersonByID(id) != null) {
-						Person collaborator = unitManager.getPersonByID(id);
+//					if (unitManager.getLookupPerson().containsKey(id)) {
+						Person collaborator = lookupPerson.get(id);
 						ScienceType collaborativeScience = study.getCollaborativeResearchers().get(id);
 						acceptChance += (collaborator.getScientificAchievement(collaborativeScience) / 2D);
-					}
+//					}
 				}
 
 				// Modify if researcher's job science is collaborative.

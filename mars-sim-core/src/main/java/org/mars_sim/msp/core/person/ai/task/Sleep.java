@@ -95,7 +95,7 @@ public class Sleep extends Task implements Serializable {
 	//
 	public Sleep(Person person) {
 		super(NAME, person, false, false, STRESS_MODIFIER, true, 
-				(25 + RandomUtil.getRandomDouble(2.5) - RandomUtil.getRandomDouble(2.5)));
+				(100 + RandomUtil.getRandomDouble(2.5) - RandomUtil.getRandomDouble(2.5)));
 
 		pc = person.getPhysicalCondition();
 		circadian = person.getCircadianClock();
