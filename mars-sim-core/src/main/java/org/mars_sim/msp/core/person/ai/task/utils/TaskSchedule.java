@@ -57,7 +57,11 @@ public class TaskSchedule implements Serializable {
 	// Data members
 	private int solCache;
 	private int startTime;
-
+	private int id0Cache;
+	private int id1Cache;
+	private int id2Cache;
+	private int id3Cache;
+	
 	private String actorName;
 	private String taskName;
 	private String doAction;
@@ -191,8 +195,17 @@ public class TaskSchedule implements Serializable {
 		int id3 = getID(missionNames, mission);
 		// int id3 = getID(functions, functionType.toString());
 
-		todayActivities.add(new OneActivity(startTime, id0, id1, id2, id3));
-
+		if (id0Cache != id0
+				|| id1Cache != id1
+				|| id2Cache != id2
+				|| id3Cache != id3) {
+			
+			todayActivities.add(new OneActivity(startTime, id0, id1, id2, id3));
+			id0Cache = id0;
+			id1Cache = id1;
+			id2Cache = id2;
+			id3Cache = id3;
+		}
 	}
 
 	/**

@@ -235,7 +235,7 @@ implements Serializable {
 		String taskName = getTaskClassName();
 		String taskPhase = "";
 	
-		if (taskName != null && !taskName.equals("")) {
+		if (!taskName.equals("")) {
 			if (!taskDescription.equals(taskDescriptionCache)
 				|| !taskPhase.equals(taskPhaseCache)) {
 	

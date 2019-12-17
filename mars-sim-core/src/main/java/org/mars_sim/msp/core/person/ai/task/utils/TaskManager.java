@@ -367,15 +367,12 @@ public class TaskManager implements Serializable {
 		if (missionManager.getMission(person) != null)
 			missionName = missionManager.getMission(person).toString();
 
-		// Remove tasks such as Walk, WalkRoverInterior, WalkSettlementInterior,
-		// WalkSteps
-		// Filters off descriptions such as "Walking inside a settlement"
-		if (taskName != null && !taskName.equals("")) {
+		if (!taskName.equals("")) {
 
 			if (isEVATask(taskName)) {
 				person.addEVATime(taskName, time);
 			}
-
+			
 			if (!taskDescription.equals(taskDescriptionCache)
 					|| !taskPhaseName.equals(taskPhaseNameCache)
 					|| !missionName.equals(missionNameCache)) {
