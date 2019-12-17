@@ -22,6 +22,8 @@ import org.mars_sim.msp.core.structure.Settlement;
 //import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.time.MarsClock;
 
+import com.google.common.collect.HashBiMap;
+
 /**
  * This class represents the task schedule of a person.
  */
@@ -73,12 +75,17 @@ public class TaskSchedule implements Serializable {
 	// private Map <Integer, List<OneTask>> schedules;
 	// private List<OneTask> todaySchedule;
 	private transient Map<Integer, List<OneActivity>> allActivities;
-	private Map<String, Integer> taskDescriptions;
-	private Map<String, Integer> taskNames;
-	private Map<String, Integer> missionNames;
-	private Map<String, Integer> taskPhases;
+//	private Map<String, Integer> taskDescriptions;
+//	private Map<String, Integer> taskNames;
+//	private Map<String, Integer> missionNames;
+//	private Map<String, Integer> taskPhases;
 //	private Map<String, Integer> functions;
 
+	private HashBiMap<Integer, String> taskDescriptions = HashBiMap.create();
+	private HashBiMap<Integer, String> taskNames = HashBiMap.create();
+	private HashBiMap<Integer, String> missionNames = HashBiMap.create();
+	private HashBiMap<Integer, String> taskPhases = HashBiMap.create();
+	
 	private List<OneActivity> todayActivities;
 
 	private static MarsClock marsClock = Simulation.instance().getMasterClock().getMarsClock();
@@ -96,10 +103,11 @@ public class TaskSchedule implements Serializable {
 		todayActivities = new CopyOnWriteArrayList<OneActivity>();
 		// this.schedules = new ConcurrentHashMap <>();
 		// this.todaySchedule = new CopyOnWriteArrayList<OneTask>();
-		taskDescriptions = new ConcurrentHashMap<String, Integer>();
-		taskNames = new ConcurrentHashMap<String, Integer>();
-		missionNames = new ConcurrentHashMap<String, Integer>();
-		taskPhases = new ConcurrentHashMap<String, Integer>();
+		
+//		taskDescriptions = new ConcurrentHashMap<String, Integer>();
+//		taskNames = new ConcurrentHashMap<String, Integer>();
+//		missionNames = new ConcurrentHashMap<String, Integer>();
+//		taskPhases = new ConcurrentHashMap<String, Integer>();
 //		functions = new ConcurrentHashMap<String, Integer>();
 
 		shiftChoice = new HashMap<>();
@@ -128,10 +136,10 @@ public class TaskSchedule implements Serializable {
 		todayActivities = new CopyOnWriteArrayList<OneActivity>();
 		// this.schedules = new ConcurrentHashMap <>();
 		// this.todaySchedule = new CopyOnWriteArrayList<OneTask>();
-		taskDescriptions = new ConcurrentHashMap<String, Integer>();
-		taskNames = new ConcurrentHashMap<String, Integer>();
-		missionNames = new ConcurrentHashMap<String, Integer>();
-		taskPhases = new ConcurrentHashMap<String, Integer>();
+//		taskDescriptions = new ConcurrentHashMap<String, Integer>();
+//		taskNames = new ConcurrentHashMap<String, Integer>();
+//		missionNames = new ConcurrentHashMap<String, Integer>();
+//		taskPhases = new ConcurrentHashMap<String, Integer>();
 //		functions = new ConcurrentHashMap<String, Integer>();
 
 //		marsClock = Simulation.instance().getMasterClock().getMarsClock();
@@ -169,8 +177,10 @@ public class TaskSchedule implements Serializable {
 			solCache = solElapsed;
 			// Create a new schedule for this brand new day
 			todayActivities = new CopyOnWriteArrayList<OneActivity>();
-			// Add recordYestersolTask()
-			recordYestersolLastTask();
+			
+			if (solElapsed > 1)
+				// Add recordYestersolTask()
+				recordYestersolLastTask();
 
 		}
 
@@ -186,18 +196,18 @@ public class TaskSchedule implements Serializable {
 	}
 
 	/**
-	 * Gets the ID of a map
+	 * Gets the ID of a HashBiMap
 	 * 
 	 * @param map
-	 * @param key
+	 * @param value
 	 * @return
 	 */
-	public int getID(Map<String, Integer> map, String key) {
-		if (map.containsKey(key)) {
-			return map.get(key);
+	public int getID(HashBiMap<Integer, String> map, String value) {
+		if (map.containsValue(value)) {
+			return map.inverse().get(value);
 		} else {
 			int size = map.size();
-			map.put(key, size + 1);
+			map.put(size + 1, value);
 			return size + 1;
 		}
 	}
@@ -209,13 +219,8 @@ public class TaskSchedule implements Serializable {
 	 * @param id
 	 * @return
 	 */
-	public String getString(Map<String, Integer> map, Integer id) {
-		for (String key : map.keySet()) {
-			if (map.get(key).equals(id)) {
-				return key; // return the first found
-			}
-		}
-		return null;
+	public String getString(Map<Integer, String> map, Integer id) {
+		return map.get(id);
 	}
 
 	public String convertTaskName(Integer id) {

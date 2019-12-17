@@ -146,6 +146,8 @@ public class Mind implements Serializable {
 		if (taskManager != null) {
 			// Take action as necessary.
 			takeAction(time);
+			// Record the action (task/mission)
+//			taskManager.recordFilterTask(time);
 		}
 		
 		double msol1 = marsClock.getMillisolOneDecimal();

@@ -68,10 +68,12 @@ public class TaskManager implements Serializable {
 	/** The cache for task name. */
 //	private String taskNameCache = "";
 	/** The cache for task description. */
-	private String taskDescriptionCache = "Relaxing";
+	private String taskDescriptionCache = "";
 	/** The cache for task phase. */
-	private String taskPhaseNameCache = "Relaxing";
-
+	private String taskPhaseNameCache = "";
+	/** The cache for mission name. */
+	private String missionNameCache = "";
+	
 	/** The current task the person/robot is doing. */
 	private Task currentTask;
 	/** The last task the person/robot was doing. */
@@ -360,7 +362,7 @@ public class TaskManager implements Serializable {
 	public void recordFilterTask(double time) {
 		String taskDescription = getTaskDescription(false);
 		String taskName = getTaskClassName();
-
+		String taskPhaseName = "";
 		String missionName = "";
 		if (missionManager.getMission(person) != null)
 			missionName = missionManager.getMission(person).toString();
@@ -375,24 +377,17 @@ public class TaskManager implements Serializable {
 			}
 
 			if (!taskDescription.equals(taskDescriptionCache)
-//				&& !taskName.toLowerCase().contains(WALK) 
-//				&& !taskDescription.toLowerCase().contains(WALK) 
-					&& !taskDescription.equals("")) {
+					|| !taskPhaseName.equals(taskPhaseNameCache)
+					|| !missionName.equals(missionNameCache)) {
 
-				String taskPhaseName = "";
-				TaskPhase tp = getPhase();
-
-				if (tp != null) {
-					taskPhaseName = tp.getName();
+				if (getPhase() != null) {
+					taskPhaseName = getPhase().getName();
 				}	
 
-//				if (!taskPhaseNameCache.equals(taskPhaseName)) {
-					// Note : can taskPhaseName be null ?
-					// TODO: decide if it needs to record the same task description as the last
-					taskSchedule.recordTask(taskName, taskDescription, taskPhaseName, missionName);
-					taskPhaseNameCache = taskPhaseName;
-					taskDescriptionCache = taskDescription;
-//				}
+				taskSchedule.recordTask(taskName, taskDescription, taskPhaseName, missionName);
+				taskPhaseNameCache = taskPhaseName;
+				taskDescriptionCache = taskDescription;
+				missionNameCache = missionName;
 			}
 		}
 	}

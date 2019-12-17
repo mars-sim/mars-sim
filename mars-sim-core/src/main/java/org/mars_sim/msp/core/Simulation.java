@@ -213,7 +213,7 @@ public class Simulation implements ClockListener, Serializable {
 			+ ((NUM_THREADS == 1) ? " CPU thread" : " CPU threads")); // $NON-NLS-1$
 
 	/** The mininum size of heap space in bytes */
-	public final static int MIN_HEAP_SPACE = 150*1024*1024;
+	public final static int MIN_HEAP_SPACE = 128*1024*1024;
 	
 //	private static final boolean debug = false; // logger.isLoggable(Level.FINE);
 	/** true if displaying graphic user interface. */
@@ -1296,14 +1296,14 @@ public class Simulation implements ClockListener, Serializable {
 		
 		logger.config("heapSize: " + formatSize(heapSize) 
 		+ "    heapMaxSize: " + formatSize(heapMaxSize) 
-		+ "    heapFreeSize: " + heapFreeSize
+//		+ "    heapFreeSize: " + heapFreeSize
 		+ "    heapFreeSize: " + formatSize(heapFreeSize) + "");
 		
 		int counts = 0;
 		while (heapFreeSize < MIN_HEAP_SPACE && counts <= 5) {
 			counts++;
-			logger.config("Please try again. Ensure enough free heap space available beforehand.");
-			delay(500);
+			logger.config("Not enough free memory in heap space. Wait for 3 seconds and retry...");
+			delay(3000);
 			// Get current size of heap in bytes
 			heapSize = Runtime.getRuntime().totalMemory();
 			// Get maximum size of heap in bytes. The heap cannot grow beyond this size.// Any attempt will result in an OutOfMemoryException.
@@ -1319,6 +1319,9 @@ public class Simulation implements ClockListener, Serializable {
 		if (counts <= 5) {
 			// Serialize the file
 			serialize(type, file, srcPath, destPath);
+		}
+		else {
+			logger.config("Please try saving again later.");
 		}
 
 		// Restarts the master clock and adds back the Simulation clock listener

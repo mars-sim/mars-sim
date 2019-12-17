@@ -108,7 +108,6 @@ public class BotMind implements Serializable {
 		if (botTaskManager != null) {
 			// Take action as necessary.
 			takeAction(time);
-			botTaskManager.recordTask();
 		}
 		
 //	    if (missionManager != null)

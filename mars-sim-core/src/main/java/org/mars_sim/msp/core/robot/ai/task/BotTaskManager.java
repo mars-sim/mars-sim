@@ -230,24 +230,22 @@ implements Serializable {
 	/*
 	 * Prepares the task for recording in the task schedule
 	 */
-	public void recordTask() {
+	public void recordFilterTask() {
 		String taskDescription = getTaskDescription(false);
 		String taskName = getTaskClassName();
-		String taskPhase = null;
+		String taskPhase = "";
 	
-//		if (!taskName.toLowerCase().contains("walk")
-//			&& !taskDescription.toLowerCase().contains("walk")
-		if (!taskDescription.equals(taskDescriptionCache)
-			&& !taskDescription.equals("")
-			&& getPhase() != null) {
-
-			taskPhase = getPhase().getName();
-
-//			if (!taskPhase.equals(taskPhaseCache)) {		
+		if (taskName != null && !taskName.equals("")) {
+			if (!taskDescription.equals(taskDescriptionCache)
+				|| !taskPhase.equals(taskPhaseCache)) {
+	
+				if (getPhase() != null)
+					taskPhase = getPhase().getName();
+			
 				robot.getTaskSchedule().recordTask(taskName, taskDescription, taskPhase, "");
 				taskPhaseCache = taskPhase;
 				taskDescriptionCache = taskDescription;
-//			}
+			}
 		}
 	}
 
@@ -314,7 +312,9 @@ implements Serializable {
 
 			checkForEmergency();
 			remainingTime = currentTask.performTask(time);
-
+			// Record the action (task/mission)
+			recordFilterTask();
+			
 			// Expend energy based on activity.
 		    double energyTime = time - remainingTime;
 
