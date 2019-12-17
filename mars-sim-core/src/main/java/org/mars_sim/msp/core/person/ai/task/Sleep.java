@@ -95,7 +95,7 @@ public class Sleep extends Task implements Serializable {
 	//
 	public Sleep(Person person) {
 		super(NAME, person, false, false, STRESS_MODIFIER, true, 
-				(100 + RandomUtil.getRandomDouble(2.5) - RandomUtil.getRandomDouble(2.5)));
+				(50 + RandomUtil.getRandomDouble(2.5) - RandomUtil.getRandomDouble(2.5)));
 
 		pc = person.getPhysicalCondition();
 		circadian = person.getCircadianClock();
@@ -127,6 +127,9 @@ public class Sleep extends Task implements Serializable {
 
 		// If person is in a settlement, try to find a living accommodations building.
 		else if (person.isInSettlement()) {
+			// Double the sleep duration
+			setDuration(getDuration() * 2);
+			
 			// Organized into 9 branching decisions
 			// A bed can be either empty(E) or occupied(O), either unmarked(U) or
 			// designated(D).

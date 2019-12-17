@@ -212,6 +212,9 @@ public class Simulation implements ClockListener, Serializable {
 			+ " - " + OS_ARCH + " " + JAVA_VERSION + " - " + NUM_THREADS
 			+ ((NUM_THREADS == 1) ? " CPU thread" : " CPU threads")); // $NON-NLS-1$
 
+	/** The mininum size of heap space in bytes */
+	public final static int MIN_HEAP_SPACE = 150*1024*1024;
+	
 //	private static final boolean debug = false; // logger.isLoggable(Level.FINE);
 	/** true if displaying graphic user interface. */
 	private transient boolean useGUI = true;
@@ -1293,10 +1296,11 @@ public class Simulation implements ClockListener, Serializable {
 		
 		logger.config("heapSize: " + formatSize(heapSize) 
 		+ "    heapMaxSize: " + formatSize(heapMaxSize) 
+		+ "    heapFreeSize: " + heapFreeSize
 		+ "    heapFreeSize: " + formatSize(heapFreeSize) + "");
 		
 		int counts = 0;
-		while (heapFreeSize < 250 && counts <= 5) {
+		while (heapFreeSize < MIN_HEAP_SPACE && counts <= 5) {
 			counts++;
 			logger.config("Please try again. Ensure enough free heap space available beforehand.");
 			delay(500);
