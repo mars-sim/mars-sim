@@ -63,6 +63,8 @@ public class RespondToStudyInvitation extends Task implements Serializable {
 	/** The scientific study. */
 	private ScientificStudy study;
 
+//	private static Map<Integer, Person> lookupPerson = unitManager.getLookupPerson();
+	
 	/**
 	 * Constructor
 	 * 
@@ -225,20 +227,24 @@ public class RespondToStudyInvitation extends Task implements Serializable {
 				
 //				if (unitManager != null)
 //					unitManager = Simulation.instance().getUnitManager();
-				
 				Map<Integer, Person> lookupPerson = unitManager.getLookupPerson();
-				
-				// Modify based on study collaborative researchers' achievements.
-				Iterator<Integer> i = study.getCollaborativeResearchers().keySet().iterator();
-				while (i.hasNext()) {
-					Integer id = i.next();
-//					if (unitManager.getLookupPerson().containsKey(id)) {
-						Person collaborator = lookupPerson.get(id);
-						ScienceType collaborativeScience = study.getCollaborativeResearchers().get(id);
-						acceptChance += (collaborator.getScientificAchievement(collaborativeScience) / 2D);
-//					}
+				if (lookupPerson == null) {
+					lookupPerson = unitManager.getLookupPerson();
 				}
-
+				
+				if (lookupPerson != null) {
+					// Modify based on study collaborative researchers' achievements.
+					Iterator<Integer> i = study.getCollaborativeResearchers().keySet().iterator();
+					while (i.hasNext()) {
+						Integer id = i.next();
+						if (lookupPerson.containsKey(id)) {
+							Person collaborator = lookupPerson.get(id);
+							ScienceType collaborativeScience = study.getCollaborativeResearchers().get(id);
+							acceptChance += (collaborator.getScientificAchievement(collaborativeScience) / 2D);
+						}
+					}
+				}
+				
 				// Modify if researcher's job science is collaborative.
 				if (isCollaborativeScience) {
 					acceptChance /= 2D;

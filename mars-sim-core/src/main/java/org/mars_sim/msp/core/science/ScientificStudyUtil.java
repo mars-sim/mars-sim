@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
@@ -89,10 +90,12 @@ public class ScientificStudyUtil {
         double academicAptitudeModifier = (academicAptitude - 50) / 2D;
         baseChance += academicAptitudeModifier;
         
+        Map<Integer, Person> lookupPerson = unitManager.getLookupPerson();
+        
         Iterator<Integer> i = study.getCollaborativeResearchers().keySet().iterator();
         while (i.hasNext()) {
         	Integer id = i.next();
-            Person researcher = unitManager.getPersonByID(id);
+            Person researcher = lookupPerson.get(id);//unitManager.getPersonByID(id);
             double collaboratorModifier = 10D;
             
             // Modify based on collaborative researcher skill in their science.
@@ -137,10 +140,13 @@ public class ScientificStudyUtil {
         
         // Add achievement credit to collaborative researchers.
         double collaborativeAchievement = baseAchievement / 3D;
+        
+        Map<Integer, Person> lookupPerson = unitManager.getLookupPerson();
+        
         Iterator<Integer> i = study.getCollaborativeResearchers().keySet().iterator();
         while (i.hasNext()) {
         	Integer id = i.next();
-            Person researcher = unitManager.getPersonByID(id);
+            Person researcher = lookupPerson.get(id);//getPersonByID(id); ?
             ScienceType collaborativeScience = study.getCollaborativeResearchers().get(id);
             researcher.addScientificAchievement(collaborativeAchievement, collaborativeScience);
             study.setCollaborativeResearcherEarnedScientificAchievement(researcher, collaborativeAchievement);

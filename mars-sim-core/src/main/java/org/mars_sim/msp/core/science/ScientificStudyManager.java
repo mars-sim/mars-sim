@@ -10,6 +10,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -531,11 +532,16 @@ public class ScientificStudyManager // extends Thread
 					continue;
 				}
 
+				Map<Integer, Person> lookupPerson = unitManager.getLookupPerson();
+				if (lookupPerson == null) {
+					lookupPerson = unitManager.getLookupPerson();
+				}
+				
 				// Check if collaborators have died.
 				Iterator<Integer> j = study.getCollaborativeResearchers().keySet().iterator();
 				while (j.hasNext()) {
 					Integer id = j.next();
-					Person collaborator = unitManager.getPersonByID(id);
+					Person collaborator = lookupPerson.get(id);//unitManager.getPersonByID(id);
 					if (collaborator.getPhysicalCondition().isDead()) {
 						String genderStr = GenderType.getPossessivePronoun(collaborator.getGender());
 						study.removeCollaborativeResearcher(collaborator);
@@ -583,7 +589,7 @@ public class ScientificStudyManager // extends Thread
 						study.addPrimaryResearchWorkTime(0D);
 						Iterator<Integer> k = study.getCollaborativeResearchers().keySet().iterator();
 						while (k.hasNext())
-							study.addCollaborativeResearchWorkTime(unitManager.getPersonByID(k.next()), 0D);
+							study.addCollaborativeResearchWorkTime(lookupPerson.get(k.next()), 0D);
 
 						continue;
 					}
@@ -616,7 +622,7 @@ public class ScientificStudyManager // extends Thread
 						// Check each collaborator for downtime.
 						Iterator<Integer> l = study.getCollaborativeResearchers().keySet().iterator();
 						while (l.hasNext()) {
-							Person researcher = unitManager.getPersonByID(l.next());
+							Person researcher = lookupPerson.get(l.next());
 							if (!study.isCollaborativeResearchCompleted(researcher)) {
 								MarsClock lastCollaborativeWork = study
 										.getLastCollaborativeResearchWorkTime(researcher);

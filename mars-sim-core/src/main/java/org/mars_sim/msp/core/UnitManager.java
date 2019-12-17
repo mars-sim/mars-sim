@@ -588,7 +588,7 @@ public class UnitManager implements Serializable {
 //		return null;
 	}
 
-	public  Map<Integer, Person> getLookupPerson() {
+	public Map<Integer, Person> getLookupPerson() {
 		return new HashMap<>(lookupPerson);
 	}
 
