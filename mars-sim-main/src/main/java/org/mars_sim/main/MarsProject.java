@@ -19,10 +19,12 @@ import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import org.mars.sim.console.InteractiveTerm;
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.ui.helpGenerator.HelpGenerator;
@@ -471,7 +473,7 @@ public class MarsProject {
 					sim.createNewSimulation(-1, true);
 
 					// Prompt to open the file cHooser to select a saved sim
-					boolean canLoad = MainWindow.loadSimulationProcess(false);
+					boolean canLoad = interactiveTerm.loadSimulationProcess();
 					
 					if (!canLoad) {
 						// initialize class instances
@@ -583,6 +585,7 @@ public class MarsProject {
 //			}
 		}
 	}
+	
 	
 	/**
 	 * The starting method for the application

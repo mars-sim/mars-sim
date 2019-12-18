@@ -17,6 +17,7 @@ import java.util.function.BiConsumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.swing.JFileChooser;
 import javax.swing.SwingUtilities;
 
 import org.beryx.textio.AbstractTextTerminal;
@@ -29,6 +30,7 @@ import org.beryx.textio.swing.SwingTextTerminal;
 import org.mars_sim.msp.core.GameManager;
 import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.LogConsolidated;
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.time.MasterClock;
@@ -768,6 +770,27 @@ public class InteractiveTerm {
         }
     }
     
+	/**
+	 * Performs the process of loading a simulation.
+	 * 
+	 * return true if a sim is loaded
+	 */
+	public boolean loadSimulationProcess() {
+		sim.stop();
+
+		String dir = Simulation.SAVE_DIR;;
+		String title = Msg.getString("MainWindow.dialogLoadSavedSim");
+
+		JFileChooser chooser = new JFileChooser(dir);
+		chooser.setDialogTitle(title); // $NON-NLS-1$
+		if (chooser.showOpenDialog(marsTerminal.getFrame()) == JFileChooser.APPROVE_OPTION) {
+			sim.loadSimulation(chooser.getSelectedFile());
+			return true;
+		}
+		
+		return false;
+	}
+	
     /**
      * Starts the time delay
      * 

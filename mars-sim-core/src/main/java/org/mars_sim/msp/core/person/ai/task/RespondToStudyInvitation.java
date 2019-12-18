@@ -234,13 +234,13 @@ public class RespondToStudyInvitation extends Task implements Serializable {
 				
 //				if (unitManager.getLookupPerson() != null) {
 					// Modify based on study collaborative researchers' achievements.
-					Iterator<Integer> i = study.getCollaborativeResearchers().keySet().iterator();
+					Iterator<Person> i = study.getPersonCollaborativePersons().keySet().iterator();
 					while (i.hasNext()) {
-						Integer id = i.next();
+						Person p = i.next();
 //						if (lookupPerson.containsKey(id)) {
 //							Person collaborator = lookupPerson.get(id);
-							ScienceType collaborativeScience = study.getCollaborativeResearchers().get(id);
-							acceptChance += (unitManager.getLookupPerson().get(id).getScientificAchievement(collaborativeScience) / 2D);
+							ScienceType collaborativeScience = study.getPersonCollaborativePersons().get(p);
+							acceptChance += (p.getScientificAchievement(collaborativeScience) / 2D);
 //						}
 					}
 //				}

@@ -19,6 +19,7 @@ import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
+
 import java.lang.Runnable;
 
 import org.mars.sim.console.InteractiveTerm;
@@ -232,13 +233,51 @@ public class MarsProjectHeadless {
 			// Alert the user to see the interactive terminal 
 			logger.config("Please proceed to selecting the type of Game Mode in the popped-up console.");
 			// Start interactive terminal 
-			interactiveTerm.startConsoleMainMenu(); 
+			int type = interactiveTerm.startConsoleMainMenu(); 
+			// Initialize interactive terminal 
+			InteractiveTerm.initializeTerminal();	
 			
-//			sim.destroyOldSimulation();
+			if (type == 0) {
+				// Since SCE is not used, manually set up each of the followings 
+				// Create new simulation
+				// sim.createNewSimulation(-1, false);
+				// Run this class in sim executor
+				sim.runCreateNewSimTask();	
 
-			sim.createNewSimulation(userTimeRatio, false);
-			// Start the sim thread
-			startSimThread(true);
+				// Start the simulation
+				startSimThread(false);
+				
+				// Start beryx console
+				startConsoleThread();
+			
+//				logger.config("Done with setupMainWindow()");
+			}
+			
+			else if (type == 1) {
+
+			}
+		
+			else if (type == 2) {
+				// initialize class instances but do NOT recreate simulation
+				sim.createNewSimulation(-1, true);
+
+				// Prompt to open the file cHooser to select a saved sim
+				boolean canLoad = interactiveTerm.loadSimulationProcess();
+				
+				if (!canLoad) {
+					// initialize class instances
+					sim.createNewSimulation(-1, false);
+				}
+				else {
+					// Start simulation.
+					startSimThread(false);
+					
+					// Start beryx console
+					startConsoleThread();
+				
+				}
+//				logger.config("Done with setupMainWindow()");
+			}
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -246,6 +285,39 @@ public class MarsProjectHeadless {
 		}
 	}
 
+	/**
+	 * Start the simulation instance.
+	 */
+	public void startConsoleThread() {
+		// Start the simulation.
+		ExecutorService e = sim.getSimExecutor();
+		if (e == null || (e != null && (e.isTerminated() || e.isShutdown())))
+			sim.startSimExecutor();
+		e.submit(new ConsoleTask());
+	}
+	
+	class ConsoleTask implements Runnable {
+
+		ConsoleTask() {
+		}
+		
+		public void run() {
+//			while (true) {
+//				try {
+//					Thread.sleep(100L);
+//				} catch (InterruptedException e) {
+//				}
+//				
+//				if (!sim.isUpdating()) {
+//					logger.config("ConsoleTask run() is on " + Thread.currentThread().getName());
+					// Load the menu choice
+					InteractiveTerm.loadTerminalMenu();
+//					break;
+//				}
+//			}
+		}
+	}
+	
 	/**
 	 * Start the simulation instance.
 	 */
@@ -265,7 +337,7 @@ public class MarsProjectHeadless {
 		}
 	
 		public void run() {
-			logger.config("StartTask's run() is on " + Thread.currentThread().getName());
+//			logger.config("StartTask's run() is on " + Thread.currentThread().getName());
 			Simulation.instance().startClock(autosaveDefault);
 			// Load the menu choice
 			InteractiveTerm.loadTerminalMenu();

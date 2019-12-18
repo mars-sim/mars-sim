@@ -350,6 +350,20 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
 	}
 
 	/**
+	 * Gets the study's collaborative researchers and their fields of science.
+	 * 
+	 * @return map of researchers and their sciences.
+	 */
+	public Map<Person, ScienceType> getPersonCollaborativePersons() {
+		Map<Person, ScienceType> map =  new HashMap<>();
+		for (Integer id : collaborativeResearchers.keySet()) {
+			map.put(unitManager.getPersonByID(id), collaborativeResearchers.get(id));
+		}
+		return map;
+	}
+
+	
+	/**
 	 * Adds a collaborative researcher to the study.
 	 * 
 	 * @param researcher the collaborative researcher.

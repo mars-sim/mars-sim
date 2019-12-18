@@ -59,7 +59,7 @@ implements Serializable {
             "Task.phase.collectRegolith")); //$NON-NLS-1$
 
 	/** Collection rate of regolith during EVA (kg/millisol). */
-	public static final double BASE_COLLECTION_RATE = .5D;
+	public static final double BASE_COLLECTION_RATE = .1D;
 
 	public static final double SMALL_AMOUNT = 0.001;
 			
