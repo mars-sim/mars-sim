@@ -775,7 +775,9 @@ public class Inventory implements Serializable {
 	public void storeAmountResource(AmountResource resource, double amount, boolean useContainedUnits) {
 
 		if (amount < 0D) {
-			LogConsolidated.log(logger, Level.SEVERE, 0, sourceName, "Cannot store negative amount of resource: " + amount, null);
+			LogConsolidated.log(Level.SEVERE, 0, sourceName, 
+					"[" + getOwner() + "] Cannot store negative amount of resource: " 
+					+ Math.round(amount*100.0)/100.0);
 		}
 
 		if (amount > 0D) {
@@ -797,9 +799,10 @@ public class Inventory implements Serializable {
 				// Check if local resource storage can hold resources if not using contained
 				// units.
 				if (!useContainedUnits && (remainingAmount > remainingStorageCapacity)) {
-					LogConsolidated.log(logger, Level.WARNING, 10_000, sourceName, "Case A1 : " + resource.getName() 
+					LogConsolidated.log(Level.WARNING, 10_000, sourceName, 
+							"[" + getOwner() + "] " + resource.getName() 
 							+ " could not be totally stored. Remaining: "
-							+ (remainingAmount - remainingStorageCapacity), null);
+							+ Math.round(remainingAmount - remainingStorageCapacity)*100.0/100.0);
 				}
 
 				// Store resource in local resource storage.
@@ -834,8 +837,10 @@ public class Inventory implements Serializable {
 				}
 
 				if (remainingAmount > SMALL_AMOUNT_COMPARISON) {
-					LogConsolidated.log(logger, Level.WARNING, 10_000, sourceName, "Case A2 : " + resource.getName() 
-							+ " could not be totally stored. Remaining: " + remainingAmount, null);
+					LogConsolidated.log(Level.WARNING, 10_000, sourceName, 
+							"[" + getOwner() + "] " + resource.getName() 
+							+ " could not be totally stored. Remaining: " 
+							+ Math.round(remainingAmount*100.0)/100.0);
 				}
 
 				// Fire inventory event.
@@ -844,9 +849,11 @@ public class Inventory implements Serializable {
 					o.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);
 				}
 			} else {
-				LogConsolidated.log(logger, Level.SEVERE, 0, sourceName, "Insufficient capacity to store " + resource.getName() + ", capacity: "
-						+ getAmountResourceRemainingCapacity(resource, useContainedUnits, false) + ", attempted: "
-						+ Math.round(amount*1000.0)/1000.0, null);
+				LogConsolidated.log(Level.SEVERE, 0, sourceName, 
+						"[" + getOwner() + "] Insufficient capacity to store " 
+						+ resource.getName() + ", capacity: "
+						+ Math.round(getAmountResourceRemainingCapacity(resource, useContainedUnits, false)*100.0)/100.0 
+						+ ", attempted: " + Math.round(amount*1000.0)/1000.0);
 			}
 		}
 	}
@@ -861,7 +868,9 @@ public class Inventory implements Serializable {
 	public void storeAmountResource(int resource, double amount, boolean useContainedUnits) {
 
 		if (amount < 0D) {
-			LogConsolidated.log(logger, Level.SEVERE, 0, sourceName, "Cannot store negative amount of resource: " + amount, null);
+			LogConsolidated.log(Level.SEVERE, 0, sourceName, 
+					"[" + getOwner() + "] Cannot store negative amount of resource: " 
+					+ Math.round(amount*100.0)/100.0);
 		}
 
 		if (amount > 0D) {
@@ -884,10 +893,11 @@ public class Inventory implements Serializable {
 				// Check if local resource storage can hold resources if not using contained
 				// units.
 				if (!useContainedUnits && (remainingAmount > remainingStorageCapacity)) {
-					LogConsolidated.log(logger, Level.WARNING, 10_000, sourceName, "Case B1 : " + 
-							ResourceUtil.findAmountResourceName(resource) 
+					LogConsolidated.log(Level.WARNING, 10_000, sourceName, 
+							"[" + getOwner() + "] " 
+							+ ResourceUtil.findAmountResourceName(resource) 
 							+ " could not be totally stored. Remaining: "
-									+ (remainingAmount - remainingStorageCapacity), null);
+							+ Math.round((remainingAmount - remainingStorageCapacity)*100.0)/100.0);
 				}
 
 				// Store resource in local resource storage.
@@ -922,8 +932,10 @@ public class Inventory implements Serializable {
 				}
 
 				if (remainingAmount > SMALL_AMOUNT_COMPARISON) {
-					LogConsolidated.log(logger, Level.WARNING, 10_000, sourceName, "Case B2 : " + ResourceUtil.findAmountResourceName(resource)
-							+ " could not be totally stored. Remaining: " + remainingAmount, null);
+					LogConsolidated.log(Level.WARNING, 10_000, sourceName, 
+							"[" + getOwner() + "] " + ResourceUtil.findAmountResourceName(resource)
+							+ " could not be totally stored. Remaining: " 
+							+ Math.round(remainingAmount*100.0)/100.0);
 				}
 
 				// Fire inventory event.
@@ -933,10 +945,11 @@ public class Inventory implements Serializable {
 //							ResourceUtil.findAmountResourceName(resource));
 				}
 			} else {
-				LogConsolidated.log(logger, Level.SEVERE, 0, sourceName, "Insufficient capacity to store "
+				LogConsolidated.log(Level.SEVERE, 0, sourceName, 
+						"[" + getOwner() + "] Insufficient capacity to store "
 						+ ResourceUtil.findAmountResourceName(resource) + ", capacity: "
-						+ getAmountResourceRemainingCapacity(resource, useContainedUnits, false) + ", attempted: "
-						+ Math.round(amount*1000.0)/1000.0, null);
+						+ Math.round(getAmountResourceRemainingCapacity(resource, useContainedUnits, false)*100.0)/100.0 
+						+ ", attempted: " + Math.round(amount*1000.0)/1000.0);
 			}
 		}
 	}
@@ -947,9 +960,20 @@ public class Inventory implements Serializable {
 	 * @param resource the resource.
 	 * @param amount   the amount (kg).
 	 */
+	public void retrieveAllAmountResource(int resource) {
+		retrieveAmountResource(resource, getAmountResourceStored(resource, false));
+	}
+	
+	/**
+	 * Retrieves an amount of a resource from storage.
+	 * 
+	 * @param resource the resource.
+	 * @param amount   the amount (kg).
+	 */
 	public void retrieveAmountResource(int resource, double amount) {
 		if (amount < 0D) {
-			LogConsolidated.log(Level.SEVERE, 0, sourceName, "Cannot retrieve negative amount of resource: " + amount);
+			LogConsolidated.log(Level.SEVERE, 0, sourceName, 
+					"[" + getOwner() + "] Cannot retrieve negative amount of resource: " + amount);
 		}
 
 		if (amount > 0D) {
@@ -999,7 +1023,8 @@ public class Inventory implements Serializable {
 
 				if (remainingAmount > SMALL_AMOUNT_COMPARISON) {
 					LogConsolidated.log(Level.SEVERE, 10_000, sourceName,
-							ResourceUtil.findAmountResourceName(resource)
+							"[" + getOwner() + "] " 
+							+ ResourceUtil.findAmountResourceName(resource)
 							+ " could not be totally retrieved. Remaining: " + remainingAmount);
 //					throw new IllegalStateException(ResourceUtil.findAmountResourceName(resource)
 //							+ " could not be totally retrieved. Remaining: " + remainingAmount);
@@ -1016,7 +1041,8 @@ public class Inventory implements Serializable {
 //							ResourceUtil.findAmountResource(resource));
 				}
 			} else {
-				LogConsolidated.log(Level.SEVERE, 10_000, sourceName, "Insufficient stored amount to retrieve "
+				LogConsolidated.log(Level.SEVERE, 10_000, sourceName, 
+						"[" + getOwner() + "] Insufficient stored amount to retrieve "
 						+ ResourceUtil.findAmountResourceName(resource) + ". Storage Amount : "
 						+ getAmountResourceStored(resource, false) + " kg. Attempted Amount : " + amount + " kg");
 			}

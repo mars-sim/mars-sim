@@ -423,9 +423,9 @@ implements Serializable {
     	Bag bag = pInv.findABag(false);
     	 
         // Unload bag to rover's inventory.
-        if (bag != null) {
-            Inventory bInv = bag.getInventory();
-            double ice0 = bInv.getAmountResourceStored(iceID, false);
+//        if (bag != null) {
+//            Inventory bInv = bag.getInventory();
+//            double ice0 = bInv.getAmountResourceStored(iceID, false);
             double ice1 = pInv.getAmountResourceStored(iceID, false);
 
         	Inventory sInv = settlement.getInventory();
@@ -435,22 +435,22 @@ implements Serializable {
 
             if (sInv != null) {
 	            // Try to store ice in settlement.
-	            if (ice0 + ice1 < settlementCap) {
-	            	bInv.retrieveAmountResource(iceID, ice0);
+	            if (ice1 <= settlementCap) {
+//	            	bInv.retrieveAmountResource(iceID, ice0);
 	            	pInv.retrieveAmountResource(iceID, ice1);
 	                // Store the ice
-	                sInv.storeAmountResource(iceID, ice0 + ice1, false);
+	                sInv.storeAmountResource(iceID, ice1, false);
 	                // Track supply
-	                sInv.addAmountSupply(iceID, ice0 + ice1);
+	                sInv.addAmountSupply(iceID, ice1);
 	                // Transfer the bag
 	                bag.transfer(person, sInv);
 					// Add to the daily output
-					settlement.addOutput(iceID, ice0 + ice1, getTimeCompleted());
+					settlement.addOutput(iceID, ice1, getTimeCompleted());
 		            // Recalculate settlement good value for output item.
 		            settlement.getGoodsManager().updateGoodValue(GoodsUtil.getResourceGood(iceID), false);
 	            }
             }
-        }
+//        }
 
         super.endTask();
     }
