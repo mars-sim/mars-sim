@@ -385,35 +385,35 @@ public abstract class RoverMission extends VehicleMission {
 			if (member instanceof Person) {
 				Person person = (Person) member;
 				// If person is not aboard the rover, board rover.
-				if (!getRover().isCrewmember(person)
-					&& Walk.canWalkAllSteps(person, adjustedLoc.getX(), adjustedLoc.getY(), 0, v)) {
+				if (!getRover().isCrewmember(person)) {
+
+					if (Walk.canWalkAllSteps(person, adjustedLoc.getX(), adjustedLoc.getY(), 0, v)) {
 					
-					assignTask(person, new Walk(person, adjustedLoc.getX(), adjustedLoc.getY(), 0, v));
-					
-					if (!isDone() && isRoverInAGarage()) {
-						// Store one or two EVA suit for person (if possible).
-						int limit = RandomUtil.getRandomInt(1, 2);
-						for (int i=0; i<limit; i++) {
-							if (settlement.getInventory().findNumEVASuits(false, false) > 1) {
-								EVASuit suit = settlement.getInventory().findAnEVAsuit();
-								if (suit != null && v.getInventory().canStoreUnit(suit, false)) {
-									// TODL: should add codes to have a person carries the extra EVA suit physically
-									suit.transfer(settlement, v);
+						assignTask(person, new Walk(person, adjustedLoc.getX(), adjustedLoc.getY(), 0, v));
+						
+						if (!isDone() && isRoverInAGarage()) {
+							// Store one or two EVA suit for person (if possible).
+							int limit = RandomUtil.getRandomInt(1, 2);
+							for (int i=0; i<limit; i++) {
+								if (settlement.getInventory().findNumEVASuits(false, false) > 1) {
+									EVASuit suit = settlement.getInventory().findAnEVAsuit();
+									if (suit != null && v.getInventory().canStoreUnit(suit, false)) {
+										// TODL: should add codes to have a person carries the extra EVA suit physically
+										suit.transfer(settlement, v);
+									}
 								}
 							}
 						}
 					}
-				}
 				
-				else {
-					LogConsolidated.log(Level.SEVERE, 10_000, sourceName,
-							"[" + person.getLocationTag().getLocale() + "] " 
-								+  Msg.getString("RoverMission.log.unableToEnter", person.getName(), //$NON-NLS-1$
-							v.getName()));
-//							logger.warning(Msg.getString("RoverMission.log.unableToEnter", person.getName(), //$NON-NLS-1$
-//									v.getName()));
-//							addMissionStatus(MissionStatus.CANNOT_ENTER_ROVER);
-//							endMission();
+					else { // this crewmember cannot find the walking steps to enter the rover
+						LogConsolidated.log(Level.SEVERE, 10_000, sourceName,
+								"[" + person.getLocationTag().getLocale() + "] " 
+									+  Msg.getString("RoverMission.log.unableToEnter", person.getName(), //$NON-NLS-1$
+								v.getName()));
+//								addMissionStatus(MissionStatus.CANNOT_ENTER_ROVER);
+//								endMission();
+					}
 				}
 			}
 			

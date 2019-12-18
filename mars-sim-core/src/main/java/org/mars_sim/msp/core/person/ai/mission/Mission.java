@@ -1475,7 +1475,7 @@ public abstract class Mission implements Serializable {
 		
 		else if (plan != null) {
 			if (plan.getStatus() == PlanType.NOT_APPROVED) {
-				logger.info(this + " was not approved.");
+//				logger.info(this + " was not approved.");
 				addMissionStatus(MissionStatus.MISSION_NOT_APPROVED);
 				endMission();
 			}

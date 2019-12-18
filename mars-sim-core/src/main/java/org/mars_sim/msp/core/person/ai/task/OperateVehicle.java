@@ -18,7 +18,6 @@ import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
-import org.mars_sim.msp.core.mars.TerrainElevation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.Pilot;
@@ -285,6 +284,21 @@ public abstract class OperateVehicle extends Task implements Serializable {
         return time - timeUsed;
 	}
 	
+	private void turnOnBeacon() {
+		vehicle.setSpeed(0D);
+    	if (!vehicle.haveStatusType(StatusType.OUT_OF_FUEL))
+    		vehicle.addStatus(StatusType.OUT_OF_FUEL);
+    	if (vehicle.haveStatusType(StatusType.MOVING))
+    		vehicle.removeStatus(StatusType.MOVING);
+    	
+    	if (!vehicle.isBeaconOn()) {
+    		Mission m = vehicle.getMission();
+    		((VehicleMission)m).setEmergencyBeacon(person, vehicle, true, MissionStatus.NO_METHANE.getName());
+    		m.addMissionStatus(MissionStatus.NO_METHANE);
+    		((VehicleMission)m).getHelp();
+    	}
+	}
+	
 	/**
 	 * Move the vehicle in its direction at its speed for the amount of time given.
 	 * Stop if reached destination.
@@ -309,16 +323,9 @@ public abstract class OperateVehicle extends Task implements Serializable {
         	// TODO: need to turn on emergency beacon and ask for rescue here or in RoverMission ?
 	    	LogConsolidated.log(Level.SEVERE, 30_000, sourceName, "[" + vehicle.getName() + "] " 
 					+ "ran out of methane. Cannot drive.");
-//        	distanceTraveled = 0;
-	    	vehicle.removeStatus(StatusType.MOVING);
-        	vehicle.addStatus(StatusType.OUT_OF_FUEL);
-        	
-        	if (!vehicle.isBeaconOn()) {
-        		Mission m = vehicle.getMission();
-        		((VehicleMission)m).setEmergencyBeacon(person, vehicle, true, MissionStatus.NO_METHANE.getName());
-        		m.addMissionStatus(MissionStatus.NO_METHANE);
-        		((VehicleMission)m).getHelp();
-        	}
+
+	    	// Turn on emergency beacon
+	    	turnOnBeacon();
         	
         	endTask();
         	return time;
@@ -339,18 +346,24 @@ public abstract class OperateVehicle extends Task implements Serializable {
 		    	vInv.retrieveAmountResource(fuelType, fuelNeeded);
 	        	// Update and reduce the distanceTraveled since there is not enough fuel
 	        	distanceTraveled = fuelNeeded * vehicle.getIFuelEconomy();
+	        	if (!vehicle.haveStatusType(StatusType.MOVING))
+	        		vehicle.addStatus(StatusType.MOVING);
+	        	if (vehicle.haveStatusType(StatusType.OUT_OF_FUEL))
+	        		vehicle.removeStatus(StatusType.OUT_OF_FUEL);
 	        	
 	            // Add distance traveled to vehicle's odometer.
 //	        	vehicle.addOdometerReading(distanceTraveled);
 	            vehicle.addTotalDistanceTraveled(distanceTraveled);
 	            vehicle.addDistanceLastMaintenance(distanceTraveled);
+	        	return time - MarsClock.MILLISOLS_PER_HOUR * distanceTraveled / vehicle.getSpeed();
 		    }
 		    catch (Exception e) {
 		    	LogConsolidated.log(Level.SEVERE, 0, sourceName, "[" + vehicle.getName() + "] " 
 						+ "can't retrieve methane. Cannot drive.");
-//	        	distanceTraveled = 0;
-	        	vehicle.addStatus(StatusType.OUT_OF_FUEL);
-	        	vehicle.removeStatus(StatusType.MOVING);
+
+		    	// Turn on emergency beacon
+		    	turnOnBeacon();
+		    	
 	        	endTask();
 	        	return time;
 		    }
@@ -376,8 +389,10 @@ public abstract class OperateVehicle extends Task implements Serializable {
     		        
     	            vehicle.setCoordinates(destination);
 	                vehicle.setSpeed(0D);
-    	        	vehicle.addStatus(StatusType.PARKED);
-    	        	vehicle.removeStatus(StatusType.MOVING);
+	                if (!vehicle.haveStatusType(StatusType.PARKED))
+	                	vehicle.addStatus(StatusType.PARKED);
+	                if (vehicle.haveStatusType(StatusType.MOVING))
+	                	vehicle.removeStatus(StatusType.MOVING);
 	                vehicle.setOperator(null);
 	                updateVehicleElevationAltitude();
 	                if (isSettlementDestination()) {
@@ -397,10 +412,10 @@ public abstract class OperateVehicle extends Task implements Serializable {
     		    catch (Exception e) {
     		    	LogConsolidated.log(Level.SEVERE, 0, sourceName, "[" + vehicle.getName() + "] " 
     						+ "can't retrieve methane. Cannot drive.");
-//    	        	distanceTraveled = 0;
-    		    	vehicle.setSpeed(0D);
-    	        	vehicle.addStatus(StatusType.OUT_OF_FUEL);
-    	        	vehicle.removeStatus(StatusType.MOVING);
+
+    		    	// Turn on emergency beacon
+    		    	turnOnBeacon();
+    		    	
     	        	endTask();
     	        	return time;
     		    }
@@ -431,10 +446,10 @@ public abstract class OperateVehicle extends Task implements Serializable {
     		    catch (Exception e) {
     		    	LogConsolidated.log(Level.SEVERE, 0, sourceName, "[" + vehicle.getName() + "] " 
     						+ "can't retrieve methane. Cannot drive.");
-//    	        	distanceTraveled = 0;
-    		    	vehicle.setSpeed(0D);
-    	        	vehicle.addStatus(StatusType.OUT_OF_FUEL);
-    	        	vehicle.removeStatus(StatusType.MOVING);
+
+    		    	// Turn on emergency beacon
+    		    	turnOnBeacon();
+    		    	
     	        	endTask();
     	        	return time;
     		    }

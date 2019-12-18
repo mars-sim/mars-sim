@@ -662,6 +662,11 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 				plugInTemperature(time);
 				plugInAirPressure(time);	
 			}
+			
+			if (getInventory().getAmountResourceStored(getFuelType(), false) > GroundVehicle.LEAST_AMOUNT)
+				if (super.haveStatusType(StatusType.OUT_OF_FUEL))
+					super.removeStatus(StatusType.OUT_OF_FUEL);
+			
 //			String s = this + " is plugged in.  " +  + airPressure + " kPa  " + temperature + " C";
 //			if (!sCache.equals(s)) {
 //				sCache = s;
@@ -674,6 +679,8 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupportInterfa
 			plugOffAirPressure(time);
 		}
 	
+			
+		
 	}
 
 	/**
