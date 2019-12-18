@@ -1081,20 +1081,18 @@ public class MalfunctionManager implements Serializable {
 					
 					if (highestScore > 0 && chosen != null) {
 						// TODO : how to avoid having the multiple person or the same person to do the following task repetitively ?
-						LogConsolidated.log(Level.INFO, 10_000, sourceName,
-								"[" + entity.getLocale() + "] " + chosen + " was going to handle the repair due to '" 
-								+ m.getName() + "' on "
-								+ entity.getUnit());
-//								+ " in " + entity.getImmediateLocation());
 
 						String chiefRepairer = m.getChiefRepairer();
 						if (chiefRepairer == null || chiefRepairer.equals("")) {
-							if (emerg) 
-								addTask(chosen, new RepairEmergencyMalfunction(chosen));	
-							else if (gen) 
-								addTask(chosen, new RepairMalfunction(chosen));
-							else if (eva) 
-								addTask(chosen, new RepairEVAMalfunction(chosen));
+							if (emerg) {
+								addTask(chosen, new RepairEmergencyMalfunction(chosen), m);
+							}
+							else if (gen) {
+								addTask(chosen, new RepairMalfunction(chosen), m);
+							}
+							else if (eva) {
+								addTask(chosen, new RepairEVAMalfunction(chosen), m);
+							}
 						}
 					}
 					
@@ -1176,12 +1174,16 @@ public class MalfunctionManager implements Serializable {
 	 * @param person
 	 * @param task
 	 */
-	private void addTask(Person person, Task task) {
+	private void addTask(Person person, Task task, Malfunction malfunction) {
 		// Give 50% of chance for a person to do other important things so that 
 		// he would not be locked up to do just this task
 		int rand = RandomUtil.getRandomInt(1);
 		if (rand == 0) {
 			person.getMind().getTaskManager().addTask(task, false);		
+			LogConsolidated.log(Level.INFO, 10_000, sourceName,
+					"[" + entity.getLocale() + "] " + person + " was handling the repair due to '" 
+					+ malfunction.getName() + "' on "
+					+ entity.getUnit());
 		}
 	}
 	

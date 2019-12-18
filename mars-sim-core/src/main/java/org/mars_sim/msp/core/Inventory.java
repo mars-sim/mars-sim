@@ -2623,7 +2623,10 @@ public class Inventory implements Serializable {
 		// Add checking for amountResourceContainersStoredCacheDirty and add if else
 		// clause
 //		logger.config(ResourceUtil.findAmountResource(resource) + " (id : " + resource + ")"); 
-		if (containersStoredCacheDirty != null && containersStoredCacheDirty.containsKey(resource)) {
+		
+		if (containersStoredCacheDirty == null)
+			containersStoredCacheDirty = new HashMap<>();
+		else if (containersStoredCacheDirty.containsKey(resource)) {
 			if (containersStoredCacheDirty.get(resource)) {
 				if (containedUnitIDs != null) {
 					for (Unit unit : getContainedUnits()) {

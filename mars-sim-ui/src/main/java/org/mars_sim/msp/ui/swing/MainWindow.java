@@ -354,7 +354,7 @@ extends JComponent {
 			marsClock = masterClock.getMarsClock();
 		}
 		
-		Font font = new Font("SansSerif", Font.PLAIN, 11);
+		Font font = new Font("Arial", Font.BOLD, 12); //new Font("SansSerif", Font.BOLD, 11);
 
 //		StyleId styledlabelShadow = StyleId.of ( "shadow" );
 		earthDateField = new WebDateField(StyleId.datefield);//new Date(earthClock.getInstant().toEpochMilli()));
