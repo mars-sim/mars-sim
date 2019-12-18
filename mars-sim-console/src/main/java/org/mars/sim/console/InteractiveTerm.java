@@ -94,6 +94,10 @@ public class InteractiveTerm {
 			
 	        textIO = new TextIO(marsTerminal);
 	        
+			gm = new GameManager();
+			
+	        handler = new SwingHandler(textIO, "console", gm);
+	        
 	        setUpArrows();
 	        
 	    	logger.config("Done with setUpArrows on " + Thread.currentThread().getName());
@@ -110,7 +114,7 @@ public class InteractiveTerm {
 	//    		//  Re-initialize the GameManager
 	//    		GameManager.initializeInstances(Simulation.instance().getUnitManager());
 	    		
-	            handler = new SwingHandler(textIO, "console", gm);
+//	            handler = new SwingHandler(textIO, "console", gm);
 	//    		// Prevent allow users from arbitrarily close the terminal by clicking top right close button
 	    		marsTerminal.registerUserInterruptHandler(term -> {}, false);
 	    		
@@ -140,10 +144,6 @@ public class InteractiveTerm {
 		initializeTerminal();
 		
 		profile = new CommanderProfile(this);
-
-		gm = new GameManager();
-	
-        handler = new SwingHandler(textIO, "console", gm);
         
 		// Prevent allow users from arbitrarily close the terminal by clicking top right close button
 		marsTerminal.registerUserInterruptHandler(term -> {}, false);

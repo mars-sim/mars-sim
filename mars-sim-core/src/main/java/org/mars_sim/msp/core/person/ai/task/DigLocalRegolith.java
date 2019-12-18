@@ -59,7 +59,7 @@ implements Serializable {
             "Task.phase.collectRegolith")); //$NON-NLS-1$
 
 	/** Collection rate of regolith during EVA (kg/millisol). */
-	public static final double BASE_COLLECTION_RATE = .1D;
+	public static final double BASE_COLLECTION_RATE = 10D;
 
 	public static final double SMALL_AMOUNT = 0.001;
 			
@@ -135,7 +135,7 @@ implements Serializable {
 	        int eva = person.getSkillManager().getSkillLevel(SkillType.EVA_OPERATIONS);
 	        
 	        factor = .9 * (1 - (agility + strength) / 200D);
-	        compositeRate  = BASE_COLLECTION_RATE * ((.5 * agility + strength) / 150D) * (eva + .1)/ 5D ;
+	        compositeRate  = BASE_COLLECTION_RATE * ((.5 * agility + strength) / 150D) * (eva + .1);
 	        
 			// set the boolean to true so that it won't be done again today
 	//		person.getPreference().setTaskDue(this, true);
@@ -188,7 +188,7 @@ implements Serializable {
         	Inventory pInv = person.getInventory();
 	        Inventory bInv = pInv.findABag(false).getInventory();
 	        
-	        double collected = RandomUtil.getRandomDouble(1) * time * compositeRate;
+	        double collected = RandomUtil.getRandomDouble(2) * time * compositeRate;
 	        
 			// Modify collection rate by "Areology" skill.
 			int areologySkill = person.getSkillManager().getEffectiveSkillLevel(SkillType.AREOLOGY); 
@@ -196,8 +196,13 @@ implements Serializable {
 				collected /= 2D;
 			}
 			if (areologySkill >= 1) {
-				collected += collected * (.2D * areologySkill);
+				collected = collected + .2 * collected * areologySkill;
 			}
+			
+//			LogConsolidated.log(Level.INFO, 0, sourceName, 
+//	        		"[" + person.getLocationTag().getLocale() +  "] " +
+//	        		person.getName() + " just collected " + Math.round(collected*100D)/100D 
+//	        		+ " kg regolith outside at " + person.getCoordinates().getFormattedString());
 			
 	        boolean finishedCollecting = false;
 	        
@@ -214,22 +219,25 @@ implements Serializable {
 	        }
 	        
 	        else if (bagRemainingCap < SMALL_AMOUNT) {
+//	        	logger.info(person + " case 2");
 	            finishedCollecting = true;
 	            collected = 0;
 	        }
 	        		
-	        else if (collected > SMALL_AMOUNT 
-	        		&& (collected >= bagRemainingCap || collected >= personRemainingCap)) {
-	        	finishedCollecting = true;
-	        	collected = bagRemainingCap;    	
-	        }
-	        		
-	        else if (totalCollected + collected >= bInv.getGeneralCapacity()
-	        		|| totalCollected + collected >= pInv.getGeneralCapacity()) {     	
+	        else if (//totalCollected + collected >= bInv.getGeneralCapacity()
+	        		totalCollected + collected >= pInv.getGeneralCapacity()) {    
+//	        	logger.info(person + " case 3 (" + bInv.getGeneralCapacity() + ", " + pInv.getGeneralCapacity());
 	            finishedCollecting = true;
 	            collected = bagRemainingCap;
 	        }
-	
+	        
+	        else if (collected > SMALL_AMOUNT 
+	        		&& (collected >= bagRemainingCap || collected >= personRemainingCap)) {
+//	        	logger.info(person + " case 4");
+	        	finishedCollecting = true;
+	        	collected = bagRemainingCap;    	
+	        }    		
+
 	        if (collected > 0) {
 	        	totalCollected += collected;
 	        	bInv.storeAmountResource(regolithID, collected, true);
@@ -248,7 +256,7 @@ implements Serializable {
 	        if (finishedCollecting && totalCollected > 0) {
 	            LogConsolidated.log(Level.INFO, 0, sourceName, 
 	        		"[" + person.getLocationTag().getLocale() +  "] " +
-	        		person.getName() + " collected " + Math.round(totalCollected*100D)/100D 
+	        		person.getName() + " collected a total of " + Math.round(totalCollected*100D)/100D 
 	        		+ " kg regolith outside at " + person.getCoordinates().getFormattedString());
 	            if (person.isOutside()) {
 	            	setPhase(WALK_BACK_INSIDE);
