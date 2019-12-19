@@ -174,6 +174,41 @@ public class Malfunction implements Serializable {
 	}
 	
 	/**
+	 * Checks if all repairer slots are filled
+	 * 
+	 * @return
+	 */
+	public boolean areAllRepairerSlotsFilled() {
+		for (String n: chiefRepairers.values()) {
+			if (n.equalsIgnoreCase(""))
+				return false;
+		}
+		for (String n: deputyRepairers.values()) {
+			if (n.equalsIgnoreCase(""))
+				return false;
+		}
+		return true;
+	}
+	
+	/**
+	 * Checks if all repairer slots are filled
+	 * 
+	 * @return
+	 */
+	public int numRepairerSlotsEmpty(int type) {
+		int emptySlots = 0;
+		if (chiefRepairers.containsKey(type)) {
+			if (chiefRepairers.get(type).equalsIgnoreCase(""))
+				emptySlots++;
+		}
+		if (deputyRepairers.containsKey(type)) {
+			if (deputyRepairers.get(type).equalsIgnoreCase(""))
+				emptySlots++;
+		}
+		return emptySlots;
+	}
+	
+	/**
 	 * Sets the name of the chief repairer of a particular type of repair
 	 * 
 	 * @param type 1: general repair; 2: emergency repair; 3: EVA repair
@@ -507,6 +542,7 @@ public class Malfunction implements Serializable {
 	 * @return remaining work time not used (in millisols)
 	 */
 	public double addEVAWorkTime(double time, String repairer) {
+//		logger.info(repairer + "  time : " + time);
 		// if this malfunction has EVA repair work
 		double t0 = EVAWorkTimeExpected;
 		double t = EVAWorkTimeCompleted;
@@ -522,6 +558,8 @@ public class Malfunction implements Serializable {
 			// Add randomness to the expected EVA work time
 			t0 = t0 + (t0 - t) * (RandomUtil.getRandomDouble(.1) - RandomUtil.getRandomDouble(.1));
 				
+			t += time;
+			
 			if (t0 > 0)
 				EVAWorkTimeExpected = t0;
 			else
@@ -537,13 +575,14 @@ public class Malfunction implements Serializable {
 			
 			if (t > t0) {
 				double remaining = t - t0;
-	
+//				logger.info(repairer + "  remaining : " + remaining);
 				return remaining;
 			}
 			
 		}
 		else
 			return time;
+		
 		return 0D;
 	}
 

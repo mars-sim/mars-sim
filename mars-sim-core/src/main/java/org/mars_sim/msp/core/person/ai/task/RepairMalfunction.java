@@ -21,6 +21,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
+import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.mars.MarsSurface;
 import org.mars_sim.msp.core.person.Person;
@@ -66,6 +67,8 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 	// Data members
 	/** Entity being repaired. */
 	private Malfunctionable entity;
+	
+	private Malfunction malfunction;
 
 	/**
 	 * Constructor
@@ -85,16 +88,81 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 		if (entity != null) {
 			// Add person to location of malfunction if possible.
 			addPersonOrRobotToMalfunctionLocation(entity);
+			
+			// Get an emergency malfunction.
+			malfunction = entity.getMalfunctionManager().getMostSeriousEmergencyMalfunction();
+
+			if (malfunction != null) {
+				
+				String chief = malfunction.getChiefRepairer(1);
+				String deputy = malfunction.getDeputyRepairer(1);
+	
+				if (chief == null || chief.equals("")) {
+					LogConsolidated.log(Level.INFO, 0, sourceName,
+							"[" + entity.getLocale() + "] " + person 
+							+ " was appointed as the chief repairer handling the Emergency Repair for '" 
+							+ malfunction.getName() + "' on "
+							+ entity.getUnit());
+					 malfunction.setChiefRepairer(1, person.getName());						
+				}
+				else if (deputy == null || deputy.equals("")) {
+					LogConsolidated.log(Level.INFO, 0, sourceName,
+							"[" + entity.getLocale() + "] " + person 
+							+ " was appointed as the deputy repairer handling the Emergency Repair for '" 
+							+ malfunction.getName() + "' on "
+							+ entity.getUnit());
+					malfunction.setDeputyRepairer(1, person.getName());
+				}
+				// Initialize phase
+				addPhase(REPAIRING);
+				setPhase(REPAIRING);
+	
+				logger.fine(person.getName() + " was about to repair malfunction.");
+			}
+				
+			else {
+				//	Get a general malfunction.
+				malfunction = entity.getMalfunctionManager().getMostSeriousGeneralMalfunction();
+			
+				if (malfunction != null) {
+				
+					String chief = malfunction.getChiefRepairer(3);
+					String deputy = malfunction.getDeputyRepairer(3);
+		
+					if (chief == null || chief.equals("")) {
+						LogConsolidated.log(Level.INFO, 0, sourceName,
+								"[" + entity.getLocale() + "] " + person 
+								+ " was appointed as the chief repairer handling the EVA Repair for '" 
+								+ malfunction.getName() + "' on "
+								+ entity.getUnit());
+						 malfunction.setChiefRepairer(3, person.getName());						
+					}
+					else if (deputy == null || deputy.equals("")) {
+						LogConsolidated.log(Level.INFO, 0, sourceName,
+								"[" + entity.getLocale() + "] " + person 
+								+ " was appointed as the deputy repairer handling the EVA Repair for '" 
+								+ malfunction.getName() + "' on "
+								+ entity.getUnit());
+						malfunction.setDeputyRepairer(3, person.getName());
+					}
+					
+					// Initialize phase
+					addPhase(REPAIRING);
+					setPhase(REPAIRING);
+		
+					logger.fine(person.getName() + " was about to repair malfunction.");
+
+				} else {
+					endTask();
+					return;
+				}
+			}
+			
 		} else {
 			endTask();
 			return;
 		}
 
-		// Initialize phase
-		addPhase(REPAIRING);
-		setPhase(REPAIRING);
-
-		logger.fine(person.getName() + " was about to repair malfunction.");
 	}
 
 	public RepairMalfunction(Robot robot) {
@@ -110,16 +178,18 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 		if (entity != null) {
 			// Add robot to location of malfunction if possible.
 			addPersonOrRobotToMalfunctionLocation(entity);
+			
+			// Initialize phase
+			addPhase(REPAIRING);
+			setPhase(REPAIRING);
+
+			logger.fine(robot.getName() + " was about to repair malfunction.");
+			
 		} else {
 			endTask();
 			return;
 		}
 
-		// Initialize phase
-		addPhase(REPAIRING);
-		setPhase(REPAIRING);
-
-		logger.fine(robot.getName() + " was about to repair malfunction.");
 	}
 
 	/**
@@ -128,7 +198,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 	 * @param person the person.
 	 * @return malfunctionable entity.
 	 */
-	private static Malfunctionable getMalfunctionEntity(Person person) {
+	public static Malfunctionable getMalfunctionEntity(Person person) {
 		Malfunctionable result = null;
 
 		Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(person).iterator();
@@ -145,6 +215,51 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 		return result;
 	}
 	
+	/**
+	 * Gets a reparable malfunction requiring an EVA for a given entity.
+	 * 
+	 * @param person the person to repair.
+	 * @param entity the entity with a malfunction.
+	 * @return malfunction requiring an EVA repair or null if none found.
+	 */
+	public static Malfunction getMalfunction(Person person, Malfunctionable entity) {
+
+		Malfunction result = null;
+
+		MalfunctionManager manager = entity.getMalfunctionManager();
+
+		// Check if entity has any malfunctions.
+		Iterator<Malfunction> j = manager.getMalfunctions().iterator();
+		while (j.hasNext() && (result == null)) {
+			Malfunction malfunction = j.next();
+			try {
+				if (hasRepairPartsForMalfunction(person, person.getTopContainerUnit(),
+						malfunction)) {
+					result = malfunction;
+				}
+			} catch (Exception e) {
+				e.printStackTrace(System.err);
+			}
+		}
+
+		// Check if entity needs no EVA and has any normal malfunctions.
+		if ((result == null) && !hasEVA(person, entity)) {
+			Iterator<Malfunction> k = manager.getGeneralMalfunctions().iterator();
+			while (k.hasNext() && (result == null)) {
+				Malfunction malfunction = k.next();
+				try {
+					if (hasRepairPartsForMalfunction(person, malfunction)) {
+						result = malfunction;
+					}
+				} catch (Exception e) {
+					e.printStackTrace(System.err);
+				}
+			}
+		}
+
+		return result;
+	}
+
 	/**
 	 * Gets a malfunctionable entity with a normal malfunction for a user.
 	 * 
@@ -174,6 +289,24 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 		return result;
 	}
 
+	/**
+	 * Checks if there are enough repair parts at person's location to fix the
+	 * malfunction.
+	 * 
+	 * @param person        the person checking.
+	 * @param containerUnit the unit the person is doing an EVA from.
+	 * @param malfunction   the malfunction.
+	 * @return true if enough repair parts to fix malfunction.
+	 */
+	public static boolean hasRepairPartsForMalfunction(Person person, Unit containerUnit, Malfunction malfunction) {
+
+		if (person == null)
+			throw new IllegalArgumentException("person is null");
+
+		return hasRepairParts(containerUnit, malfunction);
+	}
+
+	
 	/**
 	 * Check if a malfunctionable entity requires an EVA to repair.
 	 * 
@@ -303,6 +436,32 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 //				&& hasRepairPartsForMalfunction(robot, manager.getMostSeriousEmergencyMalfunction()))
 //			return true;
 	
+		return result;
+	}
+
+	public static boolean hasRepairParts(Unit containerUnit, Malfunction malfunction) {
+
+		boolean result = true;
+
+		if (containerUnit == null)
+			throw new IllegalArgumentException("containerUnit is null");
+
+		if (malfunction == null)
+			throw new IllegalArgumentException("malfunction is null");
+
+		Inventory inv = containerUnit.getInventory();
+
+		Map<Integer, Integer> repairParts = malfunction.getRepairParts();
+		Iterator<Integer> i = repairParts.keySet().iterator();
+		while (i.hasNext() && result) {
+			Integer part = i.next();
+			int number = repairParts.get(part);
+			if (inv.getItemResourceNum(part) < number) {
+				inv.addItemDemand(part, number);
+				result = false;
+			}
+		}
+
 		return result;
 	}
 
@@ -463,10 +622,10 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 		}
 
 		// Get a local malfunction.
-		Malfunction malfunction = entity.getMalfunctionManager().getMostSeriousEmergencyMalfunction();
-
-		if (malfunction == null) 
-			malfunction = entity.getMalfunctionManager().getMostSeriousGeneralMalfunction();
+//		Malfunction malfunction = entity.getMalfunctionManager().getMostSeriousEmergencyMalfunction();
+//
+//		if (malfunction == null) 
+//			malfunction = entity.getMalfunctionManager().getMostSeriousGeneralMalfunction();
 		
 		if (malfunction != null) {
 			if (person != null) {
@@ -552,14 +711,14 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 		if (person != null) {
 			// Check if there are no more malfunctions.
 			if (isEmerg && malfunction.needEmergencyRepair() && malfunction.isEmergencyRepairDone()) {
-				LogConsolidated.log(Level.INFO, 10_000, sourceName,
+				LogConsolidated.log(Level.INFO, 1_000, sourceName,
 					"[" + person.getLocationTag().getLocale() + "] " + person.getName()
 						+ " wrapped up the Emergency Repair of " + malfunction.getName() 
 						+ " in "+ entity + " (" + Math.round(malfunction.getCompletedEmergencyWorkTime()*10.0)/10.0 + " millisols spent).");
 			}
 			
 			else if (isGeneral && malfunction.needGeneralRepair() && malfunction.isGeneralRepairDone()) {
-				LogConsolidated.log(Level.INFO, 10_000, sourceName,
+				LogConsolidated.log(Level.INFO, 1_000, sourceName,
 					"[" + person.getLocationTag().getLocale() + "] " + person.getName()
 						+ " had completed the General Repair of " + malfunction.getName() 
 						+ " in "+ entity + " (" + Math.round(malfunction.getCompletedGeneralWorkTime()*10.0)/10.0 + " millisols spent).");

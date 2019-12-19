@@ -287,11 +287,11 @@ implements MouseListener {
 		
 		// Create scroll panel for crop table
 		WebScrollPane tableScrollPanel = new WebScrollPane();
-		if (farm.getBuilding().getBuildingType().equalsIgnoreCase("Large Greenhouse"))
-			tableScrollPanel.setPreferredSize(new Dimension(200, 280)); // 280 is the best fit for 15 crops
-		else
+//		if (farm.getBuilding().getBuildingType().equalsIgnoreCase("Large Greenhouse"))
+//			tableScrollPanel.setPreferredSize(new Dimension(200, 280)); // 280 is the best fit for 15 crops
+//		else
 			// Increase the height from 100 to 130 to make the first 5 rows of crop FULLY visible
-			tableScrollPanel.setPreferredSize(new Dimension(200, 110)); // 110 is the best fit for 5 crops
+			tableScrollPanel.setPreferredSize(new Dimension(200, 140)); // 140 is the best fit for 5 crops
 
 		southPanel.add(tableScrollPanel, BorderLayout.NORTH);
 

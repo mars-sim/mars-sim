@@ -451,12 +451,14 @@ public class TabPanelLog extends TabPanel {
 				else if (column == 1) {
 					oneMillisolStatuses = oneDayStatuses.get(msol);
 					String s = "";
-					int size = oneMillisolStatuses.size();
-					for (int i = 0; i < size; i++) {
-						StatusType t = oneMillisolStatuses.get(i);
-						s = t.getName();
-						if (i != size - 1)
-							s += ", ";
+					if (oneMillisolStatuses != null) {
+						int size = oneMillisolStatuses.size();
+						for (int i = 0; i < size; i++) {
+							StatusType t = oneMillisolStatuses.get(i);
+							s = t.getName();
+							if (i != size - 1)
+								s += ", ";
+						}
 					}
 					return s;
 				}

@@ -2229,8 +2229,8 @@ public class UnitManager implements Serializable {
 	 */
 	public Collection<Settlement> getSettlements() {
 		if (lookupSettlement != null && !lookupSettlement.isEmpty())
-			return lookupSettlement.values();//CollectionUtils.getSettlement(units);
-		else 
+			return lookupSettlement.values();//CollectionUtils.getSettlement(units); 
+		else
 			return new ArrayList<>();
 	}
 

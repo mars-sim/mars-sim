@@ -6,6 +6,7 @@
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
+import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.Iterator;
 
@@ -35,7 +36,7 @@ public class RepairEVAMalfunctionMeta implements MetaTask, Serializable {
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.repairEVAMalfunction"); //$NON-NLS-1$
 
-	private static final double WEIGHT = 200D;
+	private static final double WEIGHT = 300D;
 	
 	@Override
 	public String getName() {
@@ -49,10 +50,6 @@ public class RepairEVAMalfunctionMeta implements MetaTask, Serializable {
 
 	@Override
 	public double getProbability(Person person) {
-		Settlement settlement = CollectionUtils.findSettlement(person.getCoordinates());
-		if (settlement == null) {
-			return 0;
-		}
 				
 		double result = 0D;
 
@@ -65,15 +62,44 @@ public class RepairEVAMalfunctionMeta implements MetaTask, Serializable {
         if (fatigue > 1000 || stress > 50 || hunger > 500)
         	return 0;
         
-		boolean returnFromMission = false;
-		
-		// TODO: need to analyze if checking the location state this way can properly verify if a person return from a mission
-		if (person.isInVehicle() && person.getVehicle().getLocationStateType() == LocationStateType.WITHIN_SETTLEMENT_VICINITY) {
-			returnFromMission = true;
-		}
-		
-		if (returnFromMission || person.isInSettlement()) {
+        if (person.isInside() && EVAOperation.getWalkableAvailableAirlock(person) == null)
+			return 0;
 			
+//		boolean returnFromMission = false;
+//		// TODO: need to analyze if checking the location state this way can properly verify if a person return from a mission
+//		if (person.isInVehicle() && person.getVehicle().getLocationStateType() == LocationStateType.WITHIN_SETTLEMENT_VICINITY) {
+//			returnFromMission = true;
+//		}
+        		
+        if (person.isInVehicle()) {
+        	// Get the malfunctioning entity.
+        	Malfunctionable entity = RepairEVAMalfunction.getEVAMalfunctionEntity(person);
+			
+			if (entity != null) {
+				Malfunction malfunction = RepairEVAMalfunction.getMalfunction(person, entity);
+						
+				if (malfunction != null) {
+					if (malfunction.areAllRepairerSlotsFilled()) {
+						return 0;
+					}
+					else if (malfunction.needEVARepair()) {
+						result += WEIGHT * malfunction.numRepairerSlotsEmpty(2);
+					}
+				}
+				else {
+					return 0;
+				}
+				
+			}
+			else {
+				return 0;
+			}
+        }
+        
+        else if (person.isInSettlement()) {
+			
+    		Settlement settlement = CollectionUtils.findSettlement(person.getCoordinates());
+    		
 			// Check for radiation events
 			boolean[] exposed = settlement.getExposed();
 
@@ -81,17 +107,27 @@ public class RepairEVAMalfunctionMeta implements MetaTask, Serializable {
 				return 0;
 			}
 
-			// Check if an airlock is available
-//			if (person.isInSettlement() || person.isInVehicle())
-				if (EVAOperation.getWalkableAvailableAirlock(person) == null)
-					return 0;
-
 			// Check if it is night time.
 			// Even if it's night time, technicians/engineers are assigned to man that work shift 
 			// to take care of the the repair.
 			
 			result = getSettlementProbability(settlement);
 
+
+			if (exposed[0]) {
+				result = result / 3D;// Baseline can give a fair amount dose of radiation
+			}
+
+			if (exposed[1]) {// GCR can give nearly lethal dose of radiation
+				result = result / 6D;
+			}
+
+			if (result < 0) {
+				result = 0;
+			}
+		}
+        
+        if (person.isInside()) {
 			// Effort-driven task modifier.
 			result *= person.getPerformanceRating();
 
@@ -110,20 +146,7 @@ public class RepairEVAMalfunctionMeta implements MetaTask, Serializable {
 			if (result > 0D) {
 				result = result + result * person.getPreference().getPreferenceScore(this) / 5D;
 			}
-
-			if (exposed[0]) {
-				result = result / 3D;// Baseline can give a fair amount dose of radiation
-			}
-
-			if (exposed[1]) {// GCR can give nearly lethal dose of radiation
-				result = result / 6D;
-			}
-
-			if (result < 0) {
-				result = 0;
-			}
-
-		}
+        }
 
 		return result;
 	}

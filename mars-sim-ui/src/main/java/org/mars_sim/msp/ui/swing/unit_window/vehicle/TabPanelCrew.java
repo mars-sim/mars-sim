@@ -119,7 +119,7 @@ implements MouseListener, ActionListener {
 
 		// Create scroll panel for crew list.
 		WebScrollPane crewScrollPanel = new WebScrollPane();
-		crewScrollPanel.setPreferredSize(new Dimension(175, 100));
+		crewScrollPanel.setPreferredSize(new Dimension(175, 200));
 		crewDisplayPanel.add(crewScrollPanel);
 
 		// Create crew list model

@@ -38,7 +38,6 @@ import org.mars_sim.msp.core.robot.RoboticAttributeType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
@@ -83,31 +82,66 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 		if (!(containerUnit instanceof MarsSurface)) {
 			// Get the malfunctioning entity.
 			entity = getEVAMalfunctionEntity(person);
+			
 			if (entity != null) {
 				malfunction = getMalfunction(person, entity);
-				isEVAMalfunction = malfunction.needEVARepair();
-	
-				setDescription(Msg.getString("Task.description.repairEVAMalfunction.detail", malfunction.getName(),
-						entity.getNickName())); // $NON-NLS-1$
-	
-				// Determine location for repairing malfunction.
-				Point2D malfunctionLoc = determineMalfunctionLocation();
-				setOutsideSiteLocation(malfunctionLoc.getX(), malfunctionLoc.getY());
-			} else {
+				
+				if (malfunction != null) {
+					isEVAMalfunction = malfunction.needEVARepair();
+		
+					setDescription(Msg.getString("Task.description.repairEVAMalfunction.detail", malfunction.getName(),
+							entity.getNickName())); // $NON-NLS-1$
+		
+					// Determine location for repairing malfunction.
+					Point2D malfunctionLoc = determineMalfunctionLocation();
+					setOutsideSiteLocation(malfunctionLoc.getX(), malfunctionLoc.getY());
+					
+					if (isDone()) {
+			            if (person.isInside()) {
+			            	setPhase(WALK_TO_OUTSIDE_SITE);
+			            }
+					}
+					
+					// Initialize phase
+					addPhase(REPAIRING);
+			
+					String chief = malfunction.getChiefRepairer(3);
+					String deputy = malfunction.getDeputyRepairer(3);
+
+					if (chief == null || chief.equals("")) {
+						LogConsolidated.log(Level.INFO, 0, sourceName,
+								"[" + entity.getLocale() + "] " + person 
+								+ " was appointed as the chief repairer handling the EVA Repair for '" 
+								+ malfunction.getName() + "' on "
+								+ entity.getUnit());
+						 malfunction.setChiefRepairer(3, person.getName());						
+					}
+					else if (deputy == null || deputy.equals("")) {
+						LogConsolidated.log(Level.INFO, 0, sourceName,
+								"[" + entity.getLocale() + "] " + person 
+								+ " was appointed as the deputy repairer handling the EVA Repair for '" 
+								+ malfunction.getName() + "' on "
+								+ entity.getUnit());
+						malfunction.setDeputyRepairer(3, person.getName());
+					}
+					
+					logger.info(person.getName() + " started the RepairEVAMalfunction task.");
+				}
+				else {
+					endTask();
+				}
+				
+			} 
+			else {
 				endTask();
 			}
-	
-			// Initialize phase
-			addPhase(REPAIRING);
-	
-			logger.fine(person.getName() + " has started the RepairEVAMalfunction task.");
 		}
 		else 
 			endTask();
 	}
 
 
-	private Malfunctionable getEVAMalfunctionEntity(Person person) {
+	public static Malfunctionable getEVAMalfunctionEntity(Person person) {
 		Malfunctionable result = null;
 
 		Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(person).iterator();
@@ -216,7 +250,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 	 * @param entity the entity with a malfunction.
 	 * @return malfunction requiring an EVA repair or null if none found.
 	 */
-	private Malfunction getMalfunction(Person person, Malfunctionable entity) {
+	public static Malfunction getMalfunction(Person person, Malfunctionable entity) {
 
 		Malfunction result = null;
 
@@ -370,6 +404,136 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 		}
 	}
 
+	/**
+	 * Gets a malfunctional entity with a normal malfunction for a user.
+	 * 
+	 * @return malfunctional entity.
+	 */
+	private static boolean hasMalfunction(Person person, Malfunctionable entity) {
+		boolean result = false;
+
+		if (entity.getMalfunctionManager().hasMalfunction())
+			return true;
+		
+		return result;
+	}
+
+	
+	/**
+	 * Perform the repair malfunction phase of the task.
+	 * 
+	 * @param time the time to perform this phase (in millisols)
+	 * @return the time remaining after performing this phase (in millisols)
+	 */
+	private double repairMalfunctionPhase(double time) {
+//		logger.info(person + "::repairMalfunctionPhase   time :" + time);
+		
+		if (isDone()) {
+            if (person.isOutside()) {
+            	setPhase(WALK_BACK_INSIDE);
+            }
+            else if (person.isInside()) {
+        		endTask();
+            }
+            return time;
+		}
+		
+		// Check for radiation exposure during the EVA operation.
+		if (person.isOutside() && isRadiationDetected(time)) {
+			setPhase(WALK_BACK_INSIDE);
+			return time;
+		}
+
+		if (person != null) {
+			// Check if there are no more malfunctions.
+			if (!hasMalfunction(person, entity)) {
+				setPhase(WALK_BACK_INSIDE);
+				return time;
+			}
+		}
+		
+		if (person.isOutside() && (shouldEndEVAOperation() || addTimeOnSite(time))) {
+			setPhase(WALK_BACK_INSIDE);
+			return time;
+		}
+
+		double workTime = 0;
+
+		if (person != null) {
+			workTime = time;
+		} else if (robot != null) {
+			// A robot moves slower than a person and incurs penalty on workTime
+			workTime = time / 2;
+		}
+
+		// Determine effective work time based on "Mechanic" skill.
+		int mechanicSkill = 0;
+
+		if (person != null)
+			mechanicSkill = person.getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
+
+		else if (robot != null)
+			mechanicSkill = robot.getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
+
+		if (mechanicSkill == 0)
+			workTime /= 2;
+		if (mechanicSkill > 1)
+			workTime += workTime * (.2D * mechanicSkill);
+
+//		logger.info(person + " workTime: " + workTime);
+		
+		if (person != null) {
+			if (hasRepairPartsForMalfunction(person, containerUnit, malfunction)) {
+				Map<Integer, Integer> parts = new HashMap<>(malfunction.getRepairParts());
+				Iterator<Integer> j = parts.keySet().iterator();
+				// Add repair parts if necessary.
+				Inventory inv = containerUnit.getInventory();
+				while (j.hasNext()) {
+					Integer id = j.next();
+					int number = parts.get(id);
+					inv.retrieveItemResources(id, number);
+					malfunction.repairWithParts(id, number, inv);
+//					logger.info(person + " repairWithParts: " + id);
+				}
+			} else {
+				setPhase(WALK_BACK_INSIDE);
+				return time;
+			}
+
+		}
+
+		// Add EVA work to malfunction.
+		double workTimeLeft = 0D;
+		if (isEVAMalfunction && !malfunction.isEVARepairDone() ) {
+			workTimeLeft = malfunction.addEVAWorkTime(workTime, person.getName());
+//			logger.info(person + " addEVAWorkTime() : " + workTimeLeft);
+		}
+		
+		// Add experience points
+		addExperience(time);
+
+		// Check if an accident happens during repair.
+		checkForAccident(time);
+
+		// Check if there are no more malfunctions.
+		if (isEVAMalfunction && malfunction.needEVARepair() && malfunction.isEVARepairDone()) {
+			LogConsolidated.log(Level.INFO, 1_000, sourceName,
+				"[" + person.getLocationTag().getLocale() + "] " + person.getName()
+					+ " wrapped up the EVA Repair of " + malfunction.getName() 
+					+ " in "+ entity + " (" + Math.round(malfunction.getCompletedEVAWorkTime()*10.0)/10.0 + " millisols spent).");
+            if (person.isOutside()) {
+            	setPhase(WALK_BACK_INSIDE);
+            	return time;
+            }
+            else if (person.isInside()) {
+        		endTask();
+            }
+		}
+			
+//		logger.info(person + "::repairMalfunctionPhase   workTimeLeft : " + workTimeLeft);
+		return workTimeLeft;
+	}
+
 	@Override
 	protected void addExperience(double time) {
 
@@ -408,124 +572,6 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 				robot.getSkillManager().addExperience(SkillType.MECHANICS, mechanicsExperience, time);
 
 		}
-	}
-
-	/**
-	 * Perform the repair malfunction phase of the task.
-	 * 
-	 * @param time the time to perform this phase (in millisols)
-	 * @return the time remaining after performing this phase (in millisols)
-	 */
-	private double repairMalfunctionPhase(double time) {
-
-		// Check for radiation exposure during the EVA operation.
-		if (person.isOutside() && isRadiationDetected(time)) {
-			setPhase(WALK_BACK_INSIDE);
-			return 0;
-		}
-
-		
-		boolean finishedRepair = false;
-		if (isEVAMalfunction) {
-			if (malfunction.isEVARepairDone()) {
-//				LogConsolidated.log(Level.INFO, 0, sourceName,
-//						"[" + person.getLocationTag().getLocale() + "] " + person.getName()
-//						+ " had completed the EVA Repair of " + malfunction.getName() + " in "+ entity + ".");
-				finishedRepair = true;
-			}
-		} 
-		
-		else if (malfunction.isGeneralRepairDone()) {
-//				LogConsolidated.log(Level.INFO, 0, sourceName,
-//						"[" + person.getLocationTag().getLocale() + "] " + person.getName()
-//						+ " had completed the General Repair of " + malfunction.getName() + " in "+ entity + ".");
-				finishedRepair = true;
-		}
-
-		if (person.isOutside() && (finishedRepair || shouldEndEVAOperation() || addTimeOnSite(time))) {
-			setPhase(WALK_BACK_INSIDE);
-			return 0;
-		}
-
-		double workTime = 0;
-
-		if (person != null) {
-			workTime = time;
-		} else if (robot != null) {
-			// A robot moves slower than a person and incurs penalty on workTime
-			workTime = time / 2;
-		}
-
-		// Determine effective work time based on "Mechanic" skill.
-		int mechanicSkill = 0;
-
-		if (person != null)
-			mechanicSkill = person.getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
-
-		else if (robot != null)
-			mechanicSkill = robot.getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
-
-		if (mechanicSkill == 0)
-			workTime /= 2;
-		if (mechanicSkill > 1)
-			workTime += workTime * (.2D * mechanicSkill);
-
-		// Add repair parts if necessary.
-		Inventory inv = containerUnit.getInventory();
-
-		if (person != null) {
-			if (hasRepairPartsForMalfunction(person, containerUnit, malfunction)) {
-				Map<Integer, Integer> parts = new HashMap<>(malfunction.getRepairParts());
-				Iterator<Integer> j = parts.keySet().iterator();
-				while (j.hasNext()) {
-					Integer id = j.next();
-					int number = parts.get(id);
-					inv.retrieveItemResources(id, number);
-					malfunction.repairWithParts(id, number, inv);
-				}
-			} else {
-				setPhase(WALK_BACK_INSIDE);
-				return 0;
-			}
-
-		}
-
-		// Add EVA work to malfunction.
-		double workTimeLeft = 0D;
-		if (isEVAMalfunction && !malfunction.isEVARepairDone() ) {
-			workTimeLeft = malfunction.addEVAWorkTime(workTime, person.getName());
-		} else if (!malfunction.isGeneralRepairDone()) {
-			workTimeLeft = malfunction.addGeneralWorkTime(workTime, person.getName());
-		}
-		
-		// Add experience points
-		addExperience(time);
-
-		// Check if an accident happens during repair.
-		checkForAccident(time);
-
-//		if (isDone()) {
-			// Check if there are no more malfunctions.
-			if (isEVAMalfunction && malfunction.needEVARepair() && malfunction.isEVARepairDone()) {
-				LogConsolidated.log(Level.INFO, 10_000, sourceName,
-					"[" + person.getLocationTag().getLocale() + "] " + person.getName()
-						+ " wrapped up the EVA Repair of " + malfunction.getName() 
-						+ " in "+ entity + " (" + Math.round(malfunction.getCompletedEVAWorkTime()*10.0)/10.0 + " millisols spent).");
-				setPhase(WALK_BACK_INSIDE);
-				return 0;
-			}
-			
-			else if (!isEVAMalfunction && malfunction.needGeneralRepair() && malfunction.isGeneralRepairDone()) {
-				LogConsolidated.log(Level.INFO, 10_000, sourceName,
-					"[" + person.getLocationTag().getLocale() + "] " + person.getName()
-						+ " wrapped up the General Repair of " + malfunction.getName() 
-						+ " in "+ entity + " (" + Math.round(malfunction.getCompletedGeneralWorkTime()*10.0)/10.0 + " millisols spent).");	
-				setPhase(WALK_BACK_INSIDE);
-				return 0;
-			}
-//		}
-		
-		return workTimeLeft;
 	}
 
 	@Override

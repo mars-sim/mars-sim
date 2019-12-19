@@ -11,6 +11,7 @@ import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Direction;
 import org.mars_sim.msp.core.Inventory;
@@ -344,18 +345,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
         	
         	try {
 		    	vInv.retrieveAmountResource(fuelType, fuelNeeded);
-	        	// Update and reduce the distanceTraveled since there is not enough fuel
-	        	distanceTraveled = fuelNeeded * vehicle.getIFuelEconomy();
-	        	if (!vehicle.haveStatusType(StatusType.MOVING))
-	        		vehicle.addStatus(StatusType.MOVING);
-	        	if (vehicle.haveStatusType(StatusType.OUT_OF_FUEL))
-	        		vehicle.removeStatus(StatusType.OUT_OF_FUEL);
-	        	
-	            // Add distance traveled to vehicle's odometer.
-//	        	vehicle.addOdometerReading(distanceTraveled);
-	            vehicle.addTotalDistanceTraveled(distanceTraveled);
-	            vehicle.addDistanceLastMaintenance(distanceTraveled);
-	        	return time - MarsClock.MILLISOLS_PER_HOUR * distanceTraveled / vehicle.getSpeed();
+	    
 		    }
 		    catch (Exception e) {
 		    	LogConsolidated.log(Level.SEVERE, 0, sourceName, "[" + vehicle.getName() + "] " 
@@ -367,6 +357,19 @@ public abstract class OperateVehicle extends Task implements Serializable {
 	        	endTask();
 	        	return time;
 		    }
+        	
+        	// Update and reduce the distanceTraveled since there is not enough fuel
+        	distanceTraveled = fuelNeeded * vehicle.getIFuelEconomy();
+        	if (!vehicle.haveStatusType(StatusType.MOVING))
+        		vehicle.addStatus(StatusType.MOVING);
+        	if (vehicle.haveStatusType(StatusType.OUT_OF_FUEL))
+        		vehicle.removeStatus(StatusType.OUT_OF_FUEL);
+        	
+            // Add distance traveled to vehicle's odometer.
+//        	vehicle.addOdometerReading(distanceTraveled);
+            vehicle.addTotalDistanceTraveled(distanceTraveled);
+            vehicle.addDistanceLastMaintenance(distanceTraveled);
+        	return time - MarsClock.MILLISOLS_PER_HOUR * distanceTraveled / vehicle.getSpeed();
         	
         }
         
@@ -382,32 +385,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
                 
                 try {
     		    	vInv.retrieveAmountResource(fuelType, fuelNeeded);
-    		    	
-    		        // Add distance traveled to vehicle's odometer.
-    		        vehicle.addTotalDistanceTraveled(distanceTraveled);
-    		        vehicle.addDistanceLastMaintenance(distanceTraveled);
-    		        
-    	            vehicle.setCoordinates(destination);
-	                vehicle.setSpeed(0D);
-	                if (!vehicle.haveStatusType(StatusType.PARKED))
-	                	vehicle.addStatus(StatusType.PARKED);
-	                if (vehicle.haveStatusType(StatusType.MOVING))
-	                	vehicle.removeStatus(StatusType.MOVING);
-	                vehicle.setOperator(null);
-	                updateVehicleElevationAltitude();
-	                if (isSettlementDestination()) {
-	                    determineInitialSettlementParkedLocation();
-	                }
-	                else {
-	                    double radDir = vehicle.getDirection().getDirection();
-	                    double degDir = radDir * 180D / Math.PI;
-	                    vehicle.setParkedLocation(0D, 0D, degDir);
-	                }
-	                
-	                // Calculate the remaining time
-	                result = time - MarsClock.MILLISOLS_PER_HOUR * distanceTraveled / vehicle.getSpeed();
-//    	            endTask();
-    	                
+   
     		    }
     		    catch (Exception e) {
     		    	LogConsolidated.log(Level.SEVERE, 0, sourceName, "[" + vehicle.getName() + "] " 
@@ -420,6 +398,32 @@ public abstract class OperateVehicle extends Task implements Serializable {
     	        	return time;
     		    }
                 
+ 		    	
+		        // Add distance traveled to vehicle's odometer.
+		        vehicle.addTotalDistanceTraveled(distanceTraveled);
+		        vehicle.addDistanceLastMaintenance(distanceTraveled);
+		        
+	            vehicle.setCoordinates(destination);
+                vehicle.setSpeed(0D);
+                if (!vehicle.haveStatusType(StatusType.PARKED))
+                	vehicle.addStatus(StatusType.PARKED);
+                if (vehicle.haveStatusType(StatusType.MOVING))
+                	vehicle.removeStatus(StatusType.MOVING);
+                vehicle.setOperator(null);
+                updateVehicleElevationAltitude();
+                if (isSettlementDestination()) {
+                    determineInitialSettlementParkedLocation();
+                }
+                else {
+                    double radDir = vehicle.getDirection().getDirection();
+                    double degDir = radDir * 180D / Math.PI;
+                    vehicle.setParkedLocation(0D, 0D, degDir);
+                }
+                
+                // Calculate the remaining time
+                result = time - MarsClock.MILLISOLS_PER_HOUR * distanceTraveled / vehicle.getSpeed();
+//	            endTask();
+	                
             }
             
             else {
@@ -432,16 +436,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
                 
                 try {
     		    	vInv.retrieveAmountResource(fuelType, fuelNeeded);
-    		    	
-                    // Determine new position.
-                    vehicle.setCoordinates(vehicle.getCoordinates().getNewLocation(vehicle.getDirection(), distanceTraveled));
-                    
-                    // Add distance traveled to vehicle's odometer.
-                    vehicle.addTotalDistanceTraveled(distanceTraveled);
-                    vehicle.addDistanceLastMaintenance(distanceTraveled);
-                    
-                    // Use up all of the available time
-                    result = 0; 
+
     		    }
     		    catch (Exception e) {
     		    	LogConsolidated.log(Level.SEVERE, 0, sourceName, "[" + vehicle.getName() + "] " 
@@ -453,6 +448,17 @@ public abstract class OperateVehicle extends Task implements Serializable {
     	        	endTask();
     	        	return time;
     		    }
+                
+		    	
+                // Determine new position.
+                vehicle.setCoordinates(vehicle.getCoordinates().getNewLocation(vehicle.getDirection(), distanceTraveled));
+                
+                // Add distance traveled to vehicle's odometer.
+                vehicle.addTotalDistanceTraveled(distanceTraveled);
+                vehicle.addDistanceLastMaintenance(distanceTraveled);
+                
+                // Use up all of the available time
+                result = 0; 
             }   
         }
 
@@ -464,18 +470,22 @@ public abstract class OperateVehicle extends Task implements Serializable {
 	 * @return true if destination is at a settlement location.
 	 */
 	private boolean isSettlementDestination() {
-	    
-	    boolean result = false;
-	    
-	    Iterator<Settlement> i = unitManager.getSettlements().iterator();
-	    while (i.hasNext()) {
-	        Settlement settlement = i.next();
-	        if (settlement.getCoordinates().equals(destination)) {
-	            result = true;
-	        }
-	    }
-	    
-	    return result;
+//	    boolean result = false;
+	    if (CollectionUtils.findSettlement(destination) instanceof Settlement)
+	    	return true;
+//	    if (unitManager == null)
+//	    	unitManager = Simulation.instance().getUnitManager();
+//	    Iterator<Settlement> i = unitManager.getSettlements().iterator();
+//	    Iterator<Settlement> i = CollectionUtils.getSettlement(units).iterator();
+//	    while (i.hasNext()) {
+//	        Settlement settlement = i.next();
+//	        // Note: This settlement does not have to be the vehicle's associated settlement
+//	        if (settlement.getCoordinates().equals(destination)) {
+//	            result = true;
+//	        }
+//	    }
+//	    return result;
+	    return false;
 	}
 	
 	/**

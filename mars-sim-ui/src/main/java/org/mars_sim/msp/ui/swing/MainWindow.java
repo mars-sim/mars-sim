@@ -64,6 +64,7 @@ import com.alee.extended.label.WebStyledLabel;
 import com.alee.extended.memorybar.WebMemoryBar;
 import com.alee.laf.WebLookAndFeel;
 import com.alee.laf.panel.WebPanel;
+import com.alee.laf.text.WebTextField;
 import com.alee.laf.window.WebFrame;
 import com.alee.managers.UIManagers;
 import com.alee.managers.language.LanguageManager;
@@ -94,6 +95,7 @@ extends JComponent {
 	private static final String SOL = "   Sol ";
 //	private static final String themeSkin = "nimrod";
 	private static final String WHITESPACES = "   ";
+	private static final String UMST = " (UMST)";
 	private static final String SLEEP_TIME = "   Sleep Time : ";
 	private static final String MS = " ms   ";
 	
@@ -137,7 +139,8 @@ extends JComponent {
 //	private JLabel memMaxLabel;
 //	private JLabel memUsedLabel;
 	
-	private WebStyledLabel marsTimeLabel;
+//	private WebStyledLabel marsTimeLabel;
+	private WebTextField marsTimeTF;
 //	private JLabel earthTimeLabel;
 	
 	private WebDateField earthDateField;
@@ -354,7 +357,7 @@ extends JComponent {
 			marsClock = masterClock.getMarsClock();
 		}
 		
-		Font font = new Font("Arial", Font.BOLD, 12); //new Font("SansSerif", Font.BOLD, 11);
+		Font font0 = new Font("SansSerif", Font.BOLD, 12); //new Font("SansSerif", Font.BOLD, 11);
 
 //		StyleId styledlabelShadow = StyleId.of ( "shadow" );
 		earthDateField = new WebDateField(StyleId.datefield);//new Date(earthClock.getInstant().toEpochMilli()));
@@ -363,7 +366,7 @@ extends JComponent {
 		earthDateField.setAllowUserInput(false);
 //		Customizer<WebCalendar> c = dateField.getCalendarCustomizer();
 //		c.customize();
-		earthDateField.setFont(font);
+		earthDateField.setFont(font0);
 		earthDateField.setForeground(Color.BLUE);
 		earthDateField.setAlignmentX(.5f);
 		earthDateField.setAlignmentY(0);
@@ -391,7 +394,7 @@ extends JComponent {
 //	              NotificationManager.showInnerNotification ( dateField, notification );
 //	          }
 //	      });
-		statusBar.addLeftComponent(earthDateField, true);
+		statusBar.addLeftComponent(earthDateField, false);
 		
 //		earthTimeLabel = new JLabel();
 //		earthTimeLabel.setFont(font);
@@ -401,27 +404,35 @@ extends JComponent {
 //		TooltipManager.setTooltip(earthTimeLabel, "Earth Timestamp", TooltipWay.up);
 //		statusBar.setLeftComponent(earthTimeLabel, true);
         
-		font = new Font("SansSerif", Font.BOLD, 13);
+		Font font1 = new Font("SansSerif", Font.BOLD, 13);
 		
 		solLabel = new WebStyledLabel(StyleId.styledlabelShadow);
-		solLabel.setFont(font);
+		solLabel.setFont(font1);
 		solLabel.setForeground(Color.DARK_GRAY);
 		solLabel.setText(SOL + "1" + WHITESPACES);
 		solLabel.setHorizontalAlignment(JLabel.CENTER);
 		solLabel.setVerticalAlignment(JLabel.CENTER);
 		TooltipManager.setTooltip(solLabel, "# of sols since the beginning of the sim", TooltipWay.up);
 //		statusBar.add(solLabel, 0);
-		statusBar.addLeftComponent(solLabel, true);
+		statusBar.addLeftComponent(solLabel, false);
 		
-		font = new Font("Arial", Font.BOLD, 12);
+//		font = new Font("SansSerif", Font.BOLD, 12);
 		
-		marsTimeLabel = new WebStyledLabel(StyleId.styledlabelShadow);
-		marsTimeLabel.setFont(font);
-		marsTimeLabel.setForeground(new Color(135,100,39));
-		marsTimeLabel.setHorizontalAlignment(JLabel.CENTER);
-		marsTimeLabel.setVerticalAlignment(JLabel.CENTER);
-		TooltipManager.setTooltip(marsTimeLabel, "Mars Timestamp", TooltipWay.up);
-		statusBar.addLeftComponent(marsTimeLabel, true);
+		marsTimeTF = new WebTextField(StyleId.formattedtextfieldNoFocus, 14);
+		marsTimeTF.setEditable(false);
+		marsTimeTF.setFont(font0);
+		marsTimeTF.setForeground(new Color(150,96,0));//135,100,39));
+		marsTimeTF.setHorizontalAlignment(JLabel.LEFT);
+//		marsTimeTF.setVerticalAlignment(JLabel.CENTER);
+		TooltipManager.setTooltip(marsTimeTF, "Mars Timestamp", TooltipWay.up);
+		statusBar.addLeftComponent(marsTimeTF, false);
+//		marsTimeLabel = new WebStyledLabel(StyleId.styledlabelShadow);
+//		marsTimeLabel.setFont(font);
+//		marsTimeLabel.setForeground(new Color(135,100,39));
+//		marsTimeLabel.setHorizontalAlignment(JLabel.CENTER);
+//		marsTimeLabel.setVerticalAlignment(JLabel.CENTER);
+//		TooltipManager.setTooltip(marsTimeLabel, "Mars Timestamp", TooltipWay.up);
+//		statusBar.addLeftComponent(marsTimeLabel, true);
 		
 		// Track the sleep time per frame
 //		if (masterClock == null)
@@ -1058,9 +1069,13 @@ extends JComponent {
 //			earthDateField.setDate(Date.from(LocalDateTime.ofInstant(earthClock.getInstant(), ZoneId.of("UTC")).atZone(ZoneId.of("UTC")).toInstant()));
 		}
 		
-		if (marsTimeLabel != null && marsClock != null) {
-			marsTimeLabel.setText(WHITESPACES + marsClock.getTrucatedDateTimeStamp() + WHITESPACES);
+//		if (marsTimeLabel != null && marsClock != null) {
+//			marsTimeLabel.setText(WHITESPACES + marsClock.getTrucatedDateTimeStamp() + WHITESPACES);
+//		}
+		if (marsTimeTF != null && marsClock != null) {
+			marsTimeTF.setText(WHITESPACES + marsClock.getTrucatedDateTimeStamp() + UMST);
 		}
+		
 	}
 	
 	/**

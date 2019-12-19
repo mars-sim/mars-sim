@@ -962,156 +962,197 @@ public class MalfunctionManager implements Serializable {
 		// Check if any malfunctions are fixed.
 		if (hasMalfunction()) {
 			for (Malfunction m : malfunctions) {
-				boolean emergRepairDone = !m.isEmergencyRepairDone();
-				boolean evaRepairDone = !m.isEVARepairDone();
-				boolean genRepairDone = !m.isGeneralRepairDone();
-				if (emergRepairDone || evaRepairDone || genRepairDone) {
-					
-					Settlement s0 = null;
-					Vehicle v0 = null;
-					
-					Collection<Person> people = null;
-					
-					if (suit != null) {
-						// Case 1: the suit has malfunction
-						people = suit.getAffectedPeople();
-						int num = people.size();
-						s0 = suit.getSettlement();	
-						v0 = ((EVASuit)(entity.getUnit())).getVehicle();
-						
-						if (num > 1) {
-							people.stream()
-							.filter(p -> p.getJobName().equalsIgnoreCase(Engineer.class.getSimpleName())
-									|| p.getJobName().equalsIgnoreCase(Technician.class.getSimpleName()))
-								.collect(Collectors.toList());
-						}
-						else if (num == 1) {
-							
-						}
-						else if (num == 0) {
-							if (s0 != null) {
-								people = s0.getIndoorPeople();
-							}
-							
-							if (people.isEmpty()) {
-								s0 = suit.getAssociatedSettlement();	
-								people = s0.getIndoorPeople();
-							}
-							
-							if (people.isEmpty() && v0 != null) {
-								people = v0.getAffectedPeople();		
-							}
-						}
-					}
-					
-					else if (entity.getUnit() instanceof Settlement 
-							|| entity.getUnit() instanceof Building
-							|| entity.getUnit() instanceof Equipment) {
-						// Case 2: the malfunction occurs within a settlement
-						s0 = entity.getUnit().getSettlement();
-//						System.out.println(m.getName() + " : " + settlement.getName());
-					}
-					else if (vehicle != null) {
-						// Case 3: the malfunction occurs in a vehicle
-						v0 = vehicle;
-//						System.out.println(m.getName() + " : " + vehicle.getName());
-					} 		
-					
-					if (s0 != null) {
-						// Could be Case 1 or Case 2
-						people = s0.getAffectedPeople();
-						Collection<Person> elites = people;
-						
-						if (people.size() == 0) {
-							people = s0.getIndoorPeople();
-						}
-						
-						if (!people.isEmpty()) {
-							elites = people.stream()
-									.filter(p -> p.getJobName().equalsIgnoreCase(Engineer.class.getSimpleName())
-											|| p.getJobName().equalsIgnoreCase(Technician.class.getSimpleName()))
-								.collect(Collectors.toList());
-						}
-						
-						
-						if (!elites.isEmpty() && elites.size() != 0) {
-							people = elites;			
-						}
-						
-					}
-					
-					else if (v0 != null) {
-						// For Case 3 only when the malfunction occurs in a vehicle
-						people = v0.getAffectedPeople();
-//						System.out.println(people);
-						Collection<Person> elites = people;
-						
-						if (people.size() == 0 && v0 instanceof Rover) {
-							people = ((Rover)v0).getCrew();
-//							System.out.println(people);
-						}
-						
-						if (!people.isEmpty()) {
-							elites = people.stream()
-								.filter(p -> p.getJobName().equalsIgnoreCase(Engineer.class.getSimpleName())
-										|| p.getJobName().equalsIgnoreCase(Technician.class.getSimpleName()))
-								.collect(Collectors.toList());
-//							System.out.println(elites);
-						}
-											
-						if (!elites.isEmpty() && elites.size() != 0) {
-							people = elites;			
-						}
-						
-					}
-					
-					Person chosen = null;
-					int highestScore = -100;
-					
-					for (Person p : people) {	
-						if (!m.isARepairer(p.getName())) {
-							int pref0 = p.getPreference().getPreferenceScore(new RepairMalfunctionMeta());
-	//						int pref1 = p.getPreference().getPreferenceScore(new RepairEmergencyMalfunctionMeta());
-							int pref1 = p.getPreference().getPreferenceScore(new RepairEVAMalfunctionMeta());
-							int skill = p.getSkillManager().getSkillLevel(SkillType.MECHANICS);
-							int exp = p.getSkillManager().getSkillExp(SkillType.MECHANICS);
-							int score = (pref0 + pref1) + skill * 3 + exp;
-							if (highestScore < score) {
-								highestScore = score;
-								chosen = p;
-								logger.info(chosen.getName() + " had the highest score of " + highestScore);
-							}
-						}
-					}
-					
-					if (highestScore > 0 && chosen != null) {
-						// TODO : how to avoid having the multiple person or the same person to do the following task repetitively ?
-
-						List<Integer> types = new ArrayList<>();
-						if (emergRepairDone) {
-							types.add(1);
-						}
-						if (genRepairDone) {
-							types.add(0);
-						}
-						if (evaRepairDone) {
-							types.add(2);
-						}
-						
-						int size = types.size()-1;
-						
-						if (size == 1) {
-							addTask(chosen, types.get(0), m);
-						}
-						else if (size == 2) {
-							
-							int rand = RandomUtil.getRandomInt(1);
-							int type = types.get(rand);
-							addTask(chosen, type, m);
-						}
-					}
-				}
-				
+//				boolean hasEmerRepair = !m.isEmergencyRepairDone();
+//				boolean hasEVARepair = !m.isEVARepairDone();
+//				boolean hasGenRepair = !m.isGeneralRepairDone();
+//				// Check if any repairer slots are still open
+//				if (!m.areAllRepairerSlotsFilled() &&
+//						(hasEmerRepair || hasEVARepair || hasGenRepair)) {
+//					
+//					Settlement s0 = null;
+//					Vehicle v0 = null;
+//					
+//					Collection<Person> people = null;
+//					
+//					if (suit != null) {
+//						// Case 1: the suit has malfunction
+//						people = suit.getAffectedPeople();
+//						
+//						// Remove the candidate if he's already a repairer
+//						for (Person p : people) {
+////							logger.info(p.getName());
+//							if (m.isARepairer(p.getName())) {
+//								people.remove(p);
+//							}
+//						}
+//						
+//						int num = people.size();
+//						
+//						
+//						s0 = suit.getSettlement();	
+//						v0 = ((EVASuit)(entity.getUnit())).getVehicle();
+//						
+//						if (num > 1) {
+//							people.stream()
+//							.filter(p -> p.getJobName().equalsIgnoreCase(Engineer.class.getSimpleName())
+//									|| p.getJobName().equalsIgnoreCase(Technician.class.getSimpleName()))
+//								.collect(Collectors.toList());
+//						}
+//						else if (num == 1) {
+//							
+//						}
+//						else if (num == 0) {
+//							if (s0 != null) {
+//								people = s0.getIndoorPeople();
+//							}
+//							
+//							if (people.isEmpty()) {
+//								s0 = suit.getAssociatedSettlement();	
+//								people = s0.getIndoorPeople();
+//							}
+//							
+//							if (people.isEmpty() && v0 != null) {
+//								people = v0.getAffectedPeople();		
+//							}
+//						}
+//					}
+//					
+//					else if (entity.getUnit() instanceof Settlement 
+//							|| entity.getUnit() instanceof Building
+//							|| entity.getUnit() instanceof Equipment) {
+//						// Case 2: the malfunction occurs within a settlement
+//						s0 = entity.getUnit().getSettlement();
+////						System.out.println(m.getName() + " : " + settlement.getName());
+//					}
+//					else if (vehicle != null) {
+//						// Case 3: the malfunction occurs in a vehicle
+//						v0 = vehicle;
+////						System.out.println(m.getName() + " : " + vehicle.getName());
+//					} 		
+//					
+//					if (s0 != null) {
+//						// Could be Case 1 or Case 2
+//						people = s0.getAffectedPeople();
+//						
+//						// Remove the candidate if he's already a repairer
+//						for (Person p : people) {
+////							logger.info(p.getName());
+//							if (m.isARepairer(p.getName()) || p.isOutside()) {
+//								people.remove(p);
+//							}
+//						}
+//						
+//						Collection<Person> elites = people;
+//						
+//						if (people.size() == 0) {
+//							people = s0.getIndoorPeople();
+//						}
+//						
+//						if (!people.isEmpty()) {
+//							elites = people.stream()
+//									.filter(p -> p.getJobName().equalsIgnoreCase(Engineer.class.getSimpleName())
+//											|| p.getJobName().equalsIgnoreCase(Technician.class.getSimpleName()))
+//								.collect(Collectors.toList());
+//						}
+//						
+//						
+//						if (!elites.isEmpty() && elites.size() != 0) {
+//							people = elites;			
+//						}
+//						
+//					}
+//					
+//					else if (v0 != null) {
+//						// For Case 3 only when the malfunction occurs in a vehicle
+//						people = v0.getAffectedPeople();
+//						
+//						// Remove the candidate if he's already a repairer
+//						for (Person p : people) {
+////							logger.info(p.getName());
+//							if (m.isARepairer(p.getName()) || p.isOutside()) {
+//								people.remove(p);
+//							}
+//						}
+//						
+//						Collection<Person> elites = people;
+//						
+//						if (people.size() == 0 && v0 instanceof Rover) {
+//							people = ((Rover)v0).getCrew();
+//
+//							// Remove the candidate if he's already a repairer
+//							for (Person p : people) {
+////								logger.info(p.getName());
+//								if (m.isARepairer(p.getName()) || p.isOutside()) {
+//									people.remove(p);
+//								}
+//							}					
+//						}
+//						
+//						if (!people.isEmpty()) {
+//							elites = people.stream()
+//								.filter(p -> p.getJobName().equalsIgnoreCase(Engineer.class.getSimpleName())
+//										|| p.getJobName().equalsIgnoreCase(Technician.class.getSimpleName()))
+//								.collect(Collectors.toList());
+////							System.out.println(elites);
+//						}
+//											
+//						if (!elites.isEmpty() && elites.size() != 0) {
+//							people = elites;			
+//						}
+//						
+//					}
+//					
+//					Person chosen = null;
+//					int highestScore = -100;
+//					
+//					for (Person p : people) {
+////						logger.info(p.getName());
+//						int pref0 = p.getPreference().getPreferenceScore(new RepairMalfunctionMeta());
+////						int pref1 = p.getPreference().getPreferenceScore(new RepairEmergencyMalfunctionMeta());
+//						int pref1 = p.getPreference().getPreferenceScore(new RepairEVAMalfunctionMeta());
+//						int skill = p.getSkillManager().getSkillLevel(SkillType.MECHANICS);
+//						int exp = p.getSkillManager().getSkillExp(SkillType.MECHANICS);
+//						int score = (pref0 + pref1) + skill * 3 + exp;
+//						if (highestScore < score) {
+//							highestScore = score;
+//							chosen = p;
+//							LogConsolidated.log(Level.INFO, 0, sourceName,
+//									"[" + entity.getLocale() + "] "
+//									+ chosen.getName() + " had the highest repair qualification score of " + highestScore);
+//						}
+//					}
+//					
+//					if (highestScore > 0 && chosen != null) {
+//						// TODO : how to avoid having the multiple person or the same person to do the following task repetitively ?
+//
+//						List<Integer> types = new ArrayList<>();
+//						if (hasEmerRepair) {
+//							types.add(1);
+////							logger.info("Added 1");
+//						}
+//						if (hasGenRepair) {
+//							types.add(0);
+////							logger.info("Added 0");
+//						}
+//						if (hasEVARepair) {
+//							types.add(2);
+////							logger.info("Added 2");
+//						}
+//						
+//						int size = types.size();
+//						
+//						if (size == 1) {
+//							addTask(chosen, types.get(0), m);
+//						}
+//						else if (size == 2) {
+//							
+//							int rand = RandomUtil.getRandomInt(1);
+//							int type = types.get(rand);
+//							addTask(chosen, type, m);
+//						}
+//					}
+//				}
+//				
 				if (m.isFixed()) {
 					fixedMalfunctions.add(m);
 				}
@@ -1190,45 +1231,74 @@ public class MalfunctionManager implements Serializable {
 	 */
 	private void addTask(Person person, int type, Malfunction malfunction) {
 		
-		String repairer = malfunction.getChiefRepairer(type);
-		
-		if (repairer != null && repairer.equals("")) {
-			
+		String chief = malfunction.getChiefRepairer(type);
+		String deputy = malfunction.getDeputyRepairer(type);
+//		logger.info(person.getName());
+		if (chief == null || chief.equals("")) {
+//			logger.info("Appointing" + person.getName() + " as the chief repairer. Type: " + type);
 			// Give 50% of chance for a person to do other important things so that 
 			// he would not be locked up to do just this task
-			int rand = RandomUtil.getRandomInt(1);
-			if (rand == 0) {
+//			int rand = RandomUtil.getRandomInt(1);
+//			if (rand == 0) {
 				if (type == 0) {
 					person.getMind().getTaskManager().addTask(new RepairMalfunction(person), false);	
-					LogConsolidated.log(Level.INFO, 10_000, sourceName,
-						"[" + entity.getLocale() + "] " + person + " was handling the repair due to '" 
+					LogConsolidated.log(Level.INFO, 0, sourceName,
+						"[" + entity.getLocale() + "] " + person + " was appointed as the chief repairer handling the General Repair for '" 
 						+ malfunction.getName() + "' on "
 						+ entity.getUnit());
 					 malfunction.setChiefRepairer(type, person.getName());
 				}
 				else if (type == 1) {
 					person.getMind().getTaskManager().addTask(new RepairEmergencyMalfunction(person), false);	
-					LogConsolidated.log(Level.INFO, 10_000, sourceName,
-						"[" + entity.getLocale() + "] " + person + " was handling the repair due to '" 
+					LogConsolidated.log(Level.INFO, 0, sourceName,
+						"[" + entity.getLocale() + "] " + person + " was appointed as the chief repairer handling the Emergency Repair for '" 
 						+ malfunction.getName() + "' on "
 						+ entity.getUnit());
 					malfunction.setChiefRepairer(type, person.getName());
 				}
 				else if (type == 2) {
 					person.getMind().getTaskManager().addTask(new RepairEVAMalfunction(person), false);	
-					LogConsolidated.log(Level.INFO, 10_000, sourceName,
-						"[" + entity.getLocale() + "] " + person + " was handling the repair due to '" 
+					LogConsolidated.log(Level.INFO, 0, sourceName,
+						"[" + entity.getLocale() + "] " + person + " was appointed as the chief repairer handling the EVA Repair for '" 
 						+ malfunction.getName() + "' on "
 						+ entity.getUnit());
 					malfunction.setChiefRepairer(type, person.getName());
 				}
-			}
+//			}
 		}
 		
-
-		
-		
-		
+		else if (deputy == null || deputy.equals("")) {
+//			logger.info("Appointing" + person.getName() + " as the deputy repairer. Type: " + type);
+			// Give 50% of chance for a person to do other important things so that 
+			// he would not be locked up to do just this task
+//			int rand = RandomUtil.getRandomInt(1);
+//			if (rand == 0) {
+				if (type == 0) {
+					person.getMind().getTaskManager().addTask(new RepairMalfunction(person), false);	
+					LogConsolidated.log(Level.INFO, 0, sourceName,
+						"[" + entity.getLocale() + "] " + person + " was appointed as the deputy repairer handling the General Repair for '" 
+						+ malfunction.getName() + "' on "
+						+ entity.getUnit());
+					 malfunction.setDeputyRepairer(type, person.getName());
+				}
+				else if (type == 1) {
+					person.getMind().getTaskManager().addTask(new RepairEmergencyMalfunction(person), false);	
+					LogConsolidated.log(Level.INFO, 0, sourceName,
+						"[" + entity.getLocale() + "] " + person + " was appointed as the deputy repairer handling the Emergency Repair for '" 
+						+ malfunction.getName() + "' on "
+						+ entity.getUnit());
+					malfunction.setDeputyRepairer(type, person.getName());
+				}
+				else if (type == 2) {
+					person.getMind().getTaskManager().addTask(new RepairEVAMalfunction(person), false);	
+					LogConsolidated.log(Level.INFO, 0, sourceName,
+						"[" + entity.getLocale() + "] " + person + " was appointed as the deputy repairer handling the EVA Repair for '" 
+						+ malfunction.getName() + "' on "
+						+ entity.getUnit());
+					malfunction.setDeputyRepairer(type, person.getName());
+				}
+			}
+//		}
 	}
 	
 	/**

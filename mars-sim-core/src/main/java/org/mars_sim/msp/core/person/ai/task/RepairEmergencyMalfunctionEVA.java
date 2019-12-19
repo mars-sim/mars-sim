@@ -81,7 +81,12 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements Repai
 		// serious EVA op
 		super.setStressModifier(score / 10D + STRESS_MODIFIER);
 
-		init();
+		// Get the malfunctioning entity.
+		claimMalfunction();
+		if (entity == null) {
+			endTask();
+			return;
+		}
 
 		// Create starting task event if needed.
 		if (getCreateEvents() && !isDone()) {
@@ -90,29 +95,14 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements Repai
 			Simulation.instance().getEventManager().registerNewEvent(startingEvent);
 		}
 
-		init2();
-
-		logger.fine(person.getName() + " has started the RepairEmergencyMalfunctionEVA task.");
-	}
-
-	public void init() {
-
-		// Get the malfunctioning entity.
-		claimMalfunction();
-		if (entity == null) {
-			endTask();
-			return;
-		}
-
-	}
-
-	public void init2() {
 		// Determine location for repairing malfunction.
 		Point2D malfunctionLoc = determineMalfunctionLocation();
 		setOutsideSiteLocation(malfunctionLoc.getX(), malfunctionLoc.getY());
 
 		// Initialize phase
 		addPhase(REPAIRING);
+
+		logger.fine(person.getName() + " has started the RepairEmergencyMalfunctionEVA task.");
 	}
 
 	/**

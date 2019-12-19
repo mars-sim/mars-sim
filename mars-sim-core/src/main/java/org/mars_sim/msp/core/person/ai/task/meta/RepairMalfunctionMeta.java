@@ -38,7 +38,7 @@ public class RepairMalfunctionMeta implements MetaTask, Serializable {
     private static final String NAME = Msg.getString(
             "Task.description.repairMalfunction"); //$NON-NLS-1$
 
-	private static final double WEIGHT = 200D;
+	private static final double WEIGHT = 300D;
 	
     @Override
     public String getName() {
@@ -68,7 +68,32 @@ public class RepairMalfunctionMeta implements MetaTask, Serializable {
             
             if (person.isInSettlement()) 
             	result = computeProbability(person.getSettlement(), person);
-	
+            else {
+            	// Get the malfunctioning entity.
+            	Malfunctionable entity = RepairMalfunction.getMalfunctionEntity(person);
+    			
+    			if (entity != null) {
+    				Malfunction malfunction = RepairMalfunction.getMalfunction(person, entity);
+    						
+    				if (malfunction != null) {
+    					if (malfunction.areAllRepairerSlotsFilled()) {
+    						return 0;
+    					}
+    					else if (malfunction.needEVARepair()) {
+    						result += WEIGHT * malfunction.numRepairerSlotsEmpty(1)
+    								+ WEIGHT * malfunction.numRepairerSlotsEmpty(0);
+    					}
+    				}
+    				else {
+    					return 0;
+    				}
+    				
+    			}
+    			else {
+    				return 0;
+    			}
+            }
+            
 	        // Effort-driven task modifier.
 	        result *= person.getPerformanceRating();
 	
