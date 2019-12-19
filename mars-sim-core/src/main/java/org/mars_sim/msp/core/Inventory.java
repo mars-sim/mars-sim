@@ -2678,23 +2678,13 @@ public class Inventory implements Serializable {
 		}
 	}
 
-//	/**
-//	 * Checks if the amount resource stored cache is dirty for a resource.
-//	 * 
-//	 * @param resource the resource to check.
-//	 * @return true if resource is dirty in cache.
-//	 */
-//	private boolean isAmountResourceStoredCacheDirty(AmountResource resource) {
-//		return isARStoredCacheDirty(resource.getID());
-//	}
-
 	/**
 	 * Checks if the amount resource stored cache is dirty for a resource.
 	 * 
 	 * @param resource the resource to check.
 	 * @return true if resource is dirty in cache.
 	 */
-	private boolean isARStoredCacheDirty(int resource) {
+	private boolean isAmountResourceStoredCacheDirty(int resource) {
 		// Initialize amount resource stored cache if necessary.
 		if (storedCacheDirty == null) {
 			initializeAmountResourceStoredCache();
@@ -2707,21 +2697,12 @@ public class Inventory implements Serializable {
 			return true;
 	}
 
-//	/**
-//	 * Sets a resource in the amount resource stored cache to dirty.
-//	 * 
-//	 * @param resource the dirty resource.
-//	 */
-//	private void setAmountResourceStoredCacheDirty(AmountResource resource) {
-//		setARStoredCacheDirty(resource.getID());
-//	}
-
 	/**
 	 * Sets a resource in the amount resource stored cache to dirty.
 	 * 
 	 * @param resource the dirty resource.
 	 */
-	private void setARStoredCacheDirty(int resource) {
+	private void setAmountResourceStoredCacheDirty(int resource) {
 
 		// Initialize amount resource stored cache if necessary.
 		if (storedCache == null) {
@@ -2738,16 +2719,6 @@ public class Inventory implements Serializable {
 	 *                        dirty.
 	 */
 	private void setAmountResourceStoredCacheAllDirty(boolean containersDirty) {
-//		setARStoredCacheAllDirty(containersDirty);
-//	}
-//
-//	/**
-//	 * Sets all of the resources in the amount resource stored cache to dirty.
-//	 * 
-//	 * @param containersDirty true if containers cache should be marked as all
-//	 *                        dirty.
-//	 */
-//	private void setARStoredCacheAllDirty(boolean containersDirty) {
 
 		// Initialize amount resource stored cache if necessary.
 		if (storedCache == null) {
@@ -2755,7 +2726,7 @@ public class Inventory implements Serializable {
 		}
 
 		for (int id : ResourceUtil.getIDs()) { //allStoredARCache
-			setARStoredCacheDirty(id);
+			setAmountResourceStoredCacheDirty(id);
 
 			if (containersDirty) {
 				containersStoredCacheDirty.put(id, true);
@@ -2792,7 +2763,7 @@ public class Inventory implements Serializable {
 		}
 
 		// Update amount resource stored cache if it is dirty.
-		if (!allowDirty && isARStoredCacheDirty(resource)) {
+		if (!allowDirty && isAmountResourceStoredCacheDirty(resource)) {
 			updateAmountResourceStoredCache(resource);
 		}
 
@@ -2808,15 +2779,6 @@ public class Inventory implements Serializable {
 
 	}
 
-//	/**
-//	 * Update the amount resource stored cache for an amount resource.
-//	 * 
-//	 * @param resource the resource to update.
-//	 */
-//	private void updateAmountResourceStoredCache(AmountResource resource) {
-//		updateAmountResourceStoredCache(resource.getID());
-//	}
-
 	/**
 	 * Update the amount resource stored cache for an amount resource.
 	 * 
@@ -2831,9 +2793,10 @@ public class Inventory implements Serializable {
 		}
 
 		double containerStored = 0D;
-		// Add checking for amountResourceContainersStoredCacheDirty
-		if (containersStoredCacheDirty != null && containersStoredCacheDirty.containsKey(resource)) {
-			if (containersStoredCacheDirty.get(resource) != null && containersStoredCacheDirty.get(resource)) {
+		if (containersStoredCacheDirty == null)
+			containersStoredCacheDirty = new HashMap<>();
+		else if (containersStoredCacheDirty.containsKey(resource)) {
+			if (containersStoredCacheDirty.get(resource)) {
 				if (containedUnitIDs != null) {
 					for (Unit unit : getContainedUnits()) {
 						if (unit instanceof Container) {

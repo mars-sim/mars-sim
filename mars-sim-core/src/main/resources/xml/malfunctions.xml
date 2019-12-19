@@ -53,15 +53,18 @@
 		<!-- Values: 0.0 to 100.0 (100.0 = most likely) -->
 		<probability value="5.0" />
 
-		<!-- The max possible general (non-EVA) repair time. (millisols) (optional) -->
+		<!-- The average general (non-EVA) repair time. (millisols) (optional) -->
 		<repair-time value="20.0" />
 
-		<!-- The max possible emergency repair time. (millisols) (optional) -->
+		<!-- The average emergency repair time. (millisols) (optional) -->
 		<emergency-repair-time value="10.0" />
 
-		<!-- The max possible EVA repair time. (millisols) (optional) -->
+		<!-- The average EVA repair time. (millisols) (optional) -->
 		<eva-repair-time value="0.0" />
 
+		<!-- Note: each of the expected repair time above will be 
+             computed based on a gaussian curve when this malfunction occurs. -->
+		     
 		<!-- List of systems (or functions of a building) that are susceptible 
 		to this malfunction. (min 1 entity required) -->
 		<system-list>

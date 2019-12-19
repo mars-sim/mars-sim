@@ -41,6 +41,7 @@ import org.mars_sim.msp.core.person.ai.job.Technician;
 import org.mars_sim.msp.core.person.ai.task.RepairEVAMalfunction;
 import org.mars_sim.msp.core.person.ai.task.RepairEmergencyMalfunction;
 import org.mars_sim.msp.core.person.ai.task.RepairMalfunction;
+import org.mars_sim.msp.core.person.ai.task.meta.RepairEVAMalfunctionMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.RepairMalfunctionMeta;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.health.Complaint;
@@ -961,10 +962,10 @@ public class MalfunctionManager implements Serializable {
 		// Check if any malfunctions are fixed.
 		if (hasMalfunction()) {
 			for (Malfunction m : malfunctions) {
-				boolean emerg = !m.isEmergencyRepairDone();
-				boolean eva = !m.isEVARepairDone();
-				boolean gen = !m.isGeneralRepairDone();
-				if (emerg || eva || gen) {
+				boolean emergRepairDone = !m.isEmergencyRepairDone();
+				boolean evaRepairDone = !m.isEVARepairDone();
+				boolean genRepairDone = !m.isGeneralRepairDone();
+				if (emergRepairDone || evaRepairDone || genRepairDone) {
 					
 					Settlement s0 = null;
 					Vehicle v0 = null;
@@ -1066,36 +1067,49 @@ public class MalfunctionManager implements Serializable {
 					
 					Person chosen = null;
 					int highestScore = -100;
-
-					for (Person p : people) {
-						int pref = p.getPreference().getPreferenceScore(new RepairMalfunctionMeta());
-						int skill = p.getSkillManager().getSkillLevel(SkillType.MECHANICS);
-						int exp = p.getSkillManager().getSkillExp(SkillType.MECHANICS);
-						int score = pref + skill * 3 + exp;
-						if (highestScore < score) {
-							highestScore = score;
-							chosen = p;
-//							System.out.println(chosen.getName() + " : " + highestScore);
+					
+					for (Person p : people) {	
+						if (!m.isARepairer(p.getName())) {
+							int pref0 = p.getPreference().getPreferenceScore(new RepairMalfunctionMeta());
+	//						int pref1 = p.getPreference().getPreferenceScore(new RepairEmergencyMalfunctionMeta());
+							int pref1 = p.getPreference().getPreferenceScore(new RepairEVAMalfunctionMeta());
+							int skill = p.getSkillManager().getSkillLevel(SkillType.MECHANICS);
+							int exp = p.getSkillManager().getSkillExp(SkillType.MECHANICS);
+							int score = (pref0 + pref1) + skill * 3 + exp;
+							if (highestScore < score) {
+								highestScore = score;
+								chosen = p;
+								logger.info(chosen.getName() + " had the highest score of " + highestScore);
+							}
 						}
 					}
 					
 					if (highestScore > 0 && chosen != null) {
 						// TODO : how to avoid having the multiple person or the same person to do the following task repetitively ?
 
-						String chiefRepairer = m.getChiefRepairer();
-						if (chiefRepairer == null || chiefRepairer.equals("")) {
-							if (emerg) {
-								addTask(chosen, new RepairEmergencyMalfunction(chosen), m);
-							}
-							else if (gen) {
-								addTask(chosen, new RepairMalfunction(chosen), m);
-							}
-							else if (eva) {
-								addTask(chosen, new RepairEVAMalfunction(chosen), m);
-							}
+						List<Integer> types = new ArrayList<>();
+						if (emergRepairDone) {
+							types.add(1);
+						}
+						if (genRepairDone) {
+							types.add(0);
+						}
+						if (evaRepairDone) {
+							types.add(2);
+						}
+						
+						int size = types.size()-1;
+						
+						if (size == 1) {
+							addTask(chosen, types.get(0), m);
+						}
+						else if (size == 2) {
+							
+							int rand = RandomUtil.getRandomInt(1);
+							int type = types.get(rand);
+							addTask(chosen, type, m);
 						}
 					}
-					
 				}
 				
 				if (m.isFixed()) {
@@ -1130,7 +1144,7 @@ public class MalfunctionManager implements Serializable {
 					e.printStackTrace(System.err);
 				}
 
-				String chiefRepairer = m.getChiefRepairer();
+				String chiefRepairer = m.getMostProductiveRepairer();
 				String loc = "";
 				if (vehicle != null)
 					loc = vehicle.getAssociatedSettlement().getName();
@@ -1174,17 +1188,47 @@ public class MalfunctionManager implements Serializable {
 	 * @param person
 	 * @param task
 	 */
-	private void addTask(Person person, Task task, Malfunction malfunction) {
-		// Give 50% of chance for a person to do other important things so that 
-		// he would not be locked up to do just this task
-		int rand = RandomUtil.getRandomInt(1);
-		if (rand == 0) {
-			person.getMind().getTaskManager().addTask(task, false);		
-			LogConsolidated.log(Level.INFO, 10_000, sourceName,
-					"[" + entity.getLocale() + "] " + person + " was handling the repair due to '" 
-					+ malfunction.getName() + "' on "
-					+ entity.getUnit());
+	private void addTask(Person person, int type, Malfunction malfunction) {
+		
+		String repairer = malfunction.getChiefRepairer(type);
+		
+		if (repairer != null && repairer.equals("")) {
+			
+			// Give 50% of chance for a person to do other important things so that 
+			// he would not be locked up to do just this task
+			int rand = RandomUtil.getRandomInt(1);
+			if (rand == 0) {
+				if (type == 0) {
+					person.getMind().getTaskManager().addTask(new RepairMalfunction(person), false);	
+					LogConsolidated.log(Level.INFO, 10_000, sourceName,
+						"[" + entity.getLocale() + "] " + person + " was handling the repair due to '" 
+						+ malfunction.getName() + "' on "
+						+ entity.getUnit());
+					 malfunction.setChiefRepairer(type, person.getName());
+				}
+				else if (type == 1) {
+					person.getMind().getTaskManager().addTask(new RepairEmergencyMalfunction(person), false);	
+					LogConsolidated.log(Level.INFO, 10_000, sourceName,
+						"[" + entity.getLocale() + "] " + person + " was handling the repair due to '" 
+						+ malfunction.getName() + "' on "
+						+ entity.getUnit());
+					malfunction.setChiefRepairer(type, person.getName());
+				}
+				else if (type == 2) {
+					person.getMind().getTaskManager().addTask(new RepairEVAMalfunction(person), false);	
+					LogConsolidated.log(Level.INFO, 10_000, sourceName,
+						"[" + entity.getLocale() + "] " + person + " was handling the repair due to '" 
+						+ malfunction.getName() + "' on "
+						+ entity.getUnit());
+					malfunction.setChiefRepairer(type, person.getName());
+				}
+			}
 		}
+		
+
+		
+		
+		
 	}
 	
 	/**

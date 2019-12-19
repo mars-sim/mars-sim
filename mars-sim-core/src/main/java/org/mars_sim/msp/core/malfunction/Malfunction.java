@@ -67,12 +67,15 @@ public class Malfunction implements Serializable {
 	private Map<ComplaintType, Double> medicalComplaints;
 	private Map<Integer, Integer> repairParts;
 
-	/*
-	 * The map for storing how much worktime the repairers spent in fixing this
-	 * malfunction
-	 */
+	/** The map for storing how much work time the repairers spent in fixing this malfunction. */
 	private Map<String, Double> repairersWorkTime;
-
+	
+	/** The chief repairer for each type of repair work */
+	private Map<Integer, String> chiefRepairers;
+	
+	/** The deputy repairer for each type of repair work */
+	private Map<Integer, String> deputyRepairers;
+	
 	private static MalfunctionConfig malfunctionConfig = SimulationConfig.instance().getMalfunctionConfiguration();
 
 	/**
@@ -99,9 +102,88 @@ public class Malfunction implements Serializable {
 
 		repairParts = new HashMap<>();
 		repairersWorkTime = new HashMap<>();
-
+		chiefRepairers = new HashMap<>();
+		deputyRepairers = new HashMap<>();
+		
+		if (needGeneralRepair()) {
+			chiefRepairers.put(0, "");
+			deputyRepairers.put(0, "");
+		}
+		if (needEmergencyRepair()) {
+			chiefRepairers.put(1, "");
+			deputyRepairers.put(1, "");
+		}
+		if (needEVARepair()) {
+			chiefRepairers.put(2, "");
+			deputyRepairers.put(2, "");
+		}
 	}
 
+	/**
+	 * Obtains the name of the chief repairer
+	 * 
+	 * @param type 1: general repair; 2: emergency repair; 3: EVA repair
+	 * @return
+	 */
+	public String getChiefRepairer(int type) {
+		if (chiefRepairers.containsKey(type)) {
+			return chiefRepairers.get(type);
+		}
+		return null;
+	}
+	
+	/**
+	 * Sets the name of the deputy repairer of a particular type of repair
+	 * 
+	 * @param type 1: general repair; 2: emergency repair; 3: EVA repair
+	 * @param name
+	 */
+	public void setDeputyRepairer(int type, String name) {
+		deputyRepairers.put(type, name);
+	}
+	
+	/**
+	 * Obtains the name of the deputy repairer
+	 * 
+	 * @param type 1: general repair; 2: emergency repair; 3: EVA repair
+	 * @return
+	 */
+	public String getDeputyRepairer(int type) {
+		if (deputyRepairers.containsKey(type)) {
+			return deputyRepairers.get(type);
+		}
+		return null;
+	}
+	
+	/**
+	 * Checks if this person is already a repairer or not
+	 * 
+	 * @param name
+	 * @return true if htis person is already a repairer of this malfunction
+	 */
+	public boolean isARepairer(String name) {
+		for (String n: chiefRepairers.values()) {
+			if (n.equalsIgnoreCase(name))
+				return true;
+		}
+		for (String n: deputyRepairers.values()) {
+			if (n.equalsIgnoreCase(name))
+				return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * Sets the name of the chief repairer of a particular type of repair
+	 * 
+	 * @param type 1: general repair; 2: emergency repair; 3: EVA repair
+	 * @param name
+	 */
+	public void setChiefRepairer(int type, String name) {
+		chiefRepairers.put(type, name);
+	}
+	
+	
 	/**
 	 * Computes the expected work time on a gaussian curve
 	 * 
@@ -470,7 +552,7 @@ public class Malfunction implements Serializable {
 	 * 
 	 * @return the name of the person
 	 */
-	public String getChiefRepairer() {
+	public String getMostProductiveRepairer() {
 		Map.Entry<String, Double> maxEntry = repairersWorkTime.entrySet()
 				.stream()
 				.max(Map.Entry.comparingByValue())

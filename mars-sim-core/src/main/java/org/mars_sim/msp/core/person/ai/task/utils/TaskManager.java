@@ -393,10 +393,11 @@ public class TaskManager implements Serializable {
 	 * Adds a task to the stack of tasks.
 	 * 
 	 * @param newTask the task to be added
+	 * @param isSubTask adds this newTask as a subtask if possible
 	 */
-	public void addTask(Task newTask, boolean subTask) {
+	public void addTask(Task newTask, boolean isSubTask) {
 
-		if (hasActiveTask() && subTask) {
+		if (hasActiveTask() && isSubTask) {
 			if (!currentTask.getTaskName().equals(newTask.getTaskName())) {
 				if (currentTask.getSubTask() != null 
 						&& !currentTask.getSubTask().getTaskName().equals(newTask.getTaskName())) {
