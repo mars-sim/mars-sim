@@ -132,7 +132,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 					if (chief == null || chief.equals("")) {
 						LogConsolidated.log(Level.INFO, 0, sourceName,
 								"[" + entity.getLocale() + "] " + person 
-								+ " was appointed as the chief repairer handling the EVA Repair for '" 
+								+ " was appointed as the chief repairer handling the General/Emergency Repair for '" 
 								+ malfunction.getName() + "' on "
 								+ entity.getUnit());
 						 malfunction.setChiefRepairer(3, person.getName());						
@@ -140,7 +140,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 					else if (deputy == null || deputy.equals("")) {
 						LogConsolidated.log(Level.INFO, 0, sourceName,
 								"[" + entity.getLocale() + "] " + person 
-								+ " was appointed as the deputy repairer handling the EVA Repair for '" 
+								+ " was appointed as the deputy repairer handling the General/Emergency Repair for '" 
 								+ malfunction.getName() + "' on "
 								+ entity.getUnit());
 						malfunction.setDeputyRepairer(3, person.getName());
@@ -150,7 +150,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 					addPhase(REPAIRING);
 					setPhase(REPAIRING);
 		
-					logger.fine(person.getName() + " was about to repair malfunction.");
+//					logger.fine(person.getName() + " was about to repair malfunction.");
 
 				} else {
 					endTask();

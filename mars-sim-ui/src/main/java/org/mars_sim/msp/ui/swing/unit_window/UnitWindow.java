@@ -398,9 +398,9 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 		String townString = null;
 
 		if (p.getPhysicalCondition().isDead())
-			townString = DEAD;
+			townString = Conversion.capitalize(((Person)unit).getBuriedSettlement().getName());//DEAD;
 		else
-			townString = Conversion.capitalize(unit.getDescription());
+			townString = Conversion.capitalize(unit.getAssociatedSettlement().getName());//.getDescription());
 
 		if (!oldTownString.equals(townString)) {
 			oldJobString = townString;

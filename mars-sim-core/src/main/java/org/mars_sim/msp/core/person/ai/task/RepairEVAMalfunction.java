@@ -96,14 +96,11 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 					Point2D malfunctionLoc = determineMalfunctionLocation();
 					setOutsideSiteLocation(malfunctionLoc.getX(), malfunctionLoc.getY());
 					
-					if (isDone()) {
+					if (!isDone()) {
 			            if (person.isInside()) {
 			            	setPhase(WALK_TO_OUTSIDE_SITE);
 			            }
-					}
-					
-					// Initialize phase
-					addPhase(REPAIRING);
+					}				
 			
 					String chief = malfunction.getChiefRepairer(3);
 					String deputy = malfunction.getDeputyRepairer(3);
@@ -125,7 +122,10 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 						malfunction.setDeputyRepairer(3, person.getName());
 					}
 					
-					logger.info(person.getName() + " started the RepairEVAMalfunction task.");
+					// Initialize phase
+					addPhase(REPAIRING);
+					
+//					logger.info(person.getName() + " started the RepairEVAMalfunction task.");
 				}
 				else {
 					endTask();

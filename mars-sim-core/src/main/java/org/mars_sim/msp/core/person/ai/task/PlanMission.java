@@ -156,7 +156,8 @@ public class PlanMission extends Task implements Serializable {
 		
 		if (!canDo) {
 			LogConsolidated.log(Level.INFO, 10_000, sourceName, 
-					"[" + person.getAssociatedSettlement() + "] " + person.getName() + " cannot select a new mission.");
+					"[" + person.getAssociatedSettlement() + "] " 
+			+ person.getName() + " just joined in a mission and was unable to start a new one at this moment.");
 			endTask();
 		}
 		else {

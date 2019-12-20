@@ -2593,7 +2593,7 @@ public class Inventory implements Serializable {
 		double containedCapacity = 0D;
 		// Check for null
 		if (containersCapacityCacheDirty.containsKey(resource)) {
-			if (containersCapacityCacheDirty.get(resource)) {
+			if (containersCapacityCacheDirty.get((Integer)resource)) {
 				if (containedUnitIDs != null) {
 					for (Unit unit : getContainedUnits()) {
 						if (unit instanceof Container) {
