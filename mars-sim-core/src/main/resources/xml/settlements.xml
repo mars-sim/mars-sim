@@ -3857,17 +3857,64 @@
 	</new-arriving-settlement-list>
 
 	<!-- List of settlement names -->
+	<!-- 
+	    - Canadian Space Agency (CSA)
+		- European Space Agency (ESA)
+		- Indian Space Research Organisation (ISRO)
+		- Japan Aerospace Exploration Agency (JAXA)
+		- National Aeronautics and Space Administration (NASA)
+		- Roscosmos (RKA)
+		- Mars Society (MS)
+		- Space Exploration Technologies (SpaceX)
+	-->
+		
 	<settlement-name-list>
+		<settlement-name sponsor="China National Space Administration (CNSA)" value="Tian Cheng" />
+		<settlement-name sponsor="China National Space Administration (CNSA)" value="Xin Cheng" />
+		<settlement-name sponsor="China National Space Administration (CNSA)" value="Huoxing Cheng" />
+		<settlement-name sponsor="China National Space Administration (CNSA)" value="Chang-e Cheng" />
 
-		<settlement-name sponsor="NASA" value="Port Braun" />
-		<settlement-name sponsor="NASA" value="Sagan Station" />
-		<settlement-name sponsor="NASA" value="McKay Base" />
+		<settlement-name sponsor="Canadian Space Agency (CSA)" value="New Quebec" />
+		<settlement-name sponsor="Canadian Space Agency (CSA)" value="New Columbia" />
+		<settlement-name sponsor="Canadian Space Agency (CSA)" value="New Ontario" />
+		<settlement-name sponsor="Canadian Space Agency (CSA)" value="New Alberta" />
+		<settlement-name sponsor="Canadian Space Agency (CSA)" value="New Yukon" />
+				
+		<settlement-name sponsor="European Space Agency (ESA)" value="Base Visage" />
+		<settlement-name sponsor="European Space Agency (ESA)" value="Base Gaia" />
+		<settlement-name sponsor="European Space Agency (ESA)" value="Station Mere" />
+		<settlement-name sponsor="European Space Agency (ESA)" value="Neu Braunfels" />
+		<settlement-name sponsor="European Space Agency (ESA)" value="Nieuw Amsterdam" />	
+		
+		<settlement-name sponsor="Indian Space Research Organisation (ISRO)" value="New Bengal" />
+		<settlement-name sponsor="Indian Space Research Organisation (ISRO)" value="New Chennai" />
+		<settlement-name sponsor="Indian Space Research Organisation (ISRO)" value="New Punjab" />
+		<settlement-name sponsor="Indian Space Research Organisation (ISRO)" value="Mahindra" />
+		<settlement-name sponsor="Indian Space Research Organisation (ISRO)" value="New Mumbai" />		
+		<settlement-name sponsor="Indian Space Research Organisation (ISRO)" value="Chandrasekhar" />	
+
+		<settlement-name sponsor="Japan Aerospace Exploration Agency (JAXA)" value="New Tokyo" />
+		<settlement-name sponsor="Japan Aerospace Exploration Agency (JAXA)" value="New Seto" />						
+		<settlement-name sponsor="Japan Aerospace Exploration Agency (JAXA)" value="Ohsumi" />
+		<settlement-name sponsor="Japan Aerospace Exploration Agency (JAXA)" value="Kawasaki Port" />		
+		<settlement-name sponsor="Japan Aerospace Exploration Agency (JAXA)" value="Obayashi Port" />
+		<settlement-name sponsor="Japan Aerospace Exploration Agency (JAXA)" value="Osamu" />		
+		
+		<settlement-name sponsor="National Aeronautics and Space Administration (NASA)" value="Port Braun" />
+		<settlement-name sponsor="National Aeronautics and Space Administration (NASA)" value="Sagan Station" />
+		<settlement-name sponsor="National Aeronautics and Space Administration (NASA)" value="McKay Base" />
 		<!-- http://www.jpl.nasa.gov/media/mgs-sept05/meyer.html -->
-		<settlement-name sponsor="NASA" value="Meyer Station" />
+		<settlement-name sponsor="National Aeronautics and Space Administration (NASA)" value="Meyer Station" />
 		<!-- http://science.gsfc.nasa.gov/staff/garvin-10_2005.html -->
-		<settlement-name sponsor="NASA" value="Garvin Station" />
-		<settlement-name sponsor="NASA" value="Goddard Trading Post" />
-		<settlement-name sponsor="NASA" value="Ares One" />
+		<settlement-name sponsor="National Aeronautics and Space Administration (NASA)" value="Garvin Station" />
+		<settlement-name sponsor="National Aeronautics and Space Administration (NASA)" value="Goddard Trading Post" />
+		<settlement-name sponsor="National Aeronautics and Space Administration (NASA)" value="Ares One" />
+
+		<settlement-name sponsor="Roscosmos (RKA)" value="Mir Town" />
+		<settlement-name sponsor="Roscosmos (RKA)" value="Kosmosdrome" />
+		<settlement-name sponsor="Roscosmos (RKA)" value="Konstantin Point" />
+		<settlement-name sponsor="Roscosmos (RKA)" value="Gorbachev" />				
+		<settlement-name sponsor="Roscosmos (RKA)" value="New Moscow" />
 
 		<settlement-name sponsor="Mars Society (MS)" value="New Cairo" />
 		<settlement-name sponsor="Mars Society (MS)" value="Port Zubrin" />
@@ -3895,6 +3942,12 @@
 		<settlement-name sponsor="Mars Society (MS)" value="Mars One Base" />
 		<settlement-name sponsor="Mars Society (MS)" value="Watney Station" />
 
+		<settlement-name sponsor="Space Exploration Technologies (SpaceX)" value="MuskVille" />
+		<settlement-name sponsor="Space Exploration Technologies (SpaceX)" value="Falcon Station" />
+		<settlement-name sponsor="Space Exploration Technologies (SpaceX)" value="Nicolas Town" />
+		<settlement-name sponsor="Space Exploration Technologies (SpaceX)" value="Starlink" />
+		<settlement-name sponsor="Space Exploration Technologies (SpaceX)" value="New Eden" />
+		<settlement-name sponsor="Space Exploration Technologies (SpaceX)" value="TeslaVille" />
 
 	</settlement-name-list>
 

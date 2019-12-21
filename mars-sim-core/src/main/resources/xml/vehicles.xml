@@ -403,7 +403,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<rover-name value="Vikram" /> <!-- a male Hindu/Sanskrit name for being valorous, wise, brave and strong as well as victorious-->
 		<rover-name value="Wind Runner" />
 		<rover-name value="Windstorm" />
-				
+
 	</rover-name-list>
 
 </vehicle-configuration>

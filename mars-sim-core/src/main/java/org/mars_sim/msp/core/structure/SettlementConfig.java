@@ -998,7 +998,10 @@ public class SettlementConfig implements Serializable {
 	 * @return list of settlement names as strings
 	 */
 	public List<String> getSettlementNameList(String sponsor) {
-		return new ArrayList<String>(settlementNamesMap.get(sponsor));
+		if (settlementNamesMap.containsKey(sponsor))
+			return new ArrayList<String>(settlementNamesMap.get(sponsor));
+		
+		return new ArrayList<String>();
 	}
 	
 	/**

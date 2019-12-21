@@ -28,6 +28,7 @@ import org.mars.sim.console.InteractiveTerm;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 import org.mars_sim.msp.core.structure.SettlementConfig;
 import org.mars_sim.msp.core.structure.SettlementTemplate;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -263,29 +264,31 @@ public class MarsProjectHeadless {
 					}
 				}
 			}
-			
-			SettlementTemplate settlementTemplate = settlementConfig.getSettlementTemplate(templateString);
+		}
+		
+		SettlementTemplate settlementTemplate = settlementConfig.getSettlementTemplate(templateString);
 
-			List<String> settlementNames = settlementConfig.getSettlementNameList(sponsorString);
+		String longSponsorName = ReportingAuthorityType.convertSponsorNameShort2Long(sponsorString);
+		
+		List<String> settlementNames = settlementConfig.getSettlementNameList(longSponsorName);
+		
+		if (settlementNames.isEmpty()) {
+			settlementNames = settlementConfig.getSettlementNameList("Mars Society (MS)");
+		}
+		
+		int size = settlementNames.size();
+		String settlementName = "";
+		int rand = RandomUtil.getRandomInt(size-1);
+		settlementName = settlementNames.get(rand);
 			
-			if (settlementNames.isEmpty()) {
-				settlementNames = settlementConfig.getSettlementNameList("MS");
-			}
-			
-			int size = settlementNames.size();
-			String settlementName = "";
-			int rand = RandomUtil.getRandomInt(size-1);
-			settlementName = settlementNames.get(rand);
-				
-			settlementConfig.addInitialSettlement(settlementName,
-												templateString, 
-												settlementTemplate.getDefaultPopulation(),
-												settlementTemplate.getDefaultNumOfRobots(),
-												sponsorString,
-												"0.0", //latitude,
-												"0.0" //longitude
-												);
-		}	
+		settlementConfig.addInitialSettlement(settlementName,
+											templateString, 
+											settlementTemplate.getDefaultPopulation(),
+											settlementTemplate.getDefaultNumOfRobots(),
+											longSponsorName,
+											"0.0", //latitude,
+											"0.0" //longitude
+											);
 	}
 	
 	private void createNewSettlement() {

@@ -10,6 +10,7 @@ package org.mars_sim.msp.core.reportingAuthority;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.mars_sim.msp.core.Msg;
 
 public enum ReportingAuthorityType {
@@ -139,6 +140,18 @@ public enum ReportingAuthorityType {
 	
 	public static int getSponsorID(String longSponsor) {
 		return getType(longSponsor).ordinal() - 9;
+	}
+	
+	public static String convertSponsorNameShort2Long(String name) {
+		if (longSponsorList == null) {
+			longSponsorList = new ArrayList<>();
+			for (ReportingAuthorityType ra : SPONSORS_LONG) {
+				if (StringUtils.containsIgnoreCase(ra.getName(), name)) {
+					return ra.getName();
+				}
+			}
+		}
+		return null;
 	}
 	
 //	public static List<String> StringList() {

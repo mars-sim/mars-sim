@@ -215,7 +215,9 @@ executable inside will be the one to be loaded by Windows OS.
 3. Set `JAVA_HOME` to a JRE or JDK's destination such as `C:\Program Files\Java\jdk-12.0.2` or 
 `C:\Program Files\Java\jre-12.0.2`. 
  
-4. Add `%JAVA_HOME%;%JAVA_HOME%\bin;` to `PATH`         
+4. Add `%JAVA_HOME%;%JAVA_HOME%\bin;` to `PATH`. Type "path" in a command prompt to double check 
+the order of precedence when it comes to searching for the JDK. 
+
  ```
 Note 3 : The BEST approach is to enable only one Java build (such as Java 12.0.2) 
 inside `PATH` and remove all other folders referencing other java versions/builds.
