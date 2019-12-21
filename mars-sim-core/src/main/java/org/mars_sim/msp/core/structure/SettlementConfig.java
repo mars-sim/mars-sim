@@ -279,8 +279,12 @@ public class SettlementConfig implements Serializable {
 			int defaultNumOfRobots = Integer.parseInt(templateElement.getAttributeValue(DEFAULT_NUM_ROBOTS));
 
 			// Add scenarioID
-			SettlementTemplate template = new SettlementTemplate(settlementTemplateName, templateID, defaultPopulation,
+			SettlementTemplate template = new SettlementTemplate(
+					settlementTemplateName, 
+					templateID, 
+					defaultPopulation,
 					defaultNumOfRobots);
+			
 			settlementTemplates.add(template);
 
 			Set<Integer> existingIDs = new HashSet<Integer>();

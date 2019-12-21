@@ -134,7 +134,8 @@ public class UnitManager implements Serializable {
 
 	private static List<String> ESACountries;
 	private static List<String> allCountries;
-	private static List<String> allSponsors;
+	private static List<String> allLongSponsors;
+	private static List<String> allShortSponsors;
 	
 	// Data members
 	/** Is it running in Commander's Mode */
@@ -2565,9 +2566,9 @@ public class UnitManager implements Serializable {
 	}
 	
 	public static String getSponsorByID(int id) {
-		if (allSponsors == null)
+		if (allLongSponsors == null)
 			getAllSponsorList();
-		return allSponsors.get(id);
+		return allLongSponsors.get(id);
 	}
 	
 	/**
@@ -2633,9 +2634,15 @@ public class UnitManager implements Serializable {
 	}
 	
 	public static List<String> getAllSponsorList() {
-		if (allSponsors == null)
-			allSponsors = ReportingAuthorityType.getLongSponsorList();
-		return allSponsors;
+		if (allLongSponsors == null)
+			allLongSponsors = ReportingAuthorityType.getLongSponsorList();
+		return allLongSponsors;
+	}
+	
+	public static List<String> getAllSponsorShortList() {
+		if (allShortSponsors == null)
+			allShortSponsors = ReportingAuthorityType.getSponsorList();
+		return allShortSponsors;
 	}
 	
 //	/**

@@ -16,15 +16,21 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 import java.lang.Runnable;
 
+import org.apache.commons.lang3.StringUtils;
 import org.mars.sim.console.InteractiveTerm;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.structure.SettlementConfig;
+import org.mars_sim.msp.core.structure.SettlementTemplate;
+import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
  * MarsProjectHeadless is the main class for starting mars-sim in purely
@@ -37,13 +43,21 @@ public class MarsProjectHeadless {
 	
 	private static final String LOGGING_PROPERTIES = "/logging.properties";
 
-	static String[] args;
+//	static String[] args;
+	
+	private List<String> argList;
 
 	private Simulation sim = Simulation.instance();
 	
 	private SimulationConfig simulationConfig = SimulationConfig.instance();
 	
 	private InteractiveTerm interactiveTerm = new InteractiveTerm(true, false);
+	
+	private String templatePhaseString;
+	
+	private String countryString;
+	
+	private String sponsorString;
 	
 	private static final String HELP = 
 
@@ -80,14 +94,21 @@ public class MarsProjectHeadless {
 	 * 
 	 * @param args command line arguments.
 	 */
-	public MarsProjectHeadless(String args[]) {
+	public MarsProjectHeadless(String[] args) {
+//		this.args = args;
 		logger.config("Starting " + Simulation.title);
 		sim.startSimExecutor();
-		sim.getSimExecutor().submit(new SimulationTask());		
+		sim.getSimExecutor().submit(new SimulationTask(args));		
 	}
 
 	public class SimulationTask implements Runnable {
-
+		
+		private String[] args;
+		
+		private SimulationTask(String[] args) {
+			this.args = args;
+		}
+		
 		public void run() {
 			// new Simulation(); // NOTE: NOT supposed to start another instance of the
 			// singleton Simulation
@@ -97,7 +118,6 @@ public class MarsProjectHeadless {
 			
 			// Initialize the simulation.
 			initializeSimulation(args);
-
 		}
 	}
 
@@ -119,11 +139,18 @@ public class MarsProjectHeadless {
 	 * @return true if new simulation (not loaded)
 	 */
 	boolean initializeSimulation(String[] args) {
+//		logger.info("Calling initializeSimulation() ");
+//		for (String s: args)
+//			System.out.print(s + " ");
+//		System.out.println();
+		
+		boolean useTemplate = false;
+		
 		boolean result = false;
 		int userTimeRatio = -1;
 
 		// Create a simulation
-		List<String> argList = Arrays.asList(args);
+		argList = Arrays.asList(args);
 
 		if (argList.contains("-512x"))
 			userTimeRatio = 512;
@@ -141,12 +168,6 @@ public class MarsProjectHeadless {
 			System.exit(1);
 		}
 		
-		else if (argList.contains("-new")) {
-			// If new argument, create new simulation.
-			handleNewSimulation(userTimeRatio); // if this fails we always exit, continuing is useless
-			result = true;
-		} 
-		
 		else if (argList.contains("-load")) {
 			// If load argument, load simulation from file.
 			try {
@@ -163,20 +184,148 @@ public class MarsProjectHeadless {
 				handleNewSimulation(userTimeRatio);
 				result = true;
 			}
-			
-
 		} 
 		
+		else {//if (argList.contains("-new")) {
+//			logger.info("has -new");
+			for (String arg: argList) {
+				if (arg.contains("-template:")) {
+					useTemplate = true;
+					break;
+				}
+			}
+		} 
+		
+//		else {
+//			// if there is no args, load default.sim
+////                showError("Could not load the default simulation, trying to create a new Simulation...", e);
+//			handleNewSimulation(userTimeRatio);
+//			result = true;
+//		}
+
+		if (useTemplate) {
+			// Create a new simulation with the specified settlement template
+			createNewSettlement();
+			result = true;
+		}
 		else {
-			// if there is no args, load default.sim
-//                showError("Could not load the default simulation, trying to create a new Simulation...", e);
 			handleNewSimulation(userTimeRatio);
 			result = true;
 		}
-
+		
 		return result;
 	}
 
+	
+	private void loadSettlementTemplate() {
+//		logger.config("loadSettlementTemplate()");
+		String templateString = "";
+		SettlementConfig settlementConfig = SimulationConfig.instance().getSettlementConfiguration();
+		
+		for (String s: argList) {
+			if (StringUtils.containsIgnoreCase(s, "-country:")) {
+				List<String> countries = UnitManager.getAllCountryList();
+//				System.out.println(countries);
+//				logger.info(s);
+				for (String c: countries) {
+//					logger.info(c);
+					if (s.contains(c) || s.contains(c.toLowerCase())) {
+						countryString = c;
+						logger.info("Found countryString: " + countryString);
+					}
+				}
+			}
+			
+			if (StringUtils.containsIgnoreCase(s, "-sponsor:")) {
+				List<String> sponsors = UnitManager.getAllSponsorShortList();
+//				System.out.println(sponsors);
+//				logger.info(s);
+				for (String ss: sponsors) {
+					if (s.contains(ss) || s.contains(ss.toLowerCase())) {
+						sponsorString = ss;
+						logger.info("Found sponsorString: " + sponsorString);
+					}
+				}
+			}
+			
+			
+			if (StringUtils.containsIgnoreCase(s, "-template:")) {
+				settlementConfig.clearInitialSettlements();
+				
+				Collection<String> templates = settlementConfig.getTemplateMap().values();//MarsProjectHeadlessStarter.getTemplates();
+//				System.out.println(templates);
+//				logger.info(s);
+				templatePhaseString = s.substring(s.indexOf(":") + 1, s.length());
+				logger.info("Found templatePhaseString: " + templatePhaseString);
+				for (String t: templates) {
+					if (StringUtils.containsIgnoreCase(t, templatePhaseString)) {
+						templateString = t;
+					}
+				}
+			}
+			
+			SettlementTemplate settlementTemplate = settlementConfig.getSettlementTemplate(templateString);
+
+			List<String> settlementNames = settlementConfig.getSettlementNameList(sponsorString);
+			
+			if (settlementNames.isEmpty()) {
+				settlementNames = settlementConfig.getSettlementNameList("MS");
+			}
+			
+			int size = settlementNames.size();
+			String settlementName = "";
+			int rand = RandomUtil.getRandomInt(size-1);
+			settlementName = settlementNames.get(rand);
+				
+			settlementConfig.addInitialSettlement(settlementName,
+												templateString, 
+												settlementTemplate.getDefaultPopulation(),
+												settlementTemplate.getDefaultNumOfRobots(),
+												sponsorString,
+												"0.0", //latitude,
+												"0.0" //longitude
+												);
+		}	
+	}
+	
+	private void createNewSettlement() {
+		logger.info("createNewSettlement()");
+		try {
+			// Load xml files
+			simulationConfig.loadConfig();
+			// Clear the default templates and load the specified template
+			loadSettlementTemplate();
+			// Alert the user to see the interactive terminal 
+			logger.config("Please proceed to selecting the type of Game Mode in the popped-up console.");
+			// Start interactive terminal 
+			int type = interactiveTerm.startConsoleMainMenu(); 
+			// Initialize interactive terminal 
+			InteractiveTerm.initializeTerminal();	
+			
+			if (type == 0) {
+				// Since SCE is not used, manually set up each of the followings 
+				// Create new simulation
+				// sim.createNewSimulation(-1, false);
+				// Run this class in sim executor
+				sim.runCreateNewSimTask();	
+
+				// Start the simulation
+				startSimThread(false);
+				
+				// Start beryx console
+				startConsoleThread();
+			
+//				logger.config("Done with setupMainWindow()");
+			}
+
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			exitWithError("Could not create a new simulation, startup cannot continue", e);
+		}		
+		
+	}
+	
 	/**
 	 * Exit the simulation with an error message.
 	 * 
@@ -254,7 +403,8 @@ public class MarsProjectHeadless {
 			}
 			
 			else if (type == 1) {
-
+				// Replace the Site Editor GUI with a CLI Site Editor
+				
 			}
 		
 			else if (type == 2) {
@@ -353,7 +503,7 @@ public class MarsProjectHeadless {
 
 		Logger.getLogger("").setLevel(Level.ALL);//.FINE);
 
-		MarsProjectHeadless.args = args;
+//		MarsProjectHeadless.args = args;
 
 		new File(Simulation.USER_HOME, Simulation.MARS_SIM_DIR + File.separator + Simulation.LOGS_DIR).mkdirs();
 

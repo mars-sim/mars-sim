@@ -280,6 +280,80 @@
 				</connection-list>
 			</building>
 			
+			<building id="3" type="Laboratory" x-location="-12.0" y-location="0.0" facing="270.0">
+				<connection-list>
+					<connection id="2" x-location="0.0" y-location="4.5" />
+					<connection id="4" x-location="0.0" y-location="-4.5" />
+				</connection-list>
+			</building>
+			
+			<building id="4" type="Hallway" length="3.0" x-location="-18.0" y-location="0.0" facing="270.0">
+				<connection-list>
+					<connection id="3" x-location="0.0" y-location="1.5" />
+					<connection id="5" x-location="0.0" y-location="-1.5" />
+				</connection-list>
+			</building>
+			
+			<building id="5" type="Inflatable Greenhouse" x-location="-24.0" y-location="0.0" facing="270.0">
+				<connection-list>
+					<connection id="4" x-location="0.0" y-location="4.5" />
+				</connection-list>
+			</building>
+
+			<building id="6" type="MD1 Nuclear Reactor" x-location="40.0" y-location="-60.0" facing="0.0" />
+			<building id="7" type="MD1 Nuclear Reactor" x-location="40.0" y-location="-80.0" facing="0.0" />
+			<building id="8" type="MD1 Nuclear Reactor" x-location="60.0" y-location="-60.0" facing="0.0" />
+
+			<building id="9" type="Starting ERV Base" x-location="40.0" y-location="15.0" facing="135.0" />
+
+			<building id="10" type="ERV Base" x-location="40.0" y-location="-15.0" facing="45.0" />
+
+			<building id="11" type="Large Sabatier Processor" x-location="0.0" y-location="-40.0" facing="90.0" />
+
+			<building id="12" type="Large Sabatier Processor" x-location="0.0" y-location="-65.0" facing="90.0" />		
+
+			<vehicle type="Explorer Rover" number="2" />
+			<vehicle type="Light Utility Vehicle" number="1" />
+
+			<equipment type="EVA Suit" number="8" />
+			<equipment type="Gas Canister" number="40" />
+			<equipment type="Barrel" number="40" />
+			<equipment type="Bag" number="40" />
+			<equipment type="Large Bag" number="10" />
+			<equipment type="Specimen Box" number="50" />
+
+			<part-package name="package 1" number="1" />
+
+			<resupply>
+				<resupply-mission name="Mars Direct Base Resupply 1" arrival-time="668.0" />
+				<resupply-mission name="Mars Direct Base Resupply 2" arrival-time="1336.0" />
+				<resupply-mission name="Mars Direct Base Resupply 3" arrival-time="2004.0" />
+			</resupply>
+		</template>
+
+		<template name="Mars Direct Base (Phase 1B)" default-population="4" number-of-robots="2" sponsor="China National Space Administration (CNSA)">
+
+			<building id="0" type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0">
+				<connection-list>
+					<connection id="1" x-location="4.5" y-location="0.0" />
+					<connection id="2" x-location="-4.5" y-location="0.0" />					
+				</connection-list>
+			</building>
+
+			<!-- EVA Airlock is attached to the lander hab -->
+			<building id="1" type="EVA Airlock" x-location="7.0" y-location="0.0" facing="0.0">
+				<connection-list>
+					<connection id="0" x-location="-2.5" y-location="0.0" />
+				</connection-list>
+			</building>
+			
+			<building id="2" type="Hallway" length="3.0" x-location="-6.0" y-location="0.0" facing="270.0">
+				<connection-list>
+					<connection id="0" x-location="0.0" y-location="1.5" />
+					<connection id="3" x-location="0.0" y-location="-1.5" />
+				</connection-list>
+			</building>
+			
 			<building id="3" type="Workshop" x-location="-12.0" y-location="0.0" facing="270.0">
 				<connection-list>
 					<connection id="2" x-location="0.0" y-location="4.5" />
@@ -330,7 +404,155 @@
 				<resupply-mission name="Mars Direct Base Resupply 3" arrival-time="2004.0" />
 			</resupply>
 		</template>
-		
+
+		<template name="Mars Direct Base (Phase 1C)" default-population="4" number-of-robots="2" sponsor="The Indian Space Research Organisation (ISRO)">
+
+			<building id="0" type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0">
+				<connection-list>
+					<connection id="1" x-location="4.5" y-location="0.0" />
+					<connection id="2" x-location="-4.5" y-location="0.0" />					
+				</connection-list>
+			</building>
+
+			<!-- EVA Airlock is attached to the lander hab -->
+			<building id="1" type="EVA Airlock" x-location="7.0" y-location="0.0" facing="0.0">
+				<connection-list>
+					<connection id="0" x-location="-2.5" y-location="0.0" />
+				</connection-list>
+			</building>
+			
+			<building id="2" type="Hallway" length="3.0" x-location="-6.0" y-location="0.0" facing="270.0">
+				<connection-list>
+					<connection id="0" x-location="0.0" y-location="1.5" />
+					<connection id="3" x-location="0.0" y-location="-1.5" />
+				</connection-list>
+			</building>
+			
+			<building id="3" type="Lounge" x-location="-12.0" y-location="0.0" facing="270.0">
+				<connection-list>
+					<connection id="2" x-location="0.0" y-location="4.5" />
+					<connection id="4" x-location="0.0" y-location="-4.5" />
+				</connection-list>
+			</building>
+			
+			<building id="4" type="Hallway" length="3.0" x-location="-18.0" y-location="0.0" facing="270.0">
+				<connection-list>
+					<connection id="3" x-location="0.0" y-location="1.5" />
+					<connection id="5" x-location="0.0" y-location="-1.5" />
+				</connection-list>
+			</building>
+			
+			<building id="5" type="Inflatable Greenhouse" x-location="-24.0" y-location="0.0" facing="270.0">
+				<connection-list>
+					<connection id="4" x-location="0.0" y-location="4.5" />
+				</connection-list>
+			</building>
+
+			<building id="6" type="MD1 Nuclear Reactor" x-location="40.0" y-location="-60.0" facing="0.0" />
+			<building id="7" type="MD1 Nuclear Reactor" x-location="40.0" y-location="-80.0" facing="0.0" />
+			<building id="8" type="MD1 Nuclear Reactor" x-location="60.0" y-location="-60.0" facing="0.0" />
+
+			<building id="9" type="Starting ERV Base" x-location="40.0" y-location="15.0" facing="135.0" />
+
+			<building id="10" type="ERV Base" x-location="40.0" y-location="-15.0" facing="45.0" />
+
+			<building id="11" type="Large Sabatier Processor" x-location="0.0" y-location="-40.0" facing="90.0" />
+
+			<building id="12" type="Large Sabatier Processor" x-location="0.0" y-location="-65.0" facing="90.0" />		
+
+			<vehicle type="Explorer Rover" number="2" />
+			<vehicle type="Light Utility Vehicle" number="1" />
+
+			<equipment type="EVA Suit" number="8" />
+			<equipment type="Gas Canister" number="40" />
+			<equipment type="Barrel" number="40" />
+			<equipment type="Bag" number="40" />
+			<equipment type="Large Bag" number="10" />
+			<equipment type="Specimen Box" number="50" />
+
+			<part-package name="package 1" number="1" />
+
+			<resupply>
+				<resupply-mission name="Mars Direct Base Resupply 1" arrival-time="668.0" />
+				<resupply-mission name="Mars Direct Base Resupply 2" arrival-time="1336.0" />
+				<resupply-mission name="Mars Direct Base Resupply 3" arrival-time="2004.0" />
+			</resupply>
+		</template>
+
+		<template name="Mars Direct Base (Phase 1D)" default-population="4" number-of-robots="2" sponsor="Roscosmos (RKA)">
+
+			<building id="0" type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0">
+				<connection-list>
+					<connection id="1" x-location="4.5" y-location="0.0" />
+					<connection id="2" x-location="-4.5" y-location="0.0" />					
+				</connection-list>
+			</building>
+
+			<!-- EVA Airlock is attached to the lander hab -->
+			<building id="1" type="EVA Airlock" x-location="7.0" y-location="0.0" facing="0.0">
+				<connection-list>
+					<connection id="0" x-location="-2.5" y-location="0.0" />
+				</connection-list>
+			</building>
+			
+			<building id="2" type="Hallway" length="3.0" x-location="-6.0" y-location="0.0" facing="270.0">
+				<connection-list>
+					<connection id="0" x-location="0.0" y-location="1.5" />
+					<connection id="3" x-location="0.0" y-location="-1.5" />
+				</connection-list>
+			</building>
+			
+			<building id="3" type="Infirmary" x-location="-12.0" y-location="0.0" facing="270.0">
+				<connection-list>
+					<connection id="2" x-location="0.0" y-location="4.5" />
+					<connection id="4" x-location="0.0" y-location="-4.5" />
+				</connection-list>
+			</building>
+			
+			<building id="4" type="Hallway" length="3.0" x-location="-18.0" y-location="0.0" facing="270.0">
+				<connection-list>
+					<connection id="3" x-location="0.0" y-location="1.5" />
+					<connection id="5" x-location="0.0" y-location="-1.5" />
+				</connection-list>
+			</building>
+			
+			<building id="5" type="Inflatable Greenhouse" x-location="-24.0" y-location="0.0" facing="270.0">
+				<connection-list>
+					<connection id="4" x-location="0.0" y-location="4.5" />
+				</connection-list>
+			</building>
+
+			<building id="6" type="MD1 Nuclear Reactor" x-location="40.0" y-location="-60.0" facing="0.0" />
+			<building id="7" type="MD1 Nuclear Reactor" x-location="40.0" y-location="-80.0" facing="0.0" />
+			<building id="8" type="MD1 Nuclear Reactor" x-location="60.0" y-location="-60.0" facing="0.0" />
+
+			<building id="9" type="Starting ERV Base" x-location="40.0" y-location="15.0" facing="135.0" />
+
+			<building id="10" type="ERV Base" x-location="40.0" y-location="-15.0" facing="45.0" />
+
+			<building id="11" type="Large Sabatier Processor" x-location="0.0" y-location="-40.0" facing="90.0" />
+
+			<building id="12" type="Large Sabatier Processor" x-location="0.0" y-location="-65.0" facing="90.0" />		
+
+			<vehicle type="Explorer Rover" number="2" />
+			<vehicle type="Light Utility Vehicle" number="1" />
+
+			<equipment type="EVA Suit" number="8" />
+			<equipment type="Gas Canister" number="40" />
+			<equipment type="Barrel" number="40" />
+			<equipment type="Bag" number="40" />
+			<equipment type="Large Bag" number="10" />
+			<equipment type="Specimen Box" number="50" />
+
+			<part-package name="package 1" number="1" />
+
+			<resupply>
+				<resupply-mission name="Mars Direct Base Resupply 1" arrival-time="668.0" />
+				<resupply-mission name="Mars Direct Base Resupply 2" arrival-time="1336.0" />
+				<resupply-mission name="Mars Direct Base Resupply 3" arrival-time="2004.0" />
+			</resupply>
+		</template>
+				
 		<template name="Mars Direct Base (Phase 2)" default-population="8" number-of-robots="4" sponsor="Mars Society (MS)">
 			<building id="0" type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0">
 				<connection-list>
@@ -546,7 +768,7 @@
 				</connection-list>
 			</building>
 			
-			<building id="3" type="Workshop" x-location="-12.0" y-location="0.0" facing="270.0">
+			<building id="3" type="Laboratory" x-location="-12.0" y-location="0.0" facing="270.0">
 				<connection-list>
 					<connection id="2" x-location="0.0" y-location="4.5" />
 					<connection id="4" x-location="0.0" y-location="-4.5" />
@@ -816,7 +1038,7 @@
 				</connection-list>
 			</building>
 			
-			<building id="8" type="Residential Quarters" x-location="-12.0" y-location="13.0" facing="270.0">
+			<building id="8" type="Laboratory" x-location="-12.0" y-location="13.0" facing="270.0">
 				<connection-list>
 					<connection id="7" x-location="0.0" y-location="4.5" />
 					<connection id="9" x-location="0.0" y-location="-4.5" />
@@ -1016,7 +1238,7 @@
 				</connection-list>
 			</building>
 			
-			<building id="3" type="Workshop" x-location="-12.0" y-location="0.0" facing="270.0">
+			<building id="3" type="Lounge" x-location="-12.0" y-location="0.0" facing="270.0">
 				<connection-list>
 					<connection id="2" x-location="0.0" y-location="4.5" />
 					<connection id="4" x-location="0.0" y-location="-4.5" />
@@ -1052,7 +1274,257 @@
 				</connection-list>
 			</building>
 			
-			<building id="8" type="Residential Quarters" x-location="-12.0" y-location="13.0" facing="270.0">
+			<building id="8" type="Laboratory" x-location="-12.0" y-location="13.0" facing="270.0">
+				<connection-list>
+					<connection id="7" x-location="0.0" y-location="4.5" />
+					<connection id="9" x-location="0.0" y-location="-4.5" />
+				</connection-list>
+			</building>
+			
+			<building id="9" type="Hallway" length="3.0" x-location="-18.0" y-location="13.0" facing="270.0">
+				<connection-list>
+					<connection id="8" x-location="0.0" y-location="1.5" />
+					<connection id="10" x-location="0.0" y-location="-1.5" />
+				</connection-list>
+			</building>
+			
+			<building id="10" type="Inflatable Greenhouse" x-location="-24.0" y-location="13.0" facing="270.0">
+				<connection-list>
+					<connection id="9" x-location="0.0" y-location="4.5" />
+					<connection id="11" x-location="3.0" y-location="0.0" />
+				</connection-list>
+			</building>
+					
+			<!-- This hallway connects the inflatable greenhouse on the first row and the inflatable greenhouse on the second row -->		
+			<building id="11" type="Hallway" length="7.0" x-location="-24.0" y-location="6.5" facing="0.0">
+				<connection-list>
+					<connection id="5" x-location="0.0" y-location="-3.5" />
+					<connection id="10" x-location="0.0" y-location="3.5" />
+				</connection-list>
+			</building>						
+
+			<!-- This hallway connects the inflatable greenhouse to the garage -->		
+			<building id="12" type="Hallway" length="4.0" x-location="-24.0" y-location="-5.0" facing="0.0">
+				<connection-list>
+					<connection id="5" x-location="0.0" y-location="2.0" />
+					<connection id="13" x-location="0.0" y-location="-2.0" />
+				</connection-list>
+			</building>		
+			
+			<building id="13" type="Garage" x-location="-24.0" y-location="-15" facing="180.0">
+				<connection-list>
+					<connection id="12" x-location="0.0" y-location="-8.0" />
+				</connection-list>
+			</building>
+				
+			<!-- EVA Airlock is attached to the lander hab -->
+			<building id="14" type="EVA Airlock" x-location="7.0" y-location="0.0" facing="0.0">
+				<connection-list>
+					<connection id="0" x-location="-2.5" y-location="0.0" />
+				</connection-list>
+			</building>	
+																		
+			<building id="15" type="MD1 Nuclear Reactor" x-location="40.0" y-location="-60.0" facing="0.0" />
+			<building id="16" type="MD1 Nuclear Reactor" x-location="40.0" y-location="-80.0" facing="0.0" />
+			<building id="17" type="MD1 Nuclear Reactor" x-location="60.0" y-location="-60.0" facing="0.0" />
+			<building id="18" type="MD1 Nuclear Reactor" x-location="60.0" y-location="-80.0" facing="0.0" />
+			<building id="19" type="MD1 Nuclear Reactor" x-location="80.0" y-location="-100.0" facing="0.0" />
+								
+			<building id="20" type="Starting ERV Base" x-location="40.0" y-location="45.0" facing="135.0" />
+			<building id="21" type="ERV Base" x-location="40.0" y-location="15.0" facing="135.0" />
+			<building id="22" type="ERV Base" x-location="40.0" y-location="-15.0" facing="45.0" />
+	
+			<building id="23" type="Large Sabatier Processor" x-location="0.0" y-location="-40.0" facing="90.0" />
+			<building id="24" type="Large Sabatier Processor" x-location="0.0" y-location="-45.0" facing="90.0" />
+					
+			<vehicle type="Explorer Rover" number="2" />
+			<vehicle type="Light Utility Vehicle" number="1" />
+			
+			<equipment type="EVA Suit" number="16" />
+			<equipment type="Gas Canister" number="80" />
+			<equipment type="Barrel" number="80" />
+			<equipment type="Bag" number="80" />
+			<equipment type="Large Bag" number="20" />
+			<equipment type="Specimen Box" number="50" />
+
+			<!-- Resources -->
+			<resource type="food" amount="4000.0" />
+			<resource type="water" amount="6000.0" />	
+						
+			<resource type="black water" amount="25.0" />			
+			<resource type="grey water" amount="25.0" />			
+			<resource type="food waste" amount="25.0" />			
+			<resource type="solid waste" amount="25.0" />			
+			<resource type="crop waste" amount="25.0" />	
+<!--		
+			<resource type="nitrogen" amount="1000.0" />			
+			<resource type="hydrogen" amount="6000.0" />					
+			<resource type="methane" amount="6000.0" />			
+			<resource type="carbon dioxide" amount="10.0" />
+-->
+			<resource type="argon" amount="60.0" />		
+			
+			<resource type="fertilizer" amount="50.0" />
+
+			<!-- Crop -->
+			<resource type="Blueberry" amount="50.0" />
+			<resource type="Cabbage" amount="50.0" />
+			<resource type="Carrot" amount="50.0" />
+			<resource type="Celery" amount="50.0" />
+			<resource type="Corn" amount="50.0" />
+			
+			<resource type="Cranberry" amount="50.0" />
+			<resource type="Cucumber" amount="50.0" />
+			<resource type="Garlic" amount="50.0" />
+			<resource type="Ginger" amount="50.0" />
+			<resource type="Green Bell Pepper" amount="50.0" />
+			
+			<resource type="Spring Onion" amount="50.0" />
+			<resource type="Kidney Bean" amount="50.0" />
+			<resource type="Lettuce" amount="50.0" />
+			<resource type="Peanut" amount="50.0" />
+			<resource type="Peas" amount="50.0" />
+			
+			<resource type="Potato" amount="50.0" />
+			<resource type="Quinoa" amount="50.0" />
+			<resource type="Rice" amount="50.0" />		
+			<resource type="Soybean" amount="50.0" />
+			<resource type="Strawberry" amount="50.0" />
+			
+			<resource type="Sugarcane" amount="50.0" />		
+			<resource type="Swiss Chard" amount="50.0" />
+			<resource type="Taro" amount="50.0" />
+			<resource type="Tomato" amount="50.0" />
+			
+			<resource type="Wheat" amount="50.0" />
+			<resource type="White Rice" amount="50.0" />
+			<resource type="White Onion" amount="50.0" />
+			<resource type="Yam" amount="50.0" />
+
+			<resource type="morel mushroom" amount="50.0" />
+			<resource type="radish" amount="50.0" />	
+			<resource type="red beet" amount="50.0" />
+			<resource type="sweet potato" amount="50.0" />
+			
+			<resource type="Mustard Seed" amount="50.0" />
+			<resource type="Sesame Seed" amount="50.0" />
+			
+			<!-- Food Derived Items -->
+			<resource type="mustard" amount="50.0" />
+
+			<!-- Kitchen Resources -->
+			<resource type="chlorine" amount="50.0" />
+			<resource type="Sodium Hypochlorite" amount="20.0" />
+			<resource type="Acetic Acid Bacteria" amount="20.0" />
+			<resource type="Nitrosomonas spp" amount="20.0" />
+			<resource type="Nitrospira spp" amount="20.0" />
+			<resource type="Rhizobia" amount="20.0" />
+
+			<resource type="bisphenol-A" amount="100.0" />
+			<resource type="toilet tissue" amount="100.0" />
+			<resource type="paper" amount="100.0" />
+			<resource type="napkin" amount="100.0" />
+			<resource type="bleaching chemical" amount="50.0" />
+			<resource type="Baking Powder" amount="100.0" />
+			<resource type="pulp" amount="100.0" />
+			<resource type="Honey" amount="100.0" />
+			<resource type="Yeast" amount="50.0" />
+			<resource type="Epsom Salt" amount="50.0" />
+			<resource type="Table Salt" amount="50.0" />
+			<resource type="Sugar" amount="50.0" />
+			
+			<!-- Food Derived Items -->
+			<resource type="mustard" amount="50.0" />
+			<resource type="Tofu" amount="50.0" />
+			<resource type="Roasted Peanut" amount="50.0" />
+			<resource type="White Bread" amount="50.0" />
+			<resource type="White Bun" amount="50.0" />
+			<resource type="Veggie Patty" amount="50.0" />
+			<resource type="Wheat Bread" amount="50" />
+			<resource type="Wheat Bun" amount="50" />
+			<resource type="Soy Protein" amount="50.0" />
+			<resource type="Peanut Butter" amount="50.0" />
+			<resource type="Soy Sprout" amount="50.0" />
+			<resource type="Soybean Oil" amount="50.0" />
+			<resource type="Peanut Oil" amount="50.0" />
+			<resource type="Garlic Oil" amount="50.0" />
+			<resource type="Sesame Oil" amount="50.0" />
+			<resource type="Cane Fiber" amount="100.0" />
+			<resource type="Rice Vinegar" amount="50.0" />
+			<resource type="Soy Sauce" amount="50.0" />
+			<resource type="Soymilk" amount="50.0" />
+			<resource type="Soy Flour" amount="50.0" />
+			<resource type="Wheat Flour" amount="50.0" />
+			<resource type="Granola Bar" amount="10.0" />
+
+			<part-package name="package 2" number="1" />
+			<resupply>
+				<resupply-mission name="Mars Direct Base Resupply 2" arrival-time="669.0" />
+				<resupply-mission name="Mars Direct Base Resupply 3" arrival-time="1337.0" />
+			</resupply>
+		</template>
+
+		<template name="Mars Direct Base (Phase 2D)" default-population="8" number-of-robots="4" sponsor="Roscosmos (RKA)">
+			<building id="0" type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0">
+				<connection-list>
+					<connection id="2" x-location="-4.5" y-location="0.0" />
+					<connection id="1" x-location="0.0" y-location="4.5" />	
+					<connection id="14" x-location="4.5" y-location="0.0" />										
+				</connection-list>
+			</building>
+					
+			<!-- This hallway connects the lander hab on the first row and the research hab on the second row -->			
+			<building id="1" type="Hallway" length="4.0" x-location="0.0" y-location="6.5" facing="0.0">
+				<connection-list>
+					<connection id="0" x-location="0.0" y-location="-2.0" />
+					<connection id="6" x-location="0.0" y-location="2.0" />
+				</connection-list>
+			</building>
+								
+			<building id="2" type="Hallway" length="3.0" x-location="-6.0" y-location="0.0" facing="270.0">
+				<connection-list>
+					<connection id="0" x-location="0.0" y-location="1.5" />
+					<connection id="3" x-location="0.0" y-location="-1.5" />
+				</connection-list>
+			</building>
+			
+			<building id="3" type="Infirmary" x-location="-12.0" y-location="0.0" facing="270.0">
+				<connection-list>
+					<connection id="2" x-location="0.0" y-location="4.5" />
+					<connection id="4" x-location="0.0" y-location="-4.5" />
+				</connection-list>
+			</building>
+			
+			<building id="4" type="Hallway" length="3.0" x-location="-18.0" y-location="0.0" facing="270.0">
+				<connection-list>
+					<connection id="3" x-location="0.0" y-location="1.5" />
+					<connection id="5" x-location="0.0" y-location="-1.5" />
+				</connection-list>
+			</building>			
+			
+			<building id="5" type="Inflatable Greenhouse" x-location="-24.0" y-location="0.0" facing="270.0">
+				<connection-list>
+					<connection id="4" x-location="0.0" y-location="4.5" />
+					<connection id="11" x-location="-3.0" y-location="0.0" />	
+					<connection id="12" x-location="3.0" y-location="0.0" />					
+				</connection-list>
+			</building>					
+			
+			<building id="6" type="Medical Hab" x-location="0.0" y-location="13.0" facing="0.0">
+				<connection-list>
+					<connection id="1" x-location="0.0" y-location="-4.5" />
+					<connection id="7" x-location="-4.5" y-location="0.0" />
+				</connection-list>
+			</building>
+			
+			<building id="7" type="Hallway" length="3.0" x-location="-6.0" y-location="13.0" facing="270.0">
+				<connection-list>
+					<connection id="6" x-location="0.0" y-location="1.5" />
+					<connection id="8" x-location="0.0" y-location="-1.5" />
+				</connection-list>
+			</building>
+			
+			<building id="8" type="Command and Control" x-location="-12.0" y-location="13.0" facing="270.0">
 				<connection-list>
 					<connection id="7" x-location="0.0" y-location="4.5" />
 					<connection id="9" x-location="0.0" y-location="-4.5" />
@@ -1499,7 +1971,599 @@
 					<connection id="6" x-location="0.0" y-location="-1.5" />
 				</connection-list>
 			</building>
-			<building id="6" type="Workshop" x-location="-12.0" y-location="0.0" facing="270.0">
+			<building id="6" type="Laboratory" x-location="-12.0" y-location="0.0" facing="270.0">
+				<connection-list>
+					<connection id="5" x-location="0.0" y-location="4.5" />
+					<connection id="7" x-location="0.0" y-location="-4.5" />					
+				</connection-list>
+			</building>
+			
+			<building id="7" type="Hallway" length="3.0" x-location="-18.0" y-location="0.0" facing="270.0">
+				<connection-list>
+					<connection id="6" x-location="0.0" y-location="1.5" />
+					<connection id="8" x-location="0.0" y-location="-1.5" />
+				</connection-list>
+			</building>
+			<building id="8" type="Inflatable Greenhouse" x-location="-24.0" y-location="0.0" facing="270.0">
+				<connection-list>
+					<connection id="7" x-location="0.0" y-location="4.5" />
+					<connection id="17" x-location="-3.0" y-location="0.0" />	
+					<connection id="19" x-location="3.0" y-location="0.0" />									
+				</connection-list>
+			</building>
+					
+			<!-- The second row -->		
+			<building id="9" type="Hallway" length="3.0" x-location="-6.0" y-location="13.0" facing="270.0">
+				<connection-list>
+					<connection id="2" x-location="0.0" y-location="1.5" />
+					<connection id="10" x-location="0.0" y-location="-1.5" />
+				</connection-list>
+			</building>
+			<building id="10" type="Residential Quarters" x-location="-12.0" y-location="13.0" facing="270.0">
+				<connection-list>
+					<connection id="9" x-location="0.0" y-location="4.5" />
+					<connection id="11" x-location="0.0" y-location="-4.5" />
+				</connection-list>
+			</building>
+									
+			<building id="11" type="Hallway" length="3.0" x-location="-18.0" y-location="13.0" facing="270.0">
+				<connection-list>
+					<connection id="10" x-location="0.0" y-location="1.5" />
+					<connection id="12" x-location="0.0" y-location="-1.5" />
+				</connection-list>
+			</building>
+			<building id="12" type="Inflatable Greenhouse" x-location="-24.0" y-location="13.0" facing="270.0">
+				<connection-list>
+					<connection id="11" x-location="0.0" y-location="4.5" />
+					<connection id="17" x-location="3.0" y-location="0.0" />	
+					<connection id="18" x-location="-3.0" y-location="0.0" />									
+				</connection-list>
+			</building>
+			
+			<!-- The third row -->		
+			<building id="13" type="Hallway" length="3.0" x-location="-6.0" y-location="26.0" facing="270.0">
+				<connection-list>
+					<connection id="4" x-location="0.0" y-location="1.5" />
+					<connection id="14" x-location="0.0" y-location="-1.5" />
+				</connection-list>
+			</building>
+			<building id="14" type="Lounge" x-location="-12.0" y-location="26.0" facing="270.0">
+				<connection-list>
+					<connection id="13" x-location="0.0" y-location="4.5" />
+					<connection id="15" x-location="0.0" y-location="-4.5" />					
+				</connection-list>
+			</building>
+				
+			<building id="15" type="Hallway" length="3.0" x-location="-18.0" y-location="26.0" facing="270.0">
+				<connection-list>
+					<connection id="14" x-location="0.0" y-location="1.5" />
+					<connection id="16" x-location="0.0" y-location="-1.5" />
+				</connection-list>
+			</building>
+			<building id="16" type="Inflatable Greenhouse" x-location="-24.0" y-location="26.0" facing="270.0">
+				<connection-list>
+					<connection id="15" x-location="0.0" y-location="4.5" />
+					<connection id="18" x-location="3.0" y-location="0.0" />
+				</connection-list>
+			</building>
+								
+			<!-- This hallway connects the inflatable greenhouse on the first row to that of second row -->		
+			<building id="17" type="Hallway" length="7.0" x-location="-24.0" y-location="6.5" facing="0.0">
+				<connection-list>
+					<connection id="8" x-location="0.0" y-location="-3.5" />
+					<connection id="12" x-location="0.0" y-location="3.5" />
+				</connection-list>
+			</building>						
+
+			<!-- This hallway connects the inflatable greenhouse on the second row to that of the third row -->		
+			<building id="18" type="Hallway" length="7.0" x-location="-24.0" y-location="19.5" facing="0.0">
+				<connection-list>
+					<connection id="12" x-location="0.0" y-location="-3.5" />
+					<connection id="16" x-location="0.0" y-location="3.5" />
+				</connection-list>
+			</building>	
+	
+			<!-- This hallway connects the inflatable greenhouse in the first row to the garage -->		
+			<building id="19" type="Hallway" length="4.0" x-location="-24.0" y-location="-5.0" facing="0.0">
+				<connection-list>
+					<connection id="8" x-location="0.0" y-location="2.0" />
+					<connection id="20" x-location="0.0" y-location="-2.0" />
+				</connection-list>
+			</building>		
+			
+			<building id="20" type="Garage" x-location="-24.0" y-location="-15" facing="180.0">
+				<connection-list>
+					<connection id="19" x-location="0.0" y-location="-8.0" />
+				</connection-list>
+			</building>
+				
+			<!-- EVA Airlock is attached to the lander hab -->
+			<building id="21" type="EVA Airlock" x-location="7.0" y-location="0.0" facing="0.0">
+				<connection-list>
+					<connection id="0" x-location="-2.5" y-location="0.0" />
+				</connection-list>
+			</building>	
+																		
+			<building id="22" type="MD1 Nuclear Reactor" x-location="40.0" y-location="-60.0" facing="0.0" />
+			<building id="23" type="MD1 Nuclear Reactor" x-location="40.0" y-location="-80.0" facing="0.0" />
+			<building id="24" type="MD1 Nuclear Reactor" x-location="60.0" y-location="-60.0" facing="0.0" />
+			<building id="25" type="MD1 Nuclear Reactor" x-location="60.0" y-location="-80.0" facing="0.0" />
+			
+			<building id="26" type="MD4 Nuclear Reactor" x-location="100.0" y-location="-100" facing="0.0" />
+		
+			<building id="27" type="Starting ERV Base" x-location="40.0" y-location="45.0" facing="135.0" />
+			<building id="28" type="ERV Base" x-location="40.0" y-location="15.0" facing="135.0" />
+			<building id="29" type="ERV Base" x-location="40.0" y-location="-15.0" facing="45.0" />
+			<building id="30" type="ERV Base" x-location="80.0" y-location="15.0" facing="135.0" />		
+			
+			<building id="31" type="Large Sabatier Processor" x-location="0.0" y-location="-40.0" facing="90.0" />
+			<building id="32" type="Large Sabatier Processor" x-location="0.0" y-location="-45.0" facing="90.0" />
+			<building id="33" type="Large Sabatier Processor" x-location="0.0" y-location="-50.0" facing="90.0" />
+			
+			<vehicle type="Explorer Rover" number="2" />
+			<vehicle type="Transport Rover" number="1" />
+			<vehicle type="Cargo Rover" number="1" />
+			<vehicle type="Light Utility Vehicle" number="2" />
+			
+			<equipment type="EVA Suit" number="24" />
+			<equipment type="Gas Canister" number="120" />
+			<equipment type="Barrel" number="120" />
+			<equipment type="Bag" number="120" />
+			<equipment type="Large Bag" number="30" />
+			<equipment type="Specimen Box" number="70" />
+
+			<!-- Resources -->
+			<resource type="food" amount="6000.0" />
+			<resource type="water" amount="10000.0" />	
+						
+			<resource type="black water" amount="25.0" />			
+			<resource type="grey water" amount="25.0" />			
+			<resource type="food waste" amount="25.0" />			
+			<resource type="solid waste" amount="25.0" />			
+			<resource type="crop waste" amount="25.0" />	
+<!--		
+			<resource type="nitrogen" amount="2000.0" />			
+			<resource type="hydrogen" amount="9000.0" />					
+			<resource type="methane" amount="9000.0" />			
+			<resource type="carbon dioxide" amount="10.0" />
+-->
+			<resource type="argon" amount="90.0" />		
+			
+			<resource type="fertilizer" amount="50.0" />
+			
+			<!-- Crop -->
+			<resource type="Blueberry" amount="50.0" />
+			<resource type="Cabbage" amount="50.0" />
+			<resource type="Carrot" amount="50.0" />
+			<resource type="Celery" amount="50.0" />
+			<resource type="Corn" amount="50.0" />
+			
+			<resource type="Cranberry" amount="50.0" />
+			<resource type="Cucumber" amount="50.0" />
+			<resource type="Garlic" amount="50.0" />
+			<resource type="Ginger" amount="50.0" />
+			<resource type="Green Bell Pepper" amount="50.0" />
+			
+			<resource type="Spring Onion" amount="50.0" />
+			<resource type="Kidney Bean" amount="50.0" />
+			<resource type="Lettuce" amount="50.0" />
+			<resource type="Peanut" amount="50.0" />
+			<resource type="Peas" amount="50.0" />
+			
+			<resource type="Potato" amount="50.0" />
+			<resource type="Quinoa" amount="50.0" />
+			<resource type="Rice" amount="50.0" />
+			<resource type="Soybean" amount="50.0" />
+			<resource type="Strawberry" amount="50.0" />
+			
+			<resource type="Sugarcane" amount="50.0" />
+			<resource type="Swiss Chard" amount="50.0" />
+			<resource type="Taro" amount="50.0" />
+			<resource type="Tomato" amount="50.0" />
+			
+			<resource type="Wheat" amount="50.0" />
+			<resource type="White Rice" amount="50.0" />
+			<resource type="White Onion" amount="50.0" />
+			<resource type="Yam" amount="50.0" />
+			
+			<resource type="morel mushroom" amount="50.0" />
+			<resource type="radish" amount="50.0" />	
+			<resource type="red beet" amount="50.0" />
+			<resource type="sweet potato" amount="50.0" />
+
+			<resource type="Mustard Seed" amount="50.0" />
+			<resource type="Sesame Seed" amount="50.0" />
+
+
+			<!-- Kitchen Resources -->
+			<resource type="chlorine" amount="50.0" />
+			<resource type="Sodium Hypochlorite" amount="20.0" />
+			<resource type="Acetic Acid Bacteria" amount="20.0" />
+			<resource type="Nitrosomonas spp" amount="20.0" />
+			<resource type="Nitrospira spp" amount="20.0" />
+			<resource type="Rhizobia" amount="20.0" />
+
+			<resource type="bisphenol-A" amount="100.0" />
+			<resource type="toilet tissue" amount="100.0" />
+			<resource type="paper" amount="100.0" />
+			<resource type="napkin" amount="100.0" />
+			<resource type="bleaching chemical" amount="50.0" />
+			<resource type="Baking Powder" amount="100.0" />
+			<resource type="pulp" amount="100.0" />
+			<resource type="Honey" amount="100.0" />
+			<resource type="Yeast" amount="50.0" />
+			<resource type="Epsom Salt" amount="50.0" />
+			<resource type="Table Salt" amount="50.0" />
+			<resource type="Sugar" amount="50.0" />
+		
+			<!-- Food Derived Items -->
+			<resource type="mustard" amount="50.0" />			
+			<resource type="Tofu" amount="50.0" />
+			<resource type="Roasted Peanut" amount="50.0" />
+			<resource type="White Bread" amount="50.0" />
+			<resource type="White Bun" amount="50.0" />
+			<resource type="Veggie Patty" amount="50.0" />
+			<resource type="Wheat Bread" amount="50" />
+			<resource type="Wheat Bun" amount="50" />
+			<resource type="Soy Protein" amount="50.0" />
+			<resource type="Peanut Butter" amount="50.0" />
+			<resource type="Soy Sprout" amount="50.0" />
+			<resource type="Soybean Oil" amount="50.0" />
+			<resource type="Peanut Oil" amount="50.0" />
+			<resource type="Garlic Oil" amount="50.0" />
+			<resource type="Sesame Oil" amount="50.0" />
+			<resource type="Cane Fiber" amount="100.0" />
+			<resource type="Rice Vinegar" amount="50.0" />
+			<resource type="Soy Sauce" amount="50.0" />
+			<resource type="Soymilk" amount="50.0" />
+			<resource type="Soy Flour" amount="50.0" />
+			<resource type="Wheat Flour" amount="50.0" />
+			<resource type="Granola Bar" amount="10.0" />
+
+			<part-package name="package 3" number="1" />
+			<resupply>
+				<resupply-mission name="Mars Direct Base Resupply 3" arrival-time="670.0" />
+			</resupply>
+		</template>
+
+		<template name="Mars Direct Base (Phase 3B)" default-population="12" number-of-robots="6"  sponsor="China National Space Administration (CNSA)">
+			<building id="0" type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0">
+				<connection-list>
+					<connection id="1" x-location="0.0" y-location="4.5" />
+					<connection id="5" x-location="-4.5" y-location="0.0" />
+					<connection id="21" x-location="4.5" y-location="0.0" />						
+				</connection-list>
+			</building>
+			<building id="1" type="Hallway" length="4.0" x-location="0.0" y-location="6.5" facing="0.0">
+				<connection-list>
+					<connection id="0" x-location="0.0" y-location="-2.0" />
+					<connection id="2" x-location="0.0" y-location="2.0" />
+				</connection-list>
+			</building>
+			<building id="2" type="Research Hab" x-location="0.0" y-location="13.0" facing="0.0">
+				<connection-list>
+					<connection id="1" x-location="0.0" y-location="-4.5" />
+					<connection id="3" x-location="0.0" y-location="4.5" />
+					<connection id="9" x-location="-4.5" y-location="0.0" />
+				</connection-list>
+			</building>
+			<building id="3" type="Hallway" length="4.0" x-location="0.0" y-location="19.5" facing="0.0">
+				<connection-list>
+					<connection id="2" x-location="0.0" y-location="-2.0" />
+					<connection id="4" x-location="0.0" y-location="2.0" />
+				</connection-list>
+			</building>
+			<building id="4" type="Storage Hab" x-location="0.0" y-location="26.0" facing="0.0">
+				<connection-list>
+					<connection id="3" x-location="0.0" y-location="-4.5" />
+					<connection id="13" x-location="-4.5" y-location="0.0" />
+				</connection-list>
+			</building>
+			
+			<!-- The first row -->		
+			<building id="5" type="Hallway" length="3.0" x-location="-6.0" y-location="0.0" facing="270.0">
+				<connection-list>
+					<connection id="0" x-location="0.0" y-location="1.5" />
+					<connection id="6" x-location="0.0" y-location="-1.5" />
+				</connection-list>
+			</building>
+			<building id="6" type="Laboratory" x-location="-12.0" y-location="0.0" facing="270.0">
+				<connection-list>
+					<connection id="5" x-location="0.0" y-location="4.5" />
+					<connection id="7" x-location="0.0" y-location="-4.5" />					
+				</connection-list>
+			</building>
+			
+			<building id="7" type="Hallway" length="3.0" x-location="-18.0" y-location="0.0" facing="270.0">
+				<connection-list>
+					<connection id="6" x-location="0.0" y-location="1.5" />
+					<connection id="8" x-location="0.0" y-location="-1.5" />
+				</connection-list>
+			</building>
+			<building id="8" type="Inflatable Greenhouse" x-location="-24.0" y-location="0.0" facing="270.0">
+				<connection-list>
+					<connection id="7" x-location="0.0" y-location="4.5" />
+					<connection id="17" x-location="-3.0" y-location="0.0" />	
+					<connection id="19" x-location="3.0" y-location="0.0" />									
+				</connection-list>
+			</building>
+					
+			<!-- The second row -->		
+			<building id="9" type="Hallway" length="3.0" x-location="-6.0" y-location="13.0" facing="270.0">
+				<connection-list>
+					<connection id="2" x-location="0.0" y-location="1.5" />
+					<connection id="10" x-location="0.0" y-location="-1.5" />
+				</connection-list>
+			</building>
+			<building id="10" type="Residential Quarters" x-location="-12.0" y-location="13.0" facing="270.0">
+				<connection-list>
+					<connection id="9" x-location="0.0" y-location="4.5" />
+					<connection id="11" x-location="0.0" y-location="-4.5" />
+				</connection-list>
+			</building>
+									
+			<building id="11" type="Hallway" length="3.0" x-location="-18.0" y-location="13.0" facing="270.0">
+				<connection-list>
+					<connection id="10" x-location="0.0" y-location="1.5" />
+					<connection id="12" x-location="0.0" y-location="-1.5" />
+				</connection-list>
+			</building>
+			<building id="12" type="Inflatable Greenhouse" x-location="-24.0" y-location="13.0" facing="270.0">
+				<connection-list>
+					<connection id="11" x-location="0.0" y-location="4.5" />
+					<connection id="17" x-location="3.0" y-location="0.0" />	
+					<connection id="18" x-location="-3.0" y-location="0.0" />									
+				</connection-list>
+			</building>
+			
+			<!-- The third row -->		
+			<building id="13" type="Hallway" length="3.0" x-location="-6.0" y-location="26.0" facing="270.0">
+				<connection-list>
+					<connection id="4" x-location="0.0" y-location="1.5" />
+					<connection id="14" x-location="0.0" y-location="-1.5" />
+				</connection-list>
+			</building>
+			<building id="14" type="Lounge" x-location="-12.0" y-location="26.0" facing="270.0">
+				<connection-list>
+					<connection id="13" x-location="0.0" y-location="4.5" />
+					<connection id="15" x-location="0.0" y-location="-4.5" />					
+				</connection-list>
+			</building>
+				
+			<building id="15" type="Hallway" length="3.0" x-location="-18.0" y-location="26.0" facing="270.0">
+				<connection-list>
+					<connection id="14" x-location="0.0" y-location="1.5" />
+					<connection id="16" x-location="0.0" y-location="-1.5" />
+				</connection-list>
+			</building>
+			<building id="16" type="Inflatable Greenhouse" x-location="-24.0" y-location="26.0" facing="270.0">
+				<connection-list>
+					<connection id="15" x-location="0.0" y-location="4.5" />
+					<connection id="18" x-location="3.0" y-location="0.0" />
+				</connection-list>
+			</building>
+								
+			<!-- This hallway connects the inflatable greenhouse on the first row to that of second row -->		
+			<building id="17" type="Hallway" length="7.0" x-location="-24.0" y-location="6.5" facing="0.0">
+				<connection-list>
+					<connection id="8" x-location="0.0" y-location="-3.5" />
+					<connection id="12" x-location="0.0" y-location="3.5" />
+				</connection-list>
+			</building>						
+
+			<!-- This hallway connects the inflatable greenhouse on the second row to that of the third row -->		
+			<building id="18" type="Hallway" length="7.0" x-location="-24.0" y-location="19.5" facing="0.0">
+				<connection-list>
+					<connection id="12" x-location="0.0" y-location="-3.5" />
+					<connection id="16" x-location="0.0" y-location="3.5" />
+				</connection-list>
+			</building>	
+	
+			<!-- This hallway connects the inflatable greenhouse in the first row to the garage -->		
+			<building id="19" type="Hallway" length="4.0" x-location="-24.0" y-location="-5.0" facing="0.0">
+				<connection-list>
+					<connection id="8" x-location="0.0" y-location="2.0" />
+					<connection id="20" x-location="0.0" y-location="-2.0" />
+				</connection-list>
+			</building>		
+			
+			<building id="20" type="Garage" x-location="-24.0" y-location="-15" facing="180.0">
+				<connection-list>
+					<connection id="19" x-location="0.0" y-location="-8.0" />
+				</connection-list>
+			</building>
+				
+			<!-- EVA Airlock is attached to the lander hab -->
+			<building id="21" type="EVA Airlock" x-location="7.0" y-location="0.0" facing="0.0">
+				<connection-list>
+					<connection id="0" x-location="-2.5" y-location="0.0" />
+				</connection-list>
+			</building>	
+																		
+			<building id="22" type="MD1 Nuclear Reactor" x-location="40.0" y-location="-60.0" facing="0.0" />
+			<building id="23" type="MD1 Nuclear Reactor" x-location="40.0" y-location="-80.0" facing="0.0" />
+			<building id="24" type="MD1 Nuclear Reactor" x-location="60.0" y-location="-60.0" facing="0.0" />
+			<building id="25" type="MD1 Nuclear Reactor" x-location="60.0" y-location="-80.0" facing="0.0" />
+			
+			<building id="26" type="MD4 Nuclear Reactor" x-location="100.0" y-location="-100" facing="0.0" />
+		
+			<building id="27" type="Starting ERV Base" x-location="40.0" y-location="45.0" facing="135.0" />
+			<building id="28" type="ERV Base" x-location="40.0" y-location="15.0" facing="135.0" />
+			<building id="29" type="ERV Base" x-location="40.0" y-location="-15.0" facing="45.0" />
+			<building id="30" type="ERV Base" x-location="80.0" y-location="15.0" facing="135.0" />		
+			
+			<building id="31" type="Large Sabatier Processor" x-location="0.0" y-location="-40.0" facing="90.0" />
+			<building id="32" type="Large Sabatier Processor" x-location="0.0" y-location="-45.0" facing="90.0" />
+			<building id="33" type="Large Sabatier Processor" x-location="0.0" y-location="-50.0" facing="90.0" />
+			
+			<vehicle type="Explorer Rover" number="2" />
+			<vehicle type="Transport Rover" number="1" />
+			<vehicle type="Cargo Rover" number="1" />
+			<vehicle type="Light Utility Vehicle" number="2" />
+			
+			<equipment type="EVA Suit" number="24" />
+			<equipment type="Gas Canister" number="120" />
+			<equipment type="Barrel" number="120" />
+			<equipment type="Bag" number="120" />
+			<equipment type="Large Bag" number="30" />
+			<equipment type="Specimen Box" number="70" />
+
+			<!-- Resources -->
+			<resource type="food" amount="6000.0" />
+			<resource type="water" amount="10000.0" />	
+						
+			<resource type="black water" amount="25.0" />			
+			<resource type="grey water" amount="25.0" />			
+			<resource type="food waste" amount="25.0" />			
+			<resource type="solid waste" amount="25.0" />			
+			<resource type="crop waste" amount="25.0" />	
+<!--		
+			<resource type="nitrogen" amount="2000.0" />			
+			<resource type="hydrogen" amount="9000.0" />					
+			<resource type="methane" amount="9000.0" />			
+			<resource type="carbon dioxide" amount="10.0" />
+-->
+			<resource type="argon" amount="90.0" />		
+			
+			<resource type="fertilizer" amount="50.0" />
+			
+			<!-- Crop -->
+			<resource type="Blueberry" amount="50.0" />
+			<resource type="Cabbage" amount="50.0" />
+			<resource type="Carrot" amount="50.0" />
+			<resource type="Celery" amount="50.0" />
+			<resource type="Corn" amount="50.0" />
+			
+			<resource type="Cranberry" amount="50.0" />
+			<resource type="Cucumber" amount="50.0" />
+			<resource type="Garlic" amount="50.0" />
+			<resource type="Ginger" amount="50.0" />
+			<resource type="Green Bell Pepper" amount="50.0" />
+			
+			<resource type="Spring Onion" amount="50.0" />
+			<resource type="Kidney Bean" amount="50.0" />
+			<resource type="Lettuce" amount="50.0" />
+			<resource type="Peanut" amount="50.0" />
+			<resource type="Peas" amount="50.0" />
+			
+			<resource type="Potato" amount="50.0" />
+			<resource type="Quinoa" amount="50.0" />
+			<resource type="Rice" amount="50.0" />
+			<resource type="Soybean" amount="50.0" />
+			<resource type="Strawberry" amount="50.0" />
+			
+			<resource type="Sugarcane" amount="50.0" />
+			<resource type="Swiss Chard" amount="50.0" />
+			<resource type="Taro" amount="50.0" />
+			<resource type="Tomato" amount="50.0" />
+			
+			<resource type="Wheat" amount="50.0" />
+			<resource type="White Rice" amount="50.0" />
+			<resource type="White Onion" amount="50.0" />
+			<resource type="Yam" amount="50.0" />
+			
+			<resource type="morel mushroom" amount="50.0" />
+			<resource type="radish" amount="50.0" />	
+			<resource type="red beet" amount="50.0" />
+			<resource type="sweet potato" amount="50.0" />
+
+			<resource type="Mustard Seed" amount="50.0" />
+			<resource type="Sesame Seed" amount="50.0" />
+
+
+			<!-- Kitchen Resources -->
+			<resource type="chlorine" amount="50.0" />
+			<resource type="Sodium Hypochlorite" amount="20.0" />
+			<resource type="Acetic Acid Bacteria" amount="20.0" />
+			<resource type="Nitrosomonas spp" amount="20.0" />
+			<resource type="Nitrospira spp" amount="20.0" />
+			<resource type="Rhizobia" amount="20.0" />
+
+			<resource type="bisphenol-A" amount="100.0" />
+			<resource type="toilet tissue" amount="100.0" />
+			<resource type="paper" amount="100.0" />
+			<resource type="napkin" amount="100.0" />
+			<resource type="bleaching chemical" amount="50.0" />
+			<resource type="Baking Powder" amount="100.0" />
+			<resource type="pulp" amount="100.0" />
+			<resource type="Honey" amount="100.0" />
+			<resource type="Yeast" amount="50.0" />
+			<resource type="Epsom Salt" amount="50.0" />
+			<resource type="Table Salt" amount="50.0" />
+			<resource type="Sugar" amount="50.0" />
+		
+			<!-- Food Derived Items -->
+			<resource type="mustard" amount="50.0" />			
+			<resource type="Tofu" amount="50.0" />
+			<resource type="Roasted Peanut" amount="50.0" />
+			<resource type="White Bread" amount="50.0" />
+			<resource type="White Bun" amount="50.0" />
+			<resource type="Veggie Patty" amount="50.0" />
+			<resource type="Wheat Bread" amount="50" />
+			<resource type="Wheat Bun" amount="50" />
+			<resource type="Soy Protein" amount="50.0" />
+			<resource type="Peanut Butter" amount="50.0" />
+			<resource type="Soy Sprout" amount="50.0" />
+			<resource type="Soybean Oil" amount="50.0" />
+			<resource type="Peanut Oil" amount="50.0" />
+			<resource type="Garlic Oil" amount="50.0" />
+			<resource type="Sesame Oil" amount="50.0" />
+			<resource type="Cane Fiber" amount="100.0" />
+			<resource type="Rice Vinegar" amount="50.0" />
+			<resource type="Soy Sauce" amount="50.0" />
+			<resource type="Soymilk" amount="50.0" />
+			<resource type="Soy Flour" amount="50.0" />
+			<resource type="Wheat Flour" amount="50.0" />
+			<resource type="Granola Bar" amount="10.0" />
+
+			<part-package name="package 3" number="1" />
+			<resupply>
+				<resupply-mission name="Mars Direct Base Resupply 3" arrival-time="670.0" />
+			</resupply>
+		</template>
+
+		<template name="Mars Direct Base (Phase 3C)" default-population="12" number-of-robots="6"  sponsor="The Indian Space Research Organisation (ISRO)">
+			<building id="0" type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0">
+				<connection-list>
+					<connection id="1" x-location="0.0" y-location="4.5" />
+					<connection id="5" x-location="-4.5" y-location="0.0" />
+					<connection id="21" x-location="4.5" y-location="0.0" />						
+				</connection-list>
+			</building>
+			<building id="1" type="Hallway" length="4.0" x-location="0.0" y-location="6.5" facing="0.0">
+				<connection-list>
+					<connection id="0" x-location="0.0" y-location="-2.0" />
+					<connection id="2" x-location="0.0" y-location="2.0" />
+				</connection-list>
+			</building>
+			<building id="2" type="Research Hab" x-location="0.0" y-location="13.0" facing="0.0">
+				<connection-list>
+					<connection id="1" x-location="0.0" y-location="-4.5" />
+					<connection id="3" x-location="0.0" y-location="4.5" />
+					<connection id="9" x-location="-4.5" y-location="0.0" />
+				</connection-list>
+			</building>
+			<building id="3" type="Hallway" length="4.0" x-location="0.0" y-location="19.5" facing="0.0">
+				<connection-list>
+					<connection id="2" x-location="0.0" y-location="-2.0" />
+					<connection id="4" x-location="0.0" y-location="2.0" />
+				</connection-list>
+			</building>
+			<building id="4" type="Storage Hab" x-location="0.0" y-location="26.0" facing="0.0">
+				<connection-list>
+					<connection id="3" x-location="0.0" y-location="-4.5" />
+					<connection id="13" x-location="-4.5" y-location="0.0" />
+				</connection-list>
+			</building>
+			
+			<!-- The first row -->		
+			<building id="5" type="Hallway" length="3.0" x-location="-6.0" y-location="0.0" facing="270.0">
+				<connection-list>
+					<connection id="0" x-location="0.0" y-location="1.5" />
+					<connection id="6" x-location="0.0" y-location="-1.5" />
+				</connection-list>
+			</building>
+			<building id="6" type="Laboratory" x-location="-12.0" y-location="0.0" facing="270.0">
 				<connection-list>
 					<connection id="5" x-location="0.0" y-location="4.5" />
 					<connection id="7" x-location="0.0" y-location="-4.5" />					
@@ -1768,7 +2832,7 @@
 					<connection id="2" x-location="0.0" y-location="2.0" />
 				</connection-list>
 			</building>
-			<building id="2" type="Research Hab" x-location="0.0" y-location="13.0" facing="0.0">
+			<building id="2" type="Medical Hab" x-location="0.0" y-location="13.0" facing="0.0">
 				<connection-list>
 					<connection id="1" x-location="0.0" y-location="-4.5" />
 					<connection id="3" x-location="0.0" y-location="4.5" />
@@ -1781,7 +2845,7 @@
 					<connection id="4" x-location="0.0" y-location="2.0" />
 				</connection-list>
 			</building>
-			<building id="4" type="Medical Hab" x-location="0.0" y-location="26.0" facing="0.0">
+			<building id="4" type="Research Hab" x-location="0.0" y-location="26.0" facing="0.0">
 				<connection-list>
 					<connection id="3" x-location="0.0" y-location="-4.5" />
 					<connection id="13" x-location="-4.5" y-location="0.0" />
@@ -1795,7 +2859,7 @@
 					<connection id="6" x-location="0.0" y-location="-1.5" />
 				</connection-list>
 			</building>
-			<building id="6" type="Workshop" x-location="-12.0" y-location="0.0" facing="270.0">
+			<building id="6" type="Infirmary" x-location="-12.0" y-location="0.0" facing="270.0">
 				<connection-list>
 					<connection id="5" x-location="0.0" y-location="4.5" />
 					<connection id="7" x-location="0.0" y-location="-4.5" />					
@@ -1823,7 +2887,7 @@
 					<connection id="10" x-location="0.0" y-location="-1.5" />
 				</connection-list>
 			</building>
-			<building id="10" type="Residential Quarters" x-location="-12.0" y-location="13.0" facing="270.0">
+			<building id="10" type="Command and Control" x-location="-12.0" y-location="13.0" facing="270.0">
 				<connection-list>
 					<connection id="9" x-location="0.0" y-location="4.5" />
 					<connection id="11" x-location="0.0" y-location="-4.5" />
@@ -1851,7 +2915,7 @@
 					<connection id="14" x-location="0.0" y-location="-1.5" />
 				</connection-list>
 			</building>
-			<building id="14" type="Lounge" x-location="-12.0" y-location="26.0" facing="270.0">
+			<building id="14" type="Residential Quarters" x-location="-12.0" y-location="26.0" facing="270.0">
 				<connection-list>
 					<connection id="13" x-location="0.0" y-location="4.5" />
 					<connection id="15" x-location="0.0" y-location="-4.5" />					

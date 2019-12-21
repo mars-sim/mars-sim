@@ -11,8 +11,13 @@ package org.mars_sim.headless;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+import org.mars_sim.msp.core.UnitManager;
 
 /**
  * MarsProjectHeadlessStarter is the main class for running the main executable
@@ -23,23 +28,58 @@ public class MarsProjectHeadlessStarter {
 
 //	private final static String ERROR_PREFIX = "? ";
 
+	private static final String JAVA = "java";
+	private static final String JAVA_HOME = "JAVA_HOME";
+	private static final String BIN = "bin";
+	private static final String ONE_WHITESPACE = " ";
+	
+	private static List<String> templates = new ArrayList<>();
+	
+	static {
+		templates.add("template:1");
+		templates.add("template:1A");
+		templates.add("template:1B");
+		templates.add("template:1C");
+		templates.add("template:1D");
+		templates.add("template:2");
+		templates.add("template:2A");
+		templates.add("template:2B");
+		templates.add("template:2C");
+		templates.add("template:2D");
+		templates.add("template:3");
+		templates.add("template:3A");
+		templates.add("template:3B");
+		templates.add("template:3C");
+		templates.add("template:3D");
+	}
+	
+	public static List<String> getTemplates() {
+		return templates;
+	}
+	
 	public static void main(String[] args) {
 
 		StringBuilder command = new StringBuilder();
 
-		String javaHome = System.getenv("JAVA_HOME");
+		String javaHome = System.getenv(JAVA_HOME);
 		
 		if (javaHome != null) {
-			if (javaHome.contains(" "))
+			if (javaHome.contains(ONE_WHITESPACE))
 				javaHome = "\"" + javaHome;
 
-			command.append(javaHome).append(File.separator).append("bin").append(File.separator).append("java");
+			command
+			.append(javaHome)
+			.append(File.separator)
+			.append(BIN)
+			.append(File.separator)
+			.append(JAVA);
 
-			if (javaHome.contains(" "))
+			if (javaHome.contains(ONE_WHITESPACE))
 				command.append("\"");
-		} else
-			command.append("java");
-
+		} 
+		else {
+			command.append(JAVA);
+		}
 		// command.append(" -Dswing.aatext=true");
 		// command.append(" -Dswing.plaf.metal.controlFont=Tahoma"); // the compiled jar
 		// won't run
@@ -54,8 +94,13 @@ public class MarsProjectHeadlessStarter {
 //        	.append(" -Xlog:gc*");
         
 		command.append(" -Djava.util.logging.config.file=logging.properties").append(" -cp .")
-				.append(File.pathSeparator).append("*").append(File.pathSeparator).append("jars").append(File.separator)
-				.append("*").append(" org.mars_sim.headless.MarsProjectHeadless");
+				.append(File.pathSeparator)
+				.append("*")
+				.append(File.pathSeparator)
+				.append("jars")
+				.append(File.separator)
+				.append("*")
+				.append(" org.mars_sim.headless.MarsProjectHeadless");
 
 		// Add checking for input args
 		List<String> argList = Arrays.asList(args);
@@ -112,9 +157,23 @@ public class MarsProjectHeadlessStarter {
 //					command.append(" -headless");
 
 				// Check for the new switch
-				if (argList.contains("new") || argList.contains("-new"))
+				if (argList.contains("new") || argList.contains("-new")) {
 					command.append(" -new");
 
+					for (String s: argList) {
+						if (StringUtils.containsIgnoreCase(s, "-country:")) {
+							command.append(" " + s);
+						}
+						
+						if (StringUtils.containsIgnoreCase(s, "-sponsor:")) {
+							command.append(" " + s);
+						}
+								
+						if (StringUtils.containsIgnoreCase(s, "-template:")) {
+							command.append(" " + s);
+						}
+					}				
+				}
 				// Check for the load switch
 				else if (argList.contains("load") || argList.contains("-load")) {
 					command.append(" -load");
