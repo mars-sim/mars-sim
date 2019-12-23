@@ -89,7 +89,9 @@ public class InteractiveTerm {
 		SwingUtilities.invokeLater(() -> {
 			marsTerminal = new MarsTerminal(this);
 	        marsTerminal.init();
-	        
+			// Prevent allow users from arbitrarily close the terminal by clicking top right close button
+			marsTerminal.registerUserInterruptHandler(term -> {}, false);
+		
 			logger.config("Done with MarsTerminal on " + Thread.currentThread().getName());
 			
 	        textIO = new TextIO(marsTerminal);
@@ -107,7 +109,6 @@ public class InteractiveTerm {
 	    	logger.config("Done with setUpESC on " + Thread.currentThread().getName());
 
 	        if (restart) {
-	        	
 	//    		profile = new CommanderProfile(this);
 	//
 	//    		gm = new GameManager();
@@ -116,10 +117,10 @@ public class InteractiveTerm {
 	    		
 //	            handler = new SwingHandler(textIO, "console", gm);
 	//    		// Prevent allow users from arbitrarily close the terminal by clicking top right close button
-	    		marsTerminal.registerUserInterruptHandler(term -> {}, false);
+//	    		marsTerminal.registerUserInterruptHandler(term -> {}, false);
 	    		
 	    		setKeepRunning(true);
-	
+	    		
 	    		loadTerminalMenu();
 	        }
 	        
@@ -144,10 +145,7 @@ public class InteractiveTerm {
 		initializeTerminal();
 		
 		profile = new CommanderProfile(this);
-        
-		// Prevent allow users from arbitrarily close the terminal by clicking top right close button
-		marsTerminal.registerUserInterruptHandler(term -> {}, false);
-			
+        		
 		return selectMenu();
 	}
 	
