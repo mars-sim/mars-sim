@@ -51,6 +51,7 @@ public class MarsProjectHeadlessStarter {
 		templates.add("template:3B");
 		templates.add("template:3C");
 		templates.add("template:3D");
+		templates.add("template:4");
 	}
 	
 	public static List<String> getTemplates() {

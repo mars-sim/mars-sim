@@ -1,1 +1,8 @@
 /target/
+.classpath
+.project
+/.settings/
+/.settings/**
+.idea
+/bin/
+/mars-sim-core.iml

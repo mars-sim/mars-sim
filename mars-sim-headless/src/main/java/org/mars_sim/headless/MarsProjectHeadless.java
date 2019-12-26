@@ -227,12 +227,12 @@ public class MarsProjectHeadless {
 			if (StringUtils.containsIgnoreCase(s, "-country:")) {
 				List<String> countries = UnitManager.getAllCountryList();
 //				System.out.println(countries);
-//				logger.info(s);
+				logger.info("has " + s);
 				for (String c: countries) {
 //					logger.info(c);
 					if (s.contains(c) || s.contains(c.toLowerCase())) {
 						countryString = c;
-						logger.info("Found countryString: " + countryString);
+						logger.info("Found country string: " + countryString);
 					}
 				}
 			}
@@ -240,11 +240,12 @@ public class MarsProjectHeadless {
 			if (StringUtils.containsIgnoreCase(s, "-sponsor:")) {
 				List<String> sponsors = UnitManager.getAllSponsorShortList();
 //				System.out.println(sponsors);
-//				logger.info(s);
+				logger.info("has " + s);
 				for (String ss: sponsors) {
+//					logger.info(ss);
 					if (s.contains(ss) || s.contains(ss.toLowerCase())) {
 						sponsorString = ss;
-						logger.info("Found sponsorString: " + sponsorString);
+						logger.info("Found sponsor string: " + sponsorString);
 					}
 				}
 			}
@@ -255,7 +256,7 @@ public class MarsProjectHeadless {
 				
 				Collection<String> templates = settlementConfig.getTemplateMap().values();//MarsProjectHeadlessStarter.getTemplates();
 //				System.out.println(templates);
-//				logger.info(s);
+				logger.info("has " + s);
 				templatePhaseString = s.substring(s.indexOf(":") + 1, s.length());
 				logger.info("Found templatePhaseString: " + templatePhaseString);
 				for (String t: templates) {

@@ -18,7 +18,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.JFileChooser;
-import javax.swing.SwingUtilities;
 
 import org.beryx.textio.AbstractTextTerminal;
 import org.beryx.textio.ReadHandlerData;
@@ -86,7 +85,7 @@ public class InteractiveTerm {
 		this.consoleEdition = consoleEdition;
 		interactiveTerm = this;
 		
-		SwingUtilities.invokeLater(() -> {
+//		SwingUtilities.invokeLater(() -> {
 			marsTerminal = new MarsTerminal(this);
 	        marsTerminal.init();
 			// Prevent allow users from arbitrarily close the terminal by clicking top right close button
@@ -126,7 +125,7 @@ public class InteractiveTerm {
 	        
 			logger.config("Done with InteractiveTerm's constructor is on " + Thread.currentThread().getName());
 			
-		});
+//		});
 		  
 	}
 	

@@ -482,7 +482,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
 	        FileInputStream fi = new FileInputStream(PATH);
 	        p.load(fi);
 	        fi.close();
-        
+
 	        commander = loadProperties(p, commander);
 	        
 	        logger.config("Commander's profile loaded: " + p);
@@ -490,7 +490,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
 	        return true;
 		}
 		else {
-	        logger.config("Can't find the 'commander.profile' file.");
+	        logger.config("Can't find " + FILENAME);
 	        return false;
 		}
     }
