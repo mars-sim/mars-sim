@@ -106,6 +106,8 @@ public class MarsProjectHeadlessStarter {
 		// Add checking for input args
 		List<String> argList = Arrays.asList(args);
 
+		boolean isNew = false;
+		
 		if (argList.isEmpty()) {
 			// by default, use gui and 1.5 GB
 			command.append(" -Xms256m");
@@ -159,22 +161,9 @@ public class MarsProjectHeadlessStarter {
 
 				// Check for the new switch
 				if (argList.contains("new") || argList.contains("-new")) {
-					command.append(" -new");
-
-					for (String s: argList) {
-						if (StringUtils.containsIgnoreCase(s, "-country:")) {
-							command.append(" " + s);
-						}
-						
-						if (StringUtils.containsIgnoreCase(s, "-sponsor:")) {
-							command.append(" " + s);
-						}
-								
-						if (StringUtils.containsIgnoreCase(s, "-template:")) {
-							command.append(" " + s);
-						}
-					}				
+					isNew = true;	
 				}
+				
 				// Check for the load switch
 				else if (argList.contains("load") || argList.contains("-load")) {
 					command.append(" -load");
@@ -194,13 +183,30 @@ public class MarsProjectHeadlessStarter {
 				else {
 					// System.out.println("Note: it's missing 'new' or 'load'. Assume you want to
 					// start a new sim now.");
-					command.append(" -new");
+					
+					isNew = true;	
 				}
-
 			}
-
 		}
 
+		if (isNew) {
+			command.append(" -new");
+			
+			for (String s: argList) {
+				if (StringUtils.containsIgnoreCase(s, "-country:")) {
+					command.append(" " + s);
+				}
+				
+				if (StringUtils.containsIgnoreCase(s, "-sponsor:")) {
+					command.append(" " + s);
+				}
+						
+				if (StringUtils.containsIgnoreCase(s, "-template:")) {
+					command.append(" " + s);
+				}
+			}		
+		}
+		
 		// Check for noaudio switch
 		if (argList.contains("noaudio") || argList.contains("-noaudio"))
 			command.append(" -noaudio");

@@ -2229,10 +2229,13 @@ public class UnitManager implements Serializable {
 	 * @return Collection of settlements
 	 */
 	public Collection<Settlement> getSettlements() {
-		if (lookupSettlement != null && !lookupSettlement.isEmpty())
+		if (lookupSettlement != null && !lookupSettlement.isEmpty()) {
 			return lookupSettlement.values();//CollectionUtils.getSettlement(units); 
-		else
+		}
+		else {
+			logger.severe("lookupSettlement is null.");
 			return new ArrayList<>();
+		}
 	}
 
 	/**
