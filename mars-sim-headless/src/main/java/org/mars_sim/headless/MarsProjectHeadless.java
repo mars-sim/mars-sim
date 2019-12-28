@@ -44,8 +44,6 @@ public class MarsProjectHeadless {
 	
 	private static final String LOGGING_PROPERTIES = "/logging.properties";
 
-//	static String[] args;
-	
 	private List<String> argList;
 
 	private Simulation sim = Simulation.instance();
@@ -75,11 +73,11 @@ public class MarsProjectHeadless {
 	 +"                    (Note : if 'load' is absent, 'new' is automatically appended.)," + System.lineSeparator()
 	 +"    headless        run in console mode without an user interface (UI)" + System.lineSeparator()
 	 +"    0               256MB Min, 1024MB Max (by default)" + System.lineSeparator()
-	 +"    1               256MB Min, 512MB Max" + System.lineSeparator()
-	 +"    2               256MB Min, 768MB Max" + System.lineSeparator()
-	 +"    3               256MB Min, 1024MB Max" + System.lineSeparator()
-	 +"    4               256MB Min, 1536MB Max" + System.lineSeparator()
-	 +"    5               256MB Min, 2048MB Max" + System.lineSeparator()
+	 +"    1               256MB Min, 1024MB Max" + System.lineSeparator()
+	 +"    2               256MB Min, 1536MB Max" + System.lineSeparator()
+	 +"    3               256MB Min, 2048MB Max" + System.lineSeparator()
+	 +"    4               256MB Min, 2560MB Max" + System.lineSeparator()
+	 +"    5               256MB Min, 3072MB Max" + System.lineSeparator()
 	 +"    load            open the File Chooser at the /.mars-sim/saved/" + System.lineSeparator() 
 	 +"                    and wait for user to choose a saved sim" + System.lineSeparator()
 	 +"    load 123.sim    load the sim with filename '123.sim'" + System.lineSeparator()
@@ -293,7 +291,7 @@ public class MarsProjectHeadless {
 	}
 	
 	private void createNewSettlement() {
-		logger.info("createNewSettlement()");
+//		logger.info("createNewSettlement()");
 		try {
 			// Load xml files
 			simulationConfig.loadConfig();

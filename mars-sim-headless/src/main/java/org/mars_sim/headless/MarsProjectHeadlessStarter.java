@@ -13,11 +13,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.mars_sim.msp.core.UnitManager;
 
 /**
  * MarsProjectHeadlessStarter is the main class for running the main executable
@@ -117,24 +115,29 @@ public class MarsProjectHeadlessStarter {
 
 		else {
 			// Check for the memory switch
-			if (argList.contains("5") || argList.contains("-5")) {// || argList.contains("5 ")) {
-				command.append(" -Xms256m");
-				command.append(" -Xmx2048m");
-			} else if (argList.contains("4") || argList.contains("-4")) {
-				command.append(" -Xms256m");
-				command.append(" -Xmx1536m");
-			} else if (argList.contains("3") || argList.contains("-3")) {
-				command.append(" -Xms256m");
-				command.append(" -Xmx1024m");
-			} else if (argList.contains("2") || argList.contains("-2")) {
-				command.append(" -Xms256m");
-				command.append(" -Xmx768m");
-			} else if (argList.contains("1") || argList.contains("-1")) {
-				command.append(" -Xms256m");
-				command.append(" -Xmx512m");
-			} else if (argList.contains("0") || argList.contains("-0")) {
-				command.append(" -Xms256m");
-				command.append(" -Xmx1024m");
+	        if (argList.contains("5") || argList.contains("-5")) {
+	            command.append(" -Xms256m");
+	            command.append(" -Xmx3072m");
+	        }
+	        else if (argList.contains("4") || argList.contains("-4")) {
+	            command.append(" -Xms256m");
+	            command.append(" -Xmx2560m");
+	        }
+	        else if (argList.contains("3") || argList.contains("-3")) {
+	            command.append(" -Xms256m");
+	            command.append(" -Xmx2048m");
+	        }
+	        else if (argList.contains("2") || argList.contains("-2")) {
+	            command.append(" -Xms256m");
+	            command.append(" -Xmx1536m");
+	        }
+	        else if (argList.contains("1") || argList.contains("-1")) {
+	            command.append(" -Xms256m");
+	            command.append(" -Xmx1024m");
+	        }
+	        else if (argList.contains("0") || argList.contains("-0")) {
+	            command.append(" -Xms256m");
+	            command.append(" -Xmx1536m");
 			} else {
 				// Use 1.5 GB by default
 				command.append(" -Xms256m");

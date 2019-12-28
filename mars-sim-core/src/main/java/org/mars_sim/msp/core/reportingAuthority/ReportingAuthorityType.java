@@ -143,14 +143,14 @@ public enum ReportingAuthorityType {
 	}
 	
 	public static String convertSponsorNameShort2Long(String name) {
-		if (longSponsorList == null || longSponsorList.isEmpty()) {
-			longSponsorList = new ArrayList<>();
+//		if (longSponsorList == null || longSponsorList.isEmpty()) {
+//			longSponsorList = new ArrayList<>();
 			for (ReportingAuthorityType ra : SPONSORS_LONG) {
 				if (StringUtils.containsIgnoreCase(ra.getName(), name)) {
 					return ra.getName();
 				}
 			}
-		}
+//		}
 		return null;
 	}
 	
