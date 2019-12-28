@@ -238,7 +238,7 @@ public class MarsProjectHeadless {
 			}
 			
 			if (StringUtils.containsIgnoreCase(s, "-sponsor:")) {
-				List<String> sponsors = UnitManager.getAllSponsorShortList();
+				List<String> sponsors = UnitManager.getAllShortSponsors();
 //				System.out.println(sponsors);
 				logger.info("has " + s);
 				for (String ss: sponsors) {

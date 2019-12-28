@@ -119,7 +119,7 @@ public enum ReportingAuthorityType {
 //	}
 	
 	public static List<String> getSponsorList() {
-		if (sponsorList == null) {
+		if (sponsorList == null  || sponsorList.isEmpty()) {
 			sponsorList = new ArrayList<>();
 			for (ReportingAuthorityType ra : SPONSORS) {
 				sponsorList.add(ra.getName());
@@ -129,10 +129,10 @@ public enum ReportingAuthorityType {
 	}
 
 	public static List<String> getLongSponsorList() {
-		if (longSponsorList == null) {
+		if (longSponsorList == null || longSponsorList.isEmpty()) {
 			longSponsorList = new ArrayList<>();
 			for (ReportingAuthorityType ra : SPONSORS_LONG) {
-				longSponsorList.add(ra.getName());
+				longSponsorList.add(ra.getName()); 
 			}
 		}
 		return longSponsorList;
@@ -143,7 +143,7 @@ public enum ReportingAuthorityType {
 	}
 	
 	public static String convertSponsorNameShort2Long(String name) {
-		if (longSponsorList == null) {
+		if (longSponsorList == null || longSponsorList.isEmpty()) {
 			longSponsorList = new ArrayList<>();
 			for (ReportingAuthorityType ra : SPONSORS_LONG) {
 				if (StringUtils.containsIgnoreCase(ra.getName(), name)) {

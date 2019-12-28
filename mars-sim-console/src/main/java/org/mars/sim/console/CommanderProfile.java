@@ -209,7 +209,8 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
 			           		+ "    ----------------------- Sponsors Listing -----------------------" 
 			           		+ System.lineSeparator()
 			           		+ System.lineSeparator());
-			        	List<String> list = ReportingAuthorityType.getLongSponsorList();
+			        	List<String> list = UnitManager.getAllLongSponsors();//ReportingAuthorityType.getLongSponsorList();
+//			        	System.out.println(list);
 			        	tt.print(printOneColumn(list));
                     }
             );
@@ -368,15 +369,15 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
      * @return List<String>
      */
     public static List<String> printOneColumn(List<String> list) {
-    	
+//    	System.out.println(list);
        	List<String> newList = new ArrayList<>();
     	StringBuffer s = null;
   
         for (int i=0; i< list.size(); i++) {  
             s = new StringBuffer();
-        	String c = list.get(i).toString();
+        	String c = list.get(i);
 
-			// Look at how many whitespaces needed before printing each column
+			// Look at how many white spaces needed before printing each column
         	if (i+1 < 10)
         		s.append(" ");
         	s.append("(");
@@ -396,7 +397,7 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
      * @return List<String>
      */
     public static List<String> printList(List<String> list) {
-    	
+
        	List<String> newList = new ArrayList<>();
     	StringBuffer s = new StringBuffer();
     	int SPACES = 18;
@@ -417,7 +418,6 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
 			if (column == 0) {
 				c = list.get(i).toString();
 				num = SPACES - c.length();
-	
 			}
 			
 			else if (column == 1 || column == 2) {

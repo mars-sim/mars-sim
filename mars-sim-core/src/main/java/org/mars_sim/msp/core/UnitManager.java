@@ -2570,7 +2570,7 @@ public class UnitManager implements Serializable {
 	
 	public static String getSponsorByID(int id) {
 		if (allLongSponsors == null)
-			getAllSponsorList();
+			getAllLongSponsors();
 		return allLongSponsors.get(id);
 	}
 	
@@ -2636,13 +2636,13 @@ public class UnitManager implements Serializable {
 		return allCountries;
 	}
 	
-	public static List<String> getAllSponsorList() {
+	public static List<String> getAllLongSponsors() {
 		if (allLongSponsors == null)
 			allLongSponsors = ReportingAuthorityType.getLongSponsorList();
 		return allLongSponsors;
 	}
 	
-	public static List<String> getAllSponsorShortList() {
+	public static List<String> getAllShortSponsors() {
 		if (allShortSponsors == null)
 			allShortSponsors = ReportingAuthorityType.getSponsorList();
 		return allShortSponsors;

@@ -546,7 +546,7 @@ public class InteractiveTerm {
         handler.addStringTask("sandbox0", "Enter your choice:", false).addChoices("0", "1", "2", "3").constrainInputToChoices();
         handler.executeOneTask();
 
-        if (GameManager.input.equals("0")) {
+        if (GameManager.sandbox0.equals("0")) {
         	sim.endSimulation(); 
     		sim.getSimExecutor().shutdownNow();
 
