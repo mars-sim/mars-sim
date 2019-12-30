@@ -74,7 +74,8 @@ public class ReviewMissionPlan extends Task implements Serializable {
 	private Administration office;
 	/** The role of the person who is reviewing the mission plan. */
 	public RoleType roleType;
-	
+	/** The total time spent in reviewing a mission plan. */
+//	private double timeReviewing;
 	/**
 	 * Constructor. This is an effort-driven task.
 	 * 
@@ -82,7 +83,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 	 */
 	public ReviewMissionPlan(Person person) {
 		// Use Task constructor.
-		super(NAME, person, true, false, STRESS_MODIFIER, true, 50D + RandomUtil.getRandomInt(-5, 5));
+		super(NAME, person, true, false, STRESS_MODIFIER, true, 45D + RandomUtil.getRandomInt(-10, 10));
 
 //		logger.info(person + " was reviewing mission plan.");
 				
@@ -208,211 +209,218 @@ public class ReviewMissionPlan extends Task implements Serializable {
 		            	Settlement reviewerSettlement = person.getAssociatedSettlement();
 						String s = reviewerSettlement.getName();
 						
-						LogConsolidated.log(Level.INFO, 15_000, sourceName, 
-								"[" + s + "] " + reviewedBy + " reviewed " + requestedBy
-								+ "'s " + m.getDescription() + " mission plan.");
-						
-//						if (!reviewedBy.equals(requestedBy)
-//								&& mp.isReviewerValid(reviewedBy, pop)) {
+						if (!reviewedBy.equals(requestedBy)
+								&& mp.isReviewerValid(reviewedBy, reviewerSettlement.getNumCitizens())) {
 							
-							List<JobAssignment> list = p.getJobHistory().getJobAssignmentList();
-							int last = list.size() - 1;
-							
-							// 1. Reviews requester's cumulative job rating
-							double rating = list.get(last).getJobRating();
-							double cumulative_rating = 0;
-							int size = list.size();
-							for (int j = 0; j < size; j++) {
-								cumulative_rating += list.get(j).getJobRating();
-							}
-							cumulative_rating = cumulative_rating / size;
-			
-							rating = (rating + cumulative_rating);
-									
-							// 2. Relationship Score 
-							
-							// 2a. Reviewer's view of the mission lead
-							double relationshipWithReviewer = relationshipManager.getOpinionOfPerson(person, p);
-							//Math.round(100D * relationshipManager.getOpinionOfPerson(person, p))/100D;
+						    if (getTimeCompleted() < getDuration() * .95) {
+						    	
+								LogConsolidated.log(Level.INFO, 15_000, sourceName, 
+										"[" + s + "] " + reviewedBy + " was reviewing " + requestedBy
+										+ "'s " + m.getDescription() + " mission plan.");
+						    }
+						    
+						    else {
+								List<JobAssignment> list = p.getJobHistory().getJobAssignmentList();
+								int last = list.size() - 1;
 								
-							double relationshipWithOthers = 0;
-							int num = reviewerSettlement.getAllAssociatedPeople().size();
-							for (Person pp : reviewerSettlement.getAllAssociatedPeople()) {
-								relationshipWithOthers += relationshipManager.getOpinionOfPerson(person, pp);
-							}
-							
-							// 2b. Others' view of the mission lead
-							relationshipWithOthers = (int)(1.0 * relationshipWithOthers / num);
-							
-							int relation = (int)((relationshipWithReviewer + relationshipWithOthers) / 10D) ;
-							
-							// 3. Mission Qualification Score
-							double qual = 0;
-							
-							if (m instanceof AreologyFieldStudy) {
-								qual = .5 * ((AreologyFieldStudy)m).getMissionQualification(person);
-							}
-							else if (m instanceof BiologyFieldStudy) {
-								qual = .5 * ((BiologyFieldStudy)m).getMissionQualification(person);
-							}
-							else if (m instanceof CollectIce) {
-								qual = .25 * ((CollectIce)m).getMissionQualification(person);
-							}
-							else if (m instanceof CollectRegolith) {
-								qual = .15 * ((CollectRegolith)m).getMissionQualification(person);
-							}
-							else if (m instanceof Exploration) {
-								qual = .25 * ((Exploration)m).getMissionQualification(person);
-							}
-							else if (m instanceof MeteorologyFieldStudy) {
-								qual = .5 * ((MeteorologyFieldStudy)m).getMissionQualification(person);
-							}
-							else if (m instanceof Mining) {
-								qual = .3 * ((Mining)m).getMissionQualification(person);
-							}
-							else if (m instanceof RescueSalvageVehicle) {
-								qual = .5 * ((RescueSalvageVehicle)m).getMissionQualification(person);
-							}
-							else if (m instanceof Trade) {
-								qual = .35 * ((Trade)m).getMissionQualification(person);
-							}
-							else if (m instanceof TravelToSettlement) {
-								qual = .5 * ((TravelToSettlement)m).getMissionQualification(person);
-							}
-							else
-								qual = .4 * m.getMissionQualification(person);											
-							
-							qual = 2.5 * Math.round(qual * 10.0)/10.0;
-							
-							// 4. Settlement objective score
-							double obj = 0;
-							
-							if (person.getAssociatedSettlement().getObjective() == ObjectiveType.CROP_FARM
-									&& (m instanceof CollectIce
-										|| m instanceof BiologyFieldStudy)) {
-								obj += 5D * goodsManager.getCropFarmFactor();
-							}	
-							
-							else if (person.getAssociatedSettlement().getObjective() == ObjectiveType.TOURISM
-									&& (m instanceof AreologyFieldStudy
-									|| m instanceof BiologyFieldStudy
-									|| m instanceof MeteorologyFieldStudy
-									|| m instanceof TravelToSettlement
-									|| m instanceof Exploration)
-									) {
-								obj += 5D * goodsManager.getTourismFactor();
-							}				
-							
-							else if (person.getAssociatedSettlement().getObjective() == ObjectiveType.TRADE_CENTER
-									&& m instanceof Trade) {
-								obj += 5D * goodsManager.getTradeFactor();
-							}	
-							
-							else if (person.getAssociatedSettlement().getObjective() == ObjectiveType.TRANSPORTATION_HUB
-									&& (m instanceof TravelToSettlement
-									|| m instanceof Exploration)) {
-								obj += 5D * goodsManager.getTransportationFactor();
-							}	
-							
-							else if (person.getAssociatedSettlement().getObjective() == ObjectiveType.MANUFACTURING_DEPOT
-									&& (m instanceof Mining
-									|| m instanceof CollectRegolith)) {
-								obj += 5D * goodsManager.getManufacturingFactor();
-							}	
-							
-							// 5. emergency
-							int emer = 0;
-							if (m instanceof EmergencySupply
-									|| m instanceof RescueSalvageVehicle) {
-								emer = 50;
-							}	
-							
-							// 6. site
-							int site = 0;
-							if (m instanceof CollectIce) {
-								site = (int)(((CollectIce) m).getTotalSiteScore()/50 - 5);
-								logger.info("Ice collection site score is " + site);
-							}	
-							
-							// 7. proposed route distance (0 to 10 points)
-							int dist = 0;
-							if (m instanceof TravelToSettlement) {
-								int max = (int)(((TravelToSettlement) m).getAssociatedSettlement().getMaxMssionRange());
-								((TravelToSettlement) m).computeProposedRouteTotalDistance();
-								int proposed = (int)(((TravelToSettlement) m).getProposedRouteTotalDistance());
-								dist = (int)(1.0 * (max - proposed) / max * 10);
-							}
-							
-							// 8. Leadership and Charisma
-							int leadership = (int)(.075 * person.getNaturalAttributeManager()
-												.getAttribute(NaturalAttributeType.LEADERSHIP)
-											+ .025 * person.getNaturalAttributeManager()
-												.getAttribute(NaturalAttributeType.ATTRACTIVENESS));				
+								// 1. Reviews requester's cumulative job rating
+								double rating = list.get(last).getJobRating();
+								double cumulative_rating = 0;
+								int size = list.size();
+								for (int j = 0; j < size; j++) {
+									cumulative_rating += list.get(j).getJobRating();
+								}
+								cumulative_rating = cumulative_rating / size;
+				
+								rating = (rating + cumulative_rating);
+										
+								// 2. Relationship Score 
+								
+								// 2a. Reviewer's view of the mission lead
+								double relationshipWithReviewer = relationshipManager.getOpinionOfPerson(person, p);
+								//Math.round(100D * relationshipManager.getOpinionOfPerson(person, p))/100D;
+									
+								double relationshipWithOthers = 0;
+								int num = reviewerSettlement.getAllAssociatedPeople().size();
+								for (Person pp : reviewerSettlement.getAllAssociatedPeople()) {
+									relationshipWithOthers += relationshipManager.getOpinionOfPerson(person, pp);
+								}
+								
+								// 2b. Others' view of the mission lead
+								relationshipWithOthers = (int)(1.0 * relationshipWithOthers / num);
+								
+								int relation = (int)((relationshipWithReviewer + relationshipWithOthers) / 10D) ;
+								
+								// 3. Mission Qualification Score
+								double qual = 0;
+								
+								if (m instanceof AreologyFieldStudy) {
+									qual = .5 * ((AreologyFieldStudy)m).getMissionQualification(person);
+								}
+								else if (m instanceof BiologyFieldStudy) {
+									qual = .5 * ((BiologyFieldStudy)m).getMissionQualification(person);
+								}
+								else if (m instanceof CollectIce) {
+									qual = .25 * ((CollectIce)m).getMissionQualification(person);
+								}
+								else if (m instanceof CollectRegolith) {
+									qual = .15 * ((CollectRegolith)m).getMissionQualification(person);
+								}
+								else if (m instanceof Exploration) {
+									qual = .25 * ((Exploration)m).getMissionQualification(person);
+								}
+								else if (m instanceof MeteorologyFieldStudy) {
+									qual = .5 * ((MeteorologyFieldStudy)m).getMissionQualification(person);
+								}
+								else if (m instanceof Mining) {
+									qual = .3 * ((Mining)m).getMissionQualification(person);
+								}
+								else if (m instanceof RescueSalvageVehicle) {
+									qual = .5 * ((RescueSalvageVehicle)m).getMissionQualification(person);
+								}
+								else if (m instanceof Trade) {
+									qual = .35 * ((Trade)m).getMissionQualification(person);
+								}
+								else if (m instanceof TravelToSettlement) {
+									qual = .5 * ((TravelToSettlement)m).getMissionQualification(person);
+								}
+								else
+									qual = .4 * m.getMissionQualification(person);											
+								
+								qual = 2.5 * Math.round(qual * 10.0)/10.0;
+								
+								// 4. Settlement objective score
+								double obj = 0;
+								
+								if (person.getAssociatedSettlement().getObjective() == ObjectiveType.CROP_FARM
+										&& (m instanceof CollectIce
+											|| m instanceof BiologyFieldStudy)) {
+									obj += 5D * goodsManager.getCropFarmFactor();
+								}	
+								
+								else if (person.getAssociatedSettlement().getObjective() == ObjectiveType.TOURISM
+										&& (m instanceof AreologyFieldStudy
+										|| m instanceof BiologyFieldStudy
+										|| m instanceof MeteorologyFieldStudy
+										|| m instanceof TravelToSettlement
+										|| m instanceof Exploration)
+										) {
+									obj += 5D * goodsManager.getTourismFactor();
+								}				
+								
+								else if (person.getAssociatedSettlement().getObjective() == ObjectiveType.TRADE_CENTER
+										&& m instanceof Trade) {
+									obj += 5D * goodsManager.getTradeFactor();
+								}	
+								
+								else if (person.getAssociatedSettlement().getObjective() == ObjectiveType.TRANSPORTATION_HUB
+										&& (m instanceof TravelToSettlement
+										|| m instanceof Exploration)) {
+									obj += 5D * goodsManager.getTransportationFactor();
+								}	
+								
+								else if (person.getAssociatedSettlement().getObjective() == ObjectiveType.MANUFACTURING_DEPOT
+										&& (m instanceof Mining
+										|| m instanceof CollectRegolith)) {
+									obj += 5D * goodsManager.getManufacturingFactor();
+								}	
+								
+								// 5. emergency
+								int emer = 0;
+								if (m instanceof EmergencySupply
+										|| m instanceof RescueSalvageVehicle) {
+									emer = 50;
+								}	
+								
+								// 6. site
+								int site = 0;
+								if (m instanceof CollectIce) {
+									site = (int)(((CollectIce) m).getTotalSiteScore()/50 - 5);
+									logger.info("Ice collection site score is " + site);
+								}	
+								
+								// 7. proposed route distance (0 to 10 points)
+								int dist = 0;
+								if (m instanceof TravelToSettlement) {
+									int max = (int)(((TravelToSettlement) m).getAssociatedSettlement().getMaxMssionRange());
+									((TravelToSettlement) m).computeProposedRouteTotalDistance();
+									int proposed = (int)(((TravelToSettlement) m).getProposedRouteTotalDistance());
+									dist = (int)(1.0 * (max - proposed) / max * 10);
+								}
+								
+								// 8. Leadership and Charisma
+								int leadership = (int)(.075 * person.getNaturalAttributeManager()
+													.getAttribute(NaturalAttributeType.LEADERSHIP)
+												+ .025 * person.getNaturalAttributeManager()
+													.getAttribute(NaturalAttributeType.ATTRACTIVENESS));				
+		
+								// 9. reviewer role weight
+								RoleType role = person.getRole().getType();
+								int weight = 0;
+								
+								if (role == RoleType.PRESIDENT)
+									weight = 20;
+								else if (role == RoleType.MAYOR)
+									weight = 15;
+								else if (role == RoleType.COMMANDER)
+									weight = 10;
+								else if (role == RoleType.SUB_COMMANDER)
+									weight = 8;
+								else if (role == RoleType.CHIEF_OF_MISSION_PLANNING)
+									weight = 7;
+								else if (role == RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS)
+									weight = 6;
+								else if (role == RoleType.CHIEF_OF_AGRICULTURE
+									|| role == RoleType.CHIEF_OF_ENGINEERING
+									|| role == RoleType.CHIEF_OF_SAFETY_N_HEALTH
+									|| role == RoleType.CHIEF_OF_SCIENCE
+									|| role == RoleType.CHIEF_OF_SUPPLY_N_RESOURCES
+									)
+									weight = 5;
+								else if (role == RoleType.MISSION_SPECIALIST)
+									weight = 4;
+								else
+									weight = 2;
+								
+								
+								// 10. luck
+								int luck = RandomUtil.getRandomInt(-5, 5);	
+								
+								// TODO: 9. Go to him/her to have a chat
+								// TODO: 10. mission lead's leadership/charisma
+								
+								score = Math.round((rating + relation + qual + obj + emer + site + dist + leadership + weight + luck)* 10.0)/10.0;
 	
-							// 9. reviewer role weight
-							RoleType role = person.getRole().getType();
-							int weight = 0;
-							
-							if (role == RoleType.PRESIDENT)
-								weight = 20;
-							else if (role == RoleType.MAYOR)
-								weight = 15;
-							else if (role == RoleType.COMMANDER)
-								weight = 10;
-							else if (role == RoleType.SUB_COMMANDER)
-								weight = 8;
-							else if (role == RoleType.CHIEF_OF_MISSION_PLANNING)
-								weight = 7;
-							else if (role == RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS)
-								weight = 6;
-							else if (role == RoleType.CHIEF_OF_AGRICULTURE
-								|| role == RoleType.CHIEF_OF_ENGINEERING
-								|| role == RoleType.CHIEF_OF_SAFETY_N_HEALTH
-								|| role == RoleType.CHIEF_OF_SCIENCE
-								|| role == RoleType.CHIEF_OF_SUPPLY_N_RESOURCES
-								)
-								weight = 5;
-							else if (role == RoleType.MISSION_SPECIALIST)
-								weight = 4;
-							else
-								weight = 2;
-							
-							
-							// 10. luck
-							int luck = RandomUtil.getRandomInt(-5, 5);	
-							
-							// TODO: 9. Go to him/her to have a chat
-							// TODO: 10. mission lead's leadership/charisma
-							
-							score = Math.round((rating + relation + qual + obj + emer + site + dist + leadership + weight + luck)* 10.0)/10.0;
+								// Updates the mission plan status
+								missionManager.scoreMissionPlan(mp, score, person);
+															
+								LogConsolidated.log(Level.INFO, 0, sourceName, 
+										"[" + s + "] " + reviewedBy + " graded " + requestedBy
+										+ "'s " + m.getDescription() + " mission plan as follows :");
+								logger.info(" ---------------------------");
+								logger.info(" (1)          Rating : " + rating); 
+								logger.info(" (2)    Relationship : " + relation); 
+								logger.info(" (3)  Qualifications : " + qual); 
+								logger.info(" (4)       Objective : " + obj);
+								logger.info(" (5)       Emergency : " + emer);
+								logger.info(" (6)          Sites  : " + site);
+								logger.info(" (7)       Distance  : " + dist);
+								logger.info(" (8)      Leadership : " + leadership); 							
+								logger.info(" (9)   Reviewer Role : " + weight); 
+								logger.info(" (10)           Luck : " + luck); 
+								logger.info(" ----------------------------");
+								logger.info("           Sub Total : " + score);
+								
+							      // Add experience
+						        addExperience(time);
+					        
+								// Do only one review each time
+						        endTask();
+						    }
 
-							// Updates the mission plan status
-							missionManager.scoreMissionPlan(mp, score, person);
-														
-							LogConsolidated.log(Level.INFO, 0, sourceName, 
-									"[" + s + "] " + reviewedBy + " graded " + requestedBy
-									+ "'s " + m.getDescription() + " mission plan as follows :");
-							logger.info(" ---------------------------");
-							logger.info(" (1)          Rating : " + rating); 
-							logger.info(" (2)    Relationship : " + relation); 
-							logger.info(" (3)  Qualifications : " + qual); 
-							logger.info(" (4)       Objective : " + obj);
-							logger.info(" (5)       Emergency : " + emer);
-							logger.info(" (6)          Sites  : " + site);
-							logger.info(" (7)       Distance  : " + dist);
-							logger.info(" (8)      Leadership : " + leadership); 							
-							logger.info(" (9)   Reviewer Role : " + weight); 
-							logger.info(" (10)           Luck : " + luck); 
-							logger.info(" ----------------------------");
-							logger.info("           Sub Total : " + score);
-							
-						      // Add experience
-					        addExperience(time);
-				        
-							// Do only one review each time
-					        //endTask();
-//						}
+						}
 						
+							
 						if (mp.getPercentComplete() >= 100D) {
 			            	// Go to the finished phase and finalize the approval
 			            	setPhase(APPROVING);
@@ -428,8 +436,12 @@ public class ReviewMissionPlan extends Task implements Serializable {
 				                return time * 0.2;
 				        	}
 				        }
+	
 		            } // end of else // if (mp.getPercentComplete() >= 100D) {
-				}
+		            
+		            // The break below prevents a person from reviewing another mission plan in the same period of time
+		            break;
+				} // if (status != null && status == PlanType.PENDING)
 			}
 		} // end of while
 		

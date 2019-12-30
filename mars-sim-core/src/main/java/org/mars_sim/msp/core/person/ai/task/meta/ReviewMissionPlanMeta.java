@@ -103,9 +103,9 @@ public class ReviewMissionPlanMeta implements MetaTask, Serializable {
 						Person p = m.getStartingMember();
 						String requestedBy = p.getName();
 						
-						if (reviewedBy.equals(requestedBy)) {
+						if (reviewedBy.equals(requestedBy) || !mp.isReviewerValid(reviewedBy, pop)) {
 							// Add penalty to the probability score if reviewer is the same as requester
-							result -= 300D;
+							return 0;
 						}
                     	
                         
