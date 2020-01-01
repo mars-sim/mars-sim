@@ -47,8 +47,8 @@ public class MarsProjectStarter {
         //command.append(" -new");
 
         // Use new Shenandoah Garbage Collector from Java 12 
-        command.append(" -XX:+UnlockExperimentalVMOptions")
-        	.append(" -XX:+UseShenandoahGC");
+//        command.append(" -XX:+UnlockExperimentalVMOptions")
+//        	.append(" -XX:+UseShenandoahGC");
 //        	.append(" -Xlog:gc*");
         
         command.append(" -Djava.util.logging.config.file=logging.properties")
