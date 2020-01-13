@@ -104,7 +104,7 @@
 		<!-- Value must be a positive number between 1 and 1440 and cannot be zero -->
 		<!-- Min : 1 ; Max : 360 -->
 		<!-- Default: 15 -->
-		<autosave-interval value="15" />
+		<autosave-interval value="2" />
 
 		<!-- average transit-time is the number of sols to send payload/cargo from Earth to Mars -->
 		<!-- Min : 1 ; Max : 430 -->
