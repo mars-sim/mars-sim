@@ -789,7 +789,6 @@ public class SurfaceFeatures implements Serializable {
 		weather = null;
 		orbitInfo = null;
 		sunDirection = null;
-		terrainElevation = null;
 		terrainElevation.destroy();
 		terrainElevation = null;
 		orbitInfo = null;

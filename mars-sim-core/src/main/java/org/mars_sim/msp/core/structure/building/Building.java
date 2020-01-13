@@ -1629,7 +1629,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		buildingType = null;
 		powerModeCache = null;
 		heatModeCache = null;
-		malfunctionManager.destroy();
+//		malfunctionManager.destroy();
 		malfunctionManager = null;
 	}
 }

@@ -10,21 +10,22 @@
 package org.mars_sim.headless;
 
 import java.io.File;
-
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
-import java.lang.Runnable;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 
 import org.apache.commons.lang3.StringUtils;
 import org.mars.sim.console.InteractiveTerm;
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
@@ -44,6 +45,8 @@ public class MarsProjectHeadless {
 	
 	private static final String LOGGING_PROPERTIES = "/logging.properties";
 
+	private static final String DEFAULT_SIM_FILENAME = "default.sim";
+	
 	private List<String> argList;
 
 	private Simulation sim = Simulation.instance();
@@ -170,12 +173,8 @@ public class MarsProjectHeadless {
 		else if (argList.contains("-load")) {
 			// If load argument, load simulation from file.
 			try {
-				// Initialize the simulation.
-				simulationConfig.loadConfig();
 				
-				sim.createNewSimulation(userTimeRatio, true);
-				
-				handleLoadDefaultSimulation();
+				handleLoadSimulation(userTimeRatio);
 
 				// FIXME : make it work
 			} catch (Exception e) {
@@ -183,6 +182,7 @@ public class MarsProjectHeadless {
 				handleNewSimulation(userTimeRatio);
 				result = true;
 			}
+			
 		} 
 		
 		else {//if (argList.contains("-new")) {
@@ -207,10 +207,10 @@ public class MarsProjectHeadless {
 			createNewSettlement();
 			result = true;
 		}
-		else {
-			handleNewSimulation(userTimeRatio);
-			result = true;
-		}
+//		else {
+//			handleNewSimulation(userTimeRatio);
+//			result = true;
+//		}
 		
 		return result;
 	}
@@ -358,22 +358,95 @@ public class MarsProjectHeadless {
 	 * 
 	 * @throws Exception if error loading the default saved simulation.
 	 */
-	private void handleLoadDefaultSimulation() throws Exception {
+	private void handleLoadSimulation(int userTimeRatio) throws Exception {
+		// Initialize the simulation.
+		simulationConfig.loadConfig();
+		// Create class instances
+		sim.createNewSimulation(userTimeRatio, true);
+		
 		try {
-			// Load the default simulation
-			sim.loadSimulation(null);
-			// Initialize interactive terminal 
-			InteractiveTerm.initializeTerminal();
-			// Start the sim thread
-			startSimThread(true);
+			boolean hasDefault = argList.contains(DEFAULT_SIM_FILENAME);
+			int index = argList.indexOf("-load");
+			boolean hasSim = argList.contains(".sim");
 			
+			// Initialize interactive terminal 
+			InteractiveTerm.initializeTerminal();	
+			
+			if (hasDefault || !hasSim) {
+				// Prompt to open the file cHooser to select a saved sim
+				boolean canLoad = loadSimulationProcess(false);
+				if (!canLoad) {
+					// Create class instances
+					sim.createNewSimulation(userTimeRatio, false);	
+				}
+				else {			
+					// Start simulation clock
+					startSimThread(true);				
+					
+					// Start beryx console
+					startConsoleThread();
+				
+				}
+
+				// Initialize interactive terminal and load menu
+//				initTerminalLoadMenu();
+			}
+
+			else if (!hasDefault && hasSim) {
+				// Get the next argument as the filename.
+				File loadFile = new File(argList.get(index + 1));
+				if (loadFile.exists() && loadFile.canRead()) {
+					sim.loadSimulation(loadFile);
+
+					// Start simulation.
+					startSimThread(false);	
+					
+					// Start beryx console
+					startConsoleThread();
+				
+				}
+				else {
+//					logger.config("Invalid param.");
+					exitWithError("Problem loading simulation. No valid saved sim is found.", null);
+				}
+			}
+
 		} catch (Exception e) {
-			// logger.log(Level.WARNING, "Could not load default simulation", e);
-//			 throw e;
+			// logger.log(Level.SEVERE, "Problem loading existing simulation", e);
 			exitWithError("Problem loading the default simulation.", e);
 		}
 	}
 
+	/**
+	 * Performs the process of loading a simulation.
+	 * 
+	 * @param autosave
+	 */
+	public boolean loadSimulationProcess(boolean autosave) {
+		sim.stop();
+
+		String dir = null;
+		String title = null;
+
+		// Add autosave
+		if (autosave) {
+			dir = Simulation.AUTOSAVE_DIR;
+			title = Msg.getString("MainWindow.dialogLoadAutosaveSim");
+		} else {
+			dir = Simulation.SAVE_DIR;
+			title = Msg.getString("MainWindow.dialogLoadSavedSim");
+		}
+
+		JFileChooser chooser = new JFileChooser(dir);
+		chooser.setDialogTitle(title); // $NON-NLS-1$
+		if (chooser.showOpenDialog(new JFrame()) == JFileChooser.APPROVE_OPTION) {
+			sim.loadSimulation(chooser.getSelectedFile());
+			return true;
+		}
+		
+		return false;
+	}
+	
 	/**
 	 * Create a new simulation instance without loading the Simulation Configuration Editor
 	 */
@@ -490,9 +563,9 @@ public class MarsProjectHeadless {
 	
 		public void run() {
 //			logger.config("StartTask's run() is on " + Thread.currentThread().getName());
-			Simulation.instance().startClock(autosaveDefault);
+			sim.startClock(autosaveDefault);
 			// Load the menu choice
-			InteractiveTerm.loadTerminalMenu();
+//			InteractiveTerm.loadTerminalMenu();
 		}
 	}
 	

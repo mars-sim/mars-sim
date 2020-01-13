@@ -1302,8 +1302,8 @@ public class Simulation implements ClockListener, Serializable {
 		int counts = 0;
 		while (heapFreeSize < MIN_HEAP_SPACE && counts <= 5) {
 			counts++;
-			logger.config("Not enough free memory in heap space. Wait for 3 seconds and retry...");
-			delay(3000);
+			logger.config("Not enough free memory in heap space. Wait for 10 seconds and retry...");
+			delay(10000);
 			// Get current size of heap in bytes
 			heapSize = Runtime.getRuntime().totalMemory();
 			// Get maximum size of heap in bytes. The heap cannot grow beyond this size.// Any attempt will result in an OutOfMemoryException.

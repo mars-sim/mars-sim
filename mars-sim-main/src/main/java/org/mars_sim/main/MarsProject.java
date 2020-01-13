@@ -269,8 +269,6 @@ public class MarsProject {
 	 * @throws Exception if error loading the default saved simulation.
 	 */
 	private void handleLoadDefaultSimulation() throws Exception {
-//		logger.config("handleLoadDefaultSimulation() is on " 
-//				+ Thread.currentThread().getName() + " Thread");
 		// Initialize the simulation.
 		simulationConfig.loadConfig();
 		// Create serializable class 
@@ -295,6 +293,9 @@ public class MarsProject {
 				else {
 					// Go headless				
 				}
+				
+				// Start beryx console
+				startConsoleThread();
 			}
 			
 
@@ -322,7 +323,7 @@ public class MarsProject {
 //		logger.config("MarsProject's handleLoadSimulation() is on " + Thread.currentThread().getName() + " Thread");
 		// Initialize the simulation.
 		simulationConfig.loadConfig();
-		// Create serializable class 
+		// Create class instances
 		sim.createNewSimulation(-1, true);
 		
 		try {
