@@ -28,7 +28,7 @@ public class MarsProjectHeadlessStarter {
 
 	private static final String JAVA = "java";
 	private static final String JAVA_HOME = "JAVA_HOME";
-	private static final String BIN = "bin";
+//	private static final String BIN = "bin";
 	private static final String ONE_WHITESPACE = " ";
 	
 	private static List<String> templates = new ArrayList<>();
@@ -69,8 +69,8 @@ public class MarsProjectHeadlessStarter {
 			command
 			.append(javaHome)
 			.append(File.separator)
-			.append(BIN)
-			.append(File.separator)
+//			.append(BIN)
+//			.append(File.separator)
 			.append(JAVA);
 
 			if (javaHome.contains(ONE_WHITESPACE))
@@ -256,10 +256,12 @@ public class MarsProjectHeadlessStarter {
 			errorConsumer.join();
 			outputConsumer.join();
 
-		} catch (IOException e) {
-			throw new IllegalStateException(e);
-		} catch (InterruptedException e) {
-			throw new IllegalStateException(e);
-		}
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e1) {
+        	e1.printStackTrace();
+        } catch (Exception e2) {
+        	e2.printStackTrace();        	
+        }
 	}
 }

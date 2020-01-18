@@ -32,7 +32,11 @@ public class MarsProjectStarter {
             if (javaHome.contains(" "))
             	javaHome = "\"" + javaHome;
 
-            command.append(javaHome).append(File.separator).append("bin").append(File.separator).append("java");
+            command.append(javaHome)
+            .append(File.separator)
+//            .append("bin")
+//            .append(File.separator)
+            .append("java");
 
             if (javaHome.contains(" "))
             	command.append("\"");
@@ -171,9 +175,11 @@ public class MarsProjectStarter {
             outputConsumer.join();
 
         } catch (IOException e) {
-            throw new IllegalStateException(e);
-        } catch (InterruptedException e) {
-            throw new IllegalStateException(e);
+            e.printStackTrace();
+        } catch (InterruptedException e1) {
+        	e1.printStackTrace();
+        } catch (Exception e2) {
+        	e2.printStackTrace();        	
         }
     }
 }

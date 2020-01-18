@@ -170,7 +170,7 @@ As of 5258 and afterward,
 * Requires JRE 13 for running mars-sim
 * Requires JDK 13 (or openjdk 13) for compiling binary
 
-As of r5217 and afterward,
+As of r5217,
 * Requires JRE 12 for running mars-sim
 * Requires JDK 12 (or openjdk 12) for compiling binary
 

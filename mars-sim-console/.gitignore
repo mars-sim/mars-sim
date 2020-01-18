@@ -1,7 +1,6 @@
 /target/
 .classpath
 .project
-/.settings/
 /.settings/**
 .idea
 .prefs
