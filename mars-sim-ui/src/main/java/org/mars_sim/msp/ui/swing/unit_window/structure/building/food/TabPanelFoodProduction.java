@@ -92,7 +92,6 @@ public class TabPanelFoodProduction extends TabPanel {
 	 * @param unit    {@link Unit} the unit to display.
 	 * @param desktop {@link MainDesktopPane} the main desktop.
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public TabPanelFoodProduction(Unit unit, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(Msg.getString("TabPanelFoodProduction.title"), //$NON-NLS-1$
@@ -107,6 +106,7 @@ public class TabPanelFoodProduction extends TabPanel {
 		return uiDone;
 	}
 	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void initializeUI() {
 		uiDone = true;
 		
@@ -226,12 +226,11 @@ public class TabPanelFoodProduction extends TabPanel {
 		// setVisible(true);
 	}
 
-	// 2014-12-01 Added PromptComboBoxRenderer()
 	class PromptComboBoxRenderer extends DefaultListCellRenderer {
 
-		private static final long serialVersionUID = 1L;
 		private String prompt;
 
+		@SuppressWarnings("unused")
 		private DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();
 
 		/*
@@ -269,6 +268,7 @@ public class TabPanelFoodProduction extends TabPanel {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void update() {
 		if (!uiDone)
@@ -472,7 +472,7 @@ public class TabPanelFoodProduction extends TabPanel {
 		/*
 		 * Set the text to display when no item has been selected.
 		 */
-		// 2014-12-01 Added prompt
+
 		public FoodProductionSelectionListCellRenderer(String prompt) {
 			this.prompt = prompt;
 		}
@@ -490,12 +490,12 @@ public class TabPanelFoodProduction extends TabPanel {
 					if (processName.length() > PROCESS_NAME_LENGTH)
 						processName = processName.substring(0, PROCESS_NAME_LENGTH)
 								+ Msg.getString("TabPanelFoodProduction.cutOff"); //$NON-NLS-1$
-					// 2014-11-19 Capitalized process names
+
 					((JLabel) result).setText(Conversion.capitalize(processName));
 					((JComponent) result).setToolTipText(FoodProductionPanel.getToolTipString(info, null));
 				}
 			}
-			// 2014-12-01 Added setText()
+
 			if (value == null)
 				setText(prompt);
 

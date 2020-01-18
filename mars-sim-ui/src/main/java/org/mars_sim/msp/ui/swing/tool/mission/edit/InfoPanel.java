@@ -55,8 +55,8 @@ import com.alee.laf.text.WebTextField;
 /**
  * The mission info panel for the edit mission dialog.
  */
-public class InfoPanel
-extends JPanel {
+@SuppressWarnings("serial")
+public class InfoPanel extends JPanel {
 
 	/** action text. */
 	final static String ACTION_NONE = "None";
@@ -158,7 +158,7 @@ extends JPanel {
         			@Override
         			public void valueChanged(ListSelectionEvent e) {
         				// Enable remove members button if there are members in the list.
-        				removeMembersButton.setEnabled(memberList.getSelectedValues().length > 0);
+        				removeMembersButton.setEnabled(memberList.getSelectedValuesList().size() > 0);
         			}
         		}
         	);

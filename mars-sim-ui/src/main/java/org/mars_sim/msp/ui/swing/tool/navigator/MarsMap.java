@@ -50,6 +50,7 @@ public class MarsMap {
 	/** Center position of globe. */
 	private Coordinates centerCoords;
 	/** point colors in variably-sized vectors. */
+	@SuppressWarnings("unchecked")
 	private Vector<Integer>[] sphereColor = new Vector[MAP_H];
 	/** cylindrical map image. */
 	private Image marsMap;

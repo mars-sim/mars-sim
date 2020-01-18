@@ -67,12 +67,12 @@ public class TabPanelLog extends TabPanel {
 	private int theme;
 	
 	private JTable table;
-	private JComboBoxMW<Object> solBox;
+	private JComboBoxMW<Integer> solBox;
 	
 	private WebTextField odometerTF;
 	private WebTextField maintTF;
 	
-	private DefaultComboBoxModel<Object> comboBoxModel;
+	private DefaultComboBoxModel<Integer> comboBoxModel;
 	private ScheduleTableModel scheduleTableModel;
 
 	
@@ -108,6 +108,7 @@ public class TabPanelLog extends TabPanel {
 		return uiDone;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void initializeUI() {
 		uiDone = true;
 		
@@ -179,12 +180,12 @@ public class TabPanelLog extends TabPanel {
 
 		// Create comboBoxModel
 		Collections.sort(solList, Collections.reverseOrder());
-		comboBoxModel = new DefaultComboBoxModel<Object>();
+		comboBoxModel = new DefaultComboBoxModel<Integer>();
 		// Using internal iterator in lambda expression
 		solList.forEach(s -> comboBoxModel.addElement(s));
 
 		// Create comboBox
-		solBox = new JComboBoxMW<Object>(comboBoxModel);
+		solBox = new JComboBoxMW<>(comboBoxModel);
 		solBox.setPreferredSize(new Dimension(80, 25));
 		solBox.setPrototypeDisplayValue(new Dimension(80, 25));
 		solBox.setSelectedItem(todayInteger);
@@ -267,6 +268,7 @@ public class TabPanelLog extends TabPanel {
 	}
 
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void update() {
 		if (!uiDone)

@@ -26,6 +26,7 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JList;
 import javax.swing.JTable;
+import javax.swing.ListCellRenderer;
 import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -130,6 +131,7 @@ public class TabPanelSchedule extends TabPanel {
 		return uiDone;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void initializeUI() {
 		uiDone = true;
 		
@@ -340,6 +342,7 @@ public class TabPanelSchedule extends TabPanel {
 	/**
 	 * Updates the info on this panel.
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public void update() {
 		if (!uiDone)

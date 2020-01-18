@@ -78,6 +78,7 @@ public class BuildingPanelFoodProduction extends BuildingFunctionPanel {
 	 * @param foodFactory the manufacturing building function.
 	 * @param desktop     the main desktop.
 	 */
+	@SuppressWarnings("unchecked")
 	public BuildingPanelFoodProduction(FoodProduction foodFactory, MainDesktopPane desktop) {
 		// Use BuildingFunctionPanel constructor.
 		super(foodFactory.getBuilding(), desktop);

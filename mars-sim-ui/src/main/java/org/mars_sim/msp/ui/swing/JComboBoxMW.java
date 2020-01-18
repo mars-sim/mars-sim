@@ -17,7 +17,7 @@ import javax.swing.JComboBox;
 /**
  * A Combobox that is mouse wheel-enabled.
  */
-@SuppressWarnings("serial")
+@SuppressWarnings({ "serial", "rawtypes" })
 public class JComboBoxMW<T> extends JComboBox implements MouseWheelListener {
 
 //	private static final long serialVersionUID = -3527247980947082803L;
@@ -41,6 +41,7 @@ public class JComboBoxMW<T> extends JComboBox implements MouseWheelListener {
 	 * 
 	 * @param items {@link Vector}<T> the initial items.
 	 */
+	@SuppressWarnings("unchecked")
 	public JComboBoxMW(Vector<T> items) {
 		super(items);
 		this.addMouseWheelListener(this);
@@ -51,6 +52,7 @@ public class JComboBoxMW<T> extends JComboBox implements MouseWheelListener {
 	 * 
 	 * @param model {@link ComboBoxModel}<T>
 	 */
+	@SuppressWarnings("unchecked")
 	public JComboBoxMW(ComboBoxModel<T> model) {
 		super(model);
 		this.addMouseWheelListener(this);
@@ -61,6 +63,7 @@ public class JComboBoxMW<T> extends JComboBox implements MouseWheelListener {
 	 * 
 	 * @param items T[]
 	 */
+	@SuppressWarnings("unchecked")
 	public JComboBoxMW(T[] items) {
 		super(items);
 		this.addMouseWheelListener(this);

@@ -484,10 +484,10 @@ public class CommanderWindow extends ToolWindow {
      * @param data sample data
      * @return sample check box list model
      */
-    protected static CheckBoxListModel<?> createModel (final List<Settlement> settlements) {
-        final CheckBoxListModel<?> model = new CheckBoxListModel();
+    protected static CheckBoxListModel<Settlement> createModel (final List<Settlement> settlements) {
+        final CheckBoxListModel<Settlement> model = new CheckBoxListModel<Settlement>();
         for (final Settlement element : settlements) {
-            model.add(new CheckBoxCellData(element));
+            model.add(new CheckBoxCellData<Settlement>(element));
         }
         return model;
     }

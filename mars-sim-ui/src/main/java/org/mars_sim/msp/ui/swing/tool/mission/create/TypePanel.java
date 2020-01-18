@@ -50,7 +50,7 @@ public class TypePanel extends WizardPanel implements ItemListener {
 	private final static String NAME = "Mission Type";
 	
 	// Private members.
-	private JComboBoxMW<Object> typeSelect;
+	private JComboBoxMW<String> typeSelect;
 	private WebLabel descriptionInfoLabel;
 	private WebLabel descriptionLabel;
 	private WebTextField descriptionTF;
@@ -66,6 +66,7 @@ public class TypePanel extends WizardPanel implements ItemListener {
 	 * Constructor.
 	 * @param wizard {@link CreateMissionWizard} the create mission wizard.
 	 */
+	@SuppressWarnings("unchecked")
 	TypePanel(CreateMissionWizard wizard) {
 		// Use WizardPanel constructor.
 		super(wizard);
@@ -106,9 +107,10 @@ public class TypePanel extends WizardPanel implements ItemListener {
 		}
 //		displayMissionTypes[0] = "";
 //        System.arraycopy(missionTypes, 0, displayMissionTypes, 1, missionTypes.length);
-		typeSelect = new JComboBoxMW<>();
+		typeSelect = new JComboBoxMW<String>();
 		Iterator<String> k = types.iterator();
-		while (k.hasNext()) typeSelect.addItem(k.next());
+		while (k.hasNext()) 
+			typeSelect.addItem(k.next());
 		typeSelect.setSelectedIndex(-1);
 		
 		typeSelect.addItemListener(this);

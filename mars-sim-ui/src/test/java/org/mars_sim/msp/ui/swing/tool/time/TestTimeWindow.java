@@ -11,7 +11,7 @@ public class TestTimeWindow extends TestCase {
 	 * Test the calculateTimeRatioFromSlider method.
 	 */
 	public void testCalculateTimeRatioFromSlider() {
-		// equire setting TimeWindow.ratioatmid = 500D;
+		// require setting TimeWindow.ratioatmid = 500D;
 //        assertEquals(.01D, TimeWindow.calculateTimeRatioFromSlider(1));
 //        assertEquals(500D, TimeWindow.calculateTimeRatioFromSlider(50));
 //        assertEquals(10800D, TimeWindow.calculateTimeRatioFromSlider(100));

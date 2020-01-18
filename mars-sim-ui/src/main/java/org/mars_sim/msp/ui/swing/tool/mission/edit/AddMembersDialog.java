@@ -99,7 +99,7 @@ class AddMembersDialog extends ModalInternalFrame {
         		new ListSelectionListener() {
         			public void valueChanged(ListSelectionEvent e) {
         				// Enable the add button if there are available members.
-        				addButton.setEnabled(availableList.getSelectedValues().length > 0);
+        				addButton.setEnabled(availableList.getSelectedValuesList().size() > 0);
         			}
         		}
         	);
@@ -111,7 +111,7 @@ class AddMembersDialog extends ModalInternalFrame {
 		
 		// Create add button.
 		addButton = new WebButton("Add");
-		addButton.setEnabled(availableList.getSelectedValues().length > 0);
+		addButton.setEnabled(availableList.getSelectedValuesList().size() > 0);
 		addButton.addActionListener(
 				new ActionListener() {
         			public void actionPerformed(ActionEvent e) {
