@@ -20,8 +20,10 @@ module mars-sim-ui {
     requires trident;  
     requires jorbis;
     requires nimrodlf;
+    
     requires weblaf-core;
     requires weblaf-ui;
+    requires weblaf-plugin;
     
     requires com.alee.managers.tooltip.TooltipManager;
     requires com.alee.managers.tooltip.TooltipWay;
