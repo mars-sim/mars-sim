@@ -463,7 +463,7 @@ public class MarsProject {
 				
 				else if (type == 1) {
 					SwingUtilities.invokeLater(() -> {
-						new SimulationConfigEditor(SimulationConfig.instance(), null);
+						new SimulationConfigEditor(SimulationConfig.instance());
 					});
 				}
 			

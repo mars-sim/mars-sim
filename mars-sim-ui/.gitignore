@@ -1,11 +1,12 @@
 /target/
+.classpath
+.project
+/.settings/**
+.idea
+.prefs
 /src/main/java/afester/
 /modena/
 /logs/
 /system/
 /profiles/
-.classpath
-.project
-/.settings/**
-.idea
 /mars-sim-ui.iml

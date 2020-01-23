@@ -1,6 +1,8 @@
-/build
 /target/
 .classpath
 .project
 /.settings/**
 .idea
+.prefs
+/build
+/mars-sim-android.iml

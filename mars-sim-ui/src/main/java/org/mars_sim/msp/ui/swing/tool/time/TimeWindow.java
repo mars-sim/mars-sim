@@ -486,7 +486,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	 */
 	private void setTimeRatioFromSlider(int sliderValue) {
 		double timeRatio = calculateTimeRatioFromSlider(sliderValue);
-		masterClock.setTimeRatio(timeRatio);
+		masterClock.setTimeRatio((int)timeRatio);
 	}
 
 	/**

@@ -3,5 +3,6 @@
 .project
 /.settings/**
 .idea
+.prefs
 /bin/
 /mars-sim-core.iml

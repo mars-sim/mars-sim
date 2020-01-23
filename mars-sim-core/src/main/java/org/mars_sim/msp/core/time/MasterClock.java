@@ -70,9 +70,9 @@ public class MasterClock implements Serializable {
 	/** The Current time between updates (TBU). */
 	private volatile long currentTBU_ns = 0L;
 	/** Simulation time ratio. */
-	private volatile double currentTR = 0D;
+	private volatile int currentTR = 0;
 	/** Adjusted time ratio. */
-	private volatile double baseTR = 0D;
+	private volatile int baseTR = 0;
 	/** Adjusted time between updates in nanoseconds. */
 	private volatile double baseTBU_ns = 0D;
 	/** Adjusted time between updates in milliseconds. */
@@ -222,23 +222,23 @@ public class MasterClock implements Serializable {
 
 		// Tune the time ratio
 		if (threads == 1) {
-			baseTR = tr / 32D;
+			baseTR = (int) (tr / 32D);
 		} else if (threads == 2) {
-			baseTR = tr / 16D;
+			baseTR = (int) (tr / 16D);
 		} else if (threads <= 3) {
-			baseTR = tr / 8D;
+			baseTR = (int) (tr / 8D);
 		} else if (threads <= 4) {
-			baseTR = tr / 6D;
+			baseTR = (int) (tr / 6D);
 		} else if (threads <= 6) {
-			baseTR = tr / 4D;
+			baseTR = (int) (tr / 4D);
 		} else if (threads <= 8) {
-			baseTR = tr / 2D;
+			baseTR = (int) (tr / 2D);
 		} else if (threads <= 12) {
-			baseTR = tr;
+			baseTR = (int) tr;
 		} else if (threads <= 16) {
-			baseTR = tr * 2D;
+			baseTR = (int) (tr * 2D);
 		} else {
-			baseTR = tr * 4D;
+			baseTR = (int) (tr * 4D);
 		}
 
 		baseTBU_ns = baseTBU_ms * 1_000_000.0; // convert from millis to nano
@@ -588,7 +588,7 @@ public class MasterClock implements Serializable {
 	 * 
 	 * @param ratio
 	 */
-	public void setTimeRatio(double ratio) {
+	public void setTimeRatio(int ratio) {
 		if (ratio >= 1D && ratio <= 65536D && currentTR != ratio) {
 
 			if (ratio > currentTR)
@@ -872,7 +872,7 @@ public class MasterClock implements Serializable {
 				
 				// Reset currentTR
 				if (currentTR == baseTR)
-					currentTR = baseTR/2D;
+					currentTR = baseTR/2;
 				else
 					currentTR = baseTR;
 				
@@ -883,7 +883,7 @@ public class MasterClock implements Serializable {
 //			logger.config("millis : " + millis + "     currentTR : " + currentTR);
 
 			// The time elapsed for the EarthClock
-			int earthMillis = (int) (millis * currentTR);
+			long earthMillis = millis * currentTR;
 			// Get the time pulse length in millisols.
 			double timePulse = earthMillis / MILLISECONDS_PER_MILLISOL; 
 //			logger.config("timePulse : " + Math.round(timePulse*1000.0)/1000.0);
@@ -1427,7 +1427,7 @@ public class MasterClock implements Serializable {
         int newSpeed = currentSpeed + 1;
 		if (newSpeed >= 0 && newSpeed <= 13) {
         	double ratio = Math.pow(2, newSpeed);
-        	setTimeRatio(ratio);  
+        	setTimeRatio((int)ratio);  
 		}
 	}
 	
@@ -1436,7 +1436,7 @@ public class MasterClock implements Serializable {
         int newSpeed = currentSpeed - 1;
 		if (newSpeed >= 0 && newSpeed <= 13) {
         	double ratio = Math.pow(2, newSpeed);
-        	setTimeRatio(ratio);  
+        	setTimeRatio((int)ratio);  
 		}
 	}
 	

@@ -1,9 +1,9 @@
 /target/
-..classpath
+.classpath
 .project
-/.settings/*
+/.settings/**
 .idea
-org.eclipse.jdt.core.prefs
+.prefs
 /src/main/resources/SurfaceMarsMap.dat
 /src/main/resources/TopoMarsMap.dat
 /mars-sim-mapdata.iml

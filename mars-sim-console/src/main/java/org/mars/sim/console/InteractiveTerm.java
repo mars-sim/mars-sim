@@ -79,11 +79,11 @@ public class InteractiveTerm {
 	
 	private static GameManager gm;
 	
-	private static InteractiveTerm interactiveTerm;
+//	private static InteractiveTerm interactiveTerm;
 
 	public InteractiveTerm(boolean consoleEdition, boolean restart) {
 		this.consoleEdition = consoleEdition;
-		interactiveTerm = this;
+//		interactiveTerm = this;
 		
 //		SwingUtilities.invokeLater(() -> {
 			marsTerminal = new MarsTerminal(this);

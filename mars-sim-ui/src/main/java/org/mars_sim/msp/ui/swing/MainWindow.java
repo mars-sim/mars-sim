@@ -50,13 +50,11 @@ import org.mars.sim.console.InteractiveTerm;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Simulation.SaveType;
-import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.swing.configeditor.CrewEditor;
-import org.mars_sim.msp.ui.swing.configeditor.SimulationConfigEditor;
 import org.mars_sim.msp.ui.swing.tool.JStatusBar;
 
 import com.alee.extended.date.WebDateField;
@@ -688,18 +686,21 @@ extends JComponent {
 //		}
 //	}
 
-	public class SimConfigTask implements Runnable {
-		MainWindow win;
-
-		SimConfigTask(MainWindow win) {
-			this.win = win;
-		}
-
-		public void run() {
-			SimulationConfig.instance().loadConfig();
-			new SimulationConfigEditor(SimulationConfig.instance(), null);
-		}
-	}
+//	public class SimConfigTask implements Runnable {
+//		MainWindow win;
+//
+//		SimConfigTask(MainWindow win) {
+//			this.win = win;
+//		}
+//
+//		public void run() {
+//			SimulationConfig.instance().loadConfig();
+//
+//			SwingUtilities.invokeLater(() -> {
+//				new SimulationConfigEditor(SimulationConfig.instance(), win);
+//			});
+//		}
+//	}
 
 	/**
 	 * Saves the current simulation.

@@ -58,7 +58,7 @@ public class TimeRatioMenu implements BiConsumer<TextIO, RunnerData> {
         
 		if (speedInt >= 0 && speedInt <= 14) {
         	double ratio = Math.pow(2, speedInt);
-        	masterClock.setTimeRatio(ratio);   
+        	masterClock.setTimeRatio((int)ratio);   
         	
             terminal.printf(System.lineSeparator() 
             		+ "The new simulation speed becomes %d"//  -->  New Time-Ratio = 2^speed = %dx" 

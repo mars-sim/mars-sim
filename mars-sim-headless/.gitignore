@@ -3,4 +3,6 @@
 .project
 /.settings/**
 .idea
+.prefs
+/bin/
 /mars-sim-headless.iml

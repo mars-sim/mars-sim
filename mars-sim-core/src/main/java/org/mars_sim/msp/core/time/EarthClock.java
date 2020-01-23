@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.SimpleTimeZone;
 import java.util.TimeZone;
+import java.util.logging.Logger;
 
 /**
  * The EarthClock class keeps track of Earth Universal Time. It should be
@@ -32,6 +33,11 @@ public class EarthClock implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	/** Initialized logger. */
+	private static Logger logger = Logger.getLogger(EarthClock.class.getName());
+	private static String loggerName = logger.getName();
+	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+	
 	/**
 	 * Tracks the number of milliseconds since 1 January 1970 00:00:00 at the start of the sim
 	 */
@@ -242,8 +248,9 @@ public class EarthClock implements Serializable {
 	 * 
 	 * @param milliseconds the time to be added to the calendar
 	 */
-	public void addTime(int milliseconds) {
+	public void addTime(long milliseconds) {
 		zonedDateTime = zonedDateTime.plusNanos(milliseconds*1_000_000);
+//		logger.config("zonedDateTime : " + zonedDateTime);
 	}
 
 	/**

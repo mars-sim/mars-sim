@@ -31,7 +31,6 @@ import javax.swing.DefaultCellEditor;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRootPane;
@@ -65,9 +64,8 @@ import org.mars_sim.msp.ui.swing.MainWindow;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 
 import com.alee.laf.WebLookAndFeel;
+import com.alee.laf.window.WebFrame;
 import com.alee.managers.UIManagers;
-import com.alee.managers.tooltip.TooltipManager;
-import com.alee.managers.tooltip.TooltipWay;
 
 /**
  * A temporary simulation configuration editor dialog. Will be replaced by
@@ -87,7 +85,7 @@ public class SimulationConfigEditor {
 	private JTable settlementTable;
 	private JLabel errorLabel;
 	private JButton startButton;
-	private JFrame f;
+	private WebFrame f;
 
 	private CrewEditor crewEditor;
 	
@@ -109,16 +107,13 @@ public class SimulationConfigEditor {
 
 	/**
 	 * Constructor
-	 * 
-	 * @param owner
-	 *            the owner window.
 	 * @param config
 	 *            the simulation configuration.
 	 */
-	public SimulationConfigEditor(SimulationConfig config, MainWindow mainWindow) {
+	public SimulationConfigEditor(SimulationConfig config) {
 
 		// Initialize data members.
-		this.simulationConfig = config;
+		simulationConfig = config;
 		settlementConfig = config.getSettlementConfiguration();
 		personConfig = simulationConfig.getPersonConfig();
 		
@@ -137,7 +132,7 @@ public class SimulationConfigEditor {
 			logger.log(Level.WARNING, Msg.getString("MainWindow.log.lookAndFeelError"), ex); //$NON-NLS-1$
 		}
 
-		f = new JFrame();
+		f = new WebFrame();
 
 		ImageIcon icon = new ImageIcon(SimulationConfigEditor.class.getResource(MainWindow.ICON_IMAGE));
 		f.setIconImage(MainWindow.iconToImage(icon));
@@ -274,8 +269,8 @@ public class SimulationConfigEditor {
 
 		// Create add settlement button.
 		JButton addButton = new JButton(Msg.getString("SimulationConfigEditor.button.add")); //$NON-NLS-1$
-		TooltipManager.setTooltip(addButton, Msg.getString("SimulationConfigEditor.button.add"), TooltipWay.up);
-//		addButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.add")); //$NON-NLS-1$
+//		TooltipManager.setTooltip(addButton, Msg.getString("SimulationConfigEditor.button.add"), TooltipWay.up);
+		addButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.add")); //$NON-NLS-1$
 		addButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				addNewSettlement();
@@ -285,8 +280,8 @@ public class SimulationConfigEditor {
 
 		// Create remove settlement button.
 		JButton removeButton = new JButton(Msg.getString("SimulationConfigEditor.button.remove")); //$NON-NLS-1$
-		TooltipManager.setTooltip(removeButton, Msg.getString("SimulationConfigEditor.button.remove"), TooltipWay.up);
-//		removeButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.remove")); //$NON-NLS-1$
+//		TooltipManager.setTooltip(removeButton, Msg.getString("SimulationConfigEditor.button.remove"), TooltipWay.up);
+		removeButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.remove")); //$NON-NLS-1$
 		removeButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				removeSelectedSettlements();
@@ -300,8 +295,8 @@ public class SimulationConfigEditor {
 
 		// Create default button.
 		JButton defaultButton = new JButton(" " + Msg.getString("SimulationConfigEditor.button.undo") + " "); //$NON-NLS-1$
-		TooltipManager.setTooltip(defaultButton, Msg.getString("SimulationConfigEditor.button.undo"), TooltipWay.up);
-//		defaultButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.undo")); //$NON-NLS-1$
+//		TooltipManager.setTooltip(defaultButton, Msg.getString("SimulationConfigEditor.button.undo"), TooltipWay.up);
+		defaultButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.undo")); //$NON-NLS-1$
 		defaultButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				setDefaultSettlements();
@@ -332,8 +327,8 @@ public class SimulationConfigEditor {
 		
 		// Create the start button.
 		startButton = new JButton("  " + Msg.getString("SimulationConfigEditor.button.newSim") + "  "); //$NON-NLS-1$
-		TooltipManager.setTooltip(startButton, Msg.getString("SimulationConfigEditor.button.newSim"), TooltipWay.up);
-//		createButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.newSim")); //$NON-NLS-1$
+//		TooltipManager.setTooltip(startButton, Msg.getString("SimulationConfigEditor.button.newSim"), TooltipWay.up);
+		startButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.newSim")); //$NON-NLS-1$
 		startButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				// Make sure any editing cell is completed, then check if error.
@@ -342,9 +337,9 @@ public class SimulationConfigEditor {
 					editor.stopCellEditing();
 				}
 				if (!hasError) {
-					if (mainWindow != null) {
-						mainWindow.getFrame().dispose();
-					}
+//					if (mainWindow != null) {
+//						mainWindow.getFrame().dispose();
+//					}
 					f.setVisible(false);
 					// Finalizes the simulation configuration
 					finalizeSettlementConfig();		
@@ -369,12 +364,11 @@ public class SimulationConfigEditor {
 
 		bottomButtonPanel.add(startButton);
 		//bottomButtonPanel.add(new JLabel("    "));
-	 
 		 
 		// Edit Alpha Crew button.
 		JButton alphaButton = new JButton("  " + Msg.getString("SimulationConfigEditor.button.crewEditor") + "  "); //$NON-NLS-1$
-		TooltipManager.setTooltip(alphaButton, Msg.getString("SimulationConfigEditor.button.crewEditor"), TooltipWay.up);
-//		alphaButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.crewEditor")); //$NON-NLS-1$
+//		TooltipManager.setTooltip(alphaButton, Msg.getString("SimulationConfigEditor.button.crewEditor"), TooltipWay.up);
+		alphaButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.crewEditor")); //$NON-NLS-1$
 		alphaButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				editCrewProfile("alpha");

@@ -166,11 +166,7 @@ Alternatively, you may use SourceForge's button below to automatically sense the
 
 ### Prerequisites
 
-As of r5217 and afterward,
-* Requires JRE 12 for running mars-sim
-* Requires JDK 12 (or openjdk 12) for compiling binary
-
-As of r4945,
+As of r4945 and afterward,
 * Requires JRE 11 for running mars-sim
 * Requires JDK 11 (or openjdk 11) for compiling binary
 
@@ -204,34 +200,35 @@ See [DZone](https://dzone.com/articles/installing-openjdk-13-on-macos) for more 
 
 #### For Windows OS
  
-1. Start a command prompt and type this `set PATH="C:\Program Files\Java\jre-12.0.2\bin";%PATH%`.
+1. Start a command prompt and type this `set PATH="C:\Program Files\Java\jre-11.0.6\bin";%PATH%`.
 
-2. Edit the `JAVA_HOME` and `PATH` in the *Environment Variables* in Control Panel 
+2. Alternatively, edit the `JAVA_HOME` and `PATH` in the *Environment Variables* in Control Panel. 
+   Add `C:\Program Files\Java\jre-11.0.6\bin` to the `PATH` variable. 
  ```
 Note 2 : The order of precedence inside `PATH` is crucial. The first available folder having Java 
 executable inside will be the one to be loaded by Windows OS. 
  ```
-3. Set `JAVA_HOME` to a JRE or JDK's destination such as `C:\Program Files\Java\jdk-12.0.2` or 
-`C:\Program Files\Java\jre-12.0.2`. 
+  a. Set `JAVA_HOME` to a JRE or JDK's destination such as `C:\Program Files\Java\jdk-11.0.6\bin\` or 
+`C:\Program Files\Java\jre-11.0.6\bin`. 
  
-4. Add `%JAVA_HOME%;%JAVA_HOME%\bin;` to `PATH`. Type "path" in a command prompt to double check 
+  b. Add `%JAVA_HOME%;` to `PATH`. Type "path" in a command prompt to double check 
 the order of precedence when it comes to searching for the JDK. 
 
  ```
-Note 3 : The BEST approach is to enable only one Java build (such as Java 12.0.2) 
+Note 3 : The BEST approach is to enable only one Java build (such as Java 11.0.6) 
 inside `PATH` and remove all other folders referencing other java versions/builds.
  ```
-5. Remove any path similar to `C:\ProgramData\Oracle\Java\javapath;`  in `PATH` variable. It can 
+3. Remove any path similar to `C:\ProgramData\Oracle\Java\javapath;`  in `PATH` variable. It can 
 interfere with the correct version of Java that you would like to use. 
  ```
 Note 4 : Depending on the order of precedence in Path variable, 
 `C:\ProgramData\Oracle\Java\javapath` can load the undesired version of jre/jdk,
 instead of the java version you prefer.
  ```
-6. To test the version of Java that your machine is using, type "java -version"
+4. To test the version of Java that your machine is using, type "java -version"
 in a command prompt window.
 
-7. To check if a particular official version of Java is being *enabled*, 
+5. To check if a particular official version of Java is being *enabled*, 
 start **Java Control Panel** in Windows's Control Panel as follows :  
 
 * Move your mouse to the magnifier icon (the 2nd icon from the left) on win 10 task bar. 

@@ -55,6 +55,36 @@ public class MarsProjectStarter {
 //        	.append(" -XX:+UseShenandoahGC");
 //        	.append(" -Xlog:gc*");
         
+        // Take care of the illegal reflective access for Java 12+
+        command.append(" --add-opens java.base/java.util=ALL-UNNAMED")
+        .append(" --add-opens java.base/java.text=ALL-UNNAMED")
+        .append(" --add-opens java.base/java.lang.reflect=ALL-UNNAMED")
+        .append(" --add-opens java.base/java.net=ALL-UNNAMED")
+        .append(" --add-opens java.base/java.lang=ALL-UNNAMED")
+        .append(" --add-opens java.base/jdk.internal.loader=ALL-UNNAMED")
+        .append(" --add-opens java.desktop/javax.swing=ALL-UNNAMED")
+        .append(" --add-opens java.desktop/javax.swing.text=ALL-UNNAMED")
+        .append(" --add-opens java.desktop/java.awt.font=ALL-UNNAMED")
+        .append(" --add-opens java.desktop/java.awt.geom=ALL-UNNAMED")
+        .append(" --add-opens java.desktop/java.awt=ALL-UNNAMED")
+        .append(" --add-opens java.desktop/java.beans=ALL-UNNAMED")
+        .append(" --add-opens java.desktop/javax.swing.table=ALL-UNNAMED")
+        .append(" --add-opens java.desktop/com.sun.awt=ALL-UNNAMED")
+        .append(" --add-opens java.desktop/sun.awt=ALL-UNNAMED")
+        .append(" --add-opens java.desktop/sun.swing=ALL-UNNAMED")
+        .append(" --add-opens java.desktop/sun.font=ALL-UNNAMED")
+        .append(" --add-opens java.desktop/javax.swing.plaf.basic=ALL-UNNAMED")
+        .append(" --add-opens java.desktop/javax.swing.plaf.synth=ALL-UNNAMED")
+        
+        .append(" --add-opens java.desktop/com.sun.java.swing.plaf.windows=ALL-UNNAMED")
+        .append(" --add-opens java.desktop/com.sun.java.swing.plaf.gtk=ALL-UNNAMED")
+        .append(" --add-opens java.desktop/com.apple.laf=ALL-UNNAMED")
+        
+//        .append(" --add-opens java.desktop/com.sun.java.swing.plaf.windows")
+//        .append(" --add-opens java.desktop/com.sun.java.swing.plaf.gtk")
+//        .append(" --add-opens java.desktop/com.apple.laf");
+        .append(" --illegal-access=deny");
+        
         command.append(" -Djava.util.logging.config.file=logging.properties")
         	.append(" -cp .")
         	.append(File.pathSeparator)
