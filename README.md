@@ -166,6 +166,10 @@ Alternatively, you may use SourceForge's button below to automatically sense the
 
 ### Prerequisites
 
+As of r5217 and afterward,
+* Requires JRE 12 for running mars-sim
+* Requires JDK 12 (or openjdk 12) for compiling binary
+
 As of r4945 and afterward,
 * Requires JRE 11 for running mars-sim
 * Requires JDK 11 (or openjdk 11) for compiling binary
@@ -192,7 +196,7 @@ see this [DZone article](https://dzone.com/articles/how-to-install-multiple-vers
 
 #### For macOS
 
-1.  The directory of JDK is at `Library/Java/JavaVirtualMachines/jdk-13.jdk/Contents/Home`. 
+1.  The directory of JDK is at `Library/Java/JavaVirtualMachines/jdk-12.jdk/Contents/Home`. 
 See [DZone](https://dzone.com/articles/installing-openjdk-13-on-macos) for more instructions.
 
 2. Enter `/usr/libexec/java_home -V` to find out which version of Java you have installed.
@@ -200,22 +204,22 @@ See [DZone](https://dzone.com/articles/installing-openjdk-13-on-macos) for more 
 
 #### For Windows OS
  
-1. Start a command prompt and type this `set PATH="C:\Program Files\Java\jre-11.0.6\bin";%PATH%`.
+1. Start a command prompt and type this `set PATH="C:\Program Files\Java\jre-12.0.2\bin";%PATH%`.
 
 2. Alternatively, edit the `JAVA_HOME` and `PATH` in the *Environment Variables* in Control Panel. 
-   Add `C:\Program Files\Java\jre-11.0.6\bin` to the `PATH` variable. 
+   Add `C:\Program Files\Java\jre-12.0.2\bin` to the `PATH` variable. 
  ```
 Note 2 : The order of precedence inside `PATH` is crucial. The first available folder having Java 
 executable inside will be the one to be loaded by Windows OS. 
  ```
-  a. Set `JAVA_HOME` to a JRE or JDK's destination such as `C:\Program Files\Java\jdk-11.0.6\bin\` or 
-`C:\Program Files\Java\jre-11.0.6\bin`. 
+  a. Set `JAVA_HOME` to a JRE or JDK's destination such as `C:\Program Files\Java\jdk-12.0.2\bin\` or 
+`C:\Program Files\Java\jre-12.0.2\bin`. 
  
   b. Add `%JAVA_HOME%;` to `PATH`. Type "path" in a command prompt to double check 
 the order of precedence when it comes to searching for the JDK. 
 
  ```
-Note 3 : The BEST approach is to enable only one Java build (such as Java 11.0.6) 
+Note 3 : The BEST approach is to enable only one Java build (such as Java 12.0.2) 
 inside `PATH` and remove all other folders referencing other java versions/builds.
  ```
 3. Remove any path similar to `C:\ProgramData\Oracle\Java\javapath;`  in `PATH` variable. It can 

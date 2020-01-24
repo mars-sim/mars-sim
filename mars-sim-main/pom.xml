@@ -109,6 +109,9 @@
 						<manifest>
 							<mainClass>${domainNameMainClass}</mainClass>
 						</manifest>
+						<manifestEntries>
+						    <Multi-Release>true</Multi-Release>
+						</manifestEntries>						
 					</archive>
 				</configuration>
 				<executions>
