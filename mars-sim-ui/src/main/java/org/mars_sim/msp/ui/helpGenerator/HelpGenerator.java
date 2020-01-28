@@ -1128,6 +1128,13 @@ public class HelpGenerator {
 			.toString()
 		);
 
+		logger.log(
+				Level.INFO,
+				new StringBuffer()
+					.append("The generated files are located at /Git/mars-sim/mars-sim-ui/target/classes/")
+				.toString()
+			);
+				
 		System.exit(0);
 	}
 }
