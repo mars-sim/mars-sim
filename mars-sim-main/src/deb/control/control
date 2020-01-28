@@ -3,7 +3,7 @@ Version: [[version]]
 Section: misc
 Priority: optional
 Architecture: all
-Depends: default-jre (>= 1.8)
+Depends: default-jre (>= 11)
 Maintainer: Scott Davis <scud1@users.sourceforge.net>
 Homepage: https://mars-sim.github.io
 Distribution: development

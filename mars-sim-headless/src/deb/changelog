@@ -1,5 +1,6 @@
-mars-sim-main (3.1.0) unstable; Urgency : low
-
+  * Version 3.1.0 debian package release.
+ -- By Manny Kung <mannykung@gmail.com>           Tue, 28 Jan 2020 00:00:00 -0700
+ 
   * Version 3.07 debian package release.
  -- Scott Davis <scud1@users.sourceforge.net>  Sun, 18 Jan 2015 00:00:00 -0700
 

@@ -1,6 +1,6 @@
 # Mars Simulation Project
 
-Copyright (C) 2019 Scott Davis
+Copyright (C) 2020 Scott Davis
 https://mars-sim.github.io
 https://github.com/mars-sim/mars-sim
 
@@ -14,7 +14,7 @@ https://github.com/mars-sim/mars-sim
 
 - 220 MB free disk space
 
-- Java 12 
+- Java 11 or openjdk 11
 
 ---------------------------------------------------------------------
 
