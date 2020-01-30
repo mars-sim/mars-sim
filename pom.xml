@@ -7,13 +7,13 @@
 	<groupId>com.github</groupId>
 	<artifactId>mars-sim</artifactId>
 	<packaging>pom</packaging>
-	<version>3.1.0</version>
+	<version>3.1.1-SNAPSHOT</version>
 	<name>mars-sim</name>
 	<url>https://github.com/mars-sim/mars-sim</url>
 	<inceptionYear>2009</inceptionYear>
 	<properties>
 		<release>11</release>
-		<project.version>3.1.0</project.version>
+		<project.version>3.1.1-SNAPSHOT</project.version>
 		<junit.version>4.12</junit.version>
 		<timestamp>${maven.build.timestamp}</timestamp>
 		<maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>

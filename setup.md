@@ -164,7 +164,7 @@ numeral argument after the jar file as shown below :
 > java -jar mars-sim-main-[$VERSION].jar 4
 
 - Below are options :
-// no numerical --> 256MB Min, 1024MB Max (by default)
+// no numerical --> 256MB Min, 1536MB Max (by default)
 // 0 --> 256MB Min, 1024MB Max
 // 1 --> 256MB Min, 512MB Max
 // 2 --> 256MB Min, 768MB Max
