@@ -9,40 +9,74 @@ package org.mars_sim.main;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.mars_sim.headless.StreamConsumer;
 
 /**
  * MarsProjectStarter is the default main class for the main executable JAR.
- * It creates a new virtual machine with 1GB memory and logging properties.
+ * It creates a new virtual machine with logging properties.
  * It isn't used in the webstart release.
  */
 public class MarsProjectStarter {
 
 //	private final static String ERROR_PREFIX = "? ";
-
+	private static final String JAVA = "java";
+	private static final String JAVA_HOME = "JAVA_HOME";
+//	private static final String BIN = "bin";
+	private static final String ONE_WHITESPACE = " ";
+	
+	private static List<String> templates = new ArrayList<>();
+	
+	static {
+		templates.add("template:1");
+		templates.add("template:1A");
+		templates.add("template:1B");
+		templates.add("template:1C");
+		templates.add("template:1D");
+		templates.add("template:2");
+		templates.add("template:2A");
+		templates.add("template:2B");
+		templates.add("template:2C");
+		templates.add("template:2D");
+		templates.add("template:3");
+		templates.add("template:3A");
+		templates.add("template:3B");
+		templates.add("template:3C");
+		templates.add("template:3D");
+		templates.add("template:4");
+	}
+	
+	public static List<String> getTemplates() {
+		return templates;
+	}
+	
     public static void main(String[] args) {
 
         StringBuilder command = new StringBuilder();
 
-        String javaHome = System.getenv("JAVA_HOME");
-        if (javaHome != null) {
-            if (javaHome.contains(" "))
-            	javaHome = "\"" + javaHome;
+		String javaHome = System.getenv(JAVA_HOME);
+		
+		if (javaHome != null) {
+			if (javaHome.contains(ONE_WHITESPACE))
+				javaHome = "\"" + javaHome;
 
-            command.append(javaHome)
-            .append(File.separator)
-//            .append("bin")
-//            .append(File.separator)
-            .append("java");
+			command
+			.append(javaHome)
+			.append(File.separator)
+//			.append(BIN)
+//			.append(File.separator)
+			.append(JAVA);
 
-            if (javaHome.contains(" "))
-            	command.append("\"");
-        }
-        else 
-        	command.append("java");
+			if (javaHome.contains(ONE_WHITESPACE))
+				command.append("\"");
+		} 
+		else {
+			command.append(JAVA);
+		}
 
         //command.append(" -Dswing.aatext=true");
         //command.append(" -Dswing.plaf.metal.controlFont=Tahoma"); // the compiled jar won't run
@@ -101,6 +135,8 @@ public class MarsProjectStarter {
         // Add checking for input args
         List<String> argList = Arrays.asList(args);
 
+		boolean isNew = false;
+		
         if (argList.isEmpty()) {
         	// by default, use gui and 1GB
             command.append(" -Xms256m");
@@ -152,17 +188,19 @@ public class MarsProjectStarter {
 	        }
 
 	        else {
-
+				// Check for the headless switch
 		        if (argList.contains("headless") || argList.contains("-headless"))
 		        	command.append(" -headless");
 
-		        if (argList.contains("new") || argList.contains("-new"))
-		        	command.append(" -new");
-
+				// Check for the new switch
+				if (argList.contains("new") || argList.contains("-new")) {
+					isNew = true;	
+				}
+				
 		        else if (argList.contains("load") || argList.contains("-load")) {
 		        	command.append(" -load");
 
-		        	// 2016-10-06 Appended the name of loadFile to the end of the command stream so that MarsProjectFX can read it.
+		        	// Appended the name of loadFile to the end of the command stream so that MarsProjectFX can read it.
 		        	int index = argList.indexOf("load");
 		        	int size = argList.size();
 		        	String fileName = null;
@@ -174,16 +212,56 @@ public class MarsProjectStarter {
 		        }
 
 		        else {
-		        	//System.out.println("Note: it's missing 'new' or 'load'. Assume you want to start a new sim now.");
-		        	command.append(" -new");
-		        }
-
-	        }
-
-	        if (argList.contains("noaudio") || argList.contains("-noaudio")) 
-	        	command.append(" -noaudio");
+					// System.out.println("Note: it's missing 'new' or 'load'. Assume you want to
+					// start a new sim now.");
+						
+					isNew = true;
+				}
+			}
         }
 
+		if (isNew) {
+			command.append(" -new");
+			
+			for (String s: argList) {
+				if (StringUtils.containsIgnoreCase(s, "-country:")) {
+					command.append(" " + s);
+				}
+				
+				if (StringUtils.containsIgnoreCase(s, "-sponsor:")) {
+					command.append(" " + s);
+				}
+						
+				if (StringUtils.containsIgnoreCase(s, "-template:")) {
+					command.append(" " + s);
+				}
+			}		
+		}
+
+        if (argList.contains("noaudio") || argList.contains("-noaudio")) 
+        	command.append(" -noaudio");
+
+    	// Check for time-ratio switches
+		if (argList.contains("512x") || argList.contains("-512x")) {// time ratio is 512x
+			command.append(" -512x");
+		}
+
+		else if (argList.contains("1024x") || argList.contains("-1024x")) {// time ratio is 1024x
+			command.append(" -1024x");
+		}
+
+		else if (argList.contains("2048x") || argList.contains("-2048x")) {// time ratio is 2048x
+			command.append(" -2048x");
+		}
+
+		else if (argList.contains("4096x") || argList.contains("-4096x")) {// time ratio is 4096x
+			command.append(" -4096x");
+		}
+
+		else if (argList.contains("8192x") || argList.contains("-8192x")) {// time ratio is 8192x
+			command.append(" -8192x");
+		}
+		
         String commandStr = command.toString();
         System.out.println("Command: " + commandStr);
 

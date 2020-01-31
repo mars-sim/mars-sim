@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MarsProjectHeadlessStarter.java
-* @version 3.1.0 2018-06-14
+ * @version 3.1.0 2018-06-14
  * @author Manny Kung
  * $LastChangedDate$
  * $LastChangedRevision$
@@ -18,9 +18,9 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * MarsProjectHeadlessStarter is the main class for running the main executable
- * JAR in purely headless mode. It creates a new virtual machine with 1GB memory
- * and logging properties. It isn't used in the webstart release.
+ * MarsProjectHeadlessStarter is the main class for running the executable
+ * JAR in pure console mode. It creates a new virtual machine with logging properties. 
+ * It isn't used in the webstart release.
  */
 public class MarsProjectHeadlessStarter {
 
@@ -157,7 +157,6 @@ public class MarsProjectHeadlessStarter {
 			}
 
 			else {
-
 				// Check for the headless switch
 //				if (argList.contains("headless") || argList.contains("-headless"))
 //					command.append(" -headless");

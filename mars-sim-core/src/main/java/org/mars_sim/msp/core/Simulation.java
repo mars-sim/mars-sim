@@ -350,15 +350,21 @@ public class Simulation implements ClockListener, Serializable {
 		return simExecutor;
 	}
 
-	public void runCreateNewSimTask() {
+	public void runCreateNewSimTask(int userTimeRatio) {
 		startSimExecutor();
-		simExecutor.submit(new CreateNewSimTask());
+		simExecutor.submit(new CreateNewSimTask(userTimeRatio));
 	}
 	
 	public class CreateNewSimTask implements Runnable {
 
+		int userTimeRatio = -1;
+		
+		CreateNewSimTask(int userTimeRatio) {
+			this.userTimeRatio = userTimeRatio;
+		}
+		
 		public void run() {
-			createNewSimulation(-1, false);
+			createNewSimulation(userTimeRatio, false);
 		}
 	}
 	

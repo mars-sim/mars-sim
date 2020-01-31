@@ -75,7 +75,7 @@ public class MarsProjectHeadless {
 	 +"    new             start a new sim (by default" + System.lineSeparator()
 	 +"                    (Note : if 'load' is absent, 'new' is automatically appended.)," + System.lineSeparator()
 	 +"    headless        run in console mode without an user interface (UI)" + System.lineSeparator()
-	 +"    0               256MB Min, 1024MB Max (by default)" + System.lineSeparator()
+	 +"    0               256MB Min, 1536MB Max (by default)" + System.lineSeparator()
 	 +"    1               256MB Min, 1024MB Max" + System.lineSeparator()
 	 +"    2               256MB Min, 1536MB Max" + System.lineSeparator()
 	 +"    3               256MB Min, 2048MB Max" + System.lineSeparator()
@@ -182,7 +182,6 @@ public class MarsProjectHeadless {
 				handleNewSimulation(userTimeRatio);
 				result = true;
 			}
-			
 		} 
 		
 		else {//if (argList.contains("-new")) {
@@ -193,29 +192,24 @@ public class MarsProjectHeadless {
 					break;
 				}
 			}
+			
+			if (useTemplate) {
+				// Create a new simulation with the specified settlement template
+				createNewSettlement(userTimeRatio);
+				result = true;
+			}
+			else {
+				handleNewSimulation(userTimeRatio);
+				result = true;
+			}
 		} 
-		
-//		else {
-//			// if there is no args, load default.sim
-////                showError("Could not load the default simulation, trying to create a new Simulation...", e);
-//			handleNewSimulation(userTimeRatio);
-//			result = true;
-//		}
-
-		if (useTemplate) {
-			// Create a new simulation with the specified settlement template
-			createNewSettlement();
-			result = true;
-		}
-//		else {
-//			handleNewSimulation(userTimeRatio);
-//			result = true;
-//		}
-		
+	
 		return result;
 	}
 
-	
+	/**
+	 * Loads the prescribed settlement template
+	 */
 	private void loadSettlementTemplate() {
 //		logger.config("loadSettlementTemplate()");
 		String templateString = "";
@@ -290,7 +284,7 @@ public class MarsProjectHeadless {
 											);
 	}
 	
-	private void createNewSettlement() {
+	private void createNewSettlement(int userTimeRatio) {
 //		logger.info("createNewSettlement()");
 		try {
 			// Load xml files
@@ -309,7 +303,7 @@ public class MarsProjectHeadless {
 				// Create new simulation
 				// sim.createNewSimulation(-1, false);
 				// Run this class in sim executor
-				sim.runCreateNewSimTask();	
+				sim.runCreateNewSimTask(userTimeRatio);	
 
 				// Start the simulation
 				startSimThread(false);
@@ -466,7 +460,7 @@ public class MarsProjectHeadless {
 				// Create new simulation
 				// sim.createNewSimulation(-1, false);
 				// Run this class in sim executor
-				sim.runCreateNewSimTask();	
+				sim.runCreateNewSimTask(userTimeRatio);	
 
 				// Start the simulation
 				startSimThread(false);

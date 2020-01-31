@@ -104,13 +104,13 @@ public class SimulationConfigEditor {
 	private static SettlementConfig settlementConfig;
 	private static PersonConfig personConfig;
 //	private static UnitManager unitManager;
-
+	
 	/**
 	 * Constructor
 	 * @param config
 	 *            the simulation configuration.
 	 */
-	public SimulationConfigEditor(SimulationConfig config) {
+	public SimulationConfigEditor(SimulationConfig config, int userTimeRatio) {
 
 		// Initialize data members.
 		simulationConfig = config;
@@ -347,7 +347,7 @@ public class SimulationConfigEditor {
 //					sim.destroyOldSimulation();
 					
 					// Run this class in sim executor
-					sim.runCreateNewSimTask();					
+					sim.runCreateNewSimTask(userTimeRatio);					
 					// Create new simulation
 //					sim.createNewSimulation(-1, false);
 	
