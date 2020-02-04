@@ -1306,10 +1306,15 @@ public class Simulation implements ClockListener, Serializable {
 		+ "    heapFreeSize: " + formatSize(heapFreeSize) + "");
 		
 		int counts = 0;
-		while (heapFreeSize < MIN_HEAP_SPACE && counts <= 5) {
+		while (heapFreeSize < MIN_HEAP_SPACE && counts <= 2) {
 			counts++;
 			logger.config("Not enough free memory in heap space. Wait for 10 seconds and retry...");
+			// Restarts the master clock and removes the Simulation clock listener
+			sim.proceed(isPause);
+			// delay for 10 seconds
 			delay(10000);
+			// Stops the master clock and removes the Simulation clock listener
+			sim.halt(isPause);
 			// Get current size of heap in bytes
 			heapSize = Runtime.getRuntime().totalMemory();
 			// Get maximum size of heap in bytes. The heap cannot grow beyond this size.// Any attempt will result in an OutOfMemoryException.
@@ -1322,12 +1327,12 @@ public class Simulation implements ClockListener, Serializable {
 			+ "    heapFreeSize: " + formatSize(heapFreeSize) + "");
 		}
 
-		if (counts <= 5) {
+		if (counts <= 2) {
 			// Serialize the file
 			serialize(type, file, srcPath, destPath);
 		}
 		else {
-			logger.config("Please try saving again later.");
+			logger.config("Please try saving the sim later.");
 		}
 
 		// Restarts the master clock and adds back the Simulation clock listener

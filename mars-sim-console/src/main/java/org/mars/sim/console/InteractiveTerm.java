@@ -369,7 +369,7 @@ public class InteractiveTerm {
         		+ System.lineSeparator()
 				+ "1. Open site editor"
 				+ System.lineSeparator()
-				+ "2. Proceed with default site selection"
+				+ "2. Proceed to start the sim"
 				+ System.lineSeparator()
 				+ System.lineSeparator()
 				+ "NOTE: the Console Editon does not come with the Site Editor."
@@ -534,7 +534,7 @@ public class InteractiveTerm {
 				+ System.lineSeparator()
 				+ "2. Enable/disable alpha crew"
 				+ System.lineSeparator()
-				+ "3. Proceed"
+				+ "3. Proceed to start the sim"
 				+ System.lineSeparator()
 				+ System.lineSeparator()
 				+ "NOTE 1: The alpha crew defined in crew.xml will be loaded by default."
@@ -868,15 +868,13 @@ public class InteractiveTerm {
         	if (masterClock != null) {
 				if (masterClock.isPaused()) {
 					masterClock.setPaused(false, false);
-//					terminal.printf(System.lineSeparator() + System.lineSeparator());
-//					terminal.printf("                          [ Simulation Resumed ]");
+					logger.config("                            [ Simulation Paused ]");
 					//terminal.printf(System.lineSeparator() + System.lineSeparator());
 				}
 				else {
 //					terminal.resetLine();
 					masterClock.setPaused(true, false);
-//					terminal.printf(System.lineSeparator() + System.lineSeparator());
-//					terminal.printf("                           [ Simulation Paused ]");
+					logger.config("                            [ Simulation Paused ]");
 					//terminal.printf(System.lineSeparator() + System.lineSeparator());
 				}
         	}

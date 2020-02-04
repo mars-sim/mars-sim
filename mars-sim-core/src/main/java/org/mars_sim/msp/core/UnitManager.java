@@ -138,8 +138,8 @@ public class UnitManager implements Serializable {
 	private static List<String> allShortSponsors;
 	
 	// Data members
-	/** Is it running in Commander's Mode */
-	public boolean isCommanderMode;	
+	/** Is it running in the Command Mode */
+	public boolean isCommandMode;	
 	/** The commander's unique id . */
     public Integer commanderID;
 	/** The cache of the mission sol. */    
@@ -1578,7 +1578,7 @@ public class UnitManager implements Serializable {
 		cc.setSponsor(newSponsor);		
 		
 		commanderID = (Integer) cc.getIdentifier();
-		isCommanderMode = true;
+		isCommandMode = true;
 		GameManager.setCommander(cc);
 	}
 	
@@ -2649,17 +2649,17 @@ public class UnitManager implements Serializable {
 	}
 	
 //	/**
-//	 * Sets the commander mode
+//	 * Sets the command mode
 //	 */
-//	public void setCommanderMode(boolean value) {
-//		isCommanderMode = value;
+//	public void setCommandMode(boolean value) {
+//		isCommandMode = value;
 //	}
 	
 	/**
-	 * is the simulation running in commander mode ? 
+	 * is the simulation running in the command mode ? 
 	 */
-	public boolean getCommanderMode() {
-		return isCommanderMode;
+	public boolean isCommandMode() {
+		return isCommandMode;
 	}
 	
 	/** Gets the commander's fullname */

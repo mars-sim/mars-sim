@@ -52,7 +52,7 @@ public class GameManager {
     public static void initializeInstances(UnitManager u) {
     	unitManager = u;
 	
-		if (unitManager.getCommanderMode()) {
+		if (unitManager.isCommandMode()) {
 			mode = GameMode.COMMAND;
 	    	id = unitManager.getCommanderID();
 	    	commanderPerson = unitManager.getPersonByID(id);

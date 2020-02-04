@@ -68,7 +68,8 @@ extends TabPanel {
 	private StudyTableModel studyTableModel;
 	private AchievementTableModel achievementTableModel;
 
-
+	private ScientificStudyManager manager = Simulation.instance().getScientificStudyManager();
+	
 	/**
 	 * Constructor.
 	 * @param settlement the settlement.
@@ -131,6 +132,8 @@ extends TabPanel {
 		renderer.setHorizontalAlignment(SwingConstants.CENTER);
 		studyTable.getColumnModel().getColumn(0).setCellRenderer(renderer);
 		studyTable.getColumnModel().getColumn(1).setCellRenderer(renderer);
+		studyTable.getColumnModel().getColumn(2).setCellRenderer(renderer);
+		studyTable.getColumnModel().getColumn(3).setCellRenderer(renderer);
 		
 		studyTable.setPreferredScrollableViewportSize(new Dimension(225, -1));
 //		studyTable.setCellSelectionEnabled(false);
@@ -292,7 +295,7 @@ extends TabPanel {
 			this.settlement = settlement;
 
 			// Get all studies the settlement is primary for.
-			ScientificStudyManager manager = Simulation.instance().getScientificStudyManager();
+//			ScientificStudyManager manager = Simulation.instance().getScientificStudyManager();
 			studies = manager.getAllStudies(settlement);
 		}
 
@@ -301,13 +304,22 @@ extends TabPanel {
 		 * @return the number of columns in the model.
 		 */
 		public int getColumnCount() {
-			return 2;
+			return 4;
 		}
 
 		@Override
-		public String getColumnName(int columnIndex) {
-			if (columnIndex == 0) return Msg.getString("TabPanelScience.column.study"); //$NON-NLS-1$
-			else if (columnIndex == 1) return Msg.getString("TabPanelScience.column.phase"); //$NON-NLS-1$
+		public String getColumnName(int column) {
+			if (column == 0) 
+				return Msg.getString("TabPanelScience.column.study"); //$NON-NLS-1$
+			else if (column == 1) 
+				return Msg.getString("TabPanelScience.column.level"); //$NON-NLS-1$
+			else if (column == 2) 
+				return Msg.getString("TabPanelScience.column.phase"); //$NON-NLS-1$
+			else if (column == 3)
+				return Msg.getString("TabPanelScience.column.researcher"); //$NON-NLS-1$
+
+//			if (columnIndex == 0) return Msg.getString("TabPanelScience.column.study"); //$NON-NLS-1$
+//			else if (columnIndex == 1) return Msg.getString("TabPanelScience.column.phase"); //$NON-NLS-1$
 			else return null;
 		}
 
@@ -329,12 +341,29 @@ extends TabPanel {
 			String result = null;
 			if ((rowIndex >= 0) && (rowIndex < studies.size())) {
 				ScientificStudy study = studies.get(rowIndex);
-				// 2014-12-01 Added Conversion.capitalize()
-				if (columnIndex == 0) result = Conversion.capitalize(study.toString());
-				else if (columnIndex == 1) {
-					if (study.isCompleted()) result = study.getCompletionState();
-					else result = study.getPhase();
+				
+				if (columnIndex == 0) 
+					result = Conversion.capitalize(study.getScienceName());
+				else if (columnIndex == 1) 
+					result = study.getDifficultyLevel() + "";
+				else if (columnIndex == 2) {
+					if (study.isCompleted()) result = Conversion.capitalize(study.getCompletionState());
+					else result = Conversion.capitalize(study.getPhase());
 				}
+				else if (columnIndex == 3) {
+					String researcherN = "";	
+					if (study.getPrimaryResearcher() != null) {
+						researcherN = study.getPrimaryResearcher().getName();
+						result = Conversion.capitalize(researcherN);
+					}
+				}
+				
+//				if (columnIndex == 0) result = Conversion.capitalize(study.toString());
+//				else if (columnIndex == 1) {
+//					if (study.isCompleted()) result = study.getCompletionState();
+//					else result = study.getPhase();
+//				}
+
 			}
 			return result;
 		}
@@ -343,7 +372,6 @@ extends TabPanel {
 		 * Updates the table model.
 		 */
 		private void update() {
-			ScientificStudyManager manager = Simulation.instance().getScientificStudyManager();
 			List<ScientificStudy> newStudies = manager.getAllStudies(settlement);
 			if (!newStudies.equals(studies)) studies = newStudies;
 			fireTableDataChanged();

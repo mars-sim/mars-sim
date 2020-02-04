@@ -253,12 +253,14 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
 					printf(System.lineSeparator() + System.lineSeparator());
 					printf("                      [ Simulation Unpaused ]");
 					printf(System.lineSeparator() + System.lineSeparator());
+					logger.config("                            [ Simulation Paused ]");
 				}
 				else {
 					masterClock.setPaused(true, false);
 					printf(System.lineSeparator() + System.lineSeparator());
 					printf("                       [ Simulation Paused ]");
 					printf(System.lineSeparator() + System.lineSeparator());
+					logger.config("                            [ Simulation Paused ]");
 				}
         	}
         });

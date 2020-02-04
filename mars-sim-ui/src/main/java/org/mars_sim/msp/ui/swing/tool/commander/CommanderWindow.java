@@ -65,9 +65,18 @@ public class CommanderWindow extends ToolWindow {
 
 	/** Tool name. */
 	public static final String NAME = "Commander Dashboard";
-	public static final String TASK_TAB = "Task";
-	public static final String INTERVAL_TAB = "Time";
-	public static final String POLICY_TAB = "Policy";
+	
+	public static final String LEADERSHIP_TAB = "Leadership";
+	
+	public static final String AGRICULTURE_TAB = "Agriculture";
+	public static final String ENGINEERING_TAB = "Engineering";
+	public static final String LOGISTIC_TAB = "Logistic";
+	public static final String MISSION_TAB = " Mission";
+	public static final String RESOURCE_TAB = "Resource";
+	public static final String SAFETY_TAB = "Safety";
+	public static final String SCIENCE_TAB = "Science";
+
+
 	public static final String ALLOW = "Allow Trading Missions from other settlements";
 	public static final String SEE_RIGHT = ".    -->";
 	
@@ -132,7 +141,7 @@ public class CommanderWindow extends ToolWindow {
 //		mainPane.add(listPane, BorderLayout.WEST);
 
 		WebPanel bottomPane = new WebPanel(new GridLayout(1, 4));
-		bottomPane.setPreferredSize(new Dimension(200, 50));
+		bottomPane.setPreferredSize(new Dimension(-1, 50));
 		mainPane.add(bottomPane, BorderLayout.SOUTH);
 		
 //		JPanel leadershipPane = new JPanel(new BorderLayout());
@@ -153,13 +162,23 @@ public class CommanderWindow extends ToolWindow {
 		tabPane = new JTabbedPane();
 		mainPane.add(tabPane, BorderLayout.CENTER);
 
-		createTaskPanel();
+		createLeadershipPanel();
 		
-		createTimePanel();
+		createLogisticPanel();
 		
-		createPolicyPanel();
+		createResourcePanel();
 		
-		setSize(new Dimension(480, 480));
+		createMissionPanel();
+		
+		createSciencePanel();
+		
+		createEngineeringPanel();
+		
+		createAgriculturePanel();
+		
+		createSafetyPanel();
+		
+		setSize(new Dimension(640, 480));
 		setMaximizable(true);
 		setResizable(false);
 
@@ -174,79 +193,36 @@ public class CommanderWindow extends ToolWindow {
 
 	}
 
-	public void createTimePanel() {
-		JPanel timePanel = new JPanel(new BorderLayout());
-		tabPane.add(timePanel, BorderLayout.CENTER);
-		tabPane.setTitleAt(1, INTERVAL_TAB);
+	public void createLeadershipPanel() {
+		JPanel panel = new JPanel(new BorderLayout());
+		tabPane.add(LEADERSHIP_TAB, panel);
 		
 		JPanel topPanel = new JPanel(new BorderLayout(20, 20));
-		timePanel.add(topPanel, BorderLayout.NORTH);
-
-//		JLabel label = new JLabel("Pause Timer");	
-
-		// Create a button panel
-		JPanel buttonPanel = new JPanel(new GridLayout(5,1));
-		topPanel.add(buttonPanel);
-		
-		buttonPanel.setBorder(BorderFactory.createTitledBorder("Pausing Interval"));
-		buttonPanel.setToolTipText("Select the time interval for automatic simulation pausing");
-		
-		ButtonGroup group = new ButtonGroup();
+		panel.add(topPanel, BorderLayout.NORTH);	
+	}
 	
-		r0 = new JRadioButton("None", true);
-		r1 = new JRadioButton("250 millisols");
-		r2 = new JRadioButton("333 millisols");
-		r3 = new JRadioButton("500 millisols");
-		r4 = new JRadioButton("1 sol");
-
-		group.add(r0);
-		group.add(r1);
-		group.add(r2);
-		group.add(r3);
-		group.add(r4);
+	public void createAgriculturePanel() {
+		JPanel panel = new JPanel(new BorderLayout());
+		tabPane.add(AGRICULTURE_TAB, panel);
 		
-		buttonPanel.add(r0);
-		buttonPanel.add(r1);
-		buttonPanel.add(r2);
-		buttonPanel.add(r3);
-		buttonPanel.add(r4);
+		JPanel topPanel = new JPanel(new BorderLayout(20, 20));
+		panel.add(topPanel, BorderLayout.NORTH);	
+	}
+	
+	public void createEngineeringPanel() {
+		JPanel panel = new JPanel(new BorderLayout());
+		tabPane.add(ENGINEERING_TAB, panel);
 		
-		RadioButtonActionListener actionListener = new RadioButtonActionListener();
-		r0.addActionListener(actionListener);
-		r1.addActionListener(actionListener);
-		r2.addActionListener(actionListener);
-		r3.addActionListener(actionListener);
-		r4.addActionListener(actionListener);
-	    
+		JPanel topPanel = new JPanel(new BorderLayout(20, 20));
+		panel.add(topPanel, BorderLayout.NORTH);	
 	}
-
-	class RadioButtonActionListener implements ActionListener {
-	    @Override
-	    public void actionPerformed(ActionEvent event) {
-	        JRadioButton button = (JRadioButton) event.getSource();
-	 
-	        if (button == r0) {
-	        	masterClock.setCommandPause(false, 1000);
-	        } else if (button == r1) {
-	        	masterClock.setCommandPause(true, 250);	 
-	        } else if (button == r2) {
-	        	masterClock.setCommandPause(true, 333.333);	
-	        } else if (button == r3) {
-	        	masterClock.setCommandPause(true, 500);       	 
-	        } else if (button == r4) {
-	        	masterClock.setCommandPause(true, 999.999);	
-	        }
-	    }
-	}
-    
-	public void createTaskPanel() {
-		JPanel taskPanel = new JPanel(new BorderLayout());
-//		taskPanel.setPreferredSize(new Dimension(450, 450));
-		tabPane.add(taskPanel, BorderLayout.NORTH);
-		tabPane.setTitleAt(0, TASK_TAB);
+	
+	public void createLogisticPanel() {
+		JPanel panel = new JPanel(new BorderLayout());
+		tabPane.add(LOGISTIC_TAB, panel);
 	    
 	    JPanel topPanel = new JPanel(new FlowLayout());
-	    taskPanel.add(topPanel, BorderLayout.NORTH);
+	    panel.add(topPanel, BorderLayout.NORTH);
 
 		// Create a button panel
 	    JPanel buttonPanel = new JPanel(new BorderLayout());
@@ -312,7 +288,7 @@ public class CommanderWindow extends ToolWindow {
 		queueListLabel.setBorder(new MarsPanelBorder());
 	    queueButtonLabelPanel.add(queueListLabel, BorderLayout.NORTH);
 		queueListPanel.add(queueButtonLabelPanel);
-	    taskPanel.add(queueListPanel, BorderLayout.CENTER); // 2nd add
+		panel.add(queueListPanel, BorderLayout.CENTER); // 2nd add
 	    
 		// Create scroll panel for population list.
 		listScrollPanel = new JScrollPane();
@@ -344,18 +320,16 @@ public class CommanderWindow extends ToolWindow {
 		// Monitor the vertical scroll of jta
 		new SmartScroller(scrollTextArea, SmartScroller.VERTICAL, SmartScroller.END);
 		textPanel.add(scrollTextArea);
-		taskPanel.add(textPanel, BorderLayout.SOUTH);
+		panel.add(textPanel, BorderLayout.SOUTH);
 		
 	}
 	
-	public void createPolicyPanel() {
-		WebPanel policyPanel = new WebPanel(new BorderLayout());
-		
-		tabPane.add(policyPanel, BorderLayout.NORTH);
-		tabPane.setTitleAt(2, POLICY_TAB);
+	public void createMissionPanel() {
+		WebPanel panel = new WebPanel(new BorderLayout());
+		tabPane.add(MISSION_TAB, panel);
 	     
 		policyMainPanel = new WebPanel(new BorderLayout());
-		policyPanel.add(policyMainPanel, BorderLayout.NORTH);
+		panel.add(policyMainPanel, BorderLayout.NORTH);
 		policyMainPanel.setPreferredSize(new Dimension(200, 125));
 		policyMainPanel.setMaximumSize(new Dimension(200, 125));
 		
@@ -478,6 +452,85 @@ public class CommanderWindow extends ToolWindow {
 	    }
 	}
 	
+	public void createResourcePanel() {
+		JPanel panel = new JPanel(new BorderLayout());
+		tabPane.add(RESOURCE_TAB, panel);
+		
+		JPanel topPanel = new JPanel(new BorderLayout(20, 20));
+		panel.add(topPanel, BorderLayout.NORTH);
+
+		// Create a button panel
+		JPanel buttonPanel = new JPanel(new GridLayout(5,1));
+		topPanel.add(buttonPanel);
+		
+		buttonPanel.setBorder(BorderFactory.createTitledBorder(" Pausing Interval"));
+		buttonPanel.setToolTipText("Select the time interval for automatic simulation pausing");
+		
+		ButtonGroup group = new ButtonGroup();
+	
+		r0 = new JRadioButton("None", true);
+		r1 = new JRadioButton("250 millisols");
+		r2 = new JRadioButton("333 millisols");
+		r3 = new JRadioButton("500 millisols");
+		r4 = new JRadioButton("1 sol");
+
+		group.add(r0);
+		group.add(r1);
+		group.add(r2);
+		group.add(r3);
+		group.add(r4);
+		
+		buttonPanel.add(r0);
+		buttonPanel.add(r1);
+		buttonPanel.add(r2);
+		buttonPanel.add(r3);
+		buttonPanel.add(r4);
+		
+		RadioButtonActionListener actionListener = new RadioButtonActionListener();
+		r0.addActionListener(actionListener);
+		r1.addActionListener(actionListener);
+		r2.addActionListener(actionListener);
+		r3.addActionListener(actionListener);
+		r4.addActionListener(actionListener);
+	    
+	}
+
+	class RadioButtonActionListener implements ActionListener {
+	    @Override
+	    public void actionPerformed(ActionEvent event) {
+	        JRadioButton button = (JRadioButton) event.getSource();
+	 
+	        if (button == r0) {
+	        	masterClock.setCommandPause(false, 1000);
+	        } else if (button == r1) {
+	        	masterClock.setCommandPause(true, 250);	 
+	        } else if (button == r2) {
+	        	masterClock.setCommandPause(true, 333.333);	
+	        } else if (button == r3) {
+	        	masterClock.setCommandPause(true, 500);       	 
+	        } else if (button == r4) {
+	        	masterClock.setCommandPause(true, 999.999);	
+	        }
+	    }
+	}
+    
+	public void createSafetyPanel() {
+		JPanel panel = new JPanel(new BorderLayout());
+		tabPane.add(SAFETY_TAB, panel);
+		
+		JPanel topPanel = new JPanel(new BorderLayout(20, 20));
+		panel.add(topPanel, BorderLayout.NORTH);	
+	}
+	
+	public void createSciencePanel() {
+		JPanel panel = new JPanel(new BorderLayout());
+		tabPane.add(SCIENCE_TAB, panel);
+		
+		JPanel topPanel = new JPanel(new BorderLayout(20, 20));
+		panel.add(topPanel, BorderLayout.NORTH);	
+	}
+	
+
     /**
      * Returns sample check box list model.
      *
