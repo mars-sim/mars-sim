@@ -161,22 +161,22 @@ public class CommanderWindow extends ToolWindow {
 		// Create the info tab panel.
 		tabPane = new JTabbedPane();
 		mainPane.add(tabPane, BorderLayout.CENTER);
-
-		createLeadershipPanel();
-		
-		createLogisticPanel();
-		
-		createResourcePanel();
-		
-		createMissionPanel();
-		
-		createSciencePanel();
-		
-		createEngineeringPanel();
 		
 		createAgriculturePanel();
 		
+		createEngineeringPanel();
+		
+		createLeadershipPanel();
+		
+		createLogisticPanel();
+			
+		createMissionPanel();
+		
+		createResourcePanel();
+
 		createSafetyPanel();
+		
+		createSciencePanel();
 		
 		setSize(new Dimension(640, 480));
 		setMaximizable(true);
@@ -220,7 +220,8 @@ public class CommanderWindow extends ToolWindow {
 	public void createLogisticPanel() {
 		JPanel panel = new JPanel(new BorderLayout());
 		tabPane.add(LOGISTIC_TAB, panel);
-	    
+		tabPane.setSelectedComponent(panel);
+		
 	    JPanel topPanel = new JPanel(new FlowLayout());
 	    panel.add(topPanel, BorderLayout.NORTH);
 

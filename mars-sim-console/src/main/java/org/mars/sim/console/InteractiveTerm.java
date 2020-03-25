@@ -312,7 +312,7 @@ public class InteractiveTerm {
 				+ System.lineSeparator()
 				+ "0. Exit"
 				+ System.lineSeparator()
-				+ "1. Command Mode"
+				+ "1. Command Mode  (Experimental only)"
 				+ System.lineSeparator()
 				+ "2. Sandbox Mode"
 				+ System.lineSeparator()
@@ -361,7 +361,7 @@ public class InteractiveTerm {
 		
 	    marsTerminal.println(System.lineSeparator() 
         		+ System.lineSeparator()
-        		+ "           * * *   Command Mode - Site Selection   * * *" 
+        		+ "           * * *   Command Mode (Experimental only) - Site Selection   * * *" 
          		+ System.lineSeparator()
         		+ System.lineSeparator()
         		+ System.lineSeparator()
@@ -432,7 +432,7 @@ public class InteractiveTerm {
 		
         marsTerminal.println(System.lineSeparator() 
         		+ System.lineSeparator()
-        		+ "            * * *   Command Mode - Crew Selection   * * *" 
+        		+ "            * * *   Command Mode (Experimental only) - Crew Selection   * * *" 
         		+ System.lineSeparator()
         		+ System.lineSeparator()
 				+ "0. Exit"
