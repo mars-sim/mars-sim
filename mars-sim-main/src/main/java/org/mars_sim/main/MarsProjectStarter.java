@@ -29,6 +29,8 @@ public class MarsProjectStarter {
 //	private static final String BIN = "bin";
 	private static final String ONE_WHITESPACE = " ";
 	
+	private static String OS = System.getProperty("os.name").toLowerCase();
+	
 	private static List<String> templates = new ArrayList<>();
 	
 	static {
@@ -113,12 +115,17 @@ public class MarsProjectStarter {
         .append(" --add-opens java.desktop/com.sun.java.swing.plaf.windows=ALL-UNNAMED")
         .append(" --add-opens java.desktop/com.sun.java.swing.plaf.gtk=ALL-UNNAMED")
         .append(" --add-opens java.desktop/com.apple.laf=ALL-UNNAMED")
-        
-//        .append(" --add-opens java.desktop/com.sun.java.swing.plaf.windows")
-//        .append(" --add-opens java.desktop/com.sun.java.swing.plaf.gtk")
-//        .append(" --add-opens java.desktop/com.apple.laf");
         .append(" --illegal-access=deny");
         
+        // Check OS
+        if (OS.indexOf("win") >= 0)
+        	command.append(" --add-opens java.desktop/com.sun.java.swing.plaf.windows");
+        else if (OS.indexOf("mac") >= 0)
+        	command.append(" --add-opens java.desktop/com.apple.laf");
+        else if (OS.indexOf("nix") >= 0 || OS.indexOf("nux") >= 0 || OS.indexOf("aix") > 0 || OS.indexOf("sunos") >= 0)
+            command.append(" --add-opens java.desktop/com.sun.java.swing.plaf.gtk");
+        
+        // Set up logging
         command.append(" -Djava.util.logging.config.file=logging.properties")
         	.append(" -cp .")
         	.append(File.pathSeparator)

@@ -31,6 +31,8 @@ public class MarsProjectHeadlessStarter {
 //	private static final String BIN = "bin";
 	private static final String ONE_WHITESPACE = " ";
 	
+	private static String OS = System.getProperty("os.name").toLowerCase();
+	
 	private static List<String> templates = new ArrayList<>();
 	
 	static {
@@ -79,6 +81,17 @@ public class MarsProjectHeadlessStarter {
 		else {
 			command.append(JAVA);
 		}
+		
+		command.append(" --illegal-access=deny");
+        
+        // Check OS
+        if (OS.indexOf("win") >= 0)
+        	command.append(" --add-opens java.desktop/com.sun.java.swing.plaf.windows");
+        else if (OS.indexOf("mac") >= 0)
+        	command.append(" --add-opens java.desktop/com.apple.laf");
+        else if (OS.indexOf("nix") >= 0 || OS.indexOf("nux") >= 0 || OS.indexOf("aix") > 0 || OS.indexOf("sunos") >= 0)
+            command.append(" --add-opens java.desktop/com.sun.java.swing.plaf.gtk");
+		
 		// command.append(" -Dswing.aatext=true");
 		// command.append(" -Dswing.plaf.metal.controlFont=Tahoma"); // the compiled jar
 		// won't run
@@ -92,6 +105,7 @@ public class MarsProjectHeadlessStarter {
 //        	.append(" -XX:+UseShenandoahGC");
 //        	.append(" -Xlog:gc*");
         
+        // Set up logging
 		command.append(" -Djava.util.logging.config.file=logging.properties").append(" -cp .")
 				.append(File.pathSeparator)
 				.append("*")

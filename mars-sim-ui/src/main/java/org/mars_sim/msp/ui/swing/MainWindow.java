@@ -379,7 +379,6 @@ extends JComponent {
 //			earthDateField.setDate(date);
 			earthDateField.setDate(new Date(earthClock.getInstant().toEpochMilli()));
 		}
-		earthDateField.setAllowUserInput(false);
 //	    dateField.addDateListener (new DateListener () {
 //	          @Override
 //	          public void dateChanged (final Date date) {
@@ -1064,6 +1063,7 @@ extends JComponent {
 	public void incrementClocks() {
 		if (earthDateField != null && earthClock != null && earthClock.getInstant() != null) {
 			earthDateField.setDate(new Date(earthClock.getInstant().toEpochMilli()));
+			TooltipManager.setTooltip(earthDateField, "Earth's Timestamp", TooltipWay.up);
 //			LocalDateTime ldt = LocalDateTime.ofInstant(earthClock.getInstant(), ZoneId.of("UTC"));
 //			ZonedDateTime zdt = ldt.atZone(ZoneId.of("UTC"));
 //			Date date = Date.from(LocalDateTime.ofInstant(earthClock.getInstant(), ZoneId.of("UTC")).atZone(ZoneId.of("UTC")).toInstant());

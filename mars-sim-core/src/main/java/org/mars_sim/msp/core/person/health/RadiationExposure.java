@@ -323,8 +323,8 @@ public class RadiationExposure implements Serializable {
 				dose[SKIN][THIRTY_DAY] = dose[OCULAR][THIRTY_DAY] + rand(25);
 			} else if (y == ANNUAL) {
 				dose[BFO][ANNUAL] = rand(30);
-				dose[OCULAR][ANNUAL] = dose[BFO][ANNUAL] + rand(60);
-				dose[SKIN][ANNUAL] = dose[OCULAR][ANNUAL] + rand(80);
+				dose[OCULAR][ANNUAL] = dose[BFO][ANNUAL] + rand(45);
+				dose[SKIN][ANNUAL] = dose[OCULAR][ANNUAL] + rand(60);
 			} else if (y == CAREER) {
 				dose[BFO][CAREER] = rand(40);
 				dose[OCULAR][CAREER] = dose[BFO][CAREER] + rand(70);

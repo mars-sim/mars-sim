@@ -306,9 +306,9 @@ extends TabPanel {
 
 		radiationTable.setPreferredScrollableViewportSize(new Dimension(225, 70));
 		radiationTable.getColumnModel().getColumn(0).setPreferredWidth(40);
-		radiationTable.getColumnModel().getColumn(1).setPreferredWidth(80);
-		radiationTable.getColumnModel().getColumn(2).setPreferredWidth(70);
-		radiationTable.getColumnModel().getColumn(2).setPreferredWidth(30);
+		radiationTable.getColumnModel().getColumn(1).setPreferredWidth(100);
+		radiationTable.getColumnModel().getColumn(2).setPreferredWidth(65);
+		radiationTable.getColumnModel().getColumn(3).setPreferredWidth(35);
 		radiationTable.setRowSelectionAllowed(true);
 		radiationScrollPanel.setViewportView(radiationTable);
 
