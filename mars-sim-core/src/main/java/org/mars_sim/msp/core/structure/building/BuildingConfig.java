@@ -280,7 +280,6 @@ public class BuildingConfig implements Serializable {
 	 * 
 	 * @return set of building types.
 	 */
-	@SuppressWarnings("unchecked")
 	public static Set<String> getBuildingTypes() {
 
 		if (buildingTypes == null) {
@@ -302,7 +301,6 @@ public class BuildingConfig implements Serializable {
 	 * @return building element
 	 * @throws Exception if building type could not be found.
 	 */
-	@SuppressWarnings("unchecked")
 	private static Element getBuildingElement(String buildingType) {
 		Element result = null;
 
@@ -638,7 +636,6 @@ public class BuildingConfig implements Serializable {
 	 * @return list of waste specialties as {@link ScienceType}.
 	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
-	@SuppressWarnings("unchecked")
 	public List<ScienceType> getWasteSpecialties(String buildingType) {
 		
 		if (!wasteSpecialties.containsKey(buildingType)) {
@@ -954,7 +951,6 @@ public class BuildingConfig implements Serializable {
 	 * @return map of initial resources
 	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
-	@SuppressWarnings("unchecked")
 	public Map<Integer, Double> getInitialResources(String buildingType) {
 		if (initialResources.containsKey(buildingType)) {
 			return initialResources.get(buildingType);
@@ -995,7 +991,6 @@ public class BuildingConfig implements Serializable {
 	 * @return list of heat sources
 	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
-	@SuppressWarnings("unchecked")
 	public List<HeatSource> getHeatSources(String buildingType) {
 		List<HeatSource> heatSourceList = new ArrayList<HeatSource>();
 		Element buildingElement = getBuildingElement(buildingType);
@@ -1072,7 +1067,6 @@ public class BuildingConfig implements Serializable {
 	 * @return list of power sources
 	 * @throws Exception if building type cannot be found or XML parsing error.
 	 */
-	@SuppressWarnings("unchecked")
 	public List<PowerSource> getPowerSources(String buildingType) {
 		List<PowerSource> powerSourceList = new ArrayList<PowerSource>();
 		Element buildingElement = getBuildingElement(buildingType);
@@ -1716,7 +1710,6 @@ public class BuildingConfig implements Serializable {
 	 * @param functionName the type of the building function.
 	 * @return list of activity spots as Point2D objects.
 	 */
-	@SuppressWarnings("unchecked")
 	private List<Point2D> getActivitySpots(String buildingType, String functionName) {
 		List<Point2D> result = new ArrayList<Point2D>();
 
@@ -1759,7 +1752,6 @@ public class BuildingConfig implements Serializable {
 	 * @param functionName the type of the building function.
 	 * @return list of bed locations as Point2D objects.
 	 */
-	@SuppressWarnings("unchecked")
 	private List<Point2D> getBedLocations(String buildingType, String functionName) {
 		List<Point2D> result = new ArrayList<Point2D>();
 
@@ -1794,7 +1786,6 @@ public class BuildingConfig implements Serializable {
 		return Double.parseDouble(element3.getAttributeValue(param));
 	}
 
-	@SuppressWarnings("unchecked")
 	private boolean hasElements(String buildingType, String child, String children) {
 		Element element1 = getBuildingElement(buildingType);
 		Element element2 = element1.getChild(child);

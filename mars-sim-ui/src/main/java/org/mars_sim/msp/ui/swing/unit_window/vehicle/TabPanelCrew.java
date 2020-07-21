@@ -39,7 +39,6 @@ import com.alee.laf.scroll.WebScrollPane;
 /** 
  * The CrewTabPanel is a tab panel for a vehicle's crew information.
  */
-@SuppressWarnings("serial")
 public class TabPanelCrew
 extends TabPanel
 implements MouseListener, ActionListener {

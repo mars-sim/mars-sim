@@ -51,6 +51,8 @@ class XZSeekDecDemo {
             int size;
             while ((size = in.read(buf)) != -1)
                 System.out.write(buf, 0, size);
+            
+            in.close();
         } else {
             for (int i = 1; i < args.length; i += 2) {
                 int pos = Integer.parseInt(args[i]);

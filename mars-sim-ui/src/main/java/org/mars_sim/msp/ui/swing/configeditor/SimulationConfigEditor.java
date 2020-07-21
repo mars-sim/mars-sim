@@ -85,7 +85,7 @@ public class SimulationConfigEditor {
 	private JTable settlementTable;
 	private JLabel errorLabel;
 	private JButton startButton;
-	private WebFrame f;
+	private WebFrame<?> f;
 
 	private CrewEditor crewEditor;
 	

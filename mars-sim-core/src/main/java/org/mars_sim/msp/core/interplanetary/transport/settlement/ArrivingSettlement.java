@@ -302,7 +302,7 @@ public class ArrivingSettlement implements Transportable, Serializable {
 			GenderType gender = GenderType.FEMALE;
 			if (RandomUtil.getRandomDouble(1.0D) <= personConfig.getGenderRatio())
 				gender = GenderType.MALE;
-			String birthplace = "Earth"; // TODO: randomize from list of countries/federations
+//			String birthplace = "Earth"; // TODO: randomize from list of countries/federations
 			String immigrantName = unitManager.getNewName(UnitType.PERSON, null, gender, null);
 			String sponsor = newSettlement.getSponsor();
 			String country = UnitManager.getCountry(sponsor);

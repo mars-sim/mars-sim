@@ -82,7 +82,7 @@ public class App
 	public static String getKeywordList(String[][] keywords) {
 		StringBuffer s = new StringBuffer();
 		int rows = keywords.length;
-		int cols = keywords[0].length;
+//		int cols = keywords[0].length;
 		
 		for (int i = 0; i < rows; i++) {
 //			for (int j = 0; j < cols; j++) {

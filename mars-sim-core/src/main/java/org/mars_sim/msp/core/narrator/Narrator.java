@@ -22,16 +22,15 @@ public class Narrator implements Serializable {
 		
 	}
 	
-	public void translate(HistoricalEvent event) {
-		String cause = event.getWhatCause();
-	    HistoricalEventCategory category = event.getCategory();
-		//Object source = event.getSource();
-		Object who = event.getWho();
-		String location0 = event.getLocation0();
-		String location1 = event.getLocation1();
-		EventType eventType = event.getType();
-		
-	}
-	
+//	public void translate(HistoricalEvent event) {
+//		String cause = event.getWhatCause();
+//	    HistoricalEventCategory category = event.getCategory();
+//		//Object source = event.getSource();
+//		Object who = event.getWho();
+//		String location0 = event.getLocation0();
+//		String location1 = event.getLocation1();
+//		EventType eventType = event.getType();
+//		
+//	}
 	
 }

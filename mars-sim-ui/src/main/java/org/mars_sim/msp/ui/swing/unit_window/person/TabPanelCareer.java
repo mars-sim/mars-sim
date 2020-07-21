@@ -162,23 +162,9 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 	
 	public void initializeUI() {
 		uiDone = true;
-		
-		Mind mind = null;
-		BotMind botMind = null;
+
 		boolean dead = false;
 		DeathInfo deathInfo = null;
-
-		if (unit instanceof Person) {
-			person = (Person) unit;
-			mind = person.getMind();
-			dead = person.getPhysicalCondition().isDead();
-			deathInfo = person.getPhysicalCondition().getDeathDetails();
-		} else if (unit instanceof Robot) {
-			robot = (Robot) unit;
-			botMind = robot.getBotMind();
-			dead = robot.getSystemCondition().isInoperable();
-			// deathInfo = robot.getSystemCondition().getDeathDetails();
-		}
 
 		// Prepare label panel
 		WebPanel labelPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
@@ -191,7 +177,10 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 
 		if (unit instanceof Person) {
 			person = (Person) unit;
-
+			Mind mind = null;
+			dead = person.getPhysicalCondition().isDead();
+			deathInfo = person.getPhysicalCondition().getDeathDetails();
+			
 			solCache = person.getJobHistory().getSolCache();
 
 			WebPanel firstPanel = new WebPanel(new BorderLayout());// GridLayout(2, 1, 5, 0));
@@ -374,6 +363,12 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 			} else
 				// Added checking for the status of Job Reassignment
 				checkJobReassignment(person, list);
+
+		} else if (unit instanceof Robot) {
+			robot = (Robot) unit;
+	//		botMind = robot.getBotMind();
+			dead = robot.getSystemCondition().isInoperable();
+			// deathInfo = robot.getSystemCondition().getDeathDetails();
 		}
 
 		// Prepare job title panel
@@ -511,6 +506,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 	/*
 	 * Checks for any role change or reassignment
 	 */
+	@SuppressWarnings("unchecked")
 	public void checkRoleChange() {
 
 		List<String> names = getRoleNames();
@@ -690,24 +686,17 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 		
 		TableStyle.setTableStyle(table);
 
-		Person person = null;
-		Robot robot = null;
-		Mind mind = null;
-		BotMind botMind = null;
 		boolean dead = false;
-		DeathInfo deathInfo = null;
-
-		String currentJob = null;
 
 		if (unit instanceof Person) {
-
-			person = (Person) unit;
-			mind = person.getMind();
+			Person person = (Person) unit;
+//			Mind mind = person.getMind();
 			dead = person.getPhysicalCondition().isDead();
-			deathInfo = person.getPhysicalCondition().getDeathDetails();
 
 			// Update job if necessary.
 			if (dead) {
+				DeathInfo deathInfo = person.getPhysicalCondition().getDeathDetails();
+
 				jobCache = deathInfo.getJob();
 				jobComboBox.setEnabled(false);
 				roleComboBox.setEnabled(false);
@@ -738,8 +727,8 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 			} // end of else if not dead)
 
 		} else if (unit instanceof Robot) {
-			robot = (Robot) unit;
-			botMind = robot.getBotMind();
+			Robot robot = (Robot) unit;
+//			BotMind botMind = robot.getBotMind();
 			dead = robot.getSystemCondition().isInoperable();
 			// deathInfo = robot.getSystemCondition().getDeathDetails();
 		}

@@ -168,7 +168,6 @@ public class MedicalConfig implements Serializable {
 		return complaintList;
 	}
 
-    @SuppressWarnings("unchecked")
 	public List<Treatment> getTreatmentList() {
 		
 		if (treatmentList == null) {

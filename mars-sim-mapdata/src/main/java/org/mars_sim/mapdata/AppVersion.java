@@ -120,40 +120,43 @@ public class AppVersion {
               int size;
               while ((size = in.read(buf)) != -1)
                   System.out.write(buf, 0, size);
+              
+              in.close();
 
           } else {
               // Read from files given on the command line.
 //              for (int i = 0; i < args.length; ++i) {
 //                  name = args[i];
 
-                  InputStream in = new FileInputStream(name); //  loader.getResourceAsStream(name);//
+              InputStream in = new FileInputStream(name); //  loader.getResourceAsStream(name);//
 
-                  try {
-                      // Since XZInputStream does some buffering internally
-                      // anyway, BufferedInputStream doesn't seem to be
-                      // needed here to improve performance.
-                      // in = new BufferedInputStream(in);
-                      in = new XZInputStream(in);
+              try {
+                  // Since XZInputStream does some buffering internally
+                  // anyway, BufferedInputStream doesn't seem to be
+                  // needed here to improve performance.
+                  // in = new BufferedInputStream(in);
+                  in = new XZInputStream(in);
 
 //                      int size;
 //                      while ((size = in.read(buf)) != -1)
 //                          System.out.write(buf, 0, size);
-                      
-          	        Files.copy(in, Paths.get(datFilename));//, StandardCopyOption.REPLACE_EXISTING);
+                  
+      	        Files.copy(in, Paths.get(datFilename));//, StandardCopyOption.REPLACE_EXISTING);
 
-                  } catch (NullPointerException e) {
-                      System.err.println("XZDecDemo: Cannot open " + name + ": "
-                                         + e.getMessage());
-                      e.printStackTrace();
-                      System.exit(1);
+              } catch (NullPointerException e) {
+                  System.err.println("XZDecDemo: Cannot open " + name + ": "
+                                     + e.getMessage());
+                  e.printStackTrace();
+                  System.exit(1);
 
-                  } finally {
-                      // Close FileInputStream (directly or indirectly
-                      // via XZInputStream, it doesn't matter).
-                      in.close();
-                  }
-//              }
+              } finally {
+                  // Close FileInputStream (directly or indirectly
+                  // via XZInputStream, it doesn't matter).
+                  in.close();
+              }
+
           }
+          
           
       } catch (FileNotFoundException e) {
           System.err.println("XZDecDemo: Cannot open " + name + ": "

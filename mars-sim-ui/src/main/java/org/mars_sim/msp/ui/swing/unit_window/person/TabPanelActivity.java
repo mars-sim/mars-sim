@@ -641,17 +641,12 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 		Object source = event.getSource();
 		if ((source == missionButton) || (source == monitorButton)) {
 
-			Person person = null;
-			Robot robot = null;
-			Mind mind = null;
-			BotMind botMind = null;
-
 			boolean dead = false;
 			DeathInfo deathInfo = null;
 
 			if (unit instanceof Person) {
-				person = (Person) unit;
-				mind = person.getMind();
+				Person person = (Person) unit;
+				Mind mind = person.getMind();
 				dead = person.getPhysicalCondition().isDead();
 				deathInfo = person.getPhysicalCondition().getDeathDetails();
 
@@ -667,8 +662,8 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 					}
 				}
 			} else if (unit instanceof Robot) {
-				robot = (Robot) unit;
-				botMind = robot.getBotMind();
+				Robot robot = (Robot) unit;
+				BotMind botMind = robot.getBotMind();
 				dead = robot.getSystemCondition().isInoperable();
 				// deathInfo = robot.getSystemCondition().getDeathDetails();
 

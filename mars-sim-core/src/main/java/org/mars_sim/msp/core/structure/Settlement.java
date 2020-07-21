@@ -1916,8 +1916,8 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 		double demandAmount2 = getInventory().getAmountDemand(sample2);
 
 		// For items :
-		double demandItem1 = getInventory().getItemDemand(sample1);
-		double demandItem2 = getInventory().getItemDemand(sample2);
+//		double demandItem1 = getInventory().getItemDemand(sample1);
+//		double demandItem2 = getInventory().getItemDemand(sample2);
 
 		// int totalRequest1 = getInventory().getDemandTotalRequest(sample1);
 		// int totalRequest2 = getInventory().getDemandTotalRequest(sample2);

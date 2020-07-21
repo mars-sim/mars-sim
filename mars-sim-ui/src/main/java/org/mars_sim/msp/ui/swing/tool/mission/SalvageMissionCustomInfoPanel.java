@@ -6,20 +6,6 @@
  */
 package org.mars_sim.msp.ui.swing.tool.mission;
 
-import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
-import org.mars_sim.msp.core.person.ai.mission.Mission;
-import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
-import org.mars_sim.msp.core.resource.ItemResourceUtil;
-import org.mars_sim.msp.core.resource.Part;
-import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.construction.*;
-import org.mars_sim.msp.ui.swing.MainDesktopPane;
-
-import com.alee.laf.button.WebButton;
-import com.alee.laf.label.WebLabel;
-import com.alee.laf.panel.WebPanel;
-import com.alee.laf.progressbar.WebProgressBar;
-
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
@@ -29,6 +15,24 @@ import java.text.DecimalFormat;
 import java.util.Iterator;
 
 import javax.swing.BoundedRangeModel;
+
+import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
+import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
+import org.mars_sim.msp.core.resource.ItemResourceUtil;
+import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.construction.ConstructionEvent;
+import org.mars_sim.msp.core.structure.construction.ConstructionListener;
+import org.mars_sim.msp.core.structure.construction.ConstructionSite;
+import org.mars_sim.msp.core.structure.construction.ConstructionStage;
+import org.mars_sim.msp.core.structure.construction.ConstructionStageInfo;
+import org.mars_sim.msp.core.structure.construction.ConstructionVehicleType;
+import org.mars_sim.msp.ui.swing.MainDesktopPane;
+
+import com.alee.laf.button.WebButton;
+import com.alee.laf.label.WebLabel;
+import com.alee.laf.panel.WebPanel;
+import com.alee.laf.progressbar.WebProgressBar;
 
 
 /**

@@ -257,7 +257,6 @@ public class SettlementConfig implements Serializable {
 	 * @param partPackageConfig the part package configuration.
 	 * @throws Exception if error reading XML document.
 	 */
-	@SuppressWarnings("unchecked")
 	private void loadSettlementTemplates(Document settlementDoc, PartPackageConfig partPackageConfig) {
 
 		Element root = settlementDoc.getRootElement();

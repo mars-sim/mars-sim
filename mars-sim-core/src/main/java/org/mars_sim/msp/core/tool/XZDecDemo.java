@@ -29,6 +29,8 @@ class XZDecDemo {
                 int size;
                 while ((size = in.read(buf)) != -1)
                     System.out.write(buf, 0, size);
+                
+                in.close();
 
             } else {
                 // Read from files given on the command line.

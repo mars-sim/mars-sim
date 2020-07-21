@@ -876,8 +876,6 @@ implements MouseListener {
 		}
 	}
 
-
-	@SuppressWarnings("serial")
 	class ComboboxToolTipRenderer extends DefaultListCellRenderer {
 	    private ArrayList<String> tooltips;
 
@@ -903,7 +901,6 @@ implements MouseListener {
 	    }
 	}
 
-	@SuppressWarnings("serial")
 	class PromptComboBoxRenderer extends DefaultListCellRenderer {
 
 		private String prompt;

@@ -36,6 +36,9 @@ public class StandardCompressXz {
 		while ((size = inFile.read(buf)) != -1)
 		   out.write(buf, 0, size);
 
+		
 		out.finish();
+		
+        out.close();
 	}
 }

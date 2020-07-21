@@ -351,7 +351,7 @@ public class CrewEditor implements ActionListener {
 	
 	public void setUpCrewName() {
 		for (int i = 0; i < crewNum; i++) {
-			int crew_id = cc.getCrew(i);
+//			int crew_id = cc.getCrew(i);
 			String n = cc.getConfiguredPersonName(i, ALPHA_CREW);
 
 			JTextField tf = new JTextField();
@@ -646,8 +646,9 @@ public class CrewEditor implements ActionListener {
 
 	class MyItemListener implements ItemListener {
 		// This method is called only if a new item has been selected.
+		@SuppressWarnings("unchecked")
 		public void itemStateChanged(ItemEvent evt) {
-			JComboBoxMW<String> cb = (JComboBoxMW<String>) evt.getSource();
+//			JComboBoxMW<String> cb = (JComboBoxMW<String>) evt.getSource();
 
 			int index = actionListeners.indexOf(this);
 			

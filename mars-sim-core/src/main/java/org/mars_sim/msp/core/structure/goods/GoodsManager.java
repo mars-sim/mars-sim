@@ -731,9 +731,7 @@ public class GoodsManager implements Serializable {
 		
 //		if (id == 157 || id == 13) 
 //			System.out.println("2. " + id + "   totalSupply: " + totalSupply);
-		
 
-		
 		amountValue = totalAmountDemand / totalAmountSupply;
 
 		return amountValue;

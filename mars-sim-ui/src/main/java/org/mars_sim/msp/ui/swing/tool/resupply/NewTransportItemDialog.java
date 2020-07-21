@@ -28,6 +28,7 @@ import com.alee.laf.panel.WebPanel;
  * A dialog for creating a new transport item.
  * TODO externalize strings
  */
+@SuppressWarnings("serial")
 public class NewTransportItemDialog extends ModalInternalFrame {
 
 	// Transport item types.
@@ -51,6 +52,7 @@ public class NewTransportItemDialog extends ModalInternalFrame {
 	 * @param MainDesktopPane desktop
 	 * @param transportItem the transport item to modify.
 	 */
+	@SuppressWarnings("unchecked")
 	public NewTransportItemDialog(MainDesktopPane desktop, ResupplyWindow resupplyWindow) {
 
 		// Use ModalInternalFrame constructor

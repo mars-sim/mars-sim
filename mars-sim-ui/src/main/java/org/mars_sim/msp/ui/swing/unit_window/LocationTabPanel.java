@@ -702,6 +702,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
 
 			if (mars == null)
 				mars = Simulation.instance().getMars();
+			
 			if (terrainElevation == null)
 				terrainElevation =  mars.getSurfaceFeatures().getTerrainElevation();
 

@@ -8,12 +8,14 @@ import java.util.concurrent.Callable;
 
 public class AlwaysEmptySet<T> implements Set<T> {
 
-    public static final Set EMPTY_SET = new AlwaysEmptySet();
+    @SuppressWarnings("rawtypes")
+	public static final Set EMPTY_SET = new AlwaysEmptySet<>();
 
     private AlwaysEmptySet() {
     }
 
-    public static <T> Set<T> create() {
+    @SuppressWarnings("unchecked")
+	public static <T> Set<T> create() {
     	return EMPTY_SET;
     }
 
@@ -45,7 +47,8 @@ public class AlwaysEmptySet<T> implements Set<T> {
         return new Object[0];
     }
 
-    public <K> K[] toArray(K[] a) {
+    @SuppressWarnings("unchecked")
+	public <K> K[] toArray(K[] a) {
         return (K[]) Collections.emptySet().toArray();
     }
 

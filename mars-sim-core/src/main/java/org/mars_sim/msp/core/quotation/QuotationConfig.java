@@ -47,7 +47,6 @@ public class QuotationConfig implements Serializable {
 	 * @return map of quotations
 	 * @throws Exception when quotations can not be parsed.
 	 */
-	@SuppressWarnings("unchecked")
 	public Map<Integer, Quotation> getQuotations() {
 
 		if (quotations == null) {

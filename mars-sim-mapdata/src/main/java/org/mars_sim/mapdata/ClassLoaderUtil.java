@@ -64,7 +64,7 @@ public class ClassLoaderUtil {
      * @param resourceName The name of the resources to load
      * @param callingClass The Class object of the calling object
      */
-     public static Iterator<URL> getResources(String resourceName, Class callingClass, boolean aggregate) throws IOException {
+     public static Iterator<URL> getResources(String resourceName, Class<?> callingClass, boolean aggregate) throws IOException {
 
          AggregateIterator<URL> iterator = new AggregateIterator<URL>();
 
