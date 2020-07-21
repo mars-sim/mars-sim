@@ -154,8 +154,8 @@ For a more detail description of this project, see our [project website](https:/
 ---
 
 ## Download 
-Check out the most recent build in the [GitHub's Release Tab](https://github.com/mars-sim/mars-sim/releases) or 
-in [SourceForge Repo](https://sourceforge.net/projects/mars-sim/files/mars-sim/3.1.0/)
+Check out the most recent pre-release build in the [GitHub's Release Tab](https://github.com/mars-sim/mars-sim/releases).  
+In [SourceForge Repo](https://sourceforge.net/projects/mars-sim/files/mars-sim/3.1.0/), you will find the official release version only.
 
 Alternatively, you may use SourceForge's button below to automatically sense the correct platform. 
 [![Download Mars Simulation Project](https://a.fsdn.com/con/app/sf-download-button)](https://sourceforge.net/projects/mars-sim/files/latest/download)

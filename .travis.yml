@@ -5,8 +5,6 @@ script:
 export TRAVIS_WORKER_MAX_LOG_LENGTH = 10000000
 jdk:
   - oraclejdk14
-  - openjdk14
-
 addons:
 apt:
 packages:
