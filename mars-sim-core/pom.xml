@@ -43,13 +43,13 @@
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
-			<version>28.2-jre</version>
+			<version>29.0-jre</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/com.google.inject/guice : 303 KB -->
+		<!-- https://mvnrepository.com/artifact/com.google.inject/guice : 836 KB -->
 		<dependency>
 			<groupId>com.google.inject</groupId>
 			<artifactId>guice</artifactId>
-			<version>4.2.2</version>
+			<version>4.2.3</version>
 			<classifier>no_aop</classifier>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.glassfish/javax.json : 99KB 
@@ -163,8 +163,8 @@
    <build>
         <plugins>   
        		<plugin>
-				<artifactId>kotlin-maven-plugin</artifactId>
 				<groupId>org.jetbrains.kotlin</groupId>
+				<artifactId>kotlin-maven-plugin</artifactId>				
 				<version>${kotlin.version}</version>
 				<executions>
 					<execution>
