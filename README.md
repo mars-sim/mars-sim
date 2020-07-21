@@ -166,6 +166,10 @@ Alternatively, you may use SourceForge's button below to automatically sense the
 
 ### Prerequisites
 
+As of r5274 and afterward,
+* Requires JRE 14 for running mars-sim
+* Requires JDK 14 (or openjdk 14) for compiling binary
+
 As of r5217 and afterward,
 * Requires JRE 12 for running mars-sim
 * Requires JDK 12 (or openjdk 12) for compiling binary
@@ -179,9 +183,10 @@ Before r4945,
 * Require JDK 9/10 for for compiling Java 9/10 compatible binary
 
 ```
-Note 1 : Beginning Java 11, the JRE/JDK is decoupled from the graphic JavaFX API. 
-For the JavaFX edition of mars-sim, make sure you also download and configure 
-OpenJFK 11 SEPARATELY. See ticket #156 to read the discussions on how to set up
+Note 1 : Beginning Java 11, the JRE/JDK is being decoupled from the graphic JavaFX API. 
+For the open source community, the openjdk package is being decoupled from the openjfx package .
+If you want to run the JavaFX edition binary of mars-sim, make sure you also download and configure 
+the openjfk or JavaFX on top of the JDK SEPARATELY. See ticket #156 to read the discussions on how to set up
 mars-sim to run it under Java 11 for JavaFX UI. 
 ```
 
