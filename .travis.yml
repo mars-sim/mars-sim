@@ -3,15 +3,14 @@ dist: trusty
 script:
 - mvn test -DskipTests=true -Dmaven.javadoc.skip=true
 export TRAVIS_WORKER_MAX_LOG_LENGTH = 10000000
-os:
-  - linux
-  - osx
-  - windows
 jdk:
-- openjdk14
+  - oraclejdk14
+  - openjdk14
+
 addons:
 apt:
 packages:
+  - oracle-java14-installer
 cache:
 directories:
 - $HOME/.m2
