@@ -14,7 +14,7 @@ https://github.com/mars-sim/mars-sim
 
 - 220 MB free disk space
 
-- Java 11 or openjdk 11
+- Java 14 or openjdk 14
 
 ---------------------------------------------------------------------
 
@@ -243,15 +243,16 @@ where the jar file is at.
 
 ## Questions
 
-- For general questions regarding mars-sim, discuss them to our 
-[facebook](https://www.facebook.com/groups/125541663548/) community
+- For general questions regarding mars-sim, discuss them with our 
+[Facebook](https://www.facebook.com/groups/125541663548/) community.
 
 - For technical questions/comments or submitting a ticket, post it at
-our GitHub [issue tracker](https://github.com/mars-sim/mars-sim/issues)
+our GitHub [issue tracker](https://github.com/mars-sim/mars-sim/issues).
 
 - If you'd like to join in development, post what you would like to 
 contribute in [GitHub](https://github.com/mars-sim/mars-sim/issues). 
-Another way to contact us is via developer [mailing list](mars-sim-developers@lists.sourceforge.net) 
+Another way to contact us is via our developer 
+[mailing list](mars-sim-developers@lists.sourceforge.net). 
 
 ---------------------------------------------------------------------
 ## Credits

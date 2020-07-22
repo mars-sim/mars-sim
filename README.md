@@ -190,6 +190,8 @@ the openjfk or JavaFX on top of the JDK SEPARATELY. See ticket #156 to read the 
 mars-sim to run it under Java 11 for JavaFX UI. 
 ```
 
+Assuming that Java 14.0.1.7 is used,
+
 #### For linux
 
 1. The debian edition of mars-sim comes with debian installer for quick installation. However, 
@@ -201,7 +203,7 @@ see this [DZone article](https://dzone.com/articles/how-to-install-multiple-vers
 
 #### For macOS
 
-1.  The directory of JDK is at `Library/Java/JavaVirtualMachines/jdk-12.jdk/Contents/Home`. 
+1.  Check if the directory of JDK is at `Library/Java/JavaVirtualMachines/jdk-14.jdk/Contents/Home`. 
 See [DZone](https://dzone.com/articles/installing-openjdk-13-on-macos) for more instructions.
 
 2. Enter `/usr/libexec/java_home -V` to find out which version of Java you have installed.
@@ -209,22 +211,23 @@ See [DZone](https://dzone.com/articles/installing-openjdk-13-on-macos) for more 
 
 #### For Windows OS
  
-1. Start a command prompt and type this `set PATH="C:\Program Files\Java\jre-12.0.2\bin";%PATH%`.
+1. Start a command prompt and type this `set PATH="C:\Program Files\Java\jre-14.0.1.7\bin";%PATH%`.
 
-2. Alternatively, edit the `JAVA_HOME` and `PATH` in the *Environment Variables* in Control Panel. 
-   Add `C:\Program Files\Java\jre-12.0.2\bin` to the `PATH` variable. 
+2. Alternatively, edit the `JAVA_HOME` and `PATH` in *Environment Variables* in Control Panel. 
+   
+  a. Add `C:\Program Files\Java\jre-14.0.1.7\bin` to the `PATH` variable. 
  ```
 Note 2 : The order of precedence inside `PATH` is crucial. The first available folder having Java 
 executable inside will be the one to be loaded by Windows OS. 
  ```
-  a. Set `JAVA_HOME` to a JRE or JDK's destination such as `C:\Program Files\Java\jdk-12.0.2\bin\` or 
-`C:\Program Files\Java\jre-12.0.2\bin`. 
+  b. Set `JAVA_HOME` to a JRE or JDK's destination such as `C:\Program Files\Java\jdk-14.0.1.7\bin\` or 
+`C:\Program Files\Java\jre-14.0.1.7\bin`. 
  
-  b. Add `%JAVA_HOME%;` to `PATH`. Type "path" in a command prompt to double check 
+  c. Add `%JAVA_HOME%;` to `PATH`. Type "path" in a command prompt to double check 
 the order of precedence when it comes to searching for the JDK. 
 
  ```
-Note 3 : The BEST approach is to enable only one Java build (such as Java 12.0.2) 
+Note 3 : The BEST approach is to enable only one Java build (such as Java 14.0.1.7) 
 inside `PATH` and remove all other folders referencing other java versions/builds.
  ```
 3. Remove any path similar to `C:\ProgramData\Oracle\Java\javapath;`  in `PATH` variable. It can 

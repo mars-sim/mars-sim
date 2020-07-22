@@ -5,19 +5,25 @@ Copyright (C) 2020 Scott Davis
 
 -----------------------------------------------------------------------------------------
 
-## v3.1.1 (build 5___) - 2020-__-__
+## v3.1.1 (build 5283) - 2020-07-22
 
 ### CORE ENGINE IMPROVEMENTS :
 
-1. 
+1. Switch to supporting Java 14 only
+
+2. Provide a bare basic way of using CLI to start a single settlement. 
+
+3. Refine the conversion between the level of effort of an operation and its modifier in GoodsManager.
 
 ### UI IMPROVEMENT :
 
-1. 
+1. None
 
 ### FIXES :
 
-1.
+1. Correct startup issues
+
+2. Correct dashboard's level of effort alignment
 
 -----------------------------------------------------------------------------------------
 

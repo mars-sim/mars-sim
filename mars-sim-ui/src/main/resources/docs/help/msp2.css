@@ -1,3 +1,10 @@
+/**
+ * Mars Simulation Project
+ * msp2.css
+ * @version 3.1.1 2020-07-22
+ * @author Manny Kung
+ */
+ 
 a, a:link, a:visited, a:hover{color:rgb(184, 134, 11); text-decoration:none;}
 body {
 	background-color: rgb(50, 50, 50);

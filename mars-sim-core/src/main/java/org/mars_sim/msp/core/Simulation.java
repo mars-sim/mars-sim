@@ -1677,6 +1677,7 @@ public class Simulation implements ClockListener, Serializable {
 	 * Ends the current simulation
 	 */
 	public void endSimulation() {
+		logger.log(Level.CONFIG, "Exiting the simulation. Good Bye !");
 		defaultLoad = false;
 		instance().stop();
 		if (masterClock != null)

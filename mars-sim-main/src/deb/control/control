@@ -3,11 +3,11 @@ Version: [[version]]
 Section: misc
 Priority: optional
 Architecture: all
-Depends: default-jre (>= 11)
-Maintainer: Scott Davis <scud1@users.sourceforge.net>
+Depends: default-jre (>= 14)
+Maintainer: Manny Kung <mannykung@gmail.com>
 Homepage: https://mars-sim.github.io
 Distribution: development
 Description: Mars Simulation Project
- A open source simulation of Mars exploration and colonization.  A GUI provides
- users with a functional view of the running simulation and the ability to interact
- with it.
+ An open source simulation of Mars exploration and colonization.  Its console menu and 
+ the Swing GUI offers players with a functional view of the running simulation as well
+ as the ability to interact with the settlements and the settlers within them.

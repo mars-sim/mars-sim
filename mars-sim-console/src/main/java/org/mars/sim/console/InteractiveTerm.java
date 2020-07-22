@@ -183,7 +183,7 @@ public class InteractiveTerm {
         	sim.endSimulation(); 
     		sim.getSimExecutor().shutdownNow();
 
-    		logger.info("Exiting the Simulation.");
+//    		logger.info("Exiting the Simulation.");
     		setKeepRunning(false);
 			System.exit(0);
     		disposeTerminal();
@@ -326,7 +326,7 @@ public class InteractiveTerm {
         	sim.endSimulation(); 
     		sim.getSimExecutor().shutdownNow();
 
-    		logger.info("Exiting the Simulation.");
+//    		logger.info("Exiting the Simulation.");
     		setKeepRunning(false);
 			System.exit(0);
     		disposeTerminal();
@@ -383,7 +383,7 @@ public class InteractiveTerm {
         	sim.endSimulation(); 
     		sim.getSimExecutor().shutdownNow();
 
-    		logger.info("Exiting the Simulation.");
+//    		logger.config("Exiting the Simulation.");
     		setKeepRunning(false);
 			System.exit(0);
     		disposeTerminal();
@@ -459,7 +459,7 @@ public class InteractiveTerm {
         	sim.endSimulation(); 
     		sim.getSimExecutor().shutdownNow();
 
-    		logger.info("Exiting the Simulation.");
+//    		logger.info("Exiting the Simulation.");
     		setKeepRunning(false);
 			System.exit(0);
     		disposeTerminal();
@@ -550,7 +550,7 @@ public class InteractiveTerm {
         	sim.endSimulation(); 
     		sim.getSimExecutor().shutdownNow();
 
-    		logger.info("Exiting the Simulation.");
+//    		logger.config("Exiting the Simulation.");
     		setKeepRunning(false);
 			System.exit(0);
     		disposeTerminal();
