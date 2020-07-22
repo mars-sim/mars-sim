@@ -149,17 +149,16 @@ public class GoodsManager implements Serializable {
 	private static final double DAMPING_RATIO = .1;
 	private static final double MIN = .000_001;
 	
-	// Number modifiers for outstanding repair and maintenance parts.
-	private static final int OUTSTANDING_REPAIR_PART_MODIFIER = 150;
-	private static final int OUTSTANDING_MAINT_PART_MODIFIER = 15;
-	// Value multiplier factors for certain goods.
-	private static final int EVA_SUIT_FACTOR = 1;
+	// Number modifiers for outstanding repair and maintenance parts ane EVA parts.
+	private static final int BASE_REPAIR_PART = 150;
+	private static final int BASE_MAINT_PART = 15;
+	private static final int BASE_EVA_SUIT = 1;
 
-	private static double repairMod = OUTSTANDING_REPAIR_PART_MODIFIER;
-	private static double maintenanceMod = OUTSTANDING_MAINT_PART_MODIFIER;
-	// Value multiplier factors for certain goods.
-	private static double eVASuitMod = EVA_SUIT_FACTOR;
+	private double repairMod = BASE_REPAIR_PART;
+	private double maintenanceMod = BASE_MAINT_PART;
+	private double eVASuitMod = BASE_EVA_SUIT;
 
+	// Value multiplier factors for certain goods.
 	private static final double EVA_SUIT_VALUE = 75D;
 	private static final double MINERAL_VALUE = 10D;
 	private static final double ROBOT_FACTOR = 1;
@@ -3378,61 +3377,66 @@ public class GoodsManager implements Serializable {
     	return -power;
     }
 
-    
-	public int computePriority(double ratio) {
+	public int computeLevel(double ratio) {
 		double lvl = 0;
 		if (ratio < 1) {
-			double m = getNthPower(1D/ratio);
-			lvl = 5 - m;
+			lvl = 0;
+//			double m = getNthPower(1D/ratio);
+//			lvl = 10 - m;
 		}
 		else if (ratio > 1) {
 			double m = getNthPower(ratio);
-			lvl = 5 + m ;
+			lvl = m ;
 		}
 		else {
-			lvl = 5 ;
+			lvl = 1 ;
 		}
 
-		return (int)lvl;
+		return (int)(Math.round(lvl));
 	}
 	
 	public int getRepairLevel() {
-		return computePriority(repairMod/OUTSTANDING_REPAIR_PART_MODIFIER);
+		return computeLevel(repairMod/BASE_REPAIR_PART);
 	}
 	
 	public int getMaintenanceLevel(){
-		return computePriority(maintenanceMod/OUTSTANDING_MAINT_PART_MODIFIER);
+		return computeLevel(maintenanceMod/BASE_MAINT_PART);
 	}
 	
 	public int getEVASuitLevel() {
-		return computePriority(eVASuitMod/EVA_SUIT_FACTOR);
+		return computeLevel(eVASuitMod/BASE_EVA_SUIT);
 	}
 
 	
 	public void setRepairPriority(int level) {
-		repairMod = computeModifier(OUTSTANDING_REPAIR_PART_MODIFIER, level);
+		repairMod = computeModifier(BASE_REPAIR_PART, level);
 	}
 	
 	public void setMaintenancePriority(int level) {
-		maintenanceMod = computeModifier(OUTSTANDING_MAINT_PART_MODIFIER, level);
+		maintenanceMod = computeModifier(BASE_MAINT_PART, level);
 
 	}
 	
 	public void setEVASuitPriority(int level) {
-		eVASuitMod = computeModifier(EVA_SUIT_FACTOR, level);
+		eVASuitMod = computeModifier(BASE_EVA_SUIT, level);
 	}
 
 	public double computeModifier(int baseValue, int level) {
 		double mod = 0;
-		if (level == 5) {
+		if (level == 1) {
 			mod = baseValue ;
 		}
-		else if (level < 5) {
-			double m = Math.pow(2, (5 - level));
-			mod = baseValue / m;
+		else if (level < 1) {
+//			double m = Math.pow(2, (10 - level));
+//			mod = baseValue / m;
+			mod = baseValue / 2.0;
 		}
-		else if (level > 5) {
-			double m = Math.pow(2, (level - 5));
+		else if (level > 1) {
+			if (level > 5) {
+				// Limit the level to the maximum of 5
+				level = 5;
+			}
+			double m = Math.pow(2, level);
 			mod = m * baseValue ;
 		}
 		return mod;

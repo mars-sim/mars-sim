@@ -521,23 +521,23 @@ public class SettlementChatUtils extends ChatUtils {
 
 			int level = goodsManager.getRepairLevel();
 
-			String prompt = System.lineSeparator() + "Current Outstanding Repair Priority Level is " + level
+			String prompt = System.lineSeparator() + "Current Outstanding Repair's Level of Effort is " + level
 					+ System.lineSeparator() + System.lineSeparator() + "Would you like to change it?";
 			boolean change = textIO.newBooleanInputReader().read(prompt); // .withDefaultValue(true)
 
 			if (change) {
 				int newLevel = textIO.newIntInputReader().withMinVal(1).withMaxVal(9)
-						.read("Enter the Priority Level (1 = lowest; 9 = highest)");
+						.read("Enter the Level of Effort (1: lowest; 5: highest)");
 				String s = "";
 
-				if (newLevel > 0 && newLevel < 10) {
+				if (newLevel > 0 && newLevel <= 5) {
 
 					goodsManager.setRepairPriority(newLevel);
 
 					responseText.append(settlementCache + " : I've updated it for you as follows : ");
 					responseText.append(System.lineSeparator());
 					responseText.append(System.lineSeparator());
-					s = "     New Outstanding Repair Priority Level : " + newLevel;
+					s = "     New Outstanding Repair's Level of Effort : " + newLevel;
 					responseText.append(s);
 					logger.config(s);
 
@@ -557,23 +557,23 @@ public class SettlementChatUtils extends ChatUtils {
 
 			int level = goodsManager.getMaintenanceLevel();
 
-			String prompt = System.lineSeparator() + "Current Outstanding Maintenance Priority Level is " + level
+			String prompt = System.lineSeparator() + "Current Outstanding Maintenance's Level of Effort is " + level
 					+ System.lineSeparator() + System.lineSeparator() + "Would you like to change it?";
 			boolean change = textIO.newBooleanInputReader().read(prompt); // .withDefaultValue(true)
 
 			if (change) {
 				int newLevel = textIO.newIntInputReader().withMinVal(1).withMaxVal(9)
-						.read("Enter the Priority Level (1 = lowest; 9 = highest)");
+						.read("Enter the Level of Effort (1: lowest; 5: highest)");
 				String s = "";
 
-				if (newLevel > 0 && newLevel < 10) {
+				if (newLevel > 0 && newLevel <= 5) {
 
 					goodsManager.setMaintenancePriority(newLevel);
 
 					responseText.append(settlementCache + " : I've updated it for you as follows : ");
 					responseText.append(System.lineSeparator());
 					responseText.append(System.lineSeparator());
-					s = "     New Outstanding Maintenance Priority Level : " + newLevel;
+					s = "     New Outstanding Maintenance's Level of Effort : " + newLevel;
 					responseText.append(s);
 					logger.config(s);
 
@@ -593,23 +593,23 @@ public class SettlementChatUtils extends ChatUtils {
 
 			int level = goodsManager.getEVASuitLevel();
 
-			String prompt = System.lineSeparator() + "Current EVA Suit Production Priority Level is " + level
+			String prompt = System.lineSeparator() + "Current EVA Suit Production's Level of Effort is " + level
 					+ System.lineSeparator() + System.lineSeparator() + "Would you like to change it?";
 			boolean change = textIO.newBooleanInputReader().read(prompt); // .withDefaultValue(true)
 
 			if (change) {
 				int newLevel = textIO.newIntInputReader().withMinVal(1).withMaxVal(9)
-						.read("Enter the Priority Level (1 = lowest; 9 = highest)");
+						.read("Enter the Level of Effort (1: lowest; 5: highest)");
 				String s = "";
 
-				if (newLevel > 0 && newLevel < 10) {
+				if (newLevel > 0 && newLevel <= 5) {
 
 					goodsManager.setEVASuitPriority(newLevel);
 
 					responseText.append(settlementCache + " : I've updated it for you as follows : ");
 					responseText.append(System.lineSeparator());
 					responseText.append(System.lineSeparator());
-					s = "     New EVA Suit Production Priority Level : " + newLevel;
+					s = "     New EVA Suit Production's Level of Effort: " + newLevel;
 					responseText.append(s);
 					logger.config(s);
 
@@ -683,29 +683,37 @@ public class SettlementChatUtils extends ChatUtils {
 			String obj = settlementCache.getObjective().getName();
 			double level = Math.round(settlementCache.getObjectiveLevel(ObjectiveType.getType(obj)) * 10.0)/10.0;
 			
-			responseText.append(addWhiteSpacesLeftName(" Development Objective", 25));
-			responseText.append(addWhiteSpacesRightName("Level", 8));
+			responseText.append(addWhiteSpacesLeftName(" Development Objective", 27));
+			responseText.append(addWhiteSpacesRightName("Level of Effort", 10));
 			responseText.append(System.lineSeparator());
-			responseText.append(" ----------------------------------- ");
+			responseText.append(" -------------------------------------------- ");
 			responseText.append(System.lineSeparator());
-			responseText.append(addWhiteSpacesLeftName(" " + obj, 25));
-			responseText.append(addWhiteSpacesRightName("" + level, 7));	
+			responseText.append(addWhiteSpacesLeftName("  " + obj, 25));
+			responseText.append(addWhiteSpacesRightName("" + level, 11));	
 					
-			String[] s = new String[] { " Repair", " Maintenance", " EVA Suit Production" };
+			String[] cats = new String[] { "Repair", "Maintenance", "EVA Suit Production" };
 
 			GoodsManager goodsManager = settlementCache.getGoodsManager();
 
-			int[] mods = new int[] { goodsManager.getRepairLevel(), goodsManager.getMaintenanceLevel(),
+			int[] levels = new int[] { goodsManager.getRepairLevel(), goodsManager.getMaintenanceLevel(),
 					goodsManager.getEVASuitLevel() };
+			
 			
 			responseText.append(System.lineSeparator());
 			responseText.append(System.lineSeparator());
 			responseText.append(System.lineSeparator());
-			responseText.append(addWhiteSpacesLeftName(" Category of Operations     Level ", 33));
+			
+			responseText.append(addWhiteSpacesLeftName(" Category of Operations", 27));
+			responseText.append(addWhiteSpacesRightName("Level of Effort", 10));
 			responseText.append(System.lineSeparator());
-			responseText.append(" ----------------------------------- ");
+			responseText.append(" -------------------------------------------- ");
 			responseText.append(System.lineSeparator());
-			responseText.append(printLevel(s, mods));
+
+			for (int i=0; i<3; i++) {
+				responseText.append(addWhiteSpacesLeftName("  " + cats[i], 25));
+				responseText.append(addWhiteSpacesRightName("" + levels[i], 11));	
+				responseText.append(System.lineSeparator());
+			}
 		}
 
 		else if (text.equalsIgnoreCase("mission radius")) {
