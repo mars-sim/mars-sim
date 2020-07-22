@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MarsProject.java
-* @version 3.1.0 2016-10-03
+ * @version 3.1.1 2020-07-22
  * @author Scott Davis
  * $LastChangedDate$
  * $LastChangedRevision$
@@ -39,9 +39,9 @@ import org.mars_sim.msp.ui.swing.configeditor.SimulationConfigEditor;
 import org.mars_sim.msp.ui.swing.sound.AudioPlayer;
 
 /**
- * MarsProject is the main class for the application. It creates both the
- * simulation and the user interface.
- */
+* MarsProject is the main class for the application. It creates both the
+* simulation and the user interface.
+*/
 public class MarsProject {
 	/** initialized logger for this class. */
 	private static Logger logger = Logger.getLogger(MarsProject.class.getName());
