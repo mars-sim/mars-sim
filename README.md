@@ -182,17 +182,31 @@ Before r4945,
 * Require JDK 8 (u77 or above) for compiling Java 8 compatible binary
 * Require JDK 9/10 for for compiling Java 9/10 compatible binary
 
-```
-Note 1 : Beginning Java 11, the JRE/JDK is being decoupled from the graphic JavaFX API. 
-For the open source community, the openjdk package is being decoupled from the openjfx package .
-If you want to run the JavaFX edition binary of mars-sim, make sure you also download and configure 
-the openjfk or JavaFX on top of the JDK SEPARATELY. See ticket #156 to read the discussions on how to set up
-mars-sim to run it under Java 11 for JavaFX UI. 
-```
 
-Assuming that Java 14.0.1.7 is used,
+### JDK vs. JavaFX
 
-#### For linux
+Beginning Java 11, the JRE/JDK is being decoupled from the graphic JavaFX API. 
+What it means for the open source community is that the OpenJDK package is also 
+being decoupled from the OpenJFX package.
+
+If you want to run the JavaFX edition binary of mars-sim, make sure you also 
+download and configure the OpenJFX or JavaFX API on top of the JDK. 
+
+See ticket #156 to read the discussions on how to set up JavaFX to run it 
+under Java 11.
+
+
+ ```
+Note 1 : the official release of v3.1.0 and v3.1.1 version of mars-sim do not 
+utilize JavaFX / OpenJFX. Therefore, it's NOT a requirement to install them currently.
+
+ ```
+
+### OS Platform
+
+Assuming that OpenJDK 14.0.2 is being used,
+
+#### Linux
 
 1. The debian edition of mars-sim comes with debian installer for quick installation. However, 
 you will have to install, configure and properly update the JDK or openJDK binary in your linux
@@ -201,7 +215,7 @@ you will have to install, configure and properly update the JDK or openJDK binar
 2. To manage multiple versions of java with the use of a tool called `SDKMan`, 
 see this [DZone article](https://dzone.com/articles/how-to-install-multiple-versions-of-java-on-the-sa).
 
-#### For macOS
+#### macOS
 
 1.  Check if the directory of JDK is at `Library/Java/JavaVirtualMachines/jdk-14.jdk/Contents/Home`. 
 See [DZone](https://dzone.com/articles/installing-openjdk-13-on-macos) for more instructions.
@@ -209,25 +223,25 @@ See [DZone](https://dzone.com/articles/installing-openjdk-13-on-macos) for more 
 2. Enter `/usr/libexec/java_home -V` to find out which version of Java you have installed.
 
 
-#### For Windows OS
+#### Windows
  
-1. Start a command prompt and type this `set PATH="C:\Program Files\Java\jre-14.0.1.7\bin";%PATH%`.
+1. Start a command prompt and type this `set PATH="C:\Program Files\Java\jre-14.0.2\bin";%PATH%`.
 
 2. Alternatively, edit the `JAVA_HOME` and `PATH` in *Environment Variables* in Control Panel. 
    
-  a. Add `C:\Program Files\Java\jre-14.0.1.7\bin` to the `PATH` variable. 
+  a. Add `C:\Program Files\Java\jre-14.0.2\bin` to the `PATH` variable. 
  ```
 Note 2 : The order of precedence inside `PATH` is crucial. The first available folder having Java 
 executable inside will be the one to be loaded by Windows OS. 
  ```
-  b. Set `JAVA_HOME` to a JRE or JDK's destination such as `C:\Program Files\Java\jdk-14.0.1.7\bin\` or 
-`C:\Program Files\Java\jre-14.0.1.7\bin`. 
+  b. Set `JAVA_HOME` to a JRE or JDK's destination such as `C:\Program Files\Java\jdk-14.0.2\bin\` or 
+`C:\Program Files\Java\jre-14.0.2\bin`. 
  
   c. Add `%JAVA_HOME%;` to `PATH`. Type "path" in a command prompt to double check 
 the order of precedence when it comes to searching for the JDK. 
 
  ```
-Note 3 : The BEST approach is to enable only one Java build (such as Java 14.0.1.7) 
+Note 3 : The BEST approach is to enable only one Java build (such as Java 14.0.2) 
 inside `PATH` and remove all other folders referencing other java versions/builds.
  ```
 3. Remove any path similar to `C:\ProgramData\Oracle\Java\javapath;`  in `PATH` variable. It can 
@@ -240,19 +254,20 @@ instead of the java version you prefer.
 4. To test the version of Java that your machine is using, type "java -version"
 in a command prompt window.
 
-5. To check if a particular official version of Java is being *enabled*, 
-start **Java Control Panel** in Windows's Control Panel as follows :  
+5. To check if a particular Oracle version of Java is being *enabled*, 
+start **Java Control Panel (JCP)** in Windows's Control Panel as follows :  
 
 * Move your mouse to the magnifier icon (the 2nd icon from the left) on win 10 task bar. 
 * Type `Configure Java`. 
 * Hover your mouse over the `Configure Java` and click to start the `Java Control Panel`.
 * Click on `Java` tab on top.
 * Click on `View` button to open up another panel window.
-* Click on the checkbox on the `Enable` column to enable or disable any official Oracle versions of Java installed.
+* Click on the checkbox on the `Enable` column to enable or disable any installed versions of Java.
  ```
-Note 5. each row shows multiple versions of Java shown such as 1.8.0_211 and 1.10.0_1_1. 
-Unfornately, it only tracks the official Oracle versions. If you install any dozens of 
-openJDK on your machine, it won't recognize them. 
+Note 5. In JCP, each row represents a version of Java. It's very typical for a machine to 
+have multiple versions of Java installed. Unfortunately, this panel only tracks the 
+official Oracle versions. If you install any openJDK's on your machine, JCP won't 
+be able to recognize them.
  ```
 
 ---
@@ -295,8 +310,8 @@ e.g. Include the followings :
 
 **Specifications  (please complete the following information):**
  - OS version : [e.g. Windows 10, macOS 10.13, Ubuntu 14.04, etc.]
- - Java version : [e.g. Oracle Java 8u171, openjdk 1.8.0.171-8.b10 and openjfx 8 etc.]
- - mars-sim build version : [e.g. r4255, v3.1.0-p9_Java9, etc.]
+ - Java version : [e.g. Oracle JDK 14.0.2, AdoptOpenJDK 14.0.2, openjfx 14 etc.]
+ - mars-sim build version : [e.g. r4255, v3.1.1, etc.]
 
 **Additional context**
  - Add any other context about the problem here.
