@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Favorite.java
- * @version 3.1.0 2017-03-03
+ * @version 3.1.1 2020-07-22
  * @author Manny Kung
  */
 

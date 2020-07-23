@@ -1,4 +1,11 @@
 /**
+ * Mars Simulation Project
+ * Matrix.java
+ * @version 3.1.1 2020-07-22
+ * @author Manny Kung
+ */
+
+/**
  * Matrix (3x3)
  */
 package org.mars_sim.msp.core.astroarts;

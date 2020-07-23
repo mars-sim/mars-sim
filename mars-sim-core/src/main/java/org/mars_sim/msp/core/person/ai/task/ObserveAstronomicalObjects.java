@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ObserveAstronomicalObjects.java
- * @version 3.1.0 2018-10-26
+ * @version 3.1.1 2020-07-22
  * @author Sebastien Venot
  */
 package org.mars_sim.msp.core.person.ai.task;

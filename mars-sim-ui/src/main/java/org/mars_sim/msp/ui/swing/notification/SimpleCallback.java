@@ -40,7 +40,7 @@ import org.pushingpixels.trident.callback.TimelineCallback;
  * Implements a simple callback for Timeline.
  * 
  * @author Paulo Roberto Massa Cereda
- * @version 2.1
+ * @version 3.1.1 2020-07-22
  * @since 2.0
  */
 public class SimpleCallback implements TimelineCallback {

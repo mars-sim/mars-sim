@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * HazardEvent.java
- * @version 3.1.0 2018-06-21
+ * @version 3.1.1 2020-07-22
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.hazard;

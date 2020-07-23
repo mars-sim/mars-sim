@@ -7,9 +7,7 @@
 
  package org.mars_sim.mapdata;
 
- import java.io.IOException;
-
- /**
+/**
   * Static utility class for accessing Mars map data.
   */
  public final class MapDataUtil {

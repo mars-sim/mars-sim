@@ -1,4 +1,11 @@
 /**
+ * Mars Simulation Project
+ * Xyz.java
+ * @version 3.1.1 2020-07-22
+ * @author Manny Kung
+ */
+
+/**
  * 3-Dimensional Vector
  */
 package org.mars_sim.msp.core.astroarts;

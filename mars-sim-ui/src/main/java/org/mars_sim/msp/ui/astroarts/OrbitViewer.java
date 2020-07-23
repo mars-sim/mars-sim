@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * OrbitViewer.java
- * @version 3.1.0 2017-02-02
+ * @version 3.1.1 2020-07-22
  * @author Manny Kung
  * Original work by Osamu Ajiki and Ron Baalke (NASA/JPL)
  * http://www.astroarts.com/products/orbitviewer/

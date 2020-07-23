@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructionVehicleType.java
- * @version 3.1.0 2017-09-21
+ * @version 3.1.1 2020-07-22
  * @author Scott Davis
  */
 

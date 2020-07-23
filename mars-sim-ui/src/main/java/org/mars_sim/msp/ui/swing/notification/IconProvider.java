@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project 
  * IconProvider.java
- * @version 3.1.0 2019-09-20
+ * @version 3.1.1 2020-07-22
  * @author Modified by Manny Kung
  */
 
@@ -56,7 +56,7 @@ import org.mars_sim.msp.ui.swing.notification.icons.SimplicioIconProvider;
  * {@link BatchIconProvider} or {@link SimplicioIconProvider}.
  * 
  * @author Antoine Neveux
- * @version 2.1
+ * @version 3.1.1 2020-07-22
  * @since 2.1
  * 
  */

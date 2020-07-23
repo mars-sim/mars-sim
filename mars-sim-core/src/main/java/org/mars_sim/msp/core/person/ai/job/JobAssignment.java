@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * JobAssignment.java
- * @version 3.1.0 2017-08-30
+ * @version 3.1.1 2020-07-22
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.job;

@@ -1,3 +1,10 @@
+/**
+ * Mars Simulation Project
+ * CheckBoxListTest.java
+ * @version 3.1.1 2020-07-22
+ * @author Manny Kung
+ */
+
 package org.mars_sim.msp.ui.swing.tool.commander;
 
 import java.awt.event.KeyEvent;

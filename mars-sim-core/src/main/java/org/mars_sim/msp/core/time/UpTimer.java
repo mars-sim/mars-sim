@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UpTimer.java
- * @version 3.1.0 2018-11-26
+ * @version 3.1.1 2020-07-22
  * @author Scott Davis
  */
 

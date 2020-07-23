@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SpaceXMissionControl.java
- * @version 3.1.0 2017-06-17
+ * @version 3.1.1 2020-07-22
  * @author Manny Kung
  */
 

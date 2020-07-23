@@ -35,7 +35,7 @@ import org.mars_sim.msp.core.tool.RandomUtil;
 * @author Michael Main 
 *   <A HREF="mailto:main@colorado.edu"> (main@colorado.edu) </A>
 *
-* @version Feb 10, 2016
+ * @version 3.1.1 2020-07-22
 *
 * @see edu.colorado.simulations.Organism
 * @see edu.colorado.simulations.Plant

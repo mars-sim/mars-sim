@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ScienceConfig.java
- * @version 3.1.0 2019-02-08
+ * @version 3.1.1 2020-07-22
  * @author Manny Kung
  */
 

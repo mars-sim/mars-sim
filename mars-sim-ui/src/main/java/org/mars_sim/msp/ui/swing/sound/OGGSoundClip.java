@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * OGGSoundClip.java
- * @version 3.1.0 2017-03-17
+ * @version 3.1.1 2020-07-22
  * @author Lars Naesbye Christensen (complete rewrite for OGG)
  * Based on JOrbisPlayer example source
  */

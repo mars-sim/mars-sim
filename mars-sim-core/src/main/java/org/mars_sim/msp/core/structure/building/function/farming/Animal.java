@@ -18,7 +18,7 @@ import java.io.Serializable;
 * @author Michael Main 
 *   <A HREF="mailto:main@colorado.edu"> (main@colorado.edu) </A>
 *
-* @version Feb 10, 2016
+ * @version 3.1.1 2020-07-22
 *
 * @see Organism
 * @see Herbivore

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ExamineBodyMeta.java
- * @version 3.1.0 2018-11-17
+ * @version 3.1.1 2020-07-22
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.task.meta;

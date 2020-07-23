@@ -1,3 +1,10 @@
+/**
+ * Mars Simulation Project
+ * PerformanceTest.java
+ * @version 3.1.1 2020-07-22
+ * @author Manny Kung
+ */
+
 package org.mars_sim.mapdata;
 
 import java.awt.Image;

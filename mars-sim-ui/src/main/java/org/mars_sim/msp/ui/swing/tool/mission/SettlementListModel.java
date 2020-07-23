@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementListModel.java
- * @version 3.1.0 2019-12-03
+ * @version 3.1.1 2020-07-22
  * @author Manny Kung
  */
 

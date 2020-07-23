@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PartPackageConfig.java
- * @version 3.1.0 2017-09-05
+ * @version 3.1.1 2020-07-22
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.resource;

@@ -43,7 +43,7 @@ import org.pushingpixels.trident.callback.TimelineCallback;
  * another timeline
  * 
  * @author Antoine Neveux
- * @version 2.1
+ * @version 3.1.1 2020-07-22
  * @since 2.1
  * 
  */

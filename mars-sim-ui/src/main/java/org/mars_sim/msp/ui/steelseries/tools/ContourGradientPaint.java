@@ -55,7 +55,7 @@ import java.util.List;
  * you have to pass a boundary rectangle that is square (width == height).
  * Even if the name implies that it uses the contour of a shape it will always use the rectangular
  * boundary box of your shape!
- * @version 1.0
+ * @version 3.1.1 2020-07-22
  * @author hansolo
  */
 public final class ContourGradientPaint implements Paint {

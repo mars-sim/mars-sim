@@ -1,4 +1,11 @@
 /**
+ * Mars Simulation Project
+ * PlanetOrbit.java
+ * @version 3.1.1 2020-07-22
+ * @author Manny Kung
+ */
+
+/**
  * PlanetOrbit Class
  */
 package org.mars_sim.msp.core.astroarts;

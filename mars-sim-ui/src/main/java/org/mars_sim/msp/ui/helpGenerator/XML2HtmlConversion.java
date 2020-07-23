@@ -1,3 +1,10 @@
+/**
+ * Mars Simulation Project
+ * XML2HtmlConversion.java
+ * @version 3.1.1 2020-07-22
+ * @author Manny Kung
+ */
+
 package org.mars_sim.msp.ui.helpGenerator;
 import java.io.File;
 import java.io.FileNotFoundException;

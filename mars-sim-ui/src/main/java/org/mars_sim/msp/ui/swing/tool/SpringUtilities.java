@@ -1,3 +1,10 @@
+/**
+ * Mars Simulation Project
+ * SpringUtilities.java
+ * @version 3.1.1 2020-07-22
+ * @author Manny Kung
+ */
+
 /*
  * Copyright (c) 1995, 2008, Oracle and/or its affiliates. All rights reserved.
  *

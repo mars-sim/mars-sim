@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ComplaintType.java
- * @version 3.1.0 2017-03-09
+ * @version 3.1.1 2020-07-22
  * @author Manny Kung
  *
  */

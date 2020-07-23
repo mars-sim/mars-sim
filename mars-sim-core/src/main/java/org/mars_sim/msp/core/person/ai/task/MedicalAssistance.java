@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MedicalAssistance.java
- * @version 3.1.0 2017-03-09
+ * @version 3.1.1 2020-07-22
  * @author Barry Evans
  */
 package org.mars_sim.msp.core.person.ai.task;

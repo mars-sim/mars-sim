@@ -19,7 +19,7 @@ import javax.swing.ImageIcon;
  * that holds an animated image.  To show a non-animated Icon with transparency,
  * the companion class {@link AlphaIcon} is a lighter alternative.
  *
- * @version 1.0 08/16/10
+ * @version 3.1.1 2020-07-22
  * @author Darryl
  */
 public class AlphaImageIcon extends ImageIcon {

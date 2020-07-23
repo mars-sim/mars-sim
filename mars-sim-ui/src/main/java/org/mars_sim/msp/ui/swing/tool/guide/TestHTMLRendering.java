@@ -1,3 +1,10 @@
+/**
+ * Mars Simulation Project
+ * TestHTMLRendering.java
+ * @version 3.1.1 2020-07-22
+ * @author Manny Kung
+ */
+
 package org.mars_sim.msp.ui.swing.tool.guide;
 
 import static java.lang.System.err;

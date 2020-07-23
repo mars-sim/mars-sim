@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * JStatusBar.java
- * @version 3.1.0 2019-09-20
+ * @version 3.1.1 2020-07-22
  * Modified by Manny Kung
  */
 

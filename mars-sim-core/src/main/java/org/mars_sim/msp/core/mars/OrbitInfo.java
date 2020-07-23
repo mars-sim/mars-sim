@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * OrbitInfo.java
- * @version 3.1.0 2018-08-19
+ * @version 3.1.1 2020-07-22
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.mars;

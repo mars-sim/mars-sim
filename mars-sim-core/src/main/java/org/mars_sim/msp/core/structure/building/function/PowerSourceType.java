@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ThermalGeneration.java
- * @version 3.1.0 2019-01-10
+ * @version 3.1.1 2020-07-22
  * @author stpa
  */
 

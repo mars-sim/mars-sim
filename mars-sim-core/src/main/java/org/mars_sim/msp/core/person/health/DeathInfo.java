@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * DeathInfo.java
- * @version 3.1.0 2017-02-20
+ * @version 3.1.1 2020-07-22
  * @author Barry Evans
  */
 

@@ -1,4 +1,11 @@
 /**
+ * Mars Simulation Project
+ * TimeSpan.java
+ * @version 3.1.1 2020-07-22
+ * @author Manny Kung
+ */
+
+/**
  * TimeSpan Class for ATime
  */
 package org.mars_sim.msp.core.astroarts;

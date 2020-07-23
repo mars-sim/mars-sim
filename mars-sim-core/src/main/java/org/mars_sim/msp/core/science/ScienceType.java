@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ScienceType.java
- * @version 3.1.0 2017-10-23
+ * @version 3.1.1 2020-07-22
  * @author stpa
  */
 package org.mars_sim.msp.core.science;

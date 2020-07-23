@@ -1,3 +1,10 @@
+/**
+ * Mars Simulation Project
+ * MagnifierToggleTool.java
+ * @version 3.1.1 2020-07-22
+ * @author Manny Kung
+ */
+
 /*
  * This file is part of WebLookAndFeel library.
  *

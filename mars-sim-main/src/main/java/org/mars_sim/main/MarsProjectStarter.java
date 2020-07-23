@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MarsProjectStarter.java
- * @version 3.1.0 2017-01-31
+ * @version 3.1.1 2020-07-22
  * @author Scott Davis
  */
 

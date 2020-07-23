@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AudioPlayer.java
- * @version 3.1.0 2017-10-28
+ * @version 3.1.1 2020-07-22
  * @author Lars Naesbye Christensen (complete rewrite for OGG)
  */
 

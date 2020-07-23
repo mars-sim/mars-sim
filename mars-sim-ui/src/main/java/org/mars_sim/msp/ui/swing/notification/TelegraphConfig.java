@@ -52,7 +52,7 @@ import org.mars_sim.msp.ui.swing.notification.icons.SimplicioIconProvider;
  * Holds the telegraph configuration.
  * 
  * @author Paulo Roberto Massa Cereda
- * @version 2.1
+ * @version 3.1.1 2020-07-22
  * @since 2.0
  */
 public class TelegraphConfig {

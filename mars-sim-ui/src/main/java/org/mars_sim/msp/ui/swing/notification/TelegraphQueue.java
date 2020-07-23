@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project 
  * TelegraphQueue.java
- * @version 3.1.0 2019-09-20
+ * @version 3.1.1 2020-07-22
  * @author Modified by Manny Kung
  */
 
@@ -52,7 +52,7 @@ import javax.swing.Timer;
  * of {@link Telegraph} objects
  * 
  * @author Paulo Roberto Massa Cereda
- * @version 2.1
+ * @version 3.1.1 2020-07-22
  * @since 2.0
  */
 public class TelegraphQueue implements ActionListener {

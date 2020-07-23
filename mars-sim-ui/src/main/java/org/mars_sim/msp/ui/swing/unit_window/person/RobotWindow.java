@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RobotWindow.java
- * @version 3.1.0 2017-03-19
+ * @version 3.1.1 2020-07-22
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.unit_window.person;
