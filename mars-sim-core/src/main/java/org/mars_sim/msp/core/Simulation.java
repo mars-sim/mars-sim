@@ -212,8 +212,8 @@ public class Simulation implements ClockListener, Serializable {
 			+ " - " + OS_ARCH + " " + JAVA_VERSION + " - " + NUM_THREADS
 			+ ((NUM_THREADS == 1) ? " CPU thread" : " CPU threads")); // $NON-NLS-1$
 
-	/** The mininum size of heap space in bytes */
-	public final static int MIN_HEAP_SPACE = 128*1024*1024;
+	/** The minimum size of heap space in bytes */
+	public final static int MIN_HEAP_SPACE = 64*1024*1024;
 	
 //	private static final boolean debug = false; // logger.isLoggable(Level.FINE);
 	/** true if displaying graphic user interface. */
@@ -1300,41 +1300,50 @@ public class Simulation implements ClockListener, Serializable {
 		 // Get amount of free memory within the heap in bytes. This size will increase // after garbage collection and decrease as new objects are created.
 		long heapFreeSize = Runtime.getRuntime().freeMemory(); 
 		
-		logger.config("heapSize: " + formatSize(heapSize) 
-		+ "    heapMaxSize: " + formatSize(heapMaxSize) 
-//		+ "    heapFreeSize: " + heapFreeSize
+		logger.config(
+		"heapSize: " + formatSize(heapSize) 
+		+ "    heapMaxSize: " + formatSize(heapMaxSize)
 		+ "    heapFreeSize: " + formatSize(heapFreeSize) + "");
 		
-		int counts = 0;
-		while (heapFreeSize < MIN_HEAP_SPACE && counts <= 2) {
-			counts++;
-			logger.config("Not enough free memory in heap space. Wait for 10 seconds and retry...");
-			// Restarts the master clock and removes the Simulation clock listener
-			sim.proceed(isPause);
-			// delay for 10 seconds
-			delay(10000);
-			// Stops the master clock and removes the Simulation clock listener
-			sim.halt(isPause);
-			// Get current size of heap in bytes
-			heapSize = Runtime.getRuntime().totalMemory();
-			// Get maximum size of heap in bytes. The heap cannot grow beyond this size.// Any attempt will result in an OutOfMemoryException.
-			heapMaxSize = Runtime.getRuntime().maxMemory();
-			 // Get amount of free memory within the heap in bytes. This size will increase // after garbage collection and decrease as new objects are created.
-			heapFreeSize = Runtime.getRuntime().freeMemory(); 
-			
-			logger.config("heapSize: " + formatSize(heapSize) 
-			+ "    heapMaxSize: " + formatSize(heapMaxSize) 
-			+ "    heapFreeSize: " + formatSize(heapFreeSize) + "");
-		}
+//		int counts = 0;
 
-		if (counts <= 2) {
+//		while (heapFreeSize < MIN_HEAP_SPACE) { // && counts <= 2) {
+////			counts++;
+//			logger.config("Not enough free memory in heap space. Wait for 10 seconds and retry...");
+//			// Restarts the master clock and removes the Simulation clock listener
+//			sim.proceed(isPause);
+//			// delay for 20 seconds
+//			delay(20000);
+//			// Stops the master clock and removes the Simulation clock listener
+//			sim.halt(isPause);
+//			// Get current size of heap in bytes
+//			heapSize = Runtime.getRuntime().totalMemory();
+//			// Get maximum size of heap in bytes. The heap cannot grow beyond this size.// Any attempt will result in an OutOfMemoryException.
+//			heapMaxSize = Runtime.getRuntime().maxMemory();
+//			 // Get amount of free memory within the heap in bytes. This size will increase // after garbage collection and decrease as new objects are created.
+//			heapFreeSize = Runtime.getRuntime().freeMemory(); 
+//			
+//			logger.config("heapSize: " + formatSize(heapSize) 
+//			+ "    heapMaxSize: " + formatSize(heapMaxSize) 
+//			+ "    heapFreeSize: " + formatSize(heapFreeSize) + "");
+//		}
+
+//		if (counts <= 2) {
+			// Serialize the file
+//			serialize(type, file, srcPath, destPath);
+//		}
+//		else {
+//			logger.config("Please try saving the sim later.");
+//		}
+
+		if (heapFreeSize > MIN_HEAP_SPACE){
 			// Serialize the file
 			serialize(type, file, srcPath, destPath);
 		}
 		else {
-			logger.config("Please try saving the sim later.");
+			logger.config("Not enough free memory in Heap Space. Please try saving the sim later.");
 		}
-
+		
 		// Restarts the master clock and adds back the Simulation clock listener
 		sim.proceed(isPause);
 	}
@@ -1405,8 +1414,8 @@ public class Simulation implements ClockListener, Serializable {
 //			System.out.println(printObjectSize(0).toString());
 			
 			// Using the default settings and the default integrity check type (CRC64)
-			LZMA2Options lzma2 = new LZMA2Options(5);
-			// Set to 6. For mid sized archives (>8mb), 7 works better.
+			LZMA2Options lzma2 = new LZMA2Options(4);
+			// Set to 4. For mid sized archives (>8mb), 7 works better.
 			//lzma2.setPreset(8);
 			FilterOptions[] options = {lzma2};
 			
@@ -1415,10 +1424,11 @@ public class Simulation implements ClockListener, Serializable {
 //			LZMA2Options lzma2 = new LZMA2Options();
 //			FilterOptions[] options = { x86, lzma2 };
 			logger.config("Encoder memory usage : "
-		              + Math.round(FilterOptions.getEncoderMemoryUsage(options)/1_000.0*100.00)/100.00 + " MB");
+		              + Math.round(FilterOptions.getEncoderMemoryUsage(options)/1_024*100.00)/100.00 + " MB");
 			logger.config("Decoder memory usage : "
-		              + Math.round(FilterOptions.getDecoderMemoryUsage(options)/1_000.0*100.00)/100.00 + " MB");
+		              + Math.round(FilterOptions.getDecoderMemoryUsage(options)/1_024*100.00)/100.00 + " MB");
 	
+			
 			xzout = new XZOutputStream(new BufferedOutputStream(new FileOutputStream(file)), options);
 			
 			ByteStreams.copy(is, xzout);

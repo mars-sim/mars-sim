@@ -2626,8 +2626,11 @@ public class Inventory implements Serializable {
 		
 		if (containersStoredCacheDirty == null)
 			containersStoredCacheDirty = new HashMap<>();
-		else if (containersStoredCacheDirty.containsKey(resource)) {
-			if (containersStoredCacheDirty.get(resource)) {
+		
+		if (containersStoredCacheDirty.containsKey(resource)) {
+			// Check if containersStoredCacheDirty is null from another thread
+//			if (containersStoredCacheDirty != null && containersStoredCacheDirty.get(resource)) {
+			if (containersStoredCacheDirty.get(resource)) {				
 				if (containedUnitIDs != null) {
 					for (Unit unit : getContainedUnits()) {
 						if (unit instanceof Container) {

@@ -136,7 +136,7 @@ public class EventTableModel extends AbstractTableModel
 	}
 
 	private synchronized void updateCachedEvents() {
-		List<SimpleEvent> events = new ArrayList<SimpleEvent>();
+		List<SimpleEvent> events = null;
 		
 		// Clean out existing cached events for the Event Table.
 //		cachedEvents = new ArrayList<HistoricalEvent>();
@@ -146,10 +146,10 @@ public class EventTableModel extends AbstractTableModel
 		
 		if (GameManager.mode == GameMode.COMMAND) {
 			int id = unitManager.getCommanderSettlement().getIdentifier();
-			events = eventManager.getEvents(id);
+			events = new ArrayList<SimpleEvent>(eventManager.getEvents(id));
 		}
 		else {
-			events = eventManager.getEvents();
+			events = new ArrayList<SimpleEvent>(eventManager.getEvents());
 		}
 		
 		// TODO: find a way to optimize this so that it doesn't have to redo the sort everytime a new event is added.
