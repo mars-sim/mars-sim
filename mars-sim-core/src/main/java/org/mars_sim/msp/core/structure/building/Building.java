@@ -448,13 +448,17 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	 * 
 	 * @return manager
 	 */
-	protected Building(BuildingManager manager) {
-		super("Mock Building", new Coordinates(0D, 0D));
-
-		unitManager.addBuildingID(this);
+	protected Building(BuildingManager manager, String name) {
+//		super("Mock Building", new Coordinates(0D, 0D));
+		super(name, new Coordinates(0D, 0D));
 		
+		unitManager.addBuildingID(this);
+//		unitManager.addUnit(this);
+		logger.info(name + "'s ID is " + getIdentifier());
+				
 		if (manager != null) {
 //			this.manager = manager;
+			// settlementID needs to be ready before calling this
 			settlementID = (Integer) manager.getSettlement().getIdentifier();
 		}
 	}
@@ -936,6 +940,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	// Called by TabPanelBuilding.java for building nickname change
 	public void setNickName(String nickName) {
 		this.nickName = nickName;
+		changeName(nickName);
 	}
 
 	/**

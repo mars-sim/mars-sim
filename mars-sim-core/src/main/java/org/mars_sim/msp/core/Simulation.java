@@ -1071,9 +1071,6 @@ public class Simulation implements ClockListener, Serializable {
 		
 //		logger.config("Done Unit");
 		
-		// Start a chain of calls to set instances on each person
-		unitManager.reinit(marsClock);
-		
 		// Update/reset the identifier count for each type of units 
 		Person.reinitializeIdentifierCount();
 		Robot.reinitializeIdentifierCount();
@@ -1164,6 +1161,9 @@ public class Simulation implements ClockListener, Serializable {
 //		RescueSalvageVehicle.justReloaded(eventManager);  // eventManager
 		MissionPlanning.initializeInstances(marsClock);
 
+		// Start a chain of calls to set instances
+		unitManager.reinit(marsClock);
+		
 		doneInitializing = true;
 		
 //		logger.config("Done MissionPlanning");

@@ -2233,7 +2233,7 @@ public class UnitManager implements Serializable {
 			return lookupSettlement.values();//CollectionUtils.getSettlement(units); 
 		}
 		else {
-			logger.severe("lookupSettlement is null.");
+//			logger.severe("lookupSettlement is null.");
 			return new ArrayList<>();
 		}
 	}
@@ -2728,6 +2728,9 @@ public class UnitManager implements Serializable {
 		}
 		for (Building b: lookupBuilding.values()) {
 			b.reinit();
+		}
+		for (Settlement s: lookupSettlement.values()) {
+			s.reinit();
 		}
 	}
 	

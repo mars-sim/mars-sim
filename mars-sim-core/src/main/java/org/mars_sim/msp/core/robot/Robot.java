@@ -137,7 +137,7 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 	/** The Robot Type. */
 	private RobotType robotType;
 	/** The building the robot is at. */
-	private Building currentBuilding;
+	private int currentBuildingInt;
 
 	/**
 	 * Must be synchronised to prevent duplicate ids being assigned via different
@@ -801,13 +801,17 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 	 * @return building
 	 */
 	public Building computeCurrentBuilding() {
-		if (isInSettlement()) {
-			currentBuilding = getSettlement().getBuildingManager().getBuildingAtPosition(getXLocation(),
-					getYLocation());
-		} else
-			currentBuilding = null;
-
-		return currentBuilding;
+//		if (isInSettlement()) {
+//			currentBuilding = getSettlement().getBuildingManager().getBuildingAtPosition(getXLocation(),
+//					getYLocation());
+//		} else
+//			currentBuilding = null;
+//
+//		return currentBuilding;
+		
+		if (currentBuildingInt == -1)
+			return null;
+		return unitManager.getBuildingtByID(currentBuildingInt);
 	}
 
 	/**
@@ -817,7 +821,11 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 	 * @return building
 	 */
 	public void setCurrentBuilding(Building building) {
-		currentBuilding = building;
+//		currentBuilding = building;
+		if (building == null)
+			currentBuildingInt = -1;
+		else
+			currentBuildingInt = building.getIdentifier();
 	}
 
 	@Override
@@ -957,6 +965,9 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 //				&& this.nickName.equals(r.getNickName());
 	}
 
+	/**
+	 * Reinitialize references after loading from a saved sim
+	 */
 	public void reinit() {
 		botMind.reinit();
 	}

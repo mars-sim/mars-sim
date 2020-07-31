@@ -166,11 +166,11 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	private double walkSpeedMod = 1.1;
 	
 	/** The birth timestamp of the person. */
-	private String birthTimeStamp;
+//	private String birthTimeStamp;
 	/** The birthplace of the person. */
 	private String birthplace;
 	/** The person's name. */
-	private String name;
+//	private String name;
 	/** The person's first name. */
 	private String firstName;
 	/** The person's last name. */
@@ -283,7 +283,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 * @param settlement
 	 */
 	public Person(Settlement settlement) {
-		super("test person", settlement.getCoordinates());
+		super("Mock Person", settlement.getCoordinates());
 		this.xLoc = 0D;
 		this.yLoc = 0D;
 		this.associatedSettlementID = settlement.getIdentifier();
@@ -322,7 +322,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		settlement.addACitizen(this);
 		
 		// Initialize data members
-		this.name = name;
+//		this.name = name;
 		super.setName(name);
 		firstName = name.substring(0, name.indexOf(ONE_SPACE));
 		lastName = name.substring(name.indexOf(ONE_SPACE) + 1, name.length());
@@ -340,7 +340,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		mind = new Mind(this);
 
 		// Set up the time stamp for the person
-		birthTimeStamp = createBirthTimeStamp();
+		createBirthTimeStamp();
 		// Set the person's status of death
 		isBuried = false;
 	}
@@ -1405,7 +1405,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 					+ unitManager.getSettlementByID(associatedSettlementID) + ".");
 			firstName = newName.substring(0, newName.indexOf(" "));
 			lastName = newName.substring(newName.indexOf(" ") + 1, newName.length());	
-			this.name = newName;
+//			this.name = newName;
 			super.setName(newName);
 			super.setDescription(EARTHLING);
 		}
@@ -1535,6 +1535,8 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 //			currentBuilding = getSettlement().getBuildingManager().getBuildingAtPosition(getXLocation(),
 //					getYLocation());
 //		}
+		if (currentBuildingInt == -1)
+			return null;
 		return unitManager.getBuildingtByID(currentBuildingInt);
 	}
 
@@ -1545,9 +1547,37 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 * @return building
 	 */
 	public void setCurrentBuilding(Building building) {
-		currentBuildingInt = building.getIdentifier();
+		if (building == null) {
+			currentBuildingInt = -1;
+			logger.info("currentBuildingInt ID : " + currentBuildingInt);
+		}
+//		else
+//			currentBuildingInt = building.getIdentifier();
+		else {
+			logger.info(building.getName() + "'s ID : " + building.getIdentifier());
+			logger.info("currentBuildingInt ID : " + currentBuildingInt);
+			currentBuildingInt = building.getIdentifier();
+		}		
 	}
 
+	/**
+	 * Computes the building the person is currently located at Returns null if
+	 * outside of a settlement
+	 *
+	 * @return building
+	 */
+	public void setCurrentMockBuilding(Building building) {
+		if (building == null) {
+			currentBuildingInt = -1;
+			logger.info("currentBuildingInt ID : " + currentBuildingInt);
+		}
+		else {
+			logger.info(building.getName() + "'s ID : " + building.getIdentifier());
+			logger.info("currentBuildingInt ID : " + currentBuildingInt);
+			currentBuildingInt = building.getIdentifier();
+		}
+	}
+	
 	@Override
 	public String getTaskDescription() {
 		return getMind().getTaskManager().getTaskDescription(false);
@@ -2099,6 +2129,9 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		return walkSpeedMod;
 	}
 	
+	/**
+	 * Reinitialize references after loading from a saved sim
+	 */
 	public void reinit() {
 		mind.reinit();
 		condition.reinit();

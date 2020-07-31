@@ -51,7 +51,7 @@ public class WalkingStepsTest extends TestCase {
         BuildingConnectorManager connectorManager = settlement.getBuildingConnectorManager();
         assertNotNull(connectorManager);
 
-        MockBuilding building0 = new MockBuilding(buildingManager);
+        MockBuilding building0 = new MockBuilding(buildingManager, "B0");
         building0.setTemplateID(0);
         building0.setName("building 0");
         building0.setWidth(9D);
@@ -64,7 +64,7 @@ public class WalkingStepsTest extends TestCase {
         BuildingAirlock airlock0 = new BuildingAirlock(building0, 1, 0D, 0D, 0D, 0D, 0D, 0D);
         building0.addFunction(new EVA(building0, airlock0));
 
-        MockBuilding building1 = new MockBuilding(buildingManager);
+        MockBuilding building1 = new MockBuilding(buildingManager, "B1");
         building1.setTemplateID(1);
         building1.setName("building 1");
         building1.setWidth(6D);
@@ -74,7 +74,7 @@ public class WalkingStepsTest extends TestCase {
         building1.setFacing(270D);
         buildingManager.addMockBuilding(building1);
 
-        MockBuilding building2 = new MockBuilding(buildingManager);
+        MockBuilding building2 = new MockBuilding(buildingManager, "B2");
         building2.setTemplateID(2);
         building2.setName("building 2");
         building2.setWidth(2D);
@@ -133,7 +133,7 @@ public class WalkingStepsTest extends TestCase {
         BuildingConnectorManager connectorManager = settlement.getBuildingConnectorManager();
         assertNotNull(connectorManager);
 
-        MockBuilding building0 = new MockBuilding(buildingManager);
+        MockBuilding building0 = new MockBuilding(buildingManager, "B0");
         building0.setTemplateID(0);
         building0.setName("building 0");
         building0.setWidth(9D);
@@ -146,7 +146,7 @@ public class WalkingStepsTest extends TestCase {
         BuildingAirlock airlock0 = new BuildingAirlock(building0, 1, 0D, 0D, 0D, 0D, 0D, 0D);
         building0.addFunction(new EVA(building0, airlock0));
 
-        MockBuilding building1 = new MockBuilding(buildingManager);
+        MockBuilding building1 = new MockBuilding(buildingManager, "B1");
         building1.setTemplateID(1);
         building1.setName("building 1");
         building1.setWidth(6D);
@@ -201,7 +201,7 @@ public class WalkingStepsTest extends TestCase {
         BuildingConnectorManager connectorManager = settlement.getBuildingConnectorManager();
         assertNotNull(connectorManager);
 
-        MockBuilding building0 = new MockBuilding(buildingManager);
+        MockBuilding building0 = new MockBuilding(buildingManager, "B0");
         building0.setTemplateID(0);
         building0.setName("building 0");
         building0.setWidth(9D);
@@ -214,7 +214,7 @@ public class WalkingStepsTest extends TestCase {
         BuildingAirlock airlock0 = new BuildingAirlock(building0, 1, 0D, 0D, 0D, 0D, 0D, 0D);
         building0.addFunction(new EVA(building0, airlock0));
 
-        MockBuilding building1 = new MockBuilding(buildingManager);
+        MockBuilding building1 = new MockBuilding(buildingManager, "B1");
         building1.setTemplateID(1);
         building1.setName("building 1");
         building1.setWidth(6D);
@@ -290,7 +290,7 @@ public class WalkingStepsTest extends TestCase {
         BuildingConnectorManager connectorManager = settlement.getBuildingConnectorManager();
         assertNotNull(connectorManager);
 
-        MockBuilding building0 = new MockBuilding(buildingManager);
+        MockBuilding building0 = new MockBuilding(buildingManager, "B0");
         building0.setTemplateID(0);
         building0.setName("building 0");
         building0.setWidth(9D);
@@ -361,7 +361,7 @@ public class WalkingStepsTest extends TestCase {
         BuildingConnectorManager connectorManager = settlement.getBuildingConnectorManager();
         assertNotNull(connectorManager);
 
-        MockBuilding building0 = new MockBuilding(buildingManager);
+        MockBuilding building0 = new MockBuilding(buildingManager, "B0");
         building0.setTemplateID(0);
         building0.setName("building 0");
         building0.setWidth(9D);
@@ -418,7 +418,7 @@ public class WalkingStepsTest extends TestCase {
 
         BuildingManager buildingManager = settlement.getBuildingManager();
 
-        MockBuilding building0 = new MockBuilding(buildingManager);
+        MockBuilding building0 = new MockBuilding(buildingManager, "B0");
         building0.setTemplateID(0);
         building0.setName("building 0");
         building0.setWidth(9D);
@@ -502,7 +502,7 @@ public class WalkingStepsTest extends TestCase {
 //        Rover rover = new Rover("Test Rover", "Explorer Rover", settlement);
 //        rover.setParkedLocation(15D, -10D, 0D);
 
-        MockBuilding building0 = new MockBuilding(buildingManager);
+        MockBuilding building0 = new MockBuilding(buildingManager, "B0");
         building0.setTemplateID(0);
         building0.setName("building 0");
         building0.setWidth(9D);
@@ -581,7 +581,7 @@ public class WalkingStepsTest extends TestCase {
 //        Rover rover = new Rover("Test Rover", "Explorer Rover", settlement);
 //        rover.setParkedLocation(15D, -10D, 0D);
 
-        MockBuilding building0 = new MockBuilding(buildingManager);
+        MockBuilding building0 = new MockBuilding(buildingManager, "B0");
         building0.setTemplateID(0);
         building0.setName("building 0");
         building0.setWidth(9D);
@@ -660,7 +660,7 @@ public class WalkingStepsTest extends TestCase {
 //        Rover rover = new Rover("Test Rover", "Explorer Rover", settlement);
 //        rover.setParkedLocation(15D, -10D, 0D);
 
-        MockBuilding building0 = new MockBuilding(buildingManager);
+        MockBuilding building0 = new MockBuilding(buildingManager, "B0");
         building0.setTemplateID(0);
         building0.setName("building 0");
         building0.setWidth(9D);
@@ -717,7 +717,7 @@ public class WalkingStepsTest extends TestCase {
 		
         BuildingManager buildingManager = settlement.getBuildingManager();
 
-        MockBuilding building0 = new MockBuilding(buildingManager);
+        MockBuilding building0 = new MockBuilding(buildingManager, "B0");
         building0.setTemplateID(0);
         building0.setName("building 0");
         building0.setWidth(9D);
@@ -803,7 +803,7 @@ public class WalkingStepsTest extends TestCase {
 //        Rover rover = new Rover("Test Rover", "Explorer Rover", settlement);
 //        rover.setParkedLocation(0D, 0D, 0D);
 
-        MockBuilding building0 = new MockBuilding(buildingManager);
+        MockBuilding building0 = new MockBuilding(buildingManager, "B0");
         building0.setTemplateID(0);
         building0.setName("building 0");
         building0.setWidth(9D);
@@ -880,7 +880,7 @@ public class WalkingStepsTest extends TestCase {
 //        Rover rover = new Rover("Test Rover", "Explorer Rover", settlement);
 //        rover.setParkedLocation(0D, 0D, 0D);
 
-        MockBuilding building0 = new MockBuilding(buildingManager);
+        MockBuilding building0 = new MockBuilding(buildingManager, "B0");
         building0.setTemplateID(0);
         building0.setName("building 0");
         building0.setWidth(9D);
@@ -955,7 +955,7 @@ public class WalkingStepsTest extends TestCase {
         BuildingConnectorManager connectorManager = settlement.getBuildingConnectorManager();
         assertNotNull(connectorManager);
 
-        MockBuilding building0 = new MockBuilding(buildingManager);
+        MockBuilding building0 = new MockBuilding(buildingManager, "B0");
         building0.setTemplateID(0);
         building0.setName("building 0");
         building0.setWidth(9D);
@@ -1027,7 +1027,7 @@ public class WalkingStepsTest extends TestCase {
         BuildingConnectorManager connectorManager = settlement.getBuildingConnectorManager();
         assertNotNull(connectorManager);
 
-        MockBuilding building0 = new MockBuilding(buildingManager);
+        MockBuilding building0 = new MockBuilding(buildingManager, "B0");
         building0.setTemplateID(0);
         building0.setName("building 0");
         building0.setWidth(9D);
@@ -1084,7 +1084,7 @@ public class WalkingStepsTest extends TestCase {
 		
         BuildingManager buildingManager = settlement.getBuildingManager();
 
-        MockBuilding building0 = new MockBuilding(buildingManager);
+        MockBuilding building0 = new MockBuilding(buildingManager, "B0");
         building0.setTemplateID(0);
         building0.setName("building 0");
         building0.setWidth(9D);

@@ -12,9 +12,6 @@ import org.mars_sim.msp.core.LifeSupportInterface;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.equipment.SpecimenBox;
-import org.mars_sim.msp.core.person.GenderType;
-import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
@@ -75,19 +72,19 @@ extends TestCase {
 			vehicleInv.storeUnit(new SpecimenBox(settlement.getCoordinates()));
 		}
 
-		BuildingManager buildingManager = settlement.getBuildingManager();
-        MockBuilding building0 = new MockBuilding(buildingManager);
-        building0.setTemplateID(0);
-        building0.setName("building 0");
-        building0.setWidth(9D);
-        building0.setLength(9D);
-        building0.setXLocation(0D);
-        building0.setYLocation(0D);
-        building0.setFacing(0D);
-        buildingManager.addMockBuilding(building0);
+//		BuildingManager buildingManager = settlement.getBuildingManager();
+        MockBuilding b0 = new MockBuilding(settlement.getBuildingManager(), "B0");
+        b0.setTemplateID(0);
+        b0.setName("B0");
+        b0.setWidth(9D);
+        b0.setLength(9D);
+        b0.setXLocation(0D);
+        b0.setYLocation(0D);
+        b0.setFacing(0D);
+//        buildingManager.addMockBuilding(b0);
 
-        BuildingAirlock airlock0 = new BuildingAirlock(building0, 1, 0D, 0D, 0D, 0D, 0D, 0D);
-        building0.addFunction(new EVA(building0, airlock0));
+        BuildingAirlock airlock0 = new BuildingAirlock(b0, 1, 0D, 0D, 0D, 0D, 0D, 0D);
+        b0.addFunction(new EVA(b0, airlock0));
 
 //		Person person = new Person(settlement);
 //        

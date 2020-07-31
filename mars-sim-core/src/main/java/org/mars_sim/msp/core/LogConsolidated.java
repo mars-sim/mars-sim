@@ -36,7 +36,8 @@ public class LogConsolidated {
 	private static final String ONCE = "[x1] ";
 	private static final String QUESTION = "?";
 	private static final String PERIOD = ".";
-
+	private static final String PROMPT = " > ";
+	
 	private static boolean showRateLimit = false;
 	
 	/** 0 = Local time. 1 = Simulation Earth time. 2 = Simulation Martian time. */
@@ -110,7 +111,7 @@ public class LogConsolidated {
 	public static void log(Level level, int timeBetweenLogs, String sourceName, String message, Throwable t) {
 //		if (sourceName.contains("."))
 //			sourceName = sourceName.substring(sourceName.lastIndexOf(PERIOD) + 1, sourceName.length());
-		flogger.at(level).atMostEvery(timeBetweenLogs, TimeUnit.MILLISECONDS).log(sourceName + COLON + message, t);
+		flogger.at(level).atMostEvery(timeBetweenLogs, TimeUnit.MILLISECONDS).log(sourceName + PROMPT + message, t);
 	}
 	
 //	public static void info(int timeBetweenLogs, String sourceName, String message) {

@@ -100,7 +100,8 @@ public class BuildingManager implements Serializable {
 	private transient MarsClock lastVPUpdateTime;
 
 	private transient List<Building> farmsNeedingWorkCache = new ArrayList<>();
-
+	private transient List<Building> buildings;
+	
 	private transient Map<String, Double> VPNewCache = new HashMap<String, Double>();
 	private transient Map<String, Double> VPOldCache = new HashMap<String, Double>();
 	private transient Map<FunctionType, List<Building>> buildingFunctionsMap  = new ConcurrentHashMap<FunctionType, List<Building>>();
@@ -116,9 +117,8 @@ public class BuildingManager implements Serializable {
 	private double probabilityOfImpactPerSQMPerSol;
 	private double wallPenetrationThicknessAL;
 
-	// TODO: find a way to convert this list to a list of buildingID's when serializing this class
-	private List<Building> buildings;
-
+	private List<Integer> buildingInts = new ArrayList<>();
+	
 	private static Simulation sim = Simulation.instance();
 	private static SimulationConfig simulationConfig = SimulationConfig.instance();
 
@@ -166,7 +166,7 @@ public class BuildingManager implements Serializable {
 		unitManager = sim.getUnitManager();
 		
 		// Construct all buildings in the settlement.
-		buildings = new ArrayList<Building>();
+		buildings = new ArrayList<>();
 		if (buildingTemplates != null) {
 			Iterator<BuildingTemplate> i = buildingTemplates.iterator();
 			while (i.hasNext()) {
@@ -196,10 +196,10 @@ public class BuildingManager implements Serializable {
 	 * @param buildingTemplates the settlement's building templates.
 	 * @throws Exception if buildings cannot be constructed.
 	 */
-	public BuildingManager(Settlement settlement, boolean isTest) {
+	public BuildingManager(Settlement settlement, String name) {
 //		this.settlement = settlement;	
 		settlementID = (Integer) settlement.getIdentifier();
-		logger.config("BuildingManager's settlementID : " + settlementID);
+		logger.config(name + "'s settlementID : " + settlementID);
 //		if (isTest)
 //			logger.info("Loading BuildingManager's constructor 2 for " + settlement.getName() + " on "
 //					+ Thread.currentThread().getName() + " thread.");
@@ -328,6 +328,8 @@ public class BuildingManager implements Serializable {
 			Settlement settlement = unitManager.getSettlementByID(settlementID);
 			
 			buildings.add(newBuilding);
+//			System.out.println(newBuilding.getIdentifier());
+			buildingInts.add(newBuilding.getIdentifier());
 			
 			int id = newBuilding.getInhabitableID();
 			
@@ -353,7 +355,8 @@ public class BuildingManager implements Serializable {
 	public void addMockBuilding(Building newBuilding) {
 		if (!buildings.contains(newBuilding)) {
 			buildings.add(newBuilding);
-			addAllFunctionstoBFMap(newBuilding);
+//			buildingInts.add(newBuilding.getIdentifier());
+//			addAllFunctionstoBFMap(newBuilding);
 		}
 	}
 	
@@ -1364,6 +1367,38 @@ public class BuildingManager implements Serializable {
 	 * @param person   the person to add.
 	 * @param building the building to add the person to.
 	 */
+	public static void addPersonOrRobotToMockBuilding(Person person, Building building) {
+		if (building != null) {
+			try {
+				LifeSupport lifeSupport = building.getLifeSupport();
+
+				if (!lifeSupport.containsOccupant(person)) {
+					lifeSupport.addPerson(person);
+				}
+
+				person.setCurrentMockBuilding(building);
+
+			} catch (Exception e) {
+//				throw new IllegalStateException(
+//						"BuildingManager.addPersonOrRobotToBuildingSameLocation(): " + e.getMessage());
+				LogConsolidated.log(Level.SEVERE, 2000, sourceName,
+						"[" + person.getLocationTag().getLocale() + "] "
+								+ person.getName() + " could not be added to " + building.getNickName(), e);
+			}
+		}
+		
+		else 
+//			throw new IllegalStateException("Building is null");
+			LogConsolidated.log(Level.SEVERE, 2000, sourceName,
+				" the building is null.");
+	}
+		
+	/**
+	 * Adds the person to the building if possible.
+	 * 
+	 * @param person   the person to add.
+	 * @param building the building to add the person to.
+	 */
 	public static void addPersonOrRobotToBuilding(Unit unit, Building building) {
 		if (building != null) {
 			try {
@@ -1483,6 +1518,7 @@ public class BuildingManager implements Serializable {
 					}
 					person.setXLocation(settlementLoc.getX());
 					person.setYLocation(settlementLoc.getY());
+					logger.info("Building is " + building.getNickName());
 					person.setCurrentBuilding(building);
 				}
 
@@ -2046,6 +2082,18 @@ public class BuildingManager implements Serializable {
 		unitManager = u;
 	}
 			
+	/**
+	 * Reconstruct the building lists after loading from a saved sim
+	 */
+	public void reinit() {
+		buildings = new ArrayList<>();
+		for (Integer i : buildingInts) {
+			buildings.add(unitManager.getBuildingtByID(i));
+//			System.out.println(buildings);
+		}
+	}
+	
+	
 	/**
 	 * Prepare object for garbage collection.
 	 */

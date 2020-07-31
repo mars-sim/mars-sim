@@ -4718,7 +4718,14 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	public static void reinitializeIdentifierCount() {
 		uniqueCount = unitManager.getSettlementNum() + Unit.FIRST_SETTLEMENT_UNIT_ID;
 	}
-
+	
+	/**
+	 * Reinitialize references after loading from a saved sim
+	 */
+	public void reinit() {
+		buildingManager.reinit();
+	}
+	
 	
 	public boolean equals(Object obj) {
 		if (this == obj) return true;
