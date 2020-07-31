@@ -1549,13 +1549,13 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	public void setCurrentBuilding(Building building) {
 		if (building == null) {
 			currentBuildingInt = -1;
-			logger.info("currentBuildingInt ID : " + currentBuildingInt);
+//			logger.info("currentBuildingInt ID : " + currentBuildingInt);
 		}
 //		else
 //			currentBuildingInt = building.getIdentifier();
 		else {
-			logger.info(building.getName() + "'s ID : " + building.getIdentifier());
-			logger.info("currentBuildingInt ID : " + currentBuildingInt);
+//			logger.info(building.getName() + "'s ID : " + building.getIdentifier());
+//			logger.info("currentBuildingInt ID : " + currentBuildingInt);
 			currentBuildingInt = building.getIdentifier();
 		}		
 	}
@@ -1569,11 +1569,11 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	public void setCurrentMockBuilding(Building building) {
 		if (building == null) {
 			currentBuildingInt = -1;
-			logger.info("currentBuildingInt ID : " + currentBuildingInt);
+//			logger.info("currentBuildingInt ID : " + currentBuildingInt);
 		}
 		else {
-			logger.info(building.getName() + "'s ID : " + building.getIdentifier());
-			logger.info("currentBuildingInt ID : " + currentBuildingInt);
+//			logger.info(building.getName() + "'s ID : " + building.getIdentifier());
+//			logger.info("currentBuildingInt ID : " + currentBuildingInt);
 			currentBuildingInt = building.getIdentifier();
 		}
 	}

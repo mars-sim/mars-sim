@@ -6,7 +6,7 @@ xmlns="http://maven.apache.org/POM/4.0.0"
   <parent>
     <groupId>com.github</groupId>
     <artifactId>mars-sim</artifactId>
-    <version>3.1.1</version>
+    <version>3.1.2-Snapshot</version>
   </parent>
   <groupId>com.github.mars-sim</groupId>
   <artifactId>mars-sim-console</artifactId>
@@ -27,8 +27,8 @@ xmlns="http://maven.apache.org/POM/4.0.0"
 		<version>${project.version}</version>
 	</dependency>
 	<dependency>
-	   	<!-- https://github.com/beryx/text-io
-	     https://mvnrepository.com/artifact/org.beryx/text-io -->
+	<!-- https://mvnrepository.com/artifact/org.beryx/text-io : 95 KB
+	   	     https://github.com/beryx/text-io -->
 		<groupId>org.beryx</groupId>
 		<artifactId>text-io</artifactId>
 		<version>3.4.0</version>

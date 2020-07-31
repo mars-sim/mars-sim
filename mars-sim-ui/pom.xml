@@ -7,7 +7,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<parent>
 		<groupId>com.github</groupId>
 		<artifactId>mars-sim</artifactId>
-		<version>3.1.1</version>
+		<version>3.1.2-Snapshot</version>
 	</parent>
 	<groupId>com.github.mars-sim</groupId>
 	<artifactId>mars-sim-ui</artifactId>
@@ -35,7 +35,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 			<version>${project.version}</version>
 		</dependency>
 		
-		<!-- https://mvnrepository.com/artifact/org.jfree/jfreesvg/3.4 : 43KB
+		<!-- https://mvnrepository.com/artifact/org.jfree/jfreesvg/ : 43KB
 		     can jfreesvg potentially replace batik ? see http://object-refinery.com/blog/blog-20140423.html  -->
 		<dependency>
 			<groupId>org.jfree</groupId>
@@ -61,16 +61,17 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		</dependency>
 		-->	
 		<!-- trident animation library is required by steelseries.extras in mars-sim-ui	
-		     https://search.maven.org/artifact/org.pushing-pixels/radiance-trident/1.0.1/jar 
+		     https://search.maven.org/artifact/org.pushing-pixels/radiance-trident
+		     https://mvnrepository.com/artifact/org.pushing-pixels/radiance-trident/1.0.2 : 78KB
 		     https://github.com/kirill-grouchnikov/radiance/blob/master/docs/trident/trident.md 79KB -->
-		<!-- Note: steelseries requires 1.0.2. 2.0.1 does not work.  -->
+		<!-- Note: steelseries requires 1.0.2. 2.0.1 does NOT work.  -->
 		<dependency>
 		  <groupId>org.pushing-pixels</groupId>
 		  <artifactId>radiance-trident</artifactId>
 		  <version>1.0.2</version>
 		</dependency>
 	
-		<!-- https://mvnrepository.com/artifact/org.apache.xmlgraphics/batik-transcoder/1.10 : 125KB
+		<!-- https://mvnrepository.com/artifact/org.apache.xmlgraphics/batik-transcoder/ : 126 KB
 			1.9 has java.lang.NoClassDefFoundError: org/apache/batik/i18n/Localizable, which is caused by a bug with Apache FOP
 			see http://stackoverflow.com/questions/43371411/apache-fop-2-2-migration-error-classnotfoundexception-org-apache-batik-i18n-l
 			if using 1.8 or 1.9, import org.apache.batik.anim.dom.SAXSVGDocumentFactory
@@ -78,10 +79,10 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		<dependency>
 			<groupId>org.apache.xmlgraphics</groupId>
 			<artifactId>batik-transcoder</artifactId>
-			<version>1.12</version>
+			<version>1.13</version>
 		</dependency>
 	
-		<!-- https://mvnrepository.com/artifact/com.googlecode.soundlibs/jorbis -->
+		<!-- https://mvnrepository.com/artifact/com.googlecode.soundlibs/jorbis : 97 KB-->
 		<dependency>
 		    <groupId>com.googlecode.soundlibs</groupId>
 		    <artifactId>jorbis</artifactId>
@@ -121,7 +122,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 			<!--version>3.7.4</version-->
 		</dependency>
 		
-		<!-- https://mvnrepository.com/artifact/com.github.jiconfont/jiconfont-font_awesome : 102 KB
+		<!-- https://mvnrepository.com/artifact/com.github.jiconfont/jiconfont-font_awesome : 124 KB
 		https://github.com/jIconFont/jiconfont-font_awesome-->
 		<dependency>
 		    <groupId>com.github.jiconfont</groupId>
@@ -143,6 +144,16 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	            <enabled>true</enabled>
 	        </snapshots>
 	    </repository>
+	    <repository>
+            <id>oss-sonatype</id>
+            <url>https://oss.sonatype.org/content/repositories/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>    
  		<repository>
             <id>oss-sonatype-snapshots</id>
             <url>https://oss.sonatype.org/content/repositories/snapshots</url>
@@ -153,16 +164,6 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
                 <enabled>true</enabled>
             </snapshots>
         </repository>
- 		<repository>
-            <id>oss-sonatype</id>
-            <url>https://oss.sonatype.org/content/repositories/</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>    
   		<repository>
 	        <id>jerady</id>
 	        <url>https://dl.bintray.com/jerady/maven/</url>
