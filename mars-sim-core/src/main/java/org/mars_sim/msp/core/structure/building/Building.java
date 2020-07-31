@@ -212,7 +212,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	private String description;
 	
 	/** The BuildingManager instance. */
-	protected BuildingManager manager;
+//	protected BuildingManager manager;
 	/** The MalfunctionManager instance. */
 	protected MalfunctionManager malfunctionManager;
 	
@@ -289,7 +289,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 				template.getLength(), template.getXLoc(), template.getYLoc(), template.getFacing(), manager);
 		
 		this.bid = template.getID();
-		this.manager = manager;
+//		this.manager = manager;
 		buildingType = template.getBuildingType();
 		
 		settlementID = (Integer) manager.getSettlement().getIdentifier();
@@ -332,7 +332,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		this.templateID = id;
 		this.buildingType = buildingType;
 		this.nickName = nickName;
-		this.manager = manager;
+//		this.manager = manager;
 
 		settlementID = (Integer) manager.getSettlement().getIdentifier();
 		
@@ -454,7 +454,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		unitManager.addBuildingID(this);
 		
 		if (manager != null) {
-			this.manager = manager;
+//			this.manager = manager;
 			settlementID = (Integer) manager.getSettlement().getIdentifier();
 		}
 	}
@@ -474,7 +474,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	 * @return inventory
 	 */
 	public Inventory getSettlementInventory() {
-		return manager.getSettlement().getInventory();
+		return getSettlement().getInventory();
 	}
 
 	/**
@@ -483,7 +483,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	 * @return inventory
 	 */
 	public Inventory getInventory() {
-		return manager.getSettlement().getInventory();
+		return getSettlement().getInventory();
 	}
 
 	/**
@@ -925,7 +925,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	 * @return building manager
 	 */
 	public BuildingManager getBuildingManager() {
-		return manager;//unitManager.getSettlementByID(settlementID).getBuildingManager();
+		return unitManager.getSettlementByID(settlementID).getBuildingManager();
 	}
 
 	/**
@@ -1489,7 +1489,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	}
 
 	public Coordinates getLocation() {
-		return manager.getSettlement().getCoordinates();
+		return getSettlement().getCoordinates();
 	}
 
 	/**
@@ -1529,7 +1529,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	}
 
 	public Settlement getSettlement() {
-		return manager.getSettlement();//unitManager.getSettlementByID(settlementID); // 
+		return unitManager.getSettlementByID(settlementID); // getSettlement();
 	}
 
 	public void extractHeat(double heat) {

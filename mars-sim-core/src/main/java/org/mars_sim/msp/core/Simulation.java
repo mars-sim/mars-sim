@@ -107,6 +107,7 @@ import org.mars_sim.msp.core.time.SystemDateTime;
 import org.mars_sim.msp.core.time.UpTimer;
 import org.mars_sim.msp.core.tool.CheckSerializedSize;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+
 import org.tukaani.xz.FilterOptions;
 import org.tukaani.xz.LZMA2Options;
 import org.tukaani.xz.XZFormatException;
@@ -719,6 +720,8 @@ public class Simulation implements ClockListener, Serializable {
 			logger.log(Level.SEVERE, "Quitting mars-sim. The saved sim cannot be read/found.");
 			System.exit(1);
 		}
+		
+		System.gc();
 	}
 
 //	private synchronized void readJSON() throws JsonParseException, JsonMappingException, IOException {
@@ -898,7 +901,6 @@ public class Simulation implements ClockListener, Serializable {
 				baos.close();
 			}
 		}
-
     }
     
     /**
@@ -1341,6 +1343,8 @@ public class Simulation implements ClockListener, Serializable {
 			serialize(type, file, srcPath, destPath);
 		}
 		else {
+			// Call up garbage collector. But it's up to the gc what to do
+			System.gc();
 			logger.config("Not enough free memory in Heap Space. Please try saving the sim later.");
 		}
 		
@@ -1724,6 +1728,8 @@ public class Simulation implements ClockListener, Serializable {
 			if (!isPause) masterClock.setPaused(true, false);
 			masterClock.removeClockListener(this);
 		}
+		// Call up gc
+		System.gc();
 	}
 
 	/*
@@ -2071,7 +2077,7 @@ public class Simulation implements ClockListener, Serializable {
 			eventManager = null;
 		}
 
-		 logger.config("Done with destroyOldSimulation()");
+		 logger.config("Done with Simulation's destroyOldSimulation()");
 	}
 
 }

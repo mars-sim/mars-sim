@@ -39,12 +39,13 @@
 		    <artifactId>jdom2</artifactId>
 		    <version>2.0.6</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/com.google.guava/guava : 2.7 MB -->
+		<!-- https://mvnrepository.com/artifact/com.google.guava/guava : 2.7 MB 
+		See pom.xml in mapdata submodule
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
 			<version>29.0-jre</version>
-		</dependency>
+		</dependency>-->
 		<!-- https://mvnrepository.com/artifact/com.google.inject/guice : 836 KB -->
 		<dependency>
 			<groupId>com.google.inject</groupId>
@@ -54,19 +55,20 @@
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.glassfish/javax.json : 99KB 
 		     https://javaee.github.io/jsonp/
-			 https://jsonp.java.net/ http://docs.oracle.com/javaee/7/tutorial/jsonp.htm -->
+			 https://jsonp.java.net/ http://docs.oracle.com/javaee/7/tutorial/jsonp.htm
+			 Used in EmotionJSONConfig, ExperimentConfig, ScienceConfig  -->
 		<dependency>
 			<groupId>org.glassfish</groupId>
 			<artifactId>javax.json</artifactId>
 			<version>1.1.4</version>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.json/json 
-			 https://github.com/stleary/JSON-java -->
+		</dependency> 
+		<!-- https://mvnrepository.com/artifact/org.json/json : 64 KB
+			 https://github.com/stleary/JSON-java 
 		<dependency>
 		    <groupId>org.json</groupId>
 		    <artifactId>json</artifactId>
-		    <version>20190722</version>
-		</dependency>
+		    <version>20200518</version>
+		</dependency> -->
 		<!-- https://mvnrepository.com/artifact/commons-io/commons-io 
 			 13 KB-->
 		<dependency>
@@ -74,12 +76,12 @@
 		    <artifactId>commons-io</artifactId>
 		    <version>2.6</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
+		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->	
 		<dependency>
 		    <groupId>org.apache.commons</groupId>
 		    <artifactId>commons-lang3</artifactId>
 		    <version>3.9</version>
-		</dependency>					
+		</dependency>			
 		<!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-simple 
 		     For getting rid of the statement : SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder"
 		     See https://stackoverflow.com/questions/7421612/slf4j-failed-to-load-class-org-slf4j-impl-staticloggerbinder#9919375
@@ -103,17 +105,17 @@
 		</dependency>
 		-->
 		<!-- https://mvnrepository.com/artifact/com.google.flogger/flogger
-			 https://github.com/google/flogger 98 KB -->
+			 https://github.com/google/flogger 127 KB -->
 		<dependency>
 			<groupId>com.google.flogger</groupId>
 			<artifactId>flogger</artifactId>
-			<version>0.4</version>
+			<version>0.5.1</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/com.google.flogger/flogger-system-backend -->
 		<dependency>
 		    <groupId>com.google.flogger</groupId>
 		    <artifactId>flogger-system-backend</artifactId>
-		    <version>0.4</version>
+		    <version>0.5.1</version>
 		    <scope>runtime</scope>
 		</dependency>
 

@@ -44,12 +44,13 @@
 			<artifactId>mars-sim-ui</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
+		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
+			 See pom.xml at core submodule
 		<dependency>
 		    <groupId>org.apache.commons</groupId>
 		    <artifactId>commons-lang3</artifactId>
 		    <version>3.9</version>
-		</dependency>
+		</dependency> -->
 	
 	</dependencies>
 	

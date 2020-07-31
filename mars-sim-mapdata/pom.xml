@@ -20,16 +20,17 @@
 			<artifactId>xz</artifactId>
 			<version>1.8</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/me.lemire.integercompression/JavaFastPFOR : 196 KB-->
 		<dependency>
-			<groupId>me.lemire.integercompression</groupId>
-			<artifactId>JavaFastPFOR</artifactId>
-			<version>0.1.9</version>
-		</dependency>	
+		    <groupId>me.lemire.integercompression</groupId>
+		    <artifactId>JavaFastPFOR</artifactId>
+		    <version>0.1.12</version>
+		</dependency>
 		<!-- https://mvnrepository.com/artifact/com.google.guava/guava : 2.6 MB -->
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
-			<version>28.1-jre</version>
+			<version>29.0-jre</version>
 		</dependency>			
 	</dependencies>
 </project>

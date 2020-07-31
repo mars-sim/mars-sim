@@ -23,7 +23,7 @@ public class ExperimentConfig implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
  
-    public static final String JSON_FILE = "/json/experiments.json";
+	private static final String JSON_FILE = "/json/experiments.json";
     
     private Package p;
     
@@ -127,5 +127,12 @@ public class ExperimentConfig implements Serializable {
     	String getID() {
     		return id;
     	}
+    }
+    
+    /**
+     * Prepare object for garbage collection.
+     */
+    public void destroy() {
+        p = null; 
     }
 }

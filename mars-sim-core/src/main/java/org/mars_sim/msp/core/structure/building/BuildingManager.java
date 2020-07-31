@@ -116,6 +116,7 @@ public class BuildingManager implements Serializable {
 	private double probabilityOfImpactPerSQMPerSol;
 	private double wallPenetrationThicknessAL;
 
+	// TODO: find a way to convert this list to a list of buildingID's when serializing this class
 	private List<Building> buildings;
 
 	private static Simulation sim = Simulation.instance();

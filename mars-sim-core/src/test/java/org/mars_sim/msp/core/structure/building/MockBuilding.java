@@ -74,7 +74,6 @@ public class MockBuilding extends Building {
 //		sim.getUnitManager().addBuildingID(this);
 		sim.getUnitManager().addUnit(this);
 
-
 //		this.manager = manager;
 		malfunctionManager = new MalfunctionManager(this, 0D, 0D);
 		functions = new ArrayList<Function>();

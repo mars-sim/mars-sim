@@ -95,7 +95,9 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	private final static String WEIGHT = "Weight";
 	
 	private final static String EARTHLING = "Earthling";
-	private final static String MARTIAN = "Martian";
+	private final static String ONE_SPACE = " ";
+	
+//	private final static String MARTIAN = "Martian";
 	
 	/** The unit count for this person. */
 	private static int uniqueCount = Unit.FIRST_PERSON_UNIT_ID;
@@ -144,7 +146,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	/** The buried settlement if the person has been deceased. */
 	private Integer buriedSettlement = Integer.valueOf(-1);
 	/** The vehicle the person is on. */
-	private Integer vehicle = Integer.valueOf(-1);
+//	private Integer vehicleInt = Integer.valueOf(-1);
 
 	/** The cache for msol1 */
 	private double msolCache = -1D;
@@ -216,10 +218,10 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	private ReportingAuthority ra;
 	/** The bed location of the person */
 	private Point2D bed;
-	/** The quarters of the person. */
-	private Building quarters;
+	/** The quarters that the person belongs. */
+	private int quartersInt;
 	/** The current building location of the person. */
-	private Building currentBuilding;
+	private int currentBuildingInt;
 	/** The EVA suit that the person has donned on. */
 	private EVASuit suit;
 	/** The person's achievement in scientific fields. */
@@ -322,8 +324,8 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		// Initialize data members
 		this.name = name;
 		super.setName(name);
-		firstName = name.substring(0, name.indexOf(" "));
-		lastName = name.substring(name.indexOf(" ") + 1, name.length());
+		firstName = name.substring(0, name.indexOf(ONE_SPACE));
+		lastName = name.substring(name.indexOf(ONE_SPACE) + 1, name.length());
 		this.xLoc = 0D;
 		this.yLoc = 0D;
 		this.associatedSettlementID = settlement.getIdentifier();
@@ -362,39 +364,34 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		// WARNING: setAssociatedSettlement(settlement) will cause suffocation when
 		// reloading from a saved sim
 		BuildingManager.addToRandomBuilding(this, associatedSettlementID);
-
+		// Create favorites
 		favorite = new Favorite(this);
-
+		// Create preferences
 		preference = new Preference(this);
-
 		// Set up genetic make-up. Notes it requires attributes.
 		setupChromosomeMap();
-		
+		// Create ciracdian clock
 		circadian = new CircadianClock(this);
-
+		// Create physical condition
 		condition = new PhysicalCondition(this);
-		
+		// Create job history 		
 		jobHistory = new JobHistory(this);
-
+		// Create the scientific achievement map
 		scientificAchievement = new HashMap<ScienceType, Double>(0);
-
+		// Create the role
 		role = new Role(this);
-
+		// Create task schedule
 		taskSchedule = new TaskSchedule(this);
-
+		// Initialize task manager
 		mind.getTaskManager().initialize();
-
+		// Set up life support type
 		support = getLifeSupportType();
-		
 		// Create the mission experiences map
 		missionExperiences = new ConcurrentHashMap<>();
 		// Create the EVA hours map
 		eVATaskTime = new ConcurrentHashMap<>();
 		// Create the consumption map
 		consumption = new ConcurrentHashMap<>();
-		
-
-
 		// Asssume the person is not a preconfigured crew member
 		preConfigured = false;
 	}
@@ -409,9 +406,8 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		unitManager.getSettlementByID(associatedSettlementID).getInventory().storeUnit(this);
 		BuildingManager.addToRandomBuilding(this, associatedSettlementID);
 		isBuried = false;
+		// Create natural attribute mananger
 		attributes = new NaturalAttributeManager(this);
-//		mind = new Mind(this);
-//		mind.getTaskManager().initialize();
 	}
 
 	/**
@@ -982,10 +978,10 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 
 		declaredDead = true;
 		// Set quarters to null
-		if (quarters != null) {
-			LivingAccommodations accommodations = quarters.getLivingAccommodations();
+		if (quartersInt != -1) {
+			LivingAccommodations accommodations = unitManager.getBuildingtByID(quartersInt).getLivingAccommodations();
 			accommodations.getBedMap().remove(this);
-			quarters = null;
+			quartersInt = -1;
 		}
 		// Empty the bed
 		if (bed != null)
@@ -1539,7 +1535,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 //			currentBuilding = getSettlement().getBuildingManager().getBuildingAtPosition(getXLocation(),
 //					getYLocation());
 //		}
-		return currentBuilding;
+		return unitManager.getBuildingtByID(currentBuildingInt);
 	}
 
 	/**
@@ -1549,7 +1545,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 * @return building
 	 */
 	public void setCurrentBuilding(Building building) {
-		currentBuilding = building;
+		currentBuildingInt = building.getIdentifier();
 	}
 
 	@Override
@@ -1603,11 +1599,11 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	}
 
 	public Building getQuarters() {
-		return quarters;
+		return unitManager.getBuildingtByID(quartersInt);
 	}
 
-	public void setQuarters(Building quarters) {
-		this.quarters = quarters;
+	public void setQuarters(Building b) {
+		this.quartersInt = b.getIdentifier();
 	}
 
 	public Point2D getBed() {
@@ -1640,7 +1636,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 
 	@Override
 	public void setVehicle(Vehicle vehicle) {
-		this.vehicle = vehicle.getIdentifier();
+//		this.vehicleInt = vehicle.getIdentifier();
 	}
 	
 	/**
@@ -1651,7 +1647,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	public Vehicle getVehicle() {
 		if (getLocationStateType() == LocationStateType.INSIDE_VEHICLE) {
 			Vehicle v = (Vehicle) getContainerUnit();
-			setVehicle(v);
+//			setVehicle(v);
 			return v;
 		}
 
@@ -2150,17 +2146,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	@Override
 	public void destroy() {
 		super.destroy();
-//		relax = null;
-//		sleep = null;
-//		walk = null;
 		circadian = null;
-//		vehicle = null;
-//		associatedVehicle = null;
-//		associatedSettlement = null;
-//		buriedSettlement = null;
-		quarters = null;
-//		diningBuilding = null;
-		currentBuilding = null;
 		condition = null;
 		favorite = null;
 		taskSchedule = null;
@@ -2172,7 +2158,6 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		kitchenWithDessert = null;
 		ra = null;
 		bed = null;
-
 		attributes.destroy();
 		attributes = null;
 		mind.destroy();

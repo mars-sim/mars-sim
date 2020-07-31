@@ -1203,5 +1203,9 @@ public class SimulationConfig implements Serializable {
 		robotConfig = null;
 		quotationConfig.destroy();
 		quotationConfig = null;
+		experimentConfig.destroy();
+		experimentConfig = null;
+		scienceConfig.destroy();
+		scienceConfig = null;
 	}
 }

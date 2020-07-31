@@ -28,11 +28,20 @@ public class ScienceConfig implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
  
-	public static final String SCIENTIFIC_STUDY_JSON = "scientific_study.json";
+	private static final String SCIENTIFIC_STUDY = "scientific_study";
+	private static final String JSON = "json";
+	private static final String DIR = "/";
+	private static final String SUBJECT = "subject";
+	private static final String TOPIC = "topic";
+	private static final String TOPICS = TOPIC + "s";
+	private static final String DOT = ".";
+	private static final String UNDERSCORE = "_";
+	private static final String GENERAL = "General";
 	
-	public static final String JSON_DIR = "/json/";
+	private static final String JSON_DIR = DIR + JSON + DIR;
 
-	public static final String TOPICS_JSON_FILE_EXT = "_topics.json";
+	private static final String TOPICS_JSON_FILE_EXT = UNDERSCORE + TOPICS + DOT + JSON;
+	private static final String SCIENTIFIC_STUDY_JSON = SCIENTIFIC_STUDY + DOT + JSON;
 	
 	private static String[] jsonFiles = new String[9]; 
     
@@ -86,8 +95,7 @@ public class ScienceConfig implements Serializable {
         averageTime.add(jsonObject.getInt("peer_review_time"));
         averageTime.add(jsonObject.getInt("primary_researcher_work_downtime_allowed"));
         averageTime.add(jsonObject.getInt("collaborator_work_downtime_allowed"));
-    	
-        
+    	     
     	// Create a list of science topic filenames 
     	createJsonFiles();
     	
@@ -113,13 +121,13 @@ public class ScienceConfig implements Serializable {
 	         
 	        s = new Subject();
 	        // Retrieve a subject from JsonObject
-	        s.setSubject(jsonObject.getString("subject"));
+	        s.setSubject(jsonObject.getString(SUBJECT));
 	     
 //	        s.setNum(jsonObject.getInt("numbers"));
 //	        int size = s.getNum();
 	        
-	        // Read the json array of experiments
-	        JsonArray jsonArray = jsonObject.getJsonArray("topics");
+	        // Read the json array of topics
+	        JsonArray jsonArray = jsonObject.getJsonArray(TOPICS);
 	        
 	        int size = jsonArray.size();
 	        
@@ -129,7 +137,7 @@ public class ScienceConfig implements Serializable {
 //	        	System.out.println(s.getName() + " : ");
 		        for (int i = 0; i< size; i++) {
 	                JsonObject child = jsonArray.getJsonObject(i);
-	                String t = Conversion.capitalize(child.getString("topic"));
+	                String t = Conversion.capitalize(child.getString(TOPIC));
 		        	s.createTopic(t);
 //		            System.out.println("   " + t);
 		        }
@@ -154,7 +162,7 @@ public class ScienceConfig implements Serializable {
 	    		return topics.get(num).getName();
     		}
     	}
-    	return "General";	
+    	return GENERAL;	
     }
     
     
@@ -170,14 +178,18 @@ public class ScienceConfig implements Serializable {
     	return aveNumCollaborators;
     }
 
-    
+
+    /**
+     * Class Subject is a scientific subject holding a list of topics
+     * @author mk
+     */
 	class Subject {
 	    
 		int num;
 		
 		String name;
 
-		List<Topic> exps = new ArrayList<>();
+		List<Topic> topics = new ArrayList<>();
 		
 		Subject() {}
 
@@ -199,14 +211,19 @@ public class ScienceConfig implements Serializable {
 		
 	   	void createTopic(String name) {
 	   		Topic e = new Topic(name);
-	   		exps.add(e);
+	   		topics.add(e);
     	}
 	   	
 	   	List<Topic> getTopics() {
-	   		return exps;
+	   		return topics;
 	   	}
 	}
 	
+    /**
+     * Class Topic of a Subject
+     * @author mk
+     */
+
     class Topic {
     
     	String name;
@@ -220,5 +237,17 @@ public class ScienceConfig implements Serializable {
     		return name;
     	}
     	
+    }
+    
+    /**
+     * Prepare object for garbage collection.
+     */
+    public void destroy() {
+        jsonFiles = null;
+        averageTime.clear();
+        averageTime = null; 
+        s = null; 
+        scienceTopics.clear();
+        scienceTopics = null;   
     }
 }

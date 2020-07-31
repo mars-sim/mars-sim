@@ -113,8 +113,8 @@ public class MarsClock implements Serializable {
 	private static final String COLON = ":";
 	private static final String ONE_ZERO = "0";
 	private static final String TWO_ZEROS = "00";
-	private static final String THREE_ZEROS = "000";
-	private static final String UMST = "(UMST) ";
+//	private static final String THREE_ZEROS = "000";
+//	private static final String UMST = "(UMST) ";
 	private static final String EARLY = "Early ";
 	private static final String MID = "Mid ";
 	private static final String LATE = "Late ";
@@ -152,14 +152,10 @@ public class MarsClock implements Serializable {
 	private double millisol;
 	/** The millisol of the day in 1 decimal place. */
 	private double msol1;
-
 	
 	private static OrbitInfo orbitInfo;
 
-//	private static EarthClock earthClock;
-
 	private static Simulation sim;
-
 
 	/**
 	 * Constructor 1 : create an instance of MarsClock with date string parameter.

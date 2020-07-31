@@ -102,7 +102,7 @@ public class MasterClock implements Serializable {
 	/** The counts for ui pulses. */	
 	private transient int count;
 	/** The total number of counts between two ui pulses. */
-	private transient int totalCount = 40;
+//	private transient int totalCount = 40;
 	/** The average of the last working millis and the current one. */
 //	private long millisCache;
 	
@@ -141,7 +141,7 @@ public class MasterClock implements Serializable {
 	private static List<Float> timeIntervals;
 	
 	
-	/** The martian Clock. */
+	/** The Martian Clock. */
 	private MarsClock marsClock;
 	/** A copy of the initial martian clock at the start of the sim. */
 	private MarsClock initialMarsTime;
@@ -156,7 +156,7 @@ public class MasterClock implements Serializable {
 	// see https://netopyr.com/2017/03/13/surprising-behavior-of-cached-thread-pool/
 
 	private static Simulation sim = Simulation.instance();
-	private static SimulationConfig simulationConfig;
+//	private static SimulationConfig simulationConfig;
 
 	/**
 	 * Constructor
@@ -170,7 +170,7 @@ public class MasterClock implements Serializable {
 		// logger.config("MasterClock's constructor is on " + Thread.currentThread().getName() + " Thread");
 		
 		// Gets an instance of the SimulationConfig singleton 
-		simulationConfig = SimulationConfig.instance();
+		SimulationConfig simulationConfig = SimulationConfig.instance();
 
 		// Create a martian clock
 		marsClock = new MarsClock(simulationConfig.getMarsStartDateTime());
@@ -1455,7 +1455,6 @@ public class MasterClock implements Serializable {
 	 * Prepare object for garbage collection.
 	 */
 	public void destroy() {
-		simulationConfig = null;
 		sim = null;
 		marsClock.destroy();
 		marsClock = null;
