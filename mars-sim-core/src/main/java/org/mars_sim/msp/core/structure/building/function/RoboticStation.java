@@ -291,11 +291,12 @@ public class RoboticStation extends Function implements Serializable {
 	public void addRobot(Robot robot) {
 		if (!robotOccupants.contains(robot)) {
 			// Remove robot from any other inhabitable building in the settlement.
-			Iterator<Building> i = getBuilding().getBuildingManager().getACopyOfBuildings().iterator();
+			Iterator<Building> i = getBuilding().getBuildingManager().getBuildings().iterator();
 			while (i.hasNext()) {
 				Building building = i.next();
 				if (building.hasFunction(FUNCTION)) {
-					BuildingManager.removePersonOrRobotFromBuilding(robot, building);
+					BuildingManager.removeRobotFromBuilding(robot, building);
+//					building.getRoboticStation().removeRobot(robot);
 				}
 			}
 

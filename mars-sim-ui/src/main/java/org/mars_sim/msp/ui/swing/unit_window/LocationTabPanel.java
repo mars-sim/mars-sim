@@ -435,9 +435,9 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
 					double xLoc = b.getXLocation();
 					double yLoc = b.getYLocation();
 					double scale = mapPanel.getScale();
-					mapPanel.reCenter();
+//					mapPanel.reCenter();
 					mapPanel.moveCenter(xLoc * scale, yLoc * scale);
-					mapPanel.setShowBuildingLabels(true);
+//					mapPanel.setShowBuildingLabels(true);
 
 					mapPanel.selectPerson(p);
 				}
@@ -460,9 +460,9 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
 						double xLoc = vv.getXLocation();
 						double yLoc = vv.getYLocation();
 						double scale = mapPanel.getScale();
-						mapPanel.reCenter();
+//						mapPanel.reCenter();
 						mapPanel.moveCenter(xLoc * scale, yLoc * scale);
-						mapPanel.setShowVehicleLabels(true);
+//						mapPanel.setShowVehicleLabels(true);
 
 						mapPanel.selectPerson(p);
 

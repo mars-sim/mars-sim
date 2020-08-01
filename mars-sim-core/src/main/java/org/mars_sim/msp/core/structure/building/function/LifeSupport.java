@@ -204,15 +204,16 @@ public class LifeSupport extends Function implements Serializable {
 	public void addPerson(Person person) {
 		if (!occupants.contains(person)) {
 			// Remove person from any other inhabitable building in the settlement.
-			Iterator<Building> i = building.getBuildingManager().getBuildings().iterator(); // getACopyOfBuildings().iterator();
+			Iterator<Building> i = building.getBuildingManager().getBuildings().iterator(); 
 			while (i.hasNext()) {
 				Building building = i.next();
 				if (building.hasFunction(THE_FUNCTION)) {
-					// remove this person from this building first
-					BuildingManager.removePersonOrRobotFromBuilding(person, building);
+					// remove this person from the old building first
+					BuildingManager.removePersonFromBuilding(person, building);
+//					building.getLifeSupport().removePerson(person);
 				}
 			}
-
+			
 			// Add person to this building.
 			occupants.add(person);
 			logger.finest("Adding " + person + " to " + building + " life support.");

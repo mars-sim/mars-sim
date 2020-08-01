@@ -242,19 +242,18 @@ implements Serializable {
 			Iterator<Person> i = lifeSupport.getOccupants().iterator();
 			while (i.hasNext()) {
 				Person occupant = i.next();
-				BuildingManager.removePersonOrRobotFromBuilding(occupant, salvagedBuilding);
+				BuildingManager.removePersonFromBuilding(occupant, salvagedBuilding);
 				BuildingManager.addToRandomBuilding(occupant, buildingManager.getSettlement().getIdentifier());
 			}
 		}
 
-		// 2015-12-23 Added handling robots
 		// Move any robot in building to somewhere else in the settlement.
 		if (salvagedBuilding.hasFunction(FunctionType.ROBOTIC_STATION)) {
 			RoboticStation station = salvagedBuilding.getRoboticStation();
 			Iterator<Robot> i = station.getRobotOccupants().iterator();
 			while (i.hasNext()) {
 				Robot occupant = i.next();
-				BuildingManager.removePersonOrRobotFromBuilding(occupant, salvagedBuilding);
+				BuildingManager.removeRobotFromBuilding(occupant, salvagedBuilding);
 				BuildingManager.addToRandomBuilding(occupant, buildingManager.getSettlement().getIdentifier());
 			}
 		}

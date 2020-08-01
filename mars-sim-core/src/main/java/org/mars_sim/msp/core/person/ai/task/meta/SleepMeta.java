@@ -21,6 +21,7 @@ import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
@@ -57,7 +58,14 @@ public class SleepMeta implements MetaTask, Serializable {
 
     @Override
     public double getProbability(Person person) {
-
+    	
+        // No sleeping outside.
+    	if (person.isOutside())
+    		return 0;
+    	
+    	if (BuildingManager.isInBuildingAirlock(person))
+    		return 0;
+    	
    		circadian = person.getCircadianClock();
    		pc = person.getPhysicalCondition();
    		
@@ -86,25 +94,28 @@ public class SleepMeta implements MetaTask, Serializable {
     	
     	// 1000 millisols is 24 hours, if a person hasn't slept for 24 hours,
         // he is supposed to want to sleep right away.
-    	if (fatigue > 333 || stress > 50 || ghrelin-leptin > 500) {
+    	if (fatigue > 333 || stress > 50 || ghrelin-leptin > 600) {
     		proceed = true;
+//    		logger.info(person + "  ghrelin: " + ghrelin + "  leptin:" + leptin);
     	}
     	
     	int rand = RandomUtil.getRandomInt(1);
+    	// Take a break from sleep if it's too hungry
     	if (rand == 1 && (hunger > 667 || energy < 1000))
     		proceed = false;
     	
         if (proceed) {
         	// the desire to go to bed increase linearly after 12 hours of wake time
-            result = result + (fatigue - 333) * 10 + stress * 10 
-            		+ (ghrelin-leptin - 500)/2.5D
+            result = (fatigue - 333) * 10 + stress * 10 
+            		+ (ghrelin-leptin - 600)/2.5D
+            		// high hunger makes it harder to fall asleep
             		- hunger/20;
             
             double pref = person.getPreference().getPreferenceScore(this);
             
-         	result = result + result * pref/8D;                            	
+         	result = result + result * pref/12D;                            	
         	
-    	    if (result < 0) {
+    	    if (result <= 0) {
     	    	// Reduce the probability if it's not the right time to sleep
 //    	    	refreshSleepHabit(person); 
     	    	return 0;
@@ -125,15 +136,17 @@ public class SleepMeta implements MetaTask, Serializable {
                 result *= 2D;
             }
 
-            boolean isOnShift = person.getTaskSchedule().isShiftHour(marsClock.getMillisolInt());
-            if (isOnShift && person.getShiftType() != ShiftType.ON_CALL) {
+            if (person.getShiftType() == ShiftType.ON_CALL)
+            	result = result * 5;
+            
+            else if (person.getTaskSchedule().isShiftHour(marsClock.getMillisolInt())) {
          	   // Reduce the probability if it's not the right time to sleep
          	   refreshSleepHabit(person);
          	   // probability of sleep reduces to one fifth of its value
                result = result / 10D;
             }
             else
-            	result = result * 10D;
+            	result = result * 100D;
             
         	Building quarters = null;
         	Settlement s1 = person.getSettlement();
@@ -226,12 +239,6 @@ public class SleepMeta implements MetaTask, Serializable {
 //	    	refreshSleepHabit(person);  
        }
 
-       // No sleeping outside.
-       if (person.isOutside()) {
-    	   // Reduce the probability if it's not the right time to sleep
-//    	   refreshSleepHabit(person);  
-    	   result = 0D;
-       }
        
 //        if (result > 0)
 //        	LogConsolidated.log(logger, Level.INFO, 0, sourceName,

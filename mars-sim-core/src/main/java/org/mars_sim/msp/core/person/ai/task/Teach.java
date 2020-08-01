@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.social.Relationship;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
@@ -154,6 +155,16 @@ public class Teach extends Task implements Serializable {
 			endTask();
 		}
 
+        // Probability affected by the person's stress and fatigue.
+        PhysicalCondition condition = person.getPhysicalCondition();
+        double fatigue = condition.getFatigue();
+        double stress = condition.getStress();
+        double hunger = condition.getHunger();
+        double energy = condition.getEnergy();
+        
+        if (fatigue > 1000 || stress > 75 || hunger > 750 || energy < 500)
+        	endTask();   
+        
 		// Add relationship modifier for opinion of teacher from the student.
 		addRelationshipModifier(time);
 

@@ -1361,8 +1361,17 @@ public class BuildingManager implements Serializable {
 		return result;
 	}
 
+	public static boolean isInBuildingAirlock(Person person) {
+		Building b = person.getBuildingLocation();
+		if (b != null && b.getBuildingType().equalsIgnoreCase("eva airlock")) {//building.hasFunction(FunctionType.EVA)) {
+			return true;
+		}
+		return false;
+	}
+	
+	
 	/**
-	 * Adds the person to the building if possible.
+	 * Adds the person to the building if possible for maven testing
 	 * 
 	 * @param person   the person to add.
 	 * @param building the building to add the person to.
@@ -1374,9 +1383,9 @@ public class BuildingManager implements Serializable {
 
 				if (!lifeSupport.containsOccupant(person)) {
 					lifeSupport.addPerson(person);
-				}
 
-				person.setCurrentMockBuilding(building);
+					person.setCurrentMockBuilding(building);
+				}
 
 			} catch (Exception e) {
 //				throw new IllegalStateException(
@@ -1408,9 +1417,10 @@ public class BuildingManager implements Serializable {
 
 					if (!lifeSupport.containsOccupant(person)) {
 						lifeSupport.addPerson(person);
+						
+						person.setCurrentBuilding(building);
 					}
 
-					person.setCurrentBuilding(building);
 				}
 
 				else if (unit instanceof Robot) {
@@ -1419,9 +1429,9 @@ public class BuildingManager implements Serializable {
 
 					if (!roboticStation.containsRobotOccupant(robot)) {
 						roboticStation.addRobot(robot);
+						
+						robot.setCurrentBuilding(building);
 					}
-
-					robot.setCurrentBuilding(building);
 				}
 
 			} catch (Exception e) {
@@ -1460,11 +1470,11 @@ public class BuildingManager implements Serializable {
 
 					if (!lifeSupport.containsOccupant(person)) {
 						lifeSupport.addPerson(person);
+						
+						person.setXLocation(xLocation);
+						person.setYLocation(yLocation);
+						person.setCurrentBuilding(building);
 					}
-
-					person.setXLocation(xLocation);
-					person.setYLocation(yLocation);
-					person.setCurrentBuilding(building);
 				}
 
 				else if (unit instanceof Robot) {
@@ -1473,10 +1483,11 @@ public class BuildingManager implements Serializable {
 
 					if (roboticStation.containsRobotOccupant(robot)) {
 						roboticStation.addRobot(robot);
+						
+						robot.setXLocation(xLocation);
+						robot.setYLocation(yLocation);
+						robot.setCurrentBuilding(building);
 					}
-					robot.setXLocation(xLocation);
-					robot.setYLocation(yLocation);
-					robot.setCurrentBuilding(building);
 				}
 
 			} catch (Exception e) {
@@ -1512,14 +1523,13 @@ public class BuildingManager implements Serializable {
 					LifeSupport lifeSupport = building.getLifeSupport();
 
 					if (!lifeSupport.containsOccupant(person)) {
-						// Place this person within a building
-//						person.enter(LocationCodeType.BUILDING);
 						lifeSupport.addPerson(person);
+						
+						person.setXLocation(settlementLoc.getX());
+						person.setYLocation(settlementLoc.getY());
+						person.setCurrentBuilding(building);
+						logger.config(person + " was being randomly added to " + building.getNickName());
 					}
-					person.setXLocation(settlementLoc.getX());
-					person.setYLocation(settlementLoc.getY());
-					logger.info("Building is " + building.getNickName());
-					person.setCurrentBuilding(building);
 				}
 
 				else if (unit instanceof Robot) {
@@ -1527,13 +1537,13 @@ public class BuildingManager implements Serializable {
 					RoboticStation roboticStation = building.getRoboticStation();
 
 					if (!roboticStation.containsRobotOccupant(robot)) {
-						// Place this robot within a building
-//						robot.enter(LocationCodeType.BUILDING);
 						roboticStation.addRobot(robot);
+						
+						robot.setXLocation(settlementLoc.getX());
+						robot.setYLocation(settlementLoc.getY());	
+						robot.setCurrentBuilding(building);
+						logger.config(robot + " was being randomly added to " + building.getNickName());
 					}
-					robot.setXLocation(settlementLoc.getX());
-					robot.setYLocation(settlementLoc.getY());
-					robot.setCurrentBuilding(building);
 				}
 			} catch (Exception e) {
 //				throw new IllegalStateException(
@@ -1555,38 +1565,23 @@ public class BuildingManager implements Serializable {
 	 * @param person   the person to remove.
 	 * @param building the building to remove the person from.
 	 */
-	public static void removePersonOrRobotFromBuilding(Unit unit, Building building) {
+	public static void removePersonFromBuilding(Person person, Building building) {
 		if (building != null) {
 			try {
 
-				if (unit instanceof Person) {
-					Person person = (Person) unit;
-					LifeSupport lifeSupport = building.getLifeSupport();
+				LifeSupport lifeSupport = building.getLifeSupport();
 
-					if (lifeSupport.containsOccupant(person)) {
-						lifeSupport.removePerson(person);
-//						LogConsolidated.log(Level.INFO, 0, sourceName,
-//								"[" + unit.getLocationTag().getLocale() + "] "
-//										+ unit.getName() + " was removed from " + building.getNickName());
-					}
+				if (lifeSupport.containsOccupant(person)) {
+					lifeSupport.removePerson(person);
+
 					person.setCurrentBuilding(null);
 				}
 
-				else if (unit instanceof Robot) {
-					Robot robot = (Robot) unit;
-					RoboticStation roboticStation = building.getRoboticStation();
-
-					if (roboticStation.containsRobotOccupant(robot)) {
-						roboticStation.removeRobot(robot);
-					}
-					robot.setCurrentBuilding(null);
-				}
 
 			} catch (Exception e) {
-//				throw new IllegalStateException("BuildingManager.removePersonOrRobotFromBuilding(): " + e.getMessage());
 				LogConsolidated.log(Level.SEVERE, 2000, sourceName,
-						"[" + unit.getLocationTag().getLocale() + "] "
-								+ unit.getName() + " could not be removed from " + building.getNickName(), e);
+						"[" + person.getLocationTag().getLocale() + "] "
+								+ person.getName() + " could not be removed from " + building.getNickName(), e);
 			}
 		} else {
 //			throw new IllegalStateException("Building is null");
@@ -1595,6 +1590,36 @@ public class BuildingManager implements Serializable {
 		}
 	}
 
+	/**
+	 * Removes the robot from a building if possible.
+	 * 
+	 * @param robot   the robot to remove.
+	 * @param building the building to remove the robot from.
+	 */
+	public static void removeRobotFromBuilding(Robot robot, Building building) {
+		if (building != null) {
+			try {
+
+				RoboticStation roboticStation = building.getRoboticStation();
+
+				if (roboticStation.containsRobotOccupant(robot)) {
+					roboticStation.removeRobot(robot);
+				
+					robot.setCurrentBuilding(null);
+				}
+
+			} catch (Exception e) {
+				LogConsolidated.log(Level.SEVERE, 2000, sourceName,
+						"[" + robot.getLocationTag().getLocale() + "] "
+								+ robot.getName() + " could not be removed from " + building.getNickName(), e);
+			}
+		} else {
+//			throw new IllegalStateException("Building is null");
+			LogConsolidated.log(Level.SEVERE, 2000, sourceName,
+					" the building is null.");
+		}
+	}
+	
 	/**
 	 * Gets the value of a building at the settlement.
 	 * 

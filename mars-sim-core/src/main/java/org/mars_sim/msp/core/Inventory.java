@@ -2272,7 +2272,7 @@ public class Inventory implements Serializable {
 	}
 
 	/**
-	 * Transfer the ownership of a unit from one owner to another.
+	 * Transfer the ownership of an unit from one owner to another.
 	 * 
 	 * @param unit the unit.
 	 * @return true if successful
@@ -2293,12 +2293,12 @@ public class Inventory implements Serializable {
 	}
 	
 	/**
-	 * Retrieves a unit from storage.
+	 * Retrieves an unit from storage.
 	 * 
 	 * @param unit the unit.
-	 * @param changeContainerUnit should it change or keep the container unit
+	 * @param retrieveOnly is it just a retrieval
 	 */
-	public boolean retrieveUnit(Unit unit, boolean changeContainerUnit) {
+	public boolean retrieveUnit(Unit unit, boolean retrieveOnly) {
 		
 		boolean retrieved = true;
 		
@@ -2340,14 +2340,14 @@ public class Inventory implements Serializable {
 				}
 			}
 			
-			if (changeContainerUnit) {
+			if (!retrieveOnly) {
 	            unit.setContainerUnit(null);
 			}
 		}
 
 		else {
 			Unit owner = getOwner();
-			System.out.println(unit + " (" + id + ") "  
+			logger.warning(unit + " (" + id + ") "  
 			+ owner  
 			+ " (" 
 			+ owner.getIdentifier() + ") : "  + containedUnitIDs);

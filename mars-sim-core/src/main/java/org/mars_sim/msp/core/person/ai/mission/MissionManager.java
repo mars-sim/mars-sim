@@ -259,6 +259,23 @@ public class MissionManager implements Serializable {
 		return result;
 	}
 
+	/**
+	 * Gets the mission a given person is a member of. If member isn't a part of any
+	 * mission, return null.
+	 * 
+	 * @param member the member.
+	 * @return mission for that member
+	 */
+	public boolean hasMission(MissionMember member) {
+		for (Mission tempMission : onGoingMissions) {
+			if (tempMission.hasMember(member)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+	
 //	/*
 //	 * Prepares the task for recording in the task schedule
 //	 * @param newTask

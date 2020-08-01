@@ -54,6 +54,10 @@ public class DigLocalIceMeta implements MetaTask, Serializable {
     @Override
     public double getProbability(Person person) {
 
+    	// Will not perform this task if he has a mission
+    	if (missionManager.hasMission(person))
+    		return 0;
+
     	Settlement settlement = CollectionUtils.findSettlement(person.getCoordinates());
         
         double result = 0D;

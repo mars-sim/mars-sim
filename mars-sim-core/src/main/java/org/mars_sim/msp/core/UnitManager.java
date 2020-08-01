@@ -497,7 +497,7 @@ public class UnitManager implements Serializable {
 	public void addUnitID(Unit unit) {
 		if (lookupUnit == null)
 			lookupUnit = new HashMap<>();
-		System.out.println("UnitManager::addUnitID() :" + unit.getName());
+		logger.config("UnitManager::addUnitID() :" + unit.getName());
 		if (unit != null && !lookupUnit.containsKey(unit.getIdentifier())) {
 			lookupUnit.put(unit.getIdentifier(), unit);
 			// Fire unit manager event.
@@ -2069,7 +2069,7 @@ public class UnitManager implements Serializable {
 		}
 
 		if (robotType == null) {
-			System.out.println("UnitManager : robotType is null");
+			logger.config("UnitManager : robotType is null");
 			robotType = RobotType.MAKERBOT;
 		}
 		return robotType;

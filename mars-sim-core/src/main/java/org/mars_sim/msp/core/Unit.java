@@ -1214,7 +1214,7 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 	}
 	
 	/**
-	 * Transfer the unit from one place to another
+	 * Transfer the unit from one unit to another unit
 	 * 
 	 * @param origin {@link Unit} the original container unit
 	 * @param destination {@link Unit} the destination container unit
@@ -1224,7 +1224,7 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 	}
 
 	/**
-	 * Transfer the unit from one place to another
+	 * Transfer the unit from one inventory to another unit
 	 * 
 	 * @param originInv {@link Inventory} the inventory of the original container unit
 	 * @param destination {@link Unit} the destination container unit
@@ -1234,7 +1234,7 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 	}
 	
 	/**
-	 * Transfer the unit from one place to another
+	 * Transfer the unit from one unit to another inventory
 	 * 
 	 * @param origin {@link Unit} the original container unit
 	 * @param destinationInv {@link Inventory} the inventory of the destination container unit
@@ -1244,7 +1244,7 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 	}
 	
 	/**
-	 * Transfer the unit from one place to another
+	 * Transfer the unit from one inventory to another inventory
 	 * 
 	 * @param originInv {@link Inventory} the inventory of the original container unit
 	 * @param destinationInv {@link Inventory} the inventory of the destination container unit

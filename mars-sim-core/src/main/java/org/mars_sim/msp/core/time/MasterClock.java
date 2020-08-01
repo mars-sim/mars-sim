@@ -768,7 +768,7 @@ public class MasterClock implements Serializable {
 							noDelays = 0;
 						}
 
-						if (excess/1_000_000 > 500) {
+						if (excess/1_000_000 > 1000) {
 							// If the pause is more than .5 seconds, this is most likely due to the machine 
 							// just recovering from a power saving event
 							

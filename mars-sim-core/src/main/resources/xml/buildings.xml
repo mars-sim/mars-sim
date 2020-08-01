@@ -724,6 +724,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<power-source type="Solar Power Source" power="5.0" />
 			</power-generation>
 			<power-storage capacity="20.0" />
+			<robotic-station slots="2" />
 			<thermal-generation>
 				<heat-source type="Solar Heating Source" capacity="5.0" />
 				<heat-source type="Electric Heating Source" capacity="15.0" />
@@ -1733,8 +1734,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<power-required base-power="2.0" base-power-down-power="0.2" />
 
 		<functions>
-			<EVA airlock-capacity="8" xloc="0.0" yloc="7.5" interior-xloc="0.0" interior-yloc="7.0"
-			exterior-xloc="0.0" exterior-yloc="9.0" />
+			<!--  EVA airlock-capacity="8" xloc="0.0" yloc="7.5" interior-xloc="0.0" interior-yloc="7.0"
+			exterior-xloc="0.0" exterior-yloc="9.0" /-->
 			<ground-vehicle-maintenance vehicle-capacity="2" >
 		        <parking-location xloc="2.60" yloc="2.0" />
 		        <parking-location xloc="-2.60" yloc="2.0" />
@@ -2158,8 +2159,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	<building type="Astronomy Observatory" width="7.0" length="7.0" base-level="0"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature="22.5">
 		<description> The Astronomy Observatory is a small self-contained observatory building
-			furnished with an optical telescope, research workbenches and laboratory equipment
-			as well as a built-in EVA airlock for ingress and egress.
+			furnished with an optical telescope, research workbenches and laboratory equipment.
 		</description>
 		<power-required base-power="2.0" base-power-down-power="0.2" />
 
@@ -2794,8 +2794,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<power-required base-power="3.0" base-power-down-power="0.3" />
 
 		<functions>
-			<EVA airlock-capacity="8" xloc="0.0" yloc="1.0" interior-xloc="0.0" interior-yloc=".5"
-			exterior-xloc="0.0" exterior-yloc="10.0" />
+			<!-- EVA airlock-capacity="8" xloc="0.0" yloc="1.0" interior-xloc="0.0" interior-yloc=".5"
+			exterior-xloc="0.0" exterior-yloc="10.0" /-->
 			<ground-vehicle-maintenance vehicle-capacity="2" >
                 <parking-location xloc="4.5" yloc="-3.2" />
                 <parking-location xloc="-4.5" yloc="-3.2" />

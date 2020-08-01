@@ -5,6 +5,24 @@ Copyright (C) 2020 Scott Davis
 
 -----------------------------------------------------------------------------------------
 
+## v3.1.2 (build xxxx) - 2020-0x-xx
+
+### CORE ENGINE IMPROVEMENTS :
+
+1. 
+
+### UI IMPROVEMENT :
+
+1. None
+
+### FIXES :
+
+1. Remove the EVA function in Garage and Loading Garage. 
+
+2. Remove extraneous object references that bloat the saved sim file.
+
+-----------------------------------------------------------------------------------------
+
 ## v3.1.1 (build 5283) - 2020-07-22
 
 ### CORE ENGINE IMPROVEMENTS :

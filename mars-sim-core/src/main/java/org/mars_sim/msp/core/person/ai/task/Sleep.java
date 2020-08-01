@@ -52,7 +52,7 @@ public class Sleep extends Task implements Serializable {
 	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
 			logger.getName().length());
 	
-	private static final int MAX_FATIGUE = 1500;
+	private static final int MAX_FATIGUE = 2500;
 	
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.sleep"); //$NON-NLS-1$
@@ -76,7 +76,7 @@ public class Sleep extends Task implements Serializable {
 	/** The previous time (millisols). */
 	private double previousTime;
 	private double timeFactor = 4; // TODO: should vary this factor by person
-	private double totalSleepTime;
+//	private double totalSleepTime;
 	
 	private LocalBoundedObject interiorObject;
 	private Point2D returnInsideLoc;
@@ -102,9 +102,11 @@ public class Sleep extends Task implements Serializable {
 		
 		if (person.isOutside()) {
 			logger.warning(person + " was not supposed to be outside when calling Sleep");
-			walkBackInside();
+//			setPhase(WALK_BACK_INSIDE);
+//			walkBackInside();
 			endTask();
 		}
+		
 		// If person is in rover, walk to passenger activity spot.
 		else if (person.isInVehicle() && person.getVehicle() instanceof Rover) {
 			
@@ -393,50 +395,51 @@ public class Sleep extends Task implements Serializable {
 		if (person != null) {
 			if (person.isOutside()) {
 				walkBackInside();
+				endTask();
 				return time;
 			}
 			
 			pc.recoverFromSoreness(.05);
 
-			// Obtain the fractionOfRest to restore fatigue faster in high fatigue case
 			double fractionOfRest = time * timeFactor;
 			double newFatigue = 0;
+			// Calculate the residualFatigue to speed up the recuperation for the high fatigue case
 			double residualFatigue = 0;
 			double f = pc.getFatigue();
-			if (f > MAX_FATIGUE) {
-				f = MAX_FATIGUE;
+			
+			if (f < 500)
+				residualFatigue = f / 30;
+			
+			else if (f < 1000)
+				residualFatigue = (f - 500) / 25;
+			
+			else if (f < 1500)
+				residualFatigue = (f - 1000) / 20;
+			
+			else if (f < 2000)
+				residualFatigue = (f - 1500) / 15;
 
-				if (f > 1000)
-					residualFatigue = (f - 1000) / 15; //75;
-
-				// Reduce person's fatigue
-				newFatigue = f - fractionOfRest - residualFatigue;
-//				logger.info(person + " f : " + Math.round(f*10.0)/10.0 
-//						+ "   time : " + Math.round(time*1000.0)/1000.0
-//						+ "   residualFatigue : " + Math.round(residualFatigue*10.0)/10.0  
-//						+ "   fractionOfRest : " + Math.round(fractionOfRest*10.0)/10.0  
-//								+ "   newFatigue : " + Math.round(newFatigue*10.0)/10.0);
-			}
-			else {
+			else if (f < MAX_FATIGUE) 
+				residualFatigue = (f - MAX_FATIGUE + 500) / 10;
+			
+			else 
+				residualFatigue = f / 5;
+			
+			newFatigue = f - fractionOfRest - residualFatigue;	
+//			logger.info(person + " f : " + Math.round(f*10.0)/10.0
+//					+ "   time : " + Math.round(time*1000.0)/1000.0
+//					+ "   residualFatigue : " + Math.round(residualFatigue*10.0)/10.0  
+//					+ "   fractionOfRest : " + Math.round(fractionOfRest*10.0)/10.0  
+//							+ "   newFatigue : " + Math.round(newFatigue*10.0)/10.0);
 				
-				if (f > 1000)
-					residualFatigue = (f - 1000) / 25;//125;
-				else if (f > 500)
-					residualFatigue = (f - 500) / 35;//175;
-				
-				newFatigue = f - fractionOfRest - residualFatigue;	
-//				logger.info(person + " f : " + Math.round(f*10.0)/10.0
-//						+ "   time : " + Math.round(time*1000.0)/1000.0
-//						+ "   residualFatigue : " + Math.round(residualFatigue*10.0)/10.0  
-//						+ "   fractionOfRest : " + Math.round(fractionOfRest*10.0)/10.0  
-//								+ "   newFatigue : " + Math.round(newFatigue*10.0)/10.0);
-			}
-				
+			if (newFatigue < 0)
+				newFatigue = 0;
+			
 			pc.setFatigue(newFatigue);
 				
 			circadian.setAwake(false);
 			
-			totalSleepTime += time;
+//			totalSleepTime += time;
 //			logger.info(person + "  time: " + Math.round(time*1000.0)/1000.0
 //					+ "  totalSleepTime: " + Math.round(totalSleepTime*1000.0)/1000.0);
 			
@@ -460,7 +463,7 @@ public class Sleep extends Task implements Serializable {
 			}
 			
 			if (newFatigue <= 0) {
-				logger.finest(person.getName() + " woke up from sleep.");
+				logger.finest(person.getName() + " totally refreshed and awakened from sleep.");
 				endTask();
 			}
 		}

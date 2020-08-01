@@ -219,9 +219,9 @@ public class PhysicalCondition implements Serializable {
 	
 	private static EatDrinkMeta eatMealMeta = new EatDrinkMeta();
 	private static MedicalManager medicalManager;
-	private static Complaint depression;
-	private static Complaint panicAttack;
-	private static Complaint highFatigue;
+//	private static Complaint depression;
+//	private static Complaint panicAttack;
+//	private static Complaint highFatigue;
 	private static Complaint radiationPoisoning;
 
 	private static Complaint dehydration;
@@ -262,9 +262,9 @@ public class PhysicalCondition implements Serializable {
 			// Note that this 'if' above is for maven test, or else NullPointerException
 			allMedicalComplaints = medicalManager.getAllMedicalComplaints();
 			
-			panicAttack = medicalManager.getComplaintByName(ComplaintType.PANIC_ATTACK);
-			depression = medicalManager.getComplaintByName(ComplaintType.DEPRESSION);
-			highFatigue = medicalManager.getComplaintByName(ComplaintType.HIGH_FATIGUE_COLLAPSE);
+//			panicAttack = medicalManager.getComplaintByName(ComplaintType.PANIC_ATTACK);
+//			depression = medicalManager.getComplaintByName(ComplaintType.DEPRESSION);
+//			highFatigue = medicalManager.getComplaintByName(ComplaintType.HIGH_FATIGUE_COLLAPSE);
 			radiationPoisoning = medicalManager.getComplaintByName(ComplaintType.RADIATION_SICKNESS);
 			dehydration = medicalManager.getDehydration();
 			starvation = medicalManager.getStarvation();
@@ -466,23 +466,23 @@ public class PhysicalCondition implements Serializable {
 					checkDehydration(thirst);
 //				}
 
-				// If person is at high stress, check for mental breakdown.
-				if (!isStressedOut)
-					if (stress > MENTAL_BREAKDOWN)
-						checkForStressBreakdown(time);
-//					else if (stress < 33) {
-//						isStressedOut = false;
-//						checkHealth(time);// remove highFatigue
-//					}
-				
-				// Check if person is at very high fatigue may collapse.
-				if (!isCollapsed)
-					if (fatigue > COLLAPSE_IMMINENT)
-						checkForHighFatigueCollapse(time);
-//					else if (fatigue < 333) {
-//						isCollapsed = false;
-//						checkHealth(time);// remove highFatigue
-//					}
+//				// If person is at high stress, check for mental breakdown.
+//				if (!isStressedOut)
+//					if (stress > MENTAL_BREAKDOWN)
+//						checkForStressBreakdown(time);
+////					else if (stress < 33) {
+////						isStressedOut = false;
+////						checkHealth(time);// remove highFatigue
+////					}
+//				
+//				// Check if person is at very high fatigue may collapse.
+//				if (!isCollapsed)
+//					if (fatigue > COLLAPSE_IMMINENT)
+//						checkForHighFatigueCollapse(time);
+////					else if (fatigue < 333) {
+////						isCollapsed = false;
+////						checkHealth(time);// remove highFatigue
+////					}
 
 				if (!isRadiationPoisoned)
 					checkRadiationPoisoning(time);
@@ -888,96 +888,96 @@ public class PhysicalCondition implements Serializable {
 		}
 	}
 
-	/**
-	 * Checks if person has an anxiety attack due to too much stress.
-	 * 
-	 * @param time the time passing (millisols)
-	 */
-	private void checkForStressBreakdown(double time) {
-		// Expanded Anxiety Attack into either Panic Attack or Depression
-
-		// a person is limited to have only one of them at a time
-		if (!problems.containsKey(panicAttack) && !problems.containsKey(depression)) {
-
-			// Determine stress resilience modifier (0D - 2D).
-			// 0 (strong) to 1 (weak)
-			double resilienceModifier = (double) (100.0 - resilience * .6 - emotStability * .4) / 100D;
-			double value = stressBreakdownChance / 10D * resilienceModifier;
-
-			if (RandomUtil.lessThanRandPercent(value)) {
-
-				isStressedOut = true;
-
-				double rand = RandomUtil.getRandomDouble(1.0) + inclination_factor;
-
-				if (rand < 0.5) {
-
-					if (panicAttack != null) {
-						if (inclination_factor > -.5)
-							inclination_factor = inclination_factor - .05;
-						addMedicalComplaint(panicAttack);
-						person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
-						LogConsolidated.log(Level.INFO, 0, sourceName,
-								"[" + person.getLocationTag().getLocale() + "] " + name
-										+ " had a panic attack.");
-
-						// the person should be carried to the sickbay at this point
-//						person.getMind().getTaskManager().addTask(new RequestMedicalTreatment(person));
-
-					} else
-						logger.log(Level.SEVERE,
-								"Could not find 'Panic Attack' medical complaint in 'conf/medical.xml'");
-
-				} else {
-
-					if (depression != null) {
-						if (inclination_factor < .5)
-							inclination_factor = inclination_factor + .05;
-						addMedicalComplaint(depression);
-						person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
-						LogConsolidated.log(Level.INFO, 0, sourceName,
-								"[" + person.getLocationTag().getLocale() + "] " + name
-										+ " had an episode of depression.");
-//						person.getMind().getTaskManager().addTask(new RequestMedicalTreatment(person));
-					} else
-						logger.log(Level.SEVERE, "Could not find 'Depression' medical complaint in 'conf/medical.xml'");
-				}
-			}
-		}
-	}
-
-	/**
-	 * Checks if person has very high fatigue.
-	 * 
-	 * @param time the time passing (millisols)
-	 */
-	private void checkForHighFatigueCollapse(double time) {
-
-		if (!problems.containsKey(highFatigue)) {
-			// Calculate the modifier (from 10D to 0D) Note that the base
-			// high-fatigue-collapse-chance is 5%
-
-			// a person with high endurance will be less likely to be collapse
-			double modifier = (double) (100 - endurance * .6 - strength * .4) / 100D;
-
-			double value = highFatigueCollapseChance / 5D * modifier;
-
-			if (RandomUtil.lessThanRandPercent(value)) {
-				isCollapsed = true;
-
-				if (highFatigue != null) {
-					addMedicalComplaint(highFatigue);
-					person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
-//					LogConsolidated.log(Level.INFO, 500, sourceName,
-//							"[" + person.getLocationTag().getLocale() + "] " + name
-//									+ " collapsed because of high fatigue exhaustion.");
-//					person.getMind().getTaskManager().addTask(new RequestMedicalTreatment(person));
-				} else
-					logger.log(Level.SEVERE,
-							"Could not find 'High Fatigue Collapse' medical complaint in 'conf/medical.xml'");
-			}
-		}
-	}
+//	/**
+//	 * Checks if person has an anxiety attack due to too much stress.
+//	 * 
+//	 * @param time the time passing (millisols)
+//	 */
+//	private void checkForStressBreakdown(double time) {
+//		// Expanded Anxiety Attack into either Panic Attack or Depression
+//
+//		// a person is limited to have only one of them at a time
+//		if (!problems.containsKey(panicAttack) && !problems.containsKey(depression)) {
+//
+//			// Determine stress resilience modifier (0D - 2D).
+//			// 0 (strong) to 1 (weak)
+//			double resilienceModifier = (double) (100.0 - resilience * .6 - emotStability * .4) / 100D;
+//			double value = stressBreakdownChance / 10D * resilienceModifier;
+//
+//			if (RandomUtil.lessThanRandPercent(value)) {
+//
+//				isStressedOut = true;
+//
+//				double rand = RandomUtil.getRandomDouble(1.0) + inclination_factor;
+//
+//				if (rand < 0.5) {
+//
+//					if (panicAttack != null) {
+//						if (inclination_factor > -.5)
+//							inclination_factor = inclination_factor - .05;
+//						addMedicalComplaint(panicAttack);
+//						person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
+//						LogConsolidated.log(Level.INFO, 0, sourceName,
+//								"[" + person.getLocationTag().getLocale() + "] " + name
+//										+ " had a panic attack.");
+//
+//						// the person should be carried to the sickbay at this point
+////						person.getMind().getTaskManager().addTask(new RequestMedicalTreatment(person));
+//
+//					} else
+//						logger.log(Level.SEVERE,
+//								"Could not find 'Panic Attack' medical complaint in 'conf/medical.xml'");
+//
+//				} else {
+//
+//					if (depression != null) {
+//						if (inclination_factor < .5)
+//							inclination_factor = inclination_factor + .05;
+//						addMedicalComplaint(depression);
+//						person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
+//						LogConsolidated.log(Level.INFO, 0, sourceName,
+//								"[" + person.getLocationTag().getLocale() + "] " + name
+//										+ " had an episode of depression.");
+////						person.getMind().getTaskManager().addTask(new RequestMedicalTreatment(person));
+//					} else
+//						logger.log(Level.SEVERE, "Could not find 'Depression' medical complaint in 'conf/medical.xml'");
+//				}
+//			}
+//		}
+//	}
+//
+//	/**
+//	 * Checks if person has very high fatigue.
+//	 * 
+//	 * @param time the time passing (millisols)
+//	 */
+//	private void checkForHighFatigueCollapse(double time) {
+//
+//		if (!problems.containsKey(highFatigue)) {
+//			// Calculate the modifier (from 10D to 0D) Note that the base
+//			// high-fatigue-collapse-chance is 5%
+//
+//			// a person with high endurance will be less likely to be collapse
+//			double modifier = (double) (100 - endurance * .6 - strength * .4) / 100D;
+//
+//			double value = highFatigueCollapseChance / 15D * modifier;
+//
+//			if (RandomUtil.lessThanRandPercent(value)) {
+//				isCollapsed = true;
+//
+//				if (highFatigue != null) {
+//					addMedicalComplaint(highFatigue);
+//					person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
+////					LogConsolidated.log(Level.INFO, 500, sourceName,
+////							"[" + person.getLocationTag().getLocale() + "] " + name
+////									+ " collapsed because of high fatigue exhaustion.");
+////					person.getMind().getTaskManager().addTask(new RequestMedicalTreatment(person));
+//				} else
+//					logger.log(Level.SEVERE,
+//							"Could not find 'High Fatigue Collapse' medical complaint in 'conf/medical.xml'");
+//			}
+//		}
+//	}
 
 	/**
 	 * Checks if person has very high fatigue.
@@ -1551,24 +1551,24 @@ public class PhysicalCondition implements Serializable {
 		}
 
 		// High thirst reduces performance.
-		if (thirst > 400D) {
-			tempPerformance -= (thirst - 400D) * THIRST_PERFORMANCE_MODIFIER / 2;
-		} else if (thirst > 250D) {
-			tempPerformance -= (thirst - 250D) * THIRST_PERFORMANCE_MODIFIER / 4;
+		if (thirst > 800D) {
+			tempPerformance -= (thirst - 800D) * THIRST_PERFORMANCE_MODIFIER / 2;
+		} else if (thirst > 400D) {
+			tempPerformance -= (thirst - 400D) * THIRST_PERFORMANCE_MODIFIER / 4;
 		}
 
 		// High hunger reduces performance.
-		if (hunger > 1200D) {
-			tempPerformance -= (hunger - 1200D) * HUNGER_PERFORMANCE_MODIFIER / 2;
+		if (hunger > 1600D) {
+			tempPerformance -= (hunger - 1600D) * HUNGER_PERFORMANCE_MODIFIER / 2;
 		} else if (hunger > 800D) {
 			tempPerformance -= (hunger - 800D) * HUNGER_PERFORMANCE_MODIFIER / 4;
 		}
 
 		// High fatigue reduces performance.
-		if (fatigue > 1400D) {
-			tempPerformance -= (fatigue - 1400D) * FATIGUE_PERFORMANCE_MODIFIER / 2;
-		} else if (fatigue > 800D) {
-			tempPerformance -= (fatigue - 800D) * FATIGUE_PERFORMANCE_MODIFIER / 4;
+		if (fatigue > 2000D) {
+			tempPerformance -= (fatigue - 2000D) * FATIGUE_PERFORMANCE_MODIFIER / 2;
+		} else if (fatigue > 1000D) {
+			tempPerformance -= (fatigue - 1000D) * FATIGUE_PERFORMANCE_MODIFIER / 4;
 			// e.g. f = 1000, p = 1.0 - 500 * .0001/4 = 1.0 - 0.05/4 = 1.0 - .0125 ->
 			// reduces by 1.25% on each frame
 		}
@@ -1576,16 +1576,16 @@ public class PhysicalCondition implements Serializable {
 		// High stress reduces performance.
 		if (stress > 90D) {
 			tempPerformance -= (stress - 90D) * STRESS_PERFORMANCE_MODIFIER / 2;
-		} else if (stress > 70D) {
-			tempPerformance -= (stress - 70D) * STRESS_PERFORMANCE_MODIFIER / 4;
+		} else if (stress > 50D) {
+			tempPerformance -= (stress - 50D) * STRESS_PERFORMANCE_MODIFIER / 4;
 			// e.g. p = 100 - 10 * .005 /3 = 1 - .05/4 -> reduces by .0125 or 1.25% on each
 			// frame
 		}
 
 		// High kJoules improves performance and low kJoules hurts performance.
-		if (kJoules > 2000) {
+		if (kJoules > 7500) {
 			// double old = tempPerformance;
-			tempPerformance += (kJoules - 1000) * ENERGY_PERFORMANCE_MODIFIER / 4;
+			tempPerformance += (kJoules - 7500) * ENERGY_PERFORMANCE_MODIFIER / 8;
 			// LogConsolidated.log(logger, Level.INFO, 200, sourceName,
 			// "kJ > 2000 " + old + " --> " + tempPerformance, null);
 		} else if (kJoules < 400) {
@@ -1944,9 +1944,9 @@ public class PhysicalCondition implements Serializable {
 		heatStroke = null;
 		decompression = null;
 		suffocation = null;
-		depression = null;
-		panicAttack = null;
-		highFatigue = null;
+//		depression = null;
+//		panicAttack = null;
+//		highFatigue = null;
 		radiationPoisoning = null;
 
 		// if (medicationList != null) medicationList.clear();

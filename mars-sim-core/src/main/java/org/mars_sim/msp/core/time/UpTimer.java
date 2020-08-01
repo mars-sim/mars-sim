@@ -143,7 +143,8 @@ public class UpTimer implements Serializable {
             	// then there could be a powering saving event
                 thiscall = lastcall = System.nanoTime() / NANOSECONDS_PER_MILLISECONDS;
 				if (masterClock.getTotalPulses() > 1)
-					logger.warning("Time limit exceeded between the last and this call, total # of pulses : " + masterClock.getTotalPulses());
+					logger.warning("Time limit exceeded between the last and this call, total # of pulses : " 
+							+ masterClock.getTotalPulses());
                 masterClock.resetTotalPulses();
                 return uptime;
             }

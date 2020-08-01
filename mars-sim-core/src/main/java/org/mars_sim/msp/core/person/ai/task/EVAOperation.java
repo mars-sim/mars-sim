@@ -162,9 +162,6 @@ public abstract class EVAOperation extends Task implements Serializable {
 
 	public EVAOperation(String name, Robot robot, boolean hasSiteDuration, double siteDuration) {
 		super(name, robot, true, false, STRESS_MODIFIER, false, 0D);
-
-		sourceName = sourceName.substring(sourceName.lastIndexOf(".") + 1, sourceName.length());
-
 	}
 
 	/**

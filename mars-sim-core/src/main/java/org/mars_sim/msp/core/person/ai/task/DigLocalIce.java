@@ -158,6 +158,9 @@ implements Serializable {
     	if (getTimeCompleted() > getDuration()) {
     		if (person.isOutside())
     			setPhase(WALK_BACK_INSIDE);
+    		else
+        		endTask();
+    		
             return time;
     	}
     			
@@ -244,6 +247,8 @@ implements Serializable {
 	        PhysicalCondition condition = person.getPhysicalCondition();
 	        double stress = condition.getStress();
 	        double fatigue = condition.getFatigue();
+	        double hunger = condition.getHunger();
+	        double energy = condition.getEnergy(); 
 	        
 	        // Add penalty to the fatigue
 	        condition.setFatigue(fatigue + time * factor);
@@ -264,12 +269,15 @@ implements Serializable {
 	            }
 	        }
 	
-	        if (fatigue > 1000 || stress > 50) {
+	        if (fatigue > 1000 || stress > 50 || hunger > 750 || energy < 500) {
 	            LogConsolidated.log(Level.INFO, 0, sourceName, 
 	        		"[" + person.getLocationTag().getLocale() +  "] " +
 	                		+ Math.round(totalCollected*100D)/100D + " kg collected) " 
 	                		+ "; fatigue: " + Math.round(fatigue*10D)/10D 
-	                		+ "; stress: " + Math.round(stress*100D)/100D + " %");
+	                		+ "; stress: " + Math.round(stress*100D)/100D + " %"
+	    	        		+ "; hunger: " + Math.round(hunger*10D)/10D 
+	    	        		+ "; energy: " + Math.round(energy*10D)/10D + " kJ"
+	    	            	);
 	            if (person.isOutside()) {
 	            	setPhase(WALK_BACK_INSIDE);
 	            }

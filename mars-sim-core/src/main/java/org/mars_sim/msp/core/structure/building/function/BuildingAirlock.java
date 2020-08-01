@@ -184,7 +184,7 @@ public class BuildingAirlock extends Airlock {
             
 			if (successful) {
 				// 5.1 Remove the person from the building
-	            BuildingManager.removePersonOrRobotFromBuilding(person, building);
+	            BuildingManager.removePersonFromBuilding(person, building);
 	         
 				// 5.3. Set the person's coordinates to that of the settlement's
 				person.setCoordinates(settlement.getCoordinates());

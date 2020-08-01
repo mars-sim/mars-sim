@@ -1291,7 +1291,7 @@ public class Walk extends Task implements Serializable {
 //			rover.getInventory().storeUnit(person);
 			
 			// Remove the person from the garage
-			BuildingManager.removePersonOrRobotFromBuilding(person, garageBuilding);		
+			BuildingManager.removePersonFromBuilding(person, garageBuilding);		
 			
 			LogConsolidated.log(Level.FINER, 0, sourceName + "::enteringRoverInsideGaragePhase",
 	  				"[" + person.getLocationTag().getLocale() + "] "
@@ -1314,7 +1314,7 @@ public class Walk extends Task implements Serializable {
 //			rover.getInventory().storeUnit(robot);
 			
 			// Remove the robot from the garage
-			BuildingManager.removePersonOrRobotFromBuilding(robot, garageBuilding);
+			BuildingManager.removeRobotFromBuilding(robot, garageBuilding);
 
 			
 			LogConsolidated.log(Level.FINER, 0, sourceName + "::enteringRoverInsideGaragePhase",

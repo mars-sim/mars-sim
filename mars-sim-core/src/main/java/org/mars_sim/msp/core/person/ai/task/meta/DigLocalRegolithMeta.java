@@ -15,6 +15,7 @@ import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.ai.task.DigLocalRegolith;
 import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
@@ -53,6 +54,10 @@ public class DigLocalRegolithMeta implements MetaTask, Serializable {
     @Override
     public double getProbability(Person person) {
 
+    	// Will not perform this task if he has a mission
+    	if (missionManager.hasMission(person))
+    		return 0;
+    	
     	Settlement settlement = CollectionUtils.findSettlement(person.getCoordinates());
         
         double result = 0D;

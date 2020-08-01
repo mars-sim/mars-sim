@@ -177,7 +177,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 
 		if (unit instanceof Person) {
 			person = (Person) unit;
-			Mind mind = null;
+			Mind mind = person.getMind();
 			dead = person.getPhysicalCondition().isDead();
 			deathInfo = person.getPhysicalCondition().getDeathDetails();
 			
