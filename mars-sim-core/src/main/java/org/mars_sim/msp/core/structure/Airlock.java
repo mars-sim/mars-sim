@@ -39,6 +39,7 @@ import org.mars_sim.msp.core.person.ai.task.utils.Task;
 // in their spacesuits, which operate at 4.3 psi (0.30 bar),[71] although research has examined 
 // the possibility of using 100% O2 at 9.5 psi (0.66 bar) in the suits to lessen the pressure 
 // reduction, and hence the risk of DCS.[72]
+//
 // see https://en.wikipedia.org/wiki/Decompression_sickness
 
 /**
@@ -176,7 +177,7 @@ public abstract class Airlock implements Serializable {
 						throw new IllegalStateException(person + " was still waiting inner door.");
 					}
 				}
-				LogConsolidated.flog(Level.FINER, 0, sourceName,
+				LogConsolidated.log(logger, Level.FINER, 0, sourceName,
 						"[" + person.getLocationTag().getLocale() + "] " 
 							+ person.getName() + " entered through the inner door of the airlock at " + getEntityName());
 				result = true;
@@ -188,7 +189,7 @@ public abstract class Airlock implements Serializable {
 						throw new IllegalStateException(person + " was still awaiting outer door!");
 					}
 				}
-				LogConsolidated.flog(Level.FINER, 0, sourceName,
+				LogConsolidated.log(logger, Level.FINER, 0, sourceName,
 						"[" + person.getLocationTag().getLocale() + "] " 
 							+ person.getName() + " entered through the outer door of the airlock at " + getEntityName());
 				result = true;
@@ -215,7 +216,7 @@ public abstract class Airlock implements Serializable {
 		
 		addPersonID(operator);
 		
-		LogConsolidated.flog(Level.FINER, 0, sourceName,
+		LogConsolidated.log(logger, Level.FINER, 0, sourceName,
 				"[" + operator.getLocationTag().getLocale() + "] " 
 					+ operator.getName() + " as the operator was getting ready to activate the airlock at "
 					+ getEntityName());
@@ -241,7 +242,7 @@ public abstract class Airlock implements Serializable {
 					}
 
 					if (!occupantIDs.contains(id)) {
-						LogConsolidated.flog(Level.FINER, 0, sourceName,
+						LogConsolidated.log(logger, Level.FINER, 0, sourceName,
 								"[" + person.getLocationTag().getLocale() + "] " 
 									+ person.getName() + " entered through the inner door of the airlock at "
 									+ getEntityName());
@@ -268,7 +269,7 @@ public abstract class Airlock implements Serializable {
 					}
 
 					if (!occupantIDs.contains(id)) {
-						LogConsolidated.flog(Level.FINER, 0, sourceName,
+						LogConsolidated.log(logger, Level.FINER, 0, sourceName,
 								"[" + person.getLocationTag().getLocale() + "] " 
 								+ person.getName() + " entered through the outer door of the airlock at "
 								+ getEntityName());
@@ -291,7 +292,7 @@ public abstract class Airlock implements Serializable {
 			} else if (AirlockState.DEPRESSURIZED == airlockState) {
 				setState(AirlockState.PRESSURIZING);
 			} else {
-				LogConsolidated.flog(Level.SEVERE, 5_000, sourceName,
+				LogConsolidated.log(logger, Level.SEVERE, 5_000, sourceName,
 						"[" + operator.getLocationTag().getLocale() + "] " 
 					+ operator.getName() + " reported the airlock was having incorrect state for activation: '" + airlockState + "'.");
 				return false;
@@ -374,7 +375,7 @@ public abstract class Airlock implements Serializable {
 			
 			operatorID = selectedID;
 
-			LogConsolidated.flog(Level.FINER, 0, sourceName, "[" + selected.getLocationTag().getLocale() + "] "
+			LogConsolidated.log(logger, Level.FINER, 0, sourceName, "[" + selected.getLocationTag().getLocale() + "] "
 						+ selected + " stepped up and became the operator of the airlock in "
 						+ getEntityName());
 		}
@@ -431,7 +432,7 @@ public abstract class Airlock implements Serializable {
 	    		p = unitManager.getPersonByID(id);
 	    		lookupPerson.put(id, p);
 	    	}
-			LogConsolidated.flog(Level.FINER, 0, sourceName,
+			LogConsolidated.log(logger, Level.FINER, 0, sourceName,
 					"[" + p.getLocationTag().getLocale() + "] " + p.getName()
 					+ " reported that the airlock in " + getEntity() + " had been " 
 					+ getState().toString().toLowerCase() + ".");
@@ -523,7 +524,7 @@ public abstract class Airlock implements Serializable {
 	public void addAwaitingAirlockInnerDoor(Person p) {
 		addPersonID(p);
 		if (!awaitingInnerDoor.contains(p.getIdentifier())) {
-			LogConsolidated.flog(Level.FINER, 0, sourceName, "[" + p.getLocationTag().getLocale() + "] "
+			LogConsolidated.log(logger, Level.FINER, 0, sourceName, "[" + p.getLocationTag().getLocale() + "] "
 					+ p.getName() + " was awaiting the inner door of the airlock in " + getEntityName() + " to open.");
 			awaitingInnerDoor.add(p.getIdentifier());
 		}
@@ -537,7 +538,7 @@ public abstract class Airlock implements Serializable {
 	public void addAwaitingAirlockOuterDoor(Person p) {
 		addPersonID(p);
 		if (!awaitingOuterDoor.contains(p.getIdentifier())) {
-			LogConsolidated.flog(Level.FINER, 0, sourceName, "[" + p.getLocationTag().getLocale() + "] "
+			LogConsolidated.log(logger, Level.FINER, 0, sourceName, "[" + p.getLocationTag().getLocale() + "] "
 					+ p.getName() + " was in " + p.getLocationTag().getImmediateLocation() 
 					+ " and waiting the outer door of the airlock in " + getEntityName() + " to open.");
 			awaitingOuterDoor.add(p.getIdentifier());
@@ -565,7 +566,7 @@ public abstract class Airlock implements Serializable {
 				if (isDead) {
 					// If operator is dead, deactivate airlock.
 					String operatorName = p.getName();
-					LogConsolidated.flog(Level.WARNING, 10_000, sourceName, "[" + p.getLocationTag().getLocale() + "] "
+					LogConsolidated.log(logger, Level.WARNING, 10_000, sourceName, "[" + p.getLocationTag().getLocale() + "] "
 							+ "Airlock operator " + operatorName + " was dead."
 							+ getEntityName());
 					
@@ -588,7 +589,7 @@ public abstract class Airlock implements Serializable {
 
 					if (!hasAirlockTask) {
 						String operatorName = p.getName();
-						LogConsolidated.flog(Level.FINE, 10_000, sourceName, "[" + p.getLocationTag().getLocale() + "] "
+						LogConsolidated.log(logger, Level.FINE, 10_000, sourceName, "[" + p.getLocationTag().getLocale() + "] "
 								+ operatorName 
 								+ " was no longer being the Airlock operator operating the airlock at " + getEntityName());
 						

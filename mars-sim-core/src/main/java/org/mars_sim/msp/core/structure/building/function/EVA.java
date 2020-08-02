@@ -124,7 +124,7 @@ implements Serializable {
 	 * @return power (kW)
 	 */
 	public double getFullPowerRequired() {
-		return 0D;
+		return 0.5;
 	}
 
 	/**
@@ -132,7 +132,7 @@ implements Serializable {
 	 * @return power (kW)
 	 */
 	public double getPoweredDownPowerRequired() {
-		return 0D;
+		return 0.05;
 	}
 
 	@Override

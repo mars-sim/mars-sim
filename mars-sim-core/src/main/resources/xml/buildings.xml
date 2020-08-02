@@ -709,25 +709,28 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<description> The Airlock is a node to be attached to building that need to have direct access 
 			performing EVA operations.
 		</description>
-		<power-required base-power=".5" base-power-down-power="0.05" />
+		<power-required base-power="0.5" base-power-down-power="0.05" />
 		<functions>
-			<!-- The building has an airlock and changing room for EVA operations. -->
-			<!-- airlock-capacity: the number of people who can use the airlock at once. -->
-			<!-- xloc, yloc: the relative X/Y location inside the airlock. -->
-			<!-- interior-xloc, interior-yloc: the relative X/Y location inside the building. -->
-			<!-- exterior-xloc, exterior-yloc: the relative X/Y location outside the building. -->
-			<EVA airlock-capacity="4" xloc="0.0" yloc="0.0" 
-				interior-xloc="-1.5" interior-yloc="0.0"
-				exterior-xloc="3.5" exterior-yloc="0.0" />
+			<!-- This building has an airlock and changing room for EVA operations. -->
+			<!-- airlock-capacity : the number of people who can use the airlock at once. -->
+			<!--       xloc, yloc : the relative X/Y location inside the airlock. -->
+			<!--    interior-xloc : the relative X location inside the building. -->
+			<!--    interior-yloc : the relative Y location inside the building. -->
+			<!--    exterior-xloc : the relative X location outside the building. -->						
+			<!--    exterior-yloc : the relative Y location outside the building. -->
+			<EVA airlock-capacity="4" 
+			    xloc="0.0" yloc="0.0" 
+				interior-xloc="2.0" interior-yloc="0.0"
+				exterior-xloc="3.0" exterior-yloc="0.0" />
 			<life-support capacity="4" power-required="0.2" />
 			<power-generation>
-				<power-source type="Solar Power Source" power="5.0" />
+				<power-source type="Solar Power Source" power="2.0" />
 			</power-generation>
 			<power-storage capacity="20.0" />
 			<robotic-station slots="2" />
 			<thermal-generation>
-				<heat-source type="Solar Heating Source" capacity="5.0" />
-				<heat-source type="Electric Heating Source" capacity="15.0" />
+				<heat-source type="Solar Heating Source" capacity="2.0" />
+				<heat-source type="Electric Heating Source" capacity="10.0" />
 				<heat-source type="Fuel Heating Source" toggle="true"
 					fuel-type="methane"	consumption-rate="31.919" capacity="20.0"/>					
 			</thermal-generation>

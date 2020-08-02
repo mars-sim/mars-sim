@@ -8,12 +8,15 @@ package org.mars_sim.msp.core.person.ai.task;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
-
+import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
+import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.meta.ReadMeta;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
@@ -150,7 +153,6 @@ public class Read extends Task implements Serializable {
 
 	@Override
 	protected void addExperience(double time) {
-		// This task adds no experience.
 	}
 
 	@Override

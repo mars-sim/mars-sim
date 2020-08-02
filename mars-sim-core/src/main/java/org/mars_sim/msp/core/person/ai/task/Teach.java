@@ -12,6 +12,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
@@ -42,6 +43,10 @@ public class Teach extends Task implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	private static Logger logger = Logger.getLogger(Teach.class.getName());
+	private static String loggerName = logger.getName();
+	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+	
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.teach"); //$NON-NLS-1$
 
@@ -71,12 +76,22 @@ public class Teach extends Task implements Serializable {
 		super(NAME, unit, false, false, STRESS_MODIFIER, false, 10D + RandomUtil.getRandomInt(20) - RandomUtil.getRandomInt(10));
 
 		// Randomly get a student.
-		Collection<Person> students = null;
+		Collection<Person> candidates = null;
+		List<Person> students = new ArrayList<>();
 		
 		if (unit instanceof Person)
-			students = getBestStudents(person);
+			candidates = getBestStudents(person);
 		else
-			students = getBestStudents(robot);
+			candidates = getBestStudents(robot);
+		
+		// Ensure that the student is not doing digging local ice or regolith
+		Iterator<Person> i = candidates.iterator();
+		while (i.hasNext()) {
+			Person candidate = i.next();
+			Task task = candidate.getMind().getTaskManager().getTask();
+			if (task instanceof DigLocalRegolith || task instanceof DigLocalIce)
+			students.add(candidate);
+		}
 		
 		if (students.size() > 0) {
 			Object[] array = students.toArray();
@@ -203,21 +218,29 @@ public class Teach extends Task implements Serializable {
         // Experience points adjusted by person's "Experience Aptitude" attribute.
         NaturalAttributeManager nManager = person.getNaturalAttributeManager();
         int teaching = nManager.getAttribute(NaturalAttributeType.TEACHING);
-        double mod = (((double) teaching) - 50D) / 100D;
+        double mod = 10.0 * (teaching - 50);
         exp += exp * mod;
         exp *= getTeachingExperienceModifier();
         
         if (teachingTask != null && teachingTask.getAssociatedSkills() != null) {
-			Iterator<SkillType> j = teachingTask.getAssociatedSkills().iterator();
-			while (j.hasNext()) {
-				SkillType taskSkill = j.next();
+        	// Pick one skill to improve upon
+        	int rand = RandomUtil.getRandomInt(teachingTask.getAssociatedSkills().size()-1);
+        	SkillType taskSkill = teachingTask.getAssociatedSkills().get(rand);
+//			Iterator<SkillType> j = teachingTask.getAssociatedSkills().iterator();		
+//			while (j.hasNext()) {
+//				SkillType taskSkill = j.next();
 				int studentSkill = student.getSkillManager().getSkillLevel(taskSkill);
 				int teacherSkill = person.getSkillManager().getSkillLevel(taskSkill);
 				int points = teacherSkill - studentSkill;
 				double learned = (1 + points) * exp / 4.0 * RandomUtil.getRandomDouble(1);
+				double reward = exp / 12.0 * RandomUtil.getRandomDouble(1);
+				
+				logger.info("On " + taskSkill.getName() + ", " + person +  "'s teaching reward: " + Math.round(reward*1000.0)/1000.0 
+						+ " [" + student + "'s learned: " + Math.round(learned*1000.0)/1000.0 + "]");
+				
 				student.getSkillManager().addExperience(taskSkill, learned, time);
-		        person.getSkillManager().addExperience(taskSkill, exp / 12.0 * RandomUtil.getRandomDouble(1), time);
-			}
+		        person.getSkillManager().addExperience(taskSkill, reward, time);
+//			}
 		}
 	}
 

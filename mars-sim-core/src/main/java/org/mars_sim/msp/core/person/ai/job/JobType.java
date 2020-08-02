@@ -141,7 +141,7 @@ public enum JobType {
 	}
 	
 	/**
-	 * gives back a list of all valid values for the JobType enum.
+	 * Gives back a list of all valid values for the JobType enum.
 	 */
 	public static List<JobType> valuesList() {
 		return Arrays.asList(JobType.values());
