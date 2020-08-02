@@ -1528,7 +1528,7 @@ public class BuildingManager implements Serializable {
 						person.setXLocation(settlementLoc.getX());
 						person.setYLocation(settlementLoc.getY());
 						person.setCurrentBuilding(building);
-						logger.config(person + " was being randomly added to " + building.getNickName());
+//						logger.config(person + " was being randomly added to " + building.getNickName());
 					}
 				}
 
@@ -1542,7 +1542,7 @@ public class BuildingManager implements Serializable {
 						robot.setXLocation(settlementLoc.getX());
 						robot.setYLocation(settlementLoc.getY());	
 						robot.setCurrentBuilding(building);
-						logger.config(robot + " was being randomly added to " + building.getNickName());
+//						logger.config(robot + " was being randomly added to " + building.getNickName());
 					}
 				}
 			} catch (Exception e) {

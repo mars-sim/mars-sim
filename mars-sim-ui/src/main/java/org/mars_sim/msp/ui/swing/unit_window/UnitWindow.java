@@ -165,7 +165,7 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 		
 		if (unit instanceof Person) {
 			statusPanel.setPreferredSize(new Dimension(WIDTH / 8, 60));
-		}
+//		}
 
 //		int theme = 0;
 //		if (mainScene != null) {
@@ -181,7 +181,7 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 //		else
 //			theme = 7;
 
-		if (unit instanceof Person) {
+//		if (unit instanceof Person) {
 
 			WebLabel nameLabel = new WebLabel(name, displayInfo.getButtonIcon(unit), SwingConstants.CENTER);
 			nameLabel.setMinimumSize(new Dimension(80, 60));
@@ -237,7 +237,7 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 				shiftLabel = new WebLabel();
 				shiftLabel.setFont(font);
 
-				statusUpdate();
+				statusUpdate((Person)unit);
 
 				townPanel.add(townIconLabel);
 				townPanel.add(townLabel);
@@ -391,16 +391,14 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 	/*
 	 * Updates the status of an unit
 	 */
-	public void statusUpdate() {
-	
-		Person p = (Person) unit;
+	public void statusUpdate(Person p) {
 
 		String townString = null;
 
-		if (p.getPhysicalCondition().isDead())
-			townString = Conversion.capitalize(((Person)unit).getBuriedSettlement().getName());//DEAD;
-		else
-			townString = Conversion.capitalize(unit.getAssociatedSettlement().getName());//.getDescription());
+		if (p.getPhysicalCondition().isDead() && p.getBuriedSettlement() != null)
+			townString = Conversion.capitalize(p.getBuriedSettlement().getName());//DEAD;
+		else if (p.getAssociatedSettlement() != null)
+			townString = Conversion.capitalize(p.getAssociatedSettlement().getName());//.getDescription());
 
 		if (!oldTownString.equals(townString)) {
 			oldJobString = townString;
@@ -516,7 +514,7 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 		setTitle(unit.getName());
 		
 		if (unit instanceof Person) {
-			statusUpdate();
+			statusUpdate((Person)unit);
 		}
 
 	}

@@ -156,12 +156,19 @@ implements Serializable {
      * @throws Exception
      */
     private double collectRegolith(double time) {
-    	
+    	LogConsolidated.log(Level.INFO, 0, sourceName, 
+        		"[" + person.getLocationTag().getLocale() +  "] " +
+        		person.getName() + " just called collectRegolith()");
+    			
     	if (getTimeCompleted() > getDuration()) {
     		if (person.isOutside())
     			setPhase(WALK_BACK_INSIDE);
-    		else
-        		endTask();
+//    		else
+//        		endTask();
+        	
+        	LogConsolidated.log(Level.INFO, 0, sourceName, 
+            		"[" + person.getLocationTag().getLocale() +  "] " +
+            		person.getName() + " collectRegolith: getTimeCompleted() > getDuration()");
         	
             return time;
     	}
@@ -195,11 +202,11 @@ implements Serializable {
 	        
 			// Modify collection rate by "Areology" skill.
 			int areologySkill = person.getSkillManager().getEffectiveSkillLevel(SkillType.AREOLOGY); 
-			if (areologySkill == 0) {
-				collected /= 2D;
-			}
 			if (areologySkill >= 1) {
-				collected = collected + .2 * collected * areologySkill;
+				collected = collected + .1 * collected * areologySkill;
+			}
+			else { //if (areologySkill == 0) {
+				collected /= 1.5D;
 			}
 			
 //			LogConsolidated.log(Level.INFO, 0, sourceName, 
@@ -266,9 +273,9 @@ implements Serializable {
 	            if (person.isOutside()) {
 	            	setPhase(WALK_BACK_INSIDE);
 	            }
-	            else if (person.isInside()) {
-	        		endTask();
-	            }
+//	            else if (person.isInside()) {
+//	        		endTask();
+//	            }
 	    	}
 	        
 	        if (fatigue > 1000 || stress > 50 || hunger > 750 || energy < 500) {
@@ -284,9 +291,9 @@ implements Serializable {
 	            if (person.isOutside()) {
 	            	setPhase(WALK_BACK_INSIDE);
 	            }
-	            else if (person.isInside()) {
-	        		endTask();
-	            }
+//	            else if (person.isInside()) {
+//	        		endTask();
+//	            }
 	        }
         }
         

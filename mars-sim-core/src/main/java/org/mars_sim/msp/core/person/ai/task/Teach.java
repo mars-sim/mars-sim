@@ -18,6 +18,8 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
+import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
+import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.social.Relationship;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
@@ -66,7 +68,7 @@ public class Teach extends Task implements Serializable {
 	 * @param person the person performing the task.
 	 */
 	public Teach(Unit unit) {
-		super(NAME, unit, false, false, STRESS_MODIFIER, false, 0D);
+		super(NAME, unit, false, false, STRESS_MODIFIER, false, 10D + RandomUtil.getRandomInt(20) - RandomUtil.getRandomInt(10));
 
 		// Randomly get a student.
 		Collection<Person> students = null;
@@ -148,12 +150,15 @@ public class Teach extends Task implements Serializable {
 		if (teachingTask.isDone()) {
 			endTask();
 		}
+		
+    	if (getTimeCompleted() > getDuration())
+        	endTask();	
 
 		// Check if student is in a different location situation than the teacher.
 //		if (!student.getLocationSituation().equals(person.getLocationSituation())) {
-		if (student.getLocationStateType() != person.getLocationStateType()) {			
-			endTask();
-		}
+//		if (student.getLocationStateType() != person.getLocationStateType()) {			
+//			endTask();
+//		}
 
         // Probability affected by the person's stress and fatigue.
         PhysicalCondition condition = person.getPhysicalCondition();
@@ -168,6 +173,9 @@ public class Teach extends Task implements Serializable {
 		// Add relationship modifier for opinion of teacher from the student.
 		addRelationshipModifier(time);
 
+        // Add experience points
+        addExperience(time);
+        
 		return 0D;
 	}
 
@@ -188,7 +196,29 @@ public class Teach extends Task implements Serializable {
 
 	@Override
 	protected void addExperience(double time) {
-		// This task adds no experience.
+        // Add experience to associated skill.
+        // (1 base experience point per 100 millisols of time spent)
+        double exp = time / 100D;
+
+        // Experience points adjusted by person's "Experience Aptitude" attribute.
+        NaturalAttributeManager nManager = person.getNaturalAttributeManager();
+        int teaching = nManager.getAttribute(NaturalAttributeType.TEACHING);
+        double mod = (((double) teaching) - 50D) / 100D;
+        exp += exp * mod;
+        exp *= getTeachingExperienceModifier();
+        
+        if (teachingTask != null && teachingTask.getAssociatedSkills() != null) {
+			Iterator<SkillType> j = teachingTask.getAssociatedSkills().iterator();
+			while (j.hasNext()) {
+				SkillType taskSkill = j.next();
+				int studentSkill = student.getSkillManager().getSkillLevel(taskSkill);
+				int teacherSkill = person.getSkillManager().getSkillLevel(taskSkill);
+				int points = teacherSkill - studentSkill;
+				double learned = (1 + points) * exp / 4.0 * RandomUtil.getRandomDouble(1);
+				student.getSkillManager().addExperience(taskSkill, learned, time);
+		        person.getSkillManager().addExperience(taskSkill, exp / 12.0 * RandomUtil.getRandomDouble(1), time);
+			}
+		}
 	}
 
 	@Override

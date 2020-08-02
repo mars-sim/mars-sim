@@ -457,9 +457,9 @@ public class PhysicalCondition implements Serializable {
 			// unless dead. - Scott
 			// reduceEnergy(time);
 
-			int msol = marsClock.getMillisolInt();
-			int factor = (int) (Math.sqrt(masterClock.getTimeRatio())/10D);
-			if (msol % 7 * factor == 0) {
+//			int msol = marsClock.getMillisolInt();
+//			int factor = (int) (Math.sqrt(masterClock.getTimeRatio())/10D);
+//			if (msol % 7 * factor == 0) {
 
 //				if (!restingTask) {
 					checkStarvation(hunger);
@@ -486,7 +486,7 @@ public class PhysicalCondition implements Serializable {
 
 				if (!isRadiationPoisoned)
 					checkRadiationPoisoning(time);
-			}
+//			}
 
 			// Calculate performance and most serious illness.
 			recalculatePerformance();
@@ -518,22 +518,22 @@ public class PhysicalCondition implements Serializable {
 				Complaint nextPhase = problem.timePassing(time, this);
 	
 				// After sleeping sufficiently, the high fatigue collapse should no longer exist.
-				if (problem.getIllness().getType() == ComplaintType.HIGH_FATIGUE_COLLAPSE
-						&& fatigue < 500) {
-					isCollapsed = false;
-					problems.remove(problem.getIllness());	
-				}
+//				if (problem.getIllness().getType() == ComplaintType.HIGH_FATIGUE_COLLAPSE
+//						&& fatigue < 500) {
+//					isCollapsed = false;
+//					problems.remove(problem.getIllness());	
+//				}
 				
 				if (problem.isCured() || (nextPhase != null)) {
 					Complaint c = problem.getIllness();
 	
-					if (c.getType() == ComplaintType.HIGH_FATIGUE_COLLAPSE)
-						isCollapsed = false;
+//					if (c.getType() == ComplaintType.HIGH_FATIGUE_COLLAPSE)
+//						isCollapsed = false;
+//	
+//					else if (c.getType() == ComplaintType.PANIC_ATTACK || c.getType() == ComplaintType.DEPRESSION)
+//						isStressedOut = false;
 	
-					else if (c.getType() == ComplaintType.PANIC_ATTACK || c.getType() == ComplaintType.DEPRESSION)
-						isStressedOut = false;
-	
-					else if (c.getType() == ComplaintType.DEHYDRATION)
+					if (c.getType() == ComplaintType.DEHYDRATION)
 						isDehydrated = false;
 	
 					else if (c.getType() == ComplaintType.STARVATION)
@@ -792,7 +792,7 @@ public class PhysicalCondition implements Serializable {
 			}
 
 			// TODO : how to tell a person to walk back to the settlement ?
-			goEat();
+//			goEat();
 
 			// TODO : should check if a person is on a critical mission,
 
@@ -800,7 +800,7 @@ public class PhysicalCondition implements Serializable {
 
 		else if (isStarving) {
 			
-			goEat();
+//			goEat();
 			
 			if (hunger < 500D && kJoules > 800D) {
 		
@@ -815,21 +815,21 @@ public class PhysicalCondition implements Serializable {
 		}
 	}
 	
-	public void goEat() {
-		if (person.isInside() 
-				&& person.getContainerUnit().getInventory()
-				.getAmountResourceStored(ResourceUtil.foodID, false) > SMALL_AMOUNT) {
-			taskMgr.addTask(new EatDrink(person), false);
-		}
-	}
-	
-	public void goDrink() {
-		if (person.isInside() 
-				&& person.getContainerUnit().getInventory()
-				.getAmountResourceStored(ResourceUtil.waterID, false) > SMALL_AMOUNT) {
-			taskMgr.addTask(new EatDrink(person), false);
-		}
-	}
+//	public void goEat() {
+//		if (person.isInside() 
+//				&& person.getContainerUnit().getInventory()
+//				.getAmountResourceStored(ResourceUtil.foodID, false) > SMALL_AMOUNT) {
+//			taskMgr.addTask(new EatDrink(person), false);
+//		}
+//	}
+//	
+//	public void goDrink() {
+//		if (person.isInside() 
+//				&& person.getContainerUnit().getInventory()
+//				.getAmountResourceStored(ResourceUtil.waterID, false) > SMALL_AMOUNT) {
+//			taskMgr.addTask(new EatDrink(person), false);
+//		}
+//	}
 	
 	/**
 	 * Checks if a person is dehydrated
@@ -848,13 +848,13 @@ public class PhysicalCondition implements Serializable {
 			// Stop any on-going tasks
 //				taskMgr.clearTask();
 			// go drink water by eating a meal
-			goDrink();
+//			goDrink();
 
 		}
 
 		if (isDehydrated) {
 			
-			goDrink();
+//			goDrink();
 			
 			if (thirst < THIRST_THRESHOLD * 2) {
 			

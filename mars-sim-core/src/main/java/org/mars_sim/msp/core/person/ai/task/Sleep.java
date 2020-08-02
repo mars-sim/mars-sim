@@ -408,22 +408,22 @@ public class Sleep extends Task implements Serializable {
 			double f = pc.getFatigue();
 			
 			if (f < 500)
-				residualFatigue = f / 30;
+				residualFatigue = f / 40;
 			
 			else if (f < 1000)
-				residualFatigue = (f - 500) / 25;
+				residualFatigue = (f - 500) / 35;
 			
 			else if (f < 1500)
-				residualFatigue = (f - 1000) / 20;
+				residualFatigue = (f - 1000) / 30;
 			
 			else if (f < 2000)
-				residualFatigue = (f - 1500) / 15;
+				residualFatigue = (f - 1500) / 25;
 
 			else if (f < MAX_FATIGUE) 
-				residualFatigue = (f - MAX_FATIGUE + 500) / 10;
+				residualFatigue = (f - MAX_FATIGUE + 500) / 20;
 			
 			else 
-				residualFatigue = f / 5;
+				residualFatigue = f / 15;
 			
 			newFatigue = f - fractionOfRest - residualFatigue;	
 //			logger.info(person + " f : " + Math.round(f*10.0)/10.0
