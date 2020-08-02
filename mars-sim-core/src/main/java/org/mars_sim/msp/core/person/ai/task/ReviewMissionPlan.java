@@ -214,7 +214,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 							
 						    if (getTimeCompleted() < getDuration() * .95) {
 						    	
-								LogConsolidated.log(Level.INFO, 15_000, sourceName, 
+								LogConsolidated.flog(Level.INFO, 15_000, sourceName, 
 										"[" + s + "] " + reviewedBy + " was reviewing " + requestedBy
 										+ "'s " + m.getDescription() + " mission plan.");
 						    }
@@ -394,7 +394,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 								// Updates the mission plan status
 								missionManager.scoreMissionPlan(mp, score, person);
 															
-								LogConsolidated.log(Level.INFO, 0, sourceName, 
+								LogConsolidated.flog(Level.INFO, 0, sourceName, 
 										"[" + s + "] " + reviewedBy + " graded " + requestedBy
 										+ "'s " + m.getDescription() + " mission plan as follows :");
 								logger.info(" ---------------------------");
@@ -484,7 +484,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 						// Updates the mission plan status
 						missionManager.approveMissionPlan(mp, p, PlanType.APPROVED);
 							
-						LogConsolidated.log(Level.INFO, 0, sourceName,
+						LogConsolidated.flog(Level.INFO, 0, sourceName,
 								"[" + s + "] " + reviewedBy + " approved " + requestedBy
 								+ "'s " + m.getDescription() + " mission plan. Total Score: " 
 								+ Math.round(score*10.0)/10.0 
@@ -494,7 +494,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 						// Updates the mission plan status
 						missionManager.approveMissionPlan(mp, p, PlanType.NOT_APPROVED);
 					
-						LogConsolidated.log(Level.INFO, 0, sourceName, 
+						LogConsolidated.flog(Level.INFO, 0, sourceName, 
 								"[" + s + "] " + reviewedBy + " did NOT approve " + requestedBy
 								+ "'s " + m.getDescription() + " mission plan. Total Score: " 
 								+ Math.round(score*10.0)/10.0 

@@ -75,7 +75,7 @@ public class Sleep extends Task implements Serializable {
 	// Data members
 	/** The previous time (millisols). */
 	private double previousTime;
-	private double timeFactor = 4; // TODO: should vary this factor by person
+	private double timeFactor = 1.9; // TODO: should vary this factor by person
 //	private double totalSleepTime;
 	
 	private LocalBoundedObject interiorObject;
@@ -95,7 +95,7 @@ public class Sleep extends Task implements Serializable {
 	//
 	public Sleep(Person person) {
 		super(NAME, person, false, false, STRESS_MODIFIER, true, 
-				(50 + RandomUtil.getRandomDouble(2.5) - RandomUtil.getRandomDouble(2.5)));
+				(50 + RandomUtil.getRandomDouble(5) - RandomUtil.getRandomDouble(5)));
 
 		pc = person.getPhysicalCondition();
 		circadian = person.getCircadianClock();
@@ -406,24 +406,42 @@ public class Sleep extends Task implements Serializable {
 			// Calculate the residualFatigue to speed up the recuperation for the high fatigue case
 			double residualFatigue = 0;
 			double f = pc.getFatigue();
-			
-			if (f < 500)
-				residualFatigue = f / 40;
-			
+
+			if (f < 62.5)
+				residualFatigue = f / 150.0;
+
+			else if (f < 125)
+				residualFatigue = (f - 62.5) / 140.0;
+
+			else if (f < 250)
+				residualFatigue = (f - 125) / 130.0;
+
+			else if (f < 500)
+				residualFatigue = (f - 250) / 120.0;
+
+			else if (f < 750)
+				residualFatigue = (f - 500) / 110.0;
+
 			else if (f < 1000)
-				residualFatigue = (f - 500) / 35;
+				residualFatigue = (f - 750) / 100.0;
+
+			else if (f < 1250)
+				residualFatigue = (f - 1000) / 90.0;
 			
 			else if (f < 1500)
-				residualFatigue = (f - 1000) / 30;
+				residualFatigue = (f - 1250) / 80.0;
+
+			else if (f < 1750)
+				residualFatigue = (f - 1500) / 70.0;
 			
 			else if (f < 2000)
-				residualFatigue = (f - 1500) / 25;
+				residualFatigue = (f - 1750) / 60.0;
 
 			else if (f < MAX_FATIGUE) 
-				residualFatigue = (f - MAX_FATIGUE + 500) / 20;
+				residualFatigue = (f - 2000) / 50.0;
 			
 			else 
-				residualFatigue = f / 15;
+				residualFatigue = (f - MAX_FATIGUE) / 40.0;
 			
 			newFatigue = f - fractionOfRest - residualFatigue;	
 //			logger.info(person + " f : " + Math.round(f*10.0)/10.0
@@ -671,7 +689,7 @@ public class Sleep extends Task implements Serializable {
 			if (interiorObject == null)
 				interiorObject = (LocalBoundedObject)(s.getClosestAvailableAirlock(person).getEntity());
 //			System.out.println("interiorObject is " + interiorObject);
-			LogConsolidated.log(Level.FINE, 0, sourceName,
+			LogConsolidated.log(logger, Level.INFO, 4000, sourceName,
 					"[" + person.getLocationTag().getLocale() + "] " + person.getName()
 					+ " at "
 					+ person.getLocationTag().getImmediateLocation()
@@ -682,13 +700,13 @@ public class Sleep extends Task implements Serializable {
 			// near a vehicle
 			Rover r = (Rover)person.getVehicle();
 			interiorObject = (LocalBoundedObject) (r.getAirlock()).getEntity();
-			LogConsolidated.log(Level.INFO, 0, sourceName,
+			LogConsolidated.log(logger, Level.INFO, 4000, sourceName,
 					"[" + person.getLocationTag().getLocale() + "] " + person.getName()
 					+ " was near " + r.getName()
 					+ " and had to walk back inside the vehicle.");
 		}
 		if (interiorObject == null) {
-			LogConsolidated.log(Level.WARNING, 0, sourceName,
+			LogConsolidated.log(logger, Level.WARNING, 4000, sourceName,
 				"[" + person.getLocationTag().getLocale() + "] " + person.getName()
 				+ " was near " + person.getLocationTag().getImmediateLocation()
 				+ " at (" + Math.round(returnInsideLoc.getX()*10.0)/10.0 + ", " 
@@ -704,7 +722,7 @@ public class Sleep extends Task implements Serializable {
 			
 			if (returnInsideLoc != null && !LocalAreaUtil.checkLocationWithinLocalBoundedObject(returnInsideLoc.getX(),
 						returnInsideLoc.getY(), interiorObject)) {
-				LogConsolidated.log(Level.WARNING, 0, sourceName,
+				LogConsolidated.log(logger, Level.WARNING, 4000, sourceName,
 						"[" + person.getLocationTag().getLocale() + "] " + person.getName()
 						+ " was near " + ((Building)interiorObject).getNickName() //person.getLocationTag().getImmediateLocation()
 						+ " at (" + Math.round(returnInsideLoc.getX()*10.0)/10.0 + ", " 
@@ -728,7 +746,7 @@ public class Sleep extends Task implements Serializable {
 				name = ((Vehicle)interiorObject).getNickName();
 			}
 					
-			LogConsolidated.log(Level.FINEST, 10_000, sourceName,
+			LogConsolidated.log(logger, Level.FINEST, 10_000, sourceName,
 						"[" + person.getLocationTag().getLocale() + "] " + person.getName()
 						+ " was near " +  name 
 						+ " at (" + Math.round(returnInsideLoc.getX()*10.0)/10.0 + ", " 
@@ -741,15 +759,15 @@ public class Sleep extends Task implements Serializable {
 			} 
 			
 			else {
-				LogConsolidated.log(Level.SEVERE, 0, sourceName,
+				LogConsolidated.log(logger, Level.SEVERE, 4000, sourceName,
 						person.getName() + " was " + person.getTaskDescription().toLowerCase() 
 						+ " and cannot find a valid path to enter an airlock. Will see what to do.");
 				canWalkInside = false;
 			}
 		} else {
-			LogConsolidated.log(Level.SEVERE, 0, sourceName,
+			LogConsolidated.log(logger, Level.SEVERE, 4000, sourceName,
 					person.getName() + " was " + person.getTaskDescription().toLowerCase() 
-					+ " and cannot find the building airlock to  walk back inside. Will see what to do.");
+					+ " and cannot find the building airlock to walk back inside. Will see what to do.");
 			canWalkInside = false;
 		}
 		

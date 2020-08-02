@@ -525,7 +525,7 @@ public class ScientificStudyManager // extends Thread
 				if (isPrimaryResearcherDead(study)) {
 					study.setCompleted(ScientificStudy.CANCELED);
 					logger.fine(study.toString() + " was canceled due to primary researcher's death.");
-					LogConsolidated.log(Level.INFO, 0, sourceName,
+					LogConsolidated.flog(Level.INFO, 0, sourceName,
 							"[" + person.getLocationTag().getLocale() + "] " 
 							+ "Due to " + name + "'s death, the " + study.toString()
 							+ " study was abandoned.");
@@ -545,7 +545,7 @@ public class ScientificStudyManager // extends Thread
 					if (collaborator.getPhysicalCondition().isDead()) {
 						String genderStr = GenderType.getPossessivePronoun(collaborator.getGender());
 						study.removeCollaborativeResearcher(collaborator);
-						LogConsolidated.log(Level.INFO, 0, sourceName,
+						LogConsolidated.flog(Level.INFO, 0, sourceName,
 								"[" + collaborator.getLocationTag().getLocale() + "] " 
 								+ collaborator.getName() + " (a collaborator) was removed in the " + study.toString()
 								+ " study since " + genderStr + " has passed away.");
@@ -555,7 +555,7 @@ public class ScientificStudyManager // extends Thread
 				if (study.getPhase().equals(ScientificStudy.PROPOSAL_PHASE)) {
 					// Check if proposal work time is completed, then move to invitation phase.
 					if (study.getProposalWorkTimeCompleted() >= study.getTotalProposalWorkTimeRequired()) {
-						LogConsolidated.log(Level.INFO, 0, sourceName,
+						LogConsolidated.flog(Level.INFO, 0, sourceName,
 								"[" + person.getLocationTag().getLocale() + "] " 
 								+ name  +  " finished writing proposal for the "
 								+ study.toString() + " study and was starting to invite collaborative researchers");
@@ -578,7 +578,7 @@ public class ScientificStudyManager // extends Thread
 						phaseEnded = true;
 
 					if (phaseEnded) {
-						LogConsolidated.log(Level.INFO, 0, sourceName,
+						LogConsolidated.flog(Level.INFO, 0, sourceName,
 								"[" + person.getLocationTag().getLocale() + "] " 
 								+ name  + " ended the invitation phase on the " + study.toString() + " study with "
 								+ study.getCollaborativeResearchers().size() 
@@ -597,7 +597,7 @@ public class ScientificStudyManager // extends Thread
 
 					if (study.isAllResearchCompleted()) {
 						study.setPhase(ScientificStudy.PAPER_PHASE);
-						LogConsolidated.log(Level.INFO, 0, sourceName,
+						LogConsolidated.flog(Level.INFO, 0, sourceName,
 								"[" + person.getLocationTag().getLocale() + "] " 
 								+ name + " finished the research work on the " 
 								+ study.toString() + " study and was starting to compile data results.");
@@ -610,7 +610,7 @@ public class ScientificStudyManager // extends Thread
 							if ((lastPrimaryWork != null) && MarsClock.getTimeDiff(marsClock,
 									lastPrimaryWork) >study.getPrimaryWorkDownTimeAllowed()) {
 								study.setCompleted(ScientificStudy.CANCELED);
-								LogConsolidated.log(Level.INFO, 0, sourceName,
+								LogConsolidated.flog(Level.INFO, 0, sourceName,
 										"[" + person.getLocationTag().getLocale() + "] " 
 										+ name + " abandoned the "
 										+ study.toString()
@@ -629,7 +629,7 @@ public class ScientificStudyManager // extends Thread
 								if ((lastCollaborativeWork != null) && MarsClock.getTimeDiff(marsClock,
 										lastCollaborativeWork) > study.getCollaborativeWorkDownTimeAllowed()) {
 									study.removeCollaborativeResearcher(researcher);
-									LogConsolidated.log(Level.INFO, 0, sourceName,
+									LogConsolidated.flog(Level.INFO, 0, sourceName,
 											"[" + researcher.getLocationTag().getLocale() + "] " 
 											+ researcher.getName() + " (a collaborator) was removed in the " 
 											+ study.toString()
@@ -643,7 +643,7 @@ public class ScientificStudyManager // extends Thread
 					if (study.isAllPaperWritingCompleted()) {
 						study.setPhase(ScientificStudy.PEER_REVIEW_PHASE);
 						study.startingPeerReview(); 
-						LogConsolidated.log(Level.INFO, 0, sourceName,
+						LogConsolidated.flog(Level.INFO, 0, sourceName,
 								"[" + person.getLocationTag().getLocale() + "] " + name 
 								+ " had compiled data results for "
 								+ Conversion.capitalize(study.toString()) + " and was starting to do the peer review.");
@@ -658,13 +658,13 @@ public class ScientificStudyManager // extends Thread
 
 							// Provide scientific achievement to primary and collaborative researchers.
 							ScientificStudyUtil.provideCompletionAchievements(study);
-							LogConsolidated.log(Level.INFO, 0, sourceName,
+							LogConsolidated.flog(Level.INFO, 0, sourceName,
 									"[" + person.getLocationTag().getLocale() + "] " 
 										+ name + " completed a peer review on the " 
 									+ study.toString() + " study successfully.");
 						} else {
 							study.setCompleted(ScientificStudy.FAILED_COMPLETION);
-							LogConsolidated.log(Level.INFO, 0, sourceName,
+							LogConsolidated.flog(Level.INFO, 0, sourceName,
 									"[" + person.getLocationTag().getLocale() + "] " 
 									+ name + " failed to complete a peer review on the " 
 									+ study.toString() + " study.");

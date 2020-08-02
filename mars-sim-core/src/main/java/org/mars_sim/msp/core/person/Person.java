@@ -1003,7 +1003,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 				mind.timePassing(time);
 			} catch (Exception ex) {
 				ex.printStackTrace();
-				LogConsolidated.log(Level.SEVERE, 20_000, sourceName, "[" + getLocationTag().getLocale() + "] "
+				LogConsolidated.flog(Level.SEVERE, 20_000, sourceName, "[" + getLocationTag().getLocale() + "] "
 						+ getName() + "'s Mind was having trouble processing task selection.", ex);
 			}
 		}

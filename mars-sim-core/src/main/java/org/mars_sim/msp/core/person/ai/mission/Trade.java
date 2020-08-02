@@ -376,7 +376,7 @@ public class Trade extends RoverMission implements Serializable {
 						assignTask(person,
 								new Walk(person, adjustedLoc.getX(), adjustedLoc.getY(), 0, destinationBuilding));
 					} else {
-							LogConsolidated.log(Level.SEVERE, 5000, sourceName,
+							LogConsolidated.flog(Level.SEVERE, 5000, sourceName,
 									"[" + person.getLocationTag().getLocale() + "] " + person.getName()
 								+ " is unable to walk to building " + destinationBuilding);
 						// + " at " + tradingSettlement);
@@ -386,7 +386,7 @@ public class Trade extends RoverMission implements Serializable {
 					if (Walk.canWalkAllSteps(robot, adjustedLoc.getX(), adjustedLoc.getY(), 0, destinationBuilding)) {
 						assignTask(robot, new Walk(robot, adjustedLoc.getX(), adjustedLoc.getY(), 0, destinationBuilding));
 					} else {
-						LogConsolidated.log(Level.SEVERE, 5009, sourceName,
+						LogConsolidated.flog(Level.SEVERE, 5009, sourceName,
 								"[" + robot.getLocationTag().getLocale() + "] " + robot.getName()
 								+ " is unable to walk to building " + destinationBuilding);
 						// + " at " + tradingSettlement);

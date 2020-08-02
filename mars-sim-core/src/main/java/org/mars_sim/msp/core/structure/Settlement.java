@@ -1111,7 +1111,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 			// TODO: check against indoor air pressure
 			double p = getAirPressure();
 			if (p > PhysicalCondition.MAXIMUM_AIR_PRESSURE || p < Settlement.minimum_air_pressure) {
-				LogConsolidated.log(Level.SEVERE, 10_000, sourceName, "[" + this.getName()
+				LogConsolidated.flog(Level.SEVERE, 10_000, sourceName, "[" + this.getName()
 						+ "] out-of-range overall air pressure at " + Math.round(p * 10D) / 10D + " kPa detected.");
 				return false;
 			}
@@ -1119,7 +1119,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 			double t = currentTemperature;
 			if (t < life_support_value[0][4] - SAFE_TEMPERATURE_RANGE
 					|| t > life_support_value[1][4] + SAFE_TEMPERATURE_RANGE) {
-				LogConsolidated.log(Level.SEVERE, 10_000, sourceName,
+				LogConsolidated.flog(Level.SEVERE, 10_000, sourceName,
 						"[" + this.getName() + "] out-of-range overall temperature at " + Math.round(t * 10D) / 10D
 								+ " " + Msg.getString("temperature.sign.degreeCelsius") + " detected.");
 				return false;
@@ -1172,7 +1172,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 //			getInventory().addAmountSupply(co2ID, carbonDioxideProvided);
 
 		} catch (Exception e) {
-			LogConsolidated.log(Level.SEVERE, 5000, sourceName, name + " - Error in providing O2/removing CO2: ", e);
+			LogConsolidated.flog(Level.SEVERE, 5000, sourceName, name + " - Error in providing O2/removing CO2: ", e);
 		}
 
 		return oxygenTaken;
@@ -1199,7 +1199,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 //				getInventory().addAmountDemand(waterID, waterTaken);
 			}
 		} catch (Exception e) {
-			LogConsolidated.log(Level.SEVERE, 5000, sourceName, name + " - Error in providing H2O needs: ", e);
+			LogConsolidated.flog(Level.SEVERE, 5000, sourceName, name + " - Error in providing H2O needs: ", e);
 		}
 
 		return waterTaken;
@@ -1349,13 +1349,13 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 		double repairEVAScore = repairEVAMalfunctionMeta.getSettlementProbability(this);
 //		double buildingScore = constructBuildingMeta.getProbability(this);
 
-		LogConsolidated.log(Level.INFO, 0, sourceName,
+		LogConsolidated.flog(Level.INFO, 0, sourceName,
 				"[" + name + "] MaintenanceMeta Task score : " + Math.round(maintScore * 10.0) / 10.0 + ".");
-		LogConsolidated.log(Level.INFO, 0, sourceName,
+		LogConsolidated.flog(Level.INFO, 0, sourceName,
 				"[" + name + "] MaintenanceEVAMeta Task score : " + Math.round(maintEVAScore * 10.0) / 10.0 + ".");
-		LogConsolidated.log(Level.INFO, 0, sourceName,
+		LogConsolidated.flog(Level.INFO, 0, sourceName,
 				"[" + name + "] RepairMalfunctionMeta Task score : " + Math.round(repairScore * 10.0) / 10.0 + ".");
-		LogConsolidated.log(Level.INFO, 0, sourceName, "[" + name + "] RepairEVAMalfunctionMeta Task score : "
+		LogConsolidated.flog(Level.INFO, 0, sourceName, "[" + name + "] RepairEVAMalfunctionMeta Task score : "
 				+ Math.round(repairEVAScore * 10.0) / 10.0 + ".");
 //		LogConsolidated.log(Level.INFO,0, sourceName,
 //				"[" + name + "] ConstructBuildingMeta Task score : "+  Math.round(buildingScore*10.0)/10.0 + ".");
@@ -1638,7 +1638,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 			PhysicalCondition condition = p.getPhysicalCondition();
 			double energy = Math.round(condition.getEnergy() * 100.0) / 100.0;
 			String name = p.getName();
-			LogConsolidated.log(Level.INFO, 0, sourceName,
+			LogConsolidated.flog(Level.INFO, 0, sourceName,
 					"[" + this + "] " + name + "'s current energy level : " + energy + " kJ");
 		}
 	}
@@ -2232,7 +2232,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 			// this major bug is due to getBuilding(robot) above in BuildingManager
 			// what if a person is out there in ERV building for maintenance. ERV building
 			// has no LifeSupport function. currentBuilding will be null
-			LogConsolidated.log(Level.WARNING, 10_000, sourceName, person.getName() + " is not currently in a building.");
+			LogConsolidated.flog(Level.WARNING, 10_000, sourceName, person.getName() + " is not currently in a building.");
 			return null;
 		}
 
@@ -2252,7 +2252,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 			// need to refine the concept of where a robot can go. They are thought to need
 			// RoboticStation function to "survive",
 			// much like a person who needs LifeSupport function
-			LogConsolidated.log(Level.WARNING, 10_000, sourceName, robot.getName() + " is not currently in a building.");
+			LogConsolidated.flog(Level.WARNING, 10_000, sourceName, robot.getName() + " is not currently in a building.");
 			return null;
 		}
 
@@ -3738,7 +3738,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 		// double rand2 = Math.round(RandomUtil.getRandomDouble(100) * 100.0)/100.0;
 		if (RandomUtil.lessThanRandPercent(chance1)) {
 			exposed[1] = true;
-			LogConsolidated.log(Level.INFO, 1_000, sourceName,
+			LogConsolidated.flog(Level.INFO, 1_000, sourceName,
 					"[" + name + DETECTOR_GRID + UnitEventType.GCR_EVENT.toString() + " is imminent.");
 			this.fireUnitUpdate(UnitEventType.GCR_EVENT);
 		} else
@@ -3748,7 +3748,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 		// Solar energetic particles (SEPs) event
 		if (RandomUtil.lessThanRandPercent(chance2)) {
 			exposed[2] = true;
-			LogConsolidated.log(Level.INFO, 1_000, sourceName,
+			LogConsolidated.flog(Level.INFO, 1_000, sourceName,
 					"[" + name + DETECTOR_GRID + UnitEventType.SEP_EVENT.toString() + " is imminent.");
 			this.fireUnitUpdate(UnitEventType.SEP_EVENT);
 		} else

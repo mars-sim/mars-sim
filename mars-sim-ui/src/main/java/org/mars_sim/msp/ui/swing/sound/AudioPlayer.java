@@ -132,7 +132,7 @@ public class AudioPlayer implements ClockListener {
 		
 		// if it exits as a file, delete it
 		if (fileExist) {
-			LogConsolidated.log(Level.CONFIG, 0, sourceName, "'" + folder +  "'" 
+			LogConsolidated.flog(Level.CONFIG, 0, sourceName, "'" + folder +  "'" 
 					+ " is not supposed to exist as a file. Deleting it.");
 			try {
 				FileUtils.forceDelete(folder);
@@ -144,7 +144,7 @@ public class AudioPlayer implements ClockListener {
 		if (!dirExist) {
 			// Create this directory
 			folder.mkdirs();
-			LogConsolidated.log(Level.CONFIG, 0, sourceName, "'" + folder +  "'" 
+			LogConsolidated.flog(Level.CONFIG, 0, sourceName, "'" + folder +  "'" 
 					+ " folder is created for storing sound tracks");
 		}
 		else {

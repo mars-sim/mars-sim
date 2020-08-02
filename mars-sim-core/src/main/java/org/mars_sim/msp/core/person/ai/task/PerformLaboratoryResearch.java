@@ -472,7 +472,7 @@ public class PerformLaboratoryResearch extends Task implements ResearchScientifi
 
 		if (isPrimary) {
 			if (study.isPrimaryResearchCompleted()) {
-    			LogConsolidated.log(Level.INFO, 0, sourceName, "[" + person.getLocationTag().getLocale() + "] "
+    			LogConsolidated.flog(Level.INFO, 0, sourceName, "[" + person.getLocationTag().getLocale() + "] "
     					+ person.getName() + " just spent " 
     					+ Math.round(study.getPrimaryResearchWorkTimeCompleted() *10.0)/10.0
     					+ " millisols in performing primary lab research" 
@@ -482,7 +482,7 @@ public class PerformLaboratoryResearch extends Task implements ResearchScientifi
 			}
 		} else {
 			if (study.isCollaborativeResearchCompleted(person)) {
-	   			LogConsolidated.log(Level.INFO, 0, sourceName, "[" + person.getLocationTag().getLocale() + "] "
+	   			LogConsolidated.flog(Level.INFO, 0, sourceName, "[" + person.getLocationTag().getLocale() + "] "
     					+ person.getName() + " just spent " 
     					+ Math.round(study.getCollaborativeResearchWorkTimeCompleted(person) *10.0)/10.0
     					+ " millisols in performing collaborative lab research" 

@@ -499,7 +499,7 @@ implements ResearchScientificStudy, Serializable {
         // Check if research in study is completed.
         if (isPrimary) {
             if (study.isPrimaryResearchCompleted()) {
-    			LogConsolidated.log(Level.INFO, 0, sourceName, "[" + person.getLocationTag().getLocale() + "] "
+    			LogConsolidated.flog(Level.INFO, 0, sourceName, "[" + person.getLocationTag().getLocale() + "] "
     					+ person.getName() + " just spent " 
     					+ Math.round(study.getPrimaryResearchWorkTimeCompleted() *10.0)/10.0
     					+ " millisols in performing primary lab experiments" 
@@ -510,7 +510,7 @@ implements ResearchScientificStudy, Serializable {
         }
         else {
             if (study.isCollaborativeResearchCompleted(person)) {
-    			LogConsolidated.log(Level.INFO, 0, sourceName, "[" + person.getLocationTag().getLocale() + "] "
+    			LogConsolidated.flog(Level.INFO, 0, sourceName, "[" + person.getLocationTag().getLocale() + "] "
     					+ person.getName() + " just spent " 
     					+ Math.round(study.getCollaborativeResearchWorkTimeCompleted(person) *10.0)/10.0
     					+ " millisols in performing collaborative lab experiments" 

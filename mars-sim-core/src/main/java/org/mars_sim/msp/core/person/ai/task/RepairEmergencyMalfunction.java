@@ -121,13 +121,13 @@ public class RepairEmergencyMalfunction extends Task implements Repair, Serializ
 
 		if (malfunction != null) {
 			if (person != null) {
-				LogConsolidated.log(Level.INFO, 10_000, sourceName,
+				LogConsolidated.flog(Level.INFO, 10_000, sourceName,
 						"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " started repairing on emergency malfunction: " 
 				+ malfunction.getName() + " in "+ entity + ".");
 //				+ "@"+ Integer.toHexString(malfunction.hashCode()));
 			}
         	else if (robot != null) {
-				LogConsolidated.log(Level.INFO, 10_000, sourceName,
+				LogConsolidated.flog(Level.INFO, 10_000, sourceName,
 						"[" + robot.getLocationTag().getLocale() + "] " + robot.getName() + " started repairing on emergency malfunction: " 
 				+ malfunction.getName() + " in "+ entity + ".");
 //				+ "@" + Integer.toHexString(malfunction.hashCode()));
@@ -190,13 +190,13 @@ public class RepairEmergencyMalfunction extends Task implements Repair, Serializ
 		// Check if the emergency malfunction work is fixed.
 		if (malfunction.needEmergencyRepair() && malfunction.isEmergencyRepairDone()) {
 			if (person != null) {
-			LogConsolidated.log(Level.INFO, 10_000, sourceName,
+			LogConsolidated.flog(Level.INFO, 10_000, sourceName,
 					"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
 					+ " wrapped up the emergency repair of " + malfunction.getName() 
 					+ " in "+ entity + " (" + Math.round(malfunction.getCompletedEmergencyWorkTime()*10.0)/10.0 + " millisols spent).");
 			}
 			else {
-				LogConsolidated.log(Level.INFO, 10_000, sourceName,
+				LogConsolidated.flog(Level.INFO, 10_000, sourceName,
 						"[" + robot.getLocationTag().getLocale() + "] " + robot.getName() 
 						+ " wrapped up the emergency repair of " + malfunction.getName() 
 						+ " in "+ entity + " (" + Math.round(malfunction.getCompletedEmergencyWorkTime()*10.0)/10.0 + " millisols spent).");

@@ -96,19 +96,39 @@ public class LogConsolidated {
 		// Register the message
 		lastLogged.put(uniqueIdentifier, new TimeAndCount());
 	}
-//	}
+
+	/**
+	 * Logs given <code>message</code> to given <code>logger</code> as long as:
+	 * <ul>
+	 * <li>A message (from same class and line number) has not already been logged
+	 * within the past <code>timeBetweenLogs</code>.</li>
+	 * <li>The given <code>level</code> is active for given
+	 * <code>logger</code>.</li>
+	 * </ul>
+	 * Note: If messages are skipped, they are counted. When
+	 * <code>timeBetweenLogs</code> has passed, and a repeat message is logged, the
+	 * count will be displayed.
+	 * 
+	 * @param logger          Where to log.
+	 * @param level           Level to log.
+	 * @param timeBetweenLogs Milliseconds to wait between similar log messages.
+	 * @param message         The actual message to log.
+	 */
+	public static void log(Logger logger, Level level, long timeBetweenLogs, String sourceName, String message) {
+		log(logger, level, timeBetweenLogs, sourceName, message, null);
+	}
 
 //	public static void go(Level level, int timeBetweenLogs, StringBuffer sb) {
 //		flogger.at(level).atMostEvery(timeBetweenLogs, TimeUnit.SECONDS).log(sb.toString());
 //	}
 	
-	public static void log(Level level, int timeBetweenLogs, String sourceName, String message) {
+	public static void flog(Level level, int timeBetweenLogs, String sourceName, String message) {
 //		if (sourceName.contains("."))
 //			sourceName = sourceName.substring(sourceName.lastIndexOf(PERIOD) + 1, sourceName.length());
 		flogger.at(level).atMostEvery(timeBetweenLogs, TimeUnit.MILLISECONDS).log(sourceName + COLON + message);
 	}
 	
-	public static void log(Level level, int timeBetweenLogs, String sourceName, String message, Throwable t) {
+	public static void flog(Level level, int timeBetweenLogs, String sourceName, String message, Throwable t) {
 //		if (sourceName.contains("."))
 //			sourceName = sourceName.substring(sourceName.lastIndexOf(PERIOD) + 1, sourceName.length());
 		flogger.at(level).atMostEvery(timeBetweenLogs, TimeUnit.MILLISECONDS).log(sourceName + PROMPT + message, t);

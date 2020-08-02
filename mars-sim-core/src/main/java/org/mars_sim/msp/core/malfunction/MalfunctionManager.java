@@ -680,7 +680,7 @@ public class MalfunctionManager implements Serializable {
 						malfunction, malfunctionName, "N/A", "None", loc0, loc1, settlement.getName());
 				eventManager.registerNewEvent(newEvent);
 				
-				LogConsolidated.log(Level.WARNING, 0, sourceName,
+				LogConsolidated.flog(Level.WARNING, 0, sourceName,
 						"[" + loc1 + "] " + object + " had '" 
 						+ malfunction.getName() + "'. Probable Cause : Parts Fatigue.");
 			} 
@@ -691,7 +691,7 @@ public class MalfunctionManager implements Serializable {
 							malfunction, malfunctionName, task, offender, loc0, loc1, settlement.getName());
 					eventManager.registerNewEvent(newEvent);
 					
-					LogConsolidated.log(Level.WARNING, 0, sourceName, 
+					LogConsolidated.flog(Level.WARNING, 0, sourceName, 
 							"[" + loc1 + "] " + object + " had '"
 							+ malfunction.getName() + "' as reported by " 
 							+ offender + ". Probable Cause : Human Factors.");
@@ -700,7 +700,7 @@ public class MalfunctionManager implements Serializable {
 							malfunction, malfunctionName, task, offender, loc0, loc1, settlement.getName());
 					eventManager.registerNewEvent(newEvent);
 					
-					LogConsolidated.log(Level.WARNING, 0, sourceName, 
+					LogConsolidated.flog(Level.WARNING, 0, sourceName, 
 							"[" + loc1 + "] " + object + " had '"
 							+ malfunction.getName() + "' as reported by " 
 							+ offender + ". Probable Cause : Software Quality Control.");
@@ -714,7 +714,7 @@ public class MalfunctionManager implements Serializable {
 						malfunction, malfunctionName + " on " + object, "N/A", "None", loc0, loc1, settlement.getName());
 				eventManager.registerNewEvent(newEvent);
 				
-				LogConsolidated.log(Level.WARNING, 0, sourceName,
+				LogConsolidated.flog(Level.WARNING, 0, sourceName,
 						"[" + loc1 + "] " + object + " had '" 
 						+ malfunction.getName() + "' in " + loc0 + ". Probable Cause : Parts Fatigue.");					
 			} 
@@ -725,7 +725,7 @@ public class MalfunctionManager implements Serializable {
 							malfunction, malfunctionName + " on " + object, task, offender, loc0, loc1, settlement.getName());
 					eventManager.registerNewEvent(newEvent);
 					
-					LogConsolidated.log(Level.WARNING, 0, sourceName, 
+					LogConsolidated.flog(Level.WARNING, 0, sourceName, 
 							"[" + loc1 + "] " + object + " had '"
 							+ malfunction.getName() + "' in " + loc0 + " as reported by " 
 							+ offender + ". Probable Cause : Human Factors.");
@@ -736,7 +736,7 @@ public class MalfunctionManager implements Serializable {
 							malfunction, malfunctionName, task, offender, loc0, loc1, settlement.getName());
 					eventManager.registerNewEvent(newEvent);
 					
-					LogConsolidated.log(Level.WARNING, 0, sourceName, 
+					LogConsolidated.flog(Level.WARNING, 0, sourceName, 
 							"[" + loc1 + "] " + object + " had '"
 							+ malfunction.getName() + "' in " + loc0 + " as reported by " 
 							+ offender + ". Probable Cause : Software Quality Control.");
@@ -796,11 +796,11 @@ public class MalfunctionManager implements Serializable {
 		eventManager.registerNewEvent(newEvent);
 		
 		if (object.equals(loc0)) {
-			LogConsolidated.log(Level.WARNING, 0, sourceName,
+			LogConsolidated.flog(Level.WARNING, 0, sourceName,
 				"[" + loc1 + "] " + object + " was damaged by " +  malfunctionName);
 		}
 		else {
-			LogConsolidated.log(Level.WARNING, 0, sourceName,
+			LogConsolidated.flog(Level.WARNING, 0, sourceName,
 				"[" + loc1 + "] " + object + " was damaged by " +  malfunctionName + " in " + loc0);
 		}
 	}
@@ -879,7 +879,7 @@ public class MalfunctionManager implements Serializable {
 			int solsLastMaint = (int) (effectiveTimeSinceLastMaintenance / 1000D);
 			// Reduce the max possible health condition
 //			maxCondition = (wearCondition + 400D)/500D; 
-			LogConsolidated.log(Level.WARNING, 1000, sourceName,
+			LogConsolidated.flog(Level.WARNING, 1000, sourceName,
 					"[" + entity.getImmediateLocation() + "] " + entity.getNickName() 
 					+ " experienced a malfunction due to wear-and-tear.  "
 					+ "# of sols since last check-up: " + solsLastMaint + ".   Condition: " + Math.round(wearCondition*10.0)/10.0
@@ -923,7 +923,7 @@ public class MalfunctionManager implements Serializable {
 //		logger.info("Reseting modifiers type " + type );
 		if (type == 0) {
 			oxygenFlowModifier = 100D;
-			LogConsolidated.log(Level.WARNING, 5_000, sourceName,
+			LogConsolidated.flog(Level.WARNING, 5_000, sourceName,
 					"[" + entity.getLocale() + "] The oxygen flow retrictor had been fixed in "
 					+ entity.getNickName());
 		}
@@ -1212,7 +1212,7 @@ public class MalfunctionManager implements Serializable {
 				else
 					loc1 = "in " + entity.getImmediateLocation() + ".";
 				
-				LogConsolidated.log(Level.WARNING, 0, sourceName,
+				LogConsolidated.flog(Level.WARNING, 0, sourceName,
 						"[" + entity.getLocale() + "] The malfunction '" + m.getName() + "' had been dealt with "
 						+ loc1);
 			
@@ -1242,7 +1242,7 @@ public class MalfunctionManager implements Serializable {
 //			if (rand == 0) {
 				if (type == 0) {
 					person.getMind().getTaskManager().addTask(new RepairMalfunction(person), false);	
-					LogConsolidated.log(Level.INFO, 0, sourceName,
+					LogConsolidated.flog(Level.INFO, 0, sourceName,
 						"[" + entity.getLocale() + "] " + person + " was appointed as the chief repairer handling the General Repair for '" 
 						+ malfunction.getName() + "' on "
 						+ entity.getUnit());
@@ -1250,7 +1250,7 @@ public class MalfunctionManager implements Serializable {
 				}
 				else if (type == 1) {
 					person.getMind().getTaskManager().addTask(new RepairEmergencyMalfunction(person), false);	
-					LogConsolidated.log(Level.INFO, 0, sourceName,
+					LogConsolidated.flog(Level.INFO, 0, sourceName,
 						"[" + entity.getLocale() + "] " + person + " was appointed as the chief repairer handling the Emergency Repair for '" 
 						+ malfunction.getName() + "' on "
 						+ entity.getUnit());
@@ -1258,7 +1258,7 @@ public class MalfunctionManager implements Serializable {
 				}
 				else if (type == 2) {
 					person.getMind().getTaskManager().addTask(new RepairEVAMalfunction(person), false);	
-					LogConsolidated.log(Level.INFO, 0, sourceName,
+					LogConsolidated.flog(Level.INFO, 0, sourceName,
 						"[" + entity.getLocale() + "] " + person + " was appointed as the chief repairer handling the EVA Repair for '" 
 						+ malfunction.getName() + "' on "
 						+ entity.getUnit());
@@ -1275,7 +1275,7 @@ public class MalfunctionManager implements Serializable {
 //			if (rand == 0) {
 				if (type == 0) {
 					person.getMind().getTaskManager().addTask(new RepairMalfunction(person), false);	
-					LogConsolidated.log(Level.INFO, 0, sourceName,
+					LogConsolidated.flog(Level.INFO, 0, sourceName,
 						"[" + entity.getLocale() + "] " + person + " was appointed as the deputy repairer handling the General Repair for '" 
 						+ malfunction.getName() + "' on "
 						+ entity.getUnit());
@@ -1283,7 +1283,7 @@ public class MalfunctionManager implements Serializable {
 				}
 				else if (type == 1) {
 					person.getMind().getTaskManager().addTask(new RepairEmergencyMalfunction(person), false);	
-					LogConsolidated.log(Level.INFO, 0, sourceName,
+					LogConsolidated.flog(Level.INFO, 0, sourceName,
 						"[" + entity.getLocale() + "] " + person + " was appointed as the deputy repairer handling the Emergency Repair for '" 
 						+ malfunction.getName() + "' on "
 						+ entity.getUnit());
@@ -1291,7 +1291,7 @@ public class MalfunctionManager implements Serializable {
 				}
 				else if (type == 2) {
 					person.getMind().getTaskManager().addTask(new RepairEVAMalfunction(person), false);	
-					LogConsolidated.log(Level.INFO, 0, sourceName,
+					LogConsolidated.flog(Level.INFO, 0, sourceName,
 						"[" + entity.getLocale() + "] " + person + " was appointed as the deputy repairer handling the EVA Repair for '" 
 						+ malfunction.getName() + "' on "
 						+ entity.getUnit());
@@ -1333,7 +1333,7 @@ public class MalfunctionManager implements Serializable {
 				oxygenFlowModifier += tempOxygenFlowModifier * time ;
 				if (oxygenFlowModifier < 0)
 					oxygenFlowModifier = 0;
-				LogConsolidated.log(Level.WARNING, 20_000, sourceName,
+				LogConsolidated.flog(Level.WARNING, 20_000, sourceName,
 						"[" + getUnit().getLocationTag().getLocale() + "] Oxygen flow restricted to "
 								+ Math.round(oxygenFlowModifier*10.0)/10.0 + "% capacity in " 
 								+ getUnit().getLocationTag().getImmediateLocation()+ ".", null);
@@ -1394,7 +1394,7 @@ public class MalfunctionManager implements Serializable {
 						}
 						if (amountDepleted >= 0) {
 							inv.retrieveAmountResource(resource, amountDepleted);
-							LogConsolidated.log(Level.WARNING, 15_000, sourceName,
+							LogConsolidated.flog(Level.WARNING, 15_000, sourceName,
 									"[" + getUnit().getLocationTag().getLocale() + "] Leaking "
 											+ Math.round(amountDepleted*100.0)/100.0 + " of  " 
 											+ ResourceUtil.findAmountResource(resource) 
@@ -1457,17 +1457,17 @@ public class MalfunctionManager implements Serializable {
 		if (u.getLocationTag().getImmediateLocation().equalsIgnoreCase("outside")) {
 			Settlement ss = u.getLocationTag().findSettlementVicinity();
 			if (ss != null)
-				LogConsolidated.log(Level.WARNING, 3000, sourceName,
+				LogConsolidated.flog(Level.WARNING, 3000, sourceName,
 					"[" + u.getLocationTag().getLocale() + "] A Type-I accident occurred " 
 					+ sb.toString() + " outside of " + ss.getName());
 			else
-				LogConsolidated.log(Level.WARNING, 3000, sourceName,
+				LogConsolidated.flog(Level.WARNING, 3000, sourceName,
 						"[" + u.getLocationTag().getLocale() + "] A Type-I accident occurred " 
 						+ sb.toString() + " outside.");
 				
 		}
 		else {
-			LogConsolidated.log(Level.WARNING, 3000, sourceName,
+			LogConsolidated.flog(Level.WARNING, 3000, sourceName,
 				"[" + u.getLocationTag().getLocale() + "] A Type-I accident occurred " 
 				+ sb.toString() + " in " + u.getLocationTag().getImmediateLocation() + ".");
 
@@ -1515,7 +1515,7 @@ public class MalfunctionManager implements Serializable {
 //					.replace(" in ", "");
 //		}
 
-		LogConsolidated.log(Level.WARNING, 3000, sourceName,
+		LogConsolidated.flog(Level.WARNING, 3000, sourceName,
 				// "[" + locationName + "] An accident occurs " + sb.toString() + ".", null);
 				"[" + entity.getLocale() + "] A Type-II accident occurred in " 
 						+ Conversion.capitalize(n) + ".");

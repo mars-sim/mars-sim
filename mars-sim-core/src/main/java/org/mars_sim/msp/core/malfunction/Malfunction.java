@@ -396,7 +396,7 @@ public class Malfunction implements Serializable {
 		if (t0 > 0) {
 			if (t == 0) {
 				String id_string = INCIDENT_NUM + incidentNum;
-				LogConsolidated.log(Level.INFO, 10_000, sourceName,
+				LogConsolidated.flog(Level.INFO, 10_000, sourceName,
 						name + id_string + " - General repair work initiated by " + repairer + ".");
 			}
 			
@@ -474,7 +474,7 @@ public class Malfunction implements Serializable {
 		if (t0 > 0) {
 			if (t == 0) {
 				String id_string = INCIDENT_NUM + incidentNum;
-				LogConsolidated.log(Level.INFO, 10_000, sourceName,
+				LogConsolidated.flog(Level.INFO, 10_000, sourceName,
 						name + id_string + " - Emergency repair work initiated by " + repairer + ".");
 			}
 			
@@ -549,7 +549,7 @@ public class Malfunction implements Serializable {
 		if (t0 > 0) {
 			if (t == 0) {
 				String id_string = INCIDENT_NUM + incidentNum;
-				LogConsolidated.log(Level.INFO, 10_000, sourceName,
+				LogConsolidated.flog(Level.INFO, 10_000, sourceName,
 						name + id_string + " - EVA repair work initiated by " + repairer + ".");
 			}
 			

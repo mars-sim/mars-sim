@@ -506,7 +506,7 @@ public class StudyFieldSamples extends Task implements ResearchScientificStudy, 
 
 		if (isPrimary) {
 			if (study.isPrimaryResearchCompleted()) {
-				LogConsolidated.log(Level.INFO, 0, sourceName,
+				LogConsolidated.flog(Level.INFO, 0, sourceName,
 						"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " just spent "
 								+ Math.round(study.getPrimaryResearchWorkTimeCompleted() * 10.0) / 10.0
 								+ " millisols in studying the field samples for a primary research study in "
@@ -516,7 +516,7 @@ public class StudyFieldSamples extends Task implements ResearchScientificStudy, 
 			}
 		} else {
 			if (study.isCollaborativeResearchCompleted(person)) {
-				LogConsolidated.log(Level.INFO, 0, sourceName,
+				LogConsolidated.flog(Level.INFO, 0, sourceName,
 						"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " just spent "
 								+ Math.round(study.getCollaborativeResearchWorkTimeCompleted(person) * 10.0) / 10.0
 								+ " millisols in studying the field samples for a collaborative research study in " 
@@ -609,7 +609,7 @@ public class StudyFieldSamples extends Task implements ResearchScientificStudy, 
 
 				// Add to site mineral concentration estimation improvement number.
 				site.addEstimationImprovement();
-				LogConsolidated.log(Level.FINE, 5000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
+				LogConsolidated.flog(Level.FINE, 5000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
 						+ person.getName() + " was studying field samples at " + site.getLocation().getFormattedString() 
 						+ ". Estimation Improvement: "
 						+ site.getNumEstimationImprovement() + ".");

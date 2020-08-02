@@ -303,7 +303,7 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
     			return true;
 	    }
 	    catch (Exception e) {
-	    	LogConsolidated.log(Level.SEVERE, 0, sourceName, "[" + v.getName() + "] " 
+	    	LogConsolidated.flog(Level.SEVERE, 0, sourceName, "[" + v.getName() + "] " 
 					+ "can't retrieve methane. Cannot drive.");
 	    	return false;
 	    }

@@ -126,8 +126,8 @@ public class PhysicalCondition implements Serializable {
 	private boolean isStarving;
 	/** True if person is stressed out. */
 	private boolean isStressedOut;
-	/** True if person is collapsed under fatigue. */
-	private boolean isCollapsed;
+//	/** True if person is collapsed under fatigue. */
+//	private boolean isCollapsed;
 	/** True if person is dehydrated. */
 	private boolean isDehydrated;
 	/** True if person is alive. */
@@ -328,13 +328,13 @@ public class PhysicalCondition implements Serializable {
 
 		foodDryMassPerServing = food_consumption / (double) Cooking.NUMBER_OF_MEAL_PER_SOL;
 
-		starvationStartTime = 1000D * (personConfig.getStarvationStartTime() * bodyMassDeviation / 2);
+		starvationStartTime = 1000D * (personConfig.getStarvationStartTime() * bodyMassDeviation / 3);
 
 		dehydrationStartTime = 1000D * (personConfig.getDehydrationStartTime() * bodyMassDeviation);
 	
 		isStarving = false;
 		isStressedOut = false;
-		isCollapsed = false;
+//		isCollapsed = false;
 		isDehydrated = false;
 		// Initially set performance to 1.0 (=100%) to avoid issues at startup
 		performance = 1.0D;
@@ -457,9 +457,9 @@ public class PhysicalCondition implements Serializable {
 			// unless dead. - Scott
 			// reduceEnergy(time);
 
-//			int msol = marsClock.getMillisolInt();
-//			int factor = (int) (Math.sqrt(masterClock.getTimeRatio())/10D);
-//			if (msol % 7 * factor == 0) {
+			int msol = marsClock.getMillisolInt();
+			int factor = (int) (Math.sqrt(masterClock.getTimeRatio())/10D);
+			if (msol % 7 * factor == 0) {
 
 //				if (!restingTask) {
 					checkStarvation(hunger);
@@ -486,7 +486,7 @@ public class PhysicalCondition implements Serializable {
 
 				if (!isRadiationPoisoned)
 					checkRadiationPoisoning(time);
-//			}
+			}
 
 			// Calculate performance and most serious illness.
 			recalculatePerformance();
@@ -505,8 +505,9 @@ public class PhysicalCondition implements Serializable {
 		if (!problems.isEmpty()) {
 			// Throw illness event if any problems already exist.
 			illnessEvent = true;
-	
-			List<Complaint> newProblems = new ArrayList<Complaint>();
+			// A list of complaints (Type of illnesses)
+			List<Complaint> newComplaints = new ArrayList<Complaint>();
+			// Note: HealthProblem is more detail than Complaint
 			List<HealthProblem> currentProblems = new ArrayList<HealthProblem>(problems.values());
 	
 			Iterator<HealthProblem> hp = currentProblems.iterator();
@@ -515,7 +516,7 @@ public class PhysicalCondition implements Serializable {
 				// Advance each problem, they may change into a worse problem.
 				// If the current is completed or a new problem exists then
 				// remove this one.
-				Complaint nextPhase = problem.timePassing(time, this);
+				Complaint nextComplaintPhase = problem.timePassing(time, this);
 	
 				// After sleeping sufficiently, the high fatigue collapse should no longer exist.
 //				if (problem.getIllness().getType() == ComplaintType.HIGH_FATIGUE_COLLAPSE
@@ -524,7 +525,7 @@ public class PhysicalCondition implements Serializable {
 //					problems.remove(problem.getIllness());	
 //				}
 				
-				if (problem.isCured() || (nextPhase != null)) {
+				if (problem.isCured() || (nextComplaintPhase != null)) {
 					Complaint c = problem.getIllness();
 	
 //					if (c.getType() == ComplaintType.HIGH_FATIGUE_COLLAPSE)
@@ -549,13 +550,13 @@ public class PhysicalCondition implements Serializable {
 				}
 	
 				// If a new problem, check it doesn't exist already
-				if (nextPhase != null) {
-					newProblems.add(nextPhase);
+				if (nextComplaintPhase != null) {
+					newComplaints.add(nextComplaintPhase);
 				}
 			}
 	
 			// Add the new problems
-			for (Complaint c : newProblems) {
+			for (Complaint c : newComplaints) {
 				addMedicalComplaint(c);
 				illnessEvent = true;
 			}
@@ -600,18 +601,18 @@ public class PhysicalCondition implements Serializable {
 //			System.out.println("tims : " + time + "  o2_consumption : " + o2_consumption);
 			try {
 				if (lackOxygen(support, o2_consumption * (time / 1000D)))
-					LogConsolidated.log(Level.SEVERE, 1000, sourceName,
+					LogConsolidated.log(logger, Level.SEVERE, 1000, sourceName,
 							"[" + loc0 + "] " + name + " " + loc1 + " reported lack of oxygen.");
 				if (badAirPressure(support, minimum_air_pressure))
-					LogConsolidated.log(Level.SEVERE, 1000, sourceName,
+					LogConsolidated.log(logger, Level.SEVERE, 1000, sourceName,
 							"[" + loc0 + "] " + name + " " + loc1 + " reported non-optimal air pressure.");
 				if (badTemperature(support, min_temperature, max_temperature))
-					LogConsolidated.log(Level.SEVERE, 1000, sourceName,
+					LogConsolidated.log(logger, Level.SEVERE, 1000, sourceName,
 							"[" + loc0 + "] " + name + " " + loc1 + " reported non-optimal temperature.");
 				
 			} catch (Exception e) {
 				e.printStackTrace();
-				LogConsolidated.log(Level.SEVERE, 1000, sourceName,
+				LogConsolidated.log(logger, Level.SEVERE, 1000, sourceName,
 						"[" + loc0 + "] " + name + " " + loc1 + " reported anomaly in the life support system.");
 			}
 		}
@@ -780,14 +781,17 @@ public class PhysicalCondition implements Serializable {
 	 * @param hunger
 	 */
 	public void checkStarvation(double hunger) {
-
-		if (!isStarving && hunger > starvationStartTime && (kJoules < 120D)) {
+//		 LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
+//				 person + "  Hunger: "
+//				 + Math.round(hunger*10.0)/10.0 
+//				 + "  starvationStartTime: " +  Math.round(starvationStartTime*10.0)/10.0 
+//				 + "  isStarving: " + isStarving, null);
+		 
+		if (!isStarving && hunger > starvationStartTime) { // && (kJoules < 120D)) {
 			if (!problems.containsKey(starvation)) {
 				addMedicalComplaint(starvation);
 				isStarving = true;
-				// LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
-				// person + " is starving. Hunger level : "
-				// + Math.round(hunger*10.0)/10.0 + ".", null);
+
 				person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
 			}
 
@@ -803,14 +807,25 @@ public class PhysicalCondition implements Serializable {
 //			goEat();
 			
 			if (hunger < 500D && kJoules > 800D) {
-		
+			
+				 
 				if (starved == null)
 					starved = problems.get(starvation);
+				
 				if (starved != null) {
 					starved.startRecovery();
+									
 					// Set to not starving
 					isStarving = false;
 				}
+				
+				 LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
+						 person + "  Hunger: "
+						 + Math.round(hunger*10.0)/10.0 
+						 + "  kJ: " + kJoules
+						 + "  starved: " + starved
+						 + "  isStarving: " + isStarving, null);
+				 
 			}
 		}
 	}
@@ -838,7 +853,11 @@ public class PhysicalCondition implements Serializable {
 	 */
 	public void checkDehydration(double thirst) {
 
-		if (thirst > dehydrationStartTime) {
+//		 LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
+//				 person + "  Thirt: " + Math.round(thirst*10.0)/10.0 
+//				 + "  isDehydrated: " + isDehydrated, null);
+		 
+		if (!isDehydrated && thirst > dehydrationStartTime) {
 			if (!isDehydrated && !problems.containsKey(dehydration)) {
 				addMedicalComplaint(dehydration);
 				isDehydrated = true;
@@ -852,12 +871,12 @@ public class PhysicalCondition implements Serializable {
 
 		}
 
-		if (isDehydrated) {
+		else if (isDehydrated) {
 			
 //			goDrink();
 			
 			if (thirst < THIRST_THRESHOLD * 2) {
-			
+				 
 				if (dehydrated == null)
 					dehydrated = problems.get(dehydration);
 				
@@ -866,6 +885,11 @@ public class PhysicalCondition implements Serializable {
 					// Set to not dehydrated
 					isDehydrated = false;
 				}			
+				
+				 LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName,
+						 person + "  Thirt: " + Math.round(thirst*10.0)/10.0 
+						 + "  dehydrated: " + dehydrated
+						 + "  isDehydrated: " + isDehydrated, null);
 			}
 		}
 	}
@@ -998,7 +1022,7 @@ public class PhysicalCondition implements Serializable {
 				addMedicalComplaint(radiationPoisoning);
 				isRadiationPoisoned = true;
 				person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
-				LogConsolidated.log(Level.INFO, 0, sourceName,
+				LogConsolidated.log(logger, Level.INFO, 3000, sourceName,
 						"[" + person.getLocationTag().getLocale() + "] " + name
 								+ " collapsed because of radiation poisoning.");
 //				person.getMind().getTaskManager().addTask(new RequestMedicalTreatment(person));
@@ -1218,7 +1242,7 @@ public class PhysicalCondition implements Serializable {
 //			else
 //				phrase = " was complaining about " + n;
 
-			LogConsolidated.log(Level.INFO, 0, sourceName, prefix + person + phrase + suffix);
+			LogConsolidated.log(logger, Level.INFO, 3000, sourceName, prefix + person + phrase + suffix);
 
 			recalculatePerformance();
 			
@@ -1256,7 +1280,7 @@ public class PhysicalCondition implements Serializable {
 
 		if (foodAvailable < 0.01D) {
 
-			LogConsolidated.log(Level.WARNING, 10_000, sourceName,
+			LogConsolidated.log(logger, Level.WARNING, 10_000, sourceName,
 					"[" + person.getLocationTag().getLocale() + "]" + " only " + foodAvailable
 							+ " kg preserved food remaining.");
 			}
@@ -1286,7 +1310,7 @@ public class PhysicalCondition implements Serializable {
 	private boolean lackOxygen(LifeSupportInterface support, double amount) {
 		if (amount > 0) {
 			if (support == null)
-				LogConsolidated.log(Level.SEVERE, 1000, sourceName, 
+				LogConsolidated.log(logger, Level.SEVERE, 1000, sourceName, 
 						person + " in " + person.getLocationTag().getImmediateLocation() + " has no life support.");
 			double amountRecieved = support.provideOxygen(amount);
 
@@ -1349,7 +1373,7 @@ public class PhysicalCondition implements Serializable {
 					+ "   Immediate Location : " + loc1 
 					+ "   Actual : " + Math.round(actual*decimals)/decimals + unit
 					+ "   Required : " + Math.round(required*decimals)/decimals + unit;
-			LogConsolidated.log(Level.SEVERE, 10_000, sourceName, s);
+			LogConsolidated.log(logger, Level.SEVERE, 10_000, sourceName, s);
 			
 			addMedicalComplaint(complaint);
 			person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);

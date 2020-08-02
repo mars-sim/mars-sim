@@ -300,7 +300,7 @@ public class TendGreenhouse extends Task implements Serializable {
 				
 			if (greenhouse.checkBotanyLab(type.getID(), person))  {
 				
-				LogConsolidated.log(Level.INFO, 30_000, sourceName,
+				LogConsolidated.flog(Level.INFO, 30_000, sourceName,
 					"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
 						+ " was growing " + type.getName() + " tissue culture in the botany lab in " 
 						+ farmBuilding.getNickName()
@@ -391,7 +391,7 @@ public class TendGreenhouse extends Task implements Serializable {
 					setDescription(Msg.getString("Task.description.tendGreenhouse.sample",
 						Conversion.capitalize(type.getName()) + " Tissues Culture for Lab Work"));
 
-					LogConsolidated.log(Level.INFO, 30_000, sourceName,
+					LogConsolidated.flog(Level.INFO, 30_000, sourceName,
 					"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
 						+ " was growing and sampling " + type.getName() + " tissue culture in the botany lab in " 
 						+ farmBuilding.getNickName()

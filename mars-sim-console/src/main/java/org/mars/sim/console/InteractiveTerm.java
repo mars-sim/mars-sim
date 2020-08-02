@@ -289,7 +289,7 @@ public class InteractiveTerm {
 		} catch(RuntimeException e) {
 //            throw new RuntimeException("read interrupted", e);
 			e.printStackTrace();
-			LogConsolidated.log(Level.SEVERE, 0, sourceName, "RuntimeException detected.");
+			LogConsolidated.flog(Level.SEVERE, 0, sourceName, "RuntimeException detected.");
 		}
 		
         return useSCE;

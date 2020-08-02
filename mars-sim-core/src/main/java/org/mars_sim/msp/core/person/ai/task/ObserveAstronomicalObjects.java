@@ -91,7 +91,7 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 				setPhase(OBSERVING);
 				
 			} else {
-				LogConsolidated.log(Level.SEVERE, 5000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
+				LogConsolidated.flog(Level.SEVERE, 5000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
 						+ person.getName() + " could not find the observatory.");
 				endTask();
 			}
@@ -303,7 +303,7 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 		// Check if research in study is completed.
 		if (isPrimary) {
 			if (study.isPrimaryResearchCompleted()) {
-				LogConsolidated.log(Level.INFO, 0, sourceName, "[" + person.getLocationTag().getLocale() + "] "
+				LogConsolidated.flog(Level.INFO, 0, sourceName, "[" + person.getLocationTag().getLocale() + "] "
 						+ person.getName() + " just spent " 
 						+ Math.round(study.getPrimaryResearchWorkTimeCompleted() *10.0)/10.0
 						+ " millisols to complete a primary research using " + person.getLocationTag().getImmediateLocation());				
@@ -311,7 +311,7 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 			}
 		} else {
 			if (study.isCollaborativeResearchCompleted(person)) {
-				LogConsolidated.log(Level.INFO, 0, sourceName, "[" + person.getLocationTag().getLocale() + "] "
+				LogConsolidated.flog(Level.INFO, 0, sourceName, "[" + person.getLocationTag().getLocale() + "] "
 						+ person.getName() + " just spent " 
 						+ Math.round(study.getCollaborativeResearchWorkTimeCompleted(person) *10.0)/10.0
 						+ " millisols to complete a collaborative research using " + person.getLocationTag().getImmediateLocation());

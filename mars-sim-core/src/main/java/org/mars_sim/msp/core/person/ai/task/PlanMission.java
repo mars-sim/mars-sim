@@ -155,7 +155,7 @@ public class PlanMission extends Task implements Serializable {
 		boolean canDo = person.getMind().canStartNewMission();
 		
 		if (!canDo) {
-			LogConsolidated.log(Level.INFO, 10_000, sourceName, 
+			LogConsolidated.flog(Level.INFO, 10_000, sourceName, 
 					"[" + person.getAssociatedSettlement() + "] " 
 			+ person.getName() + " just joined in a mission and was unable to start a new one at this moment.");
 			endTask();
@@ -187,7 +187,7 @@ public class PlanMission extends Task implements Serializable {
 		Mission mission = person.getMind().getMission();
 		
 		if (mission instanceof VehicleMission) {
-			LogConsolidated.log(Level.INFO, 0, sourceName, 
+			LogConsolidated.flog(Level.INFO, 0, sourceName, 
 					"[" + person.getLocationTag().getQuickLocation() + "] " + person.getName() + " submitted a mission plan for " + mission.toString());
 			// Flag the mission plan ready for submission
 			((VehicleMission)mission).flag4Submission();

@@ -612,7 +612,7 @@ public class Farming extends Function implements Serializable {
 			inv.addAmountDemandTotalRequest(tissueID, amountStored);
 
 			if (amountStored < MIN) {
-				LogConsolidated.log(Level.INFO, 1000, sourceName,
+				LogConsolidated.flog(Level.INFO, 1000, sourceName,
 						"[" + building.getSettlement() + "]" + "Ran out of " + tissueName);
 				percent = 0;
 			}
@@ -621,7 +621,7 @@ public class Farming extends Function implements Serializable {
 				available = true;
 				percent = amountStored / requestedAmount * 100D;
 				requestedAmount = amountStored;
-				LogConsolidated.log(Level.INFO, 1000, sourceName,
+				LogConsolidated.flog(Level.INFO, 1000, sourceName,
 						"[" + building.getSettlement() + "] " + Math.round(requestedAmount * 100.0) / 100.0 + " kg " + tissueName
 								+ " was partially available.");
 			}
@@ -629,7 +629,7 @@ public class Farming extends Function implements Serializable {
 			else {
 				available = true;
 				percent = 100D;
-				LogConsolidated.log(Level.INFO, 1000, sourceName, "[" + building.getSettlement() + "] "
+				LogConsolidated.flog(Level.INFO, 1000, sourceName, "[" + building.getSettlement() + "] "
 						+ Math.round(requestedAmount * 100.0) / 100.0 + " kg " + tissueName + " was fully available.");
 			}
 
@@ -920,7 +920,7 @@ public class Farming extends Function implements Serializable {
 				crop.timePassing(time * productionLevel);
 			
 			} catch (Exception e) {
-				LogConsolidated.log(Level.WARNING, 1000, sourceName,
+				LogConsolidated.flog(Level.WARNING, 1000, sourceName,
 						"[" + building.getSettlement().getName() + "] " + crop.getCropName() + " ran into issues in " + building , e);
 				e.printStackTrace();
 			}
@@ -1061,7 +1061,7 @@ public class Farming extends Function implements Serializable {
 				cropHistory.put(crop.getIdentifier(), n);
 				building.getSettlement().fireUnitUpdate(UnitEventType.CROP_EVENT, crop);
 				
-				LogConsolidated.log(Level.INFO, 3_000, sourceName,
+				LogConsolidated.flog(Level.INFO, 3_000, sourceName,
 						"[" + building.getSettlement().getName() + "] " + p + " planted a new crop of " + n 
 						+ " in " + building.getNickName() + ".");
 				
@@ -1287,7 +1287,7 @@ public class Farming extends Function implements Serializable {
 					// store the tissues
 					if (STANDARD_AMOUNT_TISSUE_CULTURE > 0) {
 						store(STANDARD_AMOUNT_TISSUE_CULTURE, tissueID, sourceName + "::growCropTissue");
-						LogConsolidated.log(Level.INFO, 3_000, sourceName,
+						LogConsolidated.flog(Level.INFO, 3_000, sourceName,
 							"[" + building.getSettlement().getName() + "] " + p
 								+ " found no " + cropName + TISSUE_CULTURE
 								+ " in stock. Extracted " + STANDARD_AMOUNT_TISSUE_CULTURE
@@ -1315,7 +1315,7 @@ public class Farming extends Function implements Serializable {
 					// store the tissues
 					if (amountExtracted > 0) {
 						store(amountExtracted, tissueID, sourceName + "::growCropTissue");
-						LogConsolidated.log(Level.FINE, 3_000, sourceName,
+						LogConsolidated.flog(Level.FINE, 3_000, sourceName,
 							"[" + building.getSettlement().getName() 
 							+ "] " + p + " cloned "
 							+ Math.round(amountExtracted*1000.0)/1000.0D + " kg "

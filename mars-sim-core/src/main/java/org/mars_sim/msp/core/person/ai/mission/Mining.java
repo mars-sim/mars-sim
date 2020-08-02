@@ -403,7 +403,7 @@ public class Mining extends RoverMission {
 
 			if (!settlementInv.hasItemResource(ItemResourceUtil.pneumaticDrillID)
 					|| !settlementInv.hasItemResource(ItemResourceUtil.backhoeID)) {
-				LogConsolidated.log(Level.INFO, 0, sourceName, "[" + startingPerson.getSettlement() + "] "
+				LogConsolidated.flog(Level.INFO, 0, sourceName, "[" + startingPerson.getSettlement() + "] "
 						+ startingPerson.getName() + " could not load LUV and/or its attachment parts from " + getRover().getNickName());
 				addMissionStatus(MissionStatus.LUV_ATTACHMENT_PARTS_NOT_LOADABLE);
 				endMission();
@@ -419,7 +419,7 @@ public class Mining extends RoverMission {
 				luvInv.storeItemResources(ItemResourceUtil.backhoeID, 1);
 			} catch (Exception e) {
 //				logger.log(Level.SEVERE, "Light Utility Vehicle and/or its attachment parts could not be loaded.");
-				LogConsolidated.log(Level.INFO, 0, sourceName, "[" + startingPerson.getSettlement() + "] "
+				LogConsolidated.flog(Level.INFO, 0, sourceName, "[" + startingPerson.getSettlement() + "] "
 						+ startingPerson.getName() + " could not find the LUV attachment parts from " + getRover().getNickName());
 				addMissionStatus(MissionStatus.LUV_ATTACHMENT_PARTS_NOT_LOADABLE);
 				endMission();

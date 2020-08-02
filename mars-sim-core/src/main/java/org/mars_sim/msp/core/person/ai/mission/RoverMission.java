@@ -311,7 +311,7 @@ public abstract class RoverMission extends VehicleMission {
 		Settlement settlement = v.getSettlement();
 		if (settlement == null) {
 			//throw new IllegalStateException(
-			LogConsolidated.log(Level.WARNING, 0, sourceName, 
+			LogConsolidated.flog(Level.WARNING, 0, sourceName, 
 					Msg.getString("RoverMission.log.notAtSettlement", getPhase().getName())); //$NON-NLS-1$
 			addMissionStatus(MissionStatus.NO_AVAILABLE_VEHICLES);
 			endMission();
@@ -407,7 +407,7 @@ public abstract class RoverMission extends VehicleMission {
 					}
 				
 					else { // this crewmember cannot find the walking steps to enter the rover
-						LogConsolidated.log(Level.SEVERE, 10_000, sourceName,
+						LogConsolidated.flog(Level.SEVERE, 10_000, sourceName,
 								"[" + person.getLocationTag().getLocale() + "] " 
 									+  Msg.getString("RoverMission.log.unableToEnter", person.getName(), //$NON-NLS-1$
 								v.getName()));
@@ -422,7 +422,7 @@ public abstract class RoverMission extends VehicleMission {
 				if (Walk.canWalkAllSteps(robot, adjustedLoc.getX(), adjustedLoc.getY(), 0, v)) {
 					assignTask(robot, new Walk(robot, adjustedLoc.getX(), adjustedLoc.getY(), 0, v));
 				} else {
-					LogConsolidated.log(Level.SEVERE, 0, sourceName,
+					LogConsolidated.flog(Level.SEVERE, 0, sourceName,
 							"[" + robot.getLocationTag().getLocale() + "] " 
 								+  Msg.getString("RoverMission.log.unableToEnter", robot.getName(), //$NON-NLS-1$
 							v.getName()));
@@ -500,7 +500,7 @@ public abstract class RoverMission extends VehicleMission {
 			for (Person p : rover.getCrew()) {
 				if (p.isDeclaredDead()) {
 					
-					LogConsolidated.log(Level.FINER, 0, sourceName,
+					LogConsolidated.flog(Level.FINER, 0, sourceName,
 							"[" + p.getLocationTag().getLocale() + "] " + p.getName() 
 							+ "'s body had been retrieved from rover " + v.getName() + ".");
 				}
@@ -622,7 +622,7 @@ public abstract class RoverMission extends VehicleMission {
 					// Checks to see if the person has an EVA suit	
 					if (!ExitAirlock.goodEVASuitAvailable(rover.getInventory(), p)) {
 
-						LogConsolidated.log(Level.WARNING, 0, sourceName, "[" + p.getLocationTag().getLocale() + "] "
+						LogConsolidated.flog(Level.WARNING, 0, sourceName, "[" + p.getLocationTag().getLocale() + "] "
 										+ p + " could not find a working EVA suit and needed to wait.");
 					
 						// If the person does not have an EVA suit	
@@ -639,7 +639,7 @@ public abstract class RoverMission extends VehicleMission {
 //								disembarkSettlement.getInventory().retrieveUnit(suit);
 //								rover.getInventory().storeUnit(suit);
 								
-								LogConsolidated.log(Level.WARNING, 0, sourceName, "[" + p.getLocationTag().getLocale() + "] "
+								LogConsolidated.flog(Level.WARNING, 0, sourceName, "[" + p.getLocationTag().getLocale() + "] "
 										+ p + " received a spare EVA suit from the settlement.");
 							}
 						}
@@ -649,14 +649,14 @@ public abstract class RoverMission extends VehicleMission {
 				if (Walk.canWalkAllSteps(p, adjustedLoc.getX(), adjustedLoc.getY(), 0, destinationBuilding)) {
 			
 					if (hasStrength) {
-						LogConsolidated.log(Level.INFO, 20_000, sourceName, 
+						LogConsolidated.flog(Level.INFO, 20_000, sourceName, 
 								"[" + disembarkSettlement.getName() + "] "
 								+ p.getName() + " still had strength left and would help unload cargo.");
 						// help unload the cargo
 						unloadCargo(p, rover);
 					}	
 					else {
-						LogConsolidated.log(Level.INFO, 20_000, sourceName, 
+						LogConsolidated.flog(Level.INFO, 20_000, sourceName, 
 								"[" + disembarkSettlement.getName() + "] "
 								+ p.getName() + " had no more strength and walked back to the settlement.");
 						// walk back home
@@ -671,7 +671,7 @@ public abstract class RoverMission extends VehicleMission {
 					// TODO: consider inflatable medical tent for emergency transport of incapacitated personnel
 					
 					// This person needs to be rescued.
-					LogConsolidated.log(Level.INFO, 0, sourceName, 
+					LogConsolidated.flog(Level.INFO, 0, sourceName, 
 							"[" + disembarkSettlement.getName() + "] "
 							+ Msg.getString("RoverMission.log.emergencyEnterSettlement", p.getName(), 
 									disembarkSettlement.getNickName())); //$NON-NLS-1$
@@ -680,7 +680,7 @@ public abstract class RoverMission extends VehicleMission {
 					// TODO: Gets a lead person to perform it and give him a rescue badge
 					rescueOperation(rover, p, disembarkSettlement);
 					
-					LogConsolidated.log(Level.INFO, 0, sourceName, 
+					LogConsolidated.flog(Level.INFO, 0, sourceName, 
 							"[" + disembarkSettlement.getName() + "] "
 							+ p.getName() 
 							+ " was transported to ("

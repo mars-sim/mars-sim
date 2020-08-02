@@ -106,7 +106,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 					String deputy = malfunction.getDeputyRepairer(3);
 
 					if (chief == null || chief.equals("")) {
-						LogConsolidated.log(Level.INFO, 0, sourceName,
+						LogConsolidated.flog(Level.INFO, 0, sourceName,
 								"[" + entity.getLocale() + "] " + person 
 								+ " was appointed as the chief repairer handling the EVA Repair for '" 
 								+ malfunction.getName() + "' on "
@@ -114,7 +114,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 						 malfunction.setChiefRepairer(3, person.getName());						
 					}
 					else if (deputy == null || deputy.equals("")) {
-						LogConsolidated.log(Level.INFO, 0, sourceName,
+						LogConsolidated.flog(Level.INFO, 0, sourceName,
 								"[" + entity.getLocale() + "] " + person 
 								+ " was appointed as the deputy repairer handling the EVA Repair for '" 
 								+ malfunction.getName() + "' on "
@@ -517,7 +517,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 
 		// Check if there are no more malfunctions.
 		if (isEVAMalfunction && malfunction.needEVARepair() && malfunction.isEVARepairDone()) {
-			LogConsolidated.log(Level.INFO, 1_000, sourceName,
+			LogConsolidated.flog(Level.INFO, 1_000, sourceName,
 				"[" + person.getLocationTag().getLocale() + "] " + person.getName()
 					+ " wrapped up the EVA Repair of " + malfunction.getName() 
 					+ " in "+ entity + " (" + Math.round(malfunction.getCompletedEVAWorkTime()*10.0)/10.0 + " millisols spent).");

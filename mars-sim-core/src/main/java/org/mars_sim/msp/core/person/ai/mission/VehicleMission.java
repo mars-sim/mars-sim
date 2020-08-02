@@ -443,7 +443,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			if (!vehicle.isBeaconOn()) {
 				// if the emergency beacon is off
 				// Question: could the emergency beacon itself be broken ?
-				LogConsolidated.log(Level.INFO, 0, sourceName,
+				LogConsolidated.flog(Level.INFO, 0, sourceName,
 						"[" + startingMember.getLocationTag().getLocale() + "] " + startingMember
 								+ " turned on " + vehicle
 								+ "'s emergency beacon and request for towing with the following status flag(s) :");
@@ -458,7 +458,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 					// Note: the vehicle is being towed, wait till the journey is over
 					// don't end the mission yet
 					// So do not called setPhaseEnded(true) and super.endMission(reason);
-					LogConsolidated.log(Level.INFO, 2000, sourceName,
+					LogConsolidated.flog(Level.INFO, 2000, sourceName,
 							"[" + vehicle.getLocationTag().getLocale() + "] "
 							+  vehicle.getName() + " is currently being towed by " + vehicle.getTowingVehicle());
 //							+ " Remaining distance : " + getClosestDistance() + " km.", null);
@@ -478,7 +478,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			if (!vehicle.isBeaconOn()) {
 				// if the emergency beacon is off
 				// Question: could the emergency beacon itself be broken ?
-				LogConsolidated.log(Level.INFO, 0, sourceName,
+				LogConsolidated.flog(Level.INFO, 0, sourceName,
 						"[" + startingMember.getLocationTag().getLocale() + "] " + startingMember
 								+ " turned on " + vehicle
 								+ "'s emergency beacon and request for towing with the following status flag(s) :");
@@ -543,13 +543,13 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		boolean settlementSupplies = LoadVehicleGarage.hasEnoughSupplies(settlement, vehicle, resources, equipment,
 				getPeopleNumber(), tripTime);
 		if (!vehicleCapacity) {
-			LogConsolidated.log(Level.WARNING, 5000, sourceName,
+			LogConsolidated.flog(Level.WARNING, 5000, sourceName,
 					"[" + vehicle.getName() + "] doesn't have enough capacity for " + startingMember + "'s proposed excursion.");
 			// Disapprove this mission
 			setApproval(false);
 		}
 		if (!settlementSupplies) {
-			LogConsolidated.log(Level.WARNING, 5000, sourceName,
+			LogConsolidated.flog(Level.WARNING, 5000, sourceName,
 					"[" + settlement.getName() + "] doesn't have enough supplies for " + startingMember + "'s proposed excursion.");
 			// Disapprove this mission
 			setApproval(false);		
@@ -1043,7 +1043,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 								+ ResourceUtil.findAmountResourceName(id) + " to continue with "
 								+ getName() + " (Required: " + Math.round(amount * 100D) / 100D + " kg  Stored: "
 								+ Math.round(amountStored * 100D) / 100D + " kg).";
-						LogConsolidated.log(Level.WARNING, 10_000, sourceName, newLog);
+						LogConsolidated.flog(Level.WARNING, 10_000, sourceName, newLog);
 						return false;
 					}
 				}
@@ -1056,7 +1056,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 						String newLog = "[" + vehicle.getLocationTag().getLocale() + "] " + vehicle.getName() + " did not have enough " 
 								+ ItemResourceUtil.findItemResource(id).getName() + " to continue with "
 								+ getName() + " (Required: " + num + "  Stored: " + numStored + ").";
-						LogConsolidated.log(Level.WARNING, 10_000, sourceName, newLog);
+						LogConsolidated.flog(Level.WARNING, 10_000, sourceName, newLog);
 						return false;
 					}
 				}
@@ -1082,7 +1082,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 
 		if ((nextNav != null) && (newDestination == nextNav.getSettlement())) {
 			// If the closest settlement is already the next navpoint.
-			LogConsolidated.log(Level.WARNING, 10000, sourceName,
+			LogConsolidated.flog(Level.WARNING, 10000, sourceName,
 					"[" + vehicle.getName() 
 					+ "] Emergency encountered.  Returning to home settlement (" + newDestination.getName() 
 					+ ") : " + Math.round(newDistance * 100D) / 100D
@@ -1095,7 +1095,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 
 		else {
 			// If the closet settlement is not the home settlement
-			LogConsolidated.log(Level.WARNING, 10000, sourceName,
+			LogConsolidated.flog(Level.WARNING, 10000, sourceName,
 					"[" + vehicle.getName() 
 					+ "] Emergency encountered.  Home settlement (" + oldHome.getName() + ") : " 
 					+ Math.round(oldDistance * 100D) / 100D

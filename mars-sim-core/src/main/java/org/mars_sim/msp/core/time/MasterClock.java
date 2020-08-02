@@ -919,7 +919,7 @@ public class MasterClock implements Serializable {
 				}
 				else {
 					// NOTE: when resuming from power saving, timePulse becomes zero
-					LogConsolidated.log(Level.CONFIG, 0, sourceName, "The clockListenerExecutor has died. Restarting...");
+					LogConsolidated.flog(Level.CONFIG, 0, sourceName, "The clockListenerExecutor has died. Restarting...");
 					resetClockListeners();
 				}
 			}

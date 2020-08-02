@@ -196,7 +196,7 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 			if (getInventory().getAmountResourceStored(ResourceUtil.oxygenID, false) <= massO2MinimumLimit) {
 				String name = ((Person)(super.getLastOwner())).getName();
 				
-				LogConsolidated.log(Level.WARNING, 10_000, sourceName,
+				LogConsolidated.flog(Level.WARNING, 10_000, sourceName,
 						"[" + this.getLocationTag().getLocale() + "] " 
 								+ getName() + " worned by " + name
 								+ " had less than 0.1792 kg oxygen (below the safety limit).");
@@ -206,7 +206,7 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 			if (getInventory().getAmountResourceStored(ResourceUtil.waterID, false) <= 0D) {
 				String name = ((Person)(super.getLastOwner())).getName();
 				
-				LogConsolidated.log(Level.WARNING, 10_000, sourceName,
+				LogConsolidated.flog(Level.WARNING, 10_000, sourceName,
 						"[" + this.getLocationTag().getLocale() + "] " 
 								+ getName() + " worned by " + name + " ran out of water.");
 //				return false;
@@ -214,7 +214,7 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 			
 			if (malfunctionManager.getOxygenFlowModifier() < 100D) {
 				String name = ((Person)(super.getLastOwner())).getName();
-				LogConsolidated.log(Level.WARNING, 10_000, sourceName,
+				LogConsolidated.flog(Level.WARNING, 10_000, sourceName,
 						"[" + this.getLocationTag().getLocale() + "] " 
 								+ getName() + " worned by " + name + "had oxygen flow sensor malfunction.", null);
 				return false;
@@ -228,14 +228,14 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 
 			double p = getAirPressure();
 			if (p > PhysicalCondition.MAXIMUM_AIR_PRESSURE || p <= min_o2_pressure) {
-				LogConsolidated.log(Level.WARNING, 5000, sourceName,
+				LogConsolidated.flog(Level.WARNING, 5000, sourceName,
 						"[" + this.getLocationTag().getLocale() + "] " 
 								+ this.getName() + " detected improper o2 pressure at " + Math.round(p * 100.0D) / 100.0D);
 				return false;
 			}
 			double t = getTemperature();
 			if (t > NORMAL_TEMP + 15 || t < NORMAL_TEMP - 20) {
-				LogConsolidated.log(Level.WARNING, 5000, sourceName,
+				LogConsolidated.flog(Level.WARNING, 5000, sourceName,
 						"[" + this.getLocationTag().getLocale() + "] " 
 								+ this.getName() + " detected improper temperature at " + Math.round(t * 100.0D) / 100.0D);
 				return false;
@@ -347,7 +347,7 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 		if (oxygenLeft < massO2NominalLimit) {
 			double remainingMass = oxygenLeft;
 			double pp = CompositionOfAir.KPA_PER_ATM * remainingMass / CompositionOfAir.O2_MOLAR_MASS * CompositionOfAir.R_GAS_CONSTANT / TOTAL_VOLUME;
-			LogConsolidated.log(Level.WARNING, 10_000, sourceName,
+			LogConsolidated.flog(Level.WARNING, 10_000, sourceName,
 					"[" + this.getLocationTag().getLocale() + "] " 
 						+ this.getName() + " has " + Math.round(oxygenLeft*100.0)/100.0
 						+ " kg O2 left at partial pressure of " + Math.round(pp*100.0)/100.0);

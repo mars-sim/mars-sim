@@ -1258,7 +1258,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 
 					if (building.getNickName().toLowerCase().contains("astronomy")) {
 						if (robot.getSettlement().getBuildingConnectors(building).size() > 0) {
-							LogConsolidated.log(Level.FINER, 5000, sourceName,
+							LogConsolidated.flog(Level.FINER, 5000, sourceName,
 									"[" + robot.getLocationTag().getLocale() + "] " 
 											+ robot.getName() + " is walking toward " + building.getNickName());
 							walkToActivitySpotInBuilding(building, fct, allowFail);
@@ -1289,13 +1289,13 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			} else {
 
 				if (!allowFail) {
-					LogConsolidated.log(Level.INFO, 0, sourceName,
+					LogConsolidated.flog(Level.INFO, 0, sourceName,
 							"[" + person.getLocationTag().getLocale() + "] " 
 									+ person.getName() + " ended the task of walking to " + interiorObject);
 					endTask();
 				}
 				else {
-					LogConsolidated.log(Level.INFO, 0, sourceName,
+					LogConsolidated.flog(Level.INFO, 0, sourceName,
 							"[" + person.getLocationTag().getLocale() + "] " 
 									+ person.getName() + " was unable to walk to " + interiorObject);
 				}
@@ -1306,13 +1306,13 @@ public abstract class Task implements Serializable, Comparable<Task> {
 				addSubTask(new Walk(robot, settlementPos.getX(), settlementPos.getY(), 0, interiorObject));
 			} else {
 				if (!allowFail) {
-					LogConsolidated.log(Level.INFO, 0, sourceName,
+					LogConsolidated.flog(Level.INFO, 0, sourceName,
 							"[" + robot.getLocationTag().getLocale() + "] " 
 									+ robot.getName() + " ended the task of walking to " + interiorObject);
 					endTask();
 				}
 				else {
-					LogConsolidated.log(Level.INFO, 0, sourceName,
+					LogConsolidated.flog(Level.INFO, 0, sourceName,
 							"[" + robot.getLocationTag().getLocale() + "] " 
 									+ robot.getName() + " was unable to walk to " + interiorObject);
 				}

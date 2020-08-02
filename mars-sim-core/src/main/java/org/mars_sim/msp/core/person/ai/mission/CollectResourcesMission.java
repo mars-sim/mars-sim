@@ -815,7 +815,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 	    	// Add the equipment demand for a bag
 //	    	settlement.getInventory().addEquipmentDemandTotalRequest(id, 1);
 //	    	settlement.getInventory().addEquipmentDemand(id, 1);
-        	LogConsolidated.log(Level.WARNING, 10_000, sourceName,
+        	LogConsolidated.flog(Level.WARNING, 10_000, sourceName,
 					"[" 
 					+ settlement
 					+ "] no more empty " + name 

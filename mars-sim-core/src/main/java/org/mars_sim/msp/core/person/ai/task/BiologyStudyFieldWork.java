@@ -125,7 +125,7 @@ implements Serializable {
             	return false;
             
             if (isGettingDark(person)) {
-    			LogConsolidated.log(Level.FINE, 5000, sourceName,
+    			LogConsolidated.flog(Level.FINE, 5000, sourceName,
     					"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " ended "
     					+ person.getTaskDescription() + " due to getting too dark "
     					+ " at " + person.getCoordinates().getFormattedString());
@@ -186,7 +186,7 @@ implements Serializable {
         }
 
         if (addTimeOnSite(time)) {
-    		LogConsolidated.log(Level.INFO, 0, sourceName,
+    		LogConsolidated.flog(Level.INFO, 0, sourceName,
     				"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
     				+ " was done doing biology study field work and going back to the rover.");
             setPhase(WALK_BACK_INSIDE);

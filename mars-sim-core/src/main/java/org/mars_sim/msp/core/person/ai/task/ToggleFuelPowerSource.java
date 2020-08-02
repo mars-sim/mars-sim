@@ -437,7 +437,7 @@ implements Serializable {
             String toggle = "off";
             if (toggleOn) toggle = "on";
             
-            LogConsolidated.log(Level.FINE, 3_000, sourceName,
+            LogConsolidated.flog(Level.FINE, 3_000, sourceName,
     				"[" + settlement + "] " + person.getName() + " was turning " + toggle + " " + powerSource.getType() +
                     " at " + settlement.getName() + ": " + building.getNickName());
         }

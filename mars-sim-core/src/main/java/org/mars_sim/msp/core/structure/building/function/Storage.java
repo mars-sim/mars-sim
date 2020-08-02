@@ -306,7 +306,7 @@ public class Storage extends Function implements Serializable {
 						Settlement s = (Settlement)(inv.getOwner());
 						s.increaseGreyWaterFilteringRate();
 						double r = s.getGreyWaterFilteringRate();
-						LogConsolidated.log(Level.WARNING, 10_000, sourceName + "::" + method, 
+						LogConsolidated.flog(Level.WARNING, 10_000, sourceName + "::" + method, 
 								"[" + s
 					    		+ "] Updated the grey water filtering rate to " + Math.round(r*100.0)/100.0 + ".");
 					}
@@ -318,7 +318,7 @@ public class Storage extends Function implements Serializable {
 					// capacity to full
 					if (!method.equals(""))
 						method = " at " + method;
-				    LogConsolidated.log(Level.SEVERE, 30_000, sourceName + method, 
+				    LogConsolidated.flog(Level.SEVERE, 30_000, sourceName + method, 
 				    		"[" + inv.getOwner()
 				    		+ "] The storage capacity for " 
 				    		+ ResourceUtil.findAmountResourceName(id) + " has been reached. Only "
@@ -342,7 +342,7 @@ public class Storage extends Function implements Serializable {
 
 			} catch (Exception e) {
 				e.printStackTrace(System.err);
-				LogConsolidated.log(Level.SEVERE, 10_000, sourceName,
+				LogConsolidated.flog(Level.SEVERE, 10_000, sourceName,
 						"[" + inv.getOwner()
 			    		+ "] Issues with (int) storeAnResource on " + ResourceUtil.findAmountResourceName(id) + " : " + e.getMessage(), e);
 			}
@@ -350,7 +350,7 @@ public class Storage extends Function implements Serializable {
 			result = false;
 			if (!method.equals(""))
 				method = " at " + method;
-			LogConsolidated.log(Level.SEVERE, 10_000, sourceName, "[" + inv.getOwner()
+			LogConsolidated.flog(Level.SEVERE, 10_000, sourceName, "[" + inv.getOwner()
     		+ "] Attempting to store non-positive amount of "
 					+ ResourceUtil.findAmountResourceName(id) + method);
 		}
@@ -407,7 +407,7 @@ public class Storage extends Function implements Serializable {
 						// Adjust the grey water filtering rate
 						s.decreaseGreyWaterFilteringRate();
 						double r = s.getGreyWaterFilteringRate();
-						LogConsolidated.log(Level.WARNING, 1_000, sourceName, 
+						LogConsolidated.flog(Level.WARNING, 1_000, sourceName, 
 								"[" + s
 					    		+ "] Updated the new grey water filtering rate to " + Math.round(r*100.0)/100.0 + ".");
 					}
@@ -418,7 +418,7 @@ public class Storage extends Function implements Serializable {
 						inv.retrieveAmountResource(id, amount);
 //						inv.addAmountDemand(id, amount);
 					}
-					LogConsolidated.log(Level.WARNING, 30_000, sourceName,
+					LogConsolidated.flog(Level.WARNING, 30_000, sourceName,
 							"[" + inv.getOwner()
 				    		+ "] ran out of "
 							+ ResourceUtil.findAmountResourceName(id) + "."
@@ -434,13 +434,13 @@ public class Storage extends Function implements Serializable {
 				}
 			} catch (Exception e) {
 				e.printStackTrace(System.err);
-				LogConsolidated.log(Level.SEVERE, 10_000, sourceName, "[" + inv.getOwner()
+				LogConsolidated.flog(Level.SEVERE, 10_000, sourceName, "[" + inv.getOwner()
 	    		+ "] Issues with retrieveAnResource(ar) on "
 						+ ResourceUtil.findAmountResourceName(id) + " : " + e.getMessage(), e);
 			}
 		} else {
 			result = false;
-			LogConsolidated.log(Level.SEVERE, 10_000, sourceName, "[" + inv.getOwner()
+			LogConsolidated.flog(Level.SEVERE, 10_000, sourceName, "[" + inv.getOwner()
     		+ "] Attempting to retrieve non-positive amount of "
 					+ ResourceUtil.findAmountResourceName(id));
 		}

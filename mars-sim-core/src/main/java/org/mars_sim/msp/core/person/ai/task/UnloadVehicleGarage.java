@@ -130,7 +130,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 			addPhase(UNLOADING);
 			setPhase(UNLOADING);
 
-			LogConsolidated.log(Level.FINER, 0, sourceName,
+			LogConsolidated.flog(Level.FINER, 0, sourceName,
 					"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " in "
 							+ person.getLocationTag().getImmediateLocation() + " was going to unload "
 							+ vehicle.getName() + ".");
@@ -177,7 +177,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 			addPhase(UNLOADING);
 			setPhase(UNLOADING);
 
-			LogConsolidated.log(Level.FINER, 0, sourceName,
+			LogConsolidated.flog(Level.FINER, 0, sourceName,
 					"[" + robot.getLocationTag().getLocale() + "] " + robot.getName() + " in "
 							+ robot.getLocationTag().getImmediateLocation() + " was going to unload "
 							+ vehicle.getName() + ".");
@@ -215,7 +215,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 		addPhase(UNLOADING);
 		setPhase(UNLOADING); 
 	
-		LogConsolidated.log(Level.FINER, 0, sourceName,
+		LogConsolidated.flog(Level.FINER, 0, sourceName,
 				"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " in "
 						+ person.getLocationTag().getImmediateLocation() + " was going to unload " + vehicle.getName()
 						+ ".");
@@ -247,7 +247,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 		addPhase(UNLOADING);
 		setPhase(UNLOADING); 
 	
-		LogConsolidated.log(Level.FINER, 0, sourceName,
+		LogConsolidated.flog(Level.FINER, 0, sourceName,
 				"[" + robot.getLocationTag().getLocale() + "] " + robot.getName() + " in "
 						+ robot.getLocationTag().getImmediateLocation() + " was going to unload " + vehicle.getName()
 						+ ".");
@@ -466,12 +466,12 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 					// Note: In maven test, the name of the vehicle is "Mock Vehicle" 
 					// test if it's NOT under maven test
 					if (person != null)
-						LogConsolidated.log(Level.INFO, 3_000, sourceName,
+						LogConsolidated.flog(Level.INFO, 3_000, sourceName,
 								"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " in "
 										+ person.getLocationTag().getImmediateLocation() + " unloaded "
 										+ equipment.getNickName() + " from " + vehicle.getName() + ".");
 					else
-						LogConsolidated.log(Level.INFO, 3_000, sourceName,
+						LogConsolidated.flog(Level.INFO, 3_000, sourceName,
 								"[" + robot.getLocationTag().getLocale() + "] " + robot.getName() + " in "
 										+ robot.getLocationTag().getImmediateLocation() + " unloaded "
 										+ equipment.getNickName() + " from " + vehicle.getName() + ".");
@@ -512,7 +512,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 				}
 						
 			} catch (Exception e) {
-				LogConsolidated.log(Level.WARNING, 3_000, sourceName,
+				LogConsolidated.flog(Level.WARNING, 3_000, sourceName,
 						"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " in "
 								+ person.getLocationTag().getImmediateLocation() + " Could NOT unload the resources.", e);
 			}
@@ -526,13 +526,13 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 				// test if it's NOT under maven test
 
 			if (person != null)
-				LogConsolidated.log(Level.INFO, 3_000, sourceName,
+				LogConsolidated.flog(Level.INFO, 3_000, sourceName,
 						"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " in "
 								+ person.getLocationTag().getImmediateLocation() + " just unloaded a total of "
 								+ Math.round(totalAmount * 100.0) / 100.0 + " kg of resources from " + vehicle.getName()
 								+ ".");
 			else
-				LogConsolidated.log(Level.INFO, 3_000, sourceName,
+				LogConsolidated.flog(Level.INFO, 3_000, sourceName,
 						"[" + robot.getLocationTag().getLocale() + "] " + robot.getName() + " in "
 								+ robot.getLocationTag().getImmediateLocation() + " just unloaded a total of "
 								+ Math.round(totalAmount * 100.0) / 100.0 + " kg of resources from " + vehicle.getName()
@@ -561,12 +561,12 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 
 			if (totalItems > 0) {
 				if (person != null)
-					LogConsolidated.log(Level.INFO, 3_000, sourceName,
+					LogConsolidated.flog(Level.INFO, 3_000, sourceName,
 							"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " in "
 									+ person.getLocationTag().getImmediateLocation() + " just unloaded a total of "
 									+ totalItems + " items from " + vehicle.getName() + ".");
 				else
-					LogConsolidated.log(Level.INFO, 3_000, sourceName,
+					LogConsolidated.flog(Level.INFO, 3_000, sourceName,
 							"[" + robot.getLocationTag().getLocale() + "] " + robot.getName() + " in "
 									+ robot.getLocationTag().getImmediateLocation() + " just unloaded a total of "
 									+ totalItems + " items from " + vehicle.getName() + ".");
@@ -593,7 +593,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 			for (Person p : crewable.getCrew()) {
 				if (p.isDeclaredDead()) {
 					
-					LogConsolidated.log(Level.INFO, 0, sourceName,
+					LogConsolidated.flog(Level.INFO, 0, sourceName,
 								"[" + person.getLocationTag().getLocale() + "] " + person.getName()
 										+ " was retrieving the dead body of " + p + " from " + vehicle.getName()
 										+ " parked inside " + settlement, null);

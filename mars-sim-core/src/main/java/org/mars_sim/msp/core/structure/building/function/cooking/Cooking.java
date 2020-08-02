@@ -817,7 +817,7 @@ public class Cooking extends Function implements Serializable {
 		// Reduce a tiny bit of kitchen's cleanliness upon every meal made
 		cleanliness = cleanliness - .0075;
 
-		LogConsolidated.log(Level.INFO, 5_000, sourceName,
+		LogConsolidated.flog(Level.INFO, 5_000, sourceName,
 				"[" + building.getSettlement() + "] " + producerName + " cooked '" + nameOfMeal + "' in " + building + ".");
 
 		return nameOfMeal;
@@ -917,7 +917,7 @@ public class Cooking extends Function implements Serializable {
 		}
 		// oil is not available
 		else if (logger.isLoggable(Level.FINE)) {
-			LogConsolidated.log(Level.FINE, 30_000, sourceName, "[" + building.getSettlement() + "] No oil is available.");
+			LogConsolidated.flog(Level.FINE, 30_000, sourceName, "[" + building.getSettlement() + "] No oil is available.");
 		}
 
 		return false;
@@ -981,7 +981,7 @@ public class Cooking extends Function implements Serializable {
 									.append(" kg ").append(meal.getName().toLowerCase()).append(DISCARDED)
 									.append(getBuilding().getNickName()).append(".");
 
-							LogConsolidated.log(Level.FINE, 10_000, sourceName, log.toString());
+							LogConsolidated.flog(Level.FINE, 10_000, sourceName, log.toString());
 
 						} else {
 							// Convert the meal into preserved food.
@@ -991,7 +991,7 @@ public class Cooking extends Function implements Serializable {
 									.append(dryMassPerServing).append(" kg ").append(meal.getName().toLowerCase())
 									.append(PRESERVED).append(getBuilding().getNickName()).append(".");
 
-							LogConsolidated.log(Level.FINE, 10_000, sourceName, log.toString());
+							LogConsolidated.flog(Level.FINE, 10_000, sourceName, log.toString());
 						}
 
 						// Adjust the rate to go down for each meal that wasn't eaten.

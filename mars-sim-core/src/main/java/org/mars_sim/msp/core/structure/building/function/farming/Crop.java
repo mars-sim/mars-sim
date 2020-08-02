@@ -339,7 +339,7 @@ public class Crop implements Serializable {
 				// assume a max 2-day incubation period if no 0% tissue culture is available
 				currentPhaseWorkCompleted = 0;
 				phaseType = PhaseType.INCUBATION;
-				LogConsolidated.log(Level.INFO, 0, sourceName,
+				LogConsolidated.flog(Level.INFO, 0, sourceName,
 						"[" + settlement + "] " + " No " + capitalizedCropName + " tissue culture left in " + farmName
 								+ ". Will take time to incubate and restock in " + farmName + ".");
 			}
@@ -348,7 +348,7 @@ public class Crop implements Serializable {
 				// assume zero day incubation period if 100% tissue culture is available
 				currentPhaseWorkCompleted = 0;
 				phaseType = PhaseType.PLANTING;
-				LogConsolidated.log(Level.INFO, 0, sourceName,
+				LogConsolidated.flog(Level.INFO, 0, sourceName,
 						"[" + settlement + "] Proceeding to transferring plantflets from " + capitalizedCropName
 								+ "'s tissue culture into the field.");
 
@@ -358,7 +358,7 @@ public class Crop implements Serializable {
 			else {
 				currentPhaseWorkCompleted = 1000D * phases.get(0).getWorkRequired() * (100D - tissuePercent) / 100D;
 				phaseType = PhaseType.INCUBATION;
-				LogConsolidated.log(Level.INFO, 0, sourceName,
+				LogConsolidated.flog(Level.INFO, 0, sourceName,
 						"[" + settlement + "] A work period of "
 								+ Math.round(currentPhaseWorkCompleted / 1000D * 10D) / 10D
 								+ " sols is needed to clone enough " + capitalizedCropName + " tissues before planting in " + farmName + ".");
@@ -702,7 +702,7 @@ public class Crop implements Serializable {
 					remainingTime = overWorkTime;
 
 					if (totalHarvest > 0)
-						LogConsolidated.log(Level.INFO, 0, sourceName,
+						LogConsolidated.flog(Level.INFO, 0, sourceName,
 							"[" + name + "] " + unit.getName() + " harvested a total of "
 									+ Math.round(totalHarvest * 100.0) / 100.0 + " kg "
 									+ capitalizedCropName + " in " + farmName);

@@ -122,17 +122,17 @@ extends Airlock {
     		successful = person.transfer(marsSurface, vehicle);
         
 			if (successful)
-				LogConsolidated.log(Level.FINER, 0, sourceName, 
+				LogConsolidated.flog(Level.FINER, 0, sourceName, 
 					"[" + person.getLocationTag().getLocale() + "] "
 					+ person.getName() + " had just stepped inside rover " + vehicle.getName());
 			else
-				LogConsolidated.log(Level.SEVERE, 0, sourceName, 
+				LogConsolidated.flog(Level.SEVERE, 0, sourceName, 
 						"[" + person.getLocationTag().getLocale() + "] "
 						+ person.getName() + " could not step inside rover " + vehicle.getName());
 
 		}
 		else if (person.isInSettlement()) {
-			LogConsolidated.log(Level.SEVERE, 0, sourceName, 
+			LogConsolidated.flog(Level.SEVERE, 0, sourceName, 
 					Msg.getString("VehicleAirlock.error.notOutside", person.getName(), getEntityName()));
 			//throw new IllegalStateException(Msg.getString("VehicleAirlock.error.notOutside",person.getName(),getEntityName())); //$NON-NLS-1$
 		}
@@ -156,17 +156,17 @@ extends Airlock {
 				// 5.2 Set the person's coordinates to that of the settlement's
 				person.setCoordinates(vehicle.getCoordinates());
 						
-				LogConsolidated.log(Level.FINER, 0, sourceName, 
+				LogConsolidated.flog(Level.FINER, 0, sourceName, 
 					"[" + person.getLocationTag().getLocale() + "] "
 					+ person.getName() + " had just stepped outside rover " + vehicle.getName());
 			}
 			else
-				LogConsolidated.log(Level.SEVERE, 0, sourceName, 
+				LogConsolidated.flog(Level.SEVERE, 0, sourceName, 
 						"[" + person.getLocationTag().getLocale() + "] "
 						+ person.getName() + " could not step outside rover " + vehicle.getName());
 		}
 		else if (person.isOutside()) {
-			LogConsolidated.log(Level.SEVERE, 0, sourceName, 
+			LogConsolidated.flog(Level.SEVERE, 0, sourceName, 
 					Msg.getString("VehicleAirlock.error.notInside", person.getName(), getEntityName()));
 			//throw new IllegalStateException(Msg.getString("VehicleAirlock.error.notInside",person.getName(),getEntityName())); //$NON-NLS-1$
 		}

@@ -235,7 +235,7 @@ public class HealthProblem implements Serializable {
 		MedicalEvent treatedEvent = new MedicalEvent(sufferer, this, EventType.MEDICAL_TREATED);
 		eventManager.registerNewEvent(treatedEvent);
 
-		LogConsolidated.log(Level.INFO, 0, sourceName, "[" + getSufferer().getLocationTag().getLocale() + "] "
+		LogConsolidated.flog(Level.INFO, 0, sourceName, "[" + getSufferer().getLocationTag().getLocale() + "] "
 						+ getSufferer().getName() + " began to receive treatment for " + toString().toLowerCase());
 	}
 

@@ -334,13 +334,13 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements Repai
 		// Check if the emergency malfunction work is fixed.
 		if (malfunction.needEmergencyRepair() && malfunction.isEmergencyRepairDone()) {	
 			if (person != null) {
-				LogConsolidated.log(Level.INFO, 0, sourceName,
+				LogConsolidated.flog(Level.INFO, 0, sourceName,
 					"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
 					+ " wrapped up the emergency repair of " + malfunction.getName() 
 					+ " in "+ entity + " (" + Math.round(malfunction.getCompletedEmergencyWorkTime()*10.0)/10.0 + " millisols spent).");
 			}
 			else {
-				LogConsolidated.log(Level.INFO, 0, sourceName,
+				LogConsolidated.flog(Level.INFO, 0, sourceName,
 						"[" + robot.getLocationTag().getLocale() + "] " + robot.getName() 
 						+ " wrapped up the emergency repair of " + malfunction.getName() 
 						+ " in "+ entity + " (" + Math.round(malfunction.getCompletedEmergencyWorkTime()*10.0)/10.0 + " millisols spent).");

@@ -176,7 +176,7 @@ public abstract class Airlock implements Serializable {
 						throw new IllegalStateException(person + " was still waiting inner door.");
 					}
 				}
-				LogConsolidated.log(Level.FINER, 0, sourceName,
+				LogConsolidated.flog(Level.FINER, 0, sourceName,
 						"[" + person.getLocationTag().getLocale() + "] " 
 							+ person.getName() + " entered through the inner door of the airlock at " + getEntityName());
 				result = true;
@@ -188,7 +188,7 @@ public abstract class Airlock implements Serializable {
 						throw new IllegalStateException(person + " was still awaiting outer door!");
 					}
 				}
-				LogConsolidated.log(Level.FINER, 0, sourceName,
+				LogConsolidated.flog(Level.FINER, 0, sourceName,
 						"[" + person.getLocationTag().getLocale() + "] " 
 							+ person.getName() + " entered through the outer door of the airlock at " + getEntityName());
 				result = true;
@@ -215,7 +215,7 @@ public abstract class Airlock implements Serializable {
 		
 		addPersonID(operator);
 		
-		LogConsolidated.log(Level.FINER, 0, sourceName,
+		LogConsolidated.flog(Level.FINER, 0, sourceName,
 				"[" + operator.getLocationTag().getLocale() + "] " 
 					+ operator.getName() + " as the operator was getting ready to activate the airlock at "
 					+ getEntityName());
@@ -241,7 +241,7 @@ public abstract class Airlock implements Serializable {
 					}
 
 					if (!occupantIDs.contains(id)) {
-						LogConsolidated.log(Level.FINER, 0, sourceName,
+						LogConsolidated.flog(Level.FINER, 0, sourceName,
 								"[" + person.getLocationTag().getLocale() + "] " 
 									+ person.getName() + " entered through the inner door of the airlock at "
 									+ getEntityName());
@@ -268,7 +268,7 @@ public abstract class Airlock implements Serializable {
 					}
 
 					if (!occupantIDs.contains(id)) {
-						LogConsolidated.log(Level.FINER, 0, sourceName,
+						LogConsolidated.flog(Level.FINER, 0, sourceName,
 								"[" + person.getLocationTag().getLocale() + "] " 
 								+ person.getName() + " entered through the outer door of the airlock at "
 								+ getEntityName());
@@ -291,7 +291,7 @@ public abstract class Airlock implements Serializable {
 			} else if (AirlockState.DEPRESSURIZED == airlockState) {
 				setState(AirlockState.PRESSURIZING);
 			} else {
-				LogConsolidated.log(Level.SEVERE, 5_000, sourceName,
+				LogConsolidated.flog(Level.SEVERE, 5_000, sourceName,
 						"[" + operator.getLocationTag().getLocale() + "] " 
 					+ operator.getName() + " reported the airlock was having incorrect state for activation: '" + airlockState + "'.");
 				return false;
@@ -374,7 +374,7 @@ public abstract class Airlock implements Serializable {
 			
 			operatorID = selectedID;
 
-			LogConsolidated.log(Level.FINER, 0, sourceName, "[" + selected.getLocationTag().getLocale() + "] "
+			LogConsolidated.flog(Level.FINER, 0, sourceName, "[" + selected.getLocationTag().getLocale() + "] "
 						+ selected + " stepped up and became the operator of the airlock in "
 						+ getEntityName());
 		}
@@ -431,7 +431,7 @@ public abstract class Airlock implements Serializable {
 	    		p = unitManager.getPersonByID(id);
 	    		lookupPerson.put(id, p);
 	    	}
-			LogConsolidated.log(Level.FINER, 0, sourceName,
+			LogConsolidated.flog(Level.FINER, 0, sourceName,
 					"[" + p.getLocationTag().getLocale() + "] " + p.getName()
 					+ " reported that the airlock in " + getEntity() + " had been " 
 					+ getState().toString().toLowerCase() + ".");
@@ -523,7 +523,7 @@ public abstract class Airlock implements Serializable {
 	public void addAwaitingAirlockInnerDoor(Person p) {
 		addPersonID(p);
 		if (!awaitingInnerDoor.contains(p.getIdentifier())) {
-			LogConsolidated.log(Level.FINER, 0, sourceName, "[" + p.getLocationTag().getLocale() + "] "
+			LogConsolidated.flog(Level.FINER, 0, sourceName, "[" + p.getLocationTag().getLocale() + "] "
 					+ p.getName() + " was awaiting the inner door of the airlock in " + getEntityName() + " to open.");
 			awaitingInnerDoor.add(p.getIdentifier());
 		}
@@ -537,7 +537,7 @@ public abstract class Airlock implements Serializable {
 	public void addAwaitingAirlockOuterDoor(Person p) {
 		addPersonID(p);
 		if (!awaitingOuterDoor.contains(p.getIdentifier())) {
-			LogConsolidated.log(Level.FINER, 0, sourceName, "[" + p.getLocationTag().getLocale() + "] "
+			LogConsolidated.flog(Level.FINER, 0, sourceName, "[" + p.getLocationTag().getLocale() + "] "
 					+ p.getName() + " was in " + p.getLocationTag().getImmediateLocation() 
 					+ " and waiting the outer door of the airlock in " + getEntityName() + " to open.");
 			awaitingOuterDoor.add(p.getIdentifier());
@@ -565,7 +565,7 @@ public abstract class Airlock implements Serializable {
 				if (isDead) {
 					// If operator is dead, deactivate airlock.
 					String operatorName = p.getName();
-					LogConsolidated.log(Level.WARNING, 10_000, sourceName, "[" + p.getLocationTag().getLocale() + "] "
+					LogConsolidated.flog(Level.WARNING, 10_000, sourceName, "[" + p.getLocationTag().getLocale() + "] "
 							+ "Airlock operator " + operatorName + " was dead."
 							+ getEntityName());
 					
@@ -588,7 +588,7 @@ public abstract class Airlock implements Serializable {
 
 					if (!hasAirlockTask) {
 						String operatorName = p.getName();
-						LogConsolidated.log(Level.FINE, 10_000, sourceName, "[" + p.getLocationTag().getLocale() + "] "
+						LogConsolidated.flog(Level.FINE, 10_000, sourceName, "[" + p.getLocationTag().getLocale() + "] "
 								+ operatorName 
 								+ " was no longer being the Airlock operator operating the airlock at " + getEntityName());
 						

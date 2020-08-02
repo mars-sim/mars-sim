@@ -292,7 +292,7 @@ implements Serializable {
 
         if (isPrimary) {
             if (study.isPrimaryPaperCompleted()) {
-    			LogConsolidated.log(Level.INFO, 0, sourceName, "[" + person.getLocationTag().getLocale() + "] "
+    			LogConsolidated.flog(Level.INFO, 0, sourceName, "[" + person.getLocationTag().getLocale() + "] "
     					+ person.getName() + " just spent " 
     					+ Math.round(study.getPrimaryPaperWorkTimeCompleted() *10.0)/10.0
     					+ " millisols in compiling data" 
@@ -303,7 +303,7 @@ implements Serializable {
         }
         else {
             if (study.isCollaborativePaperCompleted(person)) {
-    			LogConsolidated.log(Level.INFO, 0, sourceName, "[" + person.getLocationTag().getLocale() + "] "
+    			LogConsolidated.flog(Level.INFO, 0, sourceName, "[" + person.getLocationTag().getLocale() + "] "
     					+ person.getName() + " just spent " 
     					+ Math.round(study.getCollaborativePaperWorkTimeCompleted(person) *10.0)/10.0
     					+ " millisols in performing lab experiments" 

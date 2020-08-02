@@ -319,7 +319,7 @@ public class TreatMedicalPatient extends Task implements Serializable {
 
             medicalAid.startTreatment(healthProblem, duration);
 //            logger.info(person.getName() + " is treating " + patient + " for " + healthProblem.getIllness().getType().toString());
-    		LogConsolidated.log(Level.INFO, 0, sourceName, "[" + person.getLocationTag().getLocale() + "] "				
+    		LogConsolidated.flog(Level.INFO, 0, sourceName, "[" + person.getLocationTag().getLocale() + "] "				
 					+ person.getName() + " is treating " + patient + " for " + healthProblem.getIllness().getType().toString());
     		
             // Create starting task event if needed.

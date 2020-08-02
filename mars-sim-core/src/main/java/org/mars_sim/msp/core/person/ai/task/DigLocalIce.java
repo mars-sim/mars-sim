@@ -154,9 +154,9 @@ implements Serializable {
      * @return time (millisol) remaining after performing phase.
      */
     private double collectIce(double time) {
-    	LogConsolidated.log(Level.INFO, 0, sourceName, 
-        		"[" + person.getLocationTag().getLocale() +  "] " +
-        		person.getName() + " just called collectice()");
+//    	LogConsolidated.log(Level.INFO, 0, sourceName, 
+//        		"[" + person.getLocationTag().getLocale() +  "] " +
+//        		person.getName() + " just called collectice()");
     	
     	if (getTimeCompleted() > getDuration()) {
     		if (person.isOutside())
@@ -164,9 +164,9 @@ implements Serializable {
 //    		else
 //        		endTask();
     		
-        	LogConsolidated.log(Level.INFO, 0, sourceName, 
-            		"[" + person.getLocationTag().getLocale() +  "] " +
-            		person.getName() + " collectIce: getTimeCompleted() > getDuration()");
+//        	LogConsolidated.log(Level.INFO, 0, sourceName, 
+//            		"[" + person.getLocationTag().getLocale() +  "] " +
+//            		person.getName() + " collectIce: getTimeCompleted() > getDuration()");
         	
             return time;
     	}
@@ -264,7 +264,7 @@ implements Serializable {
 	        addExperience(time);
 	        
 	        if (finishedCollecting && totalCollected > 0) {
-	            LogConsolidated.log(Level.INFO, 0, sourceName, 
+	            LogConsolidated.log(logger, Level.INFO, 3000, sourceName, 
 		    		"[" + person.getLocationTag().getLocale() +  "] " +
 		    		person.getName() + " collected a total of " + Math.round(totalCollected*100D)/100D 
 		    		+ " kg of ice outside at " + person.getCoordinates().getFormattedString());
@@ -277,7 +277,7 @@ implements Serializable {
 	        }
 	
 	        if (fatigue > 1000 || stress > 50 || hunger > 750 || energy < 500) {
-	            LogConsolidated.log(Level.INFO, 0, sourceName, 
+	            LogConsolidated.log(logger, Level.INFO, 3000, sourceName, 
 	        		"[" + person.getLocationTag().getLocale() +  "] " +
 	                		+ Math.round(totalCollected*100D)/100D + " kg collected) " 
 	                		+ "; fatigue: " + Math.round(fatigue*10D)/10D 
@@ -323,7 +323,7 @@ implements Serializable {
 //                bag = aBag;
             }
             else {
-            	LogConsolidated.log(Level.WARNING, 10_000, sourceName,
+            	LogConsolidated.log(logger, Level.WARNING, 10_000, sourceName,
     					"[" 
     					+ person.getLocationTag().getLocale()
     					+ "] "  + person.getName() 
@@ -333,7 +333,7 @@ implements Serializable {
             }
         }
         else {
-        	LogConsolidated.log(Level.WARNING, 10_000, sourceName,
+        	LogConsolidated.log(logger, Level.WARNING, 10_000, sourceName,
 					"[" 
 					+ person.getLocationTag().getLocale()
 					+ "] "  + person.getName() 

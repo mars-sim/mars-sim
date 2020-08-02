@@ -110,7 +110,7 @@ public class MedicalAssistance extends Task implements Serializable {
 			try {
 				medical.startTreatment(problem, duration);
 				
-				LogConsolidated.log(Level.INFO, 0, sourceName, 
+				LogConsolidated.flog(Level.INFO, 0, sourceName, 
 						"[" + person.getLocationTag().getLocale() + "] " + person
 					+ " was treating " + problem.getIllness().getType().toString());
 

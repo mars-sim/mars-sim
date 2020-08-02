@@ -63,7 +63,7 @@ implements Serializable {
 
         // Check that the person is currently inside a rover.
         if (!person.isInVehicle()) {
-        	LogConsolidated.log(Level.SEVERE, 5000, sourceName, 
+        	LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, 
         			person + " is supposed to be inside rover "
            			+ rover.getName() + "."); 
     	}
@@ -112,7 +112,7 @@ implements Serializable {
 //        }
 
         if (!robot.isInVehicle()) {
-        	LogConsolidated.log(Level.SEVERE, 5000, sourceName, 
+        	LogConsolidated.log(logger, Level.SEVERE, 5000, sourceName, 
         			robot + " is supposed to be inside rover "
            			+ rover.getName() + "."); 
     	}
@@ -188,7 +188,7 @@ implements Serializable {
                     person.setXLocation(destXLoc);
                     person.setYLocation(destYLoc);
 //                    logger.finer(person.getName() + " walked to new location in " + rover.getName());
-        			LogConsolidated.log(Level.FINER, 5000, sourceName,
+        			LogConsolidated.log(logger, Level.FINER, 5000, sourceName,
         					"[" + person.getLocationTag().getLocale() + "] "
               						+ person + " was in " + person.getLocationTag().getImmediateLocation()
         					+ " and walked to new location in " + rover.getName() + ".", null);
@@ -198,7 +198,7 @@ implements Serializable {
                     robot.setXLocation(destXLoc);
                     robot.setYLocation(destYLoc);
 //                    logger.finer(robot.getName() + " walked to new location in " + rover.getName());
-        			LogConsolidated.log(Level.FINER, 5000, sourceName,
+        			LogConsolidated.log(logger, Level.FINER, 5000, sourceName,
         					"[" + robot.getLocationTag().getLocale() + "] "
               						+ robot + " was in " + robot.getLocationTag().getImmediateLocation()
         					+ " and walked to new location in " + rover.getName() + ".", null);
@@ -216,7 +216,7 @@ implements Serializable {
                 person.setXLocation(destXLoc);
                 person.setYLocation(destYLoc);
 //                logger.finer(person.getName() + " walked to new location in " + rover.getName());
-    			LogConsolidated.log(Level.FINER, 5000, sourceName,
+    			LogConsolidated.log(logger, Level.FINER, 5000, sourceName,
     					"[" + person.getLocationTag().getLocale() + "] "
           						+ person + " was in " + person.getLocationTag().getImmediateLocation()
     					+ " and walked to new location in " + rover.getName() + ".", null);
@@ -226,7 +226,7 @@ implements Serializable {
                 robot.setXLocation(destXLoc);
                 robot.setYLocation(destYLoc);
 //              logger.finer(robot.getName() + " walked to new location in " + rover.getName());
-    			LogConsolidated.log(Level.FINER, 5000, sourceName,
+    			LogConsolidated.log(logger, Level.FINER, 5000, sourceName,
     					"[" + robot.getLocationTag().getLocale() + "] "
           						+ robot + " was in " + robot.getLocationTag().getImmediateLocation()
     					+ " and walked to new location in " + rover.getName() + ".", null);

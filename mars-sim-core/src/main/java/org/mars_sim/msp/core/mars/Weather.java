@@ -836,7 +836,7 @@ public class Weather implements Serializable {
 					s.setDustStorm(ds);
 					newStormID++;
 
-					LogConsolidated.log(Level.INFO, 1000, sourceName,
+					LogConsolidated.flog(Level.INFO, 1000, sourceName,
 							"[" + ds.getSettlements().get(0).getName() + "] On L_s = " + Math.round(L_s * 100.0) / 100.0
 									+ ", " + ds.getName() + " was first spotted near " + s + "."); 
 
@@ -870,7 +870,7 @@ public class Weather implements Serializable {
 			}
 
 			if (ds.getSize() != 0)
-				LogConsolidated.log(Level.INFO, 1000, sourceName,
+				LogConsolidated.flog(Level.INFO, 1000, sourceName,
 						"[" + ds.getSettlements().get(0).getName() + "] On Sol " + (solCache + 1) + ", " + ds.getName()
 								+ " (size " + ds.getSize() + " with windspeed "
 								+ Math.round(ds.getSpeed() * 10.0) / 10.0 + " m/s) was sighted.");
@@ -914,7 +914,7 @@ public class Weather implements Serializable {
 			}
 
 			if (ds.getSize() != 0)
-				LogConsolidated.log(Level.INFO, 1000, sourceName,
+				LogConsolidated.flog(Level.INFO, 1000, sourceName,
 						"[" + ds.getSettlements().get(0).getName() + "] On Sol " + (solCache + 1) + ", " + ds.getName()
 								+ " (size " + ds.getSize() + " with windspeed "
 								+ Math.round(ds.getSpeed() * 10.0) / 10.0 + " m/s) was sighted.");
@@ -960,7 +960,7 @@ public class Weather implements Serializable {
 			}
 
 			if (ds.getSize() != 0)
-				LogConsolidated.log(Level.INFO, 1000, sourceName,
+				LogConsolidated.flog(Level.INFO, 1000, sourceName,
 						"[" + ds.getSettlements().get(0).getName() + "] On Sol " + (solCache + 1) + ", " + ds.getName()
 								+ " (size " + ds.getSize() + " with windspeed "
 								+ Math.round(ds.getSpeed() * 10.0) / 10.0 + " m/s) was sighted.");
@@ -994,7 +994,7 @@ public class Weather implements Serializable {
 			}
 
 			if (ds.getSize() != 0)
-				LogConsolidated.log(Level.INFO, 1000, sourceName,
+				LogConsolidated.flog(Level.INFO, 1000, sourceName,
 						"[" + ds.getSettlements().get(0) + "] On Sol " + (solCache + 1) + ", " + ds.getName()
 								+ " (size " + ds.getSize() + " with windspeed "
 								+ Math.round(ds.getSpeed() * 10.0) / 10.0 + " m/s) was sighted.");

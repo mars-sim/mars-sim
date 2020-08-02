@@ -1429,7 +1429,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 			// need to set up detection of the impactTimeInMillisol with a +/- 3 range.
 			int delta = (int) Math.sqrt(Math.sqrt(masterClock.getTimeRatio()));
 			if (now > moment_of_impact - 2 * delta && now < moment_of_impact + 2 * delta) {
-				LogConsolidated.log(Level.INFO, 0, sourceName,
+				LogConsolidated.flog(Level.INFO, 0, sourceName,
 						"[" + settlement + "] A meteorite impact over " + nickName + " is imminent.");
 				// Reset the boolean immmediately. This is for keeping track of whether the
 				// impact has occurred at msols

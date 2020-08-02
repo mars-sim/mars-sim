@@ -743,7 +743,7 @@ public class BuildingManager implements Serializable {
 		} 
 		
 		else {
-			LogConsolidated.log(Level.WARNING, 2000, sourceName,
+			LogConsolidated.flog(Level.WARNING, 2000, sourceName,
 					"[" + p.getLocationTag().getLocale() + "] No medical facility available for "
 							+ p.getName() + ". Go to a random building.");
 			addToRandomBuilding(p, settlementID);
@@ -777,7 +777,7 @@ public class BuildingManager implements Serializable {
 				// if it's NOT under maven test
 				// throw new IllegalStateException("No inhabitable buildings available for " +
 				// person.getName());
-				LogConsolidated.log(Level.WARNING, 2000, sourceName,
+				LogConsolidated.flog(Level.WARNING, 2000, sourceName,
 						"[" + person.getLocationTag().getLocale() + "] No inhabitable buildings available for "
 								+ person.getName());
 			}
@@ -907,7 +907,7 @@ public class BuildingManager implements Serializable {
 				settlement.getInventory().storeUnit(vehicle);
 			}
 			else { 
-				LogConsolidated.log(Level.INFO, 1000, sourceName,
+				LogConsolidated.flog(Level.INFO, 1000, sourceName,
 					"[" + settlement.getName() + "] " + vehicle.getName() + " already garaged in " + garageBldg);
 			}
 			return true;
@@ -928,7 +928,7 @@ public class BuildingManager implements Serializable {
 				// Place this vehicle inside a building
 //				vehicle.enter(LocationCodeType.BUILDING);
 				settlement.getInventory().storeUnit(vehicle);
-				LogConsolidated.log(Level.INFO, 1000, sourceName,
+				LogConsolidated.flog(Level.INFO, 1000, sourceName,
 						"[" + settlement.getName() + "] " +  vehicle.getName() + " has just been stowed inside " + getBuilding(vehicle, settlement));
 				vehicle.addStatus(StatusType.GARAGED);
 			}
@@ -963,7 +963,7 @@ public class BuildingManager implements Serializable {
 					}
 				} catch (Exception e) {
 //					logger.log(Level.SEVERE, "Calling getBuilding(vehicle): " + e.getMessage());
-					LogConsolidated.log(Level.SEVERE, 2000, sourceName,
+					LogConsolidated.flog(Level.SEVERE, 2000, sourceName,
 							"[" + vehicle.getLocationTag().getLocale() + "] "
 									+ vehicle.getName() + " is not in a building.", e);
 				}
@@ -990,7 +990,7 @@ public class BuildingManager implements Serializable {
 					}
 				} catch (Exception e) {
 //					logger.log(Level.SEVERE, "Calling getBuilding(vehicle, settlement) : " + e.getMessage());
-					LogConsolidated.log(Level.SEVERE, 2000, sourceName,
+					LogConsolidated.flog(Level.SEVERE, 2000, sourceName,
 							"[" + vehicle.getLocationTag().getLocale() + "] "
 									+ vehicle.getName() + " is not in a building.", e);
 				}
@@ -1390,7 +1390,7 @@ public class BuildingManager implements Serializable {
 			} catch (Exception e) {
 //				throw new IllegalStateException(
 //						"BuildingManager.addPersonOrRobotToBuildingSameLocation(): " + e.getMessage());
-				LogConsolidated.log(Level.SEVERE, 2000, sourceName,
+				LogConsolidated.flog(Level.SEVERE, 2000, sourceName,
 						"[" + person.getLocationTag().getLocale() + "] "
 								+ person.getName() + " could not be added to " + building.getNickName(), e);
 			}
@@ -1398,7 +1398,7 @@ public class BuildingManager implements Serializable {
 		
 		else 
 //			throw new IllegalStateException("Building is null");
-			LogConsolidated.log(Level.SEVERE, 2000, sourceName,
+			LogConsolidated.flog(Level.SEVERE, 2000, sourceName,
 				" the building is null.");
 	}
 		
@@ -1437,7 +1437,7 @@ public class BuildingManager implements Serializable {
 			} catch (Exception e) {
 //				throw new IllegalStateException(
 //						"BuildingManager.addPersonOrRobotToBuildingSameLocation(): " + e.getMessage());
-				LogConsolidated.log(Level.SEVERE, 2000, sourceName,
+				LogConsolidated.flog(Level.SEVERE, 2000, sourceName,
 						"[" + unit.getLocationTag().getLocale() + "] "
 								+ unit.getName() + " could not be added to " + building.getNickName(), e);
 			}
@@ -1445,7 +1445,7 @@ public class BuildingManager implements Serializable {
 		
 		else 
 //			throw new IllegalStateException("Building is null");
-			LogConsolidated.log(Level.SEVERE, 2000, sourceName,
+			LogConsolidated.flog(Level.SEVERE, 2000, sourceName,
 				" the building is null.");
 	}
 
@@ -1492,13 +1492,13 @@ public class BuildingManager implements Serializable {
 
 			} catch (Exception e) {
 //				throw new IllegalStateException("BuildingManager.addPersonOrRobotToBuilding(): " + e.getMessage());
-				LogConsolidated.log(Level.SEVERE, 2000, sourceName,
+				LogConsolidated.flog(Level.SEVERE, 2000, sourceName,
 						"[" + unit.getLocationTag().getLocale() + "] "
 								+ unit.getName() + " could not be added to " + building.getNickName(), e);
 			}
 		} else {
 //			throw new IllegalStateException("Building is null");
-			LogConsolidated.log(Level.SEVERE, 2000, sourceName,
+			LogConsolidated.flog(Level.SEVERE, 2000, sourceName,
 				" the building is null.");
 		}
 	}
@@ -1548,13 +1548,13 @@ public class BuildingManager implements Serializable {
 			} catch (Exception e) {
 //				throw new IllegalStateException(
 //						"BuildingManager.addPersonOrRobotToBuildingRandomLocation(): " + e.getMessage());
-				LogConsolidated.log(Level.SEVERE, 2000, sourceName,
+				LogConsolidated.flog(Level.SEVERE, 2000, sourceName,
 						"[" + unit.getLocationTag().getLocale() + "] "
 								+ unit.getName() + " could not be added to " + building.getNickName(), e);
 			}
 		} else {
 //			throw new IllegalStateException("Building is null");
-			LogConsolidated.log(Level.SEVERE, 2000, sourceName,
+			LogConsolidated.flog(Level.SEVERE, 2000, sourceName,
 					" the building is null.");
 		}
 	}
@@ -1579,13 +1579,13 @@ public class BuildingManager implements Serializable {
 
 
 			} catch (Exception e) {
-				LogConsolidated.log(Level.SEVERE, 2000, sourceName,
+				LogConsolidated.flog(Level.SEVERE, 2000, sourceName,
 						"[" + person.getLocationTag().getLocale() + "] "
 								+ person.getName() + " could not be removed from " + building.getNickName(), e);
 			}
 		} else {
 //			throw new IllegalStateException("Building is null");
-			LogConsolidated.log(Level.SEVERE, 2000, sourceName,
+			LogConsolidated.flog(Level.SEVERE, 2000, sourceName,
 					" the building is null.");
 		}
 	}
@@ -1609,13 +1609,13 @@ public class BuildingManager implements Serializable {
 				}
 
 			} catch (Exception e) {
-				LogConsolidated.log(Level.SEVERE, 2000, sourceName,
+				LogConsolidated.flog(Level.SEVERE, 2000, sourceName,
 						"[" + robot.getLocationTag().getLocale() + "] "
 								+ robot.getName() + " could not be removed from " + building.getNickName(), e);
 			}
 		} else {
 //			throw new IllegalStateException("Building is null");
-			LogConsolidated.log(Level.SEVERE, 2000, sourceName,
+			LogConsolidated.flog(Level.SEVERE, 2000, sourceName,
 					" the building is null.");
 		}
 	}

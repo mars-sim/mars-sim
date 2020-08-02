@@ -167,7 +167,7 @@ public class NegotiateTrade extends Task implements Serializable {
 			double credit = creditManager.getCredit(buyingSettlement, sellingSettlement);
 			credit += soldLoadValue;
 			creditManager.setCredit(buyingSettlement, sellingSettlement, credit);
-			LogConsolidated.log(Level.INFO, 0, sourceName, "[" + person.getLocationTag().getLocale() + "] "
+			LogConsolidated.flog(Level.INFO, 0, sourceName, "[" + person.getLocationTag().getLocale() + "] "
 					+ person.getName() + " completed a trade negotiation as follows : "
 					+ "   Credit : " + credit 
 					+ "    Buyer : " + buyingSettlement.getName() 
@@ -187,7 +187,7 @@ public class NegotiateTrade extends Task implements Serializable {
 				credit -= buyLoadValue;
 				creditManager.setCredit(buyingSettlement, sellingSettlement, credit);
 				
-				LogConsolidated.log(Level.INFO, 1000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
+				LogConsolidated.flog(Level.INFO, 1000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
 						+ person.getName() + " updated the credit/debit as follows : "
 						+ "   Credit/Debit : " + credit);
 //				logger.fine("Credit at " + buyingSettlement.getName() + " for " + sellingSettlement.getName() + " is " + credit);

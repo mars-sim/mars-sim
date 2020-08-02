@@ -187,7 +187,7 @@ public class Administration extends Function implements Serializable {
 	 */
 	public void addStaff() {
 		if (staff >= staffCapacity) {
-			LogConsolidated.log(Level.INFO, 10_000, sourceName,
+			LogConsolidated.flog(Level.INFO, 10_000, sourceName,
 					"[" + building.getSettlement() + "] The office space in " 
 					+ building.getNickName() + " was full.");
 		}
@@ -204,7 +204,7 @@ public class Administration extends Function implements Serializable {
 		staff--;
 		if (staff < 0) {
 			staff = 0;
-			LogConsolidated.log(Level.SEVERE, 10_000, sourceName,
+			LogConsolidated.flog(Level.SEVERE, 10_000, sourceName,
 					"[" + building.getSettlement() 
 					+ "] Miscalculating the office space occupancy in " + building.getNickName() + ".");
 		}

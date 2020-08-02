@@ -98,7 +98,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 				String deputy = malfunction.getDeputyRepairer(1);
 	
 				if (chief == null || chief.equals("")) {
-					LogConsolidated.log(Level.INFO, 0, sourceName,
+					LogConsolidated.flog(Level.INFO, 0, sourceName,
 							"[" + entity.getLocale() + "] " + person 
 							+ " was appointed as the chief repairer handling the Emergency Repair for '" 
 							+ malfunction.getName() + "' on "
@@ -106,7 +106,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 					 malfunction.setChiefRepairer(1, person.getName());						
 				}
 				else if (deputy == null || deputy.equals("")) {
-					LogConsolidated.log(Level.INFO, 0, sourceName,
+					LogConsolidated.flog(Level.INFO, 0, sourceName,
 							"[" + entity.getLocale() + "] " + person 
 							+ " was appointed as the deputy repairer handling the Emergency Repair for '" 
 							+ malfunction.getName() + "' on "
@@ -130,7 +130,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 					String deputy = malfunction.getDeputyRepairer(3);
 		
 					if (chief == null || chief.equals("")) {
-						LogConsolidated.log(Level.INFO, 0, sourceName,
+						LogConsolidated.flog(Level.INFO, 0, sourceName,
 								"[" + entity.getLocale() + "] " + person 
 								+ " was appointed as the chief repairer handling the General/Emergency Repair for '" 
 								+ malfunction.getName() + "' on "
@@ -138,7 +138,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 						 malfunction.setChiefRepairer(3, person.getName());						
 					}
 					else if (deputy == null || deputy.equals("")) {
-						LogConsolidated.log(Level.INFO, 0, sourceName,
+						LogConsolidated.flog(Level.INFO, 0, sourceName,
 								"[" + entity.getLocale() + "] " + person 
 								+ " was appointed as the deputy repairer handling the General/Emergency Repair for '" 
 								+ malfunction.getName() + "' on "
@@ -711,14 +711,14 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 		if (person != null) {
 			// Check if there are no more malfunctions.
 			if (isEmerg && malfunction.needEmergencyRepair() && malfunction.isEmergencyRepairDone()) {
-				LogConsolidated.log(Level.INFO, 1_000, sourceName,
+				LogConsolidated.flog(Level.INFO, 1_000, sourceName,
 					"[" + person.getLocationTag().getLocale() + "] " + person.getName()
 						+ " wrapped up the Emergency Repair of " + malfunction.getName() 
 						+ " in "+ entity + " (" + Math.round(malfunction.getCompletedEmergencyWorkTime()*10.0)/10.0 + " millisols spent).");
 			}
 			
 			else if (isGeneral && malfunction.needGeneralRepair() && malfunction.isGeneralRepairDone()) {
-				LogConsolidated.log(Level.INFO, 1_000, sourceName,
+				LogConsolidated.flog(Level.INFO, 1_000, sourceName,
 					"[" + person.getLocationTag().getLocale() + "] " + person.getName()
 						+ " had completed the General Repair of " + malfunction.getName() 
 						+ " in "+ entity + " (" + Math.round(malfunction.getCompletedGeneralWorkTime()*10.0)/10.0 + " millisols spent).");
@@ -729,13 +729,13 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 		else if (robot != null) {
 			// Check if there are no more malfunctions.
 			if (isEmerg && malfunction.needEmergencyRepair() && malfunction.isEmergencyRepairDone()) {
-				LogConsolidated.log(Level.INFO, 10_000, sourceName,
+				LogConsolidated.flog(Level.INFO, 10_000, sourceName,
 					"[" + robot.getLocationTag().getLocale() + "] " + robot.getName()
 					+ " wrapped up the Emergency Repair of " + malfunction.getName() 
 					+ " in "+ entity + " (" + Math.round(malfunction.getCompletedEmergencyWorkTime()*10.0)/10.0 + " millisols spent).");
 			}
 			else if (isGeneral && malfunction.needGeneralRepair() && malfunction.isGeneralRepairDone()) {
-				LogConsolidated.log(Level.INFO, 10_000, sourceName,
+				LogConsolidated.flog(Level.INFO, 10_000, sourceName,
 					"[" + robot.getLocationTag().getLocale() + "] " + robot.getName()
 					+ " had completed the General Repair of " + malfunction.getName() 
 					+ " in "+ entity + " (" + Math.round(malfunction.getCompletedGeneralWorkTime()*10.0)/10.0 + " millisols spent).");

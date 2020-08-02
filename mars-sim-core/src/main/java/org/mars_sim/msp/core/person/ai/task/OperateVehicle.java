@@ -322,7 +322,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
         if (!vehicle.isInSettlement() && remainingFuel < LEAST_AMOUNT) {
         	// Case 1 : no fuel left
         	// TODO: need to turn on emergency beacon and ask for rescue here or in RoverMission ?
-	    	LogConsolidated.log(Level.SEVERE, 30_000, sourceName, "[" + vehicle.getName() + "] " 
+	    	LogConsolidated.flog(Level.SEVERE, 30_000, sourceName, "[" + vehicle.getName() + "] " 
 					+ "ran out of methane. Cannot drive.");
 
 	    	// Turn on emergency beacon
@@ -348,7 +348,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
 	    
 		    }
 		    catch (Exception e) {
-		    	LogConsolidated.log(Level.SEVERE, 0, sourceName, "[" + vehicle.getName() + "] " 
+		    	LogConsolidated.flog(Level.SEVERE, 0, sourceName, "[" + vehicle.getName() + "] " 
 						+ "can't retrieve methane. Cannot drive.");
 
 		    	// Turn on emergency beacon
@@ -388,7 +388,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
    
     		    }
     		    catch (Exception e) {
-    		    	LogConsolidated.log(Level.SEVERE, 0, sourceName, "[" + vehicle.getName() + "] " 
+    		    	LogConsolidated.flog(Level.SEVERE, 0, sourceName, "[" + vehicle.getName() + "] " 
     						+ "can't retrieve methane. Cannot drive.");
 
     		    	// Turn on emergency beacon
@@ -439,7 +439,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
 
     		    }
     		    catch (Exception e) {
-    		    	LogConsolidated.log(Level.SEVERE, 0, sourceName, "[" + vehicle.getName() + "] " 
+    		    	LogConsolidated.flog(Level.SEVERE, 0, sourceName, "[" + vehicle.getName() + "] " 
     						+ "can't retrieve methane. Cannot drive.");
 
     		    	// Turn on emergency beacon

@@ -237,7 +237,7 @@ implements Serializable {
             Relationship relationship = relationshipManager.getRelationship(invitee, person);
             double currentOpinion = relationship.getPersonOpinion(invitee);
             relationship.setPersonOpinion(invitee, currentOpinion + 10D);
-            LogConsolidated.log(Level.INFO, 0, sourceName,
+            LogConsolidated.flog(Level.INFO, 0, sourceName,
 					"[" + person.getLocationTag().getLocale() + "] " + person
 					+ " was inviting " + invitee.getName() +
                     " to collaborate in " + study.toString());

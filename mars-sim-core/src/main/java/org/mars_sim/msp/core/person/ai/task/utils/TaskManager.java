@@ -669,7 +669,7 @@ public class TaskManager implements Serializable {
 		}
 
 		if (selectedMetaTask == null) {
-			LogConsolidated.log(Level.SEVERE, 5_000, sourceName, person.getName() + " could not determine a new task.");
+			LogConsolidated.flog(Level.SEVERE, 5_000, sourceName, person.getName() + " could not determine a new task.");
 		} else {
 			// Call constructInstance of the selected Meta Task to commence the ai task
 			result = selectedMetaTask.constructInstance(mind.getPerson());
@@ -758,11 +758,11 @@ public class TaskManager implements Serializable {
 				if ((probability >= 0D) && (!Double.isNaN(probability)) && (!Double.isInfinite(probability))) {
 					if (probability > MAX_TASK_PROBABILITY) {
 						if (mt.getName().equalsIgnoreCase("sleepmeta")) {
-							LogConsolidated.log(Level.WARNING, 10_000, sourceName, mind.getPerson().getName() + " - "
+							LogConsolidated.flog(Level.WARNING, 10_000, sourceName, mind.getPerson().getName() + " - "
 									+ mt.getName() + " felt very sleepy (" + Math.round(probability * 10.0) / 10.0 + ").");
 						}
 						else 
-							LogConsolidated.log(Level.WARNING, 10_000, sourceName, mind.getPerson().getName() + " - "
+							LogConsolidated.flog(Level.WARNING, 10_000, sourceName, mind.getPerson().getName() + " - "
 								+ mt.getName() + "'s probability is at all time high : " + Math.round(probability * 10.0) / 10.0 + ".");
 						// If the person has a strong desire to eat, stop here and go to eat
 						// The person has a strong desire to sleep, stop here and go to sleep
@@ -786,7 +786,7 @@ public class TaskManager implements Serializable {
 
 				else {
 					taskProbCache.put(mt, 0D);
-					LogConsolidated.log(Level.SEVERE, 5_000, sourceName,
+					LogConsolidated.flog(Level.SEVERE, 5_000, sourceName,
 							mind.getPerson().getName() + " has invalid probability when calculating " + mt.getName()
 									+ " : Probability is " + probability + ".");
 				}

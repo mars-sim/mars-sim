@@ -570,7 +570,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 				}
 
 			} else {
-				LogConsolidated.log(Level.WARNING, 1_000, sourceName,
+				LogConsolidated.flog(Level.WARNING, 1_000, sourceName,
 						"[" + settlement.getName() + "] Rover " + vehicle + loadingError);
 				endTask();
 //                throw new IllegalStateException(loadingError);
@@ -678,7 +678,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 				if (amountLoading < 0D)
 					amountLoading = 0D;
 			} else {
-				LogConsolidated.log(Level.WARNING, 1_000, sourceName,
+				LogConsolidated.flog(Level.WARNING, 1_000, sourceName,
 						"[" + settlement.getName() + "] Rover " + vehicle + loadingError);
 				endTask();
 //                throw new IllegalStateException(loadingError);
@@ -770,7 +770,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 								}
 								loaded++;
 							} else {
-								LogConsolidated.log(Level.WARNING, 1_000, sourceName,
+								LogConsolidated.flog(Level.WARNING, 1_000, sourceName,
 										"[" + settlement.getName() + "] Rover " + vehicle + " cannot store " + eq + ".");
 								endTask();
 							}
@@ -869,7 +869,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 							}
 							loaded++;
 						} else {
-							LogConsolidated.log(Level.WARNING, 1_000, sourceName,
+							LogConsolidated.flog(Level.WARNING, 1_000, sourceName,
 									"[" + settlement.getName() + "] Rover " + vehicle + " cannot store " + eq + ".");
 //                            logger.warning(vehicle + " cannot store " + eq);
 							endTask();
@@ -962,7 +962,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 			}
 		} catch (Exception e) {
 //            logger.info(e.getMessage());
-			LogConsolidated.log(Level.WARNING, 1_000, sourceName,
+			LogConsolidated.flog(Level.WARNING, 1_000, sourceName,
 					"[" + settlement.getName() + "] did NOT have enough capacity in rover " + vehicle
 							+ " to store needed resources for a proposed mission. " + e.getMessage());
 			sufficientCapacity = false;

@@ -239,7 +239,7 @@ public class RestingMedicalRecovery extends Task implements Serializable {
             HealthProblem problem = i.next();
             if (problem.getRecovering() && problem.requiresBedRest()) {
                 problem.addBedRestRecoveryTime(time);
-    			LogConsolidated.log(Level.FINE, 20_000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
+    			LogConsolidated.flog(Level.FINE, 20_000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
     					+ person.getName() + " was taking a medical leave and resting "
     					+ " in " + person.getLocationTag().getImmediateLocation());	
                 if (!problem.isCured()) {
@@ -250,7 +250,7 @@ public class RestingMedicalRecovery extends Task implements Serializable {
 
         // If person has no more health problems requiring bed rest, end task.
         if (!remainingBedRest) {
-			LogConsolidated.log(Level.FINE, 0, sourceName, "[" + person.getLocationTag().getLocale() + "] "
+			LogConsolidated.flog(Level.FINE, 0, sourceName, "[" + person.getLocationTag().getLocale() + "] "
 					+ person.getName() + " ended the medical leave.");
             endTask();
         }

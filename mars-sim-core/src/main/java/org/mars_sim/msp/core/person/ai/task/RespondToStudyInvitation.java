@@ -102,7 +102,7 @@ public class RespondToStudyInvitation extends Task implements Serializable {
 				}
 			}
 		} else {
-			LogConsolidated.log(Level.SEVERE, 0, sourceName, "[" + person.getLocationTag().getLocale() + "] "
+			LogConsolidated.flog(Level.SEVERE, 0, sourceName, "[" + person.getLocationTag().getLocale() + "] "
 					+ person.getName() + " could not find any openly invited studies.");
 			endTask();
 		}
@@ -178,7 +178,7 @@ public class RespondToStudyInvitation extends Task implements Serializable {
 					relationship.setPersonOpinion(primaryResearcher, currentOpinion + 10D);
 				}
 
-				LogConsolidated.log(Level.INFO, 0, sourceName,
+				LogConsolidated.flog(Level.INFO, 0, sourceName,
 						"[" + person.getLocationTag().getLocale() + "] " + person.getName()
 								+ " accepted invitation from " + primaryResearcher.getName() + " to collaborate on "
 								+ study.toString());
@@ -191,7 +191,7 @@ public class RespondToStudyInvitation extends Task implements Serializable {
 					relationship.setPersonOpinion(primaryResearcher, currentOpinion - 10D);
 				}
 
-				LogConsolidated.log(Level.INFO, 0, sourceName,
+				LogConsolidated.flog(Level.INFO, 0, sourceName,
 						"[" + person.getLocationTag().getLocale() + "] " + person.getName()
 								+ " rejected invitation from " + primaryResearcher.getName() + " to collaborate on "
 								+ study.toString());

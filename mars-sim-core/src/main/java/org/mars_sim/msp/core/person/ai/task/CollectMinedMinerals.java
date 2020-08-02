@@ -356,7 +356,7 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 
 			if (surfaceFeatures.getSolarIrradiance(person.getCoordinates()) <= 15D
 				&& !surfaceFeatures.inDarkPolarRegion(person.getCoordinates())) {
-					LogConsolidated.log(Level.FINE, 5_000, sourceName, 
+					LogConsolidated.flog(Level.FINE, 5_000, sourceName, 
 			        		"[" + person.getLocationTag().getLocale() + "] " + person.getName()
 			        			+ " ended mining minerals due to low light level outside at " 
 			        				+ person.getCoordinates().getFormattedString());

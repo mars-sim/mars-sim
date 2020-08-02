@@ -156,9 +156,9 @@ implements Serializable {
      * @throws Exception
      */
     private double collectRegolith(double time) {
-    	LogConsolidated.log(Level.INFO, 0, sourceName, 
-        		"[" + person.getLocationTag().getLocale() +  "] " +
-        		person.getName() + " just called collectRegolith()");
+//    	LogConsolidated.log(Level.INFO, 0, sourceName, 
+//        		"[" + person.getLocationTag().getLocale() +  "] " +
+//        		person.getName() + " just called collectRegolith()");
     			
     	if (getTimeCompleted() > getDuration()) {
     		if (person.isOutside())
@@ -166,9 +166,9 @@ implements Serializable {
 //    		else
 //        		endTask();
         	
-        	LogConsolidated.log(Level.INFO, 0, sourceName, 
-            		"[" + person.getLocationTag().getLocale() +  "] " +
-            		person.getName() + " collectRegolith: getTimeCompleted() > getDuration()");
+//        	LogConsolidated.log(Level.INFO, 0, sourceName, 
+//            		"[" + person.getLocationTag().getLocale() +  "] " +
+//            		person.getName() + " collectRegolith: getTimeCompleted() > getDuration()");
         	
             return time;
     	}
@@ -266,7 +266,7 @@ implements Serializable {
 	        addExperience(time);
 	        
 	        if (finishedCollecting && totalCollected > 0) {
-	            LogConsolidated.log(Level.INFO, 0, sourceName, 
+	            LogConsolidated.log(logger, Level.INFO, 3000, sourceName, 
 	        		"[" + person.getLocationTag().getLocale() +  "] " +
 	        		person.getName() + " collected a total of " + Math.round(totalCollected*100D)/100D 
 	        		+ " kg regolith outside at " + person.getCoordinates().getFormattedString());
@@ -279,7 +279,7 @@ implements Serializable {
 	    	}
 	        
 	        if (fatigue > 1000 || stress > 50 || hunger > 750 || energy < 500) {
-	            LogConsolidated.log(Level.INFO, 0, sourceName, 
+	            LogConsolidated.log(logger, Level.INFO, 3000, sourceName, 
 	        		"[" + person.getLocationTag().getLocale() +  "] " +
 	        		person.getName() + " took a break from collecting regolith ("
 	        		+ Math.round(totalCollected*100D)/100D + " kg collected) " 
@@ -328,7 +328,7 @@ implements Serializable {
 //                bag = aBag;
             }
             else {
-            	LogConsolidated.log(Level.WARNING, 10_000, sourceName,
+            	LogConsolidated.log(logger, Level.WARNING, 10_000, sourceName,
     					"[" 
     					+ person.getLocationTag().getLocale()
     					+ "] "  + person.getName() 
@@ -338,7 +338,7 @@ implements Serializable {
             }
         }
         else {
-        	LogConsolidated.log(Level.WARNING, 10_000, sourceName,
+        	LogConsolidated.log(logger, Level.WARNING, 10_000, sourceName,
 					"[" 
 					+ person.getLocationTag().getLocale()
 					+ "] "  + person.getName() 

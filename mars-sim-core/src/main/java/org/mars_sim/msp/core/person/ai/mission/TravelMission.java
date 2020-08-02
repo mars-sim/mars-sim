@@ -101,7 +101,7 @@ public abstract class TravelMission extends Mission {
 			navPoints.add(navPoint);
 			fireMissionUpdate(MissionEventType.NAVPOINTS_EVENT);
 		} else {
-			LogConsolidated.log(Level.SEVERE, 10_000, logger.getName(), "navPoint is null");
+			LogConsolidated.flog(Level.SEVERE, 10_000, logger.getName(), "navPoint is null");
 			// throw new IllegalArgumentException("navPoint is null");
 		}
 	}
@@ -118,7 +118,7 @@ public abstract class TravelMission extends Mission {
 			navPoints.set(index, navPoint);
 			fireMissionUpdate(MissionEventType.NAVPOINTS_EVENT);
 		} else {
-			LogConsolidated.log(Level.SEVERE, 10_000, logger.getName(), "navPoint is null");
+			LogConsolidated.flog(Level.SEVERE, 10_000, logger.getName(), "navPoint is null");
 			// throw new IllegalArgumentException("navPoint is null");
 		}
 	}
@@ -178,7 +178,7 @@ public abstract class TravelMission extends Mission {
 		if (newNavIndex < getNumberOfNavpoints()) {
 			navIndex = newNavIndex;
 		} else
-			LogConsolidated.log(Level.SEVERE, 0, logger.getName(),
+			LogConsolidated.flog(Level.SEVERE, 0, logger.getName(),
 					getPhase() + "'s newNavIndex " + newNavIndex + " is out of bounds.");
 		// throw new IllegalStateException(getPhase() + " : newNavIndex: "
 		// + newNavIndex + " is outOfBounds.");

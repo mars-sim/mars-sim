@@ -715,7 +715,7 @@ public class PreparingDessert extends Function implements Serializable {
 										.append(dessert.getName().toLowerCase()).append(DISCARDED)
 										.append(getBuilding().getNickName()).append(".");
 
-								LogConsolidated.log(Level.INFO, 10000, sourceName, log.toString());
+								LogConsolidated.flog(Level.INFO, 10000, sourceName, log.toString());
 
 							} else {
 								// Refrigerate prepared dessert.
@@ -726,7 +726,7 @@ public class PreparingDessert extends Function implements Serializable {
 										.append(dessert.getName().toLowerCase()).append(" at ")
 										.append(getBuilding().getNickName()).append(".");
 
-								LogConsolidated.log(Level.INFO, 10000, sourceName, log.toString());
+								LogConsolidated.flog(Level.INFO, 10000, sourceName, log.toString());
 
 								// logger.finest("The dessert has lost its freshness at " +
 								// getBuilding().getBuildingManager().getSettlement().getName());
