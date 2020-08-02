@@ -307,13 +307,18 @@ public abstract class RoverMission extends VehicleMission {
 			endMission();
 			return;
 		}
-
+			
 		Settlement settlement = v.getSettlement();
 		if (settlement == null) {
 			//throw new IllegalStateException(
 			LogConsolidated.flog(Level.WARNING, 0, sourceName, 
 					Msg.getString("RoverMission.log.notAtSettlement", getPhase().getName())); //$NON-NLS-1$
 			addMissionStatus(MissionStatus.NO_AVAILABLE_VEHICLES);
+			endMission();
+			return;
+		}
+		// While still in the settlement, check if the beacon is turned on and and endMission()
+		else if (v.isBeaconOn()) {
 			endMission();
 			return;
 		}

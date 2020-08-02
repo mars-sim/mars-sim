@@ -12,8 +12,10 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
@@ -84,13 +86,26 @@ public class Teach extends Task implements Serializable {
 		else
 			candidates = getBestStudents(robot);
 		
-		// Ensure that the student is not doing digging local ice or regolith
 		Iterator<Person> i = candidates.iterator();
 		while (i.hasNext()) {
 			Person candidate = i.next();
 			Task task = candidate.getMind().getTaskManager().getTask();
-			if (task instanceof DigLocalRegolith || task instanceof DigLocalIce)
-			students.add(candidate);
+			// Ensure to filter off student performing digging local ice or regolith 
+			if (task instanceof DigLocalRegolith || task instanceof DigLocalIce) {
+				if (candidate.isInSettlement())
+					;// Do NOTHING
+				else {
+					String loc = person.getLocationTag().getImmediateLocation();
+					loc = loc == null ? "[N/A]" : loc;
+					loc = loc.equals("Outside") ? loc : "in " + loc;
+					LogConsolidated.log(logger, Level.INFO, 4000, sourceName, 
+							"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
+						 + loc + " was " + task.getName());
+					students.add(candidate);
+				}
+			}
+			else
+				students.add(candidate);
 		}
 		
 		if (students.size() > 0) {
@@ -232,8 +247,8 @@ public class Teach extends Task implements Serializable {
 				int studentSkill = student.getSkillManager().getSkillLevel(taskSkill);
 				int teacherSkill = person.getSkillManager().getSkillLevel(taskSkill);
 				int points = teacherSkill - studentSkill;
-				double learned = (1 + points) * exp / 4.0 * RandomUtil.getRandomDouble(1);
-				double reward = exp / 12.0 * RandomUtil.getRandomDouble(1);
+				double learned = (.5 + points) * exp / 10.0 * RandomUtil.getRandomDouble(1);
+				double reward = exp / 20.0 * RandomUtil.getRandomDouble(1);
 				
 				logger.info("On " + taskSkill.getName() + ", " + person +  "'s teaching reward: " + Math.round(reward*1000.0)/1000.0 
 						+ " [" + student + "'s learned: " + Math.round(learned*1000.0)/1000.0 + "]");

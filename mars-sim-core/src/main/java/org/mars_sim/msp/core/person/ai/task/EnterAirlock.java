@@ -237,9 +237,13 @@ public class EnterAirlock extends Task implements Serializable {
 				if (!airlock.isActivated()) {
 					airlock.activateAirlock(person);
 				}
+				String loc = person.getLocationTag().getImmediateLocation();
+				loc = loc == null ? "[N/A]" : loc;
+				loc = loc.equals("Outside") ? loc : "in " + loc;
+				
 				LogConsolidated.log(logger, Level.INFO, 4000, sourceName, 
 						"[" + person.getLocationTag().getLocale() + "] " + person.getName() + 
-						" had entered the airlock in " + person.getLocationTag().getImmediateLocation()
+						" had entered the airlock " + loc
 						+ " Proceed to waiting inside the airlock phase.");
 
 				setPhase(WAITING_INSIDE_AIRLOCK);
@@ -339,10 +343,14 @@ public class EnterAirlock extends Task implements Serializable {
 		}
 		
 		else {
+			String loc = person.getLocationTag().getImmediateLocation();
+			loc = loc == null ? "[N/A]" : loc;
+			loc = loc.equals("Outside") ? loc : "in " + loc;
+			
 			// at this point, the person should have already been 'stored' into the settlement's inventory. 
 			LogConsolidated.log(logger, Level.INFO, 4000, sourceName, 
 					"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
-					+ " was in " + person.getLocationTag().getImmediateLocation() + 
+					+ " was " + loc + 
 					" and was exiting the airlock.");
 			
 			setPhase(EXITING_AIRLOCK);
@@ -445,6 +453,10 @@ public class EnterAirlock extends Task implements Serializable {
 		// 5.2 deregister the suit the person will take into the airlock to don
 		person.registerSuit(null);		
 
+		String loc = person.getLocationTag().getImmediateLocation();
+		loc = loc == null ? "[N/A]" : loc;
+		loc = loc.equals("Outside") ? loc : "in " + loc;
+		
 		if (suit != null) {
 			// 5.3 set the person as the owner
 			suit.setLastOwner(person);
@@ -483,9 +495,10 @@ public class EnterAirlock extends Task implements Serializable {
 						entityInv.addAmountSupply(oxygenID, oxygenAmount);
 		
 					} catch (Exception e) {
+
 						LogConsolidated.log(logger, Level.WARNING, 4000, sourceName, 
 								"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
-								+ " in " + person.getLocationTag().getImmediateLocation() 
+								+ " " + loc
 								+ " but was unable to retrieve/store oxygen : ", e);
 //						endTask();
 					}
@@ -502,9 +515,10 @@ public class EnterAirlock extends Task implements Serializable {
 						entityInv.addAmountSupply(waterID, waterAmount);
 		
 					} catch (Exception e) {
+
 						LogConsolidated.log(logger, Level.WARNING, 4000, sourceName, 
 								"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
-								+ " in " + person.getLocationTag().getImmediateLocation() 
+								+ " " + loc
 								+ " but was unable to retrieve/store water : ", e);
 //						endTask();
 					}
@@ -515,7 +529,7 @@ public class EnterAirlock extends Task implements Serializable {
 					// Return suit to entity's inventory.
 					LogConsolidated.log(logger, Level.INFO, 4000, sourceName, 
 							"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
-							+ " in " + person.getLocationTag().getImmediateLocation() 
+							+ " " + loc 
 							+ " had just stowed away "  + suit.getName() + ".");
 					
 					// Add experience
@@ -528,8 +542,9 @@ public class EnterAirlock extends Task implements Serializable {
 		else {
 			LogConsolidated.log(logger, Level.WARNING, 4000, sourceName,
 					"[" + person.getLocationTag().getLocale() + "] " 
-					+ person.getName() + " entered an airlock and was supposed to put away an EVA suit but did not have one in "
-							+ person.getLocationTag().getImmediateLocation());
+					+ person.getName() 
+					+ " entered an airlock and was supposed to put away an EVA suit but did not have one "
+					+ loc + ".");
 		}
 
 		endTask();
