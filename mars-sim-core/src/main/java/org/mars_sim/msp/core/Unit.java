@@ -1121,6 +1121,12 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 		if (this instanceof Vehicle) {
 			if (LocationStateType.INSIDE_SETTLEMENT == currentStateType)
 				return true;
+			
+			if (getContainerUnit() instanceof Settlement 
+					&& getContainerUnit().getInventory().containsUnit(this)) {
+				return true;
+			}
+			
 		}
 		
 //		if (LocationStateType.INSIDE_EVASUIT == currentStateType)
