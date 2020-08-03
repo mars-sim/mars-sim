@@ -302,17 +302,21 @@ public class Teach extends Task implements Serializable {
 				double teacherExp = person.getSkillManager().getCumuativeExperience(taskSkill);
 				double diff = Math.round((teacherExp - studentExp)*10.0)/10.0;
 				int points = teacherSkill - studentSkill;
-				double learned = (.5 + points) * exp / 5.0 * RandomUtil.getRandomDouble(1);
-				double reward = exp / 100.0 * RandomUtil.getRandomDouble(1);
+				double learned = (.5 + points) * exp / 1.5 * RandomUtil.getRandomDouble(1);
+				double reward = exp / 40.0 * RandomUtil.getRandomDouble(1);
 				
-				logger.info(taskSkill.getName() 
-					+ " - diff: " + diff + "   "
-					+ "  mod: " + mod + "   "
-					+ person + " [Lvl : " + teacherSkill + " ]'s teaching reward: " + Math.round(reward*1000.0)/1000.0 
-					+ "   " + student + " [Lvl : " + studentSkill + "]'s learned: " + Math.round(learned*1000.0)/1000.0 + ".");
+//				logger.info(taskSkill.getName() 
+//					+ " - diff: " + diff + "   "
+//					+ "  mod: " + mod + "   "
+//					+ person + " [Lvl : " + teacherSkill + "]'s teaching reward: " + Math.round(reward*1000.0)/1000.0 
+//					+ "   " + student + " [Lvl : " + studentSkill + "]'s learned: " + Math.round(learned*1000.0)/1000.0 + ".");
 				
 				student.getSkillManager().addExperience(taskSkill, learned, time);
 		        person.getSkillManager().addExperience(taskSkill, reward, time);
+		        
+		        // If the student has more experience points than the teacher, the teaching session ends.
+		        if (diff < 0)
+		        	endTask();
 //			}
 		}
 	}

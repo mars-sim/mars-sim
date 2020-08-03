@@ -32,6 +32,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
+import javax.swing.border.Border;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -312,6 +313,8 @@ public class CommanderWindow extends ToolWindow {
 		queueListPanel.add(listScrollPanel);
 		
 		// Create an text area
+		Border title = BorderFactory.createTitledBorder("Log Book");
+		
 		JPanel textPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 18, 5));
 		jta = new JTextArea(10, 28);
 		jta.setEditable(false);
@@ -320,8 +323,14 @@ public class CommanderWindow extends ToolWindow {
 //		scrollTextArea.setSize(new Dimension(100, 100));
 		// Monitor the vertical scroll of jta
 		new SmartScroller(scrollTextArea, SmartScroller.VERTICAL, SmartScroller.END);
+			
 		textPanel.add(scrollTextArea);
-		panel.add(textPanel, BorderLayout.SOUTH);
+		
+		JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 18, 5));
+		titlePanel.setBorder(title);
+		titlePanel.add(textPanel);
+		
+		panel.add(titlePanel, BorderLayout.SOUTH);
 		
 	}
 	

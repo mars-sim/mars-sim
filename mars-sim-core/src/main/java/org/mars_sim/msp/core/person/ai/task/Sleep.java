@@ -53,7 +53,8 @@ public class Sleep extends Task implements Serializable {
 			logger.getName().length());
 	
 	private static final int MAX_FATIGUE = 2500;
-	
+    private static final int MAX_SUPPRESSION = 100;
+
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.sleep"); //$NON-NLS-1$
 
@@ -75,7 +76,7 @@ public class Sleep extends Task implements Serializable {
 	// Data members
 	/** The previous time (millisols). */
 	private double previousTime;
-	private double timeFactor = 1.9; // TODO: should vary this factor by person
+	private double timeFactor = 2.0; // TODO: should vary this factor by person
 //	private double totalSleepTime;
 	
 	private LocalBoundedObject interiorObject;
@@ -467,6 +468,17 @@ public class Sleep extends Task implements Serializable {
 			// Record the sleep time [in millisols]
 			circadian.recordSleep(time);
 			
+			if (person.getTaskSchedule().isShiftHour(marsClock.getMillisolInt())) {
+				// Reduce the probability if it's not the right time to sleep
+				refreshSleepHabit(person);
+			}
+			
+			// Check if fatigue is zero
+			if (newFatigue <= 0) {
+				logger.finest(person.getName() + " totally refreshed and awakened from sleep.");
+				endTask();
+			}
+			
 			double newTime = marsClock.getMillisol();
 			double alarmTime = getAlarmTime();
 
@@ -479,11 +491,7 @@ public class Sleep extends Task implements Serializable {
 			} else {
 				previousTime = newTime;
 			}
-			
-			if (newFatigue <= 0) {
-				logger.finest(person.getName() + " totally refreshed and awakened from sleep.");
-				endTask();
-			}
+
 		}
 
 		else if (robot != null) {
@@ -679,6 +687,63 @@ public class Sleep extends Task implements Serializable {
 		return modifiedAlarmTime;
 	}
 
+	/**
+     * Refreshes a person's sleep habit based on his/her latest work shift 
+     * 
+     * @param person
+     */
+    public void refreshSleepHabit(Person person) {
+    	int now = marsClock.getMillisolInt();
+
+        // if a person is NOT on-call
+        if (person.getTaskSchedule().getShiftType() != ShiftType.ON_CALL) {
+	        // if a person is on shift right now
+           	if (person.getTaskSchedule().isShiftHour(now)) {
+
+           		int habit = circadian.getSuppressHabit();
+           		int spaceOut = circadian.getSpaceOut();
+	           	// limit adjustment to 10 times and space it out to at least 50 millisols apart
+           		if (spaceOut < now && habit < MAX_SUPPRESSION) {
+	           		// Discourage the person from forming the sleep habit at this time
+		  	  		person.updateSleepCycle(now, false);
+			    	//System.out.println("spaceOut : " + spaceOut + "   now : " + now + "  suppressHabit : " + habit);
+
+		  	  		int rand = RandomUtil.getRandomInt(2);
+		  	  		if (rand == 2) {
+				    	circadian.setSuppressHabit(habit+1);
+				    	spaceOut = now + 20;
+				    	if (spaceOut > 1000) {
+				    		spaceOut = spaceOut - 1000;
+				    	}
+				    	circadian.setSpaceOut(spaceOut);
+		  	  		}
+           		}
+		    }
+
+//           	else {
+//           		int future = now;
+//                // Check if person's work shift will begin within the next 50 millisols.
+//           		future += 50;
+//	            if (future > 1000)
+//	            	future = future - 1000;
+//
+//	            boolean willBeShiftHour = person.getTaskSchedule().isShiftHour(future);
+//	            if (willBeShiftHour) {
+//	            	//if work shift is slated to begin in the next 50 millisols, probability of sleep reduces to one tenth of its value
+//	                result = result / 10D;
+//	            }
+//	            //else
+//	            	//result = result * 2D;
+//           	}
+	    }
+        
+//        else {
+//        	// if he's on-call
+//        	result = result * 1.1D;
+//        }
+
+    }
+    
 	public boolean walkBackInside() {
 		boolean canWalkInside = true;
 		// Get closest airlock building at settlement.

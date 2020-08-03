@@ -90,7 +90,7 @@ implements Serializable {
 	 */
 	public DigLocalIce(Person person) {
         // Use EVAOperation constructor.
-        super(NAME, person, false, 50);//+ RandomUtil.getRandomInt(10) - RandomUtil.getRandomInt(10));
+        super(NAME, person, false, 20);//+ RandomUtil.getRandomInt(10) - RandomUtil.getRandomInt(10));
 
      	settlement = CollectionUtils.findSettlement(person.getCoordinates());
      	if (settlement == null) {

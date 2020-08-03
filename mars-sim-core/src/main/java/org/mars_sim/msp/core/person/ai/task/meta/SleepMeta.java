@@ -40,8 +40,6 @@ public class SleepMeta implements MetaTask, Serializable {
     /** Task name */
     private static final String NAME = Msg.getString("Task.description.sleep"); //$NON-NLS-1$
 
-    private static final int MAX_SUPPRESSION = 100;
-
     private CircadianClock circadian;
     
     private PhysicalCondition pc;
@@ -94,15 +92,16 @@ public class SleepMeta implements MetaTask, Serializable {
     	
     	// 1000 millisols is 24 hours, if a person hasn't slept for 24 hours,
         // he is supposed to want to sleep right away.
-    	if (fatigue > 333 || stress > 50 || ghrelin-leptin > 600) {
-    		proceed = true;
+    	if (fatigue > 400 || stress > 75 || ghrelin-leptin > 700) {
+    		
+        	int rand = RandomUtil.getRandomInt(1);
+        	// Take a break from sleep if it's too hungry
+        	if (rand == 1 && (hunger > 667 || energy < 1000))
+        		proceed = false;
+        	else
+        		proceed = true;
 //    		logger.info(person + "  ghrelin: " + ghrelin + "  leptin:" + leptin);
     	}
-    	
-    	int rand = RandomUtil.getRandomInt(1);
-    	// Take a break from sleep if it's too hungry
-    	if (rand == 1 && (hunger > 667 || energy < 1000))
-    		proceed = false;
     	
         if (proceed) {
         	// the desire to go to bed increase linearly after 12 hours of wake time
@@ -137,16 +136,16 @@ public class SleepMeta implements MetaTask, Serializable {
             }
 
             if (person.getShiftType() == ShiftType.ON_CALL)
-            	result = result * 5;
+            	result = result * 2;
             
             else if (person.getTaskSchedule().isShiftHour(marsClock.getMillisolInt())) {
          	   // Reduce the probability if it's not the right time to sleep
-         	   refreshSleepHabit(person);
+//         	   Sleep.refreshSleepHabit(person);
          	   // probability of sleep reduces to one fifth of its value
-               result = result / 10D;
+               result = result / 50;
             }
             else
-            	result = result * 100D;
+            	result = result * 50;
             
         	Building quarters = null;
         	Settlement s1 = person.getSettlement();
@@ -306,62 +305,7 @@ public class SleepMeta implements MetaTask, Serializable {
 	    	return result;
 	}
 	
-	/**
-     * Refreshes a person's sleep habit based on his/her latest work shift 
-     * 
-     * @param person
-     */
-    public void refreshSleepHabit(Person person) {
-    	int now = marsClock.getMillisolInt();
 
-        // if a person is NOT on-call
-        if (person.getTaskSchedule().getShiftType() != ShiftType.ON_CALL) {
-	        // if a person is on shift right now
-           	if (person.getTaskSchedule().isShiftHour(now)) {
-
-           		int habit = circadian.getSuppressHabit();
-           		int spaceOut = circadian.getSpaceOut();
-	           	// limit adjustment to 10 times and space it out to at least 50 millisols apart
-           		if (spaceOut < now && habit < MAX_SUPPRESSION) {
-	           		// Discourage the person from forming the sleep habit at this time
-		  	  		person.updateSleepCycle(now, false);
-			    	//System.out.println("spaceOut : " + spaceOut + "   now : " + now + "  suppressHabit : " + habit);
-
-		  	  		int rand = RandomUtil.getRandomInt(2);
-		  	  		if (rand == 2) {
-				    	circadian.setSuppressHabit(habit+1);
-				    	spaceOut = now + 20;
-				    	if (spaceOut > 1000) {
-				    		spaceOut = spaceOut - 1000;
-				    	}
-				    	circadian.setSpaceOut(spaceOut);
-		  	  		}
-           		}
-		    }
-
-//           	else {
-//           		int future = now;
-//                // Check if person's work shift will begin within the next 50 millisols.
-//           		future += 50;
-//	            if (future > 1000)
-//	            	future = future - 1000;
-//
-//	            boolean willBeShiftHour = person.getTaskSchedule().isShiftHour(future);
-//	            if (willBeShiftHour) {
-//	            	//if work shift is slated to begin in the next 50 millisols, probability of sleep reduces to one tenth of its value
-//	                result = result / 10D;
-//	            }
-//	            //else
-//	            	//result = result * 2D;
-//           	}
-	    }
-        
-//        else {
-//        	// if he's on-call
-//        	result = result * 1.1D;
-//        }
-
-    }
     
     public void destroy() {
     }

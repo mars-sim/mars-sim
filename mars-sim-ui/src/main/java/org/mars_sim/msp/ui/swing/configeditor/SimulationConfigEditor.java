@@ -751,6 +751,12 @@ public class SimulationConfigEditor {
 		private void loadDefaultSettlements() {
 			SettlementConfig settlementConfig = simulationConfig.getSettlementConfiguration();
 			settlements.clear();
+			boolean hasSponsor = false;
+			String sponsorCC = null;
+			if (mode == GameMode.COMMAND) 
+				sponsorCC = personConfig.getCommander().getSponsorStr();
+			logger.config("The commander's sponsor is " + sponsorCC);
+			
 			for (int x = 0; x < settlementConfig.getNumberOfInitialSettlements(); x++) {
 				SettlementInfo info = new SettlementInfo();
 				info.name = settlementConfig.getInitialSettlementName(x);
@@ -759,16 +765,28 @@ public class SimulationConfigEditor {
 				info.numOfRobots = Integer.toString(settlementConfig.getInitialSettlementNumOfRobots(x));
 				info.latitude = settlementConfig.getInitialSettlementLatitude(x);
 				info.longitude = settlementConfig.getInitialSettlementLongitude(x);
+				info.sponsor = settlementConfig.getInitialSettlementSponsor(x);
 				
 				// Modify the sponsor in case of the Commander Mode
-				if (x == 0 && mode == GameMode.COMMAND)
-					info.sponsor = personConfig.getCommander().getSponsorStr();
-				else
-					info.sponsor = settlementConfig.getInitialSettlementSponsor(x);
-				
+				if (mode == GameMode.COMMAND) {
+					if (sponsorCC.equalsIgnoreCase(info.sponsor)) {
+//						logger.config("hasSponsor is " + hasSponsor);
+						hasSponsor = true;
+					}
+				}
+					
 				settlements.add(info);
 			}
 			
+			if (mode == GameMode.COMMAND) {
+				if (!hasSponsor) {
+					// Change the 1st settlement's sponsor to match that of the commander
+					settlements.get(0).sponsor = sponsorCC;
+					logger.config("The 1st settlement's sponsor is " + settlements.get(0).sponsor );
+					logger.config("Assigning the 1st settlement's sponsor to match that of the commander: " + settlements.get(0).sponsor);
+				}
+			}
+				
 			fireTableDataChanged();
 		}
 

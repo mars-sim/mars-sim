@@ -228,7 +228,7 @@ public class ExitAirlock extends Task implements Serializable {
 		
 		String loc = person.getLocationTag().getImmediateLocation();
 		loc = loc == null ? "[N/A]" : loc;
-		loc = loc.equals("Outside") ? loc : "in " + loc;
+		loc = loc.equalsIgnoreCase("Outside") ? loc.toLowerCase() : "in " + loc;
 		
 		LogConsolidated.log(logger, Level.INFO, 4000, sourceName, 
 				"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " " 
@@ -332,7 +332,7 @@ public class ExitAirlock extends Task implements Serializable {
 				}
 				String loc = person.getLocationTag().getImmediateLocation();
 				loc = loc == null ? "[N/A]" : loc;
-				loc = loc.equals("Outside") ? loc : "in " + loc;
+				loc = loc.equalsIgnoreCase("Outside") ? loc.toLowerCase() : "in " + loc;
 				
 				LogConsolidated.log(logger, Level.INFO, 4000, sourceName, 
 						"[" + person.getLocationTag().getLocale() + "] " + person.getName()
@@ -466,7 +466,7 @@ public class ExitAirlock extends Task implements Serializable {
 		else {
 			String loc = person.getLocationTag().getImmediateLocation();
 			loc = loc == null ? "[N/A]" : loc;
-			loc = loc.equalsIgnoreCase("Outside") ? loc : "in " + loc;
+			loc = loc.equalsIgnoreCase("Outside") ? loc.toLowerCase() : "in " + loc;
 			
 			LogConsolidated.log(logger, Level.WARNING, 4000, sourceName, 
 					"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
@@ -883,7 +883,7 @@ public class ExitAirlock extends Task implements Serializable {
 
 			String loc = person.getLocationTag().getImmediateLocation();
 			loc = loc == null ? "[N/A]" : loc;
-			loc = loc.equals("Outside") ? loc : "in " + loc;
+			loc = loc.equalsIgnoreCase("Outside") ? loc.toLowerCase() : "in " + loc;
 			
 			// Return suit to entity's inventory.
 			LogConsolidated.log(logger, Level.INFO, 4000, sourceName, 

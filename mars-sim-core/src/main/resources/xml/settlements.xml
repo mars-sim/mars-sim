@@ -405,7 +405,7 @@
 			</resupply>
 		</template>
 
-		<template name="Mars Direct Base (Phase 1C)" default-population="4" number-of-robots="2" sponsor="The Indian Space Research Organisation (ISRO)">
+		<template name="Mars Direct Base (Phase 1C)" default-population="4" number-of-robots="2" sponsor="Indian Space Research Organisation (ISRO)">
 
 			<building id="0" type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0">
 				<connection-list>
@@ -1214,7 +1214,7 @@
 			</resupply>
 		</template>
 
-		<template name="Mars Direct Base (Phase 2C)" default-population="8" number-of-robots="4" sponsor="The Indian Space Research Organisation (ISRO)">
+		<template name="Mars Direct Base (Phase 2C)" default-population="8" number-of-robots="4" sponsor="Indian Space Research Organisation (ISRO)">
 			<building id="0" type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0">
 				<connection-list>
 					<connection id="2" x-location="-4.5" y-location="0.0" />
@@ -2522,7 +2522,7 @@
 			</resupply>
 		</template>
 
-		<template name="Mars Direct Base (Phase 3C)" default-population="12" number-of-robots="6"  sponsor="The Indian Space Research Organisation (ISRO)">
+		<template name="Mars Direct Base (Phase 3C)" default-population="12" number-of-robots="6"  sponsor="Indian Space Research Organisation (ISRO)">
 			<building id="0" type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0">
 				<connection-list>
 					<connection id="1" x-location="0.0" y-location="4.5" />
@@ -3764,13 +3764,13 @@
 	<!-- List of initial settlements in the simulation -->
 	<initial-settlement-list>
 	<!-- For each settlement, use one of the followings as sponsors : 
-		- China National Space Administration (CNSA)
+		- B. China National Space Administration (CNSA)
 		- Canadian Space Agency (CSA)
 		- European Space Agency (ESA)
-		- Indian Space Research Organisation (ISRO)
+		- C. Indian Space Research Organisation (ISRO)
 		- Japan Aerospace Exploration Agency (JAXA)
-		- National Aeronautics and Space Administration (NASA)
-		- Roscosmos (RKA)
+		- A. National Aeronautics and Space Administration (NASA)
+		- D. Roscosmos (RKA)
 		- Mars Society (MS)
 		- Space Exploration Technologies (SpaceX)
 	 -->
@@ -3779,7 +3779,7 @@
 			<location longitude="16.0 W" latitude="6.30 S" />
 			<population number="8" />
 			<number-of-robots number="4" />
-			<sponsor name="Mars Society (MS)"/>
+			<sponsor name="National Aeronautics and Space Administration (NASA)"/>
 		</settlement>
 		
 		<settlement name="Tian Cheng" template="Mars Direct Base (Phase 2B)">
@@ -3795,13 +3795,6 @@
 			<number-of-robots number="4" />
 			<sponsor name="Indian Space Research Organisation (ISRO)"/>
 		</settlement>
-
-		<settlement name="Zvezda" template="Mars Direct Base (Phase 3D)">
-			<location longitude="40.0 E" latitude="33.60 S" />
-			<population number="12" />
-			<number-of-robots number="8" />
-			<sponsor name="Roscosmos (RKA)"/>
-		</settlement>
 	
 		<settlement name="Teslaville" template="Mars Direct Base (Phase 3A)">
 			<location longitude="36.68 W" latitude="11.62 S" />
@@ -3810,11 +3803,18 @@
 			<sponsor name="Space Exploration Technologies (SpaceX)"/>
 		</settlement>
 					
+		<settlement name="Zvezda" template="Mars Direct Base (Phase 3D)">
+			<location longitude="40.0 E" latitude="33.60 S" />
+			<population number="12" />
+			<number-of-robots number="8" />
+			<sponsor name="Roscosmos (RKA)"/>
+		</settlement>
+					
 		<settlement name="Columbus" template="Alpha Base (Phase 4)">
 			<location longitude="0.0 W" latitude="0.0 N" />
 			<population number="24" />
 			<number-of-robots number="12" />
-			<sponsor name="National Aeronautics and Space Administration (NASA)"/>
+			<sponsor name="Mars Society (MS)"/>
 		</settlement>
 					
 		<!-- SpaceX's proposed landing sites
@@ -3947,7 +3947,7 @@
 		<settlement-name sponsor="Space Exploration Technologies (SpaceX)" value="Nicolas Town" />
 		<settlement-name sponsor="Space Exploration Technologies (SpaceX)" value="Starlink" />
 		<settlement-name sponsor="Space Exploration Technologies (SpaceX)" value="New Eden" />
-		<settlement-name sponsor="Space Exploration Technologies (SpaceX)" value="TeslaVille" />
+		<settlement-name sponsor="Space Exploration Technologies (SpaceX)" value="IronVille" />
 
 	</settlement-name-list>
 

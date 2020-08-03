@@ -84,7 +84,7 @@ public class EnterAirlock extends Task implements Serializable {
 		this.airlock = airlock;
 		LogConsolidated.log(logger, Level.INFO, 4000, sourceName, 
 				"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
-				+ " was starting to enter " + airlock.getEntityName());
+				+ " was starting to enter " + airlock.getEntityName() + ".");
 		// Initialize data members
 		setDescription(Msg.getString("Task.description.enterAirlock.detail", airlock.getEntityName())); // $NON-NLS-1$
 		// Initialize task phase
@@ -145,7 +145,7 @@ public class EnterAirlock extends Task implements Serializable {
 
 		String loc = person.getLocationTag().getImmediateLocation();
 		loc = loc == null ? "[N/A]" : loc;
-		loc = loc.equals("Outside") ? loc : "in " + loc;
+		loc = loc.equalsIgnoreCase("Outside") ? loc.toLowerCase() : "in " + loc;
 		
 		LogConsolidated.log(logger, Level.INFO, 4000, sourceName, 
 				"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " " 
@@ -236,7 +236,7 @@ public class EnterAirlock extends Task implements Serializable {
 		else if (LocalAreaUtil.areLocationsClose(personLocation, insideAirlockPos)) {
 			LogConsolidated.log(logger, Level.INFO, 4000, sourceName, 
 					"[" + person.getLocationTag().getLocale() + "] " + person.getName()
-					+ " has arrived at an airlock  close enough and ready to enter.");
+					+ " has arrived at an airlock close enough and ready to enter.");
 
 			// Enter airlock.
 			if (airlock.enterAirlock(person, false)) {
@@ -247,7 +247,7 @@ public class EnterAirlock extends Task implements Serializable {
 				}
 				String loc = person.getLocationTag().getImmediateLocation();
 				loc = loc == null ? "[N/A]" : loc;
-				loc = loc.equals("Outside") ? loc : "in " + loc;
+				loc = loc.equalsIgnoreCase("Outside") ? loc.toLowerCase() : "in " + loc;
 				
 				LogConsolidated.log(logger, Level.INFO, 4000, sourceName, 
 						"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
@@ -361,7 +361,7 @@ public class EnterAirlock extends Task implements Serializable {
 		else {
 			String loc = person.getLocationTag().getImmediateLocation();
 			loc = loc == null ? "[N/A]" : loc;
-			loc = loc.equalsIgnoreCase("Outside") ? loc : "in " + loc;
+			loc = loc.equalsIgnoreCase("Outside") ? loc.toLowerCase() : "in " + loc;
 			
 			LogConsolidated.log(logger, Level.WARNING, 4000, sourceName, 
 					"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
@@ -470,7 +470,7 @@ public class EnterAirlock extends Task implements Serializable {
 
 		String loc = person.getLocationTag().getImmediateLocation();
 		loc = loc == null ? "[N/A]" : loc;
-		loc = loc.equals("Outside") ? loc : "in " + loc;
+		loc = loc.equalsIgnoreCase("Outside") ? loc.toLowerCase() : "in " + loc;
 		
 		if (suit != null) {
 			// 5.3 set the person as the owner
