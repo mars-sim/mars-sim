@@ -27,8 +27,8 @@ public class Skill implements Serializable {
 	
 	/** The experience points towards the next skill level. */
 	private double experiencePoints;
-	/** The experience points needed to reach the next skill level. */
-	private double neededExperiencePoints;
+	/** The threshold of the experience points needed to reach the next skill level. */
+	private double threshold;
 	/** The labor time of the skill. */
 	private double time;
 	
@@ -36,7 +36,7 @@ public class Skill implements Serializable {
 	private SkillType skill;
 
 	/**
-	 * Constructor.
+	 * Constructor, starting at level 0.
 	 * 
 	 * @param skill {@link SkillType}
 	 */
@@ -44,7 +44,7 @@ public class Skill implements Serializable {
 		this.skill = skill;
 		level = 0;
 		experiencePoints = 0D;
-		neededExperiencePoints = BASE;
+		threshold = BASE;
 	}
 
 	/**
@@ -86,7 +86,7 @@ public class Skill implements Serializable {
 		// Reset the exp points back to 0
 		experiencePoints = 0;
 		// Set the upper limit of exp points
-		neededExperiencePoints = BASE * Math.pow(2D, newLevel);
+		threshold = BASE * Math.pow(2D, newLevel);
 	}
 
 	/**
@@ -94,8 +94,8 @@ public class Skill implements Serializable {
 	 * 
 	 * @return the delta experience points
 	 */
-	public double getDeltaExp() {
-		return neededExperiencePoints - experiencePoints;
+	public double getNeededExp() {
+		return threshold - experiencePoints;
 	}
 	
 	
@@ -109,15 +109,31 @@ public class Skill implements Serializable {
 	}
 	
 	/**
+	 * Gets the cumulative experience points of the skill.
+	 * 
+	 * @return the cumulative experience points
+	 */
+	public double getCumuativeExperience() {
+		// Calculate exp points at the current level
+		double pts = experiencePoints;
+		// Calculate the exp points at previous levels
+		for (int i=0; i<level; i++) {
+			pts += BASE * Math.pow(2D, level);
+		}
+		return pts;
+	}
+	
+	/**
 	 * Adds to the experience points of the skill.
 	 * 
 	 * @param newPoints the experience points to be added
 	 */
 	void addExperience(double newPoints) {
 		experiencePoints += newPoints;
-		if (experiencePoints >= neededExperiencePoints) {
-			experiencePoints -= neededExperiencePoints;
-			neededExperiencePoints *= 2D;
+		// Check if it has reached the next level.		
+		if (experiencePoints >= threshold) {
+			experiencePoints -= threshold;
+			threshold *= 2D;
 			level++;
 		}
 	}

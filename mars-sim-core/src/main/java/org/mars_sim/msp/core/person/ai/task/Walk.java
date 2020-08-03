@@ -743,7 +743,7 @@ public class Walk extends Task implements Serializable {
 			LogConsolidated.log(logger, Level.INFO, 4000, sourceName,
       				"[" + person.getLocationTag().getLocale() + "] "
 					+ person + " was " + loc
-					+ " and walking inside the settlement.");
+					+ ", walking inside the settlement.");
 
 			// Check if person has reached destination location.
 			WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
@@ -794,7 +794,7 @@ public class Walk extends Task implements Serializable {
 			LogConsolidated.log(logger, Level.FINER, 4000, sourceName,
       				"[" + robot.getLocationTag().getLocale() + "] "
 					+ robot + " was in " + robot.getLocationTag().getImmediateLocation()
-					+ " and walking inside the settlement.");
+					+ ", walking inside the settlement.");
 			
 			// Check if robot has reached destination location.
 			WalkingSteps.RobotWalkStep step = walkingSteps.getRobotWalkingStepsList().get(walkingStepIndex);

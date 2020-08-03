@@ -251,6 +251,43 @@ public class SkillManager implements Serializable {
 	}
 
 	/**
+	 * Returns the  skill level if it exists in the
+	 * SkillManager. Returns null otherwise.
+	 * 
+	 * @param skillType {@link SkillType}
+	 * @return {@link Skill}
+	 */
+	public Skill getSkill(SkillType skillType) {
+		if (skills.containsKey(skillType)) {
+			return skills.get(skillType);
+		}
+		return null;
+	}
+	
+	/**
+	 * Gets the cumulative experience points of the skill.
+	 * 
+	 * @param skillType {@link SkillType}
+	 * @return the cumulative experience points
+	 */
+	public double getCumuativeExperience(SkillType skillType) {
+		Skill skill = getSkill(skillType);
+		if (skill != null) {
+			// Calculate exp points at the current level
+			double pts = skill.getExperience();
+			int level = skill.getLevel();
+			// Calculate the exp points at previous levels
+			for (int i=0; i<level; i++) {
+				pts += Skill.BASE * Math.pow(2D, level);
+			}
+			return pts;
+		}
+		else
+			return 0;
+
+	}
+	
+	/**
 	 * Returns the integer skill experiences from a named skill if it exists in the
 	 * SkillManager. Returns 0 otherwise.
 	 * 
@@ -275,7 +312,7 @@ public class SkillManager implements Serializable {
 	public int getSkillDeltaExp(SkillType skill) {
 		int result = 0;
 		if (skills.containsKey(skill)) {
-			result = (int) skills.get(skill).getDeltaExp();
+			result = (int) skills.get(skill).getNeededExp();
 		}
 		return result;
 	}

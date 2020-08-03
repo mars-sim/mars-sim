@@ -72,86 +72,139 @@ public class Teach extends Task implements Serializable {
 	/**
 	 * Constructor.
 	 * 
-	 * @param person the person performing the task.
+	 * @param unit the unit performing the task.
 	 */
 	public Teach(Unit unit) {
 		super(NAME, unit, false, false, STRESS_MODIFIER, false, 10D + RandomUtil.getRandomInt(20) - RandomUtil.getRandomInt(10));
 
-		// Randomly get a student.
-		Collection<Person> candidates = null;
-		List<Person> students = new ArrayList<>();
-		
-		if (unit instanceof Person)
+		if (unit instanceof Person) {
+			
+			// Assume the student is a person.
+			Collection<Person> candidates = null;
+			List<Person> students = new ArrayList<>();
+			
 			candidates = getBestStudents(person);
-		else
-			candidates = getBestStudents(robot);
-		
-		Iterator<Person> i = candidates.iterator();
-		while (i.hasNext()) {
-			Person candidate = i.next();
-			Task task = candidate.getMind().getTaskManager().getTask();
-			// Ensure to filter off student performing digging local ice or regolith 
-			if (task instanceof DigLocalRegolith || task instanceof DigLocalIce) {
-				if (candidate.isInSettlement())
-					;// Do NOTHING
-				else {
-					String loc = person.getLocationTag().getImmediateLocation();
-					loc = loc == null ? "[N/A]" : loc;
-					loc = loc.equals("Outside") ? loc : "in " + loc;
-					LogConsolidated.log(logger, Level.INFO, 4000, sourceName, 
-							"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
-						 + loc + " was " + task.getName());
+			
+			Iterator<Person> i = candidates.iterator();
+			while (i.hasNext()) {
+				Person candidate = i.next();
+				Task task = candidate.getMind().getTaskManager().getTask();
+				// Ensure to filter off student performing digging local ice or regolith 
+				if (task instanceof DigLocalRegolith || task instanceof DigLocalIce) {
+					if (candidate.isInSettlement())
+						;// Do NOTHING
+					else {
+						String loc = person.getLocationTag().getImmediateLocation();
+						loc = loc == null ? "[N/A]" : loc;
+						loc = loc.equalsIgnoreCase("Outside") ? loc : "in " + loc;
+						LogConsolidated.log(logger, Level.INFO, 4000, sourceName, 
+								"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
+							 + loc + " was " + task.getName());
+						students.add(candidate);
+					}
+				}
+				else
 					students.add(candidate);
-				}
 			}
-			else
-				students.add(candidate);
+			
+			if (students.size() > 0) {
+				Object[] array = students.toArray();
+				// Randomly get a person student.
+				int rand = RandomUtil.getRandomInt(students.size() - 1);
+				student = (Person) array[rand];
+				teachingTask = student.getMind().getTaskManager().getTask();
+				teachingTask.setTeacher(person);
+				setDescription(
+						Msg.getString("Task.description.teach.detail", teachingTask.getName(false), student.getName())); // $NON-NLS-1$
+
+				boolean walkToBuilding = false;
+				// If in settlement, move teacher to building student is in.
+				if (person.isInSettlement()) {
+
+					Building studentBuilding = BuildingManager.getBuilding(student);
+
+					if (studentBuilding != null) {
+						FunctionType teachingBuildingFunction = teachingTask.getLivingFunction();
+						if ((teachingBuildingFunction != null) && (studentBuilding.hasFunction(teachingBuildingFunction))) {
+							// Walk to relevant activity spot in student's building.
+							walkToActivitySpotInBuilding(studentBuilding, teachingBuildingFunction, false);
+						} else {
+							// Walk to random location in student's building.
+							walkToRandomLocInBuilding(BuildingManager.getBuilding(student), false);
+						}
+						walkToBuilding = true;
+					}
+				}
+
+				if (!walkToBuilding) {
+
+					if (person.isInVehicle()) {
+						// If person is in rover, walk to passenger activity spot.
+						if (person.getVehicle() instanceof Rover) {
+							walkToPassengerActivitySpotInRover((Rover) person.getVehicle(), false);
+						}
+					} else {
+						// Walk to random location.
+						walkToRandomLocation(true);
+					}
+				}
+			} else {
+				endTask();
+			}
 		}
 		
-		if (students.size() > 0) {
-			Object[] array = students.toArray();
-			int rand = RandomUtil.getRandomInt(students.size() - 1);
-			student = (Person) array[rand];
-			teachingTask = student.getMind().getTaskManager().getTask();
-			teachingTask.setTeacher(person);
-			setDescription(
-					Msg.getString("Task.description.teach.detail", teachingTask.getName(false), student.getName())); // $NON-NLS-1$
-
-			boolean walkToBuilding = false;
-			// If in settlement, move teacher to building student is in.
-			if (person.isInSettlement()) {
-
-				Building studentBuilding = BuildingManager.getBuilding(student);
-
-				if (studentBuilding != null) {
-					FunctionType teachingBuildingFunction = teachingTask.getLivingFunction();
-					if ((teachingBuildingFunction != null) && (studentBuilding.hasFunction(teachingBuildingFunction))) {
-						// Walk to relevant activity spot in student's building.
-						walkToActivitySpotInBuilding(studentBuilding, teachingBuildingFunction, false);
-					} else {
-						// Walk to random location in student's building.
-						walkToRandomLocInBuilding(BuildingManager.getBuilding(student), false);
-					}
-					walkToBuilding = true;
-				}
-			}
-
-			if (!walkToBuilding) {
-
-				if (person.isInVehicle()) {
-					// If person is in rover, walk to passenger activity spot.
-					if (person.getVehicle() instanceof Rover) {
-						walkToPassengerActivitySpotInRover((Rover) person.getVehicle(), false);
-					}
-				} else {
-					// Walk to random location.
-					walkToRandomLocation(true);
-				}
-			}
-		} else {
-			endTask();
-		}
-
+//		else if (unit instanceof Robot) {
+//			// Randomly get a student.
+//			Collection<Person> candidates = null;
+//			List<Person> students = new ArrayList<>();
+//			
+//			candidates = getBestStudents(robot);
+//			
+//			if (students.size() > 0) {
+//				Object[] array = students.toArray();
+//				int rand = RandomUtil.getRandomInt(students.size() - 1);
+//				botStudent = (Robot) array[rand];
+//				teachingTask = student.getBotMind().getTaskManager().getTask();
+//				teachingTask.setTeacher(robot);
+//				setDescription(
+//						Msg.getString("Task.description.teach.detail", teachingTask.getName(false), student.getName())); // $NON-NLS-1$
+//
+//				boolean walkToBuilding = false;
+//				// If in settlement, move teacher to building student is in.
+//				if (robot.isInSettlement()) {
+//
+//					Building studentBuilding = BuildingManager.getBuilding(student);
+//
+//					if (studentBuilding != null) {
+//						FunctionType teachingBuildingFunction = teachingTask.getLivingFunction();
+//						if ((teachingBuildingFunction != null) && (studentBuilding.hasFunction(teachingBuildingFunction))) {
+//							// Walk to relevant activity spot in student's building.
+//							walkToActivitySpotInBuilding(studentBuilding, teachingBuildingFunction, false);
+//						} else {
+//							// Walk to random location in student's building.
+//							walkToRandomLocInBuilding(BuildingManager.getBuilding(student), false);
+//						}
+//						walkToBuilding = true;
+//					}
+//				}
+//
+//				if (!walkToBuilding) {
+//
+//					if (robot.isInVehicle()) {
+//						// If person is in rover, walk to passenger activity spot.
+//						if (robot.getVehicle() instanceof Rover) {
+//							walkToPassengerActivitySpotInRover((Rover) robot.getVehicle(), false);
+//						}
+//					} else {
+//						// Walk to random location.
+//						walkToRandomLocation(true);
+//					}
+//				}
+//			} else {
+//				endTask();
+//			}
+//		}
+		
 		// Initialize phase
 		addPhase(TEACHING);
 		setPhase(TEACHING);
@@ -231,11 +284,10 @@ public class Teach extends Task implements Serializable {
         double exp = time / 100D;
 
         // Experience points adjusted by person's "Experience Aptitude" attribute.
-        NaturalAttributeManager nManager = person.getNaturalAttributeManager();
-        int teaching = nManager.getAttribute(NaturalAttributeType.TEACHING);
-        double mod = 10.0 * (teaching - 50);
-        exp += exp * mod;
-        exp *= getTeachingExperienceModifier();
+//        NaturalAttributeManager nManager = person.getNaturalAttributeManager();
+//        int teaching = nManager.getAttribute(NaturalAttributeType.TEACHING);
+        double mod = getTeachingExperienceModifier() * 150.0;
+        exp *= mod;
         
         if (teachingTask != null && teachingTask.getAssociatedSkills() != null) {
         	// Pick one skill to improve upon
@@ -246,12 +298,18 @@ public class Teach extends Task implements Serializable {
 //				SkillType taskSkill = j.next();
 				int studentSkill = student.getSkillManager().getSkillLevel(taskSkill);
 				int teacherSkill = person.getSkillManager().getSkillLevel(taskSkill);
+				double studentExp = student.getSkillManager().getCumuativeExperience(taskSkill);
+				double teacherExp = person.getSkillManager().getCumuativeExperience(taskSkill);
+				double diff = Math.round((teacherExp - studentExp)*10.0)/10.0;
 				int points = teacherSkill - studentSkill;
-				double learned = (.5 + points) * exp / 10.0 * RandomUtil.getRandomDouble(1);
-				double reward = exp / 20.0 * RandomUtil.getRandomDouble(1);
+				double learned = (.5 + points) * exp / 5.0 * RandomUtil.getRandomDouble(1);
+				double reward = exp / 100.0 * RandomUtil.getRandomDouble(1);
 				
-				logger.info("On " + taskSkill.getName() + ", " + person +  "'s teaching reward: " + Math.round(reward*1000.0)/1000.0 
-						+ " [" + student + "'s learned: " + Math.round(learned*1000.0)/1000.0 + "]");
+				logger.info(taskSkill.getName() 
+					+ " - diff: " + diff + "   "
+					+ "  mod: " + mod + "   "
+					+ person + " [Lvl : " + teacherSkill + " ]'s teaching reward: " + Math.round(reward*1000.0)/1000.0 
+					+ "   " + student + " [Lvl : " + studentSkill + "]'s learned: " + Math.round(learned*1000.0)/1000.0 + ".");
 				
 				student.getSkillManager().addExperience(taskSkill, learned, time);
 		        person.getSkillManager().addExperience(taskSkill, reward, time);
