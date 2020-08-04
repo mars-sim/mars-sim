@@ -138,7 +138,7 @@ extends TabPanel {
 
 		// Prepare health label
 		WebLabel healthLabel = new WebLabel(Msg.getString("TabPanelHealth.label"), WebLabel.CENTER); //$NON-NLS-1$
-		healthLabel.setFont(new Font("Serif", Font.BOLD, 16));
+		healthLabel.setFont(new Font("Serif", Font.BOLD, 14));
 		healthLabelPanel.add(healthLabel);
 
 		// Prepare condition panel
@@ -258,7 +258,7 @@ extends TabPanel {
 		
 		// Add radiation dose info
 		// Prepare radiation panel
-		WebPanel radiationPanel = new WebPanel(new BorderLayout(0, 0));//new GridLayout(2, 1, 0, 0));
+		WebPanel radiationPanel = new WebPanel(new BorderLayout(0, 0));
 //		radiationPanel.setBorder(new MarsPanelBorder());
 		centerContentPanel.add(radiationPanel, BorderLayout.NORTH);
 

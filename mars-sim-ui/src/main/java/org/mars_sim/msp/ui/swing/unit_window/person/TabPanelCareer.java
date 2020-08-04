@@ -45,7 +45,6 @@ import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.person.ai.role.RoleUtil;
 import org.mars_sim.msp.core.person.health.DeathInfo;
 import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.robot.ai.BotMind;
 import org.mars_sim.msp.core.structure.ChainOfCommand;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -119,6 +118,8 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 	
 	private Settlement settlement;
 	
+	private Font font = new Font("SansSerif", Font.ITALIC, 12);
+	
 	private static MarsClock marsClock;
 
 	/**
@@ -172,7 +173,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 
 		// Prepare title label
 		WebLabel titleLabel = new WebLabel(Msg.getString("TabPanelCareer.title"), WebLabel.CENTER); //$NON-NLS-1$
-		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
+		titleLabel.setFont(new Font("Serif", Font.BOLD, 14));
 		labelPanel.add(titleLabel);
 
 		if (unit instanceof Person) {
@@ -372,13 +373,14 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 		}
 
 		// Prepare job title panel
-		WebPanel jobHistoryPanel = new WebPanel(new GridLayout(2, 1, 1, 1));
+		WebPanel jobHistoryPanel = new WebPanel(new BorderLayout(0, 0));
 		centerContentPanel.add(jobHistoryPanel, BorderLayout.NORTH);
 
 		// Prepare job title label
 		WebLabel historyLabel = new WebLabel(Msg.getString("TabPanelCareer.history"), WebLabel.CENTER); //$NON-NLS-1$
 		// historyLabel.setBounds(0, 0, width, height);
-		historyLabel.setPadding(7, 0, 3, 0);
+		historyLabel.setFont(font);
+		historyLabel.setPadding(7, 0, 1, 0);
 		jobHistoryPanel.add(historyLabel, BorderLayout.NORTH);
 
 		// Create schedule table model
@@ -390,7 +392,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 		// Create attribute scroll panel
 		WebScrollPane scrollPanel = new WebScrollPane();
 //		scrollPanel.setBorder(new MarsPanelBorder());
-		centerContentPanel.add(scrollPanel, BorderLayout.CENTER);
+		jobHistoryPanel.add(scrollPanel, BorderLayout.CENTER);
 
 		// Create schedule table
 		table = new ZebraJTable(jobHistoryTableModel);

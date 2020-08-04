@@ -74,7 +74,7 @@ extends TabPanel {
 
 		// Prepare general label
 		JLabel titleLabel = new JLabel(Msg.getString("TabPanelSponsorship.label"), JLabel.CENTER); //$NON-NLS-1$
-		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
+		titleLabel.setFont(new Font("Serif", Font.BOLD, 14));
 		labelPanel.add(titleLabel);
 
 		// Prepare spring layout info panel.
@@ -95,13 +95,13 @@ extends TabPanel {
 		    sponsorTF.setText(sponsor+""); // Conversion.capitalize(sponsor)
 		}
 		sponsorTF.setEditable(false);
-		sponsorTF.setColumns(8);
+		sponsorTF.setColumns(3);
 		sponsorTF.setCaretPosition(0);
 		if (person.getReportingAuthority() != null) {
-			TooltipManager.setTooltip (sponsorTF, person.getReportingAuthority().getToolTipStr(), TooltipWay.down);
+			TooltipManager.setTooltip (sponsorTF, person.getReportingAuthority().getToolTipStr() 
+					+ " (" + sponsor + ")", TooltipWay.down);
 		}
 		infoPanel.add(sponsorTF);
-
 
 		// Prepare birth location name label
 		JLabel objectiveNameLabel = new JLabel(Msg.getString("TabPanelSponsorship.objective"), JLabel.RIGHT); //$NON-NLS-1$
@@ -113,6 +113,8 @@ extends TabPanel {
 		JTextField objectiveTF = new JTextField();
 		if (person.getReportingAuthority() != null) {
 			objective = person.getReportingAuthority().getMissionAgenda().getObjectiveName();
+			TooltipManager.setTooltip (objectiveTF, Conversion.capitalize(objective), TooltipWay.down);
+
 		}
 		//JLabel objectiveLabel = new JLabel(objective, JLabel.RIGHT);
 		objectiveTF.setText(Conversion.capitalize(objective));
@@ -125,7 +127,7 @@ extends TabPanel {
 		SpringUtilities.makeCompactGrid(infoPanel,
 		                                2, 2, //rows, cols
 		                                20, 10,        //initX, initY
-		                                10, 10);       //xPad, yPad
+		                                10, 4);       //xPad, yPad
 	}
 
 	/**

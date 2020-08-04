@@ -26,7 +26,6 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JList;
 import javax.swing.JTable;
-import javax.swing.ListCellRenderer;
 import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -156,7 +155,7 @@ public class TabPanelSchedule extends TabPanel {
 
 		// Prepare label
 		WebLabel label = new WebLabel(Msg.getString("TabPanelSchedule.label"), WebLabel.CENTER); //$NON-NLS-1$
-		label.setFont(new Font("Serif", Font.BOLD, 16));
+		label.setFont(new Font("Serif", Font.BOLD, 14));
 		labelPanel.add(label);
 
 		// Create the button panel.

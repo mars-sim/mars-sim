@@ -92,7 +92,7 @@ implements ActionListener {
 
 		// Prepare death info label
 		JLabel deathInfoLabel = new JLabel(Msg.getString("TabPanelDeath.label"), JLabel.LEFT); //$NON-NLS-1$
-		deathInfoLabel.setFont(new Font("Serif", Font.BOLD, 16));
+		deathInfoLabel.setFont(new Font("Serif", Font.BOLD, 14));
 		deathInfoLabelPanel.add(deathInfoLabel);
 
 		// Prepare death label panel

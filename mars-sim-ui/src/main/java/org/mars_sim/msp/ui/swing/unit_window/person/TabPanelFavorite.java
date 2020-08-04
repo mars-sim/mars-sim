@@ -11,7 +11,6 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -39,8 +38,6 @@ import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
 import com.alee.laf.text.WebTextField;
-import com.alee.managers.tooltip.TooltipManager;
-import com.alee.managers.tooltip.TooltipWay;
 
 //import com.vdurmont.emoji.EmojiParser;
 
@@ -92,7 +89,7 @@ extends TabPanel {
 
 		// Prepare  Favorite label
 		WebLabel favoriteLabel = new WebLabel(Msg.getString("TabPanelFavorite.label"), WebLabel.CENTER); //$NON-NLS-1$
-		favoriteLabel.setFont(font);
+		favoriteLabel.setFont(new Font("Serif", Font.BOLD, 14));
 		favoriteLabelPanel.add(favoriteLabel);
 
 		// Prepare SpringLayout for info panel.
@@ -167,21 +164,22 @@ extends TabPanel {
 		                                10, 2);       //xPad, yPad
 
 		// Create label panel.
-		WebPanel labelPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
+		WebPanel labelPanel = new WebPanel(new BorderLayout(0, 0));
 		centerContentPanel.add(labelPanel, BorderLayout.NORTH);
-
+		
 		// Create preference title label
-		WebLabel preferenceLabel = new WebLabel(Msg.getString("TabPanelFavorite.preferenceTable.title"), WebLabel.RIGHT); //$NON-NLS-1$
+		WebLabel preferenceLabel = new WebLabel(Msg.getString("TabPanelFavorite.preferenceTable.title"), WebLabel.CENTER); //$NON-NLS-1$
 		preferenceLabel.setFont(font);
-		labelPanel.add(preferenceLabel);
-
+		labelPanel.add(preferenceLabel, BorderLayout.NORTH);
+		
 		// Create scroll panel
 		WebScrollPane scrollPane = new WebScrollPane();
 //		scrollPane.setBorder(new MarsPanelBorder());
 		scrollPane.getVerticalScrollBar().setUnitIncrement(10);
 		scrollPane.setHorizontalScrollBarPolicy(WebScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		centerContentPanel.add(scrollPane,  BorderLayout.CENTER);
-
+//		centerContentPanel.add(scrollPane,  BorderLayout.CENTER);
+		labelPanel.add(scrollPane, BorderLayout.CENTER);
+		
 		// Create skill table
 		tableModel = new PreferenceTableModel(person);
 		table = new ZebraJTable(tableModel);

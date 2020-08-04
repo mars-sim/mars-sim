@@ -98,7 +98,7 @@ extends TabPanel {
 
 		// Create attribute label
 		WebLabel attributeLabel = new WebLabel(Msg.getString("TabPanelAttribute.label"), WebLabel.CENTER); //$NON-NLS-1$
-		attributeLabel.setFont(new Font("Serif", Font.BOLD, 16));
+		attributeLabel.setFont(new Font("Serif", Font.BOLD, 14));
 		attributeLabelPanel.add(attributeLabel);
 
 		// Create attribute scroll panel
@@ -235,10 +235,14 @@ class AttributeTableModel extends AbstractTableModel {
 		}
 
 		else if (column == 1) {
-			if (person != null)
-				return getLevelString(n_manager.getAttribute(n_attributes.get(row)));
-			else if (robot != null)
-				return getLevelString(r_manager.getAttribute(r_attributes.get(row)));
+			if (person != null) {
+				int level = n_manager.getAttribute(n_attributes.get(row));
+				return " " + level + " - " + getLevelString(level);
+			}
+			else if (robot != null) {
+				int level = r_manager.getAttribute(r_attributes.get(row));
+				return " " + level + " - " + getLevelString(level);
+			}
 			else
 				return null;
 		}

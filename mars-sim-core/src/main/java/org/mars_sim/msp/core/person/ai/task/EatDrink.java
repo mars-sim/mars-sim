@@ -151,8 +151,11 @@ public class EatDrink extends Task implements Serializable {
 		}
 		
 		else if (notThirsty && notHungry) {
-			// if a person is not thirsty and not hungry			
-			endTask();
+			// if a person is not thirsty and not hungry	
+			
+			// 50% chance of continuing
+			if (RandomUtil.getRandomInt(1) == 1)
+				endTask();
 		}
 		
 		// Check if person is outside and is not thirsty
@@ -224,24 +227,26 @@ public class EatDrink extends Task implements Serializable {
 			foodConsumptionRate = config.getFoodConsumptionRate() / NUMBER_OF_MEAL_PER_SOL;
 			dessertConsumptionRate = config.getDessertConsumptionRate() / NUMBER_OF_DESSERT_PER_SOL;
 		
-			// if a person is just a little thirsty and NOT that hungry
+
 			if (notHungry) {
-				
+				// if a person is NOT that hungry			
 				if (notThirsty) {
-//					LogConsolidated.log(logger, Level.WARNING, 3000, sourceName,
-//						person + " was trying to eat a meal, but is not inside a settlement/vehicle.");
-					endTask();
+					// if a person is NOT that thirsty
+					// 50% chance of continuing
+					if (RandomUtil.getRandomInt(1) == 1)
+						endTask();
+					else {					
+						addPhase(PICK_UP_DESSERT);
+						addPhase(EAT_DESSERT);
+	
+						setPhase(PICK_UP_DESSERT);
+					}
 				}
 				else {
 					addPhase(DRINK_WATER);
 					setPhase(DRINK_WATER);
 				}		
-				
-				addPhase(PICK_UP_DESSERT);
-				addPhase(EAT_DESSERT);
-
-				setPhase(LOOK_FOR_FOOD);
-			} 
+			}
 			
 			else {
 				if (diningBuilding != null) {

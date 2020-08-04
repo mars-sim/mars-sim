@@ -34,7 +34,6 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
-import com.alee.laf.table.WebTable;
 
 /**
  * A tab panel displaying a person's social relationships.
@@ -84,7 +83,7 @@ implements ListSelectionListener {
 
 		// Create relationship label
 		WebLabel relationshipLabel = new WebLabel(Msg.getString("TabPanelSocial.label"), WebLabel.CENTER); //$NON-NLS-1$
-		relationshipLabel.setFont(new Font("Serif", Font.BOLD, 16));
+		relationshipLabel.setFont(new Font("Serif", Font.BOLD, 14));
 		relationshipLabelPanel.add(relationshipLabel);
 
 		// Create relationship scroll panel
@@ -99,8 +98,8 @@ implements ListSelectionListener {
 		relationshipTable = new ZebraJTable(relationshipTableModel);
 		relationshipTable.setPreferredScrollableViewportSize(new Dimension(225, 100));
 		relationshipTable.getColumnModel().getColumn(0).setPreferredWidth(80);
-		relationshipTable.getColumnModel().getColumn(1).setPreferredWidth(80);
-		relationshipTable.getColumnModel().getColumn(2).setPreferredWidth(40);
+		relationshipTable.getColumnModel().getColumn(1).setPreferredWidth(120);
+		relationshipTable.getColumnModel().getColumn(2).setPreferredWidth(100);
 		relationshipTable.setRowSelectionAllowed(true);
 		
 		// For single clicking on a person to pop up his person window.
@@ -211,7 +210,7 @@ implements ListSelectionListener {
 				return knownPeople.toArray()[row];
 			else if (column == 2) {
 				double opinion = manager.getOpinionOfPerson(person, (Person) knownPeople.toArray()[row]);
-				return getRelationshipString(opinion);
+				return " " + Math.round(opinion*10.0)/10.0 + " - " + getRelationshipString(opinion);
 			}
 			else return null;
 		}

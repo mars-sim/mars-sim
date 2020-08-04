@@ -143,7 +143,7 @@ public class TabPanelActivity extends TabPanel implements ActionListener {
 
 		// Prepare activity label
 		WebLabel titleLabel = new WebLabel(Msg.getString("TabPanelActivity.label"), WebLabel.CENTER); //$NON-NLS-1$
-		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
+		titleLabel.setFont(new Font("Serif", Font.BOLD, 14));
 		activityLabelPanel.add(titleLabel);
 
 		// Prepare activity panel

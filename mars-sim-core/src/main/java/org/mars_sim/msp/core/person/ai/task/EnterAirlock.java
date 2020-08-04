@@ -229,8 +229,10 @@ public class EnterAirlock extends Task implements Serializable {
 					"[" + person.getLocationTag().getLocale() + "] " + person.getName() + 
 					" was supposed to enter the airlock from outside, but was reportedly inside."
 					+ " Proceed to exiting the airlock phase.");
-			setPhase(EXITING_AIRLOCK);
-			return remainingTime;
+			
+			endTask();
+//			setPhase(EXITING_AIRLOCK);
+//			return remainingTime;
 		} 
 		
 		else if (LocalAreaUtil.areLocationsClose(personLocation, insideAirlockPos)) {

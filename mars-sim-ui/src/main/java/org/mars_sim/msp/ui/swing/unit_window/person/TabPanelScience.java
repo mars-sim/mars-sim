@@ -97,7 +97,7 @@ public class TabPanelScience extends TabPanel {
 
 		// Create the title label.
 		JLabel titleLabel = new JLabel(Msg.getString("TabPanelScience.label"), JLabel.CENTER); //$NON-NLS-1$
-		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
+		titleLabel.setFont(new Font("Serif", Font.BOLD, 14));
 		titlePane.add(titleLabel);
 
 		// Create the main panel.

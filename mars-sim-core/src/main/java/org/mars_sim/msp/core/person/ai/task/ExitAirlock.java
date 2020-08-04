@@ -308,7 +308,7 @@ public class ExitAirlock extends Task implements Serializable {
 		
 		else if (person.isOutside()) {
 			// WARNING: calling this incorrectly can potentially halt the simulation
-			LogConsolidated.log(logger, Level.WARNING, 0, sourceName, 
+			LogConsolidated.log(logger, Level.WARNING, 4000, sourceName, 
 					"[" + person.getLocationTag().getLocale() + "] " + person.getName() + 
 //					" was about to exit the airlock, but was already outside. End task.");	
 					" was supposed to exit the airlock from inside, but was reportedly outside."

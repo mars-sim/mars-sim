@@ -119,7 +119,7 @@ extends TabPanel {
 
 		// Create skill label
 		WebLabel skillLabel = new WebLabel(Msg.getString("TabPanelSkill.label"), WebLabel.CENTER); //$NON-NLS-1$
-		skillLabel.setFont(new Font("Serif", Font.BOLD, 16));
+		skillLabel.setFont(new Font("Serif", Font.BOLD, 14));
 		skillLabelPanel.add(skillLabel);
 
 		// Create skill scroll panel

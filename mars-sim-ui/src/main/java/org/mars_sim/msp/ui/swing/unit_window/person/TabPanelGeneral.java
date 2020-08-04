@@ -45,6 +45,12 @@ public class TabPanelGeneral extends TabPanel {
 	/** The Person instance. */
 	private Person person = null;
 	
+	private JTextField birthDateTF;
+	
+	private String birthDate;
+	
+	private static final String TAB_BIRTH_DATE_AGE = "TabPanelGeneral.birthDateAndAge";
+			
 	/**
 	 * Constructor.
 	 * @param unit the unit to display.
@@ -74,7 +80,7 @@ public class TabPanelGeneral extends TabPanel {
 
 		// Prepare general label
 		JLabel generalLabel = new JLabel(Msg.getString("TabPanelGeneral.label"), JLabel.CENTER); //$NON-NLS-1$
-		generalLabel.setFont(new Font("Serif", Font.BOLD, 16));
+		generalLabel.setFont(new Font("Serif", Font.BOLD, 14));
 		generalLabelPanel.add(generalLabel);
 
 		// Prepare spring layout info panel.
@@ -84,7 +90,7 @@ public class TabPanelGeneral extends TabPanel {
 
 		// 1. Prepare gender name label
 		JLabel genderNameLabel = new JLabel(Msg.getString("TabPanelGeneral.gender"), JLabel.RIGHT); //$NON-NLS-1$
-		genderNameLabel.setSize(5, 2);
+//		genderNameLabel.setSize(5, 2);
 		infoPanel.add(genderNameLabel);
 
 		// Prepare gender label
@@ -100,14 +106,15 @@ public class TabPanelGeneral extends TabPanel {
 		birthNameLabel.setSize(5, 2);
 		infoPanel.add(birthNameLabel);
 
+		birthDate = person.getBirthDate();
+		
 		// Prepare birthdate and age label
 		String birthdate = Msg.getString(
-			"TabPanelGeneral.birthDateAndAge",
-			person.getBirthDate(),
-			Integer.toString(person.updateAge())
-		); //$NON-NLS-1$
+			TAB_BIRTH_DATE_AGE,
+			birthDate,
+			Integer.toString(person.updateAge())); //$NON-NLS-1$
 
-		JTextField birthDateTF = new JTextField(birthdate);
+		birthDateTF = new JTextField(birthdate);
 		birthDateTF.setEditable(false);
 		birthDateTF.setColumns(12);
 		infoPanel.add(birthDateTF);
@@ -210,7 +217,7 @@ public class TabPanelGeneral extends TabPanel {
 		SpringUtilities.makeCompactGrid(infoPanel,
 		                                8, 2, //rows, cols
 		                                50, 10,        //initX, initY
-		                                10, 5);       //xPad, yPad
+		                                10, 3);       //xPad, yPad
 		
 	}
 	
@@ -401,5 +408,13 @@ public class TabPanelGeneral extends TabPanel {
 			initializeUI();
 		// Person person = (Person) unit;
 		// Fill in as we have more to update on this panel.
+		
+		// Update the age
+		String birthdate = Msg.getString(
+			TAB_BIRTH_DATE_AGE,
+			birthDate,
+			Integer.toString(person.updateAge())); //$NON-NLS-1$
+				
+		birthDateTF.setText(birthdate); 
 	}
 }
