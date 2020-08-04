@@ -101,7 +101,7 @@ public class BuildingAirlock extends Airlock {
      */
     public boolean stepInside(Person person) {
     	boolean successful = false;
-      	LogConsolidated.log(logger, Level.FINER, 0, sourceName,
+      	LogConsolidated.log(logger, Level.INFO, 0, sourceName,
 	  				"[" + person.getLocationTag().getLocale() 
 	  				+ "] The airlock had been pressurized and is ready to open the inner door to release " + person + ".");
         	
@@ -109,7 +109,7 @@ public class BuildingAirlock extends Airlock {
         	
 			Settlement settlement = building.getSettlement();
 			
-			LogConsolidated.log(logger, Level.FINER, 0, sourceName,
+			LogConsolidated.log(logger, Level.INFO, 0, sourceName,
 	  				"[" + person.getLocationTag().getLocale() + "] "
 					+ person + " was about to leave the airlock in " + building + " to go inside " 
         			+ settlement
@@ -128,7 +128,7 @@ public class BuildingAirlock extends Airlock {
 				// 1.3 Set the person's coordinates to that of the settlement's
 				person.setCoordinates(settlement.getCoordinates());
 				
-	   			LogConsolidated.log(logger, Level.FINER, 0, sourceName,
+	   			LogConsolidated.log(logger, Level.INFO, 0, sourceName,
 		  				"[" + person.getLocationTag().getLocale() + "] "
 						+ person + " doffed the EVA suit, came through the inner door of the airlock at " 
 		  				+ building + " and went inside " 
@@ -166,7 +166,7 @@ public class BuildingAirlock extends Airlock {
     		
 			Settlement settlement = building.getSettlement();
 			
-  			LogConsolidated.log(logger, Level.FINER, 0, sourceName,
+  			LogConsolidated.log(logger, Level.INFO, 0, sourceName,
 	  				"[" + person.getLocationTag().getLocale() + "] "
 					+ person
         			+ " was about to leave the airlock at " + building + " in " 
@@ -189,7 +189,7 @@ public class BuildingAirlock extends Airlock {
 				// 5.3. Set the person's coordinates to that of the settlement's
 				person.setCoordinates(settlement.getCoordinates());
 				
-	  			LogConsolidated.log(logger, Level.FINER, 0, sourceName,
+	  			LogConsolidated.log(logger, Level.INFO, 0, sourceName,
 	  				"[" + person.getLocationTag().getLocale() + "] "
 					+ person
         			+ " donned the EVA suit, came through the outer door of the airlock at " 
@@ -216,7 +216,6 @@ public class BuildingAirlock extends Airlock {
     @Override
     public String getEntityName() {
         return building.getNickName() + " in " + building.getSettlement().getName();
-
     }
 
     @Override

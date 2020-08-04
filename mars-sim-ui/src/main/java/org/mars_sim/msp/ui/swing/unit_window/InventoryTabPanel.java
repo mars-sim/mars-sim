@@ -379,25 +379,25 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
             	}
 
             	// Sort resources alphabetically by name.
-                Collections.sort(newResourceKeys);
+//                Collections.sort(newResourceKeys);
 
                 counts++;
         		if (counts % 10 == 10 || !resources.equals(newResources)) {
-            		if (getRowCount() == newResources.size()) {
+//            		if (getRowCount() == newResources.size()) {
                    		counts = 0;
             			resources = newResources;
             			capacity = newCapacity;
             			keys = newResourceKeys;
             			fireTableDataChanged();
 //                			((AbstractTableModel)this).fireTableCellUpdated(counts, counts);
-            		}
-            		else {
-               			counts = 0;
-            			resources = newResources;
-            			capacity = newCapacity;
-            			keys = newResourceKeys;
-            			fireTableDataChanged();
-            		}
+//            		}
+//            		else {
+//               			counts = 0;
+//            			resources = newResources;
+//            			capacity = newCapacity;
+//            			keys = newResourceKeys;
+//            			fireTableDataChanged();
+//            		}
         		}
         	}
         	catch(Exception e) {

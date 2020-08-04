@@ -58,7 +58,7 @@ public class EatDrinkMeta implements MetaTask, Serializable {
 		Inventory inv = null;
 //		double foodAmount = 0;
 		double waterAmount = 0;
-		if (person.isInside()) {
+		if (person.isInside() && container != null) {
 			inv = container.getInventory();	
 			// Take preserved food from inventory if it is available.
 //			foodAmount = inv.getAmountResourceStored(ResourceUtil.foodID, false);
@@ -94,7 +94,7 @@ public class EatDrinkMeta implements MetaTask, Serializable {
 			}
 			
 			// Only eat a meal if person is sufficiently hungry or low on caloric energy.
-			else if (!notHungry) {// || ghrelin-leptin > 300) {
+			if (!notHungry) {// || ghrelin-leptin > 300) {
 				result += hunger / 2D;
 				if (energy < 2525)
 					result += (2525 - energy) / 30D; // (ghrelin-leptin - 300);
@@ -106,7 +106,7 @@ public class EatDrinkMeta implements MetaTask, Serializable {
 
 			if (!CookMeal.isLocalMealTime(person.getCoordinates(), 0)) {
 				// If it's not meal time yet, reduce the probability
-				result /= 2D;
+				result /= 5D;
 			}
 			
 			// Check if a cooked meal is available in a kitchen building at the settlement.
@@ -116,20 +116,24 @@ public class EatDrinkMeta implements MetaTask, Serializable {
 				result *= 1.5 * kitchen.getNumberOfAvailableCookedMeals();
 			} 
 			
-			else { // no kitchen has available meals
-					// If no cooked meal, check if preserved food is available to eat.
-				if (!EatDrink.isPreservedFoodAvailable(person)) {
+			// If no cooked meal, check if preserved food is available to eat.
+			else if (!EatDrink.isPreservedFoodAvailable(person)) {
 					// If no food, person can still eat dessert					
-					if (EatDrink.getKitchenWithDessert(person) == null) {
-						// If no preserved food, person can still drink
-						if (notThirsty)
-							result /= 3;
-					}
-					result /= 1.5;
+				if (EatDrink.getKitchenWithDessert(person) == null) {
+					// If no preserved food, person can still drink
+					if (notThirsty)
+						result /= 3;
 				}
+				
 				else
-					result *= 1.1;
+					result /= 1.5;
 			}
+			
+			else if (notThirsty)
+				result /= 3;
+				
+			else
+				result *= 1.2;
 
 			// Check if there is a local dining building.
 			Building diningBuilding = EatDrink.getAvailableDiningBuilding(person, false);
@@ -149,28 +153,30 @@ public class EatDrinkMeta implements MetaTask, Serializable {
 //				result /= 3;
 
 			// If no cooked meal, check if preserved food is available to eat.
-			if (!EatDrink.isPreservedFoodAvailable(person)) {
-				// If no food, person can still eat dessert					
-				if (EatDrink.getKitchenWithDessert(person) == null) {
-					// If no preserved food, person can still drink
+			if (EatDrink.isPreservedFoodAvailable(person)) {
+				
+				// Check if there is dessert		
+//				if (EatDrink.isDessertAvailable(person))
+					
+//				if (EatDrink.getKitchenWithDessert(person) == null) {
+//					// If no preserved food, person can still drink
+//					if (notThirsty)
+//						result /= 3;
+//				}
+				
 					if (notThirsty)
 						result /= 3;
+					else
+						result /= 1.5;
 				}
-				result /= 1.5;
-			}
-			else
-				result *= 1.1;
+
 			
 			// TODO : how to ration food and water if running out of it ?
 		} 
 		
 		else if (person.isOutside()) {
 
-			if (notHungry && notThirsty) {
-				return 0;
-			}
-			
-			else if (!notThirsty) {
+			if (!notThirsty) {
 				// Note: a person may drink water from EVA suit while being outside doing EVA
 				result /= 2;
 			}
@@ -191,7 +197,7 @@ public class EatDrinkMeta implements MetaTask, Serializable {
 		if (result < 0)
 			return 0;
 
-//		 if (result > 500) 
+//		 if (result > 100) 
 //			 logger.warning(person + "'s EatMealMeta : " 
 //				 +  Math.round(result * 10D)/10D);
 		 

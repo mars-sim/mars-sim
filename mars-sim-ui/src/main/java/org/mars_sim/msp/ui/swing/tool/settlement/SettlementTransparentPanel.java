@@ -794,10 +794,10 @@ public class SettlementTransparentPanel extends WebComponent {
 			JDialog.setDefaultLookAndFeelDecorated(true);
 			String newName = askNameDialog();
 			if (!oldName.equals(newName) 
-					&& newName.trim() != null 
+					&& newName != null 
 					&& newName.trim() != "" 
 					&& newName.trim().length() != 0) {
-				mapPanel.getSettlement().changeName(newName);
+				mapPanel.getSettlement().changeName(newName.trim());
 
 				desktop.closeToolWindow(SettlementWindow.NAME);
 				desktop.openToolWindow(SettlementWindow.NAME);

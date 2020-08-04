@@ -54,7 +54,7 @@ public class TaskManager implements Serializable {
 
 //	private static final String WALK = "walk";
 
-	private static final int MAX_TASK_PROBABILITY = 20000;
+	private static final int MAX_TASK_PROBABILITY = 35_000;
 	/** A decimal number a little bigger than zero for comparing doubles. */
 //	private static final double SMALL_AMOUNT = 0.001;
 	
@@ -757,13 +757,13 @@ public class TaskManager implements Serializable {
 				double probability = mt.getProbability(person);
 				if ((probability >= 0D) && (!Double.isNaN(probability)) && (!Double.isInfinite(probability))) {
 					if (probability > MAX_TASK_PROBABILITY) {
-						if (mt.getName().equalsIgnoreCase("sleepmeta")) {
-							LogConsolidated.flog(Level.INFO, 10_000, sourceName, mind.getPerson().getName() + " - "
-									+ mt.getName() + " felt very sleepy (" + Math.round(probability * 10.0) / 10.0 + ").");
+						if (mt.getName().equalsIgnoreCase("sleeping")) {
+							LogConsolidated.log(logger, Level.INFO, 10_000, sourceName, mind.getPerson().getName() + " - "
+									+ mt.getName() + " felt quite sleepy (" + Math.round(probability * 10.0) / 10.0 + ").");
 						}
 						else 
-							LogConsolidated.flog(Level.INFO, 10_000, sourceName, mind.getPerson().getName() + " - "
-								+ mt.getName() + "'s probability is at all time high : " + Math.round(probability * 10.0) / 10.0 + ".");
+							LogConsolidated.log(logger, Level.INFO, 10_000, sourceName, mind.getPerson().getName() + " - "
+								+ mt.getName() + "'s probability is at all time high (" + Math.round(probability * 10.0) / 10.0 + ").");
 						// If the person has a strong desire to eat, stop here and go to eat
 						// The person has a strong desire to sleep, stop here and go to sleep
 //						if (person.isInside() && mt.getName().contains("sleep")) { 
