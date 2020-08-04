@@ -328,7 +328,7 @@ public class EatDrink extends Task implements Serializable {
 
 				setPhase(EAT_MEAL);
 //				setDescription(Msg.getString("Task.description.eatDrink.cooked.pickingUp.detail", cookedMeal.getName())); //$NON-NLS-1$
-//				LogConsolidated.log(logger, Level.INFO, 0, sourceName,
+//				LogConsolidated.log(logger, Level.FINE, 0, sourceName,
 //						"[" + person.getLocationTag().getLocale() + "] " + person
 //								+ " picked up a cooked meal of '" + cookedMeal.getName() 
 //								+ "' to eat in " + person.getLocationTag().getImmediateLocation() + ".");
@@ -499,7 +499,7 @@ public class EatDrink extends Task implements Serializable {
 				nameOfDessert = dessertKitchen.chooseADessert(person);
 
 				if (nameOfDessert != null) {
-					LogConsolidated.log(logger, Level.INFO, 0, sourceName,
+					LogConsolidated.log(logger, Level.FINE, 0, sourceName,
 							"[" + person.getLocationTag().getLocale() + "] " + person
 									+ " picked up prepared dessert '" + nameOfDessert.getName() 
 									+ "' to eat/drink in " + person.getLocationTag().getImmediateLocation() + ".");
@@ -569,7 +569,7 @@ public class EatDrink extends Task implements Serializable {
 			// Change the hunger level after eating
 			reduceHunger(hungerRelieved);
 			
-			LogConsolidated.log(logger, Level.INFO, 1000, sourceName,
+			LogConsolidated.log(logger, Level.FINE, 1000, sourceName,
 					"[" + person.getLocationTag().getLocale() + "] "
 					+ person + " ate '" + cookedMeal.getName()
 					+ "' in " + person.getLocationTag().getImmediateLocation() + ".");
@@ -624,7 +624,7 @@ public class EatDrink extends Task implements Serializable {
 					// Add to cumulativeProportion
 					cumulativeProportion += proportion;
 					
-					LogConsolidated.log(logger, Level.INFO, 1000, sourceName,
+					LogConsolidated.log(logger, Level.FINE, 1000, sourceName,
 							"[" + person.getLocationTag().getLocale() + "] " + person 
 							+ " just ate " + Math.round(proportion*1000.0)/1000.0 + " kg of preserved food.");
 					
@@ -893,12 +893,12 @@ public class EatDrink extends Task implements Serializable {
 						person.addConsumptionTime(1, amount);
 						if (waterOnly)
 							setDescription(Msg.getString("Task.description.eatDrink.water")); //$NON-NLS-1$
-						LogConsolidated.log(logger, Level.INFO, 1000, sourceName,
+						LogConsolidated.log(logger, Level.FINE, 1000, sourceName,
 								"[" + person.getLocationTag().getLocale() + "] " + person
 										+ " drank " + Math.round(amount * 1000.0) / 1.0
 										+ " mL of water.");
 					}
-//					LogConsolidated.log(Level.INFO, 1000, sourceName,
+//					LogConsolidated.log(Level.FINE, 1000, sourceName,
 //						 person + " is drinking " + Math.round(amount * 1000.0)/1000.0 + "kg of water"
 //						 + " thirst : " + Math.round(currentThirst* 100.0)/100.0
 //						 + " waterEachServing : " + Math.round(waterEachServing* 100.0)/100.0
@@ -929,7 +929,7 @@ public class EatDrink extends Task implements Serializable {
 							person.addConsumptionTime(1, amount);
 							if (waterOnly)
 								setDescription(Msg.getString("Task.description.eatDrink.water")); //$NON-NLS-1$
-							LogConsolidated.log(logger, Level.INFO, 1000, sourceName,
+							LogConsolidated.log(logger, Level.FINE, 1000, sourceName,
 									"[" + person.getLocationTag().getLocale() + "] " + person
 											+ " was put on water ration and allocated to drink no more than " 
 											+ Math.round(amount * 1000.0) / 1.0
@@ -959,7 +959,7 @@ public class EatDrink extends Task implements Serializable {
 								person.addConsumptionTime(1, amount);
 								if (waterOnly)
 									setDescription(Msg.getString("Task.description.eatDrink.water")); //$NON-NLS-1$
-								LogConsolidated.log(logger, Level.INFO, 1000, sourceName,
+								LogConsolidated.log(logger, Level.FINE, 1000, sourceName,
 										"[" + person.getLocationTag().getLocale() + "] " + person
 												+ " was put on water ration and allocated to drink no more than " 
 												+ Math.round(amount * 1000.0) / 1.0
@@ -989,7 +989,7 @@ public class EatDrink extends Task implements Serializable {
 									person.addConsumptionTime(1, amount);
 									if (waterOnly)
 										setDescription(Msg.getString("Task.description.eatDrink.water")); //$NON-NLS-1$
-									LogConsolidated.log(logger, Level.INFO, 1000, sourceName,
+									LogConsolidated.log(logger, Level.FINE, 1000, sourceName,
 											"[" + person.getLocationTag().getLocale() + "] " + person
 													+ " was put on water ration and allocated to drink no more than " 
 													+ Math.round(amount * 1000.0) / 1.0

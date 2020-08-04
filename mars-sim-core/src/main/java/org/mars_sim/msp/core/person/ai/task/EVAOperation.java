@@ -453,7 +453,7 @@ public abstract class EVAOperation extends Task implements Serializable {
 			double oxygenCap = suitInv.getAmountResourceCapacity(ResourceUtil.oxygenID, false);
 			double oxygen = suitInv.getAmountResourceStored(ResourceUtil.oxygenID, false);
 			if (oxygen <= (oxygenCap * .2D)) {
-				LogConsolidated.log(logger, Level.INFO, 5000, sourceName,
+				LogConsolidated.log(logger, Level.WARNING, 5000, sourceName,
 						"[" + person.getLocationTag().getLocale() + "] " + person.getName()
 								+ " reported less than 20% O2 level left in "
 								+ suit.getName() + " Ending "
@@ -466,7 +466,7 @@ public abstract class EVAOperation extends Task implements Serializable {
 			double waterCap = suitInv.getAmountResourceCapacity(ResourceUtil.waterID, false);
 			double water = suitInv.getAmountResourceStored(ResourceUtil.waterID, false);
 			if (water <= (waterCap * .10D)) {
-				LogConsolidated.log(logger, Level.INFO, 5000, sourceName,
+				LogConsolidated.log(logger, Level.WARNING, 5000, sourceName,
 						"[" + person.getLocationTag().getLocale() + "] " + person.getName() + "'s " + suit.getName()
 								+ " reported less than 10% water level left when "
 										+ person.getTaskDescription());
@@ -489,7 +489,7 @@ public abstract class EVAOperation extends Task implements Serializable {
 
 		// Check if suit has any malfunctions.
 		if (suit.getMalfunctionManager().hasMalfunction()) {
-			LogConsolidated.log(logger, Level.INFO, 5000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
+			LogConsolidated.log(logger, Level.WARNING, 5000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
 					+ person.getName() + " ended '" + person.getTaskDescription() + "' : " + suit.getName() + " has malfunction.");
 			return false;
 		}
@@ -499,7 +499,7 @@ public abstract class EVAOperation extends Task implements Serializable {
 		if (perf < .1D) {
 			// Add back to 10% so that the person can walk
 			person.getPhysicalCondition().setPerformanceFactor((perf + .01)* 1.1);
-			LogConsolidated.log(logger, Level.INFO, 5000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
+			LogConsolidated.log(logger, Level.WARNING, 5000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
 							+ person.getName() + " ended '" + person.getTaskDescription() + "' : performance is less than 10%.");
 			return false;
 		}

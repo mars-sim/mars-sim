@@ -283,13 +283,16 @@ public class CommanderWindow extends ToolWindow {
 	    topPanel.add(comboBox, BorderLayout.CENTER);
 
 	    JPanel queueListPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-	    JPanel queueButtonLabelPanel = new JPanel(new BorderLayout());
-	    WebLabel queueListLabel = new WebLabel("     Task Queue    ");
-		queueListLabel.setUI(new com.jidesoft.plaf.xerto.VerticalLabelUI(false));
-	    queueListLabel.setFont( new Font( "Dialog", Font.PLAIN, 14) );
-		queueListLabel.setBorder(new MarsPanelBorder());
-	    queueButtonLabelPanel.add(queueListLabel, BorderLayout.NORTH);
-		queueListPanel.add(queueButtonLabelPanel);
+
+	    WebLabel taskQueueLabel = new WebLabel("     Task Queue    ");
+		taskQueueLabel.setUI(new com.jidesoft.plaf.xerto.VerticalLabelUI(false));
+	    taskQueueLabel.setFont( new Font( "Dialog", Font.PLAIN, 14) );
+		taskQueueLabel.setBorder(new MarsPanelBorder());
+		
+	    JPanel taskQueuePanel = new JPanel(new BorderLayout());
+	    taskQueuePanel.add(taskQueueLabel, BorderLayout.NORTH);
+		queueListPanel.add(taskQueuePanel);
+		
 		panel.add(queueListPanel, BorderLayout.CENTER); // 2nd add
 	    
 		// Create scroll panel for population list.
@@ -313,9 +316,13 @@ public class CommanderWindow extends ToolWindow {
 		queueListPanel.add(listScrollPanel);
 		
 		// Create an text area
-		Border title = BorderFactory.createTitledBorder("Log Book");
+//		Border title = BorderFactory.createTitledBorder("Log Book");
+		WebLabel logLabel = new WebLabel("       Log Book        ");
+		logLabel.setUI(new com.jidesoft.plaf.xerto.VerticalLabelUI(true));
+		logLabel.setFont( new Font( "Dialog", Font.PLAIN, 14) );
+		logLabel.setBorder(new MarsPanelBorder());
 		
-		JPanel textPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 18, 5));
+		JPanel textPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));//new FlowLayout(FlowLayout.CENTER, 18, 5));
 		jta = new JTextArea(10, 28);
 		jta.setEditable(false);
 		JScrollPane scrollTextArea = new JScrollPane (jta, 
@@ -326,11 +333,15 @@ public class CommanderWindow extends ToolWindow {
 			
 		textPanel.add(scrollTextArea);
 		
-		JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 18, 5));
-		titlePanel.setBorder(title);
-		titlePanel.add(textPanel);
+//		JPanel titlePanel = new JPanel(new BorderLayout(0, 0));
+//		titlePanel.setBorder(title);
+//		titlePanel.add(textPanel, BorderLayout.CENTER);
 		
-		panel.add(titlePanel, BorderLayout.SOUTH);
+	    JPanel logPanel = new JPanel(new BorderLayout());
+	    logPanel.add(logLabel, BorderLayout.NORTH);
+	    textPanel.add(logPanel);
+		
+		panel.add(textPanel, BorderLayout.SOUTH);
 		
 	}
 	

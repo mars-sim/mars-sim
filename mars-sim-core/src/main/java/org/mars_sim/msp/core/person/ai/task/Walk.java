@@ -740,7 +740,7 @@ public class Walk extends Task implements Serializable {
 			loc = loc == null ? "[N/A]" : loc;
 			loc = loc.equals("Outside") ? loc : "in " + loc;
 			
-			LogConsolidated.log(logger, Level.INFO, 4000, sourceName,
+			LogConsolidated.log(logger, Level.FINER, 4000, sourceName,
       				"[" + person.getLocationTag().getLocale() + "] "
 					+ person + " was " + loc
 					+ ", walking inside the settlement.");
@@ -1177,7 +1177,7 @@ public class Walk extends Task implements Serializable {
 		loc = loc == null ? "[N/A]" : loc;
 		loc = loc.equals("Outside") ? loc : "in " + loc;
 		
-		LogConsolidated.log(logger, Level.INFO, 4000, sourceName + "::enteringAirlockPhase",
+		LogConsolidated.log(logger, Level.FINER, 4000, sourceName + "::enteringAirlockPhase",
   				"[" + person.getLocationTag().getLocale() + "] "
 				+ person + " was " + loc
 				+ ".");
@@ -1187,7 +1187,7 @@ public class Walk extends Task implements Serializable {
 		Airlock airlock = step.airlock;
 		if (person.isOutside()) {
 			if (EnterAirlock.canEnterAirlock(person, airlock)) {
-				LogConsolidated.log(logger, Level.INFO, 4000, sourceName + "::enteringAirlockPhase",
+				LogConsolidated.log(logger, Level.FINER, 4000, sourceName + "::enteringAirlockPhase",
 		  				"[" + person.getLocationTag().getLocale() + "] "
 						+ person + " was " + loc
 						+ " and starting EnterAirlock subtask.");
