@@ -1597,6 +1597,16 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 //		missionManager = mgr;
 //	}
 	
+	/**
+	 * Gets the settlement associated with the vehicle.
+	 * 
+	 * @return settlement or null if none.
+	 */
+	@Override
+	public Settlement getAssociatedSettlement() {
+		return vehicle.getAssociatedSettlement();
+	}
+	
 	@Override
 	public void destroy() {
 		super.destroy();

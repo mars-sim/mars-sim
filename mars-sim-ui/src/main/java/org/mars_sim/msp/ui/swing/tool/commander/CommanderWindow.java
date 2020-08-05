@@ -315,13 +315,13 @@ public class CommanderWindow extends ToolWindow {
 		});
 		queueListPanel.add(listScrollPanel);
 		
-		// Create an text area
 //		Border title = BorderFactory.createTitledBorder("Log Book");
 		WebLabel logLabel = new WebLabel("       Log Book        ");
 		logLabel.setUI(new com.jidesoft.plaf.xerto.VerticalLabelUI(true));
 		logLabel.setFont( new Font( "Dialog", Font.PLAIN, 14) );
 		logLabel.setBorder(new MarsPanelBorder());
 		
+		// Create an text area
 		JPanel textPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));//new FlowLayout(FlowLayout.CENTER, 18, 5));
 		jta = new JTextArea(10, 28);
 		jta.setEditable(false);

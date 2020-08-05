@@ -758,8 +758,8 @@ public class TaskManager implements Serializable {
 				if ((probability >= 0D) && (!Double.isNaN(probability)) && (!Double.isInfinite(probability))) {
 					if (probability > MAX_TASK_PROBABILITY) {
 						if (mt.getName().equalsIgnoreCase("sleeping")) {
-							LogConsolidated.log(logger, Level.INFO, 10_000, sourceName, mind.getPerson().getName() + " - "
-									+ mt.getName() + " felt quite sleepy (" + Math.round(probability * 10.0) / 10.0 + ").");
+							LogConsolidated.log(logger, Level.INFO, 10_000, sourceName, mind.getPerson().getName() + " ("
+									+ mt.getName() + ") was very sleepy - " + Math.round(probability * 10.0) / 10.0 + ".");
 						}
 						else 
 							LogConsolidated.log(logger, Level.INFO, 10_000, sourceName, mind.getPerson().getName() + " - "

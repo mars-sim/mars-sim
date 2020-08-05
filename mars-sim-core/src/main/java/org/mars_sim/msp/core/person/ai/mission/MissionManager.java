@@ -537,20 +537,31 @@ public class MissionManager implements Serializable {
 			throw new IllegalArgumentException("settlement is null");
 		}
 
-		List<Mission> m0 = new ArrayList<Mission>();
-		List<Mission> m1 = getMissions();
-		if (!m1.isEmpty()) {		
-			Iterator<Mission> i = m1.iterator();
-			while (i.hasNext()) {
-				Mission m = i.next();
-				if (!m.isDone() 
-						&& settlement == m.getAssociatedSettlement()) {
-					m0.add(m);
+		List<Mission> result = new ArrayList<Mission>();		
+		Iterator<Mission> i = getMissions().iterator();
+		while (i.hasNext()) {
+			Mission m = i.next();
+			if (m instanceof VehicleMission
+					&& !result.contains(m)) {
+				VehicleMission v = (VehicleMission)m;
+				if (!v.isDone() 
+						&& settlement == v.getAssociatedSettlement()) {
+					result.add(v);
+				}
+			}
+			else if (m instanceof BuildingConstructionMission
+					&& !result.contains(m)) {
+				BuildingConstructionMission b = (BuildingConstructionMission)m;
+				if (!b.isDone() 
+						&& settlement == b.getAssociatedSettlement()) {
+					result.add(b);
 				}
 			}
 		}
 
-		return m0;
+//		System.out.println("Type of Missions : " + result);
+			
+		return result;
 	}
 
 	/**

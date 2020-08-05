@@ -50,6 +50,7 @@ import org.mars_sim.msp.core.person.ai.job.Meteorologist;
 import org.mars_sim.msp.core.person.ai.job.Technician;
 import org.mars_sim.msp.core.person.ai.mission.AreologyFieldStudy;
 import org.mars_sim.msp.core.person.ai.mission.BiologyFieldStudy;
+import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.person.ai.mission.CollectIce;
 import org.mars_sim.msp.core.person.ai.mission.CollectRegolith;
 import org.mars_sim.msp.core.person.ai.mission.EmergencySupply;
@@ -110,6 +111,7 @@ import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
+import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -2915,28 +2917,41 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	}
 	
 	/**
-	 * Gets all associated vehicles currently reserved for mission or on mission
+	 * Gets all associated vehicles currently on mission
 	 *
 	 * @return collection of vehicles.
 	 */
 	public Collection<Vehicle> getMissionVehicles() {
-		return getAllAssociatedVehicles().stream()
-				.filter(v -> v.isReservedForMission())
-				.collect(Collectors.toList());
+//		return getAllAssociatedVehicles().stream()
+//				.filter(v -> v.isReservedForMission())
+//				.collect(Collectors.toList());
 
-//		Collection<Vehicle> result = new ArrayList<Vehicle>();
-//
-//		Iterator<Mission> i = missionManager.getMissionsForSettlement(this).iterator();
-//		while (i.hasNext()) {
-//			Mission mission = i.next();
-//			if (mission instanceof VehicleMission) {
-//				Vehicle vehicle = ((VehicleMission) mission).getVehicle();
-//				if ((vehicle != null) && !this.equals(vehicle.getSettlement()))
-//					result.add(vehicle);
-//			}
-//		}
-//
-//		return result;
+		Collection<Vehicle> result = new ArrayList<Vehicle>();
+		Iterator<Mission> i = missionManager.getMissionsForSettlement(this).iterator();
+		while (i.hasNext()) {
+			Mission mission = i.next();
+			if (mission instanceof VehicleMission) {
+				Vehicle vehicle = ((VehicleMission) mission).getVehicle();
+//			Vehicle vehicle = mission.getVehicle();
+				if ((vehicle != null) 
+						&& !result.contains(vehicle)
+						&& this.equals(vehicle.getAssociatedSettlement()))
+					result.add(vehicle);
+			}
+			
+			else if (mission instanceof BuildingConstructionMission) {
+				result.addAll(((BuildingConstructionMission) mission).getConstructionVehicles());
+				
+//				Iterator<GroundVehicle> ii = ((BuildingConstructionMission) mission).getConstructionVehicles().iterator();;
+//				while (i.hasNext()) {
+//					GroundVehicle gv = ii.next();
+//				}
+			}
+		}
+		
+//		System.out.println(this + "'s Mission Vehicles : " + result);
+
+		return result;
 	}
 
 	/**

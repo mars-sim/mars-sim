@@ -240,7 +240,7 @@ public abstract class Mission implements Serializable {
 			if(Conversion.isVowel(missionName))
 				article = "an ";
 
-			LogConsolidated.flog(Level.INFO, 0, sourceName, "[" + person.getSettlement() + "] "
+			LogConsolidated.log(logger, Level.INFO, 0, sourceName, "[" + person.getSettlement() + "] "
 					+ startingMember.getName() + " began organizing " + article + missionStr + appendStr);
 
 			// Add starting member to mission.
@@ -891,7 +891,7 @@ public abstract class Mission implements Serializable {
 			
 			if (members != null) {
 				if (!members.isEmpty()) { 
-					LogConsolidated.flog(Level.INFO, 1000, sourceName,
+					LogConsolidated.log(logger, Level.INFO, 1000, sourceName,
 							"[" + startingMember.getLocationTag().getLocale()
 									+ "] " + startingMember + " disbanded mission member(s) : " + members);
 					Iterator<MissionMember> i = members.iterator();
@@ -904,7 +904,7 @@ public abstract class Mission implements Serializable {
 		}
 		
 		else 
-			LogConsolidated.flog(Level.INFO, 0, sourceName,
+			LogConsolidated.log(logger, Level.INFO, 0, sourceName,
 				"[" + startingMember.getLocationTag().getLocale() + "] " + startingMember.getName()
 						+ " ended the " + missionName + " with the following status flag(s) :");
 		
@@ -1426,7 +1426,7 @@ public abstract class Mission implements Serializable {
 				}
 			}
 			
-			LogConsolidated.flog(Level.INFO, 0, sourceName, s.toString());
+			LogConsolidated.log(logger, Level.INFO, 0, sourceName, s.toString());
 		}
 
 //		System.out.println("   p is at " + result);
@@ -1466,7 +1466,7 @@ public abstract class Mission implements Serializable {
 		
 		if (plan == null) {			
 			plan = new MissionPlanning(this, p.getName(), p.getRole().getType());		
-			LogConsolidated.flog(Level.INFO, 0, sourceName, "[" + p.getLocationTag().getLocale() + "] " 
+			LogConsolidated.log(logger, Level.INFO, 0, sourceName, "[" + p.getLocationTag().getLocale() + "] " 
 					+ p.getName() + " (" + p.getRole().getType() 
 					+ ") was requesting approval for " + getDescription() + ".");
 
@@ -1484,7 +1484,7 @@ public abstract class Mission implements Serializable {
 				
 				fullMissionDesignation = createFullDesignation(p);
 				
-				LogConsolidated.flog(Level.INFO, 0, sourceName, "[" + p.getLocationTag().getLocale() + "] " 
+				LogConsolidated.log(logger, Level.INFO, 0, sourceName, "[" + p.getLocationTag().getLocale() + "] " 
 						+ p.getRole().getType() + " " + p.getName() 
 						+ " was getting"// the rover " + startingMember.getVehicle() 
 						+ " ready to embark on " + getDescription());
@@ -1603,12 +1603,12 @@ public abstract class Mission implements Serializable {
 	public void addMissionStatus(MissionStatus status) {
 		if (!missionStatus.contains(status)) {
 			missionStatus.add(status);
-			LogConsolidated.flog(Level.INFO, 0, sourceName, "[" + startingMember.getAssociatedSettlement() + "] "
+			LogConsolidated.log(logger, Level.INFO, 0, sourceName, "[" + startingMember.getAssociatedSettlement() + "] "
 					+ startingMember.getName() + "'s "
 					+ this + " was just being tagged with '" + status.getName() + "'.");
 		}
 		else
-			LogConsolidated.flog(Level.WARNING, 10_000, sourceName, "[" + startingMember.getAssociatedSettlement() + "] "
+			LogConsolidated.log(logger, Level.WARNING, 10_000, sourceName, "[" + startingMember.getAssociatedSettlement() + "] "
 					+ startingMember.getName() + "'s "
 					+ this + " has already been tagged with '" + status.getName() + "'");
 	}
@@ -1622,6 +1622,9 @@ public abstract class Mission implements Serializable {
 		if (this instanceof VehicleMission) {
 			return ((VehicleMission)this).getVehicle();
 		}
+//		else if (this instanceof BuildingConstructionMission) {
+//			return ((BuildingConstructionMission)this).getVehicle();
+//		}
 		return null;	
 	}
 	

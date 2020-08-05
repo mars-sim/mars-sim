@@ -923,6 +923,11 @@ public class BuildingConstructionMission extends Mission implements Serializable
 		super.endMission();
 	}
 
+	/**
+	 * Gets the settlement associated with the vehicle.
+	 * 
+	 * @return settlement or null if none.
+	 */
 	@Override
 	public Settlement getAssociatedSettlement() {
 		return settlement;
@@ -1657,7 +1662,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
 
 		return goodPosition;
 	}
-
+	
 	@Override
 	public void destroy() {
 		super.destroy();

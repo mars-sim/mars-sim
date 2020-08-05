@@ -9,17 +9,37 @@ Copyright (C) 2020 Scott Davis
 
 ### CORE ENGINE IMPROVEMENTS :
 
-1. 
+1. Add teaching reward and learning points on skills when performing
+   Teach task.
+   
+2. Enforce one continuous sleep session as much as possible.
+
+3. Reduce memory footprint by 50% when loading from a saved sim.
+   
+4. Remove the duplicated EVA function in Garage and Loading Garage. 
+   
 
 ### UI IMPROVEMENT :
 
-1. None
+1. Minor cosmetic changes in Person Window.
+
 
 ### FIXES :
 
-1. Remove the EVA function in Garage and Loading Garage. 
+1. Fix OutOfMemoryError when saving sim.
 
 2. Remove extraneous object references that bloat the saved sim file.
+
+3. Fix rover embarking from a settlement.
+
+4. Correct a major walking bug - person frozen in EVA Airlock.
+
+5. Account for vehicle emergency while still parking in a settlement.
+
+6. Correct the location of inner and outer door/hatch of EVA Airlock.
+ 
+7. Fix retrieving a list of vehicles reserved for mission or on mission.
+
 
 -----------------------------------------------------------------------------------------
 
