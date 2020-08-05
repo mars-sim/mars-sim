@@ -188,6 +188,64 @@ public class TerrainElevation implements Serializable {
 	}
 	
 	
+	/**
+	 * Compute the regolith collection rate of a location
+	 * 
+	 * @param site
+	 * @param currentLocation
+	 * @return regolith collection rate 
+	 */
+	public double getRegolithCollectionRate(CollectionSite site, Coordinates currentLocation) {
+		
+		// Get the elevation and terrain gradient factor
+		double[] terrainProfile = getTerrainProfile(currentLocation);
+				
+		double elevation = terrainProfile[0];
+		double steepness = terrainProfile[1];
+		double latitude = currentLocation.getLatitudeDouble();
+		
+//		site.setElevation(elevation);
+//		site.setSteepness(steepness);
+		
+		double rate = 0;
+		
+		// TODO: Add seasonal variation for north and south hemisphere
+		// TODO: The collection rate may be increased by relevant scientific studies 
+		
+		if (latitude < 60 && latitude > -60) {
+			// The steeper the slope, the harder it is to retrieve the deposit
+			rate = (- 0.639 * elevation + 14.2492) / 5D  - Math.abs(steepness) / 10D;
+		}
+		
+		else if ((latitude >= 60 && latitude < 75)
+			|| (latitude <= -60 && latitude > -75)) {
+			rate = Math.abs(elevation) / 20.0  - Math.abs(latitude) / 100.0 - Math.abs(steepness) / 10D;
+//									* (1 + RandomUtil.getRandomDouble(.1));
+		}
+		
+		else if ((latitude >= 75 && latitude <= 90)
+				|| (latitude <= -75 && latitude >= -90)) {
+				rate = Math.abs(elevation) / 50.0  - Math.abs(latitude) / 50.0;
+//										* (1 + RandomUtil.getRandomDouble(.1));
+		}
+		
+		if (rate > 10)
+			rate = 10;	
+		
+		if (rate < 0)
+			rate = 0;	
+		
+		String nameLoc = "";
+		Settlement s = CollectionUtils.findSettlement(currentLocation);
+		if (s != null) {
+			nameLoc = "At " + s.getName() + ",";
+			logger.config(nameLoc + "                Elevation : " + Math.round(elevation*1000.0)/1000.0 + " km");
+			logger.config(nameLoc + "        Terrain Steepness : " + Math.round(steepness*10.0)/10.0);
+			logger.config(nameLoc + " Regolith Collection Rate : " + Math.round(rate*100.0)/100.0 + " kg/millisol");
+		}
+		
+		return rate;
+	}
 	
 	/**
 	 * Compute the ice collection rate of a location
@@ -208,27 +266,33 @@ public class TerrainElevation implements Serializable {
 //		site.setElevation(elevation);
 //		site.setSteepness(steepness);
 		
-		double iceCollectionRate = 0;
+		double rate = 0;
 		
 		// TODO: Add seasonal variation for north and south hemisphere
 		// TODO: The collection rate may be increased by relevant scientific studies 
 		
-		if (latitude < 59 && latitude > -59) {
+		if (latitude < 60 && latitude > -60) {
 			// The steeper the slope, the harder it is to retrieve the ice deposit
-			iceCollectionRate = (- 0.639 * elevation + 14.2492) / 20D  - steepness / 10D;
+			rate = (- 0.639 * elevation + 14.2492) / 20D + Math.abs(steepness) / 10D;
 		}
 		
-		else if ((latitude >= 59 && latitude <= 90)
-			|| (latitude <= -59 && latitude >= -90)) {
-			iceCollectionRate = Math.abs(elevation / 2.0 + latitude / 75.0);
+		else if ((latitude >= 60 && latitude < 75)
+			|| (latitude <= -60 && latitude > -75)) {
+			rate = Math.abs(elevation) / 2.0 + Math.abs(latitude) / 75.0 - Math.abs(steepness) / 10D;
 //									* (1 + RandomUtil.getRandomDouble(.1));
 		}
 		
-		if (iceCollectionRate > 5)
-			iceCollectionRate = 5;	
+		else if ((latitude >= 75 && latitude <= 90)
+				|| (latitude <= -75 && latitude >= -90)) {
+				rate = Math.abs(elevation) + Math.abs(latitude) / 75.0;
+//										* (1 + RandomUtil.getRandomDouble(.1));
+		}
 		
-		if (iceCollectionRate < 0)
-			iceCollectionRate = 0;	
+		if (rate > 5)
+			rate = 5;	
+		
+		if (rate < 0)
+			rate = 0;	
 		
 //		site.setIceCollectionRate(iceCollectionRate);
 //		
@@ -239,12 +303,12 @@ public class TerrainElevation implements Serializable {
 		Settlement s = CollectionUtils.findSettlement(currentLocation);
 		if (s != null) {
 			nameLoc = "At " + s.getName() + ",";
-			logger.config(nameLoc + "           elevation : " + Math.round(elevation*1000.0)/1000.0 + " km");
-			logger.config(nameLoc + "   terrain steepness : " + Math.round(steepness*10.0)/10.0);
-			logger.config(nameLoc + " ice collection rate : " + Math.round(iceCollectionRate*100.0)/100.0 + " kg/millisol");
+			logger.config(nameLoc + "           Elevation : " + Math.round(elevation*1000.0)/1000.0 + " km");
+			logger.config(nameLoc + "   Terrain Steepness : " + Math.round(steepness*10.0)/10.0);
+			logger.config(nameLoc + " Ice Collection Rate : " + Math.round(rate*100.0)/100.0 + " kg/millisol");
 		}
 		
-		return iceCollectionRate;
+		return rate;
 	}
 	
 	/**

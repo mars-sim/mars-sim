@@ -15,6 +15,7 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.mars.ExploredLocation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -332,12 +333,36 @@ public class ReviewMissionPlan extends Task implements Serializable {
 									emer = 50;
 								}	
 								
-								// 6. site
-								int site = 0;
+								// 6. Site Value
+								double siteValue = 0;
 								if (m instanceof CollectIce) {
-									site = (int)(((CollectIce) m).getTotalSiteScore()/50 - 5);
-									logger.info("Ice collection site score is " + site);
+									siteValue = ((CollectIce) m).getTotalSiteScore()*4.0;
+									logger.info(person + "'s Ice collection site value is " + Math.round(siteValue*10.0)/10.0);
 								}	
+								
+								else if (m instanceof CollectRegolith) {
+									siteValue = ((CollectRegolith) m).getTotalSiteScore()*2.0;
+									logger.info(person + "'s Regolith collection site value is " + Math.round(siteValue*10.0)/10.0);
+								}	
+								
+								else if (m instanceof Mining) {
+									siteValue = Mining.getMiningSiteValue(((Mining)m).getMiningSite(), person.getAssociatedSettlement())/500.0;
+									logger.info(person + "'s Mining site value is " + Math.round(siteValue*10.0)/10.0);
+								}
+								
+								else if (m instanceof Exploration) {
+									int count = 0;
+									for (ExploredLocation e : ((Exploration)m).getExploredSites()) {
+										count++;
+										siteValue += Mining.getMiningSiteValue(e, person.getAssociatedSettlement())/500.0;
+									}
+									siteValue = siteValue / count;
+									logger.info(person + "'s Mineral Exploration site value is " 
+											+ Math.round(siteValue*10.0)/10.0
+											+ "   # of site(s) : " + count + "."
+											);
+								}
+									
 								
 								// 7. proposed route distance (0 to 10 points)
 								int dist = 0;
@@ -389,7 +414,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 								// TODO: 9. Go to him/her to have a chat
 								// TODO: 10. mission lead's leadership/charisma
 								
-								score = Math.round((rating + relation + qual + obj + emer + site + dist + leadership + weight + luck)* 10.0)/10.0;
+								score = Math.round((rating + relation + qual + obj + emer + siteValue + dist + leadership + weight + luck)* 10.0)/10.0;
 	
 								// Updates the mission plan status
 								missionManager.scoreMissionPlan(mp, score, person);
@@ -403,7 +428,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 								logger.info(" (3)  Qualifications : " + qual); 
 								logger.info(" (4)       Objective : " + obj);
 								logger.info(" (5)       Emergency : " + emer);
-								logger.info(" (6)          Sites  : " + site);
+								logger.info(" (6)      Site Value : " + Math.round(siteValue*10.0)/10.0);
 								logger.info(" (7)       Distance  : " + dist);
 								logger.info(" (8)      Leadership : " + leadership); 							
 								logger.info(" (9)   Reviewer Role : " + weight); 

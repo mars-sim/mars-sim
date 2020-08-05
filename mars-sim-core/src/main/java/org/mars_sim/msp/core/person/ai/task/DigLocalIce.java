@@ -276,7 +276,7 @@ implements Serializable {
 //	            }
 	        }
 	
-	        if (fatigue > 1000 || stress > 50 || hunger > 750 || energy < 500) {
+	        if (fatigue > 7500 || stress > 50 || hunger > 750 || energy < 1000) {
 	            LogConsolidated.log(logger, Level.INFO, 3000, sourceName, 
 	        		"[" + person.getLocationTag().getLocale() +  "] " +
 	                		+ Math.round(totalCollected*100D)/100D + " kg collected) " 

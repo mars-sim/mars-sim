@@ -123,7 +123,10 @@ public class Exploration extends RoverMission implements Serializable {
 			setStartingSettlement(s);
 			exploredSites = new ArrayList<ExploredLocation>(NUM_SITES);
 			explorationSiteCompletion = new HashMap<String, Double>(NUM_SITES);
-
+			
+			// Create a list of sites to be explored
+			createNewExploredSite();
+			
 			// Recruit additional members to mission.
 			recruitMembersForMission(startingPerson);
 
@@ -390,7 +393,6 @@ public class Exploration extends RoverMission implements Serializable {
 
 		// Add new explored site if just starting exploring.
 		if (currentSite == null) {
-			createNewExploredSite();
 			explorationSiteStartTime = (MarsClock) marsClock.clone();
 		}
 
@@ -486,7 +488,7 @@ public class Exploration extends RoverMission implements Serializable {
 			currentSite = null;
 		}
 	}
-
+	
 	/**
 	 * Creates a new explored site at the current location, creates initial
 	 * estimates for mineral concentrations, and adds it to the explored site list.
@@ -497,6 +499,7 @@ public class Exploration extends RoverMission implements Serializable {
 //		SurfaceFeatures surfaceFeatures = Simulation.instance().getMars().getSurfaceFeatures();
 		MineralMap mineralMap = surfaceFeatures.getMineralMap();
 		String[] mineralTypes = mineralMap.getMineralTypeNames();
+		
 		Map<String, Double> initialMineralEstimations = new HashMap<String, Double>(mineralTypes.length);
 		for (String mineralType : mineralTypes) {
 			double estimation = RandomUtil.getRandomDouble(MINERAL_ESTIMATION_CEILING * 2D)
@@ -509,6 +512,7 @@ public class Exploration extends RoverMission implements Serializable {
 				estimation = 100D - estimation;
 			initialMineralEstimations.put(mineralType, estimation);
 		}
+		
 		currentSite = surfaceFeatures.addExploredLocation(new Coordinates(getCurrentMissionLocation()),
 				initialMineralEstimations, getAssociatedSettlement());
 		exploredSites.add(currentSite);

@@ -143,14 +143,13 @@ implements Serializable {
 	       	// Add task phases
         	addPhase(COLLECT_REGOLITH);
         	
-//	        setPhase(WALK_TO_OUTSIDE_SITE);
-        	
 //	        logger.info(person.getName() + " was going to start digging for regolith.");
         }
     }
 
-	   /**
+	/**
      * Perform collect regolith phase.
+     * 
      * @param time time (millisol) to perform phase.
      * @return time (millisol) remaining after performing phase.
      * @throws Exception
@@ -278,7 +277,7 @@ implements Serializable {
 //	            }
 	    	}
 	        
-	        if (fatigue > 1000 || stress > 50 || hunger > 750 || energy < 500) {
+	        if (fatigue > 750 || stress > 50 || hunger > 750 || energy < 1000) {
 	            LogConsolidated.log(logger, Level.INFO, 3000, sourceName, 
 	        		"[" + person.getLocationTag().getLocale() +  "] " +
 	        		person.getName() + " took a break from collecting regolith ("

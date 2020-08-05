@@ -185,7 +185,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 						}
 					}
 					
-					else { //if (resourceID == ResourceUtil.regolithID)
+					else if (resourceID == ResourceUtil.regolithID) {
 						determineCollectionSites(getVehicle().getRange(CollectRegolith.missionType),
 							getTotalTripTimeLimit(getRover(), getPeopleNumber(), true), numSites);
 					}
@@ -553,18 +553,18 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 						if (terrainElevation == null)
 							terrainElevation = sim.getMars().getSurfaceFeatures().getTerrainElevation();
 								
-						double iceCollectionRate = terrainElevation.getIceCollectionRate(person.getCoordinates());
+						double rate = terrainElevation.getIceCollectionRate(person.getCoordinates());
 						
 						// Randomize the rate of collection upon arrival
-						iceCollectionRate = iceCollectionRate * (RandomUtil.getRandomDouble(1)
-								- RandomUtil.getRandomDouble(1));
+						rate = rate 
+								* (1 + RandomUtil.getRandomDouble(.3) - RandomUtil.getRandomDouble(.3));
 						
 						// TODO: Add how areologists and some scientific study may come up with better technique 
 						// to obtain better estimation of the collection rate. Go to a prospective site, rather 
 						// than going to a site coordinate in the blind.
 						
-						if (iceCollectionRate > 0)
-							resourceCollectionRate = iceCollectionRate;
+						if (rate > 0)
+							resourceCollectionRate = rate;
 					}
 
 					else { //if (resourceID == ResourceUtil.regolithID) {
@@ -573,13 +573,17 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 						// Randomly pick a regolith
 						resourceID = REGOLITH_TYPES[rand];
 						
+						if (terrainElevation == null)
+							terrainElevation = sim.getMars().getSurfaceFeatures().getTerrainElevation();
+								
+						double rate = terrainElevation.getRegolithCollectionRate(null, person.getCoordinates());
+				
 						// Randomize the rate of collection upon arrival
-						double regolithCollectionRate = resourceCollectionRate 
-								* (1 + RandomUtil.getRandomDouble(.5) - RandomUtil.getRandomDouble(.5));
-						
-						if (regolithCollectionRate > 0)
-							resourceCollectionRate = regolithCollectionRate;
-//							System.out.println("Regolith resourceCollectionRate : " + resourceCollectionRate);
+						rate = rate 
+								* (1 + RandomUtil.getRandomDouble(.3) - RandomUtil.getRandomDouble(.3));
+
+						if (rate > 0)
+							resourceCollectionRate = rate;
 					}
 					
 					// If person can collect resources, start him/her on that task.
@@ -655,19 +659,47 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 				count++;
 			}
 			totalSiteScore += bestScore;
+//			System.out.println("(1) Ice totalSiteScore: " + Math.round(totalSiteScore*1000.0)/1000.0 
+//					+ "   bestScore: " + Math.round(bestScore*1000.0)/1000.0);
 			unorderedSites.add(bestLocation);
 			currentLocation = bestLocation;
 		}
 		
 		else {
 			// for ResourceUtil.regolithID
-			direction = new Direction(RandomUtil.getRandomDouble(2 * Math.PI));
-			limit = range / 4D;
-			siteDistance = RandomUtil.getRandomDouble(limit);
-			newLocation = startingLocation.getNewLocation(direction, siteDistance);
+			boolean quit = false;
+			double bestScore = 0;
+			Coordinates bestLocation = null;
+			int count = 0;
+			while (!quit) {
+				direction = new Direction(RandomUtil.getRandomDouble(2 * Math.PI));
+				limit = range / 4D;
+				siteDistance = RandomUtil.getRandomDouble(limit);
+				newLocation = startingLocation.getNewLocation(direction, siteDistance);
+				if (terrainElevation == null)
+					terrainElevation = surfaceFeatures.getTerrainElevation();
+				double score = terrainElevation.getRegolithCollectionRate(null, newLocation);
+				if (score > bestScore) {
+					bestScore = score;
+					bestLocation = newLocation;
+					if (count >= MAX_NUM_PRIMARY_SITES)
+						quit = true;
+				}
+				count++;
+			}
+			totalSiteScore += bestScore;
+//			System.out.println("(1) Regolith totalSiteScore: " + Math.round(totalSiteScore*1000.0)/1000.0 
+//					+ "   bestScore: " + Math.round(bestScore*1000.0)/1000.0);
 			
-			unorderedSites.add(newLocation);
-			currentLocation = newLocation;
+			unorderedSites.add(bestLocation);
+			currentLocation = bestLocation;
+			
+//			direction = new Direction(RandomUtil.getRandomDouble(2 * Math.PI));
+//			limit = range / 4D;
+//			siteDistance = RandomUtil.getRandomDouble(limit);
+//			newLocation = startingLocation.getNewLocation(direction, siteDistance);
+//			unorderedSites.add(newLocation);
+//			currentLocation = newLocation;
 		}
 
 		// Determine remaining collection sites.
@@ -700,6 +732,9 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 							terrainElevation = sim.getMars().getSurfaceFeatures().getTerrainElevation();
 
 						double score = terrainElevation.getIceCollectionRate(newLocation);
+//						if (score < 0) {
+//							bestScore = 0; 
+//						}
 						if (score > bestScore) {
 							bestScore = score;
 							bestLocation = newLocation;
@@ -710,6 +745,8 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 					}
 					
 					totalSiteScore += bestScore;
+					System.out.println("(2) Ice totalSiteScore: " + Math.round(totalSiteScore*1000.0)/1000.0 
+							+ "   bestScore: " + Math.round(bestScore*1000.0)/1000.0);
 					unorderedSites.add(bestLocation);
 					currentLocation = bestLocation;
 				
@@ -720,18 +757,49 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 		
 		else {
 			// for regolith collection mission
+			
 			for (int x = 1; x < numSites; x++) {
 				double currentDistanceToSettlement = Coordinates.computeDistance(currentLocation, startingLocation);
 				if (remainingRange > currentDistanceToSettlement) {
-					direction = new Direction(RandomUtil.getRandomDouble(2D * Math.PI));
-					double tempLimit1 = Math.pow(remainingRange, 2D) - Math.pow(currentDistanceToSettlement, 2D);
-					double tempLimit2 = (2D * remainingRange)
-							- (2D * currentDistanceToSettlement * direction.getCosDirection());
-					limit = tempLimit1 / tempLimit2;
-					siteDistance = RandomUtil.getRandomDouble(limit);
-					newLocation = currentLocation.getNewLocation(direction, siteDistance);
-					unorderedSites.add(newLocation);
-					currentLocation = newLocation;
+					boolean quit = false;
+					double bestScore = 0;
+					Coordinates bestLocation = null;
+					int count = 0;
+	
+					while (!quit) {
+							
+						direction = new Direction(RandomUtil.getRandomDouble(2D * Math.PI));
+						
+						double tempLimit1 = Math.pow(remainingRange, 2D) - Math.pow(currentDistanceToSettlement, 2D);
+						double tempLimit2 = (2D * remainingRange)
+								- (2D * currentDistanceToSettlement * direction.getCosDirection());
+						limit = tempLimit1 / tempLimit2;
+						
+						siteDistance = RandomUtil.getRandomDouble(limit);
+						newLocation = currentLocation.getNewLocation(direction, siteDistance);
+						
+						if (terrainElevation == null)
+							terrainElevation = sim.getMars().getSurfaceFeatures().getTerrainElevation();
+
+						double score = terrainElevation.getRegolithCollectionRate(null, newLocation);
+//						if (score < 0) {
+//							bestScore = 0; 
+//						}
+						if (score > bestScore) {
+							bestScore = score;
+							bestLocation = newLocation;
+							if (count >= MAX_NUM_SECONDARY_SITES)
+								quit = true;
+						}
+						count++;
+					}
+					
+					totalSiteScore += bestScore;
+					System.out.println("(2) Regolith totalSiteScore: " + Math.round(totalSiteScore*1000.0)/1000.0 
+							+ "   bestScore: " + Math.round(bestScore*1000.0)/1000.0);
+					unorderedSites.add(bestLocation);
+					currentLocation = bestLocation;
+				
 					remainingRange -= siteDistance;
 				}
 			}
@@ -815,7 +883,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 	    	// Add the equipment demand for a bag
 //	    	settlement.getInventory().addEquipmentDemandTotalRequest(id, 1);
 //	    	settlement.getInventory().addEquipmentDemand(id, 1);
-        	LogConsolidated.flog(Level.WARNING, 10_000, sourceName,
+        	LogConsolidated.log(logger, Level.WARNING, 10_000, sourceName,
 					"[" 
 					+ settlement
 					+ "] no more empty " + name 

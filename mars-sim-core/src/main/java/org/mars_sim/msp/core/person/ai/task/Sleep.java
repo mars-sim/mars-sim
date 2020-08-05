@@ -486,7 +486,7 @@ public class Sleep extends Task implements Serializable {
 			if ((previousTime <= alarmTime) && (newTime >= alarmTime)) {
 				circadian.setNumSleep(circadian.getNumSleep() + 1);
 				circadian.updateSleepCycle((int) marsClock.getMillisol(), true);
-				logger.info(person.getName() + " woke up from the alarm at " + (int)alarmTime);
+				logger.info(person.getName() + " woke up from the alarm at " + (int)alarmTime + " millisols.");
 				endTask();
 			} else {
 				previousTime = newTime;
@@ -500,7 +500,7 @@ public class Sleep extends Task implements Serializable {
 			
 			// Check if alarm went off
 			if ((previousTime <= alarmTime) && (newTime >= alarmTime)) {
-				logger.finest(robot.getName() + " woke up from alarm.");
+				logger.finest(robot.getName() + " woke up from alarm at " + (int)alarmTime + " millisols.");
 				endTask();
 			} else {
 				previousTime = newTime;
