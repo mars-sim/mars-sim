@@ -17,7 +17,9 @@ Copyright (C) 2020 Scott Davis
 3. Reduce memory footprint by 50% when loading from a saved sim.
    
 4. Remove the duplicated EVA function in Garage and Loading Garage. 
-   
+
+5. Refine ice collection rate. Higher above or below +/-60 deg latitude.
+
 
 ### UI IMPROVEMENT :
 

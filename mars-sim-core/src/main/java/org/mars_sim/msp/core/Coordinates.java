@@ -554,13 +554,13 @@ public class Coordinates implements Serializable {
 //		return String.format("%5.2f%s %s", degrees, Msg.getString("direction.degreeSign"), direction); //$NON-NLS-1$
 	}
 
-	private String formatValue(Number value, String formatString) {
-        DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(Locale.ENGLISH);
-        formatSymbols.setDecimalSeparator('.'); // or ','
-        formatSymbols.setGroupingSeparator(','); // or ' '
-        DecimalFormat formatter = new DecimalFormat(formatString, formatSymbols);
-        return formatter.format(value);
-    }
+//	private String formatValue(Number value, String formatString) {
+//        DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols(Locale.ENGLISH);
+//        formatSymbols.setDecimalSeparator('.'); // or ','
+//        formatSymbols.setGroupingSeparator(','); // or ' '
+//        DecimalFormat formatter = new DecimalFormat(formatString, formatSymbols);
+//        return formatter.format(value);
+//    }
 	
 	/**
 	 * Converts phi to latitude

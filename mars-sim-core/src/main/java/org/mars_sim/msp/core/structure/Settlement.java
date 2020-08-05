@@ -3849,7 +3849,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	/**
 	 * Sets the objective
 	 * 
-	 * @param       {{@link ObjectiveType}
+	 * @param {@link ObjectiveType}
 	 * @param level
 	 */
 	public void setObjective(ObjectiveType objectiveType, int level) {
@@ -3892,17 +3892,10 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	}
 
 	/**
-	 * Sets the objective
-	 * 
-	 * @param       {{@link ObjectiveType}
-	 * @param level
-	 */
-	
-	/**
 	 * Gets the objective level
 	 * 
-	 * @param objectiveType
-	 * @return
+	 * @param {@link ObjectiveType}
+	 * @return the level
 	 */
 	public double getObjectiveLevel(ObjectiveType objectiveType) {
 		

@@ -556,7 +556,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 						double iceCollectionRate = terrainElevation.getIceCollectionRate(person.getCoordinates());
 						
 						// Randomize the rate of collection upon arrival
-						iceCollectionRate = iceCollectionRate * (2 + RandomUtil.getRandomDouble(1)
+						iceCollectionRate = iceCollectionRate * (RandomUtil.getRandomDouble(1)
 								- RandomUtil.getRandomDouble(1));
 						
 						// TODO: Add how areologists and some scientific study may come up with better technique 

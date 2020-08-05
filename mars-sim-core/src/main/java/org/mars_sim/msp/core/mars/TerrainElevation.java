@@ -13,14 +13,24 @@ import java.util.logging.Logger;
 
 import org.mars_sim.mapdata.MapData;
 import org.mars_sim.mapdata.MapDataUtil;
+import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Direction;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
+// Note: the newly surveyed ice deposit spans latitudes from 39 to 49 deg 
+// within the Utopia Planitia plains, as estimated by SHARAD, an subsurface 
+// sounding radar ice that penetrate below the surface. SHARAD was mounted 
+// on the Mars Reconnaissance Orbiter.
+//
+// See https://www.jpl.nasa.gov/news/news.php?feature=6680
+	
 /**
  * The TerrainElevation class represents the surface terrain of the virtual
- * Mars. It can provide information about elevation and terrain ruggedness at
- * any location on the surface of virtual Mars.
+ * Mars. It provides information about elevation and terrain ruggedness and 
+ * calculate ice collection rate at a location on its vast surface.
+ *
  */
 public class TerrainElevation implements Serializable {
 
@@ -122,6 +132,14 @@ public class TerrainElevation implements Serializable {
 		return Math.atan(elevationChange / 11.1D);
 	}
 	
+	/**
+	 * Compute the terrain profile of a site at a coordinate
+	 * direction and elevation
+	 * 
+	 * @param {@link CollectionSite} site
+	 * @param {@link Coordinates} currentLocation
+	 * @return an array of two doubles, namely elevation and steepness
+	 */
 	public double[] computeTerrainProfile(CollectionSite site, Coordinates currentLocation) {
 		double steepness = 0;
 		double elevation = getMOLAElevation(currentLocation);
@@ -142,8 +160,8 @@ public class TerrainElevation implements Serializable {
 	/**
 	 * Gets the terrain profile of a location
 	 * 
-	 * @param currentLocation
-	 * @return
+	 * @param {@link Coordinates}
+	 * @return an array of two doubles, namely elevation and steepness
 	 */
 	public double[] getTerrainProfile(Coordinates currentLocation) {
 //		if (surfaceFeatures == null)
@@ -169,19 +187,46 @@ public class TerrainElevation implements Serializable {
 //		}
 	}
 	
-	public double computeCollectionRate(CollectionSite site, Coordinates currentLocation) {
+	
+	
+	/**
+	 * Compute the ice collection rate of a location
+	 * 
+	 * @param site
+	 * @param currentLocation
+	 * @return ice collection rate 
+	 */
+	public double computeIceCollectionRate(CollectionSite site, Coordinates currentLocation) {
 		
 		// Get the elevation and terrain gradient factor
 		double[] terrainProfile = getTerrainProfile(currentLocation);
 				
 		double elevation = terrainProfile[0];
-		double steepness = terrainProfile[1];		
+		double steepness = terrainProfile[1];
+		double latitude = currentLocation.getLatitudeDouble();
 		
 //		site.setElevation(elevation);
 //		site.setSteepness(steepness);
 		
-		double iceCollectionRate = (- 0.639 * elevation + 14.2492) / 20D  + steepness / 10D;
-				
+		double iceCollectionRate = 0;
+		
+		// TODO: Add seasonal variation for north and south hemisphere
+		// TODO: The collection rate may be increased by relevant scientific studies 
+		
+		if (latitude < 59 && latitude > -59) {
+			// The steeper the slope, the harder it is to retrieve the ice deposit
+			iceCollectionRate = (- 0.639 * elevation + 14.2492) / 20D  - steepness / 10D;
+		}
+		
+		else if ((latitude >= 59 && latitude <= 90)
+			|| (latitude <= -59 && latitude >= -90)) {
+			iceCollectionRate = Math.abs(elevation / 2.0 + latitude / 75.0);
+//									* (1 + RandomUtil.getRandomDouble(.1));
+		}
+		
+		if (iceCollectionRate > 5)
+			iceCollectionRate = 5;	
+		
 		if (iceCollectionRate < 0)
 			iceCollectionRate = 0;	
 		
@@ -190,14 +235,14 @@ public class TerrainElevation implements Serializable {
 //		// Save this site
 //		surfaceFeatures.setSites(currentLocation, site);
 		
-//		String nameLoc = "";
-//		Settlement s = CollectionUtils.findSettlement(currentLocation);
-//		if (s != null) {
-//			nameLoc = "At " + s.getName() + ",";
-//			logger.info(nameLoc + "           elevation : " + Math.round(elevation*1000.0)/1000.0 + " km");
-//			logger.info(nameLoc + "   terrain steepness : " + Math.round(steepness*10.0)/10.0);
-//			logger.info(nameLoc + " ice collection rate : " + Math.round(iceCollectionRate*100.0)/100.0 + " kg/millisol");
-//		}
+		String nameLoc = "";
+		Settlement s = CollectionUtils.findSettlement(currentLocation);
+		if (s != null) {
+			nameLoc = "At " + s.getName() + ",";
+			logger.config(nameLoc + "           elevation : " + Math.round(elevation*1000.0)/1000.0 + " km");
+			logger.config(nameLoc + "   terrain steepness : " + Math.round(steepness*10.0)/10.0);
+			logger.config(nameLoc + " ice collection rate : " + Math.round(iceCollectionRate*100.0)/100.0 + " kg/millisol");
+		}
 		
 		return iceCollectionRate;
 	}
@@ -215,7 +260,7 @@ public class TerrainElevation implements Serializable {
 //			CollectionSite site = (CollectionSite) surfaceFeatures.getSites().get(currentLocation);
 //			
 //			if (site.getIceCollectionRate() == -1) {
-				return computeCollectionRate(null, currentLocation);
+				return computeIceCollectionRate(null, currentLocation);
 //			}
 //			
 //			else {
@@ -340,7 +385,7 @@ public class TerrainElevation implements Serializable {
 
 		// Find hue and saturation color components at location.
 		int rgb[] = getRGB(location);
-		int red = rgb[0];
+//		int red = rgb[0];
 		int green = rgb[1];
 		int blue = rgb[2];
 		
