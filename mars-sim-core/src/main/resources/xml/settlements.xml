@@ -3228,6 +3228,7 @@
 				<connection-list>
 					<connection id="17" x-location="0.0" y-location="4.5" />
 					<connection id="19" x-location="0.0" y-location="-4.5" />
+					<connection id="23" x-location="-3.5" y-location="0.0" />
 				</connection-list>
 			</building>
 			<building id="19" type="Hallway" length="2.0" x-location="-38.5" y-location="38" facing="270.0">
@@ -3240,7 +3241,6 @@
 				<connection-list>
 					<connection id="19" x-location="0.0" y-location="4.5" />
 					<connection id="21" x-location="0.0" y-location="-4.5" />
-					<connection id="23" x-location="3.5" y-location="0.0" />
 				</connection-list>
 			</building>
 			<building id="21" type="Hallway" length="2.0" x-location="-49.5" y-location="38" facing="270.0">
@@ -3255,13 +3255,13 @@
 					<connection id="25" x-location="-3.5" y-location="0.0" />
 				</connection-list>
 			</building>
-			<building id="23" type="Hallway" length="4.0" x-location="-44.0" y-location="32.0" facing="0.0">
+			<building id="23" type="Hallway" length="4.0" x-location="-33.0" y-location="44.0" facing="0.0">
 				<connection-list>
-					<connection id="20" x-location="0.0" y-location="2.0" />
-					<connection id="24" x-location="0.0" y-location="-2.0" />
+					<connection id="18" x-location="0.0" y-location="-2.0" />
+					<connection id="24" x-location="0.0" y-location="2.0" />
 				</connection-list>
 			</building>
-			<building id="24" type="Large Greenhouse" x-location="-44.0" y-location="21.0" facing="0.0">
+			<building id="24" type="Large Greenhouse" x-location="-33.0" y-location="55.0" facing="0.0">
 				<connection-list>
 					<connection id="23" x-location="0.0" y-location="9.0" />
 				</connection-list>
@@ -3810,7 +3810,7 @@
 			<sponsor name="Roscosmos (RKA)"/>
 		</settlement>
 					
-		<settlement name="Columbus" template="Alpha Base (Phase 4)">
+		<settlement name="Zubrinville" template="Alpha Base (Phase 4)">
 			<location longitude="0.0 W" latitude="0.0 N" />
 			<population number="24" />
 			<number-of-robots number="12" />
@@ -3917,7 +3917,7 @@
 		<settlement-name sponsor="Roscosmos (RKA)" value="New Moscow" />
 
 		<settlement-name sponsor="Mars Society (MS)" value="New Cairo" />
-		<settlement-name sponsor="Mars Society (MS)" value="Port Zubrin" />
+		<settlement-name sponsor="Mars Society (MS)" value="New Boulder" />
 		<settlement-name sponsor="Mars Society (MS)" value="Burroughstown" />
 		<settlement-name sponsor="Mars Society (MS)" value="Asimov Base" />
 		<settlement-name sponsor="Mars Society (MS)" value="Clarketown" />
