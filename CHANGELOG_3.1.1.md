@@ -5,7 +5,7 @@ Copyright (C) 2020 Scott Davis
 
 -----------------------------------------------------------------------------------------
 
-## v3.1.2 (build xxxx) - 2020-0x-xx
+## v3.1.2 (build 53xx) - 2020-08-xx
 
 ### CORE ENGINE IMPROVEMENTS :
 
@@ -19,6 +19,9 @@ Copyright (C) 2020 Scott Davis
 4. Remove the duplicated EVA function in Garage and Loading Garage. 
 
 5. Refine ice collection rate. Higher above or below +/-60 deg latitude.
+
+6. Refine/add computing site value/score for collecting ice, regolith, 
+   mineral exploration, and mining.
 
 
 ### UI IMPROVEMENT :
@@ -53,7 +56,8 @@ Copyright (C) 2020 Scott Davis
 
 2. Provide a bare basic way of using CLI to start a single settlement. 
 
-3. Refine the conversion between the level of effort of an operation and its modifier in GoodsManager.
+3. Refine the conversion between the level of effort of an operation and its modifier 
+   in GoodsManager.
 
 ### UI IMPROVEMENT :
 

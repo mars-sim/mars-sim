@@ -539,6 +539,17 @@ public class Inventory implements Serializable {
 	/**
 	 * Removes capacity for a resource type.
 	 * 
+	 * @param resource the resource.
+	 * @param capacity the extra capacity amount (kg).
+	 */
+	public void removeAmountResourceTypeCapacity(AmountResource resource, double capacity) {
+		removeAmountResourceTypeCapacity(resource.getID(), capacity);  
+	}
+
+	
+	/**
+	 * Removes capacity for a resource type.
+	 * 
 	 * @param resource the resource
 	 * @param capacity the capacity amount (kg).
 	 */

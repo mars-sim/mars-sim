@@ -2,6 +2,7 @@ package org.mars_sim.msp.core;
 
 import java.util.Collection;
 
+import org.junit.Assert;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
@@ -30,49 +31,49 @@ public class TestInventory extends TestCase {
         assertEquals(100D, amountCO2, 0D);
     }
 
-//    public void testInventoryAmountResourceTypeCapacityNegativeCapacity() throws Exception {
-//        Inventory inventory = new MockUnit1().getInventory();
-//        AmountResource carbonDioxide = ResourceUtil.findAmountResource(CARBON_DIOXIDE);
-//        try {
-//            inventory.addAmountResourceTypeCapacity(carbonDioxide, -100D);
-//            fail("Should have thrown exception, cannot add negative");
-//        } catch (Exception e) {
-//            //expected
-//        }
-//    }
+    public void testInventoryAmountResourceTypeCapacityNegativeCapacity() throws Exception {
+        Inventory inventory = new MockUnit1().getInventory();
+        AmountResource carbonDioxide = ResourceUtil.findAmountResource(CARBON_DIOXIDE);
+        try {
+            inventory.addAmountResourceTypeCapacity(carbonDioxide, -100D);
+            fail("Should have thrown exception, cannot add negative");
+        } catch (Exception e) {
+            //expected
+        }
+    }
     
-//    /**
-//     * Test the removeAmountResourceTypeCapacity method.
-//     */
-//    public void testRemoveAmountResourceTypeCapacity() {
-//        Inventory inventory = new MockUnit1().getInventory();
-//        AmountResource carbonDioxide = ResourceUtil.findAmountResource(CARBON_DIOXIDE);
-//        
-//        inventory.addAmountResourceTypeCapacity(carbonDioxide, 100D);
-//        double amountCarbonDioxide1 = inventory.getAmountResourceCapacity(carbonDioxide, false);
-//        assertEquals(100D, amountCarbonDioxide1);
-//        
-//        // Test removing 50 kg of CO2 capacity.
-//        inventory.removeAmountResourceTypeCapacity(carbonDioxide, 50D);
-//        double amountCarbonDioxide2 = inventory.getAmountResourceCapacity(carbonDioxide, false);
-//        assertEquals(50D, amountCarbonDioxide2);
-//        
-//        // Test removing another 50 kg of CO2 capacity.
-//        inventory.removeAmountResourceTypeCapacity(carbonDioxide, 50D);
-//        double amountCarbonDioxide3 = inventory.getAmountResourceCapacity(carbonDioxide, false);
-//        assertEquals(0D, amountCarbonDioxide3);
-//        
-//        // Test removing another 50 kg of CO2 capacity (should throw IllegalStateException).
-//        try {
-//            inventory.removeAmountResourceTypeCapacity(carbonDioxide, 50D);
-//            fail("Should have thrown an IllegalStateException, no capacity left.");
-//        }
-//        catch (IllegalStateException e) {
-//            // Expected.
-//        }
-//        double amountCarbonDioxide4 = inventory.getAmountResourceCapacity(carbonDioxide, false);
-//        assertEquals(0D, amountCarbonDioxide4);
-//    }
+    /**
+     * Test the removeAmountResourceTypeCapacity method.
+     */
+    public void testRemoveAmountResourceTypeCapacity() {
+        Inventory inventory = new MockUnit1().getInventory();
+        AmountResource carbonDioxide = ResourceUtil.findAmountResource(CARBON_DIOXIDE);
+        
+        inventory.addAmountResourceTypeCapacity(carbonDioxide, 100D);
+        double amountCarbonDioxide1 = inventory.getAmountResourceCapacity(carbonDioxide, false);
+        assertEquals(100D, amountCarbonDioxide1);
+        
+        // Test removing 50 kg of CO2 capacity.
+        inventory.removeAmountResourceTypeCapacity(carbonDioxide, 50D);
+        double amountCarbonDioxide2 = inventory.getAmountResourceCapacity(carbonDioxide, false);
+        assertEquals(50D, amountCarbonDioxide2);
+        
+        // Test removing another 50 kg of CO2 capacity.
+        inventory.removeAmountResourceTypeCapacity(carbonDioxide, 50D);
+        double amountCarbonDioxide3 = inventory.getAmountResourceCapacity(carbonDioxide, false);
+        assertEquals(0D, amountCarbonDioxide3);
+        
+        // Test removing another 50 kg of CO2 capacity (should throw IllegalStateException).
+        try {
+            inventory.removeAmountResourceTypeCapacity(carbonDioxide, 50D);
+            fail("Should have thrown an IllegalStateException, no capacity left.");
+        }
+        catch (IllegalStateException e) {
+            // Expected.
+        }
+        double amountCarbonDioxide4 = inventory.getAmountResourceCapacity(carbonDioxide, false);
+        assertEquals(0D, amountCarbonDioxide4);
+    }
 
     public void testInventoryAmountResourcePhaseCapacityGood() throws Exception {
         Inventory inventory = new MockUnit1().getInventory();
@@ -82,15 +83,15 @@ public class TestInventory extends TestCase {
         assertEquals(100D, amountCO2, 0D);
     }
 
-//    public void testInventoryAmountResourcePhaseCapacityNegativeCapacity() throws Exception {
-//        Inventory inventory = new MockUnit1().getInventory();
-//        try {
-//            inventory.addAmountResourcePhaseCapacity(PhaseType.GAS, -100D);
-//            fail("Should have thrown exception, cannot add negative");
-//        } catch (Exception e) {
-//            //expected
-//        }
-//    }
+    public void testInventoryAmountResourcePhaseCapacityNegativeCapacity() throws Exception {
+        Inventory inventory = new MockUnit1().getInventory();
+        try {
+            inventory.addAmountResourcePhaseCapacity(PhaseType.GAS, -100D);
+            fail("Should have thrown exception, cannot add negative");
+        } catch (Exception e) {
+            //expected
+        }
+    }
 
     public void testInventoryAmountResourceComboCapacityGood() throws Exception {
         Inventory inventory = new MockUnit1().getInventory();
@@ -117,17 +118,17 @@ public class TestInventory extends TestCase {
         assertEquals(100D, amountTypeStored, 0D);
     }
 
-//    public void testInventoryAmountResourceTypeStoreOverload() throws Exception {
-//        Inventory inventory = new MockUnit1().getInventory();
-//        AmountResource carbonDioxide = ResourceUtil.findAmountResource(CARBON_DIOXIDE);
-//        inventory.addAmountResourceTypeCapacity(carbonDioxide, 100D);
-//        try {
-//            inventory.storeAmountResource(carbonDioxide, 101D, true);
-//            fail("Should have thrown exception");
-//        } catch (Exception e) {
-//            //expected
-//        }
-//    }
+    public void testInventoryAmountResourceTypeStoreOverload() throws Exception {
+        Inventory inventory = new MockUnit1().getInventory();
+        AmountResource carbonDioxide = ResourceUtil.findAmountResource(CARBON_DIOXIDE);
+        inventory.addAmountResourceTypeCapacity(carbonDioxide, 100D);
+        try {
+            inventory.storeAmountResource(carbonDioxide, 101D, true);
+            fail("Should have thrown exception");
+        } catch (Exception e) {
+            //expected
+        }
+    }
 
     public void testInventoryAmountResourcePhaseStoreGood() throws Exception {
         Inventory inventory = new MockUnit1().getInventory();
@@ -138,40 +139,40 @@ public class TestInventory extends TestCase {
         assertEquals(100D, amountPhaseStored, 0D);
     }
 
-//    public void testInventoryAmountResourcePhaseStoreOverload() throws Exception {
-//        Inventory inventory = new MockUnit1().getInventory();
-//        AmountResource hydrogen = ResourceUtil.findAmountResource(HYDROGEN);
-//        inventory.addAmountResourcePhaseCapacity(PhaseType.GAS, 100D);
-//        try {
-//            inventory.storeAmountResource(hydrogen, 101D, true);
-//            fail("Throws exception if overloaded");
-//        } catch (Exception e) {
-//            //expected
-//        }
-//    }
+    public void testInventoryAmountResourcePhaseStoreOverload() throws Exception {
+        Inventory inventory = new MockUnit1().getInventory();
+        AmountResource hydrogen = ResourceUtil.findAmountResource(HYDROGEN);
+        inventory.addAmountResourcePhaseCapacity(PhaseType.GAS, 100D);
+        try {
+            inventory.storeAmountResource(hydrogen, 101D, true);
+            fail("Throws exception if overloaded");
+        } catch (Exception e) {
+            //expected
+        }
+    }
 
-//    public void testInventoryAmountResourceStoreNegativeAmount() throws Exception {
-//        Inventory inventory = new MockUnit1().getInventory();
-//        AmountResource carbonDioxide = ResourceUtil.findAmountResource(CARBON_DIOXIDE);
-//        inventory.addAmountResourceTypeCapacity(carbonDioxide, 100D);
-//        try {
-//            inventory.storeAmountResource(carbonDioxide, -1D, true);
-//            fail("Throws exception if negative amount");
-//        } catch (Exception e) {
-//            //expected
-//        }
-//    }
+    public void testInventoryAmountResourceStoreNegativeAmount() throws Exception {
+        Inventory inventory = new MockUnit1().getInventory();
+        AmountResource carbonDioxide = ResourceUtil.findAmountResource(CARBON_DIOXIDE);
+        inventory.addAmountResourceTypeCapacity(carbonDioxide, 100D);
+        try {
+            inventory.storeAmountResource(carbonDioxide, -1D, true);
+            fail("Throws exception if negative amount");
+        } catch (Exception e) {
+            //expected
+        }
+    }
 
-//    public void testInventoryAmountResourceStoreNoCapacity() throws Exception {
-//        Inventory inventory = new MockUnit1().getInventory();
-//        AmountResource carbonDioxide = ResourceUtil.findAmountResource(CARBON_DIOXIDE);
-//        try {
-//            inventory.storeAmountResource(carbonDioxide, 100D, true);
-//            fail("Throws exception if capacity not set (overloaded)");
-//        } catch (Exception e) {
-//            //expected
-//        }
-//    }
+    public void testInventoryAmountResourceStoreNoCapacity() throws Exception {
+        Inventory inventory = new MockUnit1().getInventory();
+        AmountResource carbonDioxide = ResourceUtil.findAmountResource(CARBON_DIOXIDE);
+        try {
+            inventory.storeAmountResource(carbonDioxide, 100D, true);
+            fail("Throws exception if capacity not set (overloaded)");
+        } catch (Exception e) {
+            //expected
+        }
+    }
 
 //    public void testInventoryAmountResourcePhaseStoreDeep() throws Exception {
 //    	Simulation.instance().testRun();
@@ -193,7 +194,6 @@ public class TestInventory extends TestCase {
 //    	Unit m1 = new MockUnit1();
 //        Inventory inventory = m1.getInventory();
 //        AmountResource hydrogen = ResourceUtil.findAmountResource(HYDROGEN);
-//        System.out.println("Adding " + hydrogen.getName());
 //        inventory.addGeneralCapacity(130D);
 //        Unit testUnit = new MockUnit3(PhaseType.GAS);
 //        testUnit.getInventory().addAmountResourceTypeCapacity(hydrogen, 100D);
@@ -203,20 +203,20 @@ public class TestInventory extends TestCase {
 //        assertEquals(100D, amountPhaseStored, 0D);
 //    }
 
-//    public void testInventoryAmountResourceTypeStoreDeepOverload() throws Exception {
-//        Unit testUnit1 = new MockUnit1();
-//        testUnit1.getInventory().addGeneralCapacity(20D);
-//        Unit testUnit2 = new MockUnit1();
-//        AmountResource hydrogen = ResourceUtil.findAmountResource(HYDROGEN);
-//        testUnit2.getInventory().addAmountResourceTypeCapacity(hydrogen, 100D);
-//        testUnit1.getInventory().storeUnit(testUnit2);
-//        try {
-//            testUnit2.getInventory().storeAmountResource(hydrogen, 100D, true);
-//            fail("Fails properly when parent unit's general capacity is overloaded.");
-//        } catch (Exception e) {
-//            //expected
-//        }
-//    }
+    public void testInventoryAmountResourceTypeStoreDeepOverload() throws Exception {
+        Unit testUnit1 = new MockUnit1();
+        testUnit1.getInventory().addGeneralCapacity(20D);
+        Unit testUnit2 = new MockUnit1();
+        AmountResource hydrogen = ResourceUtil.findAmountResource(HYDROGEN);
+        testUnit2.getInventory().addAmountResourceTypeCapacity(hydrogen, 100D);
+        testUnit1.getInventory().storeUnit(testUnit2);
+        try {
+            testUnit2.getInventory().storeAmountResource(hydrogen, 100D, true);
+            fail("Fails properly when parent unit's general capacity is overloaded.");
+        } catch (Exception e) {
+            //expected
+        }
+    }
 
     public void testInventoryAmountResourceRemainingCapacityGood() throws Exception {
         Inventory inventory = new MockUnit1().getInventory();
@@ -538,7 +538,7 @@ public class TestInventory extends TestCase {
         Inventory inventory = new MockUnit1().getInventory();
         try {
             inventory.retrieveItemResources(id, 1);
-            fail("Item resource retrieved fails correctly.");
+            Assert.fail("Item resource retrieved fails correctly.");
         } catch (Exception e) {
             //expected
         }
@@ -559,8 +559,8 @@ public class TestInventory extends TestCase {
         inventory.storeUnit(testUnit);
         try {
             inventory.storeUnit(testUnit);
-            fail("Duplicate unit stored fails correctly.");
-        } catch (Exception e) {
+            Assert.fail("Duplicate unit stored fails correctly.");
+        } catch (Exception e) { //(final AssertionFailedError e) {
             //expected
         }
     }
