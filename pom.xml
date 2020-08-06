@@ -143,13 +143,14 @@
 				<!--https://mvnrepository.com/artifact/com.github.spotbugs/spotbugs-maven-plugin -->
 				  <groupId>com.github.spotbugs</groupId>
 				  <artifactId>spotbugs-maven-plugin</artifactId>
-				  <version>3.1.12.2</version>
+				  <version>4.0.4</version>
+				  <!--version>3.1.12.2</version-->
 				  <dependencies>
 				    <!-- https://spotbugs.github.io/ -->
 				    <dependency>
 				      <groupId>com.github.spotbugs</groupId>
 				      <artifactId>spotbugs</artifactId>
-				      <version>3.1.12.2</version>
+				      <version>4.0.4</version>
 				    </dependency>
 				  </dependencies>
 				</plugin>			
@@ -166,7 +167,7 @@
 				<plugin>
 				    <groupId>org.apache.maven.plugins</groupId>
 				    <artifactId>maven-surefire-plugin</artifactId>
-				    <version>3.0.0-M4</version>
+				    <version>3.0.0-M5</version>
 				    <configuration>
 				        <argLine>
 				            --illegal-access=permit
@@ -177,7 +178,7 @@
 				<plugin>
 				    <groupId>org.apache.maven.plugins</groupId>
 				    <artifactId>maven-failsafe-plugin</artifactId>
-				    <version>3.0.0-M3</version>
+				    <version>3.0.0-M5</version>
 				    <configuration>
 				        <argLine>
 				            --illegal-access=permit
@@ -244,7 +245,7 @@
 						<dependency>
 						    <groupId>org.apache.maven.wagon</groupId>
 						    <artifactId>wagon-ssh</artifactId>
-						    <version>3.3.3</version>
+						    <version>3.4.1</version>
 						</dependency>
 					</dependencies>
 				</plugin>

@@ -1,15 +1,14 @@
 package org.mars_sim.msp.core;
 
 import java.util.Collection;
-import java.util.Set;
-
-import junit.framework.TestCase;
 
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.ItemResourceUtil;
 import org.mars_sim.msp.core.resource.PhaseType;
 import org.mars_sim.msp.core.resource.ResourceUtil;
+
+import junit.framework.TestCase;
 
 public class TestInventory extends TestCase {
 
