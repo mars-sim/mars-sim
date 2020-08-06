@@ -23,6 +23,10 @@ Copyright (C) 2020 Scott Davis
 6. Refine/add computing site value/score for collecting ice, regolith, 
    mineral exploration, and mining.
 
+7. Add new job 'psychologist' and new skill/science type 'psychology'.
+
+8. Add ability to choose individual destination for each crewman as listed 
+   in crew.xml when using Crew Editor. 
 
 ### UI IMPROVEMENT :
 
@@ -45,6 +49,7 @@ Copyright (C) 2020 Scott Davis
  
 7. Fix retrieving a list of vehicles reserved for mission or on mission.
 
+8. Fix loading the crew.xml. 
 
 -----------------------------------------------------------------------------------------
 

@@ -27,7 +27,7 @@ public class Reporter extends Job implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private final int JOB_ID = 14;
+	private final int JOB_ID = 15;
 	
 	private double[] roleProspects = new double[] {5.0, 5.0, 30.0, 30.0, 20.0, 5.0, 5.0};
 

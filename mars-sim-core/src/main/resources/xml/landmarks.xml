@@ -13,9 +13,13 @@
 ]>
 
   <!-- Landmark coordinates from USGS Astrogeology Research Program -->
+  <!-- See list at https://planetarynames.wr.usgs.gov/SearchResults?target=MARS -->
+  <!--  -->
   <!-- https://planetarynames.wr.usgs.gov/AdvancedSearch -->
   <!-- https://planetarynames.wr.usgs.gov/Page/MARS/system -->
-  <!-- Landmarks to be displayed in the user interface. -->
+  <!--  -->
+  <!-- To be read by LandmarkConfig in mars-sim-core submodule -->
+  <!-- type : AA = crater, MO = Mons, TH = Tholus-->
 	<landmark-list>
 		<landmark approvaldate="1973" diameter="43.05" latitude="5.14 S" longitude="0.05 E" name="Airy" origin="George B.; British astronomer (1801-1892)." type="AA"/>
 	  	<landmark approvaldate="1973" diameter="158.38" latitude="18.87 N" longitude="150.47 E" name="Albor Tholus" origin="Classical albedo feature name." type="TH"/>
@@ -86,6 +90,9 @@
 	  	<landmark approvaldate="1973" diameter="170.78" latitude="52.48 S" longitude="110.9 E" name="Wallace" origin="Alfred R.; British biologist (1823-1913)." type="AA"/>
 	  	<landmark approvaldate="1991" diameter="13.19" latitude="35.56 N" longitude="87.96 W" name="W. Mareotis Tholus" origin="Classical albedo name." type="TH"/>
 	  	<landmark approvaldate="1997" diameter="35.95" latitude="19.75 S" longitude="172.92 E" name="Zephyria Tholus" origin="Albedo feature name." type="TH"/>
+	  	
+	  	<!-- Jezero in USGS  https://planetarynames.wr.usgs.gov/Feature/14300?__fsk=-1615191775 -->
+		<landmark approvaldate="2007" diameter="47.52" latitude="18.41 N" longitude="77.69°E" name="Jezero Crater" origin="Name after a town in Bosnia and Herzegovina." type="AA"/>
 	
 	  	<!--Artificial Objects-->
 	  	<!-- TODO: add memorial station names from https://www.giss.nasa.gov/tools/mars24/help/landers.html  -->

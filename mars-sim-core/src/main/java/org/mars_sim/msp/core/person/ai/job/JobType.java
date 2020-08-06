@@ -34,10 +34,11 @@ public enum JobType {
 	PHYSICIST			(Msg.getString("JobType.Physicist")), //$NON-NLS-1$
 	PILOT				(Msg.getString("JobType.Pilot")), //$NON-NLS-1$
 	POLITICIAN			(Msg.getString("JobType.Politician")), //$NON-NLS-1$
-	REPORTER			(Msg.getString("JobType.Reporter")), //$NON-NLS-1$
+	PSYCHOLOGIST		(Msg.getString("JobType.Psychologist")), //$NON-NLS-1$
 	
+	REPORTER			(Msg.getString("JobType.Reporter")), //$NON-NLS-1$
 	TECHNICIAN			(Msg.getString("JobType.Technician")), //$NON-NLS-1$
-	TRADER				(Msg.getString("JobType.Trader")) //$NON-NLS-1$
+	TRADER				(Msg.getString("JobType.Trader")), //$NON-NLS-1$
 	;
 
 	public static JobType[] JOB_TYPES = new JobType[]{
@@ -57,8 +58,9 @@ public enum JobType {
 			PHYSICIST,
 			PILOT,
 			POLITICIAN,
-			REPORTER,
+			PSYCHOLOGIST,
 			
+			REPORTER,
 			TECHNICIAN,
 			TRADER	
 			};

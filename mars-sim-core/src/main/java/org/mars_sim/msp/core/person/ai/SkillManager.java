@@ -95,6 +95,7 @@ public class SkillManager implements Serializable {
 		else if (t == RobotType.MEDICBOT) {
 			skills.add(SkillType.CHEMISTRY);
 			skills.add(SkillType.MEDICINE);
+			skills.add(SkillType.PSYCHOLOGY);
 		}
 		else if (t == RobotType.DELIVERYBOT) {
 			skills.add(SkillType.PILOTING);
@@ -135,7 +136,15 @@ public class SkillManager implements Serializable {
 					skillLevel = getInitialSkillLevel(0, 35);
 					int exp = RandomUtil.getRandomInt(0, 24);
 					this.addExperience(startingSkill, exp, 0);
-				}
+			}
+
+			// psychology skill is sought after for living in confined environment
+			else if (startingSkill == SkillType.PSYCHOLOGY) {
+				skillLevel = getInitialSkillLevel(0, 35);
+				int exp = RandomUtil.getRandomInt(0, 24);
+				this.addExperience(startingSkill, exp, 0);		
+			}
+			
 			// Mechanics skill is sought after for repairing malfunctions
 			else if (startingSkill == SkillType.MATERIALS_SCIENCE
 				 || startingSkill == SkillType.MECHANICS) {

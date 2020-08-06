@@ -80,9 +80,12 @@ public class CrewEditor implements ActionListener {
 //	private DefaultComboBoxModel<String> genderComboBoxModel;
 	private List<JComboBoxMW<String>> genderComboBoxList = new ArrayList<JComboBoxMW<String>>(2);
 	
+	// Provides a list of destinations options
+	private List<JComboBoxMW<String>> destinationComboBoxList = new ArrayList<JComboBoxMW<String>>();
+	
 	private List<MyItemListener> actionListeners = new ArrayList<>(4);
 	
-	private CrewConfig cc;
+	private CrewConfig crewConfig;
 	
 	private SimulationConfigEditor simulationConfigEditor;
 
@@ -104,11 +107,12 @@ public class CrewEditor implements ActionListener {
 	 */
 	public CrewEditor(SimulationConfigEditor simulationConfigEditor) {
 
-		cc = SimulationConfig.instance().getCrewConfig();
+		crewConfig = SimulationConfig.instance().getCrewConfig();
 		
 		this.simulationConfigEditor = simulationConfigEditor;
 
-		crewNum = cc.getNumberOfConfiguredPeople();
+		crewNum = crewConfig.getNumberOfConfiguredPeople();
+//		System.out.println("Number Of ConfiguredPeople is " + crewNum);
 		personalityArray = new boolean[4][crewNum];
 
 		createGUI();
@@ -136,7 +140,7 @@ public class CrewEditor implements ActionListener {
 		f.setContentPane(mainPane);
 
 		// Create list panel.
-		listPane = new JPanel(new GridLayout(6, crewNum + 1));
+		listPane = new JPanel(new GridLayout(7, crewNum + 1));
 		mainPane.add(listPane, BorderLayout.NORTH);
 
 		// Create radio panel.
@@ -146,28 +150,37 @@ public class CrewEditor implements ActionListener {
 		listPane.add(new JLabel(""));
 		for (int i = 0; i < crewNum; i++) {
 			String num = i + 1 + "";
-			listPane.add(new JLabel("Slot " + num));
+			listPane.add(new JLabel("Crewman " + num), JLabel.CENTER);
 		}
-
+	
 		listPane.add(new JLabel("Name :   ", JLabel.RIGHT));
+		// Add the name textfield
 		setUpCrewName();
 
 		listPane.add(new JLabel("Gender :   ", JLabel.RIGHT));
+		// Add the gender combobox options
 		setUpCrewGender();
 
-		radioPane.add(new JLabel("M.B.T.I. :   ", JLabel.RIGHT));
+		radioPane.add(new JLabel("Traits :   ", JLabel.RIGHT));
+		// Add the personality traits checkboxes 
 		setUpCrewPersonality();
 		
 		listPane.add(new JLabel("Job :   ", JLabel.RIGHT));
+		// Add the job combobox options
 		setUpCrewJob();
 
 		listPane.add(new JLabel("Country :   ", JLabel.RIGHT));
+		// Add the country combobox options
 		setUpCrewCountry();
-
+	
 		listPane.add(new JLabel("Sponsor :   ", JLabel.RIGHT));
+		// Add the sponsor combobox options
 		setUpCrewSponsor();
 		
-
+		listPane.add(new JLabel("Destination :   ", JLabel.RIGHT));
+		// Add the destination combobox options
+		setUpDestination();
+	
 		// Create button panel.
 		JPanel buttonPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		mainPane.add(buttonPane, BorderLayout.SOUTH);
@@ -189,8 +202,7 @@ public class CrewEditor implements ActionListener {
 				f.dispose();
 			}
 		});
-		
-		
+				
 		// Manually trigger the country selection again so as to correctly 
 		// set up the sponsor combobox at the start of the crew editor
 		for (int i = 0; i < crewNum; i++) {
@@ -219,6 +231,7 @@ public class CrewEditor implements ActionListener {
 //				}
 //			});
 		}
+
 	}
 
 	private int getRandom(int max, int index) {
@@ -265,43 +278,43 @@ public class CrewEditor implements ActionListener {
 						genderStr = "MALE";
 					else if (genderStr.equals("F"))
 						genderStr = "FEMALE";
-					cc.setPersonGender(i, genderStr, ALPHA_CREW);
+					crewConfig.setPersonGender(i, genderStr, ALPHA_CREW);
 					System.out.print(genderStr + ", ");
 					
 					String personalityStr = getPersonality(i);
-					cc.setPersonPersonality(i, personalityStr, ALPHA_CREW);
+					crewConfig.setPersonPersonality(i, personalityStr, ALPHA_CREW);
 					System.out.print(personalityStr + ", ");
 					
 					String jobStr = (String) jobsComboBoxList.get(i).getSelectedItem();
-					cc.setPersonJob(i, jobStr, ALPHA_CREW);
+					crewConfig.setPersonJob(i, jobStr, ALPHA_CREW);
 					System.out.print(jobStr + ", ");
 
 					String countryStr = (String) countriesComboBoxList.get(i).getSelectedItem();
-					cc.setPersonCountry(i, countryStr, ALPHA_CREW);
+					crewConfig.setPersonCountry(i, countryStr, ALPHA_CREW);
 					System.out.print(countryStr + ", ");
 					
 					String sponsorStr = (String) sponsorsComboBoxList.get(i).getSelectedItem();
-					cc.setPersonSponsor(i, sponsorStr, ALPHA_CREW);
+					crewConfig.setPersonSponsor(i, sponsorStr, ALPHA_CREW);
 					System.out.print(sponsorStr + ", ");
 					
-					String maindish = cc.getFavoriteMainDish(i, ALPHA_CREW);
-					cc.setMainDish(i, maindish, ALPHA_CREW);
+					String maindish = crewConfig.getFavoriteMainDish(i, ALPHA_CREW);
+					crewConfig.setMainDish(i, maindish, ALPHA_CREW);
 					System.out.print(maindish + ", ");
 					
-					String sidedish = cc.getFavoriteMainDish(i, ALPHA_CREW);
-					cc.setSideDish(i, sidedish, ALPHA_CREW);
+					String sidedish = crewConfig.getFavoriteMainDish(i, ALPHA_CREW);
+					crewConfig.setSideDish(i, sidedish, ALPHA_CREW);
 					System.out.print(sidedish + ", ");
 					
-					String dessert = cc.getFavoriteDessert(i, ALPHA_CREW);
-					cc.setDessert(i, dessert, ALPHA_CREW);
+					String dessert = crewConfig.getFavoriteDessert(i, ALPHA_CREW);
+					crewConfig.setDessert(i, dessert, ALPHA_CREW);
 					System.out.print(dessert + ", ");
 					
-					String activity = cc.getFavoriteActivity(i, ALPHA_CREW);
-					cc.setActivity(i, activity, ALPHA_CREW);
+					String activity = crewConfig.getFavoriteActivity(i, ALPHA_CREW);
+					crewConfig.setActivity(i, activity, ALPHA_CREW);
 					System.out.print(activity + ", ");
 					
-					String destinationStr = cc.getConfiguredPersonDestination(i, ALPHA_CREW);
-					cc.setPersonDestination(i, destinationStr, ALPHA_CREW);
+					String destinationStr = crewConfig.getConfiguredPersonDestination(i, ALPHA_CREW);
+					crewConfig.setPersonDestination(i, destinationStr, ALPHA_CREW);
 					System.out.println(destinationStr + ". ");
 				}
 				
@@ -332,7 +345,7 @@ public class CrewEditor implements ActionListener {
 			if (!Conversion.isBlank(nameStr)
 					&& nameStr.contains(" ")) {
 				System.out.print(nameStr + ", ");
-				cc.setPersonName(i, nameStr, ALPHA_CREW);
+				crewConfig.setPersonName(i, nameStr, ALPHA_CREW);
 				return true;
 				
 			} else {
@@ -352,7 +365,9 @@ public class CrewEditor implements ActionListener {
 	public void setUpCrewName() {
 		for (int i = 0; i < crewNum; i++) {
 //			int crew_id = cc.getCrew(i);
-			String n = cc.getConfiguredPersonName(i, ALPHA_CREW);
+//			System.out.println("setUpCrewName:: i is " + i);
+//			System.out.println("setUpCrewName:: crewNum is " + crewNum);
+			String n = crewConfig.getConfiguredPersonName(i, ALPHA_CREW);
 
 			JTextField tf = new JTextField();
 			nameTF.add(tf);
@@ -391,6 +406,9 @@ public class CrewEditor implements ActionListener {
 		else if (choice == 4) 
 			m = setUpSponsorCBModel(s);
 
+		else if (choice == 5) 
+			m = setUpDestinationCBModel(s);
+		
 		final JComboBoxMW<String> g = new JComboBoxMW<String>(m);
 		g.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e1) {
@@ -407,7 +425,7 @@ public class CrewEditor implements ActionListener {
 
 		String s[] = new String[crewNum];
 		for (int j = 0; j < crewNum; j++) {
-			GenderType n = cc.getConfiguredPersonGender(j, ALPHA_CREW);
+			GenderType n = crewConfig.getConfiguredPersonGender(j, ALPHA_CREW);
 
 			s[j] = n.toString();
 			if (s[j].equals("MALE"))
@@ -489,13 +507,13 @@ public class CrewEditor implements ActionListener {
 	public boolean retrieveCrewMBTI(int row, int col) {
 				
 		if (row == 0)
-			return cc.isExtrovert(col);
+			return crewConfig.isExtrovert(col);
 		else if (row == 1)
-			return cc.isIntuitive(col);
+			return crewConfig.isIntuitive(col);
 		else if (row == 2)
-			return cc.isFeeler(col);
+			return crewConfig.isFeeler(col);
 		else if (row == 3)
-			return cc.isJudger(col);
+			return crewConfig.isJudger(col);
 		else
 			return false;
 //		return personalityArray[row][col];
@@ -545,6 +563,11 @@ public class CrewEditor implements ActionListener {
 		return type;
 	}
 
+	/**
+	 * Set up the job comboxbox model
+	 * 
+	 * @return DefaultComboBoxModel<String>
+	 */
 	public DefaultComboBoxModel<String> setUpJobCBModel() {
 
 		List<String> jobs = JobType.getList();
@@ -563,11 +586,14 @@ public class CrewEditor implements ActionListener {
 		return m;
 	}
 
+	/**
+	 * Set up the country comboxbox model
+	 * 
+	 * @return DefaultComboBoxModel<String>
+	 */
 	public DefaultComboBoxModel<String> setUpCountryCBModel() {
 
 		List<String> countries = UnitManager.getAllCountryList();
-			
-		//Collections.sort(countries);
 
 		DefaultComboBoxModel<String> m = new DefaultComboBoxModel<String>();
 		Iterator<String> j = countries.iterator();
@@ -579,9 +605,14 @@ public class CrewEditor implements ActionListener {
 		return m;
 	}
 	
+	/**
+	 * Set up the sponsor comboxbox model
+	 * 
+	 * @param country
+	 * @return DefaultComboBoxModel<String>
+	 */
 	public DefaultComboBoxModel<String> setUpSponsorCBModel(String country) {
 
-		//List<String> sponsors = UnitManager.getSponsorByCountryID(id);
 		List<String> sponsors = new ArrayList<>();
 
 		sponsors.add(ReportingAuthorityType.MARS_SOCIETY_L.getName());
@@ -599,11 +630,39 @@ public class CrewEditor implements ActionListener {
 		return m;
 	}
 	
-	public void setUpCrewJob() {
+	/**
+	 * Set up the destination comboxbox model
+	 * 
+	 * @param destination
+	 * @return DefaultComboBoxModel<String>
+	 */
+	public DefaultComboBoxModel<String> setUpDestinationCBModel(String destination) {
 
+		List<String> destinations = simulationConfigEditor.loadDestinations();
+		
+		DefaultComboBoxModel<String> m = new DefaultComboBoxModel<String>();
+		Iterator<String> j = destinations.iterator();
+
+		while (j.hasNext()) {
+			String s = j.next();
+			m.addElement(s);
+		}
+		
+		if (destinations.contains(destination))
+			m.setSelectedItem(destination);
+		
+		return m;
+	}
+	
+	/**
+	 * Set up the job comboxbox
+	 * 
+	 */
+	public void setUpCrewJob() {
+		int SIZE = JobType.numJobTypes;
 		for (int i = 0; i < crewNum; i++) {
-			String n[] = new String[15];
-			n[i] = cc.getConfiguredPersonJob(i, ALPHA_CREW);
+			String n[] = new String[SIZE];
+			n[i] = crewConfig.getConfiguredPersonJob(i, ALPHA_CREW);
 			JComboBoxMW<String> g = setUpCB(2, n[i]);// 2 = Job
 			g.setMaximumRowCount(8);
 			listPane.add(g);
@@ -612,11 +671,15 @@ public class CrewEditor implements ActionListener {
 		}
 	}
 
+	/**
+	 * Set up the country comboxbox
+	 * 
+	 */
 	public void setUpCrewCountry() {
-
+		int SIZE = UnitManager.getAllCountryList().size();
 		for (int i = 0; i < crewNum; i++) {
-			String n[] = new String[28];
-			n[i] = cc.getConfiguredPersonCountry(i, ALPHA_CREW);
+			String n[] = new String[SIZE];
+			n[i] = crewConfig.getConfiguredPersonCountry(i, ALPHA_CREW);
 			JComboBoxMW<String> g = setUpCB(3, n[i]); // 3 = Country
 			
 			g.setMaximumRowCount(8);
@@ -631,11 +694,15 @@ public class CrewEditor implements ActionListener {
 		}
 	}
 
+	/**
+	 * Set up the sponsor comboxbox
+	 * 
+	 */
 	public void setUpCrewSponsor() {
-
+		int SIZE = UnitManager.getAllShortSponsors().size();
 		for (int i = 0; i < crewNum; i++) {
-			String n[] = new String[10];
-			n[i] = cc.getConfiguredPersonSponsor(i, ALPHA_CREW);
+			String n[] = new String[SIZE]; // 10
+			n[i] = crewConfig.getConfiguredPersonSponsor(i, ALPHA_CREW);
 			JComboBoxMW<String> g = setUpCB(4, n[i]); // 4 = Sponsor
 			g.setMaximumRowCount(8);
 			listPane.add(g);
@@ -644,6 +711,25 @@ public class CrewEditor implements ActionListener {
 		}
 	}
 
+	/**
+	 * Set up the destination comboxbox
+	 * 
+	 */
+	public void setUpDestination() {
+		int SIZE = 5;
+		for (int i = 0; i < crewNum; i++) {
+			String n[] = new String[SIZE]; // 10
+			n[i] = crewConfig.getConfiguredPersonDestination(i, ALPHA_CREW);
+			JComboBoxMW<String> g = setUpCB(5, n[i]); // 5 = Destination
+			g.setMaximumRowCount(5);
+			listPane.add(g);
+			g.getModel().setSelectedItem(n[i]);
+			destinationComboBoxList.add(g);
+		}
+	}
+	
+	
+	
 	class MyItemListener implements ItemListener {
 		// This method is called only if a new item has been selected.
 		@SuppressWarnings("unchecked")
@@ -665,9 +751,9 @@ public class CrewEditor implements ActionListener {
 		        // removing old data
 		        model.removeAllElements();
 
+		        // Add MS and SPACEX as the available options
 	            model.addElement(ReportingAuthorityType.MARS_SOCIETY_L.getName());
 	            model.addElement(ReportingAuthorityType.SPACEX_L.getName());
-	            
 	            
 				String countryStr = (String) item;
 				
@@ -697,7 +783,7 @@ public class CrewEditor implements ActionListener {
 	 * Prepare this window for deletion.
 	 */
 	public void destroy() {
-		cc = null;
+		crewConfig = null;
 		simulationConfigEditor.setCrewEditorOpen(false);
 		simulationConfigEditor = null;
 		f = null;

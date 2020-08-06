@@ -13,6 +13,9 @@ import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.Msg;
 
+/**
+ * The skill of a settler. A total of 19 types is available
+ */
 public enum SkillType {
 
 //	AREOLOGY			(Msg.getString("SkillType.areology")), //$NON-NLS-1$
@@ -34,6 +37,7 @@ public enum SkillType {
 //	PHYSICS				(Msg.getString("SkillType.physics")), //$NON-NLS-1$
 //	
 //	PILOTING			(Msg.getString("SkillType.piloting")), //$NON-NLS-1$
+//  PSYCHOLOGY			(Msg.getString("SkillType.psychology")), //$NON-NLS-1$
 //	REPORTING			(Msg.getString("SkillType.reporting")), //$NON-NLS-1$
 //	TRADING				(Msg.getString("SkillType.trading")), //$NON-NLS-1$
 	
@@ -57,6 +61,7 @@ public enum SkillType {
 	BIOLOGY				(Msg.getString("SkillType.biology")), //$NON-NLS-1$
 
 	MEDICINE			(Msg.getString("SkillType.medicine")), //$NON-NLS-1$
+	PSYCHOLOGY			(Msg.getString("SkillType.psychology")), //$NON-NLS-1$	
 	MANAGEMENT			(Msg.getString("SkillType.management")), //$NON-NLS-1$
 	REPORTING			(Msg.getString("SkillType.reporting")) //$NON-NLS-1$
 	;

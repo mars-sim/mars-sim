@@ -43,7 +43,7 @@ public class ScienceConfig implements Serializable {
 	private static final String TOPICS_JSON_FILE_EXT = UNDERSCORE + TOPICS + DOT + JSON;
 	private static final String SCIENTIFIC_STUDY_JSON = SCIENTIFIC_STUDY + DOT + JSON;
 	
-	private static String[] jsonFiles = new String[9]; 
+	private static String[] jsonFiles = new String[ScienceType.valuesList().size()]; 
     
     private static List<Integer> averageTime = new ArrayList<>(); 
     

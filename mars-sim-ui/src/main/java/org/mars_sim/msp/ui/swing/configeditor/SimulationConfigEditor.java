@@ -432,6 +432,21 @@ public class SimulationConfigEditor {
 	}
 
 	/**
+	 * Load the list of destinations created in the site editor
+	 * 
+	 * @return a list of destinations
+	 */
+	public List<String> loadDestinations() {
+		List<SettlementInfo> settlements = settlementTableModel.getSettlementInfoList();
+		List<String> destinations = new ArrayList<>();
+		for (SettlementInfo i : settlements) {
+			String n = i.getName();
+			destinations.add(n);
+		}
+		return destinations;
+	}
+	
+	/**
 	 * Edits team profile.
 	 */
 	private void editCrewProfile(String crew) {
@@ -707,6 +722,10 @@ public class SimulationConfigEditor {
 		String latitude;
 		String longitude;
 		String sponsor;
+		
+		public String getName() {
+			return name;
+		}
 	}
 
 	/**
@@ -790,7 +809,9 @@ public class SimulationConfigEditor {
 			fireTableDataChanged();
 		}
 
-
+		public List<SettlementInfo> getSettlementInfoList() {
+			return settlements;
+		}
 		
 		@Override
 		public int getRowCount() {

@@ -103,7 +103,7 @@ public class Landmark implements Serializable {
 	/**
 	 * Sets the type.
 	 * 
-	 * @param type type of feature
+	 * @param type of feature
 	 */
 	public void setLandmarkType(String type) {
 		this.landmarkType = type;

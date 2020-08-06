@@ -76,6 +76,15 @@ public class CrewConfig implements Serializable {
 	public CrewConfig(Document crewDoc) {
 		this.crewDoc = crewDoc;
 //		root = crewDoc.getRootElement();
+		
+		int size = getNumberOfConfiguredPeople();
+
+		// Load a list of crew
+		for (int x = 0; x < size; x++) {
+			// Create roster
+			getCrew(x);
+
+		}
 	}
 
 
@@ -112,14 +121,16 @@ public class CrewConfig implements Serializable {
 
 		} else {
 
-			boolean oldCrew = false;
+			boolean oldCrewName = false;
 
 			Iterator<Crew> i = roster.iterator();
 			while (i.hasNext()) {
+				// e.g. alpha crew, beta crew, etc.
 				Crew crew = i.next();
 				// if the name does not exist, create a new crew with this name
 				if (crewString.equals(crew.getName())) {
-					oldCrew = true;
+//					System.out.println("roster : " + roster + " crew.getName() : " + crew.getName());
+					oldCrewName = true;
 					// add a new member
 					// Member m = new Member();
 					crew.add(new Member());
@@ -128,7 +139,7 @@ public class CrewConfig implements Serializable {
 			}
 
 			// if this is crew name doesn't exist
-			if (!oldCrew) {
+			if (!oldCrewName) {
 				Crew c = new Crew(crewString);
 				c.add(new Member());
 				roster.add(c);
@@ -149,6 +160,9 @@ public class CrewConfig implements Serializable {
 	 * @throws Exception if error in XML parsing.
 	 */
 	public String getConfiguredPersonName(int index, int crew_id) {
+//		System.out.println("roster is " + roster);
+//		System.out.println("# of crew in roster is " + roster.size());
+//		System.out.println("crew_id is " + crew_id);
 		if (roster.get(crew_id) != null) {
 			if (roster.get(crew_id).getTeam().get(index).getName() != null) {
 				return roster.get(crew_id).getTeam().get(index).getName();

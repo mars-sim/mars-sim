@@ -1,16 +1,20 @@
 {
 	"subject": "Medicine",
 	"topics": [
-			{"topic": "Whole-Body, Ocular, Skin Radiation Limit"},
-			{"topic": "Radiation Dose on Central Nervious System"},
-			{"topic": "Protection from Micrometeorites Impacts"},
+			{"topic": "3D Bioprinting of Skin, Bones, & Organs"},
+			{"topic": "Body Toxic Chemical Buildup"},
+			{"topic": "Circadian, Sleep–Dream, REM Cycle of Martian Settlers"}, 
+			{"topic": "Handling Environmental Incidents"}, 			
+			{"topic": "Health Hazard"},
+			{"topic": "Exomedicine labs "},
 			{"topic": "Lightweight Walking Aid"},
 			{"topic": "Modality of Exercise & Health"}, 
-			{"topic": "Work Safety"},
-			{"topic": "Handling Environmental Incidents"}, 
-			{"topic": "Circadian, Sleep–Dream, REM Cycle of Martian Settlers"}, 
-			{"topic": "Health Hazard"}, 
-			{"topic": "Body Toxic Chemical Buildup"},
-			{"topic": "Psychiatrical Aspects of Closed Loop Living Space"}
+			{"topic": "Osteoporosis under Reduce Gravity"}, 
+			{"topic": "Radiation Dose on Central Nervious System"},
+			{"topic": "Replacement of Bones and Organs On-Demand"}, 
+			{"topic": "Remote Equipment for Robotic Surgery"}, 
+			{"topic": "Protection from Micrometeorites Impacts"},
+			{"topic": "Whole-Body, Ocular, Skin Radiation Limit"},
+			{"topic": "Work Safety"}
 	]
 }

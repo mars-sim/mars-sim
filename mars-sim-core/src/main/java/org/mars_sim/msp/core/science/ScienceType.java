@@ -24,48 +24,54 @@ import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.job.Mathematician;
 import org.mars_sim.msp.core.person.ai.job.Meteorologist;
 import org.mars_sim.msp.core.person.ai.job.Physicist;
+import org.mars_sim.msp.core.person.ai.job.Psychologist;
 
 /**
  * Science field names and researcher job descriptions.
  */
 public enum ScienceType {
 
-	/** environmental science of mars. */
+	/** 1. Environmental science of mars. */
 	AREOLOGY( // the actual enum value is followed by data associated to the value.
 			Msg.getString("ScienceType.areology"), //$NON-NLS-1$
 			SkillType.AREOLOGY, Areologist.class),
 
-	/** keeping track of heavenly bodies. */
+	/** 2. Keeping track of heavenly bodies. */
 	ASTRONOMY(Msg.getString("ScienceType.astronomy"), //$NON-NLS-1$
 			SkillType.ASTRONOMY, Astronomer.class),
 
-	/** concerned with the processes of life from micro to macro scale. */
+	/** 3. Concerned with the processes of life from micro to macro scale. */
 	BIOLOGY(Msg.getString("ScienceType.biology"), //$NON-NLS-1$
 			SkillType.BIOLOGY, Biologist.class),
 
-	/** plants and how to grow them. */
+	/** 4. Plants and how to grow them. */
 	BOTANY(Msg.getString("ScienceType.botany"), //$NON-NLS-1$
 			SkillType.BOTANY, Botanist.class),
 
-	/** stuff and how to make it. */
+	/** 5. Stuff and how to make it. */
 	CHEMISTRY(Msg.getString("ScienceType.chemistry"), //$NON-NLS-1$
 			SkillType.CHEMISTRY, Chemist.class),
 
-	/** provides fundamental basics for all sciences. */
+	/** 6. Provides fundamental basics for all sciences. */
 	MATHEMATICS(Msg.getString("ScienceType.mathematics"), //$NON-NLS-1$
 			SkillType.MATHEMATICS, Mathematician.class),
 
-	/** how to tell sick from healthy. */
+	/** 7. How to tell sick from healthy. */
 	MEDICINE(Msg.getString("ScienceType.medicine"), //$NON-NLS-1$
 			SkillType.MEDICINE, Doctor.class),
 
-	/** weather forecasting, climate modelling. */
+	/** 8. Weather forecasting, climate modeling. */
 	METEOROLOGY(Msg.getString("ScienceType.meteorology"), //$NON-NLS-1$
 			SkillType.METEOROLOGY, Meteorologist.class),
-
+	
+	/** 9. Laws of nature. Study of forces and mechanics. */
 	PHYSICS(Msg.getString("ScienceType.physics"), //$NON-NLS-1$
-			SkillType.PHYSICS, Physicist.class);
+			SkillType.PHYSICS, Physicist.class),
 
+	/** 10. The Study of the mind and behavior.  */
+	PSYCHOLOGY(Msg.getString("ScienceType.psychology"), //$NON-NLS-1$
+			SkillType.PSYCHOLOGY, Psychologist.class);
+	
 	/** used to keep track of collaborative sciences. */
 	private static Map<ScienceType, Science> collabSciences;
 
@@ -112,16 +118,18 @@ public enum ScienceType {
 		Science medicine = collabSciences.get(ScienceType.MEDICINE);
 		Science meteorology = collabSciences.get(ScienceType.METEOROLOGY);
 		Science physics = collabSciences.get(ScienceType.PHYSICS);
-
-		areology.setCollaborativeSciences(new Science[] { biology, chemistry, mathematics, physics, meteorology });
+		Science psychology = collabSciences.get(ScienceType.PSYCHOLOGY);
+		
+		areology.setCollaborativeSciences(new Science[] { biology, chemistry, physics, meteorology });
 		astronomy.setCollaborativeSciences(new Science[] { biology, chemistry, mathematics, physics });
-		biology.setCollaborativeSciences(new Science[] { botany, chemistry, mathematics });
+		biology.setCollaborativeSciences(new Science[] { botany, chemistry, mathematics, medicine });
 		botany.setCollaborativeSciences(new Science[] { biology, chemistry, mathematics });
 		chemistry.setCollaborativeSciences(new Science[] { mathematics });
-		mathematics.setCollaborativeSciences(new Science[] {});
+		mathematics.setCollaborativeSciences(new Science[] { physics });
 		medicine.setCollaborativeSciences(new Science[] { biology, botany, chemistry, mathematics });
 		meteorology.setCollaborativeSciences(new Science[] { chemistry, mathematics, physics });
 		physics.setCollaborativeSciences(new Science[] { astronomy, mathematics });
+		psychology.setCollaborativeSciences(new Science[] { biology, chemistry, medicine });
 	}
 
 	/**
