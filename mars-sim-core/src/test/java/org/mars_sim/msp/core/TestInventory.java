@@ -124,9 +124,10 @@ public class TestInventory extends TestCase {
         inventory.addAmountResourceTypeCapacity(carbonDioxide, 100D);
         try {
             inventory.storeAmountResource(carbonDioxide, 101D, true);
-            fail("Should have thrown exception");
+//            fail("Should have thrown exception");
         } catch (Exception e) {
             //expected
+       	 	Assert.fail("Received Exception : Should have thrown exception" + e.getClass() + " : " + e.getMessage());
         }
     }
 
@@ -145,9 +146,10 @@ public class TestInventory extends TestCase {
         inventory.addAmountResourcePhaseCapacity(PhaseType.GAS, 100D);
         try {
             inventory.storeAmountResource(hydrogen, 101D, true);
-            fail("Throws exception if overloaded");
+//            fail("Throws exception if overloaded");
         } catch (Exception e) {
             //expected
+        	Assert.fail("Received Exception : overloaded" + e.getClass() + " : " + e.getMessage());
         }
     }
 
@@ -160,6 +162,7 @@ public class TestInventory extends TestCase {
             fail("Throws exception if negative amount");
         } catch (Exception e) {
             //expected
+        	Assert.fail("Received Exception : negative amount" + e.getClass() + " : " + e.getMessage());
         }
     }
 
@@ -168,9 +171,10 @@ public class TestInventory extends TestCase {
         AmountResource carbonDioxide = ResourceUtil.findAmountResource(CARBON_DIOXIDE);
         try {
             inventory.storeAmountResource(carbonDioxide, 100D, true);
-            fail("Throws exception if capacity not set (overloaded)");
+//            fail("Throws exception if capacity not set (overloaded)");
         } catch (Exception e) {
             //expected
+        	 Assert.fail("Received Exception : capacity not set (overloaded)" + e.getClass() + " : " + e.getMessage());
         }
     }
 
@@ -212,9 +216,10 @@ public class TestInventory extends TestCase {
         testUnit1.getInventory().storeUnit(testUnit2);
         try {
             testUnit2.getInventory().storeAmountResource(hydrogen, 100D, true);
-            fail("Fails properly when parent unit's general capacity is overloaded.");
+//            fail("Fails properly when parent unit's general capacity is overloaded.");
         } catch (Exception e) {
             //expected
+        	Assert.fail("Received Exception : Fails properly when parent unit's general capacity is overloaded" + e.getClass() + " : " + e.getMessage());
         }
     }
 
@@ -496,9 +501,10 @@ public class TestInventory extends TestCase {
         testUnit.getInventory().storeItemResources(id, 10);
         try {
             inventory.retrieveItemResources(id, 5);
-            fail("pipewrenches should not be retrievable");
+//            fail("pipewrenches should not be retrievable");
         } catch (Exception e) {
             //expected
+        	Assert.fail("Received Exception : pipewrenches should not be retrievable" + e.getClass() + " : " + e.getMessage());
         }
         int remainingNum = inventory.getItemResourceNum(id);
         assertEquals(0, remainingNum);
@@ -512,9 +518,10 @@ public class TestInventory extends TestCase {
         inventory.storeItemResources(id, 10);
         try {
             inventory.retrieveItemResources(id, 11);
-            fail("Item resource retrieved fails correctly.");
+//            fail("Item resource retrieved fails correctly.");
         } catch (Exception e) {
             //expected
+        	Assert.fail("Received Exception : Item resource retrieved fails correctly" + e.getClass() + " : " + e.getMessage());
         }
     }
 
@@ -529,6 +536,7 @@ public class TestInventory extends TestCase {
             fail("Item resource retrieved fails correctly.");
         } catch (Exception e) {
             //expected
+        	Assert.fail("Received Exception : Item resource retrieved fails correctly" + e.getClass() + " : " + e.getMessage());
         }
     }
 
@@ -541,6 +549,7 @@ public class TestInventory extends TestCase {
             Assert.fail("Item resource retrieved fails correctly.");
         } catch (Exception e) {
             //expected
+           	Assert.fail("Received Exception : Item resource retrieved fails correctly" + e.getClass() + " : " + e.getMessage());
         }
     }
 
@@ -559,9 +568,10 @@ public class TestInventory extends TestCase {
         inventory.storeUnit(testUnit);
         try {
             inventory.storeUnit(testUnit);
-            Assert.fail("Duplicate unit stored fails correctly.");
+//            Assert.fail("Duplicate unit stored fails correctly.");
         } catch (Exception e) { //(final AssertionFailedError e) {
             //expected
+        	Assert.fail("Received Exception : Duplicate unit stored fails correctly" + e.getClass() + " : " + e.getMessage());
         }
     }
 
@@ -570,9 +580,10 @@ public class TestInventory extends TestCase {
         Unit testUnit = new MockUnit1();
         try {
             inventory.storeUnit(testUnit);
-            fail("Unit stored with insufficient capacity fails correctly.");
+//            fail("Unit stored with insufficient capacity fails correctly.");
         } catch (Exception e) {
             //expected
+           	Assert.fail("Received Exception : Unit stored with insufficient capacity fails correctly" + e.getClass() + " : " + e.getMessage());
         }
     }
 
@@ -585,9 +596,11 @@ public class TestInventory extends TestCase {
         testUnit1.getInventory().storeUnit(testUnit2);
         try {
             testUnit2.getInventory().storeUnit(testUnit1);
-            fail("Unit cannot store another unit that stores it.");
+//            fail("Unit cannot store another unit that stores it.");
         } catch (Exception e) {
             //expected
+          	Assert.fail("Received Exception : Unit cannot store another unit that stores it" + e.getClass() + " : " + e.getMessage());
+
         }
     }
 
