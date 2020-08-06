@@ -7,6 +7,8 @@
 package org.mars_sim.msp.core.person.ai.job;
 
 import java.io.Serializable;
+import java.util.Iterator;
+import java.util.List;
 
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
@@ -32,6 +34,9 @@ import org.mars_sim.msp.core.person.ai.task.RepairMalfunction;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleGarage;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
+import org.mars_sim.msp.core.structure.building.function.GroundVehicleMaintenance;
 
 /**
  * The Pilot class represents a pilot job.
@@ -126,9 +131,25 @@ public class Pilot extends Job implements Serializable {
 	 * @return the base need >= 0
 	 */
 	public double getSettlementNeed(Settlement settlement) {
-		double result = 0.1;
-		// Get number of associated vehicles at a settlement.	
-		return result + settlement.getVehicleNum()/3;
+		double result = .1;
+
+		int population = settlement.getNumCitizens();
+
+		// Add contributions from all garage.
+		List<Building> garage = settlement.getBuildingManager().getBuildings(FunctionType.GROUND_VEHICLE_MAINTENANCE);
+		Iterator<Building> j = garage.iterator();
+		while (j.hasNext()) {
+			Building building = j.next();
+			GroundVehicleMaintenance g = building.getGroundVehicleMaintenance();
+			result += (double) g.getVehicleCapacity() / 3.0;
+		}
+		
+		// Get number of associated vehicles at a settlement.
+		result = (result + settlement.getVehicleNum() / 3.0 + population / 6.0) / 3.0;
+		
+//		System.out.println(settlement + " Pilot need: " + result);
+		
+		return result;
 	}
 
 	public double[] getRoleProspects() {

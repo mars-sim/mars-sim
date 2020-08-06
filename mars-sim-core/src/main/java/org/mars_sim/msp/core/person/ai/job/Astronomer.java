@@ -17,11 +17,8 @@ import org.mars_sim.msp.core.person.ai.mission.AreologyFieldStudy;
 import org.mars_sim.msp.core.person.ai.mission.BiologyFieldStudy;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
-import org.mars_sim.msp.core.person.ai.mission.EmergencySupply;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
 import org.mars_sim.msp.core.person.ai.mission.Mining;
-import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
-import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.core.person.ai.task.AssistScientificStudyResearcher;
 import org.mars_sim.msp.core.person.ai.task.CompileScientificStudyResults;
 import org.mars_sim.msp.core.person.ai.task.ConsolidateContainers;
@@ -118,6 +115,8 @@ public class Astronomer extends Job implements Serializable {
 	@Override
 	public double getSettlementNeed(Settlement settlement) {
 		double result = 0.1;
+		
+		int population = settlement.getNumCitizens();
 
 		BuildingManager manager = settlement.getBuildingManager();
 
@@ -127,7 +126,7 @@ public class Astronomer extends Job implements Serializable {
 			Building building = i.next();
 			Research lab = building.getResearch();
 			if (lab.hasSpecialty(ScienceType.ASTRONOMY))
-				result += lab.getLaboratorySize() * lab.getTechnologyLevel() / 3.5D;
+				result += lab.getLaboratorySize() * lab.getTechnologyLevel() / 16.0;
 		}
 
 		// Add astronomical observatories (observer capacity * tech level * 2).
@@ -135,9 +134,13 @@ public class Astronomer extends Job implements Serializable {
 		while (j.hasNext()) {
 			Building building = j.next();
 			AstronomicalObservation observatory = building.getAstronomicalObservation();
-			result += observatory.getObservatoryCapacity() * observatory.getTechnologyLevel() * 1.5D;
+			result += observatory.getObservatoryCapacity() * observatory.getTechnologyLevel() / 2.0;
 		}
 
+		result = (result + population / 24D) / 2.0;
+		
+//		System.out.println(settlement + " Astronomer need: " + result);
+		
 		return result;
 	}
 

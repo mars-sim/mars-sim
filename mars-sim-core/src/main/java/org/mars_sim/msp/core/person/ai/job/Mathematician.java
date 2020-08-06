@@ -94,6 +94,8 @@ implements Serializable {
 	public double getSettlementNeed(Settlement settlement) {
 		double result = 0.1;
 
+		int population = settlement.getNumCitizens();
+		
 		// Add (labspace * tech level / 2) for all labs with mathematics specialties.
 		List<Building> laboratoryBuildings = settlement.getBuildingManager().getBuildings(FunctionType.RESEARCH);
 		Iterator<Building> i = laboratoryBuildings.iterator();
@@ -101,10 +103,14 @@ implements Serializable {
 			Building building = i.next();
 			Research lab = building.getResearch();
 			if (lab.hasSpecialty(ScienceType.MATHEMATICS)) {
-				result += (lab.getLaboratorySize() * lab.getTechnologyLevel() / 4.5D);
+				result += (lab.getLaboratorySize() * lab.getTechnologyLevel() / 16D);
 			}
 		}
 
+		result = (result + population / 20D) / 2.0;
+
+//		System.out.println(settlement + " Mathematician need: " + result);
+		
 		return result;
 	}
 

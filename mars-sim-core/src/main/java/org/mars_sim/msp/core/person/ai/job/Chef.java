@@ -16,9 +16,6 @@ import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
-import org.mars_sim.msp.core.person.ai.mission.EmergencySupply;
-import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
-import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.core.person.ai.task.ConsolidateContainers;
 import org.mars_sim.msp.core.person.ai.task.CookMeal;
 import org.mars_sim.msp.core.person.ai.task.PrepareDessert;
@@ -111,7 +108,10 @@ public class Chef extends Job implements Serializable {
 
 		// Add total population / 10.
 		int population = settlement.getIndoorPeopleCount();
-		result += ((double) population / 16D);
+
+		result = (result + population / 12D) / 2.0;
+		
+//		System.out.println(settlement + " Chef Need: " + result);
 
 		return result;
 	}

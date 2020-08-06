@@ -79,7 +79,7 @@ implements Serializable {
 		while (i.hasNext()) {
 			Building building = i.next();
 			Manufacture workshop = (Manufacture) building.getFunction(FunctionType.MANUFACTURE);
-			result += workshop.getTechLevel() * workshop.getSupportingProcesses() / 2D;
+			result += workshop.getTechLevel() * workshop.getMaxProcesses() / 2D;
 		}
 
 		return result;

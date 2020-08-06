@@ -114,7 +114,6 @@ public class Psychologist extends Job implements Serializable {
 
 		// Add total population / 10
 		int population = settlement.getNumCitizens();
-		result += population / 32D;
 
 		// Add (labspace * tech level) / 2 for all labs with medical specialties.
 		List<Building> laboratoryBuildings = settlement.getBuildingManager().getBuildings(FunctionType.RESEARCH);
@@ -122,8 +121,8 @@ public class Psychologist extends Job implements Serializable {
 		while (i.hasNext()) {
 			Building building = i.next();
 			Research lab = building.getResearch();
-			if (lab.hasSpecialty(ScienceType.MEDICINE)) {
-				result += ((double) (lab.getResearcherNum() * lab.getTechnologyLevel()) / 8D);
+			if (lab.hasSpecialty(ScienceType.PSYCHOLOGY)) {
+				result += ((double) (lab.getResearcherNum() * lab.getTechnologyLevel()) / 4D);
 			}
 		}
 
@@ -133,9 +132,13 @@ public class Psychologist extends Job implements Serializable {
 		while (j.hasNext()) {
 			Building building = j.next();
 			MedicalCare infirmary = building.getMedical();
-			result += (double) infirmary.getTechLevel() / 8D;
+			result += (double) infirmary.getTechLevel() / 6D;
 		}
 
+		result = (result + population / 12D) / 2.0;
+		
+//		System.out.println(settlement + " Psychologist need: " + result);
+		
 		return result;
 	}
 

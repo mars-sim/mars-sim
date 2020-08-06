@@ -96,6 +96,8 @@ implements Serializable {
 	public double getSettlementNeed(Settlement settlement) {
 		double result = 0.1;
 
+		int population = settlement.getNumCitizens();
+		
 		// Add (labspace * tech level / 2D) for all labs with physics specialties.
 		List<Building> laboratoryBuildings = settlement.getBuildingManager().getBuildings(FunctionType.RESEARCH);
 		Iterator<Building> i = laboratoryBuildings.iterator();
@@ -103,7 +105,7 @@ implements Serializable {
 			Building building = i.next();
 			Research lab = building.getResearch();
 			if (lab.hasSpecialty(ScienceType.PHYSICS)) {
-				result += (lab.getLaboratorySize() * lab.getTechnologyLevel() / 4D);
+				result += (lab.getLaboratorySize() * lab.getTechnologyLevel() / 12D);
 			}
 		}
 
@@ -116,12 +118,16 @@ implements Serializable {
 					if (rover.hasLab()) {
 						Lab lab = rover.getLab();
 						if (lab.hasSpecialty(ScienceType.PHYSICS)) {
-							result += (lab.getLaboratorySize() * lab.getTechnologyLevel() / 8D);
+							result += (lab.getLaboratorySize() * lab.getTechnologyLevel() / 12D);
 						}
 					}
 				}
 			}
 		}
+		
+		result = (result + population / 16D) / 2.0;
+		
+//		System.out.println(settlement + " Physicist need: " + result);
 		
 		return result;
 	}

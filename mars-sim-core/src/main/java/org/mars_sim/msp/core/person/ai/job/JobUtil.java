@@ -81,8 +81,9 @@ public final class JobUtil implements Serializable {
 			jobs.add(new Physicist());
 			jobs.add(new Pilot());
 			jobs.add(new Politician());
-			jobs.add(new Reporter());
+			jobs.add(new Psychologist());
 			
+			jobs.add(new Reporter());
 			jobs.add(new Technician());
 			jobs.add(new Trader());
 		}
@@ -251,16 +252,15 @@ public final class JobUtil implements Serializable {
 		// Set limits on # of position available for a job, based on settlement's population
 		// e.g. rather not having 3 botanists when the settlement has only 8 people
 		
-		while (selectedJob == originalJob) {
-			double rand = RandomUtil.getRandomDouble(2.0);
-			double t = pop/JobType.numJobTypes + rand;
-			int maxPos = (int)(Math.ceil(t));
-			
+		while (selectedJob == originalJob) {			
 			if (settlement != null) {
 				Iterator<Job> i = getJobs().iterator();
 				while (i.hasNext()) {
 					Job job = i.next();
 					if (!job.equals(JobUtil.getJob(POLITICIAN))) {
+						double rand = RandomUtil.getRandomDouble(0.8);
+						double t = pop/JobType.numJobTypes + rand;
+						int maxPos = (int)(Math.ceil(t));
 //						logger.config("job : " + job + "  ID: " + job.getJobID());
 						int numPositions = numJobs(job.getName(GenderType.MALE), settlement);
 //						logger.config(job.getName(GenderType.MALE) +  ": " + numPositions + "  ");

@@ -104,14 +104,20 @@ public class Technician extends Job implements Serializable {
 	 */
 	public double getSettlementNeed(Settlement settlement) {
 
-		double result = .1;
-
+		double result = 1;
+		
+		int population = settlement.getNumCitizens();
+		
 		// Add number of buildings in settlement.
-		result += settlement.getBuildingManager().getNumBuildings() / 11D;
+		result += settlement.getBuildingManager().getNumBuildings() / 12D;
 
 		// Add number of vehicles parked at settlement.
-		result += settlement.getParkedVehicleNum() / 7D;
+		result += settlement.getParkedVehicleNum() / 12D;
 
+		result = (result + population / 8D) / 2.0;
+		
+//		System.out.println(settlement + " Technician need: " + result);
+		
 		return result;
 	}
 	

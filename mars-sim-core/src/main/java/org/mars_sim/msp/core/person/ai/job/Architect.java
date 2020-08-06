@@ -85,11 +85,16 @@ implements Serializable {
 	@Override
 	public double getSettlementNeed(Settlement settlement) {
 		double result = .1;
+		
 		int population = settlement.getNumCitizens();
-		result += population / 24D;
 		
 		// Add number of buildings currently at settlement.
 		result += settlement.getBuildingManager().getNumBuildings() / 24D;
+		
+		result = (result + population / 24D) / 2.0;
+
+//		System.out.println(settlement + " Architect need: " + result);
+		
 		return result;
 	}
 

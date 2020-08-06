@@ -635,7 +635,7 @@ public class ManufactureGood extends Task implements Serializable {
 	private ManufactureProcess createNewManufactureProcess() {
 		ManufactureProcess result = null;
 
-		if (workshop.getTotalProcessNumber() < workshop.getSupportingProcesses()) {
+		if (workshop.getTotalProcessNumber() < workshop.getMaxProcesses()) {
 
 			int skillLevel = getEffectiveSkillLevel();
 			int techLevel = workshop.getTechLevel();

@@ -299,6 +299,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<research-specialty name="MEDICINE" />
 				<research-specialty name="METEOROLOGY" />				
 				<research-specialty name="PHYSICS" />
+				<research-specialty name="PSYCHOLOGY" />				
 			
 				<activity>
 					<activity-spot xloc="-1.0" yloc="-3.0" />
@@ -1566,6 +1567,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<power-storage capacity="20.0" />
 			<research tech-level="2" capacity="2">
 				<research-specialty name="MEDICINE" />
+				<research-specialty name="PSYCHOLOGY" />
 				<activity>
 					<activity-spot xloc="-.91" yloc="3.2" />
 					<activity-spot xloc="-1.72" yloc="3.2" />
@@ -1682,7 +1684,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<power-source type="Solar Power Source" power="5.0" />
 			</power-generation>
 			<power-storage capacity="20.0" />
-			<research tech-level="2" capacity="4">
+			<research tech-level="3" capacity="4">
 				<research-specialty name="AREOLOGY" />
 				<research-specialty name="ASTRONOMY" />
 				<research-specialty name="BIOLOGY" />
@@ -1691,6 +1693,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<research-specialty name="MEDICINE" />
 				<research-specialty name="METEOROLOGY" />				
 				<research-specialty name="PHYSICS" />
+				<research-specialty name="PSYCHOLOGY" />				
 				<activity>
 					<activity-spot xloc="1.55" yloc="2.87" />
 					<activity-spot xloc="1.55" yloc="1.38" />
@@ -2262,7 +2265,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<power-source type="Solar Power Source" power="5.0" />
 			</power-generation>
 			<power-storage capacity="20.0" />
-			<research tech-level="2" capacity="8">
+			<research tech-level="4" capacity="8">
 				<research-specialty name="AREOLOGY" />
 				<research-specialty name="ASTRONOMY" />
 				<research-specialty name="BIOLOGY" />
@@ -2271,6 +2274,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<research-specialty name="MEDICINE" />
 				<research-specialty name="METEOROLOGY" />				
 				<research-specialty name="PHYSICS" />
+				<research-specialty name="PSYCHOLOGY" />			
 				<activity>
 					<activity-spot xloc=".4" yloc="3.05" />
 					<activity-spot xloc="-2.73" yloc="-.15" />
@@ -2373,12 +2377,11 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<power-source type="Solar Power Source" power="5.0" />
 			</power-generation>
 			<power-storage capacity="20.0" />			
-			<research tech-level="2" capacity="8">
-				<research-specialty name="CHEMISTRY" />				
-				<research-specialty name="MATHEMATICS" />				
-				<research-specialty name="MEDICINE" />
-				<research-specialty name="PHYSICS" />	
-				<research-specialty name="METEOROLOGY" />							
+			<research tech-level="3" capacity="8">
+				<research-specialty name="BIOLOGY" />	
+				<research-specialty name="CHEMISTRY" />							
+				<research-specialty name="MEDICINE" />	
+				<research-specialty name="PSYCHOLOGY" />					
 				<activity>
 					<activity-spot xloc=".77" yloc="-2.52" />
 					<activity-spot xloc="-2.09" yloc="2.06" />
@@ -2583,6 +2586,25 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</recreation>
 
+			<research tech-level="1" capacity="3">
+				<!-- Sciences that can be researched at the laboratory. -->
+				<research-specialty name="AREOLOGY" />
+				<research-specialty name="ASTRONOMY" />
+				<research-specialty name="BIOLOGY" />
+				<research-specialty name="CHEMISTRY" />				
+				<research-specialty name="MATHEMATICS" />				
+				<research-specialty name="MEDICINE" />
+				<research-specialty name="METEOROLOGY" />				
+				<research-specialty name="PHYSICS" />
+				<research-specialty name="PSYCHOLOGY" />				
+			
+				<activity>
+					<activity-spot xloc="-1.0" yloc="-3.0" />
+					<activity-spot xloc="-0.4" yloc="-3.1" />
+					<activity-spot xloc="1.8"  yloc="-2.6" />			
+				</activity>
+			</research>
+			
 			<resource-processing power-down-level="0.0">
 				<process name="Grey Water Processor" power-required=".32" default="on">			
 					<input resource="grey water" rate="40.0" ambient="false" />
@@ -2639,6 +2661,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="0.5" yloc="-0.5" />
 				</activity>
 			</robotic-station>
+						
 			<storage stock-capacity="5000">
 				<!-- The building's storage capacity for a variety of resource. -->
 				<resource-storage resource="toxic waste" capacity="500.0" />

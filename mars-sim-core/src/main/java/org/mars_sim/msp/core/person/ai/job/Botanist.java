@@ -18,10 +18,7 @@ import org.mars_sim.msp.core.person.ai.mission.AreologyFieldStudy;
 import org.mars_sim.msp.core.person.ai.mission.BiologyFieldStudy;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
-import org.mars_sim.msp.core.person.ai.mission.EmergencySupply;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
-import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
-import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.core.person.ai.task.AssistScientificStudyResearcher;
 import org.mars_sim.msp.core.person.ai.task.CompileScientificStudyResults;
 import org.mars_sim.msp.core.person.ai.task.InviteStudyCollaborator;
@@ -136,7 +133,7 @@ implements Serializable {
 	public double getSettlementNeed(Settlement settlement) {
 		double result = .1;
 
-		int pop = settlement.getNumCitizens();
+		int population = settlement.getNumCitizens();
 		
 		// Add (labspace * tech level) / 2 for all labs with botany specialties.
 		List<Building> laboratoryBuildings = settlement.getBuildingManager().getBuildings(FunctionType.RESEARCH);
@@ -155,16 +152,18 @@ implements Serializable {
 		while (j.hasNext()) {
 			Building building = j.next();
 			Farming farm = building.getFarming();
-			result += (farm.getGrowingArea() / 240D);
+			result += (farm.getGrowingArea() / 100D);
 		}
 
 		// Multiply by food value at settlement.
 		//Good foodGood = GoodsUtil.getResourceGood(AmountResource.findAmountResource(LifeSupport.FOOD));
 		//double foodValue = settlement.getGoodsManager().getGoodValuePerItem(foodGood);
 		//result *= foodValue;
-		//System.out.println("getSettlementNeed() : result is " + result);
+		
+		result = (result + population / 6D) / 2.0;
+		
+//		System.out.println(settlement + " Botany Need: " + result);
 
-		result += pop/32D;
 		return result;
 	}
 

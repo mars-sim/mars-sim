@@ -140,6 +140,8 @@ public class Areologist extends Job implements Serializable {
 	public double getSettlementNeed(Settlement settlement) {
 		double result = .1;
 
+		int population = settlement.getNumCitizens();
+		
 		// Add (labspace * tech level / 2) for all labs with areology specialties.
 		List<Building> laboratoryBuildings = settlement.getBuildingManager().getBuildings(FunctionType.RESEARCH);
 		Iterator<Building> i = laboratoryBuildings.iterator();
@@ -147,7 +149,7 @@ public class Areologist extends Job implements Serializable {
 			Building building = i.next();
 			Research lab = building.getResearch();
 			if (lab.hasSpecialty(ScienceType.AREOLOGY)) {
-				result += (lab.getLaboratorySize() * lab.getTechnologyLevel() / 3D);
+				result += (lab.getLaboratorySize() * lab.getTechnologyLevel() / 10D);
 			}
 		}
 
@@ -161,7 +163,7 @@ public class Areologist extends Job implements Serializable {
 				if (rover.hasLab()) {
 					Lab lab = rover.getLab();
 					if (lab.hasSpecialty(ScienceType.AREOLOGY)) {
-						result += (lab.getLaboratorySize() * lab.getTechnologyLevel() / 6D);
+						result += (lab.getLaboratorySize() * lab.getTechnologyLevel() / 12D);
 					}
 				}
 			}
@@ -179,13 +181,17 @@ public class Areologist extends Job implements Serializable {
 					if (rover.hasLab()) {
 						Lab lab = rover.getLab();
 						if (lab.hasSpecialty(ScienceType.AREOLOGY)) {
-							result += (lab.getLaboratorySize() * lab.getTechnologyLevel() / 6D);
+							result += (lab.getLaboratorySize() * lab.getTechnologyLevel() / 8D);
 						}
 					}
 				}
 			}
 		}
 
+		result = (result + population / 10D) / 2.0;
+		
+//		System.out.println(settlement + " Areologist need: " + result);
+		
 		return result;
 	}
 

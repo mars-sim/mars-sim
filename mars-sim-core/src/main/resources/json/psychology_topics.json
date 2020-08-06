@@ -2,8 +2,12 @@
 	"subject": "Psychology",
 	"topics": [
 			{"topic": "Attitude & Expression of Favor"},
-			{"topic": "Behaviors Shaped by Psychological Traits"}, 			
+			{"topic": "Behaviors Shaped by Psychological Traits"},
+			{"topic": "Collectivism & Individualism"},
+			{"topic": "Crew Heterogeneity & Cohesion"},	
+			{"topic": "Group composition"},
 			{"topic": "Handling Environmental Incidents"}, 
+			{"topic": "leadership and Emotional Rapport"},
 			{"topic": "levels of Tension and Personality"},						
 			{"topic": "Long Duration Expeditionary Missions"},
 			{"topic": "Modality of Social Health"},
@@ -12,6 +16,7 @@
 			{"topic": "Psycho-Social Issues On-orbit"},
 			{"topic": "Social norms and Means of Social Control"},
 			{"topic": "Spirituality in Human Behavior"},
-			{"topic": "Space Analog Environments vs. Real Colony"}
+			{"topic": "Space Analog Environments vs. Real Colony"},
+			{"topic": "Human Interaction & Teamwork"}
 	]
 }

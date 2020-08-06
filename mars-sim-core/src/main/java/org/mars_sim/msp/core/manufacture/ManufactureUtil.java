@@ -358,7 +358,7 @@ public final class ManufactureUtil {
 		Inventory inv = workshop.getBuilding().getInventory();
 
 		// Check to see if workshop is full of processes.
-		if (workshop.getTotalProcessNumber() >= workshop.getSupportingProcesses()) {
+		if (workshop.getTotalProcessNumber() >= workshop.getMaxProcesses()) {
 			return false;
 		}
 
@@ -391,7 +391,7 @@ public final class ManufactureUtil {
 	 */
 	public static synchronized boolean isAn3DPrinterAvailable(Manufacture workshop) {
 
-		if (workshop.getSupportingProcesses() > 0)
+		if (workshop.getMaxProcesses() > 0)
 			return true;
 		else
 			return false;
@@ -439,7 +439,7 @@ public final class ManufactureUtil {
 		boolean result = true;
 
 		// Check to see if workshop is full of processes.
-		if (workshop.getTotalProcessNumber() >= workshop.getSupportingProcesses())
+		if (workshop.getTotalProcessNumber() >= workshop.getMaxProcesses())
 			result = false;
 
 		// Check to see if process tech level is above workshop tech level.

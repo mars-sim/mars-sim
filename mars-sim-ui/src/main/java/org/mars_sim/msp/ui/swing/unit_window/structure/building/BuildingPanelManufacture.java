@@ -114,7 +114,7 @@ public class BuildingPanelManufacture extends BuildingFunctionPanel {
 		labelPane.add(techLabel);
 
 		// Prepare processCapacity label
-		WebLabel processCapacityLabel = new WebLabel("Process Capacity: " + workshop.getSupportingProcesses(),
+		WebLabel processCapacityLabel = new WebLabel("Process Capacity: " + workshop.getMaxProcesses(),
 				WebLabel.CENTER);
 		labelPane.add(processCapacityLabel);
 
@@ -380,7 +380,7 @@ public class BuildingPanelManufacture extends BuildingFunctionPanel {
 	private List<ManufactureProcessInfo> getAvailableProcesses() {
 		List<ManufactureProcessInfo> result = new ArrayList<ManufactureProcessInfo>();
 
-		if (workshop.getProcesses().size() < workshop.getSupportingProcesses()) {
+		if (workshop.getProcesses().size() < workshop.getMaxProcesses()) {
 
 			// Determine highest materials science skill level at settlement.
 			Settlement settlement = workshop.getBuilding().getSettlement();
@@ -421,7 +421,7 @@ public class BuildingPanelManufacture extends BuildingFunctionPanel {
 	private List<SalvageProcessInfo> getAvailableSalvageProcesses() {
 		List<SalvageProcessInfo> result = new Vector<SalvageProcessInfo>();
 
-		if (workshop.getProcesses().size() < workshop.getSupportingProcesses()) {
+		if (workshop.getProcesses().size() < workshop.getMaxProcesses()) {
 			try {
 				Iterator<SalvageProcessInfo> i = Collections
 						.unmodifiableList(ManufactureUtil.getSalvageProcessesForTechLevel(workshop.getTechLevel()))

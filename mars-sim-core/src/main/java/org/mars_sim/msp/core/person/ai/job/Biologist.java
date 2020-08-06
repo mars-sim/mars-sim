@@ -18,12 +18,9 @@ import org.mars_sim.msp.core.person.ai.mission.AreologyFieldStudy;
 import org.mars_sim.msp.core.person.ai.mission.BiologyFieldStudy;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
-import org.mars_sim.msp.core.person.ai.mission.EmergencySupply;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
-import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
-import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.core.person.ai.task.AssistScientificStudyResearcher;
 import org.mars_sim.msp.core.person.ai.task.CompileScientificStudyResults;
 import org.mars_sim.msp.core.person.ai.task.ConsolidateContainers;
@@ -120,7 +117,9 @@ implements Serializable {
 	@Override
 	public double getSettlementNeed(Settlement settlement) {
 		double result = 0D;
-
+		
+		int population = settlement.getNumCitizens();
+		
 		// Add (labspace * tech level / 2) for all labs with biology specialties.
 		List<Building> laboratoryBuildings = settlement.getBuildingManager().getBuildings(FunctionType.RESEARCH);
 		Iterator<Building> i = laboratoryBuildings.iterator();
@@ -128,7 +127,7 @@ implements Serializable {
 			Building building = i.next();
 			Research lab = building.getResearch();
 			if (lab.hasSpecialty(ScienceType.BIOLOGY)) {
-				result += (lab.getLaboratorySize() * lab.getTechnologyLevel() / 4D);
+				result += (lab.getLaboratorySize() * lab.getTechnologyLevel() / 16D);
 			}
 		}
 
@@ -141,7 +140,7 @@ implements Serializable {
 				if (rover.hasLab()) {
 					Lab lab = rover.getLab();
 					if (lab.hasSpecialty(ScienceType.BIOLOGY)) {
-						result += (lab.getLaboratorySize() * lab.getTechnologyLevel() / 8D);
+						result += (lab.getLaboratorySize() * lab.getTechnologyLevel() / 16D);
 					}
 				}
 			}
@@ -158,13 +157,17 @@ implements Serializable {
 					if (rover.hasLab()) {
 						Lab lab = rover.getLab();
 						if (lab.hasSpecialty(ScienceType.BIOLOGY)) {
-							result += (lab.getLaboratorySize() * lab.getTechnologyLevel() / 8D);
+							result += (lab.getLaboratorySize() * lab.getTechnologyLevel() / 16D);
 						}
 					}
 				}
 			}
 		}
 
+		result = (result + population / 12D) / 2.0;
+
+//		System.out.println(settlement + " Biologist need: " + result);
+				
 		return result;
 	}
 

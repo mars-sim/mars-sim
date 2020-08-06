@@ -16,9 +16,6 @@ import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
-import org.mars_sim.msp.core.person.ai.mission.EmergencySupply;
-import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
-import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.core.person.ai.task.ConsolidateContainers;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
@@ -117,17 +114,27 @@ public class Engineer extends Job implements Serializable {
 	 */
 	public double getSettlementNeed(Settlement settlement) {
 
-		double result = 0.1;
-
+		double result = .1;
+		
+		// Get population
+		int population = settlement.getNumCitizens();
+		
 		// Add (tech level * process number / 2) for all manufacture buildings.
 		List<Building> manufactureBuildings = settlement.getBuildingManager().getBuildings(FunctionType.MANUFACTURE);
+//		System.out.println(settlement + " # of manu : " + manufactureBuildings.size());
 		Iterator<Building> i = manufactureBuildings.iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
 			Manufacture workshop = building.getManufacture();
-			result += ((workshop.getTechLevel() + 1)/1.5) * (workshop.getSupportingProcesses() / 8D);
+			result += (workshop.getTechLevel() + 1) * workshop.getMaxProcesses() / 8.0;
+//			System.out.println("workshop.getTechLevel(): " + workshop.getTechLevel());
+//			System.out.println("workshop.getMaxProcesses(): " + workshop.getMaxProcesses());
 		}
-
+		
+		result = (result + population / 8D) / 2.0;
+		
+//		System.out.println(settlement + " Engineer need: " + result);
+		
 		return result;
 	}
 

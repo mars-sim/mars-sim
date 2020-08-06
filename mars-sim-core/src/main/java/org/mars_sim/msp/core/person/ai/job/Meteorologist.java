@@ -101,7 +101,9 @@ public class Meteorologist extends Job implements Serializable {
 	@Override
 	public double getSettlementNeed(Settlement settlement) {
 		double result = 0.1;
-
+		
+		int population = settlement.getNumCitizens();
+		
 		// Add (labspace * tech level / 2) for all labs with meteorology specialties.
 		List<Building> laboratoryBuildings = settlement.getBuildingManager().getBuildings(FunctionType.RESEARCH);
 		Iterator<Building> i = laboratoryBuildings.iterator();
@@ -109,10 +111,14 @@ public class Meteorologist extends Job implements Serializable {
 			Building building = i.next();
 			Research lab = building.getResearch();
 			if (lab.hasSpecialty(ScienceType.METEOROLOGY)) {
-				result += (lab.getLaboratorySize() * lab.getTechnologyLevel() / 1.5D);
+				result += (lab.getLaboratorySize() * lab.getTechnologyLevel() / 12.0);
 			}
 		}
 
+		result = (result + population / 12D) / 2.0;
+		
+//		System.out.println(settlement + " Meteorologist need: " + result);
+		
 		return result;
 	}
 

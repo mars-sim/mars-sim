@@ -110,7 +110,7 @@ public class Reporter extends Job implements Serializable {
 
 		double result = .1;
 
-		int pop = settlement.getNumCitizens();
+		int population = settlement.getNumCitizens();
 		
 		Iterator<Settlement> i = unitManager.getSettlements().iterator();
 		while (i.hasNext()) {
@@ -118,11 +118,15 @@ public class Reporter extends Job implements Serializable {
 			if (otherSettlement != settlement) {
 				double distance = settlement.getCoordinates().getDistance(otherSettlement.getCoordinates());
 				if (distance <= TRADING_RANGE)
-					result += SETTLEMENT_MULTIPLIER;
+					result += SETTLEMENT_MULTIPLIER / 6.0;
 			}
 		}
 
-		return result * pop / 24D;
+		result = (result + population / 24D) / 2.0;
+		
+//		System.out.println(settlement + " Reporter need: " + result);
+		
+		return result;
 	}
 
 	public double[] getRoleProspects() {

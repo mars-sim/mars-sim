@@ -214,15 +214,27 @@ public class Manufacture extends Function implements Serializable {
 	}
 
 	/**
-	 * Gets the maximum concurrent manufacturing processes supported by the
+	 * Gets the supporting manufacturing processes by the
 	 * building.
 	 * 
-	 * @return maximum concurrent processes.
+	 * @return supporting concurrent processes.
 	 */
 	public int getSupportingProcesses() {
 		return supportingProcesses;
 	}
 
+	/**
+	 * Gets the maximum concurrent manufacturing processes supported by the
+	 * building.
+	 * 
+	 * @return maximum concurrent processes.
+	 */
+	public int getMaxProcesses() {
+		return maxProcesses;
+	}
+
+	
+	
 	/**
 	 * Gets the total manufacturing and salvage processes currently in this
 	 * building.
@@ -252,7 +264,7 @@ public class Manufacture extends Function implements Serializable {
 		if (process == null) {
 			throw new IllegalArgumentException("process is null");
 		}
-		if (getTotalProcessNumber() >= supportingProcesses) {
+		if (getTotalProcessNumber() >= maxProcesses) {
 			throw new IllegalStateException("No space to add new manufacturing process.");
 		}
 		processes.add(process);
@@ -748,6 +760,11 @@ public class Manufacture extends Function implements Serializable {
 		if (solElapsed != solCache) {
 			solCache = solElapsed;
 			supportingProcesses = building.getInventory().getItemResourceNum(printerID); // b_inv
+			
+//			System.out.println(building.getSettlement() 
+//					+ "'s supportingProcesses: " + supportingProcesses
+//					+ "   maxProcesses: " + maxProcesses);
+			
 			if (supportingProcesses < maxProcesses) {
 				distributePrinters();
 			}
