@@ -57,7 +57,7 @@ public abstract class Airlock implements Serializable {
 			logger.getName().length());
 
 	/** Pressurize/depressurize time (millisols). */
-	public static final double CYCLE_TIME = 5D; // TODO: should we add pre-breathing time into CYCLE_TIME ?
+	public static final double CYCLE_TIME = 10D; // TODO: should we add pre-breathing time into CYCLE_TIME ?
 
 	public enum AirlockState {
 		PRESSURIZED, DEPRESSURIZED, PRESSURIZING, DEPRESSURIZING

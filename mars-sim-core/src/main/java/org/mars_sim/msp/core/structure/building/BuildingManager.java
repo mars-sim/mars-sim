@@ -743,7 +743,7 @@ public class BuildingManager implements Serializable {
 		} 
 		
 		else {
-			LogConsolidated.flog(Level.WARNING, 2000, sourceName,
+			LogConsolidated.log(logger, Level.WARNING, 2000, sourceName,
 					"[" + p.getLocationTag().getLocale() + "] No medical facility available for "
 							+ p.getName() + ". Go to a random building.");
 			addToRandomBuilding(p, settlementID);
@@ -764,10 +764,13 @@ public class BuildingManager implements Serializable {
 		if (unit instanceof Person) {
 			person = (Person) unit;
 
+//			Building building = getLeastCrowdedBuildings(
+//					manager.getBuildings(FunctionType.EVA, FunctionType.LIFE_SUPPORT)).stream()
+//							.findAny().orElse(null);
 			Building building = getLeastCrowdedBuildings(
-					manager.getBuildings(FunctionType.EVA, FunctionType.LIFE_SUPPORT)).stream()
+					manager.getBuildings(FunctionType.LIFE_SUPPORT)).stream()
 							.findAny().orElse(null);
-
+			
 			if (building != null) {
 				// Add the person to a random building loc
 				addPersonOrRobotToBuildingRandomLocation(person, building);
@@ -777,7 +780,7 @@ public class BuildingManager implements Serializable {
 				// if it's NOT under maven test
 				// throw new IllegalStateException("No inhabitable buildings available for " +
 				// person.getName());
-				LogConsolidated.flog(Level.WARNING, 2000, sourceName,
+				LogConsolidated.log(logger, Level.WARNING, 2000, sourceName,
 						"[" + person.getLocationTag().getLocale() + "] No inhabitable buildings available for "
 								+ person.getName());
 			}
@@ -907,7 +910,7 @@ public class BuildingManager implements Serializable {
 				settlement.getInventory().storeUnit(vehicle);
 			}
 			else { 
-				LogConsolidated.flog(Level.INFO, 1000, sourceName,
+				LogConsolidated.log(logger, Level.INFO, 1000, sourceName,
 					"[" + settlement.getName() + "] " + vehicle.getName() + " already garaged in " + garageBldg);
 			}
 			return true;
@@ -928,7 +931,7 @@ public class BuildingManager implements Serializable {
 				// Place this vehicle inside a building
 //				vehicle.enter(LocationCodeType.BUILDING);
 				settlement.getInventory().storeUnit(vehicle);
-				LogConsolidated.flog(Level.INFO, 1000, sourceName,
+				LogConsolidated.log(logger, Level.INFO, 1000, sourceName,
 						"[" + settlement.getName() + "] " +  vehicle.getName() + " has just been stowed inside " + getBuilding(vehicle, settlement));
 				vehicle.addStatus(StatusType.GARAGED);
 			}
@@ -963,7 +966,7 @@ public class BuildingManager implements Serializable {
 					}
 				} catch (Exception e) {
 //					logger.log(Level.SEVERE, "Calling getBuilding(vehicle): " + e.getMessage());
-					LogConsolidated.flog(Level.SEVERE, 2000, sourceName,
+					LogConsolidated.log(logger, Level.SEVERE, 2000, sourceName,
 							"[" + vehicle.getLocationTag().getLocale() + "] "
 									+ vehicle.getName() + " is not in a building.", e);
 				}
@@ -990,7 +993,7 @@ public class BuildingManager implements Serializable {
 					}
 				} catch (Exception e) {
 //					logger.log(Level.SEVERE, "Calling getBuilding(vehicle, settlement) : " + e.getMessage());
-					LogConsolidated.flog(Level.SEVERE, 2000, sourceName,
+					LogConsolidated.log(logger, Level.SEVERE, 2000, sourceName,
 							"[" + vehicle.getLocationTag().getLocale() + "] "
 									+ vehicle.getName() + " is not in a building.", e);
 				}
@@ -1156,22 +1159,26 @@ public class BuildingManager implements Serializable {
 		// Find least crowded population.
 		int leastCrowded = Integer.MAX_VALUE;
 		for (Building b0 : buildingList) {
-			LifeSupport lifeSupport = b0.getLifeSupport();
-			int crowded = lifeSupport.getOccupantNumber() - lifeSupport.getOccupantCapacity();
-			if (crowded < -1)
-				crowded = -1;
-			if (crowded < leastCrowded)
-				leastCrowded = crowded;
+			if (!b0.getBuildingType().equalsIgnoreCase("EVA Airlock")) {
+				LifeSupport lifeSupport = b0.getLifeSupport();
+				int crowded = lifeSupport.getOccupantNumber() - lifeSupport.getOccupantCapacity();
+				if (crowded < -1)
+					crowded = -1;
+				if (crowded < leastCrowded)
+					leastCrowded = crowded;
+			}
 		}
 
 		// Add least crowded buildings to list.
 		for (Building b : buildingList) {
-			LifeSupport lifeSupport = b.getLifeSupport();
-			int crowded = lifeSupport.getOccupantNumber() - lifeSupport.getOccupantCapacity();
-			if (crowded < -1)
-				crowded = -1;
-			if (crowded == leastCrowded)
-				result.add(b);
+			if (!b.getBuildingType().equalsIgnoreCase("EVA Airlock")) {
+				LifeSupport lifeSupport = b.getLifeSupport();
+				int crowded = lifeSupport.getOccupantNumber() - lifeSupport.getOccupantCapacity();
+				if (crowded < -1)
+					crowded = -1;
+				if (crowded == leastCrowded && !b.getBuildingType().equalsIgnoreCase("EVA Airlock"))
+					result.add(b);
+			}
 		}
 		// Add least crowded buildings to list.
 //        Iterator<Building> j = buildingList.iterator();
@@ -1240,24 +1247,25 @@ public class BuildingManager implements Serializable {
 		Map<Building, Double> result = new HashMap<Building, Double>(buildingList.size());
 		// Determine probabilities based on relationships in buildings.
 		for (Building building : buildingList) {
-			LifeSupport lifeSupport = building.getLifeSupport();
-			double buildingRelationships = 0D;
-			int numPeople = 0;
-			for (Person occupant : lifeSupport.getOccupants()) {
-				if (person != occupant) {
-					buildingRelationships += relationshipManager.getOpinionOfPerson(person, occupant);
-					numPeople++;
+			if (!building.getBuildingType().equalsIgnoreCase("EVA Airlock")) {
+				LifeSupport lifeSupport = building.getLifeSupport();
+				double buildingRelationships = 0D;
+				int numPeople = 0;
+				for (Person occupant : lifeSupport.getOccupants()) {
+					if (person != occupant) {
+						buildingRelationships += relationshipManager.getOpinionOfPerson(person, occupant);
+						numPeople++;
+					}
 				}
-			}
-			double prob = 50D;
-			if (numPeople > 0) {
-				prob = buildingRelationships / numPeople;
-				if (prob < 0D) {
-					prob = 0D;
+				double prob = 50D;
+				if (numPeople > 0) {
+					prob = buildingRelationships / numPeople;
+					if (prob < 0D) {
+						prob = 0D;
+					}
 				}
+				result.put(building, prob);
 			}
-
-			result.put(building, prob);
 		}
 		return result;
 	}
@@ -1272,16 +1280,18 @@ public class BuildingManager implements Serializable {
 
 		List<Building> result = new ArrayList<Building>();
 		for (Building building : buildingList) {
-			LifeSupport lifeSupport = building.getLifeSupport();
-			int numPeople = 0;
-			for (Person occupant : lifeSupport.getOccupants()) {
-				// Task task = occupant.getMind().getTaskManager().getTask();
-				if (occupant.getMind().getTaskManager().getTask() instanceof HaveConversation) {
-					numPeople++;
+			if (!building.getBuildingType().equalsIgnoreCase("EVA Airlock")) {
+				LifeSupport lifeSupport = building.getLifeSupport();
+				int numPeople = 0;
+				for (Person occupant : lifeSupport.getOccupants()) {
+					// Task task = occupant.getMind().getTaskManager().getTask();
+					if (occupant.getMind().getTaskManager().getTask() instanceof HaveConversation) {
+						numPeople++;
+					}
 				}
+				if (numPeople > 0)
+					result.add(building);
 			}
-			if (numPeople > 0)
-				result.add(building);
 		}
 		return result;
 	}
@@ -1390,7 +1400,7 @@ public class BuildingManager implements Serializable {
 			} catch (Exception e) {
 //				throw new IllegalStateException(
 //						"BuildingManager.addPersonOrRobotToBuildingSameLocation(): " + e.getMessage());
-				LogConsolidated.flog(Level.SEVERE, 2000, sourceName,
+				LogConsolidated.log(logger, Level.SEVERE, 2000, sourceName,
 						"[" + person.getLocationTag().getLocale() + "] "
 								+ person.getName() + " could not be added to " + building.getNickName(), e);
 			}
@@ -1398,7 +1408,7 @@ public class BuildingManager implements Serializable {
 		
 		else 
 //			throw new IllegalStateException("Building is null");
-			LogConsolidated.flog(Level.SEVERE, 2000, sourceName,
+			LogConsolidated.log(logger, Level.SEVERE, 2000, sourceName,
 				" the building is null.");
 	}
 		
@@ -1437,7 +1447,7 @@ public class BuildingManager implements Serializable {
 			} catch (Exception e) {
 //				throw new IllegalStateException(
 //						"BuildingManager.addPersonOrRobotToBuildingSameLocation(): " + e.getMessage());
-				LogConsolidated.flog(Level.SEVERE, 2000, sourceName,
+				LogConsolidated.log(logger, Level.SEVERE, 2000, sourceName,
 						"[" + unit.getLocationTag().getLocale() + "] "
 								+ unit.getName() + " could not be added to " + building.getNickName(), e);
 			}
@@ -1445,7 +1455,7 @@ public class BuildingManager implements Serializable {
 		
 		else 
 //			throw new IllegalStateException("Building is null");
-			LogConsolidated.flog(Level.SEVERE, 2000, sourceName,
+			LogConsolidated.log(logger, Level.SEVERE, 2000, sourceName,
 				" the building is null.");
 	}
 
@@ -1492,13 +1502,13 @@ public class BuildingManager implements Serializable {
 
 			} catch (Exception e) {
 //				throw new IllegalStateException("BuildingManager.addPersonOrRobotToBuilding(): " + e.getMessage());
-				LogConsolidated.flog(Level.SEVERE, 2000, sourceName,
+				LogConsolidated.log(logger, Level.SEVERE, 2000, sourceName,
 						"[" + unit.getLocationTag().getLocale() + "] "
 								+ unit.getName() + " could not be added to " + building.getNickName(), e);
 			}
 		} else {
 //			throw new IllegalStateException("Building is null");
-			LogConsolidated.flog(Level.SEVERE, 2000, sourceName,
+			LogConsolidated.log(logger, Level.SEVERE, 2000, sourceName,
 				" the building is null.");
 		}
 	}
@@ -1548,13 +1558,13 @@ public class BuildingManager implements Serializable {
 			} catch (Exception e) {
 //				throw new IllegalStateException(
 //						"BuildingManager.addPersonOrRobotToBuildingRandomLocation(): " + e.getMessage());
-				LogConsolidated.flog(Level.SEVERE, 2000, sourceName,
+				LogConsolidated.log(logger, Level.SEVERE, 2000, sourceName,
 						"[" + unit.getLocationTag().getLocale() + "] "
 								+ unit.getName() + " could not be added to " + building.getNickName(), e);
 			}
 		} else {
 //			throw new IllegalStateException("Building is null");
-			LogConsolidated.flog(Level.SEVERE, 2000, sourceName,
+			LogConsolidated.log(logger, Level.SEVERE, 2000, sourceName,
 					" the building is null.");
 		}
 	}
@@ -1579,13 +1589,13 @@ public class BuildingManager implements Serializable {
 
 
 			} catch (Exception e) {
-				LogConsolidated.flog(Level.SEVERE, 2000, sourceName,
+				LogConsolidated.log(logger, Level.SEVERE, 2000, sourceName,
 						"[" + person.getLocationTag().getLocale() + "] "
 								+ person.getName() + " could not be removed from " + building.getNickName(), e);
 			}
 		} else {
 //			throw new IllegalStateException("Building is null");
-			LogConsolidated.flog(Level.SEVERE, 2000, sourceName,
+			LogConsolidated.log(logger, Level.SEVERE, 2000, sourceName,
 					" the building is null.");
 		}
 	}
@@ -1609,13 +1619,13 @@ public class BuildingManager implements Serializable {
 				}
 
 			} catch (Exception e) {
-				LogConsolidated.flog(Level.SEVERE, 2000, sourceName,
+				LogConsolidated.log(logger, Level.SEVERE, 2000, sourceName,
 						"[" + robot.getLocationTag().getLocale() + "] "
 								+ robot.getName() + " could not be removed from " + building.getNickName(), e);
 			}
 		} else {
 //			throw new IllegalStateException("Building is null");
-			LogConsolidated.flog(Level.SEVERE, 2000, sourceName,
+			LogConsolidated.log(logger, Level.SEVERE, 2000, sourceName,
 					" the building is null.");
 		}
 	}

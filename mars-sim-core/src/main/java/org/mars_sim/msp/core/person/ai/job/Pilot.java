@@ -141,11 +141,11 @@ public class Pilot extends Job implements Serializable {
 		while (j.hasNext()) {
 			Building building = j.next();
 			GroundVehicleMaintenance g = building.getGroundVehicleMaintenance();
-			result += (double) g.getVehicleCapacity() / 3.0;
+			result += (double) g.getVehicleCapacity() / 2.5;
 		}
 		
 		// Get number of associated vehicles at a settlement.
-		result = (result + settlement.getVehicleNum() / 3.0 + population / 6.0) / 3.0;
+		result = (result + settlement.getVehicleNum() / 2.5 + population / 4.0) / 3.0;
 		
 //		System.out.println(settlement + " Pilot need: " + result);
 		

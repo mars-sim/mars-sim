@@ -246,7 +246,7 @@ public class Mind implements Serializable {
 							takeAction(remainingTime);
 						} catch (Exception e) {
 	//						e.printStackTrace(System.err);
-							LogConsolidated.flog(Level.WARNING, 20_000, sourceName,
+							LogConsolidated.log(logger, Level.WARNING, 20_000, sourceName,
 							person.getName() + " had called takeAction() " + counts + "x doing " 
 							+ taskManager.getTaskName() + "   remainingTime : " +  Math.round(remainingTime *1000.0)/1000.0 
 							+ "   time : " + Math.round(time *1000.0)/1000.0); // 1x = 0.001126440159375963 -> 8192 = 8.950963852039651
@@ -262,7 +262,7 @@ public class Mind implements Serializable {
 					}
 				}
 				else {
-					LogConsolidated.flog(Level.WARNING, 20_000, sourceName,
+					LogConsolidated.log(logger, Level.WARNING, 20_000, sourceName,
 							person + " had been doing " + counts + "x " 
 							+ taskManager.getTaskName() + "   remainingTime : " + Math.round(remainingTime *1000.0)/1000.0 
 							+ "   time : " + Math.round(time *1000.0)/1000.0); // 1x = 0.001126440159375963 -> 8192 = 8.950963852039651
@@ -380,7 +380,7 @@ public class Mind implements Serializable {
 			// A person has no active task 
 			getNewTask();
 		} catch (Exception e) {
-			LogConsolidated.flog(Level.SEVERE, 5_000, sourceName,
+			LogConsolidated.log(logger, Level.SEVERE, 5_000, sourceName,
 					person.getName() + " could not get new action", e);
 			e.printStackTrace(System.err);
 		}
@@ -501,7 +501,7 @@ public class Mind implements Serializable {
 						person.getName(), 
 						newJobStr);
 				
-				LogConsolidated.flog(Level.CONFIG, 0, sourceName, s);
+				LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, s);
 
 				person.fireUnitUpdate(UnitEventType.JOB_EVENT, newJob);
 
@@ -661,7 +661,7 @@ public class Mind implements Serializable {
 		}
 		
 		// If reached this point, no task or mission has been found.
-		LogConsolidated.flog(Level.SEVERE, 20_000, sourceName,
+		LogConsolidated.log(logger, Level.SEVERE, 20_000, sourceName,
 					person.getName() + " could not determine a new task (taskWeights: " 
 					+ taskWeights + ").");	
 	}
@@ -721,7 +721,7 @@ public class Mind implements Serializable {
 		}
 		
 		// If reached this point, no mission has been found.
-		LogConsolidated.flog(Level.SEVERE, 20_000, sourceName,
+		LogConsolidated.log(logger, Level.SEVERE, 20_000, sourceName,
 					person.getName() + " could not determine a new mission (missionWeights: " + missionWeights + ").");	
 	}
 

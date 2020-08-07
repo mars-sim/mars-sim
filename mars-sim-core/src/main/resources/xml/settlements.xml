@@ -3315,11 +3315,18 @@
 			</building>
 							
 			<!-- EVA Airlock is attached to the lander hab -->
-			<building id="47" type="EVA Airlock" x-location="-49.0" y-location="-20.0" facing="0.0">
+			<building id="47" type="EVA Airlock" x-location="-49.0" y-location="26.0" facing="0.0">
 				<connection-list>
-					<connection id="46" x-location="-2.5" y-location="0.0" />
+					<connection id="4" x-location="-2.5" y-location="0.0" />
 				</connection-list>
 			</building>
+			
+			<!-- EVA Airlock is attached to the lander hab -->
+			<building id="48" type="EVA Airlock" x-location="7.0" y-location="0.0" facing="0.0">
+				<connection-list>
+					<connection id="0" x-location="-2.5" y-location="0.0" />
+				</connection-list>
+			</building>	
 			
 			<vehicle type="Explorer Rover" number="3" />
 			<vehicle type="Transport Rover" number="2" />

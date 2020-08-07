@@ -1284,7 +1284,7 @@ public abstract class Vehicle extends Unit
 					// Checks to see if the person has an EVA suit	
 					if (!ExitAirlock.goodEVASuitAvailable(rover.getInventory(), p)) {
 
-						LogConsolidated.flog(Level.WARNING, 0, sourceName, "[" + p.getLocationTag().getLocale() + "] "
+						LogConsolidated.log(logger, Level.WARNING, 0, sourceName, "[" + p.getLocationTag().getLocale() + "] "
 										+ p + " could not find a working EVA suit and needed to wait.");
 					
 						// If the person does not have an EVA suit	
@@ -1301,7 +1301,7 @@ public abstract class Vehicle extends Unit
 //								disembarkSettlement.getInventory().retrieveUnit(suit);
 //								rover.getInventory().storeUnit(suit);
 								
-								LogConsolidated.flog(Level.WARNING, 0, sourceName, "[" + p.getLocationTag().getLocale() + "] "
+								LogConsolidated.log(logger, Level.WARNING, 0, sourceName, "[" + p.getLocationTag().getLocale() + "] "
 										+ p + " received a spare EVA suit from the settlement.");
 							}
 						}
@@ -1311,14 +1311,14 @@ public abstract class Vehicle extends Unit
 				if (Walk.canWalkAllSteps(p, adjustedLoc.getX(), adjustedLoc.getY(), 0, destinationBuilding)) {
 			
 					if (hasStrength) {
-						LogConsolidated.flog(Level.INFO, 20_000, sourceName, 
+						LogConsolidated.log(logger, Level.INFO, 20_000, sourceName, 
 								"[" + disembarkSettlement.getName() + "] "
 								+ p.getName() + " still had strength left and would help unload cargo.");
 						// help unload the cargo
 						unloadCargo(p, rover);
 					}	
 					else {
-						LogConsolidated.flog(Level.INFO, 20_000, sourceName, 
+						LogConsolidated.log(logger, Level.INFO, 20_000, sourceName, 
 								"[" + disembarkSettlement.getName() + "] "
 								+ p.getName() + " had no more strength and walked back to the settlement.");
 						// walk back home
@@ -1333,7 +1333,7 @@ public abstract class Vehicle extends Unit
 					// TODO: consider inflatable medical tent for emergency transport of incapacitated personnel
 					
 					// This person needs to be rescued.
-					LogConsolidated.flog(Level.INFO, 0, sourceName, 
+					LogConsolidated.log(logger, Level.INFO, 0, sourceName, 
 							"[" + disembarkSettlement.getName() + "] "
 							+ Msg.getString("RoverMission.log.emergencyEnterSettlement", p.getName(), 
 									disembarkSettlement.getNickName())); //$NON-NLS-1$
@@ -1342,7 +1342,7 @@ public abstract class Vehicle extends Unit
 					// TODO: Gets a lead person to perform it and give him a rescue badge
 					rescueOperation(rover, p, disembarkSettlement);
 					
-					LogConsolidated.flog(Level.INFO, 0, sourceName, 
+					LogConsolidated.log(logger, Level.INFO, 0, sourceName, 
 							"[" + disembarkSettlement.getName() + "] "
 							+ p.getName() 
 							+ " was transported to ("
@@ -1472,14 +1472,14 @@ public abstract class Vehicle extends Unit
 			// Set reserved for mission to false if the vehicle is not associated with a
 			// mission.
 			if (missionManager.getMissionForVehicle(this) == null) {
-				LogConsolidated.flog(Level.FINE, 500, sourceName,
+				LogConsolidated.log(logger, Level.FINE, 500, sourceName,
 						"[" + getLocationTag().getLocale() + "] " + getName() 
 						+ " was found reserved for an non-existing mission. Untagging it.");
 				setReservedForMission(false);
 			}
 		} else {
 			if (missionManager.getMissionForVehicle(this) != null) {
-				LogConsolidated.flog(Level.FINE, 500, sourceName,
+				LogConsolidated.log(logger, Level.FINE, 500, sourceName,
 						"[" + getLocationTag().getLocale() + "] " + getName()
 						+ " is on a mission but is not registered as mission reserved. Correcting it.");
 				setReservedForMission(true);

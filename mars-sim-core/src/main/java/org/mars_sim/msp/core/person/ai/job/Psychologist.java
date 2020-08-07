@@ -122,7 +122,7 @@ public class Psychologist extends Job implements Serializable {
 			Building building = i.next();
 			Research lab = building.getResearch();
 			if (lab.hasSpecialty(ScienceType.PSYCHOLOGY)) {
-				result += ((double) (lab.getResearcherNum() * lab.getTechnologyLevel()) / 4D);
+				result += ((double) (lab.getResearcherNum() * lab.getTechnologyLevel()) / 6D);
 			}
 		}
 
@@ -132,7 +132,7 @@ public class Psychologist extends Job implements Serializable {
 		while (j.hasNext()) {
 			Building building = j.next();
 			MedicalCare infirmary = building.getMedical();
-			result += (double) infirmary.getTechLevel() / 6D;
+			result += (double) infirmary.getTechLevel() / 7D;
 		}
 
 		result = (result + population / 12D) / 2.0;

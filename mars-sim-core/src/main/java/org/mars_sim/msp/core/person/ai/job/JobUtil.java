@@ -259,7 +259,7 @@ public final class JobUtil implements Serializable {
 					Job job = i.next();
 					if (!job.equals(JobUtil.getJob(POLITICIAN))) {
 						double rand = RandomUtil.getRandomDouble(0.8);
-						double t = pop/JobType.numJobTypes + rand;
+						double t = 1.0 * pop / JobType.numJobTypes + rand;
 						int maxPos = (int)(Math.ceil(t));
 //						logger.config("job : " + job + "  ID: " + job.getJobID());
 						int numPositions = numJobs(job.getName(GenderType.MALE), settlement);
