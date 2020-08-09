@@ -32,6 +32,7 @@ import java.util.List;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
@@ -61,12 +62,13 @@ import org.mars_sim.msp.core.UnitManagerListener;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.ToolButton;
 
 import com.alee.extended.WebComponent;
+import com.alee.laf.button.WebButton;
 import com.alee.laf.combobox.WebComboBox;
+import com.alee.managers.icon.IconManager;
+import com.alee.managers.icon.LazyIcon;
 import com.alee.managers.style.StyleId;
 
 
@@ -84,7 +86,7 @@ public class SettlementTransparentPanel extends WebComponent {
 
 	private JSlider zoomSlider;
 	private JPanel controlCenterPane, namePane, eastPane, labelPane, buttonPane, controlPane, settlementPanel;//, infoP, renameP ;
-	private ToolButton renameBtn, infoButton;
+	private WebButton renameBtn, infoButton;
 	//private JLabel zoomLabel;
 	private JPopupMenu labelsMenu;
 	/** Lists all settlements. */
@@ -150,8 +152,9 @@ public class SettlementTransparentPanel extends WebComponent {
 		settlementPanel.add(settlementListBox);//, BorderLayout.CENTER);
 	    
       	namePane.add(infoButton);
-       	namePane.add(renameBtn);
        	namePane.add(settlementPanel);
+       	namePane.add(renameBtn);
+
        	
 	    mapPanel.add(namePane, BorderLayout.NORTH);
 
@@ -199,7 +202,7 @@ public class SettlementTransparentPanel extends WebComponent {
      */
     private int getNameLength() {
     	Collection<Settlement> list = unitManager.getSettlements();
-    	int max = 0;
+    	int max = 12;
     	for (Settlement s: list) {
     		int size = s.getNickName().length();
     		if (max < size)
@@ -219,7 +222,7 @@ public class SettlementTransparentPanel extends WebComponent {
 //		settlementListBox.setSize(200, 30);
 		//settlementListBox.setBorder(null);
 		//setBackground(new Color(139,69,19));
-		settlementListBox.setBorder(new LineBorder(Color.ORANGE.darker().darker(), 2, true));
+//		settlementListBox.setBorder(new LineBorder(Color.ORANGE.darker().darker(), 2, true));
 		//settlementListBox.setBorder(BorderFactory.createLineBorder(Color.ORANGE));
 		//((JLabel)settlementListBox.getRenderer()).setBackground(Color.darkGray);;//SwingConstants.CENTER);
 		settlementListBox.setBackground(new Color(51,25,0,128)); // dull gold color
@@ -370,10 +373,10 @@ public class SettlementTransparentPanel extends WebComponent {
             }
         });
 
-        zoomSlider = new JSlider(JSlider.VERTICAL, -3, 7, 0);
+        zoomSlider = new JSlider(JSlider.VERTICAL, -5, 7, 0);
         zoomSlider.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 100));
-        zoomSlider.setPreferredSize(new Dimension(40, 250));
-        zoomSlider.setSize(new Dimension(40, 250));
+        zoomSlider.setPreferredSize(new Dimension(40, 300));
+        zoomSlider.setSize(new Dimension(40, 300));
 //        zoomSlider.putClientProperty("Nimbus.Overrides",sliderDefaults);
 //        zoomSlider.putClientProperty("Nimbus.Overrides.InheritDefaults",false);
 
@@ -450,8 +453,11 @@ public class SettlementTransparentPanel extends WebComponent {
 //			}
 //		});
 		
-		infoButton = new ToolButton(Msg.getString("SettlementTransparentPanel.button.info"),
-				Msg.getString("icon.info")); //$NON-NLS-1$ //$NON-NLS-2$
+    	ImageIcon icon = IconManager.getIcon ("info");//new LazyIcon("info").getIcon();
+    	infoButton = new WebButton(icon);
+    	
+//		infoButton = new ToolButton(Msg.getString("SettlementTransparentPanel.button.info"),
+//				Msg.getString("icon.info")); //$NON-NLS-1$ //$NON-NLS-2$
 		infoButton.setOpaque(false);
 		infoButton.setSize(12, 12);
 		infoButton.setMaximumSize(new Dimension(12, 12));
@@ -491,9 +497,13 @@ public class SettlementTransparentPanel extends WebComponent {
 //				openRenameDialog();
 //			}
 //		});
+    	
+    	ImageIcon icon = new LazyIcon("edit").getIcon();
+    	renameBtn = new WebButton(icon);
+    	
+//		renameBtn = new ToolButton(Msg.getString("SettlementTransparentPanel.button.rename"),
+//				Msg.getString("icon.rename")); //$NON-NLS-1$ //$NON-NLS-2$
 		
-		renameBtn = new ToolButton(Msg.getString("SettlementTransparentPanel.button.rename"),
-				Msg.getString("icon.rename")); //$NON-NLS-1$ //$NON-NLS-2$
 		renameBtn.setSize(12, 12);
 		renameBtn.setMaximumSize(new Dimension(12, 12));
 		renameBtn.setOpaque(false);
@@ -533,77 +543,71 @@ public class SettlementTransparentPanel extends WebComponent {
         buttonPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 5));
         buttonPane.setBackground(new Color(0,0,0,128));
         buttonPane.setOpaque(false);
-		
-//        BufferedImage bi1 = getModifiedImage("Clockwise");
-//		JButton rotateClockwiseButton = new JButton(new ImageIcon(bi1)); 
-		JButton rotateClockwiseButton = new JButton(ImageLoader.getIcon(Msg.getString("img.clockwise")));//Msg.getString("SettlementTransparentPanel.button.recenter")); //$NON-NLS-1$
-
-//		rotateClockwiseButton.setPreferredSize(new Dimension(20, 20));
+		    
+		// Create rotate clockwise button.
+        final ImageIcon rightIcon = new LazyIcon("right").getIcon();
+        WebButton rotateClockwiseButton = new WebButton(rightIcon);
 		rotateClockwiseButton.setOpaque(false);
 		rotateClockwiseButton.setBorderPainted(false);
 		rotateClockwiseButton.setContentAreaFilled(false);
 		rotateClockwiseButton.setBackground(new Color(0,0,0,128));
-//		rotateClockwiseButton.setForeground(Color.GREEN);
-//		rotateClockwiseButton.setBorder(new LineBorder(Color.GREEN, 1, true));
 
 		rotateClockwiseButton.setToolTipText(Msg.getString("SettlementTransparentPanel.tooltip.clockwise")); //$NON-NLS-1$
 		rotateClockwiseButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
-				mapPanel.setRotation(mapPanel.getRotation() + ROTATION_CHANGE);
+				mapPanel.setRotation(mapPanel.getRotation() - ROTATION_CHANGE);
 			}
 		});
 
+		
 		buttonPane.add(rotateClockwiseButton);
-
-//        BufferedImage bi2 = getModifiedImage("CenterMap");
-//		JButton recenterButton = new JButton(new ImageIcon(bi2)); 
-		JButton recenterButton = new JButton(ImageLoader.getIcon(Msg.getString("img.centerMap")));//Msg.getString("SettlementTransparentPanel.button.recenter")); //$NON-NLS-1$
-//		recenterButton.setPreferredSize(new Dimension(20, 20));
+		
+		// Create center button.
+        final ImageIcon centerIcon = new LazyIcon("center").getIcon();
+		WebButton recenterButton = new WebButton(centerIcon);
 		recenterButton.setOpaque(false);
 		recenterButton.setBorderPainted(false);
 		recenterButton.setContentAreaFilled(false);
 		recenterButton.setBackground(new Color(0,0,0,128));
 		
-//		recenterButton.setForeground(Color.GREEN);
-//		recenterButton.setBorder(new LineBorder(Color.GREEN, 1, true));
-
 		recenterButton.setToolTipText(Msg.getString("SettlementTransparentPanel.tooltip.recenter")); //$NON-NLS-1$
 		recenterButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				mapPanel.reCenter();
-
-//				if (mainScene != null) {
-//					mainScene.getZoom().setValue(0);
-//				}
-//				else
-					zoomSlider.setValue(0);
+				zoomSlider.setValue(0);
 			}
 		});
 
 		buttonPane.add(recenterButton);
 
 		// Create rotate counter-clockwise button.
-//        BufferedImage bi3 = getModifiedImage("CounterClockwise");
-//		JButton rotateCounterClockwiseButton = new JButton(new ImageIcon(bi3)); 
-		JButton rotateCounterClockwiseButton = new JButton(ImageLoader.getIcon(Msg.getString("img.counterClockwise"))); //$NON-NLS-1$
-//		rotateCounterClockwiseButton.setPreferredSize(new Dimension(20, 20));
-		rotateCounterClockwiseButton.setOpaque(false);
-		rotateCounterClockwiseButton.setBorderPainted(false);
-		rotateCounterClockwiseButton.setContentAreaFilled(false);
-		rotateCounterClockwiseButton.setBackground(new Color(0,0,0,128));
+        final ImageIcon leftIcon = new LazyIcon("left").getIcon();
+        WebButton ccButton = new WebButton(leftIcon);
+		ccButton.setOpaque(false);
+		ccButton.setBorderPainted(false);
+		ccButton.setContentAreaFilled(false);
+		ccButton.setBackground(new Color(0,0,0,128));
 		
-//		rotateCounterClockwiseButton.setForeground(Color.GREEN);
-//		rotateCounterClockwiseButton.setBorder(new LineBorder(Color.GREEN, 1, true));
-		
-		rotateCounterClockwiseButton.setToolTipText(Msg.getString("SettlementTransparentPanel.tooltip.counterClockwise")); //$NON-NLS-1$
-		rotateCounterClockwiseButton.addActionListener(new ActionListener() {
+		ccButton.setToolTipText(Msg.getString("SettlementTransparentPanel.tooltip.counterClockwise")); //$NON-NLS-1$
+		ccButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
-				mapPanel.setRotation(mapPanel.getRotation() - ROTATION_CHANGE);
+				mapPanel.setRotation(mapPanel.getRotation() + ROTATION_CHANGE);
 			}
 		});
 
-		buttonPane.add(rotateCounterClockwiseButton);
+		buttonPane.add(ccButton);
 
+		// Need to clean up these icons
+//				img.clockwise          = /icons/map/Clockwise.png
+//				img.counterClockwise   = /icons/map/CounterClockwise.png
+//				img.centerMap          = /icons/map/CenterMap.png
+//				img.cw					= /icons/map/CW.png
+//				img.ccw					= /icons/map/CCW.png
+//				img.recenter			= /icons/map/recenter.png
+//				img.cw_yellow			= /icons/map/CW_yellow.png
+//				img.ccw_yellow			= /icons/map/CCW_yellow.png
+//				img.recenter_yellow		= /icons/map/recenter_yellow.png
+				
 		buttonPane.add(emptyLabel);
     }
 

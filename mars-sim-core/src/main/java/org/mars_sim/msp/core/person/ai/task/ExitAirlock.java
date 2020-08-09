@@ -172,7 +172,7 @@ public class ExitAirlock extends Task implements Serializable {
 					hasSuit = true;
 					// logger.info(person + " grabbed an EVA suit.");
 				} catch (Exception e) {
-					LogConsolidated.log(logger, Level.WARNING, 0, sourceName, "[" + person.getLocationTag().getLocale()
+					LogConsolidated.log(logger, Level.WARNING, 4000, sourceName, "[" + person.getLocationTag().getLocale()
 									+ "] " + person.getName() + " could not take " + suit.toString(), e);
 
 				}
@@ -299,7 +299,7 @@ public class ExitAirlock extends Task implements Serializable {
                 boolean activationSuccessful = airlock.addCycleTime(activationTime);
                 if (!activationSuccessful) {
 //                    logger.severe("Problem with airlock activation: " + person.getName());
-					LogConsolidated.log(logger, Level.WARNING, 0, sourceName, 
+					LogConsolidated.log(logger, Level.WARNING, 4000, sourceName, 
 							"[" + person.getLocationTag().getLocale() + "] "
 							+ person.getName() + " " + loc 
 							+ " had problems with airlock activation in the 'waiting to enter' phase.");
@@ -400,7 +400,7 @@ public class ExitAirlock extends Task implements Serializable {
                     boolean activationSuccessful = airlock.addCycleTime(activationTime);
                     if (!activationSuccessful) {
 //                        logger.severe("Problem with airlock activation: " + person.getName());
-    					LogConsolidated.log(logger, Level.WARNING, 0, sourceName, 
+    					LogConsolidated.log(logger, Level.WARNING, 4000, sourceName, 
     							"[" + person.getLocationTag().getLocale() + "] "
     							+ person.getName() + " " + loc 
     							+ " had problems with airlock activation in the 'entering airlock' phase.");
@@ -541,7 +541,7 @@ public class ExitAirlock extends Task implements Serializable {
 				loc = loc.equalsIgnoreCase("Outside") ? loc.toLowerCase() : "in " + loc;
 				
 				if (!activationSuccessful) {// || !deactivated) {
-					LogConsolidated.log(logger, Level.WARNING, 0, sourceName, 
+					LogConsolidated.log(logger, Level.WARNING, 4000, sourceName, 
 							"[" + person.getLocationTag().getLocale() + "] "
 							+ person.getName() + " " + loc 
 							+ " had problems with airlock activation in the 'waiting inside airlock' phase.");

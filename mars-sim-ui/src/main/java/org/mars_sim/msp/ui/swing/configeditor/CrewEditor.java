@@ -48,6 +48,8 @@ import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MainWindow;
 
+import com.alee.managers.icon.LazyIcon;
+
 /**
  * CrewEditor allows users to design the crew manifest for an initial settlement
  */
@@ -128,7 +130,7 @@ public class CrewEditor implements ActionListener {
 
 		f = new JFrame(TITLE);
 		
-		ImageIcon icon = new ImageIcon(CrewEditor.class.getResource(MainWindow.ICON_IMAGE));
+		ImageIcon icon = new LazyIcon("lander").getIcon(); //new ImageIcon(CrewEditor.class.getResource(MainWindow.LANDER_PNG));
 		f.setIconImage(MainWindow.iconToImage(icon));
 		
 		// f.setSize(600, 300);

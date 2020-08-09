@@ -140,7 +140,7 @@ public class EnterAirlock extends Task implements Serializable {
 		
 		// If person is already inside, don't need the ingress. End the task.
 		if (person.isInside()) {
-			LogConsolidated.log(logger, Level.WARNING, 0, sourceName, 
+			LogConsolidated.log(logger, Level.WARNING, 4000, sourceName, 
 					"[" + person.getLocationTag().getLocale() + "] " + person.getName() + 
 					" was in the 'waiting to enter' phase for EVA ingress"
 					+ " but was reportedly inside. End the Task.");
@@ -219,7 +219,7 @@ public class EnterAirlock extends Task implements Serializable {
                 boolean activationSuccessful = airlock.addCycleTime(activationTime);
                 if (!activationSuccessful) {
 //                    logger.severe("Problem with airlock activation: " + person.getName());
-					LogConsolidated.log(logger, Level.WARNING, 0, sourceName, 
+					LogConsolidated.log(logger, Level.WARNING, 4000, sourceName, 
 							"[" + person.getLocationTag().getLocale() + "] "
 							+ person.getName() + " " + loc 
 							+ " had problems with airlock activation in the 'waiting to enter' phase.");
@@ -263,7 +263,7 @@ public class EnterAirlock extends Task implements Serializable {
 		
 		// If person is already inside, don't need the ingress. End the task.
 		if (person.isInside()) {
-			LogConsolidated.log(logger, Level.WARNING, 0, sourceName, 
+			LogConsolidated.log(logger, Level.WARNING, 4000, sourceName, 
 					"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
 					+ " already went inside " + loc + ". Go to 'waiting inside airlock' phase.");
 			
@@ -299,7 +299,7 @@ public class EnterAirlock extends Task implements Serializable {
 				loc = loc == null ? "[N/A]" : loc;
 				loc = loc.equalsIgnoreCase("Outside") ? loc.toLowerCase() : "in " + loc;
 				
-				LogConsolidated.log(logger, Level.INFO, 0, sourceName, 
+				LogConsolidated.log(logger, Level.INFO, 4000, sourceName, 
 						"[" + person.getLocationTag().getLocale() + "] "
 						+ person.getName() 
 						+ " " + loc + " just entered the airlock chamber.");
@@ -334,7 +334,7 @@ public class EnterAirlock extends Task implements Serializable {
 	                boolean activationSuccessful = airlock.addCycleTime(activationTime);
 	                if (!activationSuccessful) {
 //	                    logger.severe("Problem with airlock activation: " + person.getName());
-	                    LogConsolidated.log(logger, Level.WARNING, 0, sourceName, 
+	                    LogConsolidated.log(logger, Level.WARNING, 4000, sourceName, 
 								"[" + person.getLocationTag().getLocale() + "] "
 								+ person.getName() + " " + loc 
 								+ " had problems with airlock activation in the 'entering airlock' phase.");	                    
@@ -393,10 +393,16 @@ public class EnterAirlock extends Task implements Serializable {
                 boolean activationSuccessful = airlock.addCycleTime(activationTime);
                 if (!activationSuccessful) {
 //                    logger.severe("Problem with airlock activation: " + person.getName());
-					LogConsolidated.log(logger, Level.WARNING, 0, sourceName, 
+					LogConsolidated.log(logger, Level.WARNING, 4000, sourceName, 
 							"[" + person.getLocationTag().getLocale() + "] "
 							+ person.getName() + " " + loc 
 							+ " had problems with airlock activation in the 'waiting inside airlock' phase.");
+//					// Note: Calling endTask is needed or else this person would get stranded in the airlock 
+//					// since this person fails to change his location state and is still inside
+					endTask();
+					// Note: go back to entering airlock phase won't work
+//					setPhase(ENTERING_AIRLOCK);
+//					return remainingTime;					
                 }
             }
             else {
@@ -406,7 +412,7 @@ public class EnterAirlock extends Task implements Serializable {
         }
         else {
 //            logger.finer(person + " is already internal during waiting inside airlock phase.");
-			LogConsolidated.log(logger, Level.WARNING, 0, sourceName, 
+			LogConsolidated.log(logger, Level.WARNING, 4000, sourceName, 
 					"[" + person.getLocationTag().getLocale() + "] "
 					+ person.getName() + " " + loc 
 					+ " was already inside during 'waiting inside airlock' phase.");
@@ -417,121 +423,6 @@ public class EnterAirlock extends Task implements Serializable {
             setPhase(EXITING_AIRLOCK);
         }
 	      
-//		if (airlock.inAirlock(person)) {
-//
-//			String loc = person.getLocationTag().getImmediateLocation();
-//			loc = loc == null ? "[N/A]" : loc;
-//			loc = loc.equalsIgnoreCase("Outside") ? loc.toLowerCase() : "in " + loc;
-//			
-//			// Waiting inside
-//			LogConsolidated.log(logger, Level.INFO, 4000, sourceName,
-//					"[" + person.getLocationTag().getLocale() + "] "
-//	  						+ person + " was in the 'waiting inside airlock' phase.");
-//				
-//			// If airlock has not been activated, activate it.
-//			if (!airlock.isActivated()) {
-//				
-//				if (airlock.activateAirlock(person)) {
-//											
-//					LogConsolidated.log(logger, Level.INFO, 4000, sourceName, 
-//							"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
-//							+ " " + loc + " pressed a button asking for activating the airlock in 'waiting inside airlock' phase.");
-//					
-//				}
-//				else {
-//					LogConsolidated.log(logger, Level.INFO, 4000, sourceName, 
-//							"[" + person.getLocationTag().getLocale() + "] " + person.getName()
-//							+ " failed to activate the airlock.");
-//					endTask();
-//				}
-//				
-//				// Check if person is the airlock operator.
-//				if (person.equals(airlock.getOperator())) {
-//					
-//					double activationTime = remainingTime;
-//					if (airlock.getRemainingCycleTime() < remainingTime) {
-//						remainingTime -= airlock.getRemainingCycleTime();
-//					} 
-//					
-//					else {
-//						remainingTime = 0D;
-//					}
-//					
-//					// If person is airlock operator, add cycle time to airlock.
-//					boolean activationSuccessful = airlock.addCycleTime(activationTime);
-//					
-//					// Note: calling deactivateAirlock() would cause the person to have 
-//					// a location state change.
-//					boolean deactivated = airlock.deactivateAirlock();
-//
-//					if (!activationSuccessful || !deactivated) {
-//						
-//						LogConsolidated.log(logger, Level.WARNING, 0, sourceName, 
-//								"[" + person.getLocationTag().getLocale() + "] "
-//								+ person.getName() + " " + loc
-//								+ " had problems with airlock activation in the 'waiting inside airlock' phase.");
-//						// Note: Calling endTask is needed or else this person would get stranded in the airlock 
-//						// since this person fails to change his location state and is still inside
-////						endTask();
-//						return remainingTime;
-//					}
-//					
-//					else {
-//						LogConsolidated.log(logger, Level.INFO, 4000, sourceName,
-//							"[" + person.getLocationTag().getLocale() + "] " 
-//							+ person.getName() 
-//							+ " as being the operator just deactivated the airlock.");
-//						
-//						// Add experience
-//						addExperience(time - remainingTime);
-//						
-//						setPhase(EXITING_AIRLOCK);
-//						
-//						remainingTime = 0D;
-//					}
-//				}
-//				
-//				else {
-//					// If person is not airlock operator, just wait.
-//					LogConsolidated.log(logger, Level.INFO, 4000, sourceName, 
-//						"[" + person.getLocationTag().getLocale() + "] " + person.getName() + 
-//						" was not the operator, waiting for others to do the task.");
-//					
-//					// Volunteer this person as the operator
-//					airlock.volunteerAsOperator(person) ;
-//				}
-//			}
-//			
-//			else { // If airlock has been activated
-//
-//				LogConsolidated.log(logger, Level.INFO, 4000, sourceName, 
-//					"[" + person.getLocationTag().getLocale() + "] " + person.getName() + 
-//					" " + loc + " noticed the airlock already got activated in the 'waiting inside airlock' phase.");
-//				
-//				// Volunteer this person as the operator
-//				airlock.volunteerAsOperator(person) ;
-//				
-//				// Add experience
-//				addExperience(time - remainingTime);
-//				
-//				setPhase(EXITING_AIRLOCK);
-//			}
-//		}
-//		
-//		else { // the person is NOT inside the airlock
-//			
-//			String loc = person.getLocationTag().getImmediateLocation();
-//			loc = loc == null ? "[N/A]" : loc;
-//			loc = loc.equalsIgnoreCase("Outside") ? loc.toLowerCase() : "in " + loc;
-//			
-//			LogConsolidated.log(logger, Level.WARNING, 4000, sourceName, 
-//					"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
-//					+ " was supposed to be inside the airlock but was " + loc
-//					+ " Attempting to re-enter the airlock now.");
-//			
-//			setPhase(ENTERING_AIRLOCK);
-//		}
-
 		return remainingTime;
 	}
 

@@ -24,6 +24,8 @@ import javax.swing.SwingUtilities;
 
 import org.mars_sim.msp.ui.swing.configeditor.SimulationConfigEditor;
 
+import com.alee.managers.icon.LazyIcon;
+
 /**
  * An internal frame that supports modal behavior. Based on code found in:
  * https://community.oracle.com/thread/1358431?start=0&tstart=0
@@ -34,7 +36,7 @@ public abstract class ModalInternalFrame extends JInternalFrame {
 	// Data members
 	boolean modal = false;
 	
-	private static ImageIcon icon = new ImageIcon(SimulationConfigEditor.class.getResource(MainWindow.ICON_IMAGE));
+	private static ImageIcon icon = new LazyIcon("lander").getIcon();//new ImageIcon(SimulationConfigEditor.class.getResource(MainWindow.LANDER_PNG));
 	
 
 	/**
@@ -46,6 +48,8 @@ public abstract class ModalInternalFrame extends JInternalFrame {
 	public ModalInternalFrame(String title) {
 		// Call JInternalFrame constructor.
 		super(title, false, false, false, false);
+		
+		setFrameIcon(icon);
 	}
 
 	public ModalInternalFrame(String title, boolean resizable, boolean closable, boolean maximizable,
@@ -169,7 +173,7 @@ public abstract class ModalInternalFrame extends JInternalFrame {
 	 */
 	public void setIconImage() {
 
-		String fullImageName = MainWindow.ICON_IMAGE;
+		String fullImageName = MainWindow.LANDER_PNG;
 		URL resource = ImageLoader.class.getResource(fullImageName);
 		Toolkit kit = Toolkit.getDefaultToolkit();
 		Image img = kit.createImage(resource).getScaledInstance(16, 16, Image.SCALE_DEFAULT);

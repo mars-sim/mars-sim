@@ -41,6 +41,7 @@ import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.tabbedpane.WebTabbedPane;
+import com.alee.managers.icon.LazyIcon;
 import com.alee.managers.tooltip.TooltipManager;
 import com.alee.managers.tooltip.TooltipWay;
 
@@ -107,6 +108,8 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 	/** Unit for this window. */
 	protected Unit unit;
 
+	private static ImageIcon icon = new LazyIcon("lander").getIcon();
+	
 	/**
 	 * Constructor
 	 *
@@ -123,6 +126,8 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 		this.unit = unit;
 		this.hasDescription = hasDescription;
 
+		setFrameIcon(icon);
+		
 		if (unit instanceof Person) {
 			setMaximumSize(new Dimension(WIDTH, HEIGHT));
 			setPreferredSize(new Dimension(WIDTH, HEIGHT));

@@ -66,6 +66,7 @@ import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import com.alee.laf.WebLookAndFeel;
 import com.alee.laf.window.WebFrame;
 import com.alee.managers.UIManagers;
+import com.alee.managers.icon.LazyIcon;
 
 /**
  * A temporary simulation configuration editor dialog. Will be replaced by
@@ -134,7 +135,10 @@ public class SimulationConfigEditor {
 
 		f = new WebFrame();
 
-		ImageIcon icon = new ImageIcon(SimulationConfigEditor.class.getResource(MainWindow.ICON_IMAGE));
+		// Setup weblaf's IconManager
+		SwingUtilities.invokeLater(() -> MainWindow.initIconManager());
+		
+		ImageIcon icon = new LazyIcon("lander").getIcon(); // new ImageIcon(SimulationConfigEditor.class.getResource(MainWindow.LANDER_PNG));
 		f.setIconImage(MainWindow.iconToImage(icon));
 		
 		f.addWindowListener(new WindowAdapter() {

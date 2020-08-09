@@ -73,7 +73,7 @@ public class Test {
             setLayout(new BorderLayout());
                
             try {
-                ImageIcon yourImage = new ImageIcon(Test.class.getResource(MainWindow.ICON_IMAGE));
+                ImageIcon yourImage = new ImageIcon(Test.class.getResource(MainWindow.LANDER_PNG));
                 Image image = yourImage.getImage();
                 bgImg = (BufferedImage) image;
 //                bgImg = ImageIO.read(new File("...")); 

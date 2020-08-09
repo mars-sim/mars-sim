@@ -22,6 +22,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -57,14 +58,20 @@ import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.swing.configeditor.CrewEditor;
 import org.mars_sim.msp.ui.swing.tool.JStatusBar;
 
+import com.alee.api.resource.FileResource;
 import com.alee.extended.date.WebDateField;
 import com.alee.extended.label.WebStyledLabel;
 import com.alee.extended.memorybar.WebMemoryBar;
+import com.alee.extended.svg.SvgIconSource;
 import com.alee.laf.WebLookAndFeel;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.text.WebTextField;
 import com.alee.laf.window.WebFrame;
 import com.alee.managers.UIManagers;
+import com.alee.managers.icon.IconManager;
+import com.alee.managers.icon.LazyIcon;
+import com.alee.managers.icon.set.IconSet;
+import com.alee.managers.icon.set.RuntimeIconSet;
 import com.alee.managers.language.LanguageManager;
 import com.alee.managers.style.StyleId;
 import com.alee.managers.tooltip.TooltipManager;
@@ -87,7 +94,13 @@ extends JComponent {
 //	public static int height = InteractiveTerm.getHeight();//768;
 	
 	/** Icon image filename for frame */
-	public static final String ICON_IMAGE = "/icons/landerhab16.png";//"/images/LanderHab.png";
+	public static final String LANDER_PNG = "/icons/landerhab16.png";//"/images/LanderHab.png";
+	public static final String LANDER_SVG = "/svg/icons/lander_hab.svg";
+	public static final String INFO_SVG = "/svg/icons/info.svg";
+	public static final String EDIT_SVG = "/svg/icons/edit.svg";
+	public static final String LEFT_SVG = "/svg/icons/left_rotate.svg";
+	public static final String RIGHT_SVG = "/svg/icons/right_rotate.svg";
+	public static final String CENTER_SVG = "/svg/icons/center.svg";
 	
 	public static final String OS = System.getProperty("os.name").toLowerCase(); // e.g. 'linux', 'mac os x'
 	private static final String SOL = "   Sol ";
@@ -181,6 +194,8 @@ extends JComponent {
 		frame.setSize(new Dimension(InteractiveTerm.getWidth(), InteractiveTerm.getHeight()));
 		frame.setResizable(false);
 
+		SwingUtilities.invokeLater(() -> MainWindow.initIconManager());
+		
 //		frame.setIconImages(WebLookAndFeel.getImages());
 		
 		// Disable the close button on top right
@@ -193,7 +208,7 @@ extends JComponent {
 
 		// Set look and feel of UI.
 		useDefault = UIConfig.INSTANCE.useUIDefault();
-		
+
 		// Set up MainDesktopPane
 		desktop = new MainDesktopPane(this);
 
@@ -221,6 +236,51 @@ extends JComponent {
 //		setupSettlementWindowTimer();
 	}
 
+	public static void initIconManager() {
+		// Set up an icon set for use throughout mars-sim
+		IconSet iconSet = new RuntimeIconSet("mars-sim-set");
+
+		String s0 = CrewEditor.class.getResource(MainWindow.INFO_SVG).getPath();
+//		System.out.println("s0 is " + s0);
+		
+		iconSet.addIcon(new SvgIconSource (
+		        "info",
+		        new FileResource(s0),
+		        new Dimension(12, 12)));
+		
+		String s1 = CrewEditor.class.getResource(MainWindow.EDIT_SVG).getPath();
+
+		iconSet.addIcon(new SvgIconSource (
+		        "edit",
+		        new FileResource(s1),
+		        new Dimension(12, 12)));
+		
+		iconSet.addIcon(new SvgIconSource (
+		        "lander",
+		        new FileResource(CrewEditor.class.getResource(MainWindow.LANDER_SVG).getPath()),
+		        new Dimension(16, 16)));
+		
+		iconSet.addIcon(new SvgIconSource (
+		        "left",
+		        new FileResource(CrewEditor.class.getResource(MainWindow.LEFT_SVG).getPath()),
+		        new Dimension(16, 16)));
+		
+		iconSet.addIcon(new SvgIconSource (
+		        "right",
+		        new FileResource(CrewEditor.class.getResource(MainWindow.RIGHT_SVG).getPath()),
+		        new Dimension(16, 16)));
+		
+		iconSet.addIcon(new SvgIconSource (
+		        "center",
+		        new FileResource(CrewEditor.class.getResource(MainWindow.CENTER_SVG).getPath()),
+		        new Dimension(16, 16)));
+		
+		IconManager.addIconSet(iconSet);
+		
+//		Usage e.g. : final ImageIcon icon = new LazyIcon("info").getIcon();
+		
+	}
+	
 	/**
 	 * Returns an image from an icon
 	 * 
@@ -263,8 +323,10 @@ extends JComponent {
 
 		desktop.changeTitle(false);
 		
+		
 		// Set the icon image for the frame.
-		ImageIcon icon = new ImageIcon(CrewEditor.class.getResource(MainWindow.ICON_IMAGE));
+		final ImageIcon icon = new LazyIcon("lander").getIcon();
+//		ImageIcon icon = new ImageIcon(CrewEditor.class.getResource(MainWindow.LANDER_PNG));
 		frame.setIconImage(iconToImage(icon));
 	
 		// Set up the main pane

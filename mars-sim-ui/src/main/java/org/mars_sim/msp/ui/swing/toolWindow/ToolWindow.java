@@ -24,6 +24,8 @@ import org.mars_sim.msp.ui.swing.tool.commander.CommanderWindow;
 import org.mars_sim.msp.ui.swing.tool.monitor.MonitorWindow;
 import org.mars_sim.msp.ui.swing.tool.navigator.NavigatorWindow;
 
+import com.alee.managers.icon.LazyIcon;
+
 /**
  * The ToolWindow class is an abstract UI window for a tool. Particular tool
  * windows should be derived from this.
@@ -109,12 +111,14 @@ public abstract class ToolWindow extends JInternalFrame {
 	 */
 	public void setIconImage() {
 
-		String fullImageName = MainWindow.ICON_IMAGE;
-		URL resource = ImageLoader.class.getResource(fullImageName);
-		Toolkit kit = Toolkit.getDefaultToolkit();
-		Image img = kit.createImage(resource).getScaledInstance(16, 16, Image.SCALE_DEFAULT);
+//		String fullImageName = MainWindow.LANDER_PNG;
+//		URL resource = ImageLoader.class.getResource(fullImageName);
+//		Toolkit kit = Toolkit.getDefaultToolkit();
+//		Image img = kit.createImage(resource).getScaledInstance(16, 16, Image.SCALE_DEFAULT);
 //		ImageIcon icon = new ImageIcon(ClassLoader.getSystemResource("Iconos/icono.png"));
-		ImageIcon icon = new ImageIcon(img);
+//		ImageIcon icon = new ImageIcon(img);
+		
+		final ImageIcon icon = new LazyIcon("lander").getIcon();
 		super.setFrameIcon(icon);
 	}
 	
