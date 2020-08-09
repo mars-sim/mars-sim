@@ -7,6 +7,7 @@
 
 package org.mars_sim.msp.ui.swing.tool.settlement;
 
+import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -14,6 +15,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
@@ -28,8 +30,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
@@ -44,6 +44,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JSlider;
 import javax.swing.Painter;
 import javax.swing.UIDefaults;
+import javax.swing.border.LineBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -62,25 +63,28 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.ToolButton;
 
 import com.alee.extended.WebComponent;
 import com.alee.laf.combobox.WebComboBox;
 import com.alee.managers.style.StyleId;
+
+
 @SuppressWarnings("serial")
 public class SettlementTransparentPanel extends WebComponent {
 
 	/** Rotation change (radians per rotation button press). */
 	private static final double ROTATION_CHANGE = Math.PI / 20D;
 	/** Zoom change. */
-	public static final double ZOOM_CHANGE = 1D;
+	public static final double ZOOM_CHANGE = 0.5;
 
 	private GameMode mode;
 	
 	private JLabel emptyLabel;
 
 	private JSlider zoomSlider;
-	private JPanel controlCenterPane, nameBtnPane, eastPane, labelPane, buttonPane, controlPane, settlementPanel, infoP, renameP ;
-	private JButton renameBtn, infoButton;
+	private JPanel controlCenterPane, namePane, eastPane, labelPane, buttonPane, controlPane, settlementPanel;//, infoP, renameP ;
+	private ToolButton renameBtn, infoButton;
 	//private JLabel zoomLabel;
 	private JPopupMenu labelsMenu;
 	/** Lists all settlements. */
@@ -92,7 +96,6 @@ public class SettlementTransparentPanel extends WebComponent {
 
 	private SettlementMapPanel mapPanel;
 	private MainDesktopPane desktop;
-//	private MainScene mainScene;
 
 	private static UnitManager unitManager = Simulation.instance().getUnitManager();
 		
@@ -109,7 +112,14 @@ public class SettlementTransparentPanel extends WebComponent {
 		setDoubleBuffered(true);
     }
 
-
+    public void paintComponent (Graphics g) { 
+		((Graphics2D) g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,0.0f)); // draw transparent background
+		super.paintComponent(g);
+		((Graphics2D) g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,1.0f)); // turn on opacity
+		g.setColor(Color.RED);
+		g.fillRect(20, 20, 500, 300);
+	} 
+    
     public void createAndShowGUI() {
 
 	    emptyLabel = new JLabel("  ") {
@@ -130,45 +140,40 @@ public class SettlementTransparentPanel extends WebComponent {
         buildZoomSlider();
         buildButtonPane();
 
-		nameBtnPane = new JPanel(new FlowLayout());
-		nameBtnPane.setBackground(new Color(0,0,0));
-        nameBtnPane.setOpaque(false);
-
-      	nameBtnPane.add(infoP);
-       	nameBtnPane.add(renameP);
-       	nameBtnPane.add(new JLabel(""));
+		namePane = new JPanel(new FlowLayout(FlowLayout.CENTER, 2,2));
+		namePane.setBackground(new Color(0,0,0,128));
+        namePane.setOpaque(false);
 
 		settlementPanel = new JPanel();//new BorderLayout());
 		settlementPanel.setBackground(new Color(0,0,0,128));
 		settlementPanel.setOpaque(false);
 		settlementPanel.add(settlementListBox);//, BorderLayout.CENTER);
-
-		Box box = new Box(BoxLayout.Y_AXIS);
-	    box.add(Box.createVerticalGlue());
-	    box.setAlignmentX(JComponent.CENTER_ALIGNMENT);
-	    //box.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
-	    box.add(Box.createVerticalGlue());
-		box.setBackground(new Color(0,0,0,128));
-		box.setOpaque(false);
-	    box.add(settlementPanel);
-	    box.add(nameBtnPane);
-
-	    mapPanel.add(box, BorderLayout.NORTH);
-
-	    controlCenterPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
-	    controlCenterPane.setBackground(new Color(0,0,0,128));//,0));
-	    controlCenterPane.setOpaque(false);
-        controlCenterPane.setPreferredSize(new Dimension(50, 200));
-        controlCenterPane.setSize(new Dimension(50, 200));
-        controlCenterPane.add(zoomSlider);
+	    
+      	namePane.add(infoButton);
+       	namePane.add(renameBtn);
+       	namePane.add(settlementPanel);
+       	
+	    mapPanel.add(namePane, BorderLayout.NORTH);
 
 	    controlPane = new JPanel(new BorderLayout());//GridLayout(2,1,10,2));
 	    controlPane.setBackground(new Color(0,0,0,128));//,0));
 		controlPane.setOpaque(false);
+       	
+	    controlCenterPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
+//	    controlCenterPane = new JPanel(new BoxLayout(controlPane, BoxLayout.Y_AXIS));
+	    controlCenterPane.setBackground(new Color(0,0,0,128));//,0));
+	    controlCenterPane.setOpaque(false);
+//        controlCenterPane.setPreferredSize(new Dimension(40, 200));
+//        controlCenterPane.setSize(new Dimension(40, 200));
+//	    controlCenterPane.add(emptyLabel);
+//	    controlCenterPane.add(emptyLabel);
+	    controlCenterPane.add(zoomSlider);
+	    controlCenterPane.setAlignmentY(CENTER_ALIGNMENT);
+
        	controlPane.add(buttonPane, BorderLayout.NORTH);
 	    controlPane.add(labelPane, BorderLayout.SOUTH);
        	controlPane.add(controlCenterPane, BorderLayout.CENTER);
-
+       	
 	    eastPane = new JPanel(new BorderLayout());//GridLayout(3,1,10,2));
 		eastPane.setBackground(new Color(0,0,0,15));
 		eastPane.setBackground(new Color(0,0,0));//,0));
@@ -187,19 +192,39 @@ public class SettlementTransparentPanel extends WebComponent {
         mapPanel.setVisible(true);
     }
 
+    /**
+     * Gets the length of the most lengthy settlement name
+     * 
+     * @return
+     */
+    private int getNameLength() {
+    	Collection<Settlement> list = unitManager.getSettlements();
+    	int max = 0;
+    	for (Settlement s: list) {
+    		int size = s.getNickName().length();
+    		if (max < size)
+    			max = size;
+    	}
+    	return max;
+    }
 
 	@SuppressWarnings("unchecked")
 	public void buildSettlementNameComboBox() {
 
 		settlementCBModel = new SettlementComboBoxModel();
 		settlementListBox = new WebComboBox(settlementCBModel);
+		settlementListBox.setPreferredSize(getNameLength() * 10, 25);
+		
+//		settlementListBox.setPrototypeDisplayValue("        ");
+//		settlementListBox.setSize(200, 30);
 		//settlementListBox.setBorder(null);
 		//setBackground(new Color(139,69,19));
+		settlementListBox.setBorder(new LineBorder(Color.ORANGE.darker().darker(), 2, true));
 		//settlementListBox.setBorder(BorderFactory.createLineBorder(Color.ORANGE));
 		//((JLabel)settlementListBox.getRenderer()).setBackground(Color.darkGray);;//SwingConstants.CENTER);
 		settlementListBox.setBackground(new Color(51,25,0,128)); // dull gold color
 		settlementListBox.setOpaque(false);
-		settlementListBox.setFont(new Font("Dialog", Font.BOLD, 18));
+		settlementListBox.setFont(new Font("Dialog", Font.BOLD, 16));
 		settlementListBox.setForeground(Color.BLACK);
 		settlementListBox.setToolTipText(Msg.getString("SettlementWindow.tooltip.selectSettlement")); //$NON-NLS-1$
 		settlementListBox.setRenderer(new PromptComboBoxRenderer());
@@ -263,8 +288,8 @@ public class SettlementTransparentPanel extends WebComponent {
 			//defaultRenderer.setHorizontalAlignment(DefaultListCellRenderer.CENTER);
 		    //settlementListBox.setRenderer(defaultRenderer);
 		    //setOpaque(false);
-		    setHorizontalAlignment(CENTER);
-		    setVerticalAlignment(CENTER);
+//		    setHorizontalAlignment(LEFT);
+//		    setVerticalAlignment(CENTER);
 		}
 
 		public PromptComboBoxRenderer(String prompt){
@@ -279,7 +304,7 @@ public class SettlementTransparentPanel extends WebComponent {
 		        //Component component = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 		        //component.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 				if (value == null) {
-					setText( prompt );
+					setText(prompt);
 					//this.setForeground(Color.green);
 			        //this.setBackground(new Color(184,134,11));
 					return this;
@@ -327,7 +352,7 @@ public class SettlementTransparentPanel extends WebComponent {
             public void paint(Graphics2D g, JComponent c, int w, int h) {
                 g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 g.setStroke(new BasicStroke(2f));
-                g.setColor(Color.green);
+                g.setColor(Color.ORANGE.darker().darker());
                 g.fillOval(1, 1, w-1, h-1);
                 g.setColor(Color.WHITE);
                 g.drawOval(1, 1, w-1, h-1);
@@ -338,27 +363,27 @@ public class SettlementTransparentPanel extends WebComponent {
                 g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 g.setStroke(new BasicStroke(2f));
                 //g.setColor(new Color(139,69,19)); // brown
-                g.setColor(Color.green);
+                g.setColor(Color.ORANGE.darker().darker());
                 g.fillRoundRect(0, 6, w, 6, 6, 6); // g.fillRoundRect(0, 6, w-1, 6, 6, 6);
                 g.setColor(Color.WHITE);
                 g.drawRoundRect(0, 6, w, 6, 6, 6);
             }
         });
 
-        zoomSlider = new JSlider(JSlider.VERTICAL, -2, 5, 0);
-        zoomSlider.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 20));
-        zoomSlider.setPreferredSize(new Dimension(50, 200));
-        zoomSlider.setSize(new Dimension(50, 200));
-        zoomSlider.putClientProperty("Nimbus.Overrides",sliderDefaults);
-        zoomSlider.putClientProperty("Nimbus.Overrides.InheritDefaults",false);
+        zoomSlider = new JSlider(JSlider.VERTICAL, -3, 7, 0);
+        zoomSlider.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 100));
+        zoomSlider.setPreferredSize(new Dimension(40, 250));
+        zoomSlider.setSize(new Dimension(40, 250));
+//        zoomSlider.putClientProperty("Nimbus.Overrides",sliderDefaults);
+//        zoomSlider.putClientProperty("Nimbus.Overrides.InheritDefaults",false);
 
     	//zoomSlider = new JSliderMW(JSlider.VERTICAL, -10, 10, 0);
 //		zoomSlider.setMajorTickSpacing(5);
 		zoomSlider.setMinorTickSpacing(1);
 		zoomSlider.setPaintTicks(true);
 		zoomSlider.setPaintLabels(true);
-//		zoomSlider.setForeground(Color.GREEN);
-		zoomSlider.setBackground(new Color(0,0,0,15));
+		zoomSlider.setForeground(Color.ORANGE.darker().darker());
+//		zoomSlider.setBackground(new Color(0,0,0,15));
 		//zoomSlider.setContentAreaFilled(false);
 		zoomSlider.setOpaque(false);
 		zoomSlider.setToolTipText(Msg.getString("SettlementTransparentPanel.tooltip.zoom")); //$NON-NLS-1$
@@ -401,56 +426,86 @@ public class SettlementTransparentPanel extends WebComponent {
 
     public void buildInfoP() {
 
-		infoP = new JPanel(new FlowLayout());
-		infoP.setBackground(new Color(0,0,0));//,0));
-		infoP.setOpaque(false);
-		infoP.setAlignmentX(FlowLayout.CENTER);
-
-		infoButton = new JButton(Msg.getString("SettlementTransparentPanel.button.info")); //$NON-NLS-1$
-		infoButton.setPreferredSize(new Dimension(50, 20)); //35, 20));
-		infoButton.setFont(new Font("Dialog", Font.PLAIN, 12));
-//		infoButton.setForeground(Color.GREEN);
-		infoButton.setContentAreaFilled(false);
+//		infoP = new JPanel(new FlowLayout());
+//		infoP.setBackground(new Color(0,0,0,128));
+////		infoP.setBackground(new Color(51,25,0,128)); // dark brown
+//		infoP.setOpaque(false);
+//		infoP.setAlignmentX(FlowLayout.CENTER);
+		
+//		infoButton = new JButton(Msg.getString("SettlementTransparentPanel.button.info")); //$NON-NLS-1$
+//		infoButton.setPreferredSize(new Dimension(70, 25)); //35, 20));
+//		infoButton.setFont(new Font("Dialog", Font.ITALIC, 13));
+//		infoButton.setForeground(Color.ORANGE.darker().darker());
+//		infoButton.setContentAreaFilled(false);
+//		infoButton.setOpaque(false); // text disappeared if setOpaque(false)
+//		infoButton.setBorder(new LineBorder(Color.ORANGE.darker().darker(), 1, true));
+//		infoButton.setBorderPainted(true);
+//		infoButton.setToolTipText(Msg.getString("SettlementTransparentPanel.tooltip.info")); //$NON-NLS-1$
+//		infoButton.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent evt) {
+//				Settlement settlement = mapPanel.getSettlement();
+//				if (settlement != null) {
+//					desktop.openUnitWindow(settlement, false);
+//				}
+//			}
+//		});
+		
+		infoButton = new ToolButton(Msg.getString("SettlementTransparentPanel.button.info"),
+				Msg.getString("icon.info")); //$NON-NLS-1$ //$NON-NLS-2$
 		infoButton.setOpaque(false);
-		//infoButton.setOpaque(false); // text disappeared if setOpaque(false)
-//		infoButton.setBorder(new LineBorder(Color.green, 1, true));
-		//infoButton.setBorderPainted(true);
-		infoButton.setToolTipText(Msg.getString("SettlementTransparentPanel.tooltip.info")); //$NON-NLS-1$
+		infoButton.setSize(12, 12);
+		infoButton.setMaximumSize(new Dimension(12, 12));
+		infoButton.setBackground(new Color(0,0,0,128));
+		infoButton.setContentAreaFilled(false);
+		infoButton.setBorderPainted(false);
 		infoButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent evt) {
+			public void actionPerformed(ActionEvent e) {
 				Settlement settlement = mapPanel.getSettlement();
 				if (settlement != null) {
-					// 2014-10-26 obtained settlement object
-					//setCurrentSettlement(settlement);
 					desktop.openUnitWindow(settlement, false);
 				}
-			}
+			};
 		});
-		infoP.add(infoButton);
+		
+//		infoP.add(infoButton);
     }
 
     public void buildrenameBtn() {
 
-		renameP  = new JPanel(new FlowLayout());
-		renameP.setBackground(new Color(0,0,0));//,0));
-		renameP.setOpaque(false);
-		renameP.setAlignmentX(FlowLayout.CENTER);
+//		renameP  = new JPanel(new FlowLayout());
+//		renameP.setBackground(new Color(0,0,0,128));
+////		renameP.setBackground(new Color(51,25,0,128));
+//		renameP.setOpaque(false);
+//		renameP.setAlignmentX(FlowLayout.CENTER);
 
-		renameBtn = new JButton(Msg.getString("SettlementTransparentPanel.button.rename")); //$NON-NLS-1$
-		renameBtn.setPreferredSize(new Dimension(80, 20)); //
-		renameBtn.setFont(new Font("Dialog", Font.PLAIN, 12));
-//		renameBtn.setForeground(Color.GREEN);
-		renameBtn.setContentAreaFilled(false);
+//		renameBtn = new JButton(Msg.getString("SettlementTransparentPanel.button.rename")); //$NON-NLS-1$
+//		renameBtn.setPreferredSize(new Dimension(70, 25)); //
+//		renameBtn.setFont(new Font("Dialog", Font.ITALIC, 13));
+//		renameBtn.setForeground(Color.ORANGE.darker().darker());
+//		renameBtn.setContentAreaFilled(false);
+//		renameBtn.setOpaque(false); // text disappeared if setOpaque(false)
+//		renameBtn.setBorder(new LineBorder(Color.ORANGE.darker().darker(), 1, true));
+//		renameBtn.setToolTipText(Msg.getString("SettlementTransparentPanel.tooltip.rename")); //$NON-NLS-1$
+//		renameBtn.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent evt) {
+//				openRenameDialog();
+//			}
+//		});
+		
+		renameBtn = new ToolButton(Msg.getString("SettlementTransparentPanel.button.rename"),
+				Msg.getString("icon.rename")); //$NON-NLS-1$ //$NON-NLS-2$
+		renameBtn.setSize(12, 12);
+		renameBtn.setMaximumSize(new Dimension(12, 12));
 		renameBtn.setOpaque(false);
-		//renameBtn.setOpaque(false); // text disappeared if setOpaque(false)
-//		renameBtn.setBorder(new LineBorder(Color.GREEN), 1, true));
-		infoButton.setToolTipText(Msg.getString("SettlementTransparentPanel.tooltip.rename")); //$NON-NLS-1$
+		renameBtn.setBackground(new Color(0,0,0,128));
+		renameBtn.setContentAreaFilled(false);
+		renameBtn.setBorderPainted(false);
 		renameBtn.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent evt) {
+			public void actionPerformed(ActionEvent e) {
 				openRenameDialog();
-			}
+			};
 		});
-		renameP.add(renameBtn);
+//		renameP.add(renameBtn);
     }
 
 //    private BufferedImage getModifiedImage(String n) {
@@ -475,10 +530,10 @@ public class SettlementTransparentPanel extends WebComponent {
     
     public void buildButtonPane() {
 
-        buttonPane = new JPanel(new FlowLayout(FlowLayout.LEADING));
+        buttonPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 5));
         buttonPane.setBackground(new Color(0,0,0,128));
         buttonPane.setOpaque(false);
-
+		
 //        BufferedImage bi1 = getModifiedImage("Clockwise");
 //		JButton rotateClockwiseButton = new JButton(new ImageIcon(bi1)); 
 		JButton rotateClockwiseButton = new JButton(ImageLoader.getIcon(Msg.getString("img.clockwise")));//Msg.getString("SettlementTransparentPanel.button.recenter")); //$NON-NLS-1$
@@ -486,9 +541,11 @@ public class SettlementTransparentPanel extends WebComponent {
 //		rotateClockwiseButton.setPreferredSize(new Dimension(20, 20));
 		rotateClockwiseButton.setOpaque(false);
 		rotateClockwiseButton.setBorderPainted(false);
+		rotateClockwiseButton.setContentAreaFilled(false);
+		rotateClockwiseButton.setBackground(new Color(0,0,0,128));
 //		rotateClockwiseButton.setForeground(Color.GREEN);
 //		rotateClockwiseButton.setBorder(new LineBorder(Color.GREEN, 1, true));
-//		rotateClockwiseButton.setContentAreaFilled(false);
+
 		rotateClockwiseButton.setToolTipText(Msg.getString("SettlementTransparentPanel.tooltip.clockwise")); //$NON-NLS-1$
 		rotateClockwiseButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
@@ -504,9 +561,12 @@ public class SettlementTransparentPanel extends WebComponent {
 //		recenterButton.setPreferredSize(new Dimension(20, 20));
 		recenterButton.setOpaque(false);
 		recenterButton.setBorderPainted(false);
+		recenterButton.setContentAreaFilled(false);
+		recenterButton.setBackground(new Color(0,0,0,128));
+		
 //		recenterButton.setForeground(Color.GREEN);
 //		recenterButton.setBorder(new LineBorder(Color.GREEN, 1, true));
-//		recenterButton.setContentAreaFilled(false);
+
 		recenterButton.setToolTipText(Msg.getString("SettlementTransparentPanel.tooltip.recenter")); //$NON-NLS-1$
 		recenterButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
@@ -529,10 +589,12 @@ public class SettlementTransparentPanel extends WebComponent {
 //		rotateCounterClockwiseButton.setPreferredSize(new Dimension(20, 20));
 		rotateCounterClockwiseButton.setOpaque(false);
 		rotateCounterClockwiseButton.setBorderPainted(false);
-		rotateCounterClockwiseButton.setBackground(new Color(0,0,0,128));
-//		rotateCounterClockwiseButton.setForeground(Color.GREEN);
 		rotateCounterClockwiseButton.setContentAreaFilled(false);
+		rotateCounterClockwiseButton.setBackground(new Color(0,0,0,128));
+		
+//		rotateCounterClockwiseButton.setForeground(Color.GREEN);
 //		rotateCounterClockwiseButton.setBorder(new LineBorder(Color.GREEN, 1, true));
+		
 		rotateCounterClockwiseButton.setToolTipText(Msg.getString("SettlementTransparentPanel.tooltip.counterClockwise")); //$NON-NLS-1$
 		rotateCounterClockwiseButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
@@ -547,23 +609,31 @@ public class SettlementTransparentPanel extends WebComponent {
 
     public void buildLabelPane() {
 
-        labelPane = new JPanel(new FlowLayout(FlowLayout.LEADING));
+        labelPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
         labelPane.setBackground(new Color(0,0,0,128));
 		labelPane.setOpaque(false);
-
+		
 		JButton labelsButton = new JButton(Msg.getString("SettlementTransparentPanel.button.labels")); //$NON-NLS-1$
-		//labelsButton.setFont(new Font("Dialog", Font.BOLD, 16));
+		labelsButton.setBorder(new LineBorder(Color.ORANGE.darker().darker(), 2, true));
+
 		//labelsButton.setBackground(new Color(139,69,19)); // (139,69,19) is brown
 		//labelsButton.setBackground(new Color(139,69,19,40));
 		//labelsButton.setBackground(new Color(51,25,0,5)); // dull gold color
 //		labelsButton.setBackground(new Color(0,0,0));//,0));
-		labelsButton.setPreferredSize(new Dimension(80, 20));
-//		labelsButton.setForeground(Color.green);
-		labelsButton.setOpaque(false);
+		
+		labelsButton.setFont(new Font("Dialog", Font.BOLD, 13));
+		labelsButton.setForeground(Color.ORANGE.darker().darker());
+
+			
+		labelsButton.setPreferredSize(new Dimension(80, 25));
 		labelsButton.setVerticalAlignment(JLabel.CENTER);
 		labelsButton.setHorizontalAlignment(JLabel.CENTER);
-		//labelsButton.setContentAreaFilled(false); more artifact when enabled
-//		labelsButton.setBorder(new LineBorder(Color.green, 1, true));
+		
+		labelsButton.setOpaque(false);
+		labelsButton.setBackground(new Color(0,0,0,128));
+		labelsButton.setContentAreaFilled(false); //more artifact when enabled
+		labelsButton.setBorderPainted(false);
+
 		labelsButton.setToolTipText(Msg.getString("SettlementTransparentPanel.tooltip.labels")); //$NON-NLS-1$
 		labelsButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
@@ -628,7 +698,11 @@ public class SettlementTransparentPanel extends WebComponent {
 	 * @return popup menu.
 	 */
 	public JPopupMenu createLabelsMenu() {
-		JPopupMenu result = new JPopupMenu(Msg.getString("SettlementWindow.menu.labelOptions")); //$NON-NLS-1$
+		JPopupMenu popMenu = new JPopupMenu(Msg.getString("SettlementWindow.menu.labelOptions")); //$NON-NLS-1$
+		popMenu.setOpaque(false);
+		popMenu.setBackground(new Color(0,0,0,128));
+//		result.setContentAreaFilled(false);
+		popMenu.setBorderPainted(false);
 //		result.setOpaque(false);
 //		result.setBorder(BorderFactory.createLineBorder(new Color(139,69,19)));// dark brown
 //		result.setBackground(new Color(222,184,135,128)); // pale silky brown
@@ -646,7 +720,7 @@ public class SettlementTransparentPanel extends WebComponent {
 				mapPanel.setShowDayNightLayer(!mapPanel.isDaylightTrackingOn());
 			}
 		});
-		result.add(dayNightLabelMenuItem);
+		popMenu.add(dayNightLabelMenuItem);
 
 		// Create building label menu item.
 		buildingLabelMenuItem = new JCustomCheckBoxMenuItem(
@@ -661,7 +735,7 @@ public class SettlementTransparentPanel extends WebComponent {
 				mapPanel.setShowBuildingLabels(!mapPanel.isShowBuildingLabels());
 			}
 		});
-		result.add(buildingLabelMenuItem);
+		popMenu.add(buildingLabelMenuItem);
 
 		// Create construction/salvage label menu item.
 		constructionLabelMenuItem = new JCustomCheckBoxMenuItem(
@@ -675,7 +749,7 @@ public class SettlementTransparentPanel extends WebComponent {
 				mapPanel.setShowConstructionLabels(!mapPanel.isShowConstructionLabels());
 			}
 		});
-		result.add(constructionLabelMenuItem);
+		popMenu.add(constructionLabelMenuItem);
 
 		// Create vehicle label menu item.
 		vehicleLabelMenuItem = new JCustomCheckBoxMenuItem(
@@ -689,7 +763,7 @@ public class SettlementTransparentPanel extends WebComponent {
 				mapPanel.setShowVehicleLabels(!mapPanel.isShowVehicleLabels());
 			}
 		});
-		result.add(vehicleLabelMenuItem);
+		popMenu.add(vehicleLabelMenuItem);
 
 		// Create person label menu item.
 		personLabelMenuItem = new JCustomCheckBoxMenuItem(
@@ -703,7 +777,7 @@ public class SettlementTransparentPanel extends WebComponent {
 				mapPanel.setShowPersonLabels(!mapPanel.isShowPersonLabels());
 			}
 		});
-		result.add(personLabelMenuItem);
+		popMenu.add(personLabelMenuItem);
 
 		// Create person label menu item.
 		robotLabelMenuItem = new JCustomCheckBoxMenuItem(
@@ -715,11 +789,11 @@ public class SettlementTransparentPanel extends WebComponent {
 				mapPanel.setShowRobotLabels(!mapPanel.isShowRobotLabels());
 			}
 		});
-		result.add(robotLabelMenuItem);
+		popMenu.add(robotLabelMenuItem);
 
-		result.pack();
+		popMenu.pack();
 
-		return result;
+		return popMenu;
 	}
 
 
@@ -749,65 +823,20 @@ public class SettlementTransparentPanel extends WebComponent {
 
 		String oldName = mapPanel.getSettlement().getName();
 
-//		logger.info("Old name was " + oldName);
-		//boolean isFX = Platform.isFxApplicationThread();
+		JDialog.setDefaultLookAndFeelDecorated(true);
+		String newName = askNameDialog();
+		if (!oldName.equals(newName) 
+				&& newName != null 
+				&& newName.trim() != "" 
+				&& newName.trim().length() != 0) {
+			mapPanel.getSettlement().changeName(newName.trim());
 
-//		if (desktop.getMainScene() != null) {
-//
-//			Platform.runLater(() -> {
-//
-//				if (askNameFX(oldName) != null) {
-//					String newName = askNameFX(oldName).trim();
-//					if (!isBlank(newName)) { // newName != null && !newName.isEmpty() && newName with only whitespace(s)
-//						mapPanel.getSettlement().changeName(newName);
-//		            }
-//					else {
-//						Alert alert = new Alert(AlertType.ERROR, "Please use a valid name.");
-//						alert.initOwner(desktop.getMainScene().getStage());
-//						alert.showAndWait();
-//					}
-//	/*
-//					// Note: do not use if (newName.trim().equals(null), will throw java.lang.NullPointerException
-//					if (newName == null || newName.trim() == "" || (newName.trim().length() == 0)) {
-//						//System.out.println("newName is " + newName);
-//						newName = askNameFX(oldName);
-//
-//						if (newName == null || newName.trim() == "" || (newName.trim().length() == 0))
-//							return;
-//						else
-//							mapPanel.getSettlement().changeName(newName);
-//					}
-//					else {
-//						mapPanel.getSettlement().changeName(newName);
-//						//logger.info("New name is now " + newName);
-//					}
-//	*/
-//				}
-//			});
-//
-//			//desktop.closeToolWindow(SettlementWindow.NAME);
-//			//desktop.openToolWindow(SettlementWindow.NAME);
-//		}
-//
-//		else {
+			desktop.closeToolWindow(SettlementWindow.NAME);
+			desktop.openToolWindow(SettlementWindow.NAME);
 
-			JDialog.setDefaultLookAndFeelDecorated(true);
-			String newName = askNameDialog();
-			if (!oldName.equals(newName) 
-					&& newName != null 
-					&& newName.trim() != "" 
-					&& newName.trim().length() != 0) {
-				mapPanel.getSettlement().changeName(newName.trim());
-
-				desktop.closeToolWindow(SettlementWindow.NAME);
-				desktop.openToolWindow(SettlementWindow.NAME);
-
-			} else {
-				return;
-			}
-
-//		}
-
+		} else {
+			return;
+		}
 	}
 
 	 /**
@@ -850,30 +879,6 @@ public class SettlementTransparentPanel extends WebComponent {
 					Msg.getString("SettlementWindow.JDialog.changeSettlementName.title"), //$NON-NLS-1$
 			        JOptionPane.QUESTION_MESSAGE);
 	}
-
-//	/**
-//	 * Ask for a new building name using TextInputDialog in JavaFX/8
-//	 * @return new name
-//	 */
-//	public String askNameFX(String oldName) {
-//		String newName = null;
-//		TextInputDialog dialog = new TextInputDialog(oldName);
-//		dialog.initOwner(desktop.getMainScene().getStage());
-//		dialog.initModality(Modality.APPLICATION_MODAL);
-//		dialog.setTitle(Msg.getString("BuildingPanel.renameBuilding.dialogTitle"));
-//		dialog.setHeaderText(Msg.getString("BuildingPanel.renameBuilding.dialog.header"));
-//		dialog.setContentText(Msg.getString("BuildingPanel.renameBuilding.dialog.content"));
-//
-//		Optional<String> result = dialog.showAndWait();
-//		//result.ifPresent(name -> {});
-//
-//		if (result.isPresent()){
-//		    //logger.info("The settlement name has been changed to : " + result.get());
-//			newName = result.get();
-//		}
-//
-//		return newName;
-//	}
 
 	/**
 	 * Inner class combo box model for settlements.

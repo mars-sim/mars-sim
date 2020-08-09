@@ -148,7 +148,8 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 
 		// Set foreground and background colors.
 		setOpaque(false);
-		setBackground(MAP_BACKGROUND);
+		setBackground(new Color(0,0,0,128));
+//		setBackground(MAP_BACKGROUND);
 		setForeground(Color.ORANGE);
 
 		if (masterClock == null)

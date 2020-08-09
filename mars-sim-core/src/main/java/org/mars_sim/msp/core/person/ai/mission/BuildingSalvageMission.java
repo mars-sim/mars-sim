@@ -446,10 +446,11 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 			setPhaseEnded(true);
 		}
 
+		MarsClock currentTime = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
+		
 		// Check if site preparation time has expired.
-		MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
 		if (sitePreparationStartTime == null) {
-			sitePreparationStartTime = (MarsClock) currentTime.clone();
+			sitePreparationStartTime = currentTime;
 		}
 		if (MarsClock.getTimeDiff(currentTime, sitePreparationStartTime) >= SITE_PREPARE_TIME) {
 			setPhaseEnded(true);

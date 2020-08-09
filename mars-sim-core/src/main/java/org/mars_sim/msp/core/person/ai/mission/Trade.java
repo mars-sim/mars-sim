@@ -19,6 +19,7 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -420,12 +421,17 @@ public class Trade extends RoverMission implements Serializable {
 						fireMissionUpdate(MissionEventType.BUY_LOAD_EVENT);
 						setPhaseEnded(true);
 					}
-				} else {
+				} 
+				
+				else {
+					MarsClock currentTime = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
+					
 					if (startNegotiationTime == null) {
-
-						startNegotiationTime = (MarsClock) marsClock.clone();
+						startNegotiationTime = currentTime;
 					}
+					
 					Person settlementTrader = getSettlementTrader();
+					
 					if (settlementTrader != null) {
 						// TODO Refactor.
 						if (member instanceof Person) {
@@ -436,8 +442,8 @@ public class Trade extends RoverMission implements Serializable {
 						}
 					} else {
 
-						MarsClock currentTime = (MarsClock) marsClock.clone();
 						double timeDiff = MarsClock.getTimeDiff(currentTime, startNegotiationTime);
+						
 						if (timeDiff > 1000D) {
 							buyLoad = new HashMap<Good, Integer>(0);
 							profit = 0D;

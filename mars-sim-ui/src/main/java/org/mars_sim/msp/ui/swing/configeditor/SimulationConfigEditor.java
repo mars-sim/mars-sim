@@ -772,9 +772,10 @@ public class SimulationConfigEditor {
 			settlements.clear();
 			boolean hasSponsor = false;
 			String sponsorCC = null;
-			if (mode == GameMode.COMMAND) 
+			if (mode == GameMode.COMMAND) {
 				sponsorCC = personConfig.getCommander().getSponsorStr();
-			logger.config("The commander's sponsor is " + sponsorCC);
+				logger.config("The commander's sponsor is " + sponsorCC);
+			}
 			
 			for (int x = 0; x < settlementConfig.getNumberOfInitialSettlements(); x++) {
 				SettlementInfo info = new SettlementInfo();

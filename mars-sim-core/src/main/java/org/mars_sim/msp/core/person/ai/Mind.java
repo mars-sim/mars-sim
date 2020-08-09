@@ -246,10 +246,20 @@ public class Mind implements Serializable {
 							takeAction(remainingTime);
 						} catch (Exception e) {
 	//						e.printStackTrace(System.err);
-							LogConsolidated.log(logger, Level.WARNING, 20_000, sourceName,
-							person.getName() + " had called takeAction() " + counts + "x doing " 
-							+ taskManager.getTaskName() + "   remainingTime : " +  Math.round(remainingTime *1000.0)/1000.0 
-							+ "   time : " + Math.round(time *1000.0)/1000.0); // 1x = 0.001126440159375963 -> 8192 = 8.950963852039651
+							String taskName = taskManager.getTaskName();
+							
+							if (taskName != null) {
+								LogConsolidated.log(logger, Level.WARNING, 20_000, sourceName,
+									person.getName() + " had called takeAction() " + counts + "x doing " 
+									+ taskManager.getTaskName() + "   remainingTime : " +  Math.round(remainingTime *1000.0)/1000.0 
+									+ "   time : " + Math.round(time *1000.0)/1000.0); // 1x = 0.001126440159375963 -> 8192 = 8.950963852039651
+							} else {
+								LogConsolidated.log(logger, Level.WARNING, 20_000, sourceName,
+										person.getName() + " had called takeAction() " + counts + "x with no task in mind." 
+										+ "  - remainingTime : " +  Math.round(remainingTime *1000.0)/1000.0 
+										+ "  - time : " + Math.round(time *1000.0)/1000.0);
+							}
+							
 							return;
 						}
 					}
@@ -261,11 +271,11 @@ public class Mind implements Serializable {
 //								+ ")   time : " + Math.round(time *1000.0)/1000.0); // 1x = 0.001126440159375963 -> 8192 = 8.950963852039651
 					}
 				}
-				else {
+				else if (taskManager.getTaskName() != null) {
 					LogConsolidated.log(logger, Level.WARNING, 20_000, sourceName,
 							person + " had been doing " + counts + "x " 
-							+ taskManager.getTaskName() + "   remainingTime : " + Math.round(remainingTime *1000.0)/1000.0 
-							+ "   time : " + Math.round(time *1000.0)/1000.0); // 1x = 0.001126440159375963 -> 8192 = 8.950963852039651
+							+ taskManager.getTaskName() + "  - remainingTime : " + Math.round(remainingTime *1000.0)/1000.0 
+							+ "  - time : " + Math.round(time *1000.0)/1000.0); // 1x = 0.001126440159375963 -> 8192 = 8.950963852039651
 				}
 			}
 			else {
@@ -496,7 +506,7 @@ public class Mind implements Serializable {
 					jh.saveJob(newJob, assignedBy, status, approvedBy, false);
 				}
 				
-				String s = String.format("[%s] %18s (Job) -> %s",
+				String s = String.format("[%s] %25s (Job) -> %s",
 						person.getLocationTag().getLocale(), 
 						person.getName(), 
 						newJobStr);

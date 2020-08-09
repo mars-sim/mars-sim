@@ -48,8 +48,6 @@ public class MarsProject {
 
 	private static final String LOGGING_PROPERTIES = "/logging.properties";
 	
-	private static final String DEFAULT_SIM_FILENAME = "default.sim";
-	
 	static String[] args;
 
 	/** true if displaying graphic user interface. */
@@ -121,6 +119,13 @@ public class MarsProject {
 			// singleton Simulation
 
 			List<String> argList = Arrays.asList(args);
+			
+			String str = "";
+			for (String s : args) {
+				str = str + "[" + s + "] "; 
+			}
+			
+			logger.config("List of input args : " + str);
 			
 			if (argList.contains("-headless")) 
 				useGUI = false;
@@ -434,55 +439,55 @@ public class MarsProject {
 		}
 	}
 
-	/**
-	 * Loads the simulation from the default save file.
-	 * 
-	 * @throws Exception if error loading the default saved simulation.
-	 */
-	private void handleLoadDefaultSimulation(int userTimeRatio) throws Exception {
-		// Initialize the simulation.
-		simulationConfig.loadConfig();
-		// Create serializable class 
-		sim.createNewSimulation(userTimeRatio, true);
-		
-		try {
-			// Prompt to open the file cHooser to select a saved sim
-			boolean canLoad = MainWindow.loadSimulationProcess(false);
-			if (!canLoad) {
-				// Create class instances
-				sim.createNewSimulation(-1, false);	
-			}
-			else {		
-				// Start simulation.
-				startSimThread(true);
-				
-				if (useGUI) {
-					// Create main window
-					setupMainWindow();
-				} 
-				
-				else {
-					// Go headless				
-				}
-				
-				// Start beryx console
-				startConsoleThread();
-			}
-			
-
-//			logger.config("useGUI is " + useGUI);
-
-			
-			// Initialize interactive terminal and load menu
-//			initTerminalLoadMenu();
-			
-		} catch (Exception e) {
-			// logger.log(Level.WARNING, "Could not load default simulation", e);
-			// throw e;
-			exitWithError("Problem loading the default simulation.", e);
-		}
-
-	}
+//	/**
+//	 * Loads the simulation from the default save file.
+//	 * 
+//	 * @throws Exception if error loading the default saved simulation.
+//	 */
+//	private void handleLoadDefaultSimulation(int userTimeRatio) throws Exception {
+//		// Initialize the simulation.
+//		simulationConfig.loadConfig();
+//		// Create serializable class 
+//		sim.createNewSimulation(userTimeRatio, true);
+//		
+//		try {
+//			// Prompt to open the file cHooser to select a saved sim
+//			boolean canLoad = MainWindow.loadSimulationProcess(false);
+//			if (!canLoad) {
+//				// Create class instances
+//				sim.createNewSimulation(-1, false);	
+//			}
+//			else {		
+//				// Start simulation.
+//				startSimThread(true);
+//				
+//				if (useGUI) {
+//					// Create main window
+//					setupMainWindow();
+//				} 
+//				
+//				else {
+//					// Go headless				
+//				}
+//				
+//				// Start beryx console
+//				startConsoleThread();
+//			}
+//			
+//
+////			logger.config("useGUI is " + useGUI);
+//
+//			
+//			// Initialize interactive terminal and load menu
+////			initTerminalLoadMenu();
+//			
+//		} catch (Exception e) {
+//			// logger.log(Level.WARNING, "Could not load default simulation", e);
+//			// throw e;
+//			exitWithError("Problem loading the default simulation.", e);
+//		}
+//
+//	}
 
 	/**
 	 * Loads the simulation from a save file.
@@ -496,71 +501,130 @@ public class MarsProject {
 		simulationConfig.loadConfig();
 		// Create class instances
 		sim.createNewSimulation(userTimeRatio, true);
-		
+			
 		try {
-			boolean hasDefault = argList.contains(DEFAULT_SIM_FILENAME);
+			
+			boolean hasDefault = argList.contains(Simulation.SAVE_FILE + Simulation.SAVE_FILE_EXTENSION);
+			boolean hasSim = argList.contains(Simulation.SAVE_FILE_EXTENSION);
+			
+			String simStr = "";
+			for (String s : argList) {
+				if (s.contains(Simulation.SAVE_FILE_EXTENSION))
+					simStr = s;
+			}
+			
 			int index = argList.indexOf("-load");
-			boolean hasSim = argList.contains(".sim");
+			
+			logger.config("hasDefault is " + hasDefault); 
+			logger.config("hasSim is " + hasSim);		
 			
 			// Initialize interactive terminal 
 			InteractiveTerm.initializeTerminal();	
 			
-			if (hasDefault || !hasSim) {
-				// Prompt to open the file cHooser to select a saved sim
-				boolean canLoad = MainWindow.loadSimulationProcess(false);
-				if (!canLoad) {
-					// Create class instances
-					sim.createNewSimulation(userTimeRatio, false);	
-				}
-				else {			
-					// Start simulation clock
-					startSimThread(true);
-					
-					if (useGUI) {
-						// Create main window
-						setupMainWindow();
-					} 
-					
-					else {
-						// Go headless				
-					}
-					
-					// Start beryx console
-					startConsoleThread();
+//			if (hasDefault || hasSim) {
 				
+				if (hasDefault) {
+					File loadFile = new File(Simulation.SAVE_DIR, Simulation.SAVE_FILE + Simulation.SAVE_FILE_EXTENSION);
+					if (loadFile.exists() && loadFile.canRead()) {
+						sim.loadSimulation(loadFile);
+
+						// Start simulation.
+						startSimThread(false);
+						
+						if (useGUI) {
+//							logger.config("useGUI is " + useGUI);
+							setupMainWindow();
+						} 
+						
+						else {
+							// Go headless				
+						}
+						
+						// Start beryx console
+						startConsoleThread();
+					
+					}
+					else {
+//						logger.config("Invalid param.");
+						exitWithError("Problem loading simulation. default.sim is found but can't be loaded.", null);
+					}
 				}
+				
+				else if (hasSim) {
+					File loadFile = new File(Simulation.SAVE_DIR, simStr);
+					if (loadFile.exists() && loadFile.canRead()) {
+						sim.loadSimulation(loadFile);
+
+						// Start simulation.
+						startSimThread(false);	
+						
+						// Start beryx console
+						startConsoleThread();
+					
+					}
+					else {
+//						logger.config("Invalid param.");
+						exitWithError("Problem loading simulation. default.sim is found but can't be loaded.", null);
+					}
+				}
+				
+				else {
+					// Prompt to open the file chooser to select a saved sim
+					boolean canLoad = MainWindow.loadSimulationProcess(false);
+					
+					if (!canLoad) {
+						// Create class instances
+						sim.createNewSimulation(userTimeRatio, false);	
+					}
+					else {			
+						// Start simulation clock
+						startSimThread(true);
+						
+						if (useGUI) {
+							// Create main window
+							setupMainWindow();
+						} 
+						
+						else {
+							// Go headless				
+						}
+						
+						// Start beryx console
+						startConsoleThread();
+					}
+				}		
 
 				// Initialize interactive terminal and load menu
 //				initTerminalLoadMenu();
-			}
-
-			else if (!hasDefault && hasSim) {
-				// Get the next argument as the filename.
-				File loadFile = new File(argList.get(index + 1));
-				if (loadFile.exists() && loadFile.canRead()) {
-					sim.loadSimulation(loadFile);
-
-					// Start simulation.
-					startSimThread(false);	
-					
-					if (useGUI) {
-//						logger.config("useGUI is " + useGUI);
-						setupMainWindow();
-					} 
-					
-					else {
-						// Go headless				
-					}
-					
-					// Start beryx console
-					startConsoleThread();
-				
-				}
-				else {
-//					logger.config("Invalid param.");
-					exitWithError("Problem loading simulation. No valid saved sim is found.", null);
-				}
-			}
+//			}
+//
+//			else if (!hasDefault && hasSim) {
+//				// Get the next argument as the filename.
+//				File loadFile = new File(argList.get(index + 1));
+//				if (loadFile.exists() && loadFile.canRead()) {
+//					sim.loadSimulation(loadFile);
+//
+//					// Start simulation.
+//					startSimThread(false);	
+//					
+//					if (useGUI) {
+////						logger.config("useGUI is " + useGUI);
+//						setupMainWindow();
+//					} 
+//					
+//					else {
+//						// Go headless				
+//					}
+//					
+//					// Start beryx console
+//					startConsoleThread();
+//				
+//				}
+//				else {
+////					logger.config("Invalid param.");
+//					exitWithError("Problem loading simulation. No valid saved sim is found.", null);
+//				}
+//			}
 
 		} catch (Exception e) {
 			// logger.log(Level.SEVERE, "Problem loading existing simulation", e);

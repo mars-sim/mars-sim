@@ -286,9 +286,7 @@ public abstract class TravelMission extends Mission {
 	protected final void startTravelToNextNode() {
 		setNextNavpointIndex(navIndex + 1);
 		setTravelStatus(TRAVEL_TO_NAVPOINT);
-		if (marsClock == null)
-			marsClock = Simulation.instance().getMasterClock().getMarsClock();
-		legStartingTime = (MarsClock) marsClock.clone();
+		legStartingTime = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
 	}
 
 	/**

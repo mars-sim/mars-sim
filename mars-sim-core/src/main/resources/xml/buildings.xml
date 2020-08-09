@@ -720,9 +720,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<!--    exterior-xloc : the relative X location outside the building. -->						
 			<!--    exterior-yloc : the relative Y location outside the building. -->
 			<EVA airlock-capacity="4" 
-			    xloc="0.0" yloc="0.0" 
-				interior-xloc="2.0" interior-yloc="0.0"
-				exterior-xloc="3.0" exterior-yloc="0.0" />
+			    xloc="2.0" yloc="0.0" 
+				interior-xloc="1.5" interior-yloc="0.0"
+				exterior-xloc="3.5" exterior-yloc="0.0" />
 			<life-support capacity="4" power-required="0.2" />
 			<power-generation>
 				<power-source type="Solar Power Source" power="2.0" />

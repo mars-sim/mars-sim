@@ -166,11 +166,11 @@ public class Simulation implements ClockListener, Serializable {
 	/** OS architecture string. */
 	private final static String OS_ARCH = (System.getProperty("os.arch").contains("64") ? "64-bit" : "32-bit");
 	/** Default save filename. */
-	private final static String SAVE_FILE = Msg.getString("Simulation.saveFile"); //$NON-NLS-1$
+	public final static String SAVE_FILE = Msg.getString("Simulation.saveFile"); //$NON-NLS-1$
 	/** Default temp filename. */
 //	private final static String TEMP_FILE = Msg.getString("Simulation.tempFile"); //$NON-NLS-1$
 	/** Default save filename extension. */
-	private final static String SAVE_FILE_EXTENSION = Msg.getString("Simulation.saveFile.extension"); //$NON-NLS-1$
+	public final static String SAVE_FILE_EXTENSION = Msg.getString("Simulation.saveFile.extension"); //$NON-NLS-1$
 	/** JSON save filename extension. */
 //	private final static String JSON_EXTENSION = Msg.getString("Simulation.jsonFile.extension"); //$NON-NLS-1$
 	/** local time string */
@@ -224,7 +224,7 @@ public class Simulation implements ClockListener, Serializable {
 	/** Flag to keep track of whether the initial state of simulation has been initialized. */
 	private transient boolean doneInitializing = false;
 	
-	private transient boolean defaultLoad = false;
+//	private transient boolean defaultLoad = false;
 
 	private transient boolean justSaved = true;
 
@@ -665,17 +665,13 @@ public class Simulation implements ClockListener, Serializable {
 //			e.printStackTrace();
 //		}
 
-		// Use default file path if file is null.
-		if (f == null) {
-			// logger.config("Yes file is null");
-			// [landrus, 27.11.09]: use the home dir instead of unknown relative paths.
+		if (f == null) {		
+			// Try the default file path if file is null.
 			f = new File(SAVE_DIR, SAVE_FILE + SAVE_FILE_EXTENSION);
-//			 logger.config("file is " + f);
-			defaultLoad = true;
-		} else {
-			defaultLoad = false;
-		}
-
+		} 
+		
+		logger.config("The file to be loaded is " + f);
+		
 		if (f.exists() && f.canRead()) {
 //			logger.config(" - - - - - - - - - - - - - -");
 //			logger.config(Msg.getString("Simulation.log.loadSimFrom", f)); //$NON-NLS-1$
@@ -747,7 +743,7 @@ public class Simulation implements ClockListener, Serializable {
      * Deserialize to Object from given file.
      */
     public void deserialize(File file) throws IOException, ClassNotFoundException {
-		logger.config("deserialize() is on " + Thread.currentThread().getName());
+//		logger.config("deserialize() is on " + Thread.currentThread().getName());
 		
 //		byte[] buf = new byte[8192];
 		FileInputStream in = null;
@@ -1692,7 +1688,7 @@ public class Simulation implements ClockListener, Serializable {
 	 */
 	public void endSimulation() {
 		logger.log(Level.CONFIG, "Exiting the simulation. Good Bye !");
-		defaultLoad = false;
+//		defaultLoad = false;
 		instance().stop();
 		if (masterClock != null)
 			masterClock.endClockListenerExecutor();
@@ -1871,14 +1867,14 @@ public class Simulation implements ClockListener, Serializable {
 		return masterClock;
 	}
 
-	/**
-	 * Checks if simulation was loaded from default save file.
-	 * 
-	 * @return true if default load.
-	 */
-	public boolean isDefaultLoad() {
-		return defaultLoad;
-	}
+//	/**
+//	 * Checks if simulation was loaded from default save file.
+//	 * 
+//	 * @return true if default load.
+//	 */
+//	public boolean isDefaultLoad() {
+//		return defaultLoad;
+//	}
 
 	/**
 	 * Sets if simulation was loaded with GUI.

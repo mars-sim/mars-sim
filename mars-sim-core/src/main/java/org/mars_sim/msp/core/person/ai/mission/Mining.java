@@ -18,6 +18,7 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.equipment.EquipmentType;
@@ -476,9 +477,11 @@ public class Mining extends RoverMission {
 	 */
 	private void miningPhase(MissionMember member) {
 
+		MarsClock currentTime = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
+		
 		// Set the mining site start time if necessary.
 		if (miningSiteStartTime == null) {
-			miningSiteStartTime = (MarsClock) marsClock.clone();
+			miningSiteStartTime = currentTime;
 		}
 
 		// Detach towed light utility vehicle if necessary.
@@ -489,8 +492,8 @@ public class Mining extends RoverMission {
 
 		// Check if crew has been at site for more than three sols.
 		boolean timeExpired = false;
-//		MarsClock currentTime = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
-		if (MarsClock.getTimeDiff(marsClock, miningSiteStartTime) >= MINING_SITE_TIME) {
+
+		if (MarsClock.getTimeDiff(currentTime, miningSiteStartTime) >= MINING_SITE_TIME) {
 			timeExpired = true;
 		}
 

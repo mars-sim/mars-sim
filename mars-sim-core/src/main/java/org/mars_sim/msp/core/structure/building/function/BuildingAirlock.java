@@ -142,10 +142,14 @@ public class BuildingAirlock extends Airlock {
         }
         
         else if (!person.isBuried() || !person.isDeclaredDead()) {
+			String loc = person.getLocationTag().getImmediateLocation();
+			loc = loc == null ? "[N/A]" : loc;
+			loc = loc.equalsIgnoreCase("Outside") ? loc.toLowerCase() : "in " + loc;
+			
           	LogConsolidated.log(logger, Level.SEVERE, 0, sourceName,	
           		"[" + person.getLocationTag().getLocale() + "] "
           		 + person +  " was supposed to be entering " + getEntityName() 
-          		 + "'s airlock but already in " + person.getLocationTag().getImmediateLocation());
+          		 + "'s airlock but already " + loc + ".");
         }
     	
     	return successful;
@@ -204,10 +208,14 @@ public class BuildingAirlock extends Airlock {
         }
     	
         else if (!person.isBuried() || !person.isDeclaredDead()) {
-            	LogConsolidated.log(logger, Level.SEVERE, 0, sourceName,	
+			String loc = person.getLocationTag().getImmediateLocation();
+			loc = loc == null ? "[N/A]" : loc;
+			loc = loc.equalsIgnoreCase("Outside") ? loc.toLowerCase() : "in " + loc;
+			
+            LogConsolidated.log(logger, Level.SEVERE, 0, sourceName,	
                   	"[" + person.getLocationTag().getLocale() + "] "	
             		+ person +  " was supposed to be exiting " + getEntityName()
-                    + "'s airlock but already " + person.getLocationTag().getImmediateLocation());
+                    + "'s airlock but already " + loc + ".");
         }
     	
     	return successful;

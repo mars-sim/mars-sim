@@ -14,7 +14,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
 
-import org.apache.commons.collections.bidimap.TreeBidiMap;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ShiftType;
@@ -42,17 +41,19 @@ public class TaskSchedule implements Serializable {
 	 */
 	public static final int NUM_SOLS = 100;
 	public static final int ON_CALL_START = 0;
-	public static final int ON_CALL_END = 999;
-	public static final int A_START = 0;
-	public static final int A_END = 499;
-	public static final int B_START = 500;
-	public static final int B_END = 999;
+	public static final int ON_CALL_END = 1000;
+	
+	public static final int A_START = 250;
+	public static final int A_END = 750;
+	public static final int B_START = 751;
+	public static final int B_END = 249;
+	
 	public static final int X_START = 0;
 	public static final int X_END = 333;
 	public static final int Y_START = 334;
-	public static final int Y_END = 665;
-	public static final int Z_START = 666;
-	public static final int Z_END = 999;
+	public static final int Y_END = 666;
+	public static final int Z_START = 667;
+	public static final int Z_END = 1000;
 
 	public static final int MISSION_WINDOW = 100;
 	
@@ -73,9 +74,9 @@ public class TaskSchedule implements Serializable {
 	private ShiftType shiftTypeCache;
 
 	private Person person;
-	private Robot robot;
+//	private Robot robot;
 
-	/* The degree of willingness (0 to 100) to take the work shift. */
+	/** The degree of willingness (0 to 100) to take on a particular work shift. */
 	private Map<ShiftType, Integer> shiftChoice;
 
 	// private Map <Integer, List<OneTask>> schedules;
@@ -117,11 +118,11 @@ public class TaskSchedule implements Serializable {
 //		functions = new ConcurrentHashMap<String, Integer>();
 
 		shiftChoice = new HashMap<>();
-		shiftChoice.put(ShiftType.X, 51);
-		shiftChoice.put(ShiftType.Y, 51);
-		shiftChoice.put(ShiftType.Z, 51);
-		shiftChoice.put(ShiftType.A, 51);
-		shiftChoice.put(ShiftType.B, 51);
+		shiftChoice.put(ShiftType.X, 15);
+		shiftChoice.put(ShiftType.Y, 50);
+		shiftChoice.put(ShiftType.Z, 35);
+		shiftChoice.put(ShiftType.A, 75);
+		shiftChoice.put(ShiftType.B, 25);
 		shiftChoice.put(ShiftType.ON_CALL, 50);
 		shiftChoice.put(ShiftType.OFF, 50);
 
@@ -135,7 +136,7 @@ public class TaskSchedule implements Serializable {
 	 * @param robot
 	 */
 	public TaskSchedule(Robot robot) {
-		this.robot = robot;
+//		this.robot = robot;
 		actorName = robot.getName();
 		this.solCache = 1;
 		allActivities = new ConcurrentHashMap<>();
@@ -715,27 +716,27 @@ public class TaskSchedule implements Serializable {
 			return isTimeAtStartOfAShift(missionWindow);
 		}
 		
-		if (currentShiftType == ShiftType.A) {
-			if (millisols == 1000 || (millisols >= A_START && millisols <= A_START + missionWindow))
+		else if (currentShiftType == ShiftType.A) {
+			if (millisols >= A_START && (millisols <= A_START + missionWindow))
 				return true;
 		}
 
-		if (currentShiftType == ShiftType.B) {
-			if (millisols >= B_START && millisols <= B_START + missionWindow)
+		else if (currentShiftType == ShiftType.B) {
+			if (millisols >= B_START && (millisols <= B_START + missionWindow))
 				return true;
 		}
 
-		if (currentShiftType == ShiftType.X) {
-			if (millisols == 1000 || (millisols >= X_START && millisols <= X_START + missionWindow))
+		else if (currentShiftType == ShiftType.X) {
+			if (millisols >= X_START && (millisols <= X_START + missionWindow))
 				return true;
 		}
 
-		if (currentShiftType == ShiftType.Y) {
+		else if (currentShiftType == ShiftType.Y) {
 			if (millisols >= Y_START && millisols <= Y_START + missionWindow)
 				return true;
 		}
 
-		if (currentShiftType == ShiftType.Z) {
+		else if (currentShiftType == ShiftType.Z) {
 			if (millisols >= Z_START && millisols <= Z_START + missionWindow)
 				return true;
 		}
@@ -909,7 +910,7 @@ public class TaskSchedule implements Serializable {
 	public void destroy() {
 		person = null;
 		marsClock = null;
-		robot = null;
+//		robot = null;
 		// todaySchedule = null;
 		// schedules = null;
 		allActivities = null;

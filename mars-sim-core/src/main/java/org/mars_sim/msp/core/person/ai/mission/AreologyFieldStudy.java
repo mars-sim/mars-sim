@@ -19,6 +19,7 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Direction;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.task.AreologyStudyFieldWork;
@@ -502,15 +503,17 @@ public class AreologyFieldStudy extends RoverMission implements Serializable {
 	 */
 	private void researchFieldSitePhase(MissionMember member) {
 
+		MarsClock currentTime = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
+		
 		// Check if field site research has just started.
 		if (fieldSiteStartTime == null) {
-			fieldSiteStartTime = (MarsClock) marsClock.clone();
+			fieldSiteStartTime = currentTime;
 		}
 
 		// Check if crew has been at site for more than required length of time.
 		boolean timeExpired = false;
-//		MarsClock currentTime = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
-		if (MarsClock.getTimeDiff((MarsClock) marsClock.clone(), fieldSiteStartTime) >= FIELD_SITE_TIME) {
+
+		if (MarsClock.getTimeDiff(currentTime, fieldSiteStartTime) >= FIELD_SITE_TIME) {
 			timeExpired = true;
 		}
 

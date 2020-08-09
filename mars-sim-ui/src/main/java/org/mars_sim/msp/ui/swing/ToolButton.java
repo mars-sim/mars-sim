@@ -37,6 +37,10 @@ extends JButton {
 	public ToolButton(String toolName, String imageName) {
 		// Use JButton constructor
 		super(ImageLoader.getIcon(imageName));
+		setOpaque(false);
+		setBackground(new Color(0,0,0,128));
+		setContentAreaFilled(false);
+		setBorderPainted(false);
 		// Initialize toolName
 		this.toolName = toolName;
 		

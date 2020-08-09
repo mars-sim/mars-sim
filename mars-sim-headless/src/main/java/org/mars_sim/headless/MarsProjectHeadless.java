@@ -115,6 +115,13 @@ public class MarsProjectHeadless {
 			// new Simulation(); // NOTE: NOT supposed to start another instance of the
 			// singleton Simulation
 			
+			String str = "";
+			for (String s : args) {
+				str = str + "[" + s + "] "; 
+			}
+			
+			logger.config("List of input args : " + str);
+			
 			// Decompress map dat files
 			//decompressMaps();
 			
@@ -359,51 +366,101 @@ public class MarsProjectHeadless {
 		sim.createNewSimulation(userTimeRatio, true);
 		
 		try {
-			boolean hasDefault = argList.contains(DEFAULT_SIM_FILENAME);
+
+			boolean hasDefault = argList.contains(Simulation.SAVE_FILE + Simulation.SAVE_FILE_EXTENSION);
+			boolean hasSim = argList.contains(Simulation.SAVE_FILE_EXTENSION);
+			
+			String simStr = "";
+			for (String s : argList) {
+				if (s.contains(Simulation.SAVE_FILE_EXTENSION))
+					simStr = s;
+			}
+			
 			int index = argList.indexOf("-load");
-			boolean hasSim = argList.contains(".sim");
+			
+			logger.config("hasDefault is " + hasDefault); 
+			logger.config("hasSim is " + hasSim);		
 			
 			// Initialize interactive terminal 
 			InteractiveTerm.initializeTerminal();	
 			
-			if (hasDefault || !hasSim) {
-				// Prompt to open the file cHooser to select a saved sim
-				boolean canLoad = loadSimulationProcess(false);
-				if (!canLoad) {
-					// Create class instances
-					sim.createNewSimulation(userTimeRatio, false);	
-				}
-				else {			
-					// Start simulation clock
-					startSimThread(true);				
-					
-					// Start beryx console
-					startConsoleThread();
+//			if (hasDefault || hasSim) {
 				
-				}
+				if (hasDefault) {
+					File loadFile = new File(Simulation.SAVE_DIR, Simulation.SAVE_FILE + Simulation.SAVE_FILE_EXTENSION);
+					if (loadFile.exists() && loadFile.canRead()) {
+						sim.loadSimulation(loadFile);
 
+						// Start simulation.
+						startSimThread(false);	
+						
+						// Start beryx console
+						startConsoleThread();
+					
+					}
+					else {
+//						logger.config("Invalid param.");
+						exitWithError("Problem loading simulation. default.sim is found but can't be loaded.", null);
+					}
+				}
+				
+				else if (hasSim) {
+					File loadFile = new File(Simulation.SAVE_DIR, simStr);
+					if (loadFile.exists() && loadFile.canRead()) {
+						sim.loadSimulation(loadFile);
+
+						// Start simulation.
+						startSimThread(false);	
+						
+						// Start beryx console
+						startConsoleThread();
+					
+					}
+					else {
+//						logger.config("Invalid param.");
+						exitWithError("Problem loading simulation. default.sim is found but can't be loaded.", null);
+					}
+				}
+				
+				else {
+					// Prompt to open the file cHooser to select a saved sim
+//					boolean canLoad = MainWindow.loadSimulationProcess(false);
+					boolean canLoad = loadSimulationProcess(false);
+					if (!canLoad) {
+						// Create class instances
+						sim.createNewSimulation(userTimeRatio, false);	
+					}
+					else {			
+						// Start simulation clock
+						startSimThread(true);				
+						
+						// Start beryx console
+						startConsoleThread();
+					
+					}
+				}
 				// Initialize interactive terminal and load menu
 //				initTerminalLoadMenu();
-			}
-
-			else if (!hasDefault && hasSim) {
-				// Get the next argument as the filename.
-				File loadFile = new File(argList.get(index + 1));
-				if (loadFile.exists() && loadFile.canRead()) {
-					sim.loadSimulation(loadFile);
-
-					// Start simulation.
-					startSimThread(false);	
-					
-					// Start beryx console
-					startConsoleThread();
-				
-				}
-				else {
-//					logger.config("Invalid param.");
-					exitWithError("Problem loading simulation. No valid saved sim is found.", null);
-				}
-			}
+//			}
+//		
+//			else if (!hasDefault && hasSim) {
+//				// Get the next argument as the filename.
+//				File loadFile = new File(argList.get(index + 1));
+//				if (loadFile.exists() && loadFile.canRead()) {
+//					sim.loadSimulation(loadFile);
+//
+//					// Start simulation.
+//					startSimThread(false);	
+//					
+//					// Start beryx console
+//					startConsoleThread();
+//				
+//				}
+//				else {
+////					logger.config("Invalid param.");
+//					exitWithError("Problem loading simulation. No valid saved sim is found.", null);
+//				}
+//			}
 
 		} catch (Exception e) {
 			// logger.log(Level.SEVERE, "Problem loading existing simulation", e);

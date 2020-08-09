@@ -19,6 +19,7 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Direction;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.equipment.EquipmentType;
@@ -391,15 +392,20 @@ public class Exploration extends RoverMission implements Serializable {
 	 */
 	private void exploringPhase(MissionMember member) {
 
+		MarsClock currentTime = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
+		
 		// Add new explored site if just starting exploring.
-		if (currentSite == null) {
-			explorationSiteStartTime = (MarsClock) marsClock.clone();
+		if (explorationSiteStartTime == null) {
+			explorationSiteStartTime = currentTime;
 		}
 
 		// Check if crew has been at site for more than one sol.
 		boolean timeExpired = false;
-//		MarsClock ms = (MarsClock) marsClock.clone();
-		double timeDiff = MarsClock.getTimeDiff((MarsClock) marsClock.clone(), explorationSiteStartTime);
+//		if (currentTime == null)
+//			logger.severe("currentTime is " + currentTime);
+//		if (explorationSiteStartTime == null)
+//			logger.severe("explorationSiteStartTime is " + explorationSiteStartTime);
+		double timeDiff = MarsClock.getTimeDiff(currentTime, explorationSiteStartTime);
 		if (timeDiff >= EXPLORING_SITE_TIME) {
 			timeExpired = true;
 		}
@@ -554,7 +560,7 @@ public class Exploration extends RoverMission implements Serializable {
 		// Add estimated remaining exploration time at current site if still there.
 		if (EXPLORE_SITE.equals(getPhase())) {
 //			MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
-			double timeSpentAtExplorationSite = MarsClock.getTimeDiff(marsClock, explorationSiteStartTime);
+			double timeSpentAtExplorationSite = MarsClock.getTimeDiff(Simulation.instance().getMasterClock().getMarsClock(), explorationSiteStartTime);
 			double remainingTime = EXPLORING_SITE_TIME - timeSpentAtExplorationSite;
 			if (remainingTime > 0D)
 				result += remainingTime;

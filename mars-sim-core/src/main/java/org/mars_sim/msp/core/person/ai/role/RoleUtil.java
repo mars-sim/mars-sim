@@ -10,7 +10,11 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.LogConsolidated;
+import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.TrainingType;
 import org.mars_sim.msp.core.person.TrainingUtils;
@@ -25,6 +29,11 @@ public class RoleUtil implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
+	
+	/** default logger. */
+	private static Logger logger = Logger.getLogger(RoleUtil.class.getName());
+	private static String loggerName = logger.getName();
+	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 	
 	// Define the order of each specialist role in a role prospect array
 	public static RoleType[] specialistRoles = new RoleType[] {
@@ -215,5 +224,25 @@ public class RoleUtil implements Serializable {
 		return true;
 	}
 	
+	/**
+	 * Sets the new role and print it
+	 * 
+	 * @param person
+	 * @param roleType
+	 */
+	public static void setNewRole(Person person, RoleType roleType) {
+		// Save the new role in roleHistory
+		// Save the new role in roleHistory
+		person.getRole().addRoleHistory(roleType);
+		// Fire the role event
+		person.fireUnitUpdate(UnitEventType.ROLE_EVENT, roleType);
+		
+		String s = String.format("[%s] %25s (Role) -> %s",
+				person.getLocationTag().getLocale(), 
+				person.getName(), 
+				roleType.getName());
+		
+		LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, s);
+	}
 	
 }

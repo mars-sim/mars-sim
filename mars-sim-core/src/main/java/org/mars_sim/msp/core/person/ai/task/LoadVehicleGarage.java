@@ -76,14 +76,14 @@ public class LoadVehicleGarage extends Task implements Serializable {
 	 * The amount of resources (kg) one person of average strength can load per
 	 * millisol.
 	 */
-	private static double LOAD_RATE = 30D;
+	private static double LOAD_RATE = 20D;
 	
 	/** The duration of the loading task (millisols). */
 	private static double DURATION = RandomUtil.getRandomDouble(50D) + 10D;
 
 	// Data members
 	/** Flag if this task has ended. */
-	private boolean ended = false;
+//	private boolean ended = false;
 	
 	/** Resources required to load. */
 	private Map<Integer, Number> requiredResources;
@@ -124,7 +124,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 			endTask();
 		}
 
-		if (!ended) {
+//		if (!ended) {
 			vehicle = mission.getVehicle();
 			setDescription(Msg.getString("Task.description.loadVehicleGarage.detail", vehicle.getName())); // $NON-NLS-1$
 			requiredResources = mission.getRequiredResourcesToLoad();
@@ -132,8 +132,8 @@ public class LoadVehicleGarage extends Task implements Serializable {
 			requiredEquipment = mission.getRequiredEquipmentToLoad();
 			optionalEquipment = mission.getOptionalEquipmentToLoad();
 
-//				if (requiredResources.containsKey(1))
-//					logger.info("1. food : " + Math.round((double)requiredResources.get(1)*100.0)/100.0);
+//			if (requiredResources.containsKey(1))
+//				logger.info("1. food : " + Math.round((double)requiredResources.get(1)*100.0)/100.0);
 			
 			// If vehicle is in a garage, add person to garage.
 			Building garageBuilding = BuildingManager.getBuilding(vehicle);
@@ -151,7 +151,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 			// Initialize task phase
 			addPhase(LOADING);
 			setPhase(LOADING);
-		}
+//		}
 	}
 
 	public LoadVehicleGarage(Robot robot) {
@@ -247,11 +247,11 @@ public class LoadVehicleGarage extends Task implements Serializable {
 			endTask();
 		}
 
-		if (!ended) {
+//		if (!ended) {
 			// Initialize task phase
 			addPhase(LOADING);
 			setPhase(LOADING);
-		}
+//		}
 	}
 
 	public LoadVehicleGarage(Robot robot, Vehicle vehicle, Map<Integer, Number> requiredResources,
@@ -294,15 +294,15 @@ public class LoadVehicleGarage extends Task implements Serializable {
 		setPhase(LOADING);
 	}
 
-	/**
-	 * Ends the task and performs any final actions.
-	 */
-	public void endTask() {
-		ended = true;
-		
-		super.endTask();
-	}
-	
+//	/**
+//	 * Ends the task and performs any final actions.
+//	 */
+//	public void endTask() {
+//		ended = true;
+//		
+//		super.endTask();
+//	}
+//	
 	@Override
 	public FunctionType getLivingFunction() {
 		return FunctionType.GROUND_VEHICLE_MAINTENANCE;
@@ -404,7 +404,12 @@ public class LoadVehicleGarage extends Task implements Serializable {
 	 */
 	double loadingPhase(double time) {
 
-		if (!ended) {
+    	if (settlement == null) {
+    		endTask();
+    		return 0D;
+    	}
+    	
+//		if (!ended) {
 			int strength = 0;
 			// Determine load rate.
 			if (person != null)
@@ -438,7 +443,6 @@ public class LoadVehicleGarage extends Task implements Serializable {
 				LogConsolidated.flog(Level.WARNING, 0, sourceName + "::loadingPhase", "Error in loadResources()" + e.getMessage());
 			}
 	
-	
 			// Put rover back into settlement.
 			if (roverInSettlement) {
 				sInv.storeUnit(vehicle);
@@ -448,7 +452,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 					settlement)) {
 				endTask();
 			}
-		}
+//		}
 		
 		return 0D;
 	}

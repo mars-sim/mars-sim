@@ -111,7 +111,6 @@ import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
-import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -1308,7 +1307,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 			if (millisols >= TaskSchedule.A_START && millisols <= TaskSchedule.A_END)
 				return ShiftType.A;
 
-			else if (millisols >= TaskSchedule.B_START && millisols <= TaskSchedule.B_END)
+			else if (millisols >= TaskSchedule.B_START || millisols <= TaskSchedule.B_END)
 				return ShiftType.B;
 
 		}
@@ -1768,36 +1767,38 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 
 						// For now, we may assume it will usually be X or Z, NOT Y
 						// since Y is usually where midday is at unless a person is at polar region.
-						if (oldShift == ShiftType.Y) {
+						if (oldShift == ShiftType.Y || oldShift == ShiftType.Z) {
 
-							boolean x_ok = isWorkShiftSaturated(ShiftType.X, false);
-							boolean z_ok = isWorkShiftSaturated(ShiftType.Z, false);
-							// TODO: Instead of throwing a dice,
-							// take the shift that has less sunlight
-							int rand;
-							ShiftType newShift = null;
-
-							if (x_ok && z_ok) {
-								rand = RandomUtil.getRandomInt(1);
-								if (rand == 0)
-									newShift = ShiftType.X;
-								else
-									newShift = ShiftType.Z;
-							}
-
-							else if (x_ok)
-								newShift = ShiftType.X;
-
-							else if (z_ok)
-								newShift = ShiftType.Z;
+							ShiftType newShift = ShiftType.X;
+							
+//							boolean x_ok = isWorkShiftSaturated(ShiftType.X, false);
+//							boolean z_ok = isWorkShiftSaturated(ShiftType.Z, false);
+//							// TODO: Instead of throwing a dice,
+//							// take the shift that has less sunlight
+//							int rand;
+//							ShiftType newShift = null;
+//
+//							if (x_ok && z_ok) {
+//								rand = RandomUtil.getRandomInt(1);
+//								if (rand == 0)
+//									newShift = ShiftType.X;
+//								else
+//									newShift = ShiftType.Z;
+//							}
+//
+//							else if (x_ok)
+//								newShift = ShiftType.X;
+//
+//							else if (z_ok)
+//								newShift = ShiftType.Z;
 
 							p.setShiftType(newShift);
 						}
 
 					} // end of if (isAstronomer)
 
-					else {
-						// Not an astronomer
+					else {// Not an astronomer
+						
 						// Note: if a person's shift is over-filled or saturated, he will need to change
 						// shift
 
@@ -1831,7 +1832,6 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 										p.setShiftType(newShift);
 									}
 								}
-
 							}
 						}
 
@@ -3513,16 +3513,12 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 		int limY = 0;
 		int limZ = 0;
 
-		if (pop >= 12) {
-			limX = quotient - 1;
-			if (remainder == 0)
-				limZ = limX - 1;
-			else
-				limZ = limX;
-		} else {
-			limX = 2;
-			limZ = 2;
-		}
+		limX = quotient;
+		
+		if (remainder == 0)
+			limZ = limX + 1;
+		else
+			limZ = limX + 2;
 
 		limY = pop - limX - limZ;
 

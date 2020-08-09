@@ -15,8 +15,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
@@ -37,7 +39,9 @@ public class ChainOfCommand implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	private static Logger logger = Logger.getLogger(ChainOfCommand.class.getName());
-
+	private static String loggerName = logger.getName();
+	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+	
 	public static final int POPULATION_WITH_COMMANDER = 4;
 	public static final int POPULATION_WITH_SUB_COMMANDER = 9;
 	public static final int POPULATION_WITH_CHIEFS = 17;
@@ -147,24 +151,6 @@ public class ChainOfCommand implements Serializable {
 	public Map<RoleType, Integer> getRoleAvailability() {
 		return roleAvailability;
 	}
-
-//	/**
-//	 * Assigns a person with a specialist roleType in 7-division settlement
-//	 * 
-//	 * @param person {@link Person}
-//	 */
-//	public void assignSpecialistRole(Person person) {
-//		
-//		// Initialize roleAvailability array once only
-//		if (roleAvailability.isEmpty())
-//			initializeRoleMaps();
-//		
-//		RoleType roleType = RoleUtil.findBestRole(person);
-//				
-//		// Finalize setting a person's new role
-//		person.getRole().setNewRoleType(roleType);
-//		
-//	}
 
 	/**
 	 * Increments the number of the target role type in the map
@@ -436,16 +422,15 @@ public class ChainOfCommand implements Serializable {
 
 		else {
 			cc.setRole(RoleType.COMMANDER);
-			logger.config("[" + cc.getLocationTag().getLocale() + "] " 
-					+ cc + " got elected as the "
-					+ RoleType.COMMANDER.getName() + ".");
+			
+//			RoleUtil.setNewRole(cc, RoleType.COMMANDER);	
 		}
 
 		if (pop >= POPULATION_WITH_SUB_COMMANDER) {
+			
 			cv.setRole(RoleType.SUB_COMMANDER);
-			logger.config("[" + cv.getLocationTag().getLocale() + "] " 
-					+ cv + " got elected as the "
-					+ RoleType.SUB_COMMANDER.getName() + ".");
+			
+//			RoleUtil.setNewRole(cv, RoleType.SUB_COMMANDER);
 		}
 	}
 
@@ -539,9 +524,8 @@ public class ChainOfCommand implements Serializable {
 
 		if (mayorCandidate != null) {
 			mayorCandidate.setRole(RoleType.MAYOR);
-			logger.config("[" + mayorCandidate.getLocationTag().getLocale() + "] "
-					+ mayorCandidate
-					+ " got elected as the " + role.getName() + ".");
+			
+//			RoleUtil.setNewRole(mayorCandidate, RoleType.MAYOR);		
 		}
 	}
 
@@ -646,9 +630,8 @@ public class ChainOfCommand implements Serializable {
 
 		if (winner != null) {
 			winner.setRole(role);
-			logger.config("[" + winner.getLocationTag().getLocale() + "] " 
-					+ winner + " got elected as the "
-					+ role.getName() + ".");
+		
+//			RoleUtil.setNewRole(winner, role);
 		}
 	}
 

@@ -10,7 +10,10 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.person.Person;
@@ -22,9 +25,9 @@ public class Role implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-//	private static Logger logger = Logger.getLogger(Role.class.getName());
-//	private static String loggerName = logger.getName();
-//	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+	private static Logger logger = Logger.getLogger(Role.class.getName());
+	private static String loggerName = logger.getName();
+	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 	
 	private Person person;
 
@@ -100,32 +103,22 @@ public class Role implements Serializable {
 			// Turn in the old role
 			relinquishOldRoleType();
 
-//			if (oldType != null) {				
-//				String s = String.format("[%s] %18s (Role) : %s -> %s",
-//						person.getLocationTag().getLocale(), 
-//						person.getName(), 
-//						oldType,
-//						newType);
-//				
-//				LogConsolidated.log(Level.CONFIG, 0, sourceName, s);
-//			}
-//
-//			else {
-//				String s = String.format("[%s] %18s (Role) -> %s",
-//						person.getLocationTag().getLocale(), 
-//						person.getName(), 
-//						newType);
-//				
-//				LogConsolidated.log(Level.CONFIG, 0, sourceName, s);
-//			}
-			
-			// Save the new role in roleHistory
-			roleHistory.put(newType, marsClock);
-			// Fire the role event
-			person.fireUnitUpdate(UnitEventType.ROLE_EVENT, newType);
+			// Set new role and print it
+			RoleUtil.setNewRole(person, roleType);
+	
 		}
 	}
 
+	
+	/**
+	 * Adds the new role type in the role history map
+	 * 
+	 * @param roleType
+	 */
+	public void addRoleHistory(RoleType roleType) {
+		roleHistory.put(roleType, marsClock);
+	}
+	
 	/**
 	 * Obtains a role 
 	 * 

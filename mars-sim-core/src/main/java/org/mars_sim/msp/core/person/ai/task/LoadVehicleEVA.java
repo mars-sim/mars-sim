@@ -80,7 +80,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 
 	// Data members
 	/** Flag if this task has ended. */
-	private boolean ended = false;
+//	private boolean ended = false;
 	
 	/** The vehicle that needs to be loaded. */
 	private Vehicle vehicle;
@@ -114,22 +114,17 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 			int roverIndex = RandomUtil.getRandomInt(roversNeedingEVASuits.size() - 1);
 			vehicle = roversNeedingEVASuits.get(roverIndex); 
 			
+            setDescription(Msg.getString("Task.description.loadVehicleEVA.detail", 
+                    vehicle.getName())); //$NON-NLS-1$
+            
 			settlement = CollectionUtils.findSettlement(person.getCoordinates());
 			if (settlement == null) {
 				endTask();
-				return;
+//				return;
 			}
-		}
-		
-		else {
-			endTask();
-			return;
-		}
+		}	
 			
-			
-		if (!ended) {
-			setDescription(Msg.getString("Task.description.loadVehicleEVA.detail", vehicle.getName())); // $NON-NLS-1$
-			
+//		if (!ended) {	
 			requiredResources = new HashMap<Integer, Number>();
 //            requiredResources.put(foodID, FOOD_NEED);
 			requiredResources.put(waterID, WATER_NEED);
@@ -141,8 +136,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 			requiredEquipment.put(EquipmentType.convertName2ID(EVASuit.TYPE), 1);
 			
 			optionalEquipment = new HashMap<>(0);
-			
-		}
+//		}
 		
 		VehicleMission mission = getMissionNeedingLoading();
 		if ((vehicle == null) && (mission != null)) {
@@ -154,22 +148,17 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 			optionalEquipment = mission.getOptionalEquipmentToLoad();
 		}
 		
-		else {
-			endTask();
-			return;
-		}
-		
-		if (vehicle != null && !ended) {
+		if (vehicle != null) {// && !ended) {
 			// Determine location for loading.
 			Point2D loadingLoc = determineLoadingLocation();
 			setOutsideSiteLocation(loadingLoc.getX(), loadingLoc.getY());
 
 			// Initialize task phase
 			addPhase(LOADING);
-			
-//			if (person.isOutside()) {
-//				setPhase(WALK_BACK_INSIDE);
-//			}
+		}
+		
+		else {
+			endTask();
 		}
 	}
 
@@ -192,10 +181,10 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 		settlement = CollectionUtils.findSettlement(person.getCoordinates());
 		if (settlement == null) {
 			endTask();
-			return;
+//			return;
 		}
 			
-		if (!ended) {
+//		if (!ended) {
 			setDescription(Msg.getString("Task.description.loadVehicleEVA.detail", vehicle.getName())); // $NON-NLS-1$
 			this.vehicle = vehicle;
 
@@ -218,7 +207,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 	
 			// Initialize task phase
 			addPhase(LOADING);
-		}
+//		}
 	}
 
 	/**
@@ -356,8 +345,6 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 	protected double performMappedPhase(double time) {
 		time = super.performMappedPhase(time);
 		if (getPhase() == null) {
-//			endTask();
-//			return time;
             throw new IllegalArgumentException(person + "'s Task phase is null");
 		} else if (LOADING.equals(getPhase())) {
 			return loadingPhase(time);
@@ -376,8 +363,12 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 
 		// NOTE: in the course of the loadingPhase, a person may go from inside 
 		// to outside and come back in
-		
-		if (!ended) {
+        if (settlement == null) {
+            endTask();
+            return 0D;
+        }
+        
+//		if (!ended) {
 			// Check for an accident during the EVA operation.
 			checkForAccident(time);
 	
@@ -435,12 +426,10 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 				if (person.isOutside()) {
 					setPhase(WALK_BACK_INSIDE);	
 				}
-				else if (person.isInside()) {
-		    		endTask();
-		        }
-			}
-			
-
+//				else if (person.isInside()) {
+//		    		endTask();
+//		        }
+//			}
 		}
 		
 		return 0D;
@@ -1203,16 +1192,16 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 			robot.getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience, time);
 	}
 
-	/**
-	 * Ends the task and performs any final actions.
-	 */
-	public void endTask() {
-		ended = true;
-		
-		setPhase(WALK_BACK_INSIDE);
-		
-		super.endTask();
-	}
+//	/**
+//	 * Ends the task and performs any final actions.
+//	 */
+//	public void endTask() {
+////		ended = true;
+//		
+//		setPhase(WALK_BACK_INSIDE);
+//		
+//		super.endTask();
+//	}
 	
 	@Override
 	public void destroy() {
