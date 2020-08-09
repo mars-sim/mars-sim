@@ -84,48 +84,51 @@ public class ReviewMissionPlan extends Task implements Serializable {
 	 */
 	public ReviewMissionPlan(Person person) {
 		// Use Task constructor.
-		super(NAME, person, true, false, STRESS_MODIFIER, true, 45D + RandomUtil.getRandomInt(-10, 10));
+		super(NAME, person, true, false, STRESS_MODIFIER, true, 30D + RandomUtil.getRandomInt(-10, 10));
 
 //		logger.info(person + " was reviewing mission plan.");
 				
 		if (person.isInside()) {
 
+			List<Mission> missions = missionManager.getPendingMissions(person.getAssociatedSettlement());
+	        
+			if (missions.size() == 0)
+				endTask();
+			
 //			int pop = person.getAssociatedSettlement().getNumCitizens();
 
-				// If person is in a settlement, try to find an office building.
-				Building officeBuilding = Administration.getAvailableOffice(person);
+			// If person is in a settlement, try to find an office building.
+			Building officeBuilding = Administration.getAvailableOffice(person);
 
-				// Note: office building is optional
-				if (officeBuilding != null) {
-					office = officeBuilding.getAdministration();	
-					if (!office.isFull()) {
-						office.addStaff();
-						// Walk to the office building.
-						walkToActivitySpotInBuilding(officeBuilding, true);
-					}
+			// Note: office building is optional
+			if (officeBuilding != null) {
+				office = officeBuilding.getAdministration();	
+				if (!office.isFull()) {
+					office.addStaff();
+					// Walk to the office building.
+					walkToActivitySpotInBuilding(officeBuilding, true);
 				}
+			}
 
-				else {
-					Building dining = EatDrink.getAvailableDiningBuilding(person, false);
-					// Note: dining building is optional
-					if (dining != null) {
-						// Walk to the dining building.
-						walkToActivitySpotInBuilding(dining, true);
-					}
+			else {
+				Building dining = EatDrink.getAvailableDiningBuilding(person, false);
+				// Note: dining building is optional
+				if (dining != null) {
+					// Walk to the dining building.
+					walkToActivitySpotInBuilding(dining, true);
+				}
 //					else {
 //						// work anywhere
 //					}				
-				}
-				// TODO: add other workplace if administration building is not available
+			}
+		        
+			
+			// TODO: add other workplace if administration building is not available
 
-			}
-			else {
-				endTask();
-			}
-//		}
-//		else {
-//			endTask();
-//		}
+		}
+		else {
+			endTask();
+		}
 
 		// Initialize phase
 		addPhase(REVIEWING);
@@ -178,6 +181,9 @@ public class ReviewMissionPlan extends Task implements Serializable {
 		
         List<Mission> missions = missionManager.getPendingMissions(person.getAssociatedSettlement());
         
+        if (missions.size() == 0)
+        	endTask();
+        
         GoodsManager goodsManager = person.getAssociatedSettlement().getGoodsManager();
         
 		// Iterates through each pending mission 
@@ -190,6 +196,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 	            PlanType status = mp.getStatus();
 	
 	            if (status != null && status == PlanType.PENDING) {
+	            	
 	            	
 		            if (mp.getPercentComplete() >= 100D) {
 		            	// Go to the finished phase and finalize the approval
@@ -213,11 +220,14 @@ public class ReviewMissionPlan extends Task implements Serializable {
 						if (!reviewedBy.equals(requestedBy)
 								&& mp.isReviewerValid(reviewedBy, reviewerSettlement.getNumCitizens())) {
 							
-						    if (getTimeCompleted() < getDuration() * .95) {
+						    if (is90Completed()) {
 						    	
 								LogConsolidated.log(logger, Level.INFO, 15_000, sourceName, 
 										"[" + s + "] " + reviewedBy + " was reviewing " + requestedBy
 										+ "'s " + m.getDescription() + " mission plan.");
+								
+				            	// Use up to 90% of the time
+								return 0; 
 						    }
 						    
 						    else {
@@ -481,62 +491,83 @@ public class ReviewMissionPlan extends Task implements Serializable {
 	 */
 	private double approvingPhase(double time) {
         
-        List<Mission> missions = missionManager.getPendingMissions(person.getAssociatedSettlement());
- 		// Iterates through each pending mission 
-		Iterator<Mission> i = missions.iterator();
-		while (i.hasNext()) {
-			Mission m = i.next();		
-			MissionPlanning mp = m.getPlan();
-			
-			if (mp != null) {
-	            PlanType status = mp.getStatus();
-	
-	            if (status != null && status == PlanType.PENDING
-	            		&& mp.getPercentComplete() >= 60D) {
-	            	
-					String reviewedBy = person.getName();
-					
-					Person p = m.getStartingMember();
-					String requestedBy = p.getName();
-				
-					Settlement settlement = person.getAssociatedSettlement();
-					String s = settlement.getName();
-					
-					double score = mp.getScore();
-					
-					if (settlement.passMissionScore(score)) {
-						// Approved
-						// Updates the mission plan status
-						missionManager.approveMissionPlan(mp, p, PlanType.APPROVED);
-							
-						LogConsolidated.log(logger, Level.INFO, 0, sourceName,
-								"[" + s + "] " + reviewedBy + " approved " + requestedBy
-								+ "'s " + m.getDescription() + " mission plan. Total Score: " 
-								+ Math.round(score*10.0)/10.0 
-								+ " (Min: " + settlement.getMinimumPassingScore() + ").");
-					} else {
-						// Not Approved
-						// Updates the mission plan status
-						missionManager.approveMissionPlan(mp, p, PlanType.NOT_APPROVED);
-					
-						LogConsolidated.log(logger, Level.INFO, 0, sourceName, 
-								"[" + s + "] " + reviewedBy + " did NOT approve " + requestedBy
-								+ "'s " + m.getDescription() + " mission plan. Total Score: " 
-								+ Math.round(score*10.0)/10.0 
-								+ " (Min: " + settlement.getMinimumPassingScore() + ").");
-					}
-										
-					settlement.saveMissionScore(score);
-					
-				      // Add experience
-			        addExperience(time);
-		        
-					// Do only one review each time
-			        return 0;//endTask();
-				}
-			}
-		} // end of while
+		List<Mission> missions = missionManager.getPendingMissions(person.getAssociatedSettlement());
+	     
+		if (missions.size() == 0) 
+			endTask();
 		
+	    if (missions.size() > 0 && is90Completed()) {
+	    	
+			LogConsolidated.log(logger, Level.INFO, 5_000, sourceName, 
+					"[" + person.getLocale() + "] " + person + " was going over the approval of some mission plans.");
+			
+        	// Use up to 90% of the time
+			return 0; 
+	    }
+	    
+	    else {
+        
+	 		// Iterates through each pending mission 
+			Iterator<Mission> i = missions.iterator();
+			while (i.hasNext()) {
+				Mission m = i.next();		
+				MissionPlanning mp = m.getPlan();
+				
+				if (mp != null) {
+		            PlanType status = mp.getStatus();
+		
+		            if (status != null && status == PlanType.PENDING
+		            		&& mp.getPercentComplete() >= 60D) {
+		            	
+						String reviewedBy = person.getName();
+						
+						Person p = m.getStartingMember();
+						String requestedBy = p.getName();
+					
+						Settlement settlement = person.getAssociatedSettlement();
+						String s = settlement.getName();
+						
+						double score = mp.getScore();
+						
+						if (settlement.passMissionScore(score)) {
+							// Approved
+							// Updates the mission plan status
+							missionManager.approveMissionPlan(mp, p, PlanType.APPROVED);
+								
+							LogConsolidated.log(logger, Level.INFO, 0, sourceName,
+									"[" + s + "] " + reviewedBy + " approved " + requestedBy
+									+ "'s " + m.getDescription() + " mission plan. Total Score: " 
+									+ Math.round(score*10.0)/10.0 
+									+ " (Min: " + settlement.getMinimumPassingScore() + ").");
+						} else {
+							// Not Approved
+							// Updates the mission plan status
+							missionManager.approveMissionPlan(mp, p, PlanType.NOT_APPROVED);
+						
+							LogConsolidated.log(logger, Level.INFO, 0, sourceName, 
+									"[" + s + "] " + reviewedBy + " did NOT approve " + requestedBy
+									+ "'s " + m.getDescription() + " mission plan. Total Score: " 
+									+ Math.round(score*10.0)/10.0 
+									+ " (Min: " + settlement.getMinimumPassingScore() + ").");
+						}
+											
+						settlement.saveMissionScore(score);
+						
+					      // Add experience
+				        addExperience(time);
+			        
+						// Use up this time period 
+				        // Do NOT call endTask()
+				        // endTask();
+				        
+				        // Note: Do only one review each time
+				        return 0;
+				        
+					}
+				}
+			} // end of while
+	    }
+	    
         return 0;
 	}
 

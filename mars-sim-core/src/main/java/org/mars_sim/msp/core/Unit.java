@@ -964,6 +964,10 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 	public LocationTag getLocationTag() {
 		return tag;
 	}
+	
+	public String getLocale() {
+		return tag.getLocale();
+	}
 
 	public Settlement getSettlement() {
 		if (this instanceof Equipment) {

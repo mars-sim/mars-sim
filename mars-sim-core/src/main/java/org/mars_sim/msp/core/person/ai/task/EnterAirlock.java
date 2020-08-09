@@ -265,7 +265,7 @@ public class EnterAirlock extends Task implements Serializable {
 		if (person.isInside()) {
 			LogConsolidated.log(logger, Level.WARNING, 0, sourceName, 
 					"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
-					+ " already went inside " + loc + ". Go to the next phase");
+					+ " already went inside " + loc + ". Go to 'waiting inside airlock' phase.");
 			
 			// Note: Should not end the task
 //			endTask();
@@ -277,7 +277,7 @@ public class EnterAirlock extends Task implements Serializable {
 			
 			LogConsolidated.log(logger, Level.INFO, 4000, sourceName, 
 					"[" + person.getLocationTag().getLocale() + "] " + person.getName() + 
-					" went inside the airlock chamber, waiting inside the airlock phase.");
+					" went inside the airlock chamber. Go to 'waiting inside airlock' phase.");
 			
 			// Add experience
 			addExperience(time - remainingTime);
@@ -308,8 +308,6 @@ public class EnterAirlock extends Task implements Serializable {
                 if (!airlock.isActivated()) {
                     airlock.activateAirlock(person);
                 }
-
-                logger.finer(person + " has entered airlock");
 
 				// Add experience
 				addExperience(time - remainingTime);

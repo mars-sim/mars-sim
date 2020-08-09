@@ -882,6 +882,16 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	}
 
 	/**
+	 * Sees if the task is at least 90% completed.
+	 * 
+	 * @return true if the task is at least 90% completed.
+	 */
+	protected boolean is90Completed() {
+		return timeCompleted >= duration * .9;
+	}
+
+	
+	/**
 	 * Gets the related building function for this task. Override as necessary.
 	 * 
 	 * @return building function or null if none.

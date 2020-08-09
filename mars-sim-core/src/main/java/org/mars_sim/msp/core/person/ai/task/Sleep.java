@@ -473,20 +473,21 @@ public class Sleep extends Task implements Serializable {
 				refreshSleepHabit(person);
 			}
 			
+			double newTime = marsClock.getMillisol();
+			
 			// Check if fatigue is zero
 			if (newFatigue <= 0) {
-				logger.finest(person.getName() + " totally refreshed and awakened from sleep.");
+				logger.finest(person.getName() + " totally refreshed and woke up at " + (int)newTime + " millisols.");;
 				endTask();
 			}
 			
-			double newTime = marsClock.getMillisol();
 			double alarmTime = getAlarmTime();
 
 			// Check if alarm went off
 			if ((previousTime <= alarmTime) && (newTime >= alarmTime)) {
 				circadian.setNumSleep(circadian.getNumSleep() + 1);
 				circadian.updateSleepCycle((int) marsClock.getMillisol(), true);
-				logger.info(person.getName() + " woke up from the alarm at " + (int)alarmTime + " millisols.");
+				logger.info(person.getName() + " woke up by the alarm at " + (int)alarmTime + " millisols.");
 				endTask();
 			} else {
 				previousTime = newTime;
@@ -500,7 +501,7 @@ public class Sleep extends Task implements Serializable {
 			
 			// Check if alarm went off
 			if ((previousTime <= alarmTime) && (newTime >= alarmTime)) {
-				logger.finest(robot.getName() + " woke up from alarm at " + (int)alarmTime + " millisols.");
+				logger.finest(robot.getName() + " woke up by the alarm at " + (int)alarmTime + " millisols.");
 				endTask();
 			} else {
 				previousTime = newTime;
