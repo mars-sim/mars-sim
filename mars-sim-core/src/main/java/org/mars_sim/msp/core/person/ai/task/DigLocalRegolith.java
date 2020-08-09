@@ -80,7 +80,7 @@ implements Serializable {
 	private double compositeRate;
 	private double factor = .9;
     
-	private boolean ended = false;
+//	private boolean ended = false;
 	
 	private static int regolithID = ResourceUtil.regolithID;
 
@@ -94,20 +94,20 @@ implements Serializable {
         
      	settlement = CollectionUtils.findSettlement(person.getCoordinates());
      	if (settlement == null) {
-     		ended = true;
-     		super.endTask();
-        	return;
+//     		ended = true;
+     		endTask();
+//        	return;
      	}
      	
         // Get an available airlock.
-     	if (person.isInside()) {
+//     	if (person.isInside()) {
 	        airlock = getWalkableAvailableAirlock(person);
 	        if (airlock == null) {
-	        	ended = true;
-	        	super.endTask();
-	        	return;
+//	        	ended = true;
+	        	endTask();
+//	        	return;
 	        }
-     	}
+//     	}
 
         // Take bags for collecting regolith.
         if (!hasBags() && person.getInventory().findABag(false) == null) {
@@ -118,13 +118,13 @@ implements Serializable {
             	if (person.isOutside()){
                     setPhase(WALK_BACK_INSIDE);
                 }
-            	ended = true;
-            	super.endTask();
-            	return;
+//            	ended = true;
+            	endTask();
+//            	return;
             }
         }
 
-        if (!ended) {
+//        if (!ended) {
             // Determine digging location.
             Point2D.Double diggingLoc = determineDiggingLocation();
             setOutsideSiteLocation(diggingLoc.getX(), diggingLoc.getY());
@@ -144,7 +144,7 @@ implements Serializable {
         	addPhase(COLLECT_REGOLITH);
         	
 //	        logger.info(person.getName() + " was going to start digging for regolith.");
-        }
+//        }
     }
 
 	/**
@@ -159,18 +159,18 @@ implements Serializable {
 //        		"[" + person.getLocationTag().getLocale() +  "] " +
 //        		person.getName() + " just called collectRegolith()");
     			
-    	if (getTimeCompleted() > getDuration()) {
-    		if (person.isOutside())
-    			setPhase(WALK_BACK_INSIDE);
-//    		else
-//        		endTask();
-        	
-//        	LogConsolidated.log(Level.INFO, 0, sourceName, 
-//            		"[" + person.getLocationTag().getLocale() +  "] " +
-//            		person.getName() + " collectRegolith: getTimeCompleted() > getDuration()");
-        	
-            return time;
-    	}
+//    	if (getTimeCompleted() > getDuration()) {
+//    		if (person.isOutside())
+//    			setPhase(WALK_BACK_INSIDE);
+////    		else
+////        		endTask();
+//        	
+////        	LogConsolidated.log(Level.INFO, 0, sourceName, 
+////            		"[" + person.getLocationTag().getLocale() +  "] " +
+////            		person.getName() + " collectRegolith: getTimeCompleted() > getDuration()");
+//        	
+//            return time;
+//    	}
     	
         // Check for an accident during the EVA operation.
         checkForAccident(time);
@@ -188,12 +188,12 @@ implements Serializable {
             return time;
         }
 
-        if (person.isInside()) {
-            setPhase(WALK_TO_OUTSIDE_SITE);
-            return time;
-        }
-        
-        else {
+//        if (person.isInside()) {
+//            setPhase(WALK_TO_OUTSIDE_SITE);
+//            return time;
+//        }
+//        
+//        else {
         	Inventory pInv = person.getInventory();
 	        Inventory bInv = pInv.findABag(false).getInventory();
 	        
@@ -264,7 +264,7 @@ implements Serializable {
 	        // Add experience points
 	        addExperience(time);
 	        
-	        if (finishedCollecting && totalCollected > 0) {
+	        if (finishedCollecting) {// && totalCollected > 0) {
 	            LogConsolidated.log(logger, Level.INFO, 3000, sourceName, 
 	        		"[" + person.getLocationTag().getLocale() +  "] " +
 	        		person.getName() + " collected a total of " + Math.round(totalCollected*100D)/100D 
@@ -293,7 +293,7 @@ implements Serializable {
 //	            else if (person.isInside()) {
 //	        		endTask();
 //	            }
-	        }
+//	        }
         }
         
         return 0D;
@@ -332,8 +332,8 @@ implements Serializable {
     					+ person.getLocationTag().getLocale()
     					+ "] "  + person.getName() 
     					+ " was strangely unable to carry an empty bag.");
-            	ended = true;
-            	super.endTask();
+//            	ended = true;
+//            	super.endTask();
             }
         }
         else {
@@ -342,8 +342,8 @@ implements Serializable {
 					+ person.getLocationTag().getLocale()
 					+ "] "  + person.getName() 
 					+ " was unable to find an empty bag in the inventory.");
-        	ended = true;
-        	super.endTask();
+//        	ended = true;
+//        	super.endTask();
         }
     }
 
@@ -443,7 +443,7 @@ implements Serializable {
 
     @Override
     public void endTask() {
-    	ended = true;
+//    	ended = true;
     	Inventory pInv = person.getInventory();
     	Bag bag = pInv.findABag(false);
     	

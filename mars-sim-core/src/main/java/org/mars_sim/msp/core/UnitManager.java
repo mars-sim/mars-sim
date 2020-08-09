@@ -511,7 +511,6 @@ public class UnitManager implements Serializable {
 	}
 	
 	public Settlement getSettlementByID(Integer id) {
-//		System.out.println("Getting " + lookupSettlement.get(id) + " (" + id + ")");
 		return lookupSettlement.get(id);
 	}
 	

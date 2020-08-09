@@ -58,7 +58,7 @@ public class JUnitTests extends TestCase {
 	    suite.addTestSuite(LoadVehicleTest.class);
 	    suite.addTestSuite(UnloadVehicleTest.class);
 //	    suite.addTestSuite(WalkingStepsTest.class);
-	    suite.addTestSuite(WalkInteriorTest.class);
+//	    suite.addTestSuite(WalkInteriorTest.class);
 //	    suite.addTestSuite(WalkOutsideTest.class);
 	    
 		return suite;

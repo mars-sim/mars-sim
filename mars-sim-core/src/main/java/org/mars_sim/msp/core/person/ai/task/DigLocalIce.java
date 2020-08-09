@@ -79,7 +79,7 @@ implements Serializable {
 	/** The Settlement vicinity for collecting ice. */
 	private Settlement settlement;
 
-	private boolean ended = false;
+//	private boolean ended = false;
 	
 	private static int iceID = ResourceUtil.iceID;
 	
@@ -94,18 +94,18 @@ implements Serializable {
 
      	settlement = CollectionUtils.findSettlement(person.getCoordinates());
      	if (settlement == null) {
-     		ended = true;
-        	super.endTask();
-        	return;
+//     		ended = true;
+        	endTask();
+//        	return;
      	}
         
         // Get an available airlock.
      	if (person.isInside()) {
 	        airlock = getWalkableAvailableAirlock(person);
 	        if (airlock == null) {
-	        	ended = true;
-	        	super.endTask();
-	        	return;
+//	        	ended = true;
+	        	endTask();
+//	        	return;
 	        }
      	}
 
@@ -118,13 +118,13 @@ implements Serializable {
             	if (person.isOutside()){
                     setPhase(WALK_BACK_INSIDE);
                 }
-            	ended = true;
-            	super.endTask();
-            	return;
+//            	ended = true;
+            	endTask();
+//            	return;
             }
         }
 
-        if (!ended) {
+//        if (!ended) {
             // Determine digging location.
             Point2D.Double diggingLoc = determineDiggingLocation();
             setOutsideSiteLocation(diggingLoc.getX(), diggingLoc.getY());
@@ -145,7 +145,7 @@ implements Serializable {
 //	        	setPhase(WALK_TO_OUTSIDE_SITE);
         	
 	        logger.finest(person.getName() + " was going to start digging for ice.");
-        }
+//        }
     }
 
     /**
@@ -158,9 +158,9 @@ implements Serializable {
 //        		"[" + person.getLocationTag().getLocale() +  "] " +
 //        		person.getName() + " just called collectice()");
     	
-    	if (getTimeCompleted() > getDuration()) {
-    		if (person.isOutside())
-    			setPhase(WALK_BACK_INSIDE);
+//    	if (getTimeCompleted() > getDuration()) {
+//    		if (person.isOutside())
+//    			setPhase(WALK_BACK_INSIDE);
 //    		else
 //        		endTask();
     		
@@ -168,8 +168,8 @@ implements Serializable {
 //            		"[" + person.getLocationTag().getLocale() +  "] " +
 //            		person.getName() + " collectIce: getTimeCompleted() > getDuration()");
         	
-            return time;
-    	}
+//            return time;
+//    	}
     			
         // Check for an accident during the EVA operation.
         checkForAccident(time);
@@ -328,8 +328,8 @@ implements Serializable {
     					+ person.getLocationTag().getLocale()
     					+ "] "  + person.getName() 
     					+ " was strangely unable to carry an empty bag.");
-            	ended = true;
-            	super.endTask();
+//            	ended = true;
+//            	super.endTask();
             }
         }
         else {
@@ -338,8 +338,8 @@ implements Serializable {
 					+ person.getLocationTag().getLocale()
 					+ "] "  + person.getName() 
 					+ " was unable to find an empty bag in the inventory.");
-        	ended = true;
-        	super.endTask();
+//        	ended = true;
+//        	super.endTask();
         }
     }
     
@@ -441,7 +441,7 @@ implements Serializable {
 
     @Override
     public void endTask() {
-    	ended = true;
+//    	ended = true;
     	Inventory pInv = person.getInventory();
     	Bag bag = pInv.findABag(false);
     	 

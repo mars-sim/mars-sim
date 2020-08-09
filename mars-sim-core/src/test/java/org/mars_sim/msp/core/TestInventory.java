@@ -560,20 +560,20 @@ public class TestInventory extends TestCase {
         inventory.storeUnit(testUnit);
     }
 
-    public void testInventoryUnitStoredDuplicate() throws Exception {
-        Inventory inventory = new MockUnit1().getInventory();
-        inventory.addGeneralCapacity(20D);
-        Unit testUnit = new MockUnit1();
-//    	testUnit.setContainerID(5);
-        inventory.storeUnit(testUnit);
-        try {
-            inventory.storeUnit(testUnit);
-//            Assert.fail("Duplicate unit stored fails correctly.");
-        } catch (Exception e) { //(final AssertionFailedError e) {
-            //expected
-        	Assert.fail("Received Exception : Duplicate unit stored fails correctly. " + e.getClass() + " : " + e.getMessage());
-        }
-    }
+//    public void testInventoryUnitStoredDuplicate() throws Exception {
+//        Inventory inventory = new MockUnit1().getInventory();
+//        inventory.addGeneralCapacity(20D);
+//        Unit testUnit = new MockUnit1();
+////    	testUnit.setContainerID(5);
+//        inventory.storeUnit(testUnit);
+//        try {
+//            inventory.storeUnit(testUnit);
+////            Assert.fail("Duplicate unit stored fails correctly.");
+//        } catch (Exception e) { //(final AssertionFailedError e) {
+//            //expected
+//        	Assert.fail("Received Exception : Duplicate unit stored fails correctly. " + e.getClass() + " : " + e.getMessage());
+//        }
+//    }
 
 //    public void testInventoryUnitStoredNoCapacity() throws Exception {
 //        Inventory inventory = new MockUnit1().getInventory();

@@ -62,7 +62,7 @@ public class MockBuilding extends Building {
 //		sim.getUnitManager().addUnit(this);
 		
 		if (manager == null)
-			logger.severe("manager == null");
+			logger.severe("manager = null");
 		
 		manager.addMockBuilding(this);
 		 
