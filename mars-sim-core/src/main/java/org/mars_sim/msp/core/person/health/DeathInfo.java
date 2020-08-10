@@ -69,7 +69,7 @@ public class DeathInfo implements Serializable {
 	/** Time of death. */
 	private String earthTimeOfDeath;
 	/** Place of death. */
-	private String placeOfDeath;
+	private String placeOfDeath = "";
 	/** Name of the doctor who did the postmortem. */	
 	private String doctorName = "(Postmortem Exam not done yet)";
 	/** Name of mission at time of death. */
@@ -170,6 +170,7 @@ public class DeathInfo implements Serializable {
 			healthCondition = problem.getHealthRating();
 		}
 
+		// Record the place of death
 		if (person.isInVehicle()) {
 			// such as died inside a vehicle
 			containerUnit = person.getContainerUnit();

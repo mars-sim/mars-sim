@@ -171,7 +171,7 @@ public class TaskManager implements Serializable {
 	}
 
 	public String getSubTaskName() {
-		if (currentTask.getSubTask() != null) {
+		if (currentTask != null && currentTask.getSubTask() != null) {
 			return currentTask.getSubTask().getName();
 		} else {
 			return "";

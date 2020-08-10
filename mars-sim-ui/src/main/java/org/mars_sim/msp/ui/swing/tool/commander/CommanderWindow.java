@@ -32,7 +32,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
-import javax.swing.border.Border;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -48,6 +47,7 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.tool.SmartScroller;
+import org.mars_sim.msp.ui.swing.tool.VerticalLabelUI;
 import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
 
 import com.alee.extended.list.CheckBoxCellData;
@@ -285,7 +285,7 @@ public class CommanderWindow extends ToolWindow {
 	    JPanel queueListPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 
 	    WebLabel taskQueueLabel = new WebLabel("     Task Queue    ");
-		taskQueueLabel.setUI(new com.jidesoft.plaf.xerto.VerticalLabelUI(false));
+		taskQueueLabel.setUI(new VerticalLabelUI(false));
 	    taskQueueLabel.setFont( new Font( "Dialog", Font.PLAIN, 14) );
 		taskQueueLabel.setBorder(new MarsPanelBorder());
 		
@@ -317,7 +317,7 @@ public class CommanderWindow extends ToolWindow {
 		
 //		Border title = BorderFactory.createTitledBorder("Log Book");
 		WebLabel logLabel = new WebLabel("       Log Book        ");
-		logLabel.setUI(new com.jidesoft.plaf.xerto.VerticalLabelUI(true));
+		logLabel.setUI(new VerticalLabelUI(true));
 		logLabel.setFont( new Font( "Dialog", Font.PLAIN, 14) );
 		logLabel.setBorder(new MarsPanelBorder());
 		

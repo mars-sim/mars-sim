@@ -47,8 +47,6 @@ import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
 import com.alee.laf.text.WebTextField;
-import com.jidesoft.swing.SearchableUtils;
-import com.jidesoft.swing.TableSearchable;
 
 /**
  * This is a tab panel for a settlement's power grid information.
@@ -301,10 +299,10 @@ public class TabPanelPowerGrid extends TabPanel {
 
 		powerScrollPane.setViewportView(powerTable);
 
-		// 2015-06-17 Added resourcesSearchable
-		TableSearchable searchable = SearchableUtils.installSearchable(powerTable);
-		searchable.setPopupTimeout(5000);
-		searchable.setCaseSensitive(false);
+		// Add resourcesSearchable
+//		TableSearchable searchable = SearchableUtils.installSearchable(powerTable);
+//		searchable.setPopupTimeout(5000);
+//		searchable.setCaseSensitive(false);
 
 		// Lay out the spring panel.
 		SpringUtilities.makeCompactGrid(powerInfoPanel, 6, 2, // rows, cols

@@ -373,7 +373,7 @@ public class SettlementTransparentPanel extends WebComponent {
             }
         });
 
-        zoomSlider = new JSlider(JSlider.VERTICAL, -5, 7, 0);
+        zoomSlider = new JSlider(JSlider.VERTICAL, -10, 12, 0);
         zoomSlider.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 100));
         zoomSlider.setPreferredSize(new Dimension(40, 300));
         zoomSlider.setSize(new Dimension(40, 300));
@@ -381,8 +381,8 @@ public class SettlementTransparentPanel extends WebComponent {
 //        zoomSlider.putClientProperty("Nimbus.Overrides.InheritDefaults",false);
 
     	//zoomSlider = new JSliderMW(JSlider.VERTICAL, -10, 10, 0);
-//		zoomSlider.setMajorTickSpacing(5);
-		zoomSlider.setMinorTickSpacing(1);
+		zoomSlider.setMajorTickSpacing(10);
+		zoomSlider.setMinorTickSpacing(5);
 		zoomSlider.setPaintTicks(true);
 		zoomSlider.setPaintLabels(true);
 		zoomSlider.setForeground(Color.ORANGE.darker().darker());
@@ -402,6 +402,7 @@ public class SettlementTransparentPanel extends WebComponent {
 				else if (sliderValue < 0) {
 					newScale = defaultScale / (1D + ((double) sliderValue * -1D * ZOOM_CHANGE));
 				}
+//				System.out.println("newScale : " + newScale);
 				mapPanel.setScale(newScale);
 			}
 		});

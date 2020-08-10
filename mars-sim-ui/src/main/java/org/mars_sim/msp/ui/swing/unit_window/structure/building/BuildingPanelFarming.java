@@ -50,6 +50,7 @@ import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
+import org.mars_sim.msp.ui.swing.tool.VerticalLabelUI;
 
 import com.alee.laf.button.WebButton;
 import com.alee.laf.label.WebLabel;
@@ -424,7 +425,7 @@ implements MouseListener {
 	    WebLabel queueListLabel = new WebLabel("     Crop Queue     ");
 	    //<html><center>Crop<br>Queue:</center></html>");
 		//queueListLabel.setUI(new org.mars_sim.msp.ui.swing.tool.VerticalLabelUI(false));
-		queueListLabel.setUI(new com.jidesoft.plaf.xerto.VerticalLabelUI(false));
+		queueListLabel.setUI(new VerticalLabelUI(false));
 	    queueListLabel.setFont( new Font( "Dialog", Font.PLAIN, 14) );
 		queueListLabel.setBorder(new MarsPanelBorder());
 	    queueButtonLabelPanel.add(queueListLabel, BorderLayout.NORTH);

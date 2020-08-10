@@ -52,8 +52,6 @@ import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
-import com.jidesoft.swing.SearchableUtils;
-import com.jidesoft.swing.TableSearchable;
 
 /**
  * The InventoryTabPanel is a tab panel for displaying inventory information.
@@ -151,9 +149,9 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 		TableStyle.setTableStyle(resourcesTable);
 
      	// Added resourcesSearchable
-     	TableSearchable searchable = SearchableUtils.installSearchable(resourcesTable);
-        searchable.setPopupTimeout(5000);
-     	searchable.setCaseSensitive(false);
+//     	TableSearchable searchable = SearchableUtils.installSearchable(resourcesTable);
+//        searchable.setPopupTimeout(5000);
+//     	searchable.setCaseSensitive(false);
 
         // Create equipment panel
         WebScrollPane equipmentPanel = new WebScrollPane();

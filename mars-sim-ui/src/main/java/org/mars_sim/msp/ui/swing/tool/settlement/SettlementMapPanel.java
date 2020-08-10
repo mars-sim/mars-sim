@@ -10,6 +10,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -90,6 +91,8 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 	private Map<Settlement, Robot> selectedRobot;
 	private Map<Settlement, Building> selectedBuilding;
 
+	private Font font = new Font("Arial Narrow", Font.PLAIN, 12); //new Font("SansSerif", Font.BOLD, 11);
+	
 	private static Simulation sim;
 	private static UnitManager unitManager;
 	private static MasterClock masterClock;
@@ -1131,6 +1134,8 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 				|| (desktop != null && settlementWindow.isShowing() && desktop.isToolWindowOpen(SettlementWindow.NAME))) {
 			Graphics2D g2d = (Graphics2D) g;
 	
+			g2d.setFont(font);
+			
 			// long startTime = System.nanoTime();
 	
 			// Set graphics rendering hints.

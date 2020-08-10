@@ -22,7 +22,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -417,7 +416,7 @@ extends JComponent {
 			marsClock = masterClock.getMarsClock();
 		}
 		
-		Font font0 = new Font("SansSerif", Font.BOLD, 12); //new Font("SansSerif", Font.BOLD, 11);
+		Font font0 = new Font("SansSerif", Font.PLAIN, 12); //new Font("SansSerif", Font.BOLD, 11);
 
 //		StyleId styledlabelShadow = StyleId.of ( "shadow" );
 		earthDateField = new WebDateField(StyleId.datefield);//new Date(earthClock.getInstant().toEpochMilli()));

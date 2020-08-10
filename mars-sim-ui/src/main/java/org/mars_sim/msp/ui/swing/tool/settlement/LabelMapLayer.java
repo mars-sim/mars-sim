@@ -77,6 +77,7 @@ implements SettlementMapLayer {
 	static final Color SELECTED_ROBOT_LABEL_COLOR = new Color(255, 153, 11);
 	static final Color SELECTED_ROBOT_LABEL_OUTLINE_COLOR = new Color(50, 50, 50);
 
+	private Font font = new Font("Arial Narrow", Font.PLAIN, 12); 
 
 	// Data members
 	private SettlementMapPanel mapPanel;
@@ -549,7 +550,7 @@ implements SettlementMapLayer {
 		Font saveFont = g2d.getFont();
 
 		// Get the label image.
-		Font font = g2d.getFont().deriveFont(Font.BOLD, 12F);
+//		Font font = g2d.getFont().deriveFont(Font.BOLD, 12F);
 		g2d.setFont(font);
 		BufferedImage labelImage = getLabelImage(
 			label, font, g2d.getFontRenderContext(),

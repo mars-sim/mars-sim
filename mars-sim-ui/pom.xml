@@ -115,11 +115,10 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 						
 		<!-- https://mvnrepository.com/artifact/com.jidesoft/jide-oss : 1.2 MB
 			https://github.com/jidesoft/jide-oss-->
-		<dependency>
-			<groupId>com.jidesoft</groupId>
+		<dependency>				
+     		<groupId>net.janklab.opp</groupId>
 			<artifactId>jide-oss</artifactId>
-			<version>3.6.18</version>
-			<!--version>3.7.4</version-->
+			<version>3.7.4</version>
 		</dependency>
 		
 		<!-- https://mvnrepository.com/artifact/com.github.jiconfont/jiconfont-font_awesome : 124 KB
@@ -143,7 +142,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	        <snapshots>
 	            <enabled>true</enabled>
 	        </snapshots>
-	    </repository>
+	    </repository>   
 	    <repository>
             <id>oss-sonatype</id>
             <url>https://oss.sonatype.org/content/repositories/</url>
@@ -153,17 +152,17 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>
-        </repository>    
- 		<repository>
-            <id>oss-sonatype-snapshots</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
         </repository>
+	    <repository>
+			<id>oss.sonatype.org-snapshot</id>
+			<url>http://oss.sonatype.org/content/repositories/snapshots</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+	    </repository>
   		<repository>
 	        <id>jerady</id>
 	        <url>https://dl.bintray.com/jerady/maven/</url>

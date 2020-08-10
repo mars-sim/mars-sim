@@ -7,13 +7,11 @@
 package org.mars_sim.msp.ui.swing.unit_window.structure;
 
 
-import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -30,6 +28,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.tool.VerticalLabelUI;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
 import com.alee.laf.label.WebLabel;
@@ -103,7 +102,7 @@ extends TabPanel
 //		parkedVehiclePanel.add(label);
 
 		WebLabel parkedLabel = new WebLabel("    " + Msg.getString("TabPanelVehicles.parked.vehicles") + "    ", JLabel.CENTER); //$NON-NLS-1$
-		parkedLabel.setUI(new com.jidesoft.plaf.xerto.VerticalLabelUI(false));
+		parkedLabel.setUI(new VerticalLabelUI(false));
 		parkedLabel.setFont( new Font( "Dialog", Font.PLAIN, 14) );
 		parkedLabel.setBorder(new MarsPanelBorder());
 
@@ -163,7 +162,7 @@ extends TabPanel
 //		missionVehiclePanel.add(missionTitle);
 		
 		WebLabel missionLabel = new WebLabel(" " + Msg.getString("TabPanelVehicles.mission.vehicles") + " ", JLabel.CENTER); //$NON-NLS-1$
-		missionLabel.setUI(new com.jidesoft.plaf.xerto.VerticalLabelUI(true));
+		missionLabel.setUI(new VerticalLabelUI(true));
 		missionLabel.setFont( new Font( "Dialog", Font.PLAIN, 14) );
 		missionLabel.setBorder(new MarsPanelBorder());
 

@@ -276,7 +276,7 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 			// factory.add(centerPanel, DETAILS, getImage(DETAILS_ICON), true);
 		}
 
-//		LookAndFeelFactory.installJideExtension(LookAndFeelFactory.OFFICE2003_STYLE);
+//		com.jidesoft.plaf.LookAndFeelFactory.installJideExtension(com.jidesoft.plaf.LookAndFeelFactory.OFFICE2003_STYLE);
 //		tabPanel.setColorTheme(JideTabbedPane.COLOR_THEME_OFFICE2003); // COLOR_THEME_VSNET);
 		
 //		if (MainWindow.OS.contains("linux")) {

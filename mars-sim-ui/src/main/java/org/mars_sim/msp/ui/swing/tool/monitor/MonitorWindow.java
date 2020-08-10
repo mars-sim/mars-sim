@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import javax.swing.BorderFactory;
-import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
@@ -25,8 +24,8 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
 import org.mars_sim.msp.core.GameManager;
-import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.GameManager.GameMode;
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -42,13 +41,9 @@ import com.alee.laf.button.WebButton;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.tabbedpane.WebTabbedPane;
-
 import com.alee.managers.tooltip.TooltipManager;
 import com.alee.managers.tooltip.TooltipWay;
-import com.jidesoft.swing.Searchable;
-import com.jidesoft.swing.SearchableBar;
-import com.jidesoft.swing.SearchableUtils;
-import com.jidesoft.swing.TableSearchable;
+
 
 /**
  * The MonitorWindow is a tool window that displays a selection of tables each
@@ -114,8 +109,8 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	private JTable table;
 	private JTable rowTable;
 	
-	private Searchable searchable;
-	private SearchableBar searchBar;
+//	private Searchable searchable;
+//	private SearchableBar searchBar;
 
 	/**
 	 * Constructor.
@@ -426,8 +421,8 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 				rowTable = new RowNumberTable(table);
 				TableStyle.setTableStyle(rowTable);
 				// statusPanel.remove(_tableSearchableBar);
-				if (reloadSearch)
-					createSearchableBar(table);
+//				if (reloadSearch)
+//					createSearchableBar(table);
 			}
 
 			// String status = newTab.getCountString();
@@ -447,58 +442,58 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 	}
 
 	
-	public void createSearchableBar(JTable table) {
-		// Searchable searchable = null;
-		// SearchableBar _tableSearchableBar = null;
-
-		if (searchable != null)
-			SearchableUtils.uninstallSearchable(searchable);
-
-		if (table != null) {
-			// SearchableUtils.uninstallSearchable(searchable);
-			searchable = SearchableUtils.installSearchable(table);
-			// searchable.setRepeats(true);
-			searchable.setPopupTimeout(5000);
-			searchable.setCaseSensitive(false);
-			searchable.setHideSearchPopupOnEvent(false);
-			searchable.setWildcardEnabled(true);
-			searchable.setHeavyweightComponentEnabled(true);
-			// searchable.setSearchableProvider(searchableProvider)
-			searchable.setMismatchForeground(Color.PINK);
-			// WildcardSupport WildcardSupport = new WildcardSupport();
-			// searchable.setWildcardSupport(new WildcardSupport());
-
-			if (searchBar != null) {
-				searchBar.setSearchingText("");
-				statusPanel.remove(searchBar);
-				searchBar = null;
-			}
-
-			searchBar = new SearchableBar(searchable);
-			searchBar.setSearchingText("");
-			searchBar.setCompact(true);
-			// _tableSearchableBar.setSearchingText("*" +
-			// _tableSearchableBar.getSearchingText());
-
-			// _tableSearchableBar.setVisibleButtons(1);
-			TooltipManager.setTooltip(searchBar, "Use wildcards (*, +, ?) for searching. e.g. '*DaVinci' ");
-			
-			((TableSearchable) searchable).setMainIndex(-1); // -1 = search for all columns
-			searchBar.setVisibleButtons(SearchableBar.SHOW_NAVIGATION | SearchableBar.SHOW_MATCHCASE
-					| SearchableBar.SHOW_WHOLE_WORDS | SearchableBar.SHOW_STATUS);
-			searchBar.setName(table.getName());
-			searchBar.setShowMatchCount(true);
-			searchBar.setVisible(true);
-
-			statusPanel.add(searchBar); // , BorderLayout.AFTER_LAST_LINE);
-
-			// pack();
-
-			// statusPanel.add(_tableSearchableBar); // , BorderLayout.AFTER_LAST_LINE);
-			statusPanel.invalidate();
-			statusPanel.revalidate();
-		}
-	}
+//	public void createSearchableBar(JTable table) {
+//		// Searchable searchable = null;
+//		// SearchableBar _tableSearchableBar = null;
+//
+//		if (searchable != null)
+//			SearchableUtils.uninstallSearchable(searchable);
+//
+//		if (table != null) {
+//			// SearchableUtils.uninstallSearchable(searchable);
+//			searchable = SearchableUtils.installSearchable(table);
+//			// searchable.setRepeats(true);
+//			searchable.setPopupTimeout(5000);
+//			searchable.setCaseSensitive(false);
+//			searchable.setHideSearchPopupOnEvent(false);
+//			searchable.setWildcardEnabled(true);
+//			searchable.setHeavyweightComponentEnabled(true);
+//			// searchable.setSearchableProvider(searchableProvider)
+//			searchable.setMismatchForeground(Color.PINK);
+//			// WildcardSupport WildcardSupport = new WildcardSupport();
+//			// searchable.setWildcardSupport(new WildcardSupport());
+//
+//			if (searchBar != null) {
+//				searchBar.setSearchingText("");
+//				statusPanel.remove(searchBar);
+//				searchBar = null;
+//			}
+//
+//			searchBar = new SearchableBar(searchable);
+//			searchBar.setSearchingText("");
+//			searchBar.setCompact(true);
+//			// _tableSearchableBar.setSearchingText("*" +
+//			// _tableSearchableBar.getSearchingText());
+//
+//			// _tableSearchableBar.setVisibleButtons(1);
+//			TooltipManager.setTooltip(searchBar, "Use wildcards (*, +, ?) for searching. e.g. '*DaVinci' ");
+//			
+//			((TableSearchable) searchable).setMainIndex(-1); // -1 = search for all columns
+//			searchBar.setVisibleButtons(SearchableBar.SHOW_NAVIGATION | SearchableBar.SHOW_MATCHCASE
+//					| SearchableBar.SHOW_WHOLE_WORDS | SearchableBar.SHOW_STATUS);
+//			searchBar.setName(table.getName());
+//			searchBar.setShowMatchCount(true);
+//			searchBar.setVisible(true);
+//
+//			statusPanel.add(searchBar); // , BorderLayout.AFTER_LAST_LINE);
+//
+//			// pack();
+//
+//			// statusPanel.add(_tableSearchableBar); // , BorderLayout.AFTER_LAST_LINE);
+//			statusPanel.invalidate();
+//			statusPanel.revalidate();
+//		}
+//	}
 
 //	public void createRadioButton() {
 //		
@@ -693,8 +688,8 @@ public class MonitorWindow extends ToolWindow implements TableModelListener, Act
 		table = null;
 		rowTable = null;
 		
-		searchable = null;
-		searchBar = null;
+//		searchable = null;
+//		searchBar = null;
 
 	}
 }

@@ -51,9 +51,6 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
-import com.jidesoft.swing.SearchableUtils;
-import com.jidesoft.swing.TreeSearchable;
-
 /**
  * The TabPanelStructure is a tab panel showing the organizational structure of
  * a settlement.
@@ -173,9 +170,9 @@ public class TabPanelOrganization extends TabPanel {
 //	    tree.addTreeSelectionListener(new MyTreeModelListener());
 	    
 		// Use treeSearchable
-		TreeSearchable searchable = SearchableUtils.installSearchable(tree);
-		searchable.setPopupTimeout(5000);
-		searchable.setCaseSensitive(false);
+//		TreeSearchable searchable = SearchableUtils.installSearchable(tree);
+//		searchable.setPopupTimeout(5000);
+//		searchable.setCaseSensitive(false);
 		
 		defaultTreeModel = new DefaultTreeModel(root);
 		tree.setModel(defaultTreeModel);

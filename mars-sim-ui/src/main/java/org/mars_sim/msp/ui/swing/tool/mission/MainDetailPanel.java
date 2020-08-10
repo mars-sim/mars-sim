@@ -28,6 +28,7 @@ import java.util.Objects;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JList;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
@@ -84,6 +85,7 @@ import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
 import com.alee.laf.text.WebTextField;
+import com.alee.managers.icon.LazyIcon;
 
 /**
  * The tab panel for showing mission details.
@@ -283,7 +285,8 @@ public class MainDetailPanel extends WebPanel implements ListSelectionListener, 
 		vehicleLayout.add(vehiclePane);
 
 		// Create center map button
-		centerMapButton = new WebButton(ImageLoader.getIcon(Msg.getString("img.centerMap"))); //$NON-NLS-1$
+        final ImageIcon centerIcon = new LazyIcon("center").getIcon();
+		centerMapButton = new WebButton(centerIcon);//ImageLoader.getIcon(Msg.getString("img.centerMap"))); //$NON-NLS-1$
 		centerMapButton.setMargin(new Insets(2, 2, 2, 2));
 		centerMapButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {

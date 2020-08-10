@@ -9,12 +9,10 @@ package org.mars_sim.msp.ui.swing.tool.settlement;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import org.mars_sim.msp.core.CollectionUtils;
-import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -30,17 +28,21 @@ public class PersonMapLayer implements SettlementMapLayer {
 	private static final Color SELECTED_COLOR = LabelMapLayer.SELECTED_PERSON_LABEL_COLOR ;//Color.ORANGE; // white is (255, 255, 255);
 	private static final Color SELECTED_OUTLINE_COLOR = LabelMapLayer.SELECTED_PERSON_LABEL_OUTLINE_COLOR ;//new Color(0, 0, 0, 190);
 
+	private static final double DEFAULT_SCALE = 10.0;
+	
 	// Data members
-//	private int size = 1;
+	private int sizeCache = 1;
 	
 	private double circleDiameter = 10D;
 	private double centerX = circleDiameter / 2D;
 	private double centerY = circleDiameter / 2D;
 	
 	private SettlementMapPanel mapPanel;
+	
 
 	/**
 	 * Constructor
+	 * 
 	 * @param mapPanel the settlement map panel.
 	 */
 	public PersonMapLayer(SettlementMapPanel mapPanel) {
@@ -49,7 +51,6 @@ public class PersonMapLayer implements SettlementMapLayer {
 	}
 	
 	@Override
-	// 2014-11-04 Added building parameter
 	public void displayLayer(
 		Graphics2D g2d, Settlement settlement, Building building,
 		double xPos, double yPos, int mapWidth, int mapHeight,
@@ -109,11 +110,21 @@ public class PersonMapLayer implements SettlementMapLayer {
 	 */
 	private void drawPerson(Graphics2D g2d, Person person, Color iconColor, Color outlineColor, double scale) {
 
+		int size = (int)(Math.round(scale / 2.5));
+		size = Math.max(size, 1);
+		
+//		if (sizeCache != size) {
+//			sizeCache = size;
+//			System.out.println("size : " + size);	
+//		}
+		
+		int size1 = (int)(Math.round(size * 1.1));
+		
 		// Save original graphics transforms.
 		AffineTransform saveTransform = g2d.getTransform();
 
-		double translationX = (-1D * person.getXLocation() * scale - centerX);
-		double translationY = (-1D * person.getYLocation() * scale - centerY);
+		double translationX = -1.0 * person.getXLocation() * scale - size / 2.0;
+		double translationY = -1.0 * person.getYLocation() * scale - size / 2.0;
 
 		// Apply graphic transforms for label.
 		AffineTransform newTransform = new AffineTransform(saveTransform);
@@ -121,14 +132,14 @@ public class PersonMapLayer implements SettlementMapLayer {
 		newTransform.rotate(mapPanel.getRotation() * -1D, centerX, centerY);
 		g2d.setTransform(newTransform);
 
+		// Set color outline color.
+		g2d.setColor(outlineColor);
+		
+		// Draw outline circle.
+		g2d.fillOval(0,  0, size1, size1);
+		
 		// Set circle color.
 		g2d.setColor(iconColor);
-		
-		int size = 0;
-		if (scale > 0)
-			size = (int)(scale/4.5);
-		else //if (scale <= 0)
-			size = 2;
 		
 		// Draw circle
 		g2d.fillOval(0, 0, size, size);

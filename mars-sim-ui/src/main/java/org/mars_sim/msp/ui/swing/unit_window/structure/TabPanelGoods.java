@@ -32,8 +32,6 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
-import com.jidesoft.swing.SearchableUtils;
-import com.jidesoft.swing.TableSearchable;
 
 @SuppressWarnings("serial")
 public class TabPanelGoods extends TabPanel {
@@ -121,10 +119,10 @@ public class TabPanelGoods extends TabPanel {
 		TableStyle.setTableStyle(goodsTable);
 
      	// Added goodsSearchable
-     	TableSearchable searchable = SearchableUtils.installSearchable(goodsTable);
-        searchable.setPopupTimeout(5000);
-     	searchable.setCaseSensitive(false);
-        searchable.setMainIndex(0); // -1 = search for all columns
+//     	TableSearchable searchable = SearchableUtils.installSearchable(goodsTable);
+//        searchable.setPopupTimeout(5000);
+//     	searchable.setCaseSensitive(false);
+//        searchable.setMainIndex(0); // -1 = search for all columns
 
 	}
 

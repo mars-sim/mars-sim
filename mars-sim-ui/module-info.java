@@ -27,7 +27,7 @@ module mars-sim-ui {
     
     requires com.alee.managers.tooltip.TooltipManager;
     requires com.alee.managers.tooltip.TooltipWay;
-     
+
     requires jide-oss;
 
     requires mars-sim-core;
