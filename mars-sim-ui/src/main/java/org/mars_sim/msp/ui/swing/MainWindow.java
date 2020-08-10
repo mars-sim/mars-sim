@@ -100,6 +100,7 @@ extends JComponent {
 	public static final String LEFT_SVG = "/svg/icons/left_rotate.svg";
 	public static final String RIGHT_SVG = "/svg/icons/right_rotate.svg";
 	public static final String CENTER_SVG = "/svg/icons/center.svg";
+	public static final String STACK_SVG = "/svg/icons/stack.svg";
 	
 	public static final String OS = System.getProperty("os.name").toLowerCase(); // e.g. 'linux', 'mac os x'
 	private static final String SOL = "   Sol ";
@@ -242,17 +243,19 @@ extends JComponent {
 		String s0 = CrewEditor.class.getResource(MainWindow.INFO_SVG).getPath();
 //		System.out.println("s0 is " + s0);
 		
+		int size = 24;
+		
 		iconSet.addIcon(new SvgIconSource (
 		        "info",
 		        new FileResource(s0),
-		        new Dimension(12, 12)));
+		        new Dimension(size, size)));
 		
 		String s1 = CrewEditor.class.getResource(MainWindow.EDIT_SVG).getPath();
 
 		iconSet.addIcon(new SvgIconSource (
 		        "edit",
 		        new FileResource(s1),
-		        new Dimension(12, 12)));
+		        new Dimension(size, size)));
 		
 		iconSet.addIcon(new SvgIconSource (
 		        "lander",
@@ -262,18 +265,23 @@ extends JComponent {
 		iconSet.addIcon(new SvgIconSource (
 		        "left",
 		        new FileResource(CrewEditor.class.getResource(MainWindow.LEFT_SVG).getPath()),
-		        new Dimension(16, 16)));
+		        new Dimension(size, size)));
 		
 		iconSet.addIcon(new SvgIconSource (
 		        "right",
 		        new FileResource(CrewEditor.class.getResource(MainWindow.RIGHT_SVG).getPath()),
-		        new Dimension(16, 16)));
+		        new Dimension(size, size)));
 		
 		iconSet.addIcon(new SvgIconSource (
 		        "center",
 		        new FileResource(CrewEditor.class.getResource(MainWindow.CENTER_SVG).getPath()),
-		        new Dimension(16, 16)));
+		        new Dimension(size, size)));
 		
+		iconSet.addIcon(new SvgIconSource (
+		        "stack",
+		        new FileResource(CrewEditor.class.getResource(MainWindow.STACK_SVG).getPath()),
+		        new Dimension(size, size)));
+
 		IconManager.addIconSet(iconSet);
 		
 //		Usage e.g. : final ImageIcon icon = new LazyIcon("info").getIcon();

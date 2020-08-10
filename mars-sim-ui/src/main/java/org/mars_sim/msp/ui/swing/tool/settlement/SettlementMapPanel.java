@@ -55,7 +55,7 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 	public static final double DEFAULT_SCALE = 10D;
 	public static final double MAX_SCALE = 55D;
 	public static final double MIN_SCALE = 5D / 11D;
-	private static final Color MAP_BACKGROUND = new Color(181, 95, 0);
+//	private static final Color MAP_BACKGROUND = new Color(181, 95, 0);
 
 	// Data members
 	private double xPos;
@@ -68,8 +68,6 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 	/** Last Y mouse drag position. */
 	private int yLast;
 
-	private int size;
-
 	private boolean showBuildingLabels;
 	private boolean showConstructionLabels;
 	private boolean showPersonLabels;
@@ -77,7 +75,6 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 	private boolean showRobotLabels;
 	private boolean showDaylightLayer;
 
-//	private MainScene mainScene;
 	private MainDesktopPane desktop;
 	
 	private Building building;
@@ -91,14 +88,12 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 	private Map<Settlement, Robot> selectedRobot;
 	private Map<Settlement, Building> selectedBuilding;
 
-	private Font font = new Font("Arial Narrow", Font.PLAIN, 12); //new Font("SansSerif", Font.BOLD, 11);
+	private Font font = new Font("SansSerif", Font.BOLD, 11);
 	
 	private static Simulation sim;
 	private static UnitManager unitManager;
 	private static MasterClock masterClock;
 	
-//	private FXGraphics2D fxg2;
-
 	/**
 	 * Constructor 1 A panel for displaying a settlement map.
 	 */
@@ -106,13 +101,6 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 		super();
 		this.settlementWindow = settlementWindow;
 		this.desktop = desktop;
-//		this.mainScene = desktop.getMainScene();
-
-//		if (mainScene != null) {
-////			fxg2 = MainScene.getFXGraphics2D();
-//			//	    this.g2 = new FXGraphics2D(gc);
-//			fxg2 = new FXGraphics2D(MainScene.getCanvas().getGraphicsContext2D());
-//		}
 
 		if (sim == null)
 			sim = Simulation.instance();
@@ -144,15 +132,13 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 	}
 	
 	public void createUI() {
-		// logger.info("PERIOD_IN_MILLISOLS : " + PERIOD_IN_MILLISOLS);
-//		SwingUtilities.invokeLater(() -> {
-			initLayers(desktop);
-//		});
+
+		initLayers(desktop);
 
 		// Set foreground and background colors.
 		setOpaque(false);
 		setBackground(new Color(0,0,0,128));
-//		setBackground(MAP_BACKGROUND);
+
 		setForeground(Color.ORANGE);
 
 		if (masterClock == null)
@@ -160,18 +146,12 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 		
 		masterClock.addClockListener(this);
 	
-		// Add detectMouseMovement() after refactoring
-//		SwingUtilities.invokeLater(() -> {
-			detectMouseMovement();
-			setFocusable(true);
-			requestFocusInWindow();
-//		});
-
-		// SwingUtilities.updateComponentTreeUI(this);
+		detectMouseMovement();
+		setFocusable(true);
+		requestFocusInWindow();
 
 		setVisible(true);
 
-		// paintDoubleBuffer();
 		repaint();
 	}
 
@@ -187,15 +167,9 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 		mapLayers.add(new RobotMapLayer(this));
 		mapLayers.add(new LabelMapLayer(this));
 
-		size = mapLayers.size();
+		settlementTransparentPanel = new SettlementTransparentPanel(desktop, this);
+		settlementTransparentPanel.createAndShowGUI();
 
-		// SwingUtilities.invokeLater(() -> {
-//		if (desktop.getMainScene() == null)
-			settlementTransparentPanel = new SettlementTransparentPanel(desktop, this);
-			settlementTransparentPanel.createAndShowGUI();
-//		// });
-
-		// paintDoubleBuffer();
 		repaint();
 	}
 
@@ -216,8 +190,6 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 
 		mapLayers = new ArrayList<SettlementMapLayer>(1);
 		mapLayers.add(new StructureMapLayer(this));
-
-		size = mapLayers.size();
 
 		// Set preferred size.
 		setPreferredSize(new Dimension(100, 100));
@@ -248,12 +220,15 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 				int x = evt.getX();
 				int y = evt.getY();
 				
-				// Display building (x, y) coordinate of the mouse pointer within a building on the status bar
+				// Display the coordinate within a building of the hovering mouse pointer
 				showBuildingCoord(x, y); 
 				
-				// Display the coordinate (with a reference to the settlement map) on the status bar
+				// Display the pixel coordinate of the window panel
 				// Note: the top left most corner is (0,0)
-				settlementWindow.setMapXYCoord(x, y);
+				settlementWindow.setPixelXYCoord(x, y);
+				
+				// Display the settlement map coordinate of the hovering mouse pointer
+				settlementWindow.setMapXYCoord(convertToSettlementLocation(x,y));
 			}
 
 			
@@ -403,9 +378,12 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 
 				if (Math.abs(distanceX) <= xx && Math.abs(distanceY) <= yy) {
 
-					settlementWindow.setBuildingXYCoord(distanceX, distanceY);
+					settlementWindow.setBuildingXYCoord(distanceX, distanceY, false);
 
 					break;
+				}
+				else {
+					settlementWindow.setBuildingXYCoord(0, 0, true);
 				}
 			}
 		}

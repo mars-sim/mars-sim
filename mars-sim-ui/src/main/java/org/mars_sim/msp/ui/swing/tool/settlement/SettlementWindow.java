@@ -9,7 +9,9 @@ package org.mars_sim.msp.ui.swing.tool.settlement;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.Point;
 
 import javax.swing.JLayer;
 import javax.swing.WindowConstants;
@@ -24,6 +26,7 @@ import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
 
 import com.alee.extended.label.WebStyledLabel;
 import com.alee.extended.statusbar.WebStatusBar;
+import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import com.alee.managers.style.StyleId;
 
@@ -49,8 +52,8 @@ public class SettlementWindow extends ToolWindow {
 	public static final String COMMA = ", ";
 	public static final String CLOSE_PARENT = ")  ";
 	public static final String WITHIN_BLDG = "  Building : (";
-	public static final String SETTLEMENT_MAP = "  Panel : (";
-
+	public static final String SETTLEMENT_MAP = "  Map : (";
+	public static final String PIXEL_MAP = "  Window : (";
 
 	// public static final String MILLISOLS_UMST = " millisols (UMST) ";
 
@@ -63,6 +66,7 @@ public class SettlementWindow extends ToolWindow {
 
 	private WebStyledLabel buildingXYLabel;
 	private WebStyledLabel mapXYLabel;
+	private WebStyledLabel pixelXYLabel;
 	private WebStyledLabel popLabel;
 	private WebPanel subPanel;
 	
@@ -73,6 +77,9 @@ public class SettlementWindow extends ToolWindow {
 	/** Map panel. */
 	private SettlementMapPanel mapPanel;
 
+
+	private Font font = new Font("SansSerif", Font.PLAIN, 12);
+	
 	/** static MarsClock instance. */
 	private static MarsClock marsClock;
 
@@ -115,27 +122,43 @@ public class SettlementWindow extends ToolWindow {
         statusBar = new WebStatusBar();//JStatusBar(3, 3, 18);
         mainPanel.add(statusBar, BorderLayout.SOUTH);
 
-		Font font = new Font("Times New Roman", Font.BOLD, 12);
-
+		Font font1 = new Font("SansSerif", Font.BOLD, 13);
+		
         popLabel = new WebStyledLabel(StyleId.styledlabelShadow);
-        popLabel.setFont(font);
-        popLabel.setForeground(Color.GRAY);
+        popLabel.setFont(font1);
+        popLabel.setForeground(Color.DARK_GRAY);
 	    buildingXYLabel = new WebStyledLabel(StyleId.styledlabelShadow);
 	    buildingXYLabel.setFont(font);
-	    buildingXYLabel.setForeground(Color.GRAY);
+	    buildingXYLabel.setForeground(Color.GREEN.darker().darker());
 	    mapXYLabel = new WebStyledLabel(StyleId.styledlabelShadow);
 	    mapXYLabel.setFont(font);
-	    mapXYLabel.setForeground(Color.GRAY);
+	    mapXYLabel.setForeground(Color.ORANGE.darker());
+	    pixelXYLabel = new WebStyledLabel(StyleId.styledlabelShadow);
+	    pixelXYLabel.setFont(font);
+	    pixelXYLabel.setForeground(Color.GRAY);
 	    
-//        statusBar.addLeftComponent(mapXYLabel, false);  
-//        statusBar.addCenterComponent(popLabel, false);
-//        statusBar.addRightComponent(buildingXYLabel, false);
-//		statusBar.addRightCorner();
-        statusBar.add(mapXYLabel);  
-        statusBar.addToMiddle(popLabel);
-        statusBar.addToEnd(buildingXYLabel);
-//		statusBar.addRightCorner();
-		
+	    WebPanel w0 = new WebPanel();
+	    w0.setPreferredSize(new Dimension(115, 20));
+	    w0.add(pixelXYLabel);
+	    
+	    WebPanel w1 = new WebPanel();
+	    w1.setPreferredSize(new Dimension(115, 20));
+	    w1.add(popLabel);
+	    
+	    WebPanel w2 = new WebPanel();
+	    w2.setPreferredSize(new Dimension(145, 20));
+	    w2.add(buildingXYLabel);
+	    
+	    WebPanel w3 = new WebPanel();
+	    w3.setPreferredSize(new Dimension(113, 20));
+	    w3.add(mapXYLabel);
+	    
+        statusBar.add(w0); 
+        statusBar.add(new WebPanel().add(new WebLabel("                ")));  
+        statusBar.addToMiddle(w1);
+        statusBar.addToEnd(w2);
+        statusBar.addToEnd(w3);
+        
         // Create subPanel for housing the settlement map
 		subPanel = new WebPanel(new BorderLayout());
 		mainPanel.add(subPanel, BorderLayout.CENTER);
@@ -192,15 +215,26 @@ public class SettlementWindow extends ToolWindow {
 //		return String.format("%6.2f,%6.2f", x, y);
 		return (int)x + ", " + (int)y;
 	}
-	public void setBuildingXYCoord(double x, double y) {
-		StringBuilder sb = new StringBuilder();
-		sb.append(WITHIN_BLDG).append(format0(x, y)).append(CLOSE_PARENT);
-		buildingXYLabel.setText(sb.toString());
+	public void setBuildingXYCoord(double x, double y, boolean blank) {
+		if (blank) {
+			buildingXYLabel.setText("");
+		}
+		else {
+			StringBuilder sb = new StringBuilder();
+			sb.append(WITHIN_BLDG).append(format0(x, y)).append(CLOSE_PARENT);
+			buildingXYLabel.setText(sb.toString());
+		}
 	}
 
-	public void setMapXYCoord(double x, double y) {
+	public void setPixelXYCoord(double x, double y) {
 		StringBuilder sb = new StringBuilder();
-		sb.append(SETTLEMENT_MAP).append(format1(x, y)).append(CLOSE_PARENT);
+		sb.append(PIXEL_MAP).append(format1(x, y)).append(CLOSE_PARENT);
+		pixelXYLabel.setText(sb.toString());
+	}
+	
+	public void setMapXYCoord(Point.Double point) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(SETTLEMENT_MAP).append(format1(point.getX(), point.getY())).append(CLOSE_PARENT);
 		mapXYLabel.setText(sb.toString());
 	}
 	

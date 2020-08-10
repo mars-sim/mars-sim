@@ -68,16 +68,16 @@ implements SettlementMapLayer {
 	static final Color PERSON_LABEL_COLOR = new Color(12, 140, 133); // dull cyan
 	static final Color PERSON_LABEL_OUTLINE_COLOR = new Color(210, 210, 210, 190);
 
-	static final Color SELECTED_PERSON_LABEL_COLOR = new Color(67, 239, 229); // bright cyan;
-	static final Color SELECTED_PERSON_LABEL_OUTLINE_COLOR = new Color(50, 50, 50); //(255, 255, 255, 190);
+	static final Color SELECTED_PERSON_LABEL_COLOR = PERSON_LABEL_COLOR.brighter();//new Color(67, 239, 229); // bright cyan;
+	static final Color SELECTED_PERSON_LABEL_OUTLINE_COLOR = PERSON_LABEL_OUTLINE_COLOR.brighter();//new Color(50, 50, 50); //(255, 255, 255, 190);
 
-	static final Color ROBOT_LABEL_COLOR = new Color(255, 153, 11);
+	static final Color ROBOT_LABEL_COLOR = Color.ORANGE.darker();//new Color(255, 153, 11);
 	static final Color ROBOT_LABEL_OUTLINE_COLOR = new Color(210, 210, 210, 190);
 	
-	static final Color SELECTED_ROBOT_LABEL_COLOR = new Color(255, 153, 11);
-	static final Color SELECTED_ROBOT_LABEL_OUTLINE_COLOR = new Color(50, 50, 50);
+	static final Color SELECTED_ROBOT_LABEL_COLOR = ROBOT_LABEL_COLOR.brighter();//new Color(255, 153, 11);
+	static final Color SELECTED_ROBOT_LABEL_OUTLINE_COLOR = ROBOT_LABEL_OUTLINE_COLOR.brighter();//new Color(50, 50, 50);
 
-	private Font font = new Font("Arial Narrow", Font.PLAIN, 12); 
+//	private Font font = new Font("Courier New", Font.PLAIN, 11); 
 
 	// Data members
 	private SettlementMapPanel mapPanel;
@@ -363,7 +363,7 @@ implements SettlementMapLayer {
 
 		List<Person> people = CollectionUtils.getPeopleToDisplay(settlement);
 		Person selectedPerson = mapPanel.getSelectedPerson();
-		int offset = 8;
+		int offset = 10;
 
 		// Draw all people except selected person.
 		if (showNonSelectedPeople) {
@@ -435,7 +435,7 @@ implements SettlementMapLayer {
 
 		List<Robot> robots = RobotMapLayer.getRobotsToDisplay(settlement);
 		Robot selectedRobot = mapPanel.getSelectedRobot();
-		int offset = 8;
+		int offset = 10;
 
 		// Draw all robots except selected robot.
 		if (showNonSelectedRobots) {
@@ -484,8 +484,10 @@ implements SettlementMapLayer {
 			}
 		}
 	}
+	
 	/**
 	 * Draws a label centered at the X, Y location.
+	 * 
 	 * @param g2d the graphics 2D context.
 	 * @param label the label string.
 	 * @param xLoc the X location from center of settlement (meters).
@@ -545,12 +547,16 @@ implements SettlementMapLayer {
 		Color labelColor, Color labelOutlineColor, int xOffset, int yOffset
 	) {
 
+		double scale = mapPanel.getScale();
+		int size = (int)(Math.round(scale / 10.0));
+		size = Math.max(size, 1);
+		
 		// Save original graphics transforms.
 		AffineTransform saveTransform = g2d.getTransform();
 		Font saveFont = g2d.getFont();
 
 		// Get the label image.
-//		Font font = g2d.getFont().deriveFont(Font.BOLD, 12F);
+		Font font = g2d.getFont().deriveFont(Font.BOLD, 12F);
 		g2d.setFont(font);
 		BufferedImage labelImage = getLabelImage(
 			label, font, g2d.getFontRenderContext(),
@@ -558,10 +564,10 @@ implements SettlementMapLayer {
 		);
 
 		// Determine transform information.
-		double centerX = labelImage.getWidth() / 2D;
-		double centerY = labelImage.getHeight() / 2D;
-		double translationX = (-1D * xLoc * mapPanel.getScale()) - centerX;
-		double translationY = (-1D * yLoc * mapPanel.getScale()) - centerY;
+		double centerX = labelImage.getWidth() / 2D ;
+		double centerY = labelImage.getHeight() / 2D ;
+		double translationX = (-1D * xLoc * scale) - centerX;
+		double translationY = (-1D * yLoc * scale) - centerY;
 
 		// Apply graphic transforms for label.
 		AffineTransform newTransform = new AffineTransform(saveTransform);
@@ -570,7 +576,7 @@ implements SettlementMapLayer {
 		g2d.setTransform(newTransform);
 
 		// Draw image label.
-		int totalRightOffset = (labelImage.getWidth() / 2) + xOffset;
+		int totalRightOffset = (labelImage.getWidth() / 2) + (int)(Math.round(xOffset * scale / 40.0));
 		g2d.drawImage(labelImage, totalRightOffset, yOffset, mapPanel);
 
 		// Restore original graphic transforms.

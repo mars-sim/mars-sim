@@ -28,15 +28,7 @@ public class PersonMapLayer implements SettlementMapLayer {
 	private static final Color SELECTED_COLOR = LabelMapLayer.SELECTED_PERSON_LABEL_COLOR ;//Color.ORANGE; // white is (255, 255, 255);
 	private static final Color SELECTED_OUTLINE_COLOR = LabelMapLayer.SELECTED_PERSON_LABEL_OUTLINE_COLOR ;//new Color(0, 0, 0, 190);
 
-	private static final double DEFAULT_SCALE = 10.0;
-	
 	// Data members
-	private int sizeCache = 1;
-	
-	private double circleDiameter = 10D;
-	private double centerX = circleDiameter / 2D;
-	private double centerY = circleDiameter / 2D;
-	
 	private SettlementMapPanel mapPanel;
 	
 
@@ -110,7 +102,7 @@ public class PersonMapLayer implements SettlementMapLayer {
 	 */
 	private void drawPerson(Graphics2D g2d, Person person, Color iconColor, Color outlineColor, double scale) {
 
-		int size = (int)(Math.round(scale / 2.5));
+		int size = (int)(Math.round(scale / 3.0));
 		size = Math.max(size, 1);
 		
 //		if (sizeCache != size) {
@@ -118,25 +110,27 @@ public class PersonMapLayer implements SettlementMapLayer {
 //			System.out.println("size : " + size);	
 //		}
 		
-		int size1 = (int)(Math.round(size * 1.1));
+//		int size1 = (int)(Math.round(size * 1.1));
+		
+		double radius = size / 2.0;
 		
 		// Save original graphics transforms.
 		AffineTransform saveTransform = g2d.getTransform();
 
-		double translationX = -1.0 * person.getXLocation() * scale - size / 2.0;
-		double translationY = -1.0 * person.getYLocation() * scale - size / 2.0;
+		double translationX = -1.0 * person.getXLocation() * scale - radius;
+		double translationY = -1.0 * person.getYLocation() * scale - radius;
 
 		// Apply graphic transforms for label.
 		AffineTransform newTransform = new AffineTransform(saveTransform);
 		newTransform.translate(translationX, translationY);
-		newTransform.rotate(mapPanel.getRotation() * -1D, centerX, centerY);
+		newTransform.rotate(mapPanel.getRotation() * -1D, radius, radius);
 		g2d.setTransform(newTransform);
 
-		// Set color outline color.
-		g2d.setColor(outlineColor);
-		
-		// Draw outline circle.
-		g2d.fillOval(0,  0, size1, size1);
+//		// Set color outline color.
+//		g2d.setColor(outlineColor);
+//		
+//		// Draw outline circle.
+//		g2d.fillOval(0,  0, size1, size1);
 		
 		// Set circle color.
 		g2d.setColor(iconColor);
