@@ -64,6 +64,9 @@ public class Exploration extends RoverMission implements Serializable {
 	/** Mission phase. */
 	public static final MissionPhase EXPLORE_SITE = new MissionPhase(Msg.getString("Mission.phase.exploreSite")); //$NON-NLS-1$
 
+	/** Exploration Site */
+	public static final String EXPLORATION_SITE = "Exploration Site ";
+	
 	/** Number of specimen containers required for the mission. */
 	public static final int REQUIRED_SPECIMEN_CONTAINERS = 20;
 
@@ -113,9 +116,16 @@ public class Exploration extends RoverMission implements Serializable {
 
 		if (s != null & !isDone()) {
 
+			// Check if vehicle can carry enough supplies for the mission.
+			if (hasVehicle() && !isVehicleLoadable()) {
+				addMissionStatus(MissionStatus.VEHICLE_NOT_LOADABLE);
+				endMission();
+			}
+			
 			// Set mission capacity.
 			if (hasVehicle())
 				setMissionCapacity(getRover().getCrewCapacity());
+			
 			int availableSuitNum = Mission.getNumberAvailableEVASuitsAtSettlement(s);
 			if (availableSuitNum < getMissionCapacity())
 				setMissionCapacity(availableSuitNum);
@@ -125,7 +135,7 @@ public class Exploration extends RoverMission implements Serializable {
 			exploredSites = new ArrayList<ExploredLocation>(NUM_SITES);
 			explorationSiteCompletion = new HashMap<String, Double>(NUM_SITES);
 			
-			// Create a list of sites to be explored
+			// Create a list of sites to be explored during the stage of mission planning
 			createNewExploredSite();
 			
 			// Recruit additional members to mission.
@@ -150,11 +160,6 @@ public class Exploration extends RoverMission implements Serializable {
 			// Add home settlement
 			addNavpoint(new NavPoint(getStartingSettlement().getCoordinates(), s, s.getName()));
 
-			// Check if vehicle can carry enough supplies for the mission.
-			if (hasVehicle() && !isVehicleLoadable()) {
-				addMissionStatus(MissionStatus.VEHICLE_NOT_LOADABLE);
-				endMission();
-			}
 		}
 
 		if (s != null) {
@@ -185,6 +190,12 @@ public class Exploration extends RoverMission implements Serializable {
 		// Use RoverMission constructor.
 		super(description, missionType, (MissionMember) members.toArray()[0], RoverMission.MIN_GOING_MEMBERS, rover);
 
+		// Check if vehicle can carry enough supplies for the mission.
+		if (hasVehicle() && !isVehicleLoadable()) {
+			addMissionStatus(MissionStatus.VEHICLE_NOT_LOADABLE);
+			endMission();
+		}
+		
 		setStartingSettlement(startingSettlement);
 
 		// Set mission capacity.
@@ -197,9 +208,12 @@ public class Exploration extends RoverMission implements Serializable {
 		exploredSites = new ArrayList<ExploredLocation>(NUM_SITES);
 		explorationSiteCompletion = new HashMap<String, Double>(NUM_SITES);
 
+//		// Configure the sites to be explored with mineral concentration during the stage of mission planning
+		configuredExploredSite(explorationSites);
+				
 		// Set exploration navpoints.
 		for (int x = 0; x < explorationSites.size(); x++) {
-			String siteName = "exploration site " + (x + 1);
+			String siteName = EXPLORATION_SITE + (x + 1);
 			addNavpoint(new NavPoint(explorationSites.get(x), siteName));
 			explorationSiteCompletion.put(siteName, 0D);
 		}
@@ -233,11 +247,6 @@ public class Exploration extends RoverMission implements Serializable {
 		setPhase(VehicleMission.EMBARKING);
 		setPhaseDescription(Msg.getString("Mission.phase.embarking.description", startingSettlement.getName())); // $NON-NLS-1$
 
-		// Check if vehicle can carry enough supplies for the mission.
-		if (hasVehicle() && !isVehicleLoadable()) {
-			addMissionStatus(MissionStatus.VEHICLE_NOT_LOADABLE);
-			endMission();
-		}
 	}
 
 	/**
@@ -385,6 +394,19 @@ public class Exploration extends RoverMission implements Serializable {
 	}
 
 	/**
+	 * Obtains the current exploration site instance
+	 * 
+	 * @return
+	 */
+	private ExploredLocation getCurrentSite() {
+		for (ExploredLocation e: exploredSites) {
+			if (e.getLocation().equals(getCurrentMissionLocation()))
+				return e;
+		}
+		return null;
+	}
+	
+	/**
 	 * Performs the explore site phase of the mission.
 	 * 
 	 * @param member the mission member currently performing the mission
@@ -395,16 +417,15 @@ public class Exploration extends RoverMission implements Serializable {
 		MarsClock currentTime = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
 		
 		// Add new explored site if just starting exploring.
-		if (explorationSiteStartTime == null) {
+		if (explorationSiteStartTime == null) {// currentSite vs. explorationSiteStartTime
 			explorationSiteStartTime = currentTime;
+			// Create a list of sites to be explored
+//			createNewExploredSite();
+			currentSite = getCurrentSite();
 		}
 
 		// Check if crew has been at site for more than one sol.
 		boolean timeExpired = false;
-//		if (currentTime == null)
-//			logger.severe("currentTime is " + currentTime);
-//		if (explorationSiteStartTime == null)
-//			logger.severe("explorationSiteStartTime is " + explorationSiteStartTime);
 		double timeDiff = MarsClock.getTimeDiff(currentTime, explorationSiteStartTime);
 		if (timeDiff >= EXPLORING_SITE_TIME) {
 			timeExpired = true;
@@ -485,6 +506,7 @@ public class Exploration extends RoverMission implements Serializable {
 					Person person = (Person) member;
 					// If person can explore the site, start that task.
 					if (ExploreSite.canExploreSite(person, getRover())) {
+						if (currentSite == null) System.out.println(person + "'s currentSite is null");
 						assignTask(person, new ExploreSite(person, currentSite, (Rover) getVehicle()));
 					}
 				}
@@ -496,34 +518,76 @@ public class Exploration extends RoverMission implements Serializable {
 	}
 	
 	/**
-	 * Creates a new explored site at the current location, creates initial
+	 * Gets a list of navpoint coordinates
+	 * 
+	 * @return
+	 */
+	public List<Coordinates> getCoordinates() {
+		return ((TravelMission)this).getCoordinates();
+	}
+	
+	/**
+	 * Creates a new site at the current location, creates initial
 	 * estimates for mineral concentrations, and adds it to the explored site list.
 	 * 
 	 * @throws MissionException if error creating explored site.
 	 */
 	private void createNewExploredSite() {
-//		SurfaceFeatures surfaceFeatures = Simulation.instance().getMars().getSurfaceFeatures();
 		MineralMap mineralMap = surfaceFeatures.getMineralMap();
 		String[] mineralTypes = mineralMap.getMineralTypeNames();
 		
-		Map<String, Double> initialMineralEstimations = new HashMap<String, Double>(mineralTypes.length);
-		for (String mineralType : mineralTypes) {
-			double estimation = RandomUtil.getRandomDouble(MINERAL_ESTIMATION_CEILING * 2D)
-					- MINERAL_ESTIMATION_CEILING;
-			double actualConcentration = mineralMap.getMineralConcentration(mineralType, getCurrentMissionLocation());
-			estimation += actualConcentration;
-			if (estimation < 0D)
-				estimation = 0D - estimation;
-			else if (estimation > 100D)
-				estimation = 100D - estimation;
-			initialMineralEstimations.put(mineralType, estimation);
+		List<Coordinates> coords = ((TravelMission)this).getCoordinates();
+		for (Coordinates c: coords) {
+			Map<String, Double> initialMineralEstimations = new HashMap<String, Double>(mineralTypes.length);
+			for (String mineralType : mineralTypes) {
+				double estimation = RandomUtil.getRandomDouble(MINERAL_ESTIMATION_CEILING * 2D)
+						- MINERAL_ESTIMATION_CEILING;
+				double actualConcentration = mineralMap.getMineralConcentration(mineralType, c);//getCurrentMissionLocation());
+				estimation += actualConcentration;
+				if (estimation < 0D)
+					estimation = 0D - estimation;
+				else if (estimation > 100D)
+					estimation = 100D - estimation;
+				initialMineralEstimations.put(mineralType, estimation);
+			}
+			
+			ExploredLocation el = surfaceFeatures.addExploredLocation(c, //getCurrentMissionLocation()),
+					initialMineralEstimations, getAssociatedSettlement());
+			exploredSites.add(el);
 		}
-		
-		currentSite = surfaceFeatures.addExploredLocation(new Coordinates(getCurrentMissionLocation()),
-				initialMineralEstimations, getAssociatedSettlement());
-		exploredSites.add(currentSite);
 	}
 
+	/**
+	 * Configure a new site at the current location, creates initial
+	 * estimates for mineral concentrations, and adds it to the explored site list.
+	 * 
+	 * @param coords
+	 * @throws MissionException if error creating explored site.
+	 */
+	private void configuredExploredSite(List<Coordinates> coords) {
+		MineralMap mineralMap = surfaceFeatures.getMineralMap();
+		String[] mineralTypes = mineralMap.getMineralTypeNames();
+		
+		for (Coordinates c: coords) {
+			Map<String, Double> initialMineralEstimations = new HashMap<String, Double>(mineralTypes.length);
+			for (String mineralType : mineralTypes) {
+				double estimation = RandomUtil.getRandomDouble(MINERAL_ESTIMATION_CEILING * 2D)
+						- MINERAL_ESTIMATION_CEILING;
+				double actualConcentration = mineralMap.getMineralConcentration(mineralType, c);//getCurrentMissionLocation());
+				estimation += actualConcentration;
+				if (estimation < 0D)
+					estimation = 0D - estimation;
+				else if (estimation > 100D)
+					estimation = 100D - estimation;
+				initialMineralEstimations.put(mineralType, estimation);
+			}
+			
+			ExploredLocation el = surfaceFeatures.addExploredLocation(c, //getCurrentMissionLocation()),
+					initialMineralEstimations, getAssociatedSettlement());
+			exploredSites.add(el);
+		}
+	}
+	
 	@Override
 	protected boolean isCapableOfMission(MissionMember member) {
 		boolean result = super.isCapableOfMission(member);

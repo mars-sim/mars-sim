@@ -232,6 +232,20 @@ public abstract class TravelMission extends Mission {
 	}
 
 	/**
+	 * Gets a list of navpoint coordinates
+	 * 
+	 * @return
+	 */
+	public List<Coordinates> getCoordinates() {
+		List<Coordinates> list = new ArrayList<>();
+		int size = getNumberOfNavpoints();
+		for (int i=0; i< size; i++) {
+			list.add(navPoints.get(i).getLocation());
+		}
+		return list;
+	}
+	
+	/**
 	 * Gets the current navpoint the mission is stopped at.
 	 * 
 	 * @return navpoint or null if mission is not stopped at a navpoint.

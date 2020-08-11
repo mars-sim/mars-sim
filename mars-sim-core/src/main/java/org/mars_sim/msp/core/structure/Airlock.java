@@ -306,7 +306,7 @@ public abstract class Airlock implements Serializable {
 		
 		else {
 			
-//			LogConsolidated.log(logger, Level.INFO, 0, sourceName,
+//			LogConsolidated.log(logger, Level.FINER, 0, sourceName,
 //					"[" + p.getLocationTag().getLocale() + "] " 
 //						+ p.getName() + " as the operator was getting ready to activate the airlock at "
 //						+ getEntityName());
@@ -379,7 +379,7 @@ public abstract class Airlock implements Serializable {
 		
 		if (operatorID != id) {
 			operatorID = id;
-			LogConsolidated.log(logger, Level.INFO, 4_000, sourceName, "[" + p.getLocationTag().getLocale() + "] "
+			LogConsolidated.log(logger, Level.FINER, 4_000, sourceName, "[" + p.getLocationTag().getLocale() + "] "
 					+ p + " stepped up becoming the operator of the airlock.");
 		}
 	}
@@ -423,7 +423,7 @@ public abstract class Airlock implements Serializable {
 			
 			operatorID = selectedID;
 
-			LogConsolidated.log(logger, Level.INFO, 0, sourceName, "[" + selected.getLocationTag().getLocale() + "] "
+			LogConsolidated.log(logger, Level.FINER, 0, sourceName, "[" + selected.getLocationTag().getLocale() + "] "
 					+ selected + " stepped up becoming the operator of the airlock.");
 //					" in " + selected.getLocationTag().getImmediateLocation() + ".");
 		}
@@ -593,7 +593,7 @@ public abstract class Airlock implements Serializable {
 			loc = loc == null ? "[N/A]" : loc;
 			loc = loc.equalsIgnoreCase("Outside") ? loc.toLowerCase() : "in " + loc;
 			
-			LogConsolidated.log(logger, Level.INFO, 4000, sourceName, "[" + p.getLocationTag().getLocale() + "] "
+			LogConsolidated.log(logger, Level.FINER, 4000, sourceName, "[" + p.getLocationTag().getLocale() + "] "
 					+ p.getName() + " was " + loc 
 					+ " queuing for the interior door of the airlock chamber to open.");
 			
@@ -616,7 +616,7 @@ public abstract class Airlock implements Serializable {
 			loc = loc == null ? "[N/A]" : loc;
 			loc = loc.equalsIgnoreCase("Outside") ? loc.toLowerCase() : "in " + loc;
 			
-			LogConsolidated.log(logger, Level.INFO, 4000, sourceName, "[" + p.getLocationTag().getLocale() + "] "
+			LogConsolidated.log(logger, Level.FINER, 4000, sourceName, "[" + p.getLocationTag().getLocale() + "] "
 					+ p.getName() + " was " + loc 
 					+ " queuing for the exterior door of the airlock chamber to open.");
 			
@@ -641,7 +641,7 @@ public abstract class Airlock implements Serializable {
 			
 			// If there is no operator, operatorID = -1
 			if (operatorID > 0) {
-//				LogConsolidated.log(logger, Level.INFO, 4000, sourceName,
+//				LogConsolidated.log(logger, Level.FINER, 4000, sourceName,
 //						"Airlock::timePassing - the airlock was activated by " + getPersonByID(operatorID) + ".");
 				
 //				logger.config("unitManager is " + unitManager);

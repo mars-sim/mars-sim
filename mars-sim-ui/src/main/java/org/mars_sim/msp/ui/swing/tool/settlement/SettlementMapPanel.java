@@ -222,30 +222,18 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 				int x = evt.getX();
 				int y = evt.getY();
 				
-				// Display the coordinate within a building of the hovering mouse pointer
+				// Call to determine if it should display or remove the building coordinate within a building
 				showBuildingCoord(x, y); 
-				
-//				if (SettlementWindow.HORIZONTAL >= Math.abs(x) && SettlementWindow.VERTICAL >= Math.abs(y)) {
-					// Display the pixel coordinate of the window panel
-					// Note: the top left most corner is (0,0)
-					settlementWindow.setPixelXYCoord(x, y, false);
-					// Display the settlement map coordinate of the hovering mouse pointer
-					settlementWindow.setMapXYCoord(convertToSettlementLocation(x,y), false);
-//				}
-//				else {
-//					// Display the pixel coordinate of the window panel
-//					settlementWindow.setPixelXYCoord(x, y, true);
-//					// Display the settlement map coordinate of the hovering mouse pointer
-//					settlementWindow.setMapXYCoord(convertToSettlementLocation(x,y), true);
-//				}
-					
+				// Display the pixel coordinate of the window panel
+				// Note: the top left-most corner of window panel is (0,0)
+				settlementWindow.setPixelXYCoord(x, y, false);
+				// Display the settlement map coordinate of the hovering mouse pointer
+				settlementWindow.setMapXYCoord(convertToSettlementLocation(x,y), false);
+
 				if (exit) {
 					exit = false;
-//					System.out.println("exit is " + exit);
 				}					
 			}
-
-			
 		});
 		
 		addMouseListener(new MouseAdapter() {
@@ -253,23 +241,22 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 			@Override
 		    public void mouseEntered(MouseEvent evt) {
 				exit = false;
-//				System.out.print("enter ");
 			}
 		    
 		    
 			@Override
 			public void mouseExited(MouseEvent evt) {
-//				System.out.print("exit ");
+
 				if (!exit)  {
-//					System.out.println("exit is " + exit);
 					int x = evt.getX();
 					int y = evt.getY();
-					// Display the pixel coordinate of the window panel
+					// Remove the pixel coordinate of the window panel
 					// Note: the top left most corner is (0,0)
 					settlementWindow.setPixelXYCoord(x, y, true);
-					// Display the settlement map coordinate of the hovering mouse pointer
+					// Remove the settlement map coordinate of the hovering mouse pointer
 					settlementWindow.setMapXYCoord(convertToSettlementLocation(x,y), true);
-					
+					// Remove the building coordinate
+					settlementWindow.setBuildingXYCoord(0, 0, true);
 					exit = true;
 				}
 			}
@@ -366,6 +353,8 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 	 * @param yPixel the y pixel position on the displayed map.
 	 */
 	public void showBuildingCoord(int xPixel, int yPixel) {
+		boolean showBlank = true;
+		
 		Point.Double clickPosition = convertToSettlementLocation(xPixel, yPixel);
 
 		Iterator<Building> j = settlement.getBuildingManager().getBuildings().iterator();
@@ -415,16 +404,23 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 				double distanceY = Math.round((c_y - y) * 100.0) / 100.0; // Math.abs(y - c_y);
 
 				if (Math.abs(distanceX) <= xx && Math.abs(distanceY) <= yy) {
-
+					// Display the coordinate within a building of the hovering mouse pointer
 					settlementWindow.setBuildingXYCoord(distanceX, distanceY, false);
 
+					showBlank = false;
+					
 					break;
 				}
-				else {
-					settlementWindow.setBuildingXYCoord(0, 0, true);
-				}
+//				else {
+//					// Remove the building coordinate
+//					settlementWindow.setBuildingXYCoord(0, 0, true);
+//				}
 			}
 		}
+		
+		if (showBlank)
+			// Remove the building coordinate
+			settlementWindow.setBuildingXYCoord(0, 0, true);
 	}
 
 	/**

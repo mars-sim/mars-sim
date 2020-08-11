@@ -42,10 +42,10 @@ Copyright (C) 2020 Scott Davis
 
 ### UI IMPROVEMENT :
 
-1. Provide the exact relationship score and skill score (in addition
-   to the adjective) in Person Window.
+1. Provide the exact relationship score and attribute score (in addition
+   to its adjective) in Person Window.
 
-2. Add more zoom lebel to settlement window
+2. Add more level of zooming to the settlement map.
 
 3. Switch to using svg icons for better scaling and visual consistency
    with the icons in the settlement map.

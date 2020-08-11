@@ -94,7 +94,7 @@ public class EnterAirlock extends Task implements Serializable {
 
 		setPhase(WAITING_TO_ENTER_AIRLOCK);
 		
-		LogConsolidated.log(logger, Level.INFO, 4000, sourceName, 
+		LogConsolidated.log(logger, Level.FINER, 4000, sourceName, 
 				"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
 				+ " was starting the EVA ingress procedure in " + airlock.getEntityName() + ".");
 	}
@@ -151,7 +151,7 @@ public class EnterAirlock extends Task implements Serializable {
 		}
 
 		else {
-			LogConsolidated.log(logger, Level.INFO, 4000, sourceName, 
+			LogConsolidated.log(logger, Level.FINER, 4000, sourceName, 
 				"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " " 
 				+ loc + " was in the 'waiting to enter' phase for EVA ingress.");
 		
@@ -160,7 +160,7 @@ public class EnterAirlock extends Task implements Serializable {
 	                airlock.inAirlock(person)) {
 		// If airlock is depressurized and outer door unlocked, enter airlock.
 	
-			LogConsolidated.log(logger, Level.INFO, 4000, sourceName,
+			LogConsolidated.log(logger, Level.FINER, 4000, sourceName,
 				"[" + person.getLocationTag().getLocale() + "] The airlock chamber"// in " 
 //				 + ((Building)(airlock.getEntity())).getNickName() 
 				 + " had just been DEPRESSURIZED with the exterior door UNLOCKED for entry.");
@@ -184,7 +184,7 @@ public class EnterAirlock extends Task implements Serializable {
 			if (!airlock.isActivated()) {
 				if (airlock.activateAirlock(person)) {
 					
-					LogConsolidated.log(logger, Level.INFO, 4000, sourceName, 
+					LogConsolidated.log(logger, Level.FINER, 4000, sourceName, 
 							"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
 							+ " " + loc + 
 							" pressed a button asking for activating the airlock in 'waiting to enter' phase.");
@@ -192,7 +192,7 @@ public class EnterAirlock extends Task implements Serializable {
 				}
 				
 				else {
-					LogConsolidated.log(logger, Level.INFO, 4000, sourceName, 
+					LogConsolidated.log(logger, Level.FINER, 4000, sourceName, 
 							"[" + person.getLocationTag().getLocale() + "] " + person.getName()
 							+ " " + loc + " failed to activate the airlock for EVA ingress.");
 					
@@ -201,7 +201,7 @@ public class EnterAirlock extends Task implements Serializable {
 			}
 			
 			else { // the airlock has activated
-				LogConsolidated.log(logger, Level.INFO, 4000, sourceName, 
+				LogConsolidated.log(logger, Level.FINER, 4000, sourceName, 
 						"[" + person.getLocationTag().getLocale() + "] " + person.getName()
 						+ " " + loc + " observed the airlock just got activated for ingress.");			
 			}
@@ -227,7 +227,7 @@ public class EnterAirlock extends Task implements Serializable {
             }
             else {
                 // If person is not airlock operator, just wait.
-				LogConsolidated.log(logger, Level.INFO, 4000, sourceName, 
+				LogConsolidated.log(logger, Level.FINER, 4000, sourceName, 
 					"[" + person.getLocationTag().getLocale() + "] " + person.getName() + 
 					" was not the operator and had to wait for others to complete the activation task.");           	
                 remainingTime = 0D;
@@ -255,7 +255,7 @@ public class EnterAirlock extends Task implements Serializable {
 		loc = loc == null ? "[N/A]" : loc;
 		loc = loc.equalsIgnoreCase("Outside") ? loc.toLowerCase() : "in " + loc;
 		
-		LogConsolidated.log(logger, Level.INFO, 4000, sourceName, 
+		LogConsolidated.log(logger, Level.FINER, 4000, sourceName, 
 				"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
 				+ " " + loc + " was in the 'entering the airlock' phase for EVA ingress.");
 		
@@ -263,7 +263,7 @@ public class EnterAirlock extends Task implements Serializable {
 		
 		// If person is already inside, don't need the ingress. End the task.
 		if (person.isInside()) {
-			LogConsolidated.log(logger, Level.WARNING, 4000, sourceName, 
+			LogConsolidated.log(logger, Level.FINER, 4000, sourceName, 
 					"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
 					+ " already went inside " + loc + ". Go to 'waiting inside airlock' phase.");
 			
@@ -275,7 +275,7 @@ public class EnterAirlock extends Task implements Serializable {
 
 		else if (airlock.inAirlock(person)) {
 			
-			LogConsolidated.log(logger, Level.INFO, 4000, sourceName, 
+			LogConsolidated.log(logger, Level.FINER, 4000, sourceName, 
 					"[" + person.getLocationTag().getLocale() + "] " + person.getName() + 
 					" went inside the airlock chamber. Go to 'waiting inside airlock' phase.");
 			
@@ -287,7 +287,7 @@ public class EnterAirlock extends Task implements Serializable {
 		
 		else if (LocalAreaUtil.areLocationsClose(personLocation, insideAirlockPos)) {
 			
-			LogConsolidated.log(logger, Level.INFO, 4000, sourceName, 
+			LogConsolidated.log(logger, Level.FINER, 4000, sourceName, 
 					"[" + person.getLocationTag().getLocale() + "] " + person.getName()
 					+ " came close enough to the reference point inside of the airlock chamber.");
 
@@ -299,7 +299,7 @@ public class EnterAirlock extends Task implements Serializable {
 				loc = loc == null ? "[N/A]" : loc;
 				loc = loc.equalsIgnoreCase("Outside") ? loc.toLowerCase() : "in " + loc;
 				
-				LogConsolidated.log(logger, Level.INFO, 4000, sourceName, 
+				LogConsolidated.log(logger, Level.FINER, 4000, sourceName, 
 						"[" + person.getLocationTag().getLocale() + "] "
 						+ person.getName() 
 						+ " " + loc + " just entered the airlock chamber.");
@@ -355,9 +355,12 @@ public class EnterAirlock extends Task implements Serializable {
 				person.getYLocation(), insideAirlockPos.getX(),
 				insideAirlockPos.getY(), true));
 			
-			LogConsolidated.log(logger, Level.INFO, 4000, sourceName, 
+			LogConsolidated.log(logger, Level.FINER, 4000, sourceName, 
 					"[" + person.getLocationTag().getLocale() + "] " + person.getName()
 					+ loc + " attempted to come closer to the reference point inside of the airlock.");
+			
+			setPhase(WAITING_TO_ENTER_AIRLOCK);
+			
 			}
 		}
 
@@ -409,18 +412,20 @@ public class EnterAirlock extends Task implements Serializable {
                 // If person is not airlock operator, just wait.
                 remainingTime = 0D;
             }
-        }
-        else {
-//            logger.finer(person + " is already internal during waiting inside airlock phase.");
-			LogConsolidated.log(logger, Level.WARNING, 4000, sourceName, 
-					"[" + person.getLocationTag().getLocale() + "] "
-					+ person.getName() + " " + loc 
-					+ " was already inside during 'waiting inside airlock' phase.");
-			
+            
             // Add experience
             addExperience(time - remainingTime);
 
             setPhase(EXITING_AIRLOCK);
+        }
+        else {
+//            logger.finer(person + " is already internal during waiting inside airlock phase.");
+			LogConsolidated.log(logger, Level.FINER, 4000, sourceName, 
+					"[" + person.getLocationTag().getLocale() + "] "
+					+ person.getName() + " " + loc 
+					+ " was reportedly not inside yet during 'waiting inside airlock' phase. Go back to 'entering airlock' phase.");
+			
+            setPhase(ENTERING_AIRLOCK);
         }
 	      
 		return remainingTime;
@@ -441,7 +446,7 @@ public class EnterAirlock extends Task implements Serializable {
 		}
 
 		// logger.finer(person + " exiting airlock inside.");
-		LogConsolidated.log(logger, Level.INFO, 4000, sourceName, 
+		LogConsolidated.log(logger, Level.FINER, 4000, sourceName, 
 				"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
 				+ " was about to come through the interior door to complete the ingress.");
 
@@ -449,7 +454,7 @@ public class EnterAirlock extends Task implements Serializable {
 		
 		if (LocalAreaUtil.areLocationsClose(personLocation, interiorAirlockPos)) {
 			
-			LogConsolidated.log(logger, Level.INFO, 4000, sourceName, 
+			LogConsolidated.log(logger, Level.FINER, 4000, sourceName, 
 					"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
 					+ " came close enough to the interior door to complete the egress. Going to store the EVA suit next.");
 
@@ -465,7 +470,7 @@ public class EnterAirlock extends Task implements Serializable {
 			loc = loc == null ? "[N/A]" : loc;
 			loc = loc.equalsIgnoreCase("Outside") ? loc.toLowerCase() : "in " + loc;
 			
-			LogConsolidated.log(logger, Level.INFO, 4000, sourceName, 
+			LogConsolidated.log(logger, Level.FINER, 4000, sourceName, 
 			"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
 			+ " " + loc + " needed to walk close enough to the interior door.");
 				
@@ -513,7 +518,7 @@ public class EnterAirlock extends Task implements Serializable {
 //				
 //				if (startBuilding != null) {
 //					
-//					LogConsolidated.log(logger, Level.INFO, 4000, sourceName, 
+//					LogConsolidated.log(logger, Level.FINER, 4000, sourceName, 
 //							"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
 //							+ " attempted to step closer to the interior door of the airlock.");
 //					
@@ -541,7 +546,7 @@ public class EnterAirlock extends Task implements Serializable {
 //
 //			Rover airlockRover = (Rover) airlock.getEntity();
 //			
-//			LogConsolidated.log(logger, Level.INFO, 4000, sourceName, 
+//			LogConsolidated.log(logger, Level.FINER, 4000, sourceName, 
 //					"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
 //					+ " attempted to walk toward the internal airlock in " + airlockRover);
 //			
@@ -584,7 +589,7 @@ public class EnterAirlock extends Task implements Serializable {
 			
 			else {
 				// Empty the EVA suit
-				LogConsolidated.log(logger, Level.INFO, 4000, sourceName, 
+				LogConsolidated.log(logger, Level.FINER, 4000, sourceName, 
 						"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
 						+ " was going to retrieve the O2 and H2O in " + suit.getName() + ".");
 	
@@ -638,7 +643,7 @@ public class EnterAirlock extends Task implements Serializable {
 					suit.transfer(person, entityInv);	
 			
 					// Return suit to entity's inventory.
-					LogConsolidated.log(logger, Level.INFO, 4000, sourceName, 
+					LogConsolidated.log(logger, Level.FINER, 4000, sourceName, 
 							"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
 							+ " " + loc 
 							+ " had just stowed away "  + suit.getName() + ".");
@@ -698,7 +703,7 @@ public class EnterAirlock extends Task implements Serializable {
 		boolean result = true;
 
 		if (person.isInside()) {
-			LogConsolidated.log(logger, Level.INFO, 4000, sourceName, 
+			LogConsolidated.log(logger, Level.FINER, 4000, sourceName, 
 					"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
 					+ " could not enter airlock to " + airlock.getEntityName()
 					+ " due to not being outside.");

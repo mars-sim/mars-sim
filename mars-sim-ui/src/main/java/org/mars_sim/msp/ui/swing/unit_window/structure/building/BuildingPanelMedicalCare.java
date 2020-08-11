@@ -29,6 +29,7 @@ import com.alee.laf.scroll.WebScrollPane;
  * The MedicalCareBuildingPanel class is a building function panel representing
  * the medical info of a settlement building.
  */
+@SuppressWarnings("serial")
 public class BuildingPanelMedicalCare
 extends BuildingFunctionPanel {
 
@@ -67,8 +68,6 @@ extends BuildingFunctionPanel {
 		labelPanel.setBackground(new Color(0,0,0,128));
 
 		// Create medical care label
-		// 2014-11-21 Changed font type, size and color and label text
-		// 2014-11-21 Added internationalization for labels
 		WebLabel medicalCareLabel = new WebLabel(Msg.getString("BuildingPanelMedicalCare.title"), WebLabel.CENTER);
 		medicalCareLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		//medicalCareLabel.setForeground(new Color(102, 51, 0)); // dark brown
