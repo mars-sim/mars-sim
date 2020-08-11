@@ -13,6 +13,9 @@ import java.util.List;
 
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.MedicalAssistance;
+import org.mars_sim.msp.core.person.ai.task.PrescribeMedication;
+import org.mars_sim.msp.core.person.ai.task.RequestMedicalTreatment;
+import org.mars_sim.msp.core.person.ai.task.TreatMedicalPatient;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.health.HealthProblem;
 import org.mars_sim.msp.core.person.health.MedicalAid;
@@ -153,11 +156,18 @@ public class MedicalCare extends Function implements MedicalAid, Serializable {
 				Iterator<Person> i = lifeSupport.getOccupants().iterator();
 				while (i.hasNext()) {
 					Task task = i.next().getMind().getTaskManager().getTask();
-					if (task instanceof MedicalAssistance) {
-						MedicalAid aid = ((MedicalAssistance) task).getMedicalAid();
+//					if (task instanceof MedicalAssistance) {
+//						MedicalAid aid = ((MedicalAssistance) task).getMedicalAid();
+					if (task instanceof TreatMedicalPatient) {
+						MedicalAid aid = ((TreatMedicalPatient) task).getMedicalAid();						
 						if ((aid != null) && (aid == this))
 							result++;
 					}
+					else if (task instanceof RequestMedicalTreatment) {
+						MedicalAid aid = ((RequestMedicalTreatment) task).getMedicalAid();						
+						if ((aid != null) && (aid == this))
+							result++;
+					}	
 				}
 			} catch (Exception e) {
 			}

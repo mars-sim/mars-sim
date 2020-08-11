@@ -45,7 +45,6 @@ import javax.swing.JPopupMenu;
 import javax.swing.JSlider;
 import javax.swing.Painter;
 import javax.swing.UIDefaults;
-import javax.swing.border.LineBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -215,16 +214,10 @@ public class SettlementTransparentPanel extends WebComponent {
 	public void buildSettlementNameComboBox() {
 
 		settlementCBModel = new SettlementComboBoxModel();
-		settlementListBox = new WebComboBox(settlementCBModel);
+		settlementListBox = new WebComboBox(StyleId.comboboxHover, settlementCBModel);
+		settlementListBox.setAlignmentX(CENTER_ALIGNMENT);
 		settlementListBox.setPreferredSize(getNameLength() * 10, 25);
 		
-//		settlementListBox.setPrototypeDisplayValue("        ");
-//		settlementListBox.setSize(200, 30);
-		//settlementListBox.setBorder(null);
-		//setBackground(new Color(139,69,19));
-//		settlementListBox.setBorder(new LineBorder(Color.ORANGE.darker().darker(), 2, true));
-		//settlementListBox.setBorder(BorderFactory.createLineBorder(Color.ORANGE));
-		//((JLabel)settlementListBox.getRenderer()).setBackground(Color.darkGray);;//SwingConstants.CENTER);
 		settlementListBox.setBackground(new Color(51,25,0,128)); // dull gold color
 		settlementListBox.setOpaque(false);
 		settlementListBox.setFont(new Font("Dialog", Font.BOLD, 16));
@@ -235,18 +228,7 @@ public class SettlementTransparentPanel extends WebComponent {
 			@Override
 			// unitUpdate will update combobox when a new building is added
 			public void itemStateChanged(ItemEvent event) {
-				Settlement s;
-				// Add if else clause for selecting the settlement that the new building is arriving
-				//if (desktop.getIsTransportingBuilding()) {
-				//	s = mapPanel.getSettlement();
-				//	settlementListBox.setSelectedItem(s);
-					//settlementListBox.setForeground(Color.green);
-				//}
-				//else {
-					s = (Settlement) event.getItem();
-				//}
-				//System.out.println(" settlement is " + settlement.getName());
-
+				Settlement s = (Settlement) event.getItem();
 				// Set the selected settlement in SettlementMapPanel
 				mapPanel.setSettlement(s);
 				// Set the population label in the status bar
@@ -259,18 +241,7 @@ public class SettlementTransparentPanel extends WebComponent {
 
 		if (settlementListBox.getModel().getSize() > 0) {
 			settlementListBox.setSelectedIndex(0);
-			Settlement s;
-			// Add if else clause for selecting the settlement that the new building is arriving
-			//if (desktop.getIsTransportingBuilding()) {
-				//s = desktop.getSettlement();
-				//settlementListBox.setSelectedItem(s);
-				//settlementListBox.setForeground(Color.green);
-			//}
-			//else {
-				s = (Settlement) settlementListBox.getSelectedItem();
-			//}
-			//System.out.println(" settlement is " + settlement.getName());
-				
+			Settlement s = (Settlement) settlementListBox.getSelectedItem();
 			// Set the selected settlement in SettlementMapPanel
 			mapPanel.setSettlement(s);
 			// Set the population label in the status bar

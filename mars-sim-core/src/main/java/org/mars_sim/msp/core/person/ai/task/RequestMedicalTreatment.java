@@ -331,6 +331,15 @@ public class RequestMedicalTreatment extends Task implements Serializable {
         return remainingTime;
     }
 
+	/**
+	 * Gets the medical aid the person is using for this task.
+	 * 
+	 * @return medical aid or null.
+	 */
+	public MedicalAid getMedicalAid() {
+		return medicalAid;
+	}
+	
     @Override
     public FunctionType getLivingFunction() {
         return FunctionType.MEDICAL_CARE;

@@ -136,7 +136,8 @@ public class SimulationConfigEditor {
 		f = new WebFrame();
 
 		// Setup weblaf's IconManager
-		SwingUtilities.invokeLater(() -> MainWindow.initIconManager());
+//		SwingUtilities.invokeLater(() -> MainWindow.initIconManager());
+		MainWindow.initIconManager();
 		
 		ImageIcon icon = new LazyIcon("lander").getIcon(); // new ImageIcon(SimulationConfigEditor.class.getResource(MainWindow.LANDER_PNG));
 		f.setIconImage(MainWindow.iconToImage(icon));

@@ -28,14 +28,36 @@ Copyright (C) 2020 Scott Davis
 8. Add ability to choose individual destination for each crewman as listed 
    in crew.xml when using Crew Editor. 
    
-9. Adjust job prospect and refine job assignment.
+9. Adjust job prospect and refine job assignment for each settlement.
 
+10. Designate the name (e.g. Night, Day, and Swing shift) for 
+    XYZ work shift. Designate the name (e.g. Day and Night shift) for 
+    AB work shift.
+    
+11. Change the start and end time for work shift A (Day shift) 
+    and work shift B (Night shift).
+
+12. Incorporate Weblaf's IconManager for caching svg icons.
+ 
 
 ### UI IMPROVEMENT :
 
-1. Minor cosmetic changes in Person Window.
+1. Provide the exact relationship score and skill score (in addition
+   to the adjective) in Person Window.
 
+2. Add more zoom lebel to settlement window
 
+3. Switch to using svg icons for better scaling and visual consistency
+   with the icons in the settlement map.
+   
+4. Add showing the reference coordinate of the settlement map for the 
+   hovering mouse pointer.
+
+5. Correct the scaling of the dot size and coordinates of the 
+   person/robot in PersonMapLayer and RobotMapLayer at various zoom
+   level.
+   
+   
 ### FIXES :
 
 1. Fix OutOfMemoryError when saving sim.
@@ -44,7 +66,7 @@ Copyright (C) 2020 Scott Davis
 
 3. Fix rover embarking from a settlement.
 
-4. Correct a major walking bug - person frozen in EVA Airlock.
+4. Correct major walking bugs - person frozen in the EVA Airlock building.
 
 5. Account for vehicle emergency while still parking in a settlement.
 
@@ -53,6 +75,10 @@ Copyright (C) 2020 Scott Davis
 7. Fix retrieving a list of vehicles reserved for mission or on mission.
 
 8. Fix loading alpha crew.
+
+9. Correct the time consumed when reviewing mission plans.
+
+
 
 -----------------------------------------------------------------------------------------
 

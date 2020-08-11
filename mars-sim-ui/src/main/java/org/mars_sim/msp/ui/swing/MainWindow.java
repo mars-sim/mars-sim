@@ -104,22 +104,23 @@ extends JComponent {
 	
 	public static final String OS = System.getProperty("os.name").toLowerCase(); // e.g. 'linux', 'mac os x'
 	private static final String SOL = "   Sol ";
-//	private static final String themeSkin = "nimrod";
 	private static final String WHITESPACES = "   ";
 	private static final String UMST = " (UMST)";
-	private static final String SLEEP_TIME = "   Sleep Time : ";
-	private static final String MS = " ms   ";
+//	private static final String SLEEP_TIME = "   Sleep Time : ";
+//	private static final String MS = " ms   ";
 	
 	/** The timer for update the status bar labels. */
 	private static final int TIME_DELAY = 2_000;
-
+	/** Keeps track of whether icons have been added to the IconManager . */
+	private static boolean iconsConfigured = false;
+	/** The main window frame. */	
+	private static WebFrame frame;
+	/** The four types of theme types. */	
 	public enum ThemeType {
 		SYSTEM, NIMBUS, NIMROD, WEBLAF, METAL
 	}
-
-	public ThemeType defaultThemeType = ThemeType.NIMBUS;//WEBLAF;
-
-	private static WebFrame frame;
+	/** The default ThemeType enum. */	
+	public ThemeType defaultThemeType = ThemeType.NIMBUS;
 
 	// Data members
 	private boolean useDefault = true;
@@ -184,7 +185,7 @@ extends JComponent {
 	 */
 	public MainWindow(boolean cleanUI) {
 //		logger.config("MainWindow is on " + Thread.currentThread().getName() + " Thread");
-		logger.config("width : " + InteractiveTerm.getWidth() + "    height : " + InteractiveTerm.getHeight());
+		logger.config("width : " + InteractiveTerm.getWidth() + "  height : " + InteractiveTerm.getHeight());
 		// this.cleanUI = cleanUI;
 		// Set up the look and feel library to be used
 		initializeTheme();
@@ -194,8 +195,10 @@ extends JComponent {
 		frame.setSize(new Dimension(InteractiveTerm.getWidth(), InteractiveTerm.getHeight()));
 		frame.setResizable(false);
 
-		SwingUtilities.invokeLater(() -> MainWindow.initIconManager());
-		
+//		SwingUtilities.invokeLater(() -> MainWindow.initIconManager());
+		if (!iconsConfigured)
+			MainWindow.initIconManager();
+		 
 //		frame.setIconImages(WebLookAndFeel.getImages());
 		
 		// Disable the close button on top right
@@ -237,6 +240,7 @@ extends JComponent {
 	}
 
 	public static void initIconManager() {
+		iconsConfigured = true;
 		// Set up an icon set for use throughout mars-sim
 		IconSet iconSet = new RuntimeIconSet("mars-sim-set");
 
@@ -516,6 +520,8 @@ extends JComponent {
 		memoryBar = new WebMemoryBar();
 		memoryBar.setPreferredWidth(180);
 		memoryBar.setRefreshRate(3000);
+		memoryBar.setFont(font0);
+		memoryBar.setForeground(Color.DARK_GRAY);
 //		memoryLabel.add(bar);
 //		TooltipManager.setTooltip(bar, "Memory Usage", TooltipWay.up);
 		statusBar.addRightComponent(memoryBar, false);

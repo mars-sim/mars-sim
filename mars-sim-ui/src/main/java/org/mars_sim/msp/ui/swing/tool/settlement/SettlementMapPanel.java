@@ -58,6 +58,8 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 //	private static final Color MAP_BACKGROUND = new Color(181, 95, 0);
 
 	// Data members
+	private boolean exit = true;
+	
 	private double xPos;
 	private double yPos;
 	private double rotation;
@@ -112,7 +114,7 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 			settlement = (Settlement) unitManager.getSettlements().toArray()[0];
 
 		setLayout(new BorderLayout());
-
+			
 		setDoubleBuffered(true);
 
 		// Initialize data members.
@@ -223,19 +225,55 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 				// Display the coordinate within a building of the hovering mouse pointer
 				showBuildingCoord(x, y); 
 				
-				// Display the pixel coordinate of the window panel
-				// Note: the top left most corner is (0,0)
-				settlementWindow.setPixelXYCoord(x, y);
-				
-				// Display the settlement map coordinate of the hovering mouse pointer
-				settlementWindow.setMapXYCoord(convertToSettlementLocation(x,y));
+//				if (SettlementWindow.HORIZONTAL >= Math.abs(x) && SettlementWindow.VERTICAL >= Math.abs(y)) {
+					// Display the pixel coordinate of the window panel
+					// Note: the top left most corner is (0,0)
+					settlementWindow.setPixelXYCoord(x, y, false);
+					// Display the settlement map coordinate of the hovering mouse pointer
+					settlementWindow.setMapXYCoord(convertToSettlementLocation(x,y), false);
+//				}
+//				else {
+//					// Display the pixel coordinate of the window panel
+//					settlementWindow.setPixelXYCoord(x, y, true);
+//					// Display the settlement map coordinate of the hovering mouse pointer
+//					settlementWindow.setMapXYCoord(convertToSettlementLocation(x,y), true);
+//				}
+					
+				if (exit) {
+					exit = false;
+//					System.out.println("exit is " + exit);
+				}					
 			}
 
 			
 		});
 		
 		addMouseListener(new MouseAdapter() {
-				
+
+			@Override
+		    public void mouseEntered(MouseEvent evt) {
+				exit = false;
+//				System.out.print("enter ");
+			}
+		    
+		    
+			@Override
+			public void mouseExited(MouseEvent evt) {
+//				System.out.print("exit ");
+				if (!exit)  {
+//					System.out.println("exit is " + exit);
+					int x = evt.getX();
+					int y = evt.getY();
+					// Display the pixel coordinate of the window panel
+					// Note: the top left most corner is (0,0)
+					settlementWindow.setPixelXYCoord(x, y, true);
+					// Display the settlement map coordinate of the hovering mouse pointer
+					settlementWindow.setMapXYCoord(convertToSettlementLocation(x,y), true);
+					
+					exit = true;
+				}
+			}
+			   
 			@Override
 			public void mousePressed(MouseEvent evt) {
 				

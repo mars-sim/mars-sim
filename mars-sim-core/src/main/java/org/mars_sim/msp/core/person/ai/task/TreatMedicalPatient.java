@@ -157,6 +157,7 @@ public class TreatMedicalPatient extends Task implements Serializable {
 
     /**
      * Determines a medical aid at a settlement to use.
+     * 
      * @return medical aid or null if none found.
      */
     private MedicalAid determineMedicalAidAtSettlement() {
@@ -418,6 +419,15 @@ public class TreatMedicalPatient extends Task implements Serializable {
         }
     }
 
+	/**
+	 * Gets the medical aid the person is using for this task.
+	 * 
+	 * @return medical aid or null.
+	 */
+	public MedicalAid getMedicalAid() {
+		return medicalAid;
+	}
+	
     @Override
     public void endTask() {
         super.endTask();

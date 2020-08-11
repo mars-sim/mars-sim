@@ -53,7 +53,7 @@ public class SettlementWindow extends ToolWindow {
 	public static final String CLOSE_PARENT = ")  ";
 	public static final String WITHIN_BLDG = "  Building : (";
 	public static final String SETTLEMENT_MAP = "  Map : (";
-	public static final String PIXEL_MAP = "  Window : (";
+	public static final String PIXEL_MAP = "  Panel : (";
 
 	// public static final String MILLISOLS_UMST = " millisols (UMST) ";
 
@@ -129,13 +129,17 @@ public class SettlementWindow extends ToolWindow {
         popLabel.setForeground(Color.DARK_GRAY);
 	    buildingXYLabel = new WebStyledLabel(StyleId.styledlabelShadow);
 	    buildingXYLabel.setFont(font);
-	    buildingXYLabel.setForeground(Color.GREEN.darker().darker());
+	    buildingXYLabel.setForeground(Color.GREEN.darker().darker().darker());
 	    mapXYLabel = new WebStyledLabel(StyleId.styledlabelShadow);
 	    mapXYLabel.setFont(font);
 	    mapXYLabel.setForeground(Color.ORANGE.darker());
 	    pixelXYLabel = new WebStyledLabel(StyleId.styledlabelShadow);
 	    pixelXYLabel.setFont(font);
 	    pixelXYLabel.setForeground(Color.GRAY);
+	    
+	    WebPanel emptyPanel = new WebPanel();
+	    emptyPanel.setPreferredSize(new Dimension(145, 20));
+	    emptyPanel.add(new WebLabel(""));
 	    
 	    WebPanel w0 = new WebPanel();
 	    w0.setPreferredSize(new Dimension(115, 20));
@@ -154,7 +158,7 @@ public class SettlementWindow extends ToolWindow {
 	    w3.add(mapXYLabel);
 	    
         statusBar.add(w0); 
-        statusBar.add(new WebPanel().add(new WebLabel("                ")));  
+        statusBar.add(emptyPanel);  
         statusBar.addToMiddle(w1);
         statusBar.addToEnd(w2);
         statusBar.addToEnd(w3);
@@ -226,16 +230,26 @@ public class SettlementWindow extends ToolWindow {
 		}
 	}
 
-	public void setPixelXYCoord(double x, double y) {
-		StringBuilder sb = new StringBuilder();
-		sb.append(PIXEL_MAP).append(format1(x, y)).append(CLOSE_PARENT);
-		pixelXYLabel.setText(sb.toString());
+	public void setPixelXYCoord(double x, double y, boolean blank) {
+		if (blank) {
+			pixelXYLabel.setText("");
+		}
+		else {
+			StringBuilder sb = new StringBuilder();
+			sb.append(PIXEL_MAP).append(format1(x, y)).append(CLOSE_PARENT);
+			pixelXYLabel.setText(sb.toString());
+		}
 	}
 	
-	public void setMapXYCoord(Point.Double point) {
-		StringBuilder sb = new StringBuilder();
-		sb.append(SETTLEMENT_MAP).append(format1(point.getX(), point.getY())).append(CLOSE_PARENT);
-		mapXYLabel.setText(sb.toString());
+	public void setMapXYCoord(Point.Double point, boolean blank) {
+		if (blank) {
+			mapXYLabel.setText("");
+		}
+		else {
+			StringBuilder sb = new StringBuilder();
+			sb.append(SETTLEMENT_MAP).append(format1(point.getX(), point.getY())).append(CLOSE_PARENT);
+			mapXYLabel.setText(sb.toString());
+		}
 	}
 	
 	public void setPop(int pop) {

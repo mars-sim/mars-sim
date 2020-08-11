@@ -26,6 +26,7 @@ import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.Doctor;
+import org.mars_sim.msp.core.person.ai.job.Psychologist;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskEvent;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
@@ -398,7 +399,10 @@ public class MedicalAssistance extends Task implements Serializable {
 			Iterator<Person> i = person.getSettlement().getIndoorPeople().iterator();
 			while (i.hasNext()) {
 				Person inhabitant = i.next();
-				if ((inhabitant != person) && (inhabitant.getMind().getJob()) instanceof Doctor) {
+				if ((inhabitant != person) && 
+						(inhabitant.getMind().getJob() instanceof Doctor
+						|| inhabitant.getMind().getJob() instanceof Psychologist)
+						) {
 					result = true;
 				}
 			}
@@ -408,7 +412,10 @@ public class MedicalAssistance extends Task implements Serializable {
 				Iterator<Person> i = rover.getCrew().iterator();
 				while (i.hasNext()) {
 					Person crewmember = i.next();
-					if ((crewmember != person) && (crewmember.getMind().getJob() instanceof Doctor)) {
+					if ((crewmember != person) && 
+							(crewmember.getMind().getJob() instanceof Doctor
+							|| crewmember.getMind().getJob() instanceof Psychologist)
+							) {
 						result = true;
 					}
 				}
