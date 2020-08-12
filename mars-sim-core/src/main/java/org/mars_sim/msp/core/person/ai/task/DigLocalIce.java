@@ -157,19 +157,6 @@ implements Serializable {
 //    	LogConsolidated.log(Level.INFO, 0, sourceName, 
 //        		"[" + person.getLocationTag().getLocale() +  "] " +
 //        		person.getName() + " just called collectice()");
-    	
-//    	if (getTimeCompleted() > getDuration()) {
-//    		if (person.isOutside())
-//    			setPhase(WALK_BACK_INSIDE);
-//    		else
-//        		endTask();
-    		
-//        	LogConsolidated.log(Level.INFO, 0, sourceName, 
-//            		"[" + person.getLocationTag().getLocale() +  "] " +
-//            		person.getName() + " collectIce: getTimeCompleted() > getDuration()");
-        	
-//            return time;
-//    	}
     			
         // Check for an accident during the EVA operation.
         checkForAccident(time);
@@ -271,9 +258,6 @@ implements Serializable {
 	            if (person.isOutside()) {
 	            	setPhase(WALK_BACK_INSIDE);
 	            }
-//	            else if (person.isInside()) {
-//	        		endTask();
-//	            }
 	        }
 	
 	        if (fatigue > 7500 || stress > 50 || hunger > 750 || energy < 1000) {
@@ -288,9 +272,6 @@ implements Serializable {
 	            if (person.isOutside()) {
 	            	setPhase(WALK_BACK_INSIDE);
 	            }
-//	            else if (person.isInside()) {
-//	        		endTask();
-//	            }
 	        }
         }
         

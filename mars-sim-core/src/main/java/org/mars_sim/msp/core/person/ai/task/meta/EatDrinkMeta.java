@@ -22,6 +22,7 @@ import org.mars_sim.msp.core.resource.ResourceUtil;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
+import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
 
 /**
  * Meta task for the EatNDrink task.
@@ -56,8 +57,8 @@ public class EatDrinkMeta implements MetaTask, Serializable {
 
 		double foodAmount = 0;
 		double waterAmount = 0;
-		Inventory inv = null;
 		
+		Inventory inv = null;
 		Unit container = person.getContainerUnit();
 		if (container != null) {
 			inv = container.getInventory();	
@@ -66,139 +67,114 @@ public class EatDrinkMeta implements MetaTask, Serializable {
 			waterAmount = inv.getAmountResourceStored(ResourceUtil.waterID, false);
 		}
 		
+		boolean food = false;
+		boolean water = false;
+	
+		int meals = 0;
+		double mFactor = 1;
+		
+		int desserts = 0;
+		double dFactor = 1;
+		
+		// Check if a cooked meal is available in a kitchen building at the settlement.
+		Cooking kitchen0 = EatDrink.getKitchenWithMeal(person);
+		if (kitchen0 != null) {
+			meals = kitchen0.getNumberOfAvailableCookedMeals();
+			mFactor = 1.5 * meals;
+		} 
+		
+		// Check dessert is available in a kitchen building at the settlement.
+		PreparingDessert kitchen1 = EatDrink.getKitchenWithDessert(person);
+		if (kitchen1 != null) {
+			desserts = kitchen1.getAvailableServingsDesserts();
+			dFactor = 1.5 * desserts;
+		} 
+		
 		PhysicalCondition pc = person.getPhysicalCondition();
 
 		double thirst = pc.getThirst();
 		double hunger = pc.getHunger();
 		double energy = pc.getEnergy();
 
-		boolean notHungry = !pc.isHungry();
-		boolean notThirsty = !pc.isThirsty();
+		boolean hungry = pc.isHungry();
+		boolean thirsty = pc.isThirsty();
+		
 		
 		// CircadianClock cc = person.getCircadianClock();
 		// double ghrelin = cc.getSurplusGhrelin();
 		// double leptin = cc.getSurplusLeptin();
 		// Each meal (.155 kg = .62/4) has an average of 2525 kJ. Thus ~10,000 kJ
 		// persson per sol
-
-		if (notHungry && notThirsty)
-			// if not thirsty and not hungry
-			return 0;
 		
-		// When thirst is greater than 100, a person may start feeling thirsty
-		else  {			
-			if (!notThirsty) {
-				if (waterAmount < SMALL_AMOUNT)
-					return 0;
-				result = 2 * (thirst - PhysicalCondition.THIRST_THRESHOLD); //Math.pow((thirst - PhysicalCondition.THIRST_THRESHOLD), 3);
-	//			logger.info(person + "'s thirst p : " +  Math.round(result*10D)/10D);
-			}
-			
-			// Only eat a meal if person is sufficiently hungry or low on caloric energy.
-			if (!notHungry) {// || ghrelin-leptin > 300) {
-				result += hunger / 2D;
-				if (energy < 2525)
-					result += (2525 - energy) / 30D; // (ghrelin-leptin - 300);
-	//			logger.info(person + "'s hunger p : " +  Math.round(result*10D)/10D);
-			}
-		}
-
 		if (person.isInSettlement()) {
-
-			if (!CookMeal.isLocalMealTime(person.getCoordinates(), 0)) {
-				// If it's not meal time yet, reduce the probability
-				result /= 5D;
+			if (hungry && (foodAmount > 0 || meals > 0 || desserts > 0)) {
+				food = true;
 			}
 			
-			// Check if a cooked meal is available in a kitchen building at the settlement.
-			Cooking kitchen = EatDrink.getKitchenWithMeal(person);
-			if (kitchen != null) {
-				// Increase probability to eat meal if a cooked meal is available.
-				result *= 1.5 * kitchen.getNumberOfAvailableCookedMeals();
-			} 
-			
-			// If no cooked meal, check if preserved food is available to eat.
-			else if (!EatDrink.isPreservedFoodAvailable(person)) {
-					// If no food, person can still eat dessert					
-				if (EatDrink.getKitchenWithDessert(person) == null) {
-					// If no preserved food, person can still drink
-					if (notThirsty)
-						result /= 3;
-				}
-				
-				else
-					result /= 1.5;
-			}
-			
-			else if (notThirsty)
-				result /= 3;
-				
-			else
-				result *= 1.2;
-
-			// Check if there is a local dining building.
-			Building diningBuilding = EatDrink.getAvailableDiningBuilding(person, false);
-			if (diningBuilding != null) {
-				// Modify probability by social factors in dining building.
-				result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, diningBuilding);
-				result *= TaskProbabilityUtil.getRelationshipModifier(person, diningBuilding);
-//				logger.info(person + "'s diningBuilding p : " +  Math.round(result*10D)/10D);
+			if (thirsty && waterAmount > 0) {
+				water = true;
 			}
 		}
-
-		else if (person.isInVehicle()) {
-			// Note: consider how is the probability compared to that of inside a settlement 
-			// may be a person is more likely to become thirsty and/or hungry due to on-call shift ?
-			
-//			if (!CookMeal.isLocalMealTime(person.getCoordinates(), 0))
-//				result /= 3;
-
-			// If no cooked meal, check if preserved food is available to eat.
-			if (EatDrink.isPreservedFoodAvailable(person)) {
-				
-				// Check if there is dessert		
-//				if (EatDrink.isDessertAvailable(person))
-					
-//				if (EatDrink.getKitchenWithDessert(person) == null) {
-//					// If no preserved food, person can still drink
-//					if (notThirsty)
-//						result /= 3;
-//				}
-				
-					if (notThirsty)
-						result /= 3;
-					else
-						result /= 1.5;
-			}
-			else {
-				
-			}
-			
-			// TODO : how to ration food and water if running out of it ?
-		} 
 		
-		else if (person.isOutside()) {
-
-			if (!notThirsty) {
-				// Note: a pe rson may drink water from EVA suit while being outside doing EVA
-				result /= 2;
+		else if (person.isInVehicle()) {
+			if (hungry && (foodAmount > 0 || desserts > 0)) {
+				food = true;
 			}
 			
-			// Note: a person cannot consume food while being outside doing EVA
+			if (thirsty && waterAmount > 0) {
+				water = true;
+			}
+		}
+		
+		else {
+			if (thirsty && waterAmount > 0) {
+				water = true;
+			}
+		}
+		
+
+		if (food || water) {
+			// Calculate ...
+			// Only eat a meal if person is sufficiently hungry or low on caloric energy.
+			double h0 = 0;
+			if (hungry) {// || ghrelin-leptin > 300) {
+				h0 += hunger / 2D;
+				if (energy < 2525)
+					h0 += (2525 - energy) / 30D; // (ghrelin-leptin - 300);
+				
+				if (person.isInSettlement()) {
+					
+					if (!CookMeal.isLocalMealTime(person.getCoordinates(), 0)) {
+						// If it's not meal time yet, reduce the probability
+						mFactor /= 5D;
+					}
+					
+					// Check if there is a local dining building.
+					Building diningBuilding = EatDrink.getAvailableDiningBuilding(person, false);
+					if (diningBuilding != null) {
+						// Modify probability by social factors in dining building.
+						h0 *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, diningBuilding);
+						h0 *= TaskProbabilityUtil.getRelationshipModifier(person, diningBuilding);
+//						logger.info(person + "'s diningBuilding p : " +  Math.round(result*10D)/10D);
+					}
+				}
+			}
 			
-//			else if (CookMeal.isLocalMealTime(person.getCoordinates(), 10)) {
-//				result = hunger; 
-//			} else
-//				result /= 4;
+			double t0 = 2 * (thirst - PhysicalCondition.THIRST_THRESHOLD);
+			if (t0 <= 0)
+				t0 = 0;
+			
+			result = h0 * mFactor * dFactor + t0;
 		}
+		
+		else
+			return 0;		
 
-		// Add Preference modifier
-		if (result > 0D) {
-			result = result + result * person.getPreference().getPreferenceScore(this) / 8D;
-		}
-
-		if (result < 0)
+		if (result <= 0)
 			return 0;
+		else
+			// Add Preference modifier
+			result = result + result * person.getPreference().getPreferenceScore(this) / 8D;
 
 //		 if (result > 100) 
 //			 logger.warning(person + "'s EatMealMeta : " 

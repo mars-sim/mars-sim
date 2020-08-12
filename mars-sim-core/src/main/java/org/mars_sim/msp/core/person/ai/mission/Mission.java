@@ -493,6 +493,21 @@ public abstract class Mission implements Serializable {
 		return members.contains(member);
 	}
 
+	/**
+	 * Determines if a mission includes the given person.
+	 * 
+	 * @param person person to be checked
+	 * @return true if person is a part of the mission.
+	 */
+	public final boolean hasPerson(Person person) {
+		for (MissionMember m : members) {
+			if (m.getName().equalsIgnoreCase(person.getName()))
+				return true;
+		}
+		
+		return false;
+	}
+	
 //	/**
 //	 * Determines if a mission includes the given person.
 //	 * @param person person to be checked

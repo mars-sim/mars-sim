@@ -441,7 +441,10 @@ public class LoadVehicleGarage extends Task implements Serializable {
 				roverInSettlement = true;
 				sInv.retrieveUnit(vehicle);
 			}
-	
+			else { // if the rover is no longer in the settlement, end the task
+				endTask();
+			}
+			
 			// Load equipment
 			if (amountLoading > 0D) {
 				amountLoading = loadEquipment(amountLoading);
@@ -461,8 +464,6 @@ public class LoadVehicleGarage extends Task implements Serializable {
 			if (roverInSettlement) {
 				sInv.storeUnit(vehicle);
 			}
-			else
-				endTask();
 	
 			if (isFullyLoaded(requiredResources, optionalResources, requiredEquipment, optionalEquipment, vehicle,
 					settlement)) {

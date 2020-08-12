@@ -77,10 +77,17 @@ public class LoadVehicleEVAMeta implements MetaTask, Serializable {
 		if (EVAOperation.isExhausted(person))
 			return 0;
 		
+		
     	double result = 0D;
         
     	if (person.isInSettlement()) {
  
+        	Settlement settlement = CollectionUtils.findSettlement(person.getCoordinates());
+        	
+	        if (!LoadVehicleEVA.anyRoversNeedEVA(settlement)) {
+	        	return 0;
+	        }
+	        
             // Probability affected by the person's stress and fatigue.
             PhysicalCondition condition = person.getPhysicalCondition();
             double fatigue = condition.getFatigue();
@@ -89,9 +96,7 @@ public class LoadVehicleEVAMeta implements MetaTask, Serializable {
             
             if (fatigue > 1000 || stress > 50 || hunger > 500)
             	return 0;
-            
-        	Settlement settlement = CollectionUtils.findSettlement(person.getCoordinates());
-            
+                 
         	boolean[] exposed = {false, false, false};
         	
         	if (settlement != null) {
@@ -116,9 +121,7 @@ public class LoadVehicleEVAMeta implements MetaTask, Serializable {
 	            logger.log(Level.SEVERE, "Error finding loading missions.", e);
 	        }
 	        
-	        if (!LoadVehicleEVA.anyRoversNeedEVA(settlement)) {
-	        	return 0;
-	        }
+
 	        
 	        // Check if any rovers are in need of EVA suits to allow occupants to exit.
 	        if (LoadVehicleEVA.getRoversNeedingEVASuits(settlement).size() > 0) {
