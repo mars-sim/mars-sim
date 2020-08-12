@@ -87,9 +87,14 @@ public class DigLocalIceMeta implements MetaTask, Serializable {
             	return 0;
             
             // Checks if the person's settlement is at meal time and is hungry
-            if ((EVAOperation.isHungryAtMealTime(person)))
+            if (EVAOperation.isHungryAtMealTime(person))
             	return 0;
             
+            // Checks if the person is physically drained
+			if (EVAOperation.isExhausted(person))
+				return 0;
+			
+			
             Inventory inv = settlement.getInventory();
 
             // Check at least one EVA suit at settlement.

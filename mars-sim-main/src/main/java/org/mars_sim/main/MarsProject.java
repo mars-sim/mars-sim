@@ -276,11 +276,11 @@ public class MarsProject {
 				// Start the simulation
 				startSimThread(false);
 				
-				// Create main window
-				setupMainWindow();				
-						
 				// Start beryx console
 				startConsoleThread();
+				
+				// Create main window
+				setupMainWindow();									
 			
 //				logger.config("Done with setupMainWindow()");
 			}
@@ -305,12 +305,12 @@ public class MarsProject {
 				else {
 					// Start simulation.
 					startSimThread(false);
+						
+					// Start beryx console
+					startConsoleThread();
 					
 					// Create main window
 					setupMainWindow();
-					
-					// Start beryx console
-					startConsoleThread();
 				
 				}
 //				logger.config("Done with setupMainWindow()");
@@ -513,7 +513,7 @@ public class MarsProject {
 					simStr = s;
 			}
 			
-			int index = argList.indexOf("-load");
+//			int index = argList.indexOf("-load");
 			
 			logger.config("hasDefault is " + hasDefault); 
 			logger.config("hasSim is " + hasSim);		
@@ -531,6 +531,9 @@ public class MarsProject {
 						// Start simulation.
 						startSimThread(false);
 						
+						// Start beryx console
+						startConsoleThread();
+						
 						if (useGUI) {
 //							logger.config("useGUI is " + useGUI);
 							setupMainWindow();
@@ -538,12 +541,9 @@ public class MarsProject {
 						
 						else {
 							// Go headless				
-						}
-						
-						// Start beryx console
-						startConsoleThread();
-					
+						}			
 					}
+					
 					else {
 //						logger.config("Invalid param.");
 						exitWithError("Problem loading simulation. default.sim is found but can't be loaded.", null);
@@ -580,6 +580,9 @@ public class MarsProject {
 						// Start simulation clock
 						startSimThread(true);
 						
+						// Start beryx console
+						startConsoleThread();
+						
 						if (useGUI) {
 							// Create main window
 							setupMainWindow();
@@ -587,10 +590,7 @@ public class MarsProject {
 						
 						else {
 							// Go headless				
-						}
-						
-						// Start beryx console
-						startConsoleThread();
+						}			
 					}
 				}		
 
@@ -687,11 +687,11 @@ public class MarsProject {
 					// Start the simulation
 					startSimThread(false);
 					
-					// Create main window
-					setupMainWindow();
-					
 					// Start beryx console
 					startConsoleThread();
+					
+					// Create main window
+					setupMainWindow();
 				
 //					logger.config("Done with setupMainWindow()");
 				}
@@ -717,11 +717,11 @@ public class MarsProject {
 						// Start simulation.
 						startSimThread(false);
 						
-						// Create main window
-						setupMainWindow();
-						
 						// Start beryx console
 						startConsoleThread();
+						
+						// Create main window
+						setupMainWindow();					
 					
 					}
 //					logger.config("Done with setupMainWindow()");

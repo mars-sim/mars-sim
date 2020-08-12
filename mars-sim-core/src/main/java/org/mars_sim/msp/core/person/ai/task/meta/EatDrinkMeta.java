@@ -54,14 +54,15 @@ public class EatDrinkMeta implements MetaTask, Serializable {
 	public double getProbability(Person person) {
 		double result = 0;
 
-		Unit container = person.getContainerUnit();
-		Inventory inv = null;
-//		double foodAmount = 0;
+		double foodAmount = 0;
 		double waterAmount = 0;
-		if (person.isInside() && container != null) {
+		Inventory inv = null;
+		
+		Unit container = person.getContainerUnit();
+		if (container != null) {
 			inv = container.getInventory();	
 			// Take preserved food from inventory if it is available.
-//			foodAmount = inv.getAmountResourceStored(ResourceUtil.foodID, false);
+			foodAmount = inv.getAmountResourceStored(ResourceUtil.foodID, false);
 			waterAmount = inv.getAmountResourceStored(ResourceUtil.waterID, false);
 		}
 		
@@ -168,8 +169,10 @@ public class EatDrinkMeta implements MetaTask, Serializable {
 						result /= 3;
 					else
 						result /= 1.5;
-				}
-
+			}
+			else {
+				
+			}
 			
 			// TODO : how to ration food and water if running out of it ?
 		} 
@@ -177,7 +180,7 @@ public class EatDrinkMeta implements MetaTask, Serializable {
 		else if (person.isOutside()) {
 
 			if (!notThirsty) {
-				// Note: a person may drink water from EVA suit while being outside doing EVA
+				// Note: a pe rson may drink water from EVA suit while being outside doing EVA
 				result /= 2;
 			}
 			

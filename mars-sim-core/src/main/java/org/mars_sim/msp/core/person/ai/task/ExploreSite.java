@@ -149,9 +149,15 @@ public class ExploreSite extends EVAOperation implements Serializable {
 			}
 
 			if (EVAOperation.isHungryAtMealTime(person)) {
-				logger.fine(person.getName() + " ended exploring site due to meal time.");
+				logger.fine(person.getName() + " ended exploring site due to being hungry at meal time.");
 				return false;
 			}
+			
+			if (EVAOperation.isExhausted(person)) {
+				logger.fine(person.getName() + " ended exploring site due to being exhausted.");
+				return false;
+			}
+			
 
 			// Check if person's medical condition will not allow task.
 			if (person.getPerformanceRating() < .2D)
@@ -270,7 +276,7 @@ public class ExploreSite extends EVAOperation implements Serializable {
 
 			// Add to site mineral concentration estimation improvement number.
 			site.addEstimationImprovement();
-			LogConsolidated.flog(Level.FINE, 5000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
+			LogConsolidated.log(logger, Level.FINE, 5000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
 					+ person.getName() + " was exploring the site at " + site.getLocation().getFormattedString() 
 					+ ". Estimation Improvement: "
 					+ site.getNumEstimationImprovement() + ".");

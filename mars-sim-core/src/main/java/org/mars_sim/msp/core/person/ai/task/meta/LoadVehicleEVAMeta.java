@@ -7,7 +7,6 @@
 package org.mars_sim.msp.core.person.ai.task.meta;
 
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -25,7 +24,9 @@ import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.tool.RandomUtil;
+import org.mars_sim.msp.core.vehicle.Rover;
 
 /**
  * Meta task for the LoadVehicleEVA task.
@@ -69,9 +70,13 @@ public class LoadVehicleEVAMeta implements MetaTask, Serializable {
 			return 0;
 
         // Checks if the person's settlement is at meal time and is hungry
-        if ((EVAOperation.isHungryAtMealTime(person)))
+        if (EVAOperation.isHungryAtMealTime(person))
         	return 0;
         
+        // Checks if the person is physically drained
+		if (EVAOperation.isExhausted(person))
+			return 0;
+		
     	double result = 0D;
         
     	if (person.isInSettlement()) {
@@ -110,7 +115,11 @@ public class LoadVehicleEVAMeta implements MetaTask, Serializable {
 	        catch (Exception e) {
 	            logger.log(Level.SEVERE, "Error finding loading missions.", e);
 	        }
-	
+	        
+	        if (!LoadVehicleEVA.anyRoversNeedEVA(settlement)) {
+	        	return 0;
+	        }
+	        
 	        // Check if any rovers are in need of EVA suits to allow occupants to exit.
 	        if (LoadVehicleEVA.getRoversNeedingEVASuits(settlement).size() > 0) {
 	            int numEVASuits = settlement.getInventory().findNumEVASuits(false, false);
@@ -120,7 +129,7 @@ public class LoadVehicleEVAMeta implements MetaTask, Serializable {
 	                result += 100D;
 	            }
 	        }
-	
+				
 //	        // Crowded settlement modifier
 //	        if (settlement.getIndoorPeopleCount() > settlement.getPopulationCapacity())
 //	            result *= 2D;

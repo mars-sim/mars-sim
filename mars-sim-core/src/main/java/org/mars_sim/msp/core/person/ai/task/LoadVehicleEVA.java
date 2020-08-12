@@ -80,7 +80,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 
 	// Data members
 	/** Flag if this task has ended. */
-//	private boolean ended = false;
+	private boolean ended = false;
 	
 	/** The vehicle that needs to be loaded. */
 	private Vehicle vehicle;
@@ -109,6 +109,16 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 		// Use Task constructor
 		super(NAME, person, true, 20 + RandomUtil.getRandomInt(5) - RandomUtil.getRandomInt(5));
 		
+		settlement = CollectionUtils.findSettlement(person.getCoordinates());
+		if (settlement == null) {
+			endTask();
+//			return;
+		}
+		
+        if (!LoadVehicleEVA.anyRoversNeedEVA(settlement)) {
+        	endTask();
+        }
+		
 		List<Rover> roversNeedingEVASuits = getRoversNeedingEVASuits(person.getSettlement());
 		if (roversNeedingEVASuits.size() > 0) {
 			int roverIndex = RandomUtil.getRandomInt(roversNeedingEVASuits.size() - 1);
@@ -117,14 +127,9 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
             setDescription(Msg.getString("Task.description.loadVehicleEVA.detail", 
                     vehicle.getName())); //$NON-NLS-1$
             
-			settlement = CollectionUtils.findSettlement(person.getCoordinates());
-			if (settlement == null) {
-				endTask();
-//				return;
-			}
 		}	
 			
-//		if (!ended) {	
+		if (!ended) {	
 			requiredResources = new HashMap<Integer, Number>();
 //            requiredResources.put(foodID, FOOD_NEED);
 			requiredResources.put(waterID, WATER_NEED);
@@ -136,7 +141,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 			requiredEquipment.put(EquipmentType.convertName2ID(EVASuit.TYPE), 1);
 			
 			optionalEquipment = new HashMap<>(0);
-//		}
+		}
 		
 		VehicleMission mission = getMissionNeedingLoading();
 		if ((vehicle == null) && (mission != null)) {
@@ -148,7 +153,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 			optionalEquipment = mission.getOptionalEquipmentToLoad();
 		}
 		
-		if (vehicle != null) {// && !ended) {
+		if (vehicle != null && !ended) {
 			// Determine location for loading.
 			Point2D loadingLoc = determineLoadingLocation();
 			setOutsideSiteLocation(loadingLoc.getX(), loadingLoc.getY());
@@ -184,7 +189,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 //			return;
 		}
 			
-//		if (!ended) {
+		if (!ended) {
 			setDescription(Msg.getString("Task.description.loadVehicleEVA.detail", vehicle.getName())); // $NON-NLS-1$
 			this.vehicle = vehicle;
 
@@ -207,7 +212,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 	
 			// Initialize task phase
 			addPhase(LOADING);
-//		}
+		}
 	}
 
 	/**
@@ -244,6 +249,21 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 		return result;
 	}
 
+	public static boolean anyRoversNeedEVA(Settlement settlement) {
+
+		Iterator<Vehicle> i = settlement.getParkedVehicles().iterator();
+		while (i.hasNext()) {
+			Vehicle vehicle = i.next();
+			if (vehicle instanceof Rover) {
+				Rover rover = (Rover) vehicle;
+				if (rover.isReservedForMission() && !BuildingManager.isRoverInAGarage(vehicle)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
 	/**
 	 * Gets a list of rovers with crew who are missing EVA suits.
 	 * 
@@ -260,7 +280,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 			if (vehicle instanceof Rover) {
 				Rover rover = (Rover) vehicle;
 				if (!rover.isReservedForMission()) {
-					if (BuildingManager.getBuilding(rover) == null) {
+					if (!BuildingManager.isRoverInAGarage(vehicle)) { //BuildingManager.getBuilding(rover) == null) {
 						Inventory roverInv = rover.getInventory();
 						int peopleOnboard = roverInv.findNumUnitsOfClass(Person.class);
 						if ((peopleOnboard > 0)) {
@@ -361,28 +381,37 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 	 */
 	double loadingPhase(double time) {
 
-		// NOTE: in the course of the loadingPhase, a person may go from inside 
-		// to outside and come back in
-        if (settlement == null) {
-            endTask();
-            return 0D;
-        }
+		// NOTE: if a person is not at a settlement or near its vicinity, 
+		// then the settlement instance is set to null. 
+    	if (settlement == null) {
+    		endTask();
+    		return 0D;
+    	}
+    	
+    	if (person != null && !person.getMind().hasActiveMission()) {
+    		endTask();
+    		return 0D;
+    	}
         
-//		if (!ended) {
+        if (!LoadVehicleEVA.anyRoversNeedEVA(settlement)) {
+        	endTask();
+        }
+    		
+		if (!ended) {
 			// Check for an accident during the EVA operation.
 			checkForAccident(time);
 	
 			// Check for radiation exposure during the EVA operation.
 			if (isRadiationDetected(time) && person.isOutside()) {
 				setPhase(WALK_BACK_INSIDE);
-				return time;
+//				return time;
 			}
 	
 			// Check if site duration has ended or there is reason to cut the loading
 			// phase short and return to the rover.
 			if (person.isOutside() && (shouldEndEVAOperation() || addTimeOnSite(time))) {
 				setPhase(WALK_BACK_INSIDE);
-				return time;
+//				return time;
 			}
 	
 			// Determine load rate.
@@ -420,16 +449,22 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 			if (roverInSettlement) {
 				sInv.storeUnit(vehicle);
 			}
+			else {
+				if (person.isOutside()) {
+					setPhase(WALK_BACK_INSIDE);	
+				}
+
+				endTask();
+			}
 	
 			if (isFullyLoaded(requiredResources, optionalResources, requiredEquipment, optionalEquipment, vehicle,
 					settlement)) {
 				if (person.isOutside()) {
 					setPhase(WALK_BACK_INSIDE);	
 				}
-//				else if (person.isInside()) {
-//		    		endTask();
-//		        }
-//			}
+
+				endTask();
+			}
 		}
 		
 		return 0D;
@@ -559,7 +594,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 				}
 
 			} else {
-				LogConsolidated.flog(Level.WARNING, 1_000, sourceName,
+				LogConsolidated.log(logger, Level.WARNING, 1_000, sourceName,
 						"[" + settlement.getName() + "] Rover " + vehicle + loadingError);
 				endTask();
 //                throw new IllegalStateException(loadingError);
@@ -667,7 +702,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 				if (amountLoading < 0D)
 					amountLoading = 0D;
 			} else {
-				LogConsolidated.flog(Level.WARNING, 1_000, sourceName,
+				LogConsolidated.log(logger, Level.WARNING, 1_000, sourceName,
 						"[" + settlement.getName() + "] Rover " + vehicle + loadingError);
 				endTask();
 //                throw new IllegalStateException(loadingError);
@@ -759,7 +794,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 								}
 								loaded++;
 							} else {
-								LogConsolidated.flog(Level.WARNING, 1_000, sourceName,
+								LogConsolidated.log(logger, Level.WARNING, 1_000, sourceName,
 										"[" + settlement.getName() + "] Rover " + vehicle + " cannot store " + eq + ".");
 								endTask();
 							}
@@ -858,7 +893,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 							}
 							loaded++;
 						} else {
-							LogConsolidated.flog(Level.WARNING, 1_000, sourceName,
+							LogConsolidated.log(logger, Level.WARNING, 1_000, sourceName,
 									"[" + settlement.getName() + "] Rover " + vehicle + " cannot store " + eq + ".");
 //                            logger.warning(vehicle + " cannot store " + eq);
 							endTask();
@@ -951,7 +986,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 			}
 		} catch (Exception e) {
 //            logger.info(e.getMessage());
-			LogConsolidated.flog(Level.WARNING, 1_000, sourceName,
+			LogConsolidated.log(logger, Level.WARNING, 1_000, sourceName,
 					"[" + settlement.getName() + "] did NOT have enough capacity in rover " + vehicle
 							+ " to store needed resources for a proposed mission. " + e.getMessage());
 			sufficientCapacity = false;
@@ -1192,16 +1227,16 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 			robot.getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience, time);
 	}
 
-//	/**
-//	 * Ends the task and performs any final actions.
-//	 */
-//	public void endTask() {
-////		ended = true;
-//		
-//		setPhase(WALK_BACK_INSIDE);
-//		
-//		super.endTask();
-//	}
+	/**
+	 * Ends the task and performs any final actions.
+	 */
+	public void endTask() {
+		ended = true;
+		
+		setPhase(WALK_BACK_INSIDE);
+		
+		super.endTask();
+	}
 	
 	@Override
 	public void destroy() {

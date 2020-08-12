@@ -291,7 +291,7 @@ public abstract class RoverMission extends VehicleMission {
 	 * @return true if rover is in a garage.
 	 */
 	protected boolean isRoverInAGarage() {
-		return (BuildingManager.getBuilding(getVehicle()) != null);
+		return BuildingManager.isRoverInAGarage(getVehicle());
 	}
 
 	/**
@@ -324,10 +324,10 @@ public abstract class RoverMission extends VehicleMission {
 		}
 
 		// If the vehicle is currently not in a garage
-		if (v.getGarage() == null) {
+//		if (v.getGarage() == null) {
 			// Add the rover to a garage if possible.
-			BuildingManager.addToGarage((Rover) v, v.getSettlement());
-		}
+		boolean	isRoverInAGarage = BuildingManager.addToGarage((GroundVehicle) v);// v.getSettlement());
+//		}
 
 		// Load vehicle if not fully loaded.
 		if (!loadedFlag) {
@@ -343,7 +343,7 @@ public abstract class RoverMission extends VehicleMission {
 						if (RandomUtil.lessThanRandPercent(75)) {
 							if (member instanceof Person) {
 								Person person = (Person) member;
-								if (isRoverInAGarage()) {
+								if (isRoverInAGarage) {
 									// TODO Refactor.
 									assignTask(person,
 												new LoadVehicleGarage(person, v,
@@ -396,7 +396,7 @@ public abstract class RoverMission extends VehicleMission {
 					
 						assignTask(person, new Walk(person, adjustedLoc.getX(), adjustedLoc.getY(), 0, v));
 						
-						if (!isDone() && isRoverInAGarage()) {
+						if (!isDone() && isRoverInAGarage) {
 							// Store one or two EVA suit for person (if possible).
 							int limit = RandomUtil.getRandomInt(1, 2);
 							for (int i=0; i<limit; i++) {
@@ -496,13 +496,13 @@ public abstract class RoverMission extends VehicleMission {
 	        boolean tethered = v.isBeingTowed() || rover.isTowingAVehicle();
 	        
 			// Add vehicle to a garage if available.
-			boolean garaged = false;
-	        if (!tethered && v.getGarage() == null) {
-	        	garaged = BuildingManager.addToGarage((GroundVehicle) v, disembarkSettlement);
+			boolean isRoverInAGarage = false;
+	        if (!tethered) {// && v.getGarage() == null) {
+	        	isRoverInAGarage = BuildingManager.addToGarage((GroundVehicle) v);//, disembarkSettlement);
 	        }
 
 			// Make sure the rover chasis is not overlapping a building structure in the settlement map
-	        if (!garaged)
+	        if (!isRoverInAGarage)
 	        	rover.determinedSettlementParkedLocationAndFacing();
 	        
 			for (Person p : rover.getCrew()) {

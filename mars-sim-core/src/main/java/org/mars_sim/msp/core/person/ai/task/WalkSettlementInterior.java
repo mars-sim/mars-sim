@@ -223,8 +223,7 @@ public class WalkSettlementInterior extends Task implements Serializable {
 
 		// If no valid walking path is found, end task.
 		if (walkingPath == null) {
-			LogConsolidated
-					.flog(Level.WARNING, 20_000, sourceName,
+			LogConsolidated.log(logger, Level.WARNING, 20_000, sourceName,
 							robot.getName() + " was unable to walk from " + startBuilding.getNickName() + " to "
 									+ destinationBuilding.getNickName() + ". No valid interior path.");
 			endTask();

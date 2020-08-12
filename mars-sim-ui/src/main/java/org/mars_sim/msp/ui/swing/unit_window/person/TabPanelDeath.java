@@ -16,6 +16,7 @@ import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -37,6 +38,9 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
+import com.alee.laf.button.WebButton;
+import com.alee.managers.icon.LazyIcon;
+import com.alee.managers.style.StyleId;
 //import com.alee.managers.language.data.TooltipWay;
 import com.alee.managers.tooltip.TooltipManager;
 import com.alee.managers.tooltip.TooltipWay;
@@ -163,7 +167,9 @@ implements ActionListener {
 		innerPanel.add(locationLabelPanel);
 
 		// Prepare center map button
-		JButton centerMapButton = new JButton(ImageLoader.getIcon(Msg.getString("img.centerMap"))); //$NON-NLS-1$
+		final ImageIcon centerIcon = new LazyIcon("center").getIcon();
+		WebButton centerMapButton = new WebButton(StyleId.buttonUndecorated, centerIcon);
+//		JButton centerMapButton = new JButton(ImageLoader.getIcon(Msg.getString("img.centerMap"))); //$NON-NLS-1$
 		centerMapButton.setMargin(new Insets(1, 1, 1, 1));
 		centerMapButton.addActionListener(this);
 		TooltipManager.setTooltip (centerMapButton, Msg.getString("TabPanelDeath.tooltip.centerMap"), TooltipWay.down);

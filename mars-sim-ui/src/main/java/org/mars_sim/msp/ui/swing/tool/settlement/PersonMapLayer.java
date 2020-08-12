@@ -103,7 +103,7 @@ public class PersonMapLayer implements SettlementMapLayer {
 	private void drawPerson(Graphics2D g2d, Person person, Color iconColor, Color outlineColor, double scale) {
 
 		int size = (int)(Math.round(scale / 3.0));
-		size = Math.max(size, 1);
+		size = Math.max(size, 4);
 		
 //		if (sizeCache != size) {
 //			sizeCache = size;

@@ -51,6 +51,8 @@ public class VehicleWindow extends UnitWindow {
 				addTabPanel(new TabPanelBots(vehicle, desktop));
 		}
 
+		addTabPanel(new TabPanelMission(vehicle, desktop));
+		
 		addTabPanel(new InventoryTabPanel(vehicle, desktop));
 
 		if (vehicle instanceof Rover) {
@@ -64,7 +66,7 @@ public class VehicleWindow extends UnitWindow {
 		addTopPanel(new TabPanelLog(vehicle, desktop));
 		addTabPanel(new MaintenanceTabPanel(vehicle, desktop));
 		addTabPanel(new NotesTabPanel(vehicle, desktop));
-		addTabPanel(new TabPanelMission(vehicle, desktop));
+
 		addTabPanel(new NavigationTabPanel(vehicle, desktop));
 
 		salvaged = vehicle.isSalvaged();

@@ -63,7 +63,11 @@ public class PhysicalCondition implements Serializable {
 	public static final int HUNGER_THRESHOLD = 250;// + RandomUtil.getRandomInt(30);
 	/** The amount of thirst threshold [millisols]. */
 	public static final int ENERGY_THRESHOLD = 2525;// + RandomUtil.getRandomInt(20);
-
+	/** The amount of fatigue threshold [millisols]. */
+	public static final int FATIGUE_THRESHOLD = 500;
+	/** The amount of stress threshold [millisols]. */
+	public static final int STRESS_THRESHOLD = 50;
+	
 	/** Life support minimum value. */
 	private static final int MIN_VALUE = 0;
 	/** Life support maximum value. */
@@ -1919,7 +1923,7 @@ public class PhysicalCondition implements Serializable {
 	 * @return
 	 */
 	public boolean isHungry() {
-		return hunger > HUNGER_THRESHOLD || kJoules < ENERGY_THRESHOLD;
+		return hunger > HUNGER_THRESHOLD * 2 || kJoules < ENERGY_THRESHOLD / 2;
 	}
 	
 	/**
@@ -1928,7 +1932,25 @@ public class PhysicalCondition implements Serializable {
 	 * @return
 	 */
 	public boolean isThirsty() {
-		return thirst > THIRST_THRESHOLD;
+		return thirst > THIRST_THRESHOLD * 2;
+	}
+	
+	/**
+	 * Checks if it passes the fatigue threshold
+	 * 
+	 * @return
+	 */
+	public boolean isSleepy() {
+		return fatigue > FATIGUE_THRESHOLD;
+	}
+	
+	/**
+	 * Checks if it passes the stress threshold
+	 * 
+	 * @return
+	 */
+	public boolean isStressed() {
+		return stress > STRESS_THRESHOLD;
 	}
 	
 	public static void initializeInstances(Simulation s, MasterClock c0, MarsClock c1, MedicalManager m) {

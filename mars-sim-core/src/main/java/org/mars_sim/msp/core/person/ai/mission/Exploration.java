@@ -116,6 +116,11 @@ public class Exploration extends RoverMission implements Serializable {
 
 		if (s != null & !isDone()) {
 
+			// Initialize data members.
+			setStartingSettlement(s);
+			exploredSites = new ArrayList<ExploredLocation>(NUM_SITES);
+			explorationSiteCompletion = new HashMap<String, Double>(NUM_SITES);
+			
 			// Check if vehicle can carry enough supplies for the mission.
 			if (hasVehicle() && !isVehicleLoadable()) {
 				addMissionStatus(MissionStatus.VEHICLE_NOT_LOADABLE);
@@ -130,11 +135,6 @@ public class Exploration extends RoverMission implements Serializable {
 			if (availableSuitNum < getMissionCapacity())
 				setMissionCapacity(availableSuitNum);
 
-			// Initialize data members.
-			setStartingSettlement(s);
-			exploredSites = new ArrayList<ExploredLocation>(NUM_SITES);
-			explorationSiteCompletion = new HashMap<String, Double>(NUM_SITES);
-			
 			// Create a list of sites to be explored during the stage of mission planning
 			createNewExploredSite();
 			
@@ -160,9 +160,9 @@ public class Exploration extends RoverMission implements Serializable {
 			// Add home settlement
 			addNavpoint(new NavPoint(getStartingSettlement().getCoordinates(), s, s.getName()));
 
-		}
-
-		if (s != null) {
+//		}
+//
+//		if (s != null) {
 			// Add exploring site phase.
 			addPhase(EXPLORE_SITE);
 
@@ -394,11 +394,11 @@ public class Exploration extends RoverMission implements Serializable {
 	}
 
 	/**
-	 * Obtains the current exploration site instance
+	 * Retrieves the current exploration site instance
 	 * 
 	 * @return
 	 */
-	private ExploredLocation getCurrentSite() {
+	private ExploredLocation retrieveCurrentSite() {
 		for (ExploredLocation e: exploredSites) {
 			if (e.getLocation().equals(getCurrentMissionLocation()))
 				return e;
@@ -417,11 +417,9 @@ public class Exploration extends RoverMission implements Serializable {
 		MarsClock currentTime = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
 		
 		// Add new explored site if just starting exploring.
-		if (explorationSiteStartTime == null) {// currentSite vs. explorationSiteStartTime
+		if (currentSite == null) {// currentSite vs. explorationSiteStartTime
 			explorationSiteStartTime = currentTime;
-			// Create a list of sites to be explored
-//			createNewExploredSite();
-			currentSite = getCurrentSite();
+			currentSite = retrieveCurrentSite();
 		}
 
 		// Check if crew has been at site for more than one sol.
@@ -518,12 +516,12 @@ public class Exploration extends RoverMission implements Serializable {
 	}
 	
 	/**
-	 * Gets a list of navpoint coordinates
+	 * Gets a list of navpoint site coordinates
 	 * 
 	 * @return
 	 */
-	public List<Coordinates> getCoordinates() {
-		return ((TravelMission)this).getCoordinates();
+	public List<Coordinates> getSiteCoordinates() {
+		return ((TravelMission)this).getNavCoordinates();
 	}
 	
 	/**
@@ -536,7 +534,7 @@ public class Exploration extends RoverMission implements Serializable {
 		MineralMap mineralMap = surfaceFeatures.getMineralMap();
 		String[] mineralTypes = mineralMap.getMineralTypeNames();
 		
-		List<Coordinates> coords = ((TravelMission)this).getCoordinates();
+		List<Coordinates> coords = getSiteCoordinates();
 		for (Coordinates c: coords) {
 			Map<String, Double> initialMineralEstimations = new HashMap<String, Double>(mineralTypes.length);
 			for (String mineralType : mineralTypes) {

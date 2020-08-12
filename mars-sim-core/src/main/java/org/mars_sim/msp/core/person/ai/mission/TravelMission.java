@@ -236,7 +236,7 @@ public abstract class TravelMission extends Mission {
 	 * 
 	 * @return
 	 */
-	public List<Coordinates> getCoordinates() {
+	public List<Coordinates> getNavCoordinates() {
 		List<Coordinates> list = new ArrayList<>();
 		int size = getNumberOfNavpoints();
 		for (int i=0; i< size; i++) {

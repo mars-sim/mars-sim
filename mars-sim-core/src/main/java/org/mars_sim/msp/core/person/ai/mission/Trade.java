@@ -355,7 +355,7 @@ public class Trade extends RoverMission implements Serializable {
 
 			// Add vehicle to a garage if available.
 			if (v.getGarage() == null) {
-				BuildingManager.addToGarage((GroundVehicle) v, tradingSettlement);
+				BuildingManager.addToGarage((GroundVehicle) v);//, tradingSettlement);
 			}
 			
 			v.determinedSettlementParkedLocationAndFacing();

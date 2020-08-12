@@ -901,7 +901,8 @@ public class BuildingManager implements Serializable {
 	 * 
 	 * @return true if it has been added to a garage 
 	 */
-	public static boolean addToGarage(GroundVehicle vehicle, Settlement settlement) {
+	public static boolean addToGarage(GroundVehicle vehicle) {
+		Settlement settlement = vehicle.getSettlement();
 		// The following block of codes are for FIXING invalid states and setting them straight
 		Building garageBldg = getBuilding(vehicle, settlement);
 		if (vehicle.haveStatusType(StatusType.GARAGED) && garageBldg != null) {
@@ -946,6 +947,35 @@ public class BuildingManager implements Serializable {
 
 	}
 
+	/**
+	 * Checks if the rover is currently in a garage or not.
+	 * 
+	 * @return true if rover is in a garage.
+	 */
+	public static boolean isRoverInAGarage(Vehicle vehicle) {
+		if (vehicle == null)
+			throw new IllegalArgumentException("vehicle is null");
+		Building result = null;
+		Settlement settlement = vehicle.getSettlement();
+		if (settlement != null) {
+			List<Building> list = settlement.getBuildingManager().getBuildings(FunctionType.GROUND_VEHICLE_MAINTENANCE);
+			for (Building garageBuilding : list) {
+				try {
+					VehicleMaintenance garage = garageBuilding.getVehicleMaintenance();
+					if (garage != null && garage.containsVehicle(vehicle)) {
+						return true;
+					}
+				} catch (Exception e) {
+//					logger.log(Level.SEVERE, "Calling getBuilding(vehicle): " + e.getMessage());
+					LogConsolidated.log(logger, Level.SEVERE, 2000, sourceName,
+							"[" + vehicle.getLocationTag().getLocale() + "] "
+									+ vehicle.getName() + " is not in a building.", e);
+				}
+			}
+		}
+		return false;
+	}
+	
 	/**
 	 * Gets the vehicle maintenance building a given vehicle is in.
 	 * 

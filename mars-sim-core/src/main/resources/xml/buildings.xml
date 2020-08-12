@@ -1761,10 +1761,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<power-storage capacity="40.0" />
 			<robotic-station slots="4">
 				<activity>
-					<activity-spot xloc="2.0" yloc="-5.8" />
-					<activity-spot xloc="2.5" yloc="-5.8" />
-					<activity-spot xloc="3.0" yloc="-5.8" />
-					<activity-spot xloc="3.5" yloc="5.8" />
+					<activity-spot xloc="-5.8" yloc="2.0" />
+					<activity-spot xloc="-5.8" yloc="2.5" />
+					<activity-spot xloc="-5.8" yloc="3.0" />
+					<activity-spot xloc="5.8" yloc="3.5" />
 				</activity>
 			</robotic-station>
 			<storage stock-capacity="10000">

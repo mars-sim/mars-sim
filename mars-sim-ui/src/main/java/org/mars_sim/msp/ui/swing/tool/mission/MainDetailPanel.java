@@ -86,6 +86,7 @@ import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
 import com.alee.laf.text.WebTextField;
 import com.alee.managers.icon.LazyIcon;
+import com.alee.managers.style.StyleId;
 
 /**
  * The tab panel for showing mission details.
@@ -286,7 +287,7 @@ public class MainDetailPanel extends WebPanel implements ListSelectionListener, 
 
 		// Create center map button
         final ImageIcon centerIcon = new LazyIcon("center").getIcon();
-		centerMapButton = new WebButton(centerIcon);//ImageLoader.getIcon(Msg.getString("img.centerMap"))); //$NON-NLS-1$
+		centerMapButton = new WebButton(StyleId.buttonUndecorated, centerIcon);//ImageLoader.getIcon(Msg.getString("img.centerMap"))); //$NON-NLS-1$
 		centerMapButton.setMargin(new Insets(2, 2, 2, 2));
 		centerMapButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {

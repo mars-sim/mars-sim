@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.SpringLayout;
@@ -47,6 +48,8 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 import com.alee.laf.button.WebButton;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
+import com.alee.managers.icon.LazyIcon;
+import com.alee.managers.style.StyleId;
 
 /**
  * The NavigationTabPanel is a tab panel for a vehicle's navigation information.
@@ -174,7 +177,9 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         destinationPanel.add(destinationLabelPanel, BorderLayout.NORTH);
 
         // Prepare center map button
-        centerMapButton = new WebButton(ImageLoader.getIcon(Msg.getString("img.centerMap")));//ImageLoader.getIcon("CenterMap")); 
+		final ImageIcon centerIcon = new LazyIcon("center").getIcon();
+		centerMapButton = new WebButton(StyleId.buttonUndecorated, centerIcon);
+//        centerMapButton = new WebButton(ImageLoader.getIcon(Msg.getString("img.centerMap")));//ImageLoader.getIcon("CenterMap")); 
         centerMapButton.setMargin(new Insets(1, 1, 1, 1));
         centerMapButton.addActionListener(this);
         centerMapButton.setToolTipText("Locate the vehicle in Navigator Tool");

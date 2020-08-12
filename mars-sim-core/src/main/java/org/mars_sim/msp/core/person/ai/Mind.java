@@ -293,8 +293,9 @@ public class Mind implements Serializable {
 	
 					// If the mission vehicle has embarked but the person is not on board, 
 					// then release the person from the mission
-					if (!mission.getCurrentMissionLocation().equals(person.getCoordinates())) {
+					if (!(mission.getCurrentMissionLocation().equals(person.getCoordinates()))) {
 						mission.removeMember(person);
+						mission = null;
 						selectNewTask();
 					}
 						

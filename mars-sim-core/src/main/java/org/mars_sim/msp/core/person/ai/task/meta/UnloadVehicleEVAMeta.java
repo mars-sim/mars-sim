@@ -81,9 +81,13 @@ public class UnloadVehicleEVAMeta implements MetaTask, Serializable {
 				return 0;
 	        		
             // Checks if the person's settlement is at meal time and is hungry
-            if ((EVAOperation.isHungryAtMealTime(person)))
+            if (EVAOperation.isHungryAtMealTime(person))
             	return 0;
             
+            // Checks if the person is physically drained
+			if (EVAOperation.isExhausted(person))
+				return 0;
+			
 	        // Check all vehicle missions occurring at the settlement.
 	        try {
 	            int numVehicles = 0;

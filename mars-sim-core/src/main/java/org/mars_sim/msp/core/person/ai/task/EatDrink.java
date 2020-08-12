@@ -144,22 +144,11 @@ public class EatDrink extends Task implements Serializable {
 		boolean notHungry = !condition.isHungry();
 		boolean notThirsty = !condition.isThirsty();
 		
-		if (!notThirsty && notHungry) {
-			// if a person is thirsty and not hungry, whether he's inside or outside			
-			addPhase(DRINK_WATER);
-			setPhase(DRINK_WATER);
-		}
-		
-		else if (notThirsty && notHungry) {
-			// if a person is not thirsty and not hungry	
-			
-			// 50% chance of continuing
-			if (RandomUtil.getRandomInt(1) == 1)
-				endTask();
-		}
-		
 		// Check if person is outside and is not thirsty
 		if (person.isOutside()) {
+			double waterAmount = 0;
+			Inventory inv = null;
+					
 			// Note : if a person is on EVA suit, he cannot eat 
 			// but should be able to drink water from the helmet tube if he's thirsty				
 			if (notThirsty) {
@@ -168,12 +157,39 @@ public class EatDrink extends Task implements Serializable {
 				endTask();
 			}
 			else {
-				addPhase(DRINK_WATER);
-				setPhase(DRINK_WATER);
+				Unit container = person.getContainerUnit();
+				if (container != null) {
+					inv = container.getInventory();	
+					// Take preserved food from inventory if it is available.
+//					foodAmount = inv.getAmountResourceStored(ResourceUtil.foodID, false);
+					waterAmount = inv.getAmountResourceStored(ResourceUtil.waterID, false);
+				}
+				
+				if (waterAmount > 0) {
+					addPhase(DRINK_WATER);
+					setPhase(DRINK_WATER);
+				}
+				else
+					endTask();
 			}
 		}
 		
 		else if (person.isInVehicle()) {
+			
+			if (!notThirsty && notHungry) {
+				// if a person is thirsty and not hungry, whether he's inside or outside			
+				addPhase(DRINK_WATER);
+				setPhase(DRINK_WATER);
+			}
+			
+			else if (notThirsty && notHungry) {
+				// if a person is not thirsty and not hungry	
+				
+				// 50% chance of continuing
+				if (RandomUtil.getRandomInt(1) == 1)
+					endTask();
+			}
+			
 			if (notHungry) {
 				// Initialize task phase.
 				addPhase(PICK_UP_DESSERT);
@@ -192,6 +208,20 @@ public class EatDrink extends Task implements Serializable {
 		}
 		
 		else if (person.isInSettlement()) {	
+			
+			if (!notThirsty && notHungry) {
+				// if a person is thirsty and not hungry, whether he's inside or outside			
+				addPhase(DRINK_WATER);
+				setPhase(DRINK_WATER);
+			}
+			
+			else if (notThirsty && notHungry) {
+				// if a person is not thirsty and not hungry	
+				
+				// 50% chance of continuing
+				if (RandomUtil.getRandomInt(1) == 1)
+					endTask();
+			}
 			
 			boolean want2Chat = true;
 			// See if a person wants to chat while eating
@@ -355,7 +385,7 @@ public class EatDrink extends Task implements Serializable {
 		consumeWater(true);
 		// Note: must call endTask here to end this task
 		super.endTask();
-		return time *.9;
+		return time *.5;
 	}
 	
 	

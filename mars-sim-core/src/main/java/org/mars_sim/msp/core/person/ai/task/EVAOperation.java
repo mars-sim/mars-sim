@@ -366,25 +366,26 @@ public abstract class EVAOperation extends Task implements Serializable {
 		boolean result = false;
 
 		// Check end EVA flag.
-		if (endEVA) {
+		if (endEVA)
 			return true;
-		}
 
 		// Check for sunlight
-		if (isGettingDark(person)) {
+		if (isGettingDark(person))
 			return true;
-		}
 				
 		// Check if any EVA problem.
-		else if (!noEVAProblem(person)) {
+		if (!noEVAProblem(person))
 			return true;
-		}
 
 		// Check if it is at meal time and the person is hungry
-		else if (isHungryAtMealTime(person)) {
+		if (isHungryAtMealTime(person)) 
 			return true;
-		}
 		
+        // Checks if the person is physically drained
+		if (isExhausted(person))
+			return true;
+	
+	
 		return result;
 	}
 
@@ -520,6 +521,22 @@ public abstract class EVAOperation extends Task implements Serializable {
 	public static boolean isHungryAtMealTime(Person person) {
 	
 		if (CookMeal.isLocalMealTime(person.getCoordinates(), 15) && person.getPhysicalCondition().isHungry()) {
+			return true;
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * Checks if the person's settlement is physically drained
+	 * 
+	 * @param person
+	 * @return
+	 */
+	public static boolean isExhausted(Person person) {
+	
+		if (person.getPhysicalCondition().isHungry() || person.getPhysicalCondition().isThirsty()
+				|| person.getPhysicalCondition().isSleepy() || person.getPhysicalCondition().isStressed()) {
 			return true;
 		}
 		

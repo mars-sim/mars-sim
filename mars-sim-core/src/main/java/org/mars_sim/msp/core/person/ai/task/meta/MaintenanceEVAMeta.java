@@ -76,6 +76,10 @@ public class MaintenanceEVAMeta implements MetaTask, Serializable {
             if (EVAOperation.isHungryAtMealTime(person))
             	return 0;
             
+            // Checks if the person is physically drained
+			if (EVAOperation.isExhausted(person))
+				return 0;
+			
             // Checks if a EVA suit is good
             if (EVAOperation.noEVAProblem(person))
             	return 0;	

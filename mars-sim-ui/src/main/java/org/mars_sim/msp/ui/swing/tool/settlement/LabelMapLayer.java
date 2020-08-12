@@ -58,7 +58,6 @@ implements SettlementMapLayer {
 	private static final Color LIVING_LABEL_COLOR = new Color (236, 255, 179); // pale yellow
 	private static final Color RESOURCE_LABEL_COLOR = new Color (182, 201, 255); // pale blue
 
-
 	private static final Color CONSTRUCTION_SITE_LABEL_COLOR = new Color(237, 114, 38); //greyish orange
 	private static final Color CONSTRUCTION_SITE_LABEL_OUTLINE_COLOR = new Color(0, 0, 0, 150);
 
@@ -68,14 +67,14 @@ implements SettlementMapLayer {
 	static final Color PERSON_LABEL_COLOR = new Color(12, 140, 133); // dull cyan
 	static final Color PERSON_LABEL_OUTLINE_COLOR = new Color(210, 210, 210, 190);
 
-	static final Color SELECTED_PERSON_LABEL_COLOR = PERSON_LABEL_COLOR.brighter();//new Color(67, 239, 229); // bright cyan;
-	static final Color SELECTED_PERSON_LABEL_OUTLINE_COLOR = PERSON_LABEL_OUTLINE_COLOR.brighter();//new Color(50, 50, 50); //(255, 255, 255, 190);
+	static final Color SELECTED_PERSON_LABEL_COLOR = PERSON_LABEL_COLOR.darker();//new Color(67, 239, 229); // bright cyan;
+	static final Color SELECTED_PERSON_LABEL_OUTLINE_COLOR = PERSON_LABEL_OUTLINE_COLOR.darker();//new Color(50, 50, 50); //(255, 255, 255, 190);
 
-	static final Color ROBOT_LABEL_COLOR = Color.ORANGE.darker();//new Color(255, 153, 11);
+	static final Color ROBOT_LABEL_COLOR = Color.ORANGE;//new Color(255, 153, 11);
 	static final Color ROBOT_LABEL_OUTLINE_COLOR = new Color(210, 210, 210, 190);
 	
-	static final Color SELECTED_ROBOT_LABEL_COLOR = ROBOT_LABEL_COLOR.brighter();//new Color(255, 153, 11);
-	static final Color SELECTED_ROBOT_LABEL_OUTLINE_COLOR = ROBOT_LABEL_OUTLINE_COLOR.brighter();//new Color(50, 50, 50);
+	static final Color SELECTED_ROBOT_LABEL_COLOR = ROBOT_LABEL_COLOR.darker();//new Color(255, 153, 11);
+	static final Color SELECTED_ROBOT_LABEL_OUTLINE_COLOR = ROBOT_LABEL_OUTLINE_COLOR.darker();//new Color(50, 50, 50);
 
 //	private Font font = new Font("Courier New", Font.PLAIN, 11); 
 

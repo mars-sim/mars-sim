@@ -80,7 +80,7 @@ public class ExitAirlock extends Task implements Serializable {
 	/** The inside airlock position. */
 	private Point2D insideAirlockPos = null;
 	/** The exterior airlock position. */
-	private Point2D exteriorAirlockPos = null;
+	private Point2D exteriorDoorPos = null;
 	
 	private static int oxygenID = ResourceUtil.oxygenID;
 	private static int waterID = ResourceUtil.waterID;
@@ -282,7 +282,7 @@ public class ExitAirlock extends Task implements Serializable {
 			else { // the airlock has activated
 				LogConsolidated.log(logger, Level.FINER, 4000, sourceName, 
 						"[" + person.getLocationTag().getLocale() + "] " + person.getName()
-						+ " " + loc + " observed the airlock just got activated for egress.");
+						+ " " + loc + " observed the airlock just got activated for EVA egress.");
 				
 			}
 			
@@ -611,13 +611,13 @@ public class ExitAirlock extends Task implements Serializable {
 					+ " was in 'exiting airlock' phase but is not outside.");
 		}
 		
-		if (exteriorAirlockPos == null) {
-			exteriorAirlockPos = airlock.getAvailableExteriorPosition();
+		if (exteriorDoorPos == null) {
+			exteriorDoorPos = airlock.getAvailableExteriorPosition();
 		}
 
 		Point2D personLocation = new Point2D.Double(person.getXLocation(), person.getYLocation());
 		
-		if (LocalAreaUtil.areLocationsClose(personLocation, exteriorAirlockPos)) {
+		if (LocalAreaUtil.areLocationsClose(personLocation, exteriorDoorPos)) {
 			
 			LogConsolidated.log(logger, Level.FINER, 4000, sourceName,
 					"[" + person.getLocationTag().getLocale() + "] " + person 
@@ -635,7 +635,7 @@ public class ExitAirlock extends Task implements Serializable {
 //			if (person.isOutside()) {
 				// Walk to exterior airlock position.
 				addSubTask(new WalkOutside(person, person.getXLocation(), person.getYLocation(),
-					exteriorAirlockPos.getX(), exteriorAirlockPos.getY(), true));
+					exteriorDoorPos.getX(), exteriorDoorPos.getY(), true));
 //			}
 //			else {
 //				String loc = person.getLocationTag().getImmediateLocation();
