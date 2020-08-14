@@ -14,11 +14,14 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.LocalAreaUtil;
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.StatusType;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -34,6 +37,8 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
 
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(VehicleMaintenance.class.getName());
+	private static final String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
+			logger.getName().length());
 
 	protected int vehicleCapacity;
 
@@ -79,48 +84,60 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
 	 * @throws BuildingException if vehicle cannot be added.
 	 */
 	public void addVehicle(Vehicle vehicle) {
-
+		boolean valid = true;
 		// Check if vehicle cannot be added to building.
-		if (vehicles.contains(vehicle))
-			throw new IllegalStateException("Building already contains vehicle.");
-		if (vehicles.size() >= vehicleCapacity)
-			throw new IllegalStateException("Building is full of vehicles.");
-
-		// Remove vehicle from any other garage that it might be in.
-		Iterator<Building> i = getBuilding().getBuildingManager().getBuildings(getFunctionType()).iterator();
-		while (i.hasNext()) {
-			Building building = i.next();
-			VehicleMaintenance garage = building.getVehicleMaintenance();
-			if (garage.containsVehicle(vehicle)) {
-				garage.removeVehicle(vehicle);
+		if (vehicles.contains(vehicle)) {
+//			throw new IllegalStateException("Building already contains vehicle.");
+			LogConsolidated.log(logger, Level.INFO, 1000, sourceName,
+				"[" + vehicle.getName() + "] " +  vehicle.getName() + " has already been garaged in " + BuildingManager.getBuilding(vehicle, vehicle.getSettlement()));
+			 valid = false;
+		}
+		
+		if (vehicles.size() >= vehicleCapacity) {
+//			throw new IllegalStateException("Building is full of vehicles.");
+			LogConsolidated.log(logger, Level.INFO, 1000, sourceName,
+				"[" + vehicle.getName() + "] " +  BuildingManager.getBuilding(vehicle, vehicle.getSettlement())
+				+ " is already full.");
+			 valid = false;
+		}
+		
+		if (valid) {
+			// Remove vehicle from any other garage that it might be in.
+			Iterator<Building> i = getBuilding().getBuildingManager().getBuildings(getFunctionType()).iterator();
+			while (i.hasNext()) {
+				Building building = i.next();
+				VehicleMaintenance garage = building.getVehicleMaintenance();
+				if (garage.containsVehicle(vehicle)) {
+					garage.removeVehicle(vehicle);
+				}
 			}
+	
+			// Add vehicle to building.
+			vehicles.add(vehicle);
+			vehicle.addStatus(StatusType.PARKED);
+			vehicle.removeStatus(StatusType.MOVING);
+	
+			// Put vehicle in assigned parking location within building.
+			ParkingLocation location = getEmptyParkingLocation();
+			double newXLoc = 0D;
+			double newYLoc = 0D;
+			if (location != null) {
+				Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(location.getXLocation(),
+						location.getYLocation(), getBuilding());
+				newXLoc = settlementLoc.getX();
+				newYLoc = settlementLoc.getY();
+				location.parkVehicle(vehicle);
+			} else {
+				// Park vehicle in center point of building.
+				newXLoc = getBuilding().getXLocation();
+				newYLoc = getBuilding().getYLocation();
+			}
+	
+			double newFacing = getBuilding().getFacing();
+			vehicle.setParkedLocation(newXLoc, newYLoc, newFacing);
+	
+			logger.fine("Adding " + vehicle.getName() + " to " + building.getNickName() + " in " + building.getSettlement());
 		}
-
-		// Add vehicle to building.
-		vehicles.add(vehicle);
-		vehicle.addStatus(StatusType.PARKED);
-		vehicle.removeStatus(StatusType.MOVING);
-
-		// Put vehicle in assigned parking location within building.
-		ParkingLocation location = getEmptyParkingLocation();
-		double newXLoc = 0D;
-		double newYLoc = 0D;
-		if (location != null) {
-			Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(location.getXLocation(),
-					location.getYLocation(), getBuilding());
-			newXLoc = settlementLoc.getX();
-			newYLoc = settlementLoc.getY();
-			location.parkVehicle(vehicle);
-		} else {
-			// Park vehicle in center point of building.
-			newXLoc = getBuilding().getXLocation();
-			newYLoc = getBuilding().getYLocation();
-		}
-
-		double newFacing = getBuilding().getFacing();
-		vehicle.setParkedLocation(newXLoc, newYLoc, newFacing);
-
-		logger.fine("Adding " + vehicle.getName() + " to " + building.getNickName() + " in " + building.getSettlement());
 	}
 
 	/**
