@@ -66,7 +66,8 @@ public class TendGreenhouse extends Task implements Serializable {
 	// Static members
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = -.1D;
-
+	/** The current task phase. */
+	private static TaskPhase currentTaskPhase;
 	/** The total time spent in inspecting the greenhouse. */
 	private double timeInspecting;
 	/** The total time spent in inspecting the greenhouse. */
@@ -97,64 +98,52 @@ public class TendGreenhouse extends Task implements Serializable {
 
 		// Get available greenhouse if any.
 		farmBuilding = getAvailableGreenhouse(person);
+		
 		if (farmBuilding != null) {
+			
 			greenhouse = farmBuilding.getFarming();
 
 			// Walk to greenhouse.
-			walkToActivitySpotInBuilding(farmBuilding, false);
-			
-			if (person != null) {
+			this.walkToActivitySpotInBuilding(farmBuilding, false);	
 
+			if (currentTaskPhase != null) {
+				addPhase(currentTaskPhase);
+				setPhase(currentTaskPhase);
+			}
+			
+			else {
 				int rand = RandomUtil.getRandomInt(20);
 
-				if (rand == 0) {
-					
-					addPhase(INSPECTING);
-					setPhase(INSPECTING);
-				} 
+				if (rand == 0)
+					currentTaskPhase = INSPECTING;
 				
-				else if (rand == 1) {
-					
-					addPhase(CLEANING);
-					setPhase(CLEANING);
-				}
+				else if (rand == 1)
+					currentTaskPhase = CLEANING;
 				
-				else if (rand == 2) {
-					
-					addPhase(SAMPLING);
-					setPhase(SAMPLING);
-				}
+				else if (rand == 2)
+					currentTaskPhase = SAMPLING;
 
-				else if (rand == 3) {
-					
-					addPhase(GROWING_TISSUE);
-					setPhase(GROWING_TISSUE);
-				}
+				else if (rand == 3)
+					currentTaskPhase = GROWING_TISSUE;
 				
 				else if (rand == 4) {
 					
-					if (greenhouse.getNumCrops2Plant() > 0) {
-					
-						addPhase(TRANSFERRING_SEEDLING);
-						setPhase(TRANSFERRING_SEEDLING);
-					}
-					
+					if (greenhouse.getNumCrops2Plant() > 0)				
+						currentTaskPhase = TRANSFERRING_SEEDLING;
 					else
-						addPhase(TENDING);
-						setPhase(TENDING);
+						currentTaskPhase = TENDING;
 				}
-					
-				else {
-					addPhase(TENDING);
-					setPhase(TENDING);
-				}
+				
+				else
+					currentTaskPhase = TENDING;
+				
+				addPhase(currentTaskPhase);
+				setPhase(currentTaskPhase);
 			}
-		} 
-		
-		else {
-			endTask();
-			return;
 		}
+		else
+			endTask();
+
 	}
 
 	/**
@@ -260,8 +249,16 @@ public class TendGreenhouse extends Task implements Serializable {
 
 		workTime *= mod;
 
-		// Divided by mod to get back any leftover real time
-		workTime = greenhouse.addWork(workTime, this, robot)/mod;
+		if (person != null) {
+			// Divided by mod to get back any leftover real time
+			workTime = greenhouse.addWork(workTime, this, person)/mod;
+		}
+
+		else {//if (robot != null) {
+			// Divided by mod to get back any leftover real time
+			workTime = greenhouse.addWork(workTime, this, robot)/mod;
+		}
+
 		
 		// Add experience
 		addExperience(time);
@@ -300,7 +297,7 @@ public class TendGreenhouse extends Task implements Serializable {
 				
 			if (greenhouse.checkBotanyLab(type.getID(), person))  {
 				
-				LogConsolidated.flog(Level.INFO, 30_000, sourceName,
+				LogConsolidated.log(logger, Level.INFO, 30_000, sourceName,
 					"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
 						+ " was growing " + type.getName() + " tissue culture in the botany lab in " 
 						+ farmBuilding.getNickName()
@@ -391,7 +388,7 @@ public class TendGreenhouse extends Task implements Serializable {
 					setDescription(Msg.getString("Task.description.tendGreenhouse.sample",
 						Conversion.capitalize(type.getName()) + " Tissues Culture for Lab Work"));
 
-					LogConsolidated.flog(Level.INFO, 30_000, sourceName,
+					LogConsolidated.log(logger, Level.INFO, 30_000, sourceName,
 					"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
 						+ " was growing and sampling " + type.getName() + " tissue culture in the botany lab in " 
 						+ farmBuilding.getNickName()

@@ -101,6 +101,8 @@ public class MiningMeta implements MetaMission {
     					if (missionProbability < 0)
     						missionProbability = 0;
                     }
+                    else // no mining site can be identified
+                    	return 0;
                 }
             } catch (Exception e) {
                 logger.log(Level.SEVERE, "Error getting mining site.", e);
