@@ -421,7 +421,7 @@ public class ExitAirlock extends Task implements Serializable {
 					insideAirlockPos = airlock.getAvailableAirlockPosition();
 				}
 				// Walk toward the reference point inside the airlock
-				walkToReference(loc);
+				walkToReferencePoint(loc);
 			}
 		}
 
@@ -429,19 +429,19 @@ public class ExitAirlock extends Task implements Serializable {
 	}
 
 	/**
-	 * Walks toward the reference inside of the airlock
+	 * Walks toward the reference point inside of the airlock
 	 * 
 	 * @param loc
 	 * @param personLocation
 	 */
-	private void walkToReference(String loc) {
+	private void walkToReferencePoint(String loc) {
 		// Walk to inside airlock position.
 		if (airlock.getEntity() instanceof Building) {
 			double distance = Point2D.distance(person.getXLocation(), person.getYLocation(),
 					insideAirlockPos.getX(), insideAirlockPos.getY());
 					
 			if (distance > 0) {
-				LogConsolidated.log(logger, Level.FINER, 4000, sourceName, 
+				LogConsolidated.log(logger, Level.INFO, 4000, sourceName, 
 						"[" + person.getLocationTag().getLocale() + "] " + person.getName()
 						+ " was within a distance of " + distance + " m from the reference point of the airlock.");
 				
@@ -449,15 +449,15 @@ public class ExitAirlock extends Task implements Serializable {
 				addSubTask(new WalkSettlementInterior(person, airlockBuilding, insideAirlockPos.getX(),
 						insideAirlockPos.getY(), 0));
 				
-				LogConsolidated.log(logger, Level.FINER, 4000, sourceName, 
-						"[" + person.getLocationTag().getLocale() + "] " + person.getName()
-						+ " " + loc + " attempted to come closer to the reference point inside of the airlock.");
+//				LogConsolidated.log(logger, Level.INFO, 4000, sourceName, 
+//						"[" + person.getLocationTag().getLocale() + "] " + person.getName()
+//						+ " " + loc + " attempted to come closer to the reference point inside of the airlock.");
 			}
 			
 			else {
-				LogConsolidated.log(logger, Level.FINER, 4000, sourceName, 
+				LogConsolidated.log(logger, Level.INFO, 4000, sourceName, 
 						"[" + person.getLocationTag().getLocale() + "] " + person.getName()
-						+ " was at the reference point of the airlock.");
+						+ " was exactly at the reference point of the airlock in " + airlock.getEntity());
 			}
 			
 		} else if (airlock.getEntity() instanceof Rover) {

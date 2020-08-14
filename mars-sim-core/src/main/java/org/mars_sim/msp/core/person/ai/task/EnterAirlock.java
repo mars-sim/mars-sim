@@ -451,7 +451,7 @@ public class EnterAirlock extends Task implements Serializable {
 			LogConsolidated.log(logger, Level.INFO, 4000, sourceName, 
 					"[" + person.getLocationTag().getLocale() + "] "
 					+ person.getName() + " " + loc 
-					+ " just stepped out of the airlock chamber. Ready to go to 'exiting airlock' phase.");
+					+ " was stepping out of the airlock chamber. Ready to go to 'exiting airlock' phase.");
 				
 	        // Add experience
 	        addExperience(time - remainingTime);
@@ -476,6 +476,14 @@ public class EnterAirlock extends Task implements Serializable {
 			interiorDoorPos = airlock.getAvailableInteriorPosition();
 		}
 
+		if (airlock.inAirlock(person)) {
+
+            // If airlock has not been activated, activate it.
+            if (!airlock.isActivated()) {
+                airlock.activateAirlock(person);
+            }
+		}
+		
 		// logger.finer(person + " exiting airlock inside.");
 		LogConsolidated.log(logger, Level.FINER, 4000, sourceName, 
 				"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
@@ -500,8 +508,7 @@ public class EnterAirlock extends Task implements Serializable {
 			String loc = person.getLocationTag().getImmediateLocation();
 			loc = loc == null ? "[N/A]" : loc;
 			loc = loc.equalsIgnoreCase("Outside") ? loc.toLowerCase() : "in " + loc;
-			
-				
+						
 	           // Walk to interior airlock position.
             if (airlock.getEntity() instanceof Building) {
 
@@ -522,12 +529,18 @@ public class EnterAirlock extends Task implements Serializable {
 //                logger.finest(person + " exiting airlock inside " + airlockRover);
     			LogConsolidated.log(logger, Level.INFO, 4000, sourceName, 
     					"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
-    					+ " " + loc + " will walk close enough to the interior door.");
+    					+ " " + loc + " will walk close to the interior door.");
     			
                 addSubTask(new WalkRoverInterior(person, airlockRover, 
                         interiorDoorPos.getX(), interiorDoorPos.getY()));
             }
             
+			// Add experience
+			addExperience(time - remainingTime);
+			
+			// This completes the task of ingress through the airlock
+			setPhase(STORING_EVA_SUIT);	
+			
 //			// Walk to inside airlock position.
 //			addSubTask(new WalkOutside(person, person.getXLocation(), 
 //				person.getYLocation(), interiorAirlockPos.getX(),

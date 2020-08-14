@@ -119,7 +119,7 @@ implements Serializable {
                     setPhase(WALK_BACK_INSIDE);
                 }
 //            	ended = true;
-            	endTask();
+//            	endTask();
 //            	return;
             }
         }
