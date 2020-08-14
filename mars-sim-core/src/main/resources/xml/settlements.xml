@@ -165,9 +165,9 @@
 			</building>
 
 			<!-- EVA Airlock is attached to the lander hab -->
-			<building id="1" type="EVA Airlock" x-location="7.0" y-location="0.0" facing="0.0">
+			<building id="1" type="EVA Airlock" x-location="7.5" y-location="0.0" facing="0.0">
 				<connection-list>
-					<connection id="0" x-location="-2.5" y-location="0.0" />
+					<connection id="0" x-location="-3.0" y-location="0.0" />
 				</connection-list>
 			</building>
 
@@ -267,9 +267,9 @@
 			</building>
 
 			<!-- EVA Airlock is attached to the lander hab -->
-			<building id="1" type="EVA Airlock" x-location="7.0" y-location="0.0" facing="0.0">
+			<building id="1" type="EVA Airlock" x-location="7.5" y-location="0.0" facing="0.0">
 				<connection-list>
-					<connection id="0" x-location="-2.5" y-location="0.0" />
+					<connection id="0" x-location="-3.0" y-location="0.0" />
 				</connection-list>
 			</building>
 			
@@ -341,9 +341,9 @@
 			</building>
 
 			<!-- EVA Airlock is attached to the lander hab -->
-			<building id="1" type="EVA Airlock" x-location="7.0" y-location="0.0" facing="0.0">
+			<building id="1" type="EVA Airlock" x-location="7.5" y-location="0.0" facing="0.0">
 				<connection-list>
-					<connection id="0" x-location="-2.5" y-location="0.0" />
+					<connection id="0" x-location="-3.0" y-location="0.0" />
 				</connection-list>
 			</building>
 			
@@ -415,9 +415,9 @@
 			</building>
 
 			<!-- EVA Airlock is attached to the lander hab -->
-			<building id="1" type="EVA Airlock" x-location="7.0" y-location="0.0" facing="0.0">
+			<building id="1" type="EVA Airlock" x-location="7.5" y-location="0.0" facing="0.0">
 				<connection-list>
-					<connection id="0" x-location="-2.5" y-location="0.0" />
+					<connection id="0" x-location="-3.0" y-location="0.0" />
 				</connection-list>
 			</building>
 			
@@ -489,9 +489,9 @@
 			</building>
 
 			<!-- EVA Airlock is attached to the lander hab -->
-			<building id="1" type="EVA Airlock" x-location="7.0" y-location="0.0" facing="0.0">
+			<building id="1" type="EVA Airlock" x-location="7.5" y-location="0.0" facing="0.0">
 				<connection-list>
-					<connection id="0" x-location="-2.5" y-location="0.0" />
+					<connection id="0" x-location="-3.0" y-location="0.0" />
 				</connection-list>
 			</building>
 			
@@ -574,9 +574,9 @@
 				</connection-list>
 			</building>
 			<!-- EVA Airlock is attached to the lander hab -->
-			<building id="3" type="EVA Airlock" x-location="7.0" y-location="0.0" facing="0.0">
+			<building id="3" type="EVA Airlock" x-location="7.5" y-location="0.0" facing="0.0">
 				<connection-list>
-					<connection id="2" x-location="-2.5" y-location="0.0" />
+					<connection id="2" x-location="-3.0" y-location="0.0" />
 				</connection-list>
 			</building>
 			<building id="4" type="Hallway" length="3.0" x-location="-6.0" y-location="0.0" facing="270.0">
@@ -833,9 +833,9 @@
 			</building>						
 						
 			<!-- EVA Airlock is attached to the lander hab -->
-			<building id="12" type="EVA Airlock" x-location="7.0" y-location="0.0" facing="0.0">
+			<building id="12" type="EVA Airlock" x-location="7.5" y-location="0.0" facing="0.0">
 				<connection-list>
-					<connection id="0" x-location="-2.5" y-location="0.0" />
+					<connection id="0" x-location="-3.0" y-location="0.0" />
 				</connection-list>
 			</building>	
 								
@@ -1068,9 +1068,9 @@
 			</building>						
 							
 			<!-- EVA Airlock is attached to the lander hab -->
-			<building id="12" type="EVA Airlock" x-location="7.0" y-location="0.0" facing="0.0">
+			<building id="12" type="EVA Airlock" x-location="7.5" y-location="0.0" facing="0.0">
 				<connection-list>
-					<connection id="0" x-location="-2.5" y-location="0.0" />
+					<connection id="0" x-location="-3.0" y-location="0.0" />
 				</connection-list>
 			</building>	
 											
@@ -1318,9 +1318,9 @@
 			</building>
 				
 			<!-- EVA Airlock is attached to the lander hab -->
-			<building id="14" type="EVA Airlock" x-location="7.0" y-location="0.0" facing="0.0">
+			<building id="14" type="EVA Airlock" x-location="7.5" y-location="0.0" facing="0.0">
 				<connection-list>
-					<connection id="0" x-location="-2.5" y-location="0.0" />
+					<connection id="0" x-location="-3.0" y-location="0.0" />
 				</connection-list>
 			</building>	
 																		
@@ -1568,9 +1568,9 @@
 			</building>
 				
 			<!-- EVA Airlock is attached to the lander hab -->
-			<building id="14" type="EVA Airlock" x-location="7.0" y-location="0.0" facing="0.0">
+			<building id="14" type="EVA Airlock" x-location="7.5" y-location="0.0" facing="0.0">
 				<connection-list>
-					<connection id="0" x-location="-2.5" y-location="0.0" />
+					<connection id="0" x-location="-3.0" y-location="0.0" />
 				</connection-list>
 			</building>	
 																		
@@ -1782,9 +1782,9 @@
 			</building>
 					
 			<!-- EVA Airlock is attached to the lander hab -->
-			<building id="11" type="EVA Airlock" x-location="7.0" y-location="0.0" facing="0.0">
+			<building id="11" type="EVA Airlock" x-location="7.5" y-location="0.0" facing="0.0">
 				<connection-list>
-					<connection id="0" x-location="-2.5" y-location="0.0" />
+					<connection id="0" x-location="-3.0" y-location="0.0" />
 				</connection-list>
 			</building>		
 							
@@ -2078,9 +2078,9 @@
 			</building>
 				
 			<!-- EVA Airlock is attached to the lander hab -->
-			<building id="21" type="EVA Airlock" x-location="7.0" y-location="0.0" facing="0.0">
+			<building id="21" type="EVA Airlock" x-location="7.5" y-location="0.0" facing="0.0">
 				<connection-list>
-					<connection id="0" x-location="-2.5" y-location="0.0" />
+					<connection id="0" x-location="-3.0" y-location="0.0" />
 				</connection-list>
 			</building>	
 																		
@@ -2374,9 +2374,9 @@
 			</building>
 				
 			<!-- EVA Airlock is attached to the lander hab -->
-			<building id="21" type="EVA Airlock" x-location="7.0" y-location="0.0" facing="0.0">
+			<building id="21" type="EVA Airlock" x-location="7.5" y-location="0.0" facing="0.0">
 				<connection-list>
-					<connection id="0" x-location="-2.5" y-location="0.0" />
+					<connection id="0" x-location="-3.0" y-location="0.0" />
 				</connection-list>
 			</building>	
 																		
@@ -2670,9 +2670,9 @@
 			</building>
 				
 			<!-- EVA Airlock is attached to the lander hab -->
-			<building id="21" type="EVA Airlock" x-location="7.0" y-location="0.0" facing="0.0">
+			<building id="21" type="EVA Airlock" x-location="7.5" y-location="0.0" facing="0.0">
 				<connection-list>
-					<connection id="0" x-location="-2.5" y-location="0.0" />
+					<connection id="0" x-location="-3.0" y-location="0.0" />
 				</connection-list>
 			</building>	
 																		
@@ -2966,9 +2966,9 @@
 			</building>
 		
 			<!-- EVA Airlock is attached to the lander hab -->
-			<building id="21" type="EVA Airlock" x-location="7.0" y-location="0.0" facing="0.0">
+			<building id="21" type="EVA Airlock" x-location="7.5" y-location="0.0" facing="0.0">
 				<connection-list>
-					<connection id="0" x-location="-2.5" y-location="0.0" />
+					<connection id="0" x-location="-3.0" y-location="0.0" />
 				</connection-list>
 			</building>	
 																			
@@ -3280,9 +3280,9 @@
 			</building>
 			
 			<!-- EVA Airlock is attached to the 1st lander hab -->
-			<building id="27" type="EVA Airlock" x-location="7.0" y-location="0.0" facing="0.0">
+			<building id="27" type="EVA Airlock" x-location="7.5" y-location="0.0" facing="0.0">
 				<connection-list>
-					<connection id="0" x-location="-2.5" y-location="0.0" />
+					<connection id="0" x-location="-3.0" y-location="0.0" />
 				</connection-list>
 			</building>	
 						
@@ -3316,16 +3316,16 @@
 			</building>
 							
 			<!-- EVA Airlock is attached to the Astronomy Observatory -->
-			<building id="47" type="EVA Airlock" x-location="-49.0" y-location="-20.0" facing="0.0">
+			<building id="47" type="EVA Airlock" x-location="-48.5" y-location="-20.0" facing="0.0">
 				<connection-list>
-					<connection id="46" x-location="-2.5" y-location="0.0" />
+					<connection id="46" x-location="-3.0" y-location="0.0" />
 				</connection-list>
 			</building>
 			
 			<!-- EVA Airlock is attached to the 3rd lander hab -->
-			<building id="48" type="EVA Airlock" x-location="7.0" y-location="26.0" facing="0.0">
+			<building id="48" type="EVA Airlock" x-location="7.5" y-location="26.0" facing="0.0">
 				<connection-list>
-					<connection id="4" x-location="-2.5" y-location="0.0" />
+					<connection id="4" x-location="-3.0" y-location="0.0" />
 				</connection-list>
 			</building>	
 			
@@ -3566,7 +3566,7 @@
 
 			<building id="35" type="Large Sabatier Processor" x-location="0.0" y-location="-40.0" facing="90.0" />
 			<building id="36" type="Large Sabatier Processor" x-location="0.0" y-location="-45.0" facing="90.0" />
-	
+			
 			<vehicle type="Cargo Rover" number="2" />
 			<vehicle type="Light Utility Vehicle" number="1" />
 

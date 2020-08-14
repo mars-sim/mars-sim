@@ -32,7 +32,7 @@
 	<!ATTLIST dining capacity CDATA #REQUIRED>
 	<!ELEMENT earth-return EMPTY>
 	<!ATTLIST earth-return crew-capacity CDATA #REQUIRED>
-	<!ELEMENT EVA EMPTY>
+	<!ELEMENT EVA (activity?)>
 	<!ATTLIST EVA airlock-capacity CDATA #REQUIRED>
 	<!ATTLIST EVA xloc CDATA #REQUIRED>
 	<!ATTLIST EVA yloc CDATA #REQUIRED>
@@ -173,15 +173,15 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<administration population-support="2">
 				<activity>
 					<!-- temporarily using two of the activity-spots/chairs in the dining space for now -->
-					<activity-spot xloc="-0.8" yloc="-1.8" />
-					<activity-spot xloc="-0.8" yloc="-2.4" />
+					<activity-spot xloc="2.81" yloc="-1.0" />
+					<activity-spot xloc="2.33" yloc="-0.5" />
 				</activity>
 			</administration>
 
 			<!-- The building has communication capabilities. -->
 			<communication>
 				<activity>
-					<activity-spot xloc="-0.8" yloc="-1.2" />
+					<activity-spot xloc="-0.9" yloc="-1.3" />
 				</activity>
 			</communication>
 
@@ -231,7 +231,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<!-- The building is inhabitable and can provide life support for people. -->
 			<!-- capacity: number of people the building can normally support without crowding. -->
 			<!-- power-required: power (kW) required for life support. -->
-			<life-support capacity="8" power-required="0.4" />
+			<life-support capacity="16" power-required="0.8" />
 
 			<!-- The building provides sleeping quarters for people. -->
 			<!-- beds: the number of sleeping quarters provided. -->
@@ -250,8 +250,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			     can support -->
 			<manufacture tech-level="4" concurrent-processes="2">
 				<activity>
-					<activity-spot xloc="-0.75" yloc="-1.3" />
-					<activity-spot xloc="-0.75" yloc="-1.85" />					
+					<activity-spot xloc="-0.9" yloc="-2.5" />
+					<activity-spot xloc="-0.9" yloc="-1.85" />					
 				</activity>
 			</manufacture>
 
@@ -281,8 +281,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<!-- The building has recreation facilities (movies, games, music, etc.). -->
 			<recreation population-support="2">
 				<activity>
-					<activity-spot xloc="1.9" yloc="-1.0" />
-					<activity-spot xloc="2.4" yloc="-1.5" />
+					<activity-spot xloc="1.85" yloc="-1.05" />
+					<activity-spot xloc="2.32" yloc="-1.5" />
 				</activity>
 			</recreation>
 
@@ -705,7 +705,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	</building>
 <!-- end of Lander Hab-->
 
-	<building type="EVA Airlock" width="5.0" length="5.0" base-level="-1"
+	<building type="EVA Airlock" width="6.0" length="4.0" base-level="-1"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature="22.5">
 		<description> The Airlock is a node to be attached to building that need to have direct access 
 			performing EVA operations.
@@ -720,15 +720,32 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<!--    exterior-xloc : the relative X location outside the building. -->						
 			<!--    exterior-yloc : the relative Y location outside the building. -->
 			<EVA airlock-capacity="4" 
-			    xloc="2.0" yloc="0.0" 
-				interior-xloc="1.5" interior-yloc="0.0"
-				exterior-xloc="3.5" exterior-yloc="0.0" />
-			<life-support capacity="4" power-required="0.2" />
+			    xloc="1.0" yloc="0.0" 
+				interior-xloc="-1.0" interior-yloc="0.0"
+				exterior-xloc="3.0" exterior-yloc="0.0" >
+				<activity>
+					<activity-spot xloc="1.25" yloc="1.0" />
+					<activity-spot xloc="1.25" yloc="-1.0" />
+					<activity-spot xloc="0.0" yloc="1.0" />
+					<activity-spot xloc="0.0" yloc="-1.0" />
+				</activity>
+			</EVA>	
+			<life-support capacity="6" power-required="0.3" />
+			<living-accommodations beds="2">
+				<activity>
+					<activity-spot xloc="-2.6" yloc="1.35" />
+					<activity-spot xloc="-2.6" yloc="-1.35" />
+				</activity>
+			</living-accommodations>			
 			<power-generation>
 				<power-source type="Solar Power Source" power="2.0" />
 			</power-generation>
 			<power-storage capacity="20.0" />
-			<robotic-station slots="2" />
+			<robotic-station slots="1" >
+				<activity>
+					<activity-spot xloc="2.75" yloc="1.0" />
+				</activity>
+			</robotic-station>	
 			<thermal-generation>
 				<heat-source type="Solar Heating Source" capacity="2.0" />
 				<heat-source type="Electric Heating Source" capacity="10.0" />
@@ -1274,6 +1291,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="2.2" yloc="-.6" />
 					<activity-spot xloc="2.2" yloc="-2.0" />
 					<activity-spot xloc="2.2" yloc="-3.4" />
+					
 					<activity-spot xloc="-2.2" yloc="3.2" />
 					<activity-spot xloc="-2.2" yloc="1.8" />
 					<activity-spot xloc="-2.2" yloc=".4" />
@@ -1355,31 +1373,37 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="-1.55" yloc="2.0" />
 					<activity-spot xloc="-2.00" yloc="2.0" />
 					<activity-spot xloc="-2.45" yloc="2.0" />
+					
 					<activity-spot xloc="-.32" yloc="1.59" />
 					<activity-spot xloc="-.65" yloc="1.23" />
 					<activity-spot xloc="-1.10" yloc="1.23" />
 					<activity-spot xloc="-1.55" yloc="1.23" />
 					<activity-spot xloc="-2.00" yloc="1.23" />
+					
 					<activity-spot xloc="-2.45" yloc="1.23" />
 					<activity-spot xloc="-.65" yloc=".99" />
 					<activity-spot xloc="-1.10" yloc=".99" />
 					<activity-spot xloc="-1.55" yloc=".99" />
 					<activity-spot xloc="-2.00" yloc=".99" />
+					
 					<activity-spot xloc="-2.45" yloc=".99" />
 					<activity-spot xloc="-.32" yloc=".62" />
 					<activity-spot xloc="-.65" yloc=".22" />
 					<activity-spot xloc="-1.10" yloc=".22" />
 					<activity-spot xloc="-1.55" yloc=".22" />
+					
 					<activity-spot xloc="-2.00" yloc=".22" />
 					<activity-spot xloc="-2.45" yloc=".22" />
 					<activity-spot xloc="-.65" yloc="-.02" />
 					<activity-spot xloc="-1.10" yloc="-.02" />
 					<activity-spot xloc="-1.55" yloc="-.02" />
+					
 					<activity-spot xloc="-2.00" yloc="-.02" />
 					<activity-spot xloc="-2.45" yloc="-.02" />
 					<activity-spot xloc="-.32" yloc="-.39" />
 					<activity-spot xloc="-.65" yloc="-.79" />
 					<activity-spot xloc="-1.10" yloc="-.79" />
+					
 					<activity-spot xloc="-1.55" yloc="-.79" />
 					<activity-spot xloc="-2.00" yloc="-.79" />
 					<activity-spot xloc="-2.45" yloc="-.79" />
@@ -1394,7 +1418,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</exercise>
 
-			<food-production tech-level="4" concurrent-processes="7">
+			<food-production tech-level="4" concurrent-processes="8">
 				<activity>
 					<activity-spot xloc="-0.8" yloc="3.4" />
 					<activity-spot xloc="-0.7" yloc="3.2" />
@@ -1408,7 +1432,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</food-production>
 
-			<life-support capacity="64" power-required="3.2" />
+			<life-support capacity="36" power-required="1.8" />
 			
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
@@ -1602,18 +1626,20 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<power-required base-power="3.0" base-power-down-power="0.3" />
 
 		<functions>
-			<administration population-support="25">
+			<administration population-support="12">
 				<activity>
 					<activity-spot xloc="1.56" yloc="3.33" />
 					<activity-spot xloc="1.56" yloc="2.85" />
 					<activity-spot xloc="-1.62" yloc="3.33" />
 					<activity-spot xloc="-1.62" yloc="2.85" />
 					<activity-spot xloc="1.56" yloc="-2.91" />
+					
 					<activity-spot xloc="1.56" yloc="-3.37" />
 					<activity-spot xloc="-1.62" yloc="-2.91" />
 					<activity-spot xloc="-1.62" yloc="-3.37" />
 					<activity-spot xloc="-1.88" yloc="1.21" />
 					<activity-spot xloc="-1.88" yloc=".4" />
+					
 					<activity-spot xloc="-1.88" yloc="-.45" />
 					<activity-spot xloc="-1.88" yloc="-1.34" />
 				</activity>
@@ -1629,7 +1655,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			exterior-xloc="-4.5" exterior-yloc="2.3" />
 -->
 			<life-support capacity="24" power-required="0.6" />
-			<management population-support="24">
+			<management population-support="12">
 				<activity>
 					<activity-spot xloc="1.32" yloc="0.92" />
 					<activity-spot xloc="1.32" yloc="0.28" />
@@ -2552,7 +2578,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</food-production>
 
-			<life-support capacity="8" power-required="0.4" />
+			<life-support capacity="12" power-required="0.6" />
 
 			<manufacture tech-level="4" concurrent-processes="1">
 				<activity>
@@ -2820,8 +2846,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<power-required base-power="3.0" base-power-down-power="0.3" />
 
 		<functions>
-			<!-- EVA airlock-capacity="8" xloc="0.0" yloc="1.0" interior-xloc="0.0" interior-yloc=".5"
-			exterior-xloc="0.0" exterior-yloc="10.0" /-->
+			<EVA airlock-capacity="8" xloc="0.0" yloc="1.0" interior-xloc="0.0" interior-yloc=".5"
+			exterior-xloc="0.0" exterior-yloc="10.0" />
 			<ground-vehicle-maintenance vehicle-capacity="2" >
                 <parking-location xloc="4.5" yloc="-3.2" />
                 <parking-location xloc="-4.5" yloc="-3.2" />
