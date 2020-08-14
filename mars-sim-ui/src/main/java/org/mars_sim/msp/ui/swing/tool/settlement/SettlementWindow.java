@@ -154,7 +154,7 @@ public class SettlementWindow extends ToolWindow {
 	    w2.add(buildingXYLabel);
 	    
 	    WebPanel w3 = new WebPanel();
-	    w3.setPreferredSize(new Dimension(113, 20));
+	    w3.setPreferredSize(new Dimension(125, 20));
 	    w3.add(mapXYLabel);
 	    
         statusBar.add(w0); 
@@ -219,6 +219,14 @@ public class SettlementWindow extends ToolWindow {
 //		return String.format("%6.2f,%6.2f", x, y);
 		return (int)x + ", " + (int)y;
 	}
+	
+	/**
+	 * Sets the label of the coordinates within a building
+	 * 
+	 * @param x
+	 * @param y
+	 * @param blank
+	 */
 	public void setBuildingXYCoord(double x, double y, boolean blank) {
 		if (blank) {
 			buildingXYLabel.setText("");
@@ -230,6 +238,12 @@ public class SettlementWindow extends ToolWindow {
 		}
 	}
 
+	/**
+	 * Sets the x/y pixel label of the settlement window
+	 * 
+	 * @param point
+	 * @param blank
+	 */
 	public void setPixelXYCoord(double x, double y, boolean blank) {
 		if (blank) {
 			pixelXYLabel.setText("");
@@ -241,17 +255,28 @@ public class SettlementWindow extends ToolWindow {
 		}
 	}
 	
+	/**
+	 * Sets the label of the settlement map coordinates
+	 * 
+	 * @param point
+	 * @param blank
+	 */
 	public void setMapXYCoord(Point.Double point, boolean blank) {
 		if (blank) {
 			mapXYLabel.setText("");
 		}
 		else {
 			StringBuilder sb = new StringBuilder();
-			sb.append(SETTLEMENT_MAP).append(format1(point.getX(), point.getY())).append(CLOSE_PARENT);
+			sb.append(SETTLEMENT_MAP).append(format0(point.getX(), point.getY())).append(CLOSE_PARENT);
 			mapXYLabel.setText(sb.toString());
 		}
 	}
 	
+	/**
+	 * Sets the population label
+	 * 
+	 * @param pop
+	 */
 	public void setPop(int pop) {
         popLabel.setText(POPULATION + pop + WHITESPACES_2);	
 	}
@@ -259,6 +284,8 @@ public class SettlementWindow extends ToolWindow {
 	@Override
 	public void destroy() {
 		buildingXYLabel = null;
+		pixelXYLabel = null;
+		mapXYLabel = null;
 		popLabel = null;
 		statusBar = null;
 		mapPanel.destroy();

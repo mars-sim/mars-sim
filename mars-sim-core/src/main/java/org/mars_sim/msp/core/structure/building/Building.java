@@ -594,7 +594,7 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	
 	public LivingAccommodations getLivingAccommodations() {
 		if (livingAccommodations == null)
-			livingAccommodations = (LivingAccommodations) getFunction(FunctionType.LIVING_ACCOMODATIONS);
+			livingAccommodations = (LivingAccommodations) getFunction(FunctionType.LIVING_ACCOMMODATIONS);
 		return livingAccommodations;
 	}
 
@@ -886,6 +886,9 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	public Function getFunction(FunctionType functionType) {
 		Function result = null;
 
+		if (functions == null)
+			functions = determineFunctions();
+		
 		for (Function f : functions) {
 			if (f.getFunctionType() == functionType) {
 				return f;
@@ -1235,6 +1238,24 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		return people;
 	}
 
+	/**
+	 * Gets a collection of robots
+	 * 
+	 * @return
+	 */
+	public Collection<Robot> getRobots() {
+		Collection<Robot> robots = new ConcurrentLinkedQueue<Robot>();
+
+		if (roboticStation != null) {
+			for (Robot occupant : roboticStation.getRobotOccupants()) {
+				if (!robots.contains(occupant))
+					robots.add(occupant);
+			}
+		}
+		
+		return robots;
+	}
+	
 	/**
 	 * Gets a collection of people affected by this entity. Children buildings
 	 * should add additional people as necessary.

@@ -259,7 +259,7 @@ public class BuildingConfig implements Serializable {
 		functions.add(FunctionType.FOOD_PRODUCTION);
 		functions.add(FunctionType.GROUND_VEHICLE_MAINTENANCE);
 		functions.add(FunctionType.LIFE_SUPPORT);
-		functions.add(FunctionType.LIVING_ACCOMODATIONS);
+		functions.add(FunctionType.LIVING_ACCOMMODATIONS);
 		functions.add(FunctionType.MANAGEMENT);
 		functions.add(FunctionType.MANUFACTURE);
 		functions.add(FunctionType.MEDICAL_CARE);
@@ -1561,6 +1561,16 @@ public class BuildingConfig implements Serializable {
 		return getActivitySpots(buildingType, EXERCISE);
 	}
 
+	/**
+	 * Gets a list of activity spots for the EVA building function.
+	 * 
+	 * @param buildingType the type of the building.
+	 * @return list of activity spots as Point2D objects.
+	 */
+	public List<Point2D> getEVAActivitySpots(String buildingType) {
+		return getActivitySpots(buildingType, EVA);
+	}
+	
 	/**
 	 * Gets a list of activity spots for the farming building function.
 	 * 

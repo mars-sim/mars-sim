@@ -27,7 +27,7 @@ public enum FunctionType {
 	FOOD_PRODUCTION  			(Msg.getString("FunctionType.foodProduction")), //$NON-NLS-1$	
 	GROUND_VEHICLE_MAINTENANCE	(Msg.getString("FunctionType.groundVehicleMaintenance")), //$NON-NLS-1$
 	LIFE_SUPPORT				(Msg.getString("FunctionType.lifeSupport")), //$NON-NLS-1$
-	LIVING_ACCOMODATIONS		(Msg.getString("FunctionType.livingAccomodations")), //$NON-NLS-1$
+	LIVING_ACCOMMODATIONS		(Msg.getString("FunctionType.livingAccommodations")), //$NON-NLS-1$
 	MANAGEMENT					(Msg.getString("FunctionType.management")), //$NON-NLS-1$
 	MANUFACTURE					(Msg.getString("FunctionType.manufacture")), //$NON-NLS-1$
 	MEDICAL_CARE				(Msg.getString("FunctionType.medicalCare")), //$NON-NLS-1$

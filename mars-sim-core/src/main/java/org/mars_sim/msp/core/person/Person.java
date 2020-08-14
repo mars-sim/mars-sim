@@ -980,7 +980,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		// Set quarters to null
 		if (quartersInt != -1) {
 			LivingAccommodations accommodations = unitManager.getBuildingtByID(quartersInt).getLivingAccommodations();
-			accommodations.getBedMap().remove(this);
+			accommodations.getAssignedBeds().remove(this);
 			quartersInt = -1;
 		}
 		// Empty the bed

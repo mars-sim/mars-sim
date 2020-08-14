@@ -57,6 +57,8 @@ Copyright (C) 2020 Scott Davis
    person/robot in PersonMapLayer and RobotMapLayer at various zoom
    level.
    
+6. Revamp EVA airlock design and svg image.
+
    
 ### FIXES :
 

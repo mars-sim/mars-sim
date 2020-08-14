@@ -35,11 +35,8 @@ implements Serializable {
     public Management(Building building) {
         // Use Function constructor.
         super(FUNCTION, building);
-
         // Populate data members.
-//        BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
         populationSupport = buildingConfig.getManagementPopulationSupport(building.getBuildingType());
-
         // Load activity spots
         loadActivitySpots(buildingConfig.getManagementActivitySpots(building.getBuildingType()));
     }

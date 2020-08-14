@@ -96,7 +96,7 @@ implements Serializable {
 						// if gym is not available, go back to his quarters
 		                Building quarters = person.getQuarters();    
 		                if (quarters != null) {
-		                	walkToActivitySpotInBuilding(quarters, FunctionType.LIVING_ACCOMODATIONS, true);
+		                	walkToActivitySpotInBuilding(quarters, FunctionType.LIVING_ACCOMMODATIONS, true);
 						    walkSite = true;
 		                }
 	                }
@@ -157,7 +157,7 @@ implements Serializable {
 
     @Override
     public FunctionType getLivingFunction() {
-        return FunctionType.LIVING_ACCOMODATIONS;//.RECREATION;
+        return FunctionType.LIVING_ACCOMMODATIONS;//.RECREATION;
     }
 
 	@Override

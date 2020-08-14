@@ -44,13 +44,13 @@ public class LivingAccommodations extends Function implements Serializable {
 	/** 1/5 of chance of going to a restroom per frame */
 	public static final int TOILET_CHANCE = 20;
 
-	private static final FunctionType FUNCTION = FunctionType.LIVING_ACCOMODATIONS;
+	private static final FunctionType FUNCTION = FunctionType.LIVING_ACCOMMODATIONS;
 
 	private int solCache = 0; // NOTE: can't be static since each building needs to account for it.
 	/** max # of beds. */
 	private int maxNumBeds; 
-	/** The curent # of sleepers. */
-	private int sleepers;
+	/** The # of registered sleepers. */
+	private int registeredSleepers;
 	/** The average water used per person for washing (showers, washing clothes, hands, dishes, etc) [kg/sol].*/
 	private double washWaterUsage;
 	// private double wasteWaterProduced; // Waste water produced by
@@ -58,8 +58,6 @@ public class LivingAccommodations extends Function implements Serializable {
 	/** percent portion of grey water generated from waste water.*/
 	private double greyWaterFraction; 
 
-//	private Settlement settlement;
-//	private Inventory inv;
 	private Building building;
 
 	/** The bed registry in this facility. */
@@ -89,8 +87,7 @@ public class LivingAccommodations extends Function implements Serializable {
 
 		this.building = building;
 	
-		dailyWaterUsage = new HashMap<>();
-		
+		dailyWaterUsage = new HashMap<>();	
 		// Loads the max # of beds available 
 		maxNumBeds = buildingConfig.getLivingAccommodationBeds(building.getBuildingType());
 		// Loads the wash water usage kg/sol
@@ -101,6 +98,8 @@ public class LivingAccommodations extends Function implements Serializable {
 		greyWaterFraction = grey2BlackWaterRatio / (grey2BlackWaterRatio + 1);
 		// Load activity spots
 		loadActivitySpots(buildingConfig.getLivingAccommodationsActivitySpots(building.getBuildingType()));
+//		// Load bed locations
+//		loadBedLocations(buildingConfig.getMedicalCareBedLocations(building.getBuildingType()));
 	}
 
 	/**
@@ -144,89 +143,149 @@ public class LivingAccommodations extends Function implements Serializable {
 	 * 
 	 * @return number of beds.
 	 */
-	public int getBeds() {
+	public int getBedCap() {
 		return maxNumBeds;
 	}
 
+	/**
+	 * Gets the number of assigned beds in this building.
+	 * 
+	 * @return number of assigned beds
+	 */
 	public int getNumAssignedBeds() {
 		return assignedBeds.size();
 	}
 	
 	/**
-	 * Gets the number of people sleeping in the beds.
+	 * Gets the number of people registered to sleep in this building.
 	 * 
-	 * @return number of people
+	 * @return number of registered sleepers
 	 */
-	public int getSleepers() {
-		return sleepers;
+	public int getRegisteredSleepers() {
+		return registeredSleepers;
 	}
 
+	/**
+	 * Checks if all the beds have been taken/registered
+	 * @return
+	 */
+	public boolean areAllBedsTaken() {
+		if (registeredSleepers == maxNumBeds)
+			return true;
+		
+		return false;
+	}
+	
 	/**
 	 * Registers a sleeper with a bed.
 	 * 
 	 * @param person
 	 * @param isAGuest is this person a guest (not inhabitant) of this settlement
+	 * @return the bed registered with the given person 
 	 */
-	public void registerSleeper(Person person, boolean isAGuest) {
-		if (sleepers > maxNumBeds) {		 
-			 LogConsolidated.log(logger, Level.WARNING, 5000, sourceName, 
-					 "[" + building.getSettlement().getName() + "] Too many sleepers and not enough beds "
-					 		+ " (# sleepers : " + sleepers 
-					 + "  # beds : " + maxNumBeds + ").", null);
-			 
-		} else if (!assignedBeds.containsKey(person)) {
-			if (isAGuest) {
-				sleepers++;
-				// do not designate a bed since he's only a guest
-				// Case 1 & 2
-				// if (sleepers > beds) {
-				// sleepers--;
-				// logger.info("Living Accommodation : " + person + " could not find any
-				// unoccupied beds. # sleepers : "
-				// + sleepers + " # beds : " + beds + ". Will sleep at a random location.");
-				// }
-			} else {
-				// for a new inhabitant
-				// if a person has never been assigned a bed
-				// logger.info(person + " does not have a designated bed yet.");
-				Point2D bed = designateABed(person);
-				if (bed != null) {
-					sleepers++;
+	public Point2D registerSleeper(Person person, boolean isAGuest) {
+		Point2D registeredBed = person.getBed();
+		
+		if (registeredBed == null) {
+			
+			if (areAllBedsTaken()) {		 
+				 LogConsolidated.log(logger, Level.WARNING, 5000, sourceName, 
+						 "[" + building.getSettlement().getName() + "] All beds have been taken"
+						 		+ " (# Registered Beds : " + registeredSleepers 
+						 + "  Bed Capacity : " + maxNumBeds + ").", null);	
+			}
+			
+			else if (!assignedBeds.containsKey(person)) {
+				// TODO: need to rework for guest stay
+				if (isAGuest) {
+					// Note : do not designate a bed since he's only a guest
+					Point2D bed = designateABed(person, isAGuest);
+					if (bed != null) {
+						LogConsolidated.log(logger, Level.WARNING, 2000, sourceName,
+								"[" + building.getSettlement().getName() + "] " + person + " was given a temporary bed in " 
+								+ person.getQuarters().getNickName(), null);
+						return bed;
+					} else {
+						LogConsolidated.log(logger, Level.WARNING, 2000, sourceName,
+								"[" + building.getSettlement().getName() + "] " + person + " could even find a temporary bed.", null);
+					}
+		
+	
 				} else {
-					LogConsolidated.log(logger, Level.FINE, 2000, sourceName,
-							"[" + building.getSettlement().getName() + "] " + person + " did not have a bed assigned yet.", null);
+					// for a new inhabitant
+					// if a person has never been assigned a bed
+					// logger.info(person + " does not have a designated bed yet.");
+					Point2D bed = designateABed(person, isAGuest);
+					if (bed != null) {
+						registeredSleepers++;
+						LogConsolidated.log(logger, Level.WARNING, 2000, sourceName,
+								"[" + building.getSettlement().getName() + "] " + person + " was assigned in " 
+								+ person.getQuarters().getNickName(), null);
+						return bed;
+					} else {
+						LogConsolidated.log(logger, Level.WARNING, 2000, sourceName,
+								"[" + building.getSettlement().getName() + "] " + person + " did not have a bed assigned yet.", null);
+					}
 				}
 			}
 		}
-//		else // as an old inhabitant
-//			sleepers++;
+		
+		else {
+			// Ensure the person's registered bed has been added to the assignedBeds map
+			if (!assignedBeds.containsValue(registeredBed)) {
+				assignedBeds.put(person, registeredBed);
+			}
+			return registeredBed;
+		}
+		
+		return null;
 	}
 
+	/**
+	 * Assigns a given bed to a given person
+	 * 
+	 * @param person
+	 * @param bed
+	 */
+	public void assignABed(Person person, Point2D bed) {
+		assignedBeds.put(person, bed);
+		person.setBed(bed);
+		person.setQuarters(building);
+		LogConsolidated.log(logger, Level.INFO, 0, sourceName, "[" + person.getSettlement() + "] "
+				+ person + " was designated a bed at (" + Math.round(bed.getX()*100.0)/100.0 + ", " +
+				Math.round(bed.getY()*100.0)/100.0 + ") in " + person.getQuarters(), null);
+	}
+	
 	/**
 	 * Assigns/designate an available bed to a person
 	 * 
 	 * @param person
 	 * @return
 	 */
-	public Point2D designateABed(Person person) {
+	public Point2D designateABed(Person person, boolean guest) {
 		Point2D bed = null;
 		List<Point2D> spots = super.getActivitySpotsList();
-		// int numBeds = spots.size();
 		int numDesignated = getNumAssignedBeds();
-		if (numDesignated < maxNumBeds) {// numBeds) {
-			// there should be at least one bed available-- Note: it may not be empty. a
+		if (numDesignated < maxNumBeds) {
+			// TODO: there should be at least one bed available-- Note: it may not be empty. a
 			// traveler may be sleeping on it.
 			for (Point2D spot : spots) {
-				if (!assignedBeds.containsValue(spot)) {
-					bed = spot;
-					assignedBeds.put(person, bed);
-					person.setBed(bed);
-					person.setQuarters(building);
-					LogConsolidated.log(logger, Level.FINE, 2000, sourceName,
-							person + " was designated a bed at (" + bed.getX() + ", " +
-							bed.getY() + ") in " + person.getQuarters(), null);
+				// Convert the activity spot (the bed location) to the settlement reference coordinate
+				double x = spot.getX() + building.getXLocation();
+				double y = spot.getY() + building.getYLocation();
+				bed = new Point2D.Double(x, y);
+//				if (!assignedBeds.containsValue(bed)) {
+					if (!guest) {
+						assignABed(person, bed);
+
+					}
+					else { // is a guest
+						LogConsolidated.log(logger, Level.INFO, 0, sourceName, "[" + person.getSettlement() + "] "
+								+ person + " was given a temporary bed at (" + Math.round(bed.getX()*100.0)/100.0  + ", " +
+								Math.round(bed.getY()*100.0)/100.0  + ") in " + person.getQuarters(), null);
+					}
 					break;
-				}
+//				}
 			}
 		}
 
@@ -239,9 +298,9 @@ public class LivingAccommodations extends Function implements Serializable {
 	 * @throws BuildingException if no sleepers to remove.
 	 */
 	public void removeSleeper(Person person) {
-		sleepers--;
-		if (sleepers < 0) {
-			sleepers = 0;
+		registeredSleepers--;
+		if (registeredSleepers < 0) {
+			registeredSleepers = 0;
 			throw new IllegalStateException("Beds are empty.");
 		} else {
 			// bedMap.remove(bedMap.get(person));
@@ -265,14 +324,6 @@ public class LivingAccommodations extends Function implements Serializable {
 
 		if (solCache != solElapsed) {
 			solCache = solElapsed;
-			// Designate a bed for each inhabitant
-			if (sleepers < maxNumBeds) {
-				for (Person p : building.getSettlement().getIndoorPeople()) {
-					if (p.getBed() == null) {
-						registerSleeper(p, false);
-					}
-				}
-			}
 			
 			// Limit the size of the dailyWaterUsage to 20 key value pairs
 			if (dailyWaterUsage.size() > MAX_NUM_SOLS)
@@ -409,12 +460,12 @@ public class LivingAccommodations extends Function implements Serializable {
 		return building;
 	}
 
-	public Map<Person, Point2D> getBedMap() {
+	public Map<Person, Point2D> getAssignedBeds() {
 		return assignedBeds;
 	}
 
 	/*
-	 * Checks if an undesignated bed is available
+	 * Checks if an unmarked or undesignated bed is available
 	 */
 	public boolean hasAnUnmarkedBed() {
 		if (getNumAssignedBeds() < maxNumBeds)

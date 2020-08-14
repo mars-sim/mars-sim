@@ -12,8 +12,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.task.MedicalAssistance;
-import org.mars_sim.msp.core.person.ai.task.PrescribeMedication;
 import org.mars_sim.msp.core.person.ai.task.RequestMedicalTreatment;
 import org.mars_sim.msp.core.person.ai.task.TreatMedicalPatient;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
@@ -58,6 +56,7 @@ public class MedicalCare extends Function implements MedicalAid, Serializable {
 
 		// Load activity spots
 		loadActivitySpots(buildingConfig.getMedicalCareActivitySpots(building.getBuildingType()));
+		// TODO: need to distinguish between activity spots and bed locations
 		// Load bed locations
 		loadBedLocations(buildingConfig.getMedicalCareBedLocations(building.getBuildingType()));
 	}

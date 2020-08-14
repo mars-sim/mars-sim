@@ -32,6 +32,7 @@ implements Serializable {
 
 	/**
 	 * Constructor
+	 * 
 	 * @param building the building this function is for.
 	 */
 	public EVA(Building building) {
@@ -51,10 +52,14 @@ implements Serializable {
 		airlock = new BuildingAirlock(building, airlockCapacity, airlockXLoc, airlockYLoc,
 				interiorXLoc, interiorYLoc, exteriorXLoc, exteriorYLoc);
 		
+		// Load activity spots
+		loadActivitySpots(buildingConfig.getEVAActivitySpots(building.getBuildingType()));
+
 	}
 
 	/**
-	 * Constructor with airlock parameter.
+	 * Constructor with airlock parameter for testing
+	 * 
 	 * @param building the building this function is for.
 	 * @param airlock the building airlock.
 	 */

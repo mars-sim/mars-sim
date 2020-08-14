@@ -90,7 +90,7 @@ public class RoboticStation extends Function implements Serializable {
 			if (!newBuilding && building.getBuildingType().equalsIgnoreCase(buildingName) && !removedBuilding) {
 				removedBuilding = true;
 			} else {
-				RoboticStation station = (RoboticStation) building.getFunction(FUNCTION);
+				RoboticStation station = building.getRoboticStation();
 				double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
 				supply += station.slots * wearModifier;
 			}

@@ -880,9 +880,9 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	 */
 	public int getPopulationCapacity() {
 		int result = 0;
-		List<Building> bs = buildingManager.getBuildings(FunctionType.LIVING_ACCOMODATIONS);
+		List<Building> bs = buildingManager.getBuildings(FunctionType.LIVING_ACCOMMODATIONS);
 		for (Building building : bs) {
-			result += building.getLivingAccommodations().getBeds();
+			result += building.getLivingAccommodations().getBedCap();
 		}
 
 		return result;
@@ -890,18 +890,18 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 
 	public int getSleepers() {
 		int result = 0;
-		List<Building> bs = buildingManager.getBuildings(FunctionType.LIVING_ACCOMODATIONS);
+		List<Building> bs = buildingManager.getBuildings(FunctionType.LIVING_ACCOMMODATIONS);
 		for (Building building : bs) {
-			result += building.getLivingAccommodations().getSleepers();
+			result += building.getLivingAccommodations().getRegisteredSleepers();
 		}
 		return result;
 	}
 
 	public int getTotalNumDesignatedBeds() {
 		int result = 0;
-		List<Building> bs = buildingManager.getBuildings(FunctionType.LIVING_ACCOMODATIONS);
+		List<Building> bs = buildingManager.getBuildings(FunctionType.LIVING_ACCOMMODATIONS);
 		for (Building building : bs) {
-			result += building.getLivingAccommodations().getBedMap().size();
+			result += building.getLivingAccommodations().getNumAssignedBeds();
 		}
 
 		return result;

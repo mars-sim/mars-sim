@@ -216,7 +216,7 @@ public class SettlementTransparentPanel extends WebComponent {
 		settlementCBModel = new SettlementComboBoxModel();
 		settlementListBox = new WebComboBox(StyleId.comboboxHover, settlementCBModel);
 		settlementListBox.setAlignmentX(CENTER_ALIGNMENT);
-		settlementListBox.setPreferredSize(getNameLength() * 10, 25);
+		settlementListBox.setPreferredSize(getNameLength() * 11, 25);
 		
 		settlementListBox.setBackground(new Color(51,25,0,128)); // dull gold color
 		settlementListBox.setOpaque(false);

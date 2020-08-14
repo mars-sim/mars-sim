@@ -147,7 +147,7 @@ public class ProposeScientificStudy extends Task implements Serializable {
 				buildings = getBuildings(person, FunctionType.DINING);
 			}
 			if (buildings == null || buildings.size() == 0) {
-				buildings = getBuildings(person, FunctionType.LIVING_ACCOMODATIONS);
+				buildings = getBuildings(person, FunctionType.LIVING_ACCOMMODATIONS);
 			}
 			if (buildings == null || buildings.size() > 0) {
 				Map<Building, Double> possibleBuildings = BuildingManager.getBestRelationshipBuildings(person,

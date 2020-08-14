@@ -354,7 +354,7 @@ public class Sleep extends Task implements Serializable {
 
 	@Override
 	public FunctionType getLivingFunction() {
-		return FunctionType.LIVING_ACCOMODATIONS;
+		return FunctionType.LIVING_ACCOMMODATIONS;
 	}
 
 	@Override
@@ -521,7 +521,7 @@ public class Sleep extends Task implements Serializable {
 		if (person != null) {
 //	    	logger.info(person.getNickName() + " called endTask() in " + this);
 			// Remove person from living accommodations bed so others can use it.
-			if (accommodations != null && accommodations.getSleepers() > 0) {
+			if (accommodations != null && accommodations.getRegisteredSleepers() > 0) {
 				accommodations.removeSleeper(person);
 			}
 
@@ -557,7 +557,7 @@ public class Sleep extends Task implements Serializable {
 		if (person.isInSettlement()) {
 			// BuildingManager manager = person.getSettlement().getBuildingManager();
 			List<Building> quartersBuildings = person.getSettlement().getBuildingManager()
-					.getBuildings(FunctionType.LIVING_ACCOMODATIONS);
+					.getBuildings(FunctionType.LIVING_ACCOMMODATIONS);
 			quartersBuildings = BuildingManager.getNonMalfunctioningBuildings(quartersBuildings);
 			quartersBuildings = getQuartersWithEmptyBeds(quartersBuildings, unmarked);
 			if (quartersBuildings.size() > 0) {
@@ -613,7 +613,7 @@ public class Sleep extends Task implements Serializable {
 
 		for (Building building : buildingList) {
 			LivingAccommodations quarters = building.getLivingAccommodations();
-			boolean notFull = quarters.getSleepers() < quarters.getBeds();
+			boolean notFull = quarters.getRegisteredSleepers() < quarters.getBedCap();
 			// Check if an unmarked bed is wanted
 			if (unmarked) {
 				if (quarters.hasAnUnmarkedBed() && notFull ) {

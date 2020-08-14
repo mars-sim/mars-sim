@@ -472,7 +472,7 @@ public class SettlementChatUtils extends ChatUtils {
 
 			// Prints living usage
 			List<Building> quarters = settlementCache.getBuildingManager()
-					.getBuildings(FunctionType.LIVING_ACCOMODATIONS);
+					.getBuildings(FunctionType.LIVING_ACCOMMODATIONS);
 			for (Building b : quarters) {
 				LivingAccommodations la = b.getLivingAccommodations();
 				livingUsage += la.getDailyAverageWaterUsage();

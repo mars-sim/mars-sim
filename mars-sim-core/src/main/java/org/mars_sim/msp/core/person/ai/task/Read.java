@@ -72,7 +72,7 @@ public class Read extends Task implements Serializable {
 				// if gym is not available, go back to his quarters
 				Building quarters = person.getQuarters();
 				if (quarters != null) {
-					walkToActivitySpotInBuilding(quarters, FunctionType.LIVING_ACCOMODATIONS, true);
+					walkToActivitySpotInBuilding(quarters, FunctionType.LIVING_ACCOMMODATIONS, true);
 					walkSite = true;
 				}
 
