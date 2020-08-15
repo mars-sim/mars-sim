@@ -422,9 +422,14 @@ implements Serializable {
 
     @Override
     public void endTask() {
-//    	ended = true;
-    	Inventory pInv = person.getInventory();
-    	Bag bag = pInv.findABag(false);
+    	if (person.isOutside()) {
+    		setPhase(WALK_BACK_INSIDE);
+    	}
+    	
+    	else {
+	//    	ended = true;
+	    	Inventory pInv = person.getInventory();
+	    	Bag bag = pInv.findABag(false);
     	 
         // Unload bag to rover's inventory.
 //        if (bag != null) {
@@ -456,7 +461,8 @@ implements Serializable {
             }
 //        }
 
-        super.endTask();
+            super.endTask();
+    	}
     }
 
     @Override

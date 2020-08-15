@@ -251,9 +251,18 @@ public class LivingAccommodations extends Function implements Serializable {
 		assignedBeds.put(person, bed);
 		person.setBed(bed);
 		person.setQuarters(building);
+		
 		LogConsolidated.log(logger, Level.INFO, 0, sourceName, "[" + person.getSettlement() + "] "
 				+ person + " was designated a bed at (" + Math.round(bed.getX()*100.0)/100.0 + ", " +
 				Math.round(bed.getY()*100.0)/100.0 + ") in " + person.getQuarters(), null);
+		
+//		String s = String.format("[%s] %25s (Bed) -> %25s (%...",
+//				person.getLocationTag().getLocale(), 
+//				person.getName(), 
+//				person.getQuarters()
+//				);
+//		
+//		LogConsolidated.log(logger, Level.CONFIG, 0, sourceName, s);		
 	}
 	
 	/**

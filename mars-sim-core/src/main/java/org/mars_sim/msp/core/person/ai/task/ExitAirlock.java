@@ -441,7 +441,7 @@ public class ExitAirlock extends Task implements Serializable {
 					insideAirlockPos.getX(), insideAirlockPos.getY());
 					
 			if (distance > 0) {
-				LogConsolidated.log(logger, Level.INFO, 4000, sourceName, 
+				LogConsolidated.log(logger, Level.FINER, 4000, sourceName, 
 						"[" + person.getLocationTag().getLocale() + "] " + person.getName()
 						+ " was within a distance of " + distance + " m from the reference point of the airlock.");
 				
@@ -449,13 +449,13 @@ public class ExitAirlock extends Task implements Serializable {
 				addSubTask(new WalkSettlementInterior(person, airlockBuilding, insideAirlockPos.getX(),
 						insideAirlockPos.getY(), 0));
 				
-//				LogConsolidated.log(logger, Level.INFO, 4000, sourceName, 
+//				LogConsolidated.log(logger, Level.FINER, 4000, sourceName, 
 //						"[" + person.getLocationTag().getLocale() + "] " + person.getName()
 //						+ " " + loc + " attempted to come closer to the reference point inside of the airlock.");
 			}
 			
 			else {
-				LogConsolidated.log(logger, Level.INFO, 4000, sourceName, 
+				LogConsolidated.log(logger, Level.FINER, 4000, sourceName, 
 						"[" + person.getLocationTag().getLocale() + "] " + person.getName()
 						+ " was exactly at the reference point of the airlock in " + airlock.getEntity());
 			}
@@ -574,7 +574,7 @@ public class ExitAirlock extends Task implements Serializable {
 			loc = loc == null ? "[N/A]" : loc;
 			loc = loc.equalsIgnoreCase("Outside") ? loc.toLowerCase() : "in " + loc;
 			
-			LogConsolidated.log(logger, Level.INFO, 4000, sourceName, 
+			LogConsolidated.log(logger, Level.WARNING, 4000, sourceName, 
 					"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
 					+ " was supposed to be inside the airlock but was " + loc
 					+ ". Attempting to re-enter the airlock now.");

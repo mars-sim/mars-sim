@@ -671,25 +671,47 @@ public class BuildingManager implements Serializable {
 
 
 	/**
+	 * Register beds for everyone in the settlement at the start of the sim
+	 */
+	public void registerBeds() {
+		List<Point2D> beds = new ArrayList<>();
+		Map<Point2D, Building> map = new HashMap<>();
+		// Discover a list of beds
+		for (Building b : getBuildings(FunctionType.LIVING_ACCOMMODATIONS)) {
+			LivingAccommodations l = b.getLivingAccommodations();
+			List<Point2D> spots = l.getActivitySpotsList();
+			for (Point2D s : spots) {		
+				// Convert the activity spot (the bed location) to the settlement reference coordinate
+				double x = s.getX() + b.getXLocation();
+				double y = s.getY() + b.getYLocation();
+				s.setLocation(x, y);
+				beds.add(s);
+				map.put(s, b);
+			}
+		}
+		
+		for (Person p : getSettlement().getAllAssociatedPeople()) {
+			if (p.getBed() == null) {
+				Iterator<Point2D> i = beds.iterator();
+	            while (i.hasNext()) {
+	            	Point2D s = i.next();
+	            	Building b = map.get(s);
+	            	b.getLivingAccommodations().assignABed(p, s);
+//					beds.remove(s);
+					i.remove();
+					break;
+				}
+			}
+		}
+	}
+	
+	/**
 	 * Time passing for all buildings.
 	 *
 	 * @param time amount of time passing (in millisols)
 	 * @throws Exception if error.
 	 */
 	public void timePassing(double time) {
-		// check for the passing of each day
-		int solElapsed = marsClock.getMissionSol();
-
-		if (solCache != solElapsed) {
-			solCache = solElapsed;
-
-			// Update the impact probability for each settlement based on the size and speed
-			// of the new meteorite
-			if (meteorite == null) {		
-				meteorite = Guice.createInjector(new MeteoriteModule()).getInstance(Meteorite.class);
-				meteorite.startMeteoriteImpact(this);
-			}
-		}
 
 		if (buildingTypeIDMap == null) {
 			buildingTypeIDMap = new HashMap<>();
@@ -701,10 +723,30 @@ public class BuildingManager implements Serializable {
 			setupBuildingFunctionsMap();
 		}
 		
+		// check for the passing of each day
+		int solElapsed = marsClock.getMissionSol();
+
+		if (solCache != solElapsed) {
+
+//			if (solCache == 0) {
+//				registerBeds();
+//			}
+			
+			solCache = solElapsed;
+			
+			// Update the impact probability for each settlement based on the size and speed
+			// of the new meteorite
+			if (meteorite == null) {		
+				meteorite = Guice.createInjector(new MeteoriteModule()).getInstance(Meteorite.class);
+				meteorite.startMeteoriteImpact(this);
+			}
+		}
+		
 		for (Building b : buildings) {
 			b.timePassing(time);
 		}
 	}
+
 
 	/**
 	 * Gets a random inhabitable building.

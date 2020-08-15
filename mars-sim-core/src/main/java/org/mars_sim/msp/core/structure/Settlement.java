@@ -888,11 +888,20 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 		return result;
 	}
 
-	public int getSleepers() {
+	public int getNumOccupiedSpots() {
 		int result = 0;
 		List<Building> bs = buildingManager.getBuildings(FunctionType.LIVING_ACCOMMODATIONS);
 		for (Building building : bs) {
-			result += building.getLivingAccommodations().getRegisteredSleepers();
+			result += building.getLivingAccommodations().getNumOccupiedSpots();
+		}
+		return result;
+	}	
+	
+	public int getUnoccupiedBeds() {
+		int result = 0;
+		List<Building> bs = buildingManager.getBuildings(FunctionType.LIVING_ACCOMMODATIONS);
+		for (Building building : bs) {
+			result += building.getLivingAccommodations().getNumEmptyActivitySpots();
 		}
 		return result;
 	}

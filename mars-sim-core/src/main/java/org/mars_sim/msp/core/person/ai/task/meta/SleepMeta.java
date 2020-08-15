@@ -19,7 +19,6 @@ import org.mars_sim.msp.core.person.ai.task.Sleep;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.tool.RandomUtil;
@@ -142,75 +141,93 @@ public class SleepMeta implements MetaTask, Serializable {
          	   // Reduce the probability if it's not the right time to sleep
 //         	   Sleep.refreshSleepHabit(person);
          	   // probability of sleep reduces to one fifth of its value
-               result = result / 50;
+               result = result / 50D;
             }
-            else
-            	result = result * 50;
             
-        	Building quarters = null;
-        	Settlement s1 = person.getSettlement();
-        	Settlement s0 = person.getAssociatedSettlement();
-
-        	// Note: !s1.equals(s2) is troublesome if s1 or s2 is null
-
-			// check to see if a person is a trader or on a trading mission
-			if (s1 != null && !s1.equals(s0)) {
-        	//if (person.getMind().getJob() instanceof Trader) {
-        		// yes he is a trader/guest
-            	logger.fine("SleepMeta : " + person + " is a trader or a guest of a trade mission and will need to "
-            			+ "use an unoccupied bed randomly if being too tired.");
-            	// Get a quarters that has an "unoccupied bed" (even if that bed has been designated to someone else)
-            	quarters = Sleep.getBestAvailableQuarters(person, false);
-
-                if (quarters != null) {
-            		result = modifyProbability(result, person, quarters);
-                }
-//	                else {
-                   	//logger.fine("SleepMeta : " + person + " couldn't find an empty bed at all. Falling asleep at any spot if being too tired.");
-                	// TODO: should allow him/her to go sleep in gym or medical station.
+//        	Building quarters = null;
+//        	Settlement s1 = person.getSettlement();
+//        	Settlement s0 = person.getAssociatedSettlement();
+//
+//        	// Note: !s1.equals(s2) is troublesome if s1 or s2 is null
+//
+//			// check to see if a person is a trader or on a trading mission
+//			if (s1 != null && !s1.equals(s0)) {
+//        	//if (person.getMind().getJob() instanceof Trader) {
+//        		// yes he is a trader/guest 
+//				LogConsolidated.log(logger, Level.INFO, 4_000, sourceName, 
+//						"[" + person.getLocationTag().getLocale() + "] " + person.getName()
+//						+ " at "
+//						+ person.getLocationTag().getImmediateLocation()
+//						+ person + " is a trader of a Trade mission (or a tourist guest) and "
+//            			+ "may need to use an unoccupied bed randomly.");
+//            	// Get a quarters that has an "unoccupied bed" (even if that bed has been designated to someone else)
+//            	quarters = Sleep.getBestAvailableQuarters(person, false);
+//
+//                if (quarters != null) {
+//            		result = modifyProbability(result, person, quarters);
+//                }
+////	                else {
+//                   	//logger.fine("SleepMeta : " + person + " couldn't find an empty bed at all. Falling asleep at any spot if being too tired.");
+//                	// TODO: should allow him/her to go sleep in gym or medical station.
+////		            }
+//			}
+//
+//			else {
+//		        // Add checking if a person has a designated bed
+//                quarters = person.getQuarters();
+//                
+//                if (quarters != null) {
+//	            	// if this person has already been assigned a quarter and a bed, not a shared/guest bed
+//                	// he should be "more" inclined to fall asleep this way
+//                	result = 2D * modifyProbability(result, person, quarters);
+//                }
+//                else {
+//	            	// if this person has never been assigned a quarter and a bed so far
+//                	LogConsolidated.log(logger, Level.FINE, 4_000, sourceName, 
+//    						"[" + person.getLocationTag().getLocale() + "] " + person.getName()
+//    						+ " at "
+//    						+ person.getLocationTag().getImmediateLocation()
+//    						+ " has never been designated a bed");
+//
+//       				quarters = Sleep.getBestAvailableQuarters(person, true);
+//
+//		            if (quarters != null) {
+//	                	LogConsolidated.log(logger, Level.FINE, 4_000, sourceName, 
+//	    						"[" + person.getLocationTag().getLocale() + "] " + person.getName()
+//	    						+ " at "
+//	    						+ person.getLocationTag().getImmediateLocation()
+//	    						+ " will be designated a bed in " 
+//	            				+ quarters.getNickName());
+//	                    // set it as his quarters
+//                		result = modifyProbability(result, person, quarters);
 //		            }
-			}
-
-			else {
-		        // Add checking if a person has a designated bed
-                quarters = person.getQuarters();
-                
-                if (quarters != null) {
-	            	// if this person has already been assigned a quarter and a bed, not a shared/guest bed
-                	// he should be "more" inclined to fall asleep this way
-                	result = 1.2D * modifyProbability(result, person, quarters);
-                }
-                else {
-	            	// if this person has never been assigned a quarter and a bed so far
-	            	logger.fine("SleepMeta : " + person + " has never been designated a bed");
-
-       				quarters = Sleep.getBestAvailableQuarters(person, true);
-
-		            if (quarters != null) {
-	            		logger.fine("SleepMeta : " + person + " will be designated a bed in " 
-	            				+ quarters.getNickName());
-	                    // set it as his quarters
-                		result = modifyProbability(result, person, quarters);
-		            }
-		            else {
-	              		// There are no undesignated beds left in any quarters
-	                	logger.info("SleepMeta : " + person + " cannot find any empty, undesignated beds in any "
-	                			+ "quarters. Will use an unoccupied bed randomly.");
-	                	// Get a quarters that has an "unoccupied bed" (even if that bed has been designated to someone else)
-	                	quarters = Sleep.getBestAvailableQuarters(person, false);
-	                	if (quarters != null) {
-	                		result = modifyProbability(result, person, quarters);
-	                	}
-	                    else {
-	                    	logger.info("Sleep : " + person + " couldn't find an empty bed. Falling asleep at "
-	                    			+ "right where he/she is.");
-	                    	// TODO: should allow him/her to sleep in gym or anywhere.
-    	                	// he should be "less" inclined to fall asleep this way
-	                    	result /= 1.2D;
-	                    }
-	                }
-                }
-			}
+//		            else {
+//	              		// There are no undesignated beds left in any quarters
+//	                	LogConsolidated.log(logger, Level.FINE, 4_000, sourceName, 
+//	    						"[" + person.getLocationTag().getLocale() + "] " + person.getName()
+//	    						+ " at "
+//	    						+ person.getLocationTag().getImmediateLocation()
+//	    						+ " cannot find any empty, undesignated beds in any "
+//	                			+ "quarters. Will use an unoccupied bed randomly.");
+//	                	// Get a quarters that has an "unoccupied bed" (even if that bed has been designated to someone else)
+//	                	quarters = Sleep.getBestAvailableQuarters(person, false);
+//	                	if (quarters != null) {
+//	                		result = modifyProbability(result, person, quarters);
+//	                	}
+//	                    else {
+//	                    	LogConsolidated.log(logger, Level.FINE, 4_000, sourceName, 
+//	        						"[" + person.getLocationTag().getLocale() + "] " + person.getName()
+//	        						+ " at "
+//	        						+ person.getLocationTag().getImmediateLocation()
+//	        						+ " couldn't find an empty bed. Falling asleep at "
+//	                    			+ "right where he/she is.");
+//	                    	// TODO: should allow him/her to sleep in gym or anywhere.
+//    	                	// he should be "less" inclined to fall asleep this way
+//	                    	result /= 2D;
+//	                    }
+//	                }
+//                }
+//			}
 
         	int maxNumSleep = 0;
 

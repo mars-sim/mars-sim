@@ -227,7 +227,7 @@ public class EnterAirlock extends Task implements Serializable {
             }
             else {
                 // If person is not airlock operator, just wait.
-    			LogConsolidated.log(logger, Level.INFO, 4000, sourceName, 
+    			LogConsolidated.log(logger, Level.FINE, 4000, sourceName, 
     					"[" + person.getLocationTag().getLocale() + "] "
     					+ person.getName() + " " + loc 
     					+ " was not the operator in the 'waiting to enter' phase. Standby.");				
@@ -342,7 +342,7 @@ public class EnterAirlock extends Task implements Serializable {
 	                }
 	                
 	                else {
-	        			LogConsolidated.log(logger, Level.INFO, 4000, sourceName, 
+	        			LogConsolidated.log(logger, Level.FINE, 4000, sourceName, 
 	        					"[" + person.getLocationTag().getLocale() + "] "
 	        					+ person.getName() + " " + loc 
 	        					+ " completed the airlock activation in the 'entering airlock' phase. Standby.");
@@ -351,7 +351,7 @@ public class EnterAirlock extends Task implements Serializable {
 	            
 	            else {
 	                // If person is not airlock operator, just wait.
-	    			LogConsolidated.log(logger, Level.INFO, 4000, sourceName, 
+	    			LogConsolidated.log(logger, Level.FINE, 4000, sourceName, 
 	    					"[" + person.getLocationTag().getLocale() + "] "
 	    					+ person.getName() + " " + loc 
 	    					+ " was not the operator in the 'entering airlock' phase. Standby.");
@@ -429,7 +429,7 @@ public class EnterAirlock extends Task implements Serializable {
                 }
                 
                 else {
-        			LogConsolidated.log(logger, Level.INFO, 4000, sourceName, 
+        			LogConsolidated.log(logger, Level.FINE, 4000, sourceName, 
         					"[" + person.getLocationTag().getLocale() + "] "
         					+ person.getName() + " " + loc 
         					+ " completed the airlock activation in the 'waiting inside airlock' phase. Standby.");
@@ -438,7 +438,7 @@ public class EnterAirlock extends Task implements Serializable {
             
             else {
                 // If person is not airlock operator, just wait.
-    			LogConsolidated.log(logger, Level.INFO, 4000, sourceName, 
+    			LogConsolidated.log(logger, Level.FINE, 4000, sourceName, 
     					"[" + person.getLocationTag().getLocale() + "] "
     					+ person.getName() + " " + loc 
     					+ " was not the operator in the 'waiting inside airlock' phase. Standby.");
@@ -448,7 +448,7 @@ public class EnterAirlock extends Task implements Serializable {
 		
         else {
 //            logger.finer(person + " is already internal during waiting inside airlock phase.");
-			LogConsolidated.log(logger, Level.INFO, 4000, sourceName, 
+			LogConsolidated.log(logger, Level.FINE, 4000, sourceName, 
 					"[" + person.getLocationTag().getLocale() + "] "
 					+ person.getName() + " " + loc 
 					+ " was stepping out of the airlock chamber. Ready to go to 'exiting airlock' phase.");
@@ -515,9 +515,9 @@ public class EnterAirlock extends Task implements Serializable {
                 Building airlockBuilding = (Building) airlock.getEntity()
                 		;
 //                logger.finest(person + " exiting airlock inside " + airlockBuilding);
-    			LogConsolidated.log(logger, Level.INFO, 4000, sourceName, 
+    			LogConsolidated.log(logger, Level.FINE, 4000, sourceName, 
     					"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
-    					+ " " + loc + " will walk close to the interior door.");
+    					+ " " + loc + " Level.FINE,");
     			
                 addSubTask(new WalkSettlementInterior(person, airlockBuilding, 
                         interiorDoorPos.getX(), interiorDoorPos.getY(), 0));
@@ -527,7 +527,7 @@ public class EnterAirlock extends Task implements Serializable {
                 Rover airlockRover = (Rover) airlock.getEntity();
                 
 //                logger.finest(person + " exiting airlock inside " + airlockRover);
-    			LogConsolidated.log(logger, Level.INFO, 4000, sourceName, 
+    			LogConsolidated.log(logger, Level.FINE, 4000, sourceName, 
     					"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
     					+ " " + loc + " will walk close to the interior door.");
     			

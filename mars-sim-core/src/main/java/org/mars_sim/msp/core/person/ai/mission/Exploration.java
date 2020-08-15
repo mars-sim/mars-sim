@@ -556,6 +556,39 @@ public class Exploration extends RoverMission implements Serializable {
 	}
 
 	/**
+	 * Creates a brand new site at the current location and 
+	 * estimate its mineral concentrations
+	 * 
+	 * @throws MissionException if error creating explored site.
+	 * @return ExploredLocation
+	 */
+	private ExploredLocation createAExploredSite() {
+		MineralMap mineralMap = surfaceFeatures.getMineralMap();
+		String[] mineralTypes = mineralMap.getMineralTypeNames();
+		Coordinates c = getCurrentMissionLocation();
+//		List<Coordinates> coords = getSiteCoordinates();
+//		for (Coordinates c: coords) {
+			Map<String, Double> initialMineralEstimations = new HashMap<String, Double>(mineralTypes.length);
+			for (String mineralType : mineralTypes) {
+				double estimation = RandomUtil.getRandomDouble(MINERAL_ESTIMATION_CEILING * 2D)
+						- MINERAL_ESTIMATION_CEILING;
+				double actualConcentration = mineralMap.getMineralConcentration(mineralType, c);//getCurrentMissionLocation());
+				estimation += actualConcentration;
+				if (estimation < 0D)
+					estimation = 0D - estimation;
+				else if (estimation > 100D)
+					estimation = 100D - estimation;
+				initialMineralEstimations.put(mineralType, estimation);
+			}
+			
+			ExploredLocation el = surfaceFeatures.addExploredLocation(c, //getCurrentMissionLocation()),
+					initialMineralEstimations, getAssociatedSettlement());
+//			exploredSites.add(el);
+//		}
+		return el;
+	}
+	
+	/**
 	 * Configure a new site at the current location, creates initial
 	 * estimates for mineral concentrations, and adds it to the explored site list.
 	 * 

@@ -403,6 +403,36 @@ public abstract class Function implements Serializable {
 	}
 
 	/**
+	 * Gets the number of currently empty activity spots
+	 * 
+	 * @return
+	 */
+	public int getNumEmptyActivitySpots() {
+		int empty = 0;
+		for (Point2D s: activitySpots) {
+			if (isActivitySpotEmpty(s))
+				empty++;		
+		}	
+		return empty;
+	}
+	
+	/**
+	 * Gets the number of currently occupied activity spots
+	 * 
+	 * @return
+	 */
+	public int getNumOccupiedSpots() {
+		int occupied = 0;
+		for (Point2D s: activitySpots) {
+			if (!isActivitySpotEmpty(s))
+				occupied++;		
+		}	
+		return occupied;
+		
+//		return activitySpots.size() - getNumEmptyActivitySpots();
+	}
+	
+	/**
 	 * Reloads instances after loading from a saved sim
 	 * 
 	 * @param bc {@link BuildingConfig}

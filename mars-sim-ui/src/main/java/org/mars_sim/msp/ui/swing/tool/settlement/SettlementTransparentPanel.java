@@ -44,6 +44,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JSlider;
 import javax.swing.Painter;
+import javax.swing.SwingConstants;
 import javax.swing.UIDefaults;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -215,8 +216,13 @@ public class SettlementTransparentPanel extends WebComponent {
 
 		settlementCBModel = new SettlementComboBoxModel();
 		settlementListBox = new WebComboBox(StyleId.comboboxHover, settlementCBModel);
-		settlementListBox.setAlignmentX(CENTER_ALIGNMENT);
-		settlementListBox.setPreferredSize(getNameLength() * 11, 25);
+//		settlementListBox.setAlignmentX(CENTER_ALIGNMENT);
+//		((JLabel)settlementListBox.getRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
+		DefaultListCellRenderer listRenderer = new DefaultListCellRenderer();
+	    listRenderer.setHorizontalAlignment(DefaultListCellRenderer.CENTER); // center-aligned items
+	    settlementListBox.setRenderer(listRenderer);
+	      
+		settlementListBox.setPreferredSize(getNameLength() * 12, 25);
 		
 		settlementListBox.setBackground(new Color(51,25,0,128)); // dull gold color
 		settlementListBox.setOpaque(false);

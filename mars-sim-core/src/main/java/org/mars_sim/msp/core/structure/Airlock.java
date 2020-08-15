@@ -696,9 +696,9 @@ public abstract class Airlock implements Serializable {
 			else {
 				// If no operator and no occupants, deactivate airlock.
 				deactivateAirlock();
-				LogConsolidated.log(logger, Level.WARNING, 4000, sourceName, 
-						"Without an operator, the airlock in " 
-						+ getEntityName() + " got deactivated.");
+//				LogConsolidated.log(logger, Level.FINER, 4000, sourceName, 
+//						"Without an operator, the airlock in " 
+//						+ getEntityName() + " got deactivated.");
 				
 				// if there are occupants inside the airlock chamber, elect a new operator
 				if (occupantIDs.size() > 0) {

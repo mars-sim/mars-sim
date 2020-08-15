@@ -79,14 +79,14 @@ public class SettlementChatUtils extends ChatUtils {
 			responseText.append(settlementCache.getTotalNumDesignatedBeds());
 			responseText.append(" designated beds. ");
 		} else if (num == 3) {
-			questionText = YOU_PROMPT + "how many beds that are currently NOT occupied ? ";
+			questionText = YOU_PROMPT + "how many beds that are currently occupied ? ";
 			responseText.append("There are ");
-			responseText.append(settlementCache.getPopulationCapacity() - settlementCache.getSleepers());
+			responseText.append(settlementCache.getNumOccupiedSpots());
 			responseText.append(" unoccupied beds. ");
 		} else if (num == 4) {
-			questionText = YOU_PROMPT + "how many beds are currently occupied ? ";
+			questionText = YOU_PROMPT + "how many beds are currently empty or unoccupied ? ";
 			responseText.append("There are ");
-			responseText.append(settlementCache.getSleepers());
+			responseText.append(settlementCache.getUnoccupiedBeds());
 			responseText.append(" occupied beds with people sleeping on it at this moment. ");
 
 		} else {
@@ -1770,10 +1770,10 @@ public class SettlementChatUtils extends ChatUtils {
 			responseText.append(settlementCache.getTotalNumDesignatedBeds());
 			responseText.append(System.lineSeparator());
 			responseText.append("Unoccupied beds : ");
-			responseText.append(settlementCache.getPopulationCapacity() - settlementCache.getSleepers());
+			responseText.append(settlementCache.getUnoccupiedBeds());
 			responseText.append(System.lineSeparator());
 			responseText.append("Occupied beds : ");
-			responseText.append(settlementCache.getSleepers());
+			responseText.append(settlementCache.getNumOccupiedSpots());
 			responseText.append(System.lineSeparator());
 		}
 
