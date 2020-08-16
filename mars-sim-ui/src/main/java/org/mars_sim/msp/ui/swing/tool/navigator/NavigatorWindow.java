@@ -30,7 +30,6 @@ import java.util.List;
 import javax.swing.ButtonGroup;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.border.BevelBorder;
@@ -105,17 +104,20 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 	public static final double RAD_PER_DEGREE = Math.PI / 180D;
 	
 	public static final String COMMA = ", ";
-	public static final String CLOSE_PARENT = ")   ";
-	public static final String OPEN_PARENT = "   (";
+	public static final String THETA = "Theta: ";
+	public static final String PHI = "Phi: ";
+	public static final String CLOSE_P = ")";
 
 	
-	public static final String RGB = "   RGB : (";
-	public static final String HSB = "   HSB : (";
+	private static final String RGB = "RGB (";
+	private static final String HSB = "HSB (";
 	
-	public static final String ELEVATION = "Elevation : ";
-	public static final String KM = " km   ";
+	private static final String ELEVATION = "Elev: ";
+	private static final String KM = " km";
 	
-	public static final String WHITESPACES_4 = "    ";
+//	private static final String WHITESPACES_4 = "    ";
+//	private static final String WHITESPACES_3 = "   ";
+//	private static final String WHITESPACES_2 = "  ";
 	
 	// Data members
 	
@@ -152,8 +154,10 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 	/** Minerals button. */
 	private WebButton mineralsButton;
 	/** The info label on the status bar. */
-	private WebStyledLabel coordLabel;
 	private WebStyledLabel heightLabel;
+	private WebStyledLabel coordLabel;
+	private WebStyledLabel phiLabel;
+	private WebStyledLabel thetaLabel;
 	private WebStyledLabel rgbLabel;
 	private WebStyledLabel hsbLabel;
 	
@@ -254,6 +258,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		globePane.setAlignmentY(Component.CENTER_ALIGNMENT);
 		leftPane.add(globePane, BorderLayout.CENTER);
 
+		
 		///////////////////////////////////////////////////////////////////////////
 
 		
@@ -312,6 +317,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		// turn off day night layer
 		setMapLayer(false, 0, shadingLayer);
 		globeNav.setDayNightTracking(false);
+		
 		
 		///////////////////////////////////////////////////////////////////////////
 		
@@ -432,26 +438,63 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 //		statusBar.setPreferredSize(new Dimension(HORIZONTAL_FULL + 10, 20));
 		contentPane.add(statusBar, BorderLayout.SOUTH);
 		
-		Font font = new Font("Times New Roman", Font.PLAIN, 12);
-
+		Font font = new Font("Times New Roman", Font.PLAIN, 11);
+		Font font1 = new Font(Font.DIALOG, Font.PLAIN, 10);
+		Font font2 = new Font(Font.SANS_SERIF, Font.PLAIN, 10);
+		
 		coordLabel = new WebStyledLabel(StyleId.styledlabelShadow);
 		coordLabel.setFont(font);
-		coordLabel.setForeground(Color.GRAY);
+		coordLabel.setForeground(Color.GREEN.darker());
+		phiLabel = new WebStyledLabel(StyleId.styledlabelShadow);
+		phiLabel.setFont(font);
+		phiLabel.setForeground(Color.BLUE.darker());
+		thetaLabel = new WebStyledLabel(StyleId.styledlabelShadow);
+		thetaLabel.setFont(font);
+		thetaLabel.setForeground(Color.BLUE.darker());
 		heightLabel = new WebStyledLabel(StyleId.styledlabelShadow);
 		heightLabel.setFont(font);
-		heightLabel.setForeground(Color.GRAY);
+		heightLabel.setForeground(Color.ORANGE.darker());
 		rgbLabel = new WebStyledLabel(StyleId.styledlabelShadow);
-		rgbLabel.setFont(font);
-		rgbLabel.setForeground(Color.GRAY);
+		rgbLabel.setFont(font1);
+		rgbLabel.setForeground(Color.DARK_GRAY);
 		hsbLabel = new WebStyledLabel(StyleId.styledlabelShadow);
-		hsbLabel.setFont(font);
-		hsbLabel.setForeground(Color.GRAY);
+		hsbLabel.setFont(font2);
+		hsbLabel.setForeground(Color.DARK_GRAY);
         
-		statusBar.addCenterComponent(coordLabel, false);
-		statusBar.addLeftComponent(heightLabel, false);
-		statusBar.addRightComponent(rgbLabel, false);
-		statusBar.addRightComponent(hsbLabel, false);
-		statusBar.addRightCorner();
+	    WebPanel w0 = new WebPanel();
+	    w0.setPreferredSize(new Dimension(91, 18));
+	    w0.add(heightLabel);
+	    
+	    WebPanel w1 = new WebPanel();
+	    w1.setPreferredSize(new Dimension(106, 18));
+	    w1.add(coordLabel);
+	    
+	    WebPanel w1a = new WebPanel();
+	    w1a.setPreferredSize(new Dimension(54, 18));
+	    w1a.add(phiLabel);
+	
+	    WebPanel w1b = new WebPanel();
+	    w1b.setPreferredSize(new Dimension(74, 18));
+	    w1b.add(thetaLabel);
+	    
+	    WebPanel w2 = new WebPanel();
+	    w2.setPreferredSize(new Dimension(114, 18));
+	    w2.add(rgbLabel);
+	    
+	    WebPanel w3 = new WebPanel();
+	    w3.setPreferredSize(new Dimension(135, 18));
+	    w3.add(hsbLabel);
+	    
+		statusBar.addLeftComponent(w0, false);
+		statusBar.addLeftComponent(w2, false);
+		
+		statusBar.addCenterComponent(w3, false);
+
+		statusBar.addRightComponent(w1, false);
+		statusBar.addRightComponent(w1a, false);
+		statusBar.addRightComponent(w1b, false);
+		
+//		statusBar.addRightCorner();
 		
 		// Create the option menu
 		if (optionsMenu == null)
@@ -466,9 +509,11 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		pack();
 	}
 
-	public void setInfoLabel(String coord, String height, String rgb, String hsb, double phi, double theta) {
-		coordLabel.setText(coord + OPEN_PARENT + phi + COMMA + theta + CLOSE_PARENT);
+	public void createStatusBarLabels(String height, String coord, double phi, double theta, String rgb, String hsb) {
 		heightLabel.setText(height);
+		coordLabel.setText(coord);
+		phiLabel.setText(PHI + phi);
+		thetaLabel.setText(THETA + theta);
 		rgbLabel.setText(rgb);
 		hsbLabel.setText(hsb);
 	}
@@ -862,12 +907,12 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 				terrainElevation =  mars.getSurfaceFeatures().getTerrainElevation();
 
 			double e = terrainElevation.getMOLAElevation(clickedPosition);
-			
+					
 			StringBuilder s0 = new StringBuilder();
-			s0.append(WHITESPACES_4).append(clickedPosition.getFormattedString()).append(WHITESPACES_4);
+			s0.append(ELEVATION).append(Math.round(e*1000.0)/1000.0).append(KM);
 			
 			StringBuilder s1 = new StringBuilder();
-			s1.append(WHITESPACES_4).append(ELEVATION).append(Math.round(e*1000.0)/1000.0).append(KM);
+			s1.append(clickedPosition.getFormattedString());
 			
 			StringBuilder s2 = new StringBuilder();
 			
@@ -880,14 +925,16 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 				int[] rgb = terrainElevation.getRGB(clickedPosition);
 				float[] hsb = terrainElevation.getHSB(rgb);
 				
-				s2.append(RGB).append(rgb[0]).append(COMMA).append(rgb[1]).append(COMMA).append(rgb[2]).append(CLOSE_PARENT);
+				s2.append(RGB).append(rgb[0]).append(COMMA)
+				.append(rgb[1]).append(COMMA)
+				.append(rgb[2]).append(CLOSE_P);
 				
-				s3.append(HSB).append(Math.round(hsb[0]*1000.0)/1000.0).append(COMMA)
-					.append(Math.round(hsb[1]*1000.0)/1000.0).append(COMMA)
-					.append(Math.round(hsb[2]*1000.0)/1000.0).append(CLOSE_PARENT);
+				s3.append(HSB).append(Math.round(hsb[0]*100.0)/100.0).append(COMMA)
+					.append(Math.round(hsb[1]*100.0)/100.0).append(COMMA)
+					.append(Math.round(hsb[2]*100.0)/100.0).append(CLOSE_P);
 			}
 			
-			setInfoLabel(s0.toString(), s1.toString(), s2.toString(), s3.toString(), phi, theta);
+			createStatusBarLabels(s0.toString(), s1.toString(), phi, theta , s2.toString(), s3.toString());
 			
 			// System.out.println("x is " + x + " y is " + y);
 			
