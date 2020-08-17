@@ -82,7 +82,7 @@ public class CrewConfig implements Serializable {
 		// Load a list of crew
 		for (int x = 0; x < size; x++) {
 			// Create roster
-			getCrew(x);
+			loadCrew(x);
 
 		}
 	}
@@ -112,7 +112,7 @@ public class CrewConfig implements Serializable {
 	 * @return name or null if none.
 	 * @throws Exception if error in XML parsing.
 	 */
-	public int getCrew(int index) {
+	public int loadCrew(int index) {
 		// retrieve the person's crew designation
 		String crewString = getValueAsString(index, CREW);
 
@@ -156,21 +156,29 @@ public class CrewConfig implements Serializable {
 	 * Gets the configured person's name.
 	 * 
 	 * @param index the person's index.
+	 * @param crewID
+	 * @param loadFromXML true if it is loading from crew.xml (instead of the roster)
 	 * @return name or null if none.
 	 * @throws Exception if error in XML parsing.
 	 */
-	public String getConfiguredPersonName(int index, int crew_id) {
+	public String getConfiguredPersonName(int index, int crewID, boolean loadFromXML) {
 //		System.out.println("roster is " + roster);
 //		System.out.println("# of crew in roster is " + roster.size());
 //		System.out.println("crew_id is " + crew_id);
-		if (roster.get(crew_id) != null) {
-			if (roster.get(crew_id).getTeam().get(index).getName() != null) {
-				return roster.get(crew_id).getTeam().get(index).getName();
-			} else {
+		if (loadFromXML)
+			return getValueAsString(index, NAME);
+		
+		else if (roster.get(crewID) != null) {
+			if (roster.get(crewID).getTeam().get(index).getName() != null) {
+				return roster.get(crewID).getTeam().get(index).getName();
+			} 
+			
+			else {
 				return getValueAsString(index, NAME);
 			}
-
-		} else {
+		} 
+		
+		else {
 			return getValueAsString(index, NAME);
 		}
 	}
@@ -182,10 +190,11 @@ public class CrewConfig implements Serializable {
 	 * @return {@link GenderType} or null if not found.
 	 * @throws Exception if error in XML parsing.
 	 */
-	public GenderType getConfiguredPersonGender(int index, int crew_id) {
-		if (roster.get(crew_id).getTeam().get(index).getGender() != null)
-			return GenderType.valueOfIgnoreCase(roster.get(crew_id).getTeam().get(index).getGender());// alphaCrewGender.get(index))
-																										// ;
+	public GenderType getConfiguredPersonGender(int index, int crewID, boolean loadFromXML) {
+		if (loadFromXML)
+			return GenderType.valueOfIgnoreCase(getValueAsString(index, GENDER));
+		else if (roster.get(crewID).getTeam().get(index).getGender() != null)
+			return GenderType.valueOfIgnoreCase(roster.get(crewID).getTeam().get(index).getGender());// alphaCrewGender.get(index))																										// ;
 		else
 			return GenderType.valueOfIgnoreCase(getValueAsString(index, GENDER));
 	}
@@ -197,9 +206,11 @@ public class CrewConfig implements Serializable {
 	 * @return four character string for MBTI ex. "ISTJ". Return null if none.
 	 * @throws Exception if error in XML parsing.
 	 */
-	public String getConfiguredPersonPersonalityType(int index, int crew_id) {
-		if (roster.get(crew_id).getTeam().get(index).getMBTI() != null)
-			return roster.get(crew_id).getTeam().get(index).getMBTI();// alphaCrewPersonality.get(index) ;
+	public String getConfiguredPersonPersonalityType(int index, int crewID, boolean loadFromXML) {
+		if (loadFromXML)
+			return getValueAsString(index, PERSONALITY_TYPE);
+		else if (roster.get(crewID).getTeam().get(index).getMBTI() != null)
+			return roster.get(crewID).getTeam().get(index).getMBTI();// alphaCrewPersonality.get(index) ;
 		else
 			return getValueAsString(index, PERSONALITY_TYPE);
 	}
@@ -210,8 +221,8 @@ public class CrewConfig implements Serializable {
 	 * @param index the crew index
 	 * @return true if introvert
 	 */
-	public boolean isIntrovert(int index) {
-		return getConfiguredPersonPersonalityType(index, getCrew(index)).substring(0, 1).equals("I");
+	public boolean isIntrovert(int index, boolean loadFromXML) {
+		return getConfiguredPersonPersonalityType(index, loadCrew(index), loadFromXML).substring(0, 1).equals("I");
 	}
 
 	/**
@@ -220,8 +231,8 @@ public class CrewConfig implements Serializable {
 	 * @param index the crew index
 	 * @return true if extrovert
 	 */
-	public boolean isExtrovert(int index) {
-		return getConfiguredPersonPersonalityType(index, getCrew(index)).substring(0, 1).equals("E");
+	public boolean isExtrovert(int index, boolean loadFromXML ) {
+		return getConfiguredPersonPersonalityType(index, loadCrew(index), loadFromXML).substring(0, 1).equals("E");
 	}
 
 	/**
@@ -230,8 +241,8 @@ public class CrewConfig implements Serializable {
 	 * @param index the crew index
 	 * @return true if sensor
 	 */
-	public boolean isSensor(int index) {
-		return getConfiguredPersonPersonalityType(index, getCrew(index)).substring(1, 2).equals("S");
+	public boolean isSensor(int index, boolean loadFromXML) {
+		return getConfiguredPersonPersonalityType(index, loadCrew(index), loadFromXML).substring(1, 2).equals("S");
 	}
 
 	/**
@@ -240,8 +251,8 @@ public class CrewConfig implements Serializable {
 	 * @param index the crew index
 	 * @return true if intuitive
 	 */
-	public boolean isIntuitive(int index) {
-		return getConfiguredPersonPersonalityType(index, getCrew(index)).substring(1, 2).equals("N");
+	public boolean isIntuitive(int index, boolean loadFromXML) {
+		return getConfiguredPersonPersonalityType(index, loadCrew(index), loadFromXML).substring(1, 2).equals("N");
 	}
 
 	/**
@@ -250,8 +261,8 @@ public class CrewConfig implements Serializable {
 	 * @param index the crew index
 	 * @return true if thinker
 	 */
-	public boolean isThinker(int index) {
-		return getConfiguredPersonPersonalityType(index, getCrew(index)).substring(2, 3).equals("T");
+	public boolean isThinker(int index, boolean loadFromXML) {
+		return getConfiguredPersonPersonalityType(index, loadCrew(index), loadFromXML).substring(2, 3).equals("T");
 	}
 
 	/**
@@ -260,8 +271,8 @@ public class CrewConfig implements Serializable {
 	 * @param index the crew index
 	 * @return true if feeler
 	 */
-	public boolean isFeeler(int index) {
-		return getConfiguredPersonPersonalityType(index, getCrew(index)).substring(2, 3).equals("F");
+	public boolean isFeeler(int index, boolean loadFromXML) {
+		return getConfiguredPersonPersonalityType(index, loadCrew(index), loadFromXML).substring(2, 3).equals("F");
 	}
 
 	/**
@@ -270,8 +281,8 @@ public class CrewConfig implements Serializable {
 	 * @param index the crew index
 	 * @return true if judger
 	 */
-	public boolean isJudger(int index) {
-		return getConfiguredPersonPersonalityType(index, getCrew(index)).substring(3, 4).equals("J");
+	public boolean isJudger(int index, boolean loadFromXML) {
+		return getConfiguredPersonPersonalityType(index, loadCrew(index), loadFromXML).substring(3, 4).equals("J");
 	}
 
 	/**
@@ -280,8 +291,8 @@ public class CrewConfig implements Serializable {
 	 * @param index the crew index
 	 * @return true if perceiver
 	 */
-	public boolean isPerceiver(int index) {
-		return getConfiguredPersonPersonalityType(index, getCrew(index)).substring(3, 4).equals("P");
+	public boolean isPerceiver(int index, boolean loadFromXML) {
+		return getConfiguredPersonPersonalityType(index, loadCrew(index), loadFromXML).substring(3, 4).equals("P");
 	}
 
 	
@@ -292,9 +303,11 @@ public class CrewConfig implements Serializable {
 	 * @return the job name or null if none.
 	 * @throws Exception if error in XML parsing.
 	 */
-	public String getConfiguredPersonJob(int index, int crew_id) {
-		if (roster.get(crew_id).getTeam().get(index).getJob() != null)
-			return roster.get(crew_id).getTeam().get(index).getJob();// alphaCrewJob.get(index) ;
+	public String getConfiguredPersonJob(int index, int crewID, boolean loadFromXML) {
+		if (loadFromXML)
+			return getValueAsString(index, JOB);
+		else if (roster.get(crewID).getTeam().get(index).getJob() != null)
+			return roster.get(crewID).getTeam().get(index).getJob();// alphaCrewJob.get(index) ;
 		else
 			return getValueAsString(index, JOB);
 	}
@@ -306,9 +319,11 @@ public class CrewConfig implements Serializable {
 	 * @return the job name or null if none.
 	 * @throws Exception if error in XML parsing.
 	 */
-	public String getConfiguredPersonCountry(int index, int crew_id) {
-		if (roster.get(crew_id).getTeam().get(index).getCountry() != null)
-			return roster.get(crew_id).getTeam().get(index).getCountry();// alphaCrewJob.get(index) ;
+	public String getConfiguredPersonCountry(int index, int crewID, boolean loadFromXML) {
+		if (loadFromXML)
+			return getValueAsString(index, COUNTRY);
+		else if (roster.get(crewID).getTeam().get(index).getCountry() != null)
+			return roster.get(crewID).getTeam().get(index).getCountry();// alphaCrewJob.get(index) ;
 		else
 			return getValueAsString(index, COUNTRY);
 	}
@@ -320,9 +335,11 @@ public class CrewConfig implements Serializable {
 	 * @return the job name or null if none.
 	 * @throws Exception if error in XML parsing.
 	 */
-	public String getConfiguredPersonSponsor(int index, int crew_id) {
-		if (roster.get(crew_id).getTeam().get(index).getSponsor() != null)
-			return roster.get(crew_id).getTeam().get(index).getSponsor();// alphaCrewJob.get(index) ;
+	public String getConfiguredPersonSponsor(int index, int crewID, boolean loadFromXML) {
+		if (loadFromXML)
+			return getValueAsString(index, SPONSOR);	
+		else if (roster.get(crewID).getTeam().get(index).getSponsor() != null)
+			return roster.get(crewID).getTeam().get(index).getSponsor();// alphaCrewJob.get(index) ;
 		else
 			return getValueAsString(index, SPONSOR);
 	}
@@ -334,9 +351,11 @@ public class CrewConfig implements Serializable {
 	 * @return the settlement name or null if none.
 	 * @throws Exception if error in XML parsing.
 	 */
-	public String getConfiguredPersonDestination(int index, int crew_id) {
-		if (roster.get(crew_id).getTeam().get(index).getDestination() != null)
-			return roster.get(crew_id).getTeam().get(index).getDestination();// alphaCrewDestination.get(index);
+	public String getConfiguredPersonDestination(int index, int crewID, boolean loadFromXML) {
+		if (loadFromXML)
+			return getValueAsString(index, SETTLEMENT);
+		else if (roster.get(crewID).getTeam().get(index).getDestination() != null)
+			return roster.get(crewID).getTeam().get(index).getDestination();// alphaCrewDestination.get(index);
 		else
 			return getValueAsString(index, SETTLEMENT);
 	}

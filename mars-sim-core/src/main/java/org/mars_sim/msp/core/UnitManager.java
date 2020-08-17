@@ -1133,13 +1133,13 @@ public class UnitManager implements Serializable {
 		for (int x = 0; x < size; x++) {
 
 			// Get person's name (required)
-			int crew_id = crewConfig.getCrew(x);
+			int crew_id = crewConfig.loadCrew(x);
 
 			// Get person's name (required)
-			String name = crewConfig.getConfiguredPersonName(x, crew_id);
+			String name = crewConfig.getConfiguredPersonName(x, crew_id, false);
 
 			// Get person's gender or randomly determine it if not configured.
-			GenderType gender = crewConfig.getConfiguredPersonGender(x, crew_id);
+			GenderType gender = crewConfig.getConfiguredPersonGender(x, crew_id, false);
 			if (gender == null) {
 				gender = GenderType.FEMALE;
 				if (RandomUtil.getRandomDouble(1.0D) <= personConfig.getGenderRatio()) {
@@ -1190,7 +1190,7 @@ public class UnitManager implements Serializable {
 			}
 
 			// Get person's settlement or randomly determine it if not configured.
-			String preConfigSettlementName = crewConfig.getConfiguredPersonDestination(x, crew_id);
+			String preConfigSettlementName = crewConfig.getConfiguredPersonDestination(x, crew_id, false);
 			if (preConfigSettlementName != null) {
 				Collection<Settlement> col = getSettlements();//lookupSettlement.values();//CollectionUtils.getSettlement(units);
 				settlement = CollectionUtils.getSettlement(col, preConfigSettlementName);
@@ -1237,8 +1237,8 @@ public class UnitManager implements Serializable {
 
 			// Retrieve country & sponsor designation from people.xml (may be edited in
 			// CrewEditorFX)
-			String sponsor = crewConfig.getConfiguredPersonSponsor(x, crew_id);
-			String country = crewConfig.getConfiguredPersonCountry(x, crew_id);
+			String sponsor = crewConfig.getConfiguredPersonSponsor(x, crew_id, false);
+			String country = crewConfig.getConfiguredPersonCountry(x, crew_id, false);
 
 			// Loads the person's preconfigured skills (if any).
 			Map<String, Integer> skillMap = crewConfig.getSkillMap(x);
@@ -1247,7 +1247,7 @@ public class UnitManager implements Serializable {
 			Map<String, Integer> bigFiveMap = crewConfig.getBigFiveMap(x);
 
 			// Override person's personality type based on people.xml, if any.
-			String mbti = crewConfig.getConfiguredPersonPersonalityType(x, crew_id);
+			String mbti = crewConfig.getConfiguredPersonPersonalityType(x, crew_id, false);
 			
 			// Set person's configured natural attributes (if any).
 			Map<String, Integer> attributeMap = crewConfig.getNaturalAttributeMap(x);
@@ -1272,7 +1272,7 @@ public class UnitManager implements Serializable {
 			relationshipManager.addInitialSettler(person, settlement);
 
 			// Set person's job (if any).
-			String jobName = crewConfig.getConfiguredPersonJob(x, crew_id);
+			String jobName = crewConfig.getConfiguredPersonJob(x, crew_id, false);
 			if (jobName != null) {
 				Job job = JobUtil.getJob(jobName);
 				if (job != null) {

@@ -216,6 +216,7 @@ public class SettlementTransparentPanel extends WebComponent {
 
 		settlementCBModel = new SettlementComboBoxModel();
 		settlementListBox = new WebComboBox(StyleId.comboboxHover, settlementCBModel);
+		settlementListBox.setWidePopup(true);
 //		settlementListBox.setAlignmentX(CENTER_ALIGNMENT);
 //		((JLabel)settlementListBox.getRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
 		DefaultListCellRenderer listRenderer = new DefaultListCellRenderer();

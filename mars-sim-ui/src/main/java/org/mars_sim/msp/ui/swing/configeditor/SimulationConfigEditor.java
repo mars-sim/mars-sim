@@ -373,7 +373,7 @@ public class SimulationConfigEditor {
 		// Edit Alpha Crew button.
 		JButton alphaButton = new JButton("  " + Msg.getString("SimulationConfigEditor.button.crewEditor") + "  "); //$NON-NLS-1$
 //		TooltipManager.setTooltip(alphaButton, Msg.getString("SimulationConfigEditor.button.crewEditor"), TooltipWay.up);
-		alphaButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.crewEditor")); //$NON-NLS-1$
+		alphaButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.crewEditor.tip")); //$NON-NLS-1$
 		alphaButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				editCrewProfile("alpha");
@@ -453,6 +453,7 @@ public class SimulationConfigEditor {
 	
 	/**
 	 * Edits team profile.
+	 * @param crew
 	 */
 	private void editCrewProfile(String crew) {
 		if (crewEditor == null) {

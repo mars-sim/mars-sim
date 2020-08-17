@@ -25,6 +25,7 @@ public class Member implements Serializable {
 	private String country; 
 	private String sponsor;
 	private String destination;
+	
 	private String mainDish;
 	private String sideDish;
 	private String dessert;
