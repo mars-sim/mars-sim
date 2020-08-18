@@ -949,44 +949,46 @@ public class BuildingManager implements Serializable {
 		Building garageBldg = getBuilding(vehicle, settlement);
 		if (vehicle.haveStatusType(StatusType.GARAGED) && garageBldg != null) {
 			if (vehicle.getSettlement() == null) {
-				// Place this vehicle inside a building
+				// Stores this vehicle to the settlement
 				settlement.getInventory().storeUnit(vehicle);
 			}
-			else { 
-				LogConsolidated.log(logger, Level.INFO, 1000, sourceName,
-					"[" + settlement.getName() + "] " + vehicle.getName() + " already garaged in " + garageBldg);
-			}
+//			else { 
+//				LogConsolidated.log(logger, Level.INFO, 4000, sourceName,
+//					"[" + settlement.getName() + "] " + vehicle.getName() + " already garaged in " + garageBldg);
+//			}
 			return true;
 		}
 		
-		List<Building> garages = settlement.getBuildingManager().getBuildings(FunctionType.GROUND_VEHICLE_MAINTENANCE);
-		List<VehicleMaintenance> openGarages = new ArrayList<VehicleMaintenance>();
-		for (Building garageBuilding : garages) {
-			VehicleMaintenance garage = garageBuilding.getVehicleMaintenance();
-			if (garage.getCurrentVehicleNumber() < garage.getVehicleCapacity())
-				openGarages.add(garage);
-		}
-
-		if (openGarages.size() > 0) {
-			int rand = RandomUtil.getRandomInt(openGarages.size() - 1);
-			openGarages.get(rand).addVehicle(vehicle);
-			if (vehicle.getSettlement() == null) {
-				// Place this vehicle inside a building
-//				vehicle.enter(LocationCodeType.BUILDING);
-				settlement.getInventory().storeUnit(vehicle);
-				LogConsolidated.log(logger, Level.INFO, 1000, sourceName,
-						"[" + settlement.getName() + "] " +  vehicle.getName() + " has just been stowed inside " + getBuilding(vehicle, settlement));
-				vehicle.addStatus(StatusType.GARAGED);
+		else {
+			// Place this vehicle inside a building
+			List<Building> garages = settlement.getBuildingManager().getBuildings(FunctionType.GROUND_VEHICLE_MAINTENANCE);
+			List<VehicleMaintenance> openGarages = new ArrayList<VehicleMaintenance>();
+			for (Building garageBuilding : garages) {
+				VehicleMaintenance garage = garageBuilding.getVehicleMaintenance();
+				if (garage.getCurrentVehicleNumber() < garage.getVehicleCapacity())
+					openGarages.add(garage);
 			}
-			return true;
+	
+			if (openGarages.size() > 0) {
+				int rand = RandomUtil.getRandomInt(openGarages.size() - 1);
+				openGarages.get(rand).addVehicle(vehicle);
+				if (vehicle.getSettlement() == null) {
+					// Place this vehicle inside a building
+	//				vehicle.enter(LocationCodeType.BUILDING);
+					settlement.getInventory().storeUnit(vehicle);
+					LogConsolidated.log(logger, Level.INFO, 4000, sourceName,
+							"[" + settlement.getName() + "] " +  vehicle.getName() + " has just been stowed inside " + getBuilding(vehicle, settlement));
+					vehicle.addStatus(StatusType.GARAGED);
+				}
+				return true;
+			}
+			
+			else {
+				LogConsolidated.log(logger, Level.INFO, 4000, sourceName, 
+						"[" + settlement.getName() + "] No available garage space found for " + vehicle.getName() + ".");
+				return false;
+			}
 		}
-//		else {
-//			logger.info("[" + settlement.getName() + "] No available garage space found for " + vehicle.getName() + ".");
-//			return false;
-//		}
-		
-		return false;
-
 	}
 
 	/**

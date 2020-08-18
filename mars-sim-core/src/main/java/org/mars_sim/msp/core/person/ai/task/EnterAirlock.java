@@ -535,9 +535,7 @@ public class EnterAirlock extends Task implements Serializable {
                         interiorDoorPos.getX(), interiorDoorPos.getY()));
             }
             
-			// Add experience
-			addExperience(time - remainingTime);
-			
+
 			// This completes the task of ingress through the airlock
 			setPhase(STORING_EVA_SUIT);	
 			

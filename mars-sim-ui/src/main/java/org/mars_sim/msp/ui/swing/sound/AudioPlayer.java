@@ -23,6 +23,7 @@ import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.UIConfig;
 
 /**
  * A class to dispatch playback of OGG files to OGGSoundClip.
@@ -36,7 +37,7 @@ public class AudioPlayer implements ClockListener {
 //	private final static int LOUD_TRACKS = 6;
 //	private final static int REPEATING_TRACKS = 4; // track the last 4 tracks and avoid playing them repetitively.
 
-	public final static float DEFAULT_VOL = .5f;
+	public final static double DEFAULT_VOL = .5;
 
 	private static int numTracks;
 
@@ -44,19 +45,8 @@ public class AudioPlayer implements ClockListener {
 	public static double currentMusicVol = DEFAULT_VOL;
 	public static double currentSoundVol = DEFAULT_VOL;
 
-//	private double lastMusicVol = 0;
-//	private double lastSoundVol = 0;
-
-	private int play_times = 0;
-
 	private static boolean hasMasterGain = true;
 	private static boolean isSoundDisabled;
-
-	// private boolean lastMusicState = true;
-	// private boolean lastSoundState = true;
-
-//	private MainDesktopPane desktop;
-//	private static MainScene mainScene;
 
 	/** The current clip sound. */
 	private static OGGSoundClip currentSoundClip;
@@ -70,6 +60,8 @@ public class AudioPlayer implements ClockListener {
 	private static List<Integer> played_tracks = new ArrayList<>();
 
 	private static MasterClock masterClock;
+
+	private int play_times = 0;
 
 	public AudioPlayer(MainDesktopPane desktop) {
 		// logger.config("constructor is on " + Thread.currentThread().getName());
@@ -85,7 +77,23 @@ public class AudioPlayer implements ClockListener {
 			loadSoundEffects();
 		}
 		
-//		if (UIConfig.INSTANCE.useUIDefault())
+		if (UIConfig.INSTANCE.useUIDefault()) {
+			currentMusicVol = DEFAULT_VOL;
+			currentSoundVol = DEFAULT_VOL;
+		} 
+		
+		else {
+			if (UIConfig.INSTANCE.isMute()) {
+				muteSoundEffect();
+				muteMusic();
+				currentMusicVol = 0;
+				currentSoundVol = 0;
+			}
+
+			double v = UIConfig.INSTANCE.getVolume();
+			currentMusicVol = v;
+			currentSoundVol = v;
+		}
 	}
 		
 	public OGGSoundClip obtainOGGMusicTrack(String name) {

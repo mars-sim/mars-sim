@@ -16,6 +16,7 @@ import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -209,24 +210,54 @@ extends JComponent {
 			UIConfig.INSTANCE.parseFile();
 		}
 
-		// Set look and feel of UI.
+		// Set the UI configuration
 		useDefault = UIConfig.INSTANCE.useUIDefault();
 
 		// Set up MainDesktopPane
 		desktop = new MainDesktopPane(this);
 
+		// Set up timers for use on the status bar
+		setupDelayTimer();
+		
 		// Initialize UI elements for the frame
-//		EventQueue.invokeLater(new Runnable(){
-//	        public void run() {
 		SwingUtilities.invokeLater(() -> {    	
 	        	init();    
-	        	
-	    		// Set up timers for use on the status bar
-	    		setupDelayTimer();
 
+	    		// Set frame size
+	    		final Dimension frame_size;
+	    		Dimension screen_size = Toolkit.getDefaultToolkit().getScreenSize();
+	    		if (useDefault) {
+	    			// Make frame size 80% of screen size.
+	    			if (screen_size.width > 800) {
+	    				frame_size = new Dimension(
+	    					(int) Math.round(screen_size.getWidth() * .9D),
+	    					(int) Math.round(screen_size.getHeight() * .9D)
+	    				);
+	    			} else {
+	    				frame_size = new Dimension(screen_size);
+	    			}
+	    		} else {
+	    			frame_size = UIConfig.INSTANCE.getMainWindowDimension();
+	    		}
+	    		
+	    		frame.setSize(frame_size);
+
+	    		// Set frame location.
+	    		if (useDefault) {
+	    			// Center frame on screen
+	    			frame.setLocation(
+	    				((screen_size.width - frame_size.width) / 2),
+	    				((screen_size.height - frame_size.height) / 2)
+	    			);
+	    		} else {
+	    			frame.setLocation(UIConfig.INSTANCE.getMainWindowLocation());
+	    			
+//		    		frame.setLocationRelativeTo(null);
+	    		}
+	    		
 	    		// Show frame
 //	    		frame.pack();
-	    		frame.setLocationRelativeTo(null);
+
 	    		frame.setVisible(true);
 
 	    		// Open all initial windows.
@@ -868,8 +899,8 @@ extends JComponent {
 				// do something here
 			}
 			
-				// Save the current main window ui config
-//				UIConfig.INSTANCE.saveFile(this);
+			// Save the current main window ui config
+			UIConfig.INSTANCE.saveFile(this);
 
 //			SwingUtilities.invokeLater(() -> {
 				desktop.disposeAnnouncementWindow();
@@ -921,9 +952,6 @@ extends JComponent {
 	 * Exit the simulation for running and exit.
 	 */
 	public void exitSimulation() {
-		// Save the UI configuration.
-//		UIConfig.INSTANCE.saveFile(this);
-
 		// Save the simulation.
 //		Simulation sim = Simulation.instance();
 //		try {
@@ -934,8 +962,14 @@ extends JComponent {
 //		}
 		
 		endSimulationClass();
+		
+		// Save the UI configuration.
+		UIConfig.INSTANCE.saveFile(this);
+
 		masterClock.exitProgram();
+
 		System.exit(0);
+		
 		destroy();
 	}
 
@@ -1114,19 +1148,19 @@ extends JComponent {
 		return lookAndFeelTheme;
 	}
 
-	public void setupMainWindow() {
-		new Timer().schedule(new WindowDelayTimer(), 1000);
-	}
-	
-	/**
-	 * Defines the delay timer class
-	 */
-	class WindowDelayTimer extends TimerTask {
-		public void run() {
-			// Create main window
-			SwingUtilities.invokeLater(() -> new MainWindow(true));
-		}
-	}
+//	public void setupMainWindow(boolean cleanUI) {
+//		new Timer().schedule(new WindowDelayTimer(cleanUI), 1000);
+//	}
+//	
+//	/**
+//	 * Defines the delay timer class
+//	 */
+//	class WindowDelayTimer extends TimerTask {
+//		public void run() {
+//			// Create main window
+//			SwingUtilities.invokeLater(() -> new MainWindow(cleanUI));
+//		}
+//	}
 	
 	public WebPanel getMainPane() {
 		return mainPane;

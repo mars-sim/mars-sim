@@ -361,7 +361,7 @@ public class SimulationConfigEditor {
 					// Start the simulation
 					startSimThread(false);
 					// Create main window
-					setupMainWindow();
+					setupMainWindow(true);
 //					logger.config("Done SimulationConfigEditor()");
 				}
 			}
@@ -1239,7 +1239,7 @@ public class SimulationConfigEditor {
 	}
 	
 
-	public void setupMainWindow() {
+	public void setupMainWindow(boolean cleanUI) {
 //		new Timer().schedule(new WindowDelayTimer(), 100);
 		while (true) {
 			try {
@@ -1248,7 +1248,7 @@ public class SimulationConfigEditor {
 			}
 			
 			if (!sim.isUpdating()) {
-				new MainWindow(true);
+				new MainWindow(cleanUI);
 				break;
 			}
 		}

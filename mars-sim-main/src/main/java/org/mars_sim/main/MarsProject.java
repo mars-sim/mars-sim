@@ -280,7 +280,7 @@ public class MarsProject {
 				startConsoleThread();
 				
 				// Create main window
-				setupMainWindow();									
+				setupMainWindow(true);									
 			
 //				logger.config("Done with setupMainWindow()");
 			}
@@ -310,7 +310,7 @@ public class MarsProject {
 					startConsoleThread();
 					
 					// Create main window
-					setupMainWindow();
+					setupMainWindow(true);
 				
 				}
 //				logger.config("Done with setupMainWindow()");
@@ -536,7 +536,7 @@ public class MarsProject {
 						
 						if (useGUI) {
 //							logger.config("useGUI is " + useGUI);
-							setupMainWindow();
+							setupMainWindow(false);
 						} 
 						
 						else {
@@ -585,7 +585,7 @@ public class MarsProject {
 						
 						if (useGUI) {
 							// Create main window
-							setupMainWindow();
+							setupMainWindow(false);
 						} 
 						
 						else {
@@ -632,7 +632,7 @@ public class MarsProject {
 		}
 	}
 
-	public void setupMainWindow() {
+	public void setupMainWindow(boolean cleanUI) {
 //		new Timer().schedule(new WindowDelayTimer(), 100);
 		while (true) {
 			try {
@@ -641,7 +641,7 @@ public class MarsProject {
 			}
 			
 			if (!sim.isUpdating()) {
-				new MainWindow(true);
+				new MainWindow(cleanUI);
 				break;
 			}
 		}
@@ -691,7 +691,7 @@ public class MarsProject {
 					startConsoleThread();
 					
 					// Create main window
-					setupMainWindow();
+					setupMainWindow(true);
 				
 //					logger.config("Done with setupMainWindow()");
 				}
@@ -721,7 +721,7 @@ public class MarsProject {
 						startConsoleThread();
 						
 						// Create main window
-						setupMainWindow();					
+						setupMainWindow(true);					
 					
 					}
 //					logger.config("Done with setupMainWindow()");
