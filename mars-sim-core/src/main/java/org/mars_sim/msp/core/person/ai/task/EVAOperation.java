@@ -124,7 +124,7 @@ public abstract class EVAOperation extends Task implements Serializable {
 				LogConsolidated.log(logger, Level.WARNING, 10_000, sourceName,
 						"[" + person.getLocationTag().getLocale() + "] " + person.getName() + 
 						" in " + person.getLocationTag().getImmediateLocation()
-								+ " is supposed to be in a vehicle hosued inside a garage interiorObject is null.");
+								+ " is supposed to be in a vehicle housed inside a garage but interiorObject is null.");
 				endTask();
 			} else {
 				// Add task phases.
@@ -228,25 +228,28 @@ public abstract class EVAOperation extends Task implements Serializable {
 	 * @return remaining time after performing the phase.
 	 */
 	private double walkToOutsideSitePhase(double time) {
-		// If not outside, create walk outside subtask.
-		if (person.isOutside()) {
-			setPhase(getOutsideSitePhase());
-		} 
-		
-		else {
-
-			if (Walk.canWalkAllSteps(person, outsideSiteXLoc, outsideSiteYLoc, 0, null)) {
-				Task walkingTask = new Walk(person, outsideSiteXLoc, outsideSiteYLoc, 0, null);
-				addSubTask(walkingTask);
-			} else {
-				// LogConsolidated.log(logger, Level.WARNING, 3000, sourceName,
-				// person.getName() + " cannot walk to outside site.", null);
-				endTask();
-			}
-		}
-
-		return time;
-	}
+	      // If not at field work site location, create walk outside subtask.
+//        Point2D personLocation = new Point2D.Double(person.getXLocation(), person.getYLocation());
+//        Point2D outsideLocation = new Point2D.Double(outsideSiteXLoc, outsideSiteYLoc);
+//        boolean closeToLocation = LocalAreaUtil.areLocationsClose(personLocation, outsideLocation);
+        
+        if (!person.isOutside()) {// || !closeToLocation) {
+            if (Walk.canWalkAllSteps(person, outsideSiteXLoc, outsideSiteYLoc, 0, null)) {
+                Task walkingTask = new Walk(person, outsideSiteXLoc, outsideSiteYLoc, 0, null);
+                addSubTask(walkingTask);
+            }
+            else {
+				 LogConsolidated.log(logger, Level.WARNING, 4000, sourceName,
+						 person.getName() + " cannot walk to outside site.");
+                endTask();
+            }
+        }
+        else {
+            setPhase(getOutsideSitePhase());
+        }
+        
+        return time;
+    }		
 
 	/**
 	 * Perform the walk back inside phase.
@@ -257,16 +260,17 @@ public abstract class EVAOperation extends Task implements Serializable {
 	private double walkBackInsidePhase(double time) {
 		
 		if (person.isOutside()) {
+			
 			if (interiorObject == null) {
 			// Get closest airlock building at settlement.
 				Settlement s = CollectionUtils.findSettlement(person.getCoordinates());
 				if (s != null) {
 					interiorObject = (Building)(s.getClosestAvailableAirlock(person).getEntity()); 
-					System.out.println("interiorObject is " + interiorObject);
+//					System.out.println("interiorObject is " + interiorObject);
 					if (interiorObject == null)
 						interiorObject = (LocalBoundedObject)(s.getClosestAvailableAirlock(person).getEntity());
 					System.out.println("interiorObject is " + interiorObject);
-					LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
+					LogConsolidated.log(logger, Level.INFO, 0, sourceName,
 							"[" + person.getLocationTag().getLocale() + "] " + person.getName()
 							+ " in " + person.getLocationTag().getImmediateLocation()
 							+ " found " + ((Building)interiorObject).getNickName()
@@ -276,7 +280,7 @@ public abstract class EVAOperation extends Task implements Serializable {
 					// near a vehicle
 					Rover r = (Rover)person.getVehicle();
 					interiorObject = (LocalBoundedObject) (r.getAirlock()).getEntity();
-					LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
+					LogConsolidated.log(logger, Level.INFO, 0, sourceName,
 							"[" + person.getLocationTag().getLocale() + "] " + person.getName()
 							+ " was near " + r.getName()
 							+ " and had to walk back inside the vehicle.");
@@ -292,6 +296,7 @@ public abstract class EVAOperation extends Task implements Serializable {
 					+ " but interiorObject is null.");
 				endTask();
 			}
+			
 			else {
 				// Set return location.
 				Point2D rawReturnInsideLoc = LocalAreaUtil.getRandomInteriorLocation(interiorObject);
@@ -324,7 +329,7 @@ public abstract class EVAOperation extends Task implements Serializable {
 					name = ((Vehicle)interiorObject).getNickName();
 				}
 						
-				LogConsolidated.log(logger, Level.FINEST, 10_000, sourceName,
+				LogConsolidated.log(logger, Level.FINER, 10_000, sourceName,
 							"[" + person.getLocationTag().getLocale() + "] " + person.getName()
 							+ " was near " +  name 
 							+ " at (" + Math.round(returnInsideLoc.getX()*10.0)/10.0 + ", " 
@@ -342,7 +347,9 @@ public abstract class EVAOperation extends Task implements Serializable {
 							+ " and cannot find a valid path to enter an airlock. Will see what to do.");
 					endTask();
 				}
-			} else {
+			}
+			
+			else {
 				LogConsolidated.log(logger, Level.SEVERE, 0, sourceName,
 						person.getName() + " was " + person.getTaskDescription().toLowerCase() 
 						+ " and cannot find the building airlock to walk back inside. Will see what to do.");
@@ -456,7 +463,7 @@ public abstract class EVAOperation extends Task implements Serializable {
 			if (oxygen <= (oxygenCap * .2D)) {
 				LogConsolidated.log(logger, Level.WARNING, 5000, sourceName,
 						"[" + person.getLocationTag().getLocale() + "] " + person.getName()
-								+ " reported less than 20% O2 level left in "
+								+ " reported less than 20% O2 left in "
 								+ suit.getName() + " Ending "
 								+ person.getTaskDescription() 
 								+ " at " + person.getCoordinates().getFormattedString());
@@ -469,7 +476,7 @@ public abstract class EVAOperation extends Task implements Serializable {
 			if (water <= (waterCap * .10D)) {
 				LogConsolidated.log(logger, Level.WARNING, 5000, sourceName,
 						"[" + person.getLocationTag().getLocale() + "] " + person.getName() + "'s " + suit.getName()
-								+ " reported less than 10% water level left when "
+								+ " reported less than 10% water left when "
 										+ person.getTaskDescription());
 //				return false;
 			}
@@ -500,7 +507,7 @@ public abstract class EVAOperation extends Task implements Serializable {
 		if (perf < .1D) {
 			// Add back to 10% so that the person can walk
 			person.getPhysicalCondition().setPerformanceFactor((perf + .01)* 1.1);
-			LogConsolidated.log(logger, Level.WARNING, 5000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
+			LogConsolidated.log(logger, Level.WARNING, 4000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
 							+ person.getName() + " ended '" + person.getTaskDescription() + "' : performance is less than 10%.");
 			return false;
 		}

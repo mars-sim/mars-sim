@@ -303,38 +303,42 @@ public abstract class Function implements Serializable {
 	 * @return true if this activity spot is empty.
 	 */
 	public boolean isActivitySpotEmpty(Point2D spot) {
-		boolean result = false;
-
 		if (activitySpots.isEmpty())
 			return true;
+		
+		boolean result = false;
 
-		else {
-			Iterator<Point2D> i = activitySpots.iterator();
-			while (i.hasNext()) {
-				Point2D activitySpot = i.next();
+		Iterator<Point2D> i = activitySpots.iterator();
+		while (i.hasNext()) {
+			Point2D activitySpot = i.next();
 
-				if (activitySpot == spot) {
-					// Convert activity spot from building local to settlement local.
-					Building b = getBuilding();
-					Point2D settlementActivitySpot = LocalAreaUtil.getLocalRelativeLocation(activitySpot.getX(),
-							activitySpot.getY(), b);
+			if (activitySpot == spot) {
+				// Convert activity spot from building local to settlement local.
+				Building b = getBuilding();
+				Point2D settlementActivitySpot = LocalAreaUtil.getLocalRelativeLocation(activitySpot.getX(),
+						activitySpot.getY(), b);
 
-					for (Person person : b.getInhabitants()) {
-						// Check if person's location is identical or very very close (1e-5 meters) to
-						// activity spot.
-						Point2D personLoc = new Point2D.Double(person.getXLocation(), person.getYLocation());
-						if (LocalAreaUtil.areLocationsClose(settlementActivitySpot, personLoc)) {
-							result = false;
-						} else {
-							result = true;
-							break;
-						}
+				for (Person person : b.getInhabitants()) {
+					// Check if person's location is identical or very very close (1e-5 meters) to
+					// activity spot.
+					Point2D personLoc = new Point2D.Double(person.getXLocation(), person.getYLocation());
+					if (!LocalAreaUtil.areLocationsClose(settlementActivitySpot, personLoc)) {
+						return true;
+					}
+				}
+				
+				for (Robot robot : b.getRobots()) {
+					// Check if robot location is identical or very very close (1e-5 meters) to
+					// activity spot.
+					Point2D loc = new Point2D.Double(robot.getXLocation(), robot.getYLocation());
+					if (!LocalAreaUtil.areLocationsClose(settlementActivitySpot, loc)) {
+						return true;
 					}
 				}
 			}
-
-			return result;
 		}
+
+		return result;
 	}
 
 	/**

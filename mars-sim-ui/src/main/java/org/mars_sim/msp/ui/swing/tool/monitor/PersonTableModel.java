@@ -70,27 +70,27 @@ public class PersonTableModel extends UnitTableModel {
 	private final static int SHIFT = 5;
 	/** Location column. */
 	private final static int LOCATION = 6;
-	/** Gender column. */
-	private final static int GENDER = 7;
-	/** Personality column. */
-	private final static int PERSONALITY = 8;
+//	/** Gender column. */
+//	private final static int GENDER = 7;
+//	/** Personality column. */
+//	private final static int PERSONALITY = 8;
 	/** Health column. */
-	private final static int HEALTH = 9;
+	private final static int HEALTH = 7;
 	/** Energy/Hunger column. */
-	private final static int ENERGY = 10;
+	private final static int ENERGY = 8;
 	/** Water/Thirst column. */
-	private final static int WATER = 11;
+	private final static int WATER = 9;
 	/** Fatigue column. */
-	private final static int FATIGUE = 12;
+	private final static int FATIGUE = 10;
 	/** Stress column. */
-	private final static int STRESS = 13;
+	private final static int STRESS = 11;
 	/** Performance column. */
-	private final static int PERFORMANCE = 14;
+	private final static int PERFORMANCE = 12;
 	/** Emotion column. */
-	private final static int EMOTION = 15;
+	private final static int EMOTION = 13;
 
 	/** The number of Columns. */
-	private final static int COLUMNCOUNT = 16;
+	private final static int COLUMNCOUNT = 14;
 	/** Names of Columns. */
 	private static String columnNames[];
 	/** Types of Columns. */
@@ -99,9 +99,9 @@ public class PersonTableModel extends UnitTableModel {
 	private final static String DEYDRATED = "Deydrated";
 //	private final static String THIRSTY = "Thirsty";
 	private final static String STARVING = "Starving";
-	private final static String MALE = "male";
-	private final static String M = "M";
-	private final static String F = "F";
+//	private final static String MALE = "male";
+//	private final static String M = "M";
+//	private final static String F = "F";
 //	private final static String WALK = "walk";
 
 	/**
@@ -112,10 +112,10 @@ public class PersonTableModel extends UnitTableModel {
 		columnTypes = new Class[COLUMNCOUNT];
 		columnNames[NAME] = Msg.getString("PersonTableModel.column.name"); //$NON-NLS-1$
 		columnTypes[NAME] = String.class;
-		columnNames[GENDER] = Msg.getString("PersonTableModel.column.gender"); //$NON-NLS-1$
-		columnTypes[GENDER] = String.class;
-		columnNames[PERSONALITY] = Msg.getString("PersonTableModel.column.personality"); //$NON-NLS-1$
-		columnTypes[PERSONALITY] = String.class;
+//		columnNames[GENDER] = Msg.getString("PersonTableModel.column.gender"); //$NON-NLS-1$
+//		columnTypes[GENDER] = String.class;
+//		columnNames[PERSONALITY] = Msg.getString("PersonTableModel.column.personality"); //$NON-NLS-1$
+//		columnTypes[PERSONALITY] = String.class;
 		columnNames[HEALTH] = Msg.getString("PersonTableModel.column.health"); //$NON-NLS-1$
 		columnTypes[HEALTH] = String.class;
 		columnNames[ENERGY] = Msg.getString("PersonTableModel.column.energy"); //$NON-NLS-1$
@@ -415,21 +415,21 @@ public class PersonTableModel extends UnitTableModel {
 			}
 				break;
 
-			case GENDER: {
-				String genderStr = person.getGender().getName();
-				String letter;
-				if (genderStr.equals(MALE))
-					letter = M;
-				else
-					letter = F;
-				result = letter;
-			}
-				break;
-
-			case PERSONALITY: {
-				result = person.getMind().getMBTI().getTypeString();
-			}
-				break;
+//			case GENDER: {
+//				String genderStr = person.getGender().getName();
+//				String letter;
+//				if (genderStr.equals(MALE))
+//					letter = M;
+//				else
+//					letter = F;
+//				result = letter;
+//			}
+//				break;
+//
+//			case PERSONALITY: {
+//				result = person.getMind().getMBTI().getTypeString();
+//			}
+//				break;
 
 			case ENERGY: {
 				PhysicalCondition pc = person.getPhysicalCondition();

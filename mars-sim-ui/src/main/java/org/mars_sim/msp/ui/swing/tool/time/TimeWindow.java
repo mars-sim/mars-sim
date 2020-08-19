@@ -82,7 +82,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	/** the real second label string */	
 	public static final String ONE_REAL_SEC = "1 Real Sec = ";
 	/** the upper limit of the slider bar. */
-	public static final int MAX = 13;
+	public static final int MAX = 12;
 	/** the lower limit of the slider bar. */
 	public static final int MIN = 0;
 

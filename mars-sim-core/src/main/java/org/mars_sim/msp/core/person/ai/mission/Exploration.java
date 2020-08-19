@@ -403,7 +403,8 @@ public class Exploration extends RoverMission implements Serializable {
 			if (e.getLocation().equals(getCurrentMissionLocation()))
 				return e;
 		}
-		return null;
+
+		return createAExploredSite();
 	}
 	
 	/**
@@ -504,7 +505,7 @@ public class Exploration extends RoverMission implements Serializable {
 					Person person = (Person) member;
 					// If person can explore the site, start that task.
 					if (ExploreSite.canExploreSite(person, getRover())) {
-						if (currentSite == null) System.out.println(person + "'s currentSite is null");
+//						if (currentSite == null) System.out.println(person + "'s currentSite is null");
 						assignTask(person, new ExploreSite(person, currentSite, (Rover) getVehicle()));
 					}
 				}

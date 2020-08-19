@@ -2129,6 +2129,40 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		return walkSpeedMod;
 	}
 	
+	
+	/**
+	 * Returns the pronoun string of this person
+	 * @return
+	 */
+	public String getPronoun0() {
+       if (gender == GenderType.MALE)
+    	   return "he";
+       
+       return "she";
+	}
+	
+	/**
+	 * Returns the pronoun string of this person
+	 * @return
+	 */
+	public String getPronoun1() {
+       if (gender == GenderType.MALE)
+    	   return "his";
+       
+       return "her";
+	}
+
+	/**
+	 * Returns the pronoun string of this person
+	 * @return
+	 */
+	public String getPronoun2() {
+       if (gender == GenderType.MALE)
+    	   return "his";
+       
+       return "hers";
+	}
+	
 	/**
 	 * Reinitialize references after loading from a saved sim
 	 */
