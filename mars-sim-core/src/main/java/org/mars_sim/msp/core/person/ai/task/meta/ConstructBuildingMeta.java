@@ -76,6 +76,10 @@ public class ConstructBuildingMeta implements MetaTask, Serializable {
         	return 0;
         }
 
+		BuildingConstructionMission mission = ConstructBuilding.getMissionNeedingAssistance(person);
+		if (mission == null)
+			return 0;
+		
         if (person.isInSettlement()) {
             Settlement settlement = person.getSettlement();
             

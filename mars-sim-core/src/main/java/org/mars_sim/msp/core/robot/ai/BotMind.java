@@ -264,7 +264,6 @@ public class BotMind implements Serializable {
 	 * active missions.
 	 * 
 	 * @param tasks    can actions be tasks?
-	 * @param missions can actions be new missions?
 	 */
 	public void getNewAction(boolean tasks) {
 		// Get probability weights from tasks, missions and active missions.

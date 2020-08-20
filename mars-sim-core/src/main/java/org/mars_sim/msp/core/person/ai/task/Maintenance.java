@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
@@ -71,7 +72,7 @@ public class Maintenance extends Task implements Serializable {
 		super(NAME, person, true, false, STRESS_MODIFIER, true, 10D + RandomUtil.getRandomDouble(40D));
 
 		if (person.isOutside()) {
-			endTask();
+//			endTask();
 			return;
 		}
 		
@@ -96,19 +97,22 @@ public class Maintenance extends Task implements Serializable {
 						walkToRandomLocation(true);
 					}
 				}
-			} else {
-				endTask();
-				return;
-			}
+				
+				// Initialize phase.
+				addPhase(MAINTAIN);
+				setPhase(MAINTAIN);
+				
+			} 
+			
+//			else {
+//				endTask();
+//				return;
+//			}
 		} catch (Exception e) {
-//			logger.log(Level.SEVERE, person + " is unable to perform maintenance.", e);
-			endTask();
+			logger.log(Level.SEVERE, person + " was unable to perform maintenance.", e);
+//			endTask();
 			return;
 		}
-
-		// Initialize phase.
-		addPhase(MAINTAIN);
-		setPhase(MAINTAIN);
 	}
 
 	public Maintenance(Robot robot) {

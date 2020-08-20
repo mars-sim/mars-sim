@@ -201,13 +201,18 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	public void endTask() {
 //    	if (!toString().contains("Walk"))
 //    		logger.info("Called " + this + "'s super.endTask().");
-		// End subtask.
-		if (subTask != null && !subTask.isDone()) {
+		// End subtask
+        if (subTask != null) {
 			setSubTaskPhase(null);
-//			subTask.setDescription("");
-			subTask.destroy();		
-			subTask = null;
-		}
+			subTask.setDescription("");
+        	subTask.endTask();
+        }
+//		if (subTask != null && !subTask.isDone()) {
+//			setSubTaskPhase(null);
+////			subTask.setDescription("");
+//			subTask.destroy();		
+//			subTask = null;
+//		}
 	
 		// Set done to true
 		done = true;
@@ -238,7 +243,10 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		}
 		
 //		if (person != null) { 
-//			person.getMind().getTaskManager().endCurrentTask();
+//			person.getMind().getNewTask();
+//		}
+//		else {
+//			robot.getBotMind().getNewAction(true);
 //		}
 	}
 
@@ -485,16 +493,34 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @param newSubTask the new sub-task to be added
 	 */
 	public void addSubTask(Task newSubTask) {
-		if (subTask != null) {
-//			subTask.setDescription("");
-			setSubTaskPhase(null);
-			subTask.destroy();
-			subTask = null;
-			createSubTask(newSubTask);
-			
-		} else {
-			createSubTask(newSubTask);
-		}
+       if (subTask != null) {
+            if (subTask.done) {
+                subTask.destroy();
+                createSubTask(newSubTask);
+//                subTask = newSubTask;
+//                person.fireUnitUpdate(UnitEventType.TASK_SUBTASK_EVENT, newSubTask);
+            }
+            else {
+                subTask.addSubTask(newSubTask);
+            }
+        }
+       
+        else {
+        	createSubTask(newSubTask);
+//            subTask = newSubTask;
+//            person.fireUnitUpdate(UnitEventType.TASK_SUBTASK_EVENT, newSubTask);
+        }		
+       
+//		if (subTask != null) {
+////			subTask.setDescription("");
+//			setSubTaskPhase(null);
+//			subTask.destroy();
+//			subTask = null;
+//			createSubTask(newSubTask);
+//			
+//		} else {
+//			createSubTask(newSubTask);
+//		}
 	}
 
 	/**

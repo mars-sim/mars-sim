@@ -233,13 +233,13 @@ public abstract class EVAOperation extends Task implements Serializable {
 //        Point2D outsideLocation = new Point2D.Double(outsideSiteXLoc, outsideSiteYLoc);
 //        boolean closeToLocation = LocalAreaUtil.areLocationsClose(personLocation, outsideLocation);
         
-        if (!person.isOutside()) {// || !closeToLocation) {
+        if (person.isInside()) {// || !closeToLocation) {
             if (Walk.canWalkAllSteps(person, outsideSiteXLoc, outsideSiteYLoc, 0, null)) {
                 Task walkingTask = new Walk(person, outsideSiteXLoc, outsideSiteYLoc, 0, null);
                 addSubTask(walkingTask);
             }
             else {
-				 LogConsolidated.log(logger, Level.WARNING, 4000, sourceName,
+				LogConsolidated.log(logger, Level.WARNING, 4000, sourceName,
 						 person.getName() + " cannot walk to outside site.");
                 endTask();
             }
@@ -356,8 +356,14 @@ public abstract class EVAOperation extends Task implements Serializable {
 				endTask();
 			}
 		}
-		else
+		
+		else { // if a person is already inside, end the task safely here
+			LogConsolidated.log(logger, Level.FINEST, 4_000, sourceName,
+					person.getName() + " was " + person.getTaskDescription().toLowerCase() 
+					+ " and went inside, safely ending the EVA ops");
+			
 			endTask();
+		}
 		
 		return time;
 	}

@@ -80,7 +80,7 @@ implements Serializable {
 	private double compositeRate;
 	private double factor = .9;
     
-//	private boolean ended = false;
+	private boolean ended = false;
 	
 	private static int regolithID = ResourceUtil.regolithID;
 
@@ -94,7 +94,7 @@ implements Serializable {
         
      	settlement = CollectionUtils.findSettlement(person.getCoordinates());
      	if (settlement == null) {
-//     		ended = true;
+     		ended = true;
      		endTask();
 //        	return;
      	}
@@ -103,7 +103,7 @@ implements Serializable {
 //     	if (person.isInside()) {
 	        airlock = getWalkableAvailableAirlock(person);
 	        if (airlock == null) {
-//	        	ended = true;
+	        	ended = true;
 	        	endTask();
 //	        	return;
 	        }
@@ -118,13 +118,13 @@ implements Serializable {
             	if (person.isOutside()){
                     setPhase(WALK_BACK_INSIDE);
                 }
-//            	ended = true;
+            	ended = true;
 //            	endTask();
 //            	return;
             }
         }
 
-//        if (!ended) {
+        if (!ended) {
             // Determine digging location.
             Point2D.Double diggingLoc = determineDiggingLocation();
             setOutsideSiteLocation(diggingLoc.getX(), diggingLoc.getY());
@@ -143,8 +143,10 @@ implements Serializable {
 	       	// Add task phases
         	addPhase(COLLECT_REGOLITH);
         	
+            setPhase(WALK_TO_OUTSIDE_SITE);
+            
 //	        logger.info(person.getName() + " was going to start digging for regolith.");
-//        }
+        }
     }
 
     /**
@@ -180,21 +182,21 @@ implements Serializable {
 //        		"[" + person.getLocationTag().getLocale() +  "] " +
 //        		person.getName() + " just called collectRegolith()");
     	
-    // Check for an accident during the EVA operation.
-    checkForAccident(time);
-
-    // Check for radiation exposure during the EVA operation.
-    if (person.isOutside() && isRadiationDetected(time)){
-        setPhase(WALK_BACK_INSIDE);
-        return time;
-    }
-
-    // Check if there is reason to cut the collection phase short and return
-    // to the airlock.
-    if (person.isOutside() && shouldEndEVAOperation()) {
-        setPhase(WALK_BACK_INSIDE);
-        return time;
-    }
+	    // Check for an accident during the EVA operation.
+	    checkForAccident(time);
+	
+	    // Check for radiation exposure during the EVA operation.
+	    if (person.isOutside() && isRadiationDetected(time)){
+	        setPhase(WALK_BACK_INSIDE);
+	        return time;
+	    }
+	
+	    // Check if there is reason to cut the collection phase short and return
+	    // to the airlock.
+	    if (person.isOutside() && shouldEndEVAOperation()) {
+	        setPhase(WALK_BACK_INSIDE);
+	        return time;
+	    }
 
     	Inventory pInv = person.getInventory();
         Inventory bInv = pInv.findABag(false).getInventory();

@@ -79,7 +79,7 @@ implements Serializable {
 	/** The Settlement vicinity for collecting ice. */
 	private Settlement settlement;
 
-//	private boolean ended = false;
+	private boolean ended = false;
 	
 	private static int iceID = ResourceUtil.iceID;
 	
@@ -118,13 +118,13 @@ implements Serializable {
             	if (person.isOutside()){
                     setPhase(WALK_BACK_INSIDE);
                 }
-//            	ended = true;
+            	ended = true;
 //            	endTask();
 //            	return;
             }
         }
 
-//        if (!ended) {
+        if (!ended) {
             // Determine digging location.
             Point2D.Double diggingLoc = determineDiggingLocation();
             setOutsideSiteLocation(diggingLoc.getX(), diggingLoc.getY());
@@ -142,10 +142,10 @@ implements Serializable {
 	        // Add task phases
 	        addPhase(COLLECT_ICE);
 
-//	        	setPhase(WALK_TO_OUTSIDE_SITE);
+	        setPhase(WALK_TO_OUTSIDE_SITE);
         	
 	        logger.finest(person.getName() + " was going to start digging for ice.");
-//        }
+        }
     }
 
     /**
@@ -309,7 +309,7 @@ implements Serializable {
     					+ person.getLocationTag().getLocale()
     					+ "] "  + person.getName() 
     					+ " was strangely unable to carry an empty bag.");
-//            	ended = true;
+            	ended = true;
 //            	super.endTask();
             }
         }
@@ -319,7 +319,7 @@ implements Serializable {
 					+ person.getLocationTag().getLocale()
 					+ "] "  + person.getName() 
 					+ " was unable to find an empty bag in the inventory.");
-//        	ended = true;
+        	ended = true;
 //        	super.endTask();
         }
     }
@@ -427,7 +427,7 @@ implements Serializable {
     	}
     	
     	else {
-	//    	ended = true;
+	    	ended = true;
 	    	Inventory pInv = person.getInventory();
 	    	Bag bag = pInv.findABag(false);
     	 

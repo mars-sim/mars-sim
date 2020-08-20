@@ -613,6 +613,8 @@ public class Mind implements Serializable {
 		if (taskManager.hasPendingTask()) {
 			Task newTask = taskManager.getAPendingMetaTask().constructInstance(person);
 			counts = 0;
+			LogConsolidated.log(logger, Level.INFO, 20_000, sourceName,
+					person.getName() + " has pending task(s).", null);
 			taskManager.addTask(newTask, false);
 			return;
 		}

@@ -69,7 +69,8 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
 		// Use EVAOperation parent constructor.
 		super(NAME, person, true, RandomUtil.getRandomDouble(5D) + 100D);
 
-		BuildingConstructionMission mission = getMissionNeedingAssistance();
+		BuildingConstructionMission mission = getMissionNeedingAssistance(person);
+		
 		if ((mission != null) && canConstruct(person, mission.getConstructionSite())) {
 
 			// Initialize data members.
@@ -83,7 +84,9 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
 
 			// Add task phase
 			addPhase(CONSTRUCTION);
-		} else {
+		} 
+		
+		else {
 			endTask();
 		}
 	}
@@ -237,7 +240,7 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
 	 * 
 	 * @return construction mission or null if none found.
 	 */
-	private BuildingConstructionMission getMissionNeedingAssistance() {
+	public static BuildingConstructionMission getMissionNeedingAssistance(Person person) {
 
 		BuildingConstructionMission result = null;
 

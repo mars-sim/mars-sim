@@ -182,7 +182,7 @@ public class MeteorologyStudyFieldWork extends EVAOperation implements Serializa
 		// Check for an accident during the EVA operation.
 		checkForAccident(time);
 
-		// 2015-05-29 Check for radiation exposure during the EVA operation.
+		// Check for radiation exposure during the EVA operation.
 		if (isRadiationDetected(time)) {
 			setPhase(WALK_BACK_INSIDE);
 			return time;

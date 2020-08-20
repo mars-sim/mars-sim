@@ -358,6 +358,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 
 		// Check for an accident during the EVA operation.
 		checkForAccident(time);
+		
 		// Check for radiation exposure during the EVA operation.
 		if (person.isOutside() && isRadiationDetected(time)) {
 			setPhase(WALK_BACK_INSIDE);
