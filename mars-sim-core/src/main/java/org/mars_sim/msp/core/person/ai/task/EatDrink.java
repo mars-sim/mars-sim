@@ -76,8 +76,8 @@ public class EatDrink extends Task implements Serializable {
 
 	// Static members
 	/** The stress modified per millisol. */
-	private static final double STRESS_MODIFIER = -.75D;
-	private static final double DESSERT_STRESS_MODIFIER = -.6D;
+	private static final double STRESS_MODIFIER = -1.2D;
+	private static final double DESSERT_STRESS_MODIFIER = -.8D;
 	private static final int NUMBER_OF_MEAL_PER_SOL = 4;
 	private static final int NUMBER_OF_DESSERT_PER_SOL = 4;
 	/** The proportion of the task for eating a meal. */

@@ -28,9 +28,12 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 	/** Vehicle name. */
 	public static final String NAME = "Light Utility Vehicle";
 
-	/** The amount of work time to perform maintenance (millisols) */
+	/** The amount of work time to perform maintenance (millisols). */
 	public static final double MAINTENANCE_WORK_TIME = 200D;
-
+	
+	/** The terrain handling bonus of this vehicle. */
+	public static final double TERRAIN_HANDLING = 1;
+	
 	// Data members.
 	/** The LightUtilityVehicle's capacity for crewmembers. */
 	private int crewCapacity = 0;
@@ -55,7 +58,7 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 		inv.addGeneralCapacity(vehicleConfig.getTotalCapacity(type));
 
 		// Set rover terrain modifier
-		setTerrainHandlingCapability(0D);
+		setTerrainHandlingCapability(TERRAIN_HANDLING);
 	}
 
 	@Override

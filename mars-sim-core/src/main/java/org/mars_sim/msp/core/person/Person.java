@@ -1551,8 +1551,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 			currentBuildingInt = -1;
 //			logger.info("currentBuildingInt ID : " + currentBuildingInt);
 		}
-//		else
-//			currentBuildingInt = building.getIdentifier();
+		
 		else {
 //			logger.info(building.getName() + "'s ID : " + building.getIdentifier());
 //			logger.info("currentBuildingInt ID : " + currentBuildingInt);

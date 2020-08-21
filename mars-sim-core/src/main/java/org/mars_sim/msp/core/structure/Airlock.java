@@ -26,6 +26,7 @@ import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.mars.MarsSurface;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
+import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.EnterAirlock;
 import org.mars_sim.msp.core.person.ai.task.ExitAirlock;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
@@ -220,8 +221,8 @@ public abstract class Airlock implements Serializable {
 		addPersonID(p);
 		
 		// if no operator assigned and there are occupants inside the airlock chamber, elect a new operator
-//		if (operatorID == -1 && occupantIDs.size() > 0)
-		electAnOperator();
+		if (occupantIDs.size() > 0 && operatorID == -1)
+			electAnOperator();
 		
 		if (!activated) {
 			
@@ -395,9 +396,20 @@ public abstract class Airlock implements Serializable {
 		Integer selectedID = Integer.valueOf(-1);
 		int size = occupantIDs.size();
 
-		if (size > 0 
-				&& (operatorID > 0 && !occupantIDs.contains(operatorID)
-				|| operatorID == -1)) {
+		if (size == 1) {
+			List<Integer> list = new ArrayList<>(occupantIDs);
+			int id = list.get(0);
+			operatorID = id;
+			selected = getPersonByID(id);
+			LogConsolidated.log(logger, Level.FINER, 4_000, sourceName, "[" + selected.getLocationTag().getLocale() + "] "
+					+ selected + " stepped up to be the airlock operator in " 
+					+ selected.getLocationTag().getImmediateLocation() + ".");
+		}
+		
+		else if (size > 1 
+//				&& (operatorID > 0 && !occupantIDs.contains(operatorID)
+//				|| operatorID == -1)
+				) {
 			int evaExp = -1;
 			int evaLevel = -1;
 			for (Integer id : occupantIDs) {
@@ -422,10 +434,10 @@ public abstract class Airlock implements Serializable {
 			}
 			
 			operatorID = selectedID;
-
-			LogConsolidated.log(logger, Level.FINER, 0, sourceName, "[" + selected.getLocationTag().getLocale() + "] "
-					+ selected + " stepped up becoming the operator of the airlock.");
-//					" in " + selected.getLocationTag().getImmediateLocation() + ".");
+			
+			LogConsolidated.log(logger, Level.INFO, 0, sourceName, "[" + selected.getLocationTag().getLocale() + "] "
+					+ selected + " stepped up to be the airlock operator in " 
+					+ selected.getLocationTag().getImmediateLocation() + ".");
 		}
 	}
 	
@@ -634,7 +646,7 @@ public abstract class Airlock implements Serializable {
 
 		if (activated) {
 			
-			if (occupantIDs.size() > 0)
+			if (occupantIDs.size() > 0 && operatorID == -1)
 				electAnOperator();
 			
 //			logger.config("occupantIDs.size() : " + occupantIDs.size());
@@ -659,10 +671,6 @@ public abstract class Airlock implements Serializable {
 					String operatorName = p.getName();
 					LogConsolidated.log(logger, Level.WARNING, 10_000, sourceName, "[" + p.getLocationTag().getLocale() + "] "
 							+ "Airlock operator " + operatorName + " was dead.");
-					
-					// if there are occupants inside the airlock chamber, elect a new operator
-					if (occupantIDs.size() > 0)
-						electAnOperator();
 				}
 				
 				else {
@@ -672,7 +680,8 @@ public abstract class Airlock implements Serializable {
 					Task task = p.getMind().getTaskManager().getTask();
 
 					if (task != null) {
-						if ((task instanceof ExitAirlock) || (task instanceof EnterAirlock)) {
+						if ((task instanceof ExitAirlock) || (task instanceof EnterAirlock)
+								|| (task instanceof EVAOperation) ) {
 							hasAirlockTask = true;
 						}
 						task = task.getSubTask();
@@ -685,10 +694,6 @@ public abstract class Airlock implements Serializable {
 								+ " was no longer being the airlock operator at " + getEntityName());
 						
 						deactivateAirlock();
-						
-						// if there are occupants inside the airlock chamber, elect a new operator
-						if (occupantIDs.size() > 0)
-							electAnOperator();
 					}
 				}
 			}
@@ -698,12 +703,7 @@ public abstract class Airlock implements Serializable {
 				deactivateAirlock();
 //				LogConsolidated.log(logger, Level.FINER, 4000, sourceName, 
 //						"Without an operator, the airlock in " 
-//						+ getEntityName() + " got deactivated.");
-				
-				// if there are occupants inside the airlock chamber, elect a new operator
-				if (occupantIDs.size() > 0) {
-					electAnOperator();
-				}				
+//						+ getEntityName() + " got deactivated.");		
 			}
 		}
 	}

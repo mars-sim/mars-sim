@@ -32,7 +32,8 @@ public class EmotionManager implements Serializable {
 	// column : level of engagement
 	private String[][] description // = new String[5][5];
 //	description 
-			= { { "restless", "sad", "rejected", "crushed", "deceived", "reckless", "terrified", "hated" },
+			= { 
+					{ "restless", "sad", "rejected", "crushed", "deceived", "reckless", "terrified", "hated" },
 					{ "oppressed", "gloomy", "weary", "insecure", "disappointed", "troubled", "disgusted", "upset" },
 					{ "fatigued", "bored", "nonchalant", "displeased", "disbelieving", "suspicious", "irritated",
 							"defiant" },
@@ -42,7 +43,8 @@ public class EmotionManager implements Serializable {
 							"aggressive" },
 					{ "restrained", "serene", "firm", "calm", "content", "cooperative", "bold", "daring" },
 					{ "tranquil", "relaxed", "polite", "thankful", "warm", "masterful", "stimulated", "powerful" },
-					{ "introspective", "agreeable", "genial", "kind", "happy", "cheerful", "joyful", "victorious" } };
+					{ "introspective", "agreeable", "genial", "kind", "happy", "cheerful", "joyful", "victorious" } 
+			};
 
 	private String[] states = {
 			// + ve
@@ -122,9 +124,10 @@ public class EmotionManager implements Serializable {
 
 		double stress = pc.getStress(); // 0 to 100%
 		double perf = pc.getPerformanceFactor(); // 0 to 1
-
+		double fatigue = pc.getFatigue();
+		
 		// Modify level of engagement
-		aVector[0] = .001 * (1 - stress / 100D) + .005 * perf;
+		aVector[0] = .002 * (1 - stress / 100D) + .01 * perf - fatigue/50_000;
 
 		if (aVector[0] > .8)
 			aVector[0] = .8;
@@ -132,7 +135,7 @@ public class EmotionManager implements Serializable {
 			aVector[0] = 0;
 
 		// Modify level of appeal
-		aVector[1] = .005 * (1 - stress / 100D) + .001 * perf;
+		aVector[1] = .01 * (1 - stress / 100D) + .002 * perf - fatigue/50_000;
 
 		if (aVector[1] > .8)
 			aVector[1] = .8;

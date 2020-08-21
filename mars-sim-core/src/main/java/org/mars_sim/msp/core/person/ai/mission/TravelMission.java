@@ -461,6 +461,9 @@ public abstract class TravelMission extends Mission {
 			fireMissionUpdate(MissionEventType.DISTANCE_EVENT);	
 		}
 			
+		if (Double.isNaN(total))
+			total = 0;
+		
 		return total;
 	}
 

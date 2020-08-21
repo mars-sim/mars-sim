@@ -472,9 +472,14 @@ public class MissionTableModel extends AbstractTableModel
 				case REMAINING_DISTANCE: {
 					if (mission instanceof TravelMission) {
 						TravelMission travelMission = (TravelMission) mission;
-						try {
-							result = decFormatter.format(travelMission.getTotalRemainingDistance());
-						} catch (Exception e) {
+						if (mission == null || travelMission == null)
+							result = 0;
+						else {
+							try {
+								result = decFormatter.format(travelMission.getTotalRemainingDistance());
+							} catch (Exception e) {
+								result = 0;
+							}
 						}
 					} else
 						result = 0;

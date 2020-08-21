@@ -462,9 +462,7 @@ public class WalkSettlementInterior extends Task implements Serializable {
 				// Check that building still exists.
 				Building building = (Building) loc;
 				if (!settlement.getBuildingManager().containsBuilding(building)) {
-					// System.out.println("building is NOT in BuildingManager");
 					return false;
-					// result = false;
 				}
 			} else if (loc instanceof BuildingLocation) {
 				// Check that building still exists.
@@ -472,14 +470,12 @@ public class WalkSettlementInterior extends Task implements Serializable {
 				Building building = buildingLoc.getBuilding();
 				if (!settlement.getBuildingManager().containsBuilding(building)) {
 					return false;
-					// result = false;
 				}
 			} else if (loc instanceof BuildingConnector) {
 				// Check that building connector still exists.
 				BuildingConnector connector = (BuildingConnector) loc;
 				if (!settlement.getBuildingConnectorManager().containsBuildingConnector(connector)) {
 					return false;
-					// result = false;
 				}
 			} else if (loc instanceof Hatch) {
 				// Check that building connector for hatch still exists.
@@ -487,13 +483,11 @@ public class WalkSettlementInterior extends Task implements Serializable {
 				BuildingConnector connector = hatch.getBuildingConnector();
 				if (!settlement.getBuildingConnectorManager().containsBuildingConnector(connector)) {
 					return false;
-					// result = false;
 				}
 			}
 		}
 
 		return true;
-		// return result;
 	}
 
 	/**

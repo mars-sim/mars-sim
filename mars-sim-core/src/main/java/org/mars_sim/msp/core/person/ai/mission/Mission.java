@@ -902,26 +902,23 @@ public abstract class Mission implements Serializable {
 
 			// Unregister the vehicle
 			if (startingMember.getVehicle() != null)
-				startingMember.getVehicle().correctVehicleReservation();
-			
-			if (members != null) {
-				if (!members.isEmpty()) { 
-					LogConsolidated.log(logger, Level.INFO, 1000, sourceName,
-							"[" + startingMember.getLocationTag().getLocale()
-									+ "] " + startingMember + " disbanded mission member(s) : " + members);
-					Iterator<MissionMember> i = members.iterator();
-					while (i.hasNext()) {
-						removeMember(i.next());
-
-					}
-				}
-			}
+				startingMember.getVehicle().correctVehicleReservation();				
 		}
 		
 		else 
 			LogConsolidated.log(logger, Level.INFO, 0, sourceName,
 				"[" + startingMember.getLocationTag().getLocale() + "] " + startingMember.getName()
 						+ " ended the " + missionName + " with the following status flag(s) :");
+		
+		if (members != null && !members.isEmpty()) { 
+			LogConsolidated.log(logger, Level.INFO, 1000, sourceName,
+					"[" + startingMember.getLocationTag().getLocale()
+							+ "] " + startingMember + " disbanded mission member(s) : " + members);
+			Iterator<MissionMember> i = members.iterator();
+			while (i.hasNext()) {
+				removeMember(i.next());
+			}
+		}
 		
 		for (int i=0; i< missionStatus.size(); i++) {
 			logger.warning(" (" + (i+1) + "). " + missionStatus.get(i).getName());

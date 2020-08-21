@@ -53,7 +53,7 @@ implements Serializable {
 
 	// Static members
 	/** The stress modified per millisol. */
-	private static final double STRESS_MODIFIER = -.6D;
+	private static final double STRESS_MODIFIER = -.9D;
 
 	/**
 	 * Constructor.
@@ -188,7 +188,7 @@ implements Serializable {
 		}
 		else {
 	        // Reduce person's fatigue
-	        double newFatigue = person.getPhysicalCondition().getFatigue() - (2D * time);
+	        double newFatigue = person.getPhysicalCondition().getFatigue() - (10D * time);
 	        if (newFatigue < 0D) {
 	            newFatigue = 0D;
 	        }

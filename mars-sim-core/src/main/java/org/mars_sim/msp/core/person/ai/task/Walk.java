@@ -138,7 +138,10 @@ public class Walk extends Task implements Serializable {
 					walkingSteps = new WalkingSteps(person, adjustedInteriorPos.getX(), adjustedInteriorPos.getY(), 0,
 							garageBuilding);
 					walkToSettlement = true;
-				} else if (vehicle instanceof Rover) {
+				} 
+				
+				else if (vehicle instanceof Rover) {
+					// If not on a LUV
 
 					// Check if person has a good EVA suit available if in a rover.
 					boolean goodEVASuit = true;
