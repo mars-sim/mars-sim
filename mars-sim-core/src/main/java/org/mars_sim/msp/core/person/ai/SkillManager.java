@@ -215,6 +215,16 @@ public class SkillManager implements Serializable {
 	}
 
 	/**
+	 * Returns the number of skills.
+	 * 
+	 * @return the number of skills
+	 */
+	public SkillType getARandomSkillType() {
+		int rand = RandomUtil.getRandomInt(getSkillNum() - 1);
+		return getKeys()[rand];
+	}
+	
+	/**
 	 * Returns an array of the skills.
 	 * 
 	 * @return an array of the skills

@@ -110,6 +110,7 @@ public class Read extends Task implements Serializable {
 	 */
 	private double reading(double time) {
 		setDescription(Msg.getString("Task.description.read"));//$NON-NLS-1$
+		addExperience(time);
 		return 0D;
 	}
 
@@ -153,6 +154,24 @@ public class Read extends Task implements Serializable {
 
 	@Override
 	protected void addExperience(double time) {
+        // Experience points adjusted by person's "Experience Aptitude" attribute.
+        NaturalAttributeManager nManager = person.getNaturalAttributeManager();
+        int aptitude = nManager.getAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
+        
+    	// Pick one skill to improve upon
+    	SkillType taskSkill = person.getSkillManager().getARandomSkillType();
+//		int points = person.getSkillManager().getSkillLevel(taskSkill);
+//		double exp = person.getSkillManager().getCumuativeExperience(taskSkill);
+		double learned = 2  * time * (aptitude / 100D) * RandomUtil.getRandomDouble(1);
+		
+//				logger.info(taskSkill.getName() 
+//					+ " - diff: " + diff + "   "
+//					+ "  mod: " + mod + "   "
+//					+ person + " [Lvl : " + teacherSkill + "]'s teaching reward: " + Math.round(reward*1000.0)/1000.0 
+//					+ "   " + student + " [Lvl : " + studentSkill + "]'s learned: " + Math.round(learned*1000.0)/1000.0 + ".");
+		
+		person.getSkillManager().addExperience(taskSkill, learned, time);       
+
 	}
 
 	@Override

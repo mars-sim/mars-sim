@@ -172,13 +172,13 @@ public class TabPanelBots extends TabPanel implements MouseListener, ActionListe
 		// Update robot num
 		if (robotNumCache != settlement.getNumBots()) {
 			robotNumCache = settlement.getNumBots();
-			robotNumLabel.setText(Msg.getString("TabPanelBots.robot", robotNumCache)); // $NON-NLS-1$
+			robotNumLabel.setText("" + robotNumCache);
 		}
 
 		// Update robot capacity
 		if (robotCapacityCache != settlement.getRobotCapacity()) {
 			robotCapacityCache = settlement.getRobotCapacity();
-			robotCapLabel.setText(Msg.getString("TabPanelBots.robotCapacity", robotCapacityCache)); // $NON-NLS-1$
+			robotCapLabel.setText("" + robotCapacityCache);
 		}
 
 		// Update robot list
