@@ -39,7 +39,6 @@ import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.tool.monitor.PersonTableModel;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
-import com.alee.laf.button.WebButton;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
@@ -134,14 +133,15 @@ public class TabPanelAssociatedPeople extends TabPanel implements MouseListener,
 		populationCapacityLabel = new WebLabel(populationCapacityCache + "", WebLabel.RIGHT);
 		countPanel.add(populationCapacityLabel);
 		
-		// Lay out the spring panel.
+		// Set up the spring layout.
 		SpringUtilities.makeCompactGrid(countPanel, 3, 2, // rows, cols
-				25, 10, // initX, initY
-				10, 10); // xPad, yPad
+				5, 10, // initX, initY
+				5, 2); // xPad, yPad
 		
         UIManager.getDefaults().put("TitledBorder.titleColor", Color.darkGray);
         Border lowerEtched = BorderFactory.createEtchedBorder(EtchedBorder.LOWERED);
-        TitledBorder title = BorderFactory.createTitledBorder(lowerEtched, " " + Msg.getString("TabPanelAssociatedPeople.title") + " ");
+        TitledBorder title = BorderFactory.createTitledBorder(
+        		lowerEtched, " " + Msg.getString("TabPanelAssociatedPeople.TitledBorder") + " ");
 //      title.setTitleJustification(TitledBorder.RIGHT);
         Font titleFont = UIManager.getFont("TitledBorder.font");
         title.setTitleFont( titleFont.deriveFont(Font.ITALIC + Font.BOLD));

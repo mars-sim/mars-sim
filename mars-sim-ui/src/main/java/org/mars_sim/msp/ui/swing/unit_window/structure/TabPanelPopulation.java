@@ -127,14 +127,14 @@ implements MouseListener, ActionListener {
 		populationCapacityLabel = new WebLabel(populationCapacityCache + "", WebLabel.RIGHT);
 		countPanel.add(populationCapacityLabel);
 		
-		// Lay out the spring panel.
+		// Set up the spring layout.
 		SpringUtilities.makeCompactGrid(countPanel, 2, 2, // rows, cols
-				25, 10, // initX, initY
-				10, 10); // xPad, yPad
+				5, 10, // initX, initY
+				5, 2); // xPad, yPad
 		
         UIManager.getDefaults().put("TitledBorder.titleColor", Color.darkGray);
         Border lowerEtched = BorderFactory.createEtchedBorder(EtchedBorder.LOWERED);
-        TitledBorder title = BorderFactory.createTitledBorder(lowerEtched, " " + Msg.getString("TabPanelPopulation.title") + " ");
+        TitledBorder title = BorderFactory.createTitledBorder(lowerEtched, " " + Msg.getString("TabPanelPopulation.TitledBorder") + " ");
 //      title.setTitleJustification(TitledBorder.RIGHT);
         Font titleFont = UIManager.getFont("TitledBorder.font");
         title.setTitleFont( titleFont.deriveFont(Font.ITALIC + Font.BOLD));

@@ -92,27 +92,40 @@ public class TabPanelBots extends TabPanel implements MouseListener, ActionListe
 		// titleLabel.setForeground(new Color(102, 51, 0)); // dark brown
 		titlePane.add(titleLabel);
 
-		// Create robot count panel
-		WebPanel countPanel = new WebPanel(new GridLayout(3, 1, 0, 0));
+		// Prepare count spring layout panel.
+		WebPanel countPanel = new WebPanel(new SpringLayout());//GridLayout(3, 1, 0, 0));
 //		countPanel.setBorder(new MarsPanelBorder());
 		topContentPanel.add(countPanel);
-
+		
 		// Create robot num label
+		WebLabel robotNumHeader = new WebLabel(Msg.getString("TabPanelBots.associated"), WebLabel.RIGHT); // $NON-NLS-1$
+		countPanel.add(robotNumHeader);
+		
 		robotNumCache = settlement.getNumBots();
-		robotNumLabel = new WebLabel(Msg.getString("TabPanelBots.associated", robotNumCache), WebLabel.CENTER); // $NON-NLS-1$
+		robotNumLabel = new WebLabel("" + robotNumCache, WebLabel.LEFT); // $NON-NLS-1$
 		countPanel.add(robotNumLabel);
 
 		// Create robot indoor label
+		WebLabel robotIndoorHeader = new WebLabel(Msg.getString("TabPanelBots.indoor"), WebLabel.RIGHT); // $NON-NLS-1$
+		countPanel.add(robotIndoorHeader);
+		
 		robotIndoorCache = settlement.getNumBots();
-		robotIndoorLabel = new WebLabel(Msg.getString("TabPanelBots.indoor", robotIndoorCache),
-				WebLabel.CENTER); // $NON-NLS-1$
+		robotIndoorLabel = new WebLabel("" + robotIndoorCache, WebLabel.LEFT);
 		countPanel.add(robotIndoorLabel);
 		
 		// Create robot capacity label
+		WebLabel robotCapHeader = new WebLabel(Msg.getString("TabPanelBots.capacity"), WebLabel.RIGHT); // $NON-NLS-1$
+		countPanel.add(robotCapHeader);
+		
 		robotCapacityCache = settlement.getRobotCapacity();
-		robotCapLabel = new WebLabel(Msg.getString("TabPanelBots.capacity", robotCapacityCache), WebLabel.CENTER); // $NON-NLS-1$
+		robotCapLabel = new WebLabel("" + robotCapacityCache, WebLabel.LEFT); // $NON-NLS-1$
 		countPanel.add(robotCapLabel);
 
+		// Set up the spring layout.
+		SpringUtilities.makeCompactGrid(countPanel, 3, 2, // rows, cols
+				5, 10, // initX, initY
+				5, 2); // xPad, yPad
+		
 		// Create spring layout robot display panel
 		WebPanel robotDisplayPanel = new WebPanel(new SpringLayout());// FlowLayout(FlowLayout.LEFT));
 //		robotDisplayPanel.setBorder(new MarsPanelBorder());

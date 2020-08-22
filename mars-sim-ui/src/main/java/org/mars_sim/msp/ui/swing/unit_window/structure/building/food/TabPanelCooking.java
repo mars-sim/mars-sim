@@ -8,6 +8,7 @@ package org.mars_sim.msp.ui.swing.unit_window.structure.building.food;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.util.ArrayList;
@@ -22,6 +23,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTable;
+import javax.swing.SpringLayout;
 import javax.swing.SwingConstants;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.AbstractTableModel;
@@ -33,16 +35,17 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
-import org.mars_sim.msp.core.structure.building.function.cooking.CookedMeal;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
+import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
+import com.alee.laf.label.WebLabel;
 import com.alee.laf.scroll.WebScrollPane;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultiset;
@@ -156,31 +159,45 @@ public class TabPanelCooking extends TabPanel {
 				dessertsTodayCache += kitchen.getTotalServingsOfDessertsToday();
 			}
 		}
-		// Prepare cooking label panel.
-		// JPanel cookingLabelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		JPanel cookingLabelPanel = new JPanel(new BorderLayout());
-		topContentPanel.add(cookingLabelPanel);
-
+		
+		// Prepare title panel.
+		JPanel titlePane = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		topContentPanel.add(titlePane);
+		
+		// Prepare title label.
 		JLabel titleLabel = new JLabel(Msg.getString("TabPanelCooking.title"), JLabel.CENTER); //$NON-NLS-1$
 		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		// titleLabel.setForeground(new Color(102, 51, 0)); // dark brown
-
-		JPanel topPanel = new JPanel(new GridLayout(4, 1, 0, 0));
-		topPanel.add(titleLabel);
-		cookingLabelPanel.add(topPanel, BorderLayout.NORTH);
+		titlePane.add(titleLabel);
+			
+		JPanel topPanel = new JPanel(new SpringLayout()); //new GridLayout(4, 1, 0, 0));
+		topContentPanel.add(topPanel);
 
 		// Prepare cook number label
-
-		// numCooksCache = kitchen.getNumCooks();
-		numCooksLabel = new JLabel(Msg.getString("TabPanelCooking.numberOfCooks", numCooksCache), JLabel.CENTER); //$NON-NLS-1$
+		JLabel cooksHeader = new JLabel(Msg.getString("TabPanelCooking.numberOfCooks"),
+				WebLabel.RIGHT); // $NON-NLS-1$
+		topPanel.add(cooksHeader);
+		
+		numCooksLabel = new JLabel(numCooksCache + "", JLabel.LEFT);
 		topPanel.add(numCooksLabel);
 
 		// Prepare cook capacity label
-		cookCapacityLabel = new JLabel(Msg.getString("TabPanelCooking.cookCapacity", cookCapacityCache), JLabel.CENTER); //$NON-NLS-1$
+		JLabel cookCapacityHeader = new JLabel(Msg.getString("TabPanelCooking.cookCapacity"),
+				WebLabel.RIGHT); // $NON-NLS-1$
+		topPanel.add(cookCapacityHeader);
+		
+		cookCapacityLabel = new JLabel(cookCapacityCache +"", JLabel.LEFT); //$NON-NLS-1$
 		topPanel.add(cookCapacityLabel);
 
-		topPanel.add(new JLabel());
-
+		// Set up the spring layout.
+		SpringUtilities.makeCompactGrid(topPanel, 2, 2, // rows, cols
+				5, 10, // initX, initY
+				5, 2); // xPad, yPad
+		
+		// Prepare cooking label panel.
+		JPanel cookingLabelPanel = new JPanel(new BorderLayout());
+		topContentPanel.add(cookingLabelPanel);
+		
 		JPanel splitPanel = new JPanel(new GridLayout(1, 2, 0, 0));
 		cookingLabelPanel.add(splitPanel, BorderLayout.CENTER);
 
@@ -351,13 +368,13 @@ public class TabPanelCooking extends TabPanel {
 		// Update cook number
 		if (numCooksCache != numCooks) {
 			numCooksCache = numCooks;
-			numCooksLabel.setText(Msg.getString("TabPanelCooking.numberOfCooks", numCooksCache)); //$NON-NLS-1$
+			numCooksLabel.setText(numCooksCache + ""); //$NON-NLS-1$
 		}
 
 		// Update cook capacity
 		if (cookCapacityCache != cookCapacity) {
 			cookCapacityCache = cookCapacity;
-			cookCapacityLabel.setText(Msg.getString("TabPanelCooking.cookCapacity", cookCapacityCache)); //$NON-NLS-1$
+			cookCapacityLabel.setText(cookCapacityCache + ""); //$NON-NLS-1$
 		}
 	}
 
