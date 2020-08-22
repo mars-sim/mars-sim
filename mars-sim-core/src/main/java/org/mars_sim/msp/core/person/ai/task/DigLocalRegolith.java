@@ -219,6 +219,10 @@ implements Serializable {
 		
         boolean finishedCollecting = false;
         
+        // Introduce randomness into the amount collected so that it will NOT
+        // always weigh strangely at exactly 50 kg 
+        double rand = RandomUtil.getRandomDouble(1.5);
+        
         double personRemainingCap = bInv.getAmountResourceRemainingCapacity(
         		regolithID, false, false);
         
@@ -238,17 +242,17 @@ implements Serializable {
         }
         		
         else if (//totalCollected + collected >= bInv.getGeneralCapacity()
-        		totalCollected + collected >= pInv.getGeneralCapacity()) {    
+        		totalCollected + collected + rand >= pInv.getGeneralCapacity()) {    
 //	        	logger.info(person + " case 3 (" + bInv.getGeneralCapacity() + ", " + pInv.getGeneralCapacity());
             finishedCollecting = true;
-            collected = bagRemainingCap;
+            collected = pInv.getGeneralCapacity() - rand;
         }
         
         else if (collected > SMALL_AMOUNT 
-        		&& (collected >= bagRemainingCap || collected >= personRemainingCap)) {
+        		&& (collected + rand >= bagRemainingCap || collected + rand >= personRemainingCap)) {
 //	        	logger.info(person + " case 4");
         	finishedCollecting = true;
-        	collected = bagRemainingCap;    	
+        	collected = bagRemainingCap - rand;  	
         }    		
 
         if (collected > 0) {

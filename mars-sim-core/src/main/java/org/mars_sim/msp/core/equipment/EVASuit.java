@@ -127,8 +127,7 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 			 emptyMass += ItemResourceUtil.findItemResource(p).getMassPerItem();
 		 }
 		 
-		 logger.config("Each EVA suit has an unloaded weight of " + emptyMass + " kg");
-		 
+ 
 		 min_o2_pressure = personConfig.getMinSuitO2Pressure();
 		 
 		 fullO2PartialPressure = CompositionOfAir.KPA_PER_ATM * OXYGEN_CAPACITY / CompositionOfAir.O2_MOLAR_MASS * CompositionOfAir.R_GAS_CONSTANT / TOTAL_VOLUME;
@@ -137,9 +136,10 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 		 
 		 massO2NominalLimit = NORMAL_AIR_PRESSURE / min_o2_pressure * massO2MinimumLimit;
 		 
-		 logger.info("The full tank O2 partial pressure is " + Math.round(fullO2PartialPressure*1_000.0)/1_000.0 + " kPa");
-		 logger.info("The minimum mass limit of O2 (above the safety limit) is " + Math.round(massO2MinimumLimit*10_000.0)/10_000.0  + " kg");
-		 logger.info("The nomimal mass limit of O2 is " + Math.round(massO2NominalLimit*10_000.0)/10_000.0  + " kg");
+		 logger.config("        EVA suit's unloaded weight : " + Math.round(emptyMass*1_000.0)/1_000.0 + " kg");
+		 logger.config("          Minimum Mass Limit of O2 : " + Math.round(massO2MinimumLimit*10_000.0)/10_000.0  + " kg - The Safety Limit");
+		 logger.config("          Nomimal Mass limit of O2 : " + Math.round(massO2NominalLimit*10_000.0)/10_000.0  + " kg");
+		 logger.config("  Full Tank of O2 Partial Pressure : " + Math.round(fullO2PartialPressure*1_000.0)/1_000.0 + " kPa");
 
 	}
 	

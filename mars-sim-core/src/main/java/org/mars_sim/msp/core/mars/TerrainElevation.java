@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.mars;
 
 import java.awt.Color;
 import java.io.Serializable;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.mapdata.MapData;
@@ -16,6 +17,7 @@ import org.mars_sim.mapdata.MapDataUtil;
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Direction;
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
@@ -37,7 +39,9 @@ public class TerrainElevation implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private static Logger logger = Logger.getLogger(TerrainElevation.class.getName());
-
+	private static final String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
+			logger.getName().length());
+		
 	private static final double DEG_TO_RAD = Math.PI/180;
 	
 	private static final double OLYMPUS_MONS_CALDERA_PHI = 1.267990;
@@ -239,9 +243,12 @@ public class TerrainElevation implements Serializable {
 		Settlement s = CollectionUtils.findSettlement(currentLocation);
 		if (s != null) {
 			nameLoc = "At " + s.getName() + ",";
-			logger.config(nameLoc + "                Elevation : " + Math.round(elevation*1000.0)/1000.0 + " km");
-			logger.config(nameLoc + "        Terrain Steepness : " + Math.round(steepness*10.0)/10.0);
-			logger.config(nameLoc + " Regolith Collection Rate : " + Math.round(rate*100.0)/100.0 + " kg/millisol");
+			LogConsolidated.log(logger, Level.CONFIG, 0, sourceName,
+					"[" + nameLoc + "]                 Elevation : " + Math.round(elevation*1000.0)/1000.0 + " km");
+			LogConsolidated.log(logger, Level.CONFIG, 0, sourceName,
+					"[" + nameLoc + "]         Terrain Steepness : " + Math.round(steepness*10.0)/10.0);
+			LogConsolidated.log(logger, Level.CONFIG, 0, sourceName,
+					"[" + nameLoc + "]  Regolith Collection Rate : " + Math.round(rate*100.0)/100.0 + " kg/millisol");
 		}
 		
 		return rate;
