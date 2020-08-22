@@ -242,7 +242,7 @@ public class TerrainElevation implements Serializable {
 		String nameLoc = "";
 		Settlement s = CollectionUtils.findSettlement(currentLocation);
 		if (s != null) {
-			nameLoc = "At " + s.getName() + ",";
+			nameLoc = s.getName();
 			LogConsolidated.log(logger, Level.CONFIG, 0, sourceName,
 					"[" + nameLoc + "]                 Elevation : " + Math.round(elevation*1000.0)/1000.0 + " km");
 			LogConsolidated.log(logger, Level.CONFIG, 0, sourceName,
@@ -309,10 +309,13 @@ public class TerrainElevation implements Serializable {
 		String nameLoc = "";
 		Settlement s = CollectionUtils.findSettlement(currentLocation);
 		if (s != null) {
-			nameLoc = "At " + s.getName() + ",";
-			logger.config(nameLoc + "           Elevation : " + Math.round(elevation*1000.0)/1000.0 + " km");
-			logger.config(nameLoc + "   Terrain Steepness : " + Math.round(steepness*10.0)/10.0);
-			logger.config(nameLoc + " Ice Collection Rate : " + Math.round(rate*100.0)/100.0 + " kg/millisol");
+			nameLoc = s.getName();
+			LogConsolidated.log(logger, Level.CONFIG, 0, sourceName,
+					"[" + nameLoc + "]                 Elevation : " + Math.round(elevation*1000.0)/1000.0 + " km");
+			LogConsolidated.log(logger, Level.CONFIG, 0, sourceName,
+					"[" + nameLoc + "]         Terrain Steepness : " + Math.round(steepness*10.0)/10.0);
+			LogConsolidated.log(logger, Level.CONFIG, 0, sourceName,
+					"[" + nameLoc + "]       Ice Collection Rate : " + Math.round(rate*100.0)/100.0 + " kg/millisol");
 		}
 		
 		return rate;

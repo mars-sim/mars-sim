@@ -60,17 +60,8 @@ public class MaintenanceMeta implements MetaTask, Serializable {
 	@Override
 	public double getProbability(Person person) {
 		double result = 0D;
-
-		if (person.isInSettlement()) {
-
-            // Probability affected by the person's stress and fatigue.
-            PhysicalCondition condition = person.getPhysicalCondition();
-            double fatigue = condition.getFatigue();
-            double stress = condition.getStress();
-            double hunger = condition.getHunger();
-            
-            if (fatigue > 1000 || stress > 50 || hunger > 500)
-            	return 0;
+        
+		if (person.isInside()) {
             
 			try {
 				// Total probabilities for all malfunctionable entities in person's local.
@@ -94,7 +85,8 @@ public class MaintenanceMeta implements MetaTask, Serializable {
 						}
 						result += entityProb * FACTOR;
 					}
-				}
+				}        
+		        
 			} catch (Exception e) {
 				logger.log(Level.SEVERE, "getProbability()", e);
 			}
@@ -170,7 +162,7 @@ public class MaintenanceMeta implements MetaTask, Serializable {
 	public double getProbability(Robot robot) {
 		double result = 0D;
 
-		if (robot.getBotMind().getRobotJob() instanceof Repairbot) {
+		if (robot.getBotMind().getRobotJob() instanceof Repairbot && robot.isInside()) {
 
 			try {
 				// Total probabilities for all malfunctionable entities in robot's local.

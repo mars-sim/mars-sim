@@ -72,7 +72,7 @@ public class Maintenance extends Task implements Serializable {
 		super(NAME, person, true, false, STRESS_MODIFIER, true, 10D + RandomUtil.getRandomDouble(40D));
 
 		if (person.isOutside()) {
-//			endTask();
+			endTask();
 			return;
 		}
 		
@@ -100,17 +100,17 @@ public class Maintenance extends Task implements Serializable {
 				
 				// Initialize phase.
 				addPhase(MAINTAIN);
-				setPhase(MAINTAIN);
-				
-			} 
+				setPhase(MAINTAIN);			
+			}
 			
-//			else {
-//				endTask();
-//				return;
-//			}
+			else {
+				endTask();
+				return;
+			}
+			
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, person + " was unable to perform maintenance.", e);
-//			endTask();
+			endTask();
 			return;
 		}
 	}
@@ -138,6 +138,11 @@ public class Maintenance extends Task implements Serializable {
 						walkToRandomLocation(false);
 					}
 				}
+				
+				// Initialize phase.
+				addPhase(MAINTAIN);
+				setPhase(MAINTAIN);
+				
 			} else {
 				endTask();
 				return;
@@ -147,11 +152,6 @@ public class Maintenance extends Task implements Serializable {
 			endTask();
 			return;
 		}
-
-		// Initialize phase.
-		addPhase(MAINTAIN);
-		setPhase(MAINTAIN);
-
 	}
 
 	@Override

@@ -37,8 +37,11 @@ Copyright (C) 2020 Scott Davis
 11. Change the start and end time for work shift A (Day shift) 
     and work shift B (Night shift).
 
-12. Incorporate Weblaf's IconManager for caching svg icons.
- 
+12. Vary amount of ice/regolith collected.
+
+13. Make a reading task contribute to adding experience points 
+    to a skill. 
+    
 
 ### UI IMPROVEMENT :
 
@@ -59,7 +62,11 @@ Copyright (C) 2020 Scott Davis
    
 6. Revamp EVA airlock design and svg image.
 
-   
+7. Incorporate Weblaf's IconManager for caching svg icons.
+
+8. Add BuildingPanelLiving to show the living accommodation aspects
+   of a building.
+
 ### FIXES :
 
 1. Fix OutOfMemoryError when saving sim.
@@ -80,6 +87,13 @@ Copyright (C) 2020 Scott Davis
 
 9. Correct the time consumed when reviewing mission plans.
 
+10. Correct the creation of a list of sites to be explored for mineral
+    content. 
+
+11. Correct the bed assignment.
+
+12. Correctly associate how the availability of 3D printers affect 
+    concurrent manufacturing processes. 
 
 
 -----------------------------------------------------------------------------------------
