@@ -3986,14 +3986,18 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 		return sponsor;
 	}
 
-	public int getSumOfManuProcesses() {
-		return sumOfCurrentManuProcesses;
-	}
-
-	public void addManuProcesses(int value) {
-		sumOfCurrentManuProcesses = sumOfCurrentManuProcesses + value;
-	}
-
+//	public int getSumOfManuProcesses() {
+//		return sumOfCurrentManuProcesses;
+//	}
+//
+//	public void addManuProcesses(int value) {
+//		sumOfCurrentManuProcesses = sumOfCurrentManuProcesses + value;
+//	}
+//
+//	public void removeManuProcesses(int value) {
+//		sumOfCurrentManuProcesses = sumOfCurrentManuProcesses - value;
+//	}
+	
 	/**
 	 * Gets the number of crops that currently need work this Sol.
 	 * 

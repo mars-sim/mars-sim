@@ -50,7 +50,7 @@ public class BuildingPanelLiving extends BuildingFunctionPanel {
 		setLayout(new BorderLayout());
 
 		// Create label panel
-		WebPanel labelPanel = new WebPanel(new GridLayout(3, 1, 0, 0));
+		WebPanel labelPanel = new WebPanel(new GridLayout(5, 1, 0, 0));
 		add(labelPanel, BorderLayout.NORTH);
 		labelPanel.setOpaque(false);
 		labelPanel.setBackground(new Color(0,0,0,128));
@@ -71,15 +71,15 @@ public class BuildingPanelLiving extends BuildingFunctionPanel {
 				living.getNumAssignedBeds()), WebLabel.CENTER);
 		labelPanel.add(bedAssignsLabel);
 
-//		// Create bedOccupiedLabel
-//		bedOccupiedLabel = new WebLabel(Msg.getString("BuildingPanelLiving.beds.occupied",
-//				living.getNumOccupiedSpots()), WebLabel.CENTER);
-//		labelPanel.add(bedOccupiedLabel);
-//		
-//		// Create bedEmptyLabel
-//		bedEmptyLabel = new WebLabel(Msg.getString("BuildingPanelLiving.beds.empty",
-//				living.getNumEmptyActivitySpots()), WebLabel.CENTER);
-//		labelPanel.add(bedEmptyLabel);
+		// Create bedOccupiedLabel
+		bedOccupiedLabel = new WebLabel(Msg.getString("BuildingPanelLiving.beds.occupied",
+				living.getNumOccupiedSpots()), WebLabel.CENTER);
+		labelPanel.add(bedOccupiedLabel);
+		
+		// Create bedEmptyLabel
+		bedEmptyLabel = new WebLabel(Msg.getString("BuildingPanelLiving.beds.empty",
+				living.getNumEmptyActivitySpots()), WebLabel.CENTER);
+		labelPanel.add(bedEmptyLabel);
 		
 	}
 
@@ -97,17 +97,17 @@ public class BuildingPanelLiving extends BuildingFunctionPanel {
 			bedAssignsLabel.setText(Msg.getString("BuildingPanelLiving.beds.assigned", bedAssignedCache));
 		}
 		
-//		// Update bedOccupiedLabel
-//		if (bedOccupiedCache != living.getNumOccupiedSpots()) {
-//			bedOccupiedCache = living.getNumOccupiedSpots();
-//			bedOccupiedLabel.setText(Msg.getString("BuildingPanelLiving.beds.occupied", bedOccupiedCache));
-//		}	
-//		
-//		// Update bedEmptyLabel
-//		if (bedEmptyCache != living.getNumEmptyActivitySpots()) {
-//			bedEmptyCache = living.getNumEmptyActivitySpots();
-//			bedEmptyLabel.setText(Msg.getString("BuildingPanelLiving.beds.empty", bedEmptyCache));
-//		}	
+		// Update bedOccupiedLabel
+		if (bedOccupiedCache != living.getNumOccupiedSpots()) {
+			bedOccupiedCache = living.getNumOccupiedSpots();
+			bedOccupiedLabel.setText(Msg.getString("BuildingPanelLiving.beds.occupied", bedOccupiedCache));
+		}	
+		
+		// Update bedEmptyLabel
+		if (bedEmptyCache != living.getNumEmptyActivitySpots()) {
+			bedEmptyCache = living.getNumEmptyActivitySpots();
+			bedEmptyLabel.setText(Msg.getString("BuildingPanelLiving.beds.empty", bedEmptyCache));
+		}	
 	}
 }
 	

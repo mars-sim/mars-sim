@@ -70,9 +70,8 @@ public class Manufacture extends Function implements Serializable {
 	// Data members.
 	private int solCache = 0;
 	private int techLevel;
-	private int supportingProcesses;
-	private int maxProcesses;
-	// private boolean checkNumPrinter;
+	private int numPrintersInUse;
+	private final int numMaxConcurrentProcesses;
 
 	private List<ManufactureProcess> processes;
 	private List<SalvageProcess> salvages;
@@ -93,7 +92,7 @@ public class Manufacture extends Function implements Serializable {
 		this.building = building;
 
 		techLevel = buildingConfig.getManufactureTechLevel(building.getBuildingType());
-		maxProcesses = buildingConfig.getManufactureConcurrentProcesses(building.getBuildingType());
+		numMaxConcurrentProcesses = buildingConfig.getManufactureConcurrentProcesses(building.getBuildingType());
 
 		// Load activity spots
 		loadActivitySpots(buildingConfig.getManufactureActivitySpots(building.getBuildingType()));
@@ -137,7 +136,7 @@ public class Manufacture extends Function implements Serializable {
 			} else {
 				Manufacture manFunction = building.getManufacture();
 				int tech = manFunction.techLevel;
-				double processes = manFunction.getNumPrinterInUse();
+				double processes = manFunction.getNumPrintersInUse();
 				double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
 				supply += (tech * tech) * processes * wearModifier;
 
@@ -213,15 +212,15 @@ public class Manufacture extends Function implements Serializable {
 		return techLevel;
 	}
 
-	/**
-	 * Gets the supporting manufacturing processes by the
-	 * building.
-	 * 
-	 * @return supporting concurrent processes.
-	 */
-	public int getSupportingProcesses() {
-		return supportingProcesses;
-	}
+//	/**
+//	 * Gets the supporting manufacturing processes by the
+//	 * building.
+//	 * 
+//	 * @return supporting concurrent processes.
+//	 */
+//	public int getSupportingProcesses() {
+//		return numPrintersInUse;
+//	}
 
 	/**
 	 * Gets the maximum concurrent manufacturing processes supported by the
@@ -230,18 +229,18 @@ public class Manufacture extends Function implements Serializable {
 	 * @return maximum concurrent processes.
 	 */
 	public int getMaxProcesses() {
-		return maxProcesses;
+		return numMaxConcurrentProcesses;
 	}
 
 	
 	
 	/**
-	 * Gets the total manufacturing and salvage processes currently in this
+	 * Gets the current total number of manufacturing and salvage processes happening in this
 	 * building.
 	 * 
-	 * @return total process number.
+	 * @return current total.
 	 */
-	public int getTotalProcessNumber() {
+	public int getCurrentProcesses() {
 		return processes.size() + salvages.size();
 	}
 
@@ -264,7 +263,7 @@ public class Manufacture extends Function implements Serializable {
 		if (process == null) {
 			throw new IllegalArgumentException("process is null");
 		}
-		if (getTotalProcessNumber() >= maxProcesses) {
+		if (getCurrentProcesses() >= numPrintersInUse) {
 			throw new IllegalStateException("No space to add new manufacturing process.");
 		}
 		processes.add(process);
@@ -321,8 +320,8 @@ public class Manufacture extends Function implements Serializable {
 		if (process == null)
 			throw new IllegalArgumentException("process is null");
 
-		if (getTotalProcessNumber() >= supportingProcesses)
-			throw new IllegalStateException("No space to add new salvage process.");
+		if (getCurrentProcesses() >= numPrintersInUse)
+			throw new IllegalStateException("No more space left to add new salvage process.");
 
 		salvages.add(process);
 
@@ -391,17 +390,6 @@ public class Manufacture extends Function implements Serializable {
 
 		checkPrinters();
 
-		// int updatedNumPrinters = s_inv.getItemResourceNum(printerItem);
-		// if (updatedNumPrinters != cacheNumPrinters) {
-		// checkNumPrinter = true;
-		// cacheNumPrinters = updatedNumPrinters;
-		// }
-
-		// if (checkNumPrinter) {
-		// Assign where the 3D printers will go
-		// checkPrinters(updatedNumPrinters);
-		// }
-
 		List<ManufactureProcess> finishedProcesses = new ArrayList<ManufactureProcess>();
 
 		Iterator<ManufactureProcess> i = processes.iterator();
@@ -430,7 +418,7 @@ public class Manufacture extends Function implements Serializable {
 	public boolean requiresManufacturingWork(int skill) {
 		boolean result = false;
 
-		if (supportingProcesses > getTotalProcessNumber())
+		if (numPrintersInUse > getCurrentProcesses())
 			result = true;
 		else {
 			Iterator<ManufactureProcess> i = processes.iterator();
@@ -455,7 +443,7 @@ public class Manufacture extends Function implements Serializable {
 	public boolean requiresSalvagingWork(int skill) {
 		boolean result = false;
 
-		if (supportingProcesses > getTotalProcessNumber())
+		if (numPrintersInUse > getCurrentProcesses())
 			result = true;
 		else {
 			Iterator<SalvageProcess> i = salvages.iterator();
@@ -741,14 +729,10 @@ public class Manufacture extends Function implements Serializable {
 		result += techLevel * 10D;
 
 		// Add maintenance for concurrent process capacity.
-		result += supportingProcesses * 10D;
+		result += numPrintersInUse * 10D;
 
 		return result;
 	}
-
-	// public void setCheckNumPrinter(boolean value) {
-	// checkNumPrinter = value;
-	// }
 
 	/**
 	 * Check once a sol if enough 3D printer(s) are supporting the manufacturing
@@ -757,52 +741,61 @@ public class Manufacture extends Function implements Serializable {
 	public void checkPrinters() {
 		// Check only once a day for # of processes that are needed.
 		int solElapsed = marsClock.getMissionSol();
-		if (solElapsed != solCache) {
+		if (solCache != solElapsed) {
 			solCache = solElapsed;
-			supportingProcesses = building.getInventory().getItemResourceNum(printerID); // b_inv
+			// Gets the available number of printers in storage
+			int numAvailable = building.getInventory().getItemResourceNum(printerID); // b_inv
 			
 //			System.out.println(building.getSettlement() 
 //					+ "'s supportingProcesses: " + supportingProcesses
 //					+ "   maxProcesses: " + maxProcesses);
-			
-			if (supportingProcesses < maxProcesses) {
-				distributePrinters();
+
+			if (numPrintersInUse < numMaxConcurrentProcesses) {
+				int deficit = numMaxConcurrentProcesses - numPrintersInUse;
+				
+				if (numAvailable >= deficit) {
+					numPrintersInUse = numPrintersInUse + deficit;
+					building.getInventory().retrieveItemResources(printerID, deficit);
+				}
+				
+				else if (numAvailable > 0 && deficit > 0) {
+					numPrintersInUse = numPrintersInUse + numAvailable;
+					building.getInventory().retrieveItemResources(printerID, numAvailable);
+				}
+				
 			}
-//            else {
-//                // push for building new 3D printers
-//            }
+
+            //TODO: determine when to push for building new 3D printers
 		}
 	}
 
-	/**
-	 * Takes 3D printer(s) from settlement's inventory and assigns them to this
-	 * building's inventory
-	 */
-	public void distributePrinters() {
-		Settlement settlement = building.getSettlement();
-		Inventory inv = building.getInventory();
-		
-		int s_available = inv.getItemResourceNum(printerID);
-		int s_needed = settlement.getSumOfManuProcesses();
-		int surplus = s_available - s_needed;
-		int b_needed = maxProcesses;
+//	/**
+//	 * Distributes used 3D printer(s) from settlement's inventory for use
+//	 */
+//	public void distributePrinters() {
+//		Settlement settlement = building.getSettlement();
+//		Inventory inv = building.getInventory();
+//		
+//		int s_available = inv.getItemResourceNum(printerID);
+//		int s_needed = settlement.getSumOfManuProcesses();
+//		int surplus = s_available - s_needed;
+//		int b_needed = maxProcesses;
+//
+//		if (surplus > 0) {
+//			if (surplus >= b_needed) {
+//				inv.retrieveItemResources(printerID, b_needed);
+//				// b_inv.storeItemResources(printerItem, b_needed);
+//				settlement.addManuProcesses(b_needed);
+//			} else {
+//				inv.retrieveItemResources(printerID, surplus);
+//				// b_inv.storeItemResources(printerItem, surplus);
+//				settlement.addManuProcesses(surplus);
+//			}
+//		}
+//	}
 
-		if (surplus > 0) {
-			if (surplus >= b_needed) {
-				inv.retrieveItemResources(printerID, b_needed);
-				// b_inv.storeItemResources(printerItem, b_needed);
-				settlement.addManuProcesses(b_needed);
-			} else {
-				inv.retrieveItemResources(printerID, surplus);
-				// b_inv.storeItemResources(printerItem, surplus);
-				settlement.addManuProcesses(surplus);
-			}
-		}
-
-	}
-
-	public int getNumPrinterInUse() {
-		return supportingProcesses;
+	public int getNumPrintersInUse() {
+		return numPrintersInUse;
 	}
 
 	@Override
@@ -831,5 +824,4 @@ public class Manufacture extends Function implements Serializable {
 			j.next().destroy();
 		}
 	}
-
 }

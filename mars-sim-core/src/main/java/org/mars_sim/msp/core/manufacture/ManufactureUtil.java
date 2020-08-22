@@ -358,43 +358,43 @@ public final class ManufactureUtil {
 		Inventory inv = workshop.getBuilding().getInventory();
 
 		// Check to see if workshop is full of processes.
-		if (workshop.getTotalProcessNumber() >= workshop.getMaxProcesses()) {
+		if (workshop.getCurrentProcesses() >= workshop.getNumPrintersInUse()) {
 			return false;
 		}
 
 		// Check to see if process tech level is above workshop tech level.
-		else if (workshop.getTechLevel() < process.getTechLevelRequired()) {
+		if (workshop.getTechLevel() < process.getTechLevelRequired()) {
 			return false;
 		}
 
-		// Check to see if there is an available printer in this building
-		else if (!isAn3DPrinterAvailable(workshop)) {
-			return false;
-		}
+//		// Check to see if there is an available printer in this building
+//		if (!isAn3DPrinterAvailable(workshop)) {
+//			return false;
+//		}
 
 		// Check to see if process input items are available at settlement.
-		else if (!areProcessInputsAvailable(process, inv)) {
+		if (!areProcessInputsAvailable(process, inv)) {
 			return false;
 		}
 
 		// Check to see if room for process output items at settlement.
 		// if (!canProcessOutputsBeStored(process, inv)) result = false;
-		else
-			return true;
+		
+		return true;
 	}
 
-	/**
-	 * Check to see if there is an available printer in this building
-	 * 
-	 * @param workshop
-	 * @return true if there is an available 3D Printer.
-	 */
-	public static synchronized boolean isAn3DPrinterAvailable(Manufacture workshop) {
-
-		if (workshop.getMaxProcesses() > 0)
-			return true;
-		else
-			return false;
+//	/**
+//	 * Check to see if there is an available printer in this building
+//	 * 
+//	 * @param workshop
+//	 * @return true if there is an available 3D Printer.
+//	 */
+//	public static synchronized boolean isAn3DPrinterAvailable(Manufacture workshop) {
+//
+//		if (workshop.getMaxProcesses() > 0)
+//			return true;
+//		else
+//			return false;
 
 		// TODO: rework checking for the printer ?
 //    	boolean result = false;
@@ -424,7 +424,7 @@ public final class ManufactureUtil {
 //    	}
 //        //System.out.println("ManufactureUtil : isAn3DPrinterAvailable() : "+ result);
 //        return result;
-	}
+//	}
 
 	/**
 	 * Checks to see if a salvage process can be started at a given manufacturing
@@ -439,7 +439,7 @@ public final class ManufactureUtil {
 		boolean result = true;
 
 		// Check to see if workshop is full of processes.
-		if (workshop.getTotalProcessNumber() >= workshop.getMaxProcesses())
+		if (workshop.getCurrentProcesses() >= workshop.getNumPrintersInUse())
 			result = false;
 
 		// Check to see if process tech level is above workshop tech level.

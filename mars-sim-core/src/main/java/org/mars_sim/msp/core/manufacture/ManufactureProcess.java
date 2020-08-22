@@ -26,8 +26,6 @@ public class ManufactureProcess implements Serializable {
 	private Manufacture workshop;
 	private ManufactureProcessInfo info;
 	
-
-
 	/**
 	 * Constructor
 	 * 

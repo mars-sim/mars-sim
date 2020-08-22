@@ -134,7 +134,7 @@ public class ManufactureGood extends Task implements Serializable {
 	 * Cancel any manufacturing processes that's beyond the skill of any people
 	 * associated with the settlement.
 	 * 
-	 * @param person the person
+	 * @param settlement
 	 */
 	public static void cancelDifficultManufacturingProcesses(Settlement settlement) {
 
@@ -176,48 +176,48 @@ public class ManufactureGood extends Task implements Serializable {
 		}
 	}
 
-	public static void cancelDifficultManufacturingProcesses(Robot robot) {
-
-		Settlement settlement = robot.getSettlement();
-		if (settlement != null) {
-			int highestSkillLevel = 0;
-			SkillManager skillManager = null;
-			for (Person tempPerson : settlement.getAllAssociatedPeople()) {
-				if (skillManager == null)
-					skillManager = tempPerson.getSkillManager();
-				int skill = skillManager.getSkillLevel(SkillType.MATERIALS_SCIENCE);
-				if (skill > highestSkillLevel) {
-					highestSkillLevel = skill;
-				}
-			}
-
-			skillManager = null;
-			for (Robot tempRobot : settlement.getAllAssociatedRobots()) {
-				if (robot.getBotMind().getRobotJob() instanceof Makerbot) {
-					if (skillManager == null)
-						skillManager = tempRobot.getSkillManager();
-					int skill = skillManager.getSkillLevel(SkillType.MATERIALS_SCIENCE);
-					if (skill > highestSkillLevel) {
-						highestSkillLevel = skill;
-					}
-				}
-			}
-
-			BuildingManager buildingManager = robot.getSettlement().getBuildingManager();
-			for (Building building : buildingManager.getBuildings(FunctionType.MANUFACTURE)) {
-				Manufacture manufacturingFunction = building.getManufacture();
-				List<ManufactureProcess> processes = new ArrayList<ManufactureProcess>(
-						manufacturingFunction.getProcesses());
-				for (ManufactureProcess process : processes) {
-					int processSkillLevel = process.getInfo().getSkillLevelRequired();
-					if (processSkillLevel > highestSkillLevel) {
-						// Cancel manufacturing process.
-						manufacturingFunction.endManufacturingProcess(process, true);
-					}
-				}
-			}
-		}
-	}
+//	public static void cancelDifficultManufacturingProcesses(Robot robot) {
+//
+//		Settlement settlement = robot.getSettlement();
+//		if (settlement != null) {
+//			int highestSkillLevel = 0;
+//			SkillManager skillManager = null;
+//			for (Person tempPerson : settlement.getAllAssociatedPeople()) {
+//				if (skillManager == null)
+//					skillManager = tempPerson.getSkillManager();
+//				int skill = skillManager.getSkillLevel(SkillType.MATERIALS_SCIENCE);
+//				if (skill > highestSkillLevel) {
+//					highestSkillLevel = skill;
+//				}
+//			}
+//
+//			skillManager = null;
+//			for (Robot tempRobot : settlement.getAllAssociatedRobots()) {
+//				if (robot.getBotMind().getRobotJob() instanceof Makerbot) {
+//					if (skillManager == null)
+//						skillManager = tempRobot.getSkillManager();
+//					int skill = skillManager.getSkillLevel(SkillType.MATERIALS_SCIENCE);
+//					if (skill > highestSkillLevel) {
+//						highestSkillLevel = skill;
+//					}
+//				}
+//			}
+//
+//			BuildingManager buildingManager = robot.getSettlement().getBuildingManager();
+//			for (Building building : buildingManager.getBuildings(FunctionType.MANUFACTURE)) {
+//				Manufacture manufacturingFunction = building.getManufacture();
+//				List<ManufactureProcess> processes = new ArrayList<ManufactureProcess>(
+//						manufacturingFunction.getProcesses());
+//				for (ManufactureProcess process : processes) {
+//					int processSkillLevel = process.getInfo().getSkillLevelRequired();
+//					if (processSkillLevel > highestSkillLevel) {
+//						// Cancel manufacturing process.
+//						manufacturingFunction.endManufacturingProcess(process, true);
+//					}
+//				}
+//			}
+//		}
+//	}
 
 	/**
 	 * Gets an available manufacturing building that the person can use. Returns
@@ -635,7 +635,7 @@ public class ManufactureGood extends Task implements Serializable {
 	private ManufactureProcess createNewManufactureProcess() {
 		ManufactureProcess result = null;
 
-		if (workshop.getTotalProcessNumber() < workshop.getMaxProcesses()) {
+		if (workshop.getCurrentProcesses() < workshop.getNumPrintersInUse()) {
 
 			int skillLevel = getEffectiveSkillLevel();
 			int techLevel = workshop.getTechLevel();

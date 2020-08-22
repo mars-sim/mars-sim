@@ -44,6 +44,7 @@ import org.mars_sim.msp.core.manufacture.SalvageProcessInfo;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
+import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
@@ -526,8 +527,18 @@ public class TabPanelManufacture extends TabPanel {
 					}
 				}
 
+				Iterator<Robot> k = settlement.getAllAssociatedRobots().iterator();
+				while (k.hasNext()) {
+					Robot r = k.next();
+					SkillManager skillManager = r.getSkillManager();
+					int skill = skillManager.getSkillLevel(SkillType.MATERIALS_SCIENCE);
+					if (skill > highestSkillLevel) {
+						highestSkillLevel = skill;
+					}
+				}
+						
 				Manufacture workshop = manufactureBuilding.getManufacture();
-				if (workshop.getProcesses().size() < workshop.getMaxProcesses()) {
+				if (workshop.getProcesses().size() < workshop.getNumPrintersInUse()) {
 					Iterator<ManufactureProcessInfo> j = ManufactureUtil
 							.getManufactureProcessesForTechSkillLevel(workshop.getTechLevel(), highestSkillLevel)
 							.iterator();
@@ -540,6 +551,8 @@ public class TabPanelManufacture extends TabPanel {
 			}
 		} catch (Exception e) {
 		}
+		// Enable Collections.sorts by implementing Comparable<>
+		Collections.sort(result);
 		return result;
 	}
 
@@ -554,7 +567,7 @@ public class TabPanelManufacture extends TabPanel {
 		try {
 			if (manufactureBuilding != null) {
 				Manufacture workshop = manufactureBuilding.getManufacture();
-				if (workshop.getProcesses().size() < workshop.getMaxProcesses()) {
+				if (workshop.getProcesses().size() < workshop.getNumPrintersInUse()) {
 					Iterator<SalvageProcessInfo> i = Collections
 							.unmodifiableList(ManufactureUtil.getSalvageProcessesForTechLevel(workshop.getTechLevel()))
 							.iterator();
@@ -567,6 +580,8 @@ public class TabPanelManufacture extends TabPanel {
 			}
 		} catch (Exception e) {
 		}
+		// Enable Collections.sorts by implementing Comparable<>
+		Collections.sort(result);
 		return result;
 	}
 

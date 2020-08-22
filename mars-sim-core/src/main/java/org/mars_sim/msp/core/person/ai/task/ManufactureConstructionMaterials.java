@@ -659,7 +659,7 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
 	private ManufactureProcess createNewManufactureProcess() {
 		ManufactureProcess result = null;
 
-		if (workshop.getTotalProcessNumber() < workshop.getMaxProcesses()) {
+		if (workshop.getCurrentProcesses() < workshop.getNumPrintersInUse()) {
 
 			int skillLevel = getEffectiveSkillLevel();
 			int techLevel = workshop.getTechLevel();

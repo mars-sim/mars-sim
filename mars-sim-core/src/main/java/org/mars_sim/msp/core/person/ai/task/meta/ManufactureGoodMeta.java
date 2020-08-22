@@ -171,7 +171,7 @@ public class ManufactureGoodMeta implements MetaTask, Serializable {
 		        // Cancel any manufacturing processes that's beyond the skill of any people
 		        // associated with the settlement.
 		        if (result > 0)
-		        	ManufactureGood.cancelDifficultManufacturingProcesses(robot);
+		        	ManufactureGood.cancelDifficultManufacturingProcesses(robot.getAssociatedSettlement());
 
 	        }      
 
