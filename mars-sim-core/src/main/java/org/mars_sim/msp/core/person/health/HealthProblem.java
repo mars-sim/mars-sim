@@ -18,6 +18,7 @@ import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
+import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.tool.RandomUtil;
 
 /**
@@ -307,13 +308,16 @@ public class HealthProblem implements Serializable {
 
 				// Check if recovery requires bed rest.
 				requiresBedRest = illness.requiresBedRestRecovery();
-				
+				if (requiresBedRest)
+					sufferer.getTaskSchedule().setShiftType(ShiftType.OFF);
 				// Create medical event for recovering.
 				MedicalEvent recoveringEvent = new MedicalEvent(sufferer, this, EventType.MEDICAL_RECOVERY);
 				eventManager.registerNewEvent(recoveringEvent);
 
-			} else
+			} else {
 				setCured();
+				sufferer.getTaskSchedule().allocateAWorkShift();
+			}
 		}
 	}
 

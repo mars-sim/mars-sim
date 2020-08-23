@@ -13,6 +13,7 @@ import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Equipment;
@@ -381,8 +382,19 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 	}
 
 	/**
-	 * Get settlement robot is at, null if robot is not at a settlement
-	 * 
+	 * Get the settlement in vicinity. This is used assume the robot's is not at a settlement
+	 *
+	 * @return the robot's settlement
+	 */
+	public Settlement getNearbySettlement() {	
+		return CollectionUtils.findSettlement(getCoordinates());
+	}
+	
+	/**
+	/**
+	 * Get the settlement the robot is at.
+	 * Returns null if robot is not at a settlement.
+	 *
 	 * @return the robot's settlement
 	 */
 	@Override

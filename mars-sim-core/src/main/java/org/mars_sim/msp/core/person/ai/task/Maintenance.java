@@ -415,40 +415,64 @@ public class Maintenance extends Task implements Serializable {
 	 */
 	private double getProbabilityWeight(Malfunctionable malfunctionable) {
 		double result = 0D;
-		boolean isVehicle = (malfunctionable instanceof Vehicle);
+		
+		boolean isVehicle = (entity instanceof Vehicle);
+		if (isVehicle)
+			return 0;
+		
 		boolean uninhabitableBuilding = false;
-		if (malfunctionable instanceof Building)
-			uninhabitableBuilding = !((Building) malfunctionable).hasFunction(FunctionType.LIFE_SUPPORT);
-		MalfunctionManager manager = malfunctionable.getMalfunctionManager();
+		if (entity instanceof Building) {
+			uninhabitableBuilding = !((Building) entity).hasFunction(FunctionType.LIFE_SUPPORT);
+		}
+		if (uninhabitableBuilding)
+			return 0;
+		
+		MalfunctionManager manager = entity.getMalfunctionManager();
 		boolean hasMalfunction = manager.hasMalfunction();
-		double effectiveTime = manager.getEffectiveTimeSinceLastMaintenance();
-		boolean minTime = (effectiveTime >= 1000D);
+		if (hasMalfunction) {
+			return 0;
+		}
 
 		if (person != null) {
-			boolean enoughParts = hasMaintenanceParts(person, malfunctionable);
-
-			if (!isVehicle && !uninhabitableBuilding && !hasMalfunction && minTime && enoughParts) {
+			boolean hasParts = hasMaintenanceParts(person, malfunctionable);
+			if (!hasParts) {
+				return 0;
+			}
+			
+			double effectiveTime = manager.getEffectiveTimeSinceLastMaintenance();
+			boolean minTime = (effectiveTime >= 1000D);
+			
+			if (minTime) {
 				result = effectiveTime;
-				if (malfunctionable instanceof Building) {
-					Building building = (Building) malfunctionable;
-					if (isInhabitableBuilding(malfunctionable)) {
-						result *= Task.getCrowdingProbabilityModifier(person, building);
-						result *= Task.getRelationshipModifier(person, building);
-					}
+			}
+			
+			if (malfunctionable instanceof Building) {
+				Building building = (Building) malfunctionable;
+				if (isInhabitableBuilding(malfunctionable)) {
+					result *= Task.getCrowdingProbabilityModifier(person, building);
+					result *= Task.getRelationshipModifier(person, building);
 				}
 			}
-		} else if (robot != null) {
-			boolean enoughParts = hasMaintenanceParts(robot, malfunctionable);
 
-			if (!isVehicle && !uninhabitableBuilding && !hasMalfunction && minTime && enoughParts) {
+		} else if (robot != null) {
+			boolean hasParts = hasMaintenanceParts(person, malfunctionable);
+			if (!hasParts) {
+				return 0;
+			}
+
+			double effectiveTime = manager.getEffectiveTimeSinceLastMaintenance();
+			boolean minTime = (effectiveTime >= 1000D);
+			
+			if (minTime) {
 				result = effectiveTime;
-				if (malfunctionable instanceof Building) {
-					// Building building = (Building) malfunctionable;
-					if (isInhabitableBuilding(malfunctionable)) {
-						result = 2 * result;
-						// result *= Task.getCrowdingProbabilityModifier(robot, building);
-						// result *= Task.getRelationshipModifier(robot, building);
-					}
+			}
+			
+			if (malfunctionable instanceof Building) {
+				// Building building = (Building) malfunctionable;
+				if (isInhabitableBuilding(malfunctionable)) {
+					result = 2 * result;
+					// result *= Task.getCrowdingProbabilityModifier(robot, building);
+					// result *= Task.getRelationshipModifier(robot, building);
 				}
 			}
 		}
@@ -466,19 +490,39 @@ public class Maintenance extends Task implements Serializable {
 	 */
 	public static boolean hasMaintenanceParts(Person person, Malfunctionable malfunctionable) {
 		Inventory inv = null;
-		if (person.getTopContainerID() != 0)
-			inv = person.getTopContainerUnit().getInventory();
-		else
-			inv = person.getInventory();
+		
+		if (person.isInSettlement()) 
+			// This is also the case when the person is in a garage
+			inv = person.getSettlement().getInventory();
+		else if (person.isRightOutsideSettlement())
+			inv = person.getNearbySettlement().getInventory();
+		else if (person.isInVehicle())
+			inv = person.getVehicle().getInventory();
+			
 		return hasMaintenanceParts(inv, malfunctionable);
 	}
 
+	
+	/**
+	 * Checks if there are enough local parts to perform maintenance.
+	 * 
+	 * @param robot          the robot performing the maintenance.
+	 * @param nearSettlement true if a robot is in a settlement or its vicinity
+	 * @param malfunctionable the entity needing maintenance.
+	 * @return true if enough parts.
+	 * @throws Exception if error checking parts availability.
+	 */
 	public static boolean hasMaintenanceParts(Robot robot, Malfunctionable malfunctionable) {
 		Inventory inv = null;
-		if (robot.getTopContainerID() != 0)
-			inv = robot.getTopContainerUnit().getInventory();
-		else
-			inv = robot.getInventory();
+		
+		if (robot.isInSettlement()) 
+			// This is also the case when the robot is in a garage
+			inv = robot.getSettlement().getInventory();
+		else if (robot.isRightOutsideSettlement())
+			inv = robot.getNearbySettlement().getInventory();
+		else if (robot.isInVehicle())
+			inv = robot.getVehicle().getInventory();
+			
 		return hasMaintenanceParts(inv, malfunctionable);
 	}
 

@@ -831,6 +831,13 @@ public class TaskSchedule implements Serializable {
 		return new ShiftType[] {st1, st2};
 	}
 	
+	/**
+	 * Allocate a work shift for this person
+	 */
+	public void allocateAWorkShift() {
+		person.getAssociatedSettlement().assignWorkShift(person, person.getAssociatedSettlement().getPopulationCapacity());
+	}
+	
 	/*
 	 * This class represents a record of a given activity (task or mission)
 	 * undertaken by a person

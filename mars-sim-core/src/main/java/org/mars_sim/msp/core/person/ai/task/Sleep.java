@@ -26,6 +26,7 @@ import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
+import org.mars_sim.msp.core.person.ai.task.utils.TaskSchedule;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -477,7 +478,7 @@ public class Sleep extends Task implements Serializable {
 			
 			// Check if fatigue is zero
 			if (newFatigue <= 0) {
-				logger.finest(person.getName() + " totally refreshed and woke up at " + (int)newTime + " millisols.");;
+				logger.info(person.getName() + " totally refreshed and woke up at " + (int)newTime + " millisols.");;
 				endTask();
 			}
 			
@@ -487,7 +488,7 @@ public class Sleep extends Task implements Serializable {
 			if ((previousTime <= alarmTime) && (newTime >= alarmTime)) {
 				circadian.setNumSleep(circadian.getNumSleep() + 1);
 				circadian.updateSleepCycle((int) marsClock.getMillisol(), true);
-				logger.info(person.getName() + " woke up by the alarm at " + (int)alarmTime + " millisols.");
+				logger.finer(person.getName() + " woke up by the alarm at " + (int)alarmTime + " millisols.");
 				endTask();
 			} else {
 				previousTime = newTime;
@@ -501,7 +502,7 @@ public class Sleep extends Task implements Serializable {
 			
 			// Check if alarm went off
 			if ((previousTime <= alarmTime) && (newTime >= alarmTime)) {
-				logger.finest(robot.getName() + " woke up by the alarm at " + (int)alarmTime + " millisols.");
+				logger.finer(robot.getName() + " woke up by the alarm at " + (int)alarmTime + " millisols.");
 				endTask();
 			} else {
 				previousTime = newTime;
@@ -653,42 +654,46 @@ public class Sleep extends Task implements Serializable {
 	}
 
 	/**
-	 * Gets the wakeup alarm time for the person's longitude.
+	 * Gets the wake-up alarm time, based on a person's shift
 	 * 
 	 * @return alarm time in millisols.
 	 */
 	private double getAlarmTime() {
 		double timeDiff = 0;
-		double modifiedAlarmTime = 0;
+		double time = 0;
 
 		if (person != null) {
 			ShiftType shiftType = person.getTaskSchedule().getShiftType();
-			// Set to 33 millisols prior to the beginning of the duty shift hour
+			// Set to 30 millisols prior to the beginning of the duty shift hour
 			if (shiftType == ShiftType.A)
-				modifiedAlarmTime = 967;
+				time = TaskSchedule.A_START - 30; // 220
 			else if (shiftType == ShiftType.B)
-				modifiedAlarmTime = 467;
+				time = TaskSchedule.B_START - 30; // 721;
 			else if (shiftType == ShiftType.X)
-				modifiedAlarmTime = 967;
+				time = TaskSchedule.X_START - 30; // 970;
 			else if (shiftType == ShiftType.Y)
-				modifiedAlarmTime = 300;
+				time = TaskSchedule.Y_START - 30; // 304;
 			else if (shiftType == ShiftType.Z)
-				modifiedAlarmTime = 634;
+				time = TaskSchedule.Z_START - 30; // 637;
 			else if (shiftType == ShiftType.ON_CALL) { 
-				// if only one person is at the settlement, go with this schedule
+				// if a person is on a mission outside, assume the day begins with 
+				// the sun rises at ~250 milisols at 0 longitude
 				timeDiff = 1000D * (person.getCoordinates().getTheta() / (2D * Math.PI));
-				modifiedAlarmTime = BASE_ALARM_TIME - timeDiff;
+				time = BASE_ALARM_TIME - timeDiff;
+				if (time < 0D) {
+					time += 1000D;
+				}
 			}
 
 		} else if (robot != null) {
 			timeDiff = 1000D * (robot.getCoordinates().getTheta() / (2D * Math.PI));
-			modifiedAlarmTime = BASE_ALARM_TIME - timeDiff;
+			time = BASE_ALARM_TIME - timeDiff;
+			if (time < 0D) {
+				time += 1000D;
+			}
 		}
 
-		if (modifiedAlarmTime < 0D) {
-			modifiedAlarmTime += 1000D;
-		}
-		return modifiedAlarmTime;
+		return time;
 	}
 
 	/**
@@ -763,7 +768,7 @@ public class Sleep extends Task implements Serializable {
 					+ " at "
 					+ person.getLocationTag().getImmediateLocation()
 					+ " found " + ((Building)interiorObject).getNickName()
-					+ " as the closet building with an airlock to enter.");
+					+ " as the closest building with an airlock to enter.");
 		}
 		else {
 			// near a vehicle

@@ -227,7 +227,7 @@ See [DZone](https://dzone.com/articles/installing-openjdk-13-on-macos) for more 
  
 1. Start a command prompt and type this `set PATH="C:\Program Files\Java\jre-14.0.2\bin";%PATH%`.
 
-2. Alternatively, edit the `JAVA_HOME` and `PATH` in *Environment Variables* in Control Panel. 
+2. Alternatively, pre-set the `JAVA_HOME` and `PATH` in *Environment Variables* in Control Panel. 
    
   a. Add `C:\Program Files\Java\jre-14.0.2\bin` to the `PATH` variable. 
  ```

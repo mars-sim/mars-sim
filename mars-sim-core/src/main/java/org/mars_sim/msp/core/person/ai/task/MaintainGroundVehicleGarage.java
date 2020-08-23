@@ -492,16 +492,26 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 		double result = 0D;
 		MalfunctionManager manager = vehicle.getMalfunctionManager();
 		boolean tethered = vehicle.isBeingTowed() || (vehicle.getTowingVehicle() != null);
+		if (tethered)
+			return 0;
+		
 		boolean hasMalfunction = manager.hasMalfunction();
+		if (hasMalfunction)
+			return 0;
+
+		boolean hasParts = false;
+		if (person != null) {
+			hasParts = Maintenance.hasMaintenanceParts(person, vehicle);
+		} else {
+			hasParts = Maintenance.hasMaintenanceParts(robot, vehicle);
+		}
+		if (!hasParts)
+			return 0;
+		
 		double effectiveTime = manager.getEffectiveTimeSinceLastMaintenance();
 		boolean minTime = (effectiveTime >= 1000D);
-		boolean enoughParts = false;
-		if (person != null) {
-			enoughParts = Maintenance.hasMaintenanceParts(person, vehicle);
-		} else {
-			enoughParts = Maintenance.hasMaintenanceParts(robot, vehicle);
-		}
-		if (!tethered && !hasMalfunction && minTime && enoughParts) {
+
+		if (minTime) {
 			result = effectiveTime;
 		}
 		return result;

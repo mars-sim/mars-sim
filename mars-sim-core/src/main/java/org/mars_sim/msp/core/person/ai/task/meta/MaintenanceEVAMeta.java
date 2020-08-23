@@ -108,23 +108,36 @@ public class MaintenanceEVAMeta implements MetaTask, Serializable {
 
                 while (i.hasNext()) {
                     Malfunctionable entity = i.next();
-                    boolean isStructure = (entity instanceof Structure);
+                    
+                    boolean isStructure = (entity instanceof Structure);	
                     boolean uninhabitableBuilding = false;
                     if (entity instanceof Building)
                         uninhabitableBuilding = !((Building) entity).hasFunction(FunctionType.LIFE_SUPPORT);
-
+                    
+                    if (!isStructure && !uninhabitableBuilding)
+                    	return 0;
+                    
                     MalfunctionManager manager = entity.getMalfunctionManager();
-                    boolean hasMalfunction = manager.hasMalfunction();
-                    boolean hasParts = Maintenance.hasMaintenanceParts(person, entity);
-                    double effectiveTime = manager.getEffectiveTimeSinceLastMaintenance();
-                    boolean minTime = (effectiveTime >= 1000D);
-                    if ((isStructure || uninhabitableBuilding) && !hasMalfunction && minTime && hasParts) {
-                        double entityProb = manager.getEffectiveTimeSinceLastMaintenance() / 1000D;
-                        if (entityProb > 100D) {
-                            entityProb = 100D;
-                        }
-                        result += entityProb * FACTOR;
-                    }
+					boolean hasMalfunction = manager.hasMalfunction();
+					if (hasMalfunction) {
+						return 0;
+					}
+					
+					boolean hasParts = Maintenance.hasMaintenanceParts(person, entity);
+					if (!hasParts) {
+						return 0;
+					}
+					
+					double effectiveTime = manager.getEffectiveTimeSinceLastMaintenance();
+					boolean minTime = (effectiveTime >= 1000D);
+					
+					if (minTime) {
+						double entityProb = effectiveTime / 1000D;
+						if (entityProb > 100D) {
+							entityProb = 100D;
+						}
+						result += entityProb * FACTOR;
+					}         
                 }
             }
             catch (Exception e) {

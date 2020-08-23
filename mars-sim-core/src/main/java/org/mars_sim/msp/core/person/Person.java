@@ -20,6 +20,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.LifeSupportInterface;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Unit;
@@ -727,6 +728,10 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		return taskSchedule;
 	}
 
+	public void assignAWorkShiftType() {
+		
+	}
+	
 	/**
 	 * Create a string representing the birth time of the person.
 	 *
@@ -894,7 +899,17 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	}
 	
 	/**
-	 * Get settlement person is at, null if person is not at a settlement
+	 * Get the settlement in vicinity. This is used assume the person is not at a settlement
+	 *
+	 * @return the person's settlement
+	 */
+	public Settlement getNearbySettlement() {	
+		return CollectionUtils.findSettlement(getCoordinates());
+	}
+	
+	/**
+	 * Get the settlement the person is at.
+	 * Returns null if person is not at a settlement.
 	 *
 	 * @return the person's settlement
 	 */

@@ -794,7 +794,9 @@ public class PhysicalCondition implements Serializable {
 			if (!problems.containsKey(starvation)) {
 				addMedicalComplaint(starvation);
 				isStarving = true;
-
+				
+				person.getTaskSchedule().setShiftType(ShiftType.OFF);
+				
 				person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
 			}
 
@@ -817,6 +819,7 @@ public class PhysicalCondition implements Serializable {
 				
 				if (starved != null) {
 					starved.startRecovery();
+					
 									
 					// Set to not starving
 					isStarving = false;

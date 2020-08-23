@@ -76,11 +76,18 @@ public class MaintainGroundVehicleGarageMeta implements MetaTask, Serializable {
 				while (i.hasNext()) {
 					Vehicle vehicle = i.next();
 					MalfunctionManager manager = vehicle.getMalfunctionManager();
+					
 					boolean hasMalfunction = manager.hasMalfunction();
+					if (hasMalfunction)
+						return 0;
+					
 					boolean hasParts = Maintenance.hasMaintenanceParts(person, vehicle);
+					if (!hasParts)
+						return 0;
+					
 					double effectiveTime = manager.getEffectiveTimeSinceLastMaintenance();
 					boolean minTime = (effectiveTime >= 1000D);
-					if (!hasMalfunction && hasParts && minTime) {
+					if (minTime) {
 						double entityProb = effectiveTime / 50D;
 						if (entityProb > 100D) {
 							entityProb = 100D;
@@ -168,10 +175,16 @@ public class MaintainGroundVehicleGarageMeta implements MetaTask, Serializable {
 					Vehicle vehicle = i.next();
 					MalfunctionManager manager = vehicle.getMalfunctionManager();
 					boolean hasMalfunction = manager.hasMalfunction();
+					if (hasMalfunction)
+						return 0;
+					
 					boolean hasParts = Maintenance.hasMaintenanceParts(robot, vehicle);
+					if (!hasParts)
+						return 0;
+					
 					double effectiveTime = manager.getEffectiveTimeSinceLastMaintenance();
 					boolean minTime = (effectiveTime >= 1000D);
-					if (!hasMalfunction && hasParts && minTime) {
+					if (hasParts && minTime) {
 						double entityProb = effectiveTime / 50D;
 						if (entityProb > 100D) {
 							entityProb = 100D;

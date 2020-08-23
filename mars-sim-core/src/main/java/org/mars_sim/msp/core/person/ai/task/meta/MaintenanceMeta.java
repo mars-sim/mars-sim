@@ -61,24 +61,40 @@ public class MaintenanceMeta implements MetaTask, Serializable {
 	public double getProbability(Person person) {
 		double result = 0D;
         
-		if (person.isInside()) {
+		if (person.isInSettlement()) {
             
 			try {
 				// Total probabilities for all malfunctionable entities in person's local.
 				Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(person).iterator();
 				while (i.hasNext()) {
 					Malfunctionable entity = i.next();
+					
 					boolean isVehicle = (entity instanceof Vehicle);
+					if (isVehicle)
+						return 0;
+					
 					boolean uninhabitableBuilding = false;
 					if (entity instanceof Building) {
 						uninhabitableBuilding = !((Building) entity).hasFunction(FunctionType.LIFE_SUPPORT);
 					}
+					if (uninhabitableBuilding)
+						return 0;
+					
 					MalfunctionManager manager = entity.getMalfunctionManager();
 					boolean hasMalfunction = manager.hasMalfunction();
+					if (hasMalfunction) {
+						return 0;
+					}
+					
 					boolean hasParts = Maintenance.hasMaintenanceParts(person, entity);
+					if (!hasParts) {
+						return 0;
+					}
+					
 					double effectiveTime = manager.getEffectiveTimeSinceLastMaintenance();
 					boolean minTime = (effectiveTime >= 1000D);
-					if (!hasMalfunction && !isVehicle && !uninhabitableBuilding && hasParts && minTime) {
+					
+					if (minTime) {
 						double entityProb = effectiveTime / 1000D;
 						if (entityProb > 100D) {
 							entityProb = 100D;
@@ -170,16 +186,27 @@ public class MaintenanceMeta implements MetaTask, Serializable {
 				while (i.hasNext()) {
 					Malfunctionable entity = i.next();
 					boolean isVehicle = (entity instanceof Vehicle);
+					if (isVehicle)
+						return 0;
 					boolean uninhabitableBuilding = false;
 					if (entity instanceof Building) {
 						uninhabitableBuilding = !((Building) entity).hasFunction(FunctionType.LIFE_SUPPORT);
 					}
+					if (uninhabitableBuilding)
+						return 0;
+					
 					MalfunctionManager manager = entity.getMalfunctionManager();
 					boolean hasMalfunction = manager.hasMalfunction();
+					if (hasMalfunction)
+						return 0;
+					
 					boolean hasParts = Maintenance.hasMaintenanceParts(robot, entity);
+					if (!hasParts)
+						return 0;
+					
 					double effectiveTime = manager.getEffectiveTimeSinceLastMaintenance();
 					boolean minTime = (effectiveTime >= 1000D);
-					if (!hasMalfunction && !isVehicle && !uninhabitableBuilding && hasParts && minTime) {
+					if (minTime) {
 						double entityProb = effectiveTime / 1000D;
 						if (entityProb > 100D) {
 							entityProb = 100D;

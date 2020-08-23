@@ -389,17 +389,27 @@ implements Serializable {
 		boolean uninhabitableBuilding = false;
 		if (malfunctionable instanceof Building)
 			uninhabitableBuilding = !((Building) malfunctionable).hasFunction(FunctionType.LIFE_SUPPORT);
+		if (!(isStructure || uninhabitableBuilding))
+			return 0;
+		
 		MalfunctionManager manager = malfunctionable.getMalfunctionManager();
 		boolean hasMalfunction = manager.hasMalfunction();
+		if (hasMalfunction)
+			return 0;
+		
 		boolean hasParts = false;
 		if (person != null)
 			hasParts = Maintenance.hasMaintenanceParts(person, malfunctionable);
 		else if (robot != null)
 			hasParts = Maintenance.hasMaintenanceParts(robot, malfunctionable);
-
+		if (!hasParts)
+			return 0;
+		
 		double effectiveTime = manager.getEffectiveTimeSinceLastMaintenance();
 		boolean minTime = (effectiveTime >= 1000D);
-		if ((isStructure || uninhabitableBuilding) && !hasMalfunction && minTime && hasParts) result = effectiveTime;
+		if (minTime) 
+			result = effectiveTime;
+		
 		return result;
 	}
 

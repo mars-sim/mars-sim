@@ -328,14 +328,32 @@ implements Serializable {
      * @throws Exception if error determining probability weight.
      */
     private double getProbabilityWeight(Vehicle vehicle) {
-        double result = 0D;
-        MalfunctionManager manager = vehicle.getMalfunctionManager();
-        boolean hasMalfunction = manager.hasMalfunction();
-        double effectiveTime = manager.getEffectiveTimeSinceLastMaintenance();
-        boolean minTime = (effectiveTime >= 1000D);
-        boolean enoughParts = Maintenance.hasMaintenanceParts(person, vehicle);
-        if (!hasMalfunction && minTime && enoughParts) result = effectiveTime;
-        return result;
+		double result = 0D;
+		MalfunctionManager manager = vehicle.getMalfunctionManager();
+		boolean tethered = vehicle.isBeingTowed() || (vehicle.getTowingVehicle() != null);
+		if (tethered)
+			return 0;
+		
+		boolean hasMalfunction = manager.hasMalfunction();
+		if (hasMalfunction)
+			return 0;
+
+		boolean hasParts = false;
+		if (person != null) {
+			hasParts = Maintenance.hasMaintenanceParts(person, vehicle);
+		} else {
+			hasParts = Maintenance.hasMaintenanceParts(robot, vehicle);
+		}
+		if (!hasParts)
+			return 0;
+		
+		double effectiveTime = manager.getEffectiveTimeSinceLastMaintenance();
+		boolean minTime = (effectiveTime >= 1000D);
+
+		if (minTime) {
+			result = effectiveTime;
+		}
+		return result;
     }
 
     @Override

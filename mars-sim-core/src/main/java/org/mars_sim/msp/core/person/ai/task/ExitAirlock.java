@@ -497,28 +497,28 @@ public class ExitAirlock extends Task implements Serializable {
 			// 4.2 register the suit the person dons
 //				person.registerSuit(suit);
 			
-//			// If airlock has not been activated, activate it.
-//			if (!airlock.isActivated()) {
-//
-//				if (airlock.activateAirlock(person)) {
-//					
-//					String loc = person.getLocationTag().getImmediateLocation();
-//					loc = loc == null ? "[N/A]" : loc;
-//					loc = loc.equalsIgnoreCase("Outside") ? loc.toLowerCase() : "in " + loc;
-//					
-//					LogConsolidated.log(logger, Level.FINER, 4000, sourceName, 
-//							"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
-//							+ " " + loc + 	
-//							" pressed a button asking for activating the airlock in 'walking inside airlock' phase.");
-//					
-//				}
-//				else {
-//					LogConsolidated.log(logger, Level.FINER, 4000, sourceName, 
-//							"[" + person.getLocationTag().getLocale() + "] " + person.getName()
-//							+ " failed to activate the airlock.");
+			// If airlock has not been activated, activate it.
+			if (!airlock.isActivated()) {
+
+				if (airlock.activateAirlock(person)) {
+					
+					String loc = person.getLocationTag().getImmediateLocation();
+					loc = loc == null ? "[N/A]" : loc;
+					loc = loc.equalsIgnoreCase("Outside") ? loc.toLowerCase() : "in " + loc;
+					
+					LogConsolidated.log(logger, Level.FINER, 4000, sourceName, 
+							"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
+							+ " " + loc + 	
+							" pressed a button asking for activating the airlock in 'walking inside airlock' phase.");
+					
+				}
+				else {
+					LogConsolidated.log(logger, Level.WARNING, 4000, sourceName, 
+							"[" + person.getLocationTag().getLocale() + "] " + person.getName()
+							+ " failed to activate the airlock.");
 //					endTask();
-//				}
-//			}
+				}
+			}
 
 			// Check if person is the airlock operator.
 			if (person.equals(airlock.getOperator())) {
@@ -541,14 +541,12 @@ public class ExitAirlock extends Task implements Serializable {
 				loc = loc.equalsIgnoreCase("Outside") ? loc.toLowerCase() : "in " + loc;
 				
 				if (!activationSuccessful) {// || !deactivated) {
-					LogConsolidated.log(logger, Level.WARNING, 4000, sourceName, 
+					LogConsolidated.log(logger, Level.WARNING, 10_000, sourceName, 
 							"[" + person.getLocationTag().getLocale() + "] "
 							+ person.getName() + " " + loc 
 							+ " had problems with airlock activation in the 'waiting inside airlock' phase.");
-					// Note: Calling endTask is needed or else this person would get stranded in the airlock 
-					// since this person fails to change his location state and is still inside
+					// Note: Calling endTask may someone get stranded in the airlock 
 //					endTask();
-
 				}
 				
 //				else {

@@ -645,7 +645,7 @@ public class TaskManager implements Serializable {
 
 		if (totalProbability == 0D) {
 //			LogConsolidated.log(Level.SEVERE, 5_000, sourceName,
-//					person.getName() + " has zero total task probability weight.");
+//			person.getName() + " has zero total task probability weight.");
 
 			// Switch to loading non-work hour meta tasks since
 			// leisure tasks are NOT based on needs
