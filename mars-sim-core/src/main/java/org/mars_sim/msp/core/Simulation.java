@@ -449,8 +449,6 @@ public class Simulation implements ClockListener, Serializable {
 		
 		medicalManager = new MedicalManager();
 		
-	
-		
 		// Create marsClock instance
 		MarsClock marsClock = masterClock.getMarsClock();
 		EarthClock earthClock = masterClock.getEarthClock();

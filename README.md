@@ -237,6 +237,13 @@ executable inside will be the one to be loaded by Windows OS.
   b. Set `JAVA_HOME` to a JRE or JDK's destination such as `C:\Program Files\Java\jdk-14.0.2\bin\` or 
 `C:\Program Files\Java\jre-14.0.2\bin`. 
  
+  ```
+Note 2a : The `\bin` is crucial. When running `java -jar xxx.jar`, mars-sim will look for the 
+presence of the `java.exe` in Windows OS. If `\bin` is missing in the `JAVA_HOME` variable, the 
+Windows OS will attempt to look for it in the `PATH` variable. If it's not found, mars-sim cannot
+start. 
+ ```
+ 
   c. Add `%JAVA_HOME%;` to `PATH`. Type "path" in a command prompt to double check 
 the order of precedence when it comes to searching for the JDK. 
 
