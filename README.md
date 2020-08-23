@@ -238,10 +238,10 @@ executable inside will be the one to be loaded by Windows OS.
 `C:\Program Files\Java\jre-14.0.2\bin`. 
  
   ```
-Note 2a : The `\bin` is crucial. When running `java -jar xxx.jar`, mars-sim will look for the 
-presence of the `java.exe` in Windows OS. If `\bin` is missing in the `JAVA_HOME` variable, the 
-Windows OS will attempt to look for it in the `PATH` variable. If it's not found, mars-sim cannot
-start. 
+Note 2a : The `\bin` is crucial. When running `java -jar xxxx.jar`, mars-sim will look for the 
+presence of the `java.exe` in Windows OS. If `\bin` is missing in the `JAVA_HOME` variable, 
+the Windows OS may not be able to locate the `java.exe` and may continue to go down the `PATH` 
+variable to look for a valid JDK folder. If it's not found, java cannot start mars-sim. 
  ```
  
   c. Add `%JAVA_HOME%;` to `PATH`. Type "path" in a command prompt to double check 

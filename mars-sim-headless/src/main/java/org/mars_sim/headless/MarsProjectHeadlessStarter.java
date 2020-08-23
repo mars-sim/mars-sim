@@ -28,7 +28,7 @@ public class MarsProjectHeadlessStarter {
 
 	private static final String JAVA = "java";
 	private static final String JAVA_HOME = "JAVA_HOME";
-//	private static final String BIN = "bin";
+	private static final String BIN = "bin";
 	private static final String ONE_WHITESPACE = " ";
 	
 	private static String OS = System.getProperty("os.name").toLowerCase();
@@ -64,20 +64,54 @@ public class MarsProjectHeadlessStarter {
 
 		String javaHome = System.getenv(JAVA_HOME);
 		
-		if (javaHome != null) {
-			if (javaHome.contains(ONE_WHITESPACE))
-				javaHome = "\"" + javaHome;
+	    System.out.println("      JAVA_HOME : " + javaHome);
+        
+        System.out.println(" File.separator : " + File.separator);
+        
+ 		if (javaHome != null) {
+ 			if (javaHome.contains(ONE_WHITESPACE))
+ 				javaHome = "\"" + javaHome;
 
-			command
-			.append(javaHome)
-			.append(File.separator)
-//			.append(BIN)
-//			.append(File.separator)
-			.append(JAVA);
+ 			String lastChar = javaHome.substring(javaHome.length() - 1);
+ 			
+ 			if (lastChar.equalsIgnoreCase(File.separator)) {
+ 				if (javaHome.contains(BIN)) {
+ 					command
+ 					.append(javaHome)
+ 					.append(JAVA);
+ 				}
+ 				else {
+ 					command
+ 					.append(javaHome)
+ 					.append(BIN)
+ 					.append(File.separator)
+ 					.append(JAVA);
+ 				}	
+ 			}
+ 			else {
+ 				if (javaHome.contains(BIN)) {
+ 					command
+ 					.append(javaHome)
+ 					.append(File.separator)
+ 					.append(JAVA);
+ 				}
+ 				else {
+ 					command
+ 					.append(javaHome)
+ 					.append(File.separator)
+ 					.append(BIN)
+ 					.append(File.separator)
+ 					.append(JAVA);
+ 				}		
+ 			}
+ 			
+ 			if (javaHome.contains(ONE_WHITESPACE))
+ 				command.append("\"");
 
-			if (javaHome.contains(ONE_WHITESPACE))
-				command.append("\"");
-		} 
+ 		    System.out.println("      JAVA_HOME : " + javaHome);
+ 	        System.out.println("   Java Command : " + command.toString());
+ 	        
+ 		}
 		else {
 			command.append(JAVA);
 		}
