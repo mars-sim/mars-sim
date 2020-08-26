@@ -115,14 +115,13 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 		settlement = CollectionUtils.findSettlement(person.getCoordinates());
 		if (settlement == null) {
 			endTask();
-//			return;
 		}
 		
         if (!LoadVehicleEVA.anyRoversNeedEVA(settlement)) {
         	endTask();
         }
 		
-		List<Rover> roversNeedingEVASuits = getRoversNeedingEVASuits(person.getSettlement());
+		List<Rover> roversNeedingEVASuits = getRoversNeedingEVASuits(settlement);
 		if (roversNeedingEVASuits.size() > 0) {
 			int roverIndex = RandomUtil.getRandomInt(roversNeedingEVASuits.size() - 1);
 			vehicle = roversNeedingEVASuits.get(roverIndex); 
@@ -189,7 +188,6 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 		settlement = CollectionUtils.findSettlement(person.getCoordinates());
 		if (settlement == null) {
 			endTask();
-//			return;
 		}
 			
 		if (!ended) {
@@ -218,151 +216,6 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 		}
 	}
 
-	/**
-	 * Gets a list of all embarking vehicle missions at a settlement with vehicle
-	 * currently in a garage.
-	 * 
-	 * @param settlement the settlement.
-	 * @return list of vehicle missions.
-	 */
-	public static List<Mission> getAllMissionsNeedingLoading(Settlement settlement) {
-
-		List<Mission> result = new ArrayList<Mission>();
-
-		Iterator<Mission> i = missionManager.getMissions().iterator();
-		while (i.hasNext()) {
-			Mission mission = (Mission) i.next();
-			if (mission instanceof VehicleMission) {
-				if (VehicleMission.EMBARKING.equals(mission.getPhase())) {
-					VehicleMission vm = (VehicleMission) mission;
-					if (vm.hasVehicle()) {
-						Vehicle vehicle = vm.getVehicle();
-						if (settlement == vehicle.getSettlement()) {
-							if (!vm.isVehicleLoaded()) {
-								if (BuildingManager.getBuilding(vehicle) == null) {
-									result.add(vm);
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-
-		return result;
-	}
-
-	public static boolean anyRoversNeedEVA(Settlement settlement) {
-
-		Iterator<Vehicle> i = settlement.getParkedVehicles().iterator();
-		while (i.hasNext()) {
-			Vehicle vehicle = i.next();
-			if (vehicle instanceof Rover) {
-				Rover rover = (Rover) vehicle;
-				if (rover.isReservedForMission() && !BuildingManager.isRoverInAGarage(vehicle)) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-	
-	/**
-	 * Gets a list of rovers with crew who are missing EVA suits.
-	 * 
-	 * @param settlement the settlement.
-	 * @return list of rovers.
-	 */
-	public static List<Rover> getRoversNeedingEVASuits(Settlement settlement) {
-
-		List<Rover> result = new ArrayList<Rover>();
-
-		Iterator<Vehicle> i = settlement.getParkedVehicles().iterator();
-		while (i.hasNext()) {
-			Vehicle vehicle = i.next();
-			if (vehicle instanceof Rover) {
-				Rover rover = (Rover) vehicle;
-				if (!rover.isReservedForMission()) {
-					if (!BuildingManager.isRoverInAGarage(vehicle)) { //BuildingManager.getBuilding(rover) == null) {
-						Inventory roverInv = rover.getInventory();
-						int peopleOnboard = roverInv.findNumUnitsOfClass(Person.class);
-						if ((peopleOnboard > 0)) {
-							int numSuits = roverInv.findNumEVASuits(false, false);
-							double water = roverInv.getAmountResourceStored(ResourceUtil.waterID, false);
-							double oxygen = roverInv.getAmountResourceStored(ResourceUtil.oxygenID, false);
-							if ((numSuits == 0) || (water < WATER_NEED) || (oxygen < OXYGEN_NEED)) {
-								result.add(rover);
-							}
-						}
-
-						// robots need no suits, water, oxygen
-					}
-				}
-			}
-		}
-
-		return result;
-	}
-
-	/**
-	 * Gets a random vehicle mission loading at the settlement.
-	 * 
-	 * @return vehicle mission.
-	 */
-	private VehicleMission getRandomMissionNeedingLoading() {
-
-		VehicleMission result = null;
-		List<Mission> loadingMissions = null;
-		if (person != null)
-			loadingMissions = getAllMissionsNeedingLoading(person.getSettlement());
-		else if (robot != null)
-			loadingMissions = getAllMissionsNeedingLoading(robot.getSettlement());
-
-		if (loadingMissions.size() > 0) {
-			int index = RandomUtil.getRandomInt(loadingMissions.size() - 1);
-			result = (VehicleMission) loadingMissions.get(index);
-		}
-
-		return result;
-	}
-
-	/**
-	 * Gets the vehicle being loaded.
-	 * 
-	 * @return vehicle
-	 */
-	public Vehicle getVehicle() {
-		return vehicle;
-	}
-
-	/**
-	 * Determine location to load the vehicle.
-	 * 
-	 * @return location.
-	 */
-	private Point2D determineLoadingLocation() {
-
-		Point2D.Double newLocation = null;
-		boolean goodLocation = false;
-		for (int x = 0; (x < 50) && !goodLocation; x++) {
-			Point2D.Double boundedLocalPoint = LocalAreaUtil.getRandomExteriorLocation(vehicle, 1D);
-			newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(), boundedLocalPoint.getY(),
-					vehicle);
-			if (person != null)
-				goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(),
-						person.getCoordinates());
-			else if (robot != null)
-				goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(),
-						robot.getCoordinates());
-		}
-
-		return newLocation;
-	}
-
-	@Override
-	protected TaskPhase getOutsideSitePhase() {
-		return LOADING;
-	}
 
 	@Override
 	protected double performMappedPhase(double time) {
@@ -387,8 +240,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 		// NOTE: if a person is not at a settlement or near its vicinity, 
 		// then the settlement instance is set to null. 
     	if (settlement == null) {
-//    		endTask();
-    		return 0D;
+    		endTask();
     	}
     	
     	// For a person, 
@@ -399,18 +251,21 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
     				 || (vehicleMission != null && !vehicleMission.hasPerson(person))
     				) {
 				if (person.isOutside()) {
-					setPhase(WALK_BACK_INSIDE);	
-					return 0D;
+					setPhase(WALK_BACK_INSIDE);
 				}
 				else {
-//					endTask();
-					return 0D;
+					endTask();
 				}
     		}
     	}
         
         if (!LoadVehicleEVA.anyRoversNeedEVA(settlement)) {
-        	return 0D;
+        	if (person.isOutside()) {
+				setPhase(WALK_BACK_INSIDE);	
+			}
+			else {
+				endTask();
+			}
         }
     		
 		if (!ended) {
@@ -418,16 +273,14 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 			checkForAccident(time);
 	
 			// Check for radiation exposure during the EVA operation.
-			if (isRadiationDetected(time) && person.isOutside()) {
+			if (person.isOutside() && isRadiationDetected(time)) {
 				setPhase(WALK_BACK_INSIDE);
-//				return time;
 			}
 	
 			// Check if site duration has ended or there is reason to cut the loading
 			// phase short and return to the rover.
 			if (person.isOutside() && (shouldEndEVAOperation() || addTimeOnSite(time))) {
 				setPhase(WALK_BACK_INSIDE);
-//				return time;
 			}
 	
 			// Determine load rate.
@@ -939,6 +792,154 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 
 		// Return remaining amount that can be loaded by person this time period.
 		return amountLoading;
+	}
+
+	/**
+	 * Gets a list of all embarking vehicle missions at a settlement with vehicle
+	 * currently in a garage.
+	 * 
+	 * @param settlement the settlement.
+	 * @return list of vehicle missions.
+	 */
+	public static List<Mission> getAllMissionsNeedingLoading(Settlement settlement) {
+
+		List<Mission> result = new ArrayList<Mission>();
+
+		Iterator<Mission> i = missionManager.getMissions().iterator();
+		while (i.hasNext()) {
+			Mission mission = (Mission) i.next();
+			if (mission instanceof VehicleMission) {
+				if (VehicleMission.EMBARKING.equals(mission.getPhase())) {
+					VehicleMission vm = (VehicleMission) mission;
+					if (vm.hasVehicle()) {
+						Vehicle vehicle = vm.getVehicle();
+						if (settlement == vehicle.getSettlement()) {
+							if (!vm.isVehicleLoaded()) {
+								if (BuildingManager.getBuilding(vehicle) == null) {
+									result.add(vm);
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+		return result;
+	}
+
+	/**
+	 * Checks if any rovers need EVA operation
+	 * 
+	 * @param settlement
+	 * @return
+	 */
+	public static boolean anyRoversNeedEVA(Settlement settlement) {
+
+		Iterator<Vehicle> i = settlement.getParkedVehicles().iterator();
+		while (i.hasNext()) {
+			Vehicle vehicle = i.next();
+			if (vehicle instanceof Rover) {
+				Rover rover = (Rover) vehicle;
+				if (rover.isReservedForMission() && !BuildingManager.isRoverInAGarage(vehicle)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * Gets a list of rovers with crew who are missing EVA suits.
+	 * 
+	 * @param settlement the settlement.
+	 * @return list of rovers.
+	 */
+	public static List<Rover> getRoversNeedingEVASuits(Settlement settlement) {
+
+		List<Rover> result = new ArrayList<Rover>();
+
+		Iterator<Vehicle> i = settlement.getParkedVehicles().iterator();
+		while (i.hasNext()) {
+			Vehicle vehicle = i.next();
+			if (vehicle instanceof Rover) {
+				Rover rover = (Rover) vehicle;
+				if (!rover.isReservedForMission()) {
+					if (!BuildingManager.isRoverInAGarage(vehicle)) { //BuildingManager.getBuilding(rover) == null) {
+						Inventory roverInv = rover.getInventory();
+						int peopleOnboard = roverInv.findNumUnitsOfClass(Person.class);
+						if ((peopleOnboard > 0)) {
+							int numSuits = roverInv.findNumEVASuits(false, false);
+							double water = roverInv.getAmountResourceStored(ResourceUtil.waterID, false);
+							double oxygen = roverInv.getAmountResourceStored(ResourceUtil.oxygenID, false);
+							if ((numSuits == 0) || (water < WATER_NEED) || (oxygen < OXYGEN_NEED)) {
+								result.add(rover);
+							}
+						}
+
+						// robots need no suits, water, oxygen
+					}
+				}
+			}
+		}
+
+		return result;
+	}
+
+	/**
+	 * Gets a random vehicle mission loading at the settlement.
+	 * 
+	 * @return vehicle mission.
+	 */
+	private VehicleMission getRandomMissionNeedingLoading() {
+
+		VehicleMission result = null;
+		List<Mission> loadingMissions = getAllMissionsNeedingLoading(settlement);
+
+		if (loadingMissions.size() > 0) {
+			int index = RandomUtil.getRandomInt(loadingMissions.size() - 1);
+			result = (VehicleMission) loadingMissions.get(index);
+		}
+
+		return result;
+	}
+
+	/**
+	 * Gets the vehicle being loaded.
+	 * 
+	 * @return vehicle
+	 */
+	public Vehicle getVehicle() {
+		return vehicle;
+	}
+
+	/**
+	 * Determine location to load the vehicle.
+	 * 
+	 * @return location.
+	 */
+	private Point2D determineLoadingLocation() {
+
+		Point2D.Double newLocation = null;
+		boolean goodLocation = false;
+		for (int x = 0; (x < 50) && !goodLocation; x++) {
+			Point2D.Double boundedLocalPoint = LocalAreaUtil.getRandomExteriorLocation(vehicle, 1D);
+			newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(), boundedLocalPoint.getY(),
+					vehicle);
+			if (person != null)
+				goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(),
+						person.getCoordinates());
+			else if (robot != null)
+				goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(),
+						robot.getCoordinates());
+		}
+
+		return newLocation;
+	}
+
+	@Override
+	protected TaskPhase getOutsideSitePhase() {
+		return LOADING;
 	}
 
 	/**

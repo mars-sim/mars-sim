@@ -24,9 +24,7 @@ import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.tool.RandomUtil;
-import org.mars_sim.msp.core.vehicle.Rover;
 
 /**
  * Meta task for the LoadVehicleEVA task.
@@ -80,9 +78,10 @@ public class LoadVehicleEVAMeta implements MetaTask, Serializable {
 		
     	double result = 0D;
         
-    	if (person.isInSettlement()) {
+    	Settlement settlement = CollectionUtils.findSettlement(person.getCoordinates());
+    	
+    	if (settlement != null) {
  
-        	Settlement settlement = CollectionUtils.findSettlement(person.getCoordinates());
         	
 	        if (!LoadVehicleEVA.anyRoversNeedEVA(settlement)) {
 	        	return 0;
@@ -120,8 +119,6 @@ public class LoadVehicleEVAMeta implements MetaTask, Serializable {
 	        catch (Exception e) {
 	            logger.log(Level.SEVERE, "Error finding loading missions.", e);
 	        }
-	        
-
 	        
 	        // Check if any rovers are in need of EVA suits to allow occupants to exit.
 	        if (LoadVehicleEVA.getRoversNeedingEVASuits(settlement).size() > 0) {
@@ -173,53 +170,11 @@ public class LoadVehicleEVAMeta implements MetaTask, Serializable {
 
 	@Override
 	public Task constructInstance(Robot robot) {
-		return null;//new LoadVehicleEVA(robot);
+		return null;
 	}
 
 	@Override
 	public double getProbability(Robot robot) {
-
-        double result = 0D;
-
-//        if (robot.getBotMind().getRobotJob() instanceof Deliverybot)  {
-//
-//            if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-//
-//                // Check all vehicle missions occurring at the settlement.
-//                try {
-//                    List<Mission> missions = LoadVehicleEVA.getAllMissionsNeedingLoading(robot.getSettlement());
-//                    result += 100D * missions.size();
-//                }
-//                catch (Exception e) {
-//                    logger.log(Level.SEVERE, "Error finding loading missions.", e);
-//                }
-//
-//                if (LoadVehicleEVA.getRoversNeedingEVASuits(robot.getSettlement()).size() > 0) {
-//                    int numEVASuits = robot.getSettlement().getSettlementInventory().findNumEmptyUnitsOfClass(EVASuit.class, false);
-//                    if (numEVASuits >= 2) {
-//                        result += 100D;
-//                    }
-//                }
-//            }
-//
-//            // Effort-driven task modifier.
-//            result *= robot.getPerformanceRating();
-//
-//            // Check if an airlock is available
-//            if (EVAOperation.getWalkableAvailableAirlock(robot) == null) {
-//                result = 0D;
-//            }
-//
-//            // Check if it is night time.
-//            SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-//            if (surface.getSolarIrradiance(robot.getCoordinates()) == 0) {
-//                if (!surface.inDarkPolarRegion(robot.getCoordinates())) {
-//                    result = 0D;
-//                }
-//            }
-//
-//        }
-
-        return result;
+        return 0;
     }
 }

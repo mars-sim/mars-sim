@@ -1326,13 +1326,13 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			} else {
 
 				if (!allowFail) {
-					LogConsolidated.log(logger, Level.INFO, 0, sourceName,
+					LogConsolidated.log(logger, Level.INFO, 4_000, sourceName,
 							"[" + person.getLocationTag().getLocale() + "] " 
 									+ person.getName() + " ended the task of walking to " + interiorObject);
 					endTask();
 				}
 				else {
-					LogConsolidated.log(logger, Level.INFO, 0, sourceName,
+					LogConsolidated.log(logger, Level.INFO, 4_000, sourceName,
 							"[" + person.getLocationTag().getLocale() + "] " 
 									+ person.getName() + " was unable to walk to " + interiorObject);
 				}
@@ -1343,13 +1343,13 @@ public abstract class Task implements Serializable, Comparable<Task> {
 				addSubTask(new Walk(robot, settlementPos.getX(), settlementPos.getY(), 0, interiorObject));
 			} else {
 				if (!allowFail) {
-					LogConsolidated.log(logger, Level.INFO, 0, sourceName,
+					LogConsolidated.log(logger, Level.INFO, 4_000, sourceName,
 							"[" + robot.getLocationTag().getLocale() + "] " 
 									+ robot.getName() + " ended the task of walking to " + interiorObject);
 					endTask();
 				}
 				else {
-					LogConsolidated.log(logger, Level.INFO, 0, sourceName,
+					LogConsolidated.log(logger, Level.INFO, 4_000, sourceName,
 							"[" + robot.getLocationTag().getLocale() + "] " 
 									+ robot.getName() + " was unable to walk to " + interiorObject);
 				}

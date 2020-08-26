@@ -999,7 +999,7 @@ public class BuildingManager implements Serializable {
 	public static boolean isRoverInAGarage(Vehicle vehicle) {
 		if (vehicle == null)
 			throw new IllegalArgumentException("vehicle is null");
-		Building result = null;
+
 		Settlement settlement = vehicle.getSettlement();
 		if (settlement != null) {
 			List<Building> list = settlement.getBuildingManager().getBuildings(FunctionType.GROUND_VEHICLE_MAINTENANCE);

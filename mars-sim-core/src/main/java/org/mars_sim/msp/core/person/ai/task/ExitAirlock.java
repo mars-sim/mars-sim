@@ -567,24 +567,38 @@ public class ExitAirlock extends Task implements Serializable {
 			}
 		}
 		
-		else {
-			String loc = person.getLocationTag().getImmediateLocation();
-			loc = loc == null ? "[N/A]" : loc;
-			loc = loc.equalsIgnoreCase("Outside") ? loc.toLowerCase() : "in " + loc;
+		// If person is already outside, change to exit airlock phase.
+		else if (person.isOutside()) {
+			LogConsolidated.log(logger, Level.FINER, 4000, sourceName, 
+				"[" + person.getLocationTag().getLocale() + "] " + person.getName() + 
+				" was in the 'entering the airlock' phase for EVA egress"
+				+ " but was reportedly outside. End the Task.");
 			
-			LogConsolidated.log(logger, Level.WARNING, 4000, sourceName, 
-					"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
-					+ " was supposed to be inside the airlock but was " + loc
-					+ ". Attempting to re-enter the airlock now.");
-			
-			// Volunteer this person as the operator
-//			airlock.volunteerAsOperator(person) ;
-			
-			// Add experience
+	        setPhase(EXITING_AIRLOCK);
+
 			addExperience(time - remainingTime);
 			
-			setPhase(ENTERING_AIRLOCK);
+			return remainingTime;
 		}
+
+//		else {
+//			String loc = person.getLocationTag().getImmediateLocation();
+//			loc = loc == null ? "[N/A]" : loc;
+//			loc = loc.equalsIgnoreCase("Outside") ? loc.toLowerCase() : "in " + loc;
+//			
+//			LogConsolidated.log(logger, Level.WARNING, 4000, sourceName, 
+//					"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
+//					+ " was supposed to be inside the airlock but was " + loc
+//					+ ". Attempting to re-enter the airlock now.");
+//			
+//			// Volunteer this person as the operator
+////			airlock.volunteerAsOperator(person) ;
+//			
+//			// Add experience
+//			addExperience(time - remainingTime);
+//			
+////			setPhase(ENTERING_AIRLOCK);
+//		}
 
 		return remainingTime;
 	}

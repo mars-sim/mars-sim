@@ -45,8 +45,8 @@ structural requirements on buildings.
 
 While at the Earth's sea level, the atmospheric pressure is **101 kPa** (14.7 psi) and has 20.9% oxygen, 
 in mars-sim, a low pressure atmosphere of **34 kPa** (4.93 psi) is chosen for the settlement living with
-the composition of oxygen at 58.8%. However, inside a rover or an [EVA suit](https://github.com/mars-sim/mars-sim/wiki/EVA-Suit), 
-an even lower pressurized 
+the composition of oxygen at 58.8%. However, inside a rover or an 
+[EVA suit](https://github.com/mars-sim/mars-sim/wiki/EVA-Suit), an even lower pressurized 
 environment of 17 kPa (2.47 psi) is adopted for more optimal use of resources and design specifications. 
 See [Atmosphere](https://github.com/mars-sim/mars-sim/wiki/Atmosphere) wiki.
 

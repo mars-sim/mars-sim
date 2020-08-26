@@ -130,17 +130,30 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
  
 		 min_o2_pressure = personConfig.getMinSuitO2Pressure();
 		 
-		 fullO2PartialPressure = CompositionOfAir.KPA_PER_ATM * OXYGEN_CAPACITY / CompositionOfAir.O2_MOLAR_MASS * CompositionOfAir.R_GAS_CONSTANT / TOTAL_VOLUME;
+		 fullO2PartialPressure = CompositionOfAir.KPA_PER_ATM * OXYGEN_CAPACITY 
+				 / CompositionOfAir.O2_MOLAR_MASS * CompositionOfAir.R_GAS_CONSTANT / TOTAL_VOLUME;
 
 		 massO2MinimumLimit = min_o2_pressure / fullO2PartialPressure * OXYGEN_CAPACITY;
 		 
 		 massO2NominalLimit = NORMAL_AIR_PRESSURE / min_o2_pressure * massO2MinimumLimit;
 		 
-		 logger.config("        EVA suit's unloaded weight : " + Math.round(emptyMass*1_000.0)/1_000.0 + " kg");
-		 logger.config("          Minimum Mass Limit of O2 : " + Math.round(massO2MinimumLimit*10_000.0)/10_000.0  + " kg - The Safety Limit");
-		 logger.config("          Nomimal Mass limit of O2 : " + Math.round(massO2NominalLimit*10_000.0)/10_000.0  + " kg");
-		 logger.config("  Full Tank of O2 Partial Pressure : " + Math.round(fullO2PartialPressure*1_000.0)/1_000.0 + " kPa");
-
+		 logger.config(" EVA suit's unloaded weight : " + Math.round(emptyMass*1_000.0)/1_000.0 + " kg");
+		 logger.config("      Total gas tank volume : " + Math.round(TOTAL_VOLUME*100.0)/100.0 + "L");
+		 
+		 
+		 logger.config("               Full Tank O2 : " + Math.round(fullO2PartialPressure*100.0)/100.0 + " kPa -> "
+				 		+ OXYGEN_CAPACITY + "    kg - The Maximum tank pressure");
+		 
+		 logger.config("                 Nomimal O2 : " + NORMAL_AIR_PRESSURE + "  kPa -> "
+				 		+ Math.round(massO2NominalLimit*10_000.0)/10_000.0  + " kg - The suit target pressure");
+		 
+		 logger.config("                 Minimum O2 : " + Math.round(min_o2_pressure*100.0)/100.0 + " kPa -> "
+				 		+ Math.round(massO2MinimumLimit*10_000.0)/10_000.0  + " kg - The safety limit");
+		 
+			// 66.61 kPa -> 1      kg (full tank O2 pressure)
+			// 20.7  kPa -> 0.3107 kg 
+			// 17    kPa -> 0.2552 kg (target O2 pressure)
+			// 11.94 kPa -> 0.1792 kg (min O2 pressure)
 	}
 	
 	/**
@@ -196,7 +209,7 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 			if (getInventory().getAmountResourceStored(ResourceUtil.oxygenID, false) <= massO2MinimumLimit) {
 				String name = ((Person)(super.getLastOwner())).getName();
 				
-				LogConsolidated.flog(Level.WARNING, 10_000, sourceName,
+				LogConsolidated.log(logger, Level.WARNING, 10_000, sourceName,
 						"[" + this.getLocationTag().getLocale() + "] " 
 								+ getName() + " worned by " + name
 								+ " had less than 0.1792 kg oxygen (below the safety limit).");
@@ -206,7 +219,7 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 			if (getInventory().getAmountResourceStored(ResourceUtil.waterID, false) <= 0D) {
 				String name = ((Person)(super.getLastOwner())).getName();
 				
-				LogConsolidated.flog(Level.WARNING, 10_000, sourceName,
+				LogConsolidated.log(logger, Level.WARNING, 10_000, sourceName,
 						"[" + this.getLocationTag().getLocale() + "] " 
 								+ getName() + " worned by " + name + " ran out of water.");
 //				return false;
@@ -214,7 +227,7 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 			
 			if (malfunctionManager.getOxygenFlowModifier() < 100D) {
 				String name = ((Person)(super.getLastOwner())).getName();
-				LogConsolidated.flog(Level.WARNING, 10_000, sourceName,
+				LogConsolidated.log(logger, Level.WARNING, 10_000, sourceName,
 						"[" + this.getLocationTag().getLocale() + "] " 
 								+ getName() + " worned by " + name + "had oxygen flow sensor malfunction.", null);
 				return false;
@@ -228,14 +241,14 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 
 			double p = getAirPressure();
 			if (p > PhysicalCondition.MAXIMUM_AIR_PRESSURE || p <= min_o2_pressure) {
-				LogConsolidated.flog(Level.WARNING, 5000, sourceName,
+				LogConsolidated.log(logger, Level.WARNING, 5000, sourceName,
 						"[" + this.getLocationTag().getLocale() + "] " 
 								+ this.getName() + " detected improper o2 pressure at " + Math.round(p * 100.0D) / 100.0D);
 				return false;
 			}
 			double t = getTemperature();
 			if (t > NORMAL_TEMP + 15 || t < NORMAL_TEMP - 20) {
-				LogConsolidated.flog(Level.WARNING, 5000, sourceName,
+				LogConsolidated.log(logger, Level.WARNING, 5000, sourceName,
 						"[" + this.getLocationTag().getLocale() + "] " 
 								+ this.getName() + " detected improper temperature at " + Math.round(t * 100.0D) / 100.0D);
 				return false;
@@ -335,21 +348,29 @@ public class EVASuit extends Equipment implements LifeSupportInterface, Serializ
 	 */
 	public double getAirPressure() {
 		// Based on some pre-calculation, 
+		
 		// In a 3.9 liter system, 1 kg of O2 can create 66.61118 kPa partial pressure 
-		// To supply a partial oxygen pressure of 20.7 kPa, one needs at least 0.3107 kg O2
+		
+		// e.g. To supply a partial oxygen pressure of 20.7 kPa, one needs at least 0.3107 kg O2
 		
 		// With the minimum required O2 partial pressure of 11.94 kPa (1.732 psi), the minimum mass of O2 is 0.1792 kg 
 		
-		// Note : our target o2 partial pressure is now 17 kPa (not 20.7 kPa)
+		// Note : our target o2 partial pressure is 17 kPa (not 20.7 kPa), the targeted mass of O2 is 0.2552 kg
+		
+		// 66.61 kPa -> 1      kg (full tank O2 pressure)
+		// 20.7  kPa -> 0.3107 kg 
+		// 17    kPa -> 0.2552 kg (target O2 pressure)
+		// 11.94 kPa -> 0.1792 kg (min O2 pressure)
 		
 		double oxygenLeft = getInventory().getAmountResourceStored(ResourceUtil.oxygenID, false);
 		// Assuming that we can maintain a constant oxygen partial pressure unless it falls below massO2NominalLimit 
 		if (oxygenLeft < massO2NominalLimit) {
 			double remainingMass = oxygenLeft;
-			double pp = CompositionOfAir.KPA_PER_ATM * remainingMass / CompositionOfAir.O2_MOLAR_MASS * CompositionOfAir.R_GAS_CONSTANT / TOTAL_VOLUME;
-			LogConsolidated.flog(Level.WARNING, 10_000, sourceName,
+			double pp = CompositionOfAir.KPA_PER_ATM * remainingMass / CompositionOfAir.O2_MOLAR_MASS 
+					* CompositionOfAir.R_GAS_CONSTANT / TOTAL_VOLUME;
+			LogConsolidated.log(logger, Level.WARNING, 10_000, sourceName,
 					"[" + this.getLocationTag().getLocale() + "] " 
-						+ this.getName() + " has " + Math.round(oxygenLeft*100.0)/100.0
+						+ this.getName() + " got " + Math.round(oxygenLeft*100.0)/100.0
 						+ " kg O2 left at partial pressure of " + Math.round(pp*100.0)/100.0);
 			return pp;
 		}
