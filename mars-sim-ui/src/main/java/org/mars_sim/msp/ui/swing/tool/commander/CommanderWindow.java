@@ -77,12 +77,16 @@ public class CommanderWindow extends ToolWindow {
 	public static final String SAFETY_TAB = "Safety";
 	public static final String SCIENCE_TAB = "Science";
 
-
-	public static final String ALLOW = "Allow Trading Missions from other settlements";
+	public static final String CAN_INITIATE = "Can initiate Trading Mission";
+	public static final String CANNOT_INITIATE = "Cannot initiate Trading Mission";
+	public static final String ACCEPT = "Accept Trading initiated by other settlements";
+	public static final String ACCEPT_NO = "Accept no Trading initiated by other settlements";
 	public static final String SEE_RIGHT = ".    -->";
 	
 	// Private members
 //	private int deletingTaskIndex;
+	
+	private boolean changed = true;
 	
 	private String deletingTaskType;
 	private String taskName;
@@ -365,8 +369,8 @@ public class CommanderWindow extends ToolWindow {
 		ButtonGroup group0 = new ButtonGroup();
 		ButtonGroup group1 = new ButtonGroup();
 	
-		r0 = new JRadioButton("Can initiate Trading Mission", true);
-		r1 = new JRadioButton("Cannot initiate Trading Mission");
+		r0 = new JRadioButton(CAN_INITIATE, true);
+		r1 = new JRadioButton(CANNOT_INITIATE);
 
 		// Set up initial conditions
 		if (settlement.isMissionDisable(Trade.DEFAULT_DESCRIPTION)) {
@@ -378,21 +382,21 @@ public class CommanderWindow extends ToolWindow {
 			r1.setSelected(false);
 		}
 			
-		r2 = new JRadioButton("No Trading Missions from all settlements");
-		r3 = new JRadioButton(ALLOW);
+		r2 = new JRadioButton(ACCEPT_NO);
+		r3 = new JRadioButton(ACCEPT, true);
 
 		// Set up initial conditions
-		boolean noTrading = true;
-		if (settlement.isTradeMissionAllowedFromASettlement(settlement)) {
-			List<Settlement> list = getOtherSettlements();
-//			List<Settlement> allowedSettlements = settlementMissionList.getCheckedValues();
-			for (Settlement s: list) {
-				if (!settlement.isTradeMissionAllowedFromASettlement(s)) {
-					noTrading = false;
-					break;
-				}
-			}
-		}
+		boolean noTrading = false;
+//		if (settlement.isTradeMissionAllowedFromASettlement(settlement)) {
+//			List<Settlement> list = getOtherSettlements();
+////			List<Settlement> allowedSettlements = settlementMissionList.getCheckedValues();
+//			for (Settlement s: list) {
+//				if (!settlement.isTradeMissionAllowedFromASettlement(s)) {
+//					noTrading = true;
+//					break;
+//				}
+//			}
+//		}
 		
 		WebLabel selectLabel = new WebLabel(" Choose :");
 		selectLabel.setMinimumSize(new Dimension(150, 25));
@@ -409,7 +413,6 @@ public class CommanderWindow extends ToolWindow {
 		WebScrollPane = new WebScrollPane(innerPanel);
 		WebScrollPane.setMaximumWidth(250);
 
-		
 //		mainPanel.add(WebScrollPane, BorderLayout.EAST);
 		
 		if (noTrading) {			
@@ -422,7 +425,7 @@ public class CommanderWindow extends ToolWindow {
 		else {
 			r2.setSelected(false);
 			r3.setSelected(true);
-			r3.setText(ALLOW + SEE_RIGHT);
+			r3.setText(ACCEPT + SEE_RIGHT);
 			policyMainPanel.remove(emptyPanel);
 			policyMainPanel.add(WebScrollPane, BorderLayout.EAST);
 //			settlementMissionList.setEnabled(true);
@@ -457,7 +460,7 @@ public class CommanderWindow extends ToolWindow {
 	        	settlement.setMissionDisable(Trade.DEFAULT_DESCRIPTION, true);
 	        } else if (button == r2) {
 	        	SwingUtilities.invokeLater(() -> {
-					r3.setText(ALLOW);
+					r3.setText(ACCEPT);
 //					System.out.println("r2 selected");
 		        	disableAllCheckedSettlement();
 	//	        	settlementMissionList.setEnabled(false);
@@ -465,8 +468,9 @@ public class CommanderWindow extends ToolWindow {
 					policyMainPanel.add(emptyPanel, BorderLayout.EAST);
 	        	});
 	        } else if (button == r3) {
+	        	changed = true;
 //	        	settlementMissionList.setEnabled(true);
-				r3.setText(ALLOW + SEE_RIGHT);
+				r3.setText(ACCEPT + SEE_RIGHT);
 				policyMainPanel.remove(emptyPanel);
 				policyMainPanel.add(WebScrollPane, BorderLayout.EAST);
 	        }
@@ -624,7 +628,7 @@ public class CommanderWindow extends ToolWindow {
 		listUpdate();
 		
 		// Update the settlement that are being checked
-		if (r3.isSelected()) {
+		if (changed) { //r3.isSelected()) {
 			List<?> allowedSettlements =  settlementMissionList.getCheckedValues();
 			for (Object o: allowedSettlements) {
 				Settlement s = (Settlement) o;
@@ -632,6 +636,7 @@ public class CommanderWindow extends ToolWindow {
 					// If this settlement hasn't been set to allow trade mission, allow it now
 					settlement.setAllowTradeMissionFromASettlement(s, true);
 			}
+			changed = false;
 		}
 	}
 	

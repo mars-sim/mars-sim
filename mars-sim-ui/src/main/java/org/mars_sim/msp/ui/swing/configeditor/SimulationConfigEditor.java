@@ -774,10 +774,12 @@ public class SimulationConfigEditor {
 		 * Load the default settlements in the table.
 		 */
 		private void loadDefaultSettlements() {
-			SettlementConfig settlementConfig = simulationConfig.getSettlementConfiguration();
+//			SettlementConfig settlementConfig = simulationConfig.getSettlementConfiguration();
 			settlements.clear();
 			boolean hasSponsor = false;
 			String sponsorCC = null;
+			List<String> usedNames = new ArrayList<>();
+			
 			if (mode == GameMode.COMMAND) {
 				sponsorCC = personConfig.getCommander().getSponsorStr();
 				logger.config("The commander's sponsor is " + sponsorCC);
@@ -792,6 +794,9 @@ public class SimulationConfigEditor {
 				info.latitude = settlementConfig.getInitialSettlementLatitude(x);
 				info.longitude = settlementConfig.getInitialSettlementLongitude(x);
 				info.sponsor = settlementConfig.getInitialSettlementSponsor(x);
+				
+				// Save this name to the list
+				usedNames.add(info.name);
 				
 				// Modify the sponsor in case of the Commander Mode
 				if (mode == GameMode.COMMAND) {
@@ -808,8 +813,25 @@ public class SimulationConfigEditor {
 				if (!hasSponsor) {
 					// Change the 1st settlement's sponsor to match that of the commander
 					settlements.get(0).sponsor = sponsorCC;
-					logger.config("The 1st settlement's sponsor is " + settlements.get(0).sponsor );
-					logger.config("Assigning the 1st settlement's sponsor to match that of the commander: " + settlements.get(0).sponsor);
+					
+					// Gets a list of settlement names that are tailored to this country
+					List<String> candidateNames = settlementConfig.getSettlementNameList(sponsorCC);
+					Collections.shuffle(candidateNames);
+					for (String c: candidateNames) {
+						for (String u: usedNames) {
+							if (!c.equalsIgnoreCase(u)) {
+								// Change the 1st settlement's name to this country's preferred name
+								settlements.get(0).name = c;
+							}			
+						}
+						break;
+					}
+					
+					logger.config("Note: the 1st settlement's sponsor has just been changed to match the commander's sponsor.");
+				}
+				
+				else {
+					logger.config("Note: it's good the commander's sponsor shows up in sponsoring one of the settlements in the site editor.");
 				}
 			}
 				

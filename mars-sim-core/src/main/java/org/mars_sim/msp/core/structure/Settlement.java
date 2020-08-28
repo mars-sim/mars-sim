@@ -4536,7 +4536,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 		allowTradeMissionSettlements.put(settlement.getIdentifier(), allowed);
 	}
 	
-	public void allowTradeMissionFromAllSettlements(boolean allowed) {
+	public void setTradeMissionFromAllSettlements(boolean allowed) {
 		for (Settlement s: unitManager.getSettlements()) {
 			allowTradeMissionSettlements.put(s.getIdentifier(), allowed);
 		}
