@@ -96,6 +96,15 @@ public class SettlementTemplate implements Serializable {
 	}
 
 	/**
+	 * Gets the name of the template.
+	 * 
+	 * @return name.
+	 */
+	public String toString() {
+		return name;
+	}
+	
+	/**
 	 * Gets the template's unique ID.
 	 * 
 	 * @return ID number.

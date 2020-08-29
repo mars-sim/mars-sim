@@ -32,6 +32,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
+import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -54,6 +55,7 @@ import com.alee.extended.list.CheckBoxCellData;
 import com.alee.extended.list.CheckBoxListModel;
 import com.alee.extended.list.WebCheckBoxList;
 import com.alee.laf.label.WebLabel;
+import com.alee.laf.list.ListDataAdapter;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
 import com.alee.managers.style.StyleId;
@@ -86,7 +88,7 @@ public class CommanderWindow extends ToolWindow {
 	// Private members
 //	private int deletingTaskIndex;
 	
-	private boolean changed = true;
+//	private boolean changed = true;
 	
 	private String deletingTaskType;
 	private String taskName;
@@ -349,6 +351,9 @@ public class CommanderWindow extends ToolWindow {
 		
 	}
 	
+	/**
+	 * Creates the mission tab panel
+	 */
 	public void createMissionPanel() {
 		WebPanel panel = new WebPanel(new BorderLayout());
 		tabPane.add(MISSION_TAB, panel);
@@ -363,8 +368,8 @@ public class CommanderWindow extends ToolWindow {
 //		buttonPanel.setPreferredSize(new Dimension(250, 120));
 		policyMainPanel.add(buttonPanel, BorderLayout.CENTER);
 		
-		buttonPanel.setBorder(BorderFactory.createTitledBorder("Trade With Other Settlements"));
-		buttonPanel.setToolTipText("Select the trade policy with other settlements");
+		buttonPanel.setBorder(BorderFactory.createTitledBorder("Trading policy "));
+		buttonPanel.setToolTipText("Select your trading policy with other settlements");
 		
 		ButtonGroup group0 = new ButtonGroup();
 		ButtonGroup group1 = new ButtonGroup();
@@ -407,6 +412,22 @@ public class CommanderWindow extends ToolWindow {
 		
 		// Set settlement check boxes
 		settlementMissionList = new WebCheckBoxList<>(StyleId.checkboxlist, createModel(getOtherSettlements()));
+		settlementMissionList.addListDataListener(new ListDataAdapter() {
+		    @Override
+		    public void contentsChanged(final ListDataEvent e) {
+		        final int index = e.getIndex0();
+		        final boolean selected = settlementMissionList.isCheckBoxSelected(index);
+	        	List<?> allowedSettlements = settlementMissionList.getCheckedValues();
+	        	Settlement s =  (Settlement) allowedSettlements.get(index);
+		        if (selected) {
+		        	settlement.setAllowTradeMissionFromASettlement(s, true);
+		        }
+		        else {
+		        	settlement.setAllowTradeMissionFromASettlement(s, false); 	
+		        }
+		    }
+		} );
+		
 		settlementMissionList.setVisibleRowCount(3);
 		innerPanel.add(settlementMissionList, BorderLayout.CENTER);
 		
@@ -468,7 +489,7 @@ public class CommanderWindow extends ToolWindow {
 					policyMainPanel.add(emptyPanel, BorderLayout.EAST);
 	        	});
 	        } else if (button == r3) {
-	        	changed = true;
+//	        	changed = true;
 //	        	settlementMissionList.setEnabled(true);
 				r3.setText(ACCEPT + SEE_RIGHT);
 				policyMainPanel.remove(emptyPanel);
@@ -627,17 +648,17 @@ public class CommanderWindow extends ToolWindow {
 		// Update list
 		listUpdate();
 		
-		// Update the settlement that are being checked
-		if (changed) { //r3.isSelected()) {
-			List<?> allowedSettlements =  settlementMissionList.getCheckedValues();
-			for (Object o: allowedSettlements) {
-				Settlement s = (Settlement) o;
-				if (!settlement.isTradeMissionAllowedFromASettlement(s))
-					// If this settlement hasn't been set to allow trade mission, allow it now
-					settlement.setAllowTradeMissionFromASettlement(s, true);
-			}
-			changed = false;
-		}
+//		// Update the settlement that are being checked
+//		if (changed) { //r3.isSelected()) {
+//			List<?> allowedSettlements =  settlementMissionList.getCheckedValues();
+//			for (Object o: allowedSettlements) {
+//				Settlement s = (Settlement) o;
+//				if (!settlement.isTradeMissionAllowedFromASettlement(s))
+//					// If this settlement hasn't been set to allow trade mission, allow it now
+//					settlement.setAllowTradeMissionFromASettlement(s, true);
+//			}
+//			changed = false;
+//		}
 	}
 	
 	public void disableAllCheckedSettlement() {

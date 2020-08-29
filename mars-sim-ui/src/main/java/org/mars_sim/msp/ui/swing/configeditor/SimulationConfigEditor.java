@@ -64,6 +64,7 @@ import org.mars_sim.msp.ui.swing.MainWindow;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 
 import com.alee.laf.WebLookAndFeel;
+import com.alee.laf.combobox.WebComboBox;
 import com.alee.laf.window.WebFrame;
 import com.alee.managers.UIManagers;
 import com.alee.managers.icon.LazyIcon;
@@ -124,7 +125,7 @@ public class SimulationConfigEditor {
 			// use the weblaf skin
 			WebLookAndFeel.install();
 			UIManagers.initialize();
-			//			NimRODTheme nt = new NimRODTheme(getClass().getClassLoader().getResource("/theme/nimrod.theme"));
+//			NimRODTheme nt = new NimRODTheme(getClass().getClassLoader().getResource("/theme/nimrod.theme"));
 //			NimRODLookAndFeel nf = new NimRODLookAndFeel();
 //			nf.setCurrentTheme(nt);
 //			UIManager.setLookAndFeel(nf);
@@ -220,7 +221,6 @@ public class SimulationConfigEditor {
 		
 		settlementTable = new JTable(settlementTableModel);
 		settlementTable.setRowSelectionAllowed(true);
-		settlementTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		settlementTable.getColumnModel().getColumn(0).setPreferredWidth(80);
 		settlementTable.getColumnModel().getColumn(1).setPreferredWidth(140);
 		settlementTable.getColumnModel().getColumn(2).setPreferredWidth(30);
@@ -237,11 +237,12 @@ public class SimulationConfigEditor {
 
 		// Create combo box for editing template column in settlement table.
 		TableColumn templateColumn = settlementTable.getColumnModel().getColumn(1);
-		JComboBoxMW<String> templateCB = new JComboBoxMW<String>();
+		WebComboBox templateCB = new WebComboBox();
 		Iterator<SettlementTemplate> i = settlementConfig.getSettlementTemplates().iterator();
 		while (i.hasNext()) {
 			templateCB.addItem(i.next().getTemplateName());
 		}
+		
 		templateColumn.setCellEditor(new DefaultCellEditor(templateCB));
 
 		// Create combo box for editing sponsor column in settlement table.
@@ -692,6 +693,45 @@ public class SimulationConfigEditor {
 	}
 
 	/**
+	 * Returns a random settlement name tailored by the sponsor
+	 * 
+	 * @param sponsor
+	 * @return
+	 */
+	private String tailorSettlementNameBySponsor(String sponsor) {
+		
+		List<String> usedNames = new ArrayList<>();//settlementTableModel.getDisplayedSettlementNames();
+		
+		// Add configuration settlements from table data.
+		for (int x = 0; x < settlementTableModel.getRowCount(); x++) {
+			String name = (String) settlementTableModel.getValueAt(x, NAME);
+			usedNames.add(name);
+		}
+
+		// Gets a list of settlement names that are tailored to this country
+		List<String> candidateNames = settlementConfig.getSettlementNameList(sponsor);
+		candidateNames.removeAll(usedNames);
+
+		if (candidateNames.isEmpty())
+			return "[Type in a name]";
+		else
+			return candidateNames.get(RandomUtil.getRandomInt(candidateNames.size()-1));
+			
+//		Collections.shuffle(candidateNames);
+//		for (String c: candidateNames) {
+//			for (String u: usedNames) {
+//				if (!c.equalsIgnoreCase(u)) {
+//					System.out.println(c);
+//					// Pick the candidate name that is not being used
+//					return c;
+//				}			
+//			}
+//		}
+//		
+//		return "Type in a name";
+	}
+	
+	/**
 	 * Determines a new settlement's latitude.
 	 * 
 	 * @return latitude string.
@@ -737,15 +777,11 @@ public class SimulationConfigEditor {
 	/**
 	 * Inner class for the settlement table model.
 	 */
+	@SuppressWarnings("serial")
 	private class SettlementTableModel extends AbstractTableModel {
-
-		/** default serial id. */
-		private static final long serialVersionUID = 1L;
-		// Data members
-//		private boolean isCommanderMode = GameManager.mode;
 		
 		private String[] columns;
-		private List<SettlementInfo> settlements;
+		private List<SettlementInfo> settlementInfoList;
 		
 		/**
 		 * Hidden Constructor.
@@ -765,17 +801,17 @@ public class SimulationConfigEditor {
 					Msg.getString("SimulationConfigEditor.column.sponsor") //$NON-NLS-1$
 			};
 
+			settlementInfoList = new ArrayList<SettlementInfo>();
 			// Load default settlements.
-			settlements = new ArrayList<SettlementInfo>();
 			loadDefaultSettlements();
 		}
 
+		
 		/**
 		 * Load the default settlements in the table.
 		 */
 		private void loadDefaultSettlements() {
-//			SettlementConfig settlementConfig = simulationConfig.getSettlementConfiguration();
-			settlements.clear();
+			settlementInfoList.clear();
 			boolean hasSponsor = false;
 			String sponsorCC = null;
 			List<String> usedNames = new ArrayList<>();
@@ -797,7 +833,7 @@ public class SimulationConfigEditor {
 				
 				// Save this name to the list
 				usedNames.add(info.name);
-				
+							
 				// Modify the sponsor in case of the Commander Mode
 				if (mode == GameMode.COMMAND) {
 					if (sponsorCC.equalsIgnoreCase(info.sponsor)) {
@@ -806,13 +842,13 @@ public class SimulationConfigEditor {
 					}
 				}
 					
-				settlements.add(info);
+				settlementInfoList.add(info);
 			}
 			
 			if (mode == GameMode.COMMAND) {
 				if (!hasSponsor) {
 					// Change the 1st settlement's sponsor to match that of the commander
-					settlements.get(0).sponsor = sponsorCC;
+					settlementInfoList.get(0).sponsor = sponsorCC;
 					
 					// Gets a list of settlement names that are tailored to this country
 					List<String> candidateNames = settlementConfig.getSettlementNameList(sponsorCC);
@@ -821,7 +857,7 @@ public class SimulationConfigEditor {
 						for (String u: usedNames) {
 							if (!c.equalsIgnoreCase(u)) {
 								// Change the 1st settlement's name to this country's preferred name
-								settlements.get(0).name = c;
+								settlementInfoList.get(0).name = c;
 							}			
 						}
 						break;
@@ -839,12 +875,12 @@ public class SimulationConfigEditor {
 		}
 
 		public List<SettlementInfo> getSettlementInfoList() {
-			return settlements;
+			return settlementInfoList;
 		}
 		
 		@Override
 		public int getRowCount() {
-			return settlements.size();
+			return settlementInfoList.size();
 		}
 
 		@Override
@@ -880,7 +916,7 @@ public class SimulationConfigEditor {
 			Object result = Msg.getString("unknown"); //$NON-NLS-1$
 
 			if ((row > -1) && (row < getRowCount())) {
-				SettlementInfo info = settlements.get(row);
+				SettlementInfo info = settlementInfoList.get(row);
 				if ((column > -1) && (column < getColumnCount())) {
 					switch (column) {
 					case 0:
@@ -921,20 +957,24 @@ public class SimulationConfigEditor {
 		@Override
 		public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
 			if ((rowIndex > -1) && (rowIndex < getRowCount())) {
-				SettlementInfo info = settlements.get(rowIndex);
+				SettlementInfo info = settlementInfoList.get(rowIndex);
 				if ((columnIndex > -1) && (columnIndex < getColumnCount())) {
 					switch (columnIndex) {
+					
 					case 0:
 						info.name = (String) aValue;
 						break;
+						
 					case 1:
 						info.template = (String) aValue;
 						info.population = determineNewSettlementPopulation(info.template);
 						info.numOfRobots = determineNewSettlementNumOfRobots(info.template);
 						break;
+						
 					case 2:
 						info.population = (String) aValue;
 						break;
+						
 					case 3:
 						info.numOfRobots = (String) aValue;
 						break;
@@ -973,6 +1013,10 @@ public class SimulationConfigEditor {
 
 					case 6:
 						info.sponsor = (String) aValue;
+						String newName = tailorSettlementNameBySponsor(info.sponsor);
+						if (newName != null) {
+							info.name = newName;
+						}
 						break;
 
 					case 7:
@@ -984,6 +1028,7 @@ public class SimulationConfigEditor {
 					checkForErrors();
 
 				fireTableDataChanged();
+				
 			}
 		}
 
@@ -998,13 +1043,13 @@ public class SimulationConfigEditor {
 
 			for (int x = 0; x < rowIndexes.length; x++) {
 				if ((rowIndexes[x] > -1) && (rowIndexes[x] < getRowCount())) {
-					removedSettlements.add(settlements.get(rowIndexes[x]));
+					removedSettlements.add(settlementInfoList.get(rowIndexes[x]));
 				}
 			}
 
 			Iterator<SettlementInfo> i = removedSettlements.iterator();
 			while (i.hasNext()) {
-				settlements.remove(i.next());
+				settlementInfoList.remove(i.next());
 			}
 
 			fireTableDataChanged();
@@ -1017,7 +1062,7 @@ public class SimulationConfigEditor {
 		 *            the settlement configuration.
 		 */
 		private void addSettlement(SettlementInfo settlement) {
-			settlements.add(settlement);
+			settlementInfoList.add(settlement);
 			fireTableDataChanged();
 		}
 
@@ -1037,7 +1082,7 @@ public class SimulationConfigEditor {
 				setError(Msg.getString("SimulationConfigEditor.error.latitudeLongitudeBadEntry")); //$NON-NLS-1$
 			}
 
-			Iterator<SettlementInfo> i = settlements.iterator();
+			Iterator<SettlementInfo> i = settlementInfoList.iterator();
 			while (i.hasNext()) {
 				SettlementInfo settlement = i.next();
 
@@ -1228,7 +1273,7 @@ public class SimulationConfigEditor {
 		public void destroy() {
 
 			columns = null;
-			settlements = null;
+			settlementInfoList = null;
 
 		}
 
