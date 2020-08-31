@@ -74,22 +74,22 @@ public class VehicleTableModel extends UnitTableModel {
 	private final static int DESTDIST = 5;
 	private final static int MISSION = 6;
 	private final static int CREW = 7;
-	private final static int BOTS = 8;
-	private final static int DRIVER = 9;
-	private final static int STATUS = 10;
-	private final static int BEACON = 11;
-	private final static int RESERVED = 12;
-	private final static int SPEED = 13;
-	private final static int MALFUNCTION = 14;
-	private final static int OXYGEN = 15;
-	private final static int METHANE = 16;
-	private final static int WATER = 17;
-	private final static int FOOD = 18;
-	private final static int DESSERT = 19;
-	private final static int ROCK_SAMPLES = 20;
-	private final static int ICE = 21;
+//	private final static int BOTS = 8;
+	private final static int DRIVER = 8;
+	private final static int STATUS = 9;
+	private final static int BEACON = 10;
+	private final static int RESERVED = 11;
+	private final static int SPEED = 12;
+	private final static int MALFUNCTION = 13;
+	private final static int OXYGEN = 14;
+	private final static int METHANE = 15;
+	private final static int WATER = 16;
+	private final static int FOOD = 17;
+	private final static int DESSERT = 18;
+	private final static int ROCK_SAMPLES = 19;
+	private final static int ICE = 20;
 	/** The number of Columns. */
-	private final static int COLUMNCOUNT = 22;
+	private final static int COLUMNCOUNT = 21;
 	/** Names of Columns. */
 	private static String columnNames[];
 		
@@ -118,8 +118,8 @@ public class VehicleTableModel extends UnitTableModel {
 		columnTypes[MISSION] = String.class;
 		columnNames[CREW] = "Crew";
 		columnTypes[CREW] = Integer.class;
-		columnNames[BOTS] = "Bots";
-		columnTypes[BOTS] = Integer.class;
+//		columnNames[BOTS] = "Bots";
+//		columnTypes[BOTS] = Integer.class;
 		columnNames[DRIVER] = "Driver";
 		columnTypes[DRIVER] = String.class;
 		columnNames[STATUS] = "Status";
@@ -299,11 +299,11 @@ public class VehicleTableModel extends UnitTableModel {
 					else result = 0;
 				} break;
 
-				case BOTS : {
-					if (vehicle instanceof Crewable)
-						result = ((Crewable) vehicle).getRobotCrewNum();
-					else result = 0;
-				} break;
+//				case BOTS : {
+//					if (vehicle instanceof Crewable)
+//						result = ((Crewable) vehicle).getRobotCrewNum();
+//					else result = 0;
+//				} break;
 
 				case DRIVER : {
 					if (vehicle.getOperator() != null) {
@@ -454,7 +454,7 @@ public class VehicleTableModel extends UnitTableModel {
 				else if (eventType == UnitEventType.INVENTORY_STORING_UNIT_EVENT ||
 						eventType == UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT) {
 					if (source instanceof Person) columnNum = CREW;
-					else if (source instanceof Robot) columnNum = BOTS;
+//					else if (source instanceof Robot) columnNum = BOTS;
 				}
 				else if (eventType == UnitEventType.OPERATOR_EVENT) columnNum = DRIVER;
 				else if (eventType == UnitEventType.STATUS_EVENT) columnNum = STATUS;

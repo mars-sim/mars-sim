@@ -458,6 +458,7 @@ public class ArrivingSettlement implements Transportable, Serializable {
 	 */
 	private void createNewVehicles(Settlement newSettlement) {
 
+		String sponsor = newSettlement.getSponsor();
 		SettlementTemplate template = settlementConfig
 				.getSettlementTemplate(getTemplate());
 //		UnitManager unitManager = Simulation.instance().getUnitManager();
@@ -468,10 +469,10 @@ public class ArrivingSettlement implements Transportable, Serializable {
 			for (int x = 0; x < number; x++) {
 				Vehicle vehicle = null;
 				if (LightUtilityVehicle.NAME.equalsIgnoreCase(vehicleType)) {
-					String name = unitManager.getNewName(UnitType.VEHICLE, LightUtilityVehicle.NAME, null, null);
+					String name = unitManager.getNewVehicleName(LightUtilityVehicle.NAME, sponsor);
 					vehicle = new LightUtilityVehicle(name, vehicleType.toLowerCase(), newSettlement);
 				} else {
-					String name = unitManager.getNewName(UnitType.VEHICLE, null, null, null);
+					String name = unitManager.getNewVehicleName(vehicleType, sponsor);
 					vehicle = new Rover(name, vehicleType.toLowerCase(), newSettlement);
 				}
 				unitManager.addUnit(vehicle);

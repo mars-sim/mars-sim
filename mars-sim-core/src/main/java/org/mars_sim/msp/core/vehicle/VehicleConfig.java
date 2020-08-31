@@ -50,6 +50,7 @@ public class VehicleConfig implements Serializable {
 	private final String CAPACITY = "capacity";
 	private final String RESOURCE = "resource";
 	private final String VALUE = "value";
+	private final String SPONSOR = "sponsor";
 	private final String SICKBAY = "sickbay";
 	private final String LAB = "lab";
 	private final String TECH_LEVEL = "tech-level";
@@ -76,7 +77,7 @@ public class VehicleConfig implements Serializable {
 	private final String LAB_TYPE = "lab";
 
 	private Document vehicleDoc;
-	private List<String> roverNames;
+	private Map<String, String> roverNames;
 	private Map<String, VehicleDescription> map;
 
 	/**
@@ -607,26 +608,30 @@ public class VehicleConfig implements Serializable {
 	}
 
 	/**
-	 * Gets a list of rover names.
+	 * Gets a map of rover names and its sponsor.
 	 * 
-	 * @return list of rover names as strings.
+	 * @return a map
 	 * @throws Exception if XML parsing error.
 	 */
-	public List<String> getRoverNameList() {
+	public Map<String, String> getRoverNameList() {
 		if (roverNames == null) {
-			roverNames = new ArrayList<String>();
+			roverNames = new HashMap<>();
 
 			Element root = vehicleDoc.getRootElement();
-			Element vehicleNameListElement = root.getChild(ROVER_NAME_LIST);
-			List<Element> vehicleNameNodes = vehicleNameListElement.getChildren(ROVER_NAME);
+			Element l = root.getChild(ROVER_NAME_LIST);
+			List<Element> names = l.getChildren(ROVER_NAME);
 
-			for (Element vehicleNameElement : vehicleNameNodes) {
-				roverNames.add(vehicleNameElement.getAttributeValue(VALUE));
+			for (Element e : names) {
+				roverNames.put(e.getAttributeValue(VALUE), e.getAttributeValue(SPONSOR));
 			}
+			
+//			System.out.println(roverNames.size());
 		}
+		
 		return roverNames;
 	}
 
+		
 	/**
 	 * Prepare object for garbage collection. or simulation reboot.
 	 */

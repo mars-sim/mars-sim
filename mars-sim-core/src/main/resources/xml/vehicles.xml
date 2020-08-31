@@ -44,8 +44,10 @@
 	<!ATTLIST activity-spot type CDATA #REQUIRED>
 	<!ATTLIST activity-spot xloc CDATA #REQUIRED>
 	<!ATTLIST activity-spot yloc CDATA #REQUIRED>
+	
 	<!ELEMENT rover-name-list (rover-name*)>
 	<!ELEMENT rover-name EMPTY>
+	<!ATTLIST rover-name sponsor CDATA #REQUIRED>
 	<!ATTLIST rover-name value CDATA #REQUIRED>
 ]>
 
@@ -339,70 +341,147 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 -->
 	<!-- List of rover names -->
 	<rover-name-list>
-		<rover-name value="Agartha" /> <!-- Agartha is a legendary city that is said to be located in the Earth's core -->
-		<rover-name value="Agni" /> <!-- Hindi for "fire" -->
-		<rover-name value="Angaraka" /> <!-- Mars in Jyotish astrology (alternate name) -->
-		<rover-name value="Areos Aster" /> <!-- Greek for "star of Ares" -->
-		<rover-name value="Atlanta" /> <!-- The meaning of Atlanta is secure, immovable -->
-		<rover-name value="al-Mirrikh" /> <!-- Arabic/Persian for "Mars" -->
-		<rover-name value="Bahram" /> <!-- Ancient Persian for "Mars" -->
-		<rover-name value="Beagle IV" />
-		<rover-name value="Bedouin" />		
-		<rover-name value="Blodstjarna" /> <!-- Viking for "Mars" (not certain) -->
-		<rover-name value="Crater Crab" />		
-		<rover-name value="Desert Fox" />
-		<rover-name value="Desert Pearl" />	
-		<rover-name value="Desert Rose" />
-		<rover-name value="Deimos Tide" />
-		<rover-name value="Desert Star" />
-		<rover-name value="Drift Wood" />
-		<rover-name value="Desertfarer" />
-		<rover-name value="Dream Chaser" />	
-		<rover-name value="Dune Drifter" />
-		<rover-name value="Dune Runner" />
-		<rover-name value="Dusty Star" />
-		<rover-name value="Dust Storm" />
-		<rover-name value="Dust Sprite" />
-		<rover-name value="Firefly" />
-		<rover-name value="Fire Star" />	
-		<rover-name value="Fremen Wanderer" />			
-		<rover-name value="Gypsea" />
-		<rover-name value="Huoxing" /> <!-- Chinese for "Mars" -->		
-		<rover-name value="Martian Escape" />		
-		<rover-name value="Martian Cloud" />
-		<rover-name value="Mangala" /> <!--  Sanskrit for "Mars" in Jyotish astrology -->
-		<rover-name value="Ma'adim" /> <!-- Hebrew for "Mars" -->
-		<rover-name value="Merih" /> <!-- Turkish for "Mars" -->	
-		<rover-name value="Naag" /> <!-- Hindi for "snake" -->			
-		<rover-name value="Nomad" />		
-		<rover-name value="Oasis" />	
-		<rover-name value="Osprey" />			
-		<rover-name value="Opportunity II" />
-		<rover-name value="Odyssey" />
-		<rover-name value="Phobos Drifter" />
-		<rover-name value="Serenity" />
-		<rover-name value="Princess of the Sands" />
-		<rover-name value="Red Mariner" />
-		<rover-name value="Red Moon" />
-		<rover-name value="Ridge Runner" />		
-		<rover-name value="Shooting Star" />
-		<rover-name value="Sand Dancer" />
-		<rover-name value="Spice Trader" />
-		<rover-name value="Solitude" />
-		<rover-name value="Sand Spirit" />		
-		<rover-name value="Sand Crawler" />
-		<rover-name value="Sojourner II" />
-		<rover-name value="Spirit II" />
-		<rover-name value="Sun Dancer" />
-		<rover-name value="Rahu" /> <!-- Hindi for "Mars" (not certain) -->
-		<rover-name value="Vayu" /> <!-- Hindi for "wind" -->
-		<rover-name value="Prithvi" /> <!-- Hindi for "earth" -->
-		<rover-name value="Reth" /> <!-- Hindi for "sand" -->
-		<rover-name value="Sakit" /> <!-- Ancient Turkish for "Mars" -->
-		<rover-name value="Nergal" /> <!-- Babylonian for "Mars" -->
-		<rover-name value="Vikram" /> <!-- a male Hindu/Sanskrit name for being valorous, wise, brave and strong as well as victorious-->
-		<rover-name value="Wind Runner" />
-		<rover-name value="Windstorm" />
+	
+		<rover-name sponsor="China National Space Administration (CNSA)" value="Huoxing" />  <!-- Chinese for "Mars" -->		
+		<rover-name sponsor="China National Space Administration (CNSA)" value="Zidan" />    <!-- Chinese for bullet -->		
+		<rover-name sponsor="China National Space Administration (CNSA)" value="Huojian" />  <!-- Chinese for rocket -->		
+		<rover-name sponsor="China National Space Administration (CNSA)" value="Bolang" />   <!-- Chinese for wave front -->		
+		<rover-name sponsor="China National Space Administration (CNSA)" value="Lingxian" /> <!-- Chinese for leading the way -->		
+		<rover-name sponsor="China National Space Administration (CNSA)" value="guoLu" />    <!-- Chinese for passing through -->		
+		<rover-name sponsor="China National Space Administration (CNSA)" value="Youli" />    <!-- Chinese for traveling -->		
+		<rover-name sponsor="China National Space Administration (CNSA)" value="Changtu" />   <!-- Chinese for long journey" -->		
+		<rover-name sponsor="China National Space Administration (CNSA)" value="Hangcheng" /> <!-- Chinese for voyage -->		
+		<rover-name sponsor="China National Space Administration (CNSA)" value="Youke" />     <!-- Chinese for traveler -->		
+		<rover-name sponsor="China National Space Administration (CNSA)" value="YouShan" />   <!-- Chinese for treking mountain -->		
+		<rover-name sponsor="China National Space Administration (CNSA)" value="Aoxiang" />   <!-- Chinese for soaring -->		
+		<rover-name sponsor="China National Space Administration (CNSA)" value="Piaofu" />    <!-- Chinese for hovering -->		
+		<rover-name sponsor="China National Space Administration (CNSA)" value="Gaofei" />    <!-- Chinese for flying up -->
+								
+		<rover-name sponsor="Canadian Space Agency (CSA)" value="Desert Pearl" />	
+		<rover-name sponsor="Canadian Space Agency (CSA)" value="Desert Rose" />
+		<rover-name sponsor="Canadian Space Agency (CSA)" value="Deimos Tide" />
+		<rover-name sponsor="Canadian Space Agency (CSA)" value="Desert Star" />
+		<rover-name sponsor="Canadian Space Agency (CSA)" value="Drift Wood" />
+		<rover-name sponsor="Canadian Space Agency (CSA)" value="Desertfarer" />
+		<rover-name sponsor="Canadian Space Agency (CSA)" value="Dream Chaser" />	
+		<rover-name sponsor="Canadian Space Agency (CSA)" value="Dune Drifter" />
+		<rover-name sponsor="Canadian Space Agency (CSA)" value="Dune Runner" />	
+		
+		
+		<rover-name sponsor="European Space Agency (ESA)" value="al-Mirrikh" /> <!-- Arabic/Persian for "Mars" -->
+		<rover-name sponsor="European Space Agency (ESA)" value="Areos Aster" /> <!-- Greek for "star of Ares" -->
+		<rover-name sponsor="European Space Agency (ESA)" value="Ariane" /> 
+		<rover-name sponsor="European Space Agency (ESA)" value="Beagle IV" />
+		<rover-name sponsor="European Space Agency (ESA)" value="Bedouin" />		
+		<rover-name sponsor="European Space Agency (ESA)" value="Blodstjarna" /> <!-- Viking for "Mars" (not certain) -->
+		<rover-name sponsor="European Space Agency (ESA)" value="Bahram" /> <!-- Ancient Persian for "Mars" -->
+		
+		<rover-name sponsor="European Space Agency (ESA)" value="Autobahn" />	<!-- German for Motorway  -->
+		<rover-name sponsor="European Space Agency (ESA)" value="Fahrzeug" />	<!-- German for vehicle -->
+ 		<rover-name sponsor="European Space Agency (ESA)" value="Gaspedal" />	<!-- German for Accelerator  -->	
+		<rover-name sponsor="European Space Agency (ESA)" value="Gondel" />		<!-- German for gondola -->		
+		<rover-name sponsor="European Space Agency (ESA)" value="Kutsche" />	<!-- German for carriage -->		
+ 		<rover-name sponsor="European Space Agency (ESA)" value="Schlitten" />	<!-- German for carriage -->	
+				
+		<rover-name sponsor="European Space Agency (ESA)" value="Nergal" />     <!-- Babylonian for "Mars" -->		
+		
+		<rover-name sponsor="European Space Agency (ESA)" value="Merih" />      <!-- Turkish for "Mars" -->	
+		<rover-name sponsor="European Space Agency (ESA)" value="Sakit" />      <!-- Ancient Turkish for "Mars" -->
+		
+		<rover-name sponsor="European Space Agency (ESA)" value="Voiture " />	<!-- French for vehicle -->		
+						
+				
+		<rover-name sponsor="Indian Space Research Organisation (ISRO)" value="Agni" /> <!-- Hindi for "fire" -->
+		<rover-name sponsor="Indian Space Research Organisation (ISRO)" value="Naag" /> <!-- Hindi for "snake" -->		
+		<rover-name sponsor="Indian Space Research Organisation (ISRO)" value="Angaraka" /> <!-- Mars in Jyotish astrology (alternate name) -->
+		<rover-name sponsor="Indian Space Research Organisation (ISRO)" value="Mangala" /> <!--  Sanskrit for "Mars" in Jyotish astrology -->
+		<rover-name sponsor="Indian Space Research Organisation (ISRO)" value="Rahu" /> <!-- Hindi for "Mars" (not certain) -->
+		<rover-name sponsor="Indian Space Research Organisation (ISRO)" value="Vayu" /> <!-- Hindi for "wind" -->
+		<rover-name sponsor="Indian Space Research Organisation (ISRO)" value="Prithvi" /> <!-- Hindi for "earth" -->
+		<rover-name sponsor="Indian Space Research Organisation (ISRO)" value="Reth" /> <!-- Hindi for "sand" -->
+		<rover-name sponsor="Indian Space Research Organisation (ISRO)" value="Vikram" /> <!-- a male Hindu/Sanskrit name for being valorous, wise, brave and strong as well as victorious-->
+	
+	
+		<rover-name sponsor="Japan Aerospace Exploration Agency (JAXA)" value="Jyu-Sokosha" />
+		<rover-name sponsor="Japan Aerospace Exploration Agency (JAXA)" value="Ha-Go" />
+		<rover-name sponsor="Japan Aerospace Exploration Agency (JAXA)" value="Ke-To" />
+		<rover-name sponsor="Japan Aerospace Exploration Agency (JAXA)" value="Ke-Nu" />
+		<rover-name sponsor="Japan Aerospace Exploration Agency (JAXA)" value="Shinhoto" />
+		<rover-name sponsor="Japan Aerospace Exploration Agency (JAXA)" value="Ro-Go" />
+		<rover-name sponsor="Japan Aerospace Exploration Agency (JAXA)" value="So-Ki" />
+		<rover-name sponsor="Japan Aerospace Exploration Agency (JAXA)" value="So-Da" />
+		<rover-name sponsor="Japan Aerospace Exploration Agency (JAXA)" value="Ku-Se" />
+		<rover-name sponsor="Japan Aerospace Exploration Agency (JAXA)" value="Ke-Ri" />
+		<rover-name sponsor="Japan Aerospace Exploration Agency (JAXA)" value="Ho-To" />
+		<rover-name sponsor="Japan Aerospace Exploration Agency (JAXA)" value="Ke-Ho" />										
+		<rover-name sponsor="Japan Aerospace Exploration Agency (JAXA)" value="Chi-Ha" />
+		<rover-name sponsor="Japan Aerospace Exploration Agency (JAXA)" value="Chi-He" />		
+		<rover-name sponsor="Japan Aerospace Exploration Agency (JAXA)" value="Chi-To" />
+		<rover-name sponsor="Japan Aerospace Exploration Agency (JAXA)" value="Chi-Ri" />
+		<rover-name sponsor="Japan Aerospace Exploration Agency (JAXA)" value="Shi-Ki" />		
+	 
+		<rover-name sponsor="Mars Society (MS)" value="Dusty Star" />
+		<rover-name sponsor="Mars Society (MS)" value="Dust Storm" />
+		<rover-name sponsor="Mars Society (MS)" value="Dust Sprite" />
+		<rover-name sponsor="Mars Society (MS)" value="Martian Escape" />		
+		<rover-name sponsor="Mars Society (MS)" value="Martian Cloud" />	
+		<rover-name sponsor="Mars Society (MS)" value="Ma'adim" /> <!-- Hebrew for "Mars" -->
+		<rover-name sponsor="Mars Society (MS)" value="Red Mariner" />
+		<rover-name sponsor="Mars Society (MS)" value="Red Moon" />
+		<rover-name sponsor="Mars Society (MS)" value="Ridge Runner" />		
+		<rover-name sponsor="Mars Society (MS)" value="Shooting Star" />
+		<rover-name sponsor="Mars Society (MS)" value="Sand Dancer" />
+		<rover-name sponsor="Mars Society (MS)" value="Spice Trader" />
+		<rover-name sponsor="Mars Society (MS)" value="Solitude" />
+		<rover-name sponsor="Mars Society (MS)" value="Sand Spirit" />		
+		<rover-name sponsor="Mars Society (MS)" value="Sand Crawler" />
+		<rover-name sponsor="Mars Society (MS)" value="Sojourner II" />
+		<rover-name sponsor="Mars Society (MS)" value="Spirit II" />
+		<rover-name sponsor="Mars Society (MS)" value="Sun Dancer" />
+		<rover-name sponsor="Mars Society (MS)" value="Wind Runner" />
+		<rover-name sponsor="Mars Society (MS)" value="Windstorm" />
+		
+		<rover-name sponsor="National Aeronautics and Space Administration (NASA)" value="Agartha" /> <!-- Agartha is a legendary city that is said to be located in the Earth's core -->			
+		<rover-name sponsor="National Aeronautics and Space Administration (NASA)" value="Atlanta" /> <!-- The meaning of Atlanta is secure, immovable -->
+		<rover-name sponsor="National Aeronautics and Space Administration (NASA)" value="Crater Crab" />		
+		<rover-name sponsor="National Aeronautics and Space Administration (NASA)" value="Desert Rat" /> 
+		<rover-name sponsor="National Aeronautics and Space Administration (NASA)" value="Firefly" />
+		<rover-name sponsor="National Aeronautics and Space Administration (NASA)" value="Fire Star" />	
+		<rover-name sponsor="National Aeronautics and Space Administration (NASA)" value="Fremen Wanderer" />			
+		<rover-name sponsor="National Aeronautics and Space Administration (NASA)" value="Liberty" />
+		<rover-name sponsor="National Aeronautics and Space Administration (NASA)" value="Loonie" /> 	
+		<rover-name sponsor="National Aeronautics and Space Administration (NASA)" value="Jetson" /> 
+		<rover-name sponsor="National Aeronautics and Space Administration (NASA)" value="Marina" /> 			
+		<rover-name sponsor="National Aeronautics and Space Administration (NASA)" value="Opportunity II" />
+			
+		<rover-name sponsor="Roscosmos (RKA)" value="Chizhevsky" />
+		<rover-name sponsor="Roscosmos (RKA)" value="Lomonosov" />
+		<rover-name sponsor="Roscosmos (RKA)" value="Lvov" />		
+		<rover-name sponsor="Roscosmos (RKA)" value="Obruchev" />
+		<rover-name sponsor="Roscosmos (RKA)" value="Tatishchev" />
+		<rover-name sponsor="Roscosmos (RKA)" value="Vernadsky" />	
+		<rover-name sponsor="Roscosmos (RKA)" value="Chikhachyov" />
+		<rover-name sponsor="Roscosmos (RKA)" value="Dokuchaev" />
+		<rover-name sponsor="Roscosmos (RKA)" value="Karpinsky" />	
+		<rover-name sponsor="Roscosmos (RKA)" value="Middendorf" />
+		<rover-name sponsor="Roscosmos (RKA)" value="Shirshov" />
+		<rover-name sponsor="Roscosmos (RKA)" value="Shokalsky" />					
+		<rover-name sponsor="Roscosmos (RKA)" value="Tikhonov" />
+		<rover-name sponsor="Roscosmos (RKA)" value="Ivanov" />
+		<rover-name sponsor="Roscosmos (RKA)" value="Maleev" />	
+									
+		<rover-name sponsor="Space Exploration Technologies (SpaceX)" value="Desert Fox" />
+		<rover-name sponsor="Space Exploration Technologies (SpaceX)" value="Gypsea" />
+		<rover-name sponsor="Space Exploration Technologies (SpaceX)" value="Nomad" />		
+		<rover-name sponsor="Space Exploration Technologies (SpaceX)" value="Oasis" />	
+		<rover-name sponsor="Space Exploration Technologies (SpaceX)" value="Odyssey" />
+		<rover-name sponsor="Space Exploration Technologies (SpaceX)" value="Osprey" />			
+		<rover-name sponsor="Space Exploration Technologies (SpaceX)" value="Drifter" />
+		<rover-name sponsor="Space Exploration Technologies (SpaceX)" value="Princess" />		
+		<rover-name sponsor="Space Exploration Technologies (SpaceX)" value="Serenity" />
+		<rover-name sponsor="Space Exploration Technologies (SpaceX)" value="Model A" />					
+		<rover-name sponsor="Space Exploration Technologies (SpaceX)" value="Model B" />			
+		<rover-name sponsor="Space Exploration Technologies (SpaceX)" value="Model Z" />			
 
 	</rover-name-list>
 

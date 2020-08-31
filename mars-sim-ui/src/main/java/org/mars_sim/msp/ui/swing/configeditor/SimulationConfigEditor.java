@@ -418,7 +418,7 @@ public class SimulationConfigEditor {
 		JRootPane rootPane = SwingUtilities.getRootPane(defaultButton); 
 		rootPane.setDefaultButton(defaultButton);
 		
-		logger.config("Done with SimulationConfigEditor's constructor on " + Thread.currentThread().getName());
+//		logger.config("Done with SimulationConfigEditor's constructor on " + Thread.currentThread().getName());
 	}
 	
 

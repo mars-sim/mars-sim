@@ -59,6 +59,7 @@ import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleConfig;
+import org.mars_sim.msp.core.vehicle.VehicleType;
 
 /**
  * The UnitManager class contains and manages all units in virtual Mars. It has
@@ -76,16 +77,16 @@ public class UnitManager implements Serializable {
 
 	public static final int THREE_SHIFTS_MIN_POPULATION = 6;
 
-	public static final String ONE_SPACE = "0";
-	public static final String TWO_SPACES = "00";
-	public static final String THREE_SPACES = "000";
+	public static final String ONE_ZERO = "0";
+	public static final String TWO_ZEROS = "00";
+	public static final String THREE_ZEROS = "000";
 	
 	public static final String PERSON_NAME = "Person";
 	public static final String VEHICLE_NAME = "Vehicle";
 	public static final String SETTLEMENT_NAME = "Settlement";
 	
-	public static final String LUV = "LUV";
 	public static final String EARTH = "Earth";
+	public static final String LUV = "LUV";
 	
 	/** True if the simulation has just started. */
 	private static boolean justStarting = true;
@@ -108,7 +109,7 @@ public class UnitManager implements Serializable {
 	/** List of possible settlement names. */
 	private static volatile List<String> settlementNames;
 	/** List of possible vehicle names. */
-	private static volatile List<String> vehicleNames;
+	private static volatile Map<String, String> vehicleNames;
 	/** List of possible male person names. */
 	private static volatile List<String> personMaleNames;
 	/** List of possible female person names. */
@@ -118,9 +119,15 @@ public class UnitManager implements Serializable {
 
 	/** Map of equipment types and their numbers. */
 	private static volatile Map<String, Integer> equipmentNumberMap;
-	/** Map of vehicle types and their numbers. */
-	private static volatile Map<String, Integer> vehicleNumberMap;
-
+	/** The current count of LUVs. */
+	private static int LUVCount = 1;
+	/** The current count of cargo rovers. */	
+	private static int cargoCount = 1;
+	/** The current count of transport rovers. */
+	private static int transportCount = 1;
+	/** The current count of explorer rovers. */	
+	private static int explorerCount = 1;
+	
 	private static Map<Integer, List<String>> marsSociety = new HashMap<>();
 
 	private static Map<Integer, List<String>> maleFirstNamesBySponsor = new HashMap<>();
@@ -208,8 +215,7 @@ public class UnitManager implements Serializable {
 //		units = new CopyOnWriteArrayList<>();//ConcurrentLinkedQueue<Unit>();
 		listeners = new CopyOnWriteArrayList<>();//Collections.synchronizedList(new ArrayList<UnitManagerListener>());
 		equipmentNumberMap = new HashMap<String, Integer>();
-		vehicleNumberMap = new HashMap<String, Integer>();
-		
+	
 		personConfig = simulationConfig.getPersonConfig();	
 		robotConfig = simulationConfig.getRobotConfiguration();
 		crewConfig = simulationConfig.getCrewConfig();
@@ -404,7 +410,7 @@ public class UnitManager implements Serializable {
 	}
 
 	/**
-	 * Initializes the list of possible vehicle names.
+	 * Initializes the list of possible vehicle names by sponsors.
 	 *
 	 * @throws Exception if unable to load rover names.
 	 */
@@ -783,7 +789,103 @@ public class UnitManager implements Serializable {
 			fireUnitManagerUpdate(UnitManagerEventType.REMOVE_UNIT, unit);
 //		}
 	}
+	
+	/**
+	 * Gets a new vehicle name for a unit.
+	 * 
+	 * @param type the type of vehicle.
+	 * @param sponsor the sponsor name.
+	 * @return new name
+	 * @throws IllegalArgumentException if unitType is not valid.
+	 */
+	public String getNewVehicleName(String type, String sponsor) {
+		String result = "";
+	
+		List<String> usedNames = new ArrayList<String>();
+		String unitName = "";
+		
+		Iterator<Vehicle> vi = getVehicles().iterator();
+		while (vi.hasNext()) {
+			usedNames.add(vi.next().getName());
+		}
+		
+		if (type != null && type.equalsIgnoreCase(LightUtilityVehicle.NAME)) {
+			// for LUVs 
+			String tagID = "";
+			int number = LUVCount++;
 
+			if (number < 10)
+				tagID = TWO_ZEROS + number;
+			else if (number < 100)
+				tagID = ONE_ZERO + number;
+			else if (number < 1000)
+				tagID = "" + number;
+			else
+				tagID = "" + number;
+	
+			return LUV + " " + tagID;
+
+		} else {
+			// for Explorer, Transport and Cargo Rover
+
+//			System.out.println(vehicleNames);
+			
+			Map<String, String> map = vehicleNames.entrySet() 
+		              .stream() 
+		              .filter(m -> m.getValue().equalsIgnoreCase(sponsor)) 
+		              .filter(m -> !usedNames.contains(m.getKey())) 
+		              .collect(Collectors.toMap(m -> m.getKey(), m -> m.getValue()));        
+			
+//			System.out.println(map);
+		
+			List<String> possibleNames = map.keySet()
+				.stream()
+				.collect(Collectors.toList());
+			
+//			System.out.println(possibleNames);
+			
+//			Iterator<String> i = map.values().iterator();
+//			while (i.hasNext()) {
+//				String name = i.next();
+//				if (!usedNames.contains(name)) {
+//					possibleNames.add(name);
+//				}
+//			}
+
+			if (possibleNames.size() > 0) {
+				result = possibleNames.get(RandomUtil.getRandomInt(possibleNames.size() - 1));
+			} 
+			
+			// TODO: may use names from Mars Society's vehicle list 
+			
+			else {
+				unitName = VEHICLE_NAME;
+				int number = 1;
+				if (type.equalsIgnoreCase(VehicleType.CARGO_ROVER.getName()))
+					number = cargoCount++;
+				else if (type.equalsIgnoreCase(VehicleType.TRANSPORT_ROVER.getName()))
+					number = transportCount++;
+				else if (type.equalsIgnoreCase(VehicleType.EXPLORER_ROVER.getName()))
+					number = explorerCount++;
+				
+				String tagID = "";
+				
+				if (number < 10)
+					tagID = TWO_ZEROS + number;
+				else if (number < 100)
+					tagID = ONE_ZERO + number;
+				else if (number < 1000)
+					tagID = "" + number;
+				else
+					tagID = "" + number;
+				
+				result = unitName + " " + tagID;
+			}	
+		}
+
+		return result;
+	}
+	
 	/**
 	 * Gets a new name for a unit.
 	 * 
@@ -806,37 +908,6 @@ public class UnitManager implements Serializable {
 				usedNames.add(si.next().getName());
 			}
 			unitName = SETTLEMENT_NAME;
-
-		} else if (unitType == UnitType.VEHICLE) {
-			if (baseName != null && (baseName.equalsIgnoreCase(LUV)
-					|| baseName.equalsIgnoreCase(LightUtilityVehicle.NAME))) {
-				// for LUVs 
-				String tagID = "";
-				int number = 1;
-				if (vehicleNumberMap.containsKey(baseName)) {
-					number += vehicleNumberMap.get(baseName);
-				}
-				if (number < 10)
-					tagID = TWO_SPACES + number;
-				else if (number < 100)
-					tagID = ONE_SPACE + number;
-				else if (number < 1000)
-					tagID = "" + number;
-				else
-					tagID = "" + number;
-				vehicleNumberMap.put(baseName, number);
-				return baseName + " " + tagID;
-
-			} else {
-				// for Explorer, Transport and Cargo Rover
-				initialNameList = vehicleNames;
-//				System.out.println(initialNameList);
-				Iterator<Vehicle> vi = getVehicles().iterator();
-				while (vi.hasNext()) {
-					usedNames.add(vi.next().getName());
-				}
-				unitName = VEHICLE_NAME;
-			}
 
 		} else if (unitType == UnitType.PERSON) {
 			if (GenderType.MALE == gender) {
@@ -871,9 +942,9 @@ public class UnitManager implements Serializable {
 					number += equipmentNumberMap.get(baseName);
 				}
 				if (number < 10)
-					tagID = TWO_SPACES + number;
+					tagID = TWO_ZEROS + number;
 				else if (number < 100)
-					tagID = ONE_SPACE + number;
+					tagID = ONE_ZERO + number;
 				else if (number < 1000)
 					tagID = "" + number;
 				else
@@ -902,9 +973,9 @@ public class UnitManager implements Serializable {
 			int number = usedNames.size() + 1;
 			String tagID = "";
 			if (number < 10)
-				tagID = TWO_SPACES + number;
+				tagID = TWO_ZEROS + number;
 			else if (number < 100)
-				tagID = ONE_SPACE + number;
+				tagID = ONE_ZERO + number;
 			else if (number < 1000)
 				tagID = "" + number;
 			else
@@ -989,6 +1060,7 @@ public class UnitManager implements Serializable {
 				SettlementTemplate template = settlementConfig.getSettlementTemplate(settlement.getTemplate());
 				Map<String, Integer> vehicleMap = template.getVehicles();
 				Iterator<String> j = vehicleMap.keySet().iterator();
+				String sponsor = settlement.getSponsor();
 				while (j.hasNext()) {
 					String vehicleType = j.next();
 					int number = vehicleMap.get(vehicleType);
@@ -996,13 +1068,13 @@ public class UnitManager implements Serializable {
 //					logger.config("vehicleType : " + vehicleType);
 					for (int x = 0; x < number; x++) {
 						if (LightUtilityVehicle.NAME.equalsIgnoreCase(vehicleType)) {
-							String name = getNewName(UnitType.VEHICLE, LUV, null, null);
+							String name = getNewVehicleName(LightUtilityVehicle.NAME, sponsor);
 //							logger.config("name : " + name);
 							LightUtilityVehicle luv = new LightUtilityVehicle(name, vehicleType, settlement);
 //							logger.config("luv : " + luv);
 							addUnit(luv);
 						} else {
-							String name = getNewName(UnitType.VEHICLE, null, null, null);
+							String name = getNewVehicleName(vehicleType, sponsor);
 //							logger.config("name : " + name);
 							Rover rover = new Rover(name, vehicleType, settlement);
 //							logger.config("rover : " + rover);
@@ -2827,8 +2899,6 @@ public class UnitManager implements Serializable {
 		// settlementExecutor = null;
 //		equipmentNumberMap.clear();
 		equipmentNumberMap = null;
-//		vehicleNumberMap.clear();
-		vehicleNumberMap = null;
 		// masterClock = null;
 //		firstSettlement = null;
 		
