@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VersionTag.java
- * @version 3.1.1 2020-07-22
+ * @version 3.1.2 2020-09-02
  * @author Manny Kung
  */
 
@@ -28,9 +28,9 @@ import java.util.stream.Stream;
 public class VersionTag {
 
 	private static String versionTagID = "* @version";
-	private static String versionTagString = " * @version 3.1.1 2020-07-22";
+	private static String versionTagString = " * @version 3.1.2 2020-09-02";
 	
-	private static String TOP_DIR = "D:/660s/eclipse/java-2020-06/eclipse/git/mars-sim";
+	private static String TOP_DIR = "D:/eclipse/java-2020-06/eclipse/git/mars-sim";
 			
 	private static String LINE0 = "/**";
 	private static String LINE1 = " * Mars Simulation Project";
@@ -118,7 +118,7 @@ public class VersionTag {
         if (changedVersionTagList.size() > 0)
         	changedVersionTagList.forEach(System.out::println);
 
-        System.out.println();
+        System.out.println("The new VersionTag is " + versionTagString);
 
         System.out.println("> # of java files already having the correct version tag : " + unChangedVersionTagList.size());
         

@@ -52,7 +52,7 @@ import org.mars_sim.msp.ui.swing.notification.IconProvider;
  * member allows to get the associated icon...
  * 
  * @author Antoine Neveux
- * @version 3.1.1 2020-07-22
+ * @version 3.1.2 2020-09-02
  * @since 2.1
  */
 public enum BatchIconProvider implements IconProvider {

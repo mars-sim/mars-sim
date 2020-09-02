@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ModalInternalFrame.java
- * @version 3.1.1 2020-07-22
+ * @version 3.1.2 2020-09-02
  * @author Scott Davis
  */
 
@@ -22,22 +22,16 @@ import javax.swing.JInternalFrame;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
-import org.mars_sim.msp.ui.swing.configeditor.SimulationConfigEditor;
-
-import com.alee.managers.icon.LazyIcon;
-
 /**
  * An internal frame that supports modal behavior. Based on code found in:
  * https://community.oracle.com/thread/1358431?start=0&tstart=0
  * see also https://stackoverflow.com/questions/16422939/jinternalframe-as-modal
  */
+@SuppressWarnings("serial")
 public abstract class ModalInternalFrame extends JInternalFrame {
 
 	// Data members
 	boolean modal = false;
-	
-	private static ImageIcon icon = new LazyIcon("lander").getIcon();//new ImageIcon(SimulationConfigEditor.class.getResource(MainWindow.LANDER_PNG));
-	
 
 	/**
 	 * Constructor
@@ -49,7 +43,7 @@ public abstract class ModalInternalFrame extends JInternalFrame {
 		// Call JInternalFrame constructor.
 		super(title, false, false, false, false);
 		
-		setFrameIcon(icon);
+		setFrameIcon(MainWindow.getLanderIcon());
 	}
 
 	public ModalInternalFrame(String title, boolean resizable, boolean closable, boolean maximizable,
@@ -57,7 +51,7 @@ public abstract class ModalInternalFrame extends JInternalFrame {
 		// Call JInternalFrame constructor.
 		super(title, resizable, closable, maximizable, iconifiable);
 		
-		setFrameIcon(icon);
+		setFrameIcon(MainWindow.getLanderIcon());
 	}
 
 	@Override

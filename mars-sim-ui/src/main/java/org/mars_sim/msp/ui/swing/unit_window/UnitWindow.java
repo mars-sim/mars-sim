@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitWindow.java
- * @version 3.1.1 2020-07-22
+ * @version 3.1.2 2020-09-02
  * @author Scott Davis
  */
 
@@ -41,7 +41,6 @@ import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.tabbedpane.WebTabbedPane;
-import com.alee.managers.icon.LazyIcon;
 import com.alee.managers.tooltip.TooltipManager;
 import com.alee.managers.tooltip.TooltipWay;
 
@@ -108,7 +107,7 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 	/** Unit for this window. */
 	protected Unit unit;
 
-	private static ImageIcon icon = new LazyIcon("lander").getIcon();
+//	private static ImageIcon icon = MainWindow.getLanderIcon();
 	
 	/**
 	 * Constructor
@@ -126,7 +125,7 @@ public abstract class UnitWindow extends ModalInternalFrame implements ChangeLis
 		this.unit = unit;
 		this.hasDescription = hasDescription;
 
-		setFrameIcon(icon);
+		setFrameIcon(MainWindow.getLanderIcon());
 		
 		if (unit instanceof Person) {
 			setMaximumSize(new Dimension(WIDTH, HEIGHT));

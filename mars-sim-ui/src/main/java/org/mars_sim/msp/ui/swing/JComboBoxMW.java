@@ -1,8 +1,8 @@
 /**
  * Mars Simulation Project
  * JComboBoxMW.java
- * @version 3.1.1 2020-07-22
- * @version 3.1.1 2020-07-22
+ * @version 3.1.2 2020-09-02
+ * @version 3.1.2 2020-09-02
  * @author stpa
  */
 package org.mars_sim.msp.ui.swing;

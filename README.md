@@ -47,7 +47,7 @@ While at the Earth's sea level, the atmospheric pressure is **101 kPa** (14.7 ps
 in mars-sim, a low pressure atmosphere of **34 kPa** (4.93 psi) is chosen for the settlement living with
 the composition of oxygen at 58.8%. However, inside a rover or an 
 [EVA suit](https://github.com/mars-sim/mars-sim/wiki/EVA-Suit), an even lower pressurized 
-environment of 17 kPa (2.47 psi) is adopted for more optimal use of resources and design specifications. 
+environment of **17 kPa** (2.47 psi) is adopted for more optimal use of resources and design specifications. 
 See [Atmosphere](https://github.com/mars-sim/mars-sim/wiki/Atmosphere) wiki.
 
 Each building has life-support system [functions](https://github.com/mars-sim/mars-sim/wiki/Building-Function)
@@ -58,13 +58,16 @@ These gases are produced via chemical systems such as **Sabatier Reverse Water G
 An example of operation modeling is the sequence of steps involving the ingress and egress of airlocks 
 before and after an **Extra-Vehicular Activity (EVA)**. 
 
-In mars-sim, to walk on the surface of Mars, a settler must come through an intermediate chamber 
-called an *airlock* to exit the settlement. The airlock allows the passage of people between 
+To walk onto the surface of Mars, a settler must come through an intermediate chamber 
+called the *airlock* to exit the settlement. The airlock allows the passage of people between 
 a pressure vessel and its surroundings while minimizing the change of pressure in the vessel and loss of 
-air from it. One would find an airlock in *Astronomy Observatory*, any types of garage, all rovers, 
-and any *Hab* (which stands for habitation module, usually cylinderical in shape) buildings such as 
-*Lander Hab*, etc.
+air from it. In mars-sim, the airlock is a separate building joined to any *Hab* (which stands for 
+*habitation module*, cylinderical in shape) such as *Lander Hab*, or *Outpost Hub*, *Astronomy Observatory*, etc.
+All rovers have an vehicular airlock built-in. 
 
+---
+
+## Extra-Vehicular Activity (EVA)
 To perform a team EVA, one of will be selected as the *airlock operator*, who will ensure that proper
 procedures be followed before going out for an EVA or after coming back from an EVA.
 
@@ -79,14 +82,15 @@ Our third example is the [Radiation Modeling](https://github.com/mars-sim/mars-s
  which account for how often the **Galactic Cosmic Ray (GCR)** and **Solar Energetic Particles (SEP)** 
  would occur during EVA. The cumulative dose is closely monitored in 3 specific exposure interval, 
  namely, the 30-day, the annual and the career lifetime of a settler. It would affect 3 different regions 
- of our body, namely, the Blood Forming Organs (BFO), the Ocular Lens, and the Skin. The dose limits are
- measured in milli-Severt.
+ of our body, namely, the *Blood Forming Organs (BFO)*, the *Ocular Lens*, and the *Skin*. The dose limits are
+ measured in *milli-Severt*.
  
 ---
  
 ## Settlement Development 
 Player may build numerous settlements spreading across the surface of Mars. Each settlement has a 
-*[command structure](https://github.com/mars-sim/mars-sim/wiki/Role)* and a *[development objective](https://github.com/mars-sim/mars-sim/wiki/Settlement-Objective)*.  
+*[command structure](https://github.com/mars-sim/mars-sim/wiki/Role)* and a 
+*[development objective](https://github.com/mars-sim/mars-sim/wiki/Settlement-Objective)*.  
 
 As mars-sim loosely follows the *Mars Direct Mission Plan by Robert Zubrin*, there are 6 types of 
 [settlement templates](https://github.com/mars-sim/mars-sim/wiki/Settlement-Templates) to choose from. 
@@ -121,7 +125,9 @@ They may even decide to migrate from one settlement to another.
 ---
 
 ## Reliability and Malfunctions
-The perils of living on Mars are very real. There are close to 30 types of [Malfunctions](https://github.com/mars-sim/mars-sim/wiki/Field-Reliability-and-Malfunctions) that can strike. The failure rate, the Mean Time Between Failure (MTBF) and the reliability of parts are tracked real-time and updated dynamically based on field available data during the simulation.
+The perils of living on Mars are very real. There are close to 30 types of [Malfunctions]
+(https://github.com/mars-sim/mars-sim/wiki/Field-Reliability-and-Malfunctions) that can strike. The failure rate,
+ the Mean Time Between Failure (MTBF) and the reliability of parts are tracked real-time and updated dynamically based on field available data during the simulation.
 
 ---
 
@@ -136,7 +142,7 @@ planetary surface.
 
 ---
 
-## Webpage
+## Website
 For a more detail description of this project, see our [project website](https://mars-sim.github.io/).
 
 ---
@@ -183,7 +189,7 @@ Before r4945,
 * Require JDK 9/10 for for compiling Java 9/10 compatible binary
 
 
-### JDK vs. JavaFX
+### JDK and JavaFX
 
 Beginning Java 11, the JRE/JDK is being decoupled from the graphic JavaFX API. 
 What it means for the open source community is that the OpenJDK package is also 
@@ -202,7 +208,7 @@ utilize JavaFX / OpenJFX. Therefore, it's NOT a requirement to install them curr
 
  ```
 
-### OS Platform
+### OS Platforms
 
 Assuming that OpenJDK 14.0.2 is being used,
 

@@ -13,7 +13,7 @@ package org.mars_sim.msp.ui.steelseries.rangeslider;
  * The offset could also be defined from -0.5 to +0.5 or -180 to +180 degrees.
  * If you would like to use degrees instead of values from 0 to 1 you have to use
  * the full constructor and set the USE_DEGREES variable to true
- * @version 3.1.1 2020-07-22
+ * @version 3.1.2 2020-09-02
  * @author hansolo
  */
 public final class ConicalGradientPaint implements java.awt.Paint

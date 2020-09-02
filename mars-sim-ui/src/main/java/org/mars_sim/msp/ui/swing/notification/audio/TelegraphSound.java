@@ -56,7 +56,7 @@ import org.mars_sim.msp.ui.swing.notification.TelegraphConfig;
  * {@link #start()} method. It'll launch a new thread to play the sound.
  * 
  * @author Antoine Neveux
- * @version 3.1.1 2020-07-22
+ * @version 3.1.2 2020-09-02
  * @since 2.1
  * 
  */
@@ -130,7 +130,7 @@ public class TelegraphSound extends Thread {
 	 * This Listener allows to notify when the play of the sound is ended
 	 * 
 	 * @author Antoine Neveux
- * @version 3.1.1 2020-07-22
+ * @version 3.1.2 2020-09-02
 	 * @since 2.1
 	 * 
 	 */

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainWindow.java
- * @version 3.1.1 2020-07-22
+ * @version 3.1.2 2020-09-02
  * @author Scott Davis
  */
 
@@ -23,6 +23,9 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -55,10 +58,9 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
-import org.mars_sim.msp.ui.swing.configeditor.CrewEditor;
 import org.mars_sim.msp.ui.swing.tool.JStatusBar;
 
-import com.alee.api.resource.FileResource;
+import com.alee.api.resource.ClassResource;
 import com.alee.extended.date.WebDateField;
 import com.alee.extended.label.WebStyledLabel;
 import com.alee.extended.memorybar.WebMemoryBar;
@@ -116,6 +118,9 @@ extends JComponent {
 	private static boolean iconsConfigured = false;
 	/** The main window frame. */	
 	private static WebFrame frame;
+	/** The lander hab icon. */
+	private static Icon landerIcon;
+	
 	/** The four types of theme types. */	
 	public enum ThemeType {
 		SYSTEM, NIMBUS, NIMROD, WEBLAF, METAL
@@ -129,6 +134,7 @@ extends JComponent {
 	private int solCache = 0;
 
 	private String lookAndFeelTheme;
+
 	/** The unit tool bar. */
 	private UnitToolBar unitToolbar;
 	/** The tool bar. */
@@ -274,55 +280,83 @@ extends JComponent {
 		iconsConfigured = true;
 		// Set up an icon set for use throughout mars-sim
 		IconSet iconSet = new RuntimeIconSet("mars-sim-set");
-
-		String s0 = CrewEditor.class.getResource(MainWindow.INFO_SVG).getPath();
-//		System.out.println("s0 is " + s0);
-		
+	
 		int size = 24;
 		
 		iconSet.addIcon(new SvgIconSource (
 		        "info",
-		        new FileResource(s0),
+		        new ClassResource(MainWindow.class, INFO_SVG),
 		        new Dimension(size, size)));
 		
-		String s1 = CrewEditor.class.getResource(MainWindow.EDIT_SVG).getPath();
-
+//		String s1 = CrewEditor.class.getResource(MainWindow.EDIT_SVG).getPath();
+		
 		iconSet.addIcon(new SvgIconSource (
 		        "edit",
-		        new FileResource(s1),
+		        new ClassResource(MainWindow.class, EDIT_SVG),
 		        new Dimension(size, size)));
 		
+//		String s2 = CrewEditor.class.getResource(LANDER_SVG).getPath();		
+//		File f2a = new File(LANDER_SVG);
+	
 		iconSet.addIcon(new SvgIconSource (
 		        "lander",
-		        new FileResource(CrewEditor.class.getResource(MainWindow.LANDER_SVG).getPath()),
+		        new ClassResource(MainWindow.class, LANDER_SVG),
 		        new Dimension(16, 16)));
 		
 		iconSet.addIcon(new SvgIconSource (
 		        "left",
-		        new FileResource(CrewEditor.class.getResource(MainWindow.LEFT_SVG).getPath()),
+		        new ClassResource(MainWindow.class, LEFT_SVG),
 		        new Dimension(size, size)));
 		
 		iconSet.addIcon(new SvgIconSource (
 		        "right",
-		        new FileResource(CrewEditor.class.getResource(MainWindow.RIGHT_SVG).getPath()),
+		        new ClassResource(MainWindow.class, RIGHT_SVG),
 		        new Dimension(size, size)));
 		
 		iconSet.addIcon(new SvgIconSource (
 		        "center",
-		        new FileResource(CrewEditor.class.getResource(MainWindow.CENTER_SVG).getPath()),
+		        new ClassResource(MainWindow.class, CENTER_SVG),
 		        new Dimension(size, size)));
 		
 		iconSet.addIcon(new SvgIconSource (
 		        "stack",
-		        new FileResource(CrewEditor.class.getResource(MainWindow.STACK_SVG).getPath()),
+		        new ClassResource(MainWindow.class, STACK_SVG),
 		        new Dimension(size, size)));
 
 		IconManager.addIconSet(iconSet);
 		
 //		Usage e.g. : final ImageIcon icon = new LazyIcon("info").getIcon();
 		
+		landerIcon = new LazyIcon("lander").getIcon(); 
 	}
 	
+ 
+	/**
+	 * Converts InputStream to File
+	 * 
+	 * @param inputStream
+	 * @param file
+	 * @throws IOException
+	 */
+    private static File copyInputStreamToFile(InputStream inputStream, File file)
+		throws IOException {
+
+        try (FileOutputStream outputStream = new FileOutputStream(file)) {
+
+            int read;
+            byte[] bytes = new byte[1024];
+
+            while ((read = inputStream.read(bytes)) != -1) {
+                outputStream.write(bytes, 0, read);
+            }
+
+			// commons-io
+            //IOUtils.copy(inputStream, outputStream);
+        }
+        
+        return file;
+    }
+
 	/**
 	 * Returns an image from an icon
 	 * 
@@ -365,11 +399,9 @@ extends JComponent {
 
 		desktop.changeTitle(false);
 		
-		
-		// Set the icon image for the frame.
-		final ImageIcon icon = new LazyIcon("lander").getIcon();
 //		ImageIcon icon = new ImageIcon(CrewEditor.class.getResource(MainWindow.LANDER_PNG));
-		frame.setIconImage(iconToImage(icon));
+		frame.setIconImage(((ImageIcon)MainWindow.getLanderIcon()).getImage());
+//		frame.setIconImage(iconToImage(landerIcon));
 	
 		// Set up the main pane
 		mainPane = new WebPanel(new BorderLayout());
@@ -1162,8 +1194,22 @@ extends JComponent {
 //		}
 //	}
 	
+	/**
+	 * Gets the main pane instance
+	 * 
+	 * @return
+	 */
 	public WebPanel getMainPane() {
 		return mainPane;
+	}
+	
+	/**
+	 * Gets the lander hab icon instance
+	 * 
+	 * @return
+	 */
+	public static Icon getLanderIcon() {
+		return landerIcon;
 	}
 	
 	/**

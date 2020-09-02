@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingPanelVehicleMaintenance.java
- * @version 3.1.1 2020-07-22
+ * @version 3.1.2 2020-09-02
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;

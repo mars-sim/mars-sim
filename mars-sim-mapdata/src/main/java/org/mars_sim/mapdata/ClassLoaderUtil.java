@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ClassLoaderUtil.java
- * @version 3.1.1 2020-07-22
+ * @version 3.1.2 2020-09-02
  * @author Manny Kung
  */
 
@@ -44,7 +44,7 @@ import java.util.Set;
  * It was brought in from oscore trunk revision 147.
  *
  * @author $Author$
- * @version $Revision$
+ * @version 3.1.2 2020-09-02
  */
 public class ClassLoaderUtil {
     //~ Methods ////////////////////////////////////////////////////////////////

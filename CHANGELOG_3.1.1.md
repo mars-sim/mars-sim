@@ -41,7 +41,10 @@ Copyright (C) 2020 Scott Davis
 
 13. Make a reading task contribute to adding experience points 
     to a skill. 
-    
+
+14. Add settlement and vehicle names tailored to its sponsor/country.
+
+
 
 ### UI IMPROVEMENT :
 
@@ -66,6 +69,7 @@ Copyright (C) 2020 Scott Davis
 
 8. Add BuildingPanelLiving to show the living accommodation aspects
    of a building.
+      
 
 ### FIXES :
 
@@ -95,7 +99,8 @@ Copyright (C) 2020 Scott Davis
 12. Correctly associate how the availability of 3D printers affect 
     concurrent manufacturing processes. 
 
-
+13. Sync up the position of the WebSwitch when pausing or resuming the sim.
+ 
 -----------------------------------------------------------------------------------------
 
 ## v3.1.1 (build 5283) - 2020-07-22

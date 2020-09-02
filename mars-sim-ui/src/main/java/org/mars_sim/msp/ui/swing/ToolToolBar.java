@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ToolToolBar.java
- * @version 3.1.1 2020-07-22
+ * @version 3.1.2 2020-09-02
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing;
@@ -72,12 +72,12 @@ public class ToolToolBar extends WebToolBar implements ActionListener, ClockList
 
 		// Use JToolBar constructor
 		super(JToolBar.HORIZONTAL);
-
+		// Set weblaf's particular toolbar style
 		setStyleId(StyleId.toolbarAttachedNorth);
-		
 		// Initialize data members
 		masterClock = Simulation.instance().getMasterClock();
-		
+		// Add this class to the master clock's listener
+		masterClock.addClockListener(this);
 		// Initialize data members
 		toolButtons = new Vector<ToolButton>();
 		this.parentMainWindow = parentMainWindow;
@@ -206,7 +206,6 @@ public class ToolToolBar extends WebToolBar implements ActionListener, ClockList
 
 		webSwitch = new WebSwitch(true);
 		webSwitch.setSwitchComponents(
-//				new SvgIcon("play16"), new SvgIcon("pause16"));
 				ImageLoader.getIcon(Msg.getString("img.speed.play")), 
 				ImageLoader.getIcon(Msg.getString("img.speed.pause")));
 		TooltipManager.setTooltip(webSwitch, "Pause or Resume the Simulation", TooltipWay.down);
@@ -304,16 +303,22 @@ public class ToolToolBar extends WebToolBar implements ActionListener, ClockList
 	 */
 	@Override
 	public void pauseChange(boolean isPaused, boolean showPane) {
-		// Update pause/resume webswitch buttons, based on masterclock's pause state.
-		if (isPaused) {
-			// To pause
-			if (webSwitch.isSelected())
-				webSwitch.setSelected(false);
-
-		} else {
-			// To play or to resume 
-			if (!webSwitch.isSelected())
-				webSwitch.setSelected(true);
+		// Update pause/resume webswitch buttons, based on masterclock's pause state.	
+		
+		if (isPaused) { // if it needs to pause
+			// if the web switch is at the play position
+			if (webSwitch.isSelected()) {
+				// then switch it to the pause position and animate the change
+				webSwitch.setSelected(false, true);
+			}
+		} 
+		
+		else { // if it needs to resume playing
+			// if the web switch is at the pause position
+			if (!webSwitch.isSelected()) {
+				// then switch it to the play position and animate the change
+				webSwitch.setSelected(true, true);
+			}
 		}
 	}
 

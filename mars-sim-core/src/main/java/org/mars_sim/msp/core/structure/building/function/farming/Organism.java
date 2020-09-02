@@ -18,7 +18,7 @@ import java.io.Serializable;
 * @author Michael Main 
 *   <A HREF="mailto:main@colorado.edu"> (main@colorado.edu) </A>
 *
- * @version 3.1.1 2020-07-22
+ * @version 3.1.2 2020-09-02
 *
 * @see Animal
 * @see Plant

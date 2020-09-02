@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CrewEditor.java
- * @version 3.1.1 2020-07-22
+ * @version 3.1.2 2020-09-02
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.configeditor;
@@ -54,7 +54,6 @@ import com.alee.laf.combobox.WebComboBox;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.radiobutton.WebRadioButton;
-import com.alee.managers.icon.LazyIcon;
 import com.alee.managers.style.StyleId;
 import com.alee.managers.tooltip.TooltipManager;
 import com.alee.managers.tooltip.TooltipWay;
@@ -150,12 +149,8 @@ public class CrewEditor implements ActionListener {
 	 */
 	public void createGUI() {
 
-//		simulationConfigEditor.setCrewEditorOpen(true);
-
-		ImageIcon icon = new LazyIcon("lander").getIcon(); //new ImageIcon(CrewEditor.class.getResource(MainWindow.LANDER_PNG));
-		
 		f = new JFrame(TITLE);
-		f.setIconImage(MainWindow.iconToImage(icon));
+		f.setIconImage(((ImageIcon)MainWindow.getLanderIcon()).getImage());//MainWindow.iconToImage(MainWindow.getLanderIcon()));
 //		f.setPreferredSize(new Dimension(WIDTH, HEIGHT));
 		f.setResizable(false);
 		f.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);

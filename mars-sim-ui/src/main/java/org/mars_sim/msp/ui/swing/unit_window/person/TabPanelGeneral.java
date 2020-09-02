@@ -2,12 +2,13 @@
 1
  * Mars Simulation Project
  * TabPanelGeneral.java
- * @version 3.1.1 2020-07-22
+ * @version 3.1.2 2020-09-02
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.person;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -44,8 +45,10 @@ public class TabPanelGeneral extends TabPanel {
 
 	private static final String TAB_BIRTH_DATE_AGE = "TabPanelGeneral.birthDateAndAge";
 	
-	private static final Font SERIF_BOLD = new Font("Serif", Font.BOLD, 14);
-	private static final Font SERIF_PLAIN = new Font("Serif", Font.PLAIN, 14);
+	private static final Font SERIF_BOLD_14 = new Font("Serif", Font.BOLD, 14);
+	private static final Font SERIF_PLAIN_14 = new Font("Serif", Font.PLAIN, 14);
+	private static final Font SERIF_PLAIN_12 = new Font("Serif", Font.PLAIN, 12);
+	private static final Font MONOSPACED_PLAIN_12 = new Font("Monospaced", Font.PLAIN, 12);
 	
 	/** Is UI constructed. */
 	private boolean uiDone = false;
@@ -86,7 +89,7 @@ public class TabPanelGeneral extends TabPanel {
 
 		// Prepare general label
 		JLabel generalLabel = new JLabel(Msg.getString("TabPanelGeneral.label"), JLabel.CENTER); //$NON-NLS-1$
-		generalLabel.setFont(SERIF_BOLD); //new Font("Serif", Font.BOLD, 14));
+		generalLabel.setFont(SERIF_BOLD_14);
 		generalLabelPanel.add(generalLabel);
 
 		// Prepare spring layout info panel.
@@ -294,7 +297,8 @@ public class TabPanelGeneral extends TabPanel {
 					  + "<br>  Judging (J) / Perceiving (P) : -50 to 0 / 0 to 50</html>";
 		ta.setToolTipText(tip);
 		ta.setEditable(false);
-		ta.setFont(new Font("Monospaced", Font.PLAIN, 12));
+		ta.setSelectedTextColor(Color.ORANGE.darker());
+		ta.setFont(MONOSPACED_PLAIN_12);
 		ta.setColumns(13);
 //		specialtyTA.setSize(100, 60);
 		ta.setBorder(new MarsPanelBorder());
@@ -312,14 +316,14 @@ public class TabPanelGeneral extends TabPanel {
 		String descriptor = p.getDescriptor();
 		WebLabel descriptorLabel = new WebLabel(StyleId.labelShadow, type + " : " + descriptor, JLabel.CENTER);
 		descriptorLabel.setToolTipText(Msg.getString("TabPanelGeneral.mbti.descriptor.tip"));//$NON-NLS-1$
-		descriptorLabel.setFont(SERIF_PLAIN);
+		descriptorLabel.setFont(SERIF_PLAIN_14);
 		listPanel.add(descriptorLabel, BorderLayout.SOUTH);
 		
 		centerContentPanel.add(listPanel, BorderLayout.CENTER);
 		
 		TitledBorder titledBorder = BorderFactory.createTitledBorder(null, " MBTI Scores",
 				TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION,
-				new Font("Serif", Font.PLAIN, 12), java.awt.Color.darkGray);
+				SERIF_PLAIN_12, Color.darkGray);
 		listPanel.setBorder(titledBorder);
 		
 		
@@ -398,7 +402,8 @@ public class TabPanelGeneral extends TabPanel {
 		// Prepare MBTI text area
 		WebTextArea ta = new WebTextArea();
 		ta.setEditable(false);
-		ta.setFont(new Font("Monospaced", Font.PLAIN, 12));
+		ta.setFont(MONOSPACED_PLAIN_12);
+		ta.setSelectedTextColor(Color.ORANGE.darker());
 		ta.setColumns(14);
 //		specialtyTA.setSize(100, 60);
 		ta.setBorder(new MarsPanelBorder());
@@ -411,8 +416,8 @@ public class TabPanelGeneral extends TabPanel {
 		centerContentPanel.add(listPanel, BorderLayout.SOUTH);
 		
 		TitledBorder titledBorder = BorderFactory.createTitledBorder(null, " Big Five Scores",
-				javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION,
-				new Font("Serif", Font.PLAIN, 12), java.awt.Color.darkGray);
+				TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION,
+				SERIF_PLAIN_12, Color.darkGray);
 		listPanel.setBorder(titledBorder);
 		
     

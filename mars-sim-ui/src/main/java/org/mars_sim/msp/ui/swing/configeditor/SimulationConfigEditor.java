@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SimulationConfigEditor.java
- * @version 3.1.1 2020-07-22
+ * @version 3.1.2 2020-09-02
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.configeditor;
@@ -67,8 +67,6 @@ import com.alee.laf.WebLookAndFeel;
 import com.alee.laf.combobox.WebComboBox;
 import com.alee.laf.window.WebFrame;
 import com.alee.managers.UIManagers;
-import com.alee.managers.icon.LazyIcon;
-import com.alee.managers.style.StyleId;
 
 /**
  * A temporary simulation configuration editor dialog. Will be replaced by
@@ -135,14 +133,14 @@ public class SimulationConfigEditor {
 			logger.log(Level.WARNING, Msg.getString("MainWindow.log.lookAndFeelError"), ex); //$NON-NLS-1$
 		}
 
-		f = new WebFrame();//StyleId.frameDecorated);
-
 		// Setup weblaf's IconManager
 //		SwingUtilities.invokeLater(() -> MainWindow.initIconManager());
 		MainWindow.initIconManager();
+				
+		f = new WebFrame();//StyleId.frameDecorated);
 		
-		ImageIcon icon = new LazyIcon("lander").getIcon(); // new ImageIcon(SimulationConfigEditor.class.getResource(MainWindow.LANDER_PNG));
-		f.setIconImage(MainWindow.iconToImage(icon));
+		f.setIconImage(((ImageIcon)MainWindow.getLanderIcon()).getImage());
+//		f.setIconImage(MainWindow.iconToImage(MainWindow.getLanderIcon()));
 		
 		f.addWindowListener(new WindowAdapter() {
 			@Override

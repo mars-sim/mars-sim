@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TimeWindow.java
- * @version 3.1.1 2020-07-22
+ * @version 3.1.2 2020-09-02
  * @author Scott Davis
  */
 
@@ -166,6 +166,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		// Initialize data members
 		sim = Simulation.instance();
 		masterClock = sim.getMasterClock();
+		// Add this class to the master clock's listener
 		masterClock.addClockListener(this);
 		marsTime = masterClock.getMarsClock();
 		earthTime = masterClock.getEarthClock();
