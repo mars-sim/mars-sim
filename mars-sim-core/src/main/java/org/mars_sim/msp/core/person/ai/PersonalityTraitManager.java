@@ -75,9 +75,9 @@ public class PersonalityTraitManager implements Serializable {
 	/**
 	 * Sync up with the I-E pair score in MBTI 
 	 */
-	 public void syncUpExtraversion(int value) { 
+	 public void syncUpExtraversionScore(int value) { 
 //		 int value = getPerson().getMind().getMBTI().getScores().get(0); 
-		 personalityTraits.put(PersonalityTraitType.EXTRAVERSION, value); 
+		 personalityTraits.put(PersonalityTraitType.EXTRAVERSION, value + 50); 
 	 }
 
 

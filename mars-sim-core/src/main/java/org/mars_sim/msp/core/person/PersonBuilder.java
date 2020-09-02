@@ -13,6 +13,8 @@ public interface PersonBuilder<T> {
 
 	public PersonBuilder<Person> setGender(GenderType g);
 
+	public PersonBuilder<Person> setAge(int age);
+	
 	public PersonBuilder<Person> setName(String name);
 
 	public PersonBuilder<Person> setCountry(String c);

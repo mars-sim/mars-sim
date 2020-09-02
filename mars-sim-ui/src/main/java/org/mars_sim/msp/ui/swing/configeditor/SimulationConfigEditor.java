@@ -68,6 +68,7 @@ import com.alee.laf.combobox.WebComboBox;
 import com.alee.laf.window.WebFrame;
 import com.alee.managers.UIManagers;
 import com.alee.managers.icon.LazyIcon;
+import com.alee.managers.style.StyleId;
 
 /**
  * A temporary simulation configuration editor dialog. Will be replaced by
@@ -81,7 +82,7 @@ public class SimulationConfigEditor {
 	private static final int HORIZONTAL_SIZE = 1024;
 
 	// Data members.
-	private boolean hasError, isCrewEditorOpen = false;
+	private boolean hasError, isCrewEditorOpen = true;
 
 	private SettlementTableModel settlementTableModel;
 	private JTable settlementTable;
@@ -134,7 +135,7 @@ public class SimulationConfigEditor {
 			logger.log(Level.WARNING, Msg.getString("MainWindow.log.lookAndFeelError"), ex); //$NON-NLS-1$
 		}
 
-		f = new WebFrame();
+		f = new WebFrame();//StyleId.frameDecorated);
 
 		// Setup weblaf's IconManager
 //		SwingUtilities.invokeLater(() -> MainWindow.initIconManager());
@@ -457,18 +458,25 @@ public class SimulationConfigEditor {
 	 * @param crew
 	 */
 	private void editCrewProfile(String crew) {
-		if (crewEditor == null) {
+		if (crewEditor == null || !isCrewEditorOpen) {
 			crewEditor = new CrewEditor(this);
 			// System.out.println("new CrewEditor()");
-		} else if (!isCrewEditorOpen) {
-			crewEditor.createGUI();
-			// System.out.println("crewEditor.createGUI()");
+		} 
+		
+		else {
+			crewEditor.getJFrame().setVisible(true);
 		}
+		
+//		else if (!isCrewEditorOpen) {
+//			crewEditor.createGUI();
+//			// System.out.println("crewEditor.createGUI()");
+//		}
 
 	}
 
 	public void setCrewEditorOpen(boolean value) {
 		isCrewEditorOpen = value;
+		crewEditor = null;
 	}
 
 	/**
@@ -782,6 +790,7 @@ public class SimulationConfigEditor {
 		
 		private String[] columns;
 		private List<SettlementInfo> settlementInfoList;
+		private String sponsorCache;
 		
 		/**
 		 * Hidden Constructor.
@@ -1013,9 +1022,12 @@ public class SimulationConfigEditor {
 
 					case 6:
 						info.sponsor = (String) aValue;
-						String newName = tailorSettlementNameBySponsor(info.sponsor);
-						if (newName != null) {
-							info.name = newName;
+						if (sponsorCache != info.sponsor) {
+							sponsorCache = info.sponsor;
+							String newName = tailorSettlementNameBySponsor(info.sponsor);
+							if (newName != null) {
+								info.name = newName;
+						}
 						}
 						break;
 

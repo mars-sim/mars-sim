@@ -307,11 +307,13 @@ public class ToolToolBar extends WebToolBar implements ActionListener, ClockList
 		// Update pause/resume webswitch buttons, based on masterclock's pause state.
 		if (isPaused) {
 			// To pause
-			webSwitch.setSelected(false);
+			if (webSwitch.isSelected())
+				webSwitch.setSelected(false);
 
 		} else {
 			// To play or to resume 
-			webSwitch.setSelected(false);
+			if (!webSwitch.isSelected())
+				webSwitch.setSelected(true);
 		}
 	}
 

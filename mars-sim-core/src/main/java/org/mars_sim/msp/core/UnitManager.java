@@ -859,14 +859,20 @@ public class UnitManager implements Serializable {
 			// TODO: may use names from Mars Society's vehicle list 
 			
 			else {
-				unitName = VEHICLE_NAME;
+
 				int number = 1;
-				if (type.equalsIgnoreCase(VehicleType.CARGO_ROVER.getName()))
+				if (type.equalsIgnoreCase(VehicleType.CARGO_ROVER.getName())) {
 					number = cargoCount++;
-				else if (type.equalsIgnoreCase(VehicleType.TRANSPORT_ROVER.getName()))
+					unitName = "Cargo " + number;
+				}
+				else if (type.equalsIgnoreCase(VehicleType.TRANSPORT_ROVER.getName())) {
 					number = transportCount++;
-				else if (type.equalsIgnoreCase(VehicleType.EXPLORER_ROVER.getName()))
+					unitName = "Transport " + number;
+				}
+				else if (type.equalsIgnoreCase(VehicleType.EXPLORER_ROVER.getName())) {
 					number = explorerCount++;
+					unitName = "Explorer " + number;
+				}
 				
 				String tagID = "";
 				
@@ -1225,12 +1231,12 @@ public class UnitManager implements Serializable {
 			boolean invalid = false;
 			// Prevent mars-sim from using the user defined commander's name  
 			if (name == "" || name == null) {
-				logger.severe("A person's name is invalid in crew.xml");
+				logger.severe("A person's name is invalid in crew.xml.");
 				invalid = true;
 			}
 				
 			if (getFullname() != null && name.equals(getFullname())) {
-				logger.severe("A person's name in people.xml collides with the user defined commander's name ");
+				logger.severe("A person's name in people.xml collides with the user defined commander's name.");
 				invalid = true;
 			}
 			
@@ -1253,12 +1259,10 @@ public class UnitManager implements Serializable {
 						isUnique = false;						
 					}
 					else {
-						logger.config("'" + name + "' has been selected to replace '" + oldName + "' found in alpha crew list or in people.xml. ");
+						logger.config("'" + name + "' has been selected to replace '" + oldName + "' found in alpha crew list or in people.xml.");
 						isUnique = true;
 					}
-
 				}
-
 			}
 
 			// Get person's settlement or randomly determine it if not configured.
@@ -1306,6 +1310,13 @@ public class UnitManager implements Serializable {
 					return;
 				}
 			}
+			
+			// Get person's age
+			String ageStr = crewConfig.getConfiguredPersonAge(x, crew_id, false);
+			int age = 0;
+			if (ageStr != null) {
+				age = Integer.parseInt(ageStr);		
+			}
 
 			// Retrieve country & sponsor designation from people.xml (may be edited in
 			// CrewEditorFX)
@@ -1328,6 +1339,7 @@ public class UnitManager implements Serializable {
 			// Use Builder Pattern for creating an instance of Person
 			Person person = Person.create(name, settlement)
 					.setGender(gender)
+					.setAge(age)
 					.setCountry(country)
 					.setSponsor(sponsor)
 					.setSkill(skillMap)

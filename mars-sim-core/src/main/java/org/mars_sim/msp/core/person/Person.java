@@ -138,7 +138,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	/** The day of birth of a person */
 	private int day;
 	/** The age of a person */
-	private int age;
+	private int age = -1;
 	/** The cache for sol. */
 	private int solCache = 1;
 	
@@ -339,9 +339,6 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		skillManager = new SkillManager(this);
 		// Construct the Mind instance
 		mind = new Mind(this);
-
-		// Set up the time stamp for the person
-		createBirthTimeStamp();
 		// Set the person's status of death
 		isBuried = false;
 	}
@@ -361,10 +358,11 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 * Initialize field data and class 
 	 */
 	public void initialize() {
-
 		// WARNING: setAssociatedSettlement(settlement) will cause suffocation when
 		// reloading from a saved sim
-		BuildingManager.addToRandomBuilding(this, associatedSettlementID);
+		BuildingManager.addToRandomBuilding(this, associatedSettlementID);	
+		// Set up the time stamp for the person
+		createBirthTimeStamp();
 		// Create favorites
 		favorite = new Favorite(this);
 		// Create preferences
@@ -740,7 +738,13 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	private String createBirthTimeStamp() {
 		StringBuilder s = new StringBuilder();
 		// Set a birth time for the person
-		year = EarthClock.getCurrentYear(earthClock) - RandomUtil.getRandomInt(22, 62);
+		if (age != -1) {
+			year = EarthClock.getCurrentYear(earthClock) - age - 1;
+		}
+		else {
+			year = EarthClock.getCurrentYear(earthClock) - RandomUtil.getRandomInt(21, 65);
+		}
+		
 		// 2003 + RandomUtil.getRandomInt(10) + RandomUtil.getRandomInt(10);
 		s.append(year);
 
@@ -1235,16 +1239,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		year = y;
 		age = newAge;
 	}
-
-	/**
-	 * Returns the person's height in cm
-	 *
-	 * @return the person's height
-	 */
-	public double getHeight() {
-		return height;
-	}
-
+	
 	/**
 	 * Returns the person's birth date in the format of "2055-05-06"
 	 *
@@ -1986,6 +1981,15 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	}
 
 	/**
+	 * Returns the person's height in cm
+	 *
+	 * @return the person's height
+	 */
+	public double getHeight() {
+		return height;
+	}
+
+	/**
 	 * Gets the average height of a person.
 	 */
 	public static double getAverageHeight() {
@@ -1999,10 +2003,25 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		return averageWeight;
 	}
 
+	/**
+	 * Gets the age of this person.
+	 * 
+	 * @return
+	 */
 	public int getAge() {
 		return age;
 	}
 
+	/**
+	 * Sets the age of this person.
+	 * 
+	 * @param value
+	 */
+	public void setAge(int value) {
+		age = value;
+	}
+
+	
 	/**
 	 * Checks if the person is a preconfigured crew member.
 	 */

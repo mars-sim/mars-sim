@@ -58,6 +58,7 @@ import org.mars_sim.msp.ui.swing.unit_window.structure.building.food.BuildingPan
 /**
  * The BuildingPanel class is a panel representing a settlement building.
  */
+@SuppressWarnings("serial")
 public class BuildingPanel extends JPanel {
 
 	private static final Logger logger = Logger.getLogger(BuildingPanel.class.getName());

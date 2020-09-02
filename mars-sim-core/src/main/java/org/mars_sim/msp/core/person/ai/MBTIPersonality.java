@@ -80,6 +80,8 @@ public class MBTIPersonality implements Serializable {
 	/** The person's MBTI */
 	public MBTIType mbtiType;
 
+	private static Map<MBTIType, String> descriptor;
+	
 	// Add four MBTI scores
 	public static final int INTROVERSION_EXTRAVERSION = 0;
 	public static final int INTUITION_SENSATION = 1;
@@ -109,6 +111,29 @@ public class MBTIPersonality implements Serializable {
 		// Load personality type map if necessary.
 		if (personalityDistribution == null)
 			personalityDistribution = config.loadPersonalityDistribution();
+	}
+	
+	static {
+		descriptor = new HashMap<>();
+		descriptor.put(MBTIType.ISTP, "Analyzer");
+		descriptor.put(MBTIType.ISTJ, "Inspector");
+		descriptor.put(MBTIType.ISFP, "Supporter");
+		descriptor.put(MBTIType.ISFJ, "Protector");
+			
+		descriptor.put(MBTIType.INTP, "Architect");
+		descriptor.put(MBTIType.INTJ, "Investigator");
+		descriptor.put(MBTIType.INFP, "Idealist");
+		descriptor.put(MBTIType.INFJ, "Counselor");
+			
+		descriptor.put(MBTIType.ESTP, "Troubleshooter");
+		descriptor.put(MBTIType.ESTJ, "Coordinator");
+		descriptor.put(MBTIType.ESFP, "Energizer");
+		descriptor.put(MBTIType.ESFJ, "Harmonizer");
+			
+		descriptor.put(MBTIType.ENTP, "Catalyst");
+		descriptor.put(MBTIType.ENTJ, "Strategist");
+		descriptor.put(MBTIType.ENFP, "Improviser");
+		descriptor.put(MBTIType.ENFJ, "Mentor");
 	}
 	
 	/**
@@ -157,7 +182,7 @@ public class MBTIPersonality implements Serializable {
 		for (int j = 0; j < 4; j++) {
 
 			int score = 0;
-			int rand = RandomUtil.getRandomInt(1, 50);
+			int rand = -RandomUtil.getRandomInt(1, 50);
 			if (j == 0) {
 				if (isIntrovert())
 					score = rand;
@@ -182,9 +207,27 @@ public class MBTIPersonality implements Serializable {
 
 			scores.put(j, score);
 		}
-
 	}
 
+	/**
+	 * Gets the one word descriptor of this person's MBTI
+	 * 
+	 * @return
+	 */
+	public String getDescriptor() {
+		return getDescriptor(mbtiType);
+	}
+	
+	/**
+	 * 	Gets the one word descriptor of this person's MBTI
+	 * 
+	 * @param type
+	 * @return
+	 */
+	public String getDescriptor(MBTIType type) {
+		return descriptor.get(type);
+	}
+	
 	/**
 	 * Gets the personality type as a four letter code. Ex. "ISTJ"
 	 * 
@@ -225,9 +268,9 @@ public class MBTIPersonality implements Serializable {
 	/*
 	 * Sync up with the I-E pair score in MBTI
 	 */
-	public void syncUpExtraversion(int value) {
+	public void syncUpIntrovertExtravertScore(int value) {
 //		int value = getPerson().getMind().getTraitManager().getPersonalityTraitMap().get(PersonalityTraitType.EXTRAVERSION);
-		scores.put(0, value);
+		scores.put(0, value - 50);
 	}
 
 	/**
@@ -332,24 +375,90 @@ public class MBTIPersonality implements Serializable {
 	 * @throws Exception if problem updating stress.
 	 */
 	public void updateStress(double time) {
-		if (getPerson() != null) {
-			Collection<Person> localGroup = getPerson().getLocalGroup();
-			PhysicalCondition condition = getPerson().getPhysicalCondition();
-	
-			// Introverts reduce stress when alone.
-			if (isIntrovert() && (localGroup.size() == 0)) {
-				double solitudeStressModifier = BASE_SOLITUDE_STRESS_MODIFIER * time;
-				condition.setStress(condition.getStress() - solitudeStressModifier);
-			}
-	
-			// Extroverts reduce stress when with company.
-			if (isExtrovert() && (localGroup.size() > 0)) {
-				double companyStressModifier = BASE_COMPANY_STRESS_MODIFIER * time;
-				condition.setStress(condition.getStress() - companyStressModifier);
-			}
+		Person p = getPerson();
+		Collection<Person> localGroup = p.getLocalGroup();
+		PhysicalCondition condition = p.getPhysicalCondition();
+
+		// Introverts reduce stress when alone.
+		if (isIntrovert() && (localGroup.size() == 0)) {
+			double solitudeStressModifier = BASE_SOLITUDE_STRESS_MODIFIER * time;
+			condition.setStress(condition.getStress() - solitudeStressModifier);
 		}
+
+		// Extroverts reduce stress when with company.
+		if (isExtrovert() && (localGroup.size() > 0)) {
+			double companyStressModifier = BASE_COMPANY_STRESS_MODIFIER * time;
+			condition.setStress(condition.getStress() - companyStressModifier);
+		}
+
 	}
 
+	/**
+	 * Gets the description of lens
+	 * 
+	 * @param value
+	 * @return
+	 */
+	public static String interpretLens(String value) {
+		StringBuffer sb = new StringBuffer();
+		
+		// Trait 2 & 3
+		if (value.contains("ST")) {
+			sb.append("Function Lens").append(System.lineSeparator())
+			.append(" ST : Prefer to use proven methods of communication.").append(System.lineSeparator());
+		}
+		else if (value.contains("SF")) {
+			sb.append("Function Lens").append(System.lineSeparator())
+			.append(" SF : Love to share their experience to help others.").append(System.lineSeparator());
+		}
+		else if (value.contains("NF")) {
+			sb.append("Function Lens").append(System.lineSeparator())
+			.append(" NF : Prefer to communicate in creative ways.").append(System.lineSeparator());
+		}
+		else if (value.contains("NT")) {
+			sb.append("Function Lens").append(System.lineSeparator())
+			.append(" NT : Love to debate challenging questions.").append(System.lineSeparator());
+		}
+		
+		// Trait 1 & 2
+		if (value.contains("IS")) {
+			sb.append("Culture Lens").append(System.lineSeparator())
+			.append(" IS : Be careful and mindful of details when involved in change.").append(System.lineSeparator());
+		}
+		else if (value.contains("ES")) {
+			sb.append("Culture Lens").append(System.lineSeparator())
+			.append(" ES : Love to see and discuss the practical results of change.").append(System.lineSeparator());
+		}
+		else if (value.contains("IN")) {
+			sb.append("Culture Lens").append(System.lineSeparator())
+			.append(" IN : Reflect and digest ideas and concepts around the change.").append(System.lineSeparator());
+		}
+		else if (value.contains("EN")) {
+			sb.append("Culture Lens").append(System.lineSeparator())
+			.append(" EN : Maximize variety, discuss avenues and implications of change long-term.").append(System.lineSeparator());
+		}
+		
+		// Trait 2 & 4
+		if (value.contains("S") && value.contains("J")) {
+			sb.append("Temperament Lens").append(System.lineSeparator())
+			.append(" SJ : Value responsibility and loyalty.").append(System.lineSeparator());
+		}
+		else if (value.contains("S") && value.contains("P")) {
+			sb.append("Temperament Lens").append(System.lineSeparator())
+			.append(" SP : Value cleverness and timeliness.").append(System.lineSeparator());
+		}
+		else if (value.contains("N") && value.contains("P")) {
+			sb.append("Temperament Lens").append(System.lineSeparator())
+			.append(" NP : Value inspiration and a personal approach.").append(System.lineSeparator());
+		}
+		else if (value.contains("N") && value.contains("J")) {
+			sb.append("Temperament Lens").append(System.lineSeparator())
+			.append(" NJ : Value ingenuity and logic.").append(System.lineSeparator());
+		}
+		
+		return sb.toString();
+	}
+	
 	/**
 	 * Obtains the scores map
 	 * 

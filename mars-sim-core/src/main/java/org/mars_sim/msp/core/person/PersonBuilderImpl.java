@@ -28,16 +28,21 @@ public class PersonBuilderImpl implements PersonBuilder<Person> {
 		person = new Person(name, settlement);
 	}
 
-	public PersonBuilder<Person> setGender(GenderType gender) {
-		person.setGender(gender);
-		return this;
-	}
-
 	public PersonBuilder<Person> setName(String n) {
 		person.setName(n);
 		return this;
 	}
 
+	public PersonBuilder<Person> setGender(GenderType gender) {
+		person.setGender(gender);
+		return this;
+	}
+
+	public PersonBuilder<Person> setAge(int age) {
+		person.setAge(age);
+		return this;
+	}
+	
 	public PersonBuilder<Person> setCountry(String c) {
 		person.setCountry(c);
 		return this;
@@ -80,8 +85,8 @@ public class PersonBuilderImpl implements PersonBuilder<Person> {
 	 * @return {@link PersonBuilder<>}
 	 */
 	public PersonBuilder<Person> setPersonality(Map<String, Integer> map, String mbti) {
-		int introvertFromMBTIscore = 0;
-		int introvertFromBigFivescore = 0;
+		int scoreFromMBTI = 0;
+		int scoreFromBigFive = 0;
 		
 		if (map == null || map.isEmpty()) {
 			person.getMind().getTraitManager().setRandomBigFive();
@@ -100,17 +105,17 @@ public class PersonBuilderImpl implements PersonBuilder<Person> {
 			person.getMind().getMBTI().setTypeString(mbti);
 		}
 		
-		introvertFromMBTIscore = person.getMind().getMBTI().getIntrovertExtrovertScore();
-		introvertFromBigFivescore = person.getMind().getTraitManager().getIntrovertExtrovertScore();
+		scoreFromMBTI = person.getMind().getMBTI().getIntrovertExtrovertScore();
+		scoreFromBigFive = person.getMind().getTraitManager().getIntrovertExtrovertScore();
 		
 		// Call syncUpExtraversion() to sync up the extraversion score between the two
 		// personality models
 		if (map != null && !map.isEmpty() && mbti == null)
-			// Use Big Five's extraversion score in MBTI 
-			person.getMind().getMBTI().syncUpExtraversion(introvertFromBigFivescore);
+			// Use Big Five's extraversion score to derive the introvert/extrovert score in MBTI 
+			person.getMind().getMBTI().syncUpIntrovertExtravertScore(scoreFromBigFive);
 		else
-			// Use MBTI's extraversion score in Big Five
-			person.getMind().getTraitManager().syncUpExtraversion(introvertFromMBTIscore);
+			// Use MBTI's introvert/extrovert score to derive the extraversion score in Big Five
+			person.getMind().getTraitManager().syncUpExtraversionScore(scoreFromMBTI);
 		
 		return this;
 	}

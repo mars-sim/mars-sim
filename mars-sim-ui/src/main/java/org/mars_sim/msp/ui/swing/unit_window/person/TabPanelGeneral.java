@@ -8,6 +8,7 @@
 package org.mars_sim.msp.ui.swing.unit_window.person;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.Font;
 
@@ -30,8 +31,10 @@ import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
+import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.text.WebTextArea;
+import com.alee.managers.style.StyleId;
 
 /**
  * The TabPanelGeneral is a tab panel for general information about a person.
@@ -39,6 +42,11 @@ import com.alee.laf.text.WebTextArea;
 @SuppressWarnings("serial")
 public class TabPanelGeneral extends TabPanel {
 
+	private static final String TAB_BIRTH_DATE_AGE = "TabPanelGeneral.birthDateAndAge";
+	
+	private static final Font SERIF_BOLD = new Font("Serif", Font.BOLD, 14);
+	private static final Font SERIF_PLAIN = new Font("Serif", Font.PLAIN, 14);
+	
 	/** Is UI constructed. */
 	private boolean uiDone = false;
 	
@@ -49,8 +57,6 @@ public class TabPanelGeneral extends TabPanel {
 	
 	private String birthDate;
 	
-	private static final String TAB_BIRTH_DATE_AGE = "TabPanelGeneral.birthDateAndAge";
-			
 	/**
 	 * Constructor.
 	 * @param unit the unit to display.
@@ -80,7 +86,7 @@ public class TabPanelGeneral extends TabPanel {
 
 		// Prepare general label
 		JLabel generalLabel = new JLabel(Msg.getString("TabPanelGeneral.label"), JLabel.CENTER); //$NON-NLS-1$
-		generalLabel.setFont(new Font("Serif", Font.BOLD, 14));
+		generalLabel.setFont(SERIF_BOLD); //new Font("Serif", Font.BOLD, 14));
 		generalLabelPanel.add(generalLabel);
 
 		// Prepare spring layout info panel.
@@ -194,19 +200,19 @@ public class TabPanelGeneral extends TabPanel {
 		BMITF.setColumns(12);
 		infoPanel.add(BMITF);
 
-		// 8. Prepare MBTI label
-		JLabel mbtiLabel = new JLabel(Msg.getString("TabPanelGeneral.mbti"), JLabel.RIGHT); //$NON-NLS-1$
-		mbtiLabel.setSize(5, 2);
-		infoPanel.add(mbtiLabel);
-		mbtiLabel.setToolTipText(Msg.getString("TabPanelGeneral.mbti.label"));//$NON-NLS-1$
-		
-		// Prepare height label
+//		// 8. Prepare MBTI label
+//		JLabel mbtiLabel = new JLabel(Msg.getString("TabPanelGeneral.mbti"), JLabel.RIGHT); //$NON-NLS-1$
+//		mbtiLabel.setSize(5, 2);
+//		infoPanel.add(mbtiLabel);
+//		mbtiLabel.setToolTipText(Msg.getString("TabPanelGeneral.mbti.label"));//$NON-NLS-1$
+//		
+//		// Prepare height label
 		MBTIPersonality p = person.getMind().getMBTI();
-		String mbtiType = p.getTypeString();
-		JTextField mbtiTF = new JTextField(mbtiType);
-		mbtiTF.setEditable(false);
-		mbtiTF.setColumns(12);
-		infoPanel.add(mbtiTF);
+//		String mbtiType = p.getTypeString();
+//		JTextField mbtiTF = new JTextField(mbtiType);
+//		mbtiTF.setEditable(false);
+//		mbtiTF.setColumns(12);
+//		infoPanel.add(mbtiTF);
 		
 		// Create the text area for displaying the MBTI scores
 		createMBTI(p);
@@ -215,13 +221,18 @@ public class TabPanelGeneral extends TabPanel {
 		
 		//Lay out the spring panel.
 		SpringUtilities.makeCompactGrid(infoPanel,
-		                                8, 2, //rows, cols
+		                                7, 2, //rows, cols
 		                                50, 10,        //initX, initY
 		                                10, 3);       //xPad, yPad
 		
 	}
 	
 	
+	/**
+	 * Creates the MBTI text area
+	 * 
+	 * @param p
+	 */
 	public void createMBTI(MBTIPersonality p) {
 		
 		int ie = p.getIntrovertExtrovertScore();
@@ -277,57 +288,75 @@ public class TabPanelGeneral extends TabPanel {
 		
 		// Prepare MBTI text area
 		WebTextArea ta = new WebTextArea();
+		String tip =  "<html>Introvert (I) / Extrovert  (E) : -50 to 0 / 0 to 50" 
+					  + "<br>Intuitive (N) / Sensing    (S) : -50 to 0 / 0 to 50"
+					  + "<br>  Feeling (F) / Thinking   (T) : -50 to 0 / 0 to 50"
+					  + "<br>  Judging (J) / Perceiving (P) : -50 to 0 / 0 to 50</html>";
+		ta.setToolTipText(tip);
 		ta.setEditable(false);
 		ta.setFont(new Font("Monospaced", Font.PLAIN, 12));
 		ta.setColumns(13);
 //		specialtyTA.setSize(100, 60);
 		ta.setBorder(new MarsPanelBorder());
 		
-		WebPanel listPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
+		WebPanel mbtiPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
+//		mbtiPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		mbtiPanel.add(ta);
+		
+		WebPanel listPanel = new WebPanel(new BorderLayout(1, 1));
+		listPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		listPanel.setSize(110, 130);
-		listPanel.add(ta);
-
+		listPanel.add(mbtiPanel, BorderLayout.CENTER);
+		
+		String type = p.getTypeString();
+		String descriptor = p.getDescriptor();
+		WebLabel descriptorLabel = new WebLabel(StyleId.labelShadow, type + " : " + descriptor, JLabel.CENTER);
+		descriptorLabel.setToolTipText(Msg.getString("TabPanelGeneral.mbti.descriptor.tip"));//$NON-NLS-1$
+		descriptorLabel.setFont(SERIF_PLAIN);
+		listPanel.add(descriptorLabel, BorderLayout.SOUTH);
+		
 		centerContentPanel.add(listPanel, BorderLayout.CENTER);
 		
-		TitledBorder titledBorder = BorderFactory.createTitledBorder(null, "Personality scores based on MBTI",
-				javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION,
+		TitledBorder titledBorder = BorderFactory.createTitledBorder(null, " MBTI Scores",
+				TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION,
 				new Font("Serif", Font.PLAIN, 12), java.awt.Color.darkGray);
 		listPanel.setBorder(titledBorder);
 		
-		if (ie < 51) {
+		
+		if (ie < 0) {
 			types[0] = "Introvert (I)";
 			scores[0] = ie;
 		}
 		else {
 			types[0] = "Extrovert (E)";
-			scores[0] = ie - 50;
+			scores[0] = ie;
 		}
 		
-		if (ns < 51) {
+		if (ns < 0) {
 			types[1] = "Intuitive (N)";
 			scores[1] = ns;
 		}
 		else {
 			types[1] = "Sensing (S)";
-			scores[1] = ns - 50;
+			scores[1] = ns;
 		}
 		
-		if (ft < 51) {
+		if (ft < 0) {
 			types[2] = "Feeling (F)";
 			scores[2] = ft;
 		}
 		else {
 			types[2] = "Thinking (T)";
-			scores[2] = ft - 50;
+			scores[2] = ft;
 		}
 		
-		if (jp < 51) {
+		if (jp < 0) {
 			types[3] = "Judging (J)";
 			scores[3] = jp;
 		}
 		else {
 			types[3] = "Perceiving (P)";
-			scores[3] = jp - 50;
+			scores[3] = jp;
 		}
 	
 		for (int i = 0; i < 4; i++) {
@@ -346,6 +375,9 @@ public class TabPanelGeneral extends TabPanel {
 		
 	}
 
+	/**
+	 * Create the text area for the Big Five
+	 */
 	public void createBigFive() {
 		PersonalityTraitManager p = person.getMind().getTraitManager();
 		
@@ -372,12 +404,13 @@ public class TabPanelGeneral extends TabPanel {
 		ta.setBorder(new MarsPanelBorder());
 		
 		WebPanel listPanel = new WebPanel(new FlowLayout(FlowLayout.CENTER));
+		listPanel.setToolTipText(Msg.getString("TabPanelGeneral.bigFive.label"));//$NON-NLS-1$
 		listPanel.setSize(110, 150);
 		listPanel.add(ta);
 
 		centerContentPanel.add(listPanel, BorderLayout.SOUTH);
 		
-		TitledBorder titledBorder = BorderFactory.createTitledBorder(null, "Personality scores based on Big Five",
+		TitledBorder titledBorder = BorderFactory.createTitledBorder(null, " Big Five Scores",
 				javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION,
 				new Font("Serif", Font.PLAIN, 12), java.awt.Color.darkGray);
 		listPanel.setBorder(titledBorder);

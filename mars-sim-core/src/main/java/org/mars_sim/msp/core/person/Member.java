@@ -20,6 +20,7 @@ public class Member implements Serializable {
 
 	private String name; 
 	private String gender;
+	private String age; 
 	private String mbti; 
 	private String job;
 	private String country; 
@@ -41,6 +42,10 @@ public class Member implements Serializable {
 	
 	public void setGender(String value) {
 		gender = value;
+	}
+	
+	public void setAge(String value) {
+		age = value;
 	}
 	
 	public void setMBTI(String value) {
@@ -66,6 +71,7 @@ public class Member implements Serializable {
 	public void setMainDish(String value) {
 		mainDish = value;
 	}
+	
 	public void setSideDish(String value) {
 		sideDish = value;
 	}
@@ -85,6 +91,10 @@ public class Member implements Serializable {
 	
 	public String getGender() {
 		return gender;
+	}
+	
+	public String getAge() {
+		return age;
 	}
 	
 	public String getMBTI() {

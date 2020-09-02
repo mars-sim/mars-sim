@@ -7,6 +7,7 @@
 package org.mars_sim.msp.ui.swing.configeditor;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
@@ -20,19 +21,20 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
 
 import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 
@@ -47,61 +49,66 @@ import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MainWindow;
 
+import com.alee.extended.button.WebSwitch;
 import com.alee.laf.combobox.WebComboBox;
+import com.alee.laf.label.WebLabel;
+import com.alee.laf.panel.WebPanel;
+import com.alee.laf.radiobutton.WebRadioButton;
 import com.alee.managers.icon.LazyIcon;
+import com.alee.managers.style.StyleId;
+import com.alee.managers.tooltip.TooltipManager;
+import com.alee.managers.tooltip.TooltipWay;
 
 /**
  * CrewEditor allows users to design the crew manifest for an initial settlement
  */
 public class CrewEditor implements ActionListener {
 
-	public static final String TITLE = "Alpha Crew Editor";
-
+	public static final String TITLE = "Crew Editor - Alpha Crew";
 
 	public static final int ALPHA_CREW = 0;
 
 	private static final String POLITICIAN = "Politician";
 	
+	public static final int CREW_WIDTH = 100;
+//	public static final int WIDTH = 800;
+	public static final int HEIGHT = 512;
+	
 	// Data members
+	private int crewNum = 0;
 
 	private List<JTextField> nameTFs = new ArrayList<JTextField>();
 
-	private int crewNum = 0;
-
-//	private boolean[][] personalityArray = new boolean[4][crewNum];
+	private List<JTextField> ageTFs = new ArrayList<JTextField>();
 	
-//	private List<List<ButtonGroup>> allButtonGroups = new ArrayList<>();
-
 	private List<List<JRadioButton>> allRadioButtons = new ArrayList<>();
 
-//	private DefaultComboBoxModel<String> jobsComboBoxModel;
 	private List<WebComboBox> jobsComboBoxList = new ArrayList<WebComboBox>(JobType.JOB_TYPES.length);
 
-//	private DefaultComboBoxModel<String> countriesComboBoxModel;
 	private List<WebComboBox> countriesComboBoxList = new ArrayList<WebComboBox>(SimulationConfig.instance().getPersonConfig().createAllCountryList().size());
 
-//	private DefaultComboBoxModel<String> sponsorsComboBoxModel;
-	private List<WebComboBox> sponsorsComboBoxList = new ArrayList<WebComboBox>(2);
+	private List<WebComboBox> sponsorsComboBoxList = new ArrayList<WebComboBox>(3);
 
-//	private DefaultComboBoxModel<String> genderComboBoxModel;
-	private List<WebComboBox> genderComboBoxList = new ArrayList<WebComboBox>(2);
+//	private List<WebComboBox> genderComboBoxList = new ArrayList<WebComboBox>(2);
 	
-	// Provides a list of destinations options
 	private List<WebComboBox> destinationComboBoxList = new ArrayList<WebComboBox>();
 	
+	private List<WebSwitch> webSwitches = new ArrayList<>();
+	
 	private List<MyItemListener> actionListeners = new ArrayList<>(4);
+	
+	private JFrame f;
+	
+
+	private JPanel mainPane;
+	private JPanel scrollPane;
+//	private JPanel attributeHeader;
+	
+	private List<Box> crewPanels = new ArrayList<>();
 	
 	private CrewConfig crewConfig;
 	
 	private SimulationConfigEditor simulationConfigEditor;
-
-	private JFrame f;
-	
-	private JPanel mainPane;
-	private JPanel listPane;
-	private JPanel radioPane;
-	private JPanel ppane;
-	private JPanel qpane;
 
 	/**
 	 * Constructor.
@@ -119,83 +126,107 @@ public class CrewEditor implements ActionListener {
 
 		crewNum = crewConfig.getNumberOfConfiguredPeople();
 		
-//		System.out.println("Number Of ConfiguredPeople is " + crewNum);
-
 		createGUI();
 	}
 
 
 	/**
+	 * Create a crew panel to house the attributes of a crewman
+	 * 
+	 * @return
+	 */
+	public Box createCrewPanel() {
+		// Create attribute panel.
+//		JPanel crewPanel = new JPanel();
+		Box crewPanel = Box.createVerticalBox();
+//		crewPanel.setLayout(new BoxLayout(crewPanel, BoxLayout.Y_AXIS));
+//		crewPanel.setPreferredSize(new Dimension(CREW_WIDTH, HEIGHT));
+		crewPanels.add(crewPanel);
+		return crewPanel;
+	}
+	
+	/**
 	 * Creates the GUI
 	 */
 	public void createGUI() {
 
-		simulationConfigEditor.setCrewEditorOpen(true);
+//		simulationConfigEditor.setCrewEditorOpen(true);
 
-		f = new JFrame(TITLE);
-		
 		ImageIcon icon = new LazyIcon("lander").getIcon(); //new ImageIcon(CrewEditor.class.getResource(MainWindow.LANDER_PNG));
-		f.setIconImage(MainWindow.iconToImage(icon));
 		
-		// f.setSize(600, 300);
-		f.setPreferredSize(new Dimension(800, 512));
-
+		f = new JFrame(TITLE);
+		f.setIconImage(MainWindow.iconToImage(icon));
+//		f.setPreferredSize(new Dimension(WIDTH, HEIGHT));
+		f.setResizable(false);
 		f.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 		f.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent ev) {
 				simulationConfigEditor.setCrewEditorOpen(false);
 				f.dispose();
+				destroy();
 			}
 		});
-				
+
 		// Create main panel.
 		mainPane = new JPanel(new BorderLayout());
-		mainPane.setPreferredSize(new Dimension(800, 512));
+//		mainPane.setPreferredSize(new Dimension(WIDTH, HEIGHT));
 		mainPane.setBorder(MainDesktopPane.newEmptyBorder());
 		f.setContentPane(mainPane);
+		
+		// Create main panel.
+		scrollPane = new JPanel();
+		scrollPane.setLayout(new BoxLayout(scrollPane, BoxLayout.X_AXIS));
+//		scrollPane.setPreferredSize(new Dimension(WIDTH, HEIGHT));
+//		scrollPane.setAlignmentX(LEFT_ALIGNMENT);
+		scrollPane.setBorder(MainDesktopPane.newEmptyBorder());
 
-		// Create list panel.
-		listPane = new JPanel(new GridLayout(7, crewNum + 1));
-		mainPane.add(listPane, BorderLayout.NORTH);
-
-		// Create radio panel.
-		radioPane = new JPanel(new GridLayout(1, crewNum + 1));
-		mainPane.add(radioPane, BorderLayout.CENTER);
-
-		// Set up the Crewman slot labels
-		JLabel slot = new JLabel("Slot     ", JLabel.RIGHT);
-		listPane.add(slot);
-		for (int i = 0; i < crewNum; i++) {
+		// Prepare scroll panel.
+		JScrollPane scrollPanel = new JScrollPane(scrollPane);
+//		scrollPanel.setPreferredSize(new Dimension(WIDTH, HEIGHT));
+//		scrollPanel.getVerticalScrollBar().setUnitIncrement(CREW_WIDTH);
+//		scrollPanel.getHorizontalScrollBar().setUnitIncrement(CREW_WIDTH * 2);
+		mainPane.add(scrollPanel, BorderLayout.CENTER);
+		
+		for (int i=0; i<crewNum; i++) {
+			Box crewPanel = createCrewPanel();
+			// Add the Crewman title border
 			String num = i + 1 + "";
-			JLabel crewmanLabel = new JLabel("Crewman " + num, JLabel.CENTER);
-			listPane.add(crewmanLabel);
+			crewPanel.setBorder(BorderFactory.createTitledBorder("Crewman " + num));
+			scrollPane.add(crewPanel);
 		}
+		
+		// Create attribute header panel.	
+//		attributeHeader = new JPanel(new GridLayout(8, 1));
+//		mainPane.add(attributeHeader, BorderLayout.WEST);
 	
-		listPane.add(new JLabel("Name :   ", JLabel.RIGHT));
-		// Add the name textfield
+//		attributeHeader.add(new JLabel("Name :   ", JLabel.RIGHT));
+		// Add the name textfields
 		setUpCrewName();
 
-		listPane.add(new JLabel("Gender :   ", JLabel.RIGHT));
+//		attributeHeader.add(new JLabel("Gender :   ", JLabel.RIGHT));
 		// Add the gender combobox options
 		setUpCrewGender();
 
-		radioPane.add(new JLabel("Traits :   ", JLabel.RIGHT));
+		// Add the age textfields
+		setUpCrewAge();
+		
+//		attributeHeader.add(new JLabel("Traits :   ", JLabel.RIGHT));
 		// Add the personality traits checkboxes 
 		setUpCrewPersonality();
 		
-		listPane.add(new JLabel("Job :   ", JLabel.RIGHT));
+//		attributeHeader.add(new JLabel("Job :   ", JLabel.RIGHT));
 		// Add the job combobox options
 		setUpCrewJob();
 
-		listPane.add(new JLabel("Country :   ", JLabel.RIGHT));
+//		attributeHeader.add(new JLabel("Country :   ", JLabel.RIGHT));
 		// Add the country combobox options
 		setUpCrewCountry();
 	
-		listPane.add(new JLabel("Sponsor :   ", JLabel.RIGHT));
+//		attributeHeader.add(new JLabel("Sponsor :   ", JLabel.RIGHT));
 		// Add the sponsor combobox options
 		setUpCrewSponsor();
 		
-		listPane.add(new JLabel("Destination :   ", JLabel.RIGHT));
+//		attributeHeader.add(new JLabel("Destination :   ", JLabel.RIGHT));
 		// Add the destination combobox options
 		setUpDestination();
 	
@@ -223,7 +254,7 @@ public class CrewEditor implements ActionListener {
 		// set up the sponsor combobox at the start of the crew editor
 		for (int i = 0; i < crewNum; i++) {
 			final WebComboBox g = countriesComboBoxList.get(i);
-			g.setWidePopup(true);
+
 //			g.addActionListener(new ActionListener() {
 //				public void actionPerformed(ActionEvent e1) {
 					String s = (String) g.getSelectedItem();
@@ -268,6 +299,9 @@ public class CrewEditor implements ActionListener {
 	}
 
 
+	/**
+	 * Takes the actions from the button being clicked on
+	 */
 	public void actionPerformed(ActionEvent evt) {
 
 		String cmd = (String) evt.getActionCommand();
@@ -275,19 +309,22 @@ public class CrewEditor implements ActionListener {
 		if (cmd.equals("Load Default")) {
 
 			JDialog.setDefaultLookAndFeelDecorated(true);
-			JOptionPane.showMessageDialog(f, 
-							"Are you sure you want to reload default profiles ? " + System.lineSeparator()
-							+ "All changes made will be lost.",
+			int result = JOptionPane.showConfirmDialog(f, 
+							"Are you sure you want to reload the default ? " + System.lineSeparator()
+							+ "All the changes you have made will be lost.",
 							"Confirm Loading",
-							JOptionPane.YES_NO_OPTION);
+							JOptionPane.YES_NO_CANCEL_OPTION);
 			
-			loadCrewNames();
-			loadCrewGender();
-			loadCrewJob();
-			loadCrewCountry();
-			loadCrewSponsor();
-			loadDestination();
-			loadCrewPersonality();
+			if (result == JOptionPane.YES_OPTION) {
+				loadCrewNames();
+				loadCrewGender();
+				loadCrewAges();
+				loadCrewJob();
+				loadCrewCountry();
+				loadCrewSponsor();
+				loadDestination();
+				loadCrewPersonality();
+			}
 		}
 
 		else if (cmd.equals("Commit Changes")) {
@@ -298,17 +335,19 @@ public class CrewEditor implements ActionListener {
 		else if (cmd.equals("Save to xml")) {
 
 			JDialog.setDefaultLookAndFeelDecorated(true);
-			JOptionPane.showMessageDialog(f, 
+			int result = JOptionPane.showConfirmDialog(f,
 					"Are you sure you want to save the changes to crew.xml ? " + System.lineSeparator()
-					+ "It will save changes made in this session PERMANENTLY " + System.lineSeparator()
+					+ "It will save the changes made in this session PERMANENTLY " + System.lineSeparator()
 					+ "to crew.xml. " + System.lineSeparator()
 					+ "Note : If you only want the changes to apply to " + System.lineSeparator()
 					+ "the simulation you are setting up, choose " + System.lineSeparator()
 					+ "'Commit Change' instead." + System.lineSeparator(),
 					"Confirm Saving XML",
-					JOptionPane.OK_CANCEL_OPTION);
+					JOptionPane.YES_NO_CANCEL_OPTION);
 			
-			// Save to xml ...
+			if (result == JOptionPane.YES_OPTION) {
+				// Save to xml ...
+			}
 
 		}
 //		else {
@@ -326,73 +365,88 @@ public class CrewEditor implements ActionListener {
 //		}
 	}
 
+	/**
+	 * Commits the changes to the crew profiles
+	 */
 	public void commitChanges() {
 		boolean goodToGo = true;
 		
 		for (int i = 0; i < crewNum; i++) {
 
-			if (checkNameFields(i, goodToGo)) {
-				String genderStr = (String) genderComboBoxList.get(i).getSelectedItem();
-				if (genderStr.equals("M"))
-					genderStr = "MALE";
-				else if (genderStr.equals("F"))
-					genderStr = "FEMALE";
-				crewConfig.setPersonGender(i, genderStr, ALPHA_CREW);
-				System.out.print(genderStr + ", ");
-				
-				String personalityStr = getSelectedPersonality(i);
-				crewConfig.setPersonPersonality(i, personalityStr, ALPHA_CREW);
-				System.out.print(personalityStr + ", ");
-				
-				String jobStr = (String) jobsComboBoxList.get(i).getSelectedItem();
-				crewConfig.setPersonJob(i, jobStr, ALPHA_CREW);
-				System.out.print(jobStr + ", ");
-
-				String countryStr = (String) countriesComboBoxList.get(i).getSelectedItem();
-				crewConfig.setPersonCountry(i, countryStr, ALPHA_CREW);
-				System.out.print(countryStr + ", ");
-				
-				String sponsorStr = (String) sponsorsComboBoxList.get(i).getSelectedItem();
-				crewConfig.setPersonSponsor(i, sponsorStr, ALPHA_CREW);
-				System.out.print(sponsorStr + ", ");	
-				
-				String maindish = crewConfig.getFavoriteMainDish(i, ALPHA_CREW);
-				crewConfig.setMainDish(i, maindish, ALPHA_CREW);
-				System.out.print(maindish + ", ");
-				
-				String sidedish = crewConfig.getFavoriteMainDish(i, ALPHA_CREW);
-				crewConfig.setSideDish(i, sidedish, ALPHA_CREW);
-				System.out.print(sidedish + ", ");
-				
-				String dessert = crewConfig.getFavoriteDessert(i, ALPHA_CREW);
-				crewConfig.setDessert(i, dessert, ALPHA_CREW);
-				System.out.print(dessert + ", ");
-				
-				String activity = crewConfig.getFavoriteActivity(i, ALPHA_CREW);
-				crewConfig.setActivity(i, activity, ALPHA_CREW);
-				System.out.print(activity + ", ");
-				
-				String destinationStr = (String) destinationComboBoxList.get(i).getSelectedItem();//crewConfig.getConfiguredPersonDestination(i, ALPHA_CREW, false);
-				crewConfig.setPersonDestination(i, destinationStr, ALPHA_CREW);
-				System.out.println(destinationStr + ".");
-			}
-			
-			else {
+			if (!checkNameFields(i, goodToGo)) {
 				goodToGo = false;
 				break;
 			}
+				
+			if (!checkAgeFields(i, goodToGo)) {
+				goodToGo = false;
+				break;
+			}
+				
+//			String genderStr = (String) genderComboBoxList.get(i).getSelectedItem();			
+			String genderStr = "";
+			boolean isSelected = webSwitches.get(i).isSelected();
+			
+			if (isSelected)
+				genderStr = "MALE";
+			else 
+				genderStr = "FEMALE";
+			
+//			if (genderStr.equals("M"))
+//				genderStr = "MALE";
+//			else if (genderStr.equals("F"))
+//				genderStr = "FEMALE";
+			
+			crewConfig.setPersonGender(i, genderStr, ALPHA_CREW);
+			System.out.print(genderStr + ", ");	
+			
+			String personalityStr = getSelectedPersonality(i);
+			crewConfig.setPersonPersonality(i, personalityStr, ALPHA_CREW);
+			System.out.print(personalityStr + ", ");
+			
+			String jobStr = (String) jobsComboBoxList.get(i).getSelectedItem();
+			crewConfig.setPersonJob(i, jobStr, ALPHA_CREW);
+			System.out.print(jobStr + ", ");
+
+			String countryStr = (String) countriesComboBoxList.get(i).getSelectedItem();
+			crewConfig.setPersonCountry(i, countryStr, ALPHA_CREW);
+			System.out.print(countryStr + ", ");
+			
+			String sponsorStr = (String) sponsorsComboBoxList.get(i).getSelectedItem();
+			crewConfig.setPersonSponsor(i, sponsorStr, ALPHA_CREW);
+			System.out.print(sponsorStr + ", ");	
+			
+			String maindish = crewConfig.getFavoriteMainDish(i, ALPHA_CREW);
+			crewConfig.setMainDish(i, maindish, ALPHA_CREW);
+			System.out.print(maindish + ", ");
+			
+			String sidedish = crewConfig.getFavoriteMainDish(i, ALPHA_CREW);
+			crewConfig.setSideDish(i, sidedish, ALPHA_CREW);
+			System.out.print(sidedish + ", ");
+			
+			String dessert = crewConfig.getFavoriteDessert(i, ALPHA_CREW);
+			crewConfig.setDessert(i, dessert, ALPHA_CREW);
+			System.out.print(dessert + ", ");
+			
+			String activity = crewConfig.getFavoriteActivity(i, ALPHA_CREW);
+			crewConfig.setActivity(i, activity, ALPHA_CREW);
+			System.out.print(activity + ", ");
+			
+			String destinationStr = (String) destinationComboBoxList.get(i).getSelectedItem();
+			crewConfig.setPersonDestination(i, destinationStr, ALPHA_CREW);
+			System.out.println(destinationStr + ".");
 
 		}
 
 		if (goodToGo) {
-			simulationConfigEditor.setCrewEditorOpen(false);
+//			simulationConfigEditor.setCrewEditorOpen(false);
 			f.setVisible(false);
 			f.dispose();
 		}
 	}
 	
 	/**
-	 * Checks if the name text fields are valid
+	 * Checks if the name textfields are valid
 	 * 
 	 * @param i
 	 * @param goodToGo
@@ -415,7 +469,7 @@ public class CrewEditor implements ActionListener {
 			JDialog.setDefaultLookAndFeelDecorated(true);
 			JOptionPane.showMessageDialog(f, 
 							"Each Settler's name must include first and last name, separated by a whitespace",
-							"Invalid Name Field",
+							"Invalid Name Format",
 							JOptionPane.ERROR_MESSAGE);
 			
 			// Disable Start;
@@ -425,6 +479,71 @@ public class CrewEditor implements ActionListener {
 		}
 	}
 	
+	/**
+	 * Checks if the age textfields are valid
+	 * 
+	 * @param i
+	 * @param goodToGo
+	 * @return
+	 */
+	public boolean checkAgeFields(int i, boolean goodToGo) {
+		
+		String s = ageTFs.get(i).getText().trim();
+		// Use isBlank() to check against invalid names
+		if (!Conversion.isBlank(s)
+				&& isNumeric(s)) {
+			
+			int age = Integer.parseInt(s);
+			
+			if (age < 5 || age > 100) {
+				JDialog.setDefaultLookAndFeelDecorated(true);
+				JOptionPane.showMessageDialog(f, 
+								"A settler's age must be between 5 and 100",
+								"Invalid Age Range",
+								JOptionPane.ERROR_MESSAGE);
+				
+				ageTFs.get(i).requestFocus();
+				return false;
+			}
+			
+			else {
+				System.out.print(s + ", ");
+				crewConfig.setPersonAge(i, s, ALPHA_CREW);
+				return true;
+			}
+		} 
+		
+		else {
+			JDialog.setDefaultLookAndFeelDecorated(true);
+			JOptionPane.showMessageDialog(f, 
+							"A settler's age must be numeric and between 5 and 100",
+							"Invalid Age Format",
+							JOptionPane.ERROR_MESSAGE);
+			
+			ageTFs.get(i).requestFocus();
+			return false;
+		}
+	}
+	
+	/**
+	 * Checks if a string is purely numeric
+	 * 
+	 * @param str
+	 * @return
+	 */
+	public static boolean isNumeric(String str) { 
+		try {  
+			Integer.parseInt(str);
+//		    Double.parseDouble(str);  
+			return true;
+		} catch(NumberFormatException e){  
+			return false;  
+		}  
+	}
+	
+	/**
+	 * Sets up the name textfields
+	 */
 	public void setUpCrewName() {
 		for (int i = 0; i < crewNum; i++) {
 //			int crew_id = cc.getCrew(i);
@@ -432,13 +551,21 @@ public class CrewEditor implements ActionListener {
 //			System.out.println("setUpCrewName:: crewNum is " + crewNum);
 			String n = crewConfig.getConfiguredPersonName(i, ALPHA_CREW, false);
 
-			JTextField tf = new JTextField();
+			JTextField tf = new JTextField(22);
+			JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 2));
+			panel.add(new WebLabel("   Name : "));
+			panel.add(tf);
+//			panel.setPreferredSize(new Dimension(CREW_WIDTH, 30));
+//			panel.setSize(CREW_WIDTH, 30);
 			nameTFs.add(tf);
-			listPane.add(tf);
+			crewPanels.get(i).add(panel);
 			tf.setText(n);
 		}
 	}
 
+	/**
+	 * Loads the names of the crew into the name textfields
+	 */
 	public void loadCrewNames() {
 		for (int i = 0; i < crewNum; i++) {
 //			int crew_id = cc.getCrew(i);
@@ -450,29 +577,71 @@ public class CrewEditor implements ActionListener {
 			tf.setText(n);
 		}
 	}
-	
-	public DefaultComboBoxModel<String> setUpGenderCBModel() {
 
-		List<String> genderList = new ArrayList<String>(2);
-		genderList.add("M");
-		genderList.add("F");
-		DefaultComboBoxModel<String> m = new DefaultComboBoxModel<String>();
+	/**
+	 * Sets up the age textfields
+	 */
+	public void setUpCrewAge() {
+		for (int i = 0; i < crewNum; i++) {
+			int age = RandomUtil.getRandomInt(21, 65);
+			
+			JTextField tf = new JTextField(5);
+			JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 2));
+			panel.add(new WebLabel("      Age : "));
+			panel.add(tf);
 
-		Iterator<String> i = genderList.iterator();
-		while (i.hasNext()) {
-			String s = i.next();
-			m.addElement(s);
+			ageTFs.add(tf);
+			crewPanels.get(i).add(panel);
+			tf.setText(age + "");
 		}
-
-		return m;
 	}
 
+	
+	/**
+	 * Get the random age for each crew member into the age textfields
+	 */
+	public void loadCrewAges() {
+		for (int i = 0; i < crewNum; i++) {
+			int age = RandomUtil.getRandomInt(21, 65);
+			
+			JTextField tf = ageTFs.get(i);
+			tf.setText(age + "");
+		}
+	}
+	
+//	/**
+//	 * Sets up the gender combo box model
+//	 * @return
+//	 */
+//	public DefaultComboBoxModel<String> setUpGenderCBModel() {
+//
+//		List<String> genderList = new ArrayList<String>(2);
+//		genderList.add("M");
+//		genderList.add("F");
+//		DefaultComboBoxModel<String> m = new DefaultComboBoxModel<String>();
+//
+//		Iterator<String> i = genderList.iterator();
+//		while (i.hasNext()) {
+//			String s = i.next();
+//			m.addElement(s);
+//		}
+//
+//		return m;
+//	}
+
+	/**
+	 * Sets up the combo box for a few attributes
+	 * 
+	 * @param choice
+	 * @param s
+	 * @return
+	 */
 	public WebComboBox setUpCB(int choice, String s) {
 		DefaultComboBoxModel<String> m = null;
-		if (choice == 0)
-			m = setUpGenderCBModel();
-
-		else if (choice == 2)
+//		if (choice == 0)
+//			m = setUpGenderCBModel();
+//		else 
+		if (choice == 2)
 			m = setUpJobCBModel();
 		
 		else if (choice == 3) 
@@ -484,8 +653,10 @@ public class CrewEditor implements ActionListener {
 		else if (choice == 5) 
 			m = setUpDestinationCBModel(s);
 		
-		final WebComboBox g = new WebComboBox(m);
+		final WebComboBox g = new WebComboBox(StyleId.comboboxHover, m);
 		g.setWidePopup(true);
+//		g.setPreferredSize(new Dimension(CREW_WIDTH, 25));
+//		g.setSize(CREW_WIDTH, 25);
 		
 		g.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e1) {
@@ -503,23 +674,54 @@ public class CrewEditor implements ActionListener {
 	 */
 	public void setUpCrewGender() {
 
-		String s[] = new String[crewNum];
+//		String s[] = new String[crewNum];
+		String s = "";
 		for (int j = 0; j < crewNum; j++) {
 			GenderType n = crewConfig.getConfiguredPersonGender(j, ALPHA_CREW, false);
 
-			s[j] = n.toString();
-			if (s[j].equals("MALE"))
-				s[j] = "M";
-			else
-				s[j] = "F";
-
-			WebComboBox g = setUpCB(0, ""); // 0 = Gender
-			g.setWidePopup(true);
-			g.setMaximumRowCount(2);
-			listPane.add(g);
-			genderComboBoxList.add(g);
-			g.setSelectedItem(s[j]);
-
+			s = n.toString();
+			
+			WebSwitch webSwitch = new WebSwitch(true);
+			
+			if (s.equalsIgnoreCase("MALE")) {
+//				s[j] = "M";
+				webSwitch.setSelected(true);
+			}
+			else {
+//				s[j] = "F";
+				webSwitch.setSelected(false);
+			}
+			
+			webSwitches.add(webSwitch);
+			webSwitch.setSwitchComponents(
+					"M", 
+					"F");
+			TooltipManager.setTooltip(webSwitch, "Choose male or female", TooltipWay.down);
+			
+			WebPanel panel = new WebPanel(new FlowLayout(FlowLayout.LEFT, 5, 2));
+//			panel.setPreferredSize(new Dimension(55, 35));
+//			panel.setSize(55, 35);
+//			panel.setMaximumSize(55, 35);
+			panel.add(new WebLabel(" Gender : "));
+			panel.add(webSwitch);
+			
+			crewPanels.get(j).add(panel);
+			
+//			webSwitch.addActionListener(new ActionListener() {
+//				public void actionPerformed(ActionEvent e) {
+////					masterClock.setPaused(!masterClock.isPaused(), false);
+//					if (webSwitch.isSelected())
+//						;
+//					else
+//						;
+//				};
+//			});
+				
+//			WebComboBox g = setUpCB(0, ""); // 0 = Gender
+//			g.setMaximumRowCount(2);
+//			crewPanels.get(j).add(g);
+//			genderComboBoxList.add(g);
+//			g.setSelectedItem(s[j]);
 		}
 	}
 
@@ -528,22 +730,33 @@ public class CrewEditor implements ActionListener {
 	 */
 	public void loadCrewGender() {
 
-		String s[] = new String[crewNum];
+//		String s[] = new String[crewNum];
+		String s = "";
 		for (int j = 0; j < crewNum; j++) {
 			GenderType n = crewConfig.getConfiguredPersonGender(j, ALPHA_CREW, true);
-
-			s[j] = n.toString();
-			if (s[j].equals("MALE"))
-				s[j] = "M";
-			else
-				s[j] = "F";
-
-			WebComboBox g = genderComboBoxList.get(j);
-			g.setWidePopup(true);
-			g.setSelectedItem(s[j]);
-
+			
+			s = n.toString();
+			
+			WebSwitch webSwitch = webSwitches.get(j);
+			
+			if (s.equalsIgnoreCase("MALE")) {
+//				s[j] = "M";
+				webSwitch.setSelected(true);
+			}
+			else {
+//				s[j] = "F";
+				webSwitch.setSelected(false);
+			}
+			
+			
+//			WebComboBox g = genderComboBoxList.get(j);
+//			g.setSelectedItem(s[j]);
+			
 		}
 	}
+	
+	
+
 	
 	/**
 	 * Set up personality radio buttons
@@ -551,20 +764,28 @@ public class CrewEditor implements ActionListener {
 	 * @param col
 	 */
 	public void setUpCrewPersonality() {
-		String quadrant1A = "Extravert", quadrant1B = "Introvert";
-		String quadrant2A = "Intuition", quadrant2B = "Sensing";
-		String quadrant3A = "Feeling", quadrant3B = "Thinking";
-		String quadrant4A = "Judging", quadrant4B = "Perceiving";
+		String quadrant1A = "{E:u}xtravert";
+		String quadrant1B = "{I:u}ntrovert"; 
+		String quadrant2A = "I{N:u}tuition";
+		String quadrant2B = "{S:u}ensing";
+		String quadrant3A = "{F:u}eeling"; 
+		String quadrant3B = "{T:u}hinking";
+		String quadrant4A = "{J:u}udging";
+		String quadrant4B = "{P:u}erceiving";
 		String cat1 = "World", cat2 = "Information", cat3 = "Decision", cat4 = "Structure";
 		String a = null, b = null, c = null;
 		
 		for (int col = 0; col < crewNum; col++) {
-			ppane = new JPanel(new GridLayout(4, 1));
-
+			JPanel fullPane = new JPanel();
+			fullPane.setLayout(new BoxLayout(fullPane, BoxLayout.Y_AXIS));
+			fullPane.setPreferredSize(new Dimension(CREW_WIDTH, 200));
+//			fullPane.setSize(CREW_WIDTH, 240);
+//			ppane.setAlignmentX(0);
+			
 			List<JRadioButton> radioButtons = new ArrayList<>();	
 					
 			for (int row = 0; row < 4; row++) {
-				qpane = new JPanel(new FlowLayout());
+				
 				if (row == 0) {
 					a = quadrant1A;
 					b = quadrant1B;
@@ -583,11 +804,11 @@ public class CrewEditor implements ActionListener {
 					c = cat4;
 				}
 
-				JRadioButton ra = new JRadioButton(a);
+				WebRadioButton ra = new WebRadioButton(StyleId.radiobuttonStyled, a);
 				ra.addActionListener(this);
 //				ra.setActionCommand("a" + row + col);
 				
-				JRadioButton rb = new JRadioButton(b);
+				WebRadioButton rb = new WebRadioButton(StyleId.radiobuttonStyled, b);
 				rb.addActionListener(this);
 //				rb.setActionCommand("b" + row + col);
 				
@@ -604,13 +825,20 @@ public class CrewEditor implements ActionListener {
 				bg1.add(ra);
 				bg1.add(rb);
 				
-				qpane.setBorder(BorderFactory.createTitledBorder(c));
-				qpane.add(ra);
-				qpane.add(rb);
-				ppane.add(qpane);
+				JPanel quadPane = new JPanel(new GridLayout(1, 2));
+//				quadPane.setLayout(new BoxLayout(quadPane, BoxLayout.Y_AXIS));
+//				quadPane.setAlignmentX(Component.LEFT_ALIGNMENT);
+				quadPane.setPreferredSize(new Dimension(CREW_WIDTH, 60));
+//				quadPane.setMinimumSize(new Dimension(CREW_WIDTH, 60));
+//				quadPane.setSize(CREW_WIDTH, 60);
+				quadPane.setBorder(BorderFactory.createTitledBorder(c));
+				quadPane.add(ra);
+				quadPane.add(rb);
+				quadPane.setAlignmentX(Component.CENTER_ALIGNMENT);
+				fullPane.add(quadPane);
 			}
 			
-			radioPane.add(ppane);
+			crewPanels.get(col).add(fullPane);
 			
 			allRadioButtons.add(radioButtons);
 		}
@@ -825,9 +1053,9 @@ public class CrewEditor implements ActionListener {
 			String n[] = new String[SIZE];
 			n[i] = crewConfig.getConfiguredPersonJob(i, ALPHA_CREW, false);
 			WebComboBox g = setUpCB(2, n[i]);// 2 = Job
-			g.setWidePopup(true);
+			TooltipManager.setTooltip(g, "Choose the job of this person", TooltipWay.down);
 			g.setMaximumRowCount(8);
-			listPane.add(g);
+			crewPanels.get(i).add(g);
 			g.getModel().setSelectedItem(n[i]);
 			jobsComboBoxList.add(g);
 		}
@@ -843,11 +1071,11 @@ public class CrewEditor implements ActionListener {
 			String n[] = new String[SIZE];
 			n[i] = crewConfig.getConfiguredPersonJob(i, ALPHA_CREW, true);
 			WebComboBox g = jobsComboBoxList.get(i); //setUpCB(2, n[i]);// 2 = Job
-			g.setWidePopup(true);
+
 			g.getModel().setSelectedItem(n[i]);
 		}
 	}
-	
+
 	/**
 	 * Set up the country comboxbox
 	 * 
@@ -858,10 +1086,9 @@ public class CrewEditor implements ActionListener {
 			String n[] = new String[SIZE];
 			n[i] = crewConfig.getConfiguredPersonCountry(i, ALPHA_CREW, false);
 			WebComboBox g = setUpCB(3, n[i]); // 3 = Country
-			g.setWidePopup(true);
-			
+			TooltipManager.setTooltip(g, "Choose the country of origin of this person", TooltipWay.down);
 			g.setMaximumRowCount(8);
-			listPane.add(g);
+			crewPanels.get(i).add(g);
 			g.getModel().setSelectedItem(n[i]);
 			countriesComboBoxList.add(g);
 			
@@ -873,7 +1100,7 @@ public class CrewEditor implements ActionListener {
 	}
 
 	/**
-	 * Loads the crew country
+	 * Loads the crew's country
 	 * 
 	 */
 	public void loadCrewCountry() {
@@ -882,13 +1109,13 @@ public class CrewEditor implements ActionListener {
 			String n[] = new String[SIZE];
 			n[i] = crewConfig.getConfiguredPersonCountry(i, ALPHA_CREW, true);
 			WebComboBox g = countriesComboBoxList.get(i); //setUpCB(3, n[i]); // 3 = Country
-			g.setWidePopup(true);
+
 			g.getModel().setSelectedItem(n[i]);
 		}
 	}
 			
 	/**
-	 * Set up the sponsor comboxbox
+	 * Set up the sponsor combox box
 	 * 
 	 */
 	public void setUpCrewSponsor() {
@@ -897,16 +1124,16 @@ public class CrewEditor implements ActionListener {
 			String n[] = new String[SIZE]; // 10
 			n[i] = crewConfig.getConfiguredPersonSponsor(i, ALPHA_CREW, false);
 			WebComboBox g = setUpCB(4, n[i]); // 4 = Sponsor
-			g.setWidePopup(true);
+			TooltipManager.setTooltip(g, "Choose the sponsor of this person", TooltipWay.down);
 			g.setMaximumRowCount(8);
-			listPane.add(g);
+			crewPanels.get(i).add(g);
 			g.getModel().setSelectedItem(n[i]);
 			sponsorsComboBoxList.add(g);
 		}
 	}
 
 	/**
-	 * Loads the crew sponsor
+	 * Loads the crew's sponsor
 	 * 
 	 */
 	public void loadCrewSponsor() {
@@ -915,13 +1142,13 @@ public class CrewEditor implements ActionListener {
 			String n[] = new String[SIZE]; // 10
 			n[i] = crewConfig.getConfiguredPersonSponsor(i, ALPHA_CREW, true);
 			WebComboBox g = sponsorsComboBoxList.get(i); // setUpCB(4, n[i]); // 4 = Sponsor
-			g.setWidePopup(true);
+
 			g.getModel().setSelectedItem(n[i]);
 		}
 	}
 	
 	/**
-	 * Set up the destination comboxbox
+	 * Set up the destination combox box
 	 * 
 	 */
 	public void setUpDestination() {
@@ -930,16 +1157,16 @@ public class CrewEditor implements ActionListener {
 			String n[] = new String[SIZE]; // 10
 			n[i] = crewConfig.getConfiguredPersonDestination(i, ALPHA_CREW, false);
 			WebComboBox g = setUpCB(5, n[i]); // 5 = Destination
-			g.setWidePopup(true);
+			TooltipManager.setTooltip(g, "Choose the settlement destination of this person", TooltipWay.down);
 			g.setMaximumRowCount(5);
-			listPane.add(g);
+			crewPanels.get(i).add(g);
 			g.getModel().setSelectedItem(n[i]);
 			destinationComboBoxList.add(g);
 		}
 	}
 	
 	/**
-	 * Loads the crew destination
+	 * Loads the crew's destination
 	 * 
 	 */
 	public void loadDestination() {
@@ -948,16 +1175,22 @@ public class CrewEditor implements ActionListener {
 			String n[] = new String[SIZE]; // 10
 			n[i] = crewConfig.getConfiguredPersonDestination(i, ALPHA_CREW, true);
 			WebComboBox g = destinationComboBoxList.get(i); //setUpCB(5, n[i]); // 5 = Destination
-			g.setWidePopup(true);
+
 			g.getModel().setSelectedItem(n[i]);
 		}
 	}
 	
+	/**
+	 * The MyItemListener class serves to listen to the change made in the country combo box. 
+	 * It triggers a corresponding change in the sponsor combo box.
+	 * 
+	 * @author mkhelios
+	 *
+	 */
 	class MyItemListener implements ItemListener {
 		// This method is called only if a new item has been selected.
 		@SuppressWarnings("unchecked")
 		public void itemStateChanged(ItemEvent evt) {
-//			WebComboBox cb = (WebComboBox) evt.getSource();
 
 			int index = actionListeners.indexOf(this);
 			
@@ -965,7 +1198,6 @@ public class CrewEditor implements ActionListener {
 
 			if (evt.getStateChange() == ItemEvent.SELECTED && sponsorsComboBoxList.size() > 0) {
 				// Item was just selected
-
 		        WebComboBox m = sponsorsComboBoxList.get(index);
 		        
 				// Get combo box model
@@ -974,7 +1206,7 @@ public class CrewEditor implements ActionListener {
 		        // removing old data
 		        model.removeAllElements();
 
-		        // Add MS and SPACEX as the available options
+		        // Add MS and SPACEX as the universally available options
 	            model.addElement(ReportingAuthorityType.MARS_SOCIETY_L.getName());
 	            model.addElement(ReportingAuthorityType.SPACEX_L.getName());
 	            
@@ -1007,19 +1239,18 @@ public class CrewEditor implements ActionListener {
 	 */
 	public void destroy() {
 		crewConfig = null;
-		simulationConfigEditor.setCrewEditorOpen(false);
 		simulationConfigEditor = null;
 		f = null;
 		mainPane = null;
-		listPane = null;
-		radioPane = null;
-		ppane = null;
-		qpane = null;
+//		attributeHeader = null;
+		nameTFs.clear();
 		nameTFs = null;
+		ageTFs.clear();
+		ageTFs = null;
 		sponsorsComboBoxList = null;
 		countriesComboBoxList = null;
 		jobsComboBoxList = null;
-		genderComboBoxList = null;
+//		genderComboBoxList = null;
 	}
 
 }

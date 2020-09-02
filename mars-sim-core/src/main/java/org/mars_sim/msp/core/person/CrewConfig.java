@@ -129,7 +129,6 @@ public class CrewConfig implements Serializable {
 				Crew crew = i.next();
 				// if the name does not exist, create a new crew with this name
 				if (crewString.equals(crew.getName())) {
-//					System.out.println("roster : " + roster + " crew.getName() : " + crew.getName());
 					oldCrewName = true;
 					// add a new member
 					// Member m = new Member();
@@ -144,8 +143,6 @@ public class CrewConfig implements Serializable {
 				c.add(new Member());
 				roster.add(c);
 			}
-
-//			System.out.println("crewString : " + crewString + " crew size : " + roster.size());
 
 			return roster.size() - 1;
 		}
@@ -162,9 +159,6 @@ public class CrewConfig implements Serializable {
 	 * @throws Exception if error in XML parsing.
 	 */
 	public String getConfiguredPersonName(int index, int crewID, boolean loadFromXML) {
-//		System.out.println("roster is " + roster);
-//		System.out.println("# of crew in roster is " + roster.size());
-//		System.out.println("crew_id is " + crew_id);
 		if (loadFromXML)
 			return getValueAsString(index, NAME);
 		
@@ -199,6 +193,30 @@ public class CrewConfig implements Serializable {
 			return GenderType.valueOfIgnoreCase(getValueAsString(index, GENDER));
 	}
 
+	/**
+	 *  Gets the configured person's age.
+	 *  
+	 * @param index
+	 * @param crewID
+	 * @param loadFromXML
+	 * @return
+	 */
+	public String getConfiguredPersonAge(int index, int crewID, boolean loadFromXML) {
+		if (roster.get(crewID) != null) {
+			if (roster.get(crewID).getTeam().get(index).getAge() != null) {
+				return roster.get(crewID).getTeam().get(index).getAge();
+			} 
+			
+			else {
+				return null;
+			}
+		} 
+		
+		else {
+			return null;
+		}
+	}
+	
 	/**
 	 * Gets the configured person's MBTI personality type.
 	 * 
@@ -393,6 +411,17 @@ public class CrewConfig implements Serializable {
 			roster.get(crew_id).getTeam().get(index).setGender(value);
 	}
 
+	/**
+	 * Sets the age of a member of the alpha crew
+	 * 
+	 * @param index
+	 * @param age
+	 */
+	public void setPersonAge(int index, String value, int crew_id) {
+		if (roster.get(crew_id).getTeam().get(index).getAge() == null)
+			roster.get(crew_id).getTeam().get(index).setAge(value);
+	}
+	
 	/**
 	 * Sets the job of a member of the alpha crew
 	 * 
