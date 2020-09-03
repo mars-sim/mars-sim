@@ -118,7 +118,8 @@ public class MeteorologyFieldStudy extends RoverMission implements Serializable 
 				setMissionCapacity(availableSuitNum);
 
 			// Recruit additional members to mission.
-			recruitMembersForMission(startingPerson);
+			if (!recruitMembersForMission(startingPerson))
+				return;
 
 			// Determine field site location.
 			if (hasVehicle()) {

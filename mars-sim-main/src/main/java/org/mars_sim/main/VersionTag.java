@@ -169,6 +169,7 @@ public class VersionTag {
             			&& !line.contains("double")
             			&& !line.contains("static")  
             			&& !line.contains("=")  
+                    	&& !line.contains("//")
             			) {
             	
             		hasVersionTag = true;

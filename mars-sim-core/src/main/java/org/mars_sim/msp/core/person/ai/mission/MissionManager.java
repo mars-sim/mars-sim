@@ -18,6 +18,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.GameManager;
+import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.GameManager.GameMode;
@@ -43,8 +44,8 @@ public class MissionManager implements Serializable {
 
 	/** default logger. */
 	private static transient Logger logger = Logger.getLogger(MissionManager.class.getName());
-//	private static String loggerName = logger.getName();
-//	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+	private static String loggerName = logger.getName();
+	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 	
 	private static final int MAX_NUM_PLANS = 100;
 	
@@ -929,9 +930,15 @@ public class MissionManager implements Serializable {
 					mp.setPercentComplete(totalPercent);
 					double score = mp.getScore();
 					mp.setScore(score + weight * newScore);
-					logger.info(mp.getMission().getStartingMember() + "'s " + mp.getMission().getDescription() 
+					
+					LogConsolidated.log(logger, Level.INFO, 0, sourceName,
+							"[" + mp.getMission().getStartingMember().getLocationTag().getLocale() + "] " 
+							+ mp.getMission().getStartingMember().getName() 
+							+ mp.getMission().getStartingMember() + "'s " + mp.getMission().getDescription() 
 							+ " mission plan - current score : " + Math.round(mp.getScore()*10.0)/10.0 
 							+ " (" + mp.getPercentComplete() + "% review completed)");
+
+							
 					mp.setReviewedBy(reviewer.getName());
 					mp.getMission().setPhaseDescription(mp.getMission().getPhaseDescription());
 //					mp.getMission().fireMissionUpdate(MissionEventType.PHASE_DESCRIPTION_EVENT, mp.getMission().getPhaseDescription());

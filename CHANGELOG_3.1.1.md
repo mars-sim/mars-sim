@@ -5,7 +5,7 @@ Copyright (C) 2020 Scott Davis
 
 -----------------------------------------------------------------------------------------
 
-## v3.1.2 (build 53xx) - 2020-08-xx
+## v3.1.2 (build 5349) - 2020-09-02
 
 ### CORE ENGINE IMPROVEMENTS :
 
@@ -43,7 +43,6 @@ Copyright (C) 2020 Scott Davis
     to a skill. 
 
 14. Add settlement and vehicle names tailored to its sponsor/country.
-
 
 
 ### UI IMPROVEMENT :

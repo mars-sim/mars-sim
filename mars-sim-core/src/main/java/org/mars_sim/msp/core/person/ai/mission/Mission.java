@@ -41,6 +41,7 @@ import org.mars_sim.msp.core.structure.goods.CreditManager;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.tool.RandomUtil;
+import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
@@ -75,15 +76,15 @@ public abstract class Mission implements Serializable {
 	/**
 	 * The marginal factor for the amount of water to be brought during a mission.
 	 */
-	public final static double WATER_MARGIN = 8;
+	public final static double WATER_MARGIN = 2.5;
 	/**
 	 * The marginal factor for the amount of oxygen to be brought during a mission.
 	 */
-	public final static double OXYGEN_MARGIN = 8;
+	public final static double OXYGEN_MARGIN = 2.5;
 	/**
 	 * The marginal factor for the amount of food to be brought during a mission.
 	 */
-	public final static double FOOD_MARGIN = 8.0;
+	public final static double FOOD_MARGIN = 2.5;
 	/**
 	 * The marginal factor for the amount of dessert to be brought during a mission.
 	 */
@@ -474,8 +475,12 @@ public abstract class Mission implements Serializable {
 								"Removing a member", missionName, person.getName(), loc0, loc1, person.getAssociatedSettlement().getName()));
 				fireMissionUpdate(MissionEventType.REMOVE_MEMBER_EVENT, member);
 
-				if ((members.size() == 0) && !done) {
-					addMissionStatus(MissionStatus.NOT_ENOUGH_MEMBERS);
+//				if ((members.size() == 0) && !done) {
+//					addMissionStatus(MissionStatus.NOT_ENOUGH_MEMBERS);
+//					endMission();
+//				} else 
+				if (getPeopleNumber() == 0 && !done) {
+					addMissionStatus(MissionStatus.NO_MEMBERS_AVAILABLE);
 					endMission();
 				}
 				// logger.fine(member.getName() + " removed from mission : " + name);
@@ -887,7 +892,15 @@ public abstract class Mission implements Serializable {
 	 * @param reason
 	 */
 	public void endMission() {
+		Vehicle v = startingMember.getVehicle();
+		// Unregister the vehicle
+		if (v != null)
+			v.correctVehicleReservation();	
 		
+		LogConsolidated.log(logger, Level.INFO, 0, sourceName,
+				"[" + startingMember.getLocationTag().getLocale() + "] " + startingMember.getName() 
+				+ " ended " + this + " in Mission.");
+
 		// Add mission experience score
 		addMissionScore();
 		
@@ -899,29 +912,19 @@ public abstract class Mission implements Serializable {
 			done = true; // Note: done = true is very important to keep !
 //			fireMissionUpdate(MissionEventType.END_MISSION_EVENT);
 			// logger.info("done firing End_Mission_Event");
-
-			// Unregister the vehicle
-			if (startingMember.getVehicle() != null)
-				startingMember.getVehicle().correctVehicleReservation();				
+			
 		}
 		
-		else 
-			LogConsolidated.log(logger, Level.INFO, 0, sourceName,
+		else {
+			LogConsolidated.log(logger, Level.INFO, 500, sourceName,
 				"[" + startingMember.getLocationTag().getLocale() + "] " + startingMember.getName()
 						+ " ended the " + missionName + " with the following status flag(s) :");
 		
-		if (members != null && !members.isEmpty()) { 
-			LogConsolidated.log(logger, Level.INFO, 1000, sourceName,
-					"[" + startingMember.getLocationTag().getLocale()
-							+ "] " + startingMember + " disbanded mission member(s) : " + members);
-			Iterator<MissionMember> i = members.iterator();
-			while (i.hasNext()) {
-				removeMember(i.next());
+			for (int i=0; i< missionStatus.size(); i++) {
+				LogConsolidated.log(logger, Level.INFO, 500, sourceName, 
+						"[" + startingMember.getLocationTag().getLocale() + "] Status Report -> (" 
+						+ (i+1) + "). " + missionStatus.get(i).getName() + ".");
 			}
-		}
-		
-		for (int i=0; i< missionStatus.size(); i++) {
-			logger.warning(" (" + (i+1) + "). " + missionStatus.get(i).getName());
 		}
 		
 		if (haveMissionStatus(MissionStatus.MISSION_ACCOMPLISHED)) {
@@ -933,6 +936,27 @@ public abstract class Mission implements Serializable {
 		}
 		
 		else {
+			
+			if (v != null) {
+				if (((Rover)v).getCrewNum() != 0 || !v.getInventory().isEmpty(false)) {
+					addPhase(VehicleMission.DISEMBARKING);
+					setPhase(VehicleMission.DISEMBARKING);
+				}
+				
+				if (v.getSettlement() != null) {
+					// The members are leaving the vehicle
+					if (members != null && !members.isEmpty()) { 
+						LogConsolidated.log(logger, Level.INFO, 500, sourceName,
+								"[" + startingMember.getLocationTag().getLocale()
+										+ "] " + startingMember + " disbanded mission member(s) : " + members);
+						Iterator<MissionMember> i = members.iterator();
+						while (i.hasNext()) {
+							removeMember(i.next());
+						}
+					}
+				}
+			}
+			
 			String s = "";
 			for (MissionStatus ms : missionStatus) {
 				s += ms.getName();
@@ -941,7 +965,7 @@ public abstract class Mission implements Serializable {
 			setPhaseDescription(
 					Msg.getString("Mission.phase.aborted.description", s)); // $NON-NLS-1$
 		}
-			
+		
 		// Proactively call removeMission to update the list in MissionManager right away
 //		missionManager.removeMission(this); // not legit ! will crash the mission tab in monitor tool
 	}
@@ -1056,7 +1080,7 @@ public abstract class Mission implements Serializable {
 	 * 
 	 * @param startingMember the mission member starting the mission.
 	 */
-	protected void recruitMembersForMission(MissionMember startingMember) {
+	protected boolean recruitMembersForMission(MissionMember startingMember) {
 
 		// Get all people qualified for the mission.
 		Collection<Person> qualifiedPeople = new ConcurrentLinkedQueue<Person>();
@@ -1133,7 +1157,10 @@ public abstract class Mission implements Serializable {
 		if (getMembersNumber() < minMembers) {
 			addMissionStatus(MissionStatus.NOT_ENOUGH_MEMBERS);
 			endMission();
+			return false;
 		}
+		
+		return true;
 	}
 
 	/**

@@ -347,17 +347,20 @@ public class ReviewMissionPlan extends Task implements Serializable {
 								double siteValue = 0;
 								if (m instanceof CollectIce) {
 									siteValue = ((CollectIce) m).getTotalSiteScore()*4.0;
-									logger.info(person + "'s Ice collection site value is " + Math.round(siteValue*10.0)/10.0);
+									logger.info("[" + person.getLocationTag().getLocale() + "] " + 
+											person + "'s Ice collection site value is " + Math.round(siteValue*10.0)/10.0);
 								}	
 								
 								else if (m instanceof CollectRegolith) {
 									siteValue = ((CollectRegolith) m).getTotalSiteScore()*2.0;
-									logger.info(person + "'s Regolith collection site value is " + Math.round(siteValue*10.0)/10.0);
+									logger.info("[" + person.getLocationTag().getLocale() + "] " + 
+											person + "'s Regolith collection site value is " + Math.round(siteValue*10.0)/10.0);
 								}	
 								
 								else if (m instanceof Mining) {
 									siteValue = Mining.getMiningSiteValue(((Mining)m).getMiningSite(), person.getAssociatedSettlement())/500.0;
-									logger.info(person + "'s Mining site value is " + Math.round(siteValue*10.0)/10.0);
+									logger.info("[" + person.getLocationTag().getLocale() + "] " + 
+											person + "'s Mining site value is " + Math.round(siteValue*10.0)/10.0);
 								}
 								
 								else if (m instanceof Exploration) {
@@ -367,7 +370,8 @@ public class ReviewMissionPlan extends Task implements Serializable {
 										siteValue += Mining.getMiningSiteValue(e, person.getAssociatedSettlement())/500.0;
 									}
 									siteValue = siteValue / count;
-									logger.info(person + "'s Mineral Exploration site value is " 
+									logger.info("[" + person.getLocationTag().getLocale() + "] " + 
+											person + "'s Mineral Exploration site value is " 
 											+ Math.round(siteValue*10.0)/10.0
 											+ "   # of site(s) : " + count + "."
 											);
@@ -432,19 +436,19 @@ public class ReviewMissionPlan extends Task implements Serializable {
 								LogConsolidated.log(logger, Level.INFO, 0, sourceName, 
 										"[" + s + "] " + reviewedBy + " graded " + requestedBy
 										+ "'s " + m.getDescription() + " mission plan as follows :");
-								logger.info(" ---------------------------");
-								logger.info(" (1)          Rating : " + rating); 
-								logger.info(" (2)    Relationship : " + relation); 
-								logger.info(" (3)  Qualifications : " + qual); 
-								logger.info(" (4)       Objective : " + obj);
-								logger.info(" (5)       Emergency : " + emer);
-								logger.info(" (6)      Site Value : " + Math.round(siteValue*10.0)/10.0);
-								logger.info(" (7)       Distance  : " + dist);
-								logger.info(" (8)      Leadership : " + leadership); 							
-								logger.info(" (9)   Reviewer Role : " + weight); 
-								logger.info(" (10)           Luck : " + luck); 
-								logger.info(" ----------------------------");
-								logger.info("           Sub Total : " + score);
+								logger.info("[" + s + "] " + " ---------------------------");
+								logger.info("[" + s + "] " + " (1)          Rating : " + rating); 
+								logger.info("[" + s + "] " + " (2)    Relationship : " + relation); 
+								logger.info("[" + s + "] " + " (3)  Qualifications : " + qual); 
+								logger.info("[" + s + "] " + " (4)       Objective : " + obj);
+								logger.info("[" + s + "] " + " (5)       Emergency : " + emer);
+								logger.info("[" + s + "] " + " (6)      Site Value : " + Math.round(siteValue*10.0)/10.0);
+								logger.info("[" + s + "] " + " (7)       Distance  : " + dist);
+								logger.info("[" + s + "] " + " (8)      Leadership : " + leadership); 							
+								logger.info("[" + s + "] " + " (9)   Reviewer Role : " + weight); 
+								logger.info("[" + s + "] " + " (10)           Luck : " + luck); 
+								logger.info("[" + s + "] " + " ----------------------------");
+								logger.info("[" + s + "] " + "           Sub Total : " + score);
 								
 							      // Add experience
 						        addExperience(time);

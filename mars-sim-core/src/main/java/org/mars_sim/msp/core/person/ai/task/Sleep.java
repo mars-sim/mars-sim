@@ -111,14 +111,8 @@ public class Sleep extends Task implements Serializable {
 		// If person is in rover, walk to passenger activity spot.
 		if (person.isInVehicle() && person.getVehicle() instanceof Rover) {
 			
-			if (person.getLocationTag().isInSettlementVicinity()) {
-				if (!walkBackInside())
-					walkToPassengerActivitySpotInRover((Rover) person.getVehicle(), true);
-			}
-			else
-				walkToPassengerActivitySpotInRover((Rover) person.getVehicle(), true);
-//				logger.info(person + " is in " + person.getVehicle());
-			
+			walkToPassengerActivitySpotInRover((Rover) person.getVehicle(), true);
+		
 			previousTime = marsClock.getMillisol();
 
 			// Initialize phase
@@ -478,7 +472,7 @@ public class Sleep extends Task implements Serializable {
 			
 			// Check if fatigue is zero
 			if (newFatigue <= 0) {
-				logger.info(person.getName() + " totally refreshed and woke up at " + (int)newTime + " millisols.");;
+				logger.info(person.getName() + " woke up, totally refreshed from a good sleep at " + (int)newTime + " millisols.");;
 				endTask();
 			}
 			
@@ -753,7 +747,15 @@ public class Sleep extends Task implements Serializable {
 
     }
     
+    /**
+     * Walks back inside
+     * 
+     * @return true if this unit can walk back inside
+     */
 	public boolean walkBackInside() {
+		if (!person.isOutside())
+			return false;
+		
 		boolean canWalkInside = true;
 		// Get closest airlock building at settlement.
 		Settlement s = person.getLocationTag().findSettlementVicinity();

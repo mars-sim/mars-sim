@@ -106,11 +106,6 @@ public class Exploration extends RoverMission implements Serializable {
 
 		// Use RoverMission constructor.
 		super(DEFAULT_DESCRIPTION, missionType, startingPerson, RoverMission.MIN_GOING_MEMBERS);
-
-		// Check if it has a vehicle 
-//		if (!hasVehicle()) {
-//			endMission(Mission.NO_AVAILABLE_VEHICLES);
-//		}
 		
 		Settlement s = startingPerson.getSettlement();
 
@@ -139,7 +134,8 @@ public class Exploration extends RoverMission implements Serializable {
 			createNewExploredSite();
 			
 			// Recruit additional members to mission.
-			recruitMembersForMission(startingPerson);
+			if (!recruitMembersForMission(startingPerson))
+				return;
 
 			// Determine exploration sites
 			try {
@@ -160,9 +156,6 @@ public class Exploration extends RoverMission implements Serializable {
 			// Add home settlement
 			addNavpoint(new NavPoint(getStartingSettlement().getCoordinates(), s, s.getName()));
 
-//		}
-//
-//		if (s != null) {
 			// Add exploring site phase.
 			addPhase(EXPLORE_SITE);
 

@@ -376,6 +376,8 @@ public class MBTIPersonality implements Serializable {
 	 */
 	public void updateStress(double time) {
 		Person p = getPerson();
+		if (p == null) return; // TODO: why getting NPE when loading from a sim ?
+		
 		Collection<Person> localGroup = p.getLocalGroup();
 		PhysicalCondition condition = p.getPhysicalCondition();
 

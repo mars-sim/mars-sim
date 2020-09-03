@@ -87,7 +87,6 @@ public class WalkSettlementInterior extends Task implements Serializable {
 
 		// Check that the person is currently inside the settlement.
 		if (!person.isInSettlement()) {
-//			throw new IllegalStateException(
 			LogConsolidated.log(logger, Level.WARNING, 4_000, sourceName, 
 					"[" + person.getLocationTag().getLocale() + "] "
 					+ person + "'s WalkSettlementInterior task started when person is not in settlement.");
@@ -104,7 +103,6 @@ public class WalkSettlementInterior extends Task implements Serializable {
 		
 		// Check that destination location is within destination building.
 		if (!LocalAreaUtil.checkLocationWithinLocalBoundedObject(destXLoc, destYLoc, destBuilding)) {
-//			throw new IllegalStateException(
 			LogConsolidated.log(logger, Level.WARNING, 20_000, sourceName, 
 					"[" + person.getLocationTag().getLocale() + "] "
 					+ person + " was unable to walk to the destination in " + person.getBuildingLocation());
@@ -115,7 +113,6 @@ public class WalkSettlementInterior extends Task implements Serializable {
 		// Check that the person is currently inside a building.
 		Building startBuilding = BuildingManager.getBuilding(person);
 		if (startBuilding == null) {
-//			throw new IllegalStateException(
 			LogConsolidated.log(logger, Level.WARNING, 20_000, sourceName,		
 					"[" + person.getLocationTag().getLocale() + "] "
 					+person.getName() + " is not currently in a building.");
@@ -125,8 +122,6 @@ public class WalkSettlementInterior extends Task implements Serializable {
 
 		try {
 			// Determine the walking path to the destination.
-	//		System.out.println("WalkSettlementInterior : settlement : " + settlement);
-	//		System.out.println("WalkSettlementInterior : person's settlement : " + person.getSettlement());
 			if (settlement != null)
 				walkingPath = settlement.getBuildingConnectorManager().determineShortestPath(startBuilding,
 					person.getXLocation(), person.getYLocation(), destinationBuilding, destinationXLocation,
@@ -136,8 +131,6 @@ public class WalkSettlementInterior extends Task implements Serializable {
 			if (walkingPath == null) {
 				LogConsolidated.log(logger, Level.WARNING, 20_000, sourceName, 
 						"[" + person.getLocationTag().getLocale() + "] "
-	//							+ person.getName() + " was unable to walk from " + startBuilding.getNickName() + " to "
-	//									+ destinationBuilding.getNickName() + ". No valid interior path.");
 								+ person.getName() + " was unable to walk. No valid interior path.");
 				person.getMind().getTaskManager().clearAllTasks();
 				return;
@@ -168,8 +161,6 @@ public class WalkSettlementInterior extends Task implements Serializable {
 		super("Walking Settlement Interior", robot, false, false, STRESS_MODIFIER, false, 0D);
 
 		// Check that the robot is currently inside the settlement.
-//        LocationSituation location = robot.getLocationSituation();
-//        if (location != LocationSituation.IN_SETTLEMENT) {
 		if (!robot.isInSettlement()) {
 			throw new IllegalStateException("WalkSettlementInterior task started when robot is not in settlement.");
 		}
@@ -185,19 +176,14 @@ public class WalkSettlementInterior extends Task implements Serializable {
 			LogConsolidated.log(logger, Level.WARNING, 20_000, sourceName,
 					robot + " was unable to walk to the destination in " + robot.getBuildingLocation() + " at "
 							+ robot.getSettlement());
-			// throw new IllegalStateException(
 			// "Given destination walking location not within destination building.");
 			endTask();
-//			robot.getBotMind().getBotTaskManager().getNewTask();
 			return;
 		}
 
 		// Check that the robot is currently inside a building.
 		Building startBuilding = BuildingManager.getBuilding(robot);
 		if (startBuilding == null) {
-			// throw new IllegalStateException(robot.getName() + " is not currently in a
-			// building.");
-
 			// Note: the above will trigger exception below and halt the sim
 			// Exception in thread "pool-4-thread-3024" java.lang.IllegalStateException:
 			// RepairBot 003 is not currently in a building.
@@ -227,7 +213,6 @@ public class WalkSettlementInterior extends Task implements Serializable {
 							robot.getName() + " was unable to walk from " + startBuilding.getNickName() + " to "
 									+ destinationBuilding.getNickName() + ". No valid interior path.");
 			endTask();
-//			robot.getBotMind().getBotTaskManager().getNewTask();
 			return;
 		}
 
@@ -247,9 +232,7 @@ public class WalkSettlementInterior extends Task implements Serializable {
 				LogConsolidated.log(logger, Level.SEVERE, 2000, sourceName,
 						robot.getName() + " at " + robot.getBuildingLocation() + " : Task phase is null");
 			}
-			// endTask();
 			throw new IllegalArgumentException("Task phase is null");
-			// return 0;
 		}
 		if (WALKING.equals(getPhase())) {
 			return walkingPhase(time);
@@ -364,7 +347,7 @@ public class WalkSettlementInterior extends Task implements Serializable {
 				Building startBuilding = BuildingManager.getBuilding(person);
 				if (startBuilding == null || destBuilding == null) {
 					Vehicle v = person.getVehicle();
-					logger.fine("WalkSettlementInterior : [" + person.getLocationTag().getLocale()
+					logger.finer("[" + person.getLocationTag().getLocale()
 							+ "] " + person + " in " + person.getLocationTag().getImmediateLocation() 
 							+ " [vehicle : " + v + "] [start : " + startBuilding
 							+ "] [destination :  " + destBuilding + "]");

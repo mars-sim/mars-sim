@@ -114,7 +114,8 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 
 			// Recruit additional members to mission.
 			if (!isDone()) {
-				recruitMembersForMission(startingMember);
+				if (!recruitMembersForMission(startingMember))
+					return;
 			}
 
 			// Check if vehicle can carry enough supplies for the mission.

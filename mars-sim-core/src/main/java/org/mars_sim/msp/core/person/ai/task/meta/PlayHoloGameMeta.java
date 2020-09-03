@@ -44,17 +44,17 @@ public class PlayHoloGameMeta implements MetaTask, Serializable {
     /** default logger. */
     private static Logger logger = Logger.getLogger(PlayHoloGameMeta.class.getName());
 
-    private static Simulation sim = Simulation.instance();
-	private static MasterClock masterClock;// = sim.getMasterClock();
-	private static MarsClock marsClock;// = masterClock.getMarsClock();
+//    private static Simulation sim = Simulation.instance();
+//	private static MasterClock masterClock;// = sim.getMasterClock();
+//	private static MarsClock marsClock;// = masterClock.getMarsClock();
 
-	public PlayHoloGameMeta() {
-        masterClock = sim.getMasterClock();
-        if (masterClock != null) { // to avoid NullPointerException during maven test
-	        marsClock = masterClock.getMarsClock();
-        }
-        
-	}
+//	public PlayHoloGameMeta() {
+//        masterClock = sim.getMasterClock();
+//        if (masterClock != null) { // to avoid NullPointerException during maven test
+//	        marsClock = masterClock.getMarsClock();
+//        }
+//        
+//	}
 	
     @Override
     public String getName() {
@@ -109,7 +109,7 @@ public class PlayHoloGameMeta implements MetaTask, Serializable {
     	        	result += 20;
             }
             
-            else {
+            else { // the person is in the settlement
             	
             	try {
                     	
@@ -151,7 +151,7 @@ public class PlayHoloGameMeta implements MetaTask, Serializable {
             
 	        // Modify if research is the person's favorite activity.
 	        if (person.getFavorite().getFavoriteActivity() == FavoriteType.GAMING) {
-	            result += RandomUtil.getRandomInt(1, 20);
+	            result = result + result / RandomUtil.getRandomInt(1, 20);
 	        }
 	        
             result *= person.getAssociatedSettlement().getGoodsManager().getTourismFactor();

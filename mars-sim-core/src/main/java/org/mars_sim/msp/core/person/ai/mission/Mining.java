@@ -135,7 +135,8 @@ public class Mining extends RoverMission {
 			totalExcavatedMinerals = new HashMap<>(1);
 
 			// Recruit additional members to mission.
-			recruitMembersForMission(startingPerson);
+			if (!recruitMembersForMission(startingPerson))
+				return;
 
 			// Determine mining site.
 			try {

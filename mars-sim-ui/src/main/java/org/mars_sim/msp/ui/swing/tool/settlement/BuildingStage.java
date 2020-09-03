@@ -1,7 +1,7 @@
 ///**
 // * Mars Simulation Project
 // * BuildingStage.java
- * @version 3.1.2 2020-09-02
+// * @version 3.1.2 2020-09-02
 // * @author Manny Kung
 // */
 //

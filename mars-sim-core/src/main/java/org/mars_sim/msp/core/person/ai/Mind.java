@@ -278,7 +278,8 @@ public class Mind implements Serializable {
 							+ "  - time : " + Math.round(time *1000.0)/1000.0); // 1x = 0.001126440159375963 -> 8192 = 8.950963852039651
 				}
 			}
-			else {
+			else { // don't have an active task
+				
 //				LogConsolidated.log(Level.INFO, 20_000, sourceName,
 //						person + " had no active task.");
 
@@ -342,7 +343,7 @@ public class Mind implements Serializable {
 					}
 				}
 				
-				else {
+				else {  // don't have an active mission
 					selectNewTask();
 				}
 			}

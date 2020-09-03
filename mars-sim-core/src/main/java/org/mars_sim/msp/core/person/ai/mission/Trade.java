@@ -162,7 +162,8 @@ public class Trade extends RoverMission implements Serializable {
 
 			// Recruit additional members to mission.
 			if (!isDone()) {
-				recruitMembersForMission(startingMember);
+				if (!recruitMembersForMission(startingMember))
+					return;
 			}
 		}
 

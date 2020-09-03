@@ -141,7 +141,8 @@ public class EmergencySupply extends RoverMission implements Serializable {
 
 				// Recruit additional members to mission.
 				if (!isDone()) {
-					recruitMembersForMission(startingPerson);
+					if (!recruitMembersForMission(startingPerson))
+						return;
 				}
 			} else {
 				addMissionStatus(MissionStatus.NO_SETTLEMENT_FOUND_TO_DELIVER_EMERGENCY_SUPPLIES);

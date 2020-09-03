@@ -119,7 +119,8 @@ public class BiologyFieldStudy extends RoverMission implements Serializable {
 			setStartingSettlement(s);
 
 			// Recruit additional members to mission.
-			recruitMembersForMission(startingPerson);
+			if (!recruitMembersForMission(startingPerson))
+				return;
 
 			// Determine field site location.
 			if (hasVehicle()) {

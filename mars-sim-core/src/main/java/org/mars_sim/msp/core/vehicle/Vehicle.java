@@ -113,8 +113,12 @@ public abstract class Vehicle extends Unit
 	private static int uniqueCount = Unit.FIRST_VEHICLE_UNIT_ID;
 	
 	/** The types of status types that make a vehicle unavailable for us. */
-	private static final List<StatusType> badStatus = Arrays.asList(StatusType.MAINTENANCE, StatusType.TOWED, StatusType.MOVING,
-			StatusType.STUCK, StatusType.MALFUNCTION);
+	private static final List<StatusType> badStatus = Arrays.asList(
+			StatusType.MAINTENANCE, 
+			StatusType.TOWED, 
+			StatusType.MOVING,
+			StatusType.STUCK, 
+			StatusType.MALFUNCTION);
 	
 	// 1989 NASA Mars Manned Transportation Vehicle - Shuttle Fuel Cell Power Plant (FCP)  7.6 kg/kW
 	

@@ -1955,6 +1955,10 @@ public class PhysicalCondition implements Serializable {
 		return stress > STRESS_THRESHOLD;
 	}
 	
+	public double getStrengthMod() {
+		return (endurance * .6 - strength * .4) / 100D;
+	}
+	
 	public static void initializeInstances(Simulation s, MasterClock c0, MarsClock c1, MedicalManager m) {
 		sim = s;
 		masterClock = c0;

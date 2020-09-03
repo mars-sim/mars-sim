@@ -15,4 +15,4 @@ else
     echo 'You are not using OpenJDK'
 fi
 
-java -Djava.util.logging.config.file=logging.properties -cp .::jars/ org.mars_sim.headless.MarsProjectHeadless -Xms256m -Xmx1536m -new
+java -Djava.util.logging.config.file=logging.properties  -cp /usr/share/mars-sim-headless/* org.mars_sim.headless.MarsProjectHeadless -Xms256m -Xmx1536m -new

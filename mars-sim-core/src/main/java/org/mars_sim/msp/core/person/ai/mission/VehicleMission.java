@@ -374,47 +374,78 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 */
 
 	public void endMission() {
-//		 logger.fine("Calling endMission() in VehicleMission");
+		LogConsolidated.log(logger, Level.INFO, 0, sourceName,
+				"[" + startingMember.getLocationTag().getLocale() + "] " + startingMember.getName() 
+				+ " ended " + this + " in VehicleMission.");
+		 
 		if (hasVehicle()) {
 			// if user hit the "End Mission" button to abort the mission
 			// Check if user aborted the mission and if
 			// the vehicle has been disembarked.
 //			if (reason.equals(Mission.USER_ABORTED_MISSION)) {
-			if (haveMissionStatus(MissionStatus.USER_ABORTED_MISSION)) {	
-				if (vehicle.getSettlement() == null) {
-					// if the vehicle has not arrived or departed a settlement yet
-					String s = null;
-					if (description.startsWith("A") || description.startsWith("I")) {
-						s = " an " + description;
-					} else
-						s = " a " + description;
-					logger.info(
-							"User just aborted" + s + ". Switching to emergency mode to go to the nearest settlement.");
-					// will recursively call endMission() with a brand new "reason"
-					determineEmergencyDestination(startingMember);
-				}
-				// TODO: May check on which phase the mission is at for fine grain decisions 			
-				setPhaseEnded(true);
-				super.endMission();
-			}
+//			if (haveMissionStatus(MissionStatus.USER_ABORTED_MISSION)) {
+//				if (vehicle.getSettlement() == null) {
+//					// if the vehicle has not arrived or departed a settlement yet
+//					String s = null;
+//					if (description.startsWith("A") || description.startsWith("I")) {
+//						s = " an " + description;
+//					} else
+//						s = " a " + description;
+//					logger.info(
+//							"User just aborted" + s + ". Switching to emergency mode to go to the nearest settlement.");
+//					// will recursively call endMission() with a brand new "reason"
+//					determineEmergencyDestination(startingMember);
+//				}
+//				else { // if vehicle is in a settlement
+//					// TODO: May check on which phase the mission is at for fine grain decisions 			
+//					setPhaseEnded(true);
+//					setPhase(VehicleMission.DISEMBARKING);
+//					leaveVehicle();
+//					super.endMission();
+//				}
+//			}
 
-			else if (needHelp()) {		
+			if (needHelp()) {
+				logger.info(vehicleCache + " needed help.");
 				getHelp();
 			}
 
+			else if (vehicleCache.getSettlement() != null) {	
+				// if a vehicle is at a settlement		
+				// e.g. Mission not approved
+				logger.info("[" + vehicleCache.getSettlement() + "] " + vehicleCache + " parked at a settlement.");
+				setPhaseEnded(true);
+				
+				if (((Rover)vehicleCache).getCrewNum() != 0 || !vehicleCache.getInventory().isEmpty(false)) {
+					addPhase(VehicleMission.DISEMBARKING);
+					setPhase(VehicleMission.DISEMBARKING);
+				}
+				else {
+					leaveVehicle();
+					super.endMission();
+				}
+			}
+			
 			else {
 				// for ALL OTHER REASONS
-				// setPhaseEnded(true); // TODO: will setPhaseEnded cause NullPointerException ?
-				leaveVehicle();
+				logger.info("for ALL OTHER REASONS.");
 				setPhaseEnded(true);
-				super.endMission();
+				
+				if (((Rover)vehicleCache).getCrewNum() != 0 || !vehicleCache.getInventory().isEmpty(false)) {
+					addPhase(VehicleMission.DISEMBARKING);
+					setPhase(VehicleMission.DISEMBARKING);
+				}
+				else {
+					leaveVehicle();
+					super.endMission();
+				}
 			}
 		}
 		
 		else if (haveMissionStatus(MissionStatus.MISSION_ACCOMPLISHED)) {
-			logger.info("Returning the control of " + vehicle + " to the settlement");
+			logger.info("Mission Accomplished : returning the control of " + vehicleCache + " to the settlement");
 			setPhaseEnded(true);
-			// leaveVehicle();
+			leaveVehicle();
 			super.endMission();
 		}
 
@@ -435,6 +466,10 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	}
 
 	public void getHelp() {
+		LogConsolidated.log(logger, Level.INFO, 500, sourceName,
+				"[" + startingMember.getLocationTag().getLocale() + "] " + startingMember
+						+ " is asking for help.");
+		
 		// Set emergency beacon if vehicle is not at settlement.
 		// TODO: need to find out if there are other matching reasons for setting
 		// emergency beacon.
@@ -443,22 +478,22 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			if (!vehicle.isBeaconOn()) {
 				// if the emergency beacon is off
 				// Question: could the emergency beacon itself be broken ?
-				LogConsolidated.flog(Level.INFO, 0, sourceName,
+				LogConsolidated.log(logger, Level.INFO, 500, sourceName,
 						"[" + startingMember.getLocationTag().getLocale() + "] " + startingMember
 								+ " turned on " + vehicle
 								+ "'s emergency beacon and request for towing with the following status flag(s) :");
-					
-					for (int i=0; i< getMissionStatus().size(); i++) {
-						logger.warning(" (" + (i+1) + "). " + getMissionStatus().get(i).getName());
-					}
-					
+				
+				for (int i=0; i< getMissionStatus().size(); i++) {
+					logger.info("[" + startingMember.getLocationTag().getLocale() + "] Status Report -> (" + (i+1) + "). " + getMissionStatus().get(i).getName() + ".");
+				}
+				
 				vehicle.setEmergencyBeacon(true);
 
 				if (vehicle.isBeingTowed()) {
 					// Note: the vehicle is being towed, wait till the journey is over
 					// don't end the mission yet
 					// So do not called setPhaseEnded(true) and super.endMission(reason);
-					LogConsolidated.flog(Level.INFO, 2000, sourceName,
+					LogConsolidated.log(logger, Level.INFO, 2000, sourceName,
 							"[" + vehicle.getLocationTag().getLocale() + "] "
 							+  vehicle.getName() + " is currently being towed by " + vehicle.getTowingVehicle());
 //							+ " Remaining distance : " + getClosestDistance() + " km.", null);
@@ -478,13 +513,14 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			if (!vehicle.isBeaconOn()) {
 				// if the emergency beacon is off
 				// Question: could the emergency beacon itself be broken ?
-				LogConsolidated.flog(Level.INFO, 0, sourceName,
+				LogConsolidated.log(logger, Level.INFO, 500, sourceName,
 						"[" + startingMember.getLocationTag().getLocale() + "] " + startingMember
 								+ " turned on " + vehicle
 								+ "'s emergency beacon and request for towing with the following status flag(s) :");
 					
 					for (int i=0; i< getMissionStatus().size(); i++) {
-						logger.warning("Mission Status (" + i + "). " + getMissionStatus().get(i).getName());
+						LogConsolidated.log(logger, Level.INFO, 500, sourceName, 
+								"Status Report : (" + (i+1) + "). " + getMissionStatus().get(i).getName());
 					}
 				
 				vehicle.setEmergencyBeacon(true);
@@ -494,9 +530,16 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			// down
 			// TODO: wait till the repair is done and the mission may resume ?!?
 			
-			leaveVehicle();
-			setPhaseEnded(true);
-			super.endMission();
+			else if (vehicle.getSettlement() != null) {
+				// if a vehicle is at a settlement			
+				setPhaseEnded(true);
+				
+				if (!vehicle.getInventory().isEmpty(false))
+					setPhase(VehicleMission.DISEMBARKING);
+				
+				leaveVehicle();
+				super.endMission();
+			}		
 		}
 	}
 	
@@ -543,13 +586,13 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		boolean settlementSupplies = LoadVehicleGarage.hasEnoughSupplies(settlement, vehicle, resources, equipment,
 				getPeopleNumber(), tripTime);
 		if (!vehicleCapacity) {
-			LogConsolidated.flog(Level.WARNING, 5000, sourceName,
+			LogConsolidated.log(logger, Level.WARNING, 5000, sourceName,
 					"[" + vehicle.getName() + "] doesn't have enough capacity for " + startingMember + "'s proposed excursion.");
 			// Disapprove this mission
 			setApproval(false);
 		}
 		if (!settlementSupplies) {
-			LogConsolidated.flog(Level.WARNING, 5000, sourceName,
+			LogConsolidated.log(logger, Level.WARNING, 5000, sourceName,
 					"[" + settlement.getName() + "] doesn't have enough supplies for " + startingMember + "'s proposed excursion.");
 			// Disapprove this mission
 			setApproval(false);		
@@ -1043,7 +1086,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 								+ ResourceUtil.findAmountResourceName(id) + " to continue with "
 								+ getName() + " (Required: " + Math.round(amount * 100D) / 100D + " kg  Stored: "
 								+ Math.round(amountStored * 100D) / 100D + " kg).";
-						LogConsolidated.flog(Level.WARNING, 10_000, sourceName, newLog);
+						LogConsolidated.log(logger, Level.WARNING, 10_000, sourceName, newLog);
 						return false;
 					}
 				}
@@ -1056,7 +1099,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 						String newLog = "[" + vehicle.getLocationTag().getLocale() + "] " + vehicle.getName() + " did not have enough " 
 								+ ItemResourceUtil.findItemResource(id).getName() + " to continue with "
 								+ getName() + " (Required: " + num + "  Stored: " + numStored + ").";
-						LogConsolidated.flog(Level.WARNING, 10_000, sourceName, newLog);
+						LogConsolidated.log(logger, Level.WARNING, 10_000, sourceName, newLog);
 						return false;
 					}
 				}
@@ -1082,7 +1125,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 
 		if ((nextNav != null) && (newDestination == nextNav.getSettlement())) {
 			// If the closest settlement is already the next navpoint.
-			LogConsolidated.flog(Level.WARNING, 10000, sourceName,
+			LogConsolidated.log(logger, Level.WARNING, 10000, sourceName,
 					"[" + vehicle.getName() 
 					+ "] Emergency encountered.  Returning to home settlement (" + newDestination.getName() 
 					+ ") : " + Math.round(newDistance * 100D) / 100D
@@ -1095,7 +1138,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 
 		else {
 			// If the closet settlement is not the home settlement
-			LogConsolidated.flog(Level.WARNING, 10000, sourceName,
+			LogConsolidated.log(logger, Level.WARNING, 10000, sourceName,
 					"[" + vehicle.getName() 
 					+ "] Emergency encountered.  Home settlement (" + oldHome.getName() + ") : " 
 					+ Math.round(oldDistance * 100D) / 100D

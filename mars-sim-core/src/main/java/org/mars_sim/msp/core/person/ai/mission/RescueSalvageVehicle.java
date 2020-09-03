@@ -141,7 +141,8 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 
 				// Recruit additional members to mission.
 				if (!isDone()) {
-					recruitMembersForMission(startingPerson);
+					if (!recruitMembersForMission(startingPerson))
+						return;
 				}
 
 				// Check if vehicle can carry enough supplies for the mission.

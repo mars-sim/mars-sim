@@ -478,11 +478,33 @@ public abstract class RoverMission extends VehicleMission {
 	 * @param disembarkSettlement the settlement to be disembarked to.
 	 */
 	protected void performDisembarkToSettlementPhase(MissionMember member, Settlement disembarkSettlement) {
-		disembark(member, getVehicle(), disembarkSettlement);
+		
+		Vehicle v0 = getVehicle();
+		disembark(member, v0, disembarkSettlement);
+		
+		// If v0 is being towed by a vehicle, gets the towing vehicle
+		Vehicle v1 = v0.getTowingVehicle();
+		if (v1 != null)
+			disembark(member, v1, disembarkSettlement);
+		
+		// If v0 is towing a vehicle, gets the towed vehicle
+		Vehicle v2 = ((Rover)v0).getTowedVehicle();
+		if (v2 != null)
+			disembark(member, v2, disembarkSettlement);
 	}
 	
-	
+	/**
+	 * Disembarks the vehicle and unload cargo
+	 * 
+	 * @param member
+	 * @param v
+	 * @param disembarkSettlement
+	 */
 	public void disembark(MissionMember member, Vehicle v, Settlement disembarkSettlement) {
+		LogConsolidated.log(logger, Level.INFO, 0, sourceName,
+				"[" + v.getLocationTag().getLocale() + "] " + v.getName() 
+				+ " was being disemabarked at " + disembarkSettlement.getName() + ".");
+		
 		Rover rover = (Rover) v;
 
 		if (v != null) {// && v.getSettlement() == null) {
@@ -1014,7 +1036,7 @@ public abstract class RoverMission extends VehicleMission {
 	
 
 	@Override
-	protected void recruitMembersForMission(MissionMember startingMember) {
+	protected boolean recruitMembersForMission(MissionMember startingMember) {
 		super.recruitMembersForMission(startingMember);
 
 		// Make sure there is at least one person left at the starting
@@ -1035,12 +1057,16 @@ public abstract class RoverMission extends VehicleMission {
 				if (getMembersNumber() < getMinMembers()) {
 					addMissionStatus(MissionStatus.NOT_ENOUGH_MEMBERS);
 					endMission();
+					return false;
 				} else if (getPeopleNumber() == 0) {
-					addMissionStatus(MissionStatus.NO_MEMBERS_ON_MISSION);
+					addMissionStatus(MissionStatus.NO_MEMBERS_AVAILABLE);
 					endMission();
+					return false;
 				}
 			}
 		}
+		
+		return true;
 	}
 
 //	/**

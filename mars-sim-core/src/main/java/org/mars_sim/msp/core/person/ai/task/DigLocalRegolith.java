@@ -96,18 +96,16 @@ implements Serializable {
      	if (settlement == null) {
      		ended = true;
      		endTask();
-//        	return;
      	}
      	
         // Get an available airlock.
-//     	if (person.isInside()) {
+     	if (person.isInside()) {
 	        airlock = getWalkableAvailableAirlock(person);
 	        if (airlock == null) {
 	        	ended = true;
 	        	endTask();
-//	        	return;
 	        }
-//     	}
+     	}
 
         // Take bags for collecting regolith.
         if (!hasBags() && person.getInventory().findABag(false) == null) {
@@ -118,9 +116,10 @@ implements Serializable {
             	if (person.isOutside()){
                     setPhase(WALK_BACK_INSIDE);
                 }
-            	ended = true;
-//            	endTask();
-//            	return;
+            	else {
+                	ended = true;
+                	endTask();
+            	}
             }
         }
 
@@ -265,9 +264,10 @@ implements Serializable {
         double fatigue = condition.getFatigue();
         double hunger = condition.getHunger();
         double energy = condition.getEnergy(); 
+        double strengthMod = condition.getStrengthMod();
         
         // Add penalty to the fatigue
-        condition.setFatigue(fatigue + time * factor);
+        condition.setFatigue(fatigue + time * factor * (1.1D - strengthMod));
         
         // Add experience points
         addExperience(time);
@@ -280,12 +280,14 @@ implements Serializable {
             if (person.isOutside()) {
             	setPhase(WALK_BACK_INSIDE);
             }
+            else 
+            	endTask();
     	}
         
         if (fatigue > 750 || stress > 50 || hunger > 750 || energy < 1000) {
             LogConsolidated.log(logger, Level.INFO, 3000, sourceName, 
         		"[" + person.getLocationTag().getLocale() +  "] " +
-        		person.getName() + " took a break from collecting regolith ("
+        		person.getName() + " had to take a break from collecting regolith ("
         		+ Math.round(totalCollected*100D)/100D + " kg collected) " 
         		+ "; fatigue: " + Math.round(fatigue*10D)/10D 
         		+ "; stress: " + Math.round(stress*100D)/100D + " %"
@@ -295,8 +297,15 @@ implements Serializable {
             if (person.isOutside()) {
             	setPhase(WALK_BACK_INSIDE);
             }
+            else 
+            	endTask();
         }
         
+     	if (person.isInside()) {
+        	ended = true;
+        	endTask();
+     	}
+     	
         return 0D;
     }
 
@@ -461,12 +470,10 @@ implements Serializable {
 		            settlement.getGoodsManager().updateGoodValue(GoodsUtil.getResourceGood(regolithID), false);
 	            }
             }
-//        }
-
+            
             super.endTask();
     	}
     }
-
  
     @Override
     public void destroy() {

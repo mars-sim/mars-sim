@@ -207,6 +207,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			subTask.setDescription("");
         	subTask.endTask();
         }
+        
 //		if (subTask != null && !subTask.isDone()) {
 //			setSubTaskPhase(null);
 ////			subTask.setDescription("");

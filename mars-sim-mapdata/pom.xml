@@ -6,7 +6,7 @@
 	<parent>
 		<artifactId>mars-sim</artifactId>
 		<groupId>com.github</groupId>
-		<version>3.1.2-Snapshot</version>
+		<version>3.1.2</version>
 	</parent>
 	<groupId>com.github.mars-sim</groupId>
 	<artifactId>mars-sim-mapdata</artifactId>

@@ -28,8 +28,8 @@ public abstract class TravelMission extends Mission {
 
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(TravelMission.class.getName());
-//	private static String loggerName = logger.getName();
-//	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+	private static String loggerName = logger.getName();
+	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 	
 	// Travel Mission status
 	public final static String AT_NAVPOINT = "At a navpoint";
@@ -87,7 +87,9 @@ public abstract class TravelMission extends Mission {
 			setTravelStatus(AT_NAVPOINT);
 		}
 		
-		logger.info(getStartingMember() + " had put together the navpoints for the " + missionName);
+		LogConsolidated.log(logger, Level.FINER, 0, sourceName,
+				"[" + getStartingMember().getLocationTag().getLocale() + "] " + getStartingMember().getName() 
+				+ " had put together the navpoints for the " + missionName + ".");
 	}
 
 	/**
@@ -101,7 +103,7 @@ public abstract class TravelMission extends Mission {
 			navPoints.add(navPoint);
 			fireMissionUpdate(MissionEventType.NAVPOINTS_EVENT);
 		} else {
-			LogConsolidated.flog(Level.SEVERE, 10_000, logger.getName(), "navPoint is null");
+			LogConsolidated.log(logger, Level.SEVERE, 10_000, logger.getName(), "navPoint is null");
 			// throw new IllegalArgumentException("navPoint is null");
 		}
 	}
@@ -118,7 +120,7 @@ public abstract class TravelMission extends Mission {
 			navPoints.set(index, navPoint);
 			fireMissionUpdate(MissionEventType.NAVPOINTS_EVENT);
 		} else {
-			LogConsolidated.flog(Level.SEVERE, 10_000, logger.getName(), "navPoint is null");
+			LogConsolidated.log(logger, Level.SEVERE, 10_000, logger.getName(), "navPoint is null");
 			// throw new IllegalArgumentException("navPoint is null");
 		}
 	}
@@ -178,7 +180,7 @@ public abstract class TravelMission extends Mission {
 		if (newNavIndex < getNumberOfNavpoints()) {
 			navIndex = newNavIndex;
 		} else
-			LogConsolidated.flog(Level.SEVERE, 0, logger.getName(),
+			LogConsolidated.log(logger, Level.SEVERE, 0, logger.getName(),
 					getPhase() + "'s newNavIndex " + newNavIndex + " is out of bounds.");
 		// throw new IllegalStateException(getPhase() + " : newNavIndex: "
 		// + newNavIndex + " is outOfBounds.");

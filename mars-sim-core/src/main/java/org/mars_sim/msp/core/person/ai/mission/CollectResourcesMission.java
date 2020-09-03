@@ -164,7 +164,8 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 				this.containerNum = containerNum;
 
 				// Recruit additional members to mission.
-				recruitMembersForMission(startingPerson);
+				if (!recruitMembersForMission(startingPerson))
+					return;
 
 				// Determine collection sites
 				if (hasVehicle()) {

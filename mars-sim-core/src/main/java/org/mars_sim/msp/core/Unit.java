@@ -1142,6 +1142,15 @@ public abstract class Unit implements Serializable, UnitIdentifer, Comparable<Un
 	}
 	
 	/**
+	 * Is this unit in the vicinity of a settlement
+	 * 
+	 * @return true if the unit is inside a settlement
+	 */
+	public boolean isInSettlementVicinity() {
+		return tag.isInSettlementVicinity();
+	}
+	
+	/**
 	 * Is this unit in a vehicle inside a garage
 	 * 
 	 * @return true if the unit is in a vehicle inside a garage

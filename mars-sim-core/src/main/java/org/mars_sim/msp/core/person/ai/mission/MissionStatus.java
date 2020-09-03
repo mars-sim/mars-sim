@@ -21,6 +21,10 @@ public enum MissionStatus {
 	
 	UNREPAIRABLE_MALFUNCTION  						("Unrepairable malfunction"),
 	
+	NOT_ENOUGH_MEMBERS 								("Not enough members recruited"),
+	
+	NO_MEMBERS_AVAILABLE 							("No members available for mission"),
+	
 	NOT_ENOUGH_RESOURCES 							("Not enough resources"),
 	
 	NO_METHANE										("No more methane"),
@@ -38,9 +42,7 @@ public enum MissionStatus {
 	
 	NO_ICE_COLLECTION_SITES 						("No ice collection sites found"),
 	
-	NOT_ENOUGH_MEMBERS 								("Not enough members recruited"),
-	NO_MEMBERS_ON_MISSION 							("No members available for mission"),
-	
+
 	CONSTRUCTION_ENDED 								("Construction ended."),
 	CONSTRUCTION_SITE_NOT_FOUND_OR_CREATED			("Construction site NOT found or created"),
 	NEW_CONSTRUCTION_STAGE_NOT_DETERMINED			("New construction stage could not be determined"),
