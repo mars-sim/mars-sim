@@ -237,10 +237,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<!-- beds: the number of sleeping quarters provided. -->
 			<living-accommodations beds="4">
 				<activity>
-					<activity-spot xloc="1.06" yloc="2.45" />
-					<activity-spot xloc="-.33" yloc="2.74" />
-					<activity-spot xloc="-2.74" yloc=".55" />
-					<activity-spot xloc="-2.6" yloc="-1.06" />
+					<activity-spot xloc="1.5" yloc="3.16" />
+					<activity-spot xloc="-0.39" yloc="3.46" />
+					<activity-spot xloc="-3.14" yloc="0.83" />
+					<activity-spot xloc="-3.04" yloc="-1.04" />
 				</activity>
 			</living-accommodations>
 

@@ -5,7 +5,7 @@ Copyright (C) 2020 Scott Davis
 
 -----------------------------------------------------------------------------------------
 
-## v3.1.2 (build 5349) - 2020-09-02
+## v3.1.2 (build 5350) - 2020-09-03
 
 ### CORE ENGINE IMPROVEMENTS :
 
@@ -69,6 +69,7 @@ Copyright (C) 2020 Scott Davis
 8. Add BuildingPanelLiving to show the living accommodation aspects
    of a building.
       
+9. Show the second subtask and description.       
 
 ### FIXES :
 

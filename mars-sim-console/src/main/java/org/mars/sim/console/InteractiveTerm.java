@@ -52,8 +52,8 @@ public class InteractiveTerm {
 
     private static int choiceIndex = -1;
     
-    private volatile static int width = 1366;
-    private volatile static int height = 768;
+    private volatile static int width = 1920;//1366;
+    private volatile static int height = 1080;//768;
 	
     private static boolean consoleEdition = false;
     

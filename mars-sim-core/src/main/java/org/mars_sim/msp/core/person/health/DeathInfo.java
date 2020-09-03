@@ -82,8 +82,12 @@ public class DeathInfo implements Serializable {
 	private String taskPhase;
 	/** Name of sub task at time of death. */
 	private String subTask;
+	/** Name of sub task 2 at time of death. */
+	private String subTask2;
 	/** Phase of sub task at time of death. */
 	private String subTaskPhase;
+	/** Phase of sub task 2 at time of death. */
+	private String subTask2Phase;
 	/** Name of the most serious local emergency malfunction. */
 	private String malfunction;
 	/** The person's last word before departing. */
@@ -214,13 +218,13 @@ public class DeathInfo implements Serializable {
 			taskPhase = taskMgr.getLastTaskDescription();
 
 		subTask = taskMgr.getSubTaskName();
-//		if (subTask == null || subTask.equals(""))
-//			subTask = taskMgr.getLastTaskName();
 
-		taskPhase = taskMgr.getSubTaskDescription();
-//		if (taskPhase.equals(""))
-//			taskPhase = taskMgr.getLastTaskDescription();
+		subTaskPhase = taskMgr.getSubTaskDescription();
 		
+		subTask2 = taskMgr.getSubTask2Name();
+
+		subTask2Phase = taskMgr.getSubTask2Description();
+
 		Mission mm = mind.getMission();
 		if (mm != null) {
 			mission = mm.getDescription();
@@ -496,6 +500,18 @@ public class DeathInfo implements Serializable {
 	}
 	
 	/**
+	 * Gets the sub task 2 the person was doing at time of death.
+	 * 
+	 * @return sub task 2 name
+	 */
+	public String getSubTask2() {
+		if (subTask2 != null)
+			return subTask2;
+		else
+			return "   --";
+	}
+	
+	/**
 	 * Gets the task phase at time of death.
 	 * 
 	 * @return task phase
@@ -515,6 +531,19 @@ public class DeathInfo implements Serializable {
 	public String getSubTaskPhase() {
 		if (subTaskPhase != null)
 			return subTaskPhase;
+		else
+			return "   --";
+	}
+	
+
+	/**
+	 * Gets the sub task 2 phase at time of death.
+	 * 
+	 * @return sub task 2 phase
+	 */
+	public String getSubTask2Phase() {
+		if (subTask2Phase != null)
+			return subTask2Phase;
 		else
 			return "   --";
 	}

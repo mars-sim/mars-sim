@@ -129,6 +129,23 @@ implements Serializable {
 		}
 	}
 
+	public String getSubTaskName() {
+		if (currentTask != null && currentTask.getSubTask() != null) {
+			return currentTask.getSubTask().getName();
+		} else {
+			return "";
+		}
+	}
+	
+	public String getSubTask2Name() {
+		if (currentTask != null && currentTask.getSubTask() != null
+				&& currentTask.getSubTask().getSubTask() != null) {
+			return currentTask.getSubTask().getSubTask().getName();
+		} else {
+			return "";
+		}
+	}
+	
 	/**
 	 * Returns the name of the current task for UI purposes.
 	 * Returns a blank string if there is no current task.
@@ -141,8 +158,7 @@ implements Serializable {
 			return "";
 		}
 	}
-
-
+	
 	/**
 	 * Returns a description of current task for UI purposes.
 	 * Returns a blank string if there is no current task.
@@ -174,7 +190,18 @@ implements Serializable {
 			return "";
 	}
 	
-
+	public String getSubTask2Description() {
+		if (currentTask != null && currentTask.getSubTask() != null
+				&& currentTask.getSubTask().getSubTask() != null) {
+			String t = currentTask.getSubTask().getSubTask().getDescription();
+			if (t != null) // || !t.equals(""))
+				return t;
+			else
+				return "";
+		} else
+			return "";
+	}
+	
 //	public FunctionType getFunction(boolean subTask) {
 //		if (currentTask != null) {
 //			return currentTask.getFunction(subTask);
@@ -202,6 +229,15 @@ implements Serializable {
 	public TaskPhase getSubTaskPhase() {
 		if (currentTask.getSubTask() != null) {
 			return currentTask.getSubTask().getPhase();
+		} else {
+			return null;
+		}
+	}
+	
+	public TaskPhase getSubTask2Phase() {
+		if (currentTask != null && currentTask.getSubTask() != null
+				&& currentTask.getSubTask().getSubTask() != null) {
+			return currentTask.getSubTask().getSubTask().getPhase();
 		} else {
 			return null;
 		}

@@ -178,6 +178,15 @@ public class TaskManager implements Serializable {
 		}
 	}
 	
+	public String getSubTask2Name() {
+		if (currentTask != null && currentTask.getSubTask() != null
+				&& currentTask.getSubTask().getSubTask() != null) {
+			return currentTask.getSubTask().getSubTask().getName();
+		} else {
+			return "";
+		}
+	}
+	
 	/**
 	 * Returns the task name of the current or last task (one without the word
 	 * "walk" in it).
@@ -243,6 +252,18 @@ public class TaskManager implements Serializable {
 			return "";
 	}
 	
+	public String getSubTask2Description() {
+		if (currentTask != null && currentTask.getSubTask() != null
+				&& currentTask.getSubTask().getSubTask() != null) {
+			String t = currentTask.getSubTask().getSubTask().getDescription();
+			if (t != null) // || !t.equals(""))
+				return t;
+			else
+				return "";
+		} else
+			return "";
+	}
+	
 //	public FunctionType getFunction(boolean subTask) {
 //		if (currentTask != null &&
 //			currentTask.getFunction(subTask) != null) {
@@ -272,6 +293,15 @@ public class TaskManager implements Serializable {
 	public TaskPhase getSubTaskPhase() {
 		if (currentTask != null && currentTask.getSubTask() != null) {
 			return currentTask.getSubTask().getPhase();
+		} else {
+			return null;
+		}
+	}
+	
+	public TaskPhase getSubTask2Phase() {
+		if (currentTask != null && currentTask.getSubTask() != null
+				&& currentTask.getSubTask().getSubTask() != null) {
+			return currentTask.getSubTask().getSubTask().getPhase();
 		} else {
 			return null;
 		}
