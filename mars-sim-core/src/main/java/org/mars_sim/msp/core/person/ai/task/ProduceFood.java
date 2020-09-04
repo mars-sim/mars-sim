@@ -83,7 +83,7 @@ implements Serializable {
 				foodFactory = foodProductionBuilding.getFoodProduction();
 	
 				// Walk to foodProduction building.
-				walkToActivitySpotInBuilding(foodProductionBuilding, false);
+				walkToTaskSpecificActivitySpotInBuilding(foodProductionBuilding, false);
 						
 				skillManager = person.getSkillManager();
 		
@@ -116,7 +116,7 @@ implements Serializable {
 			if (foodProductionBuilding != null) {
 				foodFactory = foodProductionBuilding.getFoodProduction();
 				// Walk to foodProduction building.
-				walkToActivitySpotInBuilding(foodProductionBuilding, false);
+				walkToTaskSpecificActivitySpotInBuilding(foodProductionBuilding, false);
 							
 				skillManager = robot.getSkillManager();
 		

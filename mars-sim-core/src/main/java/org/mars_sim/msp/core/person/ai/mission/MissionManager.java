@@ -934,10 +934,9 @@ public class MissionManager implements Serializable {
 					LogConsolidated.log(logger, Level.INFO, 0, sourceName,
 							"[" + mp.getMission().getStartingMember().getLocationTag().getLocale() + "] " 
 							+ mp.getMission().getStartingMember().getName() 
-							+ mp.getMission().getStartingMember() + "'s " + mp.getMission().getDescription() 
+							+ "'s " + mp.getMission().getDescription() 
 							+ " mission plan - current score : " + Math.round(mp.getScore()*10.0)/10.0 
 							+ " (" + mp.getPercentComplete() + "% review completed)");
-
 							
 					mp.setReviewedBy(reviewer.getName());
 					mp.getMission().setPhaseDescription(mp.getMission().getPhaseDescription());

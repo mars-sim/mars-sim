@@ -10,6 +10,8 @@ package org.mars_sim.msp.core.structure.building;
 import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -495,6 +497,36 @@ public class BuildingManager implements Serializable {
 	}
 
 	/**
+	 * Gets a list of settlement's buildings (not including  hallway or tunnel) having a particular function type
+	 * 
+	 * @param functionType
+	 * @return list of buildings
+	 */
+	public List<Building> getBuildingsNoHallwayTunnel(FunctionType functionType) {
+		// Filter off hallways and tunnels
+		return getBuildings(functionType).stream().filter(b -> 
+				!b.getBuildingType().equalsIgnoreCase("hallway")
+				&& !b.getBuildingType().equalsIgnoreCase("tunnel")
+				).collect(Collectors.toList());
+	}
+	
+	/**
+	 * Gets a list of settlement's buildings (not including hallway, tunnel or observatory) 
+	 * having a particular function type
+	 * 
+	 * @param functionType
+	 * @return list of buildings
+	 */
+	public List<Building> getBuildingsNoHallwayTunnelObs(FunctionType functionType) {
+		// Filter off hallways and tunnels
+		return getBuildings(functionType).stream().filter(b -> 
+				!b.getBuildingType().equalsIgnoreCase("hallway")
+				&& !b.getBuildingType().equalsIgnoreCase("tunnel")
+				&& !b.getBuildingType().toLowerCase().contains("astronomy")
+				).collect(Collectors.toList());
+	}
+	
+	/**
 	 * Gets a list of settlement's buildings with thermal function
 	 * 
 	 * @return list of buildings
@@ -622,7 +654,6 @@ public class BuildingManager implements Serializable {
 
 			return list;
 		}
-
 	}
 
 	/**
@@ -649,6 +680,34 @@ public class BuildingManager implements Serializable {
 				.collect(Collectors.toList());
 	}
 
+	/**
+	 * Gets a random building in a settlement that has a given function.
+	 * 
+	 * @param bf {@link FunctionType} the function of the building.
+	 * @return a building.
+	 */
+	public Building getABuilding(FunctionType bf) {
+		if (buildingFunctionsMap == null) {
+			buildingFunctionsMap = new ConcurrentHashMap<FunctionType, List<Building>>();
+			setupBuildingFunctionsMap();
+		}
+		
+		if (buildingFunctionsMap.containsKey(bf)) {
+			List<Building> list = buildingFunctionsMap.get(bf);
+			Building b = list.get(RandomUtil.getRandomInt(list.size()-1));
+			return b;
+		}
+
+		else {
+			List<Building> list = buildings.stream().filter(b -> b.hasFunction(bf)).collect(Collectors.toList());
+
+			buildingFunctionsMap.put(bf, list);
+			logger.config(bf + " was not found in buildingFunctionsMap yet. Just added.");
+
+			return list.get(RandomUtil.getRandomInt(list.size()-1));
+		}
+	}
+	
 	/**
 	 * Gets the number of the same type of building.
 	 * 
@@ -864,8 +923,8 @@ public class BuildingManager implements Serializable {
 				RoboticStation roboticStation = bldg.getRoboticStation();
 				// remove hallway, tunnel, observatory
 				if (roboticStation != null) {
-					if (bldg.getBuildingType().toLowerCase().contains("hallway")
-							|| bldg.getBuildingType().toLowerCase().contains("tunnel")
+					if (bldg.getBuildingType().equalsIgnoreCase("hallway")
+							|| bldg.getBuildingType().equalsIgnoreCase("tunnel")
 							|| bldg.getBuildingType().toLowerCase().contains("observatory")) {
 						// functionBuildings.remove(bldg); // will cause ConcurrentModificationException
 					} else if (function == FunctionType.FARMING) {
@@ -873,17 +932,19 @@ public class BuildingManager implements Serializable {
 							validBuildings.add(bldg);
 						}
 					} else if (function == FunctionType.MANUFACTURE) {
-						if (bldg.getBuildingType().toLowerCase().contains("workshop")
-								|| bldg.getBuildingType().toLowerCase().contains("manufacturing shed")
-								|| bldg.getBuildingType().toLowerCase().contains("machinery hab")) {
+						if (bldg.getBuildingType().equalsIgnoreCase("workshop")
+								|| bldg.getBuildingType().equalsIgnoreCase("manufacturing shed")
+								|| bldg.getBuildingType().equalsIgnoreCase("machinery hab")) {
 							validBuildings.add(bldg);
 						}
 					} else if (function == FunctionType.COOKING) {
-						if (bldg.getBuildingType().toLowerCase().contains("lounge")) {
+						if (bldg.getBuildingType().equalsIgnoreCase("lounge")
+							|| bldg.getBuildingType().equalsIgnoreCase("lander hab")
+							|| bldg.getBuildingType().equalsIgnoreCase("outpost hub")) {
 							validBuildings.add(bldg);
 						}
 					} else if (function == FunctionType.MEDICAL_CARE) {
-						if (bldg.getBuildingType().toLowerCase().contains("infirmary")
+						if (bldg.getBuildingType().equalsIgnoreCase("infirmary")
 								|| bldg.getBuildingType().toLowerCase().contains("medical")) {
 							validBuildings.add(bldg);
 						}
@@ -910,8 +971,8 @@ public class BuildingManager implements Serializable {
 				List<Building> stations = manager.getBuildings(FunctionType.ROBOTIC_STATION);
 				for (Building bldg : stations) {
 					// remove hallway, tunnel, observatory
-					if (bldg.getBuildingType().toLowerCase().contains("hallway")
-							|| bldg.getBuildingType().toLowerCase().contains("tunnel")
+					if (bldg.getBuildingType().equalsIgnoreCase("hallway")
+							|| bldg.getBuildingType().equalsIgnoreCase("tunnel")
 							|| bldg.getBuildingType().toLowerCase().contains("observatory")) {
 						// stations.remove(bldg);// will cause ConcurrentModificationException
 					} else {

@@ -8,12 +8,10 @@ package org.mars_sim.msp.core.person.ai.task;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.person.FavoriteType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
@@ -58,8 +56,6 @@ public class Read extends Task implements Serializable {
 
 		if (person.isInSettlement() || person.isInVehicle()) {
 
-			boolean walkSite = false;
-
 			int score = person.getPreference().getPreferenceScore(new ReadMeta());
 			super.setDuration(5 + score);
 			// Factor in a person's preference for the new stress modifier
@@ -69,26 +65,55 @@ public class Read extends Task implements Serializable {
 			// person.getPreference().setTaskStatus(this, false);
 
 			if (person.isInSettlement()) {
-				// if gym is not available, go back to his quarters
-				Building quarters = person.getQuarters();
-				if (quarters != null) {
-					walkToActivitySpotInBuilding(quarters, FunctionType.LIVING_ACCOMMODATIONS, true);
-					walkSite = true;
+				
+				int rand = RandomUtil.getRandomInt(2);
+				
+				if (rand == 0) {
+					// Find a dining place
+					Building dining = EatDrink.getAvailableDiningBuilding(person, false);
+					if (dining != null) {
+						walkToActivitySpotInBuilding(dining, FunctionType.DINING, true);
+					}
+					else {
+						// Go back to his quarters
+						Building quarters = person.getQuarters();
+						if (quarters != null) {
+							walkToBed(quarters, person, true);
+						}
+					}
 				}
-
+				
+				else if (rand == 1) {
+					Building rec = getAvailableRecreationBuilding(person);
+					if (rec != null) {
+						walkToActivitySpotInBuilding(rec, FunctionType.RECREATION, true);
+					}
+					else {
+						// Go back to his quarters
+						Building quarters = person.getQuarters();
+						if (quarters != null) {
+							walkToBed(quarters, person, true);
+						}
+					}
+				}
+				
+				else {
+					// Go back to his quarters
+					Building quarters = person.getQuarters();
+					if (quarters != null) {
+						walkToBed(quarters, person, true);
+					}
+				}
 			}
 
-			if (!walkSite) {
-				if (person.isInVehicle()) {
-					// If person is in rover, walk to passenger activity spot.
-					if (person.getVehicle() instanceof Rover) {
-						walkToPassengerActivitySpotInRover((Rover) person.getVehicle(), true);
-					}
+			else if (person.isInVehicle()) {
+				// If person is in rover, walk to passenger activity spot.
+				if (person.getVehicle() instanceof Rover) {
+					walkToPassengerActivitySpotInRover((Rover) person.getVehicle(), true);
 				} else {
 					// Walk to random location.
 					walkToRandomLocation(true);
 				}
-
 			}
 
 			setDescription(Msg.getString("Task.description.read"));

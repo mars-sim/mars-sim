@@ -696,6 +696,39 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	}
 
 	/**
+	 * Gets a function type that has with openly available (empty) activity spot
+	 * 
+	 * @return FunctionType
+	 */
+	public FunctionType getEmptyActivitySpotFunctionType() {
+		return getEmptyActivitySpotFunction().getFunctionType();
+	}
+	
+	/**
+	 * Gets a function that has with openly available (empty) activity spot
+	 * 
+	 * @return FunctionType
+	 */
+	public Function getEmptyActivitySpotFunction() {
+		List<Function> goodFunctions = new ArrayList<Function>();
+		// Get the building's functions
+		if (functions == null)
+			functions = determineFunctions();
+		for (Function f : functions) {
+			if (f.hasEmptyActivitySpot())
+				goodFunctions.add(f);
+		}
+		
+		if (goodFunctions.isEmpty())
+			return null;
+		
+		// Choose a random function
+		int index = RandomUtil.getRandomInt(goodFunctions.size() - 1);
+
+		return goodFunctions.get(index);
+	}
+	
+	/**
 	 * Determines the building functions.
 	 * 
 	 * @return list of building .
@@ -884,7 +917,6 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	 * @throws BuildingException if building doesn't have the function.
 	 */
 	public Function getFunction(FunctionType functionType) {
-		Function result = null;
 
 		if (functions == null)
 			functions = determineFunctions();
@@ -898,13 +930,12 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 //		 functions.forEach(f -> { if (f.getFunction() == functionType) return f; });
 //		 Iterator<Function> i = functions.iterator(); while (i.hasNext()) { Function
 //		 function = i.next(); if (function.getFunction() == functionType) result =
-//		 function; }
-//		 
+//		 function; }	 
 		
 		// if (result != null) return result;
 		// else throw new IllegalStateException(buildingType + " does not have " +
 		// functionType);
-		return result;
+		return null;
 	}
 
 	/**

@@ -63,12 +63,12 @@ public class WriteReport extends Task implements Serializable {
 			Building officeBuilding = getAvailableOffice(person);
 			if (officeBuilding != null) {
 				// Walk to the office building.
-				walkToActivitySpotInBuilding(officeBuilding, false);
+				walkToTaskSpecificActivitySpotInBuilding(officeBuilding, false);
 				office = officeBuilding.getAdministration();
 				if (!office.isFull()) {
 					office.addStaff();
 					// Walk to the dining building.
-					walkToActivitySpotInBuilding(officeBuilding, true);
+					walkToTaskSpecificActivitySpotInBuilding(officeBuilding, true);
 				}
 			}
 			else {
@@ -76,7 +76,7 @@ public class WriteReport extends Task implements Serializable {
 				// Note: dining building is optional
 				if (dining != null) {
 					// Walk to the dining building.
-					walkToActivitySpotInBuilding(dining, true);
+					walkToTaskSpecificActivitySpotInBuilding(dining, true);
 				}
 //				else {
 //					// work anywhere

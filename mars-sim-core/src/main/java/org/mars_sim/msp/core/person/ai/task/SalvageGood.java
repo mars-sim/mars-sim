@@ -79,7 +79,7 @@ implements Serializable {
 			workshop = (Manufacture) manufactureBuilding.getFunction(FunctionType.MANUFACTURE);
 
 			// Walk to manufacturing workshop.
-			walkToActivitySpotInBuilding(manufactureBuilding, false);
+			walkToTaskSpecificActivitySpotInBuilding(manufactureBuilding, false);
 		}
 		else {
 			endTask();

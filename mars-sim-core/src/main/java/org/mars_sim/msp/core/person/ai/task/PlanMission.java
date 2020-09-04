@@ -84,7 +84,7 @@ public class PlanMission extends Task implements Serializable {
 				if (!office.isFull()) {
 					office.addStaff();
 					// Walk to the office building.
-					walkToActivitySpotInBuilding(officeBuilding, true);
+					walkToTaskSpecificActivitySpotInBuilding(officeBuilding, true);
 				}
 			}
 			else {
@@ -92,7 +92,7 @@ public class PlanMission extends Task implements Serializable {
 				// Note: dining building is optional
 				if (dining != null) {
 					// Walk to the dining building.
-					walkToActivitySpotInBuilding(dining, true);
+					walkToTaskSpecificActivitySpotInBuilding(dining, true);
 				}
 //				else {
 //					// work anywhere
@@ -155,9 +155,9 @@ public class PlanMission extends Task implements Serializable {
 		boolean canDo = person.getMind().canStartNewMission();
 		
 		if (!canDo) {
-			LogConsolidated.flog(Level.INFO, 10_000, sourceName, 
-					"[" + person.getAssociatedSettlement() + "] " 
-			+ person.getName() + " just joined in a mission and was unable to start a new one at this moment.");
+//			LogConsolidated.log(logger, Level.INFO, 10_000, sourceName, 
+//					"[" + person.getAssociatedSettlement() + "] " 
+//			+ person.getName() + " already joined in a mission and was unable to start a new one at this moment.");
 			endTask();
 		}
 		else {
@@ -187,8 +187,9 @@ public class PlanMission extends Task implements Serializable {
 		Mission mission = person.getMind().getMission();
 		
 		if (mission instanceof VehicleMission) {
-			LogConsolidated.flog(Level.INFO, 0, sourceName, 
-					"[" + person.getLocationTag().getQuickLocation() + "] " + person.getName() + " submitted a mission plan for " + mission.toString());
+			LogConsolidated.log(logger, Level.INFO, 0, sourceName, 
+					"[" + person.getLocationTag().getQuickLocation() + "] " + person.getName() 
+					+ " submitted a mission plan for " + mission.toString() + ".");
 			// Flag the mission plan ready for submission
 			((VehicleMission)mission).flag4Submission();
 //			mission.setPhase(VehicleMission.REVIEWING);

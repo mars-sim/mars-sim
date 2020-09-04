@@ -91,7 +91,7 @@ public class AssistScientificStudyResearcher extends Task implements Serializabl
 					if (researcherBuilding != null) {
 
 						// Walk to researcher
-						walkToActivitySpotInBuilding(researcherBuilding, false);
+						walkToTaskSpecificActivitySpotInBuilding(researcherBuilding, false);
 					}
 				} else if (person.isInVehicle()) {
 					// If person is in rover, walk to passenger activity spot.

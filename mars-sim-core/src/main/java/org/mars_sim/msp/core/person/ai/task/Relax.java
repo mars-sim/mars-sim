@@ -69,11 +69,18 @@ implements Serializable {
 		boolean walkSite = false;
 		if (person.isInSettlement()) {
 			try {
-				Building recBuilding = getAvailableRecreationBuilding(person);
-				if (recBuilding != null) {
+				Building rec = getAvailableRecreationBuilding(person);
+				if (rec != null) {
 					// Walk to recreation building.
-				    walkToActivitySpotInBuilding(recBuilding, true);
+				    walkToTaskSpecificActivitySpotInBuilding(rec, true);
 				    walkSite = true;
+				}
+				else {
+					// Go back to his quarters
+					Building quarters = person.getQuarters();
+					if (quarters != null) {
+						walkToBed(quarters, person, true);
+					}
 				}
 			}
 			catch (Exception e) {

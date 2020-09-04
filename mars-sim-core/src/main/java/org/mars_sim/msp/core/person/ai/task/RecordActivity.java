@@ -16,6 +16,7 @@ import org.mars_sim.msp.core.person.ai.NaturalAttributeType;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
+import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Rover;
@@ -48,6 +49,7 @@ public class RecordActivity extends Task implements Serializable {
 		super(NAME, person, true, false, STRESS_MODIFIER, true, RandomUtil.getRandomDouble(10D));
 
 		if (person.isInSettlement()) {
+			
 			walkToRandomLocation(false);
 			
 			// Initialize phase

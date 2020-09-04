@@ -292,8 +292,8 @@ implements Serializable {
         		+ "; fatigue: " + Math.round(fatigue*10D)/10D 
         		+ "; stress: " + Math.round(stress*100D)/100D + " %"
         		+ "; hunger: " + Math.round(hunger*10D)/10D 
-        		+ "; energy: " + Math.round(energy*10D)/10D + " kJ"
-            		);
+        		+ "; energy: " + Math.round(energy*10D)/10D + " kJ");
+            
             if (person.isOutside()) {
             	setPhase(WALK_BACK_INSIDE);
             }
@@ -301,7 +301,7 @@ implements Serializable {
             	endTask();
         }
         
-     	if (person.isInside()) {
+     	if (person.isInSettlement()) {
         	ended = true;
         	endTask();
      	}
@@ -332,8 +332,6 @@ implements Serializable {
         if (aBag != null) {
             if (person.getInventory().canStoreUnit(aBag, false)) {
             	aBag.transfer(settlement, person);
-//                settlement.getInventory().retrieveUnit(emptyBag);
-//                person.getInventory().storeUnit(emptyBag);
 //                bag = aBag;
             }
             else {
@@ -342,8 +340,8 @@ implements Serializable {
     					+ person.getLocationTag().getLocale()
     					+ "] "  + person.getName() 
     					+ " was strangely unable to carry an empty bag.");
-//            	ended = true;
-//            	super.endTask();
+            	ended = true;
+            	super.endTask();
             }
         }
         else {
@@ -352,8 +350,8 @@ implements Serializable {
 					+ person.getLocationTag().getLocale()
 					+ "] "  + person.getName() 
 					+ " was unable to find an empty bag in the inventory.");
-//        	ended = true;
-//        	super.endTask();
+        	ended = true;
+        	super.endTask();
         }
     }
 
@@ -441,13 +439,12 @@ implements Serializable {
 	//    	ended = true;
 	    	Inventory pInv = person.getInventory();
 	    	Bag bag = pInv.findABag(false);
-	    	
-	    	// Unload bag to rover's inventory.
-//        if (bag != null) {
-//            Inventory bInv = bag.getInventory();
-//            double reg0 = bInv.getAmountResourceStored(regolithID, false);
+
             double reg1 = pInv.getAmountResourceStored(regolithID, false);
 
+            if (reg1 < .0001)
+            	super.endTask();
+            	
           	Inventory sInv = settlement.getInventory();
           	
             double settlementCap = sInv.getAmountResourceRemainingCapacity(
@@ -455,8 +452,14 @@ implements Serializable {
             
             if (sInv != null) {
 	            // Try to store regolith in settlement.
-	            if (reg1 <= settlementCap) {
-//	                bInv.retrieveAmountResource(regolithID, reg0);
+            	if (reg1 > settlementCap) {
+            		reg1 = settlementCap;
+            		
+	            	LogConsolidated.log(logger, Level.INFO, 0, sourceName, 
+	            			"[" + person.getLocationTag().getLocale() +  "] Regolith storage full. " +
+	            				person.getName() + " could only check in " + Math.round(reg1*10.0)/10.0 + " kg regolith.");
+	                		
+	//	            bInv.retrieveAmountResource(regolithID, reg0);
 	                pInv.retrieveAmountResource(regolithID, reg1);
 	                // Store the ice
 	                sInv.storeAmountResource(regolithID, reg1, false);
@@ -468,10 +471,29 @@ implements Serializable {
 					settlement.addOutput(regolithID, reg1, getTimeCompleted());
 		            // Recalculate settlement good value for output item.
 		            settlement.getGoodsManager().updateGoodValue(GoodsUtil.getResourceGood(regolithID), false);
+            	}
+            	
+            	else {
+	            	LogConsolidated.log(logger, Level.INFO, 0, sourceName, 
+	            			"[" + person.getLocationTag().getLocale() +  "] " +
+	            				person.getName() + " was checking in " + Math.round(reg1*10.0)/10.0 + " kg regolith.");
+	                		
+	//	            bInv.retrieveAmountResource(regolithID, reg0);
+	                pInv.retrieveAmountResource(regolithID, reg1);
+	                // Store the ice
+	                sInv.storeAmountResource(regolithID, reg1, false);
+	                // Track supply
+	                sInv.addAmountSupply(regolithID, reg1);
+		            // Transfer the bag
+		            bag.transfer(person, settlement);
+					// Add to the daily output
+					settlement.addOutput(regolithID, reg1, getTimeCompleted());
+		            // Recalculate settlement good value for output item.
+		            settlement.getGoodsManager().updateGoodValue(GoodsUtil.getResourceGood(regolithID), false);
+		            
+		            super.endTask();
 	            }
             }
-            
-            super.endTask();
     	}
     }
  

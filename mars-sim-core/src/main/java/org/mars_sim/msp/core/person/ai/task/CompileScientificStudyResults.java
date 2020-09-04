@@ -83,7 +83,7 @@ implements Serializable {
                 Building adminBuilding = getAvailableAdministrationBuilding(person);
                 if (adminBuilding != null) {
                     // Walk to administration building.
-                    walkToActivitySpotInBuilding(adminBuilding, true);
+                    walkToTaskSpecificActivitySpotInBuilding(adminBuilding, true);
                     adminWalk = true;
                 }
             }

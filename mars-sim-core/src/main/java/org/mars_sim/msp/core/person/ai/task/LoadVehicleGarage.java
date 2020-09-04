@@ -139,7 +139,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 			Building garageBuilding = BuildingManager.getBuilding(vehicle);
 			if (garageBuilding != null) {
 				// Walk to garage.
-				walkToActivitySpotInBuilding(garageBuilding, false);
+				walkToTaskSpecificActivitySpotInBuilding(garageBuilding, false);
 			}
 
 			// End task if vehicle or garage not available.
@@ -179,7 +179,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 			Building garageBuilding = BuildingManager.getBuilding(vehicle);
 			if (garageBuilding != null) {
 				// Walk to garage.
-				walkToActivitySpotInBuilding(garageBuilding, false);
+				walkToTaskSpecificActivitySpotInBuilding(garageBuilding, false);
 			}
 
 			// End task if vehicle or garage not available.
@@ -245,7 +245,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 		Building garage = BuildingManager.getBuilding(vehicle);
 		if (garage != null) {
 			// Walk to garage.
-			walkToActivitySpotInBuilding(garage, false);
+			walkToTaskSpecificActivitySpotInBuilding(garage, false);
 		}
 		else {
 			endTask();
@@ -290,7 +290,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
 		if (garage != null) {
 
 			// Walk to garage.
-			walkToActivitySpotInBuilding(garage, false);
+			walkToTaskSpecificActivitySpotInBuilding(garage, false);
 		}
 
 		// Initialize task phase

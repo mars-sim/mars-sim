@@ -146,7 +146,7 @@ public class ExamineBody extends Task implements Serializable {
 					// Walk to medical care building.
 					MedicalCare medicalCare = (MedicalCare) medicalAid;
 					// Walk to medical care building.
-					walkToActivitySpotInBuilding(medicalCare.getBuilding(), false);
+					walkToTaskSpecificActivitySpotInBuilding(medicalCare.getBuilding(), false);
 					
 				} else if (medicalAid instanceof SickBay) {
 					// Walk to medical activity spot in rover.

@@ -82,7 +82,7 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 			observatory = determineObservatory(person);
 			if (observatory != null) {
 				// Walk to observatory building.
-				walkToActivitySpotInBuilding(observatory.getBuilding(), false);
+				walkToTaskSpecificActivitySpotInBuilding(observatory.getBuilding(), false);
 				observatory.addObserver();
 				isActiveObserver = true;
 				

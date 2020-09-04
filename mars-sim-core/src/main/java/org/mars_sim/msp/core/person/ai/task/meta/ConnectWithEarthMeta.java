@@ -82,7 +82,7 @@ public class ConnectWithEarthMeta implements MetaTask, Serializable {
             }
 
             // Get an available office space.
-            Building building = ConnectWithEarth.getAvailableBuilding(person);
+            Building building = ConnectWithEarth.getAvailableCommBuilding(person);
 
             if (building != null) {
             	result += 5;

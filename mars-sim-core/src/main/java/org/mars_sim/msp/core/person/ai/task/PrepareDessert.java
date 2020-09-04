@@ -75,7 +75,7 @@ public class PrepareDessert extends Task implements Serializable {
 
 			kitchen = kitchenBuilding.getPreparingDessert();
 			// Walk to kitchen building.
-			walkToActivitySpotInBuilding(kitchenBuilding, false);
+			walkToTaskSpecificActivitySpotInBuilding(kitchenBuilding, false);
 
 			boolean isAvailable = kitchen.getAListOfDesserts().size() > 0;
 			// Check if enough desserts have been prepared at the kitchen for this meal
@@ -116,7 +116,7 @@ public class PrepareDessert extends Task implements Serializable {
 			kitchen = kitchenBuilding.getPreparingDessert();
 
 			// Walk to kitchen building.
-			walkToActivitySpotInBuilding(kitchenBuilding, false);
+			walkToTaskSpecificActivitySpotInBuilding(kitchenBuilding, false);
 
 			boolean isAvailable = kitchen.getAListOfDesserts().size() > 0;
 

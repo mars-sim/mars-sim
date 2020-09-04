@@ -144,7 +144,7 @@ public class TaskManager implements Serializable {
 	 * @return true if person has an active task
 	 */
 	public boolean hasActiveTask() {
-		return (currentTask != null) && !currentTask.isDone();
+		return (currentTask != null && !currentTask.isDone());
 	}
 
 	/**

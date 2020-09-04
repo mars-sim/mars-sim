@@ -89,7 +89,7 @@ public class ReviewJobReassignment extends Task implements Serializable {
 					if (!office.isFull()) {
 						office.addStaff();
 						// Walk to the office building.
-						walkToActivitySpotInBuilding(officeBuilding, true);
+						walkToTaskSpecificActivitySpotInBuilding(officeBuilding, true);
 					}
 				}
 				else {
@@ -97,7 +97,7 @@ public class ReviewJobReassignment extends Task implements Serializable {
 					// Note: dining building is optional
 					if (dining != null) {
 						// Walk to the dining building.
-						walkToActivitySpotInBuilding(dining, true);
+						walkToTaskSpecificActivitySpotInBuilding(dining, true);
 					}
 //					else {
 //						// work anywhere

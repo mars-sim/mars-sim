@@ -77,7 +77,7 @@ public class ManufactureGood extends Task implements Serializable {
 						 manufactureBuilding.getNickName())); //$NON-NLS-1$
 				workshop = manufactureBuilding.getManufacture();
 				// Walk to manufacturing building.
-				walkToActivitySpotInBuilding(manufactureBuilding, false);
+				walkToTaskSpecificActivitySpotInBuilding(manufactureBuilding, false);
 				
 				// Initialize phase
 				addPhase(MANUFACTURE);
@@ -105,7 +105,7 @@ public class ManufactureGood extends Task implements Serializable {
 						 manufactureBuilding.getNickName())); //$NON-NLS-1$
 				workshop = manufactureBuilding.getManufacture();
 				// Walk to manufacturing building.
-				walkToActivitySpotInBuilding(manufactureBuilding, false);
+				walkToTaskSpecificActivitySpotInBuilding(manufactureBuilding, false);
 				
 				// Initialize phase
 				addPhase(MANUFACTURE);

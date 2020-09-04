@@ -24,6 +24,9 @@ import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RoboticAttributeType;
+import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.vehicle.Rover;
 
 /** 
@@ -83,8 +86,10 @@ implements Serializable {
         
         else if (person.isInSettlement()) {
         	topInventory = person.getTopContainerUnit().getInventory();
+        	Building storage = person.getSettlement().getBuildingManager().getABuilding(FunctionType.STORAGE);
+        	walkToActivitySpotInBuilding(storage, FunctionType.STORAGE, true);
             // Walk to location to consolidate containers.
-            walkToRandomLocation(true);
+//            walkToRandomLocation(true);
         }
         
         else {
@@ -111,8 +116,8 @@ implements Serializable {
         }
         else if (robot.isInSettlement()) {
         	topInventory = robot.getContainerUnit().getInventory();
-            // Walk to location to consolidate containers.
-            walkToRandomLocation(false);
+        	Building storage = robot.getSettlement().getBuildingManager().getABuilding(FunctionType.STORAGE);
+        	walkToActivitySpotInBuilding(storage, FunctionType.STORAGE, true);
         }
         
         else {

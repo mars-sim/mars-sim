@@ -50,6 +50,7 @@ import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
 import com.alee.laf.text.WebTextField;
+import com.alee.managers.style.StyleId;
 //import com.alee.managers.language.data.TooltipWay;
 import com.alee.managers.tooltip.TooltipManager;
 import com.alee.managers.tooltip.TooltipWay;
@@ -171,14 +172,17 @@ public class TabPanelSchedule extends TabPanel {
 			TooltipManager.setTooltip(shiftLabel, Msg.getString("TabPanelSchedule.shift.toolTip"), TooltipWay.down); //$NON-NLS-1$
 			buttonPane.add(shiftLabel);
 
-			shiftTF = new WebTextField(shiftCache.toString());
+			shiftTF = new WebTextField(StyleId.textareaDecorated);
 			start = taskSchedule.getShiftStart();
 			end = taskSchedule.getShiftEnd();
 			
-			shiftTF.setText(shiftCache.toString() + " : (" + start + " to " + end + ")");
-
+			if (shiftCache == ShiftType.OFF || shiftCache == ShiftType.ON_CALL)
+				shiftTF.setText(shiftCache.toString());
+			else
+				shiftTF.setText(shiftCache.toString() + " : (" + start + " to " + end + ")");
+			
 			shiftTF.setEditable(false);
-			shiftTF.setColumns(12);
+			shiftTF.setColumns(15);
 
 			shiftTF.setHorizontalAlignment(WebTextField.CENTER);
 			buttonPane.add(shiftTF);
@@ -363,7 +367,10 @@ public class TabPanelSchedule extends TabPanel {
 				start = taskSchedule.getShiftStart();
 				end = taskSchedule.getShiftEnd();
 				
-				shiftTF.setText(shiftCache.toString() + " : (" + start + " to " + end + ")");
+				if (shiftCache == ShiftType.OFF || shiftCache == ShiftType.ON_CALL)
+					shiftTF.setText(shiftCache.toString());
+				else
+					shiftTF.setText(shiftCache.toString() + " : (" + start + " to " + end + ")");
 			}
 		}
 

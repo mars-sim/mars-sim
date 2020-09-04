@@ -60,7 +60,7 @@ public class Workout extends Task implements Serializable {
 			Building gymBuilding = getAvailableGym(person);
 			if (gymBuilding != null) {
 				// Walk to gym building.
-				walkToActivitySpotInBuilding(gymBuilding, false);
+				walkToTaskSpecificActivitySpotInBuilding(gymBuilding, false);
 				gym = gymBuilding.getExercise();
 				
 				// Initialize phase

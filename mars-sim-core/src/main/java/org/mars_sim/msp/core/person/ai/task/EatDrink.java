@@ -409,21 +409,22 @@ public class EatDrink extends Task implements Serializable {
 		double remainingTime = 0D;
 		double eatingTime = time;
 	
-		int rand = RandomUtil.getRandomInt(3);
-		
-		if (rand == 3) {
-			// try out dessert instead of eating preserved food
-			setPhase(PICK_UP_DESSERT);
-			remainingTime = time * .75;
-		}
-		else {
+//		int rand = RandomUtil.getRandomInt(3);
+//		
+//		if (rand == 3) {
+//			// try out dessert instead of eating preserved food
+//			setPhase(PICK_UP_DESSERT);
+//			remainingTime = time * .75;
+//		}
+//		else {
 			
 			boolean enoughFood = eatPreservedFood(eatingTime);
 	
 			// If not enough preserved food available, change to dessert phase.
 			if (!enoughFood) {
-				setPhase(PICK_UP_DESSERT);
-				remainingTime = time * .5;
+//				setPhase(PICK_UP_DESSERT);
+//				remainingTime = time * .5;
+				endTask();
 			}
 			else {
 				// Report eating preserved food.
@@ -432,23 +433,26 @@ public class EatDrink extends Task implements Serializable {
 				if ((totalEatingTime + eatingTime) >= eatingDuration) {
 					eatingTime = eatingDuration - totalEatingTime;
 				}
-
-				if (cumulativeProportion > foodConsumptionRate) {
-					endTask();
-				}
 				
 				if (eatingTime < time) {
 					remainingTime = time - eatingTime;
 				}
 
+				if (cumulativeProportion > foodConsumptionRate) {
+					endTask();
+					return remainingTime;
+				}
+				
 				totalEatingTime += eatingTime;
 
-				if (totalEatingTime > getDuration())
+				if (totalEatingTime > getDuration()) {
 					endTask();
-						
+					return remainingTime;	
+				}
+				
 				consumeWater(false);
 			}
-		}
+//		}
 		
 		return remainingTime;
 	}
@@ -664,7 +668,7 @@ public class EatDrink extends Task implements Serializable {
 					// Add to cumulativeProportion
 					cumulativeProportion += proportion;
 					
-					LogConsolidated.log(logger, Level.FINE, 1000, sourceName,
+					LogConsolidated.log(logger, Level.INFO, 3_000, sourceName,
 							"[" + person.getLocationTag().getLocale() + "] " + person 
 							+ " just ate " + Math.round(proportion*1000.0)/1000.0 + " kg of preserved food.");
 					
@@ -933,7 +937,7 @@ public class EatDrink extends Task implements Serializable {
 						person.addConsumptionTime(1, amount);
 						if (waterOnly)
 							setDescription(Msg.getString("Task.description.eatDrink.water")); //$NON-NLS-1$
-						LogConsolidated.log(logger, Level.FINE, 1000, sourceName,
+						LogConsolidated.log(logger, Level.INFO, 3_000, sourceName,
 								"[" + person.getLocationTag().getLocale() + "] " + person
 										+ " drank " + Math.round(amount * 1000.0) / 1.0
 										+ " mL of water.");
@@ -969,7 +973,7 @@ public class EatDrink extends Task implements Serializable {
 							person.addConsumptionTime(1, amount);
 							if (waterOnly)
 								setDescription(Msg.getString("Task.description.eatDrink.water")); //$NON-NLS-1$
-							LogConsolidated.log(logger, Level.FINE, 1000, sourceName,
+							LogConsolidated.log(logger, Level.INFO, 3_000, sourceName,
 									"[" + person.getLocationTag().getLocale() + "] " + person
 											+ " was put on water ration and allocated to drink no more than " 
 											+ Math.round(amount * 1000.0) / 1.0
@@ -999,7 +1003,7 @@ public class EatDrink extends Task implements Serializable {
 								person.addConsumptionTime(1, amount);
 								if (waterOnly)
 									setDescription(Msg.getString("Task.description.eatDrink.water")); //$NON-NLS-1$
-								LogConsolidated.log(logger, Level.FINE, 1000, sourceName,
+								LogConsolidated.log(logger, Level.INFO, 3_000, sourceName,
 										"[" + person.getLocationTag().getLocale() + "] " + person
 												+ " was put on water ration and allocated to drink no more than " 
 												+ Math.round(amount * 1000.0) / 1.0
@@ -1029,7 +1033,7 @@ public class EatDrink extends Task implements Serializable {
 									person.addConsumptionTime(1, amount);
 									if (waterOnly)
 										setDescription(Msg.getString("Task.description.eatDrink.water")); //$NON-NLS-1$
-									LogConsolidated.log(logger, Level.FINE, 1000, sourceName,
+									LogConsolidated.log(logger, Level.INFO, 3_000, sourceName,
 											"[" + person.getLocationTag().getLocale() + "] " + person
 													+ " was put on water ration and allocated to drink no more than " 
 													+ Math.round(amount * 1000.0) / 1.0

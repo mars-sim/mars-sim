@@ -81,33 +81,44 @@ public class PlayHoloGame extends Task implements Serializable {
 		boolean walkSite = false;
 		
 		if (person.isInSettlement()) {
-			try {
-				Building recBuilding = getAvailableRecreationBuilding(person);
-				if (recBuilding != null) {
-					// Walk to recreation building.
-					// Add BuildingFunction.RECREATION
-					walkToActivitySpotInBuilding(recBuilding, FunctionType.RECREATION, true);
-					walkSite = true;
-				} else {
-					// if rec building is not available, go to a gym
-					Building gym = Workout.getAvailableGym(person);
-					if (gym != null) {
-						walkToActivitySpotInBuilding(gym, FunctionType.EXERCISE, true);
-						walkSite = true;
-					} else {
-						// if gym is not available, go back to his quarters
-						Building quarters = person.getQuarters();
-						if (quarters != null) {
-							walkToActivitySpotInBuilding(quarters, FunctionType.LIVING_ACCOMMODATIONS, true);
-							walkSite = true;
-						}
-						else
-							endTask();
+			
+			int rand = RandomUtil.getRandomInt(3);
+			
+			if (rand == 0) {
+				// if rec building is not available, go to a gym
+				Building gym = Workout.getAvailableGym(person);
+				if (gym != null) {
+					walkToActivitySpotInBuilding(gym, FunctionType.EXERCISE, true);
+				}
+				else {
+					// Go back to his quarters
+					Building quarters = person.getQuarters();
+					if (quarters != null) {
+						walkToBed(quarters, person, true);
 					}
 				}
-			} catch (Exception e) {
-				logger.log(Level.SEVERE, "ReadingABook's constructor(): " + e.getMessage());
-				endTask();
+			}
+			
+			else if (rand == 1 || rand == 2) {
+				Building rec = getAvailableRecreationBuilding(person);
+				if (rec != null) {
+					walkToActivitySpotInBuilding(rec, FunctionType.RECREATION, true);
+				}
+				else {
+					// Go back to his quarters
+					Building quarters = person.getQuarters();
+					if (quarters != null) {
+						walkToBed(quarters, person, true);
+					}
+				}
+			}
+			
+			else {
+				// Go back to his quarters
+				Building quarters = person.getQuarters();
+				if (quarters != null) {
+					walkToBed(quarters, person, true);
+				}
 			}
 		}
 

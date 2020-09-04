@@ -114,7 +114,7 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 				try {
 					garage = building.getVehicleMaintenance();
 					// Walk to garage.
-					walkToActivitySpotInBuilding(building, false);
+					walkToTaskSpecificActivitySpotInBuilding(building, false);
 				} catch (Exception e) {
 					e.printStackTrace(System.err);
 					logger.log(Level.SEVERE, "MaintainGroundVehicleGarage.constructor: " + e.getMessage(), e);
@@ -139,7 +139,7 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 							garage.addVehicle(vehicle);
 
 							// Walk to garage.
-							walkToActivitySpotInBuilding(garageBuilding, false);
+							walkToTaskSpecificActivitySpotInBuilding(garageBuilding, false);
 						}
 					} catch (Exception e) {
 						e.printStackTrace(System.err);

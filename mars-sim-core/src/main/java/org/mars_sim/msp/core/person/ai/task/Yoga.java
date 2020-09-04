@@ -63,7 +63,7 @@ public class Yoga extends Task implements Serializable {
 			Building gymBuilding = Workout.getAvailableGym(person);
 			if (gymBuilding != null) {
 				// Walk to gym building.
-				walkToActivitySpotInBuilding(gymBuilding, false);
+				walkToTaskSpecificActivitySpotInBuilding(gymBuilding, false);
 				gym = gymBuilding.getExercise();
 				// set the boolean to true so that it won't be done again today
 				person.getPreference().setTaskDue(this, true);

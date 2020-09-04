@@ -208,7 +208,7 @@ public class Sleep extends Task implements Serializable {
 						// addSubTask(new WalkSettlementInterior(person, quarters, bed.getX(),
 						// bed.getY()));
 
-						walkToBed(accommodations, person, true);
+						walkToBed(q1, person, true);
 					} 
 					
 					else { // unfortunately his/her marked bed is not empty
@@ -257,7 +257,7 @@ public class Sleep extends Task implements Serializable {
 						
 						accommodations.registerSleeper(person, false);
 						
-						walkToBed(accommodations, person, true);		
+						walkToBed(q1, person, true);		
 					}
 					
 					else { // no unmarked bed
@@ -304,7 +304,7 @@ public class Sleep extends Task implements Serializable {
 			// boolean atStation = false;
 			Building currentBuilding = BuildingManager.getBuilding(robot);
 			if (currentBuilding != null) {
-				if (currentBuilding.hasFunction(FunctionType.ROBOTIC_STATION)) {
+//				if (currentBuilding.hasFunction(FunctionType.ROBOTIC_STATION)) {
 					RoboticStation currentStation = currentBuilding.getRoboticStation();
 					if (currentStation.getSleepers() < currentStation.getSlots()) {
 						// atStation = true;
@@ -318,7 +318,7 @@ public class Sleep extends Task implements Serializable {
 //							walkToTaskFunctionActivitySpot(currentBuilding, true);
 						}
 					}
-				}
+//				}
 			} else {
 				// if (!atStation) {
 				Building building = getAvailableRoboticStationBuilding(robot);

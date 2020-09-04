@@ -68,19 +68,25 @@ public class ConnectWithEarth extends Task implements Serializable {
 
 		if (person.isInSettlement()) {
 			// If person is in a settlement, try to find an comm facility.
-			Building bldg = getAvailableBuilding(person);
+			Building bldg = getAvailableCommBuilding(person);
 			if (bldg != null) {
 				// Walk to the facility.
-				walkToActivitySpotInBuilding(bldg, false);
+				walkToTaskSpecificActivitySpotInBuilding(bldg, false);
 
 				comm = bldg.getComm();
 
 				// set the boolean to true so that it won't be done again today
 //				person.getPreference().setTaskDue(this, true);
 			} else {
-				endTask();
+				// Go back to his quarters
+				Building quarters = person.getQuarters();
+				if (quarters != null) {
+					walkToBed(quarters, person, true);
+				}
 			}
-		} else if (person.isInVehicle()) {
+		} 
+		
+		else if (person.isInVehicle()) {
 
 			if (person.getVehicle() instanceof Rover) {
 				walkToPassengerActivitySpotInRover((Rover) person.getVehicle(), true);
@@ -159,13 +165,14 @@ public class ConnectWithEarth extends Task implements Serializable {
 	 * @param person the person looking for the comm facility.
 	 * @return an available space or null if none found.
 	 */
-	public static Building getAvailableBuilding(Person person) {
+	public static Building getAvailableCommBuilding(Person person) {
 		Building result = null;
 
 		// If person is in a settlement, try to find a building with an office.
 		if (person.isInSettlement()) {
+			
 			BuildingManager buildingManager = person.getSettlement().getBuildingManager();
-			List<Building> bldgs = buildingManager.getBuildings(FunctionType.COMMUNICATION);
+			List<Building> bldgs = buildingManager.getBuildings(FunctionType.COMMUNICATION, FunctionType.ADMINISTRATION);
 			bldgs = BuildingManager.getNonMalfunctioningBuildings(bldgs);
 			bldgs = BuildingManager.getLeastCrowdedBuildings(bldgs);
 

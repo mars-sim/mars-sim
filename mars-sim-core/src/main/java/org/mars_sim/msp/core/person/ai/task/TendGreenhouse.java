@@ -104,7 +104,7 @@ public class TendGreenhouse extends Task implements Serializable {
 			greenhouse = farmBuilding.getFarming();
 
 			// Walk to greenhouse.
-			this.walkToActivitySpotInBuilding(farmBuilding, false);	
+			this.walkToTaskSpecificActivitySpotInBuilding(farmBuilding, false);	
 
 			if (currentTaskPhase != null) {
 				addPhase(currentTaskPhase);
@@ -167,7 +167,7 @@ public class TendGreenhouse extends Task implements Serializable {
 			greenhouse = farmBuilding.getFarming();
 
 			// Walk to greenhouse.
-			walkToActivitySpotInBuilding(farmBuilding, false);
+			walkToTaskSpecificActivitySpotInBuilding(farmBuilding, false);
 			
 			// Initialize phase
 			addPhase(TENDING);

@@ -84,7 +84,7 @@ public class RespondToStudyInvitation extends Task implements Serializable {
 				Building adminBuilding = getAvailableAdministrationBuilding(person);
 				if (adminBuilding != null) {
 					// Walk to administration building.
-					walkToActivitySpotInBuilding(adminBuilding, false);
+					walkToTaskSpecificActivitySpotInBuilding(adminBuilding, false);
 					adminWalk = true;
 				}
 			}

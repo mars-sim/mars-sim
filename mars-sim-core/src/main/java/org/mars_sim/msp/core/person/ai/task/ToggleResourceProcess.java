@@ -130,7 +130,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 				Administration admin = resourceProcessBuilding.getAdministration();
 				if (admin != null && !admin.isFull()) {
 					destination = resourceProcessBuilding;
-					walkToActivitySpotInBuilding(destination, false);
+					walkToTaskSpecificActivitySpotInBuilding(destination, false);
 				}
 				
 				else {
@@ -146,7 +146,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 						for (Building b : admins) {
 							if (b.getBuildingType().toLowerCase().equals(C2)) {
 								destination = b;
-								walkToActivitySpotInBuilding(b, false);
+								walkToTaskSpecificActivitySpotInBuilding(b, false);
 								done = true;
 								break;
 							}
@@ -159,7 +159,7 @@ public class ToggleResourceProcess extends Task implements Serializable {
 						if (!done && !adminsNotFull.isEmpty()) {
 							int rand = RandomUtil.getRandomInt(admins.size()-1);
 							destination = admins.get(rand);
-							walkToActivitySpotInBuilding(destination, false);
+							walkToTaskSpecificActivitySpotInBuilding(destination, false);
 						}
 
 						else

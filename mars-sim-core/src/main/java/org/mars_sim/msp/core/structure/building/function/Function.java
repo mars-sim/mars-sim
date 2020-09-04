@@ -342,7 +342,7 @@ public abstract class Function implements Serializable {
 	}
 
 	/**
-	 * Checks if a person is at an activity for this building function.
+	 * Checks if a person is at an activity spot for this building function.
 	 * 
 	 * @param person the person.
 	 * @return true if the person is currently at an activity spot.
@@ -368,7 +368,7 @@ public abstract class Function implements Serializable {
 	}
 
 	/**
-	 * Checks if a robot is at an activity for this building function.
+	 * Checks if a robot is at an activity spot for this building function.
 	 * 
 	 * @param robot the robot.
 	 * @return true if the robot is currently at an activity spot.
@@ -418,6 +418,19 @@ public abstract class Function implements Serializable {
 				empty++;		
 		}	
 		return empty;
+	}
+	
+	/**
+	 * Checks if an empty activity spot is available
+	 * 
+	 * @return
+	 */
+	public boolean hasEmptyActivitySpot() {
+		for (Point2D s: activitySpots) {
+			if (isActivitySpotEmpty(s))
+				return true;		
+		}	
+		return false;
 	}
 	
 	/**

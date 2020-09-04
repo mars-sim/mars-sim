@@ -199,24 +199,16 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * Ends the task and performs any final actions.
 	 */
 	public void endTask() {
-//    	if (!toString().contains("Walk"))
-//    		logger.info("Called " + this + "'s super.endTask().");
+		// Set done to true
+		done = true;
+
 		// End subtask
         if (subTask != null) {
 			setSubTaskPhase(null);
 			subTask.setDescription("");
         	subTask.endTask();
+        	subTask.destroy();
         }
-        
-//		if (subTask != null && !subTask.isDone()) {
-//			setSubTaskPhase(null);
-////			subTask.setDescription("");
-//			subTask.destroy();		
-//			subTask = null;
-//		}
-	
-		// Set done to true
-		done = true;
 
 		if (person != null) { 
 			// Note: need to avoid java.lang.StackOverflowError when calling PersonTableModel.unitUpdate()
@@ -498,9 +490,8 @@ public abstract class Task implements Serializable, Comparable<Task> {
             if (subTask.done) {
                 subTask.destroy();
                 createSubTask(newSubTask);
-//                subTask = newSubTask;
-//                person.fireUnitUpdate(UnitEventType.TASK_SUBTASK_EVENT, newSubTask);
             }
+            
             else {
                 subTask.addSubTask(newSubTask);
             }
@@ -508,20 +499,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
        
         else {
         	createSubTask(newSubTask);
-//            subTask = newSubTask;
-//            person.fireUnitUpdate(UnitEventType.TASK_SUBTASK_EVENT, newSubTask);
         }		
-       
-//		if (subTask != null) {
-////			subTask.setDescription("");
-//			setSubTaskPhase(null);
-//			subTask.destroy();
-//			subTask = null;
-//			createSubTask(newSubTask);
-//			
-//		} else {
-//			createSubTask(newSubTask);
-//		}
 	}
 
 	/**
@@ -633,7 +611,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 					endTask();
 				} else {
 					double remainingTime = timeLeft;
-//					if (getPhase() != null)
 					timeLeft = performMappedPhase(timeLeft);
 					timeCompleted += remainingTime;
 				}
@@ -942,7 +919,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @param building  the destination building.
 	 * @param allowFail true if walking is allowed to fail.
 	 */
-	public void walkToActivitySpotInBuilding(Building building, boolean allowFail) {
+	public void walkToTaskSpecificActivitySpotInBuilding(Building building, boolean allowFail) {
 		FunctionType functionType = null;
 
 		if (person != null)
@@ -959,6 +936,24 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	}
 
 	/**
+	 * Walk to an openly available activity spot in a building.
+	 * 
+	 * @param building  the destination building.
+	 * @param allowFail true if walking is allowed to fail.
+	 * @return true if an open spot is found
+	 */
+	public boolean walkToOpenActivitySpotInBuilding(Building building, boolean allowFail) {
+		FunctionType functionType = building.getEmptyActivitySpotFunctionType();
+
+		if ((functionType != null) && (building.hasFunction(functionType))) {
+			walkToActivitySpotInBuilding(building, functionType, allowFail);
+			return true;
+		}
+
+		return false;
+	}
+	
+	/**
 	 * Walks to the bed assigned for this person
 	 * 
 	 * @param accommodations
@@ -974,24 +969,40 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		if (bed != null) {
 			// Create subtask for walking to destination.
 			createWalkingSubtask(building, spot, allowFail);
-			// Update phase description
 		}
-//        else {// Note ; why is it a dead code according to eclipse ?
-//        	// If no available activity spot, go to random location in building.
-//        	walkToActivitySpotInBuilding(building, FunctionType.LIVING_ACCOMODATIONS, allowFail);
-//            //walkToRandomLocInBuilding(building, allowFail);
-//        }
 	}
 
 	/**
-	 * Walk to an available activity spot in a building.
+	 * Walks to the bed assigned for this person
+	 * 
+	 * @param building
+	 * @param person
+	 * @param allowFail
+	 */
+	public void walkToBed(Building building, Person person, boolean allowFail) {
+		Point2D bed = person.getBed();
+		Point2D spot = LocalAreaUtil.getLocalRelativeLocation(bed.getX() - building.getXLocation(),
+				bed.getY() - building.getYLocation(), building);
+
+		if (bed != null) {
+			// Create subtask for walking to destination.
+			createWalkingSubtask(building, spot, allowFail);
+		}
+	}
+	
+	/**
+	 * Walk to an available activity spot of a particular function type in a building.
 	 * 
 	 * @param building     the destination building.
 	 * @param functionType the building function type for the activity.
 	 * @param allowFail    true if walking is allowed to fail.
 	 */
 	public void walkToActivitySpotInBuilding(Building building, FunctionType functionType, boolean allowFail) {
-
+//		if (functionType == null)
+//			throw new IllegalArgumentException("functionType is null");
+//		if (building == null)
+//			throw new IllegalArgumentException("building is null");
+		
 		Function f = building.getFunction(functionType);
 		if (f == null) {
 			// If the functionType does not exist in this building, go to random location in
@@ -1019,6 +1030,42 @@ public abstract class Task implements Serializable, Comparable<Task> {
 //		}
 	}
 
+	/**
+	 * Walk to an empty activity spot in a building.
+	 * 
+	 * @param building     the destination building.
+	 * @param functionType the building function type for the activity.
+	 * @param allowFail    true if walking is allowed to fail.
+	 */
+	public void walkToEmptyActivitySpotInBuilding(Building building, boolean allowFail) {
+
+		Function f = building.getEmptyActivitySpotFunction();
+		if (f == null) {
+			// If the functionType does not exist in this building, go to random location in
+			// building.
+//			walkToRandomLocInBuilding(building, allowFail);
+			return;
+		}
+
+		Point2D settlementLoc = null;
+		if (person != null) {
+			// Find available activity spot in building.
+			settlementLoc = f.getAvailableActivitySpot(person);
+		} else if (robot != null) {
+			// Find available activity spot in building.
+			settlementLoc = f.getAvailableActivitySpot(robot);
+		}
+
+		if (settlementLoc != null) {
+			// Create subtask for walking to destination.
+			createWalkingSubtask(building, settlementLoc, allowFail);
+		} 
+//		else {
+//			// If no available activity spot, go to random location in building.
+//			walkToRandomLocInBuilding(building, allowFail);
+//		}
+	}
+	
 	/**
 	 * Walk to a random interior location in a building.
 	 * 
@@ -1197,15 +1244,21 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		if (person != null) {
 			// If person is in a settlement, walk to random building.
 			if (person.isInSettlement()) {
-
+		
 				List<Building> buildingList = person.getSettlement().getBuildingManager()
-						.getBuildings(FunctionType.LIFE_SUPPORT);
+						.getBuildings();
 
 				if (buildingList.size() > 0) {
-					int buildingIndex = RandomUtil.getRandomInt(buildingList.size() - 1);
-					Building building = buildingList.get(buildingIndex);
-
-					walkToRandomLocInBuilding(building, allowFail);
+					for (Building b : buildingList) {
+						FunctionType ft = b.getEmptyActivitySpotFunctionType();
+						if (ft != null)
+							 walkToEmptyActivitySpotInBuilding(b, allowFail);
+					}
+					
+//					int buildingIndex = RandomUtil.getRandomInt(buildingList.size() - 1);
+//					Building building = buildingList.get(buildingIndex);
+//
+//					walkToRandomLocInBuilding(building, allowFail);
 				}
 			}
 			// If person is in a vehicle, walk to random location within vehicle.
@@ -1251,58 +1304,37 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			Building currentBuilding = BuildingManager.getBuilding(robot);
 
 			if (currentBuilding != null) {
-				RobotType type = robot.getRobotType();// .getName();
-				// List<Building> buildingList;
+				RobotType type = robot.getRobotType();
 				FunctionType fct = null;
 
-				if (type == RobotType.CHEFBOT)// type.equals("ChefBot"))
+				if (type == RobotType.CHEFBOT)
 					fct = FunctionType.COOKING;
-				else if (type == RobotType.CONSTRUCTIONBOT)// type.equals("ConstructionBot"))
+				else if (type == RobotType.CONSTRUCTIONBOT)
 					fct = FunctionType.MANUFACTURE;
-				else if (type == RobotType.DELIVERYBOT)// type.equals("DeliveryBot"))
+				else if (type == RobotType.DELIVERYBOT)
 					fct = FunctionType.ROBOTIC_STATION;
-				else if (type == RobotType.GARDENBOT)// type.equals("GardenBot"))
+				else if (type == RobotType.GARDENBOT)
 					fct = FunctionType.FARMING;
-				else if (type == RobotType.MAKERBOT)// type.equals("MakerBot"))
+				else if (type == RobotType.MAKERBOT)
 					fct = FunctionType.MANUFACTURE;
-				else if (type == RobotType.MEDICBOT)// type.equals("MedicBot"))
+				else if (type == RobotType.MEDICBOT)
 					fct = FunctionType.MEDICAL_CARE;
-				else if (type == RobotType.REPAIRBOT)// type.equals("RepairBot"))
-					fct = FunctionType.ROBOTIC_STATION;
+				else if (type == RobotType.REPAIRBOT)
+					fct = FunctionType.LIFE_SUPPORT;
 				else
 					fct = FunctionType.ROBOTIC_STATION;
-//	    		if (fct == null)
-//	    			fct = FunctionType.LIVING_ACCOMODATIONS;
 
-//	       		if (fct == null)
-//	    			fct = FunctionType.LIFE_SUPPORT;
-
-				// Added debugging statement below
-				if (currentBuilding.getBuildingManager() == null)
-					throw new IllegalStateException("currentBuilding.getBuildingManager() is null");
-				if (currentBuilding.getBuildingManager().getBuildings(fct) == null)
-					throw new IllegalStateException("currentBuilding.getBuildingManager().getBuildings(fct) is null");
-
-				List<Building> buildingList = currentBuilding.getBuildingManager().getBuildings(fct);
-
-				// Filter off hallways and tunnels
-				buildingList = buildingList.stream().filter(b -> !b.getBuildingType().toLowerCase().equals("hallway")
-						&& !b.getBuildingType().toLowerCase().equals("tunnel")).collect(Collectors.toList());
+				List<Building> buildingList = currentBuilding.getBuildingManager().getBuildingsNoHallwayTunnelObs(fct);
 
 				if (buildingList.size() > 0) {
 					int buildingIndex = RandomUtil.getRandomInt(buildingList.size() - 1);
 
 					Building building = buildingList.get(buildingIndex);
 
-					if (building.getNickName().toLowerCase().contains("astronomy")) {
-						if (robot.getSettlement().getBuildingConnectors(building).size() > 0) {
-							LogConsolidated.log(logger, Level.FINER, 5000, sourceName,
-									"[" + robot.getLocationTag().getLocale() + "] " 
-											+ robot.getName() + " is walking toward " + building.getNickName());
-							walkToActivitySpotInBuilding(building, fct, allowFail);
-						}
-					} else {
-//		                logger.info(robot.getNickName() + " is walking toward " + building.getNickName());
+					if (robot.getSettlement().getBuildingConnectors(building).size() > 0) {
+						LogConsolidated.log(logger, Level.FINER, 5000, sourceName,
+								"[" + robot.getLocationTag().getLocale() + "] " 
+								+ robot.getName() + " is walking toward " + building.getNickName());
 						walkToActivitySpotInBuilding(building, fct, allowFail);
 					}
 				}

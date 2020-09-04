@@ -99,7 +99,7 @@ public class CookMeal extends Task implements Serializable {
 			kitchen = kitchenBuilding.getCooking();
 
 			// Walk to kitchen building.
-			walkToActivitySpotInBuilding(kitchenBuilding, false);
+			walkToTaskSpecificActivitySpotInBuilding(kitchenBuilding, false);
 
 			// int size = kitchen.getMealRecipesWithAvailableIngredients().size();
 			int size = kitchen.getNumCookableMeal();
@@ -155,7 +155,7 @@ public class CookMeal extends Task implements Serializable {
 			kitchen = kitchenBuilding.getCooking();
 
 			// Walk to kitchen building.
-			walkToActivitySpotInBuilding(kitchenBuilding, false);
+			walkToTaskSpecificActivitySpotInBuilding(kitchenBuilding, false);
 
 			// int size = kitchen.getMealRecipesWithAvailableIngredients().size();
 			int numGoodRecipes = kitchen.getNumCookableMeal();

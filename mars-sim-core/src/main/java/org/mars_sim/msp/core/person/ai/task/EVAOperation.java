@@ -233,14 +233,14 @@ public abstract class EVAOperation extends Task implements Serializable {
 //        Point2D outsideLocation = new Point2D.Double(outsideSiteXLoc, outsideSiteYLoc);
 //        boolean closeToLocation = LocalAreaUtil.areLocationsClose(personLocation, outsideLocation);
         
-        if (person.isInside()) {// || !closeToLocation) {
+        if (!person.isOutside()) {// || !closeToLocation) {
             if (Walk.canWalkAllSteps(person, outsideSiteXLoc, outsideSiteYLoc, 0, null)) {
                 Task walkingTask = new Walk(person, outsideSiteXLoc, outsideSiteYLoc, 0, null);
                 addSubTask(walkingTask);
             }
             else {
-				LogConsolidated.log(logger, Level.WARNING, 4000, sourceName,
-						 person.getName() + " cannot walk to outside site.");
+				LogConsolidated.log(logger, Level.SEVERE, 4_000, sourceName,
+						 person.getName() + " cannot walk to outside site.");			
                 endTask();
             }
         }
@@ -259,113 +259,147 @@ public abstract class EVAOperation extends Task implements Serializable {
 	 */
 	private double walkBackInsidePhase(double time) {
 		
-		if (person.isOutside()) {
-			
-			if (interiorObject == null) {
-			// Get closest airlock building at settlement.
-				Settlement s = CollectionUtils.findSettlement(person.getCoordinates());
-				if (s != null) {
-					interiorObject = (Building)(s.getClosestAvailableAirlock(person).getEntity()); 
-//					System.out.println("interiorObject is " + interiorObject);
-					if (interiorObject == null)
-						interiorObject = (LocalBoundedObject)(s.getClosestAvailableAirlock(person).getEntity());
-					System.out.println("interiorObject is " + interiorObject);
-					LogConsolidated.log(logger, Level.INFO, 0, sourceName,
-							"[" + person.getLocationTag().getLocale() + "] " + person.getName()
-							+ " in " + person.getLocationTag().getImmediateLocation()
-							+ " found " + ((Building)interiorObject).getNickName()
-							+ " as the closet building with an airlock to enter.");
-				}
-				else {
-					// near a vehicle
-					Rover r = (Rover)person.getVehicle();
-					interiorObject = (LocalBoundedObject) (r.getAirlock()).getEntity();
-					LogConsolidated.log(logger, Level.INFO, 0, sourceName,
-							"[" + person.getLocationTag().getLocale() + "] " + person.getName()
-							+ " was near " + r.getName()
-							+ " and had to walk back inside the vehicle.");
-				}
-			}
-			
-			if (interiorObject == null) {
-				LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
-					"[" + person.getLocationTag().getLocale() + "] " + person.getName()
-					+ " was near " + person.getLocationTag().getImmediateLocation()
-					+ " at (" + Math.round(returnInsideLoc.getX()*10.0)/10.0 + ", " 
-					+ Math.round(returnInsideLoc.getY()*10.0)/10.0 + ") "
-					+ " but interiorObject is null.");
-				endTask();
-			}
-			
-			else {
-				// Set return location.
-				Point2D rawReturnInsideLoc = LocalAreaUtil.getRandomInteriorLocation(interiorObject);
-				returnInsideLoc = LocalAreaUtil.getLocalRelativeLocation(rawReturnInsideLoc.getX(),
-						rawReturnInsideLoc.getY(), interiorObject);
-				
-				if (returnInsideLoc != null && !LocalAreaUtil.checkLocationWithinLocalBoundedObject(returnInsideLoc.getX(),
-							returnInsideLoc.getY(), interiorObject)) {
-					LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
-							"[" + person.getLocationTag().getLocale() + "] " + person.getName()
-							+ " was near " + ((Building)interiorObject).getNickName() //person.getLocationTag().getImmediateLocation()
-							+ " at (" + Math.round(returnInsideLoc.getX()*10.0)/10.0 + ", " 
-							+ Math.round(returnInsideLoc.getY()*10.0)/10.0 + ") "
-							+ " but could not be found inside " + interiorObject);
-					endTask();
-				}
-			}
-	
-			// If not at return inside location, create walk inside subtask.
-	        Point2D personLocation = new Point2D.Double(person.getXLocation(), person.getYLocation());
-	        boolean closeToLocation = LocalAreaUtil.areLocationsClose(personLocation, returnInsideLoc);
-	        
-			// If not inside, create walk inside subtask.
-			if (interiorObject != null && !closeToLocation) {
-				String name = "";
-				if (interiorObject instanceof Building) {
-					name = ((Building)interiorObject).getNickName();
-				}
-				else if (interiorObject instanceof Vehicle) {
-					name = ((Vehicle)interiorObject).getNickName();
-				}
-						
-				LogConsolidated.log(logger, Level.FINER, 10_000, sourceName,
-							"[" + person.getLocationTag().getLocale() + "] " + person.getName()
-							+ " was near " +  name 
-							+ " at (" + Math.round(returnInsideLoc.getX()*10.0)/10.0 + ", " 
-							+ Math.round(returnInsideLoc.getY()*10.0)/10.0 
-							+ ") and was attempting to enter its airlock.");
-				
-				if (Walk.canWalkAllSteps(person, returnInsideLoc.getX(), returnInsideLoc.getY(), 0, interiorObject)) {
-					Task walkingTask = new Walk(person, returnInsideLoc.getX(), returnInsideLoc.getY(), 0, interiorObject);
-					addSubTask(walkingTask);
-				} 
-				
-				else {
-					LogConsolidated.log(logger, Level.SEVERE, 0, sourceName,
-							person.getName() + " was " + person.getTaskDescription().toLowerCase() 
-							+ " and cannot find a valid path to enter an airlock. Will see what to do.");
-					endTask();
-				}
-			}
-			
-			else {
-				LogConsolidated.log(logger, Level.SEVERE, 0, sourceName,
-						person.getName() + " was " + person.getTaskDescription().toLowerCase() 
-						+ " and cannot find the building airlock to walk back inside. Will see what to do.");
-				endTask();
-			}
-		}
+        if ((returnInsideLoc == null) || !LocalAreaUtil.checkLocationWithinLocalBoundedObject(
+                returnInsideLoc.getX(), returnInsideLoc.getY(), interiorObject)) {
+            // Set return location.        
+            Point2D rawReturnInsideLoc = LocalAreaUtil.getRandomInteriorLocation(interiorObject);
+            returnInsideLoc = LocalAreaUtil.getLocalRelativeLocation(rawReturnInsideLoc.getX(), 
+                    rawReturnInsideLoc.getY(), interiorObject);
+        }
 		
-		else { // if a person is already inside, end the task safely here
-			LogConsolidated.log(logger, Level.FINEST, 4_000, sourceName,
+        // If not at return inside location, create walk inside subtask.
+        Point2D personLocation = new Point2D.Double(person.getXLocation(), person.getYLocation());
+        boolean closeToLocation = LocalAreaUtil.areLocationsClose(personLocation, returnInsideLoc);
+        
+        if (person.isOutside() || !closeToLocation) {
+            if (Walk.canWalkAllSteps(person, returnInsideLoc.getX(), returnInsideLoc.getY(), 0, interiorObject)) {
+                Task walkingTask = new Walk(person, returnInsideLoc.getX(), returnInsideLoc.getY(), 0, interiorObject);
+                addSubTask(walkingTask);
+            }
+            else {
+            	LogConsolidated.log(logger, Level.SEVERE, 4_000, sourceName,
+						"[" + person.getLocationTag().getLocale() + "] " + person.getName()
+            			+ " cannot walk back to inside location.");
+                endTask();
+            }
+        }
+        else {
+        	// if a person is already inside, end the task safely here
+			LogConsolidated.log(logger, Level.INFO, 4_000, sourceName,
 					person.getName() + " was " + person.getTaskDescription().toLowerCase() 
 					+ " and went inside, safely ending the EVA ops");
-			
-			endTask();
-		}
-		
-		return time;
+            endTask();
+        }
+        
+        return time;
+//        
+//		if (person.isOutside()) {
+//			
+//			if (interiorObject == null) {
+//			// Get closest airlock building at settlement.
+//				Settlement s = CollectionUtils.findSettlement(person.getCoordinates());
+//				if (s != null) {
+//					interiorObject = (Building)(s.getClosestAvailableAirlock(person).getEntity()); 
+////					System.out.println("interiorObject is " + interiorObject);
+//					if (interiorObject == null)
+//						interiorObject = (LocalBoundedObject)(s.getClosestAvailableAirlock(person).getEntity());
+//					System.out.println("interiorObject is " + interiorObject);
+//					LogConsolidated.log(logger, Level.INFO, 0, sourceName,
+//							"[" + person.getLocationTag().getLocale() + "] " + person.getName()
+//							+ " in " + person.getLocationTag().getImmediateLocation()
+//							+ " found " + ((Building)interiorObject).getNickName()
+//							+ " as the closet building with an airlock to enter.");
+//				}
+//				else {
+//					// near a vehicle
+//					Rover r = (Rover)person.getVehicle();
+//					interiorObject = (LocalBoundedObject) (r.getAirlock()).getEntity();
+//					LogConsolidated.log(logger, Level.INFO, 0, sourceName,
+//							"[" + person.getLocationTag().getLocale() + "] " + person.getName()
+//							+ " was near " + r.getName()
+//							+ " and had to walk back inside the vehicle.");
+//				}
+//			}
+//			
+//			if (interiorObject == null) {
+//				LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
+//					"[" + person.getLocationTag().getLocale() + "] " + person.getName()
+//					+ " was near " + person.getLocationTag().getImmediateLocation()
+//					+ " at (" + Math.round(returnInsideLoc.getX()*10.0)/10.0 + ", " 
+//					+ Math.round(returnInsideLoc.getY()*10.0)/10.0 + ") "
+//					+ " but interiorObject is null.");
+//				endTask();
+//			}
+//			
+//			else {
+//				// Set return location.
+//				Point2D rawReturnInsideLoc = LocalAreaUtil.getRandomInteriorLocation(interiorObject);
+//				returnInsideLoc = LocalAreaUtil.getLocalRelativeLocation(rawReturnInsideLoc.getX(),
+//						rawReturnInsideLoc.getY(), interiorObject);
+//				
+//				if (returnInsideLoc != null && !LocalAreaUtil.checkLocationWithinLocalBoundedObject(returnInsideLoc.getX(),
+//							returnInsideLoc.getY(), interiorObject)) {
+//					LogConsolidated.log(logger, Level.WARNING, 0, sourceName,
+//							"[" + person.getLocationTag().getLocale() + "] " + person.getName()
+//							+ " was near " + ((Building)interiorObject).getNickName() //person.getLocationTag().getImmediateLocation()
+//							+ " at (" + Math.round(returnInsideLoc.getX()*10.0)/10.0 + ", " 
+//							+ Math.round(returnInsideLoc.getY()*10.0)/10.0 + ") "
+//							+ " but could not be found inside " + interiorObject);
+//					endTask();
+//				}
+//			}
+//	
+//			// If not at return inside location, create walk inside subtask.
+//	        Point2D personLocation = new Point2D.Double(person.getXLocation(), person.getYLocation());
+//	        boolean closeToLocation = LocalAreaUtil.areLocationsClose(personLocation, returnInsideLoc);
+//	        
+//			// If not inside, create walk inside subtask.
+//			if (interiorObject != null && !closeToLocation) {
+//				String name = "";
+//				if (interiorObject instanceof Building) {
+//					name = ((Building)interiorObject).getNickName();
+//				}
+//				else if (interiorObject instanceof Vehicle) {
+//					name = ((Vehicle)interiorObject).getNickName();
+//				}
+//						
+//				LogConsolidated.log(logger, Level.FINER, 10_000, sourceName,
+//							"[" + person.getLocationTag().getLocale() + "] " + person.getName()
+//							+ " was near " +  name 
+//							+ " at (" + Math.round(returnInsideLoc.getX()*10.0)/10.0 + ", " 
+//							+ Math.round(returnInsideLoc.getY()*10.0)/10.0 
+//							+ ") and was attempting to enter its airlock.");
+//				
+//				if (Walk.canWalkAllSteps(person, returnInsideLoc.getX(), returnInsideLoc.getY(), 0, interiorObject)) {
+//					Task walkingTask = new Walk(person, returnInsideLoc.getX(), returnInsideLoc.getY(), 0, interiorObject);
+//					addSubTask(walkingTask);
+//				} 
+//				
+//				else {
+//					LogConsolidated.log(logger, Level.SEVERE, 0, sourceName,
+//							person.getName() + " was " + person.getTaskDescription().toLowerCase() 
+//							+ " and cannot find a valid path to enter an airlock. Will see what to do.");
+//					endTask();
+//				}
+//			}
+//			
+//			else {
+//				LogConsolidated.log(logger, Level.SEVERE, 0, sourceName,
+//						person.getName() + " was " + person.getTaskDescription().toLowerCase() 
+//						+ " and cannot find the building airlock to walk back inside. Will see what to do.");
+//				endTask();
+//			}
+//		}
+//		
+//		else { // if a person is already inside, end the task safely here
+//			LogConsolidated.log(logger, Level.FINEST, 4_000, sourceName,
+//					person.getName() + " was " + person.getTaskDescription().toLowerCase() 
+//					+ " and went inside, safely ending the EVA ops");
+//			
+//			endTask();
+//		}
+//		
+//		return time;
 	}
 
 	/**

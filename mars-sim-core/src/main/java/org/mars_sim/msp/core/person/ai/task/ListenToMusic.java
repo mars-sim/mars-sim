@@ -81,10 +81,10 @@ implements Serializable {
 		if (person.isInSettlement()) {
 
 			try {
-				Building recBuilding = getAvailableRecreationBuilding(person);
-				if (recBuilding != null) {
+				Building rec = getAvailableRecreationBuilding(person);
+				if (rec != null) {
 					// Walk to recreation building.
-				    walkToActivitySpotInBuilding(recBuilding, FunctionType.RECREATION, true);
+				    walkToActivitySpotInBuilding(rec, FunctionType.RECREATION, true);
 				    walkSite = true;
 				} else {
                 	// if rec building is not available, go to a gym
@@ -93,10 +93,10 @@ implements Serializable {
 	                	walkToActivitySpotInBuilding(gym, FunctionType.EXERCISE, true);
 	                	walkSite = true;
 	                } else {
-						// if gym is not available, go back to his quarters
-		                Building quarters = person.getQuarters();    
-		                if (quarters != null) {
-		                	walkToActivitySpotInBuilding(quarters, FunctionType.LIVING_ACCOMMODATIONS, true);
+						// Go back to his quarters
+						Building quarters = person.getQuarters();
+						if (quarters != null) {
+							walkToBed(quarters, person, true);
 						    walkSite = true;
 		                }
 	                }

@@ -381,7 +381,7 @@ public class StudyFieldSamples extends Task implements ResearchScientificStudy, 
 				Building labBuilding = ((Research) lab).getBuilding();
 
 				// Walk to lab building.
-				walkToActivitySpotInBuilding(labBuilding, false);
+				walkToTaskSpecificActivitySpotInBuilding(labBuilding, false);
 				lab.addResearcher();
 				malfunctions = labBuilding.getMalfunctionManager();
 			} else if (person.isInVehicle()) {

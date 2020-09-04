@@ -90,7 +90,7 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
 			workshop = manufactureBuilding.getManufacture();
 
 			// Walk to manufacturing building.
-			walkToActivitySpotInBuilding(manufactureBuilding, false);
+			walkToTaskSpecificActivitySpotInBuilding(manufactureBuilding, false);
 		} else {
 			endTask();
 		}
@@ -123,7 +123,7 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
 																// manufactureBuilding.getFunction(FunctionType.MANUFACTURE);
 
 			// Walk to manufacturing building.
-			walkToActivitySpotInBuilding(manufactureBuilding, false);
+			walkToTaskSpecificActivitySpotInBuilding(manufactureBuilding, false);
 		} else {
 			endTask();
 		}

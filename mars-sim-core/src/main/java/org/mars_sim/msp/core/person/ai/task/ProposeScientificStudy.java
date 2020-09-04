@@ -89,7 +89,7 @@ public class ProposeScientificStudy extends Task implements Serializable {
 				Building b = getAvailableBuilding(study, person);
 				if (b != null) {
 					// Walk to administration building.
-					walkToActivitySpotInBuilding(b, false);
+					walkToTaskSpecificActivitySpotInBuilding(b, false);
 					walk = true;
 				}
 			}

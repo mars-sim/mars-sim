@@ -700,6 +700,7 @@ public class EnterAirlock extends Task implements Serializable {
 					// Add experience
 					addExperience(remainingTime);
 
+					endTask();
 				}
 			}
 		}
