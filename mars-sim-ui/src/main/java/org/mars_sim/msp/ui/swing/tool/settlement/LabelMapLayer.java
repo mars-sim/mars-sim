@@ -70,7 +70,7 @@ implements SettlementMapLayer {
 	static final Color SELECTED_PERSON_LABEL_COLOR = PERSON_LABEL_COLOR.darker();//new Color(67, 239, 229); // bright cyan;
 	static final Color SELECTED_PERSON_LABEL_OUTLINE_COLOR = PERSON_LABEL_OUTLINE_COLOR.darker();//new Color(50, 50, 50); //(255, 255, 255, 190);
 
-	static final Color ROBOT_LABEL_COLOR = Color.ORANGE;//new Color(255, 153, 11);
+	static final Color ROBOT_LABEL_COLOR = Color.ORANGE.darker();//new Color(255, 153, 11);
 	static final Color ROBOT_LABEL_OUTLINE_COLOR = new Color(210, 210, 210, 190);
 	
 	static final Color SELECTED_ROBOT_LABEL_COLOR = ROBOT_LABEL_COLOR.darker();//new Color(255, 153, 11);
@@ -352,12 +352,20 @@ implements SettlementMapLayer {
 				Coordinates settlementLoc = settlement.getCoordinates();
 				Coordinates vehicleLoc = vehicle.getCoordinates();
 				if (vehicleLoc.equals(settlementLoc)) {
-					// Split up the name into multiple lines
-					String words[] = vehicle.getName().split(" ");
-					int s = words.length;
-					for (int j = 0; j < s; j++) {
-						drawStructureLabel(g2d, words[j], vehicle.getXLocation(), vehicle.getYLocation(),
-							VEHICLE_LABEL_COLOR, VEHICLE_LABEL_OUTLINE_COLOR, j * (size + 0));
+					
+					if (vehicle.getName().contains("LUV")) {
+						drawStructureLabel(g2d,vehicle.getName(), vehicle.getXLocation(), vehicle.getYLocation(),
+							VEHICLE_LABEL_COLOR, VEHICLE_LABEL_OUTLINE_COLOR, 0);
+					}
+					
+					else {
+						// Split up the name into multiple lines
+						String words[] = vehicle.getName().split(" ");
+						int s = words.length;
+						for (int j = 0; j < s; j++) {
+							drawStructureLabel(g2d, words[j], vehicle.getXLocation(), vehicle.getYLocation(),
+								VEHICLE_LABEL_COLOR, VEHICLE_LABEL_OUTLINE_COLOR, j * (size + 0));
+						}
 					}
 				}
 			}
@@ -391,9 +399,13 @@ implements SettlementMapLayer {
 					// Split up the name into 2 lines
 					String words[] = person.getName().split(" ");
 					int s = words.length;
-					for (int j = 0; j < s; j++)
-						drawPersonRobotLabel(g2d, words[j], person.getXLocation(), person.getYLocation(),
-								PERSON_LABEL_COLOR, PERSON_LABEL_OUTLINE_COLOR, xoffset, j * (size + 0));
+					String n = "";
+					for (int j = 0; j < s; j++) {
+						if (j == 0) n = words[0];
+						else n += " " + words[j].substring(0, 1) + ".";
+					}					
+					drawPersonRobotLabel(g2d, n, person.getXLocation(), person.getYLocation(),
+							PERSON_LABEL_COLOR, PERSON_LABEL_OUTLINE_COLOR, xoffset, 0);
 				}
 			}
 		}
@@ -453,11 +465,13 @@ implements SettlementMapLayer {
 				Robot robot = i.next();
 
 				if (!robot.equals(selectedRobot)) {
-					String words[] = robot.getName().split(" ");
-					int s = words.length;
-					for (int j = 0; j < s; j++)
-						drawPersonRobotLabel(g2d, words[j], robot.getXLocation(), robot.getYLocation(),
-								ROBOT_LABEL_COLOR, ROBOT_LABEL_OUTLINE_COLOR, xoffset, j * (size + 0));
+//					String words[] = robot.getName().split(" ");
+//					int s = words.length;
+//					for (int j = 0; j < s; j++)
+//						drawPersonRobotLabel(g2d, words[j], robot.getXLocation(), robot.getYLocation(),
+//								ROBOT_LABEL_COLOR, ROBOT_LABEL_OUTLINE_COLOR, xoffset, j * (size + 0));
+					drawPersonRobotLabel(g2d, robot.getName(), robot.getXLocation(), robot.getYLocation(),
+							ROBOT_LABEL_COLOR, ROBOT_LABEL_OUTLINE_COLOR, xoffset, 0);
 				}
 			}
 		}
@@ -506,7 +520,7 @@ implements SettlementMapLayer {
 		Color labelColor, Color labelOutlineColor, int yOffset
 	) {
 		double scale = mapPanel.getScale();
-		float fontSize = Math.round(scale / 5.0);
+		float fontSize = Math.round(scale / 2.5);
 		int size = (int)(fontSize / 2.0);
 		size = Math.max(size, 2);
 		
@@ -559,7 +573,7 @@ implements SettlementMapLayer {
 	) {
 
 		double scale = mapPanel.getScale();
-		float fontSize = Math.round(scale / 5.0);
+		float fontSize = Math.round(scale / 2.5);
 		int size = (int)(fontSize / 2.0);
 		size = Math.max(size, 1);
 		
