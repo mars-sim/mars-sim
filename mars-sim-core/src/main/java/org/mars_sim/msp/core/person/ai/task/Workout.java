@@ -68,7 +68,15 @@ public class Workout extends Task implements Serializable {
 				setPhase(EXERCISING);
 			}
 			else {
-				endTask();
+				// Go back to his quarters
+				Building quarters = person.getQuarters();
+				if (quarters != null) {
+					walkToBed(quarters, person, true);
+				}
+				
+				// Initialize phase
+				addPhase(EXERCISING);
+				setPhase(EXERCISING);
 			}
 			
 		} else {

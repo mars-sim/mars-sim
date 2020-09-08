@@ -11,12 +11,14 @@ import java.io.Serializable;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
+import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.ai.role.RoleType;
 import org.mars_sim.msp.core.person.ai.task.ConnectWithEarth;
 import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
@@ -31,6 +33,9 @@ public class ConnectWithEarthMeta implements MetaTask, Serializable {
     private static final String NAME = Msg.getString(
             "Task.description.connectWithEarth"); //$NON-NLS-1$
 
+    /** Modifier if during person's work shift. */
+    private static final double WORK_SHIFT_MODIFIER = .2D;
+    
     public RoleType roleType;
 
     @Override
@@ -82,7 +87,7 @@ public class ConnectWithEarthMeta implements MetaTask, Serializable {
             }
 
             // Get an available office space.
-            Building building = ConnectWithEarth.getAvailableCommBuilding(person);
+            Building building = BuildingManager.getAvailableCommBuilding(person);
 
             if (building != null) {
             	result += 5;
@@ -99,6 +104,13 @@ public class ConnectWithEarthMeta implements MetaTask, Serializable {
     	        }
             }
         
+            // Modify probability if during person's work shift.
+            int millisols = marsClock.getMillisolInt();
+            boolean isShiftHour = person.getTaskSchedule().isShiftHour(millisols);
+            if (isShiftHour && person.getShiftType() != ShiftType.ON_CALL) {
+                result*= WORK_SHIFT_MODIFIER;
+            }
+            
 	        if (result < 0) result = 0;
 
         }

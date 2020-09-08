@@ -250,22 +250,22 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
     		if (!person.getMind().hasActiveMission()
     				 || (vehicleMission != null && !vehicleMission.hasPerson(person))
     				) {
-				if (person.isOutside()) {
-					setPhase(WALK_BACK_INSIDE);
-				}
-				else {
+//				if (person.isOutside()) {
+//					setPhase(WALK_BACK_INSIDE);
+//				}
+//				else {
 					endTask();
-				}
+//				}
     		}
     	}
         
         if (!LoadVehicleEVA.anyRoversNeedEVA(settlement)) {
-        	if (person.isOutside()) {
-				setPhase(WALK_BACK_INSIDE);	
-			}
-			else {
+//        	if (person.isOutside()) {
+//				setPhase(WALK_BACK_INSIDE);	
+//			}
+//			else {
 				endTask();
-			}
+//			}
         }
     		
 		if (!ended) {
@@ -301,11 +301,11 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 				sInv.retrieveUnit(vehicle);
 			}
 			else { // if the rover is no longer in the settlement, end the task
-				if (person.isOutside()) {
-					setPhase(WALK_BACK_INSIDE);	
-				}
+//				if (person.isOutside()) {
+//					setPhase(WALK_BACK_INSIDE);	
+//				}
 
-//				endTask();
+				endTask();
 				return 0D;
 			}
 	
@@ -328,11 +328,11 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
 			
 			if (isFullyLoaded(requiredResources, optionalResources, requiredEquipment, optionalEquipment, vehicle,
 					settlement)) {
-				if (person.isOutside()) {
-					setPhase(WALK_BACK_INSIDE);	
-				}
+//				if (person.isOutside()) {
+//					setPhase(WALK_BACK_INSIDE);	
+//				}
 
-//				endTask();
+				endTask();
 			}
 		}
 		

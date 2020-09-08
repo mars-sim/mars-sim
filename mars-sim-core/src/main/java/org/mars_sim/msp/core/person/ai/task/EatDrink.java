@@ -668,9 +668,9 @@ public class EatDrink extends Task implements Serializable {
 					// Add to cumulativeProportion
 					cumulativeProportion += proportion;
 					
-					LogConsolidated.log(logger, Level.INFO, 3_000, sourceName,
-							"[" + person.getLocationTag().getLocale() + "] " + person 
-							+ " just ate " + Math.round(proportion*1000.0)/1000.0 + " kg of preserved food.");
+//					LogConsolidated.log(logger, Level.INFO, 3_000, sourceName,
+//							"[" + person.getLocationTag().getLocale() + "] " + person 
+//							+ " just ate " + Math.round(proportion*1000.0)/1000.0 + " kg of preserved food.");
 					
 					// Food amount eaten over this period of time.
 					double hungerRelieved = RATIO * proportion / foodConsumptionRate;
@@ -937,10 +937,11 @@ public class EatDrink extends Task implements Serializable {
 						person.addConsumptionTime(1, amount);
 						if (waterOnly)
 							setDescription(Msg.getString("Task.description.eatDrink.water")); //$NON-NLS-1$
-						LogConsolidated.log(logger, Level.INFO, 3_000, sourceName,
-								"[" + person.getLocationTag().getLocale() + "] " + person
-										+ " drank " + Math.round(amount * 1000.0) / 1.0
-										+ " mL of water.");
+						
+//						LogConsolidated.log(logger, Level.INFO, 3_000, sourceName,
+//								"[" + person.getLocationTag().getLocale() + "] " + person
+//										+ " drank " + Math.round(amount * 1000.0) / 1.0
+//										+ " mL of water.");
 					}
 //					LogConsolidated.log(Level.FINE, 1000, sourceName,
 //						 person + " is drinking " + Math.round(amount * 1000.0)/1000.0 + "kg of water"
@@ -973,7 +974,7 @@ public class EatDrink extends Task implements Serializable {
 							person.addConsumptionTime(1, amount);
 							if (waterOnly)
 								setDescription(Msg.getString("Task.description.eatDrink.water")); //$NON-NLS-1$
-							LogConsolidated.log(logger, Level.INFO, 3_000, sourceName,
+							LogConsolidated.log(logger, Level.INFO, 30_000, sourceName,
 									"[" + person.getLocationTag().getLocale() + "] " + person
 											+ " was put on water ration and allocated to drink no more than " 
 											+ Math.round(amount * 1000.0) / 1.0
@@ -1003,7 +1004,7 @@ public class EatDrink extends Task implements Serializable {
 								person.addConsumptionTime(1, amount);
 								if (waterOnly)
 									setDescription(Msg.getString("Task.description.eatDrink.water")); //$NON-NLS-1$
-								LogConsolidated.log(logger, Level.INFO, 3_000, sourceName,
+								LogConsolidated.log(logger, Level.INFO, 30_000, sourceName,
 										"[" + person.getLocationTag().getLocale() + "] " + person
 												+ " was put on water ration and allocated to drink no more than " 
 												+ Math.round(amount * 1000.0) / 1.0
@@ -1033,7 +1034,7 @@ public class EatDrink extends Task implements Serializable {
 									person.addConsumptionTime(1, amount);
 									if (waterOnly)
 										setDescription(Msg.getString("Task.description.eatDrink.water")); //$NON-NLS-1$
-									LogConsolidated.log(logger, Level.INFO, 3_000, sourceName,
+									LogConsolidated.log(logger, Level.INFO, 30_000, sourceName,
 											"[" + person.getLocationTag().getLocale() + "] " + person
 													+ " was put on water ration and allocated to drink no more than " 
 													+ Math.round(amount * 1000.0) / 1.0

@@ -6,8 +6,6 @@ import java.util.Iterator;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
-import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.task.WalkingSteps.WalkStep;
 import org.mars_sim.msp.core.structure.MockSettlement;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -17,7 +15,6 @@ import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorMana
 import org.mars_sim.msp.core.structure.building.function.BuildingAirlock;
 import org.mars_sim.msp.core.structure.building.function.EVA;
 import org.mars_sim.msp.core.structure.building.function.GroundVehicleMaintenance;
-import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.VehicleConfig;
 
 import junit.framework.TestCase;

@@ -576,14 +576,14 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 		}
 
 		if (isFullyUnloaded(vehicle)) {
-			setPhase(WALK_BACK_INSIDE);
-			
-			if (person.isOutside()) {
-				setPhase(WALK_BACK_INSIDE);	
-			}
-			else if (person.isInside()) {
+//			setPhase(WALK_BACK_INSIDE);
+//			
+//			if (person.isOutside()) {
+//				setPhase(WALK_BACK_INSIDE);	
+//			}
+//			else if (person.isInside()) {
 	    		endTask();
-	        }
+//	        }
 			
 		}
         

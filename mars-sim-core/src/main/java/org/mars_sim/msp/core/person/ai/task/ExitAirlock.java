@@ -452,7 +452,7 @@ public class ExitAirlock extends Task implements Serializable {
 					
 			if (distance > 0) {
 
-				LogConsolidated.log(logger, Level.INFO, 4000, sourceName, 
+				LogConsolidated.log(logger, Level.FINE, 4000, sourceName, 
 						"[" + person.getLocale() + "] " + person.getName() 
 						+ " " + loc 
 						+ " walked to an available activity spot.");
@@ -697,7 +697,8 @@ public class ExitAirlock extends Task implements Serializable {
 			// TODO: if incapacitated, should someone else help this person to get out?
 
 			// Prevent the logger statement below from being repeated multiple times
-			String newLog = person.getName() + " could NOT exit the airlock from " + airlock.getEntityName()
+			String newLog = "[" + person.getLocale() + "] " + person.getName() 
+					+ " could NOT exit the airlock from " + airlock.getEntityName()
 					+ " due to crippling performance rating";
 
 			LogConsolidated.log(logger, Level.FINER, 4_000, sourceName, newLog);
@@ -719,7 +720,7 @@ public class ExitAirlock extends Task implements Serializable {
 				
 			} catch (Exception e) {
 				LogConsolidated.log(logger, Level.SEVERE, 4_000, sourceName,
-						person + " could not get new action" + e.getMessage(), e);
+						"[" + person.getLocale() + "] " + person.getName() + " could not get new action" + e.getMessage(), e);
 				e.printStackTrace(System.err);
 
 			}

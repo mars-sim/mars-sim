@@ -20,7 +20,7 @@ import org.mars_sim.msp.core.person.ai.task.utils.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.tool.RandomUtil;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
@@ -59,22 +59,11 @@ public class ListenToMusicMeta implements MetaTask, Serializable {
             
             try {
             	// Check if a person has a designated bed
-                Building quarters = person.getQuarters();    
-                if (quarters == null) {
-                	quarters = Sleep.getBestAvailableQuarters(person, true);
-
-	            	if (quarters == null) {
-		                Building recBuilding = ListenToMusic.getAvailableRecreationBuilding(person);
-			                if (recBuilding != null) {
-			                    result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, recBuilding);
-			                    result *= TaskProbabilityUtil.getRelationshipModifier(person, recBuilding);
-//			                    result *= RandomUtil.getRandomDouble(3);
-			                }
-	            	}
-//	            	else
-//	            		result *= RandomUtil.getRandomDouble(1.5);
-	            }
-	
+                Building recBuilding = BuildingManager.getAvailableRecBuilding(person);
+                if (recBuilding != null) {
+                    result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, recBuilding);
+                    result *= TaskProbabilityUtil.getRelationshipModifier(person, recBuilding);
+                }
             } catch (Exception e) {
                 logger.log(Level.SEVERE, e.getMessage());
             }

@@ -3,105 +3,119 @@ Copyright (C) 2020 Scott Davis
 [Project Website](https://mars-sim.github.io)
 [GitHub Page](https://github.com/mars-sim/mars-sim)
 
------------------------------------------------------------------------------------------
-
-## v3.1.2 (build 5352) - 2020-09-04
+------------------------------------------|---------------------
+## v3.1.2 (build 5353) - 2020-09-08
 
 ### CORE ENGINE IMPROVEMENTS :
 
-1. Add teaching reward and learning points on skills when performing
-   Teach task.
+1. Add teaching reward and learning points on skills when 
+   performing Teach task.
    
 2. Enforce one continuous sleep session as much as possible.
 
 3. Reduce memory footprint by 50% when loading from a saved sim.
    
-4. Remove the duplicated EVA function in Garage and Loading Garage. 
+4. Remove the duplicated EVA function in garages. 
 
-5. Refine ice collection rate. Higher above or below +/-60 deg latitude.
+5. Refine ice collection rate. Higher above/ below +/-60 deg 
+   latitude.
 
-6. Refine/add computing site value/score for collecting ice, regolith, 
-   mineral exploration, and mining.
+6. Refine/add computing site value/score for collecting ice, 
+   regolith, mineral exploration, and mining.
 
-7. Add new job 'psychologist' and new skill/science type 'psychology'.
+7. Add new job 'psychologist' and new skill/science type 
+   'psychology'.
 
-8. Add ability to choose individual destination for each crewman as listed 
-   in crew.xml when using Crew Editor. 
+8. Add ability to choose individual destination for each 
+   crewman as listed in crew.xml when using Crew Editor. 
    
-9. Adjust job prospect and refine job assignment for each settlement.
+9. Adjust job prospect and refine job assignment for each 
+   settlement.
 
 10. Designate the name (e.g. Night, Day, and Swing shift) for 
-    XYZ work shift. Designate the name (e.g. Day and Night shift) for 
-    AB work shift.
+    XYZ work shift. Designate the name (e.g. Day and Night 
+    shift) for the AB work shift.
     
-11. Change the start and end time for work shift A (Day shift) 
-    and work shift B (Night shift).
+11. Change the start and end time for work shift A 
+    (Day shift) and work shift B (Night shift).
 
 12. Vary amount of ice/regolith collected.
 
 13. Make a reading task contribute to adding experience points 
     to a skill. 
 
-14. Add settlement and vehicle names tailored to its sponsor/country.
+14. Add settlement and vehicle names tailored to its 
+    sponsor/country.
 
 
 ### UI IMPROVEMENT :
 
-1. Provide the exact relationship score and attribute score (in addition
-   to its adjective) in Person Window.
+1. Provide the exact relationship score and attribute score (in 
+   addition to its adjective) in Person Window.
 
 2. Add more level of zooming to the settlement map.
 
-3. Switch to using svg icons for better scaling and visual consistency
-   with the icons in the settlement map.
+3. Switch to using svg icons for better scaling and visual 
+   consistency with the icons in the settlement map.
    
-4. Add showing the reference coordinate of the settlement map for the 
-   hovering mouse pointer.
+4. Add showing the reference coordinate of the settlement map 
+   for the hovering mouse pointer.
 
-5. Correct the scaling of the dot size and coordinates of the 
-   person/robot in PersonMapLayer and RobotMapLayer at various zoom
-   level.
+5. Correct the scaling of the dot size and coordinates of 
+   the person/robot in PersonMapLayer and RobotMapLayer at 
+   various zoom level.
    
 6. Revamp EVA airlock design and svg image.
 
 7. Incorporate Weblaf's IconManager for caching svg icons.
 
-8. Add BuildingPanelLiving to show the living accommodation aspects
-   of a building.
+8. Add BuildingPanelLiving to show the living accommodation
+   aspects of a building.
       
 9. Show the second subtask and description.       
 
+10. Change size of person/robot/building/vehicle/site label 
+   on-the-fly in response to the change of map scale in 
+   settlement map.
+   
+   
 ### FIXES :
 
 1. Fix OutOfMemoryError when saving sim.
 
-2. Remove extraneous object references that bloat the saved sim file.
+2. Remove extraneous object references that bloat the saved
+   sim file.
 
 3. Fix rover embarking from a settlement.
 
-4. Correct major walking bugs - person frozen in the EVA Airlock building.
+4. Correct major walking bugs in that person frozen in the EVA 
+   Airlock building.
 
-5. Account for vehicle emergency while still parking in a settlement.
+5. Account for vehicle emergency while still parking in a 
+   settlement.
 
-6. Correct the location of inner and outer door/hatch of EVA Airlock.
+6. Correct the location of inner and outer door/hatch of 
+   EVA Airlock.
  
-7. Fix retrieving a list of vehicles reserved for mission or on mission.
+7. Fix retrieving a list of vehicles reserved for mission or 
+   on mission.
 
-8. Fix loading alpha crew.
+8. Fix loading the alpha crew in the crew editor.
 
 9. Correct the time consumed when reviewing mission plans.
 
-10. Correct the creation of a list of sites to be explored for mineral
-    content. 
+10. Correct the creation of a list of sites to be explored for 
+    mineral content. 
 
 11. Correct the bed assignment.
 
-12. Correctly associate how the availability of 3D printers affect 
-    concurrent manufacturing processes. 
+12. Correctly associate how the availability of 3D printers 
+    affect concurrent manufacturing processes. 
 
-13. Sync up the position of the WebSwitch when pausing or resuming the sim.
+13. Sync up the position of the WebSwitch when pausing or 
+    resuming the sim.
  
------------------------------------------------------------------------------------------
+------------------------------------------|---------------------
 
 ## v3.1.1 (build 5283) - 2020-07-22
 

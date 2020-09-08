@@ -85,9 +85,6 @@ public abstract class Airlock implements Serializable {
 	/** Amount of remaining time for the airlock cycle. (in millisols) */
 	private double remainingCycleTime;
 	
-	/** The locale information of the airlock. */
-	private String locale = "";
-	
 	/** People currently in airlock. */
     private volatile Set<Integer> occupantIDs;
 //	private Collection<Person> occupants;
@@ -115,7 +112,7 @@ public abstract class Airlock implements Serializable {
 	 * @param capacity number of people airlock can hold.
 	 * @throws IllegalArgumentException if capacity is less than one.
 	 */
-	public Airlock(int capacity, Unit unit) throws IllegalArgumentException {
+	public Airlock(int capacity) throws IllegalArgumentException {
 
 		// Initialize data members
 		if (capacity < 1)
@@ -136,43 +133,14 @@ public abstract class Airlock implements Serializable {
 		awaitingInnerDoor = new HashSet<>();
 		awaitingOuterDoor = new HashSet<>();
 		
-		if (unit instanceof Building) {
-			locale = ((Building)unit).getLocale();//.getBuildingManager().getSettlement().getName();
-		}
-		
-		else if (unit instanceof Vehicle) {
-			locale = ((Vehicle)unit).getLocale();
-//			if (((Vehicle)getEntity()).getSettlement() != null) {
-//				locale = ((Vehicle)getEntity()).getSettlement().getName();
-//			}
-//			else {
-//				locale = ((Vehicle)getEntity()).getLocale();
-//			}
-		}
-	}
-
-//	/**
-//	 * Activates the chamber for pressurization or depressurization
-//	 * 
-//	 * @return
-//	 */
-//	public boolean activateChamber() {
-//		boolean result = false;
-//		
-//		if (switchState()) {
-//			// Lock both doors
-//			innerDoorLocked = true;
-//			outerDoorLocked = true;
-//			// Reset the counter down timer to CYCLE_TIME
-//			remainingCycleTime = CYCLE_TIME;
-//			// To set 'activate' to true, the airlock must be at either Pressurized or Depressurized states. 
-//			activated = true;
-//			// Set it to true
-//			result = true;
+//		if (unit instanceof Building) {
+//			locale = ((Building)unit).getLocale();
 //		}
 //		
-//		return result;
-//	}
+//		else if (unit instanceof Vehicle) {
+//			locale = ((Vehicle)unit).getLocale();
+//		}
+	}
 	
 	/**
 	 * Enters a person into the airlock from either the inside or the outside. Inner
@@ -274,8 +242,8 @@ public abstract class Airlock implements Serializable {
 	 * @return true if airlock successfully activated.
 	 */
 	public boolean activateAirlock(Person p) {
-		LogConsolidated.log(logger, Level.INFO, 0, sourceName, "[" + locale + "] "
-				+ getEntity() + " was being activated.");
+//		LogConsolidated.log(logger, Level.INFO, 0, sourceName, "[" + getLocale() + "] "
+//				+ getEntity() + " was being activated.");
 		
 		boolean result = false;
 
@@ -517,7 +485,7 @@ public abstract class Airlock implements Serializable {
 	 * @return true if cycle time successfully added.
 	 */
 	public void addTime(double time) {
-//		LogConsolidated.log(logger, Level.INFO, 4000, sourceName, "[" + locale + "] "
+//		LogConsolidated.log(logger, Level.INFO, 4000, sourceName, "[" + getLocale() + "] "
 //				+ getEntity() + " was adding time.");
 //		boolean result = false;
 
@@ -530,7 +498,7 @@ public abstract class Airlock implements Serializable {
 				// Switch the airlock state to a steady state
 				switch2SteadyState();
 				LogConsolidated.log(logger, Level.INFO, 4000, sourceName, 
-						"[" + locale + "] Done with the air cycling in "
+						"[" + getLocale() + "] Done with the air cycling in "
 						+ getEntity() + ".");
 			} else {
 //				result = true;
@@ -541,7 +509,7 @@ public abstract class Airlock implements Serializable {
 	}
 	
 	public void setActivated(boolean value) {
-		LogConsolidated.log(logger, Level.INFO, 4000, sourceName, "[" + locale + "] "
+		LogConsolidated.log(logger, Level.INFO, 4000, sourceName, "[" + getLocale() + "] "
 				+ getEntity() + " was being activated.");
 		activated = value;
 		remainingCycleTime = CYCLE_TIME;
@@ -646,8 +614,8 @@ public abstract class Airlock implements Serializable {
 	 * @return true if airlock was deactivated successfully.
 	 */
 	public boolean deactivateAirlock() {
-		LogConsolidated.log(logger, Level.INFO, 4000, sourceName, "[" + locale + "] "
-				+ getEntity() + " was being deactivated.");
+//		LogConsolidated.log(logger, Level.INFO, 4000, sourceName, "[" + getLocale() + "] "
+//				+ getEntity() + " was being deactivated.");
 		
 		boolean result = false;
 
@@ -694,10 +662,10 @@ public abstract class Airlock implements Serializable {
 		// Ensure that the person is in the lookup map
 		addPersonID(p);	
     	
-		LogConsolidated.log(logger, Level.INFO, 4000, sourceName,
-				"[" + p.getLocale() + "] " + p.getName()
-				+ " was ready to make a location state transition in " 
-				+ getEntity().toString() + ".");
+//		LogConsolidated.log(logger, Level.INFO, 4000, sourceName,
+//				"[" + p.getLocale() + "] " + p.getName()
+//				+ " was ready to make a location state transition in " 
+//				+ getEntity().toString() + ".");
 		
 		// Call in BuildingAirlock or VehicleAirlock
 		return ingress(p);
@@ -709,8 +677,8 @@ public abstract class Airlock implements Serializable {
 	 * @param true if the exit is successful
 	 */
 	public boolean leaveAirlock() {
-		LogConsolidated.log(logger, Level.INFO, 4000, sourceName, "[" + locale + "] "
-				+ getEntity() + " called leaveAirlock().");
+//		LogConsolidated.log(logger, Level.INFO, 4000, sourceName, "[" + getLocale() + "] "
+//				+ getEntity() + " called leaveAirlock().");
 		boolean successful = true;
 		
 		Iterator<Integer> i = occupantIDs.iterator();
@@ -724,10 +692,10 @@ public abstract class Airlock implements Serializable {
 	    		lookupPerson.put(id, p);
 	    	}
 	    	
-			LogConsolidated.log(logger, Level.INFO, 4000, sourceName,
-					"[" + p.getLocale() + "] " + p.getName()
-					+ " reported that " + getEntity() + " had been " 
-					+ getState().toString().toLowerCase() + ".");
+//			LogConsolidated.log(logger, Level.INFO, 4000, sourceName,
+//					"[" + p.getLocale() + "] " + p.getName()
+//					+ " reported that " + getEntity() + " had been " 
+//					+ getState().toString().toLowerCase() + ".");
 			
 			// Call exitAirlock() in BuildingAirlock or VehicleAirlock
 			successful = successful && egress(p);
@@ -1049,6 +1017,13 @@ public abstract class Airlock implements Serializable {
 	 */
 	public abstract Object getEntity();
 
+	/**
+	 * Gets the entity this airlock is attached to.
+	 * 
+	 * @return entity.
+	 */
+	public abstract String getLocale();
+	
 	/**
 	 * Gets an available position inside the airlock entity.
 	 * 

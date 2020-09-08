@@ -53,7 +53,7 @@ public class BuildingAirlock extends Airlock {
     public BuildingAirlock(Building building, int capacity, double xLoc, double yLoc,
             double interiorXLoc, double interiorYLoc, double exteriorXLoc, double exteriorYLoc) {
         // User Airlock constructor
-        super(capacity, building);
+        super(capacity);//, building);
 
         this.building = building;
 
@@ -70,9 +70,9 @@ public class BuildingAirlock extends Airlock {
     @Override
     protected boolean egress(Person person) {
     	boolean successful = false;
-      	LogConsolidated.log(logger, Level.INFO, 0, sourceName,
-	  				"[" + person.getLocale() 
-	  				 + "] " + person + " was calling egress.");
+//      	LogConsolidated.log(logger, Level.INFO, 0, sourceName,
+//	  				"[" + person.getLocale() 
+//	  				 + "] " + person + " was calling egress.");
       	
         if (inAirlock(person)) {
             // check if the airlock has been de-pressurized, ready to open the outer door to 
@@ -89,9 +89,9 @@ public class BuildingAirlock extends Airlock {
     @Override
     protected boolean ingress(Person person) {
     	boolean successful = false;
-      	LogConsolidated.log(logger, Level.INFO, 0, sourceName,
-	  				"[" + person.getLocale() 
-	  				 + "] " + person + " was calling ingress.");
+//      	LogConsolidated.log(logger, Level.INFO, 0, sourceName,
+//	  				"[" + person.getLocale() 
+//	  				 + "] " + person + " was calling ingress.");
       	
         if (inAirlock(person)) {
             // check if the airlock has been sealed from outside and pressurized, ready to 
@@ -113,19 +113,19 @@ public class BuildingAirlock extends Airlock {
      */
     public boolean stepInside(Person person) {
     	boolean successful = false;
-      	LogConsolidated.log(logger, Level.INFO, 0, sourceName,
-	  				"[" + person.getLocale() 
-	  				+ "] " + person + " called stepInside()");
+//      	LogConsolidated.log(logger, Level.INFO, 0, sourceName,
+//	  				"[" + person.getLocale() 
+//	  				+ "] " + person + " called stepInside()");
         	
         if (person.isOutside()) {
         	
 			Settlement settlement = building.getSettlement();
 			
-			LogConsolidated.log(logger, Level.INFO, 0, sourceName,
-	  				"[" + person.getLocale() + "] "
-					+ person + " was about to leave the airlock in " + building + " to go inside " 
-        			+ settlement
-        			+ ".");
+//			LogConsolidated.log(logger, Level.INFO, 0, sourceName,
+//	  				"[" + person.getLocale() + "] "
+//					+ person + " was about to leave the airlock in " + building + " to go inside " 
+//        			+ settlement
+//        			+ ".");
 			
             // 1.0. Pump air into the airlock to make it breathable
 			settlement.getCompositionOfAir().releaseOrRecaptureAir(building.getInhabitableID(), true, building);
@@ -140,15 +140,15 @@ public class BuildingAirlock extends Airlock {
 				// 1.3 Set the person's coordinates to that of the settlement's
 				person.setCoordinates(settlement.getCoordinates());
 				
-	   			LogConsolidated.log(logger, Level.INFO, 0, sourceName,
-		  				"[" + person.getLocale() + "] "
-						+ person 
-//						+ " came through the inner door of " 
-//		  				+ building 
-//		  				+ " and "
-		  				+ " stepped inside " 
-	        			+ settlement
-	        			+ ".");
+//	   			LogConsolidated.log(logger, Level.INFO, 0, sourceName,
+//		  				"[" + person.getLocale() + "] "
+//						+ person 
+////						+ " came through the inner door of " 
+////		  				+ building 
+////		  				+ " and "
+//		  				+ " stepped inside " 
+//	        			+ settlement
+//	        			+ ".");
 			}
 			else
 				LogConsolidated.log(logger, Level.SEVERE, 0, sourceName, 
@@ -238,7 +238,7 @@ public class BuildingAirlock extends Airlock {
     
     @Override
     public String getEntityName() {
-        return building.getNickName() + " in " + building.getSettlement().getName();
+        return building.getNickName();// + " in " + building.getSettlement().getName();
     }
 
     @Override
@@ -251,6 +251,11 @@ public class BuildingAirlock extends Airlock {
         return building;
     }
 
+    @Override
+    public String getLocale() {
+        return building.getLocale();
+    }
+    
     @Override
     public Point2D getAvailableInteriorPosition() {
         return airlockInteriorPos;

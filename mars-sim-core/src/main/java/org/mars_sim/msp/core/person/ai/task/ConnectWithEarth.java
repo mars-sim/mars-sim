@@ -52,6 +52,7 @@ public class ConnectWithEarth extends Task implements Serializable {
 	private static final double STRESS_MODIFIER = -.5D;
 
 	// Data members
+	private boolean proceed = false;
 	/** The Communication building the person is using. */
 	private Communication comm;
 
@@ -64,26 +65,39 @@ public class ConnectWithEarth extends Task implements Serializable {
 	 */
 	public ConnectWithEarth(Person person) {
 		// Use Task constructor.
-		super(NAME, person, true, false, STRESS_MODIFIER, true, 10D + RandomUtil.getRandomDouble(5D) - RandomUtil.getRandomDouble(5D));
+		super(NAME, person, true, false, STRESS_MODIFIER, true, 10D + RandomUtil.getRandomDouble(-5D, 5D));
 
 		if (person.isInSettlement()) {
+			// set the boolean to true so that it won't be done again today
+//			person.getPreference().setTaskDue(this, true);
+			
 			// If person is in a settlement, try to find an comm facility.
-			Building bldg = getAvailableCommBuilding(person);
+			Building bldg = BuildingManager.getAvailableCommBuilding(person);
 			if (bldg != null) {
 				// Walk to the facility.
 				walkToTaskSpecificActivitySpotInBuilding(bldg, false);
-
 				comm = bldg.getComm();
-
-				// set the boolean to true so that it won't be done again today
-//				person.getPreference().setTaskDue(this, true);
-			} else {
-				// Go back to his quarters
-				Building quarters = person.getQuarters();
-				if (quarters != null) {
-					walkToBed(quarters, person, true);
+			} 
+			
+			else {
+				// Find an admin facility.
+				bldg = BuildingManager.getAvailableAdminBuilding(person);
+				if (bldg != null) {
+					// Walk to the facility.
+					walkToTaskSpecificActivitySpotInBuilding(bldg, false);
+				} 
+				
+				else {
+					// Go back to his quarters
+					Building quarters = person.getQuarters();
+					if (quarters != null) {
+						walkToBed(quarters, person, true);
+					}
 				}
 			}
+			
+			proceed = true;
+			
 		} 
 		
 		else if (person.isInVehicle()) {
@@ -94,28 +108,33 @@ public class ConnectWithEarth extends Task implements Serializable {
 				// set the boolean to true so that it won't be done again today
 				person.getPreference().setTaskDue(this, true);
 			}
+			
+			proceed = true;
+		} 
 
-		} else {
-			endTask();
+		if (proceed) {
+			String act = "";
+			double rand = RandomUtil.getRandomInt(5);
+			if (rand == 0)
+				act = "checking personal v-messages.";
+			else if (rand == 1)
+				act = "watching Earth news.";
+			else if (rand == 2)
+				act = "browsing MarsNet.";
+			else if (rand == 3)
+				act = "watching Earth TV.";
+			else if (rand == 4)
+				act = "watching Earth movies.";
+			else if (rand == 5)
+				act = "browsing Earth net.";
+			
+			LogConsolidated.log(logger, Level.INFO, 30_000, sourceName, "[" + person.getLocale() + "] "
+					+ person + " was " + act + " in " + person.getImmediateLocation());
+			
+			// Initialize phase
+			addPhase(CONNECTING_EARTH);
+			setPhase(CONNECTING_EARTH);
 		}
-
-		String act = "";
-		double rand = RandomUtil.getRandomInt(3);
-		if (rand == 0)
-			act = "checking personal messages/vmails";
-		else if (rand == 1)
-			act = "watching Earth news";
-		else if (rand == 2)
-			act = "browsing MarsNet";
-		else if (rand == 3)
-			act = "watching TV/movies";
-		
-		LogConsolidated.log(logger, Level.FINE, 2_000, sourceName, "[" + person.getLocationTag().getLocale() + "] "
-				+ person + " was " + act + " in " + person.getLocationTag().getImmediateLocation());
-		
-		// Initialize phase
-		addPhase(CONNECTING_EARTH);
-		setPhase(CONNECTING_EARTH);
 	}
 
 	@Override
@@ -159,32 +178,6 @@ public class ConnectWithEarth extends Task implements Serializable {
 		}
 	}
 
-	/**
-	 * Gets an available building with the comm function.
-	 * 
-	 * @param person the person looking for the comm facility.
-	 * @return an available space or null if none found.
-	 */
-	public static Building getAvailableCommBuilding(Person person) {
-		Building result = null;
-
-		// If person is in a settlement, try to find a building with an office.
-		if (person.isInSettlement()) {
-			
-			BuildingManager buildingManager = person.getSettlement().getBuildingManager();
-			List<Building> bldgs = buildingManager.getBuildings(FunctionType.COMMUNICATION, FunctionType.ADMINISTRATION);
-			bldgs = BuildingManager.getNonMalfunctioningBuildings(bldgs);
-			bldgs = BuildingManager.getLeastCrowdedBuildings(bldgs);
-
-			if (bldgs.size() > 0) {
-				Map<Building, Double> selectedBldgs = BuildingManager.getBestRelationshipBuildings(person, bldgs);
-				result = RandomUtil.getWeightedRandomObject(selectedBldgs);
-			}
-		}
-
-		return result;
-	}
-
 	@Override
 	public int getEffectiveSkillLevel() {
 		return 0;
@@ -199,7 +192,7 @@ public class ConnectWithEarth extends Task implements Serializable {
 	@Override
 	public void destroy() {
 		super.destroy();
-
+		roleType= null;
 		comm = null;
 	}
 }

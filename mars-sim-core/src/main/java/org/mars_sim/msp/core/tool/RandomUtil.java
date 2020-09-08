@@ -102,6 +102,18 @@ public final class RandomUtil {
 	}
 
 	/**
+	 * Returns a random double number from 0 to the ceiling number given.
+	 * 
+	 * @param ceiling the maximum number result
+	 * @return the random number
+	 */
+	public static double getRandomDouble(double base, double ceiling) {
+		if (ceiling < base)
+			throw new IllegalArgumentException(Msg.getString("RandomUtil.log.ceilingMustGreaterBase")); //$NON-NLS-1$
+		return random.nextDouble() * ceiling - random.nextDouble() * base;
+	}
+	
+	/**
 	 * Returns a random double number (-infi to +infi) under Gaussian ("normally") distributed with
 	 * mean 0.0 and standard deviation 1.0 from this random number generator's
 	 * sequence

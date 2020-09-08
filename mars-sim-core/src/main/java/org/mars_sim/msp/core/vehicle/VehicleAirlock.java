@@ -50,7 +50,7 @@ extends Airlock {
 		double exteriorYLoc
 	) {
 		// User Airlock constructor
-		super(capacity, vehicle);
+		super(capacity);//, vehicle);
 
 		if (vehicle == null) {
 			throw new IllegalArgumentException(Msg.getString("VehicleAirlock.error.null")); //$NON-NLS-1$
@@ -237,6 +237,11 @@ extends Airlock {
 		return vehicle;
 	}
 
+	@Override
+	public String getLocale() {
+		return vehicle.getLocale();
+	}
+	
 	@Override
 	public Point2D getAvailableInteriorPosition() {
 		return LocalAreaUtil.getLocalRelativeLocation(airlockInteriorPos.getX(),airlockInteriorPos.getY(),vehicle);

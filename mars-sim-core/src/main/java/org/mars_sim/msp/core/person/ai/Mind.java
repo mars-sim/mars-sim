@@ -47,7 +47,7 @@ public class Mind implements Serializable {
 	private static String loggerName = logger.getName();
 	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
 	
-	private static final int MAX_COUNTS = 50;
+	private static final int MAX_COUNTS = 200;
 	private static final int STRESS_UPDATE_CYCLE = 10;
 	private static final double MINIMUM_MISSION_PERFORMANCE = 0.3;
 	private static final double FACTOR = .05;
@@ -238,7 +238,7 @@ public class Mind implements Serializable {
 			// Perform a task if the person has one, or determine a new task/mission.
 			if (taskManager.hasActiveTask()) {
 				double remainingTime = taskManager.executeTask(time, person.getPerformanceRating());
-				if (counts < MAX_COUNTS) {				
+				if (counts < MAX_COUNTS) {
 					if (remainingTime > SMALL_AMOUNT_OF_TIME) {
 						// Allow calling takeAction recursively until 'counts' exceed the limit
 						try {
@@ -263,6 +263,7 @@ public class Mind implements Serializable {
 							return;
 						}
 					}
+					
 					else {
 //						LogConsolidated.log(Level.INFO, 20_000, sourceName,
 //								person + " had been doing " + counts + "x " 
@@ -271,11 +272,12 @@ public class Mind implements Serializable {
 //								+ ")   time : " + Math.round(time *1000.0)/1000.0); // 1x = 0.001126440159375963 -> 8192 = 8.950963852039651
 					}
 				}
+				
 				else if (taskManager.getTaskName() != null) {
 					LogConsolidated.log(logger, Level.WARNING, 20_000, sourceName,
-							person + " had been doing " + counts + "x " 
-							+ taskManager.getTaskName() + "  - remainingTime : " + Math.round(remainingTime *1000.0)/1000.0 
-							+ "  - time : " + Math.round(time *1000.0)/1000.0); // 1x = 0.001126440159375963 -> 8192 = 8.950963852039651
+							person + " had been doing x" + counts + " '" 
+							+ taskManager.getTaskName() + "' (Remaining Time : " + Math.round(remainingTime *1000.0)/1000.0 
+							+ "; Time : " + Math.round(time *1000.0)/1000.0 + ")."); // 1x = 0.001126440159375963 -> 8192 = 8.950963852039651
 				}
 			}
 			

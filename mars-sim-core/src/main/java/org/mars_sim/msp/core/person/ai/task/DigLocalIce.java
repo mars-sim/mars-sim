@@ -465,7 +465,7 @@ implements Serializable {
 
             if (sInv != null) {
 	            // Try to store ice in settlement.
-	            if (ice1 <= settlementCap) {
+	            if (ice1 > settlementCap) {
 	            	ice1 = settlementCap;
 	            	
 	            	LogConsolidated.log(logger, Level.INFO, 0, sourceName, 
