@@ -488,7 +488,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	public void addSubTask(Task newSubTask) {
        if (subTask != null) {
             if (subTask.done) {
-                subTask.destroy();
+//                subTask.destroy();
                 createSubTask(newSubTask);
             }
             

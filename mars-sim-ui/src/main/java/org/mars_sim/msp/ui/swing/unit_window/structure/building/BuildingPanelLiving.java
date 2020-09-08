@@ -14,7 +14,6 @@ import java.awt.GridLayout;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
-import org.mars_sim.msp.core.structure.building.function.MedicalCare;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
 import com.alee.laf.label.WebLabel;
@@ -80,7 +79,7 @@ public class BuildingPanelLiving extends BuildingFunctionPanel {
 
 		// Create bedOccupiedLabel
 		bedOccupiedLabel = new WebLabel(Msg.getString("BuildingPanelLiving.beds.occupied",
-				living.getNumOccupiedSpots()), WebLabel.CENTER);
+				living.getNumOccupiedActivitySpots()), WebLabel.CENTER);
 		labelPanel.add(bedOccupiedLabel);
 		
 		// Create bedEmptyLabel
@@ -105,8 +104,8 @@ public class BuildingPanelLiving extends BuildingFunctionPanel {
 		}
 		
 		// Update bedOccupiedLabel
-		if (bedOccupiedCache != living.getNumOccupiedSpots()) {
-			bedOccupiedCache = living.getNumOccupiedSpots();
+		if (bedOccupiedCache != living.getNumOccupiedActivitySpots()) {
+			bedOccupiedCache = living.getNumOccupiedActivitySpots();
 			bedOccupiedLabel.setText(Msg.getString("BuildingPanelLiving.beds.occupied", bedOccupiedCache));
 		}	
 		

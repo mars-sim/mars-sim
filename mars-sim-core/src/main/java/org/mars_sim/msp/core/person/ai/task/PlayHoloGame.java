@@ -89,12 +89,14 @@ public class PlayHoloGame extends Task implements Serializable {
 				Building gym = Workout.getAvailableGym(person);
 				if (gym != null) {
 					walkToActivitySpotInBuilding(gym, FunctionType.EXERCISE, true);
+					walkSite = true;
 				}
 				else {
 					// Go back to his quarters
 					Building quarters = person.getQuarters();
 					if (quarters != null) {
 						walkToBed(quarters, person, true);
+						walkSite = true;
 					}
 				}
 			}
@@ -103,12 +105,14 @@ public class PlayHoloGame extends Task implements Serializable {
 				Building rec = getAvailableRecreationBuilding(person);
 				if (rec != null) {
 					walkToActivitySpotInBuilding(rec, FunctionType.RECREATION, true);
+					walkSite = true;
 				}
 				else {
 					// Go back to his quarters
 					Building quarters = person.getQuarters();
 					if (quarters != null) {
 						walkToBed(quarters, person, true);
+						walkSite = true;
 					}
 				}
 			}
@@ -118,6 +122,7 @@ public class PlayHoloGame extends Task implements Serializable {
 				Building quarters = person.getQuarters();
 				if (quarters != null) {
 					walkToBed(quarters, person, true);
+					walkSite = true;
 				}
 			}
 		}

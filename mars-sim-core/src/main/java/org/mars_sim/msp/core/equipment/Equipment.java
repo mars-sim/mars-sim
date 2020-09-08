@@ -269,20 +269,17 @@ public abstract class Equipment extends Unit implements Indoor, Salvagable {
 //			return LocationSituation.UNKNOWN;
 //	}
 
-	/**
-	 * Is a person carrying this equipment? Is this equipment's container a person ?
-	 * 
-	 * @return true if yes
-	 */
-	public boolean isCarriedByAPerson() {
-		if (LocationStateType.ON_A_PERSON_OR_ROBOT == currentStateType)
-			return true;
-		
-		return false;	
-//		if (getContainerUnit() instanceof Person)
+//	/**
+//	 * Is a person carrying this equipment? Is this equipment's container a person ?
+//	 * 
+//	 * @return true if yes
+//	 */
+//	public boolean isCarriedByAPerson() {
+//		if (LocationStateType.ON_A_PERSON_OR_ROBOT == currentStateType)
 //			return true;
+//		
 //		return false;
-	}
+//	}
 
 	/**
 	 * Sets the last owner of this equipment

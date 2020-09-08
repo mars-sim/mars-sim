@@ -19,6 +19,7 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
  * The BuildingFunctionPanel class is a panel representing a function for a
  * settlement building.
  */
+@SuppressWarnings("serial")
 public abstract class BuildingFunctionPanel extends JPanel {
 
 	/** The building this panel is for. */

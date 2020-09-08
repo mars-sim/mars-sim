@@ -26,7 +26,7 @@ public class LocationTag implements LocationState, Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	public static final String OUTSIDE_ON_MARS = Conversion.capitalize(LocationStateType.OUTSIDE_ON_THE_SURFACE_OF_MARS.getName());
+	public static final String OUTSIDE_ON_MARS = Conversion.capitalize(LocationStateType.OUTSIDE_ON_MARS.getName());
 
 	public static final String VICINITY = " vicinity";
 
@@ -174,7 +174,7 @@ public class LocationTag implements LocationState, Serializable {
 				return p.getVehicle().getName();
 			else if (LocationStateType.WITHIN_SETTLEMENT_VICINITY == p.getLocationStateType())
 				return findSettlementVicinity().getName();
-			else if (LocationStateType.OUTSIDE_ON_THE_SURFACE_OF_MARS == p.getLocationStateType()) {			
+			else if (LocationStateType.OUTSIDE_ON_MARS == p.getLocationStateType()) {			
 				Settlement s = findSettlementVicinity();
 				if (s != null)
 					return s.getName();	
@@ -245,7 +245,9 @@ public class LocationTag implements LocationState, Serializable {
 				else {
 					return p.getLocationStateType().getName();
 				}
-			} else if (LocationStateType.INSIDE_VEHICLE == p.getLocationStateType()) {
+			} 
+			
+			else if (LocationStateType.INSIDE_VEHICLE == p.getLocationStateType()) {
 				Vehicle v = p.getVehicle();
 				if (v.getBuildingLocation() == null) {
 					return v.getNickName();
@@ -253,6 +255,7 @@ public class LocationTag implements LocationState, Serializable {
 					return v.getBuildingLocation().getNickName();
 				}
 			} 
+			
 			else if (LocationStateType.WITHIN_SETTLEMENT_VICINITY == p.getLocationStateType() || p.isRightOutsideSettlement())
 				return findSettlementVicinity().getName() + VICINITY;
 			// TODO: check if it works in case of a trader arrives at any settlements for

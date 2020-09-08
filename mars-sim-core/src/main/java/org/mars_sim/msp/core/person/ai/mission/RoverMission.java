@@ -310,24 +310,21 @@ public abstract class RoverMission extends VehicleMission {
 			
 		Settlement settlement = v.getSettlement();
 		if (settlement == null) {
-			//throw new IllegalStateException(
 			LogConsolidated.log(logger, Level.WARNING, 0, sourceName, 
 					Msg.getString("RoverMission.log.notAtSettlement", getPhase().getName())); //$NON-NLS-1$
 			addMissionStatus(MissionStatus.NO_AVAILABLE_VEHICLES);
 			endMission();
 			return;
 		}
+		
 		// While still in the settlement, check if the beacon is turned on and and endMission()
 		else if (v.isBeaconOn()) {
 			endMission();
 			return;
 		}
 
-		// If the vehicle is currently not in a garage
-//		if (v.getGarage() == null) {
-			// Add the rover to a garage if possible.
+		// Add the rover to a garage if possible.
 		boolean	isRoverInAGarage = BuildingManager.addToGarage((GroundVehicle) v);// v.getSettlement());
-//		}
 
 		// Load vehicle if not fully loaded.
 		if (!loadedFlag) {

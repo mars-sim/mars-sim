@@ -347,20 +347,20 @@ public class ReviewMissionPlan extends Task implements Serializable {
 								double siteValue = 0;
 								if (m instanceof CollectIce) {
 									siteValue = ((CollectIce) m).getTotalSiteScore()*4.0;
-									logger.info("[" + person.getLocationTag().getLocale() + "] " + 
-											person + "'s Ice collection site value is " + Math.round(siteValue*10.0)/10.0);
+									logger.info("[" + person.getLocale() + "] " + 
+											person + "'s Ice collection site value is " + Math.round(siteValue*10.0)/10.0 + ".");
 								}	
 								
 								else if (m instanceof CollectRegolith) {
 									siteValue = ((CollectRegolith) m).getTotalSiteScore()*2.0;
-									logger.info("[" + person.getLocationTag().getLocale() + "] " + 
-											person + "'s Regolith collection site value is " + Math.round(siteValue*10.0)/10.0);
+									logger.info("[" + person.getLocale() + "] " + 
+											person + "'s Regolith collection site value is " + Math.round(siteValue*10.0)/10.0 + ".");
 								}	
 								
 								else if (m instanceof Mining) {
 									siteValue = Mining.getMiningSiteValue(((Mining)m).getMiningSite(), person.getAssociatedSettlement())/500.0;
-									logger.info("[" + person.getLocationTag().getLocale() + "] " + 
-											person + "'s Mining site value is " + Math.round(siteValue*10.0)/10.0);
+									logger.info("[" + person.getLocale() + "] " + 
+											person + "'s Mining site value is " + Math.round(siteValue*10.0)/10.0 + ".");
 								}
 								
 								else if (m instanceof Exploration) {
@@ -370,7 +370,7 @@ public class ReviewMissionPlan extends Task implements Serializable {
 										siteValue += Mining.getMiningSiteValue(e, person.getAssociatedSettlement())/500.0;
 									}
 									siteValue = siteValue / count;
-									logger.info("[" + person.getLocationTag().getLocale() + "] " + 
+									logger.info("[" + person.getLocale() + "] " + 
 											person + "'s Mineral Exploration site value is " 
 											+ Math.round(siteValue*10.0)/10.0
 											+ "   # of site(s) : " + count + "."

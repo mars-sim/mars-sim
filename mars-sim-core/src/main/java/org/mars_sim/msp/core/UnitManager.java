@@ -2367,7 +2367,7 @@ public class UnitManager implements Serializable {
 				lookupPerson.values()
 				.stream()
 				.filter(p -> p.getLocationStateType() == LocationStateType.WITHIN_SETTLEMENT_VICINITY
-						|| p.getLocationStateType() == LocationStateType.OUTSIDE_ON_THE_SURFACE_OF_MARS)
+						|| p.getLocationStateType() == LocationStateType.OUTSIDE_ON_MARS)
 				.collect(Collectors.toList());
 	}
 

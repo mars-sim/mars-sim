@@ -89,14 +89,14 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
 		if (vehicles.contains(vehicle)) {
 //			throw new IllegalStateException("Building already contains vehicle.");
 			LogConsolidated.log(logger, Level.INFO, 1000, sourceName,
-				"[" + vehicle.getName() + "] " +  vehicle.getName() + " has already been garaged in " + BuildingManager.getBuilding(vehicle, vehicle.getSettlement()));
+				"[" + vehicle.getSettlement() + "] " +  vehicle.getName() + " has already been garaged in " + BuildingManager.getBuilding(vehicle, vehicle.getSettlement()));
 			 valid = false;
 		}
 		
 		if (vehicles.size() >= vehicleCapacity) {
 //			throw new IllegalStateException("Building is full of vehicles.");
 			LogConsolidated.log(logger, Level.INFO, 1000, sourceName,
-				"[" + vehicle.getName() + "] " +  BuildingManager.getBuilding(vehicle, vehicle.getSettlement())
+				"[" + vehicle.getSettlement() + "] " +  BuildingManager.getBuilding(vehicle, vehicle.getSettlement())
 				+ " is already full.");
 			 valid = false;
 		}

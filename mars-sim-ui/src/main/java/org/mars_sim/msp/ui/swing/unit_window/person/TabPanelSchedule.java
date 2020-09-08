@@ -41,6 +41,7 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.tool.MultisortTableHeaderCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
@@ -314,6 +315,9 @@ public class TabPanelSchedule extends TabPanel {
 		table.setRowSelectionAllowed(true);
 		// table.setDefaultRenderer(Integer.class, new NumberCellRenderer());
 
+		// Apply sorting for multiple columns
+//		table.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
+		
 		scrollPanel.setViewportView(table);
 
 		// Align the content to the center of the cell

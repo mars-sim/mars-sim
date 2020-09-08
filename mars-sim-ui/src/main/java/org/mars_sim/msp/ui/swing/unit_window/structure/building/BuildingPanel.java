@@ -32,6 +32,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.AstronomicalObservation;
+import org.mars_sim.msp.core.structure.building.function.EVA;
 import org.mars_sim.msp.core.structure.building.function.FoodProduction;
 import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
@@ -197,6 +198,53 @@ public class BuildingPanel extends JPanel {
 		box.add(Box.createVerticalGlue());
 		functionListPanel.add(box);
 
+		// Prepare cooking panel if building has cooking.
+		if (building.hasFunction(FunctionType.COOKING)) {
+//			try {
+			Cooking kitchen = building.getCooking();
+			BuildingFunctionPanel cookingPanel = new BuildingPanelCooking(kitchen, desktop);
+			functionPanels.add(cookingPanel);
+			functionListPanel.add(cookingPanel);
+			// if (isTranslucent)setPanelStyle(powerPanel);
+//			}
+//			catch (BuildingException e) {}
+		}
+		
+		// Prepare cooking panel if building has cooking.
+		if (building.hasFunction(FunctionType.EVA)) {
+//			try {
+			EVA eva = building.getEVA();
+			BuildingFunctionPanel evaPanel = new BuildingPanelEVA(eva, desktop);
+			functionPanels.add(evaPanel);
+			functionListPanel.add(evaPanel);
+			// if (isTranslucent)setPanelStyle(powerPanel);
+//			}
+//			catch (BuildingException e) {}
+		}
+		
+		// Prepare farming panel if building has farming.
+		if (building.hasFunction(FunctionType.FARMING)) {
+//        	try {
+			Farming farm = building.getFarming();
+			BuildingFunctionPanel farmingPanel = new BuildingPanelFarming(farm, desktop);
+			functionPanels.add(farmingPanel);
+			functionListPanel.add(farmingPanel);
+//        	}
+//        	catch (BuildingException e) {}
+		}
+
+		if (building.hasFunction(FunctionType.FOOD_PRODUCTION)) {
+//        	try {
+			FoodProduction foodFactory = building.getFoodProduction();
+			BuildingFunctionPanel foodProductionPanel = new BuildingPanelFoodProduction(foodFactory, desktop);
+			functionPanels.add(foodProductionPanel);
+			functionListPanel.add(foodProductionPanel);
+//        	}
+//        	catch (BuildingException e) {}
+		}
+
+
+		
 		// Prepare inhabitable panel if building has lifeSupport.
 		if (building.hasFunction(FunctionType.LIFE_SUPPORT)) {
 //        	try {
@@ -232,38 +280,6 @@ public class BuildingPanel extends JPanel {
 //        	catch (BuildingException e) {}
 		}
 
-		if (building.hasFunction(FunctionType.FOOD_PRODUCTION)) {
-//        	try {
-			FoodProduction foodFactory = building.getFoodProduction();
-			BuildingFunctionPanel foodProductionPanel = new BuildingPanelFoodProduction(foodFactory, desktop);
-			functionPanels.add(foodProductionPanel);
-			functionListPanel.add(foodProductionPanel);
-//        	}
-//        	catch (BuildingException e) {}
-		}
-
-		// Prepare farming panel if building has farming.
-		if (building.hasFunction(FunctionType.FARMING)) {
-//        	try {
-			Farming farm = building.getFarming();
-			BuildingFunctionPanel farmingPanel = new BuildingPanelFarming(farm, desktop);
-			functionPanels.add(farmingPanel);
-			functionListPanel.add(farmingPanel);
-//        	}
-//        	catch (BuildingException e) {}
-		}
-
-		// Prepare cooking panel if building has cooking.
-		if (building.hasFunction(FunctionType.COOKING)) {
-//			try {
-			Cooking kitchen = building.getCooking();
-			BuildingFunctionPanel cookingPanel = new BuildingPanelCooking(kitchen, desktop);
-			functionPanels.add(cookingPanel);
-			functionListPanel.add(cookingPanel);
-			// if (isTranslucent)setPanelStyle(powerPanel);
-//			}
-//			catch (BuildingException e) {}
-		}
 
 		// Add preparing dessert function
 		// Prepare dessert panel if building has preparing dessert function.

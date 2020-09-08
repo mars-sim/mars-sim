@@ -32,9 +32,10 @@ public class LivingAccommodations extends Function implements Serializable {
 	private static final long serialVersionUID = 1L;
 	/* default logger. */
 	private static Logger logger = Logger.getLogger(LivingAccommodations.class.getName());
-
-	private static String sourceName = logger.getName();
-
+	private static String loggerName = logger.getName();
+	private static String sourceName = loggerName.substring(loggerName.lastIndexOf(".") + 1, loggerName.length());
+	
+	
 	public static final int MAX_NUM_SOLS = 14;
 	
 	public static final double TOILET_WASTE_PERSON_SOL = .02D;
@@ -218,9 +219,9 @@ public class LivingAccommodations extends Function implements Serializable {
 					Point2D bed = designateABed(person, isAGuest);
 					if (bed != null) {
 						registeredSleepers++;
-						LogConsolidated.log(logger, Level.WARNING, 2000, sourceName,
-								"[" + building.getSettlement().getName() + "] " + person + " was assigned in " 
-								+ person.getQuarters().getNickName(), null);
+//						LogConsolidated.log(logger, Level.WARNING, 2000, sourceName,
+//								"[" + building.getSettlement().getName() + "] " + person + " was assigned a bed in " 
+//								+ person.getQuarters().getNickName(), null);
 						return bed;
 					} else {
 						LogConsolidated.log(logger, Level.WARNING, 2000, sourceName,
@@ -283,18 +284,19 @@ public class LivingAccommodations extends Function implements Serializable {
 				double x = spot.getX() + building.getXLocation();
 				double y = spot.getY() + building.getYLocation();
 				bed = new Point2D.Double(x, y);
-//				if (!assignedBeds.containsValue(bed)) {
+				if (!assignedBeds.containsValue(bed)) {
 					if (!guest) {
 						assignABed(person, bed);
 
 					}
 					else { // is a guest
 						LogConsolidated.log(logger, Level.INFO, 0, sourceName, "[" + person.getSettlement() + "] "
-								+ person + " was given a temporary bed at (" + Math.round(bed.getX()*100.0)/100.0  + ", " +
-								Math.round(bed.getY()*100.0)/100.0  + ") in " + person.getQuarters(), null);
+								+ person + " was given a temporary bed in " + person.getQuarters() + "at (" 
+								+ Math.round(bed.getX()*100.0)/100.0  + ", " 
+								+ Math.round(bed.getY()*100.0)/100.0  + ").");
 					}
 					break;
-//				}
+				}
 			}
 		}
 
@@ -533,6 +535,9 @@ public class LivingAccommodations extends Function implements Serializable {
 	
 	public void destroy() {
 		building = null;
+		assignedBeds.clear();
 		assignedBeds = null;
+		dailyWaterUsage.clear();
+		dailyWaterUsage = null;
 	}
 }

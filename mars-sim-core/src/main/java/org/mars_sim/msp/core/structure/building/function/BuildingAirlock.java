@@ -53,7 +53,7 @@ public class BuildingAirlock extends Airlock {
     public BuildingAirlock(Building building, int capacity, double xLoc, double yLoc,
             double interiorXLoc, double interiorYLoc, double exteriorXLoc, double exteriorYLoc) {
         // User Airlock constructor
-        super(capacity);
+        super(capacity, building);
 
         this.building = building;
 
@@ -68,32 +68,44 @@ public class BuildingAirlock extends Airlock {
     }
        
     @Override
-    protected boolean exitAirlock(Person person) {
+    protected boolean egress(Person person) {
     	boolean successful = false;
-    	
+      	LogConsolidated.log(logger, Level.INFO, 0, sourceName,
+	  				"[" + person.getLocale() 
+	  				 + "] " + person + " was calling egress.");
+      	
         if (inAirlock(person)) {
-            if (AirlockState.PRESSURIZED == getState()) {
-            	// check if the airlock has been sealed from outside and pressurized, ready to 
-            	// open the inner door to release the person into the settlement
-            	successful = stepInside(person);
-            }
-            
-            else if (AirlockState.DEPRESSURIZED == getState()) {
-            	// check if the airlock has been de-pressurized, ready to open the outer door to 
-            	// get exposed to the outside air and release the person
-            	successful = stepIntoMarsSurface(person);
-            }
-            else {
-                logger.severe("Building airlock in incorrect state for exiting: " + getState());
-            }
+            // check if the airlock has been de-pressurized, ready to open the outer door to 
+            // get exposed to the outside air and release the person
+            successful = stepOnMars(person);
         }
+        else {
+            throw new IllegalStateException(person.getName() + " not in " + getEntityName());
+        }
+        
+        return successful;
+    }
+
+    @Override
+    protected boolean ingress(Person person) {
+    	boolean successful = false;
+      	LogConsolidated.log(logger, Level.INFO, 0, sourceName,
+	  				"[" + person.getLocale() 
+	  				 + "] " + person + " was calling ingress.");
+      	
+        if (inAirlock(person)) {
+            // check if the airlock has been sealed from outside and pressurized, ready to 
+            // open the inner door to release the person into the settlement
+            successful = stepInside(person);
+        }
+
         else {
             throw new IllegalStateException(person.getName() + " not in airlock of " + getEntityName());
         }
         
         return successful;
     }
-
+    
     /**
      * Steps inside of a settlement
      * 
@@ -101,16 +113,16 @@ public class BuildingAirlock extends Airlock {
      */
     public boolean stepInside(Person person) {
     	boolean successful = false;
-      	LogConsolidated.log(logger, Level.FINER, 0, sourceName,
-	  				"[" + person.getLocationTag().getLocale() 
-	  				+ "] The airlock had been pressurized and is ready to open the inner door to release " + person + ".");
+      	LogConsolidated.log(logger, Level.INFO, 0, sourceName,
+	  				"[" + person.getLocale() 
+	  				+ "] " + person + " called stepInside()");
         	
         if (person.isOutside()) {
         	
 			Settlement settlement = building.getSettlement();
 			
-			LogConsolidated.log(logger, Level.FINER, 0, sourceName,
-	  				"[" + person.getLocationTag().getLocale() + "] "
+			LogConsolidated.log(logger, Level.INFO, 0, sourceName,
+	  				"[" + person.getLocale() + "] "
 					+ person + " was about to leave the airlock in " + building + " to go inside " 
         			+ settlement
         			+ ".");
@@ -128,16 +140,19 @@ public class BuildingAirlock extends Airlock {
 				// 1.3 Set the person's coordinates to that of the settlement's
 				person.setCoordinates(settlement.getCoordinates());
 				
-	   			LogConsolidated.log(logger, Level.FINER, 0, sourceName,
-		  				"[" + person.getLocationTag().getLocale() + "] "
-						+ person + " doffed the EVA suit, came through the inner door of the airlock at " 
-		  				+ building + " and went inside " 
+	   			LogConsolidated.log(logger, Level.INFO, 0, sourceName,
+		  				"[" + person.getLocale() + "] "
+						+ person 
+//						+ " came through the inner door of " 
+//		  				+ building 
+//		  				+ " and "
+		  				+ " stepped inside " 
 	        			+ settlement
 	        			+ ".");
 			}
 			else
 				LogConsolidated.log(logger, Level.SEVERE, 0, sourceName, 
-						"[" + person.getLocationTag().getLocale() + "] "
+						"[" + person.getLocale() + "] "
 						+ person.getName() + " could not step inside " + settlement.getName());
         }
         
@@ -147,9 +162,9 @@ public class BuildingAirlock extends Airlock {
 			loc = loc.equalsIgnoreCase("Outside") ? loc.toLowerCase() : "in " + loc;
 			
           	LogConsolidated.log(logger, Level.SEVERE, 0, sourceName,	
-          		"[" + person.getLocationTag().getLocale() + "] "
-          		 + person +  " was supposed to be entering " + getEntityName() 
-          		 + "'s airlock but already " + loc + ".");
+          		"[" + person.getLocale() + "] "
+          		 + person +  " was supposed to be stepping into " + getEntityName() 
+          		 + " but already " + loc + " (" + person.getLocationStateType() + ").");
         }
     	
     	return successful;
@@ -160,18 +175,18 @@ public class BuildingAirlock extends Airlock {
      * 
      * @param person
      */
-    public boolean stepIntoMarsSurface(Person person) {
+    public boolean stepOnMars(Person person) {
     	boolean successful = false;
     	LogConsolidated.log(logger, Level.FINER, 0, sourceName,
-  				"[" + person.getLocationTag().getLocale() 
-  				+ "] The airlock had been depressurized and is ready to open the outer door to release " + person + ".");
+  				"[" + person.getLocale() 
+  				+ "] " + person + " called stepOnMars().");
     	
     	if (person.isInSettlement()) {
     		
 			Settlement settlement = building.getSettlement();
 			
   			LogConsolidated.log(logger, Level.FINER, 0, sourceName,
-	  				"[" + person.getLocationTag().getLocale() + "] "
+	  				"[" + person.getLocale() + "] "
 					+ person
         			+ " was about to leave the airlock at " + building + " in " 
         			+ building.getSettlement()
@@ -194,16 +209,16 @@ public class BuildingAirlock extends Airlock {
 				person.setCoordinates(settlement.getCoordinates());
 				
 	  			LogConsolidated.log(logger, Level.FINER, 0, sourceName,
-	  				"[" + person.getLocationTag().getLocale() + "] "
+	  				"[" + person.getLocale() + "] "
 					+ person
-        			+ " donned the EVA suit, came through the outer door of the airlock at " 
+        			+ " came through the outer door of the airlock at " 
 					+ building + " in " 
         			+ settlement
         			+ " and stepped outside.");
 			}
 			else
 				LogConsolidated.log(logger, Level.SEVERE, 0, sourceName, 
-						"[" + person.getLocationTag().getLocale() + "] "
+						"[" + person.getLocale() + "] "
 						+ person.getName() + " could not step outside " + settlement.getName());
         }
     	
@@ -213,7 +228,7 @@ public class BuildingAirlock extends Airlock {
 			loc = loc.equalsIgnoreCase("Outside") ? loc.toLowerCase() : "in " + loc;
 			
             LogConsolidated.log(logger, Level.SEVERE, 0, sourceName,	
-                  	"[" + person.getLocationTag().getLocale() + "] "	
+                  	"[" + person.getLocale() + "] "	
             		+ person +  " was supposed to be exiting " + getEntityName()
                     + "'s airlock but already " + loc + ".");
         }

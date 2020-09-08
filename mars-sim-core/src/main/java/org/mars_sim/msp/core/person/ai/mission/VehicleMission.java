@@ -123,14 +123,14 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 			logger.finer(getStartingMember() + " cannot get a vehicle for a " + this + " mission.");
 			return;
 		}
-		
-		// Add mission phases.
-		addPhase(REVIEWING);
-		addPhase(EMBARKING);
-		addPhase(TRAVELLING);
-		addPhase(DISEMBARKING);
-		addPhase(COMPLETED);
-		
+		else {
+			// Add mission phases.
+			addPhase(REVIEWING);
+			addPhase(EMBARKING);
+			addPhase(TRAVELLING);
+			addPhase(DISEMBARKING);
+			addPhase(COMPLETED);
+		}
 //		logger.info(getStartingMember() + " was done adding all phases.");
 	}
 

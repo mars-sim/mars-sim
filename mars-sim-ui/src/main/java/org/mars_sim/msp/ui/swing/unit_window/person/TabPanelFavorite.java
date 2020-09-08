@@ -178,7 +178,7 @@ extends TabPanel {
 		scrollPane.getVerticalScrollBar().setUnitIncrement(10);
 		scrollPane.setHorizontalScrollBarPolicy(WebScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 //		centerContentPanel.add(scrollPane,  BorderLayout.CENTER);
-		labelPanel.add(scrollPane, BorderLayout.CENTER);
+		centerContentPanel.add(scrollPane, BorderLayout.CENTER);
 		
 		// Create skill table
 		tableModel = new PreferenceTableModel(person);

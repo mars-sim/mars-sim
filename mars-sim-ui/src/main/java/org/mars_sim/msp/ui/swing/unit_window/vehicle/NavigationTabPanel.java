@@ -15,7 +15,9 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -93,7 +95,7 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
     private String etaCache;
     
     private VehicleOperator driverCache;
-    private List<StatusType> statusCache;
+    private Set<StatusType> statusCache;
 
 	/** The Vehicle instance. */
 	private Vehicle vehicle;
@@ -406,7 +408,7 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         }
 
         // Update status label
-        if (!vehicle.sameStatusTypes(statusCache, vehicle.getStatusTypes())) {
+        if (!vehicle.hasSameStatusTypes(statusCache, vehicle.getStatusTypes())) {
             statusCache = vehicle.getStatusTypes();
             statusLabel.setText(vehicle.printStatusTypes());
         }

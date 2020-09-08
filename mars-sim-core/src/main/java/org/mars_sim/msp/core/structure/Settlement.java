@@ -892,7 +892,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 		int result = 0;
 		List<Building> bs = buildingManager.getBuildings(FunctionType.LIVING_ACCOMMODATIONS);
 		for (Building building : bs) {
-			result += building.getLivingAccommodations().getNumOccupiedSpots();
+			result += building.getLivingAccommodations().getNumOccupiedActivitySpots();
 		}
 		return result;
 	}	
@@ -970,7 +970,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 
 		return citizens.stream().filter(
 				p -> !p.isDeclaredDead() && (p.getLocationStateType() == LocationStateType.WITHIN_SETTLEMENT_VICINITY
-						|| p.getLocationStateType() == LocationStateType.OUTSIDE_ON_THE_SURFACE_OF_MARS))
+						|| p.getLocationStateType() == LocationStateType.OUTSIDE_ON_MARS))
 				.collect(Collectors.toList());
 
 	}

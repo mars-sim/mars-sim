@@ -43,6 +43,7 @@ implements Serializable {
 
     /**
      * Gets the value of the function for a named building.
+     * 
      * @param buildingName the building name.
      * @param newBuilding true if adding a new building.
      * @param settlement the settlement.

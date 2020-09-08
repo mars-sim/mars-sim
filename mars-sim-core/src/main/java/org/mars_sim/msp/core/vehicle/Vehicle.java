@@ -201,7 +201,7 @@ public abstract class Vehicle extends Unit
 	/** List of passenger activity spots. */
 	private List<Point2D> passengerActivitySpots;
 	/** List of status types. */
-	private List<StatusType> statusTypes;
+	private Set<StatusType> statusTypes;
 	/** The vehicle's status log. */
 	private Map<Integer, Map<Integer, List<StatusType>>> vehicleLog = new HashMap<>();
 	
@@ -280,7 +280,7 @@ public abstract class Vehicle extends Unit
 
 		direction = new Direction(0);
 		trail = new ArrayList<Coordinates>();
-		statusTypes = new ArrayList<>();
+		statusTypes = new HashSet<>();
 		
 		isReservedMission = false;
 		distanceMark = false;
@@ -438,7 +438,7 @@ public abstract class Vehicle extends Unit
 
 		direction = new Direction(0);
 		trail = new ArrayList<Coordinates>();
-		statusTypes = new ArrayList<>();
+		statusTypes = new HashSet<>();
 		
 		// Set description
 		setDescription(vehicleType);
@@ -651,14 +651,19 @@ public abstract class Vehicle extends Unit
 	 * 
 	 * @return the vehicle's status types
 	 */
-	public List<StatusType> getStatusTypes() {
+	public Set<StatusType> getStatusTypes() {
 		return statusTypes;
 	}
 
-	public boolean sameStatusTypes(List<StatusType> st1, List<StatusType> st2) {
-		Set<StatusType> s1 = new HashSet<>(st1);
-		Set<StatusType> s2 = new HashSet<>(st2);
-		if (s1.equals(s2))
+	/**
+	 * Checks if the two set of status types are the same
+	 * 
+	 * @param st1
+	 * @param st2
+	 * @return true if the two set of status types are the same
+	 */
+	public boolean hasSameStatusTypes(Set<StatusType> st1, Set<StatusType> st2) {
+		if (st1.equals(st2))
 			return true;
 		
 		return false;
@@ -674,17 +679,20 @@ public abstract class Vehicle extends Unit
 		int size = statusTypes.size();
 		if (size == 0)
 			return s;
-		else if (size == 1) {
-			s = statusTypes.get(0).getName();
-		}
-		else if (size > 1) {
-			for (int i=0; i<size; i++) {
-				s += statusTypes.get(i).getName();
-				if (i != size - 1)
-					s += ", ";
+		else {
+			List<StatusType> list = new ArrayList<StatusType>(statusTypes);
+			if (size == 1) {
+				s = list.get(0).getName();
+			}
+			else if (size > 1) {
+				for (int i=0; i<size; i++) {
+					s += list.get(i).getName();
+					if (i != size - 1)
+						s += ", ";
+				}
 			}
 		}
-		
+
 		return s.trim();
 	}
 	

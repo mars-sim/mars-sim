@@ -89,8 +89,8 @@ public class WalkSettlementInterior extends Task implements Serializable {
 		if (!person.isInSettlement()) {
 			LogConsolidated.log(logger, Level.WARNING, 4_000, sourceName, 
 					"[" + person.getLocationTag().getLocale() + "] "
-					+ person + "'s WalkSettlementInterior task started when person is not in settlement.");
-			person.getMind().getTaskManager().clearAllTasks();
+					+ person + " started WalkSettlementInterior task when not in a settlement.");
+//			person.getMind().getTaskManager().clearAllTasks();
 			return;
 		}
 

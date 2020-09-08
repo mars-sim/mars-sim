@@ -1506,8 +1506,8 @@ public abstract class Mission implements Serializable {
 		if (plan == null) {			
 			plan = new MissionPlanning(this, p.getName(), p.getRole().getType());		
 			LogConsolidated.log(logger, Level.INFO, 0, sourceName, "[" + p.getLocationTag().getLocale() + "] " 
-					+ p.getName() + " (" + p.getRole().getType() 
-					+ ") was requesting approval for " + getDescription() + ".");
+					+ p.getRole().getType() + " " + p.getName() 
+					+ " was requesting approval for " + getDescription() + ".");
 
 			 missionManager.requestMissionApproving(plan);
 		}

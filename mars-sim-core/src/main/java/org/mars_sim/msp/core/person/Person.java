@@ -1022,7 +1022,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 				mind.timePassing(time);
 			} catch (Exception ex) {
 				ex.printStackTrace();
-				LogConsolidated.flog(Level.SEVERE, 20_000, sourceName, "[" + getLocationTag().getLocale() + "] "
+				LogConsolidated.log(logger, Level.SEVERE, 20_000, sourceName, "[" + getLocationTag().getLocale() + "] "
 						+ getName() + "'s Mind was having trouble processing task selection.", ex);
 			}
 		}
@@ -1585,6 +1585,22 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 //			logger.info("currentBuildingInt ID : " + currentBuildingInt);
 			currentBuildingInt = building.getIdentifier();
 		}
+	}
+	
+	public String getImmediateLocation() {
+		return getLocationTag().getImmediateLocation();
+	}
+
+	public String getLocale() {
+		return getLocationTag().getLocale();
+	}
+	
+	public String getExtendedLocations() {
+		return getLocationTag().getExtendedLocations();
+	}
+	
+	public Settlement findSettlementVicinity() {
+		return getLocationTag().findSettlementVicinity();
 	}
 	
 	@Override

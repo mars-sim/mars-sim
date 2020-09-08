@@ -998,7 +998,7 @@ public class PersonRobotChatUtils extends ChatUtils {
 			Vehicle v = u.getVehicle();
 			if (v != null) {
 //				String d = u.getVehicle().getDescription();
-				List<StatusType> statusTypes = u.getVehicle().getStatusTypes();
+				List<StatusType> statusTypes = new ArrayList<>(u.getVehicle().getStatusTypes());
 				responseText.append("I'm inside ");
 				responseText.append(v.getName());
 				responseText.append(System.lineSeparator());

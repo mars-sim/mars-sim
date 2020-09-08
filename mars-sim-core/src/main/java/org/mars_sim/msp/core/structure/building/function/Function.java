@@ -303,7 +303,7 @@ public abstract class Function implements Serializable {
 	 * @return true if this activity spot is empty.
 	 */
 	public boolean isActivitySpotEmpty(Point2D spot) {
-		if (activitySpots.isEmpty())
+		if (activitySpots == null || activitySpots.isEmpty())
 			return true;
 		
 		boolean result = false;
@@ -413,10 +413,12 @@ public abstract class Function implements Serializable {
 	 */
 	public int getNumEmptyActivitySpots() {
 		int empty = 0;
-		for (Point2D s: activitySpots) {
-			if (isActivitySpotEmpty(s))
-				empty++;		
-		}	
+		if (activitySpots != null && !activitySpots.isEmpty()) {
+			for (Point2D s: activitySpots) {
+				if (isActivitySpotEmpty(s))
+					empty++;		
+			}	
+		}
 		return empty;
 	}
 	
@@ -426,10 +428,12 @@ public abstract class Function implements Serializable {
 	 * @return
 	 */
 	public boolean hasEmptyActivitySpot() {
-		for (Point2D s: activitySpots) {
-			if (isActivitySpotEmpty(s))
-				return true;		
-		}	
+		if (activitySpots != null && !activitySpots.isEmpty()) {
+			for (Point2D s: activitySpots) {
+				if (isActivitySpotEmpty(s))
+					return true;		
+			}	
+		}
 		return false;
 	}
 	
@@ -438,12 +442,14 @@ public abstract class Function implements Serializable {
 	 * 
 	 * @return
 	 */
-	public int getNumOccupiedSpots() {
+	public int getNumOccupiedActivitySpots() {
 		int occupied = 0;
-		for (Point2D s: activitySpots) {
-			if (!isActivitySpotEmpty(s))
-				occupied++;		
-		}	
+		if (activitySpots != null && !activitySpots.isEmpty()) {
+			for (Point2D s: activitySpots) {
+				if (!isActivitySpotEmpty(s))
+					occupied++;		
+			}	
+		}
 		return occupied;
 		
 //		return activitySpots.size() - getNumEmptyActivitySpots();

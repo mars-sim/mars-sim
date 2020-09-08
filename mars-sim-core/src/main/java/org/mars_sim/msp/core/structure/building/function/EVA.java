@@ -28,6 +28,8 @@ implements Serializable {
 
 	private static final double MAINTENANCE_FACTOR = 5D; 
 	
+	private int airlockCapacity;
+	
 	private Airlock airlock;
 
 	/**
@@ -41,7 +43,7 @@ implements Serializable {
 
 		String buildingType = building.getBuildingType();
 		// Add a building airlock.
-		int airlockCapacity = buildingConfig.getAirlockCapacity(buildingType);
+		airlockCapacity = buildingConfig.getAirlockCapacity(buildingType);
 		double airlockXLoc = buildingConfig.getAirlockXLoc(buildingType);
 		double airlockYLoc = buildingConfig.getAirlockYLoc(buildingType);
 		double interiorXLoc = buildingConfig.getAirlockInteriorXLoc(buildingType);
@@ -107,6 +109,10 @@ implements Serializable {
 		return airlockCapacity * airlockCapacityValue;
 	}
 
+	public int getAirlockCapacity() {
+		return airlockCapacity;
+	}
+	
 	/**
 	 * Gets the building's airlock.
 	 * @return airlock
@@ -115,6 +121,22 @@ implements Serializable {
 		return airlock;
 	}
 
+	public int getNumAwaitingInnerDoor() {
+		return airlock.getNumAwaitingInnerDoor();
+	}
+	
+	public int getNumAwaitingOuterDoor() {
+		return airlock.getNumAwaitingOuterDoor();
+	}
+	
+	public int getNumEmptied() {
+		return airlockCapacity - airlock.getNumOccupants();
+	}
+	
+	public int getNumOccupied() {
+		return airlock.getNumOccupants();
+	}
+	
 	/**
 	 * Time passing for the building.
 	 * @param time amount of time passing (in millisols)

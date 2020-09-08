@@ -199,7 +199,9 @@ extends JComponent {
 		
 		// Set up the frame
 		frame = new WebFrame();//StyleId.rootpane);
+		frame.setPreferredSize(new Dimension(InteractiveTerm.getWidth(), InteractiveTerm.getHeight()));
 		frame.setSize(new Dimension(InteractiveTerm.getWidth(), InteractiveTerm.getHeight()));
+		
 		frame.setResizable(false);
 
 //		SwingUtilities.invokeLater(() -> MainWindow.initIconManager());

@@ -275,6 +275,8 @@ public abstract class EVAOperation extends Task implements Serializable {
             if (Walk.canWalkAllSteps(person, returnInsideLoc.getX(), returnInsideLoc.getY(), 0, interiorObject)) {
                 Task walkingTask = new Walk(person, returnInsideLoc.getX(), returnInsideLoc.getY(), 0, interiorObject);
                 addSubTask(walkingTask);
+                // This endTask() is needed for ending the walking sub task.
+                endTask();
             }
             else {
             	LogConsolidated.log(logger, Level.SEVERE, 4_000, sourceName,
@@ -290,6 +292,7 @@ public abstract class EVAOperation extends Task implements Serializable {
 					+ " and went inside, safely ending the EVA ops");
             endTask();
         }
+        
         
         return time;
 //        

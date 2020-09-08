@@ -3264,7 +3264,7 @@
 			</building>
 			<building id="24" type="Large Greenhouse" x-location="-33.0" y-location="55.0" facing="0.0">
 				<connection-list>
-					<connection id="23" x-location="0.0" y-location="9.0" />
+					<connection id="23" x-location="0.0" y-location="-9.0" />
 				</connection-list>
 			</building>
 			<building id="25" type="Hallway" length="4.0" x-location="-55.0" y-location="43.5" facing="0.0">

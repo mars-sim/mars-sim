@@ -826,7 +826,11 @@ public class MissionManager implements Serializable {
 			logger.info("marsClock is null");
 		int mSol = marsClock.getMissionSol();
 		
-		logger.info("On sol " + mSol + ", " + plan.getMission().getStartingMember() + " put together a mission plan.");
+		Person p = plan.getMission().getStartingMember();
+		
+		LogConsolidated.log(logger, Level.INFO, 0, sourceName,
+				"[" + p.getLocale() + "] On Sol " 
+				+ mSol + ", " + p.getName() + " put together a mission plan.");
 		
 		if (historicalMissions.containsKey(mSol)) {
 			List<MissionPlanning> plans = historicalMissions.get(mSol);
@@ -935,7 +939,7 @@ public class MissionManager implements Serializable {
 							"[" + mp.getMission().getStartingMember().getLocationTag().getLocale() + "] " 
 							+ mp.getMission().getStartingMember().getName() 
 							+ "'s " + mp.getMission().getDescription() 
-							+ " mission plan - current score : " + Math.round(mp.getScore()*10.0)/10.0 
+							+ " mission planning cumulative score : " + Math.round(mp.getScore()*10.0)/10.0 
 							+ " (" + mp.getPercentComplete() + "% review completed)");
 							
 					mp.setReviewedBy(reviewer.getName());

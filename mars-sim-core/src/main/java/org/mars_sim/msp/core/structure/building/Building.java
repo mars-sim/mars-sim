@@ -701,7 +701,11 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 	 * @return FunctionType
 	 */
 	public FunctionType getEmptyActivitySpotFunctionType() {
-		return getEmptyActivitySpotFunction().getFunctionType();
+		Function f = getEmptyActivitySpotFunction();
+		if (f != null)
+			return f.getFunctionType();
+		else
+			return null;
 	}
 	
 	/**

@@ -107,64 +107,67 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 			setStartingSettlement(startingPerson.getSettlement());
 			setMissionCapacity(MAX_GOING_MEMBERS);
 
+			// Obtain a rescuing vehicle and ensure that vehicleTarget is not included.
+			if (!reserveVehicle())
+				return;
+			
 			if (hasVehicle()) {
+				
 				if (vehicleTarget == null)
 					vehicleTarget = findBeaconVehicle(getStartingSettlement(), getVehicle().getRange(missionType));
+	
+				if (vehicleTarget != null) {
+					
+					int capacity = getRover().getCrewCapacity();
+					if (capacity < MAX_GOING_MEMBERS) {
+						setMissionCapacity(capacity);
+					}
 
-				// Obtain a rescuing vehicle and ensure that vehicleTarget is not included.
-				if (!reserveVehicle())
-					return;
+					int availableSuitNum = Mission.getNumberAvailableEVASuitsAtSettlement(startingPerson.getSettlement());
+					if (availableSuitNum < getMissionCapacity()) {
+						setMissionCapacity(availableSuitNum);
+					}
+					
+//					if (getRescuePeopleNum(vehicleTarget) > 0) {
+						rescue = true;
+						setMinMembers(MIN_MEMBER);
+						setDescription(
+								Msg.getString("Mission.description.rescueSalvageVehicle.rescue", vehicleTarget.getName())); // $NON-NLS-1$)
+//					} 
+							
+					// Add navpoints for target vehicle and back home again.
+					addNavpoint(new NavPoint(vehicleTarget.getCoordinates(), vehicleTarget.getName()));
+					addNavpoint(new NavPoint(getStartingSettlement().getCoordinates(), getStartingSettlement(),
+							getStartingSettlement().getName()));
 
-				int capacity = getRover().getCrewCapacity();
-				if (capacity < MAX_GOING_MEMBERS) {
-					setMissionCapacity(capacity);
-				}
+					// Recruit additional members to mission.
+					if (!isDone()) {
+						if (!recruitMembersForMission(startingPerson))
+							return;
+					}
 
-				int availableSuitNum = Mission.getNumberAvailableEVASuitsAtSettlement(startingPerson.getSettlement());
-				if (availableSuitNum < getMissionCapacity()) {
-					setMissionCapacity(availableSuitNum);
-				}
-			}
+					// Check if vehicle can carry enough supplies for the mission.
+					if (hasVehicle() && !isVehicleLoadable()) {			
+						addMissionStatus(MissionStatus.VEHICLE_NOT_LOADABLE);
+						endMission();
+					}
 
-			if (vehicleTarget != null) {
-//				if (getRescuePeopleNum(vehicleTarget) > 0) {
-					rescue = true;
-					setMinMembers(MIN_MEMBER);
-					setDescription(
-							Msg.getString("Mission.description.rescueSalvageVehicle.rescue", vehicleTarget.getName())); // $NON-NLS-1$)
-//				} 
-						
-				// Add navpoints for target vehicle and back home again.
-				addNavpoint(new NavPoint(vehicleTarget.getCoordinates(), vehicleTarget.getName()));
-				addNavpoint(new NavPoint(getStartingSettlement().getCoordinates(), getStartingSettlement(),
-						getStartingSettlement().getName()));
+					// Add rendezvous phase.
+					addPhase(RENDEZVOUS);
 
-				// Recruit additional members to mission.
-				if (!isDone()) {
-					if (!recruitMembersForMission(startingPerson))
-						return;
-				}
-
-				// Check if vehicle can carry enough supplies for the mission.
-				if (hasVehicle() && !isVehicleLoadable()) {			
-					addMissionStatus(MissionStatus.VEHICLE_NOT_LOADABLE);
+					// Set initial phase
+					setPhase(VehicleMission.REVIEWING);
+					setPhaseDescription(
+							Msg.getString("Mission.phase.reviewing.description")); // $NON-NLS-1$
+					
+					logger.info(startingPerson + " had started RescueSalvageVehicle");
+					
+				} else {
+					addMissionStatus(MissionStatus.TARGET_VEHICLE_NOT_FOUND);
 					endMission();
 				}
-
-				// Add rendezvous phase.
-				addPhase(RENDEZVOUS);
-
-				// Set initial phase
-				setPhase(VehicleMission.REVIEWING);
-				setPhaseDescription(
-						Msg.getString("Mission.phase.reviewing.description")); // $NON-NLS-1$
-			} else {
-				addMissionStatus(MissionStatus.TARGET_VEHICLE_NOT_FOUND);
-				endMission();
 			}
 		}
-		
-		logger.info(startingPerson + " had started RescueSalvageVehicle");
 	}
 
 	/**

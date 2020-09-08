@@ -117,7 +117,8 @@ public class SimuLoggingFormatter extends Formatter {
 			if (msg != null) {
 				
 				if (msg.contains(BRAC_X1)) {
-					msg = msg.substring(msg.indexOf(C_BRAC) + 2, msg.length());
+//					msg = msg.substring(msg.indexOf(C_BRAC) + 2, msg.length());
+					msg = msg.replace(BRAC_X1, "");
 					sb.append(msg);
 				}
 				

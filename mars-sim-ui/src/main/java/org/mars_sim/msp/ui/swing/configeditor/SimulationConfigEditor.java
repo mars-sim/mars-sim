@@ -41,6 +41,8 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.TableColumnModelListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
@@ -230,6 +232,19 @@ public class SimulationConfigEditor {
 		settlementTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		settlementTable.setBackground(java.awt.Color.WHITE);
 
+//		new TableColumnModelListener() {
+//			@Override
+//			public void columnSelectionChanged(ListSelectionEvent e) {
+//			    SwingUtilities.invokeLater(new Runnable() {
+//			        @Override
+//			        public void run() {
+//			            System.out.println(table.getSelectedColumn()); // this is correct
+//			            System.out.println(table.getSelectedRow());  // -1 on first click in JTable
+//			        }
+//			    });
+//			}
+//		}
+		
 		TableStyle.setTableStyle(settlementTable);
 
 		settlementScrollPane.setViewportView(settlementTable);

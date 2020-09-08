@@ -73,7 +73,7 @@ abstract class TableTab extends MonitorTab {
 	public TableTab(final MonitorWindow window, MonitorModel model, boolean mandatory, boolean singleSelection,
 			String icon) {
 		super(model, mandatory, ImageLoader.getNewIcon(icon));
-		// TABLEICON);
+
 
 		// Can not create icons until UIManager is up and running
 		if (ascendingIcon == null) {
@@ -208,7 +208,10 @@ abstract class TableTab extends MonitorTab {
 
 		}
 
-		// Added ColumnResizer
+		// Apply sorting for multiple columns
+//		table.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
+		
+		// Add ColumnResizer
 		// SwingUtilities.invokeLater(() -> {
 		TableStyle.setTableStyle(table);
 		// adjustColumnPreferredWidths(table);

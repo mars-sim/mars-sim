@@ -29,11 +29,11 @@ public class LogConsolidated {
 	
 	private static HashMap<String, TimeAndCount> lastLogged = new HashMap<>();
 
-	private static final String OPEN_BRACKET = "[x";
-	private static final String CLOSED_BRACKET = "] ";
+	private static final String OPEN_BRACKET = " [x";
+	private static final String CLOSED_BRACKET = "]";
 	private static final String COLON = " : ";
 	private static final String COLON_2 = ":";
-	private static final String ONCE = "[x1] ";
+	private static final String ONCE = " [x1]";
 	private static final String QUESTION = "?";
 	private static final String PERIOD = ".";
 	private static final String PROMPT = " > ";
@@ -46,7 +46,27 @@ public class LogConsolidated {
 	private static EarthClock earthClock;// = Simulation.instance().getMasterClock().getEarthClock();
 	private static MarsClock marsClock;// = Simulation.instance().getMasterClock().getMarsClock();
 	
-
+	/**
+	 * Logs given <code>message</code> to given <code>logger</code> as long as:
+	 * <ul>
+	 * <li>A message (from same class and line number) has not already been logged
+	 * within the past <code>timeBetweenLogs</code>.</li>
+	 * <li>The given <code>level</code> is active for given
+	 * <code>logger</code>.</li>
+	 * </ul>
+	 * Note: If messages are skipped, they are counted. When
+	 * <code>timeBetweenLogs</code> has passed, and a repeat message is logged, the
+	 * count will be displayed.
+	 * 
+	 * @param logger          Where to log.
+	 * @param level           Level to log.
+	 * @param timeBetweenLogs Milliseconds to wait between similar log messages.
+	 * @param message         The actual message to log.
+	 */
+	public static void log(Logger logger, Level level, long timeBetweenLogs, String sourceName, String message) {
+		log(logger, level, timeBetweenLogs, sourceName, message, null);
+	}
+	
 	/**
 	 * Logs given <code>message</code> to given <code>logger</code> as long as:
 	 * <ul>
@@ -68,8 +88,12 @@ public class LogConsolidated {
 	public static void log(Logger logger, Level level, long timeBetweenLogs, String sourceName, String message,
 			Throwable t) {
 		long dTime = timeBetweenLogs;
-		String className = sourceName.substring(sourceName.lastIndexOf(PERIOD) + 1, sourceName.length());
-
+//		System.out.print(sourceName + " - ");
+		String className = sourceName;
+		if (sourceName.contains("."))
+			className = sourceName.substring(sourceName.lastIndexOf(PERIOD) + 1, sourceName.length());
+//		System.out.println(className);
+		
 //		if (logger.isEnabledFor(level)) {
 		String uniqueIdentifier = getFileAndLine();
 		TimeAndCount lastTimeAndCount = lastLogged.get(uniqueIdentifier);
@@ -83,39 +107,39 @@ public class LogConsolidated {
 				} else {
 					// Print the log statement with counts
 					log(logger, level,
-							OPEN_BRACKET + lastTimeAndCount.count + CLOSED_BRACKET + className + COLON + message, t);
+							className	 
+							+ OPEN_BRACKET + lastTimeAndCount.count + CLOSED_BRACKET
+							+ COLON + message, t);
 				}
 			}
 		}
 
 		else {
 			// Print the log statement
-			log(logger, level, ONCE + className + COLON + message, t);
+			log(logger, level, className + ONCE + COLON + message, t);
 		}
 
 		// Register the message
 		lastLogged.put(uniqueIdentifier, new TimeAndCount());
 	}
 
-	/**
-	 * Logs given <code>message</code> to given <code>logger</code> as long as:
-	 * <ul>
-	 * <li>A message (from same class and line number) has not already been logged
-	 * within the past <code>timeBetweenLogs</code>.</li>
-	 * <li>The given <code>level</code> is active for given
-	 * <code>logger</code>.</li>
-	 * </ul>
-	 * Note: If messages are skipped, they are counted. When
-	 * <code>timeBetweenLogs</code> has passed, and a repeat message is logged, the
-	 * count will be displayed.
-	 * 
-	 * @param logger          Where to log.
-	 * @param level           Level to log.
-	 * @param timeBetweenLogs Milliseconds to wait between similar log messages.
-	 * @param message         The actual message to log.
-	 */
-	public static void log(Logger logger, Level level, long timeBetweenLogs, String sourceName, String message) {
-		log(logger, level, timeBetweenLogs, sourceName, message, null);
+	private static void log(Logger logger, Level level, String message, Throwable t) {
+
+//    	java.util.logging.Level l2 = null;
+//    	if (level == Level.INFO)
+//    		l2 =  java.util.logging.Level.INFO;
+//    	else if (level == Level.WARN || level == Level.ERROR)
+//    		l2 =  java.util.logging.Level.WARNING;
+//    	else if (level == Level.FATAL)
+//    		l2 =  java.util.logging.Level.SEVERE;
+
+		if (t == null) {
+			logger.log(level, message);
+
+		} else {
+			logger.log(level, message, t);
+		}
+
 	}
 
 //	public static void go(Level level, int timeBetweenLogs, StringBuffer sb) {
@@ -161,25 +185,6 @@ public class LogConsolidated {
 			}
 		}
 		return QUESTION;
-	}
-
-	private static void log(Logger logger, Level level, String message, Throwable t) {
-
-//    	java.util.logging.Level l2 = null;
-//    	if (level == Level.INFO)
-//    		l2 =  java.util.logging.Level.INFO;
-//    	else if (level == Level.WARN || level == Level.ERROR)
-//    		l2 =  java.util.logging.Level.WARNING;
-//    	else if (level == Level.FATAL)
-//    		l2 =  java.util.logging.Level.SEVERE;
-
-		if (t == null) {
-			logger.log(level, message);
-
-		} else {
-			logger.log(level, message, t);
-		}
-
 	}
 
 	public static boolean showRateLimit() {

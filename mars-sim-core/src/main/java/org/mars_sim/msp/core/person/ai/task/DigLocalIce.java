@@ -279,12 +279,15 @@ implements Serializable {
             LogConsolidated.log(logger, Level.INFO, 3000, sourceName, 
 	    		"[" + person.getLocationTag().getLocale() +  "] " +
 	    		person.getName() + " collected a total of " + Math.round(totalCollected*100D)/100D 
-	    		+ " kg of ice outside at " + person.getCoordinates().getFormattedString());
-            if (person.isOutside()) {
-            	setPhase(WALK_BACK_INSIDE);
-            }
-            else
-            	endTask();
+	    		+ " kg of ice outside at " + person.getCoordinates().getFormattedString() + ".");
+//          if (person.isOutside()) {
+//        	setPhase(WALK_BACK_INSIDE);
+//        }
+//        
+//        else {
+        	ended = true;
+        	endTask();
+//        }
         }
 
         if (fatigue > 750 || stress > 50 || hunger > 750 || energy < 1000) {
@@ -297,14 +300,20 @@ implements Serializable {
         		+ "; hunger: " + Math.round(hunger*10D)/10D 
         		+ "; energy: " + Math.round(energy*10D)/10D + " kJ");
             
-            if (person.isOutside()) {
-            	setPhase(WALK_BACK_INSIDE);
-            }
-            else
-            	endTask();
+//          if (person.isOutside()) {
+//        	setPhase(WALK_BACK_INSIDE);
+//        }
+//        
+//        else {
+        	ended = true;
+        	endTask();
+//        }
         }
 
      	if (person.isInSettlement()) {
+            LogConsolidated.log(logger, Level.INFO, 3000, sourceName, 
+            		"[" + person.getLocationTag().getLocale() +  "] " +
+            		person.getName() + " had already been back to the settlement."); 
         	ended = true;
         	endTask();
      	}

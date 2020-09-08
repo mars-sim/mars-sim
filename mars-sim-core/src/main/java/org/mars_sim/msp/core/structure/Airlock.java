@@ -10,18 +10,19 @@ package org.mars_sim.msp.core.structure;
 import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LogConsolidated;
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.mars.MarsSurface;
 import org.mars_sim.msp.core.person.Person;
@@ -30,6 +31,8 @@ import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.EnterAirlock;
 import org.mars_sim.msp.core.person.ai.task.ExitAirlock;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
+import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 
 // see discussions on Airlocks for Mars Colony at 
 // https://forum.nasaspaceflight.com/index.php?topic=42098.0
@@ -83,10 +86,10 @@ public abstract class Airlock implements Serializable {
 	private double remainingCycleTime;
 	
 	/** The locale information of the airlock. */
-//	private String locale ="";
+	private String locale = "";
 	
 	/** People currently in airlock. */
-    private volatile Collection<Integer> occupantIDs;
+    private volatile Set<Integer> occupantIDs;
 //	private Collection<Person> occupants;
 
 	/** The person currently operating the airlock. */
@@ -94,11 +97,11 @@ public abstract class Airlock implements Serializable {
 //	private Person operator;
     
 	/** People waiting for the airlock by the inner door. */
-    private volatile List<Integer> awaitingInnerDoor;
+    private volatile Set<Integer> awaitingInnerDoor;
 //	private List<Person> awaitingInnerDoor;
 
 	/** People waiting for the airlock by the outer door. */
-    private volatile List<Integer> awaitingOuterDoor;
+    private volatile Set<Integer> awaitingOuterDoor;
 
 	/** The lookup map for settlers. */
 	private volatile Map<Integer, Person> lookupPerson;
@@ -112,7 +115,7 @@ public abstract class Airlock implements Serializable {
 	 * @param capacity number of people airlock can hold.
 	 * @throws IllegalArgumentException if capacity is less than one.
 	 */
-	public Airlock(int capacity) throws IllegalArgumentException {
+	public Airlock(int capacity, Unit unit) throws IllegalArgumentException {
 
 		// Initialize data members
 		if (capacity < 1)
@@ -129,25 +132,48 @@ public abstract class Airlock implements Serializable {
 		operatorID = Integer.valueOf(-1);
 		
 		lookupPerson = new ConcurrentHashMap<>();
-		occupantIDs = new ConcurrentLinkedQueue<>();
-		awaitingInnerDoor = new ArrayList<>();
-		awaitingOuterDoor = new ArrayList<>();
+		occupantIDs = new HashSet<>();
+		awaitingInnerDoor = new HashSet<>();
+		awaitingOuterDoor = new HashSet<>();
 		
-//		if (getEntity() instanceof Building) {
-//			locale = ((Building)getEntity()).getLocationTag().getLocale();//.getBuildingManager().getSettlement().getName();
-//		}
-//		
-//		else if (getEntity() instanceof Vehicle) {
-//			locale = ((Vehicle)getEntity()).getLocationTag().getLocale();
-////			if (((Vehicle)getEntity()).getSettlement() != null) {
-////				locale = ((Vehicle)getEntity()).getSettlement().getName();
-////			}
-////			else {
-////				locale = ((Vehicle)getEntity()).getLocale();
-////			}
-//		}
+		if (unit instanceof Building) {
+			locale = ((Building)unit).getLocale();//.getBuildingManager().getSettlement().getName();
+		}
+		
+		else if (unit instanceof Vehicle) {
+			locale = ((Vehicle)unit).getLocale();
+//			if (((Vehicle)getEntity()).getSettlement() != null) {
+//				locale = ((Vehicle)getEntity()).getSettlement().getName();
+//			}
+//			else {
+//				locale = ((Vehicle)getEntity()).getLocale();
+//			}
+		}
 	}
 
+//	/**
+//	 * Activates the chamber for pressurization or depressurization
+//	 * 
+//	 * @return
+//	 */
+//	public boolean activateChamber() {
+//		boolean result = false;
+//		
+//		if (switchState()) {
+//			// Lock both doors
+//			innerDoorLocked = true;
+//			outerDoorLocked = true;
+//			// Reset the counter down timer to CYCLE_TIME
+//			remainingCycleTime = CYCLE_TIME;
+//			// To set 'activate' to true, the airlock must be at either Pressurized or Depressurized states. 
+//			activated = true;
+//			// Set it to true
+//			result = true;
+//		}
+//		
+//		return result;
+//	}
+	
 	/**
 	 * Enters a person into the airlock from either the inside or the outside. Inner
 	 * or outer door (respectively) must be unlocked for person to enter.
@@ -160,18 +186,48 @@ public abstract class Airlock implements Serializable {
 	 *         successfully
 	 */
 	public boolean enterAirlock(Person person, boolean inside) {
-		boolean result = false;
+		boolean result = true;
 
 		// Warning : do NOT use int id or else the list's method remove(int index) would be chosen to use
 		// List can't tell if the method remove(Object o) should be used.
 		Integer id = person.getIdentifier();
 		// Add the person's ID to the lookup map
-		addPersonID(person);
-		// Add the person's ID to the occupant ID list	
-		occupantIDs.add(id);
-		
-		if (!occupantIDs.contains(id) && (occupantIDs.size() < capacity)) {
+		addPersonID(person, id);
 
+		// Transfer from outer door queue into the airlock occupantIDs set
+		if (!occupantIDs.contains(id) && (occupantIDs.size() < capacity)) {
+			result = transferOne(person, id, inside);
+		}
+		
+		if (person.isOutside()) {
+			// Transfer the person from one container unit to another
+			result = result && transitionIn(person);
+		}
+		
+		else {
+			
+		}
+		
+		return result;
+	}
+	
+
+	/**
+	 * Transfer a person into the airlock chamber
+	 * 
+	 * @param person {@link Person} the person to enter the airlock
+	 * @param id the person's id
+	 * @param inside {@link boolean} <br/> <code>true</code> if person is entering from
+	 *               inside<br/>
+	 *               <code>false</code> if person is entering from outside
+	 * @return {@link boolean} <code>true</code> if person entered the airlock
+	 *         successfully
+	 */
+	private boolean transferOne(Person person, Integer id, boolean inside) {
+		boolean result = false;
+		// Transfer the person inside the chamber
+//		if (!occupantIDs.contains(id) && (occupantIDs.size() < capacity)) {
+			// Transfer the person into the chamber via the inner door
 			if (inside && !innerDoorLocked) {
 				if (awaitingInnerDoor.contains(id)) {
 					awaitingInnerDoor.remove((Integer)id);
@@ -181,10 +237,13 @@ public abstract class Airlock implements Serializable {
 					}
 				}
 				LogConsolidated.log(logger, Level.FINER, 0, sourceName,
-						"[" + person.getLocationTag().getLocale() + "] " 
+						"[" + person.getLocale() + "] " 
 							+ person.getName() + " entered through the inner door of the airlock at " + getEntityName());
 				result = true;
-			} else if (!inside && !outerDoorLocked) {
+			} 
+			
+			// Transfer the person into the chamber via the outer door
+			else if (!inside && !outerDoorLocked) {
 				if (awaitingOuterDoor.contains(id)) {
 					awaitingOuterDoor.remove((Integer)id);
 					
@@ -193,19 +252,20 @@ public abstract class Airlock implements Serializable {
 					}
 				}
 				LogConsolidated.log(logger, Level.FINER, 0, sourceName,
-						"[" + person.getLocationTag().getLocale() + "] " 
+						"[" + person.getLocale() + "] " 
 							+ person.getName() + " entered through the outer door of the airlock at " + getEntityName());
 				result = true;
 			}
 
 			if (result) {
+				// Add the person's ID to the occupant ID list
 				occupantIDs.add(id);
 			}
-		}
-
+//		}
+			
 		return result;
 	}
-
+	
 	/**
 	 * Activates the airlock if it is not already activated. Automatically closes
 	 * both doors and starts pressurizing/depressurizing.
@@ -214,118 +274,215 @@ public abstract class Airlock implements Serializable {
 	 * @return true if airlock successfully activated.
 	 */
 	public boolean activateAirlock(Person p) {
+		LogConsolidated.log(logger, Level.INFO, 0, sourceName, "[" + locale + "] "
+				+ getEntity() + " was being activated.");
 		
 		boolean result = false;
 
 		// Add the person's ID to the lookup map 
 		addPersonID(p);
+
+		if (switch2UnsteadyState()) {
+			result = true;
+			remainingCycleTime = CYCLE_TIME;
+			activated = true;
+		}
+		else 
+			result = false;
+		
+		if (!activated) {
+			result = transferAll();
+		}
 		
 		// if no operator assigned and there are occupants inside the airlock chamber, elect a new operator
 		if (occupantIDs.size() > 0 && operatorID == -1)
 			electAnOperator();
 		
-		if (!activated) {
-			
-			if (!innerDoorLocked) {
-				while ((occupantIDs.size() < capacity) && (awaitingInnerDoor.size() > 0)) {
+		return result;
+	}
 
-					Integer id = awaitingInnerDoor.get(0);
-					Person person = getPersonByID(id);
+	private boolean transferAll() {
+		boolean result = true;
+		
+		// Transfer of people 
+
+		if (!innerDoorLocked) {
+			// Transfer those waiting at the inner door into the airlock chamber
+			while ((occupantIDs.size() < capacity) && (awaitingInnerDoor.size() > 0)) {
+
+				// Grab the first one
+				Integer id = new ArrayList<>(awaitingInnerDoor).get(0);
+				Person person = getPersonByID(id);
+			
+		    	if (person == null) {
+		    		person = unitManager.getPersonByID(id);
+		    		lookupPerson.put(id, person);
+		    	}
 				
-			    	if (person == null) {
-			    		person = unitManager.getPersonByID(id);
-			    		lookupPerson.put(id, person);
-			    	}
-					
-					awaitingInnerDoor.remove((Integer)id);
+				awaitingInnerDoor.remove(id);
 
-					if (awaitingInnerDoor.contains(id)) {
-						throw new IllegalStateException(person + " was still awaiting inner door!");
-					}
-
-					if (!occupantIDs.contains(id)) {
-						LogConsolidated.log(logger, Level.FINER, 0, sourceName,
-								"[" + person.getLocationTag().getLocale() + "] " 
-									+ person.getName() + " entered through the inner door of the airlock at "
-									+ getEntityName());
-						occupantIDs.add(id);
-					}
-
+				if (awaitingInnerDoor.contains(id)) {
+					throw new IllegalStateException(person + " was still awaiting inner door!");
 				}
-				innerDoorLocked = true;
-			} else if (!outerDoorLocked) {
-				while ((occupantIDs.size() < capacity) && (awaitingOuterDoor.size() > 0)) {
 
-					Integer id = awaitingOuterDoor.get(0);
-					Person person = getPersonByID(id);
-					
-			    	if (person == null) {
-			    		person = unitManager.getPersonByID(id);
-			    		lookupPerson.put(id, person);
-			    	}
-					
-					awaitingOuterDoor.remove((Integer)id);
-
-					if (awaitingOuterDoor.contains(id)) {
-						throw new IllegalStateException(person + " still awaiting outer door!");
-					}
-
-					if (!occupantIDs.contains(id)) {
-						LogConsolidated.log(logger, Level.FINER, 0, sourceName,
-								"[" + person.getLocationTag().getLocale() + "] " 
-								+ person.getName() + " entered through the outer door of the airlock at "
+				if (!occupantIDs.contains(id)) {
+					LogConsolidated.log(logger, Level.FINER, 0, sourceName,
+							"[" + person.getLocale() + "] " 
+								+ person.getName() + " entered through the inner door of the airlock at "
 								+ getEntityName());
-						occupantIDs.add(id);
-					}
-
+					occupantIDs.add(id);
 				}
-				outerDoorLocked = true;
-
-				// operator.getBuildingLocation().getThermalGeneration().getHeating().flagHeatDumpViaAirlockOuterDoor(false);
-			} else {
-				return false;
 			}
+			innerDoorLocked = true;
+		} 
+		
+		else if (!outerDoorLocked) {
+			// Transfer those waiting at the outer door into the airlock chamber
+			while ((occupantIDs.size() < capacity) && (awaitingOuterDoor.size() > 0)) {
+				
+				// Grab the first one
+				Integer id = new ArrayList<>(awaitingOuterDoor).get(0);
+				Person person = getPersonByID(id);
+				
+		    	if (person == null) {
+		    		person = unitManager.getPersonByID(id);
+		    		lookupPerson.put(id, person);
+		    	}
+				
+		    	// transfer the person waiting at outer door to inside the chamber
+				awaitingOuterDoor.remove(id);
 
-			activated = true;
-			remainingCycleTime = CYCLE_TIME;
+				if (awaitingOuterDoor.contains(id)) {
+					throw new IllegalStateException(person + " still awaiting outer door!");
+				}
 
-			switchState();
-			
-//			if (AirlockState.PRESSURIZED == airlockState) {
-//				setState(AirlockState.DEPRESSURIZING);
-//			} else if (AirlockState.DEPRESSURIZED == airlockState) {
-//				setState(AirlockState.PRESSURIZING);
-//			} else {
-//				LogConsolidated.log(logger, Level.SEVERE, 5_000, sourceName,
-//						"[" + p.getLocationTag().getLocale() + "] " 
-//					+ p.getName() + " reported the airlock was having incorrect state for activation: '" + airlockState + "'.");
-//				return false;
-//			}
-			
-			result = true;
+				if (!occupantIDs.contains(id)) {
+					LogConsolidated.log(logger, Level.FINER, 0, sourceName,
+							"[" + person.getLocale() + "] " 
+							+ person.getName() + " entered through the outer door of the airlock at "
+							+ getEntityName());
+					occupantIDs.add(id);
+				}
+			}
+			outerDoorLocked = true;
+
+			// TODO: consider dumping or extracting heat 
+			// operator.getBuildingLocation().getThermalGeneration().getHeating().flagHeatDumpViaAirlockOuterDoor(false);
 		}
 		
 		else {
-			
-//			LogConsolidated.log(logger, Level.FINER, 0, sourceName,
-//					"[" + p.getLocationTag().getLocale() + "] " 
-//						+ p.getName() + " as the operator was getting ready to activate the airlock at "
-//						+ getEntityName());
+			// Not the right time to start the transfer
+			return false;
 		}
 
 		return result;
 	}
-
+	
 	/**
-	 * Switch the state from one to another
+	 * Switch the state from one unsteady state
 	 */
-	private void switchState() {
+	private boolean switch2UnsteadyState() {
+		if (AirlockState.PRESSURIZED == airlockState) {
+			setState(AirlockState.DEPRESSURIZING);	
+			return true;
+		} 
+		
+		if (AirlockState.DEPRESSURIZED == airlockState) {
+			setState(AirlockState.PRESSURIZING);
+			return true;
+		} 
+
+//			LogConsolidated.log(logger, Level.SEVERE, 5_000, sourceName,
+//				"[" + p.getLocale() + "] " 
+//					+ p.getName() + " reported the airlock was having incorrect state for activation: '" + airlockState + "'.");
+		
+		return false;
+	}
+	
+	/**
+	 * Checks if the chamber is pressurizing.
+	 * 
+	 * @return true if it's pressurizing
+	 */
+	public boolean isPressurizing() {
+		if (AirlockState.PRESSURIZING == airlockState) {
+			return true;
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * Checks if the chamber is depressurizing.
+	 * 
+	 * @return true if it's depressurizing
+	 */
+	public boolean isDepressurizing() {
+		if (AirlockState.DEPRESSURIZING == airlockState) {
+			return true;
+		}
+		
+		return false;
+	}
+	
+	public boolean setPressurizing() {
+		if (AirlockState.DEPRESSURIZED == airlockState) {
+		setState(AirlockState.PRESSURIZING);
+		return true;
+	}
+		
+		return false;
+	}
+
+	public boolean setDepressurizing() {
 		if (AirlockState.PRESSURIZED == airlockState) {
 			setState(AirlockState.DEPRESSURIZING);
-			
-		} else if (AirlockState.DEPRESSURIZED == airlockState) {
-			setState(AirlockState.PRESSURIZING);
-			
+			return true;
+		}
+		
+		return false;
+	}
+	
+	public boolean isDepressurized() {
+		if (AirlockState.DEPRESSURIZED == airlockState) {
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean isPressurized() {	
+		if (AirlockState.PRESSURIZED == airlockState) {
+			return true;
+		}	
+		return false;
+	}
+	
+	public boolean switch2SteadyState() {
+		if (AirlockState.PRESSURIZING == airlockState) {
+			setState(AirlockState.PRESSURIZED);
+			return true;
+		}
+		
+		if (AirlockState.DEPRESSURIZING == airlockState) {
+			setState(AirlockState.DEPRESSURIZED);
+			return true;
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * Add airlock cycle time.
+	 * 
+	 * @param time cycle time (millisols)
+	 * @return true if cycle time successfully added.
+	 */
+	public void turnOffChamber(double time) {
+		if (activated
+				&& AirlockState.DEPRESSURIZING != airlockState
+				&& AirlockState.PRESSURIZING != airlockState
+				) {
+			addCycleTime(time);
 		}
 	}
 	
@@ -342,7 +499,8 @@ public abstract class Airlock implements Serializable {
 		if (activated) {
 			remainingCycleTime -= time;
 			if (remainingCycleTime <= 0D) {
-				remainingCycleTime = 0D;
+				// Reset remainingCycleTime back to max
+				remainingCycleTime = CYCLE_TIME;
 				result = deactivateAirlock();
 			} else {
 				result = true;
@@ -352,6 +510,44 @@ public abstract class Airlock implements Serializable {
 		return result;
 	}
 
+	/**
+	 * Add airlock cycle time.
+	 * 
+	 * @param time cycle time (millisols)
+	 * @return true if cycle time successfully added.
+	 */
+	public void addTime(double time) {
+//		LogConsolidated.log(logger, Level.INFO, 4000, sourceName, "[" + locale + "] "
+//				+ getEntity() + " was adding time.");
+//		boolean result = false;
+
+		if (activated) {
+			remainingCycleTime -= time;
+			if (remainingCycleTime <= 0D) {
+				// the air cycle has been completed
+				// Reset remainingCycleTime to max
+				remainingCycleTime = CYCLE_TIME;
+				// Switch the airlock state to a steady state
+				switch2SteadyState();
+				LogConsolidated.log(logger, Level.INFO, 4000, sourceName, 
+						"[" + locale + "] Done with the air cycling in "
+						+ getEntity() + ".");
+			} else {
+//				result = true;
+			}
+		}
+
+//		return result;
+	}
+	
+	public void setActivated(boolean value) {
+		LogConsolidated.log(logger, Level.INFO, 4000, sourceName, "[" + locale + "] "
+				+ getEntity() + " was being activated.");
+		activated = value;
+		remainingCycleTime = CYCLE_TIME;
+	}
+	
+	
 	/**
 	 * Is this person the airlock operator ?
 	 * 
@@ -380,7 +576,7 @@ public abstract class Airlock implements Serializable {
 		
 		if (operatorID != id) {
 			operatorID = id;
-			LogConsolidated.log(logger, Level.FINER, 4_000, sourceName, "[" + p.getLocationTag().getLocale() + "] "
+			LogConsolidated.log(logger, Level.FINER, 4_000, sourceName, "[" + p.getLocale() + "] "
 					+ p + " stepped up becoming the operator of the airlock.");
 		}
 	}
@@ -389,9 +585,11 @@ public abstract class Airlock implements Serializable {
 	 * Elects an operator with the best EVA skill level/experiences
 	 */
 	private void electAnOperator() {
-		if (operatorID > 0 && !occupantIDs.contains(operatorID))
-			occupantIDs.add(operatorID);
+		// Just in case the current operator is not in occupantIDs
+//		if (operatorID > 0 && !occupantIDs.contains(operatorID))
+//			occupantIDs.add(operatorID);
 		
+		// Select a person to become the operator
 		Person selected = null;
 		Integer selectedID = Integer.valueOf(-1);
 		int size = occupantIDs.size();
@@ -401,8 +599,8 @@ public abstract class Airlock implements Serializable {
 			int id = list.get(0);
 			operatorID = id;
 			selected = getPersonByID(id);
-			LogConsolidated.log(logger, Level.FINER, 4_000, sourceName, "[" + selected.getLocationTag().getLocale() + "] "
-					+ selected + " stepped up to be the airlock operator in " 
+			LogConsolidated.log(logger, Level.FINER, 4_000, sourceName, "[" + selected.getLocale() + "] "
+					+ selected + " stepped up becoming the airlock operator in " 
 					+ selected.getLocationTag().getImmediateLocation() + ".");
 		}
 		
@@ -435,7 +633,7 @@ public abstract class Airlock implements Serializable {
 			
 			operatorID = selectedID;
 			
-			LogConsolidated.log(logger, Level.INFO, 0, sourceName, "[" + selected.getLocationTag().getLocale() + "] "
+			LogConsolidated.log(logger, Level.INFO, 4000, sourceName, "[" + selected.getLocale() + "] "
 					+ selected + " stepped up to be the airlock operator in " 
 					+ selected.getLocationTag().getImmediateLocation() + ".");
 		}
@@ -448,7 +646,9 @@ public abstract class Airlock implements Serializable {
 	 * @return true if airlock was deactivated successfully.
 	 */
 	public boolean deactivateAirlock() {
-
+		LogConsolidated.log(logger, Level.INFO, 4000, sourceName, "[" + locale + "] "
+				+ getEntity() + " was being deactivated.");
+		
 		boolean result = false;
 
 		if (activated) {
@@ -472,6 +672,7 @@ public abstract class Airlock implements Serializable {
 				occupantIDs.clear();
 				operatorID = Integer.valueOf(-1);
 				result = true;
+				remainingCycleTime = CYCLE_TIME;
 			}
 			else {
 				result = false;
@@ -482,14 +683,38 @@ public abstract class Airlock implements Serializable {
 	}
 
 	/**
+	 * Makes the transition from one location state into another
+	 * 
+	 * @param p
+	 * @return
+	 */
+	public boolean transitionIn(Person p) {
+//		Integer id = p.getIdentifier();
+		
+		// Ensure that the person is in the lookup map
+		addPersonID(p);	
+    	
+		LogConsolidated.log(logger, Level.INFO, 4000, sourceName,
+				"[" + p.getLocale() + "] " + p.getName()
+				+ " was ready to make a location state transition in " 
+				+ getEntity().toString() + ".");
+		
+		// Call in BuildingAirlock or VehicleAirlock
+		return ingress(p);
+	}
+	
+	/**
 	 * Iterates through each occupant to exit the airlock
 	 * 
 	 * @param true if the exit is successful
 	 */
 	public boolean leaveAirlock() {
+		LogConsolidated.log(logger, Level.INFO, 4000, sourceName, "[" + locale + "] "
+				+ getEntity() + " called leaveAirlock().");
 		boolean successful = true;
+		
 		Iterator<Integer> i = occupantIDs.iterator();
-		while (i.hasNext()) {	
+		while (i.hasNext()) {
 			Integer id = i.next();
 			Person p = getPersonByID(id);
 	    	if (p == null) {
@@ -499,26 +724,32 @@ public abstract class Airlock implements Serializable {
 	    		lookupPerson.put(id, p);
 	    	}
 	    	
-			LogConsolidated.log(logger, Level.FINER, 0, sourceName,
-					"[" + p.getLocationTag().getLocale() + "] " + p.getName()
-					+ " reported that the airlock in " + getEntity() + " had been " 
+			LogConsolidated.log(logger, Level.INFO, 4000, sourceName,
+					"[" + p.getLocale() + "] " + p.getName()
+					+ " reported that " + getEntity() + " had been " 
 					+ getState().toString().toLowerCase() + ".");
 			
 			// Call exitAirlock() in BuildingAirlock or VehicleAirlock
-			// for changing the state of its container unit, namely, the EVA suit
-			successful = successful && exitAirlock(p);
+			successful = successful && egress(p);
 		}
 		
 		return successful;
 	}
 	
 	/**
-	 * Causes a person within the airlock to exit either inside or outside.
+	 * Causes a person to do an EVA egress.
 	 * 
-	 * @param occupant the person to exit.
+	 * @param occupant the person exiting the settlement .
 	 */
-	protected abstract boolean exitAirlock(Person occupant);
+	protected abstract boolean egress(Person occupant);
 
+	/**
+	 * Causes a person to do an EVA ingress.
+	 * 
+	 * @param occupant the person entering the settlement .
+	 */
+	protected abstract boolean ingress(Person occupant);
+	
 	/**
 	 * Checks if the airlock's outer door is locked.
 	 * 
@@ -528,6 +759,8 @@ public abstract class Airlock implements Serializable {
 		return outerDoorLocked;
 	}
 
+
+	
 	/**
 	 * Checks if the airlock's inner door is locked.
 	 * 
@@ -537,6 +770,25 @@ public abstract class Airlock implements Serializable {
 		return innerDoorLocked;
 	}
 
+	/**
+	 * Sets the airlock's inner door locked to true or false
+	 * 
+	 * @param lock 
+	 */
+	public void setInnerDoorLocked(boolean lock) {
+		innerDoorLocked = lock;
+	}
+	
+	/**
+	 * Sets the airlock's outer door locked to true or false
+	 * 
+	 * @param lock 
+	 */
+	public void setOuterDoorLocked(boolean lock) {
+		outerDoorLocked = lock;
+	}
+	
+	
 	/**
 	 * Checks if the airlock is currently activated.
 	 * 
@@ -605,7 +857,7 @@ public abstract class Airlock implements Serializable {
 			loc = loc == null ? "[N/A]" : loc;
 			loc = loc.equalsIgnoreCase("Outside") ? loc.toLowerCase() : "in " + loc;
 			
-			LogConsolidated.log(logger, Level.FINER, 4000, sourceName, "[" + p.getLocationTag().getLocale() + "] "
+			LogConsolidated.log(logger, Level.FINER, 4000, sourceName, "[" + p.getLocale() + "] "
 					+ p.getName() + " was " + loc 
 					+ " queuing for the interior door of the airlock chamber to open.");
 			
@@ -613,12 +865,17 @@ public abstract class Airlock implements Serializable {
 		}
 	}
 
+	public int getNumAwaitingInnerDoor() {
+		return awaitingInnerDoor.size();
+	}
+	
 	/**
 	 * Adds person to queue awaiting airlock by outer door.
 	 * 
 	 * @param person the person to add to the awaiting queue.
 	 */
-	public void addAwaitingAirlockOuterDoor(Person p) {
+	public boolean addAwaitingAirlockOuterDoor(Person p) {
+
 		// Add the person's ID to the lookup map
 		addPersonID(p);
 		
@@ -628,14 +885,39 @@ public abstract class Airlock implements Serializable {
 			loc = loc == null ? "[N/A]" : loc;
 			loc = loc.equalsIgnoreCase("Outside") ? loc.toLowerCase() : "in " + loc;
 			
-			LogConsolidated.log(logger, Level.FINER, 4000, sourceName, "[" + p.getLocationTag().getLocale() + "] "
+			LogConsolidated.log(logger, Level.FINER, 4000, sourceName, "[" + p.getLocale() + "] "
 					+ p.getName() + " was " + loc 
 					+ " queuing for the exterior door of the airlock chamber to open.");
 			
 			awaitingOuterDoor.add(p.getIdentifier());
+			
+			return true;
 		}
+		
+		return false;
 	}
 
+	/**
+	 * Gets the number of people waiting at the outer door
+	 * 
+	 * @return
+	 */
+	public int getNumAwaitingOuterDoor() {
+		return awaitingOuterDoor.size();
+	}
+	
+	/**
+	 * Checks if anyone is waiting at the outer door
+	 * 
+	 * @return
+	 */
+	public boolean hasAwaitingOuterDoor() {
+		if (awaitingOuterDoor.size() == 0)
+			return false;
+		
+		return true;
+	}
+	
 	/**
 	 * Time passing for airlock. Check for unusual situations and deal with them.
 	 * Called from the unit owning the airlock.
@@ -665,11 +947,12 @@ public abstract class Airlock implements Serializable {
 				// Check if operator is dead.
 				if (isDead) {
 					
-					deactivateAirlock();
+					if (occupantIDs.isEmpty())
+						turnOffChamber(time);
 					
 					// If operator is dead, deactivate airlock.
 					String operatorName = p.getName();
-					LogConsolidated.log(logger, Level.WARNING, 10_000, sourceName, "[" + p.getLocationTag().getLocale() + "] "
+					LogConsolidated.log(logger, Level.WARNING, 10_000, sourceName, "[" + p.getLocale() + "] "
 							+ "Airlock operator " + operatorName + " was dead.");
 				}
 				
@@ -687,20 +970,37 @@ public abstract class Airlock implements Serializable {
 						task = task.getSubTask();
 					}
 
+					if (task != null) {
+						if ((task instanceof ExitAirlock) || (task instanceof EnterAirlock)
+								|| (task instanceof EVAOperation) ) {
+							hasAirlockTask = hasAirlockTask || true;
+						}
+						task = task.getSubTask();
+					}
+					
+					if (task != null) {
+						if ((task instanceof ExitAirlock) || (task instanceof EnterAirlock)
+								|| (task instanceof EVAOperation) ) {
+							hasAirlockTask = hasAirlockTask || true;
+						}
+					}
+					
 					if (!hasAirlockTask) {
 						String operatorName = p.getName();
-						LogConsolidated.log(logger, Level.FINE, 10_000, sourceName, "[" + p.getLocationTag().getLocale() + "] "
+						LogConsolidated.log(logger, Level.FINE, 10_000, sourceName, "[" + p.getLocale() + "] "
 								+ operatorName 
 								+ " was no longer being the airlock operator at " + getEntityName());
 						
-						deactivateAirlock();
+						if (occupantIDs.isEmpty())
+							turnOffChamber(time);
 					}
 				}
 			}
 			
 			else {
 				// If no operator and no occupants, deactivate airlock.
-				deactivateAirlock();
+				if (occupantIDs.isEmpty())
+					turnOffChamber(time);
 //				LogConsolidated.log(logger, Level.FINER, 4000, sourceName, 
 //						"Without an operator, the airlock in " 
 //						+ getEntityName() + " got deactivated.");		
@@ -770,14 +1070,40 @@ public abstract class Airlock implements Serializable {
 	 */
 	public abstract Point2D getAvailableAirlockPosition();
 
-//    public Collection<Unit> getOccupants() {
-//    	return occupants;
-//    }
-
-	public Collection<Integer> getOccupants() {
+	/**
+	 * Gets a collection of occupants' ids
+	 * 
+	 * @return
+	 */
+	public Set<Integer> getOccupants() {
 		return occupantIDs;
 	}
 
+	/**
+	 * Gets the number of occupants currently inside the airlock
+	 * 
+	 * @return
+	 */
+	public int getNumOccupants() {
+		return occupantIDs.size();
+	}
+	
+	/**
+	 * Checks if there is no occupants inside the airlock
+	 * 
+	 * @return true if the airlock is empty
+	 */
+	public boolean isEmpty() {
+		return occupantIDs.isEmpty();
+	}
+	
+	public boolean hasSpace() {
+		if (occupantIDs.size() < capacity)
+			return true;
+		
+		return false;
+	}
+	
 	public void addCheckEVASuit() {
 		numEVASuitChecks++;
 	}
@@ -824,7 +1150,18 @@ public abstract class Airlock implements Serializable {
 			lookupPerson.put(p.getIdentifier(), p);
 	}
 	
-
+	/**
+	 * Add a person's ID to the lookup map for person inside the airlock
+	 * 	
+	 * @param p
+	 */
+	public void addPersonID(Person p, Integer id) {
+		if (lookupPerson == null)
+			lookupPerson = new HashMap<>();
+		if (p != null && !lookupPerson.containsKey(id))
+			lookupPerson.put(id, p);
+	}
+	
 	/**
 	 * Initializes instances
 	 * 

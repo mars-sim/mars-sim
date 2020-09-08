@@ -1008,15 +1008,14 @@ public class BuildingManager implements Serializable {
 		Settlement settlement = vehicle.getSettlement();
 		// The following block of codes are for FIXING invalid states and setting them straight
 		Building garageBldg = getBuilding(vehicle, settlement);
-		if (vehicle.haveStatusType(StatusType.GARAGED) && garageBldg != null) {
-			if (vehicle.getSettlement() == null) {
-				// Stores this vehicle to the settlement
-				settlement.getInventory().storeUnit(vehicle);
-			}
-//			else { 
-//				LogConsolidated.log(logger, Level.INFO, 4000, sourceName,
-//					"[" + settlement.getName() + "] " + vehicle.getName() + " already garaged in " + garageBldg);
-//			}
+		if (garageBldg != null) {
+			
+			if (!vehicle.haveStatusType(StatusType.GARAGED))
+				vehicle.addStatus(StatusType.GARAGED);
+			
+				LogConsolidated.log(logger, Level.INFO, 4000, sourceName,
+					"[" + settlement.getName() + "] " + vehicle.getName() 
+					+ " already garaged in " + garageBldg);
 			return true;
 		}
 		
@@ -1033,14 +1032,13 @@ public class BuildingManager implements Serializable {
 			if (openGarages.size() > 0) {
 				int rand = RandomUtil.getRandomInt(openGarages.size() - 1);
 				openGarages.get(rand).addVehicle(vehicle);
-				if (vehicle.getSettlement() == null) {
-					// Place this vehicle inside a building
-	//				vehicle.enter(LocationCodeType.BUILDING);
-					settlement.getInventory().storeUnit(vehicle);
-					LogConsolidated.log(logger, Level.INFO, 4000, sourceName,
-							"[" + settlement.getName() + "] " +  vehicle.getName() + " has just been stowed inside " + getBuilding(vehicle, settlement));
+				
+				if (!vehicle.haveStatusType(StatusType.GARAGED))
 					vehicle.addStatus(StatusType.GARAGED);
-				}
+				
+				LogConsolidated.log(logger, Level.INFO, 4000, sourceName,
+						"[" + settlement.getName() + "] " +  vehicle.getName() 
+						+ " has just been stowed inside " + getBuilding(vehicle, settlement));
 				return true;
 			}
 			

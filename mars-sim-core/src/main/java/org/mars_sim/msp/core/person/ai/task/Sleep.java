@@ -529,7 +529,7 @@ public class Sleep extends Task implements Serializable {
 				// TODO: assess how well this work
 //			}
 //    		logger.info(robot.getNickName() + " was done sleeping and waking up.");
-			walkToAssignedDutyLocation(robot, false);
+			walkToAssignedDutyLocation(robot, true);
 		}
 		
 		super.endTask();
