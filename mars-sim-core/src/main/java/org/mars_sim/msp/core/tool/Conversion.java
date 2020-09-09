@@ -112,7 +112,9 @@ public class Conversion {
 			char[] charArray = input.toCharArray();
 			int index = 0;
 			for (char c : charArray) {
-				if (Character.isSpaceChar(c) || c == '(') {
+				if (Character.isSpaceChar(c) 
+						|| c == '('
+						|| c == '-') {
 					nextTitleCase = true;
 				} else if (nextTitleCase) {
 					// Check if it is "And" string and skip making the 'a' upper-case

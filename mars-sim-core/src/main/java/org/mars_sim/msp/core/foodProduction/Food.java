@@ -22,15 +22,15 @@ implements Serializable, Comparable<Food> {
 	private String name;
 	private Class<?> classType;
 	private Object object;
-	private FoodType category;
+	private FoodType foodType;
 
 	/**
 	 * Constructor with object.
 	 * @param name the name of the food.
 	 * @param object the food's object if any.
-	 * @param category the food's category.
+	 * @param foodType the food's category.
 	 */
-	Food(String name, Object object, FoodType category) {
+	Food(String name, Object object, FoodType foodType) {
 		if (name != null) this.name = name.trim().toLowerCase();
 		else throw new IllegalArgumentException("name cannot be null.");
 
@@ -40,42 +40,49 @@ implements Serializable, Comparable<Food> {
 		}
 		else throw new IllegalArgumentException("object cannot be null.");
 
-		if (isValidCategory(category)) this.category = category;
-		else throw new IllegalArgumentException("category: " + category + " not valid.");
+//		if (isValidCategory(category)) this.category = category;
+//		else throw new IllegalArgumentException("category: " + category + " not valid.");
 	}
 
-	/**
-	 * Constructor with class.
-	 * @param name the name of the food.
-	 * @param classType the food's class.
-	 * @param category {@link FoodType} the food's category.
-	 */
-	Food(String name, Class<?> classType, FoodType category) {
-		if (name != null) this.name = name.trim().toLowerCase();
-		else throw new IllegalArgumentException("name cannot be null.");
+//	/**
+//	 * Constructor with class.
+//	 * @param name the name of the food.
+//	 * @param classType the food's class.
+//	 * @param category {@link FoodType} the food's category.
+//	 */
+//	Food(String name, Class<?> classType, FoodType category) {
+//		if (name != null) this.name = name.trim().toLowerCase();
+//		else throw new IllegalArgumentException("name cannot be null.");
+//
+//		if (classType != null) this.classType = classType;
+//		else throw new IllegalArgumentException("classType cannot be null.");
+//
+//		if (isValidCategory(category)) this.category = category;
+//		else throw new IllegalArgumentException("category: " + category + " not valid.");
+//	}
 
-		if (classType != null) this.classType = classType;
-		else throw new IllegalArgumentException("classType cannot be null.");
-
-		if (isValidCategory(category)) this.category = category;
-		else throw new IllegalArgumentException("category: " + category + " not valid.");
-	}
-
-	/**
-	 * Checks if a category string is valid.
-	 * @param category the category enum to check.
-	 * @return true if valid category.
-	 */
-	private static boolean isValidCategory(FoodType category) {
-		boolean result = false;
-
-		if (FoodType.AMOUNT_RESOURCE == category) result = true;
-		//else if (FoodType.ITEM_RESOURCE == category) result = true;
-		//else if (FoodType.EQUIPMENT == category) result = true;
-		//else if (FoodType.VEHICLE == category) result = true;
-
-		return result;
-	}
+//	/**
+//	 * Checks if a FoodType is valid.
+//	 * 
+//	 * @param category the category enum to check.
+//	 * @return true if valid category.
+//	 */
+//	private static boolean isValidCategory(FoodType category) {
+//		boolean result = false;
+//
+//		if (FoodType.ANIMAL == category
+//			|| FoodType.CHEMICAL == category
+//			|| FoodType.CROP == category
+//			|| FoodType.DERIVED == category
+//			|| FoodType.INSECT == category
+//			|| FoodType.OIL == category
+//			|| FoodType.ORGANISM == category
+//			|| FoodType.SOY_BASED == category
+//			|| FoodType.TISSUE == category) 
+//			result = true;
+//
+//		return result;
+//	}
 
 	/**
 	 * Gets the food's name.
@@ -102,11 +109,11 @@ implements Serializable, Comparable<Food> {
 	}
 
 	/**
-	 * Gets the food's category enum.
-	 * @return category.
+	 * Gets the food type enum.
+	 * @return foodType.
 	 */
-	public FoodType getCategory() {
-		return category;
+	public FoodType getFoodType() {
+		return foodType;
 	}
 
 	/**
@@ -131,7 +138,7 @@ implements Serializable, Comparable<Food> {
 			if (this.object != null) {
 				if (!this.object.equals(food.object)) result = false;
 			}
-			if (!category.equals(food.category)) result = false;
+			if (!foodType.equals(food.foodType)) result = false;
 		}
 		else result = false;
 
@@ -144,7 +151,7 @@ implements Serializable, Comparable<Food> {
 	public int hashCode() {
 		int hashCode = name.hashCode() * getClass().hashCode();
 		if (object != null) hashCode *= object.hashCode();
-		hashCode *= category.hashCode();
+		hashCode *= foodType.hashCode();
 		return hashCode;
 	}
 

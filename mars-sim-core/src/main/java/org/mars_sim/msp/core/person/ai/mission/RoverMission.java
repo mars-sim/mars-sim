@@ -498,7 +498,7 @@ public abstract class RoverMission extends VehicleMission {
 	 * @param disembarkSettlement
 	 */
 	public void disembark(MissionMember member, Vehicle v, Settlement disembarkSettlement) {
-		LogConsolidated.log(logger, Level.INFO, 0, sourceName,
+		LogConsolidated.log(logger, Level.INFO, 10_000, sourceName,
 				"[" + v.getLocationTag().getLocale() + "] " + v.getName() 
 				+ " was being disemabarked at " + disembarkSettlement.getName() + ".");
 		

@@ -82,7 +82,7 @@ public class CommanderWindow extends ToolWindow {
 	public static final String CAN_INITIATE = "Can initiate Trading Mission";
 	public static final String CANNOT_INITIATE = "Cannot initiate Trading Mission";
 	public static final String ACCEPT = "Accept Trading initiated by other settlements";
-	public static final String ACCEPT_NO = "Accept no Trading initiated by other settlements";
+	public static final String ACCEPT_NO = "Accept NO Trading initiated by other settlements";
 	public static final String SEE_RIGHT = ".    -->";
 	
 	// Private members
@@ -386,9 +386,6 @@ public class CommanderWindow extends ToolWindow {
 			r0.setSelected(true);
 			r1.setSelected(false);
 		}
-			
-		r2 = new JRadioButton(ACCEPT_NO);
-		r3 = new JRadioButton(ACCEPT, true);
 
 		// Set up initial conditions
 		boolean noTrading = false;
@@ -402,6 +399,8 @@ public class CommanderWindow extends ToolWindow {
 //				}
 //			}
 //		}
+		r2 = new JRadioButton(ACCEPT_NO, noTrading);
+		r3 = new JRadioButton(ACCEPT, !noTrading);
 		
 		WebLabel selectLabel = new WebLabel(" Choose :");
 		selectLabel.setMinimumSize(new Dimension(150, 25));
@@ -454,6 +453,7 @@ public class CommanderWindow extends ToolWindow {
 		
 		group0.add(r0);
 		group0.add(r1);
+		
 		group1.add(r2);
 		group1.add(r3);
 		
@@ -480,15 +480,16 @@ public class CommanderWindow extends ToolWindow {
 	        } else if (button == r1) {
 	        	settlement.setMissionDisable(Trade.DEFAULT_DESCRIPTION, true);
 	        } else if (button == r2) {
-	        	SwingUtilities.invokeLater(() -> {
-					r3.setText(ACCEPT);
-//					System.out.println("r2 selected");
+//	        	SwingUtilities.invokeLater(() -> {
+					System.out.println("r2 selected");
 		        	disableAllCheckedSettlement();
 	//	        	settlementMissionList.setEnabled(false);
+					r3.setText(ACCEPT);
 					policyMainPanel.remove(WebScrollPane);
 					policyMainPanel.add(emptyPanel, BorderLayout.EAST);
-	        	});
+//	        	});
 	        } else if (button == r3) {
+				System.out.println("r3 selected");
 //	        	changed = true;
 //	        	settlementMissionList.setEnabled(true);
 				r3.setText(ACCEPT + SEE_RIGHT);

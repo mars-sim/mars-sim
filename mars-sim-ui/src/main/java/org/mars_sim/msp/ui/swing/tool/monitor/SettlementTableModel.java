@@ -138,9 +138,9 @@ public class SettlementTableModel extends UnitTableModel {
 		super(Msg.getString("SettlementTableModel.tabName"), "SettlementTableModel.countingSettlements", //$NON-NLS-2$
 				columnNames, columnTypes);
 
-		if (GameManager.mode == GameMode.COMMAND)
-			addUnit(unitManager.getCommanderSettlement());
-		else
+//		if (GameManager.mode == GameMode.COMMAND)
+//			addUnit(unitManager.getCommanderSettlement());
+//		else
 			setSource(unitManager.getSettlements());
 		
 		unitManagerListener = new LocalUnitManagerListener();

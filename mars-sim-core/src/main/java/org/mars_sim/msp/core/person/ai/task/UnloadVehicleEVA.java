@@ -38,6 +38,7 @@ import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Crewable;
+import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.Towing;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -104,9 +105,14 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 				vehicle = nonMissionVehicles.get(RandomUtil.getRandomInt(nonMissionVehicles.size() - 1));
 			}
 		}
-
+		
 		if (vehicle != null) {
-
+			// Add the rover to a garage if possible.
+			boolean	isRoverInAGarage = BuildingManager.addToGarage((GroundVehicle)vehicle);
+			if (isRoverInAGarage)
+				// no need of doing EVA
+				endTask();
+			
 			// Determine location for unloading.
 			Point2D unloadingLoc = determineUnloadingLocation();
 			setOutsideSiteLocation(unloadingLoc.getX(), unloadingLoc.getY());
@@ -125,12 +131,6 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 			endTask();
 		}
 	}
-
-//	public UnloadVehicleEVA(Robot robot) {
-//		// Use EVAOperation constructor.
-//		super(NAME, robot, true, RandomUtil.getRandomDouble(50D) + 10D);
-//
-//	}
 
 	/**
 	 * Constructor
@@ -166,11 +166,6 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 //		logger.fine(person.getName() + " is unloading " + vehicle.getName());
 	}
 
-//	public UnloadVehicleEVA(Robot robot, Vehicle vehicle) {
-//		// Use EVAOperation constructor.
-//		super("Unloading vehicle EVA", robot, true, RandomUtil.getRandomDouble(50D) + 10D);
-//
-//	}
 
 	/**
 	 * Gets a list of vehicles that need unloading and aren't reserved for a
@@ -415,12 +410,12 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 				amountUnloading -= equipment.getMass();
 				
 				if (person != null)
-					LogConsolidated.log(logger, Level.INFO, 3_000, sourceName, 
+					LogConsolidated.log(logger, Level.INFO, 10_000, sourceName, 
 						"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
 //						+ person.getLocationTag().getImmediateLocation().toLowerCase() 
 						+ " unloaded " + equipment.getNickName() + " from " + vehicle.getName() + ".", null);
 				else
-					LogConsolidated.log(logger, Level.INFO, 3_000, sourceName, 
+					LogConsolidated.log(logger, Level.INFO, 10_000, sourceName, 
 						"[" + robot.getLocationTag().getLocale() + "] " + robot.getName() 
 //						+ robot.getLocationTag().getImmediateLocation().toLowerCase() 
 						+ " unloaded " + equipment.getNickName() + " from " + vehicle.getName() + ".", null);
@@ -469,12 +464,12 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 		
 		if (totalAmount > 0) {
 			if (person != null)
-				LogConsolidated.log(logger, Level.INFO, 3_000, sourceName, 
+				LogConsolidated.log(logger, Level.INFO, 10_000, sourceName, 
 				"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
 //				+ person.getLocationTag().getImmediateLocation() 
 				+ " just unloaded a total of " + Math.round(totalAmount*100.0)/100.0 + " kg of resources from " + vehicle.getName() + ".", null);
 			else
-				LogConsolidated.log(logger, Level.INFO, 3_000, sourceName, 
+				LogConsolidated.log(logger, Level.INFO, 10_000, sourceName, 
 				"[" + robot.getLocationTag().getLocale() + "] " + robot.getName() 
 //				+ robot.getLocationTag().getImmediateLocation() 
 				+ " just unloaded a total of " + Math.round(totalAmount*100.0)/100.0 + " kg of resources from " + vehicle.getName() + ".", null);
@@ -504,12 +499,12 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 			
 			if (totalItems > 0) {
 				if (person != null)
-					LogConsolidated.log(logger, Level.INFO, 3_000, sourceName, 
+					LogConsolidated.log(logger, Level.INFO, 10_000, sourceName, 
 						"[" + person.getLocationTag().getLocale() + "] " + person.getName() 
 //						+ " in " + person.getLocationTag().getImmediateLocation() 
 						+ " just unloaded a total of " + totalItems + " items from " + vehicle.getName() + ".", null);
 				else
-					LogConsolidated.log(logger, Level.INFO, 3_000, sourceName, 
+					LogConsolidated.log(logger, Level.INFO, 10_000, sourceName, 
 						"[" + robot.getLocationTag().getLocale() + "] " + robot.getName() 
 //						+ " in " + robot.getLocationTag().getImmediateLocation() 
 						+ " just unloaded a total of " + totalItems + " items from " + vehicle.getName() + ".", null);

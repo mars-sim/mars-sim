@@ -210,9 +210,9 @@ public final class FoodProductionUtil {
 		} else if (item.getType().equals(ItemType.EQUIPMENT)) {
 			Good good = GoodsUtil.getEquipmentGood(EquipmentFactory.getEquipmentClass(item.getName()));
 			result = manager.getGoodValuePerItem(good) * item.getAmount();
-		} else if (item.getType().equals(ItemType.VEHICLE)) {
-			Good good = GoodsUtil.getVehicleGood(item.getName());
-			result = manager.getGoodValuePerItem(good) * item.getAmount();
+//		} else if (item.getType().equals(ItemType.VEHICLE)) {
+//			Good good = GoodsUtil.getVehicleGood(item.getName());
+//			result = manager.getGoodValuePerItem(good) * item.getAmount();
 		} else
 			throw new IllegalStateException("Item type: " + item.getType() + " not valid.");
 
@@ -286,50 +286,6 @@ public final class FoodProductionUtil {
 	}
 
 	/**
-	 * Checks if enough storage room for process outputs in an inventory.
-	 * 
-	 * @param process the foodProduction process.
-	 * @param inv     the inventory.
-	 * @return true if storage room.
-	 * @throws Exception if error determining storage room for outputs.
-	 * 
-	 * 
-	 *                   private static final boolean
-	 *                   canProcessOutputsBeStored(FoodProductionProcessInfo
-	 *                   process, Inventory inv) { boolean result = true;
-	 * 
-	 *                   Iterator<FoodProductionProcessItem> j =
-	 *                   process.getOutputList().iterator(); while (j.hasNext()) {
-	 *                   FoodProductionProcessItem item = j.next(); if
-	 *                   (FoodProductionProcessItem.AMOUNT_RESOURCE.equalsIgnoreCase(item.getType()))
-	 *                   { AmountResource resource =
-	 *                   ResourceUtil.findAmountResource(item.getName()); double
-	 *                   capacity = inv.getAmountResourceRemainingCapacity(resource,
-	 *                   true); if (item.getAmount() > capacity) result = false; }
-	 *                   else if
-	 *                   (FoodProductionProcessItem.PART.equalsIgnoreCase(item.getType()))
-	 *                   { Part part = (Part)
-	 *                   ItemResource.findItemResource(item.getName()); double mass
-	 *                   = item.getAmount() * part.getMassPerItem(); double capacity
-	 *                   = inv.getGeneralCapacity(); if (mass > capacity) result =
-	 *                   false; } else if
-	 *                   (FoodProductionProcessItem.EQUIPMENT.equalsIgnoreCase(item.getType()))
-	 *                   { String equipmentType = item.getName(); int number = (int)
-	 *                   item.getAmount(); Equipment equipment =
-	 *                   EquipmentFactory.getEquipment(equipmentType, new
-	 *                   Coordinates(0D, 0D), true); double mass =
-	 *                   equipment.getBaseMass() * number; double capacity =
-	 *                   inv.getGeneralCapacity(); if (mass > capacity) result =
-	 *                   false; } //else if
-	 *                   (FoodProductionProcessItem.VEHICLE.equalsIgnoreCase(item.getType()))
-	 *                   { // Vehicles are stored outside a settlement. } else throw
-	 *                   new BuildingException("FoodProduction.addProcess(): output:
-	 *                   " + item.getType() + " not a valid type."); }
-	 * 
-	 *                   return result; }
-	 */
-
-	/**
 	 * Checks if settlement has buildings with food production function.
 	 * 
 	 * @param settlement the settlement.
@@ -383,9 +339,9 @@ public final class FoodProductionUtil {
 			Class<? extends Equipment> equipmentClass = EquipmentFactory.getEquipmentClass(item.getName());
 			result = GoodsUtil.getEquipmentGood(equipmentClass);
 		}
-		// else if (Type.VEHICLE.equals(item.getType())) {
-		// result = GoodsUtil.getVehicleGood(item.getName());
-		// }
+//		 else if (Type.VEHICLE.equals(item.getType())) {
+//		 result = GoodsUtil.getVehicleGood(item.getName());
+//		 }
 
 		return result;
 	}
@@ -409,10 +365,10 @@ public final class FoodProductionUtil {
 			double equipmentMass = EquipmentFactory.getEquipmentMass(item.getName());
 			mass = item.getAmount() * equipmentMass;
 		}
-		// else if (Type.VEHICLE.equals(item.getType())) {
-		// VehicleConfig config = SimulationConfig.instance().getVehicleConfiguration();
-		// mass = item.getAmount() * config.getEmptyMass(item.getName());
-		// }
+//		 else if (Type.VEHICLE.equals(item.getType())) {
+//		 VehicleConfig config = SimulationConfig.instance().getVehicleConfiguration();
+//		 mass = item.getAmount() * config.getEmptyMass(item.getName());
+//		 }
 
 		return mass;
 	}

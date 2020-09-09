@@ -14,6 +14,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 
 import org.mars_sim.msp.core.GameManager;
+import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
@@ -24,7 +25,6 @@ import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.UnitManagerEvent;
 import org.mars_sim.msp.core.UnitManagerEventType;
 import org.mars_sim.msp.core.UnitManagerListener;
-import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.foodProduction.Food;
 import org.mars_sim.msp.core.foodProduction.FoodUtil;
 import org.mars_sim.msp.core.resource.ResourceUtil;
@@ -32,9 +32,12 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.goods.Good;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
 
+@SuppressWarnings("serial")
 public class FoodInventoryTableModel extends AbstractTableModel
 		implements UnitListener, MonitorModel, UnitManagerListener {
 
+	private static final int STARTING_COLUMN = 2;
+	
 	private static final String FOOD_ITEMS = " Food Items";
 
 	private GameMode mode;
@@ -89,7 +92,6 @@ public class FoodInventoryTableModel extends AbstractTableModel
 						&& unit instanceof Settlement
 						&& unit.getName().equalsIgnoreCase(commanderSettlement.getName()))
 					SwingUtilities.invokeLater(new FoodTableUpdater(event));
-				
 			}
 			else {
 				SwingUtilities.invokeLater(new FoodTableUpdater(event));
@@ -156,11 +158,11 @@ public class FoodInventoryTableModel extends AbstractTableModel
 	public String getColumnName(int columnIndex) {
 		if (columnIndex == 0)
 			return Msg.getString("FoodInventoryTableModel.firstColumn");
-		// else if (columnIndex == 1) return "Category";
-		else {
-			String columnName = Msg.getString("FoodInventoryTableModel.settlementColumns",
-					settlements.get(columnIndex - 1).getName());
-			return columnName;
+		else if (columnIndex == 1) 
+			return "Type";
+		else  {
+			return Msg.getString("FoodInventoryTableModel.settlementColumns",
+					settlements.get(columnIndex - STARTING_COLUMN).getName());
 		}
 	}
 
@@ -171,14 +173,16 @@ public class FoodInventoryTableModel extends AbstractTableModel
 	 * @return Class of specified column.
 	 */
 	public Class<?> getColumnClass(int columnIndex) {
-		if (columnIndex < 1)
+		if (columnIndex == 0)
+			return String.class;
+		else if (columnIndex == 1)
 			return String.class;
 		else
 			return Double.class;
 	}
 
 	public int getColumnCount() {
-		return settlements.size() + 1;
+		return settlements.size() + STARTING_COLUMN;
 	}
 
 	public int getRowCount() {
@@ -192,11 +196,13 @@ public class FoodInventoryTableModel extends AbstractTableModel
 			Object result = foodList.get(rowIndex).getName();
 			return Conversion.capitalize(result.toString());
 		}
-//		/*
-//		 * else if (columnIndex == 1) { // Capitalize Category Names Object result =
-//		 * getFoodCategoryName(foodList.get(rowIndex)); return
-//		 * Conversion.capitalize(result.toString()); }
-//		 */
+		
+		 else if (columnIndex == 1) {
+			 Object result = getFoodType(foodList.get(rowIndex));
+			 System.out.println(result);
+			 return Conversion.capitalize(result.toString()); 
+		}
+
 		else {
 			try {
 				// Settlement settlement = settlements.get(columnIndex - 1);
@@ -205,7 +211,7 @@ public class FoodInventoryTableModel extends AbstractTableModel
 				// String foodName = food.getName();
 				// AmountResource ar = ResourceUtil.findAmountResource(foodName);
 				// double foodAvailable = inv.getAmountResourceStored(ar, false);
-				return settlements.get(columnIndex - 1).getInventory().getAmountResourceStored(
+				return settlements.get(columnIndex - STARTING_COLUMN).getInventory().getAmountResourceStored(
 						ResourceUtil.findAmountResource(foodList.get(rowIndex).getName()), false);
 			} catch (Exception e) {
 				return null;
@@ -213,15 +219,13 @@ public class FoodInventoryTableModel extends AbstractTableModel
 		}
 	}
 
-//	/**
-//	 * gives back the internationalized name of a food's category.
-//	 * 
-//	 * public String getFoodCategoryName(Food food) { String key =
-//	 * food.getCategory().getMsgKey(); //if (food.getCategory() ==
-//	 * FoodType.EQUIPMENT) { // if
-//	 * (Container.class.isAssignableFrom(food.getClassType())) key =
-//	 * "FoodType.container"; //$NON-NLS-1$ //} return Msg.getString(key); }
-//	 */
+	/**
+	 * gives back the internationalized name of a food's category.
+	 */
+	public Object getFoodType(Food food) { 
+		return food.getFoodType().getName();
+	}
+
 	
 	/**
 	 * Inner class for updating food table.
@@ -241,7 +245,7 @@ public class FoodInventoryTableModel extends AbstractTableModel
 			else {
 				foodList = FoodUtil.getFoodList();
 				int rowIndex = foodList.indexOf(event.getTarget());
-				int columnIndex = settlements.indexOf(event.getSource()) + 2;
+				int columnIndex = settlements.indexOf(event.getSource()) + STARTING_COLUMN;
 				fireTableCellUpdated(rowIndex, columnIndex);
 			}
 		}

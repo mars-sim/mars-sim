@@ -14,6 +14,7 @@ import java.util.TreeSet;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
+import org.mars_sim.msp.core.foodProduction.FoodType;
 
 //import org.jdom.Document;
 //import org.jdom.Element;
@@ -28,7 +29,7 @@ public class AmountResourceConfig implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	// Element names
-	private static final String TISSUE_CULTURE = "tissue culture";
+	private static final String TISSUE_CULTURE = FoodType.TISSUE.getName();
 	private static final String RESOURCE = "resource";
 	private static final String NAME = "name";
 	private static final String PHASE = "phase";

@@ -1697,7 +1697,12 @@ public class UnitManager implements Serializable {
 		}			
 	}
 	
-	
+	/**
+	 * Sets up the job for a person
+	 * 
+	 * @param p the person
+	 * @param id the job ID
+	 */
 	public void setJob(Person p, int id) {
 		// Designate a specific job to a person
 		p.getMind().setJob(JobUtil.getJob(JobType.getEditedJobString(id)), true, JobUtil.MISSION_CONTROL, JobAssignmentType.APPROVED,

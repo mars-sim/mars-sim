@@ -22,6 +22,7 @@ import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
+import org.mars_sim.msp.core.foodProduction.FoodType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.TendGreenhouse;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
@@ -42,6 +43,7 @@ import org.mars_sim.msp.core.structure.goods.Good;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.RandomUtil;
+import org.mars_sim.msp.core.tool.Conversion;
 
 /**
  * The Farming class is a building function for greenhouse farming.
@@ -65,7 +67,7 @@ public class Farming extends Function implements Serializable {
 	public static final String FERTILIZER = "fertilizer";
 	public static final String SOIL = "soil";
 	public static final String CROP_WASTE = "crop waste";
-	public static final String TISSUE_CULTURE = " tissue culture";
+	public static final String TISSUE_CULTURE = " " + FoodType.TISSUE.getName();
 	public static final String CORN = "corn";
 //	 public static final String LED_KIT = "light emitting diode kit";
 //	 public static final String HPS_LAMP = "high pressure sodium lamp";
@@ -1289,7 +1291,7 @@ public class Farming extends Function implements Serializable {
 						store(STANDARD_AMOUNT_TISSUE_CULTURE, tissueID, sourceName + "::growCropTissue");
 						LogConsolidated.flog(Level.INFO, 3_000, sourceName,
 							"[" + building.getSettlement().getName() + "] " + p
-								+ " found no " + cropName + TISSUE_CULTURE
+								+ " found no " + Conversion.capitalize(cropName + TISSUE_CULTURE)
 								+ " in stock. Extracted " + STANDARD_AMOUNT_TISSUE_CULTURE
 								+ " kg from " + cropName + " in " + lab.getBuilding().getNickName()
 								+ "'s botany lab.");

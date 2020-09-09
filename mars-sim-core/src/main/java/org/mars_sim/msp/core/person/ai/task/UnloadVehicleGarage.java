@@ -37,6 +37,7 @@ import org.mars_sim.msp.core.structure.building.function.FunctionType;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.core.tool.RandomUtil;
 import org.mars_sim.msp.core.vehicle.Crewable;
+import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.Towing;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -112,6 +113,12 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 		}
 
 		if (vehicle != null) {
+			// Add the rover to a garage if possible.
+			boolean	isRoverInAGarage = BuildingManager.addToGarage((GroundVehicle)vehicle);
+			if (!isRoverInAGarage)
+				// Need to do EVA o unload
+				endTask();
+			
 			setDescription(Msg.getString("Task.description.unloadVehicleGarage.detail", vehicle.getName())); // $NON-NLS-1$
 
 			// If vehicle is in a garage, add person to garage.
@@ -159,6 +166,12 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 		}
 
 		if (vehicle != null) {
+			// Add the rover to a garage if possible.
+			boolean	isRoverInAGarage = BuildingManager.addToGarage((GroundVehicle)vehicle);
+			if (!isRoverInAGarage)
+				// Need to do EVA o unload
+				endTask();
+			
 			setDescription(Msg.getString("Task.description.unloadVehicleGarage.detail", vehicle.getName())); // $NON-NLS-1$
 
 			// If vehicle is in a garage, add robot to garage.
@@ -466,12 +479,12 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 					// Note: In maven test, the name of the vehicle is "Mock Vehicle" 
 					// test if it's NOT under maven test
 					if (person != null)
-						LogConsolidated.log(logger, Level.INFO, 3_000, sourceName,
+						LogConsolidated.log(logger, Level.INFO, 10_000, sourceName,
 								"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " in "
 										+ person.getLocationTag().getImmediateLocation() + " unloaded "
 										+ equipment.getNickName() + " from " + vehicle.getName() + ".");
 					else
-						LogConsolidated.log(logger, Level.INFO, 3_000, sourceName,
+						LogConsolidated.log(logger, Level.INFO, 10_000, sourceName,
 								"[" + robot.getLocationTag().getLocale() + "] " + robot.getName() + " in "
 										+ robot.getLocationTag().getImmediateLocation() + " unloaded "
 										+ equipment.getNickName() + " from " + vehicle.getName() + ".");
@@ -526,13 +539,13 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 				// test if it's NOT under maven test
 
 			if (person != null)
-				LogConsolidated.log(logger, Level.INFO, 3_000, sourceName,
+				LogConsolidated.log(logger, Level.INFO, 10_000, sourceName,
 						"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " in "
 								+ person.getLocationTag().getImmediateLocation() + " just unloaded a total of "
 								+ Math.round(totalAmount * 100.0) / 100.0 + " kg of resources from " + vehicle.getName()
 								+ ".");
 			else
-				LogConsolidated.log(logger, Level.INFO, 3_000, sourceName,
+				LogConsolidated.log(logger, Level.INFO, 10_000, sourceName,
 						"[" + robot.getLocationTag().getLocale() + "] " + robot.getName() + " in "
 								+ robot.getLocationTag().getImmediateLocation() + " just unloaded a total of "
 								+ Math.round(totalAmount * 100.0) / 100.0 + " kg of resources from " + vehicle.getName()
@@ -561,12 +574,12 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 
 			if (totalItems > 0) {
 				if (person != null)
-					LogConsolidated.log(logger, Level.INFO, 3_000, sourceName,
+					LogConsolidated.log(logger, Level.INFO, 10_000, sourceName,
 							"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " in "
 									+ person.getLocationTag().getImmediateLocation() + " just unloaded a total of "
 									+ totalItems + " items from " + vehicle.getName() + ".");
 				else
-					LogConsolidated.log(logger, Level.INFO, 3_000, sourceName,
+					LogConsolidated.log(logger, Level.INFO, 10_000, sourceName,
 							"[" + robot.getLocationTag().getLocale() + "] " + robot.getName() + " in "
 									+ robot.getLocationTag().getImmediateLocation() + " just unloaded a total of "
 									+ totalItems + " items from " + vehicle.getName() + ".");

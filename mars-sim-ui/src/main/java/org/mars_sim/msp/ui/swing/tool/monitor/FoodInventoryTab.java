@@ -20,6 +20,7 @@ import org.mars_sim.msp.ui.swing.NumberCellRenderer;
  * This class represents an inventory of food at settlements displayed within
  * the Monitor Window.
  */
+@SuppressWarnings("serial")
 public class FoodInventoryTab extends TableTab implements UnitManagerListener {
 	/**
 	 * constructor.
