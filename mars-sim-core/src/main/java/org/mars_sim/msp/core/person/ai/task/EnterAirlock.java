@@ -89,11 +89,11 @@ public class EnterAirlock extends Task implements Serializable {
 	/** The airlock to be used. */
 	private Airlock airlock;
 	/** The inside airlock position. */
-	private Point2D insideAirlockPos;
+	private Point2D insideAirlockPos = null;
 	/** The exterior airlock position. */
-	private Point2D exteriorDoorPos;	
+	private Point2D exteriorDoorPos = null;	
 	/** The interior airlock position. */
-	private Point2D interiorDoorPos;
+	private Point2D interiorDoorPos = null;
 	
 	private static int oxygenID = ResourceUtil.oxygenID;
 	private static int waterID = ResourceUtil.waterID;
@@ -246,7 +246,6 @@ public class EnterAirlock extends Task implements Serializable {
 	 */
 	private void moveThere(Point2D newPos, int zone) {
 //		System.out.println(person + "::moveThere");
-		
 		if (zone == 4) {	
 			addSubTask(new WalkOutside(person, 
 					person.getXLocation(), 
@@ -254,6 +253,7 @@ public class EnterAirlock extends Task implements Serializable {
 					newPos.getX(),
 					newPos.getY(), true));
 		}
+		
 		else  {	
 			// Walk to interior door position.
 			addSubTask(new WalkSettlementInterior(person, (Building)airlock.getEntity(), 

@@ -50,7 +50,7 @@ public class PlanMissionMeta implements MetaTask, Serializable {
 
         double result = 0D;
 
-        if (person.isInSettlement()) {
+        if (person.isInSettlement() && person.getBuildingLocation().getBuildingType().contains("EVA Airlock")) {
 
     		boolean canDo = person.getMind().canStartNewMission();
     		if (!canDo)

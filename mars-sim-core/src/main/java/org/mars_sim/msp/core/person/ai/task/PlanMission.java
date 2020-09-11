@@ -73,7 +73,7 @@ public class PlanMission extends Task implements Serializable {
 		
 //		roleType = person.getRole().getType();
 		
-		if (person.isInSettlement()) {
+		if (person.isInSettlement() && person.getBuildingLocation().getBuildingType().contains("EVA Airlock")) {
 
 			// If person is in a settlement, try to find an office building.
 			Building officeBuilding = Administration.getAvailableOffice(person);

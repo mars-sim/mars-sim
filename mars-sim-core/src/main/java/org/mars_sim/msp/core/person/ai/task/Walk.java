@@ -1141,7 +1141,7 @@ public class Walk extends Task implements Serializable {
 				// the person is still inside the settlement before 
 				if (ExitAirlock.canExitAirlock(person, airlock)) {
 //					logger.finer(person + " to add ExitAirlock as a subTask");
-					LogConsolidated.log(logger, Level.FINER, 4000, sourceName,
+					LogConsolidated.log(logger, Level.INFO, 4000, sourceName,
 		      				"[" + person.getLocale() + "] "
 							+ person + " was " + loc
 							+ " and can exit the airlock. Starting ExitAirlock subTask.");
