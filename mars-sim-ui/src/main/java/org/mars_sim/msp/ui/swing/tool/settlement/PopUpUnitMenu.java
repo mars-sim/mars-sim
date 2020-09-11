@@ -41,13 +41,13 @@ import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
 import org.mars_sim.msp.ui.swing.unit_window.structure.building.BuildingPanel;
 
+import com.alee.laf.window.WebDialog;
+import com.alee.managers.style.StyleId;
+
 public class PopUpUnitMenu extends JPopupMenu {
 
 	private static final long serialVersionUID = 1L;
 	
-//	public static final int WIDTH = UnitWindow.WIDTH;
-//	public static final int HEIGHT = UnitWindow.HEIGHT - 125;
-
 	public static final int D_WIDTH = 350;
 	public static final int D_HEIGHT = UnitWindow.HEIGHT - 120;
 	
@@ -115,7 +115,7 @@ public class PopUpUnitMenu extends JPopupMenu {
        	 
             public void actionPerformed(ActionEvent e) {
             	setOpaque(false);
-            	final JDialog d = new JDialog();
+            	final JDialog d = new JDialog();//StyleId.dialogDecorated);
                 d.setForeground(Color.YELLOW); // orange font
                 d.setFont(new Font("Arial", Font.BOLD, 14));
                 
@@ -160,7 +160,7 @@ public class PopUpUnitMenu extends JPopupMenu {
 				});	
 				
                 // Make panel drag-able
-			    ComponentMover mover = new ComponentMover(d, b, d.getContentPane());//d,b);
+			    ComponentMover mover = new ComponentMover(d, d.getContentPane());
 			    mover.registerComponent(b);	
 	
              }
@@ -180,19 +180,16 @@ public class PopUpUnitMenu extends JPopupMenu {
 	            
 	            else {
                 	Building building = (Building) unit;
-	            	final JDialog d = new JDialog();
-
-	                // Make panel drag-able
-	        		ComponentMover cm = new ComponentMover();
-	        		cm.registerComponent(d);
 	 
 					final BuildingPanel buildingPanel = new BuildingPanel(true, "Building Detail", building, desktop);      
-		    		buildingPanel.setOpaque(false);
+//		    		buildingPanel.setOpaque(false);
 //	                buildingPanel.setBackground(new Color(0,0,0,150));
 //	                buildingPanel.setTheme(true);
          		
 		    		// Make the buildingPanel to appear at the mouse cursor
 	                Point location = MouseInfo.getPointerInfo().getLocation();
+	                
+	                final WebDialog d = new WebDialog();//StyleId.dialogDecorated);
 	                d.setLocation(location);
 //					d.setUndecorated(true);
 //	                d.setBackground(new Color(51,25,0,128)); // java.awt.IllegalComponentStateException: The dialog is decorated
@@ -215,6 +212,10 @@ public class PopUpUnitMenu extends JPopupMenu {
 						}
 					});
 				    
+	                // Make panel drag-able
+	        		ComponentMover mover = new ComponentMover();
+	        		mover.registerComponent(d);
+	        		
 					d.setVisible(true);
 					
 	            }

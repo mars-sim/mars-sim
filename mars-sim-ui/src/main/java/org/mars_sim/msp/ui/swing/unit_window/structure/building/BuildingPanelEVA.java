@@ -27,12 +27,19 @@ import com.alee.laf.panel.WebPanel;
 @SuppressWarnings("serial")
 public class BuildingPanelEVA extends BuildingFunctionPanel {
 	
+	private static final String UNLOCKED = "UNLOCKED";
+	private static final String LOCKED = "LOCKED";
+	
 	private int capCache;
 	private int innerDoorCache;
 	private int outerDoorCache;
 	private int occupiedCache;
 	private int emptyCache;
+	private double cycleTimeCache;
+	
 	private String airlockStateCache;
+	private String innerDoorStateCache;
+	private String outerDoorStateCache;
 	
 	private WebLabel capLabel;
 	private WebLabel innerDoorLabel;
@@ -40,6 +47,9 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 	private WebLabel occupiedLabel;
 	private WebLabel emptyLabel;
 	private WebLabel airlockStateLabel;
+	private WebLabel cycleTimeLabel;
+	private WebLabel innerDoorStateLabel;
+	private WebLabel outerDoorStateLabel;
 	
 	private EVA eva; 
 
@@ -60,46 +70,80 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 		setLayout(new BorderLayout());
 
 		// Create label panel
-		WebPanel labelPanel = new WebPanel(new GridLayout(7, 1, 0, 0));
+		WebPanel labelPanel = new WebPanel(new GridLayout(10, 1, 0, 0));
 		add(labelPanel, BorderLayout.NORTH);
 		labelPanel.setOpaque(false);
 		labelPanel.setBackground(new Color(0,0,0,128));
 
+		
 		// Create medical care label
 		WebLabel titleLabel = new WebLabel(Msg.getString("BuildingPanelEVA.title"), WebLabel.CENTER);
 		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		//medicalCareLabel.setForeground(new Color(102, 51, 0)); // dark brown
 		labelPanel.add(titleLabel);
 
+		
 		// Create capacity label
 		capLabel = new WebLabel(Msg.getString("BuildingPanelEVA.capacity",
 				eva.getAirlockCapacity()), WebLabel.CENTER);
 		labelPanel.add(capLabel);
 
+		
 		// Create outerDoorLabel
-		outerDoorLabel = new WebLabel(Msg.getString("BuildingPanelEVA.outerDoor",
+		outerDoorLabel = new WebLabel(Msg.getString("BuildingPanelEVA.outerDoor.number",
 				eva.getNumAwaitingOuterDoor()), WebLabel.CENTER);
 		labelPanel.add(outerDoorLabel);
 
 		// Create innerDoorLabel
-		innerDoorLabel = new WebLabel(Msg.getString("BuildingPanelEVA.innerDoor",
+		innerDoorLabel = new WebLabel(Msg.getString("BuildingPanelEVA.innerDoor.number",
 				eva.getNumAwaitingInnerDoor()), WebLabel.CENTER);
 		labelPanel.add(innerDoorLabel);
+		
+		
+		if (eva.getAirlock().isInnerDoorLocked())
+			innerDoorStateCache = LOCKED;
+		else {
+			innerDoorStateCache = UNLOCKED;
+		}
+		// Create innerDoorStateLabel
+		innerDoorStateLabel = new WebLabel(Msg.getString("BuildingPanelEVA.innerDoor.state",
+				innerDoorStateCache), WebLabel.CENTER);
+		labelPanel.add(innerDoorStateLabel);
+		
+		
+		if (eva.getAirlock().isOuterDoorLocked())
+			outerDoorStateCache = LOCKED;
+		else {
+			outerDoorStateCache = UNLOCKED;
+		}
+		// Create outerDoorStateLabel
+		outerDoorStateLabel = new WebLabel(Msg.getString("BuildingPanelEVA.outerDoor.state",
+				outerDoorStateCache), WebLabel.CENTER);
+		labelPanel.add(outerDoorStateLabel);
+		
 		
 		// Create occupiedLabel
 		occupiedLabel = new WebLabel(Msg.getString("BuildingPanelEVA.occupied",
 				eva.getNumOccupied()), WebLabel.CENTER);
 		labelPanel.add(occupiedLabel);
 		
+		
 		// Create emptyLabel
 		emptyLabel = new WebLabel(Msg.getString("BuildingPanelEVA.empty",
 				eva.getNumEmptied()), WebLabel.CENTER);
 		labelPanel.add(emptyLabel);
 		
+		
 		// Create airlockStateLabel
-		airlockStateLabel = new WebLabel(Msg.getString("BuildingPanelEVA.airlockState",
+		airlockStateLabel = new WebLabel(Msg.getString("BuildingPanelEVA.airlock.state",
 				eva.getAirlock().getState().toString()), WebLabel.CENTER);
 		labelPanel.add(airlockStateLabel);
+		
+		
+		// Create cycleTimeLabel
+		cycleTimeLabel = new WebLabel(Msg.getString("BuildingPanelEVA.airlock.cycleTime",
+				Math.round(eva.getAirlock().getRemainingCycleTime()*10.0)/10.0), WebLabel.CENTER);
+		labelPanel.add(cycleTimeLabel);
 	}
 
 	@Override
@@ -113,13 +157,13 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 		// Update innerDoorLabel
 		if (innerDoorCache != eva.getNumAwaitingInnerDoor()) {
 			innerDoorCache = eva.getNumAwaitingInnerDoor();
-			innerDoorLabel.setText(Msg.getString("BuildingPanelEVA.innerDoor", innerDoorCache));
+			innerDoorLabel.setText(Msg.getString("BuildingPanelEVA.innerDoor.number", innerDoorCache));
 		}
 		
 		// Update outerDoorLabel
 		if (outerDoorCache != eva.getNumAwaitingOuterDoor()) {
 			outerDoorCache = eva.getNumAwaitingOuterDoor();
-			outerDoorLabel.setText(Msg.getString("BuildingPanelEVA.outerDoor", outerDoorCache));
+			outerDoorLabel.setText(Msg.getString("BuildingPanelEVA.outerDoor.number", outerDoorCache));
 		}
 		
 		// Update occupiedLabel
@@ -135,9 +179,41 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 		}	
 		
 		// Update airlockStateLabel
-		if (airlockStateCache.equalsIgnoreCase(eva.getAirlock().getState().toString())) {
+		if (!airlockStateCache.equalsIgnoreCase(eva.getAirlock().getState().toString())) {
 			airlockStateCache = eva.getAirlock().getState().toString();
-			airlockStateLabel.setText(Msg.getString("BuildingPanelEVA.airlockState", airlockStateCache));
+			airlockStateLabel.setText(Msg.getString("BuildingPanelEVA.airlock.state", airlockStateCache));
+		}
+		
+		// Update cycleTimeLabel
+		if (cycleTimeCache != eva.getAirlock().getRemainingCycleTime()) {
+			cycleTimeCache = Math.round(eva.getAirlock().getRemainingCycleTime()*10.0)/10.0;
+			cycleTimeLabel.setText(Msg.getString("BuildingPanelEVA.airlock.cycleTime", cycleTimeCache));
+		}
+		
+		String innerDoorState = "";
+		if (eva.getAirlock().isInnerDoorLocked())
+			innerDoorState = LOCKED;
+		else {
+			innerDoorState = UNLOCKED;
+		}
+		
+		// Update innerDoorStateLabel
+		if (!innerDoorStateCache.equalsIgnoreCase(innerDoorState)) {
+			innerDoorStateCache = innerDoorState;
+			innerDoorStateLabel.setText(Msg.getString("BuildingPanelEVA.innerDoor.state", innerDoorState));
+		}
+		
+		String outerDoorState = "";
+		if (eva.getAirlock().isOuterDoorLocked())
+			outerDoorState = LOCKED;
+		else {
+			outerDoorState = UNLOCKED;
+		}
+		
+		// Update outerDoorStateLabel
+		if (!outerDoorStateCache.equalsIgnoreCase(outerDoorState)) {
+			outerDoorStateCache = outerDoorState;
+			outerDoorStateLabel.setText(Msg.getString("BuildingPanelEVA.outerDoor.state", outerDoorState));
 		}
 	}
 }

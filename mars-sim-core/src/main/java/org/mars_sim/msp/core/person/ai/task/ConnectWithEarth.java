@@ -116,20 +116,20 @@ public class ConnectWithEarth extends Task implements Serializable {
 			String act = "";
 			double rand = RandomUtil.getRandomInt(5);
 			if (rand == 0)
-				act = "checking personal v-messages ";
+				act = " was checking personal v-messages in ";
 			else if (rand == 1)
-				act = "watching Earth news ";
+				act = " was watching Earth news in ";
 			else if (rand == 2)
-				act = "browsing MarsNet ";
+				act = " was browsing MarsNet in ";
 			else if (rand == 3)
-				act = "watching Earth TV ";
+				act = " was watching Earth TV in ";
 			else if (rand == 4)
-				act = "watching Earth movies ";
+				act = " was watching Earth movies in ";
 			else if (rand == 5)
-				act = "browsing Earth net ";
+				act = " was browsing Earth internet in ";
 			
 			LogConsolidated.log(logger, Level.INFO, 30_000, sourceName, "[" + person.getLocale() + "] "
-					+ person + " was " + act + " in " + person.getImmediateLocation());
+					+ person + act + person.getImmediateLocation());
 			
 			// Initialize phase
 			addPhase(CONNECTING_EARTH);

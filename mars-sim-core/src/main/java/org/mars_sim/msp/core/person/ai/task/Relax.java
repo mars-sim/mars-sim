@@ -49,7 +49,7 @@ implements Serializable {
 
 	// Static members
 	/** The stress modified per millisol. */
-	private static final double STRESS_MODIFIER = -.45D;
+	private static final double STRESS_MODIFIER = -1D;
 
 	/**
 	 * Constructor.

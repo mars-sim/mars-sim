@@ -66,13 +66,17 @@ extends Airlock {
 		}
 
 		// Determine airlock interior position.
-		airlockInteriorPos = new Point2D.Double(interiorXLoc, interiorYLoc);
+//		airlockInteriorPos = new Point2D.Double(interiorXLoc, interiorYLoc);
+//		airlockInteriorPos = LocalAreaUtil.getLocalRelativeLocation(airlockInteriorPos.getX(),airlockInteriorPos.getY(),vehicle);
 
 		// Determine airlock exterior position.
-		airlockExteriorPos = new Point2D.Double(exteriorXLoc, exteriorYLoc);
+//		airlockExteriorPos = new Point2D.Double(exteriorXLoc, exteriorYLoc);
+//		airlockExteriorPos = LocalAreaUtil.getLocalRelativeLocation(airlockExteriorPos.getX(),airlockExteriorPos.getY(),vehicle);
 
 		// Determine airlock inside position.
-		airlockInsidePos = new Point2D.Double(xLoc, yLoc);
+//		airlockInsidePos = new Point2D.Double(xLoc, yLoc);
+//		airlockInsidePos = LocalAreaUtil.getLocalRelativeLocation(airlockInsidePos.getX(),airlockInsidePos.getY(),vehicle);
+
 	}
 
 //	/**
@@ -241,20 +245,36 @@ extends Airlock {
 	public String getLocale() {
 		return vehicle.getLocale();
 	}
+
+	@Override
+	public Point2D getAvailableInteriorPosition(boolean value) {
+		return getAvailableInteriorPosition();
+	}
+
+	@Override
+	public Point2D getAvailableExteriorPosition(boolean value) {
+		return getAvailableExteriorPosition();
+	}
 	
 	@Override
 	public Point2D getAvailableInteriorPosition() {
-		return LocalAreaUtil.getLocalRelativeLocation(airlockInteriorPos.getX(),airlockInteriorPos.getY(),vehicle);
+		if (airlockInteriorPos == null)
+			airlockInteriorPos = LocalAreaUtil.getLocalRelativeLocation(airlockInteriorPos.getX(),airlockInteriorPos.getY(),vehicle);
+		return airlockInteriorPos;
 	}
 
 	@Override
 	public Point2D getAvailableExteriorPosition() {
-		return LocalAreaUtil.getLocalRelativeLocation(airlockExteriorPos.getX(),airlockExteriorPos.getY(),vehicle);
+		if (airlockExteriorPos == null)
+			airlockExteriorPos = LocalAreaUtil.getLocalRelativeLocation(airlockExteriorPos.getX(),airlockExteriorPos.getY(),vehicle);
+		return airlockExteriorPos;
 	}
 
 	@Override
 	public Point2D getAvailableAirlockPosition() {
-		return LocalAreaUtil.getLocalRelativeLocation(airlockInsidePos.getX(),airlockInsidePos.getY(),vehicle);
+		if (airlockExteriorPos == null)
+			airlockExteriorPos = LocalAreaUtil.getLocalRelativeLocation(airlockInsidePos.getX(),airlockInsidePos.getY(),vehicle);
+		return airlockInsidePos;
 	}
 	
 	public void destroy() {

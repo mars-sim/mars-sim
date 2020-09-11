@@ -220,7 +220,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	/** The bed location of the person */
 	private Point2D bed;
 	/** The quarters that the person belongs. */
-	private int quartersInt;
+	private int quartersInt = -1;
 	/** The current building location of the person. */
 	private int currentBuildingInt;
 	/** The EVA suit that the person has donned on. */
@@ -998,8 +998,9 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		declaredDead = true;
 		// Set quarters to null
 		if (quartersInt != -1) {
-			LivingAccommodations accommodations = unitManager.getBuildingtByID(quartersInt).getLivingAccommodations();
-			accommodations.getAssignedBeds().remove(this);
+			Map<Person, Point2D>  map = unitManager.getBuildingtByID(quartersInt).getLivingAccommodations().getAssignedBeds();
+			if (map.containsKey(this)) 
+				map.remove(this);
 			quartersInt = -1;
 		}
 		// Empty the bed
@@ -1022,7 +1023,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 				mind.timePassing(time);
 			} catch (Exception ex) {
 				ex.printStackTrace();
-				LogConsolidated.log(logger, Level.SEVERE, 20_000, sourceName, "[" + getLocationTag().getLocale() + "] "
+				LogConsolidated.log(logger, Level.SEVERE, 20_000, sourceName, "[" + getLocale() + "] "
 						+ getName() + "'s Mind was having trouble processing task selection.", ex);
 			}
 		}
@@ -1411,8 +1412,9 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 */
 	public void setName(String newName) {
 		if (!getName().equals(newName)) {
-			logger.config("Replace the previous '" + getName() + "' with '" + newName + "' in "
-					+ unitManager.getSettlementByID(associatedSettlementID) + ".");
+			LogConsolidated.log(logger, Level.CONFIG, 20_000, sourceName, "[" + getLocale() 
+					+ "] The Mission Control replaced the member '" + getName() + "' with '" + newName + "'.");
+//					+ unitManager.getSettlementByID(associatedSettlementID) + ".");
 			firstName = newName.substring(0, newName.indexOf(" "));
 			lastName = newName.substring(newName.indexOf(" ") + 1, newName.length());	
 //			this.name = newName;

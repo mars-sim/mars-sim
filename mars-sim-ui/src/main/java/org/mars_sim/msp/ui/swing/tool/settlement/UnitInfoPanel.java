@@ -26,7 +26,7 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.CustomScroll;
 
 @SuppressWarnings("serial")
-public class UnitInfoPanel extends JPanel {// JDialog {
+public class UnitInfoPanel extends JPanel {
 
 	public static final int MARGIN_WIDTH = 20;
 	public static final int MARGIN_HEIGHT = 10;
@@ -97,8 +97,8 @@ public class UnitInfoPanel extends JPanel {// JDialog {
 		mainPanel.add(tf1);
 
 		JTextArea ta = new JTextArea();
-		String type = "TYPE: ";
-		String description = "DESCRIPTION: ";
+		String type = "Building Type: ";
+		String description = "Descripion: ";
 
 		ta.setLineWrap(true);
 		ta.setFocusable(false);

@@ -62,7 +62,7 @@ public abstract class EVAOperation extends Task implements Serializable {
 
 	// Static members
 	/** The stress modified per millisol. */
-	private static final double STRESS_MODIFIER = .25D;
+	private static final double STRESS_MODIFIER = .1D;
 	/** The base chance of an accident per millisol. */
 	public static final double BASE_ACCIDENT_CHANCE = .01;
 

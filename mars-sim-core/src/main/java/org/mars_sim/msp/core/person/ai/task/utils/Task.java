@@ -1030,6 +1030,18 @@ public abstract class Task implements Serializable, Comparable<Task> {
 //		}
 	}
 
+	public Point2D walkToEVASpot(Building building) {
+
+		Point2D loc = building.getFunction(FunctionType.EVA).getAvailableActivitySpot(person);
+
+		if (loc != null) {
+			// Create subtask for walking to destination.
+			createWalkingSubtask(building, loc, false);
+		} 
+
+		return loc;
+	}
+	
 	/**
 	 * Walk to an empty activity spot in a building.
 	 * 

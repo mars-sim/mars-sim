@@ -153,7 +153,7 @@ public final class ManufactureUtil {
 
 		Iterator<ManufactureProcessInfo> i = ManufactureConfig.getManufactureProcessList().iterator();
 		while (i.hasNext()) {
-			ManufactureProcessInfo process = i.next();
+			ManufactureProcessInfo process = i.next(); //java.util.ConcurrentModificationException
 			if ((process.getTechLevelRequired() <= techLevel) && (process.getSkillLevelRequired() <= skillLevel))
 				result.add(process);
 		}

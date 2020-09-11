@@ -1655,8 +1655,8 @@ public class UnitManager implements Serializable {
 		cc.setGender(newGender);
 		cc.changeAge(getAge());
 		cc.setJob(newJob, JobUtil.MISSION_CONTROL);
+		logger.config(newName + " accepted the role of being a Commander by the order of the Mission Control.");
 		cc.setRole(RoleType.COMMANDER);
-		logger.config(newName + " accepted the Commander role.");
 		cc.setCountry(newCountry);
 		cc.setSponsor(newSponsor);		
 		

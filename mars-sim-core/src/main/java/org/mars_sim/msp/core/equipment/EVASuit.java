@@ -58,6 +58,9 @@ import org.mars_sim.msp.core.structure.building.function.SystemType;
  * the Orlan spacesuit at a pressure of 73 kPa (10.6 psia) to partially wash out 
  * nitrogen from crew members’ blood and tissues (Barer and Filipenkov, 1994)
  * 
+ * See https://msis.jsc.nasa.gov/sections/section14.htm for more design and 
+ * operational considerations.
+ * 
  */
 public class EVASuit extends Equipment implements LifeSupportInterface, Serializable, Malfunctionable {
 

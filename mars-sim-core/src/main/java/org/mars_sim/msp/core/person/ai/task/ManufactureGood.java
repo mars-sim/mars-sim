@@ -425,7 +425,7 @@ public class ManufactureGood extends Task implements Serializable {
 		int techLevel = manufacturingFunction.getTechLevel();
 
 		Iterator<ManufactureProcessInfo> i = ManufactureUtil
-				.getManufactureProcessesForTechSkillLevel(techLevel, skillLevel).iterator();
+				.getManufactureProcessesForTechSkillLevel(techLevel, skillLevel).iterator(); // java.util.ConcurrentModificationException
 		while (i.hasNext()) {
 			ManufactureProcessInfo process = i.next();
 			if (ManufactureUtil.canProcessBeStarted(process, manufacturingFunction)

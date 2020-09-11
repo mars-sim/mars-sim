@@ -4,7 +4,7 @@ Copyright (C) 2020 Scott Davis
 [GitHub Page](https://github.com/mars-sim/mars-sim)
 
 ------------------------------------------|---------------------
-## v3.1.2 (build 5355) - 2020-09-08
+## v3.1.2 (build 5356) - 2020-09-10
 
 ### CORE ENGINE IMPROVEMENTS :
 
@@ -46,6 +46,9 @@ Copyright (C) 2020 Scott Davis
 
 14. Add settlement and vehicle names tailored to its 
     sponsor/country.
+
+15. Revamp EVA egress and ingress phases to model airlock 
+    activities in fine details.
 
 
 ### UI IMPROVEMENT :

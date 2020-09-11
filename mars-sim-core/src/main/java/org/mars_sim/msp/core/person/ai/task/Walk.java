@@ -1116,11 +1116,11 @@ public class Walk extends Task implements Serializable {
 			loc = loc == null ? "[N/A]" : loc;
 			loc = loc.equals("Outside") ? loc : "in " + loc;
 			
-//			logger.finer(person + " in exitingAirlockPhase()");
 			LogConsolidated.log(logger, Level.FINER, 4000, sourceName,
       				"[" + person.getLocale() + "] "
 					+ person + " was " + loc
 					+ " and in exitingAirlockPhase().");
+			
 			// Check if person has reached the outside of the airlock.
 			WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
 			Airlock airlock = step.airlock;

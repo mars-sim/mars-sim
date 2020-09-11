@@ -706,13 +706,13 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<!--    exterior-yloc : the relative Y location outside the building. -->
 			<EVA airlock-capacity="4" 
 			    xloc="1.0" yloc="0.0" 
-				interior-xloc="-1.0" interior-yloc="0.0"
-				exterior-xloc="3.0" exterior-yloc="0.0" >
+				interior-xloc="-1.07" interior-yloc="0.0"
+				exterior-xloc="2.9" exterior-yloc="0.0" >
 				<activity>
-					<activity-spot xloc="1.25" yloc="1.0" />
-					<activity-spot xloc="1.25" yloc="-1.0" />
-					<activity-spot xloc="0.0" yloc="1.0" />
-					<activity-spot xloc="0.0" yloc="-1.0" />
+					<activity-spot xloc="1.55" yloc="1.35" />
+					<activity-spot xloc="1.55" yloc="-1.35" />
+					<activity-spot xloc="0.0" yloc="1.35" />
+					<activity-spot xloc="0.0" yloc="-1.35" />
 				</activity>
 			</EVA>	
 			<life-support capacity="6" power-required="0.3" />

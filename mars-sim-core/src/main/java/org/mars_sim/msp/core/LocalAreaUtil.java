@@ -877,7 +877,6 @@ public class LocalAreaUtil {
 	 * @return distance (meters).
 	 */
 	public static double getDistance(Point2D point1, Point2D point2) {
-
 		return Point2D.Double.distance(point1.getX(), point1.getY(), point2.getX(), point2.getY());
 	}
 
@@ -889,8 +888,6 @@ public class LocalAreaUtil {
 	 * @return true if very close together
 	 */
 	public static boolean areLocationsClose(Point2D point1, Point2D point2) {
-
-		double distance = getDistance(point1, point2);
-		return (distance < VERY_SMALL_DISTANCE);
+		return (getDistance(point1, point2) < VERY_SMALL_DISTANCE);
 	}
 }

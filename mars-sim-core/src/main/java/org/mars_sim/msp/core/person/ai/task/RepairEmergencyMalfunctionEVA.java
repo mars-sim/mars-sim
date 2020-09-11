@@ -53,7 +53,7 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements Repai
 
 	// Static members
 	/** The stress modified per millisol. */
-	private static final double STRESS_MODIFIER = 1.2D;
+	private static final double STRESS_MODIFIER = .5D;
 
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.repairEmergencyMalfunctionEVA"); //$NON-NLS-1$

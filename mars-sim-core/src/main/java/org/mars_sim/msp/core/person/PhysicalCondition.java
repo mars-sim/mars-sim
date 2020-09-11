@@ -121,8 +121,13 @@ public class PhysicalCondition implements Serializable {
 	public static final String SUICIDE = "Suicide";
 	public static final String INSTRUCTED = " committed suicide as instructed.";
 	
+	/** The standard pre-breathing time in the EVA suit. */
+	private static final double STANDARD_PREBREATHING_TIME = 40;
+	
 	private static double o2_consumption;
 	
+	/** The time it takes to prebreathe the air mixture in the EVA suit. */
+	private double remainingPrebreathingTime = STANDARD_PREBREATHING_TIME + RandomUtil.getRandomInt(-5, 5);
 	/**  The amount of water this person would consume each time (assuming drinking water 8 times a day). */
 	private double waterConsumedPerServing;
 	/** True if person is starving. */
@@ -1957,6 +1962,24 @@ public class PhysicalCondition implements Serializable {
 	
 	public double getStrengthMod() {
 		return (endurance * .6 - strength * .4) / 100D;
+	}
+	
+	public double getRemainingPrebreathingTime() {
+		return remainingPrebreathingTime;
+	}
+	
+	public void reduceRemainingPrebreathingTime(double time) {
+		remainingPrebreathingTime -= time;
+	}
+	
+	public boolean isDonePrebreathing() {
+		if (remainingPrebreathingTime <= 0)
+			return true;
+		return false;
+	}
+	
+	public void resetRemainingPrebreathingTime() {
+		remainingPrebreathingTime = STANDARD_PREBREATHING_TIME + RandomUtil.getRandomInt(-5, 5);
 	}
 	
 	public static void initializeInstances(Simulation s, MasterClock c0, MarsClock c1, MedicalManager m) {

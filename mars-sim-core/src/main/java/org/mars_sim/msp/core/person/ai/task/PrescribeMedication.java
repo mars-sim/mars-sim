@@ -66,7 +66,7 @@ implements Serializable {
             "Task.phase.medicating")); //$NON-NLS-1$
 
 	/** The stress modified per millisol. */
-	private static final double STRESS_MODIFIER = .2D;
+	private static final double STRESS_MODIFIER = .1D;
 
 	// Data members.
 	private Person patient = null;

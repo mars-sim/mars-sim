@@ -62,7 +62,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 
 	// Static members
 	/** The stress modified per millisol. */
-	private static final double STRESS_MODIFIER = .3D;
+	private static final double STRESS_MODIFIER = .5D;
 
 	// Data members
 	/** Entity being repaired. */

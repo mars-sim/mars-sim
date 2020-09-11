@@ -142,13 +142,8 @@ public class ManufactureGoodMeta implements MetaTask, Serializable {
 		            Building manufacturingBuilding = ManufactureGood.getAvailableManufacturingBuilding(robot);
 		            if (manufacturingBuilding != null) {
 		                result = 100D;
-
-		                // Crowding modifier.
-		                result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(robot, manufacturingBuilding);
-		                //result *= TaskProbabilityUtil.getRelationshipModifier(robot, manufacturingBuilding);
-
 		                // Manufacturing good value modifier.
-		                result *= ManufactureGood.getHighestManufacturingProcessValue(robot, manufacturingBuilding);
+//		                result *= ManufactureGood.getHighestManufacturingProcessValue(robot, manufacturingBuilding); //java.util.ConcurrentModificationException
 
 		                if (result > 100D) {
 		                    result = 100D;

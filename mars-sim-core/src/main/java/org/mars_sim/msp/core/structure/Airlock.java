@@ -22,7 +22,6 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LogConsolidated;
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.mars.MarsSurface;
 import org.mars_sim.msp.core.person.Person;
@@ -31,8 +30,7 @@ import org.mars_sim.msp.core.person.ai.task.EVAOperation;
 import org.mars_sim.msp.core.person.ai.task.EnterAirlock;
 import org.mars_sim.msp.core.person.ai.task.ExitAirlock;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
-import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.vehicle.Vehicle;
+import org.mars_sim.msp.core.structure.building.function.BuildingAirlock;
 
 // see discussions on Airlocks for Mars Colony at 
 // https://forum.nasaspaceflight.com/index.php?topic=42098.0
@@ -153,8 +151,41 @@ public abstract class Airlock implements Serializable {
 	 * @return {@link boolean} <code>true</code> if person entered the airlock
 	 *         successfully
 	 */
-	public boolean enterAirlock(Person person, boolean inside) {
+	public boolean exitAirlock(Person person, boolean inside) {
 		boolean result = true;
+
+		// Warning : do NOT use int id or else the list's method remove(int index) would be chosen to use
+		// List can't tell if the method remove(Object o) should be used.
+		Integer id = person.getIdentifier();
+		// Add the person's ID to the lookup map
+//		addPersonID(person, id);
+
+		// Transfer from door queue into the airlock occupantIDs set
+		if (occupantIDs.contains(id)) {
+			result = transferOut(id);
+		}
+		
+		if (inside) {
+			// Transfer the person from one container unit to another
+			result = result && egress(person);
+		}
+		
+		return result;
+	}
+	
+	/**
+	 * Enters a person into the airlock from either the inside or the outside. Inner
+	 * or outer door (respectively) must be unlocked for person to enter.
+	 * 
+	 * @param person {@link Person} the person to enter the airlock
+	 * @param inside {@link boolean} <code>true</code> if person is entering from
+	 *               inside<br/>
+	 *               <code>false</code> if person is entering from outside
+	 * @return {@link boolean} <code>true</code> if person entered the airlock
+	 *         successfully
+	 */
+	public boolean enterAirlock(Person person, boolean inside) {
+		boolean result = false;
 
 		// Warning : do NOT use int id or else the list's method remove(int index) would be chosen to use
 		// List can't tell if the method remove(Object o) should be used.
@@ -164,16 +195,12 @@ public abstract class Airlock implements Serializable {
 
 		// Transfer from outer door queue into the airlock occupantIDs set
 		if (!occupantIDs.contains(id) && (occupantIDs.size() < capacity)) {
-			result = transferOne(person, id, inside);
+			result = transferIn(person, id, inside);
 		}
 		
-		if (person.isOutside()) {
+		if (!inside) {
 			// Transfer the person from one container unit to another
-			result = result && transitionIn(person);
-		}
-		
-		else {
-			
+			result = result && ingress(person);
 		}
 		
 		return result;
@@ -191,48 +218,59 @@ public abstract class Airlock implements Serializable {
 	 * @return {@link boolean} <code>true</code> if person entered the airlock
 	 *         successfully
 	 */
-	private boolean transferOne(Person person, Integer id, boolean inside) {
+	private boolean transferIn(Person person, Integer id, boolean inside) {
 		boolean result = false;
 		// Transfer the person inside the chamber
-//		if (!occupantIDs.contains(id) && (occupantIDs.size() < capacity)) {
-			// Transfer the person into the chamber via the inner door
-			if (inside && !innerDoorLocked) {
-				if (awaitingInnerDoor.contains(id)) {
-					awaitingInnerDoor.remove((Integer)id);
-					
-					if (awaitingInnerDoor.contains(id)) {
-						throw new IllegalStateException(person + " was still waiting inner door.");
-					}
-				}
-				LogConsolidated.log(logger, Level.FINER, 0, sourceName,
-						"[" + person.getLocale() + "] " 
-							+ person.getName() + " entered through the inner door of the airlock at " + getEntityName());
-				result = true;
-			} 
-			
-			// Transfer the person into the chamber via the outer door
-			else if (!inside && !outerDoorLocked) {
-				if (awaitingOuterDoor.contains(id)) {
-					awaitingOuterDoor.remove((Integer)id);
-					
-					if (awaitingOuterDoor.contains(id)) {
-						throw new IllegalStateException(person + " was still awaiting outer door!");
-					}
-				}
-				LogConsolidated.log(logger, Level.FINER, 0, sourceName,
-						"[" + person.getLocale() + "] " 
-							+ person.getName() + " entered through the outer door of the airlock at " + getEntityName());
-				result = true;
-			}
 
-			if (result) {
-				// Add the person's ID to the occupant ID list
-				occupantIDs.add(id);
+		// Transfer the person into the chamber from the inner door queue
+		if (inside && !innerDoorLocked) {
+			if (awaitingInnerDoor.contains(id)) {
+				awaitingInnerDoor.remove(id);
+				
+				if (awaitingInnerDoor.contains(id)) {
+					throw new IllegalStateException(person + " was still waiting inner door.");
+				}
 			}
-//		}
+			LogConsolidated.log(logger, Level.INFO, 0, sourceName,
+					"[" + person.getLocale() + "] " 
+						+ person.getName() + " entered through the inner door of the airlock at " + getEntityName());
+			result = true;
+		} 
+		
+		// Transfer the person into the chamber via the outer door
+		if (!inside && !outerDoorLocked) {
+			if (awaitingOuterDoor.contains(id)) {
+				awaitingOuterDoor.remove(id);
+				
+				if (awaitingOuterDoor.contains(id)) {
+					throw new IllegalStateException(person + " was still awaiting outer door!");
+				}
+			}
+			LogConsolidated.log(logger, Level.INFO, 0, sourceName,
+					"[" + person.getLocale() + "] " 
+						+ person.getName() + " entered through the outer door of the airlock at " + getEntityName());
+			result = true;
+		}
+
+		if (result) {
+			// Add the person's ID to the occupant ID list
+			occupantIDs.add(id);
+		}
 			
 		return result;
 	}
+	
+	/**
+	 * Transfer a person out of the airlock chamber
+	 * 
+	 * @param id the person's id
+	 * @return {@link boolean} <code>true</code> if person exiting the airlock
+	 *         successfully
+	 */
+	private boolean transferOut(Integer id) {
+		return occupantIDs.remove(id);
+	}
+	
 	
 	/**
 	 * Activates the airlock if it is not already activated. Automatically closes
@@ -649,27 +687,6 @@ public abstract class Airlock implements Serializable {
 
 		return result;
 	}
-
-	/**
-	 * Makes the transition from one location state into another
-	 * 
-	 * @param p
-	 * @return
-	 */
-	public boolean transitionIn(Person p) {
-//		Integer id = p.getIdentifier();
-		
-		// Ensure that the person is in the lookup map
-		addPersonID(p);	
-    	
-//		LogConsolidated.log(logger, Level.INFO, 4000, sourceName,
-//				"[" + p.getLocale() + "] " + p.getName()
-//				+ " was ready to make a location state transition in " 
-//				+ getEntity().toString() + ".");
-		
-		// Call in BuildingAirlock or VehicleAirlock
-		return ingress(p);
-	}
 	
 	/**
 	 * Iterates through each occupant to exit the airlock
@@ -815,7 +832,7 @@ public abstract class Airlock implements Serializable {
 	 * 
 	 * @param person the person to add to the awaiting queue.
 	 */
-	public void addAwaitingAirlockInnerDoor(Person p) {
+	public boolean addAwaitingInnerDoor(Person p) {
 		// Add the person's ID to the lookup map
 		addPersonID(p);
 		
@@ -825,24 +842,24 @@ public abstract class Airlock implements Serializable {
 			loc = loc == null ? "[N/A]" : loc;
 			loc = loc.equalsIgnoreCase("Outside") ? loc.toLowerCase() : "in " + loc;
 			
-			LogConsolidated.log(logger, Level.FINER, 4000, sourceName, "[" + p.getLocale() + "] "
+			LogConsolidated.log(logger, Level.INFO, 4000, sourceName, "[" + p.getLocale() + "] "
 					+ p.getName() + " was " + loc 
-					+ " queuing for the interior door of the airlock chamber to open.");
+					+ " waiting for the interior door to open.");
 			
 			awaitingInnerDoor.add(p.getIdentifier());
+			
+			return true;
 		}
+		
+		return false;
 	}
 
-	public int getNumAwaitingInnerDoor() {
-		return awaitingInnerDoor.size();
-	}
-	
 	/**
 	 * Adds person to queue awaiting airlock by outer door.
 	 * 
 	 * @param person the person to add to the awaiting queue.
 	 */
-	public boolean addAwaitingAirlockOuterDoor(Person p) {
+	public boolean addAwaitingOuterDoor(Person p) {
 
 		// Add the person's ID to the lookup map
 		addPersonID(p);
@@ -855,7 +872,7 @@ public abstract class Airlock implements Serializable {
 			
 			LogConsolidated.log(logger, Level.FINER, 4000, sourceName, "[" + p.getLocale() + "] "
 					+ p.getName() + " was " + loc 
-					+ " queuing for the exterior door of the airlock chamber to open.");
+					+ " queuing for the exterior door to open.");
 			
 			awaitingOuterDoor.add(p.getIdentifier());
 			
@@ -864,7 +881,11 @@ public abstract class Airlock implements Serializable {
 		
 		return false;
 	}
-
+	
+	public int getNumAwaitingInnerDoor() {
+		return awaitingInnerDoor.size();
+	}
+	
 	/**
 	 * Gets the number of people waiting at the outer door
 	 * 
@@ -874,6 +895,7 @@ public abstract class Airlock implements Serializable {
 		return awaitingOuterDoor.size();
 	}
 	
+
 	/**
 	 * Checks if anyone is waiting at the outer door
 	 * 
@@ -881,6 +903,18 @@ public abstract class Airlock implements Serializable {
 	 */
 	public boolean hasAwaitingOuterDoor() {
 		if (awaitingOuterDoor.size() == 0)
+			return false;
+		
+		return true;
+	}
+	
+	/**
+	 * Checks if anyone is waiting at the inner door
+	 * 
+	 * @return
+	 */
+	public boolean hasAwaitingInnerDoor() {
+		if (awaitingInnerDoor.size() == 0)
 			return false;
 		
 		return true;
@@ -1027,17 +1061,31 @@ public abstract class Airlock implements Serializable {
 	/**
 	 * Gets an available position inside the airlock entity.
 	 * 
+	 * @param inside true if the position is inside of the interior door
 	 * @return available local position.
 	 */
+	public abstract Point2D getAvailableInteriorPosition(boolean insid);
+	
+//	public Point2D getAvailableInteriorPosition(boolean inside) {
+//	return ((BuildingAirlock)this).getAvailableInteriorPosition(inside);
+//}
+	
 	public abstract Point2D getAvailableInteriorPosition();
-
+	
 	/**
 	 * Gets an available position outside the airlock entity.
 	 * 
+	 * @param inside true if the position is inside of the exterior door
 	 * @return available local position.
 	 */
-	public abstract Point2D getAvailableExteriorPosition();
+	public abstract Point2D getAvailableExteriorPosition(boolean inside);
+	
+//	public Point2D getAvailableExteriorPosition(boolean inside) {
+//		return ((BuildingAirlock)this).getAvailableExteriorPosition(inside);
+//	}
 
+	public abstract Point2D getAvailableExteriorPosition();
+	
 	/**
 	 * Gets an available airlock position
 	 * 
@@ -1045,6 +1093,26 @@ public abstract class Airlock implements Serializable {
 	 */
 	public abstract Point2D getAvailableAirlockPosition();
 
+	public boolean removePosition(int zone, Point2D p, int id) {
+		return ((BuildingAirlock)this).removePosition(zone, p, id);
+	}
+	
+    public boolean joinQueue(int zone, Point2D p, Integer id) {
+    	return ((BuildingAirlock)this).joinQueue(zone, p, id);
+    }
+  
+	public boolean removerQueue(int zone, Point2D p, Integer id) {
+		return ((BuildingAirlock)this).removerQueue(zone, p, id);
+	}
+	
+	public boolean isInZone(Person p, int zone) {
+		return ((BuildingAirlock)this).isInZone(p, zone);
+	}
+	
+	public void loadEVAActivitySpots() {
+		((BuildingAirlock)this).loadEVAActivitySpots();
+	}
+	
 	/**
 	 * Gets a collection of occupants' ids
 	 * 
