@@ -314,12 +314,23 @@ public class ExitAirlock extends Task implements Serializable {
 			if (transitionTo(0)) {
 								
 				if (airlock.addAwaitingInnerDoor(person)) {			
-					// Checks if the inner door is locked
+					// Checks if the inner door is unlocked
 					if (!airlock.isInnerDoorLocked()) {
 						canEnter = true;
 					}
+					else if (airlock.getNumOccupants() == 0){
+						canEnter = true;
+					}
 //					else {
-						// wait until the inner door is open
+//						// if the inner door is locked, checks if anyone wearing EVA suit is inside
+//						List<Integer> list = new ArrayList<>(airlock.getOccupants());
+//						for (int id : list) {
+//							Person p = unitManager.getPersonByID(id);
+//							if (p.getSuit() != null) {
+//								canEnter = false;
+//								break;
+//							}
+//						}
 //					}
 				}
 			}
@@ -355,6 +366,11 @@ public class ExitAirlock extends Task implements Serializable {
 		}
 
 		if (canEnter) {
+			if (airlock.isInnerDoorLocked()) {
+				// Unlock the inner door
+				airlock.setInnerDoorLocked(false);
+			}
+			
 			// Add experience
 			addExperience(time);
 			
