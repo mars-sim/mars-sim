@@ -569,18 +569,20 @@ public class EnterAirlock extends Task implements Serializable {
 	private double lockOuterDoor(double time) {
 
 		double remainingTime = 0;
+
+		boolean result = false;
 		
 		// If it's unlock, lock it
 		if (!airlock.isOuterDoorLocked()) {
 
-			boolean result = false;
-
-			if (!airlock.hasSpace()) {
+			if (airlock.getNumOccupants() >= Airlock.MAX_SLOTS) {
+				// It includes this person.
 				result = true;
 			}
 
-			// If there are people waiting at the outer door to come in, wait
-			if (airlock.hasSpace() && !airlock.hasAwaitingOuterDoor()) {
+			// If no one is waiting at the outer door
+			else if ((!airlock.hasAwaitingOuterDoor() && airlock.isDepressurized())
+					|| (!airlock.hasAwaitingInnerDoor() && airlock.isPressurized())) {
 				result = true;
 			}
 				
@@ -589,8 +591,7 @@ public class EnterAirlock extends Task implements Serializable {
 				airlock.setOuterDoorLocked(true);
 		}
 
-		// See if it is locked or can be locked
-		if (airlock.isOuterDoorLocked()) {
+//		if (result) {
 			// Unlock the outer door
 			LogConsolidated.log(logger, Level.INFO, 4000, sourceName,
 					"[" + person.getLocale() 
@@ -601,7 +602,7 @@ public class EnterAirlock extends Task implements Serializable {
 			addExperience(time);
 				
 			setPhase(WALK_TO_CHAMBER);
-		}
+//		}
 		
 		return remainingTime;
 	}

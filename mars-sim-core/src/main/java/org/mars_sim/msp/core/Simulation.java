@@ -958,9 +958,9 @@ public class Simulation implements ClockListener, Serializable {
 		logger.config("    Martian Date/Time Stamp : " + masterClock.getMarsClock().getDateTimeStamp());
 		logger.config(" --------------------------------------------------------------------");			
 		if (Simulation.BUILD.equals(loadBuild)) {
-			logger.config(" Note : Both Builds are matched.");
+			logger.config(" Note : The two builds are identical.");
 		} else {
-			logger.config(" Note : The Builds are NOT matched.");
+			logger.config(" Note : The two builds are NOT identical.");
 			logger.warning("Attempting to load a simulation made in build " + loadBuild
 				+ " (older) under core engine build " + Simulation.BUILD + " (newer).");
 		}		

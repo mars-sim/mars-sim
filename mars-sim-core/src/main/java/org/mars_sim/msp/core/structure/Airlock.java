@@ -843,6 +843,7 @@ public abstract class Airlock implements Serializable {
 	 * Adds person to queue awaiting airlock by inner door.
 	 * 
 	 * @param person the person to add to the awaiting queue.
+	 * @return true if the person can be added or is already in the queue
 	 */
 	public boolean addAwaitingInnerDoor(Person p, Integer id) {
 		// Add the person's ID to the lookup map
@@ -874,6 +875,7 @@ public abstract class Airlock implements Serializable {
 	 * Adds person to queue awaiting airlock by outer door.
 	 * 
 	 * @param person the person to add to the awaiting queue.
+	 * @return true if the person can be added or is already in the queue
 	 */
 	public boolean addAwaitingOuterDoor(Person p, Integer id) {
 //		int id = p.getIdentifier();

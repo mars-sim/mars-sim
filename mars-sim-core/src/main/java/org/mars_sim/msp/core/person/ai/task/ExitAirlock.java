@@ -410,6 +410,9 @@ public class ExitAirlock extends Task implements Serializable {
 			
 			setPhase(LOCK_OUTER_DOOR);
 		}
+		
+		else
+			endTask();
 
 		return remainingTime;
 	}
@@ -420,7 +423,7 @@ public class ExitAirlock extends Task implements Serializable {
 		double remainingTime = 0;
 				
 		if (airlock.hasSpace()) {
-			
+			// It doesn't include this person.
 			if (!airlock.isOuterDoorLocked()) {
 				
 				String loc = person.getLocationTag().getImmediateLocation();
@@ -797,8 +800,9 @@ public class ExitAirlock extends Task implements Serializable {
 		if (!airlock.isInnerDoorLocked()) {
 
 			boolean result = false;
-
-			if (!airlock.hasSpace()) {
+			
+			if (airlock.getNumOccupants() >= Airlock.MAX_SLOTS) {//!airlock.hasSpace()) {
+			// It includes this person.
 				result = true;
 			}
 
