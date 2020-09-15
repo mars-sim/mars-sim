@@ -756,7 +756,10 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 					}
 
 					if (vehicle.getOperator() == null 
-							&& (person.getPhysicalCondition().isFit() || hasDangerousMedicalProblemsAllCrew())) {
+							// Checks if a person is tired, too stressful or hungry and need 
+							// to take break, eat and/or sleep
+							&& (person.getPhysicalCondition().isFit() 
+							|| hasDangerousMedicalProblemsAllCrew())) {
 						// If vehicle doesn't currently have an operator, set this person as the
 						// operator.
 						if (operateVehicleTask != null) {

@@ -1045,6 +1045,22 @@ public abstract class Airlock implements Serializable {
 	}
 
 	/**
+	 * Remove the record of the deceased person from the map and sets
+	 * 
+	 * @param person
+	 */
+	public void removeAirlockRecord(Person person) {
+		int id = person.getIdentifier();
+		boolean isDead = person.getPhysicalCondition().isDead();
+		// Check if operator is dead.
+		if (isDead) {
+			occupantIDs.remove(id);
+			awaitingInnerDoor.remove(id);
+			awaitingOuterDoor.remove(id);
+		}
+	}
+	
+	/**
 	 * Checks if given person is currently in the airlock.
 	 * 
 	 * @param person to be checked

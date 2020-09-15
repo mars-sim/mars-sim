@@ -323,7 +323,7 @@ public class Mind implements Serializable {
 						selectNewTask();
 				}
 				
-				// Test if a person is tired, too stressful or hungry and need 
+				// Checks if a person is tired, too stressful or hungry and need 
 				// to take break, eat and/or sleep
 				else if (!person.getPhysicalCondition().isFit()
 		        	&& !mission.hasDangerousMedicalProblemsAllCrew()) {

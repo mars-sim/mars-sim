@@ -1466,7 +1466,9 @@ public class PhysicalCondition implements Serializable {
 		// Re-elect the role
 		person.getAssociatedSettlement().getChainOfCommand().reelectLeadership(deathDetails.getRoleType());
 		// Set the state of the health problem to DEAD
-		problem.setState(HealthProblem.DEAD);	
+		problem.setState(HealthProblem.DEAD);
+		// Remove the person from the airlock's record
+		person.getAssociatedSettlement().removeAirlockRecord(person);
 		// Set the mind of the person to inactive
 		person.getMind().setInactive();
 		// Add the person's death info to the postmorten exam waiting list
@@ -1762,7 +1764,7 @@ public class PhysicalCondition implements Serializable {
 	}
 
 	public boolean isFit() {
-        if (fatigue > 1250 || stress > 75 || hunger > 1000 || thirst > 500 || kJoules < 500
+        if (fatigue > 1000 || stress > 50 || hunger > 1000 || thirst > 750 || kJoules < 1000
 	        	|| hasSeriousMedicalProblems())
         	return false;
         

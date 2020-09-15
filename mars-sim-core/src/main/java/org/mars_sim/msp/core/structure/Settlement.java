@@ -4742,6 +4742,19 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	}
 	
 	/**
+	 * Remove the record of the deceased person from airlock
+	 * 
+	 * @param person
+	 */
+	public void removeAirlockRecord(Person person) {
+		List<Building> list = buildingManager.getBuildings(FunctionType.EVA);
+		for (Building b : list) {
+			Airlock lock = b.getEVA().getAirlock();
+			lock.removeAirlockRecord(person);
+		}
+	}
+	
+	/**
 	 * Reset uniqueCount to the current number of settlements
 	 */
 	public static void reinitializeIdentifierCount() {

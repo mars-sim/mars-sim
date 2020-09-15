@@ -99,6 +99,7 @@ public class DeathInfo implements Serializable {
 	private HealthProblem problem;
 	/** Container unit at time of death. */
 	private Unit containerUnit;
+	/** Container id at time of death. */	
 	private int containerID;
 	/** Coordinate at time of death. */
 	private Coordinates locationOfDeath;

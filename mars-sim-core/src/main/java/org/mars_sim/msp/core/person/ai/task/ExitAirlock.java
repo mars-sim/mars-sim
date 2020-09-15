@@ -329,6 +329,12 @@ public class ExitAirlock extends Task implements Serializable {
 			endTask();
 		}
 		
+		// Checks if a person is tired, too stressful or hungry and need 
+		// to take break, eat and/or sleep
+		if (!person.getPhysicalCondition().isFit()) {
+			endTask();
+		}
+		
 		String loc = person.getLocationTag().getImmediateLocation();
 		loc = loc == null ? "[N/A]" : loc;
 		loc = loc.equalsIgnoreCase("Outside") ? loc.toLowerCase() : "in " + loc;
