@@ -1475,8 +1475,7 @@ public class PhysicalCondition implements Serializable {
 		medicalManager.addPostmortemExams(person.getAssociatedSettlement(), deathDetails);
 		// Remove this person from being a citizen 
 		// Note: this affects the num of indoor people as well
-		person.getAssociatedSettlement().removeACitizen(person);;
-		
+		person.getAssociatedSettlement().removeACitizen(person);
 		// Then Wait for postmortem exam to be done by doctor
 	}
 
