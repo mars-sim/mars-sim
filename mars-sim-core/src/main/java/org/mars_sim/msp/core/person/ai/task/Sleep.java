@@ -127,6 +127,9 @@ public class Sleep extends Task implements Serializable {
 			// Double the sleep duration
 			setDuration(getDuration() * 2);
 			
+//	    	if (BuildingManager.isInBuildingAirlock(person))
+//	    		;
+	    	
 			// Note: A bed can be either unmarked(U) or marked(M); and either empty(E) or occupied(O).
 			// 4 possibilities : ME, MO, UE, or UO
 

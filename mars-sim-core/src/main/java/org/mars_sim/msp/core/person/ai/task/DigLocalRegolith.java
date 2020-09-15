@@ -92,6 +92,13 @@ implements Serializable {
         // Use EVAOperation constructor.
         super(NAME, person, false, 20);
         
+		// Checks if a person is tired, too stressful or hungry and need 
+		// to take break, eat and/or sleep
+		if (!person.getPhysicalCondition().isFit()) {
+			person.getMind().getTaskManager().clearAllTasks();
+			walkToRandomLocation(true);
+		}
+		
      	settlement = CollectionUtils.findSettlement(person.getCoordinates());
      	if (settlement == null) {
      		ended = true;

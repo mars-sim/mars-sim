@@ -314,6 +314,20 @@ public class ExitAirlock extends Task implements Serializable {
 			+ Math.round(newPos.getY()*100.0)/100.0 + ") in airlock zone " + zone);
 	}
 	
+	/**
+	 * Checks if a person is tired, too stressful or hungry and need to take break, eat and/or sleep
+	 * @param time
+	 * @return
+	 */
+	private double checkFitness(double time) {
+		// Checks if a person is tired, too stressful or hungry and need 
+		// to take break, eat and/or sleep
+		if (!person.getPhysicalCondition().isFit()) {
+			person.getMind().getTaskManager().clearAllTasks();
+			walkToRandomLocation(true);
+		}
+		return time;
+	}
 	
 	/**
 	 * Request the entry of the airlock
@@ -325,17 +339,17 @@ public class ExitAirlock extends Task implements Serializable {
 
 		double remainingTime = 0;
 		
+		if (!person.getPhysicalCondition().isFit()) {
+			person.getMind().getTaskManager().clearAllTasks();
+			walkToRandomLocation(true);
+			return time;
+		}
+		
 		if (person.isOutside()) {
 			endTask();
 		}
 		
-		// Checks if a person is tired, too stressful or hungry and need 
-		// to take break, eat and/or sleep
-		if (!person.getPhysicalCondition().isFit()) {
-			endTask();
-		}
-		
-		String loc = person.getLocationTag().getImmediateLocation();
+		String loc = person.getImmediateLocation();
 		loc = loc == null ? "[N/A]" : loc;
 		loc = loc.equalsIgnoreCase("Outside") ? loc.toLowerCase() : "in " + loc;
 		
@@ -427,12 +441,12 @@ public class ExitAirlock extends Task implements Serializable {
 	private double lockOuterDoor(double time) {
 
 		double remainingTime = 0;
-				
+		
 		if (airlock.hasSpace()) {
 			// It doesn't include this person.
 			if (!airlock.isOuterDoorLocked()) {
 				
-				String loc = person.getLocationTag().getImmediateLocation();
+				String loc = person.getImmediateLocation();
 				loc = loc == null ? "[N/A]" : loc;
 				loc = loc.equalsIgnoreCase("Outside") ? loc.toLowerCase() : "in " + loc;
 				
@@ -469,6 +483,12 @@ public class ExitAirlock extends Task implements Serializable {
 	private double pressurizeChamber(double time) {
 
 		double remainingTime = 0;
+		
+		if (!person.getPhysicalCondition().isFit()) {
+			person.getMind().getTaskManager().clearAllTasks();
+			walkToRandomLocation(true);
+			return time;
+		}
 		
 		if (airlock.isPressurized()) {
 			// If it stops adding or subtracting air, 
@@ -515,7 +535,7 @@ public class ExitAirlock extends Task implements Serializable {
 	private double unlockInnerDoor(double time) {
 
 		double remainingTime = 0;
-		
+	
 		// First, unlock the inner door
 		if (airlock.isInnerDoorLocked()) {
 			// Unlock the inner door
@@ -610,7 +630,7 @@ public class ExitAirlock extends Task implements Serializable {
 		
 		double remainingTime = 0;
 		
-		String loc = person.getLocationTag().getImmediateLocation();
+		String loc = person.getImmediateLocation();
 		loc = loc == null ? "[N/A]" : loc;
 		loc = loc.equalsIgnoreCase("Outside") ? loc.toLowerCase() : "in " + loc;
 		
@@ -767,6 +787,12 @@ public class ExitAirlock extends Task implements Serializable {
 	private double prebreathe(double time) {
 
 		double remainingTime = 0;
+		
+		if (!person.getPhysicalCondition().isFit()) {
+			person.getMind().getTaskManager().clearAllTasks();
+			walkToRandomLocation(true);
+			return time;
+		}
 		
 		PhysicalCondition pc = person.getPhysicalCondition();
 		
@@ -973,7 +999,7 @@ public class ExitAirlock extends Task implements Serializable {
 			// Add experience
 	 		addExperience(time);
 	 		
-			String loc = person.getLocationTag().getImmediateLocation();
+			String loc = person.getImmediateLocation();
 			loc = loc == null ? "[N/A]" : loc;
 			loc = loc.equalsIgnoreCase("Outside") ? loc.toLowerCase() : "in " + loc;
 			
@@ -1347,7 +1373,7 @@ public class ExitAirlock extends Task implements Serializable {
 								+ person + " ran into issues providing water to " + suit.getName(), e);
 			}
 
-			String loc = person.getLocationTag().getImmediateLocation();
+			String loc = person.getImmediateLocation();
 			loc = loc == null ? "[N/A]" : loc;
 			loc = loc.equalsIgnoreCase("Outside") ? loc.toLowerCase() : "in " + loc;
 			
