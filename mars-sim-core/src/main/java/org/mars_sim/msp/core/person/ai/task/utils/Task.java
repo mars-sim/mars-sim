@@ -98,7 +98,8 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	private double duration;
 	/** The current amount of time spent on the task (in millisols). */
 	private double timeCompleted;
-
+	/** The id of the person/robot. */
+	protected Integer id;
 	/** The name of the task. */
 	private String name = "";
 	/** Description of the task. */
@@ -174,10 +175,12 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		if (unit instanceof Person) {
 			person = (Person) unit;
 			this.person = person;
+			this.id = person.getIdentifier();
 			condition = person.getPhysicalCondition();
 		} else if (unit instanceof Robot) {
 			robot = (Robot) unit;
 			this.robot = robot;
+			this.id = robot.getIdentifier();
 		}
 
 		done = false;

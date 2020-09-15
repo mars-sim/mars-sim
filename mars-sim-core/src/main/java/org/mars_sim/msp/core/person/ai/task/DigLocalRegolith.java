@@ -273,7 +273,7 @@ implements Serializable {
         addExperience(time);
         
         if (finishedCollecting) {// && totalCollected > 0) {
-            LogConsolidated.log(logger, Level.INFO, 3000, sourceName, 
+            LogConsolidated.log(logger, Level.INFO, 4_000, sourceName, 
         		"[" + person.getLocationTag().getLocale() +  "] " +
         		person.getName() + " collected a total of " + Math.round(totalCollected*100D)/100D 
         		+ " kg regolith outside at " + person.getCoordinates().getFormattedString() + ".");
@@ -290,7 +290,7 @@ implements Serializable {
         
         if (fatigue > 1000 || stress > 50 || hunger > 750 || energy < 1000) {
         	
-            LogConsolidated.log(logger, Level.INFO, 3000, sourceName, 
+            LogConsolidated.log(logger, Level.INFO, 4_000, sourceName, 
         		"[" + person.getLocationTag().getLocale() +  "] " +
         		person.getName() + " had to take a break from collecting regolith ("
         		+ Math.round(totalCollected*100D)/100D + " kg collected) " 
@@ -310,7 +310,7 @@ implements Serializable {
         }
         
      	if (person.isInSettlement()) {
-            LogConsolidated.log(logger, Level.INFO, 3000, sourceName, 
+            LogConsolidated.log(logger, Level.INFO, 4_000, sourceName, 
             		"[" + person.getLocationTag().getLocale() +  "] " +
             		person.getName() + " had already been back to the settlement."); 
         	ended = true;
@@ -466,7 +466,7 @@ implements Serializable {
             	if (reg1 > settlementCap) {
             		reg1 = settlementCap;
             		
-	            	LogConsolidated.log(logger, Level.INFO, 0, sourceName, 
+	            	LogConsolidated.log(logger, Level.INFO, 4_000, sourceName, 
 	            			"[" + person.getLocationTag().getLocale() +  "] Regolith storage full. " +
 	            				person.getName() + " could only check in " + Math.round(reg1*10.0)/10.0 + " kg regolith.");
 	                		
@@ -485,7 +485,7 @@ implements Serializable {
             	}
             	
             	else {
-	            	LogConsolidated.log(logger, Level.INFO, 0, sourceName, 
+	            	LogConsolidated.log(logger, Level.INFO, 4_000, sourceName, 
 	            			"[" + person.getLocationTag().getLocale() +  "] " +
 	            				person.getName() + " was checking in " + Math.round(reg1*10.0)/10.0 + " kg regolith.");
 	                		

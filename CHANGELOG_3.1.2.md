@@ -4,7 +4,7 @@ Copyright (C) 2020 Scott Davis
 [GitHub Page](https://github.com/mars-sim/mars-sim)
 
 ------------------------------------------|---------------------
-## v3.1.2 (build 5358) - 2020-09-11
+## v3.1.2 (build 5359) - 2020-09-14
 
 ### CORE ENGINE IMPROVEMENTS :
 
@@ -48,7 +48,7 @@ Copyright (C) 2020 Scott Davis
     sponsor/country.
 
 15. Revamp EVA egress and ingress phases to model airlock 
-    activities in fine details.
+    activities in finer details.
 
 
 ### UI IMPROVEMENT :
