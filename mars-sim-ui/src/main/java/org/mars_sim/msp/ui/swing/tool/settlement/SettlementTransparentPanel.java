@@ -895,13 +895,13 @@ public class SettlementTransparentPanel extends WebComponent {
 //			UnitManager unitManager = Simulation.instance().getUnitManager();
 			unitManager.addUnitManagerListener(this);
 
-//			// Add addUnitListener
-//			Collection<Settlement> settlements = unitManager.getSettlements();
-//			List<Settlement> settlementList = new ArrayList<Settlement>(settlements);
-//			Iterator<Settlement> i = settlementList.iterator();
-//			while (i.hasNext()) {
-//				i.next().addUnitListener(this);
-//			}
+			// Add addUnitListener
+			Collection<Settlement> settlements = unitManager.getSettlements();
+			List<Settlement> settlementList = new ArrayList<Settlement>(settlements);
+			Iterator<Settlement> i = settlementList.iterator();
+			while (i.hasNext()) {
+				i.next().addUnitListener(this);
+			}
 
 		}
 
@@ -938,11 +938,11 @@ public class SettlementTransparentPanel extends WebComponent {
 			}
 		}
 
+		@Override
 		public void unitUpdate(UnitEvent event) {
 			// Note: Easily 100+ UnitEvent calls every second
 			UnitEventType eventType = event.getType();
-			if (eventType == UnitEventType.ADD_BUILDING_EVENT
-					|| eventType == UnitEventType.REMOVE_ASSOCIATED_PERSON_EVENT) {
+			if (eventType == UnitEventType.ADD_BUILDING_EVENT) {
 				Object target = event.getTarget();
 				Building building = (Building) target; // overwrite the dummy building object made by the constructor
 				BuildingManager mgr = building.getBuildingManager();
@@ -958,6 +958,7 @@ public class SettlementTransparentPanel extends WebComponent {
 				// Set the selected settlement in SettlementMapPanel
 				mapPanel.setSettlement(s);
 				// Set the population label in the status bar
+//				System.out.println(s + " : " + s.getNumCitizens());
 				mapPanel.getSettlementWindow().setPop(s.getNumCitizens());
 				// Set the box opaque
 				settlementListBox.setOpaque(false);

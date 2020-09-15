@@ -273,11 +273,11 @@ public class Mind implements Serializable {
 					}
 				}
 				
-				else if (taskManager.getTaskName() != null) {
+				else if (taskManager.getTaskName() != null && taskManager.getTaskName().equals("")) {
 					LogConsolidated.log(logger, Level.WARNING, 20_000, sourceName,
-							person + " had been doing x" + counts + " '" 
-							+ taskManager.getTaskName() + "' (Remaining Time : " + Math.round(remainingTime *1000.0)/1000.0 
-							+ "; Time : " + Math.round(time *1000.0)/1000.0 + ")."); // 1x = 0.001126440159375963 -> 8192 = 8.950963852039651
+							person + " had been doing " + counts + "x '" 
+							+ taskManager.getTaskName() + "' (Remaining Time: " + Math.round(remainingTime *1000.0)/1000.0 
+							+ "; Time: " + Math.round(time *1000.0)/1000.0 + ")."); // 1x = 0.001126440159375963 -> 8192 = 8.950963852039651
 				}
 			}
 			

@@ -501,15 +501,15 @@ public class ChatUtils {
 		String responseText = null;
 		int rand0 = RandomUtil.getRandomInt(4);
 		if (rand0 == 0)
-			responseText = prompt + " : Could you repeat that?   [/h for help]";
+			responseText = " Could you repeat that?   [/h for help]";
 		else if (rand0 == 1)
-			responseText = prompt + " : Pardon me?   [/h for help]";
+			responseText = " Pardon me?   [/h for help]";
 		else if (rand0 == 2)
-			responseText = prompt + " : What did you say?   [/h for help]";
+			responseText = " What did you say?   [/h for help]";
 		else if (rand0 == 3)
-			responseText = prompt + " : I beg your pardon?   [/h for help]";
+			responseText = " I beg your pardon?   [/h for help]";
 		else
-			responseText = prompt + " : Can you be more specific?   [/h for help]";
+			responseText = " Can you be more specific?   [/h for help]";
 
 //		System.out.println("ChatUtils' clarify() :" + responseText);
 		return new String[] { questionText, responseText }; // + System.lineSeparator()

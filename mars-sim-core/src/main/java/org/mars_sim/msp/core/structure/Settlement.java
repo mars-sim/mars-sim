@@ -2503,9 +2503,10 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 	public void removeACitizen(Person p) {
 		if (citizens.contains(p)) {
 			citizens.remove(p);
-			fireUnitUpdate(UnitEventType.REMOVE_ASSOCIATED_PERSON_EVENT, this);
 			// Update the numCtizens
 			numCitizens = citizens.size();
+//			System.out.println("numCitizens: " + numCitizens);
+			fireUnitUpdate(UnitEventType.REMOVE_ASSOCIATED_PERSON_EVENT, this);
 		}
 	}
 

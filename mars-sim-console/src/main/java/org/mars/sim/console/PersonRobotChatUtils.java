@@ -71,10 +71,10 @@ public class PersonRobotChatUtils extends ChatUtils {
 			int col0 = 16;
 			int col1 = 8;
 			int col2a = 9;
-			try {
-				
+			
+			try {		
 				questionText = YOU_PROMPT + "How's your health ? ";
-				responseText.append("'s health : ");
+				responseText.append("See below");
 				
 				responseText.append(System.lineSeparator());
 				responseText.append(System.lineSeparator());
@@ -135,12 +135,12 @@ public class PersonRobotChatUtils extends ChatUtils {
 				responseText.append(addWhiteSpacesRightName("Performance", col0));
 				responseText.append(addWhiteSpacesRightName(perf + "", col1));
 				// Note : he percent sign is escaped using another percent sign
-				responseText.append(addWhiteSpacesLeftName(" %%", 4));
+				responseText.append(addWhiteSpacesLeftName(" %", 4));
 				responseText.append(System.lineSeparator());
 				responseText.append(addWhiteSpacesRightName("Stress", col0));
 				responseText.append(addWhiteSpacesRightName(stress + "", col1));
 				// Note : he percent sign is escaped using another percent sign
-				responseText.append(addWhiteSpacesLeftName(" %%", 4));
+				responseText.append(addWhiteSpacesLeftName(" %", 4));
 				responseText.append(System.lineSeparator());
 				
 //				System.out.println("5");
