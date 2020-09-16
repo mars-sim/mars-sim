@@ -128,13 +128,17 @@ public class ProposeScientificStudy extends Task implements Serializable {
 		if (person.isInSettlement()) {
 			List<Building> buildings = null;
 
-			if (study != null ) {
+			if (study != null) {
 				ScienceType science = study.getScience();
 				
-				if (science != null && science == ScienceType.ASTRONOMY)
-					buildings = getBuildings(person, FunctionType.ASTRONOMICAL_OBSERVATIONS);
-				else if (science == ScienceType.BOTANY)
-					buildings = getBuildings(person, FunctionType.FARMING);
+				buildings = person.getSettlement().getBuildingManager().getBuildingsWithScienceType(science);
+				
+//				if (science != null && science == ScienceType.ASTRONOMY)
+//					buildings = getBuildings(person, FunctionType.ASTRONOMICAL_OBSERVATIONS);
+//				else if (science == ScienceType.BOTANY)
+//					buildings = getBuildings(person, FunctionType.FARMING);
+//				else if (science == ScienceType.AREOLOGY)
+//					buildings = getBuildings(person, FunctionType.RESOURCE_PROCESSING);						
 			}
 			
 			if (buildings == null || buildings.size() == 0) {
@@ -149,7 +153,8 @@ public class ProposeScientificStudy extends Task implements Serializable {
 			if (buildings == null || buildings.size() == 0) {
 				buildings = getBuildings(person, FunctionType.LIVING_ACCOMMODATIONS);
 			}
-			if (buildings == null || buildings.size() > 0) {
+			
+			if (buildings != null && buildings.size() > 0) {
 				Map<Building, Double> possibleBuildings = BuildingManager.getBestRelationshipBuildings(person,
 						buildings);
 				result = RandomUtil.getWeightedRandomObject(possibleBuildings);

@@ -942,6 +942,12 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 
 	public void endAllIndoorTasks() {
 		for (Person p : getIndoorPeople()) {
+			LogConsolidated.log(logger, Level.INFO, 4_000, sourceName, 
+					"[" + p.getLocale() + "] "
+					+ p.getName() 
+					+ " had to end the current inddor tasks at ("
+					+ Math.round(p.getXLocation()*10.0)/10.0 + ", " 
+					+ Math.round(p.getYLocation()*10.0)/10.0 + ").");
 			p.getMind().getTaskManager().clearAllTasks();
 		}
 	}

@@ -1111,7 +1111,7 @@ public abstract class Airlock implements Serializable {
 	 * @param inside true if the position is inside of the interior door
 	 * @return available local position.
 	 */
-	public abstract Point2D getAvailableInteriorPosition(boolean insid);
+	public abstract Point2D getAvailableInteriorPosition(boolean inside);
 	
 //	public Point2D getAvailableInteriorPosition(boolean inside) {
 //	return ((BuildingAirlock)this).getAvailableInteriorPosition(inside);

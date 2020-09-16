@@ -38,6 +38,7 @@ import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.person.ai.task.HaveConversation;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotType;
+import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.BuildingTemplate;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.SettlementConfig;
@@ -656,6 +657,20 @@ public class BuildingManager implements Serializable {
 		}
 	}
 
+	/**
+	 * Gets the buildings in a settlement that has a given function.
+	 * 
+	 * @param building function {@link FunctionType} the function of the building.
+	 * @return list of buildings.
+	 */
+	public List<Building> getBuildingsWithoutFunctionType(FunctionType bf) {
+		return buildings.stream().filter(b -> !b.hasFunction(bf)).collect(Collectors.toList());
+	}
+	
+	public List<Building>getBuildingsWithScienceType(ScienceType type) {
+		return buildings.stream().filter(b -> b.hasSpecialty(type)).collect(Collectors.toList());
+	}
+	
 	/**
 	 * Gets the buildings in a settlement have have all of a given array of
 	 * functions.

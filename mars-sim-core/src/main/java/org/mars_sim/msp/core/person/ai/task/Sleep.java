@@ -136,8 +136,9 @@ public class Sleep extends Task implements Serializable {
 			Settlement s1 = person.getSettlement();
 			Settlement s0 = person.getAssociatedSettlement();
 			
-			// check to see if a person is a trader or a tourist guest to this settlement
 			if (s1 != null && !s1.equals(s0)) {
+				// This person is a trader, a tourist, or a guest to this settlement
+				
 //				logger.info(person + " (from " + person.getAssociatedSettlement() + ") is in " + person.getSettlement());
 				
 				//////////////////// Case 1 - 3 /////////////////////////

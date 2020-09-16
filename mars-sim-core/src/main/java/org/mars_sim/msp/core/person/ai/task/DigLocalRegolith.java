@@ -95,6 +95,12 @@ implements Serializable {
 		// Checks if a person is tired, too stressful or hungry and need 
 		// to take break, eat and/or sleep
 		if (!person.getPhysicalCondition().isFit()) {
+			LogConsolidated.log(logger, Level.INFO, 4_000, sourceName, 
+					"[" + person.getLocale() + "] "
+					+ person.getName() 
+					+ " was not fit enough to dig local regolith ("
+					+ Math.round(person.getXLocation()*10.0)/10.0 + ", " 
+					+ Math.round(person.getYLocation()*10.0)/10.0 + ").");
 			person.getMind().getTaskManager().clearAllTasks();
 			walkToRandomLocation(true);
 		}

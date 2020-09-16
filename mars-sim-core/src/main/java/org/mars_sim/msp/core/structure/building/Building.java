@@ -34,6 +34,7 @@ import org.mars_sim.msp.core.person.ai.task.Maintenance;
 import org.mars_sim.msp.core.person.ai.task.Repair;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.BuildingTemplate;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.Structure;
@@ -1643,6 +1644,10 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 				|| buildingType.contains(" Hub"))
 			return true;
 		return false;
+	}
+	
+	public boolean hasSpecialty(ScienceType type) {
+		return getResearch().hasSpecialty(type);
 	}
 	
 	/**

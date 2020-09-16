@@ -327,6 +327,12 @@ public class ExitAirlock extends Task implements Serializable {
 		double remainingTime = 0;
 		
 		if (!person.getPhysicalCondition().isFit()) {
+			LogConsolidated.log(logger, Level.INFO, 4_000, sourceName, 
+					"[" + person.getLocale() + "] "
+					+ person.getName() 
+					+ " was not fit enough to go outside ("
+					+ Math.round(person.getXLocation()*10.0)/10.0 + ", " 
+					+ Math.round(person.getYLocation()*10.0)/10.0 + ").");
 			person.getMind().getTaskManager().clearAllTasks();
 			walkToRandomLocation(true);
 			return time;
@@ -428,6 +434,18 @@ public class ExitAirlock extends Task implements Serializable {
 	private double lockOuterDoor(double time) {
 
 		double remainingTime = 0;
+			
+		if (!person.getPhysicalCondition().isFit()) {
+			LogConsolidated.log(logger, Level.INFO, 0, sourceName, 
+					"[" + person.getLocale() + "] "
+					+ person.getName() 
+					+ " was not fit enough to go outside ("
+					+ Math.round(person.getXLocation()*10.0)/10.0 + ", " 
+					+ Math.round(person.getYLocation()*10.0)/10.0 + ").");
+			person.getMind().getTaskManager().clearAllTasks();
+			walkToRandomLocation(true);
+			return time;
+		}
 		
 		if (airlock.hasSpace()) {
 			// It doesn't include this person.
@@ -472,6 +490,12 @@ public class ExitAirlock extends Task implements Serializable {
 		double remainingTime = 0;
 		
 		if (!person.getPhysicalCondition().isFit()) {
+			LogConsolidated.log(logger, Level.INFO, 0, sourceName, 
+					"[" + person.getLocale() + "] "
+					+ person.getName() 
+					+ " was not fit enough to go outside ("
+					+ Math.round(person.getXLocation()*10.0)/10.0 + ", " 
+					+ Math.round(person.getYLocation()*10.0)/10.0 + ").");
 			person.getMind().getTaskManager().clearAllTasks();
 			walkToRandomLocation(true);
 			return time;
@@ -749,11 +773,11 @@ public class ExitAirlock extends Task implements Serializable {
 
 		// If person still doesn't have an EVA suit, end task.
 		else {
-			LogConsolidated.log(logger, Level.WARNING, 4000, sourceName,
+			LogConsolidated.log(logger, Level.WARNING, 4_000, sourceName,
 					"[" + person.getLocale() + "] " + person.getName()
 							+ " could not find a working EVA suit. End this task.");
 			
-			endTask(); 
+//			endTask(); 
 			// Will need to clear the task that create the ExitAirlock sub task
 			person.getMind().getTaskManager().clearAllTasks();
 
@@ -776,6 +800,12 @@ public class ExitAirlock extends Task implements Serializable {
 		double remainingTime = 0;
 		
 		if (!person.getPhysicalCondition().isFit()) {
+			LogConsolidated.log(logger, Level.INFO, 0, sourceName, 
+					"[" + person.getLocale() + "] "
+					+ person.getName() 
+					+ " was not fit enough to go outside ("
+					+ Math.round(person.getXLocation()*10.0)/10.0 + ", " 
+					+ Math.round(person.getYLocation()*10.0)/10.0 + ").");
 			person.getMind().getTaskManager().clearAllTasks();
 			walkToRandomLocation(true);
 			return time;

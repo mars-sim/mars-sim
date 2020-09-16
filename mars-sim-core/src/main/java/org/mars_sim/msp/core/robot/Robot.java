@@ -900,7 +900,15 @@ public class Robot extends Equipment implements Salvagable, Malfunctionable, Mis
 	public String getLocale() {
 		return getLocationTag().getLocale();
 	}
-
+	
+	public String getExtendedLocations() {
+		return getLocationTag().getExtendedLocations();
+	}
+	
+	public Settlement findSettlementVicinity() {
+		return getLocationTag().findSettlementVicinity();
+	}
+		
 //	public Relax getRelax() {
 //		return relax;
 //	}

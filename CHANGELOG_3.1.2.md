@@ -4,7 +4,7 @@ Copyright (C) 2020 Scott Davis
 [GitHub Page](https://github.com/mars-sim/mars-sim)
 
 ------------------------------------------|---------------------
-## v3.1.2 (build 5365) - 2020-09-16
+## v3.1.2 (build 5366) - 2020-09-16
 
 ### CORE ENGINE IMPROVEMENTS :
 
@@ -117,6 +117,8 @@ Copyright (C) 2020 Scott Davis
 
 13. Sync up the position of the WebSwitch when pausing or 
     resuming the sim.
+ 
+14. Fix finding a lab supporting a certain science type.
  
 ------------------------------------------|---------------------
 

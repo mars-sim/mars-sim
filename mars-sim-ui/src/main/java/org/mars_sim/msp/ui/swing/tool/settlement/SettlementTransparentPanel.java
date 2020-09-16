@@ -62,6 +62,8 @@ import org.mars_sim.msp.core.UnitManagerListener;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.ui.steelseries.gauges.DisplaySingle;
+import org.mars_sim.msp.ui.steelseries.tools.LcdColor;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
 import com.alee.extended.WebComponent;
@@ -83,7 +85,7 @@ public class SettlementTransparentPanel extends WebComponent {
 	private GameMode mode;
 	
 	private JLabel emptyLabel;
-
+	private DisplaySingle bannerText;
 	private JSlider zoomSlider;
 	private JPanel controlCenterPane, namePane, eastPane, labelPane, buttonPane, controlPane, settlementPanel;//, infoP, renameP ;
 	private WebButton renameBtn, infoButton;
@@ -141,8 +143,9 @@ public class SettlementTransparentPanel extends WebComponent {
         buildButtonPane();
         buildSettlementNameComboBox();
         buildZoomSlider();
-
-		namePane = new JPanel(new FlowLayout(FlowLayout.CENTER, 2,2));
+        buildBanner();
+        
+		namePane = new JPanel(new BorderLayout(0, 0));//FlowLayout(FlowLayout.CENTER, 2,2));
 		namePane.setBackground(new Color(0,0,0,128));
         namePane.setOpaque(false);
 
@@ -150,12 +153,10 @@ public class SettlementTransparentPanel extends WebComponent {
 		settlementPanel.setBackground(new Color(0,0,0,128));
 		settlementPanel.setOpaque(false);
 		settlementPanel.add(settlementListBox);//, BorderLayout.CENTER);
-	    
-//      	namePane.add(infoButton);
-       	namePane.add(settlementPanel);
-//       	namePane.add(renameBtn);
 
-       	
+       	namePane.add(settlementPanel, BorderLayout.CENTER);
+       	namePane.add(bannerText, BorderLayout.NORTH);
+
 	    mapPanel.add(namePane, BorderLayout.NORTH);
 
 	    controlPane = new JPanel(new BorderLayout());//GridLayout(2,1,10,2));
@@ -259,6 +260,24 @@ public class SettlementTransparentPanel extends WebComponent {
 
 	}
 
+	public void buildBanner() {
+		bannerText = new DisplaySingle();
+//		lcdText.setLcdInfoString("1 2 3 4 5");
+		// lcdText.setLcdColor(LcdColor.REDDARKRED_LCD);
+//		lcdText.setGlowColor(Color.ORANGE.darker());
+		bannerText.setLcdColor(LcdColor.REDDARKRED_LCD);
+		// lcdText.setBackground(Background.SATIN_GRAY);
+		bannerText.setDigitalFont(true);
+//		bannerText.setSize(new Dimension(150, 30));
+//		bannerText.setMaximumSize(new Dimension(150, 30));
+		bannerText.setPreferredSize(new Dimension(150, 30));
+		bannerText.setVisible(true);
+		bannerText.setLcdNumericValues(false);
+		bannerText.setLcdValueFont(new Font("Serif", Font.ITALIC, 8));
+		bannerText.setLcdText("Sample text");
+		bannerText.setLcdTextScrolling(true);
+	}
+	
 	class PromptComboBoxRenderer extends DefaultListCellRenderer {
 
 		private static final long serialVersionUID = 1L;
@@ -871,6 +890,11 @@ public class SettlementTransparentPanel extends WebComponent {
 			        JOptionPane.QUESTION_MESSAGE);
 	}
 
+	
+	public void displayText(String text) {
+		bannerText.setLcdText(text);
+	}
+	
 	/**
 	 * Inner class combo box model for settlements.
 	 */

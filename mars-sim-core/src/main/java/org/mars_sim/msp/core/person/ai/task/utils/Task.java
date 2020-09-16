@@ -1261,7 +1261,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			if (person.isInSettlement()) {
 		
 				List<Building> buildingList = person.getSettlement().getBuildingManager()
-						.getBuildings();
+						.getBuildingsWithoutFunctionType(FunctionType.EVA);
 
 				if (buildingList.size() > 0) {
 					for (Building b : buildingList) {

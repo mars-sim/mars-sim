@@ -63,6 +63,8 @@ public class BuildingAirlock extends Airlock {
     
     private Map<Point2D, Integer> insideInteriorMap;
     private Map<Point2D, Integer> insideExteriorMap;
+
+    private Map<Point2D, Integer> activitySpotMap;
     
     /**
      * Constructor
@@ -75,6 +77,8 @@ public class BuildingAirlock extends Airlock {
         super(capacity);//, building);
 
         this.building = building;
+        
+        activitySpotMap  = new HashMap<>();
         
         // Determine airlock interior position.
         airlockInteriorPos = LocalAreaUtil.getLocalRelativeLocation(interiorXLoc, interiorYLoc, building);
@@ -382,7 +386,10 @@ public class BuildingAirlock extends Airlock {
 
     	}
     	else if (zone == 2) {
-    		return true;
+    		if (activitySpotMap.values().contains(id))
+    			return false;
+    		activitySpotMap.put(p, id);
+    			return true;
     	}
     	
     	else if (zone == 3) {
@@ -452,7 +459,14 @@ public class BuildingAirlock extends Airlock {
     	}
     	
     	else if (zone == 2) {
-    		return true;
+    		Point2D oldPos = getKey(activitySpotMap, id);
+    		if (oldPos == null)
+    			return false;
+			if (activitySpotMap.get(oldPos).equals(id)) {
+				activitySpotMap.put(oldPos, -1);
+				return true;
+			}
+//    		return true;
     	}
     	
     	else if (zone == 3) {
@@ -512,14 +526,24 @@ public class BuildingAirlock extends Airlock {
     	}
     	
     	else if (zone == 2) {
+    		Point2D p0 = getKey(activitySpotMap, p.getIdentifier());
+    		if (p0 == null)
+    			return false;
     		for (int i=0; i<MAX_SLOTS; i++) {
-    			Point2D s = EVASpots.get(i);
-//    			System.out.println(p + " at " + p0 + "   Spot at " + s);
-    			if (LocalAreaUtil.areLocationsClose(p.getXLocation(), p.getYLocation(), s.getX(), s.getY())) {
-//        			System.out.println(p0 + " ~ " + s);
+    			Point2D pt = EVASpots.get(i);
+    			if (LocalAreaUtil.areLocationsClose(p0, pt)) {
+//        			System.out.println(p0 + " ~ " + pt);
     				return true;
     			}
-    		}
+    		}		
+//    		for (int i=0; i<MAX_SLOTS; i++) {
+//    			Point2D s = EVASpots.get(i);
+////    			System.out.println(p + " at " + p0 + "   Spot at " + s);
+//    			if (LocalAreaUtil.areLocationsClose(p.getXLocation(), p.getYLocation(), s.getX(), s.getY())) {
+////        			System.out.println(p0 + " ~ " + s);
+//    				return true;
+//    			}
+//    		}
     	}
     	
     	else if (zone == 3) {
@@ -557,8 +581,9 @@ public class BuildingAirlock extends Airlock {
 			EVASpots = new ArrayList<>();
 			for (int i=0; i<4; i++) {
     			Point2D p0 = building.getEVA().getActivitySpotsList().get(i);
-    			Point2D p1 = LocalAreaUtil.getLocalRelativeLocation(p0.getX(), p0.getY(), building);
-    			EVASpots.add(p1);
+//    			Point2D p1 = LocalAreaUtil.getLocalRelativeLocation(p0.getX(), p0.getY(), building);
+    			EVASpots.add(p0);
+    			activitySpotMap.put(p0, -1);
     		}	
 		}       
 	}
@@ -579,8 +604,14 @@ public class BuildingAirlock extends Airlock {
 			return true;
 		}
 		
-		if (zone == 2)
+		if (zone == 2 && activitySpotMap.containsKey(p)) {
+			activitySpotMap.put(p, -1);
 			return true;
+		}
+		
+//		if (zone == 2) {
+//			return true;
+//		}
 		
 		if (zone == 3 && insideExteriorMap.containsKey(p)) {
 			insideExteriorMap.put(p, -1);
@@ -601,6 +632,8 @@ public class BuildingAirlock extends Airlock {
 	    airlockInteriorPos = null;
 	    airlockExteriorPos = null;
 	    
+	    activitySpotMap.clear();
+	    
 	    outsideInteriorList.clear();
 	    insideInteriorList.clear();
 
@@ -612,6 +645,8 @@ public class BuildingAirlock extends Airlock {
 	    
 	    insideInteriorMap.clear();
 	    insideExteriorMap.clear();
+	    
+	    activitySpotMap = null;
 	    
 	    outsideInteriorList = null;
 	    insideInteriorList = null;
