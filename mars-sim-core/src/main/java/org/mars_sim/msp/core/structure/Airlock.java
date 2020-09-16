@@ -907,11 +907,8 @@ public abstract class Airlock implements Serializable {
 			return false;
 		if (!set.contains(id)) {
 			set.add(id);
-			return true;
 		}
-		else {
-			return true;
-		}
+		return true;
 	}
 	
 	

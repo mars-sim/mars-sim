@@ -191,44 +191,31 @@ public class ExitAirlock extends Task implements Serializable {
 			return true;
 		}
 		
-		else {
-			
+		else {	
 			int previousZone = zone - 1;
 			
 			Point2D newPos = fetchNewPos(zone);
 			
 			if (newPos != null) {
-				
-//				int id = person.getIdentifier();
-				
-				if (newPos != null) {
-//					System.out.println(person + " at zone " + zone + " getting newPos (" + newPos.getX() + ", " + newPos.getY() + ").");
-//					Point2D oldPos = new Point2D.Double(person.getXLocation(), person.getYLocation());
-					
-					if (airlock.occupy(zone, newPos, id)) {
-//						System.out.println(person + " at zone " + zone + " occupy (" + newPos.getX() + ", " + newPos.getY() + ") is true.");	
-//						System.out.println(person + " at zone " + zone + " oldPos (" + oldPos.getX() + ", " + oldPos.getY() + ").");
-						if (previousZone >= 0) {
-							if (airlock.vacate(previousZone, id)) {
-//								System.out.println(person + " at zone " + zone + " vacate (" + oldPos.getX() + ", " + oldPos.getY() + ") is true.");
-								
-								moveThere(newPos, zone);
-								
-								return true;
-							}
-							else
-								return false;
-						}
-						else {
-							moveThere(newPos, zone);
-							
+//				System.out.println(person + " at zone " + zone + " getting newPos (" + newPos.getX() + ", " + newPos.getY() + ").");					
+				if (airlock.occupy(zone, newPos, id)) {
+//					System.out.println(person + " at zone " + zone + " occupy (" + newPos.getX() + ", " + newPos.getY() + ") is true.");	
+					if (previousZone >= 0) {
+						if (airlock.vacate(previousZone, id)) {
+//							System.out.println(person + " at zone " + zone + " vacate (" + oldPos.getX() + ", " + oldPos.getY() + ") is true.");								
+							moveThere(newPos, zone);						
 							return true;
 						}
+						else
+							return false;
+					}
+					else {
+						moveThere(newPos, zone);							
+						return true;
 					}
 				}
 			}
 		}
-		
 		return false;
 	}	
 	
@@ -314,20 +301,20 @@ public class ExitAirlock extends Task implements Serializable {
 			+ Math.round(newPos.getY()*100.0)/100.0 + ") in airlock zone " + zone);
 	}
 	
-	/**
-	 * Checks if a person is tired, too stressful or hungry and need to take break, eat and/or sleep
-	 * @param time
-	 * @return
-	 */
-	private double checkFitness(double time) {
-		// Checks if a person is tired, too stressful or hungry and need 
-		// to take break, eat and/or sleep
-		if (!person.getPhysicalCondition().isFit()) {
-			person.getMind().getTaskManager().clearAllTasks();
-			walkToRandomLocation(true);
-		}
-		return time;
-	}
+//	/**
+//	 * Checks if a person is tired, too stressful or hungry and need to take break, eat and/or sleep
+//	 * @param time
+//	 * @return
+//	 */
+//	private double checkFitness(double time) {
+//		// Checks if a person is tired, too stressful or hungry and need 
+//		// to take break, eat and/or sleep
+//		if (!person.getPhysicalCondition().isFit()) {
+//			person.getMind().getTaskManager().clearAllTasks();
+//			walkToRandomLocation(true);
+//		}
+//		return time;
+//	}
 	
 	/**
 	 * Request the entry of the airlock

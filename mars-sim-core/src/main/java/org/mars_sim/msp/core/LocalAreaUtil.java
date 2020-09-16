@@ -881,6 +881,17 @@ public class LocalAreaUtil {
 	}
 
 	/**
+	 * Gets the distance between two points.
+	 * 
+	 * @param point1 the first point.
+	 * @param point2 the second point.
+	 * @return distance (meters).
+	 */
+	public static double getDistance(double x1, double y1, double x2, double y2) {
+		return Point2D.Double.distance(x1, y1, x2, y2);
+	}
+	
+	/**
 	 * Checks if two locations are very close together.
 	 * 
 	 * @param point1 the first point.
@@ -889,5 +900,15 @@ public class LocalAreaUtil {
 	 */
 	public static boolean areLocationsClose(Point2D point1, Point2D point2) {
 		return (getDistance(point1, point2) < VERY_SMALL_DISTANCE);
+	}
+	/**
+	 * Checks if two locations are very close together.
+	 * 
+	 * @param point1 the first point.
+	 * @param point2 the second point.
+	 * @return true if very close together
+	 */
+	public static boolean areLocationsClose(double x1, double y1, double x2, double y2) {
+		return (getDistance(x1, y1, x2, y2) < VERY_SMALL_DISTANCE);
 	}
 }

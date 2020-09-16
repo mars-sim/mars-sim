@@ -1199,15 +1199,15 @@ public class MainDesktopPane extends JDesktopPane
 			// Note: SwingUtilities.invokeLater(()) doesn't allow guide windows to be
 			// centered for javaFX mode in Windows PC (but not in other platform)
 		
-//		GuideWindow ourGuide = (GuideWindow) getToolWindow(GuideWindow.NAME);
-		
-		openToolWindow(GuideWindow.NAME);
-		((GuideWindow) getToolWindow(GuideWindow.NAME)).setURL(Msg.getString("doc.guide")); //$NON-NLS-1$
-
 		if (mode == GameMode.COMMAND) {
 			// Open the time window for the Commander Mode
 			openToolWindow(TimeWindow.NAME);
 			openToolWindow(CommanderWindow.NAME);
+		}
+		
+		else {
+			openToolWindow(GuideWindow.NAME);
+			((GuideWindow) getToolWindow(GuideWindow.NAME)).setURL(Msg.getString("doc.guide")); //$NON-NLS-1$
 		}
 		
 //		doneLoading = true;

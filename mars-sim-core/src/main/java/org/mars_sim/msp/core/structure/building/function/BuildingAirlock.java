@@ -425,6 +425,8 @@ public class BuildingAirlock extends Airlock {
     public boolean vacate(int zone, Integer id) {
     	if (zone == 0) {
     		Point2D oldPos = getKey(outsideInteriorMap, id);
+    		if (oldPos == null)
+    			return false;
 //    		System.out.println("id : " + id);
 //    		System.out.println("outsideInteriorMap : " + outsideInteriorMap);
 //    		for (int i=0; i<4; i++) {
@@ -438,6 +440,8 @@ public class BuildingAirlock extends Airlock {
     	
     	else if (zone == 1) {
     		Point2D oldPos = getKey(insideInteriorMap, id);
+    		if (oldPos == null)
+    			return false;
 //    		for (int i=0; i<4; i++) {
 //    			Point2D pp = insideInteriorList.get(i);
     			if (insideInteriorMap.get(oldPos).equals(id)) {
@@ -453,6 +457,8 @@ public class BuildingAirlock extends Airlock {
     	
     	else if (zone == 3) {
     		Point2D oldPos = getKey(insideExteriorMap, id);
+    		if (oldPos == null)
+    			return false;
 //    		for (int i=0; i<4; i++) {
 //    			Point2D pp = insideExteriorList.get(i);
     			if (insideExteriorMap.get(oldPos).equals(id)) {
@@ -464,6 +470,8 @@ public class BuildingAirlock extends Airlock {
     	
     	else if (zone == 4) {
     		Point2D oldPos = getKey(outsideExteriorMap, id);
+    		if (oldPos == null)
+    			return false;
 //    		for (int i=0; i<4; i++) {
 //    			Point2D pp = outsideExteriorList.get(i);
     			if (outsideExteriorMap.get(oldPos).equals(id)) {
@@ -476,10 +484,12 @@ public class BuildingAirlock extends Airlock {
     }
     
 	public boolean isInZone(Person p, int zone) {
-		Point2D p0 = new Point2D.Double(p.getXLocation(), p.getYLocation());
 //		System.out.println(p + " at " + p0);
     	if (zone == 0) {
-    		for (int i=0; i<4; i++) {
+    		Point2D p0 = getKey(outsideInteriorMap, p.getIdentifier());
+    		if (p0 == null)
+    			return false;
+    		for (int i=0; i<MAX_SLOTS; i++) {
     			Point2D pt = outsideInteriorList.get(i);
     			if (LocalAreaUtil.areLocationsClose(p0, pt)) {
 //        			System.out.println(p0 + " ~ " + pt);
@@ -489,7 +499,10 @@ public class BuildingAirlock extends Airlock {
     	}
     	
     	else if (zone == 1) {
-    		for (int i=0; i<4; i++) {
+    		Point2D p0 = getKey(insideInteriorMap, p.getIdentifier());
+    		if (p0 == null)
+    			return false;
+    		for (int i=0; i<MAX_SLOTS; i++) {
     			Point2D pt = insideInteriorList.get(i);
     			if (LocalAreaUtil.areLocationsClose(p0, pt)) {
 //        			System.out.println(p0 + " ~ " + pt);
@@ -499,10 +512,10 @@ public class BuildingAirlock extends Airlock {
     	}
     	
     	else if (zone == 2) {
-    		for (int i=0; i<4; i++) {
+    		for (int i=0; i<MAX_SLOTS; i++) {
     			Point2D s = EVASpots.get(i);
 //    			System.out.println(p + " at " + p0 + "   Spot at " + s);
-    			if (LocalAreaUtil.areLocationsClose(p0, s)) {
+    			if (LocalAreaUtil.areLocationsClose(p.getXLocation(), p.getYLocation(), s.getX(), s.getY())) {
 //        			System.out.println(p0 + " ~ " + s);
     				return true;
     			}
@@ -510,7 +523,10 @@ public class BuildingAirlock extends Airlock {
     	}
     	
     	else if (zone == 3) {
-    		for (int i=0; i<4; i++) {
+    		Point2D p0 = getKey(insideExteriorMap, p.getIdentifier());
+    		if (p0 == null)
+    			return false;
+    		for (int i=0; i<MAX_SLOTS; i++) {
     			Point2D pp = insideExteriorList.get(i);
     			if (LocalAreaUtil.areLocationsClose(p0, pp)) {
     				return true;
@@ -519,7 +535,10 @@ public class BuildingAirlock extends Airlock {
     	}
     	
     	else if (zone == 4) {
-    		for (int i=0; i<4; i++) {
+    		Point2D p0 = getKey(outsideExteriorMap, p.getIdentifier());
+    		if (p0 == null)
+    			return false;
+    		for (int i=0; i<MAX_SLOTS; i++) {
     			Point2D pp = outsideExteriorList.get(i);
     			if (LocalAreaUtil.areLocationsClose(p0, pp)) {
     				return true;
