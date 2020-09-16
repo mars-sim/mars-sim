@@ -1646,8 +1646,16 @@ public class Building extends Structure implements Malfunctionable, Indoor, // C
 		return false;
 	}
 	
+	/**
+	 * Checks if the building has a lab with a particular science type
+	 * @param type
+	 * @return
+	 */
 	public boolean hasSpecialty(ScienceType type) {
-		return getResearch().hasSpecialty(type);
+		if (getResearch() == null)
+			return false;
+
+		return lab.hasSpecialty(type);
 	}
 	
 	/**
