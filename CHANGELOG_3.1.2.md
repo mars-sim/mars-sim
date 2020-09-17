@@ -4,7 +4,7 @@ Copyright (C) 2020 Scott Davis
 [GitHub Page](https://github.com/mars-sim/mars-sim)
 
 ------------------------------------------|---------------------
-## v3.1.2 (build 5367) - 2020-09-16
+## v3.1.2 (build 5368) - 2020-09-16
 
 ### CORE ENGINE IMPROVEMENTS :
 
@@ -80,6 +80,8 @@ Copyright (C) 2020 Scott Davis
 10. Change size of person/robot/building/vehicle/site label 
    on-the-fly in response to the change of map scale in 
    settlement map.
+   
+11. Display weather icon and text banner in settlement map.   
    
    
 ### FIXES :

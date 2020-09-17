@@ -24,11 +24,13 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Logger;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
@@ -44,11 +46,11 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JSlider;
 import javax.swing.Painter;
-import javax.swing.SwingConstants;
 import javax.swing.UIDefaults;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.GameManager;
 import org.mars_sim.msp.core.GameManager.GameMode;
 import org.mars_sim.msp.core.Msg;
@@ -59,11 +61,18 @@ import org.mars_sim.msp.core.UnitListener;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.UnitManagerEvent;
 import org.mars_sim.msp.core.UnitManagerListener;
+import org.mars_sim.msp.core.mars.Mars;
+import org.mars_sim.msp.core.mars.OrbitInfo;
+import org.mars_sim.msp.core.mars.SurfaceFeatures;
+import org.mars_sim.msp.core.mars.Weather;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.time.ClockListener;
+import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.steelseries.gauges.DisplaySingle;
 import org.mars_sim.msp.ui.steelseries.tools.LcdColor;
+import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
 import com.alee.extended.WebComponent;
@@ -75,21 +84,45 @@ import com.alee.managers.style.StyleId;
 
 
 @SuppressWarnings("serial")
-public class SettlementTransparentPanel extends WebComponent {
+public class SettlementTransparentPanel extends WebComponent implements ClockListener {
 
+	private static final Logger logger = Logger.getLogger(SettlementTransparentPanel.class.getName());
 	/** Rotation change (radians per rotation button press). */
 	private static final double ROTATION_CHANGE = Math.PI / 20D;
+	private static final double RADIANS_TO_DEGREES = 180D/Math.PI;
+	
 	/** Zoom change. */
 	public static final double ZOOM_CHANGE = 0.25;
+	private static final String DUSTY_SKY = Msg.getString("img.dust128"); //$NON-NLS-1$
+	private static final String SUNNY = Msg.getString("img.sunny128"); //$NON-NLS-1$
+	private static final String BALMY = Msg.getString("img.hot128"); //$NON-NLS-1$
+//	private static final String LIGHTNING = Msg.getString("img.lightning128"); //$NON-NLS-1$
 
+	private static final String SNOW_BLOWING = Msg.getString("img.snow_blowing"); //$NON-NLS-1$
+	private static final String SUN_STORM = Msg.getString("img.sun_storm"); //$NON-NLS-1$
+	private static final String SNOWFLAKE = Msg.getString("img.thermometer_snowflake"); //$NON-NLS-1$
+//	private static final String WIND_FLAG = Msg.getString("img.wind_flag_storm"); //$NON-NLS-1$
+	private static final String FRIGID = Msg.getString("img.frigid"); //$NON-NLS-1$
+	private static final String HAZE = Msg.getString("img.haze"); //$NON-NLS-1$
+	
+	private double temperatureCache;
+	private double opticalDepthCache;
+	private double windSpeedCache;
+	private double zenithAngleCache;
+	
+	private String iconCache;
+	
 	private GameMode mode;
 	
 	private JLabel emptyLabel;
 	private DisplaySingle bannerText;
 	private JSlider zoomSlider;
-	private JPanel controlCenterPane, namePane, eastPane, labelPane, buttonPane, controlPane, settlementPanel;//, infoP, renameP ;
-	private WebButton renameBtn, infoButton;
-	//private JLabel zoomLabel;
+	private JPanel controlCenterPane, namePane, eastPane, labelPane, buttonPane, controlPane, settlementPanel;
+	
+	private WebButton renameBtn;
+	private WebButton infoButton;
+	private WebButton weatherButton;
+	
 	private JPopupMenu labelsMenu;
 	/** Lists all settlements. */
 	private WebComboBox settlementListBox;
@@ -100,12 +133,32 @@ public class SettlementTransparentPanel extends WebComponent {
 
 	private SettlementMapPanel mapPanel;
 	private MainDesktopPane desktop;
-
+	
+	private static Weather weather;
+	private static SurfaceFeatures surfaceFeatures;
+	private static OrbitInfo orbitInfo;
+	
+	private static MasterClock masterClock;
+	
 	private static UnitManager unitManager = Simulation.instance().getUnitManager();
-		
+
+	private static DecimalFormat fmt = new DecimalFormat("##0");
+	//private static DecimalFormat fmt1 = new DecimalFormat("#0.0");
+	private static DecimalFormat fmt2 = new DecimalFormat("#0.00");
+	
     public SettlementTransparentPanel(MainDesktopPane desktop, SettlementMapPanel mapPanel) {
         this.mapPanel = mapPanel;
         this.desktop = desktop;
+        
+		if (masterClock == null)
+			masterClock = Simulation.instance().getMasterClock();
+		
+		masterClock.addClockListener(this);
+		
+        Mars mars = Simulation.instance().getMars();
+        weather = mars.getWeather();
+        surfaceFeatures = mars.getSurfaceFeatures();
+        orbitInfo = mars.getOrbitInfo();
 
 		if (GameManager.mode == GameMode.COMMAND) {
 			mode = GameMode.COMMAND;
@@ -144,6 +197,7 @@ public class SettlementTransparentPanel extends WebComponent {
         buildSettlementNameComboBox();
         buildZoomSlider();
         buildBanner();
+        buildWeatherPanel();
         
 		namePane = new JPanel(new BorderLayout(0, 0));//FlowLayout(FlowLayout.CENTER, 2,2));
 		namePane.setBackground(new Color(0,0,0,128));
@@ -159,6 +213,8 @@ public class SettlementTransparentPanel extends WebComponent {
 
 	    mapPanel.add(namePane, BorderLayout.NORTH);
 
+	    mapPanel.add(weatherButton, BorderLayout.WEST);
+    	
 	    controlPane = new JPanel(new BorderLayout());//GridLayout(2,1,10,2));
 	    controlPane.setBackground(new Color(0,0,0,128));//,0));
 		controlPane.setOpaque(false);
@@ -277,6 +333,216 @@ public class SettlementTransparentPanel extends WebComponent {
 		bannerText.setLcdText("Sample text");
 		bannerText.setLcdTextScrolling(true);
 	}
+	
+	
+	public void displayBanner() {
+		Settlement s = (Settlement) settlementListBox.getSelectedItem();
+		Coordinates c = new Coordinates(s.getCoordinates());
+		
+       	temperatureCache =  Math.round(getTemperature(c)*100.0)/100.0;			
+		String t = getTemperatureString(temperatureCache);
+		
+		windSpeedCache = Math.round(getWindSpeed(c)*100.0)/100.0;		
+		String ws = getWindSpeedString(windSpeedCache);
+		
+		zenithAngleCache = getZenithAngle(c);
+        String za = getZenithAngleString(zenithAngleCache);
+		
+        opticalDepthCache =  Math.round(getOpticalDepth(c)*100.0)/100.0;
+        String od =  getOpticalDepthString(opticalDepthCache);
+        
+		bannerText.setLcdText("Temperature: " + t + "   Windspeed: " + ws + "   Zenith Angle: " + za + "   Optical Depth: " + od);
+	}
+	
+    public double getTemperature(Coordinates c) {
+		return weather.getTemperature(c);
+    }
+    
+    public String getTemperatureString(double value) {
+    	// Use Msg.getString for the degree sign
+    	// Change from " °C" to " �C" for English Locale
+    	return fmt.format(value) + " deg C";// + Msg.getString("temperature.sign.degreeCelsius"); //$NON-NLS-1$
+    }
+    
+    public double getWindSpeed(Coordinates c) {
+		return weather.getWindSpeed(c);
+    }
+
+    public String getWindSpeedString(double value) {
+    	return fmt2.format(value) + " " + Msg.getString("windspeed.unit.meterpersec"); //$NON-NLS-1$
+    }
+    
+    public String getAirPressureString(double value) {
+    	return fmt2.format(value) + " " + Msg.getString("pressure.unit.kPa"); //$NON-NLS-1$
+    }
+
+    public double getAirPressure(Coordinates c) {
+    	return Math.round(weather.getAirPressure(c) *100.0) / 100.0;
+    }
+
+    public int getWindDirection(Coordinates c) {
+  		return weather.getWindDirection(c);
+    }
+
+    public String getWindDirectionString(double value) {
+       	return fmt.format(value) + " deg";// + Msg.getString("windDirection.unit.deg"); //$NON-NLS-1$
+    }
+      
+    public double getOpticalDepth(Coordinates c) {
+ 		return surfaceFeatures.getOpticalDepth(c);
+    }
+  
+    public String getOpticalDepthString(double value) {
+     	return fmt2.format(value);
+    }
+
+    public double getZenithAngle(Coordinates c) {
+ 		return orbitInfo.getSolarZenithAngle(c);
+     }
+
+    public String getZenithAngleString(double value) {
+     	return fmt2.format(value * RADIANS_TO_DEGREES) + " deg";// + Msg.getString("direction.degreeSign"); //$NON-NLS-1$
+    }
+
+    public double getSolarDeclination() {
+ 		return orbitInfo.getSolarDeclinationAngleDegree();
+     }
+
+    public String getSolarDeclinationString(double value) {
+     	return fmt2.format(value) + " " + Msg.getString("direction.degreeSign"); //$NON-NLS-1$
+    }
+
+    public double getAirDensity(Coordinates c) {
+		return weather.getAirDensity(c);
+    }
+
+    public String getAirDensityString(double value) {
+     	return fmt2.format(value) + " " + Msg.getString("airDensity.unit.gperm3"); //$NON-NLS-1$
+    }
+
+    public double getSolarIrradiance(Coordinates c) {
+  		return surfaceFeatures.getSolarIrradiance(c);
+      }
+
+    public String getSolarIrradianceString(double value) {
+      	return fmt2.format(value) + " " + Msg.getString("solarIrradiance.unit"); //$NON-NLS-1$
+    }
+
+	private String getLatitudeString(Coordinates c) {
+		return c.getFormattedLatitudeString();
+	}
+
+	private String getLongitudeString(Coordinates c) {
+		return c.getFormattedLongitudeString();
+	}
+	
+    public void updateWeather() {
+//		Settlement s = (Settlement) settlementListBox.getSelectedItem();
+//		Coordinates c = new Coordinates(s.getCoordinates());
+//
+//       	temperatureCache =  Math.round(getTemperature(c)*100.0)/100.0;
+//       	windSpeedCache = Math.round(getWindSpeed(c)*100.0)/100.0;
+//       	opticalDepthCache =  Math.round(getOpticalDepth(c)*100.0)/100.0;
+       	
+       	String iconString = null;
+       	
+    	if (temperatureCache <= 0) {
+    		if (temperatureCache < -40)
+    			iconString = FRIGID;
+    		else {
+    			if (windSpeedCache > 6D)
+    				iconString = SNOW_BLOWING;
+    			else
+    				iconString = SNOWFLAKE;
+    		}
+    	}
+    	else if (temperatureCache >= 26)
+    		iconString = BALMY;
+    	else { //if (temperatureCache >= 0) {
+    		if (windSpeedCache > 10D) {
+    			iconString = SUN_STORM;
+    		}
+    		else if (opticalDepthCache > 1D) {
+		    	if (opticalDepthCache > 3D)
+		    		iconString = DUSTY_SKY;
+		    	else
+		    		iconString = HAZE;
+	    	}
+    		else
+    			iconString = SUNNY;
+    	}
+
+    	if (!iconString.equals(iconCache)) {
+    		iconCache = iconString;
+       		weatherButton.setIcon(ImageLoader.getNewIcon(iconString));
+    	}	
+    }
+    
+	public void buildWeatherPanel() {
+//		WebPanel imgPanel = new WebPanel(new FlowLayout());
+//        weatherLabel = new WebLabel();
+//    	imgPanel.add(weatherLabel, WebLabel.CENTER);
+		
+//	 	ImageIcon icon = IconManager.getIcon ("info");//new LazyIcon("info").getIcon();
+				
+		Settlement s = (Settlement) settlementListBox.getSelectedItem();
+		Coordinates c = new Coordinates(s.getCoordinates());
+
+       	temperatureCache =  Math.round(getTemperature(c)*100.0)/100.0;
+       	windSpeedCache = Math.round(getWindSpeed(c)*100.0)/100.0;
+       	opticalDepthCache =  Math.round(getOpticalDepth(c)*100.0)/100.0;
+       	
+       	String iconString = null;
+       	
+    	if (temperatureCache <= 0) {
+    		if (temperatureCache < -40)
+    			iconString = FRIGID;
+    		else {
+    			if (windSpeedCache > 6D)
+    				iconString = SNOW_BLOWING;
+    			else
+    				iconString = SNOWFLAKE;
+    		}
+    	}
+    	else if (temperatureCache >= 26)
+    		iconString = BALMY;
+    	else { //if (temperatureCache >= 0) {
+    		if (windSpeedCache > 10D) {
+    			iconString = SUN_STORM;
+    		}
+    		else if (opticalDepthCache > 1D) {
+		    	if (opticalDepthCache > 3D)
+		    		iconString = DUSTY_SKY;
+		    	else
+		    		iconString = HAZE;
+	    	}
+    		else
+    			iconString = SUNNY;
+    	}
+
+    	if (!iconString.equals(iconCache)) {
+    		iconCache = iconString;
+        	weatherButton = new WebButton(StyleId.buttonUndecorated, iconString);
+        	weatherButton.setPreferredSize(new Dimension(128, 128));
+       		weatherButton.setIcon(ImageLoader.getNewIcon(iconString));
+    	}	
+	}
+	
+	
+	
+//	/**
+//	 * Sets weather image.
+//	 */
+//	public void setImage(String image) {
+//	URL resource = ImageLoader.class.getResource(icon);
+//		if (resource == null) {
+//			logger.severe("'" + icon + "' cannot be found");
+//		}
+//		
+//		Toolkit kit = Toolkit.getDefaultToolkit();
+//		Image img = kit.createImage(resource);
+//		ImageIcon weatherImageIcon = new ImageIcon(img);
+//	}
 	
 	class PromptComboBoxRenderer extends DefaultListCellRenderer {
 
@@ -889,11 +1155,6 @@ public class SettlementTransparentPanel extends WebComponent {
 					Msg.getString("SettlementWindow.JDialog.changeSettlementName.title"), //$NON-NLS-1$
 			        JOptionPane.QUESTION_MESSAGE);
 	}
-
-	
-	public void displayText(String text) {
-		bannerText.setLcdText(text);
-	}
 	
 	/**
 	 * Inner class combo box model for settlements.
@@ -1066,5 +1327,25 @@ public class SettlementTransparentPanel extends WebComponent {
 	public void updateUI() {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public void clockPulse(double time) {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void uiPulse(double time) {
+		displayBanner();
+		updateWeather();
+	}
+
+	@Override
+	public void pauseChange(boolean isPaused, boolean showPane) {
+		if (isPaused) {		
+			bannerText.setLcdTextScrolling(false);
+		} else {		
+			bannerText.setLcdTextScrolling(true);
+		}
 	}
 }

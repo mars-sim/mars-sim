@@ -12,13 +12,9 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
-import java.awt.Image;
-import java.awt.Toolkit;
-import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.logging.Logger;
 
-import javax.swing.ImageIcon;
 import javax.swing.SpringLayout;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
@@ -239,7 +235,7 @@ extends TabPanel {
     	// TODO: calculate the average, high and low temperature during the day to determine
     	// if it is hot, sunny, dusty, stormy...
     	// Sets up if else clause to choose the proper weather image
-    	setImage(SUNNY);
+    	ImageLoader.getNewIcon(SUNNY);
     	
     	// Prepare temperature panel
         WebPanel temperaturePanel = new WebPanel(new FlowLayout());
@@ -416,20 +412,20 @@ extends TabPanel {
 //		}
 //	}
 
-	/**
-	 * Sets weather image.
-	 */
-	public void setImage(String image) {
-        URL resource = ImageLoader.class.getResource(image);
-		if (resource == null) {
-			logger.severe("'" + image + "' cannot be found");
-		}
-		
-        Toolkit kit = Toolkit.getDefaultToolkit();
-        Image img = kit.createImage(resource);
-        ImageIcon weatherImageIcon = new ImageIcon(img);
-    	weatherLabel.setIcon(weatherImageIcon);
-	}
+//	/**
+//	 * Sets weather image.
+//	 */
+//	public void setImage(String image) {
+//        URL resource = ImageLoader.class.getResource(image);
+//		if (resource == null) {
+//			logger.severe("'" + image + "' cannot be found");
+//		}
+//		
+//        Toolkit kit = Toolkit.getDefaultToolkit();
+//        Image img = kit.createImage(resource);
+//        ImageIcon weatherImageIcon = new ImageIcon(img);
+//    	weatherLabel.setIcon(weatherImageIcon);
+//	}
 
     public String getTemperatureString(double value) {
     	// Use Msg.getString for the degree sign
@@ -600,7 +596,8 @@ extends TabPanel {
 
 	    	if (!icon.equals(iconCache)) {
 	    		iconCache = icon;
-	    		setImage(icon);
+	    		ImageLoader.getNewIcon(icon);
+//	    		setImage(icon);
 	    	}
 
 	        double za = getZenithAngle();
