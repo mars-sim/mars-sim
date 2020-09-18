@@ -171,7 +171,7 @@ public class LivingAccommodations extends Function implements Serializable {
 	 * @return
 	 */
 	public boolean areAllBedsTaken() {
-		if (registeredSleepers == maxNumBeds)
+		if (registeredSleepers >= maxNumBeds)
 			return true;
 		
 		return false;
@@ -193,7 +193,7 @@ public class LivingAccommodations extends Function implements Serializable {
 				 LogConsolidated.log(logger, Level.WARNING, 5000, sourceName, 
 						 "[" + building.getSettlement().getName() + "] All beds have been taken"
 						 		+ " (# Registered Beds : " + registeredSleepers 
-						 + "  Bed Capacity : " + maxNumBeds + ").", null);	
+						 + "  Bed Capacity : " + maxNumBeds + ").");	
 			}
 			
 			else if (!assignedBeds.containsKey(person)) {

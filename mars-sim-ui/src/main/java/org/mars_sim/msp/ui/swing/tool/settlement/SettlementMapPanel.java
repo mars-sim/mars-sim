@@ -307,7 +307,7 @@ public class SettlementMapPanel extends WebPanel implements ClockListener {
 	 * @param evt
 	 */
 	private void doPop(final MouseEvent evt) {
-		// System.out.println("doPop()");
+//		System.out.println("doPop()");
 		int x = evt.getX();
 		int y = evt.getY();
 		

@@ -192,7 +192,7 @@ public abstract class Airlock implements Serializable {
 
 		// Warning : do NOT use int id or else the list's method remove(int index) would be chosen to use
 		// List can't tell if the method remove(Object o) should be used.
-//		Integer id = person.getIdentifier();
+
 		// Add the person's ID to the lookup map
 		addPersonID(person, id);
 
@@ -846,9 +846,7 @@ public abstract class Airlock implements Serializable {
 	 * @return true if the person can be added or is already in the queue
 	 */
 	public boolean addAwaitingInnerDoor(Person p, Integer id) {
-		// Add the person's ID to the lookup map
-//		int id = p.getIdentifier();
-		
+		// Add the person's ID to the lookup map	
 		addPersonID(p, id);
 		
 //		if (!awaitingInnerDoor.contains(id)) {
@@ -877,9 +875,8 @@ public abstract class Airlock implements Serializable {
 	 * @param person the person to add to the awaiting queue.
 	 * @return true if the person can be added or is already in the queue
 	 */
-	public boolean addAwaitingOuterDoor(Person p, Integer id) {
-//		int id = p.getIdentifier();
-		
+	public boolean addAwaitingOuterDoor(Person p, Integer id) {		
+		// Add the person's ID to the lookup map
 		addPersonID(p, id);
 		
 //		if (!awaitingOuterDoor.contains(id)) {
@@ -1224,17 +1221,17 @@ public abstract class Airlock implements Serializable {
 		return null;
 	}
 
-	/**
-	 * Add a person's ID to the lookup map for person inside the airlock
-	 * 	
-	 * @param p
-	 */
-	public void addPersonID(Person p) {
-		if (lookupPerson == null)
-			lookupPerson = new HashMap<>();
-		if (p != null && !lookupPerson.containsKey(p.getIdentifier()))
-			lookupPerson.put(p.getIdentifier(), p);
-	}
+//	/**
+//	 * Add a person's ID to the lookup map for person inside the airlock
+//	 * 	
+//	 * @param p
+//	 */
+//	public void addPersonID(Person p) {
+//		if (lookupPerson == null)
+//			lookupPerson = new HashMap<>();
+//		if (p != null && !lookupPerson.containsKey(p.getIdentifier()))
+//			lookupPerson.put(p.getIdentifier(), p);
+//	}
 	
 	/**
 	 * Add a person's ID to the lookup map for person inside the airlock

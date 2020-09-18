@@ -253,15 +253,16 @@ public class Sleep extends Task implements Serializable {
 					// logger.fine(person + " has never been designated a bed so far");
 
 					q1 = getBestAvailableQuarters(person, true);
-
-					if (q1 != null) {
+					
+					accommodations = q1.getLivingAccommodations();
+					
+					Point2D bed = accommodations.registerSleeper(person, false);
+					
+					if (q1 != null && bed != null) {
 						// Case 8: unmarked, empty (UE) bed
-
-						accommodations = q1.getLivingAccommodations();
 						
-						accommodations.registerSleeper(person, false);
+						walkToBed(q1, person, true);
 						
-						walkToBed(q1, person, true);		
 					}
 					
 					else { // no unmarked bed

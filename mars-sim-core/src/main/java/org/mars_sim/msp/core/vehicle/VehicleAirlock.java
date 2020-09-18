@@ -67,15 +67,15 @@ extends Airlock {
 
 		// Determine airlock interior position.
 //		airlockInteriorPos = new Point2D.Double(interiorXLoc, interiorYLoc);
-//		airlockInteriorPos = LocalAreaUtil.getLocalRelativeLocation(airlockInteriorPos.getX(),airlockInteriorPos.getY(),vehicle);
+		airlockInteriorPos = LocalAreaUtil.getLocalRelativeLocation(interiorXLoc,interiorYLoc, vehicle);
 
 		// Determine airlock exterior position.
 //		airlockExteriorPos = new Point2D.Double(exteriorXLoc, exteriorYLoc);
-//		airlockExteriorPos = LocalAreaUtil.getLocalRelativeLocation(airlockExteriorPos.getX(),airlockExteriorPos.getY(),vehicle);
+		airlockExteriorPos = LocalAreaUtil.getLocalRelativeLocation(exteriorXLoc, exteriorYLoc, vehicle);
 
 		// Determine airlock inside position.
 //		airlockInsidePos = new Point2D.Double(xLoc, yLoc);
-//		airlockInsidePos = LocalAreaUtil.getLocalRelativeLocation(airlockInsidePos.getX(),airlockInsidePos.getY(),vehicle);
+		airlockInsidePos = LocalAreaUtil.getLocalRelativeLocation(xLoc, yLoc, vehicle);
 
 	}
 
@@ -258,22 +258,22 @@ extends Airlock {
 	
 	@Override
 	public Point2D getAvailableInteriorPosition() {
-		if (airlockInteriorPos == null)
-			airlockInteriorPos = LocalAreaUtil.getLocalRelativeLocation(airlockInteriorPos.getX(),airlockInteriorPos.getY(),vehicle);
+//		if (airlockInteriorPos == null)
+//			airlockInteriorPos = LocalAreaUtil.getLocalRelativeLocation(interiorXLoc, interiorYLoc, vehicle);
 		return airlockInteriorPos;
 	}
 
 	@Override
 	public Point2D getAvailableExteriorPosition() {
-		if (airlockExteriorPos == null)
-			airlockExteriorPos = LocalAreaUtil.getLocalRelativeLocation(airlockExteriorPos.getX(),airlockExteriorPos.getY(),vehicle);
+//		if (airlockExteriorPos == null)
+//			airlockExteriorPos = LocalAreaUtil.getLocalRelativeLocation(airlockExteriorPos.getX(),airlockExteriorPos.getY(),vehicle);
 		return airlockExteriorPos;
 	}
 
 	@Override
 	public Point2D getAvailableAirlockPosition() {
-		if (airlockExteriorPos == null)
-			airlockExteriorPos = LocalAreaUtil.getLocalRelativeLocation(airlockInsidePos.getX(),airlockInsidePos.getY(),vehicle);
+//		if (airlockExteriorPos == null)
+//			airlockExteriorPos = LocalAreaUtil.getLocalRelativeLocation(airlockInsidePos.getX(),airlockInsidePos.getY(),vehicle);
 		return airlockInsidePos;
 	}
 	

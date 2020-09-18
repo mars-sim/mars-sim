@@ -984,10 +984,9 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 */
 	public void walkToBed(Building building, Person person, boolean allowFail) {
 		Point2D bed = person.getBed();
-		Point2D spot = LocalAreaUtil.getLocalRelativeLocation(bed.getX() - building.getXLocation(),
-				bed.getY() - building.getYLocation(), building);
-
 		if (bed != null) {
+			Point2D spot = LocalAreaUtil.getLocalRelativeLocation(bed.getX() - building.getXLocation(),
+					bed.getY() - building.getYLocation(), building);
 			// Create subtask for walking to destination.
 			createWalkingSubtask(building, spot, allowFail);
 		}

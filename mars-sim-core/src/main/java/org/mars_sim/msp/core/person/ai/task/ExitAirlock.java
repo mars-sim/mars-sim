@@ -864,7 +864,7 @@ public class ExitAirlock extends Task implements Serializable {
 			if (!result) {
 				List<Integer> list = new ArrayList<>(airlock.getOccupants());
 				for (int id : list) {
-					Person p = unitManager.getPersonByID(id);
+					Person p = airlock.getPersonByID(id);
 					if (p.getSuit() == null) {
 						result = false;
 						break;

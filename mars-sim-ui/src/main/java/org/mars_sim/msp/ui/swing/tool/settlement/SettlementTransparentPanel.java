@@ -78,6 +78,8 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import com.alee.extended.WebComponent;
 import com.alee.laf.button.WebButton;
 import com.alee.laf.combobox.WebComboBox;
+import com.alee.laf.combobox.WebComboBoxRenderer;
+import com.alee.laf.list.ListCellParameters;
 import com.alee.managers.icon.IconManager;
 import com.alee.managers.icon.LazyIcon;
 import com.alee.managers.style.StyleId;
@@ -273,15 +275,19 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 
 		settlementCBModel = new SettlementComboBoxModel();
 		settlementListBox = new WebComboBox(StyleId.comboboxHover, settlementCBModel);
-		settlementListBox.setWidePopup(true);
+//		settlementListBox.setRenderer(new WebComboBoxRenderer() {
+//		    @Override
+//		    protected int horizontalAlignmentForValue (final ListCellParameters parameter) {
+//		    	return JLabel.CENTER;
+//		    }
+//		});
 //		settlementListBox.setAlignmentX(CENTER_ALIGNMENT);
 //		((JLabel)settlementListBox.getRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
-		DefaultListCellRenderer listRenderer = new DefaultListCellRenderer();
-	    listRenderer.setHorizontalAlignment(DefaultListCellRenderer.CENTER); // center-aligned items
-	    settlementListBox.setRenderer(listRenderer);
-	      
+//		DefaultListCellRenderer listRenderer = new DefaultListCellRenderer();
+//	    listRenderer.setHorizontalAlignment(DefaultListCellRenderer.CENTER); // center-aligned items
+//	    settlementListBox.setRenderer(listRenderer);
+		settlementListBox.setWidePopup(true);
 		settlementListBox.setPreferredSize(getNameLength() * 12, 25);
-		
 		settlementListBox.setBackground(new Color(51,25,0,128)); // dull gold color
 		settlementListBox.setOpaque(false);
 		settlementListBox.setFont(new Font("Dialog", Font.BOLD, 16));
@@ -554,7 +560,7 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 			//defaultRenderer.setHorizontalAlignment(DefaultListCellRenderer.CENTER);
 		    //settlementListBox.setRenderer(defaultRenderer);
 		    //setOpaque(false);
-//		    setHorizontalAlignment(LEFT);
+		    setHorizontalAlignment(CENTER);
 //		    setVerticalAlignment(CENTER);
 		}
 
@@ -562,7 +568,7 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 				this.prompt = prompt;
 			}
 
-			public Component getListCellRendererComponent(JList<?> list, Object value,
+		public Component getListCellRendererComponent(JList<?> list, Object value,
 		            int index, boolean isSelected, boolean cellHasFocus) {
 				Component c = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 				

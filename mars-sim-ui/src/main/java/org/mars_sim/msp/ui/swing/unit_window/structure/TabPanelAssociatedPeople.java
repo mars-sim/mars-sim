@@ -141,7 +141,7 @@ public class TabPanelAssociatedPeople extends TabPanel implements MouseListener,
         UIManager.getDefaults().put("TitledBorder.titleColor", Color.darkGray);
         Border lowerEtched = BorderFactory.createEtchedBorder(EtchedBorder.LOWERED);
         TitledBorder title = BorderFactory.createTitledBorder(
-        		lowerEtched, " " + Msg.getString("TabPanelAssociatedPeople.TitledBorder") + " ");
+        		lowerEtched, " " + Msg.getString("TabPanelAssociatedPeople.titledBorder") + " ");
 //      title.setTitleJustification(TitledBorder.RIGHT);
         Font titleFont = UIManager.getFont("TitledBorder.font");
         title.setTitleFont( titleFont.deriveFont(Font.ITALIC + Font.BOLD));
