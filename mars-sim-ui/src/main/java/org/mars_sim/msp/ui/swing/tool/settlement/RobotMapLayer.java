@@ -24,10 +24,10 @@ import org.mars_sim.msp.core.structure.building.Building;
 public class RobotMapLayer implements SettlementMapLayer {
 
 	// Static members
-	private static final Color ROBOT_COLOR = LabelMapLayer.ROBOT_LABEL_COLOR;//Color.green; 
-	private static final Color ROBOT_OUTLINE_COLOR = LabelMapLayer.ROBOT_LABEL_OUTLINE_COLOR;//new Color(0, 0, 0, 190);
-	private static final Color SELECTED_COLOR = LabelMapLayer.SELECTED_ROBOT_LABEL_COLOR;//Color.red; 
-	private static final Color SELECTED_OUTLINE_COLOR = LabelMapLayer.SELECTED_ROBOT_LABEL_OUTLINE_COLOR;//.new Color(0, 0, 0, 190);
+	private static final Color ROBOT_COLOR = LabelMapLayer.ROBOT_COLOR;//Color.green; 
+	private static final Color ROBOT_OUTLINE_COLOR = LabelMapLayer.ROBOT_OUTLINE_COLOR;//new Color(0, 0, 0, 190);
+	private static final Color SELECTED_COLOR = LabelMapLayer.ROBOT_SELECTED_COLOR;//Color.red; 
+	private static final Color SELECTED_OUTLINE_COLOR = LabelMapLayer.ROBOT_SELECTED_OUTLINE_COLOR;//.new Color(0, 0, 0, 190);
 
 	// Data members
 	private SettlementMapPanel mapPanel;

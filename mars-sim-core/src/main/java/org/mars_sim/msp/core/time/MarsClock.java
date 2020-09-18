@@ -898,6 +898,16 @@ public class MarsClock implements Serializable {
 	public double getMillisolOneDecimal() {
 		return msol1;
 	}
+	
+	/**
+	 * Checks if the mars clock becomes stable enough at the start of the sim
+	 * @return
+	 */
+	public boolean isStable() {
+		if (msolInt > 10)
+			return true;
+		return false;
+	}
 
 	/**
 	 * Returns the week of the month (1-4)

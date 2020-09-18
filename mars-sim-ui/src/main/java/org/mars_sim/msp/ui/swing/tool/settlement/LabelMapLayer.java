@@ -64,17 +64,20 @@ implements SettlementMapLayer {
 	private static final Color VEHICLE_LABEL_COLOR = new Color(249, 134, 134); // light-red //127, 0, 127); // magenta-purple
 	private static final Color VEHICLE_LABEL_OUTLINE_COLOR = new Color(0, 0, 0, 150);//(255, 255, 255, 190);
 
-	static final Color PERSON_LABEL_COLOR = new Color(12, 140, 133); // dull cyan
-	static final Color PERSON_LABEL_OUTLINE_COLOR = new Color(210, 210, 210, 190);
-
-	static final Color SELECTED_PERSON_LABEL_COLOR = PERSON_LABEL_COLOR.darker();//new Color(67, 239, 229); // bright cyan;
-	static final Color SELECTED_PERSON_LABEL_OUTLINE_COLOR = PERSON_LABEL_OUTLINE_COLOR.darker();//new Color(50, 50, 50); //(255, 255, 255, 190);
-
-	static final Color ROBOT_LABEL_COLOR = Color.ORANGE.darker();//new Color(255, 153, 11);
-	static final Color ROBOT_LABEL_OUTLINE_COLOR = new Color(210, 210, 210, 190);
+	static final Color FEMALE_COLOR = new Color(255, 153, 225); // light bright pink
+	static final Color FEMALE_SELECTED_COLOR = FEMALE_COLOR.darker();
+	static final Color FEMALE_OUTLINE_COLOR = Color.MAGENTA;
+	static final Color FEMALE_SELECTED_OUTLINE_COLOR = FEMALE_OUTLINE_COLOR.darker();
 	
-	static final Color SELECTED_ROBOT_LABEL_COLOR = ROBOT_LABEL_COLOR.darker();//new Color(255, 153, 11);
-	static final Color SELECTED_ROBOT_LABEL_OUTLINE_COLOR = ROBOT_LABEL_OUTLINE_COLOR.darker();//new Color(50, 50, 50);
+	static final Color MALE_COLOR = new Color(51, 153, 255); // light blue
+	static final Color MALE_SELECTED_COLOR = MALE_COLOR.darker();
+	static final Color MALE_OUTLINE_COLOR = Color.cyan.darker(); // (210, 210, 210, 190).brighter();
+	static final Color MALE_SELECTED_OUTLINE_COLOR = MALE_OUTLINE_COLOR.darker();
+
+	static final Color ROBOT_COLOR = Color.ORANGE.darker();
+	static final Color ROBOT_SELECTED_COLOR = ROBOT_COLOR.darker();
+	static final Color ROBOT_OUTLINE_COLOR = new Color(210, 210, 210, 190);
+	static final Color ROBOT_SELECTED_OUTLINE_COLOR = ROBOT_OUTLINE_COLOR.darker();
 
 //	private Font font = new Font("Courier New", Font.PLAIN, 11); 
 
@@ -374,6 +377,7 @@ implements SettlementMapLayer {
 
 	/**
 	 * Draw labels for all people at the settlement.
+	 * 
 	 * @param g2d the graphics context.
 	 * @param settlement the settlement.
 	 * @param showNonSelectedPeople true if showing non-selected person labels.
@@ -390,12 +394,57 @@ implements SettlementMapLayer {
 		int size = (int)(scale / 2.0);
 		size = Math.max(size, 12);
 		
+//		Color color = FEMALE_COLOR;
+//		Color oColor = FEMALE_OUTLINE_COLOR;
+		Color sColor = FEMALE_SELECTED_COLOR;
+		Color soColor = FEMALE_SELECTED_OUTLINE_COLOR;
+		
+		if (selectedPerson != null) {
+			
+			if (selectedPerson.isMale()) {
+//				color = MALE_COLOR;
+//				oColor = MALE_OUTLINE_COLOR;
+				sColor = MALE_SELECTED_COLOR;
+				soColor = MALE_SELECTED_OUTLINE_COLOR;
+			}
+		
+			// Draw selected person.
+			if (people.contains(selectedPerson)) {
+				// Draw person name.
+				drawPersonRobotLabel(g2d, selectedPerson.getName(), selectedPerson.getXLocation(),
+					selectedPerson.getYLocation(), sColor, soColor,
+					xoffset, 0);
+
+				// Draw task.
+				String taskString = Msg.getString("LabelMapLayer.activity", selectedPerson.getMind().getTaskManager().getTaskDescription(false)); //$NON-NLS-1$
+				if (taskString != null && !taskString.equals(""))
+					drawPersonRobotLabel(
+						g2d, selectedPerson.getMind().getTaskManager().getTaskDescription(false), selectedPerson.getXLocation(),
+		//				g2d, taskString, selectedPerson.getXLocation(),
+						selectedPerson.getYLocation(), sColor, soColor,
+						xoffset, size + 0);
+
+				// Draw mission.
+				Mission mission = selectedPerson.getMind().getMission();
+				if (mission != null) {
+					String missionString = Msg.getString("LabelMapLayer.mission", mission.getDescription(), mission.getPhaseDescription()); //$NON-NLS-1$
+					if (missionString != null && !missionString.equals(""))
+						drawPersonRobotLabel(
+							g2d, missionString, selectedPerson.getXLocation(),
+							selectedPerson.getYLocation(), sColor, soColor,
+							xoffset, 2 * (size + 0));
+				}
+			}
+		}
+
 		// Draw all people except selected person.
 		if (showNonSelectedPeople) {
 			Iterator<Person> i = people.iterator();
 			while (i.hasNext()) {
 				Person person = i.next();
+				
 				if (!person.equals(selectedPerson)) {
+					
 					// Split up the name into 2 lines
 					String words[] = person.getName().split(" ");
 					int s = words.length;
@@ -403,38 +452,14 @@ implements SettlementMapLayer {
 					for (int j = 0; j < s; j++) {
 						if (j == 0) n = words[0];
 						else n += " " + words[j].substring(0, 1) + ".";
-					}					
-					drawPersonRobotLabel(g2d, n, person.getXLocation(), person.getYLocation(),
-							PERSON_LABEL_COLOR, PERSON_LABEL_OUTLINE_COLOR, xoffset, 0);
+					}				
+					if (person.isMale())
+						drawPersonRobotLabel(g2d, n, person.getXLocation(), person.getYLocation(),
+								MALE_COLOR, MALE_OUTLINE_COLOR, xoffset, 0);
+					else
+						drawPersonRobotLabel(g2d, n, person.getXLocation(), person.getYLocation(),
+								FEMALE_COLOR, FEMALE_OUTLINE_COLOR, xoffset, 0);
 				}
-			}
-		}
-
-		// Draw selected person.
-		if (people.contains(selectedPerson)) {
-			// Draw person name.
-			drawPersonRobotLabel(g2d, selectedPerson.getName(), selectedPerson.getXLocation(),
-				selectedPerson.getYLocation(), SELECTED_PERSON_LABEL_COLOR, SELECTED_PERSON_LABEL_OUTLINE_COLOR,
-				xoffset, 0);
-
-			// Draw task.
-			String taskString = Msg.getString("LabelMapLayer.activity", selectedPerson.getMind().getTaskManager().getTaskDescription(false)); //$NON-NLS-1$
-			if (taskString != null && !taskString.equals(""))
-				drawPersonRobotLabel(
-					g2d, selectedPerson.getMind().getTaskManager().getTaskDescription(false), selectedPerson.getXLocation(),
-	//				g2d, taskString, selectedPerson.getXLocation(),
-					selectedPerson.getYLocation(), SELECTED_PERSON_LABEL_COLOR, SELECTED_PERSON_LABEL_OUTLINE_COLOR,
-					xoffset, size + 0);
-
-			// Draw mission.
-			Mission mission = selectedPerson.getMind().getMission();
-			if (mission != null) {
-				String missionString = Msg.getString("LabelMapLayer.mission", mission.getDescription(), mission.getPhaseDescription()); //$NON-NLS-1$
-				if (missionString != null && !missionString.equals(""))
-					drawPersonRobotLabel(
-						g2d, missionString, selectedPerson.getXLocation(),
-						selectedPerson.getYLocation(), SELECTED_PERSON_LABEL_COLOR, SELECTED_PERSON_LABEL_OUTLINE_COLOR,
-						xoffset, 2 * (size + 0));
 			}
 		}
 	}
@@ -442,6 +467,7 @@ implements SettlementMapLayer {
 
 	/**
 	 * Draw labels for all robots at the settlement.
+	 * 
 	 * @param g2d the graphics context.
 	 * @param settlement the settlement.
 	 * @param showNonSelectedRobots true if showing non-selected robot labels.
@@ -471,7 +497,7 @@ implements SettlementMapLayer {
 //						drawPersonRobotLabel(g2d, words[j], robot.getXLocation(), robot.getYLocation(),
 //								ROBOT_LABEL_COLOR, ROBOT_LABEL_OUTLINE_COLOR, xoffset, j * (size + 0));
 					drawPersonRobotLabel(g2d, robot.getName(), robot.getXLocation(), robot.getYLocation(),
-							ROBOT_LABEL_COLOR, ROBOT_LABEL_OUTLINE_COLOR, xoffset, 0);
+							ROBOT_COLOR, ROBOT_OUTLINE_COLOR, xoffset, 0);
 				}
 			}
 		}
@@ -481,7 +507,7 @@ implements SettlementMapLayer {
 			// Draw robot name.
 			drawPersonRobotLabel(
 				g2d, selectedRobot.getName(), selectedRobot.getXLocation(),
-				selectedRobot.getYLocation(), SELECTED_ROBOT_LABEL_COLOR, SELECTED_ROBOT_LABEL_OUTLINE_COLOR,
+				selectedRobot.getYLocation(), ROBOT_SELECTED_COLOR, ROBOT_SELECTED_OUTLINE_COLOR,
 				xoffset, 0);
 
 			// Draw task.
@@ -489,7 +515,7 @@ implements SettlementMapLayer {
 			if (taskString != null && !taskString.equals(""))
 				drawPersonRobotLabel(
 					g2d, taskString, selectedRobot.getXLocation(),
-					selectedRobot.getYLocation(), SELECTED_ROBOT_LABEL_COLOR, SELECTED_ROBOT_LABEL_OUTLINE_COLOR,
+					selectedRobot.getYLocation(), ROBOT_SELECTED_COLOR, ROBOT_SELECTED_OUTLINE_COLOR,
 					xoffset, size + 0);
 
 			// Draw mission.
@@ -499,7 +525,7 @@ implements SettlementMapLayer {
 				if (missionString != null && !missionString.equals(""))
 					drawPersonRobotLabel(
 						g2d, missionString, selectedRobot.getXLocation(),
-						selectedRobot.getYLocation(), SELECTED_ROBOT_LABEL_COLOR, SELECTED_ROBOT_LABEL_OUTLINE_COLOR,
+						selectedRobot.getYLocation(), ROBOT_SELECTED_COLOR, ROBOT_SELECTED_OUTLINE_COLOR,
 						xoffset, 2 * (size + 0));
 			}
 		}
@@ -623,7 +649,7 @@ implements SettlementMapLayer {
 	private BufferedImage getLabelImage(
 		String label, Font font, FontRenderContext fontRenderContext, Color labelColor,
 		Color labelOutlineColor
-	) {
+	) { 
 		BufferedImage labelImage = null;
 		String labelId = label + font.toString() + labelColor.toString() + labelOutlineColor.toString();
 		if (labelImageCache.containsKey(labelId)) {

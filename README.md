@@ -191,22 +191,33 @@ Before r4945,
 
 ### JDK and JavaFX
 
-Beginning Java 11, the JRE/JDK is being decoupled from the graphic JavaFX API. 
-What it means for the open source community is that the OpenJDK package is also 
-being decoupled from the OpenJFX package.
+Beginning Java 11, the JRE/JDK is being decoupled from the graphic 
+JavaFX API. 
 
-If you want to run the JavaFX edition binary of mars-sim, make sure you also 
-download and configure the OpenJFX or JavaFX API on top of the JDK. 
+What it means for the open source community is that the OpenJDK is also 
+being decoupled from the OpenJFX.
+
+If you want to run the future JavaFX edition binary of mars-sim or other 
+JavaFX apps, make sure you also download and configure the OpenJFX or 
+JavaFX package on top of the JDK. 
 
 See ticket #156 to read the discussions on how to set up JavaFX to run it 
 under Java 11.
 
+ ```
+Note 1 : the official release of v3.1.0, v3.1.1 and v3.1.2 of mars-sim do not 
+utilize JavaFX / OpenJFX. Therefore, it's NOT a requirement to install them.
 
  ```
-Note 1 : the official release of v3.1.0 and v3.1.1 version of mars-sim do not 
-utilize JavaFX / OpenJFX. Therefore, it's NOT a requirement to install them currently.
 
- ```
+You may go to [Belsoft site](https://bell-sw.com/pages/downloads/#/java-15-current) to 
+obtain the latest Liberica JDK for your platform. 
+
+We recommend downloading the `Full JDK` 64 bits JDK 15+36 MSI version. 
+
+The full version of Liberica includes LibericaFX, which is based on OpenJFX, for 
+running other apps that requires JavaFX.
+
 
 ### OS Platforms
 

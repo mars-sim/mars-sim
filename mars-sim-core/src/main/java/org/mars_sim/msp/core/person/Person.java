@@ -184,7 +184,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	private String bloodType;
 
 	/** The gender of the person (male or female). */
-	private GenderType gender;
+	private GenderType gender = GenderType.MALE;
 	
 	/** The person model instance. */
 //	private PersonModel personModel;
@@ -1326,6 +1326,17 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		return gender;
 	}
 
+	/**
+	 * Checks if he is a male
+	 * 
+	 * @return
+	 */
+	public boolean isMale() {
+		if (GenderType.MALE == gender)
+			return true;
+		return false;
+	}
+	
 	/**
 	 * Sets the gender of the person.
 	 *

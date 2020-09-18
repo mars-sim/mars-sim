@@ -23,11 +23,16 @@ import org.mars_sim.msp.core.structure.building.Building;
 public class PersonMapLayer implements SettlementMapLayer {
 
 	// Static members
-	private static final Color PERSON_COLOR = LabelMapLayer.PERSON_LABEL_COLOR.brighter(); //new Color(0, 255, 255); // cyan
-	private static final Color PERSON_OUTLINE_COLOR = LabelMapLayer.PERSON_LABEL_OUTLINE_COLOR.brighter(); //new Color(0, 0, 0, 190);
-	private static final Color SELECTED_COLOR = LabelMapLayer.SELECTED_PERSON_LABEL_COLOR.brighter() ;//Color.ORANGE; // white is (255, 255, 255);
-	private static final Color SELECTED_OUTLINE_COLOR = LabelMapLayer.SELECTED_PERSON_LABEL_OUTLINE_COLOR.brighter() ;//new Color(0, 0, 0, 190);
+	private static final Color MALE_COLOR = LabelMapLayer.MALE_COLOR;
+	private static final Color MALE_OUTLINE_COLOR = LabelMapLayer.MALE_OUTLINE_COLOR;
+	private static final Color MALE_SELECTED_COLOR = LabelMapLayer.MALE_SELECTED_COLOR;
+	private static final Color MALE_SELECTED_OUTLINE_COLOR = LabelMapLayer.MALE_SELECTED_OUTLINE_COLOR;
 
+	private static final Color FEMALE_COLOR = LabelMapLayer.FEMALE_COLOR;
+	private static final Color FEMALE_OUTLINE_COLOR = LabelMapLayer.FEMALE_OUTLINE_COLOR;
+	private static final Color FEMALE_SELECTED_COLOR = LabelMapLayer.FEMALE_SELECTED_COLOR;
+	private static final Color FEMALE_SELECTED_OUTLINE_COLOR = LabelMapLayer.FEMALE_SELECTED_OUTLINE_COLOR;
+	
 	// Data members
 	private SettlementMapPanel mapPanel;
 	
@@ -85,13 +90,19 @@ public class PersonMapLayer implements SettlementMapLayer {
 		while (i.hasNext()) {
 			Person person = i.next();
 			if (!person.equals(selectedPerson)) {
-				drawPerson(g2d, person, PERSON_COLOR, PERSON_OUTLINE_COLOR, scale);
+				if (person.isMale())
+					drawPerson(g2d, person, MALE_COLOR, MALE_OUTLINE_COLOR, scale);
+				else 
+					drawPerson(g2d, person, FEMALE_COLOR, FEMALE_OUTLINE_COLOR, scale);
 			}
 		}
 
 		// Draw selected person.
 		if (people.contains(selectedPerson)) {
-			drawPerson(g2d, selectedPerson, SELECTED_COLOR, SELECTED_OUTLINE_COLOR, scale);
+			if (selectedPerson.isMale())
+				drawPerson(g2d, selectedPerson, MALE_SELECTED_COLOR, MALE_SELECTED_OUTLINE_COLOR, scale);
+			else 
+				drawPerson(g2d, selectedPerson, FEMALE_SELECTED_COLOR, FEMALE_SELECTED_OUTLINE_COLOR, scale);
 		}
 	}
 

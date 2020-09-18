@@ -84,7 +84,7 @@ public class Sleep extends Task implements Serializable {
 	private Point2D returnInsideLoc;
 	
 	/** The living accommodations if any. */
-	private LivingAccommodations accommodations;
+//	private LivingAccommodations accommodations;
 	private RoboticStation station;
 	private CircadianClock circadian;
 	private PhysicalCondition pc;
@@ -148,7 +148,7 @@ public class Sleep extends Task implements Serializable {
 				if (q0 != null) {
 					// Case 1 : (the BEST case for a guest) unmarked, empty (UE) bed(s)
 					
-					accommodations = q0.getLivingAccommodations();
+//					accommodations = q0.getLivingAccommodations();
 					// TODO: need to figure out first how to deregister a trader/tourist once he departs 
 //					accommodations.registerSleeper(person, true);
 					
@@ -164,7 +164,7 @@ public class Sleep extends Task implements Serializable {
 					if (q0 != null) {
 						// Case 2 : marked, empty (ME) bed(s)
 						
-						accommodations = q0.getLivingAccommodations();
+//						accommodations = q0.getLivingAccommodations();
 						// TODO: need to figure out first how to deregister a trader/tourist once he departs 
 //						accommodations.registerSleeper(person, true);
 						
@@ -199,11 +199,11 @@ public class Sleep extends Task implements Serializable {
 					double x = bed.getX();
 					double y = bed.getY();
 					
-					accommodations = q1.getLivingAccommodations();
+//					accommodations = q1.getLivingAccommodations();
 					// Concert the coordinate back 
 					Point2D spot = new Point2D.Double(x - q1.getXLocation(), y - q1.getYLocation());
 					
-					boolean empty = accommodations.isActivitySpotEmpty(spot);
+					boolean empty = q1.getLivingAccommodations().isActivitySpotEmpty(spot);
 
 					if (empty) {
 						// the BEST case for an inhabitant
@@ -254,11 +254,11 @@ public class Sleep extends Task implements Serializable {
 
 					q1 = getBestAvailableQuarters(person, true);
 					
-					accommodations = q1.getLivingAccommodations();
+//					accommodations = q1.getLivingAccommodations();
+//					
+//					Point2D bed = q1.getLivingAccommodations().registerSleeper(person, false);
 					
-					Point2D bed = accommodations.registerSleeper(person, false);
-					
-					if (q1 != null && bed != null) {
+					if (q1 != null && q1.getLivingAccommodations().registerSleeper(person, false) != null) {
 						// Case 8: unmarked, empty (UE) bed
 						
 						walkToBed(q1, person, true);
@@ -874,7 +874,7 @@ public class Sleep extends Task implements Serializable {
 		SLEEPING.destroy();
 		
 		station = null;
-		accommodations = null;
+//		accommodations = null;
 		circadian = null;
 		pc = null;
 		interiorObject = null;

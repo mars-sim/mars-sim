@@ -69,6 +69,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.time.ClockListener;
+import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.steelseries.gauges.DisplaySingle;
 import org.mars_sim.msp.ui.steelseries.tools.LcdColor;
@@ -78,8 +79,6 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import com.alee.extended.WebComponent;
 import com.alee.laf.button.WebButton;
 import com.alee.laf.combobox.WebComboBox;
-import com.alee.laf.combobox.WebComboBoxRenderer;
-import com.alee.laf.list.ListCellParameters;
 import com.alee.managers.icon.IconManager;
 import com.alee.managers.icon.LazyIcon;
 import com.alee.managers.style.StyleId;
@@ -141,6 +140,7 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	private static OrbitInfo orbitInfo;
 	
 	private static MasterClock masterClock;
+	private static MarsClock marsClock;
 	
 	private static UnitManager unitManager = Simulation.instance().getUnitManager();
 
@@ -154,6 +154,8 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
         
 		if (masterClock == null)
 			masterClock = Simulation.instance().getMasterClock();
+		
+		marsClock = masterClock.getMarsClock();
 		
 		masterClock.addClockListener(this);
 		
@@ -1342,8 +1344,10 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 
 	@Override
 	public void uiPulse(double time) {
-		displayBanner();
-		updateWeather();
+		if (marsClock.isStable()) {
+			displayBanner();
+			updateWeather();
+		}
 	}
 
 	@Override
