@@ -29,6 +29,7 @@ import org.mars_sim.msp.core.structure.building.connection.BuildingConnector;
 import org.mars_sim.msp.core.structure.building.connection.Hatch;
 import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.core.structure.construction.ConstructionStage;
+import org.mars_sim.msp.ui.swing.tool.svg.SVGMapUtil;
 
 /**
  * A settlement map layer for displaying buildings and construction sites.

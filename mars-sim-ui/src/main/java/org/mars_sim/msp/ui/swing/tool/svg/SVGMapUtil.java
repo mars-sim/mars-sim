@@ -4,7 +4,7 @@
  * @version 3.1.2 2020-09-02
  * @author Scott Davis
  */
-package org.mars_sim.msp.ui.swing.tool.settlement;
+package org.mars_sim.msp.ui.swing.tool.svg;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,7 +12,6 @@ import java.net.URL;
 import java.util.Properties;
 
 import org.apache.batik.gvt.GraphicsNode;
-import org.mars_sim.msp.ui.swing.SVGLoader;
 
 /**
  * Static utility class for mapping settlement map structures, such

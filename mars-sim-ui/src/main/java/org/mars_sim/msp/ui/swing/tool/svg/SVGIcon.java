@@ -17,7 +17,7 @@
  *
  * Initial version: April 21, 2005
  */
-package org.mars_sim.msp.ui.swing.tool;
+package org.mars_sim.msp.ui.swing.tool.svg;
 
 import java.awt.Component;
 import java.awt.Dimension;

@@ -4,7 +4,7 @@
  * @version 3.1.2 2020-09-02
  * @author Scott Davis
  */
-package org.mars_sim.msp.ui.swing;
+package org.mars_sim.msp.ui.swing.tool.svg;
 
 import java.net.URL;
 import java.util.HashMap;
