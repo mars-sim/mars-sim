@@ -7,6 +7,7 @@ import java.util.List;
 import org.apache.batik.gvt.GraphicsNode;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.resource.Part;
+import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.construction.ConstructionConfig;
 import org.mars_sim.msp.core.structure.construction.ConstructionStageInfo;
 
@@ -28,8 +29,7 @@ public class TestSVGMapUtil extends TestCase {
     public void testGetBuildingSVG() {
         
         // Check that all configured building names are mapped to a SVG image.
-        Iterator<String> i = SimulationConfig.instance().getBuildingConfiguration().
-                getBuildingTypes().iterator();
+        Iterator<String> i = BuildingConfig.getBuildingTypes().iterator();
         while (i.hasNext()) {
             String buildingName = i.next();
             GraphicsNode svg = SVGMapUtil.getBuildingSVG(buildingName);
