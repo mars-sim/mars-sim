@@ -1,6 +1,4 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Created with Inkscape (http://www.inkscape.org/) -->
-
 <svg
    xmlns:dc="http://purl.org/dc/elements/1.1/"
    xmlns:cc="http://creativecommons.org/ns#"
@@ -10,12 +8,12 @@
    xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="20.1875"
-   height="20.21875"
+   width="200"
+   height="200"
    id="svg6494"
    version="1.1"
-   inkscape:version="0.48.3.1 r9886"
-   sodipodi:docname="hallway_const.svg">
+   inkscape:version="1.0.1 (3bc2e813f5, 2020-09-07)"
+   sodipodi:docname="hallway_frame_const.svg">
   <defs
      id="defs6496">
     <linearGradient
@@ -38,7 +36,7 @@
        x2="104.51723"
        y1="201.26778"
        x1="104.51723"
-       gradientTransform="translate(-562.78566,153.82519)"
+       gradientTransform="matrix(9.9009836,0,0,9.9009907,-1591.0581,-1635.9398)"
        gradientUnits="userSpaceOnUse"
        id="linearGradient6492"
        xlink:href="#linearGradient6431-7-0"
@@ -51,9 +49,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="44.958269"
-     inkscape:cx="10.09375"
-     inkscape:cy="10.109375"
+     inkscape:zoom="2.8098918"
+     inkscape:cx="249.50416"
+     inkscape:cy="140.42439"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="true"
@@ -62,11 +60,12 @@
      fit-margin-left="0"
      fit-margin-right="0"
      fit-margin-bottom="0"
-     inkscape:window-width="1871"
-     inkscape:window-height="1056"
-     inkscape:window-x="49"
-     inkscape:window-y="24"
-     inkscape:window-maximized="1">
+     inkscape:window-width="1920"
+     inkscape:window-height="1057"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:document-rotation="0">
     <inkscape:grid
        type="xygrid"
        id="grid6502"
@@ -74,8 +73,10 @@
        visible="true"
        enabled="true"
        snapvisiblegridlinesonly="true"
-       originx="-354.90625px"
-       originy="-584.89345px" />
+       originx="-354.90625"
+       originy="-584.89345"
+       spacingx="1"
+       spacingy="1" />
   </sodipodi:namedview>
   <metadata
      id="metadata6499">
@@ -95,32 +96,29 @@
      id="layer1"
      transform="translate(-354.90625,-447.25)">
     <rect
-       style="fill:url(#linearGradient6492);fill-opacity:1;stroke:#000000;stroke-width:0.2;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline"
+       style="display:inline;fill:url(#linearGradient6492);fill-opacity:1;stroke:#000000;stroke-width:1.9802;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="rect6429"
-       width="19.999987"
-       height="20"
-       x="-467.36221"
-       y="355"
-       transform="matrix(0,-1,1,0,0,0)" />
+       width="198.01955"
+       height="198.01981"
+       x="-646.27209"
+       y="355.89011"
+       transform="rotate(-90)" />
     <path
-       style="fill:none;stroke:#393939;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m 16.09375,0.1122 0,20"
+       style="fill:none;stroke:#393939;stroke-width:9.90099px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 514.30584,448.2523 V 646.27197"
        id="path3778"
-       inkscape:connector-curvature="0"
-       transform="translate(354.90625,447.25)" />
+       inkscape:connector-curvature="0" />
     <path
-       style="fill:none;stroke:#393939;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m 4.09375,0.1122 0,20"
+       style="fill:none;stroke:#393939;stroke-width:9.90099px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 395.494,448.2523 V 646.27197"
        id="path3780"
-       inkscape:connector-curvature="0"
-       transform="translate(354.90625,447.25)" />
+       inkscape:connector-curvature="0" />
     <rect
-       style="fill:#a1a36b;fill-opacity:1;stroke:#393939;stroke-width:0.20000000000000001;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       style="fill:#a1a36b;fill-opacity:1;stroke:#393939;stroke-width:1.9802;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
        id="rect3782"
-       width="12"
-       height="20"
-       x="4.09375"
-       y="0.1122"
-       transform="translate(354.90625,447.25)" />
+       width="118.81189"
+       height="198.01967"
+       x="395.4939"
+       y="448.25229" />
   </g>
 </svg>

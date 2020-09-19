@@ -1,6 +1,4 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Created with Inkscape (http://www.inkscape.org/) -->
-
 <svg
    xmlns:dc="http://purl.org/dc/elements/1.1/"
    xmlns:cc="http://creativecommons.org/ns#"
@@ -9,11 +7,11 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="20.1875"
-   height="5.21875"
+   width="200"
+   height="52"
    id="svg6476"
    version="1.1"
-   inkscape:version="0.48.3.1 r9886"
+   inkscape:version="1.0.1 (3bc2e813f5, 2020-09-07)"
    sodipodi:docname="hallway_pattern.svg">
   <defs
      id="defs6478" />
@@ -24,9 +22,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="66.972136"
-     inkscape:cx="10.09375"
-     inkscape:cy="2.609375"
+     inkscape:zoom="5.9195565"
+     inkscape:cx="89.449653"
+     inkscape:cy="45.100533"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="true"
@@ -34,12 +32,13 @@
      fit-margin-left="0"
      fit-margin-right="0"
      fit-margin-bottom="0"
-     inkscape:window-width="1871"
-     inkscape:window-height="1056"
-     inkscape:window-x="49"
-     inkscape:window-y="24"
+     inkscape:window-width="1920"
+     inkscape:window-height="1057"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
      inkscape:window-maximized="1"
-     inkscape:snap-grids="true">
+     inkscape:snap-grids="true"
+     inkscape:document-rotation="0">
     <inkscape:grid
        type="xygrid"
        id="grid6484"
@@ -47,8 +46,10 @@
        visible="true"
        enabled="true"
        snapvisiblegridlinesonly="true"
-       originx="-334.90625px"
-       originy="-649.89343px" />
+       originx="-334.90625"
+       originy="-649.89343"
+       spacingx="1"
+       spacingy="1" />
   </sodipodi:namedview>
   <metadata
      id="metadata6481">
@@ -58,7 +59,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -68,27 +69,26 @@
      id="layer1"
      transform="translate(-334.90625,-397.25)">
     <rect
-       style="fill:none;stroke:none;display:inline"
+       style="display:inline;fill:none;stroke:none;stroke-width:9.95108"
        id="rect6429"
-       width="5"
-       height="20"
-       x="-402.36218"
-       y="335"
-       transform="matrix(0,-1,1,0,0,0)" />
+       width="50.009781"
+       height="198.00978"
+       x="-448.26727"
+       y="335.89511"
+       transform="rotate(-90)" />
     <rect
-       style="fill:#000000;fill-opacity:0;stroke:none"
+       style="fill:#000000;fill-opacity:0;stroke:none;stroke-width:9.95108"
        id="rect2987"
-       width="20"
-       height="5"
-       x="0.09375"
-       y="-0.01282"
-       transform="translate(334.90625,397.375)" />
+       width="198.00978"
+       height="50.009781"
+       x="335.89511"
+       y="398.25729" />
     <rect
-       style="fill:#5e5d5f;fill-opacity:0;stroke:#808080;stroke-width:0.20000000000000001;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       style="fill:#5e5d5f;fill-opacity:0;stroke:#808080;stroke-width:1.99022;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="rect3757"
-       width="20"
-       height="5"
-       x="335"
-       y="397.36218" />
+       width="198.00978"
+       height="50.009781"
+       x="335.89511"
+       y="398.25729" />
   </g>
 </svg>

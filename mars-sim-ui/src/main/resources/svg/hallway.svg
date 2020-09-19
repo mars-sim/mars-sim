@@ -1,6 +1,4 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Created with Inkscape (http://www.inkscape.org/) -->
-
 <svg
    xmlns:dc="http://purl.org/dc/elements/1.1/"
    xmlns:cc="http://creativecommons.org/ns#"
@@ -10,11 +8,11 @@
    xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="20.1875"
-   height="20.21875"
+   width="200"
+   height="200"
    id="svg6494"
    version="1.1"
-   inkscape:version="0.48.3.1 r9886"
+   inkscape:version="1.0.1 (3bc2e813f5, 2020-09-07)"
    sodipodi:docname="hallway.svg">
   <defs
      id="defs6496">
@@ -38,7 +36,7 @@
        x2="104.51723"
        y1="201.26778"
        x1="104.51723"
-       gradientTransform="translate(-562.78566,153.82519)"
+       gradientTransform="matrix(9.9009973,0,0,9.9009901,-1591.0597,-1635.9397)"
        gradientUnits="userSpaceOnUse"
        id="linearGradient6492"
        xlink:href="#linearGradient6431-7-0"
@@ -51,9 +49,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="15.839192"
-     inkscape:cx="1.946989"
-     inkscape:cy="13.986256"
+     inkscape:zoom="1.4"
+     inkscape:cx="187.51233"
+     inkscape:cy="109.19115"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="true"
@@ -62,11 +60,14 @@
      fit-margin-left="0"
      fit-margin-right="0"
      fit-margin-bottom="0"
-     inkscape:window-width="1871"
-     inkscape:window-height="1056"
-     inkscape:window-x="49"
-     inkscape:window-y="24"
-     inkscape:window-maximized="1">
+     inkscape:window-width="1920"
+     inkscape:window-height="1057"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:document-rotation="0"
+     units="mm"
+     width="202.1875px">
     <inkscape:grid
        type="xygrid"
        id="grid6502"
@@ -85,7 +86,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -95,12 +96,12 @@
      id="layer1"
      transform="translate(-354.90625,-447.25)">
     <rect
-       style="fill:url(#linearGradient6492);fill-opacity:1;stroke:#000000;stroke-width:0.2;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline"
+       style="display:inline;fill:url(#linearGradient6492);fill-opacity:1;stroke:#000000;stroke-width:1.9802;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="rect6429"
-       width="19.999987"
-       height="20"
-       x="-467.36221"
-       y="355"
-       transform="matrix(0,-1,1,0,0,0)" />
+       width="198.01981"
+       height="198.01981"
+       x="-646.27209"
+       y="355.89011"
+       transform="rotate(-90)" />
   </g>
 </svg>

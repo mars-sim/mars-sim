@@ -47,15 +47,16 @@ public class StructureMapLayer implements SettlementMapLayer {
     private static final Color BUILDING_SPLIT_CONNECTOR_COLOR = Color.WHITE;
 
     private static final Color SITE_BORDER_COLOR = Color.BLACK;
-    private final static float dash[] = { 1.0f };
+    private final static float dash[] = {50.0f, 20.0f, 10.0f, 20.0f};
     
-    private final static BasicStroke dashed = new BasicStroke(0.2f,
-    	      BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1.0f, dash, 0.0f);
+    // See https://docstore.mik.ua/orelly/java-ent/jfc/ch04_05.htm for instructions on BasicStroke
+    private final static BasicStroke THIN_DASHES = new BasicStroke(2.0f,
+    	      BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, dash, 0.0f);
     
 //    private final static BasicStroke THICK_DASHES = new BasicStroke(3, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{5}, 0);
     
-    private final static BasicStroke THICK_DASHES = new BasicStroke(2f,
-  	      BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1.0f, dash, 0.0f);
+    private final static BasicStroke THICK_DASHES = new BasicStroke(10.0f,
+  	      BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 50.0f, dash, 0.0f);
  
     
     // Data members
@@ -477,19 +478,21 @@ public class StructureMapLayer implements SettlementMapLayer {
                 }
             }
         }
+        
         else {
             // Else draw colored rectangle for construction site.
 
             // Draw filled rectangle.
             newTransform.scale(scalingWidth, scalingLength);
             g2d.transform(newTransform);
+            
             g2d.setColor(color);
             g2d.fill(bounds);
             
         	if (color.equals(SELECTED_CONSTRUCTION_SITE_COLOR)) {
                 // Draw the dashed border
                 g2d.setPaint(SITE_BORDER_COLOR);
-                g2d.setStroke(dashed);
+                g2d.setStroke(THIN_DASHES);
                 g2d.draw(bounds);
                 g2d.setStroke(oldStroke);
         	}

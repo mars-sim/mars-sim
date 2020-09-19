@@ -419,8 +419,8 @@ implements SettlementMapLayer {
 				String taskString = Msg.getString("LabelMapLayer.activity", selectedPerson.getMind().getTaskManager().getTaskDescription(false)); //$NON-NLS-1$
 				if (taskString != null && !taskString.equals(""))
 					drawPersonRobotLabel(
-						g2d, selectedPerson.getMind().getTaskManager().getTaskDescription(false), selectedPerson.getXLocation(),
-		//				g2d, taskString, selectedPerson.getXLocation(),
+//						g2d, selectedPerson.getMind().getTaskManager().getTaskDescription(false), selectedPerson.getXLocation(),
+						g2d, taskString, selectedPerson.getXLocation(),
 						selectedPerson.getYLocation(), sColor, soColor,
 						xoffset, size + 0);
 
