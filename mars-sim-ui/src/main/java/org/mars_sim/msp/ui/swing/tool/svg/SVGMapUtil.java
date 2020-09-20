@@ -88,7 +88,7 @@ public final class SVGMapUtil {
 
         String svgFileName = svgMapProperties.getProperty(propertyName);
         if (svgFileName != null) {
-            result = SVGLoader.getSVGImage(svgFileName);
+            result = SVGLoader.getSVGImage(prefix, svgFileName);
         }
 
         return result;

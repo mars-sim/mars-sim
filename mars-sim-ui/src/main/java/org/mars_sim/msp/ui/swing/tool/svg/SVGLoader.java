@@ -43,12 +43,15 @@ public class SVGLoader {
 	 * @param name Name of the SVG file to load.
 	 * @return GraphicsNode containing SVG image or null if none found.
 	 */
-	public static GraphicsNode getSVGImage(String name) {
+	public static GraphicsNode getSVGImage(String prefix, String name) {
 		if (svgCache == null) svgCache = new HashMap<String, GraphicsNode>();
 
 		GraphicsNode found = svgCache.get(name);
 		if (found == null) {
-			String fileName = SVG_DIR + name;
+//			System.out.println("prefix:" + prefix);
+			String subPath = prefix.replace(".", "/");
+			String fileName = SVG_DIR + subPath + "/" + name;
+//			System.out.println("fileName:" + fileName);
 			URL resource = SVGLoader.class.getResource(fileName);
 
 			try {
