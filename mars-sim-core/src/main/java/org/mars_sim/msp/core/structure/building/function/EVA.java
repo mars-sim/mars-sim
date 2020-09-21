@@ -137,6 +137,10 @@ implements Serializable {
 		return airlock.getNumOccupants();
 	}
 	
+	public String getOperatorName() {
+		return airlock.getOperatorName();
+	}
+	
 	/**
 	 * Time passing for the building.
 	 * @param time amount of time passing (in millisols)

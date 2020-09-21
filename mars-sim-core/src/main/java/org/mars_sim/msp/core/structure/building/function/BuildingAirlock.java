@@ -526,11 +526,13 @@ public class BuildingAirlock extends Airlock {
     	}
     	
     	else if (zone == 2) {
+    		loadEVAActivitySpots();
     		Point2D p0 = getKey(activitySpotMap, p.getIdentifier());
     		if (p0 == null)
     			return false;
     		for (int i=0; i<MAX_SLOTS; i++) {
     			Point2D pt = EVASpots.get(i);
+//    			System.out.println("pt : " + pt);
     			if (LocalAreaUtil.areLocationsClose(p0, pt)) {
 //        			System.out.println(p0 + " ~ " + pt);
     				return true;
@@ -579,11 +581,11 @@ public class BuildingAirlock extends Airlock {
 	public void loadEVAActivitySpots() {
 		if (EVASpots == null) {
 			EVASpots = new ArrayList<>();
-			for (int i=0; i<4; i++) {
+			for (int i=0; i<MAX_SLOTS; i++) {
     			Point2D p0 = building.getEVA().getActivitySpotsList().get(i);
-//    			Point2D p1 = LocalAreaUtil.getLocalRelativeLocation(p0.getX(), p0.getY(), building);
-    			EVASpots.add(p0);
-    			activitySpotMap.put(p0, -1);
+    			Point2D p1 = LocalAreaUtil.getLocalRelativeLocation(p0.getX(), p0.getY(), building);
+    			EVASpots.add(p1);
+    			activitySpotMap.put(p1, -1);
     		}	
 		}       
 	}

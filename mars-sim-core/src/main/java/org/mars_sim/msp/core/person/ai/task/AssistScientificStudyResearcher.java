@@ -88,7 +88,7 @@ public class AssistScientificStudyResearcher extends Task implements Serializabl
 				if (person.isInSettlement()) {
 
 					Building researcherBuilding = BuildingManager.getBuilding(researcher);
-					if (researcherBuilding != null) {
+					if (researcherBuilding != null && !researcherBuilding.getBuildingType().contains("astronomy")) {
 
 						// Walk to researcher
 						walkToTaskSpecificActivitySpotInBuilding(researcherBuilding, false);

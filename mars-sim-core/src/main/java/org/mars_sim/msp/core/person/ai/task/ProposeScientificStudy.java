@@ -88,7 +88,7 @@ public class ProposeScientificStudy extends Task implements Serializable {
 			if (person.isInSettlement()) {
 				Building b = getAvailableBuilding(study, person);
 				if (b != null) {
-					// Walk to administration building.
+					// Walk to this specific building.
 					walkToTaskSpecificActivitySpotInBuilding(b, false);
 					walk = true;
 				}

@@ -59,6 +59,7 @@ public class BuildingPanelEVA extends BuildingFunctionPanel implements MouseList
 	private int emptyCache;
 	private double cycleTimeCache;
 	
+	private String operatorCache = "";
 	private String airlockStateCache = "";
 	private String innerDoorStateCache = "";
 	private String outerDoorStateCache = "";
@@ -68,6 +69,7 @@ public class BuildingPanelEVA extends BuildingFunctionPanel implements MouseList
 	private WebLabel outerDoorLabel;
 	private WebLabel occupiedLabel;
 	private WebLabel emptyLabel;
+	private WebLabel operatorLabel;
 	private WebLabel airlockStateLabel;
 	private WebLabel cycleTimeLabel;
 	private WebLabel innerDoorStateLabel;
@@ -111,7 +113,7 @@ public class BuildingPanelEVA extends BuildingFunctionPanel implements MouseList
 		setLayout(new BorderLayout());
 
 		// Create label panel
-		WebPanel labelPanel = new WebPanel(new GridLayout(10, 1, 0, 0));
+		WebPanel labelPanel = new WebPanel(new GridLayout(11, 1, 0, 0));
 		add(labelPanel, BorderLayout.NORTH);
 		labelPanel.setOpaque(false);
 		labelPanel.setBackground(new Color(0,0,0,128));
@@ -173,6 +175,12 @@ public class BuildingPanelEVA extends BuildingFunctionPanel implements MouseList
 				eva.getNumEmptied()), WebLabel.CENTER);
 		labelPanel.add(emptyLabel);
 			
+		
+		// Create OperatorLabel
+		operatorLabel = new WebLabel(Msg.getString("BuildingPanelEVA.operator",
+				eva.getOperatorName()), WebLabel.CENTER);
+		labelPanel.add(operatorLabel);
+		
 		
 		// Create airlockStateLabel
 		airlockStateLabel = new WebLabel(Msg.getString("BuildingPanelEVA.airlock.state",
@@ -245,6 +253,12 @@ public class BuildingPanelEVA extends BuildingFunctionPanel implements MouseList
 		if (emptyCache != eva.getNumEmptied()) {
 			emptyCache = eva.getNumEmptied();
 			emptyLabel.setText(Msg.getString("BuildingPanelEVA.empty", emptyCache));
+		}	
+		
+		// Update operatorLabel
+		if (operatorCache.equals(eva.getOperatorName())) {
+			operatorCache = eva.getOperatorName();
+			operatorLabel.setText(Msg.getString("BuildingPanelEVA.operator", operatorCache));
 		}	
 		
 		// Update airlockStateLabel

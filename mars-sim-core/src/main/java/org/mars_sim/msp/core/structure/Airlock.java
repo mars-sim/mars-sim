@@ -12,7 +12,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -26,10 +25,6 @@ import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.mars.MarsSurface;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.task.EVAOperation;
-import org.mars_sim.msp.core.person.ai.task.EnterAirlock;
-import org.mars_sim.msp.core.person.ai.task.ExitAirlock;
-import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.structure.building.function.BuildingAirlock;
 
 // see discussions on Airlocks for Mars Colony at 
@@ -89,22 +84,25 @@ public abstract class Airlock implements Serializable {
 	private double remainingCycleTime;
 	
 	/** People currently in airlock. */
-    private volatile Set<Integer> occupantIDs;
+    private Set<Integer> occupantIDs;
 //	private Collection<Person> occupants;
 
+	/** Current pool of operator candidates in airlock building. */
+    private Set<Integer> operatorPool;
+    
 	/** The person currently operating the airlock. */
-    private volatile Integer operatorID;
+    private Integer operatorID;
 //	private Person operator;
     
 	/** People waiting for the airlock by the inner door. */
-    private volatile Set<Integer> awaitingInnerDoor;
+    private Set<Integer> awaitingInnerDoor;
 //	private List<Person> awaitingInnerDoor;
 
 	/** People waiting for the airlock by the outer door. */
-    private volatile Set<Integer> awaitingOuterDoor;
+    private Set<Integer> awaitingOuterDoor;
 
 	/** The lookup map for settlers. */
-	private volatile Map<Integer, Person> lookupPerson;
+	private Map<Integer, Person> lookupPerson;
 	
     protected static UnitManager unitManager; 
     protected static MarsSurface marsSurface;
@@ -135,6 +133,7 @@ public abstract class Airlock implements Serializable {
 		occupantIDs = new HashSet<>();
 		awaitingInnerDoor = new HashSet<>();
 		awaitingOuterDoor = new HashSet<>();
+		operatorPool = new HashSet<>();
 		
 //		if (unit instanceof Building) {
 //			locale = ((Building)unit).getLocale();
@@ -156,13 +155,7 @@ public abstract class Airlock implements Serializable {
 	 *         successfully
 	 */
 	public boolean exitAirlock(Person person, Integer id, boolean egress) {
-		boolean result = true;
-
-		// Warning : do NOT use int id or else the list's method remove(int index) would be chosen to use
-		// List can't tell if the method remove(Object o) should be used.
-//		Integer id = person.getIdentifier();
-		// Add the person's ID to the lookup map
-//		addPersonID(person, id);
+		boolean result = false;
 
 		// Transfer from door queue into the airlock occupantIDs set
 		if (occupantIDs.contains(id)) {
@@ -171,7 +164,7 @@ public abstract class Airlock implements Serializable {
 		
 		if (egress && result) {
 			// Transfer the person from one container unit to another
-			result = result && egress(person);
+			result = egress(person);
 		}
 		
 		return result;
@@ -196,15 +189,17 @@ public abstract class Airlock implements Serializable {
 		// Add the person's ID to the lookup map
 		addPersonID(person, id);
 
-		// Transfer from outer door queue into the airlock occupantIDs set
+		// If the airlock is not full
 		if (!occupantIDs.contains(id) && (occupantIDs.size() < capacity)) {
+			
 			result = transferIn(person, id, egress);
 		}
 		
-		if (!egress && result) {
+		if (result && !egress) {
 			// Transfer the person from one container unit to another
-			result = result && ingress(person);
+			result = ingress(person);
 		}
+		
 		
 		return result;
 	}
@@ -270,8 +265,31 @@ public abstract class Airlock implements Serializable {
 	 * @return {@link boolean} <code>true</code> if person exiting the airlock
 	 *         successfully
 	 */
-	private boolean transferOut(Integer id) {
+	public boolean transferOut(Integer id) {
+		operatorPool.remove(id);
+		
+		if (operatorID.equals(id)) {;
+			operatorID = Integer.valueOf(-1);
+		}
+		
 		return occupantIDs.remove(id);
+	}
+	
+	/**
+	 * Remove the id of a person 
+	 * 
+	 * @param id the person's id
+	 */
+	public void removeID(Integer id) {
+		operatorPool.remove(id);
+		
+		if (operatorID.equals(id)) {;
+			operatorID = Integer.valueOf(-1);
+		}
+
+		occupantIDs.remove(id);
+		awaitingInnerDoor.remove(id);
+		awaitingOuterDoor.remove(id);		
 	}
 	
 	
@@ -434,24 +452,43 @@ public abstract class Airlock implements Serializable {
 		return false;
 	}
 	
+	/**
+	 * Sets to the pressurizing state
+	 * 
+	 * @return
+	 */
 	public boolean setPressurizing() {
 		if (AirlockState.DEPRESSURIZED == airlockState) {
-		setState(AirlockState.PRESSURIZING);
-		return true;
-	}
-		
+			setState(AirlockState.PRESSURIZING);
+			innerDoorLocked = true;
+			outerDoorLocked = true;
+			return true;
+		}
+			
 		return false;
 	}
 
+	/**
+	 * Sets to the depressurizing state
+	 * 
+	 * @return
+	 */
 	public boolean setDepressurizing() {
 		if (AirlockState.PRESSURIZED == airlockState) {
 			setState(AirlockState.DEPRESSURIZING);
+			innerDoorLocked = true;
+			outerDoorLocked = true;
 			return true;
 		}
 		
 		return false;
 	}
 	
+	/**
+	 * Checks if the airlock has been depressurized
+	 * 
+	 * @return
+	 */
 	public boolean isDepressurized() {
 		if (AirlockState.DEPRESSURIZED == airlockState) {
 			return true;
@@ -459,6 +496,11 @@ public abstract class Airlock implements Serializable {
 		return false;
 	}
 	
+	/**
+	 * Checks if the airlock has been pressurized
+	 * 
+	 * @return
+	 */
 	public boolean isPressurized() {	
 		if (AirlockState.PRESSURIZED == airlockState) {
 			return true;
@@ -466,16 +508,26 @@ public abstract class Airlock implements Serializable {
 		return false;
 	}
 	
+	
+	/**
+	 * Switch to a permanent airlock state
+	 * 
+	 * @return
+	 */
 	public boolean switch2SteadyState() {
 		if (AirlockState.PRESSURIZING == airlockState) {
 			setState(AirlockState.PRESSURIZED);
 			activated = false;
+			innerDoorLocked = false;
+			outerDoorLocked = true;
 			return true;
 		}
 		
 		if (AirlockState.DEPRESSURIZING == airlockState) {
 			setState(AirlockState.DEPRESSURIZED);
 			activated = false;
+			innerDoorLocked = true;
+			outerDoorLocked = false;
 			return true;
 		}
 		
@@ -540,8 +592,8 @@ public abstract class Airlock implements Serializable {
 				remainingCycleTime = CYCLE_TIME;
 				// Switch the airlock state to a steady state
 				switch2SteadyState();
-				LogConsolidated.log(logger, Level.INFO, 4000, sourceName, 
-						"[" + getLocale() + "] Done with the air cycling in "
+				LogConsolidated.log(logger, Level.INFO, 4_000, sourceName, 
+						"[" + getLocale() + "] Done with the air recycling in "
 						+ getEntity() + ".");
 			} 
 //			else {
@@ -566,18 +618,40 @@ public abstract class Airlock implements Serializable {
 	}
 	
 	
-//	/**
-//	 * Is this person the airlock operator ?
-//	 * 
-//	 * @param p
-//	 * @return true if this person is the airlock operator 
-//	 */
-//	public boolean isOperator(Person p) {
-//		if (p.getIdentifier() == operatorID)
-//			return true;
-//		return false;
-//	}
-//	
+	/**
+	 * Is this person the airlock operator ?
+	 * 
+	 * @param p
+	 * @return true if this person is the airlock operator 
+	 */
+	public boolean isOperator(int id) {
+		if (operatorID.equals(Integer.valueOf(id)))
+			return true;
+		return false;
+	}
+
+	/**
+	 * Gets the operator's Person instance
+	 * 
+	 * @return
+	 */
+	public String getOperatorName() {
+		if (operatorID.equals(Integer.valueOf(-1)))
+			return "None";
+		
+		Person p = lookupPerson.get(operatorID);
+		if (p != null)
+			return p.getName();
+		else {
+			p = unitManager.getPersonByID(operatorID);
+			if (p != null) {
+				return p.getName();
+			}
+		}
+		
+		return "N/A";
+	}
+	
 //	/**
 //	 * Volunteer this person as the operator
 //	 * 
@@ -598,64 +672,82 @@ public abstract class Airlock implements Serializable {
 //					+ p + " stepped up becoming the operator of the airlock.");
 //		}
 //	}
-//	
-//	/**
-//	 * Elects an operator with the best EVA skill level/experiences
-//	 */
-//	private void electAnOperator() {
-//		// Just in case the current operator is not in occupantIDs
-////		if (operatorID > 0 && !occupantIDs.contains(operatorID))
-////			occupantIDs.add(operatorID);
-//		
-//		// Select a person to become the operator
-//		Person selected = null;
-//		Integer selectedID = Integer.valueOf(-1);
-//		int size = occupantIDs.size();
-//
-//		if (size == 1) {
-//			List<Integer> list = new ArrayList<>(occupantIDs);
-//			int id = list.get(0);
-//			operatorID = id;
-//			selected = getPersonByID(id);
-//			LogConsolidated.log(logger, Level.FINER, 4_000, sourceName, "[" + selected.getLocale() + "] "
-//					+ selected + " stepped up becoming the airlock operator in " 
-//					+ selected.getLocationTag().getImmediateLocation() + ".");
-//		}
-//		
-//		else if (size > 1 
-////				&& (operatorID > 0 && !occupantIDs.contains(operatorID)
-////				|| operatorID == -1)
-//				) {
-//			int evaExp = -1;
-//			int evaLevel = -1;
-//			for (Integer id : occupantIDs) {
-//				Person p = 	getPersonByID(id);
-//		    	if (p == null) {
-//		    		p = unitManager.getPersonByID(id);
-//		    		lookupPerson.put(id, p);
-//		    	}
-//				int level = p.getSkillManager().getSkillLevel(SkillType.EVA_OPERATIONS);
-//				if (level > evaLevel) {
-//					selected = p;
-//					selectedID = id;
-//				}
-//	
-//				else if (level == evaExp) {
-//					int exp = p.getSkillManager().getSkillExp(SkillType.EVA_OPERATIONS);
-//					if (exp > evaExp) {
-//						selected = p;
-//						selectedID = id;
-//					}
-//				}
-//			}
-//			
-//			operatorID = selectedID;
-//			
-//			LogConsolidated.log(logger, Level.INFO, 4000, sourceName, "[" + selected.getLocale() + "] "
-//					+ selected + " stepped up to be the airlock operator in " 
-//					+ selected.getLocationTag().getImmediateLocation() + ".");
-//		}
-//	}
+
+	/**
+	 * Checks on the current pool of candidates for being an operator
+	 */
+	private void checkOperatorPool() {
+		operatorPool = new HashSet<>();
+		operatorPool.addAll(occupantIDs);		
+		operatorPool.addAll(awaitingInnerDoor);
+		operatorPool.addAll(awaitingOuterDoor);	
+	}
+	
+	/**
+	 * Elects an operator with the best EVA skill level/experiences
+	 */
+	private void electAnOperator() {
+		Set<Integer> pool = null;
+		
+		if (occupantIDs.isEmpty()) {
+			
+			if (!awaitingOuterDoor.isEmpty()) {
+				// Give those waiting at the outer door the priority to call shots
+				pool = awaitingOuterDoor;
+			}
+			else
+				pool = operatorPool;
+		}
+		else
+			pool = occupantIDs;
+		
+		// Select a person to become the operator
+		Person selected = null;
+		Integer selectedID = Integer.valueOf(-1);
+		
+		int size = pool.size();
+
+		if (size == 1) {
+			List<Integer> list = new ArrayList<>(pool);
+			int id = list.get(0);
+			operatorID = Integer.valueOf(id);
+			selected = getPersonByID(id);
+			LogConsolidated.log(logger, Level.INFO, 4_000, sourceName, "[" + selected.getLocale() + "] "
+					+ selected + " acted as the airlock operator in " 
+					+ selected.getLocationTag().getImmediateLocation() + ".");
+		}
+		
+		else if (size > 1) {
+			int evaExp = -1;
+			int evaLevel = -1;
+			for (Integer id : pool) {
+				Person p = 	getPersonByID(id);
+		    	if (p == null) {
+		    		p = unitManager.getPersonByID(id);
+		    		lookupPerson.put(id, p);
+		    	}
+				int level = p.getSkillManager().getSkillLevel(SkillType.EVA_OPERATIONS);
+				if (level > evaLevel) {
+					selected = p;
+					selectedID = id;
+				}
+	
+				else if (level == evaExp) {
+					int exp = p.getSkillManager().getSkillExp(SkillType.EVA_OPERATIONS);
+					if (exp > evaExp) {
+						selected = p;
+						selectedID = id;
+					}
+				}
+			}
+			
+			operatorID = Integer.valueOf(selectedID);
+			
+			LogConsolidated.log(logger, Level.INFO, 4000, sourceName, "[" + selected.getLocale() + "] "
+					+ selected + " stepped up becoming the airlock operator in " 
+					+ selected.getLocationTag().getImmediateLocation() + ".");
+		}
+	}
 	
 //	/**
 //	 * Set new air pressure state, and unlock/open the (inner/outer) door. 
@@ -819,16 +911,17 @@ public abstract class Airlock implements Serializable {
 	 * 
 	 * @return
 	 */
-	public Person getOperator() {
-		return getPersonByID(operatorID);
-	}
+//	public Person getOperator() {
+//		return getPersonByID(operatorID);
+//	}
 
-	/**
-	 * Clears the airlock operator.
-	 */
-	public void clearOperator() {
-		operatorID = Integer.valueOf(-1);
-	}
+//	/**
+//	 * Clears the person airlock operator.
+//	 */
+//	public void clearOperator(Integer id) {
+////		operatorID = Integer.valueOf(-1);
+//		transferOut(id);
+//	}
 
 	/**
 	 * Gets the remaining airlock cycle time.
@@ -955,6 +1048,16 @@ public abstract class Airlock implements Serializable {
 	 * @param time amount of time (in millisols)
 	 */
 	public void timePassing(double time) {
+		
+		if (activated) {
+			// Create a new set of candidates
+			checkOperatorPool();
+			
+			if (!operatorPool.isEmpty() 
+					&& (!operatorPool.contains(operatorID) || operatorID.equals(Integer.valueOf(-1))))
+				electAnOperator();
+		}
+		
 //
 //		if (activated) {
 //			

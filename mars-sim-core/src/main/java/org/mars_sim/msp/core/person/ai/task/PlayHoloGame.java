@@ -16,6 +16,7 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.LogConsolidated;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.utils.Task;
 import org.mars_sim.msp.core.person.ai.task.utils.TaskPhase;
@@ -62,7 +63,7 @@ public class PlayHoloGame extends Task implements Serializable {
 	 * @param person the person to perform the task
 	 */
 	public PlayHoloGame(Person person) {
-		super(NAME, person, false, false, STRESS_MODIFIER, true, 10D + RandomUtil.getRandomDouble(40D));
+		super(NAME, person, false, false, STRESS_MODIFIER, true, 10D + RandomUtil.getRandomDouble(10D));
 
 //        if (masterClock == null)
 //        	masterClock = sim.getMasterClock();
@@ -190,13 +191,23 @@ public class PlayHoloGame extends Task implements Serializable {
 		if (rand == 0)
 			rand = -1;
 
+		 // Probability affected by the person's stress and fatigue.
+        PhysicalCondition condition = person.getPhysicalCondition();
+        double fatigue = condition.getFatigue();
+        double hunger = condition.getHunger();
+        
+        if (hunger > 1000) {
+        	endTask();
+        	return 0;
+        }
+        
 		// Reduce stress but may increase or reduce a person's fatigue level
-		double newFatigue = person.getPhysicalCondition().getFatigue() - (2D * time * rand);
+		double newFatigue = fatigue - (2D * time * rand);
 		if (newFatigue < 0D) {
 			newFatigue = 0D;
 		}
 		
-		person.getPhysicalCondition().setFatigue(newFatigue);
+		condition.setFatigue(newFatigue);
 
 		return 0D;
 	}

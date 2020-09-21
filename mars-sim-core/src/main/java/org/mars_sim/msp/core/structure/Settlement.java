@@ -2270,6 +2270,14 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 		return result;
 	}
 
+	/**
+	 * Gets an airlock for an EVA egress
+	 * 
+	 * @param robot
+	 * @param xLocation
+	 * @param yLocation
+	 * @return
+	 */
 	public Airlock getClosestWalkableAvailableAirlock(Robot robot, double xLocation, double yLocation) {
 		Airlock result = null;
 		Building currentBuilding = BuildingManager.getBuilding(robot);
@@ -2290,26 +2298,70 @@ public class Settlement extends Structure implements Serializable, LifeSupportIn
 		return result;
 	}
 
+	
+	/**
+	 * Gets an airlock for an EVA egress, preferably an pressurized airlock
+	 * 
+	 * @param currentBuilding
+	 * @param xLocation
+	 * @param yLocation
+	 * @return
+	 */
 	public Airlock getAirlock(Building currentBuilding, double xLocation, double yLocation) {
 		Airlock result = null;
 
-		double leastDistance = Double.MAX_VALUE;
-//		BuildingManager manager = buildingManager;
+		List<Building> pressurizedBldgs = new ArrayList<>();
+		List<Building> depressurizedBldgs = new ArrayList<>();
+		List<Building> selectedPool = new ArrayList<>();
+		
 		Iterator<Building> i = buildingManager.getBuildings(FunctionType.EVA).iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
+			if (building.getEVA().getAirlock().isPressurized()
+					|| building.getEVA().getAirlock().isPressurizing())
+				pressurizedBldgs.add(building);
+			else if (building.getEVA().getAirlock().isDepressurized()
+					|| building.getEVA().getAirlock().isDepressurizing())
+				depressurizedBldgs.add(building);
+		}
+		
+		if (pressurizedBldgs.size() > 1) {
+			selectedPool = pressurizedBldgs;
+		}
+		
+		else if (pressurizedBldgs.size() == 1) {
+			return pressurizedBldgs.get(0).getEVA().getAirlock();
+		}
+		
+		else if (depressurizedBldgs.size() > 1) {
+			selectedPool = depressurizedBldgs;
+		}
+		
+		else if (depressurizedBldgs.size() == 1) {
+			return depressurizedBldgs.get(0).getEVA().getAirlock();
+		}
+		
+		else {
+			return null;
+		}
+		
+		double leastDistance = Double.MAX_VALUE;
 
+		Iterator<Building> ii = selectedPool.iterator();
+		while (i.hasNext()) {
+			Building building = ii.next();
 			if (buildingConnectorManager.hasValidPath(currentBuilding, building)) {
 
 				double distance = Point2D.distance(building.getXLocation(), building.getYLocation(), xLocation,
 						yLocation);
 				if (distance < leastDistance) {
-					// EVA eva = (EVA) building.getFunction(BuildingFunction.EVA);
+
 					result = building.getEVA().getAirlock();
 					leastDistance = distance;
 				}
 			}
 		}
+		
 		return result;
 	}
 

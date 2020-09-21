@@ -129,7 +129,7 @@ public class ConnectWithEarth extends Task implements Serializable {
 				act = " was browsing Earth internet in ";
 			
 			LogConsolidated.log(logger, Level.INFO, 30_000, sourceName, "[" + person.getLocale() + "] "
-					+ person + act + person.getImmediateLocation());
+					+ person + act + person.getImmediateLocation() + ".");
 			
 			// Initialize phase
 			addPhase(CONNECTING_EARTH);

@@ -481,14 +481,6 @@ public abstract class EVAOperation extends Task implements Serializable {
 	 */
 	public static boolean noEVAProblem(Person person) {
 		
-//		if (isGettingDark(person)) {
-//			LogConsolidated.log(logger, Level.FINE, 5000, sourceName,
-//					"[" + person.getLocationTag().getLocale() + "] " + person.getName() + " ended "
-//					+ person.getTaskDescription() + " : too dark to continue with the EVA outside at " 
-//					+ person.getCoordinates().getFormattedString());
-//			return false;
-//		}
-		
 		EVASuit suit = person.getSuit();//(EVASuit) person.getInventory().findUnitOfClass(EVASuit.class);
 		if (suit == null) {
 //			LogConsolidated.log(logger, Level.WARNING, 5000, sourceName, 
@@ -672,9 +664,10 @@ public abstract class EVAOperation extends Task implements Serializable {
 //		}
 
 		if (person.isInSettlement()) {
-			Settlement settlement = person.getSettlement();
-			result = settlement.getClosestWalkableAvailableAirlock(person, xLocation, yLocation);
-		} else if (person.isInVehicle()) {
+			result = person.getSettlement().getClosestWalkableAvailableAirlock(person, xLocation, yLocation);
+		} 
+		
+		else if (person.isInVehicle()) {
 			Vehicle vehicle = person.getVehicle();
 			if (vehicle instanceof Airlockable) {
 				result = ((Airlockable) vehicle).getAirlock();
@@ -699,9 +692,10 @@ public abstract class EVAOperation extends Task implements Serializable {
 //		}
 		
 		if (robot.isInSettlement()) {
-			Settlement settlement = robot.getSettlement();
-			result = settlement.getClosestWalkableAvailableAirlock(robot, xLocation, yLocation);
-		} else if (robot.isInVehicle()) {
+			result = robot.getSettlement().getClosestWalkableAvailableAirlock(robot, xLocation, yLocation);
+		} 
+		
+		else if (robot.isInVehicle()) {
 			Vehicle vehicle = robot.getVehicle();
 			if (vehicle instanceof Airlockable) {
 				result = ((Airlockable) vehicle).getAirlock();
@@ -722,6 +716,13 @@ public abstract class EVAOperation extends Task implements Serializable {
 		return getClosestWalkableAvailableAirlock(person, person.getXLocation(), person.getYLocation());
 	}
 
+	/**
+	 * Gets an available airlock to a given location that has a walkable path from
+	 * the robot's current location.
+	 * 
+	 * @param robot the robot.
+	 * @return airlock or null if none available
+	 */
 	public static Airlock getWalkableAvailableAirlock(Robot robot) {
 		return getClosestWalkableAvailableAirlock(robot, robot.getXLocation(), robot.getYLocation());
 	}
@@ -769,7 +770,7 @@ public abstract class EVAOperation extends Task implements Serializable {
 		
 		
 		Collection<HealthProblem> problems = p.getPhysicalCondition().getProblems();
-		Complaint complaint = p.getPhysicalCondition().getMostSerious();
+//		Complaint complaint = p.getPhysicalCondition().getMostSerious();
 		HealthProblem problem = null;
 		for (HealthProblem hp : problems) {
 			if (problem.equals(hp))

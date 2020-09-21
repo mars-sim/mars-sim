@@ -189,10 +189,9 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
 		// Check if there is work that can be done on the construction stage.
 		ConstructionStage stage = site.getCurrentConstructionStage();
 
-		// 2015-12-30 java.lang.NullPointerException on the following statement. why?
 		boolean workAvailable = false;
 
-		// 2016-06-08 Checking stage for NullPointerException
+		// Checking stage for NullPointerException
 		if (stage != null)
 			workAvailable = stage.getCompletableWorkTime() > stage.getCompletedWorkTime();
 

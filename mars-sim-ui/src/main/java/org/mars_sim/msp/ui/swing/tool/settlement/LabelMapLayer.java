@@ -69,7 +69,7 @@ implements SettlementMapLayer {
 	static final Color FEMALE_OUTLINE_COLOR = Color.MAGENTA;
 	static final Color FEMALE_SELECTED_OUTLINE_COLOR = FEMALE_OUTLINE_COLOR.darker();
 	
-	static final Color MALE_COLOR = new Color(51, 153, 255); // light blue
+	static final Color MALE_COLOR = new Color(154, 204, 255); // light blue
 	static final Color MALE_SELECTED_COLOR = MALE_COLOR.darker();
 	static final Color MALE_OUTLINE_COLOR = Color.cyan.darker(); // (210, 210, 210, 190).brighter();
 	static final Color MALE_SELECTED_OUTLINE_COLOR = MALE_OUTLINE_COLOR.darker();

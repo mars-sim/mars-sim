@@ -105,6 +105,10 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 //	private static final String WIND_FLAG = Msg.getString("img.wind_flag_storm"); //$NON-NLS-1$
 	private static final String FRIGID = Msg.getString("img.frigid"); //$NON-NLS-1$
 	private static final String HAZE = Msg.getString("img.haze"); //$NON-NLS-1$
+	private static final String TEMPERATURE = "Temperature: ";
+	private static final String WINDSPEED = "   Windspeed: ";
+	private static final String ZENITH_ANGLE = "   Zenith Angle: ";
+	private static final String OPTICAL_DEPTH = "   Optical Depth: ";
 	
 	private double temperatureCache;
 	private double opticalDepthCache;
@@ -112,11 +116,15 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	private double zenithAngleCache;
 	
 	private String iconCache;
-	
+	private String tString;
+	private String wsString;
+	private String zaString;
+	private String odString;
+	 
 	private GameMode mode;
 	
 	private JLabel emptyLabel;
-	private DisplaySingle bannerText;
+	private DisplaySingle bannerBar;
 	private JSlider zoomSlider;
 	private JPanel controlCenterPane, namePane, eastPane, labelPane, buttonPane, controlPane, settlementPanel;
 	
@@ -213,7 +221,7 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 		settlementPanel.add(settlementListBox);//, BorderLayout.CENTER);
 
        	namePane.add(settlementPanel, BorderLayout.CENTER);
-       	namePane.add(bannerText, BorderLayout.NORTH);
+       	namePane.add(bannerBar, BorderLayout.NORTH);
 
 	    mapPanel.add(namePane, BorderLayout.NORTH);
 
@@ -324,42 +332,73 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 
 	}
 
+	/**
+	 * Builds the text banner bar
+	 */
 	public void buildBanner() {
-		bannerText = new DisplaySingle();
+		bannerBar = new DisplaySingle();
 //		lcdText.setLcdInfoString("1 2 3 4 5");
 		// lcdText.setLcdColor(LcdColor.REDDARKRED_LCD);
 //		lcdText.setGlowColor(Color.ORANGE.darker());
-		bannerText.setLcdColor(LcdColor.REDDARKRED_LCD);
+		bannerBar.setLcdColor(LcdColor.REDDARKRED_LCD);
 		// lcdText.setBackground(Background.SATIN_GRAY);
-		bannerText.setDigitalFont(true);
+		bannerBar.setDigitalFont(true);
 //		bannerText.setSize(new Dimension(150, 30));
 //		bannerText.setMaximumSize(new Dimension(150, 30));
-		bannerText.setPreferredSize(new Dimension(150, 30));
-		bannerText.setVisible(true);
-		bannerText.setLcdNumericValues(false);
-		bannerText.setLcdValueFont(new Font("Serif", Font.ITALIC, 8));
-		bannerText.setLcdText("Sample text");
-		bannerText.setLcdTextScrolling(true);
+		bannerBar.setPreferredSize(new Dimension(150, 30));
+		bannerBar.setVisible(true);
+		bannerBar.setLcdNumericValues(false);
+		bannerBar.setLcdValueFont(new Font("Serif", Font.ITALIC, 8));
+		bannerBar.setLcdText("...");
+		bannerBar.setLcdTextScrolling(true);
 	}
 	
-	
+	/**
+	 * Put together the display string for the banner bar
+	 */
 	public void displayBanner() {
 		Settlement s = (Settlement) settlementListBox.getSelectedItem();
 		Coordinates c = new Coordinates(s.getCoordinates());
 		
-       	temperatureCache =  Math.round(getTemperature(c)*100.0)/100.0;			
-		String t = getTemperatureString(temperatureCache);
+		boolean result = false;
 		
-		windSpeedCache = Math.round(getWindSpeed(c)*100.0)/100.0;		
-		String ws = getWindSpeedString(windSpeedCache);
+//		String t = null;
+//		String ws = null;
+//		String za = null;
+//		String od = null;
 		
-		zenithAngleCache = getZenithAngle(c);
-        String za = getZenithAngleString(zenithAngleCache);
-		
-        opticalDepthCache =  Math.round(getOpticalDepth(c)*100.0)/100.0;
-        String od =  getOpticalDepthString(opticalDepthCache);
+       	double temperature =  Math.round(getTemperature(c)*100.0)/100.0;      	
+       	if (temperatureCache != temperature) {
+       		temperatureCache = temperature;
+    		tString = getTemperatureString(temperature);
+       		result = true;
+       	}
+	
+		double windSpeed = Math.round(getWindSpeed(c)*100.0)/100.0;				
+       	if (windSpeedCache != windSpeed) {
+       		windSpeedCache = windSpeed;
+       		wsString = getWindSpeedString(windSpeed);
+       		result = true;
+       	}
+       	
+		double zenithAngle = getZenithAngle(c);		
+       	if (zenithAngleCache != zenithAngle) {
+       		zenithAngleCache = zenithAngle;
+       		zaString = getZenithAngleString(zenithAngle);
+       		result = true;
+       	}
+	
+        double opticalDepth =  Math.round(getOpticalDepth(c)*100.0)/100.0;
+       	if (opticalDepthCache != opticalDepth) {
+       		opticalDepthCache = opticalDepth;
+       		odString =  getOpticalDepthString(opticalDepth);
+       		result = true;
+       	}
         
-		bannerText.setLcdText("Temperature: " + t + "   Windspeed: " + ws + "   Zenith Angle: " + za + "   Optical Depth: " + od);
+       	if (result) {
+//	        String bannerString = TEMPERATURE + tString + WINDSPEED + wsString + ZENITH_ANGLE + zaString + OPTICAL_DEPTH + odString;
+       		bannerBar.setLcdText(TEMPERATURE + tString + WINDSPEED + wsString + ZENITH_ANGLE + zaString + OPTICAL_DEPTH + odString);
+       	}
 	}
 	
     public double getTemperature(Coordinates c) {
@@ -464,9 +503,11 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
     				iconString = SNOWFLAKE;
     		}
     	}
+    	
     	else if (temperatureCache >= 26)
     		iconString = BALMY;
-    	else { //if (temperatureCache >= 0) {
+    	
+    	else {
     		if (windSpeedCache > 10D) {
     			iconString = SUN_STORM;
     		}
@@ -480,7 +521,7 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
     			iconString = SUNNY;
     	}
 
-    	if (!iconString.equals(iconCache)) {
+    	if (!iconCache.equals(iconString)) {
     		iconCache = iconString;
        		weatherButton.setIcon(ImageLoader.getNewIcon(iconString));
     	}	
@@ -1344,18 +1385,20 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 
 	@Override
 	public void uiPulse(double time) {
-		if (marsClock.isStable()) {
-			displayBanner();
-			updateWeather();
+		if (isVisible() || isShowing()) {
+			if (marsClock.isStable() && bannerBar != null && weatherButton != null) {
+				displayBanner();
+				updateWeather();
+			}
 		}
 	}
 
 	@Override
 	public void pauseChange(boolean isPaused, boolean showPane) {
 		if (isPaused) {		
-			bannerText.setLcdTextScrolling(false);
+			bannerBar.setLcdTextScrolling(false);
 		} else {		
-			bannerText.setLcdTextScrolling(true);
+			bannerBar.setLcdTextScrolling(true);
 		}
 	}
 }
