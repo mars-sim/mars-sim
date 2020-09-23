@@ -15,6 +15,8 @@ import java.util.logging.Logger;
 
 import javax.swing.ImageIcon;
 
+import org.mars_sim.msp.ui.swing.tool.settlement.SettlementTransparentPanel;
+
 /**
  * This is a static class that acts as a helper to load Images for use in the
  * UI. It is based on loading the resource form the class path via the
@@ -73,21 +75,50 @@ public class ImageLoader {
 	}
 	
 	public static ImageIcon getNewIcon(String imagename) {
-		String ext = "png";
-		String fullImageName = imagename.endsWith(ext) ? imagename : imagename + "." + ext;
-		ImageIcon found = iconCache.get(fullImageName);
-		if (found == null) {
-			String fileName = fullImageName.startsWith("/") ? fullImageName : "/" + fullImageName;
-
-			/* [landrus, 26.11.09]: don't use the system classloader in a webstart env. */
-			URL resource = ImageLoader.class.getResource(fileName);// ClassLoader.getSystemResource(fileName);
-			if (resource == null) {
-    			logger.severe("'" + fileName + "' cannot be found");
-    		}
-			
-			found = new ImageIcon(resource);
-			iconCache.put(fullImageName, found);
+		ImageIcon found = null;
+		
+		if (imagename == null || imagename.equals("")) {
+			return found;
 		}
+		
+//		else if (imagename.contains(".svg")) {
+//    		
+//        	if (imagename.equals(MainWindow.SANDSTORM_SVG)) {
+//        		found = SettlementTransparentPanel.sandstorm;
+//        	}
+//        	else if (imagename.equals(MainWindow.DUST_DEVIL_SVG)) {
+//        		found = SettlementTransparentPanel.dustDevil;
+//        	}
+//        	else if (imagename.equals(MainWindow.SNOWFLAKE_SVG)) {
+//        		found = SettlementTransparentPanel.snowflake;
+//        	}
+//        	else if (imagename.equals(MainWindow.COLD_WIND_SVG)) {
+//        		found = SettlementTransparentPanel.wind;
+//        	}
+//        	else if (imagename.equals("")) {
+//        		found = SettlementTransparentPanel.emptyIcon;
+//        	}
+//    	}
+//    	
+//    	else {
+		
+			String ext = "png";
+			String fullImageName = imagename.endsWith(ext) ? imagename : imagename + "." + ext;
+			found = iconCache.get(fullImageName);
+			if (found == null) {
+				String fileName = fullImageName.startsWith("/") ? fullImageName : "/" + fullImageName;
+	
+				/* [landrus, 26.11.09]: don't use the system classloader in a webstart env. */
+				URL resource = ImageLoader.class.getResource(fileName);// ClassLoader.getSystemResource(fileName);
+				if (resource == null) {
+	    			logger.severe("'" + fileName + "' cannot be found");
+	    		}
+				
+				found = new ImageIcon(resource);
+		    	
+				iconCache.put(fullImageName, found);
+			}
+//    	}
 
 		return found;
 	}

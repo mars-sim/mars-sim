@@ -256,7 +256,7 @@ public class BuildingPanelEVA extends BuildingFunctionPanel implements MouseList
 		}	
 		
 		// Update operatorLabel
-		if (operatorCache.equals(eva.getOperatorName())) {
+		if (!operatorCache.equals(eva.getOperatorName())) {
 			operatorCache = eva.getOperatorName();
 			operatorLabel.setText(Msg.getString("BuildingPanelEVA.operator", operatorCache));
 		}	
@@ -268,7 +268,7 @@ public class BuildingPanelEVA extends BuildingFunctionPanel implements MouseList
 		}
 		
 		// Update cycleTimeLabel
-		if (cycleTimeCache != eva.getAirlock().getRemainingCycleTime()) {
+		if (cycleTimeCache != Math.round(eva.getAirlock().getRemainingCycleTime()*10.0)/10.0) {
 			cycleTimeCache = Math.round(eva.getAirlock().getRemainingCycleTime()*10.0)/10.0;
 			cycleTimeLabel.setText(Msg.getString("BuildingPanelEVA.airlock.cycleTime", cycleTimeCache));
 		}
@@ -317,7 +317,7 @@ public class BuildingPanelEVA extends BuildingFunctionPanel implements MouseList
 			this.airlock = airlock;
 						
 			set = airlock.getOccupants();
-			list = new ArrayList<>(5);
+			list = new ArrayList<>(4);
 			
 			for (int i: set) {
 				list.add(unitManager.getPersonByID(i));

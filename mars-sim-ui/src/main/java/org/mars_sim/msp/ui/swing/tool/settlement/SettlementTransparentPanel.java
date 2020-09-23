@@ -17,6 +17,7 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GridLayout;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -34,6 +35,7 @@ import java.util.logging.Logger;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
@@ -75,10 +77,12 @@ import org.mars_sim.msp.ui.steelseries.gauges.DisplaySingle;
 import org.mars_sim.msp.ui.steelseries.tools.LcdColor;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.MainWindow;
 
 import com.alee.extended.WebComponent;
 import com.alee.laf.button.WebButton;
 import com.alee.laf.combobox.WebComboBox;
+import com.alee.laf.panel.WebPanel;
 import com.alee.managers.icon.IconManager;
 import com.alee.managers.icon.LazyIcon;
 import com.alee.managers.style.StyleId;
@@ -94,17 +98,31 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	
 	/** Zoom change. */
 	public static final double ZOOM_CHANGE = 0.25;
-	private static final String DUSTY_SKY = Msg.getString("img.dust128"); //$NON-NLS-1$
-	private static final String SUNNY = Msg.getString("img.sunny128"); //$NON-NLS-1$
-	private static final String BALMY = Msg.getString("img.hot128"); //$NON-NLS-1$
-//	private static final String LIGHTNING = Msg.getString("img.lightning128"); //$NON-NLS-1$
-
-	private static final String SNOW_BLOWING = Msg.getString("img.snow_blowing"); //$NON-NLS-1$
-	private static final String SUN_STORM = Msg.getString("img.sun_storm"); //$NON-NLS-1$
-	private static final String SNOWFLAKE = Msg.getString("img.thermometer_snowflake"); //$NON-NLS-1$
+//	private static final String DUSTY_SKY = Msg.getString("img.dust128"); //$NON-NLS-1$
+//	private static final String SUNNY = Msg.getString("img.sunny128"); //$NON-NLS-1$
+//	private static final String BALMY = Msg.getString("img.hot128"); //$NON-NLS-1$
+////	private static final String LIGHTNING = Msg.getString("img.lightning128"); //$NON-NLS-1$
+//	private static final String SNOW_BLOWING = Msg.getString("img.snow_blowing"); //$NON-NLS-1$
+//	private static final String SUN_STORM = Msg.getString("img.sun_storm"); //$NON-NLS-1$
+//	private static final String T_SNOWFLAKE = Msg.getString("img.thermometer_snowflake"); //$NON-NLS-1$
 //	private static final String WIND_FLAG = Msg.getString("img.wind_flag_storm"); //$NON-NLS-1$
-	private static final String FRIGID = Msg.getString("img.frigid"); //$NON-NLS-1$
-	private static final String HAZE = Msg.getString("img.haze"); //$NON-NLS-1$
+//	private static final String FRIGID = Msg.getString("img.frigid"); //$NON-NLS-1$
+//	private static final String HAZE = Msg.getString("img.haze"); //$NON-NLS-1$
+	
+	public static final String SANDSTORM_SVG = MainWindow.SANDSTORM_SVG;
+	public static final String DUST_DEVIL_SVG = MainWindow.DUST_DEVIL_SVG;
+	public static final String SAND_SVG = MainWindow.SAND_SVG;
+	public static final String HAZY_SVG = MainWindow.HAZY_SVG;
+	
+	public static final String COLD_WIND_SVG = MainWindow.COLD_WIND_SVG;
+	public static final String FROST_WIND_SVG = MainWindow.FROST_WIND_SVG;
+		
+	public static final String SUN_SVG = MainWindow.SUN_SVG;
+	public static final String DESERT_SUN_SVG = MainWindow.DESERT_SUN_SVG;
+	public static final String CLOUDY_SVG = MainWindow.CLOUDY_SVG;
+	public static final String SNOWFLAKE_SVG = MainWindow.SNOWFLAKE_SVG;
+	public static final String ICE_SVG = MainWindow.ICE_SVG;
+
 	private static final String TEMPERATURE = "Temperature: ";
 	private static final String WINDSPEED = "   Windspeed: ";
 	private static final String ZENITH_ANGLE = "   Zenith Angle: ";
@@ -115,7 +133,7 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	private double windSpeedCache;
 	private double zenithAngleCache;
 	
-	private String iconCache;
+	private String[] iconCache = new String[]{"", "", "", ""};
 	private String tString;
 	private String wsString;
 	private String zaString;
@@ -126,11 +144,34 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	private JLabel emptyLabel;
 	private DisplaySingle bannerBar;
 	private JSlider zoomSlider;
-	private JPanel controlCenterPane, namePane, eastPane, labelPane, buttonPane, controlPane, settlementPanel;
+	private JPanel controlCenterPane, eastPane, labelPane, buttonPane, controlPane;
+	
+	public static ImageIcon sandstorm;
+	public static ImageIcon dustDevil;
+
+	public static ImageIcon cold_wind;
+	public static ImageIcon frost_wind;
+	
+	public static ImageIcon sun;
+	public static ImageIcon desert_sun;
+	public static ImageIcon cloudy;
+	public static ImageIcon snowflake;
+	public static ImageIcon ice;
+	
+	public static ImageIcon hazy;
+	public static ImageIcon sand;
+	
+	
+	public static ImageIcon emptyIcon = new ImageIcon();
 	
 	private WebButton renameBtn;
 	private WebButton infoButton;
-	private WebButton weatherButton;
+	private WebButton weatherButton00;
+	private WebButton weatherButton01;
+	private WebButton weatherButton10;
+	private WebButton weatherButton11;
+	
+	private WebButton[] weatherButtons = new WebButton[4];
 	
 	private JPopupMenu labelsMenu;
 	/** Lists all settlements. */
@@ -201,7 +242,7 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	    		return new Dimension(50, 100);
 	    	};
 	    };
-
+	    
         buildInfoP();
         buildrenameBtn();
         buildLabelPane();
@@ -211,21 +252,43 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
         buildBanner();
         buildWeatherPanel();
         
-		namePane = new JPanel(new BorderLayout(0, 0));//FlowLayout(FlowLayout.CENTER, 2,2));
-		namePane.setBackground(new Color(0,0,0,128));
-        namePane.setOpaque(false);
-
-		settlementPanel = new JPanel();//new BorderLayout());
+	    WebPanel topPane = new WebPanel(new BorderLayout(20, 20));
+	    topPane.setBackground(new Color(0,0,0,128));
+	    topPane.setOpaque(false);
+	    	
+	    JPanel settlementPanel = new JPanel();
+//	    settlementPanel.setPreferredSize(new Dimension(getNameLength() * 12, 25));
 		settlementPanel.setBackground(new Color(0,0,0,128));
 		settlementPanel.setOpaque(false);
-		settlementPanel.add(settlementListBox);//, BorderLayout.CENTER);
+	    
+		settlementPanel.add(settlementListBox, BorderLayout.NORTH);
+		
+	    mapPanel.add(topPane, BorderLayout.NORTH);
 
-       	namePane.add(settlementPanel, BorderLayout.CENTER);
-       	namePane.add(bannerBar, BorderLayout.NORTH);
-
-	    mapPanel.add(namePane, BorderLayout.NORTH);
-
-	    mapPanel.add(weatherButton, BorderLayout.WEST);
+	    WebPanel weatherPane = new WebPanel(new GridLayout(2, 2, 15, 15));
+	    weatherPane.setBackground(new Color(0,0,0,128));
+	    weatherPane.setOpaque(false);
+		
+	    weatherPane.add(weatherButton00);
+	    weatherPane.add(weatherButton01);
+	    weatherPane.add(weatherButton10);
+	    weatherPane.add(weatherButton11);
+		
+	    JPanel centerPanel = new JPanel(new BorderLayout(10, 10));
+	    centerPanel.setBackground(new Color(0,0,0,128));
+	    centerPanel.setOpaque(false);
+	
+	    JPanel panel = new JPanel(new BorderLayout(10, 10));
+	    panel.setBackground(new Color(0,0,0,128));
+	    panel.setOpaque(false);
+	    panel.add(weatherPane, BorderLayout.NORTH);
+	    panel.add(new JLabel("    "), BorderLayout.WEST);
+	    
+		centerPanel.add(panel, BorderLayout.WEST);
+		centerPanel.add(settlementPanel, BorderLayout.NORTH);
+		
+		topPane.add(centerPanel, BorderLayout.CENTER);
+		topPane.add(bannerBar, BorderLayout.NORTH);
     	
 	    controlPane = new JPanel(new BorderLayout());//GridLayout(2,1,10,2));
 	    controlPane.setBackground(new Color(0,0,0,128));//,0));
@@ -256,7 +319,7 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
         eastPane.add(emptyLabel, BorderLayout.SOUTH);
         eastPane.add(controlPane, BorderLayout.CENTER);
 
-        mapPanel.add(eastPane, BorderLayout.EAST);
+        centerPanel.add(eastPane, BorderLayout.EAST);
         // Make panel drag-able
 //  	ComponentMover cmZoom = new ComponentMover(zoomPane);
 		//cmZoom.registerComponent(rightPane);
@@ -354,19 +417,21 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	}
 	
 	/**
-	 * Put together the display string for the banner bar
+	 * Updates the weather parameters
+	 * 
+	 * @return
 	 */
-	public void displayBanner() {
-		Settlement s = (Settlement) settlementListBox.getSelectedItem();
-		Coordinates c = new Coordinates(s.getCoordinates());
-		
+	public boolean updateWeather() {
 		boolean result = false;
+		
+//		Settlement s = (Settlement) settlementListBox.getSelectedItem();
+		Coordinates c = new Coordinates(((Settlement) settlementListBox.getSelectedItem()).getCoordinates());
 		
 //		String t = null;
 //		String ws = null;
 //		String za = null;
 //		String od = null;
-		
+			
        	double temperature =  Math.round(getTemperature(c)*100.0)/100.0;      	
        	if (temperatureCache != temperature) {
        		temperatureCache = temperature;
@@ -394,8 +459,15 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
        		odString =  getOpticalDepthString(opticalDepth);
        		result = true;
        	}
-        
-       	if (result) {
+       	
+       	return result;
+	}
+	
+	/**
+	 * Put together the display string for the banner bar
+	 */
+	public void displayBanner() {
+       	if (updateWeather()) {
 //	        String bannerString = TEMPERATURE + tString + WINDSPEED + wsString + ZENITH_ANGLE + zaString + OPTICAL_DEPTH + odString;
        		bannerBar.setLcdText(TEMPERATURE + tString + WINDSPEED + wsString + ZENITH_ANGLE + zaString + OPTICAL_DEPTH + odString);
        	}
@@ -482,103 +554,183 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	private String getLongitudeString(Coordinates c) {
 		return c.getFormattedLongitudeString();
 	}
-	
-    public void updateWeather() {
-//		Settlement s = (Settlement) settlementListBox.getSelectedItem();
-//		Coordinates c = new Coordinates(s.getCoordinates());
-//
-//       	temperatureCache =  Math.round(getTemperature(c)*100.0)/100.0;
-//       	windSpeedCache = Math.round(getWindSpeed(c)*100.0)/100.0;
-//       	opticalDepthCache =  Math.round(getOpticalDepth(c)*100.0)/100.0;
-       	
-       	String iconString = null;
-       	
-    	if (temperatureCache <= 0) {
-    		if (temperatureCache < -40)
-    			iconString = FRIGID;
-    		else {
-    			if (windSpeedCache > 6D)
-    				iconString = SNOW_BLOWING;
-    			else
-    				iconString = SNOWFLAKE;
-    		}
-    	}
-    	
-    	else if (temperatureCache >= 26)
-    		iconString = BALMY;
-    	
-    	else {
-    		if (windSpeedCache > 10D) {
-    			iconString = SUN_STORM;
-    		}
-    		else if (opticalDepthCache > 1D) {
-		    	if (opticalDepthCache > 3D)
-		    		iconString = DUSTY_SKY;
-		    	else
-		    		iconString = HAZE;
-	    	}
-    		else
-    			iconString = SUNNY;
-    	}
-
-    	if (!iconCache.equals(iconString)) {
-    		iconCache = iconString;
-       		weatherButton.setIcon(ImageLoader.getNewIcon(iconString));
-    	}	
-    }
     
-	public void buildWeatherPanel() {
-//		WebPanel imgPanel = new WebPanel(new FlowLayout());
-//        weatherLabel = new WebLabel();
-//    	imgPanel.add(weatherLabel, WebLabel.CENTER);
-		
-//	 	ImageIcon icon = IconManager.getIcon ("info");//new LazyIcon("info").getIcon();
-				
-		Settlement s = (Settlement) settlementListBox.getSelectedItem();
-		Coordinates c = new Coordinates(s.getCoordinates());
+    
+    /**
+     * Builds the weather panel
+     */
+	public void buildWeatherPanel() { 	
+        sandstorm = new LazyIcon("sandstorm").getIcon();
+        dustDevil = new LazyIcon("dustDevil").getIcon();
+        
+        cold_wind = new LazyIcon("cold_wind").getIcon();
+        frost_wind = new LazyIcon("frost_wind").getIcon();
 
-       	temperatureCache =  Math.round(getTemperature(c)*100.0)/100.0;
-       	windSpeedCache = Math.round(getWindSpeed(c)*100.0)/100.0;
-       	opticalDepthCache =  Math.round(getOpticalDepth(c)*100.0)/100.0;
-       	
-       	String iconString = null;
-       	
-    	if (temperatureCache <= 0) {
-    		if (temperatureCache < -40)
-    			iconString = FRIGID;
-    		else {
-    			if (windSpeedCache > 6D)
-    				iconString = SNOW_BLOWING;
-    			else
-    				iconString = SNOWFLAKE;
-    		}
-    	}
-    	else if (temperatureCache >= 26)
-    		iconString = BALMY;
-    	else { //if (temperatureCache >= 0) {
-    		if (windSpeedCache > 10D) {
-    			iconString = SUN_STORM;
-    		}
-    		else if (opticalDepthCache > 1D) {
-		    	if (opticalDepthCache > 3D)
-		    		iconString = DUSTY_SKY;
-		    	else
-		    		iconString = HAZE;
-	    	}
-    		else
-    			iconString = SUNNY;
-    	}
-
-    	if (!iconString.equals(iconCache)) {
-    		iconCache = iconString;
-        	weatherButton = new WebButton(StyleId.buttonUndecorated, iconString);
-        	weatherButton.setPreferredSize(new Dimension(128, 128));
-       		weatherButton.setIcon(ImageLoader.getNewIcon(iconString));
-    	}	
+        sun = new LazyIcon("sun").getIcon();
+        desert_sun = new LazyIcon("desert_sun").getIcon();
+        cloudy = new LazyIcon("cloudy").getIcon();
+        snowflake = new LazyIcon("snowflake").getIcon();
+        ice = new LazyIcon("ice").getIcon();
+               
+        hazy = new LazyIcon("hazy").getIcon();
+        sand = new LazyIcon("sand").getIcon();	
+    	
+        int size = 72;
+        
+    	weatherButton00 = new WebButton(StyleId.buttonUndecorated);
+    	weatherButton00.setPreferredSize(new Dimension(size, size));
+    	weatherButton01 = new WebButton(StyleId.buttonUndecorated);
+    	weatherButton01.setPreferredSize(new Dimension(size, size));
+    	weatherButton10 = new WebButton(StyleId.buttonUndecorated);
+    	weatherButton10.setPreferredSize(new Dimension(size, size));
+    	weatherButton11 = new WebButton(StyleId.buttonUndecorated);
+    	weatherButton11.setPreferredSize(new Dimension(size, size));
+    	
+	    weatherButtons[0] = weatherButton00;
+	    weatherButtons[1] = weatherButton01;
+	    weatherButtons[2] = weatherButton10;
+	    weatherButtons[3] = weatherButton11;
+    	
+        updateIcon();
 	}
 	
+	/**
+	 * Update the weather icon
+	 */
+	public void updateIcon() {
+       	String[] s = determineIcon();
+
+       	for (int i=0; i<4; i++) {
+       		String sIcon = s[i];
+	    	if (!iconCache[i].equals(sIcon)) {
+	    		iconCache[i] = sIcon;
+
+	    		Icon icon = null;
+	    		
+	        	if (sIcon.equals(SANDSTORM_SVG)) {
+	        		icon = sandstorm;
+	        	}
+	        	else if (sIcon.equals(DUST_DEVIL_SVG)) {
+	        		icon = dustDevil;
+	        	}
+	        	
+	        	else if (sIcon.equals(SAND_SVG)) {
+	        		icon = sand;
+	        	}
+	        	else if (sIcon.equals(HAZY_SVG)) {
+	        		icon = hazy;
+	        	}
+	        	
+	        	else if (sIcon.equals(COLD_WIND_SVG)) {
+	        		icon = cold_wind;
+	        	}
+	        	if (sIcon.equals(FROST_WIND_SVG)) {
+	        		icon = frost_wind;
+	        	}
+	        	
+	        	else if (sIcon.equals(SUN_SVG)) {
+	        		icon = sun;
+	        	}
+	        	else if (sIcon.equals(DESERT_SUN_SVG)) {
+	        		icon = desert_sun;
+	        	}
+	        	else if (sIcon.equals(CLOUDY_SVG)) {
+	        		icon = cloudy;
+	        	}
+            	else if (sIcon.equals(SNOWFLAKE_SVG)) {
+	        		icon = snowflake;
+	        	}
+	        	else if (sIcon.equals(ICE_SVG)) {
+	        		icon = ice;
+		        		
+	        	}
+	        	else if (sIcon.equals("")) {
+	        		icon = emptyIcon;
+	        	}
+	        	
+	    		weatherButtons[i].setIcon(icon);
+	    	}	
+       	}
+	}
 	
-	
+    /**
+     * Determines which the weather icon to be shown
+     * 
+     * @return
+     */
+    public String[] determineIcon() {
+     	
+       	String icon00 = "";
+       	String icon01 = "";
+       	String icon10 = "";
+       	String icon11 = "";
+       	
+    	if (temperatureCache < -40) {
+    		icon00 = ICE_SVG;
+    	}
+    	
+    	else if (temperatureCache < 0) {
+			icon00 = SNOWFLAKE_SVG;
+    	}	
+
+    	else if (temperatureCache < 10) {
+			icon00 = CLOUDY_SVG;
+    	}	
+    	
+    	else if (temperatureCache < 22)
+    		icon00 = DESERT_SUN_SVG;
+    	
+    	else
+    		icon00 = SUN_SVG;
+
+		///////////////////////////////////////////////
+    	
+		if (windSpeedCache > 30D) {
+			
+			if (opticalDepthCache > 0.75)
+				icon01 = SANDSTORM_SVG;	
+			else if (temperatureCache < 0)
+				icon01 = FROST_WIND_SVG;
+			else
+				icon01 = COLD_WIND_SVG;
+		}
+		
+		else if (windSpeedCache > 20D) {
+			
+			if (opticalDepthCache > 0.75)
+				icon01 = DUST_DEVIL_SVG;	
+			else if (temperatureCache < 0)
+				icon01 = FROST_WIND_SVG;
+			else
+				icon01 = COLD_WIND_SVG;
+		}
+
+		else if (windSpeedCache > 10D) {
+
+		   	if (temperatureCache < 0)
+				icon01 = FROST_WIND_SVG;
+			else
+				icon01 = COLD_WIND_SVG;
+		}
+		
+		else
+			icon01 = "";
+
+		///////////////////////////////////////////////
+		
+		if (opticalDepthCache > 0.8)
+			icon10 = SAND_SVG;
+		
+    	else if (opticalDepthCache > 0.4) {
+    		icon10 = HAZY_SVG;
+    	}
+		
+		else
+			icon10 = "";
+				
+    	return new String[] {icon00, icon01, icon10, icon11};
+    }
+    
 //	/**
 //	 * Sets weather image.
 //	 */
@@ -1386,9 +1538,9 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 	@Override
 	public void uiPulse(double time) {
 		if (isVisible() || isShowing()) {
-			if (marsClock.isStable() && bannerBar != null && weatherButton != null) {
+			if (marsClock.isStable() && bannerBar != null && weatherButtons[0] != null) {
 				displayBanner();
-				updateWeather();
+				updateIcon();
 			}
 		}
 	}

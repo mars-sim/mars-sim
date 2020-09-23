@@ -23,9 +23,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -104,6 +101,22 @@ extends JComponent {
 	public static final String RIGHT_SVG = "/svg/icons/right_rotate.svg";
 	public static final String CENTER_SVG = "/svg/icons/center.svg";
 	public static final String STACK_SVG = "/svg/icons/stack.svg";
+	
+	public static final String SAND_SVG = Msg.getString("img.svg.sand");//$NON-NLS-1$
+	public static final String HAZY_SVG = Msg.getString("img.svg.hazy");//$NON-NLS-1$
+	
+	public static final String SANDSTORM_SVG = Msg.getString("img.svg.sandstorm"); //$NON-NLS-1$
+	public static final String DUST_DEVIL_SVG = Msg.getString("img.svg.dust_devil");//$NON-NLS-1$
+
+	public static final String COLD_WIND_SVG = Msg.getString("img.svg.cold_wind");//$NON-NLS-1$
+	public static final String FROST_WIND_SVG = Msg.getString("img.svg.frost_wind");//$NON-NLS-1$
+
+	public static final String SUN_SVG = Msg.getString("img.svg.sun"); //$NON-NLS-1$
+	public static final String DESERT_SUN_SVG = Msg.getString("img.svg.desert_sun");//$NON-NLS-1$
+	public static final String CLOUDY_SVG = Msg.getString("img.svg.cloudy");//$NON-NLS-1$
+	public static final String SNOWFLAKE_SVG = Msg.getString("img.svg.snowflake");//$NON-NLS-1$
+	public static final String ICE_SVG = Msg.getString("img.svg.ice");//$NON-NLS-1$
+
 	
 	public static final String OS = System.getProperty("os.name").toLowerCase(); // e.g. 'linux', 'mac os x'
 	private static final String SOL = "   Sol ";
@@ -286,6 +299,11 @@ extends JComponent {
 		int size = 24;
 		
 		iconSet.addIcon(new SvgIconSource (
+		        "lander",
+		        new ClassResource(MainWindow.class, LANDER_SVG),
+		        new Dimension(16, 16)));
+		
+		iconSet.addIcon(new SvgIconSource (
 		        "info",
 		        new ClassResource(MainWindow.class, INFO_SVG),
 		        new Dimension(size, size)));
@@ -299,11 +317,6 @@ extends JComponent {
 		
 //		String s2 = CrewEditor.class.getResource(LANDER_SVG).getPath();		
 //		File f2a = new File(LANDER_SVG);
-	
-		iconSet.addIcon(new SvgIconSource (
-		        "lander",
-		        new ClassResource(MainWindow.class, LANDER_SVG),
-		        new Dimension(16, 16)));
 		
 		iconSet.addIcon(new SvgIconSource (
 		        "left",
@@ -325,39 +338,106 @@ extends JComponent {
 		        new ClassResource(MainWindow.class, STACK_SVG),
 		        new Dimension(size, size)));
 
+		/////////////////////////////////////////////////////////
+		
+		int weatherSize = 72;
+		
+		iconSet.addIcon(new SvgIconSource (
+		        "sandstorm",
+		        new ClassResource(MainWindow.class, SANDSTORM_SVG),
+		        new Dimension(weatherSize, weatherSize)));
+		
+		iconSet.addIcon(new SvgIconSource (
+		        "dustDevil",
+		        new ClassResource(MainWindow.class, DUST_DEVIL_SVG),
+		        new Dimension(weatherSize, weatherSize)));
+		
+		////////////////////
+		
+
+		iconSet.addIcon(new SvgIconSource (
+		        "frost_wind",
+		        new ClassResource(MainWindow.class, FROST_WIND_SVG),
+		        new Dimension(weatherSize, weatherSize)));
+		
+		iconSet.addIcon(new SvgIconSource (
+		        "cold_wind",
+		        new ClassResource(MainWindow.class, COLD_WIND_SVG),
+		        new Dimension(weatherSize, weatherSize)));
+		
+		
+		////////////////////
+		
+		iconSet.addIcon(new SvgIconSource (
+		        "sun",
+		        new ClassResource(MainWindow.class, SUN_SVG),
+		        new Dimension(weatherSize, weatherSize)));
+
+		iconSet.addIcon(new SvgIconSource (
+		        "desert_sun",
+		        new ClassResource(MainWindow.class, DESERT_SUN_SVG),
+		        new Dimension(weatherSize, weatherSize)));
+		
+		iconSet.addIcon(new SvgIconSource (
+		        "cloudy",
+		        new ClassResource(MainWindow.class, CLOUDY_SVG),
+		        new Dimension(weatherSize, weatherSize)));
+		
+		iconSet.addIcon(new SvgIconSource (
+		        "snowflake",
+		        new ClassResource(MainWindow.class, SNOWFLAKE_SVG),
+		        new Dimension(weatherSize, weatherSize)));
+		
+		iconSet.addIcon(new SvgIconSource (
+		        "ice",
+		        new ClassResource(MainWindow.class, ICE_SVG),
+		        new Dimension(weatherSize, weatherSize)));
+		
+		////////////////////
+		
+		iconSet.addIcon(new SvgIconSource (
+		        "sand",
+		        new ClassResource(MainWindow.class, SAND_SVG),
+		        new Dimension(weatherSize, weatherSize)));
+		
+		iconSet.addIcon(new SvgIconSource (
+		        "hazy",
+		        new ClassResource(MainWindow.class, HAZY_SVG),
+		        new Dimension(weatherSize, weatherSize)));
+
+		
+		// Add the icon set to the icon manager
 		IconManager.addIconSet(iconSet);
-		
-//		Usage e.g. : final ImageIcon icon = new LazyIcon("info").getIcon();
-		
+			
 		landerIcon = new LazyIcon("lander").getIcon(); 
 	}
 	
  
-	/**
-	 * Converts InputStream to File
-	 * 
-	 * @param inputStream
-	 * @param file
-	 * @throws IOException
-	 */
-    private static File copyInputStreamToFile(InputStream inputStream, File file)
-		throws IOException {
-
-        try (FileOutputStream outputStream = new FileOutputStream(file)) {
-
-            int read;
-            byte[] bytes = new byte[1024];
-
-            while ((read = inputStream.read(bytes)) != -1) {
-                outputStream.write(bytes, 0, read);
-            }
-
-			// commons-io
-            //IOUtils.copy(inputStream, outputStream);
-        }
-        
-        return file;
-    }
+//	/**
+//	 * Converts InputStream to File
+//	 * 
+//	 * @param inputStream
+//	 * @param file
+//	 * @throws IOException
+//	 */
+//    private static File copyInputStreamToFile(InputStream inputStream, File file)
+//		throws IOException {
+//
+//        try (FileOutputStream outputStream = new FileOutputStream(file)) {
+//
+//            int read;
+//            byte[] bytes = new byte[1024];
+//
+//            while ((read = inputStream.read(bytes)) != -1) {
+//                outputStream.write(bytes, 0, read);
+//            }
+//
+//			// commons-io
+//            //IOUtils.copy(inputStream, outputStream);
+//        }
+//        
+//        return file;
+//    }
 
 	/**
 	 * Returns an image from an icon
