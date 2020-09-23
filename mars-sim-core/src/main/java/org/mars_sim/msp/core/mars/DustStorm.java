@@ -71,9 +71,8 @@ public class DustStorm implements Serializable {
 	// private int tall;
 	// In case of dust devil, for simplicity, height = size
 	// Martian dust devil roughly 12 miles (20 kilometers) high was captured winding
-	// its way along
-	// the Amazonis Planitia region of Northern Mars on March 14, 2012 by the High
-	// Resolution Imaging Science Experiment (HiRISE)
+	// its way along the Amazonis Planitia region of Northern Mars on March 14, 2012
+	// by the High Resolution Imaging Science Experiment (HiRISE)
 	// camera on NASA's Mars Reconnaissance Orbiter.
 
 	private DustStormType type;

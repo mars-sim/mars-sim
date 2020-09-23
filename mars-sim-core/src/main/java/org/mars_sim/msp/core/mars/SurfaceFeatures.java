@@ -269,7 +269,7 @@ public class SurfaceFeatures implements Serializable {
 		int trend = 0;
 		
 		if (solarIrradianceCaches.containsKey(location)) {
-			List<Double> sequence = solarIrradianceCaches.get(location);
+			List<Double> sequence = new ArrayList<>(solarIrradianceCaches.get(location));
 //			double avg = sequence.get(0); 
 			int size = sequence.size();
 //			for (int i=0; i < size - 1; ++i) {
@@ -284,7 +284,7 @@ public class SurfaceFeatures implements Serializable {
 //			}
 			
 			double diff = 0;
-			if (!sequence.isEmpty() && size > 1) {
+			if (sequence != null && !sequence.isEmpty() && size > 1) {
 				for (int i=0; i < size - 1; ++i) {
 				    diff = sequence.get(i+1) - sequence.get(i);
 				    if (diff > 0) {

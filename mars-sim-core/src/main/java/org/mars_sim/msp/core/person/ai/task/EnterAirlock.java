@@ -451,6 +451,32 @@ public class EnterAirlock extends Task implements Serializable {
 
 		double remainingTime = 0;
 		
+//		if (!person.getPhysicalCondition().isFit()) {
+//			LogConsolidated.log(logger, Level.FINE, 0, sourceName, 
+//					"[" + person.getLocale() + "] "
+//					+ person.getName() 
+//					+ " was not fit enough to go outside ("
+//					+ Math.round(person.getXLocation()*10.0)/10.0 + ", " 
+//					+ Math.round(person.getYLocation()*10.0)/10.0 + ").");
+//			endTask();
+//			person.getMind().getTaskManager().clearAllTasks();
+//			walkToRandomLocation(true);
+//			return time;
+//		}
+		
+		if (!person.getPhysicalCondition().isFit()) {
+			LogConsolidated.log(logger, Level.FINE, 0, sourceName, 
+					"[" + person.getLocale() + "] "
+					+ person.getName() 
+					+ " was not fit enough to go outside ("
+					+ Math.round(person.getXLocation()*10.0)/10.0 + ", " 
+					+ Math.round(person.getYLocation()*10.0)/10.0 + ").");
+			endTask();
+			person.getMind().getTaskManager().clearAllTasks();
+			walkToRandomLocation(true);
+			return time;
+		}
+		
 		if (airlock.isDepressurized()) {
 			// If it stops adding or subtracting air, 
 			// then airlock has been depressurized, 

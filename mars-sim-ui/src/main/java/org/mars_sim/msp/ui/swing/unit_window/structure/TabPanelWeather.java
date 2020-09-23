@@ -12,9 +12,13 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.Image;
+import java.awt.Toolkit;
+import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.logging.Logger;
 
+import javax.swing.ImageIcon;
 import javax.swing.SpringLayout;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
@@ -56,7 +60,7 @@ extends TabPanel {
 	private static final String SNOW_BLOWING = Msg.getString("img.snow_blowing"); //$NON-NLS-1$
 	private static final String SUN_STORM = Msg.getString("img.sun_storm"); //$NON-NLS-1$
 	private static final String SNOWFLAKE = Msg.getString("img.thermometer_snowflake"); //$NON-NLS-1$
-//	private static final String WIND_FLAG = Msg.getString("img.wind_flag_storm"); //$NON-NLS-1$
+	private static final String WIND_FLAG = Msg.getString("img.wind_flag_storm"); //$NON-NLS-1$
 	private static final String FRIGID = Msg.getString("img.frigid"); //$NON-NLS-1$
 	private static final String HAZE = Msg.getString("img.haze"); //$NON-NLS-1$
 
@@ -167,14 +171,14 @@ extends TabPanel {
         // Prepare latitude label
         latitudeLabel = new WebLabel(getLatitudeString());
         latitudeLabel.setOpaque(false);
-        latitudeLabel.setFont(new Font("Serif", Font.PLAIN, 15));
+        latitudeLabel.setFont(new Font("San Serif", Font.ITALIC, 15));
         latitudeLabel.setHorizontalAlignment(SwingConstants.LEFT);
         locationCoordsPanel.add(latitudeLabel, BorderLayout.NORTH);
 
         // Prepare longitude label
         longitudeLabel = new WebLabel(getLongitudeString());
         longitudeLabel.setOpaque(false);
-        longitudeLabel.setFont(new Font("Serif", Font.PLAIN, 15));
+        longitudeLabel.setFont(new Font("San Serif", Font.ITALIC, 15));
         longitudeLabel.setHorizontalAlignment(SwingConstants.LEFT);
         locationCoordsPanel.add(longitudeLabel, BorderLayout.CENTER);
 
@@ -182,10 +186,10 @@ extends TabPanel {
 //        locationLabelPanel.setBorder(new EmptyBorder(1, 1, 1, 1) );
         locationLabelPanel.setLayout(new BorderLayout(0, 0));
         WebLabel latLabel = new WebLabel("Lat : ");//, JLabel.RIGHT);
-        latLabel.setFont(new Font("Serif", Font.PLAIN, 15));
+        latLabel.setFont(new Font("San Serif", Font.ITALIC, 15));
         latLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         WebLabel longLabel = new WebLabel("Lon : ");//, JLabel.RIGHT);
-        longLabel.setFont(new Font("Serif", Font.PLAIN, 15));
+        longLabel.setFont(new Font("San Serif", Font.ITALIC, 15));
         longLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         locationLabelPanel.add(latLabel, BorderLayout.NORTH);
         locationLabelPanel.add(longLabel, BorderLayout.CENTER);
@@ -230,12 +234,13 @@ extends TabPanel {
 
     	WebPanel imgPanel = new WebPanel(new FlowLayout());
         weatherLabel = new WebLabel();
+        weatherLabel.setPreferredSize(96, 96);
     	imgPanel.add(weatherLabel, WebLabel.CENTER);
     	weatherPanel.add(imgPanel, BorderLayout.NORTH);
     	// TODO: calculate the average, high and low temperature during the day to determine
     	// if it is hot, sunny, dusty, stormy...
     	// Sets up if else clause to choose the proper weather image
-    	ImageLoader.getNewIcon(SUNNY);
+//    	ImageLoader.getNewIcon(SUNNY);
     	
     	// Prepare temperature panel
         WebPanel temperaturePanel = new WebPanel(new FlowLayout());
@@ -566,6 +571,8 @@ extends TabPanel {
 	        	opticalDepthTF.setText(" " + getOpticalDepthString(opticalDepthCache));
 	        }
 
+	        //////////////////////////////////////////////
+	        
 	       	String icon = null;
 
 	    	if (temperatureCache <= 0) {
@@ -581,8 +588,8 @@ extends TabPanel {
 	    	else if (temperatureCache >= 26)
 	    		icon = BALMY;
 	    	else { //if (temperatureCache >= 0) {
-	    		if (windSpeedCache > 10D) {
-	    			icon = SUN_STORM;
+	    		if (windSpeedCache > 20D) {
+	    			icon = WIND_FLAG ;//SUN_STORM;
 	    		}
 	    		else if (opticalDepthCache > 1D) {
 			    	if (opticalDepthCache > 3D)
@@ -594,10 +601,12 @@ extends TabPanel {
 	    			icon = SUNNY;
 	    	}
 
+	    	//////////////////////////////////////////////
+	    	
 	    	if (!icon.equals(iconCache)) {
 	    		iconCache = icon;
-	    		ImageLoader.getNewIcon(icon);
 //	    		setImage(icon);
+	    		weatherLabel.setIcon(ImageLoader.getNewIcon(icon));
 	    	}
 
 	        double za = getZenithAngle();

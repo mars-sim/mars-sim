@@ -18,6 +18,7 @@ import java.util.ArrayList;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 
@@ -62,7 +63,7 @@ public class HistoricalEventManager implements Serializable {
 	 * Create a new EventManager that represents a particular simulation.
 	 */
 	public HistoricalEventManager() {
-		listeners = new ArrayList<HistoricalEventListener>();
+		listeners = new CopyOnWriteArrayList<HistoricalEventListener>();
 		eventsRegistry = new ArrayList<>();
 		initMaps();
 	}
@@ -138,7 +139,7 @@ public class HistoricalEventManager implements Serializable {
 	 * 
 	 * @param newEvent The event to register.
 	 */
-	public synchronized void registerNewEvent(HistoricalEvent newEvent) {
+	public void registerNewEvent(HistoricalEvent newEvent) {
 		if (newEvent.getCategory() == HistoricalEventCategory.TASK)
 			return;
 		

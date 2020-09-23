@@ -88,7 +88,7 @@ public class AssistScientificStudyResearcher extends Task implements Serializabl
 				if (person.isInSettlement()) {
 
 					Building researcherBuilding = BuildingManager.getBuilding(researcher);
-					if (researcherBuilding != null && !researcherBuilding.getBuildingType().contains("astronomy")) {
+					if (researcherBuilding != null && !researcherBuilding.getBuildingType().equalsIgnoreCase(Building.ASTRONOMY_OBSERVATORY)) {
 
 						// Walk to researcher
 						walkToTaskSpecificActivitySpotInBuilding(researcherBuilding, false);
@@ -282,14 +282,16 @@ public class AssistScientificStudyResearcher extends Task implements Serializabl
 		int academicAptitude = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.ACADEMIC_APTITUDE);
 		newPoints += newPoints * ((double) academicAptitude - 50D) / 100D;
 		newPoints *= getTeachingExperienceModifier();
-		SkillType scienceSkill = researchTask.getResearchScience().getSkill();
-		person.getSkillManager().addExperience(scienceSkill, newPoints, time);
+		if (researchTask != null && researchTask.getResearchScience() != null) {
+			SkillType scienceSkill = researchTask.getResearchScience().getSkill();
+			person.getSkillManager().addExperience(scienceSkill, newPoints, time);
+		}
 	}
 
 	@Override
 	public List<SkillType> getAssociatedSkills() {
 		List<SkillType> results = new ArrayList<SkillType>(1);
-		if (researchTask != null) {
+		if (researchTask != null && researchTask.getResearchScience() != null) {
 			SkillType scienceSkill = researchTask.getResearchScience().getSkill();
 			results.add(scienceSkill);
 		}
@@ -298,8 +300,11 @@ public class AssistScientificStudyResearcher extends Task implements Serializabl
 
 	@Override
 	public int getEffectiveSkillLevel() {
-		SkillType scienceSkill = researchTask.getResearchScience().getSkill();
-		return person.getSkillManager().getEffectiveSkillLevel(scienceSkill);
+		if (researchTask != null && researchTask.getResearchScience() != null) {
+			SkillType scienceSkill = researchTask.getResearchScience().getSkill();
+			return person.getSkillManager().getEffectiveSkillLevel(scienceSkill);
+		}
+		return 0;
 	}
 
 	@Override

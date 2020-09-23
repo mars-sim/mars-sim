@@ -125,7 +125,7 @@ public abstract class Airlock implements Serializable {
 		airlockState = AirlockState.PRESSURIZED;
 		innerDoorLocked = false;
 		outerDoorLocked = true;
-		remainingCycleTime = 0D;
+		remainingCycleTime = CYCLE_TIME;
 		
 		operatorID = Integer.valueOf(-1);
 		

@@ -517,6 +517,11 @@ public class ExitAirlock extends Task implements Serializable {
 
 		double remainingTime = 0;
 		
+		if (!airlock.isActivated()) {
+			// Enable someone to be selected as an airlock operator
+			airlock.setActivated(true);
+		}
+		
 		if (!person.getPhysicalCondition().isFit()) {
 			LogConsolidated.log(logger, Level.FINE, 0, sourceName, 
 					"[" + person.getLocale() + "] "
@@ -885,6 +890,10 @@ public class ExitAirlock extends Task implements Serializable {
 		
 		if (result) {
 			
+			if (!airlock.isActivated())
+				// Enable someone to be selected as an airlock operator
+				airlock.setActivated(true);
+		
 			if (airlock.isOperator(id) || airlock.isDepressurized()) {
 				// Unlock the inner door
 				LogConsolidated.log(logger, Level.FINE, 4000, sourceName,
@@ -968,6 +977,24 @@ public class ExitAirlock extends Task implements Serializable {
 
 		double remainingTime = 0;
 					
+		if (!airlock.isActivated()) {
+			// Enable someone to be selected as an airlock operator
+			airlock.setActivated(true);
+		}
+		
+		if (!person.getPhysicalCondition().isFit()) {
+			LogConsolidated.log(logger, Level.FINE, 0, sourceName, 
+					"[" + person.getLocale() + "] "
+					+ person.getName() 
+					+ " was not fit enough to go outside ("
+					+ Math.round(person.getXLocation()*10.0)/10.0 + ", " 
+					+ Math.round(person.getYLocation()*10.0)/10.0 + ").");
+			endTask();
+			person.getMind().getTaskManager().clearAllTasks();
+			walkToRandomLocation(true);
+			return time;
+		}
+		
 		if (airlock.isDepressurized()) {
 			// If it stops adding or subtracting air, 
 			// then airlock has been depressurized, 
@@ -1038,6 +1065,19 @@ public class ExitAirlock extends Task implements Serializable {
 	private double leaveAirlock(double time) {
 
 		double remainingTime = 0;
+		
+		if (!person.getPhysicalCondition().isFit()) {
+			LogConsolidated.log(logger, Level.FINE, 0, sourceName, 
+					"[" + person.getLocale() + "] "
+					+ person.getName() 
+					+ " was not fit enough to go outside ("
+					+ Math.round(person.getXLocation()*10.0)/10.0 + ", " 
+					+ Math.round(person.getYLocation()*10.0)/10.0 + ").");
+			endTask();
+			person.getMind().getTaskManager().clearAllTasks();
+			walkToRandomLocation(true);
+			return time;
+		}
 		
 		boolean canExit = false;
 		

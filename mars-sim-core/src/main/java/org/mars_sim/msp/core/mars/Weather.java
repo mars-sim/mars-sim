@@ -129,8 +129,8 @@ public class Weather implements Serializable {
 		// From the chart, it has an average of 25 C temperature variation on the
 		// maximum and minimum temperature curves
 
-		double del_latitude = 12.62; // =14.57-1.95;
-		int del_temperature = 17; // = 25-8;
+		double del_latitude = 12.62; // = 14.57 - 1.95;
+		int del_temperature = 17; // = 25 - 8;
 
 		// assuming a linear relationship
 		TEMPERATURE_DELTA_PER_DEG_LAT = del_temperature / del_latitude;
@@ -268,8 +268,6 @@ public class Weather implements Serializable {
 						}
 					}
 				}
-
-				// }
 
 				new_speed = ds_speed + rand;
 
@@ -463,7 +461,7 @@ public class Weather implements Serializable {
 			temperatureCacheMap.put(location, newT);
 			return newT;
 		} else {
-			return getCachedReading(temperatureCacheMap, location);// , TEMPERATURE);
+			return getCachedReading(temperatureCacheMap, location);
 		}
 	}
 
@@ -621,17 +619,32 @@ public class Weather implements Serializable {
 			double up = RandomUtil.getRandomDouble(2);
 			double down = RandomUtil.getRandomDouble(2);
 
-			// (6). Add Windspped
+			// (6). Add windspeed
 
 			double wind_dt = 0;
 			if (windSpeedCacheMap == null)
 				windSpeedCacheMap = new ConcurrentHashMap<>();
 
 			if (windSpeedCacheMap.containsKey(location))
-				wind_dt = windSpeedCacheMap.get(location) * 1.5D;
+				wind_dt = 10.0 / (1 + Math.exp(-.15 * windSpeedCacheMap.get(location)));
 
-			t = equatorial_temperature + viking_dt - lat_dt - terrain_dt + seasonal_dt - wind_dt + up - down;
+			
+			// Conclusion : 
+			
+			t = equatorial_temperature + viking_dt - lat_dt - terrain_dt + seasonal_dt + up - down;
 
+			if (t > 0)
+				t = t + wind_dt;
+			else
+				t = t - wind_dt;
+			
+			// Limit the highest and lowest temperature
+			if (t > 40)
+				t = 40;
+			
+			else if (t < -160)
+				t = -160;
+			
 			double previous_t = 0;
 			if (temperatureCacheMap == null) {
 				temperatureCacheMap = new ConcurrentHashMap<Coordinates, Double>();

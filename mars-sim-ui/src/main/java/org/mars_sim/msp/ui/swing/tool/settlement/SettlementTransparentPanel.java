@@ -75,7 +75,6 @@ import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.steelseries.gauges.DisplaySingle;
 import org.mars_sim.msp.ui.steelseries.tools.LcdColor;
-import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MainWindow;
 
@@ -718,10 +717,10 @@ public class SettlementTransparentPanel extends WebComponent implements ClockLis
 
 		///////////////////////////////////////////////
 		
-		if (opticalDepthCache > 0.8)
+		if (opticalDepthCache > .5)
 			icon10 = SAND_SVG;
 		
-    	else if (opticalDepthCache > 0.4) {
+    	else if (opticalDepthCache > 0.3) {
     		icon10 = HAZY_SVG;
     	}
 		

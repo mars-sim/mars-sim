@@ -328,8 +328,8 @@ public class HealthProblem implements Serializable {
 		setState(CURED);
 
 		// Create medical event for cured.
-		MedicalEvent curedEvent = new MedicalEvent(sufferer, this, EventType.MEDICAL_CURED);
-		eventManager.registerNewEvent(curedEvent);
+//		MedicalEvent curedEvent = new MedicalEvent(sufferer, this, EventType.MEDICAL_CURED);
+		eventManager.registerNewEvent(new MedicalEvent(sufferer, this, EventType.MEDICAL_CURED));
 	}
 
 	/**
