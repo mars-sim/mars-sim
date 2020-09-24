@@ -376,11 +376,27 @@ public class EnterAirlock extends Task implements Serializable {
 
 		if (canEnter) {
 			
-			if (!airlock.isActivated())
+			if (airlock.isDepressurized() && !airlock.isOuterDoorLocked()) {
+				// If it stops adding or subtracting air, 
+				// then airlock has been depressurized, 
+				// ready to unlock the outer door
+		
+				LogConsolidated.log(logger, Level.INFO, 4000, sourceName,
+					"[" + person.getLocale() 
+					+ "] The chamber had just been depressurized for EVA ingress in " 
+					+ airlock.getEntity().toString() + ".");
+				
+				// Add experience
+				addExperience(time);
+				
+				setPhase(ENTER_AIRLOCK);
+			}
+			
+			else if (!airlock.isActivated())
 				// Enable someone to be selected as an airlock operator
 				airlock.setActivated(true);
-			
-			if (airlock.isOperator(id) || airlock.isDepressurized()) {
+						
+			if (airlock.isOperator(id)) {
 				// Add experience
 				addExperience(time);
 				
@@ -451,33 +467,7 @@ public class EnterAirlock extends Task implements Serializable {
 
 		double remainingTime = 0;
 		
-//		if (!person.getPhysicalCondition().isFit()) {
-//			LogConsolidated.log(logger, Level.FINE, 0, sourceName, 
-//					"[" + person.getLocale() + "] "
-//					+ person.getName() 
-//					+ " was not fit enough to go outside ("
-//					+ Math.round(person.getXLocation()*10.0)/10.0 + ", " 
-//					+ Math.round(person.getYLocation()*10.0)/10.0 + ").");
-//			endTask();
-//			person.getMind().getTaskManager().clearAllTasks();
-//			walkToRandomLocation(true);
-//			return time;
-//		}
-		
-		if (!person.getPhysicalCondition().isFit()) {
-			LogConsolidated.log(logger, Level.FINE, 0, sourceName, 
-					"[" + person.getLocale() + "] "
-					+ person.getName() 
-					+ " was not fit enough to go outside ("
-					+ Math.round(person.getXLocation()*10.0)/10.0 + ", " 
-					+ Math.round(person.getYLocation()*10.0)/10.0 + ").");
-			endTask();
-			person.getMind().getTaskManager().clearAllTasks();
-			walkToRandomLocation(true);
-			return time;
-		}
-		
-		if (airlock.isDepressurized()) {
+		if (airlock.isDepressurized() && !airlock.isOuterDoorLocked()) {
 			// If it stops adding or subtracting air, 
 			// then airlock has been depressurized, 
 			// ready to unlock the outer door
@@ -549,7 +539,7 @@ public class EnterAirlock extends Task implements Serializable {
 
 		boolean canEnter = false;
 
-		if (airlock.getEntity() instanceof Building) {	
+		if (airlock.getEntity() instanceof Building) {
 
 			if (exteriorDoorPos == null) {
 				exteriorDoorPos = airlock.getAvailableExteriorPosition();

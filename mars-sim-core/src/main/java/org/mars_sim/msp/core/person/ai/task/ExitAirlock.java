@@ -352,16 +352,12 @@ public class ExitAirlock extends Task implements Serializable {
 //				+ " " + loc 
 				+ " requested egress for an EVA in " + airlock.getEntity().toString() + ".");
 		
-		if (airlock.hasSpace()) {
-			
-			if (!airlock.isActivated()) {
-				// Enable someone to be selected as an airlock operator
-				airlock.setActivated(true);
-			}	
-		}
-		
 		boolean canEnter = false;
 
+		if (!airlock.isActivated())
+			// Enable someone to be selected as an airlock operator
+			airlock.setActivated(true);
+		
 		if (airlock.getEntity() instanceof Building) {
 			// Load up the EVA activity spots
 			airlock.loadEVAActivitySpots();
@@ -387,16 +383,16 @@ public class ExitAirlock extends Task implements Serializable {
 				}
 			}
 			
-			else if (airlock.isEmpty()) {
-
-				if (transitionTo(0)) {
-					
-					if (airlock.addAwaitingInnerDoor(person, id)) {		
-						
-						canEnter = true;
-					}
-				}
-			}
+//			else if (airlock.isEmpty()) {
+//
+//				if (transitionTo(0)) {
+//					
+//					if (airlock.addAwaitingInnerDoor(person, id)) {		
+//						
+//						canEnter = true;
+//					}
+//				}
+//			}
 		}
 		
 		else if (airlock.getEntity() instanceof Rover) {
@@ -429,7 +425,32 @@ public class ExitAirlock extends Task implements Serializable {
 			// Add experience
 			addExperience(time);
 			
-			if (airlock.isOperator(id) || airlock.isPressurized()) {
+			if (airlock.isPressurized() && !airlock.isInnerDoorLocked()) {
+				// If it stops adding or subtracting air, 
+				// then airlock has been pressurized, 
+				// ready to unlock the outer door
+		
+				LogConsolidated.log(logger, Level.FINE, 4000, sourceName,
+					"[" + person.getLocale() 
+					+ "] The chamber had just been pressurized for EVA ingress in " 
+					+ airlock.getEntity().toString() + ".");
+				
+				// Add experience
+				addExperience(time);
+				
+				setPhase(ENTER_AIRLOCK);
+			}
+			
+			
+			else if (airlock.hasSpace()) {
+				
+				if (!airlock.isActivated()) {
+					// Enable someone to be selected as an airlock operator
+					airlock.setActivated(true);
+				}	
+			}
+			
+			if (airlock.isOperator(id)) {
 				// Add experience
 				addExperience(time);
 				
@@ -535,7 +556,7 @@ public class ExitAirlock extends Task implements Serializable {
 			return time;
 		}
 		
-		if (airlock.isPressurized()) {
+		if (airlock.isPressurized() && !airlock.isInnerDoorLocked()) {
 			// If it stops adding or subtracting air, 
 			// then airlock has been pressurized, 
 			// ready to unlock the outer door
@@ -566,7 +587,7 @@ public class ExitAirlock extends Task implements Serializable {
 					+ airlock.getEntity().toString() + ".");
 			
 			// Elect an operator to handle this task
-			// Add air cycle time untill it is fully depressurized
+			// Add air cycle time until it is fully pressurized
 			airlock.addTime(time);
 		}
 		

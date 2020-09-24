@@ -696,7 +696,7 @@ public abstract class Airlock implements Serializable {
 				pool = awaitingOuterDoor;
 			}
 			else
-				pool = operatorPool;
+				pool = awaitingInnerDoor;
 		}
 		else
 			pool = occupantIDs;
@@ -1053,92 +1053,12 @@ public abstract class Airlock implements Serializable {
 			// Create a new set of candidates
 			checkOperatorPool();
 			
-			if (!operatorPool.isEmpty() 
-					&& (!operatorPool.contains(operatorID) || operatorID.equals(Integer.valueOf(-1))))
+			// Note: the preference is first given to those inside the chambers
+			if ((!occupantIDs.isEmpty() && !occupantIDs.contains(operatorID))
+					||
+				!operatorPool.isEmpty() && (!operatorPool.contains(operatorID) || operatorID.equals(Integer.valueOf(-1))))
 				electAnOperator();
 		}
-		
-//
-//		if (activated) {
-//			
-////			if (occupantIDs.size() > 0 && operatorID == -1)
-////				electAnOperator();
-//			
-////			logger.config("occupantIDs.size() : " + occupantIDs.size());
-//			
-//			// If there is no operator, operatorID = -1
-//			if (operatorID > 0) {
-////				LogConsolidated.log(logger, Level.FINER, 4000, sourceName,
-////						"Airlock::timePassing - the airlock was activated by " + getPersonByID(operatorID) + ".");
-//				
-////				logger.config("unitManager is " + unitManager);
-//				Person p = getPersonByID(operatorID);
-////				logger.config("operatorID is " + operatorID);
-////				logger.config("person is " + p);
-////				logger.config("p.getPhysicalCondition() is " + p.getPhysicalCondition());
-//				boolean isDead = p.getPhysicalCondition().isDead();
-//				// Check if operator is dead.
-//				if (isDead) {
-//					
-//					if (occupantIDs.isEmpty())
-//						turnOffChamber(time);
-//					
-//					// If operator is dead, deactivate airlock.
-//					String operatorName = p.getName();
-//					LogConsolidated.log(logger, Level.WARNING, 10_000, sourceName, "[" + p.getLocale() + "] "
-//							+ "Airlock operator " + operatorName + " was dead.");
-//				}
-//				
-//				else {
-//					// Check if airlock operator still has a task involving the airlock.
-//					boolean hasAirlockTask = false;
-//
-//					Task task = p.getMind().getTaskManager().getTask();
-//
-//					if (task != null) {
-//						if ((task instanceof ExitAirlock) || (task instanceof EnterAirlock)
-//								|| (task instanceof EVAOperation) ) {
-//							hasAirlockTask = true;
-//						}
-//						task = task.getSubTask();
-//					}
-//
-//					if (task != null) {
-//						if ((task instanceof ExitAirlock) || (task instanceof EnterAirlock)
-//								|| (task instanceof EVAOperation) ) {
-//							hasAirlockTask = hasAirlockTask || true;
-//						}
-//						task = task.getSubTask();
-//					}
-//					
-//					if (task != null) {
-//						if ((task instanceof ExitAirlock) || (task instanceof EnterAirlock)
-//								|| (task instanceof EVAOperation) ) {
-//							hasAirlockTask = hasAirlockTask || true;
-//						}
-//					}
-//					
-//					if (!hasAirlockTask) {
-//						String operatorName = p.getName();
-//						LogConsolidated.log(logger, Level.FINE, 10_000, sourceName, "[" + p.getLocale() + "] "
-//								+ operatorName 
-//								+ " was no longer being the airlock operator at " + getEntityName());
-//						
-//						if (occupantIDs.isEmpty())
-//							turnOffChamber(time);
-//					}
-//				}
-//			}
-//			
-//			else {
-//				// If no operator and no occupants, deactivate airlock.
-//				if (occupantIDs.isEmpty())
-//					turnOffChamber(time);
-////				LogConsolidated.log(logger, Level.FINER, 4000, sourceName, 
-////						"Without an operator, the airlock in " 
-////						+ getEntityName() + " got deactivated.");		
-//			}
-//		}
 	}
 
 	/**
